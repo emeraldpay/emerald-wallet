@@ -8,8 +8,10 @@ const wideStyle = { width: 120 };
 const Render = ({account}) => {
     return (
         <TableRow selectable={false}>
-            <TableRowColumn style={wideStyle}>{account}</TableRowColumn>
-            <TableRowColumn style={shortStyle}>0.0000 Ether</TableRowColumn>
+            <TableRowColumn style={wideStyle}>{account.get('id')}</TableRowColumn>
+            <TableRowColumn style={shortStyle}>
+                {account.get('balance') ? account.get('balance').getEther() : '?'} Ether
+            </TableRowColumn>
         </TableRow>
     );
 };

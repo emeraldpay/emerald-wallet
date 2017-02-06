@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table'
+import log from 'loglevel'
+import Immutable from 'immutable'
 
 import Account from './account'
 
@@ -17,7 +19,7 @@ const Render = ({accounts}) => {
             </TableRow>
         </TableHeader>
         <TableBody displayRowCheckbox={false}>
-            {accounts.map( (account) => <Account key={account} account={account}/>)}
+            {accounts.map( (account) => <Account key={account.get('id')} account={account}/>)}
         </TableBody>
     </Table>;
 
@@ -32,7 +34,7 @@ const Render = ({accounts}) => {
 const AccountsList = connect(
     (state, ownProps) => {
         return {
-            accounts: state.accounts.has('accounts') ? state.accounts.get('accounts').toJS() : [],
+            accounts: state.accounts.get('accounts', Immutable.List()),
         }
     },
     (dispatch, ownProps) => {

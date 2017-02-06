@@ -51,6 +51,7 @@
     "immutable": "3.8.1",
     "moment": "2.17.1",
     "fbjs": "0.8.9",
+    "bignumber.js": "4.0.0",
 
     "chai": "^3.5.0",
     "coveralls": "^2.11.9",
