@@ -1,0 +1,83 @@
+{
+  "name": "classic-wallet",
+  "private": false,
+  "author": "Igor Artamonov",
+  "version": "0.1.0",
+  "description": "Ethereum Classic Wallet",
+  "main": "./src/app.js",
+  "keywords": [
+    "react",
+    "react-component",
+    "material design",
+    "material-ui",
+    "ethereum",
+    "ethereum classic",
+    "etc",
+    "dapp"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/ethereumproject/classic-wallet.git"
+  },
+  "license": "Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/ethereumproject/classic-wallet/issues"
+  },
+  "homepage": "https://github.com/ethereumproject/classic-wallet",
+  "dependencies": {
+    "babel-core": "^6.22.1",
+    "babel-runtime": "^6.22.0",
+    "babel-preset-es2015": "^6.22.0",
+    "babel-preset-react": "^6.22.0",
+    "babel-polyfill": "^6.22.0",
+
+    "react": "^15.4.2",
+    "react-dom": "^15.4.2",
+    "react-addons-test-utils": "^15.4.2",
+    "react-tap-event-plugin": "^2.0.1",
+    "react-hot-loader": "^1.3.0",
+    "redux": "3.4.0",
+    "redux-thunk": "2.0.1",
+    "redux-logger": "2.6.1",
+    "react-redux": "4.4.2",
+    "redux-form": "5.2.3",
+
+    "material-ui": "^0.16.6",
+    "react-moment": "0.1.2",
+    "font-awesome": "4.7.0",
+
+    "whatwg-fetch": "^2.0.1",
+    "loglevel": "1.4.0",
+    "immutable": "3.8.1",
+    "moment": "2.17.1",
+    "fbjs": "0.8.9",
+
+    "chai": "^3.5.0",
+    "coveralls": "^2.11.9",
+    "karma": "^1.4.1",
+    "karma-mocha": "^1.3.0",
+    "karma-mocha-reporter": "^2.2.2",
+    "karma-phantomjs-launcher": "^1.0.2",
+    "karma-sourcemap-loader": "^0.3.7",
+    "karma-webpack": "^1.7.0",
+    "mocha": "^3.2.0",
+    "phantomjs-prebuilt": "^2.1.14",
+
+    "webpack": "^1.13.1",
+    "recursive-readdir-sync": "^1.0.6",
+    "fs-extra": "^0.30.0",
+    "glob": "^7.0.3",
+    "@elastic/webpack-directory-name-as-main": "2.0.2",
+    "extract-text-webpack-plugin": "0.8.2",
+    "copy-webpack-plugin": "1.1.1",
+    "babel-loader": "^6.2.10",
+    "node-sass": "3.8.0",
+    "sass-loader": "3.2.0",
+    "css-loader": "0.17.0",
+    "style-loader": "0.12.3",
+    "imports-loader": "0.6.4",
+    "file-loader": "0.8.4",
+    "url-loader": "0.5.7"
+
+  }
+}
