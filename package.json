@@ -46,7 +46,7 @@
     "react-moment": "0.1.2",
     "font-awesome": "4.7.0",
 
-    "whatwg-fetch": "^2.0.1",
+    "whatwg-fetch": "^2.0.2",
     "loglevel": "1.4.0",
     "immutable": "3.8.1",
     "moment": "2.17.1",
