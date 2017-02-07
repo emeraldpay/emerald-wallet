@@ -65,6 +65,7 @@
     "phantomjs-prebuilt": "^2.1.14",
 
     "webpack": "^1.13.1",
+    "webpack-dev-server": "^1.13.1",
     "recursive-readdir-sync": "^1.0.6",
     "fs-extra": "^0.30.0",
     "glob": "^7.0.3",

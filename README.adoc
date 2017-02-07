@@ -22,11 +22,27 @@ npm install
 
 # Build
 
+## Rebuild automatically
 ```
 node build
 ```
 
 Open `build/index.html` with your browser
+
+## Build once
+```
+node build --no-watch
+```
+
+Open `build/index.html` with your browser
+
+
+## Rebuild and start server
+```
+node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --content-base build/ --inline
+```
+
+Open `http://localhost:8080` with your browser
 
 # License
 
