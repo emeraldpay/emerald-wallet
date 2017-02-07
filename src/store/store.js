@@ -3,11 +3,14 @@ import createLogger from 'redux-logger'
 import { createStore, applyMiddleware, combineReducers } from 'redux'
 
 import { loadAccountsList } from './accountActions'
-import { accountsReducers } from './accountReducers';
+import { accountsReducers } from './accountReducers'
+import { open } from './screenActions'
+import { screenReducers } from './screenReducers'
 
 const stateTransformer = (state) => {
     return {
-        accounts: state.accounts.toJS()
+        accounts: state.accounts.toJS(),
+        screen: state.screen.toJS()
     }
 };
 
@@ -17,6 +20,7 @@ const loggerMiddleware = createLogger({
 
 const reducers = {
     accounts: accountsReducers,
+    screen: screenReducers
 };
 
 export const store = createStore(
@@ -28,3 +32,4 @@ export const store = createStore(
 );
 
 store.dispatch(loadAccountsList());
+store.dispatch(open('home'));

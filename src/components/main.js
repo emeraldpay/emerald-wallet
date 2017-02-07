@@ -2,7 +2,7 @@ import React from 'react'
 import AppBar from 'material-ui/AppBar'
 import './main.scss'
 
-import AccountsList from './accounts/list'
+import Screen from './screen'
 
 const Main = () => (
     <div>
@@ -11,7 +11,7 @@ const Main = () => (
             iconClassNameRight="muidocs-icon-navigation-expand-more"
         />
         <div id="body">
-            <AccountsList/>
+            <Screen/>
         </div>
         <div id="footer">
             <div>
