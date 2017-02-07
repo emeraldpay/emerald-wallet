@@ -1,6 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table'
+import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
+import FlatButton from 'material-ui/FlatButton'
+import FontIcon from 'material-ui/FontIcon'
+import Avatar from 'material-ui/Avatar';
 import log from 'loglevel'
 import Immutable from 'immutable'
 
@@ -23,10 +27,30 @@ const Render = ({accounts}) => {
         </TableBody>
     </Table>;
 
+    const titleStyle = {
+        fontSize: "20px",
+    };
+    const titleAvatar = <Avatar icon={<FontIcon className="fa fa-address-book-o fa-2x" />} />;
+
     return (
         <div id="accounts-list">
-            <h2>Accounts</h2>
-            {table}
+            <Card>
+                <CardHeader
+                    title="Accounts List"
+                    titleStyle={titleStyle}
+                    subtitle="List of addresses you're controlling on Ethereum Classic blockchain"
+                    avatar={titleAvatar}
+                    actAsExpander={false}
+                    showExpandableButton={false}
+                />
+                <CardText expandable={false}>
+                    {table}
+                </CardText>
+                <CardActions>
+                    <FlatButton label="Create Account"
+                                icon={<FontIcon className="fa fa-plus-circle" />}/>
+                </CardActions>
+            </Card>
         </div>
     )
 };
