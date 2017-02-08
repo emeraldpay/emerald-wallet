@@ -37,5 +37,6 @@ export const store = createStore(
 
 store.dispatch(loadAccountsList());
 store.dispatch(open('home'));
-store.dispatch(loadSyncing());
 store.dispatch(loadHeight());
+setTimeout(() => store.dispatch(loadSyncing()), 3000); //check for syncing
+setTimeout(() => store.dispatch(loadSyncing()), 30000); //double check for syncing after 30 seconds
