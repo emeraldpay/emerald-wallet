@@ -5,6 +5,7 @@ import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
 import FlatButton from 'material-ui/FlatButton'
 import FontIcon from 'material-ui/FontIcon'
 import Avatar from 'material-ui/Avatar';
+import { cardSpace } from '../../lib/styles'
 import log from 'loglevel'
 import Immutable from 'immutable'
 
@@ -34,7 +35,7 @@ const Render = ({accounts}) => {
 
     return (
         <div id="accounts-list">
-            <Card>
+            <Card style={cardSpace}>
                 <CardHeader
                     title="Accounts List"
                     titleStyle={titleStyle}

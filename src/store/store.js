@@ -6,11 +6,14 @@ import { loadAccountsList } from './accountActions'
 import { accountsReducers } from './accountReducers'
 import { open } from './screenActions'
 import { screenReducers } from './screenReducers'
+import { loadSyncing, loadHeight } from './networkActions'
+import { networkReducers } from './networkReducers'
 
 const stateTransformer = (state) => {
     return {
         accounts: state.accounts.toJS(),
-        screen: state.screen.toJS()
+        screen: state.screen.toJS(),
+        network: state.network.toJS()
     }
 };
 
@@ -20,7 +23,8 @@ const loggerMiddleware = createLogger({
 
 const reducers = {
     accounts: accountsReducers,
-    screen: screenReducers
+    screen: screenReducers,
+    network: networkReducers
 };
 
 export const store = createStore(
@@ -33,3 +37,5 @@ export const store = createStore(
 
 store.dispatch(loadAccountsList());
 store.dispatch(open('home'));
+store.dispatch(loadSyncing());
+store.dispatch(loadHeight());
