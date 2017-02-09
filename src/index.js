@@ -7,6 +7,7 @@ import Main from './components/main';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import {store} from './store/store.js';
 import log from 'loglevel';
+import 'roboto-fontface/css/roboto/sass/roboto-fontface.scss'
 import './index.scss'
 
 log.setLevel('debug');
