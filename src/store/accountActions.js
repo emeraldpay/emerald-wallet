@@ -21,7 +21,19 @@ export function loadAccountBalance(accountId) {
             dispatch({
                 type: 'ACCOUNT/SET_BALANCE',
                 accountId: accountId,
-                balance: json.result
+                value: json.result
+            })
+        });
+    }
+}
+
+export function loadAccountTxCount(accountId) {
+    return function (dispatch) {
+        rpc("eth_getTransactionCount", [accountId, "latest"]).then((json) => {
+            dispatch({
+                type: 'ACCOUNT/SET_TXCOUNT',
+                accountId: accountId,
+                value: json.result
             })
         });
     }

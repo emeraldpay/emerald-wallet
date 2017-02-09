@@ -5,6 +5,8 @@ import log from 'loglevel'
 import AccountsList from './accounts/list'
 import AccountShow from './accounts/show'
 
+import Status from './status/status'
+
 const Render = ({screen, screenItem}) => {
 
     log.debug('screen', screen);
@@ -14,7 +16,12 @@ const Render = ({screen, screenItem}) => {
             <i className="fa fa-spinner fa-spin fa-2x" /> Initializing...
         </div>
     } else if (screen === 'home') {
-        return <AccountsList/>
+        return (
+            <div>
+                <AccountsList/>
+                <Status/>
+            </div>
+        )
     } else if (screen === 'account') {
         return <AccountShow account={screenItem}/>
     }

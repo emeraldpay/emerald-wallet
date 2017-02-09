@@ -61,7 +61,8 @@ const config = {
             },
             {
                 test: /\.css$/,
-                loader: ExtractTextPlugin.extract("style-loader", "css-loader")
+                loader: ExtractTextPlugin.extract("style-loader", "css-loader?modules"),
+                include: /flexboxgrid/
             },
             { test: /\.json/, loader: "json-loader" },
             { test: /\.(jpg|png|gif)$/, loader: "file-loader?name=images/[name].[ext]" },

@@ -41,10 +41,13 @@
     "redux-logger": "2.6.1",
     "react-redux": "4.4.2",
     "redux-form": "5.2.3",
+    "react-flexbox-grid": "0.10.2",
 
     "material-ui": "^0.16.6",
     "react-moment": "0.1.2",
     "font-awesome": "4.7.0",
+    "flexboxgrid": "^6.3.0",
+    "classnames": "^2.1.2",
 
     "whatwg-fetch": "^2.0.2",
     "loglevel": "1.4.0",
@@ -52,6 +55,7 @@
     "moment": "2.17.1",
     "fbjs": "0.8.9",
     "bignumber.js": "4.0.0",
+    "qrcode.react": "0.6.1",
 
     "chai": "^3.5.0",
     "coveralls": "^2.11.9",
