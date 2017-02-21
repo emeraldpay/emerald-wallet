@@ -1,19 +1,24 @@
 import React from 'react'
+import { connect } from 'react-redux'
 import AppBar from 'material-ui/AppBar'
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index'
 import './main.scss'
-// import 'flexboxgrid/src/css/flexboxgrid.css'
-
+import FlatButton from 'material-ui/FlatButton'
+import FontIcon from 'material-ui/FontIcon'
 import Screen from './screen'
+import { open } from '../store/screenActions'
 
 
-const Main = () => (
+const Render = ({openAccounts}) => (
     <Grid>
         <Row>
             <Col xs={12}>
             <AppBar
                 title="Ethereum Classic Wallet"
-                iconClassNameRight="muidocs-icon-navigation-expand-more"
+                iconElementRight={<FlatButton label="Accounts"
+                                              onClick={openAccounts}
+                                              icon={<FontIcon className="fa fa-address-book-o" />
+                                              } />}
             />
             </Col>
         </Row>
@@ -33,5 +38,18 @@ const Main = () => (
         </Row>
     </Grid>
 );
+
+const Main = connect(
+    (state, ownProps) => {
+        return {}
+    },
+    (dispatch, ownProps) => {
+        return {
+            openAccounts: () => {
+                dispatch(open('home'))
+            }
+        }
+    }
+)(Render);
 
 export default Main;
