@@ -8,12 +8,14 @@ import { open } from './screenActions'
 import { screenReducers } from './screenReducers'
 import { loadSyncing, loadHeight } from './networkActions'
 import { networkReducers } from './networkReducers'
+import { reducer as formReducer } from 'redux-form';
 
 const stateTransformer = (state) => {
     return {
         accounts: state.accounts.toJS(),
         screen: state.screen.toJS(),
-        network: state.network.toJS()
+        network: state.network.toJS(),
+        form: state.form,
     }
 };
 
@@ -24,7 +26,8 @@ const loggerMiddleware = createLogger({
 const reducers = {
     accounts: accountsReducers,
     screen: screenReducers,
-    network: networkReducers
+    network: networkReducers,
+    form: formReducer,
 };
 
 export const store = createStore(

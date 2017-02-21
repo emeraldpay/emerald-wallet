@@ -4,7 +4,7 @@ import log from 'loglevel'
 
 import AccountsList from './accounts/list'
 import AccountShow from './accounts/show'
-
+import CreateTx from './tx/create'
 import Status from './status/status'
 
 const Render = ({screen, screenItem}) => {
@@ -24,6 +24,8 @@ const Render = ({screen, screenItem}) => {
         )
     } else if (screen === 'account') {
         return <AccountShow account={screenItem}/>
+    } else if (screen === 'create-tx') {
+        return <CreateTx account={screenItem}/>
     }
 
     return (

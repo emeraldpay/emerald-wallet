@@ -9,8 +9,9 @@ import QRCode from 'qrcode.react'
 import log from 'loglevel'
 import Immutable from 'immutable'
 import { cardSpace } from '../../lib/styles'
+import { open } from '../../store/screenActions'
 
-const Render = ({account}) => {
+const Render = ({account, createTx}) => {
 
     const value = (account.get('balance') ? account.get('balance').getEther() : '?') + ' Ether';
 
@@ -24,6 +25,7 @@ const Render = ({account}) => {
             />
             <CardActions>
                 <FlatButton label="Send"
+                            onClick={createTx}
                             icon={<FontIcon className="fa fa-arrow-circle-o-up" />}/>
                 <FlatButton label="Receive"
                             icon={<FontIcon className="fa fa-arrow-circle-o-down" />}/>
@@ -58,7 +60,13 @@ const AccountShow = connect(
         }
     },
     (dispatch, ownProps) => {
-        return {}
+        return {
+            createTx: () => {
+                const account = ownProps.account;
+                log.debug('create tx from', account.get('id'));
+                dispatch(open('create-tx', account))
+            }
+        }
     }
 )(Render);
 
