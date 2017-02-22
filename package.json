@@ -1,9 +1,9 @@
 {
-  "name": "classic-wallet",
+  "name": "emerald-wallet",
   "private": false,
   "author": "Igor Artamonov",
   "version": "0.1.0",
-  "description": "Ethereum Classic Wallet",
+  "description": "Emerald - Ethereum Classic Wallet",
   "main": "./src/app.js",
   "keywords": [
     "react",
@@ -17,13 +17,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/ethereumproject/classic-wallet.git"
+    "url": "https://github.com/ethereumproject/emerald-wallet.git"
   },
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/ethereumproject/classic-wallet/issues"
+    "url": "https://github.com/ethereumproject/emerald-wallet/issues"
   },
-  "homepage": "https://github.com/ethereumproject/classic-wallet",
+  "homepage": "https://github.com/ethereumproject/emerald-wallet",
   "dependencies": {
     "babel-core": "^6.22.1",
     "babel-runtime": "^6.22.0",

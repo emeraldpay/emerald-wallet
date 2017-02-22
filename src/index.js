@@ -11,7 +11,7 @@ import 'roboto-fontface/css/roboto/sass/roboto-fontface.scss'
 import './index.scss'
 
 log.setLevel('debug');
-log.info("Starting ETC Wallet...");
+log.info("Starting Emerald Wallet...");
 // Needed for onTouchTap
 injectTapEventPlugin();
 

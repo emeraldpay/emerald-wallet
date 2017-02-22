@@ -14,7 +14,7 @@ const Render = ({openAccounts}) => (
         <Row>
             <Col xs={12}>
             <AppBar
-                title="Ethereum Classic Wallet"
+                title="Emerald - Ethereum Classic Wallet"
                 iconElementRight={<FlatButton label="Accounts"
                                               onClick={openAccounts}
                                               icon={<FontIcon className="fa fa-address-book-o" />
@@ -30,9 +30,11 @@ const Render = ({openAccounts}) => (
         <Row>
             <Col xs={12}>
                 <div id="footer">
-                    <div>
-                        Ethereum Classic, 2017 | <a href="https://github.com/ethereumproject/wallet">Fork on GitHub</a>
-                    </div>
+                    Emerald Wallet, Ethereum Classic, 2017<br/>
+                    <FlatButton label="Fork on GitHub"
+                                backgroundColor="#505050"
+                                href="https://github.com/ethereumproject/emerald-wallet"
+                                icon={<FontIcon className="fa fa-github" />}/>
                 </div>
             </Col>
         </Row>
