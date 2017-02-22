@@ -1,5 +1,5 @@
 Emerald - Ethereum Classic Wallet
-=======================
+=================================
 
 :rootdir: .
 :imagesdir: {rootdir}/images
@@ -14,7 +14,7 @@ image:https://img.shields.io/github/license/ethereumproject/emerald-wallet.svg?m
 endif::[]
 
 
-# Install
+## Install
 
 ```
 npm install
@@ -42,7 +42,11 @@ Open `build/index.html` with your browser
 node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --content-base build/ --inline
 ```
 
-Open `http://localhost:8080` with your browser
+Open `http://localhost:8080` with your browser.
+
+## Run node
+
+Wallet expects Web3 RPC at http://localhost:8545
 
 # License
 
