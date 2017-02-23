@@ -13,6 +13,7 @@ import { cardSpace } from '../../lib/styles'
 import { Row, Col } from 'react-flexbox-grid/lib/index'
 
 import { open } from '../../store/screenActions'
+import { positive, number, required, address } from '../../lib/validators'
 import log from 'loglevel'
 
 const renderTextField = ({ input, label, meta: { touched, error }, ...custom }) => (
@@ -53,23 +54,34 @@ const Render = ({fields: {from, to}, account, handleSubmit, resetForm, submittin
                     <Col xs={12} md={6}>
                         <Row>
                             <Col xs={12}>
-                                <Field name="from" floatingLabelText="From" component={renderSelectField} fullWidth={true}>
+                                <Field name="from"
+                                       floatingLabelText="From"
+                                       component={renderSelectField}
+                                       fullWidth={true}>
                                     <MenuItem value={account.get('id')} primaryText={account.get('id')} />
                                 </Field>
                             </Col>
                         </Row>
                         <Row>
                             <Col xs={12}>
-                                <TextField hintText="0x000000000"
-                                           fullWidth={true}
-                                           floatingLabelText="Target Address"/>
+                                <Field name="to"
+                                       component={renderTextField}
+                                       floatingLabelText="Target Address"
+                                       hintText="0x0000000000000000000000000000000000000000"
+                                       fullWidth={true}
+                                       validate={[required, address]}
+                                />
                             </Col>
                         </Row>
                         <Row>
                             <Col xs={12}>
-                                <TextField floatingLabelText="Amount (Ether)"
-                                           hintText="1.0000"
-                                           defaultValue={0.0}/>
+                                <Field name="value"
+                                       component={renderTextField}
+                                       floatingLabelText="Amount (Ether)"
+                                       hintText="1.0000"
+                                       defaultValue={0.0}
+                                       validate={[required, number, positive]}
+                                />
                             </Col>
                         </Row>
                     </Col>
@@ -77,16 +89,22 @@ const Render = ({fields: {from, to}, account, handleSubmit, resetForm, submittin
                     <Col xs={12} md={6}>
                         <Row>
                             <Col xs={12}>
-                                <TextField floatingLabelText="Gas Price (MGas)"
-                                           hintText="10000"
-                                           defaultValue={10000}/>
+                                <Field name="gasPrice"
+                                       component={renderTextField}
+                                       floatingLabelText="Gas Price (MGas)"
+                                       hintText="10000"
+                                       validate={[required, number, positive]}
+                                />
                             </Col>
                         </Row>
                         <Row>
                             <Col xs={12}>
-                                <TextField floatingLabelText="Gas Amount"
-                                           hintText="21000"
-                                           defaultValue={21000}/>
+                                <Field name="gasAmount"
+                                       component={renderTextField}
+                                       floatingLabelText="Gas Amount"
+                                       hintText="21000"
+                                       validate={[required, number, positive]}
+                                />
                             </Col>
                         </Row>
                     </Col>
@@ -107,18 +125,16 @@ const Render = ({fields: {from, to}, account, handleSubmit, resetForm, submittin
 
 const CreateTxForm = reduxForm({
     form: 'createTx',
-    fields: ['to', 'from'],
-    validate: (values) => {
-        const errors = {};
-        return errors
-    }
+    fields: ['to', 'from', 'value', 'gasPrice', 'gasAmount']
 })(Render);
 
 const CreateTx = connect(
     (state, ownProps) => {
         return {
             initialValues: {
-                from: ownProps.account.get('id')
+                from: ownProps.account.get('id'),
+                gasPrice: 10000,
+                gasAmount: 21000
             }
         }
     },
