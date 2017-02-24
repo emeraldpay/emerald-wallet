@@ -5,6 +5,11 @@
   "version": "0.1.0",
   "description": "Emerald - Ethereum Classic Wallet",
   "main": "./src/app.js",
+  "scripts": {
+    "build": "node build --no-watch",
+    "build:watch": "node build",
+    "start": "node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --content-base build/ --inline"
+  },
   "keywords": [
     "react",
     "react-component",
