@@ -24,14 +24,14 @@ npm install
 
 ## Rebuild automatically
 ```
-node build
+npm run build:watch
 ```
 
 Open `build/index.html` with your browser
 
 ## Build once
 ```
-node build --no-watch
+npm run build
 ```
 
 Open `build/index.html` with your browser
@@ -39,7 +39,7 @@ Open `build/index.html` with your browser
 
 ## Rebuild and start server
 ```
-node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --content-base build/ --inline
+npm run start
 ```
 
 Open `http://localhost:8080` with your browser.
