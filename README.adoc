@@ -36,6 +36,11 @@ npm run build
 
 Open `build/index.html` with your browser
 
+## Run tests
+```
+npm run karma
+```
+
 
 ## Rebuild and start server
 ```

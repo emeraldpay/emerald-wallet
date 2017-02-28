@@ -5,22 +5,30 @@ import ReactDOM from 'react-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Main from './components/main';
 import injectTapEventPlugin from 'react-tap-event-plugin';
-import {store} from './store/store.js';
+import {store, start as startStore} from './store/store.js';
 import log from 'loglevel';
 import 'roboto-fontface/css/roboto/sass/roboto-fontface.scss'
 import './index.scss'
 
-log.setLevel('debug');
-log.info("Starting Emerald Wallet...");
-// Needed for onTouchTap
-injectTapEventPlugin();
+function start() {
+    log.setLevel('debug');
+    log.info("Starting Emerald Wallet...");
 
-const App = () => (
-    <Provider store={store}>
-        <MuiThemeProvider>
-            <Main />
-        </MuiThemeProvider>
-    </Provider>
-);
+    // Needed for onTouchTap
+    injectTapEventPlugin();
 
-ReactDOM.render(<App />, document.getElementById('app'));
+    const App = () => (
+        <Provider store={store}>
+            <MuiThemeProvider>
+                <Main />
+            </MuiThemeProvider>
+        </Provider>
+    );
+
+    ReactDOM.render(<App />, document.getElementById('app'));
+
+    startStore();
+}
+
+window.ETCEMERALD = window.ETCEMERALD || {};
+window.ETCEMERALD.start = start;

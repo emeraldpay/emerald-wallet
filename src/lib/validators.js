@@ -3,7 +3,7 @@ export function required(value) {
 }
 
 export function number(value) {
-    return /^[+\-]?\d+(.\d+)?$/.test(value) ? undefined : "Not a number"
+    return /^[+\-]?\d+(\.\d+)?$/.test(value) ? undefined : "Not a number"
 }
 
 export function positive(value) {
