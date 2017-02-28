@@ -9,7 +9,8 @@
     "build": "node build --no-watch",
     "build:watch": "node build",
     "start": "node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --content-base build/ --inline",
-    "karma": "node ./node_modules/karma/bin/karma start"
+    "test:watch": "node ./node_modules/karma/bin/karma start",
+    "test": "node ./node_modules/karma/bin/karma start --single-run"
   },
   "keywords": [
     "react",
