@@ -16,7 +16,7 @@ const Render = ({accounts}) => {
     const shortStyle = { width: 12 };
     const wideStyle = { width: 120 };
 
-    var table = <Table selectable={false}>
+    const table = <Table selectable={false}>
         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
             <TableRow>
                 <TableHeaderColumn style={wideStyle}>Account</TableHeaderColumn>

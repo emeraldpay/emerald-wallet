@@ -53,16 +53,19 @@ npm test
 npm run start
 ```
 
-Open `http://localhost:8080` with your browser.
+Open `http://localhost:8000` with your browser.
 
 ## Run node
 
 Wallet expects Web3 RPC at http://localhost:8545
 
 ### Parity
+
+`./parity --chain=classic`
+
 Use `--rpccorsdomain` option to configure CORS.
 
-Example: `--rpccorsdomain=*` allow requests from any domain
+Example: `./parity --chain=classic --rpccorsdomain=*` allow requests from any domain
 
 # License
 
