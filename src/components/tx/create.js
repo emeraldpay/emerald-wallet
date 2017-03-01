@@ -3,8 +3,7 @@ import { connect } from 'react-redux'
 import { Field, reduxForm } from 'redux-form'
 
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
-import TextField from 'material-ui/TextField'
-import SelectField from 'material-ui/SelectField'
+import { SelectField, TextField } from 'redux-form-material-ui'
 import MenuItem from 'material-ui/MenuItem'
 import FlatButton from 'material-ui/FlatButton'
 import FontIcon from 'material-ui/FontIcon'
@@ -15,27 +14,6 @@ import { Row, Col } from 'react-flexbox-grid/lib/index'
 import { open } from '../../store/screenActions'
 import { positive, number, required, address } from '../../lib/validators'
 import log from 'loglevel'
-
-const renderTextField = ({ input, label, meta: { touched, error }, ...custom }) => (
-    <TextField hintText={label}
-               floatingLabelText={label}
-               errorText={touched && error}
-               {...input}
-               {...custom}
-    />
-);
-
-const renderSelectField = ({ input, label, meta: { touched, error }, children, ...custom }) => (
-    <SelectField
-        errorText={touched && error}
-        floatingLabelText={label}
-        {...input}
-        onChange={(event, index, value) => input.onChange(value)}
-        children={children}
-        {...custom}
-    />
-);
-
 
 
 const Render = ({fields: {from, to}, account, handleSubmit, resetForm, submitting, cancel}) => {
@@ -56,7 +34,7 @@ const Render = ({fields: {from, to}, account, handleSubmit, resetForm, submittin
                             <Col xs={12}>
                                 <Field name="from"
                                        floatingLabelText="From"
-                                       component={renderSelectField}
+                                       component={SelectField}
                                        fullWidth={true}>
                                     <MenuItem value={account.get('id')} primaryText={account.get('id')} />
                                 </Field>
@@ -65,7 +43,7 @@ const Render = ({fields: {from, to}, account, handleSubmit, resetForm, submittin
                         <Row>
                             <Col xs={12}>
                                 <Field name="to"
-                                       component={renderTextField}
+                                       component={TextField}
                                        floatingLabelText="Target Address"
                                        hintText="0x0000000000000000000000000000000000000000"
                                        fullWidth={true}
@@ -76,7 +54,7 @@ const Render = ({fields: {from, to}, account, handleSubmit, resetForm, submittin
                         <Row>
                             <Col xs={12}>
                                 <Field name="value"
-                                       component={renderTextField}
+                                       component={TextField}
                                        floatingLabelText="Amount (Ether)"
                                        hintText="1.0000"
                                        defaultValue={0.0}
@@ -90,7 +68,7 @@ const Render = ({fields: {from, to}, account, handleSubmit, resetForm, submittin
                         <Row>
                             <Col xs={12}>
                                 <Field name="gasPrice"
-                                       component={renderTextField}
+                                       component={TextField}
                                        floatingLabelText="Gas Price (MGas)"
                                        hintText="10000"
                                        validate={[required, number, positive]}
@@ -100,7 +78,7 @@ const Render = ({fields: {from, to}, account, handleSubmit, resetForm, submittin
                         <Row>
                             <Col xs={12}>
                                 <Field name="gasAmount"
-                                       component={renderTextField}
+                                       component={TextField}
                                        floatingLabelText="Gas Amount"
                                        hintText="21000"
                                        validate={[required, number, positive]}
