@@ -26,9 +26,7 @@ const Render = ({account, createTx}) => {
             <CardActions>
                 <FlatButton label="Send"
                             onClick={createTx}
-                            icon={<FontIcon className="fa fa-arrow-circle-o-up" />}/>
-                <FlatButton label="Receive"
-                            icon={<FontIcon className="fa fa-arrow-circle-o-down" />}/>
+                            icon={<FontIcon className="fa fa-arrow-circle-o-right" />}/>
             </CardActions>
             <CardText expandable={true}>
                 <Row>
