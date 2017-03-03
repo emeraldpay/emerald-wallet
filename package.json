@@ -8,7 +8,7 @@
   "scripts": {
     "build": "node build --no-watch",
     "build:watch": "node build",
-    "start": "node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --content-base build/ --inline",
+    "start": "node ./node_modules/webpack-dev-server/bin/webpack-dev-server.js --content-base build/ --inline  --port 8000",
     "test:watch": "node ./node_modules/karma/bin/karma start",
     "test": "node ./node_modules/karma/bin/karma start --single-run"
   },
