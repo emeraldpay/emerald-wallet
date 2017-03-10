@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table'
-import { open } from '../../store/screenActions'
+import { gotoScreen } from '../../store/screenActions'
 import log from 'loglevel'
 import { link } from '../../lib/styles'
 
@@ -34,7 +34,7 @@ const Account = connect(
             openAccount: () => {
                 const account = ownProps.account;
                 log.debug('open', account.get('id'));
-                dispatch(open('account', account))
+                dispatch(gotoScreen('account', account))
             }
         }
     }

@@ -1,4 +1,4 @@
-export function open(screen, item = null) {
+export function gotoScreen(screen, item = null) {
     return {
         type: 'SCREEN/OPEN',
         screen: screen,

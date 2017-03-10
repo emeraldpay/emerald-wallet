@@ -11,7 +11,7 @@ import FontIcon from 'material-ui/FontIcon'
 import { cardSpace } from '../../lib/styles'
 import { Row, Col } from 'react-flexbox-grid/lib/index'
 
-import { open } from '../../store/screenActions'
+import { gotoScreen } from '../../store/screenActions'
 import { positive, number, required, address } from '../../lib/validators'
 import log from 'loglevel'
 
@@ -119,7 +119,7 @@ const CreateTx = connect(
     (dispatch, ownProps) => {
         return {
             cancel: () => {
-                dispatch(open('home'))
+                dispatch(gotoScreen('home'))
             }
         }
     }

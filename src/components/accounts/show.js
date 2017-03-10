@@ -9,7 +9,7 @@ import QRCode from 'qrcode.react'
 import log from 'loglevel'
 import Immutable from 'immutable'
 import { cardSpace } from '../../lib/styles'
-import { open } from '../../store/screenActions'
+import { gotoScreen } from '../../store/screenActions'
 
 const Render = ({account, createTx}) => {
 
@@ -62,7 +62,7 @@ const AccountShow = connect(
             createTx: () => {
                 const account = ownProps.account;
                 log.debug('create tx from', account.get('id'));
-                dispatch(open('create-tx', account))
+                dispatch(gotoScreen('create-tx', account))
             }
         }
     }

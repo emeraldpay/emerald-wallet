@@ -4,7 +4,7 @@ import { createStore, applyMiddleware, combineReducers } from 'redux'
 
 import { loadAccountsList } from './accountActions'
 import { accountsReducers } from './accountReducers'
-import { open } from './screenActions'
+import { gotoScreen } from './screenActions'
 import { screenReducers } from './screenReducers'
 import { loadSyncing, loadHeight } from './networkActions'
 import { networkReducers } from './networkReducers'
@@ -40,7 +40,7 @@ export const store = createStore(
 
 export function start() {
     store.dispatch(loadAccountsList());
-    store.dispatch(open('home'));
+    store.dispatch(gotoScreen('home'));
     store.dispatch(loadHeight());
     setTimeout(() => store.dispatch(loadSyncing()), 3000); //check for syncing
     setTimeout(() => store.dispatch(loadSyncing()), 30000); //double check for syncing after 30 seconds

@@ -6,7 +6,7 @@ import './main.scss'
 import FlatButton from 'material-ui/FlatButton'
 import FontIcon from 'material-ui/FontIcon'
 import Screen from './screen'
-import { open } from '../store/screenActions'
+import { gotoScreen } from '../store/screenActions'
 
 
 const Render = ({openAccounts}) => (
@@ -48,7 +48,7 @@ const Main = connect(
     (dispatch, ownProps) => {
         return {
             openAccounts: () => {
-                dispatch(open('home'))
+                dispatch(gotoScreen('home'))
             }
         }
     }
