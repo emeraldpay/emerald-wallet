@@ -8,10 +8,10 @@ import Avatar from 'material-ui/Avatar';
 import { cardSpace } from '../../lib/styles'
 import log from 'loglevel'
 import Immutable from 'immutable'
-
+import { gotoScreen } from '../../store/screenActions'
 import Account from './account'
 
-const Render = ({accounts}) => {
+const Render = ({accounts, createAccount}) => {
 
     const shortStyle = { width: 12 };
     const wideStyle = { width: 120 };
@@ -49,6 +49,7 @@ const Render = ({accounts}) => {
                 </CardText>
                 <CardActions>
                     <FlatButton label="Create Account"
+                                onClick={createAccount}
                                 icon={<FontIcon className="fa fa-plus-circle" />}/>
                 </CardActions>
             </Card>
@@ -63,7 +64,11 @@ const AccountsList = connect(
         }
     },
     (dispatch, ownProps) => {
-        return {}
+        return {
+            createAccount: () => {
+                dispatch(gotoScreen('create-account'))
+            }
+        }
     }
 )(Render);
 
