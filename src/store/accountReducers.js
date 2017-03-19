@@ -57,6 +57,16 @@ function onSetTxCount(state, action) {
     return state
 }
 
+/** TODO (connector?): Accounts should be associated with names **/
+function addAccount(state, action) {
+    if (action.type == 'ACCOUNT/ADD_ACCOUNT') {
+        return state.update("accounts", (accounts) => {
+            return accounts.update({$push: initialAddr.set('id', action.accountId)})
+        })
+    }
+    return state    
+}
+
 function updateAccount(state, id, f) {
     return state.update("accounts", (accounts) => {
         const pos = accounts.findKey((acc) => acc.get('id') === id);
