@@ -18,7 +18,7 @@ import { positive, number, required, address } from '../../lib/validators'
 import log from 'loglevel'
 
 
-const Render = ({fields: {from, to}, account, handleSubmit, invalid, pristine, resetForm, submitting, cancel}) => {
+const Render = ({fields: {from, to}, accounts, account, handleSubmit, invalid, pristine, resetForm, submitting, cancel}) => {
     log.debug('fields - from', from);
 
     return (
@@ -38,7 +38,9 @@ const Render = ({fields: {from, to}, account, handleSubmit, invalid, pristine, r
                                        floatingLabelText="From"
                                        component={SelectField}
                                        fullWidth={true}>
-                                    <MenuItem value={account.get('id')} primaryText={account.get('id')} />
+                                       {accounts.map( (account) => 
+                                        <MenuItem value={account.get('id')} primaryText={account.get('id')} />
+                                        )}
                                 </Field>
                             </Col>
                         </Row>
@@ -59,7 +61,6 @@ const Render = ({fields: {from, to}, account, handleSubmit, invalid, pristine, r
                                        component={TextField}
                                        floatingLabelText="Amount (Ether)"
                                        hintText="1.0000"
-                                       defaultValue={0.0}
                                        validate={[required, number]}
                                 />
                             </Col>
