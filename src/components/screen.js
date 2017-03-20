@@ -7,6 +7,7 @@ import AccountShow from './accounts/show'
 import CreateTx from './tx/create'
 import Status from './status/status'
 import CreateAccount from './accounts/add/add'
+import GenerateAccount from './accounts/add/generate'
 
 const Render = ({screen, screenItem}) => {
 
@@ -29,6 +30,8 @@ const Render = ({screen, screenItem}) => {
         return <CreateTx account={screenItem}/>
     } else if (screen === 'create-account') {
         return <CreateAccount />
+    } else if (screen === 'generate') {
+        return <GenerateAccount />
     }
 
     return (

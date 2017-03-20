@@ -57,6 +57,20 @@ function onSetTxCount(state, action) {
     return state
 }
 
+function onAddAccount(state, action) {
+    if (action.type == 'ACCOUNT/ADD_ACCOUNT') {
+        return addAccount(state, action.accountId);
+    }
+    return state;
+}
+
+/** TODO (connector?): Accounts should be associated with names **/
+function addAccount(state, id) {
+    return state.update("accounts", (accounts) => { 
+        return accounts.push(initialAddr.set('id', id))
+    })
+}
+
 function updateAccount(state, id, f) {
     return state.update("accounts", (accounts) => {
         const pos = accounts.findKey((acc) => acc.get('id') === id);
@@ -71,6 +85,7 @@ export const accountsReducers = function(state, action) {
     state = state || initial;
     state = onLoading(state, action);
     state = onSetAccountsList(state, action);
+    state = onAddAccount(state, action);    
     state = onSetBalance(state, action);
     state = onSetTxCount(state, action);
     return state;

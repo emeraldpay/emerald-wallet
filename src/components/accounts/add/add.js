@@ -15,7 +15,7 @@ import { gotoScreen } from 'store/screenActions'
 import { positive, number, required, address } from 'lib/validators'
 import log from 'loglevel'
 
-const Render = ({fields: {}, handleSubmit, resetForm, submitting, cancel}) => {
+const Render = ({fields: {}, handleSubmit, resetForm, submitting, generate, cancel}) => {
 
     return (
         <Card style={cardSpace}>
@@ -30,6 +30,7 @@ const Render = ({fields: {}, handleSubmit, resetForm, submitting, cancel}) => {
                     <ListItem
                         primaryText="Generate"
                         secondaryText="Generates a new private/public key pair"
+                        onClick={generate}                        
                         leftIcon={<FontIcon className="fa fa-random"/>}
                     />
                     <ListItem
@@ -66,11 +67,13 @@ const CreateAccount = connect(
         return {
             cancel: () => {
                 dispatch(gotoScreen('home'))
+            },
+            generate: () => {
+                dispatch(gotoScreen('generate'))
             }
         }
     }
 )(CreateAccountForm);
-
 
 
 export default CreateAccount
