@@ -12,13 +12,13 @@ import { Row, Col } from 'react-flexbox-grid/lib/index'
 import Immutable from 'immutable'
 import { gotoScreen } from 'store/screenActions'
 import { loadAccountsList, createAccount } from 'store/accountActions'
-import { required, password, passwordMatch } from 'lib/validators'
+import { required, minLength, passwordMatch } from 'lib/validators'
 import log from 'loglevel'
 import AccountShow from '../show'
 
 const validate = values => {
     const errors = {};
-    errors.password = password(values.password);
+    errors.password = minLength(8)(values.password)
     errors.passwordConfirm = passwordMatch(values.password, values);
     return errors;
 }
@@ -35,7 +35,6 @@ const renderTextField = ({ input, label, type, meta: { touched, error } }) => (
 
 
 const Render = ({account, submitSucceeded, handleSubmit, invalid, pristine, reset, submitting, cancel}) => {
-    var shit = "lalala"
 
     return (
         <Card style={cardSpace}>
@@ -55,7 +54,7 @@ const Render = ({account, submitSucceeded, handleSubmit, invalid, pristine, rese
                             component={renderTextField} 
                             type="password" 
                             label="Please Enter a Strong Password" 
-                            validate={[ required, password ]} />
+                            validate={[ required, minLength(8) ]} />
                     <Field  name="passwordConfirm" 
                             component={renderTextField} 
                             type="password" 
@@ -101,14 +100,9 @@ const GenerateAccount = connect(
                 return new Promise((resolve, reject) => {
                     dispatch(createAccount(data.name, data.password))
                         .then((response) => {
-                            console.log(response);
                             resolve(response);
                         });
                     });
-            }, 
-            onSubmitSuccess: result => {
-                //display result
-                dispatch(reset('generate'))
             },
             cancel: () => {
                 dispatch(gotoScreen('home'))
