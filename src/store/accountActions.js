@@ -47,8 +47,7 @@ export function loadAccountTxCount(accountId) {
 */
 export function createAccount(name, password) {
     return function (dispatch) {
-        rpc("personal_newAccount", [password]).then((json) => {
-            console.log(json)
+        return rpc("personal_newAccount", [password]).then((json) => {
             dispatch({
                 type: 'ACCOUNT/ADD_ACCOUNT',
                 accountId: json.result,
