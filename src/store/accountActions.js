@@ -44,6 +44,8 @@ export function loadAccountTxCount(accountId) {
  * "personal" API must be enabled over RPC
  *    eg. --rpcapi "eth,web3,personal"
  *      [Unsafe. Not recommended. Use IPC instead.]
+ *
+ * TODO: Error handling
 */
 export function createAccount(name, password) {
     return function (dispatch) {
@@ -56,4 +58,25 @@ export function createAccount(name, password) {
             dispatch(loadAccountBalance(json.result));
         });
     }    
+}
+
+export function sendTransaction(accountId, to, gas, gasPrice, value, data) {
+    return function (dispatch) {
+        return rpc("eth_sendTransaction", [{
+                    "from": accountId,
+                    "to": to,
+                    "gas": gas,
+                    "gasPrice": gasPrice,
+                    "value": value,
+                    "data": data
+                }]).then((json) => {
+            dispatch({
+                type: 'ACCOUNT/SEND_TRANSACTION',
+                accountId: accountId,
+                txHash: json.result 
+            });
+            dispatch(loadAccountBalance(accountId));
+            return json.result;
+        });
+    }       
 }
