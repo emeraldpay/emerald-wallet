@@ -15,7 +15,7 @@ import { gotoScreen } from 'store/screenActions'
 import { positive, number, required, address } from 'lib/validators'
 import log from 'loglevel'
 
-const Render = ({fields: {}, handleSubmit, resetForm, submitting, generate, cancel}) => {
+const Render = ({fields: {}, handleSubmit, resetForm, submitting, generate, importJson, cancel}) => {
 
     return (
         <Card style={cardSpace}>
@@ -36,6 +36,7 @@ const Render = ({fields: {}, handleSubmit, resetForm, submitting, generate, canc
                     <ListItem
                         primaryText="Import JSON"
                         secondaryText="Import key from Parity/Geth in JSON format"
+                        onClick={importJson}
                         leftIcon={<FontIcon className="fa fa-code"/>}
                     />
                 </List>
@@ -70,7 +71,10 @@ const CreateAccount = connect(
             },
             generate: () => {
                 dispatch(gotoScreen('generate'))
-            }
+            },
+            importJson: () => {
+                dispatch(gotoScreen('importjson'))
+            }            
         }
     }
 )(CreateAccountForm);
