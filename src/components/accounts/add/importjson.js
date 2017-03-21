@@ -19,12 +19,11 @@ import AccountShow from '../show'
 
 const renderFileField = ({ input, name, meta: { touched, error } }) => (
   <div>
-    <Dropzone rejectStyle name={name} onDrop={( filesToUpload, e ) => input.onChange(filesToUpload)}>
+    <Dropzone rejectStyle multiple="false" accept="application/json" name={name} onDrop={( filesToUpload, e ) => input.onChange(filesToUpload)}>
         <FlatButton label="Select Wallet File..."
                             icon={<FontIcon className="fa fa-briefcase" />}/>
     </Dropzone>
-    {touched && error &&
-        <span className="error">{error}</span>}    
+    {touched && error && <span className="error">{error}</span>}    
   </div>
 )
 
@@ -75,16 +74,8 @@ const ImportAccount = connect(
     },
     (dispatch, ownProps) => {
         return {
-            onDrop: data => {
-                console.log(data)
-            },
             onSubmit: data => {                
-                return new Promise((resolve, reject) => {
-                    dispatch(createAccount(data.name, data.password))
-                        .then((response) => {
-                            resolve(response);
-                        });
-                    });
+                console.log(data)
             },
             cancel: () => {
                 dispatch(gotoScreen('home'))
