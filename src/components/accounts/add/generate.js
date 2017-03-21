@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import { Field, reduxForm, reset } from 'redux-form'
-import TextField from 'material-ui/TextField'
+import { renderTextField } from 'lib/formFields'
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
 import FlatButton from 'material-ui/FlatButton'
 import FontIcon from 'material-ui/FontIcon'
@@ -22,17 +22,6 @@ const validate = values => {
     errors.passwordConfirm = passwordMatch(values.password, values);
     return errors;
 }
-
-
-const renderTextField = ({ input, label, type, meta: { touched, error } }) => (
-  <div>
-    <label>{label}</label>
-    <div>
-      <TextField {...input} type={type} errorText={touched && error} />
-    </div>
-  </div>
-)
-
 
 const Render = ({account, submitSucceeded, handleSubmit, invalid, pristine, reset, submitting, cancel}) => {
 
