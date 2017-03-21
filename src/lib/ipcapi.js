@@ -11,6 +11,6 @@ export function ipc(name, params) {
         "params": params,
         "id": requestSeq++
     };
-    return sleep(1000) // simulate server latency
-        .then((response) => response.json())
+    return new Promise(resolve => setTimeout(resolve, 1000))
+        .then((response) => ({"result": "0xfakeAccount000"}))
 }
