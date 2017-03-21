@@ -82,11 +82,10 @@ export function sendTransaction(accountId, to, gas, gasPrice, value, data) {
     }       
 }
 
-export function importWallet(wallet, password) {
+export function importWallet(wallet) {
     return function (dispatch) {
         return ipc("backend_importWallet", {
-                    "wallet": wallet,
-                    "password": password
+                    "wallet": wallet
                 }).then((json) => {
             dispatch({
                 type: 'ACCOUNT/IMPORT_WALLET',

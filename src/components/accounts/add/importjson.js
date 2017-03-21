@@ -6,7 +6,7 @@ import FlatButton from 'material-ui/FlatButton'
 import FontIcon from 'material-ui/FontIcon'
 
 import { cardSpace } from 'lib/styles'
-import { renderFileField, renderTextField } from 'lib/formFields'
+import { renderFileField } from 'lib/formFields'
 import { Row, Col } from 'react-flexbox-grid/lib/index'
 
 import Immutable from 'immutable'
@@ -30,12 +30,7 @@ const Render = ({account, submitSucceeded, handleSubmit, invalid, pristine, rese
                 <form onSubmit={handleSubmit}>
                     <Field  name="wallet" 
                             component={renderFileField}
-                            validate={required} />
-                    <Field  name="password" 
-                            component={renderTextField} 
-                            type="password" 
-                            label="Please Enter the File Password" 
-                            validate={required} />                    
+                            validate={required} />                 
                     <FlatButton label="Submit" type="submit"
                                 disabled={pristine || submitting || invalid } />
                 </form>
@@ -57,7 +52,7 @@ const Render = ({account, submitSucceeded, handleSubmit, invalid, pristine, rese
 
 const ImportAccountForm = reduxForm({
     form: 'importjson',
-    fields: ['wallet', 'password']
+    fields: ['wallet']
 })(Render);
 
 const ImportAccount = connect(
@@ -70,7 +65,7 @@ const ImportAccount = connect(
         return {
             onSubmit: data => {                
                 return new Promise((resolve, reject) => {
-                    dispatch(importWallet(data.wallet, data.password))
+                    dispatch(importWallet(data.wallet))
                         .then((response) => {
                             resolve(response);
                         });
