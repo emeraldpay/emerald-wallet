@@ -9,6 +9,7 @@ import TransactionShow from './tx/show'
 import Status from './status/status'
 import CreateAccount from './accounts/add/add'
 import GenerateAccount from './accounts/add/generate'
+import ImportAccount from './accounts/add/importjson'
 
 const Render = ({screen, screenItem}) => {
 
@@ -35,6 +36,8 @@ const Render = ({screen, screenItem}) => {
         return <CreateAccount />
     } else if (screen === 'generate') {
         return <GenerateAccount />
+    } else if (screen === 'importjson') {
+        return <ImportAccount />
     }
 
     return (

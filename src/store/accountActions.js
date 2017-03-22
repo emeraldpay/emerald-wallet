@@ -1,4 +1,5 @@
 import { rpc } from '../lib/rpcapi'
+import { ipc } from '../lib/ipcapi'
 
 export function loadAccountsList() {
     return function (dispatch) {
@@ -79,4 +80,18 @@ export function sendTransaction(accountId, to, gas, gasPrice, value, data) {
             return json.result;
         });
     }       
+}
+
+export function importWallet(wallet) {
+    return function (dispatch) {
+        return ipc("backend_importWallet", {
+                    "wallet": wallet
+                }).then((json) => {
+            dispatch({
+                type: 'ACCOUNT/IMPORT_WALLET',
+                accountId: json.result
+            });
+            dispatch(loadAccountBalance(json.result));
+        });
+    }    
 }
