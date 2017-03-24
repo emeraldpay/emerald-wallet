@@ -9,7 +9,7 @@ const initial = Immutable.fromJS({
     loading: false
 });
 
-const initialAddr = Immutable.Map({
+const initialTok = Immutable.Map({
     id: null,
     abi: null,
     name: null,
@@ -34,16 +34,6 @@ function onSetTokenList(state, action) {
             return state
                 .set('tokens',
                     Immutable.fromJS(action.tokens)
-                        .map(({id, abi, name, decimal, symbol}) => 
-                            {
-                                initialAddr.merge({
-                                    'id': id,
-                                    'abi': abi,
-                                    'name': name,
-                                    'decimal': decimal,
-                                    'symbol': symbol
-                                    });
-                            })
                 )
                 .set('loading', false);
         default:
@@ -53,11 +43,21 @@ function onSetTokenList(state, action) {
 
 function onSetTokenSupply(state, action) {
     if (action.type == 'TOKEN/SET_TOTAL_SUPPLY') {
-        return updateAccount(state, action.accountId, (tok) =>
+        return updateToken(state, action.tokenId, (tok) =>
             tok.set('total', new TokenUnits(action.value, action.decimal))
         );
     }
     return state
+}
+
+function updateToken(state, id, f) {
+    return state.update("tokens", (tokens) => {
+        const pos = tokens.findKey((tok) => tok.get('id') === id);
+        if (pos >= 0) {
+            return tokens.update(pos, f)
+        }
+        return tokens
+    })
 }
 
 export const tokenReducers = function(state, action) {

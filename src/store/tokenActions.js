@@ -20,12 +20,13 @@ export function loadTokenList() {
     }
 }
 
-export function loadTokenBalance(tokenId) {
+export function loadTokenBalance(token) {
     return function (dispatch) {
-        ipc("eth_getTokenSupply", [tokenId, "latest"]).then((json) => {
+        ipc("eth_getTokenSupply", [token.id, "latest"]).then((json) => {
             dispatch({
                 type: 'TOKEN/SET_TOTAL_SUPPLY',
-                accountId: accountId,
+                tokenId: token.id,
+                decimal: token.decimal,
                 value: json.result
             })
         });
