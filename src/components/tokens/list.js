@@ -14,13 +14,25 @@ import Token from './token'
 
 const Render = ({tokens, addToken}) => {
 
-    const tokenGrid = <GridList cellHeight={180}>
+    const styles = {
+      root: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-around',
+      },
+      gridList: {
+        width: 600,
+        overflowY: 'auto',
+      },
+      titleStyle: {
+        fontSize: "20px",
+      }
+    };
+
+    const tokenGrid = <GridList style={styles.gridList} >
             {tokens.map( (token) => <Token key={token.get('id')} token={token}/>)}
                     </GridList>;
 
-    const titleStyle = {
-        fontSize: "20px",
-    };
     const titleAvatar = <Avatar icon={<FontIcon className="fa fa-dot-circle-o fa-2x" />} />;
 
     return (
@@ -28,12 +40,12 @@ const Render = ({tokens, addToken}) => {
             <Card style={cardSpace}>
                 <CardHeader
                     title="Token List"
-                    titleStyle={titleStyle}
+                    titleStyle={styles.titleStyle}
                     avatar={titleAvatar}
                     actAsExpander={false}
                     showExpandableButton={false}
                 />
-                <CardText expandable={false}>
+                <CardText style={styles.root} expandable={false}>
                     {tokenGrid}
                 </CardText>
                 <CardActions>
