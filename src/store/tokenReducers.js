@@ -1,7 +1,7 @@
 import Immutable from 'immutable'
 import log from 'loglevel'
 
-import { Wei } from '../lib/types'
+import { TokenUnits } from '../lib/types'
 import { toNumber } from '../lib/convert'
 
 const initial = Immutable.fromJS({
@@ -54,7 +54,7 @@ function onSetTokenList(state, action) {
 function onSetTokenSupply(state, action) {
     if (action.type == 'TOKEN/SET_TOTAL_SUPPLY') {
         return updateAccount(state, action.accountId, (tok) =>
-            tok.set('total', new Wei(action.value))
+            tok.set('total', new TokenUnits(action.value, action.decimal))
         );
     }
     return state
