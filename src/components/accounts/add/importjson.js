@@ -6,7 +6,7 @@ import FlatButton from 'material-ui/FlatButton'
 import FontIcon from 'material-ui/FontIcon'
 
 import { cardSpace } from 'lib/styles'
-import { renderFileField } from 'lib/formFields'
+import { renderFileField } from 'elements/formFields'
 import { Row, Col } from 'react-flexbox-grid/lib/index'
 
 import Immutable from 'immutable'

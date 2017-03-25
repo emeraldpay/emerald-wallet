@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux'
 import { Field, reduxForm, reset } from 'redux-form'
-import { renderTextField } from 'lib/formFields'
+import { renderTextField } from 'elements/formFields'
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
 import FlatButton from 'material-ui/FlatButton'
 import FontIcon from 'material-ui/FontIcon'
