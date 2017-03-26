@@ -5,6 +5,7 @@ import { renderTextField } from 'lib/formFields'
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
 import FlatButton from 'material-ui/FlatButton'
 import FontIcon from 'material-ui/FontIcon'
+import { GridList } from 'material-ui/GridList'
 
 import { cardSpace } from 'lib/styles'
 
@@ -13,9 +14,16 @@ import { gotoScreen } from 'store/screenActions'
 import { addToken } from 'store/tokenActions'
 import { required, positive, number, address } from 'lib/validators'
 import log from 'loglevel'
+import Token from './token'
 
 
 const Render = ({token, submitSucceeded, handleSubmit, invalid, pristine, reset, submitting, cancel}) => {
+
+    const gridStyle = {
+        width: 600,
+        overflowY: 'auto',
+    };
+
 
     return (
         <Card style={cardSpace}>
@@ -55,6 +63,9 @@ const Render = ({token, submitSucceeded, handleSubmit, invalid, pristine, reset,
                 </form>
             </CardText>
             <CardText expandable={!submitSucceeded}>
+                <GridList style={gridStyle}>
+                    <Token key={(token===undefined) ? undefined : token.get('id')} token={token}/>
+                </GridList>
                  <FlatButton label="Done"
                             onClick={cancel}
                             icon={<FontIcon className="fa fa-home" />}/>
