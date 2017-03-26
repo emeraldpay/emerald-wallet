@@ -73,7 +73,20 @@ function calcToken(tok) {
     return tok.set('total', new TokenUnits(tok.get('totalFull', '0x0'), tok.get('decimals', '0x0')))
 }
 
-function updateToken(state, address, f) {
+function onAddToken(state, action) {
+    if (action.type == 'TOKEN/ADD_TOKEN') {
+        return state.update("tokens", (tokens) => {
+            return tokens.push( 
+                initialTok.merge({
+                    'id': action.tokenId,
+                    'name': action.name
+                }) 
+            )
+        })
+    }
+}
+
+function updateToken(state, id, f) {
     return state.update("tokens", (tokens) => {
         const pos = tokens.findKey((tok) => tok.get('address') === address);
         if (pos >= 0) {
@@ -90,5 +103,6 @@ export const tokenReducers = function(state, action) {
     state = onSetTotalSupply(state, action);
     state = onSetDecimals(state, action);
     state = onSetSymbol(state, action);
+    state = onAddToken(state, action);
     return state;
 };
