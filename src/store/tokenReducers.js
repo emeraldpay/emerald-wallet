@@ -75,15 +75,20 @@ function calcToken(tok) {
 
 function onAddToken(state, action) {
     if (action.type == 'TOKEN/ADD_TOKEN') {
-        return state.update("tokens", (tokens) => {
-            return tokens.push( 
-                initialTok.merge({
-                    'id': action.tokenId,
-                    'name': action.name
-                }) 
-            )
-        })
+        return addToken(state, action.token)
     }
+    return state;
+}
+
+function addToken(state, token) {
+    return state.update("tokens", (tokens) => {
+        return tokens.push( 
+            initialTok.merge({
+                'id': action.tokenId,
+                'name': action.name
+            }) 
+        )
+    })
 }
 
 function updateToken(state, id, f) {

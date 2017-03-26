@@ -56,6 +56,7 @@ export function loadTokenDetails(token) {
 
 export function addToken(address, name) {
     return function (dispatch) {
+<<<<<<< 94df542b8d6727311fbf1a5611c45b2f92a6ca61
         return rpc("emerald_addContract", [{
                     "address": address,
                     "name": name
@@ -66,6 +67,24 @@ export function addToken(address, name) {
                             name: name
                         })
                         dispatch(loadTokenDetails({address: address}))
+=======
+        return ipc("eth_addToken", [{
+                "address": address,
+                "name": name,
+                "symbol": symbol,
+                "decimal": decimal
+            }]).then((json) => {
+                dispatch({
+                    type: 'TOKEN/ADD_TOKEN',
+                    token: {
+                        address: address,
+                        name: name,
+                        symbol: symbol,
+                        decimal: decimal
+                    }
+                })
+                dispatch(loadTokenBalance({id: address, decimal: decimal}))
+>>>>>>> store/tokenActions, tokenReducers: reorg onAddToken
         });
     }
 }
