@@ -5,7 +5,7 @@ import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
 import FlatButton from 'material-ui/FlatButton'
 import FontIcon from 'material-ui/FontIcon'
 import Avatar from 'material-ui/Avatar';
-import { cardSpace } from '../../lib/styles'
+import { cardSpace, tables } from 'lib/styles'
 import log from 'loglevel'
 import Immutable from 'immutable'
 import { gotoScreen } from '../../store/screenActions'
@@ -13,14 +13,11 @@ import Account from './account'
 
 const Render = ({accounts, createAccount}) => {
 
-    const shortStyle = { width: 12 };
-    const wideStyle = { width: 120 };
-
     const table = <Table selectable={false}>
         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
             <TableRow>
-                <TableHeaderColumn style={wideStyle}>Account</TableHeaderColumn>
-                <TableHeaderColumn style={shortStyle}>Balance</TableHeaderColumn>
+                <TableHeaderColumn style={tables.wideStyle}>Account</TableHeaderColumn>
+                <TableHeaderColumn style={tables.shortStyle}>Balance</TableHeaderColumn>
             </TableRow>
         </TableHeader>
         <TableBody displayRowCheckbox={false}>

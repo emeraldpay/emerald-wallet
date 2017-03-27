@@ -60,6 +60,14 @@ function onSetDecimals(state, action) {
     }
     return state
 }
+function onSetSymbol(state, action) {
+    if (action.type === 'TOKEN/SET_SYMBOL') {
+        return updateToken(state, action.address, (tok) =>
+            tok.set('symbol', action.value)
+        );
+    }
+    return state
+}
 
 function calcToken(tok) {
     return tok.set('total', new TokenUnits(tok.get('totalFull', '0x0'), tok.get('decimals', '0x0')))
@@ -81,5 +89,6 @@ export const tokenReducers = function(state, action) {
     state = onSetTokenList(state, action);
     state = onSetTotalSupply(state, action);
     state = onSetDecimals(state, action);
+    state = onSetSymbol(state, action);
     return state;
 };

@@ -6,7 +6,7 @@ import FlatButton from 'material-ui/FlatButton'
 import { GridList, GridTile } from 'material-ui/GridList'
 import FontIcon from 'material-ui/FontIcon'
 import Avatar from 'material-ui/Avatar';
-import { cardSpace } from '../../lib/styles'
+import { cardSpace, tables } from 'lib/styles'
 import log from 'loglevel'
 import Immutable from 'immutable'
 import { gotoScreen } from '../../store/screenActions'
@@ -20,19 +20,23 @@ const Render = ({tokens, addToken}) => {
         flexWrap: 'wrap',
         justifyContent: 'space-around',
       },
-      gridList: {
-        width: 600,
-        overflowY: 'auto',
-      },
       titleStyle: {
         fontSize: "20px",
       }
     };
 
-    const tokenGrid = <GridList style={styles.gridList} >
+    const table = <Table selectable={false}>
+        <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
+            <TableRow>
+                <TableHeaderColumn style={tables.shortStyle}>Name</TableHeaderColumn>
+                <TableHeaderColumn style={tables.wideStyle}>Address</TableHeaderColumn>
+                <TableHeaderColumn style={tables.wideStyle}>Total Supply</TableHeaderColumn>
+            </TableRow>
+        </TableHeader>
+        <TableBody displayRowCheckbox={false}>
             {tokens.map( (token) => <Token key={token.get('address')} token={token}/>)}
-                    </GridList>;
-
+        </TableBody>
+    </Table>;
     const titleAvatar = <Avatar icon={<FontIcon className="fa fa-dot-circle-o fa-2x" />} />;
 
     return (
@@ -46,7 +50,7 @@ const Render = ({tokens, addToken}) => {
                     showExpandableButton={false}
                 />
                 <CardText style={styles.root} expandable={false}>
-                    {tokenGrid}
+                    {table}
                 </CardText>
                 <CardActions>
                     <FlatButton label="Add Token"

@@ -6,3 +6,8 @@ export const cardSpace = {
 export const link = {
     cursor: "pointer"
 };
+
+export const tables = {
+    shortStyle: { width: 12 },
+    wideStyle: { width: 120 }
+};

@@ -1,5 +1,5 @@
 import { rpc } from '../lib/rpcapi'
-import { ipc } from '../lib/ipcapi'
+import { parseString } from '../lib/convert'
 
 /*
  * json.result should return a list of tokens. 
@@ -42,6 +42,13 @@ export function loadTokenDetails(token) {
                 type: 'TOKEN/SET_DECIMALS',
                 address: token.address,
                 value: resp.result
+            })
+        });
+        rpc("eth_call", [{to: token.address, data: symbolId}, "latest"]).then((resp) => {
+            dispatch({
+                type: 'TOKEN/SET_SYMBOL',
+                address: token.address,
+                value: parseString(resp.result)
             })
         });
     }
