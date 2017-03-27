@@ -10,11 +10,14 @@ const initial = Immutable.fromJS({
 });
 
 const initialTok = Immutable.Map({
-    id: null,
-    abi: null,
+    address: null,
     name: null,
-    decimal: null,
+    abi: null,
+    features: [],
+
+    decimals: null,
     symbol: null,
+    totalFull: null,
     total: null
 });
 
@@ -41,18 +44,30 @@ function onSetTokenList(state, action) {
     }
 }
 
-function onSetTokenSupply(state, action) {
-    if (action.type == 'TOKEN/SET_TOTAL_SUPPLY') {
-        return updateToken(state, action.tokenId, (tok) =>
-            tok.set('total', new TokenUnits(action.value, action.decimal))
+function onSetTotalSupply(state, action) {
+    if (action.type === 'TOKEN/SET_TOTAL_SUPPLY') {
+        return updateToken(state, action.address, (tok) =>
+            calcToken(tok.set('totalFull', action.value))
+        );
+    }
+    return state
+}
+function onSetDecimals(state, action) {
+    if (action.type === 'TOKEN/SET_DECIMALS') {
+        return updateToken(state, action.address, (tok) =>
+            calcToken(tok.set('decimals', action.value))
         );
     }
     return state
 }
 
-function updateToken(state, id, f) {
+function calcToken(tok) {
+    return tok.set('total', new TokenUnits(tok.get('totalFull', '0x0'), tok.get('decimals', '0x0')))
+}
+
+function updateToken(state, address, f) {
     return state.update("tokens", (tokens) => {
-        const pos = tokens.findKey((tok) => tok.get('id') === id);
+        const pos = tokens.findKey((tok) => tok.get('address') === address);
         if (pos >= 0) {
             return tokens.update(pos, f)
         }
@@ -64,6 +79,7 @@ export const tokenReducers = function(state, action) {
     state = state || initial;
     state = onLoading(state, action);
     state = onSetTokenList(state, action);
-    state = onSetTokenSupply(state, action);
+    state = onSetTotalSupply(state, action);
+    state = onSetDecimals(state, action);
     return state;
 };

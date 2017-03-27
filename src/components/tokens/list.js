@@ -30,7 +30,7 @@ const Render = ({tokens, addToken}) => {
     };
 
     const tokenGrid = <GridList style={styles.gridList} >
-            {tokens.map( (token) => <Token key={token.get('id')} token={token}/>)}
+            {tokens.map( (token) => <Token key={token.get('address')} token={token}/>)}
                     </GridList>;
 
     const titleAvatar = <Avatar icon={<FontIcon className="fa fa-dot-circle-o fa-2x" />} />;

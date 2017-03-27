@@ -15,8 +15,8 @@ export class Wei extends Immutable.Record({val: new BigNumber(0)}) {
 export class TokenUnits extends Immutable.Record({val: new BigNumber(0), 
                                             divisor: new BigNumber(0)}) {
     constructor(val, decimal) {
-        super({val: new BigNumber(val.substring(2), 16), 
-                divisor: new BigNumber(10).pow(decimal)});
+        super({val: new BigNumber(val.substring(2) || "0", 16),
+                divisor: new BigNumber(10).pow(decimal.substring(2))});
     }
     getDecimalized(decimals) {
         return this.val.dividedBy(this.divisor).toFixed(5)

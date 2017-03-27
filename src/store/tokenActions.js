@@ -3,32 +3,47 @@ import { ipc } from '../lib/ipcapi'
 
 /*
  * json.result should return a list of tokens. 
- * Each token should have name, contract address, decimal, symbol, ABI
+ * Each token should have name, contract address, and ABI
 */
 export function loadTokenList() {
     return function (dispatch) {
         dispatch({
             type: 'TOKEN/LOADING'
         });
-        ipc("eth_tokens", []).then((json) => {
+        rpc("emerald_contracts", []).then((json) => {
+            const tokens = json.result.filter((contract) => {
+                contract.features = contract.features || [];
+                return contract.features.indexOf('erc20') >= 0
+            });
             dispatch({
                 type: 'TOKEN/SET_LIST',
-                tokens: json.result
+                tokens: tokens
             });
-            json.result.map((token) => dispatch(loadTokenBalance(token)))
+            tokens.map((token) => dispatch(loadTokenDetails(token)))
         });
     }
 }
 
-export function loadTokenBalance(token) {
+export function loadTokenDetails(token) {
     return function (dispatch) {
-        ipc("eth_getTokenSupply", [token.id, "latest"]).then((json) => {
+        const tokenSupplyId = "0x18160ddd";
+        const decimalsId =    "0x313ce567";
+        const symbolId =      "0x95d89b41";
+        const nameId =        "0x06fdde03";
+        rpc("eth_call", [{to: token.address, data: tokenSupplyId}, "latest"]).then((resp) => {
             dispatch({
                 type: 'TOKEN/SET_TOTAL_SUPPLY',
-                tokenId: token.id,
-                decimal: token.decimal,
-                value: json.result
+                address: token.address,
+                value: resp.result
+            })
+        });
+        rpc("eth_call", [{to: token.address, data: decimalsId}, "latest"]).then((resp) => {
+            dispatch({
+                type: 'TOKEN/SET_DECIMALS',
+                address: token.address,
+                value: resp.result
             })
         });
     }
 }
+
