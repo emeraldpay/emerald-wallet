@@ -54,3 +54,18 @@ export function loadTokenDetails(token) {
     }
 }
 
+export function addToken(address, name) {
+    return function (dispatch) {
+        return rpc("emerald_addContract", [{
+                    "address": address,
+                    "name": name
+                    }]).then((json) => {
+                        dispatch({
+                            type: 'TOKEN/ADD_TOKEN',
+                            address: address,
+                            name: name
+                        })
+                        dispatch(loadTokenDetails({address: address}))
+        });
+    }
+}

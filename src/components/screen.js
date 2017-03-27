@@ -7,6 +7,7 @@ import AccountShow from './accounts/show'
 import CreateTx from './tx/create'
 import TransactionShow from './tx/show'
 import TokensList from './tokens/list'
+import AddToken from './tokens/add'
 import Status from './status/status'
 import CreateAccount from './accounts/add/add'
 import GenerateAccount from './accounts/add/generate'
@@ -40,6 +41,8 @@ const Render = ({screen, screenItem}) => {
         return <GenerateAccount />
     } else if (screen === 'importjson') {
         return <ImportAccount />
+    } else if (screen === 'add-token') {
+        return <AddToken />
     }
 
     return (

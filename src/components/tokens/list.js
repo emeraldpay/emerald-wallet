@@ -71,8 +71,7 @@ const TokensList = connect(
     (dispatch, ownProps) => {
         return {
             addToken: () => {
-                console.log("TODO: Add token")
-                //dispatch(gotoScreen('add-token'))
+                dispatch(gotoScreen('add-token'))
             }
         }
     }

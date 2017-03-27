@@ -14,7 +14,6 @@ const initialTok = Immutable.Map({
     name: null,
     abi: null,
     features: [],
-
     decimals: null,
     symbol: null,
     totalFull: null,
@@ -73,9 +72,27 @@ function calcToken(tok) {
     return tok.set('total', new TokenUnits(tok.get('totalFull', '0x0'), tok.get('decimals', '0x0')))
 }
 
-function updateToken(state, address, f) {
+function onAddToken(state, action) {
+    if (action.type == 'TOKEN/ADD_TOKEN') {
+        return addToken(state, action.address, action.name)
+    }
+    return state;
+}
+
+function addToken(state, address, name) {
     return state.update("tokens", (tokens) => {
-        const pos = tokens.findKey((tok) => tok.get('address') === address);
+        return tokens.push( 
+            initialTok.merge({
+                'address': address,
+                'name': name
+            }) 
+        )
+    })
+}
+
+function updateToken(state, id, f) {
+    return state.update("tokens", (tokens) => {
+        const pos = tokens.findKey((tok) => tok.get('address') === id);
         if (pos >= 0) {
             return tokens.update(pos, f)
         }
@@ -90,5 +107,6 @@ export const tokenReducers = function(state, action) {
     state = onSetTotalSupply(state, action);
     state = onSetDecimals(state, action);
     state = onSetSymbol(state, action);
+    state = onAddToken(state, action);
     return state;
 };
