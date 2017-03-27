@@ -12,5 +12,8 @@ export function ipc(name, params) {
         "id": requestSeq++
     };
     return new Promise(resolve => setTimeout(resolve, 1000))
-        .then((response) => ({"result": "0xfakeAccount000"}))
+        .then((response) => {
+            if (name == "backend_importWallet")
+                return {"result": "0xfakeAccount000"};
+        })
 }

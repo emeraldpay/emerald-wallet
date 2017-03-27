@@ -6,6 +6,7 @@ import AccountsList from './accounts/list'
 import AccountShow from './accounts/show'
 import CreateTx from './tx/create'
 import TransactionShow from './tx/show'
+import TokensList from './tokens/list'
 import Status from './status/status'
 import CreateAccount from './accounts/add/add'
 import GenerateAccount from './accounts/add/generate'
@@ -23,6 +24,7 @@ const Render = ({screen, screenItem}) => {
         return (
             <div>
                 <AccountsList/>
+                <TokensList/>
                 <Status/>
             </div>
         )

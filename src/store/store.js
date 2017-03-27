@@ -4,6 +4,8 @@ import { createStore, applyMiddleware, combineReducers } from 'redux'
 
 import { loadAccountsList } from './accountActions'
 import { accountsReducers } from './accountReducers'
+import { loadTokenList } from './tokenActions'
+import { tokenReducers } from './tokenReducers'
 import { gotoScreen } from './screenActions'
 import { screenReducers } from './screenReducers'
 import { loadSyncing, loadHeight } from './networkActions'
@@ -13,6 +15,7 @@ import { reducer as formReducer } from 'redux-form';
 const stateTransformer = (state) => {
     return {
         accounts: state.accounts.toJS(),
+        tokens: state.tokens.toJS(),
         screen: state.screen.toJS(),
         network: state.network.toJS(),
         form: state.form,
@@ -25,6 +28,7 @@ const loggerMiddleware = createLogger({
 
 const reducers = {
     accounts: accountsReducers,
+    tokens: tokenReducers,
     screen: screenReducers,
     network: networkReducers,
     form: formReducer,
@@ -40,6 +44,7 @@ export const store = createStore(
 
 export function start() {
     store.dispatch(loadAccountsList());
+    store.dispatch(loadTokenList());
     store.dispatch(gotoScreen('home'));
     store.dispatch(loadHeight());
     setTimeout(() => store.dispatch(loadSyncing()), 3000); //check for syncing

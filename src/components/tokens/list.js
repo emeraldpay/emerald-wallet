@@ -3,50 +3,58 @@ import { connect } from 'react-redux'
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table'
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
 import FlatButton from 'material-ui/FlatButton'
+import { GridList, GridTile } from 'material-ui/GridList'
 import FontIcon from 'material-ui/FontIcon'
 import Avatar from 'material-ui/Avatar';
 import { cardSpace, tables } from 'lib/styles'
 import log from 'loglevel'
 import Immutable from 'immutable'
 import { gotoScreen } from '../../store/screenActions'
-import Account from './account'
+import Token from './token'
 
-const Render = ({accounts, createAccount}) => {
+const Render = ({tokens, addToken}) => {
+
+    const styles = {
+      root: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        justifyContent: 'space-around',
+      },
+      titleStyle: {
+        fontSize: "20px",
+      }
+    };
 
     const table = <Table selectable={false}>
         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
             <TableRow>
-                <TableHeaderColumn style={tables.wideStyle}>Account</TableHeaderColumn>
-                <TableHeaderColumn style={tables.shortStyle}>Balance</TableHeaderColumn>
+                <TableHeaderColumn style={tables.shortStyle}>Name</TableHeaderColumn>
+                <TableHeaderColumn style={tables.wideStyle}>Address</TableHeaderColumn>
+                <TableHeaderColumn style={tables.wideStyle}>Total Supply</TableHeaderColumn>
             </TableRow>
         </TableHeader>
         <TableBody displayRowCheckbox={false}>
-            {accounts.map( (account) => <Account key={account.get('id')} account={account}/>)}
+            {tokens.map( (token) => <Token key={token.get('address')} token={token}/>)}
         </TableBody>
     </Table>;
-
-    const titleStyle = {
-        fontSize: "20px",
-    };
-    const titleAvatar = <Avatar icon={<FontIcon className="fa fa-address-book-o fa-2x" />} />;
+    const titleAvatar = <Avatar icon={<FontIcon className="fa fa-dot-circle-o fa-2x" />} />;
 
     return (
-        <div id="accounts-list">
+        <div id="token-list">
             <Card style={cardSpace}>
                 <CardHeader
-                    title="Accounts List"
-                    titleStyle={titleStyle}
-                    subtitle="List of addresses you're controlling on Ethereum Classic blockchain"
+                    title="Token List"
+                    titleStyle={styles.titleStyle}
                     avatar={titleAvatar}
                     actAsExpander={false}
                     showExpandableButton={false}
                 />
-                <CardText expandable={false}>
+                <CardText style={styles.root} expandable={false}>
                     {table}
                 </CardText>
                 <CardActions>
-                    <FlatButton label="Create Account"
-                                onClick={createAccount}
+                    <FlatButton label="Add Token"
+                                onClick={addToken}
                                 icon={<FontIcon className="fa fa-plus-circle" />}/>
                 </CardActions>
             </Card>
@@ -54,19 +62,20 @@ const Render = ({accounts, createAccount}) => {
     )
 };
 
-const AccountsList = connect(
+const TokensList = connect(
     (state, ownProps) => {
         return {
-            accounts: state.accounts.get('accounts', Immutable.List()),
+            tokens: state.tokens.get('tokens', Immutable.List()),
         }
     },
     (dispatch, ownProps) => {
         return {
-            createAccount: () => {
-                dispatch(gotoScreen('create-account'))
+            addToken: () => {
+                console.log("TODO: Add token")
+                //dispatch(gotoScreen('add-token'))
             }
         }
     }
 )(Render);
 
-export default AccountsList
+export default TokensList
