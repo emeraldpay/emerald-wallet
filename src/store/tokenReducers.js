@@ -14,7 +14,6 @@ const initialTok = Immutable.Map({
     name: null,
     abi: null,
     features: [],
-
     decimals: null,
     symbol: null,
     totalFull: null,
@@ -75,17 +74,17 @@ function calcToken(tok) {
 
 function onAddToken(state, action) {
     if (action.type == 'TOKEN/ADD_TOKEN') {
-        return addToken(state, action.token)
+        return addToken(state, action.address, action.name)
     }
     return state;
 }
 
-function addToken(state, token) {
+function addToken(state, address, name) {
     return state.update("tokens", (tokens) => {
         return tokens.push( 
             initialTok.merge({
-                'id': action.tokenId,
-                'name': action.name
+                'address': address,
+                'name': name
             }) 
         )
     })
@@ -93,7 +92,7 @@ function addToken(state, token) {
 
 function updateToken(state, id, f) {
     return state.update("tokens", (tokens) => {
-        const pos = tokens.findKey((tok) => tok.get('address') === address);
+        const pos = tokens.findKey((tok) => tok.get('address') === id);
         if (pos >= 0) {
             return tokens.update(pos, f)
         }
