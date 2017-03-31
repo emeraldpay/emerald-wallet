@@ -1,6 +1,8 @@
 import { rpc } from '../lib/rpcapi'
 import { ipc } from '../lib/ipcapi'
 
+import { loadTokenBalanceOf } from './tokenActions'
+
 export function loadAccountsList() {
     return function (dispatch) {
         dispatch({
@@ -17,7 +19,7 @@ export function loadAccountsList() {
 }
 
 export function loadAccountBalance(accountId) {
-    return function (dispatch) {
+    return function (dispatch, getState) {
         rpc("eth_getBalance", [accountId, "latest"]).then((json) => {
             dispatch({
                 type: 'ACCOUNT/SET_BALANCE',
@@ -25,6 +27,10 @@ export function loadAccountBalance(accountId) {
                 value: json.result
             })
         });
+        let tokens = getState().tokens
+        if (!tokens.get("loading"))
+            tokens.get("tokens")
+                    .map( (token) => dispatch(loadTokenBalanceOf(token, accountId)) )
     }
 }
 
