@@ -11,7 +11,15 @@ import Immutable from 'immutable'
 import { cardSpace } from '../../lib/styles'
 import { gotoScreen } from '../../store/screenActions'
 
-const Render = ({account, createTx}) => {
+const TokenRow = ({token}) => {
+    const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0'
+
+    return (
+        <div><span>{balance} {token.get('symbol')}</span></div>
+    )
+}
+
+const Render = ({account, createTx, tokens}) => {
 
     const value = (account.get('balance') ? account.get('balance').getEther() : '?') + ' Ether';
 
@@ -40,6 +48,11 @@ const Render = ({account, createTx}) => {
 
                             <DescriptionTitle>Ether Balance:</DescriptionTitle>
                             <DescriptionData>{value}</DescriptionData>
+
+                            <DescriptionTitle>Token Balances:</DescriptionTitle>
+                            <DescriptionData>{account.get('tokens')
+                                                    .map( (tok) => <TokenRow token={tok} /> )}
+                                </DescriptionData>
 
                         </DescriptionList>
                     </Col>
