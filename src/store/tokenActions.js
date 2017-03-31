@@ -25,7 +25,7 @@ export function loadTokenList() {
 }
 
 export function loadTokenDetails(token) {
-    return function (dispatch) {
+    return function (dispatch, getState) {
         const tokenSupplyId = "0x18160ddd";
         const decimalsId =    "0x313ce567";
         const symbolId =      "0x95d89b41";
@@ -51,6 +51,7 @@ export function loadTokenDetails(token) {
                 value: parseString(resp.result)
             })
         });
+        getState().accounts.map((acct) => dispatch(loadTokenBalanceOf(token, acct.id)))
     }
 }
 
@@ -69,3 +70,18 @@ export function addToken(address, name) {
         });
     }
 }
+
+export function loadTokenBalanceOf(token, accountId) {
+    return function (dispatch) {
+        const balanceOfId = "0x70a08231";
+        rpc("eth_call", [{to: token.address, data: balanceOfId, address: accountId}, "latest"])
+            .then((resp) => { dispatch({
+                type: 'TOKEN/SET_BALANCE_OF',
+                account: accountId,
+                token: token.address,
+                value: resp.result
+            })
+        });
+    }
+}
+
