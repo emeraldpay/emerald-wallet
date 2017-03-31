@@ -1,7 +1,7 @@
 import Immutable from 'immutable'
 import log from 'loglevel'
 
-import { Wei } from '../lib/types'
+import { Wei, TokenUnits } from '../lib/types'
 import { toNumber } from '../lib/convert'
 
 const initial = Immutable.fromJS({
@@ -12,7 +12,7 @@ const initial = Immutable.fromJS({
 const initialAddr = Immutable.Map({
     id: null,
     balance: null,
-    tokens: {},
+    tokens: [],
     txcount: null
 });
 
@@ -53,7 +53,7 @@ function onSetTokenBalance(state, action) {
     if (action.type == 'ACCOUNT/SET_TOKEN_BALANCE') {
         return updateAccount(state, action.accountId, (acc) => {
             let tokens = Immutable.fromJS(acc.get("tokens"))
-            return acc.set("tokens", tokens.set(action.token, action.value))
+            return acc.set("tokens", updateToken(tokens, action.token, action.value))
             }
         );
     }
@@ -91,6 +91,16 @@ function updateAccount(state, id, f) {
         }
         return accounts
     })
+}
+
+function updateToken(tokens, token, value) {
+    const pos = tokens.findKey((tok) => tok.get('address') === token.address);
+    const balance = new TokenUnits(value, (token.decimals) ? token.decimals : '0x0');
+    if (pos >= 0) 
+        return tokens.update(pos, (tok) => tok.set('balance', balance))
+    else 
+        return tokens.push(Immutable.fromJS({'address': token.address, 'symbol': token.symbol})
+                                    .set('balance', balance))
 }
 
 export const accountsReducers = function(state, action) {

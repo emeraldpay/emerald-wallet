@@ -1,4 +1,4 @@
-import { rpc } from '../lib/ipcapi'
+import { rpc } from '../lib/rpcapi'
 import { parseString } from '../lib/convert'
 
 /*
@@ -81,7 +81,7 @@ export function loadTokenBalanceOf(token, accountId) {
             "latest"]).then((resp) => { dispatch({
                 type: 'ACCOUNT/SET_TOKEN_BALANCE',
                 accountId: accountId,
-                token: token.address,
+                token: token,
                 value: resp.result
             })
         });
