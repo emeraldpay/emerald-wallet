@@ -19,12 +19,6 @@ import Token from './token'
 
 const Render = ({token, submitSucceeded, handleSubmit, invalid, pristine, reset, submitting, cancel}) => {
 
-    const gridStyle = {
-        width: 600,
-        overflowY: 'auto',
-    };
-
-
     return (
         <Card style={cardSpace}>
             <CardHeader
