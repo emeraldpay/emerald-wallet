@@ -12,6 +12,7 @@ const initial = Immutable.fromJS({
 const initialAddr = Immutable.Map({
     id: null,
     balance: null,
+    tokens: {},
     txcount: null
 });
 
@@ -43,6 +44,17 @@ function onSetBalance(state, action) {
     if (action.type == 'ACCOUNT/SET_BALANCE') {
         return updateAccount(state, action.accountId, (acc) =>
             acc.set('balance', new Wei(action.value))
+        );
+    }
+    return state
+}
+
+function onSetTokenBalance(state, action) {
+    if (action.type == 'ACCOUNT/SET_TOKEN_BALANCE') {
+        return updateAccount(state, action.accountId, (acc) => {
+            let tokens = Immutable.fromJS(acc.get("tokens"))
+            return acc.set("tokens", tokens.set(action.token, action.value))
+            }
         );
     }
     return state
@@ -88,5 +100,6 @@ export const accountsReducers = function(state, action) {
     state = onAddAccount(state, action);    
     state = onSetBalance(state, action);
     state = onSetTxCount(state, action);
+    state = onSetTokenBalance(state, action);
     return state;
 };

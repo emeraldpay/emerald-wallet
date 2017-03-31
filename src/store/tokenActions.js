@@ -1,4 +1,4 @@
-import { rpc } from '../lib/rpcapi'
+import { rpc } from '../lib/ipcapi'
 import { parseString } from '../lib/convert'
 
 /*
@@ -51,7 +51,10 @@ export function loadTokenDetails(token) {
                 value: parseString(resp.result)
             })
         });
-        getState().accounts.map((acct) => dispatch(loadTokenBalanceOf(token, acct.id)))
+        let accounts = getState().accounts
+        if (!accounts.get("loading"))
+            accounts.get("accounts")
+                    .map( (acct) => dispatch(loadTokenBalanceOf(token, acct.get("id"))) )
     }
 }
 
@@ -74,10 +77,10 @@ export function addToken(address, name) {
 export function loadTokenBalanceOf(token, accountId) {
     return function (dispatch) {
         const balanceOfId = "0x70a08231";
-        rpc("eth_call", [{to: token.address, data: balanceOfId, address: accountId}, "latest"])
-            .then((resp) => { dispatch({
-                type: 'TOKEN/SET_BALANCE_OF',
-                account: accountId,
+        rpc("eth_call", [{to: token.address, data: balanceOfId, address: accountId}, 
+            "latest"]).then((resp) => { dispatch({
+                type: 'ACCOUNT/SET_TOKEN_BALANCE',
+                accountId: accountId,
                 token: token.address,
                 value: resp.result
             })
