@@ -21,3 +21,19 @@ export function parseString(hex) {
     }
     return result
 }
+
+export function getNakedAddress(address) {
+    return address.toLowerCase().replace('0x', '');
+}
+
+export function padLeft(n, width, z) {
+    z = z || '0';
+    n = n + '';
+    return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
+}
+
+export function getDataObj(to, func, arrVals) {
+    var val="";
+    for (var i=0;i<arrVals.length;i++) val += padLeft(arrVals[i],64);
+    return {to: to, data: func+val};
+}

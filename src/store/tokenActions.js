@@ -1,5 +1,5 @@
 import { rpc } from '../lib/rpcapi'
-import { parseString } from '../lib/convert'
+import { parseString, padLeft, getNakedAddress } from '../lib/convert'
 
 /*
  * json.result should return a list of tokens. 
@@ -77,7 +77,9 @@ export function addToken(address, name) {
 export function loadTokenBalanceOf(token, accountId) {
     return function (dispatch) {
         const balanceOfId = "0x70a08231";
-        rpc("eth_call", [{to: token.address, data: balanceOfId, address: accountId}, 
+        let address = padLeft(getNakedAddress(accountId), 64);
+        let data = balanceOfId + address;
+        rpc("eth_call", [{to: token.address, data: data}, 
             "latest"]).then((resp) => { dispatch({
                 type: 'ACCOUNT/SET_TOKEN_BALANCE',
                 accountId: accountId,
