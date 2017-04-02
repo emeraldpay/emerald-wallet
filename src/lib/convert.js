@@ -1,3 +1,5 @@
+import ethUtil from 'ethereumjs-util';
+
 export function toNumber(quantity) {
     return parseInt(quantity.substring(2), 16)
 }
@@ -33,7 +35,46 @@ export function padLeft(n, width, z) {
 }
 
 export function getDataObj(to, func, arrVals) {
-    var val="";
+    let val="";
     for (var i=0;i<arrVals.length;i++) val += padLeft(arrVals[i],64);
     return {to: to, data: func+val};
 }
+
+export function fromTokens(value, decimals) {
+    return new BigNumber(value).times(new BigNumber(10).pow(decimals));
+}
+
+/**
+ * Create full function/event name from json abi
+ *
+ * @method transformToFullName
+ * @param {Object} json-abi
+ * @return {String} full fnction/event name
+ */
+export function transformToFullName(json) {
+    if (json.name.indexOf('(') !== -1) {
+        return json.name;
+    }
+
+    let typeName = json.inputs.map(function (i) {
+        return i.type;
+    }).join();
+    return json.name + '(' + typeName + ')';
+};
+
+/**
+ * Get display name of contract function
+ *
+ * @method extractDisplayName
+ * @param {String} name of function/event
+ * @returns {String} display name for function/event eg. multiply(uint256) -> multiply
+ */
+export function extractDisplayName(name) {
+    let length = name.indexOf('(');
+    return length !== -1 ? name.substr(0, length) : name;
+};
+
+export function getFunctionSignature (func) {
+    let fullName = transformToFullName(func)
+    return ethUtil.sha3(fullName).toString('hex').slice(0, 8);
+};
