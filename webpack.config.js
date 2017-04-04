@@ -5,7 +5,6 @@ var srcDir = path.join(__dirname, 'src');
 
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 var CopyWebpackPlugin = require('copy-webpack-plugin');
-var DirectoryNameAsMain = require('@elastic/webpack-directory-name-as-main');
 
 const config = {
     entry: {
@@ -14,61 +13,94 @@ const config = {
     },
     plugins: [
         new webpack.optimize.CommonsChunkPlugin({name: "index", filename: "index.js"}),
-        new ExtractTextPlugin("[name].css"),
-        new webpack.ResolverPlugin([
-            new DirectoryNameAsMain()
-        ]),
+        new ExtractTextPlugin({filename: "[name].css"}),
         new CopyWebpackPlugin([
             { from: path.join(srcDir, 'index.html'), to: "./" },
         ], {copyUnmodified: true})
     ],
     output: {
-        path: "./build/",
+        path: path.join(__dirname, "./build/"),
         filename: '[name].js'
     },
     resolve: {
-        root: path.resolve(srcDir),
-        modulesDirectories: [
+        modules: [
+            path.resolve(srcDir),
             path.join(__dirname, 'node_modules')
         ],
-        extensions: ['', '.js'],
         alias: {
             'babel-polyfill': path.join(__dirname, 'babel-polyfill/dist/polyfill.js')
         }
     },
     module: {
-        loaders: [
+        rules: [
             {
                 test: /\.(js|jsx|es6)$/,
-                exclude: /(node_modules|contracts)/,
-                loader: 'babel-loader',
-                query: {
-                    presets: ["es2015", "react", "stage-2"]
+                exclude: /(node_modules)/,
+                use: {
+                    loader: 'babel-loader',
+                    options: {
+                        presets: ["es2015", "react", "stage-2"]
+                    }
                 }
             },
             {
                 test: /\.scss$/,
-                loader: ExtractTextPlugin.extract(
-                    'style',
-                    `css!sass-loader?includePaths[]=` + path.resolve(__dirname, "./node_modules/compass-mixins/lib")
-                )
+                use: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: [
+                        {
+                            loader: "css-loader"
+                        },
+                        {
+                            loader: "sass-loader",
+                            options: {"includePaths": [path.resolve(__dirname, "./node_modules/compass-mixins/lib")]}
+                        }
+                    ],
+                }),
+                
             },
             {
                 test: /\.less$/,
-                loader: ExtractTextPlugin.extract(
-                    'style',
-                    `css!less`
-                )
+                use: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: ["css-loader", "less-loader"]
+                })
             },
             {
                 test: /\.css$/,
-                loader: ExtractTextPlugin.extract("style-loader", "css-loader?modules"),
+                use: ExtractTextPlugin.extract({
+                    fallback: 'style-loader',
+                    use: ["css-loader"]
+                }),
                 include: /flexboxgrid/
             },
-            { test: /\.json/, loader: "json-loader" },
-            { test: /\.(jpg|png|gif)$/, loader: "file-loader?name=images/[name].[ext]" },
-            { test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "url-loader?limit=10000&minetype=application/font-woff&name=fonts/[name].[ext]" },
-            { test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/, loader: "file-loader?name=fonts/[name].[ext]" }
+            {
+                test: /\.(jpg|png|gif)$/,
+                use: {
+                    loader: "file-loader",
+                    options: {name: "images/[name].[ext]"}
+                }
+            },
+            {
+                test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                use: {
+                    loader: "url-loader",
+                    options: {
+                        limit: 10000,
+                        mimetype: "application/font-woff",
+                        name: "fonts/[name].[ext]"
+                    }
+                },
+            },
+            {
+                test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
+                use: {
+                    loader: "file-loader",
+                    options: {
+                        name: "fonts/[name].[ext]"
+                    }
+                },
+            }
         ]
     }
 };
