@@ -7,6 +7,9 @@ env:
 matrix:
   allow_failures:
     - env: FULL_CHECK=true
+before_script:
+  - npm install -g license-checker
 script:
+  - if [[ $(license-checker --exclude '(GPL-2.0 OR MIT)' | grep GPL) ]]; then license-checker | grep -C 1 GPL && false; fi
   - npm run build
   - if [[ $FULL_CHECK == "true" ]]; then npm run lint --silent; fi
