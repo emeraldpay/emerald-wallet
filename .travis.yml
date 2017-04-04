@@ -1,5 +1,12 @@
 language: node_js
 node_js:
   - "6"
-before_script:
+env:
+  - FULL_CHECK=false
+  - FULL_CHECK=true
+matrix:
+  allow_failures:
+    - env: FULL_CHECK=true
+script:
   - npm run build
+  - if [[ $FULL_CHECK == "true" ]]; then npm run lint --silent; fi
