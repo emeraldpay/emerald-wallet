@@ -1,4 +1,4 @@
-import { fromTokens, transformToFullName, extractDisplayName, getFunctionSignature } from './convert'
+import { fromTokens, transformToFullName, extractDisplayName, getFunctionSignature, mweiToWei, etherToWei } from './convert';
 import BigNumber from "bignumber.js"
 
 describe("Token Converter", () => {
@@ -38,4 +38,28 @@ describe("Function Converter", () => {
     it("get function signature from ABI", () => {
         expect(getFunctionSignature(balanceOf)).toEqual("70a08231");
     })
-})
+});
+
+describe("Ether converters", () => {
+    it("mweiToWei", () => {
+        expect(mweiToWei(0).toString()).toBe('0');
+        expect(mweiToWei(1).toString()).toBe('1000000');
+        expect(mweiToWei(1561).toString()).toBe('1561000000');
+        expect(mweiToWei(8591969).toString()).toBe('8591969000000');
+        expect(mweiToWei(12.345678).toString()).toBe('12345678');
+        expect(mweiToWei(12.3456789).toString()).toBe('12345679');
+        expect(mweiToWei(12.3456780).toString()).toBe('12345678');
+        expect(mweiToWei(12.3456782).toString()).toBe('12345678');
+    });
+
+    it("etherToWei", () => {
+        expect(etherToWei(0).toString()).toBe('0');
+        expect(etherToWei(1).toString()).toBe('1000000000000000000');
+        expect(etherToWei(1234).toString(10)).toBe('1234000000000000000000');
+        expect(etherToWei("1234.5678901234567").toString(10)).toBe('1234567890123456700000');
+        expect(etherToWei("1234.567890123456789012").toString(10)).toBe('1234567890123456789012');
+        expect(etherToWei("1234.5678901234567890123").toString(10)).toBe('1234567890123456789012');
+        expect(etherToWei("1234.5678901234567890125").toString(10)).toBe('1234567890123456789012');
+        expect(etherToWei("1234.5678901234567890126").toString(10)).toBe('1234567890123456789013');
+    })
+});

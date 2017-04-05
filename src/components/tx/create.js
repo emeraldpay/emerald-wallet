@@ -16,6 +16,7 @@ import { transferTokenTransaction } from 'store/tokenActions'
 import Immutable from 'immutable'
 import { gotoScreen } from 'store/screenActions'
 import { positive, number, required, address } from '../../lib/validators'
+import { mweiToWei, etherToWei, toHex } from 'lib/convert'
 import log from 'loglevel'
 
 const DefaultGas = 21000
@@ -141,30 +142,31 @@ const CreateTx = connect(
     },
     (dispatch, ownProps) => {
         return {
-            onSubmit: data => {               
+            onSubmit: data => {
+                const afterTx = (txhash) => {
+                    let txdetails = {
+                        transaction: txhash,
+                        account: ownProps.account
+                    };
+                    dispatch(gotoScreen('transaction', txdetails));
+                    resolve(txhash);
+                };
                 if (data.token.length > 1)
                     return new Promise((resolve, reject) => {
-                        dispatch(transferTokenTransaction(data.from, data.to, data.gasAmount, data.gasPrice, data.value, data.token))
-                            .then((response) => {
-                                dispatch(gotoScreen('transaction', {
-                                                                    transaction: response, 
-                                                                    account: ownProps.account
-                                                                    }))
-                                resolve(response);
-                            });
+                        dispatch(transferTokenTransaction(data.from, data.to,
+                            toHex(data.gasAmount), toHex(mweiToWei(data.gasPrice)),
+                            toHex(etherToWei(data.value)),
+                            data.token))
+                            .then(afterTx);
                         });
                 else
                     return new Promise((resolve, reject) => {
-                        dispatch(sendTransaction(data.from, data.to, data.gasAmount, data.gasPrice, data.value))
-                            .then((response) => {
-                                dispatch(gotoScreen('transaction', {
-                                                                    transaction: response, 
-                                                                    account: ownProps.account
-                                                                    }))
-                                resolve(response);
-                            });
-                        });
-            },         
+                        dispatch(sendTransaction(data.from, data.to,
+                            toHex(data.gasAmount), toHex(mweiToWei(data.gasPrice)),
+                            toHex(etherToWei(data.value))
+                        )).then(afterTx);
+                    })
+            },
             onChangeToken: (event, value, prev) => {
                 // if switching from ETC to token, change default gas
                 if (prev.length < 1 && !(address(value))) 

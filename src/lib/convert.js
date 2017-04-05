@@ -115,3 +115,17 @@ export function estimateGasFromTrace (dataObj, trace) {
     return estGas;
 };
 */
+
+export function mweiToWei(val) {
+    const m = new BigNumber(10).pow(6);
+    return new BigNumber(val).mul(m).round(0, BigNumber.ROUND_HALF_DOWN);
+}
+
+export function etherToWei(val) {
+    const m = new BigNumber(10).pow(18);
+    return new BigNumber(val).mul(m).round(0, BigNumber.ROUND_HALF_DOWN);
+}
+
+export function toHex(val) {
+    return `0x${val.toString(16)}`;
+}
