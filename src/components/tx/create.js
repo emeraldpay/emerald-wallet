@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux'
-import { Field, reduxForm } from 'redux-form'
+import { Field, reduxForm, change } from 'redux-form'
 
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
 import { SelectField, TextField } from 'redux-form-material-ui'
@@ -12,13 +12,16 @@ import { cardSpace } from '../../lib/styles'
 import { Row, Col } from 'react-flexbox-grid/lib/index'
 
 import { sendTransaction } from 'store/accountActions'
+import { transferTokenTransaction } from 'store/tokenActions'
 import Immutable from 'immutable'
 import { gotoScreen } from 'store/screenActions'
 import { positive, number, required, address } from '../../lib/validators'
 import log from 'loglevel'
 
+const DefaultGas = 21000
+const DefaultTokenGas = 23890
 
-const Render = ({fields: {from, to}, accounts, account, handleSubmit, invalid, pristine, resetForm, submitting, cancel}) => {
+const Render = ({fields: {from, to}, accounts, account, tokens, token, onChangeToken, handleSubmit, invalid, pristine, resetForm, submitting, cancel}) => {
     log.debug('fields - from', from);
 
     return (
@@ -39,7 +42,7 @@ const Render = ({fields: {from, to}, accounts, account, handleSubmit, invalid, p
                                        component={SelectField}
                                        fullWidth={true}>
                                        {accounts.map( (account) => 
-                                        <MenuItem value={account.get('id')} primaryText={account.get('id')} />
+                                        <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
                                         )}
                                 </Field>
                             </Col>
@@ -56,14 +59,25 @@ const Render = ({fields: {from, to}, accounts, account, handleSubmit, invalid, p
                             </Col>
                         </Row>
                         <Row>
-                            <Col xs={12}>
+                            <Col xs={8} md={6}>
                                 <Field name="value"
                                        component={TextField}
-                                       floatingLabelText="Amount (Ether)"
+                                       floatingLabelText="Amount"
                                        hintText="1.0000"
                                        validate={[required, number]}
                                 />
                             </Col>
+                            <Col xs={4} md={4}>
+                                <Field name="token"
+                                       component={SelectField}
+                                       onChange={onChangeToken}
+                                       value={token}
+                                       fullWidth={true}>
+                                       {tokens.map( (token) => 
+                                        <MenuItem key={token.get('address')} value={token.get('address')} label={token.get('symbol')} primaryText={token.get('symbol')} />
+                                        )}
+                                </Field>
+                            </Col>                            
                         </Row>
                     </Col>
 
@@ -108,34 +122,57 @@ const Render = ({fields: {from, to}, accounts, account, handleSubmit, invalid, p
 
 const CreateTxForm = reduxForm({
     form: 'createTx',
-    fields: ['to', 'from', 'value', 'gasPrice', 'gasAmount']
+    fields: ['to', 'from', 'value', 'token', 'gasPrice', 'gasAmount', 'token']
 })(Render);
 
 const CreateTx = connect(
     (state, ownProps) => {
+        let tokens = state.tokens.get('tokens')
         return {
             initialValues: {
                 from: ownProps.account.get('id'),
                 gasPrice: 10000,
-                gasAmount: 21000
+                gasAmount: DefaultGas,
+                token: ''
             },
-            accounts: state.accounts.get('accounts', Immutable.List())
+            accounts: state.accounts.get('accounts', Immutable.List()),
+            tokens: tokens.unshift(Immutable.fromJS({'address': '', 'symbol': 'ETC'}))
         }
     },
     (dispatch, ownProps) => {
         return {
             onSubmit: data => {               
-                return new Promise((resolve, reject) => {
-                    dispatch(sendTransaction(data.from, data.to, data.gasAmount, data.gasPrice, data.value))
-                        .then((response) => {
-                            dispatch(gotoScreen('transaction', {
-                                                                transaction: response, 
-                                                                account: ownProps.account
-                                                                }))
-                            resolve(response);
+                if (data.token.length > 1)
+                    return new Promise((resolve, reject) => {
+                        dispatch(transferTokenTransaction(data.from, data.to, data.gasAmount, data.gasPrice, data.value, data.token))
+                            .then((response) => {
+                                dispatch(gotoScreen('transaction', {
+                                                                    transaction: response, 
+                                                                    account: ownProps.account
+                                                                    }))
+                                resolve(response);
+                            });
                         });
-                    });
-            },          
+                else
+                    return new Promise((resolve, reject) => {
+                        dispatch(sendTransaction(data.from, data.to, data.gasAmount, data.gasPrice, data.value))
+                            .then((response) => {
+                                dispatch(gotoScreen('transaction', {
+                                                                    transaction: response, 
+                                                                    account: ownProps.account
+                                                                    }))
+                                resolve(response);
+                            });
+                        });
+            },         
+            onChangeToken: (event, value, prev) => {
+                // if switching from ETC to token, change default gas
+                if (prev.length < 1 && !(address(value))) 
+                    dispatch(change("createTx", "gasAmount", DefaultTokenGas))
+                else if (!(address(prev)) && value.length < 1) 
+                    dispatch(change("createTx", "gasAmount", DefaultGas))
+                
+            },
             cancel: () => {
                 dispatch(gotoScreen('home'))
             }
