@@ -1,5 +1,4 @@
 import { rpc } from '../lib/rpcapi'
-import { ipc } from '../lib/ipcapi'
 
 import { loadTokenBalanceOf } from './tokenActions'
 
@@ -13,7 +12,9 @@ export function loadAccountsList() {
                 type: 'ACCOUNT/SET_LIST',
                 accounts: json.result
             });
-            json.result.map((acct) => dispatch(loadAccountBalance(acct)))
+            json.result.map((acct) => { 
+                dispatch(loadAccountBalance(acct));
+            })
         });
     }
 }
@@ -67,15 +68,14 @@ export function createAccount(name, password) {
     }    
 }
 
-export function sendTransaction(accountId, to, gas, gasPrice, value, data) {
+export function sendTransaction(accountId, to, gas, gasPrice, value) {
     return function (dispatch) {
         return rpc("eth_sendTransaction", [{
                     "from": accountId,
                     "to": to,
                     "gas": gas,
                     "gasPrice": gasPrice,
-                    "value": value,
-                    "data": data
+                    "value": value
                 }]).then((json) => {
             dispatch({
                 type: 'ACCOUNT/SEND_TRANSACTION',

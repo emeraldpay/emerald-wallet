@@ -1,5 +1,5 @@
 import { rpc } from '../lib/rpcapi'
-import { parseString, padLeft, getNakedAddress } from '../lib/convert'
+import { parseString, padLeft, getNakedAddress, fromTokens } from '../lib/convert'
 
 /*
  * json.result should return a list of tokens. 
@@ -90,3 +90,29 @@ export function loadTokenBalanceOf(token, accountId) {
     }
 }
 
+export function transferTokenTransaction(accountId, to, gas, gasPrice, value, tokenId) {
+    return function (dispatch, getState) {
+        const transferId = "0xa9059cbb"; // transfer(address,uint256)
+        let tokens = getState().tokens
+        let token = tokens.get("tokens").find((tok) => tok.get('address') === tokenId)
+        let numTokens = padLeft(fromTokens(value, token.get('decimals')).toString(16), 64);
+        let address = padLeft(getNakedAddress(to), 64);
+        let data = transferId + address + numTokens;
+        return rpc("eth_call", [{
+                    to: tokenId, 
+                    from: accountId,
+                    gas: gas,
+                    gasPrice: gasPrice,
+                    value: "0x00",
+                    data: data
+                }, "latest"]).then((json) => {
+            dispatch({
+                type: 'ACCOUNT/SEND_TOKEN_TRANSACTION',
+                accountId: accountId,
+                txHash: json.result 
+            });
+            dispatch(loadTokenDetails({address: token}))
+            return json.result;
+        });
+    }
+}
