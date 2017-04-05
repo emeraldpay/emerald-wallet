@@ -1,4 +1,5 @@
-import ethUtil from 'ethereumjs-util';
+import BigNumber from "bignumber.js"
+import ethUtil from 'ethereumjs-util'
 
 export function toNumber(quantity) {
     return parseInt(quantity.substring(2), 16)
@@ -41,7 +42,7 @@ export function getDataObj(to, func, arrVals) {
 }
 
 export function fromTokens(value, decimals) {
-    return new BigNumber(value).times(new BigNumber(10).pow(decimals));
+    return new BigNumber(value).times(new BigNumber(10).pow(decimals.substring(2)));
 }
 
 /**
@@ -78,3 +79,39 @@ export function getFunctionSignature (func) {
     let fullName = transformToFullName(func)
     return ethUtil.sha3(fullName).toString('hex').slice(0, 8);
 };
+
+/**
+ *
+ * Estimate gas using trace_call result
+ *
+ */
+/*
+export function estimateGasFromTrace (dataObj, trace) {
+    let gasLimit = 2000000;
+    dataObj.gasPrice = '0x01';
+    dataObj.gas = '0x' + new BigNumber(gasLimit).toString(16);
+
+    function recurCheckBalance(ops) {
+        var startVal = 24088 + ops[0].cost;
+        for (var i = 0; i < ops.length - 1; i++) {
+            var remainder = startVal - (gasLimit - ops[i].ex.used);
+            if (ops[i + 1].sub && ops[i + 1].sub.ops.length && gasLimit - ops[i + 1].cost > remainder) startVal += gasLimit - ops[i + 1].cost - startVal;else if (ops[i + 1].cost > remainder) startVal += ops[i + 1].cost - remainder;
+        }
+        if (!dataObj.to) startVal += 37000; //add 37000 for contract creation
+        startVal = startVal == gasLimit ? -1 : startVal;
+        return startVal;
+    }
+
+    if (trace.vmTrace && trace.vmTrace.ops.length) {
+        var result = trace.vmTrace.ops;
+        var estGas = recurCheckBalance(result);
+        estGas = estGas < 0 ? -1 : estGas + 5000;
+    } else {
+        var stateDiff = trace.stateDiff;
+        stateDiff = stateDiff[dataObj.from.toLowerCase()]['balance']['*'];
+        if (stateDiff) var estGas = new BigNumber(stateDiff['from']).sub(new BigNumber(stateDiff['to'])).sub(new BigNumber(dataObj.value));else var estGas = new BigNumber(-1);
+        if (estGas.lt(0) || estGas.eq(gasLimit)) estGas = -1;
+    }
+    return estGas;
+};
+*/
