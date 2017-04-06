@@ -138,7 +138,6 @@ const CreateTx = connect(
     (state, ownProps) => {
         const selector = formValueSelector('createTx')
         let tokens = state.tokens.get('tokens')
-        console.log(selector(state, 'token'))
         return {
             initialValues: {
                 from: ownProps.account.get('id'),
