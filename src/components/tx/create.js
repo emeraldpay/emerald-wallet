@@ -1,9 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux'
-import { Field, reduxForm, change } from 'redux-form'
+import { Field, reduxForm, change, formValueSelector } from 'redux-form'
 
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
-import { SelectField, TextField } from 'redux-form-material-ui'
+import { SelectField, TextField, RadioButtonGroup } from 'redux-form-material-ui'
+import { RadioButton} from 'material-ui/RadioButton'
 import MenuItem from 'material-ui/MenuItem'
 import FlatButton from 'material-ui/FlatButton'
 import FontIcon from 'material-ui/FontIcon'
@@ -22,7 +23,7 @@ import log from 'loglevel'
 const DefaultGas = 21000
 const DefaultTokenGas = 23890
 
-const Render = ({fields: {from, to}, accounts, account, tokens, token, onChangeToken, handleSubmit, invalid, pristine, resetForm, submitting, cancel}) => {
+const Render = ({fields: {from, to}, accounts, account, tokens, token, isToken, onChangeToken, handleSubmit, invalid, pristine, resetForm, submitting, cancel}) => {
     log.debug('fields - from', from);
 
     return (
@@ -78,7 +79,17 @@ const Render = ({fields: {from, to}, accounts, account, tokens, token, onChangeT
                                         <MenuItem key={token.get('address')} value={token.get('address')} label={token.get('symbol')} primaryText={token.get('symbol')} />
                                         )}
                                 </Field>
-                            </Col>                            
+                            </Col>
+                            {isToken && 
+                            <Col>
+                                <Field name="isTransfer"  
+                                    component={RadioButtonGroup}
+                                    defaultSelected="true"
+                                    validate={required}>
+                                  <RadioButton value="true" label="Transfer"/>
+                                  <RadioButton value="false" label="Approve for Withdrawal"/>
+                                </Field>
+                            </Col> }   
                         </Row>
                     </Col>
 
@@ -123,26 +134,30 @@ const Render = ({fields: {from, to}, accounts, account, tokens, token, onChangeT
 
 const CreateTxForm = reduxForm({
     form: 'createTx',
-    fields: ['to', 'from', 'value', 'token', 'gasPrice', 'gasAmount', 'token']
+    fields: ['to', 'from', 'value', 'token', 'gasPrice', 'gasAmount', 'token', 'isTransfer']
 })(Render);
 
 const CreateTx = connect(
     (state, ownProps) => {
+        const selector = formValueSelector('createTx')
         let tokens = state.tokens.get('tokens')
         return {
             initialValues: {
                 from: ownProps.account.get('id'),
                 gasPrice: 10000,
                 gasAmount: DefaultGas,
-                token: ''
+                token: '',
+                isTransfer: "true"
             },
             accounts: state.accounts.get('accounts', Immutable.List()),
-            tokens: tokens.unshift(Immutable.fromJS({'address': '', 'symbol': 'ETC'}))
+            tokens: tokens.unshift(Immutable.fromJS({'address': '', 'symbol': 'ETC'})),
+            isToken: (selector(state, 'token'))
         }
     },
     (dispatch, ownProps) => {
         return {
             onSubmit: data => {
+                console.log(data)
                 const afterTx = (txhash) => {
                     let txdetails = {
                         hash: txhash,
@@ -162,7 +177,7 @@ const CreateTx = connect(
                         dispatch(transferTokenTransaction(data.from, data.to,
                             toHex(data.gasAmount), toHex(mweiToWei(data.gasPrice)),
                             toHex(etherToWei(data.value)),
-                            data.token))
+                            data.token, data.isTransfer))
                             .then(resolver(afterTx, resolve));
                         });
                 else
