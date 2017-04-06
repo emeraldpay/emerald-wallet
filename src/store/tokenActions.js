@@ -90,14 +90,18 @@ export function loadTokenBalanceOf(token, accountId) {
     }
 }
 
-export function transferTokenTransaction(accountId, to, gas, gasPrice, value, tokenId) {
+export function transferTokenTransaction(accountId, to, gas, gasPrice, value, tokenId, isTransfer) {
     return function (dispatch, getState) {
         const transferId = "0xa9059cbb"; // transfer(address,uint256)
+        const approveId = "0x095ea7b3"; // approve(address,uint256)
         let tokens = getState().tokens
         let token = tokens.get("tokens").find((tok) => tok.get('address') === tokenId)
         let numTokens = padLeft(fromTokens(value, token.get('decimals')).toString(16), 64);
         let address = padLeft(getNakedAddress(to), 64);
-        let data = transferId + address + numTokens;
+        let data;
+        if (isTransfer) data = transferId + address + numTokens;
+        else data = approveId + address + numTokens;
+
         return rpc("eth_call", [{
                     to: tokenId, 
                     from: accountId,
