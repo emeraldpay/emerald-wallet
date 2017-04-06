@@ -3,8 +3,8 @@ import { connect } from 'react-redux'
 import { Field, reduxForm, change, formValueSelector } from 'redux-form'
 
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
-import { SelectField, TextField } from 'redux-form-material-ui'
-import { RadioButton, RadioButtonGroup } from 'material-ui/RadioButton'
+import { SelectField, TextField, RadioButtonGroup } from 'redux-form-material-ui'
+import { RadioButton} from 'material-ui/RadioButton'
 import MenuItem from 'material-ui/MenuItem'
 import FlatButton from 'material-ui/FlatButton'
 import FontIcon from 'material-ui/FontIcon'
@@ -82,7 +82,10 @@ const Render = ({fields: {from, to}, accounts, account, tokens, token, isToken, 
                             </Col>
                             {isToken && 
                             <Col>
-                                <Field name="isTransfer" component={RadioButtonGroup} defaultSelected="true">
+                                <Field name="isTransfer"  
+                                    component={RadioButtonGroup}
+                                    defaultSelected="true"
+                                    validate={required}>
                                   <RadioButton value="true" label="Transfer"/>
                                   <RadioButton value="false" label="Approve for Withdrawal"/>
                                 </Field>
@@ -144,7 +147,7 @@ const CreateTx = connect(
                 gasPrice: 10000,
                 gasAmount: DefaultGas,
                 token: '',
-                isTransfer: true
+                isTransfer: "true"
             },
             accounts: state.accounts.get('accounts', Immutable.List()),
             tokens: tokens.unshift(Immutable.fromJS({'address': '', 'symbol': 'ETC'})),
@@ -154,6 +157,7 @@ const CreateTx = connect(
     (dispatch, ownProps) => {
         return {
             onSubmit: data => {
+                console.log(data)
                 const afterTx = (txhash) => {
                     let txdetails = {
                         hash: txhash,

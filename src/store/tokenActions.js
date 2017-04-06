@@ -99,9 +99,8 @@ export function transferTokenTransaction(accountId, to, gas, gasPrice, value, to
         let numTokens = padLeft(fromTokens(value, token.get('decimals')).toString(16), 64);
         let address = padLeft(getNakedAddress(to), 64);
         let data;
-        if (isTransfer) data = transferId + address + numTokens;
+        if (isTransfer=="true") data = transferId + address + numTokens;
         else data = approveId + address + numTokens;
-
         return rpc("eth_call", [{
                     to: tokenId, 
                     from: accountId,
