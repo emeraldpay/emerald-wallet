@@ -2,6 +2,7 @@ import BigNumber from "bignumber.js"
 import Immutable from 'immutable'
 
 const ETHER = new BigNumber(10).pow(18);
+const MWEI = new BigNumber(10).pow(6);
 
 export class Wei extends Immutable.Record({val: new BigNumber(0)}) {
     constructor(val) {
@@ -9,6 +10,9 @@ export class Wei extends Immutable.Record({val: new BigNumber(0)}) {
     }
     getEther() {
         return this.val.dividedBy(ETHER).toFixed(5)
+    }
+    getMwei() {
+        return this.val.dividedBy(MWEI).toFixed(5)
     }
 }
 

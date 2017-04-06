@@ -2,6 +2,12 @@ import BigNumber from "bignumber.js"
 import ethUtil from 'ethereumjs-util'
 
 export function toNumber(quantity) {
+    if (quantity == null) {
+        return 0
+    }
+    if (quantity === '0x') {
+        return 0
+    }
     return parseInt(quantity.substring(2), 16)
 }
 
@@ -128,4 +134,8 @@ export function etherToWei(val) {
 
 export function toHex(val) {
     return `0x${val.toString(16)}`;
+}
+
+export function hexToWei(val) {
+
 }

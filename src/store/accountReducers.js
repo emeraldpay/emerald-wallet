@@ -6,6 +6,7 @@ import { toNumber } from '../lib/convert'
 
 const initial = Immutable.fromJS({
     accounts: [],
+    trackedTransactions: [],
     loading: false
 });
 
@@ -103,6 +104,36 @@ function updateToken(tokens, token, value) {
                                     .set('balance', balance))
 }
 
+function onTrackTx(state, action) {
+    if (action.type === 'ACCOUNT/TRACK_TX') {
+        let data = Immutable.fromJS({
+            hash: action.hash
+        });
+        return state.update('trackedTransactions', (txes) => txes.push(data));
+    }
+    return state
+}
+
+function onUpdateTx(state, action) {
+    if (action.type === 'ACCOUNT/UPDATE_TX') {
+        return state.update('trackedTransactions', (txes) => {
+            let pos = txes.findKey((tx) => tx.get('hash') === action.tx.hash);
+            if (pos >= 0) {
+                let data = Immutable.fromJS(action.tx);
+                if (typeof action.tx.value === 'string') {
+                    data = data.set('value', new Wei(action.tx.value))
+                }
+                if (typeof action.tx.gasPrice === 'string') {
+                    data = data.set('gasPrice', new Wei(action.tx.gasPrice))
+                }
+                txes = txes.set(pos, data);
+            }
+            return txes
+        })
+    }
+    return state
+}
+
 export const accountsReducers = function(state, action) {
     state = state || initial;
     state = onLoading(state, action);
@@ -111,5 +142,7 @@ export const accountsReducers = function(state, action) {
     state = onSetBalance(state, action);
     state = onSetTxCount(state, action);
     state = onSetTokenBalance(state, action);
+    state = onTrackTx(state, action);
+    state = onUpdateTx(state, action);
     return state;
 };

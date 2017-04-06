@@ -32,7 +32,7 @@ const Render = ({screen, screenItem}) => {
     } else if (screen === 'account') {
         return <AccountShow account={screenItem}/>
     } else if (screen === 'transaction') {
-        return <TransactionShow transaction={screenItem.transaction} account={screenItem.account}/>
+        return <TransactionShow hash={screenItem.hash} account={screenItem.account}/>
     } else if (screen === 'create-tx') {
         return <CreateTx account={screenItem}/>
     } else if (screen === 'create-account') {
