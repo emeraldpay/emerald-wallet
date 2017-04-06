@@ -101,3 +101,31 @@ export function importWallet(wallet) {
         });
     }    
 }
+
+export function refreshTransactions(hash) {
+    return function (dispatch) {
+        return rpc("eth_getTransactionByHash", [hash]).then((json) => {
+            if (typeof json.result === 'object') {
+                dispatch({
+                    type: 'ACCOUNT/UPDATE_TX',
+                    tx: json.result
+                });
+            }
+        });
+    }
+}
+
+export function refreshTrackedTransactions() {
+    return function (dispatch, getState) {
+        getState().accounts.get('trackedTransactions').map(
+            (tx) => dispatch(refreshTransactions(tx.get('hash')))
+        )
+    }
+}
+
+export function trackTx(hash) {
+    return {
+        type: 'ACCOUNT/TRACK_TX',
+        hash: hash
+    }
+}

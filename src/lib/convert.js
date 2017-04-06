@@ -2,6 +2,12 @@ import BigNumber from "bignumber.js"
 import ethUtil from 'ethereumjs-util'
 
 export function toNumber(quantity) {
+    if (quantity == null) {
+        return 0
+    }
+    if (quantity === '0x') {
+        return 0
+    }
     return parseInt(quantity.substring(2), 16)
 }
 
@@ -115,3 +121,21 @@ export function estimateGasFromTrace (dataObj, trace) {
     return estGas;
 };
 */
+
+export function mweiToWei(val) {
+    const m = new BigNumber(10).pow(6);
+    return new BigNumber(val).mul(m).round(0, BigNumber.ROUND_HALF_DOWN);
+}
+
+export function etherToWei(val) {
+    const m = new BigNumber(10).pow(18);
+    return new BigNumber(val).mul(m).round(0, BigNumber.ROUND_HALF_DOWN);
+}
+
+export function toHex(val) {
+    return `0x${val.toString(16)}`;
+}
+
+export function hexToWei(val) {
+
+}

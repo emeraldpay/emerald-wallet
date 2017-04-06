@@ -11,11 +11,12 @@ import FontIcon from 'material-ui/FontIcon'
 import { cardSpace } from '../../lib/styles'
 import { Row, Col } from 'react-flexbox-grid/lib/index'
 
-import { sendTransaction } from 'store/accountActions'
+import { sendTransaction, trackTx } from 'store/accountActions'
 import { transferTokenTransaction } from 'store/tokenActions'
 import Immutable from 'immutable'
 import { gotoScreen } from 'store/screenActions'
 import { positive, number, required, address } from '../../lib/validators'
+import { mweiToWei, etherToWei, toHex } from 'lib/convert'
 import log from 'loglevel'
 
 const DefaultGas = 21000
@@ -141,30 +142,37 @@ const CreateTx = connect(
     },
     (dispatch, ownProps) => {
         return {
-            onSubmit: data => {               
+            onSubmit: data => {
+                const afterTx = (txhash) => {
+                    let txdetails = {
+                        hash: txhash,
+                        account: ownProps.account
+                    };
+                    dispatch(trackTx(txhash));
+                    dispatch(gotoScreen('transaction', txdetails));
+                };
+                const resolver = (resolve, f) => {
+                    return (x) => {
+                        f.apply(x);
+                        resolve(x);
+                    }
+                };
                 if (data.token.length > 1)
                     return new Promise((resolve, reject) => {
-                        dispatch(transferTokenTransaction(data.from, data.to, data.gasAmount, data.gasPrice, data.value, data.token))
-                            .then((response) => {
-                                dispatch(gotoScreen('transaction', {
-                                                                    transaction: response, 
-                                                                    account: ownProps.account
-                                                                    }))
-                                resolve(response);
-                            });
+                        dispatch(transferTokenTransaction(data.from, data.to,
+                            toHex(data.gasAmount), toHex(mweiToWei(data.gasPrice)),
+                            toHex(etherToWei(data.value)),
+                            data.token))
+                            .then(resolver(afterTx, resolve));
                         });
                 else
                     return new Promise((resolve, reject) => {
-                        dispatch(sendTransaction(data.from, data.to, data.gasAmount, data.gasPrice, data.value))
-                            .then((response) => {
-                                dispatch(gotoScreen('transaction', {
-                                                                    transaction: response, 
-                                                                    account: ownProps.account
-                                                                    }))
-                                resolve(response);
-                            });
-                        });
-            },         
+                        dispatch(sendTransaction(data.from, data.to,
+                            toHex(data.gasAmount), toHex(mweiToWei(data.gasPrice)),
+                            toHex(etherToWei(data.value))
+                        )).then(resolver(afterTx, resolve));
+                    })
+            },
             onChangeToken: (event, value, prev) => {
                 // if switching from ETC to token, change default gas
                 if (prev.length < 1 && !(address(value))) 
