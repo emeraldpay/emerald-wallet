@@ -12,12 +12,12 @@ import { cardSpace } from '../../lib/styles'
 import { gotoScreen } from '../../store/screenActions'
 
 const TokenRow = ({token}) => {
-    const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0'
+    const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0';
 
     return (
         <div><span>{balance} {token.get('symbol')}</span></div>
     )
-}
+};
 
 const Render = ({account, createTx, tokens}) => {
 
@@ -50,9 +50,13 @@ const Render = ({account, createTx, tokens}) => {
                             <DescriptionData>{value}</DescriptionData>
 
                             <DescriptionTitle>Token Balances:</DescriptionTitle>
-                            <DescriptionData>{account.get('tokens')
-                                                    .map( (tok) => <TokenRow token={tok} /> )}
-                                </DescriptionData>
+                            <DescriptionData>
+                                {account
+                                    .get('tokens')
+                                    .map( (tok) =>
+                                        <TokenRow token={tok} key={tok.get('address')}/>
+                                )}
+                            </DescriptionData>
 
                         </DescriptionList>
                     </Col>
