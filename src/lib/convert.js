@@ -139,3 +139,10 @@ export function toHex(val) {
 export function hexToWei(val) {
 
 }
+
+export function parseHexQuantity(val, defaultValue) {
+    if (val == null || val === '0x') {
+        return defaultValue
+    }
+    return new BigNumber(val, 16)
+}
