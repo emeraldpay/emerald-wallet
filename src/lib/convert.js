@@ -1,5 +1,6 @@
 import BigNumber from "bignumber.js"
 import ethUtil from 'ethereumjs-util'
+import log from 'loglevel'
 
 export function toNumber(quantity) {
     if (quantity == null) {
@@ -20,6 +21,10 @@ export function parseString(hex) {
 
     hex = hex.substring(2);
     const parts = hex.match(/.{64}/g);
+    if (parts == null) {
+        log.warn("Corrupted String data", hex);
+        return ''
+    }
     const len_ignore = parts[0];
     const text_size = parts[1];
     const text_data = hex.substring(64 + 64);
