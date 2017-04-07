@@ -1,27 +1,27 @@
 import React from 'react';
-import { connect } from 'react-redux'
-import { Field, reduxForm, change, formValueSelector } from 'redux-form'
+import { connect } from 'react-redux';
+import { Field, reduxForm, change, formValueSelector } from 'redux-form';
 
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
-import { SelectField, TextField, RadioButtonGroup } from 'redux-form-material-ui'
-import { RadioButton} from 'material-ui/RadioButton'
-import MenuItem from 'material-ui/MenuItem'
-import FlatButton from 'material-ui/FlatButton'
-import FontIcon from 'material-ui/FontIcon'
+import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
+import { SelectField, TextField, RadioButtonGroup } from 'redux-form-material-ui';
+import { RadioButton} from 'material-ui/RadioButton';
+import MenuItem from 'material-ui/MenuItem';
+import FlatButton from 'material-ui/FlatButton';
+import FontIcon from 'material-ui/FontIcon';
 
-import { cardSpace } from '../../lib/styles'
-import { Row, Col } from 'react-flexbox-grid/lib/index'
+import { cardSpace } from '../../lib/styles';
+import { Row, Col } from 'react-flexbox-grid/lib/index';
 
-import { sendTransaction, trackTx } from 'store/accountActions'
-import { transferTokenTransaction } from 'store/tokenActions'
-import Immutable from 'immutable'
-import { gotoScreen } from 'store/screenActions'
-import { positive, number, required, address } from '../../lib/validators'
-import { mweiToWei, etherToWei, toHex } from 'lib/convert'
-import log from 'loglevel'
+import { sendTransaction, trackTx } from 'store/accountActions';
+import { transferTokenTransaction } from 'store/tokenActions';
+import Immutable from 'immutable';
+import { gotoScreen } from 'store/screenActions';
+import { positive, number, required, address } from '../../lib/validators';
+import { mweiToWei, etherToWei, toHex } from 'lib/convert';
+import log from 'loglevel';
 
-const DefaultGas = 21000
-const DefaultTokenGas = 23890
+const DefaultGas = 21000;
+const DefaultTokenGas = 23890;
 
 const Render = ({fields: {from, to}, accounts, account, tokens, token, isToken, onChangeToken, handleSubmit, invalid, pristine, resetForm, submitting, cancel}) => {
     log.debug('fields - from', from);
@@ -139,8 +139,8 @@ const CreateTxForm = reduxForm({
 
 const CreateTx = connect(
     (state, ownProps) => {
-        const selector = formValueSelector('createTx')
-        let tokens = state.tokens.get('tokens')
+        const selector = formValueSelector('createTx');
+        let tokens = state.tokens.get('tokens');
         return {
             initialValues: {
                 from: ownProps.account.get('id'),
@@ -157,7 +157,7 @@ const CreateTx = connect(
     (dispatch, ownProps) => {
         return {
             onSubmit: data => {
-                console.log(data)
+                console.log(data);
                 const afterTx = (txhash) => {
                     let txdetails = {
                         hash: txhash,
@@ -191,7 +191,7 @@ const CreateTx = connect(
             onChangeToken: (event, value, prev) => {
                 // if switching from ETC to token, change default gas
                 if (prev.length < 1 && !(address(value))) 
-                    dispatch(change("createTx", "gasAmount", DefaultTokenGas))
+                    dispatch(change("createTx", "gasAmount", DefaultTokenGas));
                 else if (!(address(prev)) && value.length < 1) 
                     dispatch(change("createTx", "gasAmount", DefaultGas))
                 

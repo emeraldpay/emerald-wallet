@@ -1,13 +1,13 @@
 import React from 'react';
 import Dropzone from 'react-dropzone';
-import TextField from 'material-ui/TextField'
-import FlatButton from 'material-ui/FlatButton'
-import FontIcon from 'material-ui/FontIcon'
+import TextField from 'material-ui/TextField';
+import FlatButton from 'material-ui/FlatButton';
+import FontIcon from 'material-ui/FontIcon';
 
 export const renderFileField = ({ input, name, meta: { touched, error } }) => { 
 
-    const files = input.value
-    const onDrop = ( filesToUpload, e ) => input.onChange(filesToUpload)
+    const files = input.value;
+    const onDrop = ( filesToUpload, e ) => input.onChange(filesToUpload);
 
     return (
       <div>
@@ -19,7 +19,7 @@ export const renderFileField = ({ input, name, meta: { touched, error } }) => {
         {touched && error && <span className="error">{error}</span>}    
       </div>
     )
-}
+};
 
 export const renderTextField = ({ input, label, type, meta: { touched, error } }) => (
   <div>
@@ -28,4 +28,4 @@ export const renderTextField = ({ input, label, type, meta: { touched, error } }
       <TextField {...input} type={type} errorText={touched && error} />
     </div>
   </div>
-)
+);

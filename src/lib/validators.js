@@ -7,7 +7,7 @@ export function number(value) {
 }
 
 export function positive(value) {
-    return value[0] != '-' ? undefined : "Should be positive number"
+    return value[0] !== '-' ? undefined : "Should be positive number"
 }
 
 export function address(value) {

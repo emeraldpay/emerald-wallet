@@ -1,6 +1,6 @@
-import BigNumber from "bignumber.js"
-import Immutable from 'immutable'
-import { parseHexQuantity } from './convert'
+import BigNumber from "bignumber.js";
+import Immutable from 'immutable';
+import { parseHexQuantity } from './convert';
 
 const ETHER = new BigNumber(10).pow(18);
 const MWEI = new BigNumber(10).pow(6);

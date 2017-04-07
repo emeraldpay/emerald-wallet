@@ -1,15 +1,15 @@
-import BigNumber from "bignumber.js"
-import ethUtil from 'ethereumjs-util'
-import log from 'loglevel'
+import BigNumber from "bignumber.js";
+import ethUtil from 'ethereumjs-util';
+import log from 'loglevel';
 
 export function toNumber(quantity) {
     if (quantity == null) {
-        return 0
+        return 0;
     }
     if (quantity === '0x') {
-        return 0
+        return 0;
     }
-    return parseInt(quantity.substring(2), 16)
+    return parseInt(quantity.substring(2), 16);
 }
 
 
@@ -33,7 +33,7 @@ export function parseString(hex) {
         const pos = i * 2;
         result += String.fromCharCode(parseInt(text_data[pos] + text_data[pos + 1], 16))
     }
-    return result
+    return result;
 }
 
 export function getNakedAddress(address) {
@@ -72,7 +72,7 @@ export function transformToFullName(json) {
         return i.type;
     }).join();
     return json.name + '(' + typeName + ')';
-};
+}
 
 /**
  * Get display name of contract function
@@ -84,12 +84,12 @@ export function transformToFullName(json) {
 export function extractDisplayName(name) {
     let length = name.indexOf('(');
     return length !== -1 ? name.substr(0, length) : name;
-};
+}
 
 export function getFunctionSignature (func) {
-    let fullName = transformToFullName(func)
+    let fullName = transformToFullName(func);
     return ethUtil.sha3(fullName).toString('hex').slice(0, 8);
-};
+}
 
 /**
  *
@@ -141,13 +141,9 @@ export function toHex(val) {
     return `0x${val.toString(16)}`;
 }
 
-export function hexToWei(val) {
-
-}
-
 export function parseHexQuantity(val, defaultValue) {
     if (val == null || val === '0x') {
         return defaultValue
     }
-    return new BigNumber(val, 16)
+    return new BigNumber(val, 16);
 }

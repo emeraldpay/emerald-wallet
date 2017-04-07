@@ -1,22 +1,22 @@
-import Immutable from 'immutable'
+import Immutable from 'immutable';
 
 const initial = Immutable.fromJS({
     screen: null,
-    item: null
+    item: null,
 });
 
 
 function onOpen(state, action) {
-    if (action.type == 'SCREEN/OPEN') {
+    if (action.type === 'SCREEN/OPEN') {
         return state
             .set('screen', action.screen)
-            .set('item', action.item)
+            .set('item', action.item);
     }
-    return state
+    return state;
 }
 
-export const screenReducers = function(state, action) {
+export default function screenReducers(state, action) {
     state = state || initial;
     state = onOpen(state, action);
     return state;
-};
+}

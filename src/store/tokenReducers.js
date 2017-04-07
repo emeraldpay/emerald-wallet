@@ -1,12 +1,11 @@
-import Immutable from 'immutable'
-import log from 'loglevel'
+import Immutable from 'immutable';
+import { TokenUnits } from '../lib/types';
 
-import { TokenUnits } from '../lib/types'
-import { toNumber } from '../lib/convert'
+// ----- STRUCTURES
 
 const initial = Immutable.fromJS({
     tokens: [],
-    loading: false
+    loading: false,
 });
 
 const initialTok = Immutable.Map({
@@ -17,8 +16,32 @@ const initialTok = Immutable.Map({
     decimals: null,
     symbol: null,
     totalFull: null,
-    total: null
+    total: null,
 });
+
+// ----- UTILITY FUNCTIONS
+
+function addToken(state, address, name) {
+    return state.update('tokens', (tokens) =>
+        tokens.push(initialTok.merge({ address, name }))
+    );
+}
+
+function calcToken(tok) {
+    return tok.set('total', new TokenUnits(tok.get('totalFull', '0x0'), tok.get('decimals', '0x0')));
+}
+
+function updateToken(state, id, f) {
+    return state.update('tokens', (tokens) => {
+        const pos = tokens.findKey((tok) => tok.get('address') === id);
+        if (pos >= 0) {
+            return tokens.update(pos, f);
+        }
+        return tokens;
+    });
+}
+
+// ----- REDUCERS
 
 function onLoading(state, action) {
     switch (action.type) {
@@ -26,7 +49,7 @@ function onLoading(state, action) {
             return state
                 .set('loading', true);
         default:
-            return state
+            return state;
     }
 }
 
@@ -39,7 +62,7 @@ function onSetTokenList(state, action) {
                 )
                 .set('loading', false);
         default:
-            return state
+            return state;
     }
 }
 
@@ -49,7 +72,7 @@ function onSetTotalSupply(state, action) {
             calcToken(tok.set('totalFull', action.value))
         );
     }
-    return state
+    return state;
 }
 function onSetDecimals(state, action) {
     if (action.type === 'TOKEN/SET_DECIMALS') {
@@ -57,7 +80,7 @@ function onSetDecimals(state, action) {
             calcToken(tok.set('decimals', action.value))
         );
     }
-    return state
+    return state;
 }
 function onSetSymbol(state, action) {
     if (action.type === 'TOKEN/SET_SYMBOL') {
@@ -65,42 +88,19 @@ function onSetSymbol(state, action) {
             tok.set('symbol', action.value)
         );
     }
-    return state
-}
-
-function calcToken(tok) {
-    return tok.set('total', new TokenUnits(tok.get('totalFull', '0x0'), tok.get('decimals', '0x0')))
+    return state;
 }
 
 function onAddToken(state, action) {
-    if (action.type == 'TOKEN/ADD_TOKEN') {
-        return addToken(state, action.address, action.name)
+    if (action.type === 'TOKEN/ADD_TOKEN') {
+        return addToken(state, action.address, action.name);
     }
     return state;
 }
 
-function addToken(state, address, name) {
-    return state.update("tokens", (tokens) => {
-        return tokens.push( 
-            initialTok.merge({
-                'address': address,
-                'name': name
-            }) 
-        )
-    })
-}
+// ---- REDUCER
 
-function updateToken(state, id, f) {
-    return state.update("tokens", (tokens) => {
-        const pos = tokens.findKey((tok) => tok.get('address') === id);
-        if (pos >= 0) {
-            return tokens.update(pos, f)
-        }
-        return tokens
-    })
-}
-
-export const tokenReducers = function(state, action) {
+export default function tokenReducers(state, action) {
     state = state || initial;
     state = onLoading(state, action);
     state = onSetTokenList(state, action);
@@ -109,4 +109,4 @@ export const tokenReducers = function(state, action) {
     state = onSetSymbol(state, action);
     state = onAddToken(state, action);
     return state;
-};
+}

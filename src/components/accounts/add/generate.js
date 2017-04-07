@@ -1,27 +1,27 @@
 import React from 'react';
-import { connect } from 'react-redux'
-import { Field, reduxForm, reset } from 'redux-form'
-import { renderTextField } from 'elements/formFields'
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
-import FlatButton from 'material-ui/FlatButton'
-import FontIcon from 'material-ui/FontIcon'
+import { connect } from 'react-redux';
+import { Field, reduxForm, reset } from 'redux-form';
+import { renderTextField } from 'elements/formFields';
+import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
+import FlatButton from 'material-ui/FlatButton';
+import FontIcon from 'material-ui/FontIcon';
 
-import { cardSpace } from 'lib/styles'
-import { Row, Col } from 'react-flexbox-grid/lib/index'
+import { cardSpace } from 'lib/styles';
+import { Row, Col } from 'react-flexbox-grid/lib/index';
 
-import Immutable from 'immutable'
-import { gotoScreen } from 'store/screenActions'
-import { loadAccountsList, createAccount } from 'store/accountActions'
-import { required, minLength, passwordMatch } from 'lib/validators'
-import log from 'loglevel'
-import AccountShow from '../show'
+import Immutable from 'immutable';
+import { gotoScreen } from 'store/screenActions';
+import { loadAccountsList, createAccount } from 'store/accountActions';
+import { required, minLength, passwordMatch } from 'lib/validators';
+import log from 'loglevel';
+import AccountShow from '../show';
 
 const validate = values => {
     const errors = {};
-    errors.password = minLength(8)(values.password)
+    errors.password = minLength(8)(values.password);
     errors.passwordConfirm = passwordMatch(values.password, values);
     return errors;
-}
+};
 
 const Render = ({account, submitSucceeded, handleSubmit, invalid, pristine, reset, submitting, cancel}) => {
 
@@ -69,7 +69,7 @@ const Render = ({account, submitSucceeded, handleSubmit, invalid, pristine, rese
             </CardActions>
         </Card>
         );
-}
+};
 
 const GenerateAccountForm = reduxForm({
     form: 'generate',

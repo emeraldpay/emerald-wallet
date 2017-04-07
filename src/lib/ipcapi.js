@@ -13,7 +13,7 @@ export function ipc(name, params) {
     };
     return new Promise(resolve => setTimeout(resolve, 1000))
         .then((response) => {
-            if (name == "backend_importWallet")
+            if (name === "backend_importWallet")
                 return {"result": "0xfakeAccount000"};
         })
 }

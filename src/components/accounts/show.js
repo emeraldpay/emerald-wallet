@@ -1,15 +1,15 @@
 import React from 'react';
-import { connect } from 'react-redux'
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
-import FlatButton from 'material-ui/FlatButton'
-import FontIcon from 'material-ui/FontIcon'
-import { Row, Col } from 'react-flexbox-grid/lib/index'
-import { DescriptionList, DescriptionTitle, DescriptionData} from '../../elements/dl'
-import QRCode from 'qrcode.react'
-import log from 'loglevel'
-import Immutable from 'immutable'
-import { cardSpace } from '../../lib/styles'
-import { gotoScreen } from '../../store/screenActions'
+import { connect } from 'react-redux';
+import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
+import FlatButton from 'material-ui/FlatButton';
+import FontIcon from 'material-ui/FontIcon';
+import { Row, Col } from 'react-flexbox-grid/lib/index';
+import { DescriptionList, DescriptionTitle, DescriptionData} from '../../elements/dl';
+import QRCode from 'qrcode.react';
+import log from 'loglevel';
+import Immutable from 'immutable';
+import { cardSpace } from '../../lib/styles';
+import { gotoScreen } from '../../store/screenActions';
 
 const TokenRow = ({token}) => {
     const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0';

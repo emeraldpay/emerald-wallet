@@ -1,12 +1,12 @@
-import React from 'react'
-import { connect } from 'react-redux'
-import AppBar from 'material-ui/AppBar'
-import { Grid, Row, Col } from 'react-flexbox-grid/lib/index'
-import './main.scss'
-import FlatButton from 'material-ui/FlatButton'
-import FontIcon from 'material-ui/FontIcon'
-import Screen from './screen'
-import { gotoScreen } from '../store/screenActions'
+import React from 'react';
+import { connect } from 'react-redux';
+import AppBar from 'material-ui/AppBar';
+import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
+import './main.scss';
+import FlatButton from 'material-ui/FlatButton';
+import FontIcon from 'material-ui/FontIcon';
+import Screen from './screen';
+import { gotoScreen } from '../store/screenActions';
 
 
 const Render = ({openAccounts}) => (

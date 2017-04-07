@@ -1,4 +1,4 @@
-import 'whatwg-fetch'
+import 'whatwg-fetch';
 
 const url = "http://localhost:1920";
 const headers = {
