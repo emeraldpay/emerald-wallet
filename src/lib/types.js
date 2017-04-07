@@ -1,12 +1,18 @@
-import BigNumber from "bignumber.js"
-import Immutable from 'immutable'
+import BigNumber from "bignumber.js";
+import Immutable from 'immutable';
+import { parseHexQuantity } from './convert';
 
 const ETHER = new BigNumber(10).pow(18);
 const MWEI = new BigNumber(10).pow(6);
 
-export class Wei extends Immutable.Record({val: new BigNumber(0)}) {
+const ZERO = new BigNumber(0);
+const ONE = new BigNumber(1);
+
+export class Wei extends Immutable.Record({val: ZERO}) {
     constructor(val) {
-        super({val: new BigNumber(val.substring(2), 16)});
+        super({
+            val: parseHexQuantity(val, ZERO)
+        });
     }
     getEther() {
         return this.val.dividedBy(ETHER).toFixed(5)
@@ -16,11 +22,13 @@ export class Wei extends Immutable.Record({val: new BigNumber(0)}) {
     }
 }
 
-export class TokenUnits extends Immutable.Record({val: new BigNumber(0), 
-                                            divisor: new BigNumber(0)}) {
+export class TokenUnits extends Immutable.Record({val: ZERO,
+                                            divisor: ONE}) {
     constructor(val, decimal) {
-        super({val: new BigNumber(val.substring(2) || "0", 16),
-                divisor: new BigNumber(10).pow(decimal.substring(2))});
+        super({
+            val: parseHexQuantity(val, ZERO),
+            divisor: new BigNumber(10).pow(parseHexQuantity(decimal, ZERO))
+        });
     }
     getDecimalized(decimals) {
         return this.val.dividedBy(this.divisor).toFixed(5)

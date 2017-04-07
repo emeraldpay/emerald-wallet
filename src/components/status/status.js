@@ -1,13 +1,13 @@
 import React from 'react';
-import { connect } from 'react-redux'
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
-import FlatButton from 'material-ui/FlatButton'
-import FontIcon from 'material-ui/FontIcon'
-import Avatar from 'material-ui/Avatar'
-import LinearProgress from 'material-ui/LinearProgress'
-import { cardSpace } from '../../lib/styles'
-import log from 'loglevel'
-import Immutable from 'immutable'
+import { connect } from 'react-redux';
+import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
+import FlatButton from 'material-ui/FlatButton';
+import FontIcon from 'material-ui/FontIcon';
+import Avatar from 'material-ui/Avatar';
+import LinearProgress from 'material-ui/LinearProgress';
+import { cardSpace } from '../../lib/styles';
+import log from 'loglevel';
+import Immutable from 'immutable';
 
 const Render = ({block, syncing}) => {
 

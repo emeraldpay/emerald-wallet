@@ -1,10 +1,10 @@
 import React from 'react';
-import { connect } from 'react-redux'
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table'
+import { connect } from 'react-redux';
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
 
-import { gotoScreen } from '../../store/screenActions'
-import log from 'loglevel'
-import { link, tables } from 'lib/styles'
+import { gotoScreen } from '../../store/screenActions';
+import log from 'loglevel';
+import { link, tables } from 'lib/styles';
 
 const Render = ({token, openToken}) => {
     return (

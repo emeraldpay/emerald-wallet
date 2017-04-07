@@ -1,5 +1,5 @@
 import { fromTokens, transformToFullName, extractDisplayName, getFunctionSignature, mweiToWei, etherToWei } from './convert';
-import BigNumber from "bignumber.js"
+import BigNumber from "bignumber.js";
 
 describe("Token Converter", () => {
     it("convert token number to value", () => {
@@ -21,20 +21,20 @@ describe("Function Converter", () => {
     const transfer = {"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"}
     it("extract name from function", () => {
         expect(extractDisplayName("balanceOf")).toEqual("balanceOf");
-    })
+    });
     it("extract name from function", () => {
         expect(extractDisplayName("balanceOf()")).toEqual("balanceOf");
-    })
+    });
     it("get full name from ABI", () => {
         expect(transformToFullName(balanceOf)).toEqual('balanceOf(address)');
         expect(extractDisplayName(transformToFullName(balanceOf))).toEqual("balanceOf")
-    })
+    });
     it("get full name from ABI", () => {
         expect(transformToFullName(transfer)).toEqual('transfer(address,uint256)');
-    })
+    });
     it("get function signature from ABI", () => {
         expect(getFunctionSignature(transfer)).toEqual("a9059cbb");
-    })
+    });
     it("get function signature from ABI", () => {
         expect(getFunctionSignature(balanceOf)).toEqual("70a08231");
     })

@@ -1,4 +1,4 @@
-import { number, address, required, positive } from './validators'
+import { number, address, required, positive } from './validators';
 
 describe("Field Validators", () => {
     it("valid required", () => {

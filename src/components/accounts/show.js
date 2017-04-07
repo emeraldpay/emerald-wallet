@@ -1,23 +1,23 @@
 import React from 'react';
-import { connect } from 'react-redux'
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
-import FlatButton from 'material-ui/FlatButton'
-import FontIcon from 'material-ui/FontIcon'
-import { Row, Col } from 'react-flexbox-grid/lib/index'
-import { DescriptionList, DescriptionTitle, DescriptionData} from '../../elements/dl'
-import QRCode from 'qrcode.react'
-import log from 'loglevel'
-import Immutable from 'immutable'
-import { cardSpace } from '../../lib/styles'
-import { gotoScreen } from '../../store/screenActions'
+import { connect } from 'react-redux';
+import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
+import FlatButton from 'material-ui/FlatButton';
+import FontIcon from 'material-ui/FontIcon';
+import { Row, Col } from 'react-flexbox-grid/lib/index';
+import { DescriptionList, DescriptionTitle, DescriptionData} from '../../elements/dl';
+import QRCode from 'qrcode.react';
+import log from 'loglevel';
+import Immutable from 'immutable';
+import { cardSpace } from '../../lib/styles';
+import { gotoScreen } from '../../store/screenActions';
 
 const TokenRow = ({token}) => {
-    const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0'
+    const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0';
 
     return (
         <div><span>{balance} {token.get('symbol')}</span></div>
     )
-}
+};
 
 const Render = ({account, createTx, tokens}) => {
 
@@ -50,9 +50,13 @@ const Render = ({account, createTx, tokens}) => {
                             <DescriptionData>{value}</DescriptionData>
 
                             <DescriptionTitle>Token Balances:</DescriptionTitle>
-                            <DescriptionData>{account.get('tokens')
-                                                    .map( (tok) => <TokenRow token={tok} /> )}
-                                </DescriptionData>
+                            <DescriptionData>
+                                {account
+                                    .get('tokens')
+                                    .map( (tok) =>
+                                        <TokenRow token={tok} key={tok.get('address')}/>
+                                )}
+                            </DescriptionData>
 
                         </DescriptionList>
                     </Col>

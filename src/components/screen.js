@@ -1,17 +1,17 @@
 import React from 'react';
-import { connect } from 'react-redux'
-import log from 'loglevel'
+import { connect } from 'react-redux';
+import log from 'loglevel';
 
-import AccountsList from './accounts/list'
-import AccountShow from './accounts/show'
-import CreateTx from './tx/create'
-import TransactionShow from './tx/show'
-import TokensList from './tokens/list'
-import AddToken from './tokens/add'
-import Status from './status/status'
-import CreateAccount from './accounts/add/add'
-import GenerateAccount from './accounts/add/generate'
-import ImportAccount from './accounts/add/importjson'
+import AccountsList from './accounts/list';
+import AccountShow from './accounts/show';
+import CreateTx from './tx/create';
+import TransactionShow from './tx/show';
+import TokensList from './tokens/list';
+import AddToken from './tokens/add';
+import Status from './status/status';
+import CreateAccount from './accounts/add/add';
+import GenerateAccount from './accounts/add/generate';
+import ImportAccount from './accounts/add/importjson';
 
 const Render = ({screen, screenItem}) => {
 

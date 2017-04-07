@@ -1,16 +1,16 @@
 import React from 'react';
-import { connect } from 'react-redux'
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table'
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
-import FlatButton from 'material-ui/FlatButton'
-import { GridList, GridTile } from 'material-ui/GridList'
-import FontIcon from 'material-ui/FontIcon'
+import { connect } from 'react-redux';
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
+import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
+import FlatButton from 'material-ui/FlatButton';
+import { GridList, GridTile } from 'material-ui/GridList';
+import FontIcon from 'material-ui/FontIcon';
 import Avatar from 'material-ui/Avatar';
-import { cardSpace, tables } from 'lib/styles'
-import log from 'loglevel'
-import Immutable from 'immutable'
-import { gotoScreen } from '../../store/screenActions'
-import Token from './token'
+import { cardSpace, tables } from 'lib/styles';
+import log from 'loglevel';
+import Immutable from 'immutable';
+import { gotoScreen } from '../../store/screenActions';
+import Token from './token';
 
 const Render = ({tokens, addToken}) => {
 

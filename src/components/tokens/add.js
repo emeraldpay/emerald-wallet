@@ -1,20 +1,20 @@
 import React from 'react';
-import { connect } from 'react-redux'
-import { Field, reduxForm, reset } from 'redux-form'
-import { renderTextField } from 'elements/formFields'
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card'
-import FlatButton from 'material-ui/FlatButton'
-import FontIcon from 'material-ui/FontIcon'
-import { Row, Col } from 'react-flexbox-grid/lib/index'
+import { connect } from 'react-redux';
+import { Field, reduxForm, reset } from 'redux-form';
+import { renderTextField } from 'elements/formFields';
+import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
+import FlatButton from 'material-ui/FlatButton';
+import FontIcon from 'material-ui/FontIcon';
+import { Row, Col } from 'react-flexbox-grid/lib/index';
 
-import { cardSpace } from 'lib/styles'
+import { cardSpace } from 'lib/styles';
 
-import Immutable from 'immutable'
-import { gotoScreen } from 'store/screenActions'
-import { addToken } from 'store/tokenActions'
-import { required, address } from 'lib/validators'
-import log from 'loglevel'
-import Token from './token'
+import Immutable from 'immutable';
+import { gotoScreen } from 'store/screenActions';
+import { addToken } from 'store/tokenActions';
+import { required, address } from 'lib/validators';
+import log from 'loglevel';
+import Token from './token';
 
 
 const Render = ({token, submitSucceeded, handleSubmit, invalid, pristine, reset, submitting, cancel}) => {
@@ -63,7 +63,7 @@ const Render = ({token, submitSucceeded, handleSubmit, invalid, pristine, reset,
             </CardActions>
         </Card>
         );
-}
+};
 
 const AddTokenForm = reduxForm({
     form: 'addToken',
