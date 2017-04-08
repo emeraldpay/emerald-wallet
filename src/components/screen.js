@@ -13,7 +13,7 @@ import CreateAccount from './accounts/add/add';
 import GenerateAccount from './accounts/add/generate';
 import ImportAccount from './accounts/add/importjson';
 import ContractsList from './contracts/list';
-import CreateContract from './contracts/add'
+import AddContract from './contracts/add'
 
 const Render = ({screen, screenItem}) => {
 
@@ -35,7 +35,7 @@ const Render = ({screen, screenItem}) => {
         return (
             <div>
                 <ContractsList/>
-                <CreateContract/>
+                <AddContract/>
             </div>
         )
     } else if (screen === 'account') {
