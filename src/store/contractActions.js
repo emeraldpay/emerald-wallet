@@ -20,13 +20,13 @@ export function addContract(address, name, abi) {
         rpc('emerald_addContract', [{
             address,
             name,
-            abi
+            abi,
         }]).then((json) => {
             dispatch({
                 type: 'CONTRACT/ADD_CONTRACT',
-                address: address,
-                name: name,
-                abi: abi
+                address,
+                name,
+                abi,
             });
         });
 }

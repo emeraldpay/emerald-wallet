@@ -8,12 +8,12 @@ const initial = Immutable.fromJS({
 const initialContract = Immutable.Map({
     address: null,
     name: null,
-    abi: null
+    abi: null,
 });
 
 function addContract(state, address, name, abi) {
     return state.update('contracts', (contracts) =>
-        contracts.push(initialContract.merge({ address, name, abi}))
+        contracts.push(initialContract.merge({ address, name, abi }))
     );
 }
 
@@ -46,8 +46,6 @@ function onAddContract(state, action) {
     }
     return state;
 }
-
-
 
 export default function contractReducers(state, action) {
     state = state || initial;
