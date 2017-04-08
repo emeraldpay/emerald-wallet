@@ -5,17 +5,20 @@ import { reducer as formReducer } from 'redux-form';
 
 import { loadAccountsList, refreshTrackedTransactions } from './accountActions';
 import { loadTokenList } from './tokenActions';
+import { loadContractList } from './contractActions';
 import { loadSyncing, loadHeight } from './networkActions';
 import { gotoScreen } from './screenActions';
 
 import accountsReducers from './accountReducers';
 import tokenReducers from './tokenReducers';
+import contractReducers from './contractReducers';
 import networkReducers from './networkReducers';
 import screenReducers from './screenReducers';
 
 const stateTransformer = (state) => ({
     accounts: state.accounts.toJS(),
     tokens: state.tokens.toJS(),
+    contracts: state.contracts.toJS(),
     screen: state.screen.toJS(),
     network: state.network.toJS(),
     form: state.form,
@@ -28,6 +31,7 @@ const loggerMiddleware = createLogger({
 const reducers = {
     accounts: accountsReducers,
     tokens: tokenReducers,
+    contracts: contractReducers,
     screen: screenReducers,
     network: networkReducers,
     form: formReducer,
@@ -49,6 +53,7 @@ function refreshAll() {
 export function start() {
     store.dispatch(loadAccountsList());
     store.dispatch(loadTokenList());
+    store.dispatch(loadContractList());
     store.dispatch(gotoScreen('home'));
     store.dispatch(loadHeight());
     setTimeout(() => store.dispatch(loadSyncing()), 3000); // check for syncing
