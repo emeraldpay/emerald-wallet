@@ -29,3 +29,30 @@ export const renderTextField = ({ input, label, type, meta: { touched, error } }
     </div>
   </div>
 );
+
+export const renderCodeField = ({ input, label, type, rows, meta: { touched, error } }) => {
+  const style = {
+    fontFamily: 'monospace',
+    letterSpacing: '.02em',
+    marginTop: '5px',
+    whiteSpace: 'pre-wrap',
+    wordWrap: 'break-word',
+    overflow: 'auto'
+  };
+
+  return (
+    <div>
+      <label>{label}</label>
+      <div>
+        <TextField {...input} 
+          type={type} 
+          textareaStyle={style}
+          multiLine={true}
+          rows={rows}
+          rowsMax={rows} 
+          fullWidth={true}
+          errorText={touched && error} />
+      </div>
+    </div>
+  );
+};

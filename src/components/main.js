@@ -1,24 +1,40 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import AppBar from 'material-ui/AppBar';
+import IconMenu from 'material-ui/IconMenu';
+import MenuItem from 'material-ui/MenuItem';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import './main.scss';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
+import IconButton from 'material-ui/IconButton';
+import ExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more';
+import Face from 'material-ui/svg-icons/action/face';
+import LibraryBooks from 'material-ui/svg-icons/av/library-books';
 import Screen from './screen';
 import { gotoScreen } from '../store/screenActions';
 
+const Menu = ({openAccounts, openContracts}) => (
+  <IconMenu
+    iconButtonElement={
+      <IconButton><ExpandMoreIcon color="white" /></IconButton>
+    }
+    targetOrigin={{horizontal: 'right', vertical: 'top'}}
+    anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+  >
+    <MenuItem leftIcon={<Face />} primaryText="Accounts" onClick={openAccounts} />
+    <MenuItem leftIcon={<LibraryBooks />} primaryText="Contracts" onClick={openContracts} />
+  </IconMenu>
+);
 
-const Render = ({openAccounts}) => (
+const Render = (props) => (
     <Grid>
         <Row>
             <Col xs={12}>
             <AppBar
                 title="Emerald - Ethereum Classic Wallet"
-                iconElementRight={<FlatButton label="Accounts"
-                                              onClick={openAccounts}
-                                              icon={<FontIcon className="fa fa-address-book-o" />
-                                              } />}
+                iconElementLeft={<IconButton><Face color="white" /></IconButton>}
+                iconElementRight={<Menu {...props}/>}
             />
             </Col>
         </Row>
@@ -48,7 +64,12 @@ const Main = connect(
     (dispatch, ownProps) => {
         return {
             openAccounts: () => {
+                console.log("accounts")
                 dispatch(gotoScreen('home'))
+            },
+            openContracts: () => {
+                console.log("contracts")
+                dispatch(gotoScreen('contracts'))
             }
         }
     }

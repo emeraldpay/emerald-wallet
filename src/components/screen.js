@@ -12,6 +12,8 @@ import Status from './status/status';
 import CreateAccount from './accounts/add/add';
 import GenerateAccount from './accounts/add/generate';
 import ImportAccount from './accounts/add/importjson';
+import ContractsList from './contracts/list';
+import AddContract from './contracts/add'
 
 const Render = ({screen, screenItem}) => {
 
@@ -27,6 +29,13 @@ const Render = ({screen, screenItem}) => {
                 <AccountsList/>
                 <TokensList/>
                 <Status/>
+            </div>
+        )
+    } else if (screen === 'contracts') {
+        return (
+            <div>
+                <ContractsList/>
+                <AddContract/>
             </div>
         )
     } else if (screen === 'account') {
