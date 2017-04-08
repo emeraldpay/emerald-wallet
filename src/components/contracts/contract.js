@@ -8,12 +8,12 @@ import { link, tables } from 'lib/styles';
 const Render = ({contract, openContract}) => {
     return (
         <TableRow selectable={false}>
-            <TableRowColumn style={tables.wideStyle}>
+            <TableRowColumn style={tables.shortStyle}>
                 <span onClick={openContract} style={link}>
                     {contract.get('name')}
                 </span>
             </TableRowColumn>
-            <TableRowColumn style={tables.shortStyle}>
+            <TableRowColumn style={tables.wideStyle}>
                 <span onClick={openContract} style={link}>
                     {contract.get('address')}
                 </span>

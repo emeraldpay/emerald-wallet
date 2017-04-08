@@ -11,10 +11,11 @@ import { Row, Col } from 'react-flexbox-grid/lib/index';
 
 import Immutable from 'immutable';
 import { gotoScreen } from 'store/screenActions';
+import { addContract } from 'store/contractActions'
 import { required, address } from 'lib/validators';
 import log from 'loglevel';
 
-const Render = ({account, submitSucceeded, handleSubmit, invalid, pristine, reset, submitting, deployContract}) => {
+const Render = ({account, handleSubmit, invalid, pristine, reset, submitting, deployContract}) => {
 
     return (
         <Card style={cardSpace}>
@@ -24,7 +25,7 @@ const Render = ({account, submitSucceeded, handleSubmit, invalid, pristine, rese
                 showExpandableButton={false}
             />
 
-            <CardText expandable={submitSucceeded}>
+            <CardText expandable={false}>
                 <form onSubmit={handleSubmit}>
                     <Field  name="name" 
                             component={renderTextField} 
@@ -37,7 +38,7 @@ const Render = ({account, submitSucceeded, handleSubmit, invalid, pristine, rese
                             validate={[ required, address ]} />
                     <Field  name="abi" 
                             component={renderCodeField} 
-                            rows="2"
+                            rows={2}
                             type="text" 
                             label="Contract ABI / JSON Interface" 
                             validate={ required } />
@@ -47,10 +48,6 @@ const Render = ({account, submitSucceeded, handleSubmit, invalid, pristine, rese
                                 disabled={pristine || submitting} 
                                 onClick={reset} />
                 </form>
-            </CardText>
-            <CardText expandable={!submitSucceeded}>
-                 <FlatButton label="Done"
-                            icon={<FontIcon className="fa fa-home" />}/>
             </CardText>
             <CardActions>
                 <FlatButton label="Deploy New Contract"
@@ -62,7 +59,7 @@ const Render = ({account, submitSucceeded, handleSubmit, invalid, pristine, rese
 };
 
 const AddContractForm = reduxForm({
-    form: 'generate',
+    form: 'addContract',
     fields: ['name', 'address', 'abi']
 })(Render);
 
@@ -75,9 +72,10 @@ const AddContract = connect(
         return {
             onSubmit: data => {                
                 return new Promise((resolve, reject) => {
-                    dispatch(createContract(data.name, data.address, data.abi))
+                    dispatch(addContract(data.address, data.name, data.abi))
                         .then((response) => {
                             resolve(response);
+                            dispatch(reset("addContract"));
                         });
                     });
             },
