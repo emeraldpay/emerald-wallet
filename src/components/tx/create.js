@@ -16,7 +16,7 @@ import { sendTransaction, trackTx } from 'store/accountActions';
 import { transferTokenTransaction } from 'store/tokenActions';
 import Immutable from 'immutable';
 import { gotoScreen } from 'store/screenActions';
-import { positive, number, required, address } from '../../lib/validators';
+import { positive, number, required, address } from 'lib/validators';
 import { mweiToWei, etherToWei, toHex } from 'lib/convert';
 import log from 'loglevel';
 
