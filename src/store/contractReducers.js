@@ -11,7 +11,7 @@ const initialContract = Immutable.Map({
     abi: null,
     version: null,
     options: [],
-    txhash: null
+    txhash: null,
 });
 
 function addContract(state, address, name, abi, version, options, txhash) {
@@ -45,24 +45,15 @@ function onSetContractList(state, action) {
 
 function onAddContract(state, action) {
     if (action.type === 'CONTRACT/ADD_CONTRACT') {
-        return addContract(state, 
-            action.address, 
-            action.name, 
-            action.abi, 
-            action.version, 
-            action.options, 
+        return addContract(state,
+            action.address,
+            action.name,
+            action.abi,
+            action.version,
+            action.options,
             action.txhash);
     }
     return state;
-}
-
-function onUpdateContract(state, action) {
-    if (action.type === 'CONTRACT/UPDATE_CONTRACT') {
-        return updateContract(state, action.tx.hash, (contract) => 
-            contract.set('address', action.address)
-        );
-    }
-    return state;    
 }
 
 function updateContract(state, txhash, f) {
@@ -73,6 +64,15 @@ function updateContract(state, txhash, f) {
         }
         return contracts;
     });
+}
+
+function onUpdateContract(state, action) {
+    if (action.type === 'CONTRACT/UPDATE_CONTRACT') {
+        return updateContract(state, action.tx.hash, (contract) =>
+            contract.set('address', action.address)
+        );
+    }
+    return state;
 }
 
 export default function contractReducers(state, action) {

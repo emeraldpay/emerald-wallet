@@ -26,6 +26,6 @@ export function passwordMatch(value, allValues) {
 
 export function hex(value) {
     if ((value === '') || (value === undefined)) return undefined;
-    let val = value.substring(0, 2) == '0x' ? value.substring(2) : value;
+    const val = value.substring(0, 2) === '0x' ? value.substring(2) : value;
     return /^[0-9A-Fa-f]+$/.test(val) ? undefined : "Invalid hex"
 }
