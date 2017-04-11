@@ -1,6 +1,8 @@
 import React from 'react';
 import Dropzone from 'react-dropzone';
 import TextField from 'material-ui/TextField';
+import SelectField from 'material-ui/SelectField';
+import Checkbox from 'material-ui/Checkbox';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 
@@ -35,9 +37,11 @@ export const renderCodeField = ({ input, label, type, rows, meta: { touched, err
     fontFamily: 'monospace',
     letterSpacing: '.02em',
     marginTop: '5px',
+    padding: '5px',
     whiteSpace: 'pre-wrap',
     wordWrap: 'break-word',
-    overflow: 'auto'
+    overflow: 'auto',
+    outline: '1px solid rgb(224, 224, 224)'
   };
 
   return (
@@ -56,3 +60,29 @@ export const renderCodeField = ({ input, label, type, rows, meta: { touched, err
     </div>
   );
 };
+
+export const renderSelectField = ({ input, label, type, meta: { touched, error } }) => (
+  <div>
+    <label>{label}</label>
+    <div>
+      <SelectField {...input} type={type} errorText={touched && error} />
+    </div>
+  </div>
+);
+
+export const renderCheckboxField = ({ input, label, options, meta: { touched, error } }) => (
+  <div>
+    <label>{label}</label>
+    {options.map( (option, index) => 
+      <Checkbox label={option} value={option} key={index}
+                onCheck={ event => {
+                    const value = [...input.value];
+                    if(event.target.checked)
+                        value.push(option);
+                    else
+                        value.splice(value.indexOf(option), 1);
+                    return input.onChange(value);
+                 }}/> 
+    )}
+  </div>
+);
