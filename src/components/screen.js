@@ -14,6 +14,7 @@ import GenerateAccount from './accounts/add/generate';
 import ImportAccount from './accounts/add/importjson';
 import ContractsList from './contracts/list';
 import AddContract from './contracts/add'
+import DeployContract from './contracts/deploy'
 
 const Render = ({screen, screenItem}) => {
 
@@ -52,6 +53,8 @@ const Render = ({screen, screenItem}) => {
         return <ImportAccount />
     } else if (screen === 'add-token') {
         return <AddToken />
+    } else if (screen === 'deploy-contract') {
+        return <DeployContract />
     }
 
     return (

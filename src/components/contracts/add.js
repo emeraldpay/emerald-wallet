@@ -80,7 +80,7 @@ const AddContract = connect(
                     });
             },
             deployContract: () => {
-                console.log("TODO: Deploy Contract")
+                dispatch(gotoScreen('deploy-contract'))
             }
         }
     }
