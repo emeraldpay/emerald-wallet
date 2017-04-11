@@ -23,3 +23,9 @@ export function minLength(min) {
 export function passwordMatch(value, allValues) {
     return value === allValues.password ? undefined : "Passwords must match"
 }
+
+export function hex(value) {
+    if (value === '') return undefined;
+    let val = value.substring(0, 2) == '0x' ? value.substring(2) : value;
+    return /^[0-9A-Fa-f]+$/.test(val) ? undefined : "Invalid hex"
+}

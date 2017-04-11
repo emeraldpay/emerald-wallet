@@ -1,4 +1,4 @@
-import { number, address, required, positive } from './validators';
+import { number, address, required, positive, hex } from './validators';
 
 describe("Field Validators", () => {
     it("valid required", () => {
@@ -45,5 +45,13 @@ describe("Field Validators", () => {
         expect(address('0E7C045110B8dbF29765047380898919C5CB56F4')).not.toBeUndefined();
     })
 
-
+    it("valid hex", () => {
+        expect(hex('0x51fe')).toBeUndefined();
+        expect(hex('')).toBeUndefined();
+        expect(hex('aaaCCeeee')).toBeUndefined();
+    });
+    it("invalid hex", () => {
+        expect(hex('0xgghh51fe')).not.toBeUndefined();
+        expect(hex('aaa0xeeee')).not.toBeUndefined();
+    });    
 });
