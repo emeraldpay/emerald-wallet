@@ -136,11 +136,11 @@ const DeployContract = connect(
     (dispatch, ownProps) => {
         return {
             onSubmit: data => {         
-                console.log(data)       
+                console.log(data)
                 const afterTx = (txhash) => {
                     let txdetails = {
                         hash: txhash,
-                        account: ownProps.account
+                        account: data.from
                     };
                     dispatch(addContract(null, data.name, data.abi, data.version, data.options, txhash))
                     dispatch(trackTx(txhash));
