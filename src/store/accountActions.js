@@ -1,6 +1,7 @@
 import { rpc } from '../lib/rpcapi';
 
 import { loadTokenBalanceOf } from './tokenActions';
+import { address } from 'lib/validators';
 
 export function loadAccountBalance(accountId) {
     return (dispatch, getState) => {
@@ -87,6 +88,24 @@ export function sendTransaction(accountId, to, gas, gasPrice, value) {
         });
 }
 
+export function createContract(accountId, gas, gasPrice, data) {
+    return (dispatch) =>
+        rpc('eth_sendTransaction', [{
+            from: accountId,
+            gas,
+            gasPrice,
+            data,
+        }]).then((json) => {
+            dispatch({
+                type: 'ACCOUNT/SEND_TRANSACTION',
+                accountId,
+                txHash: json.result,
+            });
+            dispatch(loadAccountBalance(accountId));
+            return json.result;
+        });
+}
+
 export function importWallet(wallet) {
     return (dispatch) =>
         ipc('backend_importWallet', {
@@ -108,6 +127,13 @@ export function refreshTransactions(hash) {
                     type: 'ACCOUNT/UPDATE_TX',
                     tx: json.result,
                 });
+                /** TODO: Check for input data **/
+                if ((json.result.creates !== undefined) && (address(json.result.creates) === undefined))
+                    dispatch({
+                        type: 'CONTRACT/UPDATE_CONTRACT',
+                        tx: json.result,
+                        address: json.result.creates,
+                    })
             }
         });
 }
