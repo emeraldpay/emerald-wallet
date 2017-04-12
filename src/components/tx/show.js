@@ -11,7 +11,7 @@ import { cardSpace } from '../../lib/styles';
 import { gotoScreen } from '../../store/screenActions';
 import { toNumber } from 'lib/convert';
 
-const Render = ({hash, transaction, account, goBack}) => {
+const Render = ({hash, transaction, accountId, account, goBack}) => {
 
     /** TODO: This will be a transaction display, and transaction will be an ImmutableMap **/
 
@@ -61,7 +61,7 @@ const Render = ({hash, transaction, account, goBack}) => {
             </CardText>
             <CardActions>
                 <FlatButton label="Go Back"
-                            onClick={goBack}
+                            onClick={goBack(account)}
                             icon={<FontIcon className="fa fa-home" />}/>
             </CardActions>            
         </Card>
@@ -70,10 +70,14 @@ const Render = ({hash, transaction, account, goBack}) => {
 
 const TransactionShow = connect(
     (state, ownProps) => {
+        let account = state.accounts.get('accounts').find(
+                (acct) => acct.get('id') === ownProps.accountId
+            );
         return {
             transaction: state.accounts.get('trackedTransactions').find(
                 (tx) => tx.get('hash') === ownProps.hash
-            )
+            ),
+            account: (account === undefined) ? undefined : account
         }
     },
     (dispatch, ownProps) => {
@@ -82,7 +86,7 @@ const TransactionShow = connect(
                 dispatch(gotoScreen('home'))
             },
             goBack: (account) => {
-               dispatch(gotoScreen('account', ownProps.account)) 
+               dispatch(gotoScreen('account', account)) 
             }
         }
     }

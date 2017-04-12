@@ -161,7 +161,7 @@ const CreateTx = connect(
                 const afterTx = (txhash) => {
                     let txdetails = {
                         hash: txhash,
-                        account: ownProps.account
+                        account: data.from 
                     };
                     dispatch(trackTx(txhash));
                     dispatch(gotoScreen('transaction', txdetails));
