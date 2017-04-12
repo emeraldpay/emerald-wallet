@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, reset } from 'redux-form';
+import { Field, reduxForm, reset, change } from 'redux-form';
 import { renderCodeField, renderCheckboxField } from 'elements/formFields';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import { SelectField, TextField } from 'redux-form-material-ui';
@@ -14,15 +14,15 @@ import { Row, Col } from 'react-flexbox-grid';
 import Immutable from 'immutable';
 import { gotoScreen } from 'store/screenActions';
 import { createContract, trackTx } from 'store/accountActions';
-import { addContract } from 'store/contractActions';
+import { addContract, estimateGas } from 'store/contractActions';
 import { positive, number, required, address, hex } from 'lib/validators';
-import { mweiToWei, etherToWei, toHex } from 'lib/convert';
+import { mweiToWei, toHex } from 'lib/convert';
 import log from 'loglevel';
 
 const DefaultGas = 300000;
 const OptionValues = ['ERC20', 'ERC23'];
 
-const Render = ({fields: {from, options}, optionVals, accounts, handleSubmit, invalid, pristine, reset, submitting, cancel}) => {
+const Render = ({fields: {from, options}, optionVals, accounts, estimateGas, handleSubmit, invalid, pristine, reset, submitting, cancel}) => {
     log.debug('fields - from', from);
 
     return (
@@ -49,6 +49,7 @@ const Render = ({fields: {from, options}, optionVals, accounts, handleSubmit, in
                                 rows={4}
                                 type="text" 
                                 label="Bytecode" 
+                                onChange={estimateGas}
                                 validate={ [required, hex] } />
                         <Field name="gasPrice"
                                type="number"
@@ -89,8 +90,7 @@ const Render = ({fields: {from, options}, optionVals, accounts, handleSubmit, in
                                         component={renderCodeField} 
                                         rows={2}
                                         type="text" 
-                                        label="Contract ABI / JSON Interface"
-                                        validate={hex} />
+                                        label="Contract ABI / JSON Interface" />
                                 <Field  name="options" 
                                         options={optionVals} 
                                         component={renderCheckboxField} />
@@ -135,12 +135,21 @@ const DeployContract = connect(
     },
     (dispatch, ownProps) => {
         return {
-            onSubmit: data => {         
+            estimateGas: (event, value) => {
+                return new Promise((resolve, reject) => {
+                    dispatch(estimateGas(value))
+                        .then(function(response) {
+                            resolve(response);
+                            dispatch(change("deployContract", "gasAmount", response));
+                        });
+                });
+            },
+            onSubmit: data => {
                 console.log(data)
                 const afterTx = (txhash) => {
                     let txdetails = {
                         hash: txhash,
-                        account: data.from
+                        accountId: data.from 
                     };
                     dispatch(addContract(null, data.name, data.abi, data.version, data.options, txhash))
                     dispatch(trackTx(txhash));
