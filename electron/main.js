@@ -1,10 +1,13 @@
-const {app, BrowserWindow} = require('electron')
+import {app, BrowserWindow, Menu} from 'electron';
 const path = require('path')
 const url = require('url')
 
+import winLinuxMenu from './menus/win-linux';
+
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let win
+let win;
+let menu;
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
 
@@ -20,7 +23,9 @@ function createWindow () {
   }))
 
   // Open the DevTools.
-  win.webContents.openDevTools()
+  if (isDev) {
+    win.webContents.openDevTools()
+  }
 
   // Emitted when the window is closed.
   win.on('closed', () => {
@@ -29,6 +34,10 @@ function createWindow () {
     // when you should delete the corresponding element.
     win = null
   })
+
+  // Menu (only win and linux for now)
+  menu = Menu.buildFromTemplate(winLinuxMenu(win));
+  win.setMenu(menu);
 }
 
 // This method will be called when Electron has finished
