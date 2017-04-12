@@ -36,3 +36,11 @@ export function addContract(address, name, abi, version, options, txhash) {
             });
         });
 }
+
+export function estimateGas(data) {
+    return (dispatch) => 
+        rpc('eth_estimateGas', [{ data }]).then((json) => {
+            return parseInt(json.result);
+        })
+
+}
