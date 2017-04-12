@@ -29,3 +29,12 @@ export function hex(value) {
     const val = value.substring(0, 2) === '0x' ? value.substring(2) : value;
     return /^[0-9A-Fa-f]+$/.test(val) ? undefined : "Invalid hex"
 }
+
+export function isJson(value) {
+    const errMsg = "Invalid JSON";
+    try {
+        return !!JSON.parse(value) ? undefined : errMsg
+    } catch (e) {
+        return errMsg
+    }
+}

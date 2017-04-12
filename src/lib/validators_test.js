@@ -1,4 +1,4 @@
-import { number, address, required, positive, hex } from './validators';
+import { number, address, required, positive, hex, isJson } from './validators';
 
 describe("Field Validators", () => {
     it("valid required", () => {
@@ -53,5 +53,18 @@ describe("Field Validators", () => {
     it("invalid hex", () => {
         expect(hex('0xgghh51fe')).not.toBeUndefined();
         expect(hex('aaa0xeeee')).not.toBeUndefined();
-    });    
+    });
+
+    it("valid json", () => {
+        expect(isJson('{"a": 1, "b": 2}')).toBeUndefined();
+        expect(isJson('{"a": [1,2,3], "b": 2}')).toBeUndefined();
+        expect(isJson('["a", 1, "b", 2]')).toBeUndefined();
+        expect(isJson('{"a": {"a": 1, "b": 2}, "b": {"a": 1, "b": {"a": 1, "b": 2}}}')).toBeUndefined();
+    })
+    it("invalid json", () => {
+        expect(isJson('{a: 1, b: 2}')).not.toBeUndefined();
+        expect(isJson('')).not.toBeUndefined();
+        expect(isJson('{"a", [1,2,3], "b": 2}')).not.toBeUndefined();
+        expect(isJson('"a", 1, "b", 2')).not.toBeUndefined();
+    })
 });
