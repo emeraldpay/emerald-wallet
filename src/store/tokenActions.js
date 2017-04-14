@@ -62,10 +62,10 @@ export function loadTokenList() {
             type: 'TOKEN/LOADING',
         });
         rpc('emerald_contracts', []).then((json) => {
-            const tokens = json.result.filter((contract) => {
+            const tokens = (json.result) ? json.result.filter((contract) => {
                 contract.features = contract.features || [];
                 return contract.features.indexOf('erc20') >= 0;
-            });
+            }) : [];
             dispatch({
                 type: 'TOKEN/SET_LIST',
                 tokens,
@@ -90,7 +90,7 @@ export function addToken(address, name) {
         });
 }
 
-export function transferTokenTransaction(accountId, to, gas, gasPrice, value, tokenId, isTransfer) {
+export function transferTokenTransaction(accountId, password, to, gas, gasPrice, value, tokenId, isTransfer) {
     return (dispatch, getState) => {
         const transferId = '0xa9059cbb'; // transfer(address,uint256)
         const approveId = '0x095ea7b3'; // approve(address,uint256)
@@ -98,6 +98,7 @@ export function transferTokenTransaction(accountId, to, gas, gasPrice, value, to
         const token = tokens.get('tokens').find((tok) => tok.get('address') === tokenId);
         const numTokens = padLeft(fromTokens(value, token.get('decimals')).toString(16), 64);
         const address = padLeft(getNakedAddress(to), 64);
+        const pwHeader = new Buffer(password).toString('base64');
         let data;
         if (isTransfer === 'true') data = transferId + address + numTokens;
         else data = approveId + address + numTokens;
@@ -108,7 +109,9 @@ export function transferTokenTransaction(accountId, to, gas, gasPrice, value, to
             gasPrice,
             value: '0x00',
             data,
-        }, 'latest']).then((json) => {
+        }, 'latest'], {
+            'X-Passphrase': pwHeader,
+        }).then((json) => {
             dispatch({
                 type: 'ACCOUNT/SEND_TOKEN_TRANSACTION',
                 accountId,
