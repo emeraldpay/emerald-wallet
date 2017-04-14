@@ -14,6 +14,7 @@ import GenerateAccount from './accounts/add/generate';
 import ImportAccount from './accounts/add/importjson';
 import ContractsList from './contracts/list';
 import AddContract from './contracts/add'
+import DeployContract from './contracts/deploy'
 
 const Render = ({screen, screenItem}) => {
 
@@ -41,7 +42,7 @@ const Render = ({screen, screenItem}) => {
     } else if (screen === 'account') {
         return <AccountShow account={screenItem}/>
     } else if (screen === 'transaction') {
-        return <TransactionShow hash={screenItem.hash} account={screenItem.account}/>
+        return <TransactionShow hash={screenItem.hash} accountId={screenItem.accountId}/>
     } else if (screen === 'create-tx') {
         return <CreateTx account={screenItem}/>
     } else if (screen === 'create-account') {
@@ -52,6 +53,8 @@ const Render = ({screen, screenItem}) => {
         return <ImportAccount />
     } else if (screen === 'add-token') {
         return <AddToken />
+    } else if (screen === 'deploy-contract') {
+        return <DeployContract />
     }
 
     return (

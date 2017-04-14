@@ -23,3 +23,18 @@ export function minLength(min) {
 export function passwordMatch(value, allValues) {
     return value === allValues.password ? undefined : "Passwords must match"
 }
+
+export function hex(value) {
+    if ((value === '') || (value === undefined)) return undefined;
+    const val = value.substring(0, 2) === '0x' ? value.substring(2) : value;
+    return /^[0-9A-Fa-f]+$/.test(val) ? undefined : "Invalid hex"
+}
+
+export function isJson(value) {
+    const errMsg = "Invalid JSON";
+    try {
+        return !!JSON.parse(value) ? undefined : errMsg
+    } catch (e) {
+        return errMsg
+    }
+}

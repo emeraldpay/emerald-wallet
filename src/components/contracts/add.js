@@ -12,7 +12,7 @@ import { Row, Col } from 'react-flexbox-grid/lib/index';
 import Immutable from 'immutable';
 import { gotoScreen } from 'store/screenActions';
 import { addContract } from 'store/contractActions'
-import { required, address } from 'lib/validators';
+import { required, address, isJson } from 'lib/validators';
 import log from 'loglevel';
 
 const Render = ({account, handleSubmit, invalid, pristine, reset, submitting, deployContract}) => {
@@ -41,7 +41,7 @@ const Render = ({account, handleSubmit, invalid, pristine, reset, submitting, de
                             rows={2}
                             type="text" 
                             label="Contract ABI / JSON Interface" 
-                            validate={ required } />
+                            validate={[ required, isJson ]} />
                     <FlatButton label="Submit" type="submit"
                                 disabled={pristine || submitting || invalid } />
                     <FlatButton label="Clear Values" 
@@ -80,7 +80,7 @@ const AddContract = connect(
                     });
             },
             deployContract: () => {
-                console.log("TODO: Deploy Contract")
+                dispatch(gotoScreen('deploy-contract'))
             }
         }
     }

@@ -9,11 +9,14 @@ const initialContract = Immutable.Map({
     address: null,
     name: null,
     abi: null,
+    version: null,
+    options: [],
+    txhash: null,
 });
 
-function addContract(state, address, name, abi) {
+function addContract(state, address, name, abi, version, options, txhash) {
     return state.update('contracts', (contracts) =>
-        contracts.push(initialContract.merge({ address, name, abi }))
+        contracts.push(initialContract.merge({ address, name, abi, version, options, txhash }))
     );
 }
 
@@ -42,7 +45,32 @@ function onSetContractList(state, action) {
 
 function onAddContract(state, action) {
     if (action.type === 'CONTRACT/ADD_CONTRACT') {
-        return addContract(state, action.address, action.name, action.abi);
+        return addContract(state,
+            action.address,
+            action.name,
+            action.abi,
+            action.version,
+            action.options,
+            action.txhash);
+    }
+    return state;
+}
+
+function updateContract(state, txhash, f) {
+    return state.update('contracts', (contracts) => {
+        const pos = contracts.findKey((contract) => contract.get('txhash') === txhash);
+        if (pos >= 0) {
+            return contracts.update(pos, f);
+        }
+        return contracts;
+    });
+}
+
+function onUpdateContract(state, action) {
+    if (action.type === 'CONTRACT/UPDATE_CONTRACT') {
+        return updateContract(state, action.tx.hash, (contract) =>
+            contract.set('address', action.address)
+        );
     }
     return state;
 }
@@ -52,5 +80,6 @@ export default function contractReducers(state, action) {
     state = onLoading(state, action);
     state = onSetContractList(state, action);
     state = onAddContract(state, action);
+    state = onUpdateContract(state, action);
     return state;
 }

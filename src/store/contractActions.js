@@ -1,5 +1,4 @@
-import { rpc } from '../lib/rpcapi';
-import log from 'loglevel';
+import { rpc } from 'lib/rpcapi';
 
 export function loadContractList() {
     return (dispatch) => {
@@ -19,18 +18,32 @@ export function loadContractList() {
     };
 }
 
-export function addContract(address, name, abi) {
+export function addContract(address, name, abi, version, options, txhash) {
     return (dispatch) =>
         rpc('emerald_addContract', [{
             address,
             name,
             abi,
+            version,
+            options,
+            txhash,
         }]).then((json) => {
             dispatch({
                 type: 'CONTRACT/ADD_CONTRACT',
                 address,
                 name,
                 abi,
+                version,
+                options,
+                txhash,
             });
         });
+}
+
+export function estimateGas(data) {
+    return (dispatch) => 
+        rpc('eth_estimateGas', [{ data }]).then((json) => {
+            return parseInt(json.result);
+        })
+
 }
