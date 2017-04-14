@@ -35,7 +35,7 @@ function onSetContractList(state, action) {
         case 'CONTRACT/SET_LIST':
             return state
                 .set('contracts',
-                    Immutable.fromJS(action.contracts)
+                    Immutable.fromJS(action.contracts || [])
                 )
                 .set('loading', false);
         default:

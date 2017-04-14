@@ -6,6 +6,9 @@ export function loadContractList() {
             type: 'CONTRACT/LOADING',
         });
         rpc('emerald_contracts', []).then((json) => {
+            if (json.error) {
+                log.error(`emerald_contracts rpc call: ${JSON.stringify(json)}`)
+            }
             dispatch({
                 type: 'CONTRACT/SET_LIST',
                 contracts: json.result,
