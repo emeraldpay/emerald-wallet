@@ -39,11 +39,17 @@ const Render = ({fields: {from, options}, optionVals, accounts, estimateGas, han
                         <Field name="from"
                                floatingLabelText="From"
                                component={SelectField}
+                               fullWidth={true}
                                validate={ [required, address] } >
                                {accounts.map( (account) => 
                                 <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
                                 )}
                         </Field>
+                        <Field  name="password"
+                                floatingLabelText="Password"
+                                type="password"
+                                component={TextField}
+                                validate={required} />
                         <Field  name="bytecode" 
                                 component={renderCodeField} 
                                 rows={4}
@@ -162,7 +168,7 @@ const DeployContract = connect(
                     }
                 };
                 return new Promise((resolve, reject) => {
-                    dispatch(createContract(data.from, 
+                    dispatch(createContract(data.from, data.password, 
                         toHex(data.gasAmount), toHex(mweiToWei(data.gasPrice)),
                         data.bytecode
                     )).then(resolver(afterTx, resolve));
