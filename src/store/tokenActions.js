@@ -110,7 +110,7 @@ export function transferTokenTransaction(accountId, password, to, gas, gasPrice,
             value: '0x00',
             data,
         }, 'latest'], {
-            'X-Passphrase': pwHeader,
+            'Authorization': pwHeader,
         }).then((json) => {
             dispatch({
                 type: 'ACCOUNT/SEND_TOKEN_TRANSACTION',

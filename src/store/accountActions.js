@@ -79,7 +79,7 @@ export function sendTransaction(accountId, password, to, gas, gasPrice, value) {
             gasPrice,
             value,
         }], {
-            'X-Passphrase': pwHeader,
+            'Authorization': pwHeader,
         }).then((json) => {
             dispatch({
                 type: 'ACCOUNT/SEND_TRANSACTION',
@@ -100,7 +100,7 @@ export function createContract(accountId, password, gas, gasPrice, data) {
             gasPrice,
             data,
         }], {
-            'X-Passphrase': pwHeader,
+            'Authorization': pwHeader,
         }).then((json) => {
             dispatch({
                 type: 'ACCOUNT/SEND_TRANSACTION',
