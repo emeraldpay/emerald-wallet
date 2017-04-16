@@ -4,15 +4,16 @@
   "author": "Igor Artamonov",
   "version": "0.1.0",
   "description": "Emerald - Ethereum Classic Wallet",
-  "main": "./src/index.js",
+  "main": "./build/main.js",
   "scripts": {
     "build": "node build --no-watch",
     "build:watch": "node build",
-    "start:electron": "npm run build && NODE_ENV=development ./node_modules/.bin/electron ./electron/main.js",
+    "start:electron": "npm run build && NODE_ENV=development ./node_modules/.bin/electron -r babel-register -r babel-polyfill ./electron/main",
     "start": "node ./node_modules/.bin/webpack-dev-server --content-base build/ --inline  --port 8000",
     "test:watch": "node ./node_modules/karma/bin/karma start",
     "test": "npm run build && node ./node_modules/karma/bin/karma start --single-run",
-    "lint": "./node_modules/eslint/bin/eslint.js ./src/"
+    "lint": "./node_modules/eslint/bin/eslint.js ./src/",
+    "package": "npm run build && NODE_ENV=production node electron/package.js"
   },
   "keywords": [
     "react",
@@ -71,6 +72,7 @@
     "babel-preset-es2015": "^6.22.0",
     "babel-preset-react": "^6.22.0",
     "babel-preset-stage-2": "^6.22.0",
+    "babel-register": "^6.24.1",
     "babel-runtime": "^6.22.0",
     "copy-webpack-plugin": "1.1.1",
     "css-loader": "0.28.0",

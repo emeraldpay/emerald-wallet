@@ -67,6 +67,13 @@ Use `--rpccorsdomain` option to configure CORS.
 
 Example: `./parity --chain=classic --rpccorsdomain=*` allow requests from any domain
 
+
+## Package
+
+```bash
+$ npm run package
+```
+
 # License
 
 Apache 2.0
