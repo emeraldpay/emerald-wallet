@@ -51,6 +51,17 @@ const Render = ({fields: {from, to}, accounts, account, tokens, token, isToken, 
                         </Row>
                         <Row>
                             <Col xs={12}>
+                                <Field name="password"
+                                       floatingLabelText="Password"
+                                       type="password"
+                                       component={TextField}
+                                       fullWidth={true}
+                                       validate={required}>
+                                </Field>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col xs={12}>
                                 <Field name="to"
                                        component={TextField}
                                        floatingLabelText="Target Address"
@@ -134,7 +145,7 @@ const Render = ({fields: {from, to}, accounts, account, tokens, token, isToken, 
 
 const CreateTxForm = reduxForm({
     form: 'createTx',
-    fields: ['to', 'from', 'value', 'token', 'gasPrice', 'gasAmount', 'token', 'isTransfer']
+    fields: ['to', 'from', 'password', 'value', 'token', 'gasPrice', 'gasAmount', 'token', 'isTransfer']
 })(Render);
 
 const CreateTx = connect(
@@ -174,15 +185,16 @@ const CreateTx = connect(
                 };
                 if (data.token.length > 1)
                     return new Promise((resolve, reject) => {
-                        dispatch(transferTokenTransaction(data.from, data.to,
-                            toHex(data.gasAmount), toHex(mweiToWei(data.gasPrice)),
+                        dispatch(transferTokenTransaction(data.from, data.password, 
+                            data.to, toHex(data.gasAmount), 
+                            toHex(mweiToWei(data.gasPrice)),
                             toHex(etherToWei(data.value)),
                             data.token, data.isTransfer))
                             .then(resolver(afterTx, resolve));
                         });
                 else
                     return new Promise((resolve, reject) => {
-                        dispatch(sendTransaction(data.from, data.to,
+                        dispatch(sendTransaction(data.from, data.password, data.to,
                             toHex(data.gasAmount), toHex(mweiToWei(data.gasPrice)),
                             toHex(etherToWei(data.value))
                         )).then(resolver(afterTx, resolve));
