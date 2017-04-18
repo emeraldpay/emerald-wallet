@@ -13,7 +13,7 @@ import { cardSpace } from '../../lib/styles';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 
 import { sendTransaction, trackTx } from 'store/accountActions';
-import { transferTokenTransaction } from 'store/tokenActions';
+import { transferTokenTransaction, traceTokenTransaction, traceCall } from 'store/tokenActions';
 import Immutable from 'immutable';
 import { gotoScreen } from 'store/screenActions';
 import { positive, number, required, address } from 'lib/validators';
@@ -23,10 +23,34 @@ import log from 'loglevel';
 const DefaultGas = 21000;
 const DefaultTokenGas = 23890;
 
-const asyncValidate = (values, dispatch) => {
-    return new Promise((resolve, reject) => {
-
-     }); 
+const asyncValidate = (data, dispatch) => {
+    const resolver = (f, res, rej) => {
+        return (x) => f(x,res,rej)
+    }
+    const resolveValidate = (response, resolve, reject) => {
+        console.log(response)
+        if(response.status != 200) {
+            reject(response); 
+        } else {
+            resolve();
+        }
+    };
+    if (data.token.length > 1)
+        return new Promise((resolve, reject) => {
+            dispatch(traceTokenTransaction(data.from, data.password, 
+                data.to, toHex(data.gasAmount), 
+                toHex(mweiToWei(data.gasPrice)),
+                toHex(etherToWei(data.value)),
+                data.token, data.isTransfer))
+                .then(resolver(resolveValidate, resolve, reject));
+            });
+    else
+        return new Promise((resolve, reject) => {
+            dispatch(traceCall(data.from, data.password, data.to,
+                toHex(data.gasAmount), toHex(mweiToWei(data.gasPrice)),
+                toHex(etherToWei(data.value))
+            )).then(resolver(resolveValidate, resolve, reject));
+        })
 };
 
 
@@ -152,7 +176,8 @@ const Render = ({fields: {from, to}, accounts, account, tokens, token, isToken, 
 
 const CreateTxForm = reduxForm({
     form: 'createTx',
-    fields: ['to', 'from', 'password', 'value', 'token', 'gasPrice', 'gasAmount', 'token', 'isTransfer']
+    fields: ['to', 'from', 'password', 'value', 'token', 'gasPrice', 'gasAmount', 'token', 'isTransfer'],
+    asyncValidate
 })(Render);
 
 const CreateTx = connect(
@@ -176,9 +201,6 @@ const CreateTx = connect(
         return {
             onSubmit: data => {
                 console.log(data);
-
-
-
                 const afterTx = (txhash) => {
                     let txdetails = {
                         hash: txhash,
