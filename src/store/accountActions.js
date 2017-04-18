@@ -91,20 +91,6 @@ export function sendTransaction(accountId, password, to, gas, gasPrice, value) {
         });
 }
 
-export function traceCall(accountId, to, gas, gasPrice, value, data) {
-    return (dispatch) =>
-        rpc('eth_traceCall', [{
-            from: accountId,
-            to,
-            gas,
-            gasPrice,
-            value,
-            data,
-        }]).then((json) => 
-            return json.result;
-        );
-}
-
 export function createContract(accountId, password, gas, gasPrice, data) {
     const pwHeader = new Buffer(password).toString('base64');
     return (dispatch) =>

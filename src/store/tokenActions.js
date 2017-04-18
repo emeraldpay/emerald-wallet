@@ -1,9 +1,17 @@
-import { rpc } from '../lib/rpcapi';
-import { parseString, padLeft, getNakedAddress, fromTokens } from '../lib/convert';
+import { rpc } from 'lib/rpcapi';
+import { parseString, padLeft, getNakedAddress, fromTokens } from 'lib/convert';
+
+/** TODO #30: Convert ABI Function name to Function Signature **/
+const transferId = '0xa9059cbb'; // transfer(address,uint256)
+const approveId = '0x095ea7b3'; // approve(address,uint256)
+const tokenSupplyId = '0x18160ddd';
+const decimalsId = '0x313ce567';
+const symbolId = '0x95d89b41';
+const nameId = '0x06fdde03';
+const balanceOfId = '0x70a08231';
 
 export function loadTokenBalanceOf(token, accountId) {
     return (dispatch) => {
-        const balanceOfId = '0x70a08231';
         const address = padLeft(getNakedAddress(accountId), 64);
         const data = balanceOfId + address;
         rpc('eth_call', [{ to: token.address, data }, 'latest']).then((resp) =>
@@ -19,10 +27,6 @@ export function loadTokenBalanceOf(token, accountId) {
 
 export function loadTokenDetails(token) {
     return (dispatch, getState) => {
-        const tokenSupplyId = '0x18160ddd';
-        const decimalsId = '0x313ce567';
-        const symbolId = '0x95d89b41';
-        const nameId = '0x06fdde03';
         rpc('eth_call', [{ to: token.address, data: tokenSupplyId }, 'latest']).then((resp) => {
             dispatch({
                 type: 'TOKEN/SET_TOTAL_SUPPLY',
@@ -92,8 +96,6 @@ export function addToken(address, name) {
 
 export function transferTokenTransaction(accountId, password, to, gas, gasPrice, value, tokenId, isTransfer) {
     return (dispatch, getState) => {
-        const transferId = '0xa9059cbb'; // transfer(address,uint256)
-        const approveId = '0x095ea7b3'; // approve(address,uint256)
         const tokens = getState().tokens;
         const token = tokens.get('tokens').find((tok) => tok.get('address') === tokenId);
         const numTokens = padLeft(fromTokens(value, token.get('decimals')).toString(16), 64);
@@ -121,4 +123,33 @@ export function transferTokenTransaction(accountId, password, to, gas, gasPrice,
             return json.result;
         });
     };
+}
+
+export function traceTokenTransaction(accountId, password, to, gas, gasPrice, value, tokenId, isTransfer) {
+    return (dispatch, getState) => {
+        const tokens = getState().tokens;
+        const token = tokens.get('tokens').find((tok) => tok.get('address') === tokenId);
+        const numTokens = padLeft(fromTokens(value, token.get('decimals')).toString(16), 64);
+        const address = padLeft(getNakedAddress(to), 64);
+        const pwHeader = new Buffer(password).toString('base64');
+        let data;
+        if (isTransfer === 'true') data = transferId + address + numTokens;
+        else data = approveId + address + numTokens;
+        return traceCall(accountId, tokenId, gas, gasPrice, '0x00', data);
+    };
+}
+
+export function traceCall(accountId, to, gas, gasPrice, value, data) {
+    return (dispatch) => {
+        return rpc('eth_traceCall', [{
+                from: accountId,
+                to,
+                gas,
+                gasPrice,
+                value,
+                data,
+            }]).then((json) => 
+                json.result
+            );
+        }
 }
