@@ -23,6 +23,13 @@ import log from 'loglevel';
 const DefaultGas = 21000;
 const DefaultTokenGas = 23890;
 
+const asyncValidate = (values, dispatch) => {
+    return new Promise((resolve, reject) => {
+
+     }); 
+};
+
+
 const Render = ({fields: {from, to}, accounts, account, tokens, token, isToken, onChangeToken, handleSubmit, invalid, pristine, resetForm, submitting, cancel}) => {
     log.debug('fields - from', from);
 
@@ -169,6 +176,9 @@ const CreateTx = connect(
         return {
             onSubmit: data => {
                 console.log(data);
+
+
+
                 const afterTx = (txhash) => {
                     let txdetails = {
                         hash: txhash,
