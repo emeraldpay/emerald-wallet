@@ -1,4 +1,4 @@
-import { rpc } from '../lib/rpcapi';
+import { rpc } from '../lib/rpc';
 import { parseString, padLeft, getNakedAddress, fromTokens } from '../lib/convert';
 
 export function loadTokenBalanceOf(token, accountId) {
@@ -6,7 +6,7 @@ export function loadTokenBalanceOf(token, accountId) {
         const balanceOfId = '0x70a08231';
         const address = padLeft(getNakedAddress(accountId), 64);
         const data = balanceOfId + address;
-        rpc('eth_call', [{ to: token.address, data }, 'latest']).then((resp) =>
+        rpc.call('eth_call', [{ to: token.address, data }, 'latest']).then((resp) =>
             dispatch({
                 type: 'ACCOUNT/SET_TOKEN_BALANCE',
                 accountId,
@@ -23,21 +23,21 @@ export function loadTokenDetails(token) {
         const decimalsId = '0x313ce567';
         const symbolId = '0x95d89b41';
         const nameId = '0x06fdde03';
-        rpc('eth_call', [{ to: token.address, data: tokenSupplyId }, 'latest']).then((resp) => {
+        rpc.call('eth_call', [{ to: token.address, data: tokenSupplyId }, 'latest']).then((resp) => {
             dispatch({
                 type: 'TOKEN/SET_TOTAL_SUPPLY',
                 address: token.address,
                 value: resp.result,
             });
         });
-        rpc('eth_call', [{ to: token.address, data: decimalsId }, 'latest']).then((resp) => {
+        rpc.call('eth_call', [{ to: token.address, data: decimalsId }, 'latest']).then((resp) => {
             dispatch({
                 type: 'TOKEN/SET_DECIMALS',
                 address: token.address,
                 value: resp.result,
             });
         });
-        rpc('eth_call', [{ to: token.address, data: symbolId }, 'latest']).then((resp) => {
+        rpc.call('eth_call', [{ to: token.address, data: symbolId }, 'latest']).then((resp) => {
             dispatch({
                 type: 'TOKEN/SET_SYMBOL',
                 address: token.address,
@@ -61,7 +61,7 @@ export function loadTokenList() {
         dispatch({
             type: 'TOKEN/LOADING',
         });
-        rpc('emerald_contracts', []).then((json) => {
+        rpc.call('emerald_contracts', []).then((json) => {
             const tokens = (json.result) ? json.result.filter((contract) => {
                 contract.features = contract.features || [];
                 return contract.features.indexOf('erc20') >= 0;
@@ -77,7 +77,7 @@ export function loadTokenList() {
 
 export function addToken(address, name) {
     return (dispatch) =>
-        rpc('emerald_addContract', [{
+        rpc.call('emerald_addContract', [{
             address,
             name,
         }]).then((json) => {
@@ -102,7 +102,7 @@ export function transferTokenTransaction(accountId, password, to, gas, gasPrice,
         let data;
         if (isTransfer === 'true') data = transferId + address + numTokens;
         else data = approveId + address + numTokens;
-        return rpc('eth_call', [{
+        return rpc.call('eth_call', [{
             to: tokenId,
             from: accountId,
             gas,
