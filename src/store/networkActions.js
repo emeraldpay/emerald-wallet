@@ -1,10 +1,10 @@
-import { rpc } from '../lib/rpcapi';
+import { rpc } from '../lib/rpc';
 
 let watchingHeight = false;
 
 export function loadHeight(watch) {
     return (dispatch) =>
-        rpc('eth_blockNumber', []).then((json) => {
+        rpc.call('eth_blockNumber', []).then((json) => {
             dispatch({
                 type: 'NETWORK/BLOCK',
                 height: json.result,
@@ -18,7 +18,7 @@ export function loadHeight(watch) {
 
 export function loadSyncing() {
     return (dispatch) =>
-        rpc('eth_syncing', []).then((json) => {
+        rpc.call('eth_syncing', []).then((json) => {
             if (typeof json.result === 'object') {
                 dispatch({
                     type: 'NETWORK/SYNCING',

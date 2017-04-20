@@ -1,4 +1,4 @@
-import { rpc } from 'lib/rpcapi';
+import { rpc } from '../lib/rpc';
 import log from 'loglevel';
 
 export function loadContractList() {
@@ -6,7 +6,7 @@ export function loadContractList() {
         dispatch({
             type: 'CONTRACT/LOADING',
         });
-        rpc('emerald_contracts', []).then((json) => {
+        rpc.call('emerald_contracts', []).then((json) => {
             if (json.error) {
                 log.error(`emerald_contracts rpc call: ${JSON.stringify(json)}`);
             }
@@ -21,7 +21,7 @@ export function loadContractList() {
 
 export function addContract(address, name, abi, version, options, txhash) {
     return (dispatch) =>
-        rpc('emerald_addContract', [{
+        rpc.call('emerald_addContract', [{
             address,
             name,
             abi,
@@ -43,7 +43,7 @@ export function addContract(address, name, abi, version, options, txhash) {
 
 export function estimateGas(data) {
     return (dispatch) =>
-        rpc('eth_estimateGas', [{ data }]).then((json) => {
+        rpc.call('eth_estimateGas', [{ data }]).then((json) => {
             return isNaN(parseInt(json.result)) ? 0 : parseInt(json.result);
         });
 }
