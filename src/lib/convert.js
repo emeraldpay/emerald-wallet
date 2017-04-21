@@ -96,14 +96,12 @@ export function getFunctionSignature (func) {
  * Estimate gas using trace_call result
  *
  */
-/*
-export function estimateGasFromTrace (dataObj, trace) {
-    let gasLimit = 2000000;
-    dataObj.gasPrice = '0x01';
-    dataObj.gas = '0x' + new BigNumber(gasLimit).toString(16);
 
-    function recurCheckBalance(ops) {
-        var startVal = 24088 + ops[0].cost;
+export function estimateGasFromTrace (dataObj, trace) {
+    const gasLimit = 2000000;
+
+    const recurCheckBalance = function(ops) {
+        let startVal = 24088 + ops[0].cost;
         for (var i = 0; i < ops.length - 1; i++) {
             var remainder = startVal - (gasLimit - ops[i].ex.used);
             if (ops[i + 1].sub && ops[i + 1].sub.ops.length && gasLimit - ops[i + 1].cost > remainder) startVal += gasLimit - ops[i + 1].cost - startVal;else if (ops[i + 1].cost > remainder) startVal += ops[i + 1].cost - remainder;
@@ -113,19 +111,22 @@ export function estimateGasFromTrace (dataObj, trace) {
         return startVal;
     }
 
-    if (trace.vmTrace && trace.vmTrace.ops.length) {
-        var result = trace.vmTrace.ops;
-        var estGas = recurCheckBalance(result);
+    let estGas = new BigNumber(-1);
+    if ((trace || {}).vmTrace && trace.vmTrace.ops.length) {
+        const result = trace.vmTrace.ops;
+        let estGas = recurCheckBalance(result);
         estGas = estGas < 0 ? -1 : estGas + 5000;
     } else {
-        var stateDiff = trace.stateDiff;
-        stateDiff = stateDiff[dataObj.from.toLowerCase()]['balance']['*'];
-        if (stateDiff) var estGas = new BigNumber(stateDiff['from']).sub(new BigNumber(stateDiff['to'])).sub(new BigNumber(dataObj.value));else var estGas = new BigNumber(-1);
-        if (estGas.lt(0) || estGas.eq(gasLimit)) estGas = -1;
+        let stateDiff = (trace || {}).stateDiff;
+        stateDiff = stateDiff && stateDiff[dataObj.from.toLowerCase()]['balance']['*'];
+        if (stateDiff) 
+            estGas = new BigNumber(stateDiff['from'])
+                .sub(new BigNumber(stateDiff['to']))
+                .sub(new BigNumber(dataObj.value));
+        if (estGas.lt(0) || estGas.eq(gasLimit)) estGas = null;
     }
     return estGas;
 };
-*/
 
 export function mweiToWei(val) {
     const m = new BigNumber(10).pow(6);
