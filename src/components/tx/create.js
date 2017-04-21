@@ -17,42 +17,48 @@ import { transferTokenTransaction, traceTokenTransaction, traceCall } from 'stor
 import Immutable from 'immutable';
 import { gotoScreen } from 'store/screenActions';
 import { positive, number, required, address } from 'lib/validators';
-import { mweiToWei, etherToWei, toHex } from 'lib/convert';
+import { mweiToWei, etherToWei, toHex, estimateGasFromTrace } from 'lib/convert';
 import log from 'loglevel';
 
 const DefaultGas = 21000;
 const DefaultTokenGas = 23890;
 
 const traceValidate = (data, dispatch) => {
+    let dataObj = {
+            "from": data.from,
+            "gasPrice":toHex(mweiToWei(data.gasPrice)),
+            "gas":toHex(data.gasAmount),
+            "to":data.to,
+            "value":toHex(etherToWei(data.value))
+        }
     const resolver = (f, res, rej) => {
         return (x) => f(x,res,rej)
     }
     const resolveValidate = (response, resolve) => {
-        let errors = {};
-        console.log(response)
-        if(!response) { // null response, error
-            errors.value = "Invalid Transaction"
-        }
-        const gas = (((response.trace || [])[0] || {}).action || {}).gas;
-        if (gas > toHex(data.gasAmount))
-            errors.gasAmount = "Insufficient gas"
-        if(Object.keys(errors).length === 0) errors = null;
+        let errors = null;
+        dataObj.data = (((response.trace || [])[0] || {}).action || {}).input;
+        const gas = estimateGasFromTrace(dataObj, response);
+        if(!gas)
+            errors = {value: "Invalid Transaction"}
         resolve(errors)
     };
     if (data.token.length > 1)
         return new Promise((resolve, reject) => {
             dispatch(traceTokenTransaction(data.from, data.password, 
-                data.to, toHex(data.gasAmount), 
-                toHex(mweiToWei(data.gasPrice)),
-                toHex(etherToWei(data.value)),
+                data.to, 
+                dataObj.gas, 
+                dataObj.gasPrice,
+                dataObj.value,
                 data.token, data.isTransfer
             )).then(resolver(resolveValidate, resolve));
         });
     else
         return new Promise((resolve, reject) => {
-            dispatch(traceCall(data.from, data.password, data.to,
-                toHex(data.gasAmount), toHex(mweiToWei(data.gasPrice)),
-                toHex(etherToWei(data.value))
+            dispatch(traceCall(data.from, data.password, 
+                data.to,
+                dataObj.gas, 
+                dataObj.gasPrice,
+                dataObj.value,
             )).then(resolver(resolveValidate, resolve));
         })
 };
@@ -222,7 +228,6 @@ const CreateTx = connect(
                         if(result)
                             throw new SubmissionError(result)
                         else {
-                            console.log("go on")
                             if (data.token.length > 1)
                                 return new Promise((resolve, reject) => {
                                     dispatch(transferTokenTransaction(data.from, data.password, 
