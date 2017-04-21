@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, change, formValueSelector } from 'redux-form';
+import { Field, reduxForm, change, formValueSelector, SubmissionError } from 'redux-form';
 
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import { SelectField, TextField, RadioButtonGroup } from 'redux-form-material-ui';
@@ -23,17 +23,21 @@ import log from 'loglevel';
 const DefaultGas = 21000;
 const DefaultTokenGas = 23890;
 
-const asyncValidate = (data, dispatch) => {
+const traceValidate = (data, dispatch) => {
     const resolver = (f, res, rej) => {
         return (x) => f(x,res,rej)
     }
-    const resolveValidate = (response, resolve, reject) => {
+    const resolveValidate = (response, resolve) => {
+        let errors = {};
         console.log(response)
-        if(response.status != 200) {
-            reject(response); 
-        } else {
-            resolve();
+        if(!response) { // null response, error
+            errors.value = "Invalid Transaction"
         }
+        const gas = (((response.trace || [])[0] || {}).action || {}).gas;
+        if (gas > toHex(data.gasAmount))
+            errors.gasAmount = "Insufficient gas"
+        if(Object.keys(errors).length === 0) errors = null;
+        resolve(errors)
     };
     if (data.token.length > 1)
         return new Promise((resolve, reject) => {
@@ -41,18 +45,17 @@ const asyncValidate = (data, dispatch) => {
                 data.to, toHex(data.gasAmount), 
                 toHex(mweiToWei(data.gasPrice)),
                 toHex(etherToWei(data.value)),
-                data.token, data.isTransfer))
-                .then(resolver(resolveValidate, resolve, reject));
-            });
+                data.token, data.isTransfer
+            )).then(resolver(resolveValidate, resolve));
+        });
     else
         return new Promise((resolve, reject) => {
             dispatch(traceCall(data.from, data.password, data.to,
                 toHex(data.gasAmount), toHex(mweiToWei(data.gasPrice)),
                 toHex(etherToWei(data.value))
-            )).then(resolver(resolveValidate, resolve, reject));
+            )).then(resolver(resolveValidate, resolve));
         })
 };
-
 
 const Render = ({fields: {from, to}, accounts, account, tokens, token, isToken, onChangeToken, handleSubmit, invalid, pristine, resetForm, submitting, cancel}) => {
     log.debug('fields - from', from);
@@ -176,8 +179,7 @@ const Render = ({fields: {from, to}, accounts, account, tokens, token, isToken, 
 
 const CreateTxForm = reduxForm({
     form: 'createTx',
-    fields: ['to', 'from', 'password', 'value', 'token', 'gasPrice', 'gasAmount', 'token', 'isTransfer'],
-    asyncValidate
+    fields: ['to', 'from', 'password', 'value', 'token', 'gasPrice', 'gasAmount', 'token', 'isTransfer']
 })(Render);
 
 const CreateTx = connect(
@@ -214,23 +216,32 @@ const CreateTx = connect(
                         f.apply(x);
                         resolve(x);
                     }
-                };
-                if (data.token.length > 1)
-                    return new Promise((resolve, reject) => {
-                        dispatch(transferTokenTransaction(data.from, data.password, 
-                            data.to, toHex(data.gasAmount), 
-                            toHex(mweiToWei(data.gasPrice)),
-                            toHex(etherToWei(data.value)),
-                            data.token, data.isTransfer))
-                            .then(resolver(afterTx, resolve));
-                        });
-                else
-                    return new Promise((resolve, reject) => {
-                        dispatch(sendTransaction(data.from, data.password, data.to,
-                            toHex(data.gasAmount), toHex(mweiToWei(data.gasPrice)),
-                            toHex(etherToWei(data.value))
-                        )).then(resolver(afterTx, resolve));
-                    })
+                };                
+                return traceValidate(data, dispatch)
+                    .then((result) => {
+                        if(result)
+                            throw new SubmissionError(result)
+                        else {
+                            console.log("go on")
+                            if (data.token.length > 1)
+                                return new Promise((resolve, reject) => {
+                                    dispatch(transferTokenTransaction(data.from, data.password, 
+                                        data.to, toHex(data.gasAmount), 
+                                        toHex(mweiToWei(data.gasPrice)),
+                                        toHex(etherToWei(data.value)),
+                                        data.token, data.isTransfer))
+                                        .then(resolver(afterTx, resolve));
+                                    });
+                            else
+                                return new Promise((resolve, reject) => {
+                                    dispatch(sendTransaction(data.from, data.password, data.to,
+                                        toHex(data.gasAmount), toHex(mweiToWei(data.gasPrice)),
+                                        toHex(etherToWei(data.value))
+                                    )).then(resolver(afterTx, resolve));
+                                })
+                        }
+
+                    }) 
             },
             onChangeToken: (event, value, prev) => {
                 // if switching from ETC to token, change default gas
