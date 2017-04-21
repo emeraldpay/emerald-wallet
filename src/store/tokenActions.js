@@ -112,7 +112,7 @@ export function transferTokenTransaction(accountId, password, to, gas, gasPrice,
             value: '0x00',
             data,
         }, 'latest'], {
-            'Authorization': pwHeader,
+            Authorization: pwHeader,
         }).then((json) => {
             dispatch({
                 type: 'ACCOUNT/SEND_TOKEN_TRANSACTION',
@@ -125,31 +125,28 @@ export function transferTokenTransaction(accountId, password, to, gas, gasPrice,
     };
 }
 
+export function traceCall(accountId, to, gas, gasPrice, value, data) {
+    return () => rpc('eth_traceCall', [{
+        from: accountId,
+        to,
+        gas,
+        gasPrice,
+        value,
+        data,
+    }]).then((json) =>
+        json.result
+    );
+}
+
 export function traceTokenTransaction(accountId, password, to, gas, gasPrice, value, tokenId, isTransfer) {
     return (dispatch, getState) => {
         const tokens = getState().tokens;
         const token = tokens.get('tokens').find((tok) => tok.get('address') === tokenId);
         const numTokens = padLeft(fromTokens(value, token.get('decimals')).toString(16), 64);
         const address = padLeft(getNakedAddress(to), 64);
-        const pwHeader = new Buffer(password).toString('base64');
         let data;
         if (isTransfer === 'true') data = transferId + address + numTokens;
         else data = approveId + address + numTokens;
         return traceCall(accountId, tokenId, gas, gasPrice, '0x00', data);
     };
-}
-
-export function traceCall(accountId, to, gas, gasPrice, value, data) {
-    return (dispatch) => {
-        return rpc('eth_traceCall', [{
-                from: accountId,
-                to,
-                gas,
-                gasPrice,
-                value,
-                data,
-            }]).then((json) => 
-                json.result
-            );
-        }
 }

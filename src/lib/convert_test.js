@@ -1,5 +1,5 @@
+import BigNumber from 'bignumber.js';
 import { fromTokens, transformToFullName, extractDisplayName, getFunctionSignature, mweiToWei, etherToWei, estimateGasFromTrace } from './convert';
-import BigNumber from "bignumber.js";
 
 describe("Token Converter", () => {
     it("convert token number to value", () => {
