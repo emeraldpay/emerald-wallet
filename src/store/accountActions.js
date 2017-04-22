@@ -1,11 +1,11 @@
-import { rpc } from 'lib/rpcapi';
+import { rpc } from 'lib/rpc';
 import { address } from 'lib/validators';
 import { loadTokenBalanceOf } from './tokenActions';
 
 
 export function loadAccountBalance(accountId) {
     return (dispatch, getState) => {
-        rpc('eth_getBalance', [accountId, 'latest']).then((json) => {
+        rpc.call('eth_getBalance', [accountId, 'latest']).then((json) => {
             dispatch({
                 type: 'ACCOUNT/SET_BALANCE',
                 accountId,
@@ -25,7 +25,7 @@ export function loadAccountsList() {
         dispatch({
             type: 'ACCOUNT/LOADING',
         });
-        rpc('eth_accounts', []).then((json) => {
+        rpc.call('eth_accounts', []).then((json) => {
             dispatch({
                 type: 'ACCOUNT/SET_LIST',
                 accounts: json.result,
@@ -39,7 +39,7 @@ export function loadAccountsList() {
 
 export function loadAccountTxCount(accountId) {
     return (dispatch) => {
-        rpc('eth_getTransactionCount', [accountId, 'latest']).then((json) => {
+        rpc.call('eth_getTransactionCount', [accountId, 'latest']).then((json) => {
             dispatch({
                 type: 'ACCOUNT/SET_TXCOUNT',
                 accountId,
@@ -59,7 +59,7 @@ export function loadAccountTxCount(accountId) {
 */
 export function createAccount(name, password) {
     return (dispatch) =>
-        rpc('personal_newAccount', [password]).then((json) => {
+        rpc.call('personal_newAccount', [password]).then((json) => {
             dispatch({
                 type: 'ACCOUNT/ADD_ACCOUNT',
                 accountId: json.result,
@@ -71,8 +71,8 @@ export function createAccount(name, password) {
 
 export function sendTransaction(accountId, password, to, gas, gasPrice, value) {
     const pwHeader = new Buffer(password).toString('base64');
-    return (dispatch) =>
-        rpc('eth_sendTransaction', [{
+    return (dispatch) =>  
+        rpc.call('eth_sendTransaction', [{
             from: accountId,
             to,
             gas,
@@ -94,7 +94,7 @@ export function sendTransaction(accountId, password, to, gas, gasPrice, value) {
 export function createContract(accountId, password, gas, gasPrice, data) {
     const pwHeader = new Buffer(password).toString('base64');
     return (dispatch) =>
-        rpc('eth_sendTransaction', [{
+        rpc.call('eth_sendTransaction', [{
             from: accountId,
             gas,
             gasPrice,
@@ -114,7 +114,7 @@ export function createContract(accountId, password, gas, gasPrice, data) {
 
 export function importWallet(wallet) {
     return (dispatch) =>
-        rpc('backend_importWallet', {
+        rpc.call('backend_importWallet', {
             wallet,
         }).then((json) => {
             dispatch({
@@ -127,7 +127,7 @@ export function importWallet(wallet) {
 
 export function refreshTransactions(hash) {
     return (dispatch) =>
-        rpc('eth_getTransactionByHash', [hash]).then((json) => {
+        rpc.call('eth_getTransactionByHash', [hash]).then((json) => {
             if (typeof json.result === 'object') {
                 dispatch({
                     type: 'ACCOUNT/UPDATE_TX',

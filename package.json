@@ -42,6 +42,7 @@
     "flexboxgrid": "^6.3.0",
     "font-awesome": "4.7.0",
     "immutable": "3.8.1",
+    "isomorphic-fetch": "^2.2.1",
     "loglevel": "1.4.0",
     "material-ui": "^0.16.6",
     "moment": "2.17.1",
@@ -61,8 +62,7 @@
     "redux-form-material-ui": "^4.1.2",
     "redux-logger": "2.8.1",
     "redux-thunk": "2.2.0",
-    "roboto-fontface": "0.7.0",
-    "whatwg-fetch": "^2.0.2"
+    "roboto-fontface": "0.7.0"
   },
   "devDependencies": {
     "@elastic/webpack-directory-name-as-main": "2.0.2",

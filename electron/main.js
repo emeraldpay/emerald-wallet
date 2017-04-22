@@ -1,49 +1,20 @@
-import {app, BrowserWindow, Menu} from 'electron';
-const path = require('path')
-const url = require('url')
+import {app, BrowserWindow} from 'electron';
+import { createWindow, mainWindow } from './mainWindow';
+import { RpcApi } from '../src/lib/rpcApi';
 
-import winLinuxMenu from './menus/win-linux';
-
-// Keep a global reference of the window object, if you don't, the window will
-// be closed automatically when the JavaScript object is garbage collected.
-let win;
-let menu;
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
 
-function createWindow () {
-  // Create the browser window.
-  win = new BrowserWindow({width: 800, height: 600})
-
-  // and load the index.html of the app.
-  win.loadURL(url.format({
-    pathname: path.join(__dirname, '../build/index.html'),
-    protocol: 'file:',
-    slashes: true
-  }))
-
-  // Open the DevTools.
-  if (isDev) {
-    win.webContents.openDevTools()
-  }
-
-  // Emitted when the window is closed.
-  win.on('closed', () => {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    win = null
-  })
-
-  // Menu (only win and linux for now)
-  menu = Menu.buildFromTemplate(winLinuxMenu(win));
-  win.setMenu(menu);
-}
+// This instance will be called from renderer process through remote.getGlobal("rpc")
+// In the future it is possible to replace rpc implementation
+global.rpc = new RpcApi();
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', () => {
+  createWindow(isDev);
+})
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
@@ -57,7 +28,7 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (win === null) {
-    createWindow()
+  if (mainWindow === null) {
+    createWindow(isDev)
   }
 })
