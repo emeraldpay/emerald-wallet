@@ -40,6 +40,8 @@ const traceValidate = (data, dispatch) => {
         const gas = estimateGasFromTrace(dataObj, response);
         if(!gas)
             errors = {value: "Invalid Transaction"}
+        else if(gas > dataObj.gas)
+            errors = {gasAmount: "Insufficient Gas: Expected " + gas.toString(10)}
         resolve(errors)
     };
     if (data.token.length > 1)
