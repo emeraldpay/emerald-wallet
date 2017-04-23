@@ -43,6 +43,7 @@
     "font-awesome": "4.7.0",
     "immutable": "3.8.1",
     "isomorphic-fetch": "^2.2.1",
+    "lib": "^2.2.5",
     "loglevel": "1.4.0",
     "material-ui": "^0.16.6",
     "moment": "2.17.1",
