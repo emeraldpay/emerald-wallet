@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 import log from 'loglevel';
 
 import AccountsList from './accounts/list';
+import AddressBook from './addressbook/book';
 import AccountShow from './accounts/show';
 import CreateTx from './tx/create';
 import TransactionShow from './tx/show';
@@ -39,6 +40,8 @@ const Render = ({screen, screenItem}) => {
                 <AddContract/>
             </div>
         )
+    } else if (screen === 'addressBook') {
+        return <AddressBook />        
     } else if (screen === 'account') {
         return <AccountShow account={screenItem}/>
     } else if (screen === 'transaction') {
