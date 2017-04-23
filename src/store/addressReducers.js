@@ -10,6 +10,7 @@ const initial = Immutable.fromJS({
 const initialAddr = Immutable.Map({
     name: null,
     id: null,
+    description: null,
     balance: null,
     txcount: null,
 });
@@ -45,8 +46,7 @@ function onSetAddressBook(state, action) {
         case 'ADDRESS/SET_BOOK':
             return state
                 .set('addressBook',
-                    Immutable.fromJS(action.addressBook)
-                        .map((id) => initialAddr.set('id', id))
+                    Immutable.fromJS(action.addressBook || [])
                 )
                 .set('loading', false);
         default:

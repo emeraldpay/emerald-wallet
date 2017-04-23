@@ -19,13 +19,13 @@ export function loadAddressBook() {
         dispatch({
             type: 'ADDRESS/LOADING',
         });
-        rpc.call('eth_addressBook', []).then((json) => {
+        rpc.call('emerald_addressBook', []).then((json) => {
             dispatch({
                 type: 'ADDRESS/SET_BOOK',
-                addresss: json.result,
+                addressBook: json.result,
             });
-            json.result.map((acct) =>
-                dispatch(loadAddressBalance(acct))
+            json.result.map((addr) =>
+                dispatch(loadAddressBalance(addr.id))
             );
         });
     };
@@ -45,9 +45,9 @@ export function loadAddressTxCount(addressId) {
 
 export function createAddress(name, password) {
     return (dispatch) =>
-        rpc.call('personal_newaddress', [password]).then((json) => {
+        rpc.call('emerald_addAddress', [password]).then((json) => {
             dispatch({
-                type: 'address/ADD_address',
+                type: 'ADDRESS/ADD_ADDRESS',
                 addressId: json.result,
                 name,
             });
