@@ -6,6 +6,7 @@ import AccountsList from './accounts/list';
 import AddressBook from './addressbook/book';
 import AccountShow from './accounts/show';
 import AddressShow from './addressbook/show';
+import AddressAdd from './addressbook/add';
 import CreateTx from './tx/create';
 import TransactionShow from './tx/show';
 import TokensList from './tokens/list';
@@ -41,14 +42,14 @@ const Render = ({screen, screenItem}) => {
                 <AddContract/>
             </div>
         )
-    } else if (screen === 'addressBook') {
+    } else if (screen === 'address-book') {
         return <AddressBook />        
     } else if (screen === 'address') {
         return (
-            <div>
-                <AddressShow address={screenItem}/>
-            </div>
+            <AddressShow addressId={screenItem}/>
         )
+    } else if (screen === 'add-address') {
+        return <AddressAdd />
     } else if (screen === 'account') {
         return <AccountShow account={screenItem}/>
     } else if (screen === 'transaction') {
