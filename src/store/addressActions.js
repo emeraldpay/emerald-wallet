@@ -31,26 +31,44 @@ export function loadAddressBook() {
     };
 }
 
-export function loadAddressTxCount(addressId) {
-    return (dispatch) => {
-        rpc.call('eth_getTransactionCount', [addressId, 'latest']).then((json) => {
-            dispatch({
-                type: 'ADDRESS/SET_TXCOUNT',
-                addressId,
-                value: json.result,
-            });
-        });
-    };
-}
-
-export function createAddress(name, password) {
+export function addAddress(id, name, description) {
     return (dispatch) =>
-        rpc.call('emerald_addAddress', [password]).then((json) => {
+        rpc.call('emerald_addAddress', [{
+            id,
+            name,
+            description,
+        }]).then((json) => {
             dispatch({
                 type: 'ADDRESS/ADD_ADDRESS',
                 addressId: json.result,
                 name,
             });
             dispatch(loadAddressBalance(json.result));
+        });
+}
+
+export function updateAddress(id, name, description) {
+    return (dispatch) =>
+        rpc.call('emerald_updateAddress', [{
+            id,
+            name,
+            description,
+        }]).then((json) => {
+            dispatch({
+                type: 'ADDRESS/UPDATE_ADDRESS',
+                addressId: json.result.id,
+                name,
+                description,
+            });
+        });
+}
+
+export function deleteAddress(addressId) {
+    return (dispatch) =>
+        rpc.call('emerald_deleteAddress', [addressId]).then((json) => {
+            dispatch({
+                type: 'ADDRESS/DELETE_ADDRESS',
+                addressId,
+            });
         });
 }
