@@ -5,6 +5,7 @@ const webpack = require('webpack');
 const webpackConfig = require('./webpack.electron.js');
 
 const appName = pkg.productName;
+const argv = require('minimist')(process.argv.slice(2));
 
 /**
  * Configuration for electron-packager
@@ -12,8 +13,6 @@ const appName = pkg.productName;
 const packOpts = {
   dir: './',
   name: appName,
-  platform: os.platform(),
-  arch: os.arch(),
   overwrite: true, // overwrite release folder
   ignore: [
     '^/release($|/)',
@@ -29,14 +28,19 @@ webpack(webpackConfig, (err, stats) => {
     return;
   }
 
-  // Run electron-packager
-  pack();
+  const platforms = (argv.all ? ['linux', 'win32'] : [os.platform()]);
+  // Run electron-packager for each platform
+  platforms.forEach(function(platform) {
+    pack(platform, os.arch());
+  })
 });
 
 
-function pack() {
-  console.log("Start packaging...")
+function pack(platform, arch) {
+  console.log(`Start packaging for ${platform}`)
   const opts = Object.assign({}, packOpts, {
+    platform: platform,
+    arch: arch,
     out: `release`
   });
 
@@ -44,6 +48,8 @@ function pack() {
 }
 
 function onPackFinished(err, appPaths) {
-  if (err) return console.error(err);
-  console.log("Finished")
+  if (err) {
+    return console.error(err);
+  }
+  console.log(`Finished ${appPaths}`)
 }
