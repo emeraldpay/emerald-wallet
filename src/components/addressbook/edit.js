@@ -5,6 +5,7 @@ import { AddressForm } from './form';
 const AddressEdit = connect(
     (state, ownProps) => {
         return {
+            blockAddress: true,
             initialValues: {
                 name: ownProps.address.get('name'),
                 address: ownProps.address.get('id'),

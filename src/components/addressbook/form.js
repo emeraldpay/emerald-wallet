@@ -4,7 +4,7 @@ import { renderTextField } from 'elements/formFields';
 import FlatButton from 'material-ui/FlatButton';
 import { required, address } from 'lib/validators';
 
-const Render = ({handleSubmit, invalid, pristine, submitting, cancel}) => {
+const Render = ({handleSubmit, blockAddress, invalid, pristine, submitting, cancel}) => {
 
     return (
             <form onSubmit={handleSubmit}>
@@ -12,6 +12,7 @@ const Render = ({handleSubmit, invalid, pristine, submitting, cancel}) => {
                         component={renderTextField} 
                         type="text" 
                         label="Network Address"
+                        disabled={blockAddress}
                         validate={[ required, address ]} />
                 <Field  name="name" 
                         component={renderTextField} 

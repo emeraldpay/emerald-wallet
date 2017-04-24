@@ -23,11 +23,11 @@ export const renderFileField = ({ input, name, meta: { touched, error } }) => {
     )
 };
 
-export const renderTextField = ({ input, label, type, meta: { touched, error } }) => (
+export const renderTextField = ({ input, label, type, disabled, meta: { touched, error } }) => (
   <div>
     <label>{label}</label>
     <div>
-      <TextField {...input} type={type} errorText={touched && error} />
+      <TextField {...input} type={type} disabled={disabled} errorText={touched && error} />
     </div>
   </div>
 );
