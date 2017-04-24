@@ -13,7 +13,8 @@
     "test:watch": "node ./node_modules/karma/bin/karma start",
     "test": "npm run build && node ./node_modules/karma/bin/karma start --single-run",
     "lint": "./node_modules/eslint/bin/eslint.js ./src/",
-    "package": "npm run build && NODE_ENV=production node electron/package.js"
+    "package": "npm run build && NODE_ENV=production node electron/package.js",
+    "package:all": "npm run package -- --all"
   },
   "keywords": [
     "react",
@@ -93,6 +94,7 @@
     "karma-phantomjs-launcher": "^1.0.2",
     "karma-sourcemap-loader": "^0.3.7",
     "karma-webpack": "^1.7.0",
+    "minimist": "^1.2.0",
     "node-sass": "4.5.2",
     "phantomjs-prebuilt": "^2.1.14",
     "recursive-readdir-sync": "^1.0.6",

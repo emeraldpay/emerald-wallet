@@ -1,4 +1,4 @@
-import { rpc } from 'lib/rpcapi';
+import { rpc } from '../lib/rpc';
 import { parseString, padLeft, getNakedAddress, fromTokens } from 'lib/convert';
 
 /** TODO #30: Convert ABI Function name to Function Signature **/
