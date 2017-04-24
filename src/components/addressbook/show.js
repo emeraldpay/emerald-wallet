@@ -100,7 +100,7 @@ const Render = ({address, editAddress, deleteAddress, expanded}) => {
 const AddressShow = connect(
     (state, ownProps) => {
         let addressBook = state.addressBook.get('addressBook');
-        let pos = addressBook.findKey((addr) => addr.get('id') === ownProps.address.get('id'));
+        let pos = addressBook.findKey((addr) => addr.get('id') === ownProps.addressId);
         return {
             address: (addressBook.get(pos) || Immutable.Map({}))
         }
@@ -120,7 +120,7 @@ const AddressShow = connect(
                     const address = ownProps.address.get('id');
                     dispatch(deleteAddress(address))
                         .then((response) => {
-                            dispatch(gotoScreen('addressBook'));
+                            dispatch(gotoScreen('address-book'));
                             resolve(response);
                         });
                     });

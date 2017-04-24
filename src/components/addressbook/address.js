@@ -35,7 +35,7 @@ const Address = connect(
         return {
             openAddress: () => {
                 const address = ownProps.address;
-                dispatch(gotoScreen('address', address))
+                dispatch(gotoScreen('address', address.get('id')))
             }
         }
     }

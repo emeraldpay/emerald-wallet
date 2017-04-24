@@ -71,7 +71,7 @@ const Main = connect(
             },
             openAddressBook: () => {
                 console.log("address book")
-                dispatch(gotoScreen('addressBook'))
+                dispatch(gotoScreen('address-book'))
             },
             openContracts: () => {
                 console.log("contracts")
