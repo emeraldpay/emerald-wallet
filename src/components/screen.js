@@ -5,6 +5,7 @@ import log from 'loglevel';
 import AccountsList from './accounts/list';
 import AddressBook from './addressbook/book';
 import AccountShow from './accounts/show';
+import AddressShow from './addressbook/show';
 import CreateTx from './tx/create';
 import TransactionShow from './tx/show';
 import TokensList from './tokens/list';
@@ -42,6 +43,12 @@ const Render = ({screen, screenItem}) => {
         )
     } else if (screen === 'addressBook') {
         return <AddressBook />        
+    } else if (screen === 'address') {
+        return (
+            <div>
+                <AddressShow address={screenItem}/>
+            </div>
+        )
     } else if (screen === 'account') {
         return <AccountShow account={screenItem}/>
     } else if (screen === 'transaction') {
