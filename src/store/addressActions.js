@@ -42,6 +42,7 @@ export function addAddress(id, name, description) {
                 type: 'ADDRESS/ADD_ADDRESS',
                 addressId: json.result,
                 name,
+                description,
             });
             dispatch(loadAddressBalance(json.result));
         });
@@ -56,7 +57,7 @@ export function updateAddress(id, name, description) {
         }]).then((json) => {
             dispatch({
                 type: 'ADDRESS/UPDATE_ADDRESS',
-                addressId: json.result.id,
+                addressId: json.result,
                 name,
                 description,
             });

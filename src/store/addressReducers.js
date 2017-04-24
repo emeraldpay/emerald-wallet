@@ -14,9 +14,9 @@ const initialAddr = Immutable.Map({
     balance: null,
 });
 
-function addAddress(state, id) {
+function addAddress(state, address) {    
     return state.update('addressBook', (addresses) =>
-        addresses.push(initialAddr.set('id', id))
+        addresses.push(initialAddr.merge(address))
     );
 }
 
@@ -64,7 +64,11 @@ function onSetBalance(state, action) {
 
 function onAddAddress(state, action) {
     if (action.type === 'ADDRESS/ADD_ADDRESS') {
-        return addAddress(state, action.addressId);
+        return addAddress(state, {
+            id: action.addressId,
+            name: action.name,
+            description: action.description,
+        });
     }
     return state;
 }
