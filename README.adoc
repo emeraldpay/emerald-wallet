@@ -70,9 +70,20 @@ Example: `./parity --chain=classic --rpccorsdomain=*` allow requests from any do
 
 ## Package
 
+For current OS:
+
 ```bash
 $ npm run package
 ```
+
+For Windows and Linux:
+
+```bash
+$ npm run package:all
+```
+
+Note: Packaging for Windows platform on Linux needs Wine to be installed.
+
 
 # License
 
