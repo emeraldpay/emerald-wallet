@@ -12,7 +12,6 @@ const initialAddr = Immutable.Map({
     id: null,
     description: null,
     balance: null,
-    txcount: null,
 });
 
 function addAddress(state, id) {
@@ -63,18 +62,32 @@ function onSetBalance(state, action) {
     return state;
 }
 
-function onSetTxCount(state, action) {
-    if (action.type === 'ADDRESS/SET_TXCOUNT') {
+function onAddAddress(state, action) {
+    if (action.type === 'ADDRESS/ADD_ADDRESS') {
+        return addAddress(state, action.addressId);
+    }
+    return state;
+}
+
+function onUpdateAddress(state, action) {
+    if (action.type === 'ADDRESS/UPDATE_ADDRESS') {
         return updateAddress(state, action.addressId, (addr) =>
-            addr.set('txcount', toNumber(action.value))
+            addr.merge({
+                name: action.name,
+                id: action.addressId,
+                description: action.description,
+            })
         );
     }
     return state;
 }
 
-function onAddAddress(state, action) {
-    if (action.type === 'ADDRESS/ADD_ADDRESS') {
-        return addAddress(state, action.addressId);
+function onDeleteAddress(state, action) {
+    if (action.type === 'ADDRESS/DELETE_ADDRESS') {
+        return state.update('addressBook', (addresses) => {
+            const pos = addresses.findKey((addr) => addr.get('id') === action.addressId);
+            return addresses.delete(pos);
+        });
     }
     return state;
 }
@@ -85,6 +98,7 @@ export default function addresssReducers(state, action) {
     state = onSetAddressBook(state, action);
     state = onAddAddress(state, action);
     state = onSetBalance(state, action);
-    state = onSetTxCount(state, action);
+    state = onUpdateAddress(state, action);
+    state = onDeleteAddress(state, action);
     return state;
 }
