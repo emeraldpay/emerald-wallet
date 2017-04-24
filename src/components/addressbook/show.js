@@ -102,7 +102,7 @@ const AddressShow = connect(
         let addressBook = state.addressBook.get('addressBook');
         let pos = addressBook.findKey((addr) => addr.get('id') === ownProps.address.get('id'));
         return {
-            address: addressBook.get(pos)
+            address: (addressBook.get(pos) || Immutable.Map({}))
         }
     },
     (dispatch, ownProps) => {
@@ -116,7 +116,14 @@ const AddressShow = connect(
                     });
             },
             deleteAddress: () => {
-                console.log("delete")
+                return new Promise((resolve, reject) => {
+                    const address = ownProps.address.get('id');
+                    dispatch(deleteAddress(address))
+                        .then((response) => {
+                            dispatch(gotoScreen('addressBook'));
+                            resolve(response);
+                        });
+                    });
             }
         }
     }
