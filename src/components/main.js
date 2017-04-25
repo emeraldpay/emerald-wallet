@@ -10,11 +10,12 @@ import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
 import ExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import Face from 'material-ui/svg-icons/action/face';
+import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
 import LibraryBooks from 'material-ui/svg-icons/av/library-books';
 import Screen from './screen';
 import { gotoScreen } from '../store/screenActions';
 
-const Menu = ({openAccounts, openContracts}) => (
+const Menu = ({openAccounts, openAddressBook, openContracts}) => (
   <IconMenu
     iconButtonElement={
       <IconButton><ExpandMoreIcon color="white" /></IconButton>
@@ -22,7 +23,8 @@ const Menu = ({openAccounts, openContracts}) => (
     targetOrigin={{horizontal: 'right', vertical: 'top'}}
     anchorOrigin={{horizontal: 'right', vertical: 'top'}}
   >
-    <MenuItem leftIcon={<Face />} primaryText="Accounts" onClick={openAccounts} />
+    <MenuItem leftIcon={<Face />} primaryText="Home" onClick={openAccounts} />
+    <MenuItem leftIcon={<ImportContacts />} primaryText="Address Book" onClick={openAddressBook} />
     <MenuItem leftIcon={<LibraryBooks />} primaryText="Contracts" onClick={openContracts} />
   </IconMenu>
 );
@@ -66,6 +68,10 @@ const Main = connect(
             openAccounts: () => {
                 console.log("accounts")
                 dispatch(gotoScreen('home'))
+            },
+            openAddressBook: () => {
+                console.log("address book")
+                dispatch(gotoScreen('address-book'))
             },
             openContracts: () => {
                 console.log("contracts")

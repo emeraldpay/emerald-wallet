@@ -4,12 +4,14 @@ import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
 
 import { loadAccountsList, refreshTrackedTransactions } from './accountActions';
+import { loadAddressBook } from './addressActions';
 import { loadTokenList } from './tokenActions';
 import { loadContractList } from './contractActions';
 import { loadSyncing, loadHeight } from './networkActions';
 import { gotoScreen } from './screenActions';
 
 import accountsReducers from './accountReducers';
+import addressReducers from './addressReducers';
 import tokenReducers from './tokenReducers';
 import contractReducers from './contractReducers';
 import networkReducers from './networkReducers';
@@ -17,6 +19,7 @@ import screenReducers from './screenReducers';
 
 const stateTransformer = (state) => ({
     accounts: state.accounts.toJS(),
+    addressBook: state.addressBook.toJS(),
     tokens: state.tokens.toJS(),
     contracts: state.contracts.toJS(),
     screen: state.screen.toJS(),
@@ -30,6 +33,7 @@ const loggerMiddleware = createLogger({
 
 const reducers = {
     accounts: accountsReducers,
+    addressBook: addressReducers,
     tokens: tokenReducers,
     contracts: contractReducers,
     screen: screenReducers,
@@ -52,6 +56,7 @@ function refreshAll() {
 
 export function start() {
     store.dispatch(loadAccountsList());
+    store.dispatch(loadAddressBook());
     store.dispatch(loadTokenList());
     store.dispatch(loadContractList());
     store.dispatch(gotoScreen('home'));

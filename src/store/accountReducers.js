@@ -13,6 +13,8 @@ const initialAddr = Immutable.Map({
     balance: null,
     tokens: [],
     txcount: null,
+    name: null,
+    description: null,
 });
 
 /** TODO (connector?): Accounts should be associated with names **/
