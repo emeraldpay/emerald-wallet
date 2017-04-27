@@ -126,16 +126,17 @@ export function transferTokenTransaction(accountId, password, to, gas, gasPrice,
 }
 
 export function traceCall(accountId, to, gas, gasPrice, value, data) {
-    return () => rpc('eth_traceCall', [{
+    return () => {
+      const params = [{
         from: accountId,
         to,
         gas,
         gasPrice,
         value,
         data,
-    }]).then((json) =>
-        json.result
-    );
+      }];
+      return rpc.call2('eth_traceCall', params);
+    }
 }
 
 export function traceTokenTransaction(accountId, password, to, gas, gasPrice, value, tokenId, isTransfer) {
