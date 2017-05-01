@@ -37,7 +37,9 @@ function updateAccount(state, id, f) {
 function updateToken(tokens, token, value) {
     const pos = tokens.findKey((tok) => tok.get('address') === token.address);
     const balance = new TokenUnits(value, (token.decimals) ? token.decimals : '0x0');
-    if (pos >= 0) { return tokens.update(pos, (tok) => tok.set('balance', balance)); }
+    if (pos >= 0) {
+        return tokens.update(pos, (tok) => tok.set('balance', balance));
+    }
     return tokens.push(Immutable.fromJS({ address: token.address, symbol: token.symbol })
             .set('balance', balance));
 }

@@ -30,7 +30,7 @@ const Render = ({account, submitSucceeded, handleSubmit, invalid, pristine, rese
                 <form onSubmit={handleSubmit}>
                     <Field  name="wallet" 
                             component={renderFileField}
-                            validate={required} />                 
+                            validate={required} />
                     <FlatButton label="Submit" type="submit"
                                 disabled={pristine || submitting || invalid } />
                 </form>

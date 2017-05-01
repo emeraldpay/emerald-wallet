@@ -10,10 +10,6 @@ export class RpcApi {
     this.requestSeq = 1;
   }
 
-  call(name, params, headers) {
-    return this.jsonPost(name, params, headers);
-  }
-
   /**
    * This call analyses JSON RPC response.
    * It returns promise which resolves whether 'result' field found
@@ -21,7 +17,7 @@ export class RpcApi {
    *
    * @returns {Promise}
    */
-  call2(name, params, headers) {
+  call(name, params, headers) {
     return new Promise((resolve, reject) => {
       this.jsonPost(name, params, headers).then((json) => {
         if (json.result)

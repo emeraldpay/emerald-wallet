@@ -70,7 +70,7 @@ const AddContract = connect(
     },
     (dispatch, ownProps) => {
         return {
-            onSubmit: data => {                
+            onSubmit: data => {
                 return new Promise((resolve, reject) => {
                     dispatch(addContract(data.address, data.name, data.abi))
                         .then((response) => {
