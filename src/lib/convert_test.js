@@ -1,5 +1,11 @@
 import BigNumber from 'bignumber.js';
-import { fromTokens, transformToFullName, extractDisplayName, getFunctionSignature, mweiToWei, etherToWei, estimateGasFromTrace } from './convert';
+import { toHex, fromTokens, transformToFullName, extractDisplayName, getFunctionSignature, mweiToWei, etherToWei, estimateGasFromTrace } from './convert';
+
+describe("Hex Converter", () => {
+    it("convert decimal number to hex", () => {
+        expect(toHex(10000000000)).toEqual("0x02540be400");
+    });
+});
 
 describe("Token Converter", () => {
     it("convert token number to value", () => {
