@@ -4,7 +4,6 @@ import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import { SelectField, TextField, RadioButtonGroup } from 'redux-form-material-ui';
 import { RadioButton} from 'material-ui/RadioButton';
 import { MenuItem, FlatButton, FontIcon } from 'material-ui';
-import { Divider } from 'material-ui/Divider';
 import { IconMenu } from 'material-ui/IconMenu';
 import { IconButton } from 'material-ui/IconButton';
 import { ImportContacts } from 'material-ui/svg-icons/communication/import-contacts';
@@ -16,7 +15,7 @@ import { positive, number, required, address } from 'lib/validators';
 const Render = (props) => {
 
   const {fields: {from, to}, accounts, account, handleSubmit, invalid, pristine, resetForm, submitting, cancel} = props;
-  const {addressBook, tokens, token, isToken, onChangeToken} = props;
+  const {tokens, token, isToken, onChangeToken} = props;
   const {error} = props;
 
   return (
@@ -68,10 +67,6 @@ const Render = (props) => {
                 {accounts.map( (account) => 
                   <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
                 )}
-                <Divider />
-                  {addressBook.map( (account) => 
-                    <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
-                  )} 
                 </IconMenu>
               </Col>
             </Row>
