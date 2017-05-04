@@ -4,6 +4,9 @@ import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import { SelectField, TextField, RadioButtonGroup } from 'redux-form-material-ui';
 import { RadioButton} from 'material-ui/RadioButton';
 import { MenuItem, FlatButton, FontIcon } from 'material-ui';
+import { IconMenu } from 'material-ui/IconMenu';
+import { IconButton } from 'material-ui/IconButton';
+import { ImportContacts } from 'material-ui/svg-icons/communication/import-contacts';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { red200 } from 'material-ui/styles/colors';
 import { cardSpace } from '../../lib/styles';
@@ -54,10 +57,17 @@ const Render = (props) => {
                 <Field name="to"
                        component={TextField}
                        floatingLabelText="Target Address"
-                       hintText="0x0000000000000000000000000000000000000000"
-                       fullWidth={true}
                        validate={[required, address]}
-                />
+                >
+                </Field>
+                <IconMenu
+                    iconButtonElement={<IconButton><ImportContacts /></IconButton>}
+                    onItemTouchTap={handleSelect}
+                >
+                {accounts.map( (account) => 
+                  <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
+                )}
+                </IconMenu>
               </Col>
             </Row>
             <Row>

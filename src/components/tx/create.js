@@ -2,7 +2,6 @@ import React from 'react';
 import Immutable from 'immutable';
 import log from 'loglevel';
 import { change, formValueSelector, SubmissionError } from 'redux-form';
-
 import { connect } from 'react-redux';
 import { sendTransaction, trackTx } from 'store/accountActions';
 import { transferTokenTransaction, traceTokenTransaction, traceCall } from 'store/tokenActions';
@@ -129,6 +128,9 @@ const CreateTx = connect(
                 else if (!(address(prev)) && value.length < 1) 
                     dispatch(change("createTx", "gasAmount", DefaultGas))
                 
+            },
+            handleSelect: (event, item) => {
+                dispatch(change("createTx", "to", item.props.value))
             },
             cancel: () => {
                 dispatch(gotoScreen('home'))
