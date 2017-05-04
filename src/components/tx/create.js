@@ -76,6 +76,7 @@ const CreateTx = connect(
                 isTransfer: "true"
             },
             accounts: state.accounts.get('accounts', Immutable.List()),
+            addressBook: state.addressBook.get('addressBook'),
             tokens: tokens.unshift(Immutable.fromJS({'address': '', 'symbol': 'ETC'})),
             isToken: (selector(state, 'token'))
         }
