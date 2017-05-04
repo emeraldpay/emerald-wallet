@@ -10,7 +10,26 @@ export class RpcApi {
     this.requestSeq = 1;
   }
 
+  /**
+   * This call analyses JSON RPC response.
+   * It returns promise which resolves whether 'result' field found
+   * or reject in case 'error' field found.
+   *
+   * @returns {Promise}
+   */
   call(name, params, headers) {
+    return new Promise((resolve, reject) => {
+      this.jsonPost(name, params, headers).then((json) => {
+        if (json.result)
+          resolve(json.result)
+        else if (json.error)
+          reject(json.error)
+        else new Error(`Unknown JSON RPC response: ${json}`)
+      }).catch(error => reject(error));
+    });
+  }
+
+  jsonPost(name, params, headers) {
     const data = {
       'jsonrpc': '2.0',
       'method': name,

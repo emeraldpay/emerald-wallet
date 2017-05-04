@@ -1,24 +1,16 @@
 import React from 'react';
+import Immutable from 'immutable';
+import log from 'loglevel';
+import { change, formValueSelector, SubmissionError } from 'redux-form';
+
 import { connect } from 'react-redux';
-import { Field, reduxForm, change, formValueSelector, SubmissionError } from 'redux-form';
-
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
-import { SelectField, TextField, RadioButtonGroup } from 'redux-form-material-ui';
-import { RadioButton} from 'material-ui/RadioButton';
-import MenuItem from 'material-ui/MenuItem';
-import FlatButton from 'material-ui/FlatButton';
-import FontIcon from 'material-ui/FontIcon';
-
-import { cardSpace } from '../../lib/styles';
-import { Row, Col } from 'react-flexbox-grid/lib/index';
-
 import { sendTransaction, trackTx } from 'store/accountActions';
 import { transferTokenTransaction, traceTokenTransaction, traceCall } from 'store/tokenActions';
-import Immutable from 'immutable';
 import { gotoScreen } from 'store/screenActions';
 import { positive, number, required, address } from 'lib/validators';
 import { mweiToWei, etherToWei, toHex, estimateGasFromTrace } from 'lib/convert';
-import log from 'loglevel';
+
+import CreateTxForm from './createTxForm';
 
 const DefaultGas = 21000;
 const DefaultTokenGas = 23890;
@@ -31,9 +23,7 @@ const traceValidate = (data, dispatch) => {
             "to":data.to,
             "value":toHex(etherToWei(data.value))
         }
-    const resolver = (f, res, rej) => {
-        return (x) => f(x,res,rej)
-    }
+
     const resolveValidate = (response, resolve) => {
         let errors = null;
         dataObj.data = (((response.trace || [])[0] || {}).action || {}).input;
@@ -44,151 +34,34 @@ const traceValidate = (data, dispatch) => {
             errors = {gasAmount: "Insufficient Gas: Expected " + gas.toString(10)}
         resolve(errors)
     };
-    if (data.token.length > 1)
+
+    if (data.token.length > 1) {
         return new Promise((resolve, reject) => {
-            dispatch(traceTokenTransaction(data.from, data.password, 
-                data.to, 
-                dataObj.gas, 
-                dataObj.gasPrice,
-                dataObj.value,
-                data.token, data.isTransfer
-            )).then(resolver(resolveValidate, resolve));
+            dispatch(traceTokenTransaction(data.from, data.password,
+              data.to,
+              dataObj.gas,
+              dataObj.gasPrice,
+              dataObj.value,
+              data.token, data.isTransfer
+            )).then(response => resolveValidate(response, resolve))
+              .catch(error => {
+                resolve({_error: (error.message || JSON.stringify(error))})
+              })
         });
-    else
+    } else {
         return new Promise((resolve, reject) => {
-            dispatch(traceCall(data.from, data.password, 
-                data.to,
-                dataObj.gas, 
-                dataObj.gasPrice,
-                dataObj.value,
-            )).then(resolver(resolveValidate, resolve));
+            dispatch(traceCall(data.from, data.password,
+              data.to,
+              dataObj.gas,
+              dataObj.gasPrice,
+              dataObj.value,
+            )).then(response => resolveValidate(response, resolve))
+              .catch(error => {
+                  resolve({_error: (error.message || JSON.stringify(error))})
+              })
         })
+    }
 };
-
-const Render = ({fields: {from, to}, accounts, account, tokens, token, isToken, onChangeToken, handleSubmit, invalid, pristine, resetForm, submitting, cancel}) => {
-    log.debug('fields - from', from);
-
-    return (
-        <Card style={cardSpace}>
-            <CardHeader
-                title='Send Transaction'
-                actAsExpander={false}
-                showExpandableButton={false}
-            />
-
-            <CardText expandable={false}>
-                <Row>
-                    <Col xs={12} md={6}>
-                        <Row>
-                            <Col xs={12}>
-                                <Field name="from"
-                                       floatingLabelText="From"
-                                       component={SelectField}
-                                       fullWidth={true}>
-                                       {accounts.map( (account) => 
-                                        <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
-                                        )}
-                                </Field>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col xs={12}>
-                                <Field name="password"
-                                       floatingLabelText="Password"
-                                       type="password"
-                                       component={TextField}
-                                       fullWidth={true}
-                                       validate={required}>
-                                </Field>
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col xs={12}>
-                                <Field name="to"
-                                       component={TextField}
-                                       floatingLabelText="Target Address"
-                                       hintText="0x0000000000000000000000000000000000000000"
-                                       fullWidth={true}
-                                       validate={[required, address]}
-                                />
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col xs={8} md={6}>
-                                <Field name="value"
-                                       component={TextField}
-                                       floatingLabelText="Amount"
-                                       hintText="1.0000"
-                                       validate={[required, number]}
-                                />
-                            </Col>
-                            <Col xs={4} md={4}>
-                                <Field name="token"
-                                       component={SelectField}
-                                       onChange={onChangeToken}
-                                       value={token}
-                                       fullWidth={true}>
-                                       {tokens.map( (token) => 
-                                        <MenuItem key={token.get('address')} value={token.get('address')} label={token.get('symbol')} primaryText={token.get('symbol')} />
-                                        )}
-                                </Field>
-                            </Col>
-                            {isToken && 
-                            <Col>
-                                <Field name="isTransfer"  
-                                    component={RadioButtonGroup}
-                                    defaultSelected="true"
-                                    validate={required}>
-                                  <RadioButton value="true" label="Transfer"/>
-                                  <RadioButton value="false" label="Approve for Withdrawal"/>
-                                </Field>
-                            </Col> }   
-                        </Row>
-                    </Col>
-
-                    <Col xs={12} md={6}>
-                        <Row>
-                            <Col xs={12}>
-                                <Field name="gasPrice"
-                                       component={TextField}
-                                       floatingLabelText="Gas Price (MGas)"
-                                       hintText="10000"
-                                       validate={[required, number, positive]}
-                                />
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col xs={12}>
-                                <Field name="gasAmount"
-                                       component={TextField}
-                                       floatingLabelText="Gas Amount"
-                                       hintText="21000"
-                                       validate={[required, number, positive]}
-                                />
-                            </Col>
-                        </Row>
-                    </Col>
-                </Row>
-
-            </CardText>
-
-            <CardActions>
-                <FlatButton label="Send"
-                            disabled={pristine || submitting || invalid }
-                            onClick={handleSubmit}
-                            icon={<FontIcon className="fa fa-check" />}/>
-                <FlatButton label="Cancel"
-                            onClick={cancel}
-                            icon={<FontIcon className="fa fa-ban" />}/>
-            </CardActions>
-        </Card>
-    )
-};
-
-const CreateTxForm = reduxForm({
-    form: 'createTx',
-    fields: ['to', 'from', 'password', 'value', 'token', 'gasPrice', 'gasAmount', 'token', 'isTransfer']
-})(Render);
 
 const CreateTx = connect(
     (state, ownProps) => {
@@ -210,7 +83,7 @@ const CreateTx = connect(
     (dispatch, ownProps) => {
         return {
             onSubmit: data => {
-                console.log(data);
+                log.debug(data);
                 const afterTx = (txhash) => {
                     let txdetails = {
                         hash: txhash,
@@ -224,12 +97,12 @@ const CreateTx = connect(
                         f.apply(x);
                         resolve(x);
                     }
-                };                
+                };
                 return traceValidate(data, dispatch)
                     .then((result) => {
-                        if(result)
+                        if (result) {
                             throw new SubmissionError(result)
-                        else {
+                        } else {
                             if (data.token.length > 1)
                                 return new Promise((resolve, reject) => {
                                     dispatch(transferTokenTransaction(data.from, data.password, 
@@ -247,8 +120,7 @@ const CreateTx = connect(
                                     )).then(resolver(afterTx, resolve));
                                 })
                         }
-
-                    }) 
+                    })
             },
             onChangeToken: (event, value, prev) => {
                 // if switching from ETC to token, change default gas
@@ -264,7 +136,6 @@ const CreateTx = connect(
         }
     }
 )(CreateTxForm);
-
 
 
 export default CreateTx

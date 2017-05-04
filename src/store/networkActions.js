@@ -4,10 +4,10 @@ let watchingHeight = false;
 
 export function loadHeight(watch) {
     return (dispatch) =>
-        rpc.call('eth_blockNumber', []).then((json) => {
+        rpc.call('eth_blockNumber', []).then((result) => {
             dispatch({
                 type: 'NETWORK/BLOCK',
-                height: json.result,
+                height: result,
             });
             if (watch && !watchingHeight) {
                 watchingHeight = true;
@@ -18,12 +18,12 @@ export function loadHeight(watch) {
 
 export function loadSyncing() {
     return (dispatch) =>
-        rpc.call('eth_syncing', []).then((json) => {
-            if (typeof json.result === 'object') {
+        rpc.call('eth_syncing', []).then((result) => {
+            if (typeof result === 'object') {
                 dispatch({
                     type: 'NETWORK/SYNCING',
                     syncing: true,
-                    status: json.result,
+                    status: result,
                 });
                 setTimeout(() => dispatch(loadSyncing()), 1000);
             } else {

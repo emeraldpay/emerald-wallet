@@ -6,15 +6,14 @@ export function loadContractList() {
         dispatch({
             type: 'CONTRACT/LOADING',
         });
-        rpc.call('emerald_contracts', []).then((json) => {
-            if (json.error) {
-                log.error(`emerald_contracts rpc call: ${JSON.stringify(json)}`);
-            }
+        rpc.call('emerald_contracts', []).then((result) => {
             dispatch({
                 type: 'CONTRACT/SET_LIST',
-                contracts: json.result,
+                contracts: result,
             });
             // load Contract details?
+        }).catch(error => {
+          log.error(`emerald_contracts rpc call: ${JSON.stringify(error)}`);
         });
     };
 }
@@ -28,7 +27,7 @@ export function addContract(address, name, abi, version, options, txhash) {
             version,
             options,
             txhash,
-        }]).then((json) => {
+        }]).then((result) => {
             dispatch({
                 type: 'CONTRACT/ADD_CONTRACT',
                 address,
@@ -43,7 +42,7 @@ export function addContract(address, name, abi, version, options, txhash) {
 
 export function estimateGas(data) {
     return (dispatch) =>
-        rpc.call('eth_estimateGas', [{ data }]).then((json) => {
-            return isNaN(parseInt(json.result)) ? 0 : parseInt(json.result);
+        rpc.call('eth_estimateGas', [{ data }]).then((result) => {
+            return isNaN(parseInt(result)) ? 0 : parseInt(result);
         });
 }

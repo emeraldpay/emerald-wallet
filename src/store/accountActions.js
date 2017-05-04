@@ -5,17 +5,17 @@ import { loadTokenBalanceOf } from './tokenActions';
 
 export function loadAccountBalance(accountId) {
     return (dispatch, getState) => {
-        rpc.call('eth_getBalance', [accountId, 'latest']).then((json) => {
+        rpc.call('eth_getBalance', [accountId, 'latest']).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SET_BALANCE',
                 accountId,
-                value: json.result,
+                value: result,
             });
         });
         const tokens = getState().tokens;
         if (!tokens.get('loading')) {
             tokens.get('tokens')
-                    .map((token) => dispatch(loadTokenBalanceOf(token, accountId)));
+              .map((token) => dispatch(loadTokenBalanceOf(token, accountId)));
         }
     };
 }
@@ -25,13 +25,12 @@ export function loadAccountsList() {
         dispatch({
             type: 'ACCOUNT/LOADING',
         });
-        rpc.call('eth_accounts', []).then((json) => {
+        rpc.call('eth_accounts', []).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SET_LIST',
-                accounts: json.result,
+                accounts: result,
             });
-            json.result.map((acct) =>
-                dispatch(loadAccountBalance(acct))
+            result.map((acct) => dispatch(loadAccountBalance(acct))
             );
         });
     };
@@ -39,11 +38,11 @@ export function loadAccountsList() {
 
 export function loadAccountTxCount(accountId) {
     return (dispatch) => {
-        rpc.call('eth_getTransactionCount', [accountId, 'latest']).then((json) => {
+        rpc.call('eth_getTransactionCount', [accountId, 'latest']).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SET_TXCOUNT',
                 accountId,
-                value: json.result,
+                value: result,
             });
         });
     };
@@ -59,13 +58,13 @@ export function loadAccountTxCount(accountId) {
 */
 export function createAccount(name, password) {
     return (dispatch) =>
-        rpc.call('personal_newAccount', [password]).then((json) => {
+        rpc.call('personal_newAccount', [password]).then((result) => {
             dispatch({
                 type: 'ACCOUNT/ADD_ACCOUNT',
-                accountId: json.result,
+                accountId: result,
                 name,
             });
-            dispatch(loadAccountBalance(json.result));
+            dispatch(loadAccountBalance(result));
         });
 }
 
@@ -80,14 +79,14 @@ export function sendTransaction(accountId, password, to, gas, gasPrice, value) {
             value,
         }], {
             Authorization: pwHeader,
-        }).then((json) => {
+        }).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SEND_TRANSACTION',
                 accountId,
-                txHash: json.result,
+                txHash: result,
             });
             dispatch(loadAccountBalance(accountId));
-            return json.result;
+            return result;
         });
 }
 
@@ -101,14 +100,14 @@ export function createContract(accountId, password, gas, gasPrice, data) {
             data,
         }], {
             Authorization: pwHeader,
-        }).then((json) => {
+        }).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SEND_TRANSACTION',
                 accountId,
-                txHash: json.result,
+                txHash: result,
             });
             dispatch(loadAccountBalance(accountId));
-            return json.result;
+            return result;
         });
 }
 
@@ -116,29 +115,29 @@ export function importWallet(wallet) {
     return (dispatch) =>
         rpc.call('backend_importWallet', {
             wallet,
-        }).then((json) => {
+        }).then((result) => {
             dispatch({
                 type: 'ACCOUNT/IMPORT_WALLET',
-                accountId: json.result,
+                accountId: result,
             });
-            dispatch(loadAccountBalance(json.result));
+            dispatch(loadAccountBalance(result));
         });
 }
 
 export function refreshTransactions(hash) {
     return (dispatch) =>
-        rpc.call('eth_getTransactionByHash', [hash]).then((json) => {
-            if (typeof json.result === 'object') {
+        rpc.call('eth_getTransactionByHash', [hash]).then((result) => {
+            if (typeof result === 'object') {
                 dispatch({
                     type: 'ACCOUNT/UPDATE_TX',
-                    tx: json.result,
+                    tx: result,
                 });
                 /** TODO: Check for input data **/
-                if ((json.result.creates !== undefined) && (address(json.result.creates) === undefined)) {
+                if ((result.creates !== undefined) && (address(result.creates) === undefined)) {
                     dispatch({
                         type: 'CONTRACT/UPDATE_CONTRACT',
-                        tx: json.result,
-                        address: json.result.creates,
+                        tx: result,
+                        address: result.creates,
                     });
                 }
             }

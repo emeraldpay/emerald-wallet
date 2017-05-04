@@ -1,12 +1,15 @@
 import React from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { renderTextField } from 'elements/formFields';
-import FlatButton from 'material-ui/FlatButton';
+import { Card, CardText, FlatButton } from 'material-ui';
 import { required, address } from 'lib/validators';
+import { cardSpace } from 'lib/styles';
 
 const Render = ({handleSubmit, blockAddress, invalid, pristine, submitting, cancel}) => {
 
     return (
+      <Card style={cardSpace}>
+        <CardText expandable={false}>
             <form onSubmit={handleSubmit}>
                 <Field  name="address" 
                         component={renderTextField} 
@@ -28,7 +31,9 @@ const Render = ({handleSubmit, blockAddress, invalid, pristine, submitting, canc
                 <FlatButton label="Cancel" 
                             onClick={cancel} />
             </form>
-        );
+        </CardText>
+      </Card>
+    );
 };
 
 export const AddressForm = reduxForm({

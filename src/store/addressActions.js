@@ -4,11 +4,11 @@ import { address } from 'lib/validators';
 
 export function loadAddressBalance(addressId) {
     return (dispatch, getState) => {
-        rpc.call('eth_getBalance', [addressId, 'latest']).then((json) => {
+        rpc.call('eth_getBalance', [addressId, 'latest']).then((result) => {
             dispatch({
                 type: 'ADDRESS/SET_BALANCE',
                 addressId,
-                value: json.result,
+                value: result,
             });
         });
     };
@@ -19,12 +19,12 @@ export function loadAddressBook() {
         dispatch({
             type: 'ADDRESS/LOADING',
         });
-        rpc.call('emerald_addressBook', []).then((json) => {
+        rpc.call('emerald_addressBook', []).then((result) => {
             dispatch({
                 type: 'ADDRESS/SET_BOOK',
-                addressBook: json.result,
+                addressBook: result,
             });
-            json.result.map((addr) =>
+            result.map((addr) =>
                 dispatch(loadAddressBalance(addr.id))
             );
         });
@@ -37,10 +37,10 @@ export function addAddress(id, name, description) {
             id,
             name,
             description,
-        }]).then((json) => {
+        }]).then((result) => {
             dispatch({
                 type: 'ADDRESS/ADD_ADDRESS',
-                addressId: json.result,
+                addressId: result,
                 name,
                 description,
             });
@@ -54,10 +54,10 @@ export function updateAddress(id, name, description) {
             id,
             name,
             description,
-        }]).then((json) => {
+        }]).then((result) => {
             dispatch({
                 type: 'ADDRESS/UPDATE_ADDRESS',
-                addressId: json.result,
+                addressId: result,
                 name,
                 description,
             });
@@ -66,7 +66,7 @@ export function updateAddress(id, name, description) {
 
 export function deleteAddress(addressId) {
     return (dispatch) =>
-        rpc.call('emerald_deleteAddress', [addressId]).then((json) => {
+        rpc.call('emerald_deleteAddress', [addressId]).then((result) => {
             dispatch({
                 type: 'ADDRESS/DELETE_ADDRESS',
                 addressId,
