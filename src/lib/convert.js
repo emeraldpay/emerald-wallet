@@ -140,7 +140,8 @@ export function etherToWei(val) {
 }
 
 export function toHex(val) {
-    return `0x${val.toString(16)}`;
+    const hex = val.toString(16);
+    return '0x' + (hex.length % 2 != 0 ? '0' + hex : hex);
 }
 
 export function parseHexQuantity(val, defaultValue) {
