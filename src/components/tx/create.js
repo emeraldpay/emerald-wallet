@@ -7,7 +7,6 @@ import { connect } from 'react-redux';
 import { sendTransaction, trackTx } from 'store/accountActions';
 import { transferTokenTransaction, traceTokenTransaction, traceCall } from 'store/tokenActions';
 import { gotoScreen } from 'store/screenActions';
-import { positive, number, required, address } from 'lib/validators';
 import { mweiToWei, etherToWei, toHex, estimateGasFromTrace } from 'lib/convert';
 
 import CreateTxForm from './createTxForm';
@@ -131,6 +130,9 @@ const CreateTx = connect(
                     dispatch(change("createTx", "gasAmount", DefaultGas))
                 
             },
+            handleSelect: (event, item) => {
+                dispatch(change("createTx", "to", item.props.value))
+            },            
             cancel: () => {
                 dispatch(gotoScreen('home'))
             }
