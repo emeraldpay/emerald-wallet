@@ -6,23 +6,12 @@ import { FlatButton, FontIcon } from 'material-ui';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { DescriptionList, DescriptionTitle, DescriptionData} from '../../elements/dl';
 import log from 'loglevel';
-import { cardSpace } from '../../lib/styles';
+import { cardSpace, code } from '../../lib/styles';
 import { gotoScreen } from '../../store/screenActions';
 
 import InteractContract from './interactForm'
 
 const Render = ({contract, functions, inputs, callContract}) => {
-    const style = {
-        fontFamily: 'monospace',
-        letterSpacing: '.02em',
-        margin: '5px',
-        padding: '5px',
-        whiteSpace: 'pre-wrap',
-        wordWrap: 'break-word',
-        outline: '1px solid rgb(224, 224, 224)',
-        overflow: 'auto',
-        maxHeight: '250px'
-      };
 
     return (
         <Card style={cardSpace}>
@@ -43,7 +32,7 @@ const Render = ({contract, functions, inputs, callContract}) => {
                 </DescriptionList>
                 <Row>
                     <b>ABI / JSON Interface</b>
-                    <div style={style}>
+                    <div style={code}>
                      {JSON.stringify(contract.get('abi'))} 
                     </div>
                 </Row>           
