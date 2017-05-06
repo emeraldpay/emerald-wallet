@@ -2,14 +2,14 @@ import React from 'react';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { Card, CardTitle, CardHeader, CardText } from 'material-ui/Card';
-import { MenuItem, FlatButton, FontIcon } from 'material-ui';
+import { FlatButton, FontIcon } from 'material-ui';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { DescriptionList, DescriptionTitle, DescriptionData} from '../../elements/dl';
 import log from 'loglevel';
 import { cardSpace } from '../../lib/styles';
 import { gotoScreen } from '../../store/screenActions';
 
-import InteractForm from './interactForm'
+import InteractContract from './interactForm'
 
 const Render = ({contract, functions, inputs, callContract}) => {
     const style = {
@@ -49,12 +49,12 @@ const Render = ({contract, functions, inputs, callContract}) => {
                 </Row>           
             </CardText>
             <CardTitle actAsExpander={true}>
-                <FlatButton label="Access"
+                <FlatButton label="Access Contract"
                             icon={<FontIcon className="fa fa-arrow-circle-o-right" />}
                 />
             </CardTitle>
             <CardText expandable={true}>
-                <InteractForm contract={contract} />
+                <InteractContract contract={contract} />
             </CardText>
         </Card>
     )
@@ -64,7 +64,9 @@ const Render = ({contract, functions, inputs, callContract}) => {
 
 const ContractShow = connect(
     (state, ownProps) => {
+        return {
 
+        }
     },
     (dispatch, ownProps) => {
         return {
