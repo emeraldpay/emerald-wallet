@@ -1,27 +1,48 @@
 import React from 'react';
 import Immutable from 'immutable';
+import log from 'loglevel';
 import { connect } from 'react-redux';
 import { Card, CardActions, CardText, FlatButton, MenuItem, FontIcon } from 'material-ui';
 import { Field, reduxForm } from 'redux-form';
 import { SelectField, TextField } from 'redux-form-material-ui';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { number, required, address } from 'lib/validators';
+import { etherToWei, toHex, estimateGasFromTrace } from 'lib/convert';
 
 class RenderABIForm extends React.Component {
 
     constructor(props) {
         super(props);
-
-        this.state = { inputs: [] };
+        this.state = { 
+            inputs: [], 
+            outputs: [], 
+            function: undefined, 
+            constant: true,
+            payable: false
+        };
     }
 
     changeInputs = (event, value, prev) => {
-        const inputs = value.map( (input) => Immutable.fromJS(input) )
-        this.setState({ inputs: inputs })
+        let inputs, outputs;
+        // if constant, read directly
+        if (value.get('inputs').size > 0)
+            inputs = value.get('inputs').map( (input) => Immutable.fromJS(input) )
+        else
+            inputs = []
+        if (value.get('constant') && value.get('outputs').size > 0)
+            outputs = value.get('outputs').map( (output) => Immutable.fromJS(output) )
+        else
+            outputs = []
+        this.setState({ 
+            inputs: inputs, 
+            outputs: outputs, 
+            function: value.get('name'),
+            constant: value.get('constant'),
+            payable: value.get('payable')
+        })
     }
 
     render() {
-        console.log(this.props)
         return (
             <Card>
                 <CardText>
@@ -34,7 +55,7 @@ class RenderABIForm extends React.Component {
                             >
                             {this.props.functions.map( (func) =>
                             <MenuItem key={func.get('name')} 
-                                      value={func.get('inputs')} 
+                                      value={func} 
                                       label={func.get('name')} 
                                       primaryText={func.get('name')} 
                             />
@@ -45,7 +66,7 @@ class RenderABIForm extends React.Component {
                     <Row>
                         {this.state.inputs && this.state.inputs.map( (input) => 
                         <Col xs={6}>
-                            <Field  key={input.get('name')}
+                            <Field  key={`${this.state.function} ${input.get('name')} IN`}
                                     name={input.get('name')}
                                     floatingLabelText={`${input.get('name')} (${input.get('type')})`}
                                     hintText={input.get('type')}
@@ -53,8 +74,18 @@ class RenderABIForm extends React.Component {
                             />
                         </Col>
                         )}
+                        {this.state.outputs && this.state.outputs.map( (output) => 
+                        <Col xs={6}>
+                            <Field  key={`${this.state.function} ${output.get('name')} OUT`}
+                                    disabled={true}
+                                    name={output.get('name')}
+                                    floatingLabelText={`${output.get('name')}`}
+                                    component={TextField}
+                            />
+                        </Col>
+                        )}
                     </Row>
-                    <Row>
+                    {!this.state.constant && <Row>
                       <Col xs={8}>
                         <Field name="from"
                                floatingLabelText="Account"
@@ -72,7 +103,21 @@ class RenderABIForm extends React.Component {
                            component={TextField}
                            validate={required}/>
                       </Col>                    
-                    </Row>
+                    </Row>}
+                    {!this.state.constant && <Row>
+                      {this.state.payable && <Col xs={8}>
+                        <Field name="value"
+                               floatingLabelText="Value to Send"
+                               hintText="0"
+                               component={TextField} />
+                      </Col>}
+                      <Col xs={8}>
+                        <Field name="gasAmount"
+                           floatingLabelText="Gas Amount"
+                           component={TextField}
+                           validate={[ required, number ]}/>
+                      </Col>    
+                    </Row>}
                 </CardText>
                 <CardActions>
                     <FlatButton label="Submit"
@@ -87,15 +132,6 @@ class RenderABIForm extends React.Component {
         )
     }
 
-}
-
-
-const Render = ({contract, functions, invalid, submitting, cancel}) => {
-    return (
-        <div>
-            <ABISelectionForm functions={functions} />
-        </div>
-    )
 }
 
 const InteractContractForm = reduxForm({
@@ -117,7 +153,42 @@ const InteractContract = connect(
     },
     (dispatch, ownProps) => {
         return {
-
+            onSubmit: data => {
+                log.debug(data);
+                
+                const afterTx = (txhash) => {
+                    let txdetails = {
+                        hash: txhash,
+                        account: data.from 
+                    };
+                    dispatch(trackTx(txhash));
+                    dispatch(gotoScreen('transaction', txdetails));
+                };
+                const resolver = (resolve, f) => {
+                    return (x) => {
+                        f.apply(x);
+                        resolve(x);
+                    }
+                };
+                /* TODO: Validate transaction, gas 
+                return traceValidate(data, dispatch)
+                    .then((result) => {
+                        if (result) {
+                            throw new SubmissionError(result)
+                        } else {
+                            return new Promise()
+                        }
+                    })
+                */
+                return new Promise((resolve, reject) => {
+                    const address = ownProps.contract.get('address')
+                    const value = data.value || 0;
+                    dispatch(callContract(data.from, data.password, address,
+                        toHex(data.gasAmount), 
+                        toHex(etherToWei(value))
+                    )).then(resolver(afterTx, resolve));
+                })
+            }
         }
     }
 )(InteractContractForm);
