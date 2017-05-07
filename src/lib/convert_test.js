@@ -1,4 +1,5 @@
 import BigNumber from 'bignumber.js';
+import Immutable from 'immutable';
 import { toHex, fromTokens, mweiToWei, etherToWei, estimateGasFromTrace } from './convert';
 import { transformToFullName, functionToData, getFunctionSignature } from './convert';
 
@@ -41,16 +42,16 @@ describe("Function Converter", () => {
         expect(getFunctionSignature(balanceOf)).toEqual("70a08231");
     });
     it("convert function to data", () => {
-        expect(functionToData(balanceOf, balanceArgs))
+        expect(functionToData(Immutable.fromJS(balanceOf), balanceArgs))
         .toEqual("0x70a082310000000000000000000000000bb0000000aaaa000000000000000000000000bb");
     });
     it("convert function to data", () => {
-        expect(functionToData(transfer, transferArgs))
+        expect(functionToData(Immutable.fromJS(transfer), transferArgs))
         .toEqual("0xa9059cbb000000000000000000000000aa00000000bbbb000000000000000000000000aa000000000000000000000000000000000000000000000000000000000000000a");
     });
     it("ignore bad args", () => {
         const badArgs = {"_owner": "0xbb0000000aaaa000000000000000000000000bb", "_elaine": 123}
-        expect(functionToData(balanceOf, badArgs))
+        expect(functionToData(Immutable.fromJS(balanceOf), badArgs))
         .toEqual("0x70a082310000000000000000000000000bb0000000aaaa000000000000000000000000bb");
     })
 });

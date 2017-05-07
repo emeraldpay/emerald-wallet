@@ -142,10 +142,10 @@ export function getFunctionSignature(func) {
 export function functionToData(func, inputs) {
     let types = [];
     let values = [];
-    func.inputs.forEach((input) => {
-        types.push(input.type);
-        values.push(inputs[input.name]);
+    func.get('inputs').forEach((input) => {
+        types.push(input.get('type'));
+        values.push(inputs[input.get('name')]);
     });
-    const data = Buffer.concat([ethAbi.methodID(func.name, types), ethAbi.rawEncode(types, values)]).toString('hex');
+    const data = Buffer.concat([ethAbi.methodID(func.get('name'), types), ethAbi.rawEncode(types, values)]).toString('hex');
     return `0x${data}`;
 }
