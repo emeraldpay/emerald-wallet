@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import Immutable from 'immutable';
 import { toHex, fromTokens, mweiToWei, etherToWei, estimateGasFromTrace } from './convert';
-import { transformToFullName, functionToData, getFunctionSignature } from './convert';
+import { transformToFullName, functionToData, dataToParams, getFunctionSignature } from './convert';
 
 describe("Hex Converter", () => {
     it("convert decimal number to hex", () => {
@@ -24,11 +24,10 @@ describe("Token Converter", () => {
     });
 });
 
+const balanceOf = {"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"type":"function"}
+const transfer = {"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"}
+
 describe("Function Converter", () => {
-    const balanceOf = {"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"type":"function"}
-    const transfer = {"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"}
-    const balanceArgs = {"_owner": "0xbb0000000aaaa000000000000000000000000bb"}
-    const transferArgs = {"_to": "0xaa00000000bbbb000000000000000000000000aa", "_value": 10}
     it("get full name from ABI", () => {
         expect(transformToFullName(balanceOf)).toEqual('balanceOf(address)');
     });
@@ -41,6 +40,11 @@ describe("Function Converter", () => {
     it("get function signature from ABI", () => {
         expect(getFunctionSignature(balanceOf)).toEqual("70a08231");
     });
+});
+
+describe("Function to Data Converter", () => {
+    const balanceArgs = {"_owner": "0xbb0000000aaaa000000000000000000000000bb"}
+    const transferArgs = {"_to": "0xaa00000000bbbb000000000000000000000000aa", "_value": 10}
     it("convert function to data", () => {
         expect(functionToData(Immutable.fromJS(balanceOf), balanceArgs))
         .toEqual("0x70a082310000000000000000000000000bb0000000aaaa000000000000000000000000bb");
@@ -54,6 +58,33 @@ describe("Function Converter", () => {
         expect(functionToData(Immutable.fromJS(balanceOf), badArgs))
         .toEqual("0x70a082310000000000000000000000000bb0000000aaaa000000000000000000000000bb");
     })
+});
+
+describe("Data to Params Converter", () => {
+    let fxn = {"inputs":[{"name":"_owner","type":"address"}],
+                "name":"balanceOf",
+                "outputs":[{"name":"balance","type":"uint32"}]
+               }
+    let data = "000000000000000000000000000000000000000000000000000000000000002a";
+    it("convert data to number", () => {
+        expect(dataToParams(Immutable.fromJS(fxn), data).last()["value"].toString()).toEqual('42');
+    });
+    it("convert data to number", () => {
+        data = "0x000000000000000000000000000000000000000000000000000000000000002a";
+        expect(dataToParams(Immutable.fromJS(fxn), data).last()["value"].toString()).toEqual('42');
+    });    
+    it("convert data to array of numbers", () => {
+        fxn["outputs"] = [{"name":"balance","type":'uint256[]'}];
+        data = '00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003';
+        expect(dataToParams(Immutable.fromJS(fxn), data).last()["value"].toString()).toEqual('1,2,3');
+    });
+    it("convert data to array of outputs", () => {
+        fxn["outputs"] = [{"name":"balance","type":'uint32'},
+                          {"name":"success","type":'bool'},];
+        data = '0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000002a';
+        expect(dataToParams(Immutable.fromJS(fxn), data).size).toEqual(2);
+        expect(dataToParams(Immutable.fromJS(fxn), data).last()["value"]).toEqual(false);
+    });
 });
 
 describe("Ether converters", () => {

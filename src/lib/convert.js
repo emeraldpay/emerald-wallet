@@ -149,3 +149,16 @@ export function functionToData(func, inputs) {
     const data = Buffer.concat([ethAbi.methodID(func.get('name'), types), ethAbi.rawEncode(types, values)]).toString('hex');
     return `0x${data}`;
 }
+
+export function dataToParams(func, data) {
+    data = new Buffer(data.replace('0x', ''), 'hex');
+    const types = func.get('outputs').map((output) => output.get('type')).toArray();
+    const params = ethAbi.rawDecode(types, data);
+    return func.get('outputs').map((o, i) => { 
+        return {
+            type: o.get('type'), 
+            name: o.get('name'), 
+            value: params[i]
+        }
+    });
+}
