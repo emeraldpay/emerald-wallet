@@ -7,7 +7,11 @@ import { Field, reduxForm } from 'redux-form';
 import { SelectField, TextField } from 'redux-form-material-ui';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { number, required, address } from 'lib/validators';
+import { cardSpace, code } from '../../lib/styles';
 import { etherToWei, toHex, estimateGasFromTrace } from 'lib/convert';
+import { trackTx } from 'store/accountActions';
+import { callContract } from 'store/contractActions';
+
 
 class RenderABIForm extends React.Component {
 
@@ -76,12 +80,10 @@ class RenderABIForm extends React.Component {
                         )}
                         {this.state.outputs && this.state.outputs.map( (output) => 
                         <Col xs={6}>
-                            <Field  key={`${this.state.function} ${output.get('name')} OUT`}
-                                    disabled={true}
-                                    name={output.get('name')}
-                                    floatingLabelText={`${output.get('name')}`}
-                                    component={TextField}
-                            />
+                            <div key={`${this.state.function} ${output.get('name')} OUT`}>
+                                <b>{`${output.get('name')}`}</b> {`(${output.get('type')})`}<br />
+                                <div style={code}>Insert output here</div>
+                            </div>
                         </Col>
                         )}
                     </Row>
@@ -134,9 +136,11 @@ class RenderABIForm extends React.Component {
 
 }
 
+const txFields = ['from', 'password', 'function', 'value', 'gasAmount'];
+
 const InteractContractForm = reduxForm({
   form: 'interactContract',
-  fields: ['from', 'password', 'function']
+  fields: txFields
 })(RenderABIForm);
 
 const InteractContract = connect(
@@ -162,7 +166,6 @@ const InteractContract = connect(
                         account: data.from 
                     };
                     dispatch(trackTx(txhash));
-                    dispatch(gotoScreen('transaction', txdetails));
                 };
                 const resolver = (resolve, f) => {
                     return (x) => {
@@ -183,9 +186,19 @@ const InteractContract = connect(
                 return new Promise((resolve, reject) => {
                     const address = ownProps.contract.get('address')
                     const value = data.value || 0;
+                    const inputs = []
+                    const args = Object.keys(data)
+                        .filter(key => !txFields.includes(key))
+                        .reduce((inputs, key) => {
+                            inputs[key] = data[key];
+                            return inputs;
+                        }, {})
+                    log.debug(args)
                     dispatch(callContract(data.from, data.password, address,
-                        toHex(data.gasAmount), 
-                        toHex(etherToWei(value))
+                        toHex(data.gasAmount || 0), 
+                        toHex(etherToWei(value || 0)),
+                        data.function,
+                        args
                     )).then(resolver(afterTx, resolve));
                 })
             }
