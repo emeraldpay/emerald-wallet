@@ -16,7 +16,7 @@ import { positive, number, required, address } from 'lib/validators';
 const Render = (props) => {
 
   const {fields: {from, to}, accounts, account, handleSubmit, invalid, pristine, resetForm, submitting, cancel} = props;
-  const {addressBook, tokens, token, isToken, onChangeToken} = props;
+  const {addressBook, handleSelect, tokens, token, isToken, onChangeToken} = props;
   const {error} = props;
 
   return (

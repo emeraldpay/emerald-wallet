@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
 import ethUtil from 'ethereumjs-util';
+import ethAbi from 'ethereumjs-abi';
 import log from 'loglevel';
 
 export function toNumber(quantity) {
@@ -42,7 +43,7 @@ export function getNakedAddress(address) {
 
 export function padLeft(n, width, z) {
     z = z || '0';
-    n += '';
+    n = n + '';
     return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 }
 
@@ -54,39 +55,6 @@ export function getDataObj(to, func, arrVals) {
 
 export function fromTokens(value, decimals) {
     return new BigNumber(value).times(new BigNumber(10).pow(decimals.substring(2)));
-}
-
-/**
- * Create full function/event name from json abi
- *
- * @method transformToFullName
- * @param {Object} json-abi
- * @return {String} full fnction/event name
- */
-export function transformToFullName(json) {
-    if (json.name.indexOf('(') !== -1) {
-        return json.name;
-    }
-
-    const typeName = json.inputs.map((i) => i.type).join();
-    return json.name + '(' + typeName + ')';
-}
-
-/**
- * Get display name of contract function
- *
- * @method extractDisplayName
- * @param {String} name of function/event
- * @returns {String} display name for function/event eg. multiply(uint256) -> multiply
- */
-export function extractDisplayName(name) {
-    const length = name.indexOf('(');
-    return length !== -1 ? name.substr(0, length) : name;
-}
-
-export function getFunctionSignature(func) {
-    const fullName = transformToFullName(func);
-    return ethUtil.sha3(fullName).toString('hex').slice(0, 8);
 }
 
 /**
@@ -141,7 +109,7 @@ export function etherToWei(val) {
 
 export function toHex(val) {
     const hex = val.toString(16);
-    return '0x' + (hex.length % 2 != 0 ? '0' + hex : hex);
+    return `0x${(hex.length % 2 !== 0 ? '0' + hex : hex)}`;
 }
 
 export function parseHexQuantity(val, defaultValue) {
@@ -149,4 +117,48 @@ export function parseHexQuantity(val, defaultValue) {
         return defaultValue;
     }
     return new BigNumber(val, 16);
+}
+
+/**
+ * Create full function/event name from json abi
+ *
+ * @method transformToFullName
+ * @param {Object} json-abi
+ * @return {String} full function/event name
+ */
+export function transformToFullName(json) {
+    if (json.name.indexOf('(') !== -1) {
+        return json.name;
+    }
+    const typeName = json.inputs.map((i) => i.type).join();
+    return `${json.name}(${typeName})`;
+}
+
+export function getFunctionSignature(func) {
+    const fullName = transformToFullName(func);
+    return ethUtil.sha3(fullName).toString('hex').slice(0, 8);
+}
+
+export function functionToData(func, inputs) {
+    let types = [];
+    let values = [];
+    func.get('inputs').forEach((input) => {
+        types.push(input.get('type'));
+        values.push(inputs[input.get('name')]);
+    });
+    const data = Buffer.concat([ethAbi.methodID(func.get('name'), types), ethAbi.rawEncode(types, values)]).toString('hex');
+    return `0x${data}`;
+}
+
+export function dataToParams(func, data) {
+    data = new Buffer(data.replace('0x', ''), 'hex');
+    const types = func.get('outputs').map((output) => output.get('type')).toArray();
+    const params = ethAbi.rawDecode(types, data);
+    return func.get('outputs').map((o, i) => { 
+        return {
+            type: o.get('type'), 
+            name: o.get('name'), 
+            value: (params[i] instanceof BigNumber) ? params[i].toString() : params[i]
+        }
+    });
 }
