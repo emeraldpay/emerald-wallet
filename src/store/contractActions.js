@@ -1,6 +1,7 @@
 import { rpc } from '../lib/rpc';
 import log from 'loglevel';
-import { functionToData } from '../lib/convert';
+import { functionToData, dataToParams } from '../lib/convert';
+import { loadAccountBalance } from './accountActions';
 
 export function loadContractList() {
     return (dispatch) => {
@@ -41,34 +42,55 @@ export function addContract(address, name, abi, version, options, txhash) {
         });
 }
 
-export function callContract(accountId, password, to, gas, value, func, inputs) {
-    console.log(func)
+/**
+ * Call Contract without creating transaction
+ * Result of eth_call should be the return value of executed contract.
+ */
+export function callContract(contractAddress, func, inputs) {
+    console.log(func);
     return (dispatch) => {
-        let pwHeader = null;
-        if (password)
-            pwHeader = new Buffer(password).toString('base64');
         const data = functionToData(func, inputs);
         return rpc.call('eth_call', [{
-            to,
-            from: accountId,
-            gas,
-            value,
+            to: contractAddress,
             data,
-        }, 'latest'], {
-            Authorization: pwHeader,
-        }).then((result) => {
+        }, 'latest']).then((result) => {
+            const outputs = dataToParams(func, result);
             dispatch({
-                type: 'ACCOUNT/CALL_CONTRACT',
-                accountId,
-                txHash: result,
+                type: 'CONTRACT/CALL_CONTRACT',
+                contractAddress,
+                result: outputs,
             });
-            return result;
+            return outputs;
         });
     };
 }
 
-export function estimateGas(data) {
+export function sendContractTransaction(accountId, password, contractAddress, gas, value, func, inputs) {
+    const pwHeader = new Buffer(password).toString('base64');
+    const data = functionToData(func, inputs);
     return (dispatch) =>
+        rpc.call('eth_sendTransaction', [{
+            from: accountId,
+            to: contractAddress,
+            gas,
+            value,
+            data,
+        }], {
+            Authorization: pwHeader,
+        }).then((result) => {
+            dispatch({
+                type: 'ACCOUNT/SEND_TRANSACTION',
+                accountId,
+                txHash: result,
+            });
+            dispatch(loadAccountBalance(accountId));
+            return result;
+        });
+}
+
+
+export function estimateGas(data) {
+    return () =>
         rpc.call('eth_estimateGas', [{ data }]).then((result) => {
             return isNaN(parseInt(result)) ? 0 : parseInt(result);
         });
