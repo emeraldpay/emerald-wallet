@@ -10,7 +10,7 @@ import { number, required, address } from 'lib/validators';
 import { cardSpace, code } from '../../lib/styles';
 import { etherToWei, toHex, estimateGasFromTrace } from 'lib/convert';
 import { trackTx } from 'store/accountActions';
-import { callContract } from 'store/contractActions';
+import { callContract, sendContractTransaction } from 'store/contractActions';
 
 
 class RenderABIForm extends React.Component {
@@ -40,10 +40,47 @@ class RenderABIForm extends React.Component {
         this.setState({ 
             inputs: inputs, 
             outputs: outputs, 
-            function: value.get('name'),
+            function: value,
             constant: value.get('constant'),
             payable: value.get('payable')
         })
+    }
+
+    updateInputVals = (event, value, prev) => {
+        log.debug(value)
+        log.debug(event.target)
+        const idx = this.state.inputs.findKey((input) => input.get('name') === event.target.name);
+        if (idx >= 0)
+            this.setState({
+                inputs: this.state.inputs.update(idx, (input) => input.set('value', value)
+                )}
+            );
+    }
+
+    /*
+      after callContract:
+        Expect return value of executed contract
+        Display decoded output params
+    */
+    callContract = () => {
+        const args = this.state.inputs.reduce((res, input) => {
+            res[input.get('name')] = input.get('value');
+            return res;
+        }, {});
+        const address = this.props.contract.get('address');
+        if (this.state.constant) 
+            return new Promise((resolve, reject) => {
+                this.props.dispatch(callContract(address,
+                                this.state.function,
+                                args
+                            )).then((result) => {
+                                if (result.size > 0) {
+                                    const cleanDecode = result.map((res) => Immutable.fromJS(res))
+                                    this.setState({ outputs: cleanDecode })
+                                    resolve();
+                                }
+                            });
+            });
     }
 
     render() {
@@ -70,19 +107,20 @@ class RenderABIForm extends React.Component {
                     <Row>
                         {this.state.inputs && this.state.inputs.map( (input) => 
                         <Col xs={6}>
-                            <Field  key={`${this.state.function} ${input.get('name')} IN`}
+                            <Field  key={`${this.state.function.get('name')} ${input.get('name')} IN`}
                                     name={input.get('name')}
                                     floatingLabelText={`${input.get('name')} (${input.get('type')})`}
                                     hintText={input.get('type')}
                                     component={TextField}
+                                    onChange={this.updateInputVals}
                             />
                         </Col>
                         )}
                         {this.state.outputs && this.state.outputs.map( (output) => 
                         <Col xs={6}>
-                            <div key={`${this.state.function} ${output.get('name')} OUT`}>
+                            <div key={`${this.state.function.get('name')} ${output.get('name')} OUT`}>
                                 <b>{`${output.get('name')}`}</b> {`(${output.get('type')})`}<br />
-                                <div style={code}>Insert output here</div>
+                                <div style={code}>{(output.get('value') || ' ').toString()}</div>
                             </div>
                         </Col>
                         )}
@@ -122,10 +160,14 @@ class RenderABIForm extends React.Component {
                     </Row>}
                 </CardText>
                 <CardActions>
-                    <FlatButton label="Submit"
+                    {this.state.constant && <FlatButton label="Submit"
+                                disabled={this.props.pristine || this.props.submitting || this.props.invalid }
+                                onClick={this.callContract}
+                                icon={<FontIcon className="fa fa-check" />}/>}
+                    {!this.state.constant && <FlatButton label="Submit"
                                 disabled={this.props.pristine || this.props.submitting || this.props.invalid }
                                 onClick={this.props.handleSubmit}
-                                icon={<FontIcon className="fa fa-check" />}/>
+                                icon={<FontIcon className="fa fa-check" />}/>}                                
                     <FlatButton label="Clear"
                                 onClick={this.props.reset}
                                 icon={<FontIcon className="fa fa-ban" />}/>
@@ -158,14 +200,13 @@ const InteractContract = connect(
     (dispatch, ownProps) => {
         return {
             onSubmit: data => {
-                log.debug(data);
-                
                 const afterTx = (txhash) => {
                     let txdetails = {
                         hash: txhash,
                         account: data.from 
                     };
                     dispatch(trackTx(txhash));
+                    dispatch(gotoScreen('transaction', txdetails));
                 };
                 const resolver = (resolve, f) => {
                     return (x) => {
@@ -194,7 +235,7 @@ const InteractContract = connect(
                             return inputs;
                         }, {})
                     log.debug(args)
-                    dispatch(callContract(data.from, data.password, address,
+                    dispatch(sendContractTransaction(data.from, data.password, address,
                         toHex(data.gasAmount || 0), 
                         toHex(etherToWei(value || 0)),
                         data.function,
