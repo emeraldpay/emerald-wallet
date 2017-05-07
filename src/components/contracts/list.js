@@ -32,7 +32,7 @@ const Render = ({contracts}) => {
     const titleAvatar = <Avatar icon={<LibraryBooks />} />;
 
     return (
-        <div id="accounts-list">
+        <div id="contracts-list">
             <Card style={cardSpace}>
                 <CardHeader
                     title="Contracts List"

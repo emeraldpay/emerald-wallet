@@ -13,3 +13,11 @@ script:
   - if [[ $(license-checker --production --exclude '(GPL-2.0 OR MIT)' | grep GPL) ]]; then license-checker --production | grep -C 1 GPL && false; fi
   - npm run build
   - if [[ $FULL_CHECK == "true" ]]; then npm run lint --silent; fi
+env:
+  - CXX=g++-4.8
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-4.8

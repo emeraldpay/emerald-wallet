@@ -28,10 +28,9 @@ const Contract = connect(
     },
     (dispatch, ownProps) => {
         return {
-            openAccount: () => {
+            openContract: () => {
                 const contract = ownProps.contract;
-                console.log("Go to contract interaction page")
-                //dispatch(gotoScreen('contract', contract))
+                dispatch(gotoScreen('contract', contract))
             }
         }
     }

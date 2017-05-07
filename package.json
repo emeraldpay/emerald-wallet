@@ -39,6 +39,7 @@
     "bignumber.js": "4.0.0",
     "classnames": "^2.1.2",
     "ethereumjs-util": "5.1.1",
+    "ethereumjs-abi": "0.6.4",
     "fbjs": "0.8.9",
     "flexboxgrid": "^6.3.0",
     "font-awesome": "4.7.0",
@@ -64,7 +65,8 @@
     "redux-form-material-ui": "^4.1.2",
     "redux-logger": "2.8.1",
     "redux-thunk": "2.2.0",
-    "roboto-fontface": "0.7.0"
+    "roboto-fontface": "0.7.0",
+    "store": "^2.0.4"
   },
   "devDependencies": {
     "@elastic/webpack-directory-name-as-main": "2.0.2",
