@@ -1,5 +1,6 @@
 import { rpc } from '../lib/rpc';
 import log from 'loglevel';
+import { functionToData } from '../lib/convert';
 
 export function loadContractList() {
     return (dispatch) => {
@@ -38,6 +39,32 @@ export function addContract(address, name, abi, version, options, txhash) {
                 txhash,
             });
         });
+}
+
+export function callContract(accountId, password, to, gas, value, func, inputs) {
+    console.log(func)
+    return (dispatch) => {
+        let pwHeader = null;
+        if (password)
+            pwHeader = new Buffer(password).toString('base64');
+        const data = functionToData(func, inputs);
+        return rpc.call('eth_call', [{
+            to,
+            from: accountId,
+            gas,
+            value,
+            data,
+        }, 'latest'], {
+            Authorization: pwHeader,
+        }).then((result) => {
+            dispatch({
+                type: 'ACCOUNT/CALL_CONTRACT',
+                accountId,
+                txHash: result,
+            });
+            return result;
+        });
+    };
 }
 
 export function estimateGas(data) {
