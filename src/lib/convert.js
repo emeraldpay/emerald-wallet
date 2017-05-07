@@ -158,7 +158,7 @@ export function dataToParams(func, data) {
         return {
             type: o.get('type'), 
             name: o.get('name'), 
-            value: params[i]
+            value: (params[i] instanceof BigNumber) ? params[i].toString() : params[i]
         }
     });
 }
