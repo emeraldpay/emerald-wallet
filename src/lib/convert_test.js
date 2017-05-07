@@ -1,5 +1,6 @@
 import BigNumber from 'bignumber.js';
-import { toHex, fromTokens, transformToFullName, extractDisplayName, getFunctionSignature, mweiToWei, etherToWei, estimateGasFromTrace } from './convert';
+import { toHex, fromTokens, mweiToWei, etherToWei, estimateGasFromTrace } from './convert';
+import { transformToFullName, functionToData, getFunctionSignature } from './convert';
 
 describe("Hex Converter", () => {
     it("convert decimal number to hex", () => {
@@ -25,15 +26,10 @@ describe("Token Converter", () => {
 describe("Function Converter", () => {
     const balanceOf = {"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"type":"function"}
     const transfer = {"constant":false,"inputs":[{"name":"_to","type":"address"},{"name":"_value","type":"uint256"}],"name":"transfer","outputs":[{"name":"success","type":"bool"}],"payable":false,"type":"function"}
-    it("extract name from function", () => {
-        expect(extractDisplayName("balanceOf")).toEqual("balanceOf");
-    });
-    it("extract name from function", () => {
-        expect(extractDisplayName("balanceOf()")).toEqual("balanceOf");
-    });
+    const balanceArgs = {"_owner": "0xbb0000000aaaa000000000000000000000000bb"}
+    const transferArgs = {"_to": "0xaa00000000bbbb000000000000000000000000aa", "_value": 10}
     it("get full name from ABI", () => {
         expect(transformToFullName(balanceOf)).toEqual('balanceOf(address)');
-        expect(extractDisplayName(transformToFullName(balanceOf))).toEqual("balanceOf")
     });
     it("get full name from ABI", () => {
         expect(transformToFullName(transfer)).toEqual('transfer(address,uint256)');
@@ -43,6 +39,19 @@ describe("Function Converter", () => {
     });
     it("get function signature from ABI", () => {
         expect(getFunctionSignature(balanceOf)).toEqual("70a08231");
+    });
+    it("convert function to data", () => {
+        expect(functionToData(balanceOf, balanceArgs))
+        .toEqual("0x70a082310000000000000000000000000bb0000000aaaa000000000000000000000000bb");
+    });
+    it("convert function to data", () => {
+        expect(functionToData(transfer, transferArgs))
+        .toEqual("0xa9059cbb000000000000000000000000aa00000000bbbb000000000000000000000000aa000000000000000000000000000000000000000000000000000000000000000a");
+    });
+    it("ignore bad args", () => {
+        const badArgs = {"_owner": "0xbb0000000aaaa000000000000000000000000bb", "_elaine": 123}
+        expect(functionToData(balanceOf, badArgs))
+        .toEqual("0x70a082310000000000000000000000000bb0000000aaaa000000000000000000000000bb");
     })
 });
 
