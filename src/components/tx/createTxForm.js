@@ -3,11 +3,8 @@ import { Field, reduxForm, change, formValueSelector, SubmissionError } from 're
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import { SelectField, TextField, RadioButtonGroup } from 'redux-form-material-ui';
 import { RadioButton} from 'material-ui/RadioButton';
-import { MenuItem, FlatButton, FontIcon } from 'material-ui';
-import { Divider } from 'material-ui/Divider';
-import { IconMenu } from 'material-ui/IconMenu';
-import { IconButton } from 'material-ui/IconButton';
-import { ImportContacts } from 'material-ui/svg-icons/communication/import-contacts';
+import { MenuItem, FlatButton, FontIcon, Divider, IconMenu, IconButton } from 'material-ui';
+import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { red200 } from 'material-ui/styles/colors';
 import { cardSpace } from '../../lib/styles';
@@ -36,8 +33,8 @@ const Render = (props) => {
                        floatingLabelText="From"
                        component={SelectField}
                        fullWidth={true}>
-                  {accounts.map( (account) =>
-                    <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
+                  {accounts.map( (acc) =>
+                    <MenuItem key={acc.get('id')} value={acc.get('id')} primaryText={acc.get('id')} />
                   )}
                 </Field>
               </Col>
@@ -64,12 +61,12 @@ const Render = (props) => {
                     iconButtonElement={<IconButton><ImportContacts /></IconButton>}
                     onItemTouchTap={handleSelect}
                 >
-                {accounts.map( (account) => 
-                  <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
+                {accounts.map( (acc) => 
+                  <MenuItem key={`${acc.get('id')}`} value={acc.get('id')} primaryText={acc.get('id')} />
                 )}
                 <Divider />
-                {addressBook.map( (account) => 
-                  <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
+                {addressBook.map( (acc) => 
+                  <MenuItem key={`${acc.get('id')}`} value={acc.get('id')} primaryText={acc.get('id')} />
                 )} 
                 </IconMenu>
               </Col>
