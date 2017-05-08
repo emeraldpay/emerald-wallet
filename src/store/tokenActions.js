@@ -1,4 +1,5 @@
 import { rpc } from '../lib/rpc';
+import Immutable from 'immutable';
 import { parseString, getNakedAddress, fromTokens, functionToData, getFunctionSignature } from 'lib/convert';
 
 /** Abbreviated ABI for ERC20-compatible tokens **/
@@ -32,10 +33,13 @@ const TokenAbi = [
         outputs:[{name:'',type:'string'}]},
     {name:'decimals',
         inputs:[],
-        outputs:[{name:'',type:'uint8'}]}];
+        outputs:[{name:'',type:'uint8'}]}
+        ];
 
 function getFunction(name) {
-    TokenAbi.find((f) => (f.name === name));
+    return Immutable.fromJS( 
+        TokenAbi.find((f) => (f.name === name))
+        );
 }
 
 export function loadTokenBalanceOf(token, accountId) {
