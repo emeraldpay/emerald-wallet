@@ -131,8 +131,8 @@ const CreateTx = connect(
                 
             },
             handleSelect: (event, item) => {
-                 dispatch(change("createTx", "to", item.props.value))
-            },
+                dispatch(change("createTx", "to", item.props.value))
+            },            
             cancel: () => {
                 dispatch(gotoScreen('home'))
             }
