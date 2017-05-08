@@ -100,20 +100,18 @@ export function transferTokenTransaction(accountId, password, to, gas, gasPrice,
         const token = tokens.get('tokens').find((tok) => tok.get('address') === tokenId);
         const numTokens = padLeft(fromTokens(value, token.get('decimals')).toString(16), 64);
         const address = padLeft(getNakedAddress(to), 64);
-        const pwHeader = new Buffer(password).toString('base64');
         let data;
         if (isTransfer === 'true') data = transferId + address + numTokens;
         else data = approveId + address + numTokens;
         return rpc.call('eth_call', [{
             to: tokenId,
+            password,
             from: accountId,
             gas,
             gasPrice,
             value: '0x00',
             data,
-        }, 'latest'], {
-            Authorization: pwHeader,
-        }).then((result) => {
+        }, 'latest']).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SEND_TOKEN_TRANSACTION',
                 accountId,
