@@ -20,7 +20,7 @@ import { gotoScreen } from 'store/screenActions';
 import './main.scss';
 import Screen from './screen';
 
-const Menu = ({openAccounts, openAddressBook, openContracts, switchChain, networks, chain}) => (
+const Menu = ({ openAccounts, openAddressBook, openContracts, switchChain, networks, chain }) => (
   <IconMenu
     iconButtonElement={
       <IconButton><ExpandMoreIcon color="white" /></IconButton>
@@ -31,21 +31,21 @@ const Menu = ({openAccounts, openAddressBook, openContracts, switchChain, networ
     <MenuItem leftIcon={<Face />} primaryText="Home" onClick={openAccounts} />
     <MenuItem leftIcon={<ImportContacts />} primaryText="Address Book" onClick={openAddressBook} />
     <MenuItem leftIcon={<LibraryBooks />} primaryText="Contracts" onClick={openContracts} />
-    <MenuItem 
-        leftIcon={<Motorcycle />} 
-        primaryText="Network" 
+    <MenuItem
+        leftIcon={<Motorcycle />}
+        primaryText="Network"
         rightIcon={<ArrowDropRight />}
         menuItems=
-            {networks.map( (net) => 
-              <MenuItem 
-                key={net.get('id')} 
+            {networks.map((net) =>
+              <MenuItem
+                key={net.get('id')}
                 primaryText={net.get('name')}
-                checked={(net.get('name')===chain)}
-                onClick={() => (net.get('name')!==chain) && switchChain(net)}
-              />,  
+                checked={(net.get('name') === chain)}
+                onClick={() => (net.get('name') !== chain) && switchChain(net)}
+              />
             )}
-          
-    />    
+
+    />
   </IconMenu>
 );
 
@@ -82,24 +82,24 @@ const Render = (props) => (
 const Main = connect(
     (state, ownProps) => ({
         chain: (state.network.get('chain') || {}).get('name'),
-        networks: Networks
+        networks: Networks,
     }),
     (dispatch, ownProps) => ({
         openAccounts: () => {
-            console.log("accounts")
-            dispatch(gotoScreen('home'))
+            log.info('accounts');
+            dispatch(gotoScreen('home'));
         },
         openAddressBook: () => {
-            console.log("address book")
-            dispatch(gotoScreen('address-book'))
+            log.info('address book');
+            dispatch(gotoScreen('address-book'));
         },
         openContracts: () => {
-            console.log("contracts")
-            dispatch(gotoScreen('contracts'))
+            log.info('contracts');
+            dispatch(gotoScreen('contracts'));
         },
         switchChain: (network) => {
-            dispatch(switchChain(network.get('name'), network.get('id')))
-        }
+            dispatch(switchChain(network.get('name'), network.get('id')));
+        },
     })
 )(Render);
 
