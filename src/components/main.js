@@ -11,12 +11,16 @@ import ExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import Face from 'material-ui/svg-icons/action/face';
 import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
 import LibraryBooks from 'material-ui/svg-icons/av/library-books';
+import Motorcycle from 'material-ui/svg-icons/action/motorcycle';
+import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
 import log from 'loglevel';
+import Networks from 'lib/networks';
+import { switchChain } from 'store/networkActions';
 import { gotoScreen } from 'store/screenActions';
 import './main.scss';
 import Screen from './screen';
 
-const Menu = ({ openAccounts, openAddressBook, openContracts }) => (
+const Menu = ({openAccounts, openAddressBook, openContracts, switchChain, networks, chain}) => (
   <IconMenu
     iconButtonElement={
       <IconButton><ExpandMoreIcon color="white" /></IconButton>
@@ -27,6 +31,21 @@ const Menu = ({ openAccounts, openAddressBook, openContracts }) => (
     <MenuItem leftIcon={<Face />} primaryText="Home" onClick={openAccounts} />
     <MenuItem leftIcon={<ImportContacts />} primaryText="Address Book" onClick={openAddressBook} />
     <MenuItem leftIcon={<LibraryBooks />} primaryText="Contracts" onClick={openContracts} />
+    <MenuItem 
+        leftIcon={<Motorcycle />} 
+        primaryText="Network" 
+        rightIcon={<ArrowDropRight />}
+        menuItems=
+            {networks.map( (net) => 
+              <MenuItem 
+                key={net.get('id')} 
+                primaryText={net.get('name')}
+                checked={(net.get('name')===chain)}
+                onClick={() => (net.get('name')!==chain) && switchChain(net)}
+              />,  
+            )}
+          
+    />    
   </IconMenu>
 );
 
@@ -61,20 +80,26 @@ const Render = (props) => (
 );
 
 const Main = connect(
-    (state, ownProps) => ({}),
+    (state, ownProps) => ({
+        chain: (state.network.get('chain') || {}).get('name'),
+        networks: Networks
+    }),
     (dispatch, ownProps) => ({
         openAccounts: () => {
-            log.info('accounts');
-            dispatch(gotoScreen('home'));
+            console.log("accounts")
+            dispatch(gotoScreen('home'))
         },
         openAddressBook: () => {
-            log.info('address book');
-            dispatch(gotoScreen('address-book'));
+            console.log("address book")
+            dispatch(gotoScreen('address-book'))
         },
         openContracts: () => {
-            log.info('contracts');
-            dispatch(gotoScreen('contracts'));
+            console.log("contracts")
+            dispatch(gotoScreen('contracts'))
         },
+        switchChain: (network) => {
+            dispatch(switchChain(network.get('name'), network.get('id')))
+        }
     })
 )(Render);
 
