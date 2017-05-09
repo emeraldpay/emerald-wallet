@@ -4,7 +4,6 @@ import AppBar from 'material-ui/AppBar';
 import IconMenu from 'material-ui/IconMenu';
 import MenuItem from 'material-ui/MenuItem';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
-import './main.scss';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
@@ -12,16 +11,18 @@ import ExpandMoreIcon from 'material-ui/svg-icons/navigation/expand-more';
 import Face from 'material-ui/svg-icons/action/face';
 import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
 import LibraryBooks from 'material-ui/svg-icons/av/library-books';
+import log from 'loglevel';
+import { gotoScreen } from 'store/screenActions';
+import './main.scss';
 import Screen from './screen';
-import { gotoScreen } from '../store/screenActions';
 
-const Menu = ({openAccounts, openAddressBook, openContracts}) => (
+const Menu = ({ openAccounts, openAddressBook, openContracts }) => (
   <IconMenu
     iconButtonElement={
       <IconButton><ExpandMoreIcon color="white" /></IconButton>
     }
-    targetOrigin={{horizontal: 'right', vertical: 'top'}}
-    anchorOrigin={{horizontal: 'right', vertical: 'top'}}
+    targetOrigin={{ horizontal: 'right', vertical: 'top' }}
+    anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
   >
     <MenuItem leftIcon={<Face />} primaryText="Home" onClick={openAccounts} />
     <MenuItem leftIcon={<ImportContacts />} primaryText="Address Book" onClick={openAddressBook} />
@@ -60,25 +61,21 @@ const Render = (props) => (
 );
 
 const Main = connect(
-    (state, ownProps) => {
-        return {}
-    },
-    (dispatch, ownProps) => {
-        return {
-            openAccounts: () => {
-                console.log("accounts")
-                dispatch(gotoScreen('home'))
-            },
-            openAddressBook: () => {
-                console.log("address book")
-                dispatch(gotoScreen('address-book'))
-            },
-            openContracts: () => {
-                console.log("contracts")
-                dispatch(gotoScreen('contracts'))
-            }
-        }
-    }
+    (state, ownProps) => ({}),
+    (dispatch, ownProps) => ({
+        openAccounts: () => {
+            log.info('accounts');
+            dispatch(gotoScreen('home'));
+        },
+        openAddressBook: () => {
+            log.info('address book');
+            dispatch(gotoScreen('address-book'));
+        },
+        openContracts: () => {
+            log.info('contracts');
+            dispatch(gotoScreen('contracts'));
+        },
+    })
 )(Render);
 
 export default Main;

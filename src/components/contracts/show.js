@@ -1,22 +1,17 @@
 import React from 'react';
-import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { Card, CardTitle, CardHeader, CardText } from 'material-ui/Card';
 import { FlatButton, FontIcon } from 'material-ui';
-import { Row, Col } from 'react-flexbox-grid/lib/index';
-import { DescriptionList, DescriptionTitle, DescriptionData} from '../../elements/dl';
-import log from 'loglevel';
-import { cardSpace, code } from '../../lib/styles';
-import { gotoScreen } from '../../store/screenActions';
+import { Row } from 'react-flexbox-grid/lib/index';
+import { DescriptionList, DescriptionTitle, DescriptionData } from 'elements/dl';
+import { cardSpace, code } from 'lib/styles';
 
-import InteractContract from './interactForm'
+import InteractContract from './interactForm';
 
-const Render = ({contract, functions, inputs, callContract}) => {
-
-    return (
+const Render = ({ contract, functions, inputs, callContract }) => (
         <Card style={cardSpace}>
             <CardHeader
-                title={'Contract: ' + contract.get('name')}
+                title={`Contract: ${contract.get('name')}`}
                 subtitle={contract.get('address')}
             />
             <CardText>
@@ -33,9 +28,9 @@ const Render = ({contract, functions, inputs, callContract}) => {
                 <Row>
                     <b>ABI / JSON Interface</b>
                     <div style={code}>
-                     {JSON.stringify(contract.get('abi'))} 
+                     {JSON.stringify(contract.get('abi'))}
                     </div>
-                </Row>           
+                </Row>
             </CardText>
             <CardTitle actAsExpander={true}>
                 <FlatButton label="Access Contract"
@@ -46,24 +41,18 @@ const Render = ({contract, functions, inputs, callContract}) => {
                 <InteractContract contract={contract} />
             </CardText>
         </Card>
-    )
-};
-
+    );
 
 
 const ContractShow = connect(
-    (state, ownProps) => {
-        return {
+    (state, ownProps) => ({
 
-        }
-    },
-    (dispatch, ownProps) => {
-        return {
-            callContract: () => {
-                
-            }
-        }
-    }
+    }),
+    (dispatch, ownProps) => ({
+        callContract: () => {
+
+        },
+    })
 )(Render);
 
-export default ContractShow
+export default ContractShow;

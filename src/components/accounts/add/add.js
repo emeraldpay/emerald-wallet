@@ -1,23 +1,18 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from 'redux-form';
+import { reduxForm } from 'redux-form';
 
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
-import {List, ListItem} from 'material-ui/List';
-import Subheader from 'material-ui/Subheader';
+import { List, ListItem } from 'material-ui/List';
 
 import { cardSpace } from 'lib/styles';
-import { Row, Col } from 'react-flexbox-grid/lib/index';
 
 import { gotoScreen } from 'store/screenActions';
 import { positive, number, required, address } from 'lib/validators';
-import log from 'loglevel';
 
-const Render = ({fields: {}, handleSubmit, resetForm, submitting, generate, importJson, cancel}) => {
-
-    return (
+const Render = ({ handleSubmit, resetForm, submitting, generate, importJson, cancel }) => (
         <Card style={cardSpace}>
             <CardHeader
                 title='Add Account'
@@ -30,7 +25,7 @@ const Render = ({fields: {}, handleSubmit, resetForm, submitting, generate, impo
                     <ListItem
                         primaryText="Generate"
                         secondaryText="Generates a new private/public key pair"
-                        onClick={generate}                        
+                        onClick={generate}
                         leftIcon={<FontIcon className="fa fa-random"/>}
                     />
                     <ListItem
@@ -49,35 +44,30 @@ const Render = ({fields: {}, handleSubmit, resetForm, submitting, generate, impo
                             icon={<FontIcon className="fa fa-ban" />}/>
             </CardActions>
         </Card>
-    )
-};
+    );
 
 const CreateAccountForm = reduxForm({
     form: 'createAccount',
-    fields: ['name']
+    fields: ['name'],
 })(Render);
 
 const CreateAccount = connect(
-    (state, ownProps) => {
-        return {
-            initialValues: {
-            }
-        }
-    },
-    (dispatch, ownProps) => {
-        return {
-            cancel: () => {
-                dispatch(gotoScreen('home'))
-            },
-            generate: () => {
-                dispatch(gotoScreen('generate'))
-            },
-            importJson: () => {
-                dispatch(gotoScreen('importjson'))
-            }            
-        }
-    }
+    (state, ownProps) => ({
+        initialValues: {
+        },
+    }),
+    (dispatch, ownProps) => ({
+        cancel: () => {
+            dispatch(gotoScreen('home'));
+        },
+        generate: () => {
+            dispatch(gotoScreen('generate'));
+        },
+        importJson: () => {
+            dispatch(gotoScreen('importjson'));
+        },
+    })
 )(CreateAccountForm);
 
 
-export default CreateAccount
+export default CreateAccount;

@@ -1,17 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
-import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import Avatar from 'material-ui/Avatar';
 import LinearProgress from 'material-ui/LinearProgress';
-import { cardSpace } from '../../lib/styles';
-import log from 'loglevel';
-import Immutable from 'immutable';
+import { cardSpace } from 'lib/styles';
 
-const Render = ({block, syncing}) => {
-
-    let networkDetails = "Block " + block;
+const Render = ({ block, syncing }) => {
+    let networkDetails = `Block ${block}`;
     const titleAvatar = <Avatar icon={<FontIcon className="fa fa-signal fa-2x" />} />;
 
     let progress = null;
@@ -20,7 +16,7 @@ const Render = ({block, syncing}) => {
                                    min={syncing.get('startingBlock')}
                                    max={syncing.get('highestBlock')}
                                    value={syncing.get('currentBlock')} />;
-        networkDetails = "Block " + syncing.get('currentBlock') + " of " + syncing.get('highestBlock')
+        networkDetails = `Block ${syncing.get('currentBlock')} of ${syncing.get('highestBlock')}`;
     }
 
     return (
@@ -38,19 +34,15 @@ const Render = ({block, syncing}) => {
             <CardText expandable={false}>
             </CardText>
         </Card>
-    )
+    );
 };
 
 const Status = connect(
-    (state, ownProps) => {
-        return {
-            block: state.network.getIn(["currentBlock", "height"], -1),
-            syncing: state.network.get("sync")
-        }
-    },
-    (dispatch, ownProps) => {
-        return {}
-    }
+    (state, ownProps) => ({
+        block: state.network.getIn(['currentBlock', 'height'], -1),
+        syncing: state.network.get('sync'),
+    }),
+    (dispatch, ownProps) => ({})
 )(Render);
 
-export default Status
+export default Status;

@@ -22,7 +22,9 @@ import log from 'loglevel';
 const DefaultGas = 300000;
 const OptionValues = ['ERC20', 'ERC23'];
 
-const Render = ({fields: {from, options}, optionVals, accounts, estimateGas, handleSubmit, invalid, pristine, reset, submitting, cancel}) => {
+const Render = ({ fields: { from, options },
+                  optionVals, accounts, estimateGas,
+                  handleSubmit, invalid, pristine, reset, submitting, cancel }) => {
     log.debug('fields - from', from);
 
     return (
@@ -41,20 +43,22 @@ const Render = ({fields: {from, options}, optionVals, accounts, estimateGas, han
                                component={SelectField}
                                fullWidth={true}
                                validate={ [required, address] } >
-                               {accounts.map( (account) => 
-                                <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
+                               {accounts.map((account) =>
+                                <MenuItem key={account.get('id')}
+                                          value={account.get('id')}
+                                          primaryText={account.get('id')} />
                                 )}
                         </Field>
-                        <Field  name="password"
+                        <Field name="password"
                                 floatingLabelText="Password"
                                 type="password"
                                 component={TextField}
                                 validate={required} />
-                        <Field  name="bytecode" 
-                                component={renderCodeField} 
+                        <Field name="bytecode"
+                                component={renderCodeField}
                                 rows={4}
-                                type="text" 
-                                label="Bytecode" 
+                                type="text"
+                                label="Bytecode"
                                 onChange={estimateGas}
                                 validate={ [required, hex] } />
                         <Field name="gasPrice"
@@ -82,9 +86,9 @@ const Render = ({fields: {from, options}, optionVals, accounts, estimateGas, han
                               showExpandableButton={true}
                             />
                             <CardText expandable={true}>
-                                <Field  name="name" 
-                                        component={TextField} 
-                                        type="text" 
+                                <Field name="name"
+                                        component={TextField}
+                                        type="text"
                                         floatingLabelText="Contract Name" />
                                 <Field name="version"
                                        type="number"
@@ -92,13 +96,13 @@ const Render = ({fields: {from, options}, optionVals, accounts, estimateGas, han
                                        floatingLabelText="Version"
                                        hintText="1.0000"
                                 />
-                                <Field  name="abi" 
-                                        component={renderCodeField} 
+                                <Field name="abi"
+                                        component={renderCodeField}
                                         rows={2}
-                                        type="text" 
+                                        type="text"
                                         label="Contract ABI / JSON Interface" />
-                                <Field  name="options" 
-                                        options={optionVals} 
+                                <Field name="options"
+                                        options={optionVals}
                                         component={renderCheckboxField} />
                             </CardText>
                         </Card>
@@ -108,77 +112,68 @@ const Render = ({fields: {from, options}, optionVals, accounts, estimateGas, han
 
             </CardText>
             <CardActions>
-                <FlatButton label="Submit" 
+                <FlatButton label="Submit"
                             onClick={handleSubmit}
                             disabled={pristine || submitting || invalid } />
-                <FlatButton label="Clear Values" 
-                            disabled={pristine || submitting} 
-                            onClick={reset} />            
+                <FlatButton label="Clear Values"
+                            disabled={pristine || submitting}
+                            onClick={reset} />
                 <FlatButton label="Cancel"
                             onClick={cancel}
                             icon={<FontIcon className="fa fa-ban" />}/>
             </CardActions>
         </Card>
-        );
+    );
 };
 
 const DeployContractForm = reduxForm({
     form: 'deployContract',
-    fields: ['from', 'bytecode', 'options']
+    fields: ['from', 'bytecode', 'options'],
 })(Render);
 
 const DeployContract = connect(
-    (state, ownProps) => {
-        return {
-            initialValues: {
-                gasPrice: 10000,
-                gasAmount: DefaultGas,
-                options: []
-            },
-            accounts: state.accounts.get('accounts', Immutable.List()),
-            optionVals: OptionValues
-        }
-    },
-    (dispatch, ownProps) => {
-        return {
-            estimateGas: (event, value) => {
-                return new Promise((resolve, reject) => {
-                    dispatch(estimateGas(value))
-                        .then(function(response) {
+    (state, ownProps) => ({
+        initialValues: {
+            gasPrice: 10000,
+            gasAmount: DefaultGas,
+            options: [],
+        },
+        accounts: state.accounts.get('accounts', Immutable.List()),
+        optionVals: OptionValues,
+    }),
+    (dispatch, ownProps) => ({
+        estimateGas: (event, value) => new Promise((resolve, reject) => {
+            dispatch(estimateGas(value))
+                        .then((response) => {
                             resolve(response);
-                            dispatch(change("deployContract", "gasAmount", response));
+                            dispatch(change('deployContract', 'gasAmount', response));
                         });
-                });
-            },
-            onSubmit: data => {
-                console.log(data)
-                const afterTx = (txhash) => {
-                    let txdetails = {
-                        hash: txhash,
-                        accountId: data.from 
-                    };
-                    dispatch(addContract(null, data.name, data.abi, data.version, data.options, txhash))
-                    dispatch(trackTx(txhash));
-                    dispatch(gotoScreen('transaction', txdetails));
+        }),
+        onSubmit: (data) => {
+            const afterTx = (txhash) => {
+                const txdetails = {
+                    hash: txhash,
+                    accountId: data.from,
                 };
-                const resolver = (resolve, f) => {
-                    return (x) => {
-                        f.apply(x);
-                        resolve(x);
-                    }
-                };
-                return new Promise((resolve, reject) => {
-                    dispatch(createContract(data.from, data.password, 
+                dispatch(addContract(null, data.name, data.abi, data.version, data.options, txhash));
+                dispatch(trackTx(txhash));
+                dispatch(gotoScreen('transaction', txdetails));
+            };
+            const resolver = (resolve, f) => (x) => {
+                f.apply(x);
+                resolve(x);
+            };
+            return new Promise((resolve, reject) => {
+                dispatch(createContract(data.from, data.password,
                         toHex(data.gasAmount), toHex(mweiToWei(data.gasPrice)),
                         data.bytecode
                     )).then(resolver(afterTx, resolve));
-                })
-            },
-            cancel: () => {
-                dispatch(gotoScreen('contracts'))
-            }
-        }
-    }
+            });
+        },
+        cancel: () => {
+            dispatch(gotoScreen('contracts'));
+        },
+    })
 )(DeployContractForm);
 
 export default DeployContract;

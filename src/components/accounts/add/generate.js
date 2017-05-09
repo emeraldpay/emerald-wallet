@@ -1,31 +1,27 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, reset } from 'redux-form';
+import { Field, reduxForm } from 'redux-form';
 import { renderTextField } from 'elements/formFields';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 
 import { cardSpace } from 'lib/styles';
-import { Row, Col } from 'react-flexbox-grid/lib/index';
 
 import Immutable from 'immutable';
 import { gotoScreen } from 'store/screenActions';
 import { loadAccountsList, createAccount } from 'store/accountActions';
 import { required, minLength, passwordMatch } from 'lib/validators';
-import log from 'loglevel';
 import AccountShow from '../show';
 
-const validate = values => {
+const validate = (values) => {
     const errors = {};
     errors.password = minLength(8)(values.password);
     errors.passwordConfirm = passwordMatch(values.password, values);
     return errors;
 };
 
-const Render = ({account, submitSucceeded, handleSubmit, invalid, pristine, reset, submitting, cancel}) => {
-
-    return (
+const Render = ({ account, submitSucceeded, handleSubmit, invalid, pristine, reset, submitting, cancel }) => (
         <Card style={cardSpace}>
             <CardHeader
                 title='Generate Wallet'
@@ -35,29 +31,29 @@ const Render = ({account, submitSucceeded, handleSubmit, invalid, pristine, rese
 
             <CardText expandable={submitSucceeded}>
                 <form onSubmit={handleSubmit}>
-                    <Field  name="name" 
-                            component={renderTextField} 
-                            type="text" 
+                    <Field name="name"
+                            component={renderTextField}
+                            type="text"
                             label="Account Name (optional)" />
-                    <Field  name="password" 
-                            component={renderTextField} 
-                            type="password" 
-                            label="Please Enter a Strong Password" 
-                            validate={[ required, minLength(8) ]} />
-                    <Field  name="passwordConfirm" 
-                            component={renderTextField} 
-                            type="password" 
-                            label="Re-Enter Password" 
+                    <Field name="password"
+                            component={renderTextField}
+                            type="password"
+                            label="Please Enter a Strong Password"
+                            validate={[required, minLength(8)]} />
+                    <Field name="passwordConfirm"
+                            component={renderTextField}
+                            type="password"
+                            label="Re-Enter Password"
                             validate={ passwordMatch } />
                     <FlatButton label="Submit" type="submit"
                                 disabled={pristine || submitting || invalid } />
-                    <FlatButton label="Clear Values" 
-                                disabled={pristine || submitting} 
+                    <FlatButton label="Clear Values"
+                                disabled={pristine || submitting}
                                 onClick={reset} />
                 </form>
             </CardText>
             <CardText expandable={!submitSucceeded}>
-                 <AccountShow key={(account===undefined) ? undefined : account.get('id')} account={account}/>
+                 <AccountShow key={(account === undefined) ? undefined : account.get('id')} account={account}/>
                  <FlatButton label="Done"
                             onClick={cancel}
                             icon={<FontIcon className="fa fa-home" />}/>
@@ -69,35 +65,28 @@ const Render = ({account, submitSucceeded, handleSubmit, invalid, pristine, rese
             </CardActions>
         </Card>
         );
-};
 
 const GenerateAccountForm = reduxForm({
     form: 'generate',
     fields: ['name', 'password', 'passwordConfirm'],
-    validate
+    validate,
 })(Render);
 
 const GenerateAccount = connect(
-    (state, ownProps) => {
-        return {
-            account: state.accounts.get('accounts', Immutable.List()).last()
-        }
-    },
-    (dispatch, ownProps) => {
-        return {
-            onSubmit: data => {                
-                return new Promise((resolve, reject) => {
-                    dispatch(createAccount(data.name, data.password))
+    (state, ownProps) => ({
+        account: state.accounts.get('accounts', Immutable.List()).last(),
+    }),
+    (dispatch, ownProps) => ({
+        onSubmit: (data) => new Promise((resolve, reject) => {
+            dispatch(createAccount(data.name, data.password))
                         .then((response) => {
                             resolve(response);
                         });
-                    });
-            },
-            cancel: () => {
-                dispatch(gotoScreen('home'))
-            }
-        }
-    }
+        }),
+        cancel: () => {
+            dispatch(gotoScreen('home'));
+        },
+    })
 )(GenerateAccountForm);
 
 export default GenerateAccount;

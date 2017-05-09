@@ -4,20 +4,18 @@ import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
-import { DescriptionList, DescriptionTitle, DescriptionData} from '../../elements/dl';
-import log from 'loglevel';
-import Immutable from 'immutable';
-import { cardSpace } from '../../lib/styles';
-import { gotoScreen } from '../../store/screenActions';
+import { DescriptionList, DescriptionTitle, DescriptionData } from 'elements/dl';
+import { cardSpace } from 'lib/styles';
+import { gotoScreen } from 'store/screenActions';
 import { toNumber } from 'lib/convert';
 
-const Render = ({hash, transaction, accountId, account, goBack}) => {
+const Render = ({ hash, transaction, accountId, account, goBack }) =>
 
     /** TODO: This will be a transaction display, and transaction will be an ImmutableMap **/
 
-    return (
+     (
         <Card style={cardSpace}>
-            <CardHeader title={'Transaction: ' + hash}/>
+            <CardHeader title={`Transaction: ${hash}`}/>
             <CardText>
                 <Row>
                     <Col xs={12}>
@@ -38,7 +36,7 @@ const Render = ({hash, transaction, accountId, account, goBack}) => {
 
                             <DescriptionTitle>Value:</DescriptionTitle>
                             <DescriptionData>
-                                {transaction.get('value') ? transaction.get('value').getEther() + ' Ether' : '--'}
+                                {transaction.get('value') ? `${transaction.get('value').getEther()} Ether` : '--'}
                             </DescriptionData>
 
                             <DescriptionTitle>Gas Provided:</DescriptionTitle>
@@ -46,14 +44,16 @@ const Render = ({hash, transaction, accountId, account, goBack}) => {
 
                             <DescriptionTitle>Gas Price:</DescriptionTitle>
                             <DescriptionData>
-                                {transaction.get('gasPrice') ? transaction.get('gasPrice').getMwei() + ' MWei' : '--'}
+                                {transaction.get('gasPrice') ? `${transaction.get('gasPrice').getMwei()} MWei` : '--'}
                             </DescriptionData>
 
                             <DescriptionTitle>nonce:</DescriptionTitle>
                             <DescriptionData>{toNumber(transaction.get('nonce'))}</DescriptionData>
 
                             <DescriptionTitle>Input Data:</DescriptionTitle>
-                            <DescriptionData>{transaction.get('input') === '0x' ? '--' : transaction.get('input')}</DescriptionData>
+                            <DescriptionData>
+                                {transaction.get('input') === '0x' ? '--' : transaction.get('input')}
+                            </DescriptionData>
 
                         </DescriptionList>
                     </Col>
@@ -63,33 +63,30 @@ const Render = ({hash, transaction, accountId, account, goBack}) => {
                 <FlatButton label="Go Back"
                             onClick={goBack(account)}
                             icon={<FontIcon className="fa fa-home" />}/>
-            </CardActions>            
+            </CardActions>
         </Card>
-    )
-};
+    );
 
 const TransactionShow = connect(
     (state, ownProps) => {
-        let account = state.accounts.get('accounts').find(
+        const account = state.accounts.get('accounts').find(
                 (acct) => acct.get('id') === ownProps.accountId
             );
         return {
             transaction: state.accounts.get('trackedTransactions').find(
                 (tx) => tx.get('hash') === ownProps.hash
             ),
-            account: (account === undefined) ? undefined : account
-        }
+            account: (account === undefined) ? undefined : account,
+        };
     },
-    (dispatch, ownProps) => {
-        return {
-            cancel: () => {
-                dispatch(gotoScreen('home'))
-            },
-            goBack: (account) => {
-               dispatch(gotoScreen('account', account)) 
-            }
-        }
-    }
+    (dispatch, ownProps) => ({
+        cancel: () => {
+            dispatch(gotoScreen('home'));
+        },
+        goBack: (account) => {
+            dispatch(gotoScreen('account', account));
+        },
+    })
 )(Render);
 
-export default TransactionShow
+export default TransactionShow;

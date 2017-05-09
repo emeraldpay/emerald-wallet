@@ -1,28 +1,25 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
-import { GridList, GridTile } from 'material-ui/GridList';
 import FontIcon from 'material-ui/FontIcon';
 import Avatar from 'material-ui/Avatar';
 import { cardSpace, tables } from 'lib/styles';
-import log from 'loglevel';
 import Immutable from 'immutable';
-import { gotoScreen } from '../../store/screenActions';
+import { gotoScreen } from 'store/screenActions';
 import Token from './token';
 
-const Render = ({tokens, addToken}) => {
-
+const Render = ({ tokens, addToken }) => {
     const styles = {
-      root: {
-        display: 'flex',
-        flexWrap: 'wrap',
-        justifyContent: 'space-around',
-      },
-      titleStyle: {
-        fontSize: "20px",
-      }
+        root: {
+            display: 'flex',
+            flexWrap: 'wrap',
+            justifyContent: 'space-around',
+        },
+        titleStyle: {
+            fontSize: '20px',
+        },
     };
 
     const table = <Table selectable={false}>
@@ -34,7 +31,7 @@ const Render = ({tokens, addToken}) => {
             </TableRow>
         </TableHeader>
         <TableBody displayRowCheckbox={false}>
-            {tokens.map( (token) => <Token key={token.get('address')} token={token}/>)}
+            {tokens.map((token) => <Token key={token.get('address')} token={token}/>)}
         </TableBody>
     </Table>;
     const titleAvatar = <Avatar icon={<FontIcon className="fa fa-dot-circle-o fa-2x" />} />;
@@ -59,22 +56,18 @@ const Render = ({tokens, addToken}) => {
                 </CardActions>
             </Card>
         </div>
-    )
+    );
 };
 
 const TokensList = connect(
-    (state, ownProps) => {
-        return {
-            tokens: state.tokens.get('tokens', Immutable.List()),
-        }
-    },
-    (dispatch, ownProps) => {
-        return {
-            addToken: () => {
-                dispatch(gotoScreen('add-token'))
-            }
-        }
-    }
+    (state, ownProps) => ({
+        tokens: state.tokens.get('tokens', Immutable.List()),
+    }),
+    (dispatch, ownProps) => ({
+        addToken: () => {
+            dispatch(gotoScreen('add-token'));
+        },
+    })
 )(Render);
 
-export default TokensList
+export default TokensList;

@@ -1,24 +1,20 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, reset } from 'redux-form';
+import { Field, reduxForm } from 'redux-form';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 
 import { cardSpace } from 'lib/styles';
 import { renderFileField } from 'elements/formFields';
-import { Row, Col } from 'react-flexbox-grid/lib/index';
 
 import Immutable from 'immutable';
 import { gotoScreen } from 'store/screenActions';
 import { importWallet } from 'store/accountActions';
 import { required } from 'lib/validators';
-import log from 'loglevel';
 import AccountShow from '../show';
 
-const Render = ({account, submitSucceeded, handleSubmit, invalid, pristine, reset, submitting, cancel}) => {
-
-    return (
+const Render = ({ account, submitSucceeded, handleSubmit, invalid, pristine, reset, submitting, cancel }) => (
         <Card style={cardSpace}>
             <CardHeader
                 title='Import Wallet'
@@ -28,7 +24,7 @@ const Render = ({account, submitSucceeded, handleSubmit, invalid, pristine, rese
 
             <CardText expandable={submitSucceeded}>
                 <form onSubmit={handleSubmit}>
-                    <Field  name="wallet" 
+                    <Field name="wallet"
                             component={renderFileField}
                             validate={required} />
                     <FlatButton label="Submit" type="submit"
@@ -36,7 +32,7 @@ const Render = ({account, submitSucceeded, handleSubmit, invalid, pristine, rese
                 </form>
             </CardText>
             <CardText expandable={!submitSucceeded}>
-                 <AccountShow key={(account===undefined) ? undefined : account.get('id')} account={account}/>
+                 <AccountShow key={(account === undefined) ? undefined : account.get('id')} account={account}/>
                  <FlatButton label="Done"
                             onClick={cancel}
                             icon={<FontIcon className="fa fa-home" />}/>
@@ -48,34 +44,27 @@ const Render = ({account, submitSucceeded, handleSubmit, invalid, pristine, rese
             </CardActions>
         </Card>
         );
-};
 
 const ImportAccountForm = reduxForm({
     form: 'importjson',
-    fields: ['wallet']
+    fields: ['wallet'],
 })(Render);
 
 const ImportAccount = connect(
-    (state, ownProps) => {
-        return {
-            account: state.accounts.get('accounts', Immutable.List()).last()
-        }
-    },
-    (dispatch, ownProps) => {
-        return {
-            onSubmit: data => {                
-                return new Promise((resolve, reject) => {
-                    dispatch(importWallet(data.wallet))
+    (state, ownProps) => ({
+        account: state.accounts.get('accounts', Immutable.List()).last(),
+    }),
+    (dispatch, ownProps) => ({
+        onSubmit: (data) => new Promise((resolve, reject) => {
+            dispatch(importWallet(data.wallet))
                         .then((response) => {
                             resolve(response);
                         });
-                    });
-            },
-            cancel: () => {
-                dispatch(gotoScreen('home'))
-            }
-        }
-    }
+        }),
+        cancel: () => {
+            dispatch(gotoScreen('home'));
+        },
+    })
 )(ImportAccountForm);
 
 export default ImportAccount;

@@ -1,18 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import Avatar from 'material-ui/Avatar';
 import { cardSpace, tables } from 'lib/styles';
-import log from 'loglevel';
 import Immutable from 'immutable';
-import { gotoScreen } from '../../store/screenActions';
+import { gotoScreen } from 'store/screenActions';
 import Address from './address';
 
-const Render = ({addressBook, addAddress}) => {
-
+const Render = ({ addressBook, addAddress }) => {
     const table = <Table selectable={false}>
         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
             <TableRow>
@@ -22,12 +20,12 @@ const Render = ({addressBook, addAddress}) => {
             </TableRow>
         </TableHeader>
         <TableBody displayRowCheckbox={false}>
-            {addressBook.map( (addr) => <Address key={addr.get('id')} address={addr}/>)}
+            {addressBook.map((addr) => <Address key={addr.get('id')} address={addr}/>)}
         </TableBody>
     </Table>;
 
     const titleStyle = {
-        fontSize: "20px",
+        fontSize: '20px',
     };
     const titleAvatar = <Avatar icon={<FontIcon className="fa fa-address-book-o fa-2x" />} />;
 
@@ -51,22 +49,18 @@ const Render = ({addressBook, addAddress}) => {
                 </CardActions>
             </Card>
         </div>
-    )
+    );
 };
 
 const AddressBook = connect(
-    (state, ownProps) => {
-        return {
-            addressBook: state.addressBook.get('addressBook', Immutable.List()),
-        }
-    },
-    (dispatch, ownProps) => {
-        return {
-            addAddress: () => {
-                dispatch(gotoScreen('add-address'))
-            }
-        }
-    }
+    (state, ownProps) => ({
+        addressBook: state.addressBook.get('addressBook', Immutable.List()),
+    }),
+    (dispatch, ownProps) => ({
+        addAddress: () => {
+            dispatch(gotoScreen('add-address'));
+        },
+    })
 )(Render);
 
-export default AddressBook
+export default AddressBook;

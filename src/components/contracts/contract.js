@@ -1,12 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
-import { gotoScreen } from '../../store/screenActions';
-import log from 'loglevel';
+import { TableRow, TableRowColumn } from 'material-ui/Table';
+import { gotoScreen } from 'store/screenActions';
 import { link, tables } from 'lib/styles';
 
-const Render = ({contract, openContract}) => {
-    return (
+const Render = ({ contract, openContract }) => (
         <TableRow selectable={false}>
             <TableRowColumn style={tables.shortStyle}>
                 <span onClick={openContract} style={link}>
@@ -20,21 +18,16 @@ const Render = ({contract, openContract}) => {
             </TableRowColumn>
         </TableRow>
     );
-};
 
 const Contract = connect(
-    (state, ownProps) => {
-        return {}
-    },
-    (dispatch, ownProps) => {
-        return {
-            openContract: () => {
-                const contract = ownProps.contract;
-                dispatch(gotoScreen('contract', contract))
-            }
-        }
-    }
+    (state, ownProps) => ({}),
+    (dispatch, ownProps) => ({
+        openContract: () => {
+            const contract = ownProps.contract;
+            dispatch(gotoScreen('contract', contract));
+        },
+    })
 )(Render);
 
 
-export default Contract
+export default Contract;
