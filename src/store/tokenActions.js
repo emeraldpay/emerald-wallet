@@ -1,4 +1,4 @@
-import { rpc } from '../lib/rpc';
+import { rpc } from 'lib/rpc';
 import { parseString, padLeft, getNakedAddress, fromTokens } from 'lib/convert';
 
 /** TODO #30: Convert ABI Function name to Function Signature **/
@@ -127,16 +127,16 @@ export function transferTokenTransaction(accountId, password, to, gas, gasPrice,
 
 export function traceCall(accountId, to, gas, gasPrice, value, data) {
     return () => {
-      const params = [{
-        from: accountId,
-        to,
-        gas,
-        gasPrice,
-        value,
-        data,
-      }];
-      return rpc.call('eth_traceCall', params);
-    }
+        const params = [{
+            from: accountId,
+            to,
+            gas,
+            gasPrice,
+            value,
+            data,
+        }];
+        return rpc.call('eth_traceCall', params);
+    };
 }
 
 export function traceTokenTransaction(accountId, password, to, gas, gasPrice, value, tokenId, isTransfer) {

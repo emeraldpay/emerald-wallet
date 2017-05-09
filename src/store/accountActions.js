@@ -2,7 +2,6 @@ import { rpc } from 'lib/rpc';
 import { address } from 'lib/validators';
 import { loadTokenBalanceOf } from './tokenActions';
 
-
 export function loadAccountBalance(accountId) {
     return (dispatch, getState) => {
         rpc.call('eth_getBalance', [accountId, 'latest']).then((result) => {
@@ -70,7 +69,7 @@ export function createAccount(name, password) {
 
 export function sendTransaction(accountId, password, to, gas, gasPrice, value) {
     const pwHeader = new Buffer(password).toString('base64');
-    return (dispatch) =>  
+    return (dispatch) =>
         rpc.call('eth_sendTransaction', [{
             from: accountId,
             to,

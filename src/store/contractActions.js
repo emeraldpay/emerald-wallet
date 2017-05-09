@@ -1,6 +1,6 @@
-import { rpc } from '../lib/rpc';
+import { rpc } from 'lib/rpc';
 import log from 'loglevel';
-import { functionToData, dataToParams } from '../lib/convert';
+import { functionToData, dataToParams, toNumber } from 'lib/convert';
 import { loadAccountBalance } from './accountActions';
 
 export function loadContractList() {
@@ -14,8 +14,8 @@ export function loadContractList() {
                 contracts: result,
             });
             // load Contract details?
-        }).catch(error => {
-          log.error(`emerald_contracts rpc call: ${JSON.stringify(error)}`);
+        }).catch((error) => {
+            log.error(`emerald_contracts rpc call: ${JSON.stringify(error)}`);
         });
     };
 }
@@ -47,7 +47,6 @@ export function addContract(address, name, abi, version, options, txhash) {
  * Result of eth_call should be the return value of executed contract.
  */
 export function callContract(contractAddress, func, inputs) {
-    console.log(func);
     return (dispatch) => {
         const data = functionToData(func, inputs);
         return rpc.call('eth_call', [{
@@ -91,7 +90,6 @@ export function sendContractTransaction(accountId, password, contractAddress, ga
 
 export function estimateGas(data) {
     return () =>
-        rpc.call('eth_estimateGas', [{ data }]).then((result) => {
-            return isNaN(parseInt(result)) ? 0 : parseInt(result);
-        });
+        rpc.call('eth_estimateGas', [{ data }])
+            .then((result) => toNumber(result, 16));
 }
