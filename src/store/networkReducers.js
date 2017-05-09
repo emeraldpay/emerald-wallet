@@ -1,7 +1,12 @@
 import Immutable from 'immutable';
-import { toNumber } from '../lib/convert';
+import { toNumber } from 'lib/convert';
+import Networks from 'lib/networks';
 
 const initial = Immutable.fromJS({
+    chain: {
+        name: 'MAINNET',
+        id: 61,
+    },
     currentBlock: {
         height: 0,
         hash: null,
@@ -42,9 +47,20 @@ function onHeight(state, action) {
     return state;
 }
 
+function onSwitchChain(state, action) {
+    if (action.type === 'NETWORK/SWITCH_CHAIN') {
+        return state.update('chain', (c) =>
+            c.set('name', action.network)
+                .set('id', Networks.get(action.id))
+        );
+    }
+    return state;
+}
+
 export default function networkReducers(state, action) {
     state = state || initial;
     state = onSyncing(state, action);
     state = onHeight(state, action);
+    state = onSwitchChain(state, action);
     return state;
 }

@@ -1,4 +1,5 @@
 import { rpc } from '../lib/rpc';
+import { start } from 'store/store'
 
 let watchingHeight = false;
 
@@ -33,5 +34,17 @@ export function loadSyncing() {
                 });
                 setTimeout(() => dispatch(loadHeight(true)), 1000);
             }
+        });
+}
+
+export function switchChain(network, id) {
+    return (dispatch) =>
+        rpc.call('backend_switchChain', [network]).then((result) => {
+            dispatch({
+                type: 'NETWORK/SWITCH_CHAIN',
+                network,
+                id,
+            });
+            start();
         });
 }
