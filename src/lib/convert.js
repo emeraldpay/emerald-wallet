@@ -119,19 +119,9 @@ export function parseHexQuantity(val, defaultValue) {
     return new BigNumber(val, 16);
 }
 
-/**
- * Create full function/event name from json abi
- *
- * @method transformToFullName
- * @param {Object} json-abi
- * @return {String} full function/event name
- */
-export function transformToFullName(json) {
-    if (json.name.indexOf('(') !== -1) {
-        return json.name;
-    }
-    const typeName = json.inputs.map((i) => i.type).join();
-    return `${json.name}(${typeName})`;
+export function transformToFullName(func) {
+    const typeName = func.get('inputs').map((i) => i.get('type')).join();
+    return `${func.get('name')}(${typeName})`;
 }
 
 export function getFunctionSignature(func) {
