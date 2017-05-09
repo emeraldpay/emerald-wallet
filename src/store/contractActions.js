@@ -14,8 +14,8 @@ export function loadContractList() {
                 contracts: result,
             });
             // load Contract details?
-        }).catch(error => {
-          log.error(`emerald_contracts rpc call: ${JSON.stringify(error)}`);
+        }).catch((error) => {
+            log.error(`emerald_contracts rpc call: ${JSON.stringify(error)}`);
         });
     };
 }
@@ -47,7 +47,6 @@ export function addContract(address, name, abi, version, options, txhash) {
  * Result of eth_call should be the return value of executed contract.
  */
 export function callContract(contractAddress, func, inputs) {
-    console.log(func);
     return (dispatch) => {
         const data = functionToData(func, inputs);
         return rpc.call('eth_call', [{
@@ -66,18 +65,16 @@ export function callContract(contractAddress, func, inputs) {
 }
 
 export function sendContractTransaction(accountId, password, contractAddress, gas, value, func, inputs) {
-    const pwHeader = new Buffer(password).toString('base64');
     const data = functionToData(func, inputs);
     return (dispatch) =>
         rpc.call('eth_sendTransaction', [{
             from: accountId,
+            password,
             to: contractAddress,
             gas,
             value,
             data,
-        }], {
-            Authorization: pwHeader,
-        }).then((result) => {
+        }]).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SEND_TRANSACTION',
                 accountId,

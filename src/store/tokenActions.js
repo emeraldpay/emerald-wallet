@@ -153,14 +153,13 @@ export function transferTokenTransaction(accountId, password, to, gas, gasPrice,
         const data = createTokenTransaction(token, to, value, isTransfer);
         return rpc.call('eth_sendTransaction', [{
             to: tokenId,
+            password,
             from: accountId,
             gas,
             gasPrice,
             value: '0x00',
             data,
-        }, 'latest'], {
-            Authorization: pwHeader,
-        }).then((result) => {
+        }, 'latest']).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SEND_TOKEN_TRANSACTION',
                 accountId,
