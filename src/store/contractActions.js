@@ -65,18 +65,16 @@ export function callContract(contractAddress, func, inputs) {
 }
 
 export function sendContractTransaction(accountId, password, contractAddress, gas, value, func, inputs) {
-    const pwHeader = new Buffer(password).toString('base64');
     const data = functionToData(func, inputs);
     return (dispatch) =>
         rpc.call('eth_sendTransaction', [{
             from: accountId,
+            password,
             to: contractAddress,
             gas,
             value,
             data,
-        }], {
-            Authorization: pwHeader,
-        }).then((result) => {
+        }]).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SEND_TRANSACTION',
                 accountId,

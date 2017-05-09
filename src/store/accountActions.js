@@ -68,17 +68,15 @@ export function createAccount(name, password) {
 }
 
 export function sendTransaction(accountId, password, to, gas, gasPrice, value) {
-    const pwHeader = new Buffer(password).toString('base64');
     return (dispatch) =>
         rpc.call('eth_sendTransaction', [{
             from: accountId,
+            password,
             to,
             gas,
             gasPrice,
             value,
-        }], {
-            Authorization: pwHeader,
-        }).then((result) => {
+        }]).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SEND_TRANSACTION',
                 accountId,
@@ -90,16 +88,14 @@ export function sendTransaction(accountId, password, to, gas, gasPrice, value) {
 }
 
 export function createContract(accountId, password, gas, gasPrice, data) {
-    const pwHeader = new Buffer(password).toString('base64');
     return (dispatch) =>
         rpc.call('eth_sendTransaction', [{
             from: accountId,
+            password,
             gas,
             gasPrice,
             data,
-        }], {
-            Authorization: pwHeader,
-        }).then((result) => {
+        }]).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SEND_TRANSACTION',
                 accountId,
