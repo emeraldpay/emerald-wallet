@@ -1,10 +1,11 @@
 import React from 'react';
-import { Field, reduxForm, change, formValueSelector, SubmissionError } from 'redux-form';
+import PropTypes from 'prop-types';
+import { Field, reduxForm } from 'redux-form';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import { SelectField, TextField, RadioButtonGroup } from 'redux-form-material-ui';
 import { RadioButton } from 'material-ui/RadioButton';
 import { MenuItem, FlatButton, FontIcon, IconButton } from 'material-ui';
-import { Divider } from 'material-ui/Divider';
+import Divider from 'material-ui/Divider';
 import { IconMenu } from 'material-ui/IconMenu';
 import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
@@ -151,6 +152,25 @@ const Render = (props) => {
       </CardActions>
     </Card>
     );
+};
+
+Render.propTypes = {
+    fields: PropTypes.array.isRequired, // verify in react-form
+    accounts: PropTypes.object.isRequired,
+    handleSubmit: PropTypes.func.isRequired,
+    invalid: PropTypes.bool.isRequired,
+    pristine: PropTypes.bool.isRequired,
+    submitting: PropTypes.bool.isRequired,
+    cancel: PropTypes.func.isRequired,
+
+    addressBook: PropTypes.object.isRequired,
+    handleSelect: PropTypes.func.isRequired,
+    tokens: PropTypes.object.isRequired,
+    token: PropTypes.object,
+    isToken: PropTypes.string,
+    onChangeToken: PropTypes.func.isRequired,
+
+    error: PropTypes.bool,
 };
 
 const CreateTxForm = reduxForm({

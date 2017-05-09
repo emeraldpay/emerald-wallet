@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
@@ -50,6 +51,11 @@ const Render = ({ accounts, createAccount }) => {
             </Card>
         </div>
     );
+};
+
+Render.propTypes = {
+    accounts: PropTypes.object.isRequired,
+    createAccount: PropTypes.func.isRequired,
 };
 
 const AccountsList = connect(

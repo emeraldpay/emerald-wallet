@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
@@ -17,8 +18,12 @@ const TokenRow = ({ token }) => {
         <div><span>{balance} {token.get('symbol')}</span></div>
     );
 };
+TokenRow.propTypes = {
+    token: PropTypes.object.isRequired,
+};
 
-const Render = ({ account, createTx, tokens }) => {
+
+const Render = ({ account, createTx }) => {
     const value = `${account.get('balance') ? account.get('balance').getEther() : '?'} Ether`;
 
     return (
@@ -65,6 +70,11 @@ const Render = ({ account, createTx, tokens }) => {
             </CardText>
         </Card>
     );
+};
+
+Render.propTypes = {
+    account: PropTypes.object.isRequired,
+    createTx: PropTypes.func.isRequired,
 };
 
 const AccountShow = connect(
