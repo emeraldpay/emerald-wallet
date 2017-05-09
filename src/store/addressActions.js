@@ -1,9 +1,7 @@
 import { rpc } from 'lib/rpc';
-import { address } from 'lib/validators';
-
 
 export function loadAddressBalance(addressId) {
-    return (dispatch, getState) => {
+    return (dispatch) => {
         rpc.call('eth_getBalance', [addressId, 'latest']).then((result) => {
             dispatch({
                 type: 'ADDRESS/SET_BALANCE',
@@ -44,7 +42,7 @@ export function addAddress(id, name, description) {
                 name,
                 description,
             });
-            dispatch(loadAddressBalance(json.result));
+            dispatch(loadAddressBalance(result.result));
         });
 }
 
@@ -66,7 +64,7 @@ export function updateAddress(id, name, description) {
 
 export function deleteAddress(addressId) {
     return (dispatch) =>
-        rpc.call('emerald_deleteAddress', [addressId]).then((result) => {
+        rpc.call('emerald_deleteAddress', [addressId]).then(() => {
             dispatch({
                 type: 'ADDRESS/DELETE_ADDRESS',
                 addressId,

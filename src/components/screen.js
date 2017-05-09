@@ -20,14 +20,13 @@ import AddContract from './contracts/add';
 import DeployContract from './contracts/deploy';
 import ContractShow from './contracts/show';
 
-const Render = ({screen, screenItem}) => {
-
+const Render = ({ screen, screenItem }) => {
     log.debug('screen', screen);
 
     if (screen === null) {
         return <div>
             <i className="fa fa-spinner fa-spin fa-2x" /> Initializing...
-        </div>
+        </div>;
     } else if (screen === 'home') {
         return (
             <div>
@@ -35,59 +34,55 @@ const Render = ({screen, screenItem}) => {
                 <TokensList/>
                 <Status/>
             </div>
-        )
+        );
     } else if (screen === 'contracts') {
         return (
             <div>
                 <ContractsList/>
                 <AddContract/>
             </div>
-        )
+        );
     } else if (screen === 'address-book') {
-        return <AddressBook />        
+        return <AddressBook />;
     } else if (screen === 'address') {
         return (
             <AddressShow addressId={screenItem}/>
-        )
+        );
     } else if (screen === 'add-address') {
-        return <AddressAdd />
+        return <AddressAdd />;
     } else if (screen === 'account') {
-        return <AccountShow account={screenItem}/>
+        return <AccountShow account={screenItem}/>;
     } else if (screen === 'transaction') {
-        return <TransactionShow hash={screenItem.hash} accountId={screenItem.accountId}/>
+        return <TransactionShow hash={screenItem.hash} accountId={screenItem.accountId}/>;
     } else if (screen === 'create-tx') {
-        return <CreateTx account={screenItem}/>
+        return <CreateTx account={screenItem}/>;
     } else if (screen === 'create-account') {
-        return <CreateAccount />
+        return <CreateAccount />;
     } else if (screen === 'generate') {
-        return <GenerateAccount />
+        return <GenerateAccount />;
     } else if (screen === 'importjson') {
-        return <ImportAccount />
+        return <ImportAccount />;
     } else if (screen === 'add-token') {
-        return <AddToken />
+        return <AddToken />;
     } else if (screen === 'deploy-contract') {
-        return <DeployContract />
+        return <DeployContract />;
     } else if (screen === 'contract') {
-        return <ContractShow contract={screenItem} />
+        return <ContractShow contract={screenItem} />;
     }
 
     return (
         <div>
             Unknown screen
         </div>
-    )
+    );
 };
 
 const Screen = connect(
-    (state, ownProps) => {
-        return {
-            screen: state.screen.get('screen'),
-            screenItem: state.screen.get('item')
-        }
-    },
-    (dispatch, ownProps) => {
-        return {}
-    }
+    (state, ownProps) => ({
+        screen: state.screen.get('screen'),
+        screenItem: state.screen.get('item'),
+    }),
+    (dispatch, ownProps) => ({})
 )(Render);
 
-export default Screen
+export default Screen;

@@ -2,7 +2,6 @@ import { rpc } from 'lib/rpc';
 import { address } from 'lib/validators';
 import { loadTokenBalanceOf } from './tokenActions';
 
-
 export function loadAccountBalance(accountId) {
     return (dispatch, getState) => {
         rpc.call('eth_getBalance', [accountId, 'latest']).then((result) => {

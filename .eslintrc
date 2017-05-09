@@ -1,10 +1,18 @@
 {
-  "extends": "airbnb-base",
+  "extends": ["airbnb-base", "plugin:react/recommended"],
   "env": {
     "browser": true,
     "es6": true,
     "jasmine": true,
     "phantomjs": true
+  },
+  "settings": {
+     "import/resolver": "webpack"
+  },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "jsx": true
+    }
   },
   "rules": {
     "indent": ["error", 4, {
@@ -21,6 +29,11 @@
     }],
     "import/prefer-default-export": 1,
     "max-len": ["error", {"code": 120}],
-    "no-unused-vars": 1
-  }
+    "no-unused-vars": ["warn", {
+      "argsIgnorePattern": "(dispatch|state|ownProps|reset|handleSubmit|resetForm|submitting|reject|resolve)"
+    }]
+  },
+  "plugins": [
+    "react"
+  ]
 }

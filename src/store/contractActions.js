@@ -1,6 +1,6 @@
-import { rpc } from '../lib/rpc';
+import { rpc } from 'lib/rpc';
 import log from 'loglevel';
-import { functionToData, dataToParams } from '../lib/convert';
+import { functionToData, dataToParams, toNumber } from 'lib/convert';
 import { loadAccountBalance } from './accountActions';
 
 export function loadContractList() {
@@ -88,7 +88,6 @@ export function sendContractTransaction(accountId, password, contractAddress, ga
 
 export function estimateGas(data) {
     return () =>
-        rpc.call('eth_estimateGas', [{ data }]).then((result) => {
-            return isNaN(parseInt(result)) ? 0 : parseInt(result);
-        });
+        rpc.call('eth_estimateGas', [{ data }])
+            .then((result) => toNumber(result, 16));
 }

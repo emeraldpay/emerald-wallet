@@ -1,12 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
-import { gotoScreen } from '../../store/screenActions';
-import log from 'loglevel';
+import { TableRow, TableRowColumn } from 'material-ui/Table';
+import { gotoScreen } from 'store/screenActions';
 import { link, tables } from 'lib/styles';
 
-const Render = ({address, openAddress}) => {
-    return (
+const Render = ({ address, openAddress }) => (
         <TableRow selectable={false}>
             <TableRowColumn style={tables.shortStyle}>
                 <span onClick={openAddress} style={link}>
@@ -25,21 +23,16 @@ const Render = ({address, openAddress}) => {
             </TableRowColumn>
         </TableRow>
     );
-};
 
 const Address = connect(
-    (state, ownProps) => {
-        return {}
-    },
-    (dispatch, ownProps) => {
-        return {
-            openAddress: () => {
-                const address = ownProps.address;
-                dispatch(gotoScreen('address', address.get('id')))
-            }
-        }
-    }
+    (state, ownProps) => ({}),
+    (dispatch, ownProps) => ({
+        openAddress: () => {
+            const address = ownProps.address;
+            dispatch(gotoScreen('address', address.get('id')));
+        },
+    })
 )(Render);
 
 
-export default Address
+export default Address;

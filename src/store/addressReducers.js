@@ -1,6 +1,5 @@
 import Immutable from 'immutable';
-import { Wei, TokenUnits } from 'lib/types';
-import { toNumber } from 'lib/convert';
+import { Wei } from 'lib/types';
 
 const initial = Immutable.fromJS({
     addressBook: [],
@@ -14,7 +13,7 @@ const initialAddr = Immutable.Map({
     balance: null,
 });
 
-function addAddress(state, address) {    
+function addAddress(state, address) {
     return state.update('addressBook', (addresses) =>
         addresses.push(initialAddr.merge(address))
     );

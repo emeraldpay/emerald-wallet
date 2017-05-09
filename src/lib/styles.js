@@ -1,15 +1,15 @@
 export const cardSpace = {
-    marginTop: "5px",
-    marginBottom: "5px"
+    marginTop: '5px',
+    marginBottom: '5px',
 };
 
 export const link = {
-    cursor: "pointer"
+    cursor: 'pointer',
 };
 
 export const tables = {
     shortStyle: { width: 12 },
-    wideStyle: { width: 120 }
+    wideStyle: { width: 120 },
 };
 
 export const code = {
@@ -21,5 +21,5 @@ export const code = {
     wordWrap: 'break-word',
     outline: '1px solid rgb(224, 224, 224)',
     overflow: 'auto',
-    maxHeight: '250px'
-}
+    maxHeight: '250px',
+};

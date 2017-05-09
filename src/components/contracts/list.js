@@ -1,19 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow, TableRowColumn } from 'material-ui/Table';
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
-import FlatButton from 'material-ui/FlatButton';
-import FontIcon from 'material-ui/FontIcon';
+import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table';
+import { Card, CardHeader, CardText } from 'material-ui/Card';
 import LibraryBooks from 'material-ui/svg-icons/av/library-books';
 import Avatar from 'material-ui/Avatar';
 import { cardSpace, tables } from 'lib/styles';
-import log from 'loglevel';
 import Immutable from 'immutable';
-import { gotoScreen } from '../../store/screenActions';
 import Contract from './contract';
 
-const Render = ({contracts}) => {
-
+const Render = ({ contracts }) => {
     const table = <Table selectable={false}>
         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
             <TableRow>
@@ -22,12 +17,12 @@ const Render = ({contracts}) => {
             </TableRow>
         </TableHeader>
         <TableBody displayRowCheckbox={false}>
-            {contracts.map( (contract) => <Contract key={contract.get('address')} contract={contract}/>)}
+            {contracts.map((contract) => <Contract key={contract.get('address')} contract={contract}/>)}
         </TableBody>
     </Table>;
 
     const titleStyle = {
-        fontSize: "20px",
+        fontSize: '20px',
     };
     const titleAvatar = <Avatar icon={<LibraryBooks />} />;
 
@@ -47,19 +42,15 @@ const Render = ({contracts}) => {
                 </CardText>
             </Card>
         </div>
-    )
+    );
 };
 
 const ContractsList = connect(
-    (state, ownProps) => {
-        return {
-            contracts: state.contracts.get('contracts', Immutable.List()),
-        }
-    },
-    (dispatch, ownProps) => {
-        return {
-        }
-    }
+    (state, ownProps) => ({
+        contracts: state.contracts.get('contracts', Immutable.List()),
+    }),
+    (dispatch, ownProps) => ({
+    })
 )(Render);
 
-export default ContractsList
+export default ContractsList;

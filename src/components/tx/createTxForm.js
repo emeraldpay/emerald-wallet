@@ -1,25 +1,24 @@
 import React from 'react';
-import { Field, reduxForm, change, formValueSelector, SubmissionError } from 'redux-form';
+import PropTypes from 'prop-types';
+import { Field, reduxForm } from 'redux-form';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import { SelectField, TextField, RadioButtonGroup } from 'redux-form-material-ui';
-import { RadioButton} from 'material-ui/RadioButton';
-import { MenuItem, FlatButton, FontIcon } from 'material-ui';
-import { Divider } from 'material-ui/Divider';
+import { RadioButton } from 'material-ui/RadioButton';
+import { MenuItem, FlatButton, FontIcon, IconButton } from 'material-ui';
+import Divider from 'material-ui/Divider';
 import { IconMenu } from 'material-ui/IconMenu';
-import { IconButton } from 'material-ui/IconButton';
-import { ImportContacts } from 'material-ui/svg-icons/communication/import-contacts';
+import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { red200 } from 'material-ui/styles/colors';
-import { cardSpace } from '../../lib/styles';
+import { cardSpace } from 'lib/styles';
 import { positive, number, required, address } from 'lib/validators';
 
 const Render = (props) => {
+    const { fields: { from, to }, accounts, handleSubmit, invalid, pristine, submitting, cancel } = props;
+    const { addressBook, handleSelect, tokens, token, isToken, onChangeToken } = props;
+    const { error } = props;
 
-  const {fields: {from, to}, accounts, account, handleSubmit, invalid, pristine, resetForm, submitting, cancel} = props;
-  const {addressBook, handleSelect, tokens, token, isToken, onChangeToken} = props;
-  const {error} = props;
-
-  return (
+    return (
     <Card style={cardSpace}>
       <CardHeader
         title='Send Transaction'
@@ -36,7 +35,7 @@ const Render = (props) => {
                        floatingLabelText="From"
                        component={SelectField}
                        fullWidth={true}>
-                  {accounts.map( (account) =>
+                  {accounts.map((account) =>
                     <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
                   )}
                 </Field>
@@ -64,13 +63,13 @@ const Render = (props) => {
                     iconButtonElement={<IconButton><ImportContacts /></IconButton>}
                     onItemTouchTap={handleSelect}
                 >
-                {accounts.map( (account) => 
+                {accounts.map((account) =>
                   <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
                 )}
                 <Divider />
-                {addressBook.map( (account) => 
+                {addressBook.map((account) =>
                   <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
-                )} 
+                )}
                 </IconMenu>
               </Col>
             </Row>
@@ -89,8 +88,11 @@ const Render = (props) => {
                        onChange={onChangeToken}
                        value={token}
                        fullWidth={true}>
-                  {tokens.map( (token) =>
-                    <MenuItem key={token.get('address')} value={token.get('address')} label={token.get('symbol')} primaryText={token.get('symbol')} />
+                  {tokens.map((it) =>
+                    <MenuItem key={it.get('address')}
+                              value={it.get('address')}
+                              label={it.get('symbol')}
+                              primaryText={it.get('symbol')} />
                   )}
                 </Field>
               </Col>
@@ -149,12 +151,31 @@ const Render = (props) => {
                     icon={<FontIcon className="fa fa-ban" />}/>
       </CardActions>
     </Card>
-  )
+    );
+};
+
+Render.propTypes = {
+    fields: PropTypes.array.isRequired, // verify in react-form
+    accounts: PropTypes.object.isRequired,
+    handleSubmit: PropTypes.func.isRequired,
+    invalid: PropTypes.bool.isRequired,
+    pristine: PropTypes.bool.isRequired,
+    submitting: PropTypes.bool.isRequired,
+    cancel: PropTypes.func.isRequired,
+
+    addressBook: PropTypes.object.isRequired,
+    handleSelect: PropTypes.func.isRequired,
+    tokens: PropTypes.object.isRequired,
+    token: PropTypes.object,
+    isToken: PropTypes.string,
+    onChangeToken: PropTypes.func.isRequired,
+
+    error: PropTypes.bool,
 };
 
 const CreateTxForm = reduxForm({
-  form: 'createTx',
-  fields: ['to', 'from', 'password', 'value', 'token', 'gasPrice', 'gasAmount', 'token', 'isTransfer']
+    form: 'createTx',
+    fields: ['to', 'from', 'password', 'value', 'token', 'gasPrice', 'gasAmount', 'token', 'isTransfer'],
 })(Render);
 
 export default CreateTxForm;
