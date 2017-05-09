@@ -18,7 +18,7 @@ export function parseString(hex) {
     if (typeof hex !== 'string') {
         return null;
     }
-    //TODO _very_ dumb implementation, and works only for ascii
+    // TODO _very_ dumb implementation, and works only for ascii
 
     hex = hex.substring(2);
     const parts = hex.match(/.{64}/g);
@@ -26,13 +26,13 @@ export function parseString(hex) {
         log.warn('Corrupted String data', hex);
         return '';
     }
-    const len_ignore = parts[0];
-    const text_size = parts[1];
-    const text_data = hex.substring(64 + 64);
+    const lenIgnore = parts[0];
+    const textSize = parts[1];
+    const textData = hex.substring(64 + 64);
     let result = '';
-    for (let i = 0; i < text_size; i++) {
+    for (let i = 0; i < textSize; i++) {
         const pos = i * 2;
-        result += String.fromCharCode(parseInt(text_data[pos] + text_data[pos + 1], 16));
+        result += String.fromCharCode(parseInt(textData[pos] + textData[pos + 1], 16));
     }
     return result;
 }
@@ -43,7 +43,7 @@ export function getNakedAddress(address) {
 
 export function padLeft(n, width, z) {
     z = z || '0';
-    n = n + '';
+    n += '';
     return n.length >= width ? n : new Array(width - n.length + 1).join(z) + n;
 }
 
@@ -70,10 +70,11 @@ export function estimateGasFromTrace(dataObj, trace) {
         let startVal = 24088 + ops[0].cost;
         for (let i = 0; i < ops.length - 1; i++) {
             const remainder = startVal - (gasLimit - ops[i].ex.used);
-            if (ops[i + 1].sub && ops[i + 1].sub.ops.length && gasLimit - ops[i + 1].cost > remainder)
+            if (ops[i + 1].sub && ops[i + 1].sub.ops.length && gasLimit - ops[i + 1].cost > remainder) {
                 startVal += gasLimit - ops[i + 1].cost - startVal;
-            else if (ops[i + 1].cost > remainder)
+            } else if (ops[i + 1].cost > remainder) {
                 startVal += ops[i + 1].cost - remainder;
+            }
         }
         if (!dataObj.to) startVal += 37000; // add 37000 for contract creation
         startVal = startVal === gasLimit ? -1 : startVal;
@@ -88,10 +89,11 @@ export function estimateGasFromTrace(dataObj, trace) {
     } else {
         let stateDiff = (trace || {}).stateDiff;
         stateDiff = stateDiff && (stateDiff[dataObj.from.toLowerCase()] || {}).balance['*'];
-        if (stateDiff)
+        if (stateDiff) {
             estGas = new BigNumber(stateDiff.from)
                 .sub(new BigNumber(stateDiff.to))
                 .sub(new BigNumber(dataObj.value));
+        }
         if (estGas.lt(0) || estGas.eq(gasLimit)) estGas = null;
     }
     return estGas;
@@ -109,7 +111,7 @@ export function etherToWei(val) {
 
 export function toHex(val) {
     const hex = val.toString(16);
-    return `0x${(hex.length % 2 !== 0 ? '0' + hex : hex)}`;
+    return `0x${(hex.length % 2 !== 0 ? `0${hex}` : hex)}`;
 }
 
 export function parseHexQuantity(val, defaultValue) {
@@ -140,13 +142,16 @@ export function getFunctionSignature(func) {
 }
 
 export function functionToData(func, inputs) {
-    let types = [];
-    let values = [];
+    const types = [];
+    const values = [];
     func.get('inputs').forEach((input) => {
         types.push(input.get('type'));
         values.push(inputs[input.get('name')]);
     });
-    const data = Buffer.concat([ethAbi.methodID(func.get('name'), types), ethAbi.rawEncode(types, values)]).toString('hex');
+    const data = Buffer.concat([
+        ethAbi.methodID(func.get('name'), types),
+        ethAbi.rawEncode(types, values)]
+    ).toString('hex');
     return `0x${data}`;
 }
 
@@ -154,11 +159,9 @@ export function dataToParams(func, data) {
     data = new Buffer(data.replace('0x', ''), 'hex');
     const types = func.get('outputs').map((output) => output.get('type')).toArray();
     const params = ethAbi.rawDecode(types, data);
-    return func.get('outputs').map((o, i) => { 
-        return {
-            type: o.get('type'), 
-            name: o.get('name'), 
-            value: (params[i] instanceof BigNumber) ? params[i].toString() : params[i]
-        }
-    });
+    return func.get('outputs').map((o, i) => ({
+        type: o.get('type'),
+        name: o.get('name'),
+        value: (params[i] instanceof BigNumber) ? params[i].toString() : params[i],
+    }));
 }
