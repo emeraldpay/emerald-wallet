@@ -37,7 +37,7 @@ const traceValidate = (data, dispatch) => {
 
     if (data.token.length > 1) {
         return new Promise((resolve, reject) => {
-            dispatch(traceTokenTransaction(data.from, data.password,
+            dispatch(traceTokenTransaction(data.from,
               data.to,
               dataObj.gas,
               dataObj.gasPrice,
@@ -50,7 +50,7 @@ const traceValidate = (data, dispatch) => {
         });
     }
     return new Promise((resolve, reject) => {
-        dispatch(traceCall(data.from, data.password,
+        dispatch(traceCall(data.from,
               data.to,
               dataObj.gas,
               dataObj.gasPrice,
