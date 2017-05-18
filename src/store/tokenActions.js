@@ -185,7 +185,7 @@ export function traceCall(accountId, to, gas, gasPrice, value, data) {
     };
 }
 
-export function traceTokenTransaction(accountId, password, to, gas, gasPrice, value, tokenId, isTransfer) {
+export function traceTokenTransaction(accountId, to, gas, gasPrice, value, tokenId, isTransfer) {
     return (dispatch, getState) => {
         const tokens = getState().tokens;
         const token = tokens.get('tokens').find((tok) => tok.get('address') === tokenId);
