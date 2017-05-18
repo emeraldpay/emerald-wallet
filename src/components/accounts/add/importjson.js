@@ -7,7 +7,7 @@ import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 
 import { cardSpace } from 'lib/styles';
-import { renderFileField } from 'elements/formFields';
+import { renderFileField, renderTextField } from 'elements/formFields';
 
 import Immutable from 'immutable';
 import { gotoScreen } from 'store/screenActions';
@@ -25,6 +25,14 @@ const Render = ({ account, submitSucceeded, handleSubmit, invalid, pristine, res
 
         <CardText expandable={submitSucceeded}>
             <form onSubmit={handleSubmit}>
+                <Field name="name"
+                        component={renderTextField}
+                        type="text"
+                        label="Account Name (optional)" />
+                 <Field name="description"
+                        component={renderTextField}
+                        type="text"
+                        label="Description (optional)" />
                 <Field name="wallet"
                         component={renderFileField}
                         validate={required} />
@@ -68,7 +76,7 @@ const ImportAccount = connect(
     }),
     (dispatch, ownProps) => ({
         onSubmit: (data) => new Promise((resolve, reject) => {
-            dispatch(importWallet(data.wallet))
+            dispatch(importWallet(data.wallet[0], data.name, data.description))
                         .then((response) => {
                             resolve(response);
                         });
