@@ -75,12 +75,9 @@ const ImportAccount = connect(
         account: state.accounts.get('accounts', Immutable.List()).last(),
     }),
     (dispatch, ownProps) => ({
-        onSubmit: (data) => new Promise((resolve, reject) => {
+        onSubmit: (data) => {
             dispatch(importWallet(data.wallet[0], data.name, data.description))
-                        .then((response) => {
-                            resolve(response);
-                        });
-        }),
+        },
         cancel: () => {
             dispatch(gotoScreen('home'));
         },

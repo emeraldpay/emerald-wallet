@@ -12,7 +12,7 @@ import { cardSpace } from 'lib/styles';
 
 import { gotoScreen } from 'store/screenActions';
 
-const Render = ({ handleSubmit, resetForm, submitting, generate, importJson, cancel }) => (
+const Render = ({ handleSubmit, submitting, generate, importJson, cancel }) => (
     <Card style={cardSpace}>
         <CardHeader
             title='Add Account'
@@ -48,7 +48,6 @@ const Render = ({ handleSubmit, resetForm, submitting, generate, importJson, can
 
 Render.propTypes = {
     handleSubmit: PropTypes.func.isRequired,
-    resetForm: PropTypes.func.isRequired,
     generate: PropTypes.func.isRequired,
     importJson: PropTypes.func.isRequired,
     submitting: PropTypes.bool.isRequired,
