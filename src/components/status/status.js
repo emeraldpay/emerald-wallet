@@ -25,8 +25,6 @@ const Render = ({ block, syncing, chain }) => {
                 title="Network Status"
                 avatar={titleAvatar}
                 subtitle={`${networkDetails} (${chain})`}
-                actAsExpander={true}
-                showExpandableButton={true}
             />
             <CardActions>
                 {progress}
