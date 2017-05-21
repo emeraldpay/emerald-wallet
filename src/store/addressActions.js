@@ -38,11 +38,11 @@ export function addAddress(id, name, description) {
         }]).then((result) => {
             dispatch({
                 type: 'ADDRESS/ADD_ADDRESS',
-                addressId: result,
+                addressId: id,
                 name,
                 description,
             });
-            dispatch(loadAddressBalance(result.result));
+            dispatch(loadAddressBalance(id));
         });
 }
 
@@ -55,7 +55,7 @@ export function updateAddress(id, name, description) {
         }]).then((result) => {
             dispatch({
                 type: 'ADDRESS/UPDATE_ADDRESS',
-                addressId: result,
+                addressId: id,
                 name,
                 description,
             });
