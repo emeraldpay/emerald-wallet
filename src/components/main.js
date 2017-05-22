@@ -15,6 +15,7 @@ import Motorcycle from 'material-ui/svg-icons/action/motorcycle';
 import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
 import log from 'loglevel';
 import Networks from 'lib/networks';
+import { translate } from 'react-i18next';
 import { switchChain } from 'store/networkActions';
 import { gotoScreen } from 'store/screenActions';
 import './main.scss';
@@ -49,12 +50,12 @@ const Menu = ({ openAccounts, openAddressBook, openContracts, switchChain, netwo
   </IconMenu>
 );
 
-const Render = (props) => (
+const Render = translate("common")(({t, ...props}) => (
     <Grid>
         <Row>
             <Col xs={12}>
             <AppBar
-                title="Emerald - Ethereum Classic Wallet"
+                title={t("appName")}
                 iconElementLeft={<IconButton><Face color="white" /></IconButton>}
                 iconElementRight={<Menu {...props}/>}
             />
@@ -77,7 +78,7 @@ const Render = (props) => (
             </Col>
         </Row>
     </Grid>
-);
+));
 
 const Main = connect(
     (state, ownProps) => ({
