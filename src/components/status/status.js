@@ -6,7 +6,7 @@ import Avatar from 'material-ui/Avatar';
 import LinearProgress from 'material-ui/LinearProgress';
 import { cardSpace } from 'lib/styles';
 
-const Render = ({ block, syncing }) => {
+const Render = ({ block, syncing, chain }) => {
     let networkDetails = `Block ${block}`;
     const titleAvatar = <Avatar icon={<FontIcon className="fa fa-signal fa-2x" />} />;
 
@@ -24,9 +24,7 @@ const Render = ({ block, syncing }) => {
             <CardHeader
                 title="Network Status"
                 avatar={titleAvatar}
-                subtitle={networkDetails}
-                actAsExpander={true}
-                showExpandableButton={true}
+                subtitle={`${networkDetails} (${chain})`}
             />
             <CardActions>
                 {progress}
@@ -41,6 +39,7 @@ const Status = connect(
     (state, ownProps) => ({
         block: state.network.getIn(['currentBlock', 'height'], -1),
         syncing: state.network.get('sync'),
+        chain: (state.network.get('chain') || {}).get('name'),
     }),
     (dispatch, ownProps) => ({})
 )(Render);

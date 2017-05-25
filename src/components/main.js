@@ -55,7 +55,7 @@ const Render = (props) => (
             <Col xs={12}>
             <AppBar
                 title="Emerald - Ethereum Classic Wallet"
-                iconElementLeft={<IconButton><Face color="white" /></IconButton>}
+                iconElementLeft={<IconButton onClick={props.openAccounts}><Face color="white" /></IconButton>}
                 iconElementRight={<Menu {...props}/>}
             />
             </Col>
