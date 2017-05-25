@@ -56,7 +56,7 @@ const Render = translate("common")(({t, ...props}) => (
             <Col xs={12}>
             <AppBar
                 title={t("appName")}
-                iconElementLeft={<IconButton><Face color="white" /></IconButton>}
+                iconElementLeft={<IconButton onClick={props.openAccounts}><Face color="white" /></IconButton>}
                 iconElementRight={<Menu {...props}/>}
             />
             </Col>
