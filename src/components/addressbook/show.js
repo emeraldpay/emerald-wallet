@@ -23,15 +23,15 @@ class CardEdit extends React.Component {
         };
     }
 
-    handleExpandChange(expanded) {
+    handleExpandChange = (expanded) => {
         this.setState({ expanded });
     }
 
-    handleExpand() {
+    handleExpand = () => {
         this.setState({ expanded: true });
     }
 
-    handleReduce() {
+    handleReduce = () => {
         this.setState({ expanded: false });
     }
 
@@ -110,7 +110,7 @@ const AddressShow = connect(
                         });
         }),
         onDeleteAddress: () => new Promise((resolve, reject) => {
-            const address = ownProps.address.get('id');
+            const address = ownProps.addressId;
             dispatch(deleteAddress(address))
                         .then((response) => {
                             dispatch(gotoScreen('address-book'));
