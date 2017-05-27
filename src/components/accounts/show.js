@@ -29,7 +29,7 @@ const Render = ({ account, createTx }) => {
     return (
         <Card style={cardSpace}>
             <CardHeader
-                title={`Address: ${account.get('id')}`}
+                title={`Account: ${account.get('name') || account.get('id')}`}
                 subtitle={value}
                 actAsExpander={true}
                 showExpandableButton={true}
@@ -43,6 +43,11 @@ const Render = ({ account, createTx }) => {
                 <Row>
                     <Col xs={8}>
                         <DescriptionList>
+                            {account.get('description') && <div>
+                            <DescriptionTitle>Account Description:</DescriptionTitle>
+                            <DescriptionData>{account.get('description')}</DescriptionData>
+                            </div>}
+
                             <DescriptionTitle>Address:</DescriptionTitle>
                             <DescriptionData>{account.get('id')}</DescriptionData>
 
