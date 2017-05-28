@@ -1,4 +1,4 @@
-import { number, address, required, positive, hex, isJson } from './validators';
+import { number, address, uuidv4, required, positive, hex, isJson } from './validators';
 
 describe('Field Validators', () => {
     it('valid required', () => {
@@ -43,6 +43,15 @@ describe('Field Validators', () => {
     it('invalid address', () => {
         expect(address('0x6ebeb2af2e734fbba2b58c5b922628af442527')).not.toBeUndefined();
         expect(address('0E7C045110B8dbF29765047380898919C5CB56F4')).not.toBeUndefined();
+    });
+
+    it('valid uuid', () => {
+        expect(uuidv4('aaaaaaaa-AAAA-4aaa-aaaa-aaaaaaaaaaaa')).toBeUndefined();
+        expect(uuidv4('00000000-0000-4000-8000-000000000000')).toBeUndefined();
+    });
+    it('invalid uuid', () => {
+        expect(uuidv4('xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx')).not.toBeUndefined();
+        expect(uuidv4('0E7C045110B8dbF29765047380898919C5CB56F4')).not.toBeUndefined();
     });
 
     it('valid hex', () => {

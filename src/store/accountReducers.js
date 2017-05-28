@@ -17,7 +17,6 @@ const initialAddr = Immutable.Map({
     description: null,
 });
 
-/** TODO (connector?): Accounts should be associated with names **/
 function addAccount(state, id) {
     return state.update('accounts', (accounts) =>
         accounts.push(initialAddr.set('id', id))
@@ -59,8 +58,12 @@ function onSetAccountsList(state, action) {
         case 'ACCOUNT/SET_LIST':
             return state
                 .set('accounts',
-                    Immutable.fromJS(action.accounts)
-                        .map((id) => initialAddr.set('id', id))
+                    Immutable.fromJS(action.accounts.map((acc) => 
+                        initialAddr.set('name', acc.name)
+                            .set('description', acc.description)
+                            .set('id', (acc.address || acc.uuid))
+                        )
+                    )
                 )
                 .set('loading', false);
         default:
