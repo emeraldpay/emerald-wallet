@@ -1,6 +1,8 @@
 import React from 'react';
 import { Provider, connect } from 'react-redux'
 import 'font-awesome/scss/font-awesome.scss'
+import { I18nextProvider } from 'react-i18next';
+import i18n from './i18n';
 import ReactDOM from 'react-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Main from './components/main';
@@ -18,11 +20,13 @@ function start() {
     injectTapEventPlugin();
 
     const App = () => (
-        <Provider store={store}>
-            <MuiThemeProvider>
-                <Main />
-            </MuiThemeProvider>
-        </Provider>
+        <I18nextProvider i18n={ i18n }>
+            <Provider store={store}>
+                <MuiThemeProvider>
+                    <Main />
+                </MuiThemeProvider>
+            </Provider>
+        </I18nextProvider>
     );
 
     ReactDOM.render(<App />, document.getElementById('app'));
