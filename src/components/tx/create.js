@@ -22,8 +22,8 @@ const traceValidate = (data, dispatch) => {
         to: data.to,
         value: toHex(etherToWei(data.value)),
     };
-
     const resolveValidate = (response, resolve) => {
+        log.debug(response);
         let errors = null;
         dataObj.data = (((response.trace || [])[0] || {}).action || {}).input;
         const gas = estimateGasFromTrace(dataObj, response);
@@ -32,6 +32,7 @@ const traceValidate = (data, dispatch) => {
         } else if (gas > dataObj.gas) {
             errors = { gasAmount: `Insufficient Gas: Expected ${gas.toString(10)}` };
         }
+        log.debug(errors)
         resolve(errors);
     };
 
@@ -118,6 +119,12 @@ const CreateTx = connect(
                             });
                         }
                     });
+        },
+        onChangeAccount: (accounts, value) => {
+            // load account information for selected account
+            const idx = accounts.findKey((acct) => acct.get('id') === value);
+            const balance = accounts.get(idx).get('balance');
+            dispatch(change('createTx', 'balance', balance.toString()));
         },
         onChangeToken: (event, value, prev) => {
             // if switching from ETC to token, change default gas
