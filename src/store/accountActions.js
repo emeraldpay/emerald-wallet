@@ -29,7 +29,7 @@ export function loadAccountsList() {
                 type: 'ACCOUNT/SET_LIST',
                 accounts: result,
             });
-            result.map((acct) => dispatch(loadAccountBalance(acct))
+            result.map((acct) => dispatch(loadAccountBalance(acct.address))
             );
         });
     };
