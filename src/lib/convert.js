@@ -66,6 +66,8 @@ export function fromTokens(value, decimals) {
 export function estimateGasFromTrace(dataObj, trace) {
     const gasLimit = 2000000;
     const value = new BigNumber(dataObj.value);
+    log.debug(dataObj);
+    log.debug(trace);
 
     const recurCheckBalance = function (ops) {
         let startVal = 24088 + ops[0].cost;
