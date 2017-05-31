@@ -38,6 +38,7 @@
   "dependencies": {
     "bignumber.js": "4.0.0",
     "classnames": "^2.1.2",
+    "eslint-plugin-react": "^6.10.3",
     "ethereumjs-util": "5.1.1",
     "ethereumjs-abi": "0.6.4",
     "fbjs": "0.8.9",
@@ -47,6 +48,7 @@
     "i18next-browser-languagedetector": "^1.0.1",
     "i18next-localstorage-cache": "^1.1.1",
     "i18next-resource-store-loader": "^0.1.1",
+    "i18next-xhr-backend": "^1.4.1",
     "immutable": "3.8.1",
     "isomorphic-fetch": "^2.2.1",
     "lib": "^2.2.5",
