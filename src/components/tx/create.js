@@ -23,16 +23,14 @@ const traceValidate = (data, dispatch) => {
         value: toHex(etherToWei(data.value)),
     };
     const resolveValidate = (response, resolve) => {
-        log.debug(response);
         let errors = null;
         dataObj.data = (((response.trace || [])[0] || {}).action || {}).input;
         const gas = estimateGasFromTrace(dataObj, response);
         if (!gas) {
             errors = { value: 'Invalid Transaction' };
-        } else if (gas > dataObj.gas) {
-            errors = { gasAmount: `Insufficient Gas: Expected ${gas.toString(10)}` };
+        } else if (gas.div(dataObj.gasPrice).toString(10) > dataObj.gasAmount) {
+            errors = { gasAmount: `Insufficient Gas: Expected ${gas.div(dataObj.gasPrice).toString(10)}` };
         }
-        log.debug(errors)
         resolve(errors);
     };
 
