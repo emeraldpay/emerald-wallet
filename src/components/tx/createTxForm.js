@@ -92,7 +92,7 @@ const Render = (props) => {
                        component={TextField}
                        floatingLabelText="Amount"
                        hintText="1.0000"
-                       validate={[required, number]}
+                       validate={[required]}
                 />
               </Col>
               <Col xs={4} md={4}>
