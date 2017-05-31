@@ -25,11 +25,16 @@ const traceValidate = (data, dispatch) => {
     const resolveValidate = (response, resolve) => {
         let errors = null;
         dataObj.data = (((response.trace || [])[0] || {}).action || {}).input;
-        const gas = estimateGasFromTrace(dataObj, response);
+        let gas; 
+        if (response.gas) gas = response.gas;
+        else {
+            gas = estimateGasFromTrace(dataObj, response);
+            gas = (gas && gas.div(dataObj.gasPrice).toString(10));
+        }
         if (!gas) {
             errors = { value: 'Invalid Transaction' };
-        } else if (gas.div(dataObj.gasPrice).toString(10) > dataObj.gasAmount) {
-            errors = { gasAmount: `Insufficient Gas: Expected ${gas.div(dataObj.gasPrice).toString(10)}` };
+        } else if (gas > dataObj.gasAmount) {
+            errors = { gasAmount: `Insufficient Gas: Expected ${gas}` };
         }
         resolve(errors);
     };
