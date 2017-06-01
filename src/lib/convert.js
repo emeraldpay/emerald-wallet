@@ -65,6 +65,9 @@ export function fromTokens(value, decimals) {
 
 export function estimateGasFromTrace(dataObj, trace) {
     const gasLimit = 2000000;
+    const value = new BigNumber(dataObj.value);
+    log.debug(dataObj);
+    log.debug(trace);
 
     const recurCheckBalance = function (ops) {
         let startVal = 24088 + ops[0].cost;
@@ -90,9 +93,11 @@ export function estimateGasFromTrace(dataObj, trace) {
         let stateDiff = (trace || {}).stateDiff;
         stateDiff = stateDiff && (stateDiff[dataObj.from.toLowerCase()] || {}).balance['*'];
         if (stateDiff) {
-            estGas = new BigNumber(stateDiff.from)
-                .sub(new BigNumber(stateDiff.to))
-                .sub(new BigNumber(dataObj.value));
+            const fromState = new BigNumber(stateDiff.from);
+            const toState = new BigNumber(stateDiff.to);
+            estGas = fromState.sub(toState).sub(value);
+            log.debug('Start balance: ' + mweiToWei(fromState).toString(10));
+            log.debug('End balance: ' + mweiToWei(toState).toString(10));
         }
         if (estGas.lt(0) || estGas.eq(gasLimit)) estGas = null;
     }

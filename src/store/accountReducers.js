@@ -57,9 +57,12 @@ function onSetAccountsList(state, action) {
     switch (action.type) {
         case 'ACCOUNT/SET_LIST':
             return state
-                .set('accounts',
-                    Immutable.fromJS(action.accounts)
-                        .map((id) => initialAddr.set('id', id))
+                .set('accounts', Immutable.fromJS(action.accounts.map((acc) =>
+                            initialAddr.set('name', acc.name)
+                                       .set('description', acc.description)
+                                       .set('id', acc.address)
+                        )
+                    )
                 )
                 .set('loading', false);
         default:

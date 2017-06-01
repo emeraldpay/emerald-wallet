@@ -22,15 +22,19 @@ const traceValidate = (data, dispatch) => {
         to: data.to,
         value: toHex(etherToWei(data.value)),
     };
-
     const resolveValidate = (response, resolve) => {
         let errors = null;
         dataObj.data = (((response.trace || [])[0] || {}).action || {}).input;
-        const gas = estimateGasFromTrace(dataObj, response);
+        let gas; 
+        if (response.gas) gas = response.gas;
+        else {
+            gas = estimateGasFromTrace(dataObj, response);
+            gas = (gas && gas.div(dataObj.gasPrice).toString(10));
+        }
         if (!gas) {
             errors = { value: 'Invalid Transaction' };
-        } else if (gas > dataObj.gas) {
-            errors = { gasAmount: `Insufficient Gas: Expected ${gas.toString(10)}` };
+        } else if (gas > dataObj.gasAmount) {
+            errors = { gasAmount: `Insufficient Gas: Expected ${gas}` };
         }
         resolve(errors);
     };
@@ -118,6 +122,12 @@ const CreateTx = connect(
                             });
                         }
                     });
+        },
+        onChangeAccount: (accounts, value) => {
+            // load account information for selected account
+            const idx = accounts.findKey((acct) => acct.get('id') === value);
+            const balance = accounts.get(idx).get('balance');
+            dispatch(change('createTx', 'balance', balance.toString()));
         },
         onChangeToken: (event, value, prev) => {
             // if switching from ETC to token, change default gas

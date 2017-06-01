@@ -15,7 +15,8 @@ const Render = ({ accounts, createAccount }) => {
     const table = <Table selectable={false}>
         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
             <TableRow>
-                <TableHeaderColumn style={tables.wideStyle}>Account</TableHeaderColumn>
+                <TableHeaderColumn style={tables.shortStyle}>Account</TableHeaderColumn>
+                <TableHeaderColumn style={tables.wideStyle}>Address</TableHeaderColumn>
                 <TableHeaderColumn style={tables.shortStyle}>Balance</TableHeaderColumn>
             </TableRow>
         </TableHeader>
