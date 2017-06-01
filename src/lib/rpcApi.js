@@ -1,6 +1,6 @@
 import 'isomorphic-fetch';
 
-const url = 'http://localhost:1920';
+const url = 'http://localhost:8545';
 const baseHeaders = {
     'Content-Type': 'application/json',
 };
