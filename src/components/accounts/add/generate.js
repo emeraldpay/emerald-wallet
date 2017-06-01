@@ -36,6 +36,10 @@ const Render = ({ account, submitSucceeded, handleSubmit, invalid, pristine, res
                         component={renderTextField}
                         type="text"
                         label="Account Name (optional)" />
+                <Field name="description"
+                        component={renderTextField}
+                        type="text"
+                        label="Description (optional)" />
                 <Field name="password"
                         component={renderTextField}
                         type="password"
@@ -80,7 +84,7 @@ Render.propTypes = {
 
 const GenerateAccountForm = reduxForm({
     form: 'generate',
-    fields: ['name', 'password', 'passwordConfirm'],
+    fields: ['name', 'description', 'password', 'passwordConfirm'],
     validate,
 })(Render);
 
@@ -90,7 +94,7 @@ const GenerateAccount = connect(
     }),
     (dispatch, ownProps) => ({
         onSubmit: (data) => new Promise((resolve, reject) => {
-            dispatch(createAccount(data.name, data.password))
+            dispatch(createAccount(data.password, data.name, data.description))
                         .then((response) => {
                             resolve(response);
                         });

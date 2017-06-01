@@ -17,10 +17,9 @@ const initialAddr = Immutable.Map({
     description: null,
 });
 
-/** TODO (connector?): Accounts should be associated with names **/
-function addAccount(state, id) {
+function addAccount(state, id, name, description) {
     return state.update('accounts', (accounts) =>
-        accounts.push(initialAddr.set('id', id))
+        accounts.push(initialAddr.merge({ id, name, description }))
     );
 }
 
@@ -102,7 +101,7 @@ function onSetTxCount(state, action) {
 
 function onAddAccount(state, action) {
     if (action.type === 'ACCOUNT/ADD_ACCOUNT') {
-        return addAccount(state, action.accountId);
+        return addAccount(state, action.accountId, state.name, state.description);
     }
     return state;
 }

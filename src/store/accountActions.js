@@ -55,13 +55,18 @@ export function loadAccountTxCount(accountId) {
  *
  * TODO: Error handling
 */
-export function createAccount(name, password) {
+export function createAccount(password, name, description) {
     return (dispatch) =>
-        rpc.call('personal_newAccount', [password]).then((result) => {
+        rpc.call('personal_newAccount', [{
+            password,
+            name,
+            description,
+        }]).then((result) => {
             dispatch({
                 type: 'ACCOUNT/ADD_ACCOUNT',
                 accountId: result,
                 name,
+                description,
             });
             dispatch(loadAccountBalance(result));
         });
