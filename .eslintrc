@@ -31,7 +31,8 @@
     "max-len": ["error", {"code": 120}],
     "no-unused-vars": ["warn", {
       "argsIgnorePattern": "(dispatch|state|ownProps|reset|handleSubmit|resetForm|submitting|reject|resolve)"
-    }]
+    }],
+    "no-plusplus": 0
   },
   "plugins": [
     "react"
