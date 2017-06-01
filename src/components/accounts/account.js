@@ -7,14 +7,19 @@ import log from 'loglevel';
 import { link, tables } from 'lib/styles';
 
 const Render = ({ account, openAccount }) => (
-    <TableRow selectable={false}>
+    <TableRow onClick={openAccount} selectable={false}>
+        <TableRowColumn style={tables.shortStyle}>
+            <span style={link}>
+                {account.get('name') || account.get('id')}
+            </span>
+        </TableRowColumn>
         <TableRowColumn style={tables.wideStyle}>
-            <span onClick={openAccount} style={link}>
+            <span style={link}>
                 {account.get('id')}
             </span>
         </TableRowColumn>
         <TableRowColumn style={tables.shortStyle}>
-            <span onClick={openAccount} style={link}>
+            <span style={link}>
                 {account.get('balance') ? account.get('balance').getEther() : '?'} Ether
             </span>
         </TableRowColumn>

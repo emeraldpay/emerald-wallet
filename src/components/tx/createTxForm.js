@@ -13,9 +13,15 @@ import { red200 } from 'material-ui/styles/colors';
 import { cardSpace } from 'lib/styles';
 import { positive, number, required, address } from 'lib/validators';
 
+/**
+  TODO (elaine):
+    `balance` is a temporary placeholder.
+    Replace with card containing full account data.
+****/
+
 const Render = (props) => {
     const { fields: { from, to }, accounts, handleSubmit, invalid, pristine, submitting, cancel } = props;
-    const { addressBook, handleSelect, tokens, token, isToken, onChangeToken } = props;
+    const { addressBook, handleSelect, tokens, token, isToken, onChangeToken, onChangeAccount } = props;
     const { error } = props;
 
     return (
@@ -33,12 +39,19 @@ const Render = (props) => {
               <Col xs={12}>
                 <Field name="from"
                        floatingLabelText="From"
+                       onChange={(event, val) => onChangeAccount(accounts, val)}
                        component={SelectField}
                        fullWidth={true}>
                   {accounts.map((account) =>
                     <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
                   )}
                 </Field>
+                <Field name="balance"
+                       disabled={true}
+                       component={TextField}
+                       floatingLabelText="Balance"
+                       
+                />
               </Col>
             </Row>
             <Row>
@@ -79,7 +92,7 @@ const Render = (props) => {
                        component={TextField}
                        floatingLabelText="Amount"
                        hintText="1.0000"
-                       validate={[required, number]}
+                       validate={[required]}
                 />
               </Col>
               <Col xs={4} md={4}>
@@ -170,7 +183,7 @@ Render.propTypes = {
     isToken: PropTypes.string,
     onChangeToken: PropTypes.func.isRequired,
 
-    error: PropTypes.bool,
+    error: PropTypes.string,
 };
 
 const CreateTxForm = reduxForm({
