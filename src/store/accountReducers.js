@@ -25,8 +25,9 @@ const initialTx = Immutable.Map({
     to: null,
     value: null,
     data: null,
-    gasAmount: null,
+    gas: null,
     gasPrice: null,
+    nonce: null,
 });
 
 function addAccount(state, id, name, description) {
@@ -123,7 +124,7 @@ function createTx(data) {
         hash: data.hash,
         from: data.from,
         to: data.to,
-        gasAmount: data.gasAmount,
+        gas: data.gasAmount,
     });
     if (typeof data.value === 'string') {
         tx = tx.set('value', new Wei(data.value));
