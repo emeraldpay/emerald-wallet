@@ -13,6 +13,7 @@ import Immutable from 'immutable';
 import { gotoScreen } from 'store/screenActions';
 import { createAccount } from 'store/accountActions';
 import { required, minLength, passwordMatch } from 'lib/validators';
+import { translate } from 'react-i18next';
 import AccountShow from '../show';
 
 const validate = (values) => {
@@ -22,10 +23,10 @@ const validate = (values) => {
     return errors;
 };
 
-const Render = ({ account, submitSucceeded, handleSubmit, invalid, pristine, reset, submitting, cancel }) => (
+const Render = translate("accounts")(({ t, account, submitSucceeded, handleSubmit, invalid, pristine, reset, submitting, cancel }) => (
     <Card style={cardSpace}>
         <CardHeader
-            title='Generate Wallet'
+            title={t("generate.title")}
             actAsExpander={false}
             showExpandableButton={false}
         />
@@ -35,41 +36,41 @@ const Render = ({ account, submitSucceeded, handleSubmit, invalid, pristine, res
                 <Field name="name"
                         component={renderTextField}
                         type="text"
-                        label="Account Name (optional)" />
+                        label={t("generate.name")} />
                 <Field name="description"
                         component={renderTextField}
                         type="text"
-                        label="Description (optional)" />
+                        label={t("generate.description")} />
                 <Field name="password"
                         component={renderTextField}
                         type="password"
-                        label="Please Enter a Strong Password"
+                        label={t("generate.password")}
                         validate={[required, minLength(8)]} />
                 <Field name="passwordConfirm"
                         component={renderTextField}
                         type="password"
-                        label="Re-Enter Password"
+                        label={t("generate.passwordConfirm")}
                         validate={ passwordMatch } />
-                <FlatButton label="Submit" type="submit"
+                <FlatButton label={t("common:submit")} type="submit"
                             disabled={pristine || submitting || invalid } />
-                <FlatButton label="Clear Values"
+                <FlatButton label={t("common:clear")}
                             disabled={pristine || submitting}
                             onClick={reset} />
             </form>
         </CardText>
         <CardText expandable={!submitSucceeded}>
              <AccountShow key={(account === undefined) ? undefined : account.get('id')} account={account}/>
-             <FlatButton label="Done"
+             <FlatButton label={t("common:done")}
                         onClick={cancel}
                         icon={<FontIcon className="fa fa-home" />}/>
         </CardText>
         <CardActions>
-            <FlatButton label="Cancel"
+            <FlatButton label={t("common:cancel")}
                         onClick={cancel}
                         icon={<FontIcon className="fa fa-ban" />}/>
         </CardActions>
     </Card>
-);
+));
 
 Render.propTypes = {
     account: PropTypes.object.isRequired,

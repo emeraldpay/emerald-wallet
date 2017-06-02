@@ -13,12 +13,13 @@ import Immutable from 'immutable';
 import { gotoScreen } from 'store/screenActions';
 import { importWallet } from 'store/accountActions';
 import { required } from 'lib/validators';
+import { translate } from 'react-i18next';
 import AccountShow from '../show';
 
-const Render = ({ account, submitSucceeded, handleSubmit, invalid, pristine, reset, submitting, cancel }) => (
+const Render = translate("accounts")(({ t, account, submitSucceeded, handleSubmit, invalid, pristine, reset, submitting, cancel }) => (
     <Card style={cardSpace}>
         <CardHeader
-            title='Import Wallet'
+            title={t("import.title")}
             actAsExpander={false}
             showExpandableButton={false}
         />
@@ -28,31 +29,31 @@ const Render = ({ account, submitSucceeded, handleSubmit, invalid, pristine, res
                 <Field name="name"
                         component={renderTextField}
                         type="text"
-                        label="Account Name (optional)" />
+                        label={t("import.name")} />
                  <Field name="description"
                         component={renderTextField}
                         type="text"
-                        label="Description (optional)" />
+                        label={t("import.description")} />
                 <Field name="wallet"
                         component={renderFileField}
                         validate={required} />
-                <FlatButton label="Submit" type="submit"
+                <FlatButton label={t("common:submit")} type="submit"
                             disabled={pristine || submitting || invalid } />
             </form>
         </CardText>
         <CardText expandable={!submitSucceeded}>
              <AccountShow key={(account === undefined) ? undefined : account.get('id')} account={account}/>
-             <FlatButton label="Done"
+             <FlatButton label={t("common:done")}
                         onClick={cancel}
                         icon={<FontIcon className="fa fa-home" />}/>
         </CardText>
         <CardActions>
-            <FlatButton label="Cancel"
+            <FlatButton label={t("common:cancel")}
                         onClick={cancel}
                         icon={<FontIcon className="fa fa-ban" />}/>
         </CardActions>
     </Card>
-);
+));
 
 Render.propTypes = {
     account: PropTypes.object.isRequired,

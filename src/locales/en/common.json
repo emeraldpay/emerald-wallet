@@ -5,5 +5,9 @@
         "addressBook": "Address Book",
         "contracts": "Contracts",
         "network": "Network"
-    }
+    },
+    "submit": "Submit",
+    "clear": "Clear Values",
+    "done": "Done",
+    "cancel": "Cancel"
 }

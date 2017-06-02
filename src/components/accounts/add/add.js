@@ -9,13 +9,13 @@ import FontIcon from 'material-ui/FontIcon';
 import { List, ListItem } from 'material-ui/List';
 
 import { cardSpace } from 'lib/styles';
-
+import { translate } from 'react-i18next';
 import { gotoScreen } from 'store/screenActions';
 
-const Render = ({ handleSubmit, submitting, generate, importJson, cancel }) => (
+const Render = translate("accounts")(({ t, handleSubmit, submitting, generate, importJson, cancel }) => (
     <Card style={cardSpace}>
         <CardHeader
-            title='Add Account'
+            title={t("add.title")}
             actAsExpander={false}
             showExpandableButton={false}
         />
@@ -23,14 +23,14 @@ const Render = ({ handleSubmit, submitting, generate, importJson, cancel }) => (
         <CardText expandable={false}>
             <List>
                 <ListItem
-                    primaryText="Generate"
-                    secondaryText="Generates a new private/public key pair"
+                    primaryText={t("add.generate.title")}
+                    secondaryText={t("add.generate.subtitle")}
                     onClick={generate}
                     leftIcon={<FontIcon className="fa fa-random"/>}
                 />
                 <ListItem
-                    primaryText="Import JSON"
-                    secondaryText="Import key from Parity/Geth in JSON format"
+                    primaryText={t("add.import.title")}
+                    secondaryText={t("add.import.subtitle")}
                     onClick={importJson}
                     leftIcon={<FontIcon className="fa fa-code"/>}
                 />
@@ -39,12 +39,12 @@ const Render = ({ handleSubmit, submitting, generate, importJson, cancel }) => (
         </CardText>
 
         <CardActions>
-            <FlatButton label="Cancel"
+            <FlatButton label={t("common:cancel")}
                         onClick={cancel}
                         icon={<FontIcon className="fa fa-ban" />}/>
         </CardActions>
     </Card>
-);
+));
 
 Render.propTypes = {
     handleSubmit: PropTypes.func.isRequired,
