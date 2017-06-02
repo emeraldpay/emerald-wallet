@@ -25,9 +25,11 @@ const Render = ({ hash, transaction, account, goBack }) =>
                         <DescriptionData>{transaction.get('hash')}</DescriptionData>
 
                         <DescriptionTitle>Block Number:</DescriptionTitle>
-                        <DescriptionData>{toNumber(transaction.get('blockNumber'))}</DescriptionData>
+                        <DescriptionData>
+                            {transaction.get('blockNumber') ? toNumber(transaction.get('blockNumber')) : 'pending'}
+                        </DescriptionData>
                         <DescriptionTitle>Block hash:</DescriptionTitle>
-                        <DescriptionData>{transaction.get('blockHash') || '?'}</DescriptionData>
+                        <DescriptionData>{transaction.get('blockHash') || 'pending'}</DescriptionData>
 
                         <DescriptionTitle>From:</DescriptionTitle>
                         <DescriptionData>{transaction.get('from')}</DescriptionData>
@@ -41,7 +43,7 @@ const Render = ({ hash, transaction, account, goBack }) =>
                         </DescriptionData>
 
                         <DescriptionTitle>Gas Provided:</DescriptionTitle>
-                        <DescriptionData>{toNumber(transaction.get('gas'))}</DescriptionData>
+                        <DescriptionData>{transaction.get('gas')}</DescriptionData>
 
                         <DescriptionTitle>Gas Price:</DescriptionTitle>
                         <DescriptionData>
@@ -62,7 +64,7 @@ const Render = ({ hash, transaction, account, goBack }) =>
         </CardText>
         <CardActions>
             <FlatButton label="Go Back"
-                        onClick={goBack(account)}
+                        onClick={(e) => goBack(account, e)}
                         icon={<FontIcon className="fa fa-home" />}/>
         </CardActions>
     </Card>
@@ -78,8 +80,8 @@ Render.propTypes = {
 const TransactionShow = connect(
     (state, ownProps) => {
         const account = state.accounts.get('accounts').find(
-                (acct) => acct.get('id') === ownProps.accountId
-            );
+           (acct) => acct.get('id') === ownProps.accountId
+        );
         return {
             transaction: state.accounts.get('trackedTransactions').find(
                 (tx) => tx.get('hash') === ownProps.hash

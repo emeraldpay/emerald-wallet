@@ -156,7 +156,7 @@ const DeployContract = connect(
                     accountId: data.from,
                 };
                 dispatch(addContract(null, data.name, data.abi, data.version, data.options, txhash));
-                dispatch(trackTx(txhash));
+                dispatch(trackTx(Object.assign(data, { hash: txhash })));
                 dispatch(gotoScreen('transaction', txdetails));
             };
             const resolver = (resolve, f) => (x) => {

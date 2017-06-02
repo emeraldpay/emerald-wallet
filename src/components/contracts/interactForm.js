@@ -210,7 +210,7 @@ const InteractContract = connect(
                     hash: txhash,
                     account: data.from,
                 };
-                dispatch(trackTx(txhash));
+                dispatch(trackTx(Object.assign(data, { hash: txhash })));
                 dispatch(gotoScreen('transaction', txdetails));
             };
             const resolver = (resolve, f) => (x) => {
