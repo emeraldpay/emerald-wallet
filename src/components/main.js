@@ -21,7 +21,7 @@ import { gotoScreen } from 'store/screenActions';
 import './main.scss';
 import Screen from './screen';
 
-const Menu = ({ openAccounts, openAddressBook, openContracts, switchChain, networks, chain }) => (
+const Menu = translate("common")(({ t, openAccounts, openAddressBook, openContracts, switchChain, networks, chain }) => (
   <IconMenu
     iconButtonElement={
       <IconButton><ExpandMoreIcon color="white" /></IconButton>
@@ -29,12 +29,12 @@ const Menu = ({ openAccounts, openAddressBook, openContracts, switchChain, netwo
     targetOrigin={{ horizontal: 'right', vertical: 'top' }}
     anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
   >
-    <MenuItem leftIcon={<Face />} primaryText="Home" onClick={openAccounts} />
-    <MenuItem leftIcon={<ImportContacts />} primaryText="Address Book" onClick={openAddressBook} />
-    <MenuItem leftIcon={<LibraryBooks />} primaryText="Contracts" onClick={openContracts} />
+    <MenuItem leftIcon={<Face />} primaryText={t("menu.home")} onClick={openAccounts} />
+    <MenuItem leftIcon={<ImportContacts />} primaryText={t("menu.addressBook")} onClick={openAddressBook} />
+    <MenuItem leftIcon={<LibraryBooks />} primaryText={t("menu.contracts")} onClick={openContracts} />
     <MenuItem
         leftIcon={<Motorcycle />}
-        primaryText="Network"
+        primaryText={t("menu.network")}
         rightIcon={<ArrowDropRight />}
         menuItems=
             {networks.map((net) =>
@@ -48,14 +48,14 @@ const Menu = ({ openAccounts, openAddressBook, openContracts, switchChain, netwo
 
     />
   </IconMenu>
-);
+));
 
 const Render = translate("common")(({t, ...props}) => (
     <Grid>
         <Row>
             <Col xs={12}>
             <AppBar
-                title={t("appName")}
+                title={t("title")}
                 iconElementLeft={<IconButton onClick={props.openAccounts}><Face color="white" /></IconButton>}
                 iconElementRight={<Menu {...props}/>}
             />
