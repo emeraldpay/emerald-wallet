@@ -57,7 +57,7 @@ Open `http://localhost:8000` with your browser.
 
 ## Run node
 
-Wallet expects Web3 RPC at http://localhost:8545
+Wallet expects Web3 RPC at the default [Emerald Connector](https://github.com/ethereumproject/emerald-rs) port http://localhost:1920
 
 ### Parity
 
