@@ -17,10 +17,23 @@ export function loadHeight(watch) {
         });
 }
 
+export function loadNetworkVersion() {
+    return (dispatch, getState) =>
+        rpc.call('net_version', []).then((result) => {
+            if (getState().network.get('chain').get('id') !== result)
+                dispatch({
+                    type: 'NETWORK/SWITCH_CHAIN',
+                    id: result,
+                });
+        });
+}
+
 export function loadSyncing() {
-    return (dispatch) =>
+    return (dispatch, getState) =>
         rpc.call('eth_syncing', []).then((result) => {
+            const syncing = getState().network.get('sync').get('syncing');
             if (typeof result === 'object') {
+                if (!syncing) dispatch(loadNetworkVersion());
                 dispatch({
                     type: 'NETWORK/SYNCING',
                     syncing: true,
