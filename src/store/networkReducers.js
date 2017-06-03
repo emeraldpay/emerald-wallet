@@ -49,9 +49,11 @@ function onHeight(state, action) {
 
 function onSwitchChain(state, action) {
     if (action.type === 'NETWORK/SWITCH_CHAIN') {
+        const idx = Networks.findKey((n) => n.get('id') === action.id);
+        const name = (action.network || Networks.get(idx).get('name'));
         return state.update('chain', (c) =>
-            c.set('name', action.network)
-                .set('id', Networks.get(action.id))
+            c.set('name', name)
+                .set('id', action.id)
         );
     }
     return state;
