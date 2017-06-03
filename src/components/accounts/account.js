@@ -10,7 +10,7 @@ const Render = ({ account, openAccount }) => (
     <TableRow onClick={openAccount} selectable={false}>
         <TableRowColumn style={tables.shortStyle}>
             <span style={link}>
-                {account.get('name') || account.get('id')}
+                {account.get('name')}
             </span>
         </TableRowColumn>
         <TableRowColumn style={tables.wideStyle}>
