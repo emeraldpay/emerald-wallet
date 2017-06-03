@@ -158,9 +158,9 @@ export function refreshTrackedTransactions() {
         );
 }
 
-export function trackTx(hash) {
+export function trackTx(tx) {
     return {
         type: 'ACCOUNT/TRACK_TX',
-        hash,
+        tx,
     };
 }

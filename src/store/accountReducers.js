@@ -17,6 +17,19 @@ const initialAddr = Immutable.Map({
     description: null,
 });
 
+const initialTx = Immutable.Map({
+    hash: null,
+    blockNumber: null,
+    timestamp: null,
+    from: null,
+    to: null,
+    value: null,
+    data: null,
+    gas: null,
+    gasPrice: null,
+    nonce: null,
+});
+
 function addAccount(state, id, name, description) {
     return state.update('accounts', (accounts) =>
         accounts.push(initialAddr.merge({ id, name, description }))
@@ -106,11 +119,25 @@ function onAddAccount(state, action) {
     return state;
 }
 
+function createTx(data) {
+    let tx = initialTx.merge({
+        hash: data.hash,
+        from: data.from,
+        to: data.to,
+        gas: data.gasAmount,
+    });
+    if (typeof data.value === 'string') {
+        tx = tx.set('value', new Wei(data.value));
+    }
+    if (typeof data.gasPrice === 'string') {
+        tx = tx.set('gasPrice', new Wei(data.gasPrice));
+    }
+    return tx;
+}
+
 function onTrackTx(state, action) {
     if (action.type === 'ACCOUNT/TRACK_TX') {
-        const data = Immutable.fromJS({
-            hash: action.hash,
-        });
+        const data = createTx(action.tx);
         return state.update('trackedTransactions', (txes) => txes.push(data));
     }
     return state;
@@ -121,13 +148,7 @@ function onUpdateTx(state, action) {
         return state.update('trackedTransactions', (txes) => {
             const pos = txes.findKey((tx) => tx.get('hash') === action.tx.hash);
             if (pos >= 0) {
-                let data = Immutable.fromJS(action.tx);
-                if (typeof action.tx.value === 'string') {
-                    data = data.set('value', new Wei(action.tx.value));
-                }
-                if (typeof action.tx.gasPrice === 'string') {
-                    data = data.set('gasPrice', new Wei(action.tx.gasPrice));
-                }
+                const data = createTx(action.tx);
                 txes = txes.set(pos, data);
             }
             return txes;
