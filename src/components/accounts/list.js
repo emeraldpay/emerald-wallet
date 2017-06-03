@@ -8,10 +8,11 @@ import FontIcon from 'material-ui/FontIcon';
 import Avatar from 'material-ui/Avatar';
 import { cardSpace, tables } from 'lib/styles';
 import Immutable from 'immutable';
+import { translate } from 'react-i18next';
 import { gotoScreen } from 'store/screenActions';
 import Account from './account';
 
-const Render = ({ accounts, createAccount }) => {
+const Render = translate("accounts")(({ t, accounts, createAccount }) => {
     const table = <Table selectable={false}>
         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
             <TableRow>
@@ -34,9 +35,9 @@ const Render = ({ accounts, createAccount }) => {
         <div id="accounts-list">
             <Card style={cardSpace}>
                 <CardHeader
-                    title="Accounts List"
+                    title={t("list.title")}
                     titleStyle={titleStyle}
-                    subtitle="List of addresses you're controlling on Ethereum Classic blockchain"
+                    subtitle={t("list.subtitle")}
                     avatar={titleAvatar}
                     actAsExpander={false}
                     showExpandableButton={false}
@@ -45,14 +46,14 @@ const Render = ({ accounts, createAccount }) => {
                     {table}
                 </CardText>
                 <CardActions>
-                    <FlatButton label="Create Account"
+                    <FlatButton label={t("list.create")}
                                 onClick={createAccount}
                                 icon={<FontIcon className="fa fa-plus-circle" />}/>
                 </CardActions>
             </Card>
         </div>
     );
-};
+});
 
 Render.propTypes = {
     accounts: PropTypes.object.isRequired,

@@ -8,6 +8,7 @@ import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { DescriptionList, DescriptionTitle, DescriptionData } from 'elements/dl';
 import QRCode from 'qrcode.react';
 import log from 'loglevel';
+import { translate } from 'react-i18next';
 import { cardSpace } from 'lib/styles';
 import { gotoScreen } from 'store/screenActions';
 
@@ -23,19 +24,19 @@ TokenRow.propTypes = {
 };
 
 
-const Render = ({ account, createTx }) => {
-    const value = `${account.get('balance') ? account.get('balance').getEther() : '?'} Ether`;
+const Render = translate("accounts")(({ t, account, createTx }) => {
+    const value = t("show.value", {value: account.get('balance') ? account.get('balance').getEther() : '?'});
 
     return (
         <Card style={cardSpace}>
             <CardHeader
-                title={`Account: ${account.get('name') || account.get('id')}`}
+                title={t("show.header", {account: account.get('name') || account.get('id')})}
                 subtitle={value}
                 actAsExpander={true}
                 showExpandableButton={true}
             />
             <CardActions>
-                <FlatButton label="Send"
+                <FlatButton label={t("show.send")}
                             onClick={createTx}
                             icon={<FontIcon className="fa fa-arrow-circle-o-right" />}/>
             </CardActions>
@@ -44,20 +45,20 @@ const Render = ({ account, createTx }) => {
                     <Col xs={8}>
                         <DescriptionList>
                             {account.get('description') && <div>
-                            <DescriptionTitle>Account Description:</DescriptionTitle>
+                            <DescriptionTitle>{t("show.description.title")}</DescriptionTitle>
                             <DescriptionData>{account.get('description')}</DescriptionData>
                             </div>}
 
-                            <DescriptionTitle>Address:</DescriptionTitle>
+                            <DescriptionTitle>{t("show.description.address")}</DescriptionTitle>
                             <DescriptionData>{account.get('id')}</DescriptionData>
 
-                            <DescriptionTitle>Sent Transactions:</DescriptionTitle>
+                            <DescriptionTitle>{t("show.description.sentTransactions")}</DescriptionTitle>
                             <DescriptionData>{account.get('txcount') || '0'}</DescriptionData>
 
-                            <DescriptionTitle>Ether Balance:</DescriptionTitle>
+                            <DescriptionTitle>{t("show.description.etherBalance")}</DescriptionTitle>
                             <DescriptionData>{value}</DescriptionData>
 
-                            <DescriptionTitle>Token Balances:</DescriptionTitle>
+                            <DescriptionTitle>{t("show.description.tokenBalance")}</DescriptionTitle>
                             <DescriptionData>
                                 {account
                                     .get('tokens')
@@ -75,7 +76,7 @@ const Render = ({ account, createTx }) => {
             </CardText>
         </Card>
     );
-};
+});
 
 Render.propTypes = {
     account: PropTypes.object.isRequired,

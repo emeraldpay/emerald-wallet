@@ -1,3 +1,13 @@
 {
-    "appName": "Emerald - Ethereum Classic Wallet"
+    "title": "Emerald - Ethereum Classic Wallet",
+    "menu": {
+        "home": "Home",
+        "addressBook": "Address Book",
+        "contracts": "Contracts",
+        "network": "Network"
+    },
+    "submit": "Submit",
+    "clear": "Clear Values",
+    "done": "Done",
+    "cancel": "Cancel"
 }
