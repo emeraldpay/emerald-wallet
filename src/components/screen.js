@@ -9,6 +9,7 @@ import AddressShow from './addressbook/show';
 import AddressAdd from './addressbook/add';
 import CreateTx from './tx/create';
 import TransactionShow from './tx/show';
+import TransactionsList from './tx/list';
 import TokensList from './tokens/list';
 import AddToken from './tokens/add';
 import Status from './status/status';
@@ -32,6 +33,7 @@ const Render = ({ screen, screenItem }) => {
             <div>
                 <AccountsList/>
                 <TokensList/>
+                <TransactionsList/>
                 <Status/>
             </div>
         );
