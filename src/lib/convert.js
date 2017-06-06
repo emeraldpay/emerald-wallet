@@ -13,6 +13,36 @@ export function toNumber(quantity) {
     return parseInt(quantity.substring(2), 16);
 }
 
+/*
+  Convert unix timestamp to time elapsed
+*/
+export function toDuration(timestamp) {
+    let millis = Date.now() - timestamp * 1000;
+    const dur = [];
+    const units = [
+        { label: "millis",  mod: 1000 },
+        { label: "seconds", mod: 60 },
+        { label: "mins",    mod: 60 },
+        { label: "hours",   mod: 24 },
+        { label: "days",    mod: 365 },
+        { label: "years",   mod: 1000 },
+    ];
+    // calculate the individual unit values
+    units.forEach((u) => {
+        const val = millis % u.mod;
+        millis = (millis - val) / u.mod;
+        if (u.label === 'millis')
+            return;
+        if (val > 0)
+            dur.push({ label: u.label, val });
+    });
+    // convert object to string representation
+    dur.toString = () =>
+        dur.reverse().slice(0, 2).map((d) =>
+            `${d.val} ${d.val === 1 ? d.label.slice(0, -1) : d.label}`
+        ).join(', ');
+    return dur;
+}
 
 export function parseString(hex) {
     if (typeof hex !== 'string') {
