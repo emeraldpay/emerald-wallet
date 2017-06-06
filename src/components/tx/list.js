@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
@@ -18,7 +19,7 @@ const Render = ({ transactions }) => {
         titleStyle: {
             fontSize: '20px',
         },
-    };
+    };                 
 
     const table = <Table selectable={false}>
         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
@@ -54,10 +55,17 @@ const Render = ({ transactions }) => {
     );
 };
 
+Render.propTypes = {
+    transactions: PropTypes.array.isRequired,
+}
+
 const TransactionsList = connect(
-    (state, ownProps) => ({
-        transactions: [], // fetch tx from all accounts
-    }),
+    (state, ownProps) => {
+        const transactions = state.accounts.get('trackedTransactions', Immutable.List());
+        return {
+            transactions,
+        };
+    },
     (dispatch, ownProps) => ({
     })
 )(Render);
