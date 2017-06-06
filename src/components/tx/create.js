@@ -70,6 +70,7 @@ const CreateTx = connect(
     (state, ownProps) => {
         const selector = formValueSelector('createTx');
         const tokens = state.tokens.get('tokens');
+        const balance = ownProps.account.get('balance');
         return {
             initialValues: {
                 from: ownProps.account.get('id'),
@@ -77,6 +78,7 @@ const CreateTx = connect(
                 gasAmount: DefaultGas,
                 token: '',
                 isTransfer: 'true',
+                balance
             },
             accounts: state.accounts.get('accounts', Immutable.List()),
             addressBook: state.addressBook.get('addressBook'),
