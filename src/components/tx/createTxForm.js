@@ -20,9 +20,9 @@ import { positive, number, required, address } from 'lib/validators';
 ****/
 
 const Render = (props) => {
-    const { fields: { from, to }, accounts, handleSubmit, invalid, pristine, submitting, cancel } = props;
+    const { fields: { from, to }, accounts, balance, handleSubmit, invalid, pristine, submitting } = props;
     const { addressBook, handleSelect, tokens, token, isToken, onChangeToken, onChangeAccount } = props;
-    const { error } = props;
+    const { error, cancel } = props;
 
     return (
     <Card style={cardSpace}>
@@ -50,7 +50,6 @@ const Render = (props) => {
                        disabled={true}
                        component={TextField}
                        floatingLabelText="Balance"
-                       
                 />
               </Col>
             </Row>
