@@ -2,6 +2,11 @@
   "name": "emerald-wallet",
   "private": false,
   "author": "Igor Artamonov",
+  "contributors": [
+    "Igor Artamonov <splix@etcdevteam.com>",
+    "Elaine Ou <elaine@ethereumclassic.org>",
+    "gagarin55"
+  ],
   "version": "0.1.0",
   "description": "Emerald - Ethereum Classic Wallet",
   "main": "./build/main.js",
