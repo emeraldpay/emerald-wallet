@@ -1,5 +1,4 @@
 import React from 'react';
-import { connect } from 'react-redux';
 
 export const DescriptionList = (props) => {
     const style = {
@@ -9,6 +8,7 @@ export const DescriptionList = (props) => {
     return (
         <dl style={style} {...props}>
             {props.children}
+            <br />
         </dl>
     );
 };
