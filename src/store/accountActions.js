@@ -124,16 +124,19 @@ export function importWallet(wallet, name, description) {
                     data.name = name;
                     data.description = description;
                 } catch (e) {
-                    reject(e);
+                    reject({error: e});
                 }
                 return rpc.call('backend_importWallet', data).then((result) => {
                     dispatch({
                         type: 'ACCOUNT/IMPORT_WALLET',
                         accountId: result,
-                    })
+                    });
                     dispatch(loadAccountBalance(result));
-                    resolve(result);
-                }).catch((error) => reject(error));
+                    if (address(result))
+                        resolve(result);
+                    else
+                        reject({error: result});
+                })
             };
         });
     };
