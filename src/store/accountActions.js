@@ -113,21 +113,29 @@ export function createContract(accountId, password, gas, gasPrice, data) {
 
 export function importWallet(wallet, name, description) {
     return (dispatch) => {
-        const reader = new FileReader();
-        reader.readAsText(wallet);
-        reader.onload = (event) => {
-            let data = JSON.parse(event.target.result);
-            data.filename = wallet.name;
-            data.name = name;
-            data.description = description;
-            rpc.call('backend_importWallet', data).then((result) => {
-                dispatch({
-                    type: 'ACCOUNT/IMPORT_WALLET',
-                    accountId: result,
-                });
-                dispatch(loadAccountBalance(result));
-            });
-        };
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsText(wallet);
+            reader.onload = (event) => {
+                let data;
+                try {
+                    data = JSON.parse(event.target.result);
+                    data.filename = wallet.name;
+                    data.name = name;
+                    data.description = description;
+                } catch (e) {
+                    reject(e);
+                }
+                return rpc.call('backend_importWallet', data).then((result) => {
+                    dispatch({
+                        type: 'ACCOUNT/IMPORT_WALLET',
+                        accountId: result,
+                    })
+                    dispatch(loadAccountBalance(result));
+                    resolve(result);
+                }).catch((error) => reject(error));
+            };
+        });
     };
 }
 
