@@ -12,7 +12,6 @@ import TransactionShow from './tx/show';
 import TransactionsList from './tx/list';
 import TokensList from './tokens/list';
 import AddToken from './tokens/add';
-import Status from './status/status';
 import CreateAccount from './accounts/add/add';
 import GenerateAccount from './accounts/add/generate';
 import ImportAccount from './accounts/add/importjson';
@@ -34,7 +33,6 @@ const Render = ({ screen, screenItem }) => {
                 <AccountsList/>
                 <TokensList/>
                 <TransactionsList/>
-                <Status/>
             </div>
         );
     } else if (screen === 'contracts') {

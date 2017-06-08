@@ -23,3 +23,9 @@ export const code = {
     overflow: 'auto',
     maxHeight: '250px',
 };
+
+export const align = {
+    left: { textAlign: 'left' },
+    center: { textAlign: 'center'},
+    right: { textAlign: 'right'}
+};
