@@ -10,15 +10,28 @@ const ONE = new BigNumber(1);
 
 export class Wei extends Immutable.Record({ val: ZERO }) {
     constructor(val) {
-        super({
-            val: parseHexQuantity(val, ZERO),
-        });
+        if (typeof val === 'string' || val === null) {
+            super({
+                val: parseHexQuantity(val, ZERO),
+            });
+        } else if (typeof val === 'number') {
+            super({
+                val: new BigNumber(val),
+            });
+        } else {
+            super({
+                val: val,
+            });
+        }
     }
     getEther() {
         return this.val.dividedBy(ETHER).toFixed(5);
     }
     getMwei() {
         return this.val.dividedBy(MWEI).toFixed(5);
+    }
+    plus(another) {
+        return new Wei(this.val.plus(another.val))
     }
 }
 
