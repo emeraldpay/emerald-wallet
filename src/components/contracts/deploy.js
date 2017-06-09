@@ -132,15 +132,18 @@ const DeployContractForm = reduxForm({
 })(Render);
 
 const DeployContract = connect(
-    (state, ownProps) => ({
-        initialValues: {
-            gasPrice: 10000,
-            gasAmount: DefaultGas,
-            options: [],
-        },
-        accounts: state.accounts.get('accounts', Immutable.List()),
-        optionVals: OptionValues,
-    }),
+    (state, ownProps) => {
+        const gasPrice = state.accounts.get('gasPrice').getMwei();
+        return {
+            initialValues: {
+                gasPrice,
+                gasAmount: DefaultGas,
+                options: [],
+            },
+            accounts: state.accounts.get('accounts', Immutable.List()),
+            optionVals: OptionValues,
+        };
+    },
     (dispatch, ownProps) => ({
         estimateGas: (event, value) => new Promise((resolve, reject) => {
             dispatch(estimateGas(value))
