@@ -3,7 +3,7 @@ import createLogger from 'redux-logger';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
 
-import { loadAccountsList, refreshTrackedTransactions } from './accountActions';
+import { loadAccountsList, refreshTrackedTransactions, getGasPrice } from './accountActions';
 import { loadAddressBook } from './addressActions';
 import { loadTokenList } from './tokenActions';
 import { loadContractList } from './contractActions';
@@ -56,6 +56,7 @@ function refreshAll() {
 
 export function start() {
     store.dispatch(loadAccountsList());
+    store.dispatch(getGasPrice());
     store.dispatch(loadAddressBook());
     store.dispatch(loadTokenList());
     store.dispatch(loadContractList());

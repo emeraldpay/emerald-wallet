@@ -6,6 +6,7 @@ const initial = Immutable.fromJS({
     accounts: [],
     trackedTransactions: [],
     loading: false,
+    gasPrice: 23000,
 });
 
 const initialAddr = Immutable.Map({
@@ -158,6 +159,13 @@ function onUpdateTx(state, action) {
     return state;
 }
 
+function onGasPrice(state, action) {
+    if (action.type === 'ACCOUNT/GAS_PRICE') {
+        return state.update('gasPrice', action.value);
+    }
+    return state;
+}
+
 export default function accountsReducers(state, action) {
     state = state || initial;
     state = onLoading(state, action);
@@ -168,5 +176,6 @@ export default function accountsReducers(state, action) {
     state = onSetTokenBalance(state, action);
     state = onTrackTx(state, action);
     state = onUpdateTx(state, action);
+    state = onGasPrice(state, action);
     return state;
 }
