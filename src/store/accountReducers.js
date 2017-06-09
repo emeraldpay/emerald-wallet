@@ -125,11 +125,12 @@ function createTx(data) {
         from: data.from,
         to: data.to,
         gas: data.gasAmount,
+        gasPrice: data.gasPrice,
     });
     if (typeof data.value === 'string') {
         tx = tx.set('value', new Wei(data.value));
     }
-    if (typeof data.gasPrice === 'string') {
+    if (typeof data.gasPrice === 'string' || typeof data.gasPrice === 'number') {
         tx = tx.set('gasPrice', new Wei(data.gasPrice));
     }
     return tx;
