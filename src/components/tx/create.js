@@ -94,9 +94,10 @@ const CreateTx = connect(
                     hash: txhash,
                     account: data.from,
                 };
-                dispatch(trackTx(
-                    Object.assign(data, { hash: txhash })
-                ));
+                const tx = data;
+                tx.hash = txhash;
+                tx.gasPrice = toHex(mweiToWei(data.gasPrice));
+                dispatch(trackTx(tx));
                 dispatch(gotoScreen('transaction', txdetails));
             };
             const resolver = (resolve, f) => (x) => {
