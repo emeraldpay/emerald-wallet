@@ -71,14 +71,15 @@ const CreateTx = connect(
         const selector = formValueSelector('createTx');
         const tokens = state.tokens.get('tokens');
         const balance = ownProps.account.get('balance');
+        const gasPrice = state.accounts.get('gasPrice').getMwei();
         return {
             initialValues: {
                 from: ownProps.account.get('id'),
-                gasPrice: 10000,
                 gasAmount: DefaultGas,
                 token: '',
                 isTransfer: 'true',
-                balance
+                gasPrice,
+                balance,
             },
             accounts: state.accounts.get('accounts', Immutable.List()),
             addressBook: state.addressBook.get('addressBook'),
@@ -94,7 +95,10 @@ const CreateTx = connect(
                     hash: txhash,
                     account: data.from,
                 };
-                dispatch(trackTx(Object.assign(data, { hash: txhash })));
+                const tx = data;
+                tx.hash = txhash;
+                tx.gasPrice = toHex(mweiToWei(data.gasPrice));
+                dispatch(trackTx(tx));
                 dispatch(gotoScreen('transaction', txdetails));
             };
             const resolver = (resolve, f) => (x) => {

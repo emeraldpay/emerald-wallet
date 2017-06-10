@@ -175,3 +175,14 @@ export function trackTx(tx) {
         tx,
     };
 }
+
+export function getGasPrice() {
+    return (dispatch) => {
+        rpc.call('eth_gasPrice', ['latest']).then((result) => {
+            dispatch({
+                type: 'ACCOUNT/GAS_PRICE',
+                value: result,
+            });
+        });
+    };
+}

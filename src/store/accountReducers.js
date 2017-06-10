@@ -6,6 +6,7 @@ const initial = Immutable.fromJS({
     accounts: [],
     trackedTransactions: [],
     loading: false,
+    gasPrice: new Wei(23000000000),
 });
 
 const initialAddr = Immutable.Map({
@@ -125,11 +126,12 @@ function createTx(data) {
         from: data.from,
         to: data.to,
         gas: data.gasAmount,
+        gasPrice: data.gasPrice,
     });
     if (typeof data.value === 'string') {
         tx = tx.set('value', new Wei(data.value));
     }
-    if (typeof data.gasPrice === 'string') {
+    if (typeof data.gasPrice === 'string' || typeof data.gasPrice === 'number') {
         tx = tx.set('gasPrice', new Wei(data.gasPrice));
     }
     return tx;
@@ -157,6 +159,13 @@ function onUpdateTx(state, action) {
     return state;
 }
 
+function onGasPrice(state, action) {
+    if (action.type === 'ACCOUNT/GAS_PRICE') {
+        return state.set('gasPrice', new Wei(action.value));
+    }
+    return state;
+}
+
 export default function accountsReducers(state, action) {
     state = state || initial;
     state = onLoading(state, action);
@@ -167,5 +176,6 @@ export default function accountsReducers(state, action) {
     state = onSetTokenBalance(state, action);
     state = onTrackTx(state, action);
     state = onUpdateTx(state, action);
+    state = onGasPrice(state, action);
     return state;
 }

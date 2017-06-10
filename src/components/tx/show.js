@@ -44,7 +44,7 @@ const Render = ({ hash, transaction, account, goBack }) =>
 
                         <DescriptionTitle>Gas Provided:</DescriptionTitle>
                         <DescriptionData>
-                            {transaction.get('gas') ? `${transaction.get('gas').getMwei()} MWei` : '--'}
+                            {transaction.get('gas') ? `${transaction.get('gas')}` : '--'}
                         </DescriptionData>
 
                         <DescriptionTitle>Gas Price:</DescriptionTitle>
