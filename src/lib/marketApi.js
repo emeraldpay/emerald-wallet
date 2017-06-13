@@ -38,6 +38,6 @@ function create() {
     }
     return new MarketApi();
 }
-const getRates = create();
+export const getRates = create();
 
 export default getRates;
