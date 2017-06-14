@@ -89,6 +89,7 @@ function onSetBalance(state, action) {
     if (action.type === 'ACCOUNT/SET_BALANCE') {
         return updateAccount(state, action.accountId, (acc) =>
             acc.set('balance', new Wei(action.value))
+                .set('balancePending', null)
         );
     }
     return state;
@@ -136,6 +137,24 @@ function createTx(data) {
         tx = tx.set('gasPrice', new Wei(data.gasPrice));
     }
     return tx;
+}
+
+function onPendingBalance(state, action) {
+    if (action.type === 'ACCOUNT/PENDING_BALANCE') {
+        let bal;
+        if (action.to) {
+            return updateAccount(state, action.to, (acc) => {
+                bal = acc.get('balance').plus(new Wei(action.value));
+                return acc.set('balancePending', bal);
+            });
+        } else if (action.from) {
+            return updateAccount(state, action.from, (acc) => {
+                bal = acc.get('balance').sub(new Wei(action.value));
+                return acc.set('balancePending', bal);
+            });
+        }
+    }
+    return state;
 }
 
 function onLoadPending(state, action) {
@@ -190,5 +209,6 @@ export default function accountsReducers(state, action) {
     state = onUpdateTx(state, action);
     state = onGasPrice(state, action);
     state = onLoadPending(state, action);
+    state = onPendingBalance(state, action);
     return state;
 }

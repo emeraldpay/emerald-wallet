@@ -175,6 +175,22 @@ export function loadPendingTransactions() {
                     type: 'ACCOUNT/PENDING_TX',
                     txList: txes,
                 });
+                for (const tx of txes) {
+                    const disp = {
+                        type: 'ACCOUNT/PENDING_BALANCE',
+                        value: tx.value,
+                        gas: tx.gas,
+                        gasPrice: tx.gasPrice,
+                    };
+                    if (addrs.includes(tx.from)) {
+                        disp.from = tx.from;
+                        dispatch(disp);
+                    }
+                    if (addrs.includes(tx.to)) {
+                        disp.to = tx.to;
+                        dispatch(disp);
+                    }
+                }
             });
 }
 
