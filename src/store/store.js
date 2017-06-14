@@ -17,6 +17,17 @@ import contractReducers from './contractReducers';
 import networkReducers from './networkReducers';
 import screenReducers from './screenReducers';
 
+export const rates = {
+    // (whilei: development: loading so often slows things a lot for me and clutters logs)
+    // all rates in milliseconds
+    loadSyncRate: 60 * 1000, // prod: 1000
+    loadSyncCheckRate: 3 * 60 * 1000, // prod: 3000
+    loadSyncDoublecheckRate: 15 * 60 * 1000, // prod: 30 * 1000
+    loadHeightRate: 5 * 60 * 1000, // prod: 5000
+    getExchangeRatesRate: 900000,
+    refreshAllTxRate: 20 * 2000, // prod: 2000
+};
+
 const stateTransformer = (state) => ({
     accounts: state.accounts.toJS(),
     addressBook: state.addressBook.toJS(),
@@ -51,7 +62,7 @@ export const store = createStore(
 
 function refreshAll() {
     store.dispatch(refreshTrackedTransactions());
-    setTimeout(refreshAll, 2000);
+    setTimeout(refreshAll, rates.refreshAllTxRate);
 }
 
 export function start() {
@@ -62,8 +73,10 @@ export function start() {
     store.dispatch(loadContractList());
     store.dispatch(gotoScreen('home'));
     store.dispatch(loadHeight());
-    setTimeout(() => store.dispatch(getExchangeRates()), 900000);
-    setTimeout(() => store.dispatch(loadSyncing()), 3000); // check for syncing
-    setTimeout(() => store.dispatch(loadSyncing()), 30000); // double check for syncing after 30 seconds
+    setTimeout(() => store.dispatch(getExchangeRates()), rates.getExchangeRatesRate);
+    // check for syncing
+    setTimeout(() => store.dispatch(loadSyncing()), rates.loadSyncCheckRate);
+    // double check for syncing after 30 seconds
+    setTimeout(() => store.dispatch(loadSyncing()), rates.loadSyncDoublecheckRate);
     setTimeout(refreshAll, 5000);
 }

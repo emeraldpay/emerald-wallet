@@ -1,11 +1,8 @@
 import log from 'loglevel';
 import { rpc } from '../lib/rpc';
-import { start } from '../store/store';
+import { start, rates } from '../store/store';
 
 let watchingHeight = false;
-//  (whilei: development: loading so often slows things a lot for me and clutters logs)
-const loadSyncRate = 60 * 1000; // milliseconds
-const loadHeightRate = 5 * 60 * 1000; // ditto
 
 export function loadHeight(watch) {
     return (dispatch) =>
@@ -16,7 +13,7 @@ export function loadHeight(watch) {
             });
             if (watch && !watchingHeight) {
                 watchingHeight = true;
-                setTimeout(() => dispatch(loadHeight(true)), loadHeightRate);
+                setTimeout(() => dispatch(loadHeight(true)), rates.loadHeightRate);
             }
         });
 }
@@ -44,13 +41,13 @@ export function loadSyncing() {
                     syncing: true,
                     status: result,
                 });
-                setTimeout(() => dispatch(loadSyncing()), loadSyncRate);
+                setTimeout(() => dispatch(loadSyncing()), rates.loadSyncRate);
             } else {
                 dispatch({
                     type: 'NETWORK/SYNCING',
                     syncing: false,
                 });
-                setTimeout(() => dispatch(loadHeight(true)), loadSyncRate);
+                setTimeout(() => dispatch(loadHeight(true)), rates.loadSyncRate);
             }
         });
 }
