@@ -134,7 +134,7 @@ const Render = (props) => {
             </Row>
             <Row>
               <Col xs={12}>
-                <Field name="gasAmount"
+                <Field name="gas"
                        component={TextField}
                        floatingLabelText="Gas Amount"
                        hintText="21000"
@@ -187,7 +187,7 @@ Render.propTypes = {
 
 const CreateTxForm = reduxForm({
     form: 'createTx',
-    fields: ['to', 'from', 'password', 'value', 'token', 'gasPrice', 'gasAmount', 'token', 'isTransfer'],
+    fields: ['to', 'from', 'password', 'value', 'token', 'gasPrice', 'gas', 'token', 'isTransfer'],
 })(Render);
 
 export default CreateTxForm;
