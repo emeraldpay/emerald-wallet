@@ -49,11 +49,16 @@ npm test
 ```
 
 ## Rebuild and start server
+This will automatically watch for changes and inject live-updating builds on your local server.
 ```
 npm run start
 ```
-
-Open `http://localhost:8000` with your browser.
+Ensure you have both __geth__ and __emerald-rs__ running:
+```
+geth --rpc # will open port on localhost:8545 by default
+cd path/to/emerald-rs; RUST_LOG=emerald,rpc cargo run # will connect on default geth port (8545), then open it's own port for the wallet on localhost:1920
+```
+Finally, open `http://localhost:8000` with your browser.
 
 ## Run node
 
