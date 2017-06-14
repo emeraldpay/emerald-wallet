@@ -158,7 +158,7 @@ class RenderABIForm extends React.Component {
                                component={TextField} />
                       </Col>}
                       <Col xs={8}>
-                        <Field name="gasAmount"
+                        <Field name="gas"
                            floatingLabelText="Gas Amount"
                            component={TextField}
                            validate={[required, number]}/>
@@ -184,7 +184,7 @@ class RenderABIForm extends React.Component {
 
 }
 
-const txFields = ['from', 'password', 'function', 'value', 'gasAmount'];
+const txFields = ['from', 'password', 'function', 'value', 'gas'];
 
 const InteractContractForm = reduxForm({
     form: 'interactContract',
@@ -239,7 +239,7 @@ const InteractContract = connect(
                         }, {});
                 log.debug(args);
                 dispatch(sendContractTransaction(data.from, data.password, address,
-                        toHex(data.gasAmount || 0),
+                        toHex(data.gas || 0),
                         toHex(etherToWei(value || 0)),
                         data.function,
                         args
