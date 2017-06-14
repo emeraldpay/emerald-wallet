@@ -18,23 +18,23 @@ const traceValidate = (data, dispatch) => {
     const dataObj = {
         from: data.from,
         gasPrice: toHex(mweiToWei(data.gasPrice)),
-        gas: toHex(data.gasAmount),
+        gas: toHex(data.gas),
         to: data.to,
         value: toHex(etherToWei(data.value)),
     };
     const resolveValidate = (response, resolve) => {
         let errors = null;
         dataObj.data = (((response.trace || [])[0] || {}).action || {}).input;
-        let gas; 
-        if (response.gas) gas = response.gas;
+        let gasEst; 
+        if (response.gas) gasEst = response.gas;
         else {
-            gas = estimateGasFromTrace(dataObj, response);
-            gas = (gas && gas.div(dataObj.gasPrice).toString(10));
+            gasEst = estimateGasFromTrace(dataObj, response);
+            gasEst = (gasEst && gasEst.div(dataObj.gasPrice).toString(10));
         }
-        if (!gas) {
+        if (!gasEst) {
             errors = { value: 'Invalid Transaction' };
-        } else if (gas > dataObj.gasAmount) {
-            errors = { gasAmount: `Insufficient Gas: Expected ${gas}` };
+        } else if (gasEst > data.gas) {
+            errors = { gas: `Insufficient Gas: Expected ${gasEst}` };
         }
         resolve(errors);
     };
@@ -75,7 +75,7 @@ const CreateTx = connect(
         return {
             initialValues: {
                 from: ownProps.account.get('id'),
-                gasAmount: DefaultGas,
+                gas: DefaultGas,
                 token: '',
                 isTransfer: 'true',
                 gasPrice,
@@ -113,7 +113,7 @@ const CreateTx = connect(
                             if (data.token.length > 1) {
                                 return new Promise((resolve, reject) => {
                                     dispatch(transferTokenTransaction(data.from, data.password,
-                                        data.to, toHex(data.gasAmount),
+                                        data.to, toHex(data.gas),
                                         toHex(mweiToWei(data.gasPrice)),
                                         toHex(etherToWei(data.value)),
                                         data.token, data.isTransfer))
@@ -122,7 +122,7 @@ const CreateTx = connect(
                             }
                             return new Promise((resolve, reject) => {
                                 dispatch(sendTransaction(data.from, data.password, data.to,
-                                        toHex(data.gasAmount), toHex(mweiToWei(data.gasPrice)),
+                                        toHex(data.gas), toHex(mweiToWei(data.gasPrice)),
                                         toHex(etherToWei(data.value))
                                     )).then(resolver(afterTx, resolve));
                             });
@@ -138,9 +138,9 @@ const CreateTx = connect(
         onChangeToken: (event, value, prev) => {
             // if switching from ETC to token, change default gas
             if (prev.length < 1 && !(address(value))) {
-                dispatch(change('createTx', 'gasAmount', DefaultTokenGas));
+                dispatch(change('createTx', 'gas', DefaultTokenGas));
             } else if (!(address(prev)) && value.length < 1) {
-                dispatch(change('createTx', 'gasAmount', DefaultGas));
+                dispatch(change('createTx', 'gas', DefaultGas));
             }
         },
         handleSelect: (event, item) => {
