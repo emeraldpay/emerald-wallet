@@ -144,7 +144,7 @@ function onLoadPending(state, action) {
         for (let tx of action.txList) {
             txes.push(createTx(tx));
         }
-        return state.set('trackedTransactions', txes);
+        return state.set('trackedTransactions', Immutable.fromJS(txes));
     }
     return state;
 }
