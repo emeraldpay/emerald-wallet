@@ -26,6 +26,7 @@ TokenRow.propTypes = {
 
 const Render = translate("accounts")(({ t, account, createTx }) => {
     const value = t("show.value", {value: account.get('balance') ? account.get('balance').getEther() : '?'});
+    const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
 
     return (
         <Card style={cardSpace}>
@@ -56,7 +57,7 @@ const Render = translate("accounts")(({ t, account, createTx }) => {
                             <DescriptionData>{account.get('txcount') || '0'}</DescriptionData>
 
                             <DescriptionTitle>{t("show.description.etherBalance")}</DescriptionTitle>
-                            <DescriptionData>{value}</DescriptionData>
+                            <DescriptionData>{value} {pending}</DescriptionData>
 
                             <DescriptionTitle>{t("show.description.tokenBalance")}</DescriptionTitle>
                             <DescriptionData>
