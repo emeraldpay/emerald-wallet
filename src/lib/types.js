@@ -33,6 +33,9 @@ export class Wei extends Immutable.Record({ val: ZERO }) {
     plus(another) {
         return new Wei(this.val.plus(another.val))
     }
+    sub(another) {
+        return new Wei(this.val.sub(another.val))
+    }
 }
 
 export class TokenUnits extends Immutable.Record({ val: ZERO,
