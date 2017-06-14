@@ -57,12 +57,12 @@ function refreshAll() {
 export function start() {
     store.dispatch(loadAccountsList());
     store.dispatch(getGasPrice());
-    store.dispatch(getExchangeRates());
     store.dispatch(loadAddressBook());
     store.dispatch(loadTokenList());
     store.dispatch(loadContractList());
     store.dispatch(gotoScreen('home'));
     store.dispatch(loadHeight());
+    setTimeout(() => store.dispatch(getExchangeRates()), 900000);
     setTimeout(() => store.dispatch(loadSyncing()), 3000); // check for syncing
     setTimeout(() => store.dispatch(loadSyncing()), 30000); // double check for syncing after 30 seconds
     setTimeout(refreshAll, 5000);
