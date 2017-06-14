@@ -12,6 +12,7 @@ const initial = Immutable.fromJS({
 const initialAddr = Immutable.Map({
     id: null,
     balance: null,
+    balancePending: null,
     tokens: [],
     txcount: null,
     name: null,
@@ -125,7 +126,7 @@ function createTx(data) {
         hash: data.hash,
         from: data.from,
         to: data.to,
-        gas: data.gasAmount,
+        gas: data.gas,
         gasPrice: data.gasPrice,
     });
     if (typeof data.value === 'string') {
@@ -140,7 +141,7 @@ function createTx(data) {
 function onLoadPending(state, action) {
     if (action.type === 'ACCOUNT/PENDING_TX') {
         const txes = [];
-        for (tx of action.txList) {
+        for (let tx of action.txList) {
             txes.push(createTx(tx));
         }
         return state.set('trackedTransactions', txes);

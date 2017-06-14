@@ -163,13 +163,19 @@ export function refreshTransactions(hash) {
 }
 
 export function loadPendingTransactions() {
-    return (dispatch) =>
-        rpc.call('eth_pendingTransactions').then((result) => {
-            dispatch({
-                type: 'ACCOUNT/PENDING_TX',
-                txList: result,
+    return (dispatch, getState) =>
+        rpc.call('eth_getBlockByNumber', ['pending', true])
+            .then((result) => {
+                const addrs = getState().accounts.get('accounts')
+                    .map((acc) => acc.get('id'));
+                const txes = result.transactions.filter((t) =>
+                    (addrs.includes(t.to) || addrs.includes(t.from))
+                );
+                dispatch({
+                    type: 'ACCOUNT/PENDING_TX',
+                    txList: txes,
+                });
             });
-        });
 }
 
 export function refreshTrackedTransactions() {
