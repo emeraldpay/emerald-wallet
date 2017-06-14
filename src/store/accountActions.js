@@ -162,6 +162,16 @@ export function refreshTransactions(hash) {
         });
 }
 
+export function loadPendingTransactions() {
+    return (dispatch) =>
+        rpc.call('eth_pendingTransactions').then((result) => {
+            dispatch({
+                type: 'ACCOUNT/PENDING_TX',
+                txList: result,
+            });
+        });
+}
+
 export function refreshTrackedTransactions() {
     return (dispatch, getState) =>
         getState().accounts.get('trackedTransactions').map(

@@ -137,6 +137,17 @@ function createTx(data) {
     return tx;
 }
 
+function onLoadPending(state, action) {
+    if (action.type === 'ACCOUNT/PENDING_TX') {
+        const txes = [];
+        for (tx of action.txList) {
+            txes.push(createTx(tx));
+        }
+        return state.set('trackedTransactions', txes);
+    }
+    return state;
+}
+
 function onTrackTx(state, action) {
     if (action.type === 'ACCOUNT/TRACK_TX') {
         const data = createTx(action.tx);
@@ -177,5 +188,6 @@ export default function accountsReducers(state, action) {
     state = onTrackTx(state, action);
     state = onUpdateTx(state, action);
     state = onGasPrice(state, action);
+    state = onLoadPending(state, action);
     return state;
 }
