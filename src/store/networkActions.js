@@ -1,3 +1,4 @@
+import log from 'loglevel';
 import { rpc } from '../lib/rpc';
 import { start } from '../store/store';
 
@@ -57,7 +58,7 @@ export function loadSyncing() {
 export function switchChain(network, id) {
     return (dispatch) =>
         rpc.call('backend_switchChain', [network]).then((result) => {
-            console.debug('switch chain', result);
+            log.debug('switch chain', result);
             dispatch({
                 type: 'NETWORK/SWITCH_CHAIN',
                 network,
