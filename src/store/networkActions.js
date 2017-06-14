@@ -1,6 +1,6 @@
 import log from 'loglevel';
 import { rpc } from '../lib/rpc';
-import { start, rates } from '../store/store';
+import { start, intervalRates } from '../store/store';
 
 let watchingHeight = false;
 
@@ -13,7 +13,7 @@ export function loadHeight(watch) {
             });
             if (watch && !watchingHeight) {
                 watchingHeight = true;
-                setTimeout(() => dispatch(loadHeight(true)), rates.loadHeightRate);
+                setTimeout(() => dispatch(loadHeight(true)), intervalRates.continueLoadHeightRate);
             }
         });
 }
@@ -41,13 +41,13 @@ export function loadSyncing() {
                     syncing: true,
                     status: result,
                 });
-                setTimeout(() => dispatch(loadSyncing()), rates.loadSyncRate);
+                setTimeout(() => dispatch(loadSyncing()), intervalRates.continueLoadSyncRate);
             } else {
                 dispatch({
                     type: 'NETWORK/SYNCING',
                     syncing: false,
                 });
-                setTimeout(() => dispatch(loadHeight(true)), rates.loadSyncRate);
+                setTimeout(() => dispatch(loadHeight(true)), intervalRates.continueLoadSyncRate);
             }
         });
 }

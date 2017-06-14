@@ -163,6 +163,38 @@ export function refreshTransactions(hash) {
         });
 }
 
+export function loadPendingTransactions() {
+    return (dispatch, getState) =>
+        rpc.call('eth_getBlockByNumber', ['pending', true])
+            .then((result) => {
+                const addrs = getState().accounts.get('accounts')
+                    .map((acc) => acc.get('id'));
+                const txes = result.transactions.filter((t) =>
+                    (addrs.includes(t.to) || addrs.includes(t.from))
+                );
+                dispatch({
+                    type: 'ACCOUNT/PENDING_TX',
+                    txList: txes,
+                });
+                for (const tx of txes) {
+                    const disp = {
+                        type: 'ACCOUNT/PENDING_BALANCE',
+                        value: tx.value,
+                        gas: tx.gas,
+                        gasPrice: tx.gasPrice,
+                    };
+                    if (addrs.includes(tx.from)) {
+                        disp.from = tx.from;
+                        dispatch(disp);
+                    }
+                    if (addrs.includes(tx.to)) {
+                        disp.to = tx.to;
+                        dispatch(disp);
+                    }
+                }
+            });
+}
+
 export function refreshTrackedTransactions() {
     return (dispatch, getState) =>
         getState().accounts.get('trackedTransactions').map(

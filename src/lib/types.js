@@ -40,6 +40,9 @@ export class Wei extends Immutable.Record({ val: ZERO }) {
         const rate = new BigNumber(r.toString());
         return this.val.dividedBy(ETHER).mul(rate).toFixed(5);
     }
+    sub(another) {
+        return new Wei(this.val.sub(another.val))
+    }
 }
 
 export class TokenUnits extends Immutable.Record({ val: ZERO,

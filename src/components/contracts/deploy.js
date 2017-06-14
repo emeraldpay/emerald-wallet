@@ -68,7 +68,7 @@ const Render = ({ fields: { from, options },
                                hintText="10000"
                                validate={[required, number, positive]}
                         />
-                        <Field name="gasAmount"
+                        <Field name="gas"
                                type="number"
                                component={TextField}
                                floatingLabelText="Gas Amount"
@@ -137,7 +137,7 @@ const DeployContract = connect(
         return {
             initialValues: {
                 gasPrice,
-                gasAmount: DefaultGas,
+                gas: DefaultGas,
                 options: [],
             },
             accounts: state.accounts.get('accounts', Immutable.List()),
@@ -149,7 +149,7 @@ const DeployContract = connect(
             dispatch(estimateGas(value))
                         .then((response) => {
                             resolve(response);
-                            dispatch(change('deployContract', 'gasAmount', response));
+                            dispatch(change('deployContract', 'gas', response));
                         });
         }),
         onSubmit: (data) => {
@@ -168,7 +168,7 @@ const DeployContract = connect(
             };
             return new Promise((resolve, reject) => {
                 dispatch(createContract(data.from, data.password,
-                        toHex(data.gasAmount), toHex(mweiToWei(data.gasPrice)),
+                        toHex(data.gas), toHex(mweiToWei(data.gasPrice)),
                         data.bytecode
                     )).then(resolver(afterTx, resolve));
             });
