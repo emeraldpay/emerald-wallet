@@ -58,7 +58,7 @@ const Render = ({ transactions }) => {
 
 Render.propTypes = {
     transactions: PropTypes.array.isRequired,
-}
+};
 
 const TransactionsList = connect(
     (state, ownProps) => {
