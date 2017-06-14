@@ -1,5 +1,5 @@
-var path = require('path')
-var webpack = require('webpack')
+var path = require('path');
+var webpack = require('webpack');
 
 const config = {
   target: 'electron-main',
@@ -43,6 +43,6 @@ const config = {
     __dirname: false,
     __filename: false
   },
-}
+};
 
-module.exports = config
+module.exports = config;
