@@ -20,7 +20,7 @@ export class Wei extends Immutable.Record({ val: ZERO }) {
             });
         } else {
             super({
-                val: val,
+                val,
             });
         }
     }

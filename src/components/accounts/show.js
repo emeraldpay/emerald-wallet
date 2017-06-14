@@ -23,19 +23,19 @@ TokenRow.propTypes = {
     token: PropTypes.object.isRequired,
 };
 
-const Render = translate("accounts")(({ t, account, fiat, createTx }) => {
-    const value = t("show.value", {value: account.get('balance') ? account.get('balance').getEther() : '?'});
+const Render = translate('accounts')(({ t, account, fiat, createTx }) => {
+    const value = t('show.value', {value: account.get('balance') ? account.get('balance').getEther() : '?'});
 
     return (
         <Card style={cardSpace}>
             <CardHeader
-                title={t("show.header", {account: account.get('name') || account.get('id')})}
+                title={t('show.header', {account: account.get('name') || account.get('id')})}
                 subtitle={value}
                 actAsExpander={true}
                 showExpandableButton={true}
             />
             <CardActions>
-                <FlatButton label={t("show.send")}
+                <FlatButton label={t('show.send')}
                             onClick={createTx}
                             icon={<FontIcon className="fa fa-arrow-circle-o-right" />}/>
             </CardActions>
@@ -44,20 +44,20 @@ const Render = translate("accounts")(({ t, account, fiat, createTx }) => {
                     <Col xs={8}>
                         <DescriptionList>
                             {account.get('description') && <div>
-                            <DescriptionTitle>{t("show.description.title")}</DescriptionTitle>
+                            <DescriptionTitle>{t('show.description.title')}</DescriptionTitle>
                             <DescriptionData>{account.get('description')}</DescriptionData>
                             </div>}
 
-                            <DescriptionTitle>{t("show.description.address")}</DescriptionTitle>
+                            <DescriptionTitle>{t('show.description.address')}</DescriptionTitle>
                             <DescriptionData>{account.get('id')}</DescriptionData>
 
-                            <DescriptionTitle>{t("show.description.sentTransactions")}</DescriptionTitle>
+                            <DescriptionTitle>{t('show.description.sentTransactions')}</DescriptionTitle>
                             <DescriptionData>{account.get('txcount') || '0'}</DescriptionData>
 
-                            <DescriptionTitle>{t("show.description.etherBalance")}</DescriptionTitle>
+                            <DescriptionTitle>{t('show.description.etherBalance')}</DescriptionTitle>
                             <DescriptionData>{value}</DescriptionData>
 
-                            <DescriptionTitle>{t("show.description.tokenBalance")}</DescriptionTitle>
+                            <DescriptionTitle>{t('show.description.tokenBalance')}</DescriptionTitle>
                             <DescriptionData>
                                 {account
                                     .get('tokens')

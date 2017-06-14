@@ -12,7 +12,7 @@ import { translate } from 'react-i18next';
 import { gotoScreen } from 'store/screenActions';
 import Account from './account';
 
-const Render = translate("accounts")(({ t, accounts, createAccount }) => {
+const Render = translate('accounts')(({ t, accounts, createAccount }) => {
     const table = <Table selectable={false}>
         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
             <TableRow>
@@ -35,9 +35,9 @@ const Render = translate("accounts")(({ t, accounts, createAccount }) => {
         <div id="accounts-list">
             <Card style={cardSpace}>
                 <CardHeader
-                    title={t("list.title")}
+                    title={t('list.title')}
                     titleStyle={titleStyle}
-                    subtitle={t("list.subtitle")}
+                    subtitle={t('list.subtitle')}
                     avatar={titleAvatar}
                     actAsExpander={false}
                     showExpandableButton={false}
@@ -46,7 +46,7 @@ const Render = translate("accounts")(({ t, accounts, createAccount }) => {
                     {table}
                 </CardText>
                 <CardActions>
-                    <FlatButton label={t("list.create")}
+                    <FlatButton label={t('list.create')}
                                 onClick={createAccount}
                                 icon={<FontIcon className="fa fa-plus-circle" />}/>
                 </CardActions>

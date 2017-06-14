@@ -19,7 +19,7 @@ const Render = ({ transactions }) => {
         titleStyle: {
             fontSize: '20px',
         },
-    };                 
+    };
 
     const table = <Table selectable={false}>
         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
@@ -35,6 +35,7 @@ const Render = ({ transactions }) => {
             {transactions.map((tx) => <Transaction key={tx.get('hash')} tx={tx}/>)}
         </TableBody>
     </Table>;
+
     const titleAvatar = <Avatar icon={<FontIcon className="fa fa-dot-circle-o fa-2x" />} />;
 
     return (

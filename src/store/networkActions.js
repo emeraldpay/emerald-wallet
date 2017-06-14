@@ -1,5 +1,6 @@
 import { rpc } from '../lib/rpc';
-import { start } from 'store/store'
+import { start } from '../store/store';
+
 
 let watchingHeight = false;
 
