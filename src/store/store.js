@@ -20,6 +20,8 @@ import screenReducers from './screenReducers';
 const second = 1000;
 const minute = 60 * second;
 export const intervalRates = {
+    second, // (whilei) this must be the newfangled object-shorthand...?
+    minute,
     // (whilei: development: loading so often slows things a lot for me and clutters logs; that's why I have
     // stand-in times here for development)
     // Continue is repeating timeouts.
