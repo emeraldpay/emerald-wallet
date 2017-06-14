@@ -23,8 +23,7 @@ TokenRow.propTypes = {
     token: PropTypes.object.isRequired,
 };
 
-
-const Render = translate("accounts")(({ t, account, createTx }) => {
+const Render = translate("accounts")(({ t, account, fiat, createTx }) => {
     const value = t("show.value", {value: account.get('balance') ? account.get('balance').getEther() : '?'});
     const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
 
@@ -68,6 +67,14 @@ const Render = translate("accounts")(({ t, account, createTx }) => {
                                 )}
                             </DescriptionData>
 
+                            <DescriptionTitle>Equivalent Values</DescriptionTitle>
+                            <DescriptionData>
+                                <div><span>BTC {fiat.btc}</span></div>
+                                <div><span>USD {fiat.usd}</span></div>
+                                <div><span>CNY {fiat.cny}</span></div>
+                            </DescriptionData>
+
+
                         </DescriptionList>
                     </Col>
                     <Col xs={4} md={2} mdOffset={2}>
@@ -85,8 +92,22 @@ Render.propTypes = {
 };
 
 const AccountShow = connect(
-    (state, ownProps) => ({
-    }),
+    (state, ownProps) => {
+        const rates = state.accounts.get('rates');
+        const balance = ownProps.account.get('balance');
+        let fiat = [];
+        if (rates && balance) {
+            fiat = {
+                btc: balance.getFiat(rates.get('btc')),
+                eur: balance.getFiat(rates.get('eur')),
+                usd: balance.getFiat(rates.get('usd')),
+                cny: balance.getFiat(rates.get('cny')),
+            };
+        }
+        return {
+            fiat,
+        };
+    },
     (dispatch, ownProps) => ({
         createTx: () => {
             const account = ownProps.account;

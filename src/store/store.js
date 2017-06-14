@@ -2,9 +2,8 @@ import thunkMiddleware from 'redux-thunk';
 import createLogger from 'redux-logger';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
-
 import { loadAccountsList, refreshTrackedTransactions, loadPendingTransactions } from './accountActions';
-import { getGasPrice } from './accountActions';
+import { getGasPrice, getExchangeRates } from './accountActions';
 import { loadAddressBook } from './addressActions';
 import { loadTokenList } from './tokenActions';
 import { loadContractList } from './contractActions';
@@ -55,6 +54,11 @@ function refreshAll() {
     setTimeout(refreshAll, 2000);
 }
 
+function refreshLong() {
+     store.dispatch(getExchangeRates());
+     setTimeout(refreshLong, 900000);
+}
+
 export function start() {
     store.dispatch(loadAccountsList());
     store.dispatch(getGasPrice());
@@ -67,4 +71,5 @@ export function start() {
     setTimeout(() => store.dispatch(loadSyncing()), 3000); // check for syncing
     setTimeout(() => store.dispatch(loadSyncing()), 30000); // double check for syncing after 30 seconds
     setTimeout(refreshAll, 5000);
+    setTimeout(refreshLong, 5000);
 }

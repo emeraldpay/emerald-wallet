@@ -1,4 +1,5 @@
 import { rpc } from 'lib/rpc';
+import { getRates } from 'lib/marketApi';
 import { address } from 'lib/validators';
 import { loadTokenBalanceOf } from './tokenActions';
 
@@ -214,6 +215,17 @@ export function getGasPrice() {
             dispatch({
                 type: 'ACCOUNT/GAS_PRICE',
                 value: result,
+            });
+        });
+    };
+}
+
+export function getExchangeRates() {
+    return (dispatch) => {
+        getRates.call().then((result) => {
+            dispatch({
+                type: 'ACCOUNT/EXCHANGE_RATES',
+                rates: result,
             });
         });
     };
