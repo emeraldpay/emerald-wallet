@@ -1,5 +1,6 @@
 import { https } from 'follow-redirects';
 import fs from 'fs';
+import os from 'os';
 import log from 'loglevel';
 import unzipper from 'unzip2';
 
@@ -11,10 +12,7 @@ const DefaultGeth = {
     },
     download: [
         {
-            os: "osx",
-            filenames: [
-                "geth"
-            ],
+            platform: "osx",
             binaries: [
                 {
                     type: "https",
@@ -28,8 +26,46 @@ const DefaultGeth = {
                     url: "https://github.com/ethereumproject/go-ethereum/releases/download/v3.5.0/geth-classic-osx-v3.5.0.zip.asc"
                 }
             ]
+        },
+        {
+            platform: "windows",
+            binaries: [
+                {
+                    type: "https",
+                    pack: "zip",
+                    url: "https://github.com/ethereumproject/go-ethereum/releases/download/v3.5.0/geth-classic-win64-v3.5.0.zip",
+                }
+            ],
+            signatures: [
+                {
+                    type: "pgp",
+                    url: "https://github.com/ethereumproject/go-ethereum/releases/download/v3.5.0/geth-classic-win64-v3.5.0.zip.asc"
+                }
+            ]
+        },
+        {
+            platform: "linux",
+            binaries: [
+                {
+                    type: "https",
+                    pack: "zip",
+                    url: "https://github.com/ethereumproject/go-ethereum/releases/download/v3.5.0/geth-classic-linux-v3.5.0.zip",
+                }
+            ],
+            signatures: [
+                {
+                    type: "pgp",
+                    url: "https://github.com/ethereumproject/go-ethereum/releases/download/v3.5.0/geth-classic-linux-v3.5.0.zip.asc"
+                }
+            ]
         }
     ]
+};
+
+const platformMapping = {
+    darwin: 'osx',
+    linux: 'linux',
+    win32: 'windows'
 };
 
 function deleteIfExists(path) {
@@ -98,13 +134,13 @@ export class Downloader {
         })
     }
 
-    getOs() {
-        return "osx"
+    getPlatform() {
+        return platformMapping[os.platform()];
     }
 
     downloadArchive() {
-        const os = this.getOs();
-        const target = this.config.download.find((x) => x.os === os);
+        const platform = this.getPlatform();
+        const target = this.config.download.find((x) => x.platform === platform);
         const targetBinary = target.binaries.find((x) => x.type === 'https' && x.pack === 'zip');
         const targetUrl = targetBinary.url;
         return new Promise((resolve, reject) => {
@@ -206,5 +242,6 @@ export class Downloader {
 }
 
 export function newGethDownloader() {
-    return new Downloader(DefaultGeth, "geth");
+    const suffix = os.platform() === 'win32' ? '.exe' : '';
+    return new Downloader(DefaultGeth, "geth" + suffix);
 }
