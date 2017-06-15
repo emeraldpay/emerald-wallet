@@ -10,13 +10,13 @@ import Navigation from './navigation';
 
 const Render = () => {
     const style = {
-        paddingTop: '15px',
+        paddingTop: '20px',
         paddingBottom: '20px',
         cardSpace,
     };
     const titleStyle = {
-        fontWeight: 900,
-        fontSize: '28px',
+        fontWeight: 400,
+        fontSize: '1.4rem',
     };
 
     return (
@@ -24,11 +24,11 @@ const Render = () => {
             <Row>
                 <Col xs={4}>
                     <Row middle="xs">
-                        <Col xs={3} style={align.center}>
+                        <Col xs={3} style={align.right}>
                             <img src={logo} height={48}/>
                         </Col>
                         <Col xs={9} style={titleStyle}>
-                            Emerald Wallet
+                            Emerald<br/>Wallet
                         </Col>
                     </Row>
                 </Col>
