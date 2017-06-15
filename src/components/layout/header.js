@@ -40,7 +40,7 @@ const Render = () => {
                 </Col>
             </Row>
             <Row>
-                <Col xs={4} xsOffset={4} style={align.center}>
+                <Col xs={10} xsOffset={1} style={align.center}>
                     <Total/>
                 </Col>
             </Row>
