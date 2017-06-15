@@ -1,8 +1,10 @@
 import { https } from 'follow-redirects';
 import fs from 'fs';
 import os from 'os';
+import path from 'path';
 import log from 'loglevel';
 import unzipper from 'unzip2';
+import { Verify } from './verify';
 
 const DefaultGeth = {
     format: "v1",
@@ -144,7 +146,8 @@ export class Downloader {
         const targetBinary = target.binaries.find((x) => x.type === 'https' && x.pack === 'zip');
         const targetUrl = targetBinary.url;
         return new Promise((resolve, reject) => {
-            fs.mkdtemp(`download-${this.name}-`, (err, folder) => {
+            const tmpDir = os.tmpdir();
+            fs.mkdtemp(path.join(tmpDir, `download-${this.name}-`), (err, folder) => {
                 if (err) {
                     log.error("Unable to create temp dir", err);
                     reject(err);
@@ -156,19 +159,41 @@ export class Downloader {
                 https.get(targetUrl, (response) => {
                     response.pipe(f);
                     response.on('end', () => {
+                        this.currentArchive = f.path;
                         resolve(f.path);
                     });
                 }).on('error', (err) => {
                     reject(err);
                 });
+                this.signature = this.downloadPgp(target);
             })
         });
     }
 
-    verifyArchive(zip) {
+    downloadPgp(target) {
+        const pgp = target.signatures.find((x) => x.type === 'pgp');
+        const url = pgp.url;
         return new Promise((resolve, reject) => {
-            resolve(zip);
+            let buf = "";
+            https.get(url, (response) => {
+                response.on('data', (chunk) => {
+                    buf = buf + chunk.toString();
+                });
+                response.on('end', () => {
+                    resolve(buf);
+                });
+            }).on('error', (err) => {
+                reject(err);
+            });
         })
+    }
+
+    verifyArchive(zip) {
+        const v = new Verify();
+        v.init();
+        return this.signature.then((signature) =>
+            v.verify(zip, signature)
+        )
     }
 
     unpack(zip) {
@@ -179,7 +204,7 @@ export class Downloader {
                 .on('entry', (entry) => {
                     const fileName = entry.path;
                     if (entry.type === 'File' && fileName === this.name) {
-                        let target = `bin/${fileName}`;
+                        let target = path.join('bin', fileName);
                         log.info(`Extract to ${target}...`);
                         entry.pipe(fs.createWriteStream(target));
                         entry.on('end', () => {
@@ -205,7 +230,7 @@ export class Downloader {
             let target = `bin/${this.name}`;
             fs.access(target, fs.constants.F_OK, (err) => {
                 if (!err) {
-                    let bak = `bin/${this.name}.bak`;
+                    let bak = path.join('bin',`${this.name}.bak`);
                     deleteIfExists(bak).then(() => {
                         log.debug(`Backup ${target} to ${bak}`);
                         fs.rename(target, bak, () => {
