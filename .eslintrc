@@ -32,7 +32,10 @@
     "no-unused-vars": ["warn", {
       "argsIgnorePattern": "(dispatch|state|ownProps|reset|handleSubmit|resetForm|submitting|reject|resolve)"
     }],
-    "no-plusplus": 0
+    "no-plusplus": 0,
+    "object-curly-spacing": 0,
+    "object-shorthand": 1,
+    "no-console": 0
   },
   "plugins": [
     "react"

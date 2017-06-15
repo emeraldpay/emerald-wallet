@@ -10,6 +10,7 @@
   "version": "0.1.0",
   "description": "Emerald - Ethereum Classic Wallet",
   "main": "./build/main.js",
+  "moduleRoots": [ "src/lib" ],
   "scripts": {
     "build": "node build --no-watch",
     "build:watch": "node build",

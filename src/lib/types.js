@@ -20,7 +20,7 @@ export class Wei extends Immutable.Record({ val: ZERO }) {
             });
         } else {
             super({
-                val: val,
+                val,
             });
         }
     }
@@ -34,6 +34,9 @@ export class Wei extends Immutable.Record({ val: ZERO }) {
         return new Wei(this.val.plus(another.val));
     }
     getFiat(r) {
+        if (typeof (r) === 'undefined' || r === null) {
+            r = 0;
+        }
         const rate = new BigNumber(r.toString());
         return this.val.dividedBy(ETHER).mul(rate).toFixed(5);
     }

@@ -2,8 +2,8 @@ import thunkMiddleware from 'redux-thunk';
 import createLogger from 'redux-logger';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
-import { loadAccountsList, refreshTrackedTransactions, loadPendingTransactions } from './accountActions';
-import { getGasPrice, getExchangeRates } from './accountActions';
+import { loadAccountsList, refreshTrackedTransactions, loadPendingTransactions,
+    getGasPrice, getExchangeRates } from './accountActions';
 import { loadAddressBook } from './addressActions';
 import { loadTokenList } from './tokenActions';
 import { loadContractList } from './contractActions';
@@ -16,6 +16,20 @@ import tokenReducers from './tokenReducers';
 import contractReducers from './contractReducers';
 import networkReducers from './networkReducers';
 import screenReducers from './screenReducers';
+
+const second = 1000;
+const minute = 60 * second;
+export const intervalRates = {
+    second, // (whilei) this must be the newfangled object-shorthand...?
+    minute,
+    // (whilei: development: loading so often slows things a lot for me and clutters logs; that's why I have
+    // stand-in times here for development)
+    // Continue is repeating timeouts.
+    continueLoadSyncRate: minute, // prod: second
+    continueLoadHeightRate: 5 * minute, // prod: 5 * second
+    continueRefreshAllTxRate: 10 * second, // prod: 2 * second
+    continueRefreshLongRate: 900000, // 5 o'clock somewhere.
+};
 
 const stateTransformer = (state) => ({
     accounts: state.accounts.toJS(),
@@ -51,12 +65,12 @@ export const store = createStore(
 
 function refreshAll() {
     store.dispatch(refreshTrackedTransactions());
-    setTimeout(refreshAll, 2000);
+    setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
 }
 
 function refreshLong() {
-     store.dispatch(getExchangeRates());
-     setTimeout(refreshLong, 900000);
+    store.dispatch(getExchangeRates());
+    setTimeout(refreshLong, intervalRates.continueRefreshLongRate);
 }
 
 export function start() {
@@ -67,9 +81,11 @@ export function start() {
     store.dispatch(loadContractList());
     store.dispatch(gotoScreen('home'));
     store.dispatch(loadHeight());
-    setTimeout(() => store.dispatch(loadPendingTransactions()), 3000);
-    setTimeout(() => store.dispatch(loadSyncing()), 3000); // check for syncing
-    setTimeout(() => store.dispatch(loadSyncing()), 30000); // double check for syncing after 30 seconds
-    setTimeout(refreshAll, 5000);
-    setTimeout(refreshLong, 5000);
+    // check for syncing
+    setTimeout(() => store.dispatch(loadSyncing()), intervalRates.second); // prod: intervalRates.second
+    // double check for syncing
+    setTimeout(() => store.dispatch(loadSyncing()), 2 * intervalRates.minute); // prod: 30 * this.second
+    setTimeout(() => store.dispatch(loadPendingTransactions()), intervalRates.refreshAllTxRate);
+    setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
+    setTimeout(refreshLong, intervalRates.continueRefreshLongRate);
 }

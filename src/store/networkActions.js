@@ -1,5 +1,6 @@
+import log from 'loglevel';
 import { rpc } from '../lib/rpc';
-import { start } from 'store/store'
+import { start, intervalRates } from '../store/store';
 
 let watchingHeight = false;
 
@@ -12,7 +13,7 @@ export function loadHeight(watch) {
             });
             if (watch && !watchingHeight) {
                 watchingHeight = true;
-                setTimeout(() => dispatch(loadHeight(true)), 5000);
+                setTimeout(() => dispatch(loadHeight(true)), intervalRates.continueLoadHeightRate);
             }
         });
 }
@@ -20,11 +21,12 @@ export function loadHeight(watch) {
 export function loadNetworkVersion() {
     return (dispatch, getState) =>
         rpc.call('net_version', []).then((result) => {
-            if (getState().network.get('chain').get('id') !== result)
+            if (getState().network.get('chain').get('id') !== result) {
                 dispatch({
                     type: 'NETWORK/SWITCH_CHAIN',
                     id: result,
                 });
+            }
         });
 }
 
@@ -39,13 +41,13 @@ export function loadSyncing() {
                     syncing: true,
                     status: result,
                 });
-                setTimeout(() => dispatch(loadSyncing()), 1000);
+                setTimeout(() => dispatch(loadSyncing()), intervalRates.continueLoadSyncRate);
             } else {
                 dispatch({
                     type: 'NETWORK/SYNCING',
                     syncing: false,
                 });
-                setTimeout(() => dispatch(loadHeight(true)), 1000);
+                setTimeout(() => dispatch(loadHeight(true)), intervalRates.continueLoadSyncRate);
             }
         });
 }
@@ -53,6 +55,7 @@ export function loadSyncing() {
 export function switchChain(network, id) {
     return (dispatch) =>
         rpc.call('backend_switchChain', [network]).then((result) => {
+            log.debug('switch chain', result);
             dispatch({
                 type: 'NETWORK/SWITCH_CHAIN',
                 network,
