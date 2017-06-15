@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
@@ -48,10 +49,19 @@ const Render = ({ tx, openTx, accounts, openAccount, refreshTx }) => {
                     <span onClick={refreshTx} style={link}>
                         <FontIcon className="fa fa-refresh fa-2x" />
                     </span>
-            </TableRowColumn>        
+            </TableRowColumn>
         </TableRow>
     );
-}
+};
+
+Render.propTypes = {
+    hash: PropTypes.string.isRequired,
+    tx: PropTypes.object.isRequired,
+    accounts: PropTypes.array.isRequired,
+    openAccount: PropTypes.func.isRequired,
+    openTx: PropTypes.func.isRequired,
+    refreshTx: PropTypes.func.isRequired,
+};
 
 const Transaction = connect(
     (state, ownProps) => {
@@ -64,7 +74,10 @@ const Transaction = connect(
     (dispatch, ownProps) => ({
         openTx: () => {
             const tx = ownProps.tx;
-            dispatch(gotoScreen('transaction', tx));
+            dispatch(gotoScreen('transaction', {
+                hash: tx.get('hash'),
+            })
+            );
         },
         openAccount: (acc) => {
             dispatch(gotoScreen('account', acc));
@@ -72,7 +85,7 @@ const Transaction = connect(
         refreshTx: () => {
             const hash = ownProps.tx.get('hash');
             dispatch(refreshTransactions(hash));
-        }
+        },
     })
 )(Render);
 
