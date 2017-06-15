@@ -1,4 +1,9 @@
 import React from 'react';
+import Avatar from 'material-ui/Avatar';
+import ListItem from 'material-ui/List/ListItem';
+import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
+
+import { deepOrange300, purple500 } from 'material-ui/styles/colors';
 
 export const DescriptionList = (props) => {
     const style = {
@@ -43,3 +48,37 @@ export const DescriptionData = (props) => {
     );
 };
 
+export const AddressAvatar = (props) => {
+    const { primary, secondary, tertiary, openAccount } = props;
+    return (
+        <ListItem
+          leftAvatar={
+            <Avatar color={deepOrange300}
+              backgroundColor={purple500}
+              size={30}>⟠
+            </Avatar>
+          }
+          rightIcon={<ImportContacts />}
+          onClick={openAccount}
+          primaryText={primary}
+          secondaryText={(tertiary) ?
+            <p>{tertiary}
+                <br />
+                {secondary}
+            </p> : secondary
+        }
+        />
+    );
+}
+
+export const AccountItem = (props) => {
+    const { primary, secondary } = props;
+    return (
+        <ListItem
+          insetChildren={true}
+          disabled={true}
+          primaryText={primary}
+          secondaryText={secondary}
+        />
+    );
+}
