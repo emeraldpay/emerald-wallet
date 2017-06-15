@@ -80,7 +80,9 @@
     "redux-logger": "2.8.1",
     "redux-thunk": "2.2.0",
     "roboto-fontface": "0.7.0",
-    "store": "^2.0.4"
+    "store": "^2.0.4",
+    "unzip2": "0.2.5",
+    "follow-redirects": "1.2.3"
   },
   "devDependencies": {
     "@elastic/webpack-directory-name-as-main": "2.0.2",

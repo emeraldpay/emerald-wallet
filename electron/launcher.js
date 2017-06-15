@@ -13,7 +13,7 @@ export function launchGeth() {
 }
 
 export function launchEmerald() {
-    log.info("Starting Emerald...");
+    log.info("Starting Emerald Connector...");
     const bin = './bin/emerald-cli';
     let options = [
         '--client-host', '127.0.0.1',
