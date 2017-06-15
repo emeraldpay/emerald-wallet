@@ -135,7 +135,12 @@ export function importWallet(wallet, name, description) {
                     });
                     // Reload accounts.
                     if (address(result)) {
-                        dispatch(loadAccountsList());
+                        dispatch({
+                            type: 'ACCOUNT/ADD_ACCOUNT',
+                            accountId: result,
+                            name,
+                            description,
+                        });
                         resolve(result);
                     } else {
                         reject({error: result});

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import Immutable from 'immutable';
-import { Wei, ETHER, renderAsCurrency } from 'lib/types';
+import { Wei, renderAsCurrency } from 'lib/types';
 
 const Render = ({ total, fiat, currentLocaleCurrency }) => {
     const styleTitle = {
@@ -36,7 +36,7 @@ const Render = ({ total, fiat, currentLocaleCurrency }) => {
                     </span>
                     &bull;
                     <span style={valueDisplay}>
-                        ${renderAsCurrency(fiat.pair.localized)} ETC/{currentLocaleCurrency.toUpperCase()}
+                        ${renderAsCurrency(fiat.rate.localized)} ETC/{currentLocaleCurrency.toUpperCase()}
                     </span>
                 </Col>
             </Row>
@@ -50,13 +50,11 @@ Render.propTypes = {
     currentLocaleCurrency: PropTypes.string.isRequired,
 };
 
-
 const Total = connect(
     (state, ownProps) => {
         // (whilei) I left hardcoded rates because they might be worth throwing in a popup, feed, sidebar, or
         // some other kind of sexy sneaky UI down the road.
 
-        const oneEther = new Wei(ETHER);
         const rates = state.accounts.get('rates');
 
         // Sum of balances of all known accounts.
@@ -84,26 +82,24 @@ const Total = connect(
                     usd: total.getFiat(r.usd),
                     cny: total.getFiat(r.cny),
                 },
-                pair: {
-                    btc: oneEther.getFiat(r.btc),
-                    eur: oneEther.getFiat(r.eur),
-                    usd: oneEther.getFiat(r.usd),
-                    cny: oneEther.getFiat(r.cny),
-                },
+                rate: r,
             };
         }
 
         // Try to localize, with USD defaults.
         let currentLocaleCurrency = 'USD'; // prod: localeCurrency localized from OS.
 
-        const localeCurrencyRate = r[currentLocaleCurrency.toLowerCase()];
+        const localeCurrencyRate = fiat.rate[currentLocaleCurrency.toLowerCase()];
+        // If we are able to get the rate for the local currency:
         if (typeof localeCurrencyRate === 'number') {
             fiat.total.localized = total.getFiat(localeCurrencyRate);
-            fiat.pair.localized = oneEther.getFiat(localeCurrencyRate);
+            fiat.rate.localized = localeCurrencyRate;
+
+        // Fallback to USD.
         } else {
             currentLocaleCurrency = 'USD';
             fiat.total.localized = fiat.total.usd;
-            fiat.pair.localized = fiat.pair.usd;
+            fiat.rate.localized = +fiat.rate.usd || 0; // fiat.pair.usd;
         }
 
         return {

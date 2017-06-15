@@ -8,7 +8,7 @@ import Immutable from 'immutable';
 // import LocaleCurrency from 'locale-currency';
 import { parseHexQuantity } from './convert';
 
-export const ETHER = new BigNumber(10).pow(18);
+const ETHER = new BigNumber(10).pow(18);
 const MWEI = new BigNumber(10).pow(6);
 
 const ZERO = new BigNumber(0);
