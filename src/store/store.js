@@ -87,5 +87,5 @@ export function start() {
     setTimeout(() => store.dispatch(loadSyncing()), 2 * intervalRates.minute); // prod: 30 * this.second
     setTimeout(() => store.dispatch(loadPendingTransactions()), intervalRates.refreshAllTxRate);
     setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
-    setTimeout(refreshLong, intervalRates.continueRefreshLongRate);
+    setTimeout(refreshLong, 3 * intervalRates.second);
 }
