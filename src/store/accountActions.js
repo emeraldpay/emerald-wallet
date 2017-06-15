@@ -133,9 +133,9 @@ export function importWallet(wallet, name, description) {
                         type: 'ACCOUNT/IMPORT_WALLET',
                         accountId: result,
                     });
-                    // We should load balance and add the new account to the canonical list.
+                    // Reload accounts.
                     if (address(result)) {
-                        dispatch(addAddress(result, name, description));
+                        dispatch(loadAccountsList());
                         resolve(result);
                     } else {
                         reject({error: result});
