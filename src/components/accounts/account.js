@@ -5,15 +5,16 @@ import { TableRow, TableRowColumn } from 'material-ui/Table';
 import { gotoScreen } from 'store/screenActions';
 import log from 'loglevel';
 import { link, tables } from 'lib/styles';
+import AccountPopup from './popup';
 
 const Render = ({ account, openAccount }) => (
-    <TableRow onClick={openAccount} selectable={false}>
-        <TableRowColumn style={tables.shortStyle}>
+    <TableRow selectable={false}>
+        <TableRowColumn style={tables.shortStyle} onClick={openAccount}>
             <span style={link}>
                 {account.get('name')}
             </span>
         </TableRowColumn>
-        <TableRowColumn style={tables.wideStyle}>
+        <TableRowColumn style={tables.wideStyle} onClick={openAccount} >
             <span style={link}>
                 {account.get('id')}
             </span>
@@ -21,6 +22,9 @@ const Render = ({ account, openAccount }) => (
         <TableRowColumn style={tables.shortStyle}>
             <span style={link}>
                 {account.get('balance') ? account.get('balance').getEther() : '?'} Ether
+            </span>
+            <span>
+                <AccountPopup account={account}/>
             </span>
         </TableRowColumn>
     </TableRow>

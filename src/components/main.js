@@ -12,8 +12,9 @@ import { gotoScreen } from 'store/screenActions';
 import './main.scss';
 import Screen from './screen';
 import Header from './layout/header';
+import AccountPopup from './accounts/popup';
 
-const Render = translate("common")(({t, ...props}) => (
+const Render = translate('common')(({t, ...props}) => (
     <Grid>
         <Row>
             <Col xs={12}>
@@ -36,6 +37,7 @@ const Render = translate("common")(({t, ...props}) => (
                 </div>
             </Col>
         </Row>
+        <AccountPopup />
     </Grid>
 ));
 
