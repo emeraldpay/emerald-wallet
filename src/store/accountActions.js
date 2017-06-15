@@ -2,6 +2,7 @@ import { rpc } from 'lib/rpc';
 import { getRates } from 'lib/marketApi';
 import { address } from 'lib/validators';
 import { loadTokenBalanceOf } from './tokenActions';
+import { addAddress } from './addressActions';
 
 export function loadAccountBalance(accountId) {
     return (dispatch, getState) => {
@@ -132,12 +133,14 @@ export function importWallet(wallet, name, description) {
                         type: 'ACCOUNT/IMPORT_WALLET',
                         accountId: result,
                     });
-                    dispatch(loadAccountBalance(result));
-                    if (address(result))
+                    // We should load balance and add the new account to the canonical list.
+                    if (address(result)) {
+                        dispatch(addAddress(result, name, description));
                         resolve(result);
-                    else
+                    } else {
                         reject({error: result});
-                })
+                    }
+                });
             };
         });
     };
