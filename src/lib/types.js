@@ -54,8 +54,11 @@ export class Wei extends Immutable.Record({ val: ZERO }) {
             });
         }
     }
-    getEther() {
-        return this.val.dividedBy(ETHER).toFixed(5);
+    getEther(decimals) {
+        if (typeof decimals === 'undefined' || decimals === null) {
+            decimals = 5;
+        }
+        return this.val.dividedBy(ETHER).toFixed(decimals);
     }
     getMwei() {
         return this.val.dividedBy(MWEI).toFixed(5);
@@ -63,12 +66,15 @@ export class Wei extends Immutable.Record({ val: ZERO }) {
     plus(another) {
         return new Wei(this.val.plus(another.val));
     }
-    getFiat(r) {
+    getFiat(r, decimals) {
         if (typeof (r) === 'undefined' || r === null) {
             r = 0;
         }
+        if (typeof decimals === 'undefined' || decimals === null) {
+            decimals = 5;
+        }
         const rate = new BigNumber(r.toString());
-        return this.val.dividedBy(ETHER).mul(rate).toFixed(5);
+        return this.val.dividedBy(ETHER).mul(rate).toFixed(decimals);
     }
     sub(another) {
         return new Wei(this.val.sub(another.val));
