@@ -37,7 +37,6 @@ const Render = translate('common')(({t, ...props}) => (
                 </div>
             </Col>
         </Row>
-        <AccountPopup />
     </Grid>
 ));
 

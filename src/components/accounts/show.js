@@ -14,6 +14,7 @@ import { cardSpace } from 'lib/styles';
 import { gotoScreen } from 'store/screenActions';
 import { updateAccount } from 'store/accountActions';
 import AccountEdit from './edit';
+import AccountPopup from './popup';
 
 const TokenRow = ({ token }) => {
     const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0';
@@ -51,14 +52,6 @@ class AccountRender extends React.Component {
         this.setState({ edit: false });
     }
 
-    showModal = () => {
-        this.setState({ showModal: true });
-    }
-
-    closeModal = () => {
-        this.setState({ showModal: false });
-    }
-
     render() {
         const { account, rates, createTx, goBack } = this.props;
         const value = account.get('balance') ? account.get('balance').getEther() : '?';
@@ -88,7 +81,7 @@ class AccountRender extends React.Component {
                             primary={account.get('name')}
                             onClick={this.handleEdit}
                         />}
-                        {this.state.edit && <AccountEdit 
+                        {this.state.edit && <AccountEdit
                             address={account}
                             submit={this.handleSave}
                             cancel={this.cancelEdit}
@@ -100,22 +93,11 @@ class AccountRender extends React.Component {
                 </Row>
             </CardText>
             <CardActions>
-                <FlatButton label="ADD ETHER"
-                            onClick={this.showModal}
-                            icon={<FontIcon className="fa fa-qrcode" />}/>
+                <AccountPopup account={account}/>
                 <FlatButton label="SEND"
                             onClick={createTx}
                             icon={<FontIcon className="fa fa-arrow-circle-o-right" />}/>
             </CardActions>
-            {/*
-                TODO: Replace with @whilei's ADD ETHER modal
-            */}
-            <Dialog
-              title="ADD ETHER!!"
-              modal={false}
-              open={this.state.showModal}
-              onRequestClose={this.closeModal}
-            />
         </Card>
         );
     }

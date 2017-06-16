@@ -78,7 +78,7 @@ export function updateAccount(address, name, description) {
         rpc.call('emerald_updateAccounts', [{
             name,
             description,
-            address
+            address,
         }]).then((result) => {
             dispatch({
                 type: 'ACCOUNT/UPDATE_ACCOUNT',

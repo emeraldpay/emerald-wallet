@@ -4,7 +4,6 @@ import { toNumber } from '../lib/convert';
 
 const initial = Immutable.fromJS({
     accounts: [],
-    accountPopup: {},
     trackedTransactions: [],
     loading: false,
     gasPrice: new Wei(23000000000),
@@ -107,15 +106,6 @@ function onSetBalance(state, action) {
     return state;
 }
 
-function onAccountPopup(state, action) {
-    if (action.type === 'ACCOUNT/POPUP/OPEN') {
-        state.set('accountPopup', action.account);
-    } else {
-        state.set('accountPopup', {});
-    }
-    return state;
-}
-
 function onSetTokenBalance(state, action) {
     if (action.type === 'ACCOUNT/SET_TOKEN_BALANCE') {
         return updateAccount(state, action.accountId, (acc) => {
@@ -159,7 +149,7 @@ function createTx(data) {
     }
     if (typeof data.gas === 'string' || typeof data.gas === 'number') {
         tx = tx.set('gas', toNumber(data.gas));
-    }    
+    }
     return tx;
 }
 
@@ -243,6 +233,5 @@ export default function accountsReducers(state, action) {
     state = onLoadPending(state, action);
     state = onPendingBalance(state, action);
     state = onExchangeRates(state, action);
-    state = onAccountPopup(state, action);
     return state;
 }

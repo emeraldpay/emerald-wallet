@@ -8,14 +8,14 @@ import { link, tables } from 'lib/styles';
 import AccountPopup from './popup';
 
 const Render = ({ account, openAccount }) => (
-    <TableRow selectable={false}>
-        <TableRowColumn style={tables.shortStyle} onClick={openAccount}>
-            <span style={link}>
+    <TableRow selectable={false} >
+        <TableRowColumn style={tables.shortStyle} >
+            <span style={link} onClick={openAccount}>
                 {account.get('name')}
             </span>
         </TableRowColumn>
-        <TableRowColumn style={tables.wideStyle} onClick={openAccount} >
-            <span style={link}>
+        <TableRowColumn style={tables.wideStyle} >
+            <span style={link} onClick={openAccount}>
                 {account.get('id')}
             </span>
         </TableRowColumn>
