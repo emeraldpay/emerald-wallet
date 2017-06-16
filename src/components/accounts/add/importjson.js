@@ -16,6 +16,9 @@ import { required } from 'lib/validators';
 import { translate } from 'react-i18next';
 import AccountShow from '../show';
 
+import { green300, red300 } from 'material-ui/styles/colors';
+
+
 class ImportRender extends React.Component {
     constructor(props) {
         super(props);
@@ -40,7 +43,7 @@ class ImportRender extends React.Component {
         const { t, accounts } = this.props;
         const { submitSucceeded, invalid, pristine, submitting, cancel } = this.props;
 
-        const p = this.state.accountId && accounts.findKey(this.state.accountId);
+        const p = this.state.accountId && accounts.findKey((acc) => acc.get('id') === this.state.accountId);
         const account = p && (p >= 0) && accounts.get(p);
 
         return (
@@ -69,6 +72,9 @@ class ImportRender extends React.Component {
                                     disabled={pristine || submitting || invalid } />
                     </form>
                 </CardText>
+                {account && <CardText color={green100}>
+                    Account Successfully Imported.
+                </CardText>}
                 {account && <CardText>
                      <AccountShow key={(account === undefined) ? undefined : account.get('id')} account={account}/>
                      <FlatButton label={t("common:done")}
@@ -76,7 +82,7 @@ class ImportRender extends React.Component {
                                 icon={<FontIcon className="fa fa-home" />}/>
                 </CardText>}
                 {this.state.fileError}
-                {this.state.fileError && <CardText>
+                {this.state.fileError && <CardText color={red300}>
                     {this.state.fileError}
                 </CardText>}
                 <CardActions>
@@ -91,6 +97,7 @@ class ImportRender extends React.Component {
 
 ImportRender.propTypes = {
     account: PropTypes.object.isRequired,
+    accounts: PropTypes.array.isRequired,
     submitSucceeded: PropTypes.bool.isRequired,
     handleSubmit: PropTypes.func.isRequired,
     invalid: PropTypes.bool.isRequired,

@@ -1,16 +1,19 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
+import { Card, CardActions, CardText } from 'material-ui/Card';
+import { AddressAvatar } from 'elements/dl';
+import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
-import { DescriptionList, DescriptionTitle, DescriptionData } from 'elements/dl';
 import QRCode from 'qrcode.react';
 import log from 'loglevel';
 import { translate } from 'react-i18next';
 import { cardSpace } from 'lib/styles';
 import { gotoScreen } from 'store/screenActions';
+import { updateAccount } from 'store/accountActions';
+import AccountEdit from './edit';
 
 const TokenRow = ({ token }) => {
     const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0';
@@ -23,77 +26,111 @@ TokenRow.propTypes = {
     token: PropTypes.object.isRequired,
 };
 
-const Render = translate('accounts')(({ t, account, fiat, createTx }) => {
-    const value = t('show.value', {value: account.get('balance') ? account.get('balance').getEther() : '?'});
-    const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
+class AccountRender extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            edit: false,
+            showModal: false,
+        };
+    }
 
-    return (
+    handleEdit = () => {
+        this.setState({ edit: true });
+    }
+
+    handleSave = (data) => {
+        this.props.editAccount(data)
+            .then((result) => {
+                this.setState({ edit: false });
+                log.debug(result);
+            })
+    }
+
+    cancelEdit = () => {
+        this.setState({ edit: false });
+    }
+
+    showModal = () => {
+        this.setState({ showModal: true });
+    }
+
+    closeModal = () => {
+        this.setState({ showModal: false });
+    }
+
+    render() {
+        const { account, rates, createTx, goBack } = this.props;
+        const value = account.get('balance') ? account.get('balance').getEther() : '?';
+        const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
+
+
+        return (
         <Card style={cardSpace}>
-            <CardHeader
-                title={t('show.header', {account: account.get('name') || account.get('id')})}
-                subtitle={value}
-                actAsExpander={true}
-                showExpandableButton={true}
-            />
             <CardActions>
-                <FlatButton label={t('show.send')}
-                            onClick={createTx}
-                            icon={<FontIcon className="fa fa-arrow-circle-o-right" />}/>
+                <FlatButton label="DASHBOARD"
+                            primary={true}
+                            onClick={goBack}
+                            icon={<FontIcon className="fa fa-arrow-left" />}/>
             </CardActions>
-            <CardText expandable={true}>
+            <CardText>
                 <Row>
                     <Col xs={8}>
-                        <DescriptionList>
-                            {account.get('description') && <div>
-                            <DescriptionTitle>{t('show.description.title')}</DescriptionTitle>
-                            <DescriptionData>{account.get('description')}</DescriptionData>
-                            </div>}
+                        <h2>
+                            {value}
+                            {pending && <FlatButton label={pending} primary={true} />}
+                        </h2>
+                        {account.get('balance') ? `$${account.get('balance').getFiat(rates.get('usd'))}` : ''}
 
-                            <DescriptionTitle>{t('show.description.address')}</DescriptionTitle>
-                            <DescriptionData>{account.get('id')}</DescriptionData>
-
-                            <DescriptionTitle>{t('show.description.sentTransactions')}</DescriptionTitle>
-                            <DescriptionData>{account.get('txcount') || '0'}</DescriptionData>
-
-                            <DescriptionTitle>{t('show.description.etherBalance')}</DescriptionTitle>
-                            <DescriptionData>{value}</DescriptionData>
-                            <DescriptionData>{value} {pending}</DescriptionData>
-
-                            <DescriptionTitle>{t('show.description.tokenBalance')}</DescriptionTitle>
-                            <DescriptionData>
-                                {account
-                                    .get('tokens')
-                                    .map((tok) =>
-                                        <TokenRow token={tok} key={tok.get('address')}/>
-                                )}
-                            </DescriptionData>
-
-                            <DescriptionTitle>Equivalent Values</DescriptionTitle>
-                            <DescriptionData>
-                                <div><span>BTC {fiat.btc}</span></div>
-                                <div><span>USD {fiat.usd}</span></div>
-                                <div><span>CNY {fiat.cny}</span></div>
-                            </DescriptionData>
-
-
-                        </DescriptionList>
+                        {!this.state.edit && <AddressAvatar
+                            secondary={account.get('id')}
+                            tertiary={account.get('description')}
+                            primary={account.get('name')}
+                            onClick={this.handleEdit}
+                        />}
+                        {this.state.edit && <AccountEdit 
+                            address={account}
+                            submit={this.handleSave}
+                            cancel={this.cancelEdit}
+                         />}
                     </Col>
                     <Col xs={4} md={2} mdOffset={2}>
                         <QRCode value={account.get('id')} />
                     </Col>
                 </Row>
             </CardText>
+            <CardActions>
+                <FlatButton label="ADD ETHER"
+                            onClick={this.showModal}
+                            icon={<FontIcon className="fa fa-qrcode" />}/>
+                <FlatButton label="SEND"
+                            onClick={createTx}
+                            icon={<FontIcon className="fa fa-arrow-circle-o-right" />}/>
+            </CardActions>
+            {/*
+                TODO: Replace with @whilei's ADD ETHER modal
+            */}
+            <Dialog
+              title="ADD ETHER!!"
+              modal={false}
+              open={this.state.showModal}
+              onRequestClose={this.closeModal}
+            />
         </Card>
-    );
-});
+        );
+    }
+}
 
-Render.propTypes = {
+AccountRender.propTypes = {
     account: PropTypes.object.isRequired,
     createTx: PropTypes.func.isRequired,
+    goBack: PropTypes.func.isRequired,
 };
 
 const AccountShow = connect(
     (state, ownProps) => {
+        const accounts = state.accounts.get('accounts');
+        const pos = accounts.findKey((acc) => acc.get('id') === ownProps.account.get('id'));
         const rates = state.accounts.get('rates');
         const balance = ownProps.account.get('balance');
         let fiat = {};
@@ -107,6 +144,8 @@ const AccountShow = connect(
         }
         return {
             fiat,
+            rates,
+            account: (accounts.get(pos) || Immutable.Map({})),
         };
     },
     (dispatch, ownProps) => ({
@@ -115,7 +154,18 @@ const AccountShow = connect(
             log.debug('create tx from', account.get('id'));
             dispatch(gotoScreen('create-tx', account));
         },
+        goBack: () => {
+            dispatch(gotoScreen('home'));
+        },
+        editAccount: (data) => {
+            return new Promise((resolve, reject) => {
+                dispatch(updateAccount(data.address, data.name, data.description))
+                        .then((response) => {
+                            resolve(response);
+                        });
+            });
+        }
     })
-)(Render);
+)(AccountRender);
 
 export default AccountShow;
