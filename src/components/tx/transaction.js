@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
 import { gotoScreen } from 'store/screenActions';
-import { refreshTransactions } from 'store/accountActions';
+import { refreshTransaction } from 'store/accountActions';
 import FontIcon from 'material-ui/FontIcon';
 import log from 'loglevel';
 import { link, tables } from 'lib/styles';
@@ -84,7 +84,7 @@ const Transaction = connect(
         },
         refreshTx: () => {
             const hash = ownProps.tx.get('hash');
-            dispatch(refreshTransactions(hash));
+            dispatch(refreshTransaction(hash));
         },
     })
 )(Render);

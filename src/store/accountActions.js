@@ -167,7 +167,7 @@ export function importWallet(wallet, name, description) {
     };
 }
 
-export function refreshTransactions(hash) {
+export function refreshTransaction(hash) {
     return (dispatch) =>
         rpc.call('eth_getTransactionByHash', [hash]).then((result) => {
             if (typeof result === 'object') {
@@ -222,7 +222,7 @@ export function loadPendingTransactions() {
 export function refreshTrackedTransactions() {
     return (dispatch, getState) =>
         getState().accounts.get('trackedTransactions').map(
-            (tx) => dispatch(refreshTransactions(tx.get('hash')))
+            (tx) => dispatch(refreshTransaction(tx.get('hash')))
         );
 }
 
