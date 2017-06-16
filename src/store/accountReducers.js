@@ -202,7 +202,7 @@ function onExchangeRates(state, action) {
     if (action.type === 'ACCOUNT/EXCHANGE_RATES') {
         return state.set('rates', Immutable.fromJS(action.rates));
     }
-    return state;    
+    return state;
 }
 
 export default function accountsReducers(state, action) {

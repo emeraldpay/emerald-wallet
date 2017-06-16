@@ -96,7 +96,7 @@ const AccountShow = connect(
     (state, ownProps) => {
         const rates = state.accounts.get('rates');
         const balance = ownProps.account.get('balance');
-        let fiat = [];
+        let fiat = {};
         if (rates && balance) {
             fiat = {
                 btc: balance.getFiat(rates.get('btc')),

@@ -10,7 +10,9 @@
   "version": "0.1.0",
   "description": "Emerald - Ethereum Classic Wallet",
   "main": "./build/main.js",
-  "moduleRoots": [ "src/lib" ],
+  "moduleRoots": [
+    "src/lib"
+  ],
   "scripts": {
     "build": "node build --no-watch",
     "build:watch": "node build",
@@ -45,8 +47,8 @@
     "bignumber.js": "4.0.0",
     "classnames": "^2.1.2",
     "eslint-plugin-react": "^6.10.3",
-    "ethereumjs-util": "5.1.1",
     "ethereumjs-abi": "0.6.4",
+    "ethereumjs-util": "5.1.1",
     "fbjs": "0.8.9",
     "flexboxgrid": "^6.3.0",
     "font-awesome": "4.7.0",
@@ -62,8 +64,8 @@
     "material-ui": "^0.16.6",
     "moment": "2.17.1",
     "object-assign": "^4.1.1",
-    "qrcode.react": "0.6.1",
     "prop-types": "^15.4.2",
+    "qrcode.react": "0.6.1",
     "react": "^15.4.2",
     "react-addons-test-utils": "^15.4.2",
     "react-dom": "^15.4.2",
