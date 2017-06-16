@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
+import { Card, CardActions, CardText } from 'material-ui/Card';
+import { AddressAvatar } from 'elements/dl';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
-import { DescriptionList, DescriptionTitle, DescriptionData } from 'elements/dl';
 import QRCode from 'qrcode.react';
 import log from 'loglevel';
 import { translate } from 'react-i18next';
@@ -23,66 +23,45 @@ TokenRow.propTypes = {
     token: PropTypes.object.isRequired,
 };
 
-const Render = translate('accounts')(({ t, account, fiat, createTx }) => {
+const Render = translate('accounts')(({ t, account, rates, editAccount, createTx, showModal }) => {
     const value = t('show.value', {value: account.get('balance') ? account.get('balance').getEther() : '?'});
     const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
 
     return (
         <Card style={cardSpace}>
-            <CardHeader
-                title={t('show.header', {account: account.get('name') || account.get('id')})}
-                subtitle={value}
-                actAsExpander={true}
-                showExpandableButton={true}
-            />
-            <CardActions>
-                <FlatButton label={t('show.send')}
-                            onClick={createTx}
-                            icon={<FontIcon className="fa fa-arrow-circle-o-right" />}/>
-            </CardActions>
-            <CardText expandable={true}>
+            <CardText>
+            Dashboard button
+            </CardText>
+            <CardText>
                 <Row>
                     <Col xs={8}>
-                        <DescriptionList>
-                            {account.get('description') && <div>
-                            <DescriptionTitle>{t('show.description.title')}</DescriptionTitle>
-                            <DescriptionData>{account.get('description')}</DescriptionData>
-                            </div>}
+                        <h2>
+                            {value}
+                            {pending && <FlatButton label={`${pending} pending`} primary={true} />}
+                        </h2>
+                        {account.get('balance') ? `$${account.get('balance').getFiat(rates.get('usd'))}` : ''}
 
-                            <DescriptionTitle>{t('show.description.address')}</DescriptionTitle>
-                            <DescriptionData>{account.get('id')}</DescriptionData>
-
-                            <DescriptionTitle>{t('show.description.sentTransactions')}</DescriptionTitle>
-                            <DescriptionData>{account.get('txcount') || '0'}</DescriptionData>
-
-                            <DescriptionTitle>{t('show.description.etherBalance')}</DescriptionTitle>
-                            <DescriptionData>{value}</DescriptionData>
-                            <DescriptionData>{value} {pending}</DescriptionData>
-
-                            <DescriptionTitle>{t('show.description.tokenBalance')}</DescriptionTitle>
-                            <DescriptionData>
-                                {account
-                                    .get('tokens')
-                                    .map((tok) =>
-                                        <TokenRow token={tok} key={tok.get('address')}/>
-                                )}
-                            </DescriptionData>
-
-                            <DescriptionTitle>Equivalent Values</DescriptionTitle>
-                            <DescriptionData>
-                                <div><span>BTC {fiat.btc}</span></div>
-                                <div><span>USD {fiat.usd}</span></div>
-                                <div><span>CNY {fiat.cny}</span></div>
-                            </DescriptionData>
-
-
-                        </DescriptionList>
+                        <AddressAvatar
+                            secondary={account.get('id')}
+                            tertiary={account.get('description')}
+                            primary={account.get('name')}
+                            onClick={editAccount}
+                        />
                     </Col>
                     <Col xs={4} md={2} mdOffset={2}>
                         <QRCode value={account.get('id')} />
                     </Col>
                 </Row>
             </CardText>
+            <CardActions>
+                <FlatButton label="ADD ETHER"
+                            onClick={showModal}
+                            icon={<FontIcon className="fa fa-qrcode" />}/>
+                <FlatButton label={t('show.send')}
+                            onClick={createTx}
+                            icon={<FontIcon className="fa fa-arrow-circle-o-right" />}/>
+            </CardActions>
+
         </Card>
     );
 });
@@ -90,6 +69,7 @@ const Render = translate('accounts')(({ t, account, fiat, createTx }) => {
 Render.propTypes = {
     account: PropTypes.object.isRequired,
     createTx: PropTypes.func.isRequired,
+    editAccount: PropTypes.func.isRequired,
 };
 
 const AccountShow = connect(
@@ -107,6 +87,7 @@ const AccountShow = connect(
         }
         return {
             fiat,
+            rates,
         };
     },
     (dispatch, ownProps) => ({
@@ -115,6 +96,9 @@ const AccountShow = connect(
             log.debug('create tx from', account.get('id'));
             dispatch(gotoScreen('create-tx', account));
         },
+        editAccount: () => {
+
+        }
     })
 )(Render);
 
