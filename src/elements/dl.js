@@ -49,7 +49,7 @@ export const DescriptionData = (props) => {
 };
 
 export const AddressAvatar = (props) => {
-    const { primary, secondary, tertiary, openAccount } = props;
+    const { primary, secondary, tertiary, onClick } = props;
     return (
         <ListItem
           leftAvatar={
@@ -59,7 +59,7 @@ export const AddressAvatar = (props) => {
             </Avatar>
           }
           rightIcon={<ImportContacts />}
-          onClick={openAccount}
+          onClick={onClick}
           primaryText={primary}
           secondaryText={(tertiary) ?
             <p>{tertiary}
