@@ -74,6 +74,22 @@ export function createAccount(password, name, description) {
         });
 }
 
+export function updateAccount(address, name, description) {
+    return (dispatch) =>
+        rpc.call('emerald_updateAccounts', [{
+            name,
+            description,
+            address
+        }]).then((result) => {
+            dispatch({
+                type: 'ACCOUNT/UPDATE_ACCOUNT',
+                address,
+                name,
+                description,
+            });
+        });
+}
+
 export function sendTransaction(accountId, password, to, gas, gasPrice, value) {
     return (dispatch) =>
         rpc.call('eth_sendTransaction', [{
