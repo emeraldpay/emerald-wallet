@@ -137,6 +137,9 @@ function createTx(data) {
     if (typeof data.gasPrice === 'string' || typeof data.gasPrice === 'number') {
         tx = tx.set('gasPrice', new Wei(data.gasPrice));
     }
+    if (typeof data.gas === 'string' || typeof data.gas === 'number') {
+        tx = tx.set('gas', toNumber(data.gas));
+    }    
     return tx;
 }
 
