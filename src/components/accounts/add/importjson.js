@@ -31,7 +31,6 @@ class ImportRender extends React.Component {
 
     submitFile() {
         this.props.handleSubmit().then((result) => {
-            console.log(result)
             if (result.error) {
                 this.setState({ fileError: result.error.toString() });
             } else {

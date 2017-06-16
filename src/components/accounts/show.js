@@ -12,6 +12,8 @@ import log from 'loglevel';
 import { translate } from 'react-i18next';
 import { cardSpace } from 'lib/styles';
 import { gotoScreen } from 'store/screenActions';
+import { updateAccount } from 'store/accountActions';
+import AccountEdit from './edit';
 
 const TokenRow = ({ token }) => {
     const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0';
@@ -37,7 +39,15 @@ class AccountRender extends React.Component {
         this.setState({ edit: true });
     }
 
-    handleSave = () => {
+    handleSave = (data) => {
+        this.props.editAccount(data)
+            .then((result) => {
+                this.setState({ edit: false });
+                log.debug(result);
+            })
+    }
+
+    cancelEdit = () => {
         this.setState({ edit: false });
     }
 
@@ -68,16 +78,21 @@ class AccountRender extends React.Component {
                     <Col xs={8}>
                         <h2>
                             {value}
-                            {pending && <FlatButton label={`${pending} pending`} primary={true} />}
+                            {pending && <FlatButton label={pending} primary={true} />}
                         </h2>
                         {account.get('balance') ? `$${account.get('balance').getFiat(rates.get('usd'))}` : ''}
 
-                        <AddressAvatar
+                        {!this.state.edit && <AddressAvatar
                             secondary={account.get('id')}
                             tertiary={account.get('description')}
                             primary={account.get('name')}
                             onClick={this.handleEdit}
-                        />
+                        />}
+                        {this.state.edit && <AccountEdit 
+                            address={account}
+                            submit={this.handleSave}
+                            cancel={this.cancelEdit}
+                         />}
                     </Col>
                     <Col xs={4} md={2} mdOffset={2}>
                         <QRCode value={account.get('id')} />
@@ -114,6 +129,8 @@ AccountRender.propTypes = {
 
 const AccountShow = connect(
     (state, ownProps) => {
+        const accounts = state.accounts.get('accounts');
+        const pos = accounts.findKey((acc) => acc.get('id') === ownProps.account.get('id'));
         const rates = state.accounts.get('rates');
         const balance = ownProps.account.get('balance');
         let fiat = {};
@@ -128,6 +145,7 @@ const AccountShow = connect(
         return {
             fiat,
             rates,
+            account: (accounts.get(pos) || Immutable.Map({})),
         };
     },
     (dispatch, ownProps) => ({
@@ -139,8 +157,13 @@ const AccountShow = connect(
         goBack: () => {
             dispatch(gotoScreen('home'));
         },
-        editAccount: () => {
-
+        editAccount: (data) => {
+            return new Promise((resolve, reject) => {
+                dispatch(updateAccount(data.address, data.name, data.description))
+                        .then((response) => {
+                            resolve(response);
+                        });
+            });
         }
     })
 )(AccountRender);
