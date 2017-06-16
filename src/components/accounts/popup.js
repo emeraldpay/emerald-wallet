@@ -40,6 +40,9 @@ class AccountPopupRender extends React.Component {
   render() {
     const { account, rates, gasPrice } = this.props;
     const styles = {
+        container: {
+            display: 'inline',
+        },
         closeButton: {
             float: 'right',
             color: 'green',
@@ -79,7 +82,7 @@ class AccountPopupRender extends React.Component {
     }
 
     return (
-      <div>
+        <div style={styles.container}>
         <FlatButton
             label="Add Ether"
             icon={<FontIcon className='fa fa-qrcode' />}
@@ -92,60 +95,60 @@ class AccountPopupRender extends React.Component {
           open={this.state.open}
           onRequestClose={this.handleClose}
         >
-        <Row>
-            <Col xs={11}>
-                <h1>Add Ether</h1>
-            </Col>
-            <Col xs={1}>
-                <FlatButton
-                  icon={<FontIcon className='fa fa-close' />}
-                  primary={true}
-                  onTouchTap={this.handleClose}
-                  style={styles.closeButton}
-                />
-            </Col>
-        </Row>
-        <Row>
-            <Col xs={7}>
-                <p>Top up your wallet with BTC</p>
-                <DescriptionList>
-                    {account.get('description') && <div>
-    -                            <DescriptionData>{account.get('description')}</DescriptionData>
-    -                            </div>}
-                    <DescriptionData>
-                        <span>
-                        <code style={styles.accountId}>
-                        {account.get('id')}
-                        </code>
-                        <FontIcon className='fa fa-clone' onClick={copyAccountToClipBoard} style={Object.assign({}, link, styles.copyIcon)} />
-                        </span>
-                    </DescriptionData>
-                </DescriptionList>
+            <Row>
+                <Col xs={11}>
+                    <h1>Add Ether</h1>
+                </Col>
+                <Col xs={1}>
+                    <FlatButton
+                      icon={<FontIcon className='fa fa-close' />}
+                      primary={true}
+                      onTouchTap={this.handleClose}
+                      style={styles.closeButton}
+                    />
+                </Col>
+            </Row>
+            <Row>
+                <Col xs={7}>
+                    <p>Top up your wallet with BTC</p>
+                    <DescriptionList>
+                        {account.get('description') && <div>
+        -                            <DescriptionData>{account.get('description')}</DescriptionData>
+        -                            </div>}
+                        <DescriptionData>
+                            <span>
+                            <code style={styles.accountId}>
+                            {account.get('id')}
+                            </code>
+                            <FontIcon className='fa fa-clone' onClick={copyAccountToClipBoard} style={Object.assign({}, link, styles.copyIcon)} />
+                            </span>
+                        </DescriptionData>
+                    </DescriptionList>
 
-                <p>Exchange Rate</p>
-                <strong>
-                    1 ETC ~ {rates.get('btc')} BTC
-                </strong>
+                    <p>Exchange Rate</p>
+                    <strong>
+                        1 ETC ~ {rates.get('btc')} BTC
+                    </strong>
 
-                <p style={styles.usageText}>
-                    Share your wallet address and use it to top up your wallet with BTC from any
-                    &nbsp;<a href='https://shapeshift.io' >other service</a>. All BTC will be converted to ETC.
-                    It may take some time for your coins be deposited.
-                </p>
+                    <p style={styles.usageText}>
+                        Share your wallet address and use it to top up your wallet with BTC from any
+                        &nbsp;<a href='https://shapeshift.io' >other service</a>. All BTC will be converted to ETC.
+                        It may take some time for your coins be deposited.
+                    </p>
 
-                <p>Minimal amount</p>
-                <p>{gasPrice.getEther(10)} ~ {gasPrice.getFiat(rates.get('btc'), 10)} BTC</p>
+                    <p>Minimal amount</p>
+                    <p>{gasPrice.getEther(10)} ~ {gasPrice.getFiat(rates.get('btc'), 10)} BTC</p>
 
-                <p style={styles.usageWarning}>
-                    Please note that if an amount is less than the minimum, it is mostly non-refundable.
-                </p>
-            </Col>
-            <Col xs={5} style={align.center}>
-                 <QRCode value={account.get('id')} size={256} style={styles.qr} />
-             </Col>
-        </Row>
+                    <p style={styles.usageWarning}>
+                        Please note that if an amount is less than the minimum, it is mostly non-refundable.
+                    </p>
+                </Col>
+                <Col xs={5} style={align.center}>
+                     <QRCode value={account.get('id')} size={256} style={styles.qr} />
+                 </Col>
+            </Row>
         </Dialog>
-      </div>
+        </div>
     );
   }
 }
