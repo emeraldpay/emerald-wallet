@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Card, CardActions, CardText } from 'material-ui/Card';
 import { AddressAvatar } from 'elements/dl';
+import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
@@ -23,15 +24,45 @@ TokenRow.propTypes = {
     token: PropTypes.object.isRequired,
 };
 
-const Render = translate('accounts')(({ t, account, rates, editAccount, createTx, showModal }) => {
-    const value = t('show.value', {value: account.get('balance') ? account.get('balance').getEther() : '?'});
-    const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
+class AccountRender extends React.Component {
+    constructor(props) {
+        super(props);
+        this.state = {
+            edit: false,
+            showModal: false,
+        };
+    }
 
-    return (
+    handleEdit = () => {
+        this.setState({ edit: true });
+    }
+
+    handleSave = () => {
+        this.setState({ edit: false });
+    }
+
+    showModal = () => {
+        this.setState({ showModal: true });
+    }
+
+    closeModal = () => {
+        this.setState({ showModal: false });
+    }
+
+    render() {
+        const { account, rates, createTx, goBack } = this.props;
+        const value = account.get('balance') ? account.get('balance').getEther() : '?';
+        const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
+
+
+        return (
         <Card style={cardSpace}>
-            <CardText>
-            Dashboard button
-            </CardText>
+            <CardActions>
+                <FlatButton label="DASHBOARD"
+                            primary={true}
+                            onClick={goBack}
+                            icon={<FontIcon className="fa fa-arrow-left" />}/>
+            </CardActions>
             <CardText>
                 <Row>
                     <Col xs={8}>
@@ -45,7 +76,7 @@ const Render = translate('accounts')(({ t, account, rates, editAccount, createTx
                             secondary={account.get('id')}
                             tertiary={account.get('description')}
                             primary={account.get('name')}
-                            onClick={editAccount}
+                            onClick={this.handleEdit}
                         />
                     </Col>
                     <Col xs={4} md={2} mdOffset={2}>
@@ -55,21 +86,30 @@ const Render = translate('accounts')(({ t, account, rates, editAccount, createTx
             </CardText>
             <CardActions>
                 <FlatButton label="ADD ETHER"
-                            onClick={showModal}
+                            onClick={this.showModal}
                             icon={<FontIcon className="fa fa-qrcode" />}/>
-                <FlatButton label={t('show.send')}
+                <FlatButton label="SEND"
                             onClick={createTx}
                             icon={<FontIcon className="fa fa-arrow-circle-o-right" />}/>
             </CardActions>
-
+            {/*
+                TODO: Replace with @whilei's ADD ETHER modal
+            */}
+            <Dialog
+              title="ADD ETHER!!"
+              modal={false}
+              open={this.state.showModal}
+              onRequestClose={this.closeModal}
+            />
         </Card>
-    );
-});
+        );
+    }
+}
 
-Render.propTypes = {
+AccountRender.propTypes = {
     account: PropTypes.object.isRequired,
     createTx: PropTypes.func.isRequired,
-    editAccount: PropTypes.func.isRequired,
+    goBack: PropTypes.func.isRequired,
 };
 
 const AccountShow = connect(
@@ -96,10 +136,13 @@ const AccountShow = connect(
             log.debug('create tx from', account.get('id'));
             dispatch(gotoScreen('create-tx', account));
         },
+        goBack: () => {
+            dispatch(gotoScreen('home'));
+        },
         editAccount: () => {
 
         }
     })
-)(Render);
+)(AccountRender);
 
 export default AccountShow;
