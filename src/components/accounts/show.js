@@ -57,6 +57,11 @@ class AccountRender extends React.Component {
         const value = account.get('balance') ? account.get('balance').getEther() : '?';
         const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
 
+        const styles = {
+                sendButton: {
+                    color: 'green',
+                },
+        };
 
         return (
         <Card style={cardSpace}>
@@ -96,7 +101,8 @@ class AccountRender extends React.Component {
                 <AccountPopup account={account}/>
                 <FlatButton label="SEND"
                             onClick={createTx}
-                            icon={<FontIcon className="fa fa-arrow-circle-o-right" />}/>
+                            icon={<FontIcon className="fa fa-arrow-circle-o-right" />}
+                            style={styles.sendButton} />
             </CardActions>
         </Card>
         );
