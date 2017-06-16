@@ -71,7 +71,7 @@ export class Wei extends Immutable.Record({ val: ZERO }) {
             r = 0;
         }
         if (typeof decimals === 'undefined' || decimals === null) {
-            decimals = 5;
+            decimals = 2;
         }
         const rate = new BigNumber(r.toString());
         return this.val.dividedBy(ETHER).mul(rate).toFixed(decimals);
