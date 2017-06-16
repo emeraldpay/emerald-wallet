@@ -19,7 +19,7 @@ const packOpts = {
     '^/.idea($|/)',
     '^/node_modules($|/)',
   ]
-}
+};
 
 // Run webpack to compile main.js
 webpack(webpackConfig, (err, stats) => {
@@ -37,7 +37,7 @@ webpack(webpackConfig, (err, stats) => {
 
 
 function pack(platform, arch) {
-  console.log(`Start packaging for ${platform}`)
+  console.log(`Start packaging for ${platform}`);
   const opts = Object.assign({}, packOpts, {
     platform: platform,
     arch: arch,

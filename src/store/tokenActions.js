@@ -180,7 +180,7 @@ export function traceCall(accountId, to, gas, gasPrice, value, data) {
             gasPrice,
             value,
             data,
-        }];
+        }, 'latest'];
         return rpc.call('eth_traceCall', params);
     };
 }

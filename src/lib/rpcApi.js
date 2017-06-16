@@ -1,13 +1,26 @@
 import 'isomorphic-fetch';
 
-const url = 'http://localhost:1920';
 const baseHeaders = {
     'Content-Type': 'application/json',
 };
 
+const emeraldMethods = [
+    "eth_sendTransaction",
+    "eth_accounts"
+];
+
 export class RpcApi {
-    constructor() {
+    constructor(urlEmerald, urlGeth) {
         this.requestSeq = 1;
+        this.urlEmerald = urlEmerald || 'http://localhost:1920';
+        this.urlGeth = urlGeth || 'http://localhost:8545';
+    }
+
+    static routeToEmerald(method) {
+        if (method.startsWith('emerald_') || method.startsWith('personal_') || method.startsWith('backend_')) {
+            return true
+        }
+        return emeraldMethods.indexOf(method) >= 0
     }
 
     /**
@@ -38,6 +51,7 @@ export class RpcApi {
             params,
             id: this.requestSeq++,
         };
+        const url = RpcApi.routeToEmerald(name) ? this.urlEmerald : this.urlGeth;
         return fetch(url, {
             method: 'POST',
             headers: Object.assign(baseHeaders, headers),
