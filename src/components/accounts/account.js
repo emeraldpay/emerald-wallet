@@ -23,8 +23,10 @@ const Render = ({ account, openAccount }) => (
             <span style={link}>
                 {account.get('balance') ? account.get('balance').getEther() : '?'} Ether
             </span>
+        </TableRowColumn>
+        <TableRowColumn>
             <span>
-                <AccountPopup account={account}/>
+            <AccountPopup account={account}/>
             </span>
         </TableRowColumn>
     </TableRow>

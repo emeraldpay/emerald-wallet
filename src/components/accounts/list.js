@@ -19,6 +19,7 @@ const Render = translate('accounts')(({ t, accounts, createAccount }) => {
                 <TableHeaderColumn style={tables.shortStyle}>Account</TableHeaderColumn>
                 <TableHeaderColumn style={tables.wideStyle}>Address</TableHeaderColumn>
                 <TableHeaderColumn style={tables.shortStyle}>Balance</TableHeaderColumn>
+                <TableHeaderColumn style={tables.shortStyle}>Add Ether</TableHeaderColumn>
             </TableRow>
         </TableHeader>
         <TableBody displayRowCheckbox={false}>
