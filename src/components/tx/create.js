@@ -25,7 +25,7 @@ const traceValidate = (data, dispatch) => {
     const resolveValidate = (response, resolve) => {
         let errors = null;
         dataObj.data = (((response.trace || [])[0] || {}).action || {}).input;
-        let gasEst; 
+        let gasEst;
         if (response.gas) gasEst = response.gas;
         else {
             gasEst = estimateGasFromTrace(dataObj, response);
@@ -147,7 +147,7 @@ const CreateTx = connect(
             dispatch(change('createTx', 'to', item.props.value));
         },
         cancel: () => {
-            dispatch(gotoScreen('home'));
+            dispatch(gotoScreen('account', ownProps.account));
         },
     })
 )(CreateTxForm);
