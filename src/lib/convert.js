@@ -44,6 +44,11 @@ export function toDuration(timestamp) {
     return dur;
 }
 
+//TODO: Handle locales
+export function toDate(timestamp) {
+    return new Date(timestamp).toJSON(); 
+}
+
 export function parseString(hex) {
     if (typeof hex !== 'string') {
         return null;
@@ -128,6 +133,7 @@ export function estimateGasFromTrace(dataObj, trace) {
             estGas = fromState.sub(toState).sub(value);
             log.debug('Start balance: ' + mweiToWei(fromState).toString(10));
             log.debug('End balance: ' + mweiToWei(toState).toString(10));
+            log.debug(fromState.sub(toState).toString(10))
         }
         if (estGas.lt(0) || estGas.eq(gasLimit)) estGas = null;
     }
