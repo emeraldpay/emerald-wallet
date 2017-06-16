@@ -141,6 +141,7 @@ export function importWallet(wallet, name, description) {
                             name,
                             description,
                         });
+                        dispatch(loadAccountBalance(result));
                         resolve(result);
                     } else {
                         reject({error: result});

@@ -45,7 +45,6 @@ class ImportRender extends React.Component {
         const { submitSucceeded, invalid, pristine, submitting, cancel } = this.props;
 
         const p = this.state.accountId && accounts.findKey((acc) => acc.get('id') === this.state.accountId);
-        console.log(p)
         const account = p && (p >= 0) && accounts.get(p);
 
         return (
