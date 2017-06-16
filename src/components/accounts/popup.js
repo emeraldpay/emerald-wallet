@@ -162,7 +162,7 @@ const AccountPopup = connect(
         const accounts = state.accounts.get('accounts');
         const pos = accounts.findKey((acc) => acc.get('id') === ownProps.account.get('id'));
         const rates = state.accounts.get('rates');
-        const gasPrice = new Wei(21000000000); // Rough estimate tx gasprice; 21000 * 10^6
+        const gasPrice = new Wei(21338000000); // Rough estimate tx gasprice; 21000 * 10^6
         return {
             account: (accounts.get(pos) || Immutable.Map({})),
             rates,
