@@ -6,7 +6,7 @@ import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import Avatar from 'material-ui/Avatar';
-import { cardSpace, tables } from 'lib/styles';
+import { cardSpace } from 'lib/styles';
 import Immutable from 'immutable';
 import { translate } from 'react-i18next';
 import { gotoScreen } from 'store/screenActions';
@@ -16,10 +16,10 @@ const Render = translate('accounts')(({ t, accounts, createAccount }) => {
     const table = <Table selectable={false}>
         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
             <TableRow>
-                <TableHeaderColumn style={tables.shortStyle}>Account</TableHeaderColumn>
-                <TableHeaderColumn style={tables.wideStyle}>Address</TableHeaderColumn>
-                <TableHeaderColumn style={tables.shortStyle}>Balance</TableHeaderColumn>
-                <TableHeaderColumn style={tables.shortStyle}>Add Ether</TableHeaderColumn>
+                <TableHeaderColumn xs={3}>Account</TableHeaderColumn>
+                <TableHeaderColumn xs={5}>Address</TableHeaderColumn>
+                <TableHeaderColumn xs={3}>Balance</TableHeaderColumn>
+                <TableHeaderColumn xs={1}>Add Ether</TableHeaderColumn>
             </TableRow>
         </TableHeader>
         <TableBody displayRowCheckbox={false}>
