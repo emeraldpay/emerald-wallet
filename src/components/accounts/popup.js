@@ -10,7 +10,7 @@ import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { DescriptionList, DescriptionTitle, DescriptionData } from 'elements/dl';
-import { cardSpace } from 'lib/styles';
+import { align, cardSpace } from 'lib/styles';
 
 /**
  * Dialog with action buttons. The actions are passed in as an array of React objects,
@@ -36,7 +36,7 @@ class AccountPopupRender extends React.Component {
   };
 
   render() {
-    const { account } = this.props;
+    const { account, rates } = this.props;
     const styles = {
         closeButton: {
             float: 'right',
@@ -44,6 +44,21 @@ class AccountPopupRender extends React.Component {
         openButton: {
             display: 'inline-block',
         },
+        qr: {
+            marginLeft: 'auto',
+            marginRight: 'auto',
+        },
+        usageText: {
+            color: 'gray',
+        },
+        usageWarning: {
+            color: 'crimson',
+        },
+        accountId: {
+            overflow: 'scroll',
+            backgroundColor: 'whitesmoke',
+            padding: '0.1rem 0.3rem',
+        }
     };
 
     return (
@@ -74,17 +89,38 @@ class AccountPopupRender extends React.Component {
             </Col>
         </Row>
         <Row>
-            <Col xs={8}>
+            <Col xs={6}>
+                <p>Top up your wallet with BTC</p>
                 <DescriptionList>
                     {account.get('description') && <div>
     -                            <DescriptionData>{account.get('description')}</DescriptionData>
     -                            </div>}
-                    <DescriptionData>{account.get('id')}</DescriptionData>
+                    <DescriptionData>
+                        <code style={styles.accountId}>
+                        {account.get('id')}
+                        </code>
+                    </DescriptionData>
                 </DescriptionList>
 
+                <p>Exchange Rate</p>
+                <p>
+                    1 ETC ~ {rates.get('btc')} BTC
+                </p>
+
+                <p style={styles.usageText}>
+                    Share your wallet address and use it to top up your wallet with BTC from any other service.
+                    All BTC will be converted to ETC. It may take some time for your coins be deposited.
+                </p>
+
+                <p>Minimal amount</p>
+                <p>0.00055 BTC</p>
+
+                <p style={styles.usageWarning}>
+                    Please note than an amount is less than the minimum, it is mostly non-refundable.
+                </p>
             </Col>
-            <Col xs={4} md={2} mdOffset={2}>
-                 <QRCode value={account.get('id')} />
+            <Col xs={6} style={align.center}>
+                 <QRCode value={account.get('id')} size={256} />
              </Col>
         </Row>
         </Dialog>
@@ -99,11 +135,12 @@ AccountPopupRender.propTypes = {
 
 const AccountPopup = connect(
     (state, ownProps) => {
-        // This seems ugly, but is the only way I've gotten it to work so far.
         const accounts = state.accounts.get('accounts');
         const pos = accounts.findKey((acc) => acc.get('id') === ownProps.account.get('id'));
+        const rates = state.accounts.get('rates');
         return {
             account: (accounts.get(pos) || Immutable.Map({})),
+            rates,
         };
     },
     (dispatch, ownProps) => ({})
