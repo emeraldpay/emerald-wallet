@@ -2,7 +2,6 @@ import { rpc } from 'lib/rpc';
 import { getRates } from 'lib/marketApi';
 import { address } from 'lib/validators';
 import { loadTokenBalanceOf } from './tokenActions';
-import { addAddress } from './addressActions';
 
 export function loadAccountBalance(accountId) {
     return (dispatch, getState) => {
