@@ -49,6 +49,8 @@ class AccountPopupRender extends React.Component {
         },
         openButton: {
             display: 'inline',
+            backgroundColor: 'dimgray',
+            color: 'white',
         },
         qr: {
             marginLeft: 'auto',
@@ -84,7 +86,7 @@ class AccountPopupRender extends React.Component {
     return (
         <div style={styles.container}>
         <FlatButton
-            label="Add Ether"
+            label="Add ETC"
             icon={<FontIcon className='fa fa-qrcode' />}
             onTouchTap={this.handleOpen}
             style={styles.openButton} />
@@ -97,7 +99,7 @@ class AccountPopupRender extends React.Component {
         >
             <Row>
                 <Col xs={11}>
-                    <h1>Add Ether</h1>
+                    <h1>Add ETC</h1>
                 </Col>
                 <Col xs={1}>
                     <FlatButton
