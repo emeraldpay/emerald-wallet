@@ -91,8 +91,6 @@ class AccountPopupRender extends React.Component {
             onTouchTap={this.handleOpen}
             style={styles.openButton} />
         <Dialog
-        //   title="Add Ether"
-        //   actions={actions}
           modal={false}
           open={this.state.open}
           onRequestClose={this.handleClose}
