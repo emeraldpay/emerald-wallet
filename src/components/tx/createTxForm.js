@@ -26,6 +26,12 @@ const Render = (props) => {
 
     return (
     <Card style={cardSpace}>
+      <CardActions>
+          <FlatButton label="ACCOUNT"
+                      primary={true}
+                      onClick={cancel}
+                      icon={<FontIcon className="fa fa-arrow-left" />}/>
+      </CardActions>
       <CardHeader
         title='Send Transaction'
         actAsExpander={false}
@@ -154,13 +160,15 @@ const Render = (props) => {
       </CardText>
 
       <CardActions>
-        <FlatButton label="Send"
-                    disabled={pristine || submitting || invalid }
-                    onClick={handleSubmit}
-                    icon={<FontIcon className="fa fa-check" />}/>
         <FlatButton label="Cancel"
                     onClick={cancel}
-                    icon={<FontIcon className="fa fa-ban" />}/>
+                    icon={<FontIcon className="fa fa-ban" />}
+                    secondary={true} />
+        <FlatButton label="Send"
+                    disabled={ pristine || submitting || invalid }
+                    onClick={handleSubmit}
+                    icon={<FontIcon className="fa fa-check" />}
+                     />
       </CardActions>
     </Card>
     );
