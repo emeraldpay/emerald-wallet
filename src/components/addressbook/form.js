@@ -27,6 +27,7 @@ const Render = ({ handleSubmit, blockAddress, invalid, pristine, submitting, can
                 <FlatButton label="Save" type="submit"
                             disabled={pristine || submitting || invalid } />
                 <FlatButton label="Cancel"
+                            secondary={true}
                             onClick={cancel} />
             </form>
         </CardText>

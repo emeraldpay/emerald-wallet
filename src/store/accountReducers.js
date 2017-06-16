@@ -149,7 +149,7 @@ function createTx(data) {
     }
     if (typeof data.gas === 'string' || typeof data.gas === 'number') {
         tx = tx.set('gas', toNumber(data.gas));
-    }    
+    }
     return tx;
 }
 

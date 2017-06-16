@@ -46,11 +46,13 @@
   "dependencies": {
     "bignumber.js": "4.0.0",
     "classnames": "^2.1.2",
+    "copy-to-clipboard": "^3.0.6",
     "eslint-plugin-react": "^6.10.3",
     "ethereumjs-abi": "0.6.4",
     "ethereumjs-util": "5.1.1",
     "fbjs": "0.8.9",
     "flexboxgrid": "^6.3.0",
+    "follow-redirects": "1.2.3",
     "font-awesome": "4.7.0",
     "i18next": "^8.3.0",
     "i18next-browser-languagedetector": "^1.0.1",
@@ -59,6 +61,7 @@
     "i18next-xhr-backend": "^1.4.1",
     "immutable": "3.8.1",
     "isomorphic-fetch": "^2.2.1",
+    "kbpgp": "2.0.72",
     "lib": "^2.2.5",
     "loglevel": "1.4.0",
     "material-ui": "^0.16.6",
@@ -83,9 +86,7 @@
     "redux-thunk": "2.2.0",
     "roboto-fontface": "0.7.0",
     "store": "^2.0.4",
-    "unzip2": "0.2.5",
-    "follow-redirects": "1.2.3",
-    "kbpgp": "2.0.72"
+    "unzip2": "0.2.5"
   },
   "devDependencies": {
     "@elastic/webpack-directory-name-as-main": "2.0.2",

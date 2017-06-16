@@ -2,7 +2,6 @@ import { rpc } from 'lib/rpc';
 import { getRates } from 'lib/marketApi';
 import { address } from 'lib/validators';
 import { loadTokenBalanceOf } from './tokenActions';
-import { addAddress } from './addressActions';
 
 export function loadAccountBalance(accountId) {
     return (dispatch, getState) => {
@@ -79,7 +78,7 @@ export function updateAccount(address, name, description) {
         rpc.call('emerald_updateAccounts', [{
             name,
             description,
-            address
+            address,
         }]).then((result) => {
             dispatch({
                 type: 'ACCOUNT/UPDATE_ACCOUNT',

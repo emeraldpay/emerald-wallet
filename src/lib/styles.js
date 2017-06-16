@@ -8,8 +8,8 @@ export const link = {
 };
 
 export const tables = {
-    shortStyle: { width: 12 },
-    wideStyle: { width: 120 },
+    shortStyle: { },
+    wideStyle: { },
 };
 
 export const code = {

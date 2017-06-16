@@ -41,7 +41,8 @@ const Render = translate("accounts")(({ t, handleSubmit, submitting, generate, i
         <CardActions>
             <FlatButton label={t("common:cancel")}
                         onClick={cancel}
-                        icon={<FontIcon className="fa fa-ban" />}/>
+                        icon={<FontIcon className="fa fa-ban" />}
+                        secondary={true} />
         </CardActions>
     </Card>
 ));
