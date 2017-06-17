@@ -40,7 +40,7 @@ const Render = (props) => {
 
       <CardText expandable={false}>
         <Row>
-          <Col xs={12} md={6}>
+          <Col xs={12} md={8}>
             <Row>
               <Col xs={12}>
                 <Field name="from"
@@ -71,18 +71,23 @@ const Render = (props) => {
               </Col>
             </Row>
             <Row>
-              <Col xs={12}>
+              <Col xs={11}>
                 <Field name="to"
                        component={TextField}
                        floatingLabelText="Target Address"
                        validate={[required, address]}
+                       fullWidth={true}
                 />
+              </Col>
+              <Col xs={1}>
                 <IconMenu
                     iconButtonElement={<IconButton><ImportContacts /></IconButton>}
                     onItemTouchTap={handleSelect}
                 >
                 {accounts.map((account) =>
-                  <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
+                  <MenuItem key={account.get('id')}
+                    value={account.get('id')}
+                    primaryText={account.get('name') ? account.get('name') : account.get('id')} />
                 )}
                 <Divider />
                 {addressBook.map((account) =>
@@ -127,7 +132,7 @@ const Render = (props) => {
             </Row>
           </Col>
 
-          <Col xs={12} md={6}>
+          <Col xs={12} md={4}>
             <Row>
               <Col xs={12}>
                 <Field name="gasPrice"
