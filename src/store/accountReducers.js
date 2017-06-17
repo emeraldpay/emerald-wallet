@@ -1,12 +1,13 @@
 import Immutable from 'immutable';
-import { Wei, TokenUnits } from '../lib/types';
+import log from 'loglevel';
+import { Wei, TokenUnits, GASPRICE_ESTIMATE } from '../lib/types';
 import { toNumber } from '../lib/convert';
 
 const initial = Immutable.fromJS({
     accounts: [],
     trackedTransactions: [],
     loading: false,
-    gasPrice: new Wei(23000000000),
+    gasPrice: GASPRICE_ESTIMATE,
     rates: {},
 });
 

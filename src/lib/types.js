@@ -81,6 +81,9 @@ export class Wei extends Immutable.Record({ val: ZERO }) {
     }
 }
 
+// TODO: get from gastracker api?
+export const GASPRICE_ESTIMATE = new Wei(23000000000);
+
 export class TokenUnits extends Immutable.Record({ val: ZERO,
     divisor: ONE }) {
     constructor(val, decimal) {

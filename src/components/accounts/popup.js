@@ -11,8 +11,8 @@ import FontIcon from 'material-ui/FontIcon';
 import copy from 'copy-to-clipboard';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { DescriptionList, DescriptionTitle, DescriptionData } from 'elements/dl';
-import { link, align, cardSpace } from 'lib/styles';
-import { Wei } from 'lib/types';
+import { link, align, cardSpace, copyIcon } from 'lib/styles';
+import { Wei, GASPRICE_ESTIMATE } from 'lib/types';
 
 /**
  * Dialog with action buttons. The actions are passed in as an array of React objects,
@@ -71,12 +71,6 @@ class AccountPopupRender extends React.Component {
             display: 'inline',
             fontSize: '0.8rem', /* to better ensure fit for all screen sizes */
         },
-        copyIcon: {
-            display: 'inline',
-            fontSize: '0.9rem',
-            color: 'darkgray',
-            marginLeft: '0.3rem',
-        },
     };
 
     function copyAccountToClipBoard() {
@@ -120,7 +114,7 @@ class AccountPopupRender extends React.Component {
                             <code style={styles.accountId}>
                             {account.get('id')}
                             </code>
-                            <FontIcon className='fa fa-clone' onClick={copyAccountToClipBoard} style={Object.assign({}, link, styles.copyIcon)} />
+                            <FontIcon className='fa fa-clone' onClick={copyAccountToClipBoard} style={copyIcon} />
                             </span>
                         </DescriptionData>
                     </DescriptionList>
@@ -162,11 +156,10 @@ const AccountPopup = connect(
         const accounts = state.accounts.get('accounts');
         const pos = accounts.findKey((acc) => acc.get('id') === ownProps.account.get('id'));
         const rates = state.accounts.get('rates');
-        const gasPrice = new Wei(21338000000); // Rough estimate tx gasprice; 21000 * 10^6
         return {
             account: (accounts.get(pos) || Immutable.Map({})),
             rates,
-            gasPrice,
+            gasPrice: GASPRICE_ESTIMATE,
         };
     },
     (dispatch, ownProps) => ({})

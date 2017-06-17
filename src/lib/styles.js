@@ -24,6 +24,15 @@ export const code = {
     maxHeight: '250px',
 };
 
+export const copyIcon = {
+    display: 'inline',
+    fontSize: '0.9rem',
+    color: 'darkgray',
+    marginLeft: '0.3rem',
+    marginRight: '0.3rem',
+    cursor: 'pointer',
+};
+
 export const align = {
     left: { textAlign: 'left' },
     center: { textAlign: 'center'},
