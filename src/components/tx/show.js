@@ -96,10 +96,12 @@ const TransactionShow = connect(
            (acct) => acct.get('id') === ownProps.accountId
         );
         const rates = state.accounts.get('rates');
+        const Tx = state.accounts.get('trackedTransactions').find(
+            (tx) => tx.get('hash') === ownProps.hash
+        );
         return {
-            transaction: state.accounts.get('trackedTransactions').find(
-                (tx) => tx.get('hash') === ownProps.hash
-            ),
+            hash: Tx.get('hash'),
+            transaction: Tx,
             account: (account === undefined) ? undefined : account,
             accounts,
             rates,

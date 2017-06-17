@@ -1,7 +1,9 @@
+import log from 'loglevel';
 import { rpc } from 'lib/rpc';
 import { getRates } from 'lib/marketApi';
 import { address } from 'lib/validators';
 import { loadTokenBalanceOf } from './tokenActions';
+
 
 export function loadAccountBalance(accountId) {
     return (dispatch, getState) => {
@@ -167,26 +169,6 @@ export function importWallet(wallet, name, description) {
     };
 }
 
-export function refreshTransaction(hash) {
-    return (dispatch) =>
-        rpc.call('eth_getTransactionByHash', [hash]).then((result) => {
-            if (typeof result === 'object') {
-                dispatch({
-                    type: 'ACCOUNT/UPDATE_TX',
-                    tx: result,
-                });
-                /** TODO: Check for input data **/
-                if ((result.creates !== undefined) && (address(result.creates) === undefined)) {
-                    dispatch({
-                        type: 'CONTRACT/UPDATE_CONTRACT',
-                        tx: result,
-                        address: result.creates,
-                    });
-                }
-            }
-        });
-}
-
 export function loadPendingTransactions() {
     return (dispatch, getState) =>
         rpc.call('eth_getBlockByNumber', ['pending', true])
@@ -219,11 +201,32 @@ export function loadPendingTransactions() {
             });
 }
 
+export function refreshTransaction(hash) {
+    return (dispatch) =>
+        rpc.call('eth_getTransactionByHash', [hash]).then((result) => {
+            if (typeof result === 'object') {
+                dispatch({
+                    type: 'ACCOUNT/UPDATE_TX',
+                    tx: result,
+                });
+                /** TODO: Check for input data **/
+                if ((result.creates !== undefined) && (address(result.creates) === undefined)) {
+                    dispatch({
+                        type: 'CONTRACT/UPDATE_CONTRACT',
+                        tx: result,
+                        address: result.creates,
+                    });
+                }
+            }
+        });
+}
+
 export function refreshTrackedTransactions() {
-    return (dispatch, getState) =>
+    return (dispatch, getState) => {
         getState().accounts.get('trackedTransactions').map(
             (tx) => dispatch(refreshTransaction(tx.get('hash')))
         );
+    };
 }
 
 export function trackTx(tx) {

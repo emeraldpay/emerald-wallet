@@ -134,6 +134,24 @@ function onAddAccount(state, action) {
     return state;
 }
 
+function onPendingBalance(state, action) {
+    if (action.type === 'ACCOUNT/PENDING_BALANCE') {
+        let bal;
+        if (action.to) {
+            return updateAccount(state, action.to, (acc) => {
+                bal = acc.get('balance').plus(new Wei(action.value));
+                return acc.set('balancePending', bal);
+            });
+        } else if (action.from) {
+            return updateAccount(state, action.from, (acc) => {
+                bal = acc.get('balance').sub(new Wei(action.value));
+                return acc.set('balancePending', bal);
+            });
+        }
+    }
+    return state;
+}
+
 function createTx(data) {
     let tx = initialTx.merge({
         hash: data.hash,
@@ -151,25 +169,17 @@ function createTx(data) {
     if (typeof data.gas === 'string' || typeof data.gas === 'number') {
         tx = tx.set('gas', toNumber(data.gas));
     }
-    return tx;
-}
-
-function onPendingBalance(state, action) {
-    if (action.type === 'ACCOUNT/PENDING_BALANCE') {
-        let bal;
-        if (action.to) {
-            return updateAccount(state, action.to, (acc) => {
-                bal = acc.get('balance').plus(new Wei(action.value));
-                return acc.set('balancePending', bal);
-            });
-        } else if (action.from) {
-            return updateAccount(state, action.from, (acc) => {
-                bal = acc.get('balance').sub(new Wei(action.value));
-                return acc.set('balancePending', bal);
-            });
-        }
+    // If is not pending, fill in finalized attributes.
+    if (typeof data.blockNumber !== 'undefined' && data.blockNumber !== null) {
+        tx = tx.merge({
+            blockHash: data.blockHash,
+            blockNumber: data.blockNumber,
+            nonce: toNumber(data.nonce),
+            replayProtected: data.replayProtected,
+            input: data.input,
+        });
     }
-    return state;
+    return tx;
 }
 
 function onLoadPending(state, action) {
@@ -196,8 +206,7 @@ function onUpdateTx(state, action) {
         return state.update('trackedTransactions', (txes) => {
             const pos = txes.findKey((tx) => tx.get('hash') === action.tx.hash);
             if (pos >= 0) {
-                const data = createTx(action.tx);
-                txes = txes.set(pos, data);
+                txes = txes.set(pos, createTx(action.tx));
             }
             return txes;
         });

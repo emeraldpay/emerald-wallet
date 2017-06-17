@@ -29,12 +29,17 @@ const Render = ({ tx, openTx, accounts, openAccount, refreshTx }) => {
         <TableRow selectable={false}>
             <TableRowColumn style={tables.shortStyle}>
                     <span onClick={openTx} style={link}>
-                        {tx.get('value') ? tx.get('value').getEther() : '?'} Ether
+                        {tx.get('blockNumber') ? tx.get('blockHash') : 'PENDING' }
+                    </span>
+            </TableRowColumn>
+            <TableRowColumn style={tables.wideStyle}>
+                    <span onClick={openTx} style={link}>
+                        {tx.get('hash')}
                     </span>
             </TableRowColumn>
             <TableRowColumn style={tables.shortStyle}>
                     <span onClick={openTx} style={link}>
-                        {tx.get('timestamp') ? toDuration(tx.get('timestamp')) : 'pending'}
+                        {tx.get('value') ? tx.get('value').getEther() : '?'} Ether
                     </span>
             </TableRowColumn>
             <TableRowColumn style={tables.wideStyle}>

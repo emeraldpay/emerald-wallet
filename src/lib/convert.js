@@ -10,6 +10,9 @@ export function toNumber(quantity) {
     if (quantity === '0x') {
         return 0;
     }
+    if (typeof quantity !== 'string') {
+        quantity = quantity.toString();
+    }
     return parseInt(quantity.substring(2), 16);
 }
 
@@ -46,7 +49,7 @@ export function toDuration(timestamp) {
 
 //TODO: Handle locales
 export function toDate(timestamp) {
-    return new Date(timestamp).toJSON(); 
+    return new Date(timestamp).toJSON();
 }
 
 export function parseString(hex) {
