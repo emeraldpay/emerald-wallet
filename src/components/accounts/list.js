@@ -16,10 +16,10 @@ const Render = translate('accounts')(({ t, accounts, createAccount }) => {
     const table = <Table selectable={false}>
         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
             <TableRow>
-                <TableHeaderColumn xs={3}>Account</TableHeaderColumn>
-                <TableHeaderColumn xs={5}>Address</TableHeaderColumn>
-                <TableHeaderColumn xs={3}>Balance</TableHeaderColumn>
-                <TableHeaderColumn xs={1}>Add Ether</TableHeaderColumn>
+                <TableHeaderColumn>Account</TableHeaderColumn>
+                <TableHeaderColumn>Address</TableHeaderColumn>
+                <TableHeaderColumn>Balance</TableHeaderColumn>
+                <TableHeaderColumn>Add Ether</TableHeaderColumn>
             </TableRow>
         </TableHeader>
         <TableBody displayRowCheckbox={false}>
