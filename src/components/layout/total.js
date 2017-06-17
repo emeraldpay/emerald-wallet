@@ -32,11 +32,11 @@ const Render = ({ total, fiat, currentLocaleCurrency }) => {
             <Row>
                 <Col xs={12} style={fiatSubtitle}>
                     <span style={valueDisplay}>
-                        ${renderAsCurrency(fiat.total.localized)}
+                        {renderAsCurrency(fiat.total.localized)}
                     </span>
                     &bull;
                     <span style={valueDisplay}>
-                        ${renderAsCurrency(fiat.rate.localized)} ETC/{currentLocaleCurrency.toUpperCase()}
+                        {renderAsCurrency(fiat.rate.localized)} ETC/{currentLocaleCurrency.toUpperCase()}
                     </span>
                 </Col>
             </Row>
@@ -103,7 +103,7 @@ const Total = connect(
         }
 
         return {
-            total: totalEther,
+            total: +totalEther,
             fiat,
             currentLocaleCurrency,
         };
