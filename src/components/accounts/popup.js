@@ -12,7 +12,7 @@ import copy from 'copy-to-clipboard';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { DescriptionList, DescriptionTitle, DescriptionData } from 'elements/dl';
 import { link, align, cardSpace, copyIcon } from 'lib/styles';
-import { Wei, GASPRICE_ESTIMATE } from 'lib/types';
+import { Wei } from 'lib/types';
 
 /**
  * Dialog with action buttons. The actions are passed in as an array of React objects,
@@ -158,10 +158,11 @@ const AccountPopup = connect(
         const accounts = state.accounts.get('accounts');
         const pos = accounts.findKey((acc) => acc.get('id') === ownProps.account.get('id'));
         const rates = state.accounts.get('rates');
+        const gasPrice = state.accounts.get('gasPrice');
         return {
             account: (accounts.get(pos) || Immutable.Map({})),
             rates,
-            gasPrice: GASPRICE_ESTIMATE,
+            gasPrice,
         };
     },
     (dispatch, ownProps) => ({})
