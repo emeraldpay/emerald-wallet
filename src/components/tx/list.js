@@ -64,10 +64,10 @@ Render.propTypes = {
 
 const TransactionsList = connect(
     (state, ownProps) => {
-        const transactions = state.accounts.get('trackedTransactions', Immutable.List());
-        // log.debug('transactions', transactions, (typeof transactions));
+        const transactionsAccounts = state.accounts.get('trackedTransactions', Immutable.List());
+        const txs = ownProps.transactions || transactionsAccounts;
         return {
-            transactions,
+            transactions: txs.reverse(),
         };
     },
     (dispatch, ownProps) => ({
