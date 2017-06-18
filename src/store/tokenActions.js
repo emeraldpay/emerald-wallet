@@ -37,7 +37,7 @@ const TokenAbi = [
         ];
 
 function getFunction(name) {
-    return Immutable.fromJS( 
+    return Immutable.fromJS(
         TokenAbi.find((f) => (f.name === name))
         );
 }
@@ -136,10 +136,10 @@ export function addToken(address, name) {
 function createTokenTransaction(token, to, value, isTransfer) {
     const address = getNakedAddress(to);
     const numTokens = fromTokens(value, token.get('decimals'));
-    if (isTransfer === 'true') 
+    if (isTransfer === 'true')
         return functionToData(getFunction('transfer'),
             { _to: address, _value: numTokens });
-    else 
+    else
         return functionToData(getFunction('approve'),
             { _spender: address, _amount: numTokens });
 }

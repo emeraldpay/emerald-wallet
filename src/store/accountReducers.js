@@ -1,4 +1,5 @@
 import Immutable from 'immutable';
+import log from 'loglevel';
 import { Wei, TokenUnits } from '../lib/types';
 import { toNumber } from '../lib/convert';
 
@@ -133,6 +134,24 @@ function onAddAccount(state, action) {
     return state;
 }
 
+function onPendingBalance(state, action) {
+    if (action.type === 'ACCOUNT/PENDING_BALANCE') {
+        let bal;
+        if (action.to) {
+            return updateAccount(state, action.to, (acc) => {
+                bal = acc.get('balance').plus(new Wei(action.value));
+                return acc.set('balancePending', bal);
+            });
+        } else if (action.from) {
+            return updateAccount(state, action.from, (acc) => {
+                bal = acc.get('balance').sub(new Wei(action.value));
+                return acc.set('balancePending', bal);
+            });
+        }
+    }
+    return state;
+}
+
 function createTx(data) {
     let tx = initialTx.merge({
         hash: data.hash,
@@ -150,25 +169,17 @@ function createTx(data) {
     if (typeof data.gas === 'string' || typeof data.gas === 'number') {
         tx = tx.set('gas', toNumber(data.gas));
     }
-    return tx;
-}
-
-function onPendingBalance(state, action) {
-    if (action.type === 'ACCOUNT/PENDING_BALANCE') {
-        let bal;
-        if (action.to) {
-            return updateAccount(state, action.to, (acc) => {
-                bal = acc.get('balance').plus(new Wei(action.value));
-                return acc.set('balancePending', bal);
-            });
-        } else if (action.from) {
-            return updateAccount(state, action.from, (acc) => {
-                bal = acc.get('balance').sub(new Wei(action.value));
-                return acc.set('balancePending', bal);
-            });
-        }
+    // If is not pending, fill in finalized attributes.
+    if (typeof data.blockNumber !== 'undefined' && data.blockNumber !== null) {
+        tx = tx.merge({
+            blockHash: data.blockHash,
+            blockNumber: data.blockNumber,
+            nonce: toNumber(data.nonce),
+            replayProtected: data.replayProtected,
+            input: data.input,
+        });
     }
-    return state;
+    return tx;
 }
 
 function onLoadPending(state, action) {
@@ -195,9 +206,14 @@ function onUpdateTx(state, action) {
         return state.update('trackedTransactions', (txes) => {
             const pos = txes.findKey((tx) => tx.get('hash') === action.tx.hash);
             if (pos >= 0) {
-                const data = createTx(action.tx);
-                txes = txes.set(pos, data);
+                txes = txes.set(pos, createTx(action.tx));
             }
+            // It seems kind of sloppy to store whole txs, when all we
+            // really need is hashes. But even if a pending transaction is stored
+            // and program closed, the interval-ized ACCOUNT/UPDATE_TX will refresh
+            // the data via the RPCAPI. So there is not much to lose except a couple of
+            // kilobytes.
+            localStorage.setItem('trackedTransactions', JSON.stringify(txes.toJS()));
             return txes;
         });
     }
@@ -218,6 +234,23 @@ function onExchangeRates(state, action) {
     return state;
 }
 
+function onLoadStoredTransactions(state, action) {
+    if (action.type === 'ACCOUNT/LOAD_STORED_TXS') {
+        let txes = state.get('trackedTransactions');
+        for (const tx of action.transactions) {
+            // In case of dupe pending txs.
+            const pos = txes.findKey((Tx) => Tx.get('hash') === tx.hash);
+            if (pos >= 0) {
+                txes = txes.set(pos, createTx(tx));
+            } else {
+                txes = txes.push(createTx(tx));
+            }
+        }
+        return state.set('trackedTransactions', Immutable.fromJS(txes));
+    }
+    return state;
+}
+
 export default function accountsReducers(state, action) {
     state = state || initial;
     state = onLoading(state, action);
@@ -233,5 +266,6 @@ export default function accountsReducers(state, action) {
     state = onLoadPending(state, action);
     state = onPendingBalance(state, action);
     state = onExchangeRates(state, action);
+    state = onLoadStoredTransactions(state, action);
     return state;
 }

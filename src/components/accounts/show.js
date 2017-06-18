@@ -1,4 +1,5 @@
 import React from 'react';
+import Immutable from 'immutable'
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Card, CardActions, CardText } from 'material-ui/Card';
@@ -15,6 +16,7 @@ import { gotoScreen } from 'store/screenActions';
 import { updateAccount } from 'store/accountActions';
 import AccountEdit from './edit';
 import AccountPopup from './popup';
+import TransactionsList from '../tx/list';
 
 const TokenRow = ({ token }) => {
     const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0';
@@ -53,7 +55,7 @@ class AccountRender extends React.Component {
     }
 
     render() {
-        const { account, rates, createTx, goBack } = this.props;
+        const { account, rates, createTx, goBack, transactions } = this.props;
         const value = account.get('balance') ? account.get('balance').getEther() : '?';
         const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
 
@@ -64,6 +66,7 @@ class AccountRender extends React.Component {
         };
 
         return (
+        <div>
         <Card style={cardSpace}>
             <CardActions>
                 <FlatButton label="DASHBOARD"
@@ -105,6 +108,9 @@ class AccountRender extends React.Component {
                             style={styles.sendButton} />
             </CardActions>
         </Card>
+
+        <TransactionsList transactions={transactions}/>
+        </div>
         );
     }
 }
@@ -113,12 +119,21 @@ AccountRender.propTypes = {
     account: PropTypes.object.isRequired,
     createTx: PropTypes.func.isRequired,
     goBack: PropTypes.func.isRequired,
+    transactions: PropTypes.object.isRequired,
 };
 
 const AccountShow = connect(
     (state, ownProps) => {
+
         const accounts = state.accounts.get('accounts');
         const pos = accounts.findKey((acc) => acc.get('id') === ownProps.account.get('id'));
+        const account = (accounts.get(pos) || Immutable.Map({}));
+        let transactions = Immutable.List([]);
+        if (account.get('id')) {
+            transactions = state.accounts.get('trackedTransactions').filter((t) =>
+                (account.get('id') === t.get('to') || account.get('id') === t.get('from'))
+            )
+        }
         const rates = state.accounts.get('rates');
         const balance = ownProps.account.get('balance');
         let fiat = {};
@@ -133,7 +148,8 @@ const AccountShow = connect(
         return {
             fiat,
             rates,
-            account: (accounts.get(pos) || Immutable.Map({})),
+            account,
+            transactions,
         };
     },
     (dispatch, ownProps) => ({

@@ -70,7 +70,7 @@ const CreateTx = connect(
     (state, ownProps) => {
         const selector = formValueSelector('createTx');
         const tokens = state.tokens.get('tokens');
-        const balance = ownProps.account.get('balance');
+        const balance = ownProps.account.get('balance').getEther(6);
         const gasPrice = state.accounts.get('gasPrice').getMwei();
         return {
             initialValues: {

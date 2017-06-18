@@ -5,6 +5,7 @@ import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'mate
 import { Card, CardHeader, CardText } from 'material-ui/Card';
 import FontIcon from 'material-ui/FontIcon';
 import Avatar from 'material-ui/Avatar';
+import log from 'loglevel';
 import { cardSpace, tables } from 'lib/styles';
 import Immutable from 'immutable';
 import Transaction from './transaction';
@@ -24,8 +25,9 @@ const Render = ({ transactions }) => {
     const table = <Table selectable={false}>
         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
             <TableRow>
+                <TableHeaderColumn style={tables.shortStyle}>Block</TableHeaderColumn>
+                <TableHeaderColumn style={tables.wideStyle}>Hash</TableHeaderColumn>
                 <TableHeaderColumn style={tables.shortStyle}>Amount</TableHeaderColumn>
-                <TableHeaderColumn style={tables.shortStyle}>Date</TableHeaderColumn>
                 <TableHeaderColumn style={tables.wideStyle}>From</TableHeaderColumn>
                 <TableHeaderColumn style={tables.wideStyle}>To</TableHeaderColumn>
                 <TableHeaderColumn style={tables.shortStyle}></TableHeaderColumn>
@@ -57,14 +59,15 @@ const Render = ({ transactions }) => {
 };
 
 Render.propTypes = {
-    transactions: PropTypes.array.isRequired,
+    transactions: PropTypes.object.isRequired,
 };
 
 const TransactionsList = connect(
     (state, ownProps) => {
-        const transactions = state.accounts.get('trackedTransactions', Immutable.List());
+        const transactionsAccounts = state.accounts.get('trackedTransactions', Immutable.List());
+        const txs = ownProps.transactions || transactionsAccounts;
         return {
-            transactions,
+            transactions: txs.reverse(),
         };
     },
     (dispatch, ownProps) => ({

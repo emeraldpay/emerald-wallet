@@ -2,35 +2,43 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
+import FontIcon from 'material-ui/FontIcon';
 import { gotoScreen } from 'store/screenActions';
 import log from 'loglevel';
-import { link, tables } from 'lib/styles';
+import copy from 'copy-to-clipboard';
+import { link, tables, copyIcon } from 'lib/styles';
 import AccountPopup from './popup';
 
-const Render = ({ account, openAccount }) => (
+const Render = ({ account, openAccount }) => {
+    function copyAccountToClipBoard() {
+        copy(account.get('id'));
+    }
+
+    return (
     <TableRow selectable={false} >
-        <TableRowColumn xs={3} >
+        <TableRowColumn >
             <span style={link} onClick={openAccount}>
                 {account.get('name')}
             </span>
         </TableRowColumn>
-        <TableRowColumn xs={5} >
+        <TableRowColumn >
+            <FontIcon className='fa fa-clone' onClick={copyAccountToClipBoard} style={copyIcon} />
             <span style={link} onClick={openAccount}>
                 {account.get('id')}
             </span>
         </TableRowColumn>
-        <TableRowColumn xs={3}>
+        <TableRowColumn>
             <span style={link}>
                 {account.get('balance') ? account.get('balance').getEther() : '?'} Ether
             </span>
         </TableRowColumn>
-        <TableRowColumn xs={1} >
+        <TableRowColumn >
             <span>
             <AccountPopup account={account}/>
             </span>
         </TableRowColumn>
-    </TableRow>
-);
+    </TableRow>);
+};
 
 Render.propTypes = {
     account: PropTypes.object.isRequired,

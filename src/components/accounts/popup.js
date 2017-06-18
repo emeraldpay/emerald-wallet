@@ -11,7 +11,7 @@ import FontIcon from 'material-ui/FontIcon';
 import copy from 'copy-to-clipboard';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { DescriptionList, DescriptionTitle, DescriptionData } from 'elements/dl';
-import { link, align, cardSpace } from 'lib/styles';
+import { link, align, cardSpace, copyIcon } from 'lib/styles';
 import { Wei } from 'lib/types';
 
 /**
@@ -71,12 +71,6 @@ class AccountPopupRender extends React.Component {
             display: 'inline',
             fontSize: '0.8rem', /* to better ensure fit for all screen sizes */
         },
-        copyIcon: {
-            display: 'inline',
-            fontSize: '0.9rem',
-            color: 'darkgray',
-            marginLeft: '0.3rem',
-        },
     };
 
     function copyAccountToClipBoard() {
@@ -120,7 +114,7 @@ class AccountPopupRender extends React.Component {
                             <code style={styles.accountId}>
                             {account.get('id')}
                             </code>
-                            <FontIcon className='fa fa-clone' onClick={copyAccountToClipBoard} style={Object.assign({}, link, styles.copyIcon)} />
+                            <FontIcon className='fa fa-clone' onClick={copyAccountToClipBoard} style={copyIcon} />
                             </span>
                         </DescriptionData>
                     </DescriptionList>
@@ -132,7 +126,9 @@ class AccountPopupRender extends React.Component {
 
                     <p style={styles.usageText}>
                         Share your wallet address and use it to top up your wallet with BTC from any
-                        &nbsp;<a href='https://shapeshift.io' >other service</a>. All BTC will be converted to ETC.
+                        &nbsp;<a href='https://shapeshift.io' target='_blank' >other service
+                        <sup><FontIcon className='fa fa-external-link' style={{fontSize: '0.6rem'}} /></sup>
+                        </a>. All BTC will be converted to ETC.
                         It may take some time for your coins be deposited.
                     </p>
 
@@ -162,7 +158,7 @@ const AccountPopup = connect(
         const accounts = state.accounts.get('accounts');
         const pos = accounts.findKey((acc) => acc.get('id') === ownProps.account.get('id'));
         const rates = state.accounts.get('rates');
-        const gasPrice = new Wei(21338000000); // Rough estimate tx gasprice; 21000 * 10^6
+        const gasPrice = state.accounts.get('gasPrice');
         return {
             account: (accounts.get(pos) || Immutable.Map({})),
             rates,

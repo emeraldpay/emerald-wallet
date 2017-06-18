@@ -33,12 +33,15 @@ export class RpcApi {
     call(name, params, headers) {
         return new Promise((resolve, reject) => {
             this.jsonPost(name, params, headers).then((json) => {
-                if (json.result) {
+                // eth_syncing will return {.. "result": false}
+                if (json.result || json.result === false) {
                     resolve(json.result);
                 } else if (json.error) {
                     reject(json.error);
                 } else {
-                    reject(new Error(`Unknown JSON RPC response: ${json}`));
+                    reject(new Error(`Unknown JSON RPC response: ${JSON.stringify(json)},
+                     name: ${name},
+                     params: ${JSON.stringify(params)}`));
                 }
             }).catch((error) => reject(error));
         });

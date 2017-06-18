@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
 import { gotoScreen } from 'store/screenActions';
-import { refreshTransactions } from 'store/accountActions';
+import { refreshTransaction } from 'store/accountActions';
 import FontIcon from 'material-ui/FontIcon';
 import log from 'loglevel';
 import { link, tables } from 'lib/styles';
@@ -29,12 +29,17 @@ const Render = ({ tx, openTx, accounts, openAccount, refreshTx }) => {
         <TableRow selectable={false}>
             <TableRowColumn style={tables.shortStyle}>
                     <span onClick={openTx} style={link}>
-                        {tx.get('value') ? tx.get('value').getEther() : '?'} Ether
+                        {tx.get('blockNumber') ? tx.get('blockHash') : 'PENDING' }
+                    </span>
+            </TableRowColumn>
+            <TableRowColumn style={tables.wideStyle}>
+                    <span onClick={openTx} style={link}>
+                        {tx.get('hash')}
                     </span>
             </TableRowColumn>
             <TableRowColumn style={tables.shortStyle}>
                     <span onClick={openTx} style={link}>
-                        {tx.get('timestamp') ? toDuration(tx.get('timestamp')) : 'pending'}
+                        {tx.get('value') ? tx.get('value').getEther() : '?'} Ether
                     </span>
             </TableRowColumn>
             <TableRowColumn style={tables.wideStyle}>
@@ -55,9 +60,8 @@ const Render = ({ tx, openTx, accounts, openAccount, refreshTx }) => {
 };
 
 Render.propTypes = {
-    hash: PropTypes.string.isRequired,
     tx: PropTypes.object.isRequired,
-    accounts: PropTypes.array.isRequired,
+    accounts: PropTypes.object.isRequired,
     openAccount: PropTypes.func.isRequired,
     openTx: PropTypes.func.isRequired,
     refreshTx: PropTypes.func.isRequired,
@@ -84,7 +88,7 @@ const Transaction = connect(
         },
         refreshTx: () => {
             const hash = ownProps.tx.get('hash');
-            dispatch(refreshTransactions(hash));
+            dispatch(refreshTransaction(hash));
         },
     })
 )(Render);
