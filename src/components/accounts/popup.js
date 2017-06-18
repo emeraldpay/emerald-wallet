@@ -126,7 +126,9 @@ class AccountPopupRender extends React.Component {
 
                     <p style={styles.usageText}>
                         Share your wallet address and use it to top up your wallet with BTC from any
-                        &nbsp;<a href='https://shapeshift.io' >other service</a>. All BTC will be converted to ETC.
+                        &nbsp;<a href='https://shapeshift.io' target='_blank' >other service
+                        <sup><FontIcon className='fa fa-external-link' style={{fontSize: '0.6rem'}} /></sup>
+                        </a>. All BTC will be converted to ETC.
                         It may take some time for your coins be deposited.
                     </p>
 
