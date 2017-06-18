@@ -1,9 +1,8 @@
-import log from 'loglevel';
+import Immutable from 'immutable';
 import { rpc } from 'lib/rpc';
 import { getRates } from 'lib/marketApi';
 import { address } from 'lib/validators';
 import { loadTokenBalanceOf } from './tokenActions';
-
 
 export function loadAccountBalance(accountId) {
     return (dispatch, getState) => {
@@ -169,6 +168,21 @@ export function importWallet(wallet, name, description) {
     };
 }
 
+function loadStoredTransactions() {
+    return (dispatch) => {
+        if (localStorage) {
+            const storedTxs = localStorage.getItem('trackedTransactions');
+            if (storedTxs !== null) {
+                const storedTxsJSON = JSON.parse(storedTxs);
+                dispatch({
+                    type: 'ACCOUNT/LOAD_STORED_TXS',
+                    transactions: storedTxsJSON,
+                });
+            }
+        }
+    };
+}
+
 export function loadPendingTransactions() {
     return (dispatch, getState) =>
         rpc.call('eth_getBlockByNumber', ['pending', true])
@@ -182,6 +196,7 @@ export function loadPendingTransactions() {
                     type: 'ACCOUNT/PENDING_TX',
                     txList: txes,
                 });
+                dispatch(loadStoredTransactions());
                 for (const tx of txes) {
                     const disp = {
                         type: 'ACCOUNT/PENDING_BALANCE',

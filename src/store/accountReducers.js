@@ -208,6 +208,12 @@ function onUpdateTx(state, action) {
             if (pos >= 0) {
                 txes = txes.set(pos, createTx(action.tx));
             }
+            // It seems kind of sloppy to store whole txs, when all we
+            // really need is hashes. But even if a pending transaction is stored
+            // and program closed, the interval-ized ACCOUNT/UPDATE_TX will refresh
+            // the data via the RPCAPI. So there is not much to lose except a couple of
+            // kilobytes.
+            localStorage.setItem('trackedTransactions', JSON.stringify(txes.toJS()));
             return txes;
         });
     }
@@ -228,6 +234,23 @@ function onExchangeRates(state, action) {
     return state;
 }
 
+function onLoadStoredTransactions(state, action) {
+    if (action.type === 'ACCOUNT/LOAD_STORED_TXS') {
+        let txes = state.get('trackedTransactions');
+        for (const tx of action.transactions) {
+            // In case of dupe pending txs.
+            const pos = txes.findKey((Tx) => Tx.get('hash') === tx.hash);
+            if (pos >= 0) {
+                txes = txes.set(pos, createTx(tx));
+            } else {
+                txes = txes.push(createTx(tx));
+            }
+        }
+        return state.set('trackedTransactions', Immutable.fromJS(txes));
+    }
+    return state;
+}
+
 export default function accountsReducers(state, action) {
     state = state || initial;
     state = onLoading(state, action);
@@ -243,5 +266,6 @@ export default function accountsReducers(state, action) {
     state = onLoadPending(state, action);
     state = onPendingBalance(state, action);
     state = onExchangeRates(state, action);
+    state = onLoadStoredTransactions(state, action);
     return state;
 }
