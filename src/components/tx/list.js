@@ -59,7 +59,7 @@ const Render = ({ transactions }) => {
 };
 
 Render.propTypes = {
-    transactions: PropTypes.array.isRequired,
+    transactions: PropTypes.object.isRequired,
 };
 
 const TransactionsList = connect(

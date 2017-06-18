@@ -60,9 +60,8 @@ const Render = ({ tx, openTx, accounts, openAccount, refreshTx }) => {
 };
 
 Render.propTypes = {
-    hash: PropTypes.string.isRequired,
     tx: PropTypes.object.isRequired,
-    accounts: PropTypes.array.isRequired,
+    accounts: PropTypes.object.isRequired,
     openAccount: PropTypes.func.isRequired,
     openTx: PropTypes.func.isRequired,
     refreshTx: PropTypes.func.isRequired,
