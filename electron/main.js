@@ -37,7 +37,7 @@ console.log('userData: ', app.getPath('userData'));
 app.on('ready', () => {
     log.info("Starting Emerald...");
 
-    let emeraldLaunched = false;
+    let connectorLaunched = false;
     let gethLaunched = false;
 
     const webContents = createWindow(isDev);
@@ -74,15 +74,18 @@ app.on('ready', () => {
         console.log('emerald process exited with code ' + code);
     });
     emerald.stderr.on('data', (data) => {
-        if (!emeraldLaunched) {
-            notify.status("connector", "ready");
-            emeraldLaunched = true;
+        if (/Connector started on/.test(data)) {
+            if (!connectorLaunched) {
+                notify.status("connector", "ready");
+                connectorLaunched = true;
+            }
         }
         console.log('emerald stderr: ' + data);
     });
+
     ipcMain.on('get-status', (event) => {
         event.returnValue = "ok";
-        notify.status("connector", emeraldLaunched ? "ready" : "not ready");
+        notify.status("connector", connectorLaunched ? "ready" : "not ready");
         notify.status("geth", gethLaunched ? "ready" : "not ready");
     })
 });
