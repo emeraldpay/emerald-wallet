@@ -91,10 +91,11 @@ function deleteIfExists(path) {
 
 export class Downloader {
 
-    constructor(conf, name) {
+    constructor(conf, name, notify) {
         this.config = conf;
         this.name = name;
         this.tmp = null;
+        this.notify = notify;
     }
 
     downloadIfNotExists() {
@@ -104,6 +105,7 @@ export class Downloader {
                     log.debug(`${this.name} exists`);
                     resolve('exists');
                 } else {
+                    this.notify.info("Downloading latest Geth");
                     this.backup()
                         .then(this.downloadArchive.bind(this))
                         .then(this.verifyArchive.bind(this))
@@ -199,6 +201,7 @@ export class Downloader {
     unpack(zip) {
         log.info(`Unpack ${zip}`);
         return new Promise((resolve, reject) => {
+            this.notify.info("Unpacking Geth");
             fs.createReadStream(zip)
                 .pipe(unzipper.Parse())
                 .on('entry', (entry) => {
@@ -266,7 +269,7 @@ export class Downloader {
 
 }
 
-export function newGethDownloader() {
+export function newGethDownloader(notify) {
     const suffix = os.platform() === 'win32' ? '.exe' : '';
-    return new Downloader(DefaultGeth, "geth" + suffix);
+    return new Downloader(DefaultGeth, "geth" + suffix, notify);
 }

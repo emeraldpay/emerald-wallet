@@ -35,5 +35,7 @@ export function createWindow (openDevTools) {
   // Menu (only win and linux for now)
   menu = Menu.buildFromTemplate(winLinuxMenu(mainWindow));
   mainWindow.setMenu(menu);
+
+  return mainWindow.webContents;
 }
 
