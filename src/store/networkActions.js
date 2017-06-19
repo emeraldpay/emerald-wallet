@@ -1,6 +1,7 @@
 import log from 'loglevel';
 import { rpc } from '../lib/rpc';
 import { start, intervalRates } from '../store/store';
+import { toNumber } from '../lib/convert';
 
 let watchingHeight = false;
 
@@ -25,6 +26,18 @@ export function loadNetworkVersion() {
                 dispatch({
                     type: 'NETWORK/SWITCH_CHAIN',
                     id: result,
+                });
+            }
+        });
+}
+
+export function loadPeerCount() {
+    return (dispatch, getState) =>
+        rpc.call('net_peerCount', []).then((result) => {
+            if (getState().network.get('peerCount') !== toNumber(result)) {
+                dispatch({
+                    type: 'NETWORK/PEER_COUNT',
+                    peerCount: result,
                 });
             }
         });

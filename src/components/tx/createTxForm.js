@@ -89,10 +89,12 @@ const Render = (props) => {
                     value={account.get('id')}
                     primaryText={account.get('name') ? account.get('name') : account.get('id')} />
                 )}
+                {/*
                 <Divider />
                 {addressBook.map((account) =>
                   <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
                 )}
+                */}
                 </IconMenu>
               </Col>
             </Row>

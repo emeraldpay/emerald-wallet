@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 
-const Render = ({ block, chain, progress }) => {
+const Render = ({ block, chain, progress, peerCount }) => {
     // networkDetails = `Block ${syncing.get('currentBlock')} of ${syncing.get('highestBlock')}`;
 
     const styles = {
@@ -47,7 +47,7 @@ const Render = ({ block, chain, progress }) => {
             </Row>
             <Row>
                 <Col xs={12} style={styles.paddingSmVert}>
-                    10 peers, {block} blocks
+                    {peerCount} {peerCount === 1 ? 'peer' : 'peers'}, {block} blocks
                 </Col>
             </Row>
             <Row >
@@ -64,16 +64,19 @@ Render.propTypes = {
     progress: PropTypes.number.isRequired,
     // syncing: PropTypes.object.isRequired,
     chain: PropTypes.string.isRequired,
+    peerCount: PropTypes.number.isRequired,
 };
 
 const Status = connect(
     (state, ownProps) => {
         const curBlock = state.network.getIn(['currentBlock', 'height'], -1);
         const tip = state.network.getIn(['sync', 'highestBlock'], -1);
+        const peerCount = state.network.get('peerCount');
         return {
             block: curBlock,
             progress: ((curBlock / tip) * 100),
             chain: (state.network.get('chain') || {}).get('name'),
+            peerCount,
         };
         // syncing: state.network.get('sync');
     },

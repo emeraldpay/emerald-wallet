@@ -17,6 +17,7 @@ const initial = Immutable.fromJS({
         currentBlock: null,
         highestBlock: null,
     },
+    peerCount: 0,
 });
 
 function onSyncing(state, action) {
@@ -47,6 +48,13 @@ function onHeight(state, action) {
     return state;
 }
 
+function onPeerCount(state, action) {
+    if (action.type === 'NETWORK/PEER_COUNT') {
+        return state.set('peerCount', toNumber(action.peerCount));
+    }
+    return state;
+}
+
 function onSwitchChain(state, action) {
     if (action.type === 'NETWORK/SWITCH_CHAIN') {
         const idx = Networks.findKey((n) => n.get('id') === action.id);
@@ -63,6 +71,7 @@ export default function networkReducers(state, action) {
     state = state || initial;
     state = onSyncing(state, action);
     state = onHeight(state, action);
+    state = onPeerCount(state, action);
     state = onSwitchChain(state, action);
     return state;
 }
