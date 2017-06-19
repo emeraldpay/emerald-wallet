@@ -7,7 +7,7 @@ import { loadAccountsList, refreshTrackedTransactions, loadPendingTransactions,
 import { loadAddressBook } from './addressActions';
 import { loadTokenList } from './tokenActions';
 import { loadContractList } from './contractActions';
-import { loadSyncing, loadHeight } from './networkActions';
+import { loadSyncing, loadHeight, loadPeerCount } from './networkActions';
 import { gotoScreen } from './screenActions';
 
 import accountsReducers from './accountReducers';
@@ -65,6 +65,7 @@ export const store = createStore(
 
 function refreshAll() {
     store.dispatch(refreshTrackedTransactions());
+    store.dispatch(loadPeerCount());
     setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
 }
 
