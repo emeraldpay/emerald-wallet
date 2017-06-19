@@ -31,7 +31,7 @@ const Render = ({ screen, screenItem }) => {
         return (
             <div>
                 <AccountsList/>
-                <TokensList/>
+                {/* #hidden#146 <TokensList/> */}
                 <TransactionsList/>
             </div>
         );

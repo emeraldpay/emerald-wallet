@@ -23,8 +23,8 @@ const Render = translate('common')(({ t, openAccounts, openAddressBook, openCont
         anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
     >
         <MenuItem leftIcon={<Face />} primaryText={t('menu.home')} onClick={openAccounts} />
-        <MenuItem leftIcon={<ImportContacts />} primaryText={t('menu.addressBook')} onClick={openAddressBook} />
-        <MenuItem leftIcon={<LibraryBooks />} primaryText={t('menu.contracts')} onClick={openContracts} />
+        {/* #hidden#146 <MenuItem leftIcon={<ImportContacts />} primaryText={t('menu.addressBook')} onClick={openAddressBook} /> */}
+        {/* #hidden#146 <MenuItem leftIcon={<LibraryBooks />} primaryText={t('menu.contracts')} onClick={openContracts} /> */}
         <MenuItem
             leftIcon={<Motorcycle />}
             primaryText={t('menu.network')}
