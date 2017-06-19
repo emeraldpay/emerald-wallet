@@ -17,10 +17,13 @@ export class RpcApi {
     }
 
     static routeToEmerald(method) {
-        if (method.startsWith('emerald_') || method.startsWith('personal_') || method.startsWith('backend_')) {
-            return true
+        if (typeof method !== 'string') {
+            return false;
         }
-        return emeraldMethods.indexOf(method) >= 0
+        if (method.startsWith('emerald_') || method.startsWith('personal_') || method.startsWith('backend_')) {
+            return true;
+        }
+        return emeraldMethods.indexOf(method) >= 0;
     }
 
     /**
@@ -32,6 +35,12 @@ export class RpcApi {
     */
     call(name, params, headers) {
         return new Promise((resolve, reject) => {
+            if (typeof name !== 'string') {
+                reject(new Error(`RPC call method must be a string, got:
+                    method: ${name},
+                    params: ${JSON.stringify(params)},
+                    headers: ${JSON.stringify(headers)}`));
+            }
             this.jsonPost(name, params, headers).then((json) => {
                 // eth_syncing will return {.. "result": false}
                 if (json.result || json.result === false) {
