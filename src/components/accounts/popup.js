@@ -13,6 +13,7 @@ import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { DescriptionList, DescriptionTitle, DescriptionData } from 'elements/dl';
 import { link, align, cardSpace, copyIcon } from 'lib/styles';
 import { Wei } from 'lib/types';
+import { AccountAddress } from 'elements/dl';
 
 /**
  * Dialog with action buttons. The actions are passed in as an array of React objects,
@@ -73,10 +74,6 @@ class AccountPopupRender extends React.Component {
         },
     };
 
-    function copyAccountToClipBoard() {
-        copy(account.get('id'));
-    }
-
     return (
         <div style={styles.container}>
         <FlatButton
@@ -110,12 +107,7 @@ class AccountPopupRender extends React.Component {
         -                            <DescriptionData>{account.get('description')}</DescriptionData>
         -                            </div>}
                         <DescriptionData>
-                            <span>
-                            <code style={styles.accountId}>
-                            {account.get('id')}
-                            </code>
-                            <FontIcon className='fa fa-clone' onClick={copyAccountToClipBoard} style={copyIcon} />
-                            </span>
+                            <AccountAddress id={account.get('id')} />
                         </DescriptionData>
                     </DescriptionList>
 

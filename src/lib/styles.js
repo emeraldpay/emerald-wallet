@@ -38,3 +38,11 @@ export const align = {
     center: { textAlign: 'center'},
     right: { textAlign: 'right'}
 };
+
+export const noShadow = {
+    boxShadow: 'none',
+};
+
+export const grayBackground = {
+    backgroundColor: 'whitesmoke',
+};

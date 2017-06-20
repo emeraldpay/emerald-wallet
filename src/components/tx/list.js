@@ -6,7 +6,7 @@ import { Card, CardHeader, CardText } from 'material-ui/Card';
 import FontIcon from 'material-ui/FontIcon';
 import Avatar from 'material-ui/Avatar';
 import log from 'loglevel';
-import { cardSpace, tables } from 'lib/styles';
+import { cardSpace, tables, noShadow, grayBackground } from 'lib/styles';
 import Immutable from 'immutable';
 import Transaction from './transaction';
 
@@ -22,15 +22,15 @@ const Render = ({ transactions }) => {
         },
     };
 
-    const table = <Table selectable={false}>
+    const table = <Table style={grayBackground} selectable={false}>
         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
             <TableRow>
                 <TableHeaderColumn style={tables.shortStyle}>Block</TableHeaderColumn>
                 <TableHeaderColumn style={tables.wideStyle}>Hash</TableHeaderColumn>
                 <TableHeaderColumn style={tables.shortStyle}>Amount</TableHeaderColumn>
                 <TableHeaderColumn style={tables.wideStyle}>From</TableHeaderColumn>
-                <TableHeaderColumn style={tables.wideStyle}>To</TableHeaderColumn>
                 <TableHeaderColumn style={tables.shortStyle}></TableHeaderColumn>
+                <TableHeaderColumn style={tables.wideStyle}>To</TableHeaderColumn>
             </TableRow>
         </TableHeader>
         <TableBody displayRowCheckbox={false}>
@@ -42,7 +42,7 @@ const Render = ({ transactions }) => {
 
     return (
         <div id="tx-list">
-            <Card style={cardSpace}>
+            <Card style={{...grayBackground, ...noShadow, ...cardSpace}}>
                 <CardHeader
                     title="Transaction History"
                     titleStyle={styles.titleStyle}

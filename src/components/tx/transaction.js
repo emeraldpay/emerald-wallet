@@ -9,21 +9,9 @@ import FontIcon from 'material-ui/FontIcon';
 import log from 'loglevel';
 import { link, tables } from 'lib/styles';
 import { toDuration } from 'lib/convert';
+import { AddressAvatar, AccountAddress } from 'elements/dl';
 
-const Render = ({ tx, openTx, accounts, openAccount, refreshTx }) => {
-
-    const accountRow = (addr) => {
-        const pos = accounts.findKey((acc) => acc.get('id') === addr);
-        const account = (pos >= 0) ? accounts.get(pos) : null;
-        return (
-            <div>
-                {account && <span onClick={() => openAccount(account)} style={link}>
-                            {addr} </span>}
-                {!account && <span> {addr} </span>}
-            </div>
-        );
-    };
-
+const Render = ({ tx, openTx, openAccount, refreshTx, toAccount, fromAccount }) => {
 
     return (
         <TableRow selectable={false}>
@@ -43,17 +31,24 @@ const Render = ({ tx, openTx, accounts, openAccount, refreshTx }) => {
                     </span>
             </TableRowColumn>
             <TableRowColumn style={tables.wideStyle}>
-                    {accountRow(tx.get('from'))}
+                <AddressAvatar
+                    secondary={<AccountAddress id={tx.get('from')}/>}
+                    tertiary={fromAccount.get('description')}
+                    primary={fromAccount.get('name')}
+                    onClick={() => openAccount(tx.get('from'))}
+                />
+            </TableRowColumn>
+            <TableRowColumn>
+                <FontIcon className='fa fa-arrow-right' />
             </TableRowColumn>
             <TableRowColumn style={tables.wideStyle}>
-                    <span>
-                        {tx.get('to')}
-                    </span>
-            </TableRowColumn>
-            <TableRowColumn style={tables.shortStyle}>
-                    <span onClick={refreshTx} style={link}>
-                        <FontIcon className="fa fa-refresh fa-2x" />
-                    </span>
+
+                <AddressAvatar
+                    secondary={<AccountAddress id={tx.get('to')}/>}
+                    tertiary={toAccount.get('description')}
+                    primary={toAccount.get('name')}
+                    onClick={() => openAccount(tx.get('to'))}
+                />
             </TableRowColumn>
         </TableRow>
     );
@@ -61,8 +56,9 @@ const Render = ({ tx, openTx, accounts, openAccount, refreshTx }) => {
 
 Render.propTypes = {
     tx: PropTypes.object.isRequired,
-    accounts: PropTypes.object.isRequired,
     openAccount: PropTypes.func.isRequired,
+    toAccount: PropTypes.object.isRequired,
+    fromAccount: PropTypes.object.isRequired,
     openTx: PropTypes.func.isRequired,
     refreshTx: PropTypes.func.isRequired,
 };
@@ -70,9 +66,23 @@ Render.propTypes = {
 const Transaction = connect(
     (state, ownProps) => {
         const accounts = state.accounts.get('accounts', Immutable.List());
+
+        const getAccount = (addr) => {
+            if (typeof addr !== 'string') {
+                return Immutable.Map({});
+            }
+            const pos = accounts.findKey((acc) => acc.get('id') === addr);
+            return (pos >= 0) ? accounts.get(pos) : Immutable.Map({});
+        };
+
+        const toAccount = getAccount(ownProps.tx.get('to'));
+        const fromAccount = getAccount(ownProps.tx.get('from'));
+
         return {
             tx: ownProps.tx,
-            accounts,
+            getAccount,
+            toAccount,
+            fromAccount,
         };
     },
     (dispatch, ownProps) => ({
