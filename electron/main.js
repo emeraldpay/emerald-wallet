@@ -2,8 +2,7 @@ import {app, BrowserWindow, ipcMain } from 'electron';
 import { createWindow, mainWindow } from './mainWindow';
 import { RpcApi } from '../src/lib/rpcApi';
 import { launchGeth, launchEmerald } from './launcher';
-import { newGethDownloader } from './downloader';
-import { UserNotify } from './userNotify';
+import { Services } from './services';
 import log from 'loglevel';
 import Store from 'electron-store';
 
@@ -36,57 +35,13 @@ console.log('userData: ', app.getPath('userData'));
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
     log.info("Starting Emerald...");
-
-    let connectorLaunched = false;
-    let gethLaunched = false;
-
     const webContents = createWindow(isDev);
-    const notify = new UserNotify(webContents);
 
-    notify.status("geth", "not ready");
-    let gethDownloader = newGethDownloader(notify);
-    gethDownloader.downloadIfNotExists().then(() => {
-        notify.info("Launching Geth backend");
-        let geth = launchGeth();
-        geth.stdout.on('data', (data) => {
-            // console.log('geth stdout: ' + data);
-        });
-        geth.stderr.on('data', (data) => {
-            // console.log('geth stderr: ' + data);
-            if (/HTTP endpoint opened/.test(data)) {
-                gethLaunched = true;
-                notify.info("Geth RPC API is ready");
-                store.set('firstRun', false);
-                notify.status("geth", "ready");
-            }
-        });
-        geth.on('exit', (code) => {
-            console.log('geth process exited with code ' + code);
-        });
-    }).catch((err) => {
-        log.error("Unable to download Geth", err);
-        notify.info(`Unable to download Geth: ${err}`);
-    });
-
-    notify.status("connector", "not ready");
-    let emerald = launchEmerald();
-    emerald.on('exit', (code) => {
-        console.log('emerald process exited with code ' + code);
-    });
-    emerald.stderr.on('data', (data) => {
-        if (/Connector started on/.test(data)) {
-            if (!connectorLaunched) {
-                notify.status("connector", "ready");
-                connectorLaunched = true;
-            }
-        }
-        console.log('emerald stderr: ' + data);
-    });
-
+    const services = new Services(webContents);
+    services.start();
     ipcMain.on('get-status', (event) => {
         event.returnValue = "ok";
-        notify.status("connector", connectorLaunched ? "ready" : "not ready");
-        notify.status("geth", gethLaunched ? "ready" : "not ready");
+        services.notifyStatus();
     })
 });
 
