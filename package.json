@@ -22,7 +22,7 @@
     "test:watch": "node ./node_modules/karma/bin/karma start",
     "test": "npm run build && node ./node_modules/karma/bin/karma start --single-run",
     "lint": "./node_modules/eslint/bin/eslint.js ./src/",
-    "package": "npm run build && NODE_ENV=production node electron/package.js",
+    "package": "node build --no-watch --for-electron && NODE_ENV=production node electron/package.js",
     "package:all": "npm run package -- --all"
   },
   "keywords": [
