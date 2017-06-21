@@ -8,23 +8,23 @@ const STATUS = {
     STARTING: 1,
     STOPPING: 2,
     READY: 3,
-    ERROR: 4
+    ERROR: 4,
 };
 
 const LAUNCH_TYPE = {
     LOCAL_RUN: 0,
     LOCAL_EXISTING: 1,
-    REMOTE_URL: 2
+    REMOTE_URL: 2,
 };
 
 const DEFAULT_SETUP = {
     connectorType: LAUNCH_TYPE.LOCAL_RUN,
     rpcType: LAUNCH_TYPE.LOCAL_RUN,
     chain: 'morden',
-    chainId: 62
+    chainId: 62,
 };
 
-export class Services {
+export default class Services {
 
     constructor(webContents, appDataPath) {
         this.setup = Object.assign({}, DEFAULT_SETUP);
@@ -38,33 +38,33 @@ export class Services {
         return this.startRpc()
             .then(this.startConnector.bind(this))
             .catch((err) => {
-                log.error("Failed to run services", err)
-            })
+                log.error('Failed to run services', err);
+            });
     }
 
     startRpc() {
         return new Promise((resolve, reject) => {
-            this.notify.status("geth", "not ready");
+            this.notify.status('geth', 'not ready');
             this.gethStatus = STATUS.NOT_STARTED;
-            let gethDownloader = newGethDownloader(this.appDataPath, this.notify);
+            const gethDownloader = newGethDownloader(this.appDataPath, this.notify);
             gethDownloader.downloadIfNotExists().then(() => {
-                this.notify.info("Launching Geth backend");
+                this.notify.info('Launching Geth backend');
                 this.gethStatus = STATUS.STARTING;
-                let launcher = new LocalGeth(this.appDataPath, this.setup.chain, 8545);
+                const launcher = new LocalGeth(this.appDataPath, this.setup.chain, 8545);
                 this.rpc = launcher;
-                let geth = launcher.launch();
+                const geth = launcher.launch();
                 geth.stderr.on('data', (data) => {
                     if (/HTTP endpoint opened/.test(data)) {
                         this.gethStatus = STATUS.READY;
-                        log.info("Geth is ready");
-                        this.notify.info("Geth RPC API is ready");
-                        this.notify.status("geth", "ready");
-                        resolve(launcher)
+                        log.info('Geth is ready');
+                        this.notify.info('Geth RPC API is ready');
+                        this.notify.status('geth', 'ready');
+                        resolve(launcher);
                     }
                 });
                 geth.on('exit', (code) => {
                     this.gethStatus = STATUS.NOT_STARTED;
-                    log.error('geth process exited with code ' + code);
+                    log.error(`geth process exited with code ${code}`);
                     // TODO: handle error better; ie, I'm getting a lot of 'port already taken'
                     // errors because startup with an error otherwise leaves the spawned process going
                     if (code === 1) {
@@ -73,34 +73,34 @@ export class Services {
                     }
                 });
             }).catch((err) => {
-                log.error("Unable to download Geth", err);
+                log.error('Unable to download Geth', err);
                 this.notify.info(`Unable to download Geth: ${err}`);
-                reject(err)
+                reject(err);
             });
-        })
+        });
     }
 
     startConnector() {
         return new Promise((resolve, reject) => {
             if (this.gethStatus !== STATUS.READY) {
-                reject(new Error("Geth is not ready"));
-                return
+                reject(new Error('Geth is not ready'));
+                return;
             }
             this.connectorStatus = STATUS.NOT_STARTED;
-            this.notify.status("connector", "not ready");
-            let launcher = new LocalConnector(this.rpc);
+            this.notify.status('connector', 'not ready');
+            const launcher = new LocalConnector(this.rpc);
             this.connector = launcher;
-            let emerald = launcher.launch();
+            const emerald = launcher.launch();
             this.connectorStatus = STATUS.STARTING;
             emerald.on('exit', (code) => {
                 this.connectorStatus = STATUS.NOT_STARTED;
-                log.error('Emerald Connector process exited with code ' + code);
+                log.error(`Emerald Connector process exited with code ${code}`);
             });
             emerald.stderr.on('data', (data) => {
                 if (/Connector started on/.test(data)) {
-                    log.info("Connector is ready");
+                    log.info('Connector is ready');
                     this.connectorStatus = STATUS.READY;
-                    this.notify.status("connector", "ready");
+                    this.notify.status('connector', 'ready');
                     resolve(launcher);
                 }
             });
@@ -109,15 +109,15 @@ export class Services {
 
     notifyStatus() {
         return new Promise((resolve, reject) => {
-            this.notify.status("connector", this.connectorStatus === STATUS.READY ? "ready" : "not ready");
-            this.notify.status("geth", this.gethStatus === STATUS.READY ? "ready" : "not ready");
+            this.notify.status('connector', this.connectorStatus === STATUS.READY ? 'ready' : 'not ready');
+            this.notify.status('geth', this.gethStatus === STATUS.READY ? 'ready' : 'not ready');
             this.notify.chain(
                 this.setup.rpcType === LAUNCH_TYPE.LOCAL_RUN ? 'local' : 'remote',
                 this.setup.chain,
                 this.setup.chainId
             );
-            resolve('ok')
-        })
+            resolve('ok');
+        });
     }
 
     stop() {
@@ -126,9 +126,11 @@ export class Services {
                 .then(this.connector.shutdown())
                 .then((res) => {
                     log.info(res);
+                    resolve(res);
                 })
                 .catch((err) => {
                     log.error(err);
+                    reject(err);
                 });
         });
     }
