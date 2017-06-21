@@ -19,7 +19,9 @@ const LAUNCH_TYPE = {
 
 const DEFAULT_SETUP = {
     connectorType: LAUNCH_TYPE.LOCAL_RUN,
-    rpcType: LAUNCH_TYPE.LOCAL_RUN
+    rpcType: LAUNCH_TYPE.LOCAL_RUN,
+    chain: 'morden',
+    chainId: 62
 };
 
 export class Services {
@@ -47,7 +49,7 @@ export class Services {
             gethDownloader.downloadIfNotExists().then(() => {
                 this.notify.info("Launching Geth backend");
                 this.gethStatus = STATUS.STARTING;
-                let launcher = new LocalGeth("morden", 8545);
+                let launcher = new LocalGeth(this.setup.chain, 8545);
                 this.rpc = launcher;
                 let geth = launcher.launch();
                 geth.stderr.on('data', (data) => {
@@ -98,8 +100,16 @@ export class Services {
     }
 
     notifyStatus() {
-        this.notify.status("connector", this.connectorStatus === STATUS.READY ? "ready" : "not ready");
-        this.notify.status("geth", this.gethStatus === STATUS.READY ? "ready" : "not ready");
+        return new Promise((resolve, reject) => {
+            this.notify.status("connector", this.connectorStatus === STATUS.READY ? "ready" : "not ready");
+            this.notify.status("geth", this.gethStatus === STATUS.READY ? "ready" : "not ready");
+            this.notify.chain(
+                this.setup.rpcType === LAUNCH_TYPE.LOCAL_RUN ? 'local' : 'remote',
+                this.setup.chain,
+                this.setup.chainId
+            );
+            resolve('ok')
+        })
     }
 
 }
