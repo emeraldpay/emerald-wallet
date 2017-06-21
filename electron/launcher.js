@@ -1,5 +1,6 @@
 import {exec, spawn} from 'child_process';
 import os from 'os';
+import path from 'path';
 import log from 'loglevel';
 
 const suffix = os.platform() === 'win32' ? '.exe' : '';
@@ -12,7 +13,7 @@ export class LocalGeth {
 
     launch() {
         log.info("Starting Geth...");
-        const bin = './bin/geth' + suffix;
+        const bin = path.join(os.homedir(), 'bin', `geth${suffix}`);
         let options = [
             '--chain', this.network,
             '--rpc',
@@ -41,7 +42,7 @@ export class LocalGeth {
             this.proc.kill();
         });
     }
-    
+
     getHost() {
         return '127.0.0.1'
     }
@@ -74,7 +75,7 @@ export class LocalConnector {
 
     launch() {
         log.info("Starting Emerald Connector...");
-        const bin = './bin/emerald-cli' + suffix;
+        const bin = path.join(os.homedir(), '.cargo', 'bin', `emerald-cli${suffix}`);
         let options = [
             '--client-host', this.target.getHost(),
             '--client-port', this.target.getPort()

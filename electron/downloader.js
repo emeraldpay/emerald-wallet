@@ -123,17 +123,15 @@ export class Downloader {
             fs.access(target, fs.constants.R_OK | fs.constants.X_OK, (err) => {
                 if (err) {
                     resolve(false)
-                } else {
-                    fs.stat(target, (err, stat) => {
-                        if (err) {
-                            resolve(false)
-                        } else if (!stat.isFile() || stat.size === 0) {
-                            resolve(false)
-                        } else {
-                            resolve(true)
-                        }
-                    })
                 }
+                fs.stat(target, (e, stat) => {
+                    if (e) {
+                        resolve(false)
+                    } else if (!stat.isFile() || stat.size === 0) {
+                        resolve(false)
+                    }
+                    resolve(true)
+                });
             });
         })
     }
@@ -207,13 +205,21 @@ export class Downloader {
                 .on('entry', (entry) => {
                     const fileName = entry.path;
                     if (entry.type === 'File' && fileName === this.name) {
-                        let target = path.join('bin', fileName);
+                        let target = path.join(os.homedir(), 'bin', fileName);
                         log.info(`Extract to ${target}...`);
-                        entry.pipe(fs.createWriteStream(target));
+                        // defaulty wstream config
+                        entry.pipe(fs.createWriteStream(target, {
+                            flags: 'w',
+                            defaultEncoding: 'utf8',
+                            fd: null,
+                            mode: 0x755, // 0o666,
+                            autoClose: true
+                        }));
                         entry.on('end', () => {
                             fs.chmod(target, 0o755, (err) => {
                                 if (err) {
                                     log.error("Failed to set executable flag", target, err)
+                                    reject(err)
                                 }
                             })
                         })
@@ -230,10 +236,10 @@ export class Downloader {
 
     backup() {
         return new Promise((resolve, reject) => {
-            let target = `bin/${this.name}`;
+            let target = path.join(os.homedir(), 'bin',`${this.name}`);
             fs.access(target, fs.constants.F_OK, (err) => {
                 if (!err) {
-                    let bak = path.join('bin',`${this.name}.bak`);
+                    let bak = path.join(os.homedir(), 'bin',`${this.name}.bak`);
                     deleteIfExists(bak).then(() => {
                         log.debug(`Backup ${target} to ${bak}`);
                         fs.rename(target, bak, () => {
