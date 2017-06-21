@@ -5,8 +5,8 @@ const baseHeaders = {
 };
 
 const emeraldMethods = [
-    "eth_sendTransaction",
-    "eth_accounts"
+    // 'eth_sendTransaction',
+    'eth_accounts',
 ];
 
 export class RpcApi {

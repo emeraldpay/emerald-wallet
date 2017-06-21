@@ -11,7 +11,7 @@ import { noShadow } from 'lib/styles';
 class AccountBalanceRender extends React.Component {
 
     render() {
-        const { balance, rates } = this.props;
+        const { balance, rates, withAvatar } = this.props;
 
         const getRate = (b, pair) => {
             if (b !== null && typeof b !== 'undefined') {
@@ -19,17 +19,24 @@ class AccountBalanceRender extends React.Component {
             }
             return '$?';
         };
+        const styles = {
+            bc: {
+                backgroundColor: 'inherit',
+            },
+        };
 
         return (
-        <Card style={noShadow}>
+        <Card style={{...noShadow, ...styles.bc}}>
             <CardHeader
-                title={`${balance.getEther(6)} ETC`}
+                title={`${balance.getEther(3)} ETC`}
                 subtitle={`$${getRate(balance, 'usd')}`}
                 avatar={
+                    withAvatar ?
                     <Avatar color={deepOrange300}
                           backgroundColor={purple500}
                           size={30}>⟠
                         </Avatar>
+                    : null
                 }
             />
         </Card>
@@ -40,15 +47,18 @@ class AccountBalanceRender extends React.Component {
 AccountBalanceRender.propTypes = {
     balance: PropTypes.object.isRequired,
     rates: PropTypes.object.isRequired,
+    withAvatar: PropTypes.bool.isRequired,
 };
 
 const AccountBalance = connect(
     (state, ownProps) => {
         const rates = state.accounts.get('rates');
         const balance = ownProps.balance;
+        const withAvatar = ownProps.withAvatar || false;
         return {
             balance,
             rates,
+            withAvatar,
         };
     },
     (dispatch, ownProps) => ({})

@@ -22,15 +22,14 @@ const Render = ({ transactions }) => {
         },
     };
 
-    const table = <Table style={grayBackground} selectable={false}>
+    const table = <Table style={{...grayBackground, ...{tableLayout: 'auto'}}} selectable={false} fixedHeader={true}>
         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
             <TableRow>
-                <TableHeaderColumn style={tables.shortStyle}>Block</TableHeaderColumn>
-                <TableHeaderColumn style={tables.wideStyle}>Hash</TableHeaderColumn>
-                <TableHeaderColumn style={tables.shortStyle}>Amount</TableHeaderColumn>
-                <TableHeaderColumn style={tables.wideStyle}>From</TableHeaderColumn>
-                <TableHeaderColumn style={tables.shortStyle}></TableHeaderColumn>
-                <TableHeaderColumn style={tables.wideStyle}>To</TableHeaderColumn>
+                <TableHeaderColumn >Amount</TableHeaderColumn> {/* style={tables.mediumStyle} */}
+                <TableHeaderColumn >Status</TableHeaderColumn> {/* style={tables.shortestStyle} */}
+                <TableHeaderColumn >From</TableHeaderColumn> {/* style={tables.wideStyle} */}
+                <TableHeaderColumn ></TableHeaderColumn> {/* style={tables.shortestStyle} */}
+                <TableHeaderColumn >To</TableHeaderColumn> {/* style={tables.wideStyle} */}
             </TableRow>
         </TableHeader>
         <TableBody displayRowCheckbox={false}>

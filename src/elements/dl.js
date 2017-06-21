@@ -4,7 +4,7 @@ import ImportContacts from 'material-ui/svg-icons/communication/import-contacts'
 import { Card, CardHeader } from 'material-ui/Card';
 import copy from 'copy-to-clipboard';
 import FontIcon from 'material-ui/FontIcon';
-import { copyIcon, noShadow } from 'lib/styles';
+import { copyIcon, noShadow, link } from 'lib/styles';
 
 export const DescriptionList = (props) => {
     const style = {
@@ -50,7 +50,7 @@ export const DescriptionData = (props) => {
 };
 
 export const AccountAddress = (props) => {
-    const { id } = props;
+    const { id, abbreviated } = props;
     function copyAddressToClipBoard() {
         copy(id);
     }
@@ -63,7 +63,7 @@ export const AccountAddress = (props) => {
     };
     return (
         <span style={styles.light}>
-            <span>{id}</span>
+            <span>{abbreviated ? id.substring(2, 7) + '…' + id.substring(id.length-6, id.length-1) : id}</span>
             <FontIcon className='fa fa-clone' onClick={copyAddressToClipBoard} style={copyIcon} />
         </span>
     );
@@ -78,7 +78,7 @@ export const AddressAvatar = (props) => {
         },
     };
     return (
-        <Card style={{...noShadow, ...styles.bc}} >
+        <Card style={{...noShadow, ...styles.bc, ...link}} >
             <CardHeader
                 title={primary}
                 subtitle={<AccountAddress id={secondary}/>}

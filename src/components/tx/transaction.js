@@ -10,44 +10,49 @@ import log from 'loglevel';
 import { link, tables } from 'lib/styles';
 import { toDuration } from 'lib/convert';
 import { AddressAvatar, AccountAddress } from 'elements/dl';
+import loading from 'images/loading.gif';
+import AccountBalance from '../accounts/balance';
+import { Wei } from 'lib/types';
 
 const Render = ({ tx, openTx, openAccount, refreshTx, toAccount, fromAccount }) => {
 
     return (
         <TableRow selectable={false}>
-            <TableRowColumn style={tables.shortStyle}>
-                    <span onClick={openTx} style={link}>
-                        {tx.get('blockNumber') ? tx.get('blockHash') : 'PENDING' }
-                    </span>
+
+            <TableRowColumn >
+                    <AccountBalance balance={tx.get('value') || new Wei(0)} onClick={openTx} withAvatar={false} />
             </TableRowColumn>
-            <TableRowColumn style={tables.wideStyle}>
-                    <span onClick={openTx} style={link}>
-                        {tx.get('hash')}
-                    </span>
+
+            {/* TODO: move tx status to own component */}
+            {/* TODO: timestamp */}
+            <TableRowColumn style={{...tables.shortStyle, ...link}} >
+                {
+                    (() => {
+                        if (tx.get('blockNumber')) {
+                            return <span style={{color: 'limegreen'}} onClick={openTx}>Success</span>
+                        }
+                        return <span style={{color: 'gray'}} onClick={openTx}><img src={loading} height={14} />&nbsp; In queue...</span>
+                    })()
+                }
             </TableRowColumn>
-            <TableRowColumn style={tables.shortStyle}>
-                    <span onClick={openTx} style={link}>
-                        {tx.get('value') ? tx.get('value').getEther() : '?'} Ether
-                    </span>
-            </TableRowColumn>
-            <TableRowColumn style={tables.wideStyle}>
+
+            <TableRowColumn >
                 <AddressAvatar
-                    secondary={<AccountAddress id={tx.get('from')}/>}
+                    secondary={<AccountAddress id={tx.get('from')} abbreviated={true}/>}
                     tertiary={fromAccount.get('description')}
                     primary={fromAccount.get('name')}
-                    onClick={() => openAccount(tx.get('from'))}
+                    onClick={() => openAccount(fromAccount)}
                 />
             </TableRowColumn>
-            <TableRowColumn>
+            <TableRowColumn >
                 <FontIcon className='fa fa-arrow-right' />
             </TableRowColumn>
-            <TableRowColumn style={tables.wideStyle}>
-
+            <TableRowColumn >
                 <AddressAvatar
-                    secondary={<AccountAddress id={tx.get('to')}/>}
+                    secondary={<AccountAddress id={tx.get('to')} abbreviated={true}/>}
                     tertiary={toAccount.get('description')}
                     primary={toAccount.get('name')}
-                    onClick={() => openAccount(tx.get('to'))}
+                    onClick={() => openAccount(toAccount)}
                 />
             </TableRowColumn>
         </TableRow>

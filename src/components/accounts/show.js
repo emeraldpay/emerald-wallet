@@ -86,7 +86,7 @@ class AccountRender extends React.Component {
                         </h2>
                         {account.get('balance') ? `$${account.get('balance').getFiat(rates.get('usd'))}` : ''}
                         */}
-                       <AccountBalance balance={account.get('balance') || new Wei(0) } />
+                       <AccountBalance balance={account.get('balance') || new Wei(0) } withAvatar={true} />
 
                         {!this.state.edit && <AddressAvatar
                             secondary={account.get('id')}

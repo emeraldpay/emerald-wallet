@@ -26,7 +26,7 @@ const Render = ({ account, openAccount }) => {
     return (
     <TableRow style={styles.broadLightBottomBorder} selectable={false} >
         <TableRowColumn>
-            <AccountBalance balance={account.get('balance') || new Wei(0) } />
+            <AccountBalance balance={account.get('balance') || new Wei(0) } withAvatar={true} />
         </TableRowColumn>
         <TableRowColumn >
             <AddressAvatar
