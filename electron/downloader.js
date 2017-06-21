@@ -208,13 +208,7 @@ export class Downloader {
                         let target = path.join(os.homedir(), 'bin', fileName);
                         log.info(`Extract to ${target}...`);
                         // defaulty wstream config
-                        entry.pipe(fs.createWriteStream(target, {
-                            flags: 'w',
-                            defaultEncoding: 'utf8',
-                            fd: null,
-                            mode: 0x755, // 0o666,
-                            autoClose: true
-                        }));
+                        entry.pipe(fs.createWriteStream(target));
                         entry.on('end', () => {
                             fs.chmod(target, 0o755, (err) => {
                                 if (err) {
