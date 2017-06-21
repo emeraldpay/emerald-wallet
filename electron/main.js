@@ -1,4 +1,3 @@
-import path from 'path';
 import {app, BrowserWindow, ipcMain } from 'electron';
 import { createWindow, mainWindow } from './mainWindow';
 import { RpcApi } from '../src/lib/rpcApi';
@@ -51,7 +50,7 @@ console.log('userData: ', app.getPath('userData'));
 app.on('ready', () => {
     log.info("Starting Emerald...");
     const webContents = createWindow(isDev);
-    const dataPath = path.join(app.getPath('userData'));
+    const dataPath = app.getPath('userData');
     const services = new Services(webContents, dataPath);
     services.start();
     ipcMain.on('get-status', (event) => {
@@ -77,7 +76,14 @@ app.on('ready', () => {
             .then(services.startRpc.bind(services))
             .then(services.notifyStatus.bind(services))
             .catch((err) => log.error('Failed to Switch Chain', err));
-    })
+    });
+
+    app.on('quit', () => {
+        return services.stop((res) => {
+            log.info(res);
+        })
+        .catch((e) => { log.error(e); });
+    });
 });
 
 // Quit when all windows are closed.

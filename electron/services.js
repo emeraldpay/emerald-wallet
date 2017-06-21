@@ -89,6 +89,7 @@ export class Services {
             this.connectorStatus = STATUS.NOT_STARTED;
             this.notify.status("connector", "not ready");
             let launcher = new LocalConnector(this.rpc);
+            this.connector = launcher;
             let emerald = launcher.launch();
             this.connectorStatus = STATUS.STARTING;
             emerald.on('exit', (code) => {
@@ -117,6 +118,19 @@ export class Services {
             );
             resolve('ok')
         })
+    }
+
+    stop() {
+        return new Promise((resolve, reject) => {
+            this.rpc.shutdown()
+                .then(this.connector.shutdown())
+                .then((res) => {
+                    log.info(res);
+                })
+                .catch((err) => {
+                    log.error(err);
+                });
+        });
     }
 
 }
