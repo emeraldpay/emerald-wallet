@@ -2,6 +2,7 @@ const path = require('path');
 const url = require('url');
 import {BrowserWindow, Menu} from 'electron';
 import winLinuxMenu from './menus/win-linux';
+// import icon from './icons/background.png';
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -38,4 +39,3 @@ export function createWindow (openDevTools) {
 
   return mainWindow.webContents;
 }
-
