@@ -26,11 +26,12 @@ const DEFAULT_SETUP = {
 
 export class Services {
 
-    constructor(webContents) {
+    constructor(webContents, appDataPath) {
         this.setup = Object.assign({}, DEFAULT_SETUP);
         this.connectorStatus = STATUS.NOT_STARTED;
         this.gethStatus = STATUS.NOT_STARTED;
         this.notify = new UserNotify(webContents);
+        this.appDataPath = appDataPath;
     }
 
     start() {
@@ -45,11 +46,11 @@ export class Services {
         return new Promise((resolve, reject) => {
             this.notify.status("geth", "not ready");
             this.gethStatus = STATUS.NOT_STARTED;
-            let gethDownloader = newGethDownloader(this.notify);
+            let gethDownloader = newGethDownloader(this.appDataPath, this.notify);
             gethDownloader.downloadIfNotExists().then(() => {
                 this.notify.info("Launching Geth backend");
                 this.gethStatus = STATUS.STARTING;
-                let launcher = new LocalGeth(this.setup.chain, 8545);
+                let launcher = new LocalGeth(this.appDataPath, this.setup.chain, 8545);
                 this.rpc = launcher;
                 let geth = launcher.launch();
                 geth.stderr.on('data', (data) => {
@@ -64,6 +65,12 @@ export class Services {
                 geth.on('exit', (code) => {
                     this.gethStatus = STATUS.NOT_STARTED;
                     log.error('geth process exited with code ' + code);
+                    // TODO: handle error better; ie, I'm getting a lot of 'port already taken'
+                    // errors because startup with an error otherwise leaves the spawned process going
+                    if (code === 1) {
+                        this.notify.status('geth', 'not ready');
+                        this.gethStatus = STATUS.ERROR;
+                    }
                 });
             }).catch((err) => {
                 log.error("Unable to download Geth", err);

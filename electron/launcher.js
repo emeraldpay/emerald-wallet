@@ -6,14 +6,15 @@ import log from 'loglevel';
 const suffix = os.platform() === 'win32' ? '.exe' : '';
 
 export class LocalGeth {
-    constructor(network, rpcPort) {
+    constructor(appDataPath, network, rpcPort) {
+        this.appDataPath = appDataPath;
         this.network = network || 'morden';
         this.rpcPort = rpcPort || 8545;
     }
 
     launch() {
         log.info("Starting Geth...");
-        const bin = path.join(os.homedir(), 'bin', `geth${suffix}`);
+        const bin = path.join(this.appDataPath, 'bin', `geth${suffix}`);
         let options = [
             '--chain', this.network,
             '--rpc',

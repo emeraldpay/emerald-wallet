@@ -1,3 +1,4 @@
+import path from 'path';
 import {app, BrowserWindow, ipcMain } from 'electron';
 import { createWindow, mainWindow } from './mainWindow';
 import { RpcApi } from '../src/lib/rpcApi';
@@ -50,8 +51,8 @@ console.log('userData: ', app.getPath('userData'));
 app.on('ready', () => {
     log.info("Starting Emerald...");
     const webContents = createWindow(isDev);
-
-    const services = new Services(webContents);
+    const dataPath = path.join(app.getPath('userData'));
+    const services = new Services(webContents, dataPath);
     services.start();
     ipcMain.on('get-status', (event) => {
         event.returnValue = "ok";
