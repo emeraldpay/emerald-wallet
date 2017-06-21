@@ -89,13 +89,29 @@ function deleteIfExists(path) {
     });
 }
 
+function ensureExistDataPath(targetdir) {
+    // https://stackoverflow.com/questions/31645738/how-to-create-full-path-with-nodes-fs-mkdirsync
+    const targetDir = targetdir;
+    const sep = path.sep;
+    const initDir = path.isAbsolute(targetDir) ? sep : '';
+    targetDir.split(sep).reduce((parentDir, childDir) => {
+        const curDir = path.resolve(parentDir, childDir);
+        if (!fs.existsSync(curDir)) {
+            fs.mkdirSync(curDir);
+        }
+        return curDir;
+    }, initDir);
+    return '';
+}
+
 export class Downloader {
 
-    constructor(conf, name, notify) {
+    constructor(conf, appDataPath, name, notify) {
         this.config = conf;
         this.name = name;
         this.tmp = null;
         this.notify = notify;
+        this.appDataPath = appDataPath;
     }
 
     downloadIfNotExists() {
@@ -118,22 +134,20 @@ export class Downloader {
     }
 
     check_exists() {
-        let target = `bin/${this.name}`;
+        let target = path.join(ensureExistDataPath(path.join(this.appDataPath, 'bin')), this.name);
         return new Promise((resolve) => {
             fs.access(target, fs.constants.R_OK | fs.constants.X_OK, (err) => {
                 if (err) {
                     resolve(false)
-                } else {
-                    fs.stat(target, (err, stat) => {
-                        if (err) {
-                            resolve(false)
-                        } else if (!stat.isFile() || stat.size === 0) {
-                            resolve(false)
-                        } else {
-                            resolve(true)
-                        }
-                    })
                 }
+                fs.stat(target, (e, stat) => {
+                    if (e) {
+                        resolve(false)
+                    } else if (!stat.isFile() || stat.size === 0) {
+                        resolve(false)
+                    }
+                    resolve(true)
+                });
             });
         })
     }
@@ -207,13 +221,15 @@ export class Downloader {
                 .on('entry', (entry) => {
                     const fileName = entry.path;
                     if (entry.type === 'File' && fileName === this.name) {
-                        let target = path.join('bin', fileName);
+                        let target = path.join(this.appDataPath, 'bin', fileName);
                         log.info(`Extract to ${target}...`);
+                        // defaulty wstream config
                         entry.pipe(fs.createWriteStream(target));
                         entry.on('end', () => {
                             fs.chmod(target, 0o755, (err) => {
                                 if (err) {
                                     log.error("Failed to set executable flag", target, err)
+                                    reject(err)
                                 }
                             })
                         })
@@ -230,10 +246,10 @@ export class Downloader {
 
     backup() {
         return new Promise((resolve, reject) => {
-            let target = `bin/${this.name}`;
+            let target = path.join(this.appDataPath, 'bin', this.name);
             fs.access(target, fs.constants.F_OK, (err) => {
                 if (!err) {
-                    let bak = path.join('bin',`${this.name}.bak`);
+                    let bak = `${target}.bak`;
                     deleteIfExists(bak).then(() => {
                         log.debug(`Backup ${target} to ${bak}`);
                         fs.rename(target, bak, () => {
@@ -269,7 +285,7 @@ export class Downloader {
 
 }
 
-export function newGethDownloader(notify) {
+export function newGethDownloader(appDataPath, notify) {
     const suffix = os.platform() === 'win32' ? '.exe' : '';
-    return new Downloader(DefaultGeth, "geth" + suffix, notify);
+    return new Downloader(DefaultGeth, appDataPath, 'geth' + suffix, notify);
 }

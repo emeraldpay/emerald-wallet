@@ -48,13 +48,13 @@ console.log('userData: ', app.getPath('userData'));
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
-    log.info("Starting Emerald...");
+    log.info('Starting Emerald...');
     const webContents = createWindow(isDev);
-
-    const services = new Services(webContents);
+    const dataPath = app.getPath('userData');
+    const services = new Services(webContents, dataPath);
     services.start();
     ipcMain.on('get-status', (event) => {
-        event.returnValue = "ok";
+        event.returnValue = 'ok';
         services.notifyStatus();
     });
     ipcMain.on('switch-chain', (event, network, id) => {
@@ -62,10 +62,10 @@ app.on('ready', () => {
         let chain = network.toLowerCase();
         if (['mainnet', 'testnet', 'morden'].indexOf(chain) < 0) {
             log.error(`Unknown chain: ${chain}`);
-            event.returnValue = "fail";
+            event.returnValue = 'fail';
             return;
         }
-        event.returnValue = "ok";
+        event.returnValue = 'ok';
         services.rpc.shutdown()
             .then(services.notifyStatus.bind(services))
             .then(new Promise((resolve) => {
@@ -76,7 +76,14 @@ app.on('ready', () => {
             .then(services.startRpc.bind(services))
             .then(services.notifyStatus.bind(services))
             .catch((err) => log.error('Failed to Switch Chain', err));
-    })
+    });
+
+    app.on('quit', () => {
+        return services.stop((res) => {
+            log.info(res);
+        })
+        .catch((e) => { log.error(e); });
+    });
 });
 
 // Quit when all windows are closed.
