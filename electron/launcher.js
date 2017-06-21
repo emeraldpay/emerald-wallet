@@ -36,26 +36,26 @@ export class LocalGeth {
     }
 
     shutdown() {
-        log.info("Shutting down Local Geth");
+        log.info('Shutting down Local Geth');
         return new Promise((resolve, reject) => {
             if (!this.proc) {
                 resolve('not_started');
-                return
+                return;
             }
             this.proc.on('exit', () => {
                 resolve('killed');
                 this.proc = null;
             });
             this.proc.on('error', (err) => {
-               log.error("Failed to shutdown Local Geth", err);
-               reject(err);
+                log.error('Failed to shutdown Local Geth', err);
+                reject(err);
             });
             this.proc.kill();
         });
     }
-    
+
     getHost() {
-        return '127.0.0.1'
+        return '127.0.0.1';
     }
 
     getPort() {
@@ -70,11 +70,11 @@ export class RemoteGeth {
     }
 
     getHost() {
-        return this.host
+        return this.host;
     }
 
     getPort() {
-        return this.port
+        return this.port;
     }
 }
 
@@ -106,6 +106,21 @@ export class LocalConnector {
     }
 
     shutdown() {
-        log.info("Shutting down Local Connector")
+        log.info('Shutting down Local Connector');
+        return new Promise((resolve, reject) => {
+            if (!this.proc) {
+                resolve('not_started');
+                return;
+            }
+            this.proc.on('exit', () => {
+                resolve('killed');
+                this.proc = null;
+            });
+            this.proc.on('error', (err) => {
+                log.error('Failed to shutdown Emerald Connector', err);
+                reject(err);
+            });
+            this.proc.kill();
+        });
     }
 }
