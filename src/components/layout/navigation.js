@@ -10,7 +10,7 @@ import ImportContacts from 'material-ui/svg-icons/communication/import-contacts'
 import LibraryBooks from 'material-ui/svg-icons/av/library-books';
 import Motorcycle from 'material-ui/svg-icons/action/motorcycle';
 import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
-import Networks from 'lib/networks';
+import { Networks } from 'lib/networks';
 import log from 'loglevel';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { gotoScreen } from 'store/screenActions';
@@ -32,10 +32,10 @@ const Render = translate('common')(({ t, openAccounts, openAddressBook, openCont
             menuItems=
                 {Networks.map((net) =>
                     <MenuItem
-                        key={net.get('id')}
-                        primaryText={net.get('name')}
-                        checked={(net.get('name') === chain)}
-                        onClick={() => (net.get('name') !== chain) && switchChain(net)}
+                        key={net.id}
+                        primaryText={net.title}
+                        checked={(net.name === chain)}
+                        onClick={() => (net.name !== chain) && switchChain(net)}
                     />
                 )}
 
@@ -69,7 +69,7 @@ const Navigation = connect(
             dispatch(gotoScreen('contracts'));
         },
         switchChain: (network) => {
-            dispatch(switchChainAction(network.get('name'), network.get('id')));
+            dispatch(switchChainAction(network.name, network.id));
         },
     })
 )(Render);

@@ -98,26 +98,34 @@ export function startSync() {
     setTimeout(refreshLong, 3 * intervalRates.second);
 }
 
+export function stopSync() {
+    //TODO
+}
+
 export function start() {
     store.dispatch(readConfig());
     store.dispatch(listenElectron());
     store.dispatch(gotoScreen('welcome'));
 }
 
-let unsubscribe = store.subscribe(() => {
-    let state = store.getState();
-    if (state.screen.get("screen") === 'welcome') {
+export function waitForServices() {
+    let unsubscribe = store.subscribe(() => {
+        let state = store.getState();
         if (state.launcher.getIn(["status", "geth"]) === 'ready'
             && state.launcher.getIn(["status", "connector"]) === 'ready') {
-            log.info("All services are ready to use by Wallet");
-            store.dispatch(gotoScreen('home'));
-            startSync();
             unsubscribe();
+            log.info("All services are ready to use by Wallet");
+            startSync();
+            if (state.screen.get("screen") === 'welcome') {
+                store.dispatch(gotoScreen('home'));
+            }
         }
-    }
-});
+    });
 
-function checkServiceStatus() {
-    ipcRenderer.send("get-status");
+    function checkServiceStatus() {
+        ipcRenderer.send("get-status");
+    }
+    setTimeout(checkServiceStatus, 2000);
 }
-setTimeout(checkServiceStatus, 2000);
+
+waitForServices();

@@ -23,7 +23,14 @@ export function listenElectron() {
         ipcRenderer.on('launcher', (event, type, message) => {
             dispatch({
                 type: `LAUNCHER/${type}`, ...message
-            })
+            });
+            if (type === 'CHAIN') {
+                dispatch({
+                    type: 'NETWORK/SWITCH_CHAIN',
+                    network: message.chain,
+                    id: message.chainId
+                });
+            }
         });
     }
 }

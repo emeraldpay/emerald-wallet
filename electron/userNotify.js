@@ -15,4 +15,8 @@ export class UserNotify {
     status(name, mode) {
         this.webContents.send("launcher", "SERVICE_STATUS", {service: name, mode: mode});
     }
+
+    chain(rpc, chain, chainId) {
+        this.webContents.send("launcher", "CHAIN", {rpc, chain, chainId});
+    }
 }

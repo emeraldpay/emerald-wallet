@@ -4,8 +4,8 @@ const initial = Immutable.fromJS({
     firstRun: false,
     launcherType: "web",
     chain: {
-        type: "local-geth"
-        //type: "remote", url: "http://api.gastracker.io/web3"
+        rpc: "local",
+        //rpc: "remote", url: "http://api.gastracker.io/web3"
     },
     message: {
         text: "Starting...",
@@ -22,7 +22,7 @@ function onConfig(state, action) {
         return state
             .set('launcherType', action.launcherType)
             .set('firstRun', action.config.firstRun)
-            .set('chain', Immutable.fromJS(action.config.chain))
+            .update('chain', (chain) => chain.merge(Immutable.fromJS(action.config.chain || {})))
     }
     return state;
 }
@@ -43,10 +43,21 @@ function onServiceStatus(state, action) {
     return state;
 }
 
+function onChain(state, action) {
+    if (action.type === 'LAUNCHER/CHAIN') {
+        return state.update("chain", (chain) =>
+            chain.set("rpc", action.rpc)
+                .set("url", action.url)
+        );
+    }
+    return state;
+}
+
 export default function launcherReducers(state, action) {
     state = state || initial;
     state = onConfig(state, action);
     state = onMessage(state, action);
     state = onServiceStatus(state, action);
+    state = onChain(state, action);
     return state;
 }

@@ -11,6 +11,20 @@ const isProd = process.env.NODE_ENV === 'production';
 
 log.setLevel(isDev ? log.levels.DEBUG : log.levels.INFO);
 
+const settings = new Store({
+    name: 'settings',
+    defaults: {
+        // RPC configuration
+        chain: {
+            //type: 'remote',
+            //url: 'https://api.gastracker.io',
+            //chain: 'mainnet'
+            type: 'local',
+            chain: 'morden'
+        }
+    }
+});
+
 // This instance will be called from renderer process through remote.getGlobal("rpc")
 // In the future it is possible to replace rpc implementation
 global.rpc = new RpcApi();
@@ -42,6 +56,26 @@ app.on('ready', () => {
     ipcMain.on('get-status', (event) => {
         event.returnValue = "ok";
         services.notifyStatus();
+    });
+    ipcMain.on('switch-chain', (event, network, id) => {
+        log.info(`Switch chain to ${network} as ${id}`);
+        let chain = network.toLowerCase();
+        if (['mainnet', 'testnet', 'morden'].indexOf(chain) < 0) {
+            log.error(`Unknown chain: ${chain}`);
+            event.returnValue = "fail";
+            return;
+        }
+        event.returnValue = "ok";
+        services.rpc.shutdown()
+            .then(services.notifyStatus.bind(services))
+            .then(new Promise((resolve) => {
+                services.setup.chain = chain;
+                services.setup.chainId = id;
+                resolve('ok')
+            }))
+            .then(services.startRpc.bind(services))
+            .then(services.notifyStatus.bind(services))
+            .catch((err) => log.error('Failed to Switch Chain', err));
     })
 });
 
