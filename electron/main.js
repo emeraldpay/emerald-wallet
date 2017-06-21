@@ -76,7 +76,14 @@ app.on('ready', () => {
             .then(services.startRpc.bind(services))
             .then(services.notifyStatus.bind(services))
             .catch((err) => log.error('Failed to Switch Chain', err));
-    })
+    });
+
+    app.on('quit', () => {
+        return services.stop((res) => {
+            log.info(res);
+        })
+        .catch((e) => { log.error(e); });
+    });
 });
 
 // Quit when all windows are closed.

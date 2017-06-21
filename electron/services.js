@@ -117,6 +117,19 @@ export class Services {
         })
     }
 
+    stop() {
+        return new Promise((resolve, reject) => {
+            this.rpc.shutdown()
+                .then(this.connector.shutdown())
+                .then((res) => {
+                    log.info(res);
+                })
+                .catch((err) => {
+                    log.error(err);
+                });
+        });
+    }
+
 }
 
 function getBinDir() {
