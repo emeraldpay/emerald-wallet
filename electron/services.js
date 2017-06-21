@@ -24,7 +24,7 @@ const DEFAULT_SETUP = {
     chainId: 62,
 };
 
-export default class Services {
+export class Services {
 
     constructor(webContents, appDataPath) {
         this.setup = Object.assign({}, DEFAULT_SETUP);
