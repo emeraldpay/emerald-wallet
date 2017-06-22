@@ -11,20 +11,20 @@ const STATUS = {
     STARTING: 1,
     STOPPING: 2,
     READY: 3,
-    ERROR: 4
+    ERROR: 4,
 };
 
 const LAUNCH_TYPE = {
     LOCAL_RUN: 0,
     LOCAL_EXISTING: 1,
-    REMOTE_URL: 2
+    REMOTE_URL: 2,
 };
 
 const DEFAULT_SETUP = {
     connectorType: LAUNCH_TYPE.LOCAL_RUN,
     rpcType: LAUNCH_TYPE.LOCAL_RUN,
     chain: 'morden',
-    chainId: 62
+    chainId: 62,
 };
 
 export class Services {
@@ -40,17 +40,17 @@ export class Services {
         return this.startRpc()
             .then(this.startConnector.bind(this))
             .catch((err) => {
-                log.error("Failed to run services", err)
-            })
+                log.error('Failed to run services', err);
+            });
     }
 
     startRpc() {
         return new Promise((resolve, reject) => {
-            this.notify.status("geth", "not ready");
+            this.notify.status('geth', 'not ready');
             this.gethStatus = STATUS.NOT_STARTED;
             let gethDownloader = newGethDownloader(this.notify, getBinDir());
             gethDownloader.downloadIfNotExists().then(() => {
-                this.notify.info("Launching Geth backend");
+                this.notify.info('Launching Geth backend');
                 this.gethStatus = STATUS.STARTING;
                 let launcher = new LocalGeth(getBinDir(), this.setup.chain, 8545);
                 this.rpc = launcher;
@@ -70,23 +70,23 @@ export class Services {
                     });
                 }).catch(reject);
             }).catch((err) => {
-                log.error("Unable to download Geth", err);
+                log.error('Unable to download Geth', err);
                 this.notify.info(`Unable to download Geth: ${err}`);
-                reject(err)
+                reject(err);
             });
-        })
+        });
     }
 
     startConnector() {
         return new Promise((resolve, reject) => {
             if (this.gethStatus !== STATUS.READY) {
-                reject(new Error("Geth is not ready"));
-                return
+                reject(new Error('Geth is not ready'));
+                return;
             }
             this.connectorStatus = STATUS.NOT_STARTED;
             this.notify.status("connector", "not ready");
-            let launcher = new LocalConnector(getBinDir(), this.rpc);
-            launcher.launch().then((emerald) => {
+            this.connector = new LocalConnector(getBinDir(), this.rpc);
+            this.connector.launch().then((emerald) => {
                 this.connectorStatus = STATUS.STARTING;
                 emerald.on('exit', (code) => {
                     this.connectorStatus = STATUS.NOT_STARTED;
@@ -97,7 +97,7 @@ export class Services {
                         log.info("Connector is ready");
                         this.connectorStatus = STATUS.READY;
                         this.notify.status("connector", "ready");
-                        resolve(launcher);
+                        resolve(this.connector);
                     }
                 });
             }).catch(reject);
@@ -106,15 +106,30 @@ export class Services {
 
     notifyStatus() {
         return new Promise((resolve, reject) => {
-            this.notify.status("connector", this.connectorStatus === STATUS.READY ? "ready" : "not ready");
-            this.notify.status("geth", this.gethStatus === STATUS.READY ? "ready" : "not ready");
+            this.notify.status('connector', this.connectorStatus === STATUS.READY ? 'ready' : 'not ready');
+            this.notify.status('geth', this.gethStatus === STATUS.READY ? 'ready' : 'not ready');
             this.notify.chain(
                 this.setup.rpcType === LAUNCH_TYPE.LOCAL_RUN ? 'local' : 'remote',
                 this.setup.chain,
                 this.setup.chainId
             );
-            resolve('ok')
-        })
+            resolve('ok');
+        });
+    }
+
+    stop() {
+        return new Promise((resolve, reject) => {
+            this.rpc.shutdown()
+                .then(this.connector.shutdown())
+                .then((res) => {
+                    log.info(res);
+                    resolve(res);
+                })
+                .catch((err) => {
+                    log.error(err);
+                    reject(err);
+                });
+        });
     }
 
 }
