@@ -26,7 +26,8 @@ export class LocalGeth {
                         '--chain', this.network,
                         '--rpc',
                         '--rpc-port', this.rpcPort,
-                        '--rpc-cors-domain', 'http://localhost:8000'
+                        '--rpc-cors-domain', 'http://localhost:8000',
+                        '--cache=32',
                     ];
                     this.proc = spawn(bin, options);
                     resolve(this.proc)
