@@ -38,7 +38,7 @@ const Render = () => {
             <Col xs={8} middle='xs' style={{color: 'gray', fontWeight: '300'}}>
                 <p style={{marginTop: 0}}>
                 Find an issue? Got a suggestion? <br/>
-                Please let us know on our <a target='_blank' href='//github.com/ethereumproject/emerald-wallet/issues'>
+                Please let us know on our <a target='_blank' href='https://github.com/ethereumproject/emerald-wallet/issues'>
                 Github issues page</a>.
                 </p>
                 <p>
