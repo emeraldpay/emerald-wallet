@@ -36,7 +36,7 @@ const Render = ({ total, fiat, currentLocaleCurrency }) => {
                     </span>
                     &bull;
                     <span style={valueDisplay}>
-                        {renderAsCurrency(fiat.rate.localized)} ETC/{currentLocaleCurrency.toUpperCase()}
+                        {fiat.rate.localized ? renderAsCurrency(fiat.rate.localized) : '?'} ETC/{currentLocaleCurrency.toUpperCase()}
                     </span>
                 </Col>
             </Row>
