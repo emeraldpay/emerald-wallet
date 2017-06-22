@@ -1,6 +1,6 @@
 const path = require('path');
 const url = require('url');
-import {BrowserWindow, Menu} from 'electron';
+import {BrowserWindow, Menu, shell } from 'electron';
 import winLinuxMenu from './menus/win-linux';
 // import icon from './icons/background.png';
 
@@ -25,6 +25,11 @@ export function createWindow (openDevTools) {
     mainWindow.webContents.openDevTools();
     require('devtron').install();
   }
+    // https://stackoverflow.com/questions/32402327/how-can-i-force-external-links-from-browser-window-to-open-in-a-default-browser
+    mainWindow.webContents.on('will-navigate', function(e, url) {
+      e.preventDefault();
+      shell.openExternal(url);
+    });
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {

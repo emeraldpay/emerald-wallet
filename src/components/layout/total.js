@@ -36,7 +36,7 @@ const Render = ({ total, fiat, currentLocaleCurrency }) => {
                     </span>
                     &bull;
                     <span style={valueDisplay}>
-                        {renderAsCurrency(fiat.rate.localized)} ETC/{currentLocaleCurrency.toUpperCase()}
+                        {fiat.rate.localized ? renderAsCurrency(fiat.rate.localized) : '?'} ETC/{currentLocaleCurrency.toUpperCase()}
                     </span>
                 </Col>
             </Row>
@@ -99,7 +99,7 @@ const Total = connect(
         } else {
             currentLocaleCurrency = 'USD';
             fiat.total.localized = fiat.total.usd;
-            fiat.rate.localized = +fiat.rate.usd || 0; // fiat.pair.usd;
+            fiat.rate.localized = +fiat.rate.usd; // fiat.pair.usd;
         }
 
         return {
