@@ -50,7 +50,7 @@ export class Services {
                 .then(() => this.gethStatus = STATUS.NOT_STARTED)
                 .then(() => this.notify.status("geth", "not ready")))
         }
-        if (this.connnector) {
+        if (this.connector) {
             shuttingDown.push(this.connector.shutdown()
                 .then(() => this.connectorStatus = STATUS.NOT_STARTED)
                 .then(() => this.notify.status("connector", "not ready")))
