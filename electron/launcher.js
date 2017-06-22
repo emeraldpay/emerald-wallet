@@ -27,7 +27,8 @@ export class LocalGeth {
                         '--rpc',
                         '--rpc-port', this.rpcPort,
                         '--rpc-cors-domain', 'http://localhost:8000',
-                        '--cache=32',
+                        '--cache=128',
+                        '--fast', // (auto-disables when at or upon reaching current bc height)
                     ];
                     this.proc = spawn(bin, options);
                     resolve(this.proc)
