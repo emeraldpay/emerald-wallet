@@ -1,26 +1,38 @@
 import {exec, spawn} from 'child_process';
+import fs from 'fs';
 import os from 'os';
 import log from 'loglevel';
+import path from 'path';
 
 const suffix = os.platform() === 'win32' ? '.exe' : '';
 
 export class LocalGeth {
-    constructor(network, rpcPort) {
+    constructor(bin, network, rpcPort) {
+        this.bin = bin;
         this.network = network || 'morden';
         this.rpcPort = rpcPort || 8545;
     }
 
     launch() {
-        log.info("Starting Geth...");
-        const bin = './bin/geth' + suffix;
-        let options = [
-            '--chain', this.network,
-            '--rpc',
-            '--rpc-port', this.rpcPort,
-            '--rpc-cors-domain', 'http://localhost:8000'
-        ];
-        this.proc = spawn(bin, options);
-        return this.proc;
+        return new Promise((resolve, reject) => {
+            log.info("Starting Geth...");
+            const bin = path.join(this.bin, 'geth' + suffix);
+            fs.access(bin, fs.constants.X_OK, (err) => {
+                if (err) {
+                    log.error(`File ${bin} doesn't exist or app doesn't have execution flag`);
+                    reject(err)
+                } else {
+                    let options = [
+                        '--chain', this.network,
+                        '--rpc',
+                        '--rpc-port', this.rpcPort,
+                        '--rpc-cors-domain', 'http://localhost:8000'
+                    ];
+                    this.proc = spawn(bin, options);
+                    resolve(this.proc)
+                }
+            });
+        })
     }
 
     shutdown() {
@@ -68,19 +80,29 @@ export class RemoteGeth {
 
 export class LocalConnector {
 
-    constructor(target) {
+    constructor(bin, target) {
+        this.bin = bin;
         this.target = target;
     }
 
     launch() {
-        log.info("Starting Emerald Connector...");
-        const bin = './bin/emerald-cli' + suffix;
-        let options = [
-            '--client-host', this.target.getHost(),
-            '--client-port', this.target.getPort()
-        ];
-        this.proc = spawn(bin, options);
-        return this.proc
+        return new Promise((resolve, reject) => {
+            log.info("Starting Emerald Connector...");
+            const bin = path.join(this.bin, 'emerald-cli' + suffix);
+            fs.access(bin, fs.constants.F_OK | fs.constants.R_OK | fs.constants.X_OK, (err) => {
+                if (err) {
+                    log.error(`File ${bin} doesn't exist or app doesn't have execution flag`);
+                    reject(err)
+                } else {
+                    let options = [
+                        '--client-host', this.target.getHost(),
+                        '--client-port', this.target.getPort()
+                    ];
+                    this.proc = spawn(bin, options);
+                    resolve(this.proc);
+                }
+            });
+        })
     }
 
     shutdown() {

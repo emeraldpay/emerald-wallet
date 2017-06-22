@@ -1,4 +1,5 @@
 import { https } from 'follow-redirects';
+import { app } from 'electron';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
@@ -91,11 +92,12 @@ function deleteIfExists(path) {
 
 export class Downloader {
 
-    constructor(conf, name, notify) {
+    constructor(conf, name, notify, dir) {
         this.config = conf;
         this.name = name;
         this.tmp = null;
         this.notify = notify;
+        this.basedir = dir;
     }
 
     downloadIfNotExists() {
@@ -109,6 +111,7 @@ export class Downloader {
                     this.backup()
                         .then(this.downloadArchive.bind(this))
                         .then(this.verifyArchive.bind(this))
+                        .then(this.prepareBin.bind(this))
                         .then(this.unpack.bind(this))
                         .then(this.cleanup.bind(this))
                         .then(resolve).catch(reject)
@@ -118,7 +121,7 @@ export class Downloader {
     }
 
     check_exists() {
-        let target = `bin/${this.name}`;
+        let target = path.join(this.basedir, this.name);
         return new Promise((resolve) => {
             fs.access(target, fs.constants.R_OK | fs.constants.X_OK, (err) => {
                 if (err) {
@@ -149,15 +152,15 @@ export class Downloader {
         const targetUrl = targetBinary.url;
         return new Promise((resolve, reject) => {
             const tmpDir = os.tmpdir();
-            fs.mkdtemp(path.join(tmpDir, `download-${this.name}-`), (err, folder) => {
+            fs.mkdtemp(path.join(tmpDir, `download-${this.name}-`), (err, tmpfolder) => {
                 if (err) {
                     log.error("Unable to create temp dir", err);
                     reject(err);
                     return
                 }
-                this.tmp = folder;
-                log.info(`Download ${this.name} from ${targetUrl} to ${folder}/`);
-                let f = fs.createWriteStream(`${folder}/dest.zip`);
+                this.tmp = tmpfolder;
+                log.info(`Download ${this.name} from ${targetUrl} to ${tmpfolder}/`);
+                let f = fs.createWriteStream(path.join(tmpfolder, 'dest.zip'));
                 https.get(targetUrl, (response) => {
                     response.pipe(f);
                     response.on('end', () => {
@@ -198,6 +201,24 @@ export class Downloader {
         )
     }
 
+    prepareBin(x) {
+        return new Promise((resolve, reject) => {
+            fs.access(this.basedir, (err) => {
+                if (err) {
+                    fs.mkdir(this.basedir, 0o777, (err) => {
+                        if (err) {
+                            reject(err)
+                        } else {
+                            resolve(x)
+                        }
+                    })
+                } else {
+                    resolve(x)
+                }
+            })
+        })
+    }
+
     unpack(zip) {
         log.info(`Unpack ${zip}`);
         return new Promise((resolve, reject) => {
@@ -207,7 +228,7 @@ export class Downloader {
                 .on('entry', (entry) => {
                     const fileName = entry.path;
                     if (entry.type === 'File' && fileName === this.name) {
-                        let target = path.join('bin', fileName);
+                        let target = path.join(this.basedir, fileName);
                         log.info(`Extract to ${target}...`);
                         entry.pipe(fs.createWriteStream(target));
                         entry.on('end', () => {
@@ -230,10 +251,10 @@ export class Downloader {
 
     backup() {
         return new Promise((resolve, reject) => {
-            let target = `bin/${this.name}`;
+            let target = path.join(this.basedir, this.name);
             fs.access(target, fs.constants.F_OK, (err) => {
                 if (!err) {
-                    let bak = path.join('bin',`${this.name}.bak`);
+                    let bak = path.join(this.basedir,`${this.name}.bak`);
                     deleteIfExists(bak).then(() => {
                         log.debug(`Backup ${target} to ${bak}`);
                         fs.rename(target, bak, () => {
@@ -253,7 +274,7 @@ export class Downloader {
                 resolve('clean');
                 return
             }
-            deleteIfExists(`${this.tmp}/dest.zip`).then(() => {
+            deleteIfExists(path.join(this.tmp, 'dest.zip')).then(() => {
                 fs.rmdir(this.tmp, (err) => {
                     if (err) {
                         log.error("Cleanup error", err);
@@ -269,7 +290,7 @@ export class Downloader {
 
 }
 
-export function newGethDownloader(notify) {
+export function newGethDownloader(notify, dir) {
     const suffix = os.platform() === 'win32' ? '.exe' : '';
-    return new Downloader(DefaultGeth, "geth" + suffix, notify);
+    return new Downloader(DefaultGeth, "geth" + suffix, notify, dir);
 }
