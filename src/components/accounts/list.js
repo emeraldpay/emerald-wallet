@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table';
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
+import { Table, TableBody } from 'material-ui/Table';
+import { Row, Col } from 'react-flexbox-grid/lib/index';
+import { Card, CardHeader, CardText } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import Avatar from 'material-ui/Avatar';
-import { cardSpace } from 'lib/styles';
+import { cardSpace, noShadow, align } from 'lib/styles';
 import Immutable from 'immutable';
 import { translate } from 'react-i18next';
 import { gotoScreen } from 'store/screenActions';
@@ -14,14 +15,6 @@ import Account from './account';
 
 const Render = translate('accounts')(({ t, accounts, createAccount }) => {
     const table = <Table selectable={false}>
-        <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
-            <TableRow>
-                <TableHeaderColumn>Account</TableHeaderColumn>
-                <TableHeaderColumn>Address</TableHeaderColumn>
-                <TableHeaderColumn>Balance</TableHeaderColumn>
-                <TableHeaderColumn>Add Ether</TableHeaderColumn>
-            </TableRow>
-        </TableHeader>
         <TableBody displayRowCheckbox={false}>
             {accounts.map((account) => <Account key={account.get('id')} account={account}/>)}
         </TableBody>
@@ -34,24 +27,32 @@ const Render = translate('accounts')(({ t, accounts, createAccount }) => {
 
     return (
         <div id="accounts-list">
-            <Card style={cardSpace}>
-                <CardHeader
-                    title={t('list.title')}
-                    titleStyle={titleStyle}
-                    subtitle={t('list.subtitle')}
-                    avatar={titleAvatar}
-                    actAsExpander={false}
-                    showExpandableButton={false}
-                />
-                <CardText expandable={false}>
-                    {table}
-                </CardText>
-                <CardActions>
+            <Row>
+                <Col xs={9}>
+                    <Card style={{...cardSpace, ...noShadow}}>
+                        <CardHeader
+                            title={t('list.title')}
+                            titleStyle={titleStyle}
+                            subtitle={t('list.subtitle')}
+                            avatar={titleAvatar}
+                            actAsExpander={false}
+                            showExpandableButton={false}
+                        />
+                    </Card>
+                </Col>
+                <Col xs={3} style={align.right}>
                     <FlatButton label={t('list.create')}
-                                onClick={createAccount}
-                                icon={<FontIcon className="fa fa-plus-circle" />}/>
-                </CardActions>
-            </Card>
+                            onClick={createAccount}
+                            icon={<FontIcon className="fa fa-plus-circle" />}/>
+                </Col>
+            </Row>
+            <Row>
+                <Card style={{...cardSpace, ...noShadow}}>
+                    <CardText expandable={false}>
+                        {table}
+                    </CardText>
+                </Card>
+            </Row>
         </div>
     );
 });

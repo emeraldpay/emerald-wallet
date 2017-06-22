@@ -9,51 +9,51 @@ import FontIcon from 'material-ui/FontIcon';
 import log from 'loglevel';
 import { link, tables } from 'lib/styles';
 import { toDuration } from 'lib/convert';
+import { AddressAvatar, AccountAddress } from 'elements/dl';
+import loading from 'images/loading.gif';
+import AccountBalance from '../accounts/balance';
+import { Wei } from 'lib/types';
 
-const Render = ({ tx, openTx, accounts, openAccount, refreshTx }) => {
-
-    const accountRow = (addr) => {
-        const pos = accounts.findKey((acc) => acc.get('id') === addr);
-        const account = (pos >= 0) ? accounts.get(pos) : null;
-        return (
-            <div>
-                {account && <span onClick={() => openAccount(account)} style={link}>
-                            {addr} </span>}
-                {!account && <span> {addr} </span>}
-            </div>
-        );
-    };
-
+const Render = ({ tx, openTx, openAccount, refreshTx, toAccount, fromAccount }) => {
 
     return (
         <TableRow selectable={false}>
-            <TableRowColumn style={tables.shortStyle}>
-                    <span onClick={openTx} style={link}>
-                        {tx.get('blockNumber') ? tx.get('blockHash') : 'PENDING' }
-                    </span>
+
+            <TableRowColumn >
+                    <AccountBalance balance={tx.get('value') || new Wei(0)} onClick={openTx} withAvatar={false} />
             </TableRowColumn>
-            <TableRowColumn style={tables.wideStyle}>
-                    <span onClick={openTx} style={link}>
-                        {tx.get('hash')}
-                    </span>
+
+            {/* TODO: move tx status to own component */}
+            {/* TODO: timestamp */}
+            <TableRowColumn style={{...tables.shortStyle, ...link}} >
+                {
+                    (() => {
+                        if (tx.get('blockNumber')) {
+                            return <span style={{color: 'limegreen'}} onClick={openTx}>Success</span>
+                        }
+                        return <span style={{color: 'gray'}} onClick={openTx}><img src={loading} height={14} />&nbsp; In queue...</span>
+                    })()
+                }
             </TableRowColumn>
-            <TableRowColumn style={tables.shortStyle}>
-                    <span onClick={openTx} style={link}>
-                        {tx.get('value') ? tx.get('value').getEther() : '?'} Ether
-                    </span>
+
+            <TableRowColumn >
+                <AddressAvatar
+                    secondary={<AccountAddress id={tx.get('from')} abbreviated={true}/>}
+                    tertiary={fromAccount.get('description')}
+                    primary={fromAccount.get('name')}
+                    onClick={() => openAccount(fromAccount)}
+                />
             </TableRowColumn>
-            <TableRowColumn style={tables.wideStyle}>
-                    {accountRow(tx.get('from'))}
+            <TableRowColumn >
+                <FontIcon className='fa fa-arrow-right' />
             </TableRowColumn>
-            <TableRowColumn style={tables.wideStyle}>
-                    <span>
-                        {tx.get('to')}
-                    </span>
-            </TableRowColumn>
-            <TableRowColumn style={tables.shortStyle}>
-                    <span onClick={refreshTx} style={link}>
-                        <FontIcon className="fa fa-refresh fa-2x" />
-                    </span>
+            <TableRowColumn >
+                <AddressAvatar
+                    secondary={<AccountAddress id={tx.get('to')} abbreviated={true}/>}
+                    tertiary={toAccount.get('description')}
+                    primary={toAccount.get('name')}
+                    onClick={() => openAccount(toAccount)}
+                />
             </TableRowColumn>
         </TableRow>
     );
@@ -61,8 +61,9 @@ const Render = ({ tx, openTx, accounts, openAccount, refreshTx }) => {
 
 Render.propTypes = {
     tx: PropTypes.object.isRequired,
-    accounts: PropTypes.object.isRequired,
     openAccount: PropTypes.func.isRequired,
+    toAccount: PropTypes.object.isRequired,
+    fromAccount: PropTypes.object.isRequired,
     openTx: PropTypes.func.isRequired,
     refreshTx: PropTypes.func.isRequired,
 };
@@ -70,9 +71,23 @@ Render.propTypes = {
 const Transaction = connect(
     (state, ownProps) => {
         const accounts = state.accounts.get('accounts', Immutable.List());
+
+        const getAccount = (addr) => {
+            if (typeof addr !== 'string') {
+                return Immutable.Map({});
+            }
+            const pos = accounts.findKey((acc) => acc.get('id') === addr);
+            return (pos >= 0) ? accounts.get(pos) : Immutable.Map({});
+        };
+
+        const toAccount = getAccount(ownProps.tx.get('to'));
+        const fromAccount = getAccount(ownProps.tx.get('from'));
+
         return {
             tx: ownProps.tx,
-            accounts,
+            getAccount,
+            toAccount,
+            fromAccount,
         };
     },
     (dispatch, ownProps) => ({

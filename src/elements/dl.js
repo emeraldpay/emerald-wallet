@@ -1,9 +1,10 @@
 import React from 'react';
-import Avatar from 'material-ui/Avatar';
 import ListItem from 'material-ui/List/ListItem';
 import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
-
-import { deepOrange300, purple500 } from 'material-ui/styles/colors';
+import { Card, CardHeader } from 'material-ui/Card';
+import copy from 'copy-to-clipboard';
+import FontIcon from 'material-ui/FontIcon';
+import { copyIcon, noShadow, link } from 'lib/styles';
 
 export const DescriptionList = (props) => {
     const style = {
@@ -48,26 +49,42 @@ export const DescriptionData = (props) => {
     );
 };
 
+export const AccountAddress = (props) => {
+    const { id, abbreviated } = props;
+    function copyAddressToClipBoard() {
+        copy(id);
+    }
+    const styles = {
+        light: {
+            fontSize: '0.8rem',
+            color: 'gray',
+            fontWeight: '300',
+        },
+    };
+    return (
+        <span style={styles.light}>
+            <span>{abbreviated ? id.substring(2, 7) + '…' + id.substring(id.length-6, id.length-1) : id}</span>
+            <FontIcon className='fa fa-clone' onClick={copyAddressToClipBoard} style={copyIcon} />
+        </span>
+    );
+};
+
 export const AddressAvatar = (props) => {
     const { primary, secondary, tertiary, onClick } = props;
+    // TODO: handle tertiary (description if exists)
+    const styles = {
+        bc: {
+            backgroundColor: 'inherit',
+        },
+    };
     return (
-        <ListItem
-          leftAvatar={
-            <Avatar color={deepOrange300}
-              backgroundColor={purple500}
-              size={30}>⟠
-            </Avatar>
-          }
-          rightIcon={<ImportContacts />}
-          onClick={onClick}
-          primaryText={primary}
-          secondaryText={(tertiary) ?
-            <p>{tertiary}
-                <br />
-                {secondary}
-            </p> : secondary
-        }
-        />
+        <Card style={{...noShadow, ...styles.bc, ...link}} >
+            <CardHeader
+                title={primary}
+                subtitle={<AccountAddress id={secondary}/>}
+                onClick={onClick}
+            />
+        </Card>
     );
 }
 

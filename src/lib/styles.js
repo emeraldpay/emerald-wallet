@@ -8,8 +8,10 @@ export const link = {
 };
 
 export const tables = {
-    shortStyle: { },
-    wideStyle: { },
+    shortestStyle: { width: 8 },
+    shortStyle: { width: 36 },
+    mediumStyle: { width: 72 },
+    wideStyle: { width: 192 },
 };
 
 export const code = {
@@ -37,4 +39,12 @@ export const align = {
     left: { textAlign: 'left' },
     center: { textAlign: 'center'},
     right: { textAlign: 'right'}
+};
+
+export const noShadow = {
+    boxShadow: 'none',
+};
+
+export const grayBackground = {
+    backgroundColor: 'whitesmoke',
 };

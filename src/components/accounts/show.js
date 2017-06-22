@@ -17,6 +17,9 @@ import { updateAccount } from 'store/accountActions';
 import AccountEdit from './edit';
 import AccountPopup from './popup';
 import TransactionsList from '../tx/list';
+import AccountSendButton from './sendButton';
+import AccountBalance from './balance';
+import { Wei } from 'lib/types';
 
 const TokenRow = ({ token }) => {
     const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0';
@@ -55,7 +58,7 @@ class AccountRender extends React.Component {
     }
 
     render() {
-        const { account, rates, createTx, goBack, transactions } = this.props;
+        const { account, rates, goBack, transactions } = this.props;
         const value = account.get('balance') ? account.get('balance').getEther() : '?';
         const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
 
@@ -77,11 +80,13 @@ class AccountRender extends React.Component {
             <CardText>
                 <Row>
                     <Col xs={8}>
-                        <h2>
+                        {/* }<h2>
                             {value}
                             {pending && <FlatButton label={pending} primary={true} />}
                         </h2>
                         {account.get('balance') ? `$${account.get('balance').getFiat(rates.get('usd'))}` : ''}
+                        */}
+                       <AccountBalance balance={account.get('balance') || new Wei(0) } withAvatar={true} />
 
                         {!this.state.edit && <AddressAvatar
                             secondary={account.get('id')}
@@ -102,10 +107,7 @@ class AccountRender extends React.Component {
             </CardText>
             <CardActions>
                 <AccountPopup account={account}/>
-                <FlatButton label="SEND"
-                            onClick={createTx}
-                            icon={<FontIcon className="fa fa-arrow-circle-o-right" />}
-                            style={styles.sendButton} />
+                <AccountSendButton account={account} />
             </CardActions>
         </Card>
 
@@ -117,7 +119,6 @@ class AccountRender extends React.Component {
 
 AccountRender.propTypes = {
     account: PropTypes.object.isRequired,
-    createTx: PropTypes.func.isRequired,
     goBack: PropTypes.func.isRequired,
     transactions: PropTypes.object.isRequired,
 };
@@ -153,11 +154,6 @@ const AccountShow = connect(
         };
     },
     (dispatch, ownProps) => ({
-        createTx: () => {
-            const account = ownProps.account;
-            log.debug('create tx from', account.get('id'));
-            dispatch(gotoScreen('create-tx', account));
-        },
         goBack: () => {
             dispatch(gotoScreen('home'));
         },
