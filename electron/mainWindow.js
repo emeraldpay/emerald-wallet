@@ -22,7 +22,8 @@ export function createWindow (openDevTools) {
 
   // Open the DevTools.
   if (openDevTools) {
-    mainWindow.webContents.openDevTools()
+    mainWindow.webContents.openDevTools();
+    require('devtron').install();
   }
 
   // Emitted when the window is closed.
