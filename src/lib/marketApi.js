@@ -2,11 +2,10 @@ import 'isomorphic-fetch';
 import log from 'loglevel';
 
 const url = 'https://coinmarketcap-nexuist.rhcloud.com/api/';
-const currency = 'etc';
 
 export class MarketApi {
 
-    call() {
+    call(name = null, currency = 'etc') {
         return new Promise((resolve, reject) => {
             this.getRates(currency).then((json) => {
                 if (json.price) {

@@ -9,6 +9,7 @@ export class RpcApi {
         this.requestSeq = 1;
         this.urlEmerald = urlEmerald || 'http://localhost:1920';
         this.urlGeth = urlGeth || 'http://localhost:8545';
+        this.urlExchange = 'https://coinmarketcap-nexuist.rhcloud.com/api/';
     }
 
     static routeToEmerald(method) {
@@ -16,6 +17,13 @@ export class RpcApi {
             return false;
         }
         return method.startsWith('emerald_');
+    }
+
+    static externalFetch(method) {
+        if (typeof method !== 'string') {
+            return false;
+        }
+        return method.startsWith('get_');
     }
 
     /**
@@ -33,7 +41,13 @@ export class RpcApi {
                     params: ${JSON.stringify(params)},
                     headers: ${JSON.stringify(headers)}`));
             }
-            this.jsonPost(name, params, headers).then((json) => {
+            let response;
+            if (RpcApi.externalFetch(name)) {
+                response = this.getRates(params);
+            } else {
+                response = this.jsonPost(name, params, headers);
+            }
+            response.then((json) => {
                 // eth_syncing will return {.. "result": false}
                 if (json.result || json.result === false) {
                     resolve(json.result);
@@ -61,6 +75,13 @@ export class RpcApi {
             headers: Object.assign(baseHeaders, headers),
             body: JSON.stringify(data),
         }).then((response) => response.json());
+    }
+
+    getRates(curr = 'etc') {
+        const url = this.urlExchange;
+        return fetch(url + curr)
+            .then((response) => response.json())
+            .then((data) => Object.assign(data, {result: data.price}));
     }
 }
 
