@@ -75,7 +75,7 @@ const Status = connect(
         return {
             block: curBlock,
             progress: ((curBlock / tip) * 100),
-            chain: (state.network.get('chain') || {}).get('name'),
+            chain: (state.network.get('chain') || {}).get('title'),
             peerCount,
         };
         // syncing: state.network.get('sync');

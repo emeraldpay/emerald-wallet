@@ -1,5 +1,6 @@
 {
   "name": "emerald-wallet",
+  "productName": "Emerald Wallet",
   "private": false,
   "author": "Igor Artamonov",
   "contributors": [
@@ -9,19 +10,19 @@
   ],
   "version": "0.1.0",
   "description": "Emerald - Ethereum Classic Wallet",
-  "main": "./build/main.js",
+  "main": "./electron/main.js",
   "moduleRoots": [
     "src/lib"
   ],
   "scripts": {
     "build": "node build --no-watch",
     "build:watch": "node build",
-    "start:electron": "npm run build && NODE_ENV=development ./node_modules/.bin/electron -r babel-register -r babel-polyfill ./electron/main",
+    "start:electron": "npm run build --for-electron && NODE_ENV=development ./node_modules/.bin/electron -r babel-register -r babel-polyfill .",
     "start": "node ./node_modules/.bin/webpack-dev-server --content-base build/ --inline  --port 8000",
     "test:watch": "node ./node_modules/karma/bin/karma start",
     "test": "npm run build && node ./node_modules/karma/bin/karma start --single-run",
     "lint": "./node_modules/eslint/bin/eslint.js ./src/",
-    "package": "npm run build && NODE_ENV=production node electron/package.js",
+    "package": "node build --no-watch --for-electron && NODE_ENV=production node electron/package.js",
     "package:all": "npm run package -- --all"
   },
   "keywords": [
@@ -86,7 +87,8 @@
     "redux-thunk": "2.2.0",
     "roboto-fontface": "0.7.0",
     "store": "^2.0.4",
-    "unzip2": "0.2.5"
+    "unzip2": "0.2.5",
+    "electron-store": "1.1.0"
   },
   "devDependencies": {
     "@elastic/webpack-directory-name-as-main": "2.0.2",

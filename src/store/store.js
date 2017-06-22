@@ -9,6 +9,7 @@ import { loadTokenList } from './tokenActions';
 import { loadContractList } from './contractActions';
 import { loadSyncing, loadHeight, loadPeerCount } from './networkActions';
 import { gotoScreen } from './screenActions';
+import { readConfig, listenElectron } from './launcherActions';
 
 import accountsReducers from './accountReducers';
 import addressReducers from './addressReducers';
@@ -16,6 +17,11 @@ import tokenReducers from './tokenReducers';
 import contractReducers from './contractReducers';
 import networkReducers from './networkReducers';
 import screenReducers from './screenReducers';
+import launcherReducers from './launcherReducers';
+
+import { ipcRenderer } from 'electron';
+
+import log from 'loglevel';
 
 const second = 1000;
 const minute = 60 * second;
@@ -38,6 +44,7 @@ const stateTransformer = (state) => ({
     contracts: state.contracts.toJS(),
     screen: state.screen.toJS(),
     network: state.network.toJS(),
+    launcher: state.launcher.toJS(),
     form: state.form,
 });
 
@@ -52,6 +59,7 @@ const reducers = {
     contracts: contractReducers,
     screen: screenReducers,
     network: networkReducers,
+    launcher: launcherReducers,
     form: formReducer,
 };
 
@@ -74,13 +82,12 @@ function refreshLong() {
     setTimeout(refreshLong, intervalRates.continueRefreshLongRate);
 }
 
-export function start() {
+export function startSync() {
     store.dispatch(loadAccountsList());
     store.dispatch(getGasPrice());
     store.dispatch(loadAddressBook());
     store.dispatch(loadTokenList());
     store.dispatch(loadContractList());
-    store.dispatch(gotoScreen('home'));
     store.dispatch(loadHeight());
     // check for syncing
     setTimeout(() => store.dispatch(loadSyncing()), intervalRates.second); // prod: intervalRates.second
@@ -90,3 +97,35 @@ export function start() {
     setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
     setTimeout(refreshLong, 3 * intervalRates.second);
 }
+
+export function stopSync() {
+    //TODO
+}
+
+export function start() {
+    store.dispatch(readConfig());
+    store.dispatch(listenElectron());
+    store.dispatch(gotoScreen('welcome'));
+}
+
+export function waitForServices() {
+    let unsubscribe = store.subscribe(() => {
+        let state = store.getState();
+        if (state.launcher.getIn(["status", "geth"]) === 'ready'
+            && state.launcher.getIn(["status", "connector"]) === 'ready') {
+            unsubscribe();
+            log.info("All services are ready to use by Wallet");
+            startSync();
+            if (state.screen.get("screen") === 'welcome') {
+                store.dispatch(gotoScreen('home'));
+            }
+        }
+    });
+
+    function checkServiceStatus() {
+        ipcRenderer.send("get-status");
+    }
+    setTimeout(checkServiceStatus, 2000);
+}
+
+waitForServices();

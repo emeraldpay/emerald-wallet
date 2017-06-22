@@ -10,7 +10,7 @@ let menu;
 
 export function createWindow (openDevTools) {
   // Create the browser window.
-  mainWindow = new BrowserWindow({width: 800, height: 600});
+  mainWindow = new BrowserWindow({width: 1060, height: 600});
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
@@ -35,5 +35,7 @@ export function createWindow (openDevTools) {
   // Menu (only win and linux for now)
   menu = Menu.buildFromTemplate(winLinuxMenu(mainWindow));
   mainWindow.setMenu(menu);
+
+  return mainWindow.webContents;
 }
 

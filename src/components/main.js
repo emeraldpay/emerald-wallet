@@ -13,37 +13,42 @@ import './main.scss';
 import Screen from './screen';
 import Header from './layout/header';
 import AccountPopup from './accounts/popup';
+import Welcome from './welcome';
 
-const Render = translate('common')(({t, ...props}) => (
-    <Grid>
-        <Row>
-            <Col xs={12}>
-                <Header/>
-            </Col>
-        </Row>
-        <Row>
-            <Col xs={12}>
-                <Screen id="body"/>
-            </Col>
-        </Row>
-        <Row>
-            <Col xs={12}>
-                <div id="footer">
-                    Emerald Wallet, Ethereum Classic, 2017<br/>
-                    <FlatButton label="Fork on GitHub"
-                                backgroundColor="#505050"
-                                href="https://github.com/ethereumproject/emerald-wallet"
-                                icon={<FontIcon className="fa fa-github" />}/>
-                </div>
-            </Col>
-        </Row>
-    </Grid>
-));
+const Render = translate('common')(({t, screen}) => {
+    if (screen === 'welcome') {
+        return (<Welcome/>)
+    }
+    return (
+        <Grid>
+            <Row>
+                <Col xs={12}>
+                    <Header/>
+                </Col>
+            </Row>
+            <Row>
+                <Col xs={12}>
+                    <Screen id="body"/>
+                </Col>
+            </Row>
+            <Row>
+                <Col xs={12}>
+                    <div id="footer">
+                        Emerald Wallet, Ethereum Classic, 2017<br/>
+                        <FlatButton label="Fork on GitHub"
+                                    backgroundColor="#505050"
+                                    href="https://github.com/ethereumproject/emerald-wallet"
+                                    icon={<FontIcon className="fa fa-github"/>}/>
+                    </div>
+                </Col>
+            </Row>
+        </Grid>
+    )
+});
 
 const Main = connect(
     (state, ownProps) => ({
-        chain: (state.network.get('chain') || {}).get('name'),
-        networks: Networks,
+        screen: state.screen.get('screen'),
     }),
     (dispatch, ownProps) => ({
         openAccounts: () => {
