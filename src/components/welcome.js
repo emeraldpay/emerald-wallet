@@ -57,7 +57,7 @@ const Render = ({ message, level, ready, gohome, isFirstRun }) => {
                         <div style={{fontWeight: '300'}}>
                         <p>
                         Welcome to Emerald Wallet Beta. Thanks for trying it out!<br/>
-                        We are anticipating an Alpha release by July 20th.
+                        We're looking forward to an Alpha release by July 20th.
                         </p>
                         <p>
                         Made with ❤️&nbsp; by <strong>ETCDEV</strong> and <strong>many wonderful contributors</strong>.
