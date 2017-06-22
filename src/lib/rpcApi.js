@@ -4,11 +4,6 @@ const baseHeaders = {
     'Content-Type': 'application/json',
 };
 
-const emeraldMethods = [
-    // 'eth_sendTransaction',
-    'eth_accounts',
-];
-
 export class RpcApi {
     constructor(urlEmerald, urlGeth) {
         this.requestSeq = 1;
@@ -20,10 +15,7 @@ export class RpcApi {
         if (typeof method !== 'string') {
             return false;
         }
-        if (method.startsWith('emerald_') || method.startsWith('personal_') || method.startsWith('backend_')) {
-            return true;
-        }
-        return emeraldMethods.indexOf(method) >= 0;
+        return method.startsWith('emerald_');
     }
 
     /**
@@ -52,7 +44,7 @@ export class RpcApi {
                      name: ${name},
                      params: ${JSON.stringify(params)}`));
                 }
-            }).catch((error) => reject(error));
+            }).catch(reject);
         });
     }
 

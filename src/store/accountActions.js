@@ -3,6 +3,7 @@ import { rpc } from 'lib/rpc';
 import { getRates } from 'lib/marketApi';
 import { address } from 'lib/validators';
 import { loadTokenBalanceOf } from './tokenActions';
+import log from 'loglevel';
 
 export function loadAccountBalance(accountId) {
     return (dispatch, getState) => {
@@ -26,7 +27,7 @@ export function loadAccountsList() {
         dispatch({
             type: 'ACCOUNT/LOADING',
         });
-        rpc.call('eth_accounts', []).then((result) => {
+        rpc.call('emerald_listAccounts', []).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SET_LIST',
                 accounts: result,
@@ -50,17 +51,13 @@ export function loadAccountTxCount(accountId) {
 }
 
 /*
- * WARNING: In order for this rpc call to work,
- * "personal" API must be enabled over RPC
- *    eg. --rpcapi "eth,web3,personal"
- *      [Unsafe. Not recommended. Use IPC instead.]
  *
  * TODO: Error handling
 */
-export function createAccount(password, name, description) {
+export function createAccount(passphrase, name, description) {
     return (dispatch) =>
-        rpc.call('personal_newAccount', [{
-            password,
+        rpc.call('emerald_newAccount', [{
+            passphrase,
             name,
             description,
         }]).then((result) => {
@@ -76,7 +73,7 @@ export function createAccount(password, name, description) {
 
 export function updateAccount(address, name, description) {
     return (dispatch) =>
-        rpc.call('emerald_updateAccounts', [{
+        rpc.call('emerald_updateAccount', [{
             name,
             description,
             address,
@@ -90,43 +87,51 @@ export function updateAccount(address, name, description) {
         });
 }
 
-export function sendTransaction(accountId, password, to, gas, gasPrice, value) {
-    return (dispatch) =>
-        rpc.call('eth_sendTransaction', [{
-            from: accountId,
-            password,
-            to,
-            gas,
-            gasPrice,
-            value,
-        }]).then((result) => {
-            dispatch({
-                type: 'ACCOUNT/SEND_TRANSACTION',
-                accountId,
-                txHash: result,
-            });
-            dispatch(loadAccountBalance(accountId));
-            return result;
-        });
+function sendRawTransaction(signed) {
+    return rpc.call('eth_sendRawTransaction', [signed])
 }
 
-export function createContract(accountId, password, gas, gasPrice, data) {
-    return (dispatch) =>
-        rpc.call('eth_sendTransaction', [{
-            from: accountId,
-            password,
-            gas,
-            gasPrice,
-            data,
-        }]).then((result) => {
-            dispatch({
-                type: 'ACCOUNT/SEND_TRANSACTION',
-                accountId,
-                txHash: result,
-            });
-            dispatch(loadAccountBalance(accountId));
-            return result;
+function onTxSend(dispatch, accountId) {
+    return (result) => {
+        dispatch({
+            type: 'ACCOUNT/SEND_TRANSACTION',
+            accountId,
+            txHash: result,
         });
+        dispatch(loadAccountBalance(accountId));
+        return result;
+    }
+}
+
+export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value) {
+    let txData = {
+        from: accountId,
+        passphrase,
+        to,
+        gas,
+        gasPrice,
+        value,
+    };
+    return (dispatch) =>
+        rpc.call('emerald_signTransaction', [txData])
+            .then(sendRawTransaction)
+            .then(onTxSend(dispatch, accountId))
+            .catch(log.error);
+}
+
+export function createContract(accountId, passphrase, gas, gasPrice, data) {
+    let txData = {
+        from: accountId,
+        passphrase,
+        gas,
+        gasPrice,
+        data,
+    };
+    return (dispatch) =>
+        rpc.call('emerald_signTransaction', [txData])
+            .then(sendRawTransaction)
+            .then(onTxSend(dispatch, accountId))
+            .catch(log.error);
 }
 
 export function importWallet(wallet, name, description) {
@@ -144,7 +149,7 @@ export function importWallet(wallet, name, description) {
                 } catch (e) {
                     reject({error: e});
                 }
-                return rpc.call('backend_importWallet', data).then((result) => {
+                return rpc.call('emerald_importAccount', data).then((result) => {
                     dispatch({
                         type: 'ACCOUNT/IMPORT_WALLET',
                         accountId: result,
