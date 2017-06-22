@@ -15,7 +15,7 @@ export class LocalGeth {
 
     launch() {
         return new Promise((resolve, reject) => {
-            log.info("Starting Geth...");
+            log.info(`Starting Geth... [network: ${this.network}, port: ${this.rpcPort}]`);
             const bin = path.join(this.bin, 'geth' + suffix);
             fs.access(bin, fs.constants.X_OK, (err) => {
                 if (err) {
@@ -82,23 +82,24 @@ export class RemoteGeth {
 
 export class LocalConnector {
 
-    constructor(bin, target) {
+    constructor(bin, chainId) {
         this.bin = bin;
-        this.target = target;
+        this.chainId = chainId || '61';
     }
 
     launch() {
         return new Promise((resolve, reject) => {
-            log.info("Starting Emerald Connector...");
-            const bin = path.join(this.bin, 'emerald-cli' + suffix);
+            log.info(`Starting Emerald Connector... [chainId: ${this.chainId}]`);
+            const bin = path.join(this.bin, 'emerald' + suffix);
             fs.access(bin, fs.constants.F_OK | fs.constants.R_OK | fs.constants.X_OK, (err) => {
                 if (err) {
                     log.error(`File ${bin} doesn't exist or app doesn't have execution flag`);
                     reject(err)
                 } else {
                     let options = [
-                        '--client-host', this.target.getHost(),
-                        '--client-port', this.target.getPort()
+                        'server',
+                        '--verbose', 1,
+                        '--chain-id', this.chainId
                     ];
                     this.proc = spawn(bin, options);
                     resolve(this.proc);

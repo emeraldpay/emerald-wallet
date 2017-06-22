@@ -85,9 +85,9 @@ function refreshLong() {
 export function startSync() {
     store.dispatch(loadAccountsList());
     store.dispatch(getGasPrice());
-    store.dispatch(loadAddressBook());
-    store.dispatch(loadTokenList());
-    store.dispatch(loadContractList());
+    // store.dispatch(loadAddressBook());
+    // store.dispatch(loadTokenList());
+    // store.dispatch(loadContractList());
     store.dispatch(loadHeight());
     // check for syncing
     setTimeout(() => store.dispatch(loadSyncing()), intervalRates.second); // prod: intervalRates.second
