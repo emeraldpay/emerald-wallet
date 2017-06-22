@@ -2,6 +2,9 @@ import log from 'loglevel';
 import { LocalGeth, LocalConnector } from './launcher';
 import { UserNotify } from './userNotify';
 import { newGethDownloader } from './downloader';
+import path from 'path';
+import { app } from 'electron';
+
 
 const STATUS = {
     NOT_STARTED: 0,
@@ -45,26 +48,27 @@ export class Services {
         return new Promise((resolve, reject) => {
             this.notify.status("geth", "not ready");
             this.gethStatus = STATUS.NOT_STARTED;
-            let gethDownloader = newGethDownloader(this.notify);
+            let gethDownloader = newGethDownloader(this.notify, getBinDir());
             gethDownloader.downloadIfNotExists().then(() => {
                 this.notify.info("Launching Geth backend");
                 this.gethStatus = STATUS.STARTING;
-                let launcher = new LocalGeth(this.setup.chain, 8545);
+                let launcher = new LocalGeth(getBinDir(), this.setup.chain, 8545);
                 this.rpc = launcher;
-                let geth = launcher.launch();
-                geth.stderr.on('data', (data) => {
-                    if (/HTTP endpoint opened/.test(data)) {
-                        this.gethStatus = STATUS.READY;
-                        log.info("Geth is ready");
-                        this.notify.info("Geth RPC API is ready");
-                        this.notify.status("geth", "ready");
-                        resolve(launcher)
-                    }
-                });
-                geth.on('exit', (code) => {
-                    this.gethStatus = STATUS.NOT_STARTED;
-                    log.error('geth process exited with code ' + code);
-                });
+                launcher.launch().then((geth) => {
+                    geth.stderr.on('data', (data) => {
+                        if (/HTTP endpoint opened/.test(data)) {
+                            this.gethStatus = STATUS.READY;
+                            log.info("Geth is ready");
+                            this.notify.info("Geth RPC API is ready");
+                            this.notify.status("geth", "ready");
+                            resolve(launcher)
+                        }
+                    });
+                    geth.on('exit', (code) => {
+                        this.gethStatus = STATUS.NOT_STARTED;
+                        log.error('geth process exited with code ' + code);
+                    });
+                }).catch(reject);
             }).catch((err) => {
                 log.error("Unable to download Geth", err);
                 this.notify.info(`Unable to download Geth: ${err}`);
@@ -81,21 +85,22 @@ export class Services {
             }
             this.connectorStatus = STATUS.NOT_STARTED;
             this.notify.status("connector", "not ready");
-            let launcher = new LocalConnector(this.rpc);
-            let emerald = launcher.launch();
-            this.connectorStatus = STATUS.STARTING;
-            emerald.on('exit', (code) => {
-                this.connectorStatus = STATUS.NOT_STARTED;
-                log.error('Emerald Connector process exited with code ' + code);
-            });
-            emerald.stderr.on('data', (data) => {
-                if (/Connector started on/.test(data)) {
-                    log.info("Connector is ready");
-                    this.connectorStatus = STATUS.READY;
-                    this.notify.status("connector", "ready");
-                    resolve(launcher);
-                }
-            });
+            let launcher = new LocalConnector(getBinDir(), this.rpc);
+            launcher.launch().then((emerald) => {
+                this.connectorStatus = STATUS.STARTING;
+                emerald.on('exit', (code) => {
+                    this.connectorStatus = STATUS.NOT_STARTED;
+                    log.error('Emerald Connector process exited with code ' + code);
+                });
+                emerald.stderr.on('data', (data) => {
+                    if (/Connector started on/.test(data)) {
+                        log.info("Connector is ready");
+                        this.connectorStatus = STATUS.READY;
+                        this.notify.status("connector", "ready");
+                        resolve(launcher);
+                    }
+                });
+            }).catch(reject);
         });
     }
 
@@ -112,4 +117,9 @@ export class Services {
         })
     }
 
+}
+
+function getBinDir() {
+    const basedir = app.getPath("userData");
+    return path.join(basedir, 'bin');
 }
