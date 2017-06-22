@@ -85,8 +85,8 @@ export class Services {
             }
             this.connectorStatus = STATUS.NOT_STARTED;
             this.notify.status("connector", "not ready");
-            let launcher = new LocalConnector(getBinDir(), this.rpc);
-            launcher.launch().then((emerald) => {
+            this.connector = new LocalConnector(getBinDir(), this.rpc);
+            this.connector.launch().then((emerald) => {
                 this.connectorStatus = STATUS.STARTING;
                 emerald.on('exit', (code) => {
                     this.connectorStatus = STATUS.NOT_STARTED;
@@ -97,7 +97,7 @@ export class Services {
                         log.info("Connector is ready");
                         this.connectorStatus = STATUS.READY;
                         this.notify.status("connector", "ready");
-                        resolve(launcher);
+                        resolve(this.connector);
                     }
                 });
             }).catch(reject);
