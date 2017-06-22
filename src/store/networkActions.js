@@ -1,8 +1,7 @@
 import log from 'loglevel';
 import { rpc } from '../lib/rpc';
+import { start, intervalRates } from '../store/store';
 import { toNumber } from '../lib/convert';
-import { waitForServices, intervalRates } from '../store/store';
-import { ipcRenderer } from 'electron';
 
 let watchingHeight = false;
 
@@ -67,8 +66,14 @@ export function loadSyncing() {
 }
 
 export function switchChain(network, id) {
-    return (dispatch) => {
-        ipcRenderer.sendSync("switch-chain", network, id);
-        waitForServices();
-    };
+    return (dispatch) =>
+        rpc.call('backend_switchChain', [network]).then((result) => {
+            log.debug('switch chain', result);
+            dispatch({
+                type: 'NETWORK/SWITCH_CHAIN',
+                network,
+                id,
+            });
+            start();
+        });
 }

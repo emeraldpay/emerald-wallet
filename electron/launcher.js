@@ -1,8 +1,6 @@
 import {exec, spawn} from 'child_process';
-import fs from 'fs';
 import os from 'os';
 import log from 'loglevel';
-import path from 'path';
 
 const suffix = os.platform() === 'win32' ? '.exe' : '';
 

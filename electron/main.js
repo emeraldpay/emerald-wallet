@@ -1,48 +1,18 @@
-import {app, BrowserWindow, ipcMain } from 'electron';
+import {app, BrowserWindow} from 'electron';
 import { createWindow, mainWindow } from './mainWindow';
 import { RpcApi } from '../src/lib/rpcApi';
 import { launchGeth, launchEmerald } from './launcher';
-import { Services } from './services';
+import { newGethDownloader } from './downloader';
 import log from 'loglevel';
-import Store from 'electron-store';
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
 
 log.setLevel(isDev ? log.levels.DEBUG : log.levels.INFO);
 
-const settings = new Store({
-    name: 'settings',
-    defaults: {
-        // RPC configuration
-        chain: {
-            //type: 'remote',
-            //url: 'https://api.gastracker.io',
-            //chain: 'mainnet'
-            type: 'local',
-            chain: 'morden'
-        }
-    }
-});
-
 // This instance will be called from renderer process through remote.getGlobal("rpc")
 // In the future it is possible to replace rpc implementation
 global.rpc = new RpcApi();
-
-const store = new Store({
-    defaults: {
-        firstRun: true,
-    },
-    name: 'launcher'
-});
-
-global.launcherConfig = {
-    firstRun: store.get('firstRun'),
-    chain: store.get('chain')
-};
-
-console.log('firstRun', store.get('firstRun'));
-console.log('userData: ', app.getPath('userData'));
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.

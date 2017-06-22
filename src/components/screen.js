@@ -19,7 +19,6 @@ import ContractsList from './contracts/list';
 import AddContract from './contracts/add';
 import DeployContract from './contracts/deploy';
 import ContractShow from './contracts/show';
-import Welcome from './welcome';
 
 const Render = ({ screen, screenItem }) => {
     log.debug('screen', screen);
@@ -69,8 +68,6 @@ const Render = ({ screen, screenItem }) => {
         return <DeployContract />;
     } else if (screen === 'contract') {
         return <ContractShow contract={screenItem} />;
-    } else if (screen === 'welcome') {
-        return <Welcome />;
     }
 
     return (
