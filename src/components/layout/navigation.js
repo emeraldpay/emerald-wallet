@@ -53,7 +53,7 @@ Render.propTypes = {
 
 const Navigation = connect(
     (state, ownProps) => ({
-        chain: (state.network.get('chain') || {}).get('name'),
+        chain: (state.network.get('chain') || {}).get('name') || '',
     }),
     (dispatch, ownProps) => ({
         openAccounts: () => {

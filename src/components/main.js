@@ -13,21 +13,26 @@ import Footer from './layout/footer';
 
 const Render = translate('common')(({t, ...props}) => (
     <Grid>
+    {props.screen !== 'welcome' &&
+
         <Row>
             <Col xs={12}>
                 <Header/>
             </Col>
         </Row>
+    }
         <Row>
             <Col xs={12}>
                 <Screen id="body"/>
             </Col>
         </Row>
+    {props.screen !== 'welcome' &&
         <Row>
             <Col xs={12}>
                 <Footer />
             </Col>
         </Row>
+    }
     </Grid>
 ));
 
