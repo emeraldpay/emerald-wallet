@@ -33,9 +33,9 @@ const Render = () => {
     return (
         <Row style={{...styles.footerDiv}}>
             <Col xs={2} style={{color: 'limegreen'}}>
-                Beta 0.0.1
+                Beta 0.0.1i
             </Col>
-            <Col xs={8} middle='xs' style={{color: 'gray', fontWeight: '300'}}>
+            <Col xs={8} style={{color: 'gray', fontWeight: '300'}}>
                 <p style={{marginTop: 0}}>
                 Find an issue? Got a suggestion? <br/>
                 Please let us know on our <a target='_blank' href='https://github.com/ethereumproject/emerald-wallet/issues'>
@@ -45,7 +45,7 @@ const Render = () => {
                 Made with ❤️&nbsp; by <strong>ETCDEV</strong> and <a target='_blank' href='https://github.com/ethereumproject/emerald-wallet/network/members'>many wonderful contributors</a>.
                 </p>
             </Col>
-            <Col xs={2} style={align.right} middle="xs">
+            <Col xs={2} style={align.right}>
 
                 <FlatButton label="Source"
                     labelPosition="before"
