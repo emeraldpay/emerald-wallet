@@ -14,11 +14,11 @@ export function loadAccountBalance(accountId) {
                 value: result,
             });
         });
-        const tokens = getState().tokens;
-        if (!tokens.get('loading')) {
-            tokens.get('tokens')
-              .map((token) => dispatch(loadTokenBalanceOf(token, accountId)));
-        }
+        // const tokens = getState().tokens;
+        // if (!tokens.get('loading')) {
+        //     tokens.get('tokens')
+        //       .map((token) => dispatch(loadTokenBalanceOf(token, accountId)));
+        // }
     };
 }
 
