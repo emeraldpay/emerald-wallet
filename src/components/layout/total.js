@@ -99,7 +99,7 @@ const Total = connect(
         } else {
             currentLocaleCurrency = 'USD';
             fiat.total.localized = fiat.total.usd;
-            fiat.rate.localized = +fiat.rate.usd || 0; // fiat.pair.usd;
+            fiat.rate.localized = +fiat.rate.usd; // fiat.pair.usd;
         }
 
         return {

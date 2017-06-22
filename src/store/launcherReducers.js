@@ -13,16 +13,34 @@ const initial = Immutable.fromJS({
     },
     status: {
         geth: "not ready",
-        connector: "not ready"
+        connector: "not ready",
     }
 });
 
+// TODO: replace me with FS persistent storage along with user settings, eg
+// - window dimensions,
+// - rpc/geth/connector prefs
+function getStoredFirstRun() {
+    if (window.localStorage) {
+        const val = window.localStorage.getItem('emerald_firstRun');
+        if (typeof val !== 'undefined' && JSON.parse(val) === false) {
+            return false;
+        }
+    }
+    return true;
+}
+function setStoredFirstRun() {
+    if (window.localStorage) {
+        window.localStorage.setItem('emerald_firstRun', JSON.stringify(false));
+    }
+}
+
 function onConfig(state, action) {
     if (action.type === 'LAUNCHER/CONFIG') {
-        return state
-            .set('launcherType', action.launcherType)
-            .set('firstRun', action.config.firstRun)
-            .update('chain', (chain) => chain.merge(Immutable.fromJS(action.config.chain || {})))
+        setTimeout(setStoredFirstRun, 5000); // HACK
+        return state.set('launcherType', action.launcherType)
+            .set('firstRun', getStoredFirstRun()) // action.firstRu
+            .update('chain', (chain) => chain.merge(Immutable.fromJS(action.config.chain || {})));
     }
     return state;
 }

@@ -35,21 +35,19 @@ const Render = () => {
             <Col xs={2} style={{color: 'limegreen'}}>
                 Beta 0.0.1
             </Col>
-            <Col xs={8} middle='xs' style={{color: 'gray'}}>
+            <Col xs={8} middle='xs' style={{color: 'gray', fontWeight: '300'}}>
                 <p style={{marginTop: 0}}>
-                Welcome to Emerald Wallet Beta. Thanks for trying it out!<br/>
-                We're anticipating an Alpha release by July 20th.
-                In the meantime, you're encouraged to submit issues
-                as well as suggestions to our <a target='_blank' href='//github.com/ethereumproject/emerald-wallet/issues'>
-                issues page</a>.
+                Find an issue? Got a suggestion? <br/>
+                Please let us know on our <a target='_blank' href='//github.com/ethereumproject/emerald-wallet/issues'>
+                Github issues page</a>.
                 </p>
                 <p>
-                Made with ❤️&nbsp; by <strong>ETCDEV</strong> and <a target='_blank' href='https://github.com/ethereumproject/emerald-wallet/network/members'> wonderful contributors</a>.
+                Made with ❤️&nbsp; by <strong>ETCDEV</strong> and <a target='_blank' href='https://github.com/ethereumproject/emerald-wallet/network/members'>many wonderful contributors</a>.
                 </p>
             </Col>
             <Col xs={2} style={align.right} middle="xs">
 
-                <FlatButton label="On GitHub"
+                <FlatButton label="Source"
                     labelPosition="before"
                     href="https://github.com/ethereumproject/emerald-wallet"
                     icon={<FontIcon className="fa fa-github" />}/>

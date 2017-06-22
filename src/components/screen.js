@@ -10,7 +10,7 @@ import AddressAdd from './addressbook/add';
 import CreateTx from './tx/create';
 import TransactionShow from './tx/show';
 import TransactionsList from './tx/list';
-import TokensList from './tokens/list';
+// import TokensList from './tokens/list';
 import AddToken from './tokens/add';
 import CreateAccount from './accounts/add/add';
 import GenerateAccount from './accounts/add/generate';

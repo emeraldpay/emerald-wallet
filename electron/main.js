@@ -33,12 +33,12 @@ const store = new Store({
     defaults: {
         firstRun: true,
     },
-    name: 'launcher'
+    name: 'launcher',
 });
 
 global.launcherConfig = {
     firstRun: store.get('firstRun'),
-    chain: store.get('chain')
+    chain: store.get('chain'),
 };
 
 console.log('firstRun', store.get('firstRun'));

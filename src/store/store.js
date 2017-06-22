@@ -116,7 +116,8 @@ export function waitForServices() {
             unsubscribe();
             log.info("All services are ready to use by Wallet");
             startSync();
-            if (state.screen.get("screen") === 'welcome') {
+            // If not first run, go right to home when ready.
+            if (state.screen.get("screen") === 'welcome' && !state.launcher.get('firstRun')) {
                 store.dispatch(gotoScreen('home'));
             }
         }
