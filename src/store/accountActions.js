@@ -269,7 +269,7 @@ export function getGasPrice() {
 
 export function getExchangeRates() {
     return (dispatch) => {
-        getRates.call('get_exchangeRates').then((result) => {
+        getRates.call().then((result) => {
             dispatch({
                 type: 'ACCOUNT/EXCHANGE_RATES',
                 rates: result,
