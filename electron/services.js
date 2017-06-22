@@ -37,11 +37,25 @@ export class Services {
     }
 
     start() {
-        return this.startRpc()
-            .then(this.startConnector.bind(this))
-            .catch((err) => {
-                log.error('Failed to run services', err);
-            });
+        return Promise.all([
+            this.startRpc(),
+            this.startConnector()
+        ]);
+    }
+
+    shutdown() {
+        let shuttingDown = [];
+        if (this.rpc) {
+            shuttingDown.push(this.rpc.shutdown()
+                .then(() => this.gethStatus = STATUS.NOT_STARTED)
+                .then(() => this.notify.status("geth", "not ready")))
+        }
+        if (this.connnector) {
+            shuttingDown.push(this.connector.shutdown()
+                .then(() => this.connectorStatus = STATUS.NOT_STARTED)
+                .then(() => this.notify.status("connector", "not ready")))
+        }
+        return Promise.all(shuttingDown);
     }
 
     startRpc() {
@@ -79,13 +93,9 @@ export class Services {
 
     startConnector() {
         return new Promise((resolve, reject) => {
-            if (this.gethStatus !== STATUS.READY) {
-                reject(new Error('Geth is not ready'));
-                return;
-            }
             this.connectorStatus = STATUS.NOT_STARTED;
             this.notify.status("connector", "not ready");
-            this.connector = new LocalConnector(getBinDir(), this.rpc);
+            this.connector = new LocalConnector(getBinDir(), this.setup.chainId);
             this.connector.launch().then((emerald) => {
                 this.connectorStatus = STATUS.STARTING;
                 emerald.on('exit', (code) => {
@@ -114,21 +124,6 @@ export class Services {
                 this.setup.chainId
             );
             resolve('ok');
-        });
-    }
-
-    stop() {
-        return new Promise((resolve, reject) => {
-            this.rpc.shutdown()
-                .then(this.connector.shutdown())
-                .then((res) => {
-                    log.info(res);
-                    resolve(res);
-                })
-                .catch((err) => {
-                    log.error(err);
-                    reject(err);
-                });
         });
     }
 

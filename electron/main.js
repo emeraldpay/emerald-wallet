@@ -52,7 +52,7 @@ app.on('ready', () => {
     const webContents = createWindow(isDev);
 
     const services = new Services(webContents);
-    services.start();
+    services.start().catch((err) => log.error("Failed to start Services", err));
     ipcMain.on('get-status', (event) => {
         event.returnValue = "ok";
         services.notifyStatus();
@@ -66,23 +66,22 @@ app.on('ready', () => {
             return;
         }
         event.returnValue = "ok";
-        services.rpc.shutdown()
+        services.shutdown()
             .then(services.notifyStatus.bind(services))
             .then(new Promise((resolve) => {
                 services.setup.chain = chain;
                 services.setup.chainId = id;
                 resolve('ok')
             }))
-            .then(services.startRpc.bind(services))
+            .then(services.start.bind(services))
             .then(services.notifyStatus.bind(services))
             .catch((err) => log.error('Failed to Switch Chain', err));
     });
 
     app.on('quit', () => {
-        return services.stop((res) => {
-            log.info(res);
-        })
-        .catch((e) => { log.error(e); });
+        return services.shutdown()
+            .then(() => log.info("All services are stopped"))
+            .catch((e) => log.error("Failed to stop services", e));
     });
 });
 
