@@ -38,11 +38,11 @@ const Render = () => {
             <Col xs={8} style={{color: 'gray', fontWeight: '300'}}>
                 <p style={{marginTop: 0}}>
                 Find an issue? Got a suggestion? <br/>
-                Please let us know on our <a target='_blank' href='https://github.com/ethereumproject/emerald-wallet/issues'>
+                Please let us know on our <a  href='https://github.com/ethereumproject/emerald-wallet/issues'>
                 Github issues page</a>.
                 </p>
                 <p>
-                Made with ❤️&nbsp; by <strong>ETCDEV</strong> and <a target='_blank' href='https://github.com/ethereumproject/emerald-wallet/network/members'>many wonderful contributors</a>.
+                Made with ❤️&nbsp; by <strong>ETCDEV</strong> and <a href='https://github.com/ethereumproject/emerald-wallet/network/members'>many wonderful contributors</a>.
                 </p>
             </Col>
             <Col xs={2} style={align.right}>
