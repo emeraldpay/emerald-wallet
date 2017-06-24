@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
+import LinearProgress from 'material-ui/LinearProgress';
 
 const Render = ({ block, chain, progress, peerCount }) => {
     // networkDetails = `Block ${syncing.get('currentBlock')} of ${syncing.get('highestBlock')}`;
@@ -52,7 +53,9 @@ const Render = ({ block, chain, progress, peerCount }) => {
             </Row>
             <Row >
                 <Col style={styles.progress.total}>
-                    <div style={styles.progress.current}></div>
+                    <div style={styles.progress.current}>
+                         <LinearProgress mode="determinate" value={progress} />
+                    </div>
                 </Col>
             </Row>
         </div>
