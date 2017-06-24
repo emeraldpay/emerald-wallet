@@ -101,7 +101,7 @@ class AccountPopupRender extends React.Component {
             </Row>
             <Row>
                 <Col xs={7}>
-                    <p>Top up your wallet with BTC</p>
+                    <p>Top up your wallet with ETC</p>
                     <DescriptionList>
                         {account.get('description') && <div>
         -                            <DescriptionData>{account.get('description')}</DescriptionData>
@@ -110,26 +110,6 @@ class AccountPopupRender extends React.Component {
                             <AccountAddress id={account.get('id')} />
                         </DescriptionData>
                     </DescriptionList>
-
-                    <p>Exchange Rate</p>
-                    <strong>
-                        1 ETC ~ {rates.get('btc')} BTC
-                    </strong>
-
-                    <p style={styles.usageText}>
-                        Share your wallet address and use it to top up your wallet with BTC from any
-                        &nbsp;<a href='https://shapeshift.io' target='_blank' >other service
-                        <sup><FontIcon className='fa fa-external-link' style={{fontSize: '0.6rem'}} /></sup>
-                        </a>. All BTC will be converted to ETC.
-                        It may take some time for your coins be deposited.
-                    </p>
-
-                    <p>Minimal amount</p>
-                    <p>{gasPrice.getEther(10)} ~ {gasPrice.getFiat(rates.get('btc'), 10)} BTC</p>
-
-                    <p style={styles.usageWarning}>
-                        Please note that if an amount is less than the minimum, it is mostly non-refundable.
-                    </p>
                 </Col>
                 <Col xs={5} style={align.center}>
                      <QRCode value={account.get('id')} size={256} style={styles.qr} />
