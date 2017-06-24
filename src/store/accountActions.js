@@ -4,6 +4,7 @@ import { getRates } from 'lib/marketApi';
 import { address } from 'lib/validators';
 import { loadTokenBalanceOf } from './tokenActions';
 import log from 'loglevel';
+import { toHex, toNumber } from 'lib/convert';
 
 export function loadAccountBalance(accountId) {
     return (dispatch, getState) => {
@@ -91,6 +92,16 @@ function sendRawTransaction(signed) {
     return rpc.call('eth_sendRawTransaction', [signed])
 }
 
+function unwrap(list) {
+    return new Promise((resolve, reject) => {
+        if (list.length === 1) {
+            resolve(list[0])
+        } else {
+            reject(new Error(`Invalid list size ${list.length}`))
+        }
+    })
+}
+
 function onTxSend(dispatch, accountId) {
     return (result) => {
         dispatch({
@@ -103,6 +114,27 @@ function onTxSend(dispatch, accountId) {
     }
 }
 
+function getNonce(addr) {
+    return rpc.call('eth_getTransactionCount', [addr, 'latest'])
+}
+
+function withNonce(tx) {
+    return (nonce) => new Promise((resolve, reject) =>
+        resolve(Object.assign({}, tx, {nonce}))
+    )
+}
+
+function incNonce(nonce) {
+    return new Promise((resolve) => {
+        let nonceDec = toNumber(nonce);
+        resolve(toHex(nonceDec + 1))
+    })
+}
+
+function emeraldSign(txData) {
+    return rpc.call('emerald_signTransaction', [txData])
+}
+
 export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value) {
     let txData = {
         from: accountId,
@@ -113,10 +145,14 @@ export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value)
         value,
     };
     return (dispatch) =>
-        rpc.call('emerald_signTransaction', [txData])
-            .then(sendRawTransaction)
-            .then(onTxSend(dispatch, accountId))
-            .catch(log.error);
+            getNonce(accountId)
+                .then(incNonce)
+                .then(withNonce(txData))
+                .then(emeraldSign)
+                .then(unwrap)
+                .then(sendRawTransaction)
+                .then(onTxSend(dispatch, accountId))
+                .catch(log.error);
 }
 
 export function createContract(accountId, passphrase, gas, gasPrice, data) {
@@ -129,6 +165,7 @@ export function createContract(accountId, passphrase, gas, gasPrice, data) {
     };
     return (dispatch) =>
         rpc.call('emerald_signTransaction', [txData])
+            .then(unwrap)
             .then(sendRawTransaction)
             .then(onTxSend(dispatch, accountId))
             .catch(log.error);
