@@ -103,22 +103,17 @@ function unwrap(list) {
     })
 }
 
-function onTxSend(dispatch, accountId) {
-    return (result) => {
-        const txhash = result;
+function onTxSend(dispatch, sourceTx) {
+    return (txhash) => {
         dispatch({
             type: 'ACCOUNT/SEND_TRANSACTION',
-            accountId,
+            account: sourceTx.from,
             txHash: txhash,
         });
-        dispatch(loadAccountBalance(accountId));
-        const txdetails = {
-            hash: txhash,
-            account: accountId
-        };
-        dispatch(trackTx(txdetails));
-        dispatch(gotoScreen('transaction', txdetails));
-        return result;
+        dispatch(loadAccountBalance(sourceTx.from));
+        const senttx = Object.assign({}, sourceTx, {hash: txhash});
+        dispatch(trackTx(senttx));
+        dispatch(gotoScreen('transaction', senttx));
     }
 }
 
@@ -145,7 +140,7 @@ function emeraldSign(txData) {
 }
 
 export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value) {
-    let txData = {
+    let originalTx = {
         from: accountId,
         passphrase,
         to,
@@ -156,11 +151,14 @@ export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value)
     return (dispatch) =>
             getNonce(accountId)
                 .then(incNonce)
-                .then(withNonce(txData))
-                .then(emeraldSign)
-                .then(unwrap)
-                .then(sendRawTransaction)
-                .then(onTxSend(dispatch, accountId))
+                .then(withNonce(originalTx))
+                .then((tx) =>
+                    emeraldSign(tx)
+                        .then(unwrap)
+                        .then(sendRawTransaction)
+                        .then(onTxSend(dispatch, tx))
+                        .catch(catchError(dispatch))
+                )
                 .catch(catchError(dispatch));
 }
 

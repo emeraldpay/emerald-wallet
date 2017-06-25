@@ -123,7 +123,7 @@ Render.propTypes = {
     hash: PropTypes.string.isRequired,
     transaction: PropTypes.object.isRequired,
     rates: PropTypes.object.isRequired,
-    accounts: PropTypes.array.isRequired,
+    accounts: PropTypes.object.isRequired, //TODO toJS()?
     openAccount: PropTypes.func.isRequired,
     goBack: PropTypes.func.isRequired,
 };
