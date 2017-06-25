@@ -99,15 +99,16 @@ const Render = (props) => {
               </Col>
             </Row>
             <Row>
-              <Col xs={8} md={6}>
+              <Col xs={8}>
                 <Field name="value"
                        component={TextField}
                        floatingLabelText="Amount"
                        hintText="1.0000"
+                       fullWidth={true}
                        validate={[required]}
                 />
               </Col>
-              <Col xs={4} md={4}>
+              <Col xs={4} style={{paddingTop: "24px"}}>
                 <Field name="token"
                        component={SelectField}
                        onChange={onChangeToken}

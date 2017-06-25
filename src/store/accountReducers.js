@@ -155,11 +155,14 @@ function onPendingBalance(state, action) {
 function createTx(data) {
     let tx = initialTx.merge({
         hash: data.hash,
-        from: data.from,
         to: data.to,
         gas: data.gas,
         gasPrice: data.gasPrice,
     });
+    if (data.from !== '0x0000000000000000000000000000000000000000') {
+        console.log('!!!! set data.from', data.from);
+        tx = tx.set('from', data.from)
+    }
     if (typeof data.value === 'string') {
         tx = tx.set('value', new Wei(data.value));
     }
@@ -168,6 +171,9 @@ function createTx(data) {
     }
     if (typeof data.gas === 'string' || typeof data.gas === 'number') {
         tx = tx.set('gas', toNumber(data.gas));
+    }
+    if (typeof data.nonce === 'string') {
+        tx = tx.set('nonce', toNumber(data.nonce))
     }
     // If is not pending, fill in finalized attributes.
     if (typeof data.blockNumber !== 'undefined' && data.blockNumber !== null) {
@@ -206,7 +212,7 @@ function onUpdateTx(state, action) {
         return state.update('trackedTransactions', (txes) => {
             const pos = txes.findKey((tx) => tx.get('hash') === action.tx.hash);
             if (pos >= 0) {
-                txes = txes.set(pos, createTx(action.tx));
+                txes = txes.update(pos, (tx) => tx.mergeWith((o,n) => o || n, createTx(action.tx)));
             }
             // It seems kind of sloppy to store whole txs, when all we
             // really need is hashes. But even if a pending transaction is stored

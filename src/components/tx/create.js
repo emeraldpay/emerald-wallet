@@ -90,44 +90,22 @@ const CreateTx = connect(
     (dispatch, ownProps) => ({
         onSubmit: (data) => {
             log.debug(data);
-            const afterTx = (txhash) => {
-                const txdetails = {
-                    hash: txhash,
-                    account: data.from,
-                };
-                const tx = data;
-                tx.hash = txhash;
-                tx.gasPrice = toHex(mweiToWei(data.gasPrice));
-                dispatch(trackTx(tx));
-                dispatch(gotoScreen('transaction', txdetails));
-            };
-            const resolver = (resolve, f) => (x) => {
-                f.apply(x);
-                resolve(x);
-            };
-            return traceValidate(data, dispatch)
-                    .then((result) => {
-                        if (result) {
-                            throw new SubmissionError(result);
-                        } else {
-                            if (data.token.length > 1) {
-                                return new Promise((resolve, reject) => {
-                                    dispatch(transferTokenTransaction(data.from, data.password,
-                                        data.to, toHex(data.gas),
-                                        toHex(mweiToWei(data.gasPrice)),
-                                        toHex(etherToWei(data.value)),
-                                        data.token, data.isTransfer))
-                                        .then(resolver(afterTx, resolve));
-                                });
-                            }
-                            return new Promise((resolve, reject) => {
-                                dispatch(sendTransaction(data.from, data.password, data.to,
-                                        toHex(data.gas), toHex(mweiToWei(data.gasPrice)),
-                                        toHex(etherToWei(data.value))
-                                    )).then(resolver(afterTx, resolve));
-                            });
+            traceValidate(data, dispatch)
+                .then((result) => {
+                    if (result) {
+                        throw new SubmissionError(result);
+                    } else {
+                        if (data.token.length > 1) {
+                            log.error('unsupported');
+                            return
                         }
-                    });
+                        dispatch(
+                            sendTransaction(data.from, data.password, data.to,
+                                toHex(data.gas), toHex(mweiToWei(data.gasPrice)),
+                                toHex(etherToWei(data.value)))
+                        );
+                    }
+                });
         },
         onChangeAccount: (accounts, value) => {
             // load account information for selected account
