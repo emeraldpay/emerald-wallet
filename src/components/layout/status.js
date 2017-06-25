@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
+import LinearProgress from 'material-ui/LinearProgress';
 
 const Render = ({ block, chain, progress, peerCount }) => {
     // networkDetails = `Block ${syncing.get('currentBlock')} of ${syncing.get('highestBlock')}`;
@@ -48,11 +49,7 @@ const Render = ({ block, chain, progress, peerCount }) => {
             <Row>
                 <Col xs={12} style={styles.paddingSmVert}>
                     {peerCount} {peerCount === 1 ? 'peer' : 'peers'}, {block} blocks
-                </Col>
-            </Row>
-            <Row >
-                <Col style={styles.progress.total}>
-                    <div style={styles.progress.current}></div>
+                     <LinearProgress mode="determinate" color="green" value={progress} />
                 </Col>
             </Row>
         </div>
@@ -72,9 +69,10 @@ const Status = connect(
         const curBlock = state.network.getIn(['currentBlock', 'height'], -1);
         const tip = state.network.getIn(['sync', 'highestBlock'], -1);
         const peerCount = state.network.get('peerCount');
+        const progress = ((curBlock / tip) * 100);
         return {
             block: curBlock,
-            progress: ((curBlock / tip) * 100),
+            progress: isNaN(progress) ? 100 : progress,
             chain: (state.network.get('chain') || {}).get('title') || '',
             peerCount,
         };
