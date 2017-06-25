@@ -5,6 +5,7 @@ import { address } from 'lib/validators';
 import { loadTokenBalanceOf } from './tokenActions';
 import log from 'loglevel';
 import { toHex, toNumber } from 'lib/convert';
+import { gotoScreen, catchError } from './screenActions';
 
 export function loadAccountBalance(accountId) {
     return (dispatch, getState) => {
@@ -104,15 +105,23 @@ function unwrap(list) {
 
 function onTxSend(dispatch, accountId) {
     return (result) => {
+        const txhash = result;
         dispatch({
             type: 'ACCOUNT/SEND_TRANSACTION',
             accountId,
-            txHash: result,
+            txHash: txhash,
         });
         dispatch(loadAccountBalance(accountId));
+        const txdetails = {
+            hash: txhash,
+            account: accountId
+        };
+        dispatch(trackTx(txdetails));
+        dispatch(gotoScreen('transaction', txdetails));
         return result;
     }
 }
+
 
 function getNonce(addr) {
     return rpc.call('eth_getTransactionCount', [addr, 'latest'])
@@ -152,7 +161,7 @@ export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value)
                 .then(unwrap)
                 .then(sendRawTransaction)
                 .then(onTxSend(dispatch, accountId))
-                .catch(log.error);
+                .catch(catchError(dispatch));
 }
 
 export function createContract(accountId, passphrase, gas, gasPrice, data) {

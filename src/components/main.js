@@ -10,6 +10,7 @@ import './main.scss';
 import Screen from './screen';
 import Header from './layout/header';
 import Footer from './layout/footer';
+import Error from './error';
 
 const Render = translate('common')(({t, ...props}) => (
     <Grid>
@@ -26,6 +27,7 @@ const Render = translate('common')(({t, ...props}) => (
                 <Screen id="body"/>
             </Col>
         </Row>
+        <Error/>
     {props.screen !== 'welcome' &&
         <Row>
             <Col xs={12}>
