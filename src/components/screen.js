@@ -19,7 +19,7 @@ import ContractsList from './contracts/list';
 import AddContract from './contracts/add';
 import DeployContract from './contracts/deploy';
 import ContractShow from './contracts/show';
-import Welcome from './welcome';
+import Welcome from './welcome/welcome';
 
 const Render = ({ screen, screenItem }) => {
     log.debug('screen', screen);

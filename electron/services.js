@@ -1,5 +1,5 @@
 import log from 'loglevel';
-import { LocalGeth, LocalConnector } from './launcher';
+import { LocalGeth, LocalConnector, NoneGeth, RemoteGeth } from './launcher';
 import { UserNotify } from './userNotify';
 import { newGethDownloader } from './downloader';
 import path from 'path';
@@ -15,9 +15,10 @@ const STATUS = {
 };
 
 const LAUNCH_TYPE = {
-    LOCAL_RUN: 0,
-    LOCAL_EXISTING: 1,
-    REMOTE_URL: 2,
+    NONE: 0,
+    LOCAL_RUN: 1,
+    LOCAL_EXISTING: 2,
+    REMOTE_URL: 3,
 };
 
 const DEFAULT_SETUP = {
@@ -27,6 +28,11 @@ const DEFAULT_SETUP = {
     chainId: 62,
 };
 
+function rpcTypeName(type) {
+    const names = ['none', 'local', 'local', 'remote'];
+    return names[type]
+}
+
 export class Services {
 
     constructor(webContents) {
@@ -34,6 +40,29 @@ export class Services {
         this.connectorStatus = STATUS.NOT_STARTED;
         this.gethStatus = STATUS.NOT_STARTED;
         this.notify = new UserNotify(webContents);
+    }
+
+    useSettings(settings) {
+        return new Promise((resolve, reject) => {
+            const rpcType = settings.get('rpcType');
+            if (rpcType === 'none') {
+                this.setup.rpcType = LAUNCH_TYPE.NONE;
+            } else if (rpcType === 'remote' || rpcType === 'remote-auto') {
+                this.setup.rpcType = LAUNCH_TYPE.REMOTE_URL;
+                settings.set('chain', 'mainnet');
+                settings.set('chainId', 61);
+            } else if (rpcType === 'local') {
+                this.setup.rpcType = LAUNCH_TYPE.LOCAL_RUN;
+            } else {
+                log.error("Invalid chain type: ", rpcType);
+                this.setup.rpcType = LAUNCH_TYPE.NONE;
+                reject(new Error(`Invalid chain type: ${rpcType}`));
+                return
+            }
+            this.setup.chain = settings.get('chain');
+            this.setup.chainId = settings.get('chainId');
+            resolve(this.setup);
+        })
     }
 
     start() {
@@ -62,6 +91,21 @@ export class Services {
         return new Promise((resolve, reject) => {
             this.notify.status('geth', 'not ready');
             this.gethStatus = STATUS.NOT_STARTED;
+            if (this.setup.rpcType === LAUNCH_TYPE.NONE) {
+                log.info("use NONE Geth");
+                this.notify.error("Ethereum connection type is not configured");
+                resolve(new NoneGeth());
+                return
+            }
+            if (this.setup.rpcType === LAUNCH_TYPE.REMOTE_URL) {
+                log.info("use REMOTE Geth");
+                this.gethStatus = STATUS.READY;
+                this.notify.info("Use Remote RPC API");
+                this.notify.rpcUrl('https://api.gastracker.io/web3');
+                this.notify.status("geth", "ready");
+                resolve(new RemoteGeth(null, null));
+                return
+            }
             let gethDownloader = newGethDownloader(this.notify, getBinDir());
             gethDownloader.downloadIfNotExists().then(() => {
                 this.notify.info('Launching Geth backend');
@@ -119,10 +163,13 @@ export class Services {
             this.notify.status('connector', this.connectorStatus === STATUS.READY ? 'ready' : 'not ready');
             this.notify.status('geth', this.gethStatus === STATUS.READY ? 'ready' : 'not ready');
             this.notify.chain(
-                this.setup.rpcType === LAUNCH_TYPE.LOCAL_RUN ? 'local' : 'remote',
+                rpcTypeName(this.setup.rpcType),
                 this.setup.chain,
                 this.setup.chainId
             );
+            if (this.setup.rpcType === LAUNCH_TYPE.REMOTE_URL) {
+                this.notify.rpcUrl('https://mewapi.epool.io');
+            }
             resolve('ok');
         });
     }

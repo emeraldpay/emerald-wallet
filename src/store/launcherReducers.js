@@ -2,9 +2,10 @@ import Immutable from 'immutable';
 
 const initial = Immutable.fromJS({
     firstRun: false,
+    settingUpdated: false,
     launcherType: "web",
     chain: {
-        rpc: "local",
+        rpc: "none",
         //rpc: "remote", url: "http://api.gastracker.io/web3"
     },
     message: {
@@ -71,11 +72,19 @@ function onChain(state, action) {
     return state;
 }
 
+function onSettingUpdate(state, action) {
+    if (action.type === 'LAUNCHER/SETTINGS') {
+        return state.set("settingsUpdated", action.updated);
+    }
+    return state;
+}
+
 export default function launcherReducers(state, action) {
     state = state || initial;
     state = onConfig(state, action);
     state = onMessage(state, action);
     state = onServiceStatus(state, action);
     state = onChain(state, action);
+    state = onSettingUpdate(state, action);
     return state;
 }

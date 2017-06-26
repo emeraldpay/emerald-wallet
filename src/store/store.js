@@ -73,7 +73,10 @@ export const store = createStore(
 
 function refreshAll() {
     store.dispatch(refreshTrackedTransactions());
-    store.dispatch(loadPeerCount());
+    let state = store.getState();
+    if (state.launcher.getIn(["chain", "rpc"]) === 'local') {
+        store.dispatch(loadPeerCount());
+    }
     setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
 }
 
@@ -89,10 +92,14 @@ export function startSync() {
     // store.dispatch(loadTokenList());
     // store.dispatch(loadContractList());
     store.dispatch(loadHeight());
-    // check for syncing
-    setTimeout(() => store.dispatch(loadSyncing()), intervalRates.second); // prod: intervalRates.second
-    // double check for syncing
-    setTimeout(() => store.dispatch(loadSyncing()), 2 * intervalRates.minute); // prod: 30 * this.second
+
+    let state = store.getState();
+    if (state.launcher.getIn(["chain", "rpc"]) !== 'remote-auto') {
+        // check for syncing
+        setTimeout(() => store.dispatch(loadSyncing()), intervalRates.second); // prod: intervalRates.second
+        // double check for syncing
+        setTimeout(() => store.dispatch(loadSyncing()), 2 * intervalRates.minute); // prod: 30 * this.second
+    }
     setTimeout(() => store.dispatch(loadPendingTransactions()), intervalRates.refreshAllTxRate);
     setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
     setTimeout(refreshLong, 3 * intervalRates.second);

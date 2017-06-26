@@ -1,4 +1,5 @@
 import 'isomorphic-fetch';
+import log from 'loglevel';
 
 const baseHeaders = {
     'Content-Type': 'application/json',
@@ -32,10 +33,11 @@ export class RpcApi {
                     method: ${name},
                     params: ${JSON.stringify(params)},
                     headers: ${JSON.stringify(headers)}`));
+                return
             }
             this.jsonPost(name, params, headers).then((json) => {
                 // eth_syncing will return {.. "result": false}
-                if (json.result || json.result === false) {
+                if (json.result || json.result === false || json.result === null) {
                     resolve(json.result);
                 } else if (json.error) {
                     reject(json.error);
@@ -60,7 +62,14 @@ export class RpcApi {
             method: 'POST',
             headers: Object.assign(baseHeaders, headers),
             body: JSON.stringify(data),
-        }).then((response) => response.json());
+        }).then((response) => {
+            try {
+                return response.json()
+            } catch (e) {
+                log.error("Invalid response", response, e);
+                throw e
+            }
+        });
     }
 }
 
