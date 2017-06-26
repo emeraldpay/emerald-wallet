@@ -9,5 +9,7 @@
     "submit": "Submit",
     "clear": "Clear Values",
     "done": "Done",
-    "cancel": "Cancel"
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Forget"
 }
