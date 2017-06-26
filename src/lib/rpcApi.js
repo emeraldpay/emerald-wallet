@@ -1,4 +1,7 @@
 import 'isomorphic-fetch';
+import Immutable from 'immutable';
+import log from 'loglevel';
+import { getStoreState } from 'store/store';
 
 const baseHeaders = {
     'Content-Type': 'application/json',
@@ -55,6 +58,17 @@ export class RpcApi {
             params,
             id: this.requestSeq++,
         };
+        // Set chain && chain_id for emerald via RPC per request instead of on the CLI.
+        if (RpcApi.routeToEmerald(name) && params.constructor === Array) {
+            const chainState = getStoreState().network.get('chain') || Immutable.Map({});
+            const chainName = chainState.get('title');
+            const chainId = chainState.get('id');
+            data.params.push({
+                chain_id: chainId,
+                chain: chainName,
+            });
+        }
+        log.info('rpcapi', data);
         const url = RpcApi.routeToEmerald(name) ? this.urlEmerald : this.urlGeth;
         return fetch(url, {
             method: 'POST',

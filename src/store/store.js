@@ -71,6 +71,10 @@ export const store = createStore(
     )
 );
 
+export function getStoreState() {
+    return store.getState();
+}
+
 function refreshAll() {
     store.dispatch(refreshTrackedTransactions());
     store.dispatch(loadPeerCount());
