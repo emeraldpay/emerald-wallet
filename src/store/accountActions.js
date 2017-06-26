@@ -193,7 +193,7 @@ export function importWallet(wallet, name, description) {
                 } catch (e) {
                     reject({error: e});
                 }
-                return rpc.call('emerald_importAccount', data).then((result) => {
+                return rpc.call('emerald_importAccount', [data]).then((result) => {
                     dispatch({
                         type: 'ACCOUNT/IMPORT_WALLET',
                         accountId: result,
