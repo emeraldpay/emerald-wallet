@@ -2,6 +2,7 @@
   "name": "EmeraldWallet",
   "private": false,
   "author": "Igor Artamonov",
+  "email": "splix@etcdevteam.com", 
   "contributors": [
     "Igor Artamonov <splix@etcdevteam.com>",
     "Elaine Ou <elaine@ethereumclassic.org>",
