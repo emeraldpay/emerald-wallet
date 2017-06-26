@@ -14,7 +14,9 @@ matrix:
   allow_failures:
     - env: FULL_CHECK=true
 before_script:
+  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then xcode-select --install; fi
   - npm install -g license-checker
+  - npm install
 script:
   - if [[ $(license-checker --production --exclude '(GPL-2.0 OR MIT)' | grep GPL) ]]; then license-checker --production | grep -C 1 GPL && false; fi
   - npm run build
