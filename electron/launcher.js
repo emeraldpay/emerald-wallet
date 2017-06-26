@@ -99,8 +99,8 @@ export class LocalConnector {
                     let options = [
                         'server',
                         '--verbose', 1,
-                        '--chain-id', this.chainId,
-                        '--chain', 'testnet',
+                        // '--chain-id', this.chainId,
+                        // '--chain', 'testnet',
                     ];
                     this.proc = spawn(bin, options);
                     resolve(this.proc);
