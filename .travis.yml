@@ -1,6 +1,12 @@
 language: node_js
 node_js:
   - "6"
+cache:
+  directories:
+    - node_modules
+os:
+  - osx
+  - linux
 env:
   - FULL_CHECK=false
   - FULL_CHECK=true
@@ -13,6 +19,7 @@ script:
   - if [[ $(license-checker --production --exclude '(GPL-2.0 OR MIT)' | grep GPL) ]]; then license-checker --production | grep -C 1 GPL && false; fi
   - npm run build
   - if [[ $FULL_CHECK == "true" ]]; then npm run lint --silent; fi
+  - npm run dist
 env:
   - CXX=g++-4.8
 addons:
