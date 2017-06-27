@@ -18,11 +18,14 @@ before_script:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then npm install node-gyp -g; fi
   - npm install -g license-checker
   - npm install
+  # Install cargo and emerald and move to project base.
+  - bash dependencies.sh
 script:
   - if [[ $(license-checker --production --exclude '(GPL-2.0 OR MIT)' | grep GPL) ]]; then license-checker --production | grep -C 1 GPL && false; fi
   - npm run build
   - if [[ $FULL_CHECK == "true" ]]; then npm run lint --silent; fi
-  - npm run dist
+  # Env var to not sign for now.
+  - env CSC_IDENTITY_AUTO_DISCOVERY=false npm run dist
 env:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then CXX=g++-4.8; fi
   - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$CCX" == "g++-4.8" ]; then export CCX="gcc-4.8"; fi

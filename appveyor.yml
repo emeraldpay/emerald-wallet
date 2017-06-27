@@ -12,7 +12,9 @@ install:
   - npm install -g npm@latest
   - set PATH=%APPDATA%\npm;%PATH%
   - npm install
+  # I don't even know if windows haz bash.
+  - bash dependencies.sh
 build: off
 version: '{build}'
 test_script:
-  - npm run dist
+  - env CSC_IDENTITY_AUTO_DISCOVERY=false npm run dist

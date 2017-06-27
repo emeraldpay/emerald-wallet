@@ -6,6 +6,26 @@ import path from 'path';
 
 const suffix = os.platform() === 'win32' ? '.exe' : '';
 
+function checkExists(target) {
+    return new Promise((resolve) => {
+        fs.access(target, fs.constants.R_OK | fs.constants.X_OK, (err) => {
+            if (err) {
+                resolve(false)
+            } else {
+                fs.stat(target, (err, stat) => {
+                    if (err) {
+                        resolve(false)
+                    } else if (!stat.isFile() || stat.size === 0) {
+                        resolve(false)
+                    } else {
+                        resolve(true)
+                    }
+                });
+            }
+        });
+    });
+}
+
 export class LocalGeth {
     constructor(bin, network, rpcPort) {
         this.bin = bin;
@@ -82,14 +102,56 @@ export class RemoteGeth {
 
 export class LocalConnector {
 
-    constructor(bin, chainId) {
+    constructor(appPath, bin, chainId) {
+        this.appPath = appPath;
         this.bin = bin;
         this.chainId = chainId || '61';
     }
 
-    launch() {
+    // It would be nice to refactor so we can reuse functions
+    // - chmod to executable
+    // - check if exists
+    // - move
+    // - get bin path for executable (eg this.emeraldBin?)
+    migrateIfNotExists() {
         return new Promise((resolve, reject) => {
-            log.info(`Starting Emerald Connector... [chainId: ${this.chainId}]`);
+            const bin = path.join(this.bin, 'emerald' + suffix);
+            log.debug('migrating em if not exists, bin:', bin);
+            checkExists(bin).then((exists) => {
+                if (!exists) {
+                    log.debug('emerald does not yet exist in bin');
+                    // check that included binary path exists
+                    // where packaged emerald binary path => app.getAppPath()/Contents/Emerald
+                    // if it does exist, move it to this.bin/
+                    const packagedEmeraldBinPath = path.join(this.appPath, 'Contents', 'emerald');
+                    log.debug('packagedEmearldBinPath', packagedEmeraldBinPath);
+                    checkExists(packagedEmeraldBinPath).then((emBinaryExists) => {
+                        log.debug('packaged emerald binary exists?', emBinaryExists);
+                        if (!emBinaryExists) {
+                            reject(new Error('No packaged emerald binary found.'));
+                        }
+                        fs.rename(packagedEmeraldBinPath, bin, (mverr) => {
+                            if (mverr) {
+                                reject(mverr);
+                            }
+                            fs.chmod(bin, 0o755, (moderr) => {
+                                if (moderr) {
+                                    log.error('Failed to set emerald executable flag', moderr);
+                                    reject(moderr);
+                                }
+                                resolve(true);
+                            });
+                        });
+                    });
+                }
+                // Assuming the emerald found is valid (perms, etc).
+                resolve(true);
+            })
+        });
+    }
+
+    start() {
+        return new Promise((resolve, reject) => {
             const bin = path.join(this.bin, 'emerald' + suffix);
             fs.access(bin, fs.constants.F_OK | fs.constants.R_OK | fs.constants.X_OK, (err) => {
                 if (err) {
@@ -99,13 +161,25 @@ export class LocalConnector {
                     let options = [
                         'server',
                         '--verbose', 1,
-                        '--chain-id', this.chainId
+                        // '--chain-id', this.chainId
+                        '--chain', 'testnet',
                     ];
                     this.proc = spawn(bin, options);
                     resolve(this.proc);
                 }
             });
-        })
+        });
+    }
+
+    launch() {
+        return new Promise((resolve, reject) => {
+            log.info(`Starting Emerald Connector... [chainId: ${this.chainId}]`);
+            const bin = path.join(this.bin, 'emerald' + suffix);
+            this.migrateIfNotExists()
+                    .then(this.start.bind(this))
+                    .then(resolve)
+                    .catch(reject);
+        });
     }
 
     shutdown() {

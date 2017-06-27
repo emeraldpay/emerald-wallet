@@ -1,4 +1,5 @@
 import log from 'loglevel';
+import fs from 'fs';
 import { LocalGeth, LocalConnector } from './launcher';
 import { UserNotify } from './userNotify';
 import { newGethDownloader } from './downloader';
@@ -58,6 +59,7 @@ export class Services {
         return Promise.all(shuttingDown);
     }
 
+
     startRpc() {
         return new Promise((resolve, reject) => {
             this.notify.status('geth', 'not ready');
@@ -95,7 +97,7 @@ export class Services {
         return new Promise((resolve, reject) => {
             this.connectorStatus = STATUS.NOT_STARTED;
             this.notify.status("connector", "not ready");
-            this.connector = new LocalConnector(getBinDir(), this.setup.chainId);
+            this.connector = new LocalConnector(app.getAppPath(), getBinDir(), this.setup.chainId);
             this.connector.launch().then((emerald) => {
                 this.connectorStatus = STATUS.STARTING;
                 emerald.on('exit', (code) => {

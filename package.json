@@ -33,7 +33,8 @@
 
     "lint": "./node_modules/eslint/bin/eslint.js ./src/",
     "postinstall": "electron-builder install-app-deps",
-    "dist": "npm run build:all:nowatch && electron-builder --publish onTagOrDraft"
+    "dist": "npm run build:all:nowatch && electron-builder --publish onTagOrDraft",
+    "dist:nobuild": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder"
   },
   "keywords": [
     "react",
@@ -144,6 +145,7 @@
   },
   "build": {
     "appId": "com.ethereumclassic.emeraldwallet",
+    "extraFiles": ["./emerald"],
     "mac": {
       "category": "public.app-category.developer-tools"
     },
