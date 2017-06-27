@@ -129,7 +129,7 @@ function onSetTxCount(state, action) {
 
 function onAddAccount(state, action) {
     if (action.type === 'ACCOUNT/ADD_ACCOUNT') {
-        return addAccount(state, action.accountId, state.name, state.description);
+        return addAccount(state, action.accountId, action.name, action.description);
     }
     return state;
 }
