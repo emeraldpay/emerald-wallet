@@ -11,13 +11,14 @@ osx_image: xcode8.3
 env:
   - FULL_CHECK=false
   - FULL_CHECK=true
-  - CXX=g++-4.8
 matrix:
   allow_failures:
     - env: FULL_CHECK=true
+before_install:
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then export CXX=g++-4.8; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$CCX" == "g++-4.8" ]; then export CCX="gcc-4.8"; fi
 before_script:
   # Note: CCX vs. CXX? WTF FTW.
-  - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$CCX" == "g++-4.8" ]; then export CCX="gcc-4.8"; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then npm install node-gyp -g; fi
   - npm install -g license-checker
   - npm install
