@@ -150,7 +150,9 @@
         "mac": {
             "category": "public.app-category.developer-tools"
         },
-        "linux": ["AppImage", "rpm", "deb"],
+        "linux": {
+                "target": ["AppImage", "rpm", "deb"]
+        },
         "win": {
             "icon": "build/icon.ico"
         },
