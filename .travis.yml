@@ -25,7 +25,7 @@ script:
   - npm run dist
 env:
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then CXX=g++-4.8; fi
- #  - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$CC" == "gcc" ]; then export CC="gcc-4.8"; fi
+  - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$CCX" == "g++-4.8" ]; then export CCX="gcc-4.8"; fi
 addons:
   apt:
     sources:

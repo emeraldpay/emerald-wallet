@@ -150,8 +150,7 @@
     "linux": {
         "target": [
             "AppImage",
-            "deb",
-            "pacman"
+            "deb"
         ]
     },
     "dmg": {},
