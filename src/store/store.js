@@ -136,4 +136,15 @@ export function waitForServices() {
     setTimeout(checkServiceStatus, 2000);
 }
 
+export function waitForServicesRestart() {
+    let unsubscribe = store.subscribe(() => {
+        let state = store.getState();
+        if (state.launcher.getIn(["status", "geth"]) !== 'ready'
+            || state.launcher.getIn(["status", "connector"]) !== 'ready') {
+            unsubscribe();
+            waitForServices()
+        }
+    });
+}
+
 waitForServices();
