@@ -54,6 +54,8 @@ addons:
     - g++-multilib
     - gcc-4.8-multilib
     - g++-4.8-multilib
+    - ia32-libs
+    - libc6-dev #predefs
 # Use travis deploy config to deploy to bintray. This shouldn't override
 # the electron-builder github releases.
 # deploy:

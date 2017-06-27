@@ -153,16 +153,13 @@
         "target": [
             {
                 "target": "AppImage",
-                "arch": ["x64", "ia32"]
+                "arch": ["x64"]
             }, {
                 "target": "deb",
-                "arch": ["x64", "ia32"]
+                "arch": ["x64"]
             }, {
                 "target": "rpm",
-                "arch": ["x64", "ia32"]
-            }, {
-                "target": "pacman",
-                "arch": ["x64", "ia32"]
+                "arch": ["x64"]
             }
         ]
     },
@@ -171,10 +168,7 @@
       "target": [
         {
           "target": "nsis",
-          "arch": ["x64", "ia32"]
-        },{
-          "target": "tar.gz",
-          "arch": ["x64", "ia32"]
+          "arch": ["ia32"]
         }
       ],
       "publish": [
