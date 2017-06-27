@@ -119,7 +119,8 @@ export function waitForServices() {
     let unsubscribe = store.subscribe(() => {
         let state = store.getState();
         if (state.launcher.getIn(["status", "geth"]) === 'ready'
-            && state.launcher.getIn(["status", "connector"]) === 'ready') {
+            && state.launcher.getIn(["status", "connector"]) === 'ready'
+            && state.network.getIn(["chain", "name"]) !== null) {
             unsubscribe();
             log.info("All services are ready to use by Wallet");
             startSync();

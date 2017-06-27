@@ -25,11 +25,12 @@ export function loadAccountBalance(accountId) {
 }
 
 export function loadAccountsList() {
-    return (dispatch) => {
+    return (dispatch, getState) => {
         dispatch({
             type: 'ACCOUNT/LOADING',
         });
-        rpc.call('emerald_listAccounts', []).then((result) => {
+        let chain = getState().network.getIn(['chain', 'name']);
+        rpc.call('emerald_listAccounts', [{chain}]).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SET_LIST',
                 accounts: result,
@@ -57,12 +58,13 @@ export function loadAccountTxCount(accountId) {
  * TODO: Error handling
 */
 export function createAccount(passphrase, name, description) {
-    return (dispatch) =>
+    return (dispatch, getState) => {
+        let chain = getState().network.getIn(['chain', 'name']);
         rpc.call('emerald_newAccount', [{
             passphrase,
             name,
             description,
-        }]).then((result) => {
+        }, {chain}]).then((result) => {
             dispatch({
                 type: 'ACCOUNT/ADD_ACCOUNT',
                 accountId: result,
@@ -71,15 +73,17 @@ export function createAccount(passphrase, name, description) {
             });
             dispatch(loadAccountBalance(result));
         });
+    }
 }
 
 export function updateAccount(address, name, description) {
-    return (dispatch) =>
+    return (dispatch, getState) => {
+        let chain = getState().network.getIn(['chain', 'name']);
         rpc.call('emerald_updateAccount', [{
             name,
             description,
             address,
-        }]).then((result) => {
+        }, {chain}]).then((result) => {
             dispatch({
                 type: 'ACCOUNT/UPDATE_ACCOUNT',
                 address,
@@ -87,6 +91,7 @@ export function updateAccount(address, name, description) {
                 description,
             });
         });
+    }
 }
 
 function sendRawTransaction(signed) {
@@ -135,8 +140,8 @@ function incNonce(nonce) {
     })
 }
 
-function emeraldSign(txData) {
-    return rpc.call('emerald_signTransaction', [txData])
+function emeraldSign(txData, chain) {
+    return rpc.call('emerald_signTransaction', [txData, {chain}])
 }
 
 export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value) {
@@ -148,18 +153,20 @@ export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value)
         gasPrice,
         value,
     };
-    return (dispatch) =>
-            getNonce(accountId)
-                .then(incNonce)
-                .then(withNonce(originalTx))
-                .then((tx) =>
-                    emeraldSign(tx)
-                        .then(unwrap)
-                        .then(sendRawTransaction)
-                        .then(onTxSend(dispatch, tx))
-                        .catch(catchError(dispatch))
-                )
-                .catch(catchError(dispatch));
+    return (dispatch, getState) => {
+        let chain = getState().network.getIn(['chain', 'name']);
+        getNonce(accountId)
+            .then(incNonce)
+            .then(withNonce(originalTx))
+            .then((tx) =>
+                emeraldSign(tx, chain)
+                    .then(unwrap)
+                    .then(sendRawTransaction)
+                    .then(onTxSend(dispatch, tx))
+                    .catch(catchError(dispatch))
+            )
+            .catch(catchError(dispatch));
+    }
 }
 
 export function createContract(accountId, passphrase, gas, gasPrice, data) {
@@ -170,16 +177,19 @@ export function createContract(accountId, passphrase, gas, gasPrice, data) {
         gasPrice,
         data,
     };
-    return (dispatch) =>
-        rpc.call('emerald_signTransaction', [txData])
+    return (dispatch, getState) => {
+        let chain = getState().network.getIn(['chain', 'name']);
+        rpc.call('emerald_signTransaction', [txData, {chain}])
             .then(unwrap)
             .then(sendRawTransaction)
             .then(onTxSend(dispatch, accountId))
             .catch(log.error);
+    }
 }
 
 export function importWallet(wallet, name, description) {
-    return (dispatch) => {
+    return (dispatch, getState) => {
+        let chain = getState().network.getIn(['chain', 'name']);
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsText(wallet);
@@ -193,7 +203,7 @@ export function importWallet(wallet, name, description) {
                 } catch (e) {
                     reject({error: e});
                 }
-                return rpc.call('emerald_importAccount', data).then((result) => {
+                return rpc.call('emerald_importAccount', [data, {chain}]).then((result) => {
                     dispatch({
                         type: 'ACCOUNT/IMPORT_WALLET',
                         accountId: result,

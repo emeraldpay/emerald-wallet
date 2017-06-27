@@ -4,8 +4,8 @@ import { findNetworkDetails } from 'lib/networks';
 
 const initial = Immutable.fromJS({
     chain: {
-        name: 'MAINNET',
-        id: 61,
+        name: null,
+        id: null,
     },
     currentBlock: {
         height: 0,
