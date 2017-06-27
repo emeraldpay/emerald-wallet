@@ -14,7 +14,6 @@ matrix:
   allow_failures:
     - env: FULL_CHECK=true
 before_script:
-  - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then xcode-select --install; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then npm install node-gyp -g; fi
   - npm install -g license-checker
   - npm install
@@ -24,7 +23,8 @@ script:
   - if [[ $FULL_CHECK == "true" ]]; then npm run lint --silent; fi
   - npm run dist
 env:
-  - CXX=g++-4.8
+# Only specify c compiler for linux; mac might be ok without explicitly declaring it.
+  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then CXX=g++-4.8; fi
 addons:
   apt:
     sources:

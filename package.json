@@ -155,7 +155,7 @@
     },
     "dmg": {},
     "win": {
-      "icon": "http://isaacardis.com/z/emerald-wallet/icon.ico"
+      "icon": "build/icon.ico"
     }
   }
 }
