@@ -123,7 +123,7 @@ export class LocalConnector {
                     // check that included binary path exists
                     // where packaged emerald binary path => app.getAppPath()/Contents/Emerald
                     // if it does exist, move it to this.bin/
-                    const packagedEmeraldBinPath = path.join(this.appPath, 'Contents', 'emerald');
+                    const packagedEmeraldBinPath = path.join(this.appPath, 'emerald');
                     log.debug('packagedEmearldBinPath', packagedEmeraldBinPath);
                     checkExists(packagedEmeraldBinPath).then((emBinaryExists) => {
                         log.debug('packaged emerald binary exists?', emBinaryExists);
