@@ -1,10 +1,5 @@
 import log from 'loglevel';
-<<<<<<< HEAD
-import fs from 'fs';
-import { LocalGeth, LocalConnector } from './launcher';
-=======
 import { LocalGeth, LocalConnector, NoneGeth, RemoteGeth } from './launcher';
->>>>>>> master
 import { UserNotify } from './userNotify';
 import { newGethDownloader } from './downloader';
 import path from 'path';
