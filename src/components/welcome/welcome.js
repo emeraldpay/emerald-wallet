@@ -70,7 +70,7 @@ Render.propTypes = {
 };
 
 function needSetup(state) {
-    return state.launcher.getIn(["chain", "rpc"]) === "none" || state.launcher.get("settingsUpdated")
+    return state.launcher.getIn(["chain", "rpc"]) === "none" || state.launcher.get("settingsUpdated") === true
 }
 
 const Welcome = connect(

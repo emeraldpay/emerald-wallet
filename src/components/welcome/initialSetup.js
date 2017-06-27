@@ -71,7 +71,7 @@ Render.propTypes = {
 
 const InitialSetup = connect(
     (state, ownProps) => ({
-        rpcType: state.launcher.getIn(["chain", "rpc"])
+        rpcType: state.launcher.getIn(["chain", "rpc"]) || 'none'
     }),
     (dispatch, ownProps) => ({
     })

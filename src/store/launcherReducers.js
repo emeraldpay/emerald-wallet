@@ -5,7 +5,7 @@ const initial = Immutable.fromJS({
     settingUpdated: false,
     launcherType: "web",
     chain: {
-        rpc: "none",
+        rpc: null,
         //rpc: "remote", url: "http://api.gastracker.io/web3"
     },
     message: {

@@ -58,6 +58,9 @@ function onPeerCount(state, action) {
 function onSwitchChain(state, action) {
     if (action.type === 'NETWORK/SWITCH_CHAIN') {
         const network = findNetworkDetails(action.network, action.id, action.rpcType);
+        if (!network) {
+            return state;
+        }
         return state.update('chain', (c) =>
             c.merge(Immutable.fromJS(network))
         );
