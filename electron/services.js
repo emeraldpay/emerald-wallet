@@ -61,6 +61,7 @@ export class Services {
             }
             this.setup.chain = settings.get('chain');
             this.setup.chainId = settings.get('chainId');
+            log.debug("New Services setup", this.setup);
             resolve(this.setup);
         })
     }
@@ -169,6 +170,8 @@ export class Services {
             );
             if (this.setup.rpcType === LAUNCH_TYPE.REMOTE_URL) {
                 this.notify.rpcUrl('https://mewapi.epool.io');
+            } else if (this.setup.rpcType === LAUNCH_TYPE.LOCAL_RUN) {
+                this.notify.rpcUrl('http://localhost:8545');
             }
             resolve('ok');
         });

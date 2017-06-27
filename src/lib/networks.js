@@ -1,29 +1,19 @@
-import Immutable from 'immutable';
+import log from 'loglevel';
 
 export const Networks = [
-    { name: 'mainnet', id: 61, title: 'Mainnet'},
-    { name: 'morden', id: 62, title: 'Morden Testnet' },
+    { id: 'local/mainnet', name: 'mainnet', chainId: 61, title: 'Mainnet', type: 'local'},
+    { id: 'remote', name: 'mainnet', chainId: 61, title: 'Mainnet (Remote)', type: 'remote' },
+    { id: 'local/morden', name: 'morden', chainId: 62, title: 'Morden Testnet', type: 'local' },
 ];
 
 const UNKNOWN = { name: 'unknown', id: -1, title: 'Unknown' };
 
-export function getByName(name) {
-    name = name.toLowerCase();
-    if (name === 'mainnet') {
-        return Networks[0]
+export function findNetworkDetails(name, chainId, type) {
+    let nameClean = (name || "_unknown_").toLowerCase();
+    let found = Networks.find((n) => (n.name === nameClean || n.chainId === chainId) && n.type === type);
+    if (!found) {
+        log.error("Unknown network", name, chainId, type);
+        return UNKNOWN;
     }
-    if (name === 'testnet' || name === 'morden') {
-        return Networks[1]
-    }
-    return UNKNOWN;
-}
-
-export function getById(id) {
-    if (id === 61) {
-        return Networks[0]
-    }
-    if (id === 62 ) {
-        return Networks[1]
-    }
-    return UNKNOWN;
+    return found;
 }

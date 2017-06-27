@@ -27,6 +27,7 @@ export function loadNetworkVersion() {
                 dispatch({
                     type: 'NETWORK/SWITCH_CHAIN',
                     id: result,
+                    rpc: getState().launcher.getIn(['chain', 'rpc'])
                 });
             }
         });

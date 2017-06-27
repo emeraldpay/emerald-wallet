@@ -37,10 +37,11 @@ export function useRpc(type) {
     }
 }
 
-export function saveSettings() {
+export function saveSettings(extraSettings) {
+    extraSettings = extraSettings || {};
     return function (dispatch, getState) {
         const rpcType = getState().launcher.getIn(['chain', 'rpc']);
-        const settings = {rpcType};
+        const settings = {rpcType, ...extraSettings};
         log.info("Save settings", settings);
         ipcRenderer.send("settings", settings);
         dispatch({
@@ -60,7 +61,8 @@ export function listenElectron() {
                 dispatch({
                     type: 'NETWORK/SWITCH_CHAIN',
                     network: message.chain,
-                    id: message.chainId
+                    id: message.chainId,
+                    rpcType: message.rpc
                 });
             } else if (type === 'RPC') {
                 log.info("Use RPC URL", message.url);

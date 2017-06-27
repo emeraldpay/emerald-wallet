@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 import { toNumber } from 'lib/convert';
-import { getByName, getById } from 'lib/networks';
+import { findNetworkDetails } from 'lib/networks';
 
 const initial = Immutable.fromJS({
     chain: {
@@ -57,7 +57,7 @@ function onPeerCount(state, action) {
 
 function onSwitchChain(state, action) {
     if (action.type === 'NETWORK/SWITCH_CHAIN') {
-        const network = getByName(action.network);
+        const network = findNetworkDetails(action.network, action.id, action.rpcType);
         return state.update('chain', (c) =>
             c.merge(Immutable.fromJS(network))
         );

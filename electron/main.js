@@ -49,29 +49,23 @@ app.on('ready', () => {
         event.returnValue = "ok";
         services.notifyStatus();
     });
-    ipcMain.on('switch-chain', (event, network, id) => {
-        log.info(`Switch chain to ${network} as ${id}`);
-        let chain = network.toLowerCase();
-        if (['mainnet', 'testnet', 'morden'].indexOf(chain) < 0) {
-            log.error(`Unknown chain: ${chain}`);
-            event.returnValue = "fail";
-            return;
-        }
-        event.returnValue = "ok";
-        settings.set('chain', network);
-        settings.set('chainId', id);
-        services.shutdown()
-            .then(services.notifyStatus.bind(services))
-            .then(() => services.useSettings(settings))
-            .then(services.start.bind(services))
-            .then(services.notifyStatus.bind(services))
-            .catch((err) => log.error('Failed to Switch Chain', err));
-    });
 
     ipcMain.on('settings', (event, newsettings) => {
         event.returnValue = "ok";
         log.info('Update settings', newsettings);
         settings.set('rpcType', newsettings.rpcType);
+        if (newsettings.chain) {
+            let chain = newsettings.chain;
+            if (['mainnet', 'testnet', 'morden'].indexOf(chain) < 0) {
+                log.error(`Unknown chain: ${chain}`);
+                event.returnValue = "fail";
+                return;
+            }
+            settings.set('chain', chain);
+        }
+        if (newsettings.chainId) {
+            settings.set('chainId', newsettings.chainId);
+        }
         services.shutdown()
             .then(services.notifyStatus.bind(services))
             .then(() => services.useSettings(settings))
