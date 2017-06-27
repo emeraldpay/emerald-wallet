@@ -4,9 +4,6 @@ node_js:
 cache:
   directories:
     - "node_modules"
-os:
-  - osx
-  - linux
 env: # without this top-level env, no job will be allowed to fail
 matrix:
   include:
