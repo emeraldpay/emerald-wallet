@@ -7,6 +7,7 @@ cache:
 os:
   - osx
   - linux
+osx_image: xcode8.3
 env:
   - FULL_CHECK=false
   - FULL_CHECK=true
@@ -23,8 +24,8 @@ script:
   - if [[ $FULL_CHECK == "true" ]]; then npm run lint --silent; fi
   - npm run dist
 env:
-# Only specify c compiler for linux; mac might be ok without explicitly declaring it.
   - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then CXX=g++-4.8; fi
+ #  - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$CC" == "gcc" ]; then export CC="gcc-4.8"; fi
 addons:
   apt:
     sources:
