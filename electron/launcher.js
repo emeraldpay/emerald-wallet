@@ -100,6 +100,10 @@ export class RemoteGeth {
     }
 }
 
+export class NoneGeth {
+
+}
+
 export class LocalConnector {
 
     constructor(appPath, bin, chainId) {

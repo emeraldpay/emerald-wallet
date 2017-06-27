@@ -14,9 +14,9 @@ import { Networks } from 'lib/networks';
 import log from 'loglevel';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { gotoScreen } from 'store/screenActions';
-import { switchChain as switchChainAction } from 'store/networkActions';
+import { useRpc, saveSettings } from 'store/launcherActions'
 
-const Render = translate('common')(({ t, openAccounts, openAddressBook, openContracts, switchChain, chain }) => (
+const Render = translate('common')(({ t, openAccounts, openAddressBook, openContracts, switchChain, chain, rpcType }) => (
     <IconMenu
         iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
         targetOrigin={{ horizontal: 'right', vertical: 'top' }}
@@ -34,8 +34,8 @@ const Render = translate('common')(({ t, openAccounts, openAddressBook, openCont
                     <MenuItem
                         key={net.id}
                         primaryText={net.title}
-                        checked={(net.name === chain)}
-                        onClick={() => (net.name !== chain) && switchChain(net)}
+                        checked={(net.name === chain && net.type === rpcType)}
+                        onClick={() => (net.id !== chain.id) && switchChain(net)}
                     />
                 )}
 
@@ -45,6 +45,7 @@ const Render = translate('common')(({ t, openAccounts, openAddressBook, openCont
 
 Render.propTypes = {
     chain: PropTypes.string.isRequired,
+    rpcType: PropTypes.string.isRequired,
     openAccounts: PropTypes.func.isRequired,
     openAddressBook: PropTypes.func.isRequired,
     openContracts: PropTypes.func.isRequired,
@@ -53,7 +54,8 @@ Render.propTypes = {
 
 const Navigation = connect(
     (state, ownProps) => ({
-        chain: (state.network.get('chain') || {}).get('name') || '',
+        chain: state.network.get('chain') || {},
+        rpcType: state.launcher.getIn(['chain', 'rpc'])
     }),
     (dispatch, ownProps) => ({
         openAccounts: () => {
@@ -69,8 +71,9 @@ const Navigation = connect(
             dispatch(gotoScreen('contracts'));
         },
         switchChain: (network) => {
-            dispatch(switchChainAction(network.name, network.id));
-        },
+            dispatch(useRpc(network.type));
+            dispatch(saveSettings({chain: network.name, chainId: network.chainId}));
+        }
     })
 )(Render);
 
