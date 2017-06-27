@@ -3,7 +3,7 @@ node_js:
   - "6"
 cache:
   directories:
-    - node_modules
+    - "node_modules"
 os:
   - osx
   - linux
@@ -11,27 +11,45 @@ osx_image: xcode8.3
 env:
   - FULL_CHECK=false
   - FULL_CHECK=true
+  - CXX=g++-4.8
 matrix:
   allow_failures:
     - env: FULL_CHECK=true
 before_script:
+  # Note: CCX vs. CXX? WTF FTW.
+  - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$CCX" == "g++-4.8" ]; then export CCX="gcc-4.8"; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then npm install node-gyp -g; fi
   - npm install -g license-checker
   - npm install
-  # Install cargo and emerald and move to project base.
-  - bash dependencies.sh
+  # Install cargo and cargo install emerald and move to project base.
+  - ./dependencies.sh
 script:
+  # Generate current version information from git tags.
+  # - git describe --tags --always > version.txt
+  # - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+)-g([a-f0-9]+)/v\1.\2+\3/' version.txt > version-app.txt
+  # - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+).+/v\1.\2/' version.txt > version-only.txt
+  # - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+).+/v\1.x/' version.txt > version-base.txt
   - if [[ $(license-checker --production --exclude '(GPL-2.0 OR MIT)' | grep GPL) ]]; then license-checker --production | grep -C 1 GPL && false; fi
   - npm run build
   - if [[ $FULL_CHECK == "true" ]]; then npm run lint --silent; fi
   # Env var to not sign for now.
   - env CSC_IDENTITY_AUTO_DISCOVERY=false npm run dist
-env:
-  - if [[ "$TRAVIS_OS_NAME" == "linux" ]]; then CXX=g++-4.8; fi
-  - if [ "$TRAVIS_OS_NAME" == "osx" ] && [ "$CCX" == "g++-4.8" ]; then export CCX="gcc-4.8"; fi
+  # Set up bintray deploy config.
+  # - sed -E "s/APPVERSION/$(cat version-base.txt)/" bintray.tpl.json > bintray.json
 addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
     packages:
     - g++-4.8
+# Use travis deploy config to deploy to bintray. This shouldn't override
+# the electron-builder github releases.
+# deploy:
+#   provider: bintray
+#   file: "bintray.json"
+#   user: splix
+#   key:
+#     secure: "c50TvgsSeBMs8LoPO6nQVad3rie0Csh9l2KmwBCCZCLnJNA2nRTMM4EvlNiO8XiYKxms5h3KbzkZXCm+LCmsf+H8U0yupb44prg/MZ8HdvHQ4Qh/hEfQ8rESlxsgu6fjDjF779ge4gfYImyXHkBOCn/PoLkw+Akzw18l2dxsBnAecc+dHwBQ8NQ1Wh7CulD05DEG4SmdMuA/urj4f3kQGkb03jLF8/dNlf8HlTfgREaeKP9rpAtAKsoRIVC+34FdRWN/i8KG3TY+A3+M8bzIFCVNx+sXQ5YKbbtRQbuLPZPF/ELBWsMaxxHwlujhEbsBbZVkHGGZtKk8/EU1w9ZkEQWghXnkIuDxpqvSHzl491xhhpbf+7XL/uonAHlatoNDu3822vrp/eDj/Ys4vOF7F8dYQ7JIyhmXN/P3khehG7FG8mDBqXuImPtiltqvLBGMbsgUFIlaugaB45Zr/Oe2Umf97MgNJeSW/U5qLXN7sS4fPA/KAquty9yzFaxhgsY9iKiGJdAS6AC/CJxmhzEJWgwu6idAmN/L5BaRg29YTtaK+D6AwIVCky9hyHn0VhFN+ieF8H3P3fweG8PX4i63oqTs0+sAGGygzcN6xNit9NtJQ7i3QeGlzRIXfCh2cMz0pU5ErZrWy+kNH1ixzpW9VyugAl6qUQxnyIhbbY5ybIQ="
+#   on:
+#     branch: master
+#   tags: true

@@ -33,7 +33,7 @@
 
     "lint": "./node_modules/eslint/bin/eslint.js ./src/",
     "postinstall": "electron-builder install-app-deps",
-    "dist": "npm run build:all:nowatch && electron-builder --publish onTagOrDraft",
+    "dist": "npm run build:all:nowatch && electron-builder --publish always",
     "dist:nobuild": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder"
   },
   "keywords": [
@@ -151,13 +151,44 @@
     },
     "linux": {
         "target": [
-            "AppImage",
-            "deb"
+            {
+                "target": "AppImage",
+                "arch": ["x64", "ia32"]
+            }, {
+                "target": "deb",
+                "arch": ["x64", "ia32"]
+            }, {
+                "target": "rpm",
+                "arch": ["x64", "ia32"]
+            }, {
+                "target": "pacman",
+                "arch": ["x64", "ia32"]
+            }
         ]
     },
-    "dmg": {},
     "win": {
-      "icon": "build/icon.ico"
+      "icon": "build/icon.ico",
+      "target": [
+        {
+          "target": "nsis",
+          "arch": ["x64", "ia32"]
+        },{
+          "target": "tar.gz",
+          "arch": ["x64", "ia32"]
+        }
+      ],
+      "publish": [
+        {
+          "provider": "github"
+        },
+        {
+          "provider": "bintray",
+          "user": "splix",
+          "repo": "emerald-wallet",
+          "token": "c50TvgsSeBMs8LoPO6nQVad3rie0Csh9l2KmwBCCZCLnJNA2nRTMM4EvlNiO8XiYKxms5h3KbzkZXCm+LCmsf+H8U0yupb44prg/MZ8HdvHQ4Qh/hEfQ8rESlxsgu6fjDjF779ge4gfYImyXHkBOCn/PoLkw+Akzw18l2dxsBnAecc+dHwBQ8NQ1Wh7CulD05DEG4SmdMuA/urj4f3kQGkb03jLF8/dNlf8HlTfgREaeKP9rpAtAKsoRIVC+34FdRWN/i8KG3TY+A3+M8bzIFCVNx+sXQ5YKbbtRQbuLPZPF/ELBWsMaxxHwlujhEbsBbZVkHGGZtKk8/EU1w9ZkEQWghXnkIuDxpqvSHzl491xhhpbf+7XL/uonAHlatoNDu3822vrp/eDj/Ys4vOF7F8dYQ7JIyhmXN/P3khehG7FG8mDBqXuImPtiltqvLBGMbsgUFIlaugaB45Zr/Oe2Umf97MgNJeSW/U5qLXN7S 4fPA/KAquty9yzFaxhgsY9iKiGJdAS6AC/CJxmhzEJWgwu6idAmN/L5BaRg29YTtaK+D6AwIVCky9hyHn0VhFN+ieF8H3P3fweG8PX4i63oqTs0+sAGGygzcN6xNit9NtJQ7i3QeGlzRIXfCh2cMz0pU5ErZrWy+kNH1ixzpW9VyugAl6qUQxnyIhbbY5ybIQ=",
+           "package": "emerald-wallet"
+        }
+      ]
     }
   }
 }
