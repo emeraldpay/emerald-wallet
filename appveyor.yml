@@ -29,7 +29,7 @@ version: '{build}'
 test_script:
   # CSC...=false env var disables app signing for osx, can't hurt to have it here too.
   # But probably useless, since the dist script build for _current_ operating system.
-  - env CSC_IDENTITY_AUTO_DISCOVERY=false npm run dist
+  - npm run dist
 # Taken from go-ethereum.
 # artifacts:
 #   - path: './dist/*.exe'
