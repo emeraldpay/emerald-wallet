@@ -2,7 +2,7 @@
 
 # Get cargo.
 echo "Rusting up (non-interactively; accepting defautls)..."
-curl https://sh.rustup.rs -sSf | sh -y
+curl https://sh.rustup.rs -sSf | sh
 
 # Ensure cargo bin is added to PATH.
 export PATH=$PATH:~/.cargo/bin
