@@ -27,6 +27,7 @@ export function loadNetworkVersion() {
                 dispatch({
                     type: 'NETWORK/SWITCH_CHAIN',
                     id: result,
+                    rpc: getState().launcher.getIn(['chain', 'rpc'])
                 });
             }
         });
@@ -45,7 +46,8 @@ export function loadPeerCount() {
 }
 
 export function loadSyncing() {
-    return (dispatch, getState) =>
+    return (dispatch, getState) => {
+        let repeat = getState().launcher.getIn(["chain", "rpc"]) === 'local';
         rpc.call('eth_syncing', []).then((result) => {
             const syncing = getState().network.get('sync').get('syncing');
             if (typeof result === 'object') {
@@ -55,7 +57,9 @@ export function loadSyncing() {
                     syncing: true,
                     status: result,
                 });
-                setTimeout(() => dispatch(loadSyncing()), intervalRates.continueLoadSyncRate);
+                if (repeat) {
+                    setTimeout(() => dispatch(loadSyncing()), intervalRates.continueLoadSyncRate);
+                }
             } else {
                 dispatch({
                     type: 'NETWORK/SYNCING',
@@ -64,7 +68,9 @@ export function loadSyncing() {
                 setTimeout(() => dispatch(loadHeight(true)), intervalRates.continueLoadSyncRate);
             }
         });
+    }
 }
+
 
 export function switchChain(network, id) {
     return (dispatch) => {

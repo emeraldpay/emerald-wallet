@@ -80,6 +80,10 @@ export class RemoteGeth {
     }
 }
 
+export class NoneGeth {
+
+}
+
 export class LocalConnector {
 
     constructor(bin, chainId) {

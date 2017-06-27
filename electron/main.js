@@ -14,14 +14,9 @@ log.setLevel(isDev ? log.levels.DEBUG : log.levels.INFO);
 const settings = new Store({
     name: 'settings',
     defaults: {
-        // RPC configuration
-        chain: {
-            //type: 'remote',
-            //url: 'https://api.gastracker.io',
-            //chain: 'mainnet'
-            type: 'local',
-            chain: 'morden'
-        }
+        rpcType: 'none',
+        chain: 'morden',
+        chainId: 62
     }
 });
 
@@ -29,20 +24,16 @@ const settings = new Store({
 // In the future it is possible to replace rpc implementation
 global.rpc = new RpcApi();
 
-const store = new Store({
-    defaults: {
-        firstRun: true,
-    },
-    name: 'launcher',
-});
+if (settings.get('rpcType') === 'remote-auto') {
+    global.rpc.urlGeth = 'https://mewapi.epool.io';
+}
 
 global.launcherConfig = {
-    firstRun: store.get('firstRun'),
-    chain: store.get('chain'),
+    settings: settings.store,
 };
 
-console.log('firstRun', store.get('firstRun'));
-console.log('userData: ', app.getPath('userData'));
+log.info('userData: ', app.getPath('userData'));
+log.info(`Chain: [type: ${settings.get('rpcType')}, chain: ${settings.get('chain')}]`);
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -52,30 +43,35 @@ app.on('ready', () => {
     const webContents = createWindow(isDev);
 
     const services = new Services(webContents);
+    services.useSettings(settings);
     services.start().catch((err) => log.error("Failed to start Services", err));
     ipcMain.on('get-status', (event) => {
         event.returnValue = "ok";
         services.notifyStatus();
     });
-    ipcMain.on('switch-chain', (event, network, id) => {
-        log.info(`Switch chain to ${network} as ${id}`);
-        let chain = network.toLowerCase();
-        if (['mainnet', 'testnet', 'morden'].indexOf(chain) < 0) {
-            log.error(`Unknown chain: ${chain}`);
-            event.returnValue = "fail";
-            return;
-        }
+
+    ipcMain.on('settings', (event, newsettings) => {
         event.returnValue = "ok";
+        log.info('Update settings', newsettings);
+        settings.set('rpcType', newsettings.rpcType);
+        if (newsettings.chain) {
+            let chain = newsettings.chain;
+            if (['mainnet', 'testnet', 'morden'].indexOf(chain) < 0) {
+                log.error(`Unknown chain: ${chain}`);
+                event.returnValue = "fail";
+                return;
+            }
+            settings.set('chain', chain);
+        }
+        if (newsettings.chainId) {
+            settings.set('chainId', newsettings.chainId);
+        }
         services.shutdown()
             .then(services.notifyStatus.bind(services))
-            .then(new Promise((resolve) => {
-                services.setup.chain = chain;
-                services.setup.chainId = id;
-                resolve('ok')
-            }))
+            .then(() => services.useSettings(settings))
             .then(services.start.bind(services))
             .then(services.notifyStatus.bind(services))
-            .catch((err) => log.error('Failed to Switch Chain', err));
+            .catch((err) => log.error('Failed to restart after changing settings', err));
     });
 
     app.on('quit', () => {
