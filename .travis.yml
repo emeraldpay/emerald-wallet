@@ -1,6 +1,4 @@
 language: node_js
-node_js:
-  - "6"
 cache:
   directories:
     - "node_modules"
@@ -9,14 +7,18 @@ matrix:
   include:
   # Note: CCX vs. CXX? WTF FTW.
     - os: osx
+      node_js: 6
       env: FULL_CHECK=false CCX="gcc-4.8"
       osx_image: xcode8.3
     - os: osx
+      node_js: 6
       env: FULL_CHECK=true CCX="gcc-4.8"
       osx_image: xcode8.3
     - os: linux
+      node_js: 6
       env: FULL_CHECK=false CXX=g++-4.8
     - os: linux
+      node_js: 6
       env: FULL_CHECK=true CXX=g++-4.8
   allow_failures:
     - env: FULL_CHECK=true
