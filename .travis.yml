@@ -19,21 +19,9 @@ matrix:
     - os: linux
       node_js: 6
       env: FULL_CHECK=false CXX=g++-4.8
-      addons:
-        apt:
-          sources:
-          - ubuntu-toolchain-r-test
-          packages:
-          - g++-4.8
     - os: linux
       node_js: 6
       env: FULL_CHECK=true CXX=g++-4.8
-      addons:
-        apt:
-          sources:
-          - ubuntu-toolchain-r-test
-          packages:
-          - g++-4.8
   allow_failures:
     - env: FULL_CHECK=true
 before_install:
@@ -56,6 +44,14 @@ script:
   - env CSC_IDENTITY_AUTO_DISCOVERY=false npm run dist
   # Set up bintray deploy config.
   # - sed -E "s/APPVERSION/$(cat version-base.txt)/" bintray.tpl.json > bintray.json
+addons:
+  apt:
+    sources:
+    - ubuntu-toolchain-r-test
+    packages:
+    - g++-4.8
+    - gcc-multilib
+    - g++-multilib
 # Use travis deploy config to deploy to bintray. This shouldn't override
 # the electron-builder github releases.
 # deploy:
