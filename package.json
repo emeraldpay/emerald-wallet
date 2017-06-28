@@ -10,7 +10,7 @@
         "Elaine Ou <elaine@ethereumclassic.org>",
         "gagarin55"
     ],
-    "version": "0.1.0-archipelago",
+    "version": "0.1.0-anteater",
     "description": "Emerald - Ethereum Classic Wallet",
     "main": "./electron/webpack-main.js",
     "moduleRoots": [
