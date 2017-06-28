@@ -40,8 +40,10 @@ before_deploy:
   # Set up GCP upload.
   - npm install gcloud-storage-upload
   - ps: >-
-      $bytes = [System.Convert]::FromBase64String($env:GH_TOKEN)
+      $bytes = [System.Convert]::FromBase64String($env:GCP_AUTH)
+      
       [System.IO.File]::WriteAllBytes(".gcloud.json", $bytes)
+      
 deploy_script:
   - ps: >-
       If ($env:APPVEYOR_REPO_BRANCH -eq 'builder') {
