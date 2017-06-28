@@ -49,7 +49,7 @@ script:
   # Don't sign the build for now.
   - env CSC_IDENTITY_AUTO_DISCOVERY=false npm run dist
   - ls -l ./dist/
-  - for ext in zip tar.gz dmg; do mv dist/EmeraldWallet.$ext dist/EmeraldWallet-$(cat version-app.txt).$ext || true; done
+  - for ext in zip tar.gz dmg deb; do mv dist/EmeraldWallet.$ext dist/EmeraldWallet-$(cat version-app.txt).$ext || true; done
   - ls -l ./dist/
   # Set up bintray deploy config.
   # - sed -E "s/APPVERSION/$(cat version-base.txt)/" bintray.tpl.json > bintray.json
