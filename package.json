@@ -152,7 +152,11 @@
             "category": "public.app-category.developer-tools"
         },
         "linux": {
-                "target": ["AppImage", "deb", "tar.gz"]
+            "target": [
+                "AppImage",
+                "deb",
+                "tar.gz"
+            ]
         },
         "win": {
             "icon": "build/icon.ico"
