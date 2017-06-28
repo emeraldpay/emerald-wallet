@@ -8,21 +8,20 @@ environment:
     - nodejs_version: 6
 install:
   # Set up version from git tags.
-  # - git describe --tags --always > version.txt
-  # - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+)-g([a-f0-9]+)/v\1.\2+\3/' version.txt > version-app.txt
-  # - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+).+/v\1.\2/' version.txt > version-only.txt
-  # - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+).+/v\1.x/' version.txt > version-base.txt
-  # - set /p VERSION=<version-app.txt
-  # - set /p VERSION_ONLY=<version-only.txt
-  # - set /p VERSION_BASE=<version-base.txt
-  # - echo %VERSION_BASE% %VERSION_ONLY% %VERSION%
+  - git describe --tags --always > version.txt
+  - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+)-g([a-f0-9]+)/v\1.\2+\3/' version.txt > version-app.txt
+  - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+).+/v\1.\2/' version.txt > version-only.txt
+  - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+).+/v\1.x/' version.txt > version-base.txt
+  - set /p VERSION=<version-app.txt
+  - set /p VERSION_ONLY=<version-only.txt
+  - set /p VERSION_BASE=<version-base.txt
+  - echo %VERSION_BASE% %VERSION_ONLY% %VERSION%
   # Set up other stuff.
   - ps: Install-Product node $end:nodejs_version
   - set CI=true
   - npm install -g npm@latest
   - set PATH=%APPDATA%\npm;%PATH%
   - npm install
-  # If windows haz bash...?
   - bash ./dependencies.sh
 build: off
 version: '{build}'
@@ -31,31 +30,31 @@ test_script:
   # But probably useless, since the dist script build for _current_ operating system.
   - npm run dist
 # Taken from go-ethereum.
-# artifacts:
-#   - path: './dist/*.exe'
-#     name: emerald-wallet
-# deploy:
-#   - provider: BinTray
-#     username: splix
-#     api_key:
-#       secure: yBy4Pe1aiUnBXLheSJNzRQxvVUm+g7etLEdKDWv82XvxAup4wg2nKZ/ogTyJkWxx
-#     subject: ethereumproject
-#     repo: EmeraldWallet
-#     package: emerald-wallet
-#     version: "%VERSION_BASE%"
-#     publish: true
-#     override: true
-#     on:
-#       branch: master
-#   - provider: BinTray
-#     username: splix
-#     api_key:
-#       secure: yBy4Pe1aiUnBXLheSJNzRQxvVUm+g7etLEdKDWv82XvxAup4wg2nKZ/ogTyJkWxx
-#     subject: ethereumproject
-#     repo: EmeraldWallet
-#     package: emerald-wallet
-#     version: "%VERSION%"
-#     publish: true
-#     override: false
-#     on:
-#       appveyor_repo_tag: true
+artifacts:
+  - path: './dist/*.exe'
+    name: emerald-wallet
+deploy:
+  - provider: BinTray
+    username: splix
+    api_key:
+      secure: yBy4Pe1aiUnBXLheSJNzRQxvVUm+g7etLEdKDWv82XvxAup4wg2nKZ/ogTyJkWxx
+    subject: ethereumproject
+    repo: EmeraldWallet
+    package: emerald-wallet
+    version: "%VERSION_BASE%"
+    publish: true
+    override: true
+    on:
+      branch: master
+  - provider: BinTray
+    username: splix
+    api_key:
+      secure: yBy4Pe1aiUnBXLheSJNzRQxvVUm+g7etLEdKDWv82XvxAup4wg2nKZ/ogTyJkWxx
+    subject: ethereumproject
+    repo: EmeraldWallet
+    package: emerald-wallet
+    version: "%VERSION%"
+    publish: true
+    override: false
+    on:
+      appveyor_repo_tag: true
