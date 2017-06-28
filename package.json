@@ -144,6 +144,7 @@
     },
     "build": {
         "appId": "com.ethereumclassic.emeraldwallet",
+        "artifactName": "${productName}.${ext}",
         "extraResources": [
             "./emerald"
         ],
