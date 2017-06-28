@@ -7,3 +7,5 @@ npm-debug.log
 app/
 dist/
 emerald
+geth
+logs/
