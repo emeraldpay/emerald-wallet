@@ -169,7 +169,7 @@ export class Services {
                 emerald.on('uncaughtException', (e) => {
                     log.error((e && e.stack) ? e.stack : e);
                 });
-                const logTargetDir = path.join(getBinDir(), 'logs');
+                const logTargetDir = getLogDir();
                 log.debug('Emerald log target dir:', logTargetDir);
                 // writeProcOut(emerald, ;
                 emerald.stderr.pipe(fs.createWriteStream(
