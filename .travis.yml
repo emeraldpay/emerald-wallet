@@ -1,25 +1,26 @@
-language: node_js
-node_js:
-  - 6
+env: # without this top-level env, no job will be allowed to fail
 cache:
   directories:
     - "node_modules"
-env: # without this top-level env, no job will be allowed to fail
 matrix:
   include:
   # Note: CCX vs. CXX? WTF FTW.
     - os: osx
+      language: node_js
       node_js: 6
       env: FULL_CHECK=false CCX="gcc-4.8"
       osx_image: xcode8.3
     - os: osx
+      language: node_js
       node_js: 6
       env: FULL_CHECK=true CCX="gcc-4.8"
       osx_image: xcode8.3
     - os: linux
+      language: node_js
       node_js: 6
       env: FULL_CHECK=false CXX=g++-4.8
     - os: linux
+      language: node_js
       node_js: 6
       env: FULL_CHECK=true CXX=g++-4.8
   allow_failures:
@@ -30,7 +31,7 @@ before_script:
   - npm install node-gyp -g
   - npm install -g license-checker
   # Install cargo and cargo install emerald and move to project base.
-  - ./dependencies.sh
+  - bash ./dependencies.sh
 script:
   # Generate current version information from git tags.
   # - git describe --tags --always > version.txt

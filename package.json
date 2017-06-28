@@ -10,7 +10,7 @@
         "Elaine Ou <elaine@ethereumclassic.org>",
         "gagarin55"
     ],
-    "version": "0.1.0",
+    "version": "0.1.0-apex",
     "description": "Emerald - Ethereum Classic Wallet",
     "main": "./electron/webpack-main.js",
     "moduleRoots": [
@@ -151,7 +151,7 @@
             "category": "public.app-category.developer-tools"
         },
         "linux": {
-                "target": ["AppImage", "rpm", "deb"]
+                "target": ["AppImage", "deb", "tar.gz"]
         },
         "win": {
             "icon": "build/icon.ico"
@@ -162,10 +162,11 @@
             },
             {
                 "provider": "bintray",
-                "user": "splix",
+                "package": "emerald-wallet",
+                "owner": "ethereumproject",
                 "repo": "emerald-wallet",
-                "token": "c50TvgsSeBMs8LoPO6nQVad3rie0Csh9l2KmwBCCZCLnJNA2nRTMM4EvlNiO8XiYKxms5h3KbzkZXCm+LCmsf+H8U0yupb44prg/MZ8HdvHQ4Qh/hEfQ8rESlxsgu6fjDjF779ge4gfYImyXHkBOCn/PoLkw+Akzw18l2dxsBnAecc+dHwBQ8NQ1Wh7CulD05DEG4SmdMuA/urj4f3kQGkb03jLF8/dNlf8HlTfgREaeKP9rpAtAKsoRIVC+34FdRWN/i8KG3TY+A3+M8bzIFCVNx+sXQ5YKbbtRQbuLPZPF/ELBWsMaxxHwlujhEbsBbZVkHGGZtKk8/EU1w9ZkEQWghXnkIuDxpqvSHzl491xhhpbf+7XL/uonAHlatoNDu3822vrp/eDj/Ys4vOF7F8dYQ7JIyhmXN/P3khehG7FG8mDBqXuImPtiltqvLBGMbsgUFIlaugaB45Zr/Oe2Umf97MgNJeSW/U5qLXN7S 4fPA/KAquty9yzFaxhgsY9iKiGJdAS6AC/CJxmhzEJWgwu6idAmN/L5BaRg29YTtaK+D6AwIVCky9hyHn0VhFN+ieF8H3P3fweG8PX4i63oqTs0+sAGGygzcN6xNit9NtJQ7i3QeGlzRIXfCh2cMz0pU5ErZrWy+kNH1ixzpW9VyugAl6qUQxnyIhbbY5ybIQ=",
-                "package": "emerald-wallet"
+                "user": "splix",
+                "token": "c50TvgsSeBMs8LoPO6nQVad3rie0Csh9l2KmwBCCZCLnJNA2nRTMM4EvlNiO8XiYKxms5h3KbzkZXCm+LCmsf+H8U0yupb44prg/MZ8HdvHQ4Qh/hEfQ8rESlxsgu6fjDjF779ge4gfYImyXHkBOCn/PoLkw+Akzw18l2dxsBnAecc+dHwBQ8NQ1Wh7CulD05DEG4SmdMuA/urj4f3kQGkb03jLF8/dNlf8HlTfgREaeKP9rpAtAKsoRIVC+34FdRWN/i8KG3TY+A3+M8bzIFCVNx+sXQ5YKbbtRQbuLPZPF/ELBWsMaxxHwlujhEbsBbZVkHGGZtKk8/EU1w9ZkEQWghXnkIuDxpqvSHzl491xhhpbf+7XL/uonAHlatoNDu3822vrp/eDj/Ys4vOF7F8dYQ7JIyhmXN/P3khehG7FG8mDBqXuImPtiltqvLBGMbsgUFIlaugaB45Zr/Oe2Umf97MgNJeSW/U5qLXN7S 4fPA/KAquty9yzFaxhgsY9iKiGJdAS6AC/CJxmhzEJWgwu6idAmN/L5BaRg29YTtaK+D6AwIVCky9hyHn0VhFN+ieF8H3P3fweG8PX4i63oqTs0+sAGGygzcN6xNit9NtJQ7i3QeGlzRIXfCh2cMz0pU5ErZrWy+kNH1ixzpW9VyugAl6qUQxnyIhbbY5ybIQ="
             }
         ]
     }
