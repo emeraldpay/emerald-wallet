@@ -10,7 +10,7 @@
         "Elaine Ou <elaine@ethereumclassic.org>",
         "gagarin55"
     ],
-    "version": "0.1.0-anteater",
+    "version": "0.1.0-april",
     "description": "Emerald - Ethereum Classic Wallet",
     "main": "./electron/webpack-main.js",
     "moduleRoots": [
@@ -144,7 +144,7 @@
     },
     "build": {
         "appId": "com.ethereumclassic.emeraldwallet",
-        "artifactName": "${productName}.${ext}",
+        "artifactName": "${productName}-${os}-${arch}-${env.APP_VERSION_GIT_TAG}.${ext}",
         "extraResources": [
             "./emerald"
         ],

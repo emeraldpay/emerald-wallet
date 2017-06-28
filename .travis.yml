@@ -45,15 +45,17 @@ script:
   - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+)-g([a-f0-9]+)/v\1.\2+\3/' version.txt > version-app.txt
   - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+).+/v\1.\2/' version.txt > version-only.txt
   - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+).+/v\1.x/' version.txt > version-base.txt
-  - echo "Building app $(cat version-app.txt)"
+  # We can use this env variable in electron-builder for naming, and avoid the `for ext in ...` bash loop below.
+  - export APP_VERSION_GIT_TAG="$(cat version-app.txt)"
+  - echo "Building app version $APP_VERSION_GIT_TAG"
   - if [[ $(license-checker --production --exclude '(GPL-2.0 OR MIT)' | grep GPL) ]]; then license-checker --production | grep -C 1 GPL && false; fi
   - npm run build
   - if [[ $FULL_CHECK == "true" ]]; then npm run lint --silent; fi
   # Don't sign the build for now.
   - env CSC_IDENTITY_AUTO_DISCOVERY=false npm run dist
   - ls -l ./dist/
-  - for ext in zip tar.gz dmg deb; do mv dist/EmeraldWallet.$ext dist/EmeraldWallet-$(cat version-app.txt).$ext || true; done
-  - ls -l ./dist/
+  # - for ext in zip tar.gz dmg deb; do mv dist/EmeraldWallet.$ext dist/EmeraldWallet-$(cat version-app.txt).$ext || true; done
+  # - ls -l ./dist/
   # Set up bintray deploy config.
   # - sed -E "s/APPVERSION/$(cat version-base.txt)/" bintray.tpl.json > bintray.json
 addons:
