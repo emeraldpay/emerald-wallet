@@ -35,9 +35,8 @@ matrix:
 # before_install:
 before_script:
   # `npm install` is automatic
-  - npm install node-gyp -g
-  - npm install -g license-checker
-  # Install cargo and cargo install emerald and move to project base.
+  - npm install -g node-gyp license-checker
+  # Install cargo and then `cargo install emerald` and move binary to project base.
   - bash ./dependencies.sh
 script:
   # Generate current version information from git tags.
