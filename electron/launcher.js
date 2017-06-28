@@ -1,7 +1,7 @@
 import {exec, spawn} from 'child_process';
 import fs from 'fs';
 import os from 'os';
-import log from 'loglevel';
+import log from 'electron-log';
 import path from 'path';
 
 const suffix = os.platform() === 'win32' ? '.exe' : '';
@@ -106,8 +106,7 @@ export class NoneGeth {
 
 export class LocalConnector {
 
-    constructor(appPath, bin, chainId) {
-        this.appPath = appPath;
+    constructor(bin, chainId) {
         this.bin = bin;
         this.chainId = chainId || '61';
     }
@@ -120,24 +119,25 @@ export class LocalConnector {
     migrateIfNotExists() {
         return new Promise((resolve, reject) => {
             const bin = path.join(this.bin, 'emerald' + suffix);
-            log.debug('migrating em if not exists, bin:', bin);
+            log.debug('Checking if emerald exists:', bin);
             checkExists(bin).then((exists) => {
                 if (!exists) {
-                    log.debug('emerald does not yet exist in bin');
+                    log.debug('emerald not found');
                     // check that included binary path exists
                     // where packaged emerald binary path => app.getAppPath()/Contents/Emerald
                     // if it does exist, move it to this.bin/
-                    const packagedEmeraldBinPath = path.join(this.appPath, 'emerald');
-                    log.debug('packagedEmearldBinPath', packagedEmeraldBinPath);
-                    checkExists(packagedEmeraldBinPath).then((emBinaryExists) => {
-                        log.debug('packaged emerald binary exists?', emBinaryExists);
+                    const cargoEmeraldPath = path.join(process.env.HOME, '.cargo', 'bin', 'emerald');
+                    log.debug('cargo installed emerald path:', cargoEmeraldPath);
+                    checkExists(cargoEmeraldPath).then((emBinaryExists) => {
+                        log.debug('cargo installed emerald path exists:', emBinaryExists);
                         if (!emBinaryExists) {
                             reject(new Error('No packaged emerald binary found.'));
                         }
-                        fs.rename(packagedEmeraldBinPath, bin, (mverr) => {
-                            if (mverr) {
-                                reject(mverr);
-                            }
+                        const rs = fs.createReadStream(cargoEmeraldPath);
+                        const ws = fs.createWriteStream(bin);
+                        rs.on('error', (err) => { reject(err); });
+                        ws.on('error', (err) => { reject(err); });
+                        ws.on('close', () => {
                             fs.chmod(bin, 0o755, (moderr) => {
                                 if (moderr) {
                                     log.error('Failed to set emerald executable flag', moderr);
@@ -146,9 +146,11 @@ export class LocalConnector {
                                 resolve(true);
                             });
                         });
+                        rs.pipe(ws);
                     });
                 }
                 // Assuming the emerald found is valid (perms, etc).
+                log.debug('OK: emerald exists: ', bin);
                 resolve(true);
             })
         });
