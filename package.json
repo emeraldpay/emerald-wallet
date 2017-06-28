@@ -32,8 +32,8 @@
         "test": "npm run build && node ./node_modules/karma/bin/karma start --single-run",
         "lint": "./node_modules/eslint/bin/eslint.js ./src/",
         "postinstall": "electron-builder install-app-deps",
-        "dist": "npm run build:all:nowatch && electron-builder",
-        "dist:nobuild": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder"
+        "dist": "npm run build:all:nowatch && electron-builder --publish never",
+        "dist:nobuild": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never"
     },
     "keywords": [
         "react",
