@@ -12,7 +12,7 @@
     ],
     "version": "0.1.0-april",
     "description": "Emerald - Ethereum Classic Wallet",
-    "main": "./electron/webpack-main.js",
+    "main": "./electron/main.js",
     "moduleRoots": [
         "src/lib"
     ],
@@ -28,6 +28,7 @@
         "build:all:nowatch": "node build-electron --no-watch && node build-web --no-watch --for-electron",
         "start:web": "node ./node_modules/.bin/webpack-dev-server --content-base ./app --inline --port 8000",
         "start:electron": "NODE_ENV=development ./node_modules/.bin/electron -r babel-register -r babel-polyfill .",
+        "start:electron:getemerald": "bash dependencies.sh && NODE_ENV=development ./node_modules/.bin/electron -r babel-register -r babel-polyfill .",
         "test:watch": "node ./node_modules/karma/bin/karma start",
         "test": "npm run build && node ./node_modules/karma/bin/karma start --single-run",
         "lint": "./node_modules/eslint/bin/eslint.js ./src/",
@@ -59,6 +60,7 @@
         "classnames": "^2.1.2",
         "copy-to-clipboard": "^3.0.6",
         "decompress-zip": "^0.3.0",
+        "electron-log": "^2.2.6",
         "electron-store": "^1.1.0",
         "eslint-plugin-react": "^6.10.3",
         "ethereumjs-abi": "0.6.4",
@@ -76,7 +78,6 @@
         "isomorphic-fetch": "^2.2.1",
         "kbpgp": "2.0.72",
         "lib": "^2.2.5",
-        "loglevel": "1.4.0",
         "material-ui": "^0.16.6",
         "moment": "2.17.1",
         "object-assign": "^4.1.1",

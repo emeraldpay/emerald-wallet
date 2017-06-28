@@ -1,4 +1,4 @@
-import log from 'loglevel';
+import log from 'electron-log';
 import { rpc } from '../lib/rpc';
 import { toNumber } from '../lib/convert';
 import { waitForServices, intervalRates } from '../store/store';

@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import ethUtil from 'ethereumjs-util';
 import ethAbi from 'ethereumjs-abi';
-import log from 'loglevel';
+import log from 'electron-log';
 
 export function toNumber(quantity) {
     if (quantity == null) {

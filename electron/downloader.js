@@ -3,7 +3,7 @@ import { app } from 'electron';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import log from 'loglevel';
+import log from 'electron-log';
 // extract-zip depends on concat-stream, debug, mkdirp, yauzl
 // yauzl depends on fd-slicer, buffer-crc32
 // this should avoid the fs dependency issue

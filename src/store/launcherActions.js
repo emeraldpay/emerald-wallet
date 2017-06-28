@@ -1,5 +1,5 @@
 import { ipcRenderer } from 'electron';
-import log from 'loglevel';
+import log from 'electron-log';
 import rpc from 'lib/rpc'
 import { waitForServicesRestart } from 'store/store'
 

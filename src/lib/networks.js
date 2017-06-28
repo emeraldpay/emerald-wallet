@@ -1,4 +1,4 @@
-import log from 'loglevel';
+import log from 'electron-log';
 
 export const Networks = [
     { id: 'local/mainnet', name: 'mainnet', chainId: 61, title: 'Mainnet', type: 'local'},

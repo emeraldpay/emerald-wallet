@@ -1,5 +1,5 @@
 import kbpgp from 'kbpgp';
-import log from 'loglevel';
+import log from 'electron-log';
 import fs from 'fs';
 
 

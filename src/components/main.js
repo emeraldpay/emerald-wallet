@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
-import log from 'loglevel';
+import log from 'electron-log';
 import Networks from 'lib/networks';
 import { translate } from 'react-i18next';
 import { switchChain } from 'store/networkActions';

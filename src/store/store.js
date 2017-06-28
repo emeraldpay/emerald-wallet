@@ -21,7 +21,7 @@ import launcherReducers from './launcherReducers';
 
 import { ipcRenderer } from 'electron';
 
-import log from 'loglevel';
+import log from 'electron-log';
 
 const second = 1000;
 const minute = 60 * second;

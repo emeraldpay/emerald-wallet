@@ -1,4 +1,4 @@
-import log from 'loglevel';
+import log from 'electron-log';
 
 export function gotoScreen(screen, item = null) {
     return {

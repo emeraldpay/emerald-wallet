@@ -1,5 +1,5 @@
 import {app, ipcMain } from 'electron';
-import log from 'loglevel';
+import log from 'electron-log';
 import Store from 'electron-store';
 import { createWindow, mainWindow } from './mainWindow';
 import { RpcApi } from '../src/lib/rpcApi';
@@ -8,7 +8,15 @@ import { Services } from './services';
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
 
-log.setLevel(isDev ? log.levels.DEBUG : log.levels.INFO);
+// electron-log
+//
+// By default it writes logs to the following locations:
+//
+// on Linux: ~/.config/<app name>/log.log
+// on OS X: ~/Library/Logs/<app name>/log.log
+// on Windows: %USERPROFILE%\AppData\Roaming\<app name>\log.log
+log.transports.file.level = isDev ? 'debug' : 'info';
+log.transports.console.level = isDev ? 'debug' : 'info';
 
 const settings = new Store({
     name: 'settings',

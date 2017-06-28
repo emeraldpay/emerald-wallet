@@ -11,7 +11,7 @@ import LibraryBooks from 'material-ui/svg-icons/av/library-books';
 import Motorcycle from 'material-ui/svg-icons/action/motorcycle';
 import ArrowDropRight from 'material-ui/svg-icons/navigation-arrow-drop-right';
 import { Networks } from 'lib/networks';
-import log from 'loglevel';
+import log from 'electron-log';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { gotoScreen } from 'store/screenActions';
 import { useRpc, saveSettings } from 'store/launcherActions'
