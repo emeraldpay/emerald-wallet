@@ -52,10 +52,7 @@ script:
   - if [[ $FULL_CHECK == "true" ]]; then npm run lint --silent; fi
   # Don't sign the build for now.
   # Don't build releases for lint tests.
-  - if [[ ! "$FULL_CHECK" ]]; then \
-  env CSC_IDENTITY_AUTO_DISCOVERY=false npm run dist && \
-  ls -l ./dist/; \
-  fi
+  - if [[ ! "$FULL_CHECK" ]]; then env CSC_IDENTITY_AUTO_DISCOVERY=false npm run dist && ls -l ./dist/; fi
   -   # - for ext in zip tar.gz dmg deb; do mv dist/EmeraldWallet.$ext dist/EmeraldWallet-$(cat version-app.txt).$ext || true; done
   # - ls -l ./dist/
   # Set up bintray deploy config.
