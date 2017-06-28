@@ -42,10 +42,10 @@ before_deploy:
   - ps: >-
       $bytes = [System.Convert]::FromBase64String($env:GCP_AUTH)
 
-      [System.IO.File]::WriteAllBytes("$APPVEYOR_BUILD_FOLDER\.gcloud.json", $bytes)
+      [System.IO.File]::WriteAllBytes("gcloud.json", $bytes)
   - dir
 deploy_script:
   - ps: >-
       If ($env:APPVEYOR_REPO_BRANCH -eq 'builder') {
-          node .\node_modules\gcloud-storage-upload\lib\index.js --path dist\EmeraldWallet-win-%APP_VERSION_GIT_TAG%.exe --remotePath emerald-wallet\preview\
+          node .\node_modules\gcloud-storage-upload\lib\index.js -c gcloud.json --path dist\EmeraldWallet-win-%APP_VERSION_GIT_TAG%.exe --remotePath emerald-wallet\preview\
       }
