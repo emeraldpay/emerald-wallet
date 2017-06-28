@@ -12,7 +12,7 @@
     ],
     "version": "0.1.0-april",
     "description": "Emerald - Ethereum Classic Wallet",
-    "main": "./electron/main.js",
+    "main": "./electron/webpack-main.js",
     "moduleRoots": [
         "src/lib"
     ],
