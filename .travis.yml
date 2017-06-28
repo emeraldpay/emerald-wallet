@@ -18,17 +18,17 @@ matrix:
   exclude:
     - os: osx
       env: CXX=g++-4.8 FULL_CHECK=false
-    - os: osx
-      env: CXX=g++-4.8 FULL_CHECK=true
     - os: linux
       env: CCX=gcc-4.8 FULL_CHECK=false
-    - os: linux
-      env: CCX=gcc-4.8 FULL_CHECK=true
   allow_failures:
+    - os: osx
+      env: CXX=g++-4.8 FULL_CHECK=true
     - os: osx
       env: CXX=gcc-4.8 FULL_CHECK=true
     - os: linux
       env: CXX=g++-4.8 FULL_CHECK=true
+    - os: linux
+      env: CCX=gcc-4.8 FULL_CHECK=true
 # before_install:
 before_script:
   # `npm install` is automatic
