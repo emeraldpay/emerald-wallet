@@ -12,6 +12,8 @@ env:
   - CCX=gcc-4.8 FULL_CHECK=true # osx
   - CXX=g++-4.8 FULL_CHECK=false # linux
   - CXX=g++-4.8 FULL_CHECK=true # linux
+  global:
+     secure: "EuQQSD9GKeAUtFhNGe/m23IYXKVTr8CPl9f7O/PsVDkDMsO6E15o16hn9rn/kIeMEE9+UsCGapFJYlTg+jvZncr8kNTWkKTxsaYS9ejc9br4ePzJmg4LXrelIsunkUGTRBG7wd5I7g+Tx24k02EItftYhzhw3GV3sDvw7VISts3CaCFrGMwOlI4vuhFxJ7N9XRg3HFPY4O9847R/nfhbN9eMqI1kg9xA2INoYaeqxxjWjCX/YlRNpUjkpauv3Owc9Z+B5DYSAlywTModqiUdkiAGmFptydo8gkCqll+iuFfZAV7KT338gVVP3XLNVP1Bq7ZrcqPimhepStX1smEo7vtPzUSb4Wiy03hXlkhDEhLzOf629bGrwpMDy49oAYN0+7o2JBmtV91VEOOs2+ziDTprdv3l4VyX9em+/tf3KxZqTNuiq2Rbl2607zQ3MVYzvHqedoAJiimzUAqMEC4JZmAhlS4dnLFpG2aZv0vuNS9hzVcmSrwcUUwQXWDuRVJkI2mpvL/avbSSH2+kww+I2Uz6VPIOnWoMlY+PJ1i7nMGLpbRY9D4QY1JGJh897hSTHw3F21/4h7kSrkPG0rIdCTCiJ3sXBfUdeSdBi0E+ca9vUWZBbsfH0NdRcw4n0cYiG0NaV1zNA6EIRi8L1GHLtPtYbu/Gm2HM63d7agIQvR0="
 cache:
   directories:
     - "node_modules"
@@ -57,6 +59,8 @@ script:
   # - ls -l ./dist/
   # Set up bintray deploy config.
   # - sed -E "s/APPVERSION/$(cat version-base.txt)/" bintray.tpl.json > bintray.json
+  # Set up GCP
+  - openssl aes-256-cbc -k "$GCP_PASSWD" -in .gcloud.json.enc -out .gcloud.json -d
 addons:
   apt:
     sources:
@@ -70,11 +74,8 @@ addons:
     # - ia32-libs
     # - libc6-dev #predefs
 deploy:
-  provider: bintray
-  file: "bintray.json"
-  user: splix
-  key:
-    secure: "OQFcHH2k8ixSPhZAlq8C4/+oABVkpKjdE93Ye60pmFJuYdU7KyiyC594ZXEeIzMlaTLt8D8eXGMCEbaR3/w9URERdfNu5NG73sZVGYo3d7Y5F7Aam+rmZIYrAQnfUc1udILKPh/5zDJ4x3RXJXPwJeXPXdnEV4sV4dMj6Ol6sQETZXaDIsjKdMqtk2Kg/VNpgkBdqjrxMQb2QQAtVLdZ1kGJcaK5UvxdvD0I6c671q2L13tmpQNglmkDBQHgoO97/Mm5UT0ttCJe2JGVlcWWziXV0Jvt22jKBb2MoQGA2NibwGFMry+R0cASLROV9F+r9tE0aqCM62oFkDh8NODL63rW6KBOiRCCfayGT+GREDV64SHTXF5MqAaSKQjQlqhA3plQqaBw7EhXCdR++1a8Zkca7YbmVbSJf5nKA1kJ98N2kdARat0OaSYxcnszPR08NuO6CH29NTJ0AVLhRH+V/pTckXnzep8lqN7UNQwCpIC+f2aImXNYXedVmr7OxCDdTEY5tekJnPEgPIZuSmj/QiMrDjD96qCtFSEPfVzQp3Ix9AnqRDZzh5vSxCxlPAvpRg7wEOVYC9WWlsMIYVozCiMPXXRqrb+4OtK3sHEJXBJmmu/3N1Z5SdQYHp0R9wCTjqIciWx+j98iyFH5GcDRtxHqvqAuyTwjVg14rInuuhk="
+  provider: script
+  script: for f in dist/*.{zip,tar.gz,dmg,deb}; do node ./node_modules/gcloud-storage-upload/lib/index.js --path $f --remotePath emerald-wallet/preview/; done
   on:
     branch: builder
   tags: true
