@@ -39,7 +39,7 @@ deploy:
     api_key:
       secure: yBy4Pe1aiUnBXLheSJNzRQxvVUm+g7etLEdKDWv82XvxAup4wg2nKZ/ogTyJkWxx
     subject: ethereumproject
-    repo: EmeraldWallet
+    repo: Emerald
     package: emerald-wallet
     version: "%VERSION_BASE%"
     publish: true
@@ -51,7 +51,7 @@ deploy:
     api_key:
       secure: yBy4Pe1aiUnBXLheSJNzRQxvVUm+g7etLEdKDWv82XvxAup4wg2nKZ/ogTyJkWxx
     subject: ethereumproject
-    repo: EmeraldWallet
+    repo: Emerald
     package: emerald-wallet
     version: "%VERSION%"
     publish: true

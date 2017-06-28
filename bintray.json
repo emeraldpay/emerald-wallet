@@ -1,0 +1,20 @@
+
+{
+
+  "package": {
+    "name": "emerald-wallet",
+    "repo": "Emerald",
+    "subject": "ethereumproject"
+  },
+
+  "version": {
+    "name": "preview",
+    "attributes": [],
+    "gpgSign": false
+  },
+
+  "files": [
+    {"includePattern": "./dist/(Emerald.+\\.(dmg|deb|rpm|zip))", "uploadPattern": "$1"}
+  ],
+  "publish": true
+}

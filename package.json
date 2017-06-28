@@ -32,7 +32,7 @@
         "test": "npm run build && node ./node_modules/karma/bin/karma start --single-run",
         "lint": "./node_modules/eslint/bin/eslint.js ./src/",
         "postinstall": "electron-builder install-app-deps",
-        "dist": "npm run build:all:nowatch && electron-builder --publish always",
+        "dist": "npm run build:all:nowatch && electron-builder",
         "dist:nobuild": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder"
     },
     "keywords": [
@@ -155,19 +155,6 @@
         },
         "win": {
             "icon": "build/icon.ico"
-        },
-        "publish": [
-            {
-                "provider": "github"
-            },
-            {
-                "provider": "bintray",
-                "package": "emerald-wallet",
-                "owner": "ethereumproject",
-                "repo": "emerald-wallet",
-                "user": "splix",
-                "token": "c50TvgsSeBMs8LoPO6nQVad3rie0Csh9l2KmwBCCZCLnJNA2nRTMM4EvlNiO8XiYKxms5h3KbzkZXCm+LCmsf+H8U0yupb44prg/MZ8HdvHQ4Qh/hEfQ8rESlxsgu6fjDjF779ge4gfYImyXHkBOCn/PoLkw+Akzw18l2dxsBnAecc+dHwBQ8NQ1Wh7CulD05DEG4SmdMuA/urj4f3kQGkb03jLF8/dNlf8HlTfgREaeKP9rpAtAKsoRIVC+34FdRWN/i8KG3TY+A3+M8bzIFCVNx+sXQ5YKbbtRQbuLPZPF/ELBWsMaxxHwlujhEbsBbZVkHGGZtKk8/EU1w9ZkEQWghXnkIuDxpqvSHzl491xhhpbf+7XL/uonAHlatoNDu3822vrp/eDj/Ys4vOF7F8dYQ7JIyhmXN/P3khehG7FG8mDBqXuImPtiltqvLBGMbsgUFIlaugaB45Zr/Oe2Umf97MgNJeSW/U5qLXN7S 4fPA/KAquty9yzFaxhgsY9iKiGJdAS6AC/CJxmhzEJWgwu6idAmN/L5BaRg29YTtaK+D6AwIVCky9hyHn0VhFN+ieF8H3P3fweG8PX4i63oqTs0+sAGGygzcN6xNit9NtJQ7i3QeGlzRIXfCh2cMz0pU5ErZrWy+kNH1ixzpW9VyugAl6qUQxnyIhbbY5ybIQ="
-            }
-        ]
+        }
     }
 }
