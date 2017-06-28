@@ -4,8 +4,10 @@ os:
   - osx
   - linux
 env:
-  # Note: CCX vs. CXX? WTF FTW.
   # This is obviously not ideal. I never was good with linear algebra. Damn matrixes.
+  # -- It looks like this kind of dumb explictness is a known issue for travis, and
+  # is low on their priority list.
+  # Note: CCX vs. CXX? WTF FTW.
   - CCX=gcc-4.8 FULL_CHECK=false # osx
   - CCX=gcc-4.8 FULL_CHECK=true # osx
   - CXX=g++-4.8 FULL_CHECK=false # linux
@@ -18,17 +20,18 @@ matrix:
   exclude:
     - os: osx
       env: CXX=g++-4.8 FULL_CHECK=false
+    - os: osx
+      env: CXX=g++-4.8 FULL_CHECK=true
     - os: linux
       env: CCX=gcc-4.8 FULL_CHECK=false
-  allow_failures:
-    - os: osx
-      env: CXX=g++-4.8 FULL_CHECK=true
-    - os: osx
-      env: CXX=gcc-4.8 FULL_CHECK=true
-    - os: linux
-      env: CXX=g++-4.8 FULL_CHECK=true
     - os: linux
       env: CCX=gcc-4.8 FULL_CHECK=true
+  # Allow failures for all included runs where FULL_CHECK=true (linting)
+  allow_failures:
+    - os: osx
+      env: CCX=gcc-4.8 FULL_CHECK=true
+    - os: linux
+      env: CXX=g++-4.8 FULL_CHECK=true
 # before_install:
 before_script:
   # `npm install` is automatic
