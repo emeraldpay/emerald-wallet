@@ -42,7 +42,7 @@ before_deploy:
   - ps: >-
       $bytes = [System.Convert]::FromBase64String($env:GCP_AUTH)
 
-      [System.IO.File]::WriteAllBytes(".gcloud.json", $env:GCP_AUTH)
+      [System.IO.File]::WriteAllBytes(".gcloud.json", $bytes)
 
 deploy_script:
   - ps: >-
