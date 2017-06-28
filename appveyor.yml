@@ -13,6 +13,7 @@ install:
   - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+).+/v\1.\2/' version.txt > version-only.txt
   - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+).+/v\1.x/' version.txt > version-base.txt
   - set /p VERSION=<version-app.txt
+  - set /p APP_VERSION_GIT_TAG=<version-app.txt
   - set /p VERSION_ONLY=<version-only.txt
   - set /p VERSION_BASE=<version-base.txt
   - echo %VERSION_BASE% %VERSION_ONLY% %VERSION%

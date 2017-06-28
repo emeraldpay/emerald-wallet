@@ -116,6 +116,10 @@ export class LocalConnector {
     // - check if exists
     // - move
     // - get bin path for executable (eg this.emeraldBin?)
+    //
+    // This will migrate from cargo bin path emerald to project dir if emerald
+    // is already installed to the cargo bin path and does not exist in the project "bin" path,
+    // which is the project base dir.
     migrateIfNotExists() {
         return new Promise((resolve, reject) => {
             const bin = path.join(this.bin, 'emerald' + suffix);
