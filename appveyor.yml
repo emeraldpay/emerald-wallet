@@ -4,6 +4,8 @@ cache:
 environment:
   GH_TOKEN:
     secure: 3UjvS391L93QntuiuqFxNys8h6fJnYEo3WO4ObuRWVme927ee7qlT55U0eaKN+x5
+  GCP_AUTH:
+    secure: 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
   matrix:
     - nodejs_version: 6
 install:
@@ -17,7 +19,7 @@ install:
   - set /p VERSION_ONLY=<version-only.txt
   - set /p VERSION_BASE=<version-base.txt
   - echo %VERSION_BASE% %VERSION_ONLY% %VERSION%
-  # Set up other stuff.
+  # Set up build dependencies.
   - ps: Install-Product node $end:nodejs_version
   - set CI=true
   - npm install -g npm@latest
@@ -34,28 +36,14 @@ test_script:
 artifacts:
   - path: './dist/*.exe'
     name: emerald-wallet
-deploy:
-  - provider: BinTray
-    username: splix
-    api_key:
-      secure: yBy4Pe1aiUnBXLheSJNzRQxvVUm+g7etLEdKDWv82XvxAup4wg2nKZ/ogTyJkWxx
-    subject: ethereumproject
-    repo: Emerald
-    package: emerald-wallet
-    version: preview
-    publish: true
-    override: true
-    on:
-      branch: builder
-  - provider: BinTray
-    username: splix
-    api_key:
-      secure: yBy4Pe1aiUnBXLheSJNzRQxvVUm+g7etLEdKDWv82XvxAup4wg2nKZ/ogTyJkWxx
-    subject: ethereumproject
-    repo: Emerald
-    package: emerald-wallet
-    version: preview
-    publish: true
-    override: false
-    on:
-      appveyor_repo_tag: true
+before_deploy:
+  # Set up GCP upload.
+  - npm install gcloud-storage-upload
+  - ps: >-
+      $bytes = [System.Convert]::FromBase64String($env:GH_TOKEN)
+      [System.IO.File]::WriteAllBytes(".gcloud.json", $bytes)
+deploy_script:
+  - ps: >-
+      If ($env:APPVEYOR_REPO_BRANCH -eq 'builder') {
+          node ./node_modules/gcloud-storage-upload/lib/index.js --path dist/EmeraldWallet-win-%APP_VERSION_GIT_TAG%.exe --remotePath emerald-wallet/preview/
+      }
