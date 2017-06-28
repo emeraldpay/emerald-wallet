@@ -1,31 +1,27 @@
-env: # without this top-level env, no job will be allowed to fail
+language: node_js
+node_js: 6
+os:
+  - osx
+  - linux
+env:
+  # Note: CCX vs. CXX? WTF FTW.
+  - CCX="gcc-4.8" # osx
+  - CXX=g++-4.8 # linux
+  - FULL_CHECK=false
+  - FULL_CHECK=true
 cache:
   directories:
     - "node_modules"
 matrix:
-  include:
-  # Note: CCX vs. CXX? WTF FTW.
+  # Don't build for incompatible c compilers.
+  exclude:
     - os: osx
-      language: node_js
-      node_js: 6
-      env: FULL_CHECK=false CCX="gcc-4.8"
-      osx_image: xcode8.3
-    - os: osx
-      language: node_js
-      node_js: 6
-      env: FULL_CHECK=true CCX="gcc-4.8"
-      osx_image: xcode8.3
+      env: CXX=g++-4.8
     - os: linux
-      language: node_js
-      node_js: 6
-      env: FULL_CHECK=false CXX=g++-4.8
-    - os: linux
-      language: node_js
-      node_js: 6
-      env: FULL_CHECK=true CXX=g++-4.8
-  allow_failures:
+      env: CCX=gcc-4.8
+allow_failures:
     - env: FULL_CHECK=true
-before_install:
+# before_install:
 before_script:
   # `npm install` is automatic
   - npm install node-gyp -g
@@ -41,7 +37,7 @@ script:
   - if [[ $(license-checker --production --exclude '(GPL-2.0 OR MIT)' | grep GPL) ]]; then license-checker --production | grep -C 1 GPL && false; fi
   - npm run build
   - if [[ $FULL_CHECK == "true" ]]; then npm run lint --silent; fi
-  # Env var to not sign for now.
+  # Don't sign the build for now.
   - env CSC_IDENTITY_AUTO_DISCOVERY=false npm run dist
   # Set up bintray deploy config.
   # - sed -E "s/APPVERSION/$(cat version-base.txt)/" bintray.tpl.json > bintray.json
