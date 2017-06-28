@@ -181,6 +181,5 @@ export class Services {
 }
 
 function getBinDir() {
-    const basedir = app.getPath("userData");
-    return path.join(basedir, 'bin');
+    return process.resourcesPath;
 }
