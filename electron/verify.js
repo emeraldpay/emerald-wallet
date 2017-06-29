@@ -1,7 +1,6 @@
 import kbpgp from 'kbpgp';
-import log from 'loglevel';
+import log from 'electron-log';
 import fs from 'fs';
-
 
 // PGP keys from:
 // https://github.com/ethereumproject/volunteer/tree/master/Volunteer-Public-Keys
@@ -156,5 +155,3 @@ export class Verify {
 
     }
 }
-
-

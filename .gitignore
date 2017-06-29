@@ -1,8 +1,11 @@
 bin/
 node_modules/
-build/
 *.iml
 .idea/
 release/
+npm-debug.log
 app/
 dist/
+emerald
+geth
+logs/

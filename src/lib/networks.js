@@ -1,4 +1,4 @@
-import log from 'loglevel';
+import log from 'electron-log';
 
 export const Networks = [
     { id: 'local/mainnet', name: 'mainnet', chainId: 61, title: 'Mainnet', type: 'local'},
@@ -7,11 +7,17 @@ export const Networks = [
 ];
 
 export function findNetworkDetails(name, chainId, type) {
-    let nameClean = (name || "_unknown_").toString().toLowerCase();
-    let found = Networks.find((n) => (n.name === nameClean || n.chainId === chainId) && n.type === type);
+    const nameClean = (name || '_unknown_').toString().toLowerCase();
+    const found = Networks.find((n) => {
+        if ((n.name === nameClean || n.chainId === chainId || n.chainId === chainId.toString()) && (n.type === type)) {
+            return true;
+        }
+        return false;
+    });
     if (!found) {
-        log.error("Unknown network", name, chainId, type);
-        return null;
+        log.debug('Unknown network:', name, chainId, type);
+        return false;
     }
+    log.debug('Found network:', name, chainId, type);
     return found;
 }

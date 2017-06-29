@@ -1,6 +1,6 @@
 import React from 'react';
 import Immutable from 'immutable';
-import log from 'loglevel';
+import log from 'electron-log';
 import { connect } from 'react-redux';
 import { Card, CardActions, CardText, FlatButton, MenuItem, FontIcon } from 'material-ui';
 import { Field, reduxForm } from 'redux-form';

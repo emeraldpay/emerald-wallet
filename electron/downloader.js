@@ -3,8 +3,12 @@ import { app } from 'electron';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
-import log from 'loglevel';
-import unzipper from 'unzip2';
+import log from 'electron-log';
+// extract-zip depends on concat-stream, debug, mkdirp, yauzl
+// yauzl depends on fd-slicer, buffer-crc32
+// this should avoid the fs dependency issue
+// import extract from 'extract-zip';
+import DecompressZip from 'decompress-zip';
 import { Verify } from './verify';
 
 const DefaultGeth = {
@@ -222,31 +226,31 @@ export class Downloader {
     unpack(zip) {
         log.info(`Unpack ${zip}`);
         return new Promise((resolve, reject) => {
-            this.notify.info("Unpacking Geth");
-            fs.createReadStream(zip)
-                .pipe(unzipper.Parse())
-                .on('entry', (entry) => {
-                    const fileName = entry.path;
-                    if (entry.type === 'File' && fileName === this.name) {
-                        let target = path.join(this.basedir, fileName);
-                        log.info(`Extract to ${target}...`);
-                        entry.pipe(fs.createWriteStream(target));
-                        entry.on('end', () => {
-                            fs.chmod(target, 0o755, (err) => {
-                                if (err) {
-                                    log.error("Failed to set executable flag", target, err)
-                                }
-                            })
-                        })
-                    } else {
-                        log.debug(`Skip ${fileName}`);
-                        entry.autodrain();
+            this.notify.info('Unpacking Geth');
+            const target = path.join(this.basedir, this.name);
+            const unzipper = new DecompressZip(zip);
+            unzipper.on('error', (err) => {
+                log.error('Failed to extract zip', err);
+                reject(err);
+            });
+            unzipper.on('extract', (logg) => {
+                log.debug('Finished extracting', logg);
+                fs.chmod(target, 0o755, (moderr) => {
+                    if (moderr) {
+                        log.error('Failed to set executable flag', moderr);
+                        reject(moderr);
                     }
-                })
-                .on('close', () => {
-                    resolve(true)
-                })
-        })
+                    resolve(true);
+                });
+            });
+            unzipper.extract({
+                path: this.basedir,
+                filter: (file) => {
+                    // https://github.com/bower/decompress-zip/blob/master/lib/file-details.js#L10
+                    return file.type !== 'Directory' && file.filename === this.name;
+                },
+            });
+        });
     }
 
     backup() {

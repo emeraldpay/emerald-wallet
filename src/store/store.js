@@ -2,11 +2,13 @@ import thunkMiddleware from 'redux-thunk';
 import createLogger from 'redux-logger';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
+import { ipcRenderer } from 'electron';
+import log from 'electron-log';
 import { loadAccountsList, refreshTrackedTransactions, loadPendingTransactions,
     getGasPrice, getExchangeRates } from './accountActions';
-import { loadAddressBook } from './addressActions';
-import { loadTokenList } from './tokenActions';
-import { loadContractList } from './contractActions';
+// import { loadAddressBook } from './addressActions';
+// import { loadTokenList } from './tokenActions';
+// import { loadContractList } from './contractActions';
 import { loadSyncing, loadHeight, loadPeerCount } from './networkActions';
 import { gotoScreen } from './screenActions';
 import { readConfig, listenElectron } from './launcherActions';
@@ -18,10 +20,6 @@ import contractReducers from './contractReducers';
 import networkReducers from './networkReducers';
 import screenReducers from './screenReducers';
 import launcherReducers from './launcherReducers';
-
-import { ipcRenderer } from 'electron';
-
-import log from 'loglevel';
 
 const second = 1000;
 const minute = 60 * second;
@@ -73,8 +71,8 @@ export const store = createStore(
 
 function refreshAll() {
     store.dispatch(refreshTrackedTransactions());
-    let state = store.getState();
-    if (state.launcher.getIn(["chain", "rpc"]) === 'local') {
+    const state = store.getState();
+    if (state.launcher.getIn(['chain', 'rpc']) === 'local') {
         store.dispatch(loadPeerCount());
     }
     setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
@@ -93,8 +91,8 @@ export function startSync() {
     // store.dispatch(loadContractList());
     store.dispatch(loadHeight());
 
-    let state = store.getState();
-    if (state.launcher.getIn(["chain", "rpc"]) !== 'remote-auto') {
+    const state = store.getState();
+    if (state.launcher.getIn(['chain', 'rpc']) !== 'remote-auto') {
         // check for syncing
         setTimeout(() => store.dispatch(loadSyncing()), intervalRates.second); // prod: intervalRates.second
         // double check for syncing
@@ -106,7 +104,7 @@ export function startSync() {
 }
 
 export function stopSync() {
-    //TODO
+    // TODO
 }
 
 export function start() {
@@ -116,34 +114,34 @@ export function start() {
 }
 
 export function waitForServices() {
-    let unsubscribe = store.subscribe(() => {
-        let state = store.getState();
-        if (state.launcher.getIn(["status", "geth"]) === 'ready'
-            && state.launcher.getIn(["status", "connector"]) === 'ready'
-            && state.network.getIn(["chain", "name"]) !== null) {
+    const unsubscribe = store.subscribe(() => {
+        const state = store.getState();
+        if (state.launcher.getIn(['status', 'geth']) === 'ready'
+            && state.launcher.getIn(['status', 'connector']) === 'ready'
+            && state.network.getIn(['chain', 'name']) !== null) {
             unsubscribe();
-            log.info("All services are ready to use by Wallet");
+            log.info('All services are ready to use by Wallet');
             startSync();
             // If not first run, go right to home when ready.
-            if (state.screen.get("screen") === 'welcome' && !state.launcher.get('firstRun')) {
+            if (state.screen.get('screen') === 'welcome') { //  && !state.launcher.get('firstRun'))
                 store.dispatch(gotoScreen('home'));
             }
         }
     });
 
     function checkServiceStatus() {
-        ipcRenderer.send("get-status");
+        ipcRenderer.send('get-status');
     }
     setTimeout(checkServiceStatus, 2000);
 }
 
 export function waitForServicesRestart() {
-    let unsubscribe = store.subscribe(() => {
-        let state = store.getState();
-        if (state.launcher.getIn(["status", "geth"]) !== 'ready'
-            || state.launcher.getIn(["status", "connector"]) !== 'ready') {
+    const unsubscribe = store.subscribe(() => {
+        const state = store.getState();
+        if (state.launcher.getIn(['status', 'geth']) !== 'ready'
+            || state.launcher.getIn(['status', 'connector']) !== 'ready') {
             unsubscribe();
-            waitForServices()
+            waitForServices();
         }
     });
 }

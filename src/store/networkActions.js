@@ -1,4 +1,4 @@
-import log from 'loglevel';
+import log from 'electron-log';
 import { rpc } from '../lib/rpc';
 import { toNumber } from '../lib/convert';
 import { waitForServices, intervalRates } from '../store/store';
@@ -27,7 +27,7 @@ export function loadNetworkVersion() {
                 dispatch({
                     type: 'NETWORK/SWITCH_CHAIN',
                     id: result,
-                    rpc: getState().launcher.getIn(['chain', 'rpc'])
+                    rpc: getState().launcher.getIn(['chain', 'rpc']),
                 });
             }
         });
@@ -47,7 +47,7 @@ export function loadPeerCount() {
 
 export function loadSyncing() {
     return (dispatch, getState) => {
-        let repeat = getState().launcher.getIn(["chain", "rpc"]) === 'local';
+        const repeat = getState().launcher.getIn(['chain', 'rpc']) === 'local';
         rpc.call('eth_syncing', []).then((result) => {
             const syncing = getState().network.get('sync').get('syncing');
             if (typeof result === 'object') {
@@ -68,13 +68,12 @@ export function loadSyncing() {
                 setTimeout(() => dispatch(loadHeight(true)), intervalRates.continueLoadSyncRate);
             }
         });
-    }
+    };
 }
-
 
 export function switchChain(network, id) {
     return (dispatch) => {
-        ipcRenderer.sendSync("switch-chain", network, id);
+        ipcRenderer.sendSync('switch-chain', network, id);
         waitForServices();
     };
 }

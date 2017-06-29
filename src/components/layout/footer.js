@@ -33,7 +33,7 @@ const Render = () => {
     return (
         <Row style={{...styles.footerDiv}}>
             <Col xs={2} style={{color: 'limegreen'}}>
-                Beta 0.0.1
+                Alpha 0.1.0
             </Col>
             <Col xs={8} style={{color: 'gray', fontWeight: '300'}}>
                 <p style={{marginTop: 0}}>

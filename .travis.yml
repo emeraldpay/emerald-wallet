@@ -1,23 +1,82 @@
 language: node_js
-node_js:
-  - "6"
+node_js: 6
+os:
+  - osx
+  - linux
 env:
-  - FULL_CHECK=false
-  - FULL_CHECK=true
+  global:
+    - secure: "EuQQSD9GKeAUtFhNGe/m23IYXKVTr8CPl9f7O/PsVDkDMsO6E15o16hn9rn/kIeMEE9+UsCGapFJYlTg+jvZncr8kNTWkKTxsaYS9ejc9br4ePzJmg4LXrelIsunkUGTRBG7wd5I7g+Tx24k02EItftYhzhw3GV3sDvw7VISts3CaCFrGMwOlI4vuhFxJ7N9XRg3HFPY4O9847R/nfhbN9eMqI1kg9xA2INoYaeqxxjWjCX/YlRNpUjkpauv3Owc9Z+B5DYSAlywTModqiUdkiAGmFptydo8gkCqll+iuFfZAV7KT338gVVP3XLNVP1Bq7ZrcqPimhepStX1smEo7vtPzUSb4Wiy03hXlkhDEhLzOf629bGrwpMDy49oAYN0+7o2JBmtV91VEOOs2+ziDTprdv3l4VyX9em+/tf3KxZqTNuiq2Rbl2607zQ3MVYzvHqedoAJiimzUAqMEC4JZmAhlS4dnLFpG2aZv0vuNS9hzVcmSrwcUUwQXWDuRVJkI2mpvL/avbSSH2+kww+I2Uz6VPIOnWoMlY+PJ1i7nMGLpbRY9D4QY1JGJh897hSTHw3F21/4h7kSrkPG0rIdCTCiJ3sXBfUdeSdBi0E+ca9vUWZBbsfH0NdRcw4n0cYiG0NaV1zNA6EIRi8L1GHLtPtYbu/Gm2HM63d7agIQvR0="
+  matrix:
+    # This is obviously not ideal. I never was good with linear algebra. Damn matrixes.
+    # -- It looks like this kind of dumb explictness is a known issue for travis, and
+    # is low on their priority list.
+    # Note: CCX vs. CXX? WTF FTW.
+    - CCX=gcc-4.8 FULL_CHECK=false # osx
+    - CCX=gcc-4.8 FULL_CHECK=true # osx
+    - CXX=g++-4.8 FULL_CHECK=false # linux
+    - CXX=g++-4.8 FULL_CHECK=true # linux
+cache:
+  directories:
+    - "node_modules"
 matrix:
+  # Don't build for incompatible c compilers.
+  exclude:
+    - os: osx
+      env: CXX=g++-4.8 FULL_CHECK=false
+    - os: osx
+      env: CXX=g++-4.8 FULL_CHECK=true
+    - os: linux
+      env: CCX=gcc-4.8 FULL_CHECK=false
+    - os: linux
+      env: CCX=gcc-4.8 FULL_CHECK=true
+  # Allow failures for all included runs where FULL_CHECK=true (linting)
   allow_failures:
-    - env: FULL_CHECK=true
+    - os: osx
+      env: CCX=gcc-4.8 FULL_CHECK=true
+    - os: linux
+      env: CXX=g++-4.8 FULL_CHECK=true
+# before_install:
 before_script:
-  - npm install -g license-checker
+  # `npm install` is automatic
+  - npm install -g node-gyp license-checker
+  # Install cargo and then `cargo install emerald` and move binary to project base.
+  - bash ./dependencies.sh
+  # Set up GCP
+  - npm install gcloud-storage-upload
+  - openssl aes-256-cbc -k "$GCP_PASSWD" -in gcloud-travis.json.enc -out .gcloud.json -d
 script:
+  # Generate current version information from git tags.
+  - git describe --tags --always > version.txt
+  - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+)-g([a-f0-9]+)/v\1.\2+\3/' version.txt > version-app.txt
+  - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+).+/v\1.\2/' version.txt > version-only.txt
+  - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+).+/v\1.x/' version.txt > version-base.txt
+  # We can use this env variable in electron-builder for naming, and avoid the `for ext in ...` bash loop below.
+  - export APP_VERSION_GIT_TAG="$(cat version-app.txt)"
+  - echo "Building app version $APP_VERSION_GIT_TAG"
   - if [[ $(license-checker --production --exclude '(GPL-2.0 OR MIT)' | grep GPL) ]]; then license-checker --production | grep -C 1 GPL && false; fi
   - npm run build
   - if [[ $FULL_CHECK == "true" ]]; then npm run lint --silent; fi
-env:
-  - CXX=g++-4.8
+  # Don't build releases for lint tests.
+  # Env var disables build signing.
+  - if [[ "$FULL_CHECK" == "false" ]]; then env CSC_IDENTITY_AUTO_DISCOVERY=false npm run dist; fi
+after_success:
+  # Show dist directory contents after a successful build.
+  - if [[ "$FULL_CHECK" == "false" ]]; then ls -l ./dist/; fi
 addons:
   apt:
     sources:
     - ubuntu-toolchain-r-test
     packages:
     - g++-4.8
+    # - gcc-multilib
+    # - g++-multilib
+    # - gcc-4.8-multilib
+    # - g++-4.8-multilib
+    # - ia32-libs
+    # - libc6-dev #predefs
+deploy:
+  provider: script
+  script: ./gcloud-deploy.sh
+  on:
+    branch: master
+  tags: true

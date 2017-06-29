@@ -14,8 +14,8 @@ const Render = ({ save }) => {
             <Col xs={12}>
                 <div style={{fontWeight: '300'}}>
                     <p>
-                        Welcome to Emerald Wallet Beta. Thanks for trying it out!<br/>
-                        We're looking forward to an Alpha release by July 20th.
+                        Welcome to Emerald Wallet Alpha. Thanks for trying it out!<br/>
+                        We're looking forward to a Beta release by July 20th.
                     </p>
                     <p>
                         Made with ❤️&nbsp; by <strong>ETCDEV</strong> and <strong>many wonderful contributors</strong>.
@@ -29,12 +29,12 @@ const Render = ({ save }) => {
                             onClick={save}/>
             </Col>
         </Row>
-    )
+    );
 };
 
 
 Render.propTypes = {
-    save: PropTypes.func.isRequired
+    save: PropTypes.func.isRequired,
 };
 
 const OpenWallet = connect(
@@ -43,7 +43,7 @@ const OpenWallet = connect(
     (dispatch, ownProps) => ({
         save: () => {
             dispatch(saveSettings());
-        }
+        },
     })
 )(Render);
 
