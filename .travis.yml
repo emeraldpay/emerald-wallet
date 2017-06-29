@@ -7,36 +7,34 @@ env:
   global:
     - secure: "EuQQSD9GKeAUtFhNGe/m23IYXKVTr8CPl9f7O/PsVDkDMsO6E15o16hn9rn/kIeMEE9+UsCGapFJYlTg+jvZncr8kNTWkKTxsaYS9ejc9br4ePzJmg4LXrelIsunkUGTRBG7wd5I7g+Tx24k02EItftYhzhw3GV3sDvw7VISts3CaCFrGMwOlI4vuhFxJ7N9XRg3HFPY4O9847R/nfhbN9eMqI1kg9xA2INoYaeqxxjWjCX/YlRNpUjkpauv3Owc9Z+B5DYSAlywTModqiUdkiAGmFptydo8gkCqll+iuFfZAV7KT338gVVP3XLNVP1Bq7ZrcqPimhepStX1smEo7vtPzUSb4Wiy03hXlkhDEhLzOf629bGrwpMDy49oAYN0+7o2JBmtV91VEOOs2+ziDTprdv3l4VyX9em+/tf3KxZqTNuiq2Rbl2607zQ3MVYzvHqedoAJiimzUAqMEC4JZmAhlS4dnLFpG2aZv0vuNS9hzVcmSrwcUUwQXWDuRVJkI2mpvL/avbSSH2+kww+I2Uz6VPIOnWoMlY+PJ1i7nMGLpbRY9D4QY1JGJh897hSTHw3F21/4h7kSrkPG0rIdCTCiJ3sXBfUdeSdBi0E+ca9vUWZBbsfH0NdRcw4n0cYiG0NaV1zNA6EIRi8L1GHLtPtYbu/Gm2HM63d7agIQvR0="
   matrix:
-    - FULL_CHECK=true
-    - FULL_CHECK=false
     # This is obviously not ideal. I never was good with linear algebra. Damn matrixes.
     # -- It looks like this kind of dumb explictness is a known issue for travis, and
     # is low on their priority list.
     # Note: CCX vs. CXX? WTF FTW.
-    #- CCX=gcc-4.8 FULL_CHECK=false # osx
-    #- CCX=gcc-4.8 FULL_CHECK=true # osx
-    #- CXX=g++-4.8 FULL_CHECK=false # linux
-    #- CXX=g++-4.8 FULL_CHECK=true # linux
+    - CCX=gcc-4.8 FULL_CHECK=false # osx
+    - CCX=gcc-4.8 FULL_CHECK=true # osx
+    - CXX=g++-4.8 FULL_CHECK=false # linux
+    - CXX=g++-4.8 FULL_CHECK=true # linux
 cache:
   directories:
     - "node_modules"
 matrix:
   # Don't build for incompatible c compilers.
-#  exclude:
-#    - os: osx
-#      env: CXX=g++-4.8 FULL_CHECK=false
-#    - os: osx
-#      env: CXX=g++-4.8 FULL_CHECK=true
-#    - os: linux
-#      env: CCX=gcc-4.8 FULL_CHECK=false
-#    - os: linux
-#      env: CCX=gcc-4.8 FULL_CHECK=true
+  exclude:
+    - os: osx
+      env: CXX=g++-4.8 FULL_CHECK=false
+    - os: osx
+      env: CXX=g++-4.8 FULL_CHECK=true
+    - os: linux
+      env: CCX=gcc-4.8 FULL_CHECK=false
+    - os: linux
+      env: CCX=gcc-4.8 FULL_CHECK=true
   # Allow failures for all included runs where FULL_CHECK=true (linting)
   allow_failures:
     - os: osx
-      env: FULL_CHECK=true
+      env: CCX=gcc-4.8 FULL_CHECK=true
     - os: linux
-      env: FULL_CHECK=true
+      env: CXX=g++-4.8 FULL_CHECK=true
 # before_install:
 before_script:
   # `npm install` is automatic
