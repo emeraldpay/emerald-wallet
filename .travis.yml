@@ -62,7 +62,7 @@ script:
   # Set up GCP
   - npm install gcloud-storage-upload
   - openssl aes-256-cbc -k "$GCP_PASSWD" -in gcloud-travis.json.enc -out .gcloud.json -d
-  - for f in dist/*.{zip,tar.gz,dmg,deb}; do node ./node_modules/gcloud-storage-upload/lib/index.js --path $f --remotePath emerald-wallet/preview/; done
+  - for f in $(ls dist/ | grep -e "dmg" -e "zip" -e "deb" -e "tar.gz"); do node ./node_modules/gcloud-storage-upload/lib/index.js --path dist/$f --remotePath emerald-wallet/preview/; done
 addons:
   apt:
     sources:
