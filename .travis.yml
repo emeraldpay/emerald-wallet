@@ -56,7 +56,9 @@ script:
   # Don't build releases for lint tests.
   - if [[ ! "$FULL_CHECK" ]]; then env CSC_IDENTITY_AUTO_DISCOVERY=false npm run dist && ls -l ./dist/; fi
   -   # - for ext in zip tar.gz dmg deb; do mv dist/EmeraldWallet.$ext dist/EmeraldWallet-$(cat version-app.txt).$ext || true; done
-  # - ls -l ./dist/
+  # Build
+  - npm run dist
+  - ls -l ./dist/
   # Set up bintray deploy config.
   # - sed -E "s/APPVERSION/$(cat version-base.txt)/" bintray.tpl.json > bintray.json
   # Set up GCP
