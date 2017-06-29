@@ -30,7 +30,6 @@ test_script:
   # CSC...=false env var disables app signing for osx, can't hurt to have it here too.
   # But probably useless, since the dist script build for _current_ operating system.
   - npm run dist
-# Taken from go-ethereum.
 artifacts:
   - path: './dist/*.exe'
     name: emerald-wallet
@@ -42,6 +41,6 @@ before_deploy:
   - npm install gcloud-storage-upload
 deploy_script:
   - ps: >-
-      If ($env:APPVEYOR_REPO_BRANCH -eq 'builder') {
+      If ($env:APPVEYOR_REPO_BRANCH -eq 'master') {
           bash ./gcloud-deploy.sh
       }
