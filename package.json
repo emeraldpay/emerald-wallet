@@ -8,7 +8,8 @@
     "contributors": [
         "Igor Artamonov <splix@etcdevteam.com>",
         "Elaine Ou <elaine@ethereumclassic.org>",
-        "gagarin55"
+        "gagarin55",
+        "Isaac Ardis"
     ],
     "version": "0.1.0-april",
     "description": "Emerald - Ethereum Classic Wallet",
