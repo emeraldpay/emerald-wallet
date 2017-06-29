@@ -3,11 +3,18 @@ import log from 'electron-log';
 import fs from 'fs';
 import path from 'path';
 
-const keyDir = './electron/keys';
+// TODO: refactor these vars that happen in just about every file in electron/*.js
+const isDev = process.env.NODE_ENV === 'development';
 
 // PGP keys from:
 // https://github.com/ethereumproject/volunteer/tree/master/Volunteer-Public-Keys
 // Find keys in ./keys/* dir, downloaded directly from ^
+
+function getKeyDir() {
+    const keydir = isDev ? './keys' : path.join(process.resourcesPath, 'keys');
+    log.debug('gpg keydir:', path.resolve(keydir));
+    return keydir;
+}
 
 export class Verify {
 
@@ -15,8 +22,9 @@ export class Verify {
     // does so *synchronously*
     readKeys() {
         this.pgps = [];
-        fs.readdirSync(keyDir).forEach((file) => {
-            const k = path.join(keyDir, file);
+        const keydir = getKeyDir();
+        fs.readdirSync(keydir).forEach((file) => {
+            const k = path.join(keydir, file);
             log.debug('reading pgp key:', k);
             this.pgps.push(fs.readFileSync(k));
         });
