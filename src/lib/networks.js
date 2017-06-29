@@ -16,7 +16,8 @@ export function findNetworkDetails(name, chainId, type) {
     });
     if (!found) {
         log.debug('Unknown network:', name, chainId, type);
-        return null;
+        return false;
     }
+    log.debug('Found network:', name, chainId, type);
     return found;
 }

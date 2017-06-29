@@ -29,12 +29,12 @@ const Render = ({ save }) => {
                             onClick={save}/>
             </Col>
         </Row>
-    )
+    );
 };
 
 
 Render.propTypes = {
-    save: PropTypes.func.isRequired
+    save: PropTypes.func.isRequired,
 };
 
 const OpenWallet = connect(
@@ -43,7 +43,7 @@ const OpenWallet = connect(
     (dispatch, ownProps) => ({
         save: () => {
             dispatch(saveSettings());
-        }
+        },
     })
 )(Render);
 
