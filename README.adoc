@@ -15,30 +15,85 @@ image:https://img.shields.io/github/license/ethereumproject/emerald-wallet.svg?m
 endif::[]
 
 
-## Install
+## Development instructions
 
-```
-npm install
-```
+#### RTFM
+__Review `package.json`__  This is where scripts that get run when you do `npm run blah` get defined.
+It'll be helpful to have an idea of what's available and where the magic `npm run` commands
+are coming from. You can run of those commands without the `npm run` meta-command.
 
-# Build
+#### Install NPM packages__
+This will install dependencies saved in `package.json` under the `devDependencies` field.
+You're going to need these.
 
-- Please read the [Develop & Distribute](https://github.com/ethereumproject/emerald-wallet/wiki/Develop-&-Distribute)
-wiki page for more up-to-date instructions on running in development and packaging for release.
-
-## Rebuild automatically
-```
-npm run build:watch
-```
-
-Open `build/index.html` with your browser
-
-## Build once
-```
-npm run build
+```shell
+$ npm install
 ```
 
-Open `build/index.html` with your browser
+If you wind up installing more packages, please
+- be sure that they're really important -- we'd like to avoid a pile of "convenience"
+  packages; every required package adds complexity and complex things sometimes break
+  in hard-to-understand ways.
+- use `npm install totally-awesome-and-important` __along with__ `--save` _or_ `--save-dev`.
+  That way everyone else be able to reproduce your totally-awesomely-improved
+  setup.
+
+#### Run it!
+
+Firstly: a couple things aren't working right. If you can fix either of these issues,
+@whilei will buy you a beer. However, he won't deliver, so you'll have to come to
+St. Louis to claim them.
+
+- _Issue 1_: `webpack-dev-server` isn't working right with the current babel-webpack-electron-izing
+  setup. So you've got to do your development in Electron for now. Which means you can't run `npm run start:web`. Bummer.
+- _Issue 2_: Electron isn't playing nicely with _some_ webpack-ed javascripts, namely anything in `./electron/*.js`. This means that __in `package.json` you've got to swap `"main": "./electron/webpack-main.js"` to be `"main": "./electron/main.js"`__. Also, please don't forget to swap it back before you commit and push your changes -- the builds won't build if they get a `main.js` leftover in there.
+
+Following these guidelines, you _can_ use:
+
+_Terminal 1_
+```shell
+# This will begin a live-watching compiler for ./src/ and ./electron folders
+$ npm run build:all
+```
+
+_Terminal 2_
+```
+# This will begin the simulated electron app pulling from those compiled sources.
+$ npm run start:electron
+```
+
+#### Logs
+
+##### Electron logs
+During development, Electron logs are in your Terminal 2 console, they're also
+persisted in ~/Library/Logs/EmeraldWallet/log.log. This is the same for production.
+
+##### Geth and Emerald logs
+During development, you'll find logs in `./logs` right in the project base directory.
+In production, logs will be nestled in `~/Library/Application Support/EmeraldWallet/`.
+
+### Building alternatively
+
+You can also use a variety of alternate build options, eg.
+
+```
+$ npm run build:all:nowatch
+$ npm run build:web
+```
+
+### Distribution in development
+
+```
+$ npm run dist
+```
+
+:arrow_up: This'll build for _your current_ system. There are configurations for
+several systems specified in the `"build"` field of `package.json`, but the `dist`
+command will just build for the system it's on.
+
+OSX can also build for Linux, just tag on a `-ml` flag to that command to build for
+both at the same time.
+
 
 ## Run tests
 
@@ -51,22 +106,6 @@ or for single run:
 npm test
 ```
 
-## Rebuild and start server
-This will automatically watch for changes and inject live-updating builds on your local server.
-```
-npm run start
-```
-Ensure you have both __geth__ and __emerald-rs__ running:
-```
-geth --rpc # will open port on localhost:8545 by default
-cd path/to/emerald-rs; RUST_LOG=emerald,rpc cargo run # will connect on default geth port (8545), then open it's own port for the wallet on localhost:1920
-```
-Finally, open `http://localhost:8000` with your browser.
-
-## Run node
-
-Wallet expects Web3 RPC at the default [Emerald Connector](https://github.com/ethereumproject/emerald-rs) port http://localhost:1920
-
 ### Parity
 
 `./parity --chain=classic`
@@ -75,33 +114,6 @@ Use `--rpccorsdomain` option to configure CORS.
 
 Example: `./parity --chain=classic --rpccorsdomain=*` allow requests from any domain
 
-
-## Package
-
-For current OS:
-
-```bash
-$ npm run package
-```
-
-For Windows and Linux:
-
-```bash
-$ npm run package:all
-```
-
-Note: Packaging for Windows platform on Linux needs Wine to be installed.
-
-## Dist
-
-If you're on OSX, building for win, lin, and osx:
-```
-$ brew install rpm
-$ npm run dist
-```
-
-
 # License
 
 Apache 2.0
-
