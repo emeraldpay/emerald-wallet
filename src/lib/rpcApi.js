@@ -1,5 +1,5 @@
 import 'isomorphic-fetch';
-import log from 'loglevel';
+import log from 'electron-log';
 
 const baseHeaders = {
     'Content-Type': 'application/json',

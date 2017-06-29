@@ -23,6 +23,9 @@ npm install
 
 # Build
 
+- Please read the [Develop & Distribute](https://github.com/ethereumproject/emerald-wallet/wiki/Develop-&-Distribute)
+wiki page for more up-to-date instructions on running in development and packaging for release.
+
 ## Rebuild automatically
 ```
 npm run build:watch
@@ -89,7 +92,16 @@ $ npm run package:all
 
 Note: Packaging for Windows platform on Linux needs Wine to be installed.
 
+## Dist
+
+If you're on OSX, building for win, lin, and osx:
+```
+$ brew install rpm
+$ npm run dist
+```
+
 
 # License
 
 Apache 2.0
+

@@ -1,15 +1,22 @@
-import {app, BrowserWindow, ipcMain } from 'electron';
+import {app, ipcMain } from 'electron';
+import log from 'electron-log';
+import Store from 'electron-store';
 import { createWindow, mainWindow } from './mainWindow';
 import { RpcApi } from '../src/lib/rpcApi';
-import { launchGeth, launchEmerald } from './launcher';
 import { Services } from './services';
-import log from 'loglevel';
-import Store from 'electron-store';
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
 
-log.setLevel(isDev ? log.levels.DEBUG : log.levels.INFO);
+// electron-log
+//
+// By default it writes logs to the following locations:
+//
+// on Linux: ~/.config/<app name>/log.log
+// on OS X: ~/Library/Logs/<app name>/log.log
+// on Windows: %USERPROFILE%\AppData\Roaming\<app name>\log.log
+log.transports.file.level = isDev ? 'silly' : 'debug';
+log.transports.console.level = isDev ? 'debug' : 'info';
 
 const settings = new Store({
     name: 'settings',
@@ -39,14 +46,14 @@ log.info(`Chain: [type: ${settings.get('rpcType')}, chain: ${settings.get('chain
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
-    log.info("Starting Emerald...");
+    log.info('Starting Emerald...');
     const webContents = createWindow(isDev);
 
     const services = new Services(webContents);
     services.useSettings(settings);
     services.start().catch((err) => log.error("Failed to start Services", err));
     ipcMain.on('get-status', (event) => {
-        event.returnValue = "ok";
+        event.returnValue = 'ok';
         services.notifyStatus();
     });
 
@@ -93,7 +100,7 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (mainWindow === null) {
-    createWindow(isDev)
-  }
+    if (mainWindow === null) {
+        createWindow(isDev);
+    }
 });

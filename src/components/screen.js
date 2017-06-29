@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import log from 'loglevel';
+import log from 'electron-log';
 
 import AccountsList from './accounts/list';
 import AddressBook from './addressbook/book';

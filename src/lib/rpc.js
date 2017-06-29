@@ -1,4 +1,4 @@
-import log from 'loglevel';
+import log from 'electron-log';
 import RpcApi from './rpcApi';
 
 export const rpc = create();

@@ -7,7 +7,7 @@ import { Row, Col } from 'react-flexbox-grid/lib/index';
 import FontIcon from 'material-ui/FontIcon';
 import FlatButton from 'material-ui/FlatButton';
 import Avatar from 'material-ui/Avatar';
-import log from 'loglevel';
+import log from 'electron-log';
 import { cardSpace, tables, noShadow, grayBackground } from 'lib/styles';
 import Immutable from 'immutable';
 import Transaction from './transaction';

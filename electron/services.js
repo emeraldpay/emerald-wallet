@@ -1,10 +1,13 @@
-import log from 'loglevel';
+import log from 'electron-log';
+import fs from 'fs';
+import path from 'path';
+import { app } from 'electron';
 import { LocalGeth, LocalConnector, NoneGeth, RemoteGeth } from './launcher';
 import { UserNotify } from './userNotify';
 import { newGethDownloader } from './downloader';
-import path from 'path';
-import { app } from 'electron';
 
+const isDev = process.env.NODE_ENV === 'development';
+const isProd = process.env.NODE_ENV === 'production';
 
 const STATUS = {
     NOT_STARTED: 0,
@@ -30,7 +33,25 @@ const DEFAULT_SETUP = {
 
 function rpcTypeName(type) {
     const names = ['none', 'local', 'local', 'remote'];
-    return names[type]
+    return names[type];
+}
+
+function getBinDir() {
+    // Use project base dir for development.
+    return isDev ? './' : process.resourcesPath;
+}
+
+export function getLogDir() {
+    const p = isDev ? './logs' : path.join(app.getPath('userData'), 'logs');
+
+    // Ensure path exists.
+    // TODO: handle error better.
+    fs.mkdir(p, (e) => {
+        if (e && e.code !== 'EEXIST') {
+            log.error('Could not create log dir', p, e);
+        }
+    });
+    return p;
 }
 
 export class Services {
@@ -54,14 +75,14 @@ export class Services {
             } else if (rpcType === 'local') {
                 this.setup.rpcType = LAUNCH_TYPE.LOCAL_RUN;
             } else {
-                log.error("Invalid chain type: ", rpcType);
+                log.error('Invalid chain type: ', rpcType);
                 this.setup.rpcType = LAUNCH_TYPE.NONE;
                 reject(new Error(`Invalid chain type: ${rpcType}`));
                 return
             }
             this.setup.chain = settings.get('chain');
             this.setup.chainId = settings.get('chainId');
-            log.debug("New Services setup", this.setup);
+            log.debug('New Services setup', this.setup);
             resolve(this.setup);
         })
     }
@@ -77,56 +98,54 @@ export class Services {
         let shuttingDown = [];
         if (this.rpc) {
             shuttingDown.push(this.rpc.shutdown()
-                .then(() => this.gethStatus = STATUS.NOT_STARTED)
-                .then(() => this.notify.status("geth", "not ready")))
+                .then(() => { this.gethStatus = STATUS.NOT_STARTED; })
+                .then(() => this.notify.status('geth', 'not ready')));
         }
         if (this.connector) {
             shuttingDown.push(this.connector.shutdown()
-                .then(() => this.connectorStatus = STATUS.NOT_STARTED)
-                .then(() => this.notify.status("connector", "not ready")))
+                .then(() => { this.connectorStatus = STATUS.NOT_STARTED; })
+                .then(() => this.notify.status('connector', 'not ready')));
         }
         return Promise.all(shuttingDown);
     }
+
 
     startRpc() {
         return new Promise((resolve, reject) => {
             this.notify.status('geth', 'not ready');
             this.gethStatus = STATUS.NOT_STARTED;
             if (this.setup.rpcType === LAUNCH_TYPE.NONE) {
-                log.info("use NONE Geth");
-                this.notify.error("Ethereum connection type is not configured");
+                log.info('use NONE Geth');
+                this.notify.error('Ethereum connection type is not configured');
                 resolve(new NoneGeth());
-                return
             }
             if (this.setup.rpcType === LAUNCH_TYPE.REMOTE_URL) {
-                log.info("use REMOTE Geth");
+                log.info('use REMOTE Geth');
                 this.gethStatus = STATUS.READY;
-                this.notify.info("Use Remote RPC API");
+                this.notify.info('Use Remote RPC API');
                 this.notify.rpcUrl('https://api.gastracker.io/web3');
-                this.notify.status("geth", "ready");
+                this.notify.status('geth', 'ready');
                 resolve(new RemoteGeth(null, null));
-                return
+                return;
             }
-            let gethDownloader = newGethDownloader(this.notify, getBinDir());
+            const gethDownloader = newGethDownloader(this.notify, getBinDir());
             gethDownloader.downloadIfNotExists().then(() => {
                 this.notify.info('Launching Geth backend');
                 this.gethStatus = STATUS.STARTING;
-                let launcher = new LocalGeth(getBinDir(), this.setup.chain, 8545);
+                const launcher = new LocalGeth(getBinDir(), this.setup.chain, 8545);
                 this.rpc = launcher;
                 launcher.launch().then((geth) => {
-                    geth.stderr.on('data', (data) => {
-                        if (/HTTP endpoint opened/.test(data)) {
-                            this.gethStatus = STATUS.READY;
-                            log.info("Geth is ready");
-                            this.notify.info("Geth RPC API is ready");
-                            this.notify.status("geth", "ready");
-                            resolve(launcher)
-                        }
-                    });
                     geth.on('exit', (code) => {
                         this.gethStatus = STATUS.NOT_STARTED;
-                        log.error('geth process exited with code ' + code);
+                        log.error(`geth process exited with code: ${code}`);
                     });
+                    if (geth.pid > 0) {
+                        this.gethStatus = STATUS.READY;
+                        log.info('Geth is ready');
+                        this.notify.info('Geth RPC API is ready');
+                        this.notify.status('geth', 'ready');
+                        resolve(launcher);
+                    }
                 }).catch(reject);
             }).catch((err) => {
                 log.error('Unable to download Geth', err);
@@ -139,22 +158,30 @@ export class Services {
     startConnector() {
         return new Promise((resolve, reject) => {
             this.connectorStatus = STATUS.NOT_STARTED;
-            this.notify.status("connector", "not ready");
+            this.notify.status('connector', 'not ready');
             this.connector = new LocalConnector(getBinDir(), this.setup.chainId);
             this.connector.launch().then((emerald) => {
                 this.connectorStatus = STATUS.STARTING;
                 emerald.on('exit', (code) => {
                     this.connectorStatus = STATUS.NOT_STARTED;
-                    log.error('Emerald Connector process exited with code ' + code);
+                    log.error(`Emerald Connector process exited with code: ${code}`);
                 });
-                emerald.stderr.on('data', (data) => {
-                    if (/Connector started on/.test(data)) {
-                        log.info("Connector is ready");
-                        this.connectorStatus = STATUS.READY;
-                        this.notify.status("connector", "ready");
-                        resolve(this.connector);
-                    }
+                emerald.on('uncaughtException', (e) => {
+                    log.error((e && e.stack) ? e.stack : e);
                 });
+                const logTargetDir = getLogDir();
+                log.debug('Emerald log target dir:', logTargetDir);
+                // writeProcOut(emerald, ;
+                emerald.stderr.pipe(fs.createWriteStream(
+                    path.join(logTargetDir, `emerald-${Date.now().toString()}.log`))
+                );
+                if (emerald.pid > 0) {
+                    log.info('Connector is ready');
+                    this.connectorStatus = STATUS.READY;
+                    this.notify.status('connector', 'ready');
+
+                    resolve(this.connector);
+                }
             }).catch(reject);
         });
     }
@@ -177,9 +204,4 @@ export class Services {
         });
     }
 
-}
-
-function getBinDir() {
-    const basedir = app.getPath("userData");
-    return path.join(basedir, 'bin');
 }

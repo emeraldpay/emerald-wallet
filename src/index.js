@@ -8,13 +8,13 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import Main from './components/main';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import {store, start as startStore} from './store/store.js';
-import log from 'loglevel';
+import log from 'electron-log';
 import 'roboto-fontface/css/roboto/sass/roboto-fontface.scss'
 import './index.scss'
 
 function start() {
-    log.setLevel('debug');
-    log.info("Starting Emerald Wallet...");
+    // log.transports.console.level = 'debug';
+    log.info('Starting Emerald Wallet...');
 
     // Needed for onTouchTap
     injectTapEventPlugin();

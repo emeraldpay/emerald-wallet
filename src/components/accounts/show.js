@@ -9,7 +9,7 @@ import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import QRCode from 'qrcode.react';
-import log from 'loglevel';
+import log from 'electron-log';
 import { translate } from 'react-i18next';
 import { cardSpace } from 'lib/styles';
 import { gotoScreen } from 'store/screenActions';

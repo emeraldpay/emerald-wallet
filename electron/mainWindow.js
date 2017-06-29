@@ -1,47 +1,46 @@
-const path = require('path');
-const url = require('url');
 import {BrowserWindow, Menu, shell } from 'electron';
 import winLinuxMenu from './menus/win-linux';
-// import icon from './icons/background.png';
+const path = require('path');
+const url = require('url');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 export let mainWindow;
 let menu;
 
-export function createWindow (openDevTools) {
-  // Create the browser window.
-  mainWindow = new BrowserWindow({width: 1060, height: 600});
+export function createWindow(openDevTools) {
+    // Create the browser window.
+    mainWindow = new BrowserWindow({width: 1060, height: 600});
 
-  // and load the index.html of the app.
-  mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, '../build/index.html'),
-    protocol: 'file:',
-    slashes: true
-  }));
+    // and load the index.html of the app.
+    mainWindow.loadURL(url.format({
+        pathname: path.join(__dirname, '../app/index.html'),
+        protocol: 'file:',
+        slashes: true,
+    }));
 
-  // Open the DevTools.
-  if (openDevTools) {
-    mainWindow.webContents.openDevTools();
-    require('devtron').install();
-  }
-    // https://stackoverflow.com/questions/32402327/how-can-i-force-external-links-from-browser-window-to-open-in-a-default-browser
-    mainWindow.webContents.on('will-navigate', function(e, url) {
-      e.preventDefault();
-      shell.openExternal(url);
+    // Open the DevTools.
+    if (openDevTools) {
+        mainWindow.webContents.openDevTools();
+        require('devtron').install();
+    }
+    // Prevent opening external links in electron.
+    mainWindow.webContents.on('will-navigate', (e, _url) => {
+        e.preventDefault();
+        shell.openExternal(_url);
     });
 
-  // Emitted when the window is closed.
-  mainWindow.on('closed', () => {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    mainWindow = null
-  });
+    // Emitted when the window is closed.
+    mainWindow.on('closed', () => {
+        // Dereference the window object, usually you would store windows
+        // in an array if your app supports multi windows, this is the time
+        // when you should delete the corresponding element.
+        mainWindow = null;
+    });
 
-  // Menu (only win and linux for now)
-  menu = Menu.buildFromTemplate(winLinuxMenu(mainWindow));
-  mainWindow.setMenu(menu);
+    // Menu (only win and linux for now)
+    menu = Menu.buildFromTemplate(winLinuxMenu(mainWindow));
+    mainWindow.setMenu(menu);
 
-  return mainWindow.webContents;
+    return mainWindow.webContents;
 }
