@@ -61,7 +61,7 @@ script:
   # - sed -E "s/APPVERSION/$(cat version-base.txt)/" bintray.tpl.json > bintray.json
   # Set up GCP
   - npm install gcloud-storage-upload
-  - openssl aes-256-cbc -k "$GCP_PASSWD" -in .gcloud.json.enc -out .gcloud.json -d
+  - openssl aes-256-cbc -k "$GCP_PASSWD" -in gcloud-travis.json.enc -out .gcloud.json -d
   - for f in dist/*.{zip,tar.gz,dmg,deb}; do node ./node_modules/gcloud-storage-upload/lib/index.js --path $f --remotePath emerald-wallet/preview/; done
 addons:
   apt:
