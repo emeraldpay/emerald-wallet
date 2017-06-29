@@ -56,11 +56,12 @@ script:
   - if [[ $(license-checker --production --exclude '(GPL-2.0 OR MIT)' | grep GPL) ]]; then license-checker --production | grep -C 1 GPL && false; fi
   - npm run build
   - if [[ $FULL_CHECK == "true" ]]; then npm run lint --silent; fi
-  # Don't sign the build for now.
   # Don't build releases for lint tests.
-  - if [[ ! "$FULL_CHECK" ]]; then env CSC_IDENTITY_AUTO_DISCOVERY=false npm run dist && ls -l ./dist/; fi
-  # Build dist
-  - npm run dist
+  # Env var disables build signing.
+  - if [[ "$FULL_CHECK" == "false" ]]; then env CSC_IDENTITY_AUTO_DISCOVERY=false npm run dist; fi
+after_success:
+  # Show dist directory contents after a successful build.
+  - if [[ "$FULL_CHECK" == "false" ]]; then ls -l ./dist/; fi
 addons:
   apt:
     sources:
