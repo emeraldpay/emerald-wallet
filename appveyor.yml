@@ -43,7 +43,5 @@ before_deploy:
 deploy_script:
   - ps: >-
       If ($env:APPVEYOR_REPO_BRANCH -eq 'builder') {
-          $artifacts.values | ForEach-Object {
-            node .\node_modules\gcloud-storage-upload\lib\index.js --path $_.path --remotePath emerald-wallet/preview/$_.name
-          }
+          bash ./gcloud-deploy.sh
       }
