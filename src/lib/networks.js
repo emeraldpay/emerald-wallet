@@ -7,21 +7,15 @@ export const Networks = [
 ];
 
 export function findNetworkDetails(name, chainId, type) {
-    let nameClean = (name || "_unknown_").toString().toLowerCase();
-    let found = Networks.find((n) => {
-        if ((n.name === nameClean || n.chainId === chainId || n.chainId === chainId.toString()) && (n.type === type || n.type === 'none')) {
+    const nameClean = (name || '_unknown_').toString().toLowerCase();
+    const found = Networks.find((n) => {
+        if ((n.name === nameClean || n.chainId === chainId || n.chainId === chainId.toString()) && (n.type === type)) {
             return true;
         }
-        if (n.type === chainId || n.type === 'none') {
-            log.error(`Neither chain name nor chain_id match known networks. \n
-                Chain name: was ${nameClean}, chainId: ${chainId}`);
-            return false;
-        }
-        log.error('Could not match network type to a known type. Network type was:', type);
         return false;
     });
     if (!found) {
-        log.error('Unknown network', name, chainId, type);
+        log.debug('Unknown network:', name, chainId, type);
         return null;
     }
     return found;
