@@ -1,12 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
-import FlatButton from 'material-ui/FlatButton';
-import FontIcon from 'material-ui/FontIcon';
+import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { Step, Stepper, StepLabel } from 'material-ui/Stepper';
-import { cardSpace } from 'lib/styles';
-import { gotoScreen } from 'store/screenActions';
 import ChooseRpc from './chooseRpc';
 import OpenWallet from './openWallet';
 
@@ -14,15 +10,18 @@ const Render = ({ rpcType }) => {
 
     let step = null;
     if (rpcType === 'none') {
-        step = <ChooseRpc/>
+        step = <ChooseRpc/>;
     } else if (rpcType === 'remote') {
         // step = <ChooseRemote/>
     } else if (rpcType === 'remote-auto') {
         step = <OpenWallet/>;
+    } else if (rpcType === 'local') {
+        // TODO: allow to configure binary path/+port/+chain(?)
+        step = <OpenWallet/>;
     }
 
     let activeStep = 0;
-    let steps = [];
+    const steps = [];
     steps.push(
         <Step key="select-rpc">
             <StepLabel>Select RPC type</StepLabel>
@@ -37,7 +36,7 @@ const Render = ({ rpcType }) => {
         );
     }
     if (rpcType === 'remote-auto') {
-        activeStep++
+        activeStep++;
     }
     steps.push(
         <Step key="open-wallet">
@@ -61,17 +60,17 @@ const Render = ({ rpcType }) => {
                 </Col>
             </Row>
         </div>
-    )
+    );
 };
 
 
 Render.propTypes = {
-    rpcType: PropTypes.string.isRequired
+    rpcType: PropTypes.string.isRequired,
 };
 
 const InitialSetup = connect(
     (state, ownProps) => ({
-        rpcType: state.launcher.getIn(["chain", "rpc"]) || 'none'
+        rpcType: state.launcher.getIn(['chain', 'rpc']) || 'none',
     }),
     (dispatch, ownProps) => ({
     })
