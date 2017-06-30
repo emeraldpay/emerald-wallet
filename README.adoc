@@ -17,12 +17,13 @@ endif::[]
 
 ## Development instructions
 
-#### RTFM
-__Review `package.json`__  This is where scripts that get run when you do `npm run blah` get defined.
+`package.json`: This is where scripts that get run when you use `npm run blah` get defined.
 It'll be helpful to have an idea of what's available and where the magic `npm run` commands
-are coming from. You can run of those commands without the `npm run` meta-command.
+are coming from. You can run any of those commands without the `npm run` meta-command.
 
-#### Install NPM packages__
+### Dependencies
+
+####  NPM packages
 This will install dependencies saved in `package.json` under the `devDependencies` field.
 You're going to need these.
 
@@ -32,44 +33,56 @@ $ npm install
 
 If you wind up installing more packages, please
 - be sure that they're really important -- we'd like to avoid a pile of "convenience"
-  packages; every required package adds complexity and complex things sometimes break
-  in hard-to-understand ways.
+  packages; every required package adds complexity.
 - use `npm install totally-awesome-and-important` __along with__ `--save` _or_ `--save-dev`.
-  That way everyone else be able to reproduce your totally-awesomely-improved
+  That way everyone else will be able to reproduce your totally-awesomely-improved
   setup.
 
-#### Run it!
+#### Emerald and geth
+##### Emerald
+If you haven't got `emerald` already installed on your system, you can execute `./dependencies.sh`
+to automatically `rustup` and use `cargo` to install `emerald-cli` and move it to the
+project's base dir. Note: this command is idempotent __for rust and cargo__ (it won't
+try to install cargo if you've already got it), but it will
+use cargo's `-f` flag to force install `emerald-cli` and copy that version to the
+project directory.
+
+##### Geth
+If geth isn't available in your project directory, upon launching the app, it automatically
+be downloaded and placed in your project base dir.
+
+
+### Run for development
 
 Firstly: a couple things aren't working right. If you can fix either of these issues,
-@whilei will buy you a beer. However, he won't deliver, so you'll have to come to
-St. Louis to claim them.
+@whilei will buy you a beer.
 
 - _Issue 1_: `webpack-dev-server` isn't working right with the current babel-webpack-electron-izing
   setup. So you've got to do your development in Electron for now. Which means you can't run `npm run start:web`. Bummer.
-- _Issue 2_: Electron isn't playing nicely with _some_ webpack-ed javascripts, namely anything in `./electron/*.js`. This means that __in `package.json` you've got to swap `"main": "./electron/webpack-main.js"` to be `"main": "./electron/main.js"`__. Also, please don't forget to swap it back before you commit and push your changes -- the builds won't build if they get a `main.js` leftover in there.
+- _Issue 2_: Electron isn't playing nicely with _some_ webpack-ed javascripts, namely anything in `./electron/*.js`. This means that in `package.json` __you've got to swap__ `"main": "./electron/webpack-main.js"` to be `"main": "./electron/main.js"`. Also, please don't forget to __swap it back__ before you commit and push your changes -- the builds won't build otherwise.
 
-Following these guidelines, you _can_ use:
+With these caveats in mind, __you can run__:
 
 _Terminal 1_
 ```shell
-# This will begin a live-watching compiler for ./src/ and ./electron folders
+# This will begin a live-watching compiler for ./src/ and ./electron/ folders
 $ npm run build:all
 ```
 
 _Terminal 2_
-```
+```shell
 # This will begin the simulated electron app pulling from those compiled sources.
 $ npm run start:electron
 ```
 
-#### Logs
+### Logs
 
-##### Electron logs
-During development, Electron logs are in your Terminal 2 console, they're also
+##### Electron and Emerald logs
+During development, Electron and Emerald logs are in your Terminal 2 console, they're also
 persisted in ~/Library/Logs/EmeraldWallet/log.log. This is the same for production.
 
-##### Geth and Emerald logs
-During development, you'll find logs in `./logs` right in the project base directory.
+##### Geth logs
+During development, you'll find geth's logs in `./logs` right in the project base directory.
 In production, logs will be nestled in `~/Library/Application Support/EmeraldWallet/`.
 
 ### Building alternatively
@@ -81,18 +94,29 @@ $ npm run build:all:nowatch
 $ npm run build:web
 ```
 
-### Distribution in development
+### Building distributions in development
+You can run a distribution build in your development environment. Assuming
+you've already compiled `./src/` and `./electron/`, you'll be able to run:
 
 ```
 $ npm run dist
 ```
 
-:arrow_up: This'll build for _your current_ system. There are configurations for
-several systems specified in the `"build"` field of `package.json`, but the `dist`
-command will just build for the system it's on.
+This command will build for _your current system_. Note that there are configurations for
+several systems (OSX, Linux, Windows) specified in the `"build"` field of `package.json`, but the `dist` command will by default only build for the system it's on.
 
-OSX can also build for Linux, just tag on a `-ml` flag to that command to build for
-both at the same time.
+Note: If you're developing on OSX and have a developer signing identity on your machine, you can
+optionally disable that with `CSC_IDENTITY_AUTO_DISCOVERY=false`.
+
+OSX is also able to build for Linux. Add `-ml` to that raw command to build for
+both OSX and Linux at the same time.
+
+### Troubleshooting
+Some prelimary things to try in case you run into issues:
+
+- `rm -rf ~/Library/Application Support/EmeraldWallet` to clear out any persisted
+  settings or userdata from previous trials.
+
 
 
 ## Run tests
