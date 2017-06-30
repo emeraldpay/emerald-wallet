@@ -41,9 +41,6 @@ before_script:
   - npm install -g node-gyp license-checker
   # Install cargo and then `cargo install emerald` and move binary to project base.
   - bash ./dependencies.sh
-  # Set up GCP
-  - npm install gcloud-storage-upload
-  - openssl aes-256-cbc -k "$GCP_PASSWD" -in gcloud-travis.json.enc -out .gcloud.json -d
 script:
   # Generate current version information from git tags.
   - git describe --tags --always > version.txt
@@ -62,6 +59,10 @@ script:
 after_success:
   # Show dist directory contents after a successful build.
   - if [[ "$FULL_CHECK" == "false" ]]; then ls -l ./dist/; fi
+before_deploy:
+  # Set up GCP
+  - npm install gcloud-storage-upload
+  - openssl aes-256-cbc -k "$GCP_PASSWD" -in gcloud-travis.json.enc -out .gcloud.json -d
 addons:
   apt:
     sources:
