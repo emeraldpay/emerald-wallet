@@ -38,6 +38,14 @@ export function useRpc(option) {
     };
 }
 
+export function agreeOnTerms(v) {
+    ipcRenderer.send('terms', v);
+    return {
+        type: 'LAUNCHER/TERMS',
+        version: v,
+    }
+}
+
 export function saveSettings(extraSettings) {
     extraSettings = extraSettings || {};
     return function (dispatch, getState) {

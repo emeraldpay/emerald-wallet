@@ -4,6 +4,7 @@ const initial = Immutable.fromJS({
     firstRun: false,
     settingUpdated: false,
     launcherType: 'web',
+    terms: 'none',
     chain: {
         rpc: null,
         // rpc: "remote", url: "http://api.gastracker.io/web3"
@@ -39,9 +40,13 @@ function setStoredFirstRun() {
 function onConfig(state, action) {
     if (action.type === 'LAUNCHER/CONFIG') {
         setTimeout(setStoredFirstRun, 10000); // HACK
-        return state.set('launcherType', action.launcherType)
+        state = state.set('launcherType', action.launcherType)
             .set('firstRun', getStoredFirstRun()) // action.firstRu
             .update('chain', (chain) => chain.merge(Immutable.fromJS(action.config.chain || {})));
+        if (action.config.settings) {
+            state = state.set('terms', action.config.settings.terms);
+        }
+        return state;
     }
     return state;
 }
@@ -79,6 +84,13 @@ function onSettingUpdate(state, action) {
     return state;
 }
 
+function onTerms(state, action) {
+    if (action.type === 'LAUNCHER/TERMS') {
+        return state.set('terms', action.version);
+    }
+    return state;
+}
+
 export default function launcherReducers(state, action) {
     state = state || initial;
     state = onConfig(state, action);
@@ -86,5 +98,6 @@ export default function launcherReducers(state, action) {
     state = onServiceStatus(state, action);
     state = onChain(state, action);
     state = onSettingUpdate(state, action);
+    state = onTerms(state, action);
     return state;
 }
