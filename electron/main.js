@@ -23,7 +23,8 @@ const settings = new Store({
     defaults: {
         rpcType: 'none',
         chain: 'morden',
-        chainId: 62
+        chainId: 62,
+        terms: 'none'
     }
 });
 
@@ -41,6 +42,8 @@ global.launcherConfig = {
 
 log.info('userData: ', app.getPath('userData'));
 log.info(`Chain: [type: ${settings.get('rpcType')}, chain: ${settings.get('chain')}]`);
+log.info("Settings: ", settings.store);
+
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
@@ -79,6 +82,11 @@ app.on('ready', () => {
             .then(services.start.bind(services))
             .then(services.notifyStatus.bind(services))
             .catch((err) => log.error('Failed to restart after changing settings', err));
+    });
+
+    ipcMain.on('terms', (event, v) => {
+        settings.set('terms', v);
+        event.returnValue = "ok";
     });
 
     app.on('quit', () => {

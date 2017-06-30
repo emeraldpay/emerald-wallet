@@ -116,7 +116,8 @@ export function start() {
 export function waitForServices() {
     const unsubscribe = store.subscribe(() => {
         const state = store.getState();
-        if (state.launcher.getIn(['status', 'geth']) === 'ready'
+        if (state.launcher.get('terms') === 'v1'
+            && state.launcher.getIn(['status', 'geth']) === 'ready'
             && state.launcher.getIn(['status', 'connector']) === 'ready'
             && state.network.getIn(['chain', 'name']) !== null) {
             unsubscribe();
