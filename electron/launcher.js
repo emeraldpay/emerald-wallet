@@ -154,10 +154,11 @@ export class LocalConnector {
                         });
                         rs.pipe(ws);
                     });
+                } else {
+                    // Assuming the emerald found is valid (perms, etc).
+                    log.debug('OK: emerald exists: ', bin);
+                    resolve(true);
                 }
-                // Assuming the emerald found is valid (perms, etc).
-                log.debug('OK: emerald exists: ', bin);
-                resolve(true);
             });
         });
     }
