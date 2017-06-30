@@ -171,17 +171,16 @@ export class Services {
                 });
                 const logTargetDir = getLogDir();
                 log.debug('Emerald log target dir:', logTargetDir);
-                // writeProcOut(emerald, ;
-                emerald.stderr.pipe(fs.createWriteStream(
-                    path.join(logTargetDir, `emerald-${Date.now().toString()}.log`))
-                );
-                if (emerald.pid > 0) {
-                    log.info('Connector is ready');
-                    this.connectorStatus = STATUS.READY;
-                    this.notify.status('connector', 'ready');
-
-                    resolve(this.connector);
-                }
+                emerald.stderr.on('data', (data) => {
+                    log.debug(`[emerald]
+${data}`
+                    ); // always log emerald data
+                    if (/Connector started on/.test(data)) {
+                        this.connectorStatus = STATUS.READY;
+                        this.notify.status('connector', 'ready');
+                        resolve(this.connector);
+                    }
+                });
             }).catch(reject);
         });
     }

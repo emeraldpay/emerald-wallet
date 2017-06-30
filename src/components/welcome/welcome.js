@@ -20,8 +20,16 @@ const Render = ({ message, level, ready, needSetup }) => {
 
     let body = <div>
         <Row center="xs" style={{paddingTop: "40px"}}>
-            <Col xs>
+            <Col xs={12}>
                 <span style={{fontSize: "28px", fontWeight: 900}}>Emerald Wallet</span>
+            </Col>
+            <Col xs={12}>
+                <span style={{fontSize: "16px", fontWeight: 500}}>Version: 0.2.0 Alpha</span>
+            </Col>
+            <Col xs={12}>
+                <span style={{fontSize: "12px", fontWeight: 400, color: "#999"}}>
+                    (initial version, please don't use for serious stuff before next Beta release)
+                </span>
             </Col>
         </Row>
         <Row center="xs" style={{paddingTop: "40px", height: "40px"}}>
