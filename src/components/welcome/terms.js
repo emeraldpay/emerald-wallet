@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import RaisedButton from 'material-ui/RaisedButton';
@@ -11,7 +10,7 @@ const Render = ({ onAgree }) => {
     const style = {
         width: '100%',
         height: '250px',
-        overflowY: 'scroll'
+        overflowY: 'scroll',
     };
 
     return (
@@ -25,7 +24,7 @@ const Render = ({ onAgree }) => {
                         <p>
                             This End-User License Agreement ("EULA") is a legal agreement between you (either an
                             individual or a single entity) and authors, including all contributors to source code,
-                            ("AUTHORS) of this Software
+                            ("AUTHORS") of this Software
                             identified above, which includes computer software and may include associated media,
                             printed materials, and “online” or electronic documentation (“SOFTWARE”).
                         </p>
@@ -60,7 +59,7 @@ const Render = ({ onAgree }) => {
                     </div>
                 </Col>
             </Row>
-            <Row center="xs" style={{paddingTop: "20px"}}>
+            <Row center="xs" style={{paddingTop: '20px'}}>
                 <Col xs>
                     <RaisedButton label="I Agree"
                                   primary={true}
@@ -72,17 +71,12 @@ const Render = ({ onAgree }) => {
     );
 };
 
-
-Render.propTypes = {
-};
-
 const Terms = connect(
     (state, ownProps) => ({
     }),
     (dispatch, ownProps) => ({
-        onAgree: () => {
-            dispatch(agreeOnTerms('v1'))
-        }
+        onAgree: () =>
+            dispatch(agreeOnTerms('v1')),
     })
 )(Render);
 
