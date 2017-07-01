@@ -28,4 +28,10 @@ export class UserNotify {
             this.webContents.send("launcher", "CHAIN", {rpc, chain, chainId});
         }
     }
+
+    rpcUrl(url) {
+        if (this.webContents) {
+            this.webContents.send("launcher", "RPC", {url});
+        }
+    }
 }

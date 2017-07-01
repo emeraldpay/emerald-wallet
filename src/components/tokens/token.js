@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
 
-import log from 'loglevel';
+import log from 'electron-log';
 import { link, tables } from 'lib/styles';
 
 const Render = ({ token, openToken }) => (

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
-import log from 'loglevel';
+import log from 'electron-log';
 import QRCode from 'qrcode.react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';

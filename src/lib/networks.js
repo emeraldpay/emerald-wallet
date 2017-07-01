@@ -1,29 +1,23 @@
-import Immutable from 'immutable';
+import log from 'electron-log';
 
 export const Networks = [
-    { name: 'mainnet', id: 61, title: 'Mainnet'},
-    { name: 'morden', id: 62, title: 'Morden Testnet' },
+    { id: 'local/mainnet', name: 'mainnet', chainId: 61, title: 'Mainnet', type: 'local'},
+    { id: 'remote', name: 'mainnet', chainId: 61, title: 'Mainnet (Remote)', type: 'remote' },
+    { id: 'local/morden', name: 'morden', chainId: 62, title: 'Morden Testnet', type: 'local' },
 ];
 
-const UNKNOWN = { name: 'unknown', id: -1, title: 'Unknown' };
-
-export function getByName(name) {
-    name = name.toLowerCase();
-    if (name === 'mainnet') {
-        return Networks[0]
+export function findNetworkDetails(name, chainId, type) {
+    const nameClean = (name || '_unknown_').toString().toLowerCase();
+    const found = Networks.find((n) => {
+        if ((n.name === nameClean || n.chainId === chainId || n.chainId === chainId.toString()) && (n.type === type)) {
+            return true;
+        }
+        return false;
+    });
+    if (!found) {
+        log.debug('Unknown network:', name, chainId, type);
+        return false;
     }
-    if (name === 'testnet' || name === 'morden') {
-        return Networks[1]
-    }
-    return UNKNOWN;
-}
-
-export function getById(id) {
-    if (id === 61) {
-        return Networks[0]
-    }
-    if (id === 62 ) {
-        return Networks[1]
-    }
-    return UNKNOWN;
+    log.debug('Found network:', name, chainId, type);
+    return found;
 }

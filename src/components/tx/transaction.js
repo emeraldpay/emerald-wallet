@@ -6,7 +6,7 @@ import { TableRow, TableRowColumn } from 'material-ui/Table';
 import { gotoScreen } from 'store/screenActions';
 import { refreshTransaction } from 'store/accountActions';
 import FontIcon from 'material-ui/FontIcon';
-import log from 'loglevel';
+import log from 'electron-log';
 import { link, tables } from 'lib/styles';
 import { toDuration } from 'lib/convert';
 import { AddressAvatar, AccountAddress } from 'elements/dl';

@@ -1,5 +1,5 @@
 import { rpc } from 'lib/rpc';
-import log from 'loglevel';
+import log from 'electron-log';
 import { functionToData, dataToParams, toNumber } from 'lib/convert';
 import { loadAccountBalance } from './accountActions';
 

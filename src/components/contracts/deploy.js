@@ -17,7 +17,7 @@ import { createContract, trackTx } from 'store/accountActions';
 import { addContract, estimateGas } from 'store/contractActions';
 import { positive, number, required, address, hex } from 'lib/validators';
 import { mweiToWei, toHex } from 'lib/convert';
-import log from 'loglevel';
+import log from 'electron-log';
 
 const DefaultGas = 300000;
 const OptionValues = ['ERC20', 'ERC23'];

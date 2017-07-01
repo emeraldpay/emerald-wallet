@@ -1,0 +1,46 @@
+os: unstable
+cache:
+  - node_modules
+environment:
+  GCP_PASSWD:
+    secure: erzLJz7qT0kCJa+jZG6Sf9wwkfLYO2UDLzydkKTdwqA=
+  matrix:
+    - nodejs_version: 6
+install:
+  # Set up version from git tags.
+  - git describe --tags --always > version.txt
+  - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+)-g([a-f0-9]+)/v\1.\2+\3/' version.txt > version-app.txt
+  - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+).+/v\1.\2/' version.txt > version-only.txt
+  - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+).+/v\1.x/' version.txt > version-base.txt
+  - set /p VERSION=<version-app.txt
+  - set /p APP_VERSION_GIT_TAG=<version-app.txt
+  - set /p VERSION_ONLY=<version-only.txt
+  - set /p VERSION_BASE=<version-base.txt
+  - echo %VERSION_BASE% %VERSION_ONLY% %VERSION%
+  # Set up build dependencies.
+  - ps: Install-Product node $end:nodejs_version
+  - set CI=true
+  - npm install -g npm@latest
+  - set PATH=%APPDATA%\npm;%PATH%
+  - npm install
+  - bash ./dependencies.sh
+build: off
+version: '{build}'
+test_script:
+  # CSC...=false env var disables app signing for osx, can't hurt to have it here too.
+  # But probably useless, since the dist script build for _current_ operating system.
+  - npm run dist
+artifacts:
+  - path: './dist/*.exe'
+    name: emerald-wallet
+before_deploy:
+  # Set up GCP upload.
+  - nuget install secure-file -ExcludeVersion
+  - secure-file\tools\secure-file -decrypt gcloud-appveyor.json.enc -secret %GCP_PASSWD% -out .gcloud.json
+  - dir
+  - npm install gcloud-storage-upload
+deploy_script:
+  - ps: >-
+      If ($env:APPVEYOR_REPO_BRANCH -eq 'master') {
+          bash ./gcloud-deploy.sh
+      }

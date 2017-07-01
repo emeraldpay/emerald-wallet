@@ -6,7 +6,7 @@ import { TableRow, TableRowColumn } from 'material-ui/Table';
 import { AddressAvatar, AccountAddress } from 'elements/dl';
 import AccountSendButton from './sendButton';
 import { gotoScreen } from 'store/screenActions';
-import log from 'loglevel';
+import log from 'electron-log';
 import { align } from 'lib/styles';
 import AccountPopup from './popup';
 import AccountBalance from './balance';

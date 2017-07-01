@@ -1,5 +1,5 @@
 import Immutable from 'immutable';
-import log from 'loglevel';
+import log from 'electron-log';
 import { change, formValueSelector, SubmissionError } from 'redux-form';
 
 import { connect } from 'react-redux';
