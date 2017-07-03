@@ -19,7 +19,7 @@ const Render = ({ handleSubmit, blockAddress, invalid, pristine, submitting, can
                         component={renderTextField}
                         type="text"
                         label="Address Name"
-                        validate={ required } />
+                        disabled />
                 <Field name="description"
                         component={renderTextField}
                         type="text"
