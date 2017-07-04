@@ -172,7 +172,11 @@ export function transferTokenTransaction(accountId, password, to, gas, gasPrice,
 }
 
 export function traceCall(accountId, to, gas, gasPrice, value, data) {
-    return () => {
+    return (dispatch, getState) => {
+        const gethClient = getState().launcher.get('chain').get('client')
+            .substring(0, 4) === 'geth';
+        const call = gethClient ? 'eth_traceCall' : 'trace_call';
+        const traceParam = gethClient ? 'latest' : ['trace'];
         const params = [{
             from: accountId,
             to,
@@ -180,8 +184,8 @@ export function traceCall(accountId, to, gas, gasPrice, value, data) {
             gasPrice,
             value,
             data,
-        }, 'latest'];
-        return rpc.call('eth_traceCall', params);
+        }, traceParam];
+        return rpc.call(call, params);
     };
 }
 
