@@ -176,7 +176,6 @@ export function traceCall(accountId, to, gas, gasPrice, value, data) {
         const gethClient = getState().launcher.get('chain').get('client')
             .substring(0, 4) === 'geth';
         const call = gethClient ? 'eth_traceCall' : 'trace_call';
-        const traceParam = gethClient ? 'latest' : ['trace'];
         const params = [{
             from: accountId,
             to,
@@ -184,7 +183,11 @@ export function traceCall(accountId, to, gas, gasPrice, value, data) {
             gasPrice,
             value,
             data,
-        }, traceParam];
+        }];
+        if (!gethClient) {
+            params.push(['trace', 'stateDiff']);
+        }
+        params.push('latest');
         return rpc.call(call, params);
     };
 }
