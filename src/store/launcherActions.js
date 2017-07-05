@@ -21,8 +21,28 @@ export function readConfig() {
     };
 }
 
+export function loadClientVersion() {
+    return (dispatch) => {
+        rpc.call('web3_clientVersion', []).then((result) => {
+            log.debug(result);
+            dispatch({
+                type: 'LAUNCHER/CONFIG',
+                config: {
+                    chain: {
+                        client: result,
+                    },
+                },
+            });
+            dispatch({
+                type: 'LAUNCHER/SETTINGS',
+                updated: true,
+            });
+        });
+    };
+}
+
 export function useRpc(option) {
-    return function (dispatch) {
+    return (dispatch) => {
         dispatch({
             type: 'LAUNCHER/CONFIG',
             config: {
@@ -48,9 +68,10 @@ export function agreeOnTerms(v) {
 
 export function saveSettings(extraSettings) {
     extraSettings = extraSettings || {};
-    return function (dispatch, getState) {
+    return (dispatch, getState) => {
         const rpcType = getState().launcher.getIn(['chain', 'rpc']);
-        const settings = {rpcType, ...extraSettings};
+        const client = getState().launcher.getIn(['chain', 'client']);
+        const settings = {rpcType, client, ...extraSettings};
         log.info('Save settings', settings);
         waitForServicesRestart();
         ipcRenderer.send('settings', settings);
@@ -62,7 +83,7 @@ export function saveSettings(extraSettings) {
 }
 
 export function listenElectron() {
-    return function (dispatch) {
+    return (dispatch) => {
         ipcRenderer.on('launcher', (event, type, message) => {
             log.debug('launcher listener: ', 'type', type, 'message', message);
             dispatch({
@@ -79,6 +100,7 @@ export function listenElectron() {
                 log.info('Use RPC URL', message.url);
                 rpc.urlGeth = message.url;
             }
+            dispatch(loadClientVersion());
         });
     };
 }

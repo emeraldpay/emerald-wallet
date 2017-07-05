@@ -133,7 +133,8 @@ export function estimateGasFromTrace(dataObj, trace) {
         if (stateDiff) {
             const fromState = new BigNumber(stateDiff.from);
             const toState = new BigNumber(stateDiff.to);
-            estGas = fromState.sub(toState).sub(value);
+            estGas = fromState.sub(toState);
+            estGas = (dataObj.from.toLowerCase() === dataObj.to.toLowerCase()) ? estGas : estGas.sub(value);
             log.debug('Start balance: ' + mweiToWei(fromState).toString(10));
             log.debug('End balance: ' + mweiToWei(toState).toString(10));
             log.debug(fromState.sub(toState).toString(10))
