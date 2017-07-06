@@ -209,7 +209,7 @@ export function importWallet(wallet, name, description) {
                         accountId: result,
                     });
                     // Reload accounts.
-                    if (address(result)) {
+                    if (address(result) === undefined) {
                         dispatch({
                             type: 'ACCOUNT/ADD_ACCOUNT',
                             accountId: result,

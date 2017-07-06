@@ -72,7 +72,7 @@ class ImportRender extends React.Component {
                                     disabled={pristine || submitting || invalid } />
                     </form>
                 </CardText>
-                {account && <CardText color={green100}>
+                {account && <CardText color={green300}>
                     Account Successfully Imported.
                 </CardText>}
                 {account && <CardText>
