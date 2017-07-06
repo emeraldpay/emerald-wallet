@@ -5,6 +5,7 @@ import { app } from 'electron';
 import { LocalGeth, LocalConnector, NoneGeth, RemoteGeth } from './launcher';
 import { UserNotify } from './userNotify';
 import { newGethDownloader } from './downloader';
+import { check } from './nodecheck';
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
@@ -22,17 +23,18 @@ const LAUNCH_TYPE = {
     LOCAL_RUN: 1,
     LOCAL_EXISTING: 2,
     REMOTE_URL: 3,
+    AUTO: 4,
 };
 
 const DEFAULT_SETUP = {
     connectorType: LAUNCH_TYPE.LOCAL_RUN,
-    rpcType: LAUNCH_TYPE.LOCAL_RUN,
-    chain: 'morden',
-    chainId: 62,
+    rpcType: LAUNCH_TYPE.AUTO,
+    chain: null,
+    chainId: null,
 };
 
 function rpcTypeName(type) {
-    const names = ['none', 'local', 'local', 'remote'];
+    const names = ['none', 'local', 'local', 'remote', 'local'];
     return names[type];
 }
 
@@ -73,7 +75,7 @@ export class Services {
                 settings.set('chain', 'mainnet');
                 settings.set('chainId', 61);
             } else if (rpcType === 'local') {
-                this.setup.rpcType = LAUNCH_TYPE.LOCAL_RUN;
+                this.setup.rpcType = LAUNCH_TYPE.AUTO;
             } else {
                 log.error('Invalid chain type: ', rpcType);
                 this.setup.rpcType = LAUNCH_TYPE.NONE;
@@ -109,25 +111,64 @@ export class Services {
         return Promise.all(shuttingDown);
     }
 
-
-    startRpc() {
+    tryExistingRpc() {
         return new Promise((resolve, reject) => {
-            this.notify.status('geth', 'not ready');
-            this.gethStatus = STATUS.NOT_STARTED;
-            if (this.setup.rpcType === LAUNCH_TYPE.NONE) {
-                log.info('use NONE Geth');
-                this.notify.error('Ethereum connection type is not configured');
-                resolve(new NoneGeth());
-            }
-            if (this.setup.rpcType === LAUNCH_TYPE.REMOTE_URL) {
-                log.info('use REMOTE Geth');
+            check("http://localhost:8545").then((status) => {
+                if (!status.exists) {
+                    reject(new Error("Not exists"));
+                    return;
+                }
+                if (!this.setup.chain) {
+                    this.setup.chain = status.chain;
+                    resolve('setup from existing')
+                } else if (status.chain === this.setup.chain) {
+                    resolve('connect to existing')
+                } else {
+                    reject(new Error(`Wrong chain ${this.setup.chain} != ${status.chain}`))
+                }
+            }).catch(reject)
+        })
+    }
+
+    startNoneRpc() {
+        return new Promise((resolve, reject) => {
+            log.info('use NONE Geth');
+            this.notify.error('Ethereum connection type is not configured');
+            resolve(new NoneGeth());
+        })
+    }
+
+    startRemoteRpc() {
+        return new Promise((resolve, reject) => {
+            log.info('use REMOTE Geth');
+            this.gethStatus = STATUS.READY;
+            this.notify.info('Use Remote RPC API');
+            this.notify.rpcUrl('https://api.gastracker.io/web3');
+            this.notify.status('geth', 'ready');
+            resolve(new RemoteGeth(null, null));
+        })
+    }
+
+    startAutoRpc() {
+        return new Promise((resolve, reject) => {
+            this.tryExistingRpc().then(() => {
                 this.gethStatus = STATUS.READY;
-                this.notify.info('Use Remote RPC API');
-                this.notify.rpcUrl('https://api.gastracker.io/web3');
+                log.info("Use Local Existing RPC API");
+                this.notify.info('Use Local Existing RPC API');
+                this.notify.rpcUrl('http://localhost:8545');
                 this.notify.status('geth', 'ready');
-                resolve(new RemoteGeth(null, null));
-                return;
-            }
+                resolve(new LocalGeth(null, this.setup.chain, 8545));
+            }).catch((e) => {
+                log.info("Can't find existing RPC. Try to launch");
+                this.startLocalRpc.call(this)
+                    .then(resolve)
+                    .catch(reject);
+            })
+        })
+    }
+
+    startLocalRpc() {
+        return new Promise((resolve, reject) => {
             const gethDownloader = newGethDownloader(this.notify, getBinDir());
             gethDownloader.downloadIfNotExists().then(() => {
                 this.notify.info('Launching Geth backend');
@@ -152,7 +193,24 @@ export class Services {
                 this.notify.info(`Unable to download Geth: ${err}`);
                 reject(err);
             });
-        });
+        })
+    }
+
+
+    startRpc() {
+        this.notify.status('geth', 'not ready');
+        this.gethStatus = STATUS.NOT_STARTED;
+        if (this.setup.rpcType === LAUNCH_TYPE.NONE) {
+            return this.startNoneRpc();
+        } else if (this.setup.rpcType === LAUNCH_TYPE.REMOTE_URL) {
+            return this.startRemoteRpc();
+        } else if (this.setup.rpcType === LAUNCH_TYPE.AUTO || this.setup.rpcType === LAUNCH_TYPE.LOCAL_RUN) {
+            return this.startAutoRpc();
+        } else {
+            return new Promise((resolve, reject) => {
+                reject(new Error(`Invalid RPC TYPE ${this.setup.rpcType}`));
+            });
+        }
     }
 
     startConnector() {
@@ -196,7 +254,7 @@ ${data}`
             );
             if (this.setup.rpcType === LAUNCH_TYPE.REMOTE_URL) {
                 this.notify.rpcUrl('https://mewapi.epool.io');
-            } else if (this.setup.rpcType === LAUNCH_TYPE.LOCAL_RUN) {
+            } else if (this.setup.rpcType === LAUNCH_TYPE.LOCAL_RUN || this.setup.rpcType === LAUNCH_TYPE.AUTO) {
                 this.notify.rpcUrl('http://localhost:8545');
             }
             resolve('ok');
