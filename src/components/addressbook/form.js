@@ -18,8 +18,7 @@ const Render = ({ handleSubmit, blockAddress, invalid, pristine, submitting, can
                 <Field name="name"
                         component={renderTextField}
                         type="text"
-                        label="Address Name"
-                        disabled />
+                        label="Address Name" />
                 <Field name="description"
                         component={renderTextField}
                         type="text"
