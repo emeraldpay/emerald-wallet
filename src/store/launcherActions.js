@@ -2,6 +2,7 @@ import { ipcRenderer } from 'electron';
 import log from 'electron-log';
 import rpc from 'lib/rpc';
 import { waitForServicesRestart } from 'store/store';
+import { loadAccountsList } from './accountActions';
 import { gotoScreen } from 'store/screenActions';
 
 export function readConfig() {
@@ -96,6 +97,7 @@ export function listenElectron() {
                     id: message.chainId,
                     rpcType: message.rpc,
                 });
+                dispatch(loadAccountsList());
             } else if (type === 'RPC') {
                 log.info('Use RPC URL', message.url);
                 rpc.urlGeth = message.url;
