@@ -2,7 +2,7 @@ import Immutable from 'immutable';
 
 const initial = Immutable.fromJS({
     firstRun: false,
-    settingUpdated: false,
+    settingsUpdated: false,
     launcherType: 'web',
     terms: 'none',
     chain: {
