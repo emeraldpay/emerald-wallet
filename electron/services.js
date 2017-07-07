@@ -118,14 +118,9 @@ export class Services {
                     reject(new Error("Not exists"));
                     return;
                 }
-                if (!this.setup.chain) {
-                    this.setup.chain = status.chain;
-                    resolve('setup from existing')
-                } else if (status.chain === this.setup.chain) {
-                    resolve('connect to existing')
-                } else {
-                    reject(new Error(`Wrong chain ${this.setup.chain} != ${status.chain}`))
-                }
+                this.setup.chain = status.chain;
+                this.setup.chainId = status.chainId;
+                resolve('setup from existing');
             }).catch(reject)
         })
     }
