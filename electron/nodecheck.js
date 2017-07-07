@@ -51,7 +51,7 @@ function getChain(status) {
         rpc(status.url, "eth_getBlockByNumber", ["0x0", false]).then((result) => {
             if (result.hash === "0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3") {
                 resolve(Object.assign({}, status, {chain: "mainnet", chainId: 61}))
-            } else if(result.hash === '0x0cd786a2425d16f152c658316c423e6ce1181e15c3295826d7c9904cba9ce30') {
+            } else if(result.hash === '0x0cd786a2425d16f152c658316c423e6ce1181e15c3295826d7c9904cba9ce303') {
                 resolve(Object.assign({}, status, {chain: "morden", chainId: 62}))
             } else {
                 reject(new Error(`Unknown chain ${result.hash}`))
