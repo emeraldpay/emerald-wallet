@@ -60,7 +60,7 @@ export function loadAccountTxCount(accountId) {
 export function createAccount(passphrase, name, description) {
     return (dispatch, getState) => {
         const chain = getState().network.getIn(['chain', 'name']);
-        rpc.call('emerald_newAccount', [{
+        return rpc.call('emerald_newAccount', [{
             passphrase,
             name,
             description,
