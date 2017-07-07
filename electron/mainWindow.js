@@ -1,4 +1,4 @@
-import {BrowserWindow, Menu, shell } from 'electron';
+import { BrowserWindow, Menu, shell } from 'electron';
 import winLinuxMenu from './menus/win-linux';
 import darwinMenu from './menus/darwin';
 const path = require('path');
@@ -39,7 +39,7 @@ export function createWindow(openDevTools) {
         mainWindow = null;
     });
 
-    // Menu 
+    // Menu
     if (process.platform === 'darwin') {
         menu = Menu.buildFromTemplate(darwinMenu(mainWindow));
     } else {
