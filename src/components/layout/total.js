@@ -5,7 +5,7 @@ import { Row, Col } from 'react-flexbox-grid/lib/index';
 import Immutable from 'immutable';
 import { Wei, renderAsCurrency } from 'lib/types';
 
-const Render = ({ total, fiat, currentLocaleCurrency }) => {
+const Render = ({ total, fiat, showFiat, currentLocaleCurrency }) => {
     const styleTitle = {
     };
     const styleTotal = {
@@ -18,6 +18,7 @@ const Render = ({ total, fiat, currentLocaleCurrency }) => {
         marginLeft: '1rem',
         marginRight: '1rem',
     };
+    console.log(showFiat)
 
     return (
         <div>
@@ -29,7 +30,7 @@ const Render = ({ total, fiat, currentLocaleCurrency }) => {
                     {total} ETC
                 </Col>
             </Row>
-            <Row>
+            {showFiat && <Row>
                 <Col xs={12} style={fiatSubtitle}>
                     <span style={valueDisplay}>
                         {renderAsCurrency(fiat.total.localized)}
@@ -39,7 +40,7 @@ const Render = ({ total, fiat, currentLocaleCurrency }) => {
                         {fiat.rate.localized ? renderAsCurrency(fiat.rate.localized) : '?'} ETC/{currentLocaleCurrency.toUpperCase()}
                     </span>
                 </Col>
-            </Row>
+            </Row>}
         </div>
     );
 };
@@ -48,6 +49,7 @@ Render.propTypes = {
     total: PropTypes.number.isRequired,
     fiat: PropTypes.object.isRequired,
     currentLocaleCurrency: PropTypes.string.isRequired,
+    showFiat: PropTypes.bool.isRequired,
 };
 
 const Total = connect(
@@ -102,10 +104,13 @@ const Total = connect(
             fiat.rate.localized = +fiat.rate.usd; // fiat.pair.usd;
         }
 
+        const network = (state.network.get('chain').get('name') || '').toLowerCase();
+
         return {
             total: +totalEther,
             fiat,
             currentLocaleCurrency,
+            showFiat: (network === 'mainnet'),
         };
     },
     (dispatch, ownProps) => ({})
