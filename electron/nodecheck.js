@@ -37,7 +37,7 @@ function exists(status) {
             resolve(Object.assign({}, status, {exists: true}))
         }).catch(() => {
             log.debug(`Can't find RPC at ${status.url}`);
-            resolve(Object.assign({}, status, {exists: false}))
+            reject(`Can't find RPC at ${status.url}`)
         })
     });
 }
@@ -51,7 +51,7 @@ function getChain(status) {
         rpc(status.url, "eth_getBlockByNumber", ["0x0", false]).then((result) => {
             if (result.hash === "0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3") {
                 resolve(Object.assign({}, status, {chain: "mainnet", chainId: 61}))
-            } else if(result.hash === '0x0cd786a2425d16f152c658316c423e6ce1181e15c3295826d7c9904cba9ce30') {
+            } else if(result.hash === '0x0cd786a2425d16f152c658316c423e6ce1181e15c3295826d7c9904cba9ce303') {
                 resolve(Object.assign({}, status, {chain: "morden", chainId: 62}))
             } else {
                 reject(new Error(`Unknown chain ${result.hash}`))
@@ -66,4 +66,20 @@ export function check(url) {
     let status = Object.assign({}, DefaultStatus, {url: url});
     return exists(status)
         .then(getChain)
+}
+
+export function waitRpc(url) {
+    let status = Object.assign({}, DefaultStatus, {url: url});
+    return new Promise((resolve, reject) => {
+        let retry = (n) => {
+            exists(status).then(resolve).catch(() => {
+                if (n > 0) {
+                    setTimeout(() => retry(n - 1), 1000);
+                } else {
+                    reject(new Error("Not Connected"))
+                }
+            })
+        };
+        retry(30);
+    });
 }
