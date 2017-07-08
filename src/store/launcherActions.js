@@ -106,3 +106,10 @@ export function listenElectron() {
         });
     };
 }
+
+export function connecting(value) {
+    return {
+        type: "LAUNCHER/CONNECTING",
+        value
+    }
+}

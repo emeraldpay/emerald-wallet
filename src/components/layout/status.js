@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import LinearProgress from 'material-ui/LinearProgress';
 
-const Render = ({ block, chain, progress, peerCount, showDetails }) => {
+const Render = ({ block, chain, progress, peerCount, showDetails, connecting }) => {
     // networkDetails = `Block ${syncing.get('currentBlock')} of ${syncing.get('highestBlock')}`;
 
     const styles = {
@@ -38,7 +38,13 @@ const Render = ({ block, chain, progress, peerCount, showDetails }) => {
     };
 
     let details = null;
-    if (showDetails) {
+    if (connecting) {
+        details =  <Row>
+            <Col xs={12} style={styles.paddingSmVert}>
+                <i className="fa fa-spin fa-spinner"/> Connecting...
+            </Col>
+        </Row>
+    } else if (showDetails) {
         details =  <Row>
             <Col xs={12} style={styles.paddingSmVert}>
                 {peerCount} {peerCount === 1 ? 'peer' : 'peers'}, {block} blocks
@@ -72,7 +78,8 @@ Render.propTypes = {
     progress: PropTypes.number,
     chain: PropTypes.string.isRequired,
     peerCount: PropTypes.number,
-    showDetails: PropTypes.bool.isRequired
+    showDetails: PropTypes.bool.isRequired,
+    connecting: PropTypes.bool.isRequired
 };
 
 const Status = connect(
@@ -83,6 +90,7 @@ const Status = connect(
             block: curBlock,
             showDetails,
             chain: (state.network.get('chain') || {}).get('title') || '',
+            connecting: state.launcher.get('connecting')
         };
         if (showDetails) {
             const tip = state.network.getIn(['sync', 'highestBlock'], -1);
