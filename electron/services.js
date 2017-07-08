@@ -212,7 +212,7 @@ export class Services {
         return new Promise((resolve, reject) => {
             this.connectorStatus = STATUS.NOT_STARTED;
             this.notify.status('connector', 'not ready');
-            this.connector = new LocalConnector(getBinDir(), this.setup.chainId);
+            this.connector = new LocalConnector(getBinDir(), this.setup.chain);
             this.connector.launch().then((emerald) => {
                 this.connectorStatus = STATUS.STARTING;
                 emerald.on('exit', (code) => {

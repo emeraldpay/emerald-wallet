@@ -109,9 +109,9 @@ export class NoneGeth {
 
 export class LocalConnector {
 
-    constructor(bin, chainId) {
+    constructor(bin, chain) {
         this.bin = bin;
-        this.chainId = chainId || '61';
+        this.chain = chain || 'mainnet';
     }
 
     // It would be nice to refactor so we can reuse functions
@@ -173,6 +173,7 @@ export class LocalConnector {
                 } else {
                     const options = [
                         'server',
+                        '--chain', this.chain
                     ];
                     this.proc = spawn(bin, options);
                     resolve(this.proc);
@@ -183,7 +184,7 @@ export class LocalConnector {
 
     launch() {
         return new Promise((resolve, reject) => {
-            log.info(`Starting Emerald Connector... [chainId: ${this.chainId}]`);
+            log.info(`Starting Emerald Connector... [chain: ${this.chain}]`);
             this.migrateIfNotExists()
                     .then(this.start.bind(this))
                     .then(resolve)
