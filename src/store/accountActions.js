@@ -1,9 +1,9 @@
 import Immutable from 'immutable';
+import log from 'electron-log';
 import { rpc } from 'lib/rpc';
 import { getRates } from 'lib/marketApi';
 import { address } from 'lib/validators';
 import { loadTokenBalanceOf } from './tokenActions';
-import log from 'electron-log';
 import { toHex, toNumber } from 'lib/convert';
 import { gotoScreen, catchError } from './screenActions';
 
@@ -59,8 +59,8 @@ export function loadAccountTxCount(accountId) {
 */
 export function createAccount(passphrase, name, description) {
     return (dispatch, getState) => {
-        let chain = getState().network.getIn(['chain', 'name']);
-        rpc.call('emerald_newAccount', [{
+        const chain = getState().network.getIn(['chain', 'name']);
+        return rpc.call('emerald_newAccount', [{
             passphrase,
             name,
             description,
@@ -73,13 +73,13 @@ export function createAccount(passphrase, name, description) {
             });
             dispatch(loadAccountBalance(result));
         });
-    }
+    };
 }
 
 export function updateAccount(address, name, description) {
     return (dispatch, getState) => {
-        let chain = getState().network.getIn(['chain', 'name']);
-        rpc.call('emerald_updateAccount', [{
+        const chain = getState().network.getIn(['chain', 'name']);
+        return rpc.call('emerald_updateAccount', [{
             name,
             description,
             address,
@@ -91,11 +91,11 @@ export function updateAccount(address, name, description) {
                 description,
             });
         });
-    }
+    };
 }
 
 function sendRawTransaction(signed) {
-    return rpc.call('eth_sendRawTransaction', [signed])
+    return rpc.call('eth_sendRawTransaction', [signed]);
 }
 
 function unwrap(list) {

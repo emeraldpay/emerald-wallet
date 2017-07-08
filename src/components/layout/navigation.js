@@ -14,9 +14,13 @@ import { Networks } from 'lib/networks';
 import log from 'electron-log';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { gotoScreen } from 'store/screenActions';
-import { useRpc, saveSettings } from 'store/launcherActions'
+import { useRpc, saveSettings } from 'store/launcherActions';
 
-const Render = translate('common')(({ t, openAccounts, openAddressBook, openContracts, switchChain, chain, rpcType }) => (
+const Render = translate('common')(({ t, openAccounts, openAddressBook, openContracts, switchChain, chain, rpcType }) => {
+    const networkClick = (net) => (net.id !== chain.get('id') && net.type !== chain.get('type')) && switchChain(net);
+    const isCurrentNetwork = (net) => (net.name === chain.get('name') && net.type === rpcType);
+
+    return (
     <IconMenu
         iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
         targetOrigin={{ horizontal: 'right', vertical: 'top' }}
@@ -34,17 +38,18 @@ const Render = translate('common')(({ t, openAccounts, openAddressBook, openCont
                     <MenuItem
                         key={net.id}
                         primaryText={net.title}
-                        checked={(net.name === chain && net.type === rpcType)}
-                        onClick={() => (net.id !== chain.id) && switchChain(net)}
+                        checked={isCurrentNetwork(net)}
+                        onClick={() => networkClick(net)}
                     />
                 )}
 
         />
     </IconMenu>
-));
+    );
+});
 
 Render.propTypes = {
-    chain: PropTypes.string.isRequired,
+    chain: PropTypes.object.isRequired,
     rpcType: PropTypes.string.isRequired,
     openAccounts: PropTypes.func.isRequired,
     openAddressBook: PropTypes.func.isRequired,
@@ -55,7 +60,7 @@ Render.propTypes = {
 const Navigation = connect(
     (state, ownProps) => ({
         chain: state.network.get('chain') || {},
-        rpcType: state.launcher.getIn(['chain', 'rpc'])
+        rpcType: state.launcher.getIn(['chain', 'rpc']),
     }),
     (dispatch, ownProps) => ({
         openAccounts: () => {
@@ -73,7 +78,7 @@ const Navigation = connect(
         switchChain: (network) => {
             dispatch(useRpc(network.type));
             dispatch(saveSettings({chain: network.name, chainId: network.chainId}));
-        }
+        },
     })
 )(Render);
 
