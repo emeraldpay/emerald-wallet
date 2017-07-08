@@ -1,0 +1,16 @@
+{
+  "book": {
+    "savedAddresses": "Saved Addresses",
+    "addAddress": "Add Address"
+  },
+  "form": {
+    "networkAddress": "Network Address",
+    "addressName": "Address Name",
+    "addressDescription": "Address Description"
+  },
+  "show": {
+    "subtitle": "Address: {{id}}",
+    "etherBalance": "Ether Balance:",
+    "description": "Description:"
+  }
+}

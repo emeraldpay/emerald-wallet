@@ -12,7 +12,7 @@ import { cardSpace } from 'lib/styles';
 import { updateAddress, deleteAddress } from 'store/addressActions';
 import { gotoScreen } from 'store/screenActions';
 import AddressEdit from './edit';
-
+import { translate } from 'react-i18next';
 
 class CardEdit extends React.Component {
 
@@ -59,7 +59,7 @@ class CardEdit extends React.Component {
     }
 }
 
-const Render = ({ address, editAddress, onDeleteAddress, expanded }) => {
+const Render = translate('addressbook')(({ t, address, editAddress, onDeleteAddress, expanded }) => {
     const value = `${address.get('balance') ? address.get('balance').getEther() : '?'} Ether`;
 
     return (
@@ -67,7 +67,7 @@ const Render = ({ address, editAddress, onDeleteAddress, expanded }) => {
             <Card style={cardSpace}>
                 <CardHeader
                     title={address.get('name')}
-                    subtitle={`Address: ${address.get('id')}`}
+                    subtitle={t('show.subtitle', {id: address.get('id')})}
                     actAsExpander={true}
                     showExpandableButton={true}
                 />
@@ -75,10 +75,10 @@ const Render = ({ address, editAddress, onDeleteAddress, expanded }) => {
                     <Row>
                         <Col xs={8}>
                             <DescriptionList>
-                                <DescriptionTitle>Description:</DescriptionTitle>
+                                <DescriptionTitle>{t('show.description')}</DescriptionTitle>
                                 <DescriptionData>{address.get('description')}</DescriptionData>
 
-                                <DescriptionTitle>Ether Balance:</DescriptionTitle>
+                                <DescriptionTitle>{t('show.etherBalance')}</DescriptionTitle>
                                 <DescriptionData>{value}</DescriptionData>
 
                             </DescriptionList>
@@ -92,7 +92,7 @@ const Render = ({ address, editAddress, onDeleteAddress, expanded }) => {
             <CardEdit onDelete={onDeleteAddress} onSubmit={editAddress} address={address} />
         </div>
     );
-};
+});
 
 const AddressShow = connect(
     (state, ownProps) => {

@@ -8,9 +8,10 @@ import Avatar from 'material-ui/Avatar';
 import { cardSpace, tables } from 'lib/styles';
 import Immutable from 'immutable';
 import { gotoScreen } from 'store/screenActions';
+import { translate } from 'react-i18next';
 import Address from './address';
 
-const Render = ({ addressBook, addAddress }) => {
+const Render = translate('addressbook')(({ t, addressBook, addAddress }) => {
     const table = <Table selectable={false}>
         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
             <TableRow>
@@ -33,7 +34,7 @@ const Render = ({ addressBook, addAddress }) => {
         <div id="address-book">
             <Card style={cardSpace}>
                 <CardHeader
-                    title="Saved Addresses"
+                    title={t('book.savedAddresses')}
                     titleStyle={titleStyle}
                     avatar={titleAvatar}
                     actAsExpander={false}
@@ -43,14 +44,14 @@ const Render = ({ addressBook, addAddress }) => {
                     {table}
                 </CardText>
                 <CardActions>
-                    <FlatButton label="Add Address"
+                    <FlatButton label={t('book.addAddress')}
                                 onClick={addAddress}
                                 icon={<FontIcon className="fa fa-plus-circle" />}/>
                 </CardActions>
             </Card>
         </div>
     );
-};
+});
 
 const AddressBook = connect(
     (state, ownProps) => ({
