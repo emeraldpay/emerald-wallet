@@ -11,7 +11,7 @@ import { loadAccountsList, refreshTrackedTransactions, loadPendingTransactions,
 // import { loadContractList } from './contractActions';
 import { loadSyncing, loadHeight, loadPeerCount } from './networkActions';
 import { gotoScreen } from './screenActions';
-import { readConfig, listenElectron } from './launcherActions';
+import { readConfig, listenElectron, connecting } from './launcherActions';
 
 import accountsReducers from './accountReducers';
 import addressReducers from './addressReducers';
@@ -101,6 +101,7 @@ export function startSync() {
     setTimeout(() => store.dispatch(loadPendingTransactions()), intervalRates.refreshAllTxRate);
     setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
     setTimeout(refreshLong, 3 * intervalRates.second);
+    store.dispatch(connecting(false));
 }
 
 export function stopSync() {
@@ -137,6 +138,7 @@ export function waitForServices() {
 }
 
 export function waitForServicesRestart() {
+    store.dispatch(connecting(true));
     const unsubscribe = store.subscribe(() => {
         const state = store.getState();
         if (state.launcher.getIn(['status', 'geth']) !== 'ready'

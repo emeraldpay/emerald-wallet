@@ -3,6 +3,7 @@ import Immutable from 'immutable';
 const initial = Immutable.fromJS({
     firstRun: false,
     settingsUpdated: false,
+    connecting: true,
     launcherType: 'web',
     terms: 'none',
     chain: {
@@ -92,6 +93,13 @@ function onTerms(state, action) {
     return state;
 }
 
+function onConnecting(state, action) {
+    if (action.type === 'LAUNCHER/CONNECTING') {
+        return state.set('connecting', action.value);
+    }
+    return state;
+}
+
 export default function launcherReducers(state, action) {
     state = state || initial;
     state = onConfig(state, action);
@@ -100,5 +108,6 @@ export default function launcherReducers(state, action) {
     state = onChain(state, action);
     state = onSettingUpdate(state, action);
     state = onTerms(state, action);
+    state = onConnecting(state, action);
     return state;
 }
