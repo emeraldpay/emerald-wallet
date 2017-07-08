@@ -5,7 +5,7 @@ import { app } from 'electron';
 import { LocalGeth, LocalConnector, NoneGeth, RemoteGeth } from './launcher';
 import { UserNotify } from './userNotify';
 import { newGethDownloader } from './downloader';
-import { check } from './nodecheck';
+import { check, waitRpc } from './nodecheck';
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
@@ -114,10 +114,6 @@ export class Services {
     tryExistingRpc() {
         return new Promise((resolve, reject) => {
             check("http://localhost:8545").then((status) => {
-                if (!status.exists) {
-                    reject(new Error("Not exists"));
-                    return;
-                }
                 this.setup.chain = status.chain;
                 this.setup.chainId = status.chainId;
                 resolve('setup from existing');
@@ -176,11 +172,15 @@ export class Services {
                         log.error(`geth process exited with code: ${code}`);
                     });
                     if (geth.pid > 0) {
-                        this.gethStatus = STATUS.READY;
-                        log.info('Geth is ready');
-                        this.notify.info('Geth RPC API is ready');
-                        this.notify.status('geth', 'ready');
-                        resolve(launcher);
+                        waitRpc(launcher.getUrl()).then(() => {
+                            this.gethStatus = STATUS.READY;
+                            log.info('Geth is ready');
+                            this.notify.info('Geth RPC API is ready');
+                            this.notify.status('geth', 'ready');
+                            resolve(launcher);
+                        }).catch(reject)
+                    } else {
+                        reject(new Error("Geth not launched"))
                     }
                 }).catch(reject);
             }).catch((err) => {

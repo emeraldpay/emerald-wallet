@@ -37,7 +37,7 @@ function exists(status) {
             resolve(Object.assign({}, status, {exists: true}))
         }).catch(() => {
             log.debug(`Can't find RPC at ${status.url}`);
-            resolve(Object.assign({}, status, {exists: false}))
+            reject(`Can't find RPC at ${status.url}`)
         })
     });
 }
@@ -66,4 +66,20 @@ export function check(url) {
     let status = Object.assign({}, DefaultStatus, {url: url});
     return exists(status)
         .then(getChain)
+}
+
+export function waitRpc(url) {
+    let status = Object.assign({}, DefaultStatus, {url: url});
+    return new Promise((resolve, reject) => {
+        let retry = (n) => {
+            exists(status).then(resolve).catch(() => {
+                if (n > 0) {
+                    setTimeout(() => retry(n - 1), 1000);
+                } else {
+                    reject(new Error("Not Connected"))
+                }
+            })
+        };
+        retry(30);
+    });
 }

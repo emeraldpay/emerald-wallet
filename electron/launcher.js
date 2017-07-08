@@ -86,6 +86,10 @@ export class LocalGeth {
     getPort() {
         return this.rpcPort;
     }
+
+    getUrl() {
+        return `http://127.0.0.1:${this.rpcPort}`
+    }
 }
 
 export class RemoteGeth {
