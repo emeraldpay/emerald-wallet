@@ -110,7 +110,7 @@ const CreateTx = connect(
         onChangeAccount: (accounts, value) => {
             // load account information for selected account
             const idx = accounts.findKey((acct) => acct.get('id') === value);
-            const balance = accounts.get(idx).get('balance');
+            const balance = accounts.get(idx).get('balance').getEther(6);
             dispatch(change('createTx', 'balance', balance.toString()));
         },
         onChangeToken: (event, value, prev) => {
