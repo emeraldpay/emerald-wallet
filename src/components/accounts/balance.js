@@ -23,23 +23,23 @@ class AccountBalanceRender extends React.Component {
             bc: {
                 backgroundColor: 'inherit',
             },
+            main: {
+                fontSize: "16px",
+                fontWeight: 500
+            },
+            fiat: {
+                color: "#666"
+            }
         };
-
+        let fiat = null;
+        if (showFiat || true) {
+            fiat = <span style={styles.fiat}>${getRate(balance, 'usd')}</span>;
+        }
         return (
-        <Card style={{...noShadow, ...styles.bc}}>
-            <CardHeader
-                title={`${balance.getEther(3)} ETC`}
-                subtitle={showFiat ? `$${getRate(balance, 'usd')}` : ''}
-                avatar={
-                    withAvatar ?
-                    <Avatar color={deepOrange300}
-                          backgroundColor={purple500}
-                          size={30}>⟠
-                        </Avatar>
-                    : null
-                }
-            />
-        </Card>
+        <div style={{...styles.bc}}>
+            <span style={styles.main}>{balance.getEther(3)} ETC</span>
+            <br/>{fiat}
+        </div>
         );
     }
 }

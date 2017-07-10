@@ -16,40 +16,44 @@ import { Wei } from 'lib/types';
 
 const Render = ({ tx, openTx, openAccount, refreshTx, toAccount, fromAccount }) => {
 
+    {/* TODO: move tx status to own component */}
+    {/* TODO: timestamp */}
+    let blockNumber = null;
+    if (tx.get('blockNumber')) {
+        blockNumber = <span style={{color: 'limegreen'}} onClick={openTx}>Success</span>;
+    } else {
+        blockNumber = <span style={{color: 'gray'}} onClick={openTx}>
+            <FontIcon className="fa fa-spin fa-spinner"/> In queue...
+        </span>;
+    }
+
     return (
         <TableRow selectable={false}>
 
-            <TableRowColumn >
-                    <AccountBalance balance={tx.get('value') || new Wei(0)} onClick={openTx} withAvatar={false} />
+            <TableRowColumn style={tables.mediumStyle}>
+                <AccountBalance balance={tx.get('value') || new Wei(0)} onClick={openTx} withAvatar={false} />
             </TableRowColumn>
 
-            {/* TODO: move tx status to own component */}
-            {/* TODO: timestamp */}
-            <TableRowColumn style={{...tables.shortStyle, ...link}} >
-                {
-                    (() => {
-                        if (tx.get('blockNumber')) {
-                            return <span style={{color: 'limegreen'}} onClick={openTx}>Success</span>
-                        }
-                        return <span style={{color: 'gray'}} onClick={openTx}><img src={loading} height={14} />&nbsp; In queue...</span>
-                    })()
-                }
+            <TableRowColumn style={{...tables.mediumStyle, ...link}} >
+                {blockNumber}
             </TableRowColumn>
 
-            <TableRowColumn >
+            <TableRowColumn style2={{...tables.mediumStyle}}>
                 <AddressAvatar
-                    secondary={<AccountAddress id={tx.get('from')} abbreviated={true}/>}
+                    addr={tx.get('from')}
+                    abbreviated={false}
                     tertiary={fromAccount.get('description')}
                     primary={fromAccount.get('name')}
                     onClick={() => openAccount(fromAccount)}
                 />
             </TableRowColumn>
-            <TableRowColumn >
-                <FontIcon className='fa fa-arrow-right' />
+            <TableRowColumn style={tables.shortestStyle}>
+                <FontIcon className='fa fa-angle-right' />
             </TableRowColumn>
-            <TableRowColumn >
+            <TableRowColumn style2={{...tables.mediumStyle}}>
                 <AddressAvatar
-                    secondary={<AccountAddress id={tx.get('to')} abbreviated={true}/>}
+                    addr={tx.get('to')}
+                    abbreviated={false}
                     tertiary={toAccount.get('description')}
                     primary={toAccount.get('name')}
                     onClick={() => openAccount(toAccount)}

@@ -24,16 +24,18 @@ const Render = ({ transactions, sendTx, accounts, createAccount }) => {
         titleStyle: {
             fontSize: '20px',
         },
+        table: {
+        }
     };
 
-    const table = <Table style={{...grayBackground, ...{tableLayout: 'auto'}}} selectable={false} fixedHeader={true}>
+    const table = <Table style={{...grayBackground, ...styles.table}} selectable={false} fixedHeader={true}>
         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
             <TableRow>
-                <TableHeaderColumn >Amount</TableHeaderColumn> {/* style={tables.mediumStyle} */}
-                <TableHeaderColumn >Status</TableHeaderColumn> {/* style={tables.shortestStyle} */}
-                <TableHeaderColumn >From</TableHeaderColumn> {/* style={tables.wideStyle} */}
-                <TableHeaderColumn ></TableHeaderColumn> {/* style={tables.shortestStyle} */}
-                <TableHeaderColumn >To</TableHeaderColumn> {/* style={tables.wideStyle} */}
+                <TableHeaderColumn style={tables.mediumStyle}>Amount</TableHeaderColumn>
+                <TableHeaderColumn style={tables.mediumStyle}>Status</TableHeaderColumn>
+                <TableHeaderColumn >From</TableHeaderColumn>
+                <TableHeaderColumn style={tables.shortestStyle}>&nbsp;</TableHeaderColumn>
+                <TableHeaderColumn >To</TableHeaderColumn>
             </TableRow>
         </TableHeader>
         <TableBody displayRowCheckbox={false}>
@@ -53,28 +55,9 @@ const Render = ({ transactions, sendTx, accounts, createAccount }) => {
                     actAsExpander={false}
                     showExpandableButton={false}
                 />
-                <CardActions style={align.center}>
-                {
-                    (() => {
-                        if (transactions.length) {
-                            return <CardText style={styles.root} expandable={false}>
-                                {table}
-                            </CardText>
-                        }
-                        if (accounts.length && accounts[0] !== Immutable.Map({})) {
-                            return <FlatButton label="Send A Transaction"
-                                icon={<FontIcon className="fa fa-play-circle" />}
-                                style={{backgroundColor: 'limegreen', color: 'white'}}
-                                onClick={sendTx(accounts[0])}/>
-                        }
-                        return <FlatButton label="Create an Account"
-                                icon={<FontIcon className="fa fa-play-circle" />}
-                                style={{backgroundColor: 'limegreen', color: 'white'}}
-                                onClick={createAccount}/>
-                    })()
-                    }
-                }
-                </CardActions>
+                <CardText style={styles.root} expandable={false}>
+                    {table}
+                </CardText>
             </Card>
         </div>
     );
