@@ -42,7 +42,7 @@ const Render = () => {
                 Github issues page</a>.
                 </p>
                 <p>
-                Made with ❤️&nbsp; by <strong>ETCDEV</strong> and <a href='https://github.com/ethereumproject/emerald-wallet/network/members'>many wonderful contributors</a>.
+                Made with ❤️&nbsp; by <strong>ETCDEV</strong> and <a href='https://github.com/ethereumproject/emerald-wallet/graphs/contributors'>many wonderful contributors</a>.
                 </p>
             </Col>
             <Col xs={2} style={align.right}>
