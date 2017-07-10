@@ -32,7 +32,7 @@ class AccountBalanceRender extends React.Component {
             }
         };
         let fiat = null;
-        if (showFiat || true) {
+        if (showFiat) {
             fiat = <span style={styles.fiat}>${getRate(balance, 'usd')}</span>;
         }
         return (
