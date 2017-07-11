@@ -279,7 +279,9 @@ export function loadPendingTransactions() {
 export function refreshTransaction(hash) {
     return (dispatch) =>
         rpc.call('eth_getTransactionByHash', [hash]).then((result) => {
-            if (typeof result === 'object') {
+            if (!result) {
+                log.info(`No tx for has ${hash}`)
+            } else if (typeof result === 'object') {
                 dispatch({
                     type: 'ACCOUNT/UPDATE_TX',
                     tx: result,

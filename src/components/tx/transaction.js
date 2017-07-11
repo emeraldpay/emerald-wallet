@@ -38,7 +38,7 @@ const Render = ({ tx, openTx, openAccount, refreshTx, toAccount, fromAccount }) 
                 {blockNumber}
             </TableRowColumn>
 
-            <TableRowColumn style2={{...tables.mediumStyle}}>
+            <TableRowColumn>
                 <AddressAvatar
                     addr={tx.get('from')}
                     abbreviated={false}
@@ -50,7 +50,7 @@ const Render = ({ tx, openTx, openAccount, refreshTx, toAccount, fromAccount }) 
             <TableRowColumn style={tables.shortestStyle}>
                 <FontIcon className='fa fa-angle-right' />
             </TableRowColumn>
-            <TableRowColumn style2={{...tables.mediumStyle}}>
+            <TableRowColumn>
                 <AddressAvatar
                     addr={tx.get('to')}
                     abbreviated={false}

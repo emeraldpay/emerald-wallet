@@ -17,7 +17,11 @@ import { gotoScreen } from 'store/screenActions';
 import { useRpc, saveSettings } from 'store/launcherActions';
 
 const Render = translate('common')(({ t, openAccounts, openAddressBook, openContracts, switchChain, chain, rpcType }) => {
-    const networkClick = (net) => (net.id !== chain.get('id') && net.type !== chain.get('type')) && switchChain(net);
+    const networkClick = (net) => {
+        if (net.id !== chain.get('id') || net.type !== chain.get('type')) {
+            switchChain(net);
+        }
+    };
     const isCurrentNetwork = (net) => (net.name === chain.get('name') && net.type === rpcType);
 
     return (
