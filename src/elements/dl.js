@@ -128,10 +128,10 @@ export const AccountItem = (props) => {
     const { primary, secondary } = props;
     return (
         <ListItem
-          insetChildren={true}
-          disabled={true}
-          primaryText={primary}
-          secondaryText={secondary}
+            insetChildren={true}
+            disabled={true}
+            primaryText={primary}
+            secondaryText={secondary}
         />
     );
 };
