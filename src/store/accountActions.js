@@ -29,7 +29,7 @@ export function loadAccountsList() {
         dispatch({
             type: 'ACCOUNT/LOADING',
         });
-        let chain = getState().network.getIn(['chain', 'name']);
+        const chain = getState().network.getIn(['chain', 'name']);
         rpc.call('emerald_listAccounts', [{chain}]).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SET_LIST',
@@ -102,11 +102,11 @@ function sendRawTransaction(signed) {
 function unwrap(list) {
     return new Promise((resolve, reject) => {
         if (list.length === 1) {
-            resolve(list[0])
+            resolve(list[0]);
         } else {
-            reject(new Error(`Invalid list size ${list.length}`))
+            reject(new Error(`Invalid list size ${list.length}`));
         }
-    })
+    });
 }
 
 function onTxSend(dispatch, sourceTx) {
@@ -120,33 +120,33 @@ function onTxSend(dispatch, sourceTx) {
         const senttx = Object.assign({}, sourceTx, {hash: txhash});
         dispatch(trackTx(senttx));
         dispatch(gotoScreen('transaction', senttx));
-    }
+    };
 }
 
 
 function getNonce(addr) {
-    return rpc.call('eth_getTransactionCount', [addr, 'latest'])
+    return rpc.call('eth_getTransactionCount', [addr, 'latest']);
 }
 
 function withNonce(tx) {
     return (nonce) => new Promise((resolve, reject) =>
         resolve(Object.assign({}, tx, {nonce}))
-    )
+    );
 }
 
 function incNonce(nonce) {
     return new Promise((resolve) => {
-        let nonceDec = toNumber(nonce);
-        resolve(toHex(nonceDec + 1))
-    })
+        const nonceDec = toNumber(nonce);
+        resolve(toHex(nonceDec + 1));
+    });
 }
 
 function emeraldSign(txData, chain) {
-    return rpc.call('emerald_signTransaction', [txData, {chain}])
+    return rpc.call('emerald_signTransaction', [txData, {chain}]);
 }
 
 export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value) {
-    let originalTx = {
+    const originalTx = {
         from: accountId,
         passphrase,
         to,
@@ -155,7 +155,7 @@ export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value)
         value,
     };
     return (dispatch, getState) => {
-        let chain = getState().network.getIn(['chain', 'name']);
+        const chain = getState().network.getIn(['chain', 'name']);
         getNonce(accountId)
             .then(incNonce)
             .then(withNonce(originalTx))
@@ -167,11 +167,11 @@ export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value)
                     .catch(catchError(dispatch))
             )
             .catch(catchError(dispatch));
-    }
+    };
 }
 
 export function createContract(accountId, passphrase, gas, gasPrice, data) {
-    let txData = {
+    const txData = {
         from: accountId,
         passphrase,
         gas,
@@ -179,18 +179,18 @@ export function createContract(accountId, passphrase, gas, gasPrice, data) {
         data,
     };
     return (dispatch, getState) => {
-        let chain = getState().network.getIn(['chain', 'name']);
+        const chain = getState().network.getIn(['chain', 'name']);
         rpc.call('emerald_signTransaction', [txData, {chain}])
             .then(unwrap)
             .then(sendRawTransaction)
             .then(onTxSend(dispatch, accountId))
             .catch(log.error);
-    }
+    };
 }
 
 export function importWallet(wallet, name, description) {
     return (dispatch, getState) => {
-        let chain = getState().network.getIn(['chain', 'name']);
+        const chain = getState().network.getIn(['chain', 'name']);
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsText(wallet);
