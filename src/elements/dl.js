@@ -61,27 +61,37 @@ export const AccountAddress = (props) => {
             fontWeight: '300',
         },
     };
+    let icons = null;
+    if (!abbreviated) {
+        icons = <FontIcon className='fa fa-clone'
+                          onClick={copyAddressToClipBoard}
+                          style={copyIcon} />;
+    }
     return (
         <span style={styles.light}>
-            <span>{abbreviated ? id.substring(2, 7) + '…' + id.substring(id.length-6, id.length-1) : id}</span>
-            <FontIcon className='fa fa-clone' onClick={copyAddressToClipBoard} style={copyIcon} />
+            <span>{abbreviated ? id.substring(2, 7) + '...' + id.substring(id.length-6, id.length-1) : id}</span>
+            {icons}
         </span>
     );
 };
 
 export const AddressAvatar = (props) => {
-    const { primary, secondary, tertiary, onClick } = props;
+    const { primary, secondary, addr, abbreviated, tertiary, onClick } = props;
     // TODO: handle tertiary (description if exists)
     const styles = {
         bc: {
             backgroundColor: 'inherit',
         },
+        nopad: {
+            padding: 0
+        }
     };
     return (
         <Card style={{...noShadow, ...styles.bc, ...link}} >
             <CardHeader
+                style={styles.nopad}
                 title={primary}
-                subtitle={<AccountAddress id={secondary}/>}
+                subtitle={secondary || <AccountAddress id={addr} abbreviated={abbreviated}/>}
                 onClick={onClick}
             />
         </Card>

@@ -59,7 +59,6 @@ Firstly: a couple things aren't working right. If you can fix either of these is
 
 - _Issue 1_: `webpack-dev-server` isn't working right with the current babel-webpack-electron-izing
   setup. So you've got to do your development in Electron for now. Which means you can't run `npm run start:web`. Bummer.
-- _Issue 2_: Electron isn't playing nicely with _some_ webpack-ed javascripts, namely anything in `./electron/*.js`. This means that in `package.json` __you've got to swap__ `"main": "./electron/webpack-main.js"` to be `"main": "./electron/main.js"`. Also, please don't forget to __swap it back__ before you commit and push your changes -- the builds won't build otherwise.
 
 With these caveats in mind, __you can run__:
 
@@ -112,7 +111,7 @@ OSX is also able to build for Linux. Add `-ml` to that raw command to build for
 both OSX and Linux at the same time.
 
 ### Troubleshooting
-Some prelimary things to try in case you run into issues:
+Some preliminary things to try in case you run into issues:
 
 - `rm -rf ~/Library/Application Support/EmeraldWallet` to clear out any persisted
   settings or userdata from previous trials.

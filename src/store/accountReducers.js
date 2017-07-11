@@ -160,7 +160,6 @@ function createTx(data) {
         gasPrice: data.gasPrice,
     });
     if (data.from !== '0x0000000000000000000000000000000000000000') {
-        console.log('!!!! set data.from', data.from);
         tx = tx.set('from', data.from)
     }
     if (typeof data.value === 'string') {

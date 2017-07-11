@@ -33,7 +33,7 @@ const Render = () => {
     return (
         <Row style={{...styles.footerDiv}}>
             <Col xs={2} style={{color: 'limegreen'}}>
-                Alpha 0.2.0
+                Alpha 0.3.0
             </Col>
             <Col xs={8} style={{color: 'gray', fontWeight: '300'}}>
                 <p style={{marginTop: 0}}>
@@ -42,7 +42,7 @@ const Render = () => {
                 Github issues page</a>.
                 </p>
                 <p>
-                Made with ❤️&nbsp; by <strong>ETCDEV</strong> and <a href='https://github.com/ethereumproject/emerald-wallet/network/members'>many wonderful contributors</a>.
+                Made with ❤️&nbsp; by <strong>ETCDEV</strong> and <a href='https://github.com/ethereumproject/emerald-wallet/graphs/contributors'>many wonderful contributors</a>.
                 </p>
             </Col>
             <Col xs={2} style={align.right}>

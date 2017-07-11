@@ -1,19 +1,22 @@
-var path = require('path');
-var webpack = require('webpack');
+const path = require('path');
+const webpack = require('webpack');
 
 const config = {
     target: 'electron-main',
+    externals: [{
+        'electron-store': 'electron-store',
+    }],
     entry: {
         main: path.join(__dirname, 'electron', 'main.js'),
     },
     resolve: {
         modules: [
             path.resolve(path.join(__dirname, 'electron')),
-            path.join(__dirname, 'node_modules')
+            path.join(__dirname, 'node_modules'),
         ],
         alias: {
-            'babel-polyfill': path.join(__dirname, 'babel-polyfill/dist/polyfill.js')
-        }
+            'babel-polyfill': path.join(__dirname, 'babel-polyfill/dist/polyfill.js'),
+        },
     },
     module: {
         rules: [
@@ -23,23 +26,24 @@ const config = {
                 use: {
                     loader: 'babel-loader',
                     options: {
-                        presets: ['es2015', 'react', 'stage-2']
-                    }
-                }
+                        presets: ['es2015', 'react', 'stage-2'],
+                    },
+                },
             },
-        ]
+        ],
     },
 
     output: {
         path: path.join(__dirname, 'electron'),
-        filename: 'webpack-main.js'
+        filename: 'webpack-main.js',
+        libraryTarget: 'commonjs2',
     },
 
     plugins: [
         // NODE_ENV should be production so that modules do not perform certain development checks
         new webpack.DefinePlugin({
-            'process.env.NODE_ENV': JSON.stringify('production')
-        })
+            'process.env.NODE_ENV': JSON.stringify('production'),
+        }),
     ],
 
     /**
@@ -49,7 +53,7 @@ const config = {
      */
     node: {
         __dirname: false,
-        __filename: false
+        __filename: false,
     },
 };
 

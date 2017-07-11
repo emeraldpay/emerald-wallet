@@ -13,7 +13,20 @@ import { translate } from 'react-i18next';
 import { gotoScreen } from 'store/screenActions';
 import Account from './account';
 
-const Render = translate('accounts')(({ t, accounts, createAccount }) => {
+const Render = translate('accounts')(({ t, accounts, createAccount, connecting }) => {
+
+    if (connecting) {
+        return (
+            <div id="accounts-list">
+                <Row center="xs">
+                    <Col xs={3}>
+                        <i className="fa fa-spin fa-spinner"/> Loading...
+                    </Col>
+                </Row>
+            </div>
+        );
+    }
+
     const table = <Table selectable={false}>
         <TableBody displayRowCheckbox={false}>
             {accounts.map((account) => <Account key={account.get('id')} account={account}/>)}
@@ -60,11 +73,13 @@ const Render = translate('accounts')(({ t, accounts, createAccount }) => {
 Render.propTypes = {
     accounts: PropTypes.object.isRequired,
     createAccount: PropTypes.func.isRequired,
+    connecting: PropTypes.bool.isRequired,
 };
 
 const AccountsList = connect(
     (state, ownProps) => ({
         accounts: state.accounts.get('accounts', Immutable.List()),
+        connecting: state.launcher.get('connecting')
     }),
     (dispatch, ownProps) => ({
         createAccount: () => {

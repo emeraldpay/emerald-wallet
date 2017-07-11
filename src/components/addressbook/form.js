@@ -4,16 +4,18 @@ import { renderTextField } from 'elements/formFields';
 import { Card, CardText, FlatButton } from 'material-ui';
 import { required, address } from 'lib/validators';
 import { cardSpace } from 'lib/styles';
+import { TextField } from 'redux-form-material-ui'
 
 const Render = ({ handleSubmit, blockAddress, invalid, pristine, submitting, cancel }) => (
       <Card style={cardSpace}>
         <CardText expandable={false}>
             <form onSubmit={handleSubmit}>
                 <Field name="address"
-                        component={renderTextField}
+                        component={TextField}
                         type="text"
                         label="Network Address"
                         disabled={blockAddress}
+                        fullWidth={true}
                         validate={[required, address]} />
                 <Field name="name"
                         component={renderTextField}
