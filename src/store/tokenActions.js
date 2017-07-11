@@ -174,7 +174,7 @@ export function transferTokenTransaction(accountId, password, to, gas, gasPrice,
 export function traceCall(accountId, to, gas, gasPrice, value, data) {
     return (dispatch, getState) => {
         const gethClient = getState().launcher.get('chain').get('client')
-            .substring(0, 4) === 'geth';
+            .substring(0, 4).toLowerCase() === 'geth';
         const call = gethClient ? 'eth_traceCall' : 'trace_call';
         const params = [{
             from: accountId,

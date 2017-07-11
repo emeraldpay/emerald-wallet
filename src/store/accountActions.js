@@ -72,6 +72,7 @@ export function createAccount(passphrase, name, description) {
                 description,
             });
             dispatch(loadAccountBalance(result));
+            dispatch(gotoScreen('account', Immutable.fromJS({id: result})));
         });
     };
 }

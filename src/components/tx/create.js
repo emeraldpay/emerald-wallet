@@ -22,12 +22,13 @@ const traceValidate = (data, dispatch) => {
         to: data.to,
         value: toHex(etherToWei(data.value)),
     };
-    const resolveValidate = (response, resolve) => {
+    const resolveValidate = (response, resolve, reject) => {
         let errors = null;
         dataObj.data = (((response.trace || [])[0] || {}).action || {}).input;
         let gasEst;
-        if (response.gas) gasEst = response.gas;
-        else {
+        if (response.gas) {
+            gasEst = response.gas;
+        } else {
             gasEst = estimateGasFromTrace(dataObj, response);
             gasEst = (gasEst && gasEst.div(dataObj.gasPrice).toString(10));
         }
@@ -35,8 +36,10 @@ const traceValidate = (data, dispatch) => {
             errors = { value: 'Invalid Transaction' };
         } else if (gasEst > data.gas) {
             errors = { gas: `Insufficient Gas: Expected ${gasEst}` };
+        } else {
+            resolve(gasEst)
         }
-        resolve(errors);
+        reject(errors);
     };
 
     if (data.token.length > 1) {
@@ -47,9 +50,9 @@ const traceValidate = (data, dispatch) => {
               dataObj.gasPrice,
               dataObj.value,
               data.token, data.isTransfer
-            )).then((response) => resolveValidate(response, resolve))
+            )).then((response) => resolveValidate(response, resolve, reject))
               .catch((error) => {
-                  resolve({ _error: (error.message || JSON.stringify(error)) });
+                  reject({ _error: (error.message || JSON.stringify(error)) });
               });
         });
     }
@@ -58,11 +61,9 @@ const traceValidate = (data, dispatch) => {
               data.to,
               dataObj.gas,
               dataObj.gasPrice,
-              dataObj.value
-            )).then((response) => resolveValidate(response, resolve))
-              .catch((error) => {
-                  resolve({ _error: (error.message || JSON.stringify(error)) });
-              });
+              dataObj.value))
+            .then((response) => resolveValidate(response, resolve, reject))
+            .catch((error) => reject({ _error: (error.message || JSON.stringify(error))}));
     });
 };
 
@@ -92,19 +93,20 @@ const CreateTx = connect(
             log.debug(data);
             traceValidate(data, dispatch)
                 .then((result) => {
-                    if (result) {
-                        throw new SubmissionError(result);
-                    } else {
-                        if (data.token.length > 1) {
-                            log.error('unsupported');
-                            return
-                        }
-                        dispatch(
-                            sendTransaction(data.from, data.password, data.to,
-                                toHex(data.gas), toHex(mweiToWei(data.gasPrice)),
-                                toHex(etherToWei(data.value)))
-                        );
+                    if (data.token.length > 1) {
+                        log.error('unsupported');
+                        return
                     }
+                    log.debug("Send transaction");
+                    dispatch(
+                        sendTransaction(data.from, data.password, data.to,
+                            toHex(data.gas), toHex(mweiToWei(data.gasPrice)),
+                            toHex(etherToWei(data.value)))
+                    );
+                })
+                .catch((err) => {
+                    log.error("Validation failure", err);
+                    throw new SubmissionError(err);
                 });
         },
         onChangeAccount: (accounts, value) => {
