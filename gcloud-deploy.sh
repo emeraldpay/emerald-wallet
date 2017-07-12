@@ -7,4 +7,5 @@ do
   mv dist/$f deploy/
 done
 
-node ./node_modules/gcloud-storage-upload/lib/index.js --path deploy/ --remotePath emerald-wallet/preview/
+# Will use $GCP_PASSWD to decrypt encrypted json key
+janus deploy -to builds.etcdevteam.com/emerald-wallet/preview -files deploy/* -key gcloud-travis.json.enc
