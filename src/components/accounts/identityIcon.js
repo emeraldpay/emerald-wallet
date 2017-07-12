@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-const blockies = require('blockies-identicon/blockies');
+const blockies = require('lib/blockies');
 
 
 class IdentityIcon extends React.Component {
