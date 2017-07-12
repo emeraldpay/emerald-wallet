@@ -150,7 +150,7 @@
     "extraResources": [
       "./emerald",
       "./emerald.exe",
-      "*/*.dll"
+      "./*.dll"
     ],
     "mac": {
       "category": "public.app-category.developer-tools"
