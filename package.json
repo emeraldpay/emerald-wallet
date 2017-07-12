@@ -58,6 +58,7 @@
   "homepage": "https://github.com/ethereumproject/emerald-wallet",
   "dependencies": {
     "bignumber.js": "4.0.0",
+    "blockies-identicon": "^0.1.0",
     "classnames": "^2.1.2",
     "copy-to-clipboard": "^3.0.6",
     "decompress-zip": "^0.3.0",
