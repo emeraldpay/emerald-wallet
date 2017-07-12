@@ -1,9 +1,9 @@
 import Immutable from 'immutable';
+import log from 'electron-log';
 import { rpc } from 'lib/rpc';
 import { getRates } from 'lib/marketApi';
 import { address } from 'lib/validators';
 import { loadTokenBalanceOf } from './tokenActions';
-import log from 'electron-log';
 import { toHex, toNumber } from 'lib/convert';
 import { gotoScreen, catchError } from './screenActions';
 
@@ -29,7 +29,7 @@ export function loadAccountsList() {
         dispatch({
             type: 'ACCOUNT/LOADING',
         });
-        let chain = getState().network.getIn(['chain', 'name']);
+        const chain = getState().network.getIn(['chain', 'name']);
         rpc.call('emerald_listAccounts', [{chain}]).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SET_LIST',
@@ -59,8 +59,8 @@ export function loadAccountTxCount(accountId) {
 */
 export function createAccount(passphrase, name, description) {
     return (dispatch, getState) => {
-        let chain = getState().network.getIn(['chain', 'name']);
-        rpc.call('emerald_newAccount', [{
+        const chain = getState().network.getIn(['chain', 'name']);
+        return rpc.call('emerald_newAccount', [{
             passphrase,
             name,
             description,
@@ -72,14 +72,15 @@ export function createAccount(passphrase, name, description) {
                 description,
             });
             dispatch(loadAccountBalance(result));
+            dispatch(gotoScreen('account', Immutable.fromJS({id: result})));
         });
-    }
+    };
 }
 
 export function updateAccount(address, name, description) {
     return (dispatch, getState) => {
-        let chain = getState().network.getIn(['chain', 'name']);
-        rpc.call('emerald_updateAccount', [{
+        const chain = getState().network.getIn(['chain', 'name']);
+        return rpc.call('emerald_updateAccount', [{
             name,
             description,
             address,
@@ -91,21 +92,21 @@ export function updateAccount(address, name, description) {
                 description,
             });
         });
-    }
+    };
 }
 
 function sendRawTransaction(signed) {
-    return rpc.call('eth_sendRawTransaction', [signed])
+    return rpc.call('eth_sendRawTransaction', [signed]);
 }
 
 function unwrap(list) {
     return new Promise((resolve, reject) => {
         if (list.length === 1) {
-            resolve(list[0])
+            resolve(list[0]);
         } else {
-            reject(new Error(`Invalid list size ${list.length}`))
+            reject(new Error(`Invalid list size ${list.length}`));
         }
-    })
+    });
 }
 
 function onTxSend(dispatch, sourceTx) {
@@ -119,33 +120,33 @@ function onTxSend(dispatch, sourceTx) {
         const senttx = Object.assign({}, sourceTx, {hash: txhash});
         dispatch(trackTx(senttx));
         dispatch(gotoScreen('transaction', senttx));
-    }
+    };
 }
 
 
 function getNonce(addr) {
-    return rpc.call('eth_getTransactionCount', [addr, 'latest'])
+    return rpc.call('eth_getTransactionCount', [addr, 'latest']);
 }
 
 function withNonce(tx) {
     return (nonce) => new Promise((resolve, reject) =>
         resolve(Object.assign({}, tx, {nonce}))
-    )
+    );
 }
 
 function incNonce(nonce) {
     return new Promise((resolve) => {
-        let nonceDec = toNumber(nonce);
-        resolve(toHex(nonceDec + 1))
-    })
+        const nonceDec = toNumber(nonce);
+        resolve(toHex(nonceDec + 1));
+    });
 }
 
 function emeraldSign(txData, chain) {
-    return rpc.call('emerald_signTransaction', [txData, {chain}])
+    return rpc.call('emerald_signTransaction', [txData, {chain}]);
 }
 
 export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value) {
-    let originalTx = {
+    const originalTx = {
         from: accountId,
         passphrase,
         to,
@@ -154,7 +155,7 @@ export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value)
         value,
     };
     return (dispatch, getState) => {
-        let chain = getState().network.getIn(['chain', 'name']);
+        const chain = getState().network.getIn(['chain', 'name']);
         getNonce(accountId)
             .then(incNonce)
             .then(withNonce(originalTx))
@@ -166,11 +167,11 @@ export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value)
                     .catch(catchError(dispatch))
             )
             .catch(catchError(dispatch));
-    }
+    };
 }
 
 export function createContract(accountId, passphrase, gas, gasPrice, data) {
-    let txData = {
+    const txData = {
         from: accountId,
         passphrase,
         gas,
@@ -178,18 +179,18 @@ export function createContract(accountId, passphrase, gas, gasPrice, data) {
         data,
     };
     return (dispatch, getState) => {
-        let chain = getState().network.getIn(['chain', 'name']);
+        const chain = getState().network.getIn(['chain', 'name']);
         rpc.call('emerald_signTransaction', [txData, {chain}])
             .then(unwrap)
             .then(sendRawTransaction)
             .then(onTxSend(dispatch, accountId))
             .catch(log.error);
-    }
+    };
 }
 
 export function importWallet(wallet, name, description) {
     return (dispatch, getState) => {
-        let chain = getState().network.getIn(['chain', 'name']);
+        const chain = getState().network.getIn(['chain', 'name']);
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
             reader.readAsText(wallet);
@@ -209,7 +210,7 @@ export function importWallet(wallet, name, description) {
                         accountId: result,
                     });
                     // Reload accounts.
-                    if (address(result)) {
+                    if (address(result) === undefined) {
                         dispatch({
                             type: 'ACCOUNT/ADD_ACCOUNT',
                             accountId: result,
@@ -278,7 +279,9 @@ export function loadPendingTransactions() {
 export function refreshTransaction(hash) {
     return (dispatch) =>
         rpc.call('eth_getTransactionByHash', [hash]).then((result) => {
-            if (typeof result === 'object') {
+            if (!result) {
+                log.info(`No tx for has ${hash}`)
+            } else if (typeof result === 'object') {
                 dispatch({
                     type: 'ACCOUNT/UPDATE_TX',
                     tx: result,

@@ -95,12 +95,9 @@ const GenerateAccount = connect(
         account: state.accounts.get('accounts', Immutable.List()).last(),
     }),
     (dispatch, ownProps) => ({
-        onSubmit: (data) => new Promise((resolve, reject) => {
-            dispatch(createAccount(data.password, data.name, data.description))
-                        .then((response) => {
-                            resolve(response);
-                        });
-        }),
+        onSubmit: (data) => {
+            dispatch(createAccount(data.password, data.name, data.description));
+        },
         cancel: () => {
             dispatch(gotoScreen('home'));
         },

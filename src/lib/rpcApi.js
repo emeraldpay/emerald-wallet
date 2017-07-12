@@ -33,7 +33,7 @@ export class RpcApi {
                     method: ${name},
                     params: ${JSON.stringify(params)},
                     headers: ${JSON.stringify(headers)}`));
-                return
+                return;
             }
             this.jsonPost(name, params, headers).then((json) => {
                 // eth_syncing will return {.. "result": false}
@@ -64,10 +64,10 @@ export class RpcApi {
             body: JSON.stringify(data),
         }).then((response) => {
             try {
-                return response.json()
+                return response.json();
             } catch (e) {
-                log.error("Invalid response", response, e);
-                throw e
+                log.error('Invalid response', response, e);
+                throw e;
             }
         });
     }

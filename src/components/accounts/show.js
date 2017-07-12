@@ -19,6 +19,7 @@ import AccountPopup from './popup';
 import TransactionsList from '../tx/list';
 import AccountSendButton from './sendButton';
 import AccountBalance from './balance';
+import ExportAccountButton from './export';
 import { Wei } from 'lib/types';
 
 const TokenRow = ({ token }) => {
@@ -62,12 +63,6 @@ class AccountRender extends React.Component {
         const value = account.get('balance') ? account.get('balance').getEther() : '?';
         const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
 
-        const styles = {
-                sendButton: {
-                    color: 'green',
-                },
-        };
-
         return (
         <div>
         <Card style={cardSpace}>
@@ -108,6 +103,7 @@ class AccountRender extends React.Component {
             <CardActions>
                 <AccountPopup account={account}/>
                 <AccountSendButton account={account} />
+                <ExportAccountButton account={account} />
             </CardActions>
         </Card>
 
