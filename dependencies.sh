@@ -8,9 +8,6 @@ else
     # No cargo yet.
     echo "Rusting up (non-interactively; accepting defaults)..."
     curl https://sh.rustup.rs -sSf | sh -s -- -y
-    # FIXME: until rustc v1.19 will be released, because of `target-feature` compiler flag, see below
-    rustup install beta
-    rustup default beta
 fi
 
 # Ensure cargo bin is added to PATH, but only if it's not already there.
@@ -24,6 +21,10 @@ else
     echo "$KARGO_PATH already exists in path, not adding."
 fi
 echo "PATH -> $PATH"
+
+# FIXME: until rustc v1.19 will be released, because of `target-feature` compiler flag, see below
+rustup install beta
+rustup default beta
 
 # Install and move emerald.
 echo "Installing emerald with cargo..."
