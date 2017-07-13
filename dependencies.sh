@@ -22,9 +22,14 @@ else
 fi
 echo "PATH -> $PATH"
 
+# FIXME: until rustc v1.19 will be released, because of `target-feature` compiler flag, see below
+rustup install beta
+rustup default beta
+
 # Install and move emerald.
 echo "Installing emerald with cargo..."
 echo "$ cargo install emerald-cli"
+export RUSTFLAGS="-C target-feature=+crt-static"
 cargo install emerald-cli -f
 
 # Get location of emerald.
