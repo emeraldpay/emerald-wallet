@@ -11,12 +11,10 @@ import { align } from 'lib/styles';
 import AccountPopup from './popup';
 import AccountBalance from './balance';
 import { Wei } from 'lib/types';
-
-// import { AccountIdentifier } from './identifier';
+import IdentityIcon from './identityIcon';
 
 
 const Render = ({ account, openAccount }) => {
-
     const styles = {
         broadLightBottomBorder: {
             borderBottom: '3px solid whitesmoke',
@@ -26,7 +24,10 @@ const Render = ({ account, openAccount }) => {
     return (
     <TableRow style={styles.broadLightBottomBorder} selectable={false} >
         <TableRowColumn>
-            <AccountBalance balance={account.get('balance') || new Wei(0) } withAvatar={true} />
+            <div style={{display: 'flex'}}>
+                <IdentityIcon id={account.get('id')}/>
+                <AccountBalance balance={account.get('balance') || new Wei(0) } withAvatar={true} />
+            </div>
         </TableRowColumn>
         <TableRowColumn >
             <AddressAvatar

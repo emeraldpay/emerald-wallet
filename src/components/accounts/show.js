@@ -21,6 +21,7 @@ import AccountSendButton from './sendButton';
 import AccountBalance from './balance';
 import ExportAccountButton from './export';
 import { Wei } from 'lib/types';
+import IdentityIcon from './identityIcon';
 
 const TokenRow = ({ token }) => {
     const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0';
@@ -81,7 +82,11 @@ class AccountRender extends React.Component {
                         </h2>
                         {account.get('balance') ? `$${account.get('balance').getFiat(rates.get('usd'))}` : ''}
                         */}
-                       <AccountBalance balance={account.get('balance') || new Wei(0) } withAvatar={true} />
+
+                        <div style={{display: 'flex'}}>
+                            <IdentityIcon id={account.get('id')} expanded={true} />
+                            <AccountBalance balance={account.get('balance') || new Wei(0) } withAvatar={true} />
+                        </div>
 
                         {!this.state.edit && <AddressAvatar
                             secondary={account.get('id')}
