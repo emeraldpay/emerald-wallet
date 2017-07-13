@@ -78,6 +78,7 @@ const CreateTx = connect(
         const gasPrice = state.accounts.get('gasPrice').getMwei();
         const fiatRate = state.accounts.get('localeRate');
         const value = (selector(state, 'value')) ? selector(state, 'value') : 0;
+        const fromAddr = (selector(state, 'from'));
 
         return {
             initialValues: {
@@ -95,6 +96,7 @@ const CreateTx = connect(
             fiatRate,
             value: new Wei(etherToWei(value)),
             balance: selector(state, 'balance'),
+            fromAddr,
         };
     },
     (dispatch, ownProps) => ({

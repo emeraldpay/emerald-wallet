@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Field, reduxForm } from 'redux-form';
-import { Card, CardText } from 'material-ui/Card';
 import { SelectField, TextField, RadioButtonGroup } from 'redux-form-material-ui';
 import { RadioButton } from 'material-ui/RadioButton';
 import { MenuItem, FlatButton, FontIcon, IconButton } from 'material-ui';
@@ -11,6 +10,7 @@ import KeyboardArrowLeft from 'material-ui/svg-icons/hardware/keyboard-arrow-lef
 import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
 import { red200 } from 'material-ui/styles/colors';
 import { positive, number, required, address } from 'lib/validators';
+import IdentityIcon from '../accounts/identityIcon';
 
 const CardHeadEmerald = (props) => {
   const { title, backLabel, cancel } = props;
@@ -140,6 +140,7 @@ const linkText = {
     fontWeight: '500', 
     lineHeight: '20px',
     textTransform: 'uppercase',
+    cursor: 'pointer',
 };
 
 const balanceGroup = {
@@ -155,7 +156,7 @@ const cardStyle = {
 const Render = (props) => {
     const { fields: { from, to }, accounts, balance, handleSubmit, invalid, pristine, submitting } = props;
     const { addressBook, handleSelect, tokens, token, isToken, onChangeToken, onChangeAccount } = props;
-    const { fiatRate, value, onEntireBalance } = props;
+    const { fiatRate, value, fromAddr, onEntireBalance } = props;
     const { error, cancel } = props;
 
     return (
@@ -179,7 +180,11 @@ const Render = (props) => {
                        underlineShow={false}
                        fullWidth={true}>
                   {accounts.map((account) =>
-                    <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
+                    <MenuItem 
+                        leftIcon={<IdentityIcon id={account.get('id')}/>}
+                        key={account.get('id')} 
+                        value={account.get('id')} 
+                        primaryText={account.get('id')} />
                   )}
                 </Field>
               </Col>
@@ -218,7 +223,9 @@ const Render = (props) => {
                     onItemTouchTap={handleSelect}
                 >
                 {accounts.map((account) =>
-                  <MenuItem key={account.get('id')}
+                  <MenuItem 
+                    leftIcon={<IdentityIcon id={account.get('id')}/>}
+                    key={account.get('id')}
                     value={account.get('id')}
                     primaryText={account.get('name') ? account.get('name') : account.get('id')} />
                 )}
@@ -278,7 +285,7 @@ const Render = (props) => {
               <Col xs={2} style={textFiatLight}>
                 {balance && balance.getEther(6)}
               </Col>
-              <Col xs={3} style={linkText} onClick={(e) => onEntireBalance(balance)}>
+              <Col xs={3} style={linkText} onClick={() => onEntireBalance(balance)}>
                 Entire Balance
               </Col>
             </Row>
@@ -339,9 +346,7 @@ const Render = (props) => {
               />
             </Row>
             <Row style={{marginTop: '40px'}}>
-              <Col style={linkText}>
-                Transaction History
-              </Col>
+                <a style={linkText} href={`http://gastracker.io/addr/${fromAddr}`}>Transaction History</a>
             </Row>
           </Col>
         </Row>
@@ -367,6 +372,7 @@ Render.propTypes = {
     fiatRate: PropTypes.string.isRequired,
     value: PropTypes.number.isRequired,
     balance: PropTypes.number.isRequired,
+    fromAddr: PropTypes.string.isRequired,
     onEntireBalance: PropTypes.func.isRequired,
 
     addressBook: PropTypes.object.isRequired,
