@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Field, reduxForm } from 'redux-form';
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
+import { Card, CardText } from 'material-ui/Card';
 import { SelectField, TextField, RadioButtonGroup } from 'redux-form-material-ui';
 import { RadioButton } from 'material-ui/RadioButton';
 import { MenuItem, FlatButton, FontIcon, IconButton } from 'material-ui';
-import { Row, Col } from 'react-flexbox-grid/lib/index';
+import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import { IconMenu } from 'material-ui/IconMenu';
 import KeyboardArrowLeft from 'material-ui/svg-icons/hardware/keyboard-arrow-left';
 import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
@@ -44,7 +44,48 @@ const CardHeadEmerald = (props) => {
       </Row>
   );
 
-}
+};
+
+const textEtc = {
+  fontSize: '20px',
+  fontWeight: '500',
+  lineHeight: '24px',
+};
+
+const textFiat = {
+  marginTop: '5px',
+  fontSize: '14px',
+  lineHeight: '16px',
+};
+
+const textFiatLight = {
+  marginTop: '5px',
+  fontSize: '14px',
+  lineHeight: '16px',
+  color: '#747474',
+  textAlign: 'center',
+  width: '100%',
+};
+
+const BalanceField = ({ input, rate }) => {
+  const style = {
+    marginTop: '10px',
+    color: '#191919',
+    fontFamily: 'GT Walsheim Pro',
+    textAlign: 'left',
+  };
+
+  return (
+    <div style={style}>
+      <div style={textEtc}>
+        {input.value.getEther(6)} ETC
+      </div>
+      <div style={textFiat}>
+        ${input.value.getFiat(rate)}
+      </div>
+    </div>
+  );
+};
 
 const formLabel = {
     color: '#747474', 
@@ -73,25 +114,57 @@ const formInput = {
 }
 
 const submitButton = {
+    height: '40px',
     fontFamily: "GT Walsheim Pro",
     fontSize: '14px',
     fontWeight: '500', 
     borderRadius: '1px',
+    color: '#fff',
+    width: '100%',
+}
+
+const cancelButton = {
+    height: '40px',
+    fontSize: '14px',
+    fontWeight: '500', 
+    borderRadius: '1px',
+    width: '100%',
+}
+
+
+const linkText = {
+    marginTop: '5px',
+    color: '#47B04B', 
+    fontFamily: "GT Walsheim Pro", 
+    fontSize: '14px',  
+    fontWeight: '500', 
+    lineHeight: '20px',
+    textTransform: 'uppercase',
+};
+
+const balanceGroup = {
+    marginTop: '10px',
+    height: '40px',
+}
+
+const cardStyle = {
+    paddingTop: '100px',
+    paddingBottom: '100px',
 }
 
 const Render = (props) => {
     const { fields: { from, to }, accounts, balance, handleSubmit, invalid, pristine, submitting } = props;
     const { addressBook, handleSelect, tokens, token, isToken, onChangeToken, onChangeAccount } = props;
+    const { fiatRate, value, onEntireBalance } = props;
     const { error, cancel } = props;
 
     return (
-    <Card>
+    <Grid style={cardStyle}>
       <CardHeadEmerald 
         backLabel='DASHBOARD'
         title='Send Ether & Tokens'
         cancel={cancel}
       />
-      <CardText expandable={false}>
         <Row>
           <Col xs={12} md={8}>
             <Row middle="xs">
@@ -162,7 +235,7 @@ const Render = (props) => {
               <Col xs={2} xsOffset={1} style={formLabel}>
                 Amount
               </Col>
-              <Col xs={5} style={formGroup}>
+              <Col xs={7} style={formGroup}>
                 <Field name="value"
                        style={formInput}
                        component={TextField}
@@ -172,7 +245,7 @@ const Render = (props) => {
                        validate={[required]}
                 />
               </Col>
-              <Col xs={2} style={formGroup}>
+              <Col xs={1} style={formGroup}>
                 <Field name="token"
                        component={SelectField}
                        onChange={onChangeToken}
@@ -200,6 +273,15 @@ const Render = (props) => {
                 </Field>
               </Col> }
             </Row>
+            <Row top="xs" style={balanceGroup}>
+              <Col xs={3} style={formLabel} />
+              <Col xs={2} style={textFiatLight}>
+                {balance && balance.getEther(6)}
+              </Col>
+              <Col xs={3} style={linkText} onClick={(e) => onEntireBalance(balance)}>
+                Entire Balance
+              </Col>
+            </Row>
             <Row middle="xs">
               <Col xs={2} xsOffset={1} style={formLabel}>
                 Fee
@@ -224,19 +306,42 @@ const Render = (props) => {
                 />
               </Col>
             </Row>*/}
+            <Row top="xs">
+              <Col xs={3} style={formLabel} />
+              <Col xs={3} style={formGroup}>
+                <FlatButton label={`Send ${value && value.getEther(0).toString() } ETC`}
+                            disabled={ pristine || submitting || invalid }
+                            onClick={handleSubmit}
+                            style={submitButton}
+                            backgroundColor="#47B04B"
+                             />
+                <br />
+                <span style={textFiatLight}>
+                  {value && `$${value.getFiat(fiatRate).toString()}` }
+                </span>
+              </Col>
+              <Col xs={3} style={formGroup}>                             
+                <FlatButton label="Cancel"
+                            onClick={cancel}
+                            style={cancelButton}
+                            backgroundColor="#DDD" />                     
+              </Col>              
+            </Row>         
           </Col>
 
           <Col xs={12} md={4}>
             <Row>
-              <Col xs={11}>
-                <Field name="balance"
-                       disabled={true}
-                       component={TextField}
-                       floatingLabelText="Balance"
-                />
-
+              <Field name="balance"
+                     disabled={true}
+                     component={BalanceField}
+                     floatingLabelText="Balance"
+                     rate={fiatRate}
+              />
+            </Row>
+            <Row style={{marginTop: '40px'}}>
+              <Col style={linkText}>
+                Transaction History
               </Col>
-
             </Row>
           </Col>
         </Row>
@@ -247,23 +352,7 @@ const Render = (props) => {
             </Col>
           </Row>
         )}
-      </CardText>
-
-
-      <Row>
-        <Col xs={8} xsOffset={3}>
-          <FlatButton label="Send"
-                      disabled={ pristine || submitting || invalid }
-                      onClick={handleSubmit}
-                      style={submitButton}
-                      backgroundColor="#47B04B"
-                       />
-          <FlatButton label="Cancel"
-                      onClick={cancel}
-                      backgroundColor="#DDD" />                     
-        </Col>              
-      </Row>
-    </Card>
+    </Grid>
     );
 };
 
@@ -275,6 +364,10 @@ Render.propTypes = {
     pristine: PropTypes.bool.isRequired,
     submitting: PropTypes.bool.isRequired,
     cancel: PropTypes.func.isRequired,
+    fiatRate: PropTypes.string.isRequired,
+    value: PropTypes.number.isRequired,
+    balance: PropTypes.number.isRequired,
+    onEntireBalance: PropTypes.func.isRequired,
 
     addressBook: PropTypes.object.isRequired,
     handleSelect: PropTypes.func.isRequired,
