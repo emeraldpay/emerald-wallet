@@ -12,40 +12,6 @@ import { red200 } from 'material-ui/styles/colors';
 import { positive, number, required, address } from 'lib/validators';
 import IdentityIcon from '../accounts/identityIcon';
 
-const CardHeadEmerald = (props) => {
-  const { title, backLabel, cancel } = props;
-  const style = {
-    color: '#191919',
-    fontFamily: 'GT Walsheim Pro',
-    fontSize: '22px',
-    lineHeight: '24px',
-    textAlign: 'left',
-  }
-
-  const flatButtonNav = {
-    color: '#747474',
-    fontFamily: 'GT Walsheim Pro',
-    fontSize: '14px',
-    fontWeight: '500',
-    lineHeight: '24px',
-  };
-
-  return (
-      <Row middle="xs" style={{marginBottom: '60px'}}>
-        <Col xs={4}>
-          <FlatButton label={backLabel}
-                      primary={true}
-                      onClick={cancel}
-                      style={flatButtonNav}
-                      icon={<KeyboardArrowLeft/>}
-          />
-        </Col>
-        <Col xs={6} style={style}>{title}</Col>
-      </Row>
-  );
-
-};
-
 const textEtc = {
   fontSize: '20px',
   fontWeight: '500',
@@ -67,29 +33,8 @@ const textFiatLight = {
   width: '100%',
 };
 
-const BalanceField = ({ input, rate }) => {
-  const style = {
-    marginTop: '10px',
-    color: '#191919',
-    fontFamily: 'GT Walsheim Pro',
-    textAlign: 'left',
-  };
-
-  return (
-    <div style={style}>
-      <div style={textEtc}>
-        {input.value.getEther(6)} ETC
-      </div>
-      <div style={textFiat}>
-        ${input.value.getFiat(rate)}
-      </div>
-    </div>
-  );
-};
-
 const formLabel = {
     color: '#747474', 
-    fontFamily: "GT Walsheim Pro", 
     fontSize: '18px',
     lineHeight: '24px',
     textAlign: 'right',
@@ -106,7 +51,6 @@ const formInput = {
     border: '1px solid #DDDDDD',
     borderRadius: '1px',
     color: '#191919',
-    fontFamily: "GT Walsheim Pro", 
     fontSize: '16px',
     lineHeight: '24px',
     paddingLeft: '10px',
@@ -115,7 +59,6 @@ const formInput = {
 
 const submitButton = {
     height: '40px',
-    fontFamily: "GT Walsheim Pro",
     fontSize: '14px',
     fontWeight: '500', 
     borderRadius: '1px',
@@ -131,16 +74,15 @@ const cancelButton = {
     width: '100%',
 }
 
-
 const linkText = {
     marginTop: '5px',
     color: '#47B04B', 
-    fontFamily: "GT Walsheim Pro", 
     fontSize: '14px',  
     fontWeight: '500', 
     lineHeight: '20px',
     textTransform: 'uppercase',
     cursor: 'pointer',
+    textDecoration: 'none',
 };
 
 const balanceGroup = {
@@ -152,6 +94,57 @@ const cardStyle = {
     paddingTop: '100px',
     paddingBottom: '100px',
 }
+
+const CardHeadEmerald = (props) => {
+  const { title, backLabel, cancel } = props;
+  const style = {
+    color: '#191919',
+    fontSize: '22px',
+    lineHeight: '24px',
+    textAlign: 'left',
+  }
+
+  const flatButtonNav = {
+    color: '#747474',
+    fontSize: '14px',
+    fontWeight: '500',
+    lineHeight: '24px',
+  };
+
+  return (
+      <Row middle="xs" style={{marginBottom: '60px'}}>
+        <Col xs={4}>
+          <FlatButton label={backLabel}
+                      primary={true}
+                      onClick={cancel}
+                      style={flatButtonNav}
+                      icon={<KeyboardArrowLeft/>}
+          />
+        </Col>
+        <Col xs={6} style={style}>{title}</Col>
+      </Row>
+  );
+
+};
+
+const BalanceField = ({ input, rate }) => {
+  const style = {
+    marginTop: '10px',
+    color: '#191919',
+    textAlign: 'left',
+  };
+
+  return (
+    <div style={style}>
+      <div style={textEtc}>
+        {input.value.getEther(6)} ETC
+      </div>
+      <div style={textFiat}>
+        ${input.value.getFiat(rate)}
+      </div>
+    </div>
+  );
+};
 
 const Render = (props) => {
     const { fields: { from, to }, accounts, balance, handleSubmit, invalid, pristine, submitting } = props;
@@ -283,7 +276,7 @@ const Render = (props) => {
             <Row top="xs" style={balanceGroup}>
               <Col xs={3} style={formLabel} />
               <Col xs={2} style={textFiatLight}>
-                {balance && balance.getEther(6)}
+                  {value && `$${value.getFiat(fiatRate).toString()}` }
               </Col>
               <Col xs={3} style={linkText} onClick={() => onEntireBalance(balance)}>
                 Entire Balance
@@ -316,16 +309,13 @@ const Render = (props) => {
             <Row top="xs">
               <Col xs={3} style={formLabel} />
               <Col xs={3} style={formGroup}>
-                <FlatButton label={`Send ${value && value.getEther(0).toString() } ETC`}
+                <FlatButton label={`Send ${value && value.getEther(2).toString() } ETC`}
                             disabled={ pristine || submitting || invalid }
                             onClick={handleSubmit}
                             style={submitButton}
                             backgroundColor="#47B04B"
                              />
                 <br />
-                <span style={textFiatLight}>
-                  {value && `$${value.getFiat(fiatRate).toString()}` }
-                </span>
               </Col>
               <Col xs={3} style={formGroup}>                             
                 <FlatButton label="Cancel"
