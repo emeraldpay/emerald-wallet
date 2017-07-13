@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Table, TableBody } from 'material-ui/Table';
-import { Row, Col } from 'react-flexbox-grid/lib/index';
+import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
@@ -18,11 +18,13 @@ const Render = translate('accounts')(({ t, accounts, createAccount, connecting }
     if (connecting) {
         return (
             <div id="accounts-list">
+                <Grid>
                 <Row center="xs">
                     <Col xs={3}>
                         <i className="fa fa-spin fa-spinner"/> Loading...
                     </Col>
                 </Row>
+                </Grid>
             </div>
         );
     }
@@ -40,18 +42,10 @@ const Render = translate('accounts')(({ t, accounts, createAccount, connecting }
 
     return (
         <div id="accounts-list">
+            <Grid>
             <Row>
-                <Col xs={9}>
-                    <Card style={{...cardSpace, ...noShadow}}>
-                        <CardHeader
-                            title={t('list.title')}
-                            titleStyle={titleStyle}
-                            subtitle={t('list.subtitle')}
-                            avatar={titleAvatar}
-                            actAsExpander={false}
-                            showExpandableButton={false}
-                        />
-                    </Card>
+                <Col xs={9} style={{display: 'flex', justifyContent: 'left', alignItems: 'center'}}>
+                    <span>{t('list.title')}</span>
                 </Col>
                 <Col xs={3} style={align.right}>
                     <FlatButton label={t('list.create')}
@@ -65,7 +59,7 @@ const Render = translate('accounts')(({ t, accounts, createAccount, connecting }
                         {table}
                     </CardText>
                 </Card>
-            </Row>
+            </Row></Grid>
         </div>
     );
 });

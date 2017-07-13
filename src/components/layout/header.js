@@ -1,11 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { align, cardSpace } from 'lib/styles';
+import {Toolbar, ToolbarGroup, IconButton, FontIcon, FlatButton} from 'material-ui';
 import logo from 'images/etc_logo.png';
-import Status from './status';
+import Status from './status/status';
 import Total from './total';
-import Navigation from './navigation';
 
 
 const Render = () => {
@@ -15,36 +14,29 @@ const Render = () => {
         cardSpace,
     };
     const titleStyle = {
-        fontWeight: 400,
-        fontSize: '1.4rem',
+        color: '#191919',
+        fontSize: '17px',
+        fontWeight: 500,
+        lineHeight: '21px',
+        marginRight: '10px',
+        fontFamily: 'Poppins Medium',
     };
 
     return (
-        <div style={style}>
-            <Row>
-                <Col xs={4}>
-                    <Row middle="xs">
-                        <Col xs={3} style={align.right}>
-                            <img src={logo} height={48}/>
-                        </Col>
-                        <Col xs={9} style={titleStyle}>
-                            Emerald<br/>Wallet
-                        </Col>
-                    </Row>
-                </Col>
-                <Col xs={4} style={align.center}>
-                    <Status/>
-                </Col>
-                <Col xs={4} style={align.right}>
-                    <Navigation/>
-                </Col>
-            </Row>
-            <Row>
-                <Col xs={10} xsOffset={1} style={align.center}>
-                    <Total/>
-                </Col>
-            </Row>
-        </div>
+        <Toolbar style={{backgroundColor: '#FFFFFF', height: '64px'}}>
+            <ToolbarGroup>
+                <div style={titleStyle}>
+                    EMERALD WALLET
+                </div>
+                <div><img src={logo} height={33}/></div>
+                <Total/>
+            </ToolbarGroup>
+            <ToolbarGroup>
+                <Status/>
+
+                <IconButton><FontIcon className="fa fa-cog"></FontIcon></IconButton>
+            </ToolbarGroup>
+        </Toolbar>
     );
 };
 

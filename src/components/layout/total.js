@@ -1,46 +1,36 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Row, Col } from 'react-flexbox-grid/lib/index';
 import Immutable from 'immutable';
 import { Wei, renderAsCurrency } from 'lib/types';
 
 const Render = ({ total, fiat, showFiat, currentLocaleCurrency }) => {
-    const styleTitle = {
-    };
+
     const styleTotal = {
-        fontSize: '40px',
+        fontSize: '26px',
+        lineHeight: '36px',
+        color: '#47B04B',
+        marginLeft: '10px',
     };
     const fiatSubtitle = {
         // fontSize: '1.1rem',
     };
     const valueDisplay = {
+        lineHeight: '36px',
+        fontSize: '14px',
+        color: '#747474',
         marginLeft: '1rem',
         marginRight: '1rem',
     };
-    console.log(showFiat)
 
     return (
-        <div>
-            <Row>
-                <Col xs={12} style={styleTitle}>Total</Col>
-            </Row>
-            <Row>
-                <Col xs={12} style={styleTotal}>
-                    {total} ETC
-                </Col>
-            </Row>
-            {showFiat && <Row>
-                <Col xs={12} style={fiatSubtitle}>
-                    <span style={valueDisplay}>
-                        {renderAsCurrency(fiat.total.localized)}
-                    </span>
-                    &bull;
-                    <span style={valueDisplay}>
-                        {fiat.rate.localized ? renderAsCurrency(fiat.rate.localized) : '?'} ETC/{currentLocaleCurrency.toUpperCase()}
-                    </span>
-                </Col>
-            </Row>}
+        <div style={{display: 'flex'}}>
+            <div style={styleTotal}>~{total} ETC</div>
+            {showFiat &&
+                <div style={valueDisplay}>
+                    {renderAsCurrency(fiat.total.localized)} / {fiat.rate.localized ? renderAsCurrency(fiat.rate.localized) : '?'} {currentLocaleCurrency.toUpperCase()} for 1 ETC
+                </div>
+            }
         </div>
     );
 };
@@ -69,9 +59,8 @@ const Total = connect(
         const totalEther = total.getEther();
 
         let fiat = {};
-        let r = {};
         if (rates && total) {
-            r = {
+            const r = {
                 btc: rates.get('btc'),
                 eur: rates.get('eur'),
                 usd: rates.get('usd'),

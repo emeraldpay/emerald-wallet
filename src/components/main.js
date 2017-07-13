@@ -12,7 +12,12 @@ import Header from './layout/header';
 import Footer from './layout/footer';
 import Error from './error';
 
+
 const Render = translate('common')(({t, ...props}) => (
+<div>
+    {/*{props.screen !== 'welcome' &&*/}
+        {/*<Header/>*/}
+    {/*}*/}
     <Grid>
     {props.screen !== 'welcome' &&
 
@@ -36,6 +41,7 @@ const Render = translate('common')(({t, ...props}) => (
         </Row>
     }
     </Grid>
+</div>
 ));
 
 const Main = connect(

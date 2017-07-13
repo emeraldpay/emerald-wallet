@@ -28,7 +28,7 @@ const Render = ({ transactions, sendTx, accounts, createAccount }) => {
         }
     };
 
-    const table = <Table style={{...grayBackground, ...styles.table}} selectable={false} fixedHeader={true}>
+    const table = <Table style={{...styles.table}} selectable={false} fixedHeader={true}>
         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
             <TableRow>
                 <TableHeaderColumn style={tables.mediumStyle}>Amount</TableHeaderColumn>
@@ -47,7 +47,7 @@ const Render = ({ transactions, sendTx, accounts, createAccount }) => {
 
     return (
         <div id="tx-list">
-            <Card style={{...grayBackground, ...noShadow, ...cardSpace}}>
+            <Card style={{...noShadow, ...cardSpace}}>
                 <CardHeader
                     title="Transaction History"
                     titleStyle={styles.titleStyle}

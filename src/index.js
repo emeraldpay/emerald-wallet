@@ -11,6 +11,11 @@ import {store, start as startStore} from './store/store.js';
 import log from 'electron-log';
 import 'roboto-fontface/css/roboto/sass/roboto-fontface.scss'
 import './index.scss'
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
+
+const muiTheme = getMuiTheme({
+    fontFamily: 'Poppins Regular',
+});
 
 function start() {
     // log.transports.console.level = 'debug';
@@ -22,7 +27,7 @@ function start() {
     const App = () => (
         <I18nextProvider i18n={ i18n }>
             <Provider store={store}>
-                <MuiThemeProvider>
+                <MuiThemeProvider muiTheme={muiTheme}>
                     <Main />
                 </MuiThemeProvider>
             </Provider>
