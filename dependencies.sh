@@ -8,7 +8,7 @@ else
     # No cargo yet.
     echo "Rusting up (non-interactively; accepting defaults)..."
     curl https://sh.rustup.rs -sSf | sh -s -- -y
-    # FIXME: until rustc v0.19 will be released, because of `target-feature` compiler flag, see below
+    # FIXME: until rustc v1.19 will be released, because of `target-feature` compiler flag, see below
     rustup install beta
     rustup default beta
 fi
