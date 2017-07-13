@@ -149,8 +149,7 @@
     "artifactName": "${productName}-${os}-${arch}-${env.APP_VERSION_GIT_TAG}.${ext}",
     "extraResources": [
       "./emerald",
-      "./emerald.exe",
-      "./*.dll"
+      "./emerald.exe"
     ],
     "mac": {
       "category": "public.app-category.developer-tools"

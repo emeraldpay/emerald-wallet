@@ -8,6 +8,9 @@ else
     # No cargo yet.
     echo "Rusting up (non-interactively; accepting defaults)..."
     curl https://sh.rustup.rs -sSf | sh -s -- -y
+    # FIXME: until rustc v0.19 will be released, because of `target-feature` compiler flag, see below
+    rustup install beta
+    rustup default beta
 fi
 
 # Ensure cargo bin is added to PATH, but only if it's not already there.
@@ -25,6 +28,7 @@ echo "PATH -> $PATH"
 # Install and move emerald.
 echo "Installing emerald with cargo..."
 echo "$ cargo install emerald-cli"
+export RUSTFLAGS="-C target-feature=+crt-static"
 cargo install emerald-cli -f
 
 # Get location of emerald.
