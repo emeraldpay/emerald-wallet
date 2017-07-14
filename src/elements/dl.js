@@ -1,6 +1,6 @@
 import React from 'react';
 import ListItem from 'material-ui/List/ListItem';
-import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
+import ModeEdit from 'material-ui/svg-icons/editor/mode-edit';
 import { Card, CardHeader } from 'material-ui/Card';
 import copy from 'copy-to-clipboard';
 import FontIcon from 'material-ui/FontIcon';
@@ -76,7 +76,7 @@ export const AccountAddress = (props) => {
 };
 
 export const AddressAvatar = (props) => {
-    const { primary, secondary, addr, abbreviated, tertiary, onClick } = props;
+    const { primary, secondary, addr, abbreviated, tertiary, nameEdit, onClick } = props;
     // TODO: handle tertiary (description if exists)
     const styles = {
         bc: {
@@ -84,14 +84,21 @@ export const AddressAvatar = (props) => {
         },
         nopad: {
             padding: 0
+        },
+        address: {
+            color: '#747474', 
+            fontSize: '14px',
+            lineHeight: '16px',
         }
     };
     return (
         <Card style={{...noShadow, ...styles.bc, ...link}} >
             <CardHeader
                 style={styles.nopad}
-                title={primary}
-                subtitle={secondary || <AccountAddress id={addr} abbreviated={abbreviated}/>}
+                title={primary || 
+                    <span>{nameEdit} <ModeEdit style={{width: '20px'}} /></span>}
+                subtitle={secondary || 
+                    <AccountAddress id={addr} style={styles.address} abbreviated={abbreviated}/>}
                 onClick={onClick}
             />
         </Card>

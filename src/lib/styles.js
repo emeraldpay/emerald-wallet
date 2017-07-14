@@ -48,3 +48,53 @@ export const noShadow = {
 export const grayBackground = {
     backgroundColor: 'whitesmoke',
 };
+
+export const cardStyle = {
+    paddingTop: '100px',
+    paddingBottom: '100px',
+};
+
+export const formStyle = { 
+    avatar: {
+        color: '#191919',
+        fontSize: '18px',
+        lineHeight: '24px',
+        textAlign: 'right',
+    },
+    label: {
+        color: '#747474', 
+        fontSize: '18px',
+        lineHeight: '24px',
+        textAlign: 'right',
+        marginRight: '30px',
+    },
+    group: {
+        marginTop: '10px',
+    },
+    input: {
+        boxSizing: 'border-box',
+        height: '51px', 
+        border: '1px solid #DDDDDD',
+        borderRadius: '1px',
+        color: '#191919',
+        fontSize: '16px',
+        lineHeight: '24px',
+        paddingLeft: '10px',
+        paddingRight: '10px',
+    },
+    submitButton: {
+        height: '40px',
+        fontSize: '14px',
+        fontWeight: '500', 
+        borderRadius: '1px',
+        color: '#fff',
+        width: '100%',
+    }, 
+    cancelButton: {
+        height: '40px',
+        fontSize: '14px',
+        fontWeight: '500', 
+        borderRadius: '1px',
+        width: '100%',
+    },
+}
