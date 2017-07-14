@@ -46,7 +46,6 @@ const Render = ({ transactions, sendTx, accounts, createAccount }) => {
     const titleAvatar = <Avatar icon={<FontIcon className="fa fa-dot-circle-o fa-2x" />} />;
 
     return (
-        <div id="tx-list">
             <Card style={{...noShadow, ...cardSpace}}>
                 <CardHeader
                     title="Transaction History"
@@ -59,7 +58,6 @@ const Render = ({ transactions, sendTx, accounts, createAccount }) => {
                     {table}
                 </CardText>
             </Card>
-        </div>
     );
 };
 

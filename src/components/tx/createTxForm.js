@@ -96,8 +96,8 @@ const Render = (props) => {
                        underlineShow={false}
                        fullWidth={true}>
                   {accounts.map((account) =>
-                    <MenuItem 
-                        leftIcon={<IdentityIcon id={account.get('id')}/>}
+                    <MenuItem
+                        leftIcon={<IdentityIcon size={30} expanded={true} id={account.get('id')}/>}
                         key={account.get('id')} 
                         value={account.get('id')} 
                         primaryText={account.get('id')} />
@@ -108,7 +108,7 @@ const Render = (props) => {
             <Row middle="xs">
               <Col xs={2} xsOffset={1} style={formStyle.label}>
                 Password
-              </Col>            
+              </Col>
               <Col xs={8} style={formStyle.group}>
                 <Field name="password"
                        style={formStyle.input}
@@ -139,8 +139,8 @@ const Render = (props) => {
                     onItemTouchTap={handleSelect}
                 >
                 {accounts.map((account) =>
-                  <MenuItem 
-                    leftIcon={<IdentityIcon id={account.get('id')}/>}
+                  <MenuItem
+                    leftIcon={<IdentityIcon size={30} id={account.get('id')}/>}
                     key={account.get('id')}
                     value={account.get('id')}
                     primaryText={account.get('name') ? account.get('name') : account.get('id')} />

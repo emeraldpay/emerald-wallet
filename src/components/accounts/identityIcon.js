@@ -7,13 +7,13 @@ const blockies = require('lib/blockies');
 class IdentityIcon extends React.Component {
 
     render() {
-        const { id, expanded } = this.props;
-
+        const { id, expanded, size } = this.props;
+        const iconSize = Number.isInteger(size) ? size : 40;
         const iconBg = blockies.create({seed: id, size: 8, scale: 4}).toDataURL();
         const styles = {
             marginRight: '12px',
-            height: '40px',
-            width: '40px',
+            height: `${iconSize}px`,
+            width: `${iconSize}px`,
             background: `url(${iconBg})`,
             borderRadius: '50%',
             position: 'relative',
@@ -49,6 +49,7 @@ class IdentityIcon extends React.Component {
 IdentityIcon.propTypes = {
     id: PropTypes.string.isRequired,
     expanded: PropTypes.bool,
+    size: PropTypes.number
 };
 
 export default IdentityIcon;
