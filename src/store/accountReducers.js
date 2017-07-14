@@ -9,6 +9,8 @@ const initial = Immutable.fromJS({
     loading: false,
     gasPrice: new Wei(23000000000),
     rates: {},
+    localeCurrency: 'USD', // prod: localeCurrency localized from OS.
+    localeRate: null,
 });
 
 const initialAddr = Immutable.Map({
@@ -234,7 +236,9 @@ function onGasPrice(state, action) {
 
 function onExchangeRates(state, action) {
     if (action.type === 'ACCOUNT/EXCHANGE_RATES') {
-        return state.set('rates', Immutable.fromJS(action.rates));
+        const localeRate = action.rates[state.get('localeCurrency').toLowerCase()];
+        return state.set('rates', Immutable.fromJS(action.rates))
+            .set('localeRate', localeRate);
     }
     return state;
 }

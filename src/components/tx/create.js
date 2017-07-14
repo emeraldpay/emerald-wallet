@@ -7,6 +7,7 @@ import { sendTransaction, trackTx } from 'store/accountActions';
 import { transferTokenTransaction, traceTokenTransaction, traceCall } from 'store/tokenActions';
 import { gotoScreen } from 'store/screenActions';
 import { mweiToWei, etherToWei, toHex, estimateGasFromTrace } from 'lib/convert';
+import { Wei } from 'lib/types';
 import { address } from 'lib/validators';
 
 import CreateTxForm from './createTxForm';
@@ -67,12 +68,18 @@ const traceValidate = (data, dispatch) => {
     });
 };
 
+const selector = formValueSelector('createTx');
+
 const CreateTx = connect(
     (state, ownProps) => {
         const selector = formValueSelector('createTx');
         const tokens = state.tokens.get('tokens');
-        const balance = ownProps.account.get('balance').getEther(6);
+        const balance = ownProps.account.get('balance');
         const gasPrice = state.accounts.get('gasPrice').getMwei();
+        const fiatRate = state.accounts.get('localeRate');
+        const value = (selector(state, 'value')) ? selector(state, 'value') : 0;
+        const fromAddr = (selector(state, 'from'));
+
         return {
             initialValues: {
                 from: ownProps.account.get('id'),
@@ -86,6 +93,10 @@ const CreateTx = connect(
             addressBook: state.addressBook.get('addressBook'),
             tokens: tokens.unshift(Immutable.fromJS({ address: '', symbol: 'ETC' })),
             isToken: (selector(state, 'token')),
+            fiatRate,
+            value: new Wei(etherToWei(value)),
+            balance: selector(state, 'balance'),
+            fromAddr,
         };
     },
     (dispatch, ownProps) => ({
@@ -112,8 +123,12 @@ const CreateTx = connect(
         onChangeAccount: (accounts, value) => {
             // load account information for selected account
             const idx = accounts.findKey((acct) => acct.get('id') === value);
-            const balance = accounts.get(idx).get('balance').getEther(6);
-            dispatch(change('createTx', 'balance', balance.toString()));
+            const balance = accounts.get(idx).get('balance');
+            dispatch(change('createTx', 'balance', balance));
+        },
+        onEntireBalance: (value) => {
+            // load account information for selected account
+            dispatch(change('createTx', 'value', value.getEther()));
         },
         onChangeToken: (event, value, prev) => {
             // if switching from ETC to token, change default gas

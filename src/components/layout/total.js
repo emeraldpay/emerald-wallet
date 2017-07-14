@@ -58,6 +58,8 @@ const Total = connect(
         // some other kind of sexy sneaky UI down the road.
 
         const rates = state.accounts.get('rates');
+        const currentLocaleCurrency = state.accounts.get('localeCurrency');
+        const localeCurrencyRate = state.accounts.get('localeRate');
 
         // Sum of balances of all known accounts.
         const total = state.accounts.get('accounts', Immutable.List()).map((account) => {
@@ -88,10 +90,6 @@ const Total = connect(
             };
         }
 
-        // Try to localize, with USD defaults.
-        let currentLocaleCurrency = 'USD'; // prod: localeCurrency localized from OS.
-
-        const localeCurrencyRate = fiat.rate[currentLocaleCurrency.toLowerCase()];
         // If we are able to get the rate for the local currency:
         if (typeof localeCurrencyRate === 'number') {
             fiat.total.localized = total.getFiat(localeCurrencyRate);
@@ -99,7 +97,6 @@ const Total = connect(
 
         // Fallback to USD.
         } else {
-            currentLocaleCurrency = 'USD';
             fiat.total.localized = fiat.total.usd;
             fiat.rate.localized = +fiat.rate.usd; // fiat.pair.usd;
         }
