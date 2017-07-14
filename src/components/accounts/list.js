@@ -13,6 +13,65 @@ import { translate } from 'react-i18next';
 import { gotoScreen } from 'store/screenActions';
 import Account from './account';
 
+import {Menu, MenuItem, Popover} from 'material-ui';
+
+class WalletsTokensButton extends React.Component {
+
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            open: false,
+        };
+    }
+
+    handleTouchTap = (event) => {
+        // This prevents ghost click.
+        event.preventDefault();
+
+        this.setState({
+            open: true,
+            anchorEl: event.currentTarget,
+        });
+    };
+
+    handleRequestClose = () => {
+        this.setState({
+            open: false,
+        });
+    };
+
+    render() {
+        const {createAccount, t, style} = this.props;
+
+        return (
+
+            <div style={style}>
+                <FlatButton
+                    onTouchTap={this.handleTouchTap}
+                    label="WALLETS AND TOKENS"
+                    labelStyle={{paddingRight: 0, float: 'right'}}
+                    style={{
+                        color: '#47B04B',
+                    }}
+                    icon={<FontIcon className="fa fa-plus-circle" />}
+                />
+                <Popover
+                    open={this.state.open}
+                    anchorEl={this.state.anchorEl}
+                    anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+                    targetOrigin={{horizontal: 'left', vertical: 'top'}}
+                    onRequestClose={this.handleRequestClose}
+                >
+                    <Menu>
+                        <MenuItem primaryText={t('list.create')} onClick={createAccount} />
+                    </Menu>
+                </Popover>
+            </div>
+        );
+    }
+}
+
 const Render = translate('accounts')(({ t, accounts, createAccount, connecting }) => {
 
     if (connecting) {
@@ -44,14 +103,21 @@ const Render = translate('accounts')(({ t, accounts, createAccount, connecting }
         <div id="accounts-list">
             <Grid>
             <Row>
-                <Col xs={9} style={{display: 'flex', justifyContent: 'left', alignItems: 'center'}}>
-                    <span>{t('list.title')}</span>
+                <Col style={{ width: '100%'}}>
+                    <div style={{float:'left', display:'block-inline'}}><span>{t('list.title')}</span></div>
+                    <WalletsTokensButton
+                        style={{float:'right', display:'block-inline'}}
+                        createAccount={createAccount}
+                        t={t}
+                    />
                 </Col>
-                <Col xs={3} style={align.right}>
-                    <FlatButton label={t('list.create')}
-                            onClick={createAccount}
-                            icon={<FontIcon className="fa fa-plus-circle" />}/>
-                </Col>
+                {/*<Col xs={4} style={align.right}>*/}
+                    {/*/!*<FlatButton label={t('list.create')}*!/*/}
+                            {/*/!*onClick={createAccount}*!/*/}
+                            {/*/!*icon={<FontIcon className="fa fa-plus-circle" />}/>*!/*/}
+
+
+                {/*</Col>*/}
             </Row>
             <Row>
                 <Card style={{...cardSpace, ...noShadow}}>
