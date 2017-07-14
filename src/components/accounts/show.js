@@ -2,12 +2,15 @@ import React from 'react';
 import Immutable from 'immutable'
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Card, CardActions, CardText } from 'material-ui/Card';
+import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import { AddressAvatar } from 'elements/dl';
+import People from 'material-ui/svg-icons/social/people';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
-import { Row, Col } from 'react-flexbox-grid/lib/index';
+import IconMenu from 'material-ui/IconMenu';
+import IconButton from 'material-ui/IconButton';
+import MoreHorizIcon from 'material-ui/svg-icons/navigation/more-horiz';
 import QRCode from 'qrcode.react';
 import log from 'electron-log';
 import { translate } from 'react-i18next';
@@ -20,7 +23,10 @@ import TransactionsList from '../tx/list';
 import AccountSendButton from './sendButton';
 import AccountBalance from './balance';
 import ExportAccountButton from './export';
+import PrintAccountButton from './print';
 import { Wei } from 'lib/types';
+import { CardHeadEmerald } from 'elements/card';
+import { cardStyle, formStyle } from 'lib/styles';
 import IdentityIcon from './identityIcon';
 
 const TokenRow = ({ token }) => {
@@ -65,55 +71,62 @@ class AccountRender extends React.Component {
         const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
 
         return (
-        <div>
-        <Card style={cardSpace}>
-            <CardActions>
-                <FlatButton label="DASHBOARD"
-                            primary={true}
-                            onClick={goBack}
-                            icon={<FontIcon className="fa fa-arrow-left" />}/>
-            </CardActions>
-            <CardText>
-                <Row>
-                    <Col xs={8}>
-                        {/* }<h2>
-                            {value}
-                            {pending && <FlatButton label={pending} primary={true} />}
-                        </h2>
-                        {account.get('balance') ? `$${account.get('balance').getFiat(rates.get('usd'))}` : ''}
-                        */}
-
-                        <div style={{display: 'flex'}}>
-                            <IdentityIcon id={account.get('id')} expanded={true} />
-                            <AccountBalance balance={account.get('balance') || new Wei(0) } withAvatar={true} />
-                        </div>
-
-                        {!this.state.edit && <AddressAvatar
-                            secondary={account.get('id')}
-                            tertiary={account.get('description')}
-                            primary={account.get('name')}
-                            onClick={this.handleEdit}
-                        />}
-                        {this.state.edit && <AccountEdit
-                            address={account}
-                            submit={this.handleSave}
-                            cancel={this.cancelEdit}
-                         />}
+            <Grid style={cardStyle}>
+              <CardHeadEmerald 
+                backLabel='DASHBOARD'
+                title='Wallet'
+                cancel={goBack}
+              />
+                <Row top="xs">
+                    <Col xs={12} md={8}>
+                        <Row middle="xs">
+                            <Col xs={1} xsOffset={4} style={formStyle.avatar}>
+                                <IdentityIcon id={account.get('id')} expanded={true} />
+                            </Col>
+                            <Col xs={6} style={formStyle.group}>
+                                <AccountBalance balance={account.get('balance') || new Wei(0) } withAvatar={true} />
+                            </Col>
+                        </Row>
+                        <Row middle="xs">
+                            <Col xs={1} xsOffset={4} style={formStyle.avatar}>
+                                <People />
+                            </Col>
+                            <Col xs={6} style={formStyle.group}>
+                                {!this.state.edit && <AddressAvatar
+                                    addr={account.get('id')}
+                                    tertiary={account.get('description')}
+                                    nameEdit={account.get('name')}
+                                    onClick={this.handleEdit}
+                                />}
+                                {this.state.edit && <AccountEdit
+                                    address={account}
+                                    submit={this.handleSave}
+                                    cancel={this.cancelEdit}
+                                 />}
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col xs={6} xsOffset={5} style={formStyle.group}>
+                                <AccountPopup account={account}/>
+                                <AccountSendButton account={account} />
+                                <IconMenu
+                                    style={{height: '60px', padding: '20px'}}
+                                    iconButtonElement={<IconButton><MoreHorizIcon /></IconButton>}
+                                >
+                                  <ExportAccountButton account={account} />
+                                  <PrintAccountButton account={account} />
+                                </IconMenu>
+                            </Col>
+                        </Row>
                     </Col>
-                    <Col xs={4} md={2} mdOffset={2}>
+                    <Col xs={4} md={2} mdOffset={1}>
                         <QRCode value={account.get('id')} />
                     </Col>
                 </Row>
-            </CardText>
-            <CardActions>
-                <AccountPopup account={account}/>
-                <AccountSendButton account={account} />
-                <ExportAccountButton account={account} />
-            </CardActions>
-        </Card>
-
-        <TransactionsList transactions={transactions}/>
-        </div>
+            <Row>
+                <TransactionsList transactions={transactions}/>
+            </Row>
+        </Grid>
         );
     }
 }

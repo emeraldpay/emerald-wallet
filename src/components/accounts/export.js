@@ -1,7 +1,7 @@
 import React from 'react'
 import { connect } from 'react-redux'
 import PropTypes from 'prop-types'
-import FlatButton from 'material-ui/FlatButton'
+import MenuItem from 'material-ui/MenuItem';
 import FontIcon from 'material-ui/FontIcon'
 import { rpc } from 'lib/rpc'
 
@@ -50,9 +50,9 @@ class ExportAccountButtonRender extends React.Component {
     }
 
     render () {
-        return (<FlatButton
-            icon={<FontIcon className="fa fa-hdd-o"/>}
-            label='EXPORT'
+        return (<MenuItem
+            leftIcon={<FontIcon className="fa fa-hdd-o"/>}
+            primaryText='EXPORT'
             onTouchTap={this.handleClick}/>)
     }
 }

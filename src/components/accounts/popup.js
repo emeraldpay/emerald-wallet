@@ -49,9 +49,11 @@ class AccountPopupRender extends React.Component {
             color: 'green',
         },
         openButton: {
-            display: 'inline',
-            backgroundColor: 'dimgray',
-            color: 'white',
+            height: '40px',
+            fontSize: '14px',
+            fontWeight: '500', 
+            borderRadius: '1px',
+            backgroundColor: '#EEE',
         },
         qr: {
             marginLeft: 'auto',
