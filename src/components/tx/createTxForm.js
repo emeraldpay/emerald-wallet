@@ -3,11 +3,12 @@ import PropTypes from 'prop-types';
 import { Field, reduxForm } from 'redux-form';
 import { SelectField, TextField, RadioButtonGroup } from 'redux-form-material-ui';
 import { RadioButton } from 'material-ui/RadioButton';
-import { MenuItem, FlatButton, FontIcon, IconButton } from 'material-ui';
+import { MenuItem, FlatButton, IconButton } from 'material-ui';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import { IconMenu } from 'material-ui/IconMenu';
-import KeyboardArrowLeft from 'material-ui/svg-icons/hardware/keyboard-arrow-left';
 import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
+import { CardHeadEmerald } from 'elements/card';
+import { cardStyle, formStyle } from 'lib/styles';
 import { red200 } from 'material-ui/styles/colors';
 import { positive, number, required, address } from 'lib/validators';
 import IdentityIcon from '../accounts/identityIcon';
@@ -33,47 +34,6 @@ const textFiatLight = {
   width: '100%',
 };
 
-const formLabel = {
-    color: '#747474', 
-    fontSize: '18px',
-    lineHeight: '24px',
-    textAlign: 'right',
-    marginRight: '30px',
-}
-
-const formGroup = {
-  marginTop: '10px',
-}
-
-const formInput = {
-    boxSizing: 'border-box',
-    height: '51px', 
-    border: '1px solid #DDDDDD',
-    borderRadius: '1px',
-    color: '#191919',
-    fontSize: '16px',
-    lineHeight: '24px',
-    paddingLeft: '10px',
-    paddingRight: '10px',
-}
-
-const submitButton = {
-    height: '40px',
-    fontSize: '14px',
-    fontWeight: '500', 
-    borderRadius: '1px',
-    color: '#fff',
-    width: '100%',
-}
-
-const cancelButton = {
-    height: '40px',
-    fontSize: '14px',
-    fontWeight: '500', 
-    borderRadius: '1px',
-    width: '100%',
-}
-
 const linkText = {
     marginTop: '5px',
     color: '#47B04B', 
@@ -88,43 +48,6 @@ const linkText = {
 const balanceGroup = {
     marginTop: '10px',
     height: '40px',
-}
-
-const cardStyle = {
-    paddingTop: '100px',
-    paddingBottom: '100px',
-}
-
-const CardHeadEmerald = (props) => {
-  const { title, backLabel, cancel } = props;
-  const style = {
-    color: '#191919',
-    fontSize: '22px',
-    lineHeight: '24px',
-    textAlign: 'left',
-  }
-
-  const flatButtonNav = {
-    color: '#747474',
-    fontSize: '14px',
-    fontWeight: '500',
-    lineHeight: '24px',
-  };
-
-  return (
-      <Row middle="xs" style={{marginBottom: '60px'}}>
-        <Col xs={4}>
-          <FlatButton label={backLabel}
-                      primary={true}
-                      onClick={cancel}
-                      style={flatButtonNav}
-                      icon={<KeyboardArrowLeft/>}
-          />
-        </Col>
-        <Col xs={6} style={style}>{title}</Col>
-      </Row>
-  );
-
 };
 
 const BalanceField = ({ input, rate }) => {
@@ -162,12 +85,12 @@ const Render = (props) => {
         <Row>
           <Col xs={12} md={8}>
             <Row middle="xs">
-              <Col xs={2} xsOffset={1} style={formLabel}>
+              <Col xs={2} xsOffset={1} style={formStyle.label}>
                 From
               </Col>
-              <Col xs={8} style={formGroup}>
+              <Col xs={8} style={formStyle.group}>
                 <Field name="from"
-                       style={formInput}
+                       style={formStyle.input}
                        onChange={(event, val) => onChangeAccount(accounts, val)}
                        component={SelectField}
                        underlineShow={false}
@@ -183,12 +106,12 @@ const Render = (props) => {
               </Col>
             </Row>
             <Row middle="xs">
-              <Col xs={2} xsOffset={1} style={formLabel}>
+              <Col xs={2} xsOffset={1} style={formStyle.label}>
                 Password
               </Col>            
-              <Col xs={8} style={formGroup}>
+              <Col xs={8} style={formStyle.group}>
                 <Field name="password"
-                       style={formInput}
+                       style={formStyle.input}
                        type="password"
                        component={TextField}
                        underlineShow={false}
@@ -198,19 +121,19 @@ const Render = (props) => {
               </Col>
             </Row>
             <Row middle="xs">
-              <Col xs={2} xsOffset={1} style={formLabel}>
+              <Col xs={2} xsOffset={1} style={formStyle.label}>
                 To
               </Col>
-              <Col xs={7} style={formGroup}>
+              <Col xs={7} style={formStyle.group}>
                 <Field name="to"
-                       style={formInput}
+                       style={formStyle.input}
                        component={TextField}
                        validate={[required, address]}
                        underlineShow={false}
                        fullWidth={true}
                 />
               </Col>
-              <Col xs={1} style={formGroup}>
+              <Col xs={1} style={formStyle.group}>
                 <IconMenu
                     iconButtonElement={<IconButton><ImportContacts /></IconButton>}
                     onItemTouchTap={handleSelect}
@@ -232,12 +155,12 @@ const Render = (props) => {
               </Col>
             </Row>
             <Row middle="xs">
-              <Col xs={2} xsOffset={1} style={formLabel}>
+              <Col xs={2} xsOffset={1} style={formStyle.label}>
                 Amount
               </Col>
-              <Col xs={7} style={formGroup}>
+              <Col xs={7} style={formStyle.group}>
                 <Field name="value"
-                       style={formInput}
+                       style={formStyle.input}
                        component={TextField}
                        hintText="1.0000"
                        fullWidth={true}
@@ -245,7 +168,7 @@ const Render = (props) => {
                        validate={[required]}
                 />
               </Col>
-              <Col xs={1} style={formGroup}>
+              <Col xs={1} style={formStyle.group}>
                 <Field name="token"
                        component={SelectField}
                        onChange={onChangeToken}
@@ -254,7 +177,7 @@ const Render = (props) => {
                        fullWidth={true}>
                   {tokens.map((it) =>
                     <MenuItem key={it.get('address')}
-                              style={formInput}
+                              style={formStyle.input}
                               value={it.get('address')}
                               label={it.get('symbol')}
                               primaryText={it.get('symbol')} />
@@ -262,9 +185,9 @@ const Render = (props) => {
                 </Field>
               </Col>
               {isToken &&
-              <Col xs={2} style={formGroup}>
+              <Col xs={2} style={formStyle.group}>
                 <Field name="isTransfer"
-                       style={formInput}
+                       style={formStyle.input}
                        component={RadioButtonGroup}
                        defaultSelected="true"
                        validate={required}>
@@ -274,7 +197,7 @@ const Render = (props) => {
               </Col> }
             </Row>
             <Row top="xs" style={balanceGroup}>
-              <Col xs={3} style={formLabel} />
+              <Col xs={3} style={formStyle.label} />
               <Col xs={2} style={textFiatLight}>
                   {value && `$${value.getFiat(fiatRate).toString()}` }
               </Col>
@@ -283,14 +206,14 @@ const Render = (props) => {
               </Col>
             </Row>
             <Row middle="xs">
-              <Col xs={2} xsOffset={1} style={formLabel}>
+              <Col xs={2} xsOffset={1} style={formStyle.label}>
                 Fee
               </Col>
-              <Col xs={5} style={formGroup}>
+              <Col xs={5} style={formStyle.group}>
                 <Field name="gasPrice"
                        component={TextField}
                        hintText="23000"
-                       style={formInput}
+                       style={formStyle.input}
                        underlineShow={false}
                        validate={[required, number, positive]}
                 />
@@ -307,20 +230,20 @@ const Render = (props) => {
               </Col>
             </Row>*/}
             <Row top="xs">
-              <Col xs={3} style={formLabel} />
-              <Col xs={3} style={formGroup}>
+              <Col xs={3} style={formStyle.label} />
+              <Col xs={3} style={formStyle.group}>
                 <FlatButton label={`Send ${value && value.getEther(2).toString() } ETC`}
                             disabled={ pristine || submitting || invalid }
                             onClick={handleSubmit}
-                            style={submitButton}
+                            style={formStyle.submitButton}
                             backgroundColor="#47B04B"
                              />
                 <br />
               </Col>
-              <Col xs={3} style={formGroup}>                             
+              <Col xs={3} style={formStyle.group}>                             
                 <FlatButton label="Cancel"
                             onClick={cancel}
-                            style={cancelButton}
+                            style={formStyle.cancelButton}
                             backgroundColor="#DDD" />                     
               </Col>              
             </Row>         

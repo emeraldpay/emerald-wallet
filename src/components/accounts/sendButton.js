@@ -11,14 +11,18 @@ class AccountSendButtonRender extends React.Component {
 
         const styles = {
             sendButton: {
-                color: 'green',
+                height: '40px',
+                fontSize: '14px',
+                fontWeight: '500', 
+                borderRadius: '1px',
+                backgroundColor: '#EEE',
+                marginLeft: '10px',
             },
         };
 
         return (
         <FlatButton label="SEND"
                     onClick={createTx}
-                    icon={<FontIcon className="fa fa-arrow-circle-o-right" />}
                     style={styles.sendButton} />
         );
     }
