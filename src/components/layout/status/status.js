@@ -68,7 +68,7 @@ const Status = connect(
         if (showDetails) {
             const tip = state.network.getIn(['sync', 'highestBlock'], -1);
             const peerCount = state.network.get('peerCount');
-            const progress = ((curBlock / tip) * 100);
+            const progress = (curBlock / tip) * 100;
             return {
                 progress: isNaN(progress) ? 100 : progress,
                 peerCount,

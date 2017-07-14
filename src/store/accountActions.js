@@ -280,7 +280,7 @@ export function refreshTransaction(hash) {
     return (dispatch) =>
         rpc.call('eth_getTransactionByHash', [hash]).then((result) => {
             if (!result) {
-                log.info(`No tx for has ${hash}`)
+                log.info(`No tx for hash ${hash}`)
             } else if (typeof result === 'object') {
                 dispatch({
                     type: 'ACCOUNT/UPDATE_TX',

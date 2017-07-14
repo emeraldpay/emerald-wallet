@@ -1,20 +1,21 @@
 import React from 'react';
-import { Provider, connect } from 'react-redux'
-import 'font-awesome/scss/font-awesome.scss'
+import { Provider, connect } from 'react-redux';
+import 'font-awesome/scss/font-awesome.scss';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n';
 import ReactDOM from 'react-dom';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import Main from './components/main';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import {store, start as startStore} from './store/store.js';
 import log from 'electron-log';
-import 'roboto-fontface/css/roboto/sass/roboto-fontface.scss'
-import './index.scss'
+import 'roboto-fontface/css/roboto/sass/roboto-fontface.scss';
+import './index.scss';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
+import 'typeface-poppins';
+import Main from './components/main';
 
 const muiTheme = getMuiTheme({
-    fontFamily: 'Poppins Regular',
+    fontFamily: 'Poppins',
 });
 
 function start() {

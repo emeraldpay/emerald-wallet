@@ -19,7 +19,7 @@ const Render = () => {
         fontWeight: 500,
         lineHeight: '21px',
         marginRight: '10px',
-        fontFamily: 'Poppins Medium',
+        fontFamily: 'Poppins',
     };
 
     return (
