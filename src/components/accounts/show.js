@@ -8,6 +8,9 @@ import People from 'material-ui/svg-icons/social/people';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
+import IconMenu from 'material-ui/IconMenu';
+import IconButton from 'material-ui/IconButton';
+import MoreHorizIcon from 'material-ui/svg-icons/navigation/more-horiz';
 import QRCode from 'qrcode.react';
 import log from 'electron-log';
 import { translate } from 'react-i18next';
@@ -20,6 +23,7 @@ import TransactionsList from '../tx/list';
 import AccountSendButton from './sendButton';
 import AccountBalance from './balance';
 import ExportAccountButton from './export';
+import PrintAccountButton from './print';
 import { Wei } from 'lib/types';
 import { CardHeadEmerald } from 'elements/card';
 import { cardStyle, formStyle } from 'lib/styles';
@@ -105,7 +109,13 @@ class AccountRender extends React.Component {
                             <Col xs={6} xsOffset={5} style={formStyle.group}>
                                 <AccountPopup account={account}/>
                                 <AccountSendButton account={account} />
-                                <ExportAccountButton account={account} />
+                                <IconMenu
+                                    style={{height: '60px', padding: '20px'}}
+                                    iconButtonElement={<IconButton><MoreHorizIcon /></IconButton>}
+                                >
+                                  <ExportAccountButton account={account} />
+                                  <PrintAccountButton account={account} />
+                                </IconMenu>
                             </Col>
                         </Row>
                     </Col>
