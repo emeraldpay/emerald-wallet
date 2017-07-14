@@ -24,11 +24,14 @@ class AccountBalanceRender extends React.Component {
                 backgroundColor: 'inherit',
             },
             main: {
-                fontSize: '16px',
+                lineHeight: '24px',
+                fontSize: '20px',
                 fontWeight: 500,
             },
             fiat: {
-                color: '#666',
+                color: '#191919',
+                fontSize: '14px',
+                lineHeight: '16px',
             },
         };
         let fiat = null;
