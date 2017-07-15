@@ -12,6 +12,7 @@ import { loadAccountsList, refreshTrackedTransactions, loadPendingTransactions,
 import { loadSyncing, loadHeight, loadPeerCount } from './networkActions';
 import { gotoScreen } from './screenActions';
 import { readConfig, listenElectron, connecting } from './launcherActions';
+import { getAddresses } from './ledgerActions';
 
 import accountsReducers from './accountReducers';
 import addressReducers from './addressReducers';
@@ -20,6 +21,7 @@ import contractReducers from './contractReducers';
 import networkReducers from './networkReducers';
 import screenReducers from './screenReducers';
 import launcherReducers from './launcherReducers';
+import ledgerReducers from './ledgerReducers';
 
 const second = 1000;
 const minute = 60 * second;
@@ -43,6 +45,7 @@ const stateTransformer = (state) => ({
     screen: state.screen.toJS(),
     network: state.network.toJS(),
     launcher: state.launcher.toJS(),
+    ledger: state.ledger.toJS(),
     form: state.form,
 });
 
@@ -58,6 +61,7 @@ const reducers = {
     screen: screenReducers,
     network: networkReducers,
     launcher: launcherReducers,
+    ledger: ledgerReducers,
     form: formReducer,
 };
 
