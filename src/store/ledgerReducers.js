@@ -2,7 +2,7 @@ import Immutable from 'immutable';
 
 const initialState = Immutable.fromJS({
     hd: {
-        base: "44'/61'/0'/0'",
+        base: "44'/61'/0'/0",
         offset: 0
     },
     addresses: []
