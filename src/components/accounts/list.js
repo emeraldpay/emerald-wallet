@@ -99,32 +99,21 @@ const Render = translate('accounts')(({ t, accounts, createAccount, connecting }
     const titleAvatar = <Avatar icon={<FontIcon className="fa fa-address-book-o fa-2x" />} />;
 
     return (
-        <div id="accounts-list">
-            <Grid>
-            <Row>
-                <Col style={{ width: '100%'}}>
-                    <div style={{float:'left', display:'block-inline'}}><span>{t('list.title')}</span></div>
-                    <WalletsTokensButton
-                        style={{float:'right', display:'block-inline'}}
-                        createAccount={createAccount}
-                        t={t}
-                    />
-                </Col>
-                {/*<Col xs={4} style={align.right}>*/}
-                    {/*/!*<FlatButton label={t('list.create')}*!/*/}
-                            {/*/!*onClick={createAccount}*!/*/}
-                            {/*/!*icon={<FontIcon className="fa fa-plus-circle" />}/>*!/*/}
-
-
-                {/*</Col>*/}
-            </Row>
-            <Row>
+        <div>
+            <div style={{display: 'flex', justifyContent:'space-between', alignItems: 'center'}}>
+                <div><span>{t('list.title')}</span></div>
+                <WalletsTokensButton
+                    createAccount={createAccount}
+                    t={t}
+                />
+            </div>
+            <div style={{backgroundColor:'red'}}>
                 <Card style={{...cardSpace, ...noShadow}}>
                     <CardText expandable={false}>
                         {table}
                     </CardText>
                 </Card>
-            </Row></Grid>
+            </div>
         </div>
     );
 });

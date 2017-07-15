@@ -15,32 +15,14 @@ import Error from './error';
 
 const Render = translate('common')(({t, ...props}) => (
 <div>
-    {/*{props.screen !== 'welcome' &&*/}
-        {/*<Header/>*/}
-    {/*}*/}
-    <Grid>
-    {props.screen !== 'welcome' &&
-
-        <Row>
-            <Col xs={12}>
-                <Header/>
-            </Col>
-        </Row>
-    }
-        <Row>
-            <Col xs={12}>
+    {props.screen !== 'welcome' && <Header/>}
+        <div style={{}}>
+            <div style={{margin: '0 auto', maxWidth: '1060px'}}>
                 <Screen id="body"/>
-            </Col>
-        </Row>
+            </div>
+        </div>
         <Error/>
-    {props.screen !== 'welcome' &&
-        <Row>
-            <Col xs={12}>
-                <Footer />
-            </Col>
-        </Row>
-    }
-    </Grid>
+    {props.screen !== 'welcome' && <Footer /> }
 </div>
 ));
 

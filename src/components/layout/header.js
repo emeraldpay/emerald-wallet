@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { align, cardSpace } from 'lib/styles';
-import {Toolbar, ToolbarGroup, IconButton, FontIcon, FlatButton} from 'material-ui';
+import {IconButton, FontIcon} from 'material-ui';
 import logo from 'images/etc_logo.png';
 import Status from './status/status';
 import Total from './total';
@@ -23,20 +23,19 @@ const Render = () => {
     };
 
     return (
-        <Toolbar style={{backgroundColor: '#FFFFFF', height: '64px'}}>
-            <ToolbarGroup>
-                <div style={titleStyle}>
-                    EMERALD WALLET
+        <div style={{backgroundColor: 'white'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', margin: '0 auto', maxWidth: '1060px'}}>
+                <div style={{display: 'flex', alignItems: 'center'}}>
+                    <div style={titleStyle}>EMERALD WALLET</div>
+                    <div><img src={logo} height={48}/></div>
+                    <Total/>
                 </div>
-                <div><img src={logo} height={33}/></div>
-                <Total/>
-            </ToolbarGroup>
-            <ToolbarGroup>
-                <Status/>
-
-                <IconButton><FontIcon className="fa fa-cog"></FontIcon></IconButton>
-            </ToolbarGroup>
-        </Toolbar>
+                <div style={{display: 'flex'}}>
+                    <Status/>
+                    <IconButton><FontIcon className="fa fa-cog"></FontIcon></IconButton>
+                </div>
+            </div>
+        </div>
     );
 };
 
