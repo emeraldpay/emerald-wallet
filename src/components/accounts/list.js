@@ -54,6 +54,7 @@ class WalletsTokensButton extends React.Component {
                     style={{
                         color: '#47B04B',
                     }}
+                    hoverColor="transparent"
                     icon={<FontIcon className="fa fa-plus-circle" />}
                 />
                 <Popover
@@ -63,9 +64,7 @@ class WalletsTokensButton extends React.Component {
                     targetOrigin={{horizontal: 'left', vertical: 'top'}}
                     onRequestClose={this.handleRequestClose}
                 >
-                    <Menu>
                         <MenuItem primaryText={t('list.create')} onClick={createAccount} />
-                    </Menu>
                 </Popover>
             </div>
         );
