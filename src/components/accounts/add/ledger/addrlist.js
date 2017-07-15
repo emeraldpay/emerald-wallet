@@ -15,7 +15,7 @@ const Render = ({ addresses }) => {
             </TableRow>
         </TableHeader>
         <TableBody>
-            {addresses.map((addr) => <Addr key={addr.hdpath} addr={addr}/>)}
+            {addresses.map((addr) => <Addr key={addr.get('hdpath')} addr={addr}/>)}
         </TableBody>
     </Table>;
 
@@ -27,7 +27,7 @@ Render.propTypes = {
 
 const Component = connect(
     (state, ownProps) => ({
-        addresses: state.ledger.get('addresses').toJS()
+        addresses: state.ledger.get('addresses')
     }),
     (dispatch, ownProps) => ({
     })

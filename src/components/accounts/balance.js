@@ -40,7 +40,7 @@ class AccountBalanceRender extends React.Component {
         }
         return (
         <div style={{...styles.bc}}>
-            <span style={styles.main}>{balance.getEther(3)} ETC</span>
+            <span style={styles.main}>{balance ? balance.getEther(3) : '-'} ETC</span>
             <br/>{fiat}
         </div>
         );

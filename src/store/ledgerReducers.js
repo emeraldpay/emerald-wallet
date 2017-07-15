@@ -1,4 +1,5 @@
 import Immutable from 'immutable';
+import { Wei, TokenUnits } from '../lib/types';
 
 const initialState = Immutable.fromJS({
     hd: {
@@ -31,6 +32,15 @@ function onGetAddress(state, action) {
     return state
 }
 
+function onSetBalance(state, action) {
+    if (action.type === 'LEDGER/ADDR_BALANCE') {
+        return updateHd(state, action.hdpath, (addr) =>
+            addr.set('value', new Wei(action.value))
+        )
+    }
+    return state
+}
+
 function onSetPath(state, action) {
     if (action.type === 'LEDGER/SET_LIST_HDPATH') {
         return state.update('addresses', (list) =>
@@ -59,5 +69,6 @@ export default function ledgerReducers(state, action) {
     state = onSetPath(state, action);
     state = onSetOffset(state, action);
     state = onSetHd(state, action);
+    state = onSetBalance(state, action);
     return state
 }

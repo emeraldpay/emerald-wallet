@@ -1,6 +1,7 @@
 import LedgerEth from 'ledgerco/src/ledger-eth';
 import LedgerComm from 'ledgerco/src/ledger-comm-u2f';
 import log from 'electron-log';
+import { rpc } from 'lib/rpc';
 
 function connection() {
     return new Promise((resolve, reject) => {
@@ -23,6 +24,18 @@ connection().then( (conn) => {
     conn.getStatus().then((status) => log.info("Ledger status", status));
 });
 
+function loadInfo(hdpath, addr) {
+    return (dispatch) => {
+        rpc.call('eth_getBalance', [addr, 'latest']).then((result) => {
+            dispatch({
+                type: 'LEDGER/ADDR_BALANCE',
+                hdpath,
+                value: result,
+            });
+        });
+    }
+}
+
 export function getAddress(hdpath) {
     return (dispatch) => {
         log.info("Load address", hdpath);
@@ -33,9 +46,10 @@ export function getAddress(hdpath) {
                     type: 'LEDGER/ADDR',
                     hdpath,
                     addr: addr.address
-                }
-            )
-        }).catch((err) => log.error("Failed to get Ledger connection", err))
+                });
+                dispatch(loadInfo(hdpath, addr.address));
+            })
+            .catch((err) => log.error("Failed to get Ledger connection", err))
     }
 }
 
