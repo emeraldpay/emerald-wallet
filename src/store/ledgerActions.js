@@ -33,6 +33,13 @@ function loadInfo(hdpath, addr) {
                 value: result,
             });
         });
+        rpc.call('eth_getTransactionCount', [addr, 'latest']).then((result) => {
+            dispatch({
+                type: 'LEDGER/ADDR_TXCOUNT',
+                hdpath,
+                value: result,
+            });
+        });
     }
 }
 

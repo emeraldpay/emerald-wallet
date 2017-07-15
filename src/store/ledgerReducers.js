@@ -12,7 +12,8 @@ const initialState = Immutable.fromJS({
 const addr = Immutable.fromJS({
     hdpath: null,
     address: null,
-    value: null
+    value: null,
+    txcount: 0
 });
 
 function updateHd(state, hd, f) {
@@ -36,6 +37,14 @@ function onSetBalance(state, action) {
     if (action.type === 'LEDGER/ADDR_BALANCE') {
         return updateHd(state, action.hdpath, (addr) =>
             addr.set('value', new Wei(action.value))
+        )
+    }
+    return state
+}
+function onSetTxCount(state, action) {
+    if (action.type === 'LEDGER/ADDR_TXCOUNT') {
+        return updateHd(state, action.hdpath, (addr) =>
+            addr.set('txcount', action.value)
         )
     }
     return state
@@ -70,5 +79,6 @@ export default function ledgerReducers(state, action) {
     state = onSetOffset(state, action);
     state = onSetHd(state, action);
     state = onSetBalance(state, action);
+    state = onSetTxCount(state, action);
     return state
 }

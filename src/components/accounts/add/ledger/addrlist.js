@@ -9,9 +9,10 @@ const Render = ({ addresses }) => {
     const table = <Table >
         <TableHeader>
             <TableRow>
-                <TableHeaderColumn style={tables.mediumStyle}>HD Path</TableHeaderColumn>
+                <TableHeaderColumn style={tables.shortStyle}>HD Path</TableHeaderColumn>
                 <TableHeaderColumn style={tables.wideStyle}>Address</TableHeaderColumn>
                 <TableHeaderColumn style={tables.mediumStyle}>Balance</TableHeaderColumn>
+                <TableHeaderColumn style={tables.shortStyle}>Used</TableHeaderColumn>
             </TableRow>
         </TableHeader>
         <TableBody>
