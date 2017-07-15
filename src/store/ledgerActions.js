@@ -9,7 +9,10 @@ function connection() {
             log.debug(`Electron: ${window.process.versions.electron}`);
             log.debug('Trying to get Ledger Connection from Electron');
             const remote = global.require('electron').remote;
-            resolve(remote.getGlobal('ledger'));
+            remote.getGlobal('ledger')
+                .connect()
+                .then(resolve)
+                .catch(reject);
         } else {
             // create U2F connection, which will work _only_ in Chrome + SSL webpage
             log.info("Use Browser based U2F connection to Ledger");
@@ -19,10 +22,6 @@ function connection() {
         }
     })
 }
-
-connection().then( (conn) => {
-    conn.getStatus().then((status) => log.info("Ledger status", status));
-});
 
 function loadInfo(hdpath, addr) {
     return (dispatch) => {
@@ -45,7 +44,6 @@ function loadInfo(hdpath, addr) {
 
 export function getAddress(hdpath) {
     return (dispatch) => {
-        log.info("Load address", hdpath);
         connection()
             .then((conn) => conn.getAddress(hdpath))
             .then((addr) => {
@@ -65,6 +63,46 @@ function start(index, hdpath) {
         type: 'LEDGER/SET_LIST_HDPATH',
         index,
         hdpath
+    }
+}
+
+export function checkConnected() {
+    return (dispatch, getState) => {
+        let connected = (value) => {
+            return () => {
+                if (getState().ledger.get('connected') !== value) {
+                    dispatch({ type: 'LEDGER/CONNECTED', value});
+                    if (value) {
+                        dispatch(getAddresses());
+                    }
+                }
+            }
+        };
+
+        connection().then((conn) => {
+            conn.getStatus()
+                .then(connected(true))
+                .catch(() => {
+                    conn.disconnect();
+                    dispatch({ type: 'LEDGER/CONNECTED', value: false});
+                });
+        }).catch(connected(false))
+    }
+}
+
+export function watchConnection() {
+    return (dispatch, getState) => {
+        let start = null;
+        let fn = () => {
+            dispatch(checkConnected());
+            start()
+        };
+        start = () => {
+            if (getState().screen.get('screen') === 'add-from-ledger') {
+                setTimeout(fn, 1000)
+            }
+        };
+        start();
     }
 }
 

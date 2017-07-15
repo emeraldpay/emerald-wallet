@@ -2,6 +2,7 @@ import Immutable from 'immutable';
 import { Wei, TokenUnits } from '../lib/types';
 
 const initialState = Immutable.fromJS({
+    connected: false,
     hd: {
         base: "44'/61'/0'/0",
         offset: 0
@@ -72,6 +73,14 @@ function onSetOffset(state, action) {
     return state
 }
 
+function onConnected(state, action) {
+    if (action.type === 'LEDGER/CONNECTED') {
+        return state.set('connected', action.value)
+    }
+    return state
+
+}
+
 export default function ledgerReducers(state, action) {
     state = state || initialState;
     state = onGetAddress(state, action);
@@ -80,5 +89,6 @@ export default function ledgerReducers(state, action) {
     state = onSetHd(state, action);
     state = onSetBalance(state, action);
     state = onSetTxCount(state, action);
+    state = onConnected(state, action);
     return state
 }

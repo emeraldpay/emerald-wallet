@@ -6,15 +6,27 @@ export class LedgerApi {
 
     connect() {
         return new Promise((resolve, reject) => {
-            LedgerComm.create_async(2000, true).then((conn) => {
-                log.info("Connected to Ledger");
-                this.conn = new LedgerEth(conn);
-                resolve(this);
-            }).catch((err) => {
-                log.warn("Failed to connect to Ledger", err);
-                reject(err);
-            });
+            if (this.conn !== null) {
+                resolve(this)
+            } else {
+                LedgerComm.create_async(2000, true).then((conn) => {
+                    log.info("Connected to Ledger");
+                    this.conn = new LedgerEth(conn);
+                    resolve(this);
+                }).catch((err) => {
+                    log.warn("Failed to connect to Ledger", err);
+                    reject(err);
+                });
+            }
         });
+    }
+
+    isConnected() {
+        return this.conn !== null;
+    }
+
+    disconnect() {
+        this.conn = null;
     }
 
     getStatus() {

@@ -7,8 +7,19 @@ import { Card, CardHeader, CardActions, CardText } from 'material-ui/Card';
 import HDPath from './hdpath';
 import AddrList from './addrlist';
 import Pager from './pager';
+import WaitConnection from './waitConnection';
 
-const Render = ({  }) => {
+const Render = ({ connected }) => {
+
+    if (!connected) {
+        return (
+            <Card>
+                <CardText>
+                    <WaitConnection/>
+                </CardText>
+            </Card>
+        )
+    }
 
     return (
         <Card>
@@ -35,6 +46,7 @@ Render.propTypes = {
 
 const Component = connect(
     (state, ownProps) => ({
+        connected: state.ledger.get('connected')
     }),
     (dispatch, ownProps) => ({
     })

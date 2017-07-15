@@ -33,7 +33,6 @@ const settings = new Store({
 // In the future it is possible to replace rpc implementation
 global.rpc = new RpcApi();
 global.ledger = new LedgerApi();
-global.ledger.connect();
 
 if (settings.get('rpcType') === 'remote-auto') {
     global.rpc.urlGeth = 'https://mewapi.epool.io';
