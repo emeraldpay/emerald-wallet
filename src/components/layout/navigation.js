@@ -15,7 +15,9 @@ import log from 'electron-log';
 import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
 import { gotoScreen } from 'store/screenActions';
 import { useRpc, saveSettings } from 'store/launcherActions';
+import FontIcon from 'material-ui/FontIcon';
 
+//TODO: @gagarin55: This Control will be removed soon
 const Render = translate('common')(({ t, openAccounts, openAddressBook, openContracts, switchChain, chain, rpcType }) => {
     const networkClick = (net) => {
         if (net.id !== chain.get('id') || net.type !== chain.get('type')) {
@@ -26,28 +28,23 @@ const Render = translate('common')(({ t, openAccounts, openAddressBook, openCont
 
     return (
     <IconMenu
-        iconButtonElement={<IconButton><MoreVertIcon /></IconButton>}
+        iconButtonElement={<IconButton><FontIcon className="fa fa-arrow-down"></FontIcon></IconButton>}
         targetOrigin={{ horizontal: 'right', vertical: 'top' }}
         anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
     >
+        {Networks.map((net) =>
+            <MenuItem
+                key={net.id}
+                primaryText={net.title}
+                checked={isCurrentNetwork(net)}
+                onClick={() => networkClick(net)}
+            />
+        )}
+
         <MenuItem leftIcon={<Face />} primaryText={t('menu.home')} onClick={openAccounts} />
         {/* #hidden#146 <MenuItem leftIcon={<ImportContacts />} primaryText={t('menu.addressBook')} onClick={openAddressBook} /> */}
         {/* #hidden#146 <MenuItem leftIcon={<LibraryBooks />} primaryText={t('menu.contracts')} onClick={openContracts} /> */}
-        <MenuItem
-            leftIcon={<Motorcycle />}
-            primaryText={t('menu.network')}
-            rightIcon={<ArrowDropRight />}
-            menuItems=
-                {Networks.map((net) =>
-                    <MenuItem
-                        key={net.id}
-                        primaryText={net.title}
-                        checked={isCurrentNetwork(net)}
-                        onClick={() => networkClick(net)}
-                    />
-                )}
 
-        />
     </IconMenu>
     );
 });
