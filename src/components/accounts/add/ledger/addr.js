@@ -28,8 +28,11 @@ const Render = ({ addr, ...otherProps }) => {
         </span>
     }
 
+    let hasPath = addr.get('hdpath') !== null;
+    let hasAddr = addr.get('address') !== null;
+
     return (
-        <TableRow {...otherProps}>
+        <TableRow {...otherProps} selectable={hasPath && hasAddr}>
             {otherProps.children[0] /* checkbox passed down from TableBody*/ }
             <TableRowColumn style={tables.shortStyle}>{addr.get('hdpath')}</TableRowColumn>
             <TableRowColumn style={tables.wideStyle}><AccountAddress id={addr.get('address')}/></TableRowColumn>
@@ -53,6 +56,7 @@ const Component = connect(
     (state, ownProps) => ({
     }),
     (dispatch, ownProps) => ({
+        onAddSelected: () => {},
     })
 )(Render);
 

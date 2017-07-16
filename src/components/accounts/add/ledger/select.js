@@ -8,6 +8,7 @@ import HDPath from './hdpath';
 import AddrList from './addrlist';
 import Pager from './pager';
 import WaitConnection from './waitConnection';
+import Buttons from './buttons';
 
 const Render = ({ connected }) => {
 
@@ -36,6 +37,9 @@ const Render = ({ connected }) => {
             <CardText>
                 <AddrList/>
             </CardText>
+            <CardActions>
+                <Buttons/>
+            </CardActions>
         </Card>
     )
 

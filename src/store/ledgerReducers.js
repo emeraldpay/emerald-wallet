@@ -7,7 +7,8 @@ const initialState = Immutable.fromJS({
         base: "44'/61'/0'/0",
         offset: 0
     },
-    addresses: []
+    addresses: [],
+    selected: []
 });
 
 const addr = Immutable.fromJS({
@@ -78,7 +79,13 @@ function onConnected(state, action) {
         return state.set('connected', action.value)
     }
     return state
+}
 
+function onSelected(state, action) {
+    if (action.type === 'LEDGER/SELECTED') {
+        return state.set('selected', Immutable.fromJS(action.value))
+    }
+    return state
 }
 
 export default function ledgerReducers(state, action) {
@@ -90,5 +97,6 @@ export default function ledgerReducers(state, action) {
     state = onSetBalance(state, action);
     state = onSetTxCount(state, action);
     state = onConnected(state, action);
+    state = onSelected(state, action);
     return state
 }

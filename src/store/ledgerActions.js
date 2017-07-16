@@ -2,12 +2,11 @@ import LedgerEth from 'ledgerco/src/ledger-eth';
 import LedgerComm from 'ledgerco/src/ledger-comm-u2f';
 import log from 'electron-log';
 import { rpc } from 'lib/rpc';
+import { gotoScreen } from './screenActions';
 
 function connection() {
     return new Promise((resolve, reject) => {
         if (typeof window.process !== 'undefined') {
-            log.debug(`Electron: ${window.process.versions.electron}`);
-            log.debug('Trying to get Ledger Connection from Electron');
             const remote = global.require('electron').remote;
             remote.getGlobal('ledger')
                 .connect()
@@ -15,7 +14,6 @@ function connection() {
                 .catch(reject);
         } else {
             // create U2F connection, which will work _only_ in Chrome + SSL webpage
-            log.info("Use Browser based U2F connection to Ledger");
             LedgerComm.create_async().then((comm) =>
                 resolve(new LedgerEth(comm))
             ).catch(reject)
@@ -116,12 +114,43 @@ export function getAddresses(offset, count) {
             type: 'LEDGER/SET_HDOFFSET',
             value: offset
         });
+        dispatch(selectRows([]));
         log.info("Load addresses", hdbase, count);
         for (let i = 0; i < count; i++) {
             let hdpath = [hdbase, i + offset].join('/');
             dispatch(start(i, hdpath));
             dispatch(getAddress(hdpath));
         }
+    }
+}
+
+export function selectRows(indexes) {
+    return {
+        type: 'LEDGER/SELECTED',
+        value: indexes
+    }
+}
+
+export function importSelected() {
+    return (dispatch, getState) => {
+        let ledger = getState().ledger;
+        let selected = ledger.get('selected');
+        let addresses = ledger.get('addresses');
+        selected.map((index, i) => {
+            let addr = addresses.get(index);
+            let data = {
+                type: 'ledger',
+                hdpath: addr.get('hdpath'),
+                address: addr.get('address')
+            };
+            let open = i === 0;
+            log.info("Import Ledger addr", data);
+            // rpc.call('emerald_importAccount', [data]).then(() => {
+            //     if (open) {
+            //         dispatch(gotoScreen('account', Immutable.fromJS({id: addr.get('address')})));
+            //     }
+            // });
+        })
     }
 }
 
