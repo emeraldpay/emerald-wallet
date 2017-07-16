@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
+import { gotoScreen } from 'store/screenActions';
 
 const style = {
     spinner: {
@@ -12,10 +13,13 @@ const style = {
         paddingTop: '30px',
         paddingBottom: '40px',
         color: '#777'
+    },
+    actions: {
+        paddingTop: '40px',
     }
 };
 
-const Render = ({ }) => {
+const Render = ({ onCancel }) => {
     return (
         <div>
             <Row>
@@ -33,6 +37,14 @@ const Render = ({ }) => {
                     </ul>
                 </Col>
             </Row>
+            <Row center="xs" style={style.actions}>
+                <Col xs>
+                    <FlatButton
+                        label="Cancel"
+                        onClick={onCancel}
+                        icon={<FontIcon className="fa fa-cancel" />}/>
+                </Col>
+            </Row>
         </div>
     )
 };
@@ -44,6 +56,9 @@ const Component = connect(
     (state, ownProps) => ({
     }),
     (dispatch, ownProps) => ({
+        onCancel: () => {
+            dispatch(gotoScreen('home'))
+        }
     })
 )(Render);
 
