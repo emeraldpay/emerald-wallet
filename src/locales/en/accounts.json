@@ -12,7 +12,7 @@
         "value": "{{value}} Ether"
     },
     "list": {
-        "title": "Account List",
+        "title": "WALLETS",
         "subtitle": "List of addresses you're controlling on Ethereum Classic blockchain",
         "create": "Create Account"
     },

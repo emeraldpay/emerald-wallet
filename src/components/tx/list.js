@@ -28,7 +28,7 @@ const Render = ({ transactions, sendTx, accounts, createAccount }) => {
         }
     };
 
-    const table = <Table style={{...grayBackground, ...styles.table}} selectable={false} fixedHeader={true}>
+    const table = <Table style={{...styles.table}} selectable={false} fixedHeader={true}>
         <TableHeader displaySelectAll={false} adjustForCheckbox={false}>
             <TableRow>
                 <TableHeaderColumn style={tables.mediumStyle}>Amount</TableHeaderColumn>
@@ -46,8 +46,7 @@ const Render = ({ transactions, sendTx, accounts, createAccount }) => {
     const titleAvatar = <Avatar icon={<FontIcon className="fa fa-dot-circle-o fa-2x" />} />;
 
     return (
-        <div id="tx-list">
-            <Card style={{...grayBackground, ...noShadow, ...cardSpace}}>
+            <Card style={{...noShadow, ...cardSpace}}>
                 <CardHeader
                     title="Transaction History"
                     titleStyle={styles.titleStyle}
@@ -59,7 +58,6 @@ const Render = ({ transactions, sendTx, accounts, createAccount }) => {
                     {table}
                 </CardText>
             </Card>
-        </div>
     );
 };
 

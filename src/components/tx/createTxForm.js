@@ -14,31 +14,31 @@ import { positive, number, required, address } from 'lib/validators';
 import IdentityIcon from '../accounts/identityIcon';
 
 const textEtc = {
-  fontSize: '20px',
-  fontWeight: '500',
-  lineHeight: '24px',
+    fontSize: '20px',
+    fontWeight: '500',
+    lineHeight: '24px',
 };
 
 const textFiat = {
-  marginTop: '5px',
-  fontSize: '14px',
-  lineHeight: '16px',
+    marginTop: '5px',
+    fontSize: '14px',
+    lineHeight: '16px',
 };
 
 const textFiatLight = {
-  marginTop: '5px',
-  fontSize: '14px',
-  lineHeight: '16px',
-  color: '#747474',
-  textAlign: 'center',
-  width: '100%',
+    marginTop: '5px',
+    fontSize: '14px',
+    lineHeight: '16px',
+    color: '#747474',
+    textAlign: 'center',
+    width: '100%',
 };
 
 const linkText = {
     marginTop: '5px',
-    color: '#47B04B', 
-    fontSize: '14px',  
-    fontWeight: '500', 
+    color: '#47B04B',
+    fontSize: '14px',
+    fontWeight: '500',
     lineHeight: '20px',
     textTransform: 'uppercase',
     cursor: 'pointer',
@@ -51,13 +51,13 @@ const balanceGroup = {
 };
 
 const BalanceField = ({ input, rate }) => {
-  const style = {
-    marginTop: '10px',
-    color: '#191919',
-    textAlign: 'left',
-  };
+    const style = {
+        marginTop: '10px',
+        color: '#191919',
+        textAlign: 'left',
+    };
 
-  return (
+    return (
     <div style={style}>
       <div style={textEtc}>
         {input.value.getEther(6)} ETC
@@ -66,7 +66,7 @@ const BalanceField = ({ input, rate }) => {
         ${input.value.getFiat(rate)}
       </div>
     </div>
-  );
+    );
 };
 
 const Render = (props) => {
@@ -77,7 +77,7 @@ const Render = (props) => {
 
     return (
     <Grid style={cardStyle}>
-      <CardHeadEmerald 
+      <CardHeadEmerald
         backLabel='DASHBOARD'
         title='Send Ether & Tokens'
         cancel={cancel}
@@ -94,13 +94,26 @@ const Render = (props) => {
                        onChange={(event, val) => onChangeAccount(accounts, val)}
                        component={SelectField}
                        underlineShow={false}
-                       fullWidth={true}>
+                       fullWidth={true}
+                       dropDownMenuProps={{
+                           menuStyle: {
+                               overflowX: 'hidden',
+                           },
+                           selectionRenderer: (value) => {
+                               return (<div style={{display: 'flex', alignItems: 'center'}}>
+                                       <IdentityIcon size={30} expanded={true} id={value}/>
+                                       <div>{value}</div>
+                                   </div>);
+                           },
+                       }}
+                >
                   {accounts.map((account) =>
-                    <MenuItem 
-                        leftIcon={<IdentityIcon id={account.get('id')}/>}
-                        key={account.get('id')} 
-                        value={account.get('id')} 
-                        primaryText={account.get('id')} />
+                    <MenuItem
+                        rightIcon={<IdentityIcon size={30} expanded={true} id={account.get('id')}/>}
+                        innerDivStyle={{display: 'flex'}}
+                        key={account.get('id')}
+                        value={account.get('id')}
+                        primaryText={account.get('id')}/>
                   )}
                 </Field>
               </Col>
@@ -108,7 +121,7 @@ const Render = (props) => {
             <Row middle="xs">
               <Col xs={2} xsOffset={1} style={formStyle.label}>
                 Password
-              </Col>            
+              </Col>
               <Col xs={8} style={formStyle.group}>
                 <Field name="password"
                        style={formStyle.input}
@@ -139,8 +152,8 @@ const Render = (props) => {
                     onItemTouchTap={handleSelect}
                 >
                 {accounts.map((account) =>
-                  <MenuItem 
-                    leftIcon={<IdentityIcon id={account.get('id')}/>}
+                  <MenuItem
+                    leftIcon={<IdentityIcon size={30} expanded={true} id={account.get('id')}/>}
                     key={account.get('id')}
                     value={account.get('id')}
                     primaryText={account.get('name') ? account.get('name') : account.get('id')} />
@@ -219,7 +232,7 @@ const Render = (props) => {
                 />
               </Col>
             </Row>
-            {/*<Row>
+            {/* <Row>
               <Col xs={12}>
                 <Field name="gas"
                        component={TextField}
@@ -232,7 +245,7 @@ const Render = (props) => {
             <Row top="xs">
               <Col xs={3} style={formStyle.label} />
               <Col xs={3} style={formStyle.group}>
-                <FlatButton label={`Send ${value && value.getEther(2).toString() } ETC`}
+                <FlatButton label={`Send ${value && value.getEther(2).toString()} ETC`}
                             disabled={ pristine || submitting || invalid }
                             onClick={handleSubmit}
                             style={formStyle.submitButton}
@@ -240,13 +253,13 @@ const Render = (props) => {
                              />
                 <br />
               </Col>
-              <Col xs={3} style={formStyle.group}>                             
+              <Col xs={3} style={formStyle.group}>
                 <FlatButton label="Cancel"
                             onClick={cancel}
                             style={formStyle.cancelButton}
-                            backgroundColor="#DDD" />                     
-              </Col>              
-            </Row>         
+                            backgroundColor="#DDD" />
+              </Col>
+            </Row>
           </Col>
 
           <Col xs={12} md={4}>

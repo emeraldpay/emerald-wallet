@@ -50,8 +50,10 @@ export const grayBackground = {
 };
 
 export const cardStyle = {
-    paddingTop: '100px',
+    paddingTop: '50px',
     paddingBottom: '100px',
+    backgroundColor: 'white',
+    marginTop: '20px',
 };
 
 export const formStyle = { 

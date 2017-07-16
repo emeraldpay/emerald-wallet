@@ -70,13 +70,13 @@ class AccountRender extends React.Component {
         const value = account.get('balance') ? account.get('balance').getEther() : '?';
         const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
 
-        return (
+        const AccountDetails = (
             <Grid style={cardStyle}>
-              <CardHeadEmerald 
-                backLabel='DASHBOARD'
-                title='Wallet'
-                cancel={goBack}
-              />
+                <CardHeadEmerald
+                    backLabel='DASHBOARD'
+                    title='Wallet'
+                    cancel={goBack}
+                />
                 <Row top="xs">
                     <Col xs={12} md={8}>
                         <Row middle="xs">
@@ -102,7 +102,7 @@ class AccountRender extends React.Component {
                                     address={account}
                                     submit={this.handleSave}
                                     cancel={this.cancelEdit}
-                                 />}
+                                />}
                             </Col>
                         </Row>
                         <Row>
@@ -113,8 +113,8 @@ class AccountRender extends React.Component {
                                     style={{height: '60px', padding: '20px'}}
                                     iconButtonElement={<IconButton><MoreHorizIcon /></IconButton>}
                                 >
-                                  <ExportAccountButton account={account} />
-                                  <PrintAccountButton account={account} />
+                                    <ExportAccountButton account={account} />
+                                    <PrintAccountButton account={account} />
                                 </IconMenu>
                             </Col>
                         </Row>
@@ -123,10 +123,20 @@ class AccountRender extends React.Component {
                         <QRCode value={account.get('id')} />
                     </Col>
                 </Row>
-            <Row>
-                <TransactionsList transactions={transactions}/>
-            </Row>
-        </Grid>
+            </Grid>
+        );
+
+        return (
+            <Grid>
+                <Row>
+                    <Col>{AccountDetails}</Col>
+                </Row>
+                <Row>
+                    <Col>
+                        <TransactionsList transactions={transactions}/>
+                    </Col>
+                </Row>
+            </Grid>
         );
     }
 }

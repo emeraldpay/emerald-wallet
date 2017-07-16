@@ -21,6 +21,7 @@ import AddContract from './contracts/add';
 import DeployContract from './contracts/deploy';
 import ContractShow from './contracts/show';
 import Welcome from './welcome/welcome';
+import Dashboard from './layout/dashboard';
 
 const Render = ({ screen, screenItem }) => {
     log.debug('screen', screen);
@@ -31,11 +32,7 @@ const Render = ({ screen, screenItem }) => {
         </div>;
     } else if (screen === 'home') {
         return (
-            <div>
-                <AccountsList/>
-                {/* #hidden#146 <TokensList/> */}
-                <TransactionsList/>
-            </div>
+            <Dashboard />
         );
     } else if (screen === 'contracts') {
         return (

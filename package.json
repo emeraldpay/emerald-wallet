@@ -79,7 +79,7 @@
     "isomorphic-fetch": "^2.2.1",
     "kbpgp": "2.0.72",
     "lib": "^2.2.5",
-    "material-ui": "^0.16.6",
+    "material-ui": "^0.18.6",
     "moment": "2.17.1",
     "object-assign": "^4.1.1",
     "prop-types": "^15.4.2",
@@ -101,7 +101,8 @@
     "redux-thunk": "2.2.0",
     "roboto-fontface": "0.7.0",
     "store": "^2.0.4",
-    "ledgerco": "1.1.3"
+    "ledgerco": "1.1.3",
+    "typeface-poppins": "0.0.31"
   },
   "devDependencies": {
     "@elastic/webpack-directory-name-as-main": "2.0.2",
