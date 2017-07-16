@@ -11,8 +11,9 @@ import { List, ListItem } from 'material-ui/List';
 import { cardSpace } from 'lib/styles';
 import { translate } from 'react-i18next';
 import { gotoScreen } from 'store/screenActions';
+import { watchConnection } from 'store/ledgerActions';
 
-const Render = translate("accounts")(({ t, handleSubmit, submitting, generate, importJson, cancel }) => (
+const Render = translate("accounts")(({ t, handleSubmit, submitting, generate, importJson, importLedger, cancel }) => (
     <Card style={cardSpace}>
         <CardHeader
             title={t("add.title")}
@@ -22,6 +23,12 @@ const Render = translate("accounts")(({ t, handleSubmit, submitting, generate, i
 
         <CardText expandable={false}>
             <List>
+                <ListItem
+                    primaryText="Ledger Nano S"
+                    secondaryText="Use Ledger hardware key to manage signatures"
+                    onClick={importLedger}
+                    leftIcon={<FontIcon className="fa fa-usb"/>}
+                />
                 <ListItem
                     primaryText={t("add.generate.title")}
                     secondaryText={t("add.generate.subtitle")}
@@ -75,6 +82,10 @@ const CreateAccount = connect(
         importJson: () => {
             dispatch(gotoScreen('importjson'));
         },
+        importLedger: () => {
+            dispatch(gotoScreen('add-from-ledger'));
+            dispatch(watchConnection());
+        }
     })
 )(CreateAccountForm);
 

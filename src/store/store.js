@@ -12,7 +12,6 @@ import { loadAccountsList, refreshTrackedTransactions, loadPendingTransactions,
 import { loadSyncing, loadHeight, loadPeerCount } from './networkActions';
 import { gotoScreen } from './screenActions';
 import { readConfig, listenElectron, connecting } from './launcherActions';
-import { getAddresses } from './ledgerActions';
 
 import accountsReducers from './accountReducers';
 import addressReducers from './addressReducers';
