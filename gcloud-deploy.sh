@@ -8,4 +8,4 @@ do
 done
 
 # Will use $GCP_PASSWD to decrypt encrypted json key
-janus deploy -to builds.etcdevteam.com/emerald-wallet/preview -files deploy/* -key gcloud-travis.json.enc
+janus deploy -to="builds.etcdevteam.com/emerald-wallet/$(janus version -format='v%M.%m.x')" -files="./deploy/*" -key="./gcloud-travis.json.enc"
