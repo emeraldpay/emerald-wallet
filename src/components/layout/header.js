@@ -8,11 +8,7 @@ import Total from './total';
 import { gotoScreen } from '../../store/screenActions';
 
 const Render = ({openSettings}) => {
-    const style = {
-        paddingTop: '20px',
-        paddingBottom: '20px',
-        cardSpace,
-    };
+
     const titleStyle = {
         color: '#191919',
         fontSize: '17px',
@@ -31,10 +27,10 @@ const Render = ({openSettings}) => {
                     <Total/>
                 </div>
                 <div style={{display: 'flex'}}>
-                    <Status/>
-                    <IconButton onTouchTap={openSettings}>
-                        <FontIcon className="fa fa-cog"/>
-                    </IconButton>
+                    <Status />
+                        <IconButton onTouchTap={openSettings}>
+                            <FontIcon className="fa fa-cog"/>
+                        </IconButton>
                 </div>
             </div>
         </div>
