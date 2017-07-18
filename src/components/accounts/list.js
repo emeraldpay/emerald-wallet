@@ -12,8 +12,9 @@ import Immutable from 'immutable';
 import { translate } from 'react-i18next';
 import { gotoScreen } from 'store/screenActions';
 import Account from './account';
-
+import { watchConnection } from 'store/ledgerActions';
 import {Menu, MenuItem, Popover} from 'material-ui';
+import { List, ListItem } from 'material-ui/List';
 
 class WalletsTokensButton extends React.Component {
 
@@ -42,7 +43,7 @@ class WalletsTokensButton extends React.Component {
     };
 
     render() {
-        const {createAccount, t, style} = this.props;
+        const {generate, importJson, importLedger, t, style} = this.props;
 
         return (
 
@@ -64,14 +65,33 @@ class WalletsTokensButton extends React.Component {
                     targetOrigin={{horizontal: 'left', vertical: 'top'}}
                     onRequestClose={this.handleRequestClose}
                 >
-                        <MenuItem primaryText={t('list.create')} onClick={createAccount} />
+                    <List>
+                    <ListItem
+                        primaryText="Ledger Nano S"
+                        secondaryText="Use Ledger hardware key to manage signatures"
+                        onClick={importLedger}
+                        leftIcon={<FontIcon className="fa fa-usb"/>}
+                    />
+                    <ListItem
+                        primaryText={t("add.generate.title")}
+                        secondaryText={t("add.generate.subtitle")}
+                        onClick={generate}
+                        leftIcon={<FontIcon className="fa fa-random"/>}
+                    />
+                    <ListItem
+                        primaryText={t("add.import.title")}
+                        secondaryText={t("add.import.subtitle")}
+                        onClick={importJson}
+                        leftIcon={<FontIcon className="fa fa-code"/>}
+                    />
+                    </List>
                 </Popover>
             </div>
         );
     }
 }
 
-const Render = translate('accounts')(({ t, accounts, createAccount, connecting }) => {
+const Render = translate('accounts')(({ t, accounts, generate, importJson, importLedger, connecting }) => {
 
     if (connecting) {
         return (
@@ -103,7 +123,9 @@ const Render = translate('accounts')(({ t, accounts, createAccount, connecting }
             <div style={{display: 'flex', justifyContent:'space-between', alignItems: 'center'}}>
                 <div><span>{t('list.title')}</span></div>
                 <WalletsTokensButton
-                    createAccount={createAccount}
+                    generate={generate}
+                    importJson={importJson}
+                    importLedger={importLedger}
                     t={t}
                 />
             </div>
@@ -130,9 +152,17 @@ const AccountsList = connect(
         connecting: state.launcher.get('connecting')
     }),
     (dispatch, ownProps) => ({
-        createAccount: () => {
-            dispatch(gotoScreen('create-account'));
+        generate: () => {
+            dispatch(gotoScreen('generate'));
         },
+        importJson: () => {
+            dispatch(gotoScreen('importjson'));
+        },
+        importLedger: () => {
+            dispatch(gotoScreen('add-from-ledger'));
+            dispatch(watchConnection());
+        }
+
     })
 )(Render);
 
