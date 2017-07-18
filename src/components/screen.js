@@ -12,7 +12,6 @@ import TransactionShow from './tx/show';
 import TransactionsList from './tx/list';
 // import TokensList from './tokens/list';
 import AddToken from './tokens/add';
-import CreateAccount from './accounts/add/add';
 import GenerateAccount from './accounts/add/generate';
 import LedgerImport from './accounts/add/ledger/select';
 import ImportAccount from './accounts/add/importjson';
@@ -57,8 +56,6 @@ const Render = ({ screen, screenItem }) => {
         return <TransactionShow hash={screenItem.hash} accountId={screenItem.from}/>;
     } else if (screen === 'create-tx') {
         return <CreateTx account={screenItem}/>;
-    } else if (screen === 'create-account') {
-        return <CreateAccount />;
     } else if (screen === 'generate') {
         return <GenerateAccount />;
     } else if (screen === 'importjson') {
