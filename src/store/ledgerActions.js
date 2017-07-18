@@ -96,7 +96,8 @@ export function watchConnection() {
             start()
         };
         start = () => {
-            if (getState().screen.get('screen') === 'add-from-ledger') {
+            let screen = getState().screen.get('screen');
+            if (screen === 'add-from-ledger' || screen === 'create-tx') {
                 setTimeout(fn, 1000)
             }
         };

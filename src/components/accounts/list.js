@@ -160,7 +160,6 @@ const AccountsList = connect(
         },
         importLedger: () => {
             dispatch(gotoScreen('add-from-ledger'));
-            dispatch(watchConnection());
         }
 
     })

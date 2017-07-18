@@ -12,6 +12,7 @@ import { cardStyle, formStyle } from 'lib/styles';
 import { red200 } from 'material-ui/styles/colors';
 import { positive, number, required, address } from 'lib/validators';
 import IdentityIcon from '../accounts/identityIcon';
+import FontIcon from 'material-ui/FontIcon';
 
 const textEtc = {
     fontSize: '20px',
@@ -74,6 +75,39 @@ const Render = (props) => {
     const { addressBook, handleSelect, tokens, token, isToken, onChangeToken, onChangeAccount } = props;
     const { fiatRate, value, fromAddr, onEntireBalance } = props;
     const { error, cancel } = props;
+    const { useLedger, ledgerConnected } = props;
+
+    let sendDisabled = pristine || submitting || invalid || (useLedger && !ledgerConnected);
+    let sendButton =  <FlatButton label={`Send ${value && value.getEther(2).toString()} ETC`}
+                              disabled={sendDisabled}
+                              onClick={handleSubmit}
+                              style={formStyle.submitButton}
+                              backgroundColor={sendDisabled ? "#CBDBCC" : "#47B04B"}/>;
+    let sendMessage = null;
+    if (useLedger && !ledgerConnected) {
+        sendMessage = <span style={formStyle.helpText}>
+            Make sure Ledger Nano is connected &amp; Browser Mode is switched off.
+        </span>
+    }
+
+    let passwordField = null;
+    if (!useLedger) {
+        passwordField = <Row middle="xs">
+            <Col xs={2} xsOffset={1} style={formStyle.label}>
+                Password
+            </Col>
+            <Col xs={8} style={formStyle.group}>
+                <Field name="password"
+                       style={formStyle.input}
+                       type="password"
+                       component={TextField}
+                       underlineShow={false}
+                       fullWidth={true}
+                       validate={required}>
+                </Field>
+            </Col>
+        </Row>
+    }
 
     return (
     <Grid style={cardStyle}>
@@ -118,21 +152,7 @@ const Render = (props) => {
                 </Field>
               </Col>
             </Row>
-            <Row middle="xs">
-              <Col xs={2} xsOffset={1} style={formStyle.label}>
-                Password
-              </Col>
-              <Col xs={8} style={formStyle.group}>
-                <Field name="password"
-                       style={formStyle.input}
-                       type="password"
-                       component={TextField}
-                       underlineShow={false}
-                       fullWidth={true}
-                       validate={required}>
-                </Field>
-              </Col>
-            </Row>
+            {passwordField}
             <Row middle="xs">
               <Col xs={2} xsOffset={1} style={formStyle.label}>
                 To
@@ -245,12 +265,7 @@ const Render = (props) => {
             <Row top="xs">
               <Col xs={3} style={formStyle.label} />
               <Col xs={3} style={formStyle.group}>
-                <FlatButton label={`Send ${value && value.getEther(2).toString()} ETC`}
-                            disabled={ pristine || submitting || invalid }
-                            onClick={handleSubmit}
-                            style={formStyle.submitButton}
-                            backgroundColor="#47B04B"
-                             />
+                  {sendButton}
                 <br />
               </Col>
               <Col xs={3} style={formStyle.group}>
@@ -259,6 +274,10 @@ const Render = (props) => {
                             style={formStyle.cancelButton}
                             backgroundColor="#DDD" />
               </Col>
+            </Row>
+            <Row top="xs">
+                <Col xs={3} style={formStyle.label} />
+                <Col xs={6}>{sendMessage}</Col>
             </Row>
           </Col>
 

@@ -79,6 +79,8 @@ const CreateTx = connect(
         const fiatRate = state.accounts.get('localeRate');
         const value = (selector(state, 'value')) ? selector(state, 'value') : 0;
         const fromAddr = (selector(state, 'from'));
+        const useLedger = ownProps.account.get('hardware_wallet', false);
+        const ledgerConnected = state.ledger.get('connected');
 
         return {
             initialValues: {
@@ -97,6 +99,7 @@ const CreateTx = connect(
             value: new Wei(etherToWei(value)),
             balance: selector(state, 'balance'),
             fromAddr,
+            useLedger, ledgerConnected
         };
     },
     (dispatch, ownProps) => ({

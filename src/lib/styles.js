@@ -99,4 +99,8 @@ export const formStyle = {
         borderRadius: '1px',
         width: '100%',
     },
+    helpText: {
+        fontSize: '12px',
+        color: '#779'
+    }
 }

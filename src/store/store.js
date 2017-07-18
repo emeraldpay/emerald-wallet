@@ -12,6 +12,7 @@ import { loadAccountsList, refreshTrackedTransactions, loadPendingTransactions,
 import { loadSyncing, loadHeight, loadPeerCount } from './networkActions';
 import { gotoScreen } from './screenActions';
 import { readConfig, listenElectron, connecting } from './launcherActions';
+import { watchConnection as waitLedger} from './ledgerActions';
 
 import accountsReducers from './accountReducers';
 import addressReducers from './addressReducers';
@@ -152,4 +153,20 @@ export function waitForServicesRestart() {
     });
 }
 
+export function screenHandlers() {
+    let prevScreen = null;
+    const unsubscribe = store.subscribe(() => {
+        const state = store.getState();
+        const screen = state.screen.get('screen');
+        const justOpened = prevScreen !== screen;
+        prevScreen = screen;
+        if (justOpened) {
+            if (screen === 'create-tx' || screen === 'add-from-ledger') {
+                store.dispatch(waitLedger())
+            }
+        }
+    });
+}
+
 waitForServices();
+screenHandlers();
