@@ -6,11 +6,13 @@ import KeyboardArrowLeft from 'material-ui/svg-icons/hardware/keyboard-arrow-lef
 import { FlatButton, MenuItem } from 'material-ui';
 import { gotoScreen } from '../store/screenActions';
 import { formStyle } from '../lib/styles';
+import i18n from '../i18n';
+import { translate } from 'react-i18next';
 
 class SettingsRender extends React.Component {
 
     render() {
-        const {goDashboard} = this.props;
+        const {goDashboard, changeLanguage, t} = this.props;
 
         const styles = {
             fieldName: {
@@ -112,12 +114,13 @@ class SettingsRender extends React.Component {
                     <div id="row" style={styles.formRow}>
                         <div style={styles.left}>
                             <div style={styles.fieldName}>
-                                Language
+                                {t('lang')}
                             </div>
                         </div>
                         <div style={styles.right}>
                             <Field name="language"
                                    component={SelectField}
+                                   onChange={(event, val) => changeLanguage(val)}
                                    underlineShow={false}
                                    style={formStyle.input}
                                    fullWidth={true}>
@@ -125,6 +128,11 @@ class SettingsRender extends React.Component {
                                           value="en"
                                           label="English"
                                           primaryText="English" />
+
+                                <MenuItem key="cn"
+                                          value="cn"
+                                          label="cn"
+                                          primaryText="cn" />
                             </Field>
                         </div>
                     </div>
@@ -150,20 +158,27 @@ class SettingsRender extends React.Component {
 }
 
 
-const SettingsForm = reduxForm({
+const SettingsForm = translate('settings')(reduxForm({
     form: 'settings',
     fields: ['language'],
-})(SettingsRender);
+})(SettingsRender));
 
 const Settings = connect(
     (state, ownProps) => {
-
+        return {
+            initialValues: {
+                language: i18n.language
+            },
+        };
     },
     (dispatch, ownProps) => ({
         goDashboard: () => {
             dispatch(gotoScreen('home'));
         },
 
+        changeLanguage: (lng) => {
+            i18n.changeLanguage(lng);
+        },
     })
 )(SettingsForm);
 
