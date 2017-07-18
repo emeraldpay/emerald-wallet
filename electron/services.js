@@ -63,6 +63,7 @@ export class Services {
         this.connectorStatus = STATUS.NOT_STARTED;
         this.gethStatus = STATUS.NOT_STARTED;
         this.notify = new UserNotify(webContents);
+        log.info(`Run services from ${getBinDir()}`)
     }
 
     useSettings(settings) {
