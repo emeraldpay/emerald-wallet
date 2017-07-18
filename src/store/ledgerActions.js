@@ -139,17 +139,20 @@ export function importSelected() {
         selected.map((index, i) => {
             let addr = addresses.get(index);
             let data = {
-                type: 'ledger',
-                hdpath: addr.get('hdpath'),
-                address: addr.get('address')
+                address: addr.get('address'),
+                crypto: {
+                    cipher: "hardware",
+                    type: "ledger-nano-s:v1",
+                    hd: addr.get('hdpath')
+                }
             };
             let open = i === 0;
             log.info("Import Ledger addr", data);
-            // rpc.call('emerald_importAccount', [data]).then(() => {
-            //     if (open) {
-            //         dispatch(gotoScreen('account', Immutable.fromJS({id: addr.get('address')})));
-            //     }
-            // });
+            rpc.call('emerald_importAccount', [data]).then(() => {
+                if (open) {
+                    dispatch(gotoScreen('account', Immutable.fromJS({id: addr.get('address')})));
+                }
+            });
         })
     }
 }
