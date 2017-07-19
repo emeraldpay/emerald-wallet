@@ -100,14 +100,14 @@ const Render = translate('accounts')(({ t, accounts, createAccount, connecting }
 
     return (
         <div>
-            <div style={{display: 'flex', justifyContent:'space-between', alignItems: 'center'}}>
-                <div><span>{t('list.title')}</span></div>
+            <div style={{display: 'flex', justifyContent:'space-between', alignItems: 'center', marginTop: '10px', height: '66px'}}>
+                <div><span style={{fontSize: "14px", fontWeight: 500, color: "#191919"}}>{t('list.title')}</span></div>
                 <WalletsTokensButton
                     createAccount={createAccount}
                     t={t}
                 />
             </div>
-            <div style={{backgroundColor:'red'}}>
+            <div style={{}}>
                 <Card style={{...cardSpace, ...noShadow}}>
                     <CardText expandable={false}>
                         {table}
