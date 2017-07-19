@@ -81,7 +81,6 @@ class SettingsRender extends React.Component {
                                    style={formStyle.input}
                                    fullWidth={true}>
                                 <MenuItem key="mainnet"
-                                          style={formStyle.input}
                                           value="mainnet"
                                           label="Mainnet"
                                           primaryText="Mainnet" />

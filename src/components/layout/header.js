@@ -2,10 +2,11 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { align, cardSpace } from 'lib/styles';
 import {IconButton, FontIcon} from 'material-ui';
-import logo from 'images/etc_logo.png';
 import Status from './status/status';
 import Total from './total';
 import { gotoScreen } from '../../store/screenActions';
+import LogoIcon from './logoIcon';
+
 
 const Render = ({openSettings}) => {
 
@@ -23,7 +24,7 @@ const Render = ({openSettings}) => {
             <div style={{display: 'flex', justifyContent: 'space-between', margin: '0 auto', maxWidth: '1060px'}}>
                 <div style={{display: 'flex', alignItems: 'center'}}>
                     <div style={titleStyle}>EMERALD WALLET</div>
-                    <div><img src={logo} height={48}/></div>
+                    <div><LogoIcon /></div>
                     <Total/>
                 </div>
                 <div style={{display: 'flex'}}>
