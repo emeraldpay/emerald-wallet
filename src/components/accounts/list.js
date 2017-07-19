@@ -87,11 +87,9 @@ const Render = translate('accounts')(({ t, accounts, createAccount, connecting }
         );
     }
 
-    const table = <Table selectable={false}>
-        <TableBody displayRowCheckbox={false}>
-            {accounts.map((account) => <Account key={account.get('id')} account={account}/>)}
-        </TableBody>
-    </Table>;
+    const table = <div>
+        {accounts.map((account) => <Account key={account.get('id')} account={account}/>)}
+    </div>;
 
     const titleStyle = {
         fontSize: '20px',
@@ -108,11 +106,7 @@ const Render = translate('accounts')(({ t, accounts, createAccount, connecting }
                 />
             </div>
             <div style={{}}>
-                <Card style={{...cardSpace, ...noShadow}}>
-                    <CardText expandable={false}>
-                        {table}
-                    </CardText>
-                </Card>
+                {table}
             </div>
         </div>
     );
