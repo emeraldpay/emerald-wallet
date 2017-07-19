@@ -25,6 +25,10 @@ const Render = ({ transactions, sendTx, accounts, createAccount }) => {
             fontSize: '20px',
         },
         table: {
+        },
+        card: {
+            marginTop: '20px',
+            ...noShadow,
         }
     };
 
@@ -46,11 +50,10 @@ const Render = ({ transactions, sendTx, accounts, createAccount }) => {
     const titleAvatar = <Avatar icon={<FontIcon className="fa fa-dot-circle-o fa-2x" />} />;
 
     return (
-            <Card style={{...noShadow, ...cardSpace}}>
+            <Card style={styles.card}>
                 <CardHeader
-                    title="Transaction History"
+                    title="History"
                     titleStyle={styles.titleStyle}
-                    avatar={titleAvatar}
                     actAsExpander={false}
                     showExpandableButton={false}
                 />
