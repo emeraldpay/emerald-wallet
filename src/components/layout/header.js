@@ -5,9 +5,9 @@ import {IconButton, FontIcon} from 'material-ui';
 import logo from 'images/etc_logo.png';
 import Status from './status/status';
 import Total from './total';
+import { gotoScreen } from '../../store/screenActions';
 
-
-const Render = () => {
+const Render = ({openSettings}) => {
     const style = {
         paddingTop: '20px',
         paddingBottom: '20px',
@@ -32,7 +32,9 @@ const Render = () => {
                 </div>
                 <div style={{display: 'flex'}}>
                     <Status/>
-                    <IconButton><FontIcon className="fa fa-cog"></FontIcon></IconButton>
+                    <IconButton onTouchTap={openSettings}>
+                        <FontIcon className="fa fa-cog"/>
+                    </IconButton>
                 </div>
             </div>
         </div>
@@ -41,7 +43,11 @@ const Render = () => {
 
 const Header = connect(
     (state, ownProps) => ({}),
-    (dispatch, ownProps) => ({})
+    (dispatch, ownProps) => ({
+        openSettings: () => {
+            dispatch(gotoScreen('settings'));
+        },
+    })
 )(Render);
 
 export default Header;
