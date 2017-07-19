@@ -9,14 +9,13 @@ import { Card, CardHeader } from 'material-ui/Card';
 const Render = () => {
     const styles = {
         footerDiv: {
-            paddingTop: '40px',
-            paddingBottom: '40px',
+            padding: '32px 6px',
             cardSpace,
 
             display: 'flex',
             justifyContent: 'space-between',
-            margin: '0 auto',
-            maxWidth: '1100px',
+            margin: '0 16px',
+            maxWidth: '1060px',
         },
     };
 
@@ -25,7 +24,7 @@ const Render = () => {
             <div style={{color: 'limegreen'}}>
                 Alpha 0.3.0
             </div>
-            <div style={{color: 'gray', fontWeight: '300'}}>
+            <div style={{color: 'gray', fontWeight: '300', fontSize: '14px'}}>
                 <p style={{marginTop: 0}}>
                 Find an issue? Got a suggestion? <br/>
                 Please let us know on our <a  href='https://github.com/ethereumproject/emerald-wallet/issues'>

@@ -26,8 +26,9 @@ import ExportAccountButton from './export';
 import PrintAccountButton from './print';
 import { Wei } from 'lib/types';
 import { CardHeadEmerald } from 'elements/card';
-import { cardStyle, formStyle } from 'lib/styles';
+import { cardStyle, formStyle, noShadow } from 'lib/styles';
 import IdentityIcon from './identityIcon';
+import { Card, CardHeader, CardText } from 'material-ui/Card';
 
 const TokenRow = ({ token }) => {
     const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0';
@@ -51,7 +52,7 @@ class AccountRender extends React.Component {
 
     handleEdit = () => {
         this.setState({ edit: true });
-    }
+    };
 
     handleSave = (data) => {
         this.props.editAccount(data)
@@ -59,11 +60,11 @@ class AccountRender extends React.Component {
                 this.setState({ edit: false });
                 log.debug(result);
             })
-    }
+    };
 
     cancelEdit = () => {
         this.setState({ edit: false });
-    }
+    };
 
     render() {
         const { account, rates, goBack, transactions } = this.props;
@@ -71,7 +72,7 @@ class AccountRender extends React.Component {
         const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
 
         const AccountDetails = (
-            <Grid style={cardStyle}>
+            <Card id="shw-grid" style={{...cardStyle, ...noShadow}}>
                 <CardHeadEmerald
                     backLabel='DASHBOARD'
                     title='Wallet'
@@ -123,20 +124,20 @@ class AccountRender extends React.Component {
                         <QRCode value={account.get('id')} />
                     </Col>
                 </Row>
-            </Grid>
+            </Card>
         );
 
         return (
-            <Grid>
+            <div>
                 <Row>
-                    <Col>{AccountDetails}</Col>
+                    <Col xs>{AccountDetails}</Col>
                 </Row>
                 <Row>
-                    <Col>
+                    <Col xs>
                         <TransactionsList transactions={transactions}/>
                     </Col>
                 </Row>
-            </Grid>
+            </div>
         );
     }
 }

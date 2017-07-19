@@ -2,12 +2,14 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
+import { Card, CardHeader, CardText } from 'material-ui/Card';
+import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 
 import { AddressAvatar, AccountAddress } from 'elements/dl';
 import AccountSendButton from './sendButton';
 import { gotoScreen } from 'store/screenActions';
 import log from 'electron-log';
-import { align } from 'lib/styles';
+import { cardSpace, noShadow, align } from 'lib/styles';
 import AccountPopup from './popup';
 import AccountBalance from './balance';
 import { Wei } from 'lib/types';
@@ -16,32 +18,37 @@ import IdentityIcon from './identityIcon';
 
 const Render = ({ account, openAccount }) => {
     const styles = {
-        broadLightBottomBorder: {
-            borderBottom: '3px solid whitesmoke',
-        },
+        card: {
+            marginBottom: "6px",
+            ...noShadow
+        }
     };
 
     return (
-    <TableRow style={styles.broadLightBottomBorder} selectable={false} >
-        <TableRowColumn>
-            <div style={{display: 'flex'}}>
-                <IdentityIcon id={account.get('id')}/>
-                <AccountBalance balance={account.get('balance') || new Wei(0) } withAvatar={true} />
-            </div>
-        </TableRowColumn>
-        <TableRowColumn >
-            <AddressAvatar
-                secondary={<AccountAddress id={account.get('id')}/>}
-                tertiary={account.get('description')}
-                primary={account.get('name')}
-                onClick={openAccount}
-            />
-        </TableRowColumn>
-        <TableRowColumn style={align.right} >
-            <AccountPopup account={account}/>
-            <AccountSendButton account={account} />
-        </TableRowColumn>
-    </TableRow>);
+    <Card style={styles.card}>
+        <CardText>
+            <Row>
+                <Col xs={3}>
+                    <div style={{display: 'flex'}}>
+                        <IdentityIcon id={account.get('id')}/>
+                        <AccountBalance balance={account.get('balance') || new Wei(0) } withAvatar={true} />
+                    </div>
+                </Col>
+                <Col xs={6}>
+                    <AddressAvatar
+                        secondary={<AccountAddress id={account.get('id')}/>}
+                        tertiary={account.get('description')}
+                        primary={account.get('name')}
+                        onClick={openAccount}
+                    />
+                </Col>
+                <Col xs={3}>
+                    <AccountPopup account={account}/>
+                    <AccountSendButton account={account} />
+                </Col>
+            </Row>
+        </CardText>
+    </Card>);
 };
 
 Render.propTypes = {

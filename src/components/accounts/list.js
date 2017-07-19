@@ -87,11 +87,9 @@ const Render = translate('accounts')(({ t, accounts, createAccount, connecting }
         );
     }
 
-    const table = <Table selectable={false}>
-        <TableBody displayRowCheckbox={false}>
-            {accounts.map((account) => <Account key={account.get('id')} account={account}/>)}
-        </TableBody>
-    </Table>;
+    const table = <div>
+        {accounts.map((account) => <Account key={account.get('id')} account={account}/>)}
+    </div>;
 
     const titleStyle = {
         fontSize: '20px',
@@ -100,19 +98,15 @@ const Render = translate('accounts')(({ t, accounts, createAccount, connecting }
 
     return (
         <div>
-            <div style={{display: 'flex', justifyContent:'space-between', alignItems: 'center'}}>
-                <div><span>{t('list.title')}</span></div>
+            <div style={{display: 'flex', justifyContent:'space-between', alignItems: 'center', marginTop: '10px', height: '66px'}}>
+                <div><span style={{fontSize: "14px", fontWeight: 500, color: "#191919"}}>{t('list.title')}</span></div>
                 <WalletsTokensButton
                     createAccount={createAccount}
                     t={t}
                 />
             </div>
-            <div style={{backgroundColor:'red'}}>
-                <Card style={{...cardSpace, ...noShadow}}>
-                    <CardText expandable={false}>
-                        {table}
-                    </CardText>
-                </Card>
+            <div style={{}}>
+                {table}
             </div>
         </div>
     );
