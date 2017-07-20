@@ -9,12 +9,12 @@ export class LedgerApi {
             if (this.conn !== null) {
                 resolve(this)
             } else {
-                LedgerComm.create_async(2000, true).then((conn) => {
+                LedgerComm.create_async(5000, false).then((conn) => {
                     log.info("Connected to Ledger");
                     this.conn = new LedgerEth(conn);
                     resolve(this);
                 }).catch((err) => {
-                    log.warn("Failed to connect to Ledger", err);
+                    log.warn("Failed to connect to Ledger", err.message);
                     reject(err);
                 });
             }
