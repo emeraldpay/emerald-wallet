@@ -2,6 +2,7 @@ os: Previous Visual Studio 2015
 environment:
   GCP_PASSWD:
     secure: erzLJz7qT0kCJa+jZG6Sf9wwkfLYO2UDLzydkKTdwqA=
+platform: x64
 install:
   # Set up version from git tags.
   - git describe --tags --always > version.txt
