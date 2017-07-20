@@ -152,8 +152,13 @@ const AccountShow = connect(
     (state, ownProps) => {
 
         const accounts = state.accounts.get('accounts');
-        const pos = accounts.findKey((acc) => acc.get('id') === ownProps.account.get('id'));
-        const account = (accounts.get(pos) || Immutable.Map({}));
+        let account = ownProps.account;
+        const listPos = accounts.findKey((acc) => acc.get('id').toLowerCase() === account.get('id').toLowerCase());
+        if (listPos >= 0) {
+            account = accounts.get(listPos);
+        } else {
+            log.warn("Can't find account in general list of accounts", account.get('id'), listPos)
+        }
         let transactions = Immutable.List([]);
         if (account.get('id')) {
             transactions = state.accounts.get('trackedTransactions').filter((t) =>
@@ -161,7 +166,7 @@ const AccountShow = connect(
             )
         }
         const rates = state.accounts.get('rates');
-        const balance = ownProps.account.get('balance');
+        const balance = account.get('balance');
         let fiat = {};
         if (rates && balance) {
             fiat = {

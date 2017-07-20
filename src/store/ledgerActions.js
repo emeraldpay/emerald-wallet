@@ -3,6 +3,9 @@ import LedgerComm from 'ledgerco/src/ledger-comm-u2f';
 import log from 'electron-log';
 import { rpc } from 'lib/rpc';
 import { gotoScreen } from './screenActions';
+import uuid from 'uuid/v4';
+import Immutable from 'immutable';
+import { loadAccountsList } from './accountActions';
 
 function connection() {
     return new Promise((resolve, reject) => {
@@ -140,18 +143,25 @@ export function importSelected() {
         selected.map((index, i) => {
             let addr = addresses.get(index);
             let data = {
-                address: addr.get('address'),
+                version: 3,
+                id: uuid(),
+                name: `Ledger ${addr.get('hdpath')}`,
+                address: addr.get('address').substring(2),
                 crypto: {
                     cipher: "hardware",
-                    type: "ledger-nano-s:v1",
-                    hd: addr.get('hdpath')
+                    hardware: "ledger-nano-s:v1",
+                    hd_path: addr.get('hdpath')
                 }
             };
             let open = i === 0;
             log.info("Import Ledger addr", data);
             rpc.call('emerald_importAccount', [data]).then(() => {
+                dispatch(loadAccountsList());
                 if (open) {
-                    dispatch(gotoScreen('account', Immutable.fromJS({id: addr.get('address')})));
+                    dispatch(gotoScreen('account', Immutable.fromJS({
+                        id: addr.get('address'), //FIXME sometimes it's ID sometimes ADDRESS
+                        name: data.name,
+                    })));
                 }
             });
         })
