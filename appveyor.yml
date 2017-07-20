@@ -3,7 +3,7 @@ environment:
   GCP_PASSWD:
     secure: erzLJz7qT0kCJa+jZG6Sf9wwkfLYO2UDLzydkKTdwqA=
   matrix:
-    - nodejs_version: 6
+    - nodejs_version: "6"
 install:
   # Set up version from git tags.
   - git describe --tags --always > version.txt
