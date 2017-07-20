@@ -12,7 +12,7 @@ import { loadAccountsList, refreshTrackedTransactions, loadPendingTransactions,
 import { loadSyncing, loadHeight, loadPeerCount } from './networkActions';
 import { gotoScreen } from './screenActions';
 import { readConfig, listenElectron, connecting } from './launcherActions';
-import { watchConnection as waitLedger} from './ledgerActions';
+import { watchConnection as waitLedger, setBaseHD } from './ledgerActions';
 
 import accountsReducers from './accountReducers';
 import addressReducers from './addressReducers';
@@ -96,6 +96,15 @@ export function startSync() {
     store.dispatch(loadHeight());
 
     const state = store.getState();
+
+    if (state.network.getIn(['chain', 'name']) === 'mainnet') {
+        store.dispatch(setBaseHD("44'/61'/0'/0"))
+    } else if (state.network.getIn(['chain', 'name']) === 'morden') {
+        //FIXME ledger throws "Invalid status 6804" for 44'/62'/0'/0
+        store.dispatch(setBaseHD("44'/61'/1'/0"))
+    }
+    
+
     if (state.launcher.getIn(['chain', 'rpc']) !== 'remote-auto') {
         // check for syncing
         setTimeout(() => store.dispatch(loadSyncing()), intervalRates.second); // prod: intervalRates.second

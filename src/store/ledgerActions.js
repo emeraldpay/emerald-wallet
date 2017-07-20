@@ -135,6 +135,13 @@ export function selectRows(indexes) {
     }
 }
 
+export function setBaseHD(hdpath) {
+    return {
+        type: 'LEDGER/SET_BASEHD',
+        value: hdpath
+    }
+}
+
 export function importSelected() {
     return (dispatch, getState) => {
         let ledger = getState().ledger;
