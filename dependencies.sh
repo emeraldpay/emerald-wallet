@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 # Get cargo.
 if command -v cargo 2>/dev/null; then
     # Have cargo already.

@@ -25,8 +25,8 @@ class AccountBalanceRender extends React.Component {
             },
             main: {
                 lineHeight: '24px',
-                fontSize: '20px',
-                fontWeight: 500,
+                fontSize: '16px',
+                color: '#191919',
             },
             fiat: {
                 color: '#191919',

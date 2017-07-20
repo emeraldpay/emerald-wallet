@@ -1,11 +1,7 @@
-os: Visual Studio 2015
-cache:
-  - node_modules
+os: Previous Visual Studio 2015
 environment:
   GCP_PASSWD:
     secure: erzLJz7qT0kCJa+jZG6Sf9wwkfLYO2UDLzydkKTdwqA=
-  matrix:
-    - nodejs_version: 6
 install:
   # Set up version from git tags.
   - git describe --tags --always > version.txt
@@ -18,7 +14,7 @@ install:
   - set /p VERSION_BASE=<version-base.txt
   - echo %VERSION_BASE% %VERSION_ONLY% %VERSION%
   # Set up build dependencies.
-  - ps: Install-Product node $end:nodejs_version
+  - ps: Install-Product node 6 x64
   - set CI=true
   - npm install -g npm@latest windows-build-tools node-gyp node-pre-gyp
   - npm install node-pre-gyp
