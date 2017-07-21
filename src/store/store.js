@@ -75,6 +75,9 @@ export const store = createStore(
 
 function refreshAll() {
     store.dispatch(refreshTrackedTransactions());
+    store.dispatch(loadHeight());
+    store.dispatch(loadAccountsList());
+
     const state = store.getState();
     if (state.launcher.getIn(['chain', 'rpc']) === 'local') {
         store.dispatch(loadPeerCount());
@@ -88,12 +91,10 @@ function refreshLong() {
 }
 
 export function startSync() {
-    store.dispatch(loadAccountsList());
     store.dispatch(getGasPrice());
     // store.dispatch(loadAddressBook());
     // store.dispatch(loadTokenList());
     // store.dispatch(loadContractList());
-    store.dispatch(loadHeight());
 
     const state = store.getState();
 
@@ -103,7 +104,6 @@ export function startSync() {
         //FIXME ledger throws "Invalid status 6804" for 44'/62'/0'/0
         store.dispatch(setBaseHD("44'/61'/1'/0"))
     }
-    
 
     if (state.launcher.getIn(['chain', 'rpc']) !== 'remote-auto') {
         // check for syncing
@@ -112,6 +112,7 @@ export function startSync() {
         setTimeout(() => store.dispatch(loadSyncing()), 2 * intervalRates.minute); // prod: 30 * this.second
     }
     setTimeout(() => store.dispatch(loadPendingTransactions()), intervalRates.refreshAllTxRate);
+    refreshAll();
     setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
     setTimeout(refreshLong, 3 * intervalRates.second);
     store.dispatch(connecting(false));

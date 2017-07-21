@@ -75,14 +75,25 @@ function onLoading(state, action) {
 function onSetAccountsList(state, action) {
     switch (action.type) {
         case 'ACCOUNT/SET_LIST':
+            const existingAccounts = state.get('accounts');
+            function getExisting(id) {
+                const pos = existingAccounts.findKey((x) => x.get('id') === id);
+                if (pos >= 0) {
+                    return existingAccounts.get(pos)
+                }
+                return initialAddr;
+            }
+            const updatedList = Immutable.fromJS(action.accounts).map((acc) =>
+                Immutable.fromJS({
+                    name: acc.get('name'),
+                    description: acc.get('description'),
+                    id: acc.get('address')
+                })
+            ).map((acc) =>
+                getExisting(acc.get('id')).merge(acc)
+            );
             return state
-                .set('accounts', Immutable.fromJS(action.accounts.map((acc) =>
-                            initialAddr.set('name', acc.name)
-                                       .set('description', acc.description)
-                                       .set('id', acc.address)
-                        )
-                    )
-                )
+                .set('accounts', updatedList)
                 .set('loading', false);
         default:
             return state;
