@@ -1,10 +1,11 @@
 #!/usr/bin/env bash
 
-mkdir deploy
+set -e
 
-for f in $(ls dist/ | grep -e "dmg" -e "zip" -e "deb" -e "tar.gz" -e "exe" -e "msi");
-do
-  mv dist/$f deploy/
-done
+VERSION_BASE=$(janus version -format='v%M.%m.x')
+echo "Deploy to http://builds.etcdevteam.com/emerald-wallet/$VERSION_BASE/"
 
-node ./node_modules/gcloud-storage-upload/lib/index.js --path deploy/ --remotePath emerald-wallet/preview/
+janus deploy -to="builds.etcdevteam.com/emerald-wallet/$VERSION_BASE/" -files="./dist/*.zip" -key="./gcloud-travis.json.enc"
+janus deploy -to="builds.etcdevteam.com/emerald-wallet/$VERSION_BASE/" -files="./dist/*.dmg" -key="./gcloud-travis.json.enc"
+janus deploy -to="builds.etcdevteam.com/emerald-wallet/$VERSION_BASE/" -files="./dist/*.tar.gz" -key="./gcloud-travis.json.enc"
+janus deploy -to="builds.etcdevteam.com/emerald-wallet/$VERSION_BASE/" -files="./dist/*.deb" -key="./gcloud-travis.json.enc"
