@@ -16,12 +16,8 @@ fi
 # So developers don't have to worry about a PATH that's miles long
 # with repetitious cargo pathos.
 KARGO_PATH=~/.cargo/bin
-if [ -d "$KARGO_PATH" ] && [[ ":$PATH:" != *":$KARGO_PATH:"* ]]; then
-    export PATH="${PATH:+"$PATH:"}$KARGO_PATH"
-    echo "Added cargo to path..."
-else
-    echo "$KARGO_PATH already exists in path, not adding."
-fi
+export PATH="${PATH:+"$PATH:"}$KARGO_PATH"
+echo "Added cargo to path..."
 echo "PATH -> $PATH"
 
 # FIXME: until rustc v1.19 will be released, because of `target-feature` compiler flag, see below
