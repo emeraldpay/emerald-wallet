@@ -26,7 +26,13 @@ export class LedgerApi {
     }
 
     disconnect() {
-        this.conn = null;
+        return new Promise((resolve, reject) => {
+            if (this.conn) {
+                this.conn.comm.close_async();
+            }
+            this.conn = null;
+            resolve({})
+        })
     }
 
     getStatus() {

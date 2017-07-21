@@ -24,6 +24,20 @@ function connection() {
     })
 }
 
+export function closeConnection() {
+    return new Promise((resolve, reject) => {
+        if (typeof window.process !== 'undefined') {
+            const remote = global.require('electron').remote;
+            remote.getGlobal('ledger')
+                .disconnect()
+                .then(resolve)
+                .catch(reject);
+        } else {
+            resolve({})
+        }
+    })
+}
+
 function loadInfo(hdpath, addr) {
     return (dispatch) => {
         rpc.call('eth_getBalance', [addr, 'latest']).then((result) => {
