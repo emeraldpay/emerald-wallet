@@ -10,6 +10,8 @@ install:
   # Set up version from git tags.
   - ps: $env:VERSION_BASE = "$(janus.exe version -format='v%M.%m.x')"
   - ps: $env:VERSION = "$(janus.exe version -format='TAG_OR_NIGHTLY')"
+  # expected by Electron Builder config
+  - ps: $env:APP_VERSION_GIT_TAG="$(janus version -format TAG_OR_NIGHTLY)"
   - echo %VERSION_BASE% %VERSION%
   # Set up build dependencies.
   - ps: Install-Product node 6 x64
