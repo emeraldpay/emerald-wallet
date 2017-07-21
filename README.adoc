@@ -16,6 +16,7 @@ endif::[]
 
 
 ## Development instructions
+The supported version of `node` is `v6`. If you run into build errors, please make sure that you are using NodeV6 by running `node --version`.
 
 `package.json`: This is where scripts that get run when you use `npm run blah` get defined.
 It'll be helpful to have an idea of what's available and where the magic `npm run` commands
