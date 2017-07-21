@@ -10,15 +10,15 @@ else
     # No cargo yet.
     echo "Rusting up (non-interactively; accepting defaults)..."
     curl https://sh.rustup.rs -sSf | sh -s -- -y
-fi
 
-# Ensure cargo bin is added to PATH, but only if it's not already there.
-# So developers don't have to worry about a PATH that's miles long
-# with repetitious cargo pathos.
-KARGO_PATH=~/.cargo/bin
-export PATH="${PATH:+"$PATH:"}$KARGO_PATH"
-echo "Added cargo to path..."
-echo "PATH -> $PATH"
+    # Ensure cargo bin is added to PATH, but only if it's not already there.
+    # So developers don't have to worry about a PATH that's miles long
+    # with repetitious cargo pathos.
+    KARGO_PATH=~/.cargo/bin
+    export PATH="${PATH:+"$PATH:"}$KARGO_PATH"
+    echo "Added cargo to path..."
+    echo "PATH -> $PATH"
+fi
 
 # FIXME: until rustc v1.19 will be released, because of `target-feature` compiler flag, see below
 rustup install beta
