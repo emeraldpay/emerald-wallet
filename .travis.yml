@@ -42,6 +42,7 @@ before_script:
   # Install cargo and then `cargo install emerald` and move binary to project base.
   - bash ./dependencies.sh
 script:
+  - set C:\msys64\mingw64\bin;C:\msys64\usr\bin\;%PATH%
   # Install Janus
   - curl -sL https://raw.githubusercontent.com/ethereumproject/janus/master/get.sh | bash
   - export PATH=$PATH:$PWD/janusbin
