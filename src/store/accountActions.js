@@ -157,7 +157,6 @@ export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value)
     return (dispatch, getState) => {
         const chain = getState().network.getIn(['chain', 'name']);
         getNonce(accountId)
-            .then(incNonce)
             .then(withNonce(originalTx))
             .then((tx) =>
                 emeraldSign(tx, chain)
