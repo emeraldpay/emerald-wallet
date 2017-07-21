@@ -154,6 +154,7 @@ export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value)
         gasPrice,
         value,
     };
+    originalTx.passphrase = originalTx.passphrase || ""; //for HW key
     return (dispatch, getState) => {
         const chain = getState().network.getIn(['chain', 'name']);
         getNonce(accountId)
