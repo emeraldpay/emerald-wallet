@@ -3,22 +3,26 @@ environment:
   GCP_PASSWD:
     secure: erzLJz7qT0kCJa+jZG6Sf9wwkfLYO2UDLzydkKTdwqA=
 install:
+  - set PATH=C:\msys64\mingw64\bin;C:\msys64\usr\bin\;%PATH%
+  # Install janus.
+  - curl -sL https://raw.githubusercontent.com/ethereumproject/janus/master/get-windows.sh | bash
+  - set PATH=./janusbin;%PATH%
   # Set up version from git tags.
-  - git describe --tags --always > version.txt
-  - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+)-g([a-f0-9]+)/v\1.\2+\3/' version.txt > version-app.txt
-  - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+).+/v\1.\2/' version.txt > version-only.txt
-  - sed -E 's/v([[:digit:]]+\.[[:digit:]]+)\.[[:digit:]]-([[:digit:]]+).+/v\1.x/' version.txt > version-base.txt
-  - set /p VERSION=<version-app.txt
-  - set /p APP_VERSION_GIT_TAG=<version-app.txt
-  - set /p VERSION_ONLY=<version-only.txt
-  - set /p VERSION_BASE=<version-base.txt
-  - echo %VERSION_BASE% %VERSION_ONLY% %VERSION%
+  - ps: $env:VERSION_BASE = "$(janus.exe version -format='v%M.%m.x')"
+  - ps: $env:VERSION = "$(janus.exe version -format='TAG_OR_NIGHTLY')"
+  # expected by Electron Builder config
+  - ps: $env:APP_VERSION_GIT_TAG="$(janus version -format TAG_OR_NIGHTLY)"
+  - echo %VERSION_BASE% %VERSION%
   # Set up build dependencies.
   - ps: Install-Product node 6 x64
   - set CI=true
   - npm install -g npm@latest
   - set PATH=%APPDATA%\npm;%PATH%
   - npm install
+  - appveyor DownloadFile https://win.rustup.rs/ -FileName rustup-init.exe
+  - rustup-init -yv --default-toolchain beta --default-host x86_64-pc-windows-msvc
+  - set PATH=%PATH%;%USERPROFILE%\.cargo\bin
+  - rustup update
   - bash ./dependencies.sh
 build: off
 version: '{build}'
@@ -33,10 +37,9 @@ before_deploy:
   # Set up GCP upload.
   - nuget install secure-file -ExcludeVersion
   - secure-file\tools\secure-file -decrypt gcloud-appveyor.json.enc -secret %GCP_PASSWD% -out .gcloud.json
-  - dir
-  - npm install gcloud-storage-upload
 deploy_script:
   - ps: >-
       If ($env:APPVEYOR_REPO_BRANCH -eq 'master') {
-          bash ./gcloud-deploy.sh
+          echo "Deploy to http://builds.etcdevteam.com/emerald-wallet/$env:VERSION_BASE/"
+          janus.exe deploy -to="builds.etcdevteam.com/emerald-wallet/$env:VERSION_BASE/" -files="./dist/*.exe" -key="./.gcloud.json"
       }
