@@ -12,6 +12,7 @@ const Render = ({ block, progress, peerCount, showDetails, connecting }) => {
             lineHeight: '16px',
         },
         block: {
+            height: '100%',
             display: 'flex',
             alignItems: 'center',
         },
@@ -39,9 +40,7 @@ const Render = ({ block, progress, peerCount, showDetails, connecting }) => {
         <div>
             <div style={styles.block}>
                 {details}
-                <div>
-                    <NetworkSelector />
-                </div>
+                <NetworkSelector />
             </div>
             {showDetails && <div><LinearProgress mode="determinate" color="green" value={progress} /></div>}
         </div>
