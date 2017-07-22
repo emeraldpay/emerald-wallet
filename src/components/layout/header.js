@@ -2,17 +2,14 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { align, cardSpace } from 'lib/styles';
 import {IconButton, FontIcon} from 'material-ui';
-import logo from 'images/etc_logo.png';
 import Status from './status/status';
 import Total from './total';
+import { gotoScreen } from '../../store/screenActions';
+import LogoIcon from './logoIcon';
 
 
-const Render = () => {
-    const style = {
-        paddingTop: '20px',
-        paddingBottom: '20px',
-        cardSpace,
-    };
+const Render = ({openSettings}) => {
+
     const titleStyle = {
         color: '#191919',
         fontSize: '17px',
@@ -27,12 +24,14 @@ const Render = () => {
             <div style={{display: 'flex', justifyContent: 'space-between', margin: '0 auto', maxWidth: '1060px'}}>
                 <div style={{display: 'flex', alignItems: 'center'}}>
                     <div style={titleStyle}>EMERALD WALLET</div>
-                    <div><img src={logo} height={48}/></div>
+                    <div><LogoIcon /></div>
                     <Total/>
                 </div>
                 <div style={{display: 'flex'}}>
-                    <Status/>
-                    <IconButton><FontIcon className="fa fa-cog"></FontIcon></IconButton>
+                    <Status />
+                        <IconButton onTouchTap={openSettings}>
+                            <FontIcon className="fa fa-cog"/>
+                        </IconButton>
                 </div>
             </div>
         </div>
@@ -41,7 +40,11 @@ const Render = () => {
 
 const Header = connect(
     (state, ownProps) => ({}),
-    (dispatch, ownProps) => ({})
+    (dispatch, ownProps) => ({
+        openSettings: () => {
+            dispatch(gotoScreen('settings'));
+        },
+    })
 )(Render);
 
 export default Header;
