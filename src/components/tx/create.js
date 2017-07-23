@@ -5,8 +5,8 @@ import { change, formValueSelector, SubmissionError } from 'redux-form';
 import { connect } from 'react-redux';
 import { sendTransaction, trackTx } from 'store/accountActions';
 import { transferTokenTransaction, traceTokenTransaction, traceCall } from 'store/tokenActions';
-import { gotoScreen } from 'store/screenActions';
-import { closeConnection } from 'store/ledgerActions';
+import { gotoScreen, showDialog } from 'store/screenActions';
+import { closeConnection, setWatch } from 'store/ledgerActions';
 import { mweiToWei, etherToWei, toHex, estimateGasFromTrace } from 'lib/convert';
 import { Wei } from 'lib/types';
 import { address } from 'lib/validators';
@@ -80,7 +80,7 @@ const CreateTx = connect(
         const fiatRate = state.accounts.get('localeRate');
         const value = (selector(state, 'value')) ? selector(state, 'value') : 0;
         const fromAddr = (selector(state, 'from'));
-        const useLedger = ownProps.account.get('name', '').startsWith('ledger '); //FIXME!!!
+        const useLedger = ownProps.account.get('hardware', false);
         const ledgerConnected = state.ledger.get('connected');
 
         return {
@@ -106,6 +106,7 @@ const CreateTx = connect(
     (dispatch, ownProps) => ({
         onSubmit: (data) => {
             log.debug(data);
+            const useLedger = ownProps.account.get('hardware', false);
             traceValidate(data, dispatch)
                 .then((result) => {
                     if (data.token.length > 1) {
@@ -113,13 +114,17 @@ const CreateTx = connect(
                         return
                     }
                     log.debug("Send transaction");
-                    closeConnection().then(() =>
+                    dispatch(setWatch(false));
+                    closeConnection().then(() => {
+                        if (useLedger) {
+                            dispatch(showDialog('sign-transaction', data));
+                        }
                         dispatch(
                             sendTransaction(data.from, data.password, data.to,
                                 toHex(data.gas), toHex(mweiToWei(data.gasPrice)),
                                 toHex(etherToWei(data.value)))
-                        )
-                    );
+                        );
+                    });
                 })
                 .catch((err) => {
                     log.error("Validation failure", err);

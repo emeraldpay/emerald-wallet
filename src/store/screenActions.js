@@ -31,3 +31,19 @@ export function closeError() {
         message: null
     };
 }
+
+export function showDialog(name, item = null) {
+    return {
+        type: 'SCREEN/DIALOG',
+        value: name,
+        item: item
+    };
+}
+
+export function closeDialog() {
+    return {
+        type: 'SCREEN/DIALOG',
+        value: null,
+        item: null
+    };
+}

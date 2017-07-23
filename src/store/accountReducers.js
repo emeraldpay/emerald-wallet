@@ -15,6 +15,7 @@ const initial = Immutable.fromJS({
 
 const initialAddr = Immutable.Map({
     id: null,
+    hardware: false,
     balance: null,
     balancePending: null,
     tokens: [],
@@ -87,7 +88,8 @@ function onSetAccountsList(state, action) {
                 Immutable.fromJS({
                     name: acc.get('name'),
                     description: acc.get('description'),
-                    id: acc.get('address')
+                    id: acc.get('address'),
+                    hardware: acc.get('hardware')
                 })
             ).map((acc) =>
                 getExisting(acc.get('id')).merge(acc)

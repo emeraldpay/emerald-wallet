@@ -109,17 +109,29 @@ export function watchConnection() {
     return (dispatch, getState) => {
         let start = null;
         let fn = () => {
-            dispatch(checkConnected());
+            let state = getState();
+            let dialogDisplayed = state.screen.get(('dialog')) !== null;
+            if (!dialogDisplayed) {
+                dispatch(checkConnected());
+            }
             start()
         };
         start = () => {
-            let screen = getState().screen.get('screen');
-            if (screen === 'add-from-ledger' || screen === 'create-tx') {
+            let state = getState();
+            let watchEnabled = state.ledger.get('watch', false);
+            if (watchEnabled) {
                 setTimeout(fn, 1000)
             }
         };
         start();
     }
+}
+
+export function setWatch(value) {
+    return({
+        type: 'LEDGER/WATCH',
+        value
+    })
 }
 
 export function getAddresses(offset, count) {

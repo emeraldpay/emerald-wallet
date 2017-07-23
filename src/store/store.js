@@ -12,7 +12,7 @@ import { loadAccountsList, refreshTrackedTransactions, loadPendingTransactions,
 import { loadSyncing, loadHeight, loadPeerCount } from './networkActions';
 import { gotoScreen } from './screenActions';
 import { readConfig, listenElectron, connecting } from './launcherActions';
-import { watchConnection as waitLedger, setBaseHD } from './ledgerActions';
+import { watchConnection as waitLedger, setWatch, setBaseHD } from './ledgerActions';
 
 import accountsReducers from './accountReducers';
 import addressReducers from './addressReducers';
@@ -172,7 +172,10 @@ export function screenHandlers() {
         prevScreen = screen;
         if (justOpened) {
             if (screen === 'create-tx' || screen === 'add-from-ledger') {
+                store.dispatch(setWatch(true));
                 store.dispatch(waitLedger())
+            } else {
+                store.dispatch(setWatch(false));
             }
         }
     });
