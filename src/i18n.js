@@ -12,7 +12,7 @@ i18n
   // .use(Cache)
   .use(LanguageDetector)
   .init({
-    fallbackLng: 'ens',
+    fallbackLng: 'en',
 
     // have a common namespace used around the full app
     ns: ['common'],
