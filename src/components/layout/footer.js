@@ -14,7 +14,7 @@ const Render = () => {
 
             display: 'flex',
             justifyContent: 'space-between',
-            margin: '0 16px',
+            margin: '0 auto',
             maxWidth: '1060px',
         },
     };

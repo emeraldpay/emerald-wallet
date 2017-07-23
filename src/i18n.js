@@ -4,14 +4,15 @@ import XHR from 'i18next-xhr-backend';
 import LanguageDetector from 'i18next-browser-languagedetector';
 
 var resBundle = require(
-  "i18next-resource-store-loader!./locales/index.js"
+  "i18next-resource-store-loader!locales/index.js"
 );
+
 
 i18n
   // .use(Cache)
   .use(LanguageDetector)
   .init({
-    fallbackLng: 'en',
+    fallbackLng: 'ens',
 
     // have a common namespace used around the full app
     ns: ['common'],
