@@ -1,5 +1,6 @@
 import Immutable from 'immutable';
 import log from 'electron-log';
+import EthereumTx from 'ethereumjs-tx';
 import { rpc } from 'lib/rpc';
 import { getRates } from 'lib/marketApi';
 import { address } from 'lib/validators';
@@ -141,6 +142,24 @@ function incNonce(nonce) {
     });
 }
 
+function verifySender(expected) {
+    return (raw) =>
+        new Promise((resolve, reject) => {
+            let tx = new EthereumTx(raw);
+            if (tx.verifySignature()) {
+                if ('0x'+tx.getSenderAddress().toString('hex').toLowerCase() !== expected.toLowerCase()) {
+                    log.error(`WRONG SENDER: 0x${tx.getSenderAddress().toString('hex')} != ${expected}`);
+                    reject(new Error("Emerald Vault returned signature from wrong Sender"))
+                } else {
+                    resolve(raw)
+                }
+            } else {
+                log.error(`Invalid signature: ${raw}`);
+                reject(new Error("Emerald Vault returned invalid signature for the transaction"));
+            }
+        })
+}
+
 function emeraldSign(txData, chain) {
     return rpc.call('emerald_signTransaction', [txData, {chain}]);
 }
@@ -162,6 +181,7 @@ export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value)
             .then((tx) =>
                 emeraldSign(tx, chain)
                     .then(unwrap)
+                    .then(verifySender(accountId))
                     .then(sendRawTransaction)
                     .then(onTxSend(dispatch, tx))
                     .catch(catchError(dispatch))
