@@ -13,7 +13,7 @@ class AccountSendButtonRender extends React.Component {
             sendButton: {
                 height: '40px',
                 fontSize: '14px',
-                fontWeight: '500', 
+                fontWeight: '500',
                 borderRadius: '1px',
                 backgroundColor: '#EEE',
                 marginLeft: '10px',
