@@ -114,7 +114,6 @@ const Render = translate('accounts')(({ t, accounts, generate, importJson, impor
     const titleStyle = {
         fontSize: '20px',
     };
-    const titleAvatar = <Avatar icon={<FontIcon className="fa fa-address-book-o fa-2x" />} />;
 
     return (
         <div>

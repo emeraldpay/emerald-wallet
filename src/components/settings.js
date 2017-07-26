@@ -135,8 +135,6 @@ class SettingsRender extends React.Component {
                             </Field>
                         </div>
                     </div>
-
-
                     <div id="row" style={styles.formRow}>
                         <div style={styles.left}>
                         </div>
@@ -149,7 +147,6 @@ class SettingsRender extends React.Component {
                             </div>
                         </div>
                     </div>
-
                 </div>
             </div>
         );
