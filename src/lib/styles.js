@@ -64,7 +64,7 @@ export const formStyle = {
         textAlign: 'right',
     },
     label: {
-        color: '#747474', 
+        color: '#747474',
         fontSize: '18px',
         lineHeight: '24px',
         textAlign: 'right',
@@ -75,7 +75,7 @@ export const formStyle = {
     },
     input: {
         boxSizing: 'border-box',
-        height: '51px', 
+        height: '51px',
         border: '1px solid #DDDDDD',
         borderRadius: '1px',
         color: '#191919',
@@ -87,11 +87,11 @@ export const formStyle = {
     submitButton: {
         height: '40px',
         fontSize: '14px',
-        fontWeight: '500', 
+        fontWeight: '500',
         borderRadius: '1px',
         color: '#fff',
         width: '100%',
-    }, 
+    },
     cancelButton: {
         height: '40px',
         fontSize: '14px',

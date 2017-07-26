@@ -8,13 +8,11 @@ import { MenuItem, DropDownMenu } from 'material-ui';
 const styles = {
     main: {
         fontSize: '14px',
-        height: '57px', /* gagarin55: this is extremely important hack to align DropDownMenu vertically */
+        height: '58px', /* gagarin55: this is extremely important hack to align DropDownMenu vertically */
     },
     label: {
         color: '#747474',
         fontSize: '14px',
-        display: 'flex',
-        alignItems: 'center',
     },
 };
 

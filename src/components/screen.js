@@ -21,6 +21,7 @@ import DeployContract from './contracts/deploy';
 import ContractShow from './contracts/show';
 import Welcome from './welcome/welcome';
 import Dashboard from './layout/dashboard';
+import Settings from './settings';
 
 const Render = ({ screen, screenItem }) => {
     log.debug('screen', screen);
@@ -68,6 +69,8 @@ const Render = ({ screen, screenItem }) => {
         return <ContractShow contract={screenItem} />;
     } else if (screen === 'welcome') {
         return <Welcome />;
+    } else if (screen === 'settings') {
+        return <Settings />;
     }
 
     return (
