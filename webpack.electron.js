@@ -3,10 +3,9 @@ const webpack = require('webpack');
 
 const config = {
     target: 'electron-main',
-    externals: [
-        'electron-store',
-        'node-pre-gyp'
-    ],
+    externals: [{
+        'electron-store': 'electron-store',
+    }],
     entry: {
         main: path.join(__dirname, 'electron', 'main.js'),
     },
@@ -40,6 +39,8 @@ const config = {
         // http://andrewhfarmer.com/aws-sdk-with-webpack/
         noParse: [
             /aws\-sdk/,
+            /node\-gyp\/lib/,
+            /node\-pre\-gyp\/lib/
         ]
     },
 
