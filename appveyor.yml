@@ -16,8 +16,7 @@ install:
   # Set up build dependencies.
   - ps: Install-Product node 6 x64
   - set CI=true
-  - npm install -g npm@latest windows-build-tools node-gyp node-pre-gyp
-  - npm install node-pre-gyp
+  - npm install -g npm@latest windows-build-tools node-gyp node-pre-gyp aws-sdk
   - ps: $env:Path += ";$env:USERPROFILE\.windows-build-tools\python27"
   - set PATH=%APPDATA%\npm;%PATH%
   - npm install

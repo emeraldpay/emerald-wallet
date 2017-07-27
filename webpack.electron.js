@@ -31,6 +31,10 @@ const config = {
                 },
             },
         ],
+        // http://andrewhfarmer.com/aws-sdk-with-webpack/
+        noParse: [
+            /aws\-sdk/,
+        ]
     },
 
     output: {
