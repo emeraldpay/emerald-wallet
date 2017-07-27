@@ -3,9 +3,10 @@ const webpack = require('webpack');
 
 const config = {
     target: 'electron-main',
-    externals: [{
-        'electron-store': 'electron-store',
-    }],
+    externals: [
+        'electron-store',
+        'node-pre-gyp'
+    ],
     entry: {
         main: path.join(__dirname, 'electron', 'main.js'),
     },
@@ -23,12 +24,17 @@ const config = {
             {
                 test: /\.(js|jsx|es6)$/,
                 exclude: /(node_modules)/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ['es2015', 'react', 'stage-2'],
+                use: [
+                    {
+                        loader: 'shebang-loader',
                     },
-                },
+                    {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: ['es2015', 'react', 'stage-2'],
+                        },
+                    }
+                ]
             },
         ],
         // http://andrewhfarmer.com/aws-sdk-with-webpack/

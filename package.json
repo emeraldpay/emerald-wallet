@@ -150,7 +150,8 @@
     "url-loader": "0.5.7",
     "webpack": "2.6.1",
     "webpack-dev-server": "2.4.2",
-    "aws-sdk": "2.91.0"
+    "aws-sdk": "2.91.0",
+    "shebang-loader": "0.0.1"
   },
   "build": {
     "appId": "com.ethereumclassic.emeraldwallet",
