@@ -12,8 +12,8 @@ import TransactionShow from './tx/show';
 import TransactionsList from './tx/list';
 // import TokensList from './tokens/list';
 import AddToken from './tokens/add';
-import CreateAccount from './accounts/add/add';
 import GenerateAccount from './accounts/add/generate';
+import LedgerImport from './accounts/add/ledger/select';
 import ImportAccount from './accounts/add/importjson';
 import ContractsList from './contracts/list';
 import AddContract from './contracts/add';
@@ -49,14 +49,14 @@ const Render = ({ screen, screenItem }) => {
         );
     } else if (screen === 'add-address') {
         return <AddressAdd />;
+    } else if (screen === 'add-from-ledger') {
+        return <LedgerImport />;
     } else if (screen === 'account') {
         return <AccountShow account={screenItem}/>;
     } else if (screen === 'transaction') {
         return <TransactionShow hash={screenItem.hash} accountId={screenItem.from}/>;
     } else if (screen === 'create-tx') {
         return <CreateTx account={screenItem}/>;
-    } else if (screen === 'create-account') {
-        return <CreateAccount />;
     } else if (screen === 'generate') {
         return <GenerateAccount />;
     } else if (screen === 'importjson') {

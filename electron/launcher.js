@@ -169,7 +169,7 @@ export class LocalConnector {
 
     start() {
         return new Promise((resolve, reject) => {
-            const bin = path.join(this.bin, `emerald${suffix}`);
+            const bin = path.resolve(path.join(this.bin, `emerald${suffix}`));
             fs.access(bin, fs.constants.F_OK | fs.constants.R_OK | fs.constants.X_OK, (err) => {
                 if (err) {
                     log.error(`File ${bin} doesn't exist or app doesn't have execution flag`);

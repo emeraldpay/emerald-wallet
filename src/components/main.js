@@ -11,7 +11,7 @@ import Screen from './screen';
 import Header from './layout/header';
 import Footer from './layout/footer';
 import Error from './error';
-
+import Dialog from './dialog';
 
 const Render = translate('common')(({t, ...props}) => (
 <div>
@@ -21,7 +21,7 @@ const Render = translate('common')(({t, ...props}) => (
                 <Screen id="body"/>
             </div>
         </div>
-        <Error/>
+        <Error/><Dialog/>
     {props.screen !== 'welcome' && <Footer /> }
 </div>
 ));

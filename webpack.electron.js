@@ -23,14 +23,24 @@ const config = {
             {
                 test: /\.(js|jsx|es6)$/,
                 exclude: /(node_modules)/,
-                use: {
-                    loader: 'babel-loader',
-                    options: {
-                        presets: ['es2015', 'react', 'stage-2'],
+                use: [
+                    {
+                        loader: 'shebang-loader',
                     },
-                },
+                    {
+                        loader: 'babel-loader',
+                        options: {
+                            presets: ['es2015', 'react', 'stage-2'],
+                        },
+                    }
+                ]
             },
         ],
+        noParse: [
+            /aws\-sdk/,
+            /node\-gyp[\/\\]lib/,
+            /node\-pre\-gyp[\/\\]lib/
+        ]
     },
 
     output: {

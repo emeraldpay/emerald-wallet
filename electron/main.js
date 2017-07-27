@@ -4,6 +4,7 @@ import Store from 'electron-store';
 import { createWindow, mainWindow } from './mainWindow';
 import { RpcApi } from '../src/lib/rpcApi';
 import { Services } from './services';
+import { LedgerApi } from './ledger';
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
@@ -31,6 +32,7 @@ const settings = new Store({
 // This instance will be called from renderer process through remote.getGlobal("rpc")
 // In the future it is possible to replace rpc implementation
 global.rpc = new RpcApi();
+global.ledger = new LedgerApi();
 
 if (settings.get('rpcType') === 'remote-auto') {
     global.rpc.urlGeth = 'https://mewapi.epool.io';

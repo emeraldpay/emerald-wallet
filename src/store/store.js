@@ -12,6 +12,7 @@ import { loadAccountsList, refreshTrackedTransactions, loadPendingTransactions,
 import { loadSyncing, loadHeight, loadPeerCount } from './networkActions';
 import { gotoScreen } from './screenActions';
 import { readConfig, listenElectron, connecting } from './launcherActions';
+import { watchConnection as waitLedger, setWatch, setBaseHD } from './ledgerActions';
 
 import accountsReducers from './accountReducers';
 import addressReducers from './addressReducers';
@@ -20,6 +21,7 @@ import contractReducers from './contractReducers';
 import networkReducers from './networkReducers';
 import screenReducers from './screenReducers';
 import launcherReducers from './launcherReducers';
+import ledgerReducers from './ledgerReducers';
 
 const second = 1000;
 const minute = 60 * second;
@@ -43,6 +45,7 @@ const stateTransformer = (state) => ({
     screen: state.screen.toJS(),
     network: state.network.toJS(),
     launcher: state.launcher.toJS(),
+    ledger: state.ledger.toJS(),
     form: state.form,
 });
 
@@ -58,6 +61,7 @@ const reducers = {
     screen: screenReducers,
     network: networkReducers,
     launcher: launcherReducers,
+    ledger: ledgerReducers,
     form: formReducer,
 };
 
@@ -71,6 +75,9 @@ export const store = createStore(
 
 function refreshAll() {
     store.dispatch(refreshTrackedTransactions());
+    store.dispatch(loadHeight());
+    store.dispatch(loadAccountsList());
+
     const state = store.getState();
     if (state.launcher.getIn(['chain', 'rpc']) === 'local') {
         store.dispatch(loadPeerCount());
@@ -84,14 +91,20 @@ function refreshLong() {
 }
 
 export function startSync() {
-    store.dispatch(loadAccountsList());
     store.dispatch(getGasPrice());
     // store.dispatch(loadAddressBook());
     // store.dispatch(loadTokenList());
     // store.dispatch(loadContractList());
-    store.dispatch(loadHeight());
 
     const state = store.getState();
+
+    if (state.network.getIn(['chain', 'name']) === 'mainnet') {
+        store.dispatch(setBaseHD("44'/61'/0'/0"))
+    } else if (state.network.getIn(['chain', 'name']) === 'morden') {
+        //FIXME ledger throws "Invalid status 6804" for 44'/62'/0'/0
+        store.dispatch(setBaseHD("44'/61'/1'/0"))
+    }
+
     if (state.launcher.getIn(['chain', 'rpc']) !== 'remote-auto') {
         // check for syncing
         setTimeout(() => store.dispatch(loadSyncing()), intervalRates.second); // prod: intervalRates.second
@@ -99,6 +112,7 @@ export function startSync() {
         setTimeout(() => store.dispatch(loadSyncing()), 2 * intervalRates.minute); // prod: 30 * this.second
     }
     setTimeout(() => store.dispatch(loadPendingTransactions()), intervalRates.refreshAllTxRate);
+    refreshAll();
     setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
     setTimeout(refreshLong, 3 * intervalRates.second);
     store.dispatch(connecting(false));
@@ -149,4 +163,23 @@ export function waitForServicesRestart() {
     });
 }
 
+export function screenHandlers() {
+    let prevScreen = null;
+    const unsubscribe = store.subscribe(() => {
+        const state = store.getState();
+        const screen = state.screen.get('screen');
+        const justOpened = prevScreen !== screen;
+        prevScreen = screen;
+        if (justOpened) {
+            if (screen === 'create-tx' || screen === 'add-from-ledger') {
+                store.dispatch(setWatch(true));
+                store.dispatch(waitLedger())
+            } else {
+                store.dispatch(setWatch(false));
+            }
+        }
+    });
+}
+
 waitForServices();
+screenHandlers();

@@ -38,7 +38,7 @@ matrix:
 # before_install:
 before_script:
   # `npm install` is automatic
-  - npm install -g node-gyp license-checker
+  - npm install -g node-gyp node-pre-gyp license-checker aws-sdk
   # Install cargo and then `cargo install emerald` and move binary to project base.
   - bash ./dependencies.sh
 script:
@@ -65,6 +65,8 @@ addons:
     - ubuntu-toolchain-r-test
     packages:
     - g++-4.8
+    - libusb-1.0-0
+    - libusb-1.0-0-dev
     # - gcc-multilib
     # - g++-multilib
     # - gcc-4.8-multilib
