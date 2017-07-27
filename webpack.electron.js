@@ -36,11 +36,10 @@ const config = {
                 ]
             },
         ],
-        // http://andrewhfarmer.com/aws-sdk-with-webpack/
         noParse: [
             /aws\-sdk/,
-            /node\-gyp\/lib/,
-            /node\-pre\-gyp\/lib/
+            /node\-gyp[\/\\]lib/,
+            /node\-pre\-gyp[\/\\]lib/
         ]
     },
 
