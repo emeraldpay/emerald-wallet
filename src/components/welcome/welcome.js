@@ -11,11 +11,15 @@ import logo from 'images/etc_logo.png';
 
 const Render = ({ message, level, ready, needSetup }) => {
 
-    let messageStyle = {
-        color: "#999"
-    };
-    if (level === 3) {
-        messageStyle.color = "#f66";
+    let messageBlock = null;
+    if (message) {
+        let messageStyle = {
+            color: "#999"
+        };
+        if (level === 3) {
+            messageStyle.color = "#f66";
+        }
+        messageBlock = <span style={messageStyle}><i className="fa fa-spin fa-spinner"/> {message}</span>
     }
 
     let body = <div>
@@ -34,7 +38,7 @@ const Render = ({ message, level, ready, needSetup }) => {
         </Row>
         <Row center="xs" style={{paddingTop: "40px", height: "40px"}}>
             <Col xs>
-                <span style={messageStyle}><i className="fa fa-spin fa-spinner"/> {message}</span>
+                {messageBlock}
             </Col>
         </Row>
     </div>;
@@ -71,8 +75,8 @@ const Render = ({ message, level, ready, needSetup }) => {
 };
 
 Render.propTypes = {
-    message: PropTypes.string.isRequired,
-    level: PropTypes.number.isRequired,
+    message: PropTypes.string,
+    level: PropTypes.number,
     ready: PropTypes.bool.isRequired,
     needSetup: PropTypes.bool.isRequired,
 };
