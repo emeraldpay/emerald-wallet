@@ -135,8 +135,10 @@ const Render = translate('accounts')(({ t, accounts, generate, importJson, impor
 
 Render.propTypes = {
     accounts: PropTypes.object.isRequired,
-    createAccount: PropTypes.func.isRequired,
     connecting: PropTypes.bool.isRequired,
+    generate: PropTypes.func.isRequired,
+    importJson: PropTypes.func.isRequired,
+    importLedger: PropTypes.func.isRequired,
 };
 
 const AccountsList = connect(
