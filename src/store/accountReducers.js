@@ -202,6 +202,10 @@ function createTx(data) {
     return tx;
 }
 
+function isTracked(state, tx) {
+    return state.get('trackedTransactions').some((x) => tx.hash === x.hash)
+}
+
 function onLoadPending(state, action) {
     if (action.type === 'ACCOUNT/PENDING_TX') {
         const txes = [];
@@ -216,6 +220,9 @@ function onLoadPending(state, action) {
 function onTrackTx(state, action) {
     if (action.type === 'ACCOUNT/TRACK_TX') {
         const data = createTx(action.tx);
+        if (isTracked(state, data)) {
+            return state
+        }
         return state.update('trackedTransactions', (txes) => txes.push(data));
     }
     return state;
