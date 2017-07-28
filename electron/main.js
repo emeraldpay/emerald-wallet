@@ -1,10 +1,11 @@
-import {app, ipcMain } from 'electron';
-import log from 'electron-log';
-import Store from 'electron-store';
-import { createWindow, mainWindow } from './mainWindow';
-import { RpcApi } from '../src/lib/rpcApi';
-import { Services } from './services';
-import { LedgerApi } from './ledger';
+const electron = require('electron');
+const app = electron.app;
+const ipcMain = electron.ipcMain;
+const log = require('electron-log');
+const Store = require('electron-store');
+const mainWindow = require('./mainWindow');
+const Services = require('./services').Services;
+const LedgerApi = require('./ledger').LedgerApi;
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
@@ -31,7 +32,7 @@ const settings = new Store({
 
 // This instance will be called from renderer process through remote.getGlobal("rpc")
 // In the future it is possible to replace rpc implementation
-global.rpc = new RpcApi();
+global.rpc = null;// new RpcApi();
 global.ledger = new LedgerApi();
 
 if (settings.get('rpcType') === 'remote-auto') {
@@ -52,7 +53,7 @@ log.info("Settings: ", settings.store);
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
     log.info('Starting Emerald...');
-    const webContents = createWindow(isDev);
+    const webContents = mainWindow.createWindow(isDev);
 
     const services = new Services(webContents);
     services.useSettings(settings);
@@ -110,7 +111,7 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-    if (mainWindow === null) {
-        createWindow(isDev);
+    if (mainWindow.mainWindow === null) {
+        mainWindow.createWindow(isDev);
     }
 });

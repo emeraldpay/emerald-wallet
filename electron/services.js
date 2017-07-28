@@ -1,11 +1,13 @@
-import log from 'electron-log';
-import fs from 'fs';
-import path from 'path';
-import { app } from 'electron';
-import { LocalGeth, LocalConnector, NoneGeth, RemoteGeth } from './launcher';
-import { UserNotify } from './userNotify';
-import { newGethDownloader } from './downloader';
-import { check, waitRpc } from './nodecheck';
+const log = require('electron-log');
+const fs = require('fs');
+const path = require('path');
+const app = require('electron').app;
+const launcher = require('./launcher');
+const { LocalGeth, LocalConnector, NoneGeth, RemoteGeth } = launcher;
+const UserNotify = require('./userNotify').UserNotify ;
+const newGethDownloader = require('./downloader').newGethDownloader;
+const { check, waitRpc } = require('./nodecheck');
+require('es6-promise').polyfill();
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
@@ -43,7 +45,7 @@ function getBinDir() {
     return isDev ? './' : process.resourcesPath;
 }
 
-export function getLogDir() {
+const getLogDir = function() {
     const p = isDev ? './logs' : path.join(app.getPath('userData'), 'logs');
 
     // Ensure path exists.
@@ -54,9 +56,9 @@ export function getLogDir() {
         }
     });
     return p;
-}
+};
 
-export class Services {
+class Services {
 
     constructor(webContents) {
         this.setup = Object.assign({}, DEFAULT_SETUP);
@@ -149,7 +151,7 @@ export class Services {
                 this.notify.info('Use Local Existing RPC API');
                 this.notify.rpcUrl('http://localhost:8545');
                 this.notify.status('geth', 'ready');
-                resolve(new LocalGeth(null, this.setup.chain, 8545));
+                resolve(new LocalGeth(null, getLogDir(), this.setup.chain, 8545));
             }).catch((e) => {
                 log.info("Can't find existing RPC. Try to launch");
                 this.startLocalRpc.call(this)
@@ -165,7 +167,7 @@ export class Services {
             gethDownloader.downloadIfNotExists().then(() => {
                 this.notify.info('Launching Geth backend');
                 this.gethStatus = STATUS.STARTING;
-                const launcher = new LocalGeth(getBinDir(), this.setup.chain, 8545);
+                const launcher = new LocalGeth(getBinDir(), getLogDir(), this.setup.chain, 8545);
                 this.rpc = launcher;
                 launcher.launch().then((geth) => {
                     geth.on('exit', (code) => {
@@ -258,3 +260,9 @@ ${data}`
     }
 
 }
+
+
+module.exports = {
+    getLogDir: getLogDir,
+    Services: Services
+};

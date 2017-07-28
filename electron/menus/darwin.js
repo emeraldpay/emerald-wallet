@@ -1,4 +1,4 @@
-export default (window) => {
+module.exports = function(window) {
     return [{
         label: 'Emerald',
         submenu: [

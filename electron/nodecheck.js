@@ -1,5 +1,6 @@
-import 'isomorphic-fetch';
-import log from 'electron-log';
+require('es6-promise').polyfill();
+require('isomorphic-fetch');
+const log = require('electron-log');
 
 const DefaultStatus = {
     url: null,
@@ -62,13 +63,13 @@ function getChain(status) {
     });
 }
 
-export function check(url) {
+const check = function(url) {
     let status = Object.assign({}, DefaultStatus, {url: url});
     return exists(status)
         .then(getChain)
-}
+};
 
-export function waitRpc(url) {
+const waitRpc = function(url) {
     let status = Object.assign({}, DefaultStatus, {url: url});
     return new Promise((resolve, reject) => {
         let retry = (n) => {
@@ -82,4 +83,9 @@ export function waitRpc(url) {
         };
         retry(30);
     });
-}
+};
+
+module.exports = {
+    check: check,
+    waitRpc: waitRpc
+};

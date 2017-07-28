@@ -1,13 +1,13 @@
-import {exec, spawn} from 'child_process';
-import fs from 'fs';
-import os from 'os';
-import log from 'electron-log';
-import path from 'path';
-import { getLogDir } from './services';
+const spawn = require('child_process').spawn;
+const fs = require('fs');
+const os = require('os');
+const log = require('electron-log');
+const path = require('path');
+require('es6-promise').polyfill();
 
 const suffix = os.platform() === 'win32' ? '.exe' : '';
 
-export function checkExists(target) {
+const checkExists = function (target) {
     return new Promise((resolve) => {
         fs.access(target, fs.constants.R_OK | fs.constants.X_OK, (err) => {
             if (err) {
@@ -25,11 +25,13 @@ export function checkExists(target) {
             }
         });
     });
-}
+};
 
-export class LocalGeth {
-    constructor(bin, network, rpcPort) {
+class LocalGeth {
+
+    constructor(bin, logDir, network, rpcPort) {
         this.bin = bin;
+        this.logDir = logDir;
         this.network = network || 'morden';
         this.rpcPort = rpcPort || 8545;
     }
@@ -43,7 +45,7 @@ export class LocalGeth {
                     log.error(`File ${bin} doesn't exist or app doesn't have execution flag`);
                     reject(err);
                 } else {
-                    const logTarget = path.join(getLogDir(), 'geth'); // this shall be a dir
+                    const logTarget = path.join(this.logDir, 'geth'); // this shall be a dir
                     const options = [
                         '--chain', this.network,
                         '--rpc',
@@ -92,7 +94,7 @@ export class LocalGeth {
     }
 }
 
-export class RemoteGeth {
+class RemoteGeth {
     constructor(host, port) {
         this.host = host;
         this.port = port;
@@ -107,11 +109,11 @@ export class RemoteGeth {
     }
 }
 
-export class NoneGeth {
+class NoneGeth {
 
 }
 
-export class LocalConnector {
+class LocalConnector {
 
     constructor(bin, chain) {
         this.bin = bin;
@@ -215,3 +217,11 @@ export class LocalConnector {
         });
     }
 }
+
+module.exports = {
+    checkExists: checkExists,
+    LocalConnector: LocalConnector,
+    NoneGeth: NoneGeth,
+    RemoteGeth: RemoteGeth,
+    LocalGeth: LocalGeth
+};

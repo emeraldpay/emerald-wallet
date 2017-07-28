@@ -1,6 +1,7 @@
-import kbpgp from 'kbpgp';
-import log from 'electron-log';
-import fs from 'fs';
+const kbpgp = require('kbpgp');
+const log = require('electron-log');
+const fs = require('fs');
+require('es6-promise').polyfill();
 
 // PGP keys from:
 // https://github.com/ethereumproject/volunteer/tree/master/Volunteer-Public-Keys
@@ -109,7 +110,7 @@ var whileiPgp = "-----BEGIN PGP PUBLIC KEY BLOCK-----\n\n"+
 "    =VzoR\n" +
 "-----END PGP PUBLIC KEY BLOCK-----";
 
-export class Verify {
+class Verify {
     init() {
         const kms = [];
         const pgps = [splixPgp, whileiPgp];
@@ -155,3 +156,7 @@ export class Verify {
 
     }
 }
+
+module.exports = {
+    Verify: Verify
+};
