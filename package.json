@@ -157,7 +157,7 @@
   "build": {
     "appId": "com.ethereumclassic.emeraldwallet",
     "artifactName": "${productName}-${os}-${arch}-${env.APP_VERSION_GIT_TAG}.${ext}",
-    "compression": "store",
+    "compression": "normal",
     "asar": true,
     "extraResources": [
       "./emerald",
