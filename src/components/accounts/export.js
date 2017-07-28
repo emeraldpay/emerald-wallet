@@ -14,7 +14,7 @@ class ExportAccountButtonRender extends React.Component {
     }
 
     // from http://stackoverflow.com/questions/283956/
-    saveAs = (uri, filename) => {
+    saveAs(uri, filename) {
         const link = document.createElement('a')
         if (typeof link.download === 'string') {
             document.body.appendChild(link) // Firefox requires the link to be in the body
@@ -27,7 +27,7 @@ class ExportAccountButtonRender extends React.Component {
         }
     }
 
-    exportKeyFile = (address) => {
+    exportKeyFile(address) {
         const chain = this.props.chain
 
         rpc.call('emerald_exportAccount', [{address}, {chain}]).then((result) => {
@@ -44,7 +44,7 @@ class ExportAccountButtonRender extends React.Component {
         })
     }
 
-    handleClick = () => {
+    handleClick() {
         const address = this.props.account.get('id')
         this.exportKeyFile(address)
     }

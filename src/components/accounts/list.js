@@ -26,7 +26,7 @@ class WalletsTokensButton extends React.Component {
         };
     }
 
-    handleTouchTap = (event) => {
+    handleTouchTap(event) {
         // This prevents ghost click.
         event.preventDefault();
 
@@ -36,7 +36,7 @@ class WalletsTokensButton extends React.Component {
         });
     };
 
-    handleRequestClose = () => {
+    handleRequestClose() {
         this.setState({
             open: false,
         });

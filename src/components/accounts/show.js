@@ -50,11 +50,11 @@ class AccountRender extends React.Component {
         };
     }
 
-    handleEdit = () => {
+    handleEdit() {
         this.setState({ edit: true });
-    };
+    }
 
-    handleSave = (data) => {
+    handleSave(data) {
         this.props.editAccount(data)
             .then((result) => {
                 this.setState({ edit: false });
@@ -62,7 +62,7 @@ class AccountRender extends React.Component {
             })
     };
 
-    cancelEdit = () => {
+    cancelEdit() {
         this.setState({ edit: false });
     };
 
