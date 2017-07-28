@@ -8,7 +8,7 @@ const initial = Immutable.fromJS({
     terms: 'none',
     chain: {
         client: null,
-        rpc: null,
+        rpc: 'notset',
         // rpc: "remote", url: "http://api.gastracker.io/web3"
     },
     message: {
