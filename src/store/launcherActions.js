@@ -5,6 +5,10 @@ import { waitForServicesRestart } from 'store/store';
 import { loadAccountsList } from './accountActions';
 import { gotoScreen } from 'store/screenActions';
 
+function isGethReady(state) {
+    return state.launcher.getIn(['status', 'geth']) === 'ready'
+}
+
 export function readConfig() {
     if (typeof window.process !== 'undefined') {
         const remote = global.require('electron').remote;
@@ -84,7 +88,8 @@ export function saveSettings(extraSettings) {
 }
 
 export function listenElectron() {
-    return (dispatch) => {
+    return (dispatch, getState) => {
+        const state = getState();
         ipcRenderer.on('launcher', (event, type, message) => {
             log.debug('launcher listener: ', 'type', type, 'message', message);
             dispatch({
@@ -97,12 +102,16 @@ export function listenElectron() {
                     id: message.chainId,
                     rpcType: message.rpc,
                 });
-                dispatch(loadAccountsList());
+                if (isGethReady(state)) {
+                    dispatch(loadAccountsList());
+                }
             } else if (type === 'RPC') {
                 log.info('Use RPC URL', message.url);
                 rpc.urlGeth = message.url;
             }
-            dispatch(loadClientVersion());
+            if (isGethReady(state)) {
+                dispatch(loadClientVersion());
+            }
         });
     };
 }
