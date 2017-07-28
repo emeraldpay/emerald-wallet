@@ -31,7 +31,7 @@
     "test:watch": "node ./node_modules/karma/bin/karma start",
     "test": "npm run build && node ./node_modules/karma/bin/karma start --single-run",
     "lint": "./node_modules/eslint/bin/eslint.js ./src/",
-    "postinstall": "electron-builder install-app-deps",
+    "postinstall": "electron-rebuild && electron-builder install-app-deps",
     "dist": "npm run build:all:nowatch && electron-builder --publish never",
     "dist:nobuild": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never"
   },
@@ -123,6 +123,7 @@
     "devtron": "^1.4.0",
     "electron": "^1.6.11",
     "electron-builder": "^19.7.1",
+    "electron-rebuild": "1.5.11",
     "eslint": "^3.19.0",
     "eslint-config-airbnb-base": "11.1.3",
     "eslint-import-resolver-webpack": "0.8.1",
