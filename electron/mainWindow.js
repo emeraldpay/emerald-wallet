@@ -1,17 +1,17 @@
-import { BrowserWindow, Menu, shell } from 'electron';
-import winLinuxMenu from './menus/win-linux';
-import darwinMenu from './menus/darwin';
+const electron = require('electron');
+const winLinuxMenu = require('./menus/win-linux');
+const darwinMenu = require('./menus/darwin');
 const path = require('path');
 const url = require('url');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-export let mainWindow;
+let mainWindow;
 let menu;
 
-export function createWindow(openDevTools) {
+const createWindow = function(openDevTools) {
     // Create the browser window.
-    mainWindow = new BrowserWindow({width: 1100, height: 600});
+    mainWindow = new electron.BrowserWindow({width: 1100, height: 600});
 
     // and load the index.html of the app.
     mainWindow.loadURL(url.format({
@@ -28,7 +28,7 @@ export function createWindow(openDevTools) {
     // Prevent opening external links in electron.
     mainWindow.webContents.on('will-navigate', (e, _url) => {
         e.preventDefault();
-        shell.openExternal(_url);
+        electron.shell.openExternal(_url);
     });
 
     // Emitted when the window is closed.
@@ -41,12 +41,17 @@ export function createWindow(openDevTools) {
 
     // Menu
     if (process.platform === 'darwin') {
-        menu = Menu.buildFromTemplate(darwinMenu(mainWindow));
+        menu = electron.Menu.buildFromTemplate(darwinMenu(mainWindow));
     } else {
-        menu = Menu.buildFromTemplate(winLinuxMenu(mainWindow));
+        menu = electron.Menu.buildFromTemplate(winLinuxMenu(mainWindow));
     }
-    Menu.setApplicationMenu(menu);
+    electron.Menu.setApplicationMenu(menu);
     mainWindow.setMenu(menu);
 
     return mainWindow.webContents;
-}
+};
+
+module.exports = {
+    mainWindow: mainWindow,
+    createWindow: createWindow
+};

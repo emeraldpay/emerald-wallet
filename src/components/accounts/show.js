@@ -48,13 +48,16 @@ class AccountRender extends React.Component {
             edit: false,
             showModal: false,
         };
+        this.handleEdit = this.handleEdit.bind(this);
+        this.handleSave = this.handleSave.bind(this);
+        this.cancelEdit = this.cancelEdit.bind(this);
     }
 
-    handleEdit = () => {
+    handleEdit() {
         this.setState({ edit: true });
-    };
+    }
 
-    handleSave = (data) => {
+    handleSave(data) {
         this.props.editAccount(data)
             .then((result) => {
                 this.setState({ edit: false });
@@ -62,7 +65,7 @@ class AccountRender extends React.Component {
             })
     };
 
-    cancelEdit = () => {
+    cancelEdit() {
         this.setState({ edit: false });
     };
 
@@ -115,7 +118,7 @@ class AccountRender extends React.Component {
                                     iconButtonElement={<IconButton><MoreHorizIcon /></IconButton>}
                                 >
                                     <ExportAccountButton account={account} />
-                                    <PrintAccountButton account={account} />
+                                    {/*<PrintAccountButton account={account} />*/}
                                 </IconMenu>
                             </Col>
                         </Row>

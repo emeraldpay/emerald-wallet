@@ -10,25 +10,26 @@ import { rpc } from 'lib/rpc'
  */
 class ExportAccountButtonRender extends React.Component {
     constructor (props) {
-        super(props)
+        super(props);
+        this.handleClick = this.handleClick.bind(this);
     }
 
     // from http://stackoverflow.com/questions/283956/
-    saveAs = (uri, filename) => {
-        const link = document.createElement('a')
+    saveAs(uri, filename) {
+        const link = document.createElement('a');
         if (typeof link.download === 'string') {
-            document.body.appendChild(link) // Firefox requires the link to be in the body
-            link.download = filename
-            link.href = uri
-            link.click()
+            document.body.appendChild(link); // Firefox requires the link to be in the body
+            link.download = filename;
+            link.href = uri;
+            link.click();
             document.body.removeChild(link) // remove the link when done
         } else {
             location.replace(uri)
         }
     }
 
-    exportKeyFile = (address) => {
-        const chain = this.props.chain
+    exportKeyFile(address) {
+        const chain = this.props.chain;
 
         rpc.call('emerald_exportAccount', [{address}, {chain}]).then((result) => {
 
@@ -36,16 +37,16 @@ class ExportAccountButtonRender extends React.Component {
                 filename: `${address}.json`,
                 mime: 'text/plain',
                 contents: result,
-            }
+            };
 
-            const blob = new Blob([fileData.contents], {type: fileData.mime})
-            const url = URL.createObjectURL(blob)
+            const blob = new Blob([fileData.contents], {type: fileData.mime});
+            const url = URL.createObjectURL(blob);
             this.saveAs(url, fileData.filename)
         })
     }
 
-    handleClick = () => {
-        const address = this.props.account.get('id')
+    handleClick() {
+        const address = this.props.account.get('id');
         this.exportKeyFile(address)
     }
 
@@ -59,13 +60,13 @@ class ExportAccountButtonRender extends React.Component {
 
 ExportAccountButtonRender.propTypes = {
     account: PropTypes.object.isRequired,
-}
+};
 
 const ExportAccountButton = connect(
     (state, ownProps) => ({
         chain: state.network.getIn(['chain', 'name'])
     }),
     null
-)(ExportAccountButtonRender)
+)(ExportAccountButtonRender);
 
 export default ExportAccountButton

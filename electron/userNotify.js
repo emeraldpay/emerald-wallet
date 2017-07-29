@@ -1,4 +1,4 @@
-export class UserNotify {
+class UserNotify {
 
     constructor(webContents) {
         this.webContents = webContents;
@@ -35,3 +35,7 @@ export class UserNotify {
         }
     }
 }
+
+module.exports = {
+    UserNotify: UserNotify
+};

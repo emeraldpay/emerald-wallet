@@ -13,27 +13,25 @@
   ],
   "version": "0.2.0",
   "description": "Emerald - Ethereum Classic Wallet",
-  "main": "./electron/webpack-main.js",
+  "main": "./electron/main.js",
   "moduleRoots": [
     "src/lib"
   ],
   "scripts": {
     "howto": "say 'in order to build and run for developement, the MAIN field (above) should be ./electron/main.js; but for distribution it should be ./electron/webpack-main.js'",
     "shipit": "say 'try npm run build:all:nowatch, then npm run dist (or dist:all if you are feeling ambitious). note that you can change the compression rate in the build config down below. make sure you have MAIN set to electron/webpack-main.js'",
-    "build": "node build-web --no-watch && node build-electron --no-watch",
-    "build:electron": "node build-electron",
-    "build:electron:nowatch": "node build-electron --no-watch",
+    "build": "node build-web --no-watch",
     "build:web": "node build-web --for-electron",
     "build:web:nowatch": "node build-web --no-watch --for-electron",
-    "build:all": "node build-electron & node build-web --for-electron",
-    "build:all:nowatch": "node build-electron --no-watch && node build-web --no-watch --for-electron",
+    "build:all": "node build-web --for-electron",
+    "build:all:nowatch": "node build-web --no-watch --for-electron",
     "start:web": "node ./node_modules/.bin/webpack-dev-server --content-base ./app --inline --port 8000",
     "start:electron": "NODE_ENV=development ./node_modules/.bin/electron .",
     "start:electron:getemerald": "bash dependencies.sh && NODE_ENV=development ./node_modules/.bin/electron .",
     "test:watch": "node ./node_modules/karma/bin/karma start",
     "test": "npm run build && node ./node_modules/karma/bin/karma start --single-run",
     "lint": "./node_modules/eslint/bin/eslint.js ./src/",
-    "postinstall": "electron-builder install-app-deps",
+    "postinstall": "electron-rebuild && electron-builder install-app-deps",
     "dist": "npm run build:all:nowatch && electron-builder --publish never",
     "dist:nobuild": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never"
   },
@@ -107,7 +105,8 @@
     "ethereumjs-tx": "1.3.3",
     "node-pre-gyp": "0.6.36",
     "recompose": "^0.24.0",
-    "react-transition-group": "2.2.0"
+    "react-transition-group": "2.2.0",
+    "es6-promise": "4.1.1"
   },
   "devDependencies": {
     "@elastic/webpack-directory-name-as-main": "2.0.2",
@@ -116,7 +115,7 @@
     "babel-polyfill": "^6.23.0",
     "babel-preset-es2015": "^6.24.1",
     "babel-preset-react": "^6.24.1",
-    "babel-preset-stage-2": "^6.24.1",
+    "babel-preset-stage-3": "^6.24.1",
     "babel-register": "^6.24.1",
     "babel-runtime": "^6.23.0",
     "copy-webpack-plugin": "1.1.1",
@@ -124,6 +123,7 @@
     "devtron": "^1.4.0",
     "electron": "^1.6.11",
     "electron-builder": "^19.7.1",
+    "electron-rebuild": "1.5.11",
     "eslint": "^3.19.0",
     "eslint-config-airbnb-base": "11.1.3",
     "eslint-import-resolver-webpack": "0.8.1",
@@ -157,6 +157,8 @@
   "build": {
     "appId": "com.ethereumclassic.emeraldwallet",
     "artifactName": "${productName}-${os}-${arch}-${env.APP_VERSION_GIT_TAG}.${ext}",
+    "compression": "normal",
+    "asar": true,
     "extraResources": [
       "./emerald",
       "./emerald.exe"

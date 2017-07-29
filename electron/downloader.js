@@ -1,15 +1,11 @@
-import { https } from 'follow-redirects';
-import { app } from 'electron';
-import fs from 'fs';
-import os from 'os';
-import path from 'path';
-import log from 'electron-log';
-// extract-zip depends on concat-stream, debug, mkdirp, yauzl
-// yauzl depends on fd-slicer, buffer-crc32
-// this should avoid the fs dependency issue
-// import extract from 'extract-zip';
-import DecompressZip from 'decompress-zip';
-import { Verify } from './verify';
+const { https } = require('follow-redirects');
+const fs = require('fs');
+const os = require('os');
+const path = require('path');
+const log = require('electron-log');
+const DecompressZip = require('decompress-zip');
+const { Verify } = require('./verify');
+require('es6-promise').polyfill();
 
 const DefaultGeth = {
     format: "v1",
@@ -94,7 +90,7 @@ function deleteIfExists(path) {
     });
 }
 
-export class Downloader {
+class Downloader {
 
     constructor(conf, name, notify, dir) {
         this.config = conf;
@@ -294,7 +290,12 @@ export class Downloader {
 
 }
 
-export function newGethDownloader(notify, dir) {
+const newGethDownloader = function(notify, dir) {
     const suffix = os.platform() === 'win32' ? '.exe' : '';
     return new Downloader(DefaultGeth, "geth" + suffix, notify, dir);
-}
+};
+
+module.exports = {
+    newGethDownloader: newGethDownloader,
+    Downloader: Downloader
+};

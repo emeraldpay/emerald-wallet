@@ -1,8 +1,9 @@
-import LedgerComm from 'ledgerco/src/ledger-comm-node';
-import LedgerEth from 'ledgerco/src/ledger-eth';
-import log from 'electron-log';
+const LedgerComm = require('ledgerco/src/ledger-comm-node');
+const LedgerEth = require('ledgerco/src/ledger-eth');
+const log = require('electron-log');
+require('es6-promise').polyfill();
 
-export class LedgerApi {
+class LedgerApi {
 
     connect() {
         return new Promise((resolve, reject) => {
@@ -47,3 +48,7 @@ export class LedgerApi {
         })
     }
 }
+
+module.exports = {
+    LedgerApi: LedgerApi
+};
