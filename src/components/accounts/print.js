@@ -14,6 +14,7 @@ class PrintAccountRender extends React.Component {
 
     constructor(props) {
         super(props);
+        this.handleClick = this.handleClick.bind(this);
     }
 
     printWallet(address, key) {
@@ -32,7 +33,7 @@ class PrintAccountRender extends React.Component {
     }    
 
     exportKeyFile(address) {
-        const chain = this.props.chain
+        const chain = this.props.chain;
 
         rpc.call('emerald_exportAccount', [{address}, {chain}]).then((result) => {
             this.printWallet(address, result);
@@ -40,7 +41,7 @@ class PrintAccountRender extends React.Component {
     }
 
     handleClick() {
-        const address = this.props.account.get('id')
+        const address = this.props.account.get('id');
         this.exportKeyFile(address)
     }
 

@@ -26,8 +26,9 @@ class AccountPopupRender extends React.Component {
         super(props);
         this.state = {
             open: false,
-        }
-
+        };
+        this.handleOpen = this.handleOpen.bind(this);
+        this.handleClose = this.handleClose.bind(this);
     }
 
   handleOpen() {

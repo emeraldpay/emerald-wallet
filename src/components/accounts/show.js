@@ -48,6 +48,9 @@ class AccountRender extends React.Component {
             edit: false,
             showModal: false,
         };
+        this.handleEdit = this.handleEdit.bind(this);
+        this.handleSave = this.handleSave.bind(this);
+        this.cancelEdit = this.cancelEdit.bind(this);
     }
 
     handleEdit() {
