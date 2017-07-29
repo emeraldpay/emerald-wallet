@@ -29,9 +29,10 @@ const Render = ({openSettings}) => {
                 </div>
                 <div style={{display: 'flex'}}>
                     <Status />
-                        <IconButton onTouchTap={openSettings}>
-                            <FontIcon className="fa fa-cog"/>
-                        </IconButton>
+                    <IconButton onTouchTap={openSettings}
+                                disableTouchRipple={true} //TODO find why doesn't work
+                                iconClassName="fa fa-cog"
+                    />
                 </div>
             </div>
         </div>
