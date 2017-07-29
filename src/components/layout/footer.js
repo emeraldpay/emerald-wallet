@@ -22,7 +22,7 @@ const Render = () => {
     return (
         <div style={{...styles.footerDiv}}>
             <div style={{color: 'limegreen'}}>
-                Alpha 0.3.0
+                Beta 0.4.0
             </div>
             <div style={{color: 'gray', fontWeight: '300', fontSize: '14px'}}>
                 <p style={{marginTop: 0}}>

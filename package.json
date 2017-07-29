@@ -11,7 +11,7 @@
     "gagarin55",
     "Isaac Ardis"
   ],
-  "version": "0.2.0",
+  "version": "0.4.0",
   "description": "Emerald - Ethereum Classic Wallet",
   "main": "./electron/main.js",
   "moduleRoots": [

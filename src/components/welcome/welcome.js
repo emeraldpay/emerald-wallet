@@ -28,11 +28,11 @@ const Render = ({ message, level, ready, needSetup }) => {
                 <span style={{fontSize: "28px", fontWeight: 900}}>Emerald Wallet</span>
             </Col>
             <Col xs={12}>
-                <span style={{fontSize: "16px", fontWeight: 500}}>Version: 0.3.0 Alpha</span>
+                <span style={{fontSize: "16px", fontWeight: 500}}>Version: 0.4.0 Beta 1</span>
             </Col>
             <Col xs={12}>
                 <span style={{fontSize: "12px", fontWeight: 400, color: "#999"}}>
-                    (initial version, please don't use for serious stuff before next Beta release)
+                    (beta version, please don't rely on the current version, it may have critical bugs)
                 </span>
             </Col>
         </Row>
