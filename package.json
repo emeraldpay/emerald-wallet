@@ -92,7 +92,7 @@
     "react-redux": "5.0.2",
     "react-tap-event-plugin": "^2.0.1",
     "react-event-listener": "^0.4.5",
-    "react-transition-group": "2.2.0",
+    "react-transition-group": "^1.1.2",
     "redux": "3.6.0",
     "redux-form": "6.5.0",
     "redux-form-material-ui": "^4.2.0",
