@@ -30,7 +30,6 @@ const Render = ({openSettings}) => {
                 <div style={{display: 'flex'}}>
                     <Status />
                     <IconButton onTouchTap={openSettings}
-                                disableTouchRipple={true} //TODO find why doesn't work
                                 iconClassName="fa fa-cog"
                     />
                 </div>
