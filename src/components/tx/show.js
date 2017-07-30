@@ -7,6 +7,7 @@ import { cardSpace } from 'lib/styles';
 import { gotoScreen } from 'store/screenActions';
 import { toNumber, toDate } from 'lib/convert';
 import IdentityIcon from '../accounts/identityIcon';
+import log from 'electron-log';
 
 import {InnerDialog, styles} from '../../elements/innerDialog';
 
@@ -298,6 +299,9 @@ const TransactionShow = connect(
         const Tx = state.accounts.get('trackedTransactions').find(
             (tx) => tx.get('hash') === ownProps.hash
         );
+        if (!Tx) {
+            log.error("Can't find tx for hash", ownProps.hash)
+        }
         return {
             hash: Tx.get('hash'),
             transaction: Tx,

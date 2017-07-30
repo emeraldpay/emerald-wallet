@@ -203,7 +203,7 @@ function createTx(data) {
 }
 
 function isTracked(state, tx) {
-    return state.get('trackedTransactions').some((x) => tx.hash === x.hash)
+    return state.get('trackedTransactions').some((x) => tx.get('hash') === x.get('hash'))
 }
 
 function onLoadPending(state, action) {

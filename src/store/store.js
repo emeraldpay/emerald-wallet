@@ -11,7 +11,7 @@ import { loadAccountsList, refreshTrackedTransactions, loadPendingTransactions,
 // import { loadContractList } from './contractActions';
 import { loadSyncing, loadHeight, loadPeerCount } from './networkActions';
 import { gotoScreen } from './screenActions';
-import { readConfig, listenElectron, connecting } from './launcherActions';
+import { readConfig, listenElectron, connecting, loadClientVersion } from './launcherActions';
 import { watchConnection as waitLedger, setWatch, setBaseHD } from './ledgerActions';
 
 import accountsReducers from './accountReducers';
@@ -92,6 +92,7 @@ function refreshLong() {
 
 export function startSync() {
     store.dispatch(getGasPrice());
+    store.dispatch(loadClientVersion());
     // store.dispatch(loadAddressBook());
     // store.dispatch(loadTokenList());
     // store.dispatch(loadContractList());
