@@ -6,6 +6,7 @@ import Status from './status/status';
 import Total from './total';
 import { gotoScreen } from '../../store/screenActions';
 import LogoIcon from './logoIcon';
+import SettingsIcon from './settingsIcon';
 
 
 const Render = ({openSettings}) => {
@@ -29,9 +30,9 @@ const Render = ({openSettings}) => {
                 </div>
                 <div style={{display: 'flex'}}>
                     <Status />
-                    <IconButton onTouchTap={openSettings}
-                                iconClassName="fa fa-cog"
-                    />
+                    <IconButton onTouchTap={openSettings}>
+                        <SettingsIcon />
+                    </IconButton>
                 </div>
             </div>
         </div>

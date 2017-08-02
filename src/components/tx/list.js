@@ -48,8 +48,6 @@ const Render = ({ transactions, sendTx, accounts, createAccount }) => {
         </TableBody>
     </Table>;
 
-    const titleAvatar = <Avatar icon={<FontIcon className="fa fa-dot-circle-o fa-2x" />} />;
-
     return (
             <Card style={styles.card}>
                 <CardHeader
