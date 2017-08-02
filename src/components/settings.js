@@ -6,7 +6,7 @@ import { FlatButton, MenuItem } from 'material-ui';
 import { translate } from 'react-i18next';
 import { gotoScreen } from '../store/screenActions';
 import { formStyle } from '../lib/styles';
-import i18n from '../i18n';
+import i18n from '../i18n/i18n';
 import {InnerDialog, styles} from '../elements/innerDialog';
 
 class SettingsRender extends React.Component {
