@@ -2,71 +2,20 @@ import React from 'react';
 import {connect} from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import { SelectField } from 'redux-form-material-ui';
-import KeyboardArrowLeft from 'material-ui/svg-icons/hardware/keyboard-arrow-left';
 import { FlatButton, MenuItem } from 'material-ui';
 import { gotoScreen } from '../store/screenActions';
 import { formStyle } from '../lib/styles';
 import i18n from '../i18n';
 import { translate } from 'react-i18next';
+import {InnerDialog, styles} from '../elements/innerDialog';
 
 class SettingsRender extends React.Component {
 
     render() {
         const {goDashboard, changeLanguage, t} = this.props;
 
-        const styles = {
-            fieldName: {
-                color: '#747474',
-                fontSize: '18px',
-                textAlign: 'right',
-            },
-            left: {
-                flexBasis: '20%',
-                marginLeft: '14.75px',
-                marginRight: '14.75px',
-            },
-            right: {
-                flexGrow: 2,
-                display: 'flex',
-                marginLeft: '14.75px',
-                marginRight: '14.75px',
-                maxWidth: '581px',
-            },
-            formRow: {
-                display: 'flex',
-                marginTop: '19px',
-                alignItems: 'center',
-            },
-        };
-
-        const backLabel = 'DASHBOARD';
-        const cancel = goDashboard;
-        const flatButtonNav = {
-            color: '#747474',
-            fontSize: '14px',
-            fontWeight: '500',
-            lineHeight: '24px',
-        };
-
         return (
-            <div style={{marginTop: '20px', backgroundColor: 'white', paddingTop: '41px'}}>
-                <div id="header" style={{display: 'flex', alignItems: 'center'}}>
-                    <div style={styles.left}>
-
-                        <FlatButton label={backLabel}
-                                    primary={true}
-                                    onClick={cancel}
-                                    style={flatButtonNav}
-                                    icon={<KeyboardArrowLeft/>}
-                        />
-
-                    </div>
-                    <div style={styles.right}>
-                        <div id="caption" style={{fontSize: '22px'}}>
-                            Settings
-                        </div>
-                    </div>
-                </div>
+            <InnerDialog caption="Settings" onCancel={goDashboard}>
                 <div id="body">
                     <div id="row" style={styles.formRow}>
                         <div style={styles.left}>
@@ -148,7 +97,7 @@ class SettingsRender extends React.Component {
                         </div>
                     </div>
                 </div>
-            </div>
+            </InnerDialog>
         );
     }
 }
@@ -163,7 +112,7 @@ const Settings = connect(
     (state, ownProps) => {
         return {
             initialValues: {
-                language: i18n.language
+                language: i18n.language,
             },
         };
     },
