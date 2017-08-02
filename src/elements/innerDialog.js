@@ -4,6 +4,12 @@ import KeyboardArrowLeft from 'material-ui/svg-icons/hardware/keyboard-arrow-lef
 import { FlatButton } from 'material-ui';
 
 export const styles = {
+    dialog: {
+        marginTop: '20px',
+        backgroundColor: 'white',
+        paddingTop: '41px',
+        paddingBottom: '41px',
+    },
     fieldName: {
         color: '#747474',
         fontSize: '18px',
@@ -43,7 +49,7 @@ export class InnerDialog extends React.Component {
         const backLabel = 'DASHBOARD';
 
         return (
-            <div style={{marginTop: '20px', backgroundColor: 'white', paddingTop: '41px', paddingBottom: '41px'}}>
+            <div style={styles.dialog}>
                 <div id="header" style={{display: 'flex', alignItems: 'center'}}>
                     <div style={styles.left}>
                         <FlatButton label={backLabel}

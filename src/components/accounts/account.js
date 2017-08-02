@@ -5,7 +5,8 @@ import { TableRow, TableRowColumn } from 'material-ui/Table';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 
-import { AddressAvatar, AccountAddress } from 'elements/dl';
+import { AccountAddress } from 'elements/dl';
+import AddressAvatar from '../../elements/addressAvatar';
 import AccountSendButton from './sendButton';
 import { gotoScreen } from 'store/screenActions';
 import log from 'electron-log';
@@ -36,10 +37,10 @@ const Render = ({ account, openAccount }) => {
                 </Col>
                 <Col xs={6}>
                     <AddressAvatar
-                        secondary={<AccountAddress id={account.get('id')}/>}
+                        addr={account.get('id')}
                         tertiary={account.get('description')}
                         primary={account.get('name')}
-                        onClick={openAccount}
+                        onAddressClick={openAccount}
                     />
                 </Col>
                 <Col xs={3}>
