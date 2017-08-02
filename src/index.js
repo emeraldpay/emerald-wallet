@@ -8,14 +8,14 @@ import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import {store, start as startStore} from './store/store.js';
 import log from 'electron-log';
-import 'roboto-fontface/css/roboto/sass/roboto-fontface.scss';
+// import 'roboto-fontface/css/roboto/sass/roboto-fontface.scss';
 import './index.scss';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import 'typeface-poppins';
+import 'typeface-rubik';
 import Main from './components/main';
 
 const muiTheme = getMuiTheme({
-    fontFamily: 'Poppins',
+    fontFamily: 'Rubik',
 });
 
 function start() {

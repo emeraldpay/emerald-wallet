@@ -2,7 +2,6 @@ import React from 'react';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import AddressAvatar from 'elements/addressAvatar';
 import People from 'material-ui/svg-icons/social/people';
 import IconMenu from 'material-ui/IconMenu';
@@ -24,7 +23,7 @@ import { Wei } from 'lib/types';
 import { CardHeadEmerald } from 'elements/card';
 import { cardStyle, formStyle, noShadow } from 'lib/styles';
 import IdentityIcon from './identityIcon';
-import { Card, CardHeader, CardText } from 'material-ui/Card';
+import {InnerDialog, styles} from '../../elements/innerDialog';
 
 const TokenRow = ({ token }) => {
     const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0';
@@ -71,27 +70,29 @@ class AccountRender extends React.Component {
         const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
 
         const AccountDetails = (
-            <Card id="shw-grid" style={{...cardStyle, ...noShadow}}>
-                <CardHeadEmerald
-                    backLabel='DASHBOARD'
-                    title='Wallet'
-                    cancel={goBack}
-                />
-                <Row top="xs">
-                    <Col xs={12} md={8}>
-                        <Row middle="xs">
-                            <Col xs={1} xsOffset={4} style={formStyle.avatar}>
-                                <IdentityIcon id={account.get('id')} expanded={true} />
-                            </Col>
-                            <Col xs={6} style={formStyle.group}>
+
+            <div style={{display: 'flex', alignItems: 'stretch'}}>
+                <div style={{flexGrow: 1}}>
+                    <InnerDialog caption="Wallet" onCancel={goBack}>
+
+                        <div id="row" style={styles.formRow}>
+                            <div id="left-column" style={styles.left}>
+                                <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+                                    <IdentityIcon id={account.get('id')} expanded={true} />
+                                </div>
+                            </div>
+                            <div style={styles.right}>
                                 <AccountBalance balance={account.get('balance') || new Wei(0) } withAvatar={true} />
-                            </Col>
-                        </Row>
-                        <Row middle="xs">
-                            <Col xs={1} xsOffset={4} style={formStyle.avatar}>
-                                <People />
-                            </Col>
-                            <Col xs={6} style={formStyle.group}>
+                            </div>
+                        </div>
+
+                        <div id="row" style={styles.formRow}>
+                            <div style={styles.left}>
+                                <div style={styles.fieldName}>
+                                    <People />
+                                </div>
+                            </div>
+                            <div style={styles.right}>
                                 {!this.state.edit && <AddressAvatar
                                     addr={account.get('id')}
                                     tertiary={account.get('description')}
@@ -103,39 +104,44 @@ class AccountRender extends React.Component {
                                     submit={this.handleSave}
                                     cancel={this.cancelEdit}
                                 />}
-                            </Col>
-                        </Row>
-                        <Row>
-                            <Col xs={6} xsOffset={5} style={formStyle.group}>
-                                <AccountPopup account={account}/>
-                                <AccountSendButton account={account} />
-                                <IconMenu
-                                    style={{height: '60px', padding: '20px'}}
-                                    iconButtonElement={<IconButton><MoreHorizIcon /></IconButton>}
-                                >
-                                    <ExportAccountButton account={account} />
-                                    {/* <PrintAccountButton account={account} />*/}
-                                </IconMenu>
-                            </Col>
-                        </Row>
-                    </Col>
-                    <Col xs={4} md={2} mdOffset={1}>
-                        <QRCode value={account.get('id')} />
-                    </Col>
-                </Row>
-            </Card>
+                            </div>
+                        </div>
+
+                        <div id="row" style={styles.formRow}>
+                            <div style={styles.left}>
+                            </div>
+                            <div style={styles.right}>
+                                <div>
+                                    <div style={{display: 'flex', alignItems: 'center'}}>
+                                        <AccountPopup textColor='white' backgroundColor='#47B04B' account={account} />
+                                        <AccountSendButton textColor='white' backgroundColor='#47B04B' account={account} />
+                                        <IconMenu
+                                            iconButtonElement={<IconButton><MoreHorizIcon /></IconButton>}>
+                                            <ExportAccountButton account={account} />
+                                            {/* <PrintAccountButton account={account} />*/}
+                                        </IconMenu>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </InnerDialog>
+                </div>
+                <div style={{flexBasis: '30%', backgroundColor: 'white', marginTop: '20px', paddingTop: '110px'}}>
+                    <QRCode value={account.get('id')} />
+                </div>
+            </div>
         );
 
         return (
             <div>
-                <Row>
-                    <Col xs>{AccountDetails}</Col>
-                </Row>
-                <Row>
-                    <Col xs>
-                        <TransactionsList transactions={transactions}/>
-                    </Col>
-                </Row>
+                <div>
+                    {AccountDetails}
+                </div>
+                <div>
+                    <TransactionsList transactions={transactions}/>
+                </div>
             </div>
         );
     }

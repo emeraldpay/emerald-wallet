@@ -3,10 +3,10 @@ import {connect} from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import { SelectField } from 'redux-form-material-ui';
 import { FlatButton, MenuItem } from 'material-ui';
+import { translate } from 'react-i18next';
 import { gotoScreen } from '../store/screenActions';
 import { formStyle } from '../lib/styles';
 import i18n from '../i18n';
-import { translate } from 'react-i18next';
 import {InnerDialog, styles} from '../elements/innerDialog';
 
 class SettingsRender extends React.Component {

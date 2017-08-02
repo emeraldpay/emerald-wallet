@@ -1,7 +1,7 @@
 import React from 'react';
 
-const LogoIcon = (props) => (
-    <svg width="20px" height="36px" viewBox="0 0 20 36" version="1.1" xmlns="http://www.w3.org/2000/svg">
+const LogoIcon = ({height, width}) => (
+    <svg width={width} height={height} viewBox="0 0 20 36" version="1.1" xmlns="http://www.w3.org/2000/svg">
         <defs></defs>
         <g id="Symbols" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
             <g id="header" transform="translate(-274.000000, -14.000000)">

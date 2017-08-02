@@ -10,20 +10,25 @@ import { Wei } from 'lib/types';
 import { AccountAddress } from 'elements/dl';
 import { showDialog } from 'store/screenActions';
 
-const styles = {
-    container: {
-        display: 'inline',
-    },
-    openButton: {
-        height: '40px',
-        fontSize: '14px',
-        fontWeight: '500',
-        borderRadius: '1px',
-        backgroundColor: '#EEE',
-    },
-};
+const Render = ({ account, handleOpen, backgroundColor, textColor }) => {
 
-const Render = ({ account, handleOpen }) => {
+    const bgColor = backgroundColor ? backgroundColor : '#EEE';
+    const color = textColor ? textColor : 'black';
+
+    const styles = {
+        container: {
+            display: 'inline',
+        },
+        openButton: {
+            height: '40px',
+            fontSize: '14px',
+            fontWeight: '500',
+            borderRadius: '1px',
+            backgroundColor: bgColor,
+            color,
+        },
+    };
+
     if (!account) {
         return <div style={styles.container}/>;
     }

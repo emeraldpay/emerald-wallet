@@ -32,7 +32,9 @@ const Render = ({ account, openAccount }) => {
                 <Col xs={3}>
                     <div style={{display: 'flex'}}>
                         <IdentityIcon id={account.get('id')}/>
-                        <AccountBalance balance={account.get('balance') || new Wei(0) } withAvatar={true} />
+                        <div style={{marginLeft: '10px'}}>
+                            <AccountBalance balance={account.get('balance') || new Wei(0) } withAvatar={true} />
+                        </div>
                     </div>
                 </Col>
                 <Col xs={6}>
