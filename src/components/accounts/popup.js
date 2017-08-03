@@ -10,10 +10,7 @@ import { Wei } from 'lib/types';
 import { AccountAddress } from 'elements/dl';
 import { showDialog } from 'store/screenActions';
 
-const Render = ({ account, handleOpen, backgroundColor, textColor }) => {
-
-    const bgColor = backgroundColor ? backgroundColor : '#EEE';
-    const color = textColor ? textColor : 'black';
+const Render = ({ account, handleOpen, backgroundColor = '#EEE', textColor = 'black' }) => {
 
     const styles = {
         container: {
@@ -24,8 +21,8 @@ const Render = ({ account, handleOpen, backgroundColor, textColor }) => {
             fontSize: '14px',
             fontWeight: '500',
             borderRadius: '1px',
-            backgroundColor: bgColor,
-            color,
+            backgroundColor,
+            color: textColor,
         },
     };
 
