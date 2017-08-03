@@ -9,7 +9,9 @@ import FontIcon from 'material-ui/FontIcon';
 import log from 'electron-log';
 import { link, tables } from 'lib/styles';
 import { toDuration } from 'lib/convert';
-import { AddressAvatar, AccountAddress } from 'elements/dl';
+import { AccountAddress } from 'elements/dl';
+import AddressAvatar from 'elements/addressAvatar';
+
 import loading from 'images/loading.gif';
 import AccountBalance from '../accounts/balance';
 import { Wei } from 'lib/types';
@@ -44,7 +46,7 @@ const Render = ({ tx, openTx, openAccount, refreshTx, toAccount, fromAccount }) 
                     abbreviated={false}
                     tertiary={fromAccount.get('description')}
                     primary={fromAccount.get('name')}
-                    onClick={() => openAccount(fromAccount)}
+                    onAddressClick={() => openAccount(fromAccount)}
                 />
             </TableRowColumn>
             <TableRowColumn style={tables.shortestStyle}>
@@ -56,7 +58,7 @@ const Render = ({ tx, openTx, openAccount, refreshTx, toAccount, fromAccount }) 
                     abbreviated={false}
                     tertiary={toAccount.get('description')}
                     primary={toAccount.get('name')}
-                    onClick={() => openAccount(toAccount)}
+                    onAddressClick={() => openAccount(toAccount)}
                 />
             </TableRowColumn>
         </TableRow>

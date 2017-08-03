@@ -5,7 +5,7 @@ import {IconButton, FontIcon} from 'material-ui';
 import Status from './status/status';
 import Total from './total';
 import { gotoScreen } from '../../store/screenActions';
-import LogoIcon from './logoIcon';
+import { LogoIcon, SettingsIcon } from '../../elements/icons';
 
 
 const Render = ({openSettings}) => {
@@ -16,7 +16,6 @@ const Render = ({openSettings}) => {
         fontWeight: 500,
         lineHeight: '21px',
         marginRight: '10px',
-        fontFamily: 'Poppins',
     };
 
     return (
@@ -24,14 +23,14 @@ const Render = ({openSettings}) => {
             <div style={{display: 'flex', justifyContent: 'space-between', margin: '0 auto', maxWidth: '1060px'}}>
                 <div style={{display: 'flex', alignItems: 'center'}}>
                     <div style={titleStyle}>EMERALD WALLET</div>
-                    <div><LogoIcon /></div>
+                    <div><LogoIcon height="33px" width="17px" /></div>
                     <Total/>
                 </div>
                 <div style={{display: 'flex'}}>
                     <Status />
-                    <IconButton onTouchTap={openSettings}
-                                iconClassName="fa fa-cog"
-                    />
+                    <IconButton onTouchTap={openSettings}>
+                        <SettingsIcon />
+                    </IconButton>
                 </div>
             </div>
         </div>

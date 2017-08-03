@@ -11,7 +11,6 @@ const Render = () => {
         footerDiv: {
             padding: '32px 6px',
             cardSpace,
-
             display: 'flex',
             justifyContent: 'space-between',
             margin: '0 auto',

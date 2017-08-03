@@ -11,7 +11,7 @@ class IdentityIcon extends React.Component {
         const iconSize = Number.isInteger(size) ? size : 40;
         const iconBg = blockies.create({seed: id, size: 8, scale: 4}).toDataURL();
         const styles = {
-            marginRight: '16px',
+            // marginRight: '16px',
             height: `${iconSize}px`,
             width: `${iconSize}px`,
             background: `url(${iconBg})`,

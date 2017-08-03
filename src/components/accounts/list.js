@@ -36,13 +36,13 @@ class WalletsTokensButton extends React.Component {
             open: true,
             anchorEl: event.currentTarget,
         });
-    };
+    }
 
     handleRequestClose() {
         this.setState({
             open: false,
         });
-    };
+    }
 
     render() {
         const {generate, importJson, importLedger, t, style} = this.props;
@@ -75,14 +75,14 @@ class WalletsTokensButton extends React.Component {
                         leftIcon={<FontIcon className="fa fa-usb"/>}
                     />
                     <ListItem
-                        primaryText={t("add.generate.title")}
-                        secondaryText={t("add.generate.subtitle")}
+                        primaryText={t('add.generate.title')}
+                        secondaryText={t('add.generate.subtitle')}
                         onClick={generate}
                         leftIcon={<FontIcon className="fa fa-random"/>}
                     />
                     <ListItem
-                        primaryText={t("add.import.title")}
-                        secondaryText={t("add.import.subtitle")}
+                        primaryText={t('add.import.title')}
+                        secondaryText={t('add.import.subtitle')}
                         onClick={importJson}
                         leftIcon={<FontIcon className="fa fa-code"/>}
                     />
@@ -94,7 +94,6 @@ class WalletsTokensButton extends React.Component {
 }
 
 const Render = translate('accounts')(({ t, accounts, generate, importJson, importLedger, connecting }) => {
-
     if (connecting) {
         return (
             <div id="accounts-list">
@@ -113,14 +112,11 @@ const Render = translate('accounts')(({ t, accounts, generate, importJson, impor
         {accounts.map((account) => <Account key={account.get('id')} account={account}/>)}
     </div>;
 
-    const titleStyle = {
-        fontSize: '20px',
-    };
 
     return (
         <div>
-            <div style={{display: 'flex', justifyContent:'space-between', alignItems: 'center', marginTop: '10px', height: '66px'}}>
-                <div><span style={{fontSize: "14px", fontWeight: 500, color: "#191919"}}>{t('list.title')}</span></div>
+            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', height: '66px'}}>
+                <div><span style={{fontSize: '14px', fontWeight: 500, color: '#191919'}}>{t('list.title')}</span></div>
                 <WalletsTokensButton
                     generate={generate}
                     importJson={importJson}
@@ -146,7 +142,7 @@ Render.propTypes = {
 const AccountsList = connect(
     (state, ownProps) => ({
         accounts: state.accounts.get('accounts', Immutable.List()),
-        connecting: state.launcher.get('connecting')
+        connecting: state.launcher.get('connecting'),
     }),
     (dispatch, ownProps) => ({
         generate: () => {
@@ -157,7 +153,7 @@ const AccountsList = connect(
         },
         importLedger: () => {
             dispatch(gotoScreen('add-from-ledger'));
-        }
+        },
 
     })
 )(Render);

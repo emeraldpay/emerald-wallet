@@ -77,7 +77,7 @@ const config = {
                     fallback: 'style-loader',
                     use: ['css-loader?modules']
                 }),
-                include: [/flexboxgrid/, /typeface-poppins/],
+                include: [/flexboxgrid/, /typeface-rubik/],
             },
             {
                 test: /\.(jpg|png|gif)$/,

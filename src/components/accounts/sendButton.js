@@ -9,13 +9,17 @@ class AccountSendButtonRender extends React.Component {
     render() {
         const { createTx } = this.props;
 
+        const backgroundColor = this.props.backgroundColor ? this.props.backgroundColor : '#EEE';
+        const textColor = this.props.textColor ? this.props.textColor : 'black';
+
         const styles = {
             sendButton: {
                 height: '40px',
                 fontSize: '14px',
                 fontWeight: '500',
                 borderRadius: '1px',
-                backgroundColor: '#EEE',
+                backgroundColor,
+                color: textColor,
                 marginLeft: '10px',
             },
         };

@@ -22,14 +22,15 @@ const Render = ({ transactions, sendTx, accounts, createAccount }) => {
             justifyContent: 'space-around',
         },
         titleStyle: {
-            fontSize: '20px',
+            fontSize: '14px',
+            fontWeight: 500,
         },
         table: {
         },
         card: {
             marginTop: '20px',
             ...noShadow,
-        }
+        },
     };
 
     const table = <Table style={{...styles.table}} selectable={false} fixedHeader={true}>
@@ -47,12 +48,10 @@ const Render = ({ transactions, sendTx, accounts, createAccount }) => {
         </TableBody>
     </Table>;
 
-    const titleAvatar = <Avatar icon={<FontIcon className="fa fa-dot-circle-o fa-2x" />} />;
-
     return (
             <Card style={styles.card}>
                 <CardHeader
-                    title="History"
+                    title="HISTORY"
                     titleStyle={styles.titleStyle}
                     actAsExpander={false}
                     showExpandableButton={false}
