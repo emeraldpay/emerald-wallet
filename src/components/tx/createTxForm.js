@@ -4,19 +4,16 @@ import { Field, reduxForm } from 'redux-form';
 import { SelectField, TextField, RadioButtonGroup } from 'redux-form-material-ui';
 import { RadioButton } from 'material-ui/RadioButton';
 import { MenuItem, FlatButton, IconButton } from 'material-ui';
-import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import { IconMenu } from 'material-ui/IconMenu';
 import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
-import { CardHeadEmerald } from 'elements/card';
 import { cardStyle, formStyle } from 'lib/styles';
 import { red200 } from 'material-ui/styles/colors';
 import { positive, number, required, address } from 'lib/validators';
 import IdentityIcon from '../accounts/identityIcon';
-import FontIcon from 'material-ui/FontIcon';
+import {InnerDialog, styles} from '../../elements/innerDialog';
 
 const textEtc = {
     fontSize: '20px',
-    fontWeight: '500',
     lineHeight: '24px',
 };
 
@@ -31,8 +28,6 @@ const textFiatLight = {
     fontSize: '14px',
     lineHeight: '16px',
     color: '#747474',
-    textAlign: 'center',
-    width: '100%',
 };
 
 const linkText = {
@@ -53,7 +48,6 @@ const balanceGroup = {
 
 const BalanceField = ({ input, rate }) => {
     const style = {
-        marginTop: '10px',
         color: '#191919',
         textAlign: 'left',
     };
@@ -70,94 +64,117 @@ const BalanceField = ({ input, rate }) => {
     );
 };
 
-const Render = (props) => {
+/**
+ * Address with IdentityIcon. We show it in from field select control
+ */
+const AddressWithIcon = ({ address }) => {
+    const style = {
+        div: {display: 'flex', alignItems: 'center'},
+        address: {marginLeft: '5px', fontSize: '16px', color: '#191919'},
+    };
+    return (<div style={style.div}>
+        <IdentityIcon size={30} expanded={true} id={address}/>
+        <div style={style.address}>{address}</div>
+    </div>);
+};
+
+const FromAddressField = ({accounts, onChangeAccount}) => {
+    return (<Field name="from"
+                   style={formStyle.input}
+                   onChange={(event, val) => onChangeAccount(accounts, val)}
+                   component={SelectField}
+                   underlineShow={false}
+                   fullWidth={true}
+                   dropDownMenuProps={{
+                       menuStyle: {
+                           overflowX: 'hidden',
+                       },
+                       selectionRenderer: (val) => (<AddressWithIcon address={val}/>),
+                   }}>
+        {accounts.map((account) =>
+            <MenuItem
+                // innerDivStyle={{display: 'flex'}}
+                key={account.get('id')}
+                value={account.get('id')}
+                primaryText={<AddressWithIcon address={account.get('id')}/>}/>
+        )}
+    </Field>);
+};
+
+const Renderer = (props) => {
     const { fields: { from, to }, accounts, balance, handleSubmit, invalid, pristine, submitting } = props;
     const { addressBook, handleSelect, tokens, token, isToken, onChangeToken, onChangeAccount } = props;
     const { fiatRate, value, fromAddr, onEntireBalance } = props;
     const { error, cancel } = props;
     const { useLedger, ledgerConnected } = props;
 
-    let sendDisabled = pristine || submitting || invalid || (useLedger && !ledgerConnected);
-    let sendButton =  <FlatButton label={`Send ${value && value.getEther(2).toString()} ETC`}
+    const sendDisabled = pristine || submitting || invalid || (useLedger && !ledgerConnected);
+    const sendButton = <FlatButton label={`Send ${value && value.getEther(2).toString()} ETC`}
                               disabled={sendDisabled}
                               onClick={handleSubmit}
                               style={formStyle.submitButton}
-                              backgroundColor={sendDisabled ? "#CBDBCC" : "#47B04B"}/>;
+                              backgroundColor={sendDisabled ? '#CBDBCC' : '#47B04B'}/>;
     let sendMessage = null;
     if (useLedger && !ledgerConnected) {
         sendMessage = <span style={formStyle.helpText}>
             Make sure Ledger Nano is connected &amp; Browser Mode is switched off.
-        </span>
+        </span>;
     }
 
     let passwordField = null;
     if (!useLedger) {
-        passwordField = <Row middle="xs">
-            <Col xs={2} xsOffset={1} style={formStyle.label}>
-                Password
-            </Col>
-            <Col xs={8} style={formStyle.group}>
-                <Field name="password"
-                       style={formStyle.input}
-                       type="password"
-                       component={TextField}
-                       underlineShow={false}
-                       fullWidth={true}
-                       validate={required}>
-                </Field>
-            </Col>
-        </Row>
+        passwordField =
+
+            <div style={styles.formRow}>
+                <div style={styles.left}>
+                    <div style={styles.fieldName}>
+                        Password
+                    </div>
+                </div>
+                <div style={styles.right}>
+                    <Field name="password"
+                           style={formStyle.input}
+                           type="password"
+                           component={TextField}
+                           underlineShow={false}
+                           fullWidth={true}
+                           validate={required}/>
+                </div>
+            </div>;
     }
 
+
     return (
-    <Grid style={cardStyle}>
-      <CardHeadEmerald
-        backLabel='DASHBOARD'
-        title='Send Ether & Tokens'
-        cancel={cancel}
-      />
-        <Row>
-          <Col xs={12} md={8}>
-            <Row middle="xs">
-              <Col xs={2} xsOffset={1} style={formStyle.label}>
-                From
-              </Col>
-              <Col xs={8} style={formStyle.group}>
-                <Field name="from"
-                       style={formStyle.input}
-                       onChange={(event, val) => onChangeAccount(accounts, val)}
-                       component={SelectField}
-                       underlineShow={false}
-                       fullWidth={true}
-                       dropDownMenuProps={{
-                           menuStyle: {
-                               overflowX: 'hidden',
-                           },
-                           selectionRenderer: (value) => {
-                               return (<div style={{display: 'flex', alignItems: 'center'}}>
-                                       <IdentityIcon size={30} expanded={true} id={value}/>
-                                       <div>{value}</div>
-                                   </div>);
-                           },
-                       }}
-                >
-                  {accounts.map((account) =>
-                    <MenuItem
-                        rightIcon={<IdentityIcon size={30} expanded={true} id={account.get('id')}/>}
-                        innerDivStyle={{display: 'flex'}}
-                        key={account.get('id')}
-                        value={account.get('id')}
-                        primaryText={account.get('id')}/>
-                  )}
-                </Field>
-              </Col>
-            </Row>
-            {passwordField}
-            <Row middle="xs">
-              <Col xs={2} xsOffset={1} style={formStyle.label}>
-                To
-              </Col>
-              <Col xs={7} style={formStyle.group}>
+    <InnerDialog caption="Send Ether & Tokens" onCancel={cancel}>
+        <div id="row" style={styles.formRow}>
+            <div style={styles.left}>
+                <div style={styles.fieldName}>
+                    From
+                </div>
+            </div>
+            <div style={{...styles.right, alignItems: 'center'}}>
+                <FromAddressField accounts={accounts} onChangeAccount={onChangeAccount}/>
+
+            </div>
+            <div style={{...styles.right}}>
+                <Field name="balance"
+                       disabled={true}
+                       component={BalanceField}
+                       floatingLabelText="Balance"
+                       rate={fiatRate}
+                />
+            </div>
+        </div>
+
+        {passwordField}
+
+        <div id="row" style={styles.formRow}>
+            <div style={styles.left}>
+                <div style={styles.fieldName}>
+                    To
+                </div>
+            </div>
+            <div style={styles.right}>
                 <Field name="to"
                        style={formStyle.input}
                        component={TextField}
@@ -165,33 +182,40 @@ const Render = (props) => {
                        underlineShow={false}
                        fullWidth={true}
                 />
-              </Col>
-              <Col xs={1} style={formStyle.group}>
+
                 <IconMenu
                     iconButtonElement={<IconButton><ImportContacts /></IconButton>}
                     onItemTouchTap={handleSelect}
                 >
-                {accounts.map((account) =>
-                  <MenuItem
-                    leftIcon={<IdentityIcon size={30} expanded={true} id={account.get('id')}/>}
-                    key={account.get('id')}
-                    value={account.get('id')}
-                    primaryText={account.get('name') ? account.get('name') : account.get('id')} />
-                )}
-                {/*
-                <Divider />
-                {addressBook.map((account) =>
-                  <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
-                )}
-                */}
+                    {accounts.map((account) =>
+                        <MenuItem
+                            leftIcon={<IdentityIcon size={30} expanded={true} id={account.get('id')}/>}
+                            key={account.get('id')}
+                            value={account.get('id')}
+                            primaryText={account.get('name') ? account.get('name') : account.get('id')} />
+                    )}
+                    {/*
+                     <Divider />
+                     {addressBook.map((account) =>
+                     <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
+                     )}
+                     */}
                 </IconMenu>
-              </Col>
-            </Row>
-            <Row middle="xs">
-              <Col xs={2} xsOffset={1} style={formStyle.label}>
-                Amount
-              </Col>
-              <Col xs={7} style={formStyle.group}>
+
+            </div>
+            <div style={styles.right}>
+                <a style={linkText} href={`http://gastracker.io/addr/${fromAddr}`}>Transaction History</a>
+            </div>
+        </div>
+
+
+        <div id="row" style={styles.formRow}>
+            <div style={styles.left}>
+                <div style={styles.fieldName}>
+                    Amount
+                </div>
+            </div>
+            <div style={{...styles.right, justifyContent: 'space-between'}}>
                 <Field name="value"
                        style={formStyle.input}
                        component={TextField}
@@ -200,49 +224,58 @@ const Render = (props) => {
                        underlineShow={false}
                        validate={[required]}
                 />
-              </Col>
-              <Col xs={1} style={formStyle.group}>
-                <Field name="token"
-                       component={SelectField}
-                       onChange={onChangeToken}
-                       value={token}
-                       underlineShow={false}
-                       fullWidth={true}>
-                  {tokens.map((it) =>
-                    <MenuItem key={it.get('address')}
-                              style={formStyle.input}
-                              value={it.get('address')}
-                              label={it.get('symbol')}
-                              primaryText={it.get('symbol')} />
-                  )}
-                </Field>
-              </Col>
-              {isToken &&
-              <Col xs={2} style={formStyle.group}>
-                <Field name="isTransfer"
-                       style={formStyle.input}
-                       component={RadioButtonGroup}
-                       defaultSelected="true"
-                       validate={required}>
-                  <RadioButton value="true" label="Transfer"/>
-                  <RadioButton value="false" label="Approve for Withdrawal"/>
-                </Field>
-              </Col> }
-            </Row>
-            <Row top="xs" style={balanceGroup}>
-              <Col xs={3} style={formStyle.label} />
-              <Col xs={2} style={textFiatLight}>
-                  {value && `$${value.getFiat(fiatRate).toString()}` }
-              </Col>
-              <Col xs={3} style={linkText} onClick={() => onEntireBalance(balance)}>
-                Entire Balance
-              </Col>
-            </Row>
-            <Row middle="xs">
-              <Col xs={2} xsOffset={1} style={formStyle.label}>
-                Fee
-              </Col>
-              <Col xs={5} style={formStyle.group}>
+
+                    <Field name="token"
+                           style={{...formStyle.input, marginLeft: '19px', maxWidth:'125px'}}
+                           component={SelectField}
+                           onChange={onChangeToken}
+                           value={token}
+                           underlineShow={false}
+                           fullWidth={true}>
+                        {tokens.map((it) =>
+                            <MenuItem key={it.get('address')}
+                                      value={it.get('address')}
+                                      label={it.get('symbol')}
+                                      primaryText={it.get('symbol')} />
+                        )}
+                    </Field>
+
+                {isToken &&
+                    <Field name="isTransfer"
+                           style={formStyle.input}
+                           component={RadioButtonGroup}
+                           defaultSelected="true"
+                           validate={required}>
+                        <RadioButton value="true" label="Transfer"/>
+                        <RadioButton value="false" label="Approve for Withdrawal"/>
+                    </Field>
+                }
+
+
+            </div>
+        </div>
+
+        <div id="row" style={styles.formRow}>
+            <div style={styles.left}></div>
+            <div style={styles.right}>
+                <div style={textFiatLight}>
+                    {value && `$${value.getFiat(fiatRate).toString()}` }
+                </div>
+                <div style={{...linkText, marginLeft: '20px'}} onClick={() => onEntireBalance(balance)}>
+                    Entire Balance
+                </div>
+            </div>
+        </div>
+
+
+        <div id="row" style={styles.formRow}>
+            <div style={styles.left}>
+                <div style={styles.fieldName}>
+                    Fee
+                </div>
+            </div>
+
+            <div style={styles.right}>
                 <Field name="gasPrice"
                        component={TextField}
                        hintText="23000"
@@ -250,63 +283,48 @@ const Render = (props) => {
                        underlineShow={false}
                        validate={[required, number, positive]}
                 />
-              </Col>
-            </Row>
-            {/* <Row>
-              <Col xs={12}>
-                <Field name="gas"
-                       component={TextField}
-                       floatingLabelText="Gas Amount"
-                       hintText="21000"
-                       validate={[required, number, positive]}
-                />
-              </Col>
-            </Row>*/}
-            <Row top="xs">
-              <Col xs={3} style={formStyle.label} />
-              <Col xs={3} style={formStyle.group}>
-                  {sendButton}
-                <br />
-              </Col>
-              <Col xs={3} style={formStyle.group}>
+            </div>
+        </div>
+
+        {/* <Row>
+         <Col xs={12}>
+         <Field name="gas"
+         component={TextField}
+         floatingLabelText="Gas Amount"
+         hintText="21000"
+         validate={[required, number, positive]}
+         />
+         </Col>
+         </Row>*/}
+
+        <div id="row" style={styles.formRow}>
+
+            <div style={styles.left}></div>
+            <div style={{...styles.right}}>
+                {sendButton}
                 <FlatButton label="Cancel"
                             onClick={cancel}
-                            style={formStyle.cancelButton}
+                            style={{...formStyle.cancelButton, marginLeft: '10px'}}
                             backgroundColor="#DDD" />
-              </Col>
-            </Row>
-            <Row top="xs">
-                <Col xs={3} style={formStyle.label} />
-                <Col xs={6}>{sendMessage}</Col>
-            </Row>
-          </Col>
+            </div>
+        </div>
 
-          <Col xs={12} md={4}>
-            <Row>
-              <Field name="balance"
-                     disabled={true}
-                     component={BalanceField}
-                     floatingLabelText="Balance"
-                     rate={fiatRate}
-              />
-            </Row>
-            <Row style={{marginTop: '40px'}}>
-                <a style={linkText} href={`http://gastracker.io/addr/${fromAddr}`}>Transaction History</a>
-            </Row>
-          </Col>
-        </Row>
+        <div id="row" style={styles.formRow}>
+            <div style={styles.left}></div>
+            <div style={styles.right}>{sendMessage}</div>
+        </div>
+
         {error && (
-          <Row>
-            <Col>
-              <span style={{ color: red200 }}><strong>{error}</strong></span>
-            </Col>
-          </Row>
+            <div id="row" style={styles.formRow}>
+                    <span style={{ color: red200 }}><strong>{error}</strong></span>
+            </div>
         )}
-    </Grid>
+
+    </InnerDialog>
     );
 };
 
-Render.propTypes = {
+Renderer.propTypes = {
     fields: PropTypes.array.isRequired, // verify in react-form
     accounts: PropTypes.object.isRequired,
     handleSubmit: PropTypes.func.isRequired,
@@ -333,6 +351,7 @@ Render.propTypes = {
 const CreateTxForm = reduxForm({
     form: 'createTx',
     fields: ['to', 'from', 'password', 'value', 'token', 'gasPrice', 'gas', 'token', 'isTransfer'],
-})(Render);
+})(Renderer);
 
 export default CreateTxForm;
+

@@ -20,8 +20,6 @@ import AccountBalance from './balance';
 import ExportAccountButton from './export';
 import PrintAccountButton from './print';
 import { Wei } from 'lib/types';
-import { CardHeadEmerald } from 'elements/card';
-import { cardStyle, formStyle, noShadow } from 'lib/styles';
 import IdentityIcon from './identityIcon';
 import {InnerDialog, styles} from '../../elements/innerDialog';
 
@@ -123,7 +121,6 @@ class AccountRender extends React.Component {
                                     </div>
                                 </div>
                             </div>
-
                         </div>
 
                     </InnerDialog>
@@ -151,6 +148,7 @@ AccountRender.propTypes = {
     account: PropTypes.object.isRequired,
     goBack: PropTypes.func.isRequired,
     transactions: PropTypes.object.isRequired,
+    editAccount: PropTypes.func,
 };
 
 const AccountShow = connect(

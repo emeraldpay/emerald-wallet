@@ -1,6 +1,6 @@
 import React from 'react';
-import TransactionsList from '../tx/list';
-import AccountsList from '../accounts/list';
+import TransactionsList from './tx/list';
+import AccountsList from './accounts/list';
 
 const Dashboard = () => {
     return (

@@ -38,7 +38,7 @@ export const copyIcon = {
 export const align = {
     left: { textAlign: 'left' },
     center: { textAlign: 'center'},
-    right: { textAlign: 'right'}
+    right: { textAlign: 'right'},
 };
 
 export const noShadow = {
@@ -56,7 +56,7 @@ export const cardStyle = {
     marginTop: '20px',
 };
 
-export const formStyle = { 
+export const formStyle = {
     avatar: {
         color: '#191919',
         fontSize: '18px',
@@ -76,7 +76,7 @@ export const formStyle = {
     input: {
         boxSizing: 'border-box',
         height: '51px',
-        border: '1px solid #DDDDDD',
+        border: '1px solid #C5C5C5',
         borderRadius: '1px',
         color: '#191919',
         fontSize: '16px',
@@ -90,17 +90,15 @@ export const formStyle = {
         fontWeight: '500',
         borderRadius: '1px',
         color: '#fff',
-        width: '100%',
     },
     cancelButton: {
         height: '40px',
         fontSize: '14px',
-        fontWeight: '500', 
+        fontWeight: '500',
         borderRadius: '1px',
-        width: '100%',
     },
     helpText: {
         fontSize: '12px',
-        color: '#779'
-    }
-}
+        color: '#779',
+    },
+};

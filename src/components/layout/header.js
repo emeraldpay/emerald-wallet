@@ -8,8 +8,7 @@ import { gotoScreen } from '../../store/screenActions';
 import { LogoIcon, SettingsIcon } from '../../elements/icons';
 
 
-const Render = ({openSettings}) => {
-
+const Render = ({maxWidth = '1220px', openSettings}) => {
     const titleStyle = {
         color: '#191919',
         fontSize: '17px',
@@ -20,7 +19,7 @@ const Render = ({openSettings}) => {
 
     return (
         <div style={{backgroundColor: 'white'}}>
-            <div style={{display: 'flex', justifyContent: 'space-between', margin: '0 auto', maxWidth: '1060px'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', margin: '0 auto', maxWidth}}>
                 <div style={{display: 'flex', alignItems: 'center'}}>
                     <div style={titleStyle}>EMERALD WALLET</div>
                     <div><LogoIcon height="33px" width="17px" /></div>

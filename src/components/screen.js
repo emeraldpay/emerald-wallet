@@ -20,7 +20,7 @@ import AddContract from './contracts/add';
 import DeployContract from './contracts/deploy';
 import ContractShow from './contracts/show';
 import Welcome from './welcome/welcome';
-import Dashboard from './layout/dashboard';
+import Dashboard from './dashboard';
 import Settings from './settings';
 
 const Render = ({ screen, screenItem }) => {

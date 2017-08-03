@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import log from 'electron-log';
 import Networks from 'lib/networks';
 import { translate } from 'react-i18next';
@@ -13,16 +12,16 @@ import Footer from './layout/footer';
 import Error from './error';
 import Dialog from './dialog';
 
+const maxWidth = '1200px';
+
 const Render = translate('common')(({t, ...props}) => (
 <div>
-    {props.screen !== 'welcome' && <Header/>}
-        <div style={{}}>
-            <div style={{margin: '0 auto', maxWidth: '1060px'}}>
+    {props.screen !== 'welcome' && <Header maxWidth = {maxWidth}/>}
+            <div style={{margin: '0 auto', maxWidth}}>
                 <Screen id="body"/>
             </div>
-        </div>
         <Error/><Dialog/>
-    {props.screen !== 'welcome' && <Footer /> }
+    {props.screen !== 'welcome' && <Footer maxWidth = {maxWidth}/> }
 </div>
 ));
 

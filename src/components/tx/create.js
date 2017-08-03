@@ -69,7 +69,6 @@ const traceValidate = (data, dispatch) => {
     });
 };
 
-const selector = formValueSelector('createTx');
 
 const CreateTx = connect(
     (state, ownProps) => {
@@ -100,7 +99,8 @@ const CreateTx = connect(
             value: new Wei(etherToWei(value)),
             balance: selector(state, 'balance'),
             fromAddr,
-            useLedger, ledgerConnected
+            useLedger,
+            ledgerConnected,
         };
     },
     (dispatch, ownProps) => ({
@@ -132,6 +132,7 @@ const CreateTx = connect(
                 });
         },
         onChangeAccount: (accounts, value) => {
+            log.debug(JSON.stringify(ownProps));
             // load account information for selected account
             const idx = accounts.findKey((acct) => acct.get('id') === value);
             const balance = accounts.get(idx).get('balance');
