@@ -247,6 +247,25 @@ function onUpdateTx(state, action) {
     return state;
 }
 
+/**
+ * When full node can't find our tx
+ */
+function onTrackedTxNotFound(state, action) {
+    if (action.type === 'ACCOUNT/TRACKED_TX_NOTFOUND') {
+        return state.update('trackedTransactions', (txes) => {
+            const pos = txes.findKey((tx) => tx.get('hash') === action.hash);
+            if (pos >= 0) {
+                // increase total retries counter
+                txes = txes.update(pos, (tx) => tx.set('totalRetries', (tx.get('totalRetries') || 0) + 1));
+            }
+
+            localStorage.setItem('trackedTransactions', JSON.stringify(txes.toJS()));
+            return txes;
+        });
+    }
+    return state;
+}
+
 function onGasPrice(state, action) {
     if (action.type === 'ACCOUNT/GAS_PRICE') {
         return state.set('gasPrice', new Wei(action.value));
@@ -296,5 +315,6 @@ export default function accountsReducers(state, action) {
     state = onPendingBalance(state, action);
     state = onExchangeRates(state, action);
     state = onLoadStoredTransactions(state, action);
+    state = onTrackedTxNotFound(state, action);
     return state;
 }

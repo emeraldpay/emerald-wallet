@@ -118,9 +118,9 @@ function onTxSend(dispatch, sourceTx) {
             txHash: txhash,
         });
         dispatch(loadAccountBalance(sourceTx.from));
-        const senttx = Object.assign({}, sourceTx, {hash: txhash});
-        dispatch(trackTx(senttx));
-        dispatch(gotoScreen('transaction', senttx));
+        const sentTx = Object.assign({}, sourceTx, {hash: txhash});
+        dispatch(trackTx(sentTx));
+        dispatch(gotoScreen('transaction', sentTx));
     };
 }
 
@@ -301,6 +301,10 @@ export function refreshTransaction(hash) {
         rpc.call('eth_getTransactionByHash', [hash]).then((result) => {
             if (!result) {
                 log.info(`No tx for hash ${hash}`);
+                dispatch({
+                    type: 'ACCOUNT/TRACKED_TX_NOTFOUND',
+                    hash,
+                });
             } else if (typeof result === 'object') {
                 dispatch({
                     type: 'ACCOUNT/UPDATE_TX',
@@ -318,10 +322,14 @@ export function refreshTransaction(hash) {
         });
 }
 
+/**
+ * Refresh only tx with totalRetries <= 50
+ */
 export function refreshTrackedTransactions() {
     return (dispatch, getState) => {
-        getState().accounts.get('trackedTransactions').map(
-            (tx) => dispatch(refreshTransaction(tx.get('hash')))
+        getState().accounts.get('trackedTransactions')
+            .filter((tx) => tx.get('totalRetries', 0) <= 50)
+            .map((tx) => dispatch(refreshTransaction(tx.get('hash')))
         );
     };
 }
