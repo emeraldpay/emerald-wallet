@@ -1,6 +1,6 @@
-import { rpc } from '../lib/rpc';
 import Immutable from 'immutable';
 import { parseString, getNakedAddress, fromTokens, functionToData, getFunctionSignature } from 'lib/convert';
+import { rpc } from '../lib/rpc';
 
 /** Abbreviated ABI for ERC20-compatible tokens **/
 const TokenAbi = [

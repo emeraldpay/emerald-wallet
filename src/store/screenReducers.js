@@ -22,7 +22,7 @@ function onError(state, action) {
     if (action.type === 'SCREEN/ERROR') {
         return state
             .set('error', action.message)
-            .set('dialog', null).set('dialogItem', null)
+            .set('dialog', null).set('dialogItem', null);
     }
     return state;
 }
@@ -31,7 +31,7 @@ function onDialog(state, action) {
     if (action.type === 'SCREEN/DIALOG') {
         return state
             .set('dialog', action.value)
-            .set('dialogItem', action.item)
+            .set('dialogItem', action.item);
     }
     return state;
 }

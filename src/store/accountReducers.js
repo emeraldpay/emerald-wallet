@@ -77,19 +77,19 @@ function onSetAccountsList(state, action) {
     switch (action.type) {
         case 'ACCOUNT/SET_LIST':
             const existingAccounts = state.get('accounts');
-            function getExisting(id) {
+            const getExisting = (id) => {
                 const pos = existingAccounts.findKey((x) => x.get('id') === id);
                 if (pos >= 0) {
-                    return existingAccounts.get(pos)
+                    return existingAccounts.get(pos);
                 }
                 return initialAddr;
-            }
+            };
             const updatedList = Immutable.fromJS(action.accounts).map((acc) =>
                 Immutable.fromJS({
                     name: acc.get('name'),
                     description: acc.get('description'),
                     id: acc.get('address'),
-                    hardware: acc.get('hardware')
+                    hardware: acc.get('hardware'),
                 })
             ).map((acc) =>
                 getExisting(acc.get('id')).merge(acc)
@@ -175,7 +175,7 @@ function createTx(data) {
         gasPrice: data.gasPrice,
     });
     if (data.from !== '0x0000000000000000000000000000000000000000') {
-        tx = tx.set('from', data.from)
+        tx = tx.set('from', data.from);
     }
     if (typeof data.value === 'string') {
         tx = tx.set('value', new Wei(data.value));
@@ -187,7 +187,7 @@ function createTx(data) {
         tx = tx.set('gas', toNumber(data.gas));
     }
     if (typeof data.nonce === 'string') {
-        tx = tx.set('nonce', toNumber(data.nonce))
+        tx = tx.set('nonce', toNumber(data.nonce));
     }
     // If is not pending, fill in finalized attributes.
     if (typeof data.blockNumber !== 'undefined' && data.blockNumber !== null) {
@@ -203,13 +203,13 @@ function createTx(data) {
 }
 
 function isTracked(state, tx) {
-    return state.get('trackedTransactions').some((x) => tx.get('hash') === x.get('hash'))
+    return state.get('trackedTransactions').some((x) => tx.get('hash') === x.get('hash'));
 }
 
 function onLoadPending(state, action) {
     if (action.type === 'ACCOUNT/PENDING_TX') {
         const txes = [];
-        for (let tx of action.txList) {
+        for (const tx of action.txList) {
             txes.push(createTx(tx));
         }
         return state.set('trackedTransactions', Immutable.fromJS(txes));
@@ -221,7 +221,7 @@ function onTrackTx(state, action) {
     if (action.type === 'ACCOUNT/TRACK_TX') {
         const data = createTx(action.tx);
         if (isTracked(state, data)) {
-            return state
+            return state;
         }
         return state.update('trackedTransactions', (txes) => txes.push(data));
     }
@@ -233,7 +233,7 @@ function onUpdateTx(state, action) {
         return state.update('trackedTransactions', (txes) => {
             const pos = txes.findKey((tx) => tx.get('hash') === action.tx.hash);
             if (pos >= 0) {
-                txes = txes.update(pos, (tx) => tx.mergeWith((o,n) => o || n, createTx(action.tx)));
+                txes = txes.update(pos, (tx) => tx.mergeWith((o, n) => o || n, createTx(action.tx)));
             }
             // It seems kind of sloppy to store whole txs, when all we
             // really need is hashes. But even if a pending transaction is stored

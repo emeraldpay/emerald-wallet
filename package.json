@@ -59,6 +59,7 @@
     "classnames": "^2.1.2",
     "copy-to-clipboard": "^3.0.6",
     "decompress-zip": "^0.3.0",
+    "electron": "^1.6.11",
     "electron-log": "^2.2.6",
     "electron-store": "^1.1.0",
     "es6-promise": "4.1.1",
@@ -110,6 +111,7 @@
   },
   "devDependencies": {
     "@elastic/webpack-directory-name-as-main": "2.0.2",
+    "aws-sdk": "2.91.0",
     "babel-core": "^6.24.1",
     "babel-loader": "^7.1.0",
     "babel-polyfill": "^6.23.0",
@@ -121,7 +123,6 @@
     "copy-webpack-plugin": "1.1.1",
     "css-loader": "0.28.0",
     "devtron": "^1.4.0",
-    "electron": "^1.6.11",
     "electron-builder": "^19.7.1",
     "electron-rebuild": "1.5.11",
     "eslint": "^3.19.0",
@@ -147,12 +148,11 @@
     "phantomjs-prebuilt": "^2.1.14",
     "recursive-readdir-sync": "^1.0.6",
     "sass-loader": "6.0.3",
+    "shebang-loader": "0.0.1",
     "style-loader": "0.16.1",
     "url-loader": "0.5.7",
     "webpack": "2.6.1",
-    "webpack-dev-server": "2.4.2",
-    "aws-sdk": "2.91.0",
-    "shebang-loader": "0.0.1"
+    "webpack-dev-server": "2.4.2"
   },
   "build": {
     "appId": "com.ethereumclassic.emeraldwallet",

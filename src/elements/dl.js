@@ -1,5 +1,4 @@
 import React from 'react';
-// import ListItem from 'material-ui/List/ListItem';
 
 import { Card, CardHeader } from 'material-ui/Card';
 import copy from 'copy-to-clipboard';
@@ -102,15 +101,3 @@ export function ValueCard(props) {
         </Card>
     );
 }
-
-// export const AccountItem = (props) => {
-//     const { primary, secondary } = props;
-//     return (
-//         <ListItem
-//             insetChildren={true}
-//             disabled={true}
-//             primaryText={primary}
-//             secondaryText={secondary}
-//         />
-//     );
-// };

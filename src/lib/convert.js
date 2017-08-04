@@ -20,24 +20,22 @@ export function toNumber(quantity) {
   Convert unix timestamp to time elapsed
 */
 export function toDuration(timestamp) {
-    let millis = Date.now() - timestamp * 1000;
+    let millis = Date.now() - (timestamp * 1000);
     const dur = [];
     const units = [
-        { label: "millis",  mod: 1000 },
-        { label: "seconds", mod: 60 },
-        { label: "mins",    mod: 60 },
-        { label: "hours",   mod: 24 },
-        { label: "days",    mod: 365 },
-        { label: "years",   mod: 1000 },
+        { label: 'millis', mod: 1000 },
+        { label: 'seconds', mod: 60 },
+        { label: 'mins', mod: 60 },
+        { label: 'hours', mod: 24 },
+        { label: 'days', mod: 365 },
+        { label: 'years', mod: 1000 },
     ];
     // calculate the individual unit values
     units.forEach((u) => {
         const val = millis % u.mod;
         millis = (millis - val) / u.mod;
-        if (u.label === 'millis')
-            return;
-        if (val > 0)
-            dur.push({ label: u.label, val });
+        if (u.label === 'millis') { return; }
+        if (val > 0) { dur.push({ label: u.label, val }); }
     });
     // convert object to string representation
     dur.toString = () =>
@@ -47,7 +45,7 @@ export function toDuration(timestamp) {
     return dur;
 }
 
-//TODO: Handle locales
+// TODO: Handle locales
 export function toDate(timestamp) {
     return new Date(timestamp).toJSON();
 }
@@ -95,12 +93,16 @@ export function fromTokens(value, decimals) {
     return new BigNumber(value).times(new BigNumber(10).pow(decimals.substring(2)));
 }
 
+export function mweiToWei(val) {
+    const m = new BigNumber(10).pow(6);
+    return new BigNumber(val).mul(m).round(0, BigNumber.ROUND_HALF_DOWN);
+}
+
 /**
  *
  * Estimate gas using trace_call result
  *
  */
-
 export function estimateGasFromTrace(dataObj, trace) {
     const gasLimit = 2000000;
     const value = new BigNumber(dataObj.value);
@@ -135,19 +137,15 @@ export function estimateGasFromTrace(dataObj, trace) {
             const toState = new BigNumber(stateDiff.to);
             estGas = fromState.sub(toState);
             estGas = (dataObj.from.toLowerCase() === dataObj.to.toLowerCase()) ? estGas : estGas.sub(value);
-            log.debug('Start balance: ' + mweiToWei(fromState).toString(10));
-            log.debug('End balance: ' + mweiToWei(toState).toString(10));
-            log.debug(fromState.sub(toState).toString(10))
+            log.debug(`Start balance: ${mweiToWei(fromState).toString(10)}`);
+            log.debug(`End balance: ${mweiToWei(toState).toString(10)}`);
+            log.debug(fromState.sub(toState).toString(10));
         }
         if (estGas.lt(0) || estGas.eq(gasLimit)) estGas = null;
     }
     return estGas;
 }
 
-export function mweiToWei(val) {
-    const m = new BigNumber(10).pow(6);
-    return new BigNumber(val).mul(m).round(0, BigNumber.ROUND_HALF_DOWN);
-}
 
 export function etherToWei(val) {
     const m = new BigNumber(10).pow(18);

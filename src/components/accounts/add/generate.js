@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import Immutable from 'immutable';
+import { translate } from 'react-i18next';
 import { Field, reduxForm } from 'redux-form';
 import { renderTextField } from 'elements/formFields';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
@@ -9,11 +11,10 @@ import FontIcon from 'material-ui/FontIcon';
 
 import { cardSpace } from 'lib/styles';
 
-import Immutable from 'immutable';
 import { gotoScreen } from 'store/screenActions';
 import { createAccount } from 'store/accountActions';
 import { required, minLength, passwordMatch } from 'lib/validators';
-import { translate } from 'react-i18next';
+
 import AccountShow from '../show';
 
 const validate = (values) => {
@@ -23,10 +24,10 @@ const validate = (values) => {
     return errors;
 };
 
-const Render = translate("accounts")(({ t, account, submitSucceeded, handleSubmit, invalid, pristine, reset, submitting, cancel }) => (
+const Render = translate('accounts')(({ t, account, submitSucceeded, handleSubmit, invalid, pristine, reset, submitting, cancel }) => (
     <Card style={cardSpace}>
         <CardHeader
-            title={t("generate.title")}
+            title={t('generate.title')}
             actAsExpander={false}
             showExpandableButton={false}
         />
@@ -36,36 +37,36 @@ const Render = translate("accounts")(({ t, account, submitSucceeded, handleSubmi
                 <Field name="name"
                         component={renderTextField}
                         type="text"
-                        label={t("generate.name")} />
+                        label={t('generate.name')} />
                 <Field name="description"
                         component={renderTextField}
                         type="text"
-                        label={t("generate.description")} />
+                        label={t('generate.description')} />
                 <Field name="password"
                         component={renderTextField}
                         type="password"
-                        label={t("generate.password")}
+                        label={t('generate.password')}
                         validate={[required, minLength(8)]} />
                 <Field name="passwordConfirm"
                         component={renderTextField}
                         type="password"
-                        label={t("generate.passwordConfirm")}
+                        label={t('generate.passwordConfirm')}
                         validate={ passwordMatch } />
-                <FlatButton label={t("common:submit")} type="submit"
+                <FlatButton label={t('common:submit')} type="submit"
                             disabled={pristine || submitting || invalid } />
-                <FlatButton label={t("common:clear")}
+                <FlatButton label={t('common:clear')}
                             disabled={pristine || submitting}
                             onClick={reset} />
             </form>
         </CardText>
         <CardText expandable={!submitSucceeded}>
              <AccountShow key={(account === undefined) ? undefined : account.get('id')} account={account}/>
-             <FlatButton label={t("common:done")}
+             <FlatButton label={t('common:done')}
                         onClick={cancel}
                         icon={<FontIcon className="fa fa-home" />}/>
         </CardText>
         <CardActions>
-            <FlatButton label={t("common:cancel")}
+            <FlatButton label={t('common:cancel')}
                         onClick={cancel}
                         icon={<FontIcon className="fa fa-ban" />}
                         secondary={true} />

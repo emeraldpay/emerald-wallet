@@ -1,10 +1,10 @@
 import LedgerEth from 'ledgerco/src/ledger-eth';
 import LedgerComm from 'ledgerco/src/ledger-comm-u2f';
 import log from 'electron-log';
-import { rpc } from 'lib/rpc';
-import { gotoScreen } from './screenActions';
 import uuid from 'uuid/v4';
 import Immutable from 'immutable';
+import { rpc } from 'lib/rpc';
+import { gotoScreen } from './screenActions';
 import { loadAccountsList } from './accountActions';
 
 function connection() {
@@ -19,9 +19,9 @@ function connection() {
             // create U2F connection, which will work _only_ in Chrome + SSL webpage
             LedgerComm.create_async().then((comm) =>
                 resolve(new LedgerEth(comm))
-            ).catch(reject)
+            ).catch(reject);
         }
-    })
+    });
 }
 
 export function closeConnection() {
@@ -33,9 +33,9 @@ export function closeConnection() {
                 .then(resolve)
                 .catch(reject);
         } else {
-            resolve({})
+            resolve({});
         }
-    })
+    });
 }
 
 function loadInfo(hdpath, addr) {
@@ -54,7 +54,7 @@ function loadInfo(hdpath, addr) {
                 value: result,
             });
         });
-    }
+    };
 }
 
 export function getAddress(hdpath) {
@@ -65,25 +65,25 @@ export function getAddress(hdpath) {
                 dispatch({
                     type: 'LEDGER/ADDR',
                     hdpath,
-                    addr: addr.address
+                    addr: addr.address,
                 });
                 dispatch(loadInfo(hdpath, addr.address));
             })
-            .catch((err) => log.error("Failed to get Ledger connection", err))
-    }
+            .catch((err) => log.error('Failed to get Ledger connection', err));
+    };
 }
 
 function start(index, hdpath) {
     return {
         type: 'LEDGER/SET_LIST_HDPATH',
         index,
-        hdpath
-    }
+        hdpath,
+    };
 }
 
 export function checkConnected() {
     return (dispatch, getState) => {
-        let connected = (value) => {
+        const connected = (value) => {
             return () => {
                 if (getState().ledger.get('connected') !== value) {
                     dispatch({ type: 'LEDGER/CONNECTED', value});
@@ -91,7 +91,7 @@ export function checkConnected() {
                         dispatch(getAddresses());
                     }
                 }
-            }
+            };
         };
 
         connection().then((conn) => {
@@ -101,103 +101,103 @@ export function checkConnected() {
                     conn.disconnect();
                     dispatch({ type: 'LEDGER/CONNECTED', value: false});
                 });
-        }).catch(connected(false))
-    }
+        }).catch(connected(false));
+    };
 }
 
 export function watchConnection() {
     return (dispatch, getState) => {
         let start = null;
-        let fn = () => {
-            let state = getState();
-            let dialogDisplayed = state.screen.get(('dialog')) !== null;
+        const fn = () => {
+            const state = getState();
+            const dialogDisplayed = state.screen.get(('dialog')) !== null;
             if (!dialogDisplayed) {
                 dispatch(checkConnected());
             }
-            start()
+            start();
         };
         start = () => {
-            let state = getState();
-            let watchEnabled = state.ledger.get('watch', false);
+            const state = getState();
+            const watchEnabled = state.ledger.get('watch', false);
             if (watchEnabled) {
-                setTimeout(fn, 1000)
+                setTimeout(fn, 1000);
             }
         };
         start();
-    }
+    };
 }
 
 export function setWatch(value) {
-    return({
+    return ({
         type: 'LEDGER/WATCH',
-        value
-    })
+        value,
+    });
 }
 
 export function getAddresses(offset, count) {
     return (dispatch, getState) => {
         count = count || 5;
         offset = offset || 0;
-        let hdbase = getState().ledger.getIn(['hd', 'base']);
+        const hdbase = getState().ledger.getIn(['hd', 'base']);
         // let offset = getState().ledger.getIn(['hd', 'offset']);
         dispatch({
             type: 'LEDGER/SET_HDOFFSET',
-            value: offset
+            value: offset,
         });
         dispatch(selectRows([]));
-        log.info("Load addresses", hdbase, count);
+        log.info('Load addresses', hdbase, count);
         for (let i = 0; i < count; i++) {
-            let hdpath = [hdbase, i + offset].join('/');
+            const hdpath = [hdbase, i + offset].join('/');
             dispatch(start(i, hdpath));
             dispatch(getAddress(hdpath));
         }
-    }
+    };
 }
 
 export function selectRows(indexes) {
     return {
         type: 'LEDGER/SELECTED',
-        value: indexes
-    }
+        value: indexes,
+    };
 }
 
 export function setBaseHD(hdpath) {
     return {
         type: 'LEDGER/SET_BASEHD',
-        value: hdpath
-    }
+        value: hdpath,
+    };
 }
 
 export function importSelected() {
     return (dispatch, getState) => {
-        let ledger = getState().ledger;
-        let selected = ledger.get('selected');
-        let addresses = ledger.get('addresses');
+        const ledger = getState().ledger;
+        const selected = ledger.get('selected');
+        const addresses = ledger.get('addresses');
         selected.map((index, i) => {
-            let addr = addresses.get(index);
-            let data = {
+            const addr = addresses.get(index);
+            const data = {
                 version: 3,
                 id: uuid(),
                 name: `Ledger ${addr.get('hdpath')}`,
                 address: addr.get('address').substring(2),
                 crypto: {
-                    cipher: "hardware",
-                    hardware: "ledger-nano-s:v1",
-                    hd_path: addr.get('hdpath')
-                }
+                    cipher: 'hardware',
+                    hardware: 'ledger-nano-s:v1',
+                    hd_path: addr.get('hdpath'),
+                },
             };
-            let open = i === 0;
-            log.info("Import Ledger addr", data);
+            const open = i === 0;
+            log.info('Import Ledger addr', data);
             rpc.call('emerald_importAccount', [data]).then(() => {
                 dispatch(loadAccountsList());
                 if (open) {
                     dispatch(gotoScreen('account', Immutable.fromJS({
-                        id: addr.get('address'), //FIXME sometimes it's ID sometimes ADDRESS
+                        id: addr.get('address'), // FIXME sometimes it's ID sometimes ADDRESS
                         name: data.name,
                     })));
                 }
             });
-        })
-    }
+        });
+    };
 }
 

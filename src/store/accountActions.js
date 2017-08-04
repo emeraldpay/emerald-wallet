@@ -145,19 +145,19 @@ function incNonce(nonce) {
 function verifySender(expected) {
     return (raw) =>
         new Promise((resolve, reject) => {
-            let tx = new EthereumTx(raw);
+            const tx = new EthereumTx(raw);
             if (tx.verifySignature()) {
-                if ('0x'+tx.getSenderAddress().toString('hex').toLowerCase() !== expected.toLowerCase()) {
+                if (`0x${tx.getSenderAddress().toString('hex').toLowerCase()}` !== expected.toLowerCase()) {
                     log.error(`WRONG SENDER: 0x${tx.getSenderAddress().toString('hex')} != ${expected}`);
-                    reject(new Error("Emerald Vault returned signature from wrong Sender"))
+                    reject(new Error('Emerald Vault returned signature from wrong Sender'));
                 } else {
-                    resolve(raw)
+                    resolve(raw);
                 }
             } else {
                 log.error(`Invalid signature: ${raw}`);
-                reject(new Error("Emerald Vault returned invalid signature for the transaction"));
+                reject(new Error('Emerald Vault returned invalid signature for the transaction'));
             }
-        })
+        });
 }
 
 function emeraldSign(txData, chain) {
@@ -173,7 +173,7 @@ export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value)
         gasPrice,
         value,
     };
-    originalTx.passphrase = originalTx.passphrase || ""; //for HW key
+    originalTx.passphrase = originalTx.passphrase || ''; // for HW key
     return (dispatch, getState) => {
         const chain = getState().network.getIn(['chain', 'name']);
         getNonce(accountId)
@@ -300,7 +300,7 @@ export function refreshTransaction(hash) {
     return (dispatch) =>
         rpc.call('eth_getTransactionByHash', [hash]).then((result) => {
             if (!result) {
-                log.info(`No tx for hash ${hash}`)
+                log.info(`No tx for hash ${hash}`);
             } else if (typeof result === 'object') {
                 dispatch({
                     type: 'ACCOUNT/UPDATE_TX',
