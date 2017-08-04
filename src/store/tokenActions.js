@@ -4,37 +4,37 @@ import { parseString, getNakedAddress, fromTokens, functionToData, getFunctionSi
 
 /** Abbreviated ABI for ERC20-compatible tokens **/
 const TokenAbi = [
-    {name:'approve',
-        inputs:[{name:'_spender',type:'address'},
-                {name:'_amount',type:'uint256'}],
-        outputs:[{name:'success',type:'bool'}]},
-    {name:'totalSupply',
-        inputs:[],
-        outputs:[{name:'',type:'uint256'}]},
-    {name:'divisor',
-        inputs:[],
-        outputs:[{name:'divisor',type:'uint256'}]},
-    {name:'transferFrom',
-        inputs:[{name:'_from',type:'address'},
-                  {name:'_to',type:'address'},
-                  {name:'_value',type:'uint256'}],
-        outputs:[{name:'success',type:'bool'}]},
-    {name:'balanceOf',
-        inputs:[{name:'_owner',type:'address'}],
-        outputs:[{name:'balance',type:'uint256'}]},
-    {name:'transfer',
-        inputs:[{name:'_to',type:'address'},{name:'_value',type:'uint256'}],
-        outputs:[{name:'success',type:'bool'}]},
-    {name:'symbol',
-        inputs:[],
-        outputs:[{name:'',type:'string'}]},
-    {name:'name',
-        inputs:[],
-        outputs:[{name:'',type:'string'}]},
-    {name:'decimals',
-        inputs:[],
-        outputs:[{name:'',type:'uint8'}]}
-        ];
+    {name: 'approve',
+        inputs: [{name: '_spender', type: 'address'},
+                {name: '_amount', type: 'uint256'}],
+        outputs: [{name: 'success', type: 'bool'}]},
+    {name: 'totalSupply',
+        inputs: [],
+        outputs: [{name: '', type: 'uint256'}]},
+    {name: 'divisor',
+        inputs: [],
+        outputs: [{name: 'divisor', type: 'uint256'}]},
+    {name: 'transferFrom',
+        inputs: [{name: '_from', type: 'address'},
+                  {name: '_to', type: 'address'},
+                  {name: '_value', type: 'uint256'}],
+        outputs: [{name: 'success', type: 'bool'}]},
+    {name: 'balanceOf',
+        inputs: [{name: '_owner', type: 'address'}],
+        outputs: [{name: 'balance', type: 'uint256'}]},
+    {name: 'transfer',
+        inputs: [{name: '_to', type: 'address'}, {name: '_value', type: 'uint256'}],
+        outputs: [{name: 'success', type: 'bool'}]},
+    {name: 'symbol',
+        inputs: [],
+        outputs: [{name: '', type: 'string'}]},
+    {name: 'name',
+        inputs: [],
+        outputs: [{name: '', type: 'string'}]},
+    {name: 'decimals',
+        inputs: [],
+        outputs: [{name: '', type: 'uint8'}]},
+];
 
 function getFunction(name) {
     return Immutable.fromJS(
@@ -136,11 +136,11 @@ export function addToken(address, name) {
 function createTokenTransaction(token, to, value, isTransfer) {
     const address = getNakedAddress(to);
     const numTokens = fromTokens(value, token.get('decimals'));
-    if (isTransfer === 'true')
+    if (isTransfer === 'true') {
         return functionToData(getFunction('transfer'),
             { _to: address, _value: numTokens });
-    else
-        return functionToData(getFunction('approve'),
+    }
+    return functionToData(getFunction('approve'),
             { _spender: address, _amount: numTokens });
 }
 

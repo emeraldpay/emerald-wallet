@@ -116,7 +116,7 @@ class AccountRender extends React.Component {
                                         <IconMenu
                                             iconButtonElement={<IconButton><MoreHorizIcon /></IconButton>}>
                                             <ExportAccountButton account={account} />
-                                            {/* <PrintAccountButton account={account} />*/}
+                                            <PrintAccountButton account={account} />
                                         </IconMenu>
                                     </div>
                                 </div>

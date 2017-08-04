@@ -16,12 +16,12 @@ const maxWidth = '1200px';
 
 const Render = translate('common')(({t, ...props}) => (
 <div>
-    {props.screen !== 'welcome' && <Header maxWidth = {maxWidth}/>}
+    {props.screen !== 'welcome' && props.screen !== 'paper-wallet' && <Header maxWidth = {maxWidth}/>}
             <div style={{margin: '0 auto', maxWidth}}>
                 <Screen id="body"/>
             </div>
         <Error/><Dialog/>
-    {props.screen !== 'welcome' && <Footer maxWidth = {maxWidth}/> }
+    {props.screen !== 'welcome' && props.screen !== 'paper-wallet' && <Footer maxWidth = {maxWidth}/> }
 </div>
 ));
 
