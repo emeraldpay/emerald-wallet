@@ -16,7 +16,7 @@ import AccountEdit from './edit';
 import AccountPopup from './popup';
 import TransactionsList from '../tx/list';
 import AccountSendButton from './sendButton';
-import AccountBalance from './balance';
+import AccountBalance from './AccountBalance';
 import ExportAccountButton from './export';
 import PrintAccountButton from './print';
 import { Wei } from 'lib/types';

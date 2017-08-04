@@ -12,7 +12,7 @@ import { gotoScreen } from 'store/screenActions';
 import log from 'electron-log';
 import { cardSpace, noShadow, align } from 'lib/styles';
 import AccountPopup from './popup';
-import AccountBalance from './balance';
+import AccountBalance from './AccountBalance';
 import { Wei } from 'lib/types';
 import IdentityIcon from './identityIcon';
 
@@ -20,20 +20,22 @@ import IdentityIcon from './identityIcon';
 const Render = ({ account, openAccount }) => {
     const styles = {
         card: {
-            marginBottom: "6px",
-            ...noShadow
-        }
+            marginBottom: '6px',
+            ...noShadow,
+        },
     };
 
+    const balance = account.get('balance');
     return (
     <Card style={styles.card}>
         <CardText>
             <Row>
                 <Col xs={3}>
-                    <div style={{display: 'flex'}}>
+                    <div style={{display: 'flex', alignItems: 'center'}}>
                         <IdentityIcon id={account.get('id')}/>
                         <div style={{marginLeft: '10px'}}>
-                            <AccountBalance balance={account.get('balance') || new Wei(0) } withAvatar={true} />
+                            {balance && <AccountBalance balance={account.get('balance')} /> }
+                            {!balance && 'loading...'}
                         </div>
                     </div>
                 </Col>

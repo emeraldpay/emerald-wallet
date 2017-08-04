@@ -39,7 +39,7 @@ const traceValidate = (data, dispatch) => {
         } else if (gasEst > data.gas) {
             errors = { gas: `Insufficient Gas: Expected ${gasEst}` };
         } else {
-            resolve(gasEst)
+            resolve(gasEst);
         }
         reject(errors);
     };
@@ -111,9 +111,9 @@ const CreateTx = connect(
                 .then((result) => {
                     if (data.token.length > 1) {
                         log.error('unsupported');
-                        return
+                        return;
                     }
-                    log.debug("Send transaction");
+                    log.debug('Send transaction');
                     dispatch(setWatch(false));
                     closeConnection().then(() => {
                         if (useLedger) {
@@ -127,12 +127,11 @@ const CreateTx = connect(
                     });
                 })
                 .catch((err) => {
-                    log.error("Validation failure", err);
+                    log.error('Validation failure', err);
                     throw new SubmissionError(err);
                 });
         },
         onChangeAccount: (accounts, value) => {
-            log.debug(JSON.stringify(ownProps));
             // load account information for selected account
             const idx = accounts.findKey((acct) => acct.get('id') === value);
             const balance = accounts.get(idx).get('balance');
@@ -140,7 +139,9 @@ const CreateTx = connect(
         },
         onEntireBalance: (value) => {
             // load account information for selected account
-            dispatch(change('createTx', 'value', value.getEther()));
+            if (value) {
+                dispatch(change('createTx', 'value', value.getEther()));
+            }
         },
         onChangeToken: (event, value, prev) => {
             // if switching from ETC to token, change default gas

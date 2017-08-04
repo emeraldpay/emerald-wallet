@@ -11,6 +11,7 @@ import { red200 } from 'material-ui/styles/colors';
 import { positive, number, required, address } from 'lib/validators';
 import IdentityIcon from '../accounts/identityIcon';
 import {InnerDialog, styles} from '../../elements/innerDialog';
+import AccountBalance from '../accounts/AccountBalance';
 
 const textEtc = {
     fontSize: '20px',
@@ -41,26 +42,16 @@ const linkText = {
     textDecoration: 'none',
 };
 
-const balanceGroup = {
-    marginTop: '10px',
-    height: '40px',
-};
 
-const BalanceField = ({ input, rate }) => {
-    const style = {
-        color: '#191919',
-        textAlign: 'left',
-    };
-
+const BalanceField = ({ input }) => {
+    if (!input.value) {
+        return (<div></div>);
+    }
     return (
-    <div style={style}>
-      <div style={textEtc}>
-        {input.value.getEther(6)} ETC
-      </div>
-      <div style={textFiat}>
-        ${input.value.getFiat(rate)}
-      </div>
-    </div>
+        <AccountBalance balance={input.value}
+                        precision={6}
+                        fiatStyle={textFiat}
+                        etcStyle={textEtc}/>
     );
 };
 
@@ -101,7 +92,7 @@ const FromAddressField = ({accounts, onChangeAccount}) => {
     </Field>);
 };
 
-const Renderer = (props) => {
+const CreateTxForm = (props) => {
     const { fields: { from, to }, accounts, balance, handleSubmit, invalid, pristine, submitting } = props;
     const { addressBook, handleSelect, tokens, token, isToken, onChangeToken, onChangeAccount } = props;
     const { fiatRate, value, fromAddr, onEntireBalance } = props;
@@ -161,7 +152,6 @@ const Renderer = (props) => {
                        disabled={true}
                        component={BalanceField}
                        floatingLabelText="Balance"
-                       rate={fiatRate}
                 />
             </div>
         </div>
@@ -226,7 +216,7 @@ const Renderer = (props) => {
                 />
 
                     <Field name="token"
-                           style={{...formStyle.input, marginLeft: '19px', maxWidth:'125px'}}
+                           style={{...formStyle.input, marginLeft: '19px', maxWidth: '125px'}}
                            component={SelectField}
                            onChange={onChangeToken}
                            value={token}
@@ -324,7 +314,7 @@ const Renderer = (props) => {
     );
 };
 
-Renderer.propTypes = {
+CreateTxForm.propTypes = {
     fields: PropTypes.array.isRequired, // verify in react-form
     accounts: PropTypes.object.isRequired,
     handleSubmit: PropTypes.func.isRequired,
@@ -334,7 +324,7 @@ Renderer.propTypes = {
     cancel: PropTypes.func.isRequired,
     fiatRate: PropTypes.string.isRequired,
     value: PropTypes.number.isRequired,
-    balance: PropTypes.number.isRequired,
+    balance: PropTypes.object.isRequired,
     fromAddr: PropTypes.string.isRequired,
     onEntireBalance: PropTypes.func.isRequired,
 
@@ -348,10 +338,9 @@ Renderer.propTypes = {
     error: PropTypes.string,
 };
 
-const CreateTxForm = reduxForm({
+
+export default reduxForm({
     form: 'createTx',
     fields: ['to', 'from', 'password', 'value', 'token', 'gasPrice', 'gas', 'token', 'isTransfer'],
-})(Renderer);
-
-export default CreateTxForm;
+})(CreateTxForm);
 

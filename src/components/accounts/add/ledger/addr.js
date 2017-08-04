@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { TableRowColumn, TableRow } from 'material-ui/Table';
 import { tables } from 'lib/styles';
 import { AddressAvatar, AccountAddress } from 'elements/dl';
-import AccountBalance from '../../balance';
+import AccountBalance from '../../AccountBalance';
 import FontIcon from 'material-ui/FontIcon';
 import log from 'electron-log';
 
