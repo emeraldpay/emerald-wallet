@@ -9,7 +9,6 @@ import IconButton from 'material-ui/IconButton';
 import MoreHorizIcon from 'material-ui/svg-icons/navigation/more-horiz';
 import QRCode from 'qrcode.react';
 import log from 'electron-log';
-import { cardSpace } from 'lib/styles';
 import { gotoScreen } from 'store/screenActions';
 import { updateAccount } from 'store/accountActions';
 import AccountEdit from './edit';
@@ -20,7 +19,7 @@ import AccountBalance from './AccountBalance';
 import ExportAccountButton from './export';
 import PrintAccountButton from './print';
 import { Wei } from 'lib/types';
-import IdentityIcon from './IdentityIcon';
+import IdentityIcon from '../../elements/IdentityIcon';
 import {InnerDialog, styles} from '../../elements/innerDialog';
 
 const TokenRow = ({ token }) => {

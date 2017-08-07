@@ -6,7 +6,6 @@ import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
-import Avatar from 'material-ui/Avatar';
 import { cardSpace, noShadow, align } from 'lib/styles';
 import Immutable from 'immutable';
 import { translate } from 'react-i18next';

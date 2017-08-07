@@ -1,6 +1,6 @@
 import React from 'react';
 import ModeEdit from 'material-ui/svg-icons/editor/mode-edit';
-import AccountAddress from './accountAddress';
+import AccountAddress from './AccountAddress';
 
 const AddressAvatar = (props) => {
     const { primary, secondary, addr, abbreviated, tertiary, nameEdit, onAddressClick, onEditClick } = props;

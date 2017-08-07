@@ -9,7 +9,7 @@ import FontIcon from 'material-ui/FontIcon';
 import log from 'electron-log';
 import { link, tables } from 'lib/styles';
 import { toDuration } from 'lib/convert';
-import AccountAddress from 'elements/accountAddress';
+import AccountAddress from 'elements/AccountAddress';
 import AddressAvatar from 'elements/addressAvatar';
 
 import loading from 'images/loading.gif';

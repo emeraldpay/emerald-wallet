@@ -1,20 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { TableRow, TableRowColumn } from 'material-ui/Table';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
+import log from 'electron-log';
 
-import AccountAddress from 'elements/accountAddress';
+import AccountAddress from 'elements/AccountAddress';
 import AddressAvatar from '../../elements/addressAvatar';
 import AccountSendButton from './sendButton';
 import { gotoScreen } from 'store/screenActions';
-import log from 'electron-log';
+
 import { cardSpace, noShadow, align } from 'lib/styles';
 import AccountPopup from './popup';
 import AccountBalance from './AccountBalance';
 import { Wei } from 'lib/types';
-import IdentityIcon from './IdentityIcon';
+import IdentityIcon from 'elements/IdentityIcon';
 
 
 const Render = ({ account, openAccount }) => {

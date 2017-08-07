@@ -9,7 +9,7 @@ import ImportContacts from 'material-ui/svg-icons/communication/import-contacts'
 import { cardStyle, formStyle } from 'lib/styles';
 import { red200 } from 'material-ui/styles/colors';
 import { positive, number, required, address } from 'lib/validators';
-import IdentityIcon from '../../accounts/IdentityIcon';
+import IdentityIcon from '../../../elements/IdentityIcon';
 import {InnerDialog, styles} from '../../../elements/innerDialog';
 import AccountBalance from '../../accounts/AccountBalance';
 

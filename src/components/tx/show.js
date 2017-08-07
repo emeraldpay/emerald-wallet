@@ -2,11 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import FlatButton from 'material-ui/FlatButton';
-import AccountAddress from 'elements/accountAddress';
+import AccountAddress from 'elements/AccountAddress';
 import AddressAvatar from 'elements/addressAvatar';
 import { gotoScreen } from 'store/screenActions';
 import { toNumber, toDate } from 'lib/convert';
-import IdentityIcon from '../accounts/IdentityIcon';
+import IdentityIcon from '../../elements/IdentityIcon';
 import log from 'electron-log';
 
 import {InnerDialog, styles} from '../../elements/innerDialog';
