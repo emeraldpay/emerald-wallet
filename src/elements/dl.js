@@ -48,34 +48,6 @@ export const DescriptionData = (props) => {
     );
 };
 
-export const AccountAddress = (props) => {
-    const { id, abbreviated, onClick } = props;
-    function copyAddressToClipBoard() {
-        copy(id);
-    }
-    const styles = {
-        light: {
-            color: '#747474',
-            fontWeight: '300',
-            fontSize: '14px',
-        },
-    };
-    let icons = null;
-    if (!abbreviated) {
-        icons = <FontIcon className='fa fa-clone'
-                          onClick={copyAddressToClipBoard}
-                          style={copyIcon} />;
-    }
-    return (
-        <span style={styles.light}>
-            <span onClick={onClick} style={{...link}}>
-                {abbreviated ? `${id.substring(2, 7)}...${id.substring(id.length - 6, id.length - 1)}` : id}
-            </span>
-            {icons}
-        </span>
-    );
-};
-
 export function ValueCard(props) {
     let { name, value } = props;
     value = value || props.default;

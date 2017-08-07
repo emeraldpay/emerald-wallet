@@ -5,7 +5,7 @@ import FontIcon from 'material-ui/FontIcon';
 import log from 'electron-log';
 import { TableRowColumn, TableRow } from 'material-ui/Table';
 import { tables } from 'lib/styles';
-import { AccountAddress } from 'elements/dl';
+import AccountAddress from 'elements/accountAddress';
 import AccountBalance from '../../AccountBalance';
 
 const style = {

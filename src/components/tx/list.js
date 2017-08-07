@@ -7,7 +7,6 @@ import { cardSpace, tables, noShadow, grayBackground } from 'lib/styles';
 import Immutable from 'immutable';
 import Transaction from './transaction';
 import { gotoScreen } from 'store/screenActions';
-import { align } from 'lib/styles';
 
 const Render = ({ transactions, sendTx, accounts, createAccount }) => {
     const styles = {

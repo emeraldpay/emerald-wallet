@@ -9,9 +9,10 @@ import ImportContacts from 'material-ui/svg-icons/communication/import-contacts'
 import { cardStyle, formStyle } from 'lib/styles';
 import { red200 } from 'material-ui/styles/colors';
 import { positive, number, required, address } from 'lib/validators';
-import IdentityIcon from '../accounts/identityIcon';
-import {InnerDialog, styles} from '../../elements/innerDialog';
-import AccountBalance from '../accounts/AccountBalance';
+import IdentityIcon from '../../accounts/IdentityIcon';
+import {InnerDialog, styles} from '../../../elements/innerDialog';
+import AccountBalance from '../../accounts/AccountBalance';
+
 
 const textEtc = {
     fontSize: '20px',
@@ -45,7 +46,7 @@ const linkText = {
 
 const BalanceField = ({ input }) => {
     if (!input.value) {
-        return (<div></div>);
+        return null;
     }
     return (
         <AccountBalance balance={input.value}

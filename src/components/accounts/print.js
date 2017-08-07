@@ -1,11 +1,8 @@
-import { BrowserWindow } from 'electron';
 import React from 'react';
-import ReactDOM from 'react-dom';
 import { connect } from 'react-redux';
 import PropTypes from 'prop-types';
 import MenuItem from 'material-ui/MenuItem';
 import FontIcon from 'material-ui/FontIcon';
-import PaperWallet from './PaperWallet';
 import { rpc } from 'lib/rpc';
 import log from 'electron-log';
 import { gotoScreen } from 'store/screenActions';

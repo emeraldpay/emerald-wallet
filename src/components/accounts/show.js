@@ -20,7 +20,7 @@ import AccountBalance from './AccountBalance';
 import ExportAccountButton from './export';
 import PrintAccountButton from './print';
 import { Wei } from 'lib/types';
-import IdentityIcon from './identityIcon';
+import IdentityIcon from './IdentityIcon';
 import {InnerDialog, styles} from '../../elements/innerDialog';
 
 const TokenRow = ({ token }) => {

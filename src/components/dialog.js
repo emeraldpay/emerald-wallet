@@ -6,23 +6,21 @@ import WaitForSign from './tx/waitForSignDialog';
 import Receive from './accounts/receiveDialog';
 
 const Render = ({ dialog, item }) => {
-
     if (!dialog) {
-        return <div/>
+        return <div/>;
     } else if (dialog === 'sign-transaction') {
-        return <WaitForSign/>
+        return <WaitForSign/>;
     } else if (dialog === 'receive') {
-        return <Receive account={item}/>
-    } else {
-        log.error("Unsupported dialog", dialog);
-        return <div/>
+        return <Receive account={item}/>;
     }
+    log.error('Unsupported dialog', dialog);
+    return <div/>;
 };
 
 const Error = connect(
     (state, ownProps) => ({
         dialog: state.screen.get('dialog'),
-        item: state.screen.get('dialogItem')
+        item: state.screen.get('dialogItem'),
     }),
     (dispatch, ownProps) => ({
     })

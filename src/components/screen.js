@@ -2,14 +2,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import log from 'electron-log';
 
-import AccountsList from './accounts/list';
 import AddressBook from './addressbook/book';
 import AccountShow from './accounts/show';
 import AddressShow from './addressbook/show';
 import AddressAdd from './addressbook/add';
-import CreateTx from './tx/create';
+import CreateTx from './tx/CreateTx';
 import TransactionShow from './tx/show';
-import TransactionsList from './tx/list';
 // import TokensList from './tokens/list';
 import AddToken from './tokens/add';
 import GenerateAccount from './accounts/add/generate';

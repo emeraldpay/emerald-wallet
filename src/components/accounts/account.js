@@ -5,7 +5,7 @@ import { TableRow, TableRowColumn } from 'material-ui/Table';
 import { Card, CardHeader, CardText } from 'material-ui/Card';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 
-import { AccountAddress } from 'elements/dl';
+import AccountAddress from 'elements/accountAddress';
 import AddressAvatar from '../../elements/addressAvatar';
 import AccountSendButton from './sendButton';
 import { gotoScreen } from 'store/screenActions';
@@ -14,7 +14,7 @@ import { cardSpace, noShadow, align } from 'lib/styles';
 import AccountPopup from './popup';
 import AccountBalance from './AccountBalance';
 import { Wei } from 'lib/types';
-import IdentityIcon from './identityIcon';
+import IdentityIcon from './IdentityIcon';
 
 
 const Render = ({ account, openAccount }) => {
