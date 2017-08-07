@@ -1,6 +1,8 @@
 Emerald - Ethereum Classic Wallet
 =================================
 
+image:https://badges.gitter.im/ethereumproject/emerald-wallet.svg[link="https://gitter.im/ethereumproject/emerald-wallet?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge"]
+
 :rootdir: .
 :imagesdir: {rootdir}/images
 :toclevels: 2
