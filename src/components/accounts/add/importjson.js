@@ -3,20 +3,17 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
+import { green300, red300 } from 'material-ui/styles/colors';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
-
 import { cardSpace } from 'lib/styles';
 import { renderFileField, renderTextField } from 'elements/formFields';
-
 import Immutable from 'immutable';
 import { gotoScreen } from 'store/screenActions';
 import { importWallet } from 'store/accountActions';
 import { required } from 'lib/validators';
 import { translate } from 'react-i18next';
 import AccountShow from '../show';
-
-import { green300, red300 } from 'material-ui/styles/colors';
 
 
 class ImportRender extends React.Component {
@@ -49,7 +46,7 @@ class ImportRender extends React.Component {
         return (
             <Card style={cardSpace}>
                 <CardHeader
-                    title={t("import.title")}
+                    title={t('import.title')}
                     actAsExpander={false}
                     showExpandableButton={false}
                 />
@@ -59,15 +56,15 @@ class ImportRender extends React.Component {
                         <Field name="name"
                                 component={renderTextField}
                                 type="text"
-                                label={t("import.name")} />
+                                label={t('import.name')} />
                          <Field name="description"
                                 component={renderTextField}
                                 type="text"
-                                label={t("import.description")} />
+                                label={t('import.description')} />
                         <Field name="wallet"
                                 component={renderFileField}
                                 validate={required} />
-                        <FlatButton label={t("common:submit")}
+                        <FlatButton label={t('common:submit')}
                                     onClick={this.submitFile}
                                     disabled={pristine || submitting || invalid } />
                     </form>
@@ -77,7 +74,7 @@ class ImportRender extends React.Component {
                 </CardText>}
                 {account && <CardText>
                      <AccountShow key={(account === undefined) ? undefined : account.get('id')} account={account}/>
-                     <FlatButton label={t("common:done")}
+                     <FlatButton label={t('common:done')}
                                 onClick={cancel}
                                 icon={<FontIcon className="fa fa-home" />}/>
                 </CardText>}
@@ -86,7 +83,7 @@ class ImportRender extends React.Component {
                     {this.state.fileError}
                 </CardText>}
                 <CardActions>
-                    <FlatButton label={t("common:cancel")}
+                    <FlatButton label={t('common:cancel')}
                                 onClick={cancel}
                                 icon={<FontIcon className="fa fa-ban" />}/>
                 </CardActions>
@@ -107,7 +104,7 @@ ImportRender.propTypes = {
     cancel: PropTypes.func.isRequired,
 };
 
-const ImportRenderT = translate("accounts")(ImportRender);
+const ImportRenderT = translate('accounts')(ImportRender);
 
 const ImportAccountForm = reduxForm({
     form: 'importjson',

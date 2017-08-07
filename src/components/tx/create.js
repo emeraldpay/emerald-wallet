@@ -39,7 +39,7 @@ const traceValidate = (data, dispatch) => {
         } else if (gasEst > data.gas) {
             errors = { gas: `Insufficient Gas: Expected ${gasEst}` };
         } else {
-            resolve(gasEst)
+            resolve(gasEst);
         }
         reject(errors);
     };
@@ -69,7 +69,6 @@ const traceValidate = (data, dispatch) => {
     });
 };
 
-const selector = formValueSelector('createTx');
 
 const CreateTx = connect(
     (state, ownProps) => {
@@ -100,7 +99,8 @@ const CreateTx = connect(
             value: new Wei(etherToWei(value)),
             balance: selector(state, 'balance'),
             fromAddr,
-            useLedger, ledgerConnected
+            useLedger,
+            ledgerConnected,
         };
     },
     (dispatch, ownProps) => ({
@@ -111,9 +111,9 @@ const CreateTx = connect(
                 .then((result) => {
                     if (data.token.length > 1) {
                         log.error('unsupported');
-                        return
+                        return;
                     }
-                    log.debug("Send transaction");
+                    log.debug('Send transaction');
                     dispatch(setWatch(false));
                     closeConnection().then(() => {
                         if (useLedger) {
@@ -127,7 +127,7 @@ const CreateTx = connect(
                     });
                 })
                 .catch((err) => {
-                    log.error("Validation failure", err);
+                    log.error('Validation failure', err);
                     throw new SubmissionError(err);
                 });
         },
@@ -139,7 +139,9 @@ const CreateTx = connect(
         },
         onEntireBalance: (value) => {
             // load account information for selected account
-            dispatch(change('createTx', 'value', value.getEther()));
+            if (value) {
+                dispatch(change('createTx', 'value', value.getEther()));
+            }
         },
         onChangeToken: (event, value, prev) => {
             // if switching from ETC to token, change default gas

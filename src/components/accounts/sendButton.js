@@ -7,11 +7,7 @@ import { gotoScreen } from 'store/screenActions';
 
 class AccountSendButtonRender extends React.Component {
     render() {
-        const { createTx } = this.props;
-
-        const backgroundColor = this.props.backgroundColor ? this.props.backgroundColor : '#EEE';
-        const textColor = this.props.textColor ? this.props.textColor : 'black';
-
+        const { createTx, backgroundColor = '#EEE', textColor = 'black'} = this.props;
         const styles = {
             sendButton: {
                 height: '40px',

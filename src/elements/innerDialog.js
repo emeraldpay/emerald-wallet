@@ -12,7 +12,7 @@ export const styles = {
     },
     fieldName: {
         color: '#747474',
-        fontSize: '18px',
+        fontSize: '16px',
         textAlign: 'right',
     },
     left: {
@@ -25,7 +25,7 @@ export const styles = {
         display: 'flex',
         marginLeft: '14.75px',
         marginRight: '14.75px',
-        maxWidth: '581px',
+        maxWidth: '600px',
     },
     formRow: {
         display: 'flex',
@@ -37,7 +37,6 @@ export const styles = {
 const flatButtonNav = {
     color: '#747474',
     fontSize: '14px',
-    fontWeight: '500',
     lineHeight: '24px',
 };
 
@@ -66,7 +65,7 @@ export class InnerDialog extends React.Component {
                         </div>
                     </div>
                 </div>
-                <div id="body">
+                <div id="body" style={{paddingTop: '30px'}}>
                     {children}
                 </div>
             </div>);

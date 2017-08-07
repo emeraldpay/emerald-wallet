@@ -1,20 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { TableRowColumn, TableRow } from 'material-ui/Table';
-import { tables } from 'lib/styles';
-import { AddressAvatar, AccountAddress } from 'elements/dl';
-import AccountBalance from '../../balance';
 import FontIcon from 'material-ui/FontIcon';
 import log from 'electron-log';
+import { TableRowColumn, TableRow } from 'material-ui/Table';
+import { tables } from 'lib/styles';
+import { AccountAddress } from 'elements/dl';
+import AccountBalance from '../../AccountBalance';
 
 const style = {
     used: {
-        color: '#999'
+        color: '#999',
     },
     usedIcon: {
-        fontSize: '14px'
-    }
+        fontSize: '14px',
+    },
 };
 
 const Render = ({ addr, alreadyAdded, ...otherProps }) => {
@@ -22,19 +22,19 @@ const Render = ({ addr, alreadyAdded, ...otherProps }) => {
     if (alreadyAdded) {
         usedDisplay = <span style={style.used}>
             <FontIcon className="fa fa-check-square" style={style.usedIcon}/> Imported
-        </span>
+        </span>;
     } else if (addr.get('txcount') > 0) {
         usedDisplay = <span style={style.used}>
             <FontIcon className="fa fa-check" style={style.usedIcon}/> Used
-        </span>
+        </span>;
     } else {
         usedDisplay = <span style={style.used}>
             <FontIcon className="fa fa-square-o" style={style.usedIcon} /> New
-        </span>
+        </span>;
     }
 
-    let hasPath = addr.get('hdpath') !== null;
-    let hasAddr = addr.get('address') !== null;
+    const hasPath = addr.get('hdpath') !== null;
+    const hasAddr = addr.get('address') !== null;
 
     return (
         <TableRow {...otherProps} selectable={hasPath && hasAddr && !alreadyAdded}>
@@ -51,7 +51,7 @@ const Render = ({ addr, alreadyAdded, ...otherProps }) => {
                 {usedDisplay}
             </TableRowColumn>
         </TableRow>
-    )
+    );
 };
 
 Render.propTypes = {
@@ -63,14 +63,14 @@ const Component = connect(
         const addr = ownProps.addr;
         let alreadyAdded = false;
         try {
-            const addrId = (addr.get('address') || '---R') .toLowerCase();
+            const addrId = (addr.get('address') || '---R').toLowerCase();
             alreadyAdded = accounts.some((a) => a.get('id', '---L').toLowerCase() === addrId);
         } catch (e) {
-            log.error(e)
+            log.error(e);
         }
         return {
-            alreadyAdded, addr
-        }
+            alreadyAdded, addr,
+        };
     },
     (dispatch, ownProps) => ({
         onAddSelected: () => {},

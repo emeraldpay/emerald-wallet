@@ -1,12 +1,13 @@
 import { ipcRenderer } from 'electron';
 import log from 'electron-log';
 import rpc from 'lib/rpc';
+import { gotoScreen } from 'store/screenActions';
 import { waitForServicesRestart } from 'store/store';
 import { loadAccountsList } from './accountActions';
-import { gotoScreen } from 'store/screenActions';
+
 
 function isGethReady(state) {
-    return state.launcher.getIn(['status', 'geth']) === 'ready'
+    return state.launcher.getIn(['status', 'geth']) === 'ready';
 }
 
 export function readConfig() {
@@ -68,7 +69,7 @@ export function agreeOnTerms(v) {
     return {
         type: 'LAUNCHER/TERMS',
         version: v,
-    }
+    };
 }
 
 export function saveSettings(extraSettings) {
@@ -118,7 +119,7 @@ export function listenElectron() {
 
 export function connecting(value) {
     return {
-        type: "LAUNCHER/CONNECTING",
-        value
-    }
+        type: 'LAUNCHER/CONNECTING',
+        value,
+    };
 }

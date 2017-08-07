@@ -61,8 +61,8 @@ const Render = ({ account, handleClose }) => {
                 <p>Top up your wallet with ETC</p>
                 <DescriptionList>
                     {account.get('description') && <div>
-                        -                            <DescriptionData>{account.get('description')}</DescriptionData>
-                        -                            </div>}
+                        -                                      <DescriptionData>{account.get('description')}</DescriptionData>
+                        -                                      </div>}
                     <DescriptionData>
                         <AccountAddress id={account.get('id')} />
                     </DescriptionData>
@@ -72,7 +72,7 @@ const Render = ({ account, handleClose }) => {
                 <QRCode value={account.get('id')} size={256} style={styles.qr} />
             </Col>
         </Row>
-    </Dialog>
+    </Dialog>;
 };
 
 const ReceiveDialog = connect(
@@ -80,8 +80,8 @@ const ReceiveDialog = connect(
     }),
     (dispatch, ownProps) => ({
         handleClose: () => {
-            dispatch(closeDialog())
-        }
+            dispatch(closeDialog());
+        },
     })
 )(Render);
 

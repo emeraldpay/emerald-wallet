@@ -13,7 +13,7 @@ import { AccountAddress } from 'elements/dl';
 import AddressAvatar from 'elements/addressAvatar';
 
 import loading from 'images/loading.gif';
-import AccountBalance from '../accounts/balance';
+import AccountBalance from '../accounts/AccountBalance';
 import { Wei } from 'lib/types';
 
 const Render = ({ tx, openTx, openAccount, refreshTx, toAccount, fromAccount }) => {

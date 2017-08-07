@@ -100,10 +100,10 @@ export function startSync() {
     const state = store.getState();
 
     if (state.network.getIn(['chain', 'name']) === 'mainnet') {
-        store.dispatch(setBaseHD("44'/61'/0'/0"))
+        store.dispatch(setBaseHD("44'/61'/0'/0"));
     } else if (state.network.getIn(['chain', 'name']) === 'morden') {
-        //FIXME ledger throws "Invalid status 6804" for 44'/62'/0'/0
-        store.dispatch(setBaseHD("44'/61'/1'/0"))
+        // FIXME ledger throws "Invalid status 6804" for 44'/62'/0'/0
+        store.dispatch(setBaseHD("44'/61'/1'/0"));
     }
 
     if (state.launcher.getIn(['chain', 'rpc']) !== 'remote-auto') {
@@ -174,7 +174,7 @@ export function screenHandlers() {
         if (justOpened) {
             if (screen === 'create-tx' || screen === 'add-from-ledger') {
                 store.dispatch(setWatch(true));
-                store.dispatch(waitLedger())
+                store.dispatch(waitLedger());
             } else {
                 store.dispatch(setWatch(false));
             }

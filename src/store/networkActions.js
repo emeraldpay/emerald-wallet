@@ -1,8 +1,9 @@
 import log from 'electron-log';
+import { ipcRenderer } from 'electron';
 import { rpc } from '../lib/rpc';
 import { toNumber } from '../lib/convert';
 import { waitForServices, intervalRates } from '../store/store';
-import { ipcRenderer } from 'electron';
+
 
 let watchingHeight = false;
 

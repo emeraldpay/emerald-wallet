@@ -6,10 +6,9 @@ import Checkbox from 'material-ui/Checkbox';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 
-export const renderFileField = ({ input, name, meta: { touched, error } }) => { 
-
+export const renderFileField = ({ input, name, meta: { touched, error } }) => {
     const files = input.value;
-    const onDrop = ( filesToUpload, e ) => input.onChange(filesToUpload);
+    const onDrop = (filesToUpload, e) => input.onChange(filesToUpload);
 
     return (
       <div>
@@ -17,10 +16,10 @@ export const renderFileField = ({ input, name, meta: { touched, error } }) => {
             <FlatButton label="Select Wallet File..."
                                 icon={<FontIcon className="fa fa-briefcase" />}/>
         </Dropzone>
-        {files && <div>Selected: {files[0].name}</div>} 
-        {touched && error && <span className="error">{error}</span>}    
+        {files && <div>Selected: {files[0].name}</div>}
+        {touched && error && <span className="error">{error}</span>}
       </div>
-    )
+    );
 };
 
 export const renderTextField = ({ input, label, type, disabled, meta: { touched, error } }) => (
@@ -33,32 +32,32 @@ export const renderTextField = ({ input, label, type, disabled, meta: { touched,
 );
 
 export const renderCodeField = ({ input, label, type, rows, meta: { touched, error } }) => {
-  const style = {
-    fontFamily: 'monospace',
-    letterSpacing: '.02em',
-    marginTop: '5px',
-    padding: '5px',
-    whiteSpace: 'pre-wrap',
-    wordWrap: 'break-word',
-    overflow: 'auto',
-    outline: '1px solid rgb(224, 224, 224)'
-  };
+    const style = {
+        fontFamily: 'monospace',
+        letterSpacing: '.02em',
+        marginTop: '5px',
+        padding: '5px',
+        whiteSpace: 'pre-wrap',
+        wordWrap: 'break-word',
+        overflow: 'auto',
+        outline: '1px solid rgb(224, 224, 224)',
+    };
 
-  return (
+    return (
     <div>
       <label>{label}</label>
       <div>
-        <TextField {...input} 
-          type={type} 
+        <TextField {...input}
+          type={type}
           textareaStyle={style}
           multiLine={true}
           rows={rows}
-          rowsMax={rows} 
+          rowsMax={rows}
           fullWidth={true}
           errorText={touched && error} />
       </div>
     </div>
-  );
+    );
 };
 
 export const renderSelectField = ({ input, label, type, meta: { touched, error } }) => (
@@ -73,16 +72,13 @@ export const renderSelectField = ({ input, label, type, meta: { touched, error }
 export const renderCheckboxField = ({ input, label, options, meta: { touched, error } }) => (
   <div>
     <label>{label}</label>
-    {options.map( (option, index) => 
+    {options.map((option, index) =>
       <Checkbox label={option} value={option} key={index}
-                onCheck={ event => {
+                onCheck={ (event) => {
                     const value = [...input.value];
-                    if(event.target.checked)
-                        value.push(option);
-                    else
-                        value.splice(value.indexOf(option), 1);
+                    if (event.target.checked) { value.push(option); } else { value.splice(value.indexOf(option), 1); }
                     return input.onChange(value);
-                 }}/> 
+                }}/>
     )}
   </div>
 );

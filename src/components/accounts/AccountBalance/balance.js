@@ -1,17 +1,28 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Card, CardHeader } from 'material-ui/Card';
-import Avatar from 'material-ui/Avatar';
-import { deepOrange300, purple500 } from 'material-ui/styles/colors';
 import { toNumber } from 'lib/convert';
 import { Wei } from 'lib/types';
 import { noShadow } from 'lib/styles';
 
+const defaultStyles = {
+    fiat: {
+        color: '#191919',
+        fontSize: '14px',
+        lineHeight: '16px',
+    },
+    etc: {
+        lineHeight: '24px',
+        fontSize: '16px',
+        color: '#191919',
+    },
+};
+
 class AccountBalanceRender extends React.Component {
 
     render() {
-        const { balance, rates, withAvatar, showFiat } = this.props;
+        const { balance, rates, showFiat, precision = 3 } = this.props;
+        const { fiatStyle = defaultStyles.fiat, etcStyle = defaultStyles.etc } = this.props;
 
         const getRate = (b, pair) => {
             if (b !== null && typeof b !== 'undefined') {
@@ -23,24 +34,14 @@ class AccountBalanceRender extends React.Component {
             bc: {
                 backgroundColor: 'inherit',
             },
-            main: {
-                lineHeight: '24px',
-                fontSize: '16px',
-                color: '#191919',
-            },
-            fiat: {
-                color: '#191919',
-                fontSize: '14px',
-                lineHeight: '16px',
-            },
         };
         let fiat = null;
         if (showFiat) {
-            fiat = <span style={styles.fiat}>${getRate(balance, 'usd')}</span>;
+            fiat = <span style={fiatStyle}>${getRate(balance, 'usd')}</span>;
         }
         return (
         <div style={{...styles.bc}}>
-            <span style={styles.main}>{balance ? balance.getEther(3) : '-'} ETC</span>
+            <span style={etcStyle}>{balance ? balance.getEther(precision) : '-'} ETC</span>
             <br/>{fiat}
         </div>
         );
@@ -50,24 +51,19 @@ class AccountBalanceRender extends React.Component {
 AccountBalanceRender.propTypes = {
     balance: PropTypes.object.isRequired,
     rates: PropTypes.object.isRequired,
-    withAvatar: PropTypes.bool.isRequired,
     showFiat: PropTypes.bool.isRequired,
 };
 
-const AccountBalance = connect(
+export default connect(
     (state, ownProps) => {
         const rates = state.accounts.get('rates');
         const balance = ownProps.balance;
-        const withAvatar = ownProps.withAvatar || false;
         const network = (state.network.get('chain').get('name') || '').toLowerCase();
         return {
             balance,
             rates,
-            withAvatar,
             showFiat: (network === 'mainnet'),
         };
     },
     (dispatch, ownProps) => ({})
 )(AccountBalanceRender);
-
-export default AccountBalance;

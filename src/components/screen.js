@@ -20,8 +20,9 @@ import AddContract from './contracts/add';
 import DeployContract from './contracts/deploy';
 import ContractShow from './contracts/show';
 import Welcome from './welcome/welcome';
-import Dashboard from './layout/dashboard';
+import Dashboard from './dashboard';
 import Settings from './settings';
+import PaperWallet from './accounts/PaperWallet';
 
 const Render = ({ screen, screenItem }) => {
     log.debug('screen', screen);
@@ -71,6 +72,8 @@ const Render = ({ screen, screenItem }) => {
         return <Welcome />;
     } else if (screen === 'settings') {
         return <Settings />;
+    } else if (screen === 'paper-wallet') {
+        return <PaperWallet address={screenItem.address} privKey={screenItem.privKey} />;
     }
 
     return (

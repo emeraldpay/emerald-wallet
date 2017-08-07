@@ -6,7 +6,7 @@ import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import { Card, CardHeader } from 'material-ui/Card';
 
-const Render = () => {
+const Render = ({maxWidth = '1220px'}) => {
     const styles = {
         footerDiv: {
             padding: '32px 6px',
@@ -14,7 +14,7 @@ const Render = () => {
             display: 'flex',
             justifyContent: 'space-between',
             margin: '0 auto',
-            maxWidth: '1060px',
+            maxWidth,
         },
     };
 
