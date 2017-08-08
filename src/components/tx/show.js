@@ -9,7 +9,7 @@ import { toNumber, toDate } from 'lib/convert';
 import IdentityIcon from '../../elements/IdentityIcon';
 import log from 'electron-log';
 
-import {InnerDialog, styles} from '../../elements/innerDialog';
+import {InnerDialog, styles} from '../../elements/Form';
 
 const Render = ({ transaction, rates, account, accounts, openAccount, goBack }) => {
     const fromAccount = transaction.get('from') ?

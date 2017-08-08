@@ -1,19 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Table, TableBody } from 'material-ui/Table';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
-import { Card, CardHeader, CardText } from 'material-ui/Card';
-import FlatButton from 'material-ui/FlatButton';
-import FontIcon from 'material-ui/FontIcon';
-import { cardSpace, noShadow, align } from 'lib/styles';
+import { FontIcon, FlatButton, Popover} from 'material-ui';
 import Immutable from 'immutable';
 import { translate } from 'react-i18next';
 import { gotoScreen } from 'store/screenActions';
 import Account from './account';
 import { watchConnection } from 'store/ledgerActions';
-import {Menu, MenuItem, Popover} from 'material-ui';
 import { List, ListItem } from 'material-ui/List';
+
+import styles from './list.scss';
 
 class WalletsTokensButton extends React.Component {
 
@@ -108,14 +105,19 @@ const Render = translate('accounts')(({ t, accounts, generate, importJson, impor
     }
 
     const table = <div>
-        {accounts.map((account) => <Account key={account.get('id')} account={account}/>)}
+        {accounts.map((account) =>
+            <div style={{marginBottom: '6px'}} key={account.get('id')}>
+                <Account account={account}/>
+            </div>)}
     </div>;
 
 
     return (
         <div>
-            <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '10px', height: '66px'}}>
-                <div><span style={{fontSize: '14px', fontWeight: 500, color: '#191919'}}>{t('list.title')}</span></div>
+            <div className={ styles.header }>
+                <div>
+                    <span className={ styles.title }>{t('list.title')}</span>
+                </div>
                 <WalletsTokensButton
                     generate={generate}
                     importJson={importJson}
@@ -123,6 +125,7 @@ const Render = translate('accounts')(({ t, accounts, generate, importJson, impor
                     t={t}
                 />
             </div>
+
             <div style={{}}>
                 {table}
             </div>

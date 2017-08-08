@@ -1,21 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Card, CardHeader, CardText } from 'material-ui/Card';
+import { CardText } from 'material-ui/Card';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import log from 'electron-log';
+import { IconMenu, IconButton } from 'material-ui';
+import MoreHorizIcon from 'material-ui/svg-icons/navigation/more-horiz';
 
-import AccountAddress from 'elements/AccountAddress';
-import AddressAvatar from '../../elements/addressAvatar';
-import AccountSendButton from './sendButton';
+import AddressAvatar from '../../../elements/addressAvatar';
+import AccountSendButton from '../sendButton';
 import { gotoScreen } from 'store/screenActions';
 
-import { cardSpace, noShadow, align } from 'lib/styles';
-import AccountPopup from './popup';
-import AccountBalance from './AccountBalance';
+import { noShadow, align } from 'lib/styles';
+import AccountPopup from '../popup';
+import AccountBalance from '../AccountBalance';
 import { Wei } from 'lib/types';
 import IdentityIcon from 'elements/IdentityIcon';
+import ExportAccountButton from '../export';
+import PrintAccountButton from '../print';
 
+import Card from 'elements/Card';
 
 const Render = ({ account, openAccount }) => {
     const styles = {
@@ -27,7 +31,7 @@ const Render = ({ account, openAccount }) => {
 
     const balance = account.get('balance');
     return (
-    <Card style={styles.card}>
+    <Card>
         <CardText>
             <Row>
                 <Col xs={3}>
@@ -48,8 +52,15 @@ const Render = ({ account, openAccount }) => {
                     />
                 </Col>
                 <Col xs={3}>
-                    <AccountPopup account={account}/>
-                    <AccountSendButton account={account} />
+                    <div style={{display: 'flex', alignItems: 'center'}}>
+                        <IconMenu
+                            iconButtonElement={<IconButton><MoreHorizIcon color="#595959"/></IconButton>}>
+                            <ExportAccountButton account={account} />
+                            <PrintAccountButton account={account} />
+                        </IconMenu>
+                        <AccountPopup account={account}/>
+                        <AccountSendButton account={account} />
+                    </div>
                 </Col>
             </Row>
         </CardText>

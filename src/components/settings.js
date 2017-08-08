@@ -7,7 +7,7 @@ import { translate } from 'react-i18next';
 import { gotoScreen } from '../store/screenActions';
 import { formStyle } from '../lib/styles';
 import i18n from '../i18n/i18n';
-import {InnerDialog, styles} from '../elements/innerDialog';
+import {InnerDialog, styles} from '../elements/Form';
 
 class SettingsRender extends React.Component {
 

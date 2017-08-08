@@ -20,7 +20,7 @@ import ExportAccountButton from './export';
 import PrintAccountButton from './print';
 import { Wei } from 'lib/types';
 import IdentityIcon from '../../elements/IdentityIcon';
-import {InnerDialog, styles} from '../../elements/innerDialog';
+import {InnerDialog, styles} from '../../elements/Form';
 
 const TokenRow = ({ token }) => {
     const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0';
@@ -71,7 +71,6 @@ class AccountRender extends React.Component {
             <div style={{display: 'flex', alignItems: 'stretch'}}>
                 <div style={{flexGrow: 1}}>
                     <InnerDialog caption="Wallet" onCancel={goBack}>
-
                         <div id="row" style={styles.formRow}>
                             <div id="left-column" style={styles.left}>
                                 <div style={{display: 'flex', justifyContent: 'flex-end'}}>
@@ -124,7 +123,7 @@ class AccountRender extends React.Component {
 
                     </InnerDialog>
                 </div>
-                <div style={{flexBasis: '30%', backgroundColor: 'white', marginTop: '20px', paddingTop: '110px'}}>
+                <div style={{flexBasis: '30%', backgroundColor: 'white', paddingTop: '110px'}}>
                     <QRCode value={account.get('id')} />
                 </div>
             </div>

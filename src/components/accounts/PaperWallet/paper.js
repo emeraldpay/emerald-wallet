@@ -16,7 +16,7 @@ const PaperWallet = (props) => {
 
     const Logo = (
         <div className={styles.logoContainer}>
-            <div style={styles.logoIcon }>
+            <div className={styles.logoIcon }>
                 <LogoIcon width="17px" height="33px" />
             </div>
         </div>
