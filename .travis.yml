@@ -49,6 +49,7 @@ script:
   - echo "Building app version $APP_VERSION_GIT_TAG"
   - if [[ $(license-checker --production --exclude '(GPL-2.0 OR MIT)' | grep GPL) ]]; then license-checker --production | grep -C 1 GPL && false; fi
   - npm run build
+  - npm run test:jest
   - if [[ $FULL_CHECK == "true" ]]; then npm run lint --silent; fi
   # Don't build releases for lint tests.
   # Env var disables build signing.
