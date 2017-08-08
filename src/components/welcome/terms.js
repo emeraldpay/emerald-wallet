@@ -6,7 +6,6 @@ import FontIcon from 'material-ui/FontIcon';
 import { agreeOnTerms } from 'store/launcherActions';
 
 const Render = ({ onAgree }) => {
-
     const style = {
         width: '100%',
         height: '250px',
@@ -22,9 +21,9 @@ const Render = ({ onAgree }) => {
                             End-User License Agreement for Emerald Wallet
                         </p>
                         <p>
-                            This End-User License Agreement ("EULA") is a legal agreement between you (either an
+                            This End-User License Agreement (&quot;EULA&quot;) is a legal agreement between you (either an
                             individual or a single entity) and authors, including all contributors to source code,
-                            ("AUTHORS") of this Software
+                            (&quot;AUTHORS&quot;) of this Software
                             identified above, which includes computer software and may include associated media,
                             printed materials, and “online” or electronic documentation (“SOFTWARE”).
                         </p>
@@ -34,7 +33,7 @@ const Render = ({ onAgree }) => {
                             If you do not agree to the terms of this EULA, do not install or use the SOFTWARE.
                         </p>
                         <p>
-                            THE SOFTWARE IS PROVIDED ON AN "AS IS" BASIS, AND NO WARRANTY, EITHER EXPRESS OR IMPLIED,
+                            THE SOFTWARE IS PROVIDED ON AN &quot;AS IS&quot; BASIS, AND NO WARRANTY, EITHER EXPRESS OR IMPLIED,
                             IS GIVEN. YOUR USE OF THE SOFTWARE IS AT YOUR SOLE RISK. AUTHORS do not warrant that (i)
                             the SOFTWARE will meet your specific requirements; (ii) the SOFTWARE is fully compatible
                             with any particular platform; (iii) your use of the SOFTWARE will be uninterrupted, timely,

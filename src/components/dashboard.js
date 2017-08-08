@@ -1,5 +1,5 @@
 import React from 'react';
-import TransactionsList from './tx/list';
+import TransactionsList from './tx/TxList';
 import AccountsList from './accounts/AccountsList';
 
 const Dashboard = () => {

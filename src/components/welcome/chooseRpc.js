@@ -10,7 +10,6 @@ import { gotoScreen } from 'store/screenActions';
 import { useRpc } from 'store/launcherActions';
 
 const Render = ({ useFullNode, useRemoteNode }) => {
-
     return (
         <Row>
             <Col xs={12}>
@@ -33,13 +32,13 @@ const Render = ({ useFullNode, useRemoteNode }) => {
                 </List>
             </Col>
         </Row>
-    )
+    );
 };
 
 
 Render.propTypes = {
     useFullNode: PropTypes.func.isRequired,
-    useRemoteNode: PropTypes.func.isRequired
+    useRemoteNode: PropTypes.func.isRequired,
 };
 
 const ChooseRPC = connect(
@@ -47,11 +46,11 @@ const ChooseRPC = connect(
     }),
     (dispatch, ownProps) => ({
         useFullNode: () => {
-            dispatch(useRpc('local'))
+            dispatch(useRpc('local'));
         },
         useRemoteNode: () => {
-            dispatch(useRpc('remote-auto'))
-        }
+            dispatch(useRpc('remote-auto'));
+        },
     })
 )(Render);
 

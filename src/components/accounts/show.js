@@ -13,7 +13,7 @@ import { gotoScreen } from 'store/screenActions';
 import { updateAccount } from 'store/accountActions';
 import AccountEdit from './edit';
 import AccountPopup from './popup';
-import TransactionsList from '../tx/list';
+import TransactionsList from '../tx/TxList';
 import AccountSendButton from './sendButton';
 import AccountBalance from './AccountBalance';
 import ExportAccountButton from './export';
