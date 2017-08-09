@@ -25,6 +25,10 @@
         "import": {
             "title": "Import JSON",
             "subtitle": "Import key from Parity/Geth in JSON format"
+        },
+        "importPrivateKey": {
+            "title": "Import Private Key",
+            "subtitle": "Import private key in hex format"
         }
     },
     "generate": {

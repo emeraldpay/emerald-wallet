@@ -9,7 +9,7 @@ import { toNumber, toDate } from 'lib/convert';
 import IdentityIcon from '../../elements/IdentityIcon';
 import log from 'electron-log';
 
-import {InnerDialog, styles} from '../../elements/Form';
+import {Form, styles} from '../../elements/Form';
 
 const Render = ({ transaction, rates, account, accounts, openAccount, goBack }) => {
     const fromAccount = transaction.get('from') ?
@@ -43,7 +43,7 @@ const Render = ({ transaction, rates, account, accounts, openAccount, goBack }) 
 
     return (
 
-        <InnerDialog caption="Ethereum Classic Transfer" onCancel={() => goBack(account)}>
+        <Form caption="Ethereum Classic Transfer" onCancel={() => goBack(account)}>
 
             <div id="row" style={styles.formRow}>
                 <div style={styles.left}>
@@ -176,7 +176,7 @@ const Render = ({ transaction, rates, account, accounts, openAccount, goBack }) 
                 </div>
             </div>
 
-        </InnerDialog>);
+        </Form>);
 };
 
 Render.propTypes = {

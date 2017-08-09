@@ -323,12 +323,12 @@ export function refreshTransaction(hash) {
 }
 
 /**
- * Refresh only tx with totalRetries <= 50
+ * Refresh only tx with totalRetries <= 10
  */
 export function refreshTrackedTransactions() {
     return (dispatch, getState) => {
         getState().accounts.get('trackedTransactions')
-            .filter((tx) => tx.get('totalRetries', 0) <= 50)
+            .filter((tx) => tx.get('totalRetries', 0) <= 10)
             .map((tx) => dispatch(refreshTransaction(tx.get('hash')))
         );
     };

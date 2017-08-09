@@ -10,9 +10,10 @@ import CreateTx from './tx/CreateTx';
 import TransactionShow from './tx/show';
 // import TokensList from './tokens/list';
 import AddToken from './tokens/add';
-import GenerateAccount from './accounts/add/generate';
+import GenerateAccount from './accounts/add/Generate';
 import LedgerImport from './accounts/add/ledger/select';
-import ImportAccount from './accounts/add/importjson';
+import ImportAccount from './accounts/add/ImportJson';
+import ImportPrivateKey from './accounts/add/ImportPrivateKey';
 import ContractsList from './contracts/list';
 import AddContract from './contracts/add';
 import DeployContract from './contracts/deploy';
@@ -43,9 +44,7 @@ const Render = ({ screen, screenItem }) => {
     } else if (screen === 'address-book') {
         return <AddressBook />;
     } else if (screen === 'address') {
-        return (
-            <AddressShow addressId={screenItem}/>
-        );
+        return <AddressShow addressId={screenItem}/>;
     } else if (screen === 'add-address') {
         return <AddressAdd />;
     } else if (screen === 'add-from-ledger') {
@@ -60,6 +59,8 @@ const Render = ({ screen, screenItem }) => {
         return <GenerateAccount />;
     } else if (screen === 'importjson') {
         return <ImportAccount />;
+    } else if (screen === 'import-private-key') {
+        return <ImportPrivateKey />;
     } else if (screen === 'add-token') {
         return <AddToken />;
     } else if (screen === 'deploy-contract') {

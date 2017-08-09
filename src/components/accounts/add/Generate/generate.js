@@ -15,7 +15,7 @@ import { gotoScreen } from 'store/screenActions';
 import { createAccount } from 'store/accountActions';
 import { required, minLength, passwordMatch } from 'lib/validators';
 
-import AccountShow from '../show';
+import AccountShow from '../../show';
 
 const validate = (values) => {
     const errors = {};

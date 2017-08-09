@@ -6,7 +6,6 @@ import FontIcon from 'material-ui/FontIcon';
 import { showDialog } from 'store/screenActions';
 
 const Render = ({ account, handleOpen, backgroundColor = '#EEE', textColor = 'black' }) => {
-
     const styles = {
         container: {
             display: 'inline',

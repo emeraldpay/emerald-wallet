@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
-import { FontIcon, FlatButton, Popover} from 'material-ui';
+import { FontIcon, FlatButton, Popover } from 'material-ui';
 import Immutable from 'immutable';
 import { translate } from 'react-i18next';
 import { gotoScreen } from 'store/screenActions';
@@ -41,10 +41,9 @@ class WalletsTokensButton extends React.Component {
     }
 
     render() {
-        const {generate, importJson, importLedger, t, style} = this.props;
+        const {generate, importJson, importLedger, importPrivateKey, t, style} = this.props;
 
         return (
-
             <div style={style}>
                 <FlatButton
                     onTouchTap={this.handleTouchTap}
@@ -54,7 +53,7 @@ class WalletsTokensButton extends React.Component {
                         color: '#47B04B',
                     }}
                     hoverColor="transparent"
-                    icon={<FontIcon className="fa fa-plus-circle" />}
+                    icon={<FontIcon className="fa fa-plus-circle"/>}
                 />
                 <Popover
                     open={this.state.open}
@@ -64,24 +63,30 @@ class WalletsTokensButton extends React.Component {
                     onRequestClose={this.handleRequestClose}
                 >
                     <List>
-                    <ListItem
-                        primaryText="Ledger Nano S"
-                        secondaryText="Use Ledger hardware key to manage signatures"
-                        onClick={importLedger}
-                        leftIcon={<FontIcon className="fa fa-usb"/>}
-                    />
-                    <ListItem
-                        primaryText={t('add.generate.title')}
-                        secondaryText={t('add.generate.subtitle')}
-                        onClick={generate}
-                        leftIcon={<FontIcon className="fa fa-random"/>}
-                    />
-                    <ListItem
-                        primaryText={t('add.import.title')}
-                        secondaryText={t('add.import.subtitle')}
-                        onClick={importJson}
-                        leftIcon={<FontIcon className="fa fa-code"/>}
-                    />
+                        <ListItem
+                            primaryText="Ledger Nano S"
+                            secondaryText="Use Ledger hardware key to manage signatures"
+                            onClick={importLedger}
+                            leftIcon={<FontIcon className="fa fa-usb"/>}
+                        />
+                        <ListItem
+                            primaryText={t('add.generate.title')}
+                            secondaryText={t('add.generate.subtitle')}
+                            onClick={generate}
+                            leftIcon={<FontIcon className="fa fa-random"/>}
+                        />
+                        <ListItem
+                            primaryText={t('add.import.title')}
+                            secondaryText={t('add.import.subtitle')}
+                            onClick={importJson}
+                            leftIcon={<FontIcon className="fa fa-code"/>}
+                        />
+                        <ListItem
+                            primaryText={t('add.importPrivateKey.title')}
+                            secondaryText={t('add.importPrivateKey.subtitle')}
+                            onClick={importPrivateKey}
+                            leftIcon={<FontIcon className="fa fa-key"/>}
+                        />
                     </List>
                 </Popover>
             </div>
@@ -89,16 +94,16 @@ class WalletsTokensButton extends React.Component {
     }
 }
 
-const Render = translate('accounts')(({ t, accounts, generate, importJson, importLedger, connecting }) => {
+const Render = translate('accounts')(({t, accounts, generate, importJson, importLedger, connecting, importPrivateKey}) => {
     if (connecting) {
         return (
             <div id="accounts-list">
                 <Grid>
-                <Row center="xs">
-                    <Col xs={3}>
-                        <i className="fa fa-spin fa-spinner"/> Loading...
-                    </Col>
-                </Row>
+                    <Row center="xs">
+                        <Col xs={3}>
+                            <i className="fa fa-spin fa-spinner"/> Loading...
+                        </Col>
+                    </Row>
                 </Grid>
             </div>
         );
@@ -111,17 +116,17 @@ const Render = translate('accounts')(({ t, accounts, generate, importJson, impor
             </div>)}
     </div>;
 
-
     return (
         <div>
-            <div className={ styles.header }>
+            <div className={styles.header}>
                 <div>
-                    <span className={ styles.title }>{t('list.title')}</span>
+                    <span className={styles.title}>{t('list.title')}</span>
                 </div>
                 <WalletsTokensButton
-                    generate={generate}
-                    importJson={importJson}
-                    importLedger={importLedger}
+                    generate={ generate }
+                    importJson={ importJson }
+                    importLedger={ importLedger }
+                    importPrivateKey={ importPrivateKey }
                     t={t}
                 />
             </div>
@@ -152,6 +157,9 @@ const AccountsList = connect(
         },
         importJson: () => {
             dispatch(gotoScreen('importjson'));
+        },
+        importPrivateKey: () => {
+            dispatch(gotoScreen('import-private-key'));
         },
         importLedger: () => {
             dispatch(gotoScreen('add-from-ledger'));

@@ -21,7 +21,7 @@ export const styles = {
         display: 'flex',
         marginLeft: '14.75px',
         marginRight: '14.75px',
-        maxWidth: '600px',
+        maxWidth: '580px',
     },
     formRow: {
         display: 'flex',
@@ -37,7 +37,15 @@ const flatButtonNav = {
 };
 
 
-export class InnerDialog extends React.Component {
+export const Row = (props) => {
+    return (
+      <div className={ formStyles.formRow }>
+          {props.children}
+      </div>
+    );
+};
+
+export class Form extends React.Component {
 
     render() {
         const { children, caption, onCancel } = this.props;

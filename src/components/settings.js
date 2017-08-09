@@ -7,7 +7,8 @@ import { translate } from 'react-i18next';
 import { gotoScreen } from '../store/screenActions';
 import { formStyle } from '../lib/styles';
 import i18n from '../i18n/i18n';
-import {InnerDialog, styles} from '../elements/Form';
+import {Form, styles} from '../elements/Form';
+import SubmitButton from '../elements/SubmitButton/index'
 
 class SettingsRender extends React.Component {
 
@@ -15,7 +16,7 @@ class SettingsRender extends React.Component {
         const {goDashboard, changeLanguage, t} = this.props;
 
         return (
-            <InnerDialog caption="Settings" onCancel={goDashboard}>
+            <Form caption="Settings" onCancel={goDashboard}>
                 <div id="body">
                     <div id="row" style={styles.formRow}>
                         <div style={styles.left}>
@@ -89,15 +90,12 @@ class SettingsRender extends React.Component {
                         </div>
                         <div style={styles.right}>
                             <div>
-                                <FlatButton
-                                    label="SAVE"
-                                    backgroundColor="#47B04B"
-                                    style={formStyle.submitButton} />
+                                <SubmitButton label="SAVE" />
                             </div>
                         </div>
                     </div>
                 </div>
-            </InnerDialog>
+            </Form>
         );
     }
 }

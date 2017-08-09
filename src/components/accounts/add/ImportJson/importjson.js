@@ -13,7 +13,7 @@ import { gotoScreen } from 'store/screenActions';
 import { importWallet } from 'store/accountActions';
 import { required } from 'lib/validators';
 import { translate } from 'react-i18next';
-import AccountShow from '../show';
+import AccountShow from '../../show';
 
 
 class ImportRender extends React.Component {

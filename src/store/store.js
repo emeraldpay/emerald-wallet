@@ -33,7 +33,7 @@ export const intervalRates = {
     // Continue is repeating timeouts.
     continueLoadSyncRate: minute, // prod: second
     continueLoadHeightRate: 5 * minute, // prod: 5 * second
-    continueRefreshAllTxRate: 10 * second, // prod: 2 * second
+    continueRefreshAllTxRate: 20 * second, // prod: 2 * second
     continueRefreshLongRate: 900000, // 5 o'clock somewhere.
 };
 
