@@ -3,7 +3,7 @@ import log from 'electron-log';
 import EthereumTx from 'ethereumjs-tx';
 import { rpc } from 'lib/rpc';
 import { getRates } from 'lib/marketApi';
-import { address } from 'lib/validators';
+import { address as isAddress} from 'lib/validators';
 import { loadTokenBalanceOf } from './tokenActions';
 import { toHex, toNumber } from 'lib/convert';
 import { gotoScreen, catchError } from './screenActions';
@@ -230,7 +230,7 @@ export function importWallet(wallet, name, description) {
                         accountId: result,
                     });
                     // Reload accounts.
-                    if (address(result) === undefined) {
+                    if (isAddress(result) === undefined) {
                         dispatch({
                             type: 'ACCOUNT/ADD_ACCOUNT',
                             accountId: result,
@@ -323,12 +323,12 @@ export function refreshTransaction(hash) {
 }
 
 /**
- * Refresh only tx with totalRetries <= 50
+ * Refresh only tx with totalRetries <= 10
  */
 export function refreshTrackedTransactions() {
     return (dispatch, getState) => {
         getState().accounts.get('trackedTransactions')
-            .filter((tx) => tx.get('totalRetries', 0) <= 50)
+            .filter((tx) => tx.get('totalRetries', 0) <= 10)
             .map((tx) => dispatch(refreshTransaction(tx.get('hash')))
         );
     };

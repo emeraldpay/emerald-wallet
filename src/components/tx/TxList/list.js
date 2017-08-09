@@ -3,11 +3,10 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table';
 import { Card, CardHeader, CardText, CardActions } from 'material-ui/Card';
-import { cardSpace, tables, noShadow, grayBackground } from 'lib/styles';
+import { cardSpace, tables, noShadow } from 'lib/styles';
 import Immutable from 'immutable';
 import Transaction from './transaction';
 import { gotoScreen } from 'store/screenActions';
-import { align } from 'lib/styles';
 
 const Render = ({ transactions, sendTx, accounts, createAccount }) => {
     const styles = {

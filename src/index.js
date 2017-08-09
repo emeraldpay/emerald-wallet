@@ -11,6 +11,7 @@ import i18n from './i18n/i18n';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import {store, start as startStore} from './store/store.js';
 import Main from './components/main';
+
 import './index.scss';
 
 

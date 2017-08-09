@@ -12,12 +12,12 @@ import Footer from './layout/footer';
 import Error from './error';
 import Dialog from './dialog';
 
-const maxWidth = '1200px';
+const maxWidth = '1100px';
 
 const Render = translate('common')(({t, ...props}) => (
 <div>
     {props.screen !== 'welcome' && props.screen !== 'paper-wallet' && <Header maxWidth = {maxWidth}/>}
-            <div style={{margin: '0 auto', maxWidth}}>
+            <div style={{margin: '20px auto', maxWidth}}>
                 <Screen id="body"/>
             </div>
         <Error/><Dialog/>

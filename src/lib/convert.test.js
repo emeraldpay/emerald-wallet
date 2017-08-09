@@ -43,16 +43,16 @@ const transfer = {
 
 describe('Function Converter', () => {
     it('get full name from ABI', () => {
-        expect(transformToFullName(balanceOf)).toEqual('balanceOf(address)');
+        expect(transformToFullName(Immutable.fromJS(balanceOf))).toEqual('balanceOf(address)');
     });
     it('get full name from ABI', () => {
-        expect(transformToFullName(transfer)).toEqual('transfer(address,uint256)');
+        expect(transformToFullName(Immutable.fromJS(transfer))).toEqual('transfer(address,uint256)');
     });
     it('get function signature from ABI', () => {
-        expect(getFunctionSignature(transfer)).toEqual('a9059cbb');
+        expect(getFunctionSignature(Immutable.fromJS(transfer))).toEqual('a9059cbb');
     });
     it('get function signature from ABI', () => {
-        expect(getFunctionSignature(balanceOf)).toEqual('70a08231');
+        expect(getFunctionSignature(Immutable.fromJS(balanceOf))).toEqual('70a08231');
     });
 });
 

@@ -2,26 +2,22 @@ import React from 'react';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import AddressAvatar from 'elements/addressAvatar';
 import People from 'material-ui/svg-icons/social/people';
-import IconMenu from 'material-ui/IconMenu';
-import IconButton from 'material-ui/IconButton';
-import MoreHorizIcon from 'material-ui/svg-icons/navigation/more-horiz';
 import QRCode from 'qrcode.react';
 import log from 'electron-log';
-import { cardSpace } from 'lib/styles';
+
+import AddressAvatar from 'elements/addressAvatar';
 import { gotoScreen } from 'store/screenActions';
 import { updateAccount } from 'store/accountActions';
 import AccountEdit from './edit';
 import AccountPopup from './popup';
-import TransactionsList from '../tx/list';
+import TransactionsList from '../tx/TxList';
 import AccountSendButton from './sendButton';
 import AccountBalance from './AccountBalance';
-import ExportAccountButton from './export';
-import PrintAccountButton from './print';
 import { Wei } from 'lib/types';
-import IdentityIcon from './identityIcon';
-import {InnerDialog, styles} from '../../elements/innerDialog';
+import IdentityIcon from '../../elements/IdentityIcon';
+import { Form, styles } from '../../elements/Form';
+import SecondaryMenu from './SecondaryMenu';
 
 const TokenRow = ({ token }) => {
     const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0';
@@ -71,8 +67,7 @@ class AccountRender extends React.Component {
 
             <div style={{display: 'flex', alignItems: 'stretch'}}>
                 <div style={{flexGrow: 1}}>
-                    <InnerDialog caption="Wallet" onCancel={goBack}>
-
+                    <Form caption="Wallet" onCancel={goBack}>
                         <div id="row" style={styles.formRow}>
                             <div id="left-column" style={styles.left}>
                                 <div style={{display: 'flex', justifyContent: 'flex-end'}}>
@@ -113,19 +108,15 @@ class AccountRender extends React.Component {
                                     <div style={{display: 'flex', alignItems: 'center'}}>
                                         <AccountPopup textColor='white' backgroundColor='#47B04B' account={account} />
                                         <AccountSendButton textColor='white' backgroundColor='#47B04B' account={account} />
-                                        <IconMenu
-                                            iconButtonElement={<IconButton><MoreHorizIcon /></IconButton>}>
-                                            <ExportAccountButton account={account} />
-                                            <PrintAccountButton account={account} />
-                                        </IconMenu>
+                                        <SecondaryMenu account={account} />
                                     </div>
                                 </div>
                             </div>
                         </div>
 
-                    </InnerDialog>
+                    </Form>
                 </div>
-                <div style={{flexBasis: '30%', backgroundColor: 'white', marginTop: '20px', paddingTop: '110px'}}>
+                <div style={{flexBasis: '30%', backgroundColor: 'white', paddingTop: '110px'}}>
                     <QRCode value={account.get('id')} />
                 </div>
             </div>

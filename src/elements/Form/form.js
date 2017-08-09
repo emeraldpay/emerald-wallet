@@ -1,15 +1,11 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import KeyboardArrowLeft from 'material-ui/svg-icons/hardware/keyboard-arrow-left';
 import { FlatButton } from 'material-ui';
+import Card from '../Card';
+
+import formStyles from './form.scss';
 
 export const styles = {
-    dialog: {
-        marginTop: '20px',
-        backgroundColor: 'white',
-        paddingTop: '41px',
-        paddingBottom: '41px',
-    },
     fieldName: {
         color: '#747474',
         fontSize: '16px',
@@ -25,11 +21,11 @@ export const styles = {
         display: 'flex',
         marginLeft: '14.75px',
         marginRight: '14.75px',
-        maxWidth: '600px',
+        maxWidth: '580px',
     },
     formRow: {
         display: 'flex',
-        marginTop: '19px',
+        marginBottom: '19px',
         alignItems: 'center',
     },
 };
@@ -41,15 +37,24 @@ const flatButtonNav = {
 };
 
 
-export class InnerDialog extends React.Component {
+export const Row = (props) => {
+    return (
+      <div className={ formStyles.formRow }>
+          {props.children}
+      </div>
+    );
+};
+
+export class Form extends React.Component {
 
     render() {
         const { children, caption, onCancel } = this.props;
         const backLabel = 'DASHBOARD';
 
         return (
-            <div style={styles.dialog}>
-                <div id="header" style={{display: 'flex', alignItems: 'center'}}>
+            <Card>
+                <div className={formStyles.form}>
+                <div id="header" style={styles.formRow}>
                     <div style={styles.left}>
                         <FlatButton label={backLabel}
                                     primary={true}
@@ -68,7 +73,8 @@ export class InnerDialog extends React.Component {
                 <div id="body" style={{paddingTop: '30px'}}>
                     {children}
                 </div>
-            </div>);
+                </div>
+            </Card>);
     }
 }
 

@@ -9,3 +9,4 @@ dist/
 emerald
 geth
 logs/
+coverage/

@@ -8,7 +8,7 @@ import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { DescriptionList, DescriptionTitle, DescriptionData } from 'elements/dl';
-import { AccountAddress } from 'elements/dl';
+import AccountAddress from 'elements/AccountAddress';
 import { link, align, cardSpace, copyIcon } from 'lib/styles';
 import { closeDialog } from 'store/screenActions';
 

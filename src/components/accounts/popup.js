@@ -1,17 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
-import { DescriptionList, DescriptionTitle, DescriptionData } from 'elements/dl';
-import { link, align, cardSpace, copyIcon } from 'lib/styles';
-import { Wei } from 'lib/types';
-import { AccountAddress } from 'elements/dl';
 import { showDialog } from 'store/screenActions';
 
 const Render = ({ account, handleOpen, backgroundColor = '#EEE', textColor = 'black' }) => {
-
     const styles = {
         container: {
             display: 'inline',
@@ -43,7 +37,7 @@ const Render = ({ account, handleOpen, backgroundColor = '#EEE', textColor = 'bl
 
 Render.propTypes = {
     account: PropTypes.object,
-    handleOpen: PropTypes.func.isRequired
+    handleOpen: PropTypes.func.isRequired,
 };
 
 const AccountPopup = connect(
@@ -57,7 +51,7 @@ const AccountPopup = connect(
     (dispatch, ownProps) => ({
         handleOpen: (account) => {
             dispatch(showDialog('receive', account));
-        }
+        },
     })
 )(Render);
 

@@ -2,18 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import FlatButton from 'material-ui/FlatButton';
-import { AccountAddress } from 'elements/dl';
+import AccountAddress from 'elements/AccountAddress';
 import AddressAvatar from 'elements/addressAvatar';
-import { cardSpace } from 'lib/styles';
 import { gotoScreen } from 'store/screenActions';
 import { toNumber, toDate } from 'lib/convert';
-import IdentityIcon from '../accounts/identityIcon';
+import IdentityIcon from '../../elements/IdentityIcon';
 import log from 'electron-log';
 
-import {InnerDialog, styles} from '../../elements/innerDialog';
+import {Form, styles} from '../../elements/Form';
 
 const Render = ({ transaction, rates, account, accounts, openAccount, goBack }) => {
-
     const fromAccount = transaction.get('from') ?
         accounts.find((acct) => acct.get('id') === transaction.get('from')) : null;
     const toAccount = transaction.get('to') ?
@@ -45,7 +43,7 @@ const Render = ({ transaction, rates, account, accounts, openAccount, goBack }) 
 
     return (
 
-        <InnerDialog caption="Ethereum Classic Transfer" onCancel={() => goBack(account)}>
+        <Form caption="Ethereum Classic Transfer" onCancel={() => goBack(account)}>
 
             <div id="row" style={styles.formRow}>
                 <div style={styles.left}>
@@ -178,14 +176,14 @@ const Render = ({ transaction, rates, account, accounts, openAccount, goBack }) 
                 </div>
             </div>
 
-        </InnerDialog>);
+        </Form>);
 };
 
 Render.propTypes = {
     hash: PropTypes.string.isRequired,
     transaction: PropTypes.object.isRequired,
     rates: PropTypes.object.isRequired,
-    accounts: PropTypes.object.isRequired, //TODO toJS()?
+    accounts: PropTypes.object.isRequired, // TODO toJS()?
     openAccount: PropTypes.func.isRequired,
     goBack: PropTypes.func.isRequired,
 };
@@ -201,7 +199,7 @@ const TransactionShow = connect(
             (tx) => tx.get('hash') === ownProps.hash
         );
         if (!Tx) {
-            log.error("Can't find tx for hash", ownProps.hash)
+            log.error("Can't find tx for hash", ownProps.hash);
         }
         return {
             hash: Tx.get('hash'),
@@ -216,15 +214,11 @@ const TransactionShow = connect(
             dispatch(gotoScreen('home'));
         },
         goBack: (account) => {
-            if (account)
-                dispatch(gotoScreen('account', account));
-            else
-                dispatch(gotoScreen('home'));
+            if (account) { dispatch(gotoScreen('account', account)); } else { dispatch(gotoScreen('home')); }
         },
         openAccount: (account) => {
-            if (account)
-                dispatch(gotoScreen('account', account));
-        }
+            if (account) { dispatch(gotoScreen('account', account)); }
+        },
     })
 )(Render);
 

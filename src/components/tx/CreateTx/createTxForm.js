@@ -6,12 +6,14 @@ import { RadioButton } from 'material-ui/RadioButton';
 import { MenuItem, FlatButton, IconButton } from 'material-ui';
 import { IconMenu } from 'material-ui/IconMenu';
 import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
-import { cardStyle, formStyle } from 'lib/styles';
+import { formStyle } from 'lib/styles';
 import { red200 } from 'material-ui/styles/colors';
 import { positive, number, required, address } from 'lib/validators';
-import IdentityIcon from '../accounts/identityIcon';
-import {InnerDialog, styles} from '../../elements/innerDialog';
-import AccountBalance from '../accounts/AccountBalance';
+import IdentityIcon from '../../../elements/IdentityIcon';
+import { Form, Row, styles } from '../../../elements/Form';
+import AccountBalance from '../../accounts/AccountBalance';
+import SubmitButton from '../../../elements/SubmitButton/index'
+
 
 const textEtc = {
     fontSize: '20px',
@@ -45,7 +47,7 @@ const linkText = {
 
 const BalanceField = ({ input }) => {
     if (!input.value) {
-        return (<div></div>);
+        return null;
     }
     return (
         <AccountBalance balance={input.value}
@@ -100,11 +102,11 @@ const CreateTxForm = (props) => {
     const { useLedger, ledgerConnected } = props;
 
     const sendDisabled = pristine || submitting || invalid || (useLedger && !ledgerConnected);
-    const sendButton = <FlatButton label={`Send ${value && value.getEther(2).toString()} ETC`}
-                              disabled={sendDisabled}
-                              onClick={handleSubmit}
-                              style={formStyle.submitButton}
-                              backgroundColor={sendDisabled ? '#CBDBCC' : '#47B04B'}/>;
+    const sendButton = <SubmitButton
+        label={`Send ${value && value.getEther(2).toString()} ETC`}
+        disabled={ sendDisabled }
+        onClick={ handleSubmit } />;
+
     let sendMessage = null;
     if (useLedger && !ledgerConnected) {
         sendMessage = <span style={formStyle.helpText}>
@@ -136,8 +138,8 @@ const CreateTxForm = (props) => {
 
 
     return (
-    <InnerDialog caption="Send Ether & Tokens" onCancel={cancel}>
-        <div id="row" style={styles.formRow}>
+    <Form caption="Send Ether & Tokens" onCancel={cancel}>
+        <Row>
             <div style={styles.left}>
                 <div style={styles.fieldName}>
                     From
@@ -154,11 +156,11 @@ const CreateTxForm = (props) => {
                        floatingLabelText="Balance"
                 />
             </div>
-        </div>
+        </Row>
 
         {passwordField}
 
-        <div id="row" style={styles.formRow}>
+        <Row>
             <div style={styles.left}>
                 <div style={styles.fieldName}>
                     To
@@ -196,7 +198,7 @@ const CreateTxForm = (props) => {
             <div style={styles.right}>
                 <a style={linkText} href={`http://gastracker.io/addr/${fromAddr}`}>Transaction History</a>
             </div>
-        </div>
+        </Row>
 
 
         <div id="row" style={styles.formRow}>
@@ -245,7 +247,7 @@ const CreateTxForm = (props) => {
             </div>
         </div>
 
-        <div id="row" style={styles.formRow}>
+        <Row>
             <div style={styles.left}></div>
             <div style={styles.right}>
                 <div style={textFiatLight}>
@@ -255,7 +257,7 @@ const CreateTxForm = (props) => {
                     Entire Balance
                 </div>
             </div>
-        </div>
+        </Row>
 
 
         <div id="row" style={styles.formRow}>
@@ -299,10 +301,10 @@ const CreateTxForm = (props) => {
             </div>
         </div>
 
-        <div id="row" style={styles.formRow}>
+        <Row>
             <div style={styles.left}></div>
             <div style={styles.right}>{sendMessage}</div>
-        </div>
+        </Row>
 
         {error && (
             <div id="row" style={styles.formRow}>
@@ -310,7 +312,7 @@ const CreateTxForm = (props) => {
             </div>
         )}
 
-    </InnerDialog>
+    </Form>
     );
 };
 

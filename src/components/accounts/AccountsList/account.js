@@ -1,33 +1,25 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { TableRow, TableRowColumn } from 'material-ui/Table';
-import { Card, CardHeader, CardText } from 'material-ui/Card';
+import { CardText } from 'material-ui/Card';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
-
-import { AccountAddress } from 'elements/dl';
-import AddressAvatar from '../../elements/addressAvatar';
-import AccountSendButton from './sendButton';
-import { gotoScreen } from 'store/screenActions';
 import log from 'electron-log';
-import { cardSpace, noShadow, align } from 'lib/styles';
-import AccountPopup from './popup';
-import AccountBalance from './AccountBalance';
-import { Wei } from 'lib/types';
-import IdentityIcon from './identityIcon';
 
+import AddressAvatar from '../../../elements/addressAvatar';
+import AccountSendButton from '../sendButton';
+import { gotoScreen } from 'store/screenActions';
+
+import { Wei } from 'lib/types';
+import IdentityIcon from 'elements/IdentityIcon';
+import Card from 'elements/Card';
+import SecondaryMenu from '../SecondaryMenu';
+import AccountPopup from '../popup';
+import AccountBalance from '../AccountBalance';
 
 const Render = ({ account, openAccount }) => {
-    const styles = {
-        card: {
-            marginBottom: '6px',
-            ...noShadow,
-        },
-    };
-
     const balance = account.get('balance');
     return (
-    <Card style={styles.card}>
+    <Card>
         <CardText>
             <Row>
                 <Col xs={3}>
@@ -48,8 +40,11 @@ const Render = ({ account, openAccount }) => {
                     />
                 </Col>
                 <Col xs={3}>
-                    <AccountPopup account={account}/>
-                    <AccountSendButton account={account} />
+                    <div style={{display: 'flex', alignItems: 'center'}}>
+                        <SecondaryMenu account={account} />
+                        <AccountPopup account={account}/>
+                        <AccountSendButton account={account} />
+                    </div>
                 </Col>
             </Row>
         </CardText>
