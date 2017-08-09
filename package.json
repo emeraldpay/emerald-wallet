@@ -34,7 +34,7 @@
     "lint": "./node_modules/eslint/bin/eslint.js ./src/",
     "postinstall": "electron-rebuild && electron-builder install-app-deps",
     "dist": "npm run build:all:nowatch && electron-builder --publish never",
-    "dist:nobuild": "CSC_IDENTITY_AUTModule not found: Error: Can't resolve './build/Release/scrypt'O_DISCOVERY=false electron-builder --publish never"
+    "dist:nobuild": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never"
   },
   "keywords": [
     "react",
