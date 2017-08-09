@@ -2,13 +2,11 @@ import React from 'react';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import AddressAvatar from 'elements/addressAvatar';
 import People from 'material-ui/svg-icons/social/people';
-import IconMenu from 'material-ui/IconMenu';
-import IconButton from 'material-ui/IconButton';
-import MoreHorizIcon from 'material-ui/svg-icons/navigation/more-horiz';
 import QRCode from 'qrcode.react';
 import log from 'electron-log';
+
+import AddressAvatar from 'elements/addressAvatar';
 import { gotoScreen } from 'store/screenActions';
 import { updateAccount } from 'store/accountActions';
 import AccountEdit from './edit';
@@ -16,11 +14,10 @@ import AccountPopup from './popup';
 import TransactionsList from '../tx/TxList';
 import AccountSendButton from './sendButton';
 import AccountBalance from './AccountBalance';
-import ExportAccountButton from './export';
-import PrintAccountButton from './print';
 import { Wei } from 'lib/types';
 import IdentityIcon from '../../elements/IdentityIcon';
-import {InnerDialog, styles} from '../../elements/Form';
+import { InnerDialog, styles } from '../../elements/Form';
+import SecondaryMenu from './SecondaryMenu';
 
 const TokenRow = ({ token }) => {
     const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0';
@@ -111,11 +108,7 @@ class AccountRender extends React.Component {
                                     <div style={{display: 'flex', alignItems: 'center'}}>
                                         <AccountPopup textColor='white' backgroundColor='#47B04B' account={account} />
                                         <AccountSendButton textColor='white' backgroundColor='#47B04B' account={account} />
-                                        <IconMenu
-                                            iconButtonElement={<IconButton><MoreHorizIcon /></IconButton>}>
-                                            <ExportAccountButton account={account} />
-                                            <PrintAccountButton account={account} />
-                                        </IconMenu>
+                                        <SecondaryMenu account={account} />
                                     </div>
                                 </div>
                             </div>

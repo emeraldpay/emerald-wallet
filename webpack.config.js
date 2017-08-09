@@ -11,7 +11,7 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 const forElectron = process.argv.indexOf('--for-electron') >= 0;
 
 const config = {
-    target: forElectron ? 'electron-main' : 'electron-renderer', // 'web',
+    target: 'electron-renderer', // 'web',
     entry: {
         index: path.join(srcDir, 'index.js'),
         // tests: path.join(srcDir, 'tests.js'),
@@ -28,6 +28,8 @@ const config = {
         filename: '[name].js',
     },
     resolve: {
+        // browser must be the first to load some npm packages correctly
+        mainFields: ['browser', 'module', 'main'],
         modules: [
             path.resolve(srcDir),
             path.join(__dirname, 'electron'),

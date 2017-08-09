@@ -4,31 +4,19 @@ import { connect } from 'react-redux';
 import { CardText } from 'material-ui/Card';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import log from 'electron-log';
-import { IconMenu, IconButton } from 'material-ui';
-import MoreHorizIcon from 'material-ui/svg-icons/navigation/more-horiz';
 
 import AddressAvatar from '../../../elements/addressAvatar';
 import AccountSendButton from '../sendButton';
 import { gotoScreen } from 'store/screenActions';
 
-import { noShadow, align } from 'lib/styles';
-import AccountPopup from '../popup';
-import AccountBalance from '../AccountBalance';
 import { Wei } from 'lib/types';
 import IdentityIcon from 'elements/IdentityIcon';
-import ExportAccountButton from '../export';
-import PrintAccountButton from '../print';
-
 import Card from 'elements/Card';
+import SecondaryMenu from '../SecondaryMenu';
+import AccountPopup from '../popup';
+import AccountBalance from '../AccountBalance';
 
 const Render = ({ account, openAccount }) => {
-    const styles = {
-        card: {
-            marginBottom: '6px',
-            ...noShadow,
-        },
-    };
-
     const balance = account.get('balance');
     return (
     <Card>
@@ -53,11 +41,7 @@ const Render = ({ account, openAccount }) => {
                 </Col>
                 <Col xs={3}>
                     <div style={{display: 'flex', alignItems: 'center'}}>
-                        <IconMenu
-                            iconButtonElement={<IconButton><MoreHorizIcon color="#595959"/></IconButton>}>
-                            <ExportAccountButton account={account} />
-                            <PrintAccountButton account={account} />
-                        </IconMenu>
+                        <SecondaryMenu account={account} />
                         <AccountPopup account={account}/>
                         <AccountSendButton account={account} />
                     </div>

@@ -5,13 +5,14 @@ import IconButton from 'material-ui/IconButton';
 import ActionPrint from 'material-ui/svg-icons/action/print';
 import ActionCancel from 'material-ui/svg-icons/navigation/cancel';
 
-import { gotoScreen } from 'store/screenActions';
+
+import { gotoScreen } from '../../../store/screenActions';
 import { LogoIcon } from '../../../elements/icons';
 
 import styles from './paper.scss';
 
 
-const PaperWallet = (props) => {
+export const PaperWallet = (props) => {
     const { address, privKey, onCancel } = props;
 
     const Logo = (
@@ -41,14 +42,14 @@ const PaperWallet = (props) => {
                         <div className={styles.notesCaption}>AMOUNT/NOTES</div>
                     </div>
                     <div>
-                        <QRCode size={100} value="test" />
+                        <QRCode size={100} value={privKey} />
                     </div>
                 </div>
                 <div className={styles.privateBlock}>
                     {Logo}
                     <div style={{flexGrow: 1}}>
                         <div className={styles.privateLabel}>YOUR PRIVATE KEY</div>
-                        <div className={styles.privateValue}>{address}</div>
+                        <div className={styles.privateValue}>{privKey}</div>
                     </div>
                 </div>
             </div>
