@@ -50,7 +50,7 @@ Render.propTypes = {
     openAccounts: PropTypes.func.isRequired,
     openAddressBook: PropTypes.func.isRequired,
     openContracts: PropTypes.func.isRequired,
-    switchChain: PropTypes.func.isRequired,
+    switchNetwork: PropTypes.func.isRequired,
 };
 
 const Navigation = connect(
@@ -71,7 +71,7 @@ const Navigation = connect(
             log.info('contracts');
             dispatch(gotoScreen('contracts'));
         },
-        switchChain: (network) => {
+        switchNetwork: (network) => {
             dispatch(useRpc(network.type));
             dispatch(saveSettings({chain: network.name, chainId: network.chainId}));
         },

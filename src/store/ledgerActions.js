@@ -3,7 +3,8 @@ import LedgerComm from 'ledgerco/src/ledger-comm-u2f';
 import log from 'electron-log';
 import uuid from 'uuid/v4';
 import Immutable from 'immutable';
-import { rpc } from 'lib/rpc';
+import { api } from 'lib/rpc/api';
+
 import { gotoScreen } from './screenActions';
 import { loadAccountsList } from './accountActions';
 
@@ -40,14 +41,14 @@ export function closeConnection() {
 
 function loadInfo(hdpath, addr) {
     return (dispatch) => {
-        rpc.call('eth_getBalance', [addr, 'latest']).then((result) => {
+        api.geth.call('eth_getBalance', [addr, 'latest']).then((result) => {
             dispatch({
                 type: 'LEDGER/ADDR_BALANCE',
                 hdpath,
                 value: result,
             });
         });
-        rpc.call('eth_getTransactionCount', [addr, 'latest']).then((result) => {
+        api.geth.call('eth_getTransactionCount', [addr, 'latest']).then((result) => {
             dispatch({
                 type: 'LEDGER/ADDR_TXCOUNT',
                 hdpath,

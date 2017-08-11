@@ -98,7 +98,7 @@ const CreateTxForm = (props) => {
     const { fields: { from, to }, accounts, balance, handleSubmit, invalid, pristine, submitting } = props;
     const { addressBook, handleSelect, tokens, token, isToken, onChangeToken, onChangeAccount } = props;
     const { fiatRate, value, fromAddr, onEntireBalance } = props;
-    const { error, cancel } = props;
+    const { error, cancel, goDashboard } = props;
     const { useLedger, ledgerConnected } = props;
 
     const sendDisabled = pristine || submitting || invalid || (useLedger && !ledgerConnected);
@@ -138,7 +138,7 @@ const CreateTxForm = (props) => {
 
 
     return (
-    <Form caption="Send Ether & Tokens" onCancel={cancel}>
+    <Form caption="Send Ether & Tokens" onCancel={ goDashboard }>
         <Row>
             <div style={styles.left}>
                 <div style={styles.fieldName}>

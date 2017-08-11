@@ -1,4 +1,4 @@
-import { rpc } from 'lib/rpc';
+import { api } from 'lib/rpc/api';
 
 export function loadAddressBalance(addressId) {
     return (dispatch) => {

@@ -79,7 +79,7 @@ function refreshAll() {
     store.dispatch(loadAccountsList());
 
     const state = store.getState();
-    if (state.launcher.getIn(['chain', 'rpc']) === 'local') {
+    if (state.launcher.getIn(['geth', 'type']) === 'local') {
         store.dispatch(loadPeerCount());
     }
     setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
@@ -106,7 +106,7 @@ export function startSync() {
         store.dispatch(setBaseHD("44'/61'/1'/0"));
     }
 
-    if (state.launcher.getIn(['chain', 'rpc']) !== 'remote-auto') {
+    if (state.launcher.getIn(['geth', 'type']) !== 'remote') {
         // check for syncing
         setTimeout(() => store.dispatch(loadSyncing()), intervalRates.second); // prod: intervalRates.second
         // double check for syncing
@@ -133,9 +133,8 @@ export function waitForServices() {
     const unsubscribe = store.subscribe(() => {
         const state = store.getState();
         if (state.launcher.get('terms') === 'v1'
-            && state.launcher.getIn(['status', 'geth']) === 'ready'
-            && state.launcher.getIn(['status', 'connector']) === 'ready'
-            && state.network.getIn(['chain', 'name']) !== null) {
+            && state.launcher.getIn(['geth', 'status']) === 'ready'
+            && state.launcher.getIn(['connector', 'status']) === 'ready') {
             unsubscribe();
             log.info('All services are ready to use by Wallet');
             startSync();
@@ -156,8 +155,8 @@ export function waitForServicesRestart() {
     store.dispatch(connecting(true));
     const unsubscribe = store.subscribe(() => {
         const state = store.getState();
-        if (state.launcher.getIn(['status', 'geth']) !== 'ready'
-            || state.launcher.getIn(['status', 'connector']) !== 'ready') {
+        if (state.launcher.getIn(['geth', 'status']) !== 'ready'
+            || state.launcher.getIn(['connector', 'status']) !== 'ready') {
             unsubscribe();
             waitForServices();
         }

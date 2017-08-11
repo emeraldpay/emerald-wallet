@@ -58,7 +58,7 @@ export default connect(
     (state, ownProps) => {
         const rates = state.accounts.get('rates');
         const balance = ownProps.balance;
-        const network = (state.network.get('chain').get('name') || '').toLowerCase();
+        const network = (state.launcher.get('chain').get('name') || '').toLowerCase();
         return {
             balance,
             rates,

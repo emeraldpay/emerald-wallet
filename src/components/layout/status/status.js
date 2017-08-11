@@ -58,7 +58,7 @@ Render.propTypes = {
 const Status = connect(
     (state, ownProps) => {
         const curBlock = state.network.getIn(['currentBlock', 'height'], -1);
-        const showDetails = state.launcher.getIn(['chain', 'rpc']) === 'local';
+        const showDetails = state.launcher.getIn(['geth', 'type']) === 'local';
         const props = {
             block: curBlock,
             showDetails,

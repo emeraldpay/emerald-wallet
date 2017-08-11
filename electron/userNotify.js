@@ -2,40 +2,34 @@ class UserNotify {
 
     constructor(webContents) {
         this.webContents = webContents;
-        webContents.on('close', () => this.webContents = null)
+        webContents.on('close', () => this.webContents = null);
     }
 
     info(msg) {
         if (this.webContents) {
-            this.webContents.send("launcher", "MESSAGE", {msg: msg, level: 2});
+            this.webContents.send('launcher', 'MESSAGE', {msg, level: 2});
         }
     }
 
     error(msg) {
         if (this.webContents) {
-            this.webContents.send("launcher", "MESSAGE", {msg: msg, level: 3});
+            this.webContents.send('launcher', 'MESSAGE', {msg, level: 3});
         }
     }
 
     status(name, mode) {
         if (this.webContents) {
-            this.webContents.send("launcher", "SERVICE_STATUS", {service: name, mode: mode});
+            this.webContents.send('launcher', 'SERVICE_STATUS', {service: name, mode});
         }
     }
 
-    chain(rpc, chain, chainId) {
+    chain(chain, chainId) {
         if (this.webContents) {
-            this.webContents.send("launcher", "CHAIN", {rpc, chain, chainId});
-        }
-    }
-
-    rpcUrl(url) {
-        if (this.webContents) {
-            this.webContents.send("launcher", "RPC", {url});
+            this.webContents.send('launcher', 'CHAIN', { chain, chainId });
         }
     }
 }
 
 module.exports = {
-    UserNotify: UserNotify
+    UserNotify,
 };

@@ -42,7 +42,7 @@ const Main = connect(
             log.info('contracts');
             dispatch(gotoScreen('contracts'));
         },
-        switchChain: (network) => {
+        switchNetwork: (network) => {
             dispatch(switchChain(network.get('name'), network.get('id')));
         },
     })

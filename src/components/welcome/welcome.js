@@ -82,7 +82,7 @@ Render.propTypes = {
 
 function needSetup(state) {
     return state.launcher.get('terms') !== 'v1'
-        || state.launcher.getIn(['chain', 'rpc']) === 'none'
+        || state.launcher.getIn(['geth', 'type']) === 'none'
         || state.launcher.get('settingsUpdated') === true;
 }
 
@@ -90,8 +90,8 @@ const Welcome = connect(
     (state, ownProps) => ({
         message: state.launcher.getIn(['message', 'text']),
         level: state.launcher.getIn(['message', 'level']),
-        ready: state.launcher.getIn(['status', 'geth']) === 'ready'
-                && state.launcher.getIn(['status', 'connector']) === 'ready',
+        ready: state.launcher.getIn(['geth', 'status']) === 'ready'
+                && state.launcher.getIn(['connector', 'status']) === 'ready',
         needSetup: needSetup(state),
     }),
     (dispatch, ownProps) => ({

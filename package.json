@@ -31,7 +31,7 @@
     "test:watch": "node ./node_modules/karma/bin/karma start",
     "test": "npm run build && node ./node_modules/karma/bin/karma start --single-run",
     "test:jest": "jest",
-    "lint": "./node_modules/eslint/bin/eslint.js ./src/",
+    "lint": "./node_modules/eslint/bin/eslint.js ./src/ ./electron/",
     "postinstall": "electron-rebuild && electron-builder install-app-deps",
     "dist": "npm run build:all:nowatch && electron-builder --publish never",
     "dist:nobuild": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never"
