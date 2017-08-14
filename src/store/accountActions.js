@@ -55,27 +55,21 @@ export function loadAccountTxCount(accountId) {
     };
 }
 
-/*
- *
- * TODO: Error handling
-*/
 export function createAccount(passphrase, name, description) {
     return (dispatch, getState) => {
         const chain = getState().launcher.getIn(['chain', 'name']);
-        return api.emerald.call('emerald_newAccount', [{
-            passphrase,
-            name,
-            description,
-        }, {chain}]).then((result) => {
-            dispatch({
-                type: 'ACCOUNT/ADD_ACCOUNT',
-                accountId: result,
-                name,
-                description,
-            });
-            dispatch(loadAccountBalance(result));
-            dispatch(gotoScreen('account', Immutable.fromJS({id: result})));
-        });
+
+        api.emerald.newAccount(passphrase, name, description, chain)
+            .then((result) => {
+                dispatch({
+                    type: 'ACCOUNT/ADD_ACCOUNT',
+                    accountId: result,
+                    name,
+                    description,
+                });
+                dispatch(loadAccountBalance(result));
+                dispatch(gotoScreen('account', Immutable.fromJS({id: result})));
+            }).catch(catchError(dispatch));
     };
 }
 
@@ -171,7 +165,7 @@ export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value)
         gasPrice,
         value,
     };
-    originalTx.passphrase = originalTx.passphrase || ''; // for HW key
+    originalTx.passPhrase = originalTx.passPhrase || ''; // for HW key
     return (dispatch, getState) => {
         const chain = getState().launcher.getIn(['chain', 'name']);
         getNonce(accountId)
@@ -206,42 +200,48 @@ export function createContract(accountId, passphrase, gas, gasPrice, data) {
     };
 }
 
+function readWalletFile(wallet) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsText(wallet);
+        reader.onload = (event) => {
+            let data;
+            try {
+                data = JSON.parse(event.target.result);
+                data.filename = wallet.name;
+                resolve(data);
+            } catch (e) {
+                reject({error: e});
+            }
+        };
+    });
+}
+
 export function importWallet(wallet, name, description) {
     return (dispatch, getState) => {
-        const chain = getState().network.getIn(['chain', 'name']);
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsText(wallet);
-            reader.onload = (event) => {
-                let data;
-                try {
-                    data = JSON.parse(event.target.result);
-                    data.filename = wallet.name;
-                    data.name = name;
-                    data.description = description;
-                } catch (e) {
-                    reject({error: e});
-                }
-                return api.emerald.importAccount(data, chain).then((result) => {
-                    dispatch({
-                        type: 'ACCOUNT/IMPORT_WALLET',
-                        accountId: result,
-                    });
-                    // Reload accounts.
-                    if (isAddress(result) === undefined) {
-                        dispatch({
-                            type: 'ACCOUNT/ADD_ACCOUNT',
-                            accountId: result,
-                            name,
-                            description,
-                        });
-                        dispatch(loadAccountBalance(result));
-                        resolve(result);
-                    } else {
-                        reject({error: result});
-                    }
+        const chain = getState().launcher.getIn(['chain', 'name']);
+
+        return readWalletFile(wallet).then((data) => {
+            data.name = name;
+            data.description = description;
+            return api.emerald.importAccount(data, chain).then((result) => {
+                dispatch({
+                    type: 'ACCOUNT/IMPORT_WALLET',
+                    accountId: result,
                 });
-            };
+                // Reload accounts.
+                if (isAddress(result) === undefined) {
+                    dispatch({
+                        type: 'ACCOUNT/ADD_ACCOUNT',
+                        accountId: result,
+                        name,
+                        description,
+                    });
+                    dispatch(loadAccountBalance(result));
+                    return result;
+                }
+                throw new Error(result);
+            });
         });
     };
 }

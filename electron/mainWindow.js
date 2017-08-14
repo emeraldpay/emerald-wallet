@@ -9,7 +9,7 @@ const url = require('url');
 let mainWindow;
 let menu;
 
-const createWindow = function(openDevTools) {
+const createWindow = function (openDevTools) {
     // Create the browser window.
     mainWindow = new electron.BrowserWindow({width: 1100, height: 600});
 
@@ -52,6 +52,6 @@ const createWindow = function(openDevTools) {
 };
 
 module.exports = {
-    mainWindow: mainWindow,
-    createWindow: createWindow
+    mainWindow,
+    createWindow,
 };

@@ -115,7 +115,7 @@ export default connect(
                         .then((response) => resolve(response))
                         .catch((error) => resolve({error}));
                 } catch (error) {
-                    resolve({error});
+                    resolve({ error });
                 }
             });
         },

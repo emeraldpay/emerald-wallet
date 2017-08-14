@@ -92,20 +92,14 @@ class Services {
             shuttingDown.push(
                 this.geth.shutdown()
                     .then(() => { this.gethStatus = STATUS.NOT_STARTED; })
-                    .then(() => this.notify.status(SERVICES.GETH, {
-                        url: this.setup.geth.url,
-                        type: this.setup.geth.type,
-                        status: 'not ready',
-                    })));
+                    .then(() => this.notifyGethStatus('not ready')));
         }
 
         if (this.connector) {
             shuttingDown.push(this.connector.shutdown()
                 .then(() => { this.connectorStatus = STATUS.NOT_STARTED; })
-                .then(() => this.notify.status(SERVICES.CONNECTOR, {
-                    url: this.setup.connector.url,
-                    status: 'not ready',
-                })));
+                .then(() => this.notifyConnectorStatus('not ready')));
+
         }
         return Promise.all(shuttingDown);
     }
@@ -136,11 +130,7 @@ class Services {
 
             this.notify.info('Use Remote RPC API');
 
-            this.notify.status(SERVICES.GETH, {
-                url: this.setup.geth.url,
-                type: this.setup.geth.type,
-                status: 'ready',
-            });
+            this.notifyGethStatus('ready');
 
             resolve(new RemoteGeth(null, null));
         });
@@ -158,11 +148,7 @@ class Services {
 
                 this.notify.info('Use Local Existing RPC API');
 
-                this.notify.status(SERVICES.GETH, {
-                    url: this.setup.geth.url,
-                    type: this.setup.geth.type,
-                    status: 'ready',
-                });
+                this.notifyGethStatus('ready');
 
                 this.notify.chain(this.setup.chain.name, this.setup.chain.id);
 
@@ -196,11 +182,7 @@ class Services {
                             this.notify.info('Local Geth RPC API is ready');
                             this.setup.geth.url = this.geth.getUrl();
 
-                            this.notify.status(SERVICES.GETH, {
-                                url: this.setup.geth.url,
-                                type: this.setup.geth.type,
-                                status: 'ready',
-                            });
+                            this.notifyGethStatus('ready');
 
                             resolve(this.geth);
                         }).catch(reject);
@@ -219,12 +201,7 @@ class Services {
 
     startGeth() {
         this.gethStatus = STATUS.NOT_STARTED;
-
-        this.notify.status(SERVICES.GETH, {
-            url: this.setup.geth.url,
-            type: this.setup.geth.type,
-            status: 'not ready',
-        });
+        this.notifyGethStatus('not ready');
 
         if (this.setup.geth.launchType === LAUNCH_TYPE.NONE) {
             return this.startNoneRpc();
@@ -235,18 +212,15 @@ class Services {
             return this.startAutoRpc();
         }
         return new Promise((resolve, reject) => {
-            reject(new Error(`Invalid Geth launch type ${this.setup.gethType}`));
+            reject(new Error(`Invalid Geth launch type ${this.setup.geth.launchType}`));
         });
     }
 
     startConnector() {
         return new Promise((resolve, reject) => {
             this.connectorStatus = STATUS.NOT_STARTED;
+            this.notifyConnectorStatus('not ready');
 
-            this.notify.status('connector', {
-                url: this.setup.connector.url,
-                status: 'not ready',
-            });
 
             this.connector = new LocalConnector(getBinDir(), this.setup.chain);
             this.connector.launch().then((emerald) => {
@@ -264,11 +238,7 @@ class Services {
                     log.debug(`[emerald] ${data}`); // always log emerald data
                     if (/Connector started on/.test(data)) {
                         this.connectorStatus = STATUS.READY;
-
-                        this.notify.status(SERVICES.CONNECTOR, {
-                            url: this.setup.connector.url,
-                            status: 'ready',
-                        });
+                        this.notifyConnectorStatus('ready');
 
                         resolve(this.connector);
                     }
@@ -282,16 +252,8 @@ class Services {
             const connectorStatus = this.connectorStatus === STATUS.READY ? 'ready' : 'not ready';
             const gethStatus = this.gethStatus === STATUS.READY ? 'ready' : 'not ready';
 
-            this.notify.status(SERVICES.CONNECTOR, {
-                url: this.setup.connector.url,
-                status: connectorStatus,
-            });
-
-            this.notify.status(SERVICES.GETH, {
-                url: this.setup.geth.url,
-                type: this.setup.geth.type,
-                status: gethStatus,
-            });
+            this.notifyConnectorStatus(connectorStatus);
+            this.notifyGethStatus(gethStatus);
 
             this.notify.chain(
                 this.setup.chain,
@@ -299,6 +261,21 @@ class Services {
             );
 
             resolve('ok');
+        });
+    }
+
+    notifyConnectorStatus(connectorStatus) {
+        this.notify.status(SERVICES.CONNECTOR, {
+            url: this.setup.connector.url,
+            status: connectorStatus,
+        });
+    }
+
+    notifyGethStatus(gethStatus) {
+        this.notify.status(SERVICES.GETH, {
+            url: this.setup.geth.url,
+            type: this.setup.geth.type,
+            status: gethStatus,
         });
     }
 }

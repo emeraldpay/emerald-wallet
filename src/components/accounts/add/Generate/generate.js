@@ -15,8 +15,6 @@ import { gotoScreen } from 'store/screenActions';
 import { createAccount } from 'store/accountActions';
 import { required, minLength, passwordMatch } from 'lib/validators';
 
-import AccountShow from '../../show';
-
 const validate = (values) => {
     const errors = {};
     errors.password = minLength(8)(values.password);
@@ -24,7 +22,7 @@ const validate = (values) => {
     return errors;
 };
 
-const Render = translate('accounts')(({ t, account, submitSucceeded, handleSubmit, invalid, pristine, reset, submitting, cancel }) => (
+const Render = translate('accounts')(({ t, submitSucceeded, handleSubmit, invalid, pristine, reset, submitting, cancel }) => (
     <Card style={cardSpace}>
         <CardHeader
             title={t('generate.title')}
@@ -32,7 +30,7 @@ const Render = translate('accounts')(({ t, account, submitSucceeded, handleSubmi
             showExpandableButton={false}
         />
 
-        <CardText expandable={submitSucceeded}>
+        <CardText>
             <form onSubmit={handleSubmit}>
                 <Field name="name"
                         component={renderTextField}
@@ -59,12 +57,7 @@ const Render = translate('accounts')(({ t, account, submitSucceeded, handleSubmi
                             onClick={reset} />
             </form>
         </CardText>
-        <CardText expandable={!submitSucceeded}>
-             <AccountShow key={(account === undefined) ? undefined : account.get('id')} account={account}/>
-             <FlatButton label={t('common:done')}
-                        onClick={cancel}
-                        icon={<FontIcon className="fa fa-home" />}/>
-        </CardText>
+
         <CardActions>
             <FlatButton label={t('common:cancel')}
                         onClick={cancel}
@@ -93,16 +86,17 @@ const GenerateAccountForm = reduxForm({
 
 const GenerateAccount = connect(
     (state, ownProps) => ({
-        account: state.accounts.get('accounts', Immutable.List()).last(),
     }),
-    (dispatch, ownProps) => ({
-        onSubmit: (data) => {
-            dispatch(createAccount(data.password, data.name, data.description));
-        },
-        cancel: () => {
-            dispatch(gotoScreen('home'));
-        },
-    })
+    (dispatch, ownProps) => {
+        return ({
+            onSubmit: (data) => {
+                dispatch(createAccount(data.password, data.name, data.description));
+            },
+            cancel: () => {
+                dispatch(gotoScreen('home'));
+            },
+        });
+    }
 )(GenerateAccountForm);
 
 export default GenerateAccount;
