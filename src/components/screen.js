@@ -19,7 +19,7 @@ import AddContract from './contracts/add';
 import DeployContract from './contracts/deploy';
 import ContractShow from './contracts/show';
 import Welcome from './welcome/welcome';
-import Dashboard from './dashboard';
+import Dashboard from '../containers/Dashboard';
 import Settings from './settings';
 import PaperWallet from './accounts/PaperWallet';
 

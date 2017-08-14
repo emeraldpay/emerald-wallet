@@ -1,10 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Networks2 } from 'lib/networks';
 import { useRpc, saveSettings } from 'store/launcherActions';
 import { MenuItem, DropDownMenu } from 'material-ui';
-import { findNetwork } from '../../../lib/networks'
+import { Networks2, findNetwork } from '../../../lib/networks'
 
 const styles = {
     main: {

@@ -25,7 +25,7 @@ export function loadNetworkVersion() {
     return (dispatch, getState) =>
         api.geth.call('net_version', []).then((result) => {
             if (getState().launcher.get('chain').get('id') !== result) {
-                //TODO: our full node on not expected chain - should we alarm ?
+                // TODO: our full node on not expected chain - should we alarm ?
                 dispatch({
                     type: 'NETWORK/SWITCH_CHAIN',
                     id: result,
@@ -53,7 +53,9 @@ export function loadSyncing() {
         api.geth.call('eth_syncing', []).then((result) => {
             const syncing = getState().network.get('sync').get('syncing');
             if (typeof result === 'object') {
-                if (!syncing) dispatch(loadNetworkVersion());
+                if (!syncing) {
+                    dispatch(loadNetworkVersion());
+                }
                 dispatch({
                     type: 'NETWORK/SYNCING',
                     syncing: true,
@@ -73,9 +75,3 @@ export function loadSyncing() {
     };
 }
 
-export function switchChain(network, id) {
-    return (dispatch) => {
-        ipcRenderer.sendSync('switch-chain', network, id);
-        waitForServices();
-    };
-}

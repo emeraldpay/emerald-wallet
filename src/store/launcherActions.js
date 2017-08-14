@@ -96,10 +96,7 @@ export function saveSettings(extraSettings) {
 
 export function listenElectron() {
     return (dispatch, getState) => {
-
-
         ipcRenderer.on('launcher', (event, type, message) => {
-
             log.debug('launcher listener: ', 'type', type, 'message', message);
 
             dispatch({
@@ -108,25 +105,10 @@ export function listenElectron() {
             });
 
             const state = getState();
-            // update rpc url
-            //rpc.urlGeth = state.launcher.getIn(['geth', 'url']);
 
-            if (type === 'CHAIN') {
-                // dispatch({
-                //     type: 'NETWORK/SWITCH_CHAIN',
-                //     network: message.chain,
-                //     id: message.chainId,
-                //     rpcType: state.launcher.getIn(['geth', 'type']),
-                // });
-                if (isGethReady(state)) {
-                    dispatch(loadAccountsList());
-                }
-            // } else if (type === 'RPC') {
-            //     log.info('Use RPC URL', message.url);
-            //     rpc.urlGeth = message.url;
-            }
             if (isGethReady(state)) {
                 dispatch(loadClientVersion());
+                dispatch(loadAccountsList());
             }
         });
     };

@@ -66,8 +66,7 @@ function getChain(status) {
 
 const check = function (url) {
     const status = Object.assign({}, DefaultStatus, {url});
-    return exists(status)
-        .then(getChain);
+    return exists(status).then(getChain);
 };
 
 const waitRpc = function (url) {

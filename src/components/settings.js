@@ -1,14 +1,13 @@
 import React from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
-import { SelectField } from 'redux-form-material-ui';
 import { MenuItem } from 'material-ui';
 import { translate } from 'react-i18next';
 import { gotoScreen } from '../store/screenActions';
-import { formStyle } from '../lib/styles';
 import i18n from '../i18n/i18n';
-import {Form, styles, Row} from '../elements/Form';
+import { Form, styles, Row } from '../elements/Form';
 import Button from '../elements/Form/Button';
+import SelectField from '../elements/Form/SelectField';
 
 class SettingsRender extends React.Component {
 
@@ -28,7 +27,7 @@ class SettingsRender extends React.Component {
                             <Field name="network"
                                    component={SelectField}
                                    underlineShow={false}
-                                   style={formStyle.input}
+                                   // style={formStyle.input}
                                    fullWidth={true}>
                                 <MenuItem key="mainnet"
                                           value="mainnet"
@@ -47,7 +46,7 @@ class SettingsRender extends React.Component {
                             <Field name="currency"
                                    component={SelectField}
                                    underlineShow={false}
-                                   style={formStyle.input}
+                                   // style={formStyle.input}
                                    fullWidth={true}>
                                 <MenuItem key="eur"
                                           value="eur"
@@ -71,7 +70,7 @@ class SettingsRender extends React.Component {
                                    component={SelectField}
                                    onChange={(event, val) => changeLanguage(val)}
                                    underlineShow={false}
-                                   style={formStyle.input}
+                                   // style={formStyle.input}
                                    fullWidth={true}>
                                 <MenuItem key="en"
                                           value="en"
@@ -80,8 +79,8 @@ class SettingsRender extends React.Component {
 
                                 <MenuItem key="cn"
                                           value="cn"
-                                          label="cn"
-                                          primaryText="cn" />
+                                          label="中文"
+                                          primaryText="中文" />
                             </Field>
                         </div>
                     </Row>

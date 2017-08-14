@@ -83,10 +83,7 @@ function onMessage(state, action) {
 
 function onServiceStatus(state, action) {
     if (action.type === 'LAUNCHER/SERVICE_STATUS') {
-        return state
-            //.setIn([action.service, 'url'], action.mode.url)
-            .setIn([action.service, 'status'], action.mode.status)
-            //.setIn([action.service, 'type'], action.mode.type);
+        return state.setIn([action.service, 'status'], action.mode.status);
     }
     return state;
 }

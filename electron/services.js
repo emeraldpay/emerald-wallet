@@ -99,14 +99,13 @@ class Services {
             shuttingDown.push(this.connector.shutdown()
                 .then(() => { this.connectorStatus = STATUS.NOT_STARTED; })
                 .then(() => this.notifyConnectorStatus('not ready')));
-
         }
         return Promise.all(shuttingDown);
     }
 
-    tryExistingGeth() {
+    tryExistingGeth(url) {
         return new Promise((resolve, reject) => {
-            check(LOCAL_RPC_URL).then((status) => {
+            check(url).then((status) => {
                 resolve({
                     name: status.chain,
                     id: status.chainId,
@@ -124,21 +123,21 @@ class Services {
     }
 
     startRemoteRpc() {
-        return new Promise((resolve, reject) => {
-            log.info('use REMOTE Geth');
+        log.info('use REMOTE RPC');
+        return this.tryExistingGeth(this.setup.geth.url).then((chain) => {
+            this.setup.chain = chain;
             this.gethStatus = STATUS.READY;
 
-            this.notify.info('Use Remote RPC API');
-
+            this.notify.info(`Use Remote RPC API at ${this.setup.geth.url}`);
+            this.notify.chain(this.setup.chain.name, this.setup.chain.id);
             this.notifyGethStatus('ready');
-
-            resolve(new RemoteGeth(null, null));
+            return new RemoteGeth(null, null);
         });
     }
 
     startAutoRpc() {
         return new Promise((resolve, reject) => {
-            this.tryExistingGeth().then((chain) => {
+            this.tryExistingGeth(LOCAL_RPC_URL).then((chain) => {
                 this.setup.chain = chain;
                 log.info('Use Local Existing RPC API');
 
@@ -155,7 +154,7 @@ class Services {
                 resolve(new LocalGeth(null, getLogDir(), this.setup.chain.name, 8545));
             }).catch((e) => {
                 log.info("Can't find existing RPC. Try to launch");
-                this.startLocalRpc.call(this)
+                this.startLocalRpc()
                     .then(resolve)
                     .catch(reject);
             });
@@ -198,7 +197,6 @@ class Services {
         });
     }
 
-
     startGeth() {
         this.gethStatus = STATUS.NOT_STARTED;
         this.notifyGethStatus('not ready');
@@ -221,7 +219,6 @@ class Services {
             this.connectorStatus = STATUS.NOT_STARTED;
             this.notifyConnectorStatus('not ready');
 
-
             this.connector = new LocalConnector(getBinDir(), this.setup.chain);
             this.connector.launch().then((emerald) => {
                 this.connectorStatus = STATUS.STARTING;
@@ -239,7 +236,6 @@ class Services {
                     if (/Connector started on/.test(data)) {
                         this.connectorStatus = STATUS.READY;
                         this.notifyConnectorStatus('ready');
-
                         resolve(this.connector);
                     }
                 });
@@ -282,6 +278,5 @@ class Services {
 
 
 module.exports = {
-    getLogDir,
     Services,
 };

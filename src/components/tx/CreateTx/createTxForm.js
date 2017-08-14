@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Field, reduxForm } from 'redux-form';
-import { SelectField, RadioButtonGroup } from 'redux-form-material-ui';
+import { RadioButtonGroup } from 'redux-form-material-ui';
 import { RadioButton } from 'material-ui/RadioButton';
 import { MenuItem, IconButton } from 'material-ui';
 import { IconMenu } from 'material-ui/IconMenu';
@@ -12,6 +12,7 @@ import { positive, number, required, address } from 'lib/validators';
 import IdentityIcon from '../../../elements/IdentityIcon';
 import { Form, Row, styles } from '../../../elements/Form';
 import TextField from '../../../elements/Form/TextField';
+import SelectField from '../../../elements/Form/SelectField';
 import AccountBalance from '../../accounts/AccountBalance';
 import Button from '../../../elements/Form/Button';
 
@@ -74,7 +75,7 @@ const AddressWithIcon = ({ address }) => {
 
 const FromAddressField = ({accounts, onChangeAccount}) => {
     return (<Field name="from"
-                   style={formStyle.input}
+                   // style={formStyle.input}
                    onChange={(event, val) => onChangeAccount(accounts, val)}
                    component={SelectField}
                    underlineShow={false}
@@ -130,7 +131,7 @@ const CreateTxForm = (props) => {
                            component={ TextField }
                            underlineShow={false}
                            fullWidth={true}
-                           validate={required}/>
+                           validate={ [required] }/>
                 </div>
             </Row>);
     }
@@ -214,8 +215,8 @@ const CreateTxForm = (props) => {
                 />
 
                     <Field name="token"
-                           style={{...formStyle.input, marginLeft: '19px', maxWidth: '125px'}}
-                           component={SelectField}
+                           style={{ marginLeft: '19px', maxWidth: '125px' }}
+                           component={ SelectField }
                            onChange={onChangeToken}
                            value={token}
                            underlineShow={false}
@@ -244,7 +245,7 @@ const CreateTxForm = (props) => {
         </Row>
 
         <Row>
-            <div style={styles.left}></div>
+            <div style={styles.left}/>
             <div style={styles.right}>
                 <div style={textFiatLight}>
                     {value && `$${value.getFiat(fiatRate).toString()}` }
@@ -254,7 +255,6 @@ const CreateTxForm = (props) => {
                 </div>
             </div>
         </Row>
-
 
         <Row>
             <div style={styles.left}>
@@ -285,7 +285,7 @@ const CreateTxForm = (props) => {
          </Row>*/}
 
         <Row>
-            <div style={styles.left}></div>
+            <div style={styles.left}/>
             <div style={{...styles.right}}>
                 {sendButton}
                 <div style={{ marginLeft: '10px' }}>
@@ -295,7 +295,7 @@ const CreateTxForm = (props) => {
         </Row>
 
         <Row>
-            <div style={styles.left}></div>
+            <div style={styles.left}/>
             <div style={styles.right}>{sendMessage}</div>
         </Row>
 
