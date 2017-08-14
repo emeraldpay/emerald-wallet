@@ -2,16 +2,16 @@ import React from 'react';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
-import { TextField } from 'redux-form-material-ui';
 
 import { Form, Row, styles as formStyles } from '../../../../elements/Form';
+import TextField from '../../../../elements/Form/TextField';
+
 import { importWallet } from 'store/accountActions';
 import { gotoScreen } from 'store/screenActions';
 import Wallet from 'lib/wallet';
 
 import styles from './importPrivateKey.scss';
-import {formStyle as globalStyles } from 'lib/styles';
-import SubmitButton from '../../../../elements/SubmitButton';
+import Button from '../../../../elements/Form/Button';
 
 
 class ImportPrivateKey extends React.Component {
@@ -52,10 +52,9 @@ class ImportPrivateKey extends React.Component {
                             <div className={styles.passwordSubLabel}>Password needs for confirm all wallet operations.</div>
                             <div style={{marginTop: '30px'}}>
                                 <Field name="password"
-                                       style={ globalStyles.input }
                                        component={ TextField }
                                        fullWidth={ true }
-                                       underlineShow={false}
+                                       underlineShow={ false }
                                 />
                             </div>
                         </div>
@@ -70,7 +69,6 @@ class ImportPrivateKey extends React.Component {
                                 <div className={styles.passwordLabel}>Enter a private key</div>
                                 <div>
                                     <Field name="privateKey"
-                                           style={ globalStyles.input }
                                            component={ TextField }
                                            fullWidth={ true }
                                            underlineShow={false}
@@ -84,10 +82,10 @@ class ImportPrivateKey extends React.Component {
                 <Row>
                     <div style={formStyles.left}></div>
                     <div style={formStyles.right}>
-                        <SubmitButton label="IMPORT" onClick={ this.submit } />
+                        <Button primary label="IMPORT" onClick={ this.submit } />
                     </div>
                 </Row>
-                    {this.state.error}
+                    { this.state.error }
                 </form>
             </Form>
         );

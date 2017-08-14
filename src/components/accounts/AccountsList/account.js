@@ -43,7 +43,7 @@ const Render = ({ account, openAccount }) => {
                     <div style={{display: 'flex', alignItems: 'center'}}>
                         <SecondaryMenu account={account} />
                         <AccountPopup account={account}/>
-                        <AccountSendButton account={account} />
+                        <AccountSendButton style={{marginLeft: '10px'}} account={account} />
                     </div>
                 </Col>
             </Row>

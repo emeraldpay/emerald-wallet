@@ -7,7 +7,7 @@ import ActionCancel from 'material-ui/svg-icons/navigation/cancel';
 
 
 import { gotoScreen } from '../../../store/screenActions';
-import { LogoIcon } from '../../../elements/icons';
+import { LogoIcon } from '../../../elements/Icons';
 
 import styles from './paper.scss';
 
