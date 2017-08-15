@@ -48,11 +48,8 @@ export default connect(
         onPrint: (chain) => () => {
             const address = ownProps.account.get('id');
 
-            api.emerald.exportAccount(address, chain).then((result) => {
-                const wallet = Wallet.fromV3(result, '12345678');
-                const privKey = wallet.getPrivateKeyString();
-                dispatch(gotoScreen('paper-wallet', { address, privKey }));
-            });
+            dispatch(gotoScreen('export-paper-wallet', address));
+
         },
         onExport: (chain) => () => {
             const address = ownProps.account.get('id');

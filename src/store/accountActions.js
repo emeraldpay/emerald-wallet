@@ -8,6 +8,7 @@ import { address as isAddress} from 'lib/validators';
 import { loadTokenBalanceOf } from './tokenActions';
 import { toHex, toNumber } from 'lib/convert';
 import { gotoScreen, catchError } from './screenActions';
+import Wallet from 'lib/wallet';
 
 export function loadAccountBalance(accountId) {
     return (dispatch, getState) => {
@@ -52,6 +53,17 @@ export function loadAccountTxCount(accountId) {
                 value: result,
             });
         });
+    };
+}
+
+export function exportPaperWallet(passphrase, accountId) {
+    return (dispatch, getState) => {
+        const chain = getState().launcher.getIn(['chain', 'name']);
+        api.emerald.exportAccount(accountId, chain).then((result) => {
+            const wallet = Wallet.fromV3(result, passphrase);
+            const privKey = wallet.getPrivateKeyString();
+            dispatch(gotoScreen('paper-wallet', { address: accountId, privKey }));
+        }).catch(catchError(dispatch));
     };
 }
 

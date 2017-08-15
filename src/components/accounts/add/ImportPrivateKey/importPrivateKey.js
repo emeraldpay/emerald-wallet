@@ -47,11 +47,12 @@ class ImportPrivateKey extends React.Component {
                     <div style={formStyles.left}>
                     </div>
                     <div style={formStyles.right}>
-                        <div style={{width: '100%'}}>
+                        <div style={{ width: '100%' }}>
                             <div className={styles.passwordLabel}>Enter a strong password</div>
                             <div className={styles.passwordSubLabel}>Password needs for confirm all wallet operations.</div>
-                            <div style={{marginTop: '30px'}}>
+                            <div style={{ marginTop: '30px' }}>
                                 <Field name="password"
+                                       type="password"
                                        component={ TextField }
                                        fullWidth={ true }
                                        underlineShow={ false }
@@ -71,7 +72,7 @@ class ImportPrivateKey extends React.Component {
                                     <Field name="privateKey"
                                            component={ TextField }
                                            fullWidth={ true }
-                                           underlineShow={false}
+                                           underlineShow={ false }
                                     />
                                 </div>
                             </div>
@@ -80,7 +81,7 @@ class ImportPrivateKey extends React.Component {
                     </Row>
 
                 <Row>
-                    <div style={formStyles.left}></div>
+                    <div style={formStyles.left}/>
                     <div style={formStyles.right}>
                         <Button primary label="IMPORT" onClick={ this.submit } />
                     </div>

@@ -27,6 +27,10 @@ export default class Geth {
         return this.rpc.call('eth_getTransactionByHash', [hash]);
     }
 
+    netVersion() {
+        return this.rpc.call('net_version', []);
+    }
+
     call(method, params) {
         return this.rpc.call(method, params);
     }

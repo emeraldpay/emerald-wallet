@@ -67,18 +67,17 @@ class SettingsRender extends React.Component {
                         </div>
                         <div style={styles.right}>
                             <Field name="language"
-                                   component={SelectField}
+                                   component={ SelectField }
                                    onChange={(event, val) => changeLanguage(val)}
                                    underlineShow={false}
-                                   // style={formStyle.input}
                                    fullWidth={true}>
                                 <MenuItem key="en"
                                           value="en"
                                           label="English"
                                           primaryText="English" />
 
-                                <MenuItem key="cn"
-                                          value="cn"
+                                <MenuItem key="zh_cn"
+                                          value="zh_cn"
                                           label="中文"
                                           primaryText="中文" />
                             </Field>

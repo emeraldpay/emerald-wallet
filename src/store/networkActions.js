@@ -23,9 +23,10 @@ export function loadHeight(watch) {
 
 export function loadNetworkVersion() {
     return (dispatch, getState) =>
-        api.geth.call('net_version', []).then((result) => {
+        api.geth.netVersion().then((result) => {
             if (getState().launcher.get('chain').get('id') !== result) {
                 // TODO: our full node on not expected chain - should we alarm ?
+
                 dispatch({
                     type: 'NETWORK/SWITCH_CHAIN',
                     id: result,
