@@ -28,8 +28,8 @@ const settings = new Store({
             url: '',
         },
         chain: {
-            name: 'morden',
-            id: 62,
+            name: null,
+            id: null,
         },
         terms: 'none',
     },

@@ -68,6 +68,7 @@ class Services {
                 this.setup.geth.launchType = LAUNCH_TYPE.AUTO;
             }
 
+            // Set desired chain
             this.setup.chain = {
                 name: settings.get('chain.name'),
                 id: settings.get('chain.id'),
@@ -146,10 +147,9 @@ class Services {
                 this.setup.geth.type = 'local';
 
                 this.notify.info('Use Local Existing RPC API');
-
+                this.notify.chain(this.setup.chain.name, this.setup.chain.id);
                 this.notifyGethStatus('ready');
 
-                this.notify.chain(this.setup.chain.name, this.setup.chain.id);
 
                 resolve(new LocalGeth(null, getLogDir(), this.setup.chain.name, 8545));
             }).catch((e) => {
@@ -225,6 +225,7 @@ class Services {
                 emerald.on('exit', (code) => {
                     this.connectorStatus = STATUS.NOT_STARTED;
                     log.error(`Emerald Connector process exited with code: ${code}`);
+                    this.connector.proc = null;
                 });
                 emerald.on('uncaughtException', (e) => {
                     log.error((e && e.stack) ? e.stack : e);
@@ -250,8 +251,6 @@ class Services {
 
             this.notifyConnectorStatus(connectorStatus);
             this.notifyGethStatus(gethStatus);
-
-            this.notify.chain(this.setup.chain.name, this.setup.chain.id);
 
             resolve('ok');
         });

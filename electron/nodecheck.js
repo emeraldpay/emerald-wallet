@@ -36,9 +36,9 @@ function exists(status) {
     return new Promise((resolve, reject) => {
         rpc(status.url, 'web3_clientVersion', []).then((result) => {
             log.debug(`Found an RPC at ${status.url}`);
-            resolve(Object.assign({}, status, {exists: true}));
-        }).catch(() => {
-            log.debug(`Can't find RPC at ${status.url}`);
+            resolve(Object.assign({}, status, { exists: true }));
+        }).catch((error) => {
+            log.debug(`Can't find RPC at ${status.url} : ${error}`);
             reject(`Can't find RPC at ${status.url}`);
         });
     });
