@@ -198,3 +198,7 @@ export function dataToParams(func, data) {
         value: (params[i] instanceof BigNumber) ? params[i].toString() : params[i],
     }));
 }
+
+export function separateThousands(number, separator) {
+    return parseInt(number, 10).toLocaleString('en').split(',').join(separator);
+}

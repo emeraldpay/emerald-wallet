@@ -1,7 +1,14 @@
 import BigNumber from 'bignumber.js';
 import Immutable from 'immutable';
 import { toHex, fromTokens, mweiToWei, etherToWei, estimateGasFromTrace } from './convert';
-import { transformToFullName, functionToData, dataToParams, getFunctionSignature } from './convert';
+import { transformToFullName, functionToData, dataToParams, getFunctionSignature, separateThousands } from './convert';
+
+describe('Number formatting', () => {
+    it('format number with separated thousands', () => {
+        expect(separateThousands(123456789, ' ')).toEqual('123 456 789');
+        expect(separateThousands(123456789, '*')).toEqual('123*456*789');
+    });
+});
 
 describe('Hex Converter', () => {
     it('convert decimal number to hex', () => {

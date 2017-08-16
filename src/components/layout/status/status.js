@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import LinearProgress from 'material-ui/LinearProgress';
 import NetworkSelector from './networkSelector';
+import { separateThousands } from '../../../lib/convert';
 
 const Render = ({ block, progress, peerCount, showDetails, connecting }) => {
     const styles = {
@@ -27,12 +28,12 @@ const Render = ({ block, progress, peerCount, showDetails, connecting }) => {
     } else if (showDetails) {
         details =
             <div style={styles.details}>
-                {peerCount} {peerCount === 1 ? 'peer' : 'peers'}, {block} blocks
+                {peerCount} {peerCount === 1 ? 'peer' : 'peers'}, { separateThousands(block, ' ') } blocks
             </div>;
     } else {
         details =
             <div style={styles.details}>
-                {block} blocks
+                { separateThousands(block, ' ') } blocks
             </div>;
     }
 
