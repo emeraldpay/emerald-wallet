@@ -12,7 +12,7 @@ import SelectField from '../elements/Form/SelectField';
 class SettingsRender extends React.Component {
 
     render() {
-        const { goDashboard, changeLanguage, t } = this.props;
+        const { goDashboard, handleSubmit, t } = this.props;
 
         return (
             <Form caption="Settings" onCancel={ goDashboard }>
@@ -27,7 +27,6 @@ class SettingsRender extends React.Component {
                             <Field name="network"
                                    component={SelectField}
                                    underlineShow={false}
-                                   // style={formStyle.input}
                                    fullWidth={true}>
                                 <MenuItem key="mainnet"
                                           value="mainnet"
@@ -46,7 +45,6 @@ class SettingsRender extends React.Component {
                             <Field name="currency"
                                    component={SelectField}
                                    underlineShow={false}
-                                   // style={formStyle.input}
                                    fullWidth={true}>
                                 <MenuItem key="eur"
                                           value="eur"
@@ -62,13 +60,12 @@ class SettingsRender extends React.Component {
                     <Row>
                         <div style={styles.left}>
                             <div style={styles.fieldName}>
-                                {t('lang')}
+                                { t('lang') }
                             </div>
                         </div>
                         <div style={styles.right}>
                             <Field name="language"
                                    component={ SelectField }
-                                   onChange={(event, val) => changeLanguage(val)}
                                    underlineShow={false}
                                    fullWidth={true}>
                                 <MenuItem key="en"
@@ -87,7 +84,7 @@ class SettingsRender extends React.Component {
                         <div style={ styles.left }>
                         </div>
                         <div style={styles.right}>
-                                <Button primary label="SAVE" />
+                                <Button primary label="SAVE" onClick={ handleSubmit } />
                         </div>
                     </Row>
                 </div>
@@ -115,8 +112,8 @@ const Settings = connect(
             dispatch(gotoScreen('home'));
         },
 
-        changeLanguage: (lng) => {
-            i18n.changeLanguage(lng);
+        onSubmit: (data) => {
+            i18n.changeLanguage(data.language);
         },
     })
 )(SettingsForm);
