@@ -115,8 +115,10 @@ both OSX and Linux at the same time.
 ### Troubleshooting
 Some preliminary things to try in case you run into issues:
 
-- `rm -rf ~/Library/Application Support/EmeraldWallet` to clear out any persisted
-  settings or userdata from previous trials.
+- Clear out any persisted settings or userdata from previous trials
+ * OSX: `~/Library/Application Support/EmeraldWallet`
+ * Linux: `~/.config/EmeraldWallet`
+ * Windows: `%APPDATA%\EmeraldWallet`
 
 
 
