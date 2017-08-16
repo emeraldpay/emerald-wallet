@@ -251,10 +251,7 @@ class Services {
             this.notifyConnectorStatus(connectorStatus);
             this.notifyGethStatus(gethStatus);
 
-            this.notify.chain(
-                this.setup.chain,
-                this.setup.chainId
-            );
+            this.notify.chain(this.setup.chain.name, this.setup.chain.id);
 
             resolve('ok');
         });

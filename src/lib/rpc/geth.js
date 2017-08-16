@@ -31,6 +31,10 @@ export default class Geth {
         return this.rpc.call('net_version', []);
     }
 
+    netPeerCount() {
+        return this.rpc.call('net_peerCount', []);
+    }
+
     call(method, params) {
         return this.rpc.call(method, params);
     }

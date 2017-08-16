@@ -9,7 +9,7 @@ import { loadAccountsList, refreshTrackedTransactions, loadPendingTransactions,
 // import { loadAddressBook } from './addressActions';
 // import { loadTokenList } from './tokenActions';
 // import { loadContractList } from './contractActions';
-import { loadSyncing, loadHeight, loadPeerCount } from './networkActions';
+import { loadSyncing, loadHeight, loadPeerCount, loadNetworkVersion } from './networkActions'
 import { gotoScreen } from './screenActions';
 import { readConfig, listenElectron, connecting, loadClientVersion } from './launcherActions';
 import { watchConnection as waitLedger, setWatch, setBaseHD } from './ledgerActions';
@@ -33,8 +33,8 @@ export const intervalRates = {
     // Continue is repeating timeouts.
     continueLoadSyncRate: minute, // prod: second
     continueLoadHeightRate: 5 * minute, // prod: 5 * second
-    continueRefreshAllTxRate: 20 * second, // prod: 2 * second
-    continueRefreshLongRate: 900000, // 5 o'clock somewhere.
+    continueRefreshAllTxRate: 30 * second, // prod: 2 * second
+    continueRefreshLongRate: 900 * second, // 5 o'clock somewhere.
 };
 
 const stateTransformer = (state) => ({
@@ -74,6 +74,7 @@ export const store = createStore(
 );
 
 function refreshAll() {
+    //store.dispatch(loadNetworkVersion());
     store.dispatch(refreshTrackedTransactions());
     store.dispatch(loadHeight());
     store.dispatch(loadAccountsList());
@@ -99,9 +100,10 @@ export function startSync() {
 
     const state = store.getState();
 
-    if (state.network.getIn(['chain', 'name']) === 'mainnet') {
+    const chain = state.launcher.getIn(['chain', 'name']);
+    if (chain === 'mainnet') {
         store.dispatch(setBaseHD("44'/61'/0'/0"));
-    } else if (state.network.getIn(['chain', 'name']) === 'morden') {
+    } else if (chain === 'morden') {
         // FIXME ledger throws "Invalid status 6804" for 44'/62'/0'/0
         store.dispatch(setBaseHD("44'/61'/1'/0"));
     }

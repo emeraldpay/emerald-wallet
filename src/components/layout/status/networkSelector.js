@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { useRpc, saveSettings } from 'store/launcherActions';
 import { MenuItem, DropDownMenu } from 'material-ui';
-import { Networks2, findNetwork } from '../../../lib/networks'
+import { Networks, findNetwork } from '../../../lib/networks'
 
 const styles = {
     main: {
@@ -38,7 +38,7 @@ class NetworkSelectorRender extends React.Component {
                           style={styles.main}
                           underlineStyle={{ display: 'none' }}
                           labelStyle={styles.label}>
-            {Networks2.map((net) =>
+            {Networks.map((net) =>
                 <MenuItem
                     value={net.id}
                     key={net.id}

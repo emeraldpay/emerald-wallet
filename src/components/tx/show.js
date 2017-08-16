@@ -10,6 +10,7 @@ import IdentityIcon from '../../elements/IdentityIcon';
 import log from 'electron-log';
 
 import {Form, styles} from '../../elements/Form';
+import TxStatus from './TxDetails/status';
 
 const Render = ({ transaction, rates, account, accounts, openAccount, goBack }) => {
     const fromAccount = transaction.get('from') ?
@@ -41,6 +42,8 @@ const Render = ({ transaction, rates, account, accounts, openAccount, goBack }) 
         backgroundColor: '#EEE',
     };
 
+    const txStatus = transaction.get('blockNumber') ? 'success' : 'queue';
+
     return (
 
         <Form caption="Ethereum Classic Transfer" onCancel={() => goBack(account)}>
@@ -59,7 +62,7 @@ const Render = ({ transaction, rates, account, accounts, openAccount, goBack }) 
                             </div>
                         </div>
                         <div>
-                            {!transaction.get('blockNumber') && <FlatButton label="in queue" secondary={true} />}
+                            <TxStatus status={ txStatus } />
                         </div>
                     </div>
                 </div>

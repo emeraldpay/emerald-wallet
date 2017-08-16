@@ -2,13 +2,17 @@ import { ipcRenderer } from 'electron';
 import log from 'electron-log';
 import { api } from 'lib/rpc/api';
 
-import { gotoScreen } from 'store/screenActions';
+import { gotoScreen, showError } from 'store/screenActions';
 import { waitForServicesRestart } from 'store/store';
 import { loadAccountsList } from './accountActions';
 
 
 function isGethReady(state) {
     return state.launcher.getIn(['geth', 'status']) === 'ready';
+}
+
+function isEmeraldReady(state) {
+    return state.launcher.getIn(['connector', 'status']) === 'ready';
 }
 
 export function readConfig() {
@@ -106,8 +110,24 @@ export function listenElectron() {
 
             const state = getState();
 
+            if (type === 'CHAIN') {
+                if (getState().launcher.getIn(['chain', 'id']) !== message.chainId) {
+                    // Launcher sent chain different from what user has chosen
+                    // Alert !
+                    dispatch(showError(`Launcher connected to invalid chain: [${message.chain}, ${message.chainId}]`));
+                } else {
+                    dispatch({
+                        type: 'NETWORK/SWITCH_CHAIN',
+                        ...message,
+                    });
+                }
+            }
+
+
             if (isGethReady(state)) {
                 dispatch(loadClientVersion());
+            }
+            if (isEmeraldReady(state) && isGethReady(state)) {
                 dispatch(loadAccountsList());
             }
         });
