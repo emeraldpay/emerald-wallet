@@ -26,7 +26,7 @@ export function loadNetworkVersion() {
         api.geth.netVersion().then((result) => {
             dispatch({
                 type: 'NETWORK/SWITCH_CHAIN',
-                id: parseInt(result, 10) + 60 + '',
+                id: `${parseInt(result, 10) + 60}`,
             });
 
             if (getState().launcher.get('chain').get('id') !== result) {

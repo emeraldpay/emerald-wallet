@@ -188,8 +188,9 @@ export function importSelected() {
                 },
             };
             const open = i === 0;
-            log.info('Import Ledger addr', data);
-            rpc.call('emerald_importAccount', [data]).then(() => {
+            log.info('Import Ledger address', data);
+            const chain = getState().launcher.getIn(['chain', 'name']);
+            api.emerald.importAccount(data, chain).then(() => {
                 dispatch(loadAccountsList());
                 if (open) {
                     dispatch(gotoScreen('account', Immutable.fromJS({
