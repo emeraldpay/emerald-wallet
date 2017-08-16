@@ -12,7 +12,7 @@ import Wallet from 'lib/wallet';
 
 import styles from './importPrivateKey.scss';
 import Button from '../../../../elements/Form/Button';
-
+import { Warning, WarningHeader, WarningText } from '../../../../elements/Warning/warning'
 
 class ImportPrivateKey extends React.Component {
     constructor(props) {
@@ -44,8 +44,7 @@ class ImportPrivateKey extends React.Component {
             <Form caption="Import Private Key" onCancel={ onBack }>
                 <form>
                 <Row>
-                    <div style={formStyles.left}>
-                    </div>
+                    <div style={formStyles.left}/>
                     <div style={formStyles.right}>
                         <div style={{ width: '100%' }}>
                             <div className={styles.passwordLabel}>Enter a strong password</div>
@@ -62,6 +61,16 @@ class ImportPrivateKey extends React.Component {
 
                     </div>
                 </Row>
+                    <Row>
+                        <div style={formStyles.left}/>
+                        <div style={formStyles.right}>
+                            <Warning>
+                                <WarningHeader>Don't forget it.</WarningHeader>
+                                <WarningText>If you forget password, you will loose your wallet with all funds.</WarningText>
+                            </Warning>
+                        </div>
+                    </Row>
+
                     <Row>
                         <div style={formStyles.left}>
                         </div>

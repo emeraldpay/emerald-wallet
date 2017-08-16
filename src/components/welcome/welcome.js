@@ -2,10 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
-import FlatButton from 'material-ui/FlatButton';
-import FontIcon from 'material-ui/FontIcon';
-import { cardSpace } from 'lib/styles';
-import { gotoScreen } from 'store/screenActions';
+
 import InitialSetup from './initialSetup';
 import logo from 'images/etc_logo.png';
 

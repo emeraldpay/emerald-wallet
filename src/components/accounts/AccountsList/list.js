@@ -45,12 +45,10 @@ class WalletsTokensButton extends React.Component {
         return (
             <div style={style}>
                 <FlatButton
-                    onTouchTap={this.handleTouchTap}
+                    onTouchTap={ this.handleTouchTap }
                     label="WALLETS AND TOKENS"
-                    labelStyle={{paddingRight: 0, float: 'right'}}
-                    style={{
-                        color: '#47B04B',
-                    }}
+                    labelStyle={{ paddingRight: 0 }}
+                    style={{ color: '#47B04B' }}
                     hoverColor="transparent"
                     icon={<FontIcon className="fa fa-plus-circle"/>}
                 />

@@ -116,7 +116,6 @@ export function startSync() {
     }
     setTimeout(() => store.dispatch(loadPendingTransactions()), intervalRates.refreshAllTxRate);
     refreshAll();
-    setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
     setTimeout(refreshLong, 3 * intervalRates.second);
     store.dispatch(connecting(false));
 }

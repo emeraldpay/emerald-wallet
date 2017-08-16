@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
-import { cardSpace } from 'lib/styles';
 import { saveSettings } from 'store/launcherActions';
 
 const Render = ({ save }) => {
