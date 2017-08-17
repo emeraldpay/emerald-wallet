@@ -66,6 +66,8 @@ class Services {
                 this.setup.geth.launchType = LAUNCH_TYPE.REMOTE_URL;
             } else if (geth.type === 'local') {
                 this.setup.geth.launchType = LAUNCH_TYPE.AUTO;
+            } else {
+                this.setup.geth.launchType = LAUNCH_TYPE.NONE;
             }
 
             // Set desired chain

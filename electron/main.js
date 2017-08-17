@@ -23,6 +23,7 @@ log.transports.console.level = isDev ? 'debug' : 'info';
 const settings = new Store({
     name: 'settings',
     defaults: {
+        version: 1,
         geth: {
             type: 'none',
             url: '',
