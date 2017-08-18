@@ -1,10 +1,10 @@
 const spawn = require('child_process').spawn;
 const fs = require('fs');
 const os = require('os');
-const log = require('electron-log');
 const path = require('path');
-const { checkExists } = require('./utils');
 
+const { checkExists } = require('./utils');
+const log = require('./logger');
 require('es6-promise').polyfill();
 
 const suffix = os.platform() === 'win32' ? '.exe' : '';

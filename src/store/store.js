@@ -125,7 +125,11 @@ export function stopSync() {
 }
 
 export function start() {
-    store.dispatch(readConfig());
+    try {
+        store.dispatch(readConfig());
+    } catch (e) {
+        log.error(e);
+    }
     store.dispatch(listenElectron());
     store.dispatch(gotoScreen('welcome'));
 }

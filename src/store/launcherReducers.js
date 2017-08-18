@@ -52,7 +52,7 @@ function onConfig(state, action) {
 
         state = state
             .set('launcherType', action.launcherType)
-            .set('firstRun', getStoredFirstRun()) // action.firstRu
+            .set('firstRun', getStoredFirstRun()) // action.firstRun
             .update('geth', (geth) => geth.merge(Immutable.fromJS(action.config.geth || {})))
             .update('chain', (chain) => chain.merge(Immutable.fromJS(action.config.chain || {})));
 

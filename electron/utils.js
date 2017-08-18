@@ -64,9 +64,22 @@ function deleteIfExists(path) {
     });
 }
 
+
+const knownChains = [
+    { name: 'mainnet', id: 61 },
+    { name: 'morden', id: 62 },
+];
+
+function isValidChain(chain) {
+    const found = knownChains.filter((c) => c.name === chain.name && c.id === parseInt(chain.id, 10));
+    return found.length === 1;
+}
+
+
 module.exports = {
     checkExists,
     deleteIfExists,
     getBinDir,
     getLogDir,
+    isValidChain,
 };

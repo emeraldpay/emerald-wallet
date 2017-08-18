@@ -2,8 +2,9 @@ const { https } = require('follow-redirects');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const log = require('electron-log');
 const DecompressZip = require('decompress-zip');
+
+const log = require('./logger');
 const { Verify } = require('./verify');
 const { deleteIfExists, checkExists } = require('./utils');
 
@@ -104,27 +105,6 @@ class Downloader {
             });
         });
     }
-
-    // checkExists() {
-    //     const target = path.join(this.basedir, this.name);
-    //     return new Promise((resolve) => {
-    //         fs.access(target, fs.constants.R_OK | fs.constants.X_OK, (err) => {
-    //             if (err) {
-    //                 resolve(false);
-    //             } else {
-    //                 fs.stat(target, (err, stat) => {
-    //                     if (err) {
-    //                         resolve(false);
-    //                     } else if (!stat.isFile() || stat.size === 0) {
-    //                         resolve(false);
-    //                     } else {
-    //                         resolve(true);
-    //                     }
-    //                 });
-    //             }
-    //         });
-    //     });
-    // }
 
     getPlatform() {
         return platformMapping[os.platform()];

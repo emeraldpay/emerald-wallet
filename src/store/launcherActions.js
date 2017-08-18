@@ -100,6 +100,8 @@ export function saveSettings(extraSettings) {
 
 export function listenElectron() {
     return (dispatch, getState) => {
+        log.debug('Running launcher listener');
+
         ipcRenderer.on('launcher', (event, type, message) => {
             log.debug('launcher listener: ', 'type', type, 'message', message);
 

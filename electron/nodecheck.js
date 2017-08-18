@@ -1,6 +1,7 @@
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
-const log = require('electron-log');
+
+const log = require('./logger');
 
 const DefaultStatus = {
     url: null,
@@ -23,7 +24,9 @@ function rpc(url, method, params) {
             body: JSON.stringify(data),
         }).then((response) => {
             try {
-                response.json().then((json) => resolve(json.result)).catch(reject);
+                response.json()
+                    .then((json) => resolve(json.result))
+                    .catch(reject);
             } catch (e) {
                 log.error('Invalid response', response, e);
                 reject(e);

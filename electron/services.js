@@ -1,10 +1,9 @@
-const log = require('electron-log');
-
+const log = require('./logger');
 const { LocalGeth, LocalConnector, NoneGeth, RemoteGeth } = require('./launcher');
 const UserNotify = require('./userNotify').UserNotify;
 const newGethDownloader = require('./downloader').newGethDownloader;
 const { check, waitRpc } = require('./nodecheck');
-const { getBinDir, getLogDir } = require('./utils');
+const { getBinDir, getLogDir, isValidChain } = require('./utils');
 
 require('es6-promise').polyfill();
 
@@ -21,6 +20,7 @@ const STATUS = {
     STOPPING: 2,
     READY: 3,
     ERROR: 4,
+    WRONG_SETTINGS: 5,
 };
 
 const LAUNCH_TYPE = {
@@ -56,25 +56,33 @@ class Services {
         log.info(`Run services from ${getBinDir()}`);
     }
 
+    /**
+     * Configure services with new settings
+     *
+     * @param settings - plain JavaScript object with settings
+     * @returns {Promise}
+     */
     useSettings(settings) {
         return new Promise((resolve, reject) => {
-            const geth = settings.get('geth');
+            if (!isValidChain(settings.chain)) {
+                this.gethStatus = STATUS.WRONG_SETTINGS;
+                this.connectorStatus = STATUS.WRONG_SETTINGS;
+                reject(`Wrong chain ${JSON.stringify(settings.chain)}`);
+            }
 
-            this.setup.geth = geth;
+            // Set desired chain
+            this.setup.chain = settings.chain;
 
-            if (geth.type === 'remote') {
+            // Set Geth
+            this.setup.geth = settings.geth;
+
+            if (this.setup.geth.type === 'remote') {
                 this.setup.geth.launchType = LAUNCH_TYPE.REMOTE_URL;
-            } else if (geth.type === 'local') {
+            } else if (this.setup.geth.type === 'local') {
                 this.setup.geth.launchType = LAUNCH_TYPE.AUTO;
             } else {
                 this.setup.geth.launchType = LAUNCH_TYPE.NONE;
             }
-
-            // Set desired chain
-            this.setup.chain = {
-                name: settings.get('chain.name'),
-                id: settings.get('chain.id'),
-            };
 
             log.debug('New Services setup', this.setup);
             resolve(this.setup);
@@ -95,13 +103,13 @@ class Services {
             shuttingDown.push(
                 this.geth.shutdown()
                     .then(() => { this.gethStatus = STATUS.NOT_STARTED; })
-                    .then(() => this.notifyGethStatus('not ready')));
+                    .then(() => this.notifyGethStatus()));
         }
 
         if (this.connector) {
             shuttingDown.push(this.connector.shutdown()
                 .then(() => { this.connectorStatus = STATUS.NOT_STARTED; })
-                .then(() => this.notifyConnectorStatus('not ready')));
+                .then(() => this.notifyConnectorStatus()));
         }
         return Promise.all(shuttingDown);
     }
@@ -133,7 +141,7 @@ class Services {
 
             this.notify.info(`Use Remote RPC API at ${this.setup.geth.url}`);
             this.notify.chain(this.setup.chain.name, this.setup.chain.id);
-            this.notifyGethStatus('ready');
+            this.notifyGethStatus();
             return new RemoteGeth(null, null);
         });
     }
@@ -150,7 +158,7 @@ class Services {
 
                 this.notify.info('Use Local Existing RPC API');
                 this.notify.chain(this.setup.chain.name, this.setup.chain.id);
-                this.notifyGethStatus('ready');
+                this.notifyGethStatus();
 
 
                 resolve(new LocalGeth(null, getLogDir(), this.setup.chain.name, 8545));
@@ -183,7 +191,7 @@ class Services {
                             this.notify.info('Local Geth RPC API is ready');
                             this.setup.geth.url = this.geth.getUrl();
 
-                            this.notifyGethStatus('ready');
+                            this.notifyGethStatus();
 
                             resolve(this.geth);
                         }).catch(reject);
@@ -219,7 +227,7 @@ class Services {
     startConnector() {
         return new Promise((resolve, reject) => {
             this.connectorStatus = STATUS.NOT_STARTED;
-            this.notifyConnectorStatus('not ready');
+            this.notifyConnectorStatus();
 
             this.connector = new LocalConnector(getBinDir(), this.setup.chain);
             this.connector.launch().then((emerald) => {
@@ -238,7 +246,7 @@ class Services {
                     log.debug(`[emerald] ${data}`); // always log emerald data
                     if (/Connector started on/.test(data)) {
                         this.connectorStatus = STATUS.READY;
-                        this.notifyConnectorStatus('ready');
+                        this.notifyConnectorStatus();
                         resolve(this.connector);
                     }
                 });
@@ -248,24 +256,31 @@ class Services {
 
     notifyStatus() {
         return new Promise((resolve, reject) => {
-            const connectorStatus = this.connectorStatus === STATUS.READY ? 'ready' : 'not ready';
-            const gethStatus = this.gethStatus === STATUS.READY ? 'ready' : 'not ready';
-
-            this.notifyConnectorStatus(connectorStatus);
-            this.notifyGethStatus(gethStatus);
-
+            this.notifyConnectorStatus(Services.statusName(this.connectorStatus));
+            this.notifyGethStatus(Services.statusName(this.gethStatus));
             resolve('ok');
         });
     }
 
-    notifyConnectorStatus(connectorStatus) {
+    static statusName(status) {
+        switch (status) {
+            case STATUS.READY: return 'ready';
+            case STATUS.WRONG_SETTINGS: return 'wrong settings';
+            case STATUS.NOT_STARTED: return 'not ready';
+            default: return 'not ready';
+        }
+    }
+
+    notifyConnectorStatus() {
+        const connectorStatus = Services.statusName(this.connectorStatus);
         this.notify.status(SERVICES.CONNECTOR, {
             url: this.setup.connector.url,
             status: connectorStatus,
         });
     }
 
-    notifyGethStatus(gethStatus) {
+    notifyGethStatus() {
+        const gethStatus = Services.statusName(this.gethStatus);
         this.notify.status(SERVICES.GETH, {
             url: this.setup.geth.url,
             type: this.setup.geth.type,
