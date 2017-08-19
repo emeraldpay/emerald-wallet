@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import Button from 'elements/Form/Button';
+import Button from 'elements/Button';
 import FontIcon from 'material-ui/FontIcon';
 import { showDialog } from 'store/screenActions';
 

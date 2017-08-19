@@ -1,18 +1,33 @@
 import React from 'react';
-import { TextField as ReduxFormTextField} from 'redux-form-material-ui';
+import { TextField as ReduxFormTextField } from 'redux-form-material-ui';
 
 const style = {
-    boxSizing: 'border-box',
     height: '51px',
-    border: '1px solid #C5C5C5',
-    borderRadius: '1px',
     color: '#191919',
     fontSize: '16px',
     lineHeight: '24px',
-    paddingLeft: '10px',
-    paddingRight: '10px',
 };
 
-export const TextField = (props) => (<ReduxFormTextField {...props} style={ style } />);
+const container = {
+    boxSizing: 'border-box',
+    border: '1px solid #DDDDDD',
+    borderRadius: '1px',
+    paddingLeft: '10px',
+    paddingRight: '10px',
+    display: 'flex',
+    alignItems: 'center',
+};
+
+export const TextField = (props) => {
+    const { fullWidth } = props;
+    if (fullWidth) {
+        container.width = '100%';
+    }
+    return (
+        <div style={ container }>
+            <ReduxFormTextField { ...props } style={ style }/>
+        </div>
+    );
+};
 
 export default TextField;

@@ -12,11 +12,11 @@ import { updateAccount } from 'store/accountActions';
 import AccountEdit from './edit';
 import AccountPopup from './popup';
 import TransactionsList from '../tx/TxList';
-import AccountSendButton from './sendButton';
 import AccountBalance from './AccountBalance';
 import { Wei } from 'lib/types';
 import IdentityIcon from '../../elements/IdentityIcon';
 import { Form, styles } from '../../elements/Form';
+import Button from 'elements/Button';
 import SecondaryMenu from './SecondaryMenu';
 
 const TokenRow = ({ token }) => {
@@ -59,7 +59,7 @@ class AccountRender extends React.Component {
     }
 
     render() {
-        const { account, rates, goBack, transactions } = this.props;
+        const { account, rates, goBack, transactions, createTx } = this.props;
         const value = account.get('balance') ? account.get('balance').getEther() : '?';
         const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
 
@@ -107,7 +107,12 @@ class AccountRender extends React.Component {
                                 <div>
                                     <div style={{display: 'flex', alignItems: 'center'}}>
                                         <AccountPopup primary account={account} />
-                                        <AccountSendButton style={{marginLeft: '10px'}} primary account={account} />
+                                        <Button
+                                            primary
+                                            style={ {marginLeft: '10px'} }
+                                            label="Send"
+                                            onClick={ createTx }
+                                        />
                                         <SecondaryMenu account={account} />
                                     </div>
                                 </div>
@@ -140,6 +145,7 @@ AccountRender.propTypes = {
     goBack: PropTypes.func.isRequired,
     transactions: PropTypes.object.isRequired,
     editAccount: PropTypes.func,
+    createTx: PropTypes.func,
 };
 
 const AccountShow = connect(
@@ -177,6 +183,10 @@ const AccountShow = connect(
         };
     },
     (dispatch, ownProps) => ({
+        createTx: () => {
+            const account = ownProps.account;
+            dispatch(gotoScreen('create-tx', account));
+        },
         goBack: () => {
             dispatch(gotoScreen('home'));
         },

@@ -5,14 +5,13 @@ import { Field, reduxForm } from 'redux-form';
 
 import { Form, Row, styles as formStyles } from '../../../../elements/Form';
 import TextField from '../../../../elements/Form/TextField';
-
 import { importWallet } from 'store/accountActions';
 import { gotoScreen } from 'store/screenActions';
 import Wallet from 'lib/wallet';
 
 import styles from './importPrivateKey.scss';
-import Button from '../../../../elements/Form/Button';
-import { Warning, WarningHeader, WarningText } from '../../../../elements/Warning/warning'
+import Button from 'elements/Button';
+import { Warning, WarningHeader, WarningText } from 'elements/Warning';
 
 class ImportPrivateKey extends React.Component {
     constructor(props) {
@@ -25,14 +24,16 @@ class ImportPrivateKey extends React.Component {
     }
 
     submit() {
-        this.props.handleSubmit().then((result) => {
+        const { handleSubmit, accounts, dispatch } = this.props;
+
+        handleSubmit().then((result) => {
             if (result.error) {
-                this.setState({ error: result.error.toString() });
+                this.setState({error: result.error.toString()});
             } else {
-                this.setState({ accountId: result });
-                const p = this.props.accounts.findKey((acc) => acc.get('id') === this.state.accountId);
-                const account = p && (p >= 0) && this.props.accounts.get(p);
-                this.props.dispatch(gotoScreen('account', account));
+                this.setState({accountId: result});
+                const p = accounts.findKey((acc) => acc.get('id') === this.state.accountId);
+                const account = p && (p >= 0) && accounts.get(p);
+                dispatch(gotoScreen('account', account));
             }
         });
     }
@@ -41,32 +42,35 @@ class ImportPrivateKey extends React.Component {
         const { onBack } = this.props;
 
         return (
-            <Form caption="Import Private Key" onCancel={ onBack }>
+            <Form caption="Import Private Key" onCancel={onBack}>
                 <form>
-                <Row>
-                    <div style={formStyles.left}/>
-                    <div style={formStyles.right}>
-                        <div style={{ width: '100%' }}>
-                            <div className={styles.passwordLabel}>Enter a strong password</div>
-                            <div className={styles.passwordSubLabel}>Password needs for confirm all wallet operations.</div>
-                            <div style={{ marginTop: '30px' }}>
-                                <Field name="password"
-                                       type="password"
-                                       component={ TextField }
-                                       fullWidth={ true }
-                                       underlineShow={ false }
-                                />
+                    <Row>
+                        <div style={formStyles.left}/>
+                        <div style={formStyles.right}>
+                            <div style={{width: '100%'}}>
+                                <div className={styles.passwordLabel}>Enter a strong password</div>
+                                <div className={styles.passwordSubLabel}>Password needs for confirm all wallet
+                                    operations.
+                                </div>
+                                <div style={{marginTop: '30px'}}>
+                                    <Field name="password"
+                                           type="password"
+                                           component={TextField}
+                                           fullWidth={true}
+                                           underlineShow={false}
+                                    />
+                                </div>
                             </div>
-                        </div>
 
-                    </div>
-                </Row>
+                        </div>
+                    </Row>
                     <Row>
                         <div style={formStyles.left}/>
                         <div style={formStyles.right}>
                             <Warning>
                                 <WarningHeader>Don't forget it.</WarningHeader>
-                                <WarningText>If you forget password, you will loose your wallet with all funds.</WarningText>
+                                <WarningText>If you forget password, you will loose your wallet with all
+                                    funds.</WarningText>
                             </Warning>
                         </div>
                     </Row>
@@ -76,26 +80,26 @@ class ImportPrivateKey extends React.Component {
                         </div>
                         <div style={formStyles.right}>
                             <div style={{width: '100%'}}>
-                                <div className={styles.passwordLabel}>Enter a private key</div>
+                                <div className={ styles.passwordLabel }>Enter a private key</div>
                                 <div>
-                                    <Field name="privateKey"
-                                           component={ TextField }
-                                           fullWidth={ true }
-                                           underlineShow={ false }
+                                    <Field
+                                        name="privateKey"
+                                        component={ TextField }
+                                        fullWidth={ true }
+                                        underlineShow={ false }
                                     />
                                 </div>
                             </div>
-
                         </div>
                     </Row>
 
-                <Row>
-                    <div style={formStyles.left}/>
-                    <div style={formStyles.right}>
-                        <Button primary label="IMPORT" onClick={ this.submit } />
-                    </div>
-                </Row>
-                    { this.state.error }
+                    <Row>
+                        <div style={formStyles.left}/>
+                        <div style={formStyles.right}>
+                            <Button primary label="Import" onClick={ this.submit }/>
+                        </div>
+                    </Row>
+                    {this.state.error}
                 </form>
             </Form>
         );
@@ -123,7 +127,7 @@ export default connect(
                         .then((response) => resolve(response))
                         .catch((error) => resolve({error}));
                 } catch (error) {
-                    resolve({ error });
+                    resolve({error});
                 }
             });
         },

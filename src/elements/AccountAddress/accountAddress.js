@@ -15,7 +15,12 @@ const AccountAddress = (props) => {
 
     let icons = null;
     if (!shortened) {
-        icons = <CloneIcon onClick={copyAddressToClipBoard} color={styles.container.color} style={copyIcon} />;
+        icons = <CloneIcon
+            onClick={ copyAddressToClipBoard }
+            color={ styles.container.color }
+            style={ copyIcon }
+            className={ styles.copyIcon }
+        />;
     }
     return (
         <div className={styles.container}>

@@ -6,17 +6,17 @@ import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import log from 'electron-log';
 
 import AddressAvatar from '../../../elements/addressAvatar';
-import AccountSendButton from '../sendButton';
 import { gotoScreen } from 'store/screenActions';
 
 import { Wei } from 'lib/types';
 import IdentityIcon from 'elements/IdentityIcon';
 import Card from 'elements/Card';
+import Button from 'elements/Button';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountPopup from '../popup';
 import AccountBalance from '../AccountBalance';
 
-const Render = ({ account, openAccount }) => {
+const Render = ({ account, openAccount, createTx }) => {
     const balance = account.get('balance');
     return (
     <Card>
@@ -43,7 +43,11 @@ const Render = ({ account, openAccount }) => {
                     <div style={{display: 'flex', alignItems: 'center'}}>
                         <SecondaryMenu account={account} />
                         <AccountPopup account={account}/>
-                        <AccountSendButton style={{marginLeft: '10px'}} account={account} />
+                        <Button
+                            style={ {marginLeft: '10px'} }
+                            label="Send"
+                            onClick={ createTx }
+                        />
                     </div>
                 </Col>
             </Row>
@@ -54,11 +58,16 @@ const Render = ({ account, openAccount }) => {
 Render.propTypes = {
     account: PropTypes.object.isRequired,
     openAccount: PropTypes.func.isRequired,
+    createTx: PropTypes.func,
 };
 
 const Account = connect(
     (state, ownProps) => ({}),
     (dispatch, ownProps) => ({
+        createTx: () => {
+            const account = ownProps.account;
+            dispatch(gotoScreen('create-tx', account));
+        },
         openAccount: () => {
             const account = ownProps.account;
             log.debug('open', account.get('id'));

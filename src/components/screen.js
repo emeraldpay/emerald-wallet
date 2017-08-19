@@ -23,6 +23,7 @@ import Dashboard from '../containers/Dashboard';
 import Settings from './settings';
 import PaperWallet from '../containers/PaperWallet';
 import ExportPaperWallet from '../containers/ExportPaperWallet';
+import GenerateAccount2 from '../components/accounts/GenerateAccount';
 
 const Render = ({ screen, screenItem }) => {
     log.debug('screen', screen);
@@ -58,6 +59,8 @@ const Render = ({ screen, screenItem }) => {
         return <CreateTx account={screenItem}/>;
     } else if (screen === 'generate') {
         return <GenerateAccount />;
+    } else if (screen === 'generate2') {
+        return <GenerateAccount2 />;
     } else if (screen === 'importjson') {
         return <ImportAccount />;
     } else if (screen === 'import-private-key') {

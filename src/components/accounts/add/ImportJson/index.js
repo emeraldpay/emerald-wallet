@@ -1,1 +1,1 @@
-export {default} from './importjson';
+export {default} from './importJson';

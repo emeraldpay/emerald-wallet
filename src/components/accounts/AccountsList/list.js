@@ -40,7 +40,7 @@ class WalletsTokensButton extends React.Component {
     }
 
     render() {
-        const { generate, importJson, importLedger, importPrivateKey, t, style } = this.props;
+        const { generate, generate2, importJson, importLedger, importPrivateKey, t, style } = this.props;
 
         return (
             <div style={style}>
@@ -73,6 +73,12 @@ class WalletsTokensButton extends React.Component {
                             leftIcon={<FontIcon className="fa fa-random"/>}
                         />
                         <ListItem
+                            primaryText={' Generate (NEW) '}
+                            secondaryText={ t('add.generate.subtitle') }
+                            onClick={ generate2 }
+                            leftIcon={<FontIcon className="fa fa-random"/>}
+                        />
+                        <ListItem
                             primaryText={t('add.import.title')}
                             secondaryText={t('add.import.subtitle')}
                             onClick={importJson}
@@ -91,8 +97,9 @@ class WalletsTokensButton extends React.Component {
     }
 }
 
-const Render = translate('accounts')(({t, accounts, generate, importJson, importLedger, importPrivateKey}) => {
+const Render = translate('accounts')((props) => {
 
+    const { t, accounts, generate, generate2, importJson, importLedger, importPrivateKey } = props;
     const table = <div>
         {accounts.map((account) =>
             <div style={{marginBottom: '6px'}} key={account.get('id')}>
@@ -104,10 +111,11 @@ const Render = translate('accounts')(({t, accounts, generate, importJson, import
         <div>
             <div className={ styles.header }>
                 <div>
-                    <span className={ styles.title }>{t('list.title')}</span>
+                    <span className={ styles.title }>{ t('list.title') }</span>
                 </div>
                 <WalletsTokensButton
                     generate={ generate }
+                    generate2={ generate2 }
                     importJson={ importJson }
                     importLedger={ importLedger }
                     importPrivateKey={ importPrivateKey }
@@ -136,6 +144,9 @@ const AccountsList = connect(
     (dispatch, ownProps) => ({
         generate: () => {
             dispatch(gotoScreen('generate'));
+        },
+        generate2: () => {
+            dispatch(gotoScreen('generate2'));
         },
         importJson: () => {
             dispatch(gotoScreen('importjson'));

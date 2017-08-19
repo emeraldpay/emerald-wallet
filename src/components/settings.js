@@ -6,7 +6,7 @@ import { translate } from 'react-i18next';
 import { gotoScreen } from '../store/screenActions';
 import i18n from '../i18n/i18n';
 import { Form, styles, Row } from '../elements/Form';
-import Button from '../elements/Form/Button';
+import Button from 'elements/Button';
 import SelectField from '../elements/Form/SelectField';
 
 class SettingsRender extends React.Component {

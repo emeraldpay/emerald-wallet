@@ -9,7 +9,7 @@ export const WarningHeader = (props) => {
 };
 
 export const WarningText = (props) => {
-    return (<div>
+    return (<div className={ styles.text }>
         { props.children }
     </div>);
 };
