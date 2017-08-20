@@ -4,7 +4,7 @@ import { change, formValueSelector, SubmissionError } from 'redux-form';
 
 import { connect } from 'react-redux';
 import { sendTransaction, trackTx } from 'store/accountActions';
-import { transferTokenTransaction, traceTokenTransaction, traceCall } from 'store/tokenActions';
+import { traceTokenTransaction, traceCall } from 'store/tokenActions';
 import { gotoScreen, showDialog } from 'store/screenActions';
 import { closeConnection, setWatch } from 'store/ledgerActions';
 import { mweiToWei, etherToWei, toHex, estimateGasFromTrace } from 'lib/convert';
