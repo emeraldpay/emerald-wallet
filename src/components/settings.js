@@ -73,8 +73,8 @@ class SettingsRender extends React.Component {
                                           label="English"
                                           primaryText="English" />
 
-                                <MenuItem key="zh_cn"
-                                          value="zh_cn"
+                                <MenuItem key="zh-CN"
+                                          value="zh-CN"
                                           label="中文"
                                           primaryText="中文" />
                             </Field>
