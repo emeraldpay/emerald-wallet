@@ -1,0 +1,13 @@
+{
+    "title": "Emerald - Carteira Ethereum Clássico",
+    "menu": {
+        "home": "Principal",
+        "addressBook": "Catálogo de Endereços",
+        "contracts": "Contratos",
+        "network": "Rede"
+    },
+    "submit": "Enviar",
+    "clear": "Limpar Valores",
+    "done": "Feito",
+    "cancel": "Cancelar"
+}
