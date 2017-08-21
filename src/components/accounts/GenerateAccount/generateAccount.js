@@ -64,6 +64,7 @@ class GenerateAccount extends React.Component {
                 return (<ShowPrivateDialog onNext={ this.editAccountProps }/>);
             case ACCOUNT_PROPS_PAGE:
                 return (<AccountPropertiesDialog onSkip={ this.skipAccountProps } />);
+            default: return <div></div>;
         }
     }
 }

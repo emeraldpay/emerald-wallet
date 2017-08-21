@@ -7,7 +7,7 @@ import AccountShow from './accounts/show';
 import AddressShow from './addressbook/show';
 import AddressAdd from './addressbook/add';
 import CreateTx from './tx/CreateTx';
-import TransactionShow from './tx/show';
+import TransactionShow from './tx/TxDetails';
 // import TokensList from './tokens/list';
 import AddToken from './tokens/add';
 import GenerateAccount from './accounts/add/Generate';

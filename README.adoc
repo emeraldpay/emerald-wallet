@@ -78,11 +78,11 @@ $ npm run start:electron
 
 ### Logs
 
-##### Electron and Emerald logs
+#### Electron and Emerald logs
 During development, Electron and Emerald logs are in your Terminal 2 console, they're also
 persisted in ~/Library/Logs/EmeraldWallet/log.log. This is the same for production.
 
-##### Geth logs
+#### Geth logs
 During development, you'll find geth's logs in `./logs` right in the project base directory.
 In production, logs will be nestled in `~/Library/Application Support/EmeraldWallet/`.
 
@@ -141,6 +141,6 @@ Use `--rpccorsdomain` option to configure CORS.
 
 Example: `./parity --chain=classic --rpccorsdomain=*` allow requests from any domain
 
-# License
+## License
 
 Apache 2.0

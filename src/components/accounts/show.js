@@ -62,6 +62,7 @@ class AccountRender extends React.Component {
         const { account, rates, goBack, transactions, createTx } = this.props;
         const value = account.get('balance') ? account.get('balance').getEther() : '?';
         const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
+        const isHardware = (acc) => acc.get('hardware', false);
 
         const AccountDetails = (
 
@@ -113,7 +114,7 @@ class AccountRender extends React.Component {
                                             label="Send"
                                             onClick={ createTx }
                                         />
-                                        <SecondaryMenu account={account} />
+                                        { !isHardware(account) && <SecondaryMenu account={account} /> }
                                     </div>
                                 </div>
                             </div>

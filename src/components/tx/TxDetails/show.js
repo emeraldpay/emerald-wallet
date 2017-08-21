@@ -1,16 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import log from 'electron-log';
 import FlatButton from 'material-ui/FlatButton';
+
 import AccountAddress from 'elements/AccountAddress';
 import AddressAvatar from 'elements/addressAvatar';
 import { gotoScreen } from 'store/screenActions';
 import { toNumber, toDate } from 'lib/convert';
-import IdentityIcon from '../../elements/IdentityIcon';
-import log from 'electron-log';
-
-import {Form, styles} from '../../elements/Form';
-import TxStatus from './TxDetails/status';
+import IdentityIcon from 'elements/IdentityIcon';
+import { Form, styles } from 'elements/Form';
+import TxStatus from './status';
 
 const Render = ({ transaction, rates, account, accounts, openAccount, goBack }) => {
     const fromAccount = transaction.get('from') ?

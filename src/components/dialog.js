@@ -10,7 +10,7 @@ import AboutDialog from './layout/AboutDialog';
 
 const Render = ({ dialog, item, handleClose }) => {
     if (!dialog) {
-        return <div/>;receiveDialog
+        return <div/>;
     } else if (dialog === 'sign-transaction') {
         return <WaitForSign/>;
     } else if (dialog === 'receive') {

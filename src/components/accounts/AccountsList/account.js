@@ -18,6 +18,8 @@ import AccountBalance from '../AccountBalance';
 
 const Render = ({ account, openAccount, createTx }) => {
     const balance = account.get('balance');
+    const isHardware = (acc) => acc.get('hardware', false);
+
     return (
     <Card>
         <CardText>
@@ -41,7 +43,8 @@ const Render = ({ account, openAccount, createTx }) => {
                 </Col>
                 <Col xs={3}>
                     <div style={{display: 'flex', alignItems: 'center'}}>
-                        <SecondaryMenu account={account} />
+                        { !isHardware(account) && <SecondaryMenu account={account} /> }
+
                         <AccountPopup account={account}/>
                         <Button
                             style={ {marginLeft: '10px'} }
