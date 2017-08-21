@@ -1,16 +1,23 @@
 import React from 'react';
-import { Provider, connect } from 'react-redux'
-import 'font-awesome/scss/font-awesome.scss'
-import { I18nextProvider } from 'react-i18next';
-import i18n from './i18n';
 import ReactDOM from 'react-dom';
+import { Provider, connect } from 'react-redux';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import Main from './components/main';
+import log from 'electron-log';
+import 'font-awesome/scss/font-awesome.scss';
+import 'typeface-rubik';
+import { I18nextProvider } from 'react-i18next';
+import i18n from './i18n/i18n';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import {store, start as startStore} from './store/store.js';
-import log from 'electron-log';
-import 'roboto-fontface/css/roboto/sass/roboto-fontface.scss'
-import './index.scss'
+import Main from './components/main';
+
+import './index.scss';
+
+
+const muiTheme = getMuiTheme({
+    fontFamily: 'Rubik',
+});
 
 function start() {
     // log.transports.console.level = 'debug';
@@ -22,7 +29,7 @@ function start() {
     const App = () => (
         <I18nextProvider i18n={ i18n }>
             <Provider store={store}>
-                <MuiThemeProvider>
+                <MuiThemeProvider muiTheme={muiTheme}>
                     <Main />
                 </MuiThemeProvider>
             </Provider>

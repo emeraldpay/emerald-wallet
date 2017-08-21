@@ -8,7 +8,7 @@ var config = require('./webpack.config.js');
 
 // var electronCompiler = webpack(require('./electron/webpack.electron'));
 var compiler = webpack(config);
-var statOpts = {
+const statOpts = {
     hash: true,
     timing: true,
     assets: true,

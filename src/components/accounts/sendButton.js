@@ -1,25 +1,20 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import FlatButton from 'material-ui/FlatButton';
-import FontIcon from 'material-ui/FontIcon';
+import Button from 'elements/Form/Button';
 import { gotoScreen } from 'store/screenActions';
 
 class AccountSendButtonRender extends React.Component {
     render() {
-        const { createTx } = this.props;
-
+        const { createTx, primary, style } = this.props;
         const styles = {
             sendButton: {
-                color: 'green',
+
             },
         };
 
         return (
-        <FlatButton label="SEND"
-                    onClick={createTx}
-                    icon={<FontIcon className="fa fa-arrow-circle-o-right" />}
-                    style={styles.sendButton} />
+            <Button primary={ primary } style={ style } label="SEND" onClick={ createTx } />
         );
     }
 }

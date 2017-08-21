@@ -1,4 +1,4 @@
-export default (window) => {
+module.exports = function(window) {
     return [{
         label: 'Emerald',
         submenu: [
@@ -31,6 +31,34 @@ export default (window) => {
                 role: 'quit',
             },
         ]}, {
+            label: 'Edit',
+            submenu: [
+                {
+                    role: 'undo'
+                },
+                {
+                    role: 'redo'
+                },
+                {
+                    type: 'separator'
+                },
+                {
+                    role: 'cut'
+                },
+                {
+                    role: 'copy'
+                },
+                {
+                    role: 'paste'
+                },
+                {
+                    role: 'delete'
+                },
+                {
+                    role: 'selectall'
+                }
+        ]},
+        {
             label: 'View',
             submenu: [
                 {

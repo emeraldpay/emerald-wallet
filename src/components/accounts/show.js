@@ -1,26 +1,23 @@
 import React from 'react';
-import Immutable from 'immutable'
+import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Card, CardActions, CardText } from 'material-ui/Card';
-import { AddressAvatar } from 'elements/dl';
-import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
-import FontIcon from 'material-ui/FontIcon';
-import { Row, Col } from 'react-flexbox-grid/lib/index';
+import People from 'material-ui/svg-icons/social/people';
 import QRCode from 'qrcode.react';
 import log from 'electron-log';
-import { translate } from 'react-i18next';
-import { cardSpace } from 'lib/styles';
+
+import AddressAvatar from 'elements/addressAvatar';
 import { gotoScreen } from 'store/screenActions';
 import { updateAccount } from 'store/accountActions';
 import AccountEdit from './edit';
 import AccountPopup from './popup';
-import TransactionsList from '../tx/list';
+import TransactionsList from '../tx/TxList';
 import AccountSendButton from './sendButton';
-import AccountBalance from './balance';
-import ExportAccountButton from './export';
+import AccountBalance from './AccountBalance';
 import { Wei } from 'lib/types';
+import IdentityIcon from '../../elements/IdentityIcon';
+import { Form, styles } from '../../elements/Form';
+import SecondaryMenu from './SecondaryMenu';
 
 const TokenRow = ({ token }) => {
     const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0';
@@ -40,21 +37,24 @@ class AccountRender extends React.Component {
             edit: false,
             showModal: false,
         };
+        this.handleEdit = this.handleEdit.bind(this);
+        this.handleSave = this.handleSave.bind(this);
+        this.cancelEdit = this.cancelEdit.bind(this);
     }
 
-    handleEdit = () => {
+    handleEdit() {
         this.setState({ edit: true });
     }
 
-    handleSave = (data) => {
+    handleSave(data) {
         this.props.editAccount(data)
             .then((result) => {
                 this.setState({ edit: false });
                 log.debug(result);
-            })
+            });
     }
 
-    cancelEdit = () => {
+    cancelEdit() {
         this.setState({ edit: false });
     }
 
@@ -63,52 +63,74 @@ class AccountRender extends React.Component {
         const value = account.get('balance') ? account.get('balance').getEther() : '?';
         const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
 
+        const AccountDetails = (
+
+            <div style={{display: 'flex', alignItems: 'stretch'}}>
+                <div style={{flexGrow: 1}}>
+                    <Form caption="Wallet" onCancel={goBack}>
+                        <div id="row" style={styles.formRow}>
+                            <div id="left-column" style={styles.left}>
+                                <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+                                    <IdentityIcon id={account.get('id')} expanded={true} />
+                                </div>
+                            </div>
+                            <div style={styles.right}>
+                                <AccountBalance balance={account.get('balance') || new Wei(0) } withAvatar={true} />
+                            </div>
+                        </div>
+
+                        <div id="row" style={styles.formRow}>
+                            <div style={styles.left}>
+                                <div style={styles.fieldName}>
+                                    <People />
+                                </div>
+                            </div>
+                            <div style={styles.right}>
+                                {!this.state.edit && <AddressAvatar
+                                    addr={account.get('id')}
+                                    tertiary={account.get('description')}
+                                    nameEdit={account.get('name')}
+                                    onEditClick={this.handleEdit}
+                                />}
+                                {this.state.edit && <AccountEdit
+                                    address={account}
+                                    submit={this.handleSave}
+                                    cancel={this.cancelEdit}
+                                />}
+                            </div>
+                        </div>
+
+                        <div id="row" style={styles.formRow}>
+                            <div style={styles.left}>
+                            </div>
+                            <div style={styles.right}>
+                                <div>
+                                    <div style={{display: 'flex', alignItems: 'center'}}>
+                                        <AccountPopup primary account={account} />
+                                        <AccountSendButton style={{marginLeft: '10px'}} primary account={account} />
+                                        <SecondaryMenu account={account} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </Form>
+                </div>
+                <div style={{flexBasis: '30%', backgroundColor: 'white', paddingTop: '110px'}}>
+                    <QRCode value={account.get('id')} />
+                </div>
+            </div>
+        );
+
         return (
-        <div>
-        <Card style={cardSpace}>
-            <CardActions>
-                <FlatButton label="DASHBOARD"
-                            primary={true}
-                            onClick={goBack}
-                            icon={<FontIcon className="fa fa-arrow-left" />}/>
-            </CardActions>
-            <CardText>
-                <Row>
-                    <Col xs={8}>
-                        {/* }<h2>
-                            {value}
-                            {pending && <FlatButton label={pending} primary={true} />}
-                        </h2>
-                        {account.get('balance') ? `$${account.get('balance').getFiat(rates.get('usd'))}` : ''}
-                        */}
-                       <AccountBalance balance={account.get('balance') || new Wei(0) } withAvatar={true} />
-
-                        {!this.state.edit && <AddressAvatar
-                            secondary={account.get('id')}
-                            tertiary={account.get('description')}
-                            primary={account.get('name')}
-                            onClick={this.handleEdit}
-                        />}
-                        {this.state.edit && <AccountEdit
-                            address={account}
-                            submit={this.handleSave}
-                            cancel={this.cancelEdit}
-                         />}
-                    </Col>
-                    <Col xs={4} md={2} mdOffset={2}>
-                        <QRCode value={account.get('id')} />
-                    </Col>
-                </Row>
-            </CardText>
-            <CardActions>
-                <AccountPopup account={account}/>
-                <AccountSendButton account={account} />
-                <ExportAccountButton account={account} />
-            </CardActions>
-        </Card>
-
-        <TransactionsList transactions={transactions}/>
-        </div>
+            <div>
+                <div>
+                    {AccountDetails}
+                </div>
+                <div>
+                    <TransactionsList transactions={transactions}/>
+                </div>
+            </div>
         );
     }
 }
@@ -117,22 +139,27 @@ AccountRender.propTypes = {
     account: PropTypes.object.isRequired,
     goBack: PropTypes.func.isRequired,
     transactions: PropTypes.object.isRequired,
+    editAccount: PropTypes.func,
 };
 
 const AccountShow = connect(
     (state, ownProps) => {
-
         const accounts = state.accounts.get('accounts');
-        const pos = accounts.findKey((acc) => acc.get('id') === ownProps.account.get('id'));
-        const account = (accounts.get(pos) || Immutable.Map({}));
+        let account = ownProps.account;
+        const listPos = accounts.findKey((acc) => acc.get('id').toLowerCase() === account.get('id').toLowerCase());
+        if (listPos >= 0) {
+            account = accounts.get(listPos);
+        } else {
+            log.warn("Can't find account in general list of accounts", account.get('id'), listPos);
+        }
         let transactions = Immutable.List([]);
         if (account.get('id')) {
             transactions = state.accounts.get('trackedTransactions').filter((t) =>
                 (account.get('id') === t.get('to') || account.get('id') === t.get('from'))
-            )
+            );
         }
         const rates = state.accounts.get('rates');
-        const balance = ownProps.account.get('balance');
+        const balance = account.get('balance');
         let fiat = {};
         if (rates && balance) {
             fiat = {
@@ -160,7 +187,7 @@ const AccountShow = connect(
                             resolve(response);
                         });
             });
-        }
+        },
     })
 )(AccountRender);
 

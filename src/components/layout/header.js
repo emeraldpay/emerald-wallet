@@ -1,56 +1,48 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { align, cardSpace } from 'lib/styles';
-import logo from 'images/etc_logo.png';
-import Status from './status';
+import {IconButton, FontIcon} from 'material-ui';
+import Status from './status/status';
 import Total from './total';
-import Navigation from './navigation';
+import { gotoScreen } from '../../store/screenActions';
+import { LogoIcon, SettingsIcon } from '../../elements/Icons';
 
 
-const Render = () => {
-    const style = {
-        paddingTop: '20px',
-        paddingBottom: '20px',
-        cardSpace,
-    };
+const Render = ({maxWidth = '1220px', openSettings}) => {
     const titleStyle = {
-        fontWeight: 400,
-        fontSize: '1.4rem',
+        color: '#191919',
+        fontSize: '17px',
+        fontWeight: 500,
+        lineHeight: '21px',
+        marginRight: '10px',
     };
 
     return (
-        <div style={style}>
-            <Row>
-                <Col xs={4}>
-                    <Row middle="xs">
-                        <Col xs={3} style={align.right}>
-                            <img src={logo} height={48}/>
-                        </Col>
-                        <Col xs={9} style={titleStyle}>
-                            Emerald<br/>Wallet
-                        </Col>
-                    </Row>
-                </Col>
-                <Col xs={4} style={align.center}>
-                    <Status/>
-                </Col>
-                <Col xs={4} style={align.right}>
-                    <Navigation/>
-                </Col>
-            </Row>
-            <Row>
-                <Col xs={10} xsOffset={1} style={align.center}>
+        <div style={{backgroundColor: 'white'}}>
+            <div style={{display: 'flex', justifyContent: 'space-between', margin: '0 auto', maxWidth}}>
+                <div style={{display: 'flex', alignItems: 'center'}}>
+                    <div style={titleStyle}>EMERALD WALLET</div>
+                    <div><LogoIcon height="33px" width="17px" /></div>
                     <Total/>
-                </Col>
-            </Row>
+                </div>
+                <div style={{display: 'flex'}}>
+                    <Status />
+                    <IconButton onTouchTap={openSettings}>
+                        <SettingsIcon />
+                    </IconButton>
+                </div>
+            </div>
         </div>
     );
 };
 
 const Header = connect(
     (state, ownProps) => ({}),
-    (dispatch, ownProps) => ({})
+    (dispatch, ownProps) => ({
+        openSettings: () => {
+            dispatch(gotoScreen('settings'));
+        },
+    })
 )(Render);
 
 export default Header;

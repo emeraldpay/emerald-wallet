@@ -1,41 +1,26 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import log from 'electron-log';
-import Networks from 'lib/networks';
 import { translate } from 'react-i18next';
-import { switchChain } from 'store/networkActions';
 import { gotoScreen } from 'store/screenActions';
 import './main.scss';
 import Screen from './screen';
 import Header from './layout/header';
 import Footer from './layout/footer';
 import Error from './error';
+import Dialog from './dialog';
+
+const maxWidth = '1100px';
 
 const Render = translate('common')(({t, ...props}) => (
-    <Grid>
-    {props.screen !== 'welcome' &&
-
-        <Row>
-            <Col xs={12}>
-                <Header/>
-            </Col>
-        </Row>
-    }
-        <Row>
-            <Col xs={12}>
+<div>
+    {props.screen !== 'welcome' && props.screen !== 'paper-wallet' && <Header maxWidth = {maxWidth}/>}
+            <div style={{margin: '20px auto', maxWidth}}>
                 <Screen id="body"/>
-            </Col>
-        </Row>
-        <Error/>
-    {props.screen !== 'welcome' &&
-        <Row>
-            <Col xs={12}>
-                <Footer />
-            </Col>
-        </Row>
-    }
-    </Grid>
+            </div>
+        <Error/><Dialog/>
+    {props.screen !== 'welcome' && props.screen !== 'paper-wallet' && <Footer maxWidth = {maxWidth}/> }
+</div>
 ));
 
 const Main = connect(
@@ -54,9 +39,6 @@ const Main = connect(
         openContracts: () => {
             log.info('contracts');
             dispatch(gotoScreen('contracts'));
-        },
-        switchChain: (network) => {
-            dispatch(switchChain(network.get('name'), network.get('id')));
         },
     })
 )(Render);

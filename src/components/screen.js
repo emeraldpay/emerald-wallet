@@ -2,24 +2,27 @@ import React from 'react';
 import { connect } from 'react-redux';
 import log from 'electron-log';
 
-import AccountsList from './accounts/list';
 import AddressBook from './addressbook/book';
 import AccountShow from './accounts/show';
 import AddressShow from './addressbook/show';
 import AddressAdd from './addressbook/add';
-import CreateTx from './tx/create';
+import CreateTx from './tx/CreateTx';
 import TransactionShow from './tx/show';
-import TransactionsList from './tx/list';
 // import TokensList from './tokens/list';
 import AddToken from './tokens/add';
-import CreateAccount from './accounts/add/add';
-import GenerateAccount from './accounts/add/generate';
-import ImportAccount from './accounts/add/importjson';
+import GenerateAccount from './accounts/add/Generate';
+import LedgerImport from './accounts/add/ledger/select';
+import ImportAccount from './accounts/add/ImportJson';
+import ImportPrivateKey from './accounts/add/ImportPrivateKey';
 import ContractsList from './contracts/list';
 import AddContract from './contracts/add';
 import DeployContract from './contracts/deploy';
 import ContractShow from './contracts/show';
 import Welcome from './welcome/welcome';
+import Dashboard from '../containers/Dashboard';
+import Settings from './settings';
+import PaperWallet from '../containers/PaperWallet';
+import ExportPaperWallet from '../containers/ExportPaperWallet';
 
 const Render = ({ screen, screenItem }) => {
     log.debug('screen', screen);
@@ -30,11 +33,7 @@ const Render = ({ screen, screenItem }) => {
         </div>;
     } else if (screen === 'home') {
         return (
-            <div>
-                <AccountsList/>
-                {/* #hidden#146 <TokensList/> */}
-                <TransactionsList/>
-            </div>
+            <Dashboard />
         );
     } else if (screen === 'contracts') {
         return (
@@ -46,23 +45,23 @@ const Render = ({ screen, screenItem }) => {
     } else if (screen === 'address-book') {
         return <AddressBook />;
     } else if (screen === 'address') {
-        return (
-            <AddressShow addressId={screenItem}/>
-        );
+        return <AddressShow addressId={screenItem}/>;
     } else if (screen === 'add-address') {
         return <AddressAdd />;
+    } else if (screen === 'add-from-ledger') {
+        return <LedgerImport />;
     } else if (screen === 'account') {
         return <AccountShow account={screenItem}/>;
     } else if (screen === 'transaction') {
         return <TransactionShow hash={screenItem.hash} accountId={screenItem.from}/>;
     } else if (screen === 'create-tx') {
         return <CreateTx account={screenItem}/>;
-    } else if (screen === 'create-account') {
-        return <CreateAccount />;
     } else if (screen === 'generate') {
         return <GenerateAccount />;
     } else if (screen === 'importjson') {
         return <ImportAccount />;
+    } else if (screen === 'import-private-key') {
+        return <ImportPrivateKey />;
     } else if (screen === 'add-token') {
         return <AddToken />;
     } else if (screen === 'deploy-contract') {
@@ -71,6 +70,12 @@ const Render = ({ screen, screenItem }) => {
         return <ContractShow contract={screenItem} />;
     } else if (screen === 'welcome') {
         return <Welcome />;
+    } else if (screen === 'settings') {
+        return <Settings />;
+    } else if (screen === 'paper-wallet') {
+        return <PaperWallet address={ screenItem.address } privKey={ screenItem.privKey } />;
+    } else if (screen === 'export-paper-wallet') {
+        return <ExportPaperWallet accountId={ screenItem } />;
     }
 
     return (

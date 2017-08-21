@@ -23,15 +23,15 @@ class CardEdit extends React.Component {
         };
     }
 
-    handleExpandChange = (expanded) => {
+    handleExpandChange(expanded) {
         this.setState({ expanded });
     }
 
-    handleExpand = () => {
+    handleExpand() {
         this.setState({ expanded: true });
     }
 
-    handleReduce = () => {
+    handleReduce() {
         this.setState({ expanded: false });
     }
 

@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
-import { cardSpace } from 'lib/styles';
 import { saveSettings } from 'store/launcherActions';
 
 const Render = ({ save }) => {
@@ -14,8 +13,7 @@ const Render = ({ save }) => {
             <Col xs={12}>
                 <div style={{fontWeight: '300'}}>
                     <p>
-                        Welcome to Emerald Wallet Alpha. Thanks for trying it out!<br/>
-                        We're looking forward to a Beta release by July 20th.
+                        Welcome to Emerald Wallet Beta. Thanks for trying it out!<br/>
                     </p>
                     <p>
                         Made with ❤️&nbsp; by <strong>ETCDEV</strong> and <strong>many wonderful contributors</strong>.

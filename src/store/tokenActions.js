@@ -1,40 +1,41 @@
-import { rpc } from '../lib/rpc';
 import Immutable from 'immutable';
 import { parseString, getNakedAddress, fromTokens, functionToData, getFunctionSignature } from 'lib/convert';
+import { api } from 'lib/rpc/api';
+
 
 /** Abbreviated ABI for ERC20-compatible tokens **/
 const TokenAbi = [
-    {name:'approve',
-        inputs:[{name:'_spender',type:'address'},
-                {name:'_amount',type:'uint256'}],
-        outputs:[{name:'success',type:'bool'}]},
-    {name:'totalSupply',
-        inputs:[],
-        outputs:[{name:'',type:'uint256'}]},
-    {name:'divisor',
-        inputs:[],
-        outputs:[{name:'divisor',type:'uint256'}]},
-    {name:'transferFrom',
-        inputs:[{name:'_from',type:'address'},
-                  {name:'_to',type:'address'},
-                  {name:'_value',type:'uint256'}],
-        outputs:[{name:'success',type:'bool'}]},
-    {name:'balanceOf',
-        inputs:[{name:'_owner',type:'address'}],
-        outputs:[{name:'balance',type:'uint256'}]},
-    {name:'transfer',
-        inputs:[{name:'_to',type:'address'},{name:'_value',type:'uint256'}],
-        outputs:[{name:'success',type:'bool'}]},
-    {name:'symbol',
-        inputs:[],
-        outputs:[{name:'',type:'string'}]},
-    {name:'name',
-        inputs:[],
-        outputs:[{name:'',type:'string'}]},
-    {name:'decimals',
-        inputs:[],
-        outputs:[{name:'',type:'uint8'}]}
-        ];
+    {name: 'approve',
+        inputs: [{name: '_spender', type: 'address'},
+                {name: '_amount', type: 'uint256'}],
+        outputs: [{name: 'success', type: 'bool'}]},
+    {name: 'totalSupply',
+        inputs: [],
+        outputs: [{name: '', type: 'uint256'}]},
+    {name: 'divisor',
+        inputs: [],
+        outputs: [{name: 'divisor', type: 'uint256'}]},
+    {name: 'transferFrom',
+        inputs: [{name: '_from', type: 'address'},
+                  {name: '_to', type: 'address'},
+                  {name: '_value', type: 'uint256'}],
+        outputs: [{name: 'success', type: 'bool'}]},
+    {name: 'balanceOf',
+        inputs: [{name: '_owner', type: 'address'}],
+        outputs: [{name: 'balance', type: 'uint256'}]},
+    {name: 'transfer',
+        inputs: [{name: '_to', type: 'address'}, {name: '_value', type: 'uint256'}],
+        outputs: [{name: 'success', type: 'bool'}]},
+    {name: 'symbol',
+        inputs: [],
+        outputs: [{name: '', type: 'string'}]},
+    {name: 'name',
+        inputs: [],
+        outputs: [{name: '', type: 'string'}]},
+    {name: 'decimals',
+        inputs: [],
+        outputs: [{name: '', type: 'uint8'}]},
+];
 
 function getFunction(name) {
     return Immutable.fromJS(
@@ -46,7 +47,7 @@ export function loadTokenBalanceOf(token, accountId) {
     return (dispatch) => {
         const data = functionToData(getFunction('balanceOf'),
             { _owner: getNakedAddress(accountId) });
-        rpc.call('eth_call', [{ to: token.address, data }, 'latest']).then((result) =>
+        api.geth.call('eth_call', [{ to: token.address, data }, 'latest']).then((result) =>
             dispatch({
                 type: 'ACCOUNT/SET_TOKEN_BALANCE',
                 accountId,
@@ -59,7 +60,7 @@ export function loadTokenBalanceOf(token, accountId) {
 
 export function loadTokenDetails(token) {
     return (dispatch, getState) => {
-        rpc.call('eth_call', [{
+        api.geth.call('eth_call', [{
             to: token.address,
             data: getFunctionSignature(getFunction('totalSupply')) },
             'latest']).then((result) => {
@@ -69,7 +70,7 @@ export function loadTokenDetails(token) {
                     value: result,
                 });
             });
-        rpc.call('eth_call', [{ to: token.address,
+        api.geth.call('eth_call', [{ to: token.address,
             data: getFunctionSignature(getFunction('decimals')) },
             'latest']).then((result) => {
                 dispatch({
@@ -78,7 +79,7 @@ export function loadTokenDetails(token) {
                     value: result,
                 });
             });
-        rpc.call('eth_call', [{ to: token.address,
+        api.geth.call('eth_call', [{ to: token.address,
             data: getFunctionSignature(getFunction('symbol')) },
             'latest']).then((result) => {
                 dispatch({
@@ -104,7 +105,7 @@ export function loadTokenList() {
         dispatch({
             type: 'TOKEN/LOADING',
         });
-        rpc.call('emerald_contracts', []).then((result) => {
+        api.geth.call('emerald_contracts', []).then((result) => {
             const tokens = result ? result.filter((contract) => {
                 contract.features = contract.features || [];
                 return contract.features.indexOf('erc20') >= 0;
@@ -120,7 +121,7 @@ export function loadTokenList() {
 
 export function addToken(address, name) {
     return (dispatch) =>
-        rpc.call('emerald_addContract', [{
+        api.emerald.call('emerald_addContract', [{
             address,
             name,
         }]).then((result) => {
@@ -136,11 +137,11 @@ export function addToken(address, name) {
 function createTokenTransaction(token, to, value, isTransfer) {
     const address = getNakedAddress(to);
     const numTokens = fromTokens(value, token.get('decimals'));
-    if (isTransfer === 'true')
+    if (isTransfer === 'true') {
         return functionToData(getFunction('transfer'),
             { _to: address, _value: numTokens });
-    else
-        return functionToData(getFunction('approve'),
+    }
+    return functionToData(getFunction('approve'),
             { _spender: address, _amount: numTokens });
 }
 
@@ -188,7 +189,7 @@ export function traceCall(accountId, to, gas, gasPrice, value, data) {
             params.push(['trace', 'stateDiff']);
         }
         params.push('latest');
-        return rpc.call(call, params);
+        return api.geth.call(call, params);
     };
 }
 
