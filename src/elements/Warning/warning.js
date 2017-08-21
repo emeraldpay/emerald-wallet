@@ -9,9 +9,11 @@ export const WarningHeader = (props) => {
 };
 
 export const WarningText = (props) => {
-    return (<div className={ styles.text }>
-        { props.children }
-    </div>);
+    return (
+        <div className={ styles.text }>
+            { props.children }
+        </div>
+    );
 };
 
 export const Warning = (props) => {

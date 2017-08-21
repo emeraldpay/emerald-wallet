@@ -17,6 +17,7 @@ import AccountBalance from '../../accounts/AccountBalance';
 import Button from '../../../elements/Button';
 import LinkButton from 'elements/LinkButton';
 
+
 import classes from './createTxForm.scss';
 
 const textEtc = {
@@ -250,9 +251,7 @@ const CreateTxForm = (props) => {
                         onClick={() => onEntireBalance(balance)}
                         label="Entire Balance"
                     />
-
                 </div>
-
             </div>
         </Row>
 

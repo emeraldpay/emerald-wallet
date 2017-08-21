@@ -98,7 +98,6 @@ class WalletsTokensButton extends React.Component {
 }
 
 const Render = translate('accounts')((props) => {
-
     const { t, accounts, generate, generate2, importJson, importLedger, importPrivateKey } = props;
     const table = <div>
         {accounts.map((account) =>

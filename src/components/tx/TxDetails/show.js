@@ -12,6 +12,7 @@ import IdentityIcon from 'elements/IdentityIcon';
 import { Form, styles } from 'elements/Form';
 import TxStatus from './status';
 
+
 const Render = ({ transaction, rates, account, accounts, openAccount, goBack }) => {
     const fromAccount = transaction.get('from') ?
         accounts.find((acct) => acct.get('id') === transaction.get('from')) : null;

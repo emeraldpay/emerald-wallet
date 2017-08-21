@@ -61,7 +61,6 @@ class ImportPrivateKey extends React.Component {
                                     />
                                 </div>
                             </div>
-
                         </div>
                     </Row>
                     <Row>
@@ -71,6 +70,16 @@ class ImportPrivateKey extends React.Component {
                                 <WarningHeader>Don&#39;t forget it.</WarningHeader>
                                 <WarningText>If you forget password, you will loose your wallet with all
                                     funds.</WarningText>
+                            </Warning>
+                        </div>
+                    </Row>
+
+                    <Row>
+                        <div style={formStyles.left}/>
+                        <div style={formStyles.right}>
+                            <Warning>
+                                <WarningHeader>Don't forget it.</WarningHeader>
+                                <WarningText>If you forget password, you will loose your wallet with all funds.</WarningText>
                             </Warning>
                         </div>
                     </Row>
@@ -99,7 +108,7 @@ class ImportPrivateKey extends React.Component {
                             <Button primary label="Import" onClick={ this.submit }/>
                         </div>
                     </Row>
-                    {this.state.error}
+                    { this.state.error }
                 </form>
             </Form>
         );
@@ -127,7 +136,7 @@ export default connect(
                         .then((response) => resolve(response))
                         .catch((error) => resolve({error}));
                 } catch (error) {
-                    resolve({error});
+                    resolve({ error });
                 }
             });
         },

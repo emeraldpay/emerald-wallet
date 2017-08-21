@@ -35,6 +35,7 @@ export function loadAccountsList() {
             type: 'ACCOUNT/LOADING',
         });
         const chain = currentChain(getState());
+
         api.emerald.listAccounts(chain).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SET_LIST',
@@ -234,7 +235,6 @@ function readWalletFile(wallet) {
 export function importWallet(wallet, name, description) {
     return (dispatch, getState) => {
         const chain = currentChain(getState());
-
         return readWalletFile(wallet).then((data) => {
             data.name = name;
             data.description = description;

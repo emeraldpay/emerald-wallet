@@ -72,7 +72,6 @@ class SettingsRender extends React.Component {
                                           value="en"
                                           label="English"
                                           primaryText="English" />
-
                                 <MenuItem key="zh-CN"
                                           value="zh-CN"
                                           label="中文"

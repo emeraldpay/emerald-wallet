@@ -5,6 +5,7 @@ import { useRpc, saveSettings } from 'store/launcherActions';
 import { MenuItem, DropDownMenu } from 'material-ui';
 import { Networks, findNetwork } from 'lib/networks';
 
+
 const styles = {
     main: {
         fontSize: '14px',
@@ -22,16 +23,13 @@ class NetworkSelectorRender extends React.Component {
         const { current, switchNetwork } = this.props;
         const isCurrentNetwork = (net) => (net.chain.id === current.chain.id
             && (net.geth.url === current.geth.url));
-
-        const currentNetwork = findNetwork(current.geth.url, current.chain.id)||{};
+        const currentNetwork = findNetwork(current.geth.url, current.chain.id) || {};
 
         const networkClick = (net) => {
             if (!isCurrentNetwork(net)) {
                 switchNetwork(net);
             }
         };
-
-
 
         return (
             <DropDownMenu value={ currentNetwork.id }
@@ -59,8 +57,8 @@ NetworkSelectorRender.propTypes = {
 const NetworkSelector = connect(
     (state, ownProps) => ({
         current: {
-            chain: state.launcher.get('chain').toJS() || {},
-            geth: state.launcher.get('geth').toJS() || {},
+            chain: state.launcher.get('chain').toJS(),
+            geth: state.launcher.get('geth').toJS(),
         },
     }),
     (dispatch, ownProps) => ({

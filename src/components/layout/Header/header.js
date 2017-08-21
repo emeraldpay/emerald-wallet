@@ -7,7 +7,6 @@ import Status from './status/status';
 import Total from './total';
 import { gotoScreen } from '../../../store/screenActions';
 
-
 const Render = ({maxWidth = '1220px', openSettings}) => {
     const titleStyle = {
         color: '#191919',
