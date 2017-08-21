@@ -1,11 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { align, cardSpace } from 'lib/styles';
-import {IconButton, FontIcon} from 'material-ui';
+import { IconButton } from 'material-ui';
+
+import { LogoIcon, SettingsIcon } from 'elements/Icons';
 import Status from './status/status';
 import Total from './total';
-import { gotoScreen } from '../../store/screenActions';
-import { LogoIcon, SettingsIcon } from '../../elements/Icons';
+import { gotoScreen } from '../../../store/screenActions';
 
 
 const Render = ({maxWidth = '1220px', openSettings}) => {

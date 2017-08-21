@@ -1,7 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import Immutable from 'immutable';
-import { connect } from 'react-redux';
 import QRCode from 'qrcode.react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -10,7 +7,6 @@ import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { DescriptionList, DescriptionTitle, DescriptionData } from 'elements/dl';
 import AccountAddress from 'elements/AccountAddress';
 import { link, align, cardSpace, copyIcon } from 'lib/styles';
-import { closeDialog } from 'store/screenActions';
 
 const styles = {
     closeButton: {
@@ -38,11 +34,11 @@ const styles = {
     },
 };
 
-const Render = ({ account, handleClose }) => {
+const ReceiveDialog = ({ account, onClose }) => {
     return <Dialog
         modal={false}
         open={true}
-        onRequestClose={handleClose}>
+        onRequestClose={ onClose }>
         <Row>
             <Col xs={11}>
                 <h1>Add ETC</h1>
@@ -51,7 +47,7 @@ const Render = ({ account, handleClose }) => {
                 <FlatButton
                     icon={<FontIcon className='fa fa-close' />}
                     primary={true}
-                    onTouchTap={handleClose}
+                    onTouchTap={ onClose }
                     style={styles.closeButton}
                 />
             </Col>
@@ -74,15 +70,5 @@ const Render = ({ account, handleClose }) => {
         </Row>
     </Dialog>;
 };
-
-const ReceiveDialog = connect(
-    (state, ownProps) => ({
-    }),
-    (dispatch, ownProps) => ({
-        handleClose: () => {
-            dispatch(closeDialog());
-        },
-    })
-)(Render);
 
 export default ReceiveDialog;

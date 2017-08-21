@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import LinearProgress from 'material-ui/LinearProgress';
 import NetworkSelector from './networkSelector';
-import { separateThousands } from '../../../lib/convert';
+import { separateThousands } from 'lib/convert';
 
 const Render = ({ block, progress, peerCount, showDetails, connecting }) => {
     const styles = {

@@ -3,15 +3,15 @@ import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 
-import { Form, Row, styles as formStyles } from '../../../../elements/Form';
-import TextField from '../../../../elements/Form/TextField';
+import { Form, Row, styles as formStyles } from 'elements/Form';
+import TextField from 'elements/Form/TextField';
 import { importWallet } from 'store/accountActions';
 import { gotoScreen } from 'store/screenActions';
 import Wallet from 'lib/wallet';
-
-import styles from './importPrivateKey.scss';
 import Button from 'elements/Button';
 import { Warning, WarningHeader, WarningText } from 'elements/Warning';
+
+import styles from './importPrivateKey.scss';
 
 class ImportPrivateKey extends React.Component {
     constructor(props) {
@@ -68,7 +68,7 @@ class ImportPrivateKey extends React.Component {
                         <div style={formStyles.left}/>
                         <div style={formStyles.right}>
                             <Warning>
-                                <WarningHeader>Don't forget it.</WarningHeader>
+                                <WarningHeader>Don&#39;t forget it.</WarningHeader>
                                 <WarningText>If you forget password, you will loose your wallet with all
                                     funds.</WarningText>
                             </Warning>

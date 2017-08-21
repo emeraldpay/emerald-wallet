@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { gotoScreen } from '../../../store/screenActions';
 import saveAs from 'lib/saveAs';
+import { gotoScreen } from '../../../store/screenActions';
 import PasswordDialog from './PasswordDialog';
 import DownloadDialog from './DownloadDialog';
 import ShowPrivateDialog from './ShowPrivateDialog';
-import AccountPropertiesDialog from './AccountPropertiesDialog'
+import AccountPropertiesDialog from './AccountPropertiesDialog';
 
 const PASSWORD_PAGE = 1;
 const DOWNLOAD_PAGE = 2;
@@ -23,14 +23,13 @@ class GenerateAccount extends React.Component {
 
     generate = () => {
         this.setState({
-            page: DOWNLOAD_PAGE
-        })
+            page: DOWNLOAD_PAGE,
+        });
     };
 
     download = () => {
-
         const fileData = {
-            filename: `hz.json`,
+            filename: 'hz.json',
             mime: 'text/plain',
             contents: '',
         };
@@ -40,29 +39,29 @@ class GenerateAccount extends React.Component {
         saveAs(url, fileData.filename);
 
         this.setState({
-            page: PRIVATE_PAGE
-        })
+            page: PRIVATE_PAGE,
+        });
     }
 
     editAccountProps = () => {
         this.setState({
-            page: ACCOUNT_PROPS_PAGE
-        })
+            page: ACCOUNT_PROPS_PAGE,
+        });
     }
 
     skipAccountProps = () => {
-        this.props.dispatch(gotoScreen('home'))
+        this.props.dispatch(gotoScreen('home'));
     }
 
     render() {
         const { page } = this.state;
         switch (page) {
             case PASSWORD_PAGE:
-                return (<PasswordDialog onGenerate={ this.generate }/>)
+                return (<PasswordDialog onGenerate={ this.generate }/>);
             case DOWNLOAD_PAGE:
-                return (<DownloadDialog onDownload={ this.download }/>)
+                return (<DownloadDialog onDownload={ this.download }/>);
             case PRIVATE_PAGE:
-                return (<ShowPrivateDialog onNext={ this.editAccountProps }/>)
+                return (<ShowPrivateDialog onNext={ this.editAccountProps }/>);
             case ACCOUNT_PROPS_PAGE:
                 return (<AccountPropertiesDialog onSkip={ this.skipAccountProps } />);
         }

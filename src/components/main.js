@@ -3,12 +3,14 @@ import { connect } from 'react-redux';
 import log from 'electron-log';
 import { translate } from 'react-i18next';
 import { gotoScreen } from 'store/screenActions';
-import './main.scss';
+
 import Screen from './screen';
-import Header from './layout/header';
-import Footer from './layout/footer';
+import Header from './layout/Header';
+import Footer from './layout/Footer';
 import Error from './error';
 import Dialog from './dialog';
+
+import './main.scss';
 
 const maxWidth = '1100px';
 

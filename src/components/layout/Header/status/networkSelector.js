@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { useRpc, saveSettings } from 'store/launcherActions';
 import { MenuItem, DropDownMenu } from 'material-ui';
-import { Networks, findNetwork } from '../../../lib/networks'
+import { Networks, findNetwork } from 'lib/networks';
 
 const styles = {
     main: {
