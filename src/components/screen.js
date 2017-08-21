@@ -19,9 +19,10 @@ import AddContract from './contracts/add';
 import DeployContract from './contracts/deploy';
 import ContractShow from './contracts/show';
 import Welcome from './welcome/welcome';
-import Dashboard from './dashboard';
+import Dashboard from '../containers/Dashboard';
 import Settings from './settings';
-import PaperWallet from './accounts/PaperWallet';
+import PaperWallet from '../containers/PaperWallet';
+import ExportPaperWallet from '../containers/ExportPaperWallet';
 
 const Render = ({ screen, screenItem }) => {
     log.debug('screen', screen);
@@ -72,7 +73,9 @@ const Render = ({ screen, screenItem }) => {
     } else if (screen === 'settings') {
         return <Settings />;
     } else if (screen === 'paper-wallet') {
-        return <PaperWallet address={screenItem.address} privKey={screenItem.privKey} />;
+        return <PaperWallet address={ screenItem.address } privKey={ screenItem.privKey } />;
+    } else if (screen === 'export-paper-wallet') {
+        return <ExportPaperWallet accountId={ screenItem } />;
     }
 
     return (

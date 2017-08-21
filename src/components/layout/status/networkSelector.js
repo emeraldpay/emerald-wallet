@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Networks } from 'lib/networks';
 import { useRpc, saveSettings } from 'store/launcherActions';
 import { MenuItem, DropDownMenu } from 'material-ui';
+import { Networks, findNetwork } from '../../../lib/networks'
 
 const styles = {
     main: {
@@ -19,18 +19,22 @@ const styles = {
 class NetworkSelectorRender extends React.Component {
 
     render() {
-        const { chain, rpcType, switchChain } = this.props;
+        const { current, switchNetwork } = this.props;
+        const isCurrentNetwork = (net) => (net.chain.id === current.chain.id
+            && (net.geth.url === current.geth.url));
+
+        const currentNetwork = findNetwork(current.geth.url, current.chain.id)||{};
 
         const networkClick = (net) => {
-            if (net.id !== chain.get('id') || net.type !== chain.get('type')) {
-                switchChain(net);
+            if (!isCurrentNetwork(net)) {
+                switchNetwork(net);
             }
         };
 
-        const isCurrentNetwork = (net) => (net.name === chain.get('name') && net.type === rpcType);
+
 
         return (
-            <DropDownMenu value={chain.get('id')}
+            <DropDownMenu value={ currentNetwork.id }
                           style={styles.main}
                           underlineStyle={{ display: 'none' }}
                           labelStyle={styles.label}>
@@ -47,21 +51,22 @@ class NetworkSelectorRender extends React.Component {
     }
 }
 
+
 NetworkSelectorRender.propTypes = {
-    chain: PropTypes.object.isRequired,
-    rpcType: PropTypes.string.isRequired,
-    switchChain: PropTypes.func.isRequired,
+    switchNetwork: PropTypes.func.isRequired,
 };
 
 const NetworkSelector = connect(
     (state, ownProps) => ({
-        chain: state.network.get('chain') || {},
-        rpcType: state.launcher.getIn(['chain', 'rpc']),
+        current: {
+            chain: state.launcher.get('chain').toJS() || {},
+            geth: state.launcher.get('geth').toJS() || {},
+        },
     }),
     (dispatch, ownProps) => ({
-        switchChain: (network) => {
-            dispatch(useRpc(network.type));
-            dispatch(saveSettings({chain: network.name, chainId: network.chainId}));
+        switchNetwork: (net) => {
+            dispatch(useRpc({ geth: net.geth, chain: net.chain }));
+            dispatch(saveSettings({ chain: net.chain, geth: net.geth }));
         },
     })
 )(NetworkSelectorRender);

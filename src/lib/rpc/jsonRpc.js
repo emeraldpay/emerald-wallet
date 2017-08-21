@@ -5,18 +5,10 @@ const baseHeaders = {
     'Content-Type': 'application/json',
 };
 
-export class RpcApi {
-    constructor(urlEmerald, urlGeth) {
+export default class JsonRpc {
+    constructor(url) {
         this.requestSeq = 1;
-        this.urlEmerald = urlEmerald || 'http://localhost:1920';
-        this.urlGeth = urlGeth || 'http://localhost:8545';
-    }
-
-    static routeToEmerald(method) {
-        if (typeof method !== 'string') {
-            return false;
-        }
-        return method.startsWith('emerald_');
+        this.url = url;
     }
 
     /**
@@ -35,7 +27,7 @@ export class RpcApi {
                     headers: ${JSON.stringify(headers)}`));
                 return;
             }
-            this.jsonPost(name, params, headers).then((json) => {
+            this.post(name, params, headers).then((json) => {
                 // eth_syncing will return {.. "result": false}
                 if (json.result || json.result === false || json.result === null) {
                     resolve(json.result);
@@ -50,15 +42,14 @@ export class RpcApi {
         });
     }
 
-    jsonPost(name, params, headers) {
+    post(name, params, headers) {
         const data = {
             jsonrpc: '2.0',
             method: name,
             params,
             id: this.requestSeq++,
         };
-        const url = RpcApi.routeToEmerald(name) ? this.urlEmerald : this.urlGeth;
-        return fetch(url, {
+        return fetch(this.url, {
             method: 'POST',
             headers: Object.assign(baseHeaders, headers),
             body: JSON.stringify(data),
@@ -72,6 +63,3 @@ export class RpcApi {
         });
     }
 }
-
-
-export default RpcApi;

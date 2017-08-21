@@ -157,6 +157,9 @@ const CreateTx = connect(
         cancel: () => {
             dispatch(gotoScreen('account', ownProps.account));
         },
+        goDashboard: () => {
+            dispatch(gotoScreen('home', ownProps.account));
+        },
     })
 )(CreateTxForm);
 

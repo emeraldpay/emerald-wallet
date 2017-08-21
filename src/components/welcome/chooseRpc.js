@@ -8,6 +8,8 @@ import { List, ListItem } from 'material-ui/List';
 import { cardSpace } from 'lib/styles';
 import { gotoScreen } from 'store/screenActions';
 import { useRpc } from 'store/launcherActions';
+import { MainnetEpool, MainnetLocal } from '../../lib/rpc/gethProviders';
+
 
 const Render = ({ useFullNode, useRemoteNode }) => {
     return (
@@ -46,10 +48,10 @@ const ChooseRPC = connect(
     }),
     (dispatch, ownProps) => ({
         useFullNode: () => {
-            dispatch(useRpc('local'));
+            dispatch(useRpc(MainnetLocal));
         },
         useRemoteNode: () => {
-            dispatch(useRpc('remote-auto'));
+            dispatch(useRpc(MainnetEpool));
         },
     })
 )(Render);

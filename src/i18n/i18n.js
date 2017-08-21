@@ -18,7 +18,6 @@ i18n
       ns: ['common'],
       defaultNS: 'common',
       resources: resBundle,
-
       debug: true,
 
       // cache: {

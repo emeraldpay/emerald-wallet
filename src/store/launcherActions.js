@@ -1,19 +1,27 @@
 import { ipcRenderer } from 'electron';
 import log from 'electron-log';
-import rpc from 'lib/rpc';
-import { gotoScreen } from 'store/screenActions';
+import { api } from 'lib/rpc/api';
+
+import { gotoScreen, showError } from 'store/screenActions';
 import { waitForServicesRestart } from 'store/store';
 import { loadAccountsList } from './accountActions';
 
 
 function isGethReady(state) {
-    return state.launcher.getIn(['status', 'geth']) === 'ready';
+    return state.launcher.getIn(['geth', 'status']) === 'ready';
+}
+
+function isEmeraldReady(state) {
+    return state.launcher.getIn(['connector', 'status']) === 'ready';
 }
 
 export function readConfig() {
     if (typeof window.process !== 'undefined') {
         const remote = global.require('electron').remote;
-        const launcherConfig = remote.getGlobal('launcherConfig');
+        const launcherConfig = remote.getGlobal('launcherConfig').get();
+
+        log.debug(`Got launcher config from electron: ${JSON.stringify(launcherConfig)}`);
+
         return {
             type: 'LAUNCHER/CONFIG',
             config: launcherConfig,
@@ -29,8 +37,7 @@ export function readConfig() {
 
 export function loadClientVersion() {
     return (dispatch) => {
-        rpc.call('web3_clientVersion', []).then((result) => {
-            log.debug(result);
+        api.geth.call('web3_clientVersion', []).then((result) => {
             dispatch({
                 type: 'LAUNCHER/CONFIG',
                 config: {
@@ -47,14 +54,12 @@ export function loadClientVersion() {
     };
 }
 
-export function useRpc(option) {
+export function useRpc(gethProvider) {
     return (dispatch) => {
         dispatch({
             type: 'LAUNCHER/CONFIG',
             config: {
-                chain: {
-                    rpc: option,
-                },
+                ...gethProvider,
             },
         });
         dispatch({
@@ -75,12 +80,17 @@ export function agreeOnTerms(v) {
 export function saveSettings(extraSettings) {
     extraSettings = extraSettings || {};
     return (dispatch, getState) => {
-        const rpcType = getState().launcher.getIn(['chain', 'rpc']);
-        const client = getState().launcher.getIn(['chain', 'client']);
-        const settings = {rpcType, client, ...extraSettings};
+        const geth = getState().launcher.get('geth').toJS();
+        const chain = getState().launcher.get('chain').toJS();
+
+        const settings = { geth, chain, ...extraSettings };
+
         log.info('Save settings', settings);
+
         waitForServicesRestart();
+
         ipcRenderer.send('settings', settings);
+
         dispatch({
             type: 'LAUNCHER/SETTINGS',
             updated: false,
@@ -90,28 +100,37 @@ export function saveSettings(extraSettings) {
 
 export function listenElectron() {
     return (dispatch, getState) => {
-        const state = getState();
+        log.debug('Running launcher listener');
+
         ipcRenderer.on('launcher', (event, type, message) => {
             log.debug('launcher listener: ', 'type', type, 'message', message);
+
             dispatch({
-                type: `LAUNCHER/${type}`, ...message,
+                type: `LAUNCHER/${type}`,
+                ...message,
             });
+
+            const state = getState();
+
             if (type === 'CHAIN') {
-                dispatch({
-                    type: 'NETWORK/SWITCH_CHAIN',
-                    network: message.chain,
-                    id: message.chainId,
-                    rpcType: message.rpc,
-                });
-                if (isGethReady(state)) {
-                    dispatch(loadAccountsList());
+                if (getState().launcher.getIn(['chain', 'id']) !== message.chainId) {
+                    // Launcher sent chain different from what user has chosen
+                    // Alert !
+                    dispatch(showError(`Launcher connected to invalid chain: [${message.chain}, ${message.chainId}]`));
+                } else {
+                    dispatch({
+                        type: 'NETWORK/SWITCH_CHAIN',
+                        ...message,
+                    });
                 }
-            } else if (type === 'RPC') {
-                log.info('Use RPC URL', message.url);
-                rpc.urlGeth = message.url;
             }
+
+
             if (isGethReady(state)) {
                 dispatch(loadClientVersion());
+            }
+            if (isEmeraldReady(state) && isGethReady(state)) {
+                dispatch(loadAccountsList());
             }
         });
     };

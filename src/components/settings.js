@@ -1,24 +1,23 @@
 import React from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
-import { SelectField } from 'redux-form-material-ui';
-import { FlatButton, MenuItem } from 'material-ui';
+import { MenuItem } from 'material-ui';
 import { translate } from 'react-i18next';
 import { gotoScreen } from '../store/screenActions';
-import { formStyle } from '../lib/styles';
 import i18n from '../i18n/i18n';
-import {Form, styles} from '../elements/Form';
-import SubmitButton from '../elements/SubmitButton/index'
+import { Form, styles, Row } from '../elements/Form';
+import Button from '../elements/Form/Button';
+import SelectField from '../elements/Form/SelectField';
 
 class SettingsRender extends React.Component {
 
     render() {
-        const {goDashboard, changeLanguage, t} = this.props;
+        const { goDashboard, handleSubmit, t } = this.props;
 
         return (
-            <Form caption="Settings" onCancel={goDashboard}>
+            <Form caption="Settings" onCancel={ goDashboard }>
                 <div id="body">
-                    <div id="row" style={styles.formRow}>
+                    <Row>
                         <div style={styles.left}>
                             <div style={styles.fieldName}>
                                 Network
@@ -28,7 +27,6 @@ class SettingsRender extends React.Component {
                             <Field name="network"
                                    component={SelectField}
                                    underlineShow={false}
-                                   style={formStyle.input}
                                    fullWidth={true}>
                                 <MenuItem key="mainnet"
                                           value="mainnet"
@@ -36,8 +34,8 @@ class SettingsRender extends React.Component {
                                           primaryText="Mainnet" />
                             </Field>
                         </div>
-                    </div>
-                    <div id="row" style={styles.formRow}>
+                    </Row>
+                    <Row>
                         <div style={styles.left}>
                             <div style={styles.fieldName}>
                                 Equivalent currency
@@ -47,7 +45,6 @@ class SettingsRender extends React.Component {
                             <Field name="currency"
                                    component={SelectField}
                                    underlineShow={false}
-                                   style={formStyle.input}
                                    fullWidth={true}>
                                 <MenuItem key="eur"
                                           value="eur"
@@ -59,41 +56,37 @@ class SettingsRender extends React.Component {
                                           primaryText="USD" />
                             </Field>
                         </div>
-                    </div>
-                    <div id="row" style={styles.formRow}>
+                    </Row>
+                    <Row>
                         <div style={styles.left}>
                             <div style={styles.fieldName}>
-                                {t('lang')}
+                                { t('lang') }
                             </div>
                         </div>
                         <div style={styles.right}>
                             <Field name="language"
-                                   component={SelectField}
-                                   onChange={(event, val) => changeLanguage(val)}
+                                   component={ SelectField }
                                    underlineShow={false}
-                                   style={formStyle.input}
                                    fullWidth={true}>
                                 <MenuItem key="en"
                                           value="en"
                                           label="English"
                                           primaryText="English" />
 
-                                <MenuItem key="cn"
-                                          value="cn"
-                                          label="cn"
-                                          primaryText="cn" />
+                                <MenuItem key="zh_cn"
+                                          value="zh_cn"
+                                          label="中文"
+                                          primaryText="中文" />
                             </Field>
                         </div>
-                    </div>
-                    <div id="row" style={styles.formRow}>
-                        <div style={styles.left}>
+                    </Row>
+                    <Row>
+                        <div style={ styles.left }>
                         </div>
                         <div style={styles.right}>
-                            <div>
-                                <SubmitButton label="SAVE" />
-                            </div>
+                                <Button primary label="SAVE" onClick={ handleSubmit } />
                         </div>
-                    </div>
+                    </Row>
                 </div>
             </Form>
         );
@@ -119,8 +112,8 @@ const Settings = connect(
             dispatch(gotoScreen('home'));
         },
 
-        changeLanguage: (lng) => {
-            i18n.changeLanguage(lng);
+        onSubmit: (data) => {
+            i18n.changeLanguage(data.language);
         },
     })
 )(SettingsForm);

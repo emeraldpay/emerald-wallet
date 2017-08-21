@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import { FontIcon, FlatButton, Popover } from 'material-ui';
 import Immutable from 'immutable';
 import { translate } from 'react-i18next';
@@ -41,17 +40,15 @@ class WalletsTokensButton extends React.Component {
     }
 
     render() {
-        const {generate, importJson, importLedger, importPrivateKey, t, style} = this.props;
+        const { generate, importJson, importLedger, importPrivateKey, t, style } = this.props;
 
         return (
             <div style={style}>
                 <FlatButton
-                    onTouchTap={this.handleTouchTap}
+                    onTouchTap={ this.handleTouchTap }
                     label="WALLETS AND TOKENS"
-                    labelStyle={{paddingRight: 0, float: 'right'}}
-                    style={{
-                        color: '#47B04B',
-                    }}
+                    labelStyle={{ paddingRight: 0 }}
+                    style={{ color: '#47B04B' }}
                     hoverColor="transparent"
                     icon={<FontIcon className="fa fa-plus-circle"/>}
                 />
@@ -94,20 +91,7 @@ class WalletsTokensButton extends React.Component {
     }
 }
 
-const Render = translate('accounts')(({t, accounts, generate, importJson, importLedger, connecting, importPrivateKey}) => {
-    if (connecting) {
-        return (
-            <div id="accounts-list">
-                <Grid>
-                    <Row center="xs">
-                        <Col xs={3}>
-                            <i className="fa fa-spin fa-spinner"/> Loading...
-                        </Col>
-                    </Row>
-                </Grid>
-            </div>
-        );
-    }
+const Render = translate('accounts')(({t, accounts, generate, importJson, importLedger, importPrivateKey}) => {
 
     const table = <div>
         {accounts.map((account) =>
@@ -118,21 +102,21 @@ const Render = translate('accounts')(({t, accounts, generate, importJson, import
 
     return (
         <div>
-            <div className={styles.header}>
+            <div className={ styles.header }>
                 <div>
-                    <span className={styles.title}>{t('list.title')}</span>
+                    <span className={ styles.title }>{t('list.title')}</span>
                 </div>
                 <WalletsTokensButton
                     generate={ generate }
                     importJson={ importJson }
                     importLedger={ importLedger }
                     importPrivateKey={ importPrivateKey }
-                    t={t}
+                    t={ t }
                 />
             </div>
 
             <div style={{}}>
-                {table}
+                { table }
             </div>
         </div>
     );
@@ -140,7 +124,6 @@ const Render = translate('accounts')(({t, accounts, generate, importJson, import
 
 Render.propTypes = {
     accounts: PropTypes.object.isRequired,
-    connecting: PropTypes.bool.isRequired,
     generate: PropTypes.func.isRequired,
     importJson: PropTypes.func.isRequired,
     importLedger: PropTypes.func.isRequired,
@@ -149,7 +132,6 @@ Render.propTypes = {
 const AccountsList = connect(
     (state, ownProps) => ({
         accounts: state.accounts.get('accounts', Immutable.List()),
-        connecting: state.launcher.get('connecting'),
     }),
     (dispatch, ownProps) => ({
         generate: () => {

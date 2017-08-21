@@ -1,16 +1,18 @@
 import Immutable from 'immutable';
 import log from 'electron-log';
 import EthereumTx from 'ethereumjs-tx';
-import { rpc } from 'lib/rpc';
+import { api } from 'lib/rpc/api';
+
 import { getRates } from 'lib/marketApi';
 import { address as isAddress} from 'lib/validators';
 import { loadTokenBalanceOf } from './tokenActions';
 import { toHex, toNumber } from 'lib/convert';
 import { gotoScreen, catchError } from './screenActions';
+import Wallet from 'lib/wallet';
 
 export function loadAccountBalance(accountId) {
     return (dispatch, getState) => {
-        rpc.call('eth_getBalance', [accountId, 'latest']).then((result) => {
+        api.geth.getBalance(accountId).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SET_BALANCE',
                 accountId,
@@ -30,8 +32,8 @@ export function loadAccountsList() {
         dispatch({
             type: 'ACCOUNT/LOADING',
         });
-        const chain = getState().network.getIn(['chain', 'name']);
-        rpc.call('emerald_listAccounts', [{chain}]).then((result) => {
+        const chain = getState().launcher.getIn(['chain', 'name']);
+        api.emerald.listAccounts(chain).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SET_LIST',
                 accounts: result,
@@ -44,7 +46,7 @@ export function loadAccountsList() {
 
 export function loadAccountTxCount(accountId) {
     return (dispatch) => {
-        rpc.call('eth_getTransactionCount', [accountId, 'latest']).then((result) => {
+        api.geth.getTransactionCount(accountId).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SET_TXCOUNT',
                 accountId,
@@ -54,50 +56,52 @@ export function loadAccountTxCount(accountId) {
     };
 }
 
-/*
- *
- * TODO: Error handling
-*/
+export function exportPaperWallet(passphrase, accountId) {
+    return (dispatch, getState) => {
+        const chain = getState().launcher.getIn(['chain', 'name']);
+        api.emerald.exportAccount(accountId, chain).then((result) => {
+            const wallet = Wallet.fromV3(result, passphrase);
+            const privKey = wallet.getPrivateKeyString();
+            dispatch(gotoScreen('paper-wallet', { address: accountId, privKey }));
+        }).catch(catchError(dispatch));
+    };
+}
+
 export function createAccount(passphrase, name, description) {
     return (dispatch, getState) => {
-        const chain = getState().network.getIn(['chain', 'name']);
-        return rpc.call('emerald_newAccount', [{
-            passphrase,
-            name,
-            description,
-        }, {chain}]).then((result) => {
-            dispatch({
-                type: 'ACCOUNT/ADD_ACCOUNT',
-                accountId: result,
-                name,
-                description,
-            });
-            dispatch(loadAccountBalance(result));
-            dispatch(gotoScreen('account', Immutable.fromJS({id: result})));
-        });
+        const chain = getState().launcher.getIn(['chain', 'name']);
+
+        api.emerald.newAccount(passphrase, name, description, chain)
+            .then((result) => {
+                dispatch({
+                    type: 'ACCOUNT/ADD_ACCOUNT',
+                    accountId: result,
+                    name,
+                    description,
+                });
+                dispatch(loadAccountBalance(result));
+                dispatch(gotoScreen('account', Immutable.fromJS({id: result})));
+            }).catch(catchError(dispatch));
     };
 }
 
 export function updateAccount(address, name, description) {
     return (dispatch, getState) => {
-        const chain = getState().network.getIn(['chain', 'name']);
-        return rpc.call('emerald_updateAccount', [{
-            name,
-            description,
-            address,
-        }, {chain}]).then((result) => {
-            dispatch({
-                type: 'ACCOUNT/UPDATE_ACCOUNT',
-                address,
-                name,
-                description,
+        const chain = getState().launcher.getIn(['chain', 'name']);
+        return api.emerald.updateAccount(address, name, description, chain)
+            .then((result) => {
+                dispatch({
+                    type: 'ACCOUNT/UPDATE_ACCOUNT',
+                    address,
+                    name,
+                    description,
+                });
             });
-        });
     };
 }
 
 function sendRawTransaction(signed) {
-    return rpc.call('eth_sendRawTransaction', [signed]);
+    return api.geth.sendRawTransaction(signed);
 }
 
 function unwrap(list) {
@@ -125,8 +129,8 @@ function onTxSend(dispatch, sourceTx) {
 }
 
 
-function getNonce(addr) {
-    return rpc.call('eth_getTransactionCount', [addr, 'latest']);
+function getNonce(address) {
+    return api.geth.getTransactionCount(address);
 }
 
 function withNonce(tx) {
@@ -161,7 +165,7 @@ function verifySender(expected) {
 }
 
 function emeraldSign(txData, chain) {
-    return rpc.call('emerald_signTransaction', [txData, {chain}]);
+    return api.emerald.signTransaction(txData, chain);
 }
 
 export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value) {
@@ -173,9 +177,9 @@ export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value)
         gasPrice,
         value,
     };
-    originalTx.passphrase = originalTx.passphrase || ''; // for HW key
+    originalTx.passPhrase = originalTx.passPhrase || ''; // for HW key
     return (dispatch, getState) => {
-        const chain = getState().network.getIn(['chain', 'name']);
+        const chain = getState().launcher.getIn(['chain', 'name']);
         getNonce(accountId)
             .then(withNonce(originalTx))
             .then((tx) =>
@@ -199,8 +203,8 @@ export function createContract(accountId, passphrase, gas, gasPrice, data) {
         data,
     };
     return (dispatch, getState) => {
-        const chain = getState().network.getIn(['chain', 'name']);
-        rpc.call('emerald_signTransaction', [txData, {chain}])
+        const chain = getState().launcher.getIn(['chain', 'name']);
+        api.emerald.signTransaction(txData, { chain })
             .then(unwrap)
             .then(sendRawTransaction)
             .then(onTxSend(dispatch, accountId))
@@ -208,42 +212,48 @@ export function createContract(accountId, passphrase, gas, gasPrice, data) {
     };
 }
 
+function readWalletFile(wallet) {
+    return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.readAsText(wallet);
+        reader.onload = (event) => {
+            let data;
+            try {
+                data = JSON.parse(event.target.result);
+                data.filename = wallet.name;
+                resolve(data);
+            } catch (e) {
+                reject({error: e});
+            }
+        };
+    });
+}
+
 export function importWallet(wallet, name, description) {
     return (dispatch, getState) => {
-        const chain = getState().network.getIn(['chain', 'name']);
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsText(wallet);
-            reader.onload = (event) => {
-                let data;
-                try {
-                    data = JSON.parse(event.target.result);
-                    data.filename = wallet.name;
-                    data.name = name;
-                    data.description = description;
-                } catch (e) {
-                    reject({error: e});
-                }
-                return rpc.call('emerald_importAccount', [data, {chain}]).then((result) => {
-                    dispatch({
-                        type: 'ACCOUNT/IMPORT_WALLET',
-                        accountId: result,
-                    });
-                    // Reload accounts.
-                    if (isAddress(result) === undefined) {
-                        dispatch({
-                            type: 'ACCOUNT/ADD_ACCOUNT',
-                            accountId: result,
-                            name,
-                            description,
-                        });
-                        dispatch(loadAccountBalance(result));
-                        resolve(result);
-                    } else {
-                        reject({error: result});
-                    }
+        const chain = getState().launcher.getIn(['chain', 'name']);
+
+        return readWalletFile(wallet).then((data) => {
+            data.name = name;
+            data.description = description;
+            return api.emerald.importAccount(data, chain).then((result) => {
+                dispatch({
+                    type: 'ACCOUNT/IMPORT_WALLET',
+                    accountId: result,
                 });
-            };
+                // Reload accounts.
+                if (isAddress(result) === undefined) {
+                    dispatch({
+                        type: 'ACCOUNT/ADD_ACCOUNT',
+                        accountId: result,
+                        name,
+                        description,
+                    });
+                    dispatch(loadAccountBalance(result));
+                    return result;
+                }
+                throw new Error(result);
+            });
         });
     };
 }
@@ -265,7 +275,7 @@ function loadStoredTransactions() {
 
 export function loadPendingTransactions() {
     return (dispatch, getState) =>
-        rpc.call('eth_getBlockByNumber', ['pending', true])
+        api.geth.getBlockByNumber('pending', true)
             .then((result) => {
                 const addrs = getState().accounts.get('accounts')
                     .map((acc) => acc.get('id'));
@@ -298,7 +308,7 @@ export function loadPendingTransactions() {
 
 export function refreshTransaction(hash) {
     return (dispatch) =>
-        rpc.call('eth_getTransactionByHash', [hash]).then((result) => {
+        api.geth.getTransactionByHash(hash).then((result) => {
             if (!result) {
                 log.info(`No tx for hash ${hash}`);
                 dispatch({
@@ -311,7 +321,7 @@ export function refreshTransaction(hash) {
                     tx: result,
                 });
                 /** TODO: Check for input data **/
-                if ((result.creates !== undefined) && (address(result.creates) === undefined)) {
+                if ((result.creates !== undefined) && (isAddress(result.creates) === undefined)) {
                     dispatch({
                         type: 'CONTRACT/UPDATE_CONTRACT',
                         tx: result,
@@ -343,12 +353,12 @@ export function trackTx(tx) {
 
 export function getGasPrice() {
     return (dispatch) => {
-        rpc.call('eth_gasPrice', ['latest']).then((result) => {
+        api.geth.gasPrice().then((result) => {
             dispatch({
                 type: 'ACCOUNT/GAS_PRICE',
                 value: result,
             });
-        });
+        }).catch((error) => log.error(error));
     };
 }
 

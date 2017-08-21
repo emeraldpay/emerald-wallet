@@ -1,9 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import log from 'electron-log';
-import Networks from 'lib/networks';
 import { translate } from 'react-i18next';
-import { switchChain } from 'store/networkActions';
 import { gotoScreen } from 'store/screenActions';
 import './main.scss';
 import Screen from './screen';
@@ -41,9 +39,6 @@ const Main = connect(
         openContracts: () => {
             log.info('contracts');
             dispatch(gotoScreen('contracts'));
-        },
-        switchChain: (network) => {
-            dispatch(switchChain(network.get('name'), network.get('id')));
         },
     })
 )(Render);
