@@ -5,7 +5,7 @@ import {IconButton, FontIcon} from 'material-ui';
 import Status from './status/status';
 import Total from './total';
 import { gotoScreen } from '../../store/screenActions';
-import { LogoIcon, SettingsIcon } from '../../elements/icons';
+import { LogoIcon, SettingsIcon } from '../../elements/Icons';
 
 
 const Render = ({maxWidth = '1220px', openSettings}) => {

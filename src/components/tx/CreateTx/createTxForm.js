@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Field, reduxForm } from 'redux-form';
-import { SelectField, TextField, RadioButtonGroup } from 'redux-form-material-ui';
+import { RadioButtonGroup } from 'redux-form-material-ui';
 import { RadioButton } from 'material-ui/RadioButton';
-import { MenuItem, FlatButton, IconButton } from 'material-ui';
+import { MenuItem, IconButton } from 'material-ui';
 import { IconMenu } from 'material-ui/IconMenu';
 import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
 import { formStyle } from 'lib/styles';
@@ -11,8 +11,10 @@ import { red200 } from 'material-ui/styles/colors';
 import { positive, number, required, address } from 'lib/validators';
 import IdentityIcon from '../../../elements/IdentityIcon';
 import { Form, Row, styles } from '../../../elements/Form';
+import TextField from '../../../elements/Form/TextField';
+import SelectField from '../../../elements/Form/SelectField';
 import AccountBalance from '../../accounts/AccountBalance';
-import SubmitButton from '../../../elements/SubmitButton/index'
+import Button from '../../../elements/Form/Button';
 
 
 const textEtc = {
@@ -73,7 +75,7 @@ const AddressWithIcon = ({ address }) => {
 
 const FromAddressField = ({accounts, onChangeAccount}) => {
     return (<Field name="from"
-                   style={formStyle.input}
+                   // style={formStyle.input}
                    onChange={(event, val) => onChangeAccount(accounts, val)}
                    component={SelectField}
                    underlineShow={false}
@@ -98,11 +100,11 @@ const CreateTxForm = (props) => {
     const { fields: { from, to }, accounts, balance, handleSubmit, invalid, pristine, submitting } = props;
     const { addressBook, handleSelect, tokens, token, isToken, onChangeToken, onChangeAccount } = props;
     const { fiatRate, value, fromAddr, onEntireBalance } = props;
-    const { error, cancel } = props;
+    const { error, cancel, goDashboard } = props;
     const { useLedger, ledgerConnected } = props;
 
     const sendDisabled = pristine || submitting || invalid || (useLedger && !ledgerConnected);
-    const sendButton = <SubmitButton
+    const sendButton = <Button primary
         label={`Send ${value && value.getEther(2).toString()} ETC`}
         disabled={ sendDisabled }
         onClick={ handleSubmit } />;
@@ -116,9 +118,8 @@ const CreateTxForm = (props) => {
 
     let passwordField = null;
     if (!useLedger) {
-        passwordField =
-
-            <div style={styles.formRow}>
+        passwordField = (
+            <Row>
                 <div style={styles.left}>
                     <div style={styles.fieldName}>
                         Password
@@ -126,19 +127,18 @@ const CreateTxForm = (props) => {
                 </div>
                 <div style={styles.right}>
                     <Field name="password"
-                           style={formStyle.input}
                            type="password"
-                           component={TextField}
+                           component={ TextField }
                            underlineShow={false}
                            fullWidth={true}
-                           validate={required}/>
+                           validate={ [required] }/>
                 </div>
-            </div>;
+            </Row>);
     }
 
 
     return (
-    <Form caption="Send Ether & Tokens" onCancel={cancel}>
+    <Form caption="Send Ether & Tokens" onCancel={ goDashboard }>
         <Row>
             <div style={styles.left}>
                 <div style={styles.fieldName}>
@@ -168,8 +168,7 @@ const CreateTxForm = (props) => {
             </div>
             <div style={styles.right}>
                 <Field name="to"
-                       style={formStyle.input}
-                       component={TextField}
+                       component={ TextField }
                        validate={[required, address]}
                        underlineShow={false}
                        fullWidth={true}
@@ -200,8 +199,7 @@ const CreateTxForm = (props) => {
             </div>
         </Row>
 
-
-        <div id="row" style={styles.formRow}>
+        <Row>
             <div style={styles.left}>
                 <div style={styles.fieldName}>
                     Amount
@@ -209,8 +207,7 @@ const CreateTxForm = (props) => {
             </div>
             <div style={{...styles.right, justifyContent: 'space-between'}}>
                 <Field name="value"
-                       style={formStyle.input}
-                       component={TextField}
+                       component={ TextField }
                        hintText="1.0000"
                        fullWidth={true}
                        underlineShow={false}
@@ -218,8 +215,8 @@ const CreateTxForm = (props) => {
                 />
 
                     <Field name="token"
-                           style={{...formStyle.input, marginLeft: '19px', maxWidth: '125px'}}
-                           component={SelectField}
+                           style={{ marginLeft: '19px', maxWidth: '125px' }}
+                           component={ SelectField }
                            onChange={onChangeToken}
                            value={token}
                            underlineShow={false}
@@ -245,10 +242,10 @@ const CreateTxForm = (props) => {
 
 
             </div>
-        </div>
+        </Row>
 
         <Row>
-            <div style={styles.left}></div>
+            <div style={styles.left}/>
             <div style={styles.right}>
                 <div style={textFiatLight}>
                     {value && `$${value.getFiat(fiatRate).toString()}` }
@@ -259,8 +256,7 @@ const CreateTxForm = (props) => {
             </div>
         </Row>
 
-
-        <div id="row" style={styles.formRow}>
+        <Row>
             <div style={styles.left}>
                 <div style={styles.fieldName}>
                     Fee
@@ -269,14 +265,13 @@ const CreateTxForm = (props) => {
 
             <div style={styles.right}>
                 <Field name="gasPrice"
-                       component={TextField}
+                       component={ TextField }
                        hintText="23000"
-                       style={formStyle.input}
                        underlineShow={false}
                        validate={[required, number, positive]}
                 />
             </div>
-        </div>
+        </Row>
 
         {/* <Row>
          <Col xs={12}>
@@ -289,27 +284,25 @@ const CreateTxForm = (props) => {
          </Col>
          </Row>*/}
 
-        <div id="row" style={styles.formRow}>
-
-            <div style={styles.left}></div>
+        <Row>
+            <div style={styles.left}/>
             <div style={{...styles.right}}>
                 {sendButton}
-                <FlatButton label="Cancel"
-                            onClick={cancel}
-                            style={{...formStyle.cancelButton, marginLeft: '10px'}}
-                            backgroundColor="#DDD" />
+                <div style={{ marginLeft: '10px' }}>
+                    <Button label="Cancel" onClick={ cancel } />
+                </div>
             </div>
-        </div>
+        </Row>
 
         <Row>
-            <div style={styles.left}></div>
+            <div style={styles.left}/>
             <div style={styles.right}>{sendMessage}</div>
         </Row>
 
         {error && (
-            <div id="row" style={styles.formRow}>
+            <Row>
                     <span style={{ color: red200 }}><strong>{error}</strong></span>
-            </div>
+            </Row>
         )}
 
     </Form>

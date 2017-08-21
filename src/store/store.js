@@ -9,7 +9,7 @@ import { loadAccountsList, refreshTrackedTransactions, loadPendingTransactions,
 // import { loadAddressBook } from './addressActions';
 // import { loadTokenList } from './tokenActions';
 // import { loadContractList } from './contractActions';
-import { loadSyncing, loadHeight, loadPeerCount } from './networkActions';
+import { loadSyncing, loadHeight, loadPeerCount, loadNetworkVersion } from './networkActions'
 import { gotoScreen } from './screenActions';
 import { readConfig, listenElectron, connecting, loadClientVersion } from './launcherActions';
 import { watchConnection as waitLedger, setWatch, setBaseHD } from './ledgerActions';
@@ -33,8 +33,8 @@ export const intervalRates = {
     // Continue is repeating timeouts.
     continueLoadSyncRate: minute, // prod: second
     continueLoadHeightRate: 5 * minute, // prod: 5 * second
-    continueRefreshAllTxRate: 20 * second, // prod: 2 * second
-    continueRefreshLongRate: 900000, // 5 o'clock somewhere.
+    continueRefreshAllTxRate: 30 * second, // prod: 2 * second
+    continueRefreshLongRate: 900 * second, // 5 o'clock somewhere.
 };
 
 const stateTransformer = (state) => ({
@@ -74,12 +74,13 @@ export const store = createStore(
 );
 
 function refreshAll() {
+    //store.dispatch(loadNetworkVersion());
     store.dispatch(refreshTrackedTransactions());
     store.dispatch(loadHeight());
     store.dispatch(loadAccountsList());
 
     const state = store.getState();
-    if (state.launcher.getIn(['chain', 'rpc']) === 'local') {
+    if (state.launcher.getIn(['geth', 'type']) === 'local') {
         store.dispatch(loadPeerCount());
     }
     setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
@@ -99,14 +100,15 @@ export function startSync() {
 
     const state = store.getState();
 
-    if (state.network.getIn(['chain', 'name']) === 'mainnet') {
+    const chain = state.launcher.getIn(['chain', 'name']);
+    if (chain === 'mainnet') {
         store.dispatch(setBaseHD("44'/61'/0'/0"));
-    } else if (state.network.getIn(['chain', 'name']) === 'morden') {
+    } else if (chain === 'morden') {
         // FIXME ledger throws "Invalid status 6804" for 44'/62'/0'/0
         store.dispatch(setBaseHD("44'/61'/1'/0"));
     }
 
-    if (state.launcher.getIn(['chain', 'rpc']) !== 'remote-auto') {
+    if (state.launcher.getIn(['geth', 'type']) !== 'remote') {
         // check for syncing
         setTimeout(() => store.dispatch(loadSyncing()), intervalRates.second); // prod: intervalRates.second
         // double check for syncing
@@ -114,7 +116,6 @@ export function startSync() {
     }
     setTimeout(() => store.dispatch(loadPendingTransactions()), intervalRates.refreshAllTxRate);
     refreshAll();
-    setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
     setTimeout(refreshLong, 3 * intervalRates.second);
     store.dispatch(connecting(false));
 }
@@ -124,7 +125,11 @@ export function stopSync() {
 }
 
 export function start() {
-    store.dispatch(readConfig());
+    try {
+        store.dispatch(readConfig());
+    } catch (e) {
+        log.error(e);
+    }
     store.dispatch(listenElectron());
     store.dispatch(gotoScreen('welcome'));
 }
@@ -133,9 +138,8 @@ export function waitForServices() {
     const unsubscribe = store.subscribe(() => {
         const state = store.getState();
         if (state.launcher.get('terms') === 'v1'
-            && state.launcher.getIn(['status', 'geth']) === 'ready'
-            && state.launcher.getIn(['status', 'connector']) === 'ready'
-            && state.network.getIn(['chain', 'name']) !== null) {
+            && state.launcher.getIn(['geth', 'status']) === 'ready'
+            && state.launcher.getIn(['connector', 'status']) === 'ready') {
             unsubscribe();
             log.info('All services are ready to use by Wallet');
             startSync();
@@ -156,8 +160,8 @@ export function waitForServicesRestart() {
     store.dispatch(connecting(true));
     const unsubscribe = store.subscribe(() => {
         const state = store.getState();
-        if (state.launcher.getIn(['status', 'geth']) !== 'ready'
-            || state.launcher.getIn(['status', 'connector']) !== 'ready') {
+        if (state.launcher.getIn(['geth', 'status']) !== 'ready'
+            || state.launcher.getIn(['connector', 'status']) !== 'ready') {
             unsubscribe();
             waitForServices();
         }

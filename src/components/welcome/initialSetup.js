@@ -17,10 +17,7 @@ const Render = ({ rpcType, terms }) => {
     } else if (rpcType === 'none') {
         activeStep = 1;
         step = <ChooseRpc/>;
-    } else if (rpcType === 'remote-auto' || rpcType === 'remote') {
-        activeStep = 2;
-        step = <OpenWallet/>;
-    } else if (rpcType === 'local') {
+    } else {
         activeStep = 2;
         step = <OpenWallet/>;
     }
@@ -48,7 +45,7 @@ const Render = ({ rpcType, terms }) => {
             <Row>
                 <Col xs={12}>
                     <Stepper activeStep={activeStep}>
-                        {steps.map((step, idx) => step)}
+                        { steps.map((s, idx) => s) }
                     </Stepper>
                 </Col>
             </Row>
@@ -69,8 +66,8 @@ Render.propTypes = {
 
 const InitialSetup = connect(
     (state, ownProps) => ({
-        rpcType: state.launcher.getIn(['chain', 'rpc']) || 'none',
-        terms: state.launcher.get('terms')
+        rpcType: state.launcher.getIn(['geth', 'type']) || 'none',
+        terms: state.launcher.get('terms'),
     }),
     (dispatch, ownProps) => ({
     })

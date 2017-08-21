@@ -90,13 +90,13 @@ const Total = connect(
             fiat.rate.localized = +fiat.rate.usd; // fiat.pair.usd;
         }
 
-        const network = (state.network.get('chain').get('name') || '').toLowerCase();
+        const chain = (state.launcher.get('chain').get('name') || '').toLowerCase();
 
         return {
             total: +totalEther,
             fiat,
             currentLocaleCurrency,
-            showFiat: (network === 'mainnet'),
+            showFiat: (chain === 'mainnet'),
         };
     },
     (dispatch, ownProps) => ({})

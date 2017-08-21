@@ -106,8 +106,8 @@ class AccountRender extends React.Component {
                             <div style={styles.right}>
                                 <div>
                                     <div style={{display: 'flex', alignItems: 'center'}}>
-                                        <AccountPopup textColor='white' backgroundColor='#47B04B' account={account} />
-                                        <AccountSendButton textColor='white' backgroundColor='#47B04B' account={account} />
+                                        <AccountPopup primary account={account} />
+                                        <AccountSendButton style={{marginLeft: '10px'}} primary account={account} />
                                         <SecondaryMenu account={account} />
                                     </div>
                                 </div>

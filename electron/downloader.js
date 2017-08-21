@@ -2,93 +2,77 @@ const { https } = require('follow-redirects');
 const fs = require('fs');
 const os = require('os');
 const path = require('path');
-const log = require('electron-log');
 const DecompressZip = require('decompress-zip');
+
+const log = require('./logger');
 const { Verify } = require('./verify');
+const { deleteIfExists, checkExists } = require('./utils');
+
 require('es6-promise').polyfill();
 
 const DefaultGeth = {
-    format: "v1",
-    channel: "stable",
+    format: 'v1',
+    channel: 'stable',
     app: {
-        version: "3.5.0"
+        version: '3.5.0',
     },
     download: [
         {
-            platform: "osx",
+            platform: 'osx',
             binaries: [
                 {
-                    type: "https",
-                    pack: "zip",
-                    url: "https://github.com/ethereumproject/go-ethereum/releases/download/v3.5.0/geth-classic-osx-v3.5.0.zip",
-                }
+                    type: 'https',
+                    pack: 'zip',
+                    url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v3.5.0/geth-classic-osx-v3.5.0.zip',
+                },
             ],
             signatures: [
                 {
-                    type: "pgp",
-                    url: "https://github.com/ethereumproject/go-ethereum/releases/download/v3.5.0/geth-classic-osx-v3.5.0.zip.asc"
-                }
-            ]
+                    type: 'pgp',
+                    url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v3.5.0/geth-classic-osx-v3.5.0.zip.asc',
+                },
+            ],
         },
         {
-            platform: "windows",
+            platform: 'windows',
             binaries: [
                 {
-                    type: "https",
-                    pack: "zip",
-                    url: "https://github.com/ethereumproject/go-ethereum/releases/download/v3.5.0/geth-classic-win64-v3.5.0.zip",
-                }
+                    type: 'https',
+                    pack: 'zip',
+                    url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v3.5.0/geth-classic-win64-v3.5.0.zip',
+                },
             ],
             signatures: [
                 {
-                    type: "pgp",
-                    url: "https://github.com/ethereumproject/go-ethereum/releases/download/v3.5.0/geth-classic-win64-v3.5.0.zip.asc"
-                }
-            ]
+                    type: 'pgp',
+                    url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v3.5.0/geth-classic-win64-v3.5.0.zip.asc',
+                },
+            ],
         },
         {
-            platform: "linux",
+            platform: 'linux',
             binaries: [
                 {
-                    type: "https",
-                    pack: "zip",
-                    url: "https://github.com/ethereumproject/go-ethereum/releases/download/v3.5.0/geth-classic-linux-v3.5.0.zip",
-                }
+                    type: 'https',
+                    pack: 'zip',
+                    url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v3.5.0/geth-classic-linux-v3.5.0.zip',
+                },
             ],
             signatures: [
                 {
-                    type: "pgp",
-                    url: "https://github.com/ethereumproject/go-ethereum/releases/download/v3.5.0/geth-classic-linux-v3.5.0.zip.asc"
-                }
-            ]
-        }
-    ]
+                    type: 'pgp',
+                    url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v3.5.0/geth-classic-linux-v3.5.0.zip.asc',
+                },
+            ],
+        },
+    ],
 };
 
 const platformMapping = {
     darwin: 'osx',
     linux: 'linux',
-    win32: 'windows'
+    win32: 'windows',
 };
-
-function deleteIfExists(path) {
-    return new Promise((resolve, reject) => {
-        fs.access(path, fs.constants.W_OK, (err) => {
-            if (err) {
-                resolve('not_exists')
-            } else {
-                fs.unlink(path, (err2) => {
-                    if (err2) {
-                        log.error('Failed to delete', path, err);
-                        reject(err2)
-                    } else {
-                        resolve('deleted');
-                    }
-                })
-            }
-        });
-    });
-}
 
 class Downloader {
 
@@ -102,43 +86,24 @@ class Downloader {
 
     downloadIfNotExists() {
         return new Promise((resolve, reject) => {
-            this.check_exists().then((is_exists) => {
-                if (is_exists) {
+            const target = path.join(this.basedir, this.name);
+            checkExists(target).then((isExists) => {
+                if (isExists) {
                     log.debug(`${this.name} exists`);
                     resolve('exists');
                 } else {
-                    this.notify.info("Downloading latest Geth");
+                    this.notify.info('Downloading latest Geth');
                     this.backup()
                         .then(this.downloadArchive.bind(this))
                         .then(this.verifyArchive.bind(this))
                         .then(this.prepareBin.bind(this))
                         .then(this.unpack.bind(this))
                         .then(this.cleanup.bind(this))
-                        .then(resolve).catch(reject)
+                        .then(resolve)
+                        .catch(reject);
                 }
             });
         });
-    }
-
-    check_exists() {
-        let target = path.join(this.basedir, this.name);
-        return new Promise((resolve) => {
-            fs.access(target, fs.constants.R_OK | fs.constants.X_OK, (err) => {
-                if (err) {
-                    resolve(false)
-                } else {
-                    fs.stat(target, (err, stat) => {
-                        if (err) {
-                            resolve(false)
-                        } else if (!stat.isFile() || stat.size === 0) {
-                            resolve(false)
-                        } else {
-                            resolve(true)
-                        }
-                    })
-                }
-            });
-        })
     }
 
     getPlatform() {
@@ -154,13 +119,13 @@ class Downloader {
             const tmpDir = os.tmpdir();
             fs.mkdtemp(path.join(tmpDir, `download-${this.name}-`), (err, tmpfolder) => {
                 if (err) {
-                    log.error("Unable to create temp dir", err);
+                    log.error('Unable to create temp dir', err);
                     reject(err);
-                    return
+                    return;
                 }
                 this.tmp = tmpfolder;
                 log.info(`Download ${this.name} from ${targetUrl} to ${tmpfolder}/`);
-                let f = fs.createWriteStream(path.join(tmpfolder, 'dest.zip'));
+                const f = fs.createWriteStream(path.join(tmpfolder, 'dest.zip'));
                 https.get(targetUrl, (response) => {
                     response.pipe(f);
                     response.on('end', () => {
@@ -171,7 +136,7 @@ class Downloader {
                     reject(err);
                 });
                 this.signature = this.downloadPgp(target);
-            })
+            });
         });
     }
 
@@ -179,10 +144,10 @@ class Downloader {
         const pgp = target.signatures.find((x) => x.type === 'pgp');
         const url = pgp.url;
         return new Promise((resolve, reject) => {
-            let buf = "";
+            let buf = '';
             https.get(url, (response) => {
                 response.on('data', (chunk) => {
-                    buf = buf + chunk.toString();
+                    buf += chunk.toString();
                 });
                 response.on('end', () => {
                     resolve(buf);
@@ -190,7 +155,7 @@ class Downloader {
             }).on('error', (err) => {
                 reject(err);
             });
-        })
+        });
     }
 
     verifyArchive(zip) {
@@ -198,7 +163,7 @@ class Downloader {
         v.init();
         return this.signature.then((signature) =>
             v.verify(zip, signature)
-        )
+        );
     }
 
     prepareBin(x) {
@@ -207,16 +172,16 @@ class Downloader {
                 if (err) {
                     fs.mkdir(this.basedir, 0o777, (err) => {
                         if (err) {
-                            reject(err)
+                            reject(err);
                         } else {
-                            resolve(x)
+                            resolve(x);
                         }
-                    })
+                    });
                 } else {
-                    resolve(x)
+                    resolve(x);
                 }
-            })
-        })
+            });
+        });
     }
 
     unpack(zip) {
@@ -251,51 +216,51 @@ class Downloader {
 
     backup() {
         return new Promise((resolve, reject) => {
-            let target = path.join(this.basedir, this.name);
+            const target = path.join(this.basedir, this.name);
             fs.access(target, fs.constants.F_OK, (err) => {
                 if (!err) {
-                    let bak = path.join(this.basedir,`${this.name}.bak`);
+                    const bak = path.join(this.basedir, `${this.name}.bak`);
                     deleteIfExists(bak).then(() => {
                         log.debug(`Backup ${target} to ${bak}`);
                         fs.rename(target, bak, () => {
                             resolve(true);
                         });
-                    }).catch(reject)
+                    }).catch(reject);
                 } else {
-                    resolve(false)
+                    resolve(false);
                 }
-            })
-        })
+            });
+        });
     }
 
     cleanup() {
         return new Promise((resolve, reject) => {
             if (!this.tmp) {
                 resolve('clean');
-                return
+                return;
             }
             deleteIfExists(path.join(this.tmp, 'dest.zip')).then(() => {
                 fs.rmdir(this.tmp, (err) => {
                     if (err) {
-                        log.error("Cleanup error", err);
+                        log.error('Cleanup error', err);
                     }
                     resolve('cleaned');
                 });
             }).catch((err) => {
-                log.error('Cleanup failed', err)
-            })
-        })
+                log.error('Cleanup failed', err);
+            });
+        });
     }
 
 
 }
 
-const newGethDownloader = function(notify, dir) {
+const newGethDownloader = function (notify, dir) {
     const suffix = os.platform() === 'win32' ? '.exe' : '';
-    return new Downloader(DefaultGeth, "geth" + suffix, notify, dir);
+    return new Downloader(DefaultGeth, `geth${suffix}`, notify, dir);
 };
 
 module.exports = {
-    newGethDownloader: newGethDownloader,
-    Downloader: Downloader
+    newGethDownloader,
+    Downloader,
 };

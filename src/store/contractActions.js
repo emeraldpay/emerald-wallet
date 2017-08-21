@@ -1,4 +1,4 @@
-import { rpc } from 'lib/rpc';
+import { api } from 'lib/rpc/api';
 import log from 'electron-log';
 import { functionToData, dataToParams, toNumber } from 'lib/convert';
 import { loadAccountBalance } from './accountActions';

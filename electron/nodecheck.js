@@ -1,19 +1,21 @@
 require('es6-promise').polyfill();
 require('isomorphic-fetch');
-const log = require('electron-log');
+
+const log = require('./logger');
 
 const DefaultStatus = {
     url: null,
     exists: false,
     chain: null,
-    chainId: null
+    chainId: null,
 };
 
 function rpc(url, method, params) {
     const data = {
         jsonrpc: '2.0',
         id: 1,
-        method, params,
+        method,
+        params,
     };
     return new Promise((resolve, reject) =>
         fetch(url, {
@@ -22,24 +24,26 @@ function rpc(url, method, params) {
             body: JSON.stringify(data),
         }).then((response) => {
             try {
-                response.json().then((json) => resolve(json.result)).catch(reject);
+                response.json()
+                    .then((json) => resolve(json.result))
+                    .catch(reject);
             } catch (e) {
-                log.error("Invalid response", response, e);
-                reject(e)
+                log.error('Invalid response', response, e);
+                reject(e);
             }
         }).catch(reject)
-    )
+    );
 }
 
 function exists(status) {
     return new Promise((resolve, reject) => {
-        rpc(status.url, "web3_clientVersion", []).then((result) => {
+        rpc(status.url, 'web3_clientVersion', []).then((result) => {
             log.debug(`Found an RPC at ${status.url}`);
-            resolve(Object.assign({}, status, {exists: true}))
-        }).catch(() => {
-            log.debug(`Can't find RPC at ${status.url}`);
-            reject(`Can't find RPC at ${status.url}`)
-        })
+            resolve(Object.assign({}, status, { exists: true }));
+        }).catch((error) => {
+            log.debug(`Can't find RPC at ${status.url} : ${error}`);
+            reject(`Can't find RPC at ${status.url}`);
+        });
     });
 }
 
@@ -47,45 +51,44 @@ function getChain(status) {
     return new Promise((resolve, reject) => {
         if (!status.exists) {
             resolve(status);
-            return
+            return;
         }
-        rpc(status.url, "eth_getBlockByNumber", ["0x0", false]).then((result) => {
-            if (result.hash === "0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3") {
-                resolve(Object.assign({}, status, {chain: "mainnet", chainId: 61}))
-            } else if(result.hash === '0x0cd786a2425d16f152c658316c423e6ce1181e15c3295826d7c9904cba9ce303') {
-                resolve(Object.assign({}, status, {chain: "morden", chainId: 62}))
+        rpc(status.url, 'eth_getBlockByNumber', ['0x0', false]).then((result) => {
+            if (result.hash === '0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3') {
+                resolve(Object.assign({}, status, {chain: 'mainnet', chainId: 61}));
+            } else if (result.hash === '0x0cd786a2425d16f152c658316c423e6ce1181e15c3295826d7c9904cba9ce303') {
+                resolve(Object.assign({}, status, {chain: 'morden', chainId: 62}));
             } else {
-                reject(new Error(`Unknown chain ${result.hash}`))
+                reject(new Error(`Unknown chain ${result.hash}`));
             }
         }).catch(() => {
-            resolve(Object.assign({}, status, {exists: false}))
-        })
+            resolve(Object.assign({}, status, {exists: false}));
+        });
     });
 }
 
-const check = function(url) {
-    let status = Object.assign({}, DefaultStatus, {url: url});
-    return exists(status)
-        .then(getChain)
+const check = function (url) {
+    const status = Object.assign({}, DefaultStatus, {url});
+    return exists(status).then(getChain);
 };
 
-const waitRpc = function(url) {
-    let status = Object.assign({}, DefaultStatus, {url: url});
+const waitRpc = function (url) {
+    const status = Object.assign({}, DefaultStatus, {url});
     return new Promise((resolve, reject) => {
-        let retry = (n) => {
+        const retry = (n) => {
             exists(status).then(resolve).catch(() => {
                 if (n > 0) {
                     setTimeout(() => retry(n - 1), 1000);
                 } else {
-                    reject(new Error("Not Connected"))
+                    reject(new Error('Not Connected'));
                 }
-            })
+            });
         };
         retry(30);
     });
 };
 
 module.exports = {
-    check: check,
-    waitRpc: waitRpc
+    check,
+    waitRpc,
 };

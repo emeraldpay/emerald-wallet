@@ -1,15 +1,15 @@
 import log from 'electron-log';
 import { ipcRenderer } from 'electron';
-import { rpc } from '../lib/rpc';
+import { api } from 'lib/rpc/api';
+
 import { toNumber } from '../lib/convert';
 import { waitForServices, intervalRates } from '../store/store';
-
 
 let watchingHeight = false;
 
 export function loadHeight(watch) {
     return (dispatch) =>
-        rpc.call('eth_blockNumber', []).then((result) => {
+        api.geth.call('eth_blockNumber', []).then((result) => {
             dispatch({
                 type: 'NETWORK/BLOCK',
                 height: result,
@@ -23,20 +23,22 @@ export function loadHeight(watch) {
 
 export function loadNetworkVersion() {
     return (dispatch, getState) =>
-        rpc.call('net_version', []).then((result) => {
-            if (getState().network.get('chain').get('id') !== result) {
-                dispatch({
-                    type: 'NETWORK/SWITCH_CHAIN',
-                    id: result,
-                    rpc: getState().launcher.getIn(['chain', 'rpc']),
-                });
+        api.geth.netVersion().then((result) => {
+            dispatch({
+                type: 'NETWORK/SWITCH_CHAIN',
+                id: `${parseInt(result, 10) + 60}`,
+            });
+
+            if (getState().launcher.get('chain').get('id') !== result) {
+                // TODO: our full node on not expected chain - should we alarm ?
+
             }
         });
 }
 
 export function loadPeerCount() {
     return (dispatch, getState) =>
-        rpc.call('net_peerCount', []).then((result) => {
+        api.geth.netPeerCount().then((result) => {
             if (getState().network.get('peerCount') !== toNumber(result)) {
                 dispatch({
                     type: 'NETWORK/PEER_COUNT',
@@ -48,11 +50,14 @@ export function loadPeerCount() {
 
 export function loadSyncing() {
     return (dispatch, getState) => {
-        const repeat = getState().launcher.getIn(['chain', 'rpc']) === 'local';
-        rpc.call('eth_syncing', []).then((result) => {
+        const repeat = getState().launcher.getIn(['geth', 'type']) === 'local';
+        api.geth.call('eth_syncing', []).then((result) => {
             const syncing = getState().network.get('sync').get('syncing');
             if (typeof result === 'object') {
-                if (!syncing) dispatch(loadNetworkVersion());
+                // TODO: hz, remove it ?
+                // if (!syncing) {
+                //     dispatch(loadNetworkVersion());
+                // }
                 dispatch({
                     type: 'NETWORK/SYNCING',
                     syncing: true,
@@ -72,9 +77,3 @@ export function loadSyncing() {
     };
 }
 
-export function switchChain(network, id) {
-    return (dispatch) => {
-        ipcRenderer.sendSync('switch-chain', network, id);
-        waitForServices();
-    };
-}

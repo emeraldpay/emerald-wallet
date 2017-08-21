@@ -12,6 +12,7 @@ ifdef::env-github,env-browser[:outfilesuffix: .adoc]
 ifdef::badges[]
 image:https://travis-ci.org/ethereumproject/emerald-wallet.png?branch=master[Travis CI Build Status, link=https://travis-ci.org/ethereumproject/emerald-wallet]
 image:https://img.shields.io/github/license/ethereumproject/emerald-wallet.svg?maxAge=2592000["License", link="https://github.com/ethereumproject/emerald-wallet/blob/master/LICENSE"]
+image:https://ci.appveyor.com/api/projects/status/github/splix/emerald-wallet?branch=master&svg=true[AppVeyor Build Status, link=https://ci.appveyor.com/project/splix/emerald-wallet/]
 endif::[]
 
 
@@ -114,8 +115,10 @@ both OSX and Linux at the same time.
 ### Troubleshooting
 Some preliminary things to try in case you run into issues:
 
-- `rm -rf ~/Library/Application Support/EmeraldWallet` to clear out any persisted
-  settings or userdata from previous trials.
+- Clear out any persisted settings or userdata from previous trials
+ * OSX: `~/Library/Application Support/EmeraldWallet`
+ * Linux: `~/.config/EmeraldWallet`
+ * Windows: `%APPDATA%\EmeraldWallet`
 
 
 

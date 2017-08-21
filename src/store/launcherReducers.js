@@ -1,4 +1,5 @@
 import Immutable from 'immutable';
+import { api } from '../lib/rpc/api';
 
 const initial = Immutable.fromJS({
     firstRun: false,
@@ -8,16 +9,22 @@ const initial = Immutable.fromJS({
     terms: 'none',
     chain: {
         client: null,
-        rpc: 'notset',
-        // rpc: "remote", url: "http://api.gastracker.io/web3"
     },
+
+    geth: {
+        url: '',
+        status: 'not ready',
+        type: 'none',
+    },
+
+    connector: {
+        url: '',
+        status: 'not ready',
+    },
+
     message: {
         text: 'Starting...',
         level: 2,
-    },
-    status: {
-        geth: 'not ready',
-        connector: 'not ready',
     },
 });
 
@@ -42,12 +49,23 @@ function setStoredFirstRun() {
 function onConfig(state, action) {
     if (action.type === 'LAUNCHER/CONFIG') {
         setTimeout(setStoredFirstRun, 10000); // HACK
-        state = state.set('launcherType', action.launcherType)
-            .set('firstRun', getStoredFirstRun()) // action.firstRu
+
+        state = state
+            .set('launcherType', action.launcherType)
+            .set('firstRun', getStoredFirstRun()) // action.firstRun
+            .update('geth', (geth) => geth.merge(Immutable.fromJS(action.config.geth || {})))
             .update('chain', (chain) => chain.merge(Immutable.fromJS(action.config.chain || {})));
-        if (action.config.settings) {
-            state = state.set('terms', action.config.settings.terms);
+
+        if (action.config.terms) {
+            state = state.set('terms', action.config.terms);
         }
+
+        if (action.config.chain) {
+            state = state.setIn(['chain', 'client'], action.config.chain.client);
+        }
+
+        //TODO: remove this hack
+        api.updateGethUrl(state.getIn(['geth', 'url']));
         return state;
     }
     return state;
@@ -55,27 +73,27 @@ function onConfig(state, action) {
 
 function onMessage(state, action) {
     if (action.type === 'LAUNCHER/MESSAGE') {
-        return state.update('message', (m) => {
-            m.set('text', action.msg).set('level', action.level);
-        });
+        return state.set('message', Immutable.fromJS({
+            text: action.msg,
+            level: action.level,
+        }));
     }
     return state;
 }
 
 function onServiceStatus(state, action) {
     if (action.type === 'LAUNCHER/SERVICE_STATUS') {
-        return state.setIn(['status', action.service], action.mode);
+        return state.setIn([action.service, 'status'], action.mode.status);
     }
     return state;
 }
 
 function onChain(state, action) {
-    if (action.type === 'LAUNCHER/CHAIN') {
-        return state.update('chain', (chain) =>
-            chain.set('rpc', action.rpc)
-                .set('url', action.url)
-        );
-    }
+    // if (action.type === 'LAUNCHER/CHAIN') {
+    //     return state.update('chain', (chain) =>
+    //         chain.set('name', action.chain).set('id', action.chainId)
+    //     );
+    // }
     return state;
 }
 

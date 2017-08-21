@@ -1,31 +1,14 @@
 const spawn = require('child_process').spawn;
 const fs = require('fs');
 const os = require('os');
-const log = require('electron-log');
 const path = require('path');
+
+const { checkExists } = require('./utils');
+const log = require('./logger');
 require('es6-promise').polyfill();
 
 const suffix = os.platform() === 'win32' ? '.exe' : '';
 
-const checkExists = function (target) {
-    return new Promise((resolve) => {
-        fs.access(target, fs.constants.R_OK | fs.constants.X_OK, (err) => {
-            if (err) {
-                resolve(false);
-            } else {
-                fs.stat(target, (e, stat) => {
-                    if (e) {
-                        resolve(false);
-                    } else if (!stat.isFile() || stat.size === 0) {
-                        resolve(false);
-                    } else {
-                        resolve(true);
-                    }
-                });
-            }
-        });
-    });
-};
 
 class LocalGeth {
 
@@ -38,7 +21,7 @@ class LocalGeth {
 
     launch() {
         return new Promise((resolve, reject) => {
-            log.info(`Starting Geth... [network: ${this.network}, port: ${this.rpcPort}]`);
+            log.info(`Starting Geth... [bin: ${this.bin} network: ${this.network}, port: ${this.rpcPort}]`);
             const bin = path.join(this.bin, `geth${suffix}`);
             fs.access(bin, fs.constants.X_OK, (err) => {
                 if (err) {
@@ -55,7 +38,11 @@ class LocalGeth {
                         '--fast', // (auto-disables when at or upon reaching current bc height)
                         '--log-dir', logTarget,
                     ];
-                    this.proc = spawn(bin, options);
+
+                    const env = Object.assign({}, process.env, {PATH: process.env.PATH + ':.'});
+
+                    log.debug(`Geth options: [${options}]`);
+                    this.proc = spawn(bin, options, { env });
                     resolve(this.proc);
                 }
             });
@@ -90,7 +77,7 @@ class LocalGeth {
     }
 
     getUrl() {
-        return `http://127.0.0.1:${this.rpcPort}`
+        return `http://127.0.0.1:${this.rpcPort}`;
     }
 }
 
@@ -115,9 +102,10 @@ class NoneGeth {
 
 class LocalConnector {
 
+    // TODO: assert params
     constructor(bin, chain) {
         this.bin = bin;
-        this.chain = chain || 'mainnet';
+        this.chain = chain;
     }
 
     // It would be nice to refactor so we can reuse functions
@@ -179,8 +167,9 @@ class LocalConnector {
                 } else {
                     const options = [
                         'server',
-                        '--chain', this.chain
+                        '--chain', this.chain.name,
                     ];
+                    log.debug(`Emerald bin: ${bin}, args: ${options}`);
                     this.proc = spawn(bin, options);
                     resolve(this.proc);
                 }
@@ -190,7 +179,7 @@ class LocalConnector {
 
     launch() {
         return new Promise((resolve, reject) => {
-            log.info(`Starting Emerald Connector... [chain: ${this.chain}]`);
+            log.info(`Starting Emerald Connector... [chain: ${JSON.stringify(this.chain)}]`);
             this.migrateIfNotExists()
                     .then(this.start.bind(this))
                     .then(resolve)
@@ -219,9 +208,8 @@ class LocalConnector {
 }
 
 module.exports = {
-    checkExists: checkExists,
-    LocalConnector: LocalConnector,
-    NoneGeth: NoneGeth,
-    RemoteGeth: RemoteGeth,
-    LocalGeth: LocalGeth
+    LocalConnector,
+    NoneGeth,
+    RemoteGeth,
+    LocalGeth,
 };

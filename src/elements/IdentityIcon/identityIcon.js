@@ -11,6 +11,7 @@ const IdentityIcon = ({id, expanded, size}) => {
     const mainStyle = {
         height: `${iconSize}px`,
         width: `${iconSize}px`,
+        minWidth: `${iconSize}px`,
         background: `url(${icon})`,
         borderRadius: '50%',
         position: 'relative',

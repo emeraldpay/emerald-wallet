@@ -30,7 +30,7 @@ const Render = ({ open, transaction, handleClose }) => {
     )
 };
 
-const Error = connect(
+export default connect(
     (state, ownProps) => ({
         open: state.screen.get('dialog') === 'sign-transaction',
         transaction: state.screen.get('dialogItem')
@@ -41,4 +41,3 @@ const Error = connect(
     })
 )(Render);
 
-export default Error;

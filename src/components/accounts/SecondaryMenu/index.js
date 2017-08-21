@@ -5,22 +5,22 @@ import MoreHorizIcon from 'material-ui/svg-icons/navigation/more-horiz';
 import FontIcon from 'material-ui/FontIcon';
 import log from 'electron-log';
 
-import { rpc } from 'lib/rpc';
+import { api } from 'lib/rpc/api';
 import { gotoScreen } from 'store/screenActions';
 import Wallet from 'lib/wallet';
 
-const SecondaryMenu = ({ account, onPrint, onExport }) => {
+const SecondaryMenu = ({ account, onPrint, onExport, chain }) => {
     return (
         <IconMenu iconButtonElement={<IconButton><MoreHorizIcon /></IconButton>}>
             <MenuItem
                 leftIcon={<FontIcon className="fa fa-hdd-o"/>}
                 primaryText='EXPORT'
-                onTouchTap={onExport}/>
+                onTouchTap={onExport(chain)}/>
 
             <MenuItem
                 leftIcon={<FontIcon className="fa fa-print"/>}
                 primaryText='PRINT'
-                onTouchTap={onPrint}/>
+                onTouchTap={onPrint(chain)}/>
 
         </IconMenu>
     );
@@ -42,24 +42,19 @@ const saveAs = (uri, filename) => {
 
 export default connect(
     (state, ownProps) => ({
-        chain: state.network.getIn(['chain', 'name']),
+        chain: state.launcher.getIn(['chain', 'name']),
     }),
     (dispatch, ownProps) => ({
-        onPrint: () => {
+        onPrint: (chain) => () => {
             const address = ownProps.account.get('id');
-            const chain = ownProps.chain;
 
-            rpc.call('emerald_exportAccount', [{address}, {chain}]).then((result) => {
-                const wallet = Wallet.fromV3(result, '12345678');
-                const privKey = wallet.getPrivateKeyString();
-                dispatch(gotoScreen('paper-wallet', { address, privKey }));
-            });
+            dispatch(gotoScreen('export-paper-wallet', address));
+
         },
-        onExport: () => {
+        onExport: (chain) => () => {
             const address = ownProps.account.get('id');
-            const chain = ownProps.chain;
 
-            rpc.call('emerald_exportAccount', [{address}, {chain}]).then((result) => {
+            api.emerald.exportAccount(address, chain).then((result) => {
                 const fileData = {
                     filename: `${address}.json`,
                     mime: 'text/plain',
