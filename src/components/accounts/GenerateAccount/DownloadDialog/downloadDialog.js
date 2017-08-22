@@ -7,11 +7,10 @@ import { Warning, WarningHeader, WarningText } from 'elements/Warning';
 import styles from './downloadDialog.scss';
 
 const DownloadDialog = (props) => {
-
-    const { onDownload, onBack } = props;
+    const { accountId, onDownload, onBack } = props;
     return (
 
-        <Form caption="Generate New Wallet" onCancel={ onBack }>
+        <Form caption="Generate New Account" onCancel={ onBack }>
 
             <Row>
                 <div style={formStyles.left}/>
@@ -24,7 +23,7 @@ const DownloadDialog = (props) => {
                             And save the copy in a safe place (not on this computer).
                         </div>
                         <div className={ styles.description }>
-                            You need a Wallet File to make all operations wallet. When you want to view your balance or send something from your Ethereum Wallet, you will need this file.  You will also need the strong password you created earlier.
+                            You need a Wallet File to make all operations with account. When you want to view your balance or send something from your Ethereum Wallet, you will need this file.  You will also need the strong password you created earlier.
                         </div>
                     </div>
                 </div>

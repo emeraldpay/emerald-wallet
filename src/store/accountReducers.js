@@ -1,5 +1,4 @@
 import Immutable from 'immutable';
-import log from 'electron-log';
 import { Wei, TokenUnits } from '../lib/types';
 import { toNumber } from '../lib/convert';
 

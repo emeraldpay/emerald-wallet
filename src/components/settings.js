@@ -13,7 +13,7 @@ class SettingsRender extends React.Component {
 
     render() {
         const { goDashboard, handleSubmit, t } = this.props;
-
+        console.log('i18n.language='+i18n.language);
         return (
             <Form caption="Settings" onCancel={ goDashboard }>
                 <div id="body">
@@ -68,10 +68,10 @@ class SettingsRender extends React.Component {
                                    component={ SelectField }
                                    underlineShow={false}
                                    fullWidth={true}>
-                                <MenuItem key="en"
-                                          value="en"
-                                          label="English"
-                                          primaryText="English" />
+                                <MenuItem key="en-US"
+                                          value="en-US"
+                                          label="English (US)"
+                                          primaryText="English (US)" />
                                 <MenuItem key="zh-CN"
                                           value="zh-CN"
                                           label="中文"

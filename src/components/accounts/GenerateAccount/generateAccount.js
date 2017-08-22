@@ -1,51 +1,77 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
+import Wallet from 'lib/wallet';
 import saveAs from 'lib/saveAs';
+import { createAccount, exportKeyFile, updateAccount } from 'store/accountActions';
 import { gotoScreen } from '../../../store/screenActions';
 import PasswordDialog from './PasswordDialog';
 import DownloadDialog from './DownloadDialog';
 import ShowPrivateDialog from './ShowPrivateDialog';
 import AccountPropertiesDialog from './AccountPropertiesDialog';
 
-const PASSWORD_PAGE = 1;
-const DOWNLOAD_PAGE = 2;
-const PRIVATE_PAGE = 3;
-const ACCOUNT_PROPS_PAGE = 4;
+const PAGES = {
+    PASSWORD: 1,
+    DOWNLOAD: 2,
+    SHOW_PRIVATE: 3,
+    ACCOUNT_PROPS: 4,
+};
 
 class GenerateAccount extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
-            page: PASSWORD_PAGE,
+            page: PAGES.PASSWORD,
         };
     }
 
-    generate = () => {
-        this.setState({
-            page: DOWNLOAD_PAGE,
-        });
+    generate = (passphrase) => {
+        // Create new account
+        this.props.dispatch(createAccount(passphrase))
+            .then((accountId) => {
+                this.setState({
+                    accountId,
+                    passphrase,
+                    page: PAGES.DOWNLOAD,
+                });
+            });
     };
 
     download = () => {
-        const fileData = {
-            filename: 'hz.json',
-            mime: 'text/plain',
-            contents: '',
-        };
+        const { passphrase, accountId } = this.state;
 
-        const blob = new Blob([fileData.contents], {type: fileData.mime});
-        const url = URL.createObjectURL(blob);
-        saveAs(url, fileData.filename);
+        // Get encrypted key file from emerald vault
+        this.props.dispatch(exportKeyFile(accountId)).then((result) => {
 
-        this.setState({
-            page: PRIVATE_PAGE,
+            // Decrypt and get private key
+            const wallet = Wallet.fromV3(result, passphrase);
+            const privateKey = wallet.getPrivateKeyString();
+
+            const newState = {
+                ...this.state,
+                page: PAGES.SHOW_PRIVATE,
+                privateKey,
+            };
+
+            const fileData = {
+                filename: `${accountId}.json`,
+                mime: 'text/plain',
+                contents: result,
+            };
+
+            // Give encrypted key file to user
+            const blob = new Blob([fileData.contents], {type: fileData.mime});
+            const url = URL.createObjectURL(blob);
+            saveAs(url, fileData.filename);
+
+            this.setState(newState);
         });
     }
 
     editAccountProps = () => {
         this.setState({
-            page: ACCOUNT_PROPS_PAGE,
+            ...this.state,
+            page: PAGES.ACCOUNT_PROPS,
         });
     }
 
@@ -53,17 +79,23 @@ class GenerateAccount extends React.Component {
         this.props.dispatch(gotoScreen('home'));
     }
 
+    updateAccountProps = (name) => {
+        const { dispatch } = this.props;
+        dispatch(updateAccount(this.state.accountId, name))
+            .then(() => dispatch(gotoScreen('home')));
+    }
+
     render() {
-        const { page } = this.state;
+        const { page, privateKey } = this.state;
         switch (page) {
-            case PASSWORD_PAGE:
+            case PAGES.PASSWORD:
                 return (<PasswordDialog onGenerate={ this.generate }/>);
-            case DOWNLOAD_PAGE:
+            case PAGES.DOWNLOAD:
                 return (<DownloadDialog onDownload={ this.download }/>);
-            case PRIVATE_PAGE:
-                return (<ShowPrivateDialog onNext={ this.editAccountProps }/>);
-            case ACCOUNT_PROPS_PAGE:
-                return (<AccountPropertiesDialog onSkip={ this.skipAccountProps } />);
+            case PAGES.SHOW_PRIVATE:
+                return (<ShowPrivateDialog privateKey={ privateKey } onNext={ this.editAccountProps }/>);
+            case PAGES.ACCOUNT_PROPS:
+                return (<AccountPropertiesDialog onSave={ this.updateAccountProps } onSkip={ this.skipAccountProps } />);
             default: return <div></div>;
         }
     }

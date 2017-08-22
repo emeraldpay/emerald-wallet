@@ -15,12 +15,12 @@ const SecondaryMenu = ({ account, onPrint, onExport, chain }) => {
             <MenuItem
                 leftIcon={<FontIcon className="fa fa-hdd-o"/>}
                 primaryText='EXPORT'
-                onTouchTap={onExport(chain)}/>
+                onTouchTap={ onExport(chain) }/>
 
             <MenuItem
                 leftIcon={<FontIcon className="fa fa-print"/>}
                 primaryText='PRINT'
-                onTouchTap={onPrint(chain)}/>
+                onTouchTap={ onPrint(chain) }/>
 
         </IconMenu>
     );

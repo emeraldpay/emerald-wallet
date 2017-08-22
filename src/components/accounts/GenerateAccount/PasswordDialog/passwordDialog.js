@@ -7,70 +7,90 @@ import { Warning, WarningHeader, WarningText } from 'elements/Warning/warning';
 import Advice from './advice';
 import styles from './passwordDialog.scss';
 
-const PasswordDialog = (props) => {
-    const { onGenerate, onBack } = props;
+class PasswordDialog extends React.Component {
 
-    return (
-        <Form caption="Generate New Wallet" onCancel={ onBack }>
+    onInputChange = (event, newValue) => {
+        this.setState({
+            passphrase: newValue,
+        });
+    };
 
-            <Row>
-                <div style={formStyles.left}/>
-                <div style={formStyles.right}>
-                    <div style={{ width: '100%' }}>
-                        <div className={styles.passwordLabel}>Enter a strong password</div>
-                        <div className={styles.passwordSubLabel}>Password needs for confirm all wallet operations.</div>
-                        <div style={{ marginTop: '30px' }}>
-                            <TextField
-                                hintText="At least 8 characters"
-                                name="password"
-                                fullWidth={ true }
-                                underlineShow={ false }
-                            />
-                            {/* <Field name="password"*/}
-                                   {/* type="password"*/}
-                                   {/* component={ TextField }*/}
-                                   {/* fullWidth={ true }*/}
-                                   {/* underlineShow={ false }*/}
-                            {/* />*/}
+    handleGenerate = () => {
+        const { onGenerate } = this.props;
+
+        const passphrase = this.state.passphrase;
+        onGenerate(passphrase);
+    }
+
+    render() {
+        const { onBack } = this.props;
+
+        return (
+            <Form caption="Generate New Account" onCancel={ onBack }>
+
+                <Row>
+                    <div style={ formStyles.left }/>
+                    <div style={ formStyles.right }>
+                        <div style={{ width: '100%' }}>
+                            <div className={ styles.passwordLabel }>Enter a strong password</div>
+                            <div className={ styles.passwordSubLabel }>
+                                Password needs for confirm all wallet operations.
+                            </div>
+                            <div style={{ marginTop: '30px' }}>
+                                <TextField
+                                    onChange={ this.onInputChange }
+                                    hintText="At least 8 characters"
+                                    type="password"
+                                    name="password"
+                                    fullWidth={ true }
+                                    underlineShow={ false }
+                                />
+                                {/* <Field name="password"*/}
+                                {/* type="password"*/}
+                                {/* component={ TextField }*/}
+                                {/* fullWidth={ true }*/}
+                                {/* underlineShow={ false }*/}
+                                {/* />*/}
+                            </div>
                         </div>
                     </div>
+                </Row>
 
-                </div>
-            </Row>
+                <Row>
+                    <div style={ formStyles.left }/>
+                    <div style={ formStyles.right }>
+                        <Warning>
+                            <WarningHeader>Don&#39;t forget it.</WarningHeader>
+                            <WarningText>If you forget password, you will loose your wallet with all
+                                funds.</WarningText>
+                        </Warning>
+                    </div>
+                </Row>
 
-            <Row>
-                <div style={formStyles.left}/>
-                <div style={formStyles.right}>
-                    <Warning>
-                        <WarningHeader>Don&#39;t forget it.</WarningHeader>
-                        <WarningText>If you forget password, you will loose your wallet with all
-                            funds.</WarningText>
-                    </Warning>
-                </div>
-            </Row>
+                <Row>
+                    <div style={formStyles.left}/>
+                    <div style={formStyles.right}>
+                        <Advice
+                            title="Advice"
+                            text={ <div>
+                                You can use a word or phrase as password. Write it in short text.<br/>
+                                Only you know where password is. It is safer than write a password only.
+                            </div>}
+                        />
+                    </div>
+                </Row>
 
-            <Row>
-                <div style={formStyles.left}/>
-                <div style={formStyles.right}>
-                    <Advice
-                        title="Advice"
-                        text={ <div>
-                            You can use a word or phrase as password. Write it in short text.<br/>
-                            Only you know where password is. It is safer than write a password only.
-                        </div>}
-                    />
-                </div>
-            </Row>
+                <Row>
+                    <div style={formStyles.left}/>
+                    <div style={formStyles.right}>
+                        <Button primary onClick={ this.handleGenerate } label="Generate Account" />
+                    </div>
+                </Row>
+            </Form>
+        );
+    }
+}
 
-            <Row>
-                <div style={formStyles.left}/>
-                <div style={formStyles.right}>
-                    <Button primary onClick={ onGenerate } label="Generate Wallet" />
-                </div>
-            </Row>
-        </Form>
-    );
-};
 
 export default PasswordDialog;
 

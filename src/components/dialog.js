@@ -5,16 +5,16 @@ import log from 'electron-log';
 import { closeDialog } from 'store/screenActions';
 
 import WaitForSign from './tx/waitForSignDialog';
-import Receive from './accounts/ReceiveDialog';
+import ReceiveDialog from './accounts/ReceiveDialog';
 import AboutDialog from './layout/AboutDialog';
 
-const Render = ({ dialog, item, handleClose }) => {
+const Dialog = ({ dialog, item, handleClose }) => {
     if (!dialog) {
         return <div/>;
     } else if (dialog === 'sign-transaction') {
         return <WaitForSign/>;
     } else if (dialog === 'receive') {
-        return <Receive account={ item } onClose= { handleClose }/>;
+        return <ReceiveDialog account={ item } onClose= { handleClose }/>;
     } else if (dialog === 'about') {
         return <AboutDialog onClose= { handleClose } />;
     }
@@ -22,7 +22,7 @@ const Render = ({ dialog, item, handleClose }) => {
     return <div/>;
 };
 
-const Error = connect(
+export default connect(
     (state, ownProps) => ({
         dialog: state.screen.get('dialog'),
         item: state.screen.get('dialogItem'),
@@ -32,6 +32,5 @@ const Error = connect(
             dispatch(closeDialog());
         },
     })
-)(Render);
+)(Dialog);
 
-export default Error;

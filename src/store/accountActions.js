@@ -70,12 +70,20 @@ export function exportPaperWallet(passphrase, accountId) {
     };
 }
 
-export function createAccount(passphrase, name, description) {
+export function exportKeyFile(accountId) {
+    return (dispatch, getState) => {
+        const chain = currentChain(getState());
+        return api.emerald.exportAccount(accountId, chain);
+    };
+}
+
+export function createAccount(passphrase, name = '', description = '') {
     return (dispatch, getState) => {
         const chain = currentChain(getState());
 
-        api.emerald.newAccount(passphrase, name, description, chain)
+        return api.emerald.newAccount(passphrase, name, description, chain)
             .then((result) => {
+                log.debug(`Account ${result} created`);
                 dispatch({
                     type: 'ACCOUNT/ADD_ACCOUNT',
                     accountId: result,
@@ -83,7 +91,7 @@ export function createAccount(passphrase, name, description) {
                     description,
                 });
                 dispatch(loadAccountBalance(result));
-                dispatch(gotoScreen('account', Immutable.fromJS({id: result})));
+                return result;
             }).catch(catchError(dispatch));
     };
 }

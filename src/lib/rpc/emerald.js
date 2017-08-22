@@ -23,7 +23,7 @@ export default class Emerald {
         return this.rpc.call('emerald_exportAccount', [{address}, {chain}]);
     }
 
-    updateAccount(address, name, description, chain) {
+    updateAccount(address, name, description = '', chain) {
         this.notNull(chain, 'chain');
         return this.rpc.call('emerald_updateAccount', [{ name, description, address }, {chain}]);
     }

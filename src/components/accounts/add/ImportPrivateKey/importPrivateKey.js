@@ -75,16 +75,6 @@ class ImportPrivateKey extends React.Component {
                     </Row>
 
                     <Row>
-                        <div style={formStyles.left}/>
-                        <div style={formStyles.right}>
-                            <Warning>
-                                <WarningHeader>Don't forget it.</WarningHeader>
-                                <WarningText>If you forget password, you will loose your wallet with all funds.</WarningText>
-                            </Warning>
-                        </div>
-                    </Row>
-
-                    <Row>
                         <div style={formStyles.left}>
                         </div>
                         <div style={formStyles.right}>

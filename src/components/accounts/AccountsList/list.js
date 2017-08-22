@@ -1,101 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { FontIcon, FlatButton, Popover } from 'material-ui';
 import Immutable from 'immutable';
 import { translate } from 'react-i18next';
+
 import { gotoScreen } from 'store/screenActions';
 import Account from './account';
-import { watchConnection } from 'store/ledgerActions';
-import { List, ListItem } from 'material-ui/List';
+import WalletsTokensButton from './menuButton';
 
 import styles from './list.scss';
 
-class WalletsTokensButton extends React.Component {
-
-    constructor(props) {
-        super(props);
-
-        this.state = {
-            open: false,
-        };
-        this.handleTouchTap = this.handleTouchTap.bind(this);
-        this.handleRequestClose = this.handleRequestClose.bind(this);
-    }
-
-    handleTouchTap(event) {
-        // This prevents ghost click.
-        event.preventDefault();
-
-        this.setState({
-            open: true,
-            anchorEl: event.currentTarget,
-        });
-    }
-
-    handleRequestClose() {
-        this.setState({
-            open: false,
-        });
-    }
-
-    render() {
-        const { generate, generate2, importJson, importLedger, importPrivateKey, t, style } = this.props;
-
-        return (
-            <div style={style}>
-                <FlatButton
-                    onTouchTap={ this.handleTouchTap }
-                    label="WALLETS AND TOKENS"
-                    labelStyle={{ paddingRight: 0 }}
-                    style={{ color: '#47B04B' }}
-                    hoverColor="transparent"
-                    icon={<FontIcon className="fa fa-plus-circle"/>}
-                />
-                <Popover
-                    open={this.state.open}
-                    anchorEl={this.state.anchorEl}
-                    anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                    targetOrigin={{horizontal: 'left', vertical: 'top'}}
-                    onRequestClose={this.handleRequestClose}
-                >
-                    <List>
-                        <ListItem
-                            primaryText="Ledger Nano S"
-                            secondaryText="Use Ledger hardware key to manage signatures"
-                            onClick={importLedger}
-                            leftIcon={<FontIcon className="fa fa-usb"/>}
-                        />
-                        <ListItem
-                            primaryText={t('add.generate.title')}
-                            secondaryText={t('add.generate.subtitle')}
-                            onClick={generate}
-                            leftIcon={<FontIcon className="fa fa-random"/>}
-                        />
-                        <ListItem
-                            primaryText={' Generate (NEW) '}
-                            secondaryText={ t('add.generate.subtitle') }
-                            onClick={ generate2 }
-                            leftIcon={<FontIcon className="fa fa-random"/>}
-                        />
-                        <ListItem
-                            primaryText={t('add.import.title')}
-                            secondaryText={t('add.import.subtitle')}
-                            onClick={importJson}
-                            leftIcon={<FontIcon className="fa fa-code"/>}
-                        />
-                        <ListItem
-                            primaryText={t('add.importPrivateKey.title')}
-                            secondaryText={t('add.importPrivateKey.subtitle')}
-                            onClick={importPrivateKey}
-                            leftIcon={<FontIcon className="fa fa-key"/>}
-                        />
-                    </List>
-                </Popover>
-            </div>
-        );
-    }
-}
 
 const Render = translate('accounts')((props) => {
     const { t, accounts, generate, generate2, importJson, importLedger, importPrivateKey } = props;

@@ -5,12 +5,12 @@ import { connect } from 'react-redux';
 import People from 'material-ui/svg-icons/social/people';
 import QRCode from 'qrcode.react';
 import log from 'electron-log';
+import { FontIcon } from 'material-ui';
 
 import AddressAvatar from 'elements/addressAvatar';
-import { gotoScreen } from 'store/screenActions';
+import { gotoScreen, showDialog } from 'store/screenActions';
 import { updateAccount } from 'store/accountActions';
 import AccountEdit from './edit';
-import AccountPopup from './popup';
 import TransactionsList from '../tx/TxList';
 import AccountBalance from './AccountBalance';
 import { Wei } from 'lib/types';
@@ -59,7 +59,7 @@ class AccountRender extends React.Component {
     }
 
     render() {
-        const { account, rates, goBack, transactions, createTx } = this.props;
+        const { account, rates, goBack, transactions, createTx, showReceiveDialog } = this.props;
         const value = account.get('balance') ? account.get('balance').getEther() : '?';
         const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
         const isHardware = (acc) => acc.get('hardware', false);
@@ -107,7 +107,12 @@ class AccountRender extends React.Component {
                             <div style={styles.right}>
                                 <div>
                                     <div style={{display: 'flex', alignItems: 'center'}}>
-                                        <AccountPopup primary account={account} />
+                                        <Button
+                                            primary
+                                            label="Add ETC"
+                                            icon={<FontIcon className='fa fa-qrcode' />}
+                                            onClick={ showReceiveDialog }
+                                        />
                                         <Button
                                             primary
                                             style={ {marginLeft: '10px'} }
@@ -187,6 +192,10 @@ const AccountShow = connect(
         createTx: () => {
             const account = ownProps.account;
             dispatch(gotoScreen('create-tx', account));
+        },
+        showReceiveDialog: () => {
+            const account = ownProps.account;
+            dispatch(showDialog('receive', account));
         },
         goBack: () => {
             dispatch(gotoScreen('home'));
