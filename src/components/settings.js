@@ -13,7 +13,7 @@ class SettingsRender extends React.Component {
 
     render() {
         const { goDashboard, handleSubmit, t } = this.props;
-        console.log('i18n.language='+i18n.language);
+        console.log(`i18n.language=${i18n.language}`);
         return (
             <Form caption="Settings" onCancel={ goDashboard }>
                 <div id="body">
@@ -68,14 +68,30 @@ class SettingsRender extends React.Component {
                                    component={ SelectField }
                                    underlineShow={false}
                                    fullWidth={true}>
-                                <MenuItem key="en-US"
-                                          value="en-US"
-                                          label="English (US)"
-                                          primaryText="English (US)" />
-                                <MenuItem key="zh-CN"
-                                          value="zh-CN"
-                                          label="中文"
-                                          primaryText="中文" />
+                                <MenuItem
+                                    key="en-US"
+                                    value="en-US"
+                                    label="English (US)"
+                                    primaryText="English (US)"
+                                />
+                                <MenuItem
+                                    key="zh-CN"
+                                    value="zh-CN"
+                                    label="中文"
+                                    primaryText="中文"
+                                />
+                                <MenuItem
+                                    key="pt-BR"
+                                    value="pt-BR"
+                                    label="Portugese"
+                                    primaryText="Portugese"
+                                />
+                                <MenuItem
+                                    key="ko-KR"
+                                    value="ko-KR"
+                                    label="Korean"
+                                    primaryText="Korean"
+                                />
                             </Field>
                         </div>
                     </Row>
