@@ -47,12 +47,6 @@ class GenerateAccount extends React.Component {
             const wallet = Wallet.fromV3(result, passphrase);
             const privateKey = wallet.getPrivateKeyString();
 
-            const newState = {
-                ...this.state,
-                page: PAGES.SHOW_PRIVATE,
-                privateKey,
-            };
-
             const fileData = {
                 filename: `${accountId}.json`,
                 mime: 'text/plain',
@@ -64,13 +58,15 @@ class GenerateAccount extends React.Component {
             const url = URL.createObjectURL(blob);
             saveAs(url, fileData.filename);
 
-            this.setState(newState);
+            this.setState({
+                page: PAGES.SHOW_PRIVATE,
+                privateKey,
+            });
         });
     }
 
     editAccountProps = () => {
         this.setState({
-            ...this.state,
             page: PAGES.ACCOUNT_PROPS,
         });
     }

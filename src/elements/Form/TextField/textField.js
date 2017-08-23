@@ -10,7 +10,8 @@ const style = {
 
 const container = {
     boxSizing: 'border-box',
-    border: '1px solid #DDDDDD',
+    border: '1px solid',
+    borderColor: '#DDDDDD',
     borderRadius: '1px',
     paddingLeft: '10px',
     paddingRight: '10px',
@@ -19,13 +20,16 @@ const container = {
 };
 
 export const TextField = (props) => {
-    const { fullWidth, rightIcon } = props;
-    if (fullWidth) {
+    const { rightIcon, invalid, ...other } = props;
+    if (other.fullWidth) {
         container.width = '100%';
     }
+    const containerStyle = invalid ? {...container, borderColor: '#BC0000' } : container;
+    const textFieldStyle = invalid ? {...style, color: '#BC0000' } : style;
+
     return (
-        <div style={ container }>
-            <ReduxFormTextField { ...props } style={ style }/>{ rightIcon }
+        <div style={ containerStyle }>
+            <ReduxFormTextField { ...other } style={ textFieldStyle }/>{ rightIcon }
         </div>
     );
 };

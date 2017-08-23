@@ -17,7 +17,13 @@ export const WarningText = (props) => {
 };
 
 export const Warning = (props) => {
-    return (<div className={ styles.container }>
+    const { fullWidth } = props;
+    const style = {};
+    if (fullWidth) {
+        style.width = '100%';
+    }
+
+    return (<div className={ styles.container } style={ style }>
         { props.children }
     </div>);
 };

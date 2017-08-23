@@ -1,30 +1,53 @@
 import React from 'react';
 import Button from 'elements/Button';
 import { Form, Row, styles as formStyles } from 'elements/Form';
-import TextField from 'elements/Form/TextField';
 import { Warning, WarningHeader, WarningText } from 'elements/Warning/warning';
-import { EyeIcon } from 'elements/Icons';
+import PasswordInput from 'elements/PasswordInput';
 
 import Advice from './advice';
 import styles from './passwordDialog.scss';
 
+const MIN_PASSWORD_LENGTH = 8;
+
 class PasswordDialog extends React.Component {
 
-    onInputChange = (event, newValue) => {
-        this.setState({
-            passphrase: newValue,
-        });
-    };
+    constructor(props) {
+        super(props);
+        this.state = {
+            passphrase: '',
+            invalidPassphrase: false,
+        };
+    }
 
     handleGenerate = () => {
         const { onGenerate } = this.props;
-
         const passphrase = this.state.passphrase;
-        onGenerate(passphrase);
+
+        // validate passphrase
+        if (passphrase.length < MIN_PASSWORD_LENGTH) {
+            this.setState({
+                invalidPassphrase: true,
+            });
+        } else {
+            onGenerate(passphrase);
+        }
     }
+
+    onPassphraseChange = (newValue) => {
+        const invalidPassphrase = (newValue.length === 0 || newValue.length >= MIN_PASSWORD_LENGTH) ?
+            false :
+            this.state.invalidPassphrase;
+
+        this.setState({
+            passphrase: newValue,
+            invalidPassphrase,
+        });
+    }
+
 
     render() {
         const { onDashboard, t } = this.props;
+        const { invalidPassphrase } = this.state;
 
         return (
             <Form caption={ t('generate.title') } onCancel={ onDashboard }>
@@ -38,21 +61,10 @@ class PasswordDialog extends React.Component {
                                 Password needs for confirm all wallet operations.
                             </div>
                             <div style={{ marginTop: '30px' }}>
-                                <TextField
-                                    rightIcon={ <EyeIcon/> }
-                                    onChange={ this.onInputChange }
-                                    hintText="At least 8 characters"
-                                    type="password"
-                                    name="password"
-                                    fullWidth={ true }
-                                    underlineShow={ false }
+                                <PasswordInput
+                                    onChange={ this.onPassphraseChange }
+                                    invalid={ invalidPassphrase }
                                 />
-                                {/* <Field name="password"*/}
-                                {/* type="password"*/}
-                                {/* component={ TextField }*/}
-                                {/* fullWidth={ true }*/}
-                                {/* underlineShow={ false }*/}
-                                {/* />*/}
                             </div>
                         </div>
                     </div>
@@ -61,11 +73,11 @@ class PasswordDialog extends React.Component {
                 <Row>
                     <div style={ formStyles.left }/>
                     <div style={ formStyles.right }>
-                        <Warning>
-                            <WarningHeader>Don&#39;t forget it.</WarningHeader>
-                            <WarningText>If you forget password, you will loose your wallet with all
-                                funds.</WarningText>
-                        </Warning>
+                            <Warning fullWidth={ true }>
+                                <WarningHeader>Don&#39;t forget it.</WarningHeader>
+                                <WarningText>If you forget password, you will loose your wallet with all
+                                    funds.</WarningText>
+                            </Warning>
                     </div>
                 </Row>
 
