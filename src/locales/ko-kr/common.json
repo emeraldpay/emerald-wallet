@@ -1,0 +1,13 @@
+{
+    "title": "Emerald - 이더리움 클래식 지갑",
+    "menu": {
+        "home": "홈",
+        "addressBook": "주소록",
+        "contracts": "계약 목록",
+        "network": "네트워크"
+    },
+    "submit": "제출",
+    "clear": "초기화",
+    "done": "완료",
+    "cancel": "취소"
+}

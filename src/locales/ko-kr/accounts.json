@@ -1,0 +1,42 @@
+{
+    "show": {
+        "header": "계정: {{account}}",
+        "description": {
+            "title": "계정 정보:",
+            "address": "주소:",
+            "sentTransactions": "전송된 트랜잭션:",
+            "etherBalance": "이더 밸런스:",
+            "tokenBalances": "토큰 밸런스:"
+        },
+        "send": "전송",
+        "value": "{{value}} 이더"
+    },
+    "list": {
+        "title": "계정 리스트",
+        "subtitle": "이더리움 클래식 블록체인에서 관리하는 주소 목록",
+        "create": "계정 생성"
+    },
+    "add": {
+        "title": "계정 추가",
+        "generate": {
+            "title": "생성",
+            "subtitle": "새로운 개인 혹은 공개 키 페어를 생성"
+        },
+        "import": {
+            "title": "JSON 가져오기",
+            "subtitle": "Parity 또는 Geth로부터 JSON 형식의 키를 가져오기"
+        }
+    },
+    "generate": {
+        "title": "지갑 생성",
+        "name": "계정 이름 (선택)",
+        "description": "설명 (선택)",
+        "password": "타인이 알기 어려운 복잡한 비밀번호를 사용하세요",
+        "passwordConfirm": "비밀번호 재입력"
+    },
+    "import": {
+        "title": "지갑 가져오기",
+        "name": "계정 이름 (선택)",
+        "description": "설명 (선택)"
+    }
+}
