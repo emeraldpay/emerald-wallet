@@ -24,7 +24,7 @@ class AccountPropertiesDialog extends React.Component {
     };
 
     render() {
-        const { onSave, onSkip, onBack } = this.props;
+        const { onSave, onSkip, onBack, t } = this.props;
         return (
             <Form caption="Set account properties" onCancel={ onBack }>
                 <Row>

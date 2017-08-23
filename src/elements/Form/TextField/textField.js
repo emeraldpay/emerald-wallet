@@ -19,13 +19,13 @@ const container = {
 };
 
 export const TextField = (props) => {
-    const { fullWidth } = props;
+    const { fullWidth, rightIcon } = props;
     if (fullWidth) {
         container.width = '100%';
     }
     return (
         <div style={ container }>
-            <ReduxFormTextField { ...props } style={ style }/>
+            <ReduxFormTextField { ...props } style={ style }/>{ rightIcon }
         </div>
     );
 };

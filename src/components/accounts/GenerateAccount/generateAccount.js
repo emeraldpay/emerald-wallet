@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { translate } from 'react-i18next';
 
 import Wallet from 'lib/wallet';
 import saveAs from 'lib/saveAs';
@@ -42,7 +43,6 @@ class GenerateAccount extends React.Component {
 
         // Get encrypted key file from emerald vault
         this.props.dispatch(exportKeyFile(accountId)).then((result) => {
-
             // Decrypt and get private key
             const wallet = Wallet.fromV3(result, passphrase);
             const privateKey = wallet.getPrivateKeyString();
@@ -85,20 +85,25 @@ class GenerateAccount extends React.Component {
             .then(() => dispatch(gotoScreen('home')));
     }
 
+    goToDashboard = () => {
+        this.props.dispatch(gotoScreen('home'));
+    }
+
     render() {
         const { page, privateKey } = this.state;
+        const { t } = this.props;
         switch (page) {
             case PAGES.PASSWORD:
-                return (<PasswordDialog onGenerate={ this.generate }/>);
+                return (<PasswordDialog t={ t } onGenerate={ this.generate } onDashboard={ this.goToDashboard } />);
             case PAGES.DOWNLOAD:
-                return (<DownloadDialog onDownload={ this.download }/>);
+                return (<DownloadDialog t={ t } onDownload={ this.download }/>);
             case PAGES.SHOW_PRIVATE:
-                return (<ShowPrivateDialog privateKey={ privateKey } onNext={ this.editAccountProps }/>);
+                return (<ShowPrivateDialog t={ t } privateKey={ privateKey } onNext={ this.editAccountProps }/>);
             case PAGES.ACCOUNT_PROPS:
-                return (<AccountPropertiesDialog onSave={ this.updateAccountProps } onSkip={ this.skipAccountProps } />);
+                return (<AccountPropertiesDialog t={ t } onSave={ this.updateAccountProps } onSkip={ this.skipAccountProps } />);
             default: return <div></div>;
         }
     }
 }
 
-export default connect()(GenerateAccount);
+export default connect()(translate('accounts')(GenerateAccount));

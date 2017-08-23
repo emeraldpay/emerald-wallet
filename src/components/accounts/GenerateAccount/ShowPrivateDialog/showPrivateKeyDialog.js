@@ -8,10 +8,10 @@ import { Warning, WarningHeader, WarningText } from 'elements/Warning';
 import styles from './showPrivateKeyDialog.scss';
 
 const ShowPrivateDialog = (props) => {
-    const { onBack, onNext, privateKey } = props;
+    const { onBack, onNext, privateKey, t } = props;
 
     return (
-        <Form caption="Generate New Account" onCancel={ onBack }>
+        <Form caption={ t('generate.title') }  onCancel={ onBack }>
 
             <Row>
                 <div style={ formStyles.left }/>

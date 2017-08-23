@@ -3,6 +3,7 @@ import Button from 'elements/Button';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
 import { Warning, WarningHeader, WarningText } from 'elements/Warning/warning';
+import { EyeIcon } from 'elements/Icons';
 
 import Advice from './advice';
 import styles from './passwordDialog.scss';
@@ -23,10 +24,10 @@ class PasswordDialog extends React.Component {
     }
 
     render() {
-        const { onBack } = this.props;
+        const { onDashboard, t } = this.props;
 
         return (
-            <Form caption="Generate New Account" onCancel={ onBack }>
+            <Form caption={ t('generate.title') } onCancel={ onDashboard }>
 
                 <Row>
                     <div style={ formStyles.left }/>
@@ -38,6 +39,7 @@ class PasswordDialog extends React.Component {
                             </div>
                             <div style={{ marginTop: '30px' }}>
                                 <TextField
+                                    rightIcon={ <EyeIcon/> }
                                     onChange={ this.onInputChange }
                                     hintText="At least 8 characters"
                                     type="password"

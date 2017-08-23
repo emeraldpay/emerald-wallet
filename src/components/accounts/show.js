@@ -18,6 +18,7 @@ import IdentityIcon from '../../elements/IdentityIcon';
 import { Form, styles } from '../../elements/Form';
 import Button from 'elements/Button';
 import SecondaryMenu from './SecondaryMenu';
+import { QrCodeIcon } from 'elements/Icons';
 
 const TokenRow = ({ token }) => {
     const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0';
@@ -110,7 +111,7 @@ class AccountRender extends React.Component {
                                         <Button
                                             primary
                                             label="Add ETC"
-                                            icon={<FontIcon className='fa fa-qrcode' />}
+                                            icon={ <QrCodeIcon color="white"/> }
                                             onClick={ showReceiveDialog }
                                         />
                                         <Button

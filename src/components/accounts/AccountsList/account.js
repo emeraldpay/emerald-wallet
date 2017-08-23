@@ -14,7 +14,7 @@ import Card from 'elements/Card';
 import Button from 'elements/Button';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../AccountBalance';
-import FontIcon from 'material-ui/FontIcon';
+import { QrCodeIcon } from 'elements/Icons';
 
 const Render = ({account, openAccount, createTx, showReceiveDialog}) => {
     const balance = account.get('balance');
@@ -33,7 +33,7 @@ const Render = ({account, openAccount, createTx, showReceiveDialog}) => {
                             </div>
                         </div>
                     </Col>
-                    <Col xs={6}>
+                    <Col xs={5}>
                         <AddressAvatar
                             addr={account.get('id')}
                             tertiary={account.get('description')}
@@ -41,13 +41,13 @@ const Render = ({account, openAccount, createTx, showReceiveDialog}) => {
                             onAddressClick={openAccount}
                         />
                     </Col>
-                    <Col xs={3}>
-                        <div style={{display: 'flex', alignItems: 'center'}}>
+                    <Col xs={4}>
+                        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'flex-end'}}>
                             {!isHardware(account) && <SecondaryMenu account={account}/>}
                             <Button
                                 label="Add ETC"
-                                icon={<FontIcon className='fa fa-qrcode'/>}
-                                onClick={showReceiveDialog}
+                                icon={<QrCodeIcon />}
+                                onClick={ showReceiveDialog }
                             />
                             <Button
                                 style={{marginLeft: '10px'}}

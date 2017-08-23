@@ -31,7 +31,7 @@ class WalletsTokensButton extends React.Component {
     }
 
     render() {
-        const { generate, generate2, importJson, importLedger, importPrivateKey, t, style } = this.props;
+        const { generate, importJson, importLedger, importPrivateKey, t, style } = this.props;
 
         return (
             <div style={style}>
@@ -60,13 +60,7 @@ class WalletsTokensButton extends React.Component {
                         <ListItem
                             primaryText={t('add.generate.title')}
                             secondaryText={t('add.generate.subtitle')}
-                            onClick={generate}
-                            leftIcon={<FontIcon className="fa fa-random"/>}
-                        />
-                        <ListItem
-                            primaryText={' Generate (NEW) '}
-                            secondaryText={ t('add.generate.subtitle') }
-                            onClick={ generate2 }
+                            onClick={ generate }
                             leftIcon={<FontIcon className="fa fa-random"/>}
                         />
                         <ListItem

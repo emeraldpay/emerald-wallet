@@ -12,7 +12,7 @@ import styles from './list.scss';
 
 
 const Render = translate('accounts')((props) => {
-    const { t, accounts, generate, generate2, importJson, importLedger, importPrivateKey } = props;
+    const { t, accounts, generate, importJson, importLedger, importPrivateKey } = props;
     const table = <div>
         {accounts.map((account) =>
             <div style={{marginBottom: '6px'}} key={account.get('id')}>
@@ -28,7 +28,6 @@ const Render = translate('accounts')((props) => {
                 </div>
                 <WalletsTokensButton
                     generate={ generate }
-                    generate2={ generate2 }
                     importJson={ importJson }
                     importLedger={ importLedger }
                     importPrivateKey={ importPrivateKey }
@@ -57,9 +56,6 @@ const AccountsList = connect(
     (dispatch, ownProps) => ({
         generate: () => {
             dispatch(gotoScreen('generate'));
-        },
-        generate2: () => {
-            dispatch(gotoScreen('generate2'));
         },
         importJson: () => {
             dispatch(gotoScreen('importjson'));

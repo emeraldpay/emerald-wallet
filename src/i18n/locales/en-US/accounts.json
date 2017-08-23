@@ -33,7 +33,7 @@
         }
     },
     "generate": {
-        "title": "Generate Wallet",
+        "title": "Generate New Account",
         "name": "Account Name (optional)",
         "description": "Description (optional)",
         "password": "Please Enter a Strong Password",

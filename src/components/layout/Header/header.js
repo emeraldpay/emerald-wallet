@@ -7,27 +7,21 @@ import Status from './status/status';
 import Total from './total';
 import { gotoScreen } from '../../../store/screenActions';
 
-const Render = ({maxWidth = '1220px', openSettings}) => {
-    const titleStyle = {
-        color: '#191919',
-        fontSize: '17px',
-        fontWeight: 500,
-        lineHeight: '21px',
-        marginRight: '10px',
-    };
+import classes from './header.scss';
 
+const Header = ({ maxWidth = '1220px', openSettings }) => {
     return (
         <div style={{backgroundColor: 'white'}}>
             <div style={{display: 'flex', justifyContent: 'space-between', margin: '0 auto', maxWidth}}>
                 <div style={{display: 'flex', alignItems: 'center'}}>
-                    <div style={titleStyle}>EMERALD WALLET</div>
+                    <div className={ classes.title }>EMERALD WALLET</div>
                     <div><LogoIcon height="33px" width="17px" /></div>
                     <Total/>
                 </div>
                 <div style={{display: 'flex'}}>
                     <Status />
-                    <IconButton onTouchTap={openSettings}>
-                        <SettingsIcon />
+                    <IconButton onTouchTap={ openSettings }>
+                        <SettingsIcon className={ classes.settingsIcon }/>
                     </IconButton>
                 </div>
             </div>
@@ -35,13 +29,12 @@ const Render = ({maxWidth = '1220px', openSettings}) => {
     );
 };
 
-const Header = connect(
+export default connect(
     (state, ownProps) => ({}),
     (dispatch, ownProps) => ({
         openSettings: () => {
             dispatch(gotoScreen('settings'));
         },
     })
-)(Render);
+)(Header);
 
-export default Header;

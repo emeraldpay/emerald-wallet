@@ -7,10 +7,10 @@ import { Warning, WarningHeader, WarningText } from 'elements/Warning';
 import styles from './downloadDialog.scss';
 
 const DownloadDialog = (props) => {
-    const { accountId, onDownload, onBack } = props;
+    const { accountId, onDownload, onBack, t } = props;
     return (
 
-        <Form caption="Generate New Account" onCancel={ onBack }>
+        <Form caption={ t('generate.title') } onCancel={ onBack }>
 
             <Row>
                 <div style={formStyles.left}/>
@@ -47,7 +47,7 @@ const DownloadDialog = (props) => {
             <Row>
                 <div style={formStyles.left}/>
                 <div style={formStyles.right}>
-                    <Button primary onClick={ onDownload } label="Download" />
+                    <Button primary onClick={ onDownload } label="Download wallet" />
                 </div>
             </Row>
         </Form>
