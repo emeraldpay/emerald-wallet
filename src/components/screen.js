@@ -11,7 +11,7 @@ import TransactionShow from './tx/TxDetails';
 // import TokensList from './tokens/list';
 import AddToken from './tokens/add';
 import LedgerImport from './accounts/add/ledger/select';
-import ImportAccount from './accounts/add/ImportJson';
+import ImportJson from './accounts/add/ImportJson';
 import ImportPrivateKey from './accounts/add/ImportPrivateKey';
 import ContractsList from './contracts/list';
 import AddContract from './contracts/add';
@@ -59,7 +59,7 @@ const Render = ({ screen, screenItem }) => {
     } else if (screen === 'generate') {
         return <GenerateAccount2 />;
     } else if (screen === 'importjson') {
-        return <ImportAccount />;
+        return <ImportJson />;
     } else if (screen === 'import-private-key') {
         return <ImportPrivateKey />;
     } else if (screen === 'add-token') {

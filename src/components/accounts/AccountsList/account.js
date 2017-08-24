@@ -5,7 +5,7 @@ import { CardText } from 'material-ui/Card';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import log from 'electron-log';
 
-import AddressAvatar from '../../../elements/addressAvatar';
+import AddressAvatar from '../../../elements/AddressAvatar/addressAvatar';
 import { gotoScreen, showDialog } from 'store/screenActions';
 
 import { Wei } from 'lib/types';

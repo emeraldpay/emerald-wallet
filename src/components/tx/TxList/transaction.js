@@ -10,7 +10,7 @@ import log from 'electron-log';
 import { link, tables } from 'lib/styles';
 import { toDuration } from 'lib/convert';
 import AccountAddress from 'elements/AccountAddress';
-import AddressAvatar from 'elements/addressAvatar';
+import AddressAvatar from 'elements/AddressAvatar/addressAvatar';
 
 import loading from 'images/loading.gif';
 import AccountBalance from '../../accounts/AccountBalance';
@@ -37,7 +37,7 @@ const Render = ({ tx, openTx, openAccount, refreshTx, toAccount, fromAccount }) 
             </TableRowColumn>
 
             <TableRowColumn style={{...tables.mediumStyle, ...link}} >
-                {blockNumber}
+                { blockNumber }
             </TableRowColumn>
 
             <TableRowColumn>
@@ -49,7 +49,7 @@ const Render = ({ tx, openTx, openAccount, refreshTx, toAccount, fromAccount }) 
                     onAddressClick={() => openAccount(fromAccount)}
                 />
             </TableRowColumn>
-            <TableRowColumn style={tables.shortestStyle}>
+            <TableRowColumn style={{...tables.shortestStyle, textOverflow: 'inherit'}}>
                 <FontIcon className='fa fa-angle-right' />
             </TableRowColumn>
             <TableRowColumn>

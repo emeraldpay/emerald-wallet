@@ -66,7 +66,7 @@ class WalletsTokensButton extends React.Component {
                         <ListItem
                             primaryText={t('add.import.title')}
                             secondaryText={t('add.import.subtitle')}
-                            onClick={importJson}
+                            onClick={ importJson }
                             leftIcon={<FontIcon className="fa fa-code"/>}
                         />
                         <ListItem

@@ -119,7 +119,8 @@ export default connect(
             return new Promise((resolve, reject) => {
                 // create V3 json key file
                 try {
-                    const keyFile = Wallet.toV3(data.privateKey, data.password);
+                    const keyFile = Wallet.fromPrivateKey(data.privateKey)
+                        .toV3String(data.password);
 
                     // import key file
                     dispatch(importWallet(new Blob([keyFile]), '', ''))

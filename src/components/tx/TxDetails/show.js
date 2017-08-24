@@ -5,7 +5,7 @@ import log from 'electron-log';
 import FlatButton from 'material-ui/FlatButton';
 
 import AccountAddress from 'elements/AccountAddress';
-import AddressAvatar from 'elements/addressAvatar';
+import AddressAvatar from 'elements/AddressAvatar';
 import { gotoScreen } from 'store/screenActions';
 import { toNumber, toDate } from 'lib/convert';
 import IdentityIcon from 'elements/IdentityIcon';

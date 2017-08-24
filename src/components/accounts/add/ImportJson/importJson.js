@@ -1,133 +1,117 @@
 import React from 'react';
+import { translate } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from 'redux-form';
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
-import { green300, red300 } from 'material-ui/styles/colors';
-import FlatButton from 'material-ui/FlatButton';
-import FontIcon from 'material-ui/FontIcon';
-import { cardSpace } from 'lib/styles';
-import { renderFileField, renderTextField } from 'elements/formFields';
 import Immutable from 'immutable';
+
 import { gotoScreen } from 'store/screenActions';
 import { importWallet } from 'store/accountActions';
-import { required } from 'lib/validators';
-import { translate } from 'react-i18next';
-import AccountShow from '../../show';
+import Button from 'elements/Button/index';
+import { Form, Row, styles as formStyles } from 'elements/Form/index';
+import { Warning, WarningText, WarningHeader } from 'elements/Warning';
 
+import FileDropField from './fileDropField';
 
-class ImportRender extends React.Component {
+class ImportJson extends React.Component {
+    static propTypes = {
+        importFile: PropTypes.func,
+        showAccount: PropTypes.func,
+        accounts: PropTypes.object,
+        t: PropTypes.func,
+        onDashboard: PropTypes.func,
+    }
+
     constructor(props) {
         super(props);
-        this.submitFile = this.submitFile.bind(this);
         this.state = {
             fileError: null,
-            accountId: null,
+            file: null,
         };
     }
 
-    submitFile() {
-        this.props.handleSubmit().then((result) => {
+    submitFile = () => {
+        const { importFile, showAccount, accounts } = this.props;
+        importFile(this.state.file).then((result) => {
             if (result.error) {
                 this.setState({ fileError: result.error.toString() });
             } else {
-                this.setState({ accountId: result });
+                const account = accounts.find((a) => a.get('id') === result);
+                if (account) {
+                    showAccount(account);
+                }
             }
         });
     }
 
-    render() {
-        const { t, accounts } = this.props;
-        const { submitSucceeded, invalid, pristine, submitting, cancel } = this.props;
+    onFileChange = (file) => {
+        this.setState({
+            file,
+        });
+    }
 
-        const p = this.state.accountId && accounts.findKey((acc) => acc.get('id') === this.state.accountId);
-        const account = p && (p >= 0) && accounts.get(p);
+    render() {
+        const { t, onDashboard } = this.props;
+        const { file, fileError } = this.state;
 
         return (
-            <Card style={cardSpace}>
-                <CardHeader
-                    title={t('import.title')}
-                    actAsExpander={false}
-                    showExpandableButton={false}
-                />
+            <Form caption={ t('import.title') } onCancel={ onDashboard }>
+                {fileError && (
+                    <Row>
+                        <div style={ formStyles.left }/>
+                        <div style={ formStyles.right }>
+                            <Warning fullWidth={ true }>
+                                <WarningHeader>File error</WarningHeader>
+                                <WarningText>{ fileError }</WarningText>
+                            </Warning>
+                        </div>
+                    </Row>
+                )}
+                <Row>
+                    <div style={ formStyles.left }/>
+                    <div style={ formStyles.right }>
+                        <FileDropField
+                            name="wallet"
+                            onChange={ this.onFileChange }
+                        />
+                    </div>
+                </Row>
 
-                <CardText expandable={submitSucceeded}>
-                    <form>
-                        <Field name="name"
-                                component={renderTextField}
-                                type="text"
-                                label={t('import.name')} />
-                         <Field name="description"
-                                component={renderTextField}
-                                type="text"
-                                label={t('import.description')} />
-                        <Field name="wallet"
-                                component={renderFileField}
-                                validate={required} />
-                        <FlatButton label={t('common:submit')}
-                                    onClick={this.submitFile}
-                                    disabled={pristine || submitting || invalid } />
-                    </form>
-                </CardText>
-                {account && <CardText color={green300}>
-                    Account Successfully Imported.
-                </CardText>}
-                {account && <CardText>
-                     <AccountShow key={(account === undefined) ? undefined : account.get('id')} account={account}/>
-                     <FlatButton label={t('common:done')}
-                                onClick={cancel}
-                                icon={<FontIcon className="fa fa-home" />}/>
-                </CardText>}
-                {this.state.fileError}
-                {this.state.fileError && <CardText color={red300}>
-                    {this.state.fileError}
-                </CardText>}
-                <CardActions>
-                    <FlatButton label={t('common:cancel')}
-                                onClick={cancel}
-                                icon={<FontIcon className="fa fa-ban" />}/>
-                </CardActions>
-            </Card>
+                {file && (
+                    <Row>
+                        <div style={ formStyles.left }/>
+                        <div style={ formStyles.right }>
+                            <Button primary onClick={ this.submitFile } label={ t('common:submit') }/>
+                        </div>
+                    </Row>)
+                }
+            </Form>
         );
     }
 }
 
-ImportRender.propTypes = {
-    account: PropTypes.object.isRequired,
-    accounts: PropTypes.array.isRequired,
-    submitSucceeded: PropTypes.bool.isRequired,
-    handleSubmit: PropTypes.func.isRequired,
-    invalid: PropTypes.bool.isRequired,
-    pristine: PropTypes.bool.isRequired,
-    reset: PropTypes.func.isRequired,
-    submitting: PropTypes.bool.isRequired,
-    cancel: PropTypes.func.isRequired,
-};
+const ImportRenderT = translate('accounts')(ImportJson);
 
-const ImportRenderT = translate('accounts')(ImportRender);
-
-const ImportAccountForm = reduxForm({
-    form: 'importjson',
-    fields: ['wallet'],
-})(ImportRenderT);
-
-const ImportAccount = connect(
+export default connect(
     (state, ownProps) => ({
-        account: state.accounts.get('accounts', Immutable.List()).last(),
         accounts: state.accounts.get('accounts', Immutable.List()),
     }),
     (dispatch, ownProps) => ({
-        onSubmit: (data) => {
+        importFile: (file) => {
             return new Promise((resolve, reject) => {
-                dispatch(importWallet(data.wallet[0], data.name, data.description))
-                        .then((response) => resolve(response))
+                dispatch(importWallet(file, '', ''))
+                        .then((accountId) => resolve(accountId))
                         .catch((response) => resolve(response));
             });
+        },
+        showAccount: (account) => {
+            dispatch(gotoScreen('account', account));
+        },
+        onDashboard: () => {
+            dispatch(gotoScreen('home'));
         },
         cancel: () => {
             dispatch(gotoScreen('home'));
         },
     })
-)(ImportAccountForm);
+)(ImportRenderT);
 
-export default ImportAccount;
