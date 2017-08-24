@@ -8,7 +8,7 @@ import { copyIcon, link } from '../../lib/styles';
 import styles from './accountAddress.scss';
 
 const AccountAddress = (props) => {
-    const { id, shortened, onClick } = props;
+    const { id, shortened, onClick, style } = props;
     function copyAddressToClipBoard() {
         copy(id);
     }
@@ -23,7 +23,7 @@ const AccountAddress = (props) => {
         />;
     }
     return (
-        <div className={styles.container}>
+        <div className={ styles.container } style={ style }>
             <div onClick={onClick} style={{...link}}>
                 {shortened ? `${id.substring(2, 7)}...${id.substring(id.length - 6, id.length - 1)}` : id}
             </div>

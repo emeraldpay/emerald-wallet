@@ -4,11 +4,11 @@ import log from 'electron-log';
 import { translate } from 'react-i18next';
 import { gotoScreen } from 'store/screenActions';
 
-import Screen from '../screen';
-import Header from '../layout/Header';
-import Footer from '../layout/Footer';
-import Error from '../error';
-import Dialog from '../dialog';
+import Screen from '../../screen';
+import Header from '../Header';
+import Footer from '../Footer';
+import Error from '../../error';
+import Dialog from '../../dialog';
 
 import './main.scss';
 

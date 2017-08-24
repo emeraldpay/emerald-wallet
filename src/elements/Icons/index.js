@@ -5,6 +5,7 @@ import AdviceIcon from './adviceIcon';
 import EyeIcon from './eyeIcon';
 import QrCodeIcon from './qrcodeIcon';
 import EditIcon from './editIcon';
+import CloseIcon from './closeIcon';
 
 export {
     AdviceIcon,
@@ -14,4 +15,5 @@ export {
     EyeIcon,
     QrCodeIcon,
     EditIcon,
+    CloseIcon,
 };

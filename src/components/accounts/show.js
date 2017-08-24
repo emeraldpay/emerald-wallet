@@ -5,7 +5,6 @@ import { connect } from 'react-redux';
 import People from 'material-ui/svg-icons/social/people';
 import QRCode from 'qrcode.react';
 import log from 'electron-log';
-import { FontIcon } from 'material-ui';
 
 import AddressAvatar from 'elements/AddressAvatar/addressAvatar';
 import { gotoScreen, showDialog } from 'store/screenActions';
