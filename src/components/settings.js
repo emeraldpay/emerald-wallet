@@ -6,14 +6,14 @@ import { translate } from 'react-i18next';
 import { gotoScreen } from '../store/screenActions';
 import i18n from '../i18n/i18n';
 import { Form, styles, Row } from '../elements/Form';
-import Button from '../elements/Form/Button';
+import Button from 'elements/Button';
 import SelectField from '../elements/Form/SelectField';
 
 class SettingsRender extends React.Component {
 
     render() {
         const { goDashboard, handleSubmit, t } = this.props;
-
+        console.log(`i18n.language=${i18n.language}`);
         return (
             <Form caption="Settings" onCancel={ goDashboard }>
                 <div id="body">
@@ -68,15 +68,30 @@ class SettingsRender extends React.Component {
                                    component={ SelectField }
                                    underlineShow={false}
                                    fullWidth={true}>
-                                <MenuItem key="en"
-                                          value="en"
-                                          label="English"
-                                          primaryText="English" />
-
-                                <MenuItem key="zh_cn"
-                                          value="zh_cn"
-                                          label="中文"
-                                          primaryText="中文" />
+                                <MenuItem
+                                    key="en-US"
+                                    value="en-US"
+                                    label="English (US)"
+                                    primaryText="English (US)"
+                                />
+                                <MenuItem
+                                    key="zh-CN"
+                                    value="zh-CN"
+                                    label="中文"
+                                    primaryText="中文"
+                                />
+                                <MenuItem
+                                    key="pt-BR"
+                                    value="pt-BR"
+                                    label="Portugese"
+                                    primaryText="Portugese"
+                                />
+                                <MenuItem
+                                    key="ko-KR"
+                                    value="ko-KR"
+                                    label="Korean"
+                                    primaryText="Korean"
+                                />
                             </Field>
                         </div>
                     </Row>

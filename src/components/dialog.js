@@ -2,28 +2,35 @@ import React from 'react';
 import { connect } from 'react-redux';
 import log from 'electron-log';
 
-import WaitForSign from './tx/waitForSignDialog';
-import Receive from './accounts/receiveDialog';
+import { closeDialog } from 'store/screenActions';
 
-const Render = ({ dialog, item }) => {
+import WaitForSign from './tx/waitForSignDialog';
+import ReceiveDialog from './accounts/ReceiveDialog';
+import AboutDialog from './layout/AboutDialog';
+
+const Dialog = ({ dialog, item, handleClose }) => {
     if (!dialog) {
         return <div/>;
     } else if (dialog === 'sign-transaction') {
         return <WaitForSign/>;
     } else if (dialog === 'receive') {
-        return <Receive account={item}/>;
+        return <ReceiveDialog account={ item } onClose= { handleClose }/>;
+    } else if (dialog === 'about') {
+        return <AboutDialog onClose= { handleClose } />;
     }
     log.error('Unsupported dialog', dialog);
     return <div/>;
 };
 
-const Error = connect(
+export default connect(
     (state, ownProps) => ({
         dialog: state.screen.get('dialog'),
         item: state.screen.get('dialogItem'),
     }),
     (dispatch, ownProps) => ({
+        handleClose: () => {
+            dispatch(closeDialog());
+        },
     })
-)(Render);
+)(Dialog);
 
-export default Error;

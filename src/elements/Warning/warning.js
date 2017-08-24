@@ -9,13 +9,21 @@ export const WarningHeader = (props) => {
 };
 
 export const WarningText = (props) => {
-    return (<div>
-        { props.children }
-    </div>);
+    return (
+        <div className={ styles.text }>
+            { props.children }
+        </div>
+    );
 };
 
 export const Warning = (props) => {
-    return (<div className={ styles.container }>
+    const { fullWidth } = props;
+    const style = {};
+    if (fullWidth) {
+        style.width = '100%';
+    }
+
+    return (<div className={ styles.container } style={ style }>
         { props.children }
     </div>);
 };

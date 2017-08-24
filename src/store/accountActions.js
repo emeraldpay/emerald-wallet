@@ -10,6 +10,8 @@ import { toHex, toNumber } from 'lib/convert';
 import { gotoScreen, catchError } from './screenActions';
 import Wallet from 'lib/wallet';
 
+const currentChain = (state) => state.launcher.getIn(['chain', 'name']);
+
 export function loadAccountBalance(accountId) {
     return (dispatch, getState) => {
         api.geth.getBalance(accountId).then((result) => {
@@ -32,7 +34,8 @@ export function loadAccountsList() {
         dispatch({
             type: 'ACCOUNT/LOADING',
         });
-        const chain = getState().launcher.getIn(['chain', 'name']);
+        const chain = currentChain(getState());
+
         api.emerald.listAccounts(chain).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SET_LIST',
@@ -58,7 +61,7 @@ export function loadAccountTxCount(accountId) {
 
 export function exportPaperWallet(passphrase, accountId) {
     return (dispatch, getState) => {
-        const chain = getState().launcher.getIn(['chain', 'name']);
+        const chain = currentChain(getState());
         api.emerald.exportAccount(accountId, chain).then((result) => {
             const wallet = Wallet.fromV3(result, passphrase);
             const privKey = wallet.getPrivateKeyString();
@@ -67,12 +70,20 @@ export function exportPaperWallet(passphrase, accountId) {
     };
 }
 
-export function createAccount(passphrase, name, description) {
+export function exportKeyFile(accountId) {
     return (dispatch, getState) => {
-        const chain = getState().launcher.getIn(['chain', 'name']);
+        const chain = currentChain(getState());
+        return api.emerald.exportAccount(accountId, chain);
+    };
+}
 
-        api.emerald.newAccount(passphrase, name, description, chain)
+export function createAccount(passphrase, name = '', description = '') {
+    return (dispatch, getState) => {
+        const chain = currentChain(getState());
+
+        return api.emerald.newAccount(passphrase, name, description, chain)
             .then((result) => {
+                log.debug(`Account ${result} created`);
                 dispatch({
                     type: 'ACCOUNT/ADD_ACCOUNT',
                     accountId: result,
@@ -80,14 +91,14 @@ export function createAccount(passphrase, name, description) {
                     description,
                 });
                 dispatch(loadAccountBalance(result));
-                dispatch(gotoScreen('account', Immutable.fromJS({id: result})));
+                return result;
             }).catch(catchError(dispatch));
     };
 }
 
 export function updateAccount(address, name, description) {
     return (dispatch, getState) => {
-        const chain = getState().launcher.getIn(['chain', 'name']);
+        const chain = currentChain(getState());
         return api.emerald.updateAccount(address, name, description, chain)
             .then((result) => {
                 dispatch({
@@ -179,7 +190,7 @@ export function sendTransaction(accountId, passphrase, to, gas, gasPrice, value)
     };
     originalTx.passPhrase = originalTx.passPhrase || ''; // for HW key
     return (dispatch, getState) => {
-        const chain = getState().launcher.getIn(['chain', 'name']);
+        const chain = currentChain(getState());
         getNonce(accountId)
             .then(withNonce(originalTx))
             .then((tx) =>
@@ -203,7 +214,7 @@ export function createContract(accountId, passphrase, gas, gasPrice, data) {
         data,
     };
     return (dispatch, getState) => {
-        const chain = getState().launcher.getIn(['chain', 'name']);
+        const chain = currentChain(getState());
         api.emerald.signTransaction(txData, { chain })
             .then(unwrap)
             .then(sendRawTransaction)
@@ -231,8 +242,7 @@ function readWalletFile(wallet) {
 
 export function importWallet(wallet, name, description) {
     return (dispatch, getState) => {
-        const chain = getState().launcher.getIn(['chain', 'name']);
-
+        const chain = currentChain(getState());
         return readWalletFile(wallet).then((data) => {
             data.name = name;
             data.description = description;

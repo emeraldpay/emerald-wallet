@@ -5,19 +5,20 @@ import { connect } from 'react-redux';
 import People from 'material-ui/svg-icons/social/people';
 import QRCode from 'qrcode.react';
 import log from 'electron-log';
+import { FontIcon } from 'material-ui';
 
 import AddressAvatar from 'elements/addressAvatar';
-import { gotoScreen } from 'store/screenActions';
+import { gotoScreen, showDialog } from 'store/screenActions';
 import { updateAccount } from 'store/accountActions';
 import AccountEdit from './edit';
-import AccountPopup from './popup';
 import TransactionsList from '../tx/TxList';
-import AccountSendButton from './sendButton';
 import AccountBalance from './AccountBalance';
 import { Wei } from 'lib/types';
 import IdentityIcon from '../../elements/IdentityIcon';
 import { Form, styles } from '../../elements/Form';
+import Button from 'elements/Button';
 import SecondaryMenu from './SecondaryMenu';
+import { QrCodeIcon } from 'elements/Icons';
 
 const TokenRow = ({ token }) => {
     const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0';
@@ -59,9 +60,10 @@ class AccountRender extends React.Component {
     }
 
     render() {
-        const { account, rates, goBack, transactions } = this.props;
+        const { account, rates, goBack, transactions, createTx, showReceiveDialog } = this.props;
         const value = account.get('balance') ? account.get('balance').getEther() : '?';
         const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
+        const isHardware = (acc) => acc.get('hardware', false);
 
         const AccountDetails = (
 
@@ -106,9 +108,19 @@ class AccountRender extends React.Component {
                             <div style={styles.right}>
                                 <div>
                                     <div style={{display: 'flex', alignItems: 'center'}}>
-                                        <AccountPopup primary account={account} />
-                                        <AccountSendButton style={{marginLeft: '10px'}} primary account={account} />
-                                        <SecondaryMenu account={account} />
+                                        <Button
+                                            primary
+                                            label="Add ETC"
+                                            icon={ <QrCodeIcon color="white"/> }
+                                            onClick={ showReceiveDialog }
+                                        />
+                                        <Button
+                                            primary
+                                            style={ {marginLeft: '10px'} }
+                                            label="Send"
+                                            onClick={ createTx }
+                                        />
+                                        { !isHardware(account) && <SecondaryMenu account={account} /> }
                                     </div>
                                 </div>
                             </div>
@@ -140,6 +152,7 @@ AccountRender.propTypes = {
     goBack: PropTypes.func.isRequired,
     transactions: PropTypes.object.isRequired,
     editAccount: PropTypes.func,
+    createTx: PropTypes.func,
 };
 
 const AccountShow = connect(
@@ -177,6 +190,14 @@ const AccountShow = connect(
         };
     },
     (dispatch, ownProps) => ({
+        createTx: () => {
+            const account = ownProps.account;
+            dispatch(gotoScreen('create-tx', account));
+        },
+        showReceiveDialog: () => {
+            const account = ownProps.account;
+            dispatch(showDialog('receive', account));
+        },
         goBack: () => {
             dispatch(gotoScreen('home'));
         },

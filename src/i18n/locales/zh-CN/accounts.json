@@ -1,0 +1,43 @@
+{
+    "show": {
+        "header": "账户： {{account}}",
+        "description": {
+            "title": "描述：",
+            "address": "地址：",
+            "sentTransactions": "已完成交易：",
+            "etherBalance": "以太余额：",
+            "tokenBalances": "令牌余额："
+        },
+        "send": "传送交易",
+        "value": "{{value}}以太"
+    },
+    "list": {
+        "title": "账户列表",
+        "subtitle": "以太经典链上您目前控制的账户地址",
+        "create": "创建新账户",
+        "popupMenuLabel": "ACCOUNTS AND TOKENS"
+    },
+    "add": {
+        "title": "创建新账户",
+        "generate": {
+            "title": "生成新账户",
+            "subtitle": "生成一个新的公有和私有密钥对"
+        },
+        "import": {
+            "title": "从JSON导入",
+            "subtitle": "从Parity或Geth中导入一个JSON密钥"
+        }
+    },
+    "generate": {
+        "title": "生成新账户",
+        "name": "账户名称（可选）",
+        "description": "账户描述（可选）",
+        "password": "请设置一个强密码",
+        "passwordConfirm": "再次输入您的密码"
+    },
+    "import": {
+        "title": "从JSON导入",
+        "name": "账户名称（可选）",
+        "description": "账户描述（可选）"
+    }
+}

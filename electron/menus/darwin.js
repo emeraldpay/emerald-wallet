@@ -1,4 +1,4 @@
-module.exports = function(window) {
+module.exports = function (window) {
     return [{
         label: 'Emerald',
         submenu: [
@@ -34,61 +34,61 @@ module.exports = function(window) {
             label: 'Edit',
             submenu: [
                 {
-                    role: 'undo'
+                    role: 'undo',
                 },
                 {
-                    role: 'redo'
-                },
-                {
-                    type: 'separator'
-                },
-                {
-                    role: 'cut'
-                },
-                {
-                    role: 'copy'
-                },
-                {
-                    role: 'paste'
-                },
-                {
-                    role: 'delete'
-                },
-                {
-                    role: 'selectall'
-                }
-        ]},
-        {
-            label: 'View',
-            submenu: [
-                {
-                    label: 'Reload',
-                    accelerator: 'CmdOrCtrl+R',
-                    click() { window.webContents.reload() },
-                },
-                {
-                    label: 'Developer Tools',
-                    accelerator: 'Alt+Command+I',
-                    click() { window.toggleDevTools() },
+                    role: 'redo',
                 },
                 {
                     type: 'separator',
                 },
                 {
-                    role: 'resetzoom',
+                    role: 'cut',
                 },
                 {
-                    role: 'zoomin',
+                    role: 'copy',
                 },
                 {
-                    role: 'zoomout',
+                    role: 'paste',
                 },
                 {
-                    type: 'separator',
+                    role: 'delete',
                 },
                 {
-                    role: 'togglefullscreen',
+                    role: 'selectall',
                 },
-            ],
-        }];
+            ]},
+    {
+        label: 'View',
+        submenu: [
+            {
+                label: 'Reload',
+                accelerator: 'CmdOrCtrl+R',
+                click() { window.webContents.reload(); },
+            },
+            {
+                label: 'Developer Tools',
+                accelerator: 'Alt+Command+I',
+                click() { window.toggleDevTools(); },
+            },
+            {
+                type: 'separator',
+            },
+            {
+                role: 'resetzoom',
+            },
+            {
+                role: 'zoomin',
+            },
+            {
+                role: 'zoomout',
+            },
+            {
+                type: 'separator',
+            },
+            {
+                role: 'togglefullscreen',
+            },
+        ],
+    }];
 };

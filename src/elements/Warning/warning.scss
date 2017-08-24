@@ -1,6 +1,6 @@
 .container {
   max-width: 580px;
-  width: 100%;
+  //width: auto;
   border-radius: 1px;
   background-color: #F9F2F2;
   color: #CF3B3B;
@@ -8,19 +8,15 @@
   line-height: 22px;
   padding-top: 14px;
   padding-left: 20px;
-  padding-bottom: 14px;
+  padding-right: 20px;
+  padding-bottom: 10px;
 }
 
 .header {
   font-weight: bold;
 }
 
-//
-//.don-t-forget-it-if {
-//  height: 44px;
-//  width: 412px;
-//  color: #CF3B3B;
-//  font-size: 14px;
-//  font-weight: bold;
-//  line-height: 22px;
-//}
+.text {
+  padding-bottom: 10px;
+}
+

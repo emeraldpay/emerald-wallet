@@ -10,7 +10,7 @@ import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n/i18n';
 import injectTapEventPlugin from 'react-tap-event-plugin';
 import {store, start as startStore} from './store/store.js';
-import Main from './components/main';
+import Main from './components/Main/main';
 
 import './index.scss';
 

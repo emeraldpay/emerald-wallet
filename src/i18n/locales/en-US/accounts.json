@@ -1,0 +1,47 @@
+{
+    "show": {
+        "header": "Account: {{account}}",
+        "description": {
+            "title": "Account Description:",
+            "address": "Address:",
+            "sentTransactions": "Sent Transactions:",
+            "etherBalance": "Ether Balance:",
+            "tokenBalances": "Token Balances:"
+        },
+        "send": "Send",
+        "value": "{{value}} Ether"
+    },
+    "list": {
+        "title": "ACCOUNTS",
+        "subtitle": "List of addresses you're controlling on Ethereum Classic blockchain",
+        "create": "Create Account",
+        "popupMenuLabel": "ACCOUNTS AND TOKENS"
+    },
+    "add": {
+        "title": "Add Account",
+        "generate": {
+            "title": "Generate",
+            "subtitle": "Generates a new private/public key pair"
+        },
+        "import": {
+            "title": "Import JSON",
+            "subtitle": "Import key from Parity/Geth in JSON format"
+        },
+        "importPrivateKey": {
+            "title": "Import Private Key",
+            "subtitle": "Import private key in hex format"
+        }
+    },
+    "generate": {
+        "title": "Generate New Account",
+        "name": "Account Name (optional)",
+        "description": "Description (optional)",
+        "password": "Please Enter a Strong Password",
+        "passwordConfirm": "Re-Enter Password"
+    },
+    "import": {
+        "title": "Import Wallet",
+        "name": "Account Name (optional)",
+        "description": "Description (optional)"
+    }
+}

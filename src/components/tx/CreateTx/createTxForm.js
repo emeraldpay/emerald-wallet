@@ -14,8 +14,11 @@ import { Form, Row, styles } from '../../../elements/Form';
 import TextField from '../../../elements/Form/TextField';
 import SelectField from '../../../elements/Form/SelectField';
 import AccountBalance from '../../accounts/AccountBalance';
-import Button from '../../../elements/Form/Button';
+import Button from '../../../elements/Button';
+import LinkButton from 'elements/LinkButton';
 
+
+import classes from './createTxForm.scss';
 
 const textEtc = {
     fontSize: '20px',
@@ -35,27 +38,18 @@ const textFiatLight = {
     color: '#747474',
 };
 
-const linkText = {
-    marginTop: '5px',
-    color: '#47B04B',
-    fontSize: '14px',
-    fontWeight: '500',
-    lineHeight: '20px',
-    textTransform: 'uppercase',
-    cursor: 'pointer',
-    textDecoration: 'none',
-};
-
 
 const BalanceField = ({ input }) => {
     if (!input.value) {
         return null;
     }
     return (
-        <AccountBalance balance={input.value}
-                        precision={6}
-                        fiatStyle={textFiat}
-                        etcStyle={textEtc}/>
+        <AccountBalance
+            balance={ input.value }
+            precision={ 6 }
+            fiatStyle={ textFiat }
+            etcStyle={ textEtc }
+        />
     );
 };
 
@@ -147,7 +141,6 @@ const CreateTxForm = (props) => {
             </div>
             <div style={{...styles.right, alignItems: 'center'}}>
                 <FromAddressField accounts={accounts} onChangeAccount={onChangeAccount}/>
-
             </div>
             <div style={{...styles.right}}>
                 <Field name="balance"
@@ -195,7 +188,10 @@ const CreateTxForm = (props) => {
 
             </div>
             <div style={styles.right}>
-                <a style={linkText} href={`http://gastracker.io/addr/${fromAddr}`}>Transaction History</a>
+                <LinkButton
+                    href={ `http://gastracker.io/addr/${fromAddr}` }
+                    label="Transaction History"
+                />
             </div>
         </Row>
 
@@ -245,13 +241,16 @@ const CreateTxForm = (props) => {
         </Row>
 
         <Row>
-            <div style={styles.left}/>
-            <div style={styles.right}>
-                <div style={textFiatLight}>
-                    {value && `$${value.getFiat(fiatRate).toString()}` }
-                </div>
-                <div style={{...linkText, marginLeft: '20px'}} onClick={() => onEntireBalance(balance)}>
-                    Entire Balance
+            <div style={ styles.left }/>
+            <div style={ styles.right }>
+                <div className= { classes.entireBalanceContainer }>
+                    <div style={textFiatLight}>
+                        {value && `$${value.getFiat(fiatRate).toString()}` }
+                    </div>
+                    <LinkButton
+                        onClick={() => onEntireBalance(balance)}
+                        label="Entire Balance"
+                    />
                 </div>
             </div>
         </Row>

@@ -90,7 +90,10 @@ const GenerateAccount = connect(
     (dispatch, ownProps) => {
         return ({
             onSubmit: (data) => {
-                dispatch(createAccount(data.password, data.name, data.description));
+                dispatch(createAccount(data.password, data.name, data.description))
+                    .then((accountId) => {
+                        dispatch(gotoScreen('account', Immutable.fromJS({id: accountId})));
+                    });
             },
             cancel: () => {
                 dispatch(gotoScreen('home'));

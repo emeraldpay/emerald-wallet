@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 
 import { Form, Row, styles as formStyles } from '../../elements/Form';
-import Button from '../../elements/Form/Button';
+import Button from 'elements/Button';
 import TextField from '../../elements/Form/TextField';
 import { gotoScreen } from '../../store/screenActions';
 import { exportPaperWallet } from '../../store/accountActions';

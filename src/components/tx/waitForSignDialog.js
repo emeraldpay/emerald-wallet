@@ -27,17 +27,17 @@ const Render = ({ open, transaction, handleClose }) => {
             Please sign transaction using your Hardware Key<br/>
             <FontIcon className="fa fa-spinner fa-spin"/> Waiting for signature....
         </Dialog>
-    )
+    );
 };
 
 export default connect(
     (state, ownProps) => ({
         open: state.screen.get('dialog') === 'sign-transaction',
-        transaction: state.screen.get('dialogItem')
+        transaction: state.screen.get('dialogItem'),
     }),
     (dispatch, ownProps) => ({
         handleClose: () => {
-        }
+        },
     })
 )(Render);
 

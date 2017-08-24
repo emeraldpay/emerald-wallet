@@ -7,10 +7,9 @@ import AccountShow from './accounts/show';
 import AddressShow from './addressbook/show';
 import AddressAdd from './addressbook/add';
 import CreateTx from './tx/CreateTx';
-import TransactionShow from './tx/show';
+import TransactionShow from './tx/TxDetails';
 // import TokensList from './tokens/list';
 import AddToken from './tokens/add';
-import GenerateAccount from './accounts/add/Generate';
 import LedgerImport from './accounts/add/ledger/select';
 import ImportAccount from './accounts/add/ImportJson';
 import ImportPrivateKey from './accounts/add/ImportPrivateKey';
@@ -23,6 +22,7 @@ import Dashboard from '../containers/Dashboard';
 import Settings from './settings';
 import PaperWallet from '../containers/PaperWallet';
 import ExportPaperWallet from '../containers/ExportPaperWallet';
+import GenerateAccount2 from '../components/accounts/GenerateAccount';
 
 const Render = ({ screen, screenItem }) => {
     log.debug('screen', screen);
@@ -53,11 +53,11 @@ const Render = ({ screen, screenItem }) => {
     } else if (screen === 'account') {
         return <AccountShow account={screenItem}/>;
     } else if (screen === 'transaction') {
-        return <TransactionShow hash={screenItem.hash} accountId={screenItem.from}/>;
+        return <TransactionShow hash={ screenItem.hash } accountId={ screenItem.from }/>;
     } else if (screen === 'create-tx') {
         return <CreateTx account={screenItem}/>;
     } else if (screen === 'generate') {
-        return <GenerateAccount />;
+        return <GenerateAccount2 />;
     } else if (screen === 'importjson') {
         return <ImportAccount />;
     } else if (screen === 'import-private-key') {
