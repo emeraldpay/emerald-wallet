@@ -43,23 +43,32 @@ export default class JsonRpc {
     }
 
     post(name, params, headers) {
-        const data = {
+        const data = this.newRequest(name, params);
+        const opt = {
+            method: 'POST',
+            headers: Object.assign(baseHeaders, headers),
+            body: JSON.stringify(data),
+        };
+
+        return fetch(this.url, opt).then((response) => {
+            if (response.status >= 400) {
+                throw new Error(`Bad RPC response: ${response.status}`);
+            }
+            try {
+                return response.json();
+            } catch (e) {
+                log.error('Invalid JSON response', response, e);
+                throw e;
+            }
+        });
+    }
+
+    newRequest(name, params) {
+        return {
             jsonrpc: '2.0',
             method: name,
             params,
             id: this.requestSeq++,
         };
-        return fetch(this.url, {
-            method: 'POST',
-            headers: Object.assign(baseHeaders, headers),
-            body: JSON.stringify(data),
-        }).then((response) => {
-            try {
-                return response.json();
-            } catch (e) {
-                log.error('Invalid response', response, e);
-                throw e;
-            }
-        });
     }
 }

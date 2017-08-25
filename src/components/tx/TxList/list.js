@@ -10,7 +10,7 @@ import { gotoScreen } from 'store/screenActions';
 
 import Filter from './filter';
 import TextField from 'elements/Form/TextField';
-
+import { SearchIcon } from 'elements/Icons';
 import classes from './list.scss';
 
 const Render = ({ transactions, sendTx, accounts, createAccount }) => {
@@ -57,6 +57,7 @@ const Render = ({ transactions, sendTx, accounts, createAccount }) => {
                         </div>
                         <div className={ classes.search.maxHeight }>
                             <TextField
+                                rightIcon={ <SearchIcon/> }
                                 style={{ maxHeight: '40px' }}
                                 hintText="Search for amount or hash"
                                 underlineShow={ false }

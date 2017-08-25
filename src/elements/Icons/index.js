@@ -6,8 +6,10 @@ import EyeIcon from './eyeIcon';
 import QrCodeIcon from './qrcodeIcon';
 import EditIcon from './editIcon';
 import CloseIcon from './closeIcon';
+import SearchIcon from './searchIcon';
 
 export {
+    SearchIcon,
     AdviceIcon,
     LogoIcon,
     SettingsIcon,
