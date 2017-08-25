@@ -2,11 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table';
-import { Card, CardHeader, CardText, CardActions } from 'material-ui/Card';
+import Card from 'elements/Card';
 import { cardSpace, tables, noShadow } from 'lib/styles';
 import Immutable from 'immutable';
 import Transaction from './transaction';
 import { gotoScreen } from 'store/screenActions';
+
+import Filter from './filter';
+import TextField from 'elements/Form/TextField';
+
+import classes from './list.scss';
 
 const Render = ({ transactions, sendTx, accounts, createAccount }) => {
     const styles = {
@@ -43,16 +48,26 @@ const Render = ({ transactions, sendTx, accounts, createAccount }) => {
     </Table>;
 
     return (
-            <Card style={styles.card}>
-                <CardHeader
-                    title="HISTORY"
-                    titleStyle={styles.titleStyle}
-                    actAsExpander={false}
-                    showExpandableButton={false}
-                />
-                <CardText style={styles.root} expandable={false}>
-                    {table}
-                </CardText>
+            <Card>
+                <div className={ classes.container }>
+                    <div className={ classes.headerContainer }>
+                        <div className={ classes.headerMain }>
+                            <div className={ classes.headerTitle }>History</div>
+                            <div className={ classes.filter }><Filter /></div>
+                        </div>
+                        <div className={ classes.search.maxHeight }>
+                            <TextField
+                                style={{ maxHeight: '40px' }}
+                                hintText="Search for amount or hash"
+                                underlineShow={ false }
+                            />
+                        </div>
+                    </div>
+
+                    <div>
+                        {table}
+                    </div>
+                </div>
             </Card>
     );
 };

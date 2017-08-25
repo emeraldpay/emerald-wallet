@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import log from 'electron-log';
 
 import AddressBook from './addressbook/book';
-import AccountShow from './accounts/show';
+import AccountShow from './accounts/AccountShow';
 import AddressShow from './addressbook/show';
 import AddressAdd from './addressbook/add';
 import CreateTx from './tx/CreateTx';

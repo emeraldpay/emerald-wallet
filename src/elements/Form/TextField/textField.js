@@ -1,7 +1,7 @@
 import React from 'react';
 import { TextField as ReduxFormTextField } from 'redux-form-material-ui';
 
-const style = {
+const defaultStyle = {
     height: '51px',
     color: '#191919',
     fontSize: '16px',
@@ -20,16 +20,20 @@ const container = {
 };
 
 export const TextField = (props) => {
-    const { rightIcon, invalid, ...other } = props;
+    const { rightIcon, invalid, style, ...other } = props;
     if (other.fullWidth) {
         container.width = '100%';
     }
-    const containerStyle = invalid ? {...container, borderColor: '#BC0000' } : container;
-    const textFieldStyle = invalid ? {...style, color: '#BC0000' } : style;
 
+    let containerStyle = invalid ? {...container, borderColor: '#BC0000' } : container;
+    if (style) {
+        containerStyle = { ...containerStyle, maxHeight: style.maxHeight };
+    }
+
+    const textFieldStyle = invalid ? {...defaultStyle, color: '#BC0000' } : defaultStyle;
     return (
         <div style={ containerStyle }>
-            <ReduxFormTextField { ...other } style={ textFieldStyle }/>{ rightIcon }
+            <ReduxFormTextField { ...other } style={ textFieldStyle } />{ rightIcon }
         </div>
     );
 };

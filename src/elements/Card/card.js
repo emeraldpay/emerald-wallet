@@ -5,8 +5,8 @@ import styles from './card.scss';
 
 const Card = (props) => {
     return (
-        <div style={props.style} className={styles.card}>
-            {props.children}
+        <div style={ props.style } className={ styles.card }>
+            { props.children }
         </div>);
 };
 

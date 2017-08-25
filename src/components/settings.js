@@ -13,28 +13,9 @@ class SettingsRender extends React.Component {
 
     render() {
         const { goDashboard, handleSubmit, t } = this.props;
-        console.log(`i18n.language=${i18n.language}`);
         return (
             <Form caption="Settings" onCancel={ goDashboard }>
                 <div id="body">
-                    <Row>
-                        <div style={styles.left}>
-                            <div style={styles.fieldName}>
-                                Network
-                            </div>
-                        </div>
-                        <div style={styles.right}>
-                            <Field name="network"
-                                   component={SelectField}
-                                   underlineShow={false}
-                                   fullWidth={true}>
-                                <MenuItem key="mainnet"
-                                          value="mainnet"
-                                          label="Mainnet"
-                                          primaryText="Mainnet" />
-                            </Field>
-                        </div>
-                    </Row>
                     <Row>
                         <div style={styles.left}>
                             <div style={styles.fieldName}>

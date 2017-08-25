@@ -7,6 +7,7 @@ import AccountAddress from 'elements/AccountAddress';
 import { CloseIcon } from 'elements/Icons';
 
 import classes from './receiveDialog.scss';
+import DepositOptions from './DepositOptions';
 
 const styles = {
 
@@ -32,7 +33,9 @@ const styles = {
 };
 
 
-const ReceiveDialog = ({account, onClose}) => {
+const ReceiveDialog = ({ account, onClose }) => {
+    const qrCodeSize = 150;
+    const address = account.get('id');
     return (
         <Dialog
             modal={ false }
@@ -42,20 +45,20 @@ const ReceiveDialog = ({account, onClose}) => {
             <div className={ classes.container }>
                 <div>
                     <div className={ classes.title }>Add Ether</div>
-                    <div><QRCode value={account.get('id')} size={150}/></div>
+                    <div style={{marginTop: '30px' }}>
+                        <QRCode value={ address } size={ qrCodeSize }/></div>
                 </div>
                 <div>
-                    <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-                        <IconButton
-                            onTouchTap={ onClose }
-                            tooltip="Close">
+                    <div className={ classes.depositOptionsContainer }>
+                        <DepositOptions />
+                        <IconButton onTouchTap={ onClose } tooltip="Close">
                             <CloseIcon/>
                         </IconButton>
                     </div>
-                    <div style={{marginLeft: '30px'}}>
+                    <div style={{marginTop: '30px', marginLeft: '30px'}}>
                         <div className={ classes.headerText }>Top up your wallet with ETC</div>
                         <div>
-                            <AccountAddress id={ account.get('id') } style={ styles.address }/>
+                            <AccountAddress id={ address } style={ styles.address }/>
                         </div>
                         <div className={ classes.note }>
                             Share your wallet address and use it to top up your wallet with ETC from any other service.

@@ -20,10 +20,10 @@ const styles = {
 class NetworkSelectorRender extends React.Component {
 
     render() {
-        const { current, switchNetwork } = this.props;
-        const isCurrentNetwork = (net) => (net.chain.id === current.chain.id
-            && (net.geth.url === current.geth.url));
-        const currentNetwork = findNetwork(current.geth.url, current.chain.id) || {};
+        const { chain, geth, switchNetwork } = this.props;
+        const isCurrentNetwork = (net) => (net.chain.id === chain.get('id')
+            && (net.geth.url === geth.get('url')));
+        const currentNetwork = findNetwork(geth.get('url'), chain.get('id')) || {};
 
         const networkClick = (net) => {
             if (!isCurrentNetwork(net)) {
@@ -32,19 +32,20 @@ class NetworkSelectorRender extends React.Component {
         };
 
         return (
-            <DropDownMenu value={ currentNetwork.id }
-                          style={styles.main}
-                          underlineStyle={{ display: 'none' }}
-                          labelStyle={styles.label}>
-            {Networks.map((net) =>
-                <MenuItem
-                    value={net.id}
-                    key={net.id}
-                    primaryText={net.title}
-                    checked={isCurrentNetwork(net)}
-                    onClick={() => networkClick(net)}
-                />
-            )}
+            <DropDownMenu
+                value={ currentNetwork.id }
+                style={ styles.main }
+                underlineStyle={{ display: 'none' }}
+                labelStyle={ styles.label }>
+                { Networks.map((net) =>
+                    <MenuItem
+                        value={net.id}
+                        key={net.id}
+                        primaryText={net.title}
+                        checked={isCurrentNetwork(net)}
+                        onClick={() => networkClick(net)}
+                    />
+                )}
             </DropDownMenu>);
     }
 }
@@ -52,14 +53,14 @@ class NetworkSelectorRender extends React.Component {
 
 NetworkSelectorRender.propTypes = {
     switchNetwork: PropTypes.func.isRequired,
+    geth: PropTypes.object,
+    chain: PropTypes.object,
 };
 
 const NetworkSelector = connect(
     (state, ownProps) => ({
-        current: {
-            chain: state.launcher.get('chain').toJS(),
-            geth: state.launcher.get('geth').toJS(),
-        },
+        chain: state.launcher.get('chain'),
+        geth: state.launcher.get('geth'),
     }),
     (dispatch, ownProps) => ({
         switchNetwork: (net) => {

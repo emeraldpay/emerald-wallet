@@ -13,7 +13,7 @@ import {store, start as startStore} from './store/store.js';
 import Main from './components/layout/Main/main';
 
 import './index.scss';
-
+import './bootstrapButtons.scss';
 
 const muiTheme = getMuiTheme({
     fontFamily: 'Rubik',

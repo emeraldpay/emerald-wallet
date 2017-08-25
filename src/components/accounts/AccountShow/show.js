@@ -9,15 +9,18 @@ import log from 'electron-log';
 import AddressAvatar from 'elements/AddressAvatar/addressAvatar';
 import { gotoScreen, showDialog } from 'store/screenActions';
 import { updateAccount } from 'store/accountActions';
-import AccountEdit from './edit';
-import TransactionsList from '../tx/TxList';
-import AccountBalance from './AccountBalance';
 import { Wei } from 'lib/types';
-import IdentityIcon from '../../elements/IdentityIcon';
-import { Form, styles, Row } from '../../elements/Form';
-import Button from 'elements/Button';
-import SecondaryMenu from './SecondaryMenu';
+import IdentityIcon from 'elements/IdentityIcon';
+import { Form, styles, Row } from 'elements/Form';
+import Button from 'elements/Button/index';
 import { QrCodeIcon } from 'elements/Icons';
+
+import AccountEdit from '../edit';
+import TransactionsList from '../../tx/TxList';
+import AccountBalance from '../AccountBalance';
+import SecondaryMenu from '../SecondaryMenu';
+
+import classes from './show.scss';
 
 const TokenRow = ({ token }) => {
     const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0';
@@ -137,7 +140,7 @@ class AccountRender extends React.Component {
                 <div>
                     {AccountDetails}
                 </div>
-                <div>
+                <div className={ classes.transContainer }>
                     <TransactionsList transactions={transactions}/>
                 </div>
             </div>
@@ -151,6 +154,7 @@ AccountRender.propTypes = {
     transactions: PropTypes.object.isRequired,
     editAccount: PropTypes.func,
     createTx: PropTypes.func,
+    showReceiveDialog: PropTypes.func,
 };
 
 const AccountShow = connect(

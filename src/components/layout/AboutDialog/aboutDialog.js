@@ -7,6 +7,7 @@ import { Row, Col } from 'react-flexbox-grid/lib/index';
 
 import { CloseIcon } from 'elements/Icons';
 
+
 const styles = {
     closeButton: {
         float: 'right',
@@ -37,7 +38,7 @@ const AboutDialog = ({ onClose }) => {
             </Col>
             <Col xs={1}>
                 <IconButton
-                    style={styles.closeButton}
+                    style={ styles.closeButton }
                     onTouchTap={ onClose }
                     tooltip="Close">
                     <CloseIcon />
