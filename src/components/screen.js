@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import log from 'electron-log';
+import createLogger from '../utils/logger';
 
 import AddressBook from './addressbook/book';
 import AccountShow from './accounts/AccountShow';
@@ -24,8 +24,10 @@ import PaperWallet from '../containers/PaperWallet';
 import ExportPaperWallet from '../containers/ExportPaperWallet';
 import GenerateAccount2 from '../components/accounts/GenerateAccount';
 
+const log = createLogger('screen');
+
 const Render = ({ screen, screenItem }) => {
-    log.debug('screen', screen);
+    log.debug('Show screen: ', screen);
 
     if (screen === null) {
         return <div>
@@ -45,17 +47,17 @@ const Render = ({ screen, screenItem }) => {
     } else if (screen === 'address-book') {
         return <AddressBook />;
     } else if (screen === 'address') {
-        return <AddressShow addressId={screenItem}/>;
+        return <AddressShow addressId={ screenItem }/>;
     } else if (screen === 'add-address') {
         return <AddressAdd />;
     } else if (screen === 'add-from-ledger') {
         return <LedgerImport />;
     } else if (screen === 'account') {
-        return <AccountShow account={screenItem}/>;
+        return <AccountShow account={ screenItem }/>;
     } else if (screen === 'transaction') {
         return <TransactionShow hash={ screenItem.hash } accountId={ screenItem.from }/>;
     } else if (screen === 'create-tx') {
-        return <CreateTx account={screenItem}/>;
+        return <CreateTx account={ screenItem }/>;
     } else if (screen === 'generate') {
         return <GenerateAccount2 />;
     } else if (screen === 'importjson') {
@@ -67,7 +69,7 @@ const Render = ({ screen, screenItem }) => {
     } else if (screen === 'deploy-contract') {
         return <DeployContract />;
     } else if (screen === 'contract') {
-        return <ContractShow contract={screenItem} />;
+        return <ContractShow contract={ screenItem } />;
     } else if (screen === 'welcome') {
         return <Welcome />;
     } else if (screen === 'settings') {

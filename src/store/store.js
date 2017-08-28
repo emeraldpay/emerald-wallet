@@ -1,9 +1,9 @@
 import thunkMiddleware from 'redux-thunk';
-import createLogger from 'redux-logger';
+import createReduxLogger from 'redux-logger';
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
 import { ipcRenderer } from 'electron';
-import log from 'electron-log';
+
 import { loadAccountsList, refreshTrackedTransactions, loadPendingTransactions,
     getGasPrice, getExchangeRates } from './accountActions';
 // import { loadAddressBook } from './addressActions';
@@ -22,6 +22,10 @@ import networkReducers from './networkReducers';
 import screenReducers from './screenReducers';
 import launcherReducers from './launcherReducers';
 import ledgerReducers from './ledgerReducers';
+
+import createLogger from '../utils/logger';
+
+const log = createLogger('store');
 
 const second = 1000;
 const minute = 60 * second;
@@ -49,7 +53,7 @@ const stateTransformer = (state) => ({
     form: state.form,
 });
 
-const loggerMiddleware = createLogger({
+const loggerMiddleware = createReduxLogger({
     stateTransformer,
 });
 

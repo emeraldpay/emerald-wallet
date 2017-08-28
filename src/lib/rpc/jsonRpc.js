@@ -1,6 +1,5 @@
 /* @flow */
 import 'isomorphic-fetch';
-import log from 'electron-log';
 
 const baseHeaders = {
     'Content-Type': 'application/json',
@@ -58,12 +57,7 @@ export default class JsonRpc {
             if (response.status >= 400) {
                 throw new Error(`Bad RPC response: ${response.status}`);
             }
-            try {
-                return response.json();
-            } catch (e) {
-                log.error('Invalid JSON response', response, e);
-                throw e;
-            }
+            return response.json();
         });
     }
 
