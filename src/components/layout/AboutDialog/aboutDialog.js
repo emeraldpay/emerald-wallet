@@ -6,7 +6,7 @@ import IconButton from 'material-ui/IconButton';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 
 import { CloseIcon } from 'elements/Icons';
-
+import version from '../../../version';
 
 const styles = {
     closeButton: {
@@ -35,7 +35,7 @@ const AboutDialog = ({ onClose }) => {
         <Row>
             <Col xs={12}>
                 <div style={{color: 'limegreen'}}>
-                    Beta 0.4.0
+                    { version }
                 </div>
                 <div style={{color: 'gray', fontWeight: '300', fontSize: '14px'}}>
                     <p style={{marginTop: 0}}>
