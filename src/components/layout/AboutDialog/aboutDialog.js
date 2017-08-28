@@ -11,19 +11,6 @@ import { CloseIcon } from 'elements/Icons';
 const styles = {
     closeButton: {
         float: 'right',
-        color: 'green',
-    },
-    qr: {
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        maxWidth: '90%',
-    },
-    usageText: {
-        color: 'gray',
-    },
-    usageWarning: {
-        color: 'crimson',
-        fontSize: '0.9rem',
     },
 };
 

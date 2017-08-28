@@ -2,29 +2,14 @@ import React from 'react';
 import QRCode from 'qrcode.react';
 import Dialog from 'material-ui/Dialog';
 import IconButton from 'material-ui/IconButton';
-import AccountAddress from 'elements/AccountAddress';
 
+import AccountAddress from 'elements/AccountAddress';
 import { CloseIcon } from 'elements/Icons';
 
 import classes from './receiveDialog.scss';
 import DepositOptions from './DepositOptions';
 
 const styles = {
-
-    usageText: {
-        color: 'gray',
-    },
-    usageWarning: {
-        color: 'crimson',
-        fontSize: '0.9rem',
-    },
-    accountId: {
-        overflow: 'scroll',
-        backgroundColor: 'whitesmoke',
-        padding: '0.1rem 0.3rem',
-        display: 'inline',
-        fontSize: '0.8rem', /* to better ensure fit for all screen sizes */
-    },
     address: {
         color: '#191919',
         fontSize: '14px',

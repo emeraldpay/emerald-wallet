@@ -16,7 +16,7 @@ import Button from 'elements/Button/index';
 import { QrCodeIcon } from 'elements/Icons';
 
 import AccountEdit from '../edit';
-import TransactionsList from '../../tx/TxList';
+import TransactionsList from '../../tx/TxHistory';
 import AccountBalance from '../AccountBalance';
 import SecondaryMenu from '../SecondaryMenu';
 

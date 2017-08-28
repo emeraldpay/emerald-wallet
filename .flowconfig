@@ -1,0 +1,11 @@
+[ignore]
+.*/node_modules/react-event-listener/.*
+
+[include]
+
+[libs]
+
+[lints]
+
+[options]
+module.name_mapper.extension='scss' -> '<PROJECT_ROOT>/flow/CSSModule.js.flow'

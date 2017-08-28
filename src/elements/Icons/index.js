@@ -7,8 +7,10 @@ import QrCodeIcon from './qrcodeIcon';
 import EditIcon from './editIcon';
 import CloseIcon from './closeIcon';
 import SearchIcon from './searchIcon';
+import RepeatIcon from './repeatIcon';
 
 export {
+    RepeatIcon,
     SearchIcon,
     AdviceIcon,
     LogoIcon,

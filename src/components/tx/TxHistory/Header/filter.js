@@ -10,7 +10,6 @@ import { ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
 
 class Filter extends React.Component {
     render() {
-        const { defaultValue } = this.props;
         return (
             <ToggleButtonGroup name="options" type="radio" defaultValue={ 1 }>
                 <ToggleButton value={ 1 }>ALL</ToggleButton>
@@ -20,6 +19,5 @@ class Filter extends React.Component {
         );
     }
 }
-
 
 export default Filter;

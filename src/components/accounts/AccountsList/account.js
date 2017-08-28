@@ -5,16 +5,17 @@ import { CardText } from 'material-ui/Card';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import log from 'electron-log';
 
-import AddressAvatar from '../../../elements/AddressAvatar/addressAvatar';
 import { gotoScreen, showDialog } from 'store/screenActions';
 
 import { Wei } from 'lib/types';
 import IdentityIcon from 'elements/IdentityIcon';
 import Card from 'elements/Card';
 import Button from 'elements/Button';
+
+import { QrCodeIcon } from 'elements/Icons';
+import AddressAvatar from '../../../elements/AddressAvatar/addressAvatar';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../AccountBalance';
-import { QrCodeIcon } from 'elements/Icons';
 
 const Render = ({account, openAccount, createTx, showReceiveDialog}) => {
     const balance = account.get('balance');
