@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { CardText } from 'material-ui/Card';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
-import log from 'electron-log';
 
 import { gotoScreen, showDialog } from 'store/screenActions';
 
@@ -82,7 +81,6 @@ const Account = connect(
         },
         openAccount: () => {
             const account = ownProps.account;
-            log.debug('open', account.get('id'));
             dispatch(gotoScreen('account', account));
         },
     })

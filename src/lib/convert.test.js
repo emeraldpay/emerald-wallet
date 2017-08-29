@@ -13,6 +13,11 @@ describe('Number formatting', () => {
 describe('Hex Converter', () => {
     it('convert decimal number to hex', () => {
         expect(toHex(10000000000)).toEqual('0x02540be400');
+        expect(toHex('21000')).toEqual('0x5208');
+    });
+
+    it('convert BigNumber to hex', () => {
+        expect(toHex(new BigNumber(21000))).toEqual('0x5208');
     });
 });
 

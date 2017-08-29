@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import People from 'material-ui/svg-icons/social/people';
 import QRCode from 'qrcode.react';
-import log from 'electron-log';
 
 import AddressAvatar from 'elements/AddressAvatar/addressAvatar';
 import { gotoScreen, showDialog } from 'store/screenActions';
@@ -14,6 +13,7 @@ import IdentityIcon from 'elements/IdentityIcon';
 import { Form, styles, Row } from 'elements/Form';
 import Button from 'elements/Button/index';
 import { QrCodeIcon } from 'elements/Icons';
+import createLogger from '../../../utils/logger';
 
 import AccountEdit from '../edit';
 import TransactionsList from '../../tx/TxHistory';
@@ -21,6 +21,8 @@ import AccountBalance from '../AccountBalance';
 import SecondaryMenu from '../SecondaryMenu';
 
 import classes from './show.scss';
+
+const log = createLogger('AccountShow');
 
 const TokenRow = ({ token }) => {
     const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0';

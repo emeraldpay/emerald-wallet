@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import { IconMenu, IconButton, MenuItem } from 'material-ui';
 import MoreHorizIcon from 'material-ui/svg-icons/navigation/more-horiz';
 import FontIcon from 'material-ui/FontIcon';
-import log from 'electron-log';
 
 import { api } from 'lib/rpc/api';
 import { gotoScreen } from 'store/screenActions';
@@ -33,9 +32,7 @@ export default connect(
     (dispatch, ownProps) => ({
         onPrint: (chain) => () => {
             const address = ownProps.account.get('id');
-
             dispatch(gotoScreen('export-paper-wallet', address));
-
         },
         onExport: (chain) => () => {
             const address = ownProps.account.get('id');

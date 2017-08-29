@@ -78,6 +78,7 @@ const waitRpc = function (url) {
         const retry = (n) => {
             exists(status).then(resolve).catch(() => {
                 if (n > 0) {
+                    log.debug(`RPC ${JSON.stringify(status)} not exists, going retry after 1000 ms`);
                     setTimeout(() => retry(n - 1), 1000);
                 } else {
                     reject(new Error('Not Connected'));
