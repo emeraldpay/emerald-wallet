@@ -12,7 +12,7 @@ const initial = Immutable.fromJS({
     localeRate: null,
 });
 
-const initialAddr = Immutable.Map({
+const initialAccount = Immutable.Map({
     id: null,
     hardware: false,
     balance: null,
@@ -37,9 +37,13 @@ const initialTx = Immutable.Map({
 });
 
 function addAccount(state, id, name, description) {
-    return state.update('accounts', (accounts) =>
-        accounts.push(initialAddr.merge({ id, name, description }))
-    );
+    return state.update('accounts', (accounts) => {
+        const pos = accounts.findKey((acc) => acc.get('id') === id);
+        if (pos >= 0) {
+            return accounts;
+        }
+        return accounts.push(initialAccount.merge({ id, name, description }));
+    });
 }
 
 function updateAccount(state, id, f) {
@@ -81,7 +85,7 @@ function onSetAccountsList(state, action) {
                 if (pos >= 0) {
                     return existingAccounts.get(pos);
                 }
-                return initialAddr;
+                return initialAccount;
             };
             const updatedList = Immutable.fromJS(action.accounts).map((acc) =>
                 Immutable.fromJS({

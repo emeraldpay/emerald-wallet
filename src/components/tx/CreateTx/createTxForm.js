@@ -19,6 +19,7 @@ import LinkButton from 'elements/LinkButton';
 
 
 import classes from './createTxForm.scss';
+import { WarningText, Warning } from '../../../elements/Warning';
 
 const textEtc = {
     fontSize: '20px',
@@ -56,15 +57,24 @@ const BalanceField = ({ input }) => {
 /**
  * Address with IdentityIcon. We show it in from field select control
  */
-const AddressWithIcon = ({ address }) => {
+const AddressWithIcon = ({ address, name }) => {
     const style = {
-        div: {display: 'flex', alignItems: 'center'},
-        address: {marginLeft: '5px', fontSize: '16px', color: '#191919'},
+        div: {
+            display: 'flex',
+            alignItems: 'center',
+        },
+        address: {
+            marginLeft: '5px',
+            fontSize: '16px',
+            color: '#191919',
+        },
     };
-    return (<div style={style.div}>
-        <IdentityIcon size={30} expanded={true} id={address}/>
-        <div style={style.address}>{address}</div>
-    </div>);
+    return (
+        <div style={style.div}>
+            <IdentityIcon size={30} expanded={true} id={ address }/>
+            <div style={ style.address }>{ name || address }</div>
+        </div>
+    );
 };
 
 const FromAddressField = ({accounts, onChangeAccount}) => {
@@ -82,7 +92,6 @@ const FromAddressField = ({accounts, onChangeAccount}) => {
                    }}>
         {accounts.map((account) =>
             <MenuItem
-                // innerDivStyle={{display: 'flex'}}
                 key={account.get('id')}
                 value={account.get('id')}
                 primaryText={<AddressWithIcon address={account.get('id')}/>}/>
@@ -91,9 +100,9 @@ const FromAddressField = ({accounts, onChangeAccount}) => {
 };
 
 const CreateTxForm = (props) => {
-    const { fields: { from, to }, accounts, balance, handleSubmit, invalid, pristine, submitting } = props;
-    const { addressBook, handleSelect, tokens, token, isToken, onChangeToken, onChangeAccount } = props;
-    const { fiatRate, value, fromAddr, onEntireBalance } = props;
+    const { accounts, balance, handleSubmit, invalid, pristine, submitting } = props;
+    const { addressBook, handleSelect, tokens, token, isToken, onChangeToken, onChangeAccount, onChangeGasLimit } = props;
+    const { fiatRate, value, fromAddr, onEntireBalance, fee } = props;
     const { error, cancel, goDashboard } = props;
     const { useLedger, ledgerConnected } = props;
 
@@ -169,14 +178,15 @@ const CreateTxForm = (props) => {
 
                 <IconMenu
                     iconButtonElement={<IconButton><ImportContacts /></IconButton>}
-                    onItemTouchTap={handleSelect}
+                    onItemTouchTap={ handleSelect }
                 >
                     {accounts.map((account) =>
                         <MenuItem
-                            leftIcon={<IdentityIcon size={30} expanded={true} id={account.get('id')}/>}
-                            key={account.get('id')}
-                            value={account.get('id')}
-                            primaryText={account.get('name') ? account.get('name') : account.get('id')} />
+                            key={ account.get('id') }
+                            value={ account.get('id') }
+                            primaryText={
+                                <AddressWithIcon name={ account.get('name') } address={ account.get('id') }/> }
+                        />
                     )}
                     {/*
                      <Divider />
@@ -248,7 +258,7 @@ const CreateTxForm = (props) => {
                         {value && `$${value.getFiat(fiatRate).toString()}` }
                     </div>
                     <LinkButton
-                        onClick={() => onEntireBalance(balance)}
+                        onClick={() => onEntireBalance(balance, fee)}
                         label="Entire Balance"
                     />
                 </div>
@@ -258,16 +268,32 @@ const CreateTxForm = (props) => {
         <Row>
             <div style={styles.left}>
                 <div style={styles.fieldName}>
-                    Fee
+                    Gas Limit
                 </div>
             </div>
 
             <div style={styles.right}>
-                <Field name="gasPrice"
-                       component={ TextField }
-                       hintText="23000"
-                       underlineShow={false}
-                       validate={[required, number, positive]}
+                <Field
+                    name="gas"
+                    onChange={ onChangeGasLimit }
+                    component={ TextField }
+                    underlineShow={ false }
+                    validate={[required, number, positive]}
+                />
+            </div>
+        </Row>
+        <Row>
+            <div style={styles.left}>
+                <div style={styles.fieldName}>
+                    Fee
+                </div>
+            </div>
+            <div style={styles.right}>
+                <AccountBalance
+                    balance={ fee }
+                    precision={ 6 }
+                    fiatStyle={ textFiat }
+                    etcStyle={ textEtc }
                 />
             </div>
         </Row>
@@ -300,7 +326,12 @@ const CreateTxForm = (props) => {
 
         {error && (
             <Row>
-                    <span style={{ color: red200 }}><strong>{error}</strong></span>
+                <div style={styles.left}/>
+                <div style={styles.right}>
+                    <Warning>
+                        <WarningText>{error}</WarningText>
+                    </Warning>
+                </div>
             </Row>
         )}
 

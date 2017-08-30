@@ -45,10 +45,6 @@ export const noShadow = {
     boxShadow: 'none',
 };
 
-export const grayBackground = {
-    backgroundColor: 'whitesmoke',
-};
-
 export const cardStyle = {
     paddingTop: '50px',
     paddingBottom: '100px',

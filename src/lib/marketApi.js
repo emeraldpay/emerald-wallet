@@ -1,5 +1,4 @@
 import 'isomorphic-fetch';
-import log from 'electron-log';
 
 const url = 'https://coinmarketcap-nexuist.rhcloud.com/api/';
 const currency = 'etc';

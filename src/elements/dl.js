@@ -48,28 +48,29 @@ export const DescriptionData = (props) => {
     );
 };
 
-export function ValueCard(props) {
-    let { name, value } = props;
-    value = value || props.default;
-    const styles = {
-        bc: {
-            backgroundColor: 'inherit',
-        },
-        light: {
-            fontSize: '0.8rem',
-            color: 'gray',
-            fontWeight: '300',
-        },
-    };
-    const val = <span style={styles.light}>
-        <span>{value}</span>
-    </span>;
-    return (
-        <Card style={{...noShadow, ...styles.bc, ...link}} >
-            <CardHeader
-                title={name}
-                subtitle={val}
-            />
-        </Card>
-    );
-}
+// TODO: remove
+// export function ValueCard(props) {
+//     let { name, value } = props;
+//     value = value || props.default;
+//     const styles = {
+//         bc: {
+//             backgroundColor: 'inherit',
+//         },
+//         light: {
+//             fontSize: '0.8rem',
+//             color: 'gray',
+//             fontWeight: '300',
+//         },
+//     };
+//     const val = <span style={styles.light}>
+//         <span>{value}</span>
+//     </span>;
+//     return (
+//         <Card style={{...noShadow, ...styles.bc, ...link}} >
+//             <CardHeader
+//                 title={name}
+//                 subtitle={val}
+//             />
+//         </Card>
+//     );
+// }

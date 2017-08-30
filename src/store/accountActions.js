@@ -240,33 +240,40 @@ function readWalletFile(wallet) {
     });
 }
 
-export function importWallet(wallet, name, description) {
+export function importJson(data, name, description) {
     return (dispatch, getState) => {
         const chain = currentChain(getState());
-        return readWalletFile(wallet).then((data) => {
-            data.name = name;
-            data.description = description;
-            return api.emerald.importAccount(data, chain).then((result) => {
-                dispatch({
-                    type: 'ACCOUNT/IMPORT_WALLET',
-                    accountId: result,
-                });
-                // Reload accounts.
-                if (isAddress(result) === undefined) {
-                    dispatch({
-                        type: 'ACCOUNT/ADD_ACCOUNT',
-                        accountId: result,
-                        name,
-                        description,
-                    });
-                    dispatch(loadAccountBalance(result));
-                    return result;
-                }
-                throw new Error(result);
+        data.name = name;
+        data.description = description;
+        return api.emerald.importAccount(data, chain).then((result) => {
+            dispatch({
+                type: 'ACCOUNT/IMPORT_WALLET',
+                accountId: result,
             });
+            // Reload accounts.
+            if (isAddress(result) === undefined) {
+                dispatch({
+                    type: 'ACCOUNT/ADD_ACCOUNT',
+                    accountId: result,
+                    name,
+                    description,
+                });
+                dispatch(loadAccountBalance(result));
+                return result;
+            }
+            throw new Error(result);
         });
     };
 }
+
+export function importWallet(wallet, name, description) {
+    return (dispatch, getState) => {
+        return readWalletFile(wallet).then((data) => {
+            return dispatch(importJson(data, name, description));
+        });
+    };
+}
+
 
 function loadStoredTransactions() {
     return (dispatch) => {

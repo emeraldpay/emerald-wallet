@@ -5,6 +5,7 @@ import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 
 import InitialSetup from './initialSetup';
 import logo from 'images/etc_logo.png';
+import version from '../../version';
 
 const Render = ({ message, level, ready, needSetup }) => {
     let messageBlock = null;
@@ -24,7 +25,7 @@ const Render = ({ message, level, ready, needSetup }) => {
                 <span style={{fontSize: '28px', fontWeight: 900}}>Emerald Wallet</span>
             </Col>
             <Col xs={12}>
-                <span style={{fontSize: '16px', fontWeight: 500}}>Version: 0.4.0 Beta 1</span>
+                <span style={{fontSize: '16px', fontWeight: 500}}>Version: { version }</span>
             </Col>
             <Col xs={12}>
                 <span style={{fontSize: '12px', fontWeight: 400, color: '#999'}}>
@@ -49,13 +50,15 @@ const Render = ({ message, level, ready, needSetup }) => {
     };
 
     if (needSetup) {
-        body = <Row>
-            <Col xs={8} xsOffset={2}>
-                <InitialSetup/>
-            </Col>
-        </Row>;
-        logoStyles.row.paddingTop = '20px';
-        logoStyles.img.height = 64;
+        return (
+            <Grid id="welcome-screen">
+                <Row>
+                    <Col xs={8} xsOffset={2}>
+                        <InitialSetup/>
+                    </Col>
+                </Row>;
+            </Grid>
+        );
     }
 
     return (

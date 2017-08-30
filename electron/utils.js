@@ -45,15 +45,15 @@ function checkExists(target) {
 }
 
 
-function deleteIfExists(path) {
+function deleteIfExists(filePath) {
     return new Promise((resolve, reject) => {
-        fs.access(path, fs.constants.W_OK, (err) => {
+        fs.access(filePath, fs.constants.W_OK, (err) => {
             if (err) {
                 resolve('not_exists');
             } else {
-                fs.unlink(path, (err2) => {
+                fs.unlink(filePath, (err2) => {
                     if (err2) {
-                        log.error('Failed to delete', path, err);
+                        log.error('Failed to delete', filePath, err);
                         reject(err2);
                     } else {
                         resolve('deleted');

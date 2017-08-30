@@ -1,6 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import log from 'electron-log';
 
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
@@ -25,7 +24,7 @@ const Render = ({ open, message, handleClose }) => {
         >
             <strong>ERROR:</strong> {message}
         </Dialog>
-    )
+    );
 };
 
 const Error = connect(
@@ -35,8 +34,8 @@ const Error = connect(
     }),
     (dispatch, ownProps) => ({
         handleClose: () => {
-            dispatch(closeError())
-        }
+            dispatch(closeError());
+        },
     })
 )(Render);
 

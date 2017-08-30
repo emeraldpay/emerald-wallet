@@ -4,21 +4,25 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import People from 'material-ui/svg-icons/social/people';
 import QRCode from 'qrcode.react';
-import log from 'electron-log';
-import { FontIcon } from 'material-ui';
 
-import AddressAvatar from 'elements/addressAvatar';
+import AddressAvatar from 'elements/AddressAvatar/addressAvatar';
 import { gotoScreen, showDialog } from 'store/screenActions';
 import { updateAccount } from 'store/accountActions';
-import AccountEdit from './edit';
-import TransactionsList from '../tx/TxList';
-import AccountBalance from './AccountBalance';
 import { Wei } from 'lib/types';
-import IdentityIcon from '../../elements/IdentityIcon';
-import { Form, styles } from '../../elements/Form';
-import Button from 'elements/Button';
-import SecondaryMenu from './SecondaryMenu';
+import IdentityIcon from 'elements/IdentityIcon';
+import { Form, styles, Row } from 'elements/Form';
+import Button from 'elements/Button/index';
 import { QrCodeIcon } from 'elements/Icons';
+import createLogger from '../../../utils/logger';
+
+import AccountEdit from '../edit';
+import TransactionsList from '../../tx/TxHistory';
+import AccountBalance from '../AccountBalance';
+import SecondaryMenu from '../SecondaryMenu';
+
+import classes from './show.scss';
+
+const log = createLogger('AccountShow');
 
 const TokenRow = ({ token }) => {
     const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0';
@@ -69,8 +73,8 @@ class AccountRender extends React.Component {
 
             <div style={{display: 'flex', alignItems: 'stretch'}}>
                 <div style={{flexGrow: 1}}>
-                    <Form caption="Wallet" onCancel={goBack}>
-                        <div id="row" style={styles.formRow}>
+                    <Form caption="Account" onCancel={ goBack }>
+                        <Row>
                             <div id="left-column" style={styles.left}>
                                 <div style={{display: 'flex', justifyContent: 'flex-end'}}>
                                     <IdentityIcon id={account.get('id')} expanded={true} />
@@ -79,9 +83,9 @@ class AccountRender extends React.Component {
                             <div style={styles.right}>
                                 <AccountBalance balance={account.get('balance') || new Wei(0) } withAvatar={true} />
                             </div>
-                        </div>
+                        </Row>
 
-                        <div id="row" style={styles.formRow}>
+                        <Row>
                             <div style={styles.left}>
                                 <div style={styles.fieldName}>
                                     <People />
@@ -100,11 +104,10 @@ class AccountRender extends React.Component {
                                     cancel={this.cancelEdit}
                                 />}
                             </div>
-                        </div>
+                        </Row>
 
-                        <div id="row" style={styles.formRow}>
-                            <div style={styles.left}>
-                            </div>
+                        <Row>
+                            <div style={styles.left}/>
                             <div style={styles.right}>
                                 <div>
                                     <div style={{display: 'flex', alignItems: 'center'}}>
@@ -124,7 +127,7 @@ class AccountRender extends React.Component {
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </Row>
 
                     </Form>
                 </div>
@@ -139,7 +142,7 @@ class AccountRender extends React.Component {
                 <div>
                     {AccountDetails}
                 </div>
-                <div>
+                <div className={ classes.transContainer }>
                     <TransactionsList transactions={transactions}/>
                 </div>
             </div>
@@ -153,6 +156,7 @@ AccountRender.propTypes = {
     transactions: PropTypes.object.isRequired,
     editAccount: PropTypes.func,
     createTx: PropTypes.func,
+    showReceiveDialog: PropTypes.func,
 };
 
 const AccountShow = connect(

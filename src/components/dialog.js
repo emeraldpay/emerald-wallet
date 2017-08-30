@@ -1,12 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import log from 'electron-log';
 
 import { closeDialog } from 'store/screenActions';
-
 import WaitForSign from './tx/waitForSignDialog';
 import ReceiveDialog from './accounts/ReceiveDialog';
 import AboutDialog from './layout/AboutDialog';
+import createLogger from '../utils/logger';
+
+const log = createLogger('Dialog');
 
 const Dialog = ({ dialog, item, handleClose }) => {
     if (!dialog) {

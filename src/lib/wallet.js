@@ -10,6 +10,22 @@ class WalletWrapper {
         const wallet = Wallet.fromPrivateKey(ethUtil.toBuffer(privateKey));
         return wallet.toV3String(password);
     }
+
+    static fromPrivateKey(privateKey) {
+        return new WalletWrapper(Wallet.fromPrivateKey(ethUtil.toBuffer(privateKey)));
+    }
+
+    constructor(wallet) {
+        this.wallet = wallet;
+    }
+
+    toV3String(password) {
+        return this.wallet.toV3String(password);
+    }
+
+    getAddress() {
+        return this.wallet.getAddress();
+    }
 }
 
 export default WalletWrapper;

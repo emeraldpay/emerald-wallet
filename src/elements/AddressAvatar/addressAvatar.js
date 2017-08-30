@@ -1,6 +1,8 @@
 import React from 'react';
 import ModeEdit from 'material-ui/svg-icons/editor/mode-edit';
-import AccountAddress from './AccountAddress';
+
+import AccountAddress from '../AccountAddress';
+import { EditIcon } from 'elements/Icons';
 
 const AddressAvatar = (props) => {
     const { primary, secondary, addr, abbreviated, tertiary, nameEdit, onAddressClick, onEditClick } = props;
@@ -20,16 +22,21 @@ const AddressAvatar = (props) => {
         editIcon: {
             width: '20px',
             cursor: 'pointer',
+
         },
         accountName: {
+            lineHeight: '22px',
             fontSize: '14px',
         },
     };
     return (
         <div style={{...styles.bc}}>
-            <div style={styles.accountName}>
+            <div style={ styles.accountName }>
                 {primary ||
-                <span onClick={onEditClick}>{nameEdit} <ModeEdit style={styles.editIcon} /></span>}
+                <div onClick={ onEditClick } style={ {display: 'flex', alignItems: 'center'} }>
+                    <div>{ nameEdit }</div>
+                    <div style={{display: 'flex', alignItems: 'center', marginLeft: '5px'}}><EditIcon style={ styles.editIcon } /></div>
+                </div>}
             </div>
             <div>
                 {secondary ||

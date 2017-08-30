@@ -1,12 +1,15 @@
+/* @flow */
 import 'isomorphic-fetch';
-import log from 'electron-log';
 
 const baseHeaders = {
     'Content-Type': 'application/json',
 };
 
 export default class JsonRpc {
-    constructor(url) {
+    requestSeq: number;
+    url: string;
+
+    constructor(url: string) {
         this.requestSeq = 1;
         this.url = url;
     }
@@ -18,7 +21,7 @@ export default class JsonRpc {
     *
     * @returns {Promise}
     */
-    call(name, params, headers) {
+    call(name: string, params: any, headers: any) {
         return new Promise((resolve, reject) => {
             if (typeof name !== 'string') {
                 reject(new Error(`RPC call method must be a string, got:
@@ -42,24 +45,28 @@ export default class JsonRpc {
         });
     }
 
-    post(name, params, headers) {
-        const data = {
+    post(name: string, params: any, headers: any) {
+        const data = this.newRequest(name, params);
+        const opt = {
+            method: 'POST',
+            headers: Object.assign(baseHeaders, headers),
+            body: JSON.stringify(data),
+        };
+
+        return fetch(this.url, opt).then((response) => {
+            if (response.status >= 400) {
+                throw new Error(`Bad RPC response: ${response.status}`);
+            }
+            return response.json();
+        });
+    }
+
+    newRequest(name: string, params: any) {
+        return {
             jsonrpc: '2.0',
             method: name,
             params,
             id: this.requestSeq++,
         };
-        return fetch(this.url, {
-            method: 'POST',
-            headers: Object.assign(baseHeaders, headers),
-            body: JSON.stringify(data),
-        }).then((response) => {
-            try {
-                return response.json();
-            } catch (e) {
-                log.error('Invalid response', response, e);
-                throw e;
-            }
-        });
     }
 }

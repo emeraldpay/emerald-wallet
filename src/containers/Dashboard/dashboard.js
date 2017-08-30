@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import Immutable from 'immutable';
 
-import TransactionsList from '../../components/tx/TxList';
+import TransactionsHistory from '../../components/tx/TxHistory';
 import AccountsList from '../../components/accounts/AccountsList';
 
 const Dashboard = (props) => {
@@ -28,7 +28,7 @@ const Dashboard = (props) => {
         <div>
             <AccountsList/>
             {/* #hidden#146 <TokensList/> */}
-            <TransactionsList/>
+            <TransactionsHistory/>
         </div>
     );
 };

@@ -1,4 +1,5 @@
 import Immutable from 'immutable';
+import BigNumber from 'bignumber.js';
 import log from 'electron-log';
 import { change, formValueSelector, SubmissionError } from 'redux-form';
 
@@ -19,7 +20,7 @@ const DefaultTokenGas = 23890;
 const traceValidate = (data, dispatch) => {
     const dataObj = {
         from: data.from,
-        gasPrice: toHex(mweiToWei(data.gasPrice)),
+        gasPrice: toHex(data.gasPrice.val),
         gas: toHex(data.gas),
         to: data.to,
         value: toHex(etherToWei(data.value)),
@@ -41,29 +42,29 @@ const traceValidate = (data, dispatch) => {
         } else {
             resolve(gasEst);
         }
-        reject(errors);
+        reject({ _error: JSON.stringify(errors)});
     };
 
     if (data.token.length > 1) {
         return new Promise((resolve, reject) => {
             dispatch(traceTokenTransaction(data.from,
-              data.to,
-              dataObj.gas,
-              dataObj.gasPrice,
-              dataObj.value,
-              data.token, data.isTransfer
+                data.to,
+                dataObj.gas,
+                dataObj.gasPrice,
+                dataObj.value,
+                data.token, data.isTransfer
             )).then((response) => resolveValidate(response, resolve, reject))
-              .catch((error) => {
-                  reject({ _error: (error.message || JSON.stringify(error)) });
-              });
+                .catch((error) => {
+                    reject({ _error: (error.message || JSON.stringify(error)) });
+                });
         });
     }
     return new Promise((resolve, reject) => {
         dispatch(traceCall(data.from,
-              data.to,
-              dataObj.gas,
-              dataObj.gasPrice,
-              dataObj.value))
+            data.to,
+            dataObj.gas,
+            dataObj.gasPrice,
+            dataObj.value))
             .then((response) => resolveValidate(response, resolve, reject))
             .catch((error) => reject({ _error: (error.message || JSON.stringify(error))}));
     });
@@ -75,12 +76,15 @@ const CreateTx = connect(
         const selector = formValueSelector('createTx');
         const tokens = state.tokens.get('tokens');
         const balance = ownProps.account.get('balance');
-        const gasPrice = state.accounts.get('gasPrice').getMwei();
+        const gasPrice = state.accounts.get('gasPrice');
         const fiatRate = state.accounts.get('localeRate');
         const value = (selector(state, 'value')) ? selector(state, 'value') : 0;
         const fromAddr = (selector(state, 'from'));
         const useLedger = ownProps.account.get('hardware', false);
         const ledgerConnected = state.ledger.get('connected');
+
+        const gasLimit = selector(state, 'gas') ? new BigNumber(selector(state, 'gas')) : new BigNumber(DefaultGas);
+        const fee = gasPrice.mul(gasLimit);
 
         return {
             initialValues: {
@@ -90,6 +94,7 @@ const CreateTx = connect(
                 isTransfer: 'true',
                 gasPrice,
                 balance,
+                fee,
             },
             accounts: state.accounts.get('accounts', Immutable.List()),
             addressBook: state.addressBook.get('addressBook'),
@@ -101,13 +106,15 @@ const CreateTx = connect(
             fromAddr,
             useLedger,
             ledgerConnected,
+            fee,
         };
     },
     (dispatch, ownProps) => ({
         onSubmit: (data) => {
             log.debug(data);
             const useLedger = ownProps.account.get('hardware', false);
-            traceValidate(data, dispatch)
+
+            return traceValidate(data, dispatch)
                 .then((result) => {
                     if (data.token.length > 1) {
                         log.error('unsupported');
@@ -120,8 +127,12 @@ const CreateTx = connect(
                             dispatch(showDialog('sign-transaction', data));
                         }
                         dispatch(
-                            sendTransaction(data.from, data.password, data.to,
-                                toHex(data.gas), toHex(mweiToWei(data.gasPrice)),
+                            sendTransaction(
+                                data.from,
+                                data.password,
+                                data.to,
+                                toHex(data.gas),
+                                toHex(data.gasPrice.val),
                                 toHex(etherToWei(data.value)))
                         );
                     });
@@ -137,10 +148,15 @@ const CreateTx = connect(
             const balance = accounts.get(idx).get('balance');
             dispatch(change('createTx', 'balance', balance));
         },
-        onEntireBalance: (value) => {
+        onEntireBalance: (value, fee) => {
             // load account information for selected account
             if (value) {
-                dispatch(change('createTx', 'value', value.getEther()));
+                dispatch(change('createTx', 'value', value.sub(fee).getEther(8)));
+            }
+        },
+        onChangeGasLimit: (event, value) => {
+            if (value) {
+                dispatch(change('createTx', 'gas', value));
             }
         },
         onChangeToken: (event, value, prev) => {

@@ -1,4 +1,3 @@
-import log from 'electron-log';
 import { ipcRenderer } from 'electron';
 import { api } from 'lib/rpc/api';
 

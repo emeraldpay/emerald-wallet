@@ -2,35 +2,19 @@ import React from 'react';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
+import IconButton from 'material-ui/IconButton';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
+
+import { CloseIcon } from 'elements/Icons';
+import version from '../../../version';
 
 const styles = {
     closeButton: {
         float: 'right',
-        color: 'green',
-    },
-    qr: {
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        maxWidth: '90%',
-    },
-    usageText: {
-        color: 'gray',
-    },
-    usageWarning: {
-        color: 'crimson',
-        fontSize: '0.9rem',
-    },
-    accountId: {
-        overflow: 'scroll',
-        backgroundColor: 'whitesmoke',
-        padding: '0.1rem 0.3rem',
-        display: 'inline',
-        fontSize: '0.8rem', /* to better ensure fit for all screen sizes */
     },
 };
 
-const AboutDialog = ({ account, onClose }) => {
+const AboutDialog = ({ onClose }) => {
     return <Dialog
         modal={false}
         open={true}
@@ -40,18 +24,18 @@ const AboutDialog = ({ account, onClose }) => {
                 <h1>About</h1>
             </Col>
             <Col xs={1}>
-                <FlatButton
-                    icon={<FontIcon className='fa fa-close' />}
-                    primary={true}
+                <IconButton
+                    style={ styles.closeButton }
                     onTouchTap={ onClose }
-                    style={styles.closeButton}
-                />
+                    tooltip="Close">
+                    <CloseIcon />
+                </IconButton>
             </Col>
         </Row>
         <Row>
             <Col xs={12}>
                 <div style={{color: 'limegreen'}}>
-                    Beta 0.4.0
+                    { version }
                 </div>
                 <div style={{color: 'gray', fontWeight: '300', fontSize: '14px'}}>
                     <p style={{marginTop: 0}}>

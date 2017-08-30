@@ -1,10 +1,12 @@
-import React from 'react';
+/* @flow */
+import * as React from 'react';
+import { PropTypes } from 'prop-types';
 import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
 
-import Wallet from 'lib/wallet';
-import saveAs from 'lib/saveAs';
-import { createAccount, exportKeyFile, updateAccount } from 'store/accountActions';
+import Wallet from '../../../lib/wallet';
+import saveAs from '../../../lib/saveAs';
+import { createAccount, exportKeyFile, updateAccount } from '../../../store/accountActions';
 import { gotoScreen } from '../../../store/screenActions';
 import PasswordDialog from './PasswordDialog';
 import DownloadDialog from './DownloadDialog';
@@ -18,11 +20,29 @@ const PAGES = {
     ACCOUNT_PROPS: 4,
 };
 
-class GenerateAccount extends React.Component {
+type Props = {
+    dispatch: any,
+    t: any
+}
+
+type State = {
+    page: number,
+    accountId: string,
+    passphrase?: string,
+    privateKey?: string,
+}
+
+class GenerateAccount extends React.Component<Props, State> {
+    static propTypes = {
+        dispatch: PropTypes.func,
+        t: PropTypes.func.isRequired,
+    }
+
     constructor(props) {
         super(props);
         this.state = {
             page: PAGES.PASSWORD,
+            accountId: '',
         };
     }
 

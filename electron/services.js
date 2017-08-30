@@ -188,9 +188,11 @@ class Services {
                         waitRpc(this.geth.getUrl()).then(() => {
                             this.gethStatus = STATUS.READY;
                             log.info('Geth is ready');
-                            this.notify.info('Local Geth RPC API is ready');
                             this.setup.geth.url = this.geth.getUrl();
+                            this.setup.geth.type = 'local';
 
+                            this.notify.info('Local Geth RPC API is ready');
+                            this.notify.chain(this.setup.chain.name, this.setup.chain.id);
                             this.notifyGethStatus();
 
                             resolve(this.geth);

@@ -15,7 +15,9 @@ export function address(value) {
 }
 
 export function minLength(min) {
-    return (value) => (value && (value.length >= min)) ? undefined : `Please enter at least ${min} characters`;
+    return (value) => {
+        return (value && (value.length >= min)) ? undefined : `Please enter at least ${min} characters`;
+    };
 }
 
 export function passwordMatch(value, allValues) {

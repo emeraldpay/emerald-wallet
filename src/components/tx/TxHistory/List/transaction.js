@@ -3,18 +3,19 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
-import { gotoScreen } from 'store/screenActions';
-import { refreshTransaction } from 'store/accountActions';
 import FontIcon from 'material-ui/FontIcon';
-import log from 'electron-log';
-import { link, tables } from 'lib/styles';
-import { toDuration } from 'lib/convert';
-import AccountAddress from 'elements/AccountAddress';
-import AddressAvatar from 'elements/addressAvatar';
+import IconButton from 'material-ui/IconButton';
+
+import { gotoScreen } from '../../../../store/screenActions';
+import { refreshTransaction } from '../../../../store/accountActions';
+import { link, tables } from '../../../../lib/styles';
+import { toDuration } from '../../../../lib/convert';
+import AddressAvatar from 'elements/AddressAvatar/addressAvatar';
 
 import loading from 'images/loading.gif';
-import AccountBalance from '../../accounts/AccountBalance';
-import { Wei } from 'lib/types';
+import AccountBalance from '../../../accounts/AccountBalance';
+import { Wei } from '../../../../lib/types';
+import { RepeatIcon } from '../../../../elements/Icons';
 
 const Render = ({ tx, openTx, openAccount, refreshTx, toAccount, fromAccount }) => {
 
@@ -32,12 +33,12 @@ const Render = ({ tx, openTx, openAccount, refreshTx, toAccount, fromAccount }) 
     return (
         <TableRow selectable={false}>
 
-            <TableRowColumn style={tables.mediumStyle}>
+            <TableRowColumn style={{ ...tables.mediumStyle, paddingLeft: '0' }}>
                 <AccountBalance balance={tx.get('value') || new Wei(0)} onClick={openTx} withAvatar={false} />
             </TableRowColumn>
 
             <TableRowColumn style={{...tables.mediumStyle, ...link}} >
-                {blockNumber}
+                { blockNumber }
             </TableRowColumn>
 
             <TableRowColumn>
@@ -49,7 +50,7 @@ const Render = ({ tx, openTx, openAccount, refreshTx, toAccount, fromAccount }) 
                     onAddressClick={() => openAccount(fromAccount)}
                 />
             </TableRowColumn>
-            <TableRowColumn style={tables.shortestStyle}>
+            <TableRowColumn style={{...tables.shortestStyle, textOverflow: 'inherit'}}>
                 <FontIcon className='fa fa-angle-right' />
             </TableRowColumn>
             <TableRowColumn>
@@ -60,6 +61,11 @@ const Render = ({ tx, openTx, openAccount, refreshTx, toAccount, fromAccount }) 
                     primary={toAccount.get('name')}
                     onAddressClick={() => openAccount(toAccount)}
                 />
+            </TableRowColumn>
+            <TableRowColumn style={{...tables.shortStyle, paddingRight: '0', textAlign: 'right' }}>
+                <IconButton onClick={ refreshTx }>
+                    <RepeatIcon />
+                </IconButton>
             </TableRowColumn>
         </TableRow>
     );

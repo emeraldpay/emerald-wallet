@@ -2,7 +2,7 @@ class UserNotify {
 
     constructor(webContents) {
         this.webContents = webContents;
-        webContents.on('close', () => this.webContents = null);
+        webContents.on('close', () => { this.webContents = null });
     }
 
     info(msg) {
