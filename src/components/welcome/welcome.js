@@ -50,13 +50,15 @@ const Render = ({ message, level, ready, needSetup }) => {
     };
 
     if (needSetup) {
-        body = <Row>
-            <Col xs={8} xsOffset={2}>
-                <InitialSetup/>
-            </Col>
-        </Row>;
-        logoStyles.row.paddingTop = '20px';
-        logoStyles.img.height = 64;
+        return (
+            <Grid id="welcome-screen">
+                <Row>
+                    <Col xs={8} xsOffset={2}>
+                        <InitialSetup/>
+                    </Col>
+                </Row>;
+            </Grid>
+        );
     }
 
     return (
