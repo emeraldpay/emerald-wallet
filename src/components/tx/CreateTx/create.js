@@ -1,6 +1,5 @@
 import Immutable from 'immutable';
 import BigNumber from 'bignumber.js';
-import log from 'electron-log';
 import { change, formValueSelector, SubmissionError } from 'redux-form';
 
 import { connect } from 'react-redux';
@@ -13,6 +12,9 @@ import { Wei } from 'lib/types';
 import { address } from 'lib/validators';
 
 import CreateTxForm from './createTxForm';
+import createLogger from '../../../utils/logger';
+
+const log = createLogger('CreateTx');
 
 const DefaultGas = 21000;
 const DefaultTokenGas = 23890;
@@ -149,9 +151,9 @@ const CreateTx = connect(
             dispatch(change('createTx', 'balance', balance));
         },
         onEntireBalance: (value, fee) => {
-            // load account information for selected account
             if (value) {
-                dispatch(change('createTx', 'value', value.sub(fee).getEther(8)));
+                const amount = new Wei(BigNumber.max(value.sub(fee).val, new BigNumber(0)));
+                dispatch(change('createTx', 'value', amount.getEther(8)));
             }
         },
         onChangeGasLimit: (event, value) => {
