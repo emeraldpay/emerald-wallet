@@ -22,14 +22,20 @@ export const renderFileField = ({ input, name, meta: { touched, error } }) => {
     );
 };
 
-export const renderTextField = ({ input, label, type, disabled, meta: { touched, error } }) => (
-  <div>
-    <label>{label}</label>
+export const renderTextField = ({ input, label, type, disabled, meta: { touched, error } }) => {
+  const style = {
+    textOverflow: 'ellipsis',
+  };
+    
+  return (
     <div>
-      <TextField {...input} type={type} disabled={disabled} errorText={touched && error} />
+      <label>{label}</label>
+      <div>
+        <TextField inputStyle={style} {...input} type={type} disabled={disabled} errorText={touched && error} />
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 export const renderCodeField = ({ input, label, type, rows, meta: { touched, error } }) => {
     const style = {
