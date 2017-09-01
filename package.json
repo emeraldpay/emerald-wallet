@@ -11,7 +11,7 @@
     "gagarin55 <gagarin55@protonmail.com>",
     "Isaac Ardis"
   ],
-  "version": "0.4.5",
+  "version": "0.5.0",
   "description": "Emerald - Ethereum Classic Wallet",
   "main": "./electron/main.js",
   "moduleRoots": [
