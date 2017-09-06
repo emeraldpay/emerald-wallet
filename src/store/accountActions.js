@@ -1,15 +1,15 @@
-import Immutable from 'immutable';
 import log from 'electron-log';
 import EthereumTx from 'ethereumjs-tx';
-import { api } from 'lib/rpc/api';
+import { convert } from 'emerald-js';
+import { api } from '../lib/rpc/api';
 
-import { getRates } from 'lib/marketApi';
-import { address as isAddress} from 'lib/validators';
+import { getRates } from '../lib/marketApi';
+import { address as isAddress} from '../lib/validators';
 import { loadTokenBalanceOf } from './tokenActions';
-import { toHex, toNumber } from 'lib/convert';
 import { gotoScreen, catchError } from './screenActions';
-import Wallet from 'lib/wallet';
+import Wallet from '../lib/wallet';
 
+const { toNumber, toHex } = convert;
 const currentChain = (state) => state.launcher.getIn(['chain', 'name']);
 
 export function loadAccountBalance(accountId) {
@@ -286,6 +286,19 @@ function loadStoredTransactions() {
                     transactions: storedTxsJSON,
                 });
             }
+        }
+    };
+}
+
+export function loadSettings() {
+    return (dispatch) => {
+        if (localStorage) {
+            let localeCurrency = localStorage.getItem('localeCurrency');
+            localeCurrency = (localeCurrency === null) ? 'USD' : localeCurrency;
+            dispatch({
+                type: 'ACCOUNT/SET_LOCALE_CURRENCY',
+                currency: localeCurrency,
+            });
         }
     };
 }

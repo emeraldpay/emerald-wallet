@@ -5,7 +5,7 @@ import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import Immutable from 'immutable';
 
 import TransactionsHistory from '../../components/tx/TxHistory';
-import AccountsList from '../../components/accounts/AccountsList';
+import AccountsList from '../../components/accounts/AccountList';
 
 const Dashboard = (props) => {
     const { connecting } = props;

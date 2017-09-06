@@ -1,5 +1,7 @@
 import Immutable from 'immutable';
-import { toNumber } from 'lib/convert';
+import { convert } from 'emerald-js';
+
+const { toNumber } = convert;
 
 const initial = Immutable.fromJS({
     chain: {

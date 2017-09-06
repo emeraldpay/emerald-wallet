@@ -5,27 +5,24 @@ import Immutable from 'immutable';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
 import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
+import { Wei } from 'emerald-js';
 
 import { gotoScreen } from '../../../../store/screenActions';
 import { refreshTransaction } from '../../../../store/accountActions';
 import { link, tables } from '../../../../lib/styles';
-import { toDuration } from '../../../../lib/convert';
-import AddressAvatar from 'elements/AddressAvatar/addressAvatar';
-
-import loading from 'images/loading.gif';
+import AddressAvatar from '../../../../elements/AddressAvatar/addressAvatar';
 import AccountBalance from '../../../accounts/AccountBalance';
-import { Wei } from '../../../../lib/types';
 import { RepeatIcon } from '../../../../elements/Icons';
 
-const Render = ({ tx, openTx, openAccount, refreshTx, toAccount, fromAccount }) => {
+export const Transaction = ({ tx, openTx, openAccount, refreshTx, toAccount, fromAccount }) => {
 
-    {/* TODO: move tx status to own component */}
-    {/* TODO: timestamp */}
+    // TODO: move tx status to own component
+    // TODO: timestamp
     let blockNumber = null;
     if (tx.get('blockNumber')) {
-        blockNumber = <span style={{color: 'limegreen'}} onClick={openTx}>Success</span>;
+        blockNumber = <span style={{color: 'limegreen'}} onClick={ openTx }>Success</span>;
     } else {
-        blockNumber = <span style={{color: 'gray'}} onClick={openTx}>
+        blockNumber = <span style={{color: 'gray'}} onClick={ openTx }>
             <FontIcon className="fa fa-spin fa-spinner"/> In queue...
         </span>;
     }
@@ -34,7 +31,7 @@ const Render = ({ tx, openTx, openAccount, refreshTx, toAccount, fromAccount }) 
         <TableRow selectable={false}>
 
             <TableRowColumn style={{ ...tables.mediumStyle, paddingLeft: '0' }}>
-                <AccountBalance balance={tx.get('value') || new Wei(0)} onClick={openTx} withAvatar={false} />
+                <AccountBalance balance={tx.get('value') || Wei.ZERO} onClick={openTx} withAvatar={false} />
             </TableRowColumn>
 
             <TableRowColumn style={{...tables.mediumStyle, ...link}} >
@@ -71,7 +68,7 @@ const Render = ({ tx, openTx, openAccount, refreshTx, toAccount, fromAccount }) 
     );
 };
 
-Render.propTypes = {
+Transaction.propTypes = {
     tx: PropTypes.object.isRequired,
     openAccount: PropTypes.func.isRequired,
     toAccount: PropTypes.object.isRequired,
@@ -80,7 +77,7 @@ Render.propTypes = {
     refreshTx: PropTypes.func.isRequired,
 };
 
-const Transaction = connect(
+export default connect(
     (state, ownProps) => {
         const accounts = state.accounts.get('accounts', Immutable.List());
 
@@ -118,7 +115,5 @@ const Transaction = connect(
             dispatch(refreshTransaction(hash));
         },
     })
-)(Render);
+)(Transaction);
 
-
-export default Transaction;

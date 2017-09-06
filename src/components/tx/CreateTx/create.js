@@ -7,8 +7,8 @@ import { sendTransaction, trackTx } from 'store/accountActions';
 import { traceTokenTransaction, traceCall } from 'store/tokenActions';
 import { gotoScreen, showDialog } from 'store/screenActions';
 import { closeConnection, setWatch } from 'store/ledgerActions';
-import { mweiToWei, etherToWei, toHex, estimateGasFromTrace } from 'lib/convert';
-import { Wei } from 'lib/types';
+import { mweiToWei, etherToWei, estimateGasFromTrace } from 'lib/convert';
+import { Wei, convert } from 'emerald-js';
 import { address } from 'lib/validators';
 
 import CreateTxForm from './createTxForm';
@@ -19,10 +19,12 @@ const log = createLogger('CreateTx');
 const DefaultGas = 21000;
 const DefaultTokenGas = 23890;
 
+const { toHex } = convert;
+
 const traceValidate = (data, dispatch) => {
     const dataObj = {
         from: data.from,
-        gasPrice: toHex(data.gasPrice.val),
+        gasPrice: toHex(data.gasPrice.value()),
         gas: toHex(data.gas),
         to: data.to,
         value: toHex(etherToWei(data.value)),
@@ -79,7 +81,10 @@ const CreateTx = connect(
         const tokens = state.tokens.get('tokens');
         const balance = ownProps.account.get('balance');
         const gasPrice = state.accounts.get('gasPrice');
+
         const fiatRate = state.accounts.get('localeRate');
+        const fiatCurrency = state.accounts.get('localeCurrency');
+
         const value = (selector(state, 'value')) ? selector(state, 'value') : 0;
         const fromAddr = (selector(state, 'from'));
         const useLedger = ownProps.account.get('hardware', false);
@@ -103,6 +108,7 @@ const CreateTx = connect(
             tokens: tokens.unshift(Immutable.fromJS({ address: '', symbol: 'ETC' })),
             isToken: (selector(state, 'token')),
             fiatRate,
+            fiatCurrency,
             value: new Wei(etherToWei(value)),
             balance: selector(state, 'balance'),
             fromAddr,
@@ -152,7 +158,7 @@ const CreateTx = connect(
         },
         onEntireBalance: (value, fee) => {
             if (value) {
-                const amount = new Wei(BigNumber.max(value.sub(fee).val, new BigNumber(0)));
+                const amount = new Wei(BigNumber.max(value.sub(fee).value(), new BigNumber(0)));
                 dispatch(change('createTx', 'value', amount.getEther(8)));
             }
         },

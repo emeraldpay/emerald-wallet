@@ -42,5 +42,13 @@
   },
   "plugins": [
     "react"
-  ]
+  ],
+  "globals": {
+    "fetch": true,
+    "describe": true,
+    "it": true,
+    "expect": true,
+    "jest": true,
+    "test": true
+  }
 }

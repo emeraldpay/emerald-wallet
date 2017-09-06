@@ -3,18 +3,6 @@ import ethUtil from 'ethereumjs-util';
 import ethAbi from 'ethereumjs-abi';
 import log from 'electron-log';
 
-export function toNumber(quantity) {
-    if (quantity == null) {
-        return 0;
-    }
-    if (quantity === '0x') {
-        return 0;
-    }
-    if (typeof quantity !== 'string') {
-        quantity = quantity.toString();
-    }
-    return parseInt(quantity.substring(2), 16);
-}
 
 /*
   Convert unix timestamp to time elapsed
@@ -150,11 +138,6 @@ export function estimateGasFromTrace(dataObj, trace) {
 export function etherToWei(val) {
     const m = new BigNumber(10).pow(18);
     return new BigNumber(val).mul(m).round(0, BigNumber.ROUND_HALF_DOWN);
-}
-
-export function toHex(val) {
-    const hex = new BigNumber(val).toString(16);
-    return `0x${(hex.length % 2 !== 0 ? `0${hex}` : hex)}`;
 }
 
 export function parseHexQuantity(val, defaultValue) {

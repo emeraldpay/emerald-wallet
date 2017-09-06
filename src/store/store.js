@@ -5,7 +5,7 @@ import { reducer as formReducer } from 'redux-form';
 import { ipcRenderer } from 'electron';
 
 import { loadAccountsList, refreshTrackedTransactions, loadPendingTransactions,
-    getGasPrice, getExchangeRates } from './accountActions';
+    getGasPrice, getExchangeRates, loadSettings } from './accountActions';
 // import { loadAddressBook } from './addressActions';
 // import { loadTokenList } from './tokenActions';
 // import { loadContractList } from './contractActions';
@@ -13,7 +13,6 @@ import { loadSyncing, loadHeight, loadPeerCount, loadNetworkVersion } from './ne
 import { gotoScreen } from './screenActions';
 import { readConfig, listenElectron, connecting, loadClientVersion } from './launcherActions';
 import { watchConnection as waitLedger, setWatch, setBaseHD } from './ledgerActions';
-
 import accountsReducers from './accountReducers';
 import addressReducers from './addressReducers';
 import tokenReducers from './tokenReducers';
@@ -79,6 +78,7 @@ export const store = createStore(
 
 function refreshAll() {
     //store.dispatch(loadNetworkVersion());
+    store.dispatch(loadPendingTransactions());
     store.dispatch(refreshTrackedTransactions());
     store.dispatch(loadHeight());
     store.dispatch(loadAccountsList());
@@ -118,7 +118,6 @@ export function startSync() {
         // double check for syncing
         setTimeout(() => store.dispatch(loadSyncing()), 2 * intervalRates.minute); // prod: 30 * this.second
     }
-    setTimeout(() => store.dispatch(loadPendingTransactions()), intervalRates.refreshAllTxRate);
     refreshAll();
     setTimeout(refreshLong, 3 * intervalRates.second);
     store.dispatch(connecting(false));
@@ -131,6 +130,7 @@ export function stopSync() {
 export function start() {
     try {
         store.dispatch(readConfig());
+        store.dispatch(loadSettings());
     } catch (e) {
         log.error(e);
     }

@@ -18,23 +18,18 @@ class SettingsRender extends React.Component {
                 <div id="body">
                     <Row>
                         <div style={styles.left}>
-                            <div style={styles.fieldName}>
-                                Equivalent currency
-                            </div>
+                            <div style={ styles.fieldName }>{ t('currency') }</div>
                         </div>
-                        <div style={styles.right}>
-                            <Field name="currency"
-                                   component={SelectField}
-                                   underlineShow={false}
-                                   fullWidth={true}>
-                                <MenuItem key="eur"
-                                          value="eur"
-                                          label="EUR"
-                                          primaryText="EUR" />
-                                <MenuItem key="usd"
-                                          value="usd"
-                                          label="USD"
-                                          primaryText="USD" />
+                        <div style={ styles.right }>
+                            <Field
+                                name="currency"
+                                component={ SelectField }
+                                underlineShow={ false }
+                                fullWidth={ true } >
+                                <MenuItem key="eur" value="eur" label="EUR" primaryText="EUR" />
+                                <MenuItem key="usd" value="usd" label="USD" primaryText="USD" />
+                                <MenuItem key="cny" value="cny" label="CNY" primaryText="CNY" />
+                                <MenuItem key="rub" value="rub" label="RUB" primaryText="RUB" />
                             </Field>
                         </div>
                     </Row>
@@ -77,9 +72,8 @@ class SettingsRender extends React.Component {
                         </div>
                     </Row>
                     <Row>
-                        <div style={ styles.left }>
-                        </div>
-                        <div style={styles.right}>
+                        <div style={ styles.left } />
+                        <div style={ styles.right }>
                                 <Button primary label="SAVE" onClick={ handleSubmit } />
                         </div>
                     </Row>
@@ -92,7 +86,7 @@ class SettingsRender extends React.Component {
 
 const SettingsForm = translate('settings')(reduxForm({
     form: 'settings',
-    fields: ['language'],
+    fields: ['language', 'currency'],
 })(SettingsRender));
 
 const Settings = connect(
@@ -100,6 +94,7 @@ const Settings = connect(
         return {
             initialValues: {
                 language: i18n.language,
+                currency: state.accounts.get('localeCurrency', '').toLowerCase(),
             },
         };
     },
@@ -110,6 +105,10 @@ const Settings = connect(
 
         onSubmit: (data) => {
             i18n.changeLanguage(data.language);
+            dispatch({
+                type: 'ACCOUNT/SET_LOCALE_CURRENCY',
+                currency: data.currency,
+            });
         },
     })
 )(SettingsForm);

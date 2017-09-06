@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { toNumber } from 'lib/convert';
-import { Wei } from 'lib/types';
-import { noShadow } from 'lib/styles';
+
+import { Currency } from '../../../lib/currency';
 
 const defaultStyles = {
     fiat: {
@@ -18,52 +17,51 @@ const defaultStyles = {
     },
 };
 
-class AccountBalanceRender extends React.Component {
+class AccountBalance extends React.Component {
+
+    calcFiat = (balance, rate) => {
+        if (balance !== null && typeof balance !== 'undefined') {
+            return balance.getFiat(rate);
+        }
+        return 0;
+    };
 
     render() {
-        const { balance, rates, showFiat, precision = 3 } = this.props;
+        const { balance, showFiat, fiatCurrency, fiatRate, precision = 3 } = this.props;
         const { fiatStyle = defaultStyles.fiat, etcStyle = defaultStyles.etc } = this.props;
 
-        const getRate = (b, pair) => {
-            if (b !== null && typeof b !== 'undefined') {
-                return b.getFiat(rates.get(pair));
-            }
-            return '$?';
-        };
-        const styles = {
-            bc: {
-                backgroundColor: 'inherit',
-            },
-        };
-        let fiat = null;
-        if (showFiat) {
-            fiat = <span style={fiatStyle}>${getRate(balance, 'usd')}</span>;
-        }
         return (
-        <div style={{...styles.bc}}>
-            <span style={etcStyle}>{balance ? balance.getEther(precision) : '-'} ETC</span>
-            <br/>{fiat}
-        </div>
+            <div>
+                <span style={ etcStyle }>
+                    { balance ? balance.getEther(precision) : '-'} ETC
+                </span>
+                <br/>
+                { showFiat &&
+                <span style={ fiatStyle }>{ Currency.format(this.calcFiat(balance, fiatRate), fiatCurrency) }</span> }
+            </div>
         );
     }
 }
 
-AccountBalanceRender.propTypes = {
+AccountBalance.propTypes = {
     balance: PropTypes.object.isRequired,
-    rates: PropTypes.object.isRequired,
+    fiatRate: PropTypes.number.isRequired,
     showFiat: PropTypes.bool.isRequired,
 };
 
 export default connect(
     (state, ownProps) => {
-        const rates = state.accounts.get('rates');
+        const fiatCurrency = state.accounts.get('localeCurrency');
+        const fiatRate = state.accounts.get('localeRate');
+
         const balance = ownProps.balance;
         const network = (state.launcher.get('chain').get('name') || '').toLowerCase();
         return {
             balance,
-            rates,
+            fiatCurrency,
+            fiatRate,
             showFiat: (network === 'mainnet'),
         };
     },
     (dispatch, ownProps) => ({})
-)(AccountBalanceRender);
+)(AccountBalance);
