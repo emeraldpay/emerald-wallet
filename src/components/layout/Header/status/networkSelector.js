@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { useRpc, saveSettings } from 'store/launcherActions';
 import { MenuItem, DropDownMenu } from 'material-ui';
 import { Networks, findNetwork } from 'lib/networks';
 
@@ -20,14 +19,14 @@ const styles = {
 class NetworkSelectorRender extends React.Component {
 
     render() {
-        const { chain, geth, switchNetwork } = this.props;
+        const { chain, geth, onNetworkChange } = this.props;
         const isCurrentNetwork = (net) => (net.chain.id === chain.get('id')
             && (net.geth.url === geth.get('url')));
         const currentNetwork = findNetwork(geth.get('url'), chain.get('id')) || {};
 
         const networkClick = (net) => {
             if (!isCurrentNetwork(net)) {
-                switchNetwork(net);
+                onNetworkChange(net);
             }
         };
 
@@ -52,7 +51,7 @@ class NetworkSelectorRender extends React.Component {
 
 
 NetworkSelectorRender.propTypes = {
-    switchNetwork: PropTypes.func.isRequired,
+    onNetworkChange: PropTypes.func,
     geth: PropTypes.object,
     chain: PropTypes.object,
 };
@@ -62,12 +61,7 @@ const NetworkSelector = connect(
         chain: state.launcher.get('chain'),
         geth: state.launcher.get('geth'),
     }),
-    (dispatch, ownProps) => ({
-        switchNetwork: (net) => {
-            dispatch(useRpc({ geth: net.geth, chain: net.chain }));
-            dispatch(saveSettings({ chain: net.chain, geth: net.geth }));
-        },
-    })
+    (dispatch, ownProps) => ({})
 )(NetworkSelectorRender);
 
 export default NetworkSelector;

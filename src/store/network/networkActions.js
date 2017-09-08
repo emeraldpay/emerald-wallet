@@ -1,7 +1,7 @@
-import { api } from 'lib/rpc/api';
+import { api } from '../../lib/rpc/api';
 
 import { convert } from 'emerald-js';
-import { waitForServices, intervalRates } from '../store/store';
+import { waitForServices, intervalRates } from '../../store/store';
 
 let watchingHeight = false;
 

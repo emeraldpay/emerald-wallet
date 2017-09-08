@@ -8,7 +8,7 @@ import IconButton from 'material-ui/IconButton';
 import { Wei } from 'emerald-js';
 
 import { gotoScreen } from '../../../../store/screenActions';
-import { refreshTransaction } from '../../../../store/accountActions';
+import { refreshTransaction } from '../../../../store/wallet/history/historyActions';
 import { link, tables } from '../../../../lib/styles';
 import AddressAvatar from '../../../../elements/AddressAvatar/addressAvatar';
 import AccountBalance from '../../../accounts/AccountBalance';
