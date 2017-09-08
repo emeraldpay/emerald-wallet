@@ -2,19 +2,20 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
-import { Wei, renderAsCurrency } from 'lib/types';
+// import { Wei } from 'lib/types';
+
+import { Wei } from 'emerald-js';
+import { Currency } from '../../../lib/currency';
+
 
 const Render = ({ total, fiat, showFiat, currentLocaleCurrency }) => {
-
     const styleTotal = {
         fontSize: '26px',
         lineHeight: '36px',
         color: '#47B04B',
         marginLeft: '10px',
     };
-    const fiatSubtitle = {
-        // fontSize: '1.1rem',
-    };
+
     const valueDisplay = {
         lineHeight: '36px',
         fontSize: '14px',
@@ -23,12 +24,15 @@ const Render = ({ total, fiat, showFiat, currentLocaleCurrency }) => {
         marginRight: '1rem',
     };
 
+    const totalAmount = Currency.format(fiat.total.localized, currentLocaleCurrency);
+    const rateAmount = fiat.rate.localized ? Currency.format(fiat.rate.localized, currentLocaleCurrency) : '?';
+
     return (
         <div style={{display: 'flex'}}>
-            <div style={styleTotal}>~{total} ETC</div>
+            <div style={styleTotal}>~{ total } ETC</div>
             {showFiat &&
                 <div style={valueDisplay}>
-                    {renderAsCurrency(fiat.total.localized)} / {fiat.rate.localized ? renderAsCurrency(fiat.rate.localized) : '?'} {currentLocaleCurrency.toUpperCase()} for 1 ETC
+                    { totalAmount } / { rateAmount } for 1 ETC
                 </div>
             }
         </div>
@@ -52,12 +56,9 @@ const Total = connect(
         const localeCurrencyRate = state.accounts.get('localeRate');
 
         // Sum of balances of all known accounts.
-        const total = state.accounts.get('accounts', Immutable.List()).map((account) => {
-            if (account.get('balance')) {
-                return account.get('balance');
-            }
-            return new Wei(0);
-        }).reduce((t, v) => t.plus(v), new Wei(0));
+        const total = state.accounts.get('accounts', Immutable.List())
+            .map((account) => (account.get('balance') ? account.get('balance') : new Wei(0)))
+            .reduce((t, v) => t.plus(v), new Wei(0));
         const totalEther = total.getEther();
 
         let fiat = {};

@@ -24,6 +24,10 @@ class Logger {
         this.log(log.error, text, params);
     }
 
+    warn(text: string, ...params: Array<any>): void {
+        this.log(log.warn, text, params);
+    }
+
     log(func: (...params: any[]) => void, text: string, params: Array<any>) {
         if (params.length > 0) {
             func(`${this.category} - ${text}`, ...params);

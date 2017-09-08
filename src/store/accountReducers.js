@@ -1,6 +1,9 @@
 import Immutable from 'immutable';
-import { Wei, TokenUnits } from '../lib/types';
-import { toNumber } from '../lib/convert';
+import { convert, Wei } from 'emerald-js';
+
+import { TokenUnits } from '../lib/types';
+
+const { toNumber } = convert;
 
 const initial = Immutable.fromJS({
     accounts: [],
@@ -8,7 +11,7 @@ const initial = Immutable.fromJS({
     loading: false,
     gasPrice: new Wei(23000000000),
     rates: {},
-    localeCurrency: 'USD', // prod: localeCurrency localized from OS.
+    localeCurrency: 'USD',
     localeRate: null,
 });
 
@@ -279,8 +282,24 @@ function onGasPrice(state, action) {
 function onExchangeRates(state, action) {
     if (action.type === 'ACCOUNT/EXCHANGE_RATES') {
         const localeRate = action.rates[state.get('localeCurrency').toLowerCase()];
-        return state.set('rates', Immutable.fromJS(action.rates))
+        return state
+            .set('rates', Immutable.fromJS(action.rates))
             .set('localeRate', localeRate);
+    }
+    return state;
+}
+
+function onSetLocaleCurrency(state, action) {
+    if (action.type === 'ACCOUNT/SET_LOCALE_CURRENCY') {
+        const currency = action.currency;
+        const rate = state.get('rates', {}).get(currency.toLowerCase());
+
+        // persist settings
+        localStorage.setItem('localeCurrency', currency);
+
+        return state
+            .set('localeCurrency', currency)
+            .set('localeRate', rate);
     }
     return state;
 }
@@ -319,5 +338,6 @@ export default function accountsReducers(state, action) {
     state = onExchangeRates(state, action);
     state = onLoadStoredTransactions(state, action);
     state = onTrackedTxNotFound(state, action);
+    state = onSetLocaleCurrency(state, action);
     return state;
 }

@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
-import { parseString, getNakedAddress, fromTokens, functionToData, getFunctionSignature } from 'lib/convert';
-import { api } from 'lib/rpc/api';
+import { parseString, getNakedAddress, fromTokens, functionToData, getFunctionSignature } from '../lib/convert';
+import { api } from '../lib/rpc/api';
 
 
 /** Abbreviated ABI for ERC20-compatible tokens **/

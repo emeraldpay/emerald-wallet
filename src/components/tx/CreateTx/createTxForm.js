@@ -7,7 +7,6 @@ import { MenuItem, IconButton } from 'material-ui';
 import { IconMenu } from 'material-ui/IconMenu';
 import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
 import { formStyle } from 'lib/styles';
-import { red200 } from 'material-ui/styles/colors';
 import { positive, number, required, address } from 'lib/validators';
 import IdentityIcon from '../../../elements/IdentityIcon';
 import { Form, Row, styles } from '../../../elements/Form';
@@ -20,6 +19,8 @@ import LinkButton from 'elements/LinkButton';
 
 import classes from './createTxForm.scss';
 import { WarningText, Warning } from '../../../elements/Warning';
+
+import { Currency } from '../../../lib/currency';
 
 const textEtc = {
     fontSize: '20px',
@@ -102,7 +103,7 @@ const FromAddressField = ({accounts, onChangeAccount}) => {
 const CreateTxForm = (props) => {
     const { accounts, balance, handleSubmit, invalid, pristine, submitting } = props;
     const { addressBook, handleSelect, tokens, token, isToken, onChangeToken, onChangeAccount, onChangeGasLimit } = props;
-    const { fiatRate, value, fromAddr, onEntireBalance, fee } = props;
+    const { fiatRate, fiatCurrency, value, fromAddr, onEntireBalance, fee } = props;
     const { error, cancel, goDashboard } = props;
     const { useLedger, ledgerConnected } = props;
 
@@ -255,7 +256,7 @@ const CreateTxForm = (props) => {
             <div style={ styles.right }>
                 <div className= { classes.entireBalanceContainer }>
                     <div style={textFiatLight}>
-                        {value && `$${value.getFiat(fiatRate).toString()}` }
+                        { value && Currency.format(value.getFiat(fiatRate), fiatCurrency) }
                     </div>
                     <LinkButton
                         onClick={() => onEntireBalance(balance, fee)}

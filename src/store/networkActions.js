@@ -1,7 +1,6 @@
-import { ipcRenderer } from 'electron';
 import { api } from 'lib/rpc/api';
 
-import { toNumber } from '../lib/convert';
+import { convert } from 'emerald-js';
 import { waitForServices, intervalRates } from '../store/store';
 
 let watchingHeight = false;
@@ -38,7 +37,7 @@ export function loadNetworkVersion() {
 export function loadPeerCount() {
     return (dispatch, getState) =>
         api.geth.netPeerCount().then((result) => {
-            if (getState().network.get('peerCount') !== toNumber(result)) {
+            if (getState().network.get('peerCount') !== convert.toNumber(result)) {
                 dispatch({
                     type: 'NETWORK/PEER_COUNT',
                     peerCount: result,

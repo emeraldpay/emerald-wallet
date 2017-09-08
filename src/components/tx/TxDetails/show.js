@@ -1,21 +1,26 @@
+/* @flow */
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import FlatButton from 'material-ui/FlatButton';
+import { convert } from 'emerald-js';
 
-import AccountAddress from 'elements/AccountAddress';
-import AddressAvatar from 'elements/AddressAvatar';
-import { gotoScreen } from 'store/screenActions';
-import { toNumber, toDate } from 'lib/convert';
-import IdentityIcon from 'elements/IdentityIcon';
-import { Form, styles } from 'elements/Form';
+import AccountAddress from '../../../elements/AccountAddress';
+import AddressAvatar from '../../../elements/AddressAvatar';
+import { gotoScreen } from '../../../store/screenActions';
+import { toDate } from '../../../lib/convert';
+import IdentityIcon from '../../../elements/IdentityIcon';
+import { Form, styles, Row } from '../../../elements/Form';
 import TxStatus from './status';
+import { Currency } from '../../../lib/currency';
 
 import createLogger from '../../../utils/logger';
 
+import classes from './show.scss';
+
 const log = createLogger('TxDetails');
 
-const Render = ({ transaction, rates, account, accounts, openAccount, goBack }) => {
+const Render = ({ transaction, rates, account, accounts, openAccount, goBack, currentCurrency }) => {
     const fromAccount = transaction.get('from') ?
         accounts.find((acct) => acct.get('id') === transaction.get('from')) : null;
     const toAccount = transaction.get('to') ?
@@ -28,15 +33,6 @@ const Render = ({ transaction, rates, account, accounts, openAccount, goBack }) 
         textAlign: 'right',
     };
 
-    const amountEtcStyle = {
-        fontSize: '20px',
-        fontWeight: '500',
-    };
-
-    const amountFiatStyle = {
-        fontSize: '14px',
-    };
-
     const repeatButtonStyle = {
         height: '40px',
         fontSize: '14px',
@@ -45,23 +41,26 @@ const Render = ({ transaction, rates, account, accounts, openAccount, goBack }) 
         backgroundColor: '#EEE',
     };
 
-    const txStatus = transaction.get('blockNumber') ? 'success' : 'queue';
+    const blockNumber = transaction.get('blockNumber');
+    const txStatus = blockNumber ? 'success' : 'queue';
+
+    const fiatAmount = transaction.get('value') ?
+        Currency.format(transaction.get('value').getFiat(rates.get(currentCurrency.toLowerCase())), currentCurrency) :
+        '';
 
     return (
-
         <Form caption="Ethereum Classic Transfer" onCancel={() => goBack(account)}>
-
-            <div id="row" style={styles.formRow}>
+            <Row>
                 <div style={styles.left}>
                 </div>
                 <div style={styles.right}>
                     <div style={{display: 'flex'}}>
                         <div>
-                            <div style={amountEtcStyle}>
-                                {transaction.get('value') ? `${transaction.get('value').getEther()} ETC` : '--'}
+                            <div className={ classes.etcAmount }>
+                                { transaction.get('value') ? `${transaction.get('value').getEther()} ETC` : '--' }
                             </div>
-                            <div style={amountFiatStyle}>
-                                {transaction.get('value') ? `$${transaction.get('value').getFiat(rates.get('usd'))}` : ''}
+                            <div className={ classes.fiatAmount }>
+                                { fiatAmount }
                             </div>
                         </div>
                         <div>
@@ -69,53 +68,53 @@ const Render = ({ transaction, rates, account, accounts, openAccount, goBack }) 
                         </div>
                     </div>
                 </div>
-            </div>
+            </Row>
 
-            <div id="row" style={styles.formRow}>
+            <Row>
                 <div style={styles.left}>
                     <div style={fieldNameStyle}>From</div>
                 </div>
                 <div style={{...styles.right, alignItems: 'center'}}>
-                    <IdentityIcon size={30} expanded={true} id={transaction.get('from')}/>
+                    <IdentityIcon size={ 30 } expanded={ true } id={ transaction.get('from') }/>
                     <AddressAvatar
-                        secondary={<AccountAddress id={transaction.get('from')}/>}
-                        onClick={() => openAccount(fromAccount)}
+                        secondary={<AccountAddress id={ transaction.get('from') }/>}
+                        onClick={ () => openAccount(fromAccount) }
                     />
                 </div>
-            </div>
+            </Row>
 
-            <div id="row" style={styles.formRow}>
+            <Row>
                 <div style={styles.left}>
                     <div style={fieldNameStyle}>To</div>
                 </div>
                 <div style={{...styles.right, alignItems: 'center'}}>
                     <IdentityIcon size={30} expanded={true} id={transaction.get('to')}/>
                     <AddressAvatar
-                        secondary={<AccountAddress id={transaction.get('to')}/>}
-                        onClick={() => openAccount(toAccount)}
+                        secondary={ <AccountAddress id={ transaction.get('to') }/>}
+                        onClick={ () => openAccount(toAccount) }
                     />
                 </div>
-            </div>
+            </Row>
 
-            <div id="row" style={styles.formRow}>
+            <Row>
                 <div style={styles.left}>
                     <div style={fieldNameStyle}>Date</div>
                 </div>
                 <div style={styles.right}>
                     {transaction.get('timestamp') ? toDate(transaction.get('timestamp')) : null}
                 </div>
-            </div>
+            </Row>
 
-            <div id="row" style={styles.formRow}>
+            <Row>
                 <div style={styles.left}>
                     <div style={fieldNameStyle}>GAS</div>
                 </div>
                 <div style={styles.right}>
                     {transaction.get('gas') ? transaction.get('gas') : null}
                 </div>
-            </div>
+            </Row>
 
-            <div id="row" style={styles.formRow}>
+            <Row>
                 <div style={styles.left}>
                 </div>
                 <div style={styles.right}>
@@ -125,18 +124,18 @@ const Render = ({ transaction, rates, account, accounts, openAccount, goBack }) 
                             label="REPEAT" />
                     </div>
                 </div>
-            </div>
+            </Row>
 
-            <div id="row" style={styles.formRow}>
+            <Row>
                 <hr style={{
                     backgroundColor: '#F5F5F5',
                     height: '2px',
                     width: '100%',
                     margin: '30px',
                     border: 'none'}} />
-            </div>
+            </Row>
 
-            <div id="row" style={styles.formRow}>
+            <Row>
                 <div style={styles.left}>
                 </div>
                 <div style={styles.right}>
@@ -144,43 +143,43 @@ const Render = ({ transaction, rates, account, accounts, openAccount, goBack }) 
                         Details
                     </div>
                 </div>
-            </div>
+            </Row>
 
-            <div id="row" style={styles.formRow}>
+            <Row>
                 <div style={styles.left}>
                     <div style={fieldNameStyle}>Hash</div>
                 </div>
                 <div style={styles.right}>
                     {transaction.get('hash')}
                 </div>
-            </div>
+            </Row>
 
-            <div id="row" style={styles.formRow}>
+            <Row>
                 <div style={styles.left}>
                     <div style={fieldNameStyle}>Block</div>
                 </div>
                 <div style={styles.right}>
-                    {transaction.get('blockNumber') ? toNumber(transaction.get('blockNumber')) : 'pending'}
+                    { blockNumber ? convert.toNumber(blockNumber) : 'pending' }
                 </div>
-            </div>
+            </Row>
 
-            <div id="row" style={styles.formRow}>
+            <Row>
                 <div style={styles.left}>
                     <div style={fieldNameStyle}>Nonce</div>
                 </div>
                 <div style={styles.right}>
-                    {transaction.get('nonce')}
+                    { transaction.get('nonce') }
                 </div>
-            </div>
+            </Row>
 
-            <div id="row" style={styles.formRow}>
+            <Row>
                 <div style={styles.left}>
                     <div style={fieldNameStyle}>Input Data</div>
                 </div>
                 <div style={styles.right}>
                     {transaction.get('input') === '0x' ? 'none' : transaction.get('input')}
                 </div>
-            </div>
+            </Row>
 
         </Form>);
 };
@@ -189,7 +188,7 @@ Render.propTypes = {
     hash: PropTypes.string.isRequired,
     transaction: PropTypes.object.isRequired,
     rates: PropTypes.object.isRequired,
-    accounts: PropTypes.object.isRequired, // TODO toJS()?
+    accounts: PropTypes.object.isRequired,
     openAccount: PropTypes.func.isRequired,
     goBack: PropTypes.func.isRequired,
 };
@@ -201,6 +200,8 @@ const TransactionShow = connect(
            (acct) => acct.get('id') === ownProps.accountId
         );
         const rates = state.accounts.get('rates');
+        const currentCurrency = state.accounts.get('localeCurrency');
+
         const Tx = state.accounts.get('trackedTransactions').find(
             (tx) => tx.get('hash') === ownProps.hash
         );
@@ -213,6 +214,7 @@ const TransactionShow = connect(
             account: (account === undefined) ? undefined : account,
             accounts,
             rates,
+            currentCurrency,
         };
     },
     (dispatch, ownProps) => ({
@@ -220,10 +222,16 @@ const TransactionShow = connect(
             dispatch(gotoScreen('home'));
         },
         goBack: (account) => {
-            if (account) { dispatch(gotoScreen('account', account)); } else { dispatch(gotoScreen('home')); }
+            if (account) {
+                dispatch(gotoScreen('account', account));
+            } else {
+                dispatch(gotoScreen('home'));
+            }
         },
         openAccount: (account) => {
-            if (account) { dispatch(gotoScreen('account', account)); }
+            if (account) {
+                dispatch(gotoScreen('account', account));
+            }
         },
     })
 )(Render);

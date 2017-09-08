@@ -6,7 +6,6 @@ import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 
 import { gotoScreen, showDialog } from 'store/screenActions';
 
-import { Wei } from 'lib/types';
 import IdentityIcon from 'elements/IdentityIcon';
 import Card from 'elements/Card';
 import Button from 'elements/Button';
