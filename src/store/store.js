@@ -4,12 +4,12 @@ import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
 import { ipcRenderer } from 'electron';
 
-import { loadAccountsList, refreshTrackedTransactions, loadPendingTransactions,
-    getGasPrice, getExchangeRates, loadSettings } from './accountActions';
+import { refreshTrackedTransactions, init as initHistory } from './wallet/history/historyActions';
+import { loadAccountsList, getGasPrice, getExchangeRates, loadSettings, loadPendingTransactions } from './accountActions';
 // import { loadAddressBook } from './addressActions';
 // import { loadTokenList } from './tokenActions';
 // import { loadContractList } from './contractActions';
-import { loadSyncing, loadHeight, loadPeerCount, loadNetworkVersion } from './networkActions'
+import { loadSyncing, loadHeight, loadPeerCount, loadNetworkVersion } from './network/networkActions'
 import { gotoScreen } from './screenActions';
 import { readConfig, listenElectron, connecting, loadClientVersion } from './launcherActions';
 import { watchConnection as waitLedger, setWatch, setBaseHD } from './ledgerActions';
@@ -17,10 +17,11 @@ import accountsReducers from './accountReducers';
 import addressReducers from './addressReducers';
 import tokenReducers from './tokenReducers';
 import contractReducers from './contractReducers';
-import networkReducers from './networkReducers';
+import networkReducers from './network/networkReducers';
 import screenReducers from './screenReducers';
 import launcherReducers from './launcherReducers';
 import ledgerReducers from './ledgerReducers';
+import walletReducers from './wallet/walletReducers';
 
 import createLogger from '../utils/logger';
 
@@ -50,6 +51,9 @@ const stateTransformer = (state) => ({
     launcher: state.launcher.toJS(),
     ledger: state.ledger.toJS(),
     form: state.form,
+    wallet: {
+        history: state.wallet.history.toJS(),
+    },
 });
 
 const loggerMiddleware = createReduxLogger({
@@ -66,6 +70,7 @@ const reducers = {
     launcher: launcherReducers,
     ledger: ledgerReducers,
     form: formReducer,
+    wallet: walletReducers,
 };
 
 export const store = createStore(
@@ -105,6 +110,7 @@ export function startSync() {
     const state = store.getState();
 
     const chain = state.launcher.getIn(['chain', 'name']);
+
     if (chain === 'mainnet') {
         store.dispatch(setBaseHD("44'/61'/0'/0"));
     } else if (chain === 'morden') {
@@ -118,6 +124,10 @@ export function startSync() {
         // double check for syncing
         setTimeout(() => store.dispatch(loadSyncing()), 2 * intervalRates.minute); // prod: 30 * this.second
     }
+
+    const chainId = state.launcher.getIn(['chain', 'id']);
+    store.dispatch(initHistory(chainId));
+
     refreshAll();
     setTimeout(refreshLong, 3 * intervalRates.second);
     store.dispatch(connecting(false));

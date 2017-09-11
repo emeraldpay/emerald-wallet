@@ -4,9 +4,10 @@ import { connect } from 'react-redux';
 import LinearProgress from 'material-ui/LinearProgress';
 import NetworkSelector from './networkSelector';
 import { separateThousands } from 'lib/convert';
+import { useRpc, saveSettings } from '../../../../store/launcherActions';
+import { init as initWalletHistory } from '../../../../store/wallet/history/historyActions';
 
-
-const Render = ({ block, progress, peerCount, showDetails, connecting }) => {
+const Render = ({ block, progress, peerCount, showDetails, connecting, switchNetwork }) => {
     const styles = {
         details: {
             color: '#47B04B',
@@ -42,7 +43,7 @@ const Render = ({ block, progress, peerCount, showDetails, connecting }) => {
         <div>
             <div style={styles.block}>
                 {details}
-                <NetworkSelector />
+                <NetworkSelector onNetworkChange={ switchNetwork }/>
             </div>
             {showDetails && <div><LinearProgress mode="determinate" color="green" value={progress} /></div>}
         </div>
@@ -55,6 +56,7 @@ Render.propTypes = {
     peerCount: PropTypes.number,
     showDetails: PropTypes.bool.isRequired,
     connecting: PropTypes.bool.isRequired,
+    switchNetwork: PropTypes.func,
 };
 
 const Status = connect(
@@ -78,7 +80,13 @@ const Status = connect(
         }
         return props;
     },
-    (dispatch, ownProps) => ({})
+    (dispatch, ownProps) => ({
+        switchNetwork: (net) => {
+            dispatch(useRpc({ geth: net.geth, chain: net.chain }));
+            dispatch(saveSettings({ chain: net.chain, geth: net.geth }));
+            dispatch(initWalletHistory(net.chain.id));
+        },
+    })
 )(Render);
 
 export default Status;

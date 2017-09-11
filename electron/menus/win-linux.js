@@ -1,4 +1,4 @@
-module.exports = function(window) {
+module.exports = function (window) {
     return [{
         label: '&Emerald',
         submenu: [{

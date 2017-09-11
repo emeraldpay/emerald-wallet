@@ -1,7 +1,7 @@
 import BigNumber from 'bignumber.js';
 import Immutable from 'immutable';
-import { fromTokens, mweiToWei, etherToWei, estimateGasFromTrace } from './convert';
-import { transformToFullName, functionToData, dataToParams, getFunctionSignature, separateThousands } from './convert';
+import { fromTokens, mweiToWei, etherToWei, estimateGasFromTrace, transformToFullName, functionToData,
+    dataToParams, getFunctionSignature, separateThousands } from './convert';
 
 describe('Number formatting', () => {
     it('format number with separated thousands', () => {

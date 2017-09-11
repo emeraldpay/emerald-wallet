@@ -202,7 +202,7 @@ const TransactionShow = connect(
         const rates = state.accounts.get('rates');
         const currentCurrency = state.accounts.get('localeCurrency');
 
-        const Tx = state.accounts.get('trackedTransactions').find(
+        const Tx = state.wallet.history.get('trackedTransactions').find(
             (tx) => tx.get('hash') === ownProps.hash
         );
         if (!Tx) {

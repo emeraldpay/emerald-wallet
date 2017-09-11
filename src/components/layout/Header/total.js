@@ -57,8 +57,8 @@ const Total = connect(
 
         // Sum of balances of all known accounts.
         const total = state.accounts.get('accounts', Immutable.List())
-            .map((account) => (account.get('balance') ? account.get('balance') : new Wei(0)))
-            .reduce((t, v) => t.plus(v), new Wei(0));
+            .map((account) => (account.get('balance') ? account.get('balance') : Wei.ZERO))
+            .reduce((t, v) => t.plus(v), Wei.ZERO);
         const totalEther = total.getEther();
 
         let fiat = {};

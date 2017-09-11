@@ -7,7 +7,6 @@ const { toNumber } = convert;
 
 const initial = Immutable.fromJS({
     accounts: [],
-    trackedTransactions: [],
     loading: false,
     gasPrice: new Wei(23000000000),
     rates: {},
@@ -24,19 +23,6 @@ const initialAccount = Immutable.Map({
     txcount: null,
     name: null,
     description: null,
-});
-
-const initialTx = Immutable.Map({
-    hash: null,
-    blockNumber: null,
-    timestamp: null,
-    from: null,
-    to: null,
-    value: null,
-    data: null,
-    gas: null,
-    gasPrice: null,
-    nonce: null,
 });
 
 function addAccount(state, id, name, description) {
@@ -120,10 +106,17 @@ function onUpdateAccount(state, action) {
 
 function onSetBalance(state, action) {
     if (action.type === 'ACCOUNT/SET_BALANCE') {
-        return updateAccount(state, action.accountId, (acc) =>
-            acc.set('balance', new Wei(action.value))
-                .set('balancePending', null)
-        );
+        return updateAccount(state, action.accountId, (acc) => {
+            // Update balance only if it's changed
+            const newBalance = new Wei(action.value);
+            const currentBalance = acc.get('balance');
+            if (currentBalance && currentBalance.equals(newBalance)) {
+                return acc.set('balancePending', null);
+            }
+            return acc
+                    .set('balance', newBalance)
+                    .set('balancePending', null);
+        });
     }
     return state;
 }
@@ -173,104 +166,6 @@ function onPendingBalance(state, action) {
     return state;
 }
 
-function createTx(data) {
-    let tx = initialTx.merge({
-        hash: data.hash,
-        to: data.to,
-        gas: data.gas,
-        gasPrice: data.gasPrice,
-    });
-    if (data.from !== '0x0000000000000000000000000000000000000000') {
-        tx = tx.set('from', data.from);
-    }
-    if (typeof data.value === 'string') {
-        tx = tx.set('value', new Wei(data.value));
-    }
-    if (typeof data.gasPrice === 'string' || typeof data.gasPrice === 'number') {
-        tx = tx.set('gasPrice', new Wei(data.gasPrice));
-    }
-    if (typeof data.gas === 'string' || typeof data.gas === 'number') {
-        tx = tx.set('gas', toNumber(data.gas));
-    }
-    if (typeof data.nonce === 'string') {
-        tx = tx.set('nonce', toNumber(data.nonce));
-    }
-    // If is not pending, fill in finalized attributes.
-    if (typeof data.blockNumber !== 'undefined' && data.blockNumber !== null) {
-        tx = tx.merge({
-            blockHash: data.blockHash,
-            blockNumber: data.blockNumber,
-            nonce: toNumber(data.nonce),
-            replayProtected: data.replayProtected,
-            input: data.input,
-        });
-    }
-    return tx;
-}
-
-function isTracked(state, tx) {
-    return state.get('trackedTransactions').some((x) => tx.get('hash') === x.get('hash'));
-}
-
-function onLoadPending(state, action) {
-    if (action.type === 'ACCOUNT/PENDING_TX') {
-        const txes = [];
-        for (const tx of action.txList) {
-            txes.push(createTx(tx));
-        }
-        return state.set('trackedTransactions', Immutable.fromJS(txes));
-    }
-    return state;
-}
-
-function onTrackTx(state, action) {
-    if (action.type === 'ACCOUNT/TRACK_TX') {
-        const data = createTx(action.tx);
-        if (isTracked(state, data)) {
-            return state;
-        }
-        return state.update('trackedTransactions', (txes) => txes.push(data));
-    }
-    return state;
-}
-
-function onUpdateTx(state, action) {
-    if (action.type === 'ACCOUNT/UPDATE_TX') {
-        return state.update('trackedTransactions', (txes) => {
-            const pos = txes.findKey((tx) => tx.get('hash') === action.tx.hash);
-            if (pos >= 0) {
-                txes = txes.update(pos, (tx) => tx.mergeWith((o, n) => o || n, createTx(action.tx)));
-            }
-            // It seems kind of sloppy to store whole txs, when all we
-            // really need is hashes. But even if a pending transaction is stored
-            // and program closed, the interval-ized ACCOUNT/UPDATE_TX will refresh
-            // the data via the RPCAPI. So there is not much to lose except a couple of
-            // kilobytes.
-            localStorage.setItem('trackedTransactions', JSON.stringify(txes.toJS()));
-            return txes;
-        });
-    }
-    return state;
-}
-
-/**
- * When full node can't find our tx
- */
-function onTrackedTxNotFound(state, action) {
-    if (action.type === 'ACCOUNT/TRACKED_TX_NOTFOUND') {
-        return state.update('trackedTransactions', (txes) => {
-            const pos = txes.findKey((tx) => tx.get('hash') === action.hash);
-            if (pos >= 0) {
-                // increase total retries counter
-                txes = txes.update(pos, (tx) => tx.set('totalRetries', (tx.get('totalRetries') || 0) + 1));
-            }
-
-            localStorage.setItem('trackedTransactions', JSON.stringify(txes.toJS()));
-            return txes;
-        });
-    }
-    return state;
-}
 
 function onGasPrice(state, action) {
     if (action.type === 'ACCOUNT/GAS_PRICE') {
@@ -304,22 +199,6 @@ function onSetLocaleCurrency(state, action) {
     return state;
 }
 
-function onLoadStoredTransactions(state, action) {
-    if (action.type === 'ACCOUNT/LOAD_STORED_TXS') {
-        let txes = state.get('trackedTransactions');
-        for (const tx of action.transactions) {
-            // In case of dupe pending txs.
-            const pos = txes.findKey((Tx) => Tx.get('hash') === tx.hash);
-            if (pos >= 0) {
-                txes = txes.set(pos, createTx(tx));
-            } else {
-                txes = txes.push(createTx(tx));
-            }
-        }
-        return state.set('trackedTransactions', Immutable.fromJS(txes));
-    }
-    return state;
-}
 
 export default function accountsReducers(state, action) {
     state = state || initial;
@@ -330,14 +209,9 @@ export default function accountsReducers(state, action) {
     state = onSetBalance(state, action);
     state = onSetTxCount(state, action);
     state = onSetTokenBalance(state, action);
-    state = onTrackTx(state, action);
-    state = onUpdateTx(state, action);
     state = onGasPrice(state, action);
-    state = onLoadPending(state, action);
     state = onPendingBalance(state, action);
     state = onExchangeRates(state, action);
-    state = onLoadStoredTransactions(state, action);
-    state = onTrackedTxNotFound(state, action);
     state = onSetLocaleCurrency(state, action);
     return state;
 }

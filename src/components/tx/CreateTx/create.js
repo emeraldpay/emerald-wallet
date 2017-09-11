@@ -140,7 +140,7 @@ const CreateTx = connect(
                                 data.password,
                                 data.to,
                                 toHex(data.gas),
-                                toHex(data.gasPrice.val),
+                                toHex(data.gasPrice.value()),
                                 toHex(etherToWei(data.value)))
                         );
                     });

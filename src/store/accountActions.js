@@ -9,6 +9,8 @@ import { loadTokenBalanceOf } from './tokenActions';
 import { gotoScreen, catchError } from './screenActions';
 import Wallet from '../lib/wallet';
 
+import { trackTx, processPending } from './wallet/history/historyActions';
+
 const { toNumber, toHex } = convert;
 const currentChain = (state) => state.launcher.getIn(['chain', 'name']);
 
@@ -274,22 +276,6 @@ export function importWallet(wallet, name, description) {
     };
 }
 
-
-function loadStoredTransactions() {
-    return (dispatch) => {
-        if (localStorage) {
-            const storedTxs = localStorage.getItem('trackedTransactions');
-            if (storedTxs !== null) {
-                const storedTxsJSON = JSON.parse(storedTxs);
-                dispatch({
-                    type: 'ACCOUNT/LOAD_STORED_TXS',
-                    transactions: storedTxsJSON,
-                });
-            }
-        }
-    };
-}
-
 export function loadSettings() {
     return (dispatch) => {
         if (localStorage) {
@@ -312,11 +298,7 @@ export function loadPendingTransactions() {
                 const txes = result.transactions.filter((t) =>
                     (addrs.includes(t.to) || addrs.includes(t.from))
                 );
-                dispatch({
-                    type: 'ACCOUNT/PENDING_TX',
-                    txList: txes,
-                });
-                dispatch(loadStoredTransactions());
+                dispatch(processPending(txes));
                 for (const tx of txes) {
                     const disp = {
                         type: 'ACCOUNT/PENDING_BALANCE',
@@ -334,51 +316,6 @@ export function loadPendingTransactions() {
                     }
                 }
             });
-}
-
-export function refreshTransaction(hash) {
-    return (dispatch) =>
-        api.geth.getTransactionByHash(hash).then((result) => {
-            if (!result) {
-                log.info(`No tx for hash ${hash}`);
-                dispatch({
-                    type: 'ACCOUNT/TRACKED_TX_NOTFOUND',
-                    hash,
-                });
-            } else if (typeof result === 'object') {
-                dispatch({
-                    type: 'ACCOUNT/UPDATE_TX',
-                    tx: result,
-                });
-                /** TODO: Check for input data **/
-                if ((result.creates !== undefined) && (isAddress(result.creates) === undefined)) {
-                    dispatch({
-                        type: 'CONTRACT/UPDATE_CONTRACT',
-                        tx: result,
-                        address: result.creates,
-                    });
-                }
-            }
-        });
-}
-
-/**
- * Refresh only tx with totalRetries <= 10
- */
-export function refreshTrackedTransactions() {
-    return (dispatch, getState) => {
-        getState().accounts.get('trackedTransactions')
-            .filter((tx) => tx.get('totalRetries', 0) <= 10)
-            .map((tx) => dispatch(refreshTransaction(tx.get('hash')))
-        );
-    };
-}
-
-export function trackTx(tx) {
-    return {
-        type: 'ACCOUNT/TRACK_TX',
-        tx,
-    };
 }
 
 export function getGasPrice() {

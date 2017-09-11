@@ -81,7 +81,7 @@ class AccountRender extends React.Component {
                                 </div>
                             </div>
                             <div style={styles.right}>
-                                <AccountBalance balance={account.get('balance') || new Wei(0) } withAvatar={true} />
+                                <AccountBalance balance={account.get('balance') || Wei.ZERO } withAvatar={true} />
                             </div>
                         </Row>
 
@@ -171,7 +171,7 @@ const AccountShow = connect(
         }
         let transactions = Immutable.List([]);
         if (account.get('id')) {
-            transactions = state.accounts.get('trackedTransactions').filter((t) =>
+            transactions = state.wallet.history.get('trackedTransactions').filter((t) =>
                 (account.get('id') === t.get('to') || account.get('id') === t.get('from'))
             );
         }

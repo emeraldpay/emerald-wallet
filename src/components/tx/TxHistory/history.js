@@ -5,14 +5,12 @@ import { connect } from 'react-redux';
 import { List } from 'immutable';
 
 import Card from '../../../elements/Card';
-import { gotoScreen } from '../../../store/screenActions';
-
 import Header from './Header';
 import TxList from './List';
 
 import classes from './history.scss';
 
-const Render = ({ transactions }) => {
+const TransactionsHistory = ({ transactions }) => {
     return (
         <Card>
             <div className={ classes.container }>
@@ -23,13 +21,13 @@ const Render = ({ transactions }) => {
     );
 };
 
-Render.propTypes = {
+TransactionsHistory.propTypes = {
     transactions: PropTypes.object.isRequired,
 };
 
-const TransactionsHistory = connect(
+export default connect(
     (state, ownProps) => {
-        const transactionsAccounts = state.accounts.get('trackedTransactions', new List());
+        const transactionsAccounts = state.wallet.history.get('trackedTransactions', new List());
         const txs = ownProps.transactions || transactionsAccounts;
         return {
             transactions: txs.reverse(),
@@ -37,6 +35,4 @@ const TransactionsHistory = connect(
     },
     (dispatch, ownProps) => ({
     })
-)(Render);
-
-export default TransactionsHistory;
+)(TransactionsHistory);
