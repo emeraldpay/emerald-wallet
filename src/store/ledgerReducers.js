@@ -1,5 +1,5 @@
 import Immutable from 'immutable';
-import { Wei, TokenUnits } from '../lib/types';
+import { Wei, TokenUnits } from '../lib/tokenUnits';
 
 const initialState = Immutable.fromJS({
     connected: false,

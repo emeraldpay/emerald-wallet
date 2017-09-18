@@ -1,15 +1,19 @@
-import { api } from '../../lib/rpc/api';
-
 import { convert } from 'emerald-js';
+
+import { api } from '../../lib/rpc/api';
 import { waitForServices, intervalRates } from '../../store/store';
+import createLogger from '../../utils/logger';
+import ActionTypes from './actionTypes';
+
+const log = createLogger('networkActions');
 
 let watchingHeight = false;
 
 export function loadHeight(watch) {
     return (dispatch) =>
-        api.geth.call('eth_blockNumber', []).then((result) => {
+        api.geth.eth.blockNumber().then((result) => {
             dispatch({
-                type: 'NETWORK/BLOCK',
+                type: ActionTypes.BLOCK,
                 height: result,
             });
             if (watch && !watchingHeight) {
@@ -21,9 +25,9 @@ export function loadHeight(watch) {
 
 export function loadNetworkVersion() {
     return (dispatch, getState) =>
-        api.geth.netVersion().then((result) => {
+        api.geth.net.version().then((result) => {
             dispatch({
-                type: 'NETWORK/SWITCH_CHAIN',
+                type: ActionTypes.PEER_COUNT,
                 id: `${parseInt(result, 10) + 60}`,
             });
 
@@ -36,10 +40,10 @@ export function loadNetworkVersion() {
 
 export function loadPeerCount() {
     return (dispatch, getState) =>
-        api.geth.netPeerCount().then((result) => {
+        api.geth.net.peerCount().then((result) => {
             if (getState().network.get('peerCount') !== convert.toNumber(result)) {
                 dispatch({
-                    type: 'NETWORK/PEER_COUNT',
+                    type: ActionTypes.PEER_COUNT,
                     peerCount: result,
                 });
             }
@@ -49,7 +53,7 @@ export function loadPeerCount() {
 export function loadSyncing() {
     return (dispatch, getState) => {
         const repeat = getState().launcher.getIn(['geth', 'type']) === 'local';
-        api.geth.call('eth_syncing', []).then((result) => {
+        api.geth.eth.syncing().then((result) => {
             const syncing = getState().network.get('sync').get('syncing');
             if (typeof result === 'object') {
                 // TODO: hz, remove it ?
@@ -57,7 +61,7 @@ export function loadSyncing() {
                 //     dispatch(loadNetworkVersion());
                 // }
                 dispatch({
-                    type: 'NETWORK/SYNCING',
+                    type: ActionTypes.SYNCING,
                     syncing: true,
                     status: result,
                 });
@@ -66,7 +70,7 @@ export function loadSyncing() {
                 }
             } else {
                 dispatch({
-                    type: 'NETWORK/SYNCING',
+                    type: ActionTypes.SYNCING,
                     syncing: false,
                 });
                 setTimeout(() => dispatch(loadHeight(true)), intervalRates.continueLoadSyncRate);
@@ -75,3 +79,13 @@ export function loadSyncing() {
     };
 }
 
+export function getGasPrice() {
+    return (dispatch) => {
+        api.geth.eth.gasPrice().then((result) => {
+            dispatch({
+                type: ActionTypes.GAS_PRICE,
+                value: result,
+            });
+        }).catch((error) => log.error(error));
+    };
+}

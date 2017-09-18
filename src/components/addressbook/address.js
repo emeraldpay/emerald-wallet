@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
-import { gotoScreen } from 'store/screenActions';
+import { gotoScreen } from '../../store/wallet/screen/screenActions';
 import { link, tables } from 'lib/styles';
 
 const Render = ({ address, openAddress }) => (

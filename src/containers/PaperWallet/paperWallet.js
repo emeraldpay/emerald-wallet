@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { gotoScreen } from '../../store/screenActions';
+import { gotoScreen } from '../../store/wallet/screen/screenActions';
 import PaperWallet from '../../components/accounts/PaperWallet';
 
 

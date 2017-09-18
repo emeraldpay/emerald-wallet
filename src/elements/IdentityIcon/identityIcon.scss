@@ -16,3 +16,9 @@
   text-align: center;
   border: 1px solid #FFFFFF;
 }
+
+.clickAble {
+  &:hover {
+    cursor: pointer;
+  }
+}

@@ -120,6 +120,7 @@ class Services {
                 resolve({
                     name: status.chain,
                     id: status.chainId,
+                    clientVersion: status.clientVersion,
                 });
             }).catch(reject);
         });
@@ -185,9 +186,9 @@ class Services {
                         log.error(`geth process exited with code: ${code}`);
                     });
                     if (geth.pid > 0) {
-                        waitRpc(this.geth.getUrl()).then(() => {
+                        waitRpc(this.geth.getUrl()).then((nodeInfo) => {
                             this.gethStatus = STATUS.READY;
-                            log.info('Geth is ready');
+                            log.info(`Geth is ready: ${clientVersion}`);
                             this.setup.geth.url = this.geth.getUrl();
                             this.setup.geth.type = 'local';
 

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { closeDialog } from 'store/screenActions';
+import { closeDialog } from '../store/wallet/screen/screenActions';
 import WaitForSign from './tx/waitForSignDialog';
 import ReceiveDialog from './accounts/ReceiveDialog';
 import AboutDialog from './layout/AboutDialog';
@@ -25,8 +25,8 @@ const Dialog = ({ dialog, item, handleClose }) => {
 
 export default connect(
     (state, ownProps) => ({
-        dialog: state.screen.get('dialog'),
-        item: state.screen.get('dialogItem'),
+        dialog: state.wallet.screen.get('dialog'),
+        item: state.wallet.screen.get('dialogItem'),
     }),
     (dispatch, ownProps) => ({
         handleClose: () => {

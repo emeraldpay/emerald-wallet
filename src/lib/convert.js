@@ -140,12 +140,6 @@ export function etherToWei(val) {
     return new BigNumber(val).mul(m).round(0, BigNumber.ROUND_HALF_DOWN);
 }
 
-export function parseHexQuantity(val, defaultValue) {
-    if (val === null || val === '0x') {
-        return defaultValue;
-    }
-    return new BigNumber(val, 16);
-}
 
 export function transformToFullName(func) {
     const typeName = func.get('inputs').map((i) => i.get('type')).join();

@@ -2,8 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import copy from 'copy-to-clipboard';
 
+import { copyIcon, link } from 'lib/styles';
 import { CloneIcon } from '../Icons';
-import { copyIcon, link } from '../../lib/styles';
+
 
 import styles from './accountAddress.scss';
 

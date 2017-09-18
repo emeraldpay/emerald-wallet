@@ -7,7 +7,7 @@ import FontIcon from 'material-ui/FontIcon';
 import Avatar from 'material-ui/Avatar';
 import { cardSpace, tables } from 'lib/styles';
 import Immutable from 'immutable';
-import { gotoScreen } from 'store/screenActions';
+import { gotoScreen } from '../../store/wallet/screen/screenActions';
 import Token from './token';
 
 const Render = ({ tokens, addToken }) => {

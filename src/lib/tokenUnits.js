@@ -1,15 +1,15 @@
 import BigNumber from 'bignumber.js';
 import Immutable from 'immutable';
+import { convert } from 'emerald-js';
+
 // (whilei) I ran in into error trying to add these npm packages:
 // $ npm install -S os-locale locale-currency
 // $ npm run build ->
 // > Module not found 'child_process', 'fs', and 'spawn-sync'.
 // import osLocale from 'os-locale';
 // import LocaleCurrency from 'locale-currency';
-import { parseHexQuantity } from './convert';
 
-const ETHER = new BigNumber(10).pow(18);
-const MWEI = new BigNumber(10).pow(6);
+const { hexToBigNumber } = convert;
 
 const ZERO = new BigNumber(0);
 const ONE = new BigNumber(1);
@@ -38,12 +38,11 @@ const ONE = new BigNumber(1);
 // }
 // export const localeCurrency = osLocale((locale) => LocaleCurrency.getCurrency(locale));
 
-export class TokenUnits extends Immutable.Record({ val: ZERO,
-    divisor: ONE }) {
+export class TokenUnits extends Immutable.Record({ val: ZERO, divisor: ONE }) {
     constructor(val, decimal) {
         super({
-            val: parseHexQuantity(val, ZERO),
-            divisor: new BigNumber(10).pow(parseHexQuantity(decimal, ZERO)),
+            val: hexToBigNumber(val, ZERO),
+            divisor: new BigNumber(10).pow(hexToBigNumber(decimal, ZERO)),
         });
     }
     getDecimalized(decimals) {

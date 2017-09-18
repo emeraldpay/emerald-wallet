@@ -1,16 +1,15 @@
 import Immutable from 'immutable';
 import BigNumber from 'bignumber.js';
 import { change, formValueSelector, SubmissionError } from 'redux-form';
-
+import { Wei, convert } from 'emerald-js';
 import { connect } from 'react-redux';
+
 import { sendTransaction, trackTx } from 'store/accountActions';
 import { traceTokenTransaction, traceCall } from 'store/tokenActions';
-import { gotoScreen, showDialog } from 'store/screenActions';
+import { gotoScreen, showDialog } from '../../../store/wallet/screen/screenActions';
 import { closeConnection, setWatch } from 'store/ledgerActions';
-import { mweiToWei, etherToWei, estimateGasFromTrace } from 'lib/convert';
-import { Wei, convert } from 'emerald-js';
+import { etherToWei, estimateGasFromTrace } from 'lib/convert';
 import { address } from 'lib/validators';
-
 import CreateTxForm from './createTxForm';
 import createLogger from '../../../utils/logger';
 
@@ -51,12 +50,14 @@ const traceValidate = (data, dispatch) => {
 
     if (data.token.length > 1) {
         return new Promise((resolve, reject) => {
-            dispatch(traceTokenTransaction(data.from,
+            dispatch(traceTokenTransaction(
+                data.from,
                 data.to,
                 dataObj.gas,
                 dataObj.gasPrice,
                 dataObj.value,
-                data.token, data.isTransfer
+                data.token,
+                data.isTransfer
             )).then((response) => resolveValidate(response, resolve, reject))
                 .catch((error) => {
                     reject({ _error: (error.message || JSON.stringify(error)) });
@@ -74,16 +75,17 @@ const traceValidate = (data, dispatch) => {
     });
 };
 
+const getGasPrice = (state) => state.network.get('gasPrice');
 
 const CreateTx = connect(
     (state, ownProps) => {
         const selector = formValueSelector('createTx');
         const tokens = state.tokens.get('tokens');
         const balance = ownProps.account.get('balance');
-        const gasPrice = state.accounts.get('gasPrice');
+        const gasPrice = getGasPrice(state);
 
-        const fiatRate = state.accounts.get('localeRate');
-        const fiatCurrency = state.accounts.get('localeCurrency');
+        const fiatRate = state.wallet.settings.get('localeRate');
+        const fiatCurrency = state.wallet.settings.get('localeCurrency');
 
         const value = (selector(state, 'value')) ? selector(state, 'value') : 0;
         const fromAddr = (selector(state, 'from'));

@@ -10,7 +10,7 @@ import QRCode from 'qrcode.react';
 import Immutable from 'immutable';
 import { cardSpace } from 'lib/styles';
 import { updateAddress, deleteAddress } from 'store/addressActions';
-import { gotoScreen } from 'store/screenActions';
+import { gotoScreen } from '../../store/wallet/screen/screenActions';
 import AddressEdit from './edit';
 
 

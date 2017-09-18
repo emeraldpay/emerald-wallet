@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import { addAddress } from 'store/addressActions';
-import { gotoScreen } from 'store/screenActions';
+import { gotoScreen } from '../../store/wallet/screen/screenActions';
 import { AddressForm } from './form';
 
 const AddressAdd = connect(

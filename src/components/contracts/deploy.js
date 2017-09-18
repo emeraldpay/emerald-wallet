@@ -12,7 +12,7 @@ import { cardSpace } from 'lib/styles';
 import { Row, Col } from 'react-flexbox-grid';
 
 import Immutable from 'immutable';
-import { gotoScreen } from 'store/screenActions';
+import { gotoScreen } from '../../store/wallet/screen/screenActions';
 import { createContract, trackTx } from 'store/accountActions';
 import { addContract, estimateGas } from 'store/contractActions';
 import { positive, number, required, address, hex } from 'lib/validators';

@@ -1,17 +1,14 @@
 import Immutable from 'immutable';
 import { convert, Wei } from 'emerald-js';
 
-import { TokenUnits } from '../lib/types';
+import { TokenUnits } from '../lib/tokenUnits';
 
 const { toNumber } = convert;
 
 const initial = Immutable.fromJS({
     accounts: [],
     loading: false,
-    gasPrice: new Wei(23000000000),
-    rates: {},
-    localeCurrency: 'USD',
-    localeRate: null,
+
 });
 
 const initialAccount = Immutable.Map({
@@ -166,40 +163,6 @@ function onPendingBalance(state, action) {
     return state;
 }
 
-
-function onGasPrice(state, action) {
-    if (action.type === 'ACCOUNT/GAS_PRICE') {
-        return state.set('gasPrice', new Wei(action.value));
-    }
-    return state;
-}
-
-function onExchangeRates(state, action) {
-    if (action.type === 'ACCOUNT/EXCHANGE_RATES') {
-        const localeRate = action.rates[state.get('localeCurrency').toLowerCase()];
-        return state
-            .set('rates', Immutable.fromJS(action.rates))
-            .set('localeRate', localeRate);
-    }
-    return state;
-}
-
-function onSetLocaleCurrency(state, action) {
-    if (action.type === 'ACCOUNT/SET_LOCALE_CURRENCY') {
-        const currency = action.currency;
-        const rate = state.get('rates', {}).get(currency.toLowerCase());
-
-        // persist settings
-        localStorage.setItem('localeCurrency', currency);
-
-        return state
-            .set('localeCurrency', currency)
-            .set('localeRate', rate);
-    }
-    return state;
-}
-
-
 export default function accountsReducers(state, action) {
     state = state || initial;
     state = onLoading(state, action);
@@ -209,9 +172,6 @@ export default function accountsReducers(state, action) {
     state = onSetBalance(state, action);
     state = onSetTxCount(state, action);
     state = onSetTokenBalance(state, action);
-    state = onGasPrice(state, action);
     state = onPendingBalance(state, action);
-    state = onExchangeRates(state, action);
-    state = onSetLocaleCurrency(state, action);
     return state;
 }

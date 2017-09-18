@@ -1,9 +1,10 @@
-export default class Emerald {
+/* @flow */
+export default class Vault {
     constructor(jsonRpc) {
         this.rpc = jsonRpc;
     }
 
-    listAccounts(chain) {
+    listAccounts(chain: string) {
         this.notNull(chain, 'chain');
         return this.rpc.call('emerald_listAccounts', [{chain}]);
     }
@@ -32,6 +33,11 @@ export default class Emerald {
         this.notNull(chain, 'chain');
         const params = [{ passphrase, name, description }, {chain}];
         return this.rpc.call('emerald_newAccount', params);
+    }
+
+    addContract(address: string, name: string) {
+        return Promise.resolve(address);
+        // TODO: return this.rpc.call('emerald_addContract', [{address, name }]);
     }
 
     call(params) {

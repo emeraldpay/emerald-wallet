@@ -5,12 +5,14 @@ import { reducer as formReducer } from 'redux-form';
 import { ipcRenderer } from 'electron';
 
 import { refreshTrackedTransactions, init as initHistory } from './wallet/history/historyActions';
-import { loadAccountsList, getGasPrice, getExchangeRates, loadSettings, loadPendingTransactions } from './accountActions';
+import { loadAccountsList, loadPendingTransactions } from './accountActions';
+import { addToken } from './tokenActions';
+import { getExchangeRates, loadSettings } from './wallet/settings/settingsActions';
 // import { loadAddressBook } from './addressActions';
 // import { loadTokenList } from './tokenActions';
 // import { loadContractList } from './contractActions';
-import { loadSyncing, loadHeight, loadPeerCount, loadNetworkVersion } from './network/networkActions'
-import { gotoScreen } from './screenActions';
+import { getGasPrice, loadSyncing, loadHeight, loadPeerCount, loadNetworkVersion } from './network/networkActions';
+import { gotoScreen } from './wallet/screen/screenActions';
 import { readConfig, listenElectron, connecting, loadClientVersion } from './launcherActions';
 import { watchConnection as waitLedger, setWatch, setBaseHD } from './ledgerActions';
 import accountsReducers from './accountReducers';
@@ -18,10 +20,10 @@ import addressReducers from './addressReducers';
 import tokenReducers from './tokenReducers';
 import contractReducers from './contractReducers';
 import networkReducers from './network/networkReducers';
-import screenReducers from './screenReducers';
 import launcherReducers from './launcherReducers';
 import ledgerReducers from './ledgerReducers';
 import walletReducers from './wallet/walletReducers';
+import deployedTokens from '../lib/deployedTokens';
 
 import createLogger from '../utils/logger';
 
@@ -46,13 +48,14 @@ const stateTransformer = (state) => ({
     addressBook: state.addressBook.toJS(),
     tokens: state.tokens.toJS(),
     contracts: state.contracts.toJS(),
-    screen: state.screen.toJS(),
     network: state.network.toJS(),
     launcher: state.launcher.toJS(),
     ledger: state.ledger.toJS(),
     form: state.form,
     wallet: {
         history: state.wallet.history.toJS(),
+        screen: state.wallet.screen.toJS(),
+        settings: state.wallet.settings.toJS(),
     },
 });
 
@@ -65,7 +68,6 @@ const reducers = {
     addressBook: addressReducers,
     tokens: tokenReducers,
     contracts: contractReducers,
-    screen: screenReducers,
     network: networkReducers,
     launcher: launcherReducers,
     ledger: ledgerReducers,
@@ -128,6 +130,10 @@ export function startSync() {
     const chainId = state.launcher.getIn(['chain', 'id']);
     store.dispatch(initHistory(chainId));
 
+    // deployed tokens
+    const tokens = deployedTokens[+chainId];
+    tokens.forEach((token) => store.dispatch(addToken(token.address, token.name)));
+
     refreshAll();
     setTimeout(refreshLong, 3 * intervalRates.second);
     store.dispatch(connecting(false));
@@ -158,7 +164,7 @@ export function waitForServices() {
             log.info('All services are ready to use by Wallet');
             startSync();
             // If not first run, go right to home when ready.
-            if (state.screen.get('screen') === 'welcome') { //  && !state.launcher.get('firstRun'))
+            if (state.wallet.screen.get('screen') === 'welcome') { //  && !state.launcher.get('firstRun'))
                 store.dispatch(gotoScreen('home'));
             }
         }
@@ -186,7 +192,7 @@ export function screenHandlers() {
     let prevScreen = null;
     const unsubscribe = store.subscribe(() => {
         const state = store.getState();
-        const screen = state.screen.get('screen');
+        const screen = state.wallet.screen.get('screen');
         const justOpened = prevScreen !== screen;
         prevScreen = screen;
         if (justOpened) {

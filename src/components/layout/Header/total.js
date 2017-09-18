@@ -51,9 +51,9 @@ const Total = connect(
         // (whilei) I left hardcoded rates because they might be worth throwing in a popup, feed, sidebar, or
         // some other kind of sexy sneaky UI down the road.
 
-        const rates = state.accounts.get('rates');
-        const currentLocaleCurrency = state.accounts.get('localeCurrency');
-        const localeCurrencyRate = state.accounts.get('localeRate');
+        const rates = state.wallet.settings.get('rates');
+        const currentLocaleCurrency = state.wallet.settings.get('localeCurrency');
+        const localeCurrencyRate = state.wallet.settings.get('localeRate');
 
         // Sum of balances of all known accounts.
         const total = state.accounts.get('accounts', Immutable.List())

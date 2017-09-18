@@ -2,7 +2,7 @@ import React from 'react';
 import { FontIcon, FlatButton, Popover } from 'material-ui';
 import { List, ListItem } from 'material-ui/List';
 
-class WalletsTokensButton extends React.Component {
+class DashboardMenu extends React.Component {
 
     constructor(props) {
         super(props);
@@ -10,11 +10,9 @@ class WalletsTokensButton extends React.Component {
         this.state = {
             open: false,
         };
-        this.handleTouchTap = this.handleTouchTap.bind(this);
-        this.handleRequestClose = this.handleRequestClose.bind(this);
     }
 
-    handleTouchTap(event) {
+    handleTouchTap = (event) => {
         // This prevents ghost click.
         event.preventDefault();
 
@@ -24,17 +22,17 @@ class WalletsTokensButton extends React.Component {
         });
     }
 
-    handleRequestClose() {
+    handleRequestClose = () => {
         this.setState({
             open: false,
         });
     }
 
     render() {
-        const { generate, importJson, importLedger, importPrivateKey, t, style } = this.props;
+        const { generate, importJson, importLedger, importPrivateKey, addToken, t, style } = this.props;
 
         return (
-            <div style={style}>
+            <div style={ style }>
                 <FlatButton
                     onTouchTap={ this.handleTouchTap }
                     label={ t('list.popupMenuLabel') }
@@ -70,9 +68,15 @@ class WalletsTokensButton extends React.Component {
                             leftIcon={<FontIcon className="fa fa-code"/>}
                         />
                         <ListItem
-                            primaryText={t('add.importPrivateKey.title')}
-                            secondaryText={t('add.importPrivateKey.subtitle')}
+                            primaryText={ t('add.importPrivateKey.title') }
+                            secondaryText={ t('add.importPrivateKey.subtitle') }
                             onClick={importPrivateKey}
+                            leftIcon={<FontIcon className="fa fa-key"/>}
+                        />
+                        <ListItem
+                            primaryText={ t('add.token.title') }
+                            secondaryText={ t('add.token.subtitle') }
+                            onClick={ addToken }
                             leftIcon={<FontIcon className="fa fa-key"/>}
                         />
                     </List>
@@ -82,4 +86,4 @@ class WalletsTokensButton extends React.Component {
     }
 }
 
-export default WalletsTokensButton;
+export default DashboardMenu;

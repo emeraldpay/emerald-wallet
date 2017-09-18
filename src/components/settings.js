@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import { MenuItem } from 'material-ui';
 import { translate } from 'react-i18next';
-import { gotoScreen } from '../store/screenActions';
+import { gotoScreen } from '../store/wallet/screen/screenActions';
 import i18n from '../i18n/i18n';
 import { Form, styles, Row } from '../elements/Form';
 import Button from 'elements/Button';

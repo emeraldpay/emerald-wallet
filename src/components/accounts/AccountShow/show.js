@@ -4,17 +4,17 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import People from 'material-ui/svg-icons/social/people';
 import QRCode from 'qrcode.react';
+import { Wei } from 'emerald-js';
 
 import AddressAvatar from 'elements/AddressAvatar/addressAvatar';
-import { gotoScreen, showDialog } from 'store/screenActions';
 import { updateAccount } from 'store/accountActions';
-import { Wei } from 'lib/types';
+
 import IdentityIcon from 'elements/IdentityIcon';
 import { Form, styles, Row } from 'elements/Form';
 import Button from 'elements/Button/index';
 import { QrCodeIcon } from 'elements/Icons';
 import createLogger from '../../../utils/logger';
-
+import { gotoScreen, showDialog } from '../../../store/wallet/screen/screenActions';
 import AccountEdit from '../edit';
 import TransactionsList from '../../tx/TxHistory';
 import AccountBalance from '../AccountBalance';
@@ -69,78 +69,85 @@ class AccountRender extends React.Component {
         const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
         const isHardware = (acc) => acc.get('hardware', false);
 
-        const AccountDetails = (
-
-            <div style={{display: 'flex', alignItems: 'stretch'}}>
-                <div style={{flexGrow: 1}}>
-                    <Form caption="Account" onCancel={ goBack }>
-                        <Row>
-                            <div id="left-column" style={styles.left}>
-                                <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-                                    <IdentityIcon id={account.get('id')} expanded={true} />
-                                </div>
-                            </div>
-                            <div style={styles.right}>
-                                <AccountBalance balance={account.get('balance') || Wei.ZERO } withAvatar={true} />
-                            </div>
-                        </Row>
-
-                        <Row>
-                            <div style={styles.left}>
-                                <div style={styles.fieldName}>
-                                    <People />
-                                </div>
-                            </div>
-                            <div style={styles.right}>
-                                {!this.state.edit && <AddressAvatar
-                                    addr={account.get('id')}
-                                    tertiary={account.get('description')}
-                                    nameEdit={account.get('name')}
-                                    onEditClick={this.handleEdit}
-                                />}
-                                {this.state.edit && <AccountEdit
-                                    address={account}
-                                    submit={this.handleSave}
-                                    cancel={this.cancelEdit}
-                                />}
-                            </div>
-                        </Row>
-
-                        <Row>
-                            <div style={styles.left}/>
-                            <div style={styles.right}>
-                                <div>
-                                    <div style={{display: 'flex', alignItems: 'center'}}>
-                                        <Button
-                                            primary
-                                            label="Add ETC"
-                                            icon={ <QrCodeIcon color="white"/> }
-                                            onClick={ showReceiveDialog }
-                                        />
-                                        <Button
-                                            primary
-                                            style={ {marginLeft: '10px'} }
-                                            label="Send"
-                                            onClick={ createTx }
-                                        />
-                                        { !isHardware(account) && <SecondaryMenu account={account} /> }
-                                    </div>
-                                </div>
-                            </div>
-                        </Row>
-
-                    </Form>
-                </div>
-                <div style={{flexBasis: '30%', backgroundColor: 'white', paddingTop: '110px'}}>
-                    <QRCode value={account.get('id')} />
-                </div>
-            </div>
-        );
-
         return (
             <div>
-                <div>
-                    {AccountDetails}
+                <div style={{display: 'flex', alignItems: 'stretch'}}>
+                    <div style={{flexGrow: 1}}>
+                        <Form caption="Account" onCancel={ goBack }>
+                            <Row>
+                                <div id="left-column" style={styles.left}>
+                                    <div style={{display: 'flex', justifyContent: 'flex-end'}}>
+                                        <IdentityIcon id={account.get('id')} expanded={true} />
+                                    </div>
+                                </div>
+                                <div style={styles.right}>
+                                    <AccountBalance balance={ account.get('balance') || Wei.ZERO } />
+                                </div>
+                            </Row>
+
+                            <Row>
+                                <div style={ styles.left }>
+                                </div>
+                                <div style={ styles.right }>
+                                    <div>
+                                        { account.get('tokens').map((token) => (
+                                            <div key={ token.get('address') }>
+                                                { token.get('balance').getDecimalized() } { token.get('symbol') }
+                                            </div>))
+                                        }
+                                    </div>
+                                </div>
+                            </Row>
+
+                            <Row>
+                                <div style={styles.left}>
+                                    <div style={styles.fieldName}>
+                                        <People />
+                                    </div>
+                                </div>
+                                <div style={styles.right}>
+                                    {!this.state.edit && <AddressAvatar
+                                        addr={account.get('id')}
+                                        tertiary={account.get('description')}
+                                        nameEdit={account.get('name')}
+                                        onEditClick={this.handleEdit}
+                                    />}
+                                    {this.state.edit && <AccountEdit
+                                        address={account}
+                                        submit={this.handleSave}
+                                        cancel={this.cancelEdit}
+                                    />}
+                                </div>
+                            </Row>
+
+                            <Row>
+                                <div style={styles.left}/>
+                                <div style={styles.right}>
+                                    <div>
+                                        <div style={{display: 'flex', alignItems: 'center'}}>
+                                            <Button
+                                                primary
+                                                label="Add ETC"
+                                                icon={ <QrCodeIcon color="white"/> }
+                                                onClick={ showReceiveDialog }
+                                            />
+                                            <Button
+                                                primary
+                                                style={ {marginLeft: '10px'} }
+                                                label="Send"
+                                                onClick={ createTx }
+                                            />
+                                            { !isHardware(account) && <SecondaryMenu account={account} /> }
+                                        </div>
+                                    </div>
+                                </div>
+                            </Row>
+
+                        </Form>
+                    </div>
+                    <div className={ classes.qrCodeContainer }>
+                        <QRCode value={ account.get('id') } />
+                    </div>
                 </div>
                 <div className={ classes.transContainer }>
                     <TransactionsList transactions={transactions}/>

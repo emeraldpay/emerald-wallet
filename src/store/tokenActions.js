@@ -1,101 +1,77 @@
-import Immutable from 'immutable';
-import { parseString, getNakedAddress, fromTokens, functionToData, getFunctionSignature } from '../lib/convert';
+/* @flow */
+import { convert } from 'emerald-js';
+import { parseString, getNakedAddress, fromTokens } from '../lib/convert';
 import { api } from '../lib/rpc/api';
 
+import { TokenAbi } from '../lib/erc20';
+import Contract from '../lib/contract';
 
-/** Abbreviated ABI for ERC20-compatible tokens **/
-const TokenAbi = [
-    {name: 'approve',
-        inputs: [{name: '_spender', type: 'address'},
-                {name: '_amount', type: 'uint256'}],
-        outputs: [{name: 'success', type: 'bool'}]},
-    {name: 'totalSupply',
-        inputs: [],
-        outputs: [{name: '', type: 'uint256'}]},
-    {name: 'divisor',
-        inputs: [],
-        outputs: [{name: 'divisor', type: 'uint256'}]},
-    {name: 'transferFrom',
-        inputs: [{name: '_from', type: 'address'},
-                  {name: '_to', type: 'address'},
-                  {name: '_value', type: 'uint256'}],
-        outputs: [{name: 'success', type: 'bool'}]},
-    {name: 'balanceOf',
-        inputs: [{name: '_owner', type: 'address'}],
-        outputs: [{name: 'balance', type: 'uint256'}]},
-    {name: 'transfer',
-        inputs: [{name: '_to', type: 'address'}, {name: '_value', type: 'uint256'}],
-        outputs: [{name: 'success', type: 'bool'}]},
-    {name: 'symbol',
-        inputs: [],
-        outputs: [{name: '', type: 'string'}]},
-    {name: 'name',
-        inputs: [],
-        outputs: [{name: '', type: 'string'}]},
-    {name: 'decimals',
-        inputs: [],
-        outputs: [{name: '', type: 'uint8'}]},
-];
+import createLogger from '../utils/logger';
 
-function getFunction(name) {
-    return Immutable.fromJS(
-        TokenAbi.find((f) => (f.name === name))
-        );
+const { toNumber } = convert;
+const tokenContract = new Contract(TokenAbi);
+
+const log = createLogger('tokenActions');
+
+type TokenInfo = {
+    address: string,
 }
 
-export function loadTokenBalanceOf(token, accountId) {
+export function loadTokenBalanceOf(token: TokenInfo, accountId: string) {
     return (dispatch) => {
-        const data = functionToData(getFunction('balanceOf'),
-            { _owner: getNakedAddress(accountId) });
-        api.geth.call('eth_call', [{ to: token.address, data }, 'latest']).then((result) =>
-            dispatch({
-                type: 'ACCOUNT/SET_TOKEN_BALANCE',
-                accountId,
-                token,
-                value: result,
-            })
-        );
+        if (token.address) {
+            const data = tokenContract.functionToData('balanceOf', { _owner: accountId });
+            return api.geth.eth.call(token.address, data).then((result) => {
+                dispatch({
+                    type: 'ACCOUNT/SET_TOKEN_BALANCE',
+                    accountId,
+                    token,
+                    value: result,
+                });
+            });
+        }
+        log.warn(`Invalid token data ${JSON.stringify(token)}`);
     };
 }
 
 export function loadTokenDetails(token) {
     return (dispatch, getState) => {
-        api.geth.call('eth_call', [{
-            to: token.address,
-            data: getFunctionSignature(getFunction('totalSupply')) },
-            'latest']).then((result) => {
-                dispatch({
-                    type: 'TOKEN/SET_TOTAL_SUPPLY',
-                    address: token.address,
-                    value: result,
-                });
+        return Promise.all([
+            api.geth.eth.call(token.address, tokenContract.functionToData('totalSupply')),
+            api.geth.eth.call(token.address, tokenContract.functionToData('decimals')),
+            api.geth.eth.call(token.address, tokenContract.functionToData('symbol')),
+        ]).then((results) => {
+            dispatch({
+                type: 'TOKEN/SET_TOTAL_SUPPLY',
+                address: token.address,
+                value: results[0],
             });
-        api.geth.call('eth_call', [{ to: token.address,
-            data: getFunctionSignature(getFunction('decimals')) },
-            'latest']).then((result) => {
-                dispatch({
-                    type: 'TOKEN/SET_DECIMALS',
-                    address: token.address,
-                    value: result,
-                });
+
+            dispatch({
+                type: 'TOKEN/SET_DECIMALS',
+                address: token.address,
+                value: results[1],
             });
-        api.geth.call('eth_call', [{ to: token.address,
-            data: getFunctionSignature(getFunction('symbol')) },
-            'latest']).then((result) => {
-                dispatch({
-                    type: 'TOKEN/SET_SYMBOL',
-                    address: token.address,
-                    value: parseString(result),
-                });
+
+            dispatch({
+                type: 'TOKEN/SET_SYMBOL',
+                address: token.address,
+                value: parseString(results[2]),
             });
-        const accounts = getState().accounts;
-        if (!accounts.get('loading')) {
-            accounts.get('accounts')
-                    .map((acct) => dispatch(loadTokenBalanceOf(token, acct.get('id'))));
-        }
+        });
     };
 }
 
+export function loadTokenBalances(token: TokenInfo) {
+    return (dispatch, getState) => {
+            // After all promises resolved update accounts balances
+        const tokenInfo = getState().tokens.get('tokens').find((t) => t.get('address') === token.address).toJS();
+        const accounts = getState().accounts;
+        if (!accounts.get('loading')) {
+            accounts.get('accounts').forEach((acct) => dispatch(loadTokenBalanceOf(tokenInfo, acct.get('id'))));
+        }
+    };
+}
 /*
  * json.result should return a list of tokens.
  * Each token should have name, contract address, and ABI
@@ -120,29 +96,25 @@ export function loadTokenList() {
 }
 
 export function addToken(address, name) {
-    return (dispatch) =>
-        api.emerald.call('emerald_addContract', [{
-            address,
-            name,
-        }]).then((result) => {
+    return (dispatch) => {
+        return api.emerald.addContract(address, name).then((result) => {
             dispatch({
                 type: 'TOKEN/ADD_TOKEN',
                 address,
                 name,
             });
-            dispatch(loadTokenDetails({ address }));
+            return dispatch(loadTokenDetails({address}));
         });
+    };
 }
 
 function createTokenTransaction(token, to, value, isTransfer) {
     const address = getNakedAddress(to);
     const numTokens = fromTokens(value, token.get('decimals'));
     if (isTransfer === 'true') {
-        return functionToData(getFunction('transfer'),
-            { _to: address, _value: numTokens });
+        return tokenContract.functionToData('transfer', { _to: address, _value: numTokens });
     }
-    return functionToData(getFunction('approve'),
-            { _spender: address, _amount: numTokens });
+    return tokenContract.functionToData('approve', { _spender: address, _amount: numTokens });
 }
 
 

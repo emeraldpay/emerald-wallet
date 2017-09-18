@@ -7,7 +7,7 @@ import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
 import { Wei } from 'emerald-js';
 
-import { gotoScreen } from '../../../../store/screenActions';
+import { gotoScreen } from '../../../../store/wallet/screen/screenActions';
 import { refreshTransaction } from '../../../../store/wallet/history/historyActions';
 import { link, tables } from '../../../../lib/styles';
 import AddressAvatar from '../../../../elements/AddressAvatar/addressAvatar';

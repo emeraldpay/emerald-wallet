@@ -1,5 +1,5 @@
 import Immutable from 'immutable';
-import { TokenUnits } from '../lib/types';
+import { TokenUnits } from '../lib/tokenUnits';
 
 // ----- STRUCTURES
 

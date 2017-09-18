@@ -7,7 +7,7 @@ import { translate } from 'react-i18next';
 import Wallet from '../../../lib/wallet';
 import saveAs from '../../../lib/saveAs';
 import { createAccount, exportKeyFile, updateAccount } from '../../../store/accountActions';
-import { gotoScreen } from '../../../store/screenActions';
+import { gotoScreen } from '../../../store/wallet/screen/screenActions';
 import PasswordDialog from './PasswordDialog';
 import DownloadDialog from './DownloadDialog';
 import ShowPrivateDialog from './ShowPrivateDialog';

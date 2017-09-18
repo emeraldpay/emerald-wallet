@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import RaisedButton from 'material-ui/RaisedButton';
 import FontIcon from 'material-ui/FontIcon';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
-import { gotoScreen } from 'store/screenActions';
+import { gotoScreen } from '../../../../store/wallet/screen/screenActions';
 import { importSelected } from 'store/ledgerActions';
 
 const Render = ({ selected, onAddSelected, onCancel }) => {

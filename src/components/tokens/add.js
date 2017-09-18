@@ -10,8 +10,8 @@ import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { cardSpace } from 'lib/styles';
 
 import Immutable from 'immutable';
-import { gotoScreen } from 'store/screenActions';
-import { addToken } from 'store/tokenActions';
+import { gotoScreen } from '../../store/wallet/screen/screenActions';
+import { addToken, loadTokenBalances } from 'store/tokenActions';
 import { required, address } from 'lib/validators';
 import Token from './token';
 
@@ -70,12 +70,13 @@ const AddToken = connect(
         token: state.tokens.get('tokens', Immutable.List()).last(),
     }),
     (dispatch, ownProps) => ({
-        onSubmit: (data) => new Promise((resolve, reject) => {
-            dispatch(addToken(data.address, data.name))
-                        .then((response) => {
-                            resolve(response);
-                        });
-        }),
+        onSubmit: (data) => {
+            return dispatch(addToken(data.address, data.name))
+                .then((response) => {
+                    return dispatch(loadTokenBalances(data));
+                    //resolve(response);
+                });
+        },
         cancel: () => {
             dispatch(gotoScreen('home'));
         },

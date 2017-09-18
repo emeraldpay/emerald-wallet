@@ -5,8 +5,8 @@ import MoreHorizIcon from 'material-ui/svg-icons/navigation/more-horiz';
 import FontIcon from 'material-ui/FontIcon';
 
 import { api } from 'lib/rpc/api';
-import { gotoScreen } from 'store/screenActions';
 import saveAs from 'lib/saveAs';
+import { gotoScreen } from '../../../store/wallet/screen/screenActions';
 
 const SecondaryMenu = ({ account, onPrint, onExport, chain }) => {
     return (

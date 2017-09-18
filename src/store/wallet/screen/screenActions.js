@@ -1,4 +1,6 @@
-import log from 'electron-log';
+import createLogger from '../../../utils/logger';
+
+const log = createLogger('screenActions');
 
 export function gotoScreen(screen, item = null) {
     return {

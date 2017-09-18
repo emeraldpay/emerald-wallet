@@ -1,32 +1,32 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import createLogger from '../utils/logger';
+import createLogger from '../../utils/logger';
 
-import AddressBook from './addressbook/book';
-import AccountShow from './accounts/AccountShow';
-import AddressShow from './addressbook/show';
-import AddressAdd from './addressbook/add';
-import CreateTx from './tx/CreateTx';
-import TransactionShow from './tx/TxDetails';
+import AddressBook from '../../components/addressbook/book';
+import AccountShow from '../../components/accounts/AccountShow';
+import AddressShow from '../../components/addressbook/show';
+import AddressAdd from '../../components/addressbook/add';
+import CreateTx from '../../components/tx/CreateTx';
+import TransactionShow from '../../components/tx/TxDetails';
 // import TokensList from './tokens/list';
-import AddToken from './tokens/add';
-import LedgerImport from './accounts/add/ledger/select';
-import ImportJson from './accounts/add/ImportJson';
-import ImportPrivateKey from './accounts/add/ImportPrivateKey';
-import ContractsList from './contracts/list';
-import AddContract from './contracts/add';
-import DeployContract from './contracts/deploy';
-import ContractShow from './contracts/show';
-import Welcome from './welcome/welcome';
-import Dashboard from '../containers/Dashboard';
-import Settings from './settings';
-import PaperWallet from '../containers/PaperWallet';
-import ExportPaperWallet from '../containers/ExportPaperWallet';
-import GenerateAccount2 from '../components/accounts/GenerateAccount';
+import AddToken from '../../components/tokens/add';
+import LedgerImport from '../../components/accounts/add/ledger/select';
+import ImportJson from '../../components/accounts/add/ImportJson';
+import ImportPrivateKey from '../../components/accounts/add/ImportPrivateKey';
+import ContractsList from '../../components/contracts/list';
+import AddContract from '../../components/contracts/add';
+import DeployContract from '../../components/contracts/deploy';
+import ContractShow from '../../components/contracts/show';
+import Welcome from '../../components/welcome/welcome';
+import Dashboard from '../../components/layout/Dashboard';
+import Settings from '../../components/settings';
+import PaperWallet from '../PaperWallet';
+import ExportPaperWallet from '../../components/accounts/ExportPaperWallet';
+import GenerateAccount2 from '../../components/accounts/GenerateAccount';
 
 const log = createLogger('screen');
 
-const Render = ({ screen, screenItem }) => {
+const Screen = ({ screen, screenItem }) => {
     log.debug('Show screen: ', screen);
 
     if (screen === null) {
@@ -34,9 +34,7 @@ const Render = ({ screen, screenItem }) => {
             <i className="fa fa-spinner fa-spin fa-2x" /> Initializing...
         </div>;
     } else if (screen === 'home') {
-        return (
-            <Dashboard />
-        );
+        return (<Dashboard />);
     } else if (screen === 'contracts') {
         return (
             <div>
@@ -87,12 +85,11 @@ const Render = ({ screen, screenItem }) => {
     );
 };
 
-const Screen = connect(
+export default connect(
     (state, ownProps) => ({
-        screen: state.screen.get('screen'),
-        screenItem: state.screen.get('item'),
+        screen: state.wallet.screen.get('screen'),
+        screenItem: state.wallet.screen.get('item'),
     }),
     (dispatch, ownProps) => ({})
-)(Render);
+)(Screen);
 
-export default Screen;

@@ -3,11 +3,11 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 
-import { Form, Row, styles as formStyles } from '../../elements/Form';
-import Button from 'elements/Button';
-import TextField from '../../elements/Form/TextField';
-import { gotoScreen } from '../../store/screenActions';
-import { exportPaperWallet } from '../../store/accountActions';
+import { Form, Row, styles as formStyles } from '../../../elements/Form';
+import Button from '../../../elements/Button/index';
+import TextField from '../../../elements/Form/TextField';
+import { gotoScreen } from '../../../store/wallet/screen/screenActions';
+import { exportPaperWallet } from '../../../store/accountActions';
 
 import styles from './exportPaperWallet.scss';
 

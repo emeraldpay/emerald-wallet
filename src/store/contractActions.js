@@ -1,7 +1,8 @@
-import { api } from 'lib/rpc/api';
+
 import log from 'electron-log';
 import { functionToData, dataToParams, toNumber } from 'lib/convert';
 import { loadAccountBalance } from './accountActions';
+import { api } from '../lib/rpc/api';
 
 export function loadContractList() {
     return (dispatch) => {
@@ -22,24 +23,22 @@ export function loadContractList() {
 
 export function addContract(address, name, abi, version, options, txhash) {
     return (dispatch) =>
-        rpc.call('emerald_addContract', [{
-            address,
+        api.emerald.addContract(address,
             name,
             abi,
             version,
             options,
-            txhash,
-        }]).then((result) => {
-            dispatch({
-                type: 'CONTRACT/ADD_CONTRACT',
-                address,
-                name,
-                abi,
-                version,
-                options,
-                txhash,
+            txhash).then((result) => {
+                dispatch({
+                    type: 'CONTRACT/ADD_CONTRACT',
+                    address,
+                    name,
+                    abi,
+                    version,
+                    options,
+                    txhash,
+                });
             });
-        });
 }
 
 /**

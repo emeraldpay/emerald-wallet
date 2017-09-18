@@ -82,7 +82,7 @@ export function init(chainId: number) {
 
 export function refreshTransaction(hash: string) {
     return (dispatch, getState) =>
-        api.geth.getTransactionByHash(hash).then((result) => {
+        api.geth.eth.getTransactionByHash(hash).then((result) => {
             if (!result) {
                 log.info(`No tx for hash ${hash}`);
                 dispatch({

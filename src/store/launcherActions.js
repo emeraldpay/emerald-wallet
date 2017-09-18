@@ -2,7 +2,7 @@ import { ipcRenderer } from 'electron';
 import log from 'electron-log';
 import { api } from 'lib/rpc/api';
 
-import { gotoScreen, showError } from 'store/screenActions';
+import { showError } from './wallet/screen/screenActions';
 import { waitForServicesRestart } from 'store/store';
 import { loadAccountsList } from './accountActions';
 
@@ -37,7 +37,7 @@ export function readConfig() {
 
 export function loadClientVersion() {
     return (dispatch) => {
-        api.geth.call('web3_clientVersion', []).then((result) => {
+        api.geth.web3.clientVersion().then((result) => {
             dispatch({
                 type: 'LAUNCHER/CONFIG',
                 config: {

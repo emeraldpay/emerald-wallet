@@ -3,10 +3,9 @@ import EthereumTx from 'ethereumjs-tx';
 import { convert } from 'emerald-js';
 import { api } from '../lib/rpc/api';
 
-import { getRates } from '../lib/marketApi';
 import { address as isAddress} from '../lib/validators';
 import { loadTokenBalanceOf } from './tokenActions';
-import { gotoScreen, catchError } from './screenActions';
+import { gotoScreen, catchError } from './wallet/screen/screenActions';
 import Wallet from '../lib/wallet';
 
 import { trackTx, processPending } from './wallet/history/historyActions';
@@ -16,7 +15,7 @@ const currentChain = (state) => state.launcher.getIn(['chain', 'name']);
 
 export function loadAccountBalance(accountId) {
     return (dispatch, getState) => {
-        api.geth.getBalance(accountId).then((result) => {
+        api.geth.eth.getBalance(accountId).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SET_BALANCE',
                 accountId,
@@ -43,15 +42,30 @@ export function loadAccountsList() {
                 type: 'ACCOUNT/SET_LIST',
                 accounts: result,
             });
-            result.map((acct) => dispatch(loadAccountBalance(acct.address))
-            );
+            api.geth.ext.getBalances(result.map((account) => account.address)).then((balances) => {
+                result.forEach((account) => {
+                    if (balances[account.address]) {
+                        dispatch({
+                            type: 'ACCOUNT/SET_BALANCE',
+                            accountId: account.address,
+                            value: balances[account.address],
+                        });
+                        // Tokens
+                        const tokens = getState().tokens;
+                        if (!tokens.get('loading')) {
+                            tokens.get('tokens')
+                              .map((token) => dispatch(loadTokenBalanceOf(token.toJS(), account.address)));
+                        }
+                    }
+                });
+            });
         });
     };
 }
 
 export function loadAccountTxCount(accountId) {
     return (dispatch) => {
-        api.geth.getTransactionCount(accountId).then((result) => {
+        api.geth.eth.getTransactionCount(accountId).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SET_TXCOUNT',
                 accountId,
@@ -114,7 +128,7 @@ export function updateAccount(address, name, description) {
 }
 
 function sendRawTransaction(signed) {
-    return api.geth.sendRawTransaction(signed);
+    return api.geth.eth.sendRawTransaction(signed);
 }
 
 function unwrap(list) {
@@ -140,7 +154,6 @@ function onTxSend(dispatch, sourceTx) {
         dispatch(gotoScreen('transaction', sentTx));
     };
 }
-
 
 function getNonce(address) {
     return api.geth.getTransactionCount(address);
@@ -276,22 +289,9 @@ export function importWallet(wallet, name, description) {
     };
 }
 
-export function loadSettings() {
-    return (dispatch) => {
-        if (localStorage) {
-            let localeCurrency = localStorage.getItem('localeCurrency');
-            localeCurrency = (localeCurrency === null) ? 'USD' : localeCurrency;
-            dispatch({
-                type: 'ACCOUNT/SET_LOCALE_CURRENCY',
-                currency: localeCurrency,
-            });
-        }
-    };
-}
-
 export function loadPendingTransactions() {
     return (dispatch, getState) =>
-        api.geth.getBlockByNumber('pending', true)
+        api.geth.eth.getBlockByNumber('pending', true)
             .then((result) => {
                 const addrs = getState().accounts.get('accounts')
                     .map((acc) => acc.get('id'));
@@ -318,24 +318,3 @@ export function loadPendingTransactions() {
             });
 }
 
-export function getGasPrice() {
-    return (dispatch) => {
-        api.geth.gasPrice().then((result) => {
-            dispatch({
-                type: 'ACCOUNT/GAS_PRICE',
-                value: result,
-            });
-        }).catch((error) => log.error(error));
-    };
-}
-
-export function getExchangeRates() {
-    return (dispatch) => {
-        getRates.call().then((result) => {
-            dispatch({
-                type: 'ACCOUNT/EXCHANGE_RATES',
-                rates: result,
-            });
-        });
-    };
-}

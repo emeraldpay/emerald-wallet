@@ -7,7 +7,7 @@ import { convert } from 'emerald-js';
 
 import AccountAddress from '../../../elements/AccountAddress';
 import AddressAvatar from '../../../elements/AddressAvatar';
-import { gotoScreen } from '../../../store/screenActions';
+import { gotoScreen } from '../../../store/wallet/screen/screenActions';
 import { toDate } from '../../../lib/convert';
 import IdentityIcon from '../../../elements/IdentityIcon';
 import { Form, styles, Row } from '../../../elements/Form';
