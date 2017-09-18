@@ -8,6 +8,8 @@ import { CloseIcon } from 'elements/Icons';
 import AddToken from '../add';
 import TokensList from '../list';
 
+import classes from './tokensDialog.scss';
+
 const styles = {
     closeButton: {
         float: 'right',
@@ -24,7 +26,7 @@ export default class TokensDialog extends React.Component {
 
             <Row>
                 <Col xs={11}>
-                    <h1>About</h1>
+                    <div className={ classes.title }>Add token by address</div>
                 </Col>
                 <Col xs={1}>
                     <IconButton

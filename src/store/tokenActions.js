@@ -173,7 +173,7 @@ export function traceCall(accountId, to, gas, gasPrice, value, data) {
             params.push(['trace', 'stateDiff']);
         }
         params.push('latest');
-        return api.geth.call(call, params);
+        return api.geth.raw(call, params);
     };
 }
 

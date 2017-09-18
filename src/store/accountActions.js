@@ -1,3 +1,4 @@
+/* @flow */
 import log from 'electron-log';
 import EthereumTx from 'ethereumjs-tx';
 import { convert } from 'emerald-js';
@@ -155,8 +156,8 @@ function onTxSend(dispatch, sourceTx) {
     };
 }
 
-function getNonce(address) {
-    return api.geth.getTransactionCount(address);
+function getNonce(address: string) {
+    return api.geth.eth.getTransactionCount(address);
 }
 
 function withNonce(tx) {
