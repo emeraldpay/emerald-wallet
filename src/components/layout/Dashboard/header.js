@@ -45,7 +45,7 @@ export default translate('accounts')(
                 dispatch(gotoScreen('add-from-ledger'));
             },
             addToken: () => {
-                dispatch(gotoScreen('add-token'));
+                dispatch(showDialog('tokens'));
             },
         })
     )(Header)

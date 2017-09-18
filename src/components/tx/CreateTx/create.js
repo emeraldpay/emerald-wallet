@@ -107,7 +107,11 @@ const CreateTx = connect(
             },
             accounts: state.accounts.get('accounts', Immutable.List()),
             addressBook: state.addressBook.get('addressBook'),
-            tokens: tokens.unshift(Immutable.fromJS({ address: '', symbol: 'ETC' })),
+
+            tokens: Immutable.fromJS([{ address: '', symbol: 'ETC' }]),
+
+            //TODO: doesn't work yet
+            //tokens: tokens.unshift(Immutable.fromJS({ address: '', symbol: 'ETC' })),
             isToken: (selector(state, 'token')),
             fiatRate,
             fiatCurrency,

@@ -10,7 +10,7 @@ import Immutable from 'immutable';
 import { gotoScreen } from '../../store/wallet/screen/screenActions';
 import Token from './token';
 
-const Render = ({ tokens, addToken }) => {
+const Render = ({ tokens }) => {
     const styles = {
         root: {
             display: 'flex',
@@ -49,11 +49,6 @@ const Render = ({ tokens, addToken }) => {
                 <CardText style={styles.root} expandable={false}>
                     {table}
                 </CardText>
-                <CardActions>
-                    <FlatButton label="Add Token"
-                                onClick={addToken}
-                                icon={<FontIcon className="fa fa-plus-circle" />}/>
-                </CardActions>
             </Card>
         </div>
     );
@@ -64,9 +59,7 @@ const TokensList = connect(
         tokens: state.tokens.get('tokens', Immutable.List()),
     }),
     (dispatch, ownProps) => ({
-        addToken: () => {
-            dispatch(gotoScreen('add-token'));
-        },
+
     })
 )(Render);
 

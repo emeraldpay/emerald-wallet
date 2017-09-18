@@ -28,8 +28,15 @@ class DashboardMenu extends React.Component {
         });
     }
 
+    handleAddToken = () => {
+        this.setState({
+            open: false,
+        });
+        this.props.addToken();
+    }
+
     render() {
-        const { generate, importJson, importLedger, importPrivateKey, addToken, t, style } = this.props;
+        const { generate, importJson, importLedger, importPrivateKey, t, style } = this.props;
 
         return (
             <div style={ style }>
@@ -76,7 +83,7 @@ class DashboardMenu extends React.Component {
                         <ListItem
                             primaryText={ t('add.token.title') }
                             secondaryText={ t('add.token.subtitle') }
-                            onClick={ addToken }
+                            onClick={ this.handleAddToken }
                             leftIcon={<FontIcon className="fa fa-key"/>}
                         />
                     </List>

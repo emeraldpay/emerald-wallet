@@ -30,6 +30,10 @@
         "importPrivateKey": {
             "title": "Import Private Key",
             "subtitle": "Import private key in hex format"
+        },
+        "token": {
+            "title": "Add Token",
+            "subtitle": "Add Token by address"
         }
     },
     "generate": {

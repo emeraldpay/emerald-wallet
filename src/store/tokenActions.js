@@ -42,29 +42,33 @@ export function loadTokenDetails(token) {
             api.geth.eth.call(token.address, tokenContract.functionToData('symbol')),
         ]).then((results) => {
             dispatch({
-                type: 'TOKEN/SET_TOTAL_SUPPLY',
+                type: 'TOKEN/SET_INFO',
                 address: token.address,
-                value: results[0],
-            });
-
-            dispatch({
-                type: 'TOKEN/SET_DECIMALS',
-                address: token.address,
-                value: results[1],
-            });
-
-            dispatch({
-                type: 'TOKEN/SET_SYMBOL',
-                address: token.address,
-                value: parseString(results[2]),
+                totalSupply: results[0],
+                decimals: results[1],
+                symbol: parseString(results[2]),
             });
         });
     };
 }
 
+export function fetchTokenDetails(tokenAddress: string): Promise<any> {
+    return Promise.all([
+        api.geth.eth.call(tokenAddress, tokenContract.functionToData('totalSupply')),
+        api.geth.eth.call(tokenAddress, tokenContract.functionToData('decimals')),
+        api.geth.eth.call(tokenAddress, tokenContract.functionToData('symbol')),
+    ]).then((results) => {
+        return {
+            address: tokenAddress,
+            totalSupply: results[0],
+            decimals: results[1],
+            symbol: parseString(results[2]),
+        };
+    });
+}
+
 export function loadTokenBalances(token: TokenInfo) {
     return (dispatch, getState) => {
-            // After all promises resolved update accounts balances
         const tokenInfo = getState().tokens.get('tokens').find((t) => t.get('address') === token.address).toJS();
         const accounts = getState().accounts;
         if (!accounts.get('loading')) {
@@ -98,12 +102,20 @@ export function loadTokenList() {
 export function addToken(address, name) {
     return (dispatch) => {
         return api.emerald.addContract(address, name).then((result) => {
-            dispatch({
-                type: 'TOKEN/ADD_TOKEN',
-                address,
-                name,
+            return fetchTokenDetails(address).then((tokenInfo) => {
+                dispatch({
+                    type: 'TOKEN/ADD_TOKEN',
+                    address,
+                    name,
+                });
+                return dispatch({
+                    type: 'TOKEN/SET_INFO',
+                    address: tokenInfo.address,
+                    totalSupply: tokenInfo.totalSupply,
+                    decimals: tokenInfo.decimals,
+                    symbol: tokenInfo.symbol,
+                });
             });
-            return dispatch(loadTokenDetails({address}));
         });
     };
 }

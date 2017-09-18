@@ -1,4 +1,5 @@
 import React from 'react';
+import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import { renderTextField } from 'elements/formFields';
@@ -9,10 +10,11 @@ import { Row, Col } from 'react-flexbox-grid/lib/index';
 
 import { cardSpace } from 'lib/styles';
 
-import Immutable from 'immutable';
-import { gotoScreen } from '../../store/wallet/screen/screenActions';
 import { addToken, loadTokenBalances } from 'store/tokenActions';
 import { required, address } from 'lib/validators';
+
+import { gotoScreen } from '../../store/wallet/screen/screenActions';
+
 import Token from './token';
 
 const Render = ({ token, submitSucceeded, handleSubmit, invalid, pristine, reset, submitting, cancel }) => (

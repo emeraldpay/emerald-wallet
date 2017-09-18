@@ -6,7 +6,7 @@ import { ipcRenderer } from 'electron';
 
 import { refreshTrackedTransactions, init as initHistory } from './wallet/history/historyActions';
 import { loadAccountsList, loadPendingTransactions } from './accountActions';
-import { addToken } from './tokenActions';
+import { loadTokenDetails, addToken } from './tokenActions';
 import { getExchangeRates, loadSettings } from './wallet/settings/settingsActions';
 // import { loadAddressBook } from './addressActions';
 // import { loadTokenList } from './tokenActions';
