@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { Provider, connect } from 'react-redux';
+import injectTapEventPlugin from 'react-tap-event-plugin';
+import { Provider } from 'react-redux';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import log from 'electron-log';
@@ -8,8 +9,7 @@ import 'font-awesome/scss/font-awesome.scss';
 import 'typeface-rubik';
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n/i18n';
-import injectTapEventPlugin from 'react-tap-event-plugin';
-import {store, start as startStore} from './store/store.js';
+import {store, start as startStore} from './store/store';
 import Main from './components/layout/Main/main';
 
 import './index.scss';

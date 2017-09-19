@@ -6,44 +6,33 @@ import IconButton from 'material-ui/IconButton';
 import { CloseIcon } from 'elements/Icons';
 
 import AddToken from '../add';
-import TokensList from '../list';
+import TokensList from '../TokensList/list';
 
-import classes from './tokensDialog.scss';
-
-const styles = {
-    closeButton: {
-        float: 'right',
-    },
-};
+import styles from './tokensDialog.scss';
 
 export default class TokensDialog extends React.Component {
     render() {
         const { onClose } = this.props;
 
-        return (<Dialog modal={true}
-                        open={true}
-                        onRequestClose={ onClose }>
-
-            <Row>
-                <Col xs={11}>
-                    <div className={ classes.title }>Add token by address</div>
-                </Col>
-                <Col xs={1}>
-                    <IconButton
-                        style={ styles.closeButton }
-                        onTouchTap={ onClose }
-                        tooltip="Close">
-                        <CloseIcon />
-                    </IconButton>
-                </Col>
-            </Row>
-            <Row>
-                <Col xs={12}>
-                    <TokensList />
-                    <AddToken/>
-                </Col>
-            </Row>
-
-        </Dialog>);
+        return (
+            <Dialog modal={true} open={true} onRequestClose={onClose} contentStyle={{maxWidth: '600px'}}>
+                <div style={{width: '100%'}}>
+                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                        <div className={styles.title}>Add token by address</div>
+                        <div>
+                            <IconButton
+                                className={styles.closeButton}
+                                onTouchTap={onClose}
+                                tooltip="Close">
+                                <CloseIcon/>
+                            </IconButton>
+                        </div>
+                    </div>
+                    <div>
+                        <TokensList/>
+                        <AddToken/>
+                    </div>
+                </div>
+            </Dialog>);
     }
 }

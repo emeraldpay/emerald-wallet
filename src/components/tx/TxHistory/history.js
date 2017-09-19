@@ -8,12 +8,12 @@ import Card from '../../../elements/Card';
 import Header from './Header';
 import TxList from './List';
 
-import classes from './history.scss';
+import styles from './history.scss';
 
 const TransactionsHistory = ({ transactions }) => {
     return (
         <Card>
-            <div className={ classes.container }>
+            <div className={ styles.container }>
                 <Header />
                 <TxList transactions={ transactions } />
             </div>

@@ -21,6 +21,7 @@ import AccountBalance from '../AccountBalance';
 import SecondaryMenu from '../SecondaryMenu';
 
 import classes from './show.scss';
+import TokenBalances from '../TokenBalances/tokenBalances'
 
 const log = createLogger('AccountShow');
 
@@ -81,7 +82,10 @@ class AccountRender extends React.Component {
                                     </div>
                                 </div>
                                 <div style={styles.right}>
-                                    <AccountBalance balance={ account.get('balance') || Wei.ZERO } />
+                                    <AccountBalance
+                                        etcStyle={{fontSize: '20px', lineHeight: '24px'}}
+                                        balance={ account.get('balance') || Wei.ZERO }
+                                    />
                                 </div>
                             </Row>
 
@@ -89,13 +93,7 @@ class AccountRender extends React.Component {
                                 <div style={ styles.left }>
                                 </div>
                                 <div style={ styles.right }>
-                                    <div>
-                                        { account.get('tokens').map((token) => (
-                                            <div key={ token.get('address') }>
-                                                { token.get('balance').getDecimalized() } { token.get('symbol') }
-                                            </div>))
-                                        }
-                                    </div>
+                                    <TokenBalances balances={ account.get('tokens') }/>
                                 </div>
                             </Row>
 

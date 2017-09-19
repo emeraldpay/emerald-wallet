@@ -63,32 +63,30 @@ function onLoading(state, action) {
 }
 
 function onSetAccountsList(state, action) {
-    switch (action.type) {
-        case 'ACCOUNT/SET_LIST':
-            const existingAccounts = state.get('accounts');
-            const getExisting = (id) => {
-                const pos = existingAccounts.findKey((x) => x.get('id') === id);
-                if (pos >= 0) {
-                    return existingAccounts.get(pos);
-                }
-                return initialAccount;
-            };
-            const updatedList = Immutable.fromJS(action.accounts).map((acc) =>
-                Immutable.fromJS({
-                    name: acc.get('name'),
-                    description: acc.get('description'),
-                    id: acc.get('address'),
-                    hardware: acc.get('hardware'),
-                })
-            ).map((acc) =>
-                getExisting(acc.get('id')).merge(acc)
-            );
-            return state
-                .set('accounts', updatedList)
-                .set('loading', false);
-        default:
-            return state;
+    if (action.type === 'ACCOUNT/SET_LIST') {
+        const existingAccounts = state.get('accounts');
+        const getExisting = (id) => {
+            const pos = existingAccounts.findKey((x) => x.get('id') === id);
+            if (pos >= 0) {
+                return existingAccounts.get(pos);
+            }
+            return initialAccount;
+        };
+        const updatedList = Immutable.fromJS(action.accounts).map((acc) =>
+            Immutable.fromJS({
+                name: acc.get('name'),
+                description: acc.get('description'),
+                id: acc.get('address'),
+                hardware: acc.get('hardware'),
+            })
+        ).map((acc) =>
+            getExisting(acc.get('id')).merge(acc)
+        );
+        return state
+            .set('accounts', updatedList)
+            .set('loading', false);
     }
+    return state;
 }
 
 function onUpdateAccount(state, action) {
@@ -123,8 +121,7 @@ function onSetTokenBalance(state, action) {
         return updateAccount(state, action.accountId, (acc) => {
             const tokens = Immutable.fromJS(acc.get('tokens'));
             return acc.set('tokens', updateToken(tokens, action.token, action.value));
-        }
-        );
+        });
     }
     return state;
 }

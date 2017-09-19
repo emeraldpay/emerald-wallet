@@ -200,7 +200,7 @@ export default connect(
            (acct) => acct.get('id') === ownProps.accountId
         );
         const rates = state.wallet.settings.get('rates');
-        const currentCurrency = state.accounts.get('localeCurrency');
+        const currentCurrency = state.wallet.settings.get('localeCurrency');
 
         const Tx = state.wallet.history.get('trackedTransactions').find(
             (tx) => tx.get('hash') === ownProps.hash

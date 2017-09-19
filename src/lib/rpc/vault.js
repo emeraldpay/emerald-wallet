@@ -1,6 +1,10 @@
 /* @flow */
+import { JsonRpc } from 'emerald-js';
+
 export default class Vault {
-    constructor(jsonRpc) {
+    rpc: JsonRpc;
+
+    constructor(jsonRpc: JsonRpc) {
         this.rpc = jsonRpc;
     }
 
@@ -9,27 +13,27 @@ export default class Vault {
         return this.rpc.call('emerald_listAccounts', [{chain}]);
     }
 
-    signTransaction(tx, chain) {
+    signTransaction(tx, chain: string) {
         this.notNull(chain, 'chain');
         return this.rpc.call('emerald_signTransaction', [tx, {chain}]);
     }
 
-    importAccount(data, chain) {
+    importAccount(data, chain: string) {
         this.notNull(chain, 'chain');
         return this.rpc.call('emerald_importAccount', [data, {chain}]);
     }
 
-    exportAccount(address, chain) {
+    exportAccount(address: string, chain: string) {
         this.notNull(chain, 'chain');
         return this.rpc.call('emerald_exportAccount', [{address}, {chain}]);
     }
 
-    updateAccount(address, name, description = '', chain) {
+    updateAccount(address: string, name: string, description: string = '', chain: string) {
         this.notNull(chain, 'chain');
         return this.rpc.call('emerald_updateAccount', [{ name, description, address }, {chain}]);
     }
 
-    newAccount(passphrase, name, description, chain) {
+    newAccount(passphrase: string, name: string, description: string, chain: string) {
         this.notNull(chain, 'chain');
         const params = [{ passphrase, name, description }, {chain}];
         return this.rpc.call('emerald_newAccount', params);
@@ -40,11 +44,8 @@ export default class Vault {
         // TODO: return this.rpc.call('emerald_addContract', [{address, name }]);
     }
 
-    call(params) {
-        return this.rpc.call(params);
-    }
 
-    notNull(value, param) {
+    notNull(value: any, param: string) {
         if (!value) {
             throw new Error(`${param} must be not null`);
         }

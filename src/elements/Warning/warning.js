@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 import styles from './warning.scss';
 
@@ -8,12 +9,20 @@ export const WarningHeader = (props) => {
     </div>);
 };
 
+WarningHeader.propTypes = {
+    children: PropTypes.node,
+};
+
 export const WarningText = (props) => {
     return (
         <div className={ styles.text }>
             { props.children }
         </div>
     );
+};
+
+WarningText.propTypes = {
+    children: PropTypes.node,
 };
 
 export const Warning = (props) => {
@@ -26,6 +35,11 @@ export const Warning = (props) => {
     return (<div className={ styles.container } style={ style }>
         { props.children }
     </div>);
+};
+
+Warning.propTypes = {
+    children: PropTypes.node,
+    fullWidth: PropTypes.bool,
 };
 
 export default Warning;

@@ -1,11 +1,18 @@
 import React from 'react';
-
+import PropTypes from 'prop-types';
 import TextField from 'elements/Form/TextField';
 import Button from 'elements/Button';
 import LinkButton from 'elements/LinkButton';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 
 class AccountPropertiesDialog extends React.Component {
+    static propTypes = {
+        onSave: PropTypes.func,
+        onSkip: PropTypes.func,
+        onBack: PropTypes.func,
+        t: PropTypes.func,
+    }
+
     constructor(props) {
         super(props);
         this.state = {};
@@ -13,7 +20,6 @@ class AccountPropertiesDialog extends React.Component {
 
     handleSave = () => {
         const { onSave } = this.props;
-
         onSave(this.state.name);
     }
 
@@ -24,7 +30,7 @@ class AccountPropertiesDialog extends React.Component {
     };
 
     render() {
-        const { onSave, onSkip, onBack, t } = this.props;
+        const { onSkip, onBack, t } = this.props;
         return (
             <Form caption="Set account properties" onCancel={ onBack }>
                 <Row>

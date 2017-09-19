@@ -16,22 +16,25 @@ export default class Contract {
         this.abi = abi;
     }
 
-    getFunction(name: string): AbiFunction {
+    getFunction(name: string): ?AbiFunction {
         return this.abi.find((f) => (f.name === name));
     }
 
     functionToData(name: string, inputs): string {
         const func = this.getFunction(name);
-        const types = [];
-        const values = [];
-        func.inputs.forEach((input) => {
-            types.push(input.type);
-            values.push(inputs[input.name]);
-        });
-        const data = Buffer.concat([
-            ethAbi.methodID(func.name, types),
-            ethAbi.rawEncode(types, values)]
-        ).toString('hex');
-        return `0x${data}`;
+        if (func) {
+            const types = [];
+            const values = [];
+            func.inputs.forEach((input) => {
+                types.push(input.type);
+                values.push(inputs[input.name]);
+            });
+            const data = Buffer.concat([
+                ethAbi.methodID(func.name, types),
+                ethAbi.rawEncode(types, values)]
+            ).toString('hex');
+            return `0x${data}`;
+        }
+        throw new Error(`Function ${name} not found in ABI`);
     }
 }

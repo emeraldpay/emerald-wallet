@@ -13,6 +13,12 @@ import styles from './exportPaperWallet.scss';
 
 class ExportPaperWallet extends React.Component {
 
+    static propTypes = {
+        accountId: PropTypes.string,
+        onBack: PropTypes.func,
+        handleSubmit: PropTypes.func,
+    };
+
     render() {
         const { accountId, onBack, handleSubmit } = this.props;
 
@@ -30,7 +36,8 @@ class ExportPaperWallet extends React.Component {
                     <div style={formStyles.right}>
                         <div style={{ width: '100%' }}>
                             <div className={styles.passwordLabel}>Enter a password</div>
-                            <div className={styles.passwordSubLabel}>Password needs for confirm all wallet operations.</div>
+                            <div className={styles.passwordSubLabel}>
+                                Password needs for confirm all wallet operations.</div>
                             <div style={{ marginTop: '30px' }}>
                                 <Field name="password"
                                        type="password"
@@ -55,9 +62,6 @@ class ExportPaperWallet extends React.Component {
     }
 }
 
-ExportPaperWallet.propTypes = {
-
-};
 
 const createForm = reduxForm({
     form: 'exportPaperWallet',
@@ -71,6 +75,8 @@ export default connect(
         onSubmit: (data) => {
             dispatch(exportPaperWallet(data.password, ownProps.accountId));
         },
-        onBack: () => { dispatch(gotoScreen('home')); },
+        onBack: () => {
+            dispatch(gotoScreen('home'));
+        },
 
     }))(createForm);

@@ -10,9 +10,9 @@ import { QrCodeIcon } from 'elements/Icons';
 import AddressAvatar from '../../../elements/AddressAvatar/addressAvatar';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../AccountBalance';
+import TokenBalances from '../TokenBalances';
 
-import classes from './account.scss';
-
+import styles from './account.scss';
 
 export default class Account extends React.Component {
 
@@ -50,7 +50,7 @@ export default class Account extends React.Component {
                 <CardText>
                     <Row>
                         <Col xs={3}>
-                            <div className={ classes.identityIconContainer }>
+                            <div className={ styles.identityIconContainer }>
                                 <IdentityIcon
                                     id={ account.get('id') }
                                     onClick={ this.switchDetails }
@@ -71,7 +71,7 @@ export default class Account extends React.Component {
                             />
                         </Col>
                         <Col xs={4}>
-                            <div className={ classes.actionsContainer }>
+                            <div className={ styles.actionsContainer }>
                                 {!isHardware(account) && <SecondaryMenu account={account}/>}
                                 <Button
                                     label="Add ETC"
@@ -90,22 +90,15 @@ export default class Account extends React.Component {
                     (<div>
                         <Row>
                             <Col xs={12} lg={12} md={12} sm={12}>
-                                <hr className={ classes.tokensDivider } />
+                                <hr className={ styles.tokensDivider } />
                             </Col>
                         </Row>
-                            {
-                                tokens.map((token) => (
-                                    <Row key={ token.get('address') }>
-                                        <Col xs={5}>
-                                            <div style={{marginLeft: '50px'}}>
-                                                { token.get('balance').getDecimalized() } { token.get('symbol') }
-                                            </div>
-                                        </Col>
-                                    </Row>
-                                ))
-                            }
+                        <Row>
+                            <Col xs={12} lg={12} md={12} sm={12} style={{marginLeft: '50px'}}>
+                                <TokenBalances balances={ tokens } />
+                            </Col>
+                        </Row>
                     </div>)}
-
                 </CardText>
             </Card>);
     }

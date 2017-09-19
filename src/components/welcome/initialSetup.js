@@ -4,12 +4,10 @@ import { connect } from 'react-redux';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { Step, Stepper, StepLabel } from 'material-ui/Stepper';
 import Terms from './terms';
-import ChooseRpc from './chooseRpc';
 import OpenWallet from './openWallet';
 import NodeTypeChoice from './NodeTypeChoice';
 
 const Render = ({ rpcType, terms }) => {
-
     let step = null;
     let activeStep = 0;
 
@@ -17,7 +15,7 @@ const Render = ({ rpcType, terms }) => {
         step = <Terms/>;
     } else if (rpcType === 'none') {
         activeStep = 1;
-        step = <NodeTypeChoice/>;//<ChooseRpc/>;
+        step = <NodeTypeChoice/>;
     } else {
         activeStep = 2;
         step = <OpenWallet/>;
@@ -39,7 +37,6 @@ const Render = ({ rpcType, terms }) => {
             <StepLabel>Open Wallet</StepLabel>
         </Step>
     );
-
 
     return (
         <div>
