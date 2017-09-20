@@ -164,6 +164,7 @@ class Services {
 
                 resolve(new LocalGeth(null, getLogDir(), this.setup.chain.name, 8545));
             }).catch((e) => {
+                log.error(e);
                 log.info("Can't find existing RPC. Try to launch");
                 this.startLocalRpc()
                     .then(resolve)
@@ -186,7 +187,7 @@ class Services {
                         log.error(`geth process exited with code: ${code}`);
                     });
                     if (geth.pid > 0) {
-                        waitRpc(this.geth.getUrl()).then((nodeInfo) => {
+                        waitRpc(this.geth.getUrl()).then((clientVersion) => {
                             this.gethStatus = STATUS.READY;
                             log.info(`Geth is ready: ${clientVersion}`);
                             this.setup.geth.url = this.geth.getUrl();
