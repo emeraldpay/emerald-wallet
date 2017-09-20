@@ -1,6 +1,6 @@
 module.exports = function (window) {
     return [{
-        label: 'Vault',
+        label: 'Emerald',
         submenu: [
             {
                 role: 'about',
