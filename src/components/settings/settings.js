@@ -3,11 +3,14 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import { MenuItem } from 'material-ui';
 import { translate } from 'react-i18next';
-import { gotoScreen } from '../store/wallet/screen/screenActions';
-import i18n from '../i18n/i18n';
-import { Form, styles, Row } from '../elements/Form';
-import Button from 'elements/Button';
-import SelectField from '../elements/Form/SelectField';
+
+import { Form, styles, Row } from 'elements/Form';
+import Button from 'elements/Button/index';
+import SelectField from 'elements/Form/SelectField';
+
+import screen from '../../store/wallet/screen';
+import settings from '../../store/wallet/settings';
+import i18n from '../../i18n/i18n';
 
 class SettingsRender extends React.Component {
 
@@ -100,15 +103,12 @@ const Settings = connect(
     },
     (dispatch, ownProps) => ({
         goDashboard: () => {
-            dispatch(gotoScreen('home'));
+            dispatch(screen.actions.gotoScreen('home'));
         },
 
         onSubmit: (data) => {
             i18n.changeLanguage(data.language);
-            dispatch({
-                type: 'ACCOUNT/SET_LOCALE_CURRENCY',
-                currency: data.currency,
-            });
+            dispatch(settings.actions.updateLocalCurrency(data.language));
         },
     })
 )(SettingsForm);

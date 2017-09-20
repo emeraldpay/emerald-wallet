@@ -6,7 +6,7 @@ import { translate } from 'react-i18next';
 
 import createLogger from '../../../utils/logger';
 
-import { gotoScreen, showDialog } from '../../../store/wallet/screen/screenActions';
+import screen from '../../../store/wallet/screen';
 import Account from './account';
 
 import styles from './list.scss';
@@ -50,13 +50,13 @@ export default connect(
     }),
     (dispatch, ownProps) => ({
         openAccount: (account) => () => {
-            dispatch(gotoScreen('account', account));
+            dispatch(screen.actions.gotoScreen('account', account));
         },
         createTx: (account) => () => {
-            dispatch(gotoScreen('create-tx', account));
+            dispatch(screen.actions.gotoScreen('create-tx', account));
         },
         showReceiveDialog: (account) => () => {
-            dispatch(showDialog('receive', account));
+            dispatch(screen.actions.showDialog('receive', account));
         },
     })
 )(AccountList);

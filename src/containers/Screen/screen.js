@@ -9,7 +9,7 @@ import AddressAdd from '../../components/addressbook/add';
 import CreateTx from '../../components/tx/CreateTx';
 import TransactionShow from '../../components/tx/TxDetails';
 // import TokensList from './tokens/list';
-import AddToken from '../../components/tokens/add';
+import AddToken from '../../components/tokens/AddToken/add';
 import LedgerImport from '../../components/accounts/add/ledger/select';
 import ImportJson from '../../components/accounts/add/ImportJson';
 import ImportPrivateKey from '../../components/accounts/add/ImportPrivateKey';
@@ -22,7 +22,7 @@ import Dashboard from '../../components/layout/Dashboard';
 import Settings from '../../components/settings';
 import PaperWallet from '../PaperWallet';
 import ExportPaperWallet from '../../components/accounts/ExportPaperWallet';
-import GenerateAccount2 from '../../components/accounts/GenerateAccount';
+import GenerateAccount from '../../components/accounts/GenerateAccount';
 
 const log = createLogger('screen');
 
@@ -57,7 +57,7 @@ const Screen = ({ screen, screenItem }) => {
     } else if (screen === 'create-tx') {
         return <CreateTx account={ screenItem }/>;
     } else if (screen === 'generate') {
-        return <GenerateAccount2 />;
+        return <GenerateAccount />;
     } else if (screen === 'importjson') {
         return <ImportJson />;
     } else if (screen === 'import-private-key') {

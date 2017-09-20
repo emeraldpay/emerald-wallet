@@ -4,22 +4,22 @@ import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
 import { ipcRenderer } from 'electron';
 
-import { refreshTrackedTransactions, init as initHistory } from './wallet/history/historyActions';
-import { loadAccountsList, loadPendingTransactions } from './accountActions';
-import { loadTokenDetails, addToken } from './tokenActions';
-import { getExchangeRates, loadSettings } from './wallet/settings/settingsActions';
+import history from './wallet/history';
+import accounts from './vault/accounts';
+import network from './network';
+import screen from './wallet/screen';
+import settings from './wallet/settings';
+
+import { loadTokenDetails, addToken } from './vault/tokens/tokenActions';
+
 // import { loadAddressBook } from './addressActions';
 // import { loadTokenList } from './tokenActions';
 // import { loadContractList } from './contractActions';
-import { getGasPrice, loadSyncing, loadHeight, loadPeerCount, loadNetworkVersion } from './network/networkActions';
-import { gotoScreen } from './wallet/screen/screenActions';
 import { readConfig, listenElectron, connecting, loadClientVersion } from './launcherActions';
 import { watchConnection as waitLedger, setWatch, setBaseHD } from './ledgerActions';
-import accountsReducers from './accountReducers';
 import addressReducers from './addressReducers';
-import tokenReducers from './tokenReducers';
+import tokenReducers from './vault/tokens/tokenReducers';
 import contractReducers from './contractReducers';
-import networkReducers from './network/networkReducers';
 import launcherReducers from './launcherReducers';
 import ledgerReducers from './ledgerReducers';
 import walletReducers from './wallet/walletReducers';
@@ -64,11 +64,11 @@ const loggerMiddleware = createReduxLogger({
 });
 
 const reducers = {
-    accounts: accountsReducers,
+    accounts: accounts.reducer,
     addressBook: addressReducers,
     tokens: tokenReducers,
     contracts: contractReducers,
-    network: networkReducers,
+    network: network.reducer,
     launcher: launcherReducers,
     ledger: ledgerReducers,
     form: formReducer,
@@ -84,26 +84,25 @@ export const store = createStore(
 );
 
 function refreshAll() {
-    //store.dispatch(loadNetworkVersion());
-    store.dispatch(loadPendingTransactions());
-    store.dispatch(refreshTrackedTransactions());
-    store.dispatch(loadHeight());
-    store.dispatch(loadAccountsList());
+    store.dispatch(accounts.actions.loadPendingTransactions());
+    store.dispatch(history.actions.refreshTrackedTransactions());
+    store.dispatch(network.actions.loadHeight());
+    store.dispatch(accounts.actions.loadAccountsList());
 
     const state = store.getState();
     if (state.launcher.getIn(['geth', 'type']) === 'local') {
-        store.dispatch(loadPeerCount());
+        store.dispatch(network.actions.loadPeerCount());
     }
     setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
 }
 
 function refreshLong() {
-    store.dispatch(getExchangeRates());
+    store.dispatch(settings.actions.getExchangeRates());
     setTimeout(refreshLong, intervalRates.continueRefreshLongRate);
 }
 
 export function startSync() {
-    store.dispatch(getGasPrice());
+    store.dispatch(network.actions.getGasPrice());
     store.dispatch(loadClientVersion());
     // store.dispatch(loadAddressBook());
     // store.dispatch(loadTokenList());
@@ -122,13 +121,13 @@ export function startSync() {
 
     if (state.launcher.getIn(['geth', 'type']) !== 'remote') {
         // check for syncing
-        setTimeout(() => store.dispatch(loadSyncing()), intervalRates.second); // prod: intervalRates.second
+        setTimeout(() => store.dispatch(network.actions.loadSyncing()), intervalRates.second); // prod: intervalRates.second
         // double check for syncing
-        setTimeout(() => store.dispatch(loadSyncing()), 2 * intervalRates.minute); // prod: 30 * this.second
+        setTimeout(() => store.dispatch(network.actions.loadSyncing()), 2 * intervalRates.minute); // prod: 30 * this.second
     }
 
     const chainId = state.launcher.getIn(['chain', 'id']);
-    store.dispatch(initHistory(chainId));
+    store.dispatch(history.actions.init(chainId));
 
     // deployed tokens
     const tokens = deployedTokens[+chainId];
@@ -146,12 +145,12 @@ export function stopSync() {
 export function start() {
     try {
         store.dispatch(readConfig());
-        store.dispatch(loadSettings());
+        store.dispatch(settings.actions.loadSettings());
     } catch (e) {
         log.error(e);
     }
     store.dispatch(listenElectron());
-    store.dispatch(gotoScreen('welcome'));
+    store.dispatch(screen.actions.gotoScreen('welcome'));
 }
 
 export function waitForServices() {
@@ -165,7 +164,7 @@ export function waitForServices() {
             startSync();
             // If not first run, go right to home when ready.
             if (state.wallet.screen.get('screen') === 'welcome') { //  && !state.launcher.get('firstRun'))
-                store.dispatch(gotoScreen('home'));
+                store.dispatch(screen.actions.gotoScreen('home'));
             }
         }
     });
@@ -192,11 +191,11 @@ export function screenHandlers() {
     let prevScreen = null;
     const unsubscribe = store.subscribe(() => {
         const state = store.getState();
-        const screen = state.wallet.screen.get('screen');
-        const justOpened = prevScreen !== screen;
-        prevScreen = screen;
+        const curScreen = state.wallet.screen.get('screen');
+        const justOpened = prevScreen !== curScreen;
+        prevScreen = curScreen;
         if (justOpened) {
-            if (screen === 'create-tx' || screen === 'add-from-ledger') {
+            if (curScreen === 'create-tx' || curScreen === 'add-from-ledger') {
                 store.dispatch(setWatch(true));
                 store.dispatch(waitLedger());
             } else {

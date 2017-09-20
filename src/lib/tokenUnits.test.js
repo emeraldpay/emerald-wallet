@@ -6,3 +6,9 @@ test('Decimalized works', () => {
     expect(units.decimals.toString()).toBe('8');
     expect(units.getDecimalized()).toBe('0.00000005');
 });
+
+test('Constructor', () => {
+    const units = new TokenUnits('0x0000000000000000000000000000000000000000000001f91aa96af86fe20680',
+       '0x0000000000000000000000000000000000000000000000000000000000000012');
+    expect(units.getDecimalized()).toEqual('9317.526941554635310720');
+});

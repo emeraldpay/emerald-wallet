@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import { IconButton } from 'material-ui';
-//import Token from './token';
 
 import Input from 'elements/Input';
 import { DeleteIcon } from 'elements/Icons';
@@ -41,13 +40,13 @@ const Token = (props) => {
 
 Token.propTypes = {
     token: PropTypes.object.isRequired,
-}
+};
 
 const TokensList = ({ tokens }) => {
     return (
         <div>
             { tokens.map((token) =>
-                <Token key={ token.get('address') } token={ token }/> )}
+                <Token key={ token.get('address') } token={ token }/>)}
         </div>
     );
 };

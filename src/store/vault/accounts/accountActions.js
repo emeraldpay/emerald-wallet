@@ -2,14 +2,14 @@
 import log from 'electron-log';
 import EthereumTx from 'ethereumjs-tx';
 import { convert } from 'emerald-js';
-import { api } from '../lib/rpc/api';
+import { api } from 'lib/rpc/api';
+import Wallet from 'lib/wallet';
+import { address as isAddress} from 'lib/validators';
+import { loadTokenBalanceOf } from '../tokens/tokenActions';
+import screen from '../../wallet/screen';
+import history from '../../wallet/history';
 
-import { address as isAddress} from '../lib/validators';
-import { loadTokenBalanceOf } from './tokenActions';
-import { gotoScreen, catchError } from './wallet/screen/screenActions';
-import Wallet from '../lib/wallet';
-
-import { trackTx, processPending } from './wallet/history/historyActions';
+import ActionTypes from './actionTypes';
 
 const { toNumber, toHex } = convert;
 const currentChain = (state) => state.launcher.getIn(['chain', 'name']);
@@ -27,7 +27,7 @@ export function loadAccountBalance(address: string) {
     return (dispatch, getState) => {
         api.geth.eth.getBalance(address).then((result) => {
             dispatch({
-                type: 'ACCOUNT/SET_BALANCE',
+                type: ActionTypes.SET_BALANCE,
                 accountId: address,
                 value: result,
             });
@@ -43,20 +43,20 @@ export function loadAccountBalance(address: string) {
 export function loadAccountsList() {
     return (dispatch, getState) => {
         dispatch({
-            type: 'ACCOUNT/LOADING',
+            type: ActionTypes.LOADING,
         });
         const chain = currentChain(getState());
 
         api.emerald.listAccounts(chain).then((result) => {
             dispatch({
-                type: 'ACCOUNT/SET_LIST',
+                type: ActionTypes.SET_LIST,
                 accounts: result,
             });
             api.geth.ext.getBalances(result.map((account) => account.address)).then((balances) => {
                 result.forEach((account) => {
                     if (balances[account.address]) {
                         dispatch({
-                            type: 'ACCOUNT/SET_BALANCE',
+                            type: ActionTypes.SET_BALANCE,
                             accountId: account.address,
                             value: balances[account.address],
                         });
@@ -91,8 +91,8 @@ export function exportPaperWallet(passphrase: string, accountId: string) {
         api.emerald.exportAccount(accountId, chain).then((result) => {
             const wallet = Wallet.fromV3(result, passphrase);
             const privKey = wallet.getPrivateKeyString();
-            dispatch(gotoScreen('paper-wallet', { address: accountId, privKey }));
-        }).catch(catchError(dispatch));
+            dispatch(screen.actions.gotoScreen('paper-wallet', { address: accountId, privKey }));
+        }).catch(screen.actions.catchError(dispatch));
     };
 }
 
@@ -111,14 +111,14 @@ export function createAccount(passphrase: string, name: string = '', description
             .then((result) => {
                 log.debug(`Account ${result} created`);
                 dispatch({
-                    type: 'ACCOUNT/ADD_ACCOUNT',
+                    type: ActionTypes.ADD_ACCOUNT,
                     accountId: result,
                     name,
                     description,
                 });
                 dispatch(loadAccountBalance(result));
                 return result;
-            }).catch(catchError(dispatch));
+            }).catch(screen.actions.catchError(dispatch));
     };
 }
 
@@ -128,7 +128,7 @@ export function updateAccount(address: string, name: string, description?: strin
         return api.emerald.updateAccount(address, name, description, chain)
             .then((result) => {
                 dispatch({
-                    type: 'ACCOUNT/UPDATE_ACCOUNT',
+                    type: ActionTypes.UPDATE_ACCOUNT,
                     address,
                     name,
                     description,
@@ -160,8 +160,9 @@ function onTxSend(dispatch, sourceTx: Transaction) {
         });
         dispatch(loadAccountBalance(sourceTx.from));
         const sentTx = Object.assign({}, sourceTx, {hash: txhash});
-        dispatch(trackTx(sentTx));
-        dispatch(gotoScreen('transaction', sentTx));
+        // TODO: dependency on wallet/history module!
+        dispatch(history.actions.trackTx(sentTx));
+        dispatch(screen.actions.gotoScreen('transaction', sentTx));
     };
 }
 
@@ -218,9 +219,8 @@ export function sendTransaction(from: string, passphrase: string, to: string, ga
                     .then(verifySender(from))
                     .then(sendRawTransaction)
                     .then(onTxSend(dispatch, tx))
-                    .catch(catchError(dispatch))
             )
-            .catch(catchError(dispatch));
+            .catch(screen.actions.catchError(dispatch));
     };
 }
 
@@ -268,13 +268,13 @@ export function importJson(data, name: string, description: string) {
         data.description = description;
         return api.emerald.importAccount(data, chain).then((result) => {
             dispatch({
-                type: 'ACCOUNT/IMPORT_WALLET',
+                type: ActionTypes.IMPORT_WALLET,
                 accountId: result,
             });
             // Reload accounts.
             if (isAddress(result) === undefined) {
                 dispatch({
-                    type: 'ACCOUNT/ADD_ACCOUNT',
+                    type: ActionTypes.ADD_ACCOUNT,
                     accountId: result,
                     name,
                     description,
@@ -304,7 +304,8 @@ export function loadPendingTransactions() {
                 const txes = result.transactions.filter((t) =>
                     (addrs.includes(t.to) || addrs.includes(t.from))
                 );
-                dispatch(processPending(txes));
+                // TODO: dependency on wallet/history module
+                dispatch(history.actions.processPending(txes));
                 for (const tx of txes) {
                     const disp = {
                         type: 'ACCOUNT/PENDING_BALANCE',

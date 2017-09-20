@@ -6,22 +6,23 @@ import People from 'material-ui/svg-icons/social/people';
 import QRCode from 'qrcode.react';
 import { Wei } from 'emerald-js';
 
-import AddressAvatar from 'elements/AddressAvatar/addressAvatar';
-import { updateAccount } from 'store/accountActions';
-
 import IdentityIcon from 'elements/IdentityIcon';
 import { Form, styles, Row } from 'elements/Form';
 import Button from 'elements/Button/index';
 import { QrCodeIcon } from 'elements/Icons';
+import AddressAvatar from 'elements/AddressAvatar/addressAvatar';
+
+import accounts from '../../../store/vault/accounts';
+import screen from '../../../store/wallet/screen';
+
 import createLogger from '../../../utils/logger';
-import { gotoScreen, showDialog } from '../../../store/wallet/screen/screenActions';
 import AccountEdit from '../edit';
 import TransactionsList from '../../tx/TxHistory';
 import AccountBalance from '../AccountBalance';
 import SecondaryMenu from '../SecondaryMenu';
 
 import classes from './show.scss';
-import TokenBalances from '../TokenBalances/tokenBalances'
+import TokenBalances from '../TokenBalances';
 
 const log = createLogger('AccountShow');
 
@@ -166,11 +167,11 @@ AccountRender.propTypes = {
 
 const AccountShow = connect(
     (state, ownProps) => {
-        const accounts = state.accounts.get('accounts');
+        const all = state.accounts.get('accounts');
         let account = ownProps.account;
-        const listPos = accounts.findKey((acc) => acc.get('id').toLowerCase() === account.get('id').toLowerCase());
+        const listPos = all.findKey((acc) => acc.get('id').toLowerCase() === account.get('id').toLowerCase());
         if (listPos >= 0) {
-            account = accounts.get(listPos);
+            account = all.get(listPos);
         } else {
             log.warn("Can't find account in general list of accounts", account.get('id'), listPos);
         }
@@ -201,18 +202,18 @@ const AccountShow = connect(
     (dispatch, ownProps) => ({
         createTx: () => {
             const account = ownProps.account;
-            dispatch(gotoScreen('create-tx', account));
+            dispatch(screen.actions.gotoScreen('create-tx', account));
         },
         showReceiveDialog: () => {
             const account = ownProps.account;
-            dispatch(showDialog('receive', account));
+            dispatch(screen.actions.showDialog('receive', account));
         },
         goBack: () => {
-            dispatch(gotoScreen('home'));
+            dispatch(screen.actions.gotoScreen('home'));
         },
         editAccount: (data) => {
             return new Promise((resolve, reject) => {
-                dispatch(updateAccount(data.address, data.name, data.description))
+                dispatch(accounts.actions.updateAccount(data.address, data.name, data.description))
                         .then((response) => {
                             resolve(response);
                         });

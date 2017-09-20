@@ -9,7 +9,7 @@ import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { number, required, address } from 'lib/validators';
 import { code } from 'lib/styles';
 import { etherToWei, toHex, estimateGasFromTrace } from 'lib/convert';
-import { trackTx } from 'store/accountActions';
+import { trackTx } from 'store/vault/accounts/accountActions';
 import { callContract, sendContractTransaction } from 'store/contractActions';
 import { gotoScreen } from '../../store/wallet/screen/screenActions';
 

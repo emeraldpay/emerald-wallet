@@ -7,7 +7,7 @@ import { Form, Row, styles as formStyles } from '../../../elements/Form';
 import Button from '../../../elements/Button/index';
 import TextField from '../../../elements/Form/TextField';
 import { gotoScreen } from '../../../store/wallet/screen/screenActions';
-import { exportPaperWallet } from '../../../store/accountActions';
+import { exportPaperWallet } from '../../../store/vault/accounts/accountActions';
 
 import styles from './exportPaperWallet.scss';
 

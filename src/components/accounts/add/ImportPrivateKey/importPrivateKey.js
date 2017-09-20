@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
-import { importWallet } from 'store/accountActions';
+import { importWallet } from 'store/vault/accounts/accountActions';
 
 import Wallet from 'lib/wallet';
 import Button from 'elements/Button';

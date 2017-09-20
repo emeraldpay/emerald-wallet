@@ -1,12 +1,11 @@
 /* @flow */
 import { convert } from 'emerald-js';
-import { parseString, getNakedAddress, fromTokens } from '../lib/convert';
-import { api } from '../lib/rpc/api';
+import { parseString, getNakedAddress, fromTokens } from 'lib/convert';
+import { api } from 'lib/rpc/api';
+import { TokenAbi } from 'lib/erc20';
+import Contract from 'lib/contract';
 
-import { TokenAbi } from '../lib/erc20';
-import Contract from '../lib/contract';
-
-import createLogger from '../utils/logger';
+import createLogger from '../../../utils/logger';
 
 const { toNumber } = convert;
 const tokenContract = new Contract(TokenAbi);
@@ -99,7 +98,7 @@ export function loadTokenList() {
     };
 }
 
-export function addToken(address, name) {
+export function addToken(address: string, name) {
     return (dispatch) => {
         return api.emerald.addContract(address, name).then((result) => {
             return fetchTokenDetails(address).then((tokenInfo) => {

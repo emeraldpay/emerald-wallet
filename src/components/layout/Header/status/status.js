@@ -2,10 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import LinearProgress from 'material-ui/LinearProgress';
-import NetworkSelector from './networkSelector';
 import { separateThousands } from 'lib/convert';
+import NetworkSelector from './networkSelector';
 import { useRpc, saveSettings } from '../../../../store/launcherActions';
-import { init as initWalletHistory } from '../../../../store/wallet/history/historyActions';
+import history from '../../../../store/wallet/history';
 
 const Render = ({ block, progress, peerCount, showDetails, connecting, switchNetwork }) => {
     const styles = {
@@ -84,7 +84,7 @@ const Status = connect(
         switchNetwork: (net) => {
             dispatch(useRpc({ geth: net.geth, chain: net.chain }));
             dispatch(saveSettings({ chain: net.chain, geth: net.geth }));
-            dispatch(initWalletHistory(net.chain.id));
+            dispatch(history.actions.init(net.chain.id));
         },
     })
 )(Render);

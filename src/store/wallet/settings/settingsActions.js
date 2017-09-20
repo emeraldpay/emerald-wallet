@@ -1,3 +1,4 @@
+/* @flow */
 import { getRates } from '../../../lib/marketApi';
 import ActionTypes from './actionTypes';
 
@@ -21,6 +22,15 @@ export function getExchangeRates() {
                 type: ActionTypes.EXCHANGE_RATES,
                 rates: result,
             });
+        });
+    };
+}
+
+export function updateLocaleCurrency(currency: string) {
+    return (dispatch) => {
+        dispatch({
+            type: ActionTypes.SET_LOCALE_CURRENCY,
+            currency,
         });
     };
 }

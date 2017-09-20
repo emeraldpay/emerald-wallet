@@ -1,7 +1,7 @@
 
 import log from 'electron-log';
 import { functionToData, dataToParams, toNumber } from 'lib/convert';
-import { loadAccountBalance } from './accountActions';
+import { loadAccountBalance } from './vault/accounts/accountActions';
 import { api } from '../lib/rpc/api';
 
 export function loadContractList() {

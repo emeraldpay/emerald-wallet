@@ -6,7 +6,7 @@ import Immutable from 'immutable';
 import { api } from 'lib/rpc/api';
 
 import { gotoScreen } from './wallet/screen/screenActions';
-import { loadAccountsList } from './accountActions';
+import { loadAccountsList } from './vault/accounts/accountActions';
 
 function connection() {
     return new Promise((resolve, reject) => {
