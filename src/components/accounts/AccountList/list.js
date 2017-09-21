@@ -4,70 +4,60 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import { translate } from 'react-i18next';
 
-import { gotoScreen } from 'store/screenActions';
+import createLogger from '../../../utils/logger';
+
+import screen from '../../../store/wallet/screen';
 import Account from './account';
-import WalletsTokensButton from './menuButton';
 
 import styles from './list.scss';
 
+const log = createLogger('AccountList');
 
-const Render = translate('accounts')((props) => {
-    const { t, accounts, generate, importJson, importLedger, importPrivateKey } = props;
-    const table = <div>
-        {accounts.map((account) =>
-            <div style={{marginBottom: '6px'}} key={account.get('id')}>
-                <Account account={account}/>
-            </div>)}
-    </div>;
+const AccountList = translate('accounts')((props) => {
+    log.trace('render');
+
+    const { t, accounts, knownTokens } = props;
+    const { openAccount, createTx, showReceiveDialog } = props;
 
     return (
         <div>
-            <div className={ styles.header }>
-                <div>
-                    <span className={ styles.title }>{ t('list.title') }</span>
-                </div>
-                <WalletsTokensButton
-                    generate={ generate }
-                    importJson={ importJson }
-                    importLedger={ importLedger }
-                    importPrivateKey={ importPrivateKey }
-                    t={ t }
-                />
-            </div>
-
-            <div style={{}}>
-                { table }
-            </div>
+            {accounts.map((account) =>
+                <div className={ styles.listItem } key={ account.get('id') }>
+                    <Account
+                        account={ account }
+                        knownTokens={ knownTokens }
+                        openAccount={ openAccount(account) }
+                        createTx={ createTx(account) }
+                        showReceiveDialog={ showReceiveDialog(account) }
+                    />
+                </div>)}
         </div>
     );
 });
 
-Render.propTypes = {
+AccountList.propTypes = {
     accounts: PropTypes.object.isRequired,
     generate: PropTypes.func.isRequired,
     importJson: PropTypes.func.isRequired,
     importLedger: PropTypes.func.isRequired,
+    knownTokens: PropTypes.object.isRequired,
 };
 
-const AccountsList = connect(
+export default connect(
     (state, ownProps) => ({
         accounts: state.accounts.get('accounts', Immutable.List()),
+        knownTokens: state.tokens.get('tokens', Immutable.List()),
     }),
     (dispatch, ownProps) => ({
-        generate: () => {
-            dispatch(gotoScreen('generate'));
+        openAccount: (account) => () => {
+            dispatch(screen.actions.gotoScreen('account', account));
         },
-        importJson: () => {
-            dispatch(gotoScreen('importjson'));
+        createTx: (account) => () => {
+            dispatch(screen.actions.gotoScreen('create-tx', account));
         },
-        importPrivateKey: () => {
-            dispatch(gotoScreen('import-private-key'));
+        showReceiveDialog: (account) => () => {
+            dispatch(screen.actions.showDialog('receive', account));
         },
-        importLedger: () => {
-            dispatch(gotoScreen('add-from-ledger'));
-        },
-
     })
-)(Render);
+)(AccountList);
 
-export default AccountsList;

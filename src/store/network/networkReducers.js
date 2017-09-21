@@ -1,5 +1,7 @@
 import Immutable from 'immutable';
-import { convert } from 'emerald-js';
+import { convert, Wei } from 'emerald-js';
+
+import ActionTypes from './actionTypes';
 
 const { toNumber } = convert;
 
@@ -19,10 +21,11 @@ const initial = Immutable.fromJS({
         highestBlock: null,
     },
     peerCount: 0,
+    gasPrice: new Wei(23000000000),
 });
 
 function onSyncing(state, action) {
-    if (action.type === 'NETWORK/SYNCING') {
+    if (action.type === ActionTypes.SYNCING) {
         if (action.syncing) {
             return state.update('sync', (sync) =>
                 sync.set('syncing', true)
@@ -40,7 +43,7 @@ function onSyncing(state, action) {
 }
 
 function onHeight(state, action) {
-    if (action.type === 'NETWORK/BLOCK') {
+    if (action.type === ActionTypes.BLOCK) {
         return state.update('currentBlock', (b) =>
             b.set('height', toNumber(action.height))
                 .set('hash', null)
@@ -50,15 +53,14 @@ function onHeight(state, action) {
 }
 
 function onPeerCount(state, action) {
-    if (action.type === 'NETWORK/PEER_COUNT') {
+    if (action.type === ActionTypes.PEER_COUNT) {
         return state.set('peerCount', toNumber(action.peerCount));
     }
     return state;
 }
 
 function onSwitchChain(state, action) {
-    if (action.type === 'NETWORK/SWITCH_CHAIN') {
-
+    if (action.type === ActionTypes.SWITCH_CHAIN) {
         const chain = {
             name: action.chain,
             id: action.chainId,
@@ -69,11 +71,19 @@ function onSwitchChain(state, action) {
 }
 
 
+function onGasPrice(state, action) {
+    if (action.type === ActionTypes.GAS_PRICE) {
+        return state.set('gasPrice', new Wei(action.value));
+    }
+    return state;
+}
+
 export default function networkReducers(state, action) {
     state = state || initial;
     state = onSyncing(state, action);
     state = onHeight(state, action);
     state = onPeerCount(state, action);
     state = onSwitchChain(state, action);
+    state = onGasPrice(state, action);
     return state;
 }

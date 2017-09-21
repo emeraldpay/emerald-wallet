@@ -7,7 +7,7 @@ import { convert } from 'emerald-js';
 
 import AccountAddress from '../../../elements/AccountAddress';
 import AddressAvatar from '../../../elements/AddressAvatar';
-import { gotoScreen } from '../../../store/screenActions';
+import { gotoScreen } from '../../../store/wallet/screen/screenActions';
 import { toDate } from '../../../lib/convert';
 import IdentityIcon from '../../../elements/IdentityIcon';
 import { Form, styles, Row } from '../../../elements/Form';
@@ -20,7 +20,7 @@ import classes from './show.scss';
 
 const log = createLogger('TxDetails');
 
-const Render = ({ transaction, rates, account, accounts, openAccount, goBack, currentCurrency }) => {
+const TransactionShow = ({ transaction, rates, account, accounts, openAccount, goBack, currentCurrency }) => {
     const fromAccount = transaction.get('from') ?
         accounts.find((acct) => acct.get('id') === transaction.get('from')) : null;
     const toAccount = transaction.get('to') ?
@@ -184,7 +184,7 @@ const Render = ({ transaction, rates, account, accounts, openAccount, goBack, cu
         </Form>);
 };
 
-Render.propTypes = {
+TransactionShow.propTypes = {
     hash: PropTypes.string.isRequired,
     transaction: PropTypes.object.isRequired,
     rates: PropTypes.object.isRequired,
@@ -193,14 +193,14 @@ Render.propTypes = {
     goBack: PropTypes.func.isRequired,
 };
 
-const TransactionShow = connect(
+export default connect(
     (state, ownProps) => {
         const accounts = state.accounts.get('accounts');
         const account = accounts.find(
            (acct) => acct.get('id') === ownProps.accountId
         );
-        const rates = state.accounts.get('rates');
-        const currentCurrency = state.accounts.get('localeCurrency');
+        const rates = state.wallet.settings.get('rates');
+        const currentCurrency = state.wallet.settings.get('localeCurrency');
 
         const Tx = state.wallet.history.get('trackedTransactions').find(
             (tx) => tx.get('hash') === ownProps.hash
@@ -234,6 +234,5 @@ const TransactionShow = connect(
             }
         },
     })
-)(Render);
+)(TransactionShow);
 
-export default TransactionShow;

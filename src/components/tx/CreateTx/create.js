@@ -1,15 +1,15 @@
 import Immutable from 'immutable';
 import BigNumber from 'bignumber.js';
 import { change, formValueSelector, SubmissionError } from 'redux-form';
-
-import { connect } from 'react-redux';
-import { sendTransaction, trackTx } from 'store/accountActions';
-import { traceTokenTransaction, traceCall } from 'store/tokenActions';
-import { gotoScreen, showDialog } from 'store/screenActions';
-import { closeConnection, setWatch } from 'store/ledgerActions';
-import { mweiToWei, etherToWei, estimateGasFromTrace } from 'lib/convert';
 import { Wei, convert } from 'emerald-js';
+import { connect } from 'react-redux';
+import { closeConnection, setWatch } from 'store/ledgerActions';
+import { etherToWei, estimateGasFromTrace } from 'lib/convert';
 import { address } from 'lib/validators';
+
+import accounts from 'store/vault/accounts';
+import Tokens from 'store/vault/tokens';
+import screen from 'store/wallet/screen';
 
 import CreateTxForm from './createTxForm';
 import createLogger from '../../../utils/logger';
@@ -51,12 +51,14 @@ const traceValidate = (data, dispatch) => {
 
     if (data.token.length > 1) {
         return new Promise((resolve, reject) => {
-            dispatch(traceTokenTransaction(data.from,
+            dispatch(Tokens.actions.traceTokenTransaction(
+                data.from,
                 data.to,
                 dataObj.gas,
                 dataObj.gasPrice,
                 dataObj.value,
-                data.token, data.isTransfer
+                data.token,
+                data.isTransfer
             )).then((response) => resolveValidate(response, resolve, reject))
                 .catch((error) => {
                     reject({ _error: (error.message || JSON.stringify(error)) });
@@ -64,7 +66,7 @@ const traceValidate = (data, dispatch) => {
         });
     }
     return new Promise((resolve, reject) => {
-        dispatch(traceCall(data.from,
+        dispatch(Tokens.actions.traceCall(data.from,
             data.to,
             dataObj.gas,
             dataObj.gasPrice,
@@ -74,16 +76,17 @@ const traceValidate = (data, dispatch) => {
     });
 };
 
+const getGasPrice = (state) => state.network.get('gasPrice');
 
 const CreateTx = connect(
     (state, ownProps) => {
         const selector = formValueSelector('createTx');
         const tokens = state.tokens.get('tokens');
         const balance = ownProps.account.get('balance');
-        const gasPrice = state.accounts.get('gasPrice');
+        const gasPrice = getGasPrice(state);
 
-        const fiatRate = state.accounts.get('localeRate');
-        const fiatCurrency = state.accounts.get('localeCurrency');
+        const fiatRate = state.wallet.settings.get('localeRate');
+        const fiatCurrency = state.wallet.settings.get('localeCurrency');
 
         const value = (selector(state, 'value')) ? selector(state, 'value') : 0;
         const fromAddr = (selector(state, 'from'));
@@ -105,7 +108,11 @@ const CreateTx = connect(
             },
             accounts: state.accounts.get('accounts', Immutable.List()),
             addressBook: state.addressBook.get('addressBook'),
-            tokens: tokens.unshift(Immutable.fromJS({ address: '', symbol: 'ETC' })),
+
+            tokens: Immutable.fromJS([{ address: '', symbol: 'ETC' }]),
+
+            // TODO: doesn't work yet
+            // tokens: tokens.unshift(Immutable.fromJS({ address: '', symbol: 'ETC' })),
             isToken: (selector(state, 'token')),
             fiatRate,
             fiatCurrency,
@@ -132,10 +139,10 @@ const CreateTx = connect(
                     dispatch(setWatch(false));
                     closeConnection().then(() => {
                         if (useLedger) {
-                            dispatch(showDialog('sign-transaction', data));
+                            dispatch(screen.actions.showDialog('sign-transaction', data));
                         }
                         dispatch(
-                            sendTransaction(
+                            accounts.actions.sendTransaction(
                                 data.from,
                                 data.password,
                                 data.to,
@@ -150,10 +157,10 @@ const CreateTx = connect(
                     throw new SubmissionError(err);
                 });
         },
-        onChangeAccount: (accounts, value) => {
+        onChangeAccount: (all, value) => {
             // load account information for selected account
-            const idx = accounts.findKey((acct) => acct.get('id') === value);
-            const balance = accounts.get(idx).get('balance');
+            const idx = all.findKey((acct) => acct.get('id') === value);
+            const balance = all.get(idx).get('balance');
             dispatch(change('createTx', 'balance', balance));
         },
         onEntireBalance: (value, fee) => {
@@ -179,10 +186,10 @@ const CreateTx = connect(
             dispatch(change('createTx', 'to', item.props.value));
         },
         cancel: () => {
-            dispatch(gotoScreen('account', ownProps.account));
+            dispatch(screen.actions.gotoScreen('account', ownProps.account));
         },
         goDashboard: () => {
-            dispatch(gotoScreen('home', ownProps.account));
+            dispatch(screen.actions.gotoScreen('home', ownProps.account));
         },
     })
 )(CreateTxForm);

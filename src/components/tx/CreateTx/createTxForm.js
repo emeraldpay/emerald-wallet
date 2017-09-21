@@ -16,11 +16,13 @@ import AccountBalance from '../../accounts/AccountBalance';
 import Button from '../../../elements/Button';
 import LinkButton from 'elements/LinkButton';
 
+import SelectAddressField from './selectAddressField';
 
 import classes from './createTxForm.scss';
 import { WarningText, Warning } from '../../../elements/Warning';
 
 import { Currency } from '../../../lib/currency';
+
 
 const textEtc = {
     fontSize: '20px',
@@ -78,27 +80,7 @@ const AddressWithIcon = ({ address, name }) => {
     );
 };
 
-const FromAddressField = ({accounts, onChangeAccount}) => {
-    return (<Field name="from"
-                   // style={formStyle.input}
-                   onChange={(event, val) => onChangeAccount(accounts, val)}
-                   component={SelectField}
-                   underlineShow={false}
-                   fullWidth={true}
-                   dropDownMenuProps={{
-                       menuStyle: {
-                           overflowX: 'hidden',
-                       },
-                       selectionRenderer: (val) => (<AddressWithIcon address={val}/>),
-                   }}>
-        {accounts.map((account) =>
-            <MenuItem
-                key={account.get('id')}
-                value={account.get('id')}
-                primaryText={<AddressWithIcon address={account.get('id')}/>}/>
-        )}
-    </Field>);
-};
+
 
 const CreateTxForm = (props) => {
     const { accounts, balance, handleSubmit, invalid, pristine, submitting } = props;
@@ -145,12 +127,10 @@ const CreateTxForm = (props) => {
     <Form caption="Send Ether & Tokens" onCancel={ goDashboard }>
         <Row>
             <div style={styles.left}>
-                <div style={styles.fieldName}>
-                    From
-                </div>
+                <div style={ styles.fieldName }>From</div>
             </div>
             <div style={{...styles.right, alignItems: 'center'}}>
-                <FromAddressField accounts={accounts} onChangeAccount={onChangeAccount}/>
+                <SelectAddressField name='from' accounts={ accounts } onChangeAccount={ onChangeAccount }/>
             </div>
             <div style={{...styles.right}}>
                 <Field name="balance"
@@ -367,6 +347,6 @@ CreateTxForm.propTypes = {
 
 export default reduxForm({
     form: 'createTx',
-    fields: ['to', 'from', 'password', 'value', 'token', 'gasPrice', 'gas', 'token', 'isTransfer'],
+    fields: ['to', 'from', 'password', 'value', 'token', 'gasPrice', 'gas', 'isTransfer'],
 })(CreateTxForm);
 

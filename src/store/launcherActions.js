@@ -2,16 +2,16 @@ import { ipcRenderer } from 'electron';
 import log from 'electron-log';
 import { api } from 'lib/rpc/api';
 
-import { gotoScreen, showError } from 'store/screenActions';
+
 import { waitForServicesRestart } from 'store/store';
-import { loadAccountsList } from './accountActions';
+import accounts from './vault/accounts';
+import screen from './wallet/screen';
 
-
-function isGethReady(state) {
+function isEthRpcReady(state) {
     return state.launcher.getIn(['geth', 'status']) === 'ready';
 }
 
-function isEmeraldReady(state) {
+function isVaultReady(state) {
     return state.launcher.getIn(['connector', 'status']) === 'ready';
 }
 
@@ -37,7 +37,7 @@ export function readConfig() {
 
 export function loadClientVersion() {
     return (dispatch) => {
-        api.geth.call('web3_clientVersion', []).then((result) => {
+        api.geth.web3.clientVersion().then((result) => {
             dispatch({
                 type: 'LAUNCHER/CONFIG',
                 config: {
@@ -116,7 +116,8 @@ export function listenElectron() {
                 if (getState().launcher.getIn(['chain', 'id']) !== message.chainId) {
                     // Launcher sent chain different from what user has chosen
                     // Alert !
-                    dispatch(showError(`Launcher connected to invalid chain: [${message.chain}, ${message.chainId}]`));
+                    dispatch(screen.actions.showError(
+                        `Launcher connected to invalid chain: [${message.chain}, ${message.chainId}]`));
                 } else {
                     dispatch({
                         type: 'NETWORK/SWITCH_CHAIN',
@@ -126,11 +127,11 @@ export function listenElectron() {
             }
 
 
-            if (isGethReady(state)) {
+            if (isEthRpcReady(state)) {
                 dispatch(loadClientVersion());
             }
-            if (isEmeraldReady(state) && isGethReady(state)) {
-                dispatch(loadAccountsList());
+            if (isVaultReady(state) && isEthRpcReady(state)) {
+                dispatch(accounts.actions.loadAccountsList());
             }
         });
     };

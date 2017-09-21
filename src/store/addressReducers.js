@@ -1,5 +1,5 @@
 import Immutable from 'immutable';
-import { Wei } from 'lib/types';
+import { Wei } from 'emerald-js';
 
 const initial = Immutable.fromJS({
     addressBook: [],

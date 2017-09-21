@@ -6,8 +6,8 @@ import { translate } from 'react-i18next';
 
 import Wallet from '../../../lib/wallet';
 import saveAs from '../../../lib/saveAs';
-import { createAccount, exportKeyFile, updateAccount } from '../../../store/accountActions';
-import { gotoScreen } from '../../../store/screenActions';
+import accounts from '../../../store/vault/accounts';
+import screen from '../../../store/wallet/screen';
 import PasswordDialog from './PasswordDialog';
 import DownloadDialog from './DownloadDialog';
 import ShowPrivateDialog from './ShowPrivateDialog';
@@ -48,7 +48,7 @@ class GenerateAccount extends React.Component<Props, State> {
 
     generate = (passphrase) => {
         // Create new account
-        this.props.dispatch(createAccount(passphrase))
+        this.props.dispatch(accounts.actions.createAccount(passphrase))
             .then((accountId) => {
                 this.setState({
                     accountId,
@@ -62,7 +62,7 @@ class GenerateAccount extends React.Component<Props, State> {
         const { passphrase, accountId } = this.state;
 
         // Get encrypted key file from emerald vault
-        this.props.dispatch(exportKeyFile(accountId)).then((result) => {
+        this.props.dispatch(accounts.actions.exportKeyFile(accountId)).then((result) => {
             // Decrypt and get private key
             const wallet = Wallet.fromV3(result, passphrase);
             const privateKey = wallet.getPrivateKeyString();
@@ -92,17 +92,17 @@ class GenerateAccount extends React.Component<Props, State> {
     }
 
     skipAccountProps = () => {
-        this.props.dispatch(gotoScreen('home'));
+        this.props.dispatch(screen.actions.gotoScreen('home'));
     }
 
     updateAccountProps = (name) => {
         const { dispatch } = this.props;
-        dispatch(updateAccount(this.state.accountId, name))
-            .then(() => dispatch(gotoScreen('home')));
+        dispatch(accounts.actions.updateAccount(this.state.accountId, name))
+            .then(() => dispatch(screen.actions.gotoScreen('home')));
     }
 
     goToDashboard = () => {
-        this.props.dispatch(gotoScreen('home'));
+        this.props.dispatch(screen.actions.gotoScreen('home'));
     }
 
     render() {
@@ -116,7 +116,12 @@ class GenerateAccount extends React.Component<Props, State> {
             case PAGES.SHOW_PRIVATE:
                 return (<ShowPrivateDialog t={ t } privateKey={ privateKey } onNext={ this.editAccountProps }/>);
             case PAGES.ACCOUNT_PROPS:
-                return (<AccountPropertiesDialog t={ t } onSave={ this.updateAccountProps } onSkip={ this.skipAccountProps } />);
+                return (
+                    <AccountPropertiesDialog
+                        t={ t }
+                        onSave={ this.updateAccountProps }
+                        onSkip={ this.skipAccountProps }
+                    />);
             default: return <div></div>;
         }
     }

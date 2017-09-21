@@ -12,8 +12,8 @@ import { cardSpace } from 'lib/styles';
 import { Row, Col } from 'react-flexbox-grid';
 
 import Immutable from 'immutable';
-import { gotoScreen } from 'store/screenActions';
-import { createContract, trackTx } from 'store/accountActions';
+import { gotoScreen } from '../../store/wallet/screen/screenActions';
+import { createContract, trackTx } from 'store/vault/accounts/accountActions';
 import { addContract, estimateGas } from 'store/contractActions';
 import { positive, number, required, address, hex } from 'lib/validators';
 import { mweiToWei, toHex } from 'lib/convert';

@@ -51,8 +51,8 @@ AccountBalance.propTypes = {
 
 export default connect(
     (state, ownProps) => {
-        const fiatCurrency = state.accounts.get('localeCurrency');
-        const fiatRate = state.accounts.get('localeRate');
+        const fiatCurrency = state.wallet.settings.get('localeCurrency');
+        const fiatRate = state.wallet.settings.get('localeRate');
 
         const balance = ownProps.balance;
         const network = (state.launcher.get('chain').get('name') || '').toLowerCase();

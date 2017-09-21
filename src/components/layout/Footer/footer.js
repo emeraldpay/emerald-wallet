@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import FlatButton from 'material-ui/FlatButton';
 
-import { showDialog } from '../../../store/screenActions'
+import { showDialog } from '../../../store/wallet/screen/screenActions'
 import styles from './footer.scss';
 import LinkButton from '../../../elements/LinkButton/linkButton'
 
@@ -23,7 +23,7 @@ const Footer = (props) => {
         color: '#747474',
         fontWeight: 'normal',
         textTransform: 'none',
-        paddingRight: '0px'
+        paddingRight: '0px',
     };
 
     return (
@@ -61,8 +61,6 @@ const Footer = (props) => {
 
 export default connect(
     (state, ownProps) => ({
-        dialog: state.screen.get('dialog'),
-        item: state.screen.get('dialogItem'),
     }),
     (dispatch, ownProps) => ({
         handleAbout: () => {

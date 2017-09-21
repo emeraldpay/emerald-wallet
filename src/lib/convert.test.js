@@ -1,6 +1,6 @@
 import BigNumber from 'bignumber.js';
 import Immutable from 'immutable';
-import { fromTokens, mweiToWei, etherToWei, estimateGasFromTrace, transformToFullName, functionToData,
+import { fromTokens, mweiToWei, etherToWei, estimateGasFromTrace, transformToFullName,
     dataToParams, getFunctionSignature, separateThousands } from './convert';
 
 describe('Number formatting', () => {
@@ -55,24 +55,6 @@ describe('Function Converter', () => {
     });
     it('get function signature from ABI', () => {
         expect(getFunctionSignature(Immutable.fromJS(balanceOf))).toEqual('70a08231');
-    });
-});
-
-describe('Function to Data Converter', () => {
-    const balanceArgs = { _owner: '0xbb0000000aaaa000000000000000000000000bb' };
-    const transferArgs = { _to: '0xaa00000000bbbb000000000000000000000000aa', _value: 10 };
-    it('convert function to data', () => {
-        expect(functionToData(Immutable.fromJS(balanceOf), balanceArgs))
-        .toEqual('0x70a082310000000000000000000000000bb0000000aaaa000000000000000000000000bb');
-    });
-    it('convert function to data', () => {
-        expect(functionToData(Immutable.fromJS(transfer), transferArgs))
-        .toEqual('0xa9059cbb000000000000000000000000aa00000000bbbb000000000000000000000000aa000000000000000000000000000000000000000000000000000000000000000a');
-    });
-    it('ignore bad args', () => {
-        const badArgs = { _owner: '0xbb0000000aaaa000000000000000000000000bb', _elaine: 123 };
-        expect(functionToData(Immutable.fromJS(balanceOf), badArgs))
-        .toEqual('0x70a082310000000000000000000000000bb0000000aaaa000000000000000000000000bb');
     });
 });
 

@@ -1,18 +1,19 @@
 import React from 'react';
+import PropTypes from 'prop-types';
+
 import TextField from 'elements/Form/TextField';
 import { Warning, WarningText } from 'elements/Warning/warning';
 import { EyeIcon } from 'elements/Icons';
 
 
-class PasswordInput extends React.Component {
-
-    constructor(props) {
-        super(props);
+export default class PasswordInput extends React.Component {
+    static propTypes = {
+        onChange: PropTypes.func,
+        invalid: PropTypes.bool,
     }
 
     onInputChange = (event, newValue) => {
         const { onChange } = this.props;
-
         onChange(newValue);
     };
 
@@ -46,7 +47,4 @@ class PasswordInput extends React.Component {
         );
     }
 }
-
-
-export default PasswordInput;
 

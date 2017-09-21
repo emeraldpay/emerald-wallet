@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 
-import { closeError } from '../store/screenActions';
+import { closeError } from '../store/wallet/screen/screenActions';
 
 const Render = ({ open, message, handleClose }) => {
     const actions = [
@@ -29,8 +29,8 @@ const Render = ({ open, message, handleClose }) => {
 
 const Error = connect(
     (state, ownProps) => ({
-        open: state.screen.get('error') !== null,
-        message: state.screen.get('error'),
+        open: state.wallet.screen.get('error') !== null,
+        message: state.wallet.screen.get('error'),
     }),
     (dispatch, ownProps) => ({
         handleClose: () => {

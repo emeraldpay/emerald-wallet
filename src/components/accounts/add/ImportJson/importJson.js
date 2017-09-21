@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 
-import { gotoScreen } from 'store/screenActions';
-import { importWallet } from 'store/accountActions';
+import { gotoScreen } from '../../../../store/wallet/screen/screenActions';
+import { importWallet } from 'store/vault/accounts/accountActions';
 import Button from 'elements/Button/index';
 import { Form, Row, styles as formStyles } from 'elements/Form/index';
 import { Warning, WarningText, WarningHeader } from 'elements/Warning';

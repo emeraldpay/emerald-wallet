@@ -8,7 +8,7 @@ import FontIcon from 'material-ui/FontIcon';
 
 import { cardSpace } from 'lib/styles';
 
-import { gotoScreen } from 'store/screenActions';
+import { gotoScreen } from '../../store/wallet/screen/screenActions';
 import { addContract } from 'store/contractActions';
 import { required, address, isJson } from 'lib/validators';
 

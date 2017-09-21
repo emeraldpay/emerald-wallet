@@ -5,7 +5,7 @@ import { IconButton } from 'material-ui';
 import { LogoIcon, SettingsIcon } from 'elements/Icons';
 import Status from './status/status';
 import Total from './total';
-import { gotoScreen } from '../../../store/screenActions';
+import { gotoScreen } from '../../../store/wallet/screen/screenActions';
 
 import classes from './header.scss';
 

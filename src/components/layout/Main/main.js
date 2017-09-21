@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
 
-import Screen from '../../screen';
+import Screen from '../../../containers/Screen/screen';
 import Header from '../Header';
 import Footer from '../Footer';
 import Error from '../../error';
@@ -16,7 +16,7 @@ const Render = translate('common')(({ t, ...props }) => (
     <div>
         {props.screen !== 'welcome' && props.screen !== 'paper-wallet' && <Header maxWidth={ maxWidth }/>}
         <div style={{margin: '20px auto', maxWidth}}>
-            <Screen id="body"/>
+            <Screen />
         </div>
         <Error/>
         <Dialog/>
@@ -26,7 +26,7 @@ const Render = translate('common')(({ t, ...props }) => (
 
 const Main = connect(
     (state, ownProps) => ({
-        screen: state.screen.get('screen'),
+        screen: state.wallet.screen.get('screen'),
     }),
     (dispatch, ownProps) => ({})
 )(Render);

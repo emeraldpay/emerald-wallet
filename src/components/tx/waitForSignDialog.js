@@ -1,12 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import log from 'electron-log';
 
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
-
-import { closeError } from 'store/screenActions';
 
 const Render = ({ open, transaction, handleClose }) => {
     const actions = [

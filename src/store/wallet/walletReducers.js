@@ -1,8 +1,12 @@
 import { combineReducers } from 'redux';
-import historyReducers from './history/historyReducers';
+import history from './history';
+import screen from './screen';
+import settings from './settings';
 
 const reducers = {
-    history: historyReducers,
+    history: history.reducer,
+    screen: screen.reducer,
+    settings: settings.reducer,
 };
 
 export default combineReducers(reducers);

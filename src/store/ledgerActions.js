@@ -5,8 +5,8 @@ import uuid from 'uuid/v4';
 import Immutable from 'immutable';
 import { api } from 'lib/rpc/api';
 
-import { gotoScreen } from './screenActions';
-import { loadAccountsList } from './accountActions';
+import { gotoScreen } from './wallet/screen/screenActions';
+import { loadAccountsList } from './vault/accounts/accountActions';
 
 function connection() {
     return new Promise((resolve, reject) => {
@@ -111,7 +111,7 @@ export function watchConnection() {
         let start = null;
         const fn = () => {
             const state = getState();
-            const dialogDisplayed = state.screen.get(('dialog')) !== null;
+            const dialogDisplayed = state.wallet.screen.get(('dialog')) !== null;
             if (!dialogDisplayed) {
                 dispatch(checkConnected());
             }

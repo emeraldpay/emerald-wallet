@@ -2,16 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
-import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import { List, ListItem } from 'material-ui/List';
-import { cardSpace } from 'lib/styles';
-import { gotoScreen } from 'store/screenActions';
 import { useRpc } from 'store/launcherActions';
-import { MainnetEpool, MainnetLocal } from '../../lib/rpc/gethProviders';
+import { MainnetEpool, MainnetLocal } from 'lib/rpc/gethProviders';
 
-
-const Render = ({ useFullNode, useRemoteNode }) => {
+const ChooseRPC = ({ useFullNode, useRemoteNode }) => {
     return (
         <Row>
             <Col xs={12}>
@@ -38,12 +34,12 @@ const Render = ({ useFullNode, useRemoteNode }) => {
 };
 
 
-Render.propTypes = {
+ChooseRPC.propTypes = {
     useFullNode: PropTypes.func.isRequired,
     useRemoteNode: PropTypes.func.isRequired,
 };
 
-const ChooseRPC = connect(
+export default connect(
     (state, ownProps) => ({
     }),
     (dispatch, ownProps) => ({
@@ -54,6 +50,4 @@ const ChooseRPC = connect(
             dispatch(useRpc(MainnetEpool));
         },
     })
-)(Render);
-
-export default ChooseRPC;
+)(ChooseRPC);
