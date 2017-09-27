@@ -1,4 +1,4 @@
-/* @flow */
+// @flow
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -20,11 +20,12 @@ import classes from './show.scss';
 
 const log = createLogger('TxDetails');
 
-const TransactionShow = ({ transaction, rates, account, accounts, openAccount, goBack, currentCurrency }) => {
-    const fromAccount = transaction.get('from') ?
-        accounts.find((acct) => acct.get('id') === transaction.get('from')) : null;
-    const toAccount = transaction.get('to') ?
-        accounts.find((acct) => acct.get('id') === transaction.get('to')) : null;
+export const TransactionShow = (props) => {
+    const { transaction, rates, account, fromAccount, toAccount, openAccount, goBack, currentCurrency } = props;
+    // const fromAccount = transaction.get('from') ?
+    //     accounts.find((acct) => acct.get('id') === transaction.get('from')) : null;
+    // const toAccount = transaction.get('to') ?
+    //     accounts.find((acct) => acct.get('id') === transaction.get('to')) : null;
 
 
     const fieldNameStyle = {
@@ -177,7 +178,7 @@ const TransactionShow = ({ transaction, rates, account, accounts, openAccount, g
                     <div style={fieldNameStyle}>Input Data</div>
                 </div>
                 <div style={styles.right}>
-                    {transaction.get('input') === '0x' ? 'none' : transaction.get('input')}
+                    {transaction.get('data') === '0x' ? 'none' : transaction.get('data')}
                 </div>
             </Row>
 
@@ -208,6 +209,11 @@ export default connect(
         if (!Tx) {
             log.error("Can't find tx for hash", ownProps.hash);
         }
+        const fromAccount = Tx.get('from') ?
+            accounts.find((acct) => acct.get('id') === Tx.get('from')) : null;
+        const toAccount = Tx.get('to') ?
+            accounts.find((acct) => acct.get('id') === Tx.get('to')) : null;
+
         return {
             hash: Tx.get('hash'),
             transaction: Tx,
@@ -215,6 +221,8 @@ export default connect(
             accounts,
             rates,
             currentCurrency,
+            fromAccount,
+            toAccount,
         };
     },
     (dispatch, ownProps) => ({

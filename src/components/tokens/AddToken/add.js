@@ -23,6 +23,10 @@ class AddToken extends React.Component {
         const { token, submitSucceeded, handleSubmit, invalid, pristine, submitting } = this.props;
         const { clearToken } = this.props;
 
+        const total = (token) => new TokenUnits(
+            convert.hexToBigNumber(token.totalSupply),
+            convert.hexToBigNumber(token.decimals));
+
         return (
 
             <div>
@@ -67,7 +71,7 @@ class AddToken extends React.Component {
                                     </tr>
                                     <tr>
                                         <td>Total supply</td>
-                                        <td>{ new TokenUnits(token.totalSupply, token.decimals).getDecimalized() }</td>
+                                        <td>{ total(token).getDecimalized() }</td>
                                     </tr>
                                     <tr>
                                         <td>Decimals</td>
@@ -119,7 +123,7 @@ export default connect(
                     .then(dispatch(reset('addToken')))
                     .then(dispatch(tokens.actions.loadTokenBalances(data)));
             } else {
-                return tokens.actions.fetchTokenDetails(data.address)
+                return dispatch(tokens.actions.fetchTokenDetails(data.address))
                     .then((result) => {
                         return dispatch(change('addToken', 'token', result));
                     });

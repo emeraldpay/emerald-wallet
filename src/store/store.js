@@ -1,8 +1,11 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import thunkMiddleware from 'redux-thunk';
 import createReduxLogger from 'redux-logger';
-import { createStore, applyMiddleware, combineReducers } from 'redux';
+import { createStore as createReduxStore, applyMiddleware, combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
 import { ipcRenderer } from 'electron';
+
+import { api } from '../lib/rpc/api';
 
 import history from './wallet/history';
 import accounts from './vault/accounts';
@@ -39,7 +42,7 @@ export const intervalRates = {
     // Continue is repeating timeouts.
     continueLoadSyncRate: minute, // prod: second
     continueLoadHeightRate: 5 * minute, // prod: 5 * second
-    continueRefreshAllTxRate: 30 * second, // prod: 2 * second
+    continueRefreshAllTxRate: 60 * second, // prod: 2 * second
     continueRefreshLongRate: 900 * second, // 5 o'clock somewhere.
 };
 
@@ -75,13 +78,22 @@ const reducers = {
     wallet: walletReducers,
 };
 
-export const store = createStore(
+/**
+ * Creates Redux store with API as dependency injection.
+ *
+ * Injecting api allows to write unit tests.
+ *
+ * @param _api
+ */
+export const createStore = (_api) => createReduxStore(
     combineReducers(reducers),
     applyMiddleware(
-        thunkMiddleware,
+        thunkMiddleware.withExtraArgument(_api),
         loggerMiddleware
     )
 );
+
+export const store = createStore(api);
 
 function refreshAll() {
     store.dispatch(accounts.actions.loadPendingTransactions());
@@ -131,7 +143,9 @@ export function startSync() {
 
     // deployed tokens
     const tokens = deployedTokens[+chainId];
-    tokens.forEach((token) => store.dispatch(addToken(token.address, token.name)));
+    if (tokens) {
+        tokens.forEach((token) => store.dispatch(addToken(token.address, token.name)));
+    }
 
     refreshAll();
     setTimeout(refreshLong, 3 * intervalRates.second);

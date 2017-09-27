@@ -11,8 +11,9 @@ import { gotoScreen } from '../../../../store/wallet/screen/screenActions';
 import { refreshTransaction } from '../../../../store/wallet/history/historyActions';
 import { link, tables } from '../../../../lib/styles';
 import AddressAvatar from '../../../../elements/AddressAvatar/addressAvatar';
-import AccountBalance from '../../../accounts/AccountBalance';
+import AccountBalance from '../../../accounts/Balance';
 import { RepeatIcon } from '../../../../elements/Icons';
+import TokenUnits from '../../../../lib/tokenUnits'
 
 export const Transaction = ({ tx, openTx, openAccount, refreshTx, toAccount, fromAccount }) => {
 
@@ -27,11 +28,13 @@ export const Transaction = ({ tx, openTx, openAccount, refreshTx, toAccount, fro
         </span>;
     }
 
+    const txValue = tx.get('value') ? new TokenUnits(tx.get('value').value(), 18) : null;
+
     return (
         <TableRow selectable={false}>
 
             <TableRowColumn style={{ ...tables.mediumStyle, paddingLeft: '0' }}>
-                <AccountBalance balance={tx.get('value') || Wei.ZERO} onClick={openTx} withAvatar={false} />
+                {txValue && <AccountBalance balance={ txValue } onClick={ openTx } withAvatar={ false } /> }
             </TableRowColumn>
 
             <TableRowColumn style={{...tables.mediumStyle, ...link}} >

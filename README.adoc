@@ -27,11 +27,11 @@ are coming from. You can run any of those commands without the `npm run` meta-co
 ### Dependencies
 
 ####  NPM packages
-This will install dependencies saved in `package.json` under the `devDependencies` field.
-You're going to need these.
+This will install dependencies saved in `package.json` and `flow-typed` repository.
+
 
 ```shell
-$ npm install
+$ npm run setup
 ```
 
 If you wind up installing more packages, please

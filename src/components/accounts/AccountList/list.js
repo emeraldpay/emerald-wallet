@@ -16,7 +16,7 @@ const log = createLogger('AccountList');
 const AccountList = translate('accounts')((props) => {
     log.trace('render');
 
-    const { t, accounts, knownTokens } = props;
+    const { accounts, knownTokens, showFiat } = props;
     const { openAccount, createTx, showReceiveDialog } = props;
 
     return (
@@ -24,6 +24,7 @@ const AccountList = translate('accounts')((props) => {
             {accounts.map((account) =>
                 <div className={ styles.listItem } key={ account.get('id') }>
                     <Account
+                        showFiat={ showFiat }
                         account={ account }
                         knownTokens={ knownTokens }
                         openAccount={ openAccount(account) }
@@ -36,6 +37,7 @@ const AccountList = translate('accounts')((props) => {
 });
 
 AccountList.propTypes = {
+    showFiat: PropTypes.bool,
     accounts: PropTypes.object.isRequired,
     generate: PropTypes.func.isRequired,
     importJson: PropTypes.func.isRequired,
@@ -47,6 +49,7 @@ export default connect(
     (state, ownProps) => ({
         accounts: state.accounts.get('accounts', Immutable.List()),
         knownTokens: state.tokens.get('tokens', Immutable.List()),
+        showFiat: (state.launcher.get('chain').get('name') || '').toLowerCase() === 'mainnet',
     }),
     (dispatch, ownProps) => ({
         openAccount: (account) => () => {

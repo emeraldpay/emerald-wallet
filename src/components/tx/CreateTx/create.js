@@ -1,16 +1,15 @@
 import Immutable from 'immutable';
 import BigNumber from 'bignumber.js';
 import { change, formValueSelector, SubmissionError } from 'redux-form';
-import { Wei, convert } from 'emerald-js';
+import { Wei, convert, Address } from 'emerald-js';
 import { connect } from 'react-redux';
 import { closeConnection, setWatch } from 'store/ledgerActions';
-import { etherToWei, estimateGasFromTrace } from 'lib/convert';
+import { etherToWei } from 'lib/convert';
 import { address } from 'lib/validators';
-
 import accounts from 'store/vault/accounts';
 import Tokens from 'store/vault/tokens';
 import screen from 'store/wallet/screen';
-
+import TokenUnits from 'lib/tokenUnits';
 import CreateTxForm from './createTxForm';
 import createLogger from '../../../utils/logger';
 
@@ -21,103 +20,81 @@ const DefaultTokenGas = 23890;
 
 const { toHex } = convert;
 
-const traceValidate = (data, dispatch) => {
-    const dataObj = {
-        from: data.from,
-        gasPrice: toHex(data.gasPrice.value()),
-        gas: toHex(data.gas),
-        to: data.to,
-        value: toHex(etherToWei(data.value)),
-    };
-    const resolveValidate = (response, resolve, reject) => {
-        let errors = null;
-        dataObj.data = (((response.trace || [])[0] || {}).action || {}).input;
-        let gasEst;
-        if (response.gas) {
-            gasEst = response.gas;
-        } else {
-            gasEst = estimateGasFromTrace(dataObj, response);
-            gasEst = (gasEst && gasEst.div(dataObj.gasPrice).toString(10));
-        }
-        if (!gasEst) {
-            errors = { value: 'Invalid Transaction' };
-        } else if (gasEst > data.gas) {
-            errors = { gas: `Insufficient Gas: Expected ${gasEst}` };
-        } else {
-            resolve(gasEst);
-        }
-        reject({ _error: JSON.stringify(errors)});
-    };
-
-    if (data.token.length > 1) {
-        return new Promise((resolve, reject) => {
-            dispatch(Tokens.actions.traceTokenTransaction(
-                data.from,
-                data.to,
-                dataObj.gas,
-                dataObj.gasPrice,
-                dataObj.value,
-                data.token,
-                data.isTransfer
-            )).then((response) => resolveValidate(response, resolve, reject))
-                .catch((error) => {
-                    reject({ _error: (error.message || JSON.stringify(error)) });
-                });
-        });
-    }
+const traceValidate = (tx, dispatch): Promise<BigNumber> => {
     return new Promise((resolve, reject) => {
-        dispatch(Tokens.actions.traceCall(data.from,
-            data.to,
-            dataObj.gas,
-            dataObj.gasPrice,
-            dataObj.value))
-            .then((response) => resolveValidate(response, resolve, reject))
-            .catch((error) => reject({ _error: (error.message || JSON.stringify(error))}));
+        dispatch(Tokens.actions.traceCall(tx.from, tx.to, tx.gas, tx.gasPrice, tx.value, tx.data))
+            .then((gasEst) => {
+                log.debug(`Estimated gas = ${JSON.stringify(gasEst)}`);
+
+                if (!gasEst) {
+                    reject('Invalid Transaction');
+                } else if (gasEst > convert.hexToBigNumber(tx.gas)) {
+                    reject(`Insufficient Gas. Expected ${gasEst}`);
+                } else {
+                    resolve(gasEst);
+                }
+            });
     });
 };
 
+const selector = formValueSelector('createTx');
 const getGasPrice = (state) => state.network.get('gasPrice');
+
+const selectBalance = (state, account) => {
+    const tokens = state.tokens.get('tokens');
+    const token = selector(state, 'token');
+    if (Address.isValid(token)) {
+        const tokenInfo = tokens.find((t) => t.get('address') === token);
+        const accountBalance = account.get('tokens').find((t) => t.get('address') === token);
+        return {
+            symbol: tokenInfo.get('symbol'),
+            value: accountBalance.get('balance'),
+        };
+    }
+    return {
+        symbol: 'ETC',
+        value: new TokenUnits(account.get('balance').value(), 18),
+    };
+};
+
 
 const CreateTx = connect(
     (state, ownProps) => {
-        const selector = formValueSelector('createTx');
-        const tokens = state.tokens.get('tokens');
-        const balance = ownProps.account.get('balance');
+        const fromAddr = (selector(state, 'from') ? selector(state, 'from') : ownProps.account.get('id'));
+        const account = accounts.selectors.selectAccount(state, fromAddr);
+        const allTokens = state.tokens.get('tokens');
+        const balance = selectBalance(state, account);
         const gasPrice = getGasPrice(state);
 
         const fiatRate = state.wallet.settings.get('localeRate');
         const fiatCurrency = state.wallet.settings.get('localeCurrency');
 
         const value = (selector(state, 'value')) ? selector(state, 'value') : 0;
-        const fromAddr = (selector(state, 'from'));
-        const useLedger = ownProps.account.get('hardware', false);
+
+        const useLedger = account.get('hardware', false);
         const ledgerConnected = state.ledger.get('connected');
 
         const gasLimit = selector(state, 'gas') ? new BigNumber(selector(state, 'gas')) : new BigNumber(DefaultGas);
-        const fee = gasPrice.mul(gasLimit);
+        const fee = new TokenUnits(gasPrice.mul(gasLimit).value(), 18);
 
         return {
             initialValues: {
+                gasPrice,
+                fee,
                 from: ownProps.account.get('id'),
                 gas: DefaultGas,
                 token: '',
                 isTransfer: 'true',
-                gasPrice,
-                balance,
-                fee,
+                tokens: allTokens,
             },
-            accounts: state.accounts.get('accounts', Immutable.List()),
+            accounts: accounts.selectors.getAll(state, Immutable.List()),
             addressBook: state.addressBook.get('addressBook'),
-
-            tokens: Immutable.fromJS([{ address: '', symbol: 'ETC' }]),
-
-            // TODO: doesn't work yet
-            // tokens: tokens.unshift(Immutable.fromJS({ address: '', symbol: 'ETC' })),
-            isToken: (selector(state, 'token')),
+            tokens: allTokens.unshift(Immutable.fromJS({ address: '', symbol: 'ETC' })),
+            isToken: Address.isValid(selector(state, 'token')),
             fiatRate,
             fiatCurrency,
-            value: new Wei(etherToWei(value)),
-            balance: selector(state, 'balance'),
+            value,
+            balance,
             fromAddr,
             useLedger,
             ledgerConnected,
@@ -126,16 +103,54 @@ const CreateTx = connect(
     },
     (dispatch, ownProps) => ({
         onSubmit: (data) => {
-            log.debug(data);
+            log.debug(JSON.stringify(data));
+
             const useLedger = ownProps.account.get('hardware', false);
 
-            return traceValidate(data, dispatch)
-                .then((result) => {
-                    if (data.token.length > 1) {
-                        log.error('unsupported');
-                        return;
-                    }
-                    log.debug('Send transaction');
+            let tx;
+            // 1. Create TX here
+            if (Address.isValid(data.token)) {
+                // Token TX
+                const tokenInfo = data.tokens.find((t) => t.get('address') === data.token);
+                if (!tokenInfo) {
+                    throw new SubmissionError(`Unknown token ${data.token}`);
+                }
+
+                const decimals = convert.toNumber(tokenInfo.get('decimals'));
+                const tokenUnits: BigNumber = TokenUnits.fromCoins(data.value, decimals).value;
+                const txData = Tokens.actions.createTokenTxData2(
+                    data.to,
+                    tokenUnits,
+                    data.isTransfer);
+
+                tx = {
+                    from: data.from,
+                    gasPrice: toHex(data.gasPrice.value()),
+                    gas: toHex(data.gas),
+                    to: data.token,
+                    value: convert.toHex(0),
+                    data: txData,
+                };
+            } else {
+                // Ordinary Tx
+                tx = {
+                    from: data.from,
+                    gasPrice: toHex(data.gasPrice.value()),
+                    gas: toHex(data.gas),
+                    to: data.to,
+                    value: toHex(etherToWei(data.value)),
+                    data: '',
+                };
+            }
+
+            log.debug(JSON.stringify(tx));
+
+
+            // 2. Validate Trace and then Send TX
+            return traceValidate(tx, dispatch)
+                .then((estimatedGas) => {
+                    log.debug(`Tx validated by trace. Estimated Gas ${estimatedGas}`);
+
                     dispatch(setWatch(false));
                     closeConnection().then(() => {
                         if (useLedger) {
@@ -143,30 +158,37 @@ const CreateTx = connect(
                         }
                         dispatch(
                             accounts.actions.sendTransaction(
-                                data.from,
+                                tx.from,
                                 data.password,
-                                data.to,
-                                toHex(data.gas),
-                                toHex(data.gasPrice.value()),
-                                toHex(etherToWei(data.value)))
+                                tx.to,
+                                tx.gas,
+                                tx.gasPrice,
+                                tx.value,
+                                tx.data)
                         );
                     });
                 })
                 .catch((err) => {
                     log.error('Validation failure', err);
-                    throw new SubmissionError(err);
+                    throw new SubmissionError({ _error: (err.message || JSON.stringify(err)) });
                 });
         },
         onChangeAccount: (all, value) => {
             // load account information for selected account
-            const idx = all.findKey((acct) => acct.get('id') === value);
-            const balance = all.get(idx).get('balance');
-            dispatch(change('createTx', 'balance', balance));
+            // const idx = all.findKey((acct) => acct.get('id') === value);
+            // const balance = all.get(idx).get('balance');
+            // dispatch(change('createTx', 'balance', balance));
         },
-        onEntireBalance: (value, fee) => {
-            if (value) {
-                const amount = new Wei(BigNumber.max(value.sub(fee).value(), new BigNumber(0)));
-                dispatch(change('createTx', 'value', amount.getEther(8)));
+        onEntireBalance: (balance: TokenUnits, fee, isToken) => {
+            if (balance) {
+                let value;
+                if (isToken) {
+                    value = balance.getDecimalized();
+                } else {
+                    const wei = BigNumber.max(balance.value.sub(fee.value), new BigNumber(0));
+                    value = new TokenUnits(wei, 18).getDecimalized();
+                }
+                dispatch(change('createTx', 'value', value));
             }
         },
         onChangeGasLimit: (event, value) => {

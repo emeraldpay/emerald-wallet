@@ -12,7 +12,7 @@ import IdentityIcon from '../../../elements/IdentityIcon';
 import { Form, Row, styles } from '../../../elements/Form';
 import TextField from '../../../elements/Form/TextField';
 import SelectField from '../../../elements/Form/SelectField';
-import AccountBalance from '../../accounts/AccountBalance';
+import AccountBalance from '../../accounts/Balance';
 import Button from '../../../elements/Button';
 import LinkButton from 'elements/LinkButton';
 
@@ -42,20 +42,21 @@ const textFiatLight = {
     color: '#747474',
 };
 
-
-const BalanceField = ({ input }) => {
-    if (!input.value) {
-        return null;
-    }
-    return (
-        <AccountBalance
-            balance={ input.value }
-            precision={ 6 }
-            fiatStyle={ textFiat }
-            etcStyle={ textEtc }
-        />
-    );
-};
+// TODO: delete
+// const BalanceField = ({ input }) => {
+//     if (!input.value) {
+//         return null;
+//     }
+//     return (
+//         <Balance
+//             balance={ input.value.units }
+//             symbol={ input.value.symbol }
+//             precision={ 6 }
+//             fiatStyle={ textFiat }
+//             etcStyle={ textEtc }
+//         />
+//     );
+// };
 
 /**
  * Address with IdentityIcon. We show it in from field select control
@@ -81,17 +82,18 @@ const AddressWithIcon = ({ address, name }) => {
 };
 
 
-
 const CreateTxForm = (props) => {
     const { accounts, balance, handleSubmit, invalid, pristine, submitting } = props;
-    const { addressBook, handleSelect, tokens, token, isToken, onChangeToken, onChangeAccount, onChangeGasLimit } = props;
-    const { fiatRate, fiatCurrency, value, fromAddr, onEntireBalance, fee } = props;
+    const { addressBook, handleSelect, tokens, token, isToken } = props;
+    const { onEntireBalance, onChangeToken, onChangeAccount, onChangeGasLimit } = props;
+    const { fiatRate, fiatCurrency, value, fromAddr, fee } = props;
     const { error, cancel, goDashboard } = props;
     const { useLedger, ledgerConnected } = props;
+    const showFiat = !isToken && props.showFiat;
 
     const sendDisabled = pristine || submitting || invalid || (useLedger && !ledgerConnected);
     const sendButton = <Button primary
-        label={`Send ${value && value.getEther(2).toString()} ETC`}
+        label={`Send ${value} ${balance.symbol}`}
         disabled={ sendDisabled }
         onClick={ handleSubmit } />;
 
@@ -133,11 +135,19 @@ const CreateTxForm = (props) => {
                 <SelectAddressField name='from' accounts={ accounts } onChangeAccount={ onChangeAccount }/>
             </div>
             <div style={{...styles.right}}>
-                <Field name="balance"
-                       disabled={true}
-                       component={BalanceField}
-                       floatingLabelText="Balance"
+                <AccountBalance
+                    showFiat={ showFiat }
+                    symbol={ balance.symbol }
+                    balance={ balance.value }
+                    precision={ 6 }
+                    fiatStyle={ textFiat }
+                    coinsStyle={ textEtc }
                 />
+                {/* <Field name="balance"*/}
+                       {/* disabled={true}*/}
+                       {/* component={BalanceField}*/}
+                       {/* floatingLabelText="Balance"*/}
+                {/* />*/}
             </div>
         </Row>
 
@@ -179,10 +189,7 @@ const CreateTxForm = (props) => {
 
             </div>
             <div style={styles.right}>
-                <LinkButton
-                    href={ `http://gastracker.io/addr/${fromAddr}` }
-                    label="Transaction History"
-                />
+                <LinkButton href={ `http://gastracker.io/addr/${fromAddr}` } label="Transaction History" />
             </div>
         </Row>
 
@@ -193,39 +200,42 @@ const CreateTxForm = (props) => {
                 </div>
             </div>
             <div style={{...styles.right, justifyContent: 'space-between'}}>
-                <Field name="value"
-                       component={ TextField }
-                       hintText="1.0000"
-                       fullWidth={true}
-                       underlineShow={false}
-                       validate={[required]}
+                <Field
+                    name="value"
+                    component={ TextField }
+                    hintText="1.0000"
+                    fullWidth={true}
+                    underlineShow={false}
+                    validate={[required]}
                 />
+                <Field
+                    name="token"
+                    style={{marginLeft: '19px', maxWidth: '125px'}}
+                    component={SelectField}
+                    onChange={onChangeToken}
+                    value={token}
+                    underlineShow={false}
+                    fullWidth={true}>
+                    {tokens.map((it) =>
+                        <MenuItem
+                            key={it.get('address')}
+                            value={it.get('address')}
+                            label={it.get('symbol')}
+                            primaryText={it.get('symbol')}
+                        />
+                    )}
+                </Field>
 
-                    <Field name="token"
-                           style={{ marginLeft: '19px', maxWidth: '125px' }}
-                           component={ SelectField }
-                           onChange={onChangeToken}
-                           value={token}
-                           underlineShow={false}
-                           fullWidth={true}>
-                        {tokens.map((it) =>
-                            <MenuItem key={it.get('address')}
-                                      value={it.get('address')}
-                                      label={it.get('symbol')}
-                                      primaryText={it.get('symbol')} />
-                        )}
-                    </Field>
-
-                {isToken &&
-                    <Field name="isTransfer"
-                           style={formStyle.input}
-                           component={RadioButtonGroup}
-                           defaultSelected="true"
-                           validate={required}>
-                        <RadioButton value="true" label="Transfer"/>
-                        <RadioButton value="false" label="Approve for Withdrawal"/>
-                    </Field>
-                }
+                {/* {isToken &&*/}
+                    {/* <Field name="isTransfer"*/}
+                           {/* style={formStyle.input}*/}
+                           {/* component={RadioButtonGroup}*/}
+                           {/* defaultSelected="true"*/}
+                           {/* validate={required}>*/}
+                        {/* <RadioButton value="true" label="Transfer"/>*/}
+                        {/* <RadioButton value="false" label="Approve for Withdrawal"/>*/}
+                    {/* </Field>*/}
+                {/* }*/}
 
 
             </div>
@@ -235,11 +245,13 @@ const CreateTxForm = (props) => {
             <div style={ styles.left }/>
             <div style={ styles.right }>
                 <div className= { classes.entireBalanceContainer }>
-                    <div style={textFiatLight}>
-                        { value && Currency.format(value.getFiat(fiatRate), fiatCurrency) }
-                    </div>
+                    { showFiat &&
+                        <div style={textFiatLight}>
+                            { value && Currency.format(value.getFiat(fiatRate), fiatCurrency) }
+                        </div>
+                    }
                     <LinkButton
-                        onClick={() => onEntireBalance(balance, fee)}
+                        onClick={() => onEntireBalance(balance.value, fee, isToken)}
                         label="Entire Balance"
                     />
                 </div>
@@ -264,17 +276,16 @@ const CreateTxForm = (props) => {
             </div>
         </Row>
         <Row>
-            <div style={styles.left}>
-                <div style={styles.fieldName}>
-                    Fee
-                </div>
+            <div style={ styles.left }>
+                <div style={ styles.fieldName }>Fee</div>
             </div>
             <div style={styles.right}>
                 <AccountBalance
                     balance={ fee }
+                    symbol="ETC"
                     precision={ 6 }
                     fiatStyle={ textFiat }
-                    etcStyle={ textEtc }
+                    coinsStyle={ textEtc }
                 />
             </div>
         </Row>

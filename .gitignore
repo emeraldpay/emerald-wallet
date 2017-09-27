@@ -10,3 +10,4 @@ emerald
 geth
 logs/
 coverage/
+flow-typed/

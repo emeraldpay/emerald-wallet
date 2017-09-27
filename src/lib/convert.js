@@ -1,3 +1,4 @@
+/* @flow */
 import BigNumber from 'bignumber.js';
 import ethUtil from 'ethereumjs-util';
 import ethAbi from 'ethereumjs-abi';
@@ -38,7 +39,7 @@ export function toDate(timestamp) {
     return new Date(timestamp).toJSON();
 }
 
-export function parseString(hex) {
+export function parseString(hex: string) {
     if (typeof hex !== 'string') {
         return null;
     }
@@ -51,7 +52,7 @@ export function parseString(hex) {
         return '';
     }
     const lenIgnore = parts[0];
-    const textSize = parts[1];
+    const textSize: number = +parts[1];
     const textData = hex.substring(64 + 64);
     let result = '';
     for (let i = 0; i < textSize; i++) {
@@ -77,11 +78,11 @@ export function getDataObj(to, func, arrVals) {
     return { to, data: func + val };
 }
 
-export function fromTokens(value, decimals) {
-    return new BigNumber(value).times(new BigNumber(10).pow(decimals.substring(2)));
-}
+// export function fromTokens(value: number|string|BigNumber, decimals: number): BigNumber {
+//     return new BigNumber(value).times(new BigNumber(10).pow(decimals));
+// }
 
-export function mweiToWei(val) {
+export function mweiToWei(val: number|string|BigNumber) {
     const m = new BigNumber(10).pow(6);
     return new BigNumber(val).mul(m).round(0, BigNumber.ROUND_HALF_DOWN);
 }
@@ -91,7 +92,7 @@ export function mweiToWei(val) {
  * Estimate gas using trace_call result
  *
  */
-export function estimateGasFromTrace(dataObj, trace) {
+export function estimateGasFromTrace(dataObj, trace): BigNumber {
     const gasLimit = 2000000;
     const value = new BigNumber(dataObj.value);
     log.debug(dataObj);
@@ -129,7 +130,8 @@ export function estimateGasFromTrace(dataObj, trace) {
             log.debug(`End balance: ${mweiToWei(toState).toString(10)}`);
             log.debug(fromState.sub(toState).toString(10));
         }
-        if (estGas.lt(0) || estGas.eq(gasLimit)) estGas = null;
+        if (estGas.lt(0) || estGas.eq(gasLimit))
+            estGas = null;
     }
     return estGas;
 }

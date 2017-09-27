@@ -1,5 +1,8 @@
 import Immutable from 'immutable';
 import TokenUnits from 'lib/tokenUnits';
+import { convert } from 'emerald-js';
+import ActionTypes from './actionTypes';
+const { hexToBigNumber } = convert;
 
 // ----- STRUCTURES
 
@@ -62,7 +65,11 @@ function onSetTokenList(state, action) {
 }
 
 function calcToken(tok) {
-    return tok.set('total', new TokenUnits(tok.get('totalSupply', '0x0'), tok.get('decimals', '0x0')));
+    const amount = new TokenUnits(
+        hexToBigNumber(tok.get('totalSupply', '0x0')),
+        hexToBigNumber(tok.get('decimals', '0x0')));
+
+    return tok.set('total', amount);
 }
 
 function onSetTokenInfo(state, action) {

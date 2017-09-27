@@ -1,10 +1,11 @@
-/* @flow */
+// @flow
 import { convert } from 'emerald-js';
-import { parseString, getNakedAddress, fromTokens } from 'lib/convert';
-import { api } from 'lib/rpc/api';
+import { parseString } from 'lib/convert';
 import { TokenAbi } from 'lib/erc20';
 import Contract from 'lib/contract';
-
+import { detect as detectTraceCall } from 'lib/traceCall';
+import BigNumber from 'bignumber.js';
+import ActionTypes from './actionTypes';
 import createLogger from '../../../utils/logger';
 
 const { toNumber } = convert;
@@ -17,29 +18,29 @@ type TokenInfo = {
 }
 
 export function loadTokenBalanceOf(token: TokenInfo, accountId: string) {
-    return (dispatch) => {
+    return (dispatch: any, getState: any, api: any) => {
         if (token.address) {
             const data = tokenContract.functionToData('balanceOf', { _owner: accountId });
             return api.geth.eth.call(token.address, data).then((result) => {
                 dispatch({
-                    type: 'ACCOUNT/SET_TOKEN_BALANCE',
+                    type: ActionTypes.SET_TOKEN_BALANCE,
                     accountId,
                     token,
                     value: result,
                 });
             });
         }
-        log.warn(`Invalid token data ${JSON.stringify(token)}`);
+        throw new Error(`Invalid token info ${JSON.stringify(token)}`);
     };
 }
 
 export function loadTokenDetails(token) {
-    return (dispatch, getState) => {
+    return (dispatch, getState, api) => {
         return Promise.all([
             api.geth.eth.call(token.address, tokenContract.functionToData('totalSupply')),
             api.geth.eth.call(token.address, tokenContract.functionToData('decimals')),
             api.geth.eth.call(token.address, tokenContract.functionToData('symbol')),
-        ]).then((results) => {
+        ]).then((results: Array<any>) => {
             dispatch({
                 type: 'TOKEN/SET_INFO',
                 address: token.address,
@@ -51,19 +52,21 @@ export function loadTokenDetails(token) {
     };
 }
 
-export function fetchTokenDetails(tokenAddress: string): Promise<any> {
-    return Promise.all([
-        api.geth.eth.call(tokenAddress, tokenContract.functionToData('totalSupply')),
-        api.geth.eth.call(tokenAddress, tokenContract.functionToData('decimals')),
-        api.geth.eth.call(tokenAddress, tokenContract.functionToData('symbol')),
-    ]).then((results) => {
-        return {
-            address: tokenAddress,
-            totalSupply: results[0],
-            decimals: results[1],
-            symbol: parseString(results[2]),
-        };
-    });
+export function fetchTokenDetails(tokenAddress: string) {
+    return (dispatch, getState, api) => {
+        return Promise.all([
+            api.geth.eth.call(tokenAddress, tokenContract.functionToData('totalSupply')),
+            api.geth.eth.call(tokenAddress, tokenContract.functionToData('decimals')),
+            api.geth.eth.call(tokenAddress, tokenContract.functionToData('symbol')),
+        ]).then((results) => {
+            return {
+                address: tokenAddress,
+                totalSupply: results[0],
+                decimals: results[1],
+                symbol: parseString(results[2]),
+            };
+        });
+    };
 }
 
 export function loadTokenBalances(token: TokenInfo) {
@@ -80,7 +83,7 @@ export function loadTokenBalances(token: TokenInfo) {
  * Each token should have name, contract address, and ABI
  */
 export function loadTokenList() {
-    return (dispatch) => {
+    return (dispatch, getState, api) => {
         dispatch({
             type: 'TOKEN/LOADING',
         });
@@ -98,10 +101,10 @@ export function loadTokenList() {
     };
 }
 
-export function addToken(address: string, name) {
-    return (dispatch) => {
+export function addToken(address: string, name: string) {
+    return (dispatch, getState, api) => {
         return api.emerald.addContract(address, name).then((result) => {
-            return fetchTokenDetails(address).then((tokenInfo) => {
+            return dispatch(fetchTokenDetails(address)).then((tokenInfo) => {
                 dispatch({
                     type: 'TOKEN/ADD_TOKEN',
                     address,
@@ -119,68 +122,50 @@ export function addToken(address: string, name) {
     };
 }
 
-function createTokenTransaction(token, to, value, isTransfer) {
-    const address = getNakedAddress(to);
-    const numTokens = fromTokens(value, token.get('decimals'));
-    if (isTransfer === 'true') {
-        return tokenContract.functionToData('transfer', { _to: address, _value: numTokens });
-    }
-    return tokenContract.functionToData('approve', { _spender: address, _amount: numTokens });
-}
 
+// export function transferTokenTransaction(accountId, password, to, gas, gasPrice, value, tokenId, isTransfer) {
+//     return (dispatch, getState) => {
+//         const pwHeader = new Buffer(password).toString('base64');
+//         const tokens = getState().tokens;
+//         const token = tokens.get('tokens').find((tok) => tok.get('address') === tokenId);
+//         const data = createTokenTransaction(token, to, value, isTransfer);
+//         return rpc.call('eth_sendTransaction', [{
+//             to: tokenId,
+//             password,
+//             from: accountId,
+//             gas,
+//             gasPrice,
+//             value: '0x00',
+//             data,
+//         }, 'latest']).then((result) => {
+//             dispatch({
+//                 type: 'ACCOUNT/SEND_TOKEN_TRANSACTION',
+//                 accountId,
+//                 txHash: result,
+//             });
+//             dispatch(loadTokenDetails({ address: token }));
+//             return result;
+//         });
+//     };
+// }
 
-export function transferTokenTransaction(accountId, password, to, gas, gasPrice, value, tokenId, isTransfer) {
-    return (dispatch, getState) => {
-        const pwHeader = new Buffer(password).toString('base64');
-        const tokens = getState().tokens;
-        const token = tokens.get('tokens').find((tok) => tok.get('address') === tokenId);
-        const data = createTokenTransaction(token, to, value, isTransfer);
-        return rpc.call('eth_sendTransaction', [{
-            to: tokenId,
-            password,
-            from: accountId,
-            gas,
-            gasPrice,
-            value: '0x00',
-            data,
-        }, 'latest']).then((result) => {
-            dispatch({
-                type: 'ACCOUNT/SEND_TOKEN_TRANSACTION',
-                accountId,
-                txHash: result,
-            });
-            dispatch(loadTokenDetails({ address: token }));
-            return result;
+export function traceCall(from: string, to: string, gas: string, gasPrice: string, value: string, data: string) {
+    return (dispatch, getState, api) => {
+        // TODO: We shouldn't detect trace api each time, we need to do it only once
+        return detectTraceCall(api.geth).then((constructor) => {
+            const tracer = constructor({ from, to, gas, gasPrice, value, data });
+            const call = tracer.buildRequest();
+            return api.geth.raw(call.method, call.params)
+                .then((result) => tracer.estimateGas(result));
         });
     };
 }
 
-export function traceCall(accountId, to, gas, gasPrice, value, data) {
-    return (dispatch, getState) => {
-        const gethClient = getState().launcher.get('chain').get('client')
-            .substring(0, 4).toLowerCase() === 'geth';
-        const call = gethClient ? 'eth_traceCall' : 'trace_call';
-        const params = [{
-            from: accountId,
-            to,
-            gas,
-            gasPrice,
-            value,
-            data,
-        }];
-        if (!gethClient) {
-            params.push(['trace', 'stateDiff']);
-        }
-        params.push('latest');
-        return api.geth.raw(call, params);
-    };
-}
 
-export function traceTokenTransaction(accountId, to, gas, gasPrice, value, tokenId, isTransfer) {
-    return (dispatch, getState) => {
-        const tokens = getState().tokens;
-        const token = tokens.get('tokens').find((tok) => tok.get('address') === tokenId);
-        const data = createTokenTransaction(token, to, value, isTransfer);
-        return traceCall(accountId, tokenId, gas, gasPrice, '0x00', data);
-    };
+export function createTokenTxData2(to: string, amount: BigNumber, isTransfer: boolean): string {
+    const value = amount.toString(10);
+    if (isTransfer === 'true') {
+        return tokenContract.functionToData('transfer', { _to: to, _value: value });
+    }
+    return tokenContract.functionToData('approve', { _spender: to, _amount: value });
 }

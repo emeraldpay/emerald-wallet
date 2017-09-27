@@ -3,6 +3,8 @@ import { convert, Wei } from 'emerald-js';
 
 import TokenUnits from 'lib/tokenUnits';
 
+import ActionTypes from './actionTypes';
+
 const { toNumber } = convert;
 
 const initial = Immutable.fromJS({
@@ -28,7 +30,8 @@ function addAccount(state, id, name, description) {
         if (pos >= 0) {
             return accounts;
         }
-        return accounts.push(initialAccount.merge({ id, name, description }));
+        const newAccount = initialAccount.mergeWith((o, n) => o || n, Immutable.fromJS({ id, name, description }));
+        return accounts.push(newAccount);
     });
 }
 
@@ -44,12 +47,16 @@ function updateAccount(state, id, f) {
 
 function updateToken(tokens, token, value) {
     const pos = tokens.findKey((tok) => tok.get('address') === token.address);
-    const balance = new TokenUnits(value, (token.decimals) ? token.decimals : '0x0');
+
+    const balance = new TokenUnits(
+        convert.hexToBigNumber(value),
+        convert.hexToBigNumber((token.decimals) ? token.decimals : '0x0'));
+
     if (pos >= 0) {
         return tokens.update(pos, (tok) => tok.set('balance', balance));
     }
-    return tokens.push(Immutable.fromJS({ address: token.address, symbol: token.symbol })
-            .set('balance', balance));
+    const newToken = Immutable.fromJS({ address: token.address, symbol: token.symbol, balance });
+    return tokens.push(newToken);
 }
 
 function onLoading(state, action) {
@@ -117,7 +124,7 @@ function onSetBalance(state, action) {
 }
 
 function onSetTokenBalance(state, action) {
-    if (action.type === 'ACCOUNT/SET_TOKEN_BALANCE') {
+    if (action.type === ActionTypes.SET_TOKEN_BALANCE) {
         return updateAccount(state, action.accountId, (acc) => {
             const tokens = Immutable.fromJS(acc.get('tokens'));
             return acc.set('tokens', updateToken(tokens, action.token, action.value));
@@ -136,7 +143,7 @@ function onSetTxCount(state, action) {
 }
 
 function onAddAccount(state, action) {
-    if (action.type === 'ACCOUNT/ADD_ACCOUNT') {
+    if (action.type === ActionTypes.ADD_ACCOUNT) {
         return addAccount(state, action.accountId, action.name, action.description);
     }
     return state;
