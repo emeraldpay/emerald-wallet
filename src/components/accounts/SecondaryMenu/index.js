@@ -8,27 +8,27 @@ import saveAs from 'lib/saveAs';
 import screen from '../../../store/wallet/screen';
 import { gotoScreen } from '../../../store/wallet/screen/screenActions';
 
-const renderDelete = (chain, account, onDelete, precision = 3) => {
+const renderHide = (chain, account, onHide, precision = 3) => {
     const balance = account.get('balance');
 
     if (!balance) {
         return;
     }
 
-    // hide delete button if account has value
+    // only show hide button if account has value
     if (balance.getEther(precision) > 0) {
         return;
     }
 
     return (
         <MenuItem
-          leftIcon={<FontIcon className="fa fa-trash-o"/>}
-          primaryText='DELETE'
-          onTouchTap={ onDelete(chain) }/>
+          leftIcon={<FontIcon className="fa fa-eye-slash"/>}
+          primaryText='HIDE'
+          onTouchTap={ onHide(chain) }/>
     )
 };
 
-const SecondaryMenu = ({ account, onPrint, onExport, onDelete, chain }) => {
+const SecondaryMenu = ({ account, onPrint, onExport, onHide, chain }) => {
     return (
         <IconMenu iconButtonElement={<IconButton><MoreHorizIcon /></IconButton>}>
             <MenuItem
@@ -41,7 +41,7 @@ const SecondaryMenu = ({ account, onPrint, onExport, onDelete, chain }) => {
                 primaryText='PRINT'
                 onTouchTap={ onPrint(chain) }/>
 
-            {renderDelete(chain, account, onDelete)}
+            {renderHide(chain, account, onHide)}
 
         </IconMenu>
     );
@@ -56,9 +56,9 @@ export default connect(
             const address = ownProps.account.get('id');
             dispatch(gotoScreen('export-paper-wallet', address));
         },
-        onDelete: (chain) => () => {
+        onHide: (chain) => () => {
             const address = ownProps.account.get('id');
-            dispatch(screen.actions.showDialog('delete', address));
+            dispatch(screen.actions.showDialog('hide-account', address));
         },
         onExport: (chain) => () => {
             const address = ownProps.account.get('id');

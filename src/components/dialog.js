@@ -7,7 +7,7 @@ import ReceiveDialog from './accounts/ReceiveDialog';
 import AboutDialog from './layout/AboutDialog';
 import createLogger from '../utils/logger';
 import TokensDialog from './tokens/TokensDialog';
-import DeleteDialog from './accounts/DeleteDialog';
+import HideAccountDialog from './accounts/HideAccountDialog';
 
 const log = createLogger('Dialog');
 
@@ -22,8 +22,8 @@ const Dialog = ({ dialog, item, handleClose }) => {
         return <AboutDialog onClose= { handleClose } />;
     } else if (dialog === 'tokens') {
         return <TokensDialog onClose={ handleClose } />;
-    } else if (dialog === 'delete') {
-        return <DeleteDialog address={ item } onClose={ handleClose } />;
+    } else if (dialog === 'hide-account') {
+        return <HideAccountDialog address={ item } onClose={ handleClose } />;
     }
     log.error('Unsupported dialog', dialog);
     return <div/>;

@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Dialog, IconButton } from 'material-ui';
 import { CloseIcon } from 'elements/Icons';
-import styles from './deleteDialog.scss';
+import styles from './hideAccountDialog.scss';
 import Button from 'elements/Button';
 import { hideAccount } from 'store/vault/accounts/accountActions';
 import { Warning, WarningHeader, WarningText } from 'elements/Warning';
@@ -10,16 +10,15 @@ import screen from '../../../store/wallet/screen';
 import accounts from '../../../store/vault/accounts';
 import history from '../../../store/wallet/history';
 
-
-class DeleteDialog extends React.Component {
+class HideAccountDialog extends React.Component {
     render() {
-        const { onClose, handleConfirmDelete, chain } = this.props;
+        const { onClose, handleConfirmHide, chain } = this.props;
 
         return (
             <Dialog modal={true} open={true} onRequestClose={ onClose } contentStyle={{maxWidth: '600px'}}>
                 <div style={{width: '100%'}}>
                     <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-                        <div className={styles.title}>Are you Sure you want to delete your account?</div>
+                        <div className={styles.title}>Are you Sure you want to hide this account?</div>
                         <div>
                             <IconButton
                                 className={ styles.closeButton }
@@ -31,8 +30,8 @@ class DeleteDialog extends React.Component {
                     </div>
                     <div style={{marginRight: '20px'}}>
                         <Warning>
-                            <WarningHeader>Using this will NOT delete your account credentials on disk.</WarningHeader>
-                            <WarningText>If you really need to delete an account on disk, you can go through the CLI or go in and manually delete the wallet files.</WarningText>
+                            <WarningHeader>Hiding accounts will NOT delete your wallet files.</WarningHeader>
+                            <WarningText>This will only hide the account. If you really need to delete an account on disk, you can go through the CLI or go in and manually delete the wallet files.</WarningText>
                         </Warning>
                     </div>
                     <Button
@@ -41,7 +40,7 @@ class DeleteDialog extends React.Component {
                       }}
                       label="Yes"
                       primary={true}
-                      onClick={handleConfirmDelete} />
+                      onClick={handleConfirmHide} />
                     <Button
                       style={{
                           marginLeft: '10px',
@@ -59,7 +58,7 @@ export default connect(
       address: ownProps.address
   }),
   (dispatch, ownProps) => ({
-      handleConfirmDelete: () => {
+      handleConfirmHide: () => {
           dispatch(hideAccount(ownProps.address));
 
           // refresh account data
@@ -70,4 +69,4 @@ export default connect(
           dispatch(screen.actions.gotoScreen('home'));
       }
   })
-)(DeleteDialog);
+)(HideAccountDialog);
