@@ -192,12 +192,17 @@ export function importSelected() {
             const chain = getState().launcher.getIn(['chain', 'name']);
             api.emerald.importAccount(data, chain).then(() => {
                 dispatch(loadAccountsList());
+
+
+            //Todo some weird timing delay here - a Promise didn't fix it either. Ugly but working
+            setTimeout(()=>{
                 if (open) {
                     dispatch(gotoScreen('account', Immutable.fromJS({
                         id: addr.get('address'), // FIXME sometimes it's ID sometimes ADDRESS
                         name: data.name,
                     })));
                 }
+            }, 1000);
             });
         });
     };
