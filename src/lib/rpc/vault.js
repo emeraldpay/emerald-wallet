@@ -23,6 +23,11 @@ export default class Vault {
         return this.rpc.call('emerald_importAccount', [data, {chain}]);
     }
 
+    hideAccount(address: string, chain: string) {
+        this.notNull(chain, 'chain');
+        return this.rpc.call('emerald_hideAccount', [{address}, {chain}]);
+    }
+
     exportAccount(address: string, chain: string) {
         this.notNull(chain, 'chain');
         return this.rpc.call('emerald_exportAccount', [{address}, {chain}]);
