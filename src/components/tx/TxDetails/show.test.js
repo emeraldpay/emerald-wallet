@@ -10,5 +10,5 @@ test('Shows Tx.data', () => {
         data: '0xDADA',
     });
     const component = shallow(<TransactionShow transaction={tx} />);
-    expect(component.findWhere((n) => n.text() === '0xDADA')).toHaveLength(2);
+    expect(component.findWhere((n) => n.text() === '0xDADA')).toHaveLength(3);
 });

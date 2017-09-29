@@ -44,7 +44,6 @@ export const TransactionShow = (props) => {
 
     const blockNumber = transaction.get('blockNumber');
     const txStatus = blockNumber ? 'success' : 'queue';
-
     const fiatAmount = transaction.get('value') ?
         Currency.format(transaction.get('value').getFiat(rates.get(currentCurrency.toLowerCase())), currentCurrency) :
         '';
@@ -178,7 +177,9 @@ export const TransactionShow = (props) => {
                     <div style={fieldNameStyle}>Input Data</div>
                 </div>
                 <div style={styles.right}>
-                    {transaction.get('data') === '0x' ? 'none' : transaction.get('data')}
+                    <div className={ classes.txData }>
+                        { transaction.get('data') === '0x' ? 'none' : transaction.get('data') }
+                    </div>
                 </div>
             </Row>
 

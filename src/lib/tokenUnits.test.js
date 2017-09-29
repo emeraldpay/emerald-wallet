@@ -30,5 +30,6 @@ describe('Token Converter', () => {
     });
     it('convert token decimals to value', () => {
         expect(TokenUnits.fromCoins('0.01', 8).value.toString()).toEqual('1000000');
+        expect(TokenUnits.fromCoins('1', 8).value.toString(10)).toEqual('100000000');
     });
 });

@@ -75,6 +75,7 @@ export class ParityTracer implements ITracer {
             value: this.tx.value,
             data: this.tx.data,
         }];
+        // Should we use 'vmTrace' or not ?
         params.push(['trace', 'stateDiff']);
         params.push('latest');
 
@@ -129,10 +130,10 @@ export class ParityTracer implements ITracer {
                 estGas = (dataObj.from.toLowerCase() === dataObj.to.toLowerCase()) ? estGas : estGas.sub(value);
             }
             if (estGas.lt(0) || estGas.eq(gasLimit)) {
-                estGas = null;
+                return null;
             }
         }
-        return estGas;
+        return new BigNumber(estGas);
     }
 
 }
@@ -189,7 +190,9 @@ export function detect(ethRpc: EthRpc) : Promise<any> {
                     });
             } else if (error.code === -32602) {
                 // method found but wrong params, it's Ok
-                return (tx) => new ParityTracer(tx);
+                // We still use eth_estimatedGas instead of trace_call
+                return (tx) => new CommonCallTracer(tx);
+                // return (tx) => new ParityTracer(tx);
             }
             throw error;
         });

@@ -56,7 +56,8 @@ function createTx(data) {
             blockNumber: data.blockNumber,
             nonce: toNumber(data.nonce),
             replayProtected: data.replayProtected,
-            data: data.data,
+            // This is due to great inconsistency in original Eth API (sometimes data, sometimes input)
+            data: (data.data || data.input),
         });
     }
     return tx;

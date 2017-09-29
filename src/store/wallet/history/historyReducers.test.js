@@ -24,11 +24,10 @@ describe('historyReducer', () => {
         expect(state.get('trackedTransactions').size).toBe(2);
     });
 
-    it('should update TX data', () => {
+    it('should update TX data with tx.input', () => {
         const tx = {
             blockHash: '0xc87e5117923e756e5d262ef230374b73ebe47f232b0f029fa65cf6614d959100',
             blockNumber: '0x17',
-            data: '0xfdacd5760000000000000000000000000000000000000000000000000000000000000002',
             from: '0x0178537bb1d7bb412101cdb7389c28fd4cf5ac0a',
             gas: '0x47e7c4',
             gasPrice: '0x174876e800',
@@ -37,6 +36,7 @@ describe('historyReducer', () => {
             to: '0x0d5fa90814e60f2a6cb7bad13d150ba0640d08b9',
             transactionIndex: '0x0',
             value: '0x',
+            input: 'fuck EF',
         };
         const action = {
             type: ActionTypes.UPDATE_TX,
@@ -53,7 +53,8 @@ describe('historyReducer', () => {
         // action
         state = historyReducers(state, action);
         const storedTx = state.get('trackedTransactions').last().toJS();
-        expect(storedTx.data).toEqual(tx.data);
+        // This is fucking inconsistency in ethereum api
+        expect(storedTx.data).toEqual(tx.input);
         expect(storedTx.hash).toEqual(tx.hash);
     });
 });
