@@ -327,3 +327,13 @@ export function loadPendingTransactions() {
             });
 }
 
+export function hideAccount(accountId: string) {
+    return (dispatch, getState) => {
+        const chain = currentChain(getState());
+
+        return api.emerald.hideAccount(accountId, chain)
+          .then((result) => {
+            return result;
+          }).catch(screen.actions.catchError(dispatch));
+    };
+}
