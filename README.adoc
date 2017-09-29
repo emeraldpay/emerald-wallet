@@ -79,9 +79,12 @@ $ npm run start:electron
 
 ### Logs
 
-#### Electron and Emerald logs
-During development, Electron and Emerald logs are in your Terminal 2 console, they're also
-persisted in ~/Library/Logs/EmeraldWallet/log.log. This is the same for production.
+#### Emerald logs
+Electron and Emerald logs persisted in:
+
+ * OSX: `~/Library/Logs/EmeraldWallet/log.log`
+ * Linux: `~/.config/EmeraldWallet/log.log`
+
 
 #### Geth logs
 During development, you'll find geth's logs in `./logs` right in the project base directory.
