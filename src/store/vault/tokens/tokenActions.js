@@ -15,6 +15,8 @@ const log = createLogger('tokenActions');
 
 type TokenInfo = {
     address: string,
+    symbol: string,
+    decimals: string,
 }
 
 export function loadTokenBalanceOf(token: TokenInfo, accountId: string) {
@@ -101,22 +103,21 @@ export function loadTokenList() {
     };
 }
 
-export function addToken(address: string, name: string) {
+export function addToken(token: TokenInfo) {
     return (dispatch, getState, api) => {
-        return api.emerald.addContract(address, name).then((result) => {
-            return dispatch(fetchTokenDetails(address)).then((tokenInfo) => {
-                dispatch({
-                    type: 'TOKEN/ADD_TOKEN',
-                    address,
-                    name,
-                });
-                return dispatch({
-                    type: 'TOKEN/SET_INFO',
-                    address: tokenInfo.address,
-                    totalSupply: tokenInfo.totalSupply,
-                    decimals: tokenInfo.decimals,
-                    symbol: tokenInfo.symbol,
-                });
+        return api.emerald.addContract(token.address, token.symbol).then(() => {
+            // TODO: maybe replace with on action
+            dispatch({
+                type: 'TOKEN/ADD_TOKEN',
+                address: token.address,
+                name: token.symbol,
+            });
+            return dispatch({
+                type: ActionTypes.SET_INFO,
+                address: token.address,
+                totalSupply: token.totalSupply,
+                decimals: token.decimals,
+                symbol: token.symbol,
             });
         });
     };
@@ -162,7 +163,7 @@ export function traceCall(from: string, to: string, gas: string, gasPrice: strin
 }
 
 
-export function createTokenTxData2(to: string, amount: BigNumber, isTransfer: boolean): string {
+export function createTokenTxData(to: string, amount: BigNumber, isTransfer: boolean): string {
     const value = amount.toString(10);
     if (isTransfer === 'true') {
         return tokenContract.functionToData('transfer', { _to: to, _value: value });

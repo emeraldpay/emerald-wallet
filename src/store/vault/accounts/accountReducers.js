@@ -49,8 +49,8 @@ function updateToken(tokens, token, value) {
     const pos = tokens.findKey((tok) => tok.get('address') === token.address);
 
     const balance = new TokenUnits(
-        convert.hexToBigNumber(value),
-        convert.hexToBigNumber((token.decimals) ? token.decimals : '0x0'));
+        convert.toBigNumber(value),
+        convert.toBigNumber(token.decimals));
 
     if (pos >= 0) {
         return tokens.update(pos, (tok) => tok.set('balance', balance));

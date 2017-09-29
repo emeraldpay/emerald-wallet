@@ -1,4 +1,4 @@
-/* @flow */
+// @flow
 import BigNumber from 'bignumber.js';
 import ethUtil from 'ethereumjs-util';
 import ethAbi from 'ethereumjs-abi';

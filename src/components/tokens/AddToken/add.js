@@ -1,9 +1,7 @@
 import React from 'react';
 import { convert } from 'emerald-js';
-import Immutable from 'immutable';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from 'redux-form';
-import { change, formValueSelector, reset, SubmissionError } from 'redux-form';
+import { Field, reduxForm, change, formValueSelector, reset, SubmissionError } from 'redux-form';
 import TextField from 'elements/Form/TextField';
 import Button from 'elements/Button';
 
@@ -12,8 +10,6 @@ import tokens from 'store/vault/tokens';
 import { required, address } from 'lib/validators';
 
 import TokenUnits from 'lib/tokenUnits';
-
-import Token from '../token';
 
 import styles from './add.scss';
 
@@ -24,11 +20,10 @@ class AddToken extends React.Component {
         const { clearToken } = this.props;
 
         const total = (token) => new TokenUnits(
-            convert.hexToBigNumber(token.totalSupply),
-            convert.hexToBigNumber(token.decimals));
+            convert.toBigNumber(token.totalSupply),
+            convert.toBigNumber(token.decimals));
 
         return (
-
             <div>
                 <form onSubmit={handleSubmit}>
                 { !token &&
@@ -119,7 +114,7 @@ export default connect(
     (dispatch, ownProps) => ({
         onSubmit: (data) => {
             if (data.token) {
-                return dispatch(tokens.actions.addToken(data.address))
+                return dispatch(tokens.actions.addToken(data.token))
                     .then(dispatch(reset('addToken')))
                     .then(dispatch(tokens.actions.loadTokenBalances(data)));
             } else {

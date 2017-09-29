@@ -8,7 +8,9 @@ describe('accountReducers', () => {
         expect(state.get('accounts')).toEqual(Immutable.List());
         state = accountReducers(state, {
             type: ActionTypes.ADD_ACCOUNT,
-            accountId: 'id1', name: 'name1', description: 'desc1',
+            accountId: 'id1',
+            name: 'name1',
+            description: 'desc1',
         });
         console.log(state.get('accounts').last());
         expect(state.get('accounts').size).toEqual(1);
@@ -18,7 +20,9 @@ describe('accountReducers', () => {
         // add again
         state = accountReducers(state, {
             type: ActionTypes.ADD_ACCOUNT,
-            accountId: 'id1', name: 'name1', description: 'desc1',
+            accountId: 'id1',
+            name: 'name1',
+            description: 'desc1',
         });
         expect(state.get('accounts').size).toEqual(1);
     });
@@ -39,6 +43,7 @@ describe('accountReducers', () => {
             accountId: 'id1',
             token: {
                 address: '0x2',
+                decimals: '0x2',
             },
             value: '0x',
         });

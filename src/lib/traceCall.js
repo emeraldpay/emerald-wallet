@@ -49,7 +49,7 @@ class CommonCallTracer implements ITracer {
     }
 
     estimateGas(trace: any): BigNumber | null {
-        return convert.hexToBigNumber(trace);
+        return convert.toBigNumber(trace);
     }
 }
 
@@ -93,7 +93,7 @@ export class ParityTracer implements ITracer {
         if (!gasEst) {
             return null;
         }
-        return gasEst.div(convert.hexToBigNumber(this.tx.gasPrice));
+        return gasEst.div(convert.toBigNumber(this.tx.gasPrice));
     }
 
     static estimateGasFromTrace(dataObj, trace): BigNumber {
@@ -165,7 +165,7 @@ class ClassicGethTracer implements ITracer {
     }
 
     estimateGas(trace): BigNumber {
-        return convert.hexToBigNumber(trace.gas);
+        return convert.toBigNumber(trace.gas);
     }
 }
 

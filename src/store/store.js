@@ -12,8 +12,7 @@ import accounts from './vault/accounts';
 import network from './network';
 import screen from './wallet/screen';
 import settings from './wallet/settings';
-
-import { loadTokenDetails, addToken } from './vault/tokens/tokenActions';
+import tokens from './vault/tokens';
 
 // import { loadAddressBook } from './addressActions';
 // import { loadTokenList } from './tokenActions';
@@ -142,9 +141,9 @@ export function startSync() {
     store.dispatch(history.actions.init(chainId));
 
     // deployed tokens
-    const tokens = deployedTokens[+chainId];
-    if (tokens) {
-        tokens.forEach((token) => store.dispatch(addToken(token.address, token.name)));
+    const known = deployedTokens[+chainId];
+    if (known) {
+        known.forEach((token) => store.dispatch(tokens.actions.addToken(token)));
     }
 
     refreshAll();

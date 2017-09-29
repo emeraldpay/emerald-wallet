@@ -23,11 +23,6 @@ export default class TokenUnits extends Record({ value: ZERO, decimals: 0 }) {
         });
     }
 
-    static fromCoins(value: number|string|BigNumber, decimals: number): TokenUnits {
-        const units = new BigNumber(value).times(new BigNumber(10).pow(decimals));
-        return new TokenUnits(units, decimals);
-    }
-
     getDecimalized(precision?: number): string {
         if (!precision) {
             precision = this.decimals;

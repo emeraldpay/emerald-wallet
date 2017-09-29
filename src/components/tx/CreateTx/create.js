@@ -1,7 +1,7 @@
 import Immutable from 'immutable';
 import BigNumber from 'bignumber.js';
 import { change, formValueSelector, SubmissionError } from 'redux-form';
-import { Wei, convert, Address } from 'emerald-js';
+import { convert, Address } from 'emerald-js';
 import { connect } from 'react-redux';
 import { closeConnection, setWatch } from 'store/ledgerActions';
 import { etherToWei } from 'lib/convert';
@@ -28,7 +28,7 @@ const traceValidate = (tx, dispatch): Promise<BigNumber> => {
 
                 if (!gasEst) {
                     reject('Invalid Transaction');
-                } else if (gasEst > convert.hexToBigNumber(tx.gas)) {
+                } else if (gasEst.greaterThan(convert.toBigNumber(tx.gas))) {
                     reject(`Insufficient Gas. Expected ${gasEst}`);
                 } else {
                     resolve(gasEst);
@@ -103,8 +103,6 @@ const CreateTx = connect(
     },
     (dispatch, ownProps) => ({
         onSubmit: (data) => {
-            log.debug(JSON.stringify(data));
-
             const useLedger = ownProps.account.get('hardware', false);
 
             let tx;
@@ -117,8 +115,8 @@ const CreateTx = connect(
                 }
 
                 const decimals = convert.toNumber(tokenInfo.get('decimals'));
-                const tokenUnits: BigNumber = TokenUnits.fromCoins(data.value, decimals).value;
-                const txData = Tokens.actions.createTokenTxData2(
+                const tokenUnits: BigNumber = convert.toBaseUnits(convert.toBigNumber(data.value), decimals);
+                const txData = Tokens.actions.createTokenTxData(
                     data.to,
                     tokenUnits,
                     data.isTransfer);
@@ -152,11 +150,11 @@ const CreateTx = connect(
                     log.debug(`Tx validated by trace. Estimated Gas ${estimatedGas}`);
 
                     dispatch(setWatch(false));
-                    closeConnection().then(() => {
+                    return closeConnection().then(() => {
                         if (useLedger) {
-                            dispatch(screen.actions.showDialog('sign-transaction', data));
+                            return dispatch(screen.actions.showDialog('sign-transaction', data));
                         }
-                        dispatch(
+                        return dispatch(
                             accounts.actions.sendTransaction(
                                 tx.from,
                                 data.password,
