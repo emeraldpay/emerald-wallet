@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import LinearProgress from 'material-ui/LinearProgress';
 import { separateThousands } from 'lib/convert';
 import NetworkSelector from './networkSelector';
-import { useRpc, saveSettings } from '../../../../store/launcherActions';
+import launcher from '../../../../store/launcher';
 import history from '../../../../store/wallet/history';
 
 const Render = ({ block, progress, peerCount, showDetails, connecting, switchNetwork }) => {
@@ -82,8 +82,8 @@ const Status = connect(
     },
     (dispatch, ownProps) => ({
         switchNetwork: (net) => {
-            dispatch(useRpc({ geth: net.geth, chain: net.chain }));
-            dispatch(saveSettings({ chain: net.chain, geth: net.geth }));
+            dispatch(launcher.actions.useRpc({ geth: net.geth, chain: net.chain }));
+            dispatch(launcher.actions.saveSettings({ chain: net.chain, geth: net.geth }));
             dispatch(history.actions.init(net.chain.id));
         },
     })

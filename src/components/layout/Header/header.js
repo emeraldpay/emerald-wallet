@@ -5,7 +5,7 @@ import { IconButton } from 'material-ui';
 import { LogoIcon, SettingsIcon } from 'elements/Icons';
 import Status from './status/status';
 import Total from './total';
-import { gotoScreen } from '../../../store/wallet/screen/screenActions';
+import screen from '../../../store/wallet/screen';
 
 import classes from './header.scss';
 
@@ -33,7 +33,7 @@ export default connect(
     (state, ownProps) => ({}),
     (dispatch, ownProps) => ({
         openSettings: () => {
-            dispatch(gotoScreen('settings'));
+            dispatch(screen.actions.gotoScreen('settings'));
         },
     })
 )(Header);

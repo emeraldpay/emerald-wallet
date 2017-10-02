@@ -7,6 +7,7 @@ import { translate } from 'react-i18next';
 import createLogger from '../../../utils/logger';
 
 import screen from '../../../store/wallet/screen';
+import launcher from '../../../store/launcher';
 import Account from './account';
 
 import styles from './list.scss';
@@ -49,7 +50,7 @@ export default connect(
     (state, ownProps) => ({
         accounts: state.accounts.get('accounts', Immutable.List()),
         knownTokens: state.tokens.get('tokens', Immutable.List()),
-        showFiat: (state.launcher.get('chain').get('name') || '').toLowerCase() === 'mainnet',
+        showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
     }),
     (dispatch, ownProps) => ({
         openAccount: (account) => () => {

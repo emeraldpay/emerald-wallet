@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import RaisedButton from 'material-ui/RaisedButton';
 import FontIcon from 'material-ui/FontIcon';
-import { agreeOnTerms } from 'store/launcherActions';
+import launcher from 'store/launcher';
 
-const Render = ({ onAgree }) => {
+const Terms = ({ onAgree }) => {
     const style = {
         width: '100%',
         height: '250px',
@@ -70,13 +70,11 @@ const Render = ({ onAgree }) => {
     );
 };
 
-const Terms = connect(
+export default connect(
     (state, ownProps) => ({
     }),
     (dispatch, ownProps) => ({
         onAgree: () =>
-            dispatch(agreeOnTerms('v1')),
+            dispatch(launcher.actions.agreeOnTerms('v1')),
     })
-)(Render);
-
-export default Terms;
+)(Terms);

@@ -42,22 +42,6 @@ const textFiatLight = {
     color: '#747474',
 };
 
-// TODO: delete
-// const BalanceField = ({ input }) => {
-//     if (!input.value) {
-//         return null;
-//     }
-//     return (
-//         <Balance
-//             balance={ input.value.units }
-//             symbol={ input.value.symbol }
-//             precision={ 6 }
-//             fiatStyle={ textFiat }
-//             etcStyle={ textEtc }
-//         />
-//     );
-// };
-
 /**
  * Address with IdentityIcon. We show it in from field select control
  */

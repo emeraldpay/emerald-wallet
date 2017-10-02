@@ -5,18 +5,18 @@ import Immutable from 'immutable';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
 import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
-import { Wei } from 'emerald-js';
-
-import { gotoScreen } from '../../../../store/wallet/screen/screenActions';
+import launcher from 'store/launcher';
+import screen from '../../../../store/wallet/screen';
 import { refreshTransaction } from '../../../../store/wallet/history/historyActions';
 import { link, tables } from '../../../../lib/styles';
 import AddressAvatar from '../../../../elements/AddressAvatar/addressAvatar';
 import AccountBalance from '../../../accounts/Balance';
 import { RepeatIcon } from '../../../../elements/Icons';
-import TokenUnits from '../../../../lib/tokenUnits'
+import TokenUnits from '../../../../lib/tokenUnits';
 
-export const Transaction = ({ tx, openTx, openAccount, refreshTx, toAccount, fromAccount }) => {
 
+export const Transaction = (props) => {
+    const { showFiat, tx, openTx, openAccount, refreshTx, toAccount, fromAccount } = props;
     // TODO: move tx status to own component
     // TODO: timestamp
     let blockNumber = null;
@@ -34,7 +34,12 @@ export const Transaction = ({ tx, openTx, openAccount, refreshTx, toAccount, fro
         <TableRow selectable={false}>
 
             <TableRowColumn style={{ ...tables.mediumStyle, paddingLeft: '0' }}>
-                {txValue && <AccountBalance balance={ txValue } onClick={ openTx } withAvatar={ false } /> }
+                {txValue && <AccountBalance
+                    showFiat={ showFiat }
+                    balance={ txValue }
+                    onClick={ openTx }
+                    withAvatar={ false }
+                /> }
             </TableRowColumn>
 
             <TableRowColumn style={{...tables.mediumStyle, ...link}} >
@@ -72,6 +77,7 @@ export const Transaction = ({ tx, openTx, openAccount, refreshTx, toAccount, fro
 };
 
 Transaction.propTypes = {
+    showFiat: PropTypes.bool,
     tx: PropTypes.object.isRequired,
     openAccount: PropTypes.func.isRequired,
     toAccount: PropTypes.object.isRequired,
@@ -96,6 +102,7 @@ export default connect(
         const fromAccount = getAccount(ownProps.tx.get('from'));
 
         return {
+            showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
             tx: ownProps.tx,
             getAccount,
             toAccount,
@@ -105,13 +112,13 @@ export default connect(
     (dispatch, ownProps) => ({
         openTx: () => {
             const tx = ownProps.tx;
-            dispatch(gotoScreen('transaction', {
+            dispatch(screen.actions.gotoScreen('transaction', {
                 hash: tx.get('hash'),
             })
             );
         },
         openAccount: (acc) => {
-            dispatch(gotoScreen('account', acc));
+            dispatch(screen.actions.gotoScreen('account', acc));
         },
         refreshTx: () => {
             const hash = ownProps.tx.get('hash');

@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import { closeConnection, setWatch } from 'store/ledgerActions';
 import { etherToWei } from 'lib/convert';
 import { address } from 'lib/validators';
+import launcher from 'store/launcher';
 import accounts from 'store/vault/accounts';
 import Tokens from 'store/vault/tokens';
 import screen from 'store/wallet/screen';
@@ -87,6 +88,7 @@ const CreateTx = connect(
                 isTransfer: 'true',
                 tokens: allTokens,
             },
+            showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
             accounts: accounts.selectors.getAll(state, Immutable.List()),
             addressBook: state.addressBook.get('addressBook'),
             tokens: allTokens.unshift(Immutable.fromJS({ address: '', symbol: 'ETC' })),

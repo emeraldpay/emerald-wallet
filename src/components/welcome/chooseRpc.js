@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import FontIcon from 'material-ui/FontIcon';
 import { List, ListItem } from 'material-ui/List';
-import { useRpc } from 'store/launcherActions';
+import { useRpc } from 'src/store/launcher/launcherActions';
 import { MainnetEpool, MainnetLocal } from 'lib/rpc/gethProviders';
 
 const ChooseRPC = ({ useFullNode, useRemoteNode }) => {

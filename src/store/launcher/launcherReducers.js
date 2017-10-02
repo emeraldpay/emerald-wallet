@@ -1,5 +1,5 @@
 import Immutable from 'immutable';
-import { api } from '../lib/rpc/api';
+import { api } from '../../lib/rpc/api';
 
 const initial = Immutable.fromJS({
     firstRun: false,
@@ -64,7 +64,7 @@ function onConfig(state, action) {
             state = state.setIn(['chain', 'client'], action.config.chain.client);
         }
 
-        //TODO: remove this hack
+        // TODO: remove this hack
         api.updateGethUrl(state.getIn(['geth', 'url']));
         return state;
     }

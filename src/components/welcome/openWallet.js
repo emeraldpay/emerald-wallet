@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
-import { saveSettings } from 'store/launcherActions';
+import launcher from 'store/launcher';
 
 const Render = ({ save }) => {
 
@@ -40,7 +40,7 @@ const OpenWallet = connect(
     }),
     (dispatch, ownProps) => ({
         save: () => {
-            dispatch(saveSettings());
+            dispatch(launcher.actions.saveSettings());
         },
     })
 )(Render);
