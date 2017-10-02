@@ -36,7 +36,7 @@ describe('historyReducer', () => {
             to: '0x0d5fa90814e60f2a6cb7bad13d150ba0640d08b9',
             transactionIndex: '0x0',
             value: '0x',
-            input: 'fuck EF',
+            input: 'fckef',
         };
         const action = {
             type: ActionTypes.UPDATE_TX,
@@ -53,7 +53,7 @@ describe('historyReducer', () => {
         // action
         state = historyReducers(state, action);
         const storedTx = state.get('trackedTransactions').last().toJS();
-        // This is fucking inconsistency in ethereum api
+        // This is inconsistency in ethereum api
         expect(storedTx.data).toEqual(tx.input);
         expect(storedTx.hash).toEqual(tx.hash);
     });
