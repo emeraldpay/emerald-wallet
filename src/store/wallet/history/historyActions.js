@@ -1,8 +1,7 @@
-/* @flow */
+// @flow
 import createLogger from '../../../utils/logger';
 
 import ActionTypes from './actionTypes';
-import { api } from '../../../lib/rpc/api';
 import { address as isAddress} from '../../../lib/validators';
 
 const log = createLogger('historyActions');
@@ -81,7 +80,7 @@ export function init(chainId: number) {
 }
 
 export function refreshTransaction(hash: string) {
-    return (dispatch, getState) =>
+    return (dispatch, getState, api) =>
         api.geth.eth.getTransactionByHash(hash).then((result) => {
             if (!result) {
                 log.info(`No tx for hash ${hash}`);

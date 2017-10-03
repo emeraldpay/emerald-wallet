@@ -1,5 +1,9 @@
 import Immutable from 'immutable';
 import TokenUnits from 'lib/tokenUnits';
+import { convert } from 'emerald-js';
+import ActionTypes from './actionTypes';
+
+const { toBigNumber } = convert;
 
 // ----- STRUCTURES
 
@@ -62,11 +66,15 @@ function onSetTokenList(state, action) {
 }
 
 function calcToken(tok) {
-    return tok.set('total', new TokenUnits(tok.get('totalSupply', '0x0'), tok.get('decimals', '0x0')));
+    const amount = new TokenUnits(
+        toBigNumber(tok.get('totalSupply', '0x0')),
+        toBigNumber(tok.get('decimals', '0x0')));
+
+    return tok.set('total', amount);
 }
 
 function onSetTokenInfo(state, action) {
-    if (action.type === 'TOKEN/SET_INFO') {
+    if (action.type === ActionTypes.SET_INFO) {
         return updateToken(state, action.address, (token) => {
             const newToken = token
                 .set('symbol', action.symbol)

@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import People from 'material-ui/svg-icons/social/people';
 import QRCode from 'qrcode.react';
 import { Wei } from 'emerald-js';
-
+import TokenUnits from 'lib/tokenUnits';
 import IdentityIcon from 'elements/IdentityIcon';
 import { Form, styles, Row } from 'elements/Form';
 import Button from 'elements/Button/index';
@@ -18,24 +18,13 @@ import screen from '../../../store/wallet/screen';
 import createLogger from '../../../utils/logger';
 import AccountEdit from '../edit';
 import TransactionsList from '../../tx/TxHistory';
-import AccountBalance from '../AccountBalance';
+import AccountBalance from '../Balance';
 import SecondaryMenu from '../SecondaryMenu';
 
 import classes from './show.scss';
 import TokenBalances from '../TokenBalances';
 
 const log = createLogger('AccountShow');
-
-const TokenRow = ({ token }) => {
-    const balance = token.get('balance') ? token.get('balance').getDecimalized() : '0';
-
-    return (
-        <div><span>{balance} {token.get('symbol')}</span></div>
-    );
-};
-TokenRow.propTypes = {
-    token: PropTypes.object.isRequired,
-};
 
 class AccountRender extends React.Component {
     constructor(props) {
@@ -67,9 +56,11 @@ class AccountRender extends React.Component {
 
     render() {
         const { account, rates, goBack, transactions, createTx, showReceiveDialog } = this.props;
-        const value = account.get('balance') ? account.get('balance').getEther() : '?';
         const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
         const isHardware = (acc) => acc.get('hardware', false);
+
+        // TODO: we convert Wei to TokenUnits here
+        const balance = account.get('balance') ? new TokenUnits(account.get('balance').value(), 18) : null;
 
         return (
             <div>
@@ -84,8 +75,9 @@ class AccountRender extends React.Component {
                                 </div>
                                 <div style={styles.right}>
                                     <AccountBalance
-                                        etcStyle={{fontSize: '20px', lineHeight: '24px'}}
-                                        balance={ account.get('balance') || Wei.ZERO }
+                                        coinsStyle={{fontSize: '20px', lineHeight: '24px'}}
+                                        balance={ balance }
+                                        symbol="ETC"
                                     />
                                 </div>
                             </Row>

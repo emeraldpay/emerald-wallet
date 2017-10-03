@@ -1,6 +1,5 @@
 import { convert } from 'emerald-js';
 
-import { api } from '../../lib/rpc/api';
 import { waitForServices, intervalRates } from '../../store/store';
 import createLogger from '../../utils/logger';
 import ActionTypes from './actionTypes';
@@ -10,7 +9,7 @@ const log = createLogger('networkActions');
 let watchingHeight = false;
 
 export function loadHeight(watch) {
-    return (dispatch) =>
+    return (dispatch, getState, api) =>
         api.geth.eth.blockNumber().then((result) => {
             dispatch({
                 type: ActionTypes.BLOCK,
@@ -24,7 +23,7 @@ export function loadHeight(watch) {
 }
 
 export function loadNetworkVersion() {
-    return (dispatch, getState) =>
+    return (dispatch, getState, api) =>
         api.geth.net.version().then((result) => {
             dispatch({
                 type: ActionTypes.PEER_COUNT,
@@ -39,7 +38,7 @@ export function loadNetworkVersion() {
 }
 
 export function loadPeerCount() {
-    return (dispatch, getState) =>
+    return (dispatch, getState, api) =>
         api.geth.net.peerCount().then((result) => {
             if (getState().network.get('peerCount') !== convert.toNumber(result)) {
                 dispatch({
@@ -51,7 +50,7 @@ export function loadPeerCount() {
 }
 
 export function loadSyncing() {
-    return (dispatch, getState) => {
+    return (dispatch, getState, api) => {
         const repeat = getState().launcher.getIn(['geth', 'type']) === 'local';
         api.geth.eth.syncing().then((result) => {
             const syncing = getState().network.get('sync').get('syncing');
@@ -80,7 +79,7 @@ export function loadSyncing() {
 }
 
 export function getGasPrice() {
-    return (dispatch) => {
+    return (dispatch, getState, api) => {
         api.geth.eth.gasPrice().then((result) => {
             dispatch({
                 type: ActionTypes.GAS_PRICE,

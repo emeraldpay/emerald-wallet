@@ -14,6 +14,7 @@ image:https://badges.gitter.im/ethereumproject/emerald-wallet.svg[link="https://
 image:https://travis-ci.org/ethereumproject/emerald-wallet.png?branch=master[Travis CI Build Status, link=https://travis-ci.org/ethereumproject/emerald-wallet]
 image:https://img.shields.io/github/license/ethereumproject/emerald-wallet.svg?maxAge=2592000["License", link="https://github.com/ethereumproject/emerald-wallet/blob/master/LICENSE"]
 image:https://ci.appveyor.com/api/projects/status/7gh0rncs7ya9ia2a?svg=true[AppVeyor Build Status, link=https://ci.appveyor.com/project/splix/emerald-wallet/]
+image:https://codecov.io/gh/ethereumproject/emerald-wallet/branch/master/graph/badge.svg[Codecov, link=https://codecov.io/gh/ethereumproject/emerald-wallet]
 endif::[]
 
 
@@ -27,11 +28,11 @@ are coming from. You can run any of those commands without the `npm run` meta-co
 ### Dependencies
 
 ####  NPM packages
-This will install dependencies saved in `package.json` under the `devDependencies` field.
-You're going to need these.
+This will install dependencies saved in `package.json` and `flow-typed` repository.
+
 
 ```shell
-$ npm install
+$ npm run setup
 ```
 
 If you wind up installing more packages, please
@@ -79,9 +80,12 @@ $ npm run start:electron
 
 ### Logs
 
-#### Electron and Emerald logs
-During development, Electron and Emerald logs are in your Terminal 2 console, they're also
-persisted in ~/Library/Logs/EmeraldWallet/log.log. This is the same for production.
+#### Emerald logs
+Electron and Emerald logs persisted in:
+
+ * OSX: `~/Library/Logs/EmeraldWallet/log.log`
+ * Linux: `~/.config/EmeraldWallet/log.log`
+
 
 #### Geth logs
 During development, you'll find geth's logs in `./logs` right in the project base directory.

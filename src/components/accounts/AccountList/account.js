@@ -9,10 +9,11 @@ import Button from 'elements/Button';
 import { QrCodeIcon } from 'elements/Icons';
 import AddressAvatar from '../../../elements/AddressAvatar/addressAvatar';
 import SecondaryMenu from '../SecondaryMenu';
-import AccountBalance from '../AccountBalance';
+import AccountBalance from '../Balance';
 import TokenBalances from '../TokenBalances';
 
 import styles from './account.scss';
+import TokenUnits from '../../../lib/tokenUnits';
 
 export default class Account extends React.Component {
 
@@ -22,6 +23,7 @@ export default class Account extends React.Component {
         openAccount: PropTypes.func.isRequired,
         createTx: PropTypes.func,
         showReceiveDialog: PropTypes.func,
+        showFiat: PropTypes.func,
     };
 
     constructor(props) {
@@ -39,9 +41,12 @@ export default class Account extends React.Component {
 
     render() {
         const { account, openAccount, createTx, showReceiveDialog, knownTokens } = this.props;
+        const { showFiat } = this.props;
         const { showTokens } = this.state;
 
-        const balance = account.get('balance');
+        // TODO: we convert Wei to TokenUnits here
+        const balance = account.get('balance') ? new TokenUnits(account.get('balance').value(), 18) : null;
+
         const tokens = account.get('tokens');
         const isHardware = (acc) => acc.get('hardware', false);
 
@@ -57,7 +62,11 @@ export default class Account extends React.Component {
                                     expanded={ showTokens }
                                 />
                                 <div style={{marginLeft: '10px'}}>
-                                    {balance && <AccountBalance balance={account.get('balance')}/>}
+                                    {balance && <AccountBalance
+                                        balance={ balance }
+                                        symbol="ETC"
+                                        showFiat={ showFiat }
+                                    />}
                                     {!balance && 'loading...'}
                                 </div>
                             </div>

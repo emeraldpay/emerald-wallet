@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+EMERALD_CLI_VER=0.10.1
+
 set -e
 
 # Get cargo.
@@ -22,9 +24,9 @@ fi
 
 # Install and move emerald.
 echo "Installing emerald with cargo..."
-echo "$ cargo install emerald-cli"
+echo "$ cargo install --vers $EMERALD_CLI_VER emerald-cli"
 export RUSTFLAGS="-C target-feature=+crt-static"
-cargo install emerald-cli -f
+cargo install --vers $EMERALD_CLI_VER emerald-cli -f
 
 # Get location of emerald.
 # Should be ~/.cargo/bin/emerald, hopefully.

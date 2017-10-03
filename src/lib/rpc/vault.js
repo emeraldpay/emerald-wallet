@@ -1,4 +1,4 @@
-/* @flow */
+// @flow
 import { JsonRpc } from 'emerald-js';
 
 export default class Vault {
@@ -44,7 +44,7 @@ export default class Vault {
         return this.rpc.call('emerald_newAccount', params);
     }
 
-    addContract(address: string, name: string) {
+    addContract(address: string, name: string): Promise<string> {
         return Promise.resolve(address);
         // TODO: return this.rpc.call('emerald_addContract', [{address, name }]);
     }

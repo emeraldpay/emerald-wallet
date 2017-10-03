@@ -1,9 +1,7 @@
 import React from 'react';
 import { convert } from 'emerald-js';
-import Immutable from 'immutable';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from 'redux-form';
-import { change, formValueSelector, reset, SubmissionError } from 'redux-form';
+import { Field, reduxForm, change, formValueSelector, reset, SubmissionError } from 'redux-form';
 import TextField from 'elements/Form/TextField';
 import Button from 'elements/Button';
 
@@ -13,8 +11,6 @@ import { required, address } from 'lib/validators';
 
 import TokenUnits from 'lib/tokenUnits';
 
-import Token from '../token';
-
 import styles from './add.scss';
 
 class AddToken extends React.Component {
@@ -23,8 +19,11 @@ class AddToken extends React.Component {
         const { token, submitSucceeded, handleSubmit, invalid, pristine, submitting } = this.props;
         const { clearToken } = this.props;
 
-        return (
+        const total = (token) => new TokenUnits(
+            convert.toBigNumber(token.totalSupply),
+            convert.toBigNumber(token.decimals));
 
+        return (
             <div>
                 <form onSubmit={handleSubmit}>
                 { !token &&
@@ -67,7 +66,7 @@ class AddToken extends React.Component {
                                     </tr>
                                     <tr>
                                         <td>Total supply</td>
-                                        <td>{ new TokenUnits(token.totalSupply, token.decimals).getDecimalized() }</td>
+                                        <td>{ total(token).getDecimalized() }</td>
                                     </tr>
                                     <tr>
                                         <td>Decimals</td>
@@ -115,11 +114,11 @@ export default connect(
     (dispatch, ownProps) => ({
         onSubmit: (data) => {
             if (data.token) {
-                return dispatch(tokens.actions.addToken(data.address))
+                return dispatch(tokens.actions.addToken(data.token))
                     .then(dispatch(reset('addToken')))
                     .then(dispatch(tokens.actions.loadTokenBalances(data)));
             } else {
-                return tokens.actions.fetchTokenDetails(data.address)
+                return dispatch(tokens.actions.fetchTokenDetails(data.address))
                     .then((result) => {
                         return dispatch(change('addToken', 'token', result));
                     });

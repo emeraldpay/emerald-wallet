@@ -1,26 +1,28 @@
+/* eslint-disable import/no-extraneous-dependencies */
 import thunkMiddleware from 'redux-thunk';
 import createReduxLogger from 'redux-logger';
-import { createStore, applyMiddleware, combineReducers } from 'redux';
+import { createStore as createReduxStore, applyMiddleware, combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
 import { ipcRenderer } from 'electron';
+
+import { api } from '../lib/rpc/api';
 
 import history from './wallet/history';
 import accounts from './vault/accounts';
 import network from './network';
 import screen from './wallet/screen';
 import settings from './wallet/settings';
-
-import { loadTokenDetails, addToken } from './vault/tokens/tokenActions';
+import tokens from './vault/tokens';
 
 // import { loadAddressBook } from './addressActions';
 // import { loadTokenList } from './tokenActions';
 // import { loadContractList } from './contractActions';
-import { readConfig, listenElectron, connecting, loadClientVersion } from './launcherActions';
+import { readConfig, listenElectron, connecting, loadClientVersion } from './launcher/launcherActions';
 import { watchConnection as waitLedger, setWatch, setBaseHD } from './ledgerActions';
 import addressReducers from './addressReducers';
 import tokenReducers from './vault/tokens/tokenReducers';
 import contractReducers from './contractReducers';
-import launcherReducers from './launcherReducers';
+import launcherReducers from './launcher/launcherReducers';
 import ledgerReducers from './ledgerReducers';
 import walletReducers from './wallet/walletReducers';
 import deployedTokens from '../lib/deployedTokens';
@@ -39,7 +41,7 @@ export const intervalRates = {
     // Continue is repeating timeouts.
     continueLoadSyncRate: minute, // prod: second
     continueLoadHeightRate: 5 * minute, // prod: 5 * second
-    continueRefreshAllTxRate: 30 * second, // prod: 2 * second
+    continueRefreshAllTxRate: 60 * second, // prod: 2 * second
     continueRefreshLongRate: 900 * second, // 5 o'clock somewhere.
 };
 
@@ -75,13 +77,22 @@ const reducers = {
     wallet: walletReducers,
 };
 
-export const store = createStore(
+/**
+ * Creates Redux store with API as dependency injection.
+ *
+ * Injecting api allows to write unit tests.
+ *
+ * @param _api
+ */
+export const createStore = (_api) => createReduxStore(
     combineReducers(reducers),
     applyMiddleware(
-        thunkMiddleware,
+        thunkMiddleware.withExtraArgument(_api),
         loggerMiddleware
     )
 );
+
+export const store = createStore(api);
 
 function refreshAll() {
     store.dispatch(accounts.actions.loadPendingTransactions());
@@ -130,8 +141,10 @@ export function startSync() {
     store.dispatch(history.actions.init(chainId));
 
     // deployed tokens
-    const tokens = deployedTokens[+chainId];
-    tokens.forEach((token) => store.dispatch(addToken(token.address, token.name)));
+    const known = deployedTokens[+chainId];
+    if (known) {
+        known.forEach((token) => store.dispatch(tokens.actions.addToken(token)));
+    }
 
     refreshAll();
     setTimeout(refreshLong, 3 * intervalRates.second);

@@ -1,8 +1,18 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { FontIcon, FlatButton, Popover } from 'material-ui';
 import { List, ListItem } from 'material-ui/List';
 
 class DashboardMenu extends React.Component {
+
+    static propTypes = {
+        generate: PropTypes.func,
+        importJson: PropTypes.func,
+        importLedger: PropTypes.func,
+        importPrivateKey: PropTypes.func,
+        t: PropTypes.func.isRequired,
+        style: PropTypes.object,
+    }
 
     constructor(props) {
         super(props);

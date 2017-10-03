@@ -56,7 +56,8 @@ function createTx(data) {
             blockNumber: data.blockNumber,
             nonce: toNumber(data.nonce),
             replayProtected: data.replayProtected,
-            input: data.input,
+            // This is due to great inconsistency in original Eth API (sometimes data, sometimes input)
+            data: (data.data || data.input),
         });
     }
     return tx;
@@ -68,7 +69,7 @@ function onTrackTx(state, action) {
         if (isTracked(state, data)) {
             return state;
         }
-        return state.update('trackedTransactions', (txes) => txes.push(data));
+        return state.update('trackedTransactions', (txs) => txs.push(data));
     }
     return state;
 }
@@ -103,12 +104,12 @@ function onTrackedTxNotFound(state, action) {
 
 function onUpdateTx(state, action) {
     if (action.type === ActionTypes.UPDATE_TX) {
-        return state.update('trackedTransactions', (txes) => {
-            const pos = txes.findKey((tx) => tx.get('hash') === action.tx.hash);
+        return state.update('trackedTransactions', (txs) => {
+            const pos = txs.findKey((tx) => tx.get('hash') === action.tx.hash);
             if (pos >= 0) {
-                txes = txes.update(pos, (tx) => tx.mergeWith((o, n) => o || n, createTx(action.tx)));
+                txs = txs.update(pos, (tx) => tx.mergeWith((o, n) => o || n, createTx(action.tx)));
             }
-            return txes;
+            return txs;
         });
     }
     return state;

@@ -1,8 +1,8 @@
-/* @flow */
+// @flow
 import log from 'electron-log';
 import EthereumTx from 'ethereumjs-tx';
 import { convert } from 'emerald-js';
-import { api } from 'lib/rpc/api';
+
 import Wallet from 'lib/wallet';
 import { address as isAddress} from 'lib/validators';
 import { loadTokenBalanceOf } from '../tokens/tokenActions';
@@ -16,15 +16,18 @@ const currentChain = (state) => state.launcher.getIn(['chain', 'name']);
 
 type Transaction = {
     from: string,
-    to?: string,
+    // Can also be null or void
+    to: ?string,
     value: string,
     nonce: string,
     gas: string,
     gasPrice: string,
+    // Can either be void or omitted altogether. Cannot be null
+    data?: string,
 }
 
 export function loadAccountBalance(address: string) {
-    return (dispatch, getState) => {
+    return (dispatch, getState, api) => {
         api.geth.eth.getBalance(address).then((result) => {
             dispatch({
                 type: ActionTypes.SET_BALANCE,
@@ -41,7 +44,7 @@ export function loadAccountBalance(address: string) {
 }
 
 export function loadAccountsList() {
-    return (dispatch, getState) => {
+    return (dispatch, getState, api) => {
         dispatch({
             type: ActionTypes.LOADING,
         });
@@ -74,7 +77,7 @@ export function loadAccountsList() {
 }
 
 export function loadAccountTxCount(accountId: string) {
-    return (dispatch) => {
+    return (dispatch, getState, api) => {
         api.geth.eth.getTransactionCount(accountId).then((result) => {
             dispatch({
                 type: 'ACCOUNT/SET_TXCOUNT',
@@ -86,7 +89,7 @@ export function loadAccountTxCount(accountId: string) {
 }
 
 export function exportPaperWallet(passphrase: string, accountId: string) {
-    return (dispatch, getState) => {
+    return (dispatch, getState, api) => {
         const chain = currentChain(getState());
         api.emerald.exportAccount(accountId, chain).then((result) => {
             const wallet = Wallet.fromV3(result, passphrase);
@@ -97,14 +100,14 @@ export function exportPaperWallet(passphrase: string, accountId: string) {
 }
 
 export function exportKeyFile(accountId: string) {
-    return (dispatch, getState) => {
+    return (dispatch, getState, api) => {
         const chain = currentChain(getState());
         return api.emerald.exportAccount(accountId, chain);
     };
 }
 
 export function createAccount(passphrase: string, name: string = '', description: string = '') {
-    return (dispatch, getState) => {
+    return (dispatch, getState, api) => {
         const chain = currentChain(getState());
 
         return api.emerald.newAccount(passphrase, name, description, chain)
@@ -123,7 +126,7 @@ export function createAccount(passphrase: string, name: string = '', description
 }
 
 export function updateAccount(address: string, name: string, description?: string) {
-    return (dispatch, getState) => {
+    return (dispatch, getState, api) => {
         const chain = currentChain(getState());
         return api.emerald.updateAccount(address, name, description, chain)
             .then((result) => {
@@ -135,10 +138,6 @@ export function updateAccount(address: string, name: string, description?: strin
                 });
             });
     };
-}
-
-function sendRawTransaction(signed: string) {
-    return api.geth.eth.sendRawTransaction(signed);
 }
 
 function unwrap(list) {
@@ -166,13 +165,13 @@ function onTxSend(dispatch, sourceTx: Transaction) {
     };
 }
 
-function getNonce(address: string) {
+function getNonce(api, address: string) {
     return api.geth.eth.getTransactionCount(address);
 }
 
 function withNonce(tx: Transaction): (nonce: string) => Promise<Transaction> {
     return (nonce) => new Promise((resolve, reject) =>
-        resolve(Object.assign({}, tx, { nonce }))
+        resolve(Object.assign({}, tx, { nonce: convert.toHex(nonce) }))
     );
 }
 
@@ -194,30 +193,31 @@ function verifySender(expected) {
         });
 }
 
-function emeraldSign(txData: Transaction, passphrase: string, chain: string) {
-    return api.emerald.signTransaction({ ...txData, passphrase}, chain);
+function signTx(api, tx: Transaction, passphrase: string, chain: string) {
+    return api.emerald.signTransaction({ ...tx, passphrase}, chain);
 }
 
-export function sendTransaction(from: string, passphrase: string, to: string, gas: string,
-                                gasPrice: string, value: string) {
+export function sendTransaction(from: string, passphrase: string, to: ?string, gas: string,
+                                gasPrice: string, value: string, data?: string) {
     const originalTx: Transaction = {
         from,
         to,
         gas,
         gasPrice,
         value,
+        data,
         nonce: '',
     };
     const passPhrase = passphrase || ''; // for HW key
-    return (dispatch, getState) => {
+    return (dispatch, getState, api) => {
         const chain = currentChain(getState());
-        getNonce(from)
+        getNonce(api, from)
             .then(withNonce(originalTx))
             .then((tx) =>
-                emeraldSign(tx, passPhrase, chain)
+                signTx(api, tx, passPhrase, chain)
                     .then(unwrap)
                     .then(verifySender(from))
-                    .then(sendRawTransaction)
+                    .then((signed) => api.geth.eth.sendRawTransaction(signed))
                     .then(onTxSend(dispatch, tx))
             )
             .catch(screen.actions.catchError(dispatch));
@@ -226,19 +226,19 @@ export function sendTransaction(from: string, passphrase: string, to: string, ga
 
 export function createContract(accountId: string, passphrase: string, gas, gasPrice, data) {
     const txData = {
-        from: accountId,
         passphrase,
         gas,
         gasPrice,
         data,
+        from: accountId,
         nonce: '',
         value: '0x0',
     };
-    return (dispatch, getState) => {
+    return (dispatch, getState, api) => {
         const chain = currentChain(getState());
         api.emerald.signTransaction(txData, { chain })
             .then(unwrap)
-            .then(sendRawTransaction)
+            .then(api.geth.eth.sendRawTransaction)
             .then(onTxSend(dispatch, txData))
             .catch(log.error);
     };
@@ -262,7 +262,7 @@ function readWalletFile(wallet) {
 }
 
 export function importJson(data, name: string, description: string) {
-    return (dispatch, getState) => {
+    return (dispatch, getState, api) => {
         const chain = currentChain(getState());
         data.name = name;
         data.description = description;
@@ -274,10 +274,10 @@ export function importJson(data, name: string, description: string) {
             // Reload accounts.
             if (isAddress(result) === undefined) {
                 dispatch({
-                    type: ActionTypes.ADD_ACCOUNT,
-                    accountId: result,
                     name,
                     description,
+                    type: ActionTypes.ADD_ACCOUNT,
+                    accountId: result,
                 });
                 dispatch(loadAccountBalance(result));
                 return result;
@@ -296,7 +296,7 @@ export function importWallet(wallet, name: string, description: string) {
 }
 
 export function loadPendingTransactions() {
-    return (dispatch, getState) =>
+    return (dispatch, getState, api) =>
         api.geth.eth.getBlockByNumber('pending', true)
             .then((result) => {
                 const addrs = getState().accounts.get('accounts')
@@ -328,12 +328,12 @@ export function loadPendingTransactions() {
 }
 
 export function hideAccount(accountId: string) {
-    return (dispatch, getState) => {
+    return (dispatch, getState, api) => {
         const chain = currentChain(getState());
 
         return api.emerald.hideAccount(accountId, chain)
           .then((result) => {
-            return result;
+              return result;
           }).catch(screen.actions.catchError(dispatch));
     };
 }

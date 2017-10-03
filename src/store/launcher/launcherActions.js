@@ -4,8 +4,8 @@ import { api } from 'lib/rpc/api';
 
 
 import { waitForServicesRestart } from 'store/store';
-import accounts from './vault/accounts';
-import screen from './wallet/screen';
+import accounts from 'store/vault/accounts';
+import screen from 'store/wallet/screen';
 
 function isEthRpcReady(state) {
     return state.launcher.getIn(['geth', 'status']) === 'ready';
