@@ -1,4 +1,5 @@
 // @flow
+import BigNumber from 'bignumber.js';
 
 export class Currency {
     static format(value: number, currency: string): string {
@@ -18,5 +19,13 @@ export class Currency {
             case 'CNY': return 'zh-CN';
             default: return 'en-US';
         }
+    }
+
+    static convert(value: string, rate: number, decimals: number = 2): string {
+        const v = new BigNumber(value, 10);
+        const r = (rate === null || typeof rate === 'undefined') ?
+            new BigNumber(0) :
+            new BigNumber(rate.toString());
+        return v.mul(r).toFixed(decimals);
     }
 }

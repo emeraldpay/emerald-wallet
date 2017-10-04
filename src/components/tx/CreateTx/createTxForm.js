@@ -66,7 +66,7 @@ const AddressWithIcon = ({ address, name }) => {
 };
 
 
-const CreateTxForm = (props) => {
+export const CreateTxForm = (props) => {
     const { accounts, balance, handleSubmit, invalid, pristine, submitting } = props;
     const { addressBook, handleSelect, tokens, token, isToken } = props;
     const { onEntireBalance, onChangeToken, onChangeAccount, onChangeGasLimit } = props;
@@ -188,9 +188,9 @@ const CreateTxForm = (props) => {
                     name="value"
                     component={ TextField }
                     hintText="1.0000"
-                    fullWidth={true}
-                    underlineShow={false}
-                    validate={[required]}
+                    fullWidth={ true }
+                    underlineShow={ false }
+                    validate={ [required, number] }
                 />
                 <Field
                     name="token"
@@ -231,7 +231,7 @@ const CreateTxForm = (props) => {
                 <div className= { classes.entireBalanceContainer }>
                     { showFiat &&
                         <div style={textFiatLight}>
-                            { value && Currency.format(value.getFiat(fiatRate), fiatCurrency) }
+                            { value && Currency.format(Currency.convert(value, fiatRate, 2), fiatCurrency) }
                         </div>
                     }
                     <LinkButton
@@ -338,7 +338,6 @@ CreateTxForm.propTypes = {
 
     error: PropTypes.string,
 };
-
 
 export default reduxForm({
     form: 'createTx',
