@@ -1,4 +1,4 @@
-/* @flow */
+// @flow
 import log from 'electron-log';
 
 /**

@@ -1,11 +1,11 @@
 import { ipcRenderer } from 'electron';
-import log from 'electron-log';
 import { api } from 'lib/rpc/api';
-
-
 import { waitForServicesRestart } from 'store/store';
 import accounts from 'store/vault/accounts';
 import screen from 'store/wallet/screen';
+import createLogger from '../../utils/logger';
+
+const log = createLogger('launcherActions');
 
 function isEthRpcReady(state) {
     return state.launcher.getIn(['geth', 'status']) === 'ready';

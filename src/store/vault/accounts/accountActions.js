@@ -1,5 +1,4 @@
 // @flow
-import log from 'electron-log';
 import EthereumTx from 'ethereumjs-tx';
 import { convert } from 'emerald-js';
 
@@ -10,6 +9,7 @@ import screen from '../../wallet/screen';
 import history from '../../wallet/history';
 
 import ActionTypes from './actionTypes';
+import createLogger from '../../../utils/logger';
 
 const { toNumber, toHex } = convert;
 const currentChain = (state) => state.launcher.getIn(['chain', 'name']);
@@ -25,6 +25,8 @@ type Transaction = {
     // Can either be void or omitted altogether. Cannot be null
     data?: string,
 }
+
+const log = createLogger('accountActions');
 
 export function loadAccountBalance(address: string) {
     return (dispatch, getState, api) => {
