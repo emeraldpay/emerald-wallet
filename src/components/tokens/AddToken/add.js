@@ -1,53 +1,59 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 import { convert } from 'emerald-js';
 import { connect } from 'react-redux';
 import { Field, reduxForm, change, formValueSelector, reset, SubmissionError } from 'redux-form';
 import TextField from 'elements/Form/TextField';
 import Button from 'elements/Button';
-
-
 import tokens from 'store/vault/tokens';
 import { required, address } from 'lib/validators';
-
 import TokenUnits from 'lib/tokenUnits';
 
 import styles from './add.scss';
 
-class AddToken extends React.Component {
+export class AddToken extends React.Component {
+    static propTypes = {
+        handleSubmit: PropTypes.func,
+        token: PropTypes.object,
+        clearToken: PropTypes.func,
+        invalid: PropTypes.bool,
+        pristine: PropTypes.bool,
+        submitting: PropTypes.bool,
+    };
 
     render() {
-        const { token, submitSucceeded, handleSubmit, invalid, pristine, submitting } = this.props;
+        const { token, handleSubmit, invalid, pristine, submitting } = this.props;
         const { clearToken } = this.props;
 
-        const total = (token) => new TokenUnits(
-            convert.toBigNumber(token.totalSupply),
-            convert.toBigNumber(token.decimals));
+        const total = (tokenData) => new TokenUnits(
+            convert.toBigNumber(tokenData.totalSupply),
+            convert.toBigNumber(tokenData.decimals));
 
         return (
             <div>
-                <form onSubmit={handleSubmit}>
+                <form onSubmit={ handleSubmit }>
                 { !token &&
                     <div>
-                            <div>
-                                <Field
-                                    name="address"
-                                    component={ TextField }
-                                    underlineShow={ false }
-                                    fullWidth={ true }
-                                    hintText="Token Contract Address"
-                                    type="text"
-                                    label="Token Contract Address"
-                                    validate={ [required, address] }
-                                />
-                            </div>
-                            <div className={ styles.actionButtons }>
-                                <Button
-                                    primary
-                                    label="Submit"
-                                    type="submit"
-                                    disabled={pristine || submitting || invalid }
-                                />
-                            </div>
+                        <div>
+                            <Field
+                                name="address"
+                                component={ TextField }
+                                underlineShow={ false }
+                                fullWidth={ true }
+                                hintText="Token Contract Address"
+                                type="text"
+                                label="Token Contract Address"
+                                validate={ [required, address] }
+                            />
+                        </div>
+                        <div className={ styles.actionButtons }>
+                            <Button
+                                primary
+                                label="Submit"
+                                type="submit"
+                                disabled={pristine || submitting || invalid }
+                            />
+                        </div>
                     </div>
                 }
                 { token &&
@@ -117,12 +123,11 @@ export default connect(
                 return dispatch(tokens.actions.addToken(data.token))
                     .then(dispatch(reset('addToken')))
                     .then(dispatch(tokens.actions.loadTokenBalances(data)));
-            } else {
-                return dispatch(tokens.actions.fetchTokenDetails(data.address))
+            }
+            return dispatch(tokens.actions.fetchTokenDetails(data.address))
                     .then((result) => {
                         return dispatch(change('addToken', 'token', result));
                     });
-            }
         },
         clearToken: () => dispatch(reset('addToken')),
 
