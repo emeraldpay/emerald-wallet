@@ -114,6 +114,7 @@ export default connect(
             const tx = ownProps.tx;
             dispatch(screen.actions.gotoScreen('transaction', {
                 hash: tx.get('hash'),
+                accountId: ownProps.accountId,
             })
             );
         },

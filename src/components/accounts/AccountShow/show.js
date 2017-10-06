@@ -4,14 +4,13 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import People from 'material-ui/svg-icons/social/people';
 import QRCode from 'qrcode.react';
-import { Wei } from 'emerald-js';
 import TokenUnits from 'lib/tokenUnits';
 import IdentityIcon from 'elements/IdentityIcon';
 import { Form, styles, Row } from 'elements/Form';
 import Button from 'elements/Button/index';
 import { QrCodeIcon } from 'elements/Icons';
 import AddressAvatar from 'elements/AddressAvatar/addressAvatar';
-
+import DashboardButton from 'components/common/DashboardButton';
 import accounts from '../../../store/vault/accounts';
 import screen from '../../../store/wallet/screen';
 
@@ -23,6 +22,7 @@ import SecondaryMenu from '../SecondaryMenu';
 
 import classes from './show.scss';
 import TokenBalances from '../TokenBalances';
+
 
 const log = createLogger('AccountShow');
 
@@ -66,7 +66,7 @@ class AccountRender extends React.Component {
             <div>
                 <div style={{display: 'flex', alignItems: 'stretch'}}>
                     <div style={{flexGrow: 1}}>
-                        <Form caption="Account" onCancel={ goBack }>
+                        <Form caption="Account" backButton={ <DashboardButton onClick={ goBack }/> }>
                             <Row>
                                 <div id="left-column" style={styles.left}>
                                     <div style={{display: 'flex', justifyContent: 'flex-end'}}>
@@ -141,7 +141,7 @@ class AccountRender extends React.Component {
                     </div>
                 </div>
                 <div className={ classes.transContainer }>
-                    <TransactionsList transactions={transactions}/>
+                    <TransactionsList transactions={ transactions } accountId={ account.get('id') } />
                 </div>
             </div>
         );

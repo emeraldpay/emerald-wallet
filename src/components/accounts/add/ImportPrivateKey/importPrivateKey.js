@@ -4,12 +4,13 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
-import { importWallet } from 'store/vault/accounts/accountActions';
+import DashboardButton from 'components/common/DashboardButton';
+import accounts from 'store/vault/accounts';
+import screen from 'store/wallet/screen';
 
 import Wallet from 'lib/wallet';
 import Button from 'elements/Button';
 import { Warning, WarningHeader, WarningText } from 'elements/Warning';
-import { gotoScreen } from '../../../../store/wallet/screen/screenActions';
 
 import styles from './importPrivateKey.scss';
 
@@ -33,16 +34,15 @@ class ImportPrivateKey extends React.Component {
                 this.setState({accountId: result});
                 const p = accounts.findKey((acc) => acc.get('id') === this.state.accountId);
                 const account = p && (p >= 0) && accounts.get(p);
-                dispatch(gotoScreen('account', account));
+                dispatch(screen.actions.gotoScreen('account', account));
             }
         });
     }
 
     render() {
         const { onBack } = this.props;
-
         return (
-            <Form caption="Import Private Key" onCancel={onBack}>
+            <Form caption="Import Private Key" backButton={ <DashboardButton onClick={ onBack }/> }>
                 <form>
                     <Row>
                         <div style={formStyles.left}/>
@@ -53,11 +53,12 @@ class ImportPrivateKey extends React.Component {
                                     operations.
                                 </div>
                                 <div style={{marginTop: '30px'}}>
-                                    <Field name="password"
-                                           type="password"
-                                           component={TextField}
-                                           fullWidth={true}
-                                           underlineShow={false}
+                                    <Field
+                                        name="password"
+                                        type="password"
+                                        component={TextField}
+                                        fullWidth={true}
+                                        underlineShow={false}
                                     />
                                 </div>
                             </div>
@@ -105,7 +106,7 @@ class ImportPrivateKey extends React.Component {
     }
 }
 
-const createForm = reduxForm({
+const importForm = reduxForm({
     form: 'importPrivateKey',
     fields: ['password', 'privateKey'],
 })(ImportPrivateKey);
@@ -123,7 +124,7 @@ export default connect(
                         .toV3String(data.password);
 
                     // import key file
-                    dispatch(importWallet(new Blob([keyFile]), '', ''))
+                    dispatch(accounts.actions.importWallet(new Blob([keyFile]), '', ''))
                         .then((response) => resolve(response))
                         .catch((error) => resolve({error}));
                 } catch (error) {
@@ -132,8 +133,8 @@ export default connect(
             });
         },
         onBack: () => {
-            dispatch(gotoScreen('home'));
+            dispatch(screen.actions.gotoScreen('home'));
         },
     })
-)(createForm);
+)(importForm);
 

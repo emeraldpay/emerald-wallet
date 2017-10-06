@@ -14,7 +14,7 @@ type Props = {
 };
 
 const TransactionsList = (props: Props) => {
-    const { transactions } = props;
+    const { transactions, accountId } = props;
     if (!transactions) {
         return (<div>Loading...</div>);
     }
@@ -36,7 +36,7 @@ const TransactionsList = (props: Props) => {
                     </TableRow>
                 </TableHeader>
                 <TableBody displayRowCheckbox={ false }>
-                    { transactions.map((tx) => <Transaction key={tx.get('hash')} tx={tx}/>) }
+                    { transactions.map((tx) => <Transaction key={tx.get('hash')} tx={tx} accountId={ accountId } />) }
                 </TableBody>
             </Table>
         </div>

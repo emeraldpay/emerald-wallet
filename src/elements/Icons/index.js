@@ -9,6 +9,7 @@ import CloseIcon from './closeIcon';
 import SearchIcon from './searchIcon';
 import RepeatIcon from './repeatIcon';
 import DeleteIcon from './deleteIcon';
+import ArrowLeftIcon from './arrowLeftIcon';
 
 export {
     DeleteIcon,
@@ -22,4 +23,5 @@ export {
     QrCodeIcon,
     EditIcon,
     CloseIcon,
+    ArrowLeftIcon,
 };

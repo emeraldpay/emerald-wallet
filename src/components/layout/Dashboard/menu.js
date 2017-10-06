@@ -6,6 +6,7 @@ import { List, ListItem } from 'material-ui/List';
 class DashboardMenu extends React.Component {
 
     static propTypes = {
+        addToken: PropTypes.func,
         generate: PropTypes.func,
         importJson: PropTypes.func,
         importLedger: PropTypes.func,
@@ -16,7 +17,6 @@ class DashboardMenu extends React.Component {
 
     constructor(props) {
         super(props);
-
         this.state = {
             open: false,
         };
@@ -42,7 +42,9 @@ class DashboardMenu extends React.Component {
         this.setState({
             open: false,
         });
-        this.props.addToken();
+        if (this.props.addToken) {
+            this.props.addToken();
+        }
     }
 
     render() {
@@ -94,7 +96,7 @@ class DashboardMenu extends React.Component {
                             primaryText={ t('add.token.title') }
                             secondaryText={ t('add.token.subtitle') }
                             onClick={ this.handleAddToken }
-                            leftIcon={<FontIcon className="fa fa-key"/>}
+                            leftIcon={<FontIcon className="fa fa-money"/>}
                         />
                     </List>
                 </Popover>

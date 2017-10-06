@@ -1,8 +1,8 @@
 import React from 'react';
-import KeyboardArrowLeft from 'material-ui/svg-icons/hardware/keyboard-arrow-left';
+import PropTypes from 'prop-types';
 import { FlatButton } from 'material-ui';
-import Card from '../Card';
 
+import Card from '../Card';
 import formStyles from './form.scss';
 
 export const styles = {
@@ -31,13 +31,6 @@ export const styles = {
     },
 };
 
-const flatButtonNav = {
-    color: '#747474',
-    fontSize: '14px',
-    lineHeight: '24px',
-};
-
-
 export const Row = (props) => {
     return (
       <div className={ formStyles.formRow }>
@@ -47,33 +40,30 @@ export const Row = (props) => {
 };
 
 export class Form extends React.Component {
+    static propTypes = {
+        backButton: PropTypes.node,
+        caption: PropTypes.string,
+        children: PropTypes.node,
+    }
 
     render() {
-        const { children, caption, onCancel } = this.props;
-        const backLabel = 'DASHBOARD';
-
+        const { children, caption, backButton } = this.props;
         return (
             <Card>
-                <div className={formStyles.form}>
-                <div id="header" style={styles.formRow}>
-                    <div style={styles.left}>
-                        <FlatButton label={backLabel}
-                                    primary={true}
-                                    onClick={onCancel}
-                                    style={flatButtonNav}
-                                    icon={<KeyboardArrowLeft/>}
-                        />
-
-                    </div>
-                    <div style={styles.right}>
-                        <div id="caption" style={{fontSize: '22px'}}>
-                            {caption}
+                <div className={ formStyles.form }>
+                    <div style={styles.formRow}>
+                        <div style={styles.left}>
+                            { backButton }
+                        </div>
+                        <div style={styles.right}>
+                            <div style={{fontSize: '22px'}}>
+                                {caption}
+                            </div>
                         </div>
                     </div>
-                </div>
-                <div id="body" style={{paddingTop: '30px'}}>
-                    {children}
-                </div>
+                    <div style={{paddingTop: '30px'}}>
+                        {children}
+                    </div>
                 </div>
             </Card>);
     }

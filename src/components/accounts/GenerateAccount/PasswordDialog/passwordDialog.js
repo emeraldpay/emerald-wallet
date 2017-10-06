@@ -3,7 +3,7 @@ import Button from 'elements/Button';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import { Warning, WarningHeader, WarningText } from 'elements/Warning/warning';
 import PasswordInput from 'elements/PasswordInput';
-
+import DashboardButton from 'components/common/DashboardButton';
 import Advice from './advice';
 import styles from './passwordDialog.scss';
 
@@ -50,7 +50,7 @@ class PasswordDialog extends React.Component {
         const { invalidPassphrase } = this.state;
 
         return (
-            <Form caption={ t('generate.title') } onCancel={ onDashboard }>
+            <Form caption={ t('generate.title') } backButton={ <DashboardButton onClick={ onDashboard }/> }>
 
                 <Row>
                     <div style={ formStyles.left }/>
