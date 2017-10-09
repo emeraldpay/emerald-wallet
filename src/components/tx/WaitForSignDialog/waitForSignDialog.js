@@ -1,11 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 
-const Render = ({ open, transaction, handleClose }) => {
+import screen from 'store/wallet/screen';
+
+const WaitForSignDialog = ({ open, transaction, handleClose }) => {
     const actions = [
         <FlatButton
             label="Cancel"
@@ -28,13 +29,16 @@ const Render = ({ open, transaction, handleClose }) => {
 };
 
 export default connect(
-    (state, ownProps) => ({
-        open: state.screen.get('dialog') === 'sign-transaction',
-        transaction: state.screen.get('dialogItem'),
-    }),
+    (state, ownProps) => {
+        const dlg = screen.selectors.getCurrentDialog(state);
+        return {
+            open: dlg.dialog === 'sign-transaction',
+            transaction: dlg.dialogItem,
+        };
+    },
     (dispatch, ownProps) => ({
         handleClose: () => {
         },
     })
-)(Render);
+)(WaitForSignDialog);
 

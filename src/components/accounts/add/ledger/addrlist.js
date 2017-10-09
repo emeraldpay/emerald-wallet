@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table';
 import { tables } from 'lib/styles';
+import ledger from 'store/ledger';
 import Addr from './addr';
-import { selectRows } from 'store/ledgerActions'
+
 
 const Render = ({ addresses, setSelectedRows }) => {
     const table = <Table onRowSelection={setSelectedRows} multiSelectable={true}>
@@ -21,21 +22,19 @@ const Render = ({ addresses, setSelectedRows }) => {
         </TableBody>
     </Table>;
 
-    return (table)
+    return (table);
 };
 
 Render.propTypes = {
 };
 
-const Component = connect(
+export default connect(
     (state, ownProps) => ({
-        addresses: state.ledger.get('addresses')
+        addresses: state.ledger.get('addresses'),
     }),
     (dispatch, ownProps) => ({
         setSelectedRows: (indexes) => {
-            dispatch(selectRows(indexes))
-        }
+            dispatch(ledger.actions.selectRows(indexes));
+        },
     })
 )(Render);
-
-export default Component;

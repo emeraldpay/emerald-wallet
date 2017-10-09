@@ -1,12 +1,15 @@
 import LedgerEth from 'ledgerco/src/ledger-eth';
 import LedgerComm from 'ledgerco/src/ledger-comm-u2f';
-import log from 'electron-log';
 import uuid from 'uuid/v4';
 import Immutable from 'immutable';
-import { api } from 'lib/rpc/api';
 
-import { gotoScreen } from './wallet/screen/screenActions';
-import { loadAccountsList } from './vault/accounts/accountActions';
+import screen from 'store/wallet/screen/';
+import accounts from 'store/vault/accounts/';
+import createLogger from '../../utils/logger';
+
+import ActionTypes from './actionTypes';
+
+const log = createLogger('ledgerActions');
 
 function connection() {
     return new Promise((resolve, reject) => {
@@ -40,17 +43,17 @@ export function closeConnection() {
 }
 
 function loadInfo(hdpath, addr) {
-    return (dispatch) => {
-        api.geth.call('eth_getBalance', [addr, 'latest']).then((result) => {
+    return (dispatch, getState, api) => {
+        api.geth.eth.getBalance(addr).then((result) => {
             dispatch({
-                type: 'LEDGER/ADDR_BALANCE',
+                type: ActionTypes.ADDR_BALANCE,
                 hdpath,
                 value: result,
             });
         });
-        api.geth.call('eth_getTransactionCount', [addr, 'latest']).then((result) => {
+        api.geth.eth.getTransactionCount(addr).then((result) => {
             dispatch({
-                type: 'LEDGER/ADDR_TXCOUNT',
+                type: ActionTypes.ADDR_TXCOUNT,
                 hdpath,
                 value: result,
             });
@@ -64,7 +67,7 @@ export function getAddress(hdpath) {
             .then((conn) => conn.getAddress(hdpath))
             .then((addr) => {
                 dispatch({
-                    type: 'LEDGER/ADDR',
+                    type: ActionTypes.ADDR,
                     hdpath,
                     addr: addr.address,
                 });
@@ -76,7 +79,7 @@ export function getAddress(hdpath) {
 
 function start(index, hdpath) {
     return {
-        type: 'LEDGER/SET_LIST_HDPATH',
+        type: ActionTypes.SET_LIST_HDPATH,
         index,
         hdpath,
     };
@@ -87,7 +90,7 @@ export function checkConnected() {
         const connected = (value) => {
             return () => {
                 if (getState().ledger.get('connected') !== value) {
-                    dispatch({ type: 'LEDGER/CONNECTED', value});
+                    dispatch({ type: ActionTypes.CONNECTED, value});
                     if (value) {
                         dispatch(getAddresses());
                     }
@@ -100,7 +103,7 @@ export function checkConnected() {
                 .then(connected(true))
                 .catch(() => {
                     conn.disconnect();
-                    dispatch({ type: 'LEDGER/CONNECTED', value: false});
+                    dispatch({ type: ActionTypes.CONNECTED, value: false});
                 });
         }).catch(connected(false));
     };
@@ -130,9 +133,17 @@ export function watchConnection() {
 
 export function setWatch(value) {
     return ({
-        type: 'LEDGER/WATCH',
+        type: ActionTypes.WATCH,
         value,
     });
+}
+
+
+export function selectRows(indexes) {
+    return {
+        type: ActionTypes.SELECTED,
+        value: indexes,
+    };
 }
 
 export function getAddresses(offset, count) {
@@ -142,7 +153,7 @@ export function getAddresses(offset, count) {
         const hdbase = getState().ledger.getIn(['hd', 'base']);
         // let offset = getState().ledger.getIn(['hd', 'offset']);
         dispatch({
-            type: 'LEDGER/SET_HDOFFSET',
+            type: ActionTypes.SET_HDOFFSET,
             value: offset,
         });
         dispatch(selectRows([]));
@@ -155,25 +166,20 @@ export function getAddresses(offset, count) {
     };
 }
 
-export function selectRows(indexes) {
-    return {
-        type: 'LEDGER/SELECTED',
-        value: indexes,
-    };
-}
-
 export function setBaseHD(hdpath) {
     return {
-        type: 'LEDGER/SET_BASEHD',
+        type: ActionTypes.SET_BASEHD,
         value: hdpath,
     };
 }
 
 export function importSelected() {
-    return (dispatch, getState) => {
+    return (dispatch, getState, api) => {
         const ledger = getState().ledger;
         const selected = ledger.get('selected');
         const addresses = ledger.get('addresses');
+        const chain = getState().launcher.getIn(['chain', 'name']);
+
         selected.map((index, i) => {
             const addr = addresses.get(index);
             const data = {
@@ -188,12 +194,13 @@ export function importSelected() {
                 },
             };
             const open = i === 0;
+
             log.info('Import Ledger address', data);
-            const chain = getState().launcher.getIn(['chain', 'name']);
+
             api.emerald.importAccount(data, chain).then(() => {
-                dispatch(loadAccountsList());
+                dispatch(accounts.actions.loadAccountsList());
                 if (open) {
-                    dispatch(gotoScreen('account', Immutable.fromJS({
+                    dispatch(screen.actions.gotoScreen('account', Immutable.fromJS({
                         id: addr.get('address'), // FIXME sometimes it's ID sometimes ADDRESS
                         name: data.name,
                     })));

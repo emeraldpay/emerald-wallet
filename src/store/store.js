@@ -13,17 +13,15 @@ import network from './network';
 import screen from './wallet/screen';
 import settings from './wallet/settings';
 import tokens from './vault/tokens';
+import ledger from './ledger';
 
 // import { loadAddressBook } from './addressActions';
 // import { loadTokenList } from './tokenActions';
 // import { loadContractList } from './contractActions';
 import { readConfig, listenElectron, connecting, loadClientVersion } from './launcher/launcherActions';
-import { watchConnection as waitLedger, setWatch, setBaseHD } from './ledgerActions';
 import addressReducers from './addressReducers';
-import tokenReducers from './vault/tokens/tokenReducers';
 import contractReducers from './contractReducers';
 import launcherReducers from './launcher/launcherReducers';
-import ledgerReducers from './ledgerReducers';
 import walletReducers from './wallet/walletReducers';
 import deployedTokens from '../lib/deployedTokens';
 
@@ -68,11 +66,11 @@ const loggerMiddleware = createReduxLogger({
 const reducers = {
     accounts: accounts.reducer,
     addressBook: addressReducers,
-    tokens: tokenReducers,
+    tokens: tokens.reducer,
     contracts: contractReducers,
     network: network.reducer,
     launcher: launcherReducers,
-    ledger: ledgerReducers,
+    ledger: ledger.reducer,
     form: formReducer,
     wallet: walletReducers,
 };
@@ -124,10 +122,10 @@ export function startSync() {
     const chain = state.launcher.getIn(['chain', 'name']);
 
     if (chain === 'mainnet') {
-        store.dispatch(setBaseHD("44'/61'/0'/0"));
+        store.dispatch(ledger.actions.setBaseHD("44'/61'/0'/0"));
     } else if (chain === 'morden') {
         // FIXME ledger throws "Invalid status 6804" for 44'/62'/0'/0
-        store.dispatch(setBaseHD("44'/61'/1'/0"));
+        store.dispatch(ledger.actions.setBaseHD("44'/61'/1'/0"));
     }
 
     if (state.launcher.getIn(['geth', 'type']) !== 'remote') {
@@ -209,10 +207,10 @@ export function screenHandlers() {
         prevScreen = curScreen;
         if (justOpened) {
             if (curScreen === 'create-tx' || curScreen === 'add-from-ledger') {
-                store.dispatch(setWatch(true));
-                store.dispatch(waitLedger());
+                store.dispatch(ledger.actions.setWatch(true));
+                store.dispatch(ledger.actions.watchConnection());
             } else {
-                store.dispatch(setWatch(false));
+                store.dispatch(ledger.actions.setWatch(false));
             }
         }
     });

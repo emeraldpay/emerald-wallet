@@ -4,8 +4,9 @@ import { connect } from 'react-redux';
 import RaisedButton from 'material-ui/RaisedButton';
 import FontIcon from 'material-ui/FontIcon';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
+import ledger from 'store/ledger';
 import { gotoScreen } from '../../../../store/wallet/screen/screenActions';
-import { importSelected } from 'store/ledgerActions';
+
 
 const Render = ({ selected, onAddSelected, onCancel }) => {
     return (
@@ -32,18 +33,16 @@ Render.propTypes = {
     onCancel: PropTypes.func,
 };
 
-const Component = connect(
+export default connect(
     (state, ownProps) => ({
         selected: state.ledger.get('selected').size > 0,
     }),
     (dispatch, ownProps) => ({
         onAddSelected: () => {
-            dispatch(importSelected());
+            dispatch(ledger.actions.importSelected());
         },
         onCancel: () => {
             dispatch(gotoScreen('home'));
         },
     })
 )(Render);
-
-export default Component;

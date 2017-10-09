@@ -1,5 +1,7 @@
 import Immutable from 'immutable';
-import { Wei, TokenUnits } from '../lib/tokenUnits';
+import { convert } from 'emerald-js';
+import TokenUnits from 'lib/tokenUnits';
+import ActionTypes from './actionTypes';
 
 const initialState = Immutable.fromJS({
     connected: false,
@@ -30,22 +32,22 @@ function updateHd(state, hd, f) {
 }
 
 function onGetAddress(state, action) {
-    if (action.type === 'LEDGER/ADDR') {
+    if (action.type === ActionTypes.ADDR) {
         return updateHd(state, action.hdpath, (addr) => addr.set('address', action.addr));
     }
     return state;
 }
 
 function onSetBalance(state, action) {
-    if (action.type === 'LEDGER/ADDR_BALANCE') {
+    if (action.type === ActionTypes.ADDR_BALANCE) {
         return updateHd(state, action.hdpath, (addr) =>
-            addr.set('value', new Wei(action.value))
+            addr.set('value', new TokenUnits(convert.toBigNumber(action.value), 18))
         );
     }
     return state;
 }
 function onSetTxCount(state, action) {
-    if (action.type === 'LEDGER/ADDR_TXCOUNT') {
+    if (action.type === ActionTypes.ADDR_TXCOUNT) {
         return updateHd(state, action.hdpath, (addr) =>
             addr.set('txcount', action.value)
         );
@@ -54,7 +56,7 @@ function onSetTxCount(state, action) {
 }
 
 function onSetPath(state, action) {
-    if (action.type === 'LEDGER/SET_LIST_HDPATH') {
+    if (action.type === ActionTypes.SET_LIST_HDPATH) {
         return state.update('addresses', (list) =>
             list.set(action.index, addr.set('hdpath', action.hdpath))
         );
@@ -63,34 +65,34 @@ function onSetPath(state, action) {
 }
 
 function onSetHd(state, action) {
-    if (action.type === 'LEDGER/SET_BASEHD') {
+    if (action.type === ActionTypes.SET_BASEHD) {
         return state.setIn(['hd', 'base'], action.value);
     }
     return state;
 }
 function onSetOffset(state, action) {
-    if (action.type === 'LEDGER/SET_HDOFFSET') {
+    if (action.type === ActionTypes.SET_HDOFFSET) {
         return state.setIn(['hd', 'offset'], action.value);
     }
     return state;
 }
 
 function onConnected(state, action) {
-    if (action.type === 'LEDGER/CONNECTED') {
+    if (action.type === ActionTypes.CONNECTED) {
         return state.set('connected', action.value);
     }
     return state;
 }
 
 function onSelected(state, action) {
-    if (action.type === 'LEDGER/SELECTED') {
+    if (action.type === ActionTypes.SELECTED) {
         return state.set('selected', Immutable.fromJS(action.value));
     }
     return state;
 }
 
 function onWatch(state, action) {
-    if (action.type === 'LEDGER/WATCH') {
+    if (action.type === ActionTypes.WATCH) {
         return state.set('watch', action.value);
     }
     return state;

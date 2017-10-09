@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 import { change, formValueSelector, SubmissionError } from 'redux-form';
 import { convert, Address } from 'emerald-js';
 import { connect } from 'react-redux';
-import { closeConnection, setWatch } from 'store/ledgerActions';
+import ledger from 'store/ledger/';
 import { etherToWei } from 'lib/convert';
 import { address } from 'lib/validators';
 import launcher from 'store/launcher';
@@ -151,10 +151,11 @@ const CreateTx = connect(
                 .then((estimatedGas) => {
                     log.debug(`Tx validated by trace. Estimated Gas ${estimatedGas}`);
 
-                    dispatch(setWatch(false));
-                    return closeConnection().then(() => {
+                    dispatch(ledger.actions.setWatch(false));
+
+                    return ledger.actions.closeConnection().then(() => {
                         if (useLedger) {
-                            return dispatch(screen.actions.showDialog('sign-transaction', data));
+                            dispatch(screen.actions.showDialog('sign-transaction', data));
                         }
                         return dispatch(
                             accounts.actions.sendTransaction(

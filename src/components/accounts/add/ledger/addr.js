@@ -39,12 +39,13 @@ const Render = ({ addr, alreadyAdded, ...otherProps }) => {
     return (
         <TableRow {...otherProps} selectable={hasPath && hasAddr && !alreadyAdded}>
             {otherProps.children[0] /* checkbox passed down from TableBody*/ }
-            <TableRowColumn style={tables.shortStyle}>{addr.get('hdpath')}</TableRowColumn>
-            <TableRowColumn style={tables.wideStyle}><AccountAddress id={addr.get('address')}/></TableRowColumn>
+            <TableRowColumn style={tables.shortStyle}>{ addr.get('hdpath') }</TableRowColumn>
+            <TableRowColumn style={tables.wideStyle}><AccountAddress id={ addr.get('address') }/></TableRowColumn>
             <TableRowColumn style={tables.mediumStyle}>
                 <AccountBalance
-                    balance={addr.get('value')}
-                    showFiat={true} withAvatar={false}
+                    balance={ addr.get('value') }
+                    showFiat={ true }
+                    withAvatar={ false }
                 />
             </TableRowColumn>
             <TableRowColumn style={tables.shortStyle}>
@@ -57,7 +58,7 @@ const Render = ({ addr, alreadyAdded, ...otherProps }) => {
 Render.propTypes = {
 };
 
-const Component = connect(
+export default connect(
     (state, ownProps) => {
         const accounts = state.accounts.get('accounts');
         const addr = ownProps.addr;
@@ -76,5 +77,3 @@ const Component = connect(
         onAddSelected: () => {},
     })
 )(Render);
-
-export default Component;

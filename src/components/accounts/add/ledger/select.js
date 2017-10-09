@@ -11,7 +11,6 @@ import WaitConnection from './waitConnection';
 import Buttons from './buttons';
 
 const Render = ({ connected }) => {
-
     if (!connected) {
         return (
             <Card>
@@ -19,7 +18,7 @@ const Render = ({ connected }) => {
                     <WaitConnection/>
                 </CardText>
             </Card>
-        )
+        );
     }
 
     return (
@@ -41,8 +40,7 @@ const Render = ({ connected }) => {
                 <Buttons/>
             </CardActions>
         </Card>
-    )
-
+    );
 };
 
 Render.propTypes = {
@@ -50,7 +48,7 @@ Render.propTypes = {
 
 const Component = connect(
     (state, ownProps) => ({
-        connected: state.ledger.get('connected')
+        connected: state.ledger.get('connected'),
     }),
     (dispatch, ownProps) => ({
     })
