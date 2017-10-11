@@ -31,7 +31,7 @@
     "start:electron:getemerald": "bash dependencies.sh && NODE_ENV=development ./node_modules/.bin/electron .",
     "test:watch": "jest --watchAll",
     "test": "jest",
-    "test:coverage": "jest && codecov",
+    "test:coverage": "jest --coverage && codecov",
     "lint": "./node_modules/eslint/bin/eslint.js ./src/ ./electron/",
     "postinstall": "electron-rebuild && electron-builder install-app-deps",
     "dist": "npm run build:all:nowatch && electron-builder --publish never",

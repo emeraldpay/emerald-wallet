@@ -1,4 +1,4 @@
-/* @flow */
+// @flow
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -10,12 +10,12 @@ import TxList from './List';
 
 import styles from './history.scss';
 
-const TransactionsHistory = ({ transactions }) => {
+const TransactionsHistory = ({ transactions, accountId }) => {
     return (
         <Card>
             <div className={ styles.container }>
                 <Header />
-                <TxList transactions={ transactions } />
+                <TxList transactions={ transactions } accountId={ accountId }/>
             </div>
         </Card>
     );
@@ -23,6 +23,7 @@ const TransactionsHistory = ({ transactions }) => {
 
 TransactionsHistory.propTypes = {
     transactions: PropTypes.object.isRequired,
+    accountId: PropTypes.string,
 };
 
 export default connect(
@@ -31,6 +32,7 @@ export default connect(
         const txs = ownProps.transactions || transactionsAccounts;
         return {
             transactions: txs.reverse(),
+            accountId: ownProps.accountId,
         };
     },
     (dispatch, ownProps) => ({

@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import FlatButton from 'material-ui/FlatButton';
 import { convert } from 'emerald-js';
-
+import DashboardButton from 'components/common/DashboardButton';
 import AccountAddress from '../../../elements/AccountAddress';
 import AddressAvatar from '../../../elements/AddressAvatar';
 import { gotoScreen } from '../../../store/wallet/screen/screenActions';
@@ -22,11 +22,6 @@ const log = createLogger('TxDetails');
 
 export const TransactionShow = (props) => {
     const { transaction, rates, account, fromAccount, toAccount, openAccount, goBack, currentCurrency } = props;
-    // const fromAccount = transaction.get('from') ?
-    //     accounts.find((acct) => acct.get('id') === transaction.get('from')) : null;
-    // const toAccount = transaction.get('to') ?
-    //     accounts.find((acct) => acct.get('id') === transaction.get('to')) : null;
-
 
     const fieldNameStyle = {
         color: '#747474',
@@ -48,8 +43,10 @@ export const TransactionShow = (props) => {
         Currency.format(transaction.get('value').getFiat(rates.get(currentCurrency.toLowerCase())), currentCurrency) :
         '';
 
+    const backButtonLabel = account ? 'Account' : 'Dashboard';
+    const backButton = <DashboardButton label={ backButtonLabel } onClick={ () => goBack(account) }/>;
     return (
-        <Form caption="Ethereum Classic Transfer" onCancel={() => goBack(account)}>
+        <Form caption="Ethereum Classic Transfer" backButton={ backButton } >
             <Row>
                 <div style={styles.left}>
                 </div>
@@ -218,7 +215,7 @@ export default connect(
         return {
             hash: Tx.get('hash'),
             transaction: Tx,
-            account: (account === undefined) ? undefined : account,
+            account,
             accounts,
             rates,
             currentCurrency,

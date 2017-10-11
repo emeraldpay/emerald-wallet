@@ -2,12 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
-
+import DashboardButton from 'components/common/DashboardButton';
 import { Form, Row, styles as formStyles } from '../../../elements/Form';
 import Button from '../../../elements/Button/index';
 import TextField from '../../../elements/Form/TextField';
-import { gotoScreen } from '../../../store/wallet/screen/screenActions';
-import { exportPaperWallet } from '../../../store/vault/accounts/accountActions';
+import screen from '../../../store/wallet/screen';
+import accounts from '../../../store/vault/accounts';
 
 import styles from './exportPaperWallet.scss';
 
@@ -23,7 +23,7 @@ class ExportPaperWallet extends React.Component {
         const { accountId, onBack, handleSubmit } = this.props;
 
         return (
-            <Form caption="Print Paper Wallet" onCancel={ onBack }>
+            <Form caption="Print Paper Wallet" backButton={ <DashboardButton onClick={ onBack }/> } >
                 <Row>
                     <div style={formStyles.left}/>
                     <div style={formStyles.right}>
@@ -39,31 +39,29 @@ class ExportPaperWallet extends React.Component {
                             <div className={styles.passwordSubLabel}>
                                 Password needs for confirm all wallet operations.</div>
                             <div style={{ marginTop: '30px' }}>
-                                <Field name="password"
-                                       type="password"
-                                       component={ TextField }
-                                       fullWidth={ true }
-                                       underlineShow={ false }
+                                <Field
+                                    name="password"
+                                    type="password"
+                                    component={ TextField }
+                                    fullWidth={ true }
+                                    underlineShow={ false }
                                 />
                             </div>
                         </div>
-
                     </div>
                 </Row>
-
                 <Row>
                     <div style={formStyles.left}/>
                     <div style={formStyles.right}>
                         <Button primary label="EXPORT" onClick={ handleSubmit } />
                     </div>
                 </Row>
-
             </Form>);
     }
 }
 
 
-const createForm = reduxForm({
+const exportForm = reduxForm({
     form: 'exportPaperWallet',
     fields: ['password'],
 })(ExportPaperWallet);
@@ -73,10 +71,10 @@ export default connect(
     }),
     (dispatch, ownProps) => ({
         onSubmit: (data) => {
-            dispatch(exportPaperWallet(data.password, ownProps.accountId));
+            dispatch(accounts.actions.exportPaperWallet(data.password, ownProps.accountId));
         },
         onBack: () => {
-            dispatch(gotoScreen('home'));
+            dispatch(screen.actions.gotoScreen('home'));
         },
 
-    }))(createForm);
+    }))(exportForm);

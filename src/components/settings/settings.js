@@ -7,6 +7,7 @@ import { translate } from 'react-i18next';
 import { Form, styles, Row } from 'elements/Form';
 import Button from 'elements/Button/index';
 import SelectField from 'elements/Form/SelectField';
+import DashboardButton from 'components/common/DashboardButton';
 
 import screen from '../../store/wallet/screen';
 import settings from '../../store/wallet/settings';
@@ -17,7 +18,7 @@ class SettingsRender extends React.Component {
     render() {
         const { goDashboard, handleSubmit, t } = this.props;
         return (
-            <Form caption="Settings" onCancel={ goDashboard }>
+            <Form caption="Settings" backButton={ <DashboardButton onClick={ goDashboard } /> } >
                 <div id="body">
                     <Row>
                         <div style={styles.left}>
@@ -97,7 +98,7 @@ const Settings = connect(
         return {
             initialValues: {
                 language: i18n.language,
-                currency: state.accounts.get('localeCurrency', '').toLowerCase(),
+                currency: state.wallet.settings.get('localeCurrency', '').toLowerCase(),
             },
         };
     },

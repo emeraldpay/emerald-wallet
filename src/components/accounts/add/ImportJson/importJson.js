@@ -3,10 +3,10 @@ import { translate } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
-
-import { gotoScreen } from '../../../../store/wallet/screen/screenActions';
-import { importWallet } from 'store/vault/accounts/accountActions';
-import Button from 'elements/Button/index';
+import DashboardButton from 'components/common/DashboardButton';
+import screen from 'store/wallet/screen';
+import accountsModule from 'store/vault/accounts';
+import Button from 'elements/Button';
 import { Form, Row, styles as formStyles } from 'elements/Form/index';
 import { Warning, WarningText, WarningHeader } from 'elements/Warning';
 
@@ -54,7 +54,7 @@ class ImportJson extends React.Component {
         const { file, fileError } = this.state;
 
         return (
-            <Form caption={ t('import.title') } onCancel={ onDashboard }>
+            <Form caption={ t('import.title') } backButton={ <DashboardButton onClick={ onDashboard }/> }>
                 {fileError && (
                     <Row>
                         <div style={ formStyles.left }/>
@@ -89,8 +89,6 @@ class ImportJson extends React.Component {
     }
 }
 
-const ImportRenderT = translate('accounts')(ImportJson);
-
 export default connect(
     (state, ownProps) => ({
         accounts: state.accounts.get('accounts', Immutable.List()),
@@ -98,20 +96,20 @@ export default connect(
     (dispatch, ownProps) => ({
         importFile: (file) => {
             return new Promise((resolve, reject) => {
-                dispatch(importWallet(file, '', ''))
+                dispatch(accountsModule.actions.importWallet(file, '', ''))
                         .then((accountId) => resolve(accountId))
                         .catch((response) => resolve(response));
             });
         },
         showAccount: (account) => {
-            dispatch(gotoScreen('account', account));
+            dispatch(screen.actions.gotoScreen('account', account));
         },
         onDashboard: () => {
-            dispatch(gotoScreen('home'));
+            dispatch(screen.actions.gotoScreen('home'));
         },
         cancel: () => {
-            dispatch(gotoScreen('home'));
+            dispatch(screen.actions.gotoScreen('home'));
         },
     })
-)(ImportRenderT);
+)(translate('accounts')(ImportJson));
 

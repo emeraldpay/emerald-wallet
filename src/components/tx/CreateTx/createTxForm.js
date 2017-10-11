@@ -7,6 +7,7 @@ import { MenuItem, IconButton } from 'material-ui';
 import { IconMenu } from 'material-ui/IconMenu';
 import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
 import { formStyle } from 'lib/styles';
+import DashboardButton from 'components/common/DashboardButton';
 import { positive, number, required, address } from 'lib/validators';
 import IdentityIcon from '../../../elements/IdentityIcon';
 import { Form, Row, styles } from '../../../elements/Form';
@@ -110,7 +111,7 @@ export const CreateTxForm = (props) => {
 
 
     return (
-    <Form caption="Send Ether & Tokens" onCancel={ goDashboard }>
+    <Form caption="Send Ether & Tokens" backButton={ <DashboardButton onClick={ goDashboard }/> }>
         <Row>
             <div style={styles.left}>
                 <div style={ styles.fieldName }>From</div>
