@@ -2,13 +2,8 @@
 import LedgerEth from 'ledgerco/src/ledger-eth';
 import LedgerComm from 'ledgerco/src/ledger-comm-u2f';
 import uuid from 'uuid/v4';
-import Immutable from 'immutable';
-
-import screen from 'store/wallet/screen/';
-import accounts from 'store/vault/accounts/';
 import launcher from 'store/launcher';
 import createLogger from '../../utils/logger';
-
 import ActionTypes from './actionTypes';
 
 const log = createLogger('ledgerActions');
@@ -44,7 +39,7 @@ export function closeConnection(): Promise<any> {
     });
 }
 
-function loadInfo(hdpath, addr) {
+function loadInfo(hdpath: string, addr: string) {
     return (dispatch, getState, api) => {
         api.geth.eth.getBalance(addr).then((result) => {
             dispatch({
@@ -63,7 +58,7 @@ function loadInfo(hdpath, addr) {
     };
 }
 
-export function getAddress(hdpath) {
+export function getAddress(hdpath: string) {
     return (dispatch) => {
         connection()
             .then((conn) => conn.getAddress(hdpath))
@@ -103,7 +98,7 @@ export function checkConnected() {
         connection().then((conn) => {
             conn.getStatus()
                 .then(connected(true))
-                .catch(() => {
+                .catch((err) => {
                     conn.disconnect();
                     dispatch({ type: ActionTypes.CONNECTED, value: false});
                 });
@@ -133,7 +128,7 @@ export function watchConnection() {
     };
 }
 
-export function setWatch(value) {
+export function setWatch(value: boolean) {
     return ({
         type: ActionTypes.WATCH,
         value,
@@ -147,7 +142,7 @@ export function selectRows(indexes) {
     };
 }
 
-export function getAddresses(offset, count) {
+export function getAddresses(offset: number, count: number) {
     return (dispatch, getState) => {
         count = count || 5;
         offset = offset || 0;
@@ -167,7 +162,7 @@ export function getAddresses(offset, count) {
     };
 }
 
-export function setBaseHD(hdpath) {
+export function setBaseHD(hdpath: string) {
     return {
         type: ActionTypes.SET_BASEHD,
         value: hdpath,

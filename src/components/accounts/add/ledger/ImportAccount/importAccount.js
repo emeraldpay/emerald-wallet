@@ -10,7 +10,7 @@ import Pager from './pager';
 import WaitConnection from '../waitConnection';
 import Buttons from './buttons';
 
-const Render = ({ connected }) => {
+export const ImportAccount = ({ connected }) => {
     if (!connected) {
         return (
             <Card>
@@ -43,15 +43,13 @@ const Render = ({ connected }) => {
     );
 };
 
-Render.propTypes = {
+ImportAccount.propTypes = {
 };
 
-const Component = connect(
+export default connect(
     (state, ownProps) => ({
         connected: state.ledger.get('connected'),
     }),
     (dispatch, ownProps) => ({
     })
-)(Render);
-
-export default Component;
+)(ImportAccount);
