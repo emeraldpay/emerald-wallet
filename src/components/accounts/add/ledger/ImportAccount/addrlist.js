@@ -3,12 +3,12 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table';
 import { tables } from 'lib/styles';
-import ledger from 'store/ledger';
+import ledger from 'store/ledger/index';
 import Addr from './addr';
 
 
 const Render = ({ addresses, setSelectedRows }) => {
-    const table = <Table onRowSelection={setSelectedRows} multiSelectable={true}>
+    const table = <Table onRowSelection={ setSelectedRows }>
         <TableHeader>
             <TableRow>
                 <TableHeaderColumn style={tables.shortStyle}>HD Path</TableHeaderColumn>

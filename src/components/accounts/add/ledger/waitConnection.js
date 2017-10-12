@@ -12,14 +12,14 @@ const style = {
         fontSize: '18px',
         paddingTop: '30px',
         paddingBottom: '40px',
-        color: '#777'
+        color: '#777',
     },
     actions: {
         paddingTop: '40px',
-    }
+    },
 };
 
-const Render = ({ onCancel }) => {
+const WaitConnectionDialog = ({ onCancel }) => {
     return (
         <div>
             <Row>
@@ -46,20 +46,20 @@ const Render = ({ onCancel }) => {
                 </Col>
             </Row>
         </div>
-    )
+    );
 };
 
-Render.propTypes = {
+WaitConnectionDialog.propTypes = {
+    onCancel: PropTypes.func,
 };
 
-const Component = connect(
+export default connect(
     (state, ownProps) => ({
     }),
     (dispatch, ownProps) => ({
         onCancel: () => {
-            dispatch(gotoScreen('home'))
-        }
+            dispatch(gotoScreen('home'));
+        },
     })
-)(Render);
+)(WaitConnectionDialog);
 
-export default Component;

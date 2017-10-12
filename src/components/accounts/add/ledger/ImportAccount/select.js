@@ -7,7 +7,7 @@ import { Card, CardHeader, CardActions, CardText } from 'material-ui/Card';
 import HDPath from './hdpath';
 import AddrList from './addrlist';
 import Pager from './pager';
-import WaitConnection from './waitConnection';
+import WaitConnection from '../waitConnection';
 import Buttons from './buttons';
 
 const Render = ({ connected }) => {

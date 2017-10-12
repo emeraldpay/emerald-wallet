@@ -107,7 +107,7 @@ function onUpdateAccount(state, action) {
 }
 
 function onSetBalance(state, action) {
-    if (action.type === 'ACCOUNT/SET_BALANCE') {
+    if (action.type === ActionTypes.SET_BALANCE) {
         return updateAccount(state, action.accountId, (acc) => {
             // Update balance only if it's changed
             const newBalance = new Wei(action.value);

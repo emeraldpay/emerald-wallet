@@ -71,7 +71,12 @@ export default connect(
     }),
     (dispatch, ownProps) => ({
         onSubmit: (data) => {
-            dispatch(accounts.actions.exportPaperWallet(data.password, ownProps.accountId));
+            const address = ownProps.accountId;
+            dispatch(accounts.actions.exportPrivateKey(data.password, address))
+                .then((privKey) => {
+                    return dispatch(screen.actions.gotoScreen('paper-wallet', { address, privKey }));
+                })
+                .catch((err) => dispatch(screen.actions.showError(err)));
         },
         onBack: () => {
             dispatch(screen.actions.gotoScreen('home'));

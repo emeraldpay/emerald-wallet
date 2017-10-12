@@ -14,7 +14,7 @@ const initialState = Immutable.fromJS({
     selected: [],
 });
 
-const addr = Immutable.fromJS({
+const initialAccount = Immutable.fromJS({
     hdpath: null,
     address: null,
     value: null,
@@ -58,7 +58,7 @@ function onSetTxCount(state, action) {
 function onSetPath(state, action) {
     if (action.type === ActionTypes.SET_LIST_HDPATH) {
         return state.update('addresses', (list) =>
-            list.set(action.index, addr.set('hdpath', action.hdpath))
+            list.set(action.index, initialAccount.set('hdpath', action.hdpath))
         );
     }
     return state;

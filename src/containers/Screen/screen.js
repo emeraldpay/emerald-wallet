@@ -10,7 +10,7 @@ import CreateTx from '../../components/tx/CreateTx';
 import TransactionShow from '../../components/tx/TxDetails';
 // import TokensList from './tokens/list';
 import AddToken from '../../components/tokens/AddToken/add';
-import LedgerImport from '../../components/accounts/add/ledger/select';
+import LedgerImport from '../../components/accounts/add/ledger/ImportAccount';
 import ImportJson from '../../components/accounts/add/ImportJson';
 import ImportPrivateKey from '../../components/accounts/add/ImportPrivateKey';
 import ContractsList from '../../components/contracts/list';

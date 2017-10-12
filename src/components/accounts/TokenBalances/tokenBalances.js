@@ -3,6 +3,9 @@ import React from 'react';
 import styles from './tokenBalances.scss';
 
 const TokenBalances = ({ balances }) => {
+    if (!balances) {
+        return null;
+    }
     return (
         <table className={ styles.table }>
             <tbody>

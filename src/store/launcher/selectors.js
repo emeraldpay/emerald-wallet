@@ -1,1 +1,2 @@
-export const getChainName = (state) => state.launcher.get('chain').get('name') || '';
+// @flow
+export const getChainName: any => string = (state) => state.launcher.get('chain').get('name') || '';

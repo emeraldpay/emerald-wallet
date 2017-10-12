@@ -1,12 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import RaisedButton from 'material-ui/RaisedButton';
 import FontIcon from 'material-ui/FontIcon';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
-import ledger from 'store/ledger';
-import { gotoScreen } from '../../../../store/wallet/screen/screenActions';
-
+import ledger from 'store/ledger/';
+import screen from 'store/wallet/screen';
+import accounts from 'store/vault/accounts/';
 
 const Render = ({ selected, onAddSelected, onCancel }) => {
     return (
@@ -39,10 +40,18 @@ export default connect(
     }),
     (dispatch, ownProps) => ({
         onAddSelected: () => {
-            dispatch(ledger.actions.importSelected());
+            let acc = null;
+            dispatch(ledger.actions.importSelected())
+                .then((address) => {
+                    acc = Immutable.fromJS({ id: address });
+                    return dispatch(accounts.actions.loadAccountsList());
+                })
+                .then(() => {
+                    return dispatch(screen.actions.gotoScreen('account', acc));
+                });
         },
         onCancel: () => {
-            dispatch(gotoScreen('home'));
+            dispatch(screen.actions.gotoScreen('home'));
         },
     })
 )(Render);

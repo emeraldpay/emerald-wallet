@@ -1,3 +1,4 @@
+// @flow
 import LedgerEth from 'ledgerco/src/ledger-eth';
 import LedgerComm from 'ledgerco/src/ledger-comm-u2f';
 import uuid from 'uuid/v4';
@@ -5,13 +6,14 @@ import Immutable from 'immutable';
 
 import screen from 'store/wallet/screen/';
 import accounts from 'store/vault/accounts/';
+import launcher from 'store/launcher';
 import createLogger from '../../utils/logger';
 
 import ActionTypes from './actionTypes';
 
 const log = createLogger('ledgerActions');
 
-function connection() {
+function connection(): Promise<any> {
     return new Promise((resolve, reject) => {
         if (typeof window.process !== 'undefined') {
             const remote = global.require('electron').remote;
@@ -21,14 +23,14 @@ function connection() {
                 .catch(reject);
         } else {
             // create U2F connection, which will work _only_ in Chrome + SSL webpage
-            LedgerComm.create_async().then((comm) =>
-                resolve(new LedgerEth(comm))
-            ).catch(reject);
+            LedgerComm.create_async()
+                .then((comm) => resolve(new LedgerEth(comm)))
+                .catch(reject);
         }
     });
 }
 
-export function closeConnection() {
+export function closeConnection(): Promise<any> {
     return new Promise((resolve, reject) => {
         if (typeof window.process !== 'undefined') {
             const remote = global.require('electron').remote;
@@ -138,7 +140,6 @@ export function setWatch(value) {
     });
 }
 
-
 export function selectRows(indexes) {
     return {
         type: ActionTypes.SELECTED,
@@ -173,39 +174,39 @@ export function setBaseHD(hdpath) {
     };
 }
 
+function createAccountData(address: string, hdpath: string) {
+    return {
+        version: 3,
+        id: uuid(),
+        name: `Ledger ${hdpath}`,
+        address: address.substring(2),
+        crypto: {
+            cipher: 'hardware',
+            hardware: 'ledger-nano-s:v1',
+            hd_path: hdpath,
+        },
+    };
+}
+
 export function importSelected() {
     return (dispatch, getState, api) => {
         const ledger = getState().ledger;
         const selected = ledger.get('selected');
         const addresses = ledger.get('addresses');
-        const chain = getState().launcher.getIn(['chain', 'name']);
+        const chain = launcher.selectors.getChainName(getState());
 
-        selected.map((index, i) => {
-            const addr = addresses.get(index);
-            const data = {
-                version: 3,
-                id: uuid(),
-                name: `Ledger ${addr.get('hdpath')}`,
-                address: addr.get('address').substring(2),
-                crypto: {
-                    cipher: 'hardware',
-                    hardware: 'ledger-nano-s:v1',
-                    hd_path: addr.get('hdpath'),
-                },
-            };
-            const open = i === 0;
+        const index = selected.last();
 
-            log.info('Import Ledger address', data);
+        const account = addresses.get(index);
+        const address = account.get('address');
+        const hdpath = account.get('hdpath');
 
-            api.emerald.importAccount(data, chain).then(() => {
-                dispatch(accounts.actions.loadAccountsList());
-                if (open) {
-                    dispatch(screen.actions.gotoScreen('account', Immutable.fromJS({
-                        id: addr.get('address'), // FIXME sometimes it's ID sometimes ADDRESS
-                        name: data.name,
-                    })));
-                }
-            });
+        const data = createAccountData(address, hdpath);
+
+        log.info('Import Ledger address', data);
+
+        return api.emerald.importAccount(data, chain).then(() => {
+            return address;
         });
     };
 }

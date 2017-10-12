@@ -235,30 +235,30 @@ class Services {
             this.notifyConnectorStatus();
 
             this.connector = new LocalConnector(getBinDir());
-            this.connectorStatus = STATUS.READY;
-            this.notifyConnectorStatus();
-            resolve(this.connector);
-            // this.connector.launch().then((emerald) => {
-            //     this.connectorStatus = STATUS.STARTING;
-            //     emerald.on('exit', (code) => {
-            //         this.connectorStatus = STATUS.NOT_STARTED;
-            //         log.error(`Emerald Connector process exited with code: ${code}`);
-            //         this.connector.proc = null;
-            //     });
-            //     emerald.on('uncaughtException', (e) => {
-            //         log.error((e && e.stack) ? e.stack : e);
-            //     });
-            //     const logTargetDir = getLogDir();
-            //     log.debug('Emerald log target dir:', logTargetDir);
-            //     emerald.stderr.on('data', (data) => {
-            //         log.debug(`[emerald] ${data}`); // always log emerald data
-            //         if (/Connector started on/.test(data)) {
-            //             this.connectorStatus = STATUS.READY;
-            //             this.notifyConnectorStatus();
-            //             resolve(this.connector);
-            //         }
-            //     });
-            // }).catch(reject);
+            // this.connectorStatus = STATUS.READY;
+            // this.notifyConnectorStatus();
+            // resolve(this.connector);
+            this.connector.launch().then((emerald) => {
+                this.connectorStatus = STATUS.STARTING;
+                emerald.on('exit', (code) => {
+                    this.connectorStatus = STATUS.NOT_STARTED;
+                    log.error(`Emerald Connector process exited with code: ${code}`);
+                    this.connector.proc = null;
+                });
+                emerald.on('uncaughtException', (e) => {
+                    log.error((e && e.stack) ? e.stack : e);
+                });
+                const logTargetDir = getLogDir();
+                log.debug('Emerald log target dir:', logTargetDir);
+                emerald.stderr.on('data', (data) => {
+                    log.debug(`[emerald] ${data}`); // always log emerald data
+                    if (/Connector started on/.test(data)) {
+                        this.connectorStatus = STATUS.READY;
+                        this.notifyConnectorStatus();
+                        resolve(this.connector);
+                    }
+                });
+            }).catch(reject);
         });
     }
 
