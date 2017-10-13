@@ -47,6 +47,18 @@ export const Networks = [
         title: 'Morden Testnet',
         id: 'local/morden',
     },
+    {
+        geth: {
+            type: 'remote',
+            url: 'https://web3.gastracker.io/morden',
+        },
+        chain: {
+            id: 62,
+            name: 'morden',
+        },
+        title: 'Morden (gastracker.io)',
+        id: 'remote/morden',
+    },
 ];
 
 
