@@ -34,6 +34,7 @@ class SettingsRender extends React.Component {
                                 <MenuItem key="usd" value="usd" label="USD" primaryText="USD" />
                                 <MenuItem key="cny" value="cny" label="CNY" primaryText="CNY" />
                                 <MenuItem key="rub" value="rub" label="RUB" primaryText="RUB" />
+                                <MenuItem key="krw" value="krw" label="KRW" primaryText="KRW" />
                             </Field>
                         </div>
                     </Row>
@@ -109,7 +110,7 @@ const Settings = connect(
 
         onSubmit: (data) => {
             i18n.changeLanguage(data.language);
-            dispatch(settings.actions.updateLocalCurrency(data.language));
+            dispatch(settings.actions.updateLocaleCurrency(data.currency));
         },
     })
 )(SettingsForm);

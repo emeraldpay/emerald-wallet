@@ -1,5 +1,4 @@
-import { EthRpc, JsonRpc, HttpTransport } from 'emerald-js';
-import Vault from './vault';
+import { EthRpc, JsonRpc, HttpTransport, Vault } from 'emerald-js';
 
 export default class Api {
     constructor() {

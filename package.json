@@ -201,6 +201,7 @@
     },
     "modulePaths": [
       "<rootDir>/src/"
-    ]
+    ],
+    "setupFiles": ["<rootDir>/src/__mocks__/localStorageMock.js"]
   }
 }
