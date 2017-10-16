@@ -2,6 +2,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FontIcon, FlatButton, Popover } from 'material-ui';
 import { List, ListItem } from 'material-ui/List';
+import { AddIcon } from 'elements/Icons/';
+
+const styles = {
+    button: {
+        color: '#47B04B',
+    },
+    buttonLabel: {
+        paddingRight: 0,
+    },
+};
 
 class DashboardMenu extends React.Component {
 
@@ -55,10 +65,10 @@ class DashboardMenu extends React.Component {
                 <FlatButton
                     onTouchTap={ this.handleTouchTap }
                     label={ t('list.popupMenuLabel') }
-                    labelStyle={{ paddingRight: 0 }}
-                    style={{ color: '#47B04B' }}
+                    labelStyle={ styles.buttonLabel }
+                    style={ styles.button }
                     hoverColor="transparent"
-                    icon={<FontIcon className="fa fa-plus-circle"/>}
+                    icon={<AddIcon />}
                 />
                 <Popover
                     open={this.state.open}
