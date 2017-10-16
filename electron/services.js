@@ -234,10 +234,7 @@ class Services {
             this.connectorStatus = STATUS.NOT_STARTED;
             this.notifyConnectorStatus();
 
-            this.connector = new LocalConnector(getBinDir());
-            // this.connectorStatus = STATUS.READY;
-            // this.notifyConnectorStatus();
-            // resolve(this.connector);
+            this.connector = new LocalConnector(getBinDir(), this.setup.chain);
             this.connector.launch().then((emerald) => {
                 this.connectorStatus = STATUS.STARTING;
                 emerald.on('exit', (code) => {
