@@ -203,7 +203,7 @@ function verifySender(expected) {
 }
 
 function signTx(api, tx: Transaction, passphrase: string, chain: string) {
-    return api.emerald.signTransaction({ ...tx, passphrase}, chain);
+    return api.emerald.signTransaction(tx, passphrase, chain);
 }
 
 export function sendTransaction(from: string, passphrase: string, to: ?string, gas: string,
