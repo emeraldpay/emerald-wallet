@@ -130,8 +130,7 @@ export function estimateGasFromTrace(dataObj, trace): BigNumber {
             log.debug(`End balance: ${mweiToWei(toState).toString(10)}`);
             log.debug(fromState.sub(toState).toString(10));
         }
-        if (estGas.lt(0) || estGas.eq(gasLimit))
-            estGas = null;
+        if (estGas.lt(0) || estGas.eq(gasLimit)) { estGas = null; }
     }
     return estGas;
 }

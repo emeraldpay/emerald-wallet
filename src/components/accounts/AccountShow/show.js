@@ -22,6 +22,7 @@ import SecondaryMenu from '../SecondaryMenu';
 
 import classes from './show.scss';
 import TokenBalances from '../TokenBalances';
+import ButtonGroup from '../../../elements/ButtonGroup';
 
 
 const log = createLogger('AccountShow');
@@ -115,7 +116,7 @@ class AccountShow extends React.Component {
                                 <div style={styles.left}/>
                                 <div style={styles.right}>
                                     <div>
-                                        <div style={{display: 'flex', alignItems: 'center'}}>
+                                        <ButtonGroup>
                                             <Button
                                                 primary
                                                 label="Add ETC"
@@ -124,12 +125,11 @@ class AccountShow extends React.Component {
                                             />
                                             <Button
                                                 primary
-                                                style={ {marginLeft: '10px'} }
                                                 label="Send"
                                                 onClick={ createTx }
                                             />
                                             { !isHardware(account) && <SecondaryMenu account={account} /> }
-                                        </div>
+                                        </ButtonGroup>
                                     </div>
                                 </div>
                             </Row>

@@ -2,29 +2,29 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
-import RaisedButton from 'material-ui/RaisedButton';
 import FontIcon from 'material-ui/FontIcon';
-import { Row, Col } from 'react-flexbox-grid/lib/index';
 import ledger from 'store/ledger/';
 import screen from 'store/wallet/screen';
 import accounts from 'store/vault/accounts/';
+import Button from 'elements/Button';
+import ButtonGroup from 'elements/ButtonGroup';
 
 const Render = ({ selected, onAddSelected, onCancel }) => {
     return (
-        <Row end="xs">
-            <Col xs="4">
-                <RaisedButton
-                    label="Add Selected"
-                    disabled={!selected}
-                    primary={true}
-                    onClick={onAddSelected}
-                    icon={<FontIcon className="fa fa-plus" />}/>
-                <RaisedButton
-                    label="Cancel"
-                    onClick={onCancel}
-                    icon={<FontIcon className="fa fa-undo" />}/>
-            </Col>
-        </Row>
+        <ButtonGroup>
+            <Button
+                label="Add Selected"
+                disabled={!selected}
+                primary={true}
+                onClick={onAddSelected}
+                icon={<FontIcon className="fa fa-plus" />}
+            />
+            <Button
+                label="Cancel"
+                onClick={onCancel}
+                icon={<FontIcon className="fa fa-undo" />}
+            />
+        </ButtonGroup>
     );
 };
 

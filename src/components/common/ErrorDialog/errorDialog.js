@@ -1,14 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
-
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
 
-import { closeError } from '../store/wallet/screen/screenActions';
+import screen from 'store/wallet/screen';
 
-const Render = ({ open, message, handleClose }) => {
+const ErrorDialog = ({ open, message, handleClose }) => {
     const actions = [
         <FlatButton
+            key="closeButton"
             label="Close"
             primary={true}
             onTouchTap={handleClose}
@@ -27,16 +27,14 @@ const Render = ({ open, message, handleClose }) => {
     );
 };
 
-const Error = connect(
+export default connect(
     (state, ownProps) => ({
         open: state.wallet.screen.get('error') !== null,
         message: state.wallet.screen.get('error'),
     }),
     (dispatch, ownProps) => ({
         handleClose: () => {
-            dispatch(closeError());
+            dispatch(screen.actions.closeError());
         },
     })
-)(Render);
-
-export default Error;
+)(ErrorDialog);
