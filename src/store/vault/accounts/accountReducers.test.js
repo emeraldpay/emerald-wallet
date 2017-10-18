@@ -3,7 +3,25 @@ import accountReducers from './accountReducers';
 import ActionTypes from './actionTypes';
 
 describe('accountReducers', () => {
-    it('should add only non existed account', () => {
+    it('should store hidden flag', () => {
+        let state = accountReducers(null, {});
+        // do
+        state = accountReducers(state, {
+            type: ActionTypes.SET_LIST,
+            accounts: [{
+                accountId: 'address',
+                name: 'name1',
+                description: 'desc1',
+                hidden: true,
+                hardware: false,
+            }],
+        });
+        // assert
+        expect(state.get('accounts').last().get('hardware')).toEqual(false);
+        expect(state.get('accounts').last().get('hidden')).toEqual(true);
+    });
+
+    it('should add only non existent account', () => {
         let state = accountReducers(null, {});
         expect(state.get('accounts')).toEqual(Immutable.List());
         state = accountReducers(state, {
@@ -12,7 +30,6 @@ describe('accountReducers', () => {
             name: 'name1',
             description: 'desc1',
         });
-        console.log(state.get('accounts').last());
         expect(state.get('accounts').size).toEqual(1);
         expect(state.get('accounts').last().get('id')).toEqual('id1');
         expect(state.get('accounts').last().get('name')).toEqual('name1');

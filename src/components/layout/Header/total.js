@@ -78,7 +78,6 @@ export default connect(
         }
 
         // If we are able to get the rate for the local currency:
-        console.log(localeCurrencyRate);
         if (typeof localeCurrencyRate === 'number') {
             fiat.total.localized = total.getFiat(localeCurrencyRate);
             fiat.rate.localized = localeCurrencyRate;

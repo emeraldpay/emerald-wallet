@@ -1,8 +1,6 @@
 // @flow
 import EthereumTx from 'ethereumjs-tx';
-import { convert } from 'emerald-js';
-
-import Wallet from 'lib/wallet';
+import { convert, Wallet } from 'emerald-js';
 import { address as isAddress} from 'lib/validators';
 import { loadTokenBalanceOf } from '../tokens/tokenActions';
 import screen from '../../wallet/screen';
@@ -76,7 +74,8 @@ export function loadAccountsList() {
             type: ActionTypes.LOADING,
         });
         const chain = currentChain(getState());
-        return api.emerald.listAccounts(chain).then((result) => {
+        const showHidden = getState().wallet.settings.get('showHiddenAccounts', false);
+        return api.emerald.listAccounts(chain, showHidden).then((result) => {
             dispatch({
                 type: ActionTypes.SET_LIST,
                 accounts: result,

@@ -1,4 +1,4 @@
-/* @flow */
+// @flow 
 import { getRates } from '../../../lib/marketApi';
 import ActionTypes from './actionTypes';
 
@@ -31,6 +31,19 @@ export function updateLocaleCurrency(currency: string) {
         dispatch({
             type: ActionTypes.SET_LOCALE_CURRENCY,
             currency,
+        });
+    };
+}
+
+export function update(settings: { localeCurrency: string, showHiddenAccounts: boolean }) {
+    return (dispatch) => {
+        dispatch({
+            type: ActionTypes.SET_LOCALE_CURRENCY,
+            currency: settings.localeCurrency,
+        });
+        return dispatch({
+            type: ActionTypes.SET_SHOW_HIDDEN_ACCOUNTS,
+            show: settings.showHiddenAccounts,
         });
     };
 }

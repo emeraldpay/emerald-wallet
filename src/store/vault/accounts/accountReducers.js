@@ -22,6 +22,7 @@ const initialAccount = Immutable.Map({
     txcount: null,
     name: null,
     description: null,
+    hidden: false,
 });
 
 function addAccount(state, id, name, description) {
@@ -70,7 +71,7 @@ function onLoading(state, action) {
 }
 
 function onSetAccountsList(state, action) {
-    if (action.type === 'ACCOUNT/SET_LIST') {
+    if (action.type === ActionTypes.SET_LIST) {
         const existingAccounts = state.get('accounts');
         const getExisting = (id) => {
             const pos = existingAccounts.findKey((x) => x.get('id') === id);
@@ -85,6 +86,7 @@ function onSetAccountsList(state, action) {
                 description: acc.get('description'),
                 id: acc.get('address'),
                 hardware: acc.get('hardware'),
+                hidden: acc.get('hidden'),
             })
         ).map((acc) =>
             getExisting(acc.get('id')).merge(acc)

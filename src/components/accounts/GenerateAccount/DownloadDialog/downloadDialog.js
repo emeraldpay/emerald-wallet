@@ -11,7 +11,6 @@ const DownloadDialog = (props) => {
     return (
 
         <Form caption={ t('generate.title') } onCancel={ onBack }>
-
             <Row>
                 <div style={formStyles.left}/>
                 <div style={formStyles.right}>

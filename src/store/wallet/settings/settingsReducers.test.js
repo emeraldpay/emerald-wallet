@@ -35,4 +35,17 @@ describe('settingsReducers', () => {
         // assert
         expect(state.get('localeCurrency')).toEqual('EUR');
     });
+
+    it('SET_SHOW_HIDDEN_ACCOUNTS should update state', () => {
+        // prepare
+        let state = settingsReducers(null, {});
+        // do
+        state = settingsReducers(state, {
+            type: ActionTypes.SET_SHOW_HIDDEN_ACCOUNTS,
+            show: true,
+        });
+
+        // assert
+        expect(state.get('showHiddenAccounts')).toEqual(true);
+    });
 });

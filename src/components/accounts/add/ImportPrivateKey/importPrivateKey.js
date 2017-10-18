@@ -8,7 +8,7 @@ import DashboardButton from 'components/common/DashboardButton';
 import accounts from 'store/vault/accounts';
 import screen from 'store/wallet/screen';
 
-import Wallet from 'lib/wallet';
+import { Wallet } from 'emerald-js';
 import Button from 'elements/Button';
 import { Warning, WarningHeader, WarningText } from 'elements/Warning';
 

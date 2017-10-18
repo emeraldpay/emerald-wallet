@@ -6,6 +6,7 @@ const initial = Immutable.fromJS({
     rates: {},
     localeCurrency: 'USD',
     localeRate: null,
+    showHiddenAccounts: false,
 });
 
 function onSetLocaleCurrency(state, action) {
@@ -35,9 +36,17 @@ function onExchangeRates(state, action) {
     return state;
 }
 
+function onSetShowHiddenAccounts(state, action) {
+    if (action.type === ActionTypes.SET_SHOW_HIDDEN_ACCOUNTS) {
+        return state.set('showHiddenAccounts', action.show);
+    }
+    return state;
+}
+
 export default function accountsReducers(state, action) {
     state = state || initial;
     state = onSetLocaleCurrency(state, action);
     state = onExchangeRates(state, action);
+    state = onSetShowHiddenAccounts(state, action);
     return state;
 }
