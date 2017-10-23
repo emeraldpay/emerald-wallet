@@ -202,6 +202,15 @@
     ],
     "setupFiles": [
       "<rootDir>/src/__mocks__/localStorageMock.js"
+    ],
+    "testPathIgnorePatterns": [
+      "historyReducers.test.js",
+      "add.test.js",
+      "launcherReducers.test.js",
+      "accountReducers.test.js",
+      "traceCall.test.js",
+      "tokenUnits.test.js",
+      "show.test.js"
     ]
   }
 }
