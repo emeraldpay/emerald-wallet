@@ -5,7 +5,7 @@ import { translate } from 'react-i18next';
 import Screen from '../../../containers/Screen/screen';
 import Header from '../Header';
 import Footer from '../Footer';
-import Error from '../../error';
+import ErrorDialog from '../../common/ErrorDialog';
 import Dialog from '../../dialog';
 
 import './main.scss';
@@ -18,8 +18,8 @@ const Render = translate('common')(({ t, ...props }) => (
         <div style={{margin: '20px auto', maxWidth}}>
             <Screen />
         </div>
-        <Error/>
-        <Dialog/>
+        <ErrorDialog />
+        <Dialog />
         {props.screen !== 'welcome' && props.screen !== 'paper-wallet' && <Footer maxWidth={ maxWidth }/>}
     </div>
 ));

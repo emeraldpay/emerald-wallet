@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import { closeDialog } from '../store/wallet/screen/screenActions';
-import WaitForSign from './tx/waitForSignDialog';
+import WaitForSign from './tx/WaitForSignDialog/waitForSignDialog';
 import ReceiveDialog from './accounts/ReceiveDialog';
 import AboutDialog from './layout/AboutDialog';
 import createLogger from '../utils/logger';

@@ -1,0 +1,14 @@
+.container {
+  display: flex;
+  align-items: center;
+}
+
+.item {
+  /* styles of the first one */
+  margin-left: 0;
+}
+
+.item ~ .item {
+  /* styles of the others (must cancel the styles of the first rule) */
+  margin-left: 10px;
+}

@@ -13,7 +13,7 @@ import AddressAvatar from 'elements/AddressAvatar/addressAvatar';
 import DashboardButton from 'components/common/DashboardButton';
 import accounts from '../../../store/vault/accounts';
 import screen from '../../../store/wallet/screen';
-
+import launcher from '../../../store/launcher';
 import createLogger from '../../../utils/logger';
 import AccountEdit from '../edit';
 import TransactionsList from '../../tx/TxHistory';
@@ -22,11 +22,12 @@ import SecondaryMenu from '../SecondaryMenu';
 
 import classes from './show.scss';
 import TokenBalances from '../TokenBalances';
+import ButtonGroup from '../../../elements/ButtonGroup';
 
 
 const log = createLogger('AccountShow');
 
-class AccountRender extends React.Component {
+class AccountShow extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -55,7 +56,7 @@ class AccountRender extends React.Component {
     }
 
     render() {
-        const { account, rates, goBack, transactions, createTx, showReceiveDialog } = this.props;
+        const { account, rates, showFiat, goBack, transactions, createTx, showReceiveDialog } = this.props;
         const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
         const isHardware = (acc) => acc.get('hardware', false);
 
@@ -75,6 +76,7 @@ class AccountRender extends React.Component {
                                 </div>
                                 <div style={styles.right}>
                                     <AccountBalance
+                                        showFiat={ showFiat }
                                         coinsStyle={{fontSize: '20px', lineHeight: '24px'}}
                                         balance={ balance }
                                         symbol="ETC"
@@ -110,12 +112,11 @@ class AccountRender extends React.Component {
                                     />}
                                 </div>
                             </Row>
-
                             <Row>
                                 <div style={styles.left}/>
                                 <div style={styles.right}>
                                     <div>
-                                        <div style={{display: 'flex', alignItems: 'center'}}>
+                                        <ButtonGroup>
                                             <Button
                                                 primary
                                                 label="Add ETC"
@@ -124,16 +125,14 @@ class AccountRender extends React.Component {
                                             />
                                             <Button
                                                 primary
-                                                style={ {marginLeft: '10px'} }
                                                 label="Send"
                                                 onClick={ createTx }
                                             />
                                             { !isHardware(account) && <SecondaryMenu account={account} /> }
-                                        </div>
+                                        </ButtonGroup>
                                     </div>
                                 </div>
                             </Row>
-
                         </Form>
                     </div>
                     <div className={ classes.qrCodeContainer }>
@@ -148,7 +147,8 @@ class AccountRender extends React.Component {
     }
 }
 
-AccountRender.propTypes = {
+AccountShow.propTypes = {
+    showFiat: PropTypes.bool,
     account: PropTypes.object.isRequired,
     goBack: PropTypes.func.isRequired,
     transactions: PropTypes.object.isRequired,
@@ -157,7 +157,7 @@ AccountRender.propTypes = {
     showReceiveDialog: PropTypes.func,
 };
 
-const AccountShow = connect(
+export default connect(
     (state, ownProps) => {
         const all = state.accounts.get('accounts');
         let account = ownProps.account;
@@ -173,20 +173,9 @@ const AccountShow = connect(
                 (account.get('id') === t.get('to') || account.get('id') === t.get('from'))
             );
         }
-        const rates = state.accounts.get('rates');
-        const balance = account.get('balance');
-        let fiat = {};
-        if (rates && balance) {
-            fiat = {
-                btc: balance.getFiat(rates.get('btc')),
-                eur: balance.getFiat(rates.get('eur')),
-                usd: balance.getFiat(rates.get('usd')),
-                cny: balance.getFiat(rates.get('cny')),
-            };
-        }
         return {
-            fiat,
-            rates,
+            showFiat: launcher.selectors.getChainName(state) === 'mainnet',
+            rates: state.accounts.get('rates'),
             account,
             transactions,
         };
@@ -212,6 +201,4 @@ const AccountShow = connect(
             });
         },
     })
-)(AccountRender);
-
-export default AccountShow;
+)(AccountShow);

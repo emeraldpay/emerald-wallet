@@ -28,7 +28,16 @@ const renderHide = (chain, account, onHide, precision = 3) => {
     )
 };
 
-const SecondaryMenu = ({ account, onPrint, onExport, onHide, chain }) => {
+const renderUnhide = (chain, account, onUnhide) => {
+    return (
+        <MenuItem
+            leftIcon={<FontIcon className="fa fa-eye"/>}
+            primaryText='UNHIDE'
+            onTouchTap={ onUnhide(chain) }/>
+    )
+};
+
+const SecondaryMenu = ({ account, onPrint, onExport, onHide, onUnhide, chain }) => {
     return (
         <IconMenu iconButtonElement={<IconButton><MoreHorizIcon /></IconButton>}>
             <MenuItem
@@ -41,7 +50,8 @@ const SecondaryMenu = ({ account, onPrint, onExport, onHide, chain }) => {
                 primaryText='PRINT'
                 onTouchTap={ onPrint(chain) }/>
 
-            {renderHide(chain, account, onHide)}
+            { !account.get('hidden') && renderHide(chain, account, onHide) }
+            { account.get('hidden') && renderUnhide(chain, account, onUnhide) }
 
         </IconMenu>
     );
@@ -59,6 +69,10 @@ export default connect(
         onHide: (chain) => () => {
             const address = ownProps.account.get('id');
             dispatch(screen.actions.showDialog('hide-account', address));
+        },
+        onUnhide: (chain) => () => {
+            const address = ownProps.account.get('id');
+            //dispatch(screen.actions.showDialog('hide-account', address));
         },
         onExport: (chain) => () => {
             const address = ownProps.account.get('id');

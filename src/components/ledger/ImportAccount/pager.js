@@ -4,16 +4,16 @@ import { connect } from 'react-redux';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
-import { getAddresses } from 'store/ledgerActions';
+import ledger from 'store/ledger';
 
 const pageSize = 5;
 
-const Render = ({ offset, setOffset }) => {
-    let offsetStyle = {
+const Pager = ({ offset, setOffset }) => {
+    const offsetStyle = {
         textAlign: 'center',
         fontSize: '16px',
         fontWeight: 900,
-        marginTop: '8px'
+        marginTop: '8px',
     };
     return (
         <Row>
@@ -32,21 +32,19 @@ const Render = ({ offset, setOffset }) => {
                     icon={<FontIcon className="fa fa-chevron-right" />}/>
             </Col>
         </Row>
-    )
+    );
 };
 
-Render.propTypes = {
+Pager.propTypes = {
 };
 
-const Component = connect(
+export default connect(
     (state, ownProps) => ({
-        offset: state.ledger.getIn(['hd', 'offset'])
+        offset: state.ledger.getIn(['hd', 'offset']),
     }),
     (dispatch, ownProps) => ({
         setOffset: (offset) => {
-            dispatch(getAddresses(offset, pageSize))
-        }
+            dispatch(ledger.actions.getAddresses(offset, pageSize));
+        },
     })
-)(Render);
-
-export default Component;
+)(Pager);

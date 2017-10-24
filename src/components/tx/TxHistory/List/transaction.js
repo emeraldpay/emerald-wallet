@@ -35,6 +35,7 @@ export const Transaction = (props) => {
 
             <TableRowColumn style={{ ...tables.mediumStyle, paddingLeft: '0' }}>
                 {txValue && <AccountBalance
+                    symbol="ETC"
                     showFiat={ showFiat }
                     balance={ txValue }
                     onClick={ openTx }

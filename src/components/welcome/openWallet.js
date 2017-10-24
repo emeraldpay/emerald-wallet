@@ -5,6 +5,7 @@ import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
 import launcher from 'store/launcher';
+import { waitForServicesRestart } from 'store/store';
 
 const Render = ({ save }) => {
 
@@ -41,6 +42,7 @@ const OpenWallet = connect(
     (dispatch, ownProps) => ({
         save: () => {
             dispatch(launcher.actions.saveSettings());
+            waitForServicesRestart();
         },
     })
 )(Render);

@@ -53,6 +53,7 @@ export default connect(
         const fiatRate = state.wallet.settings.get('localeRate');
         const balance = ownProps.balance;
         return {
+            symbol: ownProps.symbol,
             balance,
             fiatCurrency,
             fiatRate,

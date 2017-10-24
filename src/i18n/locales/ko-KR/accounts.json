@@ -14,7 +14,7 @@
     "list": {
         "title": "계정 리스트",
         "subtitle": "이더리움 클래식 블록체인에서 관리하고 있는 주소 목록",
-        "create": "계정 생성"
+        "create": "계정 생성",
         "popupMenuLabel": "계정 및 토큰"
     },
     "add": {
@@ -26,7 +26,7 @@
         "import": {
             "title": "JSON 가져오기",
             "subtitle": "Parity 또는 Geth로부터 JSON 형식의 계정 키를 가져오기"
-        }
+        },
         "importPrivateKey": {
             "title": "비밀 키 입력",
             "subtitle": "Hex 형식의 개인 키를 입력하세요"

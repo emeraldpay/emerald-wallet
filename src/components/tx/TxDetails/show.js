@@ -40,7 +40,7 @@ export const TransactionShow = (props) => {
     const blockNumber = transaction.get('blockNumber');
     const txStatus = blockNumber ? 'success' : 'queue';
     const fiatAmount = transaction.get('value') ?
-        Currency.format(transaction.get('value').getFiat(rates.get(currentCurrency.toLowerCase())), currentCurrency) :
+        Currency.format(transaction.get('value').getFiat(rates.get(currentCurrency.toUpperCase())), currentCurrency) :
         '';
 
     const backButtonLabel = account ? 'Account' : 'Dashboard';

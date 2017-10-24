@@ -5,12 +5,14 @@ import { MenuItem } from 'material-ui';
 import { translate } from 'react-i18next';
 
 import { Form, styles, Row } from 'elements/Form';
-import Button from 'elements/Button/index';
+import Button from 'elements/Button';
 import SelectField from 'elements/Form/SelectField';
 import DashboardButton from 'components/common/DashboardButton';
+import { Checkbox } from 'redux-form-material-ui';
 
 import screen from '../../store/wallet/screen';
 import settings from '../../store/wallet/settings';
+import accounts from '../../store/vault/accounts';
 import i18n from '../../i18n/i18n';
 
 class SettingsRender extends React.Component {
@@ -34,6 +36,7 @@ class SettingsRender extends React.Component {
                                 <MenuItem key="usd" value="usd" label="USD" primaryText="USD" />
                                 <MenuItem key="cny" value="cny" label="CNY" primaryText="CNY" />
                                 <MenuItem key="rub" value="rub" label="RUB" primaryText="RUB" />
+                                <MenuItem key="krw" value="krw" label="KRW" primaryText="KRW" />
                             </Field>
                         </div>
                     </Row>
@@ -76,6 +79,19 @@ class SettingsRender extends React.Component {
                         </div>
                     </Row>
                     <Row>
+                        <div style={styles.left}>
+                            <div style={styles.fieldName}>
+                                { t('showHiddenAccounts') }
+                            </div>
+                        </div>
+                        <div style={styles.right}>
+                            <Field
+                                name="showHiddenAccounts"
+                                component={ Checkbox }
+                            />
+                        </div>
+                    </Row>
+                    <Row>
                         <div style={ styles.left } />
                         <div style={ styles.right }>
                                 <Button primary label="SAVE" onClick={ handleSubmit } />
@@ -87,10 +103,9 @@ class SettingsRender extends React.Component {
     }
 }
 
-
 const SettingsForm = translate('settings')(reduxForm({
     form: 'settings',
-    fields: ['language', 'currency'],
+    fields: ['language', 'currency', 'showHiddenAccounts'],
 })(SettingsRender));
 
 const Settings = connect(
@@ -99,6 +114,7 @@ const Settings = connect(
             initialValues: {
                 language: i18n.language,
                 currency: state.wallet.settings.get('localeCurrency', '').toLowerCase(),
+                showHiddenAccounts: state.wallet.settings.get('showHiddenAccounts', false),
             },
         };
     },
@@ -109,7 +125,11 @@ const Settings = connect(
 
         onSubmit: (data) => {
             i18n.changeLanguage(data.language);
-            dispatch(settings.actions.updateLocalCurrency(data.language));
+            dispatch(settings.actions.update({
+                localeCurrency: data.currency,
+                showHiddenAccounts: data.showHiddenAccounts,
+            }));
+            dispatch(accounts.actions.loadAccountsList());
         },
     })
 )(SettingsForm);

@@ -6,15 +6,18 @@ const initial = Immutable.fromJS({
     rates: {},
     localeCurrency: 'USD',
     localeRate: null,
+    showHiddenAccounts: false,
 });
 
 function onSetLocaleCurrency(state, action) {
     if (action.type === ActionTypes.SET_LOCALE_CURRENCY) {
-        const currency = action.currency;
-        const rate = state.get('rates', {}).get(currency.toLowerCase());
+        const currency = action.currency.toUpperCase();
+        const rate = state.get('rates', {}).get(currency);
 
         // persist settings
-        localStorage.setItem('localeCurrency', currency);
+        if (localStorage) {
+            localStorage.setItem('localeCurrency', currency);
+        }
 
         return state
             .set('localeCurrency', currency)
@@ -25,10 +28,17 @@ function onSetLocaleCurrency(state, action) {
 
 function onExchangeRates(state, action) {
     if (action.type === ActionTypes.EXCHANGE_RATES) {
-        const localeRate = action.rates[state.get('localeCurrency').toLowerCase()];
+        const localeRate = action.rates[state.get('localeCurrency')];
         return state
             .set('rates', Immutable.fromJS(action.rates))
             .set('localeRate', localeRate);
+    }
+    return state;
+}
+
+function onSetShowHiddenAccounts(state, action) {
+    if (action.type === ActionTypes.SET_SHOW_HIDDEN_ACCOUNTS) {
+        return state.set('showHiddenAccounts', action.show);
     }
     return state;
 }
@@ -37,5 +47,6 @@ export default function accountsReducers(state, action) {
     state = state || initial;
     state = onSetLocaleCurrency(state, action);
     state = onExchangeRates(state, action);
+    state = onSetShowHiddenAccounts(state, action);
     return state;
 }

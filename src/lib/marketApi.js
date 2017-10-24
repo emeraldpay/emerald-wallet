@@ -1,15 +1,15 @@
 import 'isomorphic-fetch';
 
-const url = 'https://coinmarketcap-nexuist.rhcloud.com/api/';
-const currency = 'etc';
+const url = (cur) => `https://min-api.cryptocompare.com/data/price?fsym=${cur}&extraParams=emerald&tsyms=USD,EUR,RUB,CNY,KRW`;
+const currency = 'ETC';
 
 export class MarketApi {
 
     call() {
         return new Promise((resolve, reject) => {
             this.getRates(currency).then((json) => {
-                if (json.price) {
-                    resolve(json.price);
+                if (json) {
+                    resolve(json);
                 } else {
                     reject(new Error(`Unknown JSON RPC response: ${json}`));
                 }
@@ -18,7 +18,7 @@ export class MarketApi {
     }
 
     getRates(curr) {
-        return fetch(url + curr)
+        return fetch(url(curr))
             .then((response) => response.json());
     }
 }

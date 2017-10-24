@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import { translate } from 'react-i18next';
-
+import classNames from 'classnames/bind';
 import createLogger from '../../../utils/logger';
 
 import screen from '../../../store/wallet/screen';
@@ -13,6 +13,7 @@ import Account from './account';
 import styles from './list.scss';
 
 const log = createLogger('AccountList');
+const cx = classNames.bind(styles);
 
 const AccountList = translate('accounts')((props) => {
     log.trace('render');
@@ -21,9 +22,13 @@ const AccountList = translate('accounts')((props) => {
     const { openAccount, createTx, showReceiveDialog } = props;
 
     return (
-        <div>
-            {accounts.map((account) =>
-                <div className={ styles.listItem } key={ account.get('id') }>
+        <div className={ styles.container }>
+            {accounts.map((account) => {
+                const className = cx({
+                    listItem: true,
+                    hiddenListItem: account.get('hidden'),
+                });
+                return (<div className={ className } key={ account.get('id') }>
                     <Account
                         showFiat={ showFiat }
                         account={ account }
@@ -32,7 +37,7 @@ const AccountList = translate('accounts')((props) => {
                         createTx={ createTx(account) }
                         showReceiveDialog={ showReceiveDialog(account) }
                     />
-                </div>)}
+                </div>)})}
         </div>
     );
 });

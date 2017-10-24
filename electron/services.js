@@ -1,7 +1,8 @@
 const log = require('./logger');
-const { LocalGeth, LocalConnector, NoneGeth, RemoteGeth } = require('./launcher');
+const { LocalGeth, NoneGeth, RemoteGeth } = require('./launcher');
+const { LocalConnector } = require('./vault/launcher');
 const UserNotify = require('./userNotify').UserNotify;
-const newGethDownloader = require('./downloader').newGethDownloader;
+const newGethDownloader = require('./geth/downloader').newGethDownloader;
 const { check, waitRpc } = require('./nodecheck');
 const { getBinDir, getLogDir, isValidChain } = require('./utils');
 
@@ -103,7 +104,7 @@ class Services {
             shuttingDown.push(
                 this.geth.shutdown()
                     .then(() => { this.gethStatus = STATUS.NOT_STARTED; })
-                    .then(() => this.notifyGethStatus()));
+                    .then(() => this.notifyEthRpcStatus()));
         }
 
         if (this.connector) {
@@ -142,7 +143,7 @@ class Services {
 
             this.notify.info(`Use Remote RPC API at ${this.setup.geth.url}`);
             this.notify.chain(this.setup.chain.name, this.setup.chain.id);
-            this.notifyGethStatus();
+            this.notifyEthRpcStatus();
             return new RemoteGeth(null, null);
         });
     }
@@ -159,7 +160,7 @@ class Services {
 
                 this.notify.info('Use Local Existing RPC API');
                 this.notify.chain(this.setup.chain.name, this.setup.chain.id);
-                this.notifyGethStatus();
+                this.notifyEthRpcStatus();
 
 
                 resolve(new LocalGeth(null, getLogDir(), this.setup.chain.name, 8545));
@@ -189,13 +190,13 @@ class Services {
                     if (geth.pid > 0) {
                         waitRpc(this.geth.getUrl()).then((clientVersion) => {
                             this.gethStatus = STATUS.READY;
-                            log.info(`Geth is ready: ${clientVersion}`);
+                            log.info(`RPC is ready: ${clientVersion}`);
                             this.setup.geth.url = this.geth.getUrl();
                             this.setup.geth.type = 'local';
 
                             this.notify.info('Local Geth RPC API is ready');
                             this.notify.chain(this.setup.chain.name, this.setup.chain.id);
-                            this.notifyGethStatus();
+                            this.notifyEthRpcStatus();
 
                             resolve(this.geth);
                         }).catch(reject);
@@ -213,7 +214,7 @@ class Services {
 
     startGeth() {
         this.gethStatus = STATUS.NOT_STARTED;
-        this.notifyGethStatus('not ready');
+        this.notifyEthRpcStatus('not ready');
 
         if (this.setup.geth.launchType === LAUNCH_TYPE.NONE) {
             return this.startNoneRpc();
@@ -261,7 +262,7 @@ class Services {
     notifyStatus() {
         return new Promise((resolve, reject) => {
             this.notifyConnectorStatus(Services.statusName(this.connectorStatus));
-            this.notifyGethStatus(Services.statusName(this.gethStatus));
+            this.notifyEthRpcStatus(Services.statusName(this.gethStatus));
             resolve('ok');
         });
     }
@@ -283,7 +284,7 @@ class Services {
         });
     }
 
-    notifyGethStatus() {
+    notifyEthRpcStatus() {
         const gethStatus = Services.statusName(this.gethStatus);
         this.notify.status(SERVICES.GETH, {
             url: this.setup.geth.url,

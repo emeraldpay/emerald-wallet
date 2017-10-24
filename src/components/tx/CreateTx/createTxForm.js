@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Field, reduxForm } from 'redux-form';
 import { RadioButtonGroup } from 'redux-form-material-ui';
-import { RadioButton } from 'material-ui/RadioButton';
 import { MenuItem, IconButton } from 'material-ui';
 import { IconMenu } from 'material-ui/IconMenu';
 import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
@@ -23,6 +22,7 @@ import classes from './createTxForm.scss';
 import { WarningText, Warning } from '../../../elements/Warning';
 
 import { Currency } from '../../../lib/currency';
+import ButtonGroup from '../../../elements/ButtonGroup';
 
 
 const textEtc = {
@@ -289,10 +289,10 @@ export const CreateTxForm = (props) => {
         <Row>
             <div style={styles.left}/>
             <div style={{...styles.right}}>
-                {sendButton}
-                <div style={{ marginLeft: '10px' }}>
+                <ButtonGroup>
+                    {sendButton}
                     <Button label="Cancel" onClick={ cancel } />
-                </div>
+                </ButtonGroup>
             </div>
         </Row>
 

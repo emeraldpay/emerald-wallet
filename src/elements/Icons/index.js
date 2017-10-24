@@ -10,8 +10,10 @@ import SearchIcon from './searchIcon';
 import RepeatIcon from './repeatIcon';
 import DeleteIcon from './deleteIcon';
 import ArrowLeftIcon from './arrowLeftIcon';
+import AddIcon from './addIcon';
 
 export {
+    AddIcon,
     DeleteIcon,
     RepeatIcon,
     SearchIcon,

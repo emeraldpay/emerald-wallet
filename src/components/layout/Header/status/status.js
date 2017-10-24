@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import LinearProgress from 'material-ui/LinearProgress';
 import { separateThousands } from 'lib/convert';
+import { waitForServicesRestart } from 'store/store';
 import NetworkSelector from './networkSelector';
 import launcher from '../../../../store/launcher';
 import history from '../../../../store/wallet/history';
@@ -84,6 +85,7 @@ const Status = connect(
         switchNetwork: (net) => {
             dispatch(launcher.actions.useRpc({ geth: net.geth, chain: net.chain }));
             dispatch(launcher.actions.saveSettings({ chain: net.chain, geth: net.geth }));
+            waitForServicesRestart();
             dispatch(history.actions.init(net.chain.id));
         },
     })

@@ -17,6 +17,7 @@ export class Currency {
             case 'USD': return 'en-US';
             case 'EUR': return 'de-DE';
             case 'CNY': return 'zh-CN';
+            case 'KRW': return 'ko-KR';
             default: return 'en-US';
         }
     }

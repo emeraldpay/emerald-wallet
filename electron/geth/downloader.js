@@ -4,69 +4,14 @@ const os = require('os');
 const path = require('path');
 const DecompressZip = require('decompress-zip');
 
-const log = require('./logger');
+const defaultLog = require('../logger');
 const { Verify } = require('./verify');
-const { deleteIfExists, checkExists } = require('./utils');
+const { deleteIfExists, checkExists } = require('../utils');
+const signers = require('./signers');
 
 require('es6-promise').polyfill();
 
-const DefaultGeth = {
-    format: 'v1',
-    channel: 'stable',
-    app: {
-        version: '3.5.0',
-    },
-    download: [
-        {
-            platform: 'osx',
-            binaries: [
-                {
-                    type: 'https',
-                    pack: 'zip',
-                    url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-osx-v4.0.0.zip',
-                },
-            ],
-            signatures: [
-                {
-                    type: 'pgp',
-                    url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-osx-v4.0.0.zip.sig',
-                },
-            ],
-        },
-        {
-            platform: 'windows',
-            binaries: [
-                {
-                    type: 'https',
-                    pack: 'zip',
-                    url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-win64-v4.0.0.zip',
-                },
-            ],
-            signatures: [
-                {
-                    type: 'pgp',
-                    url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-win64-v4.0.0.zip.sig',
-                },
-            ],
-        },
-        {
-            platform: 'linux',
-            binaries: [
-                {
-                    type: 'https',
-                    pack: 'zip',
-                    url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-linux-v4.0.0.zip',
-                },
-            ],
-            signatures: [
-                {
-                    type: 'pgp',
-                    url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-linux-v4.0.0.zip.sig',
-                },
-            ],
-        },
-    ],
-};
+const { DefaultGeth } = require('./config');
 
 const platformMapping = {
     darwin: 'osx',
@@ -76,8 +21,9 @@ const platformMapping = {
 
 class Downloader {
 
-    constructor(conf, name, notify, dir) {
+    constructor(conf, name, notify, dir, logger = defaultLog) {
         this.config = conf;
+        this.log = logger;
         this.name = name;
         this.tmp = null;
         this.notify = notify;
@@ -89,7 +35,7 @@ class Downloader {
             const target = path.join(this.basedir, this.name);
             checkExists(target).then((isExists) => {
                 if (isExists) {
-                    log.debug(`${this.name} exists`);
+                    this.log.debug(`${this.name} exists`);
                     resolve('exists');
                 } else {
                     this.notify.info('Downloading latest Geth');
@@ -119,12 +65,12 @@ class Downloader {
             const tmpDir = os.tmpdir();
             fs.mkdtemp(path.join(tmpDir, `download-${this.name}-`), (err, tmpfolder) => {
                 if (err) {
-                    log.error('Unable to create temp dir', err);
+                    this.log.error('Unable to create temp dir', err);
                     reject(err);
                     return;
                 }
                 this.tmp = tmpfolder;
-                log.info(`Download ${this.name} from ${targetUrl} to ${tmpfolder}/`);
+                this.log.info(`Download ${this.name} from ${targetUrl} to ${tmpfolder}/`);
                 const f = fs.createWriteStream(path.join(tmpfolder, 'dest.zip'));
                 https.get(targetUrl, (response) => {
                     response.pipe(f);
@@ -159,11 +105,11 @@ class Downloader {
     }
 
     verifyArchive(zip) {
-        const v = new Verify();
-        v.init();
-        return this.signature.then((signature) =>
-            v.verify(zip, signature)
-        );
+        return this.signature.then((signature) => {
+            const v = new Verify();
+            v.init(signers.publicKeys);
+            return v.verify(zip, signature);
+        });
     }
 
     prepareBin(x) {
@@ -185,20 +131,20 @@ class Downloader {
     }
 
     unpack(zip) {
-        log.info(`Unpack ${zip}`);
+        this.log.info(`Unpack ${zip}`);
         return new Promise((resolve, reject) => {
             this.notify.info('Unpacking Geth');
             const target = path.join(this.basedir, this.name);
             const unzipper = new DecompressZip(zip);
             unzipper.on('error', (err) => {
-                log.error('Failed to extract zip', err);
+                this.log.error('Failed to extract zip', err);
                 reject(err);
             });
             unzipper.on('extract', (logg) => {
-                log.debug('Finished extracting', logg);
+                this.log.debug('Finished extracting', logg);
                 fs.chmod(target, 0o755, (moderr) => {
                     if (moderr) {
-                        log.error('Failed to set executable flag', moderr);
+                        this.log.error('Failed to set executable flag', moderr);
                         reject(moderr);
                     }
                     resolve(true);
@@ -221,7 +167,7 @@ class Downloader {
                 if (!err) {
                     const bak = path.join(this.basedir, `${this.name}.bak`);
                     deleteIfExists(bak).then(() => {
-                        log.debug(`Backup ${target} to ${bak}`);
+                        this.log.debug(`Backup ${target} to ${bak}`);
                         fs.rename(target, bak, () => {
                             resolve(true);
                         });
@@ -242,12 +188,12 @@ class Downloader {
             deleteIfExists(path.join(this.tmp, 'dest.zip')).then(() => {
                 fs.rmdir(this.tmp, (err) => {
                     if (err) {
-                        log.error('Cleanup error', err);
+                        this.log.error('Cleanup error', err);
                     }
                     resolve('cleaned');
                 });
             }).catch((err) => {
-                log.error('Cleanup failed', err);
+                this.log.error('Cleanup failed', err);
             });
         });
     }

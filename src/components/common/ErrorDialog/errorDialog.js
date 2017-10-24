@@ -1,14 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
-
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import FontIcon from 'material-ui/FontIcon';
 
-const Render = ({ open, transaction, handleClose }) => {
+import screen from 'store/wallet/screen';
+
+const ErrorDialog = ({ open, message, handleClose }) => {
     const actions = [
         <FlatButton
-            label="Cancel"
+            key="closeButton"
+            label="Close"
             primary={true}
             onTouchTap={handleClose}
         />,
@@ -21,20 +22,19 @@ const Render = ({ open, transaction, handleClose }) => {
             open={open}
             onRequestClose={handleClose}
         >
-            Please sign transaction using your Hardware Key<br/>
-            <FontIcon className="fa fa-spinner fa-spin"/> Waiting for signature....
+            <strong>ERROR:</strong> {message}
         </Dialog>
     );
 };
 
 export default connect(
     (state, ownProps) => ({
-        open: state.screen.get('dialog') === 'sign-transaction',
-        transaction: state.screen.get('dialogItem'),
+        open: state.wallet.screen.get('error') !== null,
+        message: state.wallet.screen.get('error'),
     }),
     (dispatch, ownProps) => ({
         handleClose: () => {
+            dispatch(screen.actions.closeError());
         },
     })
-)(Render);
-
+)(ErrorDialog);

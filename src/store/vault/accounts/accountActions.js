@@ -1,18 +1,15 @@
 // @flow
 import EthereumTx from 'ethereumjs-tx';
-import { convert } from 'emerald-js';
-
-import Wallet from 'lib/wallet';
+import { convert, Wallet } from 'emerald-js';
 import { address as isAddress} from 'lib/validators';
 import { loadTokenBalanceOf } from '../tokens/tokenActions';
 import screen from '../../wallet/screen';
 import history from '../../wallet/history';
-
+import launcher from '../../launcher';
 import ActionTypes from './actionTypes';
 import createLogger from '../../../utils/logger';
 
-const { toNumber, toHex } = convert;
-const currentChain = (state) => state.launcher.getIn(['chain', 'name']);
+const currentChain = (state) => launcher.selectors.getChainName(state);
 
 type Transaction = {
     from: string,
@@ -37,11 +34,37 @@ export function loadAccountBalance(address: string) {
                 value: result,
             });
         });
-        // const tokens = getState().tokens;
-        // if (!tokens.get('loading')) {
-        //     tokens.get('tokens')
-        //       .map((token) => dispatch(loadTokenBalanceOf(token, accountId)));
-        // }
+        // Tokens
+        const tokens = getState().tokens;
+        if (!tokens.get('loading')) {
+            tokens.get('tokens')
+                .map((token) => dispatch(loadTokenBalanceOf(token.toJS(), address)));
+        }
+    };
+}
+
+/**
+ * Updates balances in one batch request
+ */
+function fetchBalances(addresses: Array<string>) {
+    return (dispatch, getState, api) => {
+        api.geth.ext.getBalances(addresses).then((balances) => {
+            addresses.forEach((address) => {
+                if (balances[address]) {
+                    dispatch({
+                        type: ActionTypes.SET_BALANCE,
+                        accountId: address,
+                        value: balances[address],
+                    });
+                    // Tokens
+                    const tokens = getState().tokens;
+                    if (!tokens.get('loading')) {
+                        tokens.get('tokens')
+                            .map((token) => dispatch(loadTokenBalanceOf(token.toJS(), address)));
+                    }
+                }
+            });
+        });
     };
 }
 
@@ -51,29 +74,13 @@ export function loadAccountsList() {
             type: ActionTypes.LOADING,
         });
         const chain = currentChain(getState());
-
-        api.emerald.listAccounts(chain).then((result) => {
+        const showHidden = getState().wallet.settings.get('showHiddenAccounts', false);
+        return api.emerald.listAccounts(chain, showHidden).then((result) => {
             dispatch({
                 type: ActionTypes.SET_LIST,
                 accounts: result,
             });
-            api.geth.ext.getBalances(result.map((account) => account.address)).then((balances) => {
-                result.forEach((account) => {
-                    if (balances[account.address]) {
-                        dispatch({
-                            type: ActionTypes.SET_BALANCE,
-                            accountId: account.address,
-                            value: balances[account.address],
-                        });
-                        // Tokens
-                        const tokens = getState().tokens;
-                        if (!tokens.get('loading')) {
-                            tokens.get('tokens')
-                              .map((token) => dispatch(loadTokenBalanceOf(token.toJS(), account.address)));
-                        }
-                    }
-                });
-            });
+            dispatch(fetchBalances(result.map((account) => account.address)));
         });
     };
 }
@@ -82,7 +89,7 @@ export function loadAccountTxCount(accountId: string) {
     return (dispatch, getState, api) => {
         api.geth.eth.getTransactionCount(accountId).then((result) => {
             dispatch({
-                type: 'ACCOUNT/SET_TXCOUNT',
+                type: ActionTypes.SET_TXCOUNT,
                 accountId,
                 value: result,
             });
@@ -90,14 +97,13 @@ export function loadAccountTxCount(accountId: string) {
     };
 }
 
-export function exportPaperWallet(passphrase: string, accountId: string) {
+export function exportPrivateKey(passphrase: string, accountId: string) {
     return (dispatch, getState, api) => {
         const chain = currentChain(getState());
-        api.emerald.exportAccount(accountId, chain).then((result) => {
+        return api.emerald.exportAccount(accountId, chain).then((result) => {
             const wallet = Wallet.fromV3(result, passphrase);
-            const privKey = wallet.getPrivateKeyString();
-            dispatch(screen.actions.gotoScreen('paper-wallet', { address: accountId, privKey }));
-        }).catch(screen.actions.catchError(dispatch));
+            return wallet.getPrivateKeyString();
+        });
     };
 }
 
@@ -155,7 +161,7 @@ function unwrap(list) {
 function onTxSend(dispatch, sourceTx: Transaction) {
     return (txhash) => {
         dispatch({
-            type: 'ACCOUNT/SEND_TRANSACTION',
+            type: ActionTypes.SEND_TRANSACTION,
             account: sourceTx.from,
             txHash: txhash,
         });
@@ -196,7 +202,7 @@ function verifySender(expected) {
 }
 
 function signTx(api, tx: Transaction, passphrase: string, chain: string) {
-    return api.emerald.signTransaction({ ...tx, passphrase}, chain);
+    return api.emerald.signTransaction(tx, passphrase, chain);
 }
 
 export function sendTransaction(from: string, passphrase: string, to: ?string, gas: string,
@@ -310,7 +316,7 @@ export function loadPendingTransactions() {
                 dispatch(history.actions.processPending(txes));
                 for (const tx of txes) {
                     const disp = {
-                        type: 'ACCOUNT/PENDING_BALANCE',
+                        type: ActionTypes.PENDING_BALANCE,
                         value: tx.value,
                         gas: tx.gas,
                         gasPrice: tx.gasPrice,

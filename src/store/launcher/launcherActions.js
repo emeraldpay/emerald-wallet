@@ -1,6 +1,6 @@
 import { ipcRenderer } from 'electron';
 import { api } from 'lib/rpc/api';
-import { waitForServicesRestart } from 'store/store';
+//import { waitForServicesRestart } from 'store/store';
 import accounts from 'store/vault/accounts';
 import screen from 'store/wallet/screen';
 import createLogger from '../../utils/logger';
@@ -87,7 +87,7 @@ export function saveSettings(extraSettings) {
 
         log.info('Save settings', settings);
 
-        waitForServicesRestart();
+        //waitForServicesRestart();
 
         ipcRenderer.send('settings', settings);
 

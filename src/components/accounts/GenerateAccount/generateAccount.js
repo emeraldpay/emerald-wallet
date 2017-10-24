@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
 
-import Wallet from '../../../lib/wallet';
+import { Wallet } from 'emerald-js';
 import saveAs from '../../../lib/saveAs';
 import accounts from '../../../store/vault/accounts';
 import screen from '../../../store/wallet/screen';

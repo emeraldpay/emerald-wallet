@@ -2,28 +2,25 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
-// import { Wei } from 'lib/types';
-
 import { Wei } from 'emerald-js';
 import { Currency } from '../../../lib/currency';
 
+const styleTotal = {
+    fontSize: '26px',
+    lineHeight: '36px',
+    color: '#47B04B',
+    marginLeft: '10px',
+};
+
+const valueDisplay = {
+    lineHeight: '36px',
+    fontSize: '14px',
+    color: '#747474',
+    marginLeft: '1rem',
+    marginRight: '1rem',
+};
 
 const Render = ({ total, fiat, showFiat, currentLocaleCurrency }) => {
-    const styleTotal = {
-        fontSize: '26px',
-        lineHeight: '36px',
-        color: '#47B04B',
-        marginLeft: '10px',
-    };
-
-    const valueDisplay = {
-        lineHeight: '36px',
-        fontSize: '14px',
-        color: '#747474',
-        marginLeft: '1rem',
-        marginRight: '1rem',
-    };
-
     const totalAmount = Currency.format(fiat.total.localized, currentLocaleCurrency);
     const rateAmount = fiat.rate.localized ? Currency.format(fiat.rate.localized, currentLocaleCurrency) : '?';
 
@@ -46,13 +43,13 @@ Render.propTypes = {
     showFiat: PropTypes.bool.isRequired,
 };
 
-const Total = connect(
+export default connect(
     (state, ownProps) => {
         // (whilei) I left hardcoded rates because they might be worth throwing in a popup, feed, sidebar, or
         // some other kind of sexy sneaky UI down the road.
 
         const rates = state.wallet.settings.get('rates');
-        const currentLocaleCurrency = state.wallet.settings.get('localeCurrency');
+        let currentLocaleCurrency = state.wallet.settings.get('localeCurrency');
         const localeCurrencyRate = state.wallet.settings.get('localeRate');
 
         // Sum of balances of all known accounts.
@@ -64,10 +61,10 @@ const Total = connect(
         let fiat = {};
         if (rates && total) {
             const r = {
-                btc: rates.get('btc'),
-                eur: rates.get('eur'),
-                usd: rates.get('usd'),
-                cny: rates.get('cny'),
+                btc: rates.get('btc') || rates.get('BTC'),
+                eur: rates.get('eur') || rates.get('EUR'),
+                usd: rates.get('usd') || rates.get('USD'),
+                cny: rates.get('cny') || rates.get('CNY'),
             };
             fiat = {
                 total: {
@@ -88,7 +85,8 @@ const Total = connect(
         // Fallback to USD.
         } else {
             fiat.total.localized = fiat.total.usd;
-            fiat.rate.localized = +fiat.rate.usd; // fiat.pair.usd;
+            fiat.rate.localized = +fiat.rate.usd;
+            currentLocaleCurrency = 'USD';
         }
 
         const chain = (state.launcher.get('chain').get('name') || '').toLowerCase();
@@ -102,5 +100,3 @@ const Total = connect(
     },
     (dispatch, ownProps) => ({})
 )(Render);
-
-export default Total;

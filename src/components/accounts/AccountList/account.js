@@ -14,6 +14,7 @@ import TokenBalances from '../TokenBalances';
 
 import styles from './account.scss';
 import TokenUnits from '../../../lib/tokenUnits';
+import ButtonGroup from '../../../elements/ButtonGroup';
 
 export default class Account extends React.Component {
 
@@ -81,17 +82,18 @@ export default class Account extends React.Component {
                         </Col>
                         <Col xs={4}>
                             <div className={ styles.actionsContainer }>
-                                {!isHardware(account) && <SecondaryMenu account={account}/>}
-                                <Button
-                                    label="Add ETC"
-                                    icon={<QrCodeIcon />}
-                                    onClick={ showReceiveDialog }
-                                />
-                                <Button
-                                    style={{marginLeft: '10px'}}
-                                    label="Send"
-                                    onClick={createTx}
-                                />
+                                <ButtonGroup>
+                                    {!isHardware(account) && <SecondaryMenu account={account}/>}
+                                    <Button
+                                        label="Add ETC"
+                                        icon={<QrCodeIcon />}
+                                        onClick={ showReceiveDialog }
+                                    />
+                                    <Button
+                                        label="Send"
+                                        onClick={ createTx }
+                                    />
+                                </ButtonGroup>
                             </div>
                         </Col>
                     </Row>

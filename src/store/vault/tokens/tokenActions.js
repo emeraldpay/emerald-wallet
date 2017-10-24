@@ -5,6 +5,7 @@ import { TokenAbi } from 'lib/erc20';
 import Contract from 'lib/contract';
 import { detect as detectTraceCall } from 'lib/traceCall';
 import BigNumber from 'bignumber.js';
+import launcher from 'store/launcher';
 import ActionTypes from './actionTypes';
 import createLogger from '../../../utils/logger';
 
@@ -44,7 +45,7 @@ export function loadTokenDetails(token) {
             api.geth.eth.call(token.address, tokenContract.functionToData('symbol')),
         ]).then((results: Array<any>) => {
             dispatch({
-                type: 'TOKEN/SET_INFO',
+                type: ActionTypes.SET_INFO,
                 address: token.address,
                 totalSupply: results[0],
                 decimals: results[1],
@@ -105,7 +106,8 @@ export function loadTokenList() {
 
 export function addToken(token: TokenInfo) {
     return (dispatch, getState, api) => {
-        return api.emerald.addContract(token.address, token.symbol).then(() => {
+        const chain = launcher.selectors.getChainName(getState());
+        return api.emerald.addContract(token.address, token.symbol, chain).then(() => {
             // TODO: maybe replace with on action
             dispatch({
                 type: 'TOKEN/ADD_TOKEN',
@@ -161,7 +163,6 @@ export function traceCall(from: string, to: string, gas: string, gasPrice: strin
         });
     };
 }
-
 
 export function createTokenTxData(to: string, amount: BigNumber, isTransfer: boolean): string {
     const value = amount.toString(10);
