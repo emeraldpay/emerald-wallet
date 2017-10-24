@@ -7,6 +7,9 @@ import { api } from 'lib/rpc/api';
 import saveAs from 'lib/saveAs';
 import screen from '../../../store/wallet/screen';
 import { gotoScreen } from '../../../store/wallet/screen/screenActions';
+import { unhideAccount } from 'store/vault/accounts/accountActions';
+import history from '../../../store/wallet/history';
+import accounts from '../../../store/vault/accounts';
 
 const renderHide = (chain, account, onHide, precision = 3) => {
     const balance = account.get('balance');
@@ -72,7 +75,13 @@ export default connect(
         },
         onUnhide: (chain) => () => {
             const address = ownProps.account.get('id');
-            //dispatch(screen.actions.showDialog('hide-account', address));
+            dispatch(unhideAccount(address));
+            // refresh account data
+            dispatch(history.actions.refreshTrackedTransactions());
+            dispatch(accounts.actions.loadAccountsList());
+            dispatch(accounts.actions.loadPendingTransactions());
+
+            dispatch(screen.actions.gotoScreen('home'));
         },
         onExport: (chain) => () => {
             const address = ownProps.account.get('id');

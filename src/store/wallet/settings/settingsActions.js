@@ -11,6 +11,12 @@ export function loadSettings() {
                 type: ActionTypes.SET_LOCALE_CURRENCY,
                 currency: localeCurrency,
             });
+
+          let showHiddenAccounts = localStorage.getItem('showHiddenAccounts');
+          dispatch({
+            type: ActionTypes.SET_SHOW_HIDDEN_ACCOUNTS,
+            show: !!showHiddenAccounts,
+          });
         }
     };
 }
