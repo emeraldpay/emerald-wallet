@@ -12,7 +12,8 @@ export function loadSettings() {
                 currency: localeCurrency,
             });
 
-          let showHiddenAccounts = JSON.parse(localStorage.getItem('showHiddenAccounts'));
+          const localStorageShowHiddenAccounts = localStorage.getItem('showHiddenAccounts') || "false";
+          let showHiddenAccounts = JSON.parse(localStorageShowHiddenAccounts);
           dispatch({
             type: ActionTypes.SET_SHOW_HIDDEN_ACCOUNTS,
             show: showHiddenAccounts
