@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-EMERALD_CLI_VER=0.13.0
+EMERALD_CLI_VER=0.14.0
 
 set -e
 

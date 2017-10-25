@@ -16,7 +16,6 @@ import tokens from './vault/tokens';
 import ledger from './ledger';
 
 // import { loadAddressBook } from './addressActions';
-// import { loadTokenList } from './tokenActions';
 // import { loadContractList } from './contractActions';
 import { readConfig, listenElectron, connecting, loadClientVersion } from './launcher/launcherActions';
 import addressReducers from './addressReducers';
@@ -114,7 +113,7 @@ export function startSync() {
     store.dispatch(network.actions.getGasPrice());
     store.dispatch(loadClientVersion());
     // store.dispatch(loadAddressBook());
-    // store.dispatch(loadTokenList());
+    store.dispatch(tokens.actions.loadTokenList());
     // store.dispatch(loadContractList());
 
     const state = store.getState();
