@@ -35,7 +35,7 @@ const ReceiveDialog = ({ account, onClose }) => {
                 </div>
                 <div>
                     <div className={ classes.depositOptionsContainer }>
-                        <DepositOptions />
+                        <div className="DepositOptions-placeholder"></div>
                         <IconButton onTouchTap={ onClose } tooltip="Close">
                             <CloseIcon/>
                         </IconButton>
