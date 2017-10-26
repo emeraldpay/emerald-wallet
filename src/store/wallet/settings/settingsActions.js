@@ -11,6 +11,13 @@ export function loadSettings() {
                 type: ActionTypes.SET_LOCALE_CURRENCY,
                 currency: localeCurrency,
             });
+
+          const localStorageShowHiddenAccounts = localStorage.getItem('showHiddenAccounts') || "false";
+          let showHiddenAccounts = JSON.parse(localStorageShowHiddenAccounts);
+          dispatch({
+            type: ActionTypes.SET_SHOW_HIDDEN_ACCOUNTS,
+            show: showHiddenAccounts
+          });
         }
     };
 }

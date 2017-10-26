@@ -345,3 +345,14 @@ export function hideAccount(accountId: string) {
           }).catch(screen.actions.catchError(dispatch));
     };
 }
+
+export function unhideAccount(accountId: string) {
+  return (dispatch, getState, api) => {
+    const chain = currentChain(getState());
+
+    return api.emerald.unhideAccount(accountId, chain)
+      .then((result) => {
+        return result;
+      }).catch(screen.actions.catchError(dispatch));
+  };
+}

@@ -90,16 +90,13 @@ export function loadTokenList() {
         dispatch({
             type: 'TOKEN/LOADING',
         });
-        api.geth.call('emerald_contracts', []).then((result) => {
-            const tokens = result ? result.filter((contract) => {
-                contract.features = contract.features || [];
-                return contract.features.indexOf('erc20') >= 0;
-            }) : [];
-            dispatch({
-                type: 'TOKEN/SET_LIST',
-                tokens,
-            });
-            tokens.map((token) => dispatch(loadTokenDetails(token)));
+        api.emerald.listContracts(chain).then((result) => {
+          const tokens = result;
+          dispatch({
+              type: 'TOKEN/SET_LIST',
+              tokens,
+          });
+          tokens.map((token) => dispatch(loadTokenDetails(token)));
         });
     };
 }
@@ -107,7 +104,7 @@ export function loadTokenList() {
 export function addToken(token: TokenInfo) {
     return (dispatch, getState, api) => {
         const chain = launcher.selectors.getChainName(getState());
-        return api.emerald.addContract(token.address, token.symbol, chain).then(() => {
+        return api.emerald.importContract(token.address, token.symbol, '', chain).then(() => {
             // TODO: maybe replace with on action
             dispatch({
                 type: 'TOKEN/ADD_TOKEN',

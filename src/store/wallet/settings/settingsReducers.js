@@ -38,6 +38,10 @@ function onExchangeRates(state, action) {
 
 function onSetShowHiddenAccounts(state, action) {
     if (action.type === ActionTypes.SET_SHOW_HIDDEN_ACCOUNTS) {
+        // persist settings
+        if (localStorage) {
+          localStorage.setItem('showHiddenAccounts', action.show);
+        }
         return state.set('showHiddenAccounts', action.show);
     }
     return state;
