@@ -186,6 +186,10 @@ export function detect(ethRpc: EthRpc) : Promise<any> {
                         if (err.code === -32601) {
                             return (tx) => new CommonCallTracer(tx);
                         }
+                        // if eth_traceCall works, but wrong params
+                        if (err.code === -32602) {
+                          return (tx) => new ClassicGethTracer(tx);
+                        }
                         throw err;
                     });
             } else if (error.code === -32602) {
