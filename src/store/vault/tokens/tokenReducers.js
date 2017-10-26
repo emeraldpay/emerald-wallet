@@ -26,9 +26,13 @@ const initialTok = Immutable.Map({
 // ----- UTILITY FUNCTIONS
 
 function addToken(state, address, name) {
-    return state.update('tokens', (tokens) =>
-        tokens.push(initialTok.merge({ address, name }))
-    );
+    return state.update('tokens', (tokens) => {
+        const pos = tokens.findKey((tok) => tok.get('address') === address);
+        if (pos >= 0) {
+            return tokens;
+        }
+        return tokens.push(initialTok.merge({ address, name }));
+    });
 }
 
 
@@ -87,7 +91,7 @@ function onSetTokenInfo(state, action) {
 }
 
 function onAddToken(state, action) {
-    if (action.type === 'TOKEN/ADD_TOKEN') {
+    if (action.type === ActionTypes.ADD_TOKEN) {
         return addToken(state, action.address, action.name);
     }
     return state;

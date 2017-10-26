@@ -1,5 +1,4 @@
 // @flow
-import { convert } from 'emerald-js';
 import { parseString } from 'lib/convert';
 import { TokenAbi } from 'lib/erc20';
 import Contract from 'lib/contract';
@@ -9,7 +8,6 @@ import launcher from 'store/launcher';
 import ActionTypes from './actionTypes';
 import createLogger from '../../../utils/logger';
 
-const { toNumber } = convert;
 const tokenContract = new Contract(TokenAbi);
 
 const log = createLogger('tokenActions');
@@ -81,22 +79,30 @@ export function loadTokenBalances(token: TokenInfo) {
         }
     };
 }
-/*
- * json.result should return a list of tokens.
- * Each token should have name, contract address, and ABI
+
+/**
+ * Load ERC20 contracts from Emerald Vault, gets token details from smart contract
  */
 export function loadTokenList() {
     return (dispatch, getState, api) => {
         dispatch({
             type: 'TOKEN/LOADING',
         });
+        const chain = launcher.selectors.getChainName(getState());
         api.emerald.listContracts(chain).then((result) => {
-          const tokens = result;
-          dispatch({
-              type: 'TOKEN/SET_LIST',
-              tokens,
-          });
-          tokens.map((token) => dispatch(loadTokenDetails(token)));
+            // TODO: After features support
+            // const tokens = result ? result.filter((contract) => {
+            //     contract.features = contract.features || [];
+            //     return contract.features.indexOf('erc20') >= 0;
+            // }) : [];
+
+            const tokens = result;
+
+            dispatch({
+                type: ActionTypes.SET_LIST,
+                tokens,
+            });
+            tokens.map((token) => dispatch(loadTokenDetails(token)));
         });
     };
 }
@@ -105,9 +111,9 @@ export function addToken(token: TokenInfo) {
     return (dispatch, getState, api) => {
         const chain = launcher.selectors.getChainName(getState());
         return api.emerald.importContract(token.address, token.symbol, '', chain).then(() => {
-            // TODO: maybe replace with on action
+            // TODO: maybe replace with one action
             dispatch({
-                type: 'TOKEN/ADD_TOKEN',
+                type: ActionTypes.ADD_TOKEN,
                 address: token.address,
                 name: token.symbol,
             });

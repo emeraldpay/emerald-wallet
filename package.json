@@ -11,7 +11,7 @@
     "gagarin55 <gagarin55@protonmail.com>",
     "Isaac Ardis"
   ],
-  "version": "0.5.0",
+  "version": "0.6.0",
   "description": "Emerald - Ethereum Classic Wallet",
   "main": "./electron/main.js",
   "moduleRoots": [
@@ -204,6 +204,7 @@
       "<rootDir>/src/__mocks__/localStorageMock.js"
     ],
     "testPathIgnorePatterns": [
+      "tokenReducers.test.js",
       "historyReducers.test.js",
       "add.test.js",
       "launcherReducers.test.js",
