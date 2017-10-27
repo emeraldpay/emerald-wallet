@@ -1,4 +1,4 @@
-os: Previous Visual Studio 2015
+image: Visual Studio 2015
 environment:
   GCP_PASSWD:
     secure: erzLJz7qT0kCJa+jZG6Sf9wwkfLYO2UDLzydkKTdwqA=
