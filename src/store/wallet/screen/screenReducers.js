@@ -36,10 +36,28 @@ function onDialog(state, action) {
     return state;
 }
 
+function onSnackbarOpen(state, action) {
+  if (action.type === 'SCREEN/NOTIFICATION_SHOW') {
+    return state
+      .set('notificationMessage', action.message);
+  }
+  return state;
+};
+
+function onSnackbarClose(state, action) {
+  if (action.type === 'SCREEN/NOTIFICATION_CLOSE') {
+    return state
+      .set('notificationMessage', null);
+  }
+  return state;
+};
+
 export default function screenReducers(state, action) {
     state = state || initial;
     state = onOpen(state, action);
     state = onError(state, action);
     state = onDialog(state, action);
+    state = onSnackbarOpen(state, action);
+    state = onSnackbarClose(state, action);
     return state;
 }

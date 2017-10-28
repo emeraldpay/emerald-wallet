@@ -128,7 +128,7 @@ const Settings = connect(
             dispatch(settings.actions.update({
                 localeCurrency: data.currency,
                 showHiddenAccounts: data.showHiddenAccounts,
-            }));
+            }))
             dispatch(accounts.actions.loadAccountsList());
         },
     })

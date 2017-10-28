@@ -1,6 +1,7 @@
 // @flow 
 import { getRates } from '../../../lib/marketApi';
 import ActionTypes from './actionTypes';
+import screen from '../screen';
 
 export function loadSettings() {
     return (dispatch) => {
@@ -44,13 +45,20 @@ export function updateLocaleCurrency(currency: string) {
 
 export function update(settings: { localeCurrency: string, showHiddenAccounts: boolean }) {
     return (dispatch) => {
+      return Promise.all([
         dispatch({
-            type: ActionTypes.SET_LOCALE_CURRENCY,
-            currency: settings.localeCurrency,
-        });
-        return dispatch({
-            type: ActionTypes.SET_SHOW_HIDDEN_ACCOUNTS,
-            show: settings.showHiddenAccounts,
-        });
+          type: ActionTypes.SET_LOCALE_CURRENCY,
+          currency: settings.localeCurrency,
+        }),
+        dispatch({
+          type: ActionTypes.SET_SHOW_HIDDEN_ACCOUNTS,
+          show: settings.showHiddenAccounts,
+        })
+      ]).then(() => {
+        return dispatch(screen.actions.showNotification('Saved settings.'));
+      }).then(() => {
+        // reset redux notification message
+        return dispatch(screen.actions.closeNotification());
+      });
     };
 }
