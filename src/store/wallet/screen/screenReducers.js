@@ -36,18 +36,22 @@ function onDialog(state, action) {
     return state;
 }
 
-function onSnackbarOpen(state, action) {
+function onNotificationOpen(state, action) {
   if (action.type === 'SCREEN/NOTIFICATION_SHOW') {
     return state
-      .set('notificationMessage', action.message);
+      .set('notificationMessage', action.message)
+      .set('notificationType', 'success')
+      .set('notificationDuration', 3000);
   }
   return state;
 };
 
-function onSnackbarClose(state, action) {
+function onNotificationClose(state, action) {
   if (action.type === 'SCREEN/NOTIFICATION_CLOSE') {
     return state
-      .set('notificationMessage', null);
+      .set('notificationMessage', null)
+      .set('notificationType', null)
+      .set('notificationDuration', null);
   }
   return state;
 };
@@ -57,7 +61,7 @@ export default function screenReducers(state, action) {
     state = onOpen(state, action);
     state = onError(state, action);
     state = onDialog(state, action);
-    state = onSnackbarOpen(state, action);
-    state = onSnackbarClose(state, action);
+    state = onNotificationOpen(state, action);
+    state = onNotificationClose(state, action);
     return state;
 }
