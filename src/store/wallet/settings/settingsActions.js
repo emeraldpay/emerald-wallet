@@ -55,7 +55,7 @@ export function update(settings: { localeCurrency: string, showHiddenAccounts: b
           show: settings.showHiddenAccounts,
         })
       ]).then(() => {
-        return dispatch(screen.actions.showNotification('Saved settings.'));
+        return dispatch(screen.actions.showNotification('Saved settings.', 'success', 3000));
       }).then(() => {
         // reset redux notification message
         return dispatch(screen.actions.closeNotification());

@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Snackbar from 'material-ui/Snackbar';
-import './NotificationBar.scss';
 import { orange300, red900 } from 'material-ui/styles/colors';
 
 const colors = {

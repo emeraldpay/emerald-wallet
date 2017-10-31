@@ -51,10 +51,12 @@ export function catchError(dispatch) {
 }
 
 
-export function showNotification(message) {
+export function showNotification(message, notificationType, duration) {
     return {
         type: 'SCREEN/NOTIFICATION_SHOW',
-        message
+        message,
+        notificationType,
+        duration
     };
 }
 
