@@ -5,7 +5,6 @@ import AdviceIcon from './adviceIcon';
 import EyeIcon from './eyeIcon';
 import QrCodeIcon from './qrcodeIcon';
 import EditIcon from './editIcon';
-import CloseIcon from './closeIcon';
 import SearchIcon from './searchIcon';
 import RepeatIcon from './repeatIcon';
 import DeleteIcon from './deleteIcon';
@@ -24,6 +23,5 @@ export {
     EyeIcon,
     QrCodeIcon,
     EditIcon,
-    CloseIcon,
     ArrowLeftIcon,
 };

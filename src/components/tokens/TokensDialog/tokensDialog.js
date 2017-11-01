@@ -1,11 +1,11 @@
 import React from 'react';
 import { Dialog, IconButton } from 'material-ui';
-import { CloseIcon } from 'elements/Icons';
-
-import AddToken from '../AddToken/add';
+import CloseButton from 'elements/CloseButton';
+import AddToken from '../AddToken';
 import TokensList from '../TokensList/list';
 
 import styles from './tokensDialog.scss';
+
 
 export default class TokensDialog extends React.Component {
     render() {
@@ -14,15 +14,10 @@ export default class TokensDialog extends React.Component {
         return (
             <Dialog modal={true} open={true} onRequestClose={ onClose } contentStyle={{maxWidth: '600px'}}>
                 <div style={{width: '100%'}}>
-                    <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                    <div className={ styles.header }>
                         <div className={styles.title}>Add token by address</div>
                         <div>
-                            <IconButton
-                                className={ styles.closeButton }
-                                onTouchTap={ onClose }
-                                tooltip="Close">
-                                <CloseIcon/>
-                            </IconButton>
+                            <CloseButton className={ styles.closeButton } onClick={ onClose }/>
                         </div>
                     </div>
                     <div>
