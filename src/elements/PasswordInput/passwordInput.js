@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import TextField from 'elements/Form/TextField';
 import { Warning, WarningText } from 'elements/Warning/warning';
-import { EyeIcon } from 'elements/Icons';
+import { Eye as EyeIcon } from 'emerald-js/lib/ui/icons';
 
 
 export default class PasswordInput extends React.Component {

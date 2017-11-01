@@ -7,7 +7,7 @@ import version from '../../../version';
 
 import classes from './aboutDialog.scss';
 
-const AboutDialog = ({ onClose }) => {
+export const AboutDialog = ({ onClose }) => {
     return <Dialog
         modal={false}
         open={true}
@@ -20,8 +20,8 @@ const AboutDialog = ({ onClose }) => {
                 <CloseButton onClick={ onClose } className={ classes.closeButton }/>
             </div>
         </div>
-        < div>
-            < div>
+        <div>
+            <div>
                 < div style={{color: 'limegreen'}}>
                     {version}
                 </div>

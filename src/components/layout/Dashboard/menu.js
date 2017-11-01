@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FontIcon, FlatButton, Popover } from 'material-ui';
 import { List, ListItem } from 'material-ui/List';
-import { AddIcon } from 'elements/Icons/';
+import { Add as AddIcon } from 'emerald-js/lib/ui/icons';
 
 const styles = {
     button: {
@@ -10,6 +10,10 @@ const styles = {
     },
     buttonLabel: {
         paddingRight: 0,
+    },
+    addIcon: {
+        width: '21px',
+        height: '21px',
     },
 };
 
@@ -68,7 +72,7 @@ class DashboardMenu extends React.Component {
                     labelStyle={ styles.buttonLabel }
                     style={ styles.button }
                     hoverColor="transparent"
-                    icon={<AddIcon />}
+                    icon={<AddIcon style={ styles.addIcon } />}
                 />
                 <Popover
                     open={this.state.open}
