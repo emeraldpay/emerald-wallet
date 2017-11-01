@@ -36,10 +36,32 @@ function onDialog(state, action) {
     return state;
 }
 
+function onNotificationOpen(state, action) {
+  if (action.type === 'SCREEN/NOTIFICATION_SHOW') {
+    return state
+      .set('notificationMessage', action.message)
+      .set('notificationType', 'success')
+      .set('notificationDuration', 3000);
+  }
+  return state;
+};
+
+function onNotificationClose(state, action) {
+  if (action.type === 'SCREEN/NOTIFICATION_CLOSE') {
+    return state
+      .set('notificationMessage', null)
+      .set('notificationType', null)
+      .set('notificationDuration', null);
+  }
+  return state;
+};
+
 export default function screenReducers(state, action) {
     state = state || initial;
     state = onOpen(state, action);
     state = onError(state, action);
     state = onDialog(state, action);
+    state = onNotificationOpen(state, action);
+    state = onNotificationClose(state, action);
     return state;
 }
