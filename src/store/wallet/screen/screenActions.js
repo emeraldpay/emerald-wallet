@@ -49,3 +49,19 @@ export function catchError(dispatch) {
         dispatch(showError(err));
     };
 }
+
+
+export function showNotification(message, notificationType, duration) {
+    return {
+        type: 'SCREEN/NOTIFICATION_SHOW',
+        message,
+        notificationType,
+        duration
+    };
+}
+
+export function closeNotification() {
+  return {
+    type: 'SCREEN/NOTIFICATION_CLOSE'
+  };
+}
