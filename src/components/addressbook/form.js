@@ -4,7 +4,7 @@ import { renderTextField } from 'elements/formFields';
 import { Card, CardText, FlatButton } from 'material-ui';
 import { required, address } from 'lib/validators';
 import { cardSpace } from 'lib/styles';
-import { TextField } from 'redux-form-material-ui'
+import { TextField } from 'redux-form-material-ui';
 
 const Render = ({ handleSubmit, blockAddress, invalid, pristine, submitting, cancel }) => (
       <Card style={cardSpace}>

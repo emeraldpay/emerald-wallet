@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { AddressForm } from '../addressbook/form';
+import { AddressForm } from '../../addressbook/form';
 
 const AccountEdit = connect(
     (state, ownProps) => ({

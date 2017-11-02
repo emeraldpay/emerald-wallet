@@ -5,15 +5,21 @@ import Immutable from 'immutable';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
 import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
+import { Repeat as RepeatIcon } from 'emerald-js/lib/ui/icons';
 import launcher from 'store/launcher';
 import screen from '../../../../store/wallet/screen';
 import { refreshTransaction } from '../../../../store/wallet/history/historyActions';
 import { link, tables } from '../../../../lib/styles';
 import AddressAvatar from '../../../../elements/AddressAvatar/addressAvatar';
 import AccountBalance from '../../../accounts/Balance';
-import { RepeatIcon } from '../../../../elements/Icons';
 import TokenUnits from '../../../../lib/tokenUnits';
 
+const styles = {
+    repeatIcon: {
+        width: '15px',
+        height: '15px',
+    },
+};
 
 export const Transaction = (props) => {
     const { showFiat, tx, openTx, openAccount, refreshTx, toAccount, fromAccount } = props;
@@ -69,7 +75,7 @@ export const Transaction = (props) => {
                 />
             </TableRowColumn>
             <TableRowColumn style={{...tables.shortStyle, paddingRight: '0', textAlign: 'right' }}>
-                <IconButton onClick={ refreshTx }>
+                <IconButton onClick={ refreshTx } iconStyle={ styles.repeatIcon }>
                     <RepeatIcon />
                 </IconButton>
             </TableRowColumn>

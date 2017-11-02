@@ -34,7 +34,7 @@ const traceValidate = (tx, dispatch): Promise<BigNumber> => {
                 } else {
                     resolve(gasEst);
                 }
-            });
+            }).catch((error) => reject(error));
     });
 };
 

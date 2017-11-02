@@ -8,14 +8,14 @@ import TokenUnits from 'lib/tokenUnits';
 import IdentityIcon from 'elements/IdentityIcon';
 import { Form, styles, Row } from 'elements/Form';
 import Button from 'elements/Button/index';
-import { QrCodeIcon } from 'elements/Icons';
+import { QrCode as QrCodeIcon } from 'emerald-js/lib/ui/icons';
 import AddressAvatar from 'elements/AddressAvatar/addressAvatar';
 import DashboardButton from 'components/common/DashboardButton';
 import accounts from '../../../store/vault/accounts';
 import screen from '../../../store/wallet/screen';
 import launcher from '../../../store/launcher';
 import createLogger from '../../../utils/logger';
-import AccountEdit from '../edit';
+import AccountEdit from '../AccountEdit';
 import TransactionsList from '../../tx/TxHistory';
 import AccountBalance from '../Balance';
 import SecondaryMenu from '../SecondaryMenu';
@@ -26,6 +26,11 @@ import ButtonGroup from '../../../elements/ButtonGroup';
 
 
 const log = createLogger('AccountShow');
+
+const qrIconStyle = {
+    width: '14px',
+    height: '14px',
+};
 
 class AccountShow extends React.Component {
     constructor(props) {
@@ -58,7 +63,6 @@ class AccountShow extends React.Component {
     render() {
         const { account, rates, showFiat, goBack, transactions, createTx, showReceiveDialog } = this.props;
         const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
-        const isHardware = (acc) => acc.get('hardware', false);
 
         // TODO: we convert Wei to TokenUnits here
         const balance = account.get('balance') ? new TokenUnits(account.get('balance').value(), 18) : null;
@@ -120,7 +124,7 @@ class AccountShow extends React.Component {
                                             <Button
                                                 primary
                                                 label="Add ETC"
-                                                icon={ <QrCodeIcon color="white"/> }
+                                                icon={ <QrCodeIcon style={ qrIconStyle } color="white"/> }
                                                 onClick={ showReceiveDialog }
                                             />
                                             <Button
@@ -128,7 +132,7 @@ class AccountShow extends React.Component {
                                                 label="Send"
                                                 onClick={ createTx }
                                             />
-                                            { !isHardware(account) && <SecondaryMenu account={account} /> }
+                                            <SecondaryMenu account={ account } />
                                         </ButtonGroup>
                                     </div>
                                 </div>

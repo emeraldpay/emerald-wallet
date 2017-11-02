@@ -1,10 +1,8 @@
 import React from 'react';
 import QRCode from 'qrcode.react';
 import Dialog from 'material-ui/Dialog';
-import IconButton from 'material-ui/IconButton';
-
+import CloseButton from 'elements/CloseButton';
 import AccountAddress from 'elements/AccountAddress';
-import { CloseIcon } from 'elements/Icons';
 
 import classes from './receiveDialog.scss';
 import DepositOptions from './DepositOptions';
@@ -36,9 +34,7 @@ const ReceiveDialog = ({ account, onClose }) => {
                 <div>
                     <div className={ classes.depositOptionsContainer }>
                         <DepositOptions />
-                        <IconButton onTouchTap={ onClose } tooltip="Close">
-                            <CloseIcon/>
-                        </IconButton>
+                        <CloseButton onClick={ onClose } />
                     </div>
                     <div style={{marginTop: '30px', marginLeft: '30px'}}>
                         <div className={ classes.headerText }>Top up your wallet with ETC</div>

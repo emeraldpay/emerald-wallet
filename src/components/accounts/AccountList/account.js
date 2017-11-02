@@ -6,7 +6,7 @@ import { Row, Col } from 'react-flexbox-grid/lib/index';
 import IdentityIcon from 'elements/IdentityIcon';
 import Card from 'elements/Card';
 import Button from 'elements/Button';
-import { QrCodeIcon } from 'elements/Icons';
+import { QrCode as QrCodeIcon } from 'emerald-js/lib/ui/icons';
 import AddressAvatar from '../../../elements/AddressAvatar/addressAvatar';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../Balance';
@@ -15,6 +15,11 @@ import TokenBalances from '../TokenBalances';
 import styles from './account.scss';
 import TokenUnits from '../../../lib/tokenUnits';
 import ButtonGroup from '../../../elements/ButtonGroup';
+
+const qrIconStyle = {
+    width: '14px',
+    height: '14px',
+};
 
 export default class Account extends React.Component {
 
@@ -47,9 +52,7 @@ export default class Account extends React.Component {
 
         // TODO: we convert Wei to TokenUnits here
         const balance = account.get('balance') ? new TokenUnits(account.get('balance').value(), 18) : null;
-
         const tokens = account.get('tokens');
-        const isHardware = (acc) => acc.get('hardware', false);
 
         return (
             <Card>
@@ -83,10 +86,10 @@ export default class Account extends React.Component {
                         <Col xs={4}>
                             <div className={ styles.actionsContainer }>
                                 <ButtonGroup>
-                                    {!isHardware(account) && <SecondaryMenu account={account}/>}
+                                    <SecondaryMenu account={account} />
                                     <Button
                                         label="Add ETC"
-                                        icon={<QrCodeIcon />}
+                                        icon={<QrCodeIcon style={ qrIconStyle } />}
                                         onClick={ showReceiveDialog }
                                     />
                                     <Button

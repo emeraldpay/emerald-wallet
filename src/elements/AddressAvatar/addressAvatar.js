@@ -1,6 +1,5 @@
 import React from 'react';
-import ModeEdit from 'material-ui/svg-icons/editor/mode-edit';
-import { EditIcon } from 'elements/Icons';
+import { Edit as EditIcon } from 'emerald-js/lib/ui/icons';
 import AccountAddress from '../AccountAddress';
 
 
@@ -20,7 +19,8 @@ const AddressAvatar = (props) => {
             lineHeight: '16px',
         },
         editIcon: {
-            width: '20px',
+            width: '13px',
+            height: '13px',
             cursor: 'pointer',
 
         },
@@ -34,8 +34,8 @@ const AddressAvatar = (props) => {
             <div style={ styles.accountName }>
                 {primary ||
                 <div onClick={ onEditClick } style={ {display: 'flex', alignItems: 'center'} }>
-                    <div>{ nameEdit }</div>
-                    <div style={{display: 'flex', alignItems: 'center', marginLeft: '5px'}}>
+                    <div style={{marginRight: '5px'}}>{ nameEdit }</div>
+                    <div style={{display: 'flex', alignItems: 'center'}}>
                         <EditIcon style={ styles.editIcon } />
                     </div>
                 </div>}

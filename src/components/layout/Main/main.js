@@ -11,7 +11,7 @@ import Dialog from '../../dialog';
 
 import './main.scss';
 
-const maxWidth = '1100px';
+const maxWidth = '1150px';
 
 const Render = translate('common')(({ t, ...props }) => (
     <div>

@@ -11,7 +11,6 @@ test('It shows tx value in fiat', () => {
     const fiatRate = 1.5;
     const fiatValue = tokenValue.convert(fiatRate, 8);
     const fiatText = Currency.format(fiatValue, 'usd');
-    console.log(fiatText);
     const balance = {
         symbol: 'ETC',
         value: tokenValue,

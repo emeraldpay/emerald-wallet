@@ -1,14 +1,16 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Dialog, IconButton } from 'material-ui';
-import { CloseIcon } from 'elements/Icons';
-import styles from './hideAccountDialog.scss';
 import Button from 'elements/Button';
+import CloseButton from 'elements/CloseButton';
 import { hideAccount } from 'store/vault/accounts/accountActions';
 import { Warning, WarningHeader, WarningText } from 'elements/Warning';
+
 import screen from '../../../store/wallet/screen';
 import accounts from '../../../store/vault/accounts';
 import history from '../../../store/wallet/history';
+
+import styles from './hideAccountDialog.scss';
 
 class HideAccountDialog extends React.Component {
     render() {
@@ -20,12 +22,7 @@ class HideAccountDialog extends React.Component {
                     <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                         <div className={styles.title}>Are you Sure you want to hide this account?</div>
                         <div>
-                            <IconButton
-                                className={ styles.closeButton }
-                                onTouchTap={ onClose }
-                                tooltip="Close">
-                                <CloseIcon/>
-                            </IconButton>
+                            <CloseButton onClick={ onClose } className={ styles.closeButton }/>
                         </div>
                     </div>
                     <div style={{marginRight: '20px'}}>
@@ -36,7 +33,7 @@ class HideAccountDialog extends React.Component {
                     </div>
                     <Button
                       style={{
-                          marginTop: '10px'
+                          marginTop: '10px',
                       }}
                       label="Yes"
                       primary={true}
@@ -44,7 +41,7 @@ class HideAccountDialog extends React.Component {
                     <Button
                       style={{
                           marginLeft: '10px',
-                          marginTop: '10px'
+                          marginTop: '10px',
                       }}
                       label="No"
                       onClick={ onClose } />
@@ -55,7 +52,7 @@ class HideAccountDialog extends React.Component {
 
 export default connect(
   (state, ownProps) => ({
-      address: ownProps.address
+      address: ownProps.address,
   }),
   (dispatch, ownProps) => ({
       handleConfirmHide: () => {
@@ -67,6 +64,6 @@ export default connect(
           dispatch(accounts.actions.loadPendingTransactions());
 
           dispatch(screen.actions.gotoScreen('home'));
-      }
+      },
   })
 )(HideAccountDialog);

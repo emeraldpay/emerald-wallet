@@ -1,15 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { IconButton } from 'material-ui';
-
-import { LogoIcon, SettingsIcon } from 'elements/Icons';
+import { Gear as SettingsIcon } from 'emerald-js/lib/ui/icons';
+import { LogoIcon } from 'elements/Icons';
 import Status from './status/status';
 import Total from './total';
 import screen from '../../../store/wallet/screen';
 
 import classes from './header.scss';
 
-const Header = ({ maxWidth = '1220px', openSettings }) => {
+export const Header = ({ maxWidth = '1220px', openSettings }) => {
     return (
         <div style={{backgroundColor: 'white'}}>
             <div style={{display: 'flex', justifyContent: 'space-between', margin: '0 auto', maxWidth}}>

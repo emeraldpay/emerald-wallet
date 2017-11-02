@@ -29,9 +29,8 @@ export const code = {
 export const copyIcon = {
     display: 'inline',
     fontSize: '0.9rem',
-    color: 'darkgray',
-    marginLeft: '0.3rem',
-    marginRight: '0.3rem',
+    width: '13px',
+    height: '13px',
     cursor: 'pointer',
 };
 
