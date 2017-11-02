@@ -12,3 +12,5 @@ geth
 logs/
 coverage/
 flow-typed/
+
+package-lock.json
