@@ -52,9 +52,7 @@ export default class Account extends React.Component {
 
         // TODO: we convert Wei to TokenUnits here
         const balance = account.get('balance') ? new TokenUnits(account.get('balance').value(), 18) : null;
-
         const tokens = account.get('tokens');
-        const isHardware = (acc) => acc.get('hardware', false);
 
         return (
             <Card>
@@ -88,7 +86,7 @@ export default class Account extends React.Component {
                         <Col xs={4}>
                             <div className={ styles.actionsContainer }>
                                 <ButtonGroup>
-                                    {!isHardware(account) && <SecondaryMenu account={account}/>}
+                                    <SecondaryMenu account={account} />
                                     <Button
                                         label="Add ETC"
                                         icon={<QrCodeIcon style={ qrIconStyle } />}

@@ -1,4 +1,4 @@
-/* @flow */
+// @flow
 import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
@@ -10,7 +10,8 @@ import Transaction from './transaction';
 import classes from './list.scss';
 
 type Props = {
-    transactions: any,
+    transactions: Array<any>,
+    accountId: string,
 };
 
 const TransactionsList = (props: Props) => {

@@ -30,15 +30,12 @@ class ImportJson extends React.Component {
     }
 
     submitFile = () => {
-        const { importFile, showAccount, accounts } = this.props;
+        const { importFile, showAccount } = this.props;
         importFile(this.state.file).then((result) => {
             if (result.error) {
                 this.setState({ fileError: result.error.toString() });
             } else {
-                const account = accounts.find((a) => a.get('id') === result);
-                if (account) {
-                    showAccount(account);
-                }
+                showAccount(Immutable.fromJS({id: result}));
             }
         });
     }
@@ -91,7 +88,6 @@ class ImportJson extends React.Component {
 
 export default connect(
     (state, ownProps) => ({
-        accounts: state.accounts.get('accounts', Immutable.List()),
     }),
     (dispatch, ownProps) => ({
         importFile: (file) => {

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import copy from 'copy-to-clipboard';
 
 import { copyIcon, link } from 'lib/styles';
-import { CloneIcon } from '../Icons';
+import { Copy as CloneIcon } from 'emerald-js/lib/ui/icons';
 
 
 import styles from './accountAddress.scss';
@@ -28,7 +28,9 @@ const AccountAddress = (props) => {
             <div onClick={onClick} style={{...link}}>
                 {shortened ? `${id.substring(2, 7)}...${id.substring(id.length - 6, id.length - 1)}` : id}
             </div>
-            {icons}
+            <div>
+                {icons}
+            </div>
         </div>
     );
 };

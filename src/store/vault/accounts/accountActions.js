@@ -1,6 +1,6 @@
 // @flow
 import EthereumTx from 'ethereumjs-tx';
-import { convert, Wallet } from 'emerald-js';
+import { convert, Wallet, Address } from 'emerald-js';
 import { address as isAddress} from 'lib/validators';
 import { loadTokenBalanceOf } from '../tokens/tokenActions';
 import screen from '../../wallet/screen';
@@ -280,7 +280,7 @@ export function importJson(data, name: string, description: string) {
                 accountId: result,
             });
             // Reload accounts.
-            if (isAddress(result) === undefined) {
+            if (Address.isValid(result)) {
                 dispatch({
                     name,
                     description,

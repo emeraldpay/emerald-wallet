@@ -6,29 +6,21 @@ import FontIcon from 'material-ui/FontIcon';
 import { api } from 'lib/rpc/api';
 import saveAs from 'lib/saveAs';
 import screen from '../../../store/wallet/screen';
-import { gotoScreen } from '../../../store/wallet/screen/screenActions';
-import { unhideAccount } from 'store/vault/accounts/accountActions';
 import history from '../../../store/wallet/history';
 import accounts from '../../../store/vault/accounts';
 
-const renderHide = (chain, account, onHide, precision = 3) => {
-    const balance = account.get('balance');
+const hasBalance = (account) => account.get('balance') && account.get('balance').value().gt(0);
 
-    if (!balance) {
-        return;
+const renderHide = (chain, account, onHide) => {
+    if (hasBalance(account)) {
+        return null;
     }
-
-    // only show hide button if account has value
-    if (balance.getEther(precision) > 0) {
-        return;
-    }
-
     return (
         <MenuItem
           leftIcon={<FontIcon className="fa fa-eye-slash"/>}
           primaryText='HIDE'
           onTouchTap={ onHide(chain) }/>
-    )
+    );
 };
 
 const renderUnhide = (chain, account, onUnhide) => {
@@ -37,21 +29,27 @@ const renderUnhide = (chain, account, onUnhide) => {
             leftIcon={<FontIcon className="fa fa-eye"/>}
             primaryText='UNHIDE'
             onTouchTap={ onUnhide(chain) }/>
-    )
+    );
 };
 
 const SecondaryMenu = ({ account, onPrint, onExport, onHide, onUnhide, chain }) => {
+    const isHardware = account.get('hardware', false);
+    if (isHardware && hasBalance(account)) {
+        // Don't show empty popup menu in this case
+        return null;
+    }
     return (
         <IconMenu iconButtonElement={<IconButton><MoreHorizIcon /></IconButton>}>
+            {!isHardware &&
             <MenuItem
                 leftIcon={<FontIcon className="fa fa-hdd-o"/>}
                 primaryText='EXPORT'
-                onTouchTap={ onExport(chain) }/>
-
+                onTouchTap={ onExport(chain) }/> }
+            {!isHardware &&
             <MenuItem
                 leftIcon={<FontIcon className="fa fa-print"/>}
                 primaryText='PRINT'
-                onTouchTap={ onPrint(chain) }/>
+                onTouchTap={ onPrint(chain) }/> }
 
             { !account.get('hidden') && renderHide(chain, account, onHide) }
             { account.get('hidden') && renderUnhide(chain, account, onUnhide) }
@@ -67,7 +65,7 @@ export default connect(
     (dispatch, ownProps) => ({
         onPrint: (chain) => () => {
             const address = ownProps.account.get('id');
-            dispatch(gotoScreen('export-paper-wallet', address));
+            dispatch(screen.actions.gotoScreen('export-paper-wallet', address));
         },
         onHide: (chain) => () => {
             const address = ownProps.account.get('id');
@@ -75,7 +73,7 @@ export default connect(
         },
         onUnhide: (chain) => () => {
             const address = ownProps.account.get('id');
-            dispatch(unhideAccount(address));
+            dispatch(accounts.actions.unhideAccount(address));
             // refresh account data
             dispatch(history.actions.refreshTrackedTransactions());
             dispatch(accounts.actions.loadAccountsList());

@@ -15,7 +15,7 @@ import accounts from '../../../store/vault/accounts';
 import screen from '../../../store/wallet/screen';
 import launcher from '../../../store/launcher';
 import createLogger from '../../../utils/logger';
-import AccountEdit from '../edit';
+import AccountEdit from '../AccountEdit';
 import TransactionsList from '../../tx/TxHistory';
 import AccountBalance from '../Balance';
 import SecondaryMenu from '../SecondaryMenu';
@@ -63,7 +63,6 @@ class AccountShow extends React.Component {
     render() {
         const { account, rates, showFiat, goBack, transactions, createTx, showReceiveDialog } = this.props;
         const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
-        const isHardware = (acc) => acc.get('hardware', false);
 
         // TODO: we convert Wei to TokenUnits here
         const balance = account.get('balance') ? new TokenUnits(account.get('balance').value(), 18) : null;
@@ -133,7 +132,7 @@ class AccountShow extends React.Component {
                                                 label="Send"
                                                 onClick={ createTx }
                                             />
-                                            { !isHardware(account) && <SecondaryMenu account={account} /> }
+                                            <SecondaryMenu account={ account } />
                                         </ButtonGroup>
                                     </div>
                                 </div>
