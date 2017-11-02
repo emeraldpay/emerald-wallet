@@ -129,7 +129,7 @@
     "css-loader": "0.28.0",
     "devtron": "^1.4.0",
     "electron": "^1.6.11",
-    "electron-builder": "^19.7.1",
+    "electron-builder": "19.12.0",
     "electron-rebuild": "1.5.11",
     "enzyme": "^2.9.1",
     "eslint": "^3.19.0",
