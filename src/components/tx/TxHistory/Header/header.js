@@ -1,7 +1,7 @@
-/* @flow */
+// @flow
 import React from 'react';
+import { Search as SearchIcon } from 'emerald-js/lib/ui/icons';
 import TextField from '../../../../elements/Form/TextField';
-import { SearchIcon } from '../../../../elements/Icons';
 import Filter from './filter';
 
 import classes from './header.scss';
@@ -15,7 +15,7 @@ const Header = (props: any) => {
             </div>
             <div className={ classes.search }>
                 <TextField
-                    rightIcon={ <SearchIcon/> }
+                    rightIcon={ <SearchIcon /> }
                     style={{ maxHeight: '40px' }}
                     hintText="Search for amount or hash"
                     underlineShow={ false }

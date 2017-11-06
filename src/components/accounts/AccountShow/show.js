@@ -7,7 +7,7 @@ import QRCode from 'qrcode.react';
 import TokenUnits from 'lib/tokenUnits';
 import IdentityIcon from 'elements/IdentityIcon';
 import { Form, styles, Row } from 'elements/Form';
-import Button from 'elements/Button/index';
+import Button from 'elements/Button';
 import { QrCode as QrCodeIcon } from 'emerald-js/lib/ui/icons';
 import AddressAvatar from 'elements/AddressAvatar/addressAvatar';
 import DashboardButton from 'components/common/DashboardButton';
@@ -19,7 +19,6 @@ import AccountEdit from '../AccountEdit';
 import TransactionsList from '../../tx/TxHistory';
 import AccountBalance from '../Balance';
 import SecondaryMenu from '../SecondaryMenu';
-
 import classes from './show.scss';
 import TokenBalances from '../TokenBalances';
 import ButtonGroup from '../../../elements/ButtonGroup';
@@ -32,7 +31,7 @@ const qrIconStyle = {
     height: '14px',
 };
 
-class AccountShow extends React.Component {
+export class AccountShow extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -61,7 +60,7 @@ class AccountShow extends React.Component {
     }
 
     render() {
-        const { account, rates, showFiat, goBack, transactions, createTx, showReceiveDialog } = this.props;
+        const { account, showFiat, goBack, transactions, createTx, showReceiveDialog } = this.props;
         const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
 
         // TODO: we convert Wei to TokenUnits here
@@ -102,7 +101,7 @@ class AccountShow extends React.Component {
                                         <People />
                                     </div>
                                 </div>
-                                <div style={styles.right}>
+                                <div style={ styles.right }>
                                     {!this.state.edit && <AddressAvatar
                                         addr={account.get('id')}
                                         tertiary={account.get('description')}
@@ -116,6 +115,17 @@ class AccountShow extends React.Component {
                                     />}
                                 </div>
                             </Row>
+                            { account.get('hardware', false) &&
+                            <Row>
+                                <div style={styles.left}>
+                                    <div style={styles.fieldName}>
+                                        HD Path
+                                    </div>
+                                </div>
+                                <div style={ styles.right }>
+                                    { account.get('hdpath') }
+                                </div>
+                            </Row> }
                             <Row>
                                 <div style={styles.left}/>
                                 <div style={styles.right}>
@@ -179,7 +189,6 @@ export default connect(
         }
         return {
             showFiat: launcher.selectors.getChainName(state) === 'mainnet',
-            rates: state.accounts.get('rates'),
             account,
             transactions,
         };

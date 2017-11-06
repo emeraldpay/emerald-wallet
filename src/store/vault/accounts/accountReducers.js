@@ -1,8 +1,6 @@
 import Immutable from 'immutable';
 import { convert, Wei } from 'emerald-js';
-
 import TokenUnits from 'lib/tokenUnits';
-
 import ActionTypes from './actionTypes';
 
 const { toNumber } = convert;
@@ -99,7 +97,7 @@ function onSetAccountsList(state, action) {
 }
 
 function onUpdateAccount(state, action) {
-    if (action.type === 'ACCOUNT/UPDATE_ACCOUNT') {
+    if (action.type === ActionTypes.UPDATE_ACCOUNT) {
         return updateAccount(state, action.address, (acc) =>
             acc.set('name', action.name)
                 .set('description', action.description)
@@ -136,9 +134,18 @@ function onSetTokenBalance(state, action) {
 }
 
 function onSetTxCount(state, action) {
-    if (action.type === 'ACCOUNT/SET_TXCOUNT') {
+    if (action.type === ActionTypes.SET_TXCOUNT) {
         return updateAccount(state, action.accountId, (acc) =>
             acc.set('txcount', toNumber(action.value))
+        );
+    }
+    return state;
+}
+
+function onSetHdPath(state, action) {
+    if (action.type === ActionTypes.SET_HD_PATH) {
+        return updateAccount(state, action.accountId, (acc) =>
+            acc.set('hdpath', action.hdpath)
         );
     }
     return state;
@@ -152,7 +159,7 @@ function onAddAccount(state, action) {
 }
 
 function onPendingBalance(state, action) {
-    if (action.type === 'ACCOUNT/PENDING_BALANCE') {
+    if (action.type === ActionTypes.PENDING_BALANCE) {
         let bal;
         if (action.to) {
             return updateAccount(state, action.to, (acc) => {
@@ -179,5 +186,6 @@ export default function accountsReducers(state, action) {
     state = onSetTxCount(state, action);
     state = onSetTokenBalance(state, action);
     state = onPendingBalance(state, action);
+    state = onSetHdPath(state, action);
     return state;
 }

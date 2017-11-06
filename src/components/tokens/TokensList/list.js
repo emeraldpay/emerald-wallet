@@ -3,11 +3,15 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import { IconButton } from 'material-ui';
-
+import { Delete as DeleteIcon } from 'emerald-js/lib/ui/icons';
 import Input from 'elements/Input';
-import { DeleteIcon } from 'elements/Icons';
 
 import styles from './list.scss';
+
+const deleteIconStyle = {
+    width: '19px',
+    height: '19px',
+};
 
 const Token = (props) => {
     const { token } = props;
@@ -30,7 +34,7 @@ const Token = (props) => {
                 />
             </div>
             <div>
-                <IconButton>
+                <IconButton iconStyle={ deleteIconStyle }>
                     <DeleteIcon/>
                 </IconButton>
             </div>

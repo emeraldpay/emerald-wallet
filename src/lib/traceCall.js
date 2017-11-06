@@ -177,6 +177,11 @@ class ClassicGethTracer implements ITracer {
  */
 export function detect(ethRpc: EthRpc) : Promise<any> {
     return ethRpc.raw('trace_call', [])
+        .then(() => {
+            // If this call successful it means RPC works in wrong way,
+            // will use esimateGas method
+            return (tx) => new CommonCallTracer(tx);
+        })
         .catch((error) => {
             if (error.code === -32601) {
                 // method not found, try another
