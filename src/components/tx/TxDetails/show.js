@@ -1,9 +1,11 @@
 // @flow
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Map } from 'immutable';
 import { connect } from 'react-redux';
 import FlatButton from 'material-ui/FlatButton';
 import { convert } from 'emerald-js';
+import launcher from 'store/launcher';
 import DashboardButton from 'components/common/DashboardButton';
 import AccountAddress from '../../../elements/AccountAddress';
 import AddressAvatar from '../../../elements/AddressAvatar';
@@ -13,15 +15,27 @@ import IdentityIcon from '../../../elements/IdentityIcon';
 import { Form, styles, Row } from '../../../elements/Form';
 import TxStatus from './status';
 import { Currency } from '../../../lib/currency';
-
 import createLogger from '../../../utils/logger';
 
 import classes from './show.scss';
 
 const log = createLogger('TxDetails');
 
-export const TransactionShow = (props) => {
-    const { transaction, rates, account, fromAccount, toAccount, openAccount, goBack, currentCurrency } = props;
+type Props = {
+    showFiat: boolean,
+    goBack: (?any) => void,
+    openAccount: (?any) => void,
+    currentCurrency: string,
+    fromAccount: any,
+    toAccount: any,
+    rates: Map<string, number>,
+    transaction: any,
+    account: ?any
+}
+
+export const TransactionShow = (props: Props) => {
+    const { transaction, account, fromAccount, toAccount, openAccount, goBack } = props;
+    const { showFiat, rates, currentCurrency } = props;
 
     const fieldNameStyle = {
         color: '#747474',
@@ -56,9 +70,9 @@ export const TransactionShow = (props) => {
                             <div className={ classes.etcAmount }>
                                 { transaction.get('value') ? `${transaction.get('value').getEther()} ETC` : '--' }
                             </div>
-                            <div className={ classes.fiatAmount }>
+                            {showFiat && <div className={ classes.fiatAmount }>
                                 { fiatAmount }
-                            </div>
+                            </div> }
                         </div>
                         <div>
                             <TxStatus status={ txStatus } />
@@ -184,16 +198,14 @@ export const TransactionShow = (props) => {
 };
 
 TransactionShow.propTypes = {
-    hash: PropTypes.string.isRequired,
     transaction: PropTypes.object.isRequired,
     rates: PropTypes.object.isRequired,
-    accounts: PropTypes.object.isRequired,
     openAccount: PropTypes.func.isRequired,
     goBack: PropTypes.func.isRequired,
 };
 
 export default connect(
-    (state, ownProps) => {
+    (state, ownProps): Props => {
         const accounts = state.accounts.get('accounts');
         const account = accounts.find(
            (acct) => acct.get('id') === ownProps.accountId
@@ -213,10 +225,11 @@ export default connect(
             accounts.find((acct) => acct.get('id') === Tx.get('to')) : null;
 
         return {
-            hash: Tx.get('hash'),
+            goBack: ownProps.goBack,
+            openAccount: ownProps.openAccount,
+            showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
             transaction: Tx,
             account,
-            accounts,
             rates,
             currentCurrency,
             fromAccount,

@@ -128,33 +128,6 @@ export function addToken(token: TokenInfo) {
     };
 }
 
-
-// export function transferTokenTransaction(accountId, password, to, gas, gasPrice, value, tokenId, isTransfer) {
-//     return (dispatch, getState) => {
-//         const pwHeader = new Buffer(password).toString('base64');
-//         const tokens = getState().tokens;
-//         const token = tokens.get('tokens').find((tok) => tok.get('address') === tokenId);
-//         const data = createTokenTransaction(token, to, value, isTransfer);
-//         return rpc.call('eth_sendTransaction', [{
-//             to: tokenId,
-//             password,
-//             from: accountId,
-//             gas,
-//             gasPrice,
-//             value: '0x00',
-//             data,
-//         }, 'latest']).then((result) => {
-//             dispatch({
-//                 type: 'ACCOUNT/SEND_TOKEN_TRANSACTION',
-//                 accountId,
-//                 txHash: result,
-//             });
-//             dispatch(loadTokenDetails({ address: token }));
-//             return result;
-//         });
-//     };
-// }
-
 export function traceCall(from: string, to: string, gas: string, gasPrice: string, value: string, data: string) {
     return (dispatch, getState, api) => {
         // TODO: We shouldn't detect trace api each time, we need to do it only once

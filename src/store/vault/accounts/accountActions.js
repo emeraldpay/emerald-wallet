@@ -68,6 +68,27 @@ function fetchBalances(addresses: Array<string>) {
     };
 }
 
+/**
+ * Retrieves HD paths for hardware accounts
+ */
+function fetchHdPaths() {
+    return (dispatch, getState, api) => {
+        const chain = currentChain(getState());
+        getState().accounts.get('accounts')
+            .filter((a) => a.get('hardware', false))
+            .forEach((a) => {
+                const address = a.get('id');
+                api.emerald.exportAccount(address, chain).then((result) => {
+                    dispatch({
+                        type: ActionTypes.SET_HD_PATH,
+                        accountId: address,
+                        hdpath: JSON.parse(result).crypto.hd_path,
+                    });
+                });
+            });
+    };
+}
+
 export function loadAccountsList() {
     return (dispatch, getState, api) => {
         dispatch({
@@ -80,6 +101,7 @@ export function loadAccountsList() {
                 type: ActionTypes.SET_LIST,
                 accounts: result,
             });
+            dispatch(fetchHdPaths());
             dispatch(fetchBalances(result.map((account) => account.address)));
         });
     };
@@ -347,12 +369,12 @@ export function hideAccount(accountId: string) {
 }
 
 export function unhideAccount(accountId: string) {
-  return (dispatch, getState, api) => {
-    const chain = currentChain(getState());
+    return (dispatch, getState, api) => {
+        const chain = currentChain(getState());
 
-    return api.emerald.unhideAccount(accountId, chain)
+        return api.emerald.unhideAccount(accountId, chain)
       .then((result) => {
-        return result;
+          return result;
       }).catch(screen.actions.catchError(dispatch));
-  };
+    };
 }
