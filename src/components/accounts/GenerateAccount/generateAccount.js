@@ -36,6 +36,8 @@ class GenerateAccount extends React.Component<Props, State> {
     static propTypes = {
         dispatch: PropTypes.func,
         t: PropTypes.func.isRequired,
+        onBackScreen: PropTypes.string,
+        backLabel: PropTypes.string
     }
 
     constructor(props) {
@@ -102,15 +104,19 @@ class GenerateAccount extends React.Component<Props, State> {
     }
 
     goToDashboard = () => {
+      if (this.props.onBackScreen) {
+        this.props.dispatch(screen.actions.gotoScreen(this.props.onBackScreen));
+      } else {
         this.props.dispatch(screen.actions.gotoScreen('home'));
+      }
     }
 
     render() {
         const { page, privateKey } = this.state;
-        const { t } = this.props;
+      const { t, backLabel } = this.props;
         switch (page) {
             case PAGES.PASSWORD:
-                return (<PasswordDialog t={ t } onGenerate={ this.generate } onDashboard={ this.goToDashboard } />);
+          return (<PasswordDialog t={ t } onGenerate={ this.generate } backLabel={backLabel}onDashboard={ this.goToDashboard } />);
             case PAGES.DOWNLOAD:
                 return (<DownloadDialog t={ t } onDownload={ this.download }/>);
             case PAGES.SHOW_PRIVATE:

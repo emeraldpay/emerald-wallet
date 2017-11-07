@@ -18,6 +18,7 @@ import AddContract from '../../components/contracts/add';
 import DeployContract from '../../components/contracts/deploy';
 import ContractShow from '../../components/contracts/show';
 import Welcome from '../../components/welcome/welcome';
+import Landing from '../../components/landing/landing';
 import Dashboard from '../../components/layout/Dashboard';
 import Settings from '../../components/settings';
 import PaperWallet from '../PaperWallet';
@@ -48,6 +49,8 @@ const Screen = ({ screen, screenItem }) => {
         return <AddressShow addressId={ screenItem }/>;
     } else if (screen === 'add-address') {
         return <AddressAdd />;
+    } else if (screen === 'landing-add-from-ledger') {
+        return <LedgerImport onBackScreen={screenItem} />;
     } else if (screen === 'add-from-ledger') {
         return <LedgerImport />;
     } else if (screen === 'account') {
@@ -56,10 +59,14 @@ const Screen = ({ screen, screenItem }) => {
         return <TransactionShow hash={ screenItem.hash } accountId={ screenItem.accountId }/>;
     } else if (screen === 'create-tx') {
         return <CreateTx account={ screenItem }/>;
+    } else if (screen === 'landing-generate') {
+        return <GenerateAccount onBackScreen="landing" backLabel="Back"/>;
     } else if (screen === 'generate') {
         return <GenerateAccount />;
     } else if (screen === 'importjson') {
         return <ImportJson />;
+    } else if (screen === 'landing-importjson') {
+        return <ImportJson onBackScreen="landing" backLabel="Back"/>;
     } else if (screen === 'import-private-key') {
         return <ImportPrivateKey />;
     } else if (screen === 'add-token') {
@@ -68,6 +75,8 @@ const Screen = ({ screen, screenItem }) => {
         return <DeployContract />;
     } else if (screen === 'contract') {
         return <ContractShow contract={ screenItem } />;
+    } else if (screen === 'landing') {
+        return <Landing />;
     } else if (screen === 'welcome') {
         return <Welcome />;
     } else if (screen === 'settings') {
@@ -92,4 +101,3 @@ export default connect(
     }),
     (dispatch, ownProps) => ({})
 )(Screen);
-

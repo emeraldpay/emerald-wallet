@@ -44,7 +44,7 @@
         "passwordConfirm": "Re-Enter Password"
     },
     "import": {
-        "title": "Import Wallet",
+        "title": "Import Account",
         "name": "Account Name (optional)",
         "description": "Description (optional)"
     }

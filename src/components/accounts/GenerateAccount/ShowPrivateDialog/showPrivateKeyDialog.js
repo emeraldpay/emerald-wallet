@@ -34,7 +34,7 @@ const ShowPrivateDialog = (props) => {
                     <Warning>
                         <WarningHeader>Keep it in safety</WarningHeader>
                         <WarningText>
-                            If someone finds your unencrypted private key, they could access your wallet and funds without a password.
+                            If someone gains access to your unencrypted private key, they will be able to access your account and funds without a password.
                         </WarningText>
                     </Warning>
                 </div>
