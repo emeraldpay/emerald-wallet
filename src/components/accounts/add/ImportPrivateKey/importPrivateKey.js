@@ -69,7 +69,7 @@ class ImportPrivateKey extends React.Component {
                         <div style={formStyles.right}>
                             <Warning fullWidth={ true }>
                                 <WarningHeader>Don&#39;t forget it.</WarningHeader>
-                                <WarningText>If you forget this password, you will lose your account with all the funds.</WarningText>
+                                <WarningText>If you forget this password, you will lose access to the account and its funds.</WarningText>
                             </Warning>
                         </div>
                     </Row>
