@@ -58,7 +58,7 @@ class PasswordDialog extends React.Component {
                         <div style={{ width: '100%' }}>
                             <div className={ styles.passwordLabel }>Enter a strong password</div>
                             <div className={ styles.passwordSubLabel }>
-                                Password needs for confirm all account operations.
+                                This password will be required to confirm all account operations.
                             </div>
                             <div style={{ marginTop: '30px' }}>
                                 <PasswordInput
