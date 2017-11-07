@@ -27,8 +27,8 @@ class HideAccountDialog extends React.Component {
                     </div>
                     <div style={{marginRight: '20px'}}>
                         <Warning>
-                            <WarningHeader>Hiding accounts will NOT delete your account files.</WarningHeader>
-                            <WarningText>This will only hide the account. If you really need to delete an account on disk, you can go through the CLI or go in and manually delete the account files.</WarningText>
+                            <WarningHeader>Hiding accounts will NOT delete your account key files.</WarningHeader>
+                            <WarningText>This will only hide the account. If you really need to delete an account on disk, you can use Emerald-CLI, or manually delete the account key files from the computer's file system.</WarningText>
                         </Warning>
                     </div>
                     <Button
