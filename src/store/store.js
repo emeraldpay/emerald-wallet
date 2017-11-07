@@ -174,7 +174,14 @@ export function waitForServices() {
             startSync();
             // If not first run, go right to home when ready.
             if (state.wallet.screen.get('screen') === 'welcome') { //  && !state.launcher.get('firstRun'))
-                store.dispatch(screen.actions.gotoScreen('home'));
+              store.dispatch(accounts.actions.loadAccountsList()).then(() => {
+                const accounts = store.getState().accounts.get('accounts').toJS();
+                if (accounts.length > 0) {
+                  store.dispatch(screen.actions.gotoScreen('home'));
+                } else {
+                  store.dispatch(screen.actions.gotoScreen('landing'));
+                }
+              });
             }
         }
     });
@@ -205,7 +212,7 @@ export function screenHandlers() {
         const justOpened = prevScreen !== curScreen;
         prevScreen = curScreen;
         if (justOpened) {
-            if (curScreen === 'create-tx' || curScreen === 'add-from-ledger') {
+            if (curScreen === 'create-tx' || curScreen === 'add-from-ledger' || curScreen === 'landing') {
                 store.dispatch(ledger.actions.setWatch(true));
                 store.dispatch(ledger.actions.watchConnection());
             } else {

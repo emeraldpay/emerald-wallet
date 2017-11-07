@@ -46,11 +46,11 @@ class PasswordDialog extends React.Component {
 
 
     render() {
-        const { onDashboard, t } = this.props;
+        const { onDashboard, t, backLabel } = this.props;
         const { invalidPassphrase } = this.state;
 
         return (
-            <Form caption={ t('generate.title') } backButton={ <DashboardButton onClick={ onDashboard }/> }>
+            <Form caption={ t('generate.title') } backButton={ <DashboardButton onClick={ onDashboard } label={backLabel}/> }>
 
                 <Row>
                     <div style={ formStyles.left }/>

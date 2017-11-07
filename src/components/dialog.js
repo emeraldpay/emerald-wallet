@@ -8,6 +8,7 @@ import AboutDialog from './layout/AboutDialog';
 import createLogger from '../utils/logger';
 import TokensDialog from './tokens/TokensDialog';
 import HideAccountDialog from './accounts/HideAccountDialog';
+import WaitDialog from './ledger/WaitDialog';
 
 const log = createLogger('Dialog');
 
@@ -22,6 +23,8 @@ const Dialog = ({ dialog, item, handleClose }) => {
         return <AboutDialog onClose= { handleClose } />;
     } else if (dialog === 'tokens') {
         return <TokensDialog onClose={ handleClose } />;
+    } else if (dialog === 'ledger-wait') {
+        return (<WaitDialog onClose={ handleClose }/>);
     } else if (dialog === 'hide-account') {
         return <HideAccountDialog address={ item } onClose={ handleClose } />;
     }

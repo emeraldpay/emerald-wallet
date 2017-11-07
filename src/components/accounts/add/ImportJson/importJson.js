@@ -47,11 +47,11 @@ class ImportJson extends React.Component {
     }
 
     render() {
-        const { t, onDashboard } = this.props;
+        const { t, onDashboard, backLabel } = this.props;
         const { file, fileError } = this.state;
 
         return (
-            <Form caption={ t('import.title') } backButton={ <DashboardButton onClick={ onDashboard }/> }>
+            <Form caption={ t('import.title') } backButton={ <DashboardButton onClick={ onDashboard } label={backLabel}/> }>
                 {fileError && (
                     <Row>
                         <div style={ formStyles.left }/>
@@ -101,7 +101,11 @@ export default connect(
             dispatch(screen.actions.gotoScreen('account', account));
         },
         onDashboard: () => {
+          if (ownProps.onBackScreen) {
+            dispatch(screen.actions.gotoScreen(ownProps.onBackScreen));
+          } else {
             dispatch(screen.actions.gotoScreen('home'));
+          }
         },
         cancel: () => {
             dispatch(screen.actions.gotoScreen('home'));
