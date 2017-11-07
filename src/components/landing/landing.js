@@ -1,27 +1,16 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import Button from 'elements/Button';
 import FlatButton from 'material-ui/FlatButton';
 import { connect } from 'react-redux';
-import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
+import { Row, Col } from 'react-flexbox-grid/lib/index';
 
-import logo from 'images/etc_logo.png';
-import version from '../../version';
 import classes from './landing.scss';
 import { LogoIcon } from 'elements/Icons';
 import Divider from 'material-ui/Divider';
 import screen from '../../store/wallet/screen';
 
-const Render = ({ message, level, ready, needSetup, onGenerate, onImportjson, onLedger, onLedgerWait, connected }) => {
+const Render = ({ onGenerate, onImportjson, onLedger, onLedgerWait, connected }) => {
 
-    const logoStyles = {
-        row: {
-            paddingTop: '10px',
-        },
-        img: {
-            height: 128,
-        },
-    };
     return (
       <div>
           <div style={{display: 'flex', alignItems: 'stretch'}}>
@@ -62,27 +51,9 @@ const Render = ({ message, level, ready, needSetup, onGenerate, onImportjson, on
     );
 };
 
-Render.propTypes = {
-    message: PropTypes.string,
-    level: PropTypes.number,
-    ready: PropTypes.bool.isRequired,
-    needSetup: PropTypes.bool.isRequired,
-};
-
-function needSetup(state) {
-    return state.launcher.get('terms') !== 'v1'
-        || state.launcher.getIn(['geth', 'type']) === 'none'
-        || state.launcher.get('settingsUpdated') === true;
-}
-
 const Landing = connect(
     (state, ownProps) => ({
         connected: state.ledger.get('connected'),
-        message: state.launcher.getIn(['message', 'text']),
-        level: state.launcher.getIn(['message', 'level']),
-        ready: state.launcher.getIn(['geth', 'status']) === 'ready'
-                && state.launcher.getIn(['connector', 'status']) === 'ready',
-        needSetup: needSetup(state),
     }),
     (dispatch, ownProps) => ({
       onGenerate() {
