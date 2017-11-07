@@ -31,10 +31,10 @@ class FileDropField extends React.Component {
                             { file.name }
                         </div>
                     )}
-                    { !file && (<div className={ styles.label }>Drag & drop wallet file here to upload</div>)}
+                    { !file && (<div className={ styles.label }>Drag & drop account file here to upload</div>)}
 
                     <div>
-                        <Button primary label="Select wallet file" />
+                        <Button primary label="Select account file" />
                     </div>
                 </Dropzone>
         );

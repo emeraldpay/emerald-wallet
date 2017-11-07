@@ -27,8 +27,8 @@ class HideAccountDialog extends React.Component {
                     </div>
                     <div style={{marginRight: '20px'}}>
                         <Warning>
-                            <WarningHeader>Hiding accounts will NOT delete your wallet files.</WarningHeader>
-                            <WarningText>This will only hide the account. If you really need to delete an account on disk, you can go through the CLI or go in and manually delete the wallet files.</WarningText>
+                            <WarningHeader>Hiding accounts will NOT delete your account files.</WarningHeader>
+                            <WarningText>This will only hide the account. If you really need to delete an account on disk, you can go through the CLI or go in and manually delete the account files.</WarningText>
                         </Warning>
                     </div>
                     <Button

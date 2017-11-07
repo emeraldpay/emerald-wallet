@@ -42,13 +42,13 @@ const Render = ({ message, level, ready, needSetup, onGenerate, onImportjson, on
                               <Button label="More about ethereum classic" />
                               <br />
                               <br />
-                              <Button primary onClick={onGenerate} label="Generate New Wallet" />
+                              <Button primary onClick={onGenerate} label="Generate New Account" />
                               <br />
                               <br />
                           </div>
                           <Divider />
                           <div style={{marginLeft: '100px', marginBottom: '70px'}}>
-                            <div className={ classes.title, classes.addwallet }>Add Wallet</div>
+                            <div className={ classes.title, classes.addwallet }>Add Account</div>
                             <div style={{display: 'flex', alignItems: 'start', flexDirection: 'column', justifyContent: 'center'}}>
                               <FlatButton style={{color: '#47B04B' }} onClick={onImportjson} label="From Keystore File (UTC/JSON)" />
                               <FlatButton style={{color: '#47B04B' }} onClick={connected ? onLedger : onLedgerWait} label="Ledger Nano S" />

@@ -58,7 +58,7 @@ class PasswordDialog extends React.Component {
                         <div style={{ width: '100%' }}>
                             <div className={ styles.passwordLabel }>Enter a strong password</div>
                             <div className={ styles.passwordSubLabel }>
-                                Password needs for confirm all wallet operations.
+                                Password needs for confirm all account operations.
                             </div>
                             <div style={{ marginTop: '30px' }}>
                                 <PasswordInput
@@ -75,7 +75,7 @@ class PasswordDialog extends React.Component {
                     <div style={ formStyles.right }>
                             <Warning fullWidth={ true }>
                                 <WarningHeader>Don&#39;t forget it.</WarningHeader>
-                                <WarningText>If you forget password, you will loose your wallet with all
+                                <WarningText>If you forget password, you will lose your account with all
                                     funds.</WarningText>
                             </Warning>
                     </div>
