@@ -36,7 +36,7 @@ Render.propTypes = {
 
 export default connect(
     (state, ownProps) => ({
-        selected: state.ledger.get('selected').size > 0,
+        selected: state.ledger.get('selectedAddr') !== null,
     }),
     (dispatch, ownProps) => ({
         onAddSelected: () => {
@@ -51,10 +51,10 @@ export default connect(
                 });
         },
         onCancel: () => {
-          if (ownProps.onBackScreen) {
-            return dispatch(screen.actions.gotoScreen(ownProps.onBackScreen));
-          }
-          dispatch(screen.actions.gotoScreen('home'));
+            if (ownProps.onBackScreen) {
+                return dispatch(screen.actions.gotoScreen(ownProps.onBackScreen));
+            }
+            dispatch(screen.actions.gotoScreen('home'));
         },
     })
 )(Render);

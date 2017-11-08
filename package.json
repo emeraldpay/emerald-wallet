@@ -109,7 +109,7 @@
     "redux-thunk": "2.2.0",
     "roboto-fontface": "0.7.0",
     "store": "^2.0.4",
-    "typeface-rubik": "0.0.31",
+    "typeface-rubik": "0.0.43",
     "uuid": "3.1.0"
   },
   "devDependencies": {
@@ -156,7 +156,6 @@
     "karma-webpack": "^1.7.0",
     "minimist": "^1.2.0",
     "node-sass": "4.5.2",
-    "phantomjs-prebuilt": "^2.1.14",
     "react-test-renderer": "^15.6.1",
     "recursive-readdir-sync": "^1.0.6",
     "sass-loader": "6.0.3",

@@ -66,11 +66,11 @@ export default connect(
     }),
     (dispatch, ownProps) => ({
         onCancel: () => {
-          if (ownProps.onClose) {
-            ownProps.onClose();
-          } else {
-            dispatch(screen.actions.gotoScreen('home'));
-          }
+            if (ownProps.onClose) {
+                ownProps.onClose();
+            } else {
+                dispatch(screen.actions.gotoScreen('home'));
+            }
         },
     })
 )(WaitConnectionDialog);
