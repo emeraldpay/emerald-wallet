@@ -51,7 +51,10 @@ export default connect(
                 });
         },
         onCancel: () => {
-            dispatch(screen.actions.gotoScreen('home'));
+          if (ownProps.onBackScreen) {
+            return dispatch(screen.actions.gotoScreen(ownProps.onBackScreen));
+          }
+          dispatch(screen.actions.gotoScreen('home'));
         },
     })
 )(Render);

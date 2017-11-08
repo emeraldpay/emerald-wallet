@@ -49,7 +49,7 @@ class ImportPrivateKey extends React.Component {
                         <div style={formStyles.right}>
                             <div style={{width: '100%'}}>
                                 <div className={styles.passwordLabel}>Enter a strong password</div>
-                                <div className={styles.passwordSubLabel}>Password needs for confirm all wallet
+                                <div className={styles.passwordSubLabel}>This password will be required to confirm all account
                                     operations.
                                 </div>
                                 <div style={{marginTop: '30px'}}>
@@ -69,8 +69,7 @@ class ImportPrivateKey extends React.Component {
                         <div style={formStyles.right}>
                             <Warning fullWidth={ true }>
                                 <WarningHeader>Don&#39;t forget it.</WarningHeader>
-                                <WarningText>If you forget password, you will loose your wallet with all
-                                    funds.</WarningText>
+                                <WarningText>If you forget this password, you will lose access to the account and its funds.</WarningText>
                             </Warning>
                         </div>
                     </Row>

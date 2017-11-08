@@ -9,7 +9,7 @@ import Pager from './pager';
 import WaitDialog from '../WaitDialog';
 import Buttons from './buttons';
 
-export const ImportAccount = ({ connected }) => {
+export const ImportAccount = ({ connected, onBackScreen }) => {
     if (!connected) {
         return (<WaitDialog/>);
     }
@@ -28,7 +28,7 @@ export const ImportAccount = ({ connected }) => {
                 <AddrList/>
             </CardText>
             <CardActions>
-                <Buttons/>
+                <Buttons onBackScreen={onBackScreen}/>
             </CardActions>
         </Card>
     );
