@@ -22,13 +22,15 @@ const Render = ({ onGenerate, onImportjson, onLedger, onLedgerWait, connected })
                             <div className={ classes.title } style={{marginLeft: '18px', color: '#47B04B' }}>EMERALD WALLET</div>
                           </div>
                           <br />
-                          <div style={{marginLeft: '100px', padding: '10px'}}>
-                              <span>
+                          <div style={{marginLeft: '100px', padding: '10px', maxWidth: '700px'}}>
+                              <span style={{color: '#747474', fontWeight: '200'}}>
                                   Ethereum Classic is a decentralized platform that runs smart contracts: applications that run exactly as programmed without any possibility of downtime, censorship, fraud or third party interference.
                               </span>
                               <br />
                               <br />
-                              <Button label="More about ethereum classic" />
+                              <a href="http://ethereumclassic.org">
+                                <Button  label="More about ethereum classic" />
+                              </a>
                               <br />
                               <br />
                               <Button primary onClick={onGenerate} label="Generate New Account" />
