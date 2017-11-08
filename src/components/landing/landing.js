@@ -17,12 +17,12 @@ const Render = ({ onGenerate, onImportjson, onLedger, onLedgerWait, connected })
             <div style={{flexGrow: 1}}>
                 <Row style={{padding: 0, margin: 0}}>
                     <Col style={{backgroundColor: 'white', padding: 0}} xs={12}>
-                          <div style={{display: 'flex', alignItems: 'center', marginLeft: '75px', marginTop: '60px'}}>
+                          <div style={{display: 'flex', alignItems: 'center', marginLeft: '125px', marginTop: '60px'}}>
                             <div><LogoIcon height="33px" width="17px" /></div>
                             <div className={ classes.title } style={{marginLeft: '18px', color: '#47B04B' }}>EMERALD WALLET</div>
                           </div>
                           <br />
-                          <div style={{marginLeft: '100px', padding: '10px', maxWidth: '700px'}}>
+                          <div style={{marginLeft: '150px', padding: '10px', maxWidth: '700px'}}>
                               <span style={{color: '#747474', fontWeight: '200'}}>
                                   Ethereum Classic is a decentralized platform that runs smart contracts: applications that run exactly as programmed without any possibility of downtime, censorship, fraud or third party interference.
                               </span>
@@ -38,7 +38,7 @@ const Render = ({ onGenerate, onImportjson, onLedger, onLedgerWait, connected })
                               <br />
                           </div>
                           <Divider />
-                          <div style={{marginLeft: '100px', marginBottom: '70px'}}>
+                          <div style={{marginLeft: '145px', marginBottom: '70px'}}>
                             <div className={ classes.title, classes.addwallet }>Add Account</div>
                             <div style={{display: 'flex', alignItems: 'start', flexDirection: 'column', justifyContent: 'center'}}>
                               <FlatButton style={{color: '#47B04B' }} onClick={onImportjson} label="From Keystore File (UTC/JSON)" />
