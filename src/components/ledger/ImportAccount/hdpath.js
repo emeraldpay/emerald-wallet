@@ -25,10 +25,10 @@ class HDPath extends React.Component<Props> {
         const { hdbase } = this.props;
         return (
             <SelectField value={ hdbase } onChange={ this.handleChange }>
-                <MenuItem value="44'/61'/1'/0" primaryText="44'/61'/1'/0" />
-                <MenuItem value="44'/61'/0'/0" primaryText="44'/61'/0'/0" />
-                <MenuItem value="44'/60'/160720'/0" primaryText="44'/60'/160720'/0" />
-                <MenuItem value="44'/60'/0'" primaryText="44'/60'/0'" />
+                <MenuItem value="m/44'/60'/160720'/0'" primaryText="m/44'/60'/160720'/0'" />
+                <MenuItem value="m/44'/61'/1'/0" primaryText="m/44'/61'/1'/0" />
+                <MenuItem value="m/44'/61'/0'/0" primaryText="m/44'/61'/0'/0" />
+                <MenuItem value="m/44'/60'/0'" primaryText="m/44'/60'/0'" />
             </SelectField>
         );
     }

@@ -7,7 +7,7 @@ const initialState = Immutable.fromJS({
     connected: false,
     watch: false,
     hd: {
-        base: "44'/61'/0'/0",
+        base: "m/44'/60'/160720'/0'",
         offset: 0,
     },
     addresses: [],
