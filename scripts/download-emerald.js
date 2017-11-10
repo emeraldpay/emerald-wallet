@@ -15,13 +15,13 @@ const config = {
                 {
                     type: 'https',
                     pack: 'zip',
-                    url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-osx-v4.0.0.zip',
+                    url: 'https://github.com/ethereumproject/emerald-cli/releases/download/v0.16.2/emerald-cli-osx-v0.16.2-c9f6990.zip',
                 },
             ],
             signatures: [
                 {
                     type: 'pgp',
-                    url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-osx-v4.0.0.zip.asc',
+                    url: 'https://github.com/ethereumproject/emerald-cli/releases/download/v0.16.2/emerald-cli-osx-v0.16.2-c9f6990.zip.asc',
                 },
             ],
         },
