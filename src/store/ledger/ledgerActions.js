@@ -145,8 +145,6 @@ export function selectAddr(addr: ?string) {
 
 export function getAddresses(offset: number = 0, count: number = 5) {
     return (dispatch, getState) => {
-        // count = count || 5;
-        // offset = offset || 0;
         const hdbase = getState().ledger.getIn(['hd', 'base']);
         // let offset = getState().ledger.getIn(['hd', 'offset']);
         dispatch({
