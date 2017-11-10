@@ -24,7 +24,7 @@ install:
   - rustup-init -yv --default-toolchain beta --default-host x86_64-pc-windows-msvc
   - set PATH=%PATH%;%USERPROFILE%\.cargo\bin
   - rustup update
-  - bash ./dependencies.sh
+  - npm run getemerald
 build: off
 version: '{build}'
 test_script:
