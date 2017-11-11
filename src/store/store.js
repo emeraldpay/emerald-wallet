@@ -121,10 +121,10 @@ export function startSync() {
     const chain = state.launcher.getIn(['chain', 'name']);
 
     if (chain === 'mainnet') {
-        store.dispatch(ledger.actions.setBaseHD("44'/61'/0'/0"));
+        store.dispatch(ledger.actions.setBaseHD("m/44'/60'/160720'/0'"));
     } else if (chain === 'morden') {
         // FIXME ledger throws "Invalid status 6804" for 44'/62'/0'/0
-        store.dispatch(ledger.actions.setBaseHD("44'/61'/1'/0"));
+        store.dispatch(ledger.actions.setBaseHD("m/44'/61'/1'/0"));
     }
 
     if (state.launcher.getIn(['geth', 'type']) !== 'remote') {

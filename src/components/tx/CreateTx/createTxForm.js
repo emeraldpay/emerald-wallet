@@ -145,11 +145,13 @@ export const CreateTxForm = (props) => {
                 </div>
             </div>
             <div style={styles.right}>
-                <Field name="to"
-                       component={ TextField }
-                       validate={[required, address]}
-                       underlineShow={false}
-                       fullWidth={true}
+                <Field
+                    name="to"
+                    style={{ minWidth: '400px' }}
+                    component={ TextField }
+                    validate={[required, address]}
+                    underlineShow={false}
+                    fullWidth={true}
                 />
 
                 <IconMenu
@@ -200,7 +202,8 @@ export const CreateTxForm = (props) => {
                     onChange={onChangeToken}
                     value={token}
                     underlineShow={false}
-                    fullWidth={true}>
+                    fullWidth={true}
+                >
                     {tokens.map((it) =>
                         <MenuItem
                             key={it.get('address')}
@@ -221,7 +224,6 @@ export const CreateTxForm = (props) => {
                         {/* <RadioButton value="false" label="Approve for Withdrawal"/>*/}
                     {/* </Field>*/}
                 {/* }*/}
-
 
             </div>
         </Row>

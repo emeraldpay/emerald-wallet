@@ -27,7 +27,7 @@ export const TextField = (props) => {
 
     let containerStyle = invalid ? {...container, borderColor: '#BC0000' } : container;
     if (style) {
-        containerStyle = { ...containerStyle, maxHeight: style.maxHeight };
+        containerStyle = { ...containerStyle, maxHeight: style.maxHeight, minWidth: style.minWidth };
     }
 
     const textFieldStyle = invalid ? {...defaultStyle, color: '#BC0000' } : defaultStyle;

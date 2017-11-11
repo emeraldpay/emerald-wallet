@@ -2,11 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import FontIcon from 'material-ui/FontIcon';
+import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import log from 'electron-log';
 import { TableRowColumn, TableRow } from 'material-ui/Table';
 import { tables } from 'lib/styles';
 import AccountAddress from 'elements/AccountAddress/index';
 import AccountBalance from '../../accounts/Balance';
+
 
 const style = {
     used: {
@@ -15,9 +17,13 @@ const style = {
     usedIcon: {
         fontSize: '14px',
     },
+    addrContainer: {
+        display: 'flex',
+        alignItems: 'center',
+    },
 };
 
-const Render = ({ addr, alreadyAdded, ...otherProps }) => {
+const Addr = ({ addr, alreadyAdded, selectedValue, onSelected, ...otherProps }) => {
     let usedDisplay;
     if (alreadyAdded) {
         usedDisplay = <span style={style.used}>
@@ -36,11 +42,28 @@ const Render = ({ addr, alreadyAdded, ...otherProps }) => {
     const hasPath = addr.get('hdpath') !== null;
     const hasAddr = addr.get('address') !== null;
 
+    const address = addr.get('address');
+    const selectable = hasPath && hasAddr && !alreadyAdded;
+
     return (
-        <TableRow {...otherProps} selectable={hasPath && hasAddr && !alreadyAdded}>
-            {otherProps.children[0] /* checkbox passed down from TableBody*/ }
-            <TableRowColumn style={tables.shortStyle}>{ addr.get('hdpath') }</TableRowColumn>
-            <TableRowColumn style={tables.wideStyle}><AccountAddress id={ addr.get('address') }/></TableRowColumn>
+        <TableRow {...otherProps} selectable={ false }>
+            <TableRowColumn style={tables.wideStyle}>
+                <div style={ style.addrContainer }>
+                    <div>
+                        { address &&
+                        <RadioButtonGroup name="addrRadio" valueSelected={ selectedValue } onChange={ onSelected }>
+                            <RadioButton
+                                disabled={ !selectable }
+                                value={ address }
+                            />
+                        </RadioButtonGroup> }
+                    </div>
+                    <div>
+                        { address && <AccountAddress id={ address }/> }
+                    </div>
+                </div>
+            </TableRowColumn>
+            <TableRowColumn style={tables.mediumStyle}>{ addr.get('hdpath') }</TableRowColumn>
             <TableRowColumn style={tables.mediumStyle}>
                 <AccountBalance
                     balance={ addr.get('value') }
@@ -55,7 +78,7 @@ const Render = ({ addr, alreadyAdded, ...otherProps }) => {
     );
 };
 
-Render.propTypes = {
+Addr.propTypes = {
 };
 
 export default connect(
@@ -70,10 +93,13 @@ export default connect(
             log.error(e);
         }
         return {
-            alreadyAdded, addr,
+            alreadyAdded,
+            addr,
         };
     },
     (dispatch, ownProps) => ({
-        onAddSelected: () => {},
+        onSelected: (event, value) => {
+            ownProps.onSelected(value);
+        },
     })
-)(Render);
+)(Addr);

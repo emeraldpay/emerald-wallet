@@ -7,11 +7,11 @@ const initialState = Immutable.fromJS({
     connected: false,
     watch: false,
     hd: {
-        base: "44'/61'/0'/0",
+        base: "m/44'/60'/160720'/0'",
         offset: 0,
     },
     addresses: [],
-    selected: [],
+    selectedAddr: null,
 });
 
 const initialAccount = Immutable.fromJS({
@@ -84,9 +84,9 @@ function onConnected(state, action) {
     return state;
 }
 
-function onSelected(state, action) {
-    if (action.type === ActionTypes.SELECTED) {
-        return state.set('selected', Immutable.fromJS(action.value));
+function onAddrSelected(state, action) {
+    if (action.type === ActionTypes.ADDR_SELECTED) {
+        return state.set('selectedAddr', action.value);
     }
     return state;
 }
@@ -107,7 +107,7 @@ export default function ledgerReducers(state, action) {
     state = onSetBalance(state, action);
     state = onSetTxCount(state, action);
     state = onConnected(state, action);
-    state = onSelected(state, action);
     state = onWatch(state, action);
+    state = onAddrSelected(state, action);
     return state;
 }

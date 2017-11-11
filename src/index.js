@@ -6,7 +6,6 @@ import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import 'font-awesome/scss/font-awesome.scss';
 import 'typeface-rubik/index.css';
-
 import { I18nextProvider } from 'react-i18next';
 import i18n from './i18n/i18n';
 import {store, start as startStore} from './store/store';

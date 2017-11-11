@@ -21,7 +21,7 @@ class SettingsRender extends React.Component {
         const { goDashboard, handleSubmit, t } = this.props;
         return (
             <Form caption="Settings" backButton={ <DashboardButton onClick={ goDashboard } /> } >
-                <div id="body">
+                <div>
                     <Row>
                         <div style={styles.left}>
                             <div style={ styles.fieldName }>{ t('currency') }</div>

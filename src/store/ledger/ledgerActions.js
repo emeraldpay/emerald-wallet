@@ -68,6 +68,7 @@ export function getAddress(hdpath: string) {
                     hdpath,
                     addr: addr.address,
                 });
+                // TODO: consider batch request for all addresses
                 dispatch(loadInfo(hdpath, addr.address));
             })
             .catch((err) => log.error('Failed to get Ledger connection', err));
@@ -135,24 +136,22 @@ export function setWatch(value: boolean) {
     });
 }
 
-export function selectRows(indexes) {
+export function selectAddr(addr: ?string) {
     return {
-        type: ActionTypes.SELECTED,
-        value: indexes,
+        type: ActionTypes.ADDR_SELECTED,
+        value: addr,
     };
 }
 
-export function getAddresses(offset: number, count: number) {
+export function getAddresses(offset: number = 0, count: number = 5) {
     return (dispatch, getState) => {
-        count = count || 5;
-        offset = offset || 0;
         const hdbase = getState().ledger.getIn(['hd', 'base']);
         // let offset = getState().ledger.getIn(['hd', 'offset']);
         dispatch({
             type: ActionTypes.SET_HDOFFSET,
             value: offset,
         });
-        dispatch(selectRows([]));
+        dispatch(selectAddr(null));
         log.info('Load addresses', hdbase, count);
         for (let i = 0; i < count; i++) {
             const hdpath = [hdbase, i + offset].join('/');
@@ -186,13 +185,11 @@ function createAccountData(address: string, hdpath: string) {
 export function importSelected() {
     return (dispatch, getState, api) => {
         const ledger = getState().ledger;
-        const selected = ledger.get('selected');
+        const selected = ledger.get('selectedAddr');
         const addresses = ledger.get('addresses');
         const chain = launcher.selectors.getChainName(getState());
 
-        const index = selected.last();
-
-        const account = addresses.get(index);
+        const account = addresses.find((a) => a.get('address') === selected);
         const address = account.get('address');
         const hdpath = account.get('hdpath');
 
@@ -201,6 +198,8 @@ export function importSelected() {
         log.info('Import Ledger address', data);
 
         return api.emerald.importAccount(data, chain).then(() => {
+            // clean selected address
+            dispatch(selectAddr(null));
             return address;
         });
     };
