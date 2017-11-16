@@ -3,6 +3,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
+import { ipcRenderer } from 'electron';
 
 import { Wallet } from 'emerald-js';
 import saveAs from '../../../lib/saveAs';
@@ -43,16 +44,22 @@ class GenerateAccount extends React.Component<Props, State> {
     constructor(props) {
         super(props);
         this.state = {
+            loading: false,
             page: PAGES.PASSWORD,
             accountId: '',
         };
     }
 
     generate = (passphrase) => {
+        this.setState({
+          loading: true
+        });
+
         // Create new account
         this.props.dispatch(accounts.actions.createAccount(passphrase))
             .then((accountId) => {
                 this.setState({
+                    loading: false,
                     accountId,
                     passphrase,
                     page: PAGES.DOWNLOAD,
@@ -63,26 +70,30 @@ class GenerateAccount extends React.Component<Props, State> {
     download = () => {
         const { passphrase, accountId } = this.state;
 
+        this.setState({
+          loading: true
+        });
+
         // Get encrypted key file from emerald vault
         this.props.dispatch(accounts.actions.exportKeyFile(accountId)).then((result) => {
-            // Decrypt and get private key
-            const wallet = Wallet.fromV3(result, passphrase);
-            const privateKey = wallet.getPrivateKeyString();
+            ipcRenderer.send('get-private-key', {keyfile: result, passphrase});
+            ipcRenderer.once('recieve-private-key', (event, privateKey) => {
+                const fileData = {
+                    filename: `${accountId}.json`,
+                    mime: 'text/plain',
+                    contents: result,
+                };
 
-            const fileData = {
-                filename: `${accountId}.json`,
-                mime: 'text/plain',
-                contents: result,
-            };
+                // Give encrypted key file to user
+                const blob = new Blob([fileData.contents], {type: fileData.mime});
+                const url = URL.createObjectURL(blob);
+                saveAs(url, fileData.filename);
 
-            // Give encrypted key file to user
-            const blob = new Blob([fileData.contents], {type: fileData.mime});
-            const url = URL.createObjectURL(blob);
-            saveAs(url, fileData.filename);
-
-            this.setState({
-                page: PAGES.SHOW_PRIVATE,
-                privateKey,
+                this.setState({
+                    loading: false,
+                    page: PAGES.SHOW_PRIVATE,
+                    privateKey
+                });
             });
         });
     }
@@ -116,9 +127,9 @@ class GenerateAccount extends React.Component<Props, State> {
       const { t, backLabel } = this.props;
         switch (page) {
             case PAGES.PASSWORD:
-          return (<PasswordDialog t={ t } onGenerate={ this.generate } backLabel={backLabel}onDashboard={ this.goToDashboard } />);
+          return (<PasswordDialog loading={this.state.loading} t={ t } onGenerate={ this.generate } backLabel={backLabel}onDashboard={ this.goToDashboard } />);
             case PAGES.DOWNLOAD:
-                return (<DownloadDialog t={ t } onDownload={ this.download }/>);
+          return (<DownloadDialog loading={this.state.loading} t={ t } onDownload={ this.download }/>);
             case PAGES.SHOW_PRIVATE:
                 return (<ShowPrivateDialog t={ t } privateKey={ privateKey } onNext={ this.editAccountProps }/>);
             case PAGES.ACCOUNT_PROPS:

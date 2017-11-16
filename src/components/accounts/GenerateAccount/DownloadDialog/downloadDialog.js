@@ -3,8 +3,9 @@ import React from 'react';
 import Button from 'elements/Button';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import { Warning, WarningHeader, WarningText } from 'elements/Warning';
-
 import styles from './downloadDialog.scss';
+
+import getLoadingIcon from '../getLoadingIcon';
 
 const DownloadDialog = (props) => {
     const { accountId, onDownload, onBack, t } = props;
@@ -46,7 +47,7 @@ const DownloadDialog = (props) => {
             <Row>
                 <div style={formStyles.left}/>
                 <div style={formStyles.right}>
-                    <Button primary onClick={ onDownload } label="Download account key file" />
+                <Button primary onClick={ onDownload } label="Download account key file" icon={getLoadingIcon(props)} disabled={props.loading}/>
                 </div>
             </Row>
         </Form>
