@@ -10,6 +10,9 @@ import TokensDialog from './tokens/TokensDialog';
 import HideAccountDialog from './accounts/HideAccountDialog';
 import WaitDialog from './ledger/WaitDialog';
 
+import history from '../store/wallet/history';
+import accounts from '../store/vault/accounts';
+
 const log = createLogger('Dialog');
 
 const Dialog = ({ dialog, item, handleClose }) => {
@@ -39,6 +42,11 @@ export default connect(
     }),
     (dispatch, ownProps) => ({
         handleClose: () => {
+            // refresh data when dialogs close
+            dispatch(history.actions.refreshTrackedTransactions());
+            dispatch(accounts.actions.loadAccountsList());
+            dispatch(accounts.actions.loadPendingTransactions());
+
             dispatch(closeDialog());
         },
     })
