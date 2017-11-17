@@ -6,6 +6,7 @@ import PasswordInput from 'elements/PasswordInput';
 import DashboardButton from 'components/common/DashboardButton';
 import Advice from './advice';
 import styles from './passwordDialog.scss';
+import getLoadingIcon from '../getLoadingIcon';
 
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -97,7 +98,7 @@ class PasswordDialog extends React.Component {
                 <Row>
                     <div style={formStyles.left}/>
                     <div style={formStyles.right}>
-                        <Button primary onClick={ this.handleGenerate } label="Generate Account" />
+                        <Button primary onClick={ this.handleGenerate } label="Generate Account"  icon={getLoadingIcon(this.props)} disabled={this.props.loading}/>
                     </div>
                 </Row>
             </Form>
