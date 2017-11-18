@@ -33,7 +33,7 @@ const ReceiveDialog = ({ account, onClose }) => {
                 </div>
                 <div>
                     <div className={ classes.depositOptionsContainer }>
-                        <DepositOptions />
+                        <DepositOptions address={address} />
                         <CloseButton onClick={ onClose } />
                     </div>
                     <div style={{marginTop: '30px', marginLeft: '30px'}}>
