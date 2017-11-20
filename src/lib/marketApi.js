@@ -4,23 +4,22 @@ const url = (cur) => `https://min-api.cryptocompare.com/data/price?fsym=${cur}&e
 const currency = 'ETC';
 
 export class MarketApi {
+  call() {
+    return new Promise((resolve, reject) => {
+      this.getRates(currency).then((json) => {
+        if (json) {
+          resolve(json);
+        } else {
+          reject(new Error(`Unknown JSON RPC response: ${json}`));
+        }
+      }).catch((error) => reject(error));
+    });
+  }
 
-    call() {
-        return new Promise((resolve, reject) => {
-            this.getRates(currency).then((json) => {
-                if (json) {
-                    resolve(json);
-                } else {
-                    reject(new Error(`Unknown JSON RPC response: ${json}`));
-                }
-            }).catch((error) => reject(error));
-        });
-    }
-
-    getRates(curr) {
-        return fetch(url(curr))
-            .then((response) => response.json());
-    }
+  getRates(curr) {
+    return fetch(url(curr))
+      .then((response) => response.json());
+  }
 }
 
 /**
@@ -28,7 +27,7 @@ export class MarketApi {
  * instance from Electron's main process
  */
 function create() {
-    return new MarketApi();
+  return new MarketApi();
 }
 export const getRates = create();
 

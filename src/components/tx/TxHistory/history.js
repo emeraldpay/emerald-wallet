@@ -11,30 +11,30 @@ import TxList from './List';
 import styles from './history.scss';
 
 const TransactionsHistory = ({ transactions, accountId }) => {
-    return (
-        <Card>
-            <div className={ styles.container }>
-                <Header />
-                <TxList transactions={ transactions } accountId={ accountId }/>
-            </div>
-        </Card>
-    );
+  return (
+    <Card>
+      <div className={ styles.container }>
+        <Header />
+        <TxList transactions={ transactions } accountId={ accountId }/>
+      </div>
+    </Card>
+  );
 };
 
 TransactionsHistory.propTypes = {
-    transactions: PropTypes.object.isRequired,
-    accountId: PropTypes.string,
+  transactions: PropTypes.object.isRequired,
+  accountId: PropTypes.string,
 };
 
 export default connect(
-    (state, ownProps) => {
-        const transactionsAccounts = state.wallet.history.get('trackedTransactions', new List());
-        const txs = ownProps.transactions || transactionsAccounts;
-        return {
-            transactions: txs.reverse(),
-            accountId: ownProps.accountId,
-        };
-    },
-    (dispatch, ownProps) => ({
-    })
+  (state, ownProps) => {
+    const transactionsAccounts = state.wallet.history.get('trackedTransactions', new List());
+    const txs = ownProps.transactions || transactionsAccounts;
+    return {
+      transactions: txs.reverse(),
+      accountId: ownProps.accountId,
+    };
+  },
+  (dispatch, ownProps) => ({
+  })
 )(TransactionsHistory);

@@ -28,76 +28,76 @@ import GenerateAccount from '../../components/accounts/GenerateAccount';
 const log = createLogger('screen');
 
 const Screen = ({ screen, screenItem }) => {
-    log.debug('Show screen: ', screen);
+  log.debug('Show screen: ', screen);
 
-    if (screen === null) {
-        return <div>
-            <i className="fa fa-spinner fa-spin fa-2x" /> Initializing...
-        </div>;
-    } else if (screen === 'home') {
-        return (<Dashboard />);
-    } else if (screen === 'contracts') {
-        return (
-            <div>
-                <ContractsList/>
-                <AddContract/>
-            </div>
-        );
-    } else if (screen === 'address-book') {
-        return <AddressBook />;
-    } else if (screen === 'address') {
-        return <AddressShow addressId={ screenItem }/>;
-    } else if (screen === 'add-address') {
-        return <AddressAdd />;
-    } else if (screen === 'landing-add-from-ledger') {
-        return <LedgerImport onBackScreen={screenItem} />;
-    } else if (screen === 'add-from-ledger') {
-        return <LedgerImport />;
-    } else if (screen === 'account') {
-        return <AccountShow account={ screenItem }/>;
-    } else if (screen === 'transaction') {
-        return <TransactionShow hash={ screenItem.hash } accountId={ screenItem.accountId }/>;
-    } else if (screen === 'create-tx') {
-        return <CreateTx account={ screenItem }/>;
-    } else if (screen === 'landing-generate') {
-        return <GenerateAccount onBackScreen="landing" backLabel="Back"/>;
-    } else if (screen === 'generate') {
-        return <GenerateAccount />;
-    } else if (screen === 'importjson') {
-        return <ImportJson />;
-    } else if (screen === 'landing-importjson') {
-        return <ImportJson onBackScreen="landing" backLabel="Back"/>;
-    } else if (screen === 'import-private-key') {
-        return <ImportPrivateKey />;
-    } else if (screen === 'add-token') {
-        return <AddToken />;
-    } else if (screen === 'deploy-contract') {
-        return <DeployContract />;
-    } else if (screen === 'contract') {
-        return <ContractShow contract={ screenItem } />;
-    } else if (screen === 'landing') {
-        return <Landing />;
-    } else if (screen === 'welcome') {
-        return <Welcome />;
-    } else if (screen === 'settings') {
-        return <Settings />;
-    } else if (screen === 'paper-wallet') {
-        return <PaperWallet address={ screenItem.address } privKey={ screenItem.privKey } />;
-    } else if (screen === 'export-paper-wallet') {
-        return <ExportPaperWallet accountId={ screenItem } />;
-    }
-
+  if (screen === null) {
+    return <div>
+      <i className="fa fa-spinner fa-spin fa-2x" /> Initializing...
+    </div>;
+  } else if (screen === 'home') {
+    return (<Dashboard />);
+  } else if (screen === 'contracts') {
     return (
-        <div>
-            Unknown screen
-        </div>
+      <div>
+        <ContractsList/>
+        <AddContract/>
+      </div>
     );
+  } else if (screen === 'address-book') {
+    return <AddressBook />;
+  } else if (screen === 'address') {
+    return <AddressShow addressId={ screenItem }/>;
+  } else if (screen === 'add-address') {
+    return <AddressAdd />;
+  } else if (screen === 'landing-add-from-ledger') {
+    return <LedgerImport onBackScreen={screenItem} />;
+  } else if (screen === 'add-from-ledger') {
+    return <LedgerImport />;
+  } else if (screen === 'account') {
+    return <AccountShow account={ screenItem }/>;
+  } else if (screen === 'transaction') {
+    return <TransactionShow hash={ screenItem.hash } accountId={ screenItem.accountId }/>;
+  } else if (screen === 'create-tx') {
+    return <CreateTx account={ screenItem }/>;
+  } else if (screen === 'landing-generate') {
+    return <GenerateAccount onBackScreen="landing" backLabel="Back"/>;
+  } else if (screen === 'generate') {
+    return <GenerateAccount />;
+  } else if (screen === 'importjson') {
+    return <ImportJson />;
+  } else if (screen === 'landing-importjson') {
+    return <ImportJson onBackScreen="landing" backLabel="Back"/>;
+  } else if (screen === 'import-private-key') {
+    return <ImportPrivateKey />;
+  } else if (screen === 'add-token') {
+    return <AddToken />;
+  } else if (screen === 'deploy-contract') {
+    return <DeployContract />;
+  } else if (screen === 'contract') {
+    return <ContractShow contract={ screenItem } />;
+  } else if (screen === 'landing') {
+    return <Landing />;
+  } else if (screen === 'welcome') {
+    return <Welcome />;
+  } else if (screen === 'settings') {
+    return <Settings />;
+  } else if (screen === 'paper-wallet') {
+    return <PaperWallet address={ screenItem.address } privKey={ screenItem.privKey } />;
+  } else if (screen === 'export-paper-wallet') {
+    return <ExportPaperWallet accountId={ screenItem } />;
+  }
+
+  return (
+    <div>
+            Unknown screen
+    </div>
+  );
 };
 
 export default connect(
-    (state, ownProps) => ({
-        screen: state.wallet.screen.get('screen'),
-        screenItem: state.wallet.screen.get('item'),
-    }),
-    (dispatch, ownProps) => ({})
+  (state, ownProps) => ({
+    screen: state.wallet.screen.get('screen'),
+    screenItem: state.wallet.screen.get('item'),
+  }),
+  (dispatch, ownProps) => ({})
 )(Screen);

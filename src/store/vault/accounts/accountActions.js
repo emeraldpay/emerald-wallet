@@ -26,355 +26,355 @@ type Transaction = {
 const log = createLogger('accountActions');
 
 export function loadAccountBalance(address: string) {
-    return (dispatch, getState, api) => {
-        api.geth.eth.getBalance(address).then((result) => {
-            dispatch({
-                type: ActionTypes.SET_BALANCE,
-                accountId: address,
-                value: result,
-            });
-        });
-        // Tokens
-        const tokens = getState().tokens;
-        if (!tokens.get('loading')) {
-            tokens.get('tokens')
-                .map((token) => dispatch(loadTokenBalanceOf(token.toJS(), address)));
-        }
-    };
+  return (dispatch, getState, api) => {
+    api.geth.eth.getBalance(address).then((result) => {
+      dispatch({
+        type: ActionTypes.SET_BALANCE,
+        accountId: address,
+        value: result,
+      });
+    });
+    // Tokens
+    const tokens = getState().tokens;
+    if (!tokens.get('loading')) {
+      tokens.get('tokens')
+        .map((token) => dispatch(loadTokenBalanceOf(token.toJS(), address)));
+    }
+  };
 }
 
 /**
  * Updates balances in one batch request
  */
 function fetchBalances(addresses: Array<string>) {
-    return (dispatch, getState, api) => {
-        api.geth.ext.getBalances(addresses).then((balances) => {
-            addresses.forEach((address) => {
-                if (balances[address]) {
-                    dispatch({
-                        type: ActionTypes.SET_BALANCE,
-                        accountId: address,
-                        value: balances[address],
-                    });
-                    // Tokens
-                    const tokens = getState().tokens;
-                    if (!tokens.get('loading')) {
-                        tokens.get('tokens')
-                            .map((token) => dispatch(loadTokenBalanceOf(token.toJS(), address)));
-                    }
-                }
-            });
-        });
-    };
+  return (dispatch, getState, api) => {
+    api.geth.ext.getBalances(addresses).then((balances) => {
+      addresses.forEach((address) => {
+        if (balances[address]) {
+          dispatch({
+            type: ActionTypes.SET_BALANCE,
+            accountId: address,
+            value: balances[address],
+          });
+          // Tokens
+          const tokens = getState().tokens;
+          if (!tokens.get('loading')) {
+            tokens.get('tokens')
+              .map((token) => dispatch(loadTokenBalanceOf(token.toJS(), address)));
+          }
+        }
+      });
+    });
+  };
 }
 
 /**
  * Retrieves HD paths for hardware accounts
  */
 function fetchHdPaths() {
-    return (dispatch, getState, api) => {
-        const chain = currentChain(getState());
-        getState().accounts.get('accounts')
-            .filter((a) => a.get('hardware', false))
-            .forEach((a) => {
-                const address = a.get('id');
-                api.emerald.exportAccount(address, chain).then((result) => {
-                    dispatch({
-                        type: ActionTypes.SET_HD_PATH,
-                        accountId: address,
-                        hdpath: JSON.parse(result).crypto.hd_path,
-                    });
-                });
-            });
-    };
+  return (dispatch, getState, api) => {
+    const chain = currentChain(getState());
+    getState().accounts.get('accounts')
+      .filter((a) => a.get('hardware', false))
+      .forEach((a) => {
+        const address = a.get('id');
+        api.emerald.exportAccount(address, chain).then((result) => {
+          dispatch({
+            type: ActionTypes.SET_HD_PATH,
+            accountId: address,
+            hdpath: JSON.parse(result).crypto.hd_path,
+          });
+        });
+      });
+  };
 }
 
 export function loadAccountsList() {
-    return (dispatch, getState, api) => {
-        dispatch({
-            type: ActionTypes.LOADING,
-        });
-        const chain = currentChain(getState());
-        const showHidden = getState().wallet.settings.get('showHiddenAccounts', false);
-        return api.emerald.listAccounts(chain, showHidden).then((result) => {
-            dispatch({
-                type: ActionTypes.SET_LIST,
-                accounts: result,
-            });
-            dispatch(fetchHdPaths());
-            dispatch(fetchBalances(result.map((account) => account.address)));
-        });
-    };
+  return (dispatch, getState, api) => {
+    dispatch({
+      type: ActionTypes.LOADING,
+    });
+    const chain = currentChain(getState());
+    const showHidden = getState().wallet.settings.get('showHiddenAccounts', false);
+    return api.emerald.listAccounts(chain, showHidden).then((result) => {
+      dispatch({
+        type: ActionTypes.SET_LIST,
+        accounts: result,
+      });
+      dispatch(fetchHdPaths());
+      dispatch(fetchBalances(result.map((account) => account.address)));
+    });
+  };
 }
 
 export function loadAccountTxCount(accountId: string) {
-    return (dispatch, getState, api) => {
-        api.geth.eth.getTransactionCount(accountId).then((result) => {
-            dispatch({
-                type: ActionTypes.SET_TXCOUNT,
-                accountId,
-                value: result,
-            });
-        });
-    };
+  return (dispatch, getState, api) => {
+    api.geth.eth.getTransactionCount(accountId).then((result) => {
+      dispatch({
+        type: ActionTypes.SET_TXCOUNT,
+        accountId,
+        value: result,
+      });
+    });
+  };
 }
 
 export function exportPrivateKey(passphrase: string, accountId: string) {
-    return (dispatch, getState, api) => {
-        const chain = currentChain(getState());
-        return api.emerald.exportAccount(accountId, chain).then((result) => {
-            const wallet = Wallet.fromV3(result, passphrase);
-            return wallet.getPrivateKeyString();
-        });
-    };
+  return (dispatch, getState, api) => {
+    const chain = currentChain(getState());
+    return api.emerald.exportAccount(accountId, chain).then((result) => {
+      const wallet = Wallet.fromV3(result, passphrase);
+      return wallet.getPrivateKeyString();
+    });
+  };
 }
 
 export function exportKeyFile(accountId: string) {
-    return (dispatch, getState, api) => {
-        const chain = currentChain(getState());
-        return api.emerald.exportAccount(accountId, chain);
-    };
+  return (dispatch, getState, api) => {
+    const chain = currentChain(getState());
+    return api.emerald.exportAccount(accountId, chain);
+  };
 }
 
 export function createAccount(passphrase: string, name: string = '', description: string = '') {
-    return (dispatch, getState, api) => {
-        const chain = currentChain(getState());
+  return (dispatch, getState, api) => {
+    const chain = currentChain(getState());
 
-        return api.emerald.newAccount(passphrase, name, description, chain)
-            .then((result) => {
-                log.debug(`Account ${result} created`);
-                dispatch({
-                    type: ActionTypes.ADD_ACCOUNT,
-                    accountId: result,
-                    name,
-                    description,
-                });
-                dispatch(loadAccountBalance(result));
-                return result;
-            }).catch(screen.actions.catchError(dispatch));
-    };
+    return api.emerald.newAccount(passphrase, name, description, chain)
+      .then((result) => {
+        log.debug(`Account ${result} created`);
+        dispatch({
+          type: ActionTypes.ADD_ACCOUNT,
+          accountId: result,
+          name,
+          description,
+        });
+        dispatch(loadAccountBalance(result));
+        return result;
+      }).catch(screen.actions.catchError(dispatch));
+  };
 }
 
 export function updateAccount(address: string, name: string, description?: string) {
-    return (dispatch, getState, api) => {
-        const chain = currentChain(getState());
-        return api.emerald.updateAccount(address, name, description, chain)
-            .then((result) => {
-                dispatch({
-                    type: ActionTypes.UPDATE_ACCOUNT,
-                    address,
-                    name,
-                    description,
-                });
-            });
-    };
+  return (dispatch, getState, api) => {
+    const chain = currentChain(getState());
+    return api.emerald.updateAccount(address, name, description, chain)
+      .then((result) => {
+        dispatch({
+          type: ActionTypes.UPDATE_ACCOUNT,
+          address,
+          name,
+          description,
+        });
+      });
+  };
 }
 
 function unwrap(list) {
-    return new Promise((resolve, reject) => {
-        if (list.length === 1) {
-            resolve(list[0]);
-        } else {
-            reject(new Error(`Invalid list size ${list.length}`));
-        }
-    });
+  return new Promise((resolve, reject) => {
+    if (list.length === 1) {
+      resolve(list[0]);
+    } else {
+      reject(new Error(`Invalid list size ${list.length}`));
+    }
+  });
 }
 
 function onTxSend(dispatch, sourceTx: Transaction) {
-    return (txhash) => {
-        dispatch({
-            type: ActionTypes.SEND_TRANSACTION,
-            account: sourceTx.from,
-            txHash: txhash,
-        });
-        dispatch(loadAccountBalance(sourceTx.from));
-        const sentTx = Object.assign({}, sourceTx, {hash: txhash});
-        // TODO: dependency on wallet/history module!
-        dispatch(history.actions.trackTx(sentTx));
-        dispatch(screen.actions.gotoScreen('transaction', sentTx));
-    };
+  return (txhash) => {
+    dispatch({
+      type: ActionTypes.SEND_TRANSACTION,
+      account: sourceTx.from,
+      txHash: txhash,
+    });
+    dispatch(loadAccountBalance(sourceTx.from));
+    const sentTx = Object.assign({}, sourceTx, {hash: txhash});
+    // TODO: dependency on wallet/history module!
+    dispatch(history.actions.trackTx(sentTx));
+    dispatch(screen.actions.gotoScreen('transaction', sentTx));
+  };
 }
 
 function getNonce(api, address: string) {
-    return api.geth.eth.getTransactionCount(address);
+  return api.geth.eth.getTransactionCount(address);
 }
 
 function withNonce(tx: Transaction): (nonce: string) => Promise<Transaction> {
-    return (nonce) => new Promise((resolve, reject) =>
-        resolve(Object.assign({}, tx, { nonce: convert.toHex(nonce) }))
-    );
+  return (nonce) => new Promise((resolve, reject) =>
+    resolve(Object.assign({}, tx, { nonce: convert.toHex(nonce) }))
+  );
 }
 
 function verifySender(expected) {
-    return (raw: string) =>
-        new Promise((resolve, reject) => {
-            const tx = new EthereumTx(raw);
-            if (tx.verifySignature()) {
-                if (`0x${tx.getSenderAddress().toString('hex').toLowerCase()}` !== expected.toLowerCase()) {
-                    log.error(`WRONG SENDER: 0x${tx.getSenderAddress().toString('hex')} != ${expected}`);
-                    reject(new Error('Emerald Vault returned signature from wrong Sender'));
-                } else {
-                    resolve(raw);
-                }
-            } else {
-                log.error(`Invalid signature: ${raw}`);
-                reject(new Error('Emerald Vault returned invalid signature for the transaction'));
-            }
-        });
-}
-
-function signTx(api, tx: Transaction, passphrase: string, chain: string) {
-    return api.emerald.signTransaction(tx, passphrase, chain);
-}
-
-export function sendTransaction(from: string, passphrase: string, to: ?string, gas: string,
-                                gasPrice: string, value: string, data?: string) {
-    const originalTx: Transaction = {
-        from,
-        to,
-        gas,
-        gasPrice,
-        value,
-        data,
-        nonce: '',
-    };
-    const passPhrase = passphrase || ''; // for HW key
-    return (dispatch, getState, api) => {
-        const chain = currentChain(getState());
-        getNonce(api, from)
-            .then(withNonce(originalTx))
-            .then((tx) =>
-                signTx(api, tx, passPhrase, chain)
-                    .then(unwrap)
-                    .then(verifySender(from))
-                    .then((signed) => api.geth.eth.sendRawTransaction(signed))
-                    .then(onTxSend(dispatch, tx))
-            )
-            .catch(screen.actions.catchError(dispatch));
-    };
-}
-
-export function createContract(accountId: string, passphrase: string, gas, gasPrice, data) {
-    const txData = {
-        passphrase,
-        gas,
-        gasPrice,
-        data,
-        from: accountId,
-        nonce: '',
-        value: '0x0',
-    };
-    return (dispatch, getState, api) => {
-        const chain = currentChain(getState());
-        api.emerald.signTransaction(txData, { chain })
-            .then(unwrap)
-            .then(api.geth.eth.sendRawTransaction)
-            .then(onTxSend(dispatch, txData))
-            .catch(log.error);
-    };
-}
-
-function readWalletFile(wallet) {
-    return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsText(wallet);
-        reader.onload = (event) => {
-            let data;
-            try {
-                data = JSON.parse(event.target.result);
-                data.filename = wallet.name;
-                resolve(data);
-            } catch (e) {
-                reject({error: e});
-            }
-        };
+  return (raw: string) =>
+    new Promise((resolve, reject) => {
+      const tx = new EthereumTx(raw);
+      if (tx.verifySignature()) {
+        if (`0x${tx.getSenderAddress().toString('hex').toLowerCase()}` !== expected.toLowerCase()) {
+          log.error(`WRONG SENDER: 0x${tx.getSenderAddress().toString('hex')} != ${expected}`);
+          reject(new Error('Emerald Vault returned signature from wrong Sender'));
+        } else {
+          resolve(raw);
+        }
+      } else {
+        log.error(`Invalid signature: ${raw}`);
+        reject(new Error('Emerald Vault returned invalid signature for the transaction'));
+      }
     });
 }
 
-export function importJson(data, name: string, description: string) {
-    return (dispatch, getState, api) => {
-        const chain = currentChain(getState());
-        data.name = name;
-        data.description = description;
-        return api.emerald.importAccount(data, chain).then((result) => {
-            dispatch({
-                type: ActionTypes.IMPORT_WALLET,
-                accountId: result,
-            });
-            // Reload accounts.
-            if (Address.isValid(result)) {
-                dispatch({
-                    name,
-                    description,
-                    type: ActionTypes.ADD_ACCOUNT,
-                    accountId: result,
-                });
-                dispatch(loadAccountBalance(result));
-                return result;
-            }
-            throw new Error(result);
-        });
+function signTx(api, tx: Transaction, passphrase: string, chain: string) {
+  return api.emerald.signTransaction(tx, passphrase, chain);
+}
+
+export function sendTransaction(from: string, passphrase: string, to: ?string, gas: string,
+  gasPrice: string, value: string, data?: string) {
+  const originalTx: Transaction = {
+    from,
+    to,
+    gas,
+    gasPrice,
+    value,
+    data,
+    nonce: '',
+  };
+  const passPhrase = passphrase || ''; // for HW key
+  return (dispatch, getState, api) => {
+    const chain = currentChain(getState());
+    getNonce(api, from)
+      .then(withNonce(originalTx))
+      .then((tx) =>
+        signTx(api, tx, passPhrase, chain)
+          .then(unwrap)
+          .then(verifySender(from))
+          .then((signed) => api.geth.eth.sendRawTransaction(signed))
+          .then(onTxSend(dispatch, tx))
+      )
+      .catch(screen.actions.catchError(dispatch));
+  };
+}
+
+export function createContract(accountId: string, passphrase: string, gas, gasPrice, data) {
+  const txData = {
+    passphrase,
+    gas,
+    gasPrice,
+    data,
+    from: accountId,
+    nonce: '',
+    value: '0x0',
+  };
+  return (dispatch, getState, api) => {
+    const chain = currentChain(getState());
+    api.emerald.signTransaction(txData, { chain })
+      .then(unwrap)
+      .then(api.geth.eth.sendRawTransaction)
+      .then(onTxSend(dispatch, txData))
+      .catch(log.error);
+  };
+}
+
+function readWalletFile(wallet) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsText(wallet);
+    reader.onload = (event) => {
+      let data;
+      try {
+        data = JSON.parse(event.target.result);
+        data.filename = wallet.name;
+        resolve(data);
+      } catch (e) {
+        reject({error: e});
+      }
     };
+  });
+}
+
+export function importJson(data, name: string, description: string) {
+  return (dispatch, getState, api) => {
+    const chain = currentChain(getState());
+    data.name = name;
+    data.description = description;
+    return api.emerald.importAccount(data, chain).then((result) => {
+      dispatch({
+        type: ActionTypes.IMPORT_WALLET,
+        accountId: result,
+      });
+      // Reload accounts.
+      if (Address.isValid(result)) {
+        dispatch({
+          name,
+          description,
+          type: ActionTypes.ADD_ACCOUNT,
+          accountId: result,
+        });
+        dispatch(loadAccountBalance(result));
+        return result;
+      }
+      throw new Error(result);
+    });
+  };
 }
 
 export function importWallet(wallet, name: string, description: string) {
-    return (dispatch, getState) => {
-        return readWalletFile(wallet).then((data) => {
-            return dispatch(importJson(data, name, description));
-        });
-    };
+  return (dispatch, getState) => {
+    return readWalletFile(wallet).then((data) => {
+      return dispatch(importJson(data, name, description));
+    });
+  };
 }
 
 export function loadPendingTransactions() {
-    return (dispatch, getState, api) =>
-        api.geth.eth.getBlockByNumber('pending', true)
-            .then((result) => {
-                const addrs = getState().accounts.get('accounts')
-                    .map((acc) => acc.get('id'));
-                const txes = result.transactions.filter((t) =>
-                    (addrs.includes(t.to) || addrs.includes(t.from))
-                );
-                // TODO: dependency on wallet/history module
-                dispatch(history.actions.processPending(txes));
-                for (const tx of txes) {
-                    const disp = {
-                        type: ActionTypes.PENDING_BALANCE,
-                        value: tx.value,
-                        gas: tx.gas,
-                        gasPrice: tx.gasPrice,
-                        from: '',
-                        to: '',
-                    };
-                    if (addrs.includes(tx.from)) {
-                        disp.from = tx.from;
-                        dispatch(disp);
-                    }
-                    if (addrs.includes(tx.to)) {
-                        disp.to = tx.to;
-                        dispatch(disp);
-                    }
-                }
-            });
+  return (dispatch, getState, api) =>
+    api.geth.eth.getBlockByNumber('pending', true)
+      .then((result) => {
+        const addrs = getState().accounts.get('accounts')
+          .map((acc) => acc.get('id'));
+        const txes = result.transactions.filter((t) =>
+          (addrs.includes(t.to) || addrs.includes(t.from))
+        );
+        // TODO: dependency on wallet/history module
+        dispatch(history.actions.processPending(txes));
+        for (const tx of txes) {
+          const disp = {
+            type: ActionTypes.PENDING_BALANCE,
+            value: tx.value,
+            gas: tx.gas,
+            gasPrice: tx.gasPrice,
+            from: '',
+            to: '',
+          };
+          if (addrs.includes(tx.from)) {
+            disp.from = tx.from;
+            dispatch(disp);
+          }
+          if (addrs.includes(tx.to)) {
+            disp.to = tx.to;
+            dispatch(disp);
+          }
+        }
+      });
 }
 
 export function hideAccount(accountId: string) {
-    return (dispatch, getState, api) => {
-        const chain = currentChain(getState());
+  return (dispatch, getState, api) => {
+    const chain = currentChain(getState());
 
-        return api.emerald.hideAccount(accountId, chain)
-          .then((result) => {
-              return result;
-          }).catch(screen.actions.catchError(dispatch));
-    };
+    return api.emerald.hideAccount(accountId, chain)
+      .then((result) => {
+        return result;
+      }).catch(screen.actions.catchError(dispatch));
+  };
 }
 
 export function unhideAccount(accountId: string) {
-    return (dispatch, getState, api) => {
-        const chain = currentChain(getState());
+  return (dispatch, getState, api) => {
+    const chain = currentChain(getState());
 
-        return api.emerald.unhideAccount(accountId, chain)
+    return api.emerald.unhideAccount(accountId, chain)
       .then((result) => {
-          return result;
+        return result;
       }).catch(screen.actions.catchError(dispatch));
-    };
+  };
 }

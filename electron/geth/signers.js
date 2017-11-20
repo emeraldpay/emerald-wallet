@@ -104,5 +104,5 @@ const whileiPgp = '-----BEGIN PGP PUBLIC KEY BLOCK-----\n\n' +
     '-----END PGP PUBLIC KEY BLOCK-----';
 
 module.exports = {
-    publicKeys: [splixPgp, whileiPgp],
+  publicKeys: [splixPgp, whileiPgp],
 };

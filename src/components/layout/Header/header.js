@@ -10,31 +10,31 @@ import screen from '../../../store/wallet/screen';
 import classes from './header.scss';
 
 export const Header = ({ maxWidth = '1220px', openSettings }) => {
-    return (
-        <div style={{backgroundColor: 'white'}}>
-            <div style={{display: 'flex', justifyContent: 'space-between', margin: '0 auto', maxWidth}}>
-                <div style={{display: 'flex', alignItems: 'center'}}>
-                    <div className={ classes.title }>EMERALD WALLET</div>
-                    <div><LogoIcon height="33px" width="17px" /></div>
-                    <Total/>
-                </div>
-                <div style={{display: 'flex'}}>
-                    <Status />
-                    <IconButton onTouchTap={ openSettings }>
-                        <SettingsIcon className={ classes.settingsIcon }/>
-                    </IconButton>
-                </div>
-            </div>
+  return (
+    <div style={{backgroundColor: 'white'}}>
+      <div style={{display: 'flex', justifyContent: 'space-between', margin: '0 auto', maxWidth}}>
+        <div style={{display: 'flex', alignItems: 'center'}}>
+          <div className={ classes.title }>EMERALD WALLET</div>
+          <div><LogoIcon height="33px" width="17px" /></div>
+          <Total/>
         </div>
-    );
+        <div style={{display: 'flex'}}>
+          <Status />
+          <IconButton onTouchTap={ openSettings }>
+            <SettingsIcon className={ classes.settingsIcon }/>
+          </IconButton>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default connect(
-    (state, ownProps) => ({}),
-    (dispatch, ownProps) => ({
-        openSettings: () => {
-            dispatch(screen.actions.gotoScreen('settings'));
-        },
-    })
+  (state, ownProps) => ({}),
+  (dispatch, ownProps) => ({
+    openSettings: () => {
+      dispatch(screen.actions.gotoScreen('settings'));
+    },
+  })
 )(Header);
 

@@ -9,15 +9,15 @@ import { ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
  */
 
 class Filter extends React.Component {
-    render() {
-        return (
-            <ToggleButtonGroup name="options" type="radio" defaultValue={ 1 }>
-                <ToggleButton value={ 1 }>ALL</ToggleButton>
-                <ToggleButton value={ 2 }>IN</ToggleButton>
-                <ToggleButton value={ 3 }>OUT</ToggleButton>
-            </ToggleButtonGroup>
-        );
-    }
+  render() {
+    return (
+      <ToggleButtonGroup name="options" type="radio" defaultValue={ 1 }>
+        <ToggleButton value={ 1 }>ALL</ToggleButton>
+        <ToggleButton value={ 2 }>IN</ToggleButton>
+        <ToggleButton value={ 3 }>OUT</ToggleButton>
+      </ToggleButtonGroup>
+    );
+  }
 }
 
 export default Filter;

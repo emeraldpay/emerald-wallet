@@ -8,67 +8,67 @@ import OpenWallet from './openWallet';
 import NodeTypeChoice from './NodeTypeChoice';
 
 const Render = ({ rpcType, terms }) => {
-    let step = null;
-    let activeStep = 0;
+  let step = null;
+  let activeStep = 0;
 
-    if (terms !== 'v1') {
-        step = <Terms/>;
-    } else if (rpcType === 'none') {
-        activeStep = 1;
-        step = <NodeTypeChoice/>;
-    } else {
-        activeStep = 2;
-        step = <OpenWallet/>;
-    }
+  if (terms !== 'v1') {
+    step = <Terms/>;
+  } else if (rpcType === 'none') {
+    activeStep = 1;
+    step = <NodeTypeChoice/>;
+  } else {
+    activeStep = 2;
+    step = <OpenWallet/>;
+  }
 
-    const steps = [];
-    steps.push(
-        <Step key="terms">
-            <StepLabel>User Agreement</StepLabel>
-        </Step>
-    );
-    steps.push(
-        <Step key="select-rpc">
-            <StepLabel>Select RPC type</StepLabel>
-        </Step>
-    );
-    steps.push(
-        <Step key="open-wallet">
-            <StepLabel>Open Wallet</StepLabel>
-        </Step>
-    );
+  const steps = [];
+  steps.push(
+    <Step key="terms">
+      <StepLabel>User Agreement</StepLabel>
+    </Step>
+  );
+  steps.push(
+    <Step key="select-rpc">
+      <StepLabel>Select RPC type</StepLabel>
+    </Step>
+  );
+  steps.push(
+    <Step key="open-wallet">
+      <StepLabel>Open Wallet</StepLabel>
+    </Step>
+  );
 
-    return (
-        <div>
-            <Row>
-                <Col xs={12}>
-                    <Stepper activeStep={activeStep}>
-                        { steps.map((s, idx) => s) }
-                    </Stepper>
-                </Col>
-            </Row>
-            <Row>
-                <Col xs={12}>
-                    { step }
-                </Col>
-            </Row>
-        </div>
-    );
+  return (
+    <div>
+      <Row>
+        <Col xs={12}>
+          <Stepper activeStep={activeStep}>
+            { steps.map((s, idx) => s) }
+          </Stepper>
+        </Col>
+      </Row>
+      <Row>
+        <Col xs={12}>
+          { step }
+        </Col>
+      </Row>
+    </div>
+  );
 };
 
 
 Render.propTypes = {
-    rpcType: PropTypes.string.isRequired,
-    terms: PropTypes.string.isRequired,
+  rpcType: PropTypes.string.isRequired,
+  terms: PropTypes.string.isRequired,
 };
 
 const InitialSetup = connect(
-    (state, ownProps) => ({
-        rpcType: state.launcher.getIn(['geth', 'type']) || 'none',
-        terms: state.launcher.get('terms'),
-    }),
-    (dispatch, ownProps) => ({
-    })
+  (state, ownProps) => ({
+    rpcType: state.launcher.getIn(['geth', 'type']) || 'none',
+    terms: state.launcher.get('terms'),
+  }),
+  (dispatch, ownProps) => ({
+  })
 )(Render);
 
 export default InitialSetup;
