@@ -13,6 +13,7 @@ import AddToken from '../../components/tokens/AddToken/add';
 import LedgerImport from '../../components/ledger/ImportAccount';
 import ImportJson from '../../components/accounts/add/ImportJson';
 import ImportPrivateKey from '../../components/accounts/add/ImportPrivateKey';
+import ImportMnemonic from '../../components/accounts/add/ImportMnemonic';
 import ContractsList from '../../components/contracts/list';
 import AddContract from '../../components/contracts/add';
 import DeployContract from '../../components/contracts/deploy';
@@ -69,6 +70,8 @@ const Screen = ({ screen, screenItem }) => {
         return <ImportJson onBackScreen="landing" backLabel="Back"/>;
     } else if (screen === 'import-private-key') {
         return <ImportPrivateKey />;
+    } else if (screen === 'import-mnemonic') {
+        return <ImportMnemonic />;
     } else if (screen === 'add-token') {
         return <AddToken />;
     } else if (screen === 'deploy-contract') {

@@ -301,7 +301,6 @@ export function importJson(data, name: string, description: string) {
                 type: ActionTypes.IMPORT_WALLET,
                 accountId: result,
             });
-            // Reload accounts.
             if (Address.isValid(result)) {
                 dispatch({
                     name,
@@ -315,6 +314,27 @@ export function importJson(data, name: string, description: string) {
             throw new Error(result);
         });
     };
+}
+
+export function importMnemonic(passphrase: string, mnemonic: string, name: string, description: string) {
+  return (dispatch, getState, api) => {
+    const chain = currentChain(getState());
+    return api.emerald.importMnemonic(passphrase, '', '', mnemonic, chain).then((result) => {
+      dispatch({
+        type: ActionTypes.IMPORT_WALLET,
+        accountId: result,
+      });
+      if (Address.isValid(result)) {
+        dispatch({
+          type: ActionTypes.ADD_ACCOUNT,
+          accountId: result,
+        });
+        dispatch(loadAccountBalance(result));
+        return result;
+      }
+      throw new Error(result);
+    });
+  };
 }
 
 export function importWallet(wallet, name: string, description: string) {

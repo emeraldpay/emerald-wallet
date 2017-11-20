@@ -29,6 +29,10 @@
         "importPrivateKey": {
             "title": "Importar chave privada",
             "subtitle": "Importar chave privada em formato hexadecimal"
+        },
+        "importMnemonic": {
+            "title": "Import Mnemonic phrase",
+            "subtitle": "Import BIP039 mnemonic phrase"
         }
     },
     "generate": {

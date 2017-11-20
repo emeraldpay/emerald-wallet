@@ -31,6 +31,10 @@
             "title": "Import Private Key",
             "subtitle": "Import private key in hex format"
         },
+        "importMnemonic": {
+            "title": "Import Mnemonic phrase",
+            "subtitle": "Import BIP039 mnemonic phrase"
+        },
         "token": {
             "title": "Add Token",
             "subtitle": "Add Token by address"

@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FontIcon, FlatButton, Popover } from 'material-ui';
 import { List, ListItem } from 'material-ui/List';
-import { Add as AddIcon } from 'emerald-js/lib/ui/icons';
+import { Add as AddIcon, Ledger as LedgerIcon } from 'emerald-js/lib/ui/icons';
 
 const styles = {
     button: {
@@ -25,6 +25,7 @@ class DashboardMenu extends React.Component {
         importJson: PropTypes.func,
         importLedger: PropTypes.func,
         importPrivateKey: PropTypes.func,
+        importMnemonic: PropTypes.func,
         t: PropTypes.func.isRequired,
         style: PropTypes.object,
     }
@@ -62,7 +63,7 @@ class DashboardMenu extends React.Component {
     }
 
     render() {
-        const { generate, importJson, importLedger, importPrivateKey, t, style } = this.props;
+        const { generate, importJson, importLedger, importPrivateKey, importMnemonic, t, style } = this.props;
 
         return (
             <div style={ style }>
@@ -86,7 +87,7 @@ class DashboardMenu extends React.Component {
                             primaryText="Ledger Nano S"
                             secondaryText="Use Ledger hardware key to manage signatures"
                             onClick={importLedger}
-                            leftIcon={<FontIcon className="fa fa-usb"/>}
+                            leftIcon={<LedgerIcon />}
                         />
                         <ListItem
                             primaryText={t('add.generate.title')}
@@ -106,6 +107,12 @@ class DashboardMenu extends React.Component {
                             onClick={importPrivateKey}
                             leftIcon={<FontIcon className="fa fa-key"/>}
                         />
+                      <ListItem
+                        primaryText={ t('add.importMnemonic.title') }
+                        secondaryText={ t('add.importMnemonic.subtitle') }
+                        onClick={ importMnemonic }
+                        leftIcon={<FontIcon className="fa fa-key"/>}
+                      />
                         <ListItem
                             primaryText={ t('add.token.title') }
                             secondaryText={ t('add.token.subtitle') }

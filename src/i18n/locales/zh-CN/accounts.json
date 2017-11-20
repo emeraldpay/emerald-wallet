@@ -26,6 +26,10 @@
         "import": {
             "title": "从JSON导入",
             "subtitle": "从Parity或Geth中导入一个JSON密钥"
+        },
+        "importMnemonic": {
+            "title": "Import Mnemonic phrase",
+            "subtitle": "Import BIP039 mnemonic phrase"
         }
     },
     "generate": {
