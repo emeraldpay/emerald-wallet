@@ -47,7 +47,13 @@ const DownloadDialog = (props) => {
             <Row>
                 <div style={formStyles.left}/>
                 <div style={formStyles.right}>
-                <Button primary onClick={ onDownload } label="Download account key file" icon={getLoadingIcon(props)} disabled={props.loading}/>
+                    <Button
+                      primary
+                      onClick={ onDownload }
+                      label="Download account key file"
+                      icon={ getLoadingIcon(props) }
+                      disabled={ props.loading }
+                    />
                 </div>
             </Row>
         </Form>

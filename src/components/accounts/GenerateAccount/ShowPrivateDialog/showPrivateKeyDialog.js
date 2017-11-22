@@ -11,8 +11,7 @@ const ShowPrivateDialog = (props) => {
     const { onBack, onNext, privateKey, t } = props;
 
     return (
-        <Form caption={ t('generate.title') }  onCancel={ onBack }>
-
+        <Form caption={ t('generate.title') } onCancel={ onBack }>
             <Row>
                 <div style={ formStyles.left }/>
                 <div style={ formStyles.right }>

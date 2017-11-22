@@ -5,67 +5,68 @@ import { List, ListItem } from 'material-ui/List';
 import { Add as AddIcon, Ledger as LedgerIcon } from 'emerald-js/lib/ui/icons';
 
 const styles = {
-    button: {
-        color: '#47B04B',
-    },
-    buttonLabel: {
-        paddingRight: 0,
-    },
-    addIcon: {
-        width: '21px',
-        height: '21px',
-    },
+  button: {
+    color: '#47B04B',
+  },
+  buttonLabel: {
+    paddingRight: 0,
+  },
+  addIcon: {
+    width: '21px',
+    height: '21px',
+  },
 };
 
 class DashboardMenu extends React.Component {
 
-    static propTypes = {
-        addToken: PropTypes.func,
-        generate: PropTypes.func,
-        importJson: PropTypes.func,
-        importLedger: PropTypes.func,
-        importPrivateKey: PropTypes.func,
-        importMnemonic: PropTypes.func,
-        t: PropTypes.func.isRequired,
-        style: PropTypes.object,
-    }
+  static propTypes = {
+    addToken: PropTypes.func,
+    generate: PropTypes.func,
+    importJson: PropTypes.func,
+    importLedger: PropTypes.func,
+    importPrivateKey: PropTypes.func,
+    importMnemonic: PropTypes.func,
+    createMnemonic: PropTypes.func,
+    t: PropTypes.func.isRequired,
+    style: PropTypes.object,
+  }
 
-    constructor(props) {
-        super(props);
-        this.state = {
-            open: false,
-        };
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      open: false,
+    };
+  }
 
-    handleTouchTap = (event) => {
+  handleTouchTap = (event) => {
         // This prevents ghost click.
-        event.preventDefault();
+    event.preventDefault();
 
-        this.setState({
-            open: true,
-            anchorEl: event.currentTarget,
-        });
+    this.setState({
+      open: true,
+      anchorEl: event.currentTarget,
+    });
+  }
+
+  handleRequestClose = () => {
+    this.setState({
+      open: false,
+    });
+  }
+
+  handleAddToken = () => {
+    this.setState({
+      open: false,
+    });
+    if (this.props.addToken) {
+      this.props.addToken();
     }
+  }
 
-    handleRequestClose = () => {
-        this.setState({
-            open: false,
-        });
-    }
-
-    handleAddToken = () => {
-        this.setState({
-            open: false,
-        });
-        if (this.props.addToken) {
-            this.props.addToken();
-        }
-    }
-
-    render() {
-        const { generate, importJson, importLedger, importPrivateKey, importMnemonic, t, style } = this.props;
-
-        return (
+  render() {
+    const { generate, importJson, importLedger, importPrivateKey, importMnemonic, createMnemonic } = this.props;
+    const { t, style } = this.props;
+    return (
             <div style={ style }>
                 <FlatButton
                     onTouchTap={ this.handleTouchTap }
@@ -96,6 +97,13 @@ class DashboardMenu extends React.Component {
                             leftIcon={<FontIcon className="fa fa-random"/>}
                         />
                         <ListItem
+                          primaryText={t('add.mnemonic.title')}
+                          secondaryText={t('add.mnemonic.subtitle')}
+                          onClick={ createMnemonic }
+                          leftIcon={<FontIcon className="fa fa-random"/>}
+                        />
+
+                        <ListItem
                             primaryText={t('add.import.title')}
                             secondaryText={t('add.import.subtitle')}
                             onClick={ importJson }
@@ -122,8 +130,8 @@ class DashboardMenu extends React.Component {
                     </List>
                 </Popover>
             </div>
-        );
-    }
+    );
+  }
 }
 
 export default DashboardMenu;
