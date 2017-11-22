@@ -1,5 +1,6 @@
+// @flow
 import { convert } from 'emerald-js';
-
+import BigNumber from 'bignumber.js';
 import { waitForServices, intervalRates } from '../../store/store';
 import createLogger from '../../utils/logger';
 import ActionTypes from './actionTypes';
@@ -86,5 +87,18 @@ export function getGasPrice() {
                 value: result,
             });
         }).catch((error) => log.error(error));
+    };
+}
+
+export function estimateGas(from: string, to: string, gas: string, gasPrice: string, value: string, data: string): BigNumber {
+    return (dispatch, getState, api) => {
+        return api.geth.eth.estimateGas({
+            from,
+            to,
+            gas,
+            gasPrice,
+            value,
+            data,
+        });
     };
 }
