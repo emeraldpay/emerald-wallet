@@ -7,6 +7,7 @@ import ledger from 'store/ledger/';
 import { etherToWei } from 'lib/convert';
 import { address } from 'lib/validators';
 import launcher from 'store/launcher';
+import network from 'store/network';
 import accounts from 'store/vault/accounts';
 import Tokens from 'store/vault/tokens';
 import screen from 'store/wallet/screen';
@@ -23,9 +24,9 @@ const { toHex } = convert;
 
 const traceValidate = (tx, dispatch): Promise<BigNumber> => {
     return new Promise((resolve, reject) => {
-        dispatch(Tokens.actions.traceCall(tx.from, tx.to, tx.gas, tx.gasPrice, tx.value, tx.data))
+        dispatch(network.actions.estimateGas(tx.from, tx.to, tx.gas, tx.gasPrice, tx.value, tx.data))
             .then((gasEst) => {
-                log.debug(`Estimated gas = ${JSON.stringify(gasEst)}`);
+                log.debug(`Estimated gas = ${ JSON.stringify(gasEst) }`);
 
                 if (!gasEst) {
                     reject('Invalid Transaction');

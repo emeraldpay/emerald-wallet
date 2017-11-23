@@ -35,7 +35,7 @@ export function loadTokenBalanceOf(token: TokenInfo, accountId: string) {
     };
 }
 
-export function loadTokenDetails(token) {
+export function loadTokenDetails(token): () => Promise<any> {
     return (dispatch, getState, api) => {
         return Promise.all([
             api.geth.eth.call(token.address, tokenContract.functionToData('totalSupply')),
@@ -53,7 +53,7 @@ export function loadTokenDetails(token) {
     };
 }
 
-export function fetchTokenDetails(tokenAddress: string) {
+export function fetchTokenDetails(tokenAddress: string): () => Promise<any> {
     return (dispatch, getState, api) => {
         return Promise.all([
             api.geth.eth.call(tokenAddress, tokenContract.functionToData('totalSupply')),
@@ -128,6 +128,7 @@ export function addToken(token: TokenInfo) {
     };
 }
 
+// FIXME: deprecated
 export function traceCall(from: string, to: string, gas: string, gasPrice: string, value: string, data: string) {
     return (dispatch, getState, api) => {
         // TODO: We shouldn't detect trace api each time, we need to do it only once
