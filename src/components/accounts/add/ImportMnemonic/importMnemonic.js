@@ -132,6 +132,9 @@ const importForm = reduxForm({
 
 export default connect(
     (state, ownProps) => ({
+      initialValues: {
+        mnemonic: ownProps.mnemonic,
+      },
       accounts: state.accounts.get('accounts', Immutable.List()),
     }),
     (dispatch, ownProps) => ({
@@ -139,7 +142,11 @@ export default connect(
         return dispatch(accounts.actions.importMnemonic(data.password, data.mnemonic, '', ''));
       },
       onBack: () => {
-        dispatch(screen.actions.gotoScreen('home'));
+        if (ownProps.onBack) {
+          ownProps.onBack();
+        } else {
+          dispatch(screen.actions.gotoScreen('home'));
+        }
       },
     })
 )(importForm);

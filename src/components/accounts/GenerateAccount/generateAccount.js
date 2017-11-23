@@ -139,7 +139,7 @@ class GenerateAccount extends React.Component<Props, State> {
                     onSave={ this.updateAccountProps }
                     onSkip={ this.skipAccountProps }
                 />);
-      default: return <div></div>;
+      default: return null;
     }
   }
 }
