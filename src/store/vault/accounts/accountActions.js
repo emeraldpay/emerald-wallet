@@ -1,7 +1,6 @@
 // @flow
 import EthereumTx from 'ethereumjs-tx';
 import { convert, Wallet, Address } from 'emerald-js';
-import { address as isAddress} from 'lib/validators';
 import { loadTokenBalanceOf } from '../tokens/tokenActions';
 import screen from '../../wallet/screen';
 import history from '../../wallet/history';
