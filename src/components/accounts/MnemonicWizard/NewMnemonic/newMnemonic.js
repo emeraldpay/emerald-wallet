@@ -6,7 +6,7 @@ import Input from 'elements/Input';
 import Button from 'elements/Button';
 import { Warning, WarningHeader, WarningText } from 'elements/Warning';
 
-class NewMnemonic extends React.Component {
+export class NewMnemonic extends React.Component {
 
   static propTypes = {
     onBack: PropTypes.func,
@@ -36,6 +36,7 @@ class NewMnemonic extends React.Component {
               <div>Mnemonic phrase</div>
               <div>
                 <Input
+                  disabled={ true }
                   value={ mnemonic }
                   multiLine={ true }
                   rowsMax={ 4 }
