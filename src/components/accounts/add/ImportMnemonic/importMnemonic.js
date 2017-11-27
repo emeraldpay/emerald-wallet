@@ -2,8 +2,10 @@ import React from 'react';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
+import { MenuItem } from 'material-ui';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
+import SelectField from 'elements/Form/SelectField';
 import DashboardButton from 'components/common/DashboardButton';
 import accounts from 'store/vault/accounts';
 import screen from 'store/wallet/screen';
@@ -105,10 +107,15 @@ class ImportMnemonic extends React.Component {
               <div>
                 <Field
                   name="hdpath"
-                  component={ TextField }
+                  component={ SelectField }
                   fullWidth={ true }
                   underlineShow={ false }
-                />
+                >
+                  <MenuItem value="m/44'/60'/160720'/0'" primaryText="m/44'/60'/160720'/0'" />
+                  <MenuItem value="m/44'/61'/1'/0" primaryText="m/44'/61'/1'/0" />
+                  <MenuItem value="m/44'/61'/0'/0" primaryText="m/44'/61'/0'/0" />
+                  <MenuItem value="m/44'/60'/0'" primaryText="m/44'/60'/0'" />
+                </Field>
               </div>
             </div>
           </div>
