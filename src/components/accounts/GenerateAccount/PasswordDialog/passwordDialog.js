@@ -28,7 +28,7 @@ class PasswordDialog extends React.Component {
     const { onGenerate } = this.props;
     const passphrase = this.state.passphrase;
 
-        // validate passphrase
+    // validate passphrase
     if (passphrase.length < MIN_PASSWORD_LENGTH) {
       this.setState({
         invalidPassphrase: true,
@@ -40,8 +40,8 @@ class PasswordDialog extends React.Component {
 
   onPassphraseChange = (newValue) => {
     const invalidPassphrase = (newValue.length === 0 || newValue.length >= MIN_PASSWORD_LENGTH) ?
-            false :
-            this.state.invalidPassphrase;
+      false :
+      this.state.invalidPassphrase;
 
     this.setState({
       passphrase: newValue,
@@ -57,59 +57,59 @@ class PasswordDialog extends React.Component {
     return (
       <Form caption={ t('generate.title') } backButton={ <DashboardButton onClick={ onDashboard } label={backLabel}/> }>
         <Row>
-            <div style={ formStyles.left }/>
-            <div style={ formStyles.right }>
-                <div style={{ width: '100%' }}>
-                    <div className={ styles.passwordLabel }>Enter a strong password</div>
-                    <div className={ styles.passwordSubLabel }>
+          <div style={ formStyles.left }/>
+          <div style={ formStyles.right }>
+            <div style={{ width: '100%' }}>
+              <div className={ styles.passwordLabel }>Enter a strong password</div>
+              <div className={ styles.passwordSubLabel }>
                         This password will be required to confirm all account operations.
-                    </div>
-                    <div style={{ marginTop: '30px' }}>
-                        <PasswordInput
-                            onChange={ this.onPassphraseChange }
-                            invalid={ invalidPassphrase }
-                        />
-                    </div>
-                </div>
+              </div>
+              <div style={{ marginTop: '30px' }}>
+                <PasswordInput
+                  onChange={ this.onPassphraseChange }
+                  invalid={ invalidPassphrase }
+                />
+              </div>
             </div>
+          </div>
         </Row>
 
         <Row>
-            <div style={ formStyles.left }/>
-            <div style={ formStyles.right }>
-                    <Warning fullWidth={ true }>
-                        <WarningHeader>Don&#39;t forget it.</WarningHeader>
-                        <WarningText>If you forget password, you will lose your account with all
+          <div style={ formStyles.left }/>
+          <div style={ formStyles.right }>
+            <Warning fullWidth={ true }>
+              <WarningHeader>Don&#39;t forget it.</WarningHeader>
+              <WarningText>If you forget password, you will lose your account with all
                             funds.</WarningText>
-                    </Warning>
-            </div>
+            </Warning>
+          </div>
         </Row>
 
         <Row>
-            <div style={formStyles.left}/>
-            <div style={formStyles.right}>
-                <Advice
-                    title="Advice"
-                    text={ <div>
+          <div style={formStyles.left}/>
+          <div style={formStyles.right}>
+            <Advice
+              title="Advice"
+              text={ <div>
                         You can use a word or phrase as password. Write it in short text.<br/>
                         Only you know where password is. It is safer than write a password only.
-                    </div>}
-                />
-            </div>
+              </div>}
+            />
+          </div>
         </Row>
 
         <Row>
-            <div style={formStyles.left}/>
-            <div style={formStyles.right}>
-                <Button
-                  primary onClick={ this.handleGenerate }
-                  label="Generate Account"
-                  icon={ getLoadingIcon(this.props) }
-                  disabled={ this.props.loading }
-                />
-            </div>
+          <div style={formStyles.left}/>
+          <div style={formStyles.right}>
+            <Button
+              primary onClick={ this.handleGenerate }
+              label="Generate Account"
+              icon={ getLoadingIcon(this.props) }
+              disabled={ this.props.loading }
+            />
+          </div>
         </Row>
-    </Form>
+      </Form>
     );
   }
 }

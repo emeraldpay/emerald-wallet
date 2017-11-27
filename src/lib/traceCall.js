@@ -28,28 +28,28 @@ class CommonCallTracer implements ITracer {
     tx: Transaction;
 
     constructor(tx: Transaction) {
-        this.tx = tx;
+      this.tx = tx;
     }
 
     buildRequest(): Call {
-        const params = [{
-            from: this.tx.from,
-            to: this.tx.to,
-            gas: this.tx.gas,
-            gasPrice: this.tx.gasPrice,
-            value: this.tx.value,
-            data: this.tx.data,
-        }];
-        params.push('latest');
+      const params = [{
+        from: this.tx.from,
+        to: this.tx.to,
+        gas: this.tx.gas,
+        gasPrice: this.tx.gasPrice,
+        value: this.tx.value,
+        data: this.tx.data,
+      }];
+      params.push('latest');
 
-        return {
-            method: 'eth_estimateGas',
-            params,
-        };
+      return {
+        method: 'eth_estimateGas',
+        params,
+      };
     }
 
     estimateGas(trace: any): BigNumber | null {
-        return convert.toBigNumber(trace);
+      return convert.toBigNumber(trace);
     }
 }
 
@@ -60,82 +60,81 @@ export class ParityTracer implements ITracer {
     tx: Transaction;
 
     constructor(tx: Transaction) {
-        if (!tx) {
-            throw new Error(`Invalid value of tx ${tx}`);
-        }
-        this.tx = tx;
+      if (!tx) {
+        throw new Error(`Invalid value of tx ${tx}`);
+      }
+      this.tx = tx;
     }
 
     buildRequest(): Call {
-        const params = [{
-            from: this.tx.from,
-            to: this.tx.to,
-            gas: this.tx.gas,
-            gasPrice: this.tx.gasPrice,
-            value: this.tx.value,
-            data: this.tx.data,
-        }];
+      const params = [{
+        from: this.tx.from,
+        to: this.tx.to,
+        gas: this.tx.gas,
+        gasPrice: this.tx.gasPrice,
+        value: this.tx.value,
+        data: this.tx.data,
+      }];
         // Should we use 'vmTrace' or not ?
-        params.push(['trace', 'stateDiff']);
-        params.push('latest');
+      params.push(['trace', 'stateDiff']);
+      params.push('latest');
 
-        return {
-            method: 'trace_call',
-            params,
-        };
+      return {
+        method: 'trace_call',
+        params,
+      };
     }
 
     estimateGas(trace: any): BigNumber | null {
-        if (!trace) {
-            return new BigNumber('21000');
-        }
-        const gasEst = ParityTracer.estimateGasFromTrace(this.tx, trace);
-        if (!gasEst) {
-            return null;
-        }
-        return gasEst.div(convert.toBigNumber(this.tx.gasPrice));
+      if (!trace) {
+        return new BigNumber('21000');
+      }
+      const gasEst = ParityTracer.estimateGasFromTrace(this.tx, trace);
+      if (!gasEst) {
+        return null;
+      }
+      return gasEst.div(convert.toBigNumber(this.tx.gasPrice));
     }
 
     static estimateGasFromTrace(dataObj, trace): BigNumber {
-        const gasLimit = 2000000;
-        const value = new BigNumber(dataObj.value);
+      const gasLimit = 2000000;
+      const value = new BigNumber(dataObj.value);
 
-        const recurCheckBalance = function (ops) {
-            let startVal = 24088 + ops[0].cost;
-            for (let i = 0; i < ops.length - 1; i++) {
-                const remainder = startVal - (gasLimit - ops[i].ex.used);
-                if (ops[i + 1].sub && ops[i + 1].sub.ops.length && gasLimit - ops[i + 1].cost > remainder) {
-                    startVal += gasLimit - ops[i + 1].cost - startVal;
-                } else if (ops[i + 1].cost > remainder) {
-                    startVal += ops[i + 1].cost - remainder;
-                }
-            }
-            if (!dataObj.to) startVal += 37000; // add 37000 for contract creation
-            startVal = startVal === gasLimit ? -1 : startVal;
-            return startVal;
-        };
-
-        let estGas = new BigNumber(-1);
-        if ((trace || {}).vmTrace && trace.vmTrace.ops.length) {
-            const result = trace.vmTrace.ops;
-            estGas = recurCheckBalance(result);
-            estGas = estGas < 0 ? -1 : estGas + 5000;
-        } else {
-            let stateDiff = (trace || {}).stateDiff;
-            stateDiff = stateDiff && (stateDiff[dataObj.from.toLowerCase()] || {}).balance['*'];
-            if (stateDiff) {
-                const fromState = new BigNumber(stateDiff.from);
-                const toState = new BigNumber(stateDiff.to);
-                estGas = fromState.sub(toState);
-                estGas = (dataObj.from.toLowerCase() === dataObj.to.toLowerCase()) ? estGas : estGas.sub(value);
-            }
-            if (estGas.lt(0) || estGas.eq(gasLimit)) {
-                return null;
-            }
+      const recurCheckBalance = function (ops) {
+        let startVal = 24088 + ops[0].cost;
+        for (let i = 0; i < ops.length - 1; i++) {
+          const remainder = startVal - (gasLimit - ops[i].ex.used);
+          if (ops[i + 1].sub && ops[i + 1].sub.ops.length && gasLimit - ops[i + 1].cost > remainder) {
+            startVal += gasLimit - ops[i + 1].cost - startVal;
+          } else if (ops[i + 1].cost > remainder) {
+            startVal += ops[i + 1].cost - remainder;
+          }
         }
-        return new BigNumber(estGas);
-    }
+        if (!dataObj.to) startVal += 37000; // add 37000 for contract creation
+        startVal = startVal === gasLimit ? -1 : startVal;
+        return startVal;
+      };
 
+      let estGas = new BigNumber(-1);
+      if ((trace || {}).vmTrace && trace.vmTrace.ops.length) {
+        const result = trace.vmTrace.ops;
+        estGas = recurCheckBalance(result);
+        estGas = estGas < 0 ? -1 : estGas + 5000;
+      } else {
+        let stateDiff = (trace || {}).stateDiff;
+        stateDiff = stateDiff && (stateDiff[dataObj.from.toLowerCase()] || {}).balance['*'];
+        if (stateDiff) {
+          const fromState = new BigNumber(stateDiff.from);
+          const toState = new BigNumber(stateDiff.to);
+          estGas = fromState.sub(toState);
+          estGas = (dataObj.from.toLowerCase() === dataObj.to.toLowerCase()) ? estGas : estGas.sub(value);
+        }
+        if (estGas.lt(0) || estGas.eq(gasLimit)) {
+          return null;
+        }
+      }
+      return new BigNumber(estGas);
+    }
 }
 
 /**
@@ -145,27 +144,27 @@ class ClassicGethTracer implements ITracer {
     tx: Transaction;
 
     constructor(tx: Transaction) {
-        this.tx = tx;
+      this.tx = tx;
     }
     buildRequest(): Call {
-        const params = [{
-            from: this.tx.from,
-            to: this.tx.to,
-            gas: this.tx.gas,
-            gasPrice: this.tx.gasPrice,
-            value: this.tx.value,
-            data: this.tx.data,
-        }];
-        params.push('latest');
+      const params = [{
+        from: this.tx.from,
+        to: this.tx.to,
+        gas: this.tx.gas,
+        gasPrice: this.tx.gasPrice,
+        value: this.tx.value,
+        data: this.tx.data,
+      }];
+      params.push('latest');
 
-        return {
-            method: 'eth_traceCall',
-            params,
-        };
+      return {
+        method: 'eth_traceCall',
+        params,
+      };
     }
 
     estimateGas(trace): BigNumber {
-        return convert.toBigNumber(trace.gas);
+      return convert.toBigNumber(trace.gas);
     }
 }
 
@@ -175,34 +174,34 @@ class ClassicGethTracer implements ITracer {
  *
  * @param ethRpc
  */
-export function detect(ethRpc: EthRpc) : Promise<any> {
-    return ethRpc.raw('trace_call', [])
-        .then(() => {
-            // If this call successful it means RPC works in wrong way,
-            // will use esimateGas method
-            return (tx) => new CommonCallTracer(tx);
-        })
-        .catch((error) => {
-            if (error.code === -32601) {
-                // method not found, try another
-                return ethRpc.raw('eth_traceCall', [])
-                    .then(() => (tx) => new ClassicGethTracer(tx))
-                    .catch((err) => {
-                        if (err.code === -32601) {
-                            return (tx) => new CommonCallTracer(tx);
-                        }
-                        // if eth_traceCall works, but wrong params
-                        if (err.code === -32602) {
-                          return (tx) => new ClassicGethTracer(tx);
-                        }
-                        throw err;
-                    });
-            } else if (error.code === -32602) {
-                // method found but wrong params, it's Ok
-                // We still use eth_estimatedGas instead of trace_call
-                return (tx) => new CommonCallTracer(tx);
-                // return (tx) => new ParityTracer(tx);
+export function detect(ethRpc: EthRpc): Promise<any> {
+  return ethRpc.raw('trace_call', [])
+    .then(() => {
+      // If this call successful it means RPC works in wrong way,
+      // will use esimateGas method
+      return (tx) => new CommonCallTracer(tx);
+    })
+    .catch((error) => {
+      if (error.code === -32601) {
+        // method not found, try another
+        return ethRpc.raw('eth_traceCall', [])
+          .then(() => (tx) => new ClassicGethTracer(tx))
+          .catch((err) => {
+            if (err.code === -32601) {
+              return (tx) => new CommonCallTracer(tx);
             }
-            throw error;
-        });
+            // if eth_traceCall works, but wrong params
+            if (err.code === -32602) {
+              return (tx) => new ClassicGethTracer(tx);
+            }
+            throw err;
+          });
+      } else if (error.code === -32602) {
+        // method found but wrong params, it's Ok
+        // We still use eth_estimatedGas instead of trace_call
+        return (tx) => new CommonCallTracer(tx);
+        // return (tx) => new ParityTracer(tx);
+      }
+      throw error;
+    });
 }

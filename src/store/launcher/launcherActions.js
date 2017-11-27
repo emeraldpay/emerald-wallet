@@ -1,6 +1,6 @@
-import { ipcRenderer } from 'electron';
+import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import { api } from 'lib/rpc/api';
-//import { waitForServicesRestart } from 'store/store';
+// import { waitForServicesRestart } from 'store/store';
 import accounts from 'store/vault/accounts';
 import screen from 'store/wallet/screen';
 import createLogger from '../../utils/logger';
@@ -8,138 +8,138 @@ import createLogger from '../../utils/logger';
 const log = createLogger('launcherActions');
 
 function isEthRpcReady(state) {
-    return state.launcher.getIn(['geth', 'status']) === 'ready';
+  return state.launcher.getIn(['geth', 'status']) === 'ready';
 }
 
 function isVaultReady(state) {
-    return state.launcher.getIn(['connector', 'status']) === 'ready';
+  return state.launcher.getIn(['connector', 'status']) === 'ready';
 }
 
 export function readConfig() {
-    if (typeof window.process !== 'undefined') {
-        const remote = global.require('electron').remote;
-        const launcherConfig = remote.getGlobal('launcherConfig').get();
+  if (typeof window.process !== 'undefined') {
+    const remote = global.require('electron').remote;
+    const launcherConfig = remote.getGlobal('launcherConfig').get();
 
-        log.debug(`Got launcher config from electron: ${JSON.stringify(launcherConfig)}`);
+    log.debug(`Got launcher config from electron: ${JSON.stringify(launcherConfig)}`);
 
-        return {
-            type: 'LAUNCHER/CONFIG',
-            config: launcherConfig,
-            launcherType: 'electron',
-        };
-    }
     return {
-        type: 'LAUNCHER/CONFIG',
-        config: {},
-        launcherType: 'browser',
+      type: 'LAUNCHER/CONFIG',
+      config: launcherConfig,
+      launcherType: 'electron',
     };
+  }
+  return {
+    type: 'LAUNCHER/CONFIG',
+    config: {},
+    launcherType: 'browser',
+  };
 }
 
 export function loadClientVersion() {
-    return (dispatch) => {
-        api.geth.web3.clientVersion().then((result) => {
-            dispatch({
-                type: 'LAUNCHER/CONFIG',
-                config: {
-                    chain: {
-                        client: result,
-                    },
-                },
-            });
-            dispatch({
-                type: 'LAUNCHER/SETTINGS',
-                updated: true,
-            });
-        });
-    };
+  return (dispatch) => {
+    api.geth.web3.clientVersion().then((result) => {
+      dispatch({
+        type: 'LAUNCHER/CONFIG',
+        config: {
+          chain: {
+            client: result,
+          },
+        },
+      });
+      dispatch({
+        type: 'LAUNCHER/SETTINGS',
+        updated: true,
+      });
+    });
+  };
 }
 
 export function useRpc(gethProvider) {
-    return (dispatch) => {
-        dispatch({
-            type: 'LAUNCHER/CONFIG',
-            config: {
-                ...gethProvider,
-            },
-        });
-        dispatch({
-            type: 'LAUNCHER/SETTINGS',
-            updated: true,
-        });
-    };
+  return (dispatch) => {
+    dispatch({
+      type: 'LAUNCHER/CONFIG',
+      config: {
+        ...gethProvider,
+      },
+    });
+    dispatch({
+      type: 'LAUNCHER/SETTINGS',
+      updated: true,
+    });
+  };
 }
 
 export function agreeOnTerms(v) {
-    ipcRenderer.send('terms', v);
-    return {
-        type: 'LAUNCHER/TERMS',
-        version: v,
-    };
+  ipcRenderer.send('terms', v);
+  return {
+    type: 'LAUNCHER/TERMS',
+    version: v,
+  };
 }
 
 export function saveSettings(extraSettings) {
-    extraSettings = extraSettings || {};
-    return (dispatch, getState) => {
-        const geth = getState().launcher.get('geth').toJS();
-        const chain = getState().launcher.get('chain').toJS();
+  extraSettings = extraSettings || {};
+  return (dispatch, getState) => {
+    const geth = getState().launcher.get('geth').toJS();
+    const chain = getState().launcher.get('chain').toJS();
 
-        const settings = { geth, chain, ...extraSettings };
+    const settings = { geth, chain, ...extraSettings };
 
-        log.info('Save settings', settings);
+    log.info('Save settings', settings);
 
-        //waitForServicesRestart();
+    // waitForServicesRestart();
 
-        ipcRenderer.send('settings', settings);
+    ipcRenderer.send('settings', settings);
 
-        dispatch({
-            type: 'LAUNCHER/SETTINGS',
-            updated: false,
-        });
-    };
+    dispatch({
+      type: 'LAUNCHER/SETTINGS',
+      updated: false,
+    });
+  };
 }
 
 export function listenElectron() {
-    return (dispatch, getState) => {
-        log.debug('Running launcher listener');
+  return (dispatch, getState) => {
+    log.debug('Running launcher listener');
 
-        ipcRenderer.on('launcher', (event, type, message) => {
-            log.debug('launcher listener: ', 'type', type, 'message', message);
+    ipcRenderer.on('launcher', (event, type, message) => {
+      log.debug('launcher listener: ', 'type', type, 'message', message);
 
-            dispatch({
-                type: `LAUNCHER/${type}`,
-                ...message,
-            });
+      dispatch({
+        type: `LAUNCHER/${type}`,
+        ...message,
+      });
 
-            const state = getState();
+      const state = getState();
 
-            if (type === 'CHAIN') {
-                if (getState().launcher.getIn(['chain', 'id']) !== message.chainId) {
-                    // Launcher sent chain different from what user has chosen
-                    // Alert !
-                    dispatch(screen.actions.showError(
-                        `Launcher connected to invalid chain: [${message.chain}, ${message.chainId}]`));
-                } else {
-                    dispatch({
-                        type: 'NETWORK/SWITCH_CHAIN',
-                        ...message,
-                    });
-                }
-            }
+      if (type === 'CHAIN') {
+        if (getState().launcher.getIn(['chain', 'id']) !== message.chainId) {
+          // Launcher sent chain different from what user has chosen
+          // Alert !
+          dispatch(screen.actions.showError(
+            `Launcher connected to invalid chain: [${message.chain}, ${message.chainId}]`));
+        } else {
+          dispatch({
+            type: 'NETWORK/SWITCH_CHAIN',
+            ...message,
+          });
+        }
+      }
 
 
-            if (isEthRpcReady(state)) {
-                dispatch(loadClientVersion());
-            }
-            if (isVaultReady(state) && isEthRpcReady(state)) {
-                dispatch(accounts.actions.loadAccountsList());
-            }
-        });
-    };
+      if (isEthRpcReady(state)) {
+        dispatch(loadClientVersion());
+      }
+      if (isVaultReady(state) && isEthRpcReady(state)) {
+        dispatch(accounts.actions.loadAccountsList());
+      }
+    });
+  };
 }
 
 export function connecting(value) {
-    return {
-        type: 'LAUNCHER/CONNECTING',
-        value,
-    };
+  return {
+    type: 'LAUNCHER/CONNECTING',
+    value,
+  };
 }

@@ -13,7 +13,6 @@ const PAGES = {
 };
 
 class MnemonicWizard extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {

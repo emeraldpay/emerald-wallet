@@ -9,41 +9,41 @@ import AccountsList from '../../../components/accounts/AccountList';
 import Header from './header';
 
 const Dashboard = (props) => {
-    const { connecting } = props;
+  const { connecting } = props;
 
-    if (connecting) {
-        return (
-            <div>
-                <Grid>
-                    <Row center="xs">
-                        <Col xs={3}>
-                            <i className="fa fa-spin fa-spinner"/> Loading...
-                        </Col>
-                    </Row>
-                </Grid>
-            </div>
-        );
-    }
-
+  if (connecting) {
     return (
-        <div>
-            <Header />
-            <AccountsList/>
-            {/* #hidden#146 <TokensList/> */}
-            <TransactionsHistory/>
-        </div>
+      <div>
+        <Grid>
+          <Row center="xs">
+            <Col xs={3}>
+              <i className="fa fa-spin fa-spinner"/> Loading...
+            </Col>
+          </Row>
+        </Grid>
+      </div>
     );
+  }
+
+  return (
+    <div>
+      <Header />
+      <AccountsList/>
+      {/* #hidden#146 <TokensList/> */}
+      <TransactionsHistory/>
+    </div>
+  );
 };
 
 Dashboard.propTypes = {
-    connecting: PropTypes.bool.isRequired,
+  connecting: PropTypes.bool.isRequired,
 };
 
 export default connect(
-    (state, ownProps) => ({
-        accounts: state.accounts.get('accounts', Immutable.List()),
-        connecting: state.launcher.get('connecting'),
-    }),
-    (dispatch, ownProps) => ({
-    })
+  (state, ownProps) => ({
+    accounts: state.accounts.get('accounts', Immutable.List()),
+    connecting: state.launcher.get('connecting'),
+  }),
+  (dispatch, ownProps) => ({
+  })
 )(Dashboard);

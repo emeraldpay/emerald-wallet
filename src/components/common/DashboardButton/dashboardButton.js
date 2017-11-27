@@ -5,21 +5,21 @@ import KeyboardArrowLeft from 'material-ui/svg-icons/hardware/keyboard-arrow-lef
 import styles from './dashboardButton.scss';
 
 const style = {
-    color: '#747474',
+  color: '#747474',
 };
 
 const DashboardButton = (props) => {
-    const { onClick, label } = props;
-    return (
-        <FlatButton onClick={ onClick } >
-            <div className={ styles.button }>
-                <div className={ styles.iconContainer }>
-                    <KeyboardArrowLeft color={ style.color }/>
-                </div>
-                <div>{ label || 'Dashboard' }</div>
-            </div>
-        </FlatButton>
-    );
+  const { onClick, label } = props;
+  return (
+    <FlatButton onClick={ onClick } >
+      <div className={ styles.button }>
+        <div className={ styles.iconContainer }>
+          <KeyboardArrowLeft color={ style.color }/>
+        </div>
+        <div>{ label || 'Dashboard' }</div>
+      </div>
+    </FlatButton>
+  );
 };
 
 export default DashboardButton;

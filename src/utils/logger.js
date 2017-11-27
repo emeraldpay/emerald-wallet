@@ -9,35 +9,35 @@ class Logger {
     category: string;
 
     constructor(category: string) {
-        this.category = category;
+      this.category = category;
     }
 
     info(text: string, ...params: Array<any>): void {
-        this.log(log.info, text, params);
+      this.log(log.info, text, params);
     }
 
     debug(text: string, ...params: Array<any>): void {
-        this.log(log.debug, text, params);
+      this.log(log.debug, text, params);
     }
 
     error(text: string, ...params: Array<any>): void {
-        this.log(log.error, text, params);
+      this.log(log.error, text, params);
     }
 
     warn(text: string, ...params: Array<any>): void {
-        this.log(log.warn, text, params);
+      this.log(log.warn, text, params);
     }
 
     trace(text: string, ...params: Array<any>): void {
-        this.log(log.verbose, text, params);
+      this.log(log.verbose, text, params);
     }
 
     log(func: (...params: any[]) => void, text: string, params: Array<any>) {
-        if (params.length > 0) {
-            func(`${this.category} - ${text}`, ...params);
-        } else {
-            func(`${this.category} - ${text}`);
-        }
+      if (params.length > 0) {
+        func(`${this.category} - ${text}`, ...params);
+      } else {
+        func(`${this.category} - ${text}`);
+      }
     }
 }
 

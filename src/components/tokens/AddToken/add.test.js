@@ -3,5 +3,5 @@ import { shallow } from 'enzyme';
 import { AddToken } from './add';
 
 test('It renders', () => {
-    const component = shallow(<AddToken/>);
+  const component = shallow(<AddToken/>);
 });

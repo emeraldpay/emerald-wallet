@@ -3,7 +3,7 @@ import * as React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import saveAs from '../../../lib/saveAs';
 import accounts from '../../../store/vault/accounts';
 import screen from '../../../store/wallet/screen';
@@ -20,23 +20,23 @@ const PAGES = {
 };
 
 type Props = {
-    dispatch: any,
-    t: any
+  dispatch: any,
+  t: any,
+  backLabel: string,
 }
 
 type State = {
-    loading: boolean,
-    page: number,
-    accountId: string,
-    passphrase?: string,
-    privateKey?: string,
+  loading: boolean,
+  page: number,
+  accountId: string,
+  passphrase?: string,
+  privateKey?: string,
 }
 
 class GenerateAccount extends React.Component<Props, State> {
   static propTypes = {
     dispatch: PropTypes.func,
     t: PropTypes.func.isRequired,
-    onBackScreen: PropTypes.string,
     backLabel: PropTypes.string,
   }
 
@@ -56,14 +56,14 @@ class GenerateAccount extends React.Component<Props, State> {
 
     // Create new account
     this.props.dispatch(accounts.actions.createAccount(passphrase))
-            .then((accountId) => {
-              this.setState({
-                loading: false,
-                accountId,
-                passphrase,
-                page: PAGES.DOWNLOAD,
-              });
-            });
+      .then((accountId) => {
+        this.setState({
+          loading: false,
+          accountId,
+          passphrase,
+          page: PAGES.DOWNLOAD,
+        });
+      });
   };
 
   download = () => {
@@ -83,7 +83,7 @@ class GenerateAccount extends React.Component<Props, State> {
           contents: result,
         };
 
-                // Give encrypted key file to user
+        // Give encrypted key file to user
         const blob = new Blob([fileData.contents], {type: fileData.mime});
         const url = URL.createObjectURL(blob);
         saveAs(url, fileData.filename);
@@ -108,10 +108,10 @@ class GenerateAccount extends React.Component<Props, State> {
     this.props.dispatch(screen.actions.gotoScreen('home'));
   }
 
-  updateAccountProps = (name) => {
+  updateAccountProps = (name: string) => {
     const { dispatch } = this.props;
     dispatch(accounts.actions.updateAccount(this.state.accountId, name))
-            .then(() => dispatch(screen.actions.gotoScreen('home')));
+      .then(() => dispatch(screen.actions.gotoScreen('home')));
   }
 
   goToDashboard = () => {
@@ -134,11 +134,11 @@ class GenerateAccount extends React.Component<Props, State> {
         return (<ShowPrivateDialog t={ t } privateKey={ privateKey } onNext={ this.editAccountProps }/>);
       case PAGES.ACCOUNT_PROPS:
         return (
-                <AccountPropertiesDialog
-                    t={ t }
-                    onSave={ this.updateAccountProps }
-                    onSkip={ this.skipAccountProps }
-                />);
+          <AccountPropertiesDialog
+            t={ t }
+            onSave={ this.updateAccountProps }
+            onSkip={ this.skipAccountProps }
+          />);
       default: return null;
     }
   }

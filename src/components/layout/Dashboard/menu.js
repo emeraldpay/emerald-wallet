@@ -18,7 +18,6 @@ const styles = {
 };
 
 class DashboardMenu extends React.Component {
-
   static propTypes = {
     addToken: PropTypes.func,
     generate: PropTypes.func,
@@ -39,7 +38,7 @@ class DashboardMenu extends React.Component {
   }
 
   handleTouchTap = (event) => {
-        // This prevents ghost click.
+    // This prevents ghost click.
     event.preventDefault();
 
     this.setState({
@@ -67,69 +66,69 @@ class DashboardMenu extends React.Component {
     const { generate, importJson, importLedger, importPrivateKey, importMnemonic, createMnemonic } = this.props;
     const { t, style } = this.props;
     return (
-            <div style={ style }>
-                <FlatButton
-                    onTouchTap={ this.handleTouchTap }
-                    label={ t('list.popupMenuLabel') }
-                    labelStyle={ styles.buttonLabel }
-                    style={ styles.button }
-                    hoverColor="transparent"
-                    icon={<AddIcon style={ styles.addIcon } />}
-                />
-                <Popover
-                    open={this.state.open}
-                    anchorEl={this.state.anchorEl}
-                    anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-                    targetOrigin={{horizontal: 'left', vertical: 'top'}}
-                    onRequestClose={this.handleRequestClose}
-                >
-                    <List>
-                        <ListItem
-                            primaryText="Ledger Nano S"
-                            secondaryText="Use Ledger hardware key to manage signatures"
-                            onClick={importLedger}
-                            leftIcon={<LedgerIcon />}
-                        />
-                        <ListItem
-                            primaryText={t('add.generate.title')}
-                            secondaryText={t('add.generate.subtitle')}
-                            onClick={ generate }
-                            leftIcon={<FontIcon className="fa fa-random"/>}
-                        />
-                        <ListItem
-                          primaryText={t('add.mnemonic.title')}
-                          secondaryText={t('add.mnemonic.subtitle')}
-                          onClick={ createMnemonic }
-                          leftIcon={<FontIcon className="fa fa-random"/>}
-                        />
+      <div style={ style }>
+        <FlatButton
+          onTouchTap={ this.handleTouchTap }
+          label={ t('list.popupMenuLabel') }
+          labelStyle={ styles.buttonLabel }
+          style={ styles.button }
+          hoverColor="transparent"
+          icon={<AddIcon style={ styles.addIcon } />}
+        />
+        <Popover
+          open={this.state.open}
+          anchorEl={this.state.anchorEl}
+          anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
+          targetOrigin={{horizontal: 'left', vertical: 'top'}}
+          onRequestClose={this.handleRequestClose}
+        >
+          <List>
+            <ListItem
+              primaryText="Ledger Nano S"
+              secondaryText="Use Ledger hardware key to manage signatures"
+              onClick={importLedger}
+              leftIcon={<LedgerIcon />}
+            />
+            <ListItem
+              primaryText={t('add.generate.title')}
+              secondaryText={t('add.generate.subtitle')}
+              onClick={ generate }
+              leftIcon={<FontIcon className="fa fa-random"/>}
+            />
+            <ListItem
+              primaryText={t('add.mnemonic.title')}
+              secondaryText={t('add.mnemonic.subtitle')}
+              onClick={ createMnemonic }
+              leftIcon={<FontIcon className="fa fa-random"/>}
+            />
 
-                        <ListItem
-                            primaryText={t('add.import.title')}
-                            secondaryText={t('add.import.subtitle')}
-                            onClick={ importJson }
-                            leftIcon={<FontIcon className="fa fa-code"/>}
-                        />
-                        <ListItem
-                            primaryText={ t('add.importPrivateKey.title') }
-                            secondaryText={ t('add.importPrivateKey.subtitle') }
-                            onClick={importPrivateKey}
-                            leftIcon={<FontIcon className="fa fa-key"/>}
-                        />
-                      <ListItem
-                        primaryText={ t('add.importMnemonic.title') }
-                        secondaryText={ t('add.importMnemonic.subtitle') }
-                        onClick={ importMnemonic }
-                        leftIcon={<FontIcon className="fa fa-key"/>}
-                      />
-                        <ListItem
-                            primaryText={ t('add.token.title') }
-                            secondaryText={ t('add.token.subtitle') }
-                            onClick={ this.handleAddToken }
-                            leftIcon={<FontIcon className="fa fa-money"/>}
-                        />
-                    </List>
-                </Popover>
-            </div>
+            <ListItem
+              primaryText={t('add.import.title')}
+              secondaryText={t('add.import.subtitle')}
+              onClick={ importJson }
+              leftIcon={<FontIcon className="fa fa-code"/>}
+            />
+            <ListItem
+              primaryText={ t('add.importPrivateKey.title') }
+              secondaryText={ t('add.importPrivateKey.subtitle') }
+              onClick={importPrivateKey}
+              leftIcon={<FontIcon className="fa fa-key"/>}
+            />
+            <ListItem
+              primaryText={ t('add.importMnemonic.title') }
+              secondaryText={ t('add.importMnemonic.subtitle') }
+              onClick={ importMnemonic }
+              leftIcon={<FontIcon className="fa fa-key"/>}
+            />
+            <ListItem
+              primaryText={ t('add.token.title') }
+              secondaryText={ t('add.token.subtitle') }
+              onClick={ this.handleAddToken }
+              leftIcon={<FontIcon className="fa fa-money"/>}
+            />
+          </List>
+        </Popover>
+      </div>
     );
   }
 }

@@ -18,28 +18,28 @@ import './bootstrapButtons.scss';
 const log = createLogger('index');
 
 const muiTheme = getMuiTheme({
-    fontFamily: 'Rubik',
+  fontFamily: 'Rubik',
 });
 
 function start() {
-    log.info('Starting Emerald Wallet...');
+  log.info('Starting Emerald Wallet...');
 
-    // Needed for onTouchTap
-    injectTapEventPlugin();
+  // Needed for onTouchTap
+  injectTapEventPlugin();
 
-    const App = () => (
-        <I18nextProvider i18n={ i18n }>
-            <Provider store={store}>
-                <MuiThemeProvider muiTheme={muiTheme}>
-                    <Main />
-                </MuiThemeProvider>
-            </Provider>
-        </I18nextProvider>
-    );
+  const App = () => (
+    <I18nextProvider i18n={ i18n }>
+      <Provider store={store}>
+        <MuiThemeProvider muiTheme={muiTheme}>
+          <Main />
+        </MuiThemeProvider>
+      </Provider>
+    </I18nextProvider>
+  );
 
-    ReactDOM.render(<App />, document.getElementById('app'));
+  ReactDOM.render(<App />, document.getElementById('app'));
 
-    startStore();
+  startStore();
 }
 
 window.ETCEMERALD = window.ETCEMERALD || {};

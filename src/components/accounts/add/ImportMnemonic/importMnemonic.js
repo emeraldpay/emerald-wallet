@@ -23,15 +23,16 @@ class ImportMnemonic extends React.Component {
   }
 
   submit() {
-    const { handleSubmit, accounts, dispatch } = this.props;
+    const { handleSubmit, dispatch } = this.props;
+    const accs = this.props.accounts;
 
     handleSubmit().then((result) => {
       if (result.error) {
         this.setState({error: result.error.toString()});
       } else {
         this.setState({accountId: result});
-        const p = accounts.findKey((acc) => acc.get('id') === this.state.accountId);
-        const account = p && (p >= 0) && accounts.get(p);
+        const p = accs.findKey((acc) => acc.get('id') === this.state.accountId);
+        const account = p && (p >= 0) && accs.get(p);
         dispatch(screen.actions.gotoScreen('account', account));
       }
     }).catch((error) => {
@@ -45,54 +46,54 @@ class ImportMnemonic extends React.Component {
     return (
       <Form caption="Import Mnemonic" backButton={ <DashboardButton onClick={ onBack }/> }>
         <Row>
-            <div style={formStyles.left}/>
-            <div style={formStyles.right}>
-                <div style={{width: '100%'}}>
-                    <div className={styles.passwordLabel}>Enter a strong password</div>
-                    <div className={styles.passwordSubLabel}>This password will be required to confirm all account
+          <div style={formStyles.left}/>
+          <div style={formStyles.right}>
+            <div style={{width: '100%'}}>
+              <div className={styles.passwordLabel}>Enter a strong password</div>
+              <div className={styles.passwordSubLabel}>This password will be required to confirm all account
                         operations.
-                    </div>
-                    <div style={{marginTop: '30px'}}>
-                        <Field
-                            name="password"
-                            type="password"
-                            component={TextField}
-                            fullWidth={true}
-                            underlineShow={false}
-                        />
-                    </div>
-                </div>
+              </div>
+              <div style={{marginTop: '30px'}}>
+                <Field
+                  name="password"
+                  type="password"
+                  component={TextField}
+                  fullWidth={true}
+                  underlineShow={false}
+                />
+              </div>
             </div>
+          </div>
         </Row>
         <Row>
-            <div style={formStyles.left}/>
-            <div style={formStyles.right}>
-                <Warning fullWidth={ true }>
-                    <WarningHeader>Don&#39;t forget it.</WarningHeader>
-                    <WarningText>If you forget this password, you will lose access to the account and its funds.</WarningText>
-                </Warning>
-            </div>
+          <div style={formStyles.left}/>
+          <div style={formStyles.right}>
+            <Warning fullWidth={ true }>
+              <WarningHeader>Don&#39;t forget it.</WarningHeader>
+              <WarningText>If you forget this password, you will lose access to the account and its funds.</WarningText>
+            </Warning>
+          </div>
         </Row>
 
         <Row>
-            <div style={formStyles.left}>
+          <div style={formStyles.left}>
+          </div>
+          <div style={formStyles.right}>
+            <div style={{width: '100%'}}>
+              <div className={ styles.mnemonicLabel }>Enter a mnemonic phrase</div>
+              <div>
+                <Field
+                  multiLine={ true }
+                  rowsMax={ 4 }
+                  rows={ 2 }
+                  name="mnemonic"
+                  component={ TextField }
+                  fullWidth={ true }
+                  underlineShow={ false }
+                />
+              </div>
             </div>
-            <div style={formStyles.right}>
-                <div style={{width: '100%'}}>
-                    <div className={ styles.mnemonicLabel }>Enter a mnemonic phrase</div>
-                    <div>
-                        <Field
-                          multiLine={ true }
-                          rowsMax={ 4 }
-                          rows={ 2 }
-                          name="mnemonic"
-                          component={ TextField }
-                          fullWidth={ true }
-                          underlineShow={ false }
-                        />
-                    </div>
-                </div>
-            </div>
+          </div>
         </Row>
 
         <Row>
@@ -114,10 +115,10 @@ class ImportMnemonic extends React.Component {
         </Row>
 
         <Row>
-            <div style={formStyles.left}/>
-            <div style={formStyles.right}>
-                <Button primary label="Import" onClick={ this.submit }/>
-            </div>
+          <div style={formStyles.left}/>
+          <div style={formStyles.right}>
+            <Button primary label="Import" onClick={ this.submit }/>
+          </div>
         </Row>
         { this.state.error }
       </Form>
@@ -131,23 +132,23 @@ const importForm = reduxForm({
 })(ImportMnemonic);
 
 export default connect(
-    (state, ownProps) => ({
-      initialValues: {
-        mnemonic: ownProps.mnemonic,
-      },
-      accounts: state.accounts.get('accounts', Immutable.List()),
-    }),
-    (dispatch, ownProps) => ({
-      onSubmit: (data) => {
-        return dispatch(accounts.actions.importMnemonic(data.password, data.mnemonic, '', ''));
-      },
-      onBack: () => {
-        if (ownProps.onBack) {
-          ownProps.onBack();
-        } else {
-          dispatch(screen.actions.gotoScreen('home'));
-        }
-      },
-    })
+  (state, ownProps) => ({
+    initialValues: {
+      mnemonic: ownProps.mnemonic,
+    },
+    accounts: state.accounts.get('accounts', Immutable.List()),
+  }),
+  (dispatch, ownProps) => ({
+    onSubmit: (data) => {
+      return dispatch(accounts.actions.importMnemonic(data.password, data.mnemonic, '', ''));
+    },
+    onBack: () => {
+      if (ownProps.onBack) {
+        ownProps.onBack();
+      } else {
+        dispatch(screen.actions.gotoScreen('home'));
+      }
+    },
+  })
 )(importForm);
 

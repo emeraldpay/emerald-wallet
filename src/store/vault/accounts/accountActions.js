@@ -33,11 +33,11 @@ export function loadAccountBalance(address: string) {
         value: result,
       });
     });
-        // Tokens
+    // Tokens
     const tokens = getState().tokens;
     if (!tokens.get('loading')) {
       tokens.get('tokens')
-                .map((token) => dispatch(loadTokenBalanceOf(token.toJS(), address)));
+        .map((token) => dispatch(loadTokenBalanceOf(token.toJS(), address)));
     }
   };
 }
@@ -55,11 +55,11 @@ function fetchBalances(addresses: Array<string>) {
             accountId: address,
             value: balances[address],
           });
-                    // Tokens
+          // Tokens
           const tokens = getState().tokens;
           if (!tokens.get('loading')) {
             tokens.get('tokens')
-                            .map((token) => dispatch(loadTokenBalanceOf(token.toJS(), address)));
+              .map((token) => dispatch(loadTokenBalanceOf(token.toJS(), address)));
           }
         }
       });
@@ -74,17 +74,17 @@ function fetchHdPaths() {
   return (dispatch, getState, api) => {
     const chain = currentChain(getState());
     getState().accounts.get('accounts')
-            .filter((a) => a.get('hardware', false))
-            .forEach((a) => {
-              const address = a.get('id');
-              api.emerald.exportAccount(address, chain).then((result) => {
-                dispatch({
-                  type: ActionTypes.SET_HD_PATH,
-                  accountId: address,
-                  hdpath: JSON.parse(result).crypto.hd_path,
-                });
-              });
-            });
+      .filter((a) => a.get('hardware', false))
+      .forEach((a) => {
+        const address = a.get('id');
+        api.emerald.exportAccount(address, chain).then((result) => {
+          dispatch({
+            type: ActionTypes.SET_HD_PATH,
+            accountId: address,
+            hdpath: JSON.parse(result).crypto.hd_path,
+          });
+        });
+      });
   };
 }
 
@@ -140,17 +140,17 @@ export function createAccount(passphrase: string, name: string = '', description
     const chain = currentChain(getState());
 
     return api.emerald.newAccount(passphrase, name, description, chain)
-            .then((result) => {
-              log.debug(`Account ${result} created`);
-              dispatch({
-                type: ActionTypes.ADD_ACCOUNT,
-                accountId: result,
-                name,
-                description,
-              });
-              dispatch(loadAccountBalance(result));
-              return result;
-            }).catch(screen.actions.catchError(dispatch));
+      .then((result) => {
+        log.debug(`Account ${result} created`);
+        dispatch({
+          type: ActionTypes.ADD_ACCOUNT,
+          accountId: result,
+          name,
+          description,
+        });
+        dispatch(loadAccountBalance(result));
+        return result;
+      }).catch(screen.actions.catchError(dispatch));
   };
 }
 
@@ -158,14 +158,14 @@ export function updateAccount(address: string, name: string, description?: strin
   return (dispatch, getState, api) => {
     const chain = currentChain(getState());
     return api.emerald.updateAccount(address, name, description, chain)
-            .then((result) => {
-              dispatch({
-                type: ActionTypes.UPDATE_ACCOUNT,
-                address,
-                name,
-                description,
-              });
-            });
+      .then((result) => {
+        dispatch({
+          type: ActionTypes.UPDATE_ACCOUNT,
+          address,
+          name,
+          description,
+        });
+      });
   };
 }
 
@@ -188,7 +188,8 @@ function onTxSend(dispatch, sourceTx: Transaction) {
     });
     dispatch(loadAccountBalance(sourceTx.from));
     const sentTx = Object.assign({}, sourceTx, {hash: txhash});
-        // TODO: dependency on wallet/history module!
+
+    // TODO: dependency on wallet/history module!
     dispatch(history.actions.trackTx(sentTx));
     dispatch(screen.actions.gotoScreen('transaction', sentTx));
   };
@@ -200,26 +201,26 @@ function getNonce(api, address: string) {
 
 function withNonce(tx: Transaction): (nonce: string) => Promise<Transaction> {
   return (nonce) => new Promise((resolve, reject) =>
-        resolve(Object.assign({}, tx, { nonce: convert.toHex(nonce) }))
-    );
+    resolve(Object.assign({}, tx, { nonce: convert.toHex(nonce) }))
+  );
 }
 
 function verifySender(expected) {
   return (raw: string) =>
-        new Promise((resolve, reject) => {
-          const tx = new EthereumTx(raw);
-          if (tx.verifySignature()) {
-            if (`0x${tx.getSenderAddress().toString('hex').toLowerCase()}` !== expected.toLowerCase()) {
-              log.error(`WRONG SENDER: 0x${tx.getSenderAddress().toString('hex')} != ${expected}`);
-              reject(new Error('Emerald Vault returned signature from wrong Sender'));
-            } else {
-              resolve(raw);
-            }
-          } else {
-            log.error(`Invalid signature: ${raw}`);
-            reject(new Error('Emerald Vault returned invalid signature for the transaction'));
-          }
-        });
+    new Promise((resolve, reject) => {
+      const tx = new EthereumTx(raw);
+      if (tx.verifySignature()) {
+        if (`0x${tx.getSenderAddress().toString('hex').toLowerCase()}` !== expected.toLowerCase()) {
+          log.error(`WRONG SENDER: 0x${tx.getSenderAddress().toString('hex')} != ${expected}`);
+          reject(new Error('Emerald Vault returned signature from wrong Sender'));
+        } else {
+          resolve(raw);
+        }
+      } else {
+        log.error(`Invalid signature: ${raw}`);
+        reject(new Error('Emerald Vault returned invalid signature for the transaction'));
+      }
+    });
 }
 
 function signTx(api, tx: Transaction, passphrase: string, chain: string) {
@@ -227,7 +228,7 @@ function signTx(api, tx: Transaction, passphrase: string, chain: string) {
 }
 
 export function sendTransaction(from: string, passphrase: string, to: ?string, gas: string,
-                                gasPrice: string, value: string, data?: string) {
+  gasPrice: string, value: string, data?: string) {
   const originalTx: Transaction = {
     from,
     to,
@@ -241,15 +242,15 @@ export function sendTransaction(from: string, passphrase: string, to: ?string, g
   return (dispatch, getState, api) => {
     const chain = currentChain(getState());
     getNonce(api, from)
-            .then(withNonce(originalTx))
-            .then((tx) =>
-                signTx(api, tx, passPhrase, chain)
-                    .then(unwrap)
-                    .then(verifySender(from))
-                    .then((signed) => api.geth.eth.sendRawTransaction(signed))
-                    .then(onTxSend(dispatch, tx))
-            )
-            .catch(screen.actions.catchError(dispatch));
+      .then(withNonce(originalTx))
+      .then((tx) =>
+        signTx(api, tx, passPhrase, chain)
+          .then(unwrap)
+          .then(verifySender(from))
+          .then((signed) => api.geth.eth.sendRawTransaction(signed))
+          .then(onTxSend(dispatch, tx))
+      )
+      .catch(screen.actions.catchError(dispatch));
   };
 }
 
@@ -266,10 +267,10 @@ export function createContract(accountId: string, passphrase: string, gas, gasPr
   return (dispatch, getState, api) => {
     const chain = currentChain(getState());
     api.emerald.signTransaction(txData, { chain })
-            .then(unwrap)
-            .then(api.geth.eth.sendRawTransaction)
-            .then(onTxSend(dispatch, txData))
-            .catch(log.error);
+      .then(unwrap)
+      .then(api.geth.eth.sendRawTransaction)
+      .then(onTxSend(dispatch, txData))
+      .catch(log.error);
   };
 }
 
@@ -346,34 +347,34 @@ export function importWallet(wallet, name: string, description: string) {
 
 export function loadPendingTransactions() {
   return (dispatch, getState, api) =>
-        api.geth.eth.getBlockByNumber('pending', true)
-            .then((result) => {
-              const addrs = getState().accounts.get('accounts')
-                    .map((acc) => acc.get('id'));
-              const txes = result.transactions.filter((t) =>
-                    (addrs.includes(t.to) || addrs.includes(t.from))
-                );
-                // TODO: dependency on wallet/history module
-              dispatch(history.actions.processPending(txes));
-              for (const tx of txes) {
-                const disp = {
-                  type: ActionTypes.PENDING_BALANCE,
-                  value: tx.value,
-                  gas: tx.gas,
-                  gasPrice: tx.gasPrice,
-                  from: '',
-                  to: '',
-                };
-                if (addrs.includes(tx.from)) {
-                  disp.from = tx.from;
-                  dispatch(disp);
-                }
-                if (addrs.includes(tx.to)) {
-                  disp.to = tx.to;
-                  dispatch(disp);
-                }
-              }
-            });
+    api.geth.eth.getBlockByNumber('pending', true)
+      .then((result) => {
+        const addrs = getState().accounts.get('accounts')
+          .map((acc) => acc.get('id'));
+        const txes = result.transactions.filter((t) =>
+          (addrs.includes(t.to) || addrs.includes(t.from))
+        );
+        // TODO: dependency on wallet/history module
+        dispatch(history.actions.processPending(txes));
+        for (const tx of txes) {
+          const disp = {
+            type: ActionTypes.PENDING_BALANCE,
+            value: tx.value,
+            gas: tx.gas,
+            gasPrice: tx.gasPrice,
+            from: '',
+            to: '',
+          };
+          if (addrs.includes(tx.from)) {
+            disp.from = tx.from;
+            dispatch(disp);
+          }
+          if (addrs.includes(tx.to)) {
+            disp.to = tx.to;
+            dispatch(disp);
+          }
+        }
+      });
 }
 
 export function hideAccount(accountId: string) {
@@ -381,9 +382,9 @@ export function hideAccount(accountId: string) {
     const chain = currentChain(getState());
 
     return api.emerald.hideAccount(accountId, chain)
-          .then((result) => {
-            return result;
-          }).catch(screen.actions.catchError(dispatch));
+      .then((result) => {
+        return result;
+      }).catch(screen.actions.catchError(dispatch));
   };
 }
 

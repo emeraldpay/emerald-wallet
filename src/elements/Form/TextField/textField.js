@@ -1,3 +1,4 @@
+// @flow
 import React from 'react';
 import { TextField as ReduxFormTextField } from 'redux-form-material-ui';
 
@@ -18,8 +19,14 @@ const container = {
   alignItems: 'center',
 };
 
-export const TextField = (props) => {
-  const { rightIcon, invalid, style, ...other } = props;
+
+type Props = {
+  rightIcon: Element<typeof Icon>,
+  invalid: boolean,
+  style: Object,
+}
+
+export const TextField = ({ rightIcon, invalid, style, ...other }: Props) => {
   if (other.fullWidth) {
     container.width = '100%';
   }
@@ -31,10 +38,11 @@ export const TextField = (props) => {
 
   const textFieldStyle = invalid ? {...defaultStyle, color: '#BC0000' } : defaultStyle;
   return (
-        <div style={ containerStyle }>
-            <ReduxFormTextField { ...other } style={ textFieldStyle } />{ rightIcon }
-        </div>
+    <div style={ containerStyle }>
+      <ReduxFormTextField { ...other } style={ textFieldStyle } />{ rightIcon }
+    </div>
   );
 };
+
 
 export default TextField;

@@ -7,7 +7,6 @@ import Button from 'elements/Button';
 import { Warning, WarningHeader, WarningText } from 'elements/Warning';
 
 export class NewMnemonic extends React.Component {
-
   static propTypes = {
     onBack: PropTypes.func,
     mnemonic: PropTypes.string,

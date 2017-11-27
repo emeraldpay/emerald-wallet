@@ -5,7 +5,6 @@ import { TextField } from 'material-ui';
 import styles from './input.scss';
 
 export default class Input extends React.Component {
-
   static propTypes = {
     value: PropTypes.string,
     underlineShow: PropTypes.bool,
@@ -26,18 +25,18 @@ export default class Input extends React.Component {
   render() {
     const { value, underlineShow, className, multiLine, rowsMax, rows, disabled } = this.props;
     return (
-        <div className={ styles.container }>
-          <TextField
-            disabled={ disabled }
-            multiLine={ multiLine }
-            rowsMax={ rowsMax }
-            rows={ rows }
-            className={ className }
-            value={ value }
-            underlineShow={ underlineShow }
-            fullWidth={ true }
-          />
-        </div>
+      <div className={ styles.container }>
+        <TextField
+          disabled={ disabled }
+          multiLine={ multiLine }
+          rowsMax={ rowsMax }
+          rows={ rows }
+          className={ className }
+          value={ value }
+          underlineShow={ underlineShow }
+          fullWidth={ true }
+        />
+      </div>
     );
   }
 }
