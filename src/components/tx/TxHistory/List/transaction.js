@@ -15,123 +15,123 @@ import AccountBalance from '../../../accounts/Balance';
 import TokenUnits from '../../../../lib/tokenUnits';
 
 const styles = {
-    repeatIcon: {
-        width: '15px',
-        height: '15px',
-    },
+  repeatIcon: {
+    width: '15px',
+    height: '15px',
+  },
 };
 
 export const Transaction = (props) => {
-    const { showFiat, tx, openTx, openAccount, refreshTx, toAccount, fromAccount } = props;
-    // TODO: move tx status to own component
-    // TODO: timestamp
-    let blockNumber = null;
-    if (tx.get('blockNumber')) {
-        blockNumber = <span style={{color: 'limegreen'}} onClick={ openTx }>Success</span>;
-    } else {
-        blockNumber = <span style={{color: 'gray'}} onClick={ openTx }>
-            <FontIcon className="fa fa-spin fa-spinner"/> In queue...
-        </span>;
-    }
+  const { showFiat, tx, openTx, openAccount, refreshTx, toAccount, fromAccount } = props;
+  // TODO: move tx status to own component
+  // TODO: timestamp
+  let blockNumber = null;
+  if (tx.get('blockNumber')) {
+    blockNumber = <span style={{color: 'limegreen'}} onClick={ openTx }>Success</span>;
+  } else {
+    blockNumber = <span style={{color: 'gray'}} onClick={ openTx }>
+      <FontIcon className="fa fa-spin fa-spinner"/> In queue...
+    </span>;
+  }
 
-    const txValue = tx.get('value') ? new TokenUnits(tx.get('value').value(), 18) : null;
+  const txValue = tx.get('value') ? new TokenUnits(tx.get('value').value(), 18) : null;
 
-    return (
-        <TableRow selectable={false}>
+  return (
+    <TableRow selectable={false}>
 
-            <TableRowColumn style={{ ...tables.mediumStyle, paddingLeft: '0' }}>
-                {txValue && <AccountBalance
-                    symbol="ETC"
-                    showFiat={ showFiat }
-                    balance={ txValue }
-                    onClick={ openTx }
-                    withAvatar={ false }
-                /> }
-            </TableRowColumn>
+      <TableRowColumn style={{ ...tables.mediumStyle, paddingLeft: '0' }}>
+        {txValue && <AccountBalance
+          symbol="ETC"
+          showFiat={ showFiat }
+          balance={ txValue }
+          onClick={ openTx }
+          withAvatar={ false }
+        /> }
+      </TableRowColumn>
 
-            <TableRowColumn style={{...tables.mediumStyle, ...link}} >
-                { blockNumber }
-            </TableRowColumn>
+      <TableRowColumn style={{...tables.mediumStyle, ...link}} >
+        { blockNumber }
+      </TableRowColumn>
 
-            <TableRowColumn>
-                <AddressAvatar
-                    addr={tx.get('from')}
-                    abbreviated={false}
-                    tertiary={fromAccount.get('description')}
-                    primary={fromAccount.get('name')}
-                    onAddressClick={() => openAccount(fromAccount)}
-                />
-            </TableRowColumn>
-            <TableRowColumn style={{...tables.shortestStyle, textOverflow: 'inherit'}}>
-                <FontIcon className='fa fa-angle-right' />
-            </TableRowColumn>
-            <TableRowColumn>
-                <AddressAvatar
-                    addr={tx.get('to')}
-                    abbreviated={false}
-                    tertiary={toAccount.get('description')}
-                    primary={toAccount.get('name')}
-                    onAddressClick={() => openAccount(toAccount)}
-                />
-            </TableRowColumn>
-            <TableRowColumn style={{...tables.shortStyle, paddingRight: '0', textAlign: 'right' }}>
-                <IconButton onClick={ refreshTx } iconStyle={ styles.repeatIcon }>
-                    <RepeatIcon />
-                </IconButton>
-            </TableRowColumn>
-        </TableRow>
-    );
+      <TableRowColumn>
+        <AddressAvatar
+          addr={tx.get('from')}
+          abbreviated={false}
+          tertiary={fromAccount.get('description')}
+          primary={fromAccount.get('name')}
+          onAddressClick={() => openAccount(fromAccount)}
+        />
+      </TableRowColumn>
+      <TableRowColumn style={{...tables.shortestStyle, textOverflow: 'inherit'}}>
+        <FontIcon className='fa fa-angle-right' />
+      </TableRowColumn>
+      <TableRowColumn>
+        <AddressAvatar
+          addr={tx.get('to')}
+          abbreviated={false}
+          tertiary={toAccount.get('description')}
+          primary={toAccount.get('name')}
+          onAddressClick={() => openAccount(toAccount)}
+        />
+      </TableRowColumn>
+      <TableRowColumn style={{...tables.shortStyle, paddingRight: '0', textAlign: 'right' }}>
+        <IconButton onClick={ refreshTx } iconStyle={ styles.repeatIcon }>
+          <RepeatIcon />
+        </IconButton>
+      </TableRowColumn>
+    </TableRow>
+  );
 };
 
 Transaction.propTypes = {
-    showFiat: PropTypes.bool,
-    tx: PropTypes.object.isRequired,
-    openAccount: PropTypes.func.isRequired,
-    toAccount: PropTypes.object.isRequired,
-    fromAccount: PropTypes.object.isRequired,
-    openTx: PropTypes.func.isRequired,
-    refreshTx: PropTypes.func.isRequired,
+  showFiat: PropTypes.bool,
+  tx: PropTypes.object.isRequired,
+  openAccount: PropTypes.func.isRequired,
+  toAccount: PropTypes.object.isRequired,
+  fromAccount: PropTypes.object.isRequired,
+  openTx: PropTypes.func.isRequired,
+  refreshTx: PropTypes.func.isRequired,
 };
 
 export default connect(
-    (state, ownProps) => {
-        const accounts = state.accounts.get('accounts', Immutable.List());
+  (state, ownProps) => {
+    const accounts = state.accounts.get('accounts', Immutable.List());
 
-        const getAccount = (addr) => {
-            if (typeof addr !== 'string') {
-                return Immutable.Map({});
-            }
-            const pos = accounts.findKey((acc) => acc.get('id') === addr);
-            return (pos >= 0) ? accounts.get(pos) : Immutable.Map({});
-        };
+    const getAccount = (addr) => {
+      if (typeof addr !== 'string') {
+        return Immutable.Map({});
+      }
+      const pos = accounts.findKey((acc) => acc.get('id') === addr);
+      return (pos >= 0) ? accounts.get(pos) : Immutable.Map({});
+    };
 
-        const toAccount = getAccount(ownProps.tx.get('to'));
-        const fromAccount = getAccount(ownProps.tx.get('from'));
+    const toAccount = getAccount(ownProps.tx.get('to'));
+    const fromAccount = getAccount(ownProps.tx.get('from'));
 
-        return {
-            showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
-            tx: ownProps.tx,
-            getAccount,
-            toAccount,
-            fromAccount,
-        };
+    return {
+      showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
+      tx: ownProps.tx,
+      getAccount,
+      toAccount,
+      fromAccount,
+    };
+  },
+  (dispatch, ownProps) => ({
+    openTx: () => {
+      const tx = ownProps.tx;
+      dispatch(screen.actions.gotoScreen('transaction', {
+        hash: tx.get('hash'),
+        accountId: ownProps.accountId,
+      })
+      );
     },
-    (dispatch, ownProps) => ({
-        openTx: () => {
-            const tx = ownProps.tx;
-            dispatch(screen.actions.gotoScreen('transaction', {
-                hash: tx.get('hash'),
-                accountId: ownProps.accountId,
-            })
-            );
-        },
-        openAccount: (acc) => {
-            dispatch(screen.actions.gotoScreen('account', acc));
-        },
-        refreshTx: () => {
-            const hash = ownProps.tx.get('hash');
-            dispatch(refreshTransaction(hash));
-        },
-    })
+    openAccount: (acc) => {
+      dispatch(screen.actions.gotoScreen('account', acc));
+    },
+    refreshTx: () => {
+      const hash = ownProps.tx.get('hash');
+      dispatch(refreshTransaction(hash));
+    },
+  })
 )(Transaction);
 

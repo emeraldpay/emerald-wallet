@@ -1,61 +1,61 @@
 const DefaultGeth = {
-    format: 'v1',
-    channel: 'stable',
-    app: {
-        version: '4.0.0',
+  format: 'v1',
+  channel: 'stable',
+  app: {
+    version: '4.0.0',
+  },
+  download: [
+    {
+      platform: 'osx',
+      binaries: [
+        {
+          type: 'https',
+          pack: 'zip',
+          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-osx-v4.0.0.zip',
+        },
+      ],
+      signatures: [
+        {
+          type: 'pgp',
+          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-osx-v4.0.0.zip.asc',
+        },
+      ],
     },
-    download: [
+    {
+      platform: 'windows',
+      binaries: [
         {
-            platform: 'osx',
-            binaries: [
-                {
-                    type: 'https',
-                    pack: 'zip',
-                    url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-osx-v4.0.0.zip',
-                },
-            ],
-            signatures: [
-                {
-                    type: 'pgp',
-                    url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-osx-v4.0.0.zip.asc',
-                },
-            ],
+          type: 'https',
+          pack: 'zip',
+          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-win64-v4.0.0.zip',
         },
+      ],
+      signatures: [
         {
-            platform: 'windows',
-            binaries: [
-                {
-                    type: 'https',
-                    pack: 'zip',
-                    url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-win64-v4.0.0.zip',
-                },
-            ],
-            signatures: [
-                {
-                    type: 'pgp',
-                    url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-win64-v4.0.0.zip.asc',
-                },
-            ],
+          type: 'pgp',
+          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-win64-v4.0.0.zip.asc',
         },
+      ],
+    },
+    {
+      platform: 'linux',
+      binaries: [
         {
-            platform: 'linux',
-            binaries: [
-                {
-                    type: 'https',
-                    pack: 'zip',
-                    url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-linux-v4.0.0.zip',
-                },
-            ],
-            signatures: [
-                {
-                    type: 'pgp',
-                    url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-linux-v4.0.0.zip.asc',
-                },
-            ],
+          type: 'https',
+          pack: 'zip',
+          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-linux-v4.0.0.zip',
         },
-    ],
+      ],
+      signatures: [
+        {
+          type: 'pgp',
+          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-linux-v4.0.0.zip.asc',
+        },
+      ],
+    },
+  ],
 };
 
 module.exports = {
-    DefaultGeth,
+  DefaultGeth,
 };

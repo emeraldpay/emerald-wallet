@@ -1,20 +1,20 @@
-module.exports = function(config) {
+module.exports = function (config) {
     config.set({
-        basePath : './',
+        basePath: './',
 
-        files : [
+        files: [
             'node_modules/babel-polyfill/dist/polyfill.js',
             'build/index.js',
-            'build/tests.js'
+            'build/tests.js',
         ],
 
-        //exclude: ['app/lib/angular/angular-scenario.js'],
+        // exclude: ['app/lib/angular/angular-scenario.js'],
 
-        autoWatch : true,
+        autoWatch: true,
 
         frameworks: ['jasmine'],
 
-        browsers : ['PhantomJS'],
+        browsers: ['PhantomJS'],
 
         logLevel: config.LOG_DEBUG,
 
@@ -22,16 +22,16 @@ module.exports = function(config) {
             captureConsole: true,
         },
 
-        plugins : [
+        plugins: [
             'karma-junit-reporter',
             'karma-phantomjs-launcher',
-            'karma-jasmine'
+            'karma-jasmine',
         ],
 
-        junitReporter : {
+        junitReporter: {
             outputFile: 'test_out/unit.xml',
-            suite: 'unit'
-        }
+            suite: 'unit',
+        },
 
-    })
+    });
 };

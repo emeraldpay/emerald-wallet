@@ -1,3 +1,4 @@
+// @flow
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -15,59 +16,59 @@ import styles from './importAccount.scss';
 
 class ImportAccount extends React.Component {
     static propTypes = {
-        init: PropTypes.func,
-        onBackScreen: PropTypes.func,
+      init: PropTypes.func,
+      onBackScreen: PropTypes.func,
     };
 
     componentDidMount() {
-        if (this.props.init) {
-            this.props.init();
-        }
+      if (this.props.init) {
+        this.props.init();
+      }
     }
 
     render() {
-        const { connected, hdbase, changeBaseHD, onBackScreen, onDashboard } = this.props;
-        if (!connected) {
-            return (<WaitDialog/>);
-        }
-        return (
-            <Form caption="Import Ledger hardware account" backButton={ <DashboardButton onClick={ onDashboard } /> } >
-                <Row>
-                    <div style={ formStyles.left }>
-                        <div style={ formStyles.fieldName }>HD derivation path</div>
-                    </div>
-                    <div style={ formStyles.right }>
-                        <HDPath hdbase={ hdbase } onChange={ changeBaseHD }/>
-                        <div style={{ marginLeft: '5px' }}><Pager /></div>
-                    </div>
-                </Row>
-                <Row>
-                    <div className={ styles.row }><AddrList/></div>
-                </Row>
-                <Row>
-                    <div className={ styles.row }><Buttons onBackScreen={ onBackScreen } /></div>
-                </Row>
-            </Form>
-        );
+      const { connected, hdbase, changeBaseHD, onBackScreen, onDashboard } = this.props;
+      if (!connected) {
+        return (<WaitDialog/>);
+      }
+      return (
+        <Form caption="Import Ledger hardware account" backButton={ <DashboardButton onClick={ onDashboard } /> } >
+          <Row>
+            <div style={ formStyles.left }>
+              <div style={ formStyles.fieldName }>HD derivation path</div>
+            </div>
+            <div style={ formStyles.right }>
+              <HDPath hdbase={ hdbase } onChange={ changeBaseHD }/>
+              <div style={{ marginLeft: '5px' }}><Pager /></div>
+            </div>
+          </Row>
+          <Row>
+            <div className={ styles.row }><AddrList/></div>
+          </Row>
+          <Row>
+            <div className={ styles.row }><Buttons onBackScreen={ onBackScreen } /></div>
+          </Row>
+        </Form>
+      );
     }
 }
 
 export default connect(
-    (state, ownProps) => ({
-        hdbase: state.ledger.getIn(['hd', 'base']),
-        connected: state.ledger.get('connected'),
-    }),
-    (dispatch, ownProps) => ({
-        changeBaseHD: (hdpath: string) => {
-            dispatch(ledger.actions.setBaseHD(hdpath));
-            dispatch(ledger.actions.getAddresses());
-        },
-        init: () => dispatch(ledger.actions.getAddresses()),
-        onDashboard: () => {
-            if (ownProps.onBackScreen) {
-                return dispatch(screen.actions.gotoScreen(ownProps.onBackScreen));
-            }
-            dispatch(screen.actions.gotoScreen('home'));
-        },
-    })
+  (state, ownProps) => ({
+    hdbase: state.ledger.getIn(['hd', 'base']),
+    connected: state.ledger.get('connected'),
+  }),
+  (dispatch, ownProps) => ({
+    changeBaseHD: (hdpath: string) => {
+      dispatch(ledger.actions.setBaseHD(hdpath));
+      dispatch(ledger.actions.getAddresses());
+    },
+    init: () => dispatch(ledger.actions.getAddresses()),
+    onDashboard: () => {
+      if (ownProps.onBackScreen) {
+        return dispatch(screen.actions.gotoScreen(ownProps.onBackScreen));
+      }
+      dispatch(screen.actions.gotoScreen('home'));
+    },
+  })
 )(ImportAccount);

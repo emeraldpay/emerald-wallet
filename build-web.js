@@ -1,13 +1,13 @@
-var fs = require("fs");
-var path = require('path');
-var webpack = require('webpack');
+const fs = require('fs');
+const path = require('path');
+const webpack = require('webpack');
 
-var watch = process.argv.indexOf('--no-watch') < 0;
+const watch = process.argv.indexOf('--no-watch') < 0;
 
-var config = require('./webpack.config.js');
+const config = require('./webpack.config.js');
 
 // var electronCompiler = webpack(require('./electron/webpack.electron'));
-var compiler = webpack(config);
+const compiler = webpack(config);
 const statOpts = {
     hash: true,
     timing: true,
@@ -18,14 +18,14 @@ const statOpts = {
 };
 
 if (watch) {
-    compiler.watch({}, function (err, stats) {
+    compiler.watch({}, (err, stats) => {
         console.log(stats.toString(statOpts));
     });
 } else {
     // electronCompiler.run(function (err, stats) {
     //     console.log(stats.toString(statOpts));
     // });
-    compiler.run(function (err, stats) {
+    compiler.run((err, stats) => {
         console.log(stats.toString(statOpts));
     });
 }

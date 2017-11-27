@@ -29,12 +29,6 @@ matrix:
       env: CCX=gcc-4.8 FULL_CHECK=false
     - os: linux
       env: CCX=gcc-4.8 FULL_CHECK=true
-  # Allow failures for all included runs where FULL_CHECK=true (linting)
-  allow_failures:
-    - os: osx
-      env: CCX=gcc-4.8 FULL_CHECK=true
-    - os: linux
-      env: CXX=g++-4.8 FULL_CHECK=true
 # before_install:
 before_script:
   # `npm install` is automatic

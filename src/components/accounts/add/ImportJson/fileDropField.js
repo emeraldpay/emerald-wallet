@@ -6,38 +6,38 @@ import Button from 'elements/Button/index';
 import styles from './fileDropField.scss';
 
 class FileDropField extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            file: null,
-        };
-    }
+  constructor(props) {
+    super(props);
+    this.state = {
+      file: null,
+    };
+  }
 
     onDrop = (filesToUpload, e) => {
-        const { onChange } = this.props;
-        this.setState({
-            file: filesToUpload[0],
-        });
-        onChange(filesToUpload[0]);
+      const { onChange } = this.props;
+      this.setState({
+        file: filesToUpload[0],
+      });
+      onChange(filesToUpload[0]);
     }
 
     render() {
-        const { name } = this.props;
-        const { file } = this.state;
-        return (
-                <Dropzone name={ name } className={ styles.container } multiple={ false } onDrop={ this.onDrop }>
-                    { file && (
-                        <div className={ styles.label }>
-                            { file.name }
-                        </div>
-                    )}
-                    { !file && (<div className={ styles.label }>Drag & drop Account Key File here to upload</div>)}
+      const { name } = this.props;
+      const { file } = this.state;
+      return (
+        <Dropzone name={ name } className={ styles.container } multiple={ false } onDrop={ this.onDrop }>
+          { file && (
+            <div className={ styles.label }>
+              { file.name }
+            </div>
+          )}
+          { !file && (<div className={ styles.label }>Drag & drop Account Key File here to upload</div>)}
 
-                    <div>
-                        <Button primary label="Select account key file" />
-                    </div>
-                </Dropzone>
-        );
+          <div>
+            <Button primary label="Select account key file" />
+          </div>
+        </Dropzone>
+      );
     }
 }
 

@@ -16,57 +16,58 @@ const log = createLogger('AccountList');
 const cx = classNames.bind(styles);
 
 const AccountList = translate('accounts')((props) => {
-    log.trace('render');
+  log.trace('render');
 
-    const { accounts, knownTokens, showFiat } = props;
-    const { openAccount, createTx, showReceiveDialog } = props;
+  const { accounts, knownTokens, showFiat } = props;
+  const { openAccount, createTx, showReceiveDialog } = props;
 
-    return (
-        <div className={ styles.container }>
-            {accounts.map((account) => {
-                const className = cx({
-                    listItem: true,
-                    hiddenListItem: account.get('hidden'),
-                });
-                return (<div className={ className } key={ account.get('id') }>
-                    <Account
-                        showFiat={ showFiat }
-                        account={ account }
-                        knownTokens={ knownTokens }
-                        openAccount={ openAccount(account) }
-                        createTx={ createTx(account) }
-                        showReceiveDialog={ showReceiveDialog(account) }
-                    />
-                </div>)})}
-        </div>
-    );
+  return (
+    <div className={ styles.container }>
+      {accounts.map((account) => {
+        const className = cx({
+          listItem: true,
+          hiddenListItem: account.get('hidden'),
+        });
+        return (<div className={ className } key={ account.get('id') }>
+          <Account
+            showFiat={ showFiat }
+            account={ account }
+            knownTokens={ knownTokens }
+            openAccount={ openAccount(account) }
+            createTx={ createTx(account) }
+            showReceiveDialog={ showReceiveDialog(account) }
+          />
+        </div>);
+      })}
+    </div>
+  );
 });
 
 AccountList.propTypes = {
-    showFiat: PropTypes.bool,
-    accounts: PropTypes.object.isRequired,
-    generate: PropTypes.func.isRequired,
-    importJson: PropTypes.func.isRequired,
-    importLedger: PropTypes.func.isRequired,
-    knownTokens: PropTypes.object.isRequired,
+  showFiat: PropTypes.bool,
+  accounts: PropTypes.object.isRequired,
+  generate: PropTypes.func.isRequired,
+  importJson: PropTypes.func.isRequired,
+  importLedger: PropTypes.func.isRequired,
+  knownTokens: PropTypes.object.isRequired,
 };
 
 export default connect(
-    (state, ownProps) => ({
-        accounts: state.accounts.get('accounts', Immutable.List()),
-        knownTokens: state.tokens.get('tokens', Immutable.List()),
-        showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
-    }),
-    (dispatch, ownProps) => ({
-        openAccount: (account) => () => {
-            dispatch(screen.actions.gotoScreen('account', account));
-        },
-        createTx: (account) => () => {
-            dispatch(screen.actions.gotoScreen('create-tx', account));
-        },
-        showReceiveDialog: (account) => () => {
-            dispatch(screen.actions.showDialog('receive', account));
-        },
-    })
+  (state, ownProps) => ({
+    accounts: state.accounts.get('accounts', Immutable.List()),
+    knownTokens: state.tokens.get('tokens', Immutable.List()),
+    showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
+  }),
+  (dispatch, ownProps) => ({
+    openAccount: (account) => () => {
+      dispatch(screen.actions.gotoScreen('account', account));
+    },
+    createTx: (account) => () => {
+      dispatch(screen.actions.gotoScreen('create-tx', account));
+    },
+    showReceiveDialog: (account) => () => {
+      dispatch(screen.actions.showDialog('receive', account));
+    },
+  })
 )(AccountList);
 

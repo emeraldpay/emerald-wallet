@@ -6,10 +6,10 @@ import PaperWallet from '../../components/accounts/PaperWallet';
 
 
 export default connect(
-    (state, ownProps) => ({}),
-    (dispatch, ownProps) => ({
-        onCancel: () => {
-            dispatch(screen.actions.gotoScreen('home'));
-        },
-    })
+  (state, ownProps) => ({}),
+  (dispatch, ownProps) => ({
+    onCancel: () => {
+      dispatch(screen.actions.gotoScreen('home'));
+    },
+  })
 )(PaperWallet);

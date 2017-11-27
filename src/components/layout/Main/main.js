@@ -18,26 +18,25 @@ function isLanding(props) {
 }
 
 const Render = translate('common')(({ t, ...props }) => {
-
   return (
-      <div>
-          {isLanding(props) && props.screen !== 'welcome' && props.screen !== 'paper-wallet' && <Header maxWidth={ maxWidth }/>}
-          <div style={{margin: '20px auto', maxWidth}}>
-              <Screen />
-          </div>
-          <ErrorDialog />
-          <NotificationBar />
-          <Dialog />
-          {props.screen !== 'welcome' && props.screen !== 'paper-wallet' && <Footer maxWidth={ maxWidth }/>}
+    <div>
+      {isLanding(props) && props.screen !== 'welcome' && props.screen !== 'paper-wallet' && <Header maxWidth={ maxWidth }/>}
+      <div style={{margin: '20px auto', maxWidth}}>
+        <Screen />
       </div>
-  )
+      <ErrorDialog />
+      <NotificationBar />
+      <Dialog />
+      {props.screen !== 'welcome' && props.screen !== 'paper-wallet' && <Footer maxWidth={ maxWidth }/>}
+    </div>
+  );
 });
 
 const Main = connect(
-    (state, ownProps) => ({
-        screen: state.wallet.screen.get('screen'),
-    }),
-    (dispatch, ownProps) => ({})
+  (state, ownProps) => ({
+    screen: state.wallet.screen.get('screen'),
+  }),
+  (dispatch, ownProps) => ({})
 )(Render);
 
 export default Main;

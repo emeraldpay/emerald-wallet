@@ -9,18 +9,18 @@ import { ToggleButtonGroup, ToggleButton, Button } from 'react-bootstrap';
  */
 
 class DepositOptions extends React.Component {
-    openShapeshift() {
-      window.open(`https://shapeshift.io/shifty.html?destination=${this.props.address}&output=ETC&amount=1`, '_popup');
-    }
-    render() {
-        const { defaultValue } = this.props;
-        return (
-                <ToggleButtonGroup name="options" type="radio" defaultValue={ 1 }>
-                    <ToggleButton value={ 1 }>ETC</ToggleButton>
-                    <Button onClick={this.openShapeshift.bind(this)}>Shapeshift</Button>
-                </ToggleButtonGroup>
-        );
-    }
+  openShapeshift() {
+    window.open(`https://shapeshift.io/shifty.html?destination=${this.props.address}&output=ETC&amount=1`, '_popup');
+  }
+  render() {
+    const { defaultValue } = this.props;
+    return (
+      <ToggleButtonGroup name="options" type="radio" defaultValue={ 1 }>
+        <ToggleButton value={ 1 }>ETC</ToggleButton>
+        <Button onClick={this.openShapeshift.bind(this)}>Shapeshift</Button>
+      </ToggleButtonGroup>
+    );
+  }
 }
 
 

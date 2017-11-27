@@ -15,37 +15,37 @@ type Props = {
 };
 
 const TransactionsList = (props: Props) => {
-    const { transactions, accountId } = props;
-    if (!transactions) {
-        return (<div>Loading...</div>);
-    }
-    return (
-        <div>
-            <Table selectable={ false } fixedHeader={ true }>
-                <TableHeader displaySelectAll={ false } adjustForCheckbox={ false }>
-                    <TableRow>
-                        <TableHeaderColumn className={ cx(classes.columnName, classes.amountColumn) } >
+  const { transactions, accountId } = props;
+  if (!transactions) {
+    return (<div>Loading...</div>);
+  }
+  return (
+    <div>
+      <Table selectable={ false } fixedHeader={ true }>
+        <TableHeader displaySelectAll={ false } adjustForCheckbox={ false }>
+          <TableRow>
+            <TableHeaderColumn className={ cx(classes.columnName, classes.amountColumn) } >
                             Amount
-                        </TableHeaderColumn>
-                        <TableHeaderColumn className={classes.columnName} style={tables.mediumStyle}>
+            </TableHeaderColumn>
+            <TableHeaderColumn className={classes.columnName} style={tables.mediumStyle}>
                             Status
-                        </TableHeaderColumn>
-                        <TableHeaderColumn className={classes.columnName}>From</TableHeaderColumn>
-                        <TableHeaderColumn style={tables.shortestStyle}>&nbsp;</TableHeaderColumn>
-                        <TableHeaderColumn className={classes.columnName}>To</TableHeaderColumn>
-                        <TableHeaderColumn style={{...tables.shortestStyle }}/>
-                    </TableRow>
-                </TableHeader>
-                <TableBody displayRowCheckbox={ false }>
-                    { transactions.map((tx) => <Transaction key={tx.get('hash')} tx={tx} accountId={ accountId } />) }
-                </TableBody>
-            </Table>
-        </div>
-    );
+            </TableHeaderColumn>
+            <TableHeaderColumn className={classes.columnName}>From</TableHeaderColumn>
+            <TableHeaderColumn style={tables.shortestStyle}>&nbsp;</TableHeaderColumn>
+            <TableHeaderColumn className={classes.columnName}>To</TableHeaderColumn>
+            <TableHeaderColumn style={{...tables.shortestStyle }}/>
+          </TableRow>
+        </TableHeader>
+        <TableBody displayRowCheckbox={ false }>
+          { transactions.map((tx) => <Transaction key={tx.get('hash')} tx={tx} accountId={ accountId } />) }
+        </TableBody>
+      </Table>
+    </div>
+  );
 };
 
 TransactionsList.propTypes = {
-    transactions: PropTypes.object.isRequired,
+  transactions: PropTypes.object.isRequired,
 };
 
 

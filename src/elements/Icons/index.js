@@ -3,7 +3,7 @@ import AdviceIcon from './adviceIcon';
 import ArrowLeftIcon from './arrowLeftIcon';
 
 export {
-    AdviceIcon,
-    LogoIcon,
-    ArrowLeftIcon,
+  AdviceIcon,
+  LogoIcon,
+  ArrowLeftIcon,
 };
