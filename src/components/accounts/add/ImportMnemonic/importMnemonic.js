@@ -147,7 +147,7 @@ export default connect(
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data) => {
-      return dispatch(accounts.actions.importMnemonic(data.password, data.mnemonic, '', ''));
+      return dispatch(accounts.actions.importMnemonic(data.password, data.mnemonic, data.hdpath, '', ''));
     },
     onBack: () => {
       if (ownProps.onBack) {

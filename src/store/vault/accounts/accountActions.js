@@ -316,10 +316,10 @@ export function importJson(data, name: string, description: string) {
   };
 }
 
-export function importMnemonic(passphrase: string, mnemonic: string, name: string, description: string) {
+export function importMnemonic(passphrase: string, mnemonic: string, path: string, name: string, description: string) {
   return (dispatch, getState, api) => {
     const chain = currentChain(getState());
-    return api.emerald.importMnemonic(passphrase, '', '', mnemonic, chain).then((result) => {
+    return api.emerald.importMnemonic(passphrase, '', '', mnemonic, path, chain).then((result) => {
       dispatch({
         type: ActionTypes.IMPORT_WALLET,
         accountId: result,
@@ -401,6 +401,6 @@ export function unhideAccount(accountId: string) {
 
 export function generateMnemonic() {
   return (dispatch, getState, api) => {
-    return Promise.resolve('mnemonic1 mnemonic1 mnemonic1 mnemonic1 mnemonic1 mnemonic1');
+    return api.emerald.generateMnemonic();
   };
 }
