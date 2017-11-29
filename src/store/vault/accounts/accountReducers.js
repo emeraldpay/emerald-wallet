@@ -60,9 +60,8 @@ function updateToken(tokens, token, value) {
 
 function onLoading(state, action) {
   switch (action.type) {
-    case 'ACCOUNT/LOADING':
-      return state
-        .set('loading', true);
+    case ActionTypes.LOADING:
+      return state.set('loading', true);
     default:
       return state;
   }

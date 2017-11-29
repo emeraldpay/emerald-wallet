@@ -6,7 +6,14 @@ import Filter from './filter';
 
 import classes from './header.scss';
 
-const Header = (props: any) => {
+const styles = {
+  searchIcon: {
+    width: '14px',
+    height: '14px',
+  },
+};
+
+const Header = () => {
   return (
     <div className={ classes.headerContainer }>
       <div className={ classes.headerMain }>
@@ -15,7 +22,7 @@ const Header = (props: any) => {
       </div>
       <div className={ classes.search }>
         <TextField
-          rightIcon={ <SearchIcon /> }
+          rightIcon={ <SearchIcon style={ styles.searchIcon } /> }
           style={{ maxHeight: '40px' }}
           hintText="Search for amount or hash"
           underlineShow={ false }

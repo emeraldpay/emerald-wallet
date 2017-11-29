@@ -23,9 +23,17 @@
             "title": "生成新账户",
             "subtitle": "生成一个新的公有和私有密钥对"
         },
+        "mnemonic": {
+            "title": "Generate Mnemonic",
+            "subtitle": "Generates a new mnemonic account"
+        },
         "import": {
             "title": "从JSON导入",
             "subtitle": "从Parity或Geth中导入一个JSON密钥"
+        },
+        "importMnemonic": {
+            "title": "Import Mnemonic phrase",
+            "subtitle": "Import BIP039 mnemonic phrase"
         }
     },
     "generate": {

@@ -3,61 +3,61 @@ const process = require('process');
 const Downloader = require('./downloader').Downloader;
 
 const config = {
-    format: 'v1',
-    channel: 'stable',
-    app: {
-        version: '0.16.2',
+  format: 'v1',
+  channel: 'stable',
+  app: {
+    version: '0.18.0',
+  },
+  download: [
+    {
+      platform: 'osx',
+      binaries: [
+        {
+          type: 'https',
+          pack: 'zip',
+          url: 'https://github.com/ethereumproject/emerald-cli/releases/download/v0.18.0/emerald-cli-osx-v0.18.1-832bba6.zip',
+        },
+      ],
+      signatures: [
+        {
+          type: 'pgp',
+          url: 'https://github.com/ethereumproject/emerald-cli/releases/download/v0.18.0/emerald-cli-osx-v0.18.1-832bba6.zip.asc',
+        },
+      ],
     },
-    download: [
+    {
+      platform: 'windows',
+      binaries: [
         {
-            platform: 'osx',
-            binaries: [
-                {
-                    type: 'https',
-                    pack: 'zip',
-                    url: 'https://github.com/ethereumproject/emerald-cli/releases/download/v0.16.2/emerald-cli-osx-v0.16.2-c9f6990.zip',
-                },
-            ],
-            signatures: [
-                {
-                    type: 'pgp',
-                    url: 'https://github.com/ethereumproject/emerald-cli/releases/download/v0.16.2/emerald-cli-osx-v0.16.2-c9f6990.zip.asc',
-                },
-            ],
+          type: 'https',
+          pack: 'zip',
+          url: 'https://github.com/ethereumproject/emerald-cli/releases/download/v0.18.0/emerald-stable-x86_64-pc-windows-msvc-v0.18.1-832bba6.zip',
         },
+      ],
+      signatures: [
         {
-            platform: 'windows',
-            binaries: [
-                {
-                    type: 'https',
-                    pack: 'zip',
-                    url: 'https://github.com/ethereumproject/emerald-cli/releases/download/v0.16.2/emerald-stable-x86_64-pc-windows-msvc-v0.16.2-c9f6990.zip',
-                },
-            ],
-            signatures: [
-                {
-                    type: 'pgp',
-                    url: 'https://github.com/ethereumproject/emerald-cli/releases/download/v0.16.2/emerald-stable-x86_64-pc-windows-msvc-v0.16.2-c9f6990.zip.asc',
-                },
-            ],
+          type: 'pgp',
+          url: 'https://github.com/ethereumproject/emerald-cli/releases/download/v0.18.0/emerald-stable-x86_64-pc-windows-msvc-v0.18.1-832bba6.zip.asc',
         },
+      ],
+    },
+    {
+      platform: 'linux',
+      binaries: [
         {
-            platform: 'linux',
-            binaries: [
-                {
-                    type: 'https',
-                    pack: 'zip',
-                    url: ' https://github.com/ethereumproject/emerald-cli/releases/download/v0.16.2/emerald-cli-linux-v0.16.2-c9f6990.zip',
-                },
-            ],
-            signatures: [
-                {
-                    type: 'pgp',
-                    url: 'https://github.com/ethereumproject/emerald-cli/releases/download/v0.16.2/emerald-cli-linux-v0.16.2-c9f6990.zip.asc',
-                },
-            ],
+          type: 'https',
+          pack: 'zip',
+          url: ' https://github.com/ethereumproject/emerald-cli/releases/download/v0.18.0/emerald-cli-linux-v0.18.1-832bba6.zip',
         },
-    ],
+      ],
+      signatures: [
+        {
+          type: 'pgp',
+          url: 'https://github.com/ethereumproject/emerald-cli/releases/download/v0.18.0/emerald-cli-linux-v0.18.1-832bba6.zip.asc',
+        },
+      ],
+    },
+  ],
 };
 const signers = ['-----BEGIN PGP PUBLIC KEY BLOCK-----\n' +
 '\n' +
@@ -116,12 +116,12 @@ const fileName = `emerald${suffix}`;
 
 const downloader = new Downloader(config, fileName, './', signers);
 downloader.on('notify', (message) => {
-    console.log(message);
+  console.log(message);
 });
 
 downloader.downloadIfNotExists()
-    .then(() => process.exit(0))
-    .catch((error) => {
-        console.error('Error during downloading emerald-cli:', error);
-        process.exit(1);
-    });
+  .then(() => process.exit(0))
+  .catch((error) => {
+    console.error('Error during downloading emerald-cli:', error);
+    process.exit(1);
+  });

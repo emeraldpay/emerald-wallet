@@ -7,6 +7,7 @@ const getLoadingIcon = (props) => {
       <CircularProgress size={25}/>
     );
   }
+  return null;
 };
 
 export default getLoadingIcon;

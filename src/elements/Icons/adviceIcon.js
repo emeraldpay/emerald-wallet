@@ -1,8 +1,8 @@
 // @flow
 import React from 'react';
 
-const AdviceIcon = (props: {height: 47, width: 39}) => (
-  <svg width={ `${props.width}px` } height={ `${props.height}px` } viewBox={`0 0 ${props.width} ${props.height}`} version="1.1" xmlns="http://www.w3.org/2000/svg">
+const AdviceIcon = ({height, width}) => (
+  <svg width={ `${width}px` } height={ `${height}px` } viewBox={`0 0 ${width} ${height}`} version="1.1" xmlns="http://www.w3.org/2000/svg">
     <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
       <g id="New-Wallet" transform="translate(-354.000000, -470.000000)" fillRule="nonzero">
         <g id="Group-4" transform="translate(354.000000, 470.000000)">
@@ -17,5 +17,10 @@ const AdviceIcon = (props: {height: 47, width: 39}) => (
     </g>
   </svg>
 );
+
+AdviceIcon.defaultProps = {
+  height: 47,
+  width: 39,
+};
 
 export default AdviceIcon;

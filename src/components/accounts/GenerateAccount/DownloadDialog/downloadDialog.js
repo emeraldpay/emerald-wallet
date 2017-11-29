@@ -1,16 +1,13 @@
 import React from 'react';
-
 import Button from 'elements/Button';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import { Warning, WarningHeader, WarningText } from 'elements/Warning';
-import styles from './downloadDialog.scss';
-
 import getLoadingIcon from '../getLoadingIcon';
+import styles from './downloadDialog.scss';
 
 const DownloadDialog = (props) => {
   const { accountId, onDownload, onBack, t } = props;
   return (
-
     <Form caption={ t('generate.title') } onCancel={ onBack }>
       <Row>
         <div style={formStyles.left}/>
@@ -24,6 +21,7 @@ const DownloadDialog = (props) => {
             </div>
             <div className={ styles.description }>
                             You need an Account Key File to make all operations with an account. In order to manage or create transactions from this Ethereum Classic Account, you will need this file.  You will also need the strong password you created earlier.
+
             </div>
           </div>
         </div>

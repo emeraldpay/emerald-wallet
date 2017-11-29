@@ -3,7 +3,6 @@ import React from 'react';
 import { TextField as ReduxFormTextField } from 'redux-form-material-ui';
 
 const defaultStyle = {
-  height: '51px',
   color: '#191919',
   fontSize: '16px',
   lineHeight: '24px',
@@ -20,17 +19,19 @@ const container = {
   alignItems: 'center',
 };
 
-type propTypes = {
+
+type Props = {
   rightIcon: Element<typeof Icon>,
-  invalid: boolean,
+  error: string,
   style: Object,
 }
 
-export const TextField = ({ rightIcon, invalid, style, ...other }) => {
+export const TextField = ({ rightIcon, error, style, ...other }: Props) => {
   if (other.fullWidth) {
     container.width = '100%';
   }
 
+  const invalid = error || (other.meta && other.meta.touched && other.meta.error);
   let containerStyle = invalid ? {...container, borderColor: '#BC0000' } : container;
   if (style) {
     containerStyle = { ...containerStyle, maxHeight: style.maxHeight, minWidth: style.minWidth };

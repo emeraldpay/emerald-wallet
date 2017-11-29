@@ -14,7 +14,6 @@ const config = {
     target: 'electron-renderer', // 'web',
     entry: {
         index: path.join(srcDir, 'index.js'),
-        // tests: path.join(srcDir, 'tests.js'),
     },
     plugins: [
         new webpack.optimize.CommonsChunkPlugin({name: 'index', filename: 'index.js'}),
