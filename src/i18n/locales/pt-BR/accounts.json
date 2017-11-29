@@ -22,6 +22,10 @@
             "title": "Gerar",
             "subtitle": "Gerar novo par de chave pública/privada"
         },
+        "mnemonic": {
+            "title": "Generate Mnemonic",
+            "subtitle": "Generates a new mnemonic account"
+        },
         "import": {
             "title": "Importar JSON",
             "subtitle": "Importar chave do Parity/Geth no formato JSON"
@@ -29,6 +33,10 @@
         "importPrivateKey": {
             "title": "Importar chave privada",
             "subtitle": "Importar chave privada em formato hexadecimal"
+        },
+        "importMnemonic": {
+            "title": "Import Mnemonic phrase",
+            "subtitle": "Import BIP039 mnemonic phrase"
         }
     },
     "generate": {

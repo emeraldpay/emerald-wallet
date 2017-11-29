@@ -1,7 +1,6 @@
 // @flow
 import EthereumTx from 'ethereumjs-tx';
 import { convert, Wallet, Address } from 'emerald-js';
-import { address as isAddress} from 'lib/validators';
 import { loadTokenBalanceOf } from '../tokens/tokenActions';
 import screen from '../../wallet/screen';
 import history from '../../wallet/history';
@@ -189,6 +188,7 @@ function onTxSend(dispatch, sourceTx: Transaction) {
     });
     dispatch(loadAccountBalance(sourceTx.from));
     const sentTx = Object.assign({}, sourceTx, {hash: txhash});
+
     // TODO: dependency on wallet/history module!
     dispatch(history.actions.trackTx(sentTx));
     dispatch(screen.actions.gotoScreen('transaction', sentTx));
@@ -301,11 +301,31 @@ export function importJson(data, name: string, description: string) {
         type: ActionTypes.IMPORT_WALLET,
         accountId: result,
       });
-      // Reload accounts.
       if (Address.isValid(result)) {
         dispatch({
           name,
           description,
+          type: ActionTypes.ADD_ACCOUNT,
+          accountId: result,
+        });
+        dispatch(loadAccountBalance(result));
+        return result;
+      }
+      throw new Error(result);
+    });
+  };
+}
+
+export function importMnemonic(passphrase: string, mnemonic: string, hdPath: string, name: string, description: string) {
+  return (dispatch, getState, api) => {
+    const chain = currentChain(getState());
+    return api.emerald.importMnemonic(passphrase, '', '', mnemonic, hdPath, chain).then((result) => {
+      dispatch({
+        type: ActionTypes.IMPORT_WALLET,
+        accountId: result,
+      });
+      if (Address.isValid(result)) {
+        dispatch({
           type: ActionTypes.ADD_ACCOUNT,
           accountId: result,
         });
@@ -376,5 +396,11 @@ export function unhideAccount(accountId: string) {
       .then((result) => {
         return result;
       }).catch(screen.actions.catchError(dispatch));
+  };
+}
+
+export function generateMnemonic() {
+  return (dispatch, getState, api) => {
+    return api.emerald.generateMnemonic();
   };
 }

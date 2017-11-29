@@ -8,11 +8,12 @@ import AddressShow from '../../components/addressbook/show';
 import AddressAdd from '../../components/addressbook/add';
 import CreateTx from '../../components/tx/CreateTx';
 import TransactionShow from '../../components/tx/TxDetails';
-// import TokensList from './tokens/list';
+import MnemonicWizard from '../../components/accounts/MnemonicWizard';
 import AddToken from '../../components/tokens/AddToken/add';
 import LedgerImport from '../../components/ledger/ImportAccount';
 import ImportJson from '../../components/accounts/add/ImportJson';
 import ImportPrivateKey from '../../components/accounts/add/ImportPrivateKey';
+import ImportMnemonic from '../../components/accounts/add/ImportMnemonic';
 import ContractsList from '../../components/contracts/list';
 import AddContract from '../../components/contracts/add';
 import DeployContract from '../../components/contracts/deploy';
@@ -31,9 +32,9 @@ const Screen = ({ screen, screenItem }) => {
   log.debug('Show screen: ', screen);
 
   if (screen === null) {
-    return <div>
+    return (<div>
       <i className="fa fa-spinner fa-spin fa-2x" /> Initializing...
-    </div>;
+    </div>);
   } else if (screen === 'home') {
     return (<Dashboard />);
   } else if (screen === 'contracts') {
@@ -69,6 +70,10 @@ const Screen = ({ screen, screenItem }) => {
     return <ImportJson onBackScreen="landing" backLabel="Back"/>;
   } else if (screen === 'import-private-key') {
     return <ImportPrivateKey />;
+  } else if (screen === 'import-mnemonic') {
+    return <ImportMnemonic />;
+  } else if (screen === 'new-mnemonic') {
+    return <MnemonicWizard />;
   } else if (screen === 'add-token') {
     return <AddToken />;
   } else if (screen === 'deploy-contract') {

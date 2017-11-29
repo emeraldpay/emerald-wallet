@@ -23,6 +23,10 @@
             "title": "Generate",
             "subtitle": "Generates a new private/public key pair"
         },
+        "mnemonic": {
+            "title": "Generate Mnemonic",
+            "subtitle": "Generates a new mnemonic account"
+        },
         "import": {
             "title": "Import JSON",
             "subtitle": "Import key from Parity/Geth in JSON format"
@@ -30,6 +34,10 @@
         "importPrivateKey": {
             "title": "Import Private Key",
             "subtitle": "Import private key in hex format"
+        },
+        "importMnemonic": {
+            "title": "Import Mnemonic phrase",
+            "subtitle": "Import BIP039 mnemonic phrase"
         },
         "token": {
             "title": "Add Token",

@@ -99,7 +99,8 @@ export const CreateTxForm = (props) => {
           </div>
         </div>
         <div style={styles.right}>
-          <Field name="password"
+          <Field
+            name="password"
             type="password"
             component={ TextField }
             underlineShow={false}
@@ -128,11 +129,6 @@ export const CreateTxForm = (props) => {
             fiatStyle={ textFiat }
             coinsStyle={ textEtc }
           />
-          {/* <Field name="balance"*/}
-          {/* disabled={true}*/}
-          {/* component={BalanceField}*/}
-          {/* floatingLabelText="Balance"*/}
-          {/* />*/}
         </div>
       </Row>
 

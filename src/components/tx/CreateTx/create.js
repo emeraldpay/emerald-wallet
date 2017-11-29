@@ -151,7 +151,7 @@ const CreateTx = connect(
       // 2. Validate Trace and then Send TX
       return traceValidate(tx, dispatch)
         .then((estimatedGas) => {
-          log.debug(`Tx validated by trace. Estimated Gas ${estimatedGas}`);
+          log.debug(`Tx validated. Estimated Gas ${estimatedGas}`);
 
           dispatch(ledger.actions.setWatch(false));
 

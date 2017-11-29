@@ -9,7 +9,7 @@ import { Eye as EyeIcon } from 'emerald-js/lib/ui/icons';
 export default class PasswordInput extends React.Component {
     static propTypes = {
       onChange: PropTypes.func,
-      invalid: PropTypes.bool,
+      error: PropTypes.string,
     }
 
     onInputChange = (event, newValue) => {
@@ -26,13 +26,13 @@ export default class PasswordInput extends React.Component {
     );
 
     render() {
-      const { invalid } = this.props;
+      const { error } = this.props;
 
       return (
         <div>
           <div>
             <TextField
-              invalid={ invalid }
+              error={ error }
               rightIcon={ <EyeIcon/> }
               onChange={ this.onInputChange }
               hintText="At least 8 characters"
@@ -42,7 +42,7 @@ export default class PasswordInput extends React.Component {
               underlineShow={ false }
             />
           </div>
-          { invalid && this.renderWarning() }
+          { error && this.renderWarning() }
         </div>
       );
     }

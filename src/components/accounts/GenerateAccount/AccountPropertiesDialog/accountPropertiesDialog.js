@@ -4,6 +4,8 @@ import TextField from 'elements/Form/TextField';
 import Button from 'elements/Button';
 import LinkButton from 'elements/LinkButton';
 import { Form, Row, styles as formStyles } from 'elements/Form';
+import ButtonGroup from 'elements/ButtonGroup';
+
 
 class AccountPropertiesDialog extends React.Component {
     static propTypes = {
@@ -20,7 +22,9 @@ class AccountPropertiesDialog extends React.Component {
 
     handleSave = () => {
       const { onSave } = this.props;
-      onSave(this.state.name);
+      if (onSave) {
+        onSave(this.state.name);
+      }
     }
 
     onInputChange = (event, newValue) => {
@@ -30,9 +34,9 @@ class AccountPropertiesDialog extends React.Component {
     };
 
     render() {
-      const { onSkip, onBack, t } = this.props;
+      const { onSkip, t } = this.props;
       return (
-        <Form caption="Set account properties" onCancel={ onBack }>
+        <Form caption="Set account properties">
           <Row>
             <div style={ formStyles.left }>
               <div style={ formStyles.fieldName }>Account name</div>
@@ -53,7 +57,7 @@ class AccountPropertiesDialog extends React.Component {
           <Row>
             <div style={ formStyles.left }/>
             <div style={ formStyles.right }>
-              <div>
+              <ButtonGroup>
                 <Button
                   primary
                   onClick={ this.handleSave }
@@ -63,7 +67,7 @@ class AccountPropertiesDialog extends React.Component {
                   onClick={ onSkip }
                   label="Skip"
                 />
-              </div>
+              </ButtonGroup>
             </div>
           </Row>
         </Form>
