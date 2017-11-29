@@ -14,43 +14,45 @@ import Buttons from './buttons';
 
 import styles from './importAccount.scss';
 
-class ImportAccount extends React.Component {
-    static propTypes = {
-      init: PropTypes.func,
-      onBackScreen: PropTypes.func,
-    };
+type Props = {
+  init: Function,
+  onBackScreen: ?Function,
+  connected: boolean,
+  hdbase: string,
+}
 
-    componentDidMount() {
-      if (this.props.init) {
-        this.props.init();
-      }
+class ImportAccount extends React.Component<Props> {
+  componentDidMount() {
+    if (this.props.init) {
+      this.props.init();
     }
+  }
 
-    render() {
-      const { connected, hdbase, changeBaseHD, onBackScreen, onDashboard } = this.props;
-      if (!connected) {
-        return (<WaitDialog/>);
-      }
-      return (
-        <Form caption="Import Ledger hardware account" backButton={ <DashboardButton onClick={ onDashboard } /> } >
-          <Row>
-            <div style={ formStyles.left }>
-              <div style={ formStyles.fieldName }>HD derivation path</div>
-            </div>
-            <div style={ formStyles.right }>
-              <HDPath value={ hdbase } onChange={ changeBaseHD }/>
-              <div style={{ marginLeft: '5px' }}><Pager /></div>
-            </div>
-          </Row>
-          <Row>
-            <div className={ styles.row }><AddrList/></div>
-          </Row>
-          <Row>
-            <div className={ styles.row }><Buttons onBackScreen={ onBackScreen } /></div>
-          </Row>
-        </Form>
-      );
+  render() {
+    const { connected, hdbase, changeBaseHD, onBackScreen, onDashboard } = this.props;
+    if (!connected) {
+      return (<WaitDialog />);
     }
+    return (
+      <Form caption="Import Ledger hardware account" backButton={<DashboardButton onClick={onDashboard} />} >
+        <Row>
+          <div style={formStyles.left}>
+            <div style={formStyles.fieldName}>HD derivation path</div>
+          </div>
+          <div style={formStyles.right}>
+            <HDPath value={hdbase} onChange={changeBaseHD} />
+            <div style={{ marginLeft: '5px' }}><Pager /></div>
+          </div>
+        </Row>
+        <Row>
+          <div className={styles.row}><AddrList /></div>
+        </Row>
+        <Row>
+          <div className={styles.row}><Buttons onBackScreen={onBackScreen} /></div>
+        </Row>
+      </Form>
+    );
+  }
 }
 
 export default connect(
