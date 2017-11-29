@@ -62,6 +62,7 @@ class MnemonicWizard extends React.Component {
           <ImportMnemonic
             mnemonic={ mnemonic }
             onBack={ this.gotoGenerate }
+            backLabel="Back"
           />
         );
 

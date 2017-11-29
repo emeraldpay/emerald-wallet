@@ -20,7 +20,7 @@ class PasswordDialog extends React.Component {
     super(props);
     this.state = {
       passphrase: '',
-      invalidPassphrase: false,
+      passphraseError: null,
     };
   }
 
@@ -31,7 +31,7 @@ class PasswordDialog extends React.Component {
     // validate passphrase
     if (passphrase.length < MIN_PASSWORD_LENGTH) {
       this.setState({
-        invalidPassphrase: true,
+        passphraseError: `Minimum ${MIN_PASSWORD_LENGTH} characters`,
       });
     } else {
       onGenerate(passphrase);
@@ -39,20 +39,20 @@ class PasswordDialog extends React.Component {
   }
 
   onPassphraseChange = (newValue) => {
-    const invalidPassphrase = (newValue.length === 0 || newValue.length >= MIN_PASSWORD_LENGTH) ?
-      false :
-      this.state.invalidPassphrase;
+    const passphraseError = (newValue.length === 0 || newValue.length >= MIN_PASSWORD_LENGTH) ?
+      null :
+      this.state.passphraseError;
 
     this.setState({
       passphrase: newValue,
-      invalidPassphrase,
+      passphraseError,
     });
   }
 
 
   render() {
     const { onDashboard, t, backLabel } = this.props;
-    const { invalidPassphrase } = this.state;
+    const { passphraseError } = this.state;
 
     return (
       <Form caption={ t('generate.title') } backButton={ <DashboardButton onClick={ onDashboard } label={backLabel}/> }>
@@ -67,7 +67,7 @@ class PasswordDialog extends React.Component {
               <div style={{ marginTop: '30px' }}>
                 <PasswordInput
                   onChange={ this.onPassphraseChange }
-                  invalid={ invalidPassphrase }
+                  error={ passphraseError }
                 />
               </div>
             </div>
@@ -90,8 +90,7 @@ class PasswordDialog extends React.Component {
           <div style={formStyles.right}>
             <Advice
               title="Advice"
-              text={ <div>
-                        You can use a word or phrase as password. Write it in short text.<br/>
+              text={ <div>You can use a word or phrase as password. Write it in short text.<br/>
                         Only you know where password is. It is safer than write a password only.
               </div>}
             />

@@ -22,15 +22,16 @@ const container = {
 
 type Props = {
   rightIcon: Element<typeof Icon>,
-  invalid: boolean,
+  error: string,
   style: Object,
 }
 
-export const TextField = ({ rightIcon, invalid, style, ...other }: Props) => {
+export const TextField = ({ rightIcon, error, style, ...other }: Props) => {
   if (other.fullWidth) {
     container.width = '100%';
   }
 
+  const invalid = error || (other.meta && other.meta.touched && other.meta.error);
   let containerStyle = invalid ? {...container, borderColor: '#BC0000' } : container;
   if (style) {
     containerStyle = { ...containerStyle, maxHeight: style.maxHeight, minWidth: style.minWidth };

@@ -1,8 +1,9 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
-import { Field, reduxForm } from 'redux-form';
+import { Field, reduxForm, SubmissionError } from 'redux-form';
 import { MenuItem } from 'material-ui';
+import { required } from 'lib/validators';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
 import SelectField from 'elements/Form/SelectField';
@@ -17,51 +18,33 @@ import styles from './importMnemonic.scss';
 class ImportMnemonic extends React.Component {
   constructor(props) {
     super(props);
-    this.submit = this.submit.bind(this);
     this.state = {
       error: null,
       accountId: null,
     };
   }
 
-  submit() {
-    const { handleSubmit, dispatch } = this.props;
-    const accs = this.props.accounts;
-
-    handleSubmit().then((result) => {
-      if (result.error) {
-        this.setState({error: result.error.toString()});
-      } else {
-        this.setState({accountId: result});
-        const p = accs.findKey((acc) => acc.get('id') === this.state.accountId);
-        const account = p && (p >= 0) && accs.get(p);
-        dispatch(screen.actions.gotoScreen('account', account));
-      }
-    }).catch((error) => {
-      console.error(error);
-      this.setState({ error: error.toString() });
-    });
-  }
-
   render() {
-    const { onBack } = this.props;
+    const { onBack, backLabel, invalid, handleSubmit, error } = this.props;
     return (
-      <Form caption="Import Mnemonic" backButton={ <DashboardButton onClick={ onBack }/> }>
+      <Form caption="Import Mnemonic" backButton={ <DashboardButton onClick={ onBack } label={ backLabel }/> }>
         <Row>
-          <div style={formStyles.left}/>
-          <div style={formStyles.right}>
+          <div style={ formStyles.left }/>
+          <div style={ formStyles.right }>
             <div style={{width: '100%'}}>
-              <div className={styles.passwordLabel}>Enter a strong password</div>
-              <div className={styles.passwordSubLabel}>This password will be required to confirm all account
+              <div className={ styles.passwordLabel }>Enter a strong password</div>
+              <div className={ styles.passwordSubLabel }>This password will be required to confirm all account
                         operations.
               </div>
               <div style={{marginTop: '30px'}}>
                 <Field
+                  hintText="At least 8 characters"
                   name="password"
                   type="password"
-                  component={TextField}
-                  fullWidth={true}
-                  underlineShow={false}
+                  component={ TextField }
+                  fullWidth={ true }
+                  underlineShow={ false }
+                  validate={ [required] }
                 />
               </div>
             </div>
@@ -92,6 +75,7 @@ class ImportMnemonic extends React.Component {
                   component={ TextField }
                   fullWidth={ true }
                   underlineShow={ false }
+                  validate={ [required] }
                 />
               </div>
             </div>
@@ -99,9 +83,8 @@ class ImportMnemonic extends React.Component {
         </Row>
 
         <Row>
-          <div style={formStyles.left}>
-          </div>
-          <div style={formStyles.right}>
+          <div style={ formStyles.left }/>
+          <div style={ formStyles.right }>
             <div style={{width: '100%'}}>
               <div className={ styles.mnemonicLabel }>HD derivation path</div>
               <div>
@@ -124,10 +107,25 @@ class ImportMnemonic extends React.Component {
         <Row>
           <div style={formStyles.left}/>
           <div style={formStyles.right}>
-            <Button primary label="Import" onClick={ this.submit }/>
+            <Button
+              primary
+              label="Import"
+              disabled={ invalid }
+              onClick={ handleSubmit }
+            />
           </div>
         </Row>
-        { this.state.error }
+
+        {error && (
+          <Row>
+            <div style={formStyles.left}/>
+            <div style={formStyles.right}>
+              <Warning>
+                <WarningText>{error}</WarningText>
+              </Warning>
+            </div>
+          </Row>
+        )}
       </Form>
     );
   }
@@ -142,12 +140,24 @@ export default connect(
   (state, ownProps) => ({
     initialValues: {
       mnemonic: ownProps.mnemonic,
+      hdpath: "m/44'/60'/160720'/0'",
     },
     accounts: state.accounts.get('accounts', Immutable.List()),
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data) => {
-      return dispatch(accounts.actions.importMnemonic(data.password, data.mnemonic, data.hdpath, '', ''));
+      return dispatch(accounts.actions.importMnemonic(data.password, data.mnemonic, data.hdpath, '', ''))
+        .then((result) => {
+          if (result.error) {
+            throw new SubmissionError({ _error: result.error.toString() });
+          } else {
+            // show page with account details
+            dispatch(screen.actions.gotoScreen('account', Immutable.fromJS({id: result})));
+          }
+        }).catch((error) => {
+          console.error(error);
+          throw new SubmissionError({ _error: error.toString() });
+        });
     },
     onBack: () => {
       if (ownProps.onBack) {
