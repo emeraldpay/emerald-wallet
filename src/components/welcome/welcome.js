@@ -27,11 +27,6 @@ const Render = ({ message, level, ready, needSetup }) => {
       <Col xs={12}>
         <span style={{fontSize: '16px', fontWeight: 500}}>Version: { version }</span>
       </Col>
-      <Col xs={12}>
-        <span style={{fontSize: '12px', fontWeight: 400, color: '#999'}}>
-                    (beta version, please don't rely on the current version, it may have critical bugs)
-        </span>
-      </Col>
     </Row>
     <Row center="xs" style={{paddingTop: '40px', height: '40px'}}>
       <Col xs>
