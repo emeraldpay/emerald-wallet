@@ -1,8 +1,9 @@
+// @flow
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import Immutable from 'immutable';
 import { Wei } from 'emerald-js';
+import accounts from 'store/vault/accounts';
 import { Currency } from '../../../lib/currency';
 
 const styleTotal = {
@@ -53,10 +54,7 @@ export default connect(
     const localeCurrencyRate = state.wallet.settings.get('localeRate');
 
     // Sum of balances of all known accounts.
-    const total = state.accounts.get('accounts', Immutable.List())
-      .map((account) => (account.get('balance') ? account.get('balance') : Wei.ZERO))
-      .reduce((t, v) => t.plus(v), Wei.ZERO);
-    const totalEther = total.getEther();
+    const total: Wei = accounts.selectors.selectTotalBalance(state);
 
     let fiat = {};
     if (rates && total) {
@@ -92,7 +90,7 @@ export default connect(
     const chain = (state.launcher.get('chain').get('name') || '').toLowerCase();
 
     return {
-      total: +totalEther,
+      total: total.getEther(),
       fiat,
       currentLocaleCurrency,
       showFiat: (chain === 'mainnet'),
