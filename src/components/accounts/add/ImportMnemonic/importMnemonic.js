@@ -1,17 +1,18 @@
+// @flow
 import React from 'react';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
-import { Field, reduxForm, SubmissionError } from 'redux-form';
+import { Field, reduxForm, SubmissionError, change, formValueSelector } from 'redux-form';
 import { MenuItem } from 'material-ui';
 import { required } from 'lib/validators';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
-import SelectField from 'elements/Form/SelectField';
 import DashboardButton from 'components/common/DashboardButton';
 import accounts from 'store/vault/accounts';
 import screen from 'store/wallet/screen';
 import Button from 'elements/Button';
 import { Warning, WarningHeader, WarningText } from 'elements/Warning';
+import HdPath from 'components/common/HdPath';
 
 import styles from './importMnemonic.scss';
 
@@ -26,6 +27,7 @@ class ImportMnemonic extends React.Component {
 
   render() {
     const { onBack, backLabel, invalid, handleSubmit, error } = this.props;
+    const { handleHdPathChange, hdPath } = this.props;
     return (
       <Form caption="Import Mnemonic" backButton={ <DashboardButton onClick={ onBack } label={ backLabel }/> }>
         <Row>
@@ -88,22 +90,11 @@ class ImportMnemonic extends React.Component {
             <div style={{width: '100%'}}>
               <div className={ styles.mnemonicLabel }>HD derivation path</div>
               <div>
-                <Field
-                  name="hdpath"
-                  component={ SelectField }
-                  fullWidth={ true }
-                  underlineShow={ false }
-                >
-                  <MenuItem value="m/44'/60'/160720'/0'" primaryText="m/44'/60'/160720'/0'" />
-                  <MenuItem value="m/44'/61'/1'/0" primaryText="m/44'/61'/1'/0" />
-                  <MenuItem value="m/44'/61'/0'/0" primaryText="m/44'/61'/0'/0" />
-                  <MenuItem value="m/44'/60'/0'" primaryText="m/44'/60'/0'" />
-                </Field>
+                <HdPath value={ hdPath } onChange={ handleHdPathChange }/>
               </div>
             </div>
           </div>
         </Row>
-
         <Row>
           <div style={formStyles.left}/>
           <div style={formStyles.right}>
@@ -142,6 +133,7 @@ export default connect(
       mnemonic: ownProps.mnemonic,
       hdpath: "m/44'/60'/160720'/0'",
     },
+    hdPath: formValueSelector('importMnemonic')(state, 'hdpath'),
     accounts: state.accounts.get('accounts', Immutable.List()),
   }),
   (dispatch, ownProps) => ({
@@ -159,6 +151,11 @@ export default connect(
           throw new SubmissionError({ _error: error.toString() });
         });
     },
+
+    handleHdPathChange: (hdPath: string) => {
+      dispatch(change('importMnemonic', 'hdpath', hdPath));
+    },
+
     onBack: () => {
       if (ownProps.onBack) {
         ownProps.onBack();

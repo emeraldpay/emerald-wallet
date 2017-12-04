@@ -6,7 +6,7 @@ import DashboardButton from 'components/common/DashboardButton';
 import { Form, styles as formStyles, Row } from 'elements/Form';
 import ledger from 'store/ledger';
 import screen from 'store/wallet/screen';
-import HDPath from './hdpath';
+import HDPath from 'components/common/HdPath';
 import AddrList from './addrlist';
 import Pager from './pager';
 import WaitDialog from '../WaitDialog';
@@ -38,7 +38,7 @@ class ImportAccount extends React.Component {
               <div style={ formStyles.fieldName }>HD derivation path</div>
             </div>
             <div style={ formStyles.right }>
-              <HDPath hdbase={ hdbase } onChange={ changeBaseHD }/>
+              <HDPath value={ hdbase } onChange={ changeBaseHD }/>
               <div style={{ marginLeft: '5px' }}><Pager /></div>
             </div>
           </Row>
