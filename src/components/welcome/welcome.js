@@ -51,7 +51,7 @@ const Render = ({ message, level, ready, needSetup }) => {
           <Col xs={8} xsOffset={2}>
             <InitialSetup/>
           </Col>
-        </Row>;
+        </Row>
       </Grid>
     );
   }
