@@ -135,7 +135,11 @@ export default connect(
         });
     },
     onBack: () => {
-      dispatch(screen.actions.gotoScreen('home'));
+      if (ownProps.onBackScreen) {
+        dispatch(screen.actions.gotoScreen(ownProps.onBackScreen));
+      } else {
+        dispatch(screen.actions.gotoScreen('home'));
+      }
     },
   })
 )(importForm);
