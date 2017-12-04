@@ -3,7 +3,6 @@ import React from 'react';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { Field, reduxForm, SubmissionError, change, formValueSelector } from 'redux-form';
-import { MenuItem } from 'material-ui';
 import { required } from 'lib/validators';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
@@ -16,18 +15,19 @@ import HdPath from 'components/common/HdPath';
 
 import styles from './importMnemonic.scss';
 
-class ImportMnemonic extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      error: null,
-      accountId: null,
-    };
-  }
+/**
+ * Wrapper for redux-form Field component
+ */
+const HdPathFormField = (props) => {
+  const { input: { value, onChange } } = props;
+  return (
+    <HdPath value={ value } onChange={ onChange }/>
+  );
+};
 
+class ImportMnemonic extends React.Component {
   render() {
     const { onBack, backLabel, invalid, handleSubmit, error } = this.props;
-    const { handleHdPathChange, hdPath } = this.props;
     return (
       <Form caption="Import Mnemonic" backButton={ <DashboardButton onClick={ onBack } label={ backLabel }/> }>
         <Row>
@@ -90,7 +90,11 @@ class ImportMnemonic extends React.Component {
             <div style={{width: '100%'}}>
               <div className={ styles.mnemonicLabel }>HD derivation path</div>
               <div>
-                <HdPath value={ hdPath } onChange={ handleHdPathChange }/>
+                <Field
+                  name="hdpath"
+                  component={ HdPathFormField }
+                  validate={ [required] }
+                />
               </div>
             </div>
           </div>
@@ -133,12 +137,11 @@ export default connect(
       mnemonic: ownProps.mnemonic,
       hdpath: "m/44'/60'/160720'/0'",
     },
-    hdPath: formValueSelector('importMnemonic')(state, 'hdpath'),
     accounts: state.accounts.get('accounts', Immutable.List()),
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data) => {
-      return dispatch(accounts.actions.importMnemonic(data.password, data.mnemonic, data.hdpath, '', ''))
+      return dispatch(accounts.actions.importMnemonic(data.password, data.mnemonic, data.hdpath, data.hdpath, ''))
         .then((result) => {
           if (result.error) {
             throw new SubmissionError({ _error: result.error.toString() });
@@ -150,10 +153,6 @@ export default connect(
           console.error(error);
           throw new SubmissionError({ _error: error.toString() });
         });
-    },
-
-    handleHdPathChange: (hdPath: string) => {
-      dispatch(change('importMnemonic', 'hdpath', hdPath));
     },
 
     onBack: () => {
