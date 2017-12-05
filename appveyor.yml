@@ -36,7 +36,7 @@ before_deploy:
   - secure-file\tools\secure-file -decrypt gcloud-appveyor.json.enc -secret %GCP_PASSWD% -out .gcloud.json
 deploy_script:
   - ps: >-
-      If ($env:APPVEYOR_REPO_BRANCH -eq 'master') {
+      If (($env:APPVEYOR_REPO_BRANCH -eq 'master') -or ($env:APPVEYOR_REPO_TAG -eq 'true')) {
           echo "Deploy to http://builds.etcdevteam.com/emerald-wallet/$env:VERSION_BASE/"
           janus.exe deploy -to="builds.etcdevteam.com/emerald-wallet/$env:VERSION_BASE/" -files="./dist/*.exe" -key="./.gcloud.json"
       }
