@@ -70,6 +70,8 @@ const Screen = ({ screen, screenItem }) => {
     return <ImportJson onBackScreen="landing" backLabel="Back"/>;
   } else if (screen === 'import-private-key') {
     return <ImportPrivateKey />;
+  } else if (screen === 'landing-import-private-key') {
+    return <ImportPrivateKey onBackScreen="landing" />;
   } else if (screen === 'import-mnemonic') {
     return <ImportMnemonic />;
   } else if (screen === 'new-mnemonic') {

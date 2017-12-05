@@ -35,12 +35,6 @@ This will install dependencies saved in `package.json` and `flow-typed` reposito
 $ npm run setup
 ```
 
-If you wind up installing more packages, please
-- be sure that they're really important -- we'd like to avoid a pile of "convenience"
-  packages; every required package adds complexity.
-- use `npm install totally-awesome-and-important` __along with__ `--save` _or_ `--save-dev`.
-  That way everyone else will be able to reproduce your totally-awesomely-improved
-  setup.
 
 #### Emerald and geth
 ##### Emerald

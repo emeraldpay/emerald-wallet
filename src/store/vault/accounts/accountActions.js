@@ -319,7 +319,7 @@ export function importJson(data, name: string, description: string) {
 export function importMnemonic(passphrase: string, mnemonic: string, hdPath: string, name: string, description: string) {
   return (dispatch, getState, api) => {
     const chain = currentChain(getState());
-    return api.emerald.importMnemonic(passphrase, '', '', mnemonic, hdPath, chain).then((result) => {
+    return api.emerald.importMnemonic(passphrase, name, description, mnemonic, hdPath, chain).then((result) => {
       dispatch({
         type: ActionTypes.IMPORT_WALLET,
         accountId: result,

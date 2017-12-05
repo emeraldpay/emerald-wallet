@@ -8,7 +8,7 @@ import Divider from 'material-ui/Divider';
 import classes from './landing.scss';
 import screen from '../../store/wallet/screen';
 
-const Render = ({ onGenerate, onImportjson, onLedger, onLedgerWait, connected }) => {
+const Render = ({ onGenerate, onImportjson, onImportPrivateKey, onLedger, onLedgerWait, connected }) => {
   return (
     <div>
       <div style={{display: 'flex', alignItems: 'stretch'}}>
@@ -38,8 +38,9 @@ const Render = ({ onGenerate, onImportjson, onLedger, onLedgerWait, connected })
               <Divider />
               <div style={{marginLeft: '145px', marginBottom: '70px'}}>
                 <div className={`${classes.title} ${classes.addwallet}`}>Add Account</div>
-                <div style={{display: 'flex', alignItems: 'start', flexDirection: 'column', justifyContent: 'center'}}>
+                <div className={ classes.addAccountButtons }>
                   <FlatButton style={{color: '#47B04B' }} onClick={onImportjson} label="From Keystore File (UTC/JSON)" />
+                  <FlatButton style={{color: '#47B04B' }} onClick={onImportPrivateKey} label="From Private key" />
                   <FlatButton style={{color: '#47B04B' }} onClick={connected ? onLedger : onLedgerWait} label="Ledger Nano S" />
                 </div>
               </div>
@@ -61,6 +62,9 @@ const Landing = connect(
     },
     onImportjson() {
       dispatch(screen.actions.gotoScreen('landing-importjson'));
+    },
+    onImportPrivateKey() {
+      dispatch(screen.actions.gotoScreen('landing-import-private-key'));
     },
     onLedger() {
       dispatch(screen.actions.gotoScreen('landing-add-from-ledger', 'landing'));
