@@ -34,8 +34,7 @@ before_script:
   # `npm install` is automatic
   - npm install -g node-gyp license-checker
   - npm install -g codecov
-  # Install cargo and then `cargo install emerald` and move binary to project base.
-  - bash ./dependencies.sh
+  - npm run getemerald
 script:
   # Install Janus
   - curl -sL https://raw.githubusercontent.com/ethereumproject/janus/master/get.sh | bash
