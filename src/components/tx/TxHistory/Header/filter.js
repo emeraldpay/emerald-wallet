@@ -1,6 +1,6 @@
+// @flow
 import React from 'react';
 import { ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
-
 
 /**
  * TODO: After Material-UI v 1.0 release switch to ToggleButton
@@ -8,13 +8,18 @@ import { ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
  *
  */
 
-class Filter extends React.Component {
+type Props = {
+  value: string,
+  onChange: Function
+}
+
+class Filter extends React.Component<Props> {
   render() {
     return (
-      <ToggleButtonGroup name="options" type="radio" defaultValue={ 1 }>
-        <ToggleButton value={ 1 }>ALL</ToggleButton>
-        <ToggleButton value={ 2 }>IN</ToggleButton>
-        <ToggleButton value={ 3 }>OUT</ToggleButton>
+      <ToggleButtonGroup name="options" type="radio" defaultValue={this.props.value || 'ALL'} value={this.props.value} onChange={this.props.onChange}>
+        <ToggleButton value={'ALL'}>ALL</ToggleButton>
+        <ToggleButton value={'IN'}>IN</ToggleButton>
+        <ToggleButton value={'OUT'}>OUT</ToggleButton>
       </ToggleButtonGroup>
     );
   }
