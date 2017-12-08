@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { List } from 'immutable';
 
+import { searchTransactions, filterTransactions } from '../../../store/wallet/history/selectors';
+
 import Card from '../../../elements/Card';
 import Header from './Header';
 import TxList from './List';
@@ -11,48 +13,27 @@ import TokenUnits from '../../../lib/tokenUnits';
 
 import styles from './history.scss';
 
-const getFieldForFilter = (txFilter) => {
-  if (txFilter === 'IN') {
-    return 'to';
-  }
-  if (txFilter === 'OUT') {
-    return 'from';
-  }
-};
-
 type Props = {
   accountId: string,
   transactions: any,
   accounts: any
 }
 
+type State = {
+  txFilter: string,
+  displayedTransactions: Array
+}
+
 class TransactionsHistory extends React.Component<Props> {
-  constructor(props) {
-    super(props);
-    this.state = {
+  getInitialState() {
+    return {
       txFilter: 'ALL',
       displayedTransactions: this.props.transactions,
-    };
+    }
   }
   onSearchChange(e) {
-    const value = e.target.value;
-    const filteredTxes = this.props.transactions.filter((tx) => {
-      const fieldsToCheck = ['to', 'from', 'hash', 'value'];
-      const found = fieldsToCheck.filter((field) => {
-        // search for amount
-        if (field === 'value') {
-          const txValue = tx.get('value') ? new TokenUnits(tx.get('value').value(), 18) : null;
-          if (!txValue) {
-            return false;
-          }
-          return txValue.getDecimalized(3).toString().includes(value);
-        }
-        return tx.get(field).includes(value);
-      });
-      return found.length > 0;
-    });
     return this.setState({
-      displayedTransactions: filteredTxes,
+      displayedTransactions: searchTransactions(e.target.value, this.props.transactions)
     });
   }
   onTxFilterChange(value) {
@@ -62,23 +43,9 @@ class TransactionsHistory extends React.Component<Props> {
         displayedTransactions: this.props.transactions,
       });
     }
-
-    const inOrOut = getFieldForFilter(value);
-    const filteredTxes = this.props.transactions.filter((tx) => {
-      const accountAddress = tx.get(inOrOut);
-      if (this.props.accountId) {
-        return accountAddress === this.props.accountId;
-      }
-      const walletAccounts = this.props.accounts;
-      const belongsToAccount = walletAccounts.filter((account) => {
-        return accountAddress === account.get('id');
-      }).toJS().length > 0;
-      return belongsToAccount;
-    });
-
     this.setState({
       txFilter: value,
-      displayedTransactions: filteredTxes,
+      displayedTransactions: filterTransactions(value, this.props.accountId, this.props.transactions, this.props.accounts)
     });
   }
   render() {
