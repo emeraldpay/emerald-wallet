@@ -45,6 +45,7 @@ script:
   - npm run build
   - npm run test:coverage
   - if [[ $FULL_CHECK == "true" ]]; then npm run lint --silent; fi
+  - if [[ $FULL_CHECK == "true" ]]; then npm run flow --silent; fi
   # Don't build releases for lint tests.
   # Env var disables build signing.
   - if [[ "$FULL_CHECK" == "false" ]]; then env CSC_IDENTITY_AUTO_DISCOVERY=false npm run dist; fi
