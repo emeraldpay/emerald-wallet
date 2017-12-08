@@ -1,13 +1,16 @@
 import TokenUnits from '../../../lib/tokenUnits';
-import { List } from 'immutable';
 
 export const searchTransactions = (searchValue, transactionsToSearch) => {
+  if (transactionsToSearch.size === 0) {
+    return transactionsToSearch;
+  }
   return transactionsToSearch.filter((tx) => {
     const fieldsToCheck = ['to', 'from', 'hash', 'value'];
     return fieldsToCheck.find((field) => {
       // search for amount
       if (field === 'value') {
-        const txValue = tx.get('value') ? new TokenUnits(tx.get('value').value(), 18) : null;
+        const val = tx.get('value');
+        const txValue = val ? new TokenUnits(val.value(), 18) : null;
         if (!txValue) {
           return false;
         }
@@ -17,8 +20,7 @@ export const searchTransactions = (searchValue, transactionsToSearch) => {
       return tx.get(field).includes(searchValue);
     });
   });
-}
-
+};
 
 const getFieldForFilter = (txFilter) => {
   if (txFilter === 'IN') {
@@ -30,6 +32,9 @@ const getFieldForFilter = (txFilter) => {
 };
 
 export const filterTransactions = (filterValue, accountId, transactionsToFilter, accounts) => {
+  if (filterValue === 'ALL') {
+    return transactionsToFilter;
+  }
   const inOrOut = getFieldForFilter(filterValue);
   return transactionsToFilter.filter((tx) => {
     const accountAddress = tx.get(inOrOut);
@@ -38,4 +43,4 @@ export const filterTransactions = (filterValue, accountId, transactionsToFilter,
     }
     return accounts.filter((account) => accountAddress === account.get('id')).size > 0;
   });
-}
+};

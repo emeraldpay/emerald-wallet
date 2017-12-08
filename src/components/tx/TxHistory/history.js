@@ -21,31 +21,26 @@ type Props = {
 
 type State = {
   txFilter: string,
-  displayedTransactions: Array
+  displayedTransactions: Object
 }
 
-class TransactionsHistory extends React.Component<Props> {
-  getInitialState() {
-    return {
+class TransactionsHistory extends React.Component<Props, State> {
+  constructor(props) {
+    super(props);
+    this.state = {
       txFilter: 'ALL',
       displayedTransactions: this.props.transactions,
-    }
+    };
   }
   onSearchChange(e) {
     return this.setState({
-      displayedTransactions: searchTransactions(e.target.value, this.props.transactions)
+      displayedTransactions: searchTransactions(e.target.value, this.props.transactions),
     });
   }
   onTxFilterChange(value) {
-    if (value === 'ALL') {
-      return this.setState({
-        txFilter: value,
-        displayedTransactions: this.props.transactions,
-      });
-    }
     this.setState({
       txFilter: value,
-      displayedTransactions: filterTransactions(value, this.props.accountId, this.props.transactions, this.props.accounts)
+      displayedTransactions: filterTransactions(value, this.props.accountId, this.props.transactions, this.props.accounts),
     });
   }
   render() {
