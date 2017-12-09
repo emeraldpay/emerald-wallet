@@ -70,9 +70,14 @@ addons:
     # - ia32-libs
     # - libc6-dev #predefs
 deploy:
-  provider: script
-  script: ./gcloud-deploy.sh
-  skip_cleanup: true
-  on:
-    branch: master
-  tags: true
+  - provider: script
+    script: ./gcloud-deploy.sh
+    skip_cleanup: true
+    on:
+      branch: master
+
+  - provider: script
+    script: ./gcloud-deploy.sh
+    skip_cleanup: true
+    on:
+      tags: true
