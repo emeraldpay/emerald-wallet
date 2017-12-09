@@ -13,16 +13,17 @@ const styles = {
   },
 };
 
-const Header = () => {
+const Header = ({onTxFilterChange, onSearchChange}) => {
   return (
     <div className={ classes.headerContainer }>
       <div className={ classes.headerMain }>
         <div className={ classes.headerTitle }>History</div>
-        <div className={ classes.filter }><Filter /></div>
+        <div className={ classes.filter }><Filter onChange={onTxFilterChange}/></div>
       </div>
       <div className={ classes.search }>
         <TextField
           rightIcon={ <SearchIcon style={ styles.searchIcon } /> }
+          onChange={onSearchChange}
           style={{ maxHeight: '40px' }}
           hintText="Search for amount or hash"
           underlineShow={ false }

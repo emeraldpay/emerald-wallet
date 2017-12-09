@@ -4,27 +4,56 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { List } from 'immutable';
 
+import { searchTransactions, filterTransactions } from '../../../store/wallet/history/selectors';
+
 import Card from '../../../elements/Card';
 import Header from './Header';
 import TxList from './List';
+import TokenUnits from '../../../lib/tokenUnits';
 
 import styles from './history.scss';
 
-const TransactionsHistory = ({ transactions, accountId }) => {
-  return (
-    <Card>
-      <div className={ styles.container }>
-        <Header />
-        <TxList transactions={ transactions } accountId={ accountId }/>
-      </div>
-    </Card>
-  );
-};
+type Props = {
+  accountId: string,
+  transactions: any,
+  accounts: any
+}
 
-TransactionsHistory.propTypes = {
-  transactions: PropTypes.object.isRequired,
-  accountId: PropTypes.string,
-};
+type State = {
+  txFilter: string,
+  displayedTransactions: Object
+}
+
+class TransactionsHistory extends React.Component<Props, State> {
+  constructor(props) {
+    super(props);
+    this.state = {
+      txFilter: 'ALL',
+      displayedTransactions: this.props.transactions,
+    };
+  }
+  onSearchChange(e) {
+    return this.setState({
+      displayedTransactions: searchTransactions(e.target.value, this.props.transactions),
+    });
+  }
+  onTxFilterChange(value) {
+    this.setState({
+      txFilter: value,
+      displayedTransactions: filterTransactions(value, this.props.accountId, this.props.transactions, this.props.accounts),
+    });
+  }
+  render() {
+    return (
+      <Card>
+        <div className={ styles.container }>
+          <Header onTxFilterChange={this.onTxFilterChange.bind(this)} value={this.state.txFilter} onSearchChange={this.onSearchChange.bind(this)}/>
+          <TxList transactions={ this.state.displayedTransactions } accountId={ this.props.accountId }/>
+        </div>
+      </Card>
+    );
+  }
+}
 
 export default connect(
   (state, ownProps) => {
@@ -32,6 +61,7 @@ export default connect(
     const txs = ownProps.transactions || transactionsAccounts;
     return {
       transactions: txs.reverse(),
+      accounts: state.accounts.get('accounts', new List()),
       accountId: ownProps.accountId,
     };
   },
