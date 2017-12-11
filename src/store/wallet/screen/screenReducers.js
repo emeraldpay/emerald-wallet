@@ -40,8 +40,8 @@ function onNotificationOpen(state, action) {
   if (action.type === 'SCREEN/NOTIFICATION_SHOW') {
     return state
       .set('notificationMessage', action.message)
-      .set('notificationType', 'success')
-      .set('notificationDuration', 3000);
+      .set('notificationType', action.notificationType)
+      .set('notificationDuration', action.duration);
   }
   return state;
 }
@@ -50,7 +50,7 @@ function onNotificationClose(state, action) {
   if (action.type === 'SCREEN/NOTIFICATION_CLOSE') {
     return state
       .set('notificationMessage', null)
-      .set('notificationType', null)
+      // .set('notificationType', null)
       .set('notificationDuration', null);
   }
   return state;
