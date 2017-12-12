@@ -9,7 +9,6 @@ import { searchTransactions, filterTransactions } from '../../../store/wallet/hi
 import Card from '../../../elements/Card';
 import Header from './Header';
 import TxList from './List';
-import TokenUnits from '../../../lib/tokenUnits';
 
 import styles from './history.scss';
 
@@ -32,12 +31,12 @@ class TransactionsHistory extends React.Component<Props, State> {
       displayedTransactions: this.props.transactions,
     };
   }
-  onSearchChange(e) {
+  onSearchChange = (e) => {
     return this.setState({
       displayedTransactions: searchTransactions(e.target.value, this.props.transactions),
     });
   }
-  onTxFilterChange(value) {
+  onTxFilterChange = (value) => {
     this.setState({
       txFilter: value,
       displayedTransactions: filterTransactions(value, this.props.accountId, this.props.transactions, this.props.accounts),
@@ -47,7 +46,7 @@ class TransactionsHistory extends React.Component<Props, State> {
     return (
       <Card>
         <div className={ styles.container }>
-          <Header onTxFilterChange={this.onTxFilterChange.bind(this)} value={this.state.txFilter} onSearchChange={this.onSearchChange.bind(this)}/>
+          <Header onTxFilterChange={this.onTxFilterChange} value={this.state.txFilter} onSearchChange={this.onSearchChange}/>
           <TxList transactions={ this.state.displayedTransactions } accountId={ this.props.accountId }/>
         </div>
       </Card>

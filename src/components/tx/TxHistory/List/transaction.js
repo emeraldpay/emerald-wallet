@@ -1,3 +1,4 @@
+// @flow
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -7,6 +8,8 @@ import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
 import { Repeat as RepeatIcon } from 'emerald-js/lib/ui/icons';
 import launcher from 'store/launcher';
+import accounts from 'store/vault/accounts';
+import wallet from 'store/wallet';
 import screen from '../../../../store/wallet/screen';
 import { refreshTransaction } from '../../../../store/wallet/history/historyActions';
 import { link, tables } from '../../../../lib/styles';
@@ -25,11 +28,11 @@ export const Transaction = (props) => {
   const { showFiat, tx, openTx, openAccount, refreshTx, toAccount, fromAccount } = props;
   // TODO: move tx status to own component
   // TODO: timestamp
-  let blockNumber = null;
+  let txStatus = null;
   if (tx.get('blockNumber')) {
-    blockNumber = <span style={{color: 'limegreen'}} onClick={ openTx }>Success</span>;
+    txStatus = <span style={{color: 'limegreen'}} onClick={ openTx }>Success</span>;
   } else {
-    blockNumber = <span style={{color: 'gray'}} onClick={ openTx }>
+    txStatus = <span style={{color: 'gray'}} onClick={ openTx }>
       <FontIcon className="fa fa-spin fa-spinner"/> In queue...
     </span>;
   }
@@ -50,16 +53,15 @@ export const Transaction = (props) => {
       </TableRowColumn>
 
       <TableRowColumn style={{...tables.mediumStyle, ...link}} >
-        { blockNumber }
+        { txStatus }
       </TableRowColumn>
 
       <TableRowColumn>
         <AddressAvatar
           addr={tx.get('from')}
           abbreviated={false}
-          tertiary={fromAccount.get('description')}
           primary={fromAccount.get('name')}
-          onAddressClick={() => openAccount(fromAccount)}
+          onAddressClick={() => openAccount(tx.get('from'))}
         />
       </TableRowColumn>
       <TableRowColumn style={{...tables.shortestStyle, textOverflow: 'inherit'}}>
@@ -69,9 +71,8 @@ export const Transaction = (props) => {
         <AddressAvatar
           addr={tx.get('to')}
           abbreviated={false}
-          tertiary={toAccount.get('description')}
           primary={toAccount.get('name')}
-          onAddressClick={() => openAccount(toAccount)}
+          onAddressClick={() => openAccount(tx.get('to'))}
         />
       </TableRowColumn>
       <TableRowColumn style={{...tables.shortStyle, paddingRight: '0', textAlign: 'right' }}>
@@ -95,14 +96,9 @@ Transaction.propTypes = {
 
 export default connect(
   (state, ownProps) => {
-    const accounts = state.accounts.get('accounts', Immutable.List());
-
     const getAccount = (addr) => {
-      if (typeof addr !== 'string') {
-        return Immutable.Map({});
-      }
-      const pos = accounts.findKey((acc) => acc.get('id') === addr);
-      return (pos >= 0) ? accounts.get(pos) : Immutable.Map({});
+      const acc = accounts.selectors.selectAccount(state, addr);
+      return acc || Immutable.Map({});
     };
 
     const toAccount = getAccount(ownProps.tx.get('to'));
@@ -111,7 +107,6 @@ export default connect(
     return {
       showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
       tx: ownProps.tx,
-      getAccount,
       toAccount,
       fromAccount,
     };
@@ -125,8 +120,8 @@ export default connect(
       })
       );
     },
-    openAccount: (acc) => {
-      dispatch(screen.actions.gotoScreen('account', acc));
+    openAccount: (address: string) => {
+      dispatch(wallet.actions.showAccountDetails(address));
     },
     refreshTx: () => {
       const hash = ownProps.tx.get('hash');
