@@ -141,7 +141,7 @@ export default connect(
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data) => {
-      return dispatch(accounts.actions.importMnemonic(data.password, data.mnemonic, data.hdpath, data.hdpath, ''))
+      return dispatch(accounts.actions.importMnemonic(data.password, data.mnemonic, data.hdpath, '', ''))
         .then((result) => {
           if (result.error) {
             throw new SubmissionError({ _error: result.error.toString() });
