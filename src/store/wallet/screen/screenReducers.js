@@ -50,7 +50,6 @@ function onNotificationClose(state, action) {
   if (action.type === 'SCREEN/NOTIFICATION_CLOSE') {
     return state
       .set('notificationMessage', null)
-      // .set('notificationType', null)
       .set('notificationDuration', null);
   }
   return state;
