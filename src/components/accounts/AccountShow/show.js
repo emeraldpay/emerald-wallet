@@ -5,11 +5,10 @@ import { connect } from 'react-redux';
 import People from 'material-ui/svg-icons/social/people';
 import QRCode from 'qrcode.react';
 import TokenUnits from 'lib/tokenUnits';
-import IdentityIcon from 'elements/IdentityIcon';
+import { IdentityIcon, Account as AddressAvatar } from 'emerald-js-ui';
 import { Form, styles, Row } from 'elements/Form';
 import Button from 'elements/Button';
-import { QrCode as QrCodeIcon } from 'emerald-js/lib/ui/icons';
-import AddressAvatar from 'elements/AddressAvatar/addressAvatar';
+import { QrCode as QrCodeIcon } from 'emerald-js-ui/lib/icons';
 import DashboardButton from 'components/common/DashboardButton';
 import accounts from '../../../store/vault/accounts';
 import screen from '../../../store/wallet/screen';
@@ -61,6 +60,7 @@ export class AccountShow extends React.Component {
 
   render() {
     const { account, showFiat, goBack, transactions, createTx, showReceiveDialog } = this.props;
+    // TODO: show pending balance too
     const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
 
     // TODO: we convert Wei to TokenUnits here
@@ -103,9 +103,10 @@ export class AccountShow extends React.Component {
                 </div>
                 <div style={ styles.right }>
                   {!this.state.edit && <AddressAvatar
+                    editable
                     addr={account.get('id')}
-                    tertiary={account.get('description')}
-                    nameEdit={account.get('name')}
+                    description={account.get('description')}
+                    name={account.get('name')}
                     onEditClick={this.handleEdit}
                   />}
                   {this.state.edit && <AccountEdit
@@ -173,20 +174,20 @@ AccountShow.propTypes = {
 
 export default connect(
   (state, ownProps) => {
-    const all = state.accounts.get('accounts');
     let account = ownProps.account;
-    const listPos = all.findKey((acc) => acc.get('id').toLowerCase() === account.get('id').toLowerCase());
-    if (listPos >= 0) {
-      account = all.get(listPos);
-    } else {
-      log.warn("Can't find account in general list of accounts", account.get('id'), listPos);
-    }
+
+    account = accounts.selectors.selectAccount(state, account.get('id'));
     let transactions = Immutable.List([]);
-    if (account.get('id')) {
+
+    if (account && account.get('id')) {
+      // TODO: replace by history.selectors.selectTxs() ...
       transactions = state.wallet.history.get('trackedTransactions').filter((t) =>
         (account.get('id') === t.get('to') || account.get('id') === t.get('from'))
       );
+    } else {
+      log.warn("Can't find account in general list of accounts", account.get('id'));
     }
+
     return {
       showFiat: launcher.selectors.getChainName(state) === 'mainnet',
       account,

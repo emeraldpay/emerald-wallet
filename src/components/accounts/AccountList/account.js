@@ -2,12 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { CardText } from 'material-ui/Card';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
+import { IdentityIcon, Account as AddressAvatar } from 'emerald-js-ui';
+import { QrCode as QrCodeIcon } from 'emerald-js-ui/lib/icons';
 
-import IdentityIcon from 'elements/IdentityIcon';
 import Card from 'elements/Card';
 import Button from 'elements/Button';
-import { QrCode as QrCodeIcon } from 'emerald-js/lib/ui/icons';
-import AddressAvatar from '../../../elements/AddressAvatar/addressAvatar';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../Balance';
 import TokenBalances from '../TokenBalances';
@@ -76,8 +75,9 @@ export default class Account extends React.Component {
               </Col>
               <Col xs={5}>
                 <AddressAvatar
+                  editable
                   addr={ account.get('id') }
-                  tertiary={ account.get('description') }
+                  description={ account.get('description') }
                   primary={ account.get('name') }
                   onAddressClick={ openAccount }
                 />

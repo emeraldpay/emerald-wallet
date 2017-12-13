@@ -1,8 +1,8 @@
 import React from 'react';
 import QRCode from 'qrcode.react';
 import Dialog from 'material-ui/Dialog';
+import {Address as AccountAddress} from 'emerald-js-ui';
 import CloseButton from 'elements/CloseButton';
-import AccountAddress from 'elements/AccountAddress';
 
 import classes from './receiveDialog.scss';
 import DepositOptions from './DepositOptions';
