@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FontIcon, FlatButton, Popover } from 'material-ui';
 import { List, ListItem } from 'material-ui/List';
-import { Add as AddIcon, Ledger as LedgerIcon } from 'emerald-js/lib/ui/icons';
+import { Add as AddIcon, Ledger as LedgerIcon } from 'emerald-js-ui/lib/icons';
 
 const styles = {
   button: {
