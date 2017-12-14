@@ -9,7 +9,7 @@ import { formStyle } from 'lib/styles';
 import DashboardButton from 'components/common/DashboardButton';
 import { positive, number, required, address } from 'lib/validators';
 import LinkButton from 'elements/LinkButton';
-import IdentityIcon from '../../../elements/IdentityIcon';
+import { IdentityIcon } from 'emerald-js-ui';
 import { Form, Row, styles } from '../../../elements/Form';
 import TextField from '../../../elements/Form/TextField';
 import SelectField from '../../../elements/Form/SelectField';

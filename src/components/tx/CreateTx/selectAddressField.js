@@ -3,8 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Field } from 'redux-form';
 import { MenuItem } from 'material-ui';
-
-import IdentityIcon from '../../../elements/IdentityIcon';
+import { IdentityIcon } from 'emerald-js-ui';
 import SelectField from '../../../elements/Form/SelectField';
 
 /**

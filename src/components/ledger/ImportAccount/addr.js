@@ -6,7 +6,7 @@ import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import log from 'electron-log';
 import { TableRowColumn, TableRow } from 'material-ui/Table';
 import { tables } from 'lib/styles';
-import AccountAddress from 'elements/AccountAddress/index';
+import {Address as AccountAddress} from 'emerald-js-ui';
 import AccountBalance from '../../accounts/Balance';
 
 

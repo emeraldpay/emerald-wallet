@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { Search as SearchIcon } from 'emerald-js/lib/ui/icons';
+import { Search as SearchIcon } from 'emerald-js-ui/lib/icons';
 import TextField from '../../../../elements/Form/TextField';
 import Filter from './filter';
 

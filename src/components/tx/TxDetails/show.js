@@ -5,13 +5,12 @@ import { Map } from 'immutable';
 import { connect } from 'react-redux';
 import FlatButton from 'material-ui/FlatButton';
 import { convert } from 'emerald-js';
+import { IdentityIcon, Address as AccountAddress, Account as AddressAvatar } from 'emerald-js-ui';
 import launcher from 'store/launcher';
 import DashboardButton from 'components/common/DashboardButton';
-import AccountAddress from '../../../elements/AccountAddress';
-import AddressAvatar from '../../../elements/AddressAvatar';
 import { gotoScreen } from '../../../store/wallet/screen/screenActions';
 import { toDate } from '../../../lib/convert';
-import IdentityIcon from '../../../elements/IdentityIcon';
+
 import { Form, styles, Row } from '../../../elements/Form';
 import TxStatus from './status';
 import { Currency } from '../../../lib/currency';

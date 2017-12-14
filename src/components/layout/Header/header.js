@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { IconButton } from 'material-ui';
-import { Gear as SettingsIcon } from 'emerald-js/lib/ui/icons';
+import { Gear as SettingsIcon } from 'emerald-js-ui/lib/icons';
 import { LogoIcon } from 'elements/Icons';
 import Status from './status/status';
 import Total from './total';

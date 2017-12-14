@@ -6,14 +6,14 @@ import Immutable from 'immutable';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
 import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
-import { Repeat as RepeatIcon } from 'emerald-js/lib/ui/icons';
+import { Repeat as RepeatIcon } from 'emerald-js-ui/lib/icons';
+import { Account as AddressAvatar } from 'emerald-js-ui';
 import launcher from 'store/launcher';
 import accounts from 'store/vault/accounts';
 import wallet from 'store/wallet';
 import screen from '../../../../store/wallet/screen';
 import { refreshTransaction } from '../../../../store/wallet/history/historyActions';
 import { link, tables } from '../../../../lib/styles';
-import AddressAvatar from '../../../../elements/AddressAvatar/addressAvatar';
 import AccountBalance from '../../../accounts/Balance';
 import TokenUnits from '../../../../lib/tokenUnits';
 
@@ -59,7 +59,6 @@ export const Transaction = (props) => {
       <TableRowColumn>
         <AddressAvatar
           addr={tx.get('from')}
-          abbreviated={false}
           primary={fromAccount.get('name')}
           onAddressClick={() => openAccount(tx.get('from'))}
         />
@@ -70,7 +69,6 @@ export const Transaction = (props) => {
       <TableRowColumn>
         <AddressAvatar
           addr={tx.get('to')}
-          abbreviated={false}
           primary={toAccount.get('name')}
           onAddressClick={() => openAccount(tx.get('to'))}
         />
