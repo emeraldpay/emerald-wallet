@@ -63,6 +63,22 @@ class ImportMnemonic extends React.Component {
         </Row>
 
         <Row>
+          <div style={ formStyles.left }/>
+          <div style={ formStyles.right }>
+            <div style={{width: '100%'}}>
+              <div className={ styles.mnemonicLabel }>HD derivation path</div>
+              <div>
+                <Field
+                  name="hdpath"
+                  component={ HdPathFormField }
+                  validate={ [required] }
+                />
+              </div>
+            </div>
+          </div>
+        </Row>
+
+        <Row>
           <div style={formStyles.left}>
           </div>
           <div style={formStyles.right}>
@@ -84,21 +100,6 @@ class ImportMnemonic extends React.Component {
           </div>
         </Row>
 
-        <Row>
-          <div style={ formStyles.left }/>
-          <div style={ formStyles.right }>
-            <div style={{width: '100%'}}>
-              <div className={ styles.mnemonicLabel }>HD derivation path</div>
-              <div>
-                <Field
-                  name="hdpath"
-                  component={ HdPathFormField }
-                  validate={ [required] }
-                />
-              </div>
-            </div>
-          </div>
-        </Row>
         <Row>
           <div style={formStyles.left}/>
           <div style={formStyles.right}>
@@ -141,7 +142,7 @@ export default connect(
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data) => {
-      return dispatch(accounts.actions.importMnemonic(data.password, data.mnemonic, data.hdpath, data.hdpath, ''))
+      return dispatch(accounts.actions.importMnemonic(data.password, data.mnemonic, data.hdpath, '', ''))
         .then((result) => {
           if (result.error) {
             throw new SubmissionError({ _error: result.error.toString() });
