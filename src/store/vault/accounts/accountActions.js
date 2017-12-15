@@ -180,14 +180,9 @@ function unwrap(list) {
 }
 
 function onTxSend(dispatch, sourceTx: Transaction) {
-  return (txhash) => {
-    dispatch({
-      type: ActionTypes.SEND_TRANSACTION,
-      account: sourceTx.from,
-      txHash: txhash,
-    });
+  return (txHash: string) => {
     dispatch(loadAccountBalance(sourceTx.from));
-    const sentTx = Object.assign({}, sourceTx, {hash: txhash});
+    const sentTx = Object.assign({}, sourceTx, {hash: txHash});
 
     // TODO: dependency on wallet/history module!
     dispatch(history.actions.trackTx(sentTx));
