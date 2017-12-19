@@ -105,7 +105,7 @@ class ImportMnemonic extends React.Component {
           <div style={formStyles.right}>
             <Button
               primary
-              label="Import"
+              label="Continue"
               disabled={ invalid }
               onClick={ handleSubmit }
             />
@@ -142,18 +142,7 @@ export default connect(
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data) => {
-      return dispatch(accounts.actions.importMnemonic(data.password, data.mnemonic, data.hdpath, '', ''))
-        .then((result) => {
-          if (result.error) {
-            throw new SubmissionError({ _error: result.error.toString() });
-          } else {
-            // show page with account details
-            dispatch(screen.actions.gotoScreen('account', Immutable.fromJS({id: result})));
-          }
-        }).catch((error) => {
-          console.error(error);
-          throw new SubmissionError({ _error: error.toString() });
-        });
+      return ownProps.onContinue(data);
     },
 
     onBack: () => {

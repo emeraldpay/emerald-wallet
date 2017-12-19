@@ -4,12 +4,14 @@ import screen from 'store/wallet/screen';
 import accounts from 'store/vault/accounts';
 
 import ImportMnemonic from '../add/ImportMnemonic';
+import ConfirmMnemonic from '../add/ConfirmMnemonic';
 
 import NewMnemonic from './NewMnemonic';
 
 const PAGES = {
   GENERATE: 1,
   IMPORT: 2,
+  CONFIRM: 3,
 };
 
 class MnemonicWizard extends React.Component {
@@ -42,9 +44,17 @@ class MnemonicWizard extends React.Component {
     });
   }
 
+  gotoConfirm = (formData) => {
+    this.setState({
+      page: PAGES.CONFIRM,
+      formData,
+    });
+  }
+
+
   render() {
     const { gotoDashboard } = this.props;
-    const { page, mnemonic } = this.state;
+    const { page, mnemonic, formData } = this.state;
 
     switch (page) {
       case PAGES.GENERATE:
@@ -61,7 +71,19 @@ class MnemonicWizard extends React.Component {
         return (
           <ImportMnemonic
             mnemonic={ mnemonic }
+            onContinue={ this.gotoConfirm }
             onBack={ this.gotoGenerate }
+            backLabel="Back"
+          />
+        );
+
+      case PAGES.CONFIRM:
+        return (
+          <ConfirmMnemonic
+            mnemonic={ mnemonic }
+            onContinue={ this.gotoConfirm }
+            onBack={ this.gotoImport }
+            formData={ formData }
             backLabel="Back"
           />
         );
