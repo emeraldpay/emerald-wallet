@@ -1,6 +1,6 @@
 const os = require('os');
 const process = require('process');
-const Downloader = require('./downloader').Downloader;
+const { Downloader, getPlatformConfig } = require('emerald-js/lib/download');
 
 const config = {
   format: 'v1',
@@ -114,9 +114,12 @@ const signers = ['-----BEGIN PGP PUBLIC KEY BLOCK-----\n' +
 const suffix = os.platform() === 'win32' ? '.exe' : '';
 const fileName = `emerald${suffix}`;
 
-const downloader = new Downloader(config, fileName, './', signers);
+const downloader = new Downloader(getPlatformConfig(config), fileName, './', signers);
 downloader.on('notify', (message) => {
   console.log(message);
+});
+downloader.on('error', (error) => {
+  console.error(error);
 });
 
 downloader.downloadIfNotExists()

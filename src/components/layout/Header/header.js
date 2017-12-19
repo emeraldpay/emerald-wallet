@@ -16,7 +16,7 @@ export const Header = ({ maxWidth = '1220px', openSettings }) => {
         <div style={{display: 'flex', alignItems: 'center'}}>
           <div className={ classes.title }>EMERALD WALLET</div>
           <div><LogoIcon height="33px" width="17px" /></div>
-          <Total/>
+          <Total />
         </div>
         <div style={{display: 'flex'}}>
           <Status />

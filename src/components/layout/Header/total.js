@@ -21,7 +21,13 @@ const valueDisplay = {
   marginRight: '1rem',
 };
 
-const Render = ({ total, fiat, showFiat, currentLocaleCurrency }) => {
+type Props = {
+  total: string,
+  showFiat: boolean,
+  currentLocaleCurrency: string,
+}
+
+const Total = ({ total, fiat, showFiat, currentLocaleCurrency }: Props) => {
   const totalAmount = Currency.format(fiat.total.localized, currentLocaleCurrency);
   const rateAmount = fiat.rate.localized ? Currency.format(fiat.rate.localized, currentLocaleCurrency) : '?';
 
@@ -37,8 +43,8 @@ const Render = ({ total, fiat, showFiat, currentLocaleCurrency }) => {
   );
 };
 
-Render.propTypes = {
-  total: PropTypes.number.isRequired,
+Total.propTypes = {
+  total: PropTypes.string.isRequired,
   fiat: PropTypes.object.isRequired,
   currentLocaleCurrency: PropTypes.string.isRequired,
   showFiat: PropTypes.bool.isRequired,
@@ -97,4 +103,4 @@ export default connect(
     };
   },
   (dispatch, ownProps) => ({})
-)(Render);
+)(Total);
