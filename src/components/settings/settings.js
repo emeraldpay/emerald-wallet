@@ -8,7 +8,7 @@ import { Form, styles, Row } from 'elements/Form';
 import Button from 'elements/Button';
 import SelectField from 'elements/Form/SelectField';
 import DashboardButton from 'components/common/DashboardButton';
-import { Checkbox } from 'redux-form-material-ui';
+import Checkbox from 'elements/Form/Checkbox';
 
 import screen from '../../store/wallet/screen';
 import settings from '../../store/wallet/settings';
