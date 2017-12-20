@@ -31,7 +31,7 @@ class Header extends React.Component {
 
 export default translate('accounts')(
   connect(
-    null,
+    (state, ownProps) => ({}),
     (dispatch, ownProps) => ({
       generate: () => {
         dispatch(gotoScreen('generate'));

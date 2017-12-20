@@ -67,11 +67,12 @@ export const Transaction = (props) => {
         <FontIcon className='fa fa-angle-right' />
       </TableRowColumn>
       <TableRowColumn>
+        {tx.get('to') &&
         <AddressAvatar
           addr={tx.get('to')}
           primary={toAccount.get('name')}
           onAddressClick={() => openAccount(tx.get('to'))}
-        />
+        />}
       </TableRowColumn>
       <TableRowColumn style={{...tables.shortStyle, paddingRight: '0', textAlign: 'right' }}>
         <IconButton onClick={ refreshTx } iconStyle={ styles.repeatIcon }>
