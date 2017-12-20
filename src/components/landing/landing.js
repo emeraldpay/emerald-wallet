@@ -3,7 +3,7 @@ import Button from 'elements/Button';
 import FlatButton from 'material-ui/FlatButton';
 import { connect } from 'react-redux';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
-import { LogoIcon } from 'elements/Icons';
+import { Logo as LogoIcon } from 'emerald-js-ui/lib/icons';
 import Divider from 'material-ui/Divider';
 import classes from './landing.scss';
 import screen from '../../store/wallet/screen';
@@ -15,9 +15,9 @@ const Render = ({ onGenerate, onImportjson, onImportPrivateKey, onLedger, onLedg
         <div style={{flexGrow: 1}}>
           <Row style={{padding: 0, margin: 0}}>
             <Col style={{backgroundColor: 'white', padding: 0}} xs={12}>
-              <div style={{display: 'flex', alignItems: 'center', marginLeft: '125px', marginTop: '60px'}}>
-                <div><LogoIcon height="33px" width="17px" /></div>
-                <div className={ classes.title } style={{marginLeft: '18px', color: '#47B04B' }}>EMERALD WALLET</div>
+              <div style={{display: 'flex', alignItems: 'center', marginLeft: '80px', marginTop: '60px'}}>
+                <div><LogoIcon height="75px" width="75px" /></div>
+                <div className={ classes.title } style={{marginLeft: '5px', color: '#47B04B' }}>EMERALD WALLET</div>
               </div>
               <br />
               <div style={{marginLeft: '150px', padding: '10px', maxWidth: '700px'}}>

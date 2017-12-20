@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { IconButton } from 'material-ui';
-import { Gear as SettingsIcon } from 'emerald-js-ui/lib/icons';
-import { LogoIcon } from 'elements/Icons';
+import { Gear as SettingsIcon, Logo as LogoIcon } from 'emerald-js-ui/lib/icons';
 import Status from './status/status';
 import Total from './total';
 import screen from '../../../store/wallet/screen';
@@ -15,7 +14,7 @@ export const Header = ({ maxWidth = '1220px', openSettings }) => {
       <div style={{display: 'flex', justifyContent: 'space-between', margin: '0 auto', maxWidth}}>
         <div style={{display: 'flex', alignItems: 'center'}}>
           <div className={ classes.title }>EMERALD WALLET</div>
-          <div><LogoIcon height="33px" width="17px" /></div>
+          <div><LogoIcon height="50px" width="50px" /></div>
           <Total />
         </div>
         <div style={{display: 'flex'}}>

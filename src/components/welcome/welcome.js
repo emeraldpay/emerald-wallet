@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 
-import logo from 'images/etc_logo.png';
+import { Logo as LogoIcon } from 'emerald-js-ui/lib/icons';
 import InitialSetup from './initialSetup';
 import version from '../../version';
 
@@ -60,7 +60,7 @@ const Render = ({ message, level, ready, needSetup }) => {
     <Grid id="welcome-screen">
       <Row center="xs" style={logoStyles.row}>
         <Col xs>
-          <img src={logo} height={logoStyles.img.height}/>
+          <LogoIcon width="128px" height="128px" />
         </Col>
       </Row>
       {body}
