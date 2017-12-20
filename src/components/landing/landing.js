@@ -1,14 +1,14 @@
 import React from 'react';
-import Button from 'elements/Button';
 import FlatButton from 'material-ui/FlatButton';
 import { connect } from 'react-redux';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { Logo as LogoIcon } from 'emerald-js-ui/lib/icons';
 import Divider from 'material-ui/Divider';
+import Button from '../../elements/Button';
 import classes from './landing.scss';
 import screen from '../../store/wallet/screen';
 
-const Render = ({ onGenerate, onImportjson, onImportPrivateKey, onLedger, onLedgerWait, connected }) => {
+export const Landing = ({ onGenerate, onImportJson, onImportPrivateKey, onLedger, onLedgerWait, connected }) => {
   return (
     <div>
       <div style={{display: 'flex', alignItems: 'stretch'}}>
@@ -39,7 +39,7 @@ const Render = ({ onGenerate, onImportjson, onImportPrivateKey, onLedger, onLedg
               <div style={{marginLeft: '145px', marginBottom: '70px'}}>
                 <div className={`${classes.title} ${classes.addwallet}`}>Add Account</div>
                 <div className={ classes.addAccountButtons }>
-                  <FlatButton style={{color: '#47B04B' }} onClick={onImportjson} label="From Keystore File (UTC/JSON)" />
+                  <FlatButton style={{color: '#47B04B' }} onClick={onImportJson} label="From Keystore File (UTC/JSON)" />
                   <FlatButton style={{color: '#47B04B' }} onClick={onImportPrivateKey} label="From Private key" />
                   <FlatButton style={{color: '#47B04B' }} onClick={connected ? onLedger : onLedgerWait} label="Ledger Nano S" />
                 </div>
@@ -52,7 +52,7 @@ const Render = ({ onGenerate, onImportjson, onImportPrivateKey, onLedger, onLedg
   );
 };
 
-const Landing = connect(
+export default connect(
   (state, ownProps) => ({
     connected: state.ledger.get('connected'),
   }),
@@ -60,7 +60,7 @@ const Landing = connect(
     onGenerate() {
       dispatch(screen.actions.gotoScreen('landing-generate'));
     },
-    onImportjson() {
+    onImportJson() {
       dispatch(screen.actions.gotoScreen('landing-importjson'));
     },
     onImportPrivateKey() {
@@ -73,6 +73,5 @@ const Landing = connect(
       dispatch(screen.actions.showDialog('ledger-wait'));
     },
   })
-)(Render);
+)(Landing);
 
-export default Landing;

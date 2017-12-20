@@ -37,7 +37,8 @@
     "dist": "npm run build:all:nowatch && electron-builder --publish never",
     "dist:nobuild": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never",
     "flow": "flow",
-    "getemerald": "cross-env ELECTRON_RUN_AS_NODE=true ./node_modules/.bin/electron ./scripts/download-emerald.js"
+    "getemerald": "cross-env ELECTRON_RUN_AS_NODE=true ./node_modules/.bin/electron ./scripts/download-emerald.js",
+    "storybook": "start-storybook -p 9001 -c .storybook"
   },
   "keywords": [
     "react",
@@ -117,6 +118,7 @@
   },
   "devDependencies": {
     "@elastic/webpack-directory-name-as-main": "2.0.2",
+    "@storybook/react": "^3.2.18",
     "aws-sdk": "2.91.0",
     "babel-core": "^6.24.1",
     "babel-eslint": "^7.2.3",
