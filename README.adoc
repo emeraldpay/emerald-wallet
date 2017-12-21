@@ -140,6 +140,9 @@ Use `--rpccorsdomain` option to configure CORS.
 
 Example: `./parity --chain=classic --rpccorsdomain=*` allow requests from any domain
 
+## Contact
+Chat with us via https://gitter.im/ethereumproject/emerald-wallet[Gitter]
+
 ## License
 
 Apache 2.0

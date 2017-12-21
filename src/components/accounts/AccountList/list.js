@@ -16,8 +16,6 @@ const log = createLogger('AccountList');
 const cx = classNames.bind(styles);
 
 const AccountList = translate('accounts')((props) => {
-  log.trace('render');
-
   const { accounts, knownTokens, showFiat } = props;
   const { openAccount, createTx, showReceiveDialog } = props;
 
@@ -46,9 +44,6 @@ const AccountList = translate('accounts')((props) => {
 AccountList.propTypes = {
   showFiat: PropTypes.bool,
   accounts: PropTypes.object.isRequired,
-  generate: PropTypes.func.isRequired,
-  importJson: PropTypes.func.isRequired,
-  importLedger: PropTypes.func.isRequired,
   knownTokens: PropTypes.object.isRequired,
 };
 
