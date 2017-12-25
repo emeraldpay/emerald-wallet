@@ -66,7 +66,7 @@
     "devtron": "^1.4.0",
     "electron-log": "^2.2.6",
     "electron-store": "^1.1.0",
-    "emerald-js": "git+https://github.com/ethereumproject/emerald-js.git#v0.0.20",
+    "emerald-js": "git+https://github.com/ethereumproject/emerald-js.git#v0.0.21",
     "emerald-js-ui": "git+https://github.com/ethereumproject/emerald-js-ui.git#v0.0.4",
     "es6-promise": "4.1.1",
     "eslint": "4.2.0",
