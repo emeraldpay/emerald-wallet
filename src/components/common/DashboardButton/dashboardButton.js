@@ -1,7 +1,7 @@
 import React from 'react';
 import FlatButton from 'material-ui/FlatButton';
 import KeyboardArrowLeft from 'material-ui/svg-icons/hardware/keyboard-arrow-left';
-
+import { ArrowLeft as ArrowLeftIcon } from 'emerald-js-ui/lib/icons';
 import styles from './dashboardButton.scss';
 
 const style = {

@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { IconMenu, IconButton, MenuItem } from 'material-ui';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import MoreHorizIcon from 'material-ui/svg-icons/navigation/more-horiz';
 import FontIcon from 'material-ui/FontIcon';
 import { api } from 'lib/rpc/api';
@@ -9,15 +10,18 @@ import screen from '../../../store/wallet/screen';
 import history from '../../../store/wallet/history';
 import accounts from '../../../store/vault/accounts';
 
-const hasBalance = (account) => account.get('balance') && account.get('balance').value().gt(0);
+const hasBalance = (account) => (account.get('balance', null) === null) ||
+  (account.get('balance') && account.get('balance').value().gt(0));
 
-const renderHide = (chain, account, onHide) => {
-  if (hasBalance(account)) {
-    return null;
-  }
+const renderHide = (chain, account, onHide, { disabledColor }) => {
+  const disabled = hasBalance(account);
+  const iconStyle = disabled ? {
+    color: disabledColor,
+  } : null;
   return (
     <MenuItem
-      leftIcon={<FontIcon className="fa fa-eye-slash"/>}
+      disabled={ disabled }
+      leftIcon={<FontIcon style={ iconStyle } className="fa fa-eye-slash"/>}
       primaryText='HIDE'
       onTouchTap={ onHide(chain) }/>
   );
@@ -32,12 +36,12 @@ const renderUnhide = (chain, account, onUnhide) => {
   );
 };
 
-const SecondaryMenu = ({ account, onPrint, onExport, onHide, onUnhide, chain }) => {
+const SecondaryMenu = ({ account, onPrint, onExport, onHide, onUnhide, chain, muiTheme }) => {
+  const colors = {
+    textColor: muiTheme.palette.textColor,
+    disabledColor: muiTheme.palette.disabledColor,
+  };
   const isHardware = account.get('hardware', false);
-  if (isHardware && hasBalance(account)) {
-    // Don't show empty popup menu in this case
-    return null;
-  }
   return (
     <IconMenu iconButtonElement={<IconButton><MoreHorizIcon /></IconButton>}>
       {!isHardware &&
@@ -51,7 +55,7 @@ const SecondaryMenu = ({ account, onPrint, onExport, onHide, onUnhide, chain }) 
               primaryText='PRINT'
               onTouchTap={ onPrint(chain) }/> }
 
-      { !account.get('hidden') && renderHide(chain, account, onHide) }
+      { !account.get('hidden') && renderHide(chain, account, onHide, colors) }
       { account.get('hidden') && renderUnhide(chain, account, onUnhide) }
 
     </IconMenu>
@@ -97,4 +101,4 @@ export default connect(
       });
     },
   })
-)(SecondaryMenu);
+)(muiThemeable()(SecondaryMenu));
