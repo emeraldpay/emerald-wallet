@@ -13,7 +13,7 @@ import AddToken from '../../components/tokens/AddToken/add';
 import LedgerImport from '../../components/ledger/ImportAccount';
 import ImportJson from '../../components/accounts/add/ImportJson';
 import ImportPrivateKey from '../../components/accounts/add/ImportPrivateKey';
-import ImportMnemonic from '../../components/accounts/add/ImportMnemonic';
+import ImportMnemonic from '../../containers/ImportMnemonic';
 import ContractsList from '../../components/contracts/list';
 import AddContract from '../../components/contracts/add';
 import DeployContract from '../../components/contracts/deploy';
