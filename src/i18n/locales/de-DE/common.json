@@ -1,0 +1,13 @@
+{
+    "title": "Emerald - Ethereum Classic Wallet", // Emerald - Ethereum Classic Wallet
+    "menu": {
+        "home": "Home",
+        "addressBook": "Adressbuch", // Adress Book
+        "contracts": "Contracts", // Contracts
+        "network": "Netzwerk" // Network
+    },
+    "submit": "einreichen", // Submit
+    "clear": "Werte löschen", // Clear Values
+    "done": "Fertig", // Done
+    "cancel": "Abbrechen" // Cancel
+}
