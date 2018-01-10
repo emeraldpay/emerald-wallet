@@ -1,13 +1,11 @@
 // @flow
 import React from 'react';
-import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { Field, reduxForm, SubmissionError, change, formValueSelector } from 'redux-form';
 import { required } from 'lib/validators';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
 import DashboardButton from 'components/common/DashboardButton';
-import accounts from 'store/vault/accounts';
 import screen from 'store/wallet/screen';
 import Button from 'elements/Button';
 import { Warning, WarningHeader, WarningText } from 'elements/Warning';
@@ -138,7 +136,6 @@ export default connect(
       mnemonic: ownProps.mnemonic,
       hdpath: "m/44'/60'/160720'/0'",
     },
-    accounts: state.accounts.get('accounts', Immutable.List()),
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data) => {
