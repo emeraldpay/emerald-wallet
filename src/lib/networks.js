@@ -26,7 +26,7 @@ export const Networks = [
   {
     geth: {
       type: 'remote',
-      url: 'https://api.gastracker.io/web3',
+      url: 'https://web3.gastracker.io',
     },
     chain: {
       id: 61,
