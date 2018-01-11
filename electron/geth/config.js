@@ -11,13 +11,13 @@ const DefaultGeth = {
         {
           type: 'https',
           pack: 'zip',
-          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-osx-v4.0.0.zip',
+          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.2.0/geth-classic-osx-v4.2.0-c999068.zip',
         },
       ],
       signatures: [
         {
           type: 'pgp',
-          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-osx-v4.0.0.zip.asc',
+          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.2.0/geth-classic-osx-v4.2.0-c999068.zip.asc',
         },
       ],
     },
@@ -27,13 +27,13 @@ const DefaultGeth = {
         {
           type: 'https',
           pack: 'zip',
-          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-win64-v4.0.0.zip',
+          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.2.0/geth-classic-win64-v4.2.0-c999068.zip',
         },
       ],
       signatures: [
         {
           type: 'pgp',
-          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-win64-v4.0.0.zip.asc',
+          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.2.0/geth-classic-win64-v4.2.0-c999068.zip.asc',
         },
       ],
     },
@@ -43,13 +43,13 @@ const DefaultGeth = {
         {
           type: 'https',
           pack: 'zip',
-          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-linux-v4.0.0.zip',
+          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.2.0/geth-classic-linux-v4.2.0-c999068.zip',
         },
       ],
       signatures: [
         {
           type: 'pgp',
-          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.0.0/geth-classic-linux-v4.0.0.zip.asc',
+          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v4.2.0/geth-classic-linux-v4.2.0-c999068.zip.asc',
         },
       ],
     },
