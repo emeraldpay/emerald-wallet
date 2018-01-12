@@ -75,7 +75,8 @@ class LocalConnector {
   importKeyFiles() {
     return new Promise((resolve, reject) => {
       const bin = this.emeraldExecutable();
-      const emeraldHomeDir = `${os.homedir()}${path.join('/.emerald', this.chain.name, 'keystore/')}`;
+      const appData = (process.env.APPDATA || os.homedir());
+      const emeraldHomeDir = `${appData}${path.join('/.emerald', this.chain.name, 'keystore/')}`;
       fs.access(bin, fs.constants.F_OK | fs.constants.R_OK | fs.constants.X_OK, (err) => {
         if (err) {
           log.error(`File ${bin} doesn't exist or doesn't have execution flag`);
