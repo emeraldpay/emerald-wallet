@@ -6,9 +6,9 @@ import { separateThousands } from 'lib/convert';
 import { waitForServicesRestart } from 'store/store';
 import NetworkSelector from './networkSelector';
 import launcher from '../../../../store/launcher';
-import history from '../../../../store/wallet/history';
+import wallet from '../../../../store/wallet';
 
-const Render = ({ block, progress, peerCount, showDetails, connecting, switchNetwork }) => {
+const Status = ({ block, progress, peerCount, showDetails, connecting, switchNetwork }) => {
   const styles = {
     details: {
       color: '#47B04B',
@@ -51,7 +51,7 @@ const Render = ({ block, progress, peerCount, showDetails, connecting, switchNet
   );
 };
 
-Render.propTypes = {
+Status.propTypes = {
   block: PropTypes.number.isRequired,
   progress: PropTypes.number,
   peerCount: PropTypes.number,
@@ -60,7 +60,7 @@ Render.propTypes = {
   switchNetwork: PropTypes.func,
 };
 
-const Status = connect(
+export default connect(
   (state, ownProps) => {
     const curBlock = state.network.getIn(['currentBlock', 'height'], -1);
     const showDetails = state.launcher.getIn(['geth', 'type']) === 'local';
@@ -74,7 +74,7 @@ const Status = connect(
       const peerCount = state.network.get('peerCount');
       const progress = (curBlock / tip) * 100;
       return {
-        progress: isNaN(progress) ? 100 : progress,
+        progress: isNaN(progress) || (!isFinite(progress)) ? 0 : progress,
         peerCount,
         ...props,
       };
@@ -86,9 +86,7 @@ const Status = connect(
       dispatch(launcher.actions.useRpc({ geth: net.geth, chain: net.chain }));
       dispatch(launcher.actions.saveSettings({ chain: net.chain, geth: net.geth }));
       waitForServicesRestart();
-      dispatch(history.actions.init(net.chain.id));
+      dispatch(wallet.actions.switchEndpoint({ chainId: net.chain.id, chain: net.chain.name }));
     },
   })
-)(Render);
-
-export default Status;
+)(Status);

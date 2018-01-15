@@ -1,13 +1,23 @@
 // @flow
 import { convert } from 'emerald-js';
 import BigNumber from 'bignumber.js';
-import { waitForServices, intervalRates } from '../../store/store';
+import { intervalRates } from '../../store/config';
 import createLogger from '../../utils/logger';
 import ActionTypes from './actionTypes';
 
 const log = createLogger('networkActions');
 
 let watchingHeight = false;
+
+export function switchChain({ chain, chainId }) {
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.SWITCH_CHAIN,
+      chain,
+      chainId,
+    });
+  };
+}
 
 export function loadHeight(watch) {
   return (dispatch, getState, api) =>

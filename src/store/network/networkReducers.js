@@ -65,7 +65,7 @@ function onSwitchChain(state, action) {
       name: action.chain,
       id: action.chainId,
     };
-    return state.update('chain', (c) => c.merge(Immutable.fromJS(chain)));
+    return initial.update('chain', (c) => c.merge(Immutable.fromJS(chain)));
   }
   return state;
 }

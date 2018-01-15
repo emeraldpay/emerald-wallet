@@ -1,7 +1,8 @@
 // @flow
 import accounts from '../vault/accounts';
 import screen from './screen';
-
+import history from './history';
+import network from '../network';
 /**
  * Shows account details page if address in the vault or notification otherwise.
  */
@@ -14,5 +15,12 @@ export const showAccountDetails = (address: string) => {
     } else {
       dispatch(screen.actions.gotoScreen('account', acc));
     }
+  };
+};
+
+export const switchEndpoint = ({chainId: number, chain: string}) => {
+  return (dispatch, getState) => {
+    dispatch(history.actions.init(chainId));
+    dispatch(network.actions.switchChain({ chainId, chain }));
   };
 };
