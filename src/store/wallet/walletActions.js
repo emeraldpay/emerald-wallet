@@ -18,9 +18,9 @@ export const showAccountDetails = (address: string) => {
   };
 };
 
-export const switchEndpoint = ({chainId: number, chain: string}) => {
+export const switchEndpoint = (chain: {chainId: number, chain: string}) => {
   return (dispatch, getState) => {
-    dispatch(history.actions.init(chainId));
-    dispatch(network.actions.switchChain({ chainId, chain }));
+    dispatch(history.actions.init(chain.chainId));
+    dispatch(network.actions.switchChain(chain));
   };
 };
