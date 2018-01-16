@@ -2,7 +2,6 @@
 import React from 'react';
 
 import { Card, CardHeader } from 'material-ui/Card';
-import copy from 'copy-to-clipboard';
 import FontIcon from 'material-ui/FontIcon';
 import { copyIcon, noShadow, link } from 'lib/styles';
 
