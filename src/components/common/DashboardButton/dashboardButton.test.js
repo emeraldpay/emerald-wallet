@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import KeyboardArrowLeft from 'material-ui/svg-icons/hardware/keyboard-arrow-left';
+import { ArrowLeft as ArrowLeftIcon } from 'emerald-js-ui/lib/icons';
 import DashboardButton from './dashboardButton';
 
 describe('DashboardButton', () => {
@@ -9,8 +9,8 @@ describe('DashboardButton', () => {
     expect(component.findWhere((n) => n.text() === 'PRIV1')).toHaveLength(2);
   });
 
-  it('renders KeyboardArrowLeft icon', () => {
+  it('renders ArrowLeft icon', () => {
     const wrapper = shallow(<DashboardButton />);
-    expect(wrapper.find(KeyboardArrowLeft).length).toBe(1);
+    expect(wrapper.find(ArrowLeftIcon).length).toBe(1);
   });
 });

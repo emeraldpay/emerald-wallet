@@ -1,10 +1,10 @@
 // @flow
-import { parseString } from 'lib/convert';
-import { TokenAbi } from 'lib/erc20';
-import Contract from 'lib/contract';
-import { detect as detectTraceCall } from 'lib/traceCall';
 import BigNumber from 'bignumber.js';
-import launcher from 'store/launcher';
+import { parseString } from '../../../lib/convert';
+import { TokenAbi } from '../../../lib/erc20';
+import Contract from '../../../lib/contract';
+import { detect as detectTraceCall } from '../../../lib/traceCall';
+import launcher from '../../launcher';
 import ActionTypes from './actionTypes';
 import createLogger from '../../../utils/logger';
 

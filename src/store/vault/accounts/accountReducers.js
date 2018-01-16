@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 import { convert, Wei } from 'emerald-js';
-import TokenUnits from 'lib/tokenUnits';
+import TokenUnits from '../../../lib/tokenUnits';
 import ActionTypes from './actionTypes';
 
 const { toNumber } = convert;
