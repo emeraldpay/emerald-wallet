@@ -63,7 +63,7 @@ export const Transaction = (props) => {
         />
       </TableRowColumn>
       <TableRowColumn className={classes.columnArrow} style={{textOverflow: 'inherit'}}>
-        <ArrowRightIcon />
+        <ArrowRightIcon color="#DDDDDD" />
       </TableRowColumn>
       <TableRowColumn>
         {tx.get('to') &&
