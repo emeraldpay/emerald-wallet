@@ -6,7 +6,7 @@ import { IdentityIcon, Account as AddressAvatar } from 'emerald-js-ui';
 import { QrCode as QrCodeIcon } from 'emerald-js-ui/lib/icons';
 
 import Card from 'elements/Card';
-import Button from 'elements/Button';
+import { Button } from 'emerald-js-ui';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../Balance';
 import TokenBalances from '../TokenBalances';

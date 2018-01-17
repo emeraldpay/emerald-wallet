@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import DashboardButton from 'components/common/DashboardButton';
 import { Form, Row, styles as formStyles } from '../../../elements/Form';
-import Button from '../../../elements/Button/index';
+import { Button } from 'emerald-js-ui';
 import TextField from '../../../elements/Form/TextField';
 import screen from '../../../store/wallet/screen';
 import accounts from '../../../store/vault/accounts';

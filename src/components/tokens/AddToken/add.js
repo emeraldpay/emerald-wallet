@@ -4,7 +4,7 @@ import { convert } from 'emerald-js';
 import { connect } from 'react-redux';
 import { Field, reduxForm, change, formValueSelector, reset, SubmissionError } from 'redux-form';
 import TextField from 'elements/Form/TextField';
-import Button from 'elements/Button';
+import { Button } from 'emerald-js-ui';
 import tokens from 'store/vault/tokens';
 import { required, address } from 'lib/validators';
 import TokenUnits from 'lib/tokenUnits';

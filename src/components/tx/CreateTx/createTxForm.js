@@ -14,7 +14,7 @@ import { Form, Row, styles } from '../../../elements/Form';
 import TextField from '../../../elements/Form/TextField';
 import SelectField from '../../../elements/Form/SelectField';
 import AccountBalance from '../../accounts/Balance';
-import Button from '../../../elements/Button';
+import { Button } from 'emerald-js-ui';
 
 import SelectAddressField from './selectAddressField';
 

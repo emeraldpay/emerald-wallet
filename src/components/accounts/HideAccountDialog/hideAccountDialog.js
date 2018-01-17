@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Dialog, IconButton } from 'material-ui';
-import Button from 'elements/Button';
+import { Button } from 'emerald-js-ui';
 import CloseButton from 'elements/CloseButton';
 import { hideAccount } from 'store/vault/accounts/accountActions';
 import { Warning, WarningHeader, WarningText } from 'elements/Warning';

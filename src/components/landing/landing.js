@@ -1,27 +1,40 @@
 import React from 'react';
 import FlatButton from 'material-ui/FlatButton';
-import { connect } from 'react-redux';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { Logo as LogoIcon } from 'emerald-js-ui/lib/icons';
 import Divider from 'material-ui/Divider';
-import Button from '../../elements/Button';
-import classes from './landing.scss';
-import screen from '../../store/wallet/screen';
+import { Button } from 'emerald-js-ui';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 
-export const Landing = ({ onGenerate, onImportJson, onImportPrivateKey, onLedger, onLedgerWait, connected }) => {
+const Landing = ({ onGenerate, onImportJson, onImportPrivateKey, onLedger, onLedgerWait, connected, muiTheme }) => {
+  const styles = {
+    addAccount: {
+      color: muiTheme.palette.textColor,
+      fontWeight: '500',
+      padding: '20px',
+      fontSize: '17px',
+      paddingLeft: '15px',
+    },
+    addAccountButtons: {
+      display: 'flex',
+      alignItems: 'start',
+      flexDirection: 'column',
+      justifyContent: 'center',
+    }
+  }
   return (
     <div>
       <div style={{display: 'flex', alignItems: 'stretch'}}>
         <div style={{flexGrow: 1}}>
           <Row style={{padding: 0, margin: 0}}>
-            <Col style={{backgroundColor: 'white', padding: 0}} xs={12}>
+            <Col style={{backgroundColor: muiTheme.palette.canvasColor, padding: 0}} xs={12}>
               <div style={{display: 'flex', alignItems: 'center', marginLeft: '80px', marginTop: '60px'}}>
                 <div><LogoIcon height="75px" width="75px" /></div>
-                <div className={ classes.title } style={{marginLeft: '5px', color: '#47B04B' }}>EMERALD WALLET</div>
+                <div style={{fontWeight: '500', marginLeft: '5px', color: muiTheme.palette.primary1Color}}>EMERALD WALLET</div>
               </div>
               <br />
               <div style={{marginLeft: '150px', padding: '10px', maxWidth: '700px'}}>
-                <span style={{color: '#747474', fontWeight: '200'}}>
+                <span style={{color: muiTheme.palette.primary3Color, fontWeight: '200'}}>
                                   Ethereum Classic is a decentralized platform that runs smart contracts: applications that run exactly as programmed without any possibility of downtime, censorship, fraud or third party interference.
                 </span>
                 <br />
@@ -37,11 +50,11 @@ export const Landing = ({ onGenerate, onImportJson, onImportPrivateKey, onLedger
               </div>
               <Divider />
               <div style={{marginLeft: '145px', marginBottom: '70px'}}>
-                <div className={`${classes.title} ${classes.addwallet}`}>Add Account</div>
-                <div className={ classes.addAccountButtons }>
-                  <FlatButton style={{color: '#47B04B' }} onClick={onImportJson} label="From Keystore File (UTC/JSON)" />
-                  <FlatButton style={{color: '#47B04B' }} onClick={onImportPrivateKey} label="From Private key" />
-                  <FlatButton style={{color: '#47B04B' }} onClick={connected ? onLedger : onLedgerWait} label="Ledger Nano S" />
+                <div style={styles.addAccount}>Add Account</div>
+                <div style={styles.addAccountButtons}>
+                  <FlatButton primary onClick={onImportJson} label="From Keystore File (UTC/JSON)" />
+                  <FlatButton primary onClick={onImportPrivateKey} label="From Private key" />
+                  <FlatButton primary onClick={connected ? onLedger : onLedgerWait} label="Ledger Nano S" />
                 </div>
               </div>
             </Col>
@@ -52,26 +65,4 @@ export const Landing = ({ onGenerate, onImportJson, onImportPrivateKey, onLedger
   );
 };
 
-export default connect(
-  (state, ownProps) => ({
-    connected: state.ledger.get('connected'),
-  }),
-  (dispatch, ownProps) => ({
-    onGenerate() {
-      dispatch(screen.actions.gotoScreen('landing-generate'));
-    },
-    onImportJson() {
-      dispatch(screen.actions.gotoScreen('landing-importjson'));
-    },
-    onImportPrivateKey() {
-      dispatch(screen.actions.gotoScreen('landing-import-private-key'));
-    },
-    onLedger() {
-      dispatch(screen.actions.gotoScreen('landing-add-from-ledger', 'landing'));
-    },
-    onLedgerWait() {
-      dispatch(screen.actions.showDialog('ledger-wait'));
-    },
-  })
-)(Landing);
-
+export default muiThemeable()(Landing);

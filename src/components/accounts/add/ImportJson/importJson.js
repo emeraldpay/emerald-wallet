@@ -6,7 +6,7 @@ import Immutable from 'immutable';
 import DashboardButton from 'components/common/DashboardButton';
 import screen from 'store/wallet/screen';
 import accountsModule from 'store/vault/accounts';
-import Button from 'elements/Button';
+import { Button } from 'emerald-js-ui';
 import { Form, Row, styles as formStyles } from 'elements/Form/index';
 import { Warning, WarningText, WarningHeader } from 'elements/Warning';
 

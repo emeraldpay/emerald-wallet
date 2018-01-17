@@ -11,15 +11,14 @@ import i18n from './i18n/i18n';
 import {store, start as startStore} from './store/store';
 import Main from './components/layout/Main/main';
 import createLogger from './utils/logger';
+import theme from 'emerald-js-ui/src/theme.json'
 
 import './index.scss';
 import './bootstrapButtons.scss';
 
 const log = createLogger('index');
 
-const muiTheme = getMuiTheme({
-  fontFamily: 'Rubik',
-});
+const muiTheme = getMuiTheme(theme);
 
 function start() {
   log.info('Starting Emerald Wallet...');

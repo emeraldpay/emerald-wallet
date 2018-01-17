@@ -5,7 +5,7 @@ import { MenuItem } from 'material-ui';
 import { translate } from 'react-i18next';
 
 import { Form, styles, Row } from 'elements/Form';
-import Button from 'elements/Button';
+import { Button } from 'emerald-js-ui';
 import SelectField from 'elements/Form/SelectField';
 import DashboardButton from 'components/common/DashboardButton';
 import Checkbox from 'elements/Form/Checkbox';

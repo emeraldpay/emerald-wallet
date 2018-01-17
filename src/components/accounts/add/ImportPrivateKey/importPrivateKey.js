@@ -10,7 +10,7 @@ import accounts from 'store/vault/accounts';
 import screen from 'store/wallet/screen';
 import { required } from 'lib/validators';
 import { Wallet } from 'emerald-js';
-import Button from 'elements/Button';
+import { Button } from 'emerald-js-ui';
 import { Warning, WarningHeader, WarningText } from 'elements/Warning';
 
 import styles from './importPrivateKey.scss';

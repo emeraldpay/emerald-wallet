@@ -7,7 +7,7 @@ import QRCode from 'qrcode.react';
 import TokenUnits from 'lib/tokenUnits';
 import { IdentityIcon, Account as AddressAvatar } from 'emerald-js-ui';
 import { Form, styles, Row } from 'elements/Form';
-import Button from 'elements/Button';
+import { Button } from 'emerald-js-ui';
 import { QrCode as QrCodeIcon } from 'emerald-js-ui/lib/icons';
 import DashboardButton from 'components/common/DashboardButton';
 import accounts from '../../../store/vault/accounts';

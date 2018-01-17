@@ -1,5 +1,5 @@
 import React from 'react';
-import Button from 'elements/Button';
+import { Button } from 'emerald-js-ui';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import { Warning, WarningHeader, WarningText } from 'elements/Warning';
 import getLoadingIcon from '../getLoadingIcon';

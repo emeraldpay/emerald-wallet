@@ -7,13 +7,35 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.s?css$/,
-        loader: 'style-loader!css-loader?modules&camelCase&importLoaders=1&localIdentName=[name]__[local]___[hash:base64:5]!sass-loader'
+        test: /\.(js|jsx|es6)$/,
+        loader: 'babel-loader',
+        exclude: /(node_modules)/,
+        query: {
+          presets: ['es2015', 'react']
+        }
+      }, {
+        test: /\.(scss|css)$/,
+        loaders: ["style-loader", "css-loader", "sass-loader"],
+        include: path.resolve(__dirname, '../')
+      },
+      {
+        test: /\.(jpg|png|gif)$/,
+        use: {
+          loader: 'file-loader',
+          options: {name: 'images/[name].[ext]'},
+        },
       },
       {
         test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        loader: 'url-loader'
-      }
+        use: {
+          loader: 'url-loader',
+          options: {
+            limit: 10000,
+            mimetype: 'application/font-woff',
+            name: 'fonts/[name].[ext]',
+          },
+        },
+      },
     ]
   }
-};
+}

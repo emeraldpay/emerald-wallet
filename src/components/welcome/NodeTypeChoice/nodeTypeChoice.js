@@ -8,7 +8,7 @@ import { MainnetEpool, MainnetLocal } from '../../../lib/rpc/gethProviders';
 import Card from '../../../elements/Card';
 import FullNodeLogo from './fullNodeLogo';
 import RemoteNodeLogo from './remoteNodeLogo';
-import Button from '../../../elements/Button';
+import { Button } from 'emerald-js-ui';
 
 import classes from './nodeTypeChoice.scss';
 
