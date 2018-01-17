@@ -4,6 +4,7 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 import { Provider } from 'react-redux';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import theme from 'emerald-js-ui/src/theme.json';
 import 'font-awesome/scss/font-awesome.scss';
 import 'typeface-rubik/index.css';
 import { I18nextProvider } from 'react-i18next';
@@ -11,7 +12,6 @@ import i18n from './i18n/i18n';
 import {store, start as startStore} from './store/store';
 import Main from './components/layout/Main/main';
 import createLogger from './utils/logger';
-import theme from 'emerald-js-ui/src/theme.json'
 
 import './index.scss';
 import './bootstrapButtons.scss';

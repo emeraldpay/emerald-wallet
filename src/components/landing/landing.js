@@ -20,8 +20,8 @@ const Landing = ({ onGenerate, onImportJson, onImportPrivateKey, onLedger, onLed
       alignItems: 'start',
       flexDirection: 'column',
       justifyContent: 'center',
-    }
-  }
+    },
+  };
   return (
     <div>
       <div style={{display: 'flex', alignItems: 'stretch'}}>

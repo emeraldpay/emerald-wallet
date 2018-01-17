@@ -2,11 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { CardText } from 'material-ui/Card';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
-import { IdentityIcon, Account as AddressAvatar } from 'emerald-js-ui';
+import { Button, IdentityIcon, Account as AddressAvatar } from 'emerald-js-ui';
 import { QrCode as QrCodeIcon } from 'emerald-js-ui/lib/icons';
 
 import Card from 'elements/Card';
-import { Button } from 'emerald-js-ui';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../Balance';
 import TokenBalances from '../TokenBalances';

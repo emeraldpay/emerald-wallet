@@ -1,6 +1,6 @@
+import { connect } from 'react-redux';
 import Landing from '../../components/landing';
 import screen from '../../store/wallet/screen';
-import { connect } from 'react-redux';
 
 export default connect(
   (state, ownProps) => ({
