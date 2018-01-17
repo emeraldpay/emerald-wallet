@@ -1,5 +1,6 @@
 [ignore]
 .*/node_modules/react-event-listener/.*
+.*/node_modules/config-chain/*
 
 [include]
 
