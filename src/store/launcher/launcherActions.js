@@ -1,8 +1,8 @@
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
-import { api } from 'lib/rpc/api';
+import { api } from '../../lib/rpc/api';
 // import { waitForServicesRestart } from 'store/store';
-import accounts from 'store/vault/accounts';
-import screen from 'store/wallet/screen';
+import accounts from '../vault/accounts';
+import screen from '../wallet/screen';
 import createLogger from '../../utils/logger';
 
 const log = createLogger('launcherActions');
