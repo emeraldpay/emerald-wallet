@@ -15,10 +15,11 @@ export default class Checkbox extends React.Component {
   }
 
   render() {
-    const { input: { value }} = this.props;
+    const { input: { value }, label } = this.props;
     const checked = !!value;
 
     return (<IntCheckbox
+      label={ label }
       checked={ checked }
       onCheck={ this.handleCheck }
     />);

@@ -3,3 +3,4 @@ import '../src/index.scss';
 import './Landing';
 import './DashboardButton';
 import './TxHistory';
+import './AccountEdit';
