@@ -22,4 +22,5 @@ jobs:
               npm run lint
               export PATH=$PATH:$PWD/janusbin
               export APP_VERSION_GIT_TAG="$(janus version -format 'TAG_OR_NIGHTLY')"
+              echo "Building app version $APP_VERSION_GIT_TAG"
               npm run dist
