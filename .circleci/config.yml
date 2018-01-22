@@ -1,0 +1,17 @@
+version: 2
+jobs:
+  build:
+    macos:
+      xcode: "9.0"
+
+    steps:
+      - checkout
+
+      - run:
+          name: Install software
+          command: |
+              brew install node
+              npm -v
+              node -v
+              curl -sL https://raw.githubusercontent.com/ethereumproject/janus/master/get.sh | bash
+

@@ -87,6 +87,7 @@ class SettingsRender extends React.Component {
               <Field
                 name="showHiddenAccounts"
                 component={ Checkbox }
+                label="Show accounts you have hidden"
               />
             </div>
           </Row>

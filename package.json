@@ -19,8 +19,6 @@
   ],
   "scripts": {
     "setup": "npm install && flow-typed install",
-    "howto": "say 'in order to build and run for developement, the MAIN field (above) should be ./electron/main.js; but for distribution it should be ./electron/webpack-main.js'",
-    "shipit": "say 'try npm run build:all:nowatch, then npm run dist (or dist:all if you are feeling ambitious). note that you can change the compression rate in the build config down below. make sure you have MAIN set to electron/webpack-main.js'",
     "build": "node build-web --no-watch",
     "build:web": "node build-web --for-electron",
     "build:web:nowatch": "node build-web --no-watch --for-electron",
@@ -66,7 +64,7 @@
     "electron-log": "^2.2.6",
     "electron-store": "^1.1.0",
     "emerald-js": "git+https://github.com/ethereumproject/emerald-js.git#v0.0.21",
-    "emerald-js-ui": "git+https://github.com/ethereumproject/emerald-js-ui.git#v0.0.7",
+    "emerald-js-ui": "git+https://github.com/ethereumproject/emerald-js-ui.git#v0.0.8",
     "es6-promise": "4.1.1",
     "eslint": "4.2.0",
     "eslint-nibble": "4.2.1",

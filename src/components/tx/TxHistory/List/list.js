@@ -31,7 +31,7 @@ const TransactionsList = (props: Props) => {
                             Status
             </TableHeaderColumn>
             <TableHeaderColumn className={classes.columnName}>From</TableHeaderColumn>
-            <TableHeaderColumn style={tables.shortestStyle}>&nbsp;</TableHeaderColumn>
+            <TableHeaderColumn className={classes.columnArrow}>&nbsp;</TableHeaderColumn>
             <TableHeaderColumn className={classes.columnName}>To</TableHeaderColumn>
             <TableHeaderColumn style={{...tables.shortestStyle }}/>
           </TableRow>

@@ -110,7 +110,7 @@ export class AccountShow extends React.Component {
                     onEditClick={this.handleEdit}
                   />}
                   {this.state.edit && <AccountEdit
-                    address={account}
+                    account={account}
                     submit={this.handleSave}
                     cancel={this.cancelEdit}
                   />}

@@ -2,20 +2,22 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import Immutable from 'immutable';
+import { Map } from 'immutable';
+import { ArrowRight as ArrowRightIcon, Repeat as RepeatIcon } from 'emerald-js-ui/lib/icons';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
 import FontIcon from 'material-ui/FontIcon';
 import IconButton from 'material-ui/IconButton';
-import { Repeat as RepeatIcon } from 'emerald-js-ui/lib/icons';
 import { Account as AddressAvatar } from 'emerald-js-ui';
-import launcher from 'store/launcher';
-import accounts from 'store/vault/accounts';
-import wallet from 'store/wallet';
+import launcher from '../../../../store/launcher';
+import accounts from '../../../../store/vault/accounts';
+import wallet from '../../../../store/wallet';
 import screen from '../../../../store/wallet/screen';
 import { refreshTransaction } from '../../../../store/wallet/history/historyActions';
 import { link, tables } from '../../../../lib/styles';
 import AccountBalance from '../../../accounts/Balance';
 import TokenUnits from '../../../../lib/tokenUnits';
+
+import classes from './list.scss';
 
 const styles = {
   repeatIcon: {
@@ -41,7 +43,6 @@ export const Transaction = (props) => {
 
   return (
     <TableRow selectable={false}>
-
       <TableRowColumn style={{ ...tables.mediumStyle, paddingLeft: '0' }}>
         {txValue && <AccountBalance
           symbol="ETC"
@@ -51,11 +52,9 @@ export const Transaction = (props) => {
           withAvatar={ false }
         /> }
       </TableRowColumn>
-
       <TableRowColumn style={{...tables.mediumStyle, ...link}} >
         { txStatus }
       </TableRowColumn>
-
       <TableRowColumn>
         <AddressAvatar
           addr={tx.get('from')}
@@ -63,8 +62,8 @@ export const Transaction = (props) => {
           onAddressClick={() => openAccount(tx.get('from'))}
         />
       </TableRowColumn>
-      <TableRowColumn style={{...tables.shortestStyle, textOverflow: 'inherit'}}>
-        <FontIcon className='fa fa-angle-right' />
+      <TableRowColumn className={classes.columnArrow} style={{textOverflow: 'inherit'}}>
+        <ArrowRightIcon color="#DDDDDD" />
       </TableRowColumn>
       <TableRowColumn>
         {tx.get('to') &&
@@ -97,7 +96,7 @@ export default connect(
   (state, ownProps) => {
     const getAccount = (addr) => {
       const acc = accounts.selectors.selectAccount(state, addr);
-      return acc || Immutable.Map({});
+      return acc || Map({});
     };
 
     const toAccount = getAccount(ownProps.tx.get('to'));
