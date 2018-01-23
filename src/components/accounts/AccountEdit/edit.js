@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import React from 'react';
 import { Field, reduxForm } from 'redux-form';
-import { Card, CardText, FlatButton } from 'material-ui';
+import { Card, CardText } from 'material-ui';
 import { TextField } from 'redux-form-material-ui';
 import { Button } from 'emerald-js-ui';
 import { renderTextField } from '../../../elements/formFields';

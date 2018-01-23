@@ -10,8 +10,17 @@ jobs:
       - run:
           name: Install software
           command: |
-              brew install node
               npm -v
               node -v
               curl -sL https://raw.githubusercontent.com/ethereumproject/janus/master/get.sh | bash
 
+      - run:
+          name: Build
+          command: |
+              npm i
+              npm run test
+              npm run lint
+              export PATH=$PATH:$PWD/janusbin
+              export APP_VERSION_GIT_TAG="$(janus version -format 'TAG_OR_NIGHTLY')"
+              echo "Building app version $APP_VERSION_GIT_TAG"
+              npm run dist
