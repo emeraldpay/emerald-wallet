@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
+import { Button } from 'emerald-js-ui';
 import { NewMnemonic } from './newMnemonic';
-import Button from '../../../../elements/Button';
 
 describe('When mnemonic is empty NewMnemonic', () => {
   it('renders Generate button', () => {

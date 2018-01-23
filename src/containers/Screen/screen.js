@@ -19,7 +19,7 @@ import AddContract from '../../components/contracts/add';
 import DeployContract from '../../components/contracts/deploy';
 import ContractShow from '../../components/contracts/show';
 import Welcome from '../../components/welcome/welcome';
-import Landing from '../../components/landing/landing';
+import Landing from '../../containers/Landing';
 import Dashboard from '../../components/layout/Dashboard';
 import Settings from '../../components/settings';
 import PaperWallet from '../PaperWallet';

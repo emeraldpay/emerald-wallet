@@ -6,7 +6,7 @@ import FontIcon from 'material-ui/FontIcon';
 import ledger from 'store/ledger/';
 import screen from 'store/wallet/screen';
 import accounts from 'store/vault/accounts/';
-import Button from 'elements/Button';
+import { Button } from 'emerald-js-ui';
 import ButtonGroup from 'elements/ButtonGroup';
 
 const Render = ({ selected, onAddSelected, onCancel }) => {

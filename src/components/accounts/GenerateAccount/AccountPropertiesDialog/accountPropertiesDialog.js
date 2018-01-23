@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import TextField from 'elements/Form/TextField';
-import Button from 'elements/Button';
+import { Button } from 'emerald-js-ui';
 import LinkButton from 'elements/LinkButton';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import ButtonGroup from 'elements/ButtonGroup';

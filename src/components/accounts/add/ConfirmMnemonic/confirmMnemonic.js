@@ -8,7 +8,7 @@ import { Form, Row, styles as formStyles } from 'elements/Form';
 import DashboardButton from 'components/common/DashboardButton';
 import accounts from 'store/vault/accounts';
 import screen from 'store/wallet/screen';
-import Button from 'elements/Button';
+import { Button } from 'emerald-js-ui';
 import { Warning, WarningHeader, WarningText } from 'elements/Warning';
 
 import styles from './confirmMnemonic.scss';

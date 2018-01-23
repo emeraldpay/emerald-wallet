@@ -5,16 +5,15 @@ import { RadioButtonGroup } from 'redux-form-material-ui';
 import { MenuItem, IconButton } from 'material-ui';
 import { IconMenu } from 'material-ui/IconMenu';
 import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
+import { Button, IdentityIcon } from 'emerald-js-ui';
 import { formStyle } from 'lib/styles';
 import DashboardButton from 'components/common/DashboardButton';
 import { positive, number, required, address } from 'lib/validators';
 import LinkButton from 'elements/LinkButton';
-import { IdentityIcon } from 'emerald-js-ui';
 import { Form, Row, styles } from '../../../elements/Form';
 import TextField from '../../../elements/Form/TextField';
 import SelectField from '../../../elements/Form/SelectField';
 import AccountBalance from '../../accounts/Balance';
-import Button from '../../../elements/Button';
 
 import SelectAddressField from './selectAddressField';
 

@@ -2,13 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import cx from 'classnames';
+import { Button } from 'emerald-js-ui';
 
 import { useRpc } from '../../../store/launcher/launcherActions';
 import { MainnetEpool, MainnetLocal } from '../../../lib/rpc/gethProviders';
 import Card from '../../../elements/Card';
 import FullNodeLogo from './fullNodeLogo';
 import RemoteNodeLogo from './remoteNodeLogo';
-import Button from '../../../elements/Button';
 
 import classes from './nodeTypeChoice.scss';
 

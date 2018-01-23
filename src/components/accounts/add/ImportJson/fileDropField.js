@@ -1,8 +1,6 @@
 import React from 'react';
 import Dropzone from 'react-dropzone';
-
-import Button from 'elements/Button/index';
-
+import { Button } from 'emerald-js-ui';
 import styles from './fileDropField.scss';
 
 class FileDropField extends React.Component {

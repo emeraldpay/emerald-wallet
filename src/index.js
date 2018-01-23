@@ -4,6 +4,7 @@ import injectTapEventPlugin from 'react-tap-event-plugin';
 import { Provider } from 'react-redux';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import theme from 'emerald-js-ui/src/theme.json';
 import 'font-awesome/scss/font-awesome.scss';
 import 'typeface-rubik/index.css';
 import { I18nextProvider } from 'react-i18next';
@@ -17,9 +18,7 @@ import './bootstrapButtons.scss';
 
 const log = createLogger('index');
 
-const muiTheme = getMuiTheme({
-  fontFamily: 'Rubik',
-});
+const muiTheme = getMuiTheme(theme);
 
 function start() {
   log.info('Starting Emerald Wallet...');

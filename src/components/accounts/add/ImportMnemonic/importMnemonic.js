@@ -7,7 +7,7 @@ import { Form, Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
 import DashboardButton from 'components/common/DashboardButton';
 import screen from 'store/wallet/screen';
-import Button from 'elements/Button';
+import { Button } from 'emerald-js-ui';
 import { Warning, WarningHeader, WarningText } from 'elements/Warning';
 import HdPath from 'components/common/HdPath';
 

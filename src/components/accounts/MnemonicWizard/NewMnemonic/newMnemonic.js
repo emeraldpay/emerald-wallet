@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import { Button } from 'emerald-js-ui';
 import DashboardButton from 'components/common/DashboardButton';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import Input from 'elements/Input';
-import Button from 'elements/Button';
 import { Warning, WarningHeader, WarningText } from 'elements/Warning';
 
 export class NewMnemonic extends React.Component {
