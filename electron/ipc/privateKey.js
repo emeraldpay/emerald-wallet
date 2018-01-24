@@ -7,4 +7,9 @@ module.exports = () => {
     const privateKey = wallet.getPrivateKeyString();
     event.sender.send('recieve-private-key', privateKey);
   });
+
+  ipcMain.on('get-private-key-to-keyfile', (event, {privateKey, password}) => {
+    const keyfile = Wallet.fromPrivateKey(privateKey).toV3String(password);
+    event.sender.send('recieve-private-key-to-keyfile', keyfile);
+  });
 };
