@@ -8,9 +8,14 @@ echo "Deploy to http://builds.etcdevteam.com/emerald-wallet/$VERSION_BASE/"
 echo $PWD
 ls -la
 
-mkdir ../deploy
-mv ../dist/*.dmg ../dist/*.tar.gz ../dist/*.deb ../dist/*.zip ../dist/*.AppImage ../deploy/
+mkdir deploy
 
-janus deploy -to="builds.etcdevteam.com/emerald-wallet/$VERSION_BASE/" -files="../deploy/*" -key="$GCLOUD_KEY"
+ls -la
+
+ls -la dist/
+
+mv dist/*.dmg dist/*.tar.gz dist/*.deb dist/*.zip dist/*.AppImage deploy/
+
+janus deploy -to="builds.etcdevteam.com/emerald-wallet/$VERSION_BASE/" -files="deploy/*" -key="$GCLOUD_KEY"
 
 echo "Deployed"
