@@ -12,7 +12,6 @@ jobs:
           command: |
               npm -v
               node -v
-              cd $HOME; curl -sL https://raw.githubusercontent.com/ethereumproject/janus/master/get.sh | bash
               curl -sL https://raw.githubusercontent.com/ethereumproject/janus/master/get.sh | bash
 
       - run:
