@@ -28,7 +28,7 @@ jobs:
       - deploy:
           name: Deploy to builds.etcdevteam.com
           command: |
-            export PATH=$PATH:$HOME/janusbin
+            export PATH=$PATH:$PWD/janusbin
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
                 .circleci/deploy.sh
             fi
