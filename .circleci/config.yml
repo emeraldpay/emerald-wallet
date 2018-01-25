@@ -12,6 +12,7 @@ jobs:
           command: |
               npm -v
               node -v
+              cd $HOME; curl -sL https://raw.githubusercontent.com/ethereumproject/janus/master/get.sh | bash
               curl -sL https://raw.githubusercontent.com/ethereumproject/janus/master/get.sh | bash
 
       - run:
@@ -28,7 +29,7 @@ jobs:
       - deploy:
           name: Deploy to builds.etcdevteam.com
           command: |
-            export PATH=$PATH:$HOME/janusbin
+            export PATH=$PATH:$PWD/janusbin
             if [ "${CIRCLE_BRANCH}" == "master" ]; then
                 .circleci/deploy.sh
             fi
