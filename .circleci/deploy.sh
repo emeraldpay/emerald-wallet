@@ -9,6 +9,6 @@ mkdir deploy
 
 mv dist/*.dmg dist/*.zip deploy/
 
-janus deploy -to="builds.etcdevteam.com/emerald-wallet/$VERSION_BASE/" -files="deploy/*" -key="$GCLOUD_KEY"
+janus deploy -to="builds.etcdevteam.com/emerald-wallet/$VERSION_BASE/" -files="deploy/*" -key="gcloud-circleci.json.enc"
 
 echo "Deployed"
