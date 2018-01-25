@@ -24,3 +24,11 @@ jobs:
               export APP_VERSION_GIT_TAG="$(janus version -format 'TAG_OR_NIGHTLY')"
               echo "Building app version $APP_VERSION_GIT_TAG"
               npm run dist
+
+      - deploy:
+          name: Deploy to builds.etcdevteam.com
+          command: |
+            export PATH=$PATH:$HOME/janusbin
+            if [ "${CIRCLE_BRANCH}" == "master" ]; then
+                .circleci/deploy.sh
+            fi
