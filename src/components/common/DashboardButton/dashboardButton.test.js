@@ -9,8 +9,9 @@ describe('DashboardButton', () => {
     expect(component.findWhere((n) => n.text() === 'PRIV1')).toHaveLength(2);
   });
 
-  it('renders ArrowLeft icon', () => {
+  it('renders default label', () => {
     const wrapper = shallow(<DashboardButton />);
     expect(wrapper.find(ArrowLeftIcon).length).toBe(1);
+    expect(wrapper.findWhere((n) => n.text() === 'Dashboard')).toHaveLength(2);
   });
 });
