@@ -13,7 +13,7 @@ const Render = ({ save }) => {
       <Col xs={12}>
         <div style={{fontWeight: '300'}}>
           <p>
-                        Welcome to Emerald Wallet Beta. Thanks for trying it out!<br/>
+                        Welcome to Emerald Wallet. Thanks for trying it out!<br/>
           </p>
           <p>
                         Made with ❤️&nbsp; by <strong>ETCDEV</strong> and <strong>many wonderful contributors</strong>.

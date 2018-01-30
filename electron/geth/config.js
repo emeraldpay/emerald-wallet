@@ -2,7 +2,7 @@ const DefaultGeth = {
   format: 'v1',
   channel: 'stable',
   app: {
-    version: '4.0.0',
+    version: '4.2.0',
   },
   download: [
     {
