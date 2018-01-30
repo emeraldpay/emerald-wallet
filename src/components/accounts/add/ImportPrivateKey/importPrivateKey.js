@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, SubmissionError } from 'redux-form';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
+import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import DashboardButton from 'components/common/DashboardButton';
 import accounts from 'store/vault/accounts';
 import screen from 'store/wallet/screen';
@@ -12,12 +13,22 @@ import { required } from 'lib/validators';
 import { Wallet } from 'emerald-js';
 import { Button } from 'emerald-js-ui';
 import { Warning, WarningHeader, WarningText } from 'elements/Warning';
+import CircularProgress from 'material-ui/CircularProgress';
 
 import styles from './importPrivateKey.scss';
 
+function getLoadingIcon(submitting) {
+  if (submitting) {
+    return (
+      <CircularProgress size={25}/>
+    );
+  }
+  return null;
+}
+
 class ImportPrivateKey extends React.Component {
   render() {
-    const { onBack, error, handleSubmit } = this.props;
+    const { onBack, error, handleSubmit, submitting } = this.props;
     return (
       <Form caption="Import Private Key" backButton={ <DashboardButton onClick={ onBack }/> }>
         <Row>
@@ -72,7 +83,7 @@ class ImportPrivateKey extends React.Component {
         <Row>
           <div style={formStyles.left}/>
           <div style={formStyles.right}>
-            <Button primary label="Import" onClick={ handleSubmit }/>
+            <Button primary label="Import" onClick={ handleSubmit } disabled={ submitting } icon={getLoadingIcon(submitting) }/>
           </div>
         </Row>
 
@@ -117,11 +128,9 @@ export default connect(
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data) => {
-      return privateKeyToV3(data.privateKey, data.password)
-        .catch((error) => {
-          throw new SubmissionError({ _error: error.toString() });
-        })
-        .then((keyFile) => {
+      return new Promise((resolve, reject) => {
+        ipcRenderer.send('get-private-key-to-keyfile', {privateKey: data.privateKey, password: data.password});
+        ipcRenderer.once('recieve-private-key-to-keyfile', (event, keyFile) => {
           // import key file
           return dispatch(accounts.actions.importWallet(new Blob([keyFile]), '', ''))
             .then((result) => {
@@ -129,10 +138,11 @@ export default connect(
                 throw new SubmissionError({ _error: result.error.toString() });
               } else {
                 // show page with account details
-                dispatch(screen.actions.gotoScreen('account', Immutable.fromJS({id: result})));
+                resolve(dispatch(screen.actions.gotoScreen('account', Immutable.fromJS({id: result}))));
               }
             });
         });
+      });
     },
     onBack: () => {
       if (ownProps.onBackScreen) {
