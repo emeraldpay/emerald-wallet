@@ -10,7 +10,7 @@ export const searchTransactions = (searchValue, transactionsToSearch) => {
       // search for amount
       if (field === 'value') {
         const val = tx.get('value');
-        const txValue = val ? new TokenUnits(val.value(), 18) : null;
+        const txValue = val ? new TokenUnits(val, 18) : null;
         if (!txValue) {
           return false;
         }

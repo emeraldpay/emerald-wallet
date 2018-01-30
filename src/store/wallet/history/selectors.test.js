@@ -1,4 +1,5 @@
 import { fromJS } from 'immutable';
+import BigNumber from 'bignumber.js';
 import { searchTransactions, filterTransactions } from './selectors';
 
 const fixture = [
@@ -6,11 +7,13 @@ const fixture = [
     to: '0x123',
     from: '0x999',
     hash: '0x000',
+    value: new BigNumber(4444),
   },
   {
     to: '0x456',
     from: '0x01',
     hash: '0x02',
+    value: new BigNumber(3333),
   },
 ];
 
