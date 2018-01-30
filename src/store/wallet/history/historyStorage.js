@@ -4,12 +4,18 @@ import type { Transaction } from './types';
 
 const { toBigNumber } = convert;
 
+/**
+ * Store transaction as JSON in localStorage
+ */
 export function storeTransactions(key: string, txs: Array<Transaction>): void {
   if (localStorage) {
     localStorage.setItem(key, JSON.stringify(txs));
   }
 }
 
+/**
+ * Restore transaction from JSON stored in localStorage
+ */
 export function loadTransactions(key: string): Array<Transaction> {
   if (localStorage) {
     // check old history
