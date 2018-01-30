@@ -1,9 +1,9 @@
 import { fromJS, Map } from 'immutable';
-import { convert, Wei } from 'emerald-js';
+import { convert } from 'emerald-js';
 
 import ActionTypes from './actionTypes';
 
-const { toNumber } = convert;
+const { toNumber, toBigNumber } = convert;
 
 const initial = fromJS({
   trackedTransactions: [],
@@ -31,24 +31,15 @@ function createTx(data) {
   let tx = initialTx.merge({
     hash: data.hash,
     to: data.to,
-    gas: data.gas,
-    gasPrice: data.gasPrice,
   });
   if (data.from !== '0x0000000000000000000000000000000000000000') {
     tx = tx.set('from', data.from);
   }
-  if (typeof data.value === 'string') {
-    tx = tx.set('value', new Wei(data.value));
-  }
-  if (typeof data.gasPrice === 'string' || typeof data.gasPrice === 'number') {
-    tx = tx.set('gasPrice', new Wei(data.gasPrice));
-  }
-  if (typeof data.gas === 'string' || typeof data.gas === 'number') {
-    tx = tx.set('gas', toNumber(data.gas));
-  }
-  if (typeof data.nonce === 'string') {
-    tx = tx.set('nonce', toNumber(data.nonce));
-  }
+  tx = tx.set('value', toBigNumber(data.value));
+  tx = tx.set('gasPrice', toBigNumber(data.gasPrice));
+  tx = tx.set('gas', toBigNumber(data.gas).toNumber());
+  tx = tx.set('nonce', toBigNumber(data.nonce).toNumber());
+
   // If is not pending, fill in finalized attributes.
   if (typeof data.blockNumber !== 'undefined' && data.blockNumber !== null) {
     tx = tx.merge({
@@ -76,11 +67,11 @@ function onTrackTx(state, action) {
 
 function onLoadStoredTransactions(state, action) {
   if (action.type === ActionTypes.LOAD_STORED_TXS) {
-    let txes = fromJS([]);
+    let txs = fromJS([]);
     for (const tx of action.transactions) {
-      txes = txes.push(createTx(tx));
+      txs = txs.push(createTx(tx));
     }
-    return state.set('trackedTransactions', fromJS(txes));
+    return state.set('trackedTransactions', fromJS(txs));
   }
   return state;
 }
@@ -107,7 +98,7 @@ function onUpdateTx(state, action) {
     return state.update('trackedTransactions', (txs) => {
       const pos = txs.findKey((tx) => tx.get('hash') === action.tx.hash);
       if (pos >= 0) {
-        txs = txs.update(pos, (tx) => tx.mergeWith((o, n) => o || n, createTx(action.tx)));
+        txs = txs.update(pos, (tx) => tx.mergeWith((o, n) => n, createTx(action.tx)));
       }
       return txs;
     });

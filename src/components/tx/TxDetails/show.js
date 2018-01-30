@@ -4,8 +4,8 @@ import PropTypes from 'prop-types';
 import { Map } from 'immutable';
 import { connect } from 'react-redux';
 import FlatButton from 'material-ui/FlatButton';
-import { convert } from 'emerald-js';
-import { IdentityIcon, Address as AccountAddress, Account as AddressAvatar } from 'emerald-js-ui';
+import { convert, Wei } from 'emerald-js';
+import { IdentityIcon, Address as AccountAddress, Account, Button } from 'emerald-js-ui';
 import launcher from 'store/launcher';
 import DashboardButton from 'components/common/DashboardButton';
 import { gotoScreen } from '../../../store/wallet/screen/screenActions';
@@ -53,7 +53,7 @@ export const TransactionShow = (props: Props) => {
   const blockNumber = transaction.get('blockNumber');
   const txStatus = blockNumber ? 'success' : 'queue';
   const fiatAmount = transaction.get('value') ?
-    Currency.format(transaction.get('value').getFiat(rates.get(currentCurrency.toUpperCase())), currentCurrency) :
+    Currency.format(new Wei(transaction.get('value')).getFiat(rates.get(currentCurrency.toUpperCase())), currentCurrency) :
     '';
 
   const backButtonLabel = account ? 'Account' : 'Dashboard';
@@ -67,7 +67,7 @@ export const TransactionShow = (props: Props) => {
           <div style={{display: 'flex'}}>
             <div>
               <div className={ classes.etcAmount }>
-                { transaction.get('value') ? `${transaction.get('value').getEther()} ETC` : '--' }
+                { transaction.get('value') ? `${new Wei(transaction.get('value')).getEther()} ETC` : '--' }
               </div>
               {showFiat && <div className={ classes.fiatAmount }>
                 { fiatAmount }
@@ -86,7 +86,7 @@ export const TransactionShow = (props: Props) => {
         </div>
         <div style={{...styles.right, alignItems: 'center'}}>
           <IdentityIcon size={ 30 } expanded={ true } id={ transaction.get('from') }/>
-          <AddressAvatar
+          <Account
             secondary={<AccountAddress id={ transaction.get('from') }/>}
             onClick={ () => openAccount(fromAccount) }
           />
@@ -99,7 +99,7 @@ export const TransactionShow = (props: Props) => {
         </div>
         <div style={{...styles.right, alignItems: 'center'}}>
           <IdentityIcon size={30} expanded={true} id={transaction.get('to')}/>
-          <AddressAvatar
+          <Account
             secondary={ <AccountAddress id={ transaction.get('to') }/>}
             onClick={ () => openAccount(toAccount) }
           />
@@ -129,7 +129,7 @@ export const TransactionShow = (props: Props) => {
         </div>
         <div style={styles.right}>
           <div>
-            <FlatButton
+            <Button
               style={repeatButtonStyle}
               label="REPEAT" />
           </div>

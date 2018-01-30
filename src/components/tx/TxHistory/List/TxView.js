@@ -32,7 +32,7 @@ export const TxView = (props) => {
     </span>;
   }
 
-  const txValue = tx.get('value') ? new TokenUnits(tx.get('value').value(), 18) : null;
+  const txValue = tx.get('value') ? new TokenUnits(tx.get('value'), 18) : null;
 
   return (
     <TableRow selectable={false}>
