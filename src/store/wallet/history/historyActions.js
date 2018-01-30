@@ -1,46 +1,22 @@
 // @flow
 import createLogger from '../../../utils/logger';
-
+import type { Transaction } from './types';
 import ActionTypes from './actionTypes';
 import { address as isAddress} from '../../../lib/validators';
+import { storeTransactions, loadTransactions } from './historyStorage';
 
 const log = createLogger('historyActions');
-
 const txStoreKey = (chainId) => `chain-${chainId}-trackedTransactions`;
 const currentChainId = (state) => state.wallet.history.get('chainId');
 
 function persistTransactions(state) {
-  if (localStorage) {
-    // It seems kind of sloppy to store whole txs, when all we
-    // really need is hashes. But even if a pending transaction is stored
-    // and program closed, the interval-ized ACCOUNT/UPDATE_TX will refresh
-    // the data via the RPCAPI. So there is not much to lose except a couple of
-    // kilobytes.
-    const txes = state.wallet.history.get('trackedTransactions');
-    localStorage.setItem(txStoreKey(currentChainId(state)), JSON.stringify(txes.toJS()));
-  }
+  storeTransactions(
+    txStoreKey(currentChainId(state)),
+    state.wallet.history.get('trackedTransactions').toJS());
 }
 
-function loadPersistedTransactions(state) {
-  if (localStorage) {
-    // check old history
-    // Will be removed after stable release
-    const old = localStorage.getItem('trackedTransactions');
-    if (old) {
-      const txs = JSON.parse(old);
-      log.debug(`Loaded ${txs.length} legacy transactions from localStorage`);
-      localStorage.removeItem('trackedTransactions');
-      return txs;
-    }
-
-    const storedTxs = localStorage.getItem(txStoreKey(currentChainId(state)));
-    if (storedTxs !== null) {
-      const txs = JSON.parse(storedTxs);
-      log.debug(`Loaded ${txs.length} transactions from localStorage`);
-      return txs;
-    }
-  }
-  return [];
+function loadPersistedTransactions(state): Array<Transaction> {
+  return loadTransactions(txStoreKey(currentChainId(state)));
 }
 
 export function trackTx(tx) {
