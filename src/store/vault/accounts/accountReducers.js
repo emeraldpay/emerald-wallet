@@ -52,7 +52,9 @@ function updateToken(tokens, token, value) {
     convert.toBigNumber(token.decimals));
 
   if (pos >= 0) {
-    return tokens.update(pos, (tok) => tok.set('balance', balance));
+    return tokens.update(pos, (tok) =>
+      tok.set('balance', balance)
+        .set('symbol', token.symbol));
   }
   const newToken = Immutable.fromJS({ address: token.address, symbol: token.symbol, balance });
   return tokens.push(newToken);
