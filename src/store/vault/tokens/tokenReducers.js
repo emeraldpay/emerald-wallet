@@ -50,9 +50,8 @@ function updateToken(state, id, f) {
 
 function onLoading(state, action) {
   switch (action.type) {
-    case 'TOKEN/LOADING':
-      return state
-        .set('loading', true);
+    case ActionTypes.LOADING:
+      return state.set('loading', true);
     default:
       return state;
   }
@@ -60,7 +59,7 @@ function onLoading(state, action) {
 
 function onSetTokenList(state, action) {
   switch (action.type) {
-    case 'TOKEN/SET_LIST':
+    case ActionTypes.SET_LIST:
       return state
         .set('tokens', Immutable.fromJS(action.tokens))
         .set('loading', false);

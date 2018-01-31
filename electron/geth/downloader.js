@@ -11,7 +11,9 @@ function newGethDownloader(notify, dir) {
 
   const downloader = new Downloader(config, fileName, dir, signers.publicKeys);
   downloader.on('notify', (message) => {
-    notify.info(message);
+    if (notify) {
+      notify.info(message);
+    }
     log.log(message);
   });
   downloader.on('error', (error) => {
