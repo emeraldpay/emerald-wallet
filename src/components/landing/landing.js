@@ -29,13 +29,12 @@ const Landing = ({ onGenerate, onImportJson, onImportPrivateKey, onLedger, onLed
           <Row style={{padding: 0, margin: 0}}>
             <Col style={{backgroundColor: muiTheme.palette.canvasColor, padding: 0}} xs={12}>
               <div style={{display: 'flex', alignItems: 'center', marginLeft: '80px', marginTop: '60px'}}>
-                <div><LogoIcon height="75px" width="75px" /></div>
-                <div style={{fontWeight: '500', marginLeft: '5px', color: muiTheme.palette.primary1Color}}>EMERALD WALLET</div>
+                <div style={{fontWeight: '500', marginLeft: '80px', color: muiTheme.palette.primary1Color}}>WELCOME TO EMERALD WALLET</div>
               </div>
               <br />
               <div style={{marginLeft: '150px', padding: '10px', maxWidth: '700px'}}>
                 <span style={{color: muiTheme.palette.primary3Color, fontWeight: '200'}}>
-                                  Ethereum Classic is a decentralized platform that runs smart contracts: applications that run exactly as programmed without any possibility of downtime, censorship, fraud or third party interference.
+      Emerald Wallet runs on the Ethereum Classic platform. Ethereum Classic is a decentralized platform that runs smart contracts: applications that run exactly as programmed without any possibility of downtime, censorship, fraud or third party interference.
                 </span>
                 <br />
                 <br />

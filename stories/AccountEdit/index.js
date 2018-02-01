@@ -14,9 +14,7 @@ const store = createStore((state = {}, action) => state);
 storiesOf('AccountEdit', module)
   .addDecorator((story) => (
     <Provider store={store}>
-      <MuiThemeProvider muiTheme={muiTheme}>
-        {story()}
-      </MuiThemeProvider>
+      {story()}
     </Provider>
   ))
   .add('default', () => (

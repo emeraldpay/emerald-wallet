@@ -173,6 +173,10 @@ export function waitForServices() {
   });
 
   function checkServiceStatus() {
+    // hack to make some stuff work in storybook: @shanejonas
+    if (!ipcRenderer) {
+      return;
+    }
     ipcRenderer.send('get-status');
   }
   setTimeout(checkServiceStatus, 2000);
