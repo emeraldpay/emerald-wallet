@@ -84,7 +84,11 @@ Electron and Emerald logs persisted in:
 
 #### Geth logs
 During development, you'll find geth's logs in `./logs` right in the project base directory.
-In production, logs will be nestled in `~/Library/Application Support/EmeraldWallet/`.
+
+In production, logs will be nestled in
+
+ * OSX: `~/Library/Application Support/EmeraldWallet/`
+ * Windows: `%USERPROFILE%\AppData\Roaming\EmeraldWallet\logs`
 
 ### Building alternatively
 
