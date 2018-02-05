@@ -141,7 +141,6 @@ const CreateTx = connect(
           gas: toHex(data.gas),
           to: data.to,
           value: toHex(etherToWei(data.value)),
-          data: '',
         };
       }
 
