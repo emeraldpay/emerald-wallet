@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 import { IconButton } from 'material-ui';
-import { Close as CloseIcon } from 'emerald-js-ui/lib/icons';
+import { Close as CloseIcon } from 'emerald-js-ui/lib/icons2';
 
 const smallIcon = {
   width: '15px',
