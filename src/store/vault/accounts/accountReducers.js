@@ -124,15 +124,15 @@ function onSetBalance(state, action) {
   return state;
 }
 
-function onSetTokenBalance(state, action) {
-  if (action.type === ActionTypes.SET_TOKEN_BALANCE) {
-    return updateAccount(state, action.accountId, (acc) => {
-      const tokens = Immutable.fromJS(acc.get('tokens'));
-      return acc.set('tokens', updateToken(tokens, action.token, action.value));
-    });
-  }
-  return state;
-}
+// function onSetTokenBalance(state, action) {
+//   if (action.type === ActionTypes.SET_TOKEN_BALANCE) {
+//     return updateAccount(state, action.accountId, (acc) => {
+//       const tokens = Immutable.fromJS(acc.get('tokens'));
+//       return acc.set('tokens', updateToken(tokens, action.token, action.value));
+//     });
+//   }
+//   return state;
+// }
 
 function onSetTxCount(state, action) {
   if (action.type === ActionTypes.SET_TXCOUNT) {
@@ -185,7 +185,7 @@ export default function accountsReducers(state, action) {
   state = onUpdateAccount(state, action);
   state = onSetBalance(state, action);
   state = onSetTxCount(state, action);
-  state = onSetTokenBalance(state, action);
+  //state = onSetTokenBalance(state, action);
   state = onPendingBalance(state, action);
   state = onSetHdPath(state, action);
   return state;

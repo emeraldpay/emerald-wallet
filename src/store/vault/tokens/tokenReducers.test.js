@@ -1,3 +1,4 @@
+import BigNumber from 'bignumber.js';
 import reducer from './tokenReducers';
 import ActionTypes from './actionTypes';
 
@@ -21,5 +22,37 @@ describe('tokenReducer', () => {
 
     // assert
     expect(state.get('tokens').size).toEqual(1);
+  });
+
+  it('should update zero token balance, symbol and decimals', () => {
+    // prepare
+    let state = reducer(null, {});
+
+    // do - update balance only, without symbol
+    state = reducer(state, {
+      type: ActionTypes.SET_TOKEN_BALANCE,
+      accountId: 'id1',
+      token: {
+        address: '0x2',
+        decimals: '0x2',
+      },
+      value: '0x1',
+    });
+
+    // assert
+    expect(state.balances.get('id1').tokens[0].balance.value).toEqual(new BigNumber(1));
+
+    // do - update balance with symbol
+    state = reducer(state, {
+      type: ActionTypes.SET_TOKEN_BALANCE,
+      accountId: 'id1',
+      token: {
+        address: '0x2',
+        decimals: '0x2',
+        symbol: 'BEC',
+      },
+      value: '0x2',
+    });
+    expect(state.balances.get('id1').tokens[0].symbol).toEqual('BEC');
   });
 });

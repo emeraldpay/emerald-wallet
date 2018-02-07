@@ -1,4 +1,5 @@
-import Immutable from 'immutable';
+// @flow
+import { fromJS, Map, List } from 'immutable';
 import TokenUnits from 'lib/tokenUnits';
 import { convert } from 'emerald-js';
 import ActionTypes from './actionTypes';
@@ -7,12 +8,13 @@ const { toBigNumber } = convert;
 
 // ----- STRUCTURES
 
-const initial = Immutable.fromJS({
+const initial = fromJS({
   tokens: [],
+  balances: new Map(),
   loading: false,
 });
 
-const initialTok = Immutable.Map({
+const initialTok = Map({
   address: null,
   name: null,
   abi: null,
@@ -61,7 +63,7 @@ function onSetTokenList(state, action) {
   switch (action.type) {
     case ActionTypes.SET_LIST:
       return state
-        .set('tokens', Immutable.fromJS(action.tokens))
+        .set('tokens', fromJS(action.tokens))
         .set('loading', false);
     default:
       return state;
@@ -96,6 +98,40 @@ function onAddToken(state, action) {
   return state;
 }
 
+function onSetTokenBalance(state, action) {
+  if (action.type === ActionTypes.SET_TOKEN_BALANCE) {
+    let balances = state.get('balances');
+    const address = action.accountId;
+
+    let tokens = balances.get(address, new List());
+    tokens = updateTokenBalance(tokens, action.token, action.value);
+    balances = balances.set(address, tokens);
+    return state.set('balances', balances);
+
+    // return updateAccount(state, action.accountId, (acc) => {
+    //   const tokens = fromJS(acc.get('tokens'));
+    //   return acc.set('tokens', updateTokenBalance(tokens, action.token, action.value));
+    // });
+  }
+  return state;
+}
+
+function updateTokenBalance(tokens, token, value) {
+  const pos = tokens.findKey((tok) => tok.get('address') === token.address);
+
+  const balance = new TokenUnits(
+    convert.toBigNumber(value),
+    convert.toBigNumber(token.decimals));
+
+  if (pos >= 0) {
+    return tokens.update(pos, (tok) =>
+      tok.set('balance', balance)
+        .set('symbol', token.symbol));
+  }
+  const newToken = fromJS({ address: token.address, symbol: token.symbol, balance });
+  return tokens.push(newToken);
+}
+
 // ---- REDUCER
 
 export default function tokenReducers(state, action) {
@@ -104,5 +140,6 @@ export default function tokenReducers(state, action) {
   state = onSetTokenList(state, action);
   state = onAddToken(state, action);
   state = onSetTokenInfo(state, action);
+  state = onSetTokenBalance(state, action);
   return state;
 }

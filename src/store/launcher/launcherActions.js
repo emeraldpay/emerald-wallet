@@ -126,13 +126,14 @@ export function listenElectron() {
         }
       }
 
-
       if (isEthRpcReady(state)) {
         dispatch(loadClientVersion());
       }
-      if (isVaultReady(state) && isEthRpcReady(state)) {
-        dispatch(accounts.actions.loadAccountsList());
-      }
+      // TODO: remove it
+      // if (isVaultReady(state) && isEthRpcReady(state)) {
+      //   log.debug('Vault and Rpc are ready, going load accounts list');
+      //   dispatch(accounts.actions.loadAccountsList());
+      // }
     });
   };
 }

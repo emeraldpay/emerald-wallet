@@ -42,14 +42,21 @@ export default class Account extends React.Component {
       }));
     }
 
+    onSendClick = () => this.props.createTx(this.props.account);
+
+    onAddressClick = () => this.props.openAccount(this.props.account);
+
+    onAddEtcClick = () => this.props.showReceiveDialog(this.props.account);
+
     render() {
-      const { account, openAccount, createTx, showReceiveDialog, knownTokens } = this.props;
+      console.log('Rendering Account');
+      const { account, tokens } = this.props;
       const { showFiat } = this.props;
       const { showTokens } = this.state;
 
       // TODO: we convert Wei to TokenUnits here
       const balance = account.get('balance') ? new TokenUnits(account.get('balance').value(), 18) : null;
-      const tokens = account.get('tokens');
+
 
       return (
         <Card>
@@ -78,7 +85,7 @@ export default class Account extends React.Component {
                   addr={ account.get('id') }
                   description={ account.get('description') }
                   primary={ account.get('name') }
-                  onAddressClick={ openAccount }
+                  onAddressClick={ this.onAddressClick }
                 />
               </Col>
               <Col xs={4}>
@@ -88,11 +95,11 @@ export default class Account extends React.Component {
                     <Button
                       label="Add ETC"
                       icon={<QrCodeIcon style={ qrIconStyle } />}
-                      onClick={ showReceiveDialog }
+                      onClick={ this.onAddEtcClick }
                     />
                     <Button
                       label="Send"
-                      onClick={ createTx }
+                      onClick={ this.onSendClick }
                     />
                   </ButtonGroup>
                 </div>

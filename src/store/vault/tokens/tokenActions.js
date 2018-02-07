@@ -23,12 +23,21 @@ export function loadTokenBalanceOf(token: TokenInfo, accountId: string) {
     if (token.address) {
       const data = tokenContract.functionToData('balanceOf', { _owner: accountId });
       return api.geth.eth.call(token.address, data).then((result) => {
+
         dispatch({
           type: ActionTypes.SET_TOKEN_BALANCE,
           accountId,
           token,
           value: result,
         });
+
+        // dispatch({
+        //   type: 'ACCOUNT/SET_TOKEN_BALANCE',
+        //   accountId,
+        //   token,
+        //   value: result,
+        // });
+
       });
     }
     throw new Error(`Invalid token info ${JSON.stringify(token)}`);
@@ -37,17 +46,19 @@ export function loadTokenBalanceOf(token: TokenInfo, accountId: string) {
 
 export function loadTokenDetails(token): () => Promise<any> {
   return (dispatch, getState, api) => {
-    return Promise.all([
-      api.geth.eth.call(token.address, tokenContract.functionToData('totalSupply')),
-      api.geth.eth.call(token.address, tokenContract.functionToData('decimals')),
-      api.geth.eth.call(token.address, tokenContract.functionToData('symbol')),
-    ]).then((results: Array<any>) => {
+    const batch = [
+      { id: 'totalSupply', to: token.address, data: tokenContract.functionToData('totalSupply') },
+      { id: 'decimals', to: token.address, data: tokenContract.functionToData('decimals') },
+      { id: 'symbol', to: token.address, data: tokenContract.functionToData('symbol') },
+    ];
+
+    return api.geth.ext.batchCall(batch).then((results: Array<any>) => {
       dispatch({
         type: ActionTypes.SET_INFO,
         address: token.address,
-        totalSupply: results[0],
-        decimals: results[1],
-        symbol: parseString(results[2]),
+        totalSupply: results.totalSupply.result,
+        decimals: results.decimals.result,
+        symbol: parseString(results.symbol.result),
       });
     });
   };
@@ -75,18 +86,53 @@ export function loadTokenBalances(token: TokenInfo) {
     const tokenInfo = getState().tokens.get('tokens').find((t) => t.get('address') === token.address).toJS();
     const accounts = getState().accounts;
     if (!accounts.get('loading')) {
-      accounts.get('accounts').forEach((acct) => dispatch(loadTokenBalanceOf(tokenInfo, acct.get('id'))));
+      const addresses = accounts.get('accounts').map((acc) => acc.get('id')).toJS();
+      dispatch(getTokenBalances(tokenInfo, addresses));
     }
   };
 }
 
+function getTokenBalances(token: TokenInfo, addresses: Array<string>) {
+  return (dispatch: any, getState: any, api: any) => {
+    if (token.address) {
+      // build batch call request
+      const batch = addresses.map((addr) => {
+        return {
+          id: addr,
+          to: token.address,
+          data: tokenContract.functionToData('balanceOf', { _owner: addr }),
+        };
+      });
+
+      return api.geth.ext.batchCall(batch).then((results) => {
+        addresses.forEach((addr) => {
+          dispatch({
+            type: ActionTypes.SET_TOKEN_BALANCE,
+            accountId: addr,
+            token,
+            value: results[addr].result,
+          });
+          //
+          // dispatch({
+          //   type: 'ACCOUNT/SET_TOKEN_BALANCE',
+          //   accountId: addr,
+          //   token,
+          //   value: results[addr].result,
+          // });
+
+        });
+      });
+    }
+    throw new Error(`Invalid token info ${JSON.stringify(token)}`);
+  };
+}
 /**
  * Load ERC20 contracts from Emerald Vault, gets token details from smart contract
  */
 export function loadTokenList() {
   return (dispatch, getState, api) => {
     dispatch({
-      type: 'TOKEN/LOADING',
+      type: ActionTypes.LOADING,
     });
     const chain = launcher.selectors.getChainName(getState());
     api.emerald.listContracts(chain).then((result) => {

@@ -1,10 +1,11 @@
 // @flow
 import EthereumTx from 'ethereumjs-tx';
 import { convert, Wallet, Address } from 'emerald-js';
-import { loadTokenBalanceOf } from '../tokens/tokenActions';
+import { loadTokenBalanceOf, loadTokenBalances } from '../tokens/tokenActions';
 import screen from '../../wallet/screen';
 import history from '../../wallet/history';
 import launcher from '../../launcher';
+
 import ActionTypes from './actionTypes';
 import createLogger from '../../../utils/logger';
 
@@ -55,15 +56,16 @@ function fetchBalances(addresses: Array<string>) {
             accountId: address,
             value: balances[address],
           });
-          // Tokens
-          const tokens = getState().tokens;
-          if (!tokens.get('loading')) {
-            tokens.get('tokens')
-              .map((token) => dispatch(loadTokenBalanceOf(token.toJS(), address)));
-          }
         }
       });
     });
+
+    // ERC20 Tokens
+    const tokens = getState().tokens;
+    if (!tokens.get('loading')) {
+      tokens.get('tokens')
+        .forEach((token) => dispatch(loadTokenBalances(token.toJS())));
+    }
   };
 }
 
@@ -89,6 +91,7 @@ function fetchHdPaths() {
 }
 
 export function loadAccountsList() {
+  log.debug('Calling loadAccountsList()');
   return (dispatch, getState, api) => {
     dispatch({
       type: ActionTypes.LOADING,

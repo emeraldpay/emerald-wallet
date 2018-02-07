@@ -161,8 +161,8 @@ export function waitForServices() {
       // If not first run, go right to home when ready.
       if (state.wallet.screen.get('screen') === 'welcome') { //  && !state.launcher.get('firstRun'))
         store.dispatch(accounts.actions.loadAccountsList()).then(() => {
-          const loadedAccounts = store.getState().accounts.get('accounts').toJS();
-          if (loadedAccounts.length > 0) {
+          const loadedAccounts = store.getState().accounts.get('accounts');
+          if (loadedAccounts.count() > 0) {
             store.dispatch(screen.actions.gotoScreen('home'));
           } else {
             store.dispatch(screen.actions.gotoScreen('landing'));
