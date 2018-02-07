@@ -3,9 +3,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, reset } from 'redux-form';
 import { renderTextField, renderCodeField } from 'elements/formFields';
+import { Add as AddIcon } from 'emerald-js-ui/lib/icons2';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
-import FontIcon from 'material-ui/FontIcon';
 
 import { cardSpace } from 'lib/styles';
 
@@ -48,7 +48,7 @@ const Render = ({ account, handleSubmit, invalid, pristine, reset, submitting, d
     <CardActions>
       <FlatButton label="Deploy New Contract"
         onClick={deployContract}
-        icon={<FontIcon className="fa fa-plus-circle" />}/>
+        icon={<AddIcon />}/>
     </CardActions>
   </Card>
 );

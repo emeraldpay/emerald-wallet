@@ -7,6 +7,7 @@ import ledger from 'store/ledger/';
 import screen from 'store/wallet/screen';
 import accounts from 'store/vault/accounts/';
 import { Button, ButtonGroup } from 'emerald-js-ui';
+import { Add as AddIcon } from 'emerald-js-ui/lib/icons2';
 
 const Render = ({ selected, onAddSelected, onCancel }) => {
   return (
@@ -16,7 +17,7 @@ const Render = ({ selected, onAddSelected, onCancel }) => {
         disabled={!selected}
         primary={true}
         onClick={onAddSelected}
-        icon={<FontIcon className="fa fa-plus" />}
+        icon={<AddIcon />}
       />
       <Button
         label="Cancel"

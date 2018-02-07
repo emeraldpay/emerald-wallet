@@ -2,7 +2,8 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FontIcon, FlatButton, Popover } from 'material-ui';
 import { List, ListItem } from 'material-ui/List';
-import { Add as AddIcon, Ledger as LedgerIcon } from 'emerald-js-ui/lib/icons';
+import { Ledger as LedgerIcon } from 'emerald-js-ui/lib/icons';
+import { Add as AddIcon } from 'emerald-js-ui/lib/icons2';
 
 const styles = {
   button: {
@@ -12,8 +13,7 @@ const styles = {
     paddingRight: 0,
   },
   addIcon: {
-    width: '21px',
-    height: '21px',
+    marginBottom: '2px',
   },
 };
 
