@@ -38,9 +38,9 @@ describe('tokenReducer', () => {
       },
       value: '0x1',
     });
-
+    console.log(JSON.stringify(state));
     // assert
-    expect(state.balances.get('id1').tokens[0].balance.value).toEqual(new BigNumber(1));
+    expect(state.get('balances').get('id1').first().get('balance').value).toEqual(new BigNumber(1));
 
     // do - update balance with symbol
     state = reducer(state, {
@@ -53,6 +53,7 @@ describe('tokenReducer', () => {
       },
       value: '0x2',
     });
-    expect(state.balances.get('id1').tokens[0].symbol).toEqual('BEC');
+    console.log(JSON.stringify(state));
+    expect(state.get('balances').get('id1').first().get('symbol')).toEqual('BEC');
   });
 });

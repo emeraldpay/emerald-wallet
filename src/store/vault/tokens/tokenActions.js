@@ -23,21 +23,12 @@ export function loadTokenBalanceOf(token: TokenInfo, accountId: string) {
     if (token.address) {
       const data = tokenContract.functionToData('balanceOf', { _owner: accountId });
       return api.geth.eth.call(token.address, data).then((result) => {
-
         dispatch({
           type: ActionTypes.SET_TOKEN_BALANCE,
           accountId,
           token,
           value: result,
         });
-
-        // dispatch({
-        //   type: 'ACCOUNT/SET_TOKEN_BALANCE',
-        //   accountId,
-        //   token,
-        //   value: result,
-        // });
-
       });
     }
     throw new Error(`Invalid token info ${JSON.stringify(token)}`);
@@ -112,14 +103,6 @@ function getTokenBalances(token: TokenInfo, addresses: Array<string>) {
             token,
             value: results[addr].result,
           });
-          //
-          // dispatch({
-          //   type: 'ACCOUNT/SET_TOKEN_BALANCE',
-          //   accountId: addr,
-          //   token,
-          //   value: results[addr].result,
-          // });
-
         });
       });
     }

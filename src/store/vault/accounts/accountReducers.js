@@ -16,7 +16,6 @@ const initialAccount = Immutable.Map({
   hardware: false,
   balance: null,
   balancePending: null,
-  tokens: [],
   txcount: null,
   name: null,
   description: null,
@@ -44,21 +43,21 @@ function updateAccount(state, id, f) {
   });
 }
 
-function updateToken(tokens, token, value) {
-  const pos = tokens.findKey((tok) => tok.get('address') === token.address);
-
-  const balance = new TokenUnits(
-    convert.toBigNumber(value),
-    convert.toBigNumber(token.decimals));
-
-  if (pos >= 0) {
-    return tokens.update(pos, (tok) =>
-      tok.set('balance', balance)
-        .set('symbol', token.symbol));
-  }
-  const newToken = Immutable.fromJS({ address: token.address, symbol: token.symbol, balance });
-  return tokens.push(newToken);
-}
+// function updateToken(tokens, token, value) {
+//   const pos = tokens.findKey((tok) => tok.get('address') === token.address);
+//
+//   const balance = new TokenUnits(
+//     convert.toBigNumber(value),
+//     convert.toBigNumber(token.decimals));
+//
+//   if (pos >= 0) {
+//     return tokens.update(pos, (tok) =>
+//       tok.set('balance', balance)
+//         .set('symbol', token.symbol));
+//   }
+//   const newToken = Immutable.fromJS({ address: token.address, symbol: token.symbol, balance });
+//   return tokens.push(newToken);
+// }
 
 function onLoading(state, action) {
   switch (action.type) {
@@ -185,7 +184,7 @@ export default function accountsReducers(state, action) {
   state = onUpdateAccount(state, action);
   state = onSetBalance(state, action);
   state = onSetTxCount(state, action);
-  //state = onSetTokenBalance(state, action);
+  // state = onSetTokenBalance(state, action);
   state = onPendingBalance(state, action);
   state = onSetHdPath(state, action);
   return state;
