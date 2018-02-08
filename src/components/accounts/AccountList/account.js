@@ -50,7 +50,6 @@ export class Account extends React.Component {
     onAddEtcClick = () => this.props.showReceiveDialog(this.props.account);
 
     render() {
-      console.log('Rendering Account');
       const { account, tokens } = this.props;
       const { showFiat } = this.props;
       const { showTokens } = this.state;
