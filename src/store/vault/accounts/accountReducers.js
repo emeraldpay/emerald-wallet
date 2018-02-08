@@ -1,6 +1,5 @@
 import Immutable from 'immutable';
 import { convert, Wei } from 'emerald-js';
-import TokenUnits from '../../../lib/tokenUnits';
 import ActionTypes from './actionTypes';
 
 const { toNumber } = convert;
@@ -42,22 +41,6 @@ function updateAccount(state, id, f) {
     return accounts;
   });
 }
-
-// function updateToken(tokens, token, value) {
-//   const pos = tokens.findKey((tok) => tok.get('address') === token.address);
-//
-//   const balance = new TokenUnits(
-//     convert.toBigNumber(value),
-//     convert.toBigNumber(token.decimals));
-//
-//   if (pos >= 0) {
-//     return tokens.update(pos, (tok) =>
-//       tok.set('balance', balance)
-//         .set('symbol', token.symbol));
-//   }
-//   const newToken = Immutable.fromJS({ address: token.address, symbol: token.symbol, balance });
-//   return tokens.push(newToken);
-// }
 
 function onLoading(state, action) {
   switch (action.type) {
@@ -123,16 +106,6 @@ function onSetBalance(state, action) {
   return state;
 }
 
-// function onSetTokenBalance(state, action) {
-//   if (action.type === ActionTypes.SET_TOKEN_BALANCE) {
-//     return updateAccount(state, action.accountId, (acc) => {
-//       const tokens = Immutable.fromJS(acc.get('tokens'));
-//       return acc.set('tokens', updateToken(tokens, action.token, action.value));
-//     });
-//   }
-//   return state;
-// }
-
 function onSetTxCount(state, action) {
   if (action.type === ActionTypes.SET_TXCOUNT) {
     return updateAccount(state, action.accountId, (acc) =>
@@ -184,7 +157,6 @@ export default function accountsReducers(state, action) {
   state = onUpdateAccount(state, action);
   state = onSetBalance(state, action);
   state = onSetTxCount(state, action);
-  // state = onSetTokenBalance(state, action);
   state = onPendingBalance(state, action);
   state = onSetHdPath(state, action);
   return state;

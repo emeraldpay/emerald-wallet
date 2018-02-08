@@ -50,10 +50,9 @@ export default connect(
   (state, ownProps) => {
     const fiatCurrency = state.wallet.settings.get('localeCurrency');
     const fiatRate = state.wallet.settings.get('localeRate');
-    const balance = ownProps.balance;
     return {
       symbol: ownProps.symbol,
-      balance,
+      balance: ownProps.balance,
       fiatCurrency,
       fiatRate,
     };

@@ -24,7 +24,28 @@ describe('tokenReducer', () => {
     expect(state.get('tokens').size).toEqual(1);
   });
 
-  it('should update zero token balance, symbol and decimals', () => {
+  it('should update balances of provided tokens on SET_TOKENS_BALANCES', () => {
+    // prepare
+    let state = reducer(null, {});
+    state = reducer(state, {
+      type: ActionTypes.ADD_TOKEN,
+      address: '0x1123',
+      name: 'Token1',
+      symbol: 'TKN',
+    });
+
+    // do
+    state = reducer(state, {
+      type: ActionTypes.SET_TOKENS_BALANCES,
+      accountId: '0x123456789',
+      balances: [{ tokenAddress: '0x1123', amount: '0x01'}],
+    });
+
+    // assert
+    expect(state.toJS().balances['0x123456789'][0].balance.value).toEqual(new BigNumber(1));
+  });
+
+  it('SET_TOKEN_BALANCE should update zero token balance, symbol and decimals', () => {
     // prepare
     let state = reducer(null, {});
 
@@ -38,7 +59,7 @@ describe('tokenReducer', () => {
       },
       value: '0x1',
     });
-    console.log(JSON.stringify(state));
+
     // assert
     expect(state.get('balances').get('id1').first().get('balance').value).toEqual(new BigNumber(1));
 
@@ -53,7 +74,6 @@ describe('tokenReducer', () => {
       },
       value: '0x2',
     });
-    console.log(JSON.stringify(state));
     expect(state.get('balances').get('id1').first().get('symbol')).toEqual('BEC');
   });
 });

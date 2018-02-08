@@ -3,7 +3,6 @@ import React from 'react';
 import styles from './tokenBalances.scss';
 
 const TokenBalances = ({ balances }) => {
-  console.log('Rendering TokenBalances');
   if (!balances) {
     return null;
   }

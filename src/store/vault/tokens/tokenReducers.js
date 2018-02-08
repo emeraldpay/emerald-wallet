@@ -14,7 +14,7 @@ const initial = fromJS({
   loading: false,
 });
 
-const initialTok = Map({
+const initialToken = Map({
   address: null,
   name: null,
   abi: null,
@@ -33,10 +33,29 @@ function addToken(state, address, name) {
     if (pos >= 0) {
       return tokens;
     }
-    return tokens.push(initialTok.merge({ address, name }));
+    return tokens.push(initialToken.merge({ address, name }));
   });
 }
 
+function updateTokenBalance(balances, token, value) {
+  const pos = balances.findKey((tok) => tok.get('address') === token.address);
+
+  const balance = new TokenUnits(
+    convert.toBigNumber(value),
+    convert.toBigNumber(token.decimals));
+
+  if (pos >= 0) {
+    return balances.update(pos, (tok) =>
+      tok.set('balance', balance)
+        .set('symbol', token.symbol));
+  }
+  const newToken = fromJS({
+    address: token.address,
+    symbol: token.symbol,
+    balance,
+  });
+  return balances.push(newToken);
+}
 
 function updateToken(state, id, f) {
   return state.update('tokens', (tokens) => {
@@ -107,30 +126,34 @@ function onSetTokenBalance(state, action) {
     tokens = updateTokenBalance(tokens, action.token, action.value);
     balances = balances.set(address, tokens);
     return state.set('balances', balances);
-
-    // return updateAccount(state, action.accountId, (acc) => {
-    //   const tokens = fromJS(acc.get('tokens'));
-    //   return acc.set('tokens', updateTokenBalance(tokens, action.token, action.value));
-    // });
   }
   return state;
 }
 
-function updateTokenBalance(tokens, token, value) {
-  const pos = tokens.findKey((tok) => tok.get('address') === token.address);
+function onSetTokensBalances(state, action) {
+  if (action.type === ActionTypes.SET_TOKENS_BALANCES) {
+    const address = action.accountId;
+    let allBalances = state.get('balances');
+    let addressBalances = allBalances.get(address, new List());
 
-  const balance = new TokenUnits(
-    convert.toBigNumber(value),
-    convert.toBigNumber(token.decimals));
+    action.balances.forEach((item) => {
+      const tokenInfo = state.get('tokens').find((t) => t.get('address') === item.tokenAddress);
+      addressBalances = updateTokenBalance(addressBalances, tokenInfo.toJS(), item.amount);
+    });
 
-  if (pos >= 0) {
-    return tokens.update(pos, (tok) =>
-      tok.set('balance', balance)
-        .set('symbol', token.symbol));
+    allBalances = allBalances.set(address, addressBalances);
+    return state.set('balances', allBalances);
   }
-  const newToken = fromJS({ address: token.address, symbol: token.symbol, balance });
-  return tokens.push(newToken);
+  return state;
 }
+
+function onResetBalances(state, action) {
+  if (action.type === ActionTypes.RESET_BALANCES) {
+    return state.set('balances', new Map());
+  }
+  return state;
+}
+
 
 // ---- REDUCER
 
@@ -141,5 +164,7 @@ export default function tokenReducers(state, action) {
   state = onAddToken(state, action);
   state = onSetTokenInfo(state, action);
   state = onSetTokenBalance(state, action);
+  state = onSetTokensBalances(state, action);
+  state = onResetBalances(state, action);
   return state;
 }

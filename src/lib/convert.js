@@ -46,7 +46,6 @@ export function parseString(hex: string) {
   hex = hex.substring(2);
   const parts = hex.match(/.{64}/g);
   if (parts == null) {
-    log.warn('Corrupted String data', hex);
     return '';
   }
   const lenIgnore = parts[0];

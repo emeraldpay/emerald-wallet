@@ -2,8 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { CardText } from 'material-ui/Card';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
-import { Button, IdentityIcon, Account as AddressAvatar } from 'emerald-js-ui';
+import { Button, IdentityIcon, Account as AddressAvatar, ButtonGroup } from 'emerald-js-ui';
 import { QrCode as QrCodeIcon } from 'emerald-js-ui/lib/icons';
+import { connect } from 'react-redux';
+import Immutable from 'immutable';
 
 import Card from 'elements/Card';
 import SecondaryMenu from '../SecondaryMenu';
@@ -12,16 +14,15 @@ import TokenBalances from '../TokenBalances';
 
 import styles from './account.scss';
 import TokenUnits from '../../../lib/tokenUnits';
-import ButtonGroup from '../../../elements/ButtonGroup';
 
 const qrIconStyle = {
   width: '14px',
   height: '14px',
 };
 
-export default class Account extends React.Component {
+export class Account extends React.Component {
     static propTypes = {
-      knownTokens: PropTypes.object.isRequired,
+      tokens: PropTypes.object.isRequired,
       account: PropTypes.object.isRequired,
       openAccount: PropTypes.func.isRequired,
       createTx: PropTypes.func,
@@ -56,7 +57,6 @@ export default class Account extends React.Component {
 
       // TODO: we convert Wei to TokenUnits here
       const balance = account.get('balance') ? new TokenUnits(account.get('balance').value(), 18) : null;
-
 
       return (
         <Card>
@@ -122,3 +122,13 @@ export default class Account extends React.Component {
         </Card>);
     }
 }
+
+
+export default connect(
+  (state, ownProps) => ({
+    tokens: state.tokens.get('balances', Immutable.Map()).get(ownProps.account.get('id'), Immutable.List()),
+  }),
+  (dispatch, ownProps) => ({
+
+  })
+)(Account);

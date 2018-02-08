@@ -16,9 +16,9 @@ const log = createLogger('AccountList');
 const cx = classNames.bind(styles);
 
 const AccountList = translate('accounts')((props) => {
-  const { accounts, tokensBalances, showFiat } = props;
+  log.trace('Rendering AccountList');
+  const { accounts, showFiat } = props;
   const { openAccount, createTx, showReceiveDialog } = props;
-  console.log('Rendering AccountList');
   return (
     <div className={ styles.container }>
       {accounts.map((account) => {
@@ -30,7 +30,6 @@ const AccountList = translate('accounts')((props) => {
           <Account
             showFiat={ showFiat }
             account={ account }
-            tokens={ tokensBalances.get(account.get('id'), Immutable.List()) }
             openAccount={ openAccount }
             createTx={ createTx }
             showReceiveDialog={ showReceiveDialog }
@@ -44,13 +43,11 @@ const AccountList = translate('accounts')((props) => {
 AccountList.propTypes = {
   showFiat: PropTypes.bool,
   accounts: PropTypes.object.isRequired,
-  tokensBalances: PropTypes.object.isRequired,
 };
 
 export default connect(
   (state, ownProps) => ({
     accounts: state.accounts.get('accounts', Immutable.List()),
-    tokensBalances: state.tokens.get('balances', Immutable.Map()),
     showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
   }),
   (dispatch, ownProps) => ({
