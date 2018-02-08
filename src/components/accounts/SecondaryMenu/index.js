@@ -23,7 +23,7 @@ const renderHide = (chain, account, onHide, { disabledColor }) => {
       disabled={ disabled }
       leftIcon={<FontIcon style={ iconStyle } className="fa fa-eye-slash"/>}
       primaryText='HIDE'
-      onTouchTap={ onHide(chain) }/>
+      onClick={ onHide(chain) }/>
   );
 };
 
@@ -32,7 +32,7 @@ const renderUnhide = (chain, account, onUnhide) => {
     <MenuItem
       leftIcon={<FontIcon className="fa fa-eye"/>}
       primaryText='UNHIDE'
-      onTouchTap={ onUnhide(chain) }/>
+      onClick={ onUnhide(chain) }/>
   );
 };
 
