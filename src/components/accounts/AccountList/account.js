@@ -5,15 +5,16 @@ import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { Button, IdentityIcon, Account as AddressAvatar, ButtonGroup } from 'emerald-js-ui';
 import { QrCode as QrCodeIcon } from 'emerald-js-ui/lib/icons2';
 import { connect } from 'react-redux';
-import Immutable from 'immutable';
-
 import Card from 'elements/Card';
+
+import tokens from '../../../store/vault/tokens';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../Balance';
 import TokenBalances from '../TokenBalances';
+import TokenUnits from '../../../lib/tokenUnits';
 
 import styles from './account.scss';
-import TokenUnits from '../../../lib/tokenUnits';
+
 
 const qrIconStyle = {
   width: '14px',
@@ -22,7 +23,7 @@ const qrIconStyle = {
 
 export class Account extends React.Component {
     static propTypes = {
-      tokens: PropTypes.object.isRequired,
+      tokensBalances: PropTypes.object.isRequired,
       account: PropTypes.object.isRequired,
       openAccount: PropTypes.func.isRequired,
       createTx: PropTypes.func,
@@ -50,7 +51,7 @@ export class Account extends React.Component {
     onAddEtcClick = () => this.props.showReceiveDialog(this.props.account);
 
     render() {
-      const { account, tokens } = this.props;
+      const { account, tokensBalances } = this.props;
       const { showFiat } = this.props;
       const { showTokens } = this.state;
 
@@ -113,7 +114,7 @@ export class Account extends React.Component {
                       </Row>
                       <Row>
                         <Col xs={12} lg={12} md={12} sm={12} style={{marginLeft: '50px'}}>
-                          <TokenBalances balances={ tokens } />
+                          <TokenBalances balances={ tokensBalances } />
                         </Col>
                       </Row>
                     </div>)}
@@ -125,7 +126,7 @@ export class Account extends React.Component {
 
 export default connect(
   (state, ownProps) => ({
-    tokens: state.tokens.get('balances', Immutable.Map()).get(ownProps.account.get('id'), Immutable.List()),
+    tokensBalances: tokens.selectors.balancesByAddress(state.tokens, ownProps.account.get('id')),
   }),
   (dispatch, ownProps) => ({
 
