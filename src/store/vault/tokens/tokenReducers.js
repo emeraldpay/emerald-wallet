@@ -1,4 +1,5 @@
-import Immutable from 'immutable';
+// @flow
+import { fromJS, Map, List } from 'immutable';
 import TokenUnits from 'lib/tokenUnits';
 import { convert } from 'emerald-js';
 import ActionTypes from './actionTypes';
@@ -7,12 +8,13 @@ const { toBigNumber } = convert;
 
 // ----- STRUCTURES
 
-const initial = Immutable.fromJS({
+const initial = fromJS({
   tokens: [],
+  balances: new Map(),
   loading: false,
 });
 
-const initialTok = Immutable.Map({
+const initialToken = Map({
   address: null,
   name: null,
   abi: null,
@@ -31,10 +33,29 @@ function addToken(state, address, name) {
     if (pos >= 0) {
       return tokens;
     }
-    return tokens.push(initialTok.merge({ address, name }));
+    return tokens.push(initialToken.merge({ address, name }));
   });
 }
 
+function updateTokenBalance(balances, token, value) {
+  const pos = balances.findKey((tok) => tok.get('address') === token.address);
+
+  const balance = new TokenUnits(
+    convert.toBigNumber(value),
+    convert.toBigNumber(token.decimals));
+
+  if (pos >= 0) {
+    return balances.update(pos, (tok) =>
+      tok.set('balance', balance)
+        .set('symbol', token.symbol));
+  }
+  const newToken = fromJS({
+    address: token.address,
+    symbol: token.symbol,
+    balance,
+  });
+  return balances.push(newToken);
+}
 
 function updateToken(state, id, f) {
   return state.update('tokens', (tokens) => {
@@ -61,7 +82,7 @@ function onSetTokenList(state, action) {
   switch (action.type) {
     case ActionTypes.SET_LIST:
       return state
-        .set('tokens', Immutable.fromJS(action.tokens))
+        .set('tokens', fromJS(action.tokens))
         .set('loading', false);
     default:
       return state;
@@ -96,6 +117,44 @@ function onAddToken(state, action) {
   return state;
 }
 
+function onSetTokenBalance(state, action) {
+  if (action.type === ActionTypes.SET_TOKEN_BALANCE) {
+    let balances = state.get('balances');
+    const address = action.accountId;
+
+    let tokens = balances.get(address, new List());
+    tokens = updateTokenBalance(tokens, action.token, action.value);
+    balances = balances.set(address, tokens);
+    return state.set('balances', balances);
+  }
+  return state;
+}
+
+function onSetTokensBalances(state, action) {
+  if (action.type === ActionTypes.SET_TOKENS_BALANCES) {
+    const address = action.accountId;
+    let allBalances = state.get('balances');
+    let addressBalances = allBalances.get(address, new List());
+
+    action.balances.forEach((item) => {
+      const tokenInfo = state.get('tokens').find((t) => t.get('address') === item.tokenAddress);
+      addressBalances = updateTokenBalance(addressBalances, tokenInfo.toJS(), item.amount);
+    });
+
+    allBalances = allBalances.set(address, addressBalances);
+    return state.set('balances', allBalances);
+  }
+  return state;
+}
+
+function onResetBalances(state, action) {
+  if (action.type === ActionTypes.RESET_BALANCES) {
+    return state.set('balances', new Map());
+  }
+  return state;
+}
+
+
 // ---- REDUCER
 
 export default function tokenReducers(state, action) {
@@ -104,5 +163,8 @@ export default function tokenReducers(state, action) {
   state = onSetTokenList(state, action);
   state = onAddToken(state, action);
   state = onSetTokenInfo(state, action);
+  state = onSetTokenBalance(state, action);
+  state = onSetTokensBalances(state, action);
+  state = onResetBalances(state, action);
   return state;
 }

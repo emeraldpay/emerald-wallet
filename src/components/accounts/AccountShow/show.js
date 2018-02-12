@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import People from 'material-ui/svg-icons/social/people';
 import QRCode from 'qrcode.react';
 import TokenUnits from 'lib/tokenUnits';
-import { Button, IdentityIcon, Account as AddressAvatar } from 'emerald-js-ui';
+import { Button, IdentityIcon, Account as AddressAvatar, ButtonGroup } from 'emerald-js-ui';
 import { Form, styles, Row } from 'elements/Form';
 import { QrCode as QrCodeIcon } from 'emerald-js-ui/lib/icons';
 import DashboardButton from 'components/common/DashboardButton';
@@ -19,7 +19,6 @@ import AccountBalance from '../Balance';
 import SecondaryMenu from '../SecondaryMenu';
 import classes from './show.scss';
 import TokenBalances from '../TokenBalances';
-import ButtonGroup from '../../../elements/ButtonGroup';
 
 
 const log = createLogger('AccountShow');

@@ -18,6 +18,12 @@ type TokenInfo = {
     decimals: string,
 }
 
+export function resetBalances() {
+  return {
+    type: ActionTypes.RESET_BALANCES,
+  };
+}
+
 export function loadTokenBalanceOf(token: TokenInfo, accountId: string) {
   return (dispatch: any, getState: any, api: any) => {
     if (token.address) {
@@ -37,17 +43,19 @@ export function loadTokenBalanceOf(token: TokenInfo, accountId: string) {
 
 export function loadTokenDetails(token): () => Promise<any> {
   return (dispatch, getState, api) => {
-    return Promise.all([
-      api.geth.eth.call(token.address, tokenContract.functionToData('totalSupply')),
-      api.geth.eth.call(token.address, tokenContract.functionToData('decimals')),
-      api.geth.eth.call(token.address, tokenContract.functionToData('symbol')),
-    ]).then((results: Array<any>) => {
+    const batch = [
+      { id: 'totalSupply', to: token.address, data: tokenContract.functionToData('totalSupply') },
+      { id: 'decimals', to: token.address, data: tokenContract.functionToData('decimals') },
+      { id: 'symbol', to: token.address, data: tokenContract.functionToData('symbol') },
+    ];
+
+    return api.geth.ext.batchCall(batch).then((results: Array<any>) => {
       dispatch({
         type: ActionTypes.SET_INFO,
         address: token.address,
-        totalSupply: results[0],
-        decimals: results[1],
-        symbol: parseString(results[2]),
+        totalSupply: results.totalSupply.result,
+        decimals: results.decimals.result,
+        symbol: parseString(results.symbol.result),
       });
     });
   };
@@ -70,13 +78,38 @@ export function fetchTokenDetails(tokenAddress: string): () => Promise<any> {
   };
 }
 
-export function loadTokenBalances(token: TokenInfo) {
-  return (dispatch, getState) => {
-    const tokenInfo = getState().tokens.get('tokens').find((t) => t.get('address') === token.address).toJS();
-    const accounts = getState().accounts;
-    if (!accounts.get('loading')) {
-      accounts.get('accounts').forEach((acct) => dispatch(loadTokenBalanceOf(tokenInfo, acct.get('id'))));
-    }
+
+/**
+ * Load balances of all known tokens for particular address
+ *
+ * @param address
+ */
+export function loadTokensBalances(address: string) {
+  return (dispatch: any, getState: any, api: any) => {
+    const tokens = getState().tokens.get('tokens').toJS();
+    // build batch call request
+    const batch = tokens.map((token) => {
+      return {
+        id: token.address,
+        to: token.address,
+        data: tokenContract.functionToData('balanceOf', { _owner: address }),
+      };
+    });
+
+    return api.geth.ext.batchCall(batch).then((results) => {
+      const balances = tokens.map((token) => {
+        return {
+          tokenAddress: token.address,
+          amount: results[token.address].result,
+        };
+      });
+
+      dispatch({
+        type: ActionTypes.SET_TOKENS_BALANCES,
+        accountId: address,
+        balances,
+      });
+    });
   };
 }
 
@@ -86,7 +119,7 @@ export function loadTokenBalances(token: TokenInfo) {
 export function loadTokenList() {
   return (dispatch, getState, api) => {
     dispatch({
-      type: 'TOKEN/LOADING',
+      type: ActionTypes.LOADING,
     });
     const chain = launcher.selectors.getChainName(getState());
     api.emerald.listContracts(chain).then((result) => {

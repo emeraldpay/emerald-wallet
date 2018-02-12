@@ -3,6 +3,8 @@ import accounts from '../vault/accounts';
 import screen from './screen';
 import history from './history';
 import network from '../network';
+import tokens from '../vault/tokens';
+
 /**
  * Shows account details page if address in the vault or notification otherwise.
  */
@@ -22,5 +24,6 @@ export const switchEndpoint = (chain: {chainId: number, chain: string}) => {
   return (dispatch, getState) => {
     dispatch(history.actions.init(chain.chainId));
     dispatch(network.actions.switchChain(chain));
+    dispatch(tokens.actions.resetBalances());
   };
 };

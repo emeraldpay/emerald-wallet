@@ -16,9 +16,9 @@ const log = createLogger('AccountList');
 const cx = classNames.bind(styles);
 
 const AccountList = translate('accounts')((props) => {
-  const { accounts, knownTokens, showFiat } = props;
+  log.trace('Rendering AccountList');
+  const { accounts, showFiat } = props;
   const { openAccount, createTx, showReceiveDialog } = props;
-
   return (
     <div className={ styles.container }>
       {accounts.map((account) => {
@@ -30,10 +30,9 @@ const AccountList = translate('accounts')((props) => {
           <Account
             showFiat={ showFiat }
             account={ account }
-            knownTokens={ knownTokens }
-            openAccount={ openAccount(account) }
-            createTx={ createTx(account) }
-            showReceiveDialog={ showReceiveDialog(account) }
+            openAccount={ openAccount }
+            createTx={ createTx }
+            showReceiveDialog={ showReceiveDialog }
           />
         </div>);
       })}
@@ -44,23 +43,21 @@ const AccountList = translate('accounts')((props) => {
 AccountList.propTypes = {
   showFiat: PropTypes.bool,
   accounts: PropTypes.object.isRequired,
-  knownTokens: PropTypes.object.isRequired,
 };
 
 export default connect(
   (state, ownProps) => ({
     accounts: state.accounts.get('accounts', Immutable.List()),
-    knownTokens: state.tokens.get('tokens', Immutable.List()),
     showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
   }),
   (dispatch, ownProps) => ({
-    openAccount: (account) => () => {
+    openAccount: (account) => {
       dispatch(screen.actions.gotoScreen('account', account));
     },
-    createTx: (account) => () => {
+    createTx: (account) => {
       dispatch(screen.actions.gotoScreen('create-tx', account));
     },
-    showReceiveDialog: (account) => () => {
+    showReceiveDialog: (account) => {
       dispatch(screen.actions.showDialog('receive', account));
     },
   })

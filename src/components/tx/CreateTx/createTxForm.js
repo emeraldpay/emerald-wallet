@@ -5,7 +5,7 @@ import { RadioButtonGroup } from 'redux-form-material-ui';
 import { MenuItem, IconButton } from 'material-ui';
 import { IconMenu } from 'material-ui/IconMenu';
 import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
-import { Button, IdentityIcon } from 'emerald-js-ui';
+import { Button, IdentityIcon, ButtonGroup } from 'emerald-js-ui';
 import { formStyle } from 'lib/styles';
 import DashboardButton from 'components/common/DashboardButton';
 import { positive, number, required, address } from 'lib/validators';
@@ -21,7 +21,6 @@ import classes from './createTxForm.scss';
 import { WarningText, Warning } from '../../../elements/Warning';
 
 import { Currency } from '../../../lib/currency';
-import ButtonGroup from '../../../elements/ButtonGroup';
 
 
 const textEtc = {

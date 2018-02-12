@@ -2,8 +2,6 @@
 import BigNumber from 'bignumber.js';
 import ethUtil from 'ethereumjs-util';
 import ethAbi from 'ethereumjs-abi';
-import log from 'electron-log';
-
 
 /*
   Convert unix timestamp to time elapsed
@@ -48,7 +46,6 @@ export function parseString(hex: string) {
   hex = hex.substring(2);
   const parts = hex.match(/.{64}/g);
   if (parts == null) {
-    log.warn('Corrupted String data', hex);
     return '';
   }
   const lenIgnore = parts[0];
@@ -95,8 +92,6 @@ export function mweiToWei(val: number | string | BigNumber) {
 export function estimateGasFromTrace(dataObj, trace): BigNumber {
   const gasLimit = 2000000;
   const value = new BigNumber(dataObj.value);
-  log.debug(dataObj);
-  log.debug(trace);
 
   const recurCheckBalance = function (ops) {
     let startVal = 24088 + ops[0].cost;
@@ -126,9 +121,6 @@ export function estimateGasFromTrace(dataObj, trace): BigNumber {
       const toState = new BigNumber(stateDiff.to);
       estGas = fromState.sub(toState);
       estGas = (dataObj.from.toLowerCase() === dataObj.to.toLowerCase()) ? estGas : estGas.sub(value);
-      log.debug(`Start balance: ${mweiToWei(fromState).toString(10)}`);
-      log.debug(`End balance: ${mweiToWei(toState).toString(10)}`);
-      log.debug(fromState.sub(toState).toString(10));
     }
     if (estGas.lt(0) || estGas.eq(gasLimit)) { estGas = null; }
   }

@@ -29,8 +29,6 @@ describe('historyReducer', () => {
     storeTransactions('k', state.get('trackedTransactions').toJS());
     const loaded = loadTransactions('k');
 
-    console.log(loaded);
-
     // load restored txs to state
     state = historyReducers(state, {
       type: ActionTypes.LOAD_STORED_TXS,
@@ -38,7 +36,6 @@ describe('historyReducer', () => {
     });
 
     expect(state.get('trackedTransactions').size).toBe(1);
-    console.log(state.get('trackedTransactions').first().toJS());
     const tx = state.get('trackedTransactions').first().toJS();
     expect(tx.value).toEqual(new BigNumber(1));
   });

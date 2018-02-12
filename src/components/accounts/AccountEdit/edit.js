@@ -3,9 +3,8 @@ import React from 'react';
 import { Field, reduxForm } from 'redux-form';
 import { Card, CardText } from 'material-ui';
 import { TextField } from 'redux-form-material-ui';
-import { Button } from 'emerald-js-ui';
+import { Button, ButtonGroup } from 'emerald-js-ui';
 import { renderTextField } from '../../../elements/formFields';
-import ButtonGroup from '../../../elements/ButtonGroup';
 import { required, address } from '../../../lib/validators';
 import { cardSpace } from '../../../lib/styles';
 
