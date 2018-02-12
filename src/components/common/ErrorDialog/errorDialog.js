@@ -1,17 +1,17 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
+import { Button } from 'emerald-js-ui';
 
 import screen from 'store/wallet/screen';
 
 const ErrorDialog = ({ open, message, handleClose }) => {
   const actions = [
-    <FlatButton
+    <Button
       key="closeButton"
       label="Close"
       primary={true}
-      onTouchTap={handleClose}
+      onClick={handleClose}
     />,
   ];
 

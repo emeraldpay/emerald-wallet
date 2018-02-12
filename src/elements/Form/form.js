@@ -1,6 +1,5 @@
 // @flow
 import React from 'react';
-import { FlatButton } from 'material-ui';
 
 import Card from '../Card';
 import formStyles from './form.scss';
