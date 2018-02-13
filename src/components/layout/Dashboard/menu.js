@@ -2,7 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FontIcon, FlatButton, Popover } from 'material-ui';
 import { List, ListItem } from 'material-ui/List';
-import { Add as AddIcon, Ledger as LedgerIcon } from 'emerald-js-ui/lib/icons';
+import { Ledger as LedgerIcon } from 'emerald-js-ui/lib/icons';
+import muiThemeable from 'material-ui/styles/muiThemeable';
+import { Add as AddIcon, Download as DownloadIcon, Token1 as TokenIcon } from 'emerald-js-ui/lib/icons2';
 
 const styles = {
   button: {
@@ -12,8 +14,7 @@ const styles = {
     paddingRight: 0,
   },
   addIcon: {
-    width: '21px',
-    height: '21px',
+    marginBottom: '2px',
   },
 };
 
@@ -63,7 +64,7 @@ class DashboardMenu extends React.Component {
   }
 
   render() {
-    const { generate, importJson, importLedger, importPrivateKey, importMnemonic, createMnemonic } = this.props;
+    const { generate, importJson, importLedger, importPrivateKey, importMnemonic, createMnemonic, muiTheme } = this.props;
     const { t, style } = this.props;
     return (
       <div style={ style }>
@@ -87,44 +88,44 @@ class DashboardMenu extends React.Component {
               primaryText="Ledger Nano S"
               secondaryText="Use Ledger hardware key to manage signatures"
               onClick={importLedger}
-              leftIcon={<LedgerIcon />}
+              leftIcon={<LedgerIcon color={muiTheme.palette.textColor}/>}
             />
             <ListItem
               primaryText={t('add.generate.title')}
               secondaryText={t('add.generate.subtitle')}
               onClick={ generate }
-              leftIcon={<FontIcon className="fa fa-random"/>}
+              leftIcon={<AddIcon color={muiTheme.palette.textColor}/>}
             />
             <ListItem
               primaryText={t('add.mnemonic.title')}
               secondaryText={t('add.mnemonic.subtitle')}
               onClick={ createMnemonic }
-              leftIcon={<FontIcon className="fa fa-random"/>}
+              leftIcon={<AddIcon color={muiTheme.palette.textColor}/>}
             />
 
             <ListItem
               primaryText={t('add.import.title')}
               secondaryText={t('add.import.subtitle')}
               onClick={ importJson }
-              leftIcon={<FontIcon className="fa fa-code"/>}
+              leftIcon={<DownloadIcon color={muiTheme.palette.textColor}/>}
             />
             <ListItem
               primaryText={ t('add.importPrivateKey.title') }
               secondaryText={ t('add.importPrivateKey.subtitle') }
               onClick={importPrivateKey}
-              leftIcon={<FontIcon className="fa fa-key"/>}
+              leftIcon={<DownloadIcon color={muiTheme.palette.textColor}/>}
             />
             <ListItem
               primaryText={ t('add.importMnemonic.title') }
               secondaryText={ t('add.importMnemonic.subtitle') }
               onClick={ importMnemonic }
-              leftIcon={<FontIcon className="fa fa-key"/>}
+              leftIcon={<DownloadIcon color={muiTheme.palette.textColor}/>}
             />
             <ListItem
               primaryText={ t('add.token.title') }
               secondaryText={ t('add.token.subtitle') }
               onClick={ this.handleAddToken }
-              leftIcon={<FontIcon className="fa fa-money"/>}
+              leftIcon={<TokenIcon color={muiTheme.palette.textColor}/>}
             />
           </List>
         </Popover>
@@ -133,4 +134,4 @@ class DashboardMenu extends React.Component {
   }
 }
 
-export default DashboardMenu;
+export default muiThemeable()(DashboardMenu);

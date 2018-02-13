@@ -4,6 +4,7 @@ import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'mate
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import FontIcon from 'material-ui/FontIcon';
+import { Add as AddIcon } from 'emerald-js-ui/lib/icons2';
 import Avatar from 'material-ui/Avatar';
 import { cardSpace, tables } from 'lib/styles';
 import Immutable from 'immutable';
@@ -45,7 +46,7 @@ const Render = ({ addressBook, addAddress }) => {
         <CardActions>
           <FlatButton label="Add Address"
             onClick={addAddress}
-            icon={<FontIcon className="fa fa-plus-circle" />}/>
+            icon={<AddIcon />}/>
         </CardActions>
       </Card>
     </div>

@@ -4,6 +4,7 @@ import { IconMenu, IconButton, MenuItem } from 'material-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import MoreHorizIcon from 'material-ui/svg-icons/navigation/more-horiz';
 import FontIcon from 'material-ui/FontIcon';
+import { Print as PrintIcon, Export as ExportIcon } from 'emerald-js-ui/lib/icons2';
 import { api } from 'lib/rpc/api';
 import saveAs from 'lib/saveAs';
 import screen from '../../../store/wallet/screen';
@@ -46,12 +47,12 @@ const SecondaryMenu = ({ account, onPrint, onExport, onHide, onUnhide, chain, mu
     <IconMenu iconButtonElement={<IconButton><MoreHorizIcon /></IconButton>}>
       {!isHardware &&
             <MenuItem
-              leftIcon={<FontIcon className="fa fa-hdd-o"/>}
+              leftIcon={<ExportIcon />}
               primaryText='EXPORT'
               onTouchTap={ onExport(chain) }/> }
       {!isHardware &&
             <MenuItem
-              leftIcon={<FontIcon className="fa fa-print"/>}
+              leftIcon={<PrintIcon />}
               primaryText='PRINT'
               onTouchTap={ onPrint(chain) }/> }
 

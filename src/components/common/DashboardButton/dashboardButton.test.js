@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { ArrowLeft as ArrowLeftIcon } from 'emerald-js-ui/lib/icons';
+import { Back } from 'emerald-js-ui/lib/icons2';
 import DashboardButton from './dashboardButton';
 
 describe('DashboardButton', () => {
@@ -11,7 +11,7 @@ describe('DashboardButton', () => {
 
   it('renders default label', () => {
     const wrapper = shallow(<DashboardButton />);
-    expect(wrapper.find(ArrowLeftIcon).length).toBe(1);
+    expect(wrapper.find(Back).length).toBe(1);
     expect(wrapper.findWhere((n) => n.text() === 'Dashboard')).toHaveLength(2);
   });
 });
