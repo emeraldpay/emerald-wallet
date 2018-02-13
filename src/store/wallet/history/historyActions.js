@@ -55,6 +55,25 @@ export function init(chainId: number) {
   };
 }
 
+export function refreshTransactions(hashes: Array<string>) {
+  return (dispatch, getState, api) => {
+    api.geth.ext.getTransactions(hashes).then((txs) => {
+      const found = [];
+
+      txs.forEach((t) => {
+        if (t.result && typeof t.result === 'object') {
+          found.push(t.result);
+        }
+      });
+
+      dispatch({
+        type: ActionTypes.UPDATE_TXS,
+        transactions: found,
+      });
+    });
+  };
+}
+
 export function refreshTransaction(hash: string) {
   return (dispatch, getState, api) =>
     api.geth.eth.getTransactionByHash(hash).then((result) => {
@@ -88,9 +107,21 @@ export function refreshTransaction(hash: string) {
  */
 export function refreshTrackedTransactions() {
   return (dispatch, getState) => {
-    getState().wallet.history.get('trackedTransactions')
+    const hashes = getState().wallet.history.get('trackedTransactions')
       .filter((tx) => tx.get('totalRetries', 0) <= 10)
-      .map((tx) => dispatch(refreshTransaction(tx.get('hash')))
-      );
+      .map((tx) => tx.get('hash'));
+
+    chunk(hashes.toArray(), 20).forEach((group) => dispatch(refreshTransactions(group)));
   };
+}
+
+/**
+ * Split an array into chunks of a given size
+ */
+function chunk(array, chunkSize) {
+  const groups = [];
+  for (let i = 0; i < array.length; i += chunkSize) {
+    groups.push(array.slice(i, i + chunkSize));
+  }
+  return groups;
 }

@@ -48,10 +48,13 @@ const selectBalance = (state, account) => {
   const token = selector(state, 'token');
   if (Address.isValid(token)) {
     const tokenInfo = tokens.find((t) => t.get('address') === token);
-    const accountBalance = account.get('tokens').find((t) => t.get('address') === token);
+    let tokenBalance = Tokens.selectors.balanceByAddress(state.tokens, token, account.get('id'));
+    if (!tokenBalance) {
+      tokenBalance = new TokenUnits(0, tokenInfo.get('decimals'));
+    }
     return {
       symbol: tokenInfo.get('symbol'),
-      value: accountBalance.get('balance'),
+      value: tokenBalance,
     };
   }
   return {

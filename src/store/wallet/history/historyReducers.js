@@ -106,6 +106,21 @@ function onUpdateTx(state, action) {
   return state;
 }
 
+function onUpdateTxs(state, action) {
+  if (action.type === ActionTypes.UPDATE_TXS) {
+    return state.update('trackedTransactions', (txs) => {
+      action.transactions.forEach((t) => {
+        const pos = txs.findKey((tx) => tx.get('hash') === t.hash);
+        if (pos >= 0) {
+          txs = txs.update(pos, (tx) => tx.mergeWith((o, n) => n, createTx(t)));
+        }
+      });
+      return txs;
+    });
+  }
+  return state;
+}
+
 function onPendingTx(state, action) {
   if (action.type === ActionTypes.PENDING_TX) {
     let txes = state.get('trackedTransactions');
@@ -138,6 +153,7 @@ export default function historyReducers(state, action) {
   state = onLoadStoredTransactions(state, action);
   state = onTrackedTxNotFound(state, action);
   state = onUpdateTx(state, action);
+  state = onUpdateTxs(state, action);
   state = onPendingTx(state, action);
   state = onChainChanged(state, action);
   return state;

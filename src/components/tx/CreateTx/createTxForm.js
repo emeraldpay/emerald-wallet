@@ -150,7 +150,7 @@ export const CreateTxForm = (props) => {
 
           <IconMenu
             iconButtonElement={<IconButton><ImportContacts /></IconButton>}
-            onItemTouchTap={ handleSelect }
+            onItemClick={ handleSelect }
           >
             {accounts.map((account) =>
               <MenuItem

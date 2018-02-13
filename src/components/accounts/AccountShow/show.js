@@ -10,7 +10,9 @@ import { Form, styles, Row } from 'elements/Form';
 import { QrCode as QrCodeIcon } from 'emerald-js-ui/lib/icons2';
 import DashboardButton from 'components/common/DashboardButton';
 import accounts from '../../../store/vault/accounts';
+import tokens from '../../../store/vault/tokens';
 import screen from '../../../store/wallet/screen';
+import history from '../../../store/wallet/history';
 import launcher from '../../../store/launcher';
 import createLogger from '../../../utils/logger';
 import AccountEdit from '../AccountEdit';
@@ -57,7 +59,8 @@ export class AccountShow extends React.Component {
   }
 
   render() {
-    const { account, showFiat, goBack, transactions, createTx, showReceiveDialog } = this.props;
+    const { account, tokensBalances } = this.props;
+    const { showFiat, goBack, transactions, createTx, showReceiveDialog } = this.props;
     // TODO: show pending balance too
     const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
 
@@ -89,7 +92,7 @@ export class AccountShow extends React.Component {
                 <div style={ styles.left }>
                 </div>
                 <div style={ styles.right }>
-                  <TokenBalances balances={ account.get('tokens') }/>
+                  <TokenBalances balances={ tokensBalances }/>
                 </div>
               </Row>
 
@@ -175,19 +178,21 @@ export default connect(
     let account = ownProps.account;
 
     account = accounts.selectors.selectAccount(state, account.get('id'));
-    let transactions = Immutable.List([]);
+    let transactions = Immutable.List();
+    let tokensBalances = Immutable.List();
 
     if (account && account.get('id')) {
-      // TODO: replace by history.selectors.selectTxs() ...
-      transactions = state.wallet.history.get('trackedTransactions').filter((t) =>
-        (account.get('id') === t.get('to') || account.get('id') === t.get('from'))
-      );
+      transactions = history.selectors.searchTransactions(
+        account.get('id'),
+        state.wallet.history.get('trackedTransactions'));
+      tokensBalances = tokens.selectors.balancesByAddress(state.tokens, account.get('id'));
     } else {
       log.warn("Can't find account in general list of accounts", account.get('id'));
     }
 
     return {
       showFiat: launcher.selectors.getChainName(state) === 'mainnet',
+      tokensBalances,
       account,
       transactions,
     };
