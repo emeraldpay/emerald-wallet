@@ -22,11 +22,12 @@ const container = {
 
 type Props = {
   rightIcon: Element<typeof Icon>,
+  leftIcon: Element,
   error: string,
   style: Object,
 }
 
-export const TextField = ({ rightIcon, error, style, ...other }: Props) => {
+export const TextField = ({ rightIcon, error, style, leftIcon, fieldStyle, ...other }: Props) => {
   if (other.fullWidth) {
     container.width = '100%';
   }
@@ -40,7 +41,7 @@ export const TextField = ({ rightIcon, error, style, ...other }: Props) => {
   const textFieldStyle = invalid ? {...defaultStyle, color: '#BC0000' } : defaultStyle;
   return (
     <div style={ containerStyle }>
-      <ReduxFormTextField { ...other } style={ textFieldStyle } />{ rightIcon }
+      { leftIcon } <ReduxFormTextField { ...other } style={{...fieldStyle, ...textFieldStyle}} />{ rightIcon }
     </div>
   );
 };
