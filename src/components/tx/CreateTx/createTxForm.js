@@ -14,7 +14,6 @@ import { Form, Row, styles } from '../../../elements/Form';
 import TextField from '../../../elements/Form/TextField';
 import SelectField from '../../../elements/Form/SelectField';
 import AccountBalance from '../../accounts/Balance';
-
 import SelectAddressField from './selectAddressField';
 
 import classes from './createTxForm.scss';
@@ -39,6 +38,16 @@ const textFiatLight = {
   fontSize: '14px',
   lineHeight: '16px',
   color: '#747474',
+};
+
+
+/**
+ * Input with IdentityIcon. We show it in to field control
+ */
+const InputWithIcon = (props) => {
+  return (
+    <TextField {...props} fieldStyle={{paddingLeft: '5px'}} leftIcon={props.input.value ? <IdentityIcon size={30} expanded={true} id={ props.input.value }/> : null} />
+  );
 };
 
 /**
@@ -141,8 +150,8 @@ export const CreateTxForm = (props) => {
         <div style={styles.right}>
           <Field
             name="to"
-            style={{ minWidth: '400px' }}
-            component={ TextField }
+            style={{minWidth: '400px'}}
+            component={InputWithIcon}
             validate={[required, address]}
             underlineShow={false}
             fullWidth={true}
