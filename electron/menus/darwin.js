@@ -1,3 +1,6 @@
+const { shell } = require('electron');
+const logger = require('../logger');
+
 module.exports = function (window) {
   return [{
     label: 'Emerald',
@@ -70,6 +73,12 @@ module.exports = function (window) {
         label: 'Developer Tools',
         accelerator: 'Alt+Command+I',
         click() { window.toggleDevTools(); },
+      },
+      {
+        label: 'Open Logs',
+        click() {
+          shell.openItem(logger.transports.file.file);
+        },
       },
       {
         type: 'separator',
