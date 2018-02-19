@@ -1,4 +1,4 @@
-const { shell } = require('electron');
+const { shell } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const logger = require('../logger');
 
 module.exports = function (window) {
