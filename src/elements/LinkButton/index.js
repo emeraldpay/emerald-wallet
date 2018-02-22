@@ -1,1 +1,1 @@
-export { default } from './linkButton.js';
+export { default } from './linkButton';
