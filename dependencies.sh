@@ -22,11 +22,6 @@ ensure_cargo_installed() {
     if ! [ -x "$(command -v cargo)" ]; then
         echo "Rusting up (non-interactively; accepting defaults)..."
         curl https://sh.rustup.rs -sSf | sh -s -- -y
-
-        echo "Adding cargo to path... (and writing to ~/.profile)"
-        echo $PATH:~/.cargo/bin >> ~/.profile
-        source ~/.profile
-        echo "PATH -> $PATH"
         echo "Cargo installed Successfully."
     fi
 }
