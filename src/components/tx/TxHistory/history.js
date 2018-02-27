@@ -3,10 +3,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { List } from 'immutable';
+import { Card } from 'emerald-js-ui';
 
 import { searchTransactions, filterTransactions } from '../../../store/wallet/history/selectors';
-
-import Card from '../../../elements/Card';
 import Header from './Header';
 import TxList from './List';
 

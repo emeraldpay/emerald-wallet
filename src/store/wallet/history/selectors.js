@@ -17,7 +17,7 @@ export const searchTransactions = (searchValue, transactionsToSearch) => {
         return txValue.getDecimalized(3).toString().includes(searchValue);
       }
       // search for field
-      return tx.get(field).includes(searchValue);
+      return tx.get(field) && tx.get(field).includes(searchValue);
     });
   });
 };

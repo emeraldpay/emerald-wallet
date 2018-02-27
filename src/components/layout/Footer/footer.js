@@ -1,11 +1,7 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import FlatButton from 'material-ui/FlatButton';
-
-import { showDialog } from '../../../store/wallet/screen/screenActions';
+import { LinkButton } from 'emerald-js-ui';
 import styles from './footer.scss';
-import LinkButton from '../../../elements/LinkButton/linkButton';
-
 
 const Footer = (props) => {
   const { maxWidth = '1220px', handleAbout } = props;
@@ -59,13 +55,4 @@ const Footer = (props) => {
   );
 };
 
-export default connect(
-  (state, ownProps) => ({
-  }),
-  (dispatch, ownProps) => ({
-    handleAbout: () => {
-      dispatch(showDialog('about'));
-    },
-  })
-)(Footer);
-
+export default Footer;

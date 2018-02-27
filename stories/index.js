@@ -5,4 +5,6 @@ import './DashboardButton';
 import './TxHistory';
 import './AccountEdit';
 import './Terms';
+import './AccountPropertiesDialog';
+import './Footer';
 //import './Header';
