@@ -1,6 +1,6 @@
 import Immutable from 'immutable';
 import { convert } from 'emerald-js';
-import TokenUnits from 'lib/tokenUnits';
+import TokenUnits from '../../lib/tokenUnits';
 import ActionTypes from './actionTypes';
 
 const initialState = Immutable.fromJS({

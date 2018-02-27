@@ -2,7 +2,7 @@
 import LedgerEth from 'ledgerco/src/ledger-eth';
 import LedgerComm from 'ledgerco/src/ledger-comm-u2f';
 import uuid from 'uuid/v4';
-import launcher from 'store/launcher';
+import launcher from '../launcher';
 import createLogger from '../../utils/logger';
 import ActionTypes from './actionTypes';
 

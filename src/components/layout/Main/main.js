@@ -13,14 +13,10 @@ import './main.scss';
 
 const maxWidth = '1150px';
 
-function isLanding(props) {
-  return props.screen !== 'landing' && props.screen !== 'landing-importjson' && props.screen !== 'landing-generate' && props.screen !== 'landing-add-from-ledger';
-}
-
 const Render = translate('common')(({ t, ...props }) => {
   return (
     <div>
-      {isLanding(props) && props.screen !== 'welcome' && props.screen !== 'paper-wallet' && <Header maxWidth={ maxWidth }/>}
+      {props.screen !== 'welcome' && props.screen !== 'paper-wallet' && <Header maxWidth={ maxWidth }/>}
       <div style={{margin: '20px auto', maxWidth}}>
         <Screen />
       </div>

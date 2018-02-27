@@ -2,23 +2,27 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { MenuItem, DropDownMenu } from 'material-ui';
-import { Networks, findNetwork } from 'lib/networks';
+import { ArrowDown } from 'emerald-js-ui/lib/icons2';
+import muiThemeable from 'material-ui/styles/muiThemeable';
+import { Networks, findNetwork } from '../../../../lib/networks';
 
-
-const styles = {
-  main: {
-    fontSize: '14px',
-    height: '58px', /* gagarin55: this is extremely important hack to align DropDownMenu vertically */
-  },
-  label: {
-    color: '#747474',
-    fontSize: '14px',
-  },
-};
 
 class NetworkSelectorRender extends React.Component {
   render() {
-    const { chain, geth, onNetworkChange } = this.props;
+    const { chain, geth, onNetworkChange, muiTheme } = this.props;
+    const styles = {
+      main: {
+        marginRight: '-20px',
+        color: muiTheme.palette.alternateTextColor,
+        height: muiTheme.spacing.desktopToolbarHeight, /* gagarin55: this is extremely important hack to align DropDownMenu vertically */
+      },
+      label: {
+        color: muiTheme.palette.alternateTextColor,
+        fontSize: '14px',
+        fontWeight: '500',
+        paddingLeft: '5px',
+      },
+    };
     const isCurrentNetwork = (net) => (net.chain.id === chain.get('id')
             && (net.geth.url === geth.get('url')));
     const currentNetwork = findNetwork(geth.get('url'), chain.get('id')) || {};
@@ -34,6 +38,7 @@ class NetworkSelectorRender extends React.Component {
         value={ currentNetwork.id }
         style={ styles.main }
         underlineStyle={{ display: 'none' }}
+        iconButton={<ArrowDown color={muiTheme.palette.alternateTextColor}/>}
         labelStyle={ styles.label }>
         { Networks.map((net) =>
           <MenuItem
@@ -61,6 +66,6 @@ const NetworkSelector = connect(
     geth: state.launcher.get('geth'),
   }),
   (dispatch, ownProps) => ({})
-)(NetworkSelectorRender);
+)(muiThemeable()(NetworkSelectorRender));
 
 export default NetworkSelector;

@@ -1,7 +1,7 @@
 // @flow
 import { fromJS, Map, List } from 'immutable';
-import TokenUnits from 'lib/tokenUnits';
 import { convert } from 'emerald-js';
+import TokenUnits from '../../../lib/tokenUnits';
 import ActionTypes from './actionTypes';
 
 const { toBigNumber } = convert;

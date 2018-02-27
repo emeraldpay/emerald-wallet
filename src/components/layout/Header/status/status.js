@@ -2,51 +2,45 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import LinearProgress from 'material-ui/LinearProgress';
-import { separateThousands } from 'lib/convert';
-import { waitForServicesRestart } from 'store/store';
+import muiThemeable from 'material-ui/styles/muiThemeable';
+import { Network as NetworkIcon, NetworkDisconnected as NetworkDisconnectedIcon } from 'emerald-js-ui/lib/icons2';
+import { separateThousands } from '../../../../lib/convert';
+import { waitForServicesRestart } from '../../../../store/store';
 import NetworkSelector from './networkSelector';
 import launcher from '../../../../store/launcher';
 import wallet from '../../../../store/wallet';
+import { Networks, findNetwork } from '../../../../lib/networks';
 
-const Status = ({ block, progress, peerCount, showDetails, connecting, switchNetwork }) => {
+const Status = ({ block, progress, peerCount, showDetails, connecting, switchNetwork, chain, geth, muiTheme }) => {
+  const currentNetwork = findNetwork(geth.get('url'), chain.get('id')) || {};
   const styles = {
     details: {
-      color: '#47B04B',
-      fontSize: '14px',
+      color: muiTheme.palette.alternateTextColor,
       lineHeight: '16px',
     },
     block: {
-      height: '100%',
+      marginLeft: '10px',
       display: 'flex',
+      flexDirection: 'row',
       alignItems: 'center',
+      justifyContent: 'center',
     },
   };
 
-  let details = null;
+  let icon = null;
+
   if (connecting) {
-    details =
-            <div style={styles.details}>
-              <i className="fa fa-spin fa-spinner"/> Connecting...
-            </div>;
-  } else if (showDetails) {
-    details =
-            <div style={styles.details}>
-              {peerCount} {peerCount === 1 ? 'peer' : 'peers'}, { separateThousands(block, ' ') } blocks
-            </div>;
+    icon =
+      <NetworkDisconnectedIcon color={muiTheme.palette.alternateTextColor} />;
   } else {
-    details =
-            <div style={styles.details}>
-              { separateThousands(block, ' ') } blocks
-            </div>;
+    icon =
+      <NetworkIcon color={muiTheme.palette.alternateTextColor} />;
   }
 
   return (
-    <div>
-      <div style={styles.block}>
-        {details}
-        <NetworkSelector onNetworkChange={ switchNetwork }/>
-      </div>
-      {showDetails && <div><LinearProgress mode="determinate" color="green" value={progress} /></div>}
+    <div style={styles.block}>
+      {icon}
+      <NetworkSelector onNetworkChange={ switchNetwork }/>
     </div>
   );
 };
@@ -67,6 +61,8 @@ export default connect(
     const props = {
       block: curBlock,
       showDetails,
+      chain: state.launcher.get('chain'),
+      geth: state.launcher.get('geth'),
       connecting: state.launcher.get('connecting'),
     };
     if (showDetails) {
@@ -89,4 +85,4 @@ export default connect(
       dispatch(wallet.actions.switchEndpoint({ chainId: net.chain.id, chain: net.chain.name }));
     },
   })
-)(Status);
+)(muiThemeable()(Status));

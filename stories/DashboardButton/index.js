@@ -4,16 +4,5 @@ import { storiesOf } from '@storybook/react';
 import { MuiThemeProvider, getMuiTheme } from 'material-ui/styles';
 import DashboardButton from '../../src/components/common/DashboardButton';
 
-const muiTheme = getMuiTheme({
-  fontFamily: 'Rubik',
-});
-
 storiesOf('DashboardButton', module)
-  .addDecorator((story) => (
-    <MuiThemeProvider muiTheme={muiTheme}>
-      {story()}
-    </MuiThemeProvider>
-  ))
-  .add('default', () => (
-    <DashboardButton
-    />));
+  .add('default', () => <DashboardButton />);

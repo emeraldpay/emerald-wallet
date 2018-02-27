@@ -17,9 +17,10 @@ import i18n from '../../i18n/i18n';
 
 class SettingsRender extends React.Component {
   render() {
-    const { goDashboard, handleSubmit, t } = this.props;
+    const { goDashboard, handleSubmit, t, onBackScreen } = this.props;
+    const label = onBackScreen ? 'Back' : null;
     return (
-      <Form caption="Settings" backButton={ <DashboardButton onClick={ goDashboard } /> } >
+      <Form caption="Settings" backButton={ <DashboardButton onClick={ goDashboard } label={label}/> } >
         <div>
           <Row>
             <div style={styles.left}>
@@ -120,7 +121,7 @@ const Settings = connect(
   },
   (dispatch, ownProps) => ({
     goDashboard: () => {
-      dispatch(screen.actions.gotoScreen('home'));
+      dispatch(screen.actions.gotoScreen(ownProps.onBackScreen || 'home'));
     },
 
     onSubmit: (data) => {
