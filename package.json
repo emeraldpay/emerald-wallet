@@ -65,7 +65,7 @@
     "electron-log": "^2.2.6",
     "electron-store": "^1.1.0",
     "emerald-js": "git+https://github.com/ethereumproject/emerald-js.git#v0.0.23",
-    "emerald-js-ui": "git+https://github.com/ethereumproject/emerald-js-ui.git#master",
+    "emerald-js-ui": "git+https://github.com/gagarin55/emerald-js-ui.git#typings",
     "es6-promise": "4.1.1",
     "eslint": "4.2.0",
     "eslint-nibble": "4.2.1",
