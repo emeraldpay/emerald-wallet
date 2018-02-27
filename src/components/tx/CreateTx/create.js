@@ -2,7 +2,7 @@
 import Immutable from 'immutable';
 import BigNumber from 'bignumber.js';
 import { change, formValueSelector, SubmissionError } from 'redux-form';
-import { convert, Address } from 'emerald-js';
+import { convert, Address, Wei } from 'emerald-js';
 import { connect } from 'react-redux';
 import ledger from 'store/ledger/';
 import { etherToWei } from 'lib/convert';
@@ -75,23 +75,32 @@ const CreateTx = connect(
     const fiatRate = state.wallet.settings.get('localeRate');
     const fiatCurrency = state.wallet.settings.get('localeCurrency');
 
-    const value = (selector(state, 'value')) ? selector(state, 'value') : 0;
-
     const useLedger = account.get('hardware', false);
     const ledgerConnected = state.ledger.get('connected');
 
     const gasLimit = selector(state, 'gas') ? new BigNumber(selector(state, 'gas')) : new BigNumber(DefaultGas);
+
+    let value = (selector(state, 'value')) ? selector(state, 'value') : 0;
+    let to;
+    // Transaction is passed in if this is a repeat transaction
+    if (ownProps.transaction) {
+      value = new Wei(ownProps.transaction.get('value')).getEther();
+      to = ownProps.toAccount.get('id');
+    }
+
     const fee = new TokenUnits(gasPrice.mul(gasLimit).value(), 18);
 
     return {
       initialValues: {
         gasPrice,
         fee,
+        to,
         from: ownProps.account.get('id'),
         gas: DefaultGas,
         token: '',
         isTransfer: 'true',
         tokens: allTokens,
+        value,
       },
       showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
       accounts: accounts.selectors.getAll(state, Immutable.List()),

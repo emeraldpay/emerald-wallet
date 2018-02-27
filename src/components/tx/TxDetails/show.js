@@ -33,7 +33,7 @@ type Props = {
 }
 
 export const TransactionShow = (props: Props) => {
-  const { transaction, account, fromAccount, toAccount, openAccount, goBack } = props;
+  const { transaction, account, fromAccount, toAccount, openAccount, goBack, repeatTx } = props;
   const { showFiat, rates, currentCurrency } = props;
 
   const fieldNameStyle = {
@@ -130,6 +130,7 @@ export const TransactionShow = (props: Props) => {
         <div style={styles.right}>
           <div>
             <Button
+              onClick={ () => repeatTx(transaction, toAccount, fromAccount) }
               style={repeatButtonStyle}
               label="REPEAT" />
           </div>
@@ -226,6 +227,7 @@ export default connect(
     return {
       goBack: ownProps.goBack,
       openAccount: ownProps.openAccount,
+      repeatTx: ownProps.repeatTx,
       showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
       transaction: Tx,
       account,
@@ -251,6 +253,8 @@ export default connect(
         dispatch(gotoScreen('account', account));
       }
     },
+    repeatTx: (transaction, toAccount, fromAccount) => {
+      dispatch(gotoScreen('repeat-tx', {transaction, toAccount, fromAccount}));
+    },
   })
 )(TransactionShow);
-

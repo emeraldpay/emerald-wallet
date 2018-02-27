@@ -197,6 +197,7 @@ export const CreateTxForm = (props) => {
             fullWidth={ true }
             underlineShow={ false }
             validate={ [required, number] }
+            value={parseFloat(value)}
           />
           <Field
             name="token"
