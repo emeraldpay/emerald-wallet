@@ -119,6 +119,9 @@ function onAddToken(state, action) {
 
 function onSetTokenBalance(state, action) {
   if (action.type === ActionTypes.SET_TOKEN_BALANCE) {
+    if (!action.token) {
+      throw new Error('Invalid action parameters - token property not found');
+    }
     let balances = state.get('balances');
     const address = action.accountId;
 
