@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
-
 import Screen from '../../../containers/Screen/screen';
 import Header from '../Header';
 import Footer from '../Footer';

@@ -1,7 +1,6 @@
 // @flow
 import React from 'react';
-
-import Card from '../Card';
+import { Card } from 'emerald-js-ui';
 import formStyles from './form.scss';
 
 export const styles = {

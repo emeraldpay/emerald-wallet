@@ -1,9 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import TextField from 'elements/Form/TextField';
-import { Button, ButtonGroup } from 'emerald-js-ui';
-import LinkButton from 'elements/LinkButton';
-import { Form, Row, styles as formStyles } from 'elements/Form';
+import { Button, ButtonGroup, LinkButton } from 'emerald-js-ui';
+import TextField from '../../../../elements/Form/TextField';
+import { Form, Row, styles as formStyles } from '../../../../elements/Form';
 
 class AccountPropertiesDialog extends React.Component {
     static propTypes = {

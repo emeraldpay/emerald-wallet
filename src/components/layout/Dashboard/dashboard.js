@@ -3,7 +3,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import Immutable from 'immutable';
-
 import TransactionsHistory from '../../../components/tx/TxHistory';
 import AccountsList from '../../../components/accounts/AccountList';
 import Header from './header';
@@ -37,7 +36,6 @@ const Dashboard = (props) => {
     <div>
       <Header />
       <AccountsList/>
-      {/* #hidden#146 <TokensList/> */}
       <TransactionsHistory/>
     </div>
   );

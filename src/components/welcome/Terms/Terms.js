@@ -1,11 +1,10 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
-import RaisedButton from 'material-ui/RaisedButton';
-import FontIcon from 'material-ui/FontIcon';
-import launcher from 'store/launcher';
+import { Button } from 'emerald-js-ui';
+import { Check as CheckIcon } from 'emerald-js-ui/lib/icons2';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 
-const Terms = ({ onAgree }) => {
+export const Terms = ({ onAgree }) => {
   const style = {
     width: '100%',
     height: '250px',
@@ -60,9 +59,9 @@ const Terms = ({ onAgree }) => {
       </Row>
       <Row center="xs" style={{paddingTop: '20px'}}>
         <Col xs>
-          <RaisedButton label="I Agree"
+          <Button label="I Agree"
             primary={true}
-            icon={<FontIcon className="fa fa-check" />}
+            icon={<CheckIcon />}
             onClick={onAgree}/>
         </Col>
       </Row>
@@ -70,11 +69,4 @@ const Terms = ({ onAgree }) => {
   );
 };
 
-export default connect(
-  (state, ownProps) => ({
-  }),
-  (dispatch, ownProps) => ({
-    onAgree: () =>
-      dispatch(launcher.actions.agreeOnTerms('v1')),
-  })
-)(Terms);
+export default muiThemeable()(Terms);

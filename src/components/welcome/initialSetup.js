@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { Step, Stepper, StepLabel } from 'material-ui/Stepper';
-import Terms from './terms';
+import Terms from './Terms';
 import OpenWallet from './openWallet';
 import NodeTypeChoice from './NodeTypeChoice';
 

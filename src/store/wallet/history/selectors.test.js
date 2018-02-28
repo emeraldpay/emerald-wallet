@@ -19,6 +19,17 @@ const fixture = [
 
 describe('history selectors', () => {
   describe('searchTransactions', () => {
+    it('handles txs with to == null or hash == null correctly', () => {
+      const transactions = fromJS([
+        {
+          to: null,
+          from: '0x999',
+          hash: null,
+          value: new BigNumber(4444),
+        }]);
+      const searchResults = searchTransactions('999', transactions);
+      expect(searchResults.size).toEqual(1);
+    });
     it('returns empty array if no transactions', () => {
       const transactions = fromJS([]);
       const searchResults = searchTransactions('foo', transactions);
