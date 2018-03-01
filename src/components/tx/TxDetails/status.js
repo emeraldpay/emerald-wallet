@@ -1,6 +1,6 @@
 import React from 'react';
 import { FontIcon } from 'material-ui';
-
+import CircularProgress from 'material-ui/CircularProgress';
 import styles from './status.scss';
 
 const Status = (props) => {
@@ -8,9 +8,11 @@ const Status = (props) => {
   if (status === 'success') {
     return (<div className={ styles.success }>Success</div>);
   } else if (status === 'queue') {
-    return (<div className={ styles.queue }>
-      <FontIcon className="fa fa-spin fa-spinner"/>&nbsp;In queue
-    </div>);
+    return (
+      <div className={ styles.queue }>
+        <CircularProgress color="black" size={15} thickness={1.5}/>&nbsp; In Queue
+      </div>
+    );
   }
   return (<div>
         Unknown status

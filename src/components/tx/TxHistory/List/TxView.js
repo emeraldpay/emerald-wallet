@@ -3,6 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
 import { FontIcon, IconButton } from 'material-ui';
+import CircularProgress from 'material-ui/CircularProgress';
 import { Account as AddressAvatar } from 'emerald-js-ui';
 import { ArrowRight as ArrowRightIcon, Repeat as RepeatIcon } from 'emerald-js-ui/lib/icons';
 import AccountBalance from '../../../accounts/Balance';
@@ -16,6 +17,10 @@ const styles = {
     width: '15px',
     height: '15px',
   },
+  tablePadding: {
+    paddingTop: '15px',
+    paddingBottom: '15px'
+  }
 };
 
 
@@ -24,11 +29,11 @@ export const TxView = (props) => {
   // TODO: move tx status to own component
   // TODO: timestamp
   let txStatus = null;
-  if (tx.get('blockNumber')) {
+  if (tx.get('blockNumber') && ) {
     txStatus = <span style={{color: 'limegreen'}} onClick={ openTx }>Success</span>;
   } else {
     txStatus = <span style={{color: 'gray'}} onClick={ openTx }>
-      <FontIcon className="fa fa-spin fa-spinner"/> In queue...
+      <CircularProgress color="black" size={15} thickness={1.5}/> In Queue
     </span>;
   }
 
@@ -36,7 +41,7 @@ export const TxView = (props) => {
 
   return (
     <TableRow selectable={false}>
-      <TableRowColumn style={{ ...tables.mediumStyle, paddingLeft: '0' }}>
+      <TableRowColumn style={{ ...tables.mediumStyle, paddingLeft: '0', ...styles.tablePadding }}>
         {txValue && <AccountBalance
           symbol="ETC"
           showFiat={ showFiat }
@@ -45,7 +50,7 @@ export const TxView = (props) => {
           withAvatar={ false }
         /> }
       </TableRowColumn>
-      <TableRowColumn style={{...tables.mediumStyle, ...link}} >
+      <TableRowColumn style={{...tables.mediumStyle, ...link, ...styles.tablePadding}} >
         { txStatus }
       </TableRowColumn>
       <TableRowColumn>
@@ -55,10 +60,10 @@ export const TxView = (props) => {
           onAddressClick={() => openAccount(tx.get('from'))}
         />
       </TableRowColumn>
-      <TableRowColumn className={classes.columnArrow} style={{textOverflow: 'inherit'}}>
+      <TableRowColumn className={classes.columnArrow} style={{textOverflow: 'inherit', ...styles.tablePadding}}>
         <ArrowRightIcon color="#DDDDDD" />
       </TableRowColumn>
-      <TableRowColumn>
+      <TableRowColumn style={styles.tablePadding}>
         {tx.get('to') &&
         <AddressAvatar
           addr={tx.get('to')}
@@ -66,7 +71,7 @@ export const TxView = (props) => {
           onAddressClick={() => openAccount(tx.get('to'))}
         />}
       </TableRowColumn>
-      <TableRowColumn style={{...tables.shortStyle, paddingRight: '0', textAlign: 'right' }}>
+      <TableRowColumn style={{...tables.shortStyle, paddingRight: '0', textAlign: 'right', ...styles.tablePadding}}>
         <IconButton onClick={ refreshTx } iconStyle={ styles.repeatIcon }>
           <RepeatIcon />
         </IconButton>
@@ -83,4 +88,5 @@ TxView.propTypes = {
   fromAccount: PropTypes.object.isRequired,
   openTx: PropTypes.func.isRequired,
   refreshTx: PropTypes.func.isRequired,
+  currentBlock: PropTypes.string.isRequired
 };
