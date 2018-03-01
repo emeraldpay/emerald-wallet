@@ -45,6 +45,16 @@ describe('tokenReducer', () => {
     expect(state.toJS().balances['0x123456789'][0].balance.value).toEqual(new BigNumber(1));
   });
 
+  it('requires token data for SET_TOKEN_BALANCE', () => {
+    // prepare
+    const state = reducer(null, {});
+    return expect(() => reducer(state, {
+      type: ActionTypes.SET_TOKEN_BALANCE,
+      accountId: 'id1',
+      value: '0x1',
+    })).toThrow();
+  });
+
   it('SET_TOKEN_BALANCE should update zero token balance, symbol and decimals', () => {
     // prepare
     let state = reducer(null, {});

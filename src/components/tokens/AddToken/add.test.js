@@ -1,7 +1,20 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { AddToken } from './add';
+import ConnectedAddToken from './';
 
-test('It renders', () => {
-  const component = shallow(<AddToken/>);
+describe('tokens/AddToken', () => {
+  it('renders without crash', () => {
+    const component = shallow(<AddToken/>);
+  });
+
+  it('onSubmit dispatch valid actions to store', () => {
+    const store = {
+      getState: () => {},
+      dispatch: () => Promise.resolve(),
+    };
+    const component = shallow(<ConnectedAddToken />, {context: { store}});
+    expect(component.props().onSubmit({token: {}})).toBeDefined();
+  });
 });
+
