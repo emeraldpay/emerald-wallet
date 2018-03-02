@@ -84,8 +84,10 @@ const CreateTx = connect(
     let to;
     // Transaction is passed in if this is a repeat transaction
     if (ownProps.transaction) {
+      if (ownProps.toAccount === undefined) to = ownProps.transaction.get('to');
+      else to = ownProps.toAccount.get('id');
+
       value = new Wei(ownProps.transaction.get('value')).getEther();
-      to = ownProps.toAccount.get('id');
     }
 
     const fee = new TokenUnits(gasPrice.mul(gasLimit).value(), 18);
