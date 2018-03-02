@@ -22,6 +22,7 @@ export default connect(
 
     return {
       showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
+      network: state.network.toJS(),
       tx: ownProps.tx,
       toAccount,
       fromAccount,

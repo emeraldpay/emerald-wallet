@@ -14,9 +14,11 @@ const Status = (props) => {
       </div>
     );
   }
-  return (<div>
-        Unknown status
-  </div>);
+  return (
+    <div>
+      Unknown status
+    </div>
+  );
 };
 
 export default Status;

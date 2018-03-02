@@ -9,8 +9,11 @@ import { ArrowRight as ArrowRightIcon, Repeat as RepeatIcon } from 'emerald-js-u
 import AccountBalance from '../../../accounts/Balance';
 import TokenUnits from '../../../../lib/tokenUnits';
 import { link, tables } from '../../../../lib/styles';
+import {convert} from 'emerald-js';
+
 
 import classes from './list.scss';
+const NUM_CONFIRMATIONS = 6;
 
 const styles = {
   repeatIcon: {
@@ -25,16 +28,31 @@ const styles = {
 
 
 export const TxView = (props) => {
-  const { showFiat, tx, openTx, openAccount, refreshTx, toAccount, fromAccount } = props;
+  const { showFiat, tx, openTx, openAccount, refreshTx, toAccount, fromAccount, network} = props;
+  const blockNumber = convert.toNumber(tx.get('blockNumber'));
+  const confirmationBlockNumber = blockNumber + NUM_CONFIRMATIONS;
   // TODO: move tx status to own component
   // TODO: timestamp
   let txStatus = null;
-  if (tx.get('blockNumber') && ) {
-    txStatus = <span style={{color: 'limegreen'}} onClick={ openTx }>Success</span>;
+  const numConfirmed = network.currentBlock.height - blockNumber;
+  if (isFinite(blockNumber) && confirmationBlockNumber > network.currentBlock.height) {
+    const percent = Math.floor((numConfirmed / NUM_CONFIRMATIONS) * 100);
+    txStatus = (
+      <div>
+        <div style={{color: 'limegreen'}} onClick={ openTx }>Success ({percent}%)</div>
+        <div style={{fontSize: '9px'}} onClick={ openTx }>{numConfirmed} / {NUM_CONFIRMATIONS} confirmations</div>
+      </div>
+    );
+  } else if (isFinite(blockNumber) && confirmationBlockNumber <= network.currentBlock.height) {
+    txStatus = (
+      <span style={{color: 'limegreen'}} onClick={ openTx }>Success</span>
+    );
   } else {
-    txStatus = <span style={{color: 'gray'}} onClick={ openTx }>
-      <CircularProgress color="black" size={15} thickness={1.5}/> In Queue
-    </span>;
+    txStatus = (
+      <span style={{color: 'gray'}} onClick={ openTx }>
+        <CircularProgress color="black" size={15} thickness={1.5}/> In Queue
+      </span>
+    );
   }
 
   const txValue = tx.get('value') ? new TokenUnits(tx.get('value'), 18) : null;
@@ -80,6 +98,7 @@ export const TxView = (props) => {
   );
 };
 
+
 TxView.propTypes = {
   showFiat: PropTypes.bool,
   tx: PropTypes.object.isRequired,
@@ -90,3 +109,5 @@ TxView.propTypes = {
   refreshTx: PropTypes.func.isRequired,
   currentBlock: PropTypes.string.isRequired
 };
+
+export default TxView;
