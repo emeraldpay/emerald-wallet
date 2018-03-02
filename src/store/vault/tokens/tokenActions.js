@@ -13,9 +13,9 @@ const tokenContract = new Contract(TokenAbi);
 const log = createLogger('tokenActions');
 
 type TokenInfo = {
-    address: string,
-    symbol: string,
-    decimals: string,
+  address: string,
+  symbol: string,
+  decimals: string,
 }
 
 export function resetBalances() {
@@ -24,6 +24,9 @@ export function resetBalances() {
   };
 }
 
+/**
+ * Load balance of particular token for particular account
+ */
 export function loadTokenBalanceOf(token: TokenInfo, accountId: string) {
   return (dispatch: any, getState: any, api: any) => {
     if (token.address) {
@@ -41,18 +44,49 @@ export function loadTokenBalanceOf(token: TokenInfo, accountId: string) {
   };
 }
 
-export function loadTokenDetails(token): () => Promise<any> {
+/**
+ * For every account load balance of particular token
+ */
+export function loadTokenBalances(token: TokenInfo) {
+  return (dispatch, getState, api) => {
+    const accounts = getState().accounts;
+    if (!accounts.get('loading')) {
+      // construct batch request
+      const batch = [];
+      accounts.get('accounts').forEach((acct) => {
+        batch.push({
+          id: acct.get('id'),
+          to: token.address,
+          data: tokenContract.functionToData('balanceOf', { _owner: acct.get('id') }),
+        });
+      });
+
+      return api.geth.ext.batchCall(batch).then((results: Array<any>) => {
+        accounts.get('accounts').forEach((acct) => {
+          dispatch({
+            type: ActionTypes.SET_TOKEN_BALANCE,
+            accountId: acct.get('id'),
+            value: results[acct.get('id')].result,
+            token,
+          });
+        });
+      });
+    }
+  };
+}
+
+export function loadTokenDetails(tokenAddress: string): () => Promise<any> {
   return (dispatch, getState, api) => {
     const batch = [
-      { id: 'totalSupply', to: token.address, data: tokenContract.functionToData('totalSupply') },
-      { id: 'decimals', to: token.address, data: tokenContract.functionToData('decimals') },
-      { id: 'symbol', to: token.address, data: tokenContract.functionToData('symbol') },
+      { id: 'totalSupply', to: tokenAddress, data: tokenContract.functionToData('totalSupply') },
+      { id: 'decimals', to: tokenAddress, data: tokenContract.functionToData('decimals') },
+      { id: 'symbol', to: tokenAddress, data: tokenContract.functionToData('symbol') },
     ];
 
     return api.geth.ext.batchCall(batch).then((results: Array<any>) => {
       dispatch({
         type: ActionTypes.SET_INFO,
-        address: token.address,
+        address: tokenAddress,
         totalSupply: results.totalSupply.result,
         decimals: results.decimals.result,
         symbol: parseString(results.symbol.result),
@@ -135,7 +169,7 @@ export function loadTokenList() {
         type: ActionTypes.SET_LIST,
         tokens,
       });
-      tokens.map((token) => dispatch(loadTokenDetails(token)));
+      tokens.map((token) => dispatch(loadTokenDetails(token.address)));
     });
   };
 }

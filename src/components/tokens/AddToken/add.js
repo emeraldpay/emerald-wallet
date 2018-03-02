@@ -5,9 +5,9 @@ import { connect } from 'react-redux';
 import { Field, reduxForm, change, formValueSelector, reset, SubmissionError } from 'redux-form';
 import TextField from 'elements/Form/TextField';
 import { Button, ButtonGroup } from 'emerald-js-ui';
-import tokens from 'store/vault/tokens';
 import { required, address } from 'lib/validators';
 import TokenUnits from 'lib/tokenUnits';
+import tokens from '../../../store/vault/tokens';
 
 import styles from './add.scss';
 
@@ -111,15 +111,8 @@ const AddTokenForm = reduxForm({
   fields: ['address', 'name', 'token'],
 })(AddToken);
 
-export default connect(
-  (state, ownProps) => {
-    const selector = formValueSelector('addToken');
-    const token = (selector(state, 'token'));
-    return {
-      token,
-    };
-  },
-  (dispatch, ownProps) => ({
+function mapDispatchToProps(dispatch, ownProps) {
+  return {
     onSubmit: (data) => {
       if (data.token) {
         return dispatch(tokens.actions.addToken(data.token))
@@ -132,6 +125,18 @@ export default connect(
         });
     },
     clearToken: () => dispatch(reset('addToken')),
+  };
+}
 
-  })
+function mapStateToProps(state, ownProps) {
+  const selector = formValueSelector('addToken');
+  const token = (selector(state, 'token'));
+  return {
+    token,
+  };
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
 )(AddTokenForm);

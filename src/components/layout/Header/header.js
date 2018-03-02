@@ -1,12 +1,27 @@
 import React from 'react';
-import { connect } from 'react-redux';
 import { AppBar, FlatButton, LinearProgress } from 'material-ui';
-import { Logo as LogoIcon } from 'emerald-js-ui/lib/icons';
 import { Block as BlockIcon, Settings as SettingsIcon } from 'emerald-js-ui/lib/icons2';
-import muiThemeable from 'material-ui/styles/muiThemeable';
-import Status from './status/status';
-import Total from './total';
+import SyncWarning from '../../../containers/SyncWarning';
+import Status from './Status';
+import Total from './Total';
 import { separateThousands } from '../../../lib/convert';
+
+const styles = {
+  appBarRight: {
+    display: 'flex',
+    alignItems: 'center',
+    // justifyContent: 'flex-end',
+    marginTop: 'inherit',
+  },
+  buttons: {
+    label: {
+      textTransform: 'none',
+      fontWeight: 'normal',
+      fontSize: '16px',
+      // marginLeft: '-3px',
+    },
+  },
+};
 
 const Header = (props) => {
   const { openSettings, muiTheme, network, backScreen, showProgress, progress, tip } = props;
@@ -20,7 +35,13 @@ const Header = (props) => {
     }
     return (
       <div style={{padding: '0px 5px 5px 5px'}}>
-        <LinearProgress disabled={showProgress} mode="determinate" color="white" value={progress} style={{height: '2px'}}/>
+        <LinearProgress
+          disabled={showProgress}
+          mode="determinate"
+          color="white"
+          value={progress}
+          style={{height: '2px'}}
+        />
       </div>
     );
   };
@@ -30,21 +51,46 @@ const Header = (props) => {
     const label = showProgress ? `${separateThousands(tip - network.currentBlock.height)} blocks left (${displayProgress}%)` : separateThousands(network.currentBlock.height, ' ');
     return (
       <div style={{marginTop: showProgress ? '7px' : null}}>
-        <FlatButton disabled={true} label={label} style={{color: muiTheme.palette.alternateTextColor}} labelStyle={{textTransform: 'none'}} icon={<BlockIcon color={muiTheme.palette.alternateTextcolor}/>}/>
+        <FlatButton
+          disabled={true}
+          label={label}
+          style={{color: muiTheme.palette.alternateTextColor, lineHeight: 'inherit'}}
+          labelStyle={styles.buttons.label}
+          icon={<BlockIcon color={muiTheme.palette.alternateTextcolor}/>}
+        />
         {showProgressBar(showProgress)}
       </div>
     );
   };
 
+  const SettingsButton = () => (
+    <FlatButton
+      hoverColor="transparent"
+      onTouchTap={ openSettingsWithBackScreen }
+      style={{color: muiTheme.palette.alternateTextColor}}
+      label="Settings"
+      labelStyle={styles.buttons.label}
+      icon={<SettingsIcon color={muiTheme.palette.alternateTextcolor}/>}
+    />);
+
   return (
-    <AppBar title="Emerald Wallet" titleStyle={{fontSize: '18px'}} iconElementLeft={<LogoIcon/>} iconElementRight={
-      <div style={{display: 'flex', alignItems: 'center', justifyContent: 'flex-end', height: '50px'}}>
-        <Total />
-        <BlockDisplay />
-        <Status />
-        <FlatButton onTouchTap={ openSettingsWithBackScreen } style={{color: muiTheme.palette.alternateTextColor}} label="Settings" labelStyle={{marginLeft: '-3px'}} icon={<SettingsIcon color={muiTheme.palette.alternateTextcolor}/>} />
-      </div>
-    } />
+    <div>
+      <AppBar
+        title="Emerald Wallet"
+        titleStyle={{fontSize: '16px'}}
+        showMenuIconButton={false}
+        iconStyleRight={styles.appBarRight}
+        iconElementRight={
+          <div style={styles.appBarRight}>
+            <Total />
+            <BlockDisplay />
+            <Status />
+            <SettingsButton />
+          </div>
+        }
+      />
+      <SyncWarning />
+    </div>
   );
 };
 

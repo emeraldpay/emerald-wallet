@@ -12,12 +12,11 @@ import wallet from '../../../../store/wallet';
 import { Networks, findNetwork } from '../../../../lib/networks';
 
 const Status = ({ block, progress, peerCount, showDetails, connecting, switchNetwork, chain, geth, muiTheme }) => {
-  const currentNetwork = findNetwork(geth.get('url'), chain.get('id')) || {};
   const styles = {
-    details: {
-      color: muiTheme.palette.alternateTextColor,
-      lineHeight: '16px',
-    },
+    // details: {
+    //   color: muiTheme.palette.alternateTextColor,
+    //   lineHeight: '16px',
+    // },
     block: {
       marginLeft: '10px',
       display: 'flex',

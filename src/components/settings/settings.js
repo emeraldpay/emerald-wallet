@@ -47,7 +47,8 @@ class SettingsRender extends React.Component {
               </div>
             </div>
             <div style={styles.right}>
-              <Field name="language"
+              <Field
+                name="language"
                 component={ SelectField }
                 underlineShow={false}
                 fullWidth={true}>

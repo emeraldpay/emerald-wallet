@@ -18,8 +18,7 @@ class NetworkSelectorRender extends React.Component {
       },
       label: {
         color: muiTheme.palette.alternateTextColor,
-        fontSize: '14px',
-        fontWeight: '500',
+        fontSize: '16px',
         paddingLeft: '5px',
       },
     };

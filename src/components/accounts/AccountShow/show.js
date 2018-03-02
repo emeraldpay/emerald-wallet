@@ -37,16 +37,13 @@ export class AccountShow extends React.Component {
       edit: false,
       showModal: false,
     };
-    this.handleEdit = this.handleEdit.bind(this);
-    this.handleSave = this.handleSave.bind(this);
-    this.cancelEdit = this.cancelEdit.bind(this);
   }
 
-  handleEdit() {
+  handleEdit = () => {
     this.setState({ edit: true });
   }
 
-  handleSave(data) {
+  handleSave = (data) => {
     this.props.editAccount(data)
       .then((result) => {
         this.setState({ edit: false });
@@ -54,7 +51,7 @@ export class AccountShow extends React.Component {
       });
   }
 
-  cancelEdit() {
+  cancelEdit = () => {
     this.setState({ edit: false });
   }
 

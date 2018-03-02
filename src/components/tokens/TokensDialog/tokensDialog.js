@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dialog, IconButton } from 'material-ui';
+import { Dialog } from 'material-ui';
 import CloseButton from 'elements/CloseButton';
 import AddToken from '../AddToken';
 import TokensList from '../TokensList/list';

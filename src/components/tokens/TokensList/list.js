@@ -55,12 +55,14 @@ const TokensList = ({ tokens }) => {
   );
 };
 
-export default connect(
-  (state, ownProps) => ({
+function mapStateToProps(state, ownProps) {
+  return {
     tokens: state.tokens.get('tokens', Immutable.List()),
-  }),
-  (dispatch, ownProps) => ({
+  };
+}
 
-  })
+export default connect(
+  mapStateToProps,
+  null
 )(TokensList);
 
