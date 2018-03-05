@@ -26,14 +26,6 @@ export const code = {
   maxHeight: '250px',
 };
 
-export const copyIcon = {
-  display: 'inline',
-  fontSize: '0.9rem',
-  width: '13px',
-  height: '13px',
-  cursor: 'pointer',
-};
-
 export const align = {
   left: { textAlign: 'left' },
   center: { textAlign: 'center'},

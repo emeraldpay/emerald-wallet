@@ -185,6 +185,20 @@
     },
     "nsis": {
       "oneClick": false
+    },
+    "dmg": {
+      "iconSize": 128,
+      "contents": [
+        {
+          "x": 180, 
+          "y": 190
+        },
+        {
+          "x": 380,
+          "y": 190,
+          "type": "link",
+          "path": "/Applications"
+        }]
     }
   },
   "jest": {
