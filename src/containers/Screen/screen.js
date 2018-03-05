@@ -60,6 +60,12 @@ const Screen = ({ screen, screenItem }) => {
     return <TransactionShow hash={ screenItem.hash } accountId={ screenItem.accountId }/>;
   } else if (screen === 'create-tx') {
     return <CreateTx account={ screenItem }/>;
+  } else if (screen === 'repeat-tx') {
+    return <CreateTx
+      account={ screenItem.fromAccount }
+      toAccount={ screenItem.toAccount }
+      transaction={ screenItem.transaction }
+    />;
   } else if (screen === 'landing-generate') {
     return <GenerateAccount onBackScreen="landing" backLabel="Back"/>;
   } else if (screen === 'generate') {
