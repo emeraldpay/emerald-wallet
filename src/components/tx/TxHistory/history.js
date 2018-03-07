@@ -30,6 +30,14 @@ class TransactionsHistory extends React.Component<Props, State> {
       displayedTransactions: this.props.transactions,
     };
   }
+  componentWillReceiveProps(nextProps) {
+    if (nextProps.transactions) {
+      this.setState({
+        ...this.state,
+        displayedTransactions: filterTransactions(this.state.txFilter, this.props.accountId, nextProps.transactions, this.props.accounts),
+      });
+    }
+  }
   onSearchChange = (e) => {
     return this.setState({
       displayedTransactions: searchTransactions(e.target.value, this.props.transactions),

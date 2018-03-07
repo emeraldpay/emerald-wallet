@@ -1,5 +1,6 @@
 {
     "lang": "Language",
     "currency": "Equivalent currency",
-    "showHiddenAccounts": "Hidden Accounts"
+    "showHiddenAccounts": "Hidden Accounts",
+    "confirmations": "Confirmations"
 }

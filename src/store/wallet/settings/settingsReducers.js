@@ -47,10 +47,22 @@ function onSetShowHiddenAccounts(state, action) {
   return state;
 }
 
+function onSetConfirmations(state, action) {
+  if (action.type === ActionTypes.NUM_CONFIRMATIONS) {
+    // persist settings
+    if (localStorage) {
+      localStorage.setItem('numConfirmations', action.numConfirmations);
+    }
+    return state.set('numConfirmations', action.numConfirmations);
+  }
+  return state;
+}
+
 export default function accountsReducers(state, action) {
   state = state || initial;
   state = onSetLocaleCurrency(state, action);
   state = onExchangeRates(state, action);
   state = onSetShowHiddenAccounts(state, action);
+  state = onSetConfirmations(state, action);
   return state;
 }
