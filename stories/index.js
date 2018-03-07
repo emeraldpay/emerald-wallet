@@ -7,4 +7,5 @@ import './AccountEdit';
 import './Terms';
 import './AccountPropertiesDialog';
 import './Footer';
-//import './Header';
+import './PasswordInput';
+// import './Header';

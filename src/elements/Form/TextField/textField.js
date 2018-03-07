@@ -25,6 +25,7 @@ type Props = {
   leftIcon: Element,
   error: string,
   style: Object,
+  fullWidth: boolean,
 }
 
 export const TextField = ({ rightIcon, error, style, leftIcon, fieldStyle, ...other }: Props) => {

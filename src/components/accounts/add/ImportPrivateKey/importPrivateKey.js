@@ -3,6 +3,7 @@ import React from 'react';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { Field, reduxForm, SubmissionError } from 'redux-form';
+import { Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
@@ -11,8 +12,6 @@ import accounts from 'store/vault/accounts';
 import screen from 'store/wallet/screen';
 import { required } from 'lib/validators';
 import { Wallet } from 'emerald-js';
-import { Button } from 'emerald-js-ui';
-import { Warning, WarningHeader, WarningText } from 'elements/Warning';
 import CircularProgress from 'material-ui/CircularProgress';
 
 import styles from './importPrivateKey.scss';
@@ -26,7 +25,7 @@ function getLoadingIcon(submitting) {
   return null;
 }
 
-class ImportPrivateKey extends React.Component {
+export class ImportPrivateKey extends React.Component {
   render() {
     const { onBack, error, handleSubmit, submitting } = this.props;
     return (

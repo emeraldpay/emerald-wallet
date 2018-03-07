@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-
-import TextField from 'elements/Form/TextField';
-import { Warning, WarningText } from 'elements/Warning/warning';
 import { Eye as EyeIcon } from 'emerald-js-ui/lib/icons';
+import { Warning, WarningText } from 'emerald-js-ui';
+import { IconButton } from 'material-ui';
+import TextField from '../Form/TextField';
 
 
 export default class PasswordInput extends React.Component {
@@ -12,10 +12,24 @@ export default class PasswordInput extends React.Component {
       error: PropTypes.string,
     }
 
+    constructor(props) {
+      super(props);
+      this.state = {
+        showPassword: false,
+      };
+    }
+
     onInputChange = (event, newValue) => {
       const { onChange } = this.props;
       onChange(newValue);
     };
+
+    handleEyeClick = () => {
+      const { showPassword } = this.state;
+      this.setState({
+        showPassword: !showPassword,
+      });
+    }
 
     renderWarning = () => (
       <div style={{ marginTop: '10px' }}>
@@ -27,16 +41,26 @@ export default class PasswordInput extends React.Component {
 
     render() {
       const { error } = this.props;
+      const { showPassword } = this.state;
+      const iconStyle = {
+        color: showPassword ? 'green' : '',
+      };
+
+      const EyeIconButton = (
+        <IconButton iconStyle={iconStyle} onClick={this.handleEyeClick}>
+          <EyeIcon />
+        </IconButton>
+      );
 
       return (
         <div>
           <div>
             <TextField
               error={ error }
-              rightIcon={ <EyeIcon/> }
+              rightIcon={ EyeIconButton }
               onChange={ this.onInputChange }
               hintText="At least 8 characters"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               name="password"
               fullWidth={ true }
               underlineShow={ false }

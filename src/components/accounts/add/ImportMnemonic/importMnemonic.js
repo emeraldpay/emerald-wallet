@@ -2,13 +2,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm, SubmissionError, change, formValueSelector } from 'redux-form';
+import { Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
 import { required } from 'lib/validators';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
 import DashboardButton from 'components/common/DashboardButton';
 import screen from 'store/wallet/screen';
-import { Button } from 'emerald-js-ui';
-import { Warning, WarningHeader, WarningText } from 'elements/Warning';
 import HdPath from 'components/common/HdPath';
 
 import styles from './importMnemonic.scss';
@@ -23,7 +22,7 @@ const HdPathFormField = (props) => {
   );
 };
 
-class ImportMnemonic extends React.Component {
+export class ImportMnemonic extends React.Component {
   render() {
     const { onBack, backLabel, invalid, handleSubmit, error } = this.props;
     return (
