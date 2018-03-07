@@ -6,14 +6,11 @@ import { FontIcon, IconButton } from 'material-ui';
 import CircularProgress from 'material-ui/CircularProgress';
 import { Account as AddressAvatar } from 'emerald-js-ui';
 import { ArrowRight as ArrowRightIcon, Repeat as RepeatIcon } from 'emerald-js-ui/lib/icons';
+import { convert } from 'emerald-js';
 import AccountBalance from '../../../accounts/Balance';
 import TokenUnits from '../../../../lib/tokenUnits';
 import { link, tables } from '../../../../lib/styles';
-import {convert} from 'emerald-js';
-
-
 import classes from './list.scss';
-const NUM_CONFIRMATIONS = 6;
 
 const styles = {
   repeatIcon: {
@@ -22,28 +19,29 @@ const styles = {
   },
   tablePadding: {
     paddingTop: '15px',
-    paddingBottom: '15px'
-  }
+    paddingBottom: '15px',
+  },
 };
 
 
 export const TxView = (props) => {
-  const { showFiat, tx, openTx, openAccount, refreshTx, toAccount, fromAccount, network} = props;
-  const blockNumber = convert.toNumber(tx.get('blockNumber'));
-  const confirmationBlockNumber = blockNumber + NUM_CONFIRMATIONS;
+  const { showFiat, tx, openTx, openAccount, refreshTx, toAccount, fromAccount, network, numConfirmations} = props;
+  const blockNumber = tx.get('blockNumber');
+  const confirmationBlockNumber = blockNumber + numConfirmations;
   // TODO: move tx status to own component
   // TODO: timestamp
   let txStatus = null;
   const numConfirmed = network.currentBlock.height - blockNumber;
-  if (isFinite(blockNumber) && confirmationBlockNumber > network.currentBlock.height) {
-    const percent = Math.floor((numConfirmed / NUM_CONFIRMATIONS) * 100);
+
+  if (blockNumber && confirmationBlockNumber > network.currentBlock.height) {
+    const percent = Math.floor((numConfirmed / numConfirmations) * 100);
     txStatus = (
       <div>
         <div style={{color: 'limegreen'}} onClick={ openTx }>Success ({percent}%)</div>
-        <div style={{fontSize: '9px'}} onClick={ openTx }>{numConfirmed} / {NUM_CONFIRMATIONS} confirmations</div>
+        <div style={{fontSize: '9px'}} onClick={ openTx }>{numConfirmed} / {numConfirmations} confirmations</div>
       </div>
     );
-  } else if (isFinite(blockNumber) && confirmationBlockNumber <= network.currentBlock.height) {
+  } else if (blockNumber && confirmationBlockNumber <= network.currentBlock.height) {
     txStatus = (
       <span style={{color: 'limegreen'}} onClick={ openTx }>Success</span>
     );
@@ -107,7 +105,8 @@ TxView.propTypes = {
   fromAccount: PropTypes.object.isRequired,
   openTx: PropTypes.func.isRequired,
   refreshTx: PropTypes.func.isRequired,
-  currentBlock: PropTypes.string.isRequired
+  currentBlock: PropTypes.string.isRequired,
+  numConfirmations: PropTypes.number.required,
 };
 
 export default TxView;

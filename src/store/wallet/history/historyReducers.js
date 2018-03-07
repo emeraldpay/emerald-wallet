@@ -44,7 +44,7 @@ function createTx(data) {
   if (typeof data.blockNumber !== 'undefined' && data.blockNumber !== null) {
     tx = tx.merge({
       blockHash: data.blockHash,
-      blockNumber: data.blockNumber,
+      blockNumber: toNumber(data.blockNumber),
       nonce: toNumber(data.nonce),
       replayProtected: data.replayProtected,
       // This is due to great inconsistency in original Eth API (sometimes data, sometimes input)

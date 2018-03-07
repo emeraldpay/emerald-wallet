@@ -26,6 +26,7 @@ export default connect(
       tx: ownProps.tx,
       toAccount,
       fromAccount,
+      numConfirmations: state.wallet.settings.get('numConfirmations'),
     };
   },
   (dispatch, ownProps) => ({

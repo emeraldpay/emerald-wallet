@@ -19,6 +19,12 @@ export function loadSettings() {
         type: ActionTypes.SET_SHOW_HIDDEN_ACCOUNTS,
         show: showHiddenAccounts,
       });
+
+      const numConfirmations = localStorage.getItem('numConfirmations') || 12;
+      dispatch({
+        type: ActionTypes.NUM_CONFIRMATIONS,
+        numConfirmations: parseInt(numConfirmations, 10),
+      });
     }
   };
 }
@@ -34,7 +40,7 @@ export function getExchangeRates() {
   };
 }
 
-export function update(settings: { localeCurrency: string, showHiddenAccounts: boolean }) {
+export function update(settings: { localeCurrency: string, showHiddenAccounts: boolean, numConfirmations: number }) {
   return (dispatch) => {
     return Promise.all([
       dispatch({
@@ -44,6 +50,10 @@ export function update(settings: { localeCurrency: string, showHiddenAccounts: b
       dispatch({
         type: ActionTypes.SET_SHOW_HIDDEN_ACCOUNTS,
         show: settings.showHiddenAccounts,
+      }),
+      dispatch({
+        type: ActionTypes.NUM_CONFIRMATIONS,
+        numConfirmations: parseInt(settings.numConfirmations, 10),
       }),
     ]).then(() => {
       return dispatch(screen.actions.showNotification('Settings has been saved', 'success', 3000));

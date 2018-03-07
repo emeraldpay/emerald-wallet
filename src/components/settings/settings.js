@@ -7,6 +7,7 @@ import { translate } from 'react-i18next';
 import { Form, styles, Row } from 'elements/Form';
 import { Button } from 'emerald-js-ui';
 import SelectField from 'elements/Form/SelectField';
+import { TextField } from 'redux-form-material-ui';
 import DashboardButton from 'components/common/DashboardButton';
 import Checkbox from 'elements/Form/Checkbox';
 
@@ -94,6 +95,22 @@ class SettingsRender extends React.Component {
             </div>
           </Row>
           <Row>
+            <div style={styles.left}>
+              <div style={styles.fieldName}>
+                { t('confirmations') }
+              </div>
+            </div>
+            <div style={styles.right}>
+              <Field
+                name="numConfirmations"
+                type="number"
+                component={ TextField }
+                label="Number of confirmations for a transaction to be considered successful"
+              />
+
+            </div>
+          </Row>
+          <Row>
             <div style={ styles.left } />
             <div style={ styles.right }>
               <Button primary label="SAVE" onClick={ handleSubmit } />
@@ -117,6 +134,7 @@ const Settings = connect(
         language: i18n.language,
         currency: state.wallet.settings.get('localeCurrency', '').toLowerCase(),
         showHiddenAccounts: state.wallet.settings.get('showHiddenAccounts', false),
+        numConfirmations: state.wallet.settings.get('numConfirmations'),
       },
     };
   },
@@ -130,6 +148,7 @@ const Settings = connect(
       dispatch(settings.actions.update({
         localeCurrency: data.currency,
         showHiddenAccounts: data.showHiddenAccounts,
+        numConfirmations: data.numConfirmations,
       }));
       dispatch(accounts.actions.loadAccountsList());
     },
