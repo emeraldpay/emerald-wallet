@@ -2,8 +2,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
-import { FontIcon, IconButton } from 'material-ui';
+import { IconButton } from 'material-ui';
 import CircularProgress from 'material-ui/CircularProgress';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Account as AddressAvatar } from 'emerald-js-ui';
 import { ArrowRight as ArrowRightIcon, Repeat as RepeatIcon } from 'emerald-js-ui/lib/icons';
 import { convert } from 'emerald-js';
@@ -25,30 +26,31 @@ const styles = {
 
 
 export const TxView = (props) => {
-  const { showFiat, tx, openTx, openAccount, refreshTx, toAccount, fromAccount, network, numConfirmations} = props;
+  const { showFiat, tx, openTx, openAccount, refreshTx, toAccount, fromAccount, numConfirmations, currentBlockHeight, muiTheme } = props;
   const blockNumber = tx.get('blockNumber');
   const confirmationBlockNumber = blockNumber + numConfirmations;
+  const successColor = muiTheme.palette.primary1Color;
   // TODO: move tx status to own component
   // TODO: timestamp
   let txStatus = null;
-  const numConfirmed = network.currentBlock.height - blockNumber;
+  const numConfirmed = currentBlockHeight - blockNumber;
 
-  if (blockNumber && confirmationBlockNumber > network.currentBlock.height) {
+  if (blockNumber && confirmationBlockNumber > currentBlockHeight) {
     const percent = Math.floor((numConfirmed / numConfirmations) * 100);
     txStatus = (
       <div>
-        <div style={{color: 'limegreen'}} onClick={ openTx }>Success ({percent}%)</div>
+        <div style={{color: successColor}} onClick={ openTx }>Success ({percent}%)</div>
         <div style={{fontSize: '9px'}} onClick={ openTx }>{numConfirmed} / {numConfirmations} confirmations</div>
       </div>
     );
-  } else if (blockNumber && confirmationBlockNumber <= network.currentBlock.height) {
+  } else if (blockNumber && confirmationBlockNumber <= currentBlockHeight) {
     txStatus = (
-      <span style={{color: 'limegreen'}} onClick={ openTx }>Success</span>
+      <span style={{color: successColor}} onClick={ openTx }>Success</span>
     );
   } else {
     txStatus = (
-      <span style={{color: 'gray'}} onClick={ openTx }>
-        <CircularProgress color="black" size={15} thickness={1.5}/> In Queue
+      <span style={{color: muiTheme.palette.primary3Color}} onClick={ openTx }>
+        <CircularProgress color={muiTheme.palette.textColor} size={15} thickness={1.5}/> In Queue
       </span>
     );
   }
@@ -105,8 +107,8 @@ TxView.propTypes = {
   fromAccount: PropTypes.object.isRequired,
   openTx: PropTypes.func.isRequired,
   refreshTx: PropTypes.func.isRequired,
-  currentBlock: PropTypes.string.isRequired,
-  numConfirmations: PropTypes.number.required,
+  currentBlockHeight: PropTypes.number.isRequired,
+  numConfirmations: PropTypes.number.isRequired,
 };
 
-export default TxView;
+export default muiThemeable()(TxView);

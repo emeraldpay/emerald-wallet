@@ -8,7 +8,7 @@ import wallet from '../../../../store/wallet';
 import screen from '../../../../store/wallet/screen';
 import { refreshTransaction } from '../../../../store/wallet/history/historyActions';
 
-import { TxView } from './TxView';
+import TxView from './TxView';
 
 export default connect(
   (state, ownProps) => {
@@ -22,7 +22,7 @@ export default connect(
 
     return {
       showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
-      network: state.network.toJS(),
+      currentBlockHeight: state.network.getIn(['currentBlock', 'height']),
       tx: ownProps.tx,
       toAccount,
       fromAccount,
