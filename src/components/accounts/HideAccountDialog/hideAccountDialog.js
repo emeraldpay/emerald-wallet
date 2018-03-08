@@ -1,10 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Dialog, IconButton } from 'material-ui';
-import { Button } from 'emerald-js-ui';
+import { Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
 import CloseButton from 'elements/CloseButton';
 import { hideAccount } from 'store/vault/accounts/accountActions';
-import { Warning, WarningHeader, WarningText } from 'elements/Warning';
 
 import screen from '../../../store/wallet/screen';
 import accounts from '../../../store/vault/accounts';
@@ -12,7 +11,7 @@ import history from '../../../store/wallet/history';
 
 import styles from './hideAccountDialog.scss';
 
-class HideAccountDialog extends React.Component {
+export class HideAccountDialog extends React.Component {
   render() {
     const { onClose, handleConfirmHide, chain } = this.props;
 

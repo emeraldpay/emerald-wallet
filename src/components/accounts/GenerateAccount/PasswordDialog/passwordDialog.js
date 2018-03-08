@@ -1,8 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button } from 'emerald-js-ui';
+import { Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
 import { Form, Row, styles as formStyles } from 'elements/Form';
-import { Warning, WarningHeader, WarningText } from 'elements/Warning/warning';
 import PasswordInput from 'elements/PasswordInput';
 import DashboardButton from 'components/common/DashboardButton';
 import Advice from './advice';

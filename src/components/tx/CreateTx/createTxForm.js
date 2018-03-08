@@ -4,7 +4,7 @@ import { Field, reduxForm } from 'redux-form';
 import { RadioButtonGroup } from 'redux-form-material-ui';
 import { MenuItem, IconButton, IconMenu } from 'material-ui';
 import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
-import { Button, IdentityIcon, ButtonGroup, LinkButton } from 'emerald-js-ui';
+import { Button, IdentityIcon, ButtonGroup, LinkButton, WarningText, Warning } from 'emerald-js-ui';
 import { formStyle } from 'lib/styles';
 import DashboardButton from 'components/common/DashboardButton';
 import { positive, number, required, address } from 'lib/validators';
@@ -15,7 +15,6 @@ import AccountBalance from '../../accounts/Balance';
 import SelectAddressField from './selectAddressField';
 
 import classes from './createTxForm.scss';
-import { WarningText, Warning } from '../../../elements/Warning';
 
 import { Currency } from '../../../lib/currency';
 

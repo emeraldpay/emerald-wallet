@@ -5,5 +5,10 @@ import { MuiThemeProvider, getMuiTheme } from 'material-ui/styles';
 import DashboardButton from '../../src/components/common/DashboardButton';
 
 storiesOf('DashboardButton', module)
+  .addDecorator(story => (
+    <MuiThemeProvider>
+      {story()}
+    </MuiThemeProvider>
+  ))
   .add('default', () => <DashboardButton />)
   .add('with label', () => <DashboardButton label='Go'/>);

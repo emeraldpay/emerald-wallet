@@ -1,8 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-
-import TextField from 'elements/Form/TextField';
-import { Warning } from '../Warning/warning';
+import { Warning } from 'emerald-js-ui';
+import TextField from '../Form/TextField';
 import PasswordInput from './passwordInput';
 
 
@@ -20,5 +19,9 @@ describe('PasswordInput', () => {
   it('does not render Warning if props.error underfined', () => {
     const component = shallow(<PasswordInput/>);
     expect(component.find(Warning)).toHaveLength(0);
+  });
+  it('doesnt show password by default', () => {
+    const component = shallow(<PasswordInput/>);
+    expect(component.state().showPassword).toBeFalsy();
   });
 });

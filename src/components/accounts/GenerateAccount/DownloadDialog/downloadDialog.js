@@ -1,11 +1,10 @@
 import React from 'react';
-import { Button } from 'emerald-js-ui';
+import { Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
 import { Form, Row, styles as formStyles } from 'elements/Form';
-import { Warning, WarningHeader, WarningText } from 'elements/Warning';
 import getLoadingIcon from '../getLoadingIcon';
 import styles from './downloadDialog.scss';
 
-const DownloadDialog = (props) => {
+export const DownloadDialog = (props) => {
   const { accountId, onDownload, onBack, t } = props;
   return (
     <Form caption={ t('generate.title') } onCancel={ onBack }>

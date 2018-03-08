@@ -3,13 +3,13 @@ import { required } from 'lib/validators';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { Field, reduxForm, SubmissionError, change, formValueSelector } from 'redux-form';
+import { Button, Warning, WarningText } from 'emerald-js-ui';
+
 import TextField from 'elements/Form/TextField';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import DashboardButton from 'components/common/DashboardButton';
 import accounts from 'store/vault/accounts';
 import screen from 'store/wallet/screen';
-import { Button } from 'emerald-js-ui';
-import { Warning, WarningHeader, WarningText } from 'elements/Warning';
 
 import styles from './confirmMnemonic.scss';
 
@@ -17,7 +17,7 @@ const validateConfirm = (value, allValues, props, name) => {
   return value === props.formData.mnemonic ? undefined : 'Mnemonic phrase does not match';
 };
 
-class ConfirmMnemonic extends React.Component {
+export class ConfirmMnemonic extends React.Component {
   render() {
     const { onBack, backLabel, invalid, handleSubmit, error } = this.props;
     return (
