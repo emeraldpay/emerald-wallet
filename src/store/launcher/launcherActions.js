@@ -1,7 +1,6 @@
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import { api } from '../../lib/rpc/api';
 // import { waitForServicesRestart } from 'store/store';
-import accounts from '../vault/accounts';
 import screen from '../wallet/screen';
 import createLogger from '../../utils/logger';
 
@@ -129,11 +128,6 @@ export function listenElectron() {
       if (isEthRpcReady(state)) {
         dispatch(loadClientVersion());
       }
-      // TODO: remove it
-      // if (isVaultReady(state) && isEthRpcReady(state)) {
-      //   log.debug('Vault and Rpc are ready, going load accounts list');
-      //   dispatch(accounts.actions.loadAccountsList());
-      // }
     });
   };
 }
