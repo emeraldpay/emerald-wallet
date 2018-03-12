@@ -15,7 +15,7 @@ const maxWidth = '1150px';
 const Render = translate('common')(({ t, ...props }) => {
   return (
     <div>
-      {props.screen !== 'welcome' && props.screen !== 'paper-wallet' && <Header maxWidth={ maxWidth }/>}
+      {props.screen !== 'paper-wallet' && <Header maxWidth={ maxWidth }/>}
       <div style={{margin: '20px auto', maxWidth}}>
         <Screen />
       </div>
