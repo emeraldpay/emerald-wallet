@@ -32,7 +32,7 @@ class LocalGeth {
             '--rpc',
             '--rpc-port', this.rpcPort,
             '--rpc-cors-domain', 'http://localhost:8000',
-            '--cache=128',
+            '--cache=1024',
             '--fast', // (auto-disables when at or upon reaching current bc height)
             '--log-dir', logTarget,
           ];
