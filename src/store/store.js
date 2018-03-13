@@ -86,6 +86,7 @@ function refreshAll() {
   const state = store.getState();
   if (state.launcher.getIn(['geth', 'type']) === 'local') {
     store.dispatch(network.actions.loadPeerCount());
+    store.dispatch(network.actions.loadSyncing());
   }
   setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
 }
