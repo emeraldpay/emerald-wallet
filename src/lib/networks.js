@@ -14,18 +14,6 @@ export const Networks = [
   {
     geth: {
       type: 'remote',
-      url: 'https://mewapi.epool.io',
-    },
-    chain: {
-      id: 61,
-      name: 'mainnet',
-    },
-    title: 'Mainnet (epool.io)',
-    id: 'epool/mainnet',
-  },
-  {
-    geth: {
-      type: 'remote',
       url: 'https://web3.gastracker.io',
     },
     chain: {
@@ -34,6 +22,18 @@ export const Networks = [
     },
     title: 'Mainnet (gastracker.io)',
     id: 'gastracker/mainnet',
+  },
+  {
+    geth: {
+      type: 'remote',
+      url: 'https://mewapi.epool.io',
+    },
+    chain: {
+      id: 61,
+      name: 'mainnet',
+    },
+    title: 'Mainnet (epool.io)',
+    id: 'epool/mainnet',
   },
   {
     geth: {

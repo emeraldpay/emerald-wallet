@@ -19,3 +19,14 @@ export const MainnetEpool = {
     name: 'mainnet',
   },
 };
+
+export const GastrackerMainnet = {
+  geth: {
+    type: 'remote',
+    url: 'https://web3.gastracker.io',
+  },
+  chain: {
+    id: 61,
+    name: 'mainnet',
+  },
+};
