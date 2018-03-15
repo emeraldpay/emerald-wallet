@@ -12,10 +12,10 @@ import './main.scss';
 
 const maxWidth = '1150px';
 
-const Render = translate('common')(({ t, ...props }) => {
+const Render = translate('common')(({ ...props }) => {
   return (
     <div>
-      {props.screen !== 'welcome' && props.screen !== 'paper-wallet' && <Header maxWidth={ maxWidth }/>}
+      {props.screen !== 'paper-wallet' && (!props.launcherType || props.launcherType !== 'none') && <Header />}
       <div style={{margin: '20px auto', maxWidth}}>
         <Screen />
       </div>
@@ -30,6 +30,7 @@ const Render = translate('common')(({ t, ...props }) => {
 const Main = connect(
   (state, ownProps) => ({
     screen: state.wallet.screen.get('screen'),
+    launcherType: state.launcher.getIn(['geth', 'type']),
   }),
   (dispatch, ownProps) => ({})
 )(Render);

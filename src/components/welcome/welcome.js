@@ -57,7 +57,7 @@ const Render = ({ message, level, ready, needSetup }) => {
   }
 
   return (
-    <Grid id="welcome-screen">
+    <Grid id="welcome-screen" style={{maxWidth: '1150px'}}>
       <Row center="xs" style={logoStyles.row}>
         <Col xs>
           <LogoIcon width="128px" height="128px" />
