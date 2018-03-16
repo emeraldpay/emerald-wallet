@@ -17,33 +17,42 @@ const defaultStyles = {
   },
 };
 
-class AccountBalance extends React.Component {
-    static propTypes = {
-      precision: PropTypes.number,
-      symbol: PropTypes.string.isRequired,
-      balance: PropTypes.object.isRequired,
-      fiatRate: PropTypes.number.isRequired,
-      showFiat: PropTypes.bool.isRequired,
-      coinsStyle: PropTypes.object,
-      fiatStyle: PropTypes.object,
-      fiatCurrency: PropTypes.string,
+export class Balance extends React.Component {
+  static propTypes = {
+    precision: PropTypes.number,
+    symbol: PropTypes.string.isRequired,
+    balance: PropTypes.object.isRequired,
+    fiatRate: PropTypes.number,
+    showFiat: PropTypes.bool.isRequired,
+    coinsStyle: PropTypes.object,
+    fiatStyle: PropTypes.object,
+    fiatCurrency: PropTypes.string,
+  }
+
+  static defaultProps = {
+    showFiat: false,
+    fiatStyle: defaultStyles.fiat,
+    coinsStyle: defaultStyles.coins,
+  };
+
+  render() {
+    const { balance, showFiat, fiatCurrency, fiatRate, precision = 3, symbol } = this.props;
+    const { fiatStyle, coinsStyle } = this.props;
+    let fiatAmount = null;
+    if (showFiat && balance && fiatRate) {
+      fiatAmount = Currency.format(balance.convert(fiatRate), fiatCurrency);
     }
 
-    render() {
-      const { balance, showFiat, fiatCurrency, fiatRate, precision = 3, symbol } = this.props;
-      const { fiatStyle = defaultStyles.fiat, coinsStyle = defaultStyles.coins } = this.props;
-
-      return (
-        <div>
-          <span style={ coinsStyle }>
-            { balance ? balance.getDecimalized(precision) : '-'} { symbol }
-          </span>
-          <br/>
-          { showFiat && balance &&
-                <span style={ fiatStyle }>{ Currency.format(balance.convert(fiatRate), fiatCurrency) }</span> }
-        </div>
-      );
-    }
+    return (
+      <div>
+        <span style={coinsStyle}>
+          {balance ? balance.getDecimalized(precision) : '-'} {symbol}
+        </span>
+        <br />
+        {fiatAmount && <span style={fiatStyle}>{fiatAmount}</span> }
+      </div>
+    );
+  }
 }
 
 export default connect(
@@ -58,4 +67,4 @@ export default connect(
     };
   },
   (dispatch, ownProps) => ({})
-)(AccountBalance);
+)(Balance);

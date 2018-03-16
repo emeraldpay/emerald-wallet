@@ -14,14 +14,12 @@ import Checkbox from 'elements/Form/Checkbox';
 import screen from '../../store/wallet/screen';
 import settings from '../../store/wallet/settings';
 import accounts from '../../store/vault/accounts';
-import i18n from '../../i18n/i18n';
 
-class SettingsRender extends React.Component {
+export class Settings extends React.Component {
   render() {
-    const { goDashboard, handleSubmit, t, onBackScreen } = this.props;
-    const label = onBackScreen ? 'Back' : null;
+    const { goDashboard, handleSubmit, t } = this.props;
     return (
-      <Form caption="Settings" backButton={ <DashboardButton onClick={ goDashboard } label={label}/> } >
+      <Form caption="Settings" backButton={ <DashboardButton onClick={ goDashboard } /> } >
         <div>
           <Row>
             <div style={styles.left}>
@@ -125,13 +123,13 @@ class SettingsRender extends React.Component {
 const SettingsForm = translate('settings')(reduxForm({
   form: 'settings',
   fields: ['language', 'currency', 'showHiddenAccounts'],
-})(SettingsRender));
+})(Settings));
 
-const Settings = connect(
+export default connect(
   (state, ownProps) => {
     return {
       initialValues: {
-        language: i18n.language,
+        language: settings.selectors.currentLanguage(state),
         currency: state.wallet.settings.get('localeCurrency', '').toLowerCase(),
         showHiddenAccounts: state.wallet.settings.get('showHiddenAccounts', false),
         numConfirmations: state.wallet.settings.get('numConfirmations'),
@@ -140,19 +138,18 @@ const Settings = connect(
   },
   (dispatch, ownProps) => ({
     goDashboard: () => {
-      dispatch(screen.actions.gotoScreen(ownProps.onBackScreen || 'home'));
+      dispatch(screen.actions.gotoScreen('home'));
     },
 
     onSubmit: (data) => {
-      i18n.changeLanguage(data.language);
-      dispatch(settings.actions.update({
+      const newSettings = {
+        language: data.language,
         localeCurrency: data.currency,
         showHiddenAccounts: data.showHiddenAccounts,
         numConfirmations: data.numConfirmations,
-      }));
+      };
+      dispatch(settings.actions.update(newSettings));
       dispatch(accounts.actions.loadAccountsList());
     },
   })
 )(SettingsForm);
-
-export default Settings;

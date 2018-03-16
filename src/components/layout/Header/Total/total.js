@@ -7,7 +7,6 @@ import { Wei } from 'emerald-js';
 import EtcLogo from 'emerald-js-ui/lib/icons2/EtcLogo';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import accounts from '../../../../store/vault/accounts';
-import { Currency } from '../../../../lib/currency';
 
 type Props = {
   total: string

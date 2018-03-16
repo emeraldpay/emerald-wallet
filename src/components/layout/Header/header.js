@@ -10,7 +10,6 @@ const styles = {
   appBarRight: {
     display: 'flex',
     alignItems: 'center',
-    // justifyContent: 'flex-end',
     marginTop: 'inherit',
   },
   buttons: {
@@ -18,16 +17,12 @@ const styles = {
       textTransform: 'none',
       fontWeight: 'normal',
       fontSize: '16px',
-      // marginLeft: '-3px',
     },
   },
 };
 
 const Header = (props) => {
-  const { openSettings, muiTheme, network, backScreen, showProgress, progress, tip } = props;
-  const openSettingsWithBackScreen = () => {
-    openSettings(backScreen);
-  };
+  const { openSettings, muiTheme, network, showProgress, progress, tip } = props;
 
   const showProgressBar = (show) => {
     if (!show) {
@@ -66,7 +61,7 @@ const Header = (props) => {
   const SettingsButton = () => (
     <FlatButton
       hoverColor="transparent"
-      onTouchTap={ openSettingsWithBackScreen }
+      onTouchTap={ openSettings }
       style={{color: muiTheme.palette.alternateTextColor}}
       label="Settings"
       labelStyle={styles.buttons.label}

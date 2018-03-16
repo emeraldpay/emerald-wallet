@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Input from 'elements/Input';
+import Input from './input';
 
 test('Renders', () => {
   const component = shallow(<Input />);
