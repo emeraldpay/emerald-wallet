@@ -13,15 +13,14 @@ export default muiThemeable()(connect(
 
     return {
       network: state.network.toJS(),
-      backScreen: state.wallet.screen.toJS().screen,
       showProgress: showProgress && !invalidNumber,
       progress: invalidNumber ? 0 : progress,
       tip,
     };
   },
   (dispatch, ownProps) => ({
-    openSettings: (backScreen) => {
-      dispatch(screen.actions.gotoScreen('settings', backScreen));
+    openSettings: () => {
+      dispatch(screen.actions.gotoScreen('settings'));
     },
   })
 )(Header));

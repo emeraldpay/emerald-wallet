@@ -2,6 +2,7 @@
 import { getRates } from '../../../lib/marketApi';
 import ActionTypes from './actionTypes';
 import screen from '../screen';
+import i18n from '../../../i18n/i18n';
 
 export function loadSettings() {
   return (dispatch) => {
@@ -40,8 +41,9 @@ export function getExchangeRates() {
   };
 }
 
-export function update(settings: { localeCurrency: string, showHiddenAccounts: boolean, numConfirmations: number }) {
+export function update(settings: { language: string, localeCurrency: string, showHiddenAccounts: boolean, numConfirmations: number }) {
   return (dispatch) => {
+    i18n.changeLanguage(settings.language);
     return Promise.all([
       dispatch({
         type: ActionTypes.SET_LOCALE_CURRENCY,

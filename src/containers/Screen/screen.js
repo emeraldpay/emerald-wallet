@@ -93,7 +93,7 @@ const Screen = ({ screen, screenItem }) => {
   } else if (screen === 'welcome') {
     return <Welcome />;
   } else if (screen === 'settings') {
-    return <Settings onBackScreen={ screenItem }/>;
+    return <Settings />;
   } else if (screen === 'paper-wallet') {
     return <PaperWallet address={ screenItem.address } privKey={ screenItem.privKey } />;
   } else if (screen === 'export-paper-wallet') {
