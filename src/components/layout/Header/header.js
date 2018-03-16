@@ -10,7 +10,6 @@ const styles = {
   appBarRight: {
     display: 'flex',
     alignItems: 'center',
-    // justifyContent: 'flex-end',
     marginTop: 'inherit',
   },
   buttons: {
@@ -18,7 +17,6 @@ const styles = {
       textTransform: 'none',
       fontWeight: 'normal',
       fontSize: '16px',
-      // marginLeft: '-3px',
     },
   },
 };
