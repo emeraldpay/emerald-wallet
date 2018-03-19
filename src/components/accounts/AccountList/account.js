@@ -98,6 +98,7 @@ export class Account extends React.Component {
                     />
                     <Button
                       label="Send"
+                      disabled={ !account.get('balance') }
                       onClick={ this.onSendClick }
                     />
                   </ButtonGroup>
