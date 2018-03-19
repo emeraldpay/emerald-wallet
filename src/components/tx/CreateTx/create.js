@@ -43,7 +43,12 @@ const traceValidate = (tx, dispatch): Promise<BigNumber> => {
 const selector = formValueSelector('createTx');
 const getGasPrice = (state) => state.network.get('gasPrice');
 
-const selectBalance = (state, account) => {
+export const selectBalance = (state, account) => {
+  if (!account.get('balance')) {
+    return {
+      symbol: 'ETC',
+    };
+  }
   const tokens = state.tokens.get('tokens');
   const token = selector(state, 'token');
   if (Address.isValid(token)) {
