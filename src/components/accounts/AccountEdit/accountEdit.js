@@ -4,7 +4,6 @@ import { Field, reduxForm } from 'redux-form';
 import { Card, CardText } from 'material-ui';
 import { TextField } from 'redux-form-material-ui';
 import { Button, ButtonGroup } from 'emerald-js-ui';
-import { renderTextField } from '../../../elements/formFields';
 import { required, address } from '../../../lib/validators';
 import { cardSpace } from '../../../lib/styles';
 
@@ -13,22 +12,34 @@ export const AccountEdit = ({ handleSubmit, blockAddress, invalid, pristine, sub
   <Card style={cardSpace}>
     <CardText expandable={false}>
       <form onSubmit={handleSubmit}>
-        <Field name="address"
-          component={TextField}
-          type="text"
-          label="ETC Address"
-          disabled={blockAddress}
-          fullWidth={true}
-          validate={[required, address]} />
-        <Field name="name"
-          component={renderTextField}
-          type="text"
-          label="Account Name"
-          validate={ required } />
-        <Field name="description"
-          component={renderTextField}
-          type="text"
-          label="Account Description" />
+        <div>
+          <Field
+            name="address"
+            component={TextField}
+            type="text"
+            hintText="ETC Address"
+            disabled={blockAddress}
+            fullWidth={true}
+            validate={[required, address]}
+          />
+        </div>
+        <div>
+          <Field
+            name="name"
+            component={TextField}
+            type="text"
+            floatingLabelText="Account Name"
+            validate={required}
+          />
+        </div>
+        <div>
+          <Field
+            name="description"
+            component={TextField}
+            type="text"
+            floatingLabelText="Account Description"
+          />
+        </div>
         <ButtonGroup>
           <Button
             label="Cancel"
@@ -38,7 +49,7 @@ export const AccountEdit = ({ handleSubmit, blockAddress, invalid, pristine, sub
             primary
             label="Save"
             type="submit"
-            disabled={pristine || submitting || invalid } />
+            disabled={pristine || submitting || invalid} />
         </ButtonGroup>
       </form>
     </CardText>

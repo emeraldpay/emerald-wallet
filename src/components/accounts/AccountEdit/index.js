@@ -1,1 +1,1 @@
-export { default } from './edit';
+export { default } from './accountEdit';
