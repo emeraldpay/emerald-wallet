@@ -1,9 +1,9 @@
 // @flow
 import React from 'react';
 import { connect } from 'react-redux';
-import { Field, reduxForm, SubmissionError, change, formValueSelector } from 'redux-form';
+import { Field, reduxForm } from 'redux-form';
 import { Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
-import { required } from 'lib/validators';
+import { required, passwordMatch, minLength } from 'lib/validators';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
 import DashboardButton from 'components/common/DashboardButton';
@@ -43,7 +43,7 @@ export class ImportMnemonic extends React.Component {
                   component={ TextField }
                   fullWidth={ true }
                   underlineShow={ false }
-                  validate={ [required] }
+                  validate={ [required, minLength(8)] }
                 />
               </div>
             </div>
@@ -56,6 +56,20 @@ export class ImportMnemonic extends React.Component {
               <WarningHeader>Don&#39;t forget it.</WarningHeader>
               <WarningText>If you forget this password, you will lose access to the account and its funds.</WarningText>
             </Warning>
+          </div>
+        </Row>
+        <Row>
+          <div style={formStyles.left} />
+          <div style={formStyles.right}>
+            <Field
+              hintText="Confirm Password"
+              name="confirmPassword"
+              type="password"
+              component={TextField}
+              fullWidth={true}
+              underlineShow={false}
+              validate={[required, passwordMatch]}
+            />
           </div>
         </Row>
 
