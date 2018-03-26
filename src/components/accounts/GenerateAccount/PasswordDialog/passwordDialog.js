@@ -1,6 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
+import { Field, reduxForm } from 'redux-form';
+import TextField from 'elements/Form/TextField';
+import { required } from 'lib/validators';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import PasswordInput from 'elements/PasswordInput';
 import DashboardButton from 'components/common/DashboardButton';
@@ -20,21 +23,26 @@ class PasswordDialog extends React.Component {
     this.state = {
       passphrase: '',
       passphraseError: null,
+      confirmPassword: null,
     };
   }
 
   handleGenerate = () => {
     const { onGenerate } = this.props;
-    const passphrase = this.state.passphrase;
+    const { passphrase, confirmPassword } = this.state;
 
     // validate passphrase
     if (passphrase.length < MIN_PASSWORD_LENGTH) {
-      this.setState({
+      return this.setState({
         passphraseError: `Minimum ${MIN_PASSWORD_LENGTH} characters`,
       });
-    } else {
-      onGenerate(passphrase);
     }
+
+    if (passphrase !== confirmPassword) {
+      return;
+    }
+
+    onGenerate(passphrase);
   }
 
   onPassphraseChange = (newValue) => {
@@ -48,6 +56,16 @@ class PasswordDialog extends React.Component {
     });
   }
 
+  onConfirmChange(val) {
+    this.setState({
+      confirmPassword: val.currentTarget.value,
+    });
+  }
+  passwordMatch(value) {
+    const password = this.state.passphrase;
+    const confirmPassword = value;
+    return confirmPassword === password ? undefined : 'Passwords must match';
+  }
 
   render() {
     const { onDashboard, t, backLabel } = this.props;
@@ -85,6 +103,22 @@ class PasswordDialog extends React.Component {
         </Row>
 
         <Row>
+          <div style={formStyles.left} />
+          <div style={formStyles.right}>
+            <Field
+              hintText="Confirm Password"
+              name="confirmPassword"
+              type="password"
+              component={TextField}
+              fullWidth={true}
+              underlineShow={false}
+              onChange={this.onConfirmChange.bind(this)}
+              validate={[required, this.passwordMatch.bind(this)]}
+            />
+          </div>
+        </Row>
+
+        <Row>
           <div style={formStyles.left}/>
           <div style={formStyles.right}>
             <Advice
@@ -112,6 +146,10 @@ class PasswordDialog extends React.Component {
   }
 }
 
+const passwordDialogForm = reduxForm({
+  form: 'confirmGeneratePassword',
+  fields: ['confirmPassword'],
+})(PasswordDialog);
 
-export default PasswordDialog;
+export default passwordDialogForm;
 

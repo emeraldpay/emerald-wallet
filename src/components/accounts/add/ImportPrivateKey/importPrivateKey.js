@@ -10,8 +10,7 @@ import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extrane
 import DashboardButton from 'components/common/DashboardButton';
 import accounts from 'store/vault/accounts';
 import screen from 'store/wallet/screen';
-import { required } from 'lib/validators';
-import { Wallet } from 'emerald-js';
+import { required, passwordMatch, minLength } from 'lib/validators';
 import CircularProgress from 'material-ui/CircularProgress';
 
 import styles from './importPrivateKey.scss';
@@ -42,10 +41,11 @@ export class ImportPrivateKey extends React.Component {
                 <Field
                   name="password"
                   type="password"
+                  hintText="At least 8 characters"
                   component={TextField}
                   fullWidth={true}
                   underlineShow={false}
-                  validate={ [required] }
+                  validate={ [required, minLength(8)] }
                 />
               </div>
             </div>
@@ -58,6 +58,20 @@ export class ImportPrivateKey extends React.Component {
               <WarningHeader>Don&#39;t forget it.</WarningHeader>
               <WarningText>If you forget this password, you will lose access to the account and its funds.</WarningText>
             </Warning>
+          </div>
+        </Row>
+        <Row>
+          <div style={formStyles.left} />
+          <div style={formStyles.right}>
+            <Field
+              hintText="Confirm Password"
+              name="confirmPassword"
+              type="password"
+              component={TextField}
+              fullWidth={true}
+              underlineShow={false}
+              validate={[required, passwordMatch]}
+            />
           </div>
         </Row>
 
@@ -105,21 +119,6 @@ const importForm = reduxForm({
   form: 'importPrivateKey',
   fields: ['password', 'privateKey'],
 })(ImportPrivateKey);
-
-/**
- * Build encrypted key file for private key
- */
-function privateKeyToV3(privateKey: string, password: string): Promise<string> {
-  return new Promise((resolve, reject) => {
-    // create V3 json key file
-    try {
-      const keyFile = Wallet.fromPrivateKey(privateKey).toV3String(password);
-      resolve(keyFile);
-    } catch (error) {
-      reject(error);
-    }
-  });
-}
 
 export default connect(
   (state, ownProps) => ({

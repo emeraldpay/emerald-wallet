@@ -1,4 +1,4 @@
-import { number, address, required, positive, hex, isJson } from './validators';
+import { number, address, required, positive, hex, isJson, passwordMatch } from './validators';
 
 describe('Field Validators', () => {
   it('valid required', () => {
@@ -66,5 +66,14 @@ describe('Field Validators', () => {
     expect(isJson('')).not.toBeUndefined();
     expect(isJson('{"a", [1,2,3], "b": 2}')).not.toBeUndefined();
     expect(isJson('"a", 1, "b", 2')).not.toBeUndefined();
+  });
+});
+
+describe('Password Match', () => {
+  it('returns an error string if passwords dont match', () => {
+    expect(passwordMatch('foo', {password: 'bar'})).toEqual('Passwords must match');
+  });
+  it('returns undefined if passwords match', () => {
+    expect(passwordMatch('bar', {password: 'bar'})).toBeUndefined();
   });
 });
