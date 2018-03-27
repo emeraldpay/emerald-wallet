@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import { IconButton } from 'material-ui';
 import { Delete as DeleteIcon } from 'emerald-js-ui/lib/icons';
-import Input from 'elements/Input';
+import { Input } from 'emerald-js-ui';
 
 import styles from './list.scss';
 

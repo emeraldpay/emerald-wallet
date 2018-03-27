@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, ButtonGroup, LinkButton } from 'emerald-js-ui';
-import TextField from '../../../../elements/Form/TextField';
+import { Button, ButtonGroup, LinkButton, Input } from 'emerald-js-ui';
 import { Form, Row, styles as formStyles } from '../../../../elements/Form';
 
 class AccountPropertiesDialog extends React.Component {
@@ -40,7 +39,7 @@ class AccountPropertiesDialog extends React.Component {
             </div>
             <div style={ formStyles.right }>
               <div style={{ width: '100%' }}>
-                <TextField
+                <Input
                   onChange={ this.onInputChange }
                   hintText="if needed"
                   name="name"
