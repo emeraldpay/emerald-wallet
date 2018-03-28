@@ -5,7 +5,8 @@ import { ToggleButtonGroup, ToggleButton, Button } from 'react-bootstrap';
 /**
  * TODO: After Material-UI v 1.0 release switch to ToggleButton
  * (see: https://github.com/callemall/material-ui/pull/7551)
- *
+ * 
+ * or this approach https://github.com/mui-org/material-ui/pull/10144
  */
 
 class DepositOptions extends React.Component {
