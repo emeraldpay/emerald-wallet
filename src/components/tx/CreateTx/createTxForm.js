@@ -43,7 +43,7 @@ const textFiatLight = {
  */
 const InputWithIcon = (props) => {
   return (
-    <TextField {...props} fieldStyle={{paddingLeft: '5px'}} leftIcon={props.input.value ? <IdentityIcon size={30} expanded={true} id={ props.input.value }/> : null} />
+    <TextField {...props} fieldStyle={{paddingLeft: '5px'}} leftIcon={props.input.value ? <IdentityIcon size={30} id={ props.input.value }/> : null} />
   );
 };
 
@@ -64,7 +64,7 @@ const AddressWithIcon = ({ accountAddress, name }) => {
   };
   return (
     <div style={style.div}>
-      <IdentityIcon size={30} expanded={true} id={ accountAddress }/>
+      <IdentityIcon size={30} id={ accountAddress }/>
       <div style={ style.address }>{ name || accountAddress }</div>
     </div>
   );
