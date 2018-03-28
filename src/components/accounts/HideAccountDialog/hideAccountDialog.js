@@ -2,8 +2,6 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Dialog, IconButton } from 'material-ui';
 import { Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
-import CloseButton from 'elements/CloseButton';
-import { hideAccount } from 'store/vault/accounts/accountActions';
 
 import screen from '../../../store/wallet/screen';
 import accounts from '../../../store/vault/accounts';
@@ -20,9 +18,6 @@ export class HideAccountDialog extends React.Component {
         <div style={{width: '100%'}}>
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
             <div className={styles.title}>Are you Sure you want to hide this account?</div>
-            <div>
-              <CloseButton onClick={ onClose } className={ styles.closeButton }/>
-            </div>
           </div>
           <div style={{marginRight: '20px'}}>
             <Warning>
@@ -34,16 +29,18 @@ export class HideAccountDialog extends React.Component {
             style={{
               marginTop: '10px',
             }}
-            label="Yes"
-            primary={true}
-            onClick={handleConfirmHide} />
+            label="CANCEL"
+            onClick={ onClose }
+          />
           <Button
             style={{
               marginLeft: '10px',
               marginTop: '10px',
             }}
-            label="No"
-            onClick={ onClose } />
+            label="HIDE"
+            primary={true}
+            onClick={handleConfirmHide}
+          />
         </div>
       </Dialog>);
   }
@@ -55,7 +52,7 @@ export default connect(
   }),
   (dispatch, ownProps) => ({
     handleConfirmHide: () => {
-      dispatch(hideAccount(ownProps.address));
+      dispatch(accounts.actions.hideAccount(ownProps.address));
 
       // refresh account data
       dispatch(history.actions.refreshTrackedTransactions());

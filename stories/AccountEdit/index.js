@@ -4,7 +4,7 @@ import { storiesOf } from '@storybook/react';
 import { createStore } from 'redux';
 import { Provider } from 'react-redux';
 import { MuiThemeProvider, getMuiTheme } from 'material-ui/styles';
-import AccountEdit from '../../src/components/accounts/AccountEdit/edit';
+import AccountEdit from '../../src/components/accounts/AccountEdit';
 
 const muiTheme = getMuiTheme({
   fontFamily: 'Rubik',
