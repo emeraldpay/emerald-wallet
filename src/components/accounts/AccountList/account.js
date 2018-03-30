@@ -44,7 +44,7 @@ export class Account extends React.Component {
             <Row>
               <Col xs={3}>
                 <div className={ styles.identityIconContainer }>
-                  <IdentityIcon id={ account.get('id') } expanded={true}/>
+                  <IdentityIcon id={ account.get('id') } />
                   <div style={{marginLeft: '10px'}}>
                     {balance && <AccountBalance
                       balance={ balance }

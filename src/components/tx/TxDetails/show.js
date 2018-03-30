@@ -85,9 +85,10 @@ export const TransactionShow = (props: Props) => {
           <div style={fieldNameStyle}>From</div>
         </div>
         <div style={{...styles.right, alignItems: 'center'}}>
-          <IdentityIcon size={ 30 } expanded={ true } id={ transaction.get('from') }/>
           <Account
-            secondary={<AccountAddress id={ transaction.get('from') }/>}
+            addr={transaction.get('from')}
+            identity
+            identityProps={{size: 30}}
             onClick={ () => openAccount(fromAccount) }
           />
         </div>
@@ -98,9 +99,10 @@ export const TransactionShow = (props: Props) => {
           <div style={fieldNameStyle}>To</div>
         </div>
         <div style={{...styles.right, alignItems: 'center'}}>
-          <IdentityIcon size={30} expanded={true} id={transaction.get('to')}/>
           <Account
-            secondary={ <AccountAddress id={ transaction.get('to') }/>}
+            addr={transaction.get('to')}
+            identity
+            identityProps={{size: 30}}
             onClick={ () => openAccount(toAccount) }
           />
         </div>

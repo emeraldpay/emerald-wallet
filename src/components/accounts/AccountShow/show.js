@@ -72,7 +72,7 @@ export class AccountShow extends React.Component {
               <Row>
                 <div id="left-column" style={styles.left}>
                   <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-                    <IdentityIcon id={account.get('id')} expanded={true} />
+                    <IdentityIcon id={account.get('id')} />
                   </div>
                 </div>
                 <div style={styles.right}>
