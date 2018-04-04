@@ -3,6 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 
 import { tables } from '../../../../lib/styles';
 import Transaction from './transaction';
@@ -15,13 +16,13 @@ type Props = {
 };
 
 const TransactionsList = (props: Props) => {
-  const { transactions, accountId } = props;
+  const { transactions, accountId, muiTheme } = props;
   if (!transactions) {
     return (<div>Loading...</div>);
   }
   return (
     <div>
-      <Table selectable={ false } fixedHeader={ true }>
+      <Table selectable={ false } fixedHeader={ true } style={{background: muiTheme.palette.alternateTextColor}}>
         <TableHeader displaySelectAll={ false } adjustForCheckbox={ false }>
           <TableRow>
             <TableHeaderColumn className={ cx(classes.columnName, classes.amountColumn) } >
@@ -49,4 +50,4 @@ TransactionsList.propTypes = {
 };
 
 
-export default TransactionsList;
+export default muiThemeable()(TransactionsList);

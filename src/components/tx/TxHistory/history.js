@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { List } from 'immutable';
 import { Card } from 'emerald-js-ui';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 
 import { searchTransactions, filterTransactions } from '../../../store/wallet/history/selectors';
 import Header from './Header';
@@ -52,7 +53,7 @@ class TransactionsHistory extends React.Component<Props, State> {
   render() {
     return (
       <Card>
-        <div className={ styles.container }>
+        <div className={ styles.container } style={{border: `1px solid ${this.props.muiTheme.palette.borderColor}`}}>
           <Header onTxFilterChange={this.onTxFilterChange} value={this.state.txFilter} onSearchChange={this.onSearchChange}/>
           <TxList transactions={ this.state.displayedTransactions } accountId={ this.props.accountId }/>
         </div>
@@ -73,4 +74,4 @@ export default connect(
   },
   (dispatch, ownProps) => ({
   })
-)(TransactionsHistory);
+)(muiThemeable()(TransactionsHistory));

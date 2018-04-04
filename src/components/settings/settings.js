@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import { MenuItem } from 'material-ui';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import { translate } from 'react-i18next';
 
 import { Form, styles, Row } from 'elements/Form';
@@ -17,9 +18,9 @@ import accounts from '../../store/vault/accounts';
 
 export class Settings extends React.Component {
   render() {
-    const { goDashboard, handleSubmit, t } = this.props;
+    const { goDashboard, handleSubmit, t, muiTheme } = this.props;
     return (
-      <Form caption="Settings" backButton={ <DashboardButton onClick={ goDashboard } /> } >
+      <Form caption="Settings" backButton={ <DashboardButton onClick={ goDashboard } /> } style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
         <div>
           <Row>
             <div style={styles.left}>
@@ -123,7 +124,7 @@ export class Settings extends React.Component {
 const SettingsForm = translate('settings')(reduxForm({
   form: 'settings',
   fields: ['language', 'currency', 'showHiddenAccounts'],
-})(Settings));
+})(muiThemeable()(Settings)));
 
 export default connect(
   (state, ownProps) => {

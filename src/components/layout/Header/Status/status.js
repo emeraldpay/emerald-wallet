@@ -30,10 +30,10 @@ const Status = ({ block, progress, peerCount, showDetails, connecting, switchNet
 
   if (connecting) {
     icon =
-      <NetworkDisconnectedIcon color={muiTheme.palette.alternateTextColor} />;
+      <NetworkDisconnectedIcon color={muiTheme.palette.secondaryTextColor} />;
   } else {
     icon =
-      <NetworkIcon color={muiTheme.palette.alternateTextColor} />;
+      <NetworkIcon color={muiTheme.palette.secondaryTextColor} />;
   }
 
   return (

@@ -28,7 +28,7 @@ const Total = ({ total, muiTheme }: Props) => {
       icon={<EtcLogo />}
       labelStyle={styles.label}
       label={totalFormatted}
-      style={{color: muiTheme.palette.alternateTextColor, lineHeight: 'inherit'}} />
+      style={{color: muiTheme.palette.secondaryTextColor, lineHeight: 'inherit'}} />
   );
 };
 

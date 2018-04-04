@@ -13,13 +13,15 @@ class NetworkSelectorRender extends React.Component {
     const styles = {
       main: {
         marginRight: '-20px',
+        paddingRight: '10px',
         color: muiTheme.palette.alternateTextColor,
         height: muiTheme.spacing.desktopToolbarHeight, /* gagarin55: this is extremely important hack to align DropDownMenu vertically */
       },
       label: {
-        color: muiTheme.palette.alternateTextColor,
+        color: muiTheme.palette.secondaryTextColor,
         fontSize: '16px',
         paddingLeft: '5px',
+        paddingRight: '30px',
       },
     };
     const isCurrentNetwork = (net) => (net.chain.id === chain.get('id')
@@ -37,7 +39,7 @@ class NetworkSelectorRender extends React.Component {
         value={ currentNetwork.id }
         style={ styles.main }
         underlineStyle={{ display: 'none' }}
-        iconButton={<ArrowDown color={muiTheme.palette.alternateTextColor}/>}
+        iconStyle={{display: 'none'}}
         labelStyle={ styles.label }>
         { Networks.map((net) =>
           <MenuItem

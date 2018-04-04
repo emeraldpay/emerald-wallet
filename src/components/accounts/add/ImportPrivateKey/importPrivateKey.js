@@ -4,6 +4,7 @@ import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { Field, reduxForm, SubmissionError } from 'redux-form';
 import { Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
@@ -26,9 +27,9 @@ function getLoadingIcon(submitting) {
 
 export class ImportPrivateKey extends React.Component {
   render() {
-    const { onBack, error, handleSubmit, submitting } = this.props;
+    const { onBack, error, handleSubmit, submitting, muiTheme } = this.props;
     return (
-      <Form caption="Import Private Key" backButton={ <DashboardButton onClick={ onBack }/> }>
+      <Form caption="Import Private Key" backButton={ <DashboardButton onClick={ onBack }/> } style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
         <Row>
           <div style={formStyles.left}/>
           <div style={formStyles.right}>
@@ -150,5 +151,5 @@ export default connect(
       }
     },
   })
-)(importForm);
+)(muiThemeable()(importForm));
 

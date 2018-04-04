@@ -4,7 +4,6 @@ import { Back as BackIcon } from 'emerald-js-ui/lib/icons2';
 import styles from './dashboardButton.scss';
 
 const style = {
-  color: '#747474',
 };
 
 const DashboardButton = (props) => {

@@ -72,7 +72,7 @@ class DashboardMenu extends React.Component {
           onTouchTap={ this.handleTouchTap }
           label={ t('list.popupMenuLabel') }
           labelStyle={ styles.buttonLabel }
-          style={ styles.button }
+          style={{color: muiTheme.palette.primary1Color}}
           hoverColor="transparent"
           icon={<AddIcon style={ styles.addIcon } />}
         />
@@ -83,7 +83,7 @@ class DashboardMenu extends React.Component {
           targetOrigin={{horizontal: 'left', vertical: 'top'}}
           onRequestClose={this.handleRequestClose}
         >
-          <List>
+          <List style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
             <ListItem
               primaryText="Ledger Nano S"
               secondaryText="Use Ledger hardware key to manage signatures"

@@ -3,6 +3,7 @@ import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import People from 'material-ui/svg-icons/social/people';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import QRCode from 'qrcode.react';
 import TokenUnits from 'lib/tokenUnits';
 import { Button, IdentityIcon, Account as AddressAvatar, ButtonGroup } from 'emerald-js-ui';
@@ -57,7 +58,7 @@ export class AccountShow extends React.Component {
 
   render() {
     const { account, tokensBalances } = this.props;
-    const { showFiat, goBack, transactions, createTx, showReceiveDialog } = this.props;
+    const { showFiat, goBack, transactions, createTx, showReceiveDialog, muiTheme } = this.props;
     // TODO: show pending balance too
     const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
 
@@ -66,7 +67,7 @@ export class AccountShow extends React.Component {
 
     return (
       <div>
-        <div style={{display: 'flex', alignItems: 'stretch'}}>
+        <div style={{display: 'flex', alignItems: 'stretch', border: `1px solid ${muiTheme.palette.borderColor}`}}>
           <div style={{flexGrow: 1}}>
             <Form caption="Account" backButton={ <DashboardButton onClick={ goBack }/> }>
               <Row>
@@ -215,4 +216,4 @@ export default connect(
       });
     },
   })
-)(AccountShow);
+)(muiThemeable()(AccountShow));
