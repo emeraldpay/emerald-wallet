@@ -17,16 +17,15 @@ class ExtendedMenuItem extends React.Component {
         style={{
           cursor: 'pointer',
           padding: '5px 15px 5px 15px',
-          borderLeft: checked ? `3px solid ${muiTheme.palette.primary1Color}` : '',
-          marginLeft: checked ? '' : '3px',
+          borderLeft: checked ? `5px solid ${muiTheme.palette.primary1Color}` : '',
+          marginLeft: checked ? '' : '5px',
         }}
       >
         <div>{net.title}</div>
-        <div style={{ color: muiTheme.palette.disabledColor, fontSize: '12px' }}>{networkType}</div>
+        <div style={{ color: muiTheme.palette.disabledColor, fontSize: '12px', paddingTop: '3px' }}>{networkType}</div>
       </div>
-    )
+    );
   }
-
 }
 ExtendedMenuItem.muiName = 'MenuItem';
 

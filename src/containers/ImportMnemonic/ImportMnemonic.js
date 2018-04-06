@@ -14,9 +14,8 @@ const ImportMnemonicWrapper = ({muiTheme, ...props}) => {
     <div style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
       <ImportMnemonic {...props} />
     </div>
-  )
-
-}
+  );
+};
 
 export default connect(
   (state, ownProps) => ({

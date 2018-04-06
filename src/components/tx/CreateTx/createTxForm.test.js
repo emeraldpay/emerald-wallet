@@ -5,6 +5,9 @@ import TokenUnits from 'lib/tokenUnits';
 import { Currency } from 'lib/currency';
 import { CreateTxForm } from './createTxForm';
 
+const mockMuiTheme = {
+  palette: {},
+};
 
 test('It shows tx value in fiat', () => {
   const tokenValue = new TokenUnits(new BigNumber(123456789), 8);
@@ -17,6 +20,7 @@ test('It shows tx value in fiat', () => {
   };
 
   const component = shallow(<CreateTxForm
+    muiTheme={mockMuiTheme}
     showFiat={ true }
     fiatRate={ fiatRate }
     fiatCurrency="usd"

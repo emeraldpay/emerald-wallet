@@ -5,6 +5,7 @@ import { RadioButtonGroup } from 'redux-form-material-ui';
 import { MenuItem, IconButton, IconMenu } from 'material-ui';
 import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
 import { Button, IdentityIcon, ButtonGroup, LinkButton, WarningText, Warning } from 'emerald-js-ui';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import { formStyle } from 'lib/styles';
 import DashboardButton from 'components/common/DashboardButton';
 import { positive, number, required, address } from 'lib/validators';
@@ -72,7 +73,7 @@ const AddressWithIcon = ({ accountAddress, name }) => {
 
 
 export const CreateTxForm = (props) => {
-  const { accounts, balance, handleSubmit, invalid, pristine, submitting } = props;
+  const { accounts, balance, handleSubmit, invalid, pristine, submitting, muiTheme } = props;
   const { addressBook, handleSelect, tokens, token, isToken } = props;
   const { onEntireBalance, onChangeToken, onChangeAccount, onChangeGasLimit } = props;
   const { fiatRate, fiatCurrency, value, fromAddr, fee } = props;
@@ -116,7 +117,7 @@ export const CreateTxForm = (props) => {
 
 
   return (
-    <Form caption="Send Ether & Tokens" backButton={ <DashboardButton onClick={ goDashboard }/> }>
+    <Form caption="Send Ether & Tokens" backButton={ <DashboardButton onClick={ goDashboard }/> } style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
       <Row>
         <div style={styles.left}>
           <div style={ styles.fieldName }>From</div>
@@ -346,5 +347,5 @@ CreateTxForm.propTypes = {
 export default reduxForm({
   form: 'createTx',
   fields: ['to', 'from', 'password', 'value', 'token', 'gasPrice', 'gas', 'isTransfer'],
-})(CreateTxForm);
+})(muiThemeable()(CreateTxForm));
 

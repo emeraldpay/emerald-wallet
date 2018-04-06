@@ -4,8 +4,8 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import { translate } from 'react-i18next';
 import classNames from 'classnames/bind';
-import createLogger from '../../../utils/logger';
 import muiThemeable from 'material-ui/styles/muiThemeable';
+import createLogger from '../../../utils/logger';
 
 import screen from '../../../store/wallet/screen';
 import launcher from '../../../store/launcher';

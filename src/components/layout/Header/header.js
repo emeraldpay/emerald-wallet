@@ -42,14 +42,14 @@ const Header = (props) => {
     );
   };
 
-  const EmeraldTitle = muiThemeable()(({muiTheme}) => {
+  const EmeraldTitle = () => {
     return (
       <div>
         <span style={{color: muiTheme.palette.primary1Color}}>Emerald </span>
         <span style={{color: muiTheme.palette.secondaryTextColor}}>Wallet</span>
       </div>
     );
-  });
+  };
 
   const BlockDisplay = () => {
     const displayProgress = parseInt(100 - progress, 10);
@@ -86,6 +86,7 @@ const Header = (props) => {
         titleStyle={{fontSize: '16px'}}
         showMenuIconButton={false}
         iconStyleRight={styles.appBarRight}
+        zDepth={0}
         iconElementRight={
           <div style={styles.appBarRight}>
             <Total />
