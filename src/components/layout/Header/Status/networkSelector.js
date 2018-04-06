@@ -7,6 +7,30 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Networks, findNetwork } from '../../../../lib/networks';
 
 
+class ExtendedMenuItem extends React.Component {
+  render() {
+    const {muiTheme, checked, onClick, net} = this.props;
+    const networkType = net.geth.type === 'local' ? 'Full Node' : 'Light Node';
+    return (
+      <div
+        onClick={onClick}
+        style={{
+          cursor: 'pointer',
+          padding: '5px 15px 5px 15px',
+          borderLeft: checked ? `3px solid ${muiTheme.palette.primary1Color}` : '',
+          marginLeft: checked ? '' : '3px',
+        }}
+      >
+        <div>{net.title}</div>
+        <div style={{ color: muiTheme.palette.disabledColor, fontSize: '12px' }}>{networkType}</div>
+      </div>
+    )
+  }
+
+}
+ExtendedMenuItem.muiName = 'MenuItem';
+
+
 class NetworkSelectorRender extends React.Component {
   render() {
     const { chain, geth, onNetworkChange, muiTheme } = this.props;
@@ -33,7 +57,6 @@ class NetworkSelectorRender extends React.Component {
         onNetworkChange(net);
       }
     };
-
     return (
       <DropDownMenu
         value={ currentNetwork.id }
@@ -42,18 +65,19 @@ class NetworkSelectorRender extends React.Component {
         iconStyle={{display: 'none'}}
         labelStyle={ styles.label }>
         { Networks.map((net) =>
-          <MenuItem
+          <ExtendedMenuItem
             value={net.id}
             key={net.id}
             primaryText={net.title}
             checked={isCurrentNetwork(net)}
             onClick={() => networkClick(net)}
+            net={net}
+            muiTheme={muiTheme}
           />
         )}
       </DropDownMenu>);
   }
 }
-
 
 NetworkSelectorRender.propTypes = {
   onNetworkChange: PropTypes.func,
