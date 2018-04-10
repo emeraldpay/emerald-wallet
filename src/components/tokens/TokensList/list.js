@@ -17,7 +17,6 @@ const Token = (props) => {
   const { token } = props;
   const tokenAddress = token.get('address');
   const symbol = token.get('symbol');
-  console.log(tokenAddress);
 
   return (
     <div className={ styles.tokenItemContainer }>
@@ -48,7 +47,6 @@ Token.propTypes = {
 };
 
 const TokensList = ({ tokens }) => {
-  console.log(tokens);
   return (
     <div>
       { tokens.map((token) =>

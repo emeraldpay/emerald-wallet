@@ -5,13 +5,18 @@ import { Account } from 'emerald-js-ui';
 import { TransactionShow } from './show';
 import TxInputData from './TxInputData';
 
+const mockMuiTheme = {
+  palette: {},
+};
+
+
 describe('TransactionShow', () => {
   it('should show tx input data', () => {
     const tx = fromJS({
       hash: '0x01',
       data: '0xDADA',
     });
-    const component = shallow(<TransactionShow transaction={tx} />);
+    const component = shallow(<TransactionShow transaction={tx} muiTheme={mockMuiTheme}/>);
     const inputComps = component.find(TxInputData);
     expect(inputComps).toHaveLength(1);
     expect(inputComps.first().props().data).toEqual(tx.get('data'));
@@ -22,7 +27,7 @@ describe('TransactionShow', () => {
       hash: '0x01',
       data: '0xDADA',
     });
-    const component = shallow(<TransactionShow transaction={tx} />);
+    const component = shallow(<TransactionShow transaction={tx}  muiTheme={mockMuiTheme}/>);
     expect(component.find(Account)).toHaveLength(1);
   });
 });
