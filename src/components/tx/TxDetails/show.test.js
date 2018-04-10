@@ -27,7 +27,7 @@ describe('TransactionShow', () => {
       hash: '0x01',
       data: '0xDADA',
     });
-    const component = shallow(<TransactionShow transaction={tx}  muiTheme={mockMuiTheme}/>);
+    const component = shallow(<TransactionShow transaction={tx} muiTheme={mockMuiTheme}/>);
     expect(component.find(Account)).toHaveLength(1);
   });
 });
