@@ -6,6 +6,7 @@ import { connect } from 'react-redux';
 import FlatButton from 'material-ui/FlatButton';
 import { convert, Wei } from 'emerald-js';
 import { IdentityIcon, Address as AccountAddress, Account, Button } from 'emerald-js-ui';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import launcher from 'store/launcher';
 import DashboardButton from 'components/common/DashboardButton';
 import { gotoScreen } from '../../../store/wallet/screen/screenActions';
@@ -33,7 +34,7 @@ type Props = {
 }
 
 export const TransactionShow = (props: Props) => {
-  const { transaction, account, fromAccount, toAccount, openAccount, goBack, repeatTx } = props;
+  const { transaction, account, fromAccount, toAccount, openAccount, goBack, repeatTx, muiTheme } = props;
   const { showFiat, rates, currentCurrency } = props;
 
   const fieldNameStyle = {
@@ -59,7 +60,7 @@ export const TransactionShow = (props: Props) => {
   const backButtonLabel = account ? 'Account' : 'Dashboard';
   const backButton = <DashboardButton label={ backButtonLabel } onClick={ () => goBack(account) }/>;
   return (
-    <Form caption="Ethereum Classic Transfer" backButton={ backButton } >
+    <Form caption="Ethereum Classic Transfer" backButton={ backButton } style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
       <Row>
         <div style={styles.left}>
         </div>
@@ -259,4 +260,4 @@ export default connect(
       dispatch(gotoScreen('repeat-tx', {transaction, toAccount, fromAccount}));
     },
   })
-)(TransactionShow);
+)(muiThemeable()(TransactionShow));

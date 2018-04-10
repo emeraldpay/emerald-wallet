@@ -4,8 +4,18 @@ import screen from 'store/wallet/screen';
 import accounts from 'store/vault/accounts';
 import Immutable from 'immutable';
 import { SubmissionError } from 'redux-form';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 
 import ImportMnemonic from '../../components/accounts/add/ImportMnemonic';
+
+
+const ImportMnemonicWrapper = ({muiTheme, ...props}) => {
+  return (
+    <div style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
+      <ImportMnemonic {...props} />
+    </div>
+  );
+};
 
 export default connect(
   (state, ownProps) => ({
@@ -30,4 +40,4 @@ export default connect(
       dispatch(screen.actions.gotoScreen('home'));
     },
   })
-)(ImportMnemonic);
+)(muiThemeable()(ImportMnemonicWrapper));

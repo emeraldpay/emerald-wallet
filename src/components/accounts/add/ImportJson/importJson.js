@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import { Button, Warning, WarningText, WarningHeader } from 'emerald-js-ui';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 
 import DashboardButton from 'components/common/DashboardButton';
 import screen from 'store/wallet/screen';
@@ -47,11 +48,11 @@ class ImportJson extends React.Component {
     }
 
     render() {
-      const { t, onDashboard, backLabel } = this.props;
+      const { t, onDashboard, backLabel, muiTheme } = this.props;
       const { file, fileError } = this.state;
 
       return (
-        <Form caption={ t('import.title') } backButton={ <DashboardButton onClick={ onDashboard } label={backLabel}/> }>
+        <Form caption={ t('import.title') } backButton={ <DashboardButton onClick={ onDashboard } label={backLabel}/> } style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
           {fileError && (
             <Row>
               <div style={ formStyles.left }/>
@@ -111,5 +112,5 @@ export default connect(
       dispatch(screen.actions.gotoScreen('home'));
     },
   })
-)(translate('accounts')(ImportJson));
+)(translate('accounts')(muiThemeable()(ImportJson)));
 

@@ -2,6 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import DashboardButton from 'components/common/DashboardButton';
 import { Form, styles as formStyles, Row } from 'elements/Form';
 import ledger from 'store/ledger';
@@ -29,12 +30,12 @@ class ImportAccount extends React.Component<Props> {
   }
 
   render() {
-    const { connected, hdbase, changeBaseHD, onBackScreen, onDashboard } = this.props;
+    const { connected, hdbase, changeBaseHD, onBackScreen, onDashboard, muiTheme } = this.props;
     if (!connected) {
       return (<WaitDialog />);
     }
     return (
-      <Form caption="Import Ledger hardware account" backButton={<DashboardButton onClick={onDashboard} />} >
+      <Form caption="Import Ledger hardware account" backButton={<DashboardButton onClick={onDashboard} />} style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
         <Row>
           <div style={formStyles.left}>
             <div style={formStyles.fieldName}>HD derivation path</div>
@@ -73,4 +74,4 @@ export default connect(
       dispatch(screen.actions.gotoScreen('home'));
     },
   })
-)(ImportAccount);
+)(muiThemeable()(ImportAccount));

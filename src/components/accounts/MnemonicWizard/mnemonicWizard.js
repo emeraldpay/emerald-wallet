@@ -1,10 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import screen from 'store/wallet/screen';
 import accounts from 'store/vault/accounts';
 
 import ImportMnemonic from '../add/ImportMnemonic';
 import ConfirmMnemonic from '../add/ConfirmMnemonic';
+
 
 import NewMnemonic from './NewMnemonic';
 
@@ -52,10 +54,9 @@ class MnemonicWizard extends React.Component {
   }
 
 
-  render() {
+  getPage() {
     const { gotoDashboard } = this.props;
     const { page, mnemonic, formData } = this.state;
-
     switch (page) {
       case PAGES.GENERATE:
         return (
@@ -91,6 +92,18 @@ class MnemonicWizard extends React.Component {
       default: return null;
     }
   }
+
+
+  render() {
+    const { gotoDashboard, muiTheme } = this.props;
+    const { page, mnemonic, formData } = this.state;
+    if (!page) { return null; }
+    return (
+      <div style={{border: `1px solid ${muiTheme.palette.borderColor}`}} >
+        {this.getPage()}
+      </div>
+    );
+  }
 }
 
 
@@ -107,5 +120,5 @@ export default connect(
     },
 
   })
-)(MnemonicWizard);
+)(muiThemeable()(MnemonicWizard));
 

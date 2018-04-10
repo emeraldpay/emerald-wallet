@@ -4,6 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import saveAs from '../../../lib/saveAs';
 import accounts from '../../../store/vault/accounts';
 import screen from '../../../store/wallet/screen';
@@ -122,7 +123,7 @@ class GenerateAccount extends React.Component<Props, State> {
     }
   }
 
-  render() {
+  getPage() {
     const { page, privateKey, accountId } = this.state;
     const { t, backLabel } = this.props;
     switch (page) {
@@ -142,6 +143,17 @@ class GenerateAccount extends React.Component<Props, State> {
       default: return null;
     }
   }
+
+  render() {
+    const { page, privateKey, accountId } = this.state;
+    const { t, backLabel, muiTheme } = this.props;
+    if (!page) { return null; }
+    return (
+      <div style={{border: `1px solid ${muiTheme.palette.borderColor}`}} >
+        {this.getPage()}
+      </div>
+    );
+  }
 }
 
-export default connect()(translate('accounts')(GenerateAccount));
+export default connect()(translate('accounts')(muiThemeable()(GenerateAccount)));

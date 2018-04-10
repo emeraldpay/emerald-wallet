@@ -23,6 +23,10 @@ const muiTheme = getMuiTheme(theme);
 function start() {
   log.info('Starting Emerald Wallet...');
 
+  // set document background to theme canvas color
+  const canvasColor = theme.palette.canvasColor;
+  document.body.style.backgroundColor = canvasColor;
+
   // Needed for onTouchTap
   injectTapEventPlugin();
 

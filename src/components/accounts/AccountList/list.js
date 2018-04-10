@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import { translate } from 'react-i18next';
 import classNames from 'classnames/bind';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import createLogger from '../../../utils/logger';
 
 import screen from '../../../store/wallet/screen';
@@ -18,9 +19,9 @@ const cx = classNames.bind(styles);
 const AccountList = translate('accounts')((props) => {
   log.trace('Rendering AccountList');
   const { accounts, showFiat } = props;
-  const { openAccount, createTx, showReceiveDialog } = props;
+  const { openAccount, createTx, showReceiveDialog, muiTheme } = props;
   return (
-    <div className={ styles.container }>
+    <div className={ styles.container } style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
       {accounts.map((account) => {
         const className = cx({
           listItem: true,
@@ -61,5 +62,5 @@ export default connect(
       dispatch(screen.actions.showDialog('receive', account));
     },
   })
-)(AccountList);
+)(muiThemeable()(AccountList));
 

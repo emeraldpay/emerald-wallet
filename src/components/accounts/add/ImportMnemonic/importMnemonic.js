@@ -3,10 +3,12 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import { Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import { required, passwordMatch, minLength } from 'lib/validators';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
 import DashboardButton from 'components/common/DashboardButton';
+
 import screen from 'store/wallet/screen';
 import HdPath from 'components/common/HdPath';
 
@@ -24,9 +26,10 @@ const HdPathFormField = (props) => {
 
 export class ImportMnemonic extends React.Component {
   render() {
-    const { onBack, backLabel, invalid, handleSubmit, error } = this.props;
+    const { onBack, backLabel, invalid, handleSubmit, error, muiTheme } = this.props;
     return (
-      <Form caption="Import Mnemonic" backButton={ <DashboardButton onClick={ onBack } label={ backLabel }/> }>
+      <Form caption="Import Mnemonic" backButton={ <DashboardButton onClick={ onBack } label={ backLabel }/> } >
+
         <Row>
           <div style={ formStyles.left }/>
           <div style={ formStyles.right }>
@@ -163,5 +166,5 @@ export default connect(
       }
     },
   })
-)(importForm);
+)(muiThemeable()(importForm));
 

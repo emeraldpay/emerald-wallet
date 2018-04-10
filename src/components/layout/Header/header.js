@@ -1,6 +1,7 @@
 import React from 'react';
 import { AppBar, FlatButton, LinearProgress } from 'material-ui';
 import { Block as BlockIcon, Settings as SettingsIcon } from 'emerald-js-ui/lib/icons2';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import SyncWarning from '../../../containers/SyncWarning';
 import Status from './Status';
 import Total from './Total';
@@ -33,10 +34,19 @@ const Header = (props) => {
         <LinearProgress
           disabled={showProgress}
           mode="determinate"
-          color="white"
+          color={muiTheme.palette.primary1Color}
           value={progress}
           style={{height: '2px'}}
         />
+      </div>
+    );
+  };
+
+  const EmeraldTitle = () => {
+    return (
+      <div>
+        <span style={{color: muiTheme.palette.primary1Color}}>Emerald </span>
+        <span style={{color: muiTheme.palette.secondaryTextColor}}>Wallet</span>
       </div>
     );
   };
@@ -49,9 +59,9 @@ const Header = (props) => {
         <FlatButton
           disabled={true}
           label={label}
-          style={{color: muiTheme.palette.alternateTextColor, lineHeight: 'inherit'}}
+          style={{color: muiTheme.palette.secondaryTextColor, lineHeight: 'inherit'}}
           labelStyle={styles.buttons.label}
-          icon={<BlockIcon color={muiTheme.palette.alternateTextcolor}/>}
+          icon={<BlockIcon color={muiTheme.palette.secondaryTextColor}/>}
         />
         {showProgressBar(showProgress)}
       </div>
@@ -62,19 +72,21 @@ const Header = (props) => {
     <FlatButton
       hoverColor="transparent"
       onTouchTap={ openSettings }
-      style={{color: muiTheme.palette.alternateTextColor}}
+      style={{color: muiTheme.palette.secondaryTextColor}}
       label="Settings"
       labelStyle={styles.buttons.label}
-      icon={<SettingsIcon color={muiTheme.palette.alternateTextcolor}/>}
+      icon={<SettingsIcon color={muiTheme.palette.secondaryTextColor}/>}
     />);
 
   return (
     <div>
       <AppBar
-        title="Emerald Wallet"
+        title={<EmeraldTitle />}
+        style={{backgroundColor: muiTheme.palette.alternateTextColor, borderBottom: `1px solid ${muiTheme.palette.borderColor}`}}
         titleStyle={{fontSize: '16px'}}
         showMenuIconButton={false}
         iconStyleRight={styles.appBarRight}
+        zDepth={0}
         iconElementRight={
           <div style={styles.appBarRight}>
             <Total />

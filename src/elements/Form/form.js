@@ -1,11 +1,11 @@
 // @flow
 import React from 'react';
 import { Card } from 'emerald-js-ui';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import formStyles from './form.scss';
 
 export const styles = {
   fieldName: {
-    color: '#747474',
     fontSize: '16px',
     textAlign: 'right',
   },
@@ -43,12 +43,13 @@ export class Form extends React.Component {
     backButton: Element,
     caption: string,
     children: Element,
+    style: Object
   }
 
   render() {
-    const { children, caption, backButton } = this.props;
+    const { children, caption, backButton, style } = this.props;
     return (
-      <Card>
+      <Card style={style}>
         <div className={ formStyles.form }>
           <div style={styles.formRow}>
             <div style={styles.left}>
@@ -67,4 +68,3 @@ export class Form extends React.Component {
       </Card>);
   }
 }
-

@@ -3,6 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 
 import { tables } from '../../../../lib/styles';
 import Transaction from './transaction';
@@ -14,14 +15,23 @@ type Props = {
     accountId: string,
 };
 
+const renderEmptyTransactions = (transactions, muiTheme) => {
+  if (transactions.size === 0) {
+    return (
+      <div style={{paddingTop: '20px', color: muiTheme.palette.disabledColor}}> There are no transactions. </div>
+    );
+  }
+  return null;
+};
+
 const TransactionsList = (props: Props) => {
-  const { transactions, accountId } = props;
+  const { transactions, accountId, muiTheme } = props;
   if (!transactions) {
     return (<div>Loading...</div>);
   }
   return (
     <div>
-      <Table selectable={ false } fixedHeader={ true }>
+      <Table selectable={ false } fixedHeader={ true } style={{background: muiTheme.palette.alternateTextColor}}>
         <TableHeader displaySelectAll={ false } adjustForCheckbox={ false }>
           <TableRow>
             <TableHeaderColumn className={ cx(classes.columnName, classes.amountColumn) } >
@@ -38,6 +48,7 @@ const TransactionsList = (props: Props) => {
         </TableHeader>
         <TableBody displayRowCheckbox={ false }>
           { transactions.map((tx) => <Transaction key={tx.get('hash')} tx={tx} accountId={ accountId } />) }
+          { renderEmptyTransactions(transactions, muiTheme) }
         </TableBody>
       </Table>
     </div>
@@ -49,4 +60,4 @@ TransactionsList.propTypes = {
 };
 
 
-export default TransactionsList;
+export default muiThemeable()(TransactionsList);
