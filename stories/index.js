@@ -7,6 +7,5 @@ import './TxHistory';
 import './AccountEdit';
 import './Terms';
 import './AccountPropertiesDialog';
-import './Footer';
 import './PasswordInput';
 // import './Header';

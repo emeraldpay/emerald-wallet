@@ -4,7 +4,6 @@ import { translate } from 'react-i18next';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import Screen from '../../../containers/Screen/screen';
 import Header from '../Header';
-import Footer from '../Footer';
 import NotificationBar from '../NotificationBar';
 import ErrorDialog from '../../common/ErrorDialog';
 import Dialog from '../../dialog';
@@ -23,7 +22,6 @@ const Render = translate('common')(({ muiTheme, ...props }) => {
       <ErrorDialog />
       <NotificationBar />
       <Dialog />
-      {props.screen !== 'welcome' && props.screen !== 'paper-wallet' && <Footer maxWidth={ maxWidth }/>}
     </div>
   );
 });

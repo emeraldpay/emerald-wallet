@@ -3,6 +3,7 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Logo as EtcLogo } from 'emerald-js-ui/lib/icons';
 import { Button } from 'emerald-js-ui';
 import version from '../../version';
+
 const year = new Date().getFullYear();
 
 class AboutClass extends React.Component {
