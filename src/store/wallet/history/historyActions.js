@@ -30,9 +30,12 @@ export function trackTx(tx) {
 }
 
 export function processPending(transactions: Array<any>) {
-  return {
-    type: ActionTypes.PENDING_TX,
-    txList: transactions,
+  return (dispatch, getState) => {
+    dispatch({
+      type: ActionTypes.PENDING_TX,
+      txList: transactions,
+    });
+    persistTransactions(getState());
   };
 }
 

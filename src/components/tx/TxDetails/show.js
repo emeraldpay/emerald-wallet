@@ -3,19 +3,18 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { Map } from 'immutable';
 import { connect } from 'react-redux';
-import FlatButton from 'material-ui/FlatButton';
 import { convert, Wei } from 'emerald-js';
-import { IdentityIcon, Address as AccountAddress, Account, Button } from 'emerald-js-ui';
+import { Account, Button } from 'emerald-js-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import launcher from 'store/launcher';
 import DashboardButton from 'components/common/DashboardButton';
 import { gotoScreen } from '../../../store/wallet/screen/screenActions';
 import { toDate } from '../../../lib/convert';
-
 import { Form, styles, Row } from '../../../elements/Form';
 import TxStatus from './status';
 import { Currency } from '../../../lib/currency';
 import createLogger from '../../../utils/logger';
+import TxInputData from './TxInputData';
 
 import classes from './show.scss';
 
@@ -100,12 +99,13 @@ export const TransactionShow = (props: Props) => {
           <div style={fieldNameStyle}>To</div>
         </div>
         <div style={{...styles.right, alignItems: 'center'}}>
+          {transaction.get('to') &&
           <Account
             addr={transaction.get('to')}
             identity
             identityProps={{size: 30}}
             onClick={ () => openAccount(toAccount) }
-          />
+          />}
         </div>
       </Row>
 
@@ -192,7 +192,7 @@ export const TransactionShow = (props: Props) => {
         </div>
         <div style={styles.right}>
           <div className={ classes.txData }>
-            { transaction.get('data') === '0x' ? 'none' : transaction.get('data') }
+            <TxInputData data={transaction.get('data')} />
           </div>
         </div>
       </Row>

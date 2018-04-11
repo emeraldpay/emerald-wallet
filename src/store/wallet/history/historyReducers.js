@@ -65,6 +65,23 @@ function onTrackTx(state, action) {
   return state;
 }
 
+function onPendingTx(state, action) {
+  if (action.type === ActionTypes.PENDING_TX) {
+    let txes = state.get('trackedTransactions');
+    for (const tx of action.txList) {
+      // In case of dupe pending txs.
+      const pos = txes.findKey((Tx) => Tx.get('hash') === tx.hash);
+      if (pos >= 0) {
+        txes = txes.set(pos, createTx(tx));
+      } else {
+        txes = txes.push(createTx(tx));
+      }
+    }
+    return state.set('trackedTransactions', fromJS(txes));
+  }
+  return state;
+}
+
 function onLoadStoredTransactions(state, action) {
   if (action.type === ActionTypes.LOAD_STORED_TXS) {
     let txs = fromJS([]);
@@ -117,23 +134,6 @@ function onUpdateTxs(state, action) {
       });
       return txs;
     });
-  }
-  return state;
-}
-
-function onPendingTx(state, action) {
-  if (action.type === ActionTypes.PENDING_TX) {
-    let txes = state.get('trackedTransactions');
-    for (const tx of action.txList) {
-      // In case of dupe pending txs.
-      const pos = txes.findKey((Tx) => Tx.get('hash') === tx.hash);
-      if (pos >= 0) {
-        txes = txes.set(pos, createTx(tx));
-      } else {
-        txes = txes.push(createTx(tx));
-      }
-    }
-    return state.set('trackedTransactions', fromJS(txes));
   }
   return state;
 }
