@@ -19,7 +19,6 @@ import ledger from './ledger';
 // import { loadContractList } from './contractActions';
 import { readConfig, listenElectron, connecting, loadClientVersion } from './launcher/launcherActions';
 import addressReducers from './addressReducers';
-import contractReducers from './contractReducers';
 import launcherReducers from './launcher/launcherReducers';
 import walletReducers from './wallet/walletReducers';
 import deployedTokens from '../lib/deployedTokens';
@@ -32,7 +31,6 @@ const stateTransformer = (state) => ({
   accounts: state.accounts.toJS(),
   addressBook: state.addressBook.toJS(),
   tokens: state.tokens.toJS(),
-  contracts: state.contracts.toJS(),
   network: state.network.toJS(),
   launcher: state.launcher.toJS(),
   ledger: state.ledger.toJS(),
@@ -52,7 +50,6 @@ const reducers = {
   accounts: accounts.reducer,
   addressBook: addressReducers,
   tokens: tokens.reducer,
-  contracts: contractReducers,
   network: network.reducer,
   launcher: launcherReducers,
   ledger: ledger.reducer,

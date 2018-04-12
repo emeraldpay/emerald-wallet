@@ -14,10 +14,6 @@ import LedgerImport from '../../components/ledger/ImportAccount';
 import ImportJson from '../../components/accounts/add/ImportJson';
 import ImportPrivateKey from '../../components/accounts/add/ImportPrivateKey';
 import ImportMnemonic from '../../containers/ImportMnemonic';
-import ContractsList from '../../components/contracts/list';
-import AddContract from '../../components/contracts/add';
-import DeployContract from '../../components/contracts/deploy';
-import ContractShow from '../../components/contracts/show';
 import Welcome from '../../components/welcome/welcome';
 import Landing from '../../containers/Landing';
 import Dashboard from '../../components/layout/Dashboard';
@@ -37,13 +33,6 @@ const Screen = ({ screen, screenItem }) => {
     </div>);
   } else if (screen === 'home') {
     return (<Dashboard />);
-  } else if (screen === 'contracts') {
-    return (
-      <div>
-        <ContractsList/>
-        <AddContract/>
-      </div>
-    );
   } else if (screen === 'address-book') {
     return <AddressBook />;
   } else if (screen === 'address') {
@@ -84,10 +73,6 @@ const Screen = ({ screen, screenItem }) => {
     return <MnemonicWizard />;
   } else if (screen === 'add-token') {
     return <AddToken />;
-  } else if (screen === 'deploy-contract') {
-    return <DeployContract />;
-  } else if (screen === 'contract') {
-    return <ContractShow contract={ screenItem } />;
   } else if (screen === 'landing') {
     return <Landing />;
   } else if (screen === 'welcome') {
