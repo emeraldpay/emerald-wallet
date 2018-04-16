@@ -22,7 +22,7 @@ class ExtendedMenuItem extends React.Component {
         }}
       >
         <div>{net.title}</div>
-        <div style={{ color: muiTheme.palette.disabledColor, fontSize: '12px', paddingTop: '3px' }}>{networkType}</div>
+        <div style={{ color: muiTheme.palette.secondaryTextColor, fontSize: '12px', paddingTop: '3px' }}>{networkType}</div>
       </div>
     );
   }
@@ -61,6 +61,7 @@ class NetworkSelectorRender extends React.Component {
         value={ currentNetwork.id }
         style={ styles.main }
         underlineStyle={{ display: 'none' }}
+        menuStyle={{border: `1px solid ${muiTheme.palette.borderColor}`}}
         iconStyle={{display: 'none'}}
         labelStyle={ styles.label }>
         { Networks.map((net) =>

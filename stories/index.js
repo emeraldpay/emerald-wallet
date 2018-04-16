@@ -1,11 +1,11 @@
 import 'typeface-rubik/index.css';
 import '../src/index.scss';
+import './About';
 import './Landing';
 import './DashboardButton';
 import './TxHistory';
 import './AccountEdit';
 import './Terms';
 import './AccountPropertiesDialog';
-import './Footer';
 import './PasswordInput';
 // import './Header';

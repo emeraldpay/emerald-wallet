@@ -4,7 +4,6 @@ import { connect } from 'react-redux';
 import { closeDialog } from '../store/wallet/screen/screenActions';
 import WaitForSign from './tx/WaitForSignDialog/waitForSignDialog';
 import ReceiveDialog from './accounts/ReceiveDialog';
-import AboutDialog from './layout/AboutDialog';
 import createLogger from '../utils/logger';
 import TokensDialog from './tokens/TokensDialog';
 import HideAccountDialog from './accounts/HideAccountDialog';
@@ -22,8 +21,6 @@ const Dialog = ({ dialog, item, handleClose }) => {
     return <WaitForSign/>;
   } else if (dialog === 'receive') {
     return <ReceiveDialog account={ item } onClose= { handleClose }/>;
-  } else if (dialog === 'about') {
-    return <AboutDialog onClose= { handleClose } />;
   } else if (dialog === 'tokens') {
     return <TokensDialog onClose={ handleClose } />;
   } else if (dialog === 'ledger-wait') {

@@ -18,7 +18,7 @@ type Props = {
 const renderEmptyTransactions = (transactions, muiTheme) => {
   if (transactions.size === 0) {
     return (
-      <div style={{paddingTop: '20px', color: muiTheme.palette.disabledColor}}> There are no transactions. </div>
+      <div style={{paddingTop: '20px', color: muiTheme.palette.secondaryTextColor}}> There are no transactions. </div>
     );
   }
   return null;
