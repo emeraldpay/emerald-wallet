@@ -1,12 +1,14 @@
 const { shell } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const logger = require('../logger');
+const createAboutPage = require('../about');
 
 module.exports = function (window) {
   return [{
     label: 'Emerald',
     submenu: [
       {
-        role: 'about',
+        label: 'About Emerald Wallet',
+        click() { createAboutPage(); },
       },
       {
         type: 'separator',

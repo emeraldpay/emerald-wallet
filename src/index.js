@@ -12,6 +12,7 @@ import i18n from './i18n/i18n';
 import {store, start as startStore} from './store/store';
 import Main from './components/layout/Main/main';
 import createLogger from './utils/logger';
+import About from './containers/About';
 
 import './index.scss';
 import './bootstrapButtons.scss';
@@ -45,5 +46,17 @@ function start() {
   startStore();
 }
 
+const showAbout = () => {
+  const App = () => (
+    <I18nextProvider i18n={i18n}>
+      <MuiThemeProvider muiTheme={muiTheme}>
+        <About />
+      </MuiThemeProvider>
+    </I18nextProvider>
+  );
+  ReactDOM.render(<App />, document.getElementById('app'));
+};
+
 window.ETCEMERALD = window.ETCEMERALD || {};
 window.ETCEMERALD.start = start;
+window.ETCEMERALD.showAbout = showAbout;
