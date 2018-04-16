@@ -27,8 +27,6 @@ export const traceValidate = (tx, dispatch, estimateGas): Promise<number> => {
   return new Promise((resolve, reject) => {
     dispatch(estimateGas(tx.from, tx.to, tx.gas, tx.gasPrice, tx.value, tx.data))
       .then((gasEst) => {
-        //log.debug(`Estimated gas = ${JSON.stringify(gasEst)}`);
-
         if (!gasEst) {
           reject('Invalid Transaction');
         } else if (gasEst > convert.toNumber(tx.gas)) {

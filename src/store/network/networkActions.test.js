@@ -35,17 +35,14 @@ describe('networkActions/loadSyncing', () => {
 describe('networkActions/loadHeight', () => {
   const getState = () => ({
   });
-  
   it('should call getBlockNumber rpc endpoint', () => {
     const fakeTransport = {
       request: () => Promise.resolve({
         result: 0xc,
       }),
     };
-  
     const ethRpc = new EthRpc(new JsonRpc(fakeTransport));
     const dispatch = jest.fn();
-  
     return loadHeight(false)(dispatch, getState, { geth: ethRpc }).then(() => {
       expect(dispatch).toBeCalledWith({
         type: ActionTypes.BLOCK,
