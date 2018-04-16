@@ -2,10 +2,9 @@
 import { getRates } from '../../../lib/marketApi';
 import ActionTypes from './actionTypes';
 import screen from '../screen';
-import i18n from '../../../i18n/i18n';
 
 export function loadSettings() {
-  return (dispatch) => {
+  return (dispatch, getState) => {
     if (localStorage) {
       let localeCurrency = localStorage.getItem('localeCurrency');
       localeCurrency = (localeCurrency === null) ? 'USD' : localeCurrency;
@@ -42,8 +41,7 @@ export function getExchangeRates() {
 }
 
 export function update(settings: { language: string, localeCurrency: string, showHiddenAccounts: boolean, numConfirmations: number }) {
-  return (dispatch) => {
-    i18n.changeLanguage(settings.language);
+  return (dispatch, getState) => {
     return Promise.all([
       dispatch({
         type: ActionTypes.SET_LOCALE_CURRENCY,

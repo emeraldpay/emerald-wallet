@@ -16,6 +16,8 @@ import screen from '../../store/wallet/screen';
 import settings from '../../store/wallet/settings';
 import accounts from '../../store/vault/accounts';
 
+import i18n from '../../i18n/i18n';
+
 export class Settings extends React.Component {
   render() {
     const { goDashboard, handleSubmit, t, muiTheme } = this.props;
@@ -130,7 +132,7 @@ export default connect(
   (state, ownProps) => {
     return {
       initialValues: {
-        language: settings.selectors.currentLanguage(state),
+        language: i18n.language,
         currency: state.wallet.settings.get('localeCurrency', '').toLowerCase(),
         showHiddenAccounts: state.wallet.settings.get('showHiddenAccounts', false),
         numConfirmations: state.wallet.settings.get('numConfirmations'),
@@ -149,6 +151,7 @@ export default connect(
         showHiddenAccounts: data.showHiddenAccounts,
         numConfirmations: data.numConfirmations,
       };
+      i18n.changeLanguage(data.language);
       dispatch(settings.actions.update(newSettings));
       dispatch(accounts.actions.loadAccountsList());
     },
