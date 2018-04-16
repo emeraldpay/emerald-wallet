@@ -21,7 +21,7 @@ export function switchChain({ chain, chainId }) {
 
 export function loadHeight(watch) {
   return (dispatch, getState, api) =>
-    api.geth.eth.blockNumber().then((result) => {
+    api.geth.eth.getBlockNumber().then((result) => {
       dispatch({
         type: ActionTypes.BLOCK,
         height: result,
@@ -33,20 +33,21 @@ export function loadHeight(watch) {
     });
 }
 
-export function loadNetworkVersion() {
-  return (dispatch, getState, api) =>
-    api.geth.net.version().then((result) => {
-      dispatch({
-        type: ActionTypes.PEER_COUNT,
-        id: `${parseInt(result, 10) + 60}`,
-      });
+// TODO: remove it ?
+// export function loadNetworkVersion() {
+//   return (dispatch, getState, api) =>
+//     api.geth.net.version().then((result) => {
+//       dispatch({
+//         type: ActionTypes.PEER_COUNT,
+//         id: `${parseInt(result, 10) + 60}`,
+//       });
 
-      if (getState().launcher.get('chain').get('id') !== result) {
-        // TODO: our full node on not expected chain - should we alarm ?
+//       if (getState().launcher.get('chain').get('id') !== result) {
+//         // TODO: our full node on not expected chain - should we alarm ?
 
-      }
-    });
-}
+//       }
+//     });
+// }
 
 export function loadPeerCount() {
   return (dispatch, getState, api) =>
@@ -63,13 +64,14 @@ export function loadPeerCount() {
 export function loadSyncing() {
   return (dispatch, getState, api) => {
     const repeat = getState().launcher.getIn(['geth', 'type']) === 'local';
-    api.geth.eth.syncing().then((result) => {
-      const syncing = getState().network.get('sync').get('syncing');
+    return api.geth.eth.getSyncing().then((result) => {
+      // const syncing = getState().network.get('sync').get('syncing');
       if (typeof result === 'object') {
         // TODO: hz, remove it ?
         // if (!syncing) {
         //     dispatch(loadNetworkVersion());
         // }
+
         dispatch({
           type: ActionTypes.SYNCING,
           syncing: true,
@@ -100,7 +102,7 @@ export function getGasPrice() {
   };
 }
 
-export function estimateGas(from: string, to: string, gas: string, gasPrice: string, value: string, data: string): BigNumber {
+export function estimateGas(from: string, to: string, gas: string, gasPrice: string, value: string, data: string) {
   return (dispatch, getState, api) => {
     return api.geth.eth.estimateGas({
       from,
