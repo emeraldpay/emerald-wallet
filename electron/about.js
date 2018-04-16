@@ -12,6 +12,8 @@ const createAboutPage = () => {
     protocol: 'file:',
     slashes: true,
   }));
+
+  mainWindow.setMenu(null);
 };
 
 module.exports = createAboutPage;

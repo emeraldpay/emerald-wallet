@@ -4,10 +4,7 @@ const createAboutPage = require('../about');
 
 module.exports = function (window) {
   return [
-    {
-      label: 'About Emerald Wallet',
-      click() { createAboutPage(); },
-    },
+
     {
       label: '&Emerald',
       submenu: [
@@ -17,6 +14,10 @@ module.exports = function (window) {
           click: () => {
             window.close();
           },
+        },
+        {
+          label: '&About',
+          click() { createAboutPage(); },
         },
       ],
     },

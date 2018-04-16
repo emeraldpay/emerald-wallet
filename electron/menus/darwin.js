@@ -7,7 +7,7 @@ module.exports = function (window) {
     label: 'Emerald',
     submenu: [
       {
-        label: 'About Emerald Wallet',
+        label: 'About',
         click() { createAboutPage(); },
       },
       {

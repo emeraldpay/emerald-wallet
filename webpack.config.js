@@ -20,6 +20,7 @@ const config = {
     new ExtractTextPlugin({filename: '[name].css'}),
     new CopyWebpackPlugin([
       { from: path.join(srcDir, 'index.html'), to: './' },
+      { from: path.join(srcDir, 'about.html'), to: './' },
     ], {copyUnmodified: true}),
   ],
   output: {
