@@ -23,15 +23,13 @@ const DefaultTokenGas = 23890;
 
 const { toHex } = convert;
 
-const traceValidate = (tx, dispatch): Promise<BigNumber> => {
+export const traceValidate = (tx, dispatch, estimateGas): Promise<number> => {
   return new Promise((resolve, reject) => {
-    dispatch(network.actions.estimateGas(tx.from, tx.to, tx.gas, tx.gasPrice, tx.value, tx.data))
+    dispatch(estimateGas(tx.from, tx.to, tx.gas, tx.gasPrice, tx.value, tx.data))
       .then((gasEst) => {
-        log.debug(`Estimated gas = ${JSON.stringify(gasEst)}`);
-
         if (!gasEst) {
           reject('Invalid Transaction');
-        } else if (gasEst.greaterThan(convert.toBigNumber(tx.gas))) {
+        } else if (gasEst > convert.toNumber(tx.gas)) {
           reject(`Insufficient Gas. Expected ${gasEst}`);
         } else {
           resolve(gasEst);
@@ -167,7 +165,7 @@ const CreateTx = connect(
 
 
       // 2. Validate Trace and then Send TX
-      return traceValidate(tx, dispatch)
+      return traceValidate(tx, dispatch, network.actions.estimateGas)
         .then((estimatedGas) => {
           log.debug(`Tx validated. Estimated Gas ${estimatedGas}`);
 

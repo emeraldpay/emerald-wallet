@@ -7,7 +7,7 @@ module.exports = function (window) {
     label: 'Emerald',
     submenu: [
       {
-        label: 'About Emerald Wallet',
+        label: 'About',
         click() { createAboutPage(); },
       },
       {
@@ -35,7 +35,8 @@ module.exports = function (window) {
       {
         role: 'quit',
       },
-    ]}, {
+    ],
+  }, {
     label: 'Edit',
     submenu: [
       {
@@ -62,7 +63,8 @@ module.exports = function (window) {
       {
         role: 'selectall',
       },
-    ]},
+    ],
+  },
   {
     label: 'View',
     submenu: [
@@ -99,6 +101,15 @@ module.exports = function (window) {
       },
       {
         role: 'togglefullscreen',
+      },
+    ],
+  },
+  {
+    label: 'Help',
+    submenu: [
+      {
+        label: 'About',
+        click() { createAboutPage(); },
       },
     ],
   }];
