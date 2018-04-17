@@ -4,7 +4,6 @@ const createAboutPage = require('../about');
 
 module.exports = function (window) {
   return [
-
     {
       label: '&Emerald',
       submenu: [
@@ -14,10 +13,6 @@ module.exports = function (window) {
           click: () => {
             window.close();
           },
-        },
-        {
-          label: '&About',
-          click() { createAboutPage(); },
         },
       ],
     },
@@ -44,6 +39,15 @@ module.exports = function (window) {
           click() {
             shell.openItem(logger.transports.file.file);
           },
+        },
+      ],
+    },
+    {
+      label: '&Help',
+      submenu: [
+        {
+          label: '&About',
+          click() { createAboutPage(); },
         },
       ],
     },
