@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { FlatButton } from 'material-ui';
 import { connect } from 'react-redux';
 import { Wei } from 'emerald-js';
-import EtcLogo from 'emerald-js-ui/lib/icons2/EtcLogo';
+import { EtcSimple } from 'emerald-js-ui/lib/icons3';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import accounts from '../../../../store/vault/accounts';
 

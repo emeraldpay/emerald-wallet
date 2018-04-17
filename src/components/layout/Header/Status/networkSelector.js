@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { MenuItem, DropDownMenu } from 'material-ui';
-import { ArrowDown } from 'emerald-js-ui/lib/icons2';
+import { ArrowDown } from 'emerald-js-ui/lib/icons3';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Networks, findNetwork } from '../../../../lib/networks';
 

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { CardText } from 'material-ui/Card';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { Button, IdentityIcon, Account as AddressAvatar, ButtonGroup, Card } from 'emerald-js-ui';
-import { QrCode as QrCodeIcon } from 'emerald-js-ui/lib/icons2';
+import { Qrcode as QrCodeIcon } from 'emerald-js-ui/lib/icons3';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../Balance';
 import TokenUnits from '../../../lib/tokenUnits';

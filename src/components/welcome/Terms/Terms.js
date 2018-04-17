@@ -1,7 +1,7 @@
 import React from 'react';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { Button } from 'emerald-js-ui';
-import { Check as CheckIcon } from 'emerald-js-ui/lib/icons2';
+import { Check as CheckIcon } from 'emerald-js-ui/lib/icons3';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 
 export const Terms = ({ onAgree }) => {

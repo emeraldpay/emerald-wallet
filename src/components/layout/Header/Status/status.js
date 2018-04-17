@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import LinearProgress from 'material-ui/LinearProgress';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import { Network as NetworkIcon, NetworkDisconnected as NetworkDisconnectedIcon } from 'emerald-js-ui/lib/icons2';
+import { Network as NetworkIcon, NetworkDisconnected as NetworkDisconnectedIcon } from 'emerald-js-ui/lib/icons3';
 import { separateThousands } from '../../../../lib/convert';
 import { waitForServicesRestart } from '../../../../store/store';
 import NetworkSelector from './networkSelector';

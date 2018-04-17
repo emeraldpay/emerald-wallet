@@ -4,7 +4,7 @@ import { FontIcon, FlatButton, Popover } from 'material-ui';
 import { List, ListItem } from 'material-ui/List';
 import { Ledger as LedgerIcon } from 'emerald-js-ui/lib/icons';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import { Add as AddIcon, Download as DownloadIcon, Token1 as TokenIcon } from 'emerald-js-ui/lib/icons2';
+import { Add as AddIcon, Download as DownloadIcon, Token1 as TokenIcon } from 'emerald-js-ui/lib/icons3';
 
 const styles = {
   button: {
