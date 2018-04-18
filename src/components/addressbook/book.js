@@ -3,8 +3,7 @@ import { connect } from 'react-redux';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table';
 import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
-import FontIcon from 'material-ui/FontIcon';
-import { Add as AddIcon } from 'emerald-js-ui/lib/icons2';
+import { Add as AddIcon, Book as BookIcon } from 'emerald-js-ui/lib/icons3';
 import Avatar from 'material-ui/Avatar';
 import { cardSpace, tables } from 'lib/styles';
 import Immutable from 'immutable';
@@ -28,7 +27,7 @@ const Render = ({ addressBook, addAddress }) => {
   const titleStyle = {
     fontSize: '20px',
   };
-  const titleAvatar = <Avatar icon={<FontIcon className="fa fa-address-book-o fa-2x" />} />;
+  const titleAvatar = <Avatar icon={<BookIcon />} />;
 
   return (
     <div id="address-book">

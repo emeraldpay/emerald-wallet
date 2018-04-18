@@ -9,7 +9,6 @@ import { waitForServicesRestart } from '../../../../store/store';
 import NetworkSelector from './networkSelector';
 import launcher from '../../../../store/launcher';
 import wallet from '../../../../store/wallet';
-import { Networks, findNetwork } from '../../../../lib/networks';
 
 const Status = ({ block, progress, peerCount, showDetails, connecting, switchNetwork, chain, geth, muiTheme }) => {
   const styles = {
@@ -30,10 +29,10 @@ const Status = ({ block, progress, peerCount, showDetails, connecting, switchNet
 
   if (connecting) {
     icon =
-      <NetworkDisconnectedIcon color={muiTheme.palette.secondaryTextColor} />;
+      <NetworkDisconnectedIcon style={{color: muiTheme.palette.secondaryTextColor}} />;
   } else {
     icon =
-      <NetworkIcon color={muiTheme.palette.secondaryTextColor} />;
+      <NetworkIcon style={{color: muiTheme.palette.secondaryTextColor}} />;
   }
 
   return (

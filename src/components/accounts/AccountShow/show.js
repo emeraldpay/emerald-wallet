@@ -8,7 +8,6 @@ import QRCode from 'qrcode.react';
 import TokenUnits from 'lib/tokenUnits';
 import { Button, IdentityIcon, Account as AddressAvatar, ButtonGroup } from 'emerald-js-ui';
 import { Form, styles, Row } from 'elements/Form';
-import { Qrcode as QrCodeIcon } from 'emerald-js-ui/lib/icons3';
 import DashboardButton from 'components/common/DashboardButton';
 import accounts from '../../../store/vault/accounts';
 import tokens from '../../../store/vault/tokens';
@@ -23,13 +22,7 @@ import SecondaryMenu from '../SecondaryMenu';
 import classes from './show.scss';
 import TokenBalances from '../TokenBalances';
 
-
 const log = createLogger('AccountShow');
-
-const qrIconStyle = {
-  width: '14px',
-  height: '14px',
-};
 
 export class AccountShow extends React.Component {
   constructor(props) {
@@ -134,7 +127,6 @@ export class AccountShow extends React.Component {
                       <Button
                         primary
                         label="Add ETC"
-                        icon={ <QrCodeIcon style={ qrIconStyle } color="white"/> }
                         onClick={ showReceiveDialog }
                       />
                       <Button

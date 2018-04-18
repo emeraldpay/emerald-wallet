@@ -2,12 +2,11 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
-import FontIcon from 'material-ui/FontIcon';
 import ledger from 'store/ledger/';
 import screen from 'store/wallet/screen';
 import accounts from 'store/vault/accounts/';
 import { Button, ButtonGroup } from 'emerald-js-ui';
-import { Add as AddIcon } from 'emerald-js-ui/lib/icons3';
+import { AddCircle as AddIcon } from 'emerald-js-ui/lib/icons3';
 
 const Render = ({ selected, onAddSelected, onCancel }) => {
   return (
@@ -22,7 +21,6 @@ const Render = ({ selected, onAddSelected, onCancel }) => {
       <Button
         label="Cancel"
         onClick={onCancel}
-        icon={<FontIcon className="fa fa-undo" />}
       />
     </ButtonGroup>
   );

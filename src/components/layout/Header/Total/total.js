@@ -25,7 +25,7 @@ const Total = ({ total, muiTheme }: Props) => {
   return (
     <FlatButton
       disabled={true}
-      icon={<EtcLogo />}
+      icon={<EtcSimple style={{color: muiTheme.palette.secondaryTextColor}}/>}
       labelStyle={styles.label}
       label={totalFormatted}
       style={{color: muiTheme.palette.secondaryTextColor, lineHeight: 'inherit'}} />

@@ -2,9 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { IconMenu, IconButton, MenuItem } from 'material-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import MoreHorizIcon from 'material-ui/svg-icons/navigation/more-horiz';
-import FontIcon from 'material-ui/FontIcon';
-import { Print as PrintIcon, Export as ExportIcon } from 'emerald-js-ui/lib/icons2';
+import { Print as PrintIcon, Export as ExportIcon, ViewVisible as ViewVisibleIcon, ViewHidden as ViewHiddenIcon, MoreHorizontal as MoreHorizontalIcon } from 'emerald-js-ui/lib/icons3';
 import { api } from 'lib/rpc/api';
 import saveAs from 'lib/saveAs';
 import screen from '../../../store/wallet/screen';
@@ -22,7 +20,7 @@ const renderHide = (chain, account, onHide, { disabledColor }) => {
   return (
     <MenuItem
       disabled={ disabled }
-      leftIcon={<FontIcon style={ iconStyle } className="fa fa-eye-slash"/>}
+      leftIcon={<ViewHiddenIcon />}
       primaryText='HIDE'
       onClick={ onHide(chain) }/>
   );
@@ -31,7 +29,7 @@ const renderHide = (chain, account, onHide, { disabledColor }) => {
 const renderUnhide = (chain, account, onUnhide) => {
   return (
     <MenuItem
-      leftIcon={<FontIcon className="fa fa-eye"/>}
+      leftIcon={<ViewVisibleIcon />}
       primaryText='UNHIDE'
       onClick={ onUnhide(chain) }/>
   );
@@ -44,7 +42,7 @@ const SecondaryMenu = ({ account, onPrint, onExport, onHide, onUnhide, chain, mu
   };
   const isHardware = account.get('hardware', false);
   return (
-    <IconMenu iconButtonElement={<IconButton><MoreHorizIcon /></IconButton>}>
+    <IconMenu iconButtonElement={<IconButton><MoreHorizontalIcon /></IconButton>}>
       {!isHardware &&
             <MenuItem
               leftIcon={<ExportIcon />}

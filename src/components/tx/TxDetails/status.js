@@ -1,5 +1,4 @@
 import React from 'react';
-import { FontIcon } from 'material-ui';
 import CircularProgress from 'material-ui/CircularProgress';
 import styles from './status.scss';
 

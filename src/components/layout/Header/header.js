@@ -1,7 +1,6 @@
 import React from 'react';
 import { AppBar, FlatButton, LinearProgress } from 'material-ui';
 import { Block as BlockIcon, Settings as SettingsIcon } from 'emerald-js-ui/lib/icons3';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import SyncWarning from '../../../containers/SyncWarning';
 import Status from './Status';
 import Total from './Total';
@@ -61,7 +60,7 @@ const Header = (props) => {
           label={label}
           style={{color: muiTheme.palette.secondaryTextColor, lineHeight: 'inherit'}}
           labelStyle={styles.buttons.label}
-          icon={<BlockIcon color={muiTheme.palette.secondaryTextColor}/>}
+          icon={<BlockIcon style={{color: muiTheme.palette.secondaryTextColor}}/>}
         />
         {showProgressBar(showProgress)}
       </div>
@@ -75,7 +74,7 @@ const Header = (props) => {
       style={{color: muiTheme.palette.secondaryTextColor}}
       label="Settings"
       labelStyle={styles.buttons.label}
-      icon={<SettingsIcon color={muiTheme.palette.secondaryTextColor}/>}
+      icon={<SettingsIcon style={{color: muiTheme.palette.secondaryTextColor}}/>}
     />);
 
   return (

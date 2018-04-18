@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
+import CircularProgress from 'material-ui/CircularProgress';
 
 import { Logo as LogoIcon } from 'emerald-js-ui/lib/icons';
 import InitialSetup from './initialSetup';
@@ -16,7 +17,8 @@ const Render = ({ message, level, ready, needSetup }) => {
     if (level === 3) {
       messageStyle.color = '#f66';
     }
-    messageBlock = <span style={messageStyle}><i className="fa fa-spin fa-spinner"/> {message}</span>;
+
+    messageBlock = <span style={messageStyle}><CircularProgress size={25} /> {message}</span>;
   }
 
   const body = <div>

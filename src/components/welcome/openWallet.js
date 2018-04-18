@@ -1,13 +1,14 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { PlayCircle } from 'emerald-js-ui/lib/icons3';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import FlatButton from 'material-ui/FlatButton';
-import FontIcon from 'material-ui/FontIcon';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import launcher from 'store/launcher';
 import { waitForServicesRestart } from 'store/store';
 
-const Render = ({ save }) => {
+const Render = ({ save, muiTheme }) => {
   return (
     <Row>
       <Col xs={12}>
@@ -22,8 +23,8 @@ const Render = ({ save }) => {
       </Col>
       <Col xs={12}>
         <FlatButton label="Open Wallet"
-          icon={<FontIcon className="fa fa-play-circle" />}
-          style={{backgroundColor: 'limegreen', color: 'white'}}
+          icon={<PlayCircle style={{color: muiTheme.palette.alternateTextColor}}/>}
+          style={{backgroundColor: muiTheme.palette.primary1Color, color: muiTheme.palette.alternateTextColor}}
           onClick={save}/>
       </Col>
     </Row>
@@ -46,4 +47,4 @@ const OpenWallet = connect(
   })
 )(Render);
 
-export default OpenWallet;
+export default muiThemeable()(OpenWallet);

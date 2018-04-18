@@ -1,10 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FontIcon, FlatButton, Popover } from 'material-ui';
+import { FlatButton, Popover } from 'material-ui';
 import { List, ListItem } from 'material-ui/List';
-import { Ledger as LedgerIcon } from 'emerald-js-ui/lib/icons';
+import { Ledger as LedgerIcon, Key as KeyIcon, Keypair as KeypairIcon, AddCircle as AddIcon, Download as DownloadIcon, Token1 as TokenIcon } from 'emerald-js-ui/lib/icons3';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import { Add as AddIcon, Download as DownloadIcon, Token1 as TokenIcon } from 'emerald-js-ui/lib/icons3';
 
 const styles = {
   button: {
@@ -88,44 +87,44 @@ class DashboardMenu extends React.Component {
               primaryText="Ledger Nano S"
               secondaryText="Use Ledger hardware key to manage signatures"
               onClick={importLedger}
-              leftIcon={<LedgerIcon color={muiTheme.palette.textColor}/>}
+              leftIcon={<LedgerIcon />}
             />
             <ListItem
               primaryText={t('add.generate.title')}
               secondaryText={t('add.generate.subtitle')}
               onClick={ generate }
-              leftIcon={<AddIcon color={muiTheme.palette.textColor}/>}
+              leftIcon={<KeypairIcon />}
             />
             <ListItem
               primaryText={t('add.mnemonic.title')}
               secondaryText={t('add.mnemonic.subtitle')}
               onClick={ createMnemonic }
-              leftIcon={<AddIcon color={muiTheme.palette.textColor}/>}
+              leftIcon={<AddIcon />}
             />
 
             <ListItem
               primaryText={t('add.import.title')}
               secondaryText={t('add.import.subtitle')}
               onClick={ importJson }
-              leftIcon={<DownloadIcon color={muiTheme.palette.textColor}/>}
+              leftIcon={<DownloadIcon />}
             />
             <ListItem
               primaryText={ t('add.importPrivateKey.title') }
               secondaryText={ t('add.importPrivateKey.subtitle') }
               onClick={importPrivateKey}
-              leftIcon={<DownloadIcon color={muiTheme.palette.textColor}/>}
+              leftIcon={<KeyIcon />}
             />
             <ListItem
               primaryText={ t('add.importMnemonic.title') }
               secondaryText={ t('add.importMnemonic.subtitle') }
               onClick={ importMnemonic }
-              leftIcon={<DownloadIcon color={muiTheme.palette.textColor}/>}
+              leftIcon={<DownloadIcon />}
             />
             <ListItem
               primaryText={ t('add.token.title') }
               secondaryText={ t('add.token.subtitle') }
               onClick={ this.handleAddToken }
-              leftIcon={<TokenIcon color={muiTheme.palette.textColor}/>}
+              leftIcon={<TokenIcon />}
             />
           </List>
         </Popover>

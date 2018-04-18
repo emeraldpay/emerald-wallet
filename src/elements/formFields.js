@@ -6,8 +6,7 @@ import TextField from 'material-ui/TextField';
 import SelectField from 'material-ui/SelectField';
 import Checkbox from 'material-ui/Checkbox';
 import FlatButton from 'material-ui/FlatButton';
-import FontIcon from 'material-ui/FontIcon';
-
+import { Toolbox as ToolboxIcon } from 'emerald-js-ui/lib/icons3';
 
 export const renderFileField = ({ input, name, meta: { touched, error } }) => {
   const files = input.value;
@@ -17,7 +16,7 @@ export const renderFileField = ({ input, name, meta: { touched, error } }) => {
     <div>
       <Dropzone name={name} style={{}} multiple={false} onDrop={onDrop}>
         <FlatButton label="Select Wallet File..."
-          icon={<FontIcon className="fa fa-briefcase" />}/>
+          icon={<ToolboxIcon />}/>
       </Dropzone>
       {files && <div>Selected: {files[0].name}</div>}
       {touched && error && <span className="error">{error}</span>}

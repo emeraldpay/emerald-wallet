@@ -1,12 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import FontIcon from 'material-ui/FontIcon';
 import {RadioButton, RadioButtonGroup} from 'material-ui/RadioButton';
 import log from 'electron-log';
 import { TableRowColumn, TableRow } from 'material-ui/Table';
 import { tables } from 'lib/styles';
-import {Address as AccountAddress} from 'emerald-js-ui';
+import { Address as AccountAddress } from 'emerald-js-ui';
 import AccountBalance from '../../accounts/Balance';
 
 
@@ -24,19 +23,13 @@ const style = {
 };
 
 const Addr = ({ addr, alreadyAdded, selectedValue, onSelected, ...otherProps }) => {
-  let usedDisplay;
+  let usedLabel;
   if (alreadyAdded) {
-    usedDisplay = <span style={style.used}>
-      <FontIcon className="fa fa-check-square" style={style.usedIcon}/> Imported
-    </span>;
+    usedLabel = 'Imported';
   } else if (addr.get('txcount') > 0) {
-    usedDisplay = <span style={style.used}>
-      <FontIcon className="fa fa-check" style={style.usedIcon}/> Used
-    </span>;
+    usedLabel = 'Used';
   } else {
-    usedDisplay = <span style={style.used}>
-      <FontIcon className="fa fa-square-o" style={style.usedIcon} /> New
-    </span>;
+    usedLabel = 'New';
   }
 
   const hasPath = addr.get('hdpath') !== null;
@@ -72,7 +65,7 @@ const Addr = ({ addr, alreadyAdded, selectedValue, onSelected, ...otherProps }) 
         />
       </TableRowColumn>
       <TableRowColumn style={tables.shortStyle}>
-        {usedDisplay}
+        {usedLabel}
       </TableRowColumn>
     </TableRow>
   );

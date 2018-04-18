@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import FlatButton from 'material-ui/FlatButton';
-import FontIcon from 'material-ui/FontIcon';
+import { ArrowLeft as ArrowLeftIcon, ArrowRight as ArrowRightIcon } from 'emerald-js-ui/lib/icons3';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import ledger from 'store/ledger';
 
@@ -21,7 +21,7 @@ const Pager = ({ offset, setOffset }) => {
         <FlatButton
           disabled={offset - pageSize < 0}
           onClick={() => setOffset(offset - pageSize)}
-          icon={<FontIcon className="fa fa-chevron-left" />}/>
+          icon={<ArrowLeftIcon />}/>
       </Col>
       <Col xs={2} style={offsetStyle}>
         {offset}
@@ -29,7 +29,7 @@ const Pager = ({ offset, setOffset }) => {
       <Col xs={5}>
         <FlatButton
           onClick={() => setOffset(offset + pageSize)}
-          icon={<FontIcon className="fa fa-chevron-right" />}/>
+          icon={<ArrowRightIcon />}/>
       </Col>
     </Row>
   );

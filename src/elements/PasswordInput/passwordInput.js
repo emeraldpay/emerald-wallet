@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Eye as EyeIcon } from 'emerald-js-ui/lib/icons';
+import { ViewVisible as EyeIcon } from 'emerald-js-ui/lib/icons3';
 import { Warning, WarningText } from 'emerald-js-ui';
 import { IconButton } from 'material-ui';
 import TextField from '../Form/TextField';
