@@ -1,6 +1,6 @@
 import React from 'react';
 import FlatButton from 'material-ui/FlatButton';
-import { Back as BackIcon } from 'emerald-js-ui/lib/icons2';
+import { Back as BackIcon } from 'emerald-js-ui/lib/icons3';
 import styles from './dashboardButton.scss';
 
 const style = {

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import Immutable from 'immutable';
+import CircularProgress from 'material-ui/CircularProgress';
 import TransactionsHistory from '../../../components/tx/TxHistory';
 import AccountsList from '../../../components/accounts/AccountList';
 import Header from './header';
@@ -23,7 +24,7 @@ const Dashboard = (props) => {
         <Grid>
           <Row center="xs">
             <Col xs={12}>
-              <div><i className="fa fa-spin fa-spinner"/> Loading...</div>
+              <CircularProgress size={50} />
               <div style={styles.statusMessage}>{statusMessage}</div>
             </Col>
           </Row>

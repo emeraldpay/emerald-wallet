@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Dialog from 'material-ui/Dialog';
 import IconButton from 'material-ui/IconButton';
-import { Close as CloseIcon } from 'emerald-js-ui/lib/icons2';
+import { Close as CloseIcon } from 'emerald-js-ui/lib/icons3';
 import screen from 'store/wallet/screen';
 
 import styles from './waitDialog.scss';

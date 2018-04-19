@@ -1,10 +1,10 @@
 import React from 'react';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { Button } from 'emerald-js-ui';
-import { Check as CheckIcon } from 'emerald-js-ui/lib/icons2';
+import { Check2 as CheckIcon } from 'emerald-js-ui/lib/icons3';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 
-export const Terms = ({ onAgree }) => {
+export const Terms = ({ onAgree, muiTheme }) => {
   const style = {
     width: '100%',
     height: '250px',
@@ -61,7 +61,7 @@ export const Terms = ({ onAgree }) => {
         <Col xs>
           <Button label="I Agree"
             primary={true}
-            icon={<CheckIcon />}
+            icon={<CheckIcon style={{color: muiTheme.palette.alternateTextColor}}/>}
             onClick={onAgree}/>
         </Col>
       </Row>

@@ -67,7 +67,6 @@ const config = {
             },
           ],
         }),
-        exclude: [/font-awesome/],
       },
       {
         test: /\.less$/,
@@ -83,20 +82,6 @@ const config = {
           use: ['css-loader?modules'],
         }),
         include: [/flexboxgrid/, /typeface-rubik/],
-      },
-      {
-        test: /font-awesome.scss$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: [
-            {
-              loader: 'css-loader',
-            },
-            {
-              loader: 'sass-loader',
-            },
-          ],
-        }),
       },
       {
         test: /\.(jpg|png|gif)$/,

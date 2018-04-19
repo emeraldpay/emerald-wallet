@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import CircularProgress from 'material-ui/CircularProgress';
 import createLogger from '../../utils/logger';
 
 import AddressBook from '../../components/addressbook/book';
@@ -24,12 +25,13 @@ import GenerateAccount from '../../components/accounts/GenerateAccount';
 
 const log = createLogger('screen');
 
+
 const Screen = ({ screen, screenItem }) => {
   log.debug('Show screen: ', screen);
 
   if (screen === null) {
     return (<div>
-      <i className="fa fa-spinner fa-spin fa-2x" /> Initializing...
+      <CircularProgress size={50} secondary/> Initializing...
     </div>);
   } else if (screen === 'home') {
     return (<Dashboard />);

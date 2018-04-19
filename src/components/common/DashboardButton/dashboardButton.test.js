@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Back } from 'emerald-js-ui/lib/icons2';
+import { Back } from 'emerald-js-ui/lib/icons3';
 import DashboardButton from './dashboardButton';
 
 describe('DashboardButton', () => {

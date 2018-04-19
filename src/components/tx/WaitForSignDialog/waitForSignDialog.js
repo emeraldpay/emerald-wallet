@@ -2,8 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Dialog from 'material-ui/Dialog';
 import FlatButton from 'material-ui/FlatButton';
-import FontIcon from 'material-ui/FontIcon';
-
+import CircularProgress from 'material-ui/CircularProgress';
 import screen from 'store/wallet/screen';
 
 const WaitForSignDialog = ({ open, transaction, handleClose }) => {
@@ -24,7 +23,8 @@ const WaitForSignDialog = ({ open, transaction, handleClose }) => {
       onRequestClose={handleClose}
     >
             Please sign transaction using your Hardware Key<br/>
-      <FontIcon className="fa fa-spinner fa-spin"/> Waiting for signature....
+
+      <CircularProgress size={25} />Waiting for signature....
     </Dialog>
   );
 };

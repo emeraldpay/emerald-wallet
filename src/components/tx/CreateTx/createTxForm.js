@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import { Field, reduxForm } from 'redux-form';
 import { RadioButtonGroup } from 'redux-form-material-ui';
 import { MenuItem, IconButton, IconMenu } from 'material-ui';
-import ImportContacts from 'material-ui/svg-icons/communication/import-contacts';
 import { Button, IdentityIcon, ButtonGroup, LinkButton, WarningText, Warning } from 'emerald-js-ui';
+import { Book as BookIcon } from 'emerald-js-ui/lib/icons3';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { formStyle } from 'lib/styles';
 import DashboardButton from 'components/common/DashboardButton';
@@ -156,7 +156,7 @@ export const CreateTxForm = (props) => {
           />
 
           <IconMenu
-            iconButtonElement={<IconButton><ImportContacts /></IconButton>}
+            iconButtonElement={<IconButton><BookIcon /></IconButton>}
             onItemClick={ handleSelect }
           >
             {accounts.map((account) =>
