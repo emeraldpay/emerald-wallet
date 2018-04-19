@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Map } from 'immutable';
 import { connect } from 'react-redux';
 import { convert, Wei } from 'emerald-js';
-import { Account, Button } from 'emerald-js-ui';
+import { Account, Button, ButtonGroup } from 'emerald-js-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import launcher from 'store/launcher';
 import DashboardButton from 'components/common/DashboardButton';
@@ -62,6 +62,15 @@ export const TransactionShow = (props: Props) => {
     <Form caption="Ethereum Classic Transfer" backButton={ backButton } style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
       <Row>
         <div style={styles.left}>
+          <div style={fieldNameStyle}>Date</div>
+        </div>
+        <div style={styles.right}>
+          {transaction.get('timestamp') ? toDate(transaction.get('timestamp')) : null}
+        </div>
+      </Row>
+      <Row>
+        <div style={styles.left}>
+          <div style={fieldNameStyle}>Value</div>
         </div>
         <div style={styles.right}>
           <div style={{display: 'flex'}}>
@@ -77,6 +86,26 @@ export const TransactionShow = (props: Props) => {
               <TxStatus status={ txStatus } />
             </div>
           </div>
+        </div>
+      </Row>
+      <br />
+      <br />
+
+      <Row>
+        <div style={styles.left}>
+          <div style={fieldNameStyle}>Hash</div>
+        </div>
+        <div style={styles.right}>
+          {transaction.get('hash')}
+        </div>
+      </Row>
+
+      <Row>
+        <div style={styles.left}>
+          <div style={fieldNameStyle}>Nonce</div>
+        </div>
+        <div style={styles.right}>
+          { transaction.get('nonce') }
         </div>
       </Row>
 
@@ -109,64 +138,8 @@ export const TransactionShow = (props: Props) => {
         </div>
       </Row>
 
-      <Row>
-        <div style={styles.left}>
-          <div style={fieldNameStyle}>Date</div>
-        </div>
-        <div style={styles.right}>
-          {transaction.get('timestamp') ? toDate(transaction.get('timestamp')) : null}
-        </div>
-      </Row>
-
-      <Row>
-        <div style={styles.left}>
-          <div style={fieldNameStyle}>GAS</div>
-        </div>
-        <div style={styles.right}>
-          {transaction.get('gas') ? transaction.get('gas') : null}
-        </div>
-      </Row>
-
-      <Row>
-        <div style={styles.left}>
-        </div>
-        <div style={styles.right}>
-          <div>
-            <Button
-              onClick={ () => repeatTx(transaction, toAccount, fromAccount) }
-              style={repeatButtonStyle}
-              label="REPEAT" />
-          </div>
-        </div>
-      </Row>
-
-      <Row>
-        <hr style={{
-          backgroundColor: '#F5F5F5',
-          height: '2px',
-          width: '100%',
-          margin: '30px',
-          border: 'none'}} />
-      </Row>
-
-      <Row>
-        <div style={styles.left}>
-        </div>
-        <div style={styles.right}>
-          <div id="caption" style={{fontSize: '22px'}}>
-                        Details
-          </div>
-        </div>
-      </Row>
-
-      <Row>
-        <div style={styles.left}>
-          <div style={fieldNameStyle}>Hash</div>
-        </div>
-        <div style={styles.right}>
-          {transaction.get('hash')}
-        </div>
-      </Row>
+      <br />
+      <br />
 
       <Row>
         <div style={styles.left}>
@@ -179,20 +152,40 @@ export const TransactionShow = (props: Props) => {
 
       <Row>
         <div style={styles.left}>
-          <div style={fieldNameStyle}>Nonce</div>
-        </div>
-        <div style={styles.right}>
-          { transaction.get('nonce') }
-        </div>
-      </Row>
-
-      <Row>
-        <div style={styles.left}>
           <div style={fieldNameStyle}>Input Data</div>
         </div>
         <div style={styles.right}>
           <div className={ classes.txData }>
             <TxInputData data={transaction.get('data')} />
+          </div>
+        </div>
+      </Row>
+
+      <Row>
+        <div style={styles.left}>
+          <div style={fieldNameStyle}>GAS</div>
+        </div>
+        <div style={styles.right}>
+          {transaction.get('gas') ? transaction.get('gas') : null}
+        </div>
+      </Row>
+      <br />
+
+      <Row>
+        <div style={styles.left}>
+        </div>
+        <div style={styles.right}>
+          <div>
+            <ButtonGroup>
+              <Button
+                onClick={ () => props.goDashboard() }
+                style={repeatButtonStyle}
+                label="DASHBOARD" />
+              <Button
+                primary
+                onClick={ () => repeatTx(transaction, toAccount, fromAccount) }
+                label="CREATE ANOTHER TRANSACTION" />
+            </ButtonGroup>
           </div>
         </div>
       </Row>

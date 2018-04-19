@@ -46,6 +46,9 @@ function start() {
 }
 
 const showAbout = () => {
+  // set document background to theme canvas color
+  const canvasColor = theme.palette.alternateTextColor;
+  document.body.style.backgroundColor = canvasColor;
   const App = () => (
     <I18nextProvider i18n={i18n}>
       <MuiThemeProvider muiTheme={muiTheme}>
