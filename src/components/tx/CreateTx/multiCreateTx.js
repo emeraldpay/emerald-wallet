@@ -7,7 +7,7 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 
 import {Divider} from 'material-ui';
 import accounts from 'store/vault/accounts';
-import { Field, reduxForm, SubmissionError, formValueSelector } from 'redux-form';
+import { Field, reduxForm, SubmissionError, formValueSelector, reset } from 'redux-form';
 import { connect } from 'react-redux';
 import network from 'store/network';
 import ledger from 'store/ledger/';
@@ -102,7 +102,7 @@ const PasswordPage = reduxForm({
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '50px' }}>
-        <HorizontalAddressWithIdentity accountId={props.account.get('id')} />
+        <HorizontalAddressWithIdentity accountId={props.from} />
         <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div style={{...displayFlexCenter, flexDirection: 'column' }}>
             <div>{USDValue} USD</div>
@@ -112,7 +112,7 @@ const PasswordPage = reduxForm({
             <ArrowRight />
           </div>
         </div>
-        <HorizontalAddressWithIdentity accountId={props.account.get('id')} />
+        <HorizontalAddressWithIdentity accountId={props.to} />
       </div>
       <div style={{ paddingTop: '35px', display: 'flex', justifyContent: 'center' }}>
         <span style={{ color: props.muiTheme.palette.secondaryTextColor }}>Plus a {props.fee.getDecimalized()} ETC fee for 21000 GAS</span>
@@ -223,6 +223,8 @@ export default connect(
       else to = ownProps.toAccount.get('id');
 
       value = new Wei(ownProps.transaction.get('value')).getEther();
+    } else {
+      to = selector(state, 'to');
     }
 
     const fee = new TokenUnits(gasPrice.mul(gasLimit).value(), 18);
@@ -232,13 +234,15 @@ export default connect(
         gasPrice,
         fee,
         to,
-        from: ownProps.account.get('id'),
+        from: selector(state, 'from') || ownProps.account.get('id'),
         gas: DefaultGas,
         token: '',
         isTransfer: 'true',
         tokens: allTokens,
         value,
       },
+      to,
+      from: selector(state, 'from') || ownProps.account.get('id'),
       showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
       accounts: accounts.selectors.getAll(state, Immutable.List()),
       addressBook: state.addressBook.get('addressBook'),
@@ -256,11 +260,11 @@ export default connect(
   },
   (dispatch, ownProps) => ({
     goDashboard: () => {
+      dispatch(reset('createTx'));
       dispatch(screen.actions.gotoScreen('home', ownProps.account));
     },
     onSubmit(data) {
       const useLedger = ownProps.account.get('hardware', false);
-      console.log('ledger=', useLedger);
 
       let tx;
       // 1. Create TX here
@@ -320,6 +324,9 @@ export default connect(
                 tx.data)
             );
           });
+        })
+        .then(() => {
+          dispatch(reset('createTx'));
         })
         .catch((err) => {
           throw new SubmissionError({ _error: (err.message || JSON.stringify(err)) });

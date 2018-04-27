@@ -106,10 +106,7 @@ const CreateTx = connect(
       dispatch(change('createTx', 'to', item.props.value));
     },
     cancel: () => {
-      dispatch(screen.actions.gotoScreen('account', ownProps.account));
-    },
-    goDashboard: () => {
-      dispatch(screen.actions.gotoScreen('home', ownProps.account));
+      ownProps.goDashboard();
     },
   })
 )(CreateTxForm);

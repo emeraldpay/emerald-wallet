@@ -84,7 +84,6 @@ export const CreateTxForm = (props) => {
   const sendDisabled = pristine || submitting || invalid || (useLedger && !ledgerConnected);
 
   const sendButton = <Button primary
-    disabled={sendDisabled}
     label="Create Transaction"
     onClick={ handleSubmit } />;
 
