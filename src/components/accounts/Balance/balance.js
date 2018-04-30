@@ -49,7 +49,7 @@ export class Balance extends React.Component {
           {balance ? balance.getDecimalized(precision) : '-'} {symbol}
         </span>
         <br />
-        {fiatAmount && <span style={fiatStyle}>{fiatAmount}</span> }
+        {fiatAmount && <span style={fiatStyle}>{fiatAmount} {fiatCurrency}</span> }
       </div>
     );
   }

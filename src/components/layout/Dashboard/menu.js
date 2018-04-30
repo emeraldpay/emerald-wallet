@@ -73,7 +73,7 @@ class DashboardMenu extends React.Component {
           labelStyle={ styles.buttonLabel }
           style={{color: muiTheme.palette.primary1Color}}
           hoverColor="transparent"
-          icon={<AddIcon style={ styles.addIcon } />}
+          icon={<AddIcon style={{color: muiTheme.palette.secondaryTextColor, ...styles.addIcon}} />}
         />
         <Popover
           open={this.state.open}

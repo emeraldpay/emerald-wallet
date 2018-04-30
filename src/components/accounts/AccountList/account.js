@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import { CardText } from 'material-ui/Card';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { Button, IdentityIcon, Account as AddressAvatar, ButtonGroup, Card } from 'emerald-js-ui';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../Balance';
 import TokenUnits from '../../../lib/tokenUnits';
@@ -26,7 +27,7 @@ export class Account extends React.Component {
     onAddEtcClick = () => this.props.showReceiveDialog(this.props.account);
 
     render() {
-      const { account } = this.props;
+      const { account, muiTheme } = this.props;
       const { showFiat } = this.props;
 
       // TODO: we convert Wei to TokenUnits here
@@ -64,10 +65,12 @@ export class Account extends React.Component {
                     <SecondaryMenu account={account} />
                     <Button
                       label="Add ETC"
+                      labelStyle={{ color: muiTheme.palette.alternateTextColor }}
                       onClick={ this.onAddEtcClick }
                     />
                     <Button
                       label="Send"
+                      labelStyle={{ color: muiTheme.palette.alternateTextColor }}
                       disabled={ !account.get('balance') }
                       onClick={ this.onSendClick }
                     />
@@ -80,4 +83,4 @@ export class Account extends React.Component {
     }
 }
 
-export default Account;
+export default muiThemeable()(Account);

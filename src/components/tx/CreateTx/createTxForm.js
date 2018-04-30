@@ -82,9 +82,9 @@ export const CreateTxForm = (props) => {
   const showFiat = !isToken && props.showFiat;
 
   const sendDisabled = pristine || submitting || invalid || (useLedger && !ledgerConnected);
+
   const sendButton = <Button primary
-    label={`Send ${value} ${balance.symbol}`}
-    disabled={ sendDisabled }
+    label="Create Transaction"
     onClick={ handleSubmit } />;
 
   let sendMessage = null;
@@ -94,30 +94,8 @@ export const CreateTxForm = (props) => {
     </span>;
   }
 
-  let passwordField = null;
-  if (!useLedger) {
-    passwordField = (
-      <Row>
-        <div style={styles.left}>
-          <div style={styles.fieldName}>
-                        Password
-          </div>
-        </div>
-        <div style={styles.right}>
-          <Field
-            name="password"
-            type="password"
-            component={ TextField }
-            underlineShow={false}
-            fullWidth={true}
-            validate={ [required] }/>
-        </div>
-      </Row>);
-  }
-
-
   return (
-    <Form caption="Send Ether & Tokens" backButton={ <DashboardButton onClick={ goDashboard }/> } style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
+    <Form style={{padding: '0', marginTop: '-41px'}}>
       <Row>
         <div style={styles.left}>
           <div style={ styles.fieldName }>From</div>
@@ -125,7 +103,7 @@ export const CreateTxForm = (props) => {
         <div style={{...styles.right, alignItems: 'center'}}>
           <SelectAddressField name='from' accounts={ accounts } onChangeAccount={ onChangeAccount }/>
         </div>
-        <div style={{...styles.right}}>
+        <div style={{...styles.right, color: muiTheme.palette.secondaryTextColor}}>
           <AccountBalance
             showFiat={ showFiat }
             symbol={ balance.symbol }
@@ -136,9 +114,6 @@ export const CreateTxForm = (props) => {
           />
         </div>
       </Row>
-
-      {passwordField}
-
       <Row>
         <div style={styles.left}>
           <div style={styles.fieldName}>
@@ -266,7 +241,7 @@ export const CreateTxForm = (props) => {
       </Row>
       <Row>
         <div style={ styles.left }>
-          <div style={ styles.fieldName }>Fee</div>
+          <div style={ styles.fieldName }>Transaction Fee</div>
         </div>
         <div style={styles.right}>
           <AccountBalance
@@ -294,8 +269,8 @@ export const CreateTxForm = (props) => {
         <div style={styles.left}/>
         <div style={{...styles.right}}>
           <ButtonGroup>
+            <Button label="Cancel" onClick={ cancel } labelStyle={{color: muiTheme.palette.alternateTextColor}} />
             {sendButton}
-            <Button label="Cancel" onClick={ cancel } />
           </ButtonGroup>
         </div>
       </Row>
@@ -346,6 +321,7 @@ CreateTxForm.propTypes = {
 
 export default reduxForm({
   form: 'createTx',
-  fields: ['to', 'from', 'password', 'value', 'token', 'gasPrice', 'gas', 'isTransfer'],
+  destroyOnUnmount: false,
+  fields: ['to', 'from', 'value', 'token', 'gasPrice', 'gas', 'isTransfer'],
 })(muiThemeable()(CreateTxForm));
 
