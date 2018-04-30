@@ -25,7 +25,10 @@ const displayFlexCenter = {
 };
 
 const SignTx = muiThemeable()((props) => {
-  const USDValue = Currency.format(Currency.convert(props.value, props.fiatRate, 2), props.fiatCurrency);
+  const { value, fiatRate, fiatCurrency, fee, to } = props;
+  const { onCancel, handleSubmit } = props;
+
+  const USDValue = Currency.format(Currency.convert(value, fiatRate, 2), fiatCurrency);
 
   return (
     <div>
@@ -34,19 +37,19 @@ const SignTx = muiThemeable()((props) => {
         <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div style={{ ...displayFlexCenter, flexDirection: 'column' }}>
             <div>{USDValue} USD</div>
-            <div>{props.value} ETC</div>
+            <div>{value} ETC</div>
           </div>
           <div>
             <ArrowRight />
           </div>
         </div>
-        <HorizontalAddressWithIdentity accountId={props.to} />
+        <HorizontalAddressWithIdentity accountId={to} />
       </div>
       <div style={{ paddingTop: '35px', display: 'flex', justifyContent: 'center' }}>
-        <span style={{ color: props.muiTheme.palette.secondaryTextColor }}>Plus a {props.fee.getDecimalized()} ETC fee for 21000 GAS</span>
+        <span style={{ color: props.muiTheme.palette.secondaryTextColor }}>Plus a {fee.getDecimalized()} ETC fee for 21000 GAS</span>
       </div>
       <Divider style={{ marginTop: '35px' }} />
-      <Form style={{ marginTop: '0' }} on>
+      <Form style={{ marginTop: '0' }}>
         <Row>
           <div style={styles.left}>
             <div style={styles.fieldName}>
@@ -62,7 +65,8 @@ const SignTx = muiThemeable()((props) => {
               hintText="Enter your Password"
               underlineShow={false}
               fullWidth={true}
-              validate={[required]} />
+              validate={[required]}
+            />
           </div>
         </Row>
         <Row>
@@ -72,9 +76,9 @@ const SignTx = muiThemeable()((props) => {
               <Button
                 style={{ color: props.muiTheme.palette.alternateTextColor, paddingRight: '5px' }}
                 label="Back"
-                onClick={props.onCancel}
+                onClick={onCancel}
               />
-              <Button primary label="Send Transaction" onClick={props.handleSubmit} />
+              <Button primary label="Send Transaction" onClick={handleSubmit} />
             </ButtonGroup>
           </div>
         </Row>

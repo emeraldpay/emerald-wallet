@@ -1,4 +1,5 @@
 import Immutable from 'immutable';
+import ActionTypes from './actionTypes';
 
 const initial = Immutable.fromJS({
   addressBook: [],
@@ -29,7 +30,7 @@ function updateAddress(state, id, f) {
 
 function onLoading(state, action) {
   switch (action.type) {
-    case 'ADDRESS/LOADING':
+    case ActionTypes.LOADING:
       return state
         .set('loading', true);
     default:
@@ -39,7 +40,7 @@ function onLoading(state, action) {
 
 function onSetAddressBook(state, action) {
   switch (action.type) {
-    case 'ADDRESS/SET_BOOK':
+    case ActionTypes.SET_BOOK:
       return state
         .set('addressBook',
           Immutable.fromJS(action.addressBook || [])
@@ -51,7 +52,7 @@ function onSetAddressBook(state, action) {
 }
 
 function onAddAddress(state, action) {
-  if (action.type === 'ADDRESS/ADD_ADDRESS') {
+  if (action.type === ActionTypes.ADD_ADDRESS) {
     return addAddress(state, {
       address: action.address,
       name: action.name,
@@ -62,7 +63,7 @@ function onAddAddress(state, action) {
 }
 
 function onUpdateAddress(state, action) {
-  if (action.type === 'ADDRESS/UPDATE_ADDRESS') {
+  if (action.type === ActionTypes.UPDATE_ADDRESS) {
     return updateAddress(state, action.addressId, (addr) =>
       addr.merge({
         name: action.name,
@@ -75,7 +76,7 @@ function onUpdateAddress(state, action) {
 }
 
 function onDeleteAddress(state, action) {
-  if (action.type === 'ADDRESS/DELETE_ADDRESS') {
+  if (action.type === ActionTypes.DELETE_ADDRESS) {
     return state.update('addressBook', (addresses) => {
       const pos = addresses.findKey((addr) => addr.get('address') === action.address);
       return addresses.delete(pos);
