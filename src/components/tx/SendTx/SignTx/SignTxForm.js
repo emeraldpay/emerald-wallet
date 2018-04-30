@@ -1,0 +1,92 @@
+import { Button, ButtonGroup, IdentityIcon } from 'emerald-js-ui';
+import { ArrowRight } from 'emerald-js-ui/lib/icons3';
+import { required } from 'lib/validators';
+import { Divider } from 'material-ui';
+import muiThemeable from 'material-ui/styles/muiThemeable';
+import React from 'react';
+import { Field, reduxForm } from 'redux-form';
+import { Form, Row, styles } from '../../../../elements/Form';
+import TextField from '../../../../elements/Form/TextField';
+import { Currency } from '../../../../lib/currency';
+
+const HorizontalAddressWithIdentity = (props) => {
+  return (
+    <div style={{display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center'}}>
+      <IdentityIcon size={60} id={props.accountId} />
+      <div style={{paddingTop: '10px'}}>{props.accountId}</div>
+    </div>
+  );
+};
+
+const displayFlexCenter = {
+  display: 'flex',
+  justifyContent: 'center',
+  alignItems: 'center',
+};
+
+const SignTx = muiThemeable()((props) => {
+  const USDValue = Currency.format(Currency.convert(props.value, props.fiatRate, 2), props.fiatCurrency);
+
+  return (
+    <div>
+      <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '50px' }}>
+        <HorizontalAddressWithIdentity accountId={props.from} />
+        <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'space-between' }}>
+          <div style={{ ...displayFlexCenter, flexDirection: 'column' }}>
+            <div>{USDValue} USD</div>
+            <div>{props.value} ETC</div>
+          </div>
+          <div>
+            <ArrowRight />
+          </div>
+        </div>
+        <HorizontalAddressWithIdentity accountId={props.to} />
+      </div>
+      <div style={{ paddingTop: '35px', display: 'flex', justifyContent: 'center' }}>
+        <span style={{ color: props.muiTheme.palette.secondaryTextColor }}>Plus a {props.fee.getDecimalized()} ETC fee for 21000 GAS</span>
+      </div>
+      <Divider style={{ marginTop: '35px' }} />
+      <Form style={{ marginTop: '0' }} on>
+        <Row>
+          <div style={styles.left}>
+            <div style={styles.fieldName}>
+              Password
+            </div>
+          </div>
+          <div style={styles.right}>
+            <Field
+              name="password"
+              type="password"
+              style={{ minWidth: '600px' }}
+              component={TextField}
+              hintText="Enter your Password"
+              underlineShow={false}
+              fullWidth={true}
+              validate={[required]} />
+          </div>
+        </Row>
+        <Row>
+          <div style={styles.left} />
+          <div style={{ paddingTop: '10px', ...styles.right }}>
+            <ButtonGroup>
+              <Button
+                style={{ color: props.muiTheme.palette.alternateTextColor, paddingRight: '5px' }}
+                label="Back"
+                onClick={props.onCancel}
+              />
+              <Button primary label="Send Transaction" onClick={props.handleSubmit} />
+            </ButtonGroup>
+          </div>
+        </Row>
+      </Form>
+    </div>
+  );
+});
+
+const SignTxForm = reduxForm({
+  form: 'createTx',
+  fields: ['password'],
+  destroyOnUnmount: false,
+})(SignTx);
+
+export default SignTxForm;

@@ -34,7 +34,7 @@ const Address = connect(
       // dispatch(gotoScreen('address', address.get('address')));
     },
     onDeleteAddress: () => new Promise((resolve, reject) => {
-      const address = ownProps.address
+      const address = ownProps.address;
       dispatch(Addressbook.actions.deleteAddress(address.get('address')))
         .then((response) => {
           dispatch(gotoScreen('address-book'));

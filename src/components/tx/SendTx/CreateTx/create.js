@@ -1,27 +1,18 @@
 // @flow
-import Immutable from 'immutable';
 import BigNumber from 'bignumber.js';
-import { change, formValueSelector, SubmissionError } from 'redux-form';
-import { convert, Address, Wei } from 'emerald-js';
-import { connect } from 'react-redux';
-import ledger from 'store/ledger/';
-import { etherToWei } from 'lib/convert';
-import { address } from 'lib/validators';
-import launcher from 'store/launcher';
-import network from 'store/network';
-import accounts from 'store/vault/accounts';
-import Tokens from 'store/vault/tokens';
-import screen from 'store/wallet/screen';
+import { Address, convert } from 'emerald-js';
 import TokenUnits from 'lib/tokenUnits';
+import { address } from 'lib/validators';
+import { connect } from 'react-redux';
+import { change, formValueSelector } from 'redux-form';
+import Tokens from 'store/vault/tokens';
+import createLogger from '../../../../utils/logger';
 import CreateTxForm from './createTxForm';
-import createLogger from '../../../utils/logger';
 
 const log = createLogger('CreateTx');
 
 const DefaultGas = 21000;
 const DefaultTokenGas = 23890;
-
-const { toHex } = convert;
 
 export const traceValidate = (tx, dispatch, estimateGas): Promise<number> => {
   return new Promise((resolve, reject) => {
@@ -68,8 +59,9 @@ export const selectBalance = (state, account) => {
 
 
 const CreateTx = connect(
-  (state, ownProps) => {
-  },
+  (state, ownProps) => ({
+    addressBook: state.addressBook.get('addressBook'),
+  }),
   (dispatch, ownProps) => ({
     onChangeAccount: (all, value) => {
       // load account information for selected account

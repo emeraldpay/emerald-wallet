@@ -1,33 +1,24 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+// @flow
 import BigNumber from 'bignumber.js';
-import Immutable from 'immutable';
-import { translate } from 'react-i18next';
-import muiThemeable from 'material-ui/styles/muiThemeable';
-
-import {Divider} from 'material-ui';
-import accounts from 'store/vault/accounts';
-import { Field, reduxForm, SubmissionError, formValueSelector, reset } from 'redux-form';
-import { connect } from 'react-redux';
-import network from 'store/network';
-import ledger from 'store/ledger/';
-import TokenUnits from 'lib/tokenUnits';
-import Tokens from 'store/vault/tokens';
-import { convert, Address, Wei } from 'emerald-js';
-import { IdentityIcon, Button, ButtonGroup } from 'emerald-js-ui';
-import { ArrowRight } from 'emerald-js-ui/lib/icons3';
-import TextField from '../../../elements/Form/TextField';
 import DashboardButton from 'components/common/DashboardButton';
-import screen from 'store/wallet/screen';
-import CreateTx from './create';
-import {traceValidate} from './create';
+import { Address, Wei, convert } from 'emerald-js';
+import Immutable from 'immutable';
 import { etherToWei } from 'lib/convert';
-import TransactionShow from '../TxDetails';
-import { Form, Row, styles } from '../../../elements/Form';
-import { required } from 'lib/validators';
+import TokenUnits from 'lib/tokenUnits';
+import muiThemeable from 'material-ui/styles/muiThemeable';
+import React from 'react';
+import { translate } from 'react-i18next';
+import { connect } from 'react-redux';
+import { SubmissionError, formValueSelector, reset } from 'redux-form';
 import launcher from 'store/launcher';
-
-import { Currency } from '../../../lib/currency';
+import ledger from 'store/ledger/';
+import network from 'store/network';
+import accounts from 'store/vault/accounts';
+import Tokens from 'store/vault/tokens';
+import screen from 'store/wallet/screen';
+import TransactionShow from '../TxDetails';
+import PasswordPage from './SignTx';
+import CreateTx, { traceValidate } from './CreateTx';
 
 const { toHex } = convert;
 
@@ -76,83 +67,7 @@ const breadCrumbStyles = {
   fontWeight: '400',
 };
 
-
-const HorizontalAddressWithIdentity = (props) => {
-  return (
-    <div style={{display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center'}}>
-      <IdentityIcon size={60} id={props.accountId} />
-      <div style={{paddingTop: '10px'}}>{props.accountId}</div>
-    </div>
-  );
-}
-
-const displayFlexCenter = {
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-}
-
-const PasswordPage = reduxForm({
-  form: 'createTx',
-  fields: ['password'],
-  destroyOnUnmount: false, 
-})(muiThemeable()((props) => {
-  const USDValue = Currency.format(props.balance.value.convert(props.fiatRate), props.fiatCurrency);
-
-  return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '50px' }}>
-        <HorizontalAddressWithIdentity accountId={props.from} />
-        <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div style={{...displayFlexCenter, flexDirection: 'column' }}>
-            <div>{USDValue} USD</div>
-            <div>{props.balance.value.getDecimalized(3)} ETC</div>
-          </div>
-          <div>
-            <ArrowRight />
-          </div>
-        </div>
-        <HorizontalAddressWithIdentity accountId={props.to} />
-      </div>
-      <div style={{ paddingTop: '35px', display: 'flex', justifyContent: 'center' }}>
-        <span style={{ color: props.muiTheme.palette.secondaryTextColor }}>Plus a {props.fee.getDecimalized()} ETC fee for 21000 GAS</span>
-      </div>
-      <Divider style={{marginTop: '35px'}}/>
-      <Form style={{marginTop: '0'}} on>
-        <Row>
-          <div style={styles.left}>
-            <div style={styles.fieldName}>
-              Password
-            </div>
-          </div>
-          <div style={styles.right}>
-            <Field
-              name="password"
-              type="password"
-              style={{minWidth: '600px'}}
-              component={TextField}
-              hintText="Enter your Password"
-              underlineShow={false}
-              fullWidth={true}
-              validate={[required]} />
-          </div>
-        </Row>
-        <Row>
-          <div style={styles.left} />
-          <div style={{paddingTop: '10px', ...styles.right}}>
-            <ButtonGroup>
-              <Button style={{color: props.muiTheme.palette.alternateTextColor, paddingRight: '5px'}} label="Back" onClick={props.onCancel} />
-              <Button primary label="Send Transaction" onClick={props.handleSubmit} />
-            </ButtonGroup>
-          </div>
-        </Row>
-      </Form>
-    </div>
-  );
-}));
-
 class MultiPageCreateTx extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -302,16 +217,14 @@ export default connect(
       }
 
 
-
       // 2. Validate Trace and then Send TX
       return traceValidate(tx, dispatch, network.actions.estimateGas)
         .then((estimatedGas) => {
-
           dispatch(ledger.actions.setWatch(false));
 
           return ledger.actions.closeConnection().then(() => {
             if (useLedger) {
-              //dispatch(screen.actions.showDialog('sign-transaction', data));
+              // dispatch(screen.actions.showDialog('sign-transaction', data));
             }
             return dispatch(
               accounts.actions.sendTransaction(
@@ -331,5 +244,5 @@ export default connect(
         .catch((err) => {
           throw new SubmissionError({ _error: (err.message || JSON.stringify(err)) });
         });
-    }
+    },
   }))(translate('createtx')(muiThemeable()(MultiPageCreateTx)));

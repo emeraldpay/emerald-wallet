@@ -7,7 +7,7 @@ import AddressBook from '../../components/addressbook/ContactList';
 import AccountShow from '../../components/accounts/AccountShow';
 import AddressShow from '../../components/addressbook/show';
 import AddressAdd from '../../components/addressbook/AddContact';
-import CreateTx from '../../components/tx/CreateTx';
+import CreateTx from '../../components/tx/SendTx';
 import TransactionShow from '../../components/tx/TxDetails';
 import MnemonicWizard from '../../components/accounts/MnemonicWizard';
 import AddToken from '../../components/tokens/AddToken/add';

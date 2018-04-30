@@ -1,6 +1,6 @@
+import { shallow } from 'enzyme';
 import React from 'react';
-import {TopBar} from './TopBar';
-import {shallow} from 'enzyme';
+import { TopBar } from './TopBar';
 
 const mockMuiTheme = {
   palette: {},

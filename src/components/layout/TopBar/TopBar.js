@@ -10,10 +10,6 @@ import styles from './TopBar.scss';
  * First dumb implementation of TopBar
  */
 export class TopBar extends React.Component {
-  constructor(props) {
-    super(props);
-  }
-
   render() {
     const { onAccounts, onNewContact } = this.props;
     return (

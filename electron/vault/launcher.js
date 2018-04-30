@@ -83,6 +83,7 @@ class LocalConnector {
           reject(err);
         } else {
           const options = [
+            'account',
             'import',
             `--chain=${this.chain.name}`,
             '--all',
@@ -123,7 +124,7 @@ class LocalConnector {
     return new Promise((resolve, reject) => {
       log.info('Starting Emerald Connector...');
       this.migrateIfNotExists()
-        //.then(this.importKeyFiles.bind(this))
+        .then(this.importKeyFiles.bind(this))
         .then(this.start.bind(this))
         .then(resolve)
         .catch(reject);

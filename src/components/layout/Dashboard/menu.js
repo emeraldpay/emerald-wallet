@@ -9,7 +9,7 @@ import {
   AddCircle as AddIcon,
   Download as DownloadIcon,
   Token1 as TokenIcon,
-  List as ListIcon, 
+  List as ListIcon,
 } from 'emerald-js-ui/lib/icons3';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 

@@ -7,17 +7,16 @@ import { Button, IdentityIcon, ButtonGroup, LinkButton, WarningText, Warning } f
 import { Book as BookIcon } from 'emerald-js-ui/lib/icons3';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { formStyle } from 'lib/styles';
-import DashboardButton from 'components/common/DashboardButton';
 import { positive, number, required, address } from 'lib/validators';
-import { Form, Row, styles } from '../../../elements/Form';
-import TextField from '../../../elements/Form/TextField';
-import SelectField from '../../../elements/Form/SelectField';
-import AccountBalance from '../../accounts/Balance';
+import { Form, Row, styles } from '../../../../elements/Form';
+import TextField from '../../../../elements/Form/TextField';
+import SelectField from '../../../../elements/Form/SelectField';
+import AccountBalance from '../../../accounts/Balance';
 import SelectAddressField from './selectAddressField';
 
 import classes from './createTxForm.scss';
 
-import { Currency } from '../../../lib/currency';
+import { Currency } from '../../../../lib/currency';
 
 
 const textEtc = {
@@ -43,8 +42,9 @@ const textFiatLight = {
  * Input with IdentityIcon. We show it in to field control
  */
 const InputWithIcon = (props) => {
+  const leftIcon = props.input.value ? <IdentityIcon size={30} id={ props.input.value }/> : null;
   return (
-    <TextField {...props} fieldStyle={{paddingLeft: '5px'}} leftIcon={props.input.value ? <IdentityIcon size={30} id={ props.input.value }/> : null} />
+    <TextField {...props} fieldStyle={{paddingLeft: '5px'}} leftIcon={leftIcon} />
   );
 };
 
@@ -134,12 +134,15 @@ export const CreateTxForm = (props) => {
             iconButtonElement={<IconButton><BookIcon /></IconButton>}
             onItemClick={ handleSelect }
           >
-            {accounts.map((account) =>
+            {addressBook.map((account) =>
               <MenuItem
-                key={ account.get('id') }
-                value={ account.get('id') }
+                key={ account.get('address') }
+                value={ account.get('address') }
                 primaryText={
-                  <AddressWithIcon name={ account.get('name') } accountAddress={ account.get('id') }/> }
+                  <AddressWithIcon
+                    name={ account.get('name') }
+                    accountAddress={ account.get('address') }
+                  />}
               />
             )}
             {/*
@@ -298,6 +301,7 @@ export const CreateTxForm = (props) => {
 CreateTxForm.propTypes = {
   fields: PropTypes.array.isRequired, // verify in react-form
   accounts: PropTypes.object.isRequired,
+  addressBook: PropTypes.object.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   invalid: PropTypes.bool.isRequired,
   pristine: PropTypes.bool.isRequired,
@@ -309,7 +313,6 @@ CreateTxForm.propTypes = {
   fromAddr: PropTypes.string.isRequired,
   onEntireBalance: PropTypes.func.isRequired,
 
-  addressBook: PropTypes.object.isRequired,
   handleSelect: PropTypes.func.isRequired,
   tokens: PropTypes.object.isRequired,
   token: PropTypes.object,
