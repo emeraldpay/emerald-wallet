@@ -9,7 +9,8 @@ import classes from './header.scss';
 
 class Header extends React.Component {
   render() {
-    const { t, generate, importJson, importLedger, importPrivateKey, importMnemonic, addToken, createMnemonic } = this.props;
+    const { generate, importJson, importLedger, importPrivateKey, importMnemonic, addToken, createMnemonic, showAddressBook } = this.props;
+    const { t } = this.props;
     return (
       <div className={ classes.header }>
         <div>
@@ -22,6 +23,7 @@ class Header extends React.Component {
           importPrivateKey={ importPrivateKey }
           importMnemonic={ importMnemonic }
           createMnemonic={ createMnemonic }
+          addressBook={ showAddressBook }
           addToken={ addToken }
           t={ t }
         />
@@ -50,6 +52,9 @@ export default translate('accounts')(
       },
       importMnemonic: () => {
         dispatch(gotoScreen('import-mnemonic'));
+      },
+      showAddressBook: () => {
+        dispatch(gotoScreen('address-book'));
       },
       addToken: () => {
         dispatch(showDialog('tokens'));

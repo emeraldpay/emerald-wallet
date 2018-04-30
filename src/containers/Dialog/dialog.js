@@ -1,16 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
-import { closeDialog } from '../store/wallet/screen/screenActions';
-import WaitForSign from './tx/WaitForSignDialog/waitForSignDialog';
-import ReceiveDialog from './accounts/ReceiveDialog';
-import createLogger from '../utils/logger';
-import TokensDialog from './tokens/TokensDialog';
-import HideAccountDialog from './accounts/HideAccountDialog';
-import WaitDialog from './ledger/WaitDialog';
-
-import history from '../store/wallet/history';
-import accounts from '../store/vault/accounts';
+import WaitForSign from '../../components/tx/WaitForSignDialog/waitForSignDialog';
+import ReceiveDialog from '../../components/accounts/ReceiveDialog';
+import createLogger from '../../utils/logger';
+import TokensDialog from '../../components/tokens/TokensDialog';
+import HideAccountDialog from '../../components/accounts/HideAccountDialog';
+import WaitDialog from '../../components/ledger/WaitDialog';
+import WalletHistory from '../../store/wallet/history';
+import accounts from '../../store/vault/accounts';
+import { closeDialog } from '../../store/wallet/screen/screenActions';
 
 const log = createLogger('Dialog');
 
@@ -40,7 +39,7 @@ export default connect(
   (dispatch, ownProps) => ({
     handleClose: () => {
       // refresh data when dialogs close
-      dispatch(history.actions.refreshTrackedTransactions());
+      dispatch(WalletHistory.actions.refreshTrackedTransactions());
       dispatch(accounts.actions.loadAccountsList());
       dispatch(accounts.actions.loadPendingTransactions());
 

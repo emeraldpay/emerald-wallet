@@ -1,21 +1,19 @@
 import Immutable from 'immutable';
-import { Wei } from 'emerald-js';
 
 const initial = Immutable.fromJS({
   addressBook: [],
   loading: false,
 });
 
-const initialAddr = Immutable.Map({
+const initialContact = Immutable.Map({
   name: null,
-  id: null,
+  address: null,
   description: null,
-  balance: null,
 });
 
 function addAddress(state, address) {
   return state.update('addressBook', (addresses) =>
-    addresses.push(initialAddr.merge(address))
+    addresses.push(initialContact.merge(address))
   );
 }
 
@@ -52,19 +50,10 @@ function onSetAddressBook(state, action) {
   }
 }
 
-function onSetBalance(state, action) {
-  if (action.type === 'ADDRESS/SET_BALANCE') {
-    return updateAddress(state, action.addressId, (addr) =>
-      addr.set('balance', new Wei(action.value))
-    );
-  }
-  return state;
-}
-
 function onAddAddress(state, action) {
   if (action.type === 'ADDRESS/ADD_ADDRESS') {
     return addAddress(state, {
-      id: action.addressId,
+      address: action.address,
       name: action.name,
       description: action.description,
     });
@@ -88,19 +77,18 @@ function onUpdateAddress(state, action) {
 function onDeleteAddress(state, action) {
   if (action.type === 'ADDRESS/DELETE_ADDRESS') {
     return state.update('addressBook', (addresses) => {
-      const pos = addresses.findKey((addr) => addr.get('id') === action.addressId);
+      const pos = addresses.findKey((addr) => addr.get('address') === action.address);
       return addresses.delete(pos);
     });
   }
   return state;
 }
 
-export default function addresssReducers(state, action) {
+export default function reducer(state, action) {
   state = state || initial;
   state = onLoading(state, action);
   state = onSetAddressBook(state, action);
   state = onAddAddress(state, action);
-  state = onSetBalance(state, action);
   state = onUpdateAddress(state, action);
   state = onDeleteAddress(state, action);
   return state;

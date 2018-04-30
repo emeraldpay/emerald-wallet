@@ -14,11 +14,9 @@ import screen from './wallet/screen';
 import settings from './wallet/settings';
 import tokens from './vault/tokens';
 import ledger from './ledger';
+import Addressbook from './vault/addressbook';
 
-// import { loadAddressBook } from './addressActions';
-// import { loadContractList } from './contractActions';
 import { readConfig, listenElectron, connecting, loadClientVersion } from './launcher/launcherActions';
-import addressReducers from './addressReducers';
 import launcherReducers from './launcher/launcherReducers';
 import walletReducers from './wallet/walletReducers';
 import deployedTokens from '../lib/deployedTokens';
@@ -48,7 +46,7 @@ const loggerMiddleware = createReduxLogger({
 
 const reducers = {
   accounts: accounts.reducer,
-  addressBook: addressReducers,
+  addressBook: Addressbook.reducer,
   tokens: tokens.reducer,
   network: network.reducer,
   launcher: launcherReducers,
@@ -96,9 +94,8 @@ function refreshLong() {
 export function startSync() {
   store.dispatch(network.actions.getGasPrice());
   store.dispatch(loadClientVersion());
-  // store.dispatch(loadAddressBook());
+  store.dispatch(Addressbook.actions.loadAddressBook());
   store.dispatch(tokens.actions.loadTokenList());
-  // store.dispatch(loadContractList());
 
   const state = store.getState();
 

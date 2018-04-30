@@ -6,7 +6,7 @@ import Screen from '../../../containers/Screen/screen';
 import Header from '../Header';
 import NotificationBar from '../NotificationBar';
 import ErrorDialog from '../../common/ErrorDialog';
-import Dialog from '../../dialog';
+import Dialog from '../../../containers/Dialog';
 
 import './main.scss';
 
