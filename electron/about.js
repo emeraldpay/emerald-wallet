@@ -4,7 +4,7 @@ const path = require('path');
 const url = require('url');
 
 const createAboutPage = () => {
-  const mainWindow = new electron.BrowserWindow({ width: 800, height: 360, titleBarStyle: 'hidden', resizable: false });
+  const mainWindow = new electron.BrowserWindow({ width: 700, height: 400, titleBarStyle: 'hidden', resizable: false });
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
