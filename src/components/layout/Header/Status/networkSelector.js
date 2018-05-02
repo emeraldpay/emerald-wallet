@@ -10,7 +10,7 @@ class ExtendedMenuItem extends React.Component {
   render() {
     const {muiTheme, checked, onClick, net} = this.props;
     const networkType = net.geth.type === 'local' ? 'Full Node' : 'Light Node';
-    const textColor =  checked ? muiTheme.palette.primary1Color : muiTheme.palette.secondaryTextColor;
+    const textColor = checked ? muiTheme.palette.primary1Color : muiTheme.palette.secondaryTextColor;
     return (
       <div
         onClick={onClick}
@@ -20,7 +20,7 @@ class ExtendedMenuItem extends React.Component {
           fontSize: '14px',
           borderLeft: checked ? `5px solid ${muiTheme.palette.primary1Color}` : '',
           marginLeft: checked ? '' : '5px',
-          lineHeight: '20px'
+          lineHeight: '20px',
         }}
       >
         <div style={{ color: textColor}}>{net.title}</div>

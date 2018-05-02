@@ -84,18 +84,18 @@ const HorizontalAddressWithIdentity = (props) => {
       <div style={{paddingTop: '10px'}}>{props.accountId}</div>
     </div>
   );
-}
+};
 
 const displayFlexCenter = {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-}
+};
 
 const PasswordPage = reduxForm({
   form: 'createTx',
   fields: ['password'],
-  destroyOnUnmount: false, 
+  destroyOnUnmount: false,
 })(muiThemeable()((props) => {
   const USDValue = Currency.format(props.balance.value.convert(props.fiatRate), props.fiatCurrency);
 
@@ -152,7 +152,6 @@ const PasswordPage = reduxForm({
 }));
 
 class MultiPageCreateTx extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -302,16 +301,14 @@ export default connect(
       }
 
 
-
       // 2. Validate Trace and then Send TX
       return traceValidate(tx, dispatch, network.actions.estimateGas)
         .then((estimatedGas) => {
-
           dispatch(ledger.actions.setWatch(false));
 
           return ledger.actions.closeConnection().then(() => {
             if (useLedger) {
-              //dispatch(screen.actions.showDialog('sign-transaction', data));
+              // dispatch(screen.actions.showDialog('sign-transaction', data));
             }
             return dispatch(
               accounts.actions.sendTransaction(
@@ -331,5 +328,5 @@ export default connect(
         .catch((err) => {
           throw new SubmissionError({ _error: (err.message || JSON.stringify(err)) });
         });
-    }
+    },
   }))(translate('createtx')(muiThemeable()(MultiPageCreateTx)));
