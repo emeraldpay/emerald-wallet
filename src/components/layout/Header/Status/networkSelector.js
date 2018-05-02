@@ -58,7 +58,6 @@ class NetworkSelectorRender extends React.Component {
         onNetworkChange(net);
       }
     };
-    console.log('boxShadow', `#${muiTheme.palette.secondaryTextColor} 0px 0px 50px 0px`);
     return (
       <DropDownMenu
         value={ currentNetwork.id }
@@ -67,8 +66,9 @@ class NetworkSelectorRender extends React.Component {
         menuStyle={{
           border: `1px solid ${muiTheme.palette.borderColor}`,
           backgroundColor: muiTheme.palette.alternateTextColor,
-          paddingTop: '24px',
-          paddingBottom: '24px',
+          paddingTop: '12px',
+          paddingBottom: '12px',
+          maxWidth: '280px',
           boxShadow: `${muiTheme.palette.secondaryTextColor} 0px 0px 50px 0px`,
         }}
         iconStyle={{display: 'none'}}
