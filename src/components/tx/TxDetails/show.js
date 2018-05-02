@@ -178,13 +178,13 @@ export const TransactionShow = (props: Props) => {
           <div>
             <ButtonGroup>
               <Button
-                onClick={ () => props.goDashboard() }
+                onClick={ () => props.cancel() }
                 style={repeatButtonStyle}
                 label="DASHBOARD" />
               <Button
                 primary
                 onClick={ () => repeatTx(transaction, toAccount, fromAccount) }
-                label="CREATE ANOTHER TRANSACTION" />
+                label="REPEAT TRANSACTION" />
             </ButtonGroup>
           </div>
         </div>

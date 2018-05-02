@@ -17,8 +17,9 @@ import accounts from 'store/vault/accounts';
 import Tokens from 'store/vault/tokens';
 import screen from 'store/wallet/screen';
 import TransactionShow from '../TxDetails';
-import PasswordPage from './SignTx';
-import CreateTx, { traceValidate } from './CreateTx';
+import SignTx from './SignTx';
+import CreateTx from './CreateTx';
+import { traceValidate } from './utils';
 
 const { toHex } = convert;
 
@@ -78,18 +79,23 @@ class MultiPageCreateTx extends React.Component {
     this.getPage = this.getPage.bind(this);
   }
 
-  nextPage() {
-    this.setState({ page: this.state.page + 1 });
+  // nextPage = () => {
+  //   this.setState({ page: this.state.page + 1 });
+  // }
+
+  onCreateTransaction = (data, nativeTx, tx) => {
+    // Store both tx in state to pass it to Sign form
+    this.setState({ tx, nativeTx, page: PAGES.PASSWORD });
   }
 
   getPage() {
-    const { page } = this.state;
+    const { page, tx, nativeTx } = this.state;
     const { t, backLabel } = this.props;
     switch (page) {
       case PAGES.TX:
-        return (<CreateTx {...this.props} onSubmit={this.nextPage.bind(this)}/>);
+        return (<CreateTx {...this.props} onCreateTransaction={this.onCreateTransaction} />);
       case PAGES.PASSWORD:
-        return (<PasswordPage onSubmit={this.props.onSubmit} {...this.props} />);
+        return (<SignTx tx={tx} nativeTx={nativeTx} onSubmit={this.props.signAndSend} {...this.props} />);
       case PAGES.DETAILS:
         return (<TransactionShow hash={ this.props.hash } accountId={ this.props.accountId }/>);
       default: return null;
@@ -160,7 +166,6 @@ export default connect(
       from: selector(state, 'from') || ownProps.account.get('id'),
       showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
       accounts: accounts.selectors.getAll(state, Immutable.List()),
-      addressBook: state.addressBook.get('addressBook'),
       tokens: allTokens.unshift(Immutable.fromJS({ address: '', symbol: 'ETC' })),
       isToken: Address.isValid(selector(state, 'token')),
       fiatRate,
@@ -178,9 +183,10 @@ export default connect(
       dispatch(reset('createTx'));
       dispatch(screen.actions.gotoScreen('home', ownProps.account));
     },
-    onSubmit(data) {
+    signAndSend: (data) => {
       const useLedger = ownProps.account.get('hardware', false);
 
+      // TODO: moved tx creation to CreatTransation handler
       let tx;
       // 1. Create TX here
       if (Address.isValid(data.token)) {
@@ -216,7 +222,6 @@ export default connect(
         };
       }
 
-
       // 2. Validate Trace and then Send TX
       return traceValidate(tx, dispatch, network.actions.estimateGas)
         .then((estimatedGas) => {
@@ -226,6 +231,7 @@ export default connect(
             if (useLedger) {
               // dispatch(screen.actions.showDialog('sign-transaction', data));
             }
+
             return dispatch(
               accounts.actions.sendTransaction(
                 tx.from,

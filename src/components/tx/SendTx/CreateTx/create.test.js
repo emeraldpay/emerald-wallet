@@ -1,5 +1,6 @@
 import { fromJS } from 'immutable';
-import { selectBalance, traceValidate } from './create';
+import { selectBalance } from './create';
+import { traceValidate } from '../utils';
 
 test('It can select without an account balance', () => {
   const account = fromJS({

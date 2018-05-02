@@ -42,9 +42,9 @@ const textFiatLight = {
  * Input with IdentityIcon. We show it in to field control
  */
 const InputWithIcon = (props) => {
-  const leftIcon = props.input.value ? <IdentityIcon size={30} id={ props.input.value }/> : null;
+  const leftIcon = props.input.value ? <IdentityIcon size={30} id={props.input.value} /> : null;
   return (
-    <TextField {...props} fieldStyle={{paddingLeft: '5px'}} leftIcon={leftIcon} />
+    <TextField {...props} fieldStyle={{ paddingLeft: '5px' }} leftIcon={leftIcon} />
   );
 };
 
@@ -65,8 +65,8 @@ const AddressWithIcon = ({ accountAddress, name }) => {
   };
   return (
     <div style={style.div}>
-      <IdentityIcon size={30} id={ accountAddress }/>
-      <div style={ style.address }>{ name || accountAddress }</div>
+      <IdentityIcon size={30} id={accountAddress} />
+      <div style={style.address}>{name || accountAddress}</div>
     </div>
   );
 };
@@ -85,99 +85,96 @@ export const CreateTxForm = (props) => {
 
   const sendButton = <Button primary
     label="Create Transaction"
-    onClick={ handleSubmit } />;
+    onClick={handleSubmit} />;
 
   let sendMessage = null;
   if (useLedger && !ledgerConnected) {
     sendMessage = <span style={formStyle.helpText}>
-            Make sure Ledger Nano is connected &amp; Browser Mode is switched off.
+      Make sure Ledger Nano is connected &amp; Browser Mode is switched off.
     </span>;
   }
 
+  const RecipientPopupMenu = (<IconMenu
+    iconButtonElement={<IconButton><BookIcon /></IconButton>}
+    onItemClick={handleSelect}
+  >
+    {addressBook.map((account) =>
+      <MenuItem
+        key={account.get('address')}
+        value={account.get('address')}
+        primaryText={
+          <AddressWithIcon
+            name={account.get('name')}
+            accountAddress={account.get('address')}
+          />}
+      />
+    )}
+    {/*
+           <Divider />
+           {addressBook.map((account) =>
+           <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
+           )}
+           */}
+  </IconMenu>);
+
   return (
-    <Form style={{padding: '0', marginTop: '-41px'}}>
+    <Form style={{ padding: '0', marginTop: '-41px' }}>
       <Row>
         <div style={styles.left}>
-          <div style={ styles.fieldName }>From</div>
+          <div style={styles.fieldName}>From</div>
         </div>
-        <div style={{...styles.right, alignItems: 'center'}}>
-          <SelectAddressField name='from' accounts={ accounts } onChangeAccount={ onChangeAccount }/>
+        <div style={{ ...styles.right, alignItems: 'center' }}>
+          <SelectAddressField name='from' accounts={accounts} onChangeAccount={onChangeAccount} />
         </div>
-        <div style={{...styles.right, color: muiTheme.palette.secondaryTextColor}}>
+        <div style={{ ...styles.right, color: muiTheme.palette.secondaryTextColor }}>
           <AccountBalance
-            showFiat={ showFiat }
-            symbol={ balance.symbol }
-            balance={ balance.value }
-            precision={ 6 }
-            fiatStyle={ textFiat }
-            coinsStyle={ textEtc }
+            showFiat={showFiat}
+            symbol={balance.symbol}
+            balance={balance.value}
+            precision={6}
+            fiatStyle={textFiat}
+            coinsStyle={textEtc}
           />
         </div>
       </Row>
       <Row>
         <div style={styles.left}>
           <div style={styles.fieldName}>
-                    To
+            To
           </div>
         </div>
         <div style={styles.right}>
           <Field
+            rightIcon={RecipientPopupMenu}
             name="to"
-            style={{minWidth: '400px'}}
+            style={{ minWidth: '400px', paddingLeft: '10px', paddingRight: '10px' }}
             component={InputWithIcon}
             validate={[required, address]}
             underlineShow={false}
             fullWidth={true}
           />
-
-          <IconMenu
-            iconButtonElement={<IconButton><BookIcon /></IconButton>}
-            onItemClick={ handleSelect }
-          >
-            {addressBook.map((account) =>
-              <MenuItem
-                key={ account.get('address') }
-                value={ account.get('address') }
-                primaryText={
-                  <AddressWithIcon
-                    name={ account.get('name') }
-                    accountAddress={ account.get('address') }
-                  />}
-              />
-            )}
-            {/*
-                     <Divider />
-                     {addressBook.map((account) =>
-                     <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
-                     )}
-                     */}
-          </IconMenu>
-
-        </div>
-        <div style={styles.right}>
-          <LinkButton href={ `http://gastracker.io/addr/${fromAddr}` } label="Transaction History" />
         </div>
       </Row>
 
       <Row>
         <div style={styles.left}>
           <div style={styles.fieldName}>
-                    Amount
+            Amount
           </div>
         </div>
-        <div style={{...styles.right, justifyContent: 'space-between'}}>
+        <div style={{ ...styles.right, justifyContent: 'space-between' }}>
           <Field
             name="value"
-            component={ TextField }
+            component={TextField}
             hintText="1.0000"
-            fullWidth={ true }
-            underlineShow={ false }
-            validate={ [required, number] }
+            fullWidth={true}
+            underlineShow={false}
+            validate={[required, number]}
             value={parseFloat(value)}
           />
           <Field
             name="token"
-            style={{marginLeft: '19px', maxWidth: '125px'}}
+            style={{ marginLeft: '19px', maxWidth: '125px' }}
             component={SelectField}
             onChange={onChangeToken}
             value={token}
@@ -209,13 +206,13 @@ export const CreateTxForm = (props) => {
       </Row>
 
       <Row>
-        <div style={ styles.left }/>
-        <div style={ styles.right }>
-          <div className= { classes.entireBalanceContainer }>
-            { showFiat &&
-                        <div style={textFiatLight}>
-                          { value && Currency.format(Currency.convert(value, fiatRate, 2), fiatCurrency) }
-                        </div>
+        <div style={styles.left} />
+        <div style={styles.right}>
+          <div className={classes.entireBalanceContainer}>
+            {showFiat &&
+              <div style={textFiatLight}>
+                {value && Currency.format(Currency.convert(value, fiatRate, 2), fiatCurrency)}
+              </div>
             }
             <LinkButton
               onClick={() => onEntireBalance(balance.value, fee, isToken)}
@@ -228,31 +225,31 @@ export const CreateTxForm = (props) => {
       <Row>
         <div style={styles.left}>
           <div style={styles.fieldName}>
-                    Gas Limit
+            Gas Limit
           </div>
         </div>
 
         <div style={styles.right}>
           <Field
             name="gas"
-            onChange={ onChangeGasLimit }
-            component={ TextField }
-            underlineShow={ false }
+            onChange={onChangeGasLimit}
+            component={TextField}
+            underlineShow={false}
             validate={[required, number, positive]}
           />
         </div>
       </Row>
       <Row>
-        <div style={ styles.left }>
-          <div style={ styles.fieldName }>Transaction Fee</div>
+        <div style={styles.left}>
+          <div style={styles.fieldName}>Transaction Fee</div>
         </div>
         <div style={styles.right}>
           <AccountBalance
-            balance={ fee }
+            balance={fee}
             symbol="ETC"
-            precision={ 6 }
-            fiatStyle={ textFiat }
-            coinsStyle={ textEtc }
+            precision={6}
+            fiatStyle={textFiat}
+            coinsStyle={textEtc}
           />
         </div>
       </Row>
@@ -269,23 +266,23 @@ export const CreateTxForm = (props) => {
          </Row>*/}
 
       <Row>
-        <div style={styles.left}/>
-        <div style={{...styles.right}}>
+        <div style={styles.left} />
+        <div style={{ ...styles.right }}>
           <ButtonGroup>
-            <Button label="Cancel" onClick={ cancel } labelStyle={{color: muiTheme.palette.alternateTextColor}} />
+            <Button label="Cancel" onClick={cancel} labelStyle={{ color: muiTheme.palette.alternateTextColor }} />
             {sendButton}
           </ButtonGroup>
         </div>
       </Row>
 
       <Row>
-        <div style={styles.left}/>
+        <div style={styles.left} />
         <div style={styles.right}>{sendMessage}</div>
       </Row>
 
       {error && (
         <Row>
-          <div style={styles.left}/>
+          <div style={styles.left} />
           <div style={styles.right}>
             <Warning>
               <WarningText>{error}</WarningText>

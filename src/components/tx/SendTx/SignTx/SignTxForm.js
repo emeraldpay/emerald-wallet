@@ -25,19 +25,19 @@ const displayFlexCenter = {
 };
 
 const SignTx = muiThemeable()((props) => {
-  const { value, fiatRate, fiatCurrency, fee, to } = props;
+  const { value, fiatRate, fiatCurrency, fee, to, from, tx } = props;
   const { onCancel, handleSubmit } = props;
 
-  const USDValue = Currency.format(Currency.convert(value, fiatRate, 2), fiatCurrency);
+  // const USDValue = Currency.format(Currency.convert(value, fiatRate, 2), fiatCurrency);
 
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '50px' }}>
-        <HorizontalAddressWithIdentity accountId={props.from} />
+        <HorizontalAddressWithIdentity accountId={from} />
         <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div style={{ ...displayFlexCenter, flexDirection: 'column' }}>
-            <div>{USDValue} USD</div>
-            <div>{value} ETC</div>
+            {/* <div>{USDValue} USD</div> */}
+            <div>{value} {tx.symbol}</div>
           </div>
           <div>
             <ArrowRight />
@@ -78,7 +78,7 @@ const SignTx = muiThemeable()((props) => {
                 label="Back"
                 onClick={onCancel}
               />
-              <Button primary label="Send Transaction" onClick={handleSubmit} />
+              <Button primary label="Sign & Send Transaction" onClick={handleSubmit} />
             </ButtonGroup>
           </div>
         </Row>
