@@ -1,3 +1,4 @@
+// @flow
 import React from 'react';
 import PropTypes from 'prop-types';
 import BigNumber from 'bignumber.js';
@@ -13,19 +14,18 @@ import network from 'store/network';
 import ledger from 'store/ledger/';
 import TokenUnits from 'lib/tokenUnits';
 import Tokens from 'store/vault/tokens';
+import { etherToWei } from 'lib/convert';
 import { convert, Address, Wei } from 'emerald-js';
+import launcher from 'store/launcher';
 import { IdentityIcon, Button, ButtonGroup } from 'emerald-js-ui';
-import { ArrowRight } from 'emerald-js-ui/lib/icons3';
-import TextField from '../../../elements/Form/TextField';
 import DashboardButton from 'components/common/DashboardButton';
 import screen from 'store/wallet/screen';
-import CreateTx from './create';
-import {traceValidate} from './create';
-import { etherToWei } from 'lib/convert';
+import { ArrowRight } from 'emerald-js-ui/lib/icons3';
+import { required } from 'lib/validators';
+import TextField from '../../../elements/Form/TextField';
+import CreateTx, { traceValidate } from './create';
 import TransactionShow from '../TxDetails';
 import { Form, Row, styles } from '../../../elements/Form';
-import { required } from 'lib/validators';
-import launcher from 'store/launcher';
 
 import { Currency } from '../../../lib/currency';
 
