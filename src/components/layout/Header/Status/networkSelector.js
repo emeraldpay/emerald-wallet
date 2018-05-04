@@ -10,18 +10,21 @@ class ExtendedMenuItem extends React.Component {
   render() {
     const {muiTheme, checked, onClick, net} = this.props;
     const networkType = net.geth.type === 'local' ? 'Full Node' : 'Light Node';
+    const textColor = checked ? muiTheme.palette.primary1Color : muiTheme.palette.secondaryTextColor;
     return (
       <div
         onClick={onClick}
         style={{
           cursor: 'pointer',
-          padding: '5px 15px 5px 15px',
+          padding: '5px 80px 5px 40px',
+          fontSize: '14px',
           borderLeft: checked ? `5px solid ${muiTheme.palette.primary1Color}` : '',
           marginLeft: checked ? '' : '5px',
+          lineHeight: '20px',
         }}
       >
-        <div>{net.title}</div>
-        <div style={{ color: muiTheme.palette.secondaryTextColor, fontSize: '12px', paddingTop: '3px' }}>{networkType}</div>
+        <div style={{ color: textColor}}>{net.title}</div>
+        <div style={{ color: textColor, paddingTop: '3px' }}>{networkType}</div>
       </div>
     );
   }
@@ -60,7 +63,14 @@ class NetworkSelectorRender extends React.Component {
         value={ currentNetwork.id }
         style={ styles.main }
         underlineStyle={{ display: 'none' }}
-        menuStyle={{border: `1px solid ${muiTheme.palette.borderColor}`}}
+        menuStyle={{
+          border: `1px solid ${muiTheme.palette.borderColor}`,
+          backgroundColor: muiTheme.palette.alternateTextColor,
+          paddingTop: '12px',
+          paddingBottom: '12px',
+          maxWidth: '280px',
+          boxShadow: `${muiTheme.palette.secondaryTextColor} 0px 0px 50px 0px`,
+        }}
         iconStyle={{display: 'none'}}
         labelStyle={ styles.label }>
         { Networks.map((net) =>

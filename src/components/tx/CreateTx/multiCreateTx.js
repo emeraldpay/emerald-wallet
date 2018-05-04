@@ -1,3 +1,4 @@
+// @flow
 import React from 'react';
 import PropTypes from 'prop-types';
 import BigNumber from 'bignumber.js';
@@ -13,19 +14,18 @@ import network from 'store/network';
 import ledger from 'store/ledger/';
 import TokenUnits from 'lib/tokenUnits';
 import Tokens from 'store/vault/tokens';
+import { etherToWei } from 'lib/convert';
 import { convert, Address, Wei } from 'emerald-js';
+import launcher from 'store/launcher';
 import { IdentityIcon, Button, ButtonGroup } from 'emerald-js-ui';
-import { ArrowRight } from 'emerald-js-ui/lib/icons3';
-import TextField from '../../../elements/Form/TextField';
 import DashboardButton from 'components/common/DashboardButton';
 import screen from 'store/wallet/screen';
-import CreateTx from './create';
-import {traceValidate} from './create';
-import { etherToWei } from 'lib/convert';
+import { ArrowRight } from 'emerald-js-ui/lib/icons3';
+import { required } from 'lib/validators';
+import TextField from '../../../elements/Form/TextField';
+import CreateTx, { traceValidate } from './create';
 import TransactionShow from '../TxDetails';
 import { Form, Row, styles } from '../../../elements/Form';
-import { required } from 'lib/validators';
-import launcher from 'store/launcher';
 
 import { Currency } from '../../../lib/currency';
 
@@ -84,18 +84,18 @@ const HorizontalAddressWithIdentity = (props) => {
       <div style={{paddingTop: '10px'}}>{props.accountId}</div>
     </div>
   );
-}
+};
 
 const displayFlexCenter = {
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-}
+};
 
 const PasswordPage = reduxForm({
   form: 'createTx',
   fields: ['password'],
-  destroyOnUnmount: false, 
+  destroyOnUnmount: false,
 })(muiThemeable()((props) => {
   const USDValue = Currency.format(props.balance.value.convert(props.fiatRate), props.fiatCurrency);
 
@@ -152,7 +152,6 @@ const PasswordPage = reduxForm({
 }));
 
 class MultiPageCreateTx extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -302,16 +301,14 @@ export default connect(
       }
 
 
-
       // 2. Validate Trace and then Send TX
       return traceValidate(tx, dispatch, network.actions.estimateGas)
         .then((estimatedGas) => {
-
           dispatch(ledger.actions.setWatch(false));
 
           return ledger.actions.closeConnection().then(() => {
             if (useLedger) {
-              //dispatch(screen.actions.showDialog('sign-transaction', data));
+              // dispatch(screen.actions.showDialog('sign-transaction', data));
             }
             return dispatch(
               accounts.actions.sendTransaction(
@@ -331,5 +328,5 @@ export default connect(
         .catch((err) => {
           throw new SubmissionError({ _error: (err.message || JSON.stringify(err)) });
         });
-    }
+    },
   }))(translate('createtx')(muiThemeable()(MultiPageCreateTx)));
