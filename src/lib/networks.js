@@ -26,7 +26,7 @@ export const Networks = [
   {
     geth: {
       type: 'remote',
-      url: 'https://mewapi.epool.io',
+      url: 'https://mew.epool.io/',
     },
     chain: {
       id: 61,
