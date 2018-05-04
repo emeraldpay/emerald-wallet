@@ -37,9 +37,9 @@ const SignTx = muiThemeable()((props) => {
         <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div style={{ ...displayFlexCenter, flexDirection: 'column' }}>
             {/* <div>{USDValue} USD</div> */}
-            <div>{value} {tx.symbol}</div>
+            <div style={{fontSize: '28px'}}>{value} {tx.symbol}</div>
           </div>
-          <div>
+          <div style={{display: 'flex'}}>
             <ArrowRight />
           </div>
         </div>

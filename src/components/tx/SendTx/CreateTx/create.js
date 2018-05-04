@@ -90,7 +90,6 @@ const CreateTx = connect(
     },
     onSubmit: (data) => {
       // TODO: In this handler we should create native tx and estimate gas
-      console.log(JSON.stringify(data));
 
       const tx = {
         from: data.from,

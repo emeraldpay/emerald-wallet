@@ -6,11 +6,11 @@ import { MenuItem, IconButton, IconMenu } from 'material-ui';
 import { Button, IdentityIcon, ButtonGroup, LinkButton, WarningText, Warning } from 'emerald-js-ui';
 import { Book as BookIcon } from 'emerald-js-ui/lib/icons3';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import { formStyle } from 'lib/styles';
 import { positive, number, required, address } from 'lib/validators';
 import { Form, Row, styles } from '../../../../elements/Form';
 import TextField from '../../../../elements/Form/TextField';
 import SelectField from '../../../../elements/Form/SelectField';
+import HelpText from '../../../../elements/HelpText';
 import AccountBalance from '../../../accounts/Balance';
 import SelectAddressField from './selectAddressField';
 
@@ -76,8 +76,8 @@ export const CreateTxForm = (props) => {
   const { accounts, balance, handleSubmit, invalid, pristine, submitting, muiTheme } = props;
   const { addressBook, handleSelect, tokens, token, isToken } = props;
   const { onEntireBalance, onChangeToken, onChangeAccount, onChangeGasLimit } = props;
-  const { fiatRate, fiatCurrency, value, fromAddr, fee } = props;
-  const { error, cancel, goDashboard } = props;
+  const { fiatRate, fiatCurrency, value, fee } = props;
+  const { error, cancel } = props;
   const { useLedger, ledgerConnected } = props;
   const showFiat = !isToken && props.showFiat;
 
@@ -89,9 +89,7 @@ export const CreateTxForm = (props) => {
 
   let sendMessage = null;
   if (useLedger && !ledgerConnected) {
-    sendMessage = <span style={formStyle.helpText}>
-      Make sure Ledger Nano is connected &amp; Browser Mode is switched off.
-    </span>;
+    sendMessage = <HelpText>Make sure Ledger Nano is connected &amp; Browser Mode is switched off.</HelpText>;
   }
 
   const RecipientPopupMenu = (<IconMenu
@@ -269,7 +267,7 @@ export const CreateTxForm = (props) => {
         <div style={styles.left} />
         <div style={{ ...styles.right }}>
           <ButtonGroup>
-            <Button label="Cancel" onClick={cancel} labelStyle={{ color: muiTheme.palette.alternateTextColor }} />
+            <Button label="Cancel" onClick={cancel} />
             {sendButton}
           </ButtonGroup>
         </div>
