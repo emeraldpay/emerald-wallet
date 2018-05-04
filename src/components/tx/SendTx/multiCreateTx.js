@@ -1,33 +1,25 @@
 // @flow
-import React from 'react';
-import PropTypes from 'prop-types';
 import BigNumber from 'bignumber.js';
-import Immutable from 'immutable';
-import { translate } from 'react-i18next';
-import muiThemeable from 'material-ui/styles/muiThemeable';
-
-import {Divider} from 'material-ui';
-import accounts from 'store/vault/accounts';
-import { Field, reduxForm, SubmissionError, formValueSelector, reset } from 'redux-form';
-import { connect } from 'react-redux';
-import network from 'store/network';
-import ledger from 'store/ledger/';
-import TokenUnits from 'lib/tokenUnits';
-import Tokens from 'store/vault/tokens';
-import { etherToWei } from 'lib/convert';
-import { convert, Address, Wei } from 'emerald-js';
-import launcher from 'store/launcher';
-import { IdentityIcon, Button, ButtonGroup } from 'emerald-js-ui';
 import DashboardButton from 'components/common/DashboardButton';
+import { Address, Wei, convert } from 'emerald-js';
+import Immutable from 'immutable';
+import { etherToWei } from 'lib/convert';
+import TokenUnits from 'lib/tokenUnits';
+import muiThemeable from 'material-ui/styles/muiThemeable';
+import React from 'react';
+import { translate } from 'react-i18next';
+import { connect } from 'react-redux';
+import { SubmissionError, formValueSelector, reset } from 'redux-form';
+import launcher from 'store/launcher';
+import ledger from 'store/ledger/';
+import network from 'store/network';
+import accounts from 'store/vault/accounts';
+import Tokens from 'store/vault/tokens';
 import screen from 'store/wallet/screen';
-import { ArrowRight } from 'emerald-js-ui/lib/icons3';
-import { required } from 'lib/validators';
-import TextField from '../../../elements/Form/TextField';
-import CreateTx, { traceValidate } from './create';
 import TransactionShow from '../TxDetails';
-import { Form, Row, styles } from '../../../elements/Form';
-
-import { Currency } from '../../../lib/currency';
+import SignTx from './SignTx';
+import CreateTx from './CreateTx';
+import { traceValidate } from './utils';
 
 const { toHex } = convert;
 
@@ -76,81 +68,6 @@ const breadCrumbStyles = {
   fontWeight: '400',
 };
 
-
-const HorizontalAddressWithIdentity = (props) => {
-  return (
-    <div style={{display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center'}}>
-      <IdentityIcon size={60} id={props.accountId} />
-      <div style={{paddingTop: '10px'}}>{props.accountId}</div>
-    </div>
-  );
-};
-
-const displayFlexCenter = {
-  display: 'flex',
-  justifyContent: 'center',
-  alignItems: 'center',
-};
-
-const PasswordPage = reduxForm({
-  form: 'createTx',
-  fields: ['password'],
-  destroyOnUnmount: false,
-})(muiThemeable()((props) => {
-  const USDValue = Currency.format(props.balance.value.convert(props.fiatRate), props.fiatCurrency);
-
-  return (
-    <div>
-      <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '50px' }}>
-        <HorizontalAddressWithIdentity accountId={props.from} />
-        <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'space-between' }}>
-          <div style={{...displayFlexCenter, flexDirection: 'column' }}>
-            <div>{USDValue} USD</div>
-            <div>{props.balance.value.getDecimalized(3)} ETC</div>
-          </div>
-          <div>
-            <ArrowRight />
-          </div>
-        </div>
-        <HorizontalAddressWithIdentity accountId={props.to} />
-      </div>
-      <div style={{ paddingTop: '35px', display: 'flex', justifyContent: 'center' }}>
-        <span style={{ color: props.muiTheme.palette.secondaryTextColor }}>Plus a {props.fee.getDecimalized()} ETC fee for 21000 GAS</span>
-      </div>
-      <Divider style={{marginTop: '35px'}}/>
-      <Form style={{marginTop: '0'}} on>
-        <Row>
-          <div style={styles.left}>
-            <div style={styles.fieldName}>
-              Password
-            </div>
-          </div>
-          <div style={styles.right}>
-            <Field
-              name="password"
-              type="password"
-              style={{minWidth: '600px'}}
-              component={TextField}
-              hintText="Enter your Password"
-              underlineShow={false}
-              fullWidth={true}
-              validate={[required]} />
-          </div>
-        </Row>
-        <Row>
-          <div style={styles.left} />
-          <div style={{paddingTop: '10px', ...styles.right}}>
-            <ButtonGroup>
-              <Button style={{color: props.muiTheme.palette.alternateTextColor, paddingRight: '5px'}} label="Back" onClick={props.onCancel} />
-              <Button primary label="Send Transaction" onClick={props.handleSubmit} />
-            </ButtonGroup>
-          </div>
-        </Row>
-      </Form>
-    </div>
-  );
-}));
-
 class MultiPageCreateTx extends React.Component {
   constructor(props) {
     super(props);
@@ -162,18 +79,23 @@ class MultiPageCreateTx extends React.Component {
     this.getPage = this.getPage.bind(this);
   }
 
-  nextPage() {
-    this.setState({ page: this.state.page + 1 });
+  // nextPage = () => {
+  //   this.setState({ page: this.state.page + 1 });
+  // }
+
+  onCreateTransaction = (data, nativeTx, tx) => {
+    // Store both tx in state to pass it to Sign form
+    this.setState({ tx, nativeTx, page: PAGES.PASSWORD });
   }
 
   getPage() {
-    const { page } = this.state;
+    const { page, tx, nativeTx } = this.state;
     const { t, backLabel } = this.props;
     switch (page) {
       case PAGES.TX:
-        return (<CreateTx {...this.props} onSubmit={this.nextPage.bind(this)}/>);
+        return (<CreateTx {...this.props} onCreateTransaction={this.onCreateTransaction} />);
       case PAGES.PASSWORD:
-        return (<PasswordPage onSubmit={this.props.onSubmit} {...this.props} />);
+        return (<SignTx tx={tx} nativeTx={nativeTx} onSubmit={this.props.signAndSend} {...this.props} />);
       case PAGES.DETAILS:
         return (<TransactionShow hash={ this.props.hash } accountId={ this.props.accountId }/>);
       default: return null;
@@ -244,7 +166,6 @@ export default connect(
       from: selector(state, 'from') || ownProps.account.get('id'),
       showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
       accounts: accounts.selectors.getAll(state, Immutable.List()),
-      addressBook: state.addressBook.get('addressBook'),
       tokens: allTokens.unshift(Immutable.fromJS({ address: '', symbol: 'ETC' })),
       isToken: Address.isValid(selector(state, 'token')),
       fiatRate,
@@ -262,9 +183,10 @@ export default connect(
       dispatch(reset('createTx'));
       dispatch(screen.actions.gotoScreen('home', ownProps.account));
     },
-    onSubmit(data) {
+    signAndSend: (data) => {
       const useLedger = ownProps.account.get('hardware', false);
 
+      // TODO: moved tx creation to CreatTransation handler
       let tx;
       // 1. Create TX here
       if (Address.isValid(data.token)) {
@@ -300,7 +222,6 @@ export default connect(
         };
       }
 
-
       // 2. Validate Trace and then Send TX
       return traceValidate(tx, dispatch, network.actions.estimateGas)
         .then((estimatedGas) => {
@@ -310,6 +231,7 @@ export default connect(
             if (useLedger) {
               // dispatch(screen.actions.showDialog('sign-transaction', data));
             }
+
             return dispatch(
               accounts.actions.sendTransaction(
                 tx.from,

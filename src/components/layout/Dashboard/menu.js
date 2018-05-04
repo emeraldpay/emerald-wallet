@@ -2,7 +2,15 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { FlatButton, Popover } from 'material-ui';
 import { List, ListItem } from 'material-ui/List';
-import { Ledger as LedgerIcon, Key as KeyIcon, Keypair as KeypairIcon, AddCircle as AddIcon, Download as DownloadIcon, Token1 as TokenIcon } from 'emerald-js-ui/lib/icons3';
+import {
+  Ledger as LedgerIcon,
+  Key as KeyIcon,
+  Keypair as KeypairIcon,
+  AddCircle as AddIcon,
+  Download as DownloadIcon,
+  Token1 as TokenIcon,
+  List as ListIcon,
+} from 'emerald-js-ui/lib/icons3';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 
 const styles = {
@@ -37,7 +45,7 @@ class DashboardMenu extends React.Component {
     };
   }
 
-  handleTouchTap = (event) => {
+  openMenu = (event) => {
     // This prevents ghost click.
     event.preventDefault();
 
@@ -63,12 +71,12 @@ class DashboardMenu extends React.Component {
   }
 
   render() {
-    const { generate, importJson, importLedger, importPrivateKey, importMnemonic, createMnemonic, muiTheme } = this.props;
-    const { t, style } = this.props;
+    const { generate, importJson, importLedger, importPrivateKey, importMnemonic, createMnemonic, addressBook } = this.props;
+    const { t, style, muiTheme } = this.props;
     return (
       <div style={ style }>
         <FlatButton
-          onTouchTap={ this.handleTouchTap }
+          onClick={ this.openMenu }
           label={ t('list.popupMenuLabel') }
           labelStyle={ styles.buttonLabel }
           style={{color: muiTheme.palette.primary1Color}}
@@ -125,6 +133,12 @@ class DashboardMenu extends React.Component {
               secondaryText={ t('add.token.subtitle') }
               onClick={ this.handleAddToken }
               leftIcon={<TokenIcon />}
+            />
+            <ListItem
+              primaryText="Address Book"
+              secondaryText="View and edit contacts"
+              onClick={ addressBook }
+              leftIcon={<ListIcon />}
             />
           </List>
         </Popover>

@@ -6,7 +6,7 @@ const config = {
   format: 'v1',
   channel: 'stable',
   app: {
-    version: '0.19.0',
+    version: '0.22.0',
   },
   download: [
     {
@@ -15,13 +15,13 @@ const config = {
         {
           type: 'https',
           pack: 'zip',
-          url: 'https://github.com/ethereumproject/emerald-cli/releases/download/v0.19.0/emerald-cli-osx-v0.19.3-113a3e3.zip',
+          url: 'https://github.com/ETCDEVTeam/emerald-cli/releases/download/v0.22.0/emerald-cli-osx-v0.22.0-5dbb148.zip',
         },
       ],
       signatures: [
         {
           type: 'pgp',
-          url: 'https://github.com/ethereumproject/emerald-cli/releases/download/v0.19.0/emerald-cli-osx-v0.19.3-113a3e3.zip.asc',
+          url: 'https://github.com/ETCDEVTeam/emerald-cli/releases/download/v0.22.0/emerald-cli-osx-v0.22.0-5dbb148.zip.asc',
         },
       ],
     },
@@ -31,13 +31,13 @@ const config = {
         {
           type: 'https',
           pack: 'zip',
-          url: 'https://github.com/ethereumproject/emerald-cli/releases/download/v0.19.0/emerald-stable-x86_64-pc-windows-msvc-v0.19.3-113a3e3.zip',
+          url: 'https://github.com/ETCDEVTeam/emerald-cli/releases/download/v0.22.0/emerald-stable-x86_64-pc-windows-msvc-v0.22.0-5dbb148.zip',
         },
       ],
       signatures: [
         {
           type: 'pgp',
-          url: 'https://github.com/ethereumproject/emerald-cli/releases/download/v0.19.0/emerald-stable-x86_64-pc-windows-msvc-v0.19.3-113a3e3.zip.asc',
+          url: 'https://github.com/ETCDEVTeam/emerald-cli/releases/download/v0.22.0/emerald-stable-x86_64-pc-windows-msvc-v0.22.0-5dbb148.zip.asc',
         },
       ],
     },
@@ -47,13 +47,13 @@ const config = {
         {
           type: 'https',
           pack: 'zip',
-          url: 'https://github.com/ethereumproject/emerald-cli/releases/download/v0.19.0/emerald-cli-linux-v0.19.3-113a3e3.zip',
+          url: 'https://github.com/ETCDEVTeam/emerald-cli/releases/download/v0.22.0/emerald-cli-linux-v0.22.0-5dbb148.zip',
         },
       ],
       signatures: [
         {
           type: 'pgp',
-          url: 'https://github.com/ethereumproject/emerald-cli/releases/download/v0.19.0/emerald-cli-linux-v0.19.3-113a3e3.zip.asc',
+          url: 'https://github.com/ETCDEVTeam/emerald-cli/releases/download/v0.22.0/emerald-cli-linux-v0.22.0-5dbb148.zip.asc',
         },
       ],
     },

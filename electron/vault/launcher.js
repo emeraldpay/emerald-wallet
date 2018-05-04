@@ -83,6 +83,7 @@ class LocalConnector {
           reject(err);
         } else {
           const options = [
+            'account',
             'import',
             `--chain=${this.chain.name}`,
             '--all',
@@ -108,6 +109,7 @@ class LocalConnector {
           reject(err);
         } else {
           const options = [
+            '-v',
             'server',
           ];
           log.debug(`Emerald bin: ${bin}, args: ${options}`);

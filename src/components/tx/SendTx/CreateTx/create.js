@@ -1,42 +1,21 @@
 // @flow
-import Immutable from 'immutable';
 import BigNumber from 'bignumber.js';
-import { change, formValueSelector, SubmissionError } from 'redux-form';
-import { convert, Address, Wei } from 'emerald-js';
-import { connect } from 'react-redux';
-import ledger from 'store/ledger/';
+import { Address, convert } from 'emerald-js';
 import { etherToWei } from 'lib/convert';
-import { address } from 'lib/validators';
-import launcher from 'store/launcher';
-import network from 'store/network';
-import accounts from 'store/vault/accounts';
-import Tokens from 'store/vault/tokens';
-import screen from 'store/wallet/screen';
 import TokenUnits from 'lib/tokenUnits';
+import { address } from 'lib/validators';
+import { connect } from 'react-redux';
+import { SubmissionError, change, formValueSelector } from 'redux-form';
+import Tokens from 'store/vault/tokens';
+import createLogger from '../../../../utils/logger';
 import CreateTxForm from './createTxForm';
-import createLogger from '../../../utils/logger';
+
+const { toHex, toBaseUnits } = convert;
 
 const log = createLogger('CreateTx');
 
 const DefaultGas = 21000;
 const DefaultTokenGas = 23890;
-
-const { toHex } = convert;
-
-export const traceValidate = (tx, dispatch, estimateGas): Promise<number> => {
-  return new Promise((resolve, reject) => {
-    dispatch(estimateGas(tx.from, tx.to, tx.gas, tx.gasPrice, tx.value, tx.data))
-      .then((gasEst) => {
-        if (!gasEst) {
-          reject('Invalid Transaction');
-        } else if (gasEst > convert.toNumber(tx.gas)) {
-          reject(`Insufficient Gas. Expected ${gasEst}`);
-        } else {
-          resolve(gasEst);
-        }
-      }).catch((error) => reject(error));
-  });
-};
 
 const selector = formValueSelector('createTx');
 const getGasPrice = (state) => state.network.get('gasPrice');
@@ -68,8 +47,9 @@ export const selectBalance = (state, account) => {
 
 
 const CreateTx = connect(
-  (state, ownProps) => {
-  },
+  (state, ownProps) => ({
+    addressBook: state.addressBook.get('addressBook'),
+  }),
   (dispatch, ownProps) => ({
     onChangeAccount: (all, value) => {
       // load account information for selected account
@@ -107,6 +87,56 @@ const CreateTx = connect(
     },
     cancel: () => {
       ownProps.goDashboard();
+    },
+    onSubmit: (data) => {
+      // TODO: In this handler we should create native tx and estimate gas
+
+      const tx = {
+        from: data.from,
+        to: data.to,
+        gas: data.gas,
+        gasPrice: data.gasPrice,
+      };
+
+      let nativeTx;
+      // 1. Create TX here
+      if (Address.isValid(data.token)) {
+        // Token TX
+        const tokenInfo = data.tokens.find((t) => t.get('address') === data.token);
+        if (!tokenInfo) {
+          throw new SubmissionError(`Unknown token ${data.token}`);
+        }
+        tx.symbol = tokenInfo.get('symbol');
+        const decimals = convert.toNumber(tokenInfo.get('decimals'));
+        const tokenUnits: BigNumber = toBaseUnits(convert.toBigNumber(data.value), decimals);
+        const txData = Tokens.actions.createTokenTxData(
+          data.to,
+          tokenUnits,
+          data.isTransfer);
+
+        nativeTx = {
+          from: data.from,
+          gasPrice: toHex(data.gasPrice.value()),
+          gas: toHex(data.gas),
+          to: data.token,
+          value: convert.toHex(0),
+          data: txData,
+        };
+      } else {
+        // Ordinary Tx
+        nativeTx = {
+          from: data.from,
+          gasPrice: toHex(data.gasPrice.value()),
+          gas: toHex(data.gas),
+          to: data.to,
+          value: toHex(etherToWei(data.value)),
+        };
+        tx.symbol = 'ETC';
+      }
+
+      if (ownProps.onCreateTransaction) {
+        ownProps.onCreateTransaction(data, nativeTx, tx);
+      }
     },
   })
 )(CreateTxForm);

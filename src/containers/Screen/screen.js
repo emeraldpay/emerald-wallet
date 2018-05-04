@@ -3,11 +3,11 @@ import { connect } from 'react-redux';
 import CircularProgress from 'material-ui/CircularProgress';
 import createLogger from '../../utils/logger';
 
-import AddressBook from '../../components/addressbook/book';
+import AddressBook from '../../components/addressbook/ContactList';
 import AccountShow from '../../components/accounts/AccountShow';
 import AddressShow from '../../components/addressbook/show';
-import AddressAdd from '../../components/addressbook/add';
-import CreateTx from '../../components/tx/CreateTx';
+import AddressAdd from '../../components/addressbook/AddContact';
+import CreateTx from '../../components/tx/SendTx';
 import TransactionShow from '../../components/tx/TxDetails';
 import MnemonicWizard from '../../components/accounts/MnemonicWizard';
 import AddToken from '../../components/tokens/AddToken/add';
@@ -22,6 +22,8 @@ import Settings from '../../components/settings';
 import PaperWallet from '../PaperWallet';
 import ExportPaperWallet from '../../components/accounts/ExportPaperWallet';
 import GenerateAccount from '../../components/accounts/GenerateAccount';
+
+import WalletScreen from '../../store/wallet/screen';
 
 const log = createLogger('screen');
 
@@ -38,7 +40,7 @@ const Screen = ({ screen, screenItem }) => {
   } else if (screen === 'address-book') {
     return <AddressBook />;
   } else if (screen === 'address') {
-    return <AddressShow addressId={ screenItem }/>;
+    return <AddressShow address={ screenItem }/>;
   } else if (screen === 'add-address') {
     return <AddressAdd />;
   } else if (screen === 'landing-add-from-ledger') {
@@ -95,9 +97,6 @@ const Screen = ({ screen, screenItem }) => {
 };
 
 export default connect(
-  (state, ownProps) => ({
-    screen: state.wallet.screen.get('screen'),
-    screenItem: state.wallet.screen.get('item'),
-  }),
+  (state, ownProps) => WalletScreen.selectors.getCurrentScreen(state),
   (dispatch, ownProps) => ({})
 )(Screen);

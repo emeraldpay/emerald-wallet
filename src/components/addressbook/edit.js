@@ -6,7 +6,7 @@ const AddressEdit = connect(
     blockAddress: true,
     initialValues: {
       name: ownProps.address.get('name'),
-      address: ownProps.address.get('id'),
+      address: ownProps.address.get('address'),
       description: ownProps.address.get('description'),
     },
   }),

@@ -1,39 +1,82 @@
 import React from 'react';
 import { Field, reduxForm } from 'redux-form';
-import { renderTextField } from 'elements/formFields';
-import { Card, CardText, FlatButton } from 'material-ui';
+import { ButtonGroup, Button } from 'emerald-js-ui';
+import TextField from 'elements/Form/TextField';
 import { required, address } from 'lib/validators';
-import { cardSpace } from 'lib/styles';
-import { TextField } from 'redux-form-material-ui';
+import { Form, Row, styles as formStyles } from 'elements/Form';
 
-const Render = ({ handleSubmit, blockAddress, invalid, pristine, submitting, cancel }) => (
-  <Card style={cardSpace}>
-    <CardText expandable={false}>
-      <form onSubmit={handleSubmit}>
-        <Field name="address"
+const titleStyle = {
+  fontSize: '18px',
+  fontWeight: '400',
+};
+
+const Render = ({ handleSubmit, blockAddress, invalid, pristine, submitting, cancel, title }) => (
+  <Form>
+    <Row>
+      <div style={formStyles.left}>
+      </div>
+      <div style={formStyles.right} >
+        <span style={titleStyle}>{title}</span>
+      </div>
+    </Row>
+    <Row expandable={false}>
+      <div style={formStyles.left}>
+        <div style={formStyles.fieldName}>Address</div>
+      </div>
+      <div style={formStyles.right} >
+        <Field
+          underlineShow={false}
+          name="address"
           component={TextField}
           type="text"
-          label="Network Address"
           disabled={blockAddress}
           fullWidth={true}
-          validate={[required, address]} />
-        <Field name="name"
-          component={renderTextField}
+          validate={[required, address]}
+        />
+      </div>
+    </Row>
+    <Row>
+      <div style={formStyles.left}>
+        <div style={formStyles.fieldName}>Name</div>
+      </div>
+      <div style={formStyles.right} >
+        <Field
+          underlineShow={false}
+          name="name"
+          component={TextField}
           type="text"
-          label="Address Name"
-          validate={ required } />
-        <Field name="description"
-          component={renderTextField}
+          validate={required} /></div>
+    </Row>
+    <Row>
+      <div style={formStyles.left}>
+        <div style={formStyles.fieldName}>Description</div>
+      </div>
+      <div style={formStyles.right} >
+        <Field
+          underlineShow={false}
+          name="description"
+          component={TextField}
           type="text"
-          label="Address Description" />
-        <FlatButton label="Save" type="submit"
-          disabled={pristine || submitting || invalid } />
-        <FlatButton label="Cancel"
-          secondary={true}
-          onClick={cancel} />
-      </form>
-    </CardText>
-  </Card>
+        /></div>
+    </Row>
+    <Row>
+      <div style={formStyles.left} />
+      <div style={formStyles.right}>
+        <ButtonGroup>
+          <Button
+            label="Cancel"
+            onClick={cancel}
+          />
+          <Button
+            primary
+            label="Save"
+            disabled={pristine || submitting || invalid}
+            onClick={handleSubmit}
+          />
+        </ButtonGroup>
+      </div>
+    </Row>
+  </Form>
 );
 
 export const AddressForm = reduxForm({

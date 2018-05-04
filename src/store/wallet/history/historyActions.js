@@ -79,7 +79,7 @@ export function refreshTransactions(hashes: Array<string>) {
 
 export function refreshTransaction(hash: string) {
   return (dispatch, getState, api) =>
-    api.geth.eth.getTransactionByHash(hash).then((result) => {
+    api.geth.eth.getTransaction(hash).then((result) => {
       if (!result) {
         log.info(`No tx for hash ${hash}`);
         dispatch({

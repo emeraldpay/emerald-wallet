@@ -12,7 +12,7 @@
     "Isaac Ardis",
     "Shane Jonas <jonas.shane@gmail.com>"
   ],
-  "version": "0.9.0",
+  "version": "0.10.0",
   "description": "Emerald - Ethereum Classic Wallet",
   "main": "./electron/main.js",
   "moduleRoots": [
@@ -64,8 +64,8 @@
     "devtron": "^1.4.0",
     "electron-log": "^2.2.6",
     "electron-store": "^1.1.0",
-    "emerald-js": "git+https://github.com/ETCDEVTeam/emerald-js.git#v0.1.0",
-    "emerald-js-ui": "git+https://github.com/ETCDEVTeam/emerald-js-ui.git#v0.0.22",
+    "emerald-js": "git+https://github.com/ETCDEVTeam/emerald-js.git#v0.1.2",
+    "emerald-js-ui": "git+https://github.com/ETCDEVTeam/emerald-js-ui.git#v0.0.23",
     "es6-promise": "4.1.1",
     "eslint": "4.2.0",
     "eslint-nibble": "4.2.1",
@@ -84,7 +84,6 @@
     "lib": "^2.2.5",
     "material-ui": "^0.20.0",
     "node-pre-gyp": "0.6.36",
-    "object-assign": "^4.1.1",
     "prop-types": "^15.4.2",
     "qrcode.react": "0.6.1",
     "react": "^15.6.1",
@@ -185,7 +184,7 @@
       "iconSize": 128,
       "contents": [
         {
-          "x": 180, 
+          "x": 180,
           "y": 190
         },
         {
@@ -193,7 +192,8 @@
           "y": 190,
           "type": "link",
           "path": "/Applications"
-        }]
+        }
+      ]
     }
   },
   "jest": {

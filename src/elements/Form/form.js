@@ -1,7 +1,6 @@
 // @flow
 import React from 'react';
 import { Card } from 'emerald-js-ui';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import formStyles from './form.scss';
 
 export const styles = {

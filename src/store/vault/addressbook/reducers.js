@@ -1,21 +1,20 @@
 import Immutable from 'immutable';
-import { Wei } from 'emerald-js';
+import ActionTypes from './actionTypes';
 
 const initial = Immutable.fromJS({
   addressBook: [],
   loading: false,
 });
 
-const initialAddr = Immutable.Map({
+const initialContact = Immutable.Map({
   name: null,
-  id: null,
+  address: null,
   description: null,
-  balance: null,
 });
 
 function addAddress(state, address) {
   return state.update('addressBook', (addresses) =>
-    addresses.push(initialAddr.merge(address))
+    addresses.push(initialContact.merge(address))
   );
 }
 
@@ -31,7 +30,7 @@ function updateAddress(state, id, f) {
 
 function onLoading(state, action) {
   switch (action.type) {
-    case 'ADDRESS/LOADING':
+    case ActionTypes.LOADING:
       return state
         .set('loading', true);
     default:
@@ -41,7 +40,7 @@ function onLoading(state, action) {
 
 function onSetAddressBook(state, action) {
   switch (action.type) {
-    case 'ADDRESS/SET_BOOK':
+    case ActionTypes.SET_BOOK:
       return state
         .set('addressBook',
           Immutable.fromJS(action.addressBook || [])
@@ -52,19 +51,10 @@ function onSetAddressBook(state, action) {
   }
 }
 
-function onSetBalance(state, action) {
-  if (action.type === 'ADDRESS/SET_BALANCE') {
-    return updateAddress(state, action.addressId, (addr) =>
-      addr.set('balance', new Wei(action.value))
-    );
-  }
-  return state;
-}
-
 function onAddAddress(state, action) {
-  if (action.type === 'ADDRESS/ADD_ADDRESS') {
+  if (action.type === ActionTypes.ADD_ADDRESS) {
     return addAddress(state, {
-      id: action.addressId,
+      address: action.address,
       name: action.name,
       description: action.description,
     });
@@ -73,7 +63,7 @@ function onAddAddress(state, action) {
 }
 
 function onUpdateAddress(state, action) {
-  if (action.type === 'ADDRESS/UPDATE_ADDRESS') {
+  if (action.type === ActionTypes.UPDATE_ADDRESS) {
     return updateAddress(state, action.addressId, (addr) =>
       addr.merge({
         name: action.name,
@@ -86,21 +76,20 @@ function onUpdateAddress(state, action) {
 }
 
 function onDeleteAddress(state, action) {
-  if (action.type === 'ADDRESS/DELETE_ADDRESS') {
+  if (action.type === ActionTypes.DELETE_ADDRESS) {
     return state.update('addressBook', (addresses) => {
-      const pos = addresses.findKey((addr) => addr.get('id') === action.addressId);
+      const pos = addresses.findKey((addr) => addr.get('address') === action.address);
       return addresses.delete(pos);
     });
   }
   return state;
 }
 
-export default function addresssReducers(state, action) {
+export default function reducer(state, action) {
   state = state || initial;
   state = onLoading(state, action);
   state = onSetAddressBook(state, action);
   state = onAddAddress(state, action);
-  state = onSetBalance(state, action);
   state = onUpdateAddress(state, action);
   state = onDeleteAddress(state, action);
   return state;

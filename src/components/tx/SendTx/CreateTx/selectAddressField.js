@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { Field } from 'redux-form';
 import { MenuItem } from 'material-ui';
 import { IdentityIcon } from 'emerald-js-ui';
-import SelectField from '../../../elements/Form/SelectField';
+import SelectField from '../../../../elements/Form/SelectField';
 
 /**
  * Address with IdentityIcon. We show it in from field select control

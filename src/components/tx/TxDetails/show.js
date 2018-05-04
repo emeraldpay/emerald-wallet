@@ -42,14 +42,6 @@ export const TransactionShow = (props: Props) => {
     textAlign: 'right',
   };
 
-  const repeatButtonStyle = {
-    height: '40px',
-    fontSize: '14px',
-    fontWeight: '500',
-    borderRadius: '1px',
-    backgroundColor: '#EEE',
-  };
-
   const blockNumber = transaction.get('blockNumber');
   const txStatus = blockNumber ? 'success' : 'queue';
   const fiatAmount = transaction.get('value') ?
@@ -75,10 +67,10 @@ export const TransactionShow = (props: Props) => {
         <div style={styles.right}>
           <div style={{display: 'flex'}}>
             <div>
-              <div className={ classes.etcAmount }>
+              <div className={ classes.value }>
                 { transaction.get('value') ? `${new Wei(transaction.get('value')).getEther()} ETC` : '--' }
               </div>
-              {showFiat && <div className={ classes.fiatAmount }>
+              {showFiat && <div className={ classes.value }>
                 { fiatAmount }
               </div> }
             </div>
@@ -178,13 +170,12 @@ export const TransactionShow = (props: Props) => {
           <div>
             <ButtonGroup>
               <Button
-                onClick={ () => props.goDashboard() }
-                style={repeatButtonStyle}
+                onClick={ () => props.cancel() }
                 label="DASHBOARD" />
               <Button
                 primary
                 onClick={ () => repeatTx(transaction, toAccount, fromAccount) }
-                label="CREATE ANOTHER TRANSACTION" />
+                label="REPEAT TRANSACTION" />
             </ButtonGroup>
           </div>
         </div>

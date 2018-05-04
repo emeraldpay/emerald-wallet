@@ -27,6 +27,7 @@ test('It shows tx value in fiat', () => {
     balance={ balance }
     value='1.23456789'
     accounts={ [] }
+    addressBook={ [] }
     tokens={ [] }
   />);
 
