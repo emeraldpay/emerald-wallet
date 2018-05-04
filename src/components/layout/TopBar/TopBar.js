@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Button } from 'emerald-js-ui';
 import { Add as AddIcon } from 'emerald-js-ui/lib/icons3';
 import Screen from '../../../store/wallet/screen';
@@ -11,7 +12,7 @@ import styles from './TopBar.scss';
  */
 export class TopBar extends React.Component {
   render() {
-    const { onAccounts, onNewContact } = this.props;
+    const { onAccounts, onNewContact, muiTheme } = this.props;
     return (
       <div className={styles.container}>
         <div>
@@ -23,7 +24,7 @@ export class TopBar extends React.Component {
         <div>
           <Button
             label="NEW CONTACT"
-            icon={<AddIcon />}
+            icon={<AddIcon style={{color: muiTheme.palette.alternateTextColor}} />}
             onClick={onNewContact}
           />
         </div>
@@ -37,5 +38,5 @@ const mapDispatchToProps = (dispatch) => ({
   onNewContact: () => dispatch(Screen.actions.gotoScreen('add-address')),
 });
 
-export default connect(null, mapDispatchToProps)(TopBar);
+export default muiThemeable()(connect(null, mapDispatchToProps)(TopBar));
 

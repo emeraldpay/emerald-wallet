@@ -1,15 +1,27 @@
 import React from 'react';
 import { Field, reduxForm } from 'redux-form';
-import { FlatButton } from 'material-ui';
+import { ButtonGroup, Button } from 'emerald-js-ui';
 import TextField from 'elements/Form/TextField';
 import { required, address } from 'lib/validators';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 
-const Render = ({ handleSubmit, blockAddress, invalid, pristine, submitting, cancel }) => (
+const titleStyle = {
+  fontSize: '18px',
+  fontWeight: '400',
+};
+
+const Render = ({ handleSubmit, blockAddress, invalid, pristine, submitting, cancel, title }) => (
   <Form>
+    <Row>
+      <div style={formStyles.left}>
+      </div>
+      <div style={formStyles.right} >
+        <span style={titleStyle}>{title}</span>
+      </div>
+    </Row>
     <Row expandable={false}>
       <div style={formStyles.left}>
-        <div style={ formStyles.fieldName }>Address</div>
+        <div style={formStyles.fieldName}>Address</div>
       </div>
       <div style={formStyles.right} >
         <Field
@@ -25,7 +37,7 @@ const Render = ({ handleSubmit, blockAddress, invalid, pristine, submitting, can
     </Row>
     <Row>
       <div style={formStyles.left}>
-        <div style={ formStyles.fieldName }>Name</div>
+        <div style={formStyles.fieldName}>Name</div>
       </div>
       <div style={formStyles.right} >
         <Field
@@ -37,7 +49,7 @@ const Render = ({ handleSubmit, blockAddress, invalid, pristine, submitting, can
     </Row>
     <Row>
       <div style={formStyles.left}>
-        <div style={ formStyles.fieldName }>Description</div>
+        <div style={formStyles.fieldName}>Description</div>
       </div>
       <div style={formStyles.right} >
         <Field
@@ -50,17 +62,18 @@ const Render = ({ handleSubmit, blockAddress, invalid, pristine, submitting, can
     <Row>
       <div style={formStyles.left} />
       <div style={formStyles.right}>
-        <FlatButton
-          label="Save"
-          type="submit"
-          onClick={handleSubmit}
-          disabled={pristine || submitting || invalid}
-        />
-        <FlatButton
-          label="Cancel"
-          secondary={true}
-          onClick={cancel}
-        />
+        <ButtonGroup>
+          <Button
+            label="Cancel"
+            onClick={cancel}
+          />
+          <Button
+            primary
+            label="Save"
+            disabled={pristine || submitting || invalid}
+            onClick={handleSubmit}
+          />
+        </ButtonGroup>
       </div>
     </Row>
   </Form>

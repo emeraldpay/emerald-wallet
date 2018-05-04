@@ -22,7 +22,7 @@ const ContactList = ({ addressBook, muiTheme }) => {
   } else {
     list = (
       <div style={{ border: `1px solid ${muiTheme.palette.borderColor}` }} className={styles.noItems}>
-        There is no any contacts. Add one.
+        There are no contacts. Add one.
       </div>);
   }
 

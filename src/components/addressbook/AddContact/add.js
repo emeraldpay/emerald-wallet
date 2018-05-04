@@ -6,6 +6,7 @@ import { AddressForm } from '../form';
 const AddressAdd = connect(
   (state, ownProps) => ({
     blockAddress: false,
+    title: 'Add Contact',
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data) => new Promise((resolve, reject) => {

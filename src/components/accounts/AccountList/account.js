@@ -65,12 +65,10 @@ export class Account extends React.Component {
                     <SecondaryMenu account={account} />
                     <Button
                       label="Add ETC"
-                      labelStyle={{ color: muiTheme.palette.alternateTextColor }}
                       onClick={ this.onAddEtcClick }
                     />
                     <Button
                       label="Send"
-                      labelStyle={{ color: muiTheme.palette.alternateTextColor }}
                       disabled={ !account.get('balance') }
                       onClick={ this.onSendClick }
                     />
