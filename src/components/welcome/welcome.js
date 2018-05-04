@@ -3,12 +3,13 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
 import CircularProgress from 'material-ui/CircularProgress';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 
 import { Logo as LogoIcon } from 'emerald-js-ui/lib/icons';
 import InitialSetup from './initialSetup';
 import version from '../../version';
 
-const Render = ({ message, level, ready, needSetup }) => {
+const Render = ({ message, level, ready, needSetup, muiTheme }) => {
   let messageBlock = null;
   if (message) {
     const messageStyle = {
@@ -22,12 +23,10 @@ const Render = ({ message, level, ready, needSetup }) => {
   }
 
   const body = <div>
-    <Row center="xs" style={{paddingTop: '40px'}}>
-      <Col xs={12}>
-        <span style={{fontSize: '28px', fontWeight: 900}}>Emerald Wallet</span>
-      </Col>
-      <Col xs={12}>
-        <span style={{fontSize: '16px', fontWeight: 500}}>Version: { version }</span>
+    <Row center="xs">
+      <Col xs={12} style={{fontSize: '42px'}}>
+        <span style={{color: muiTheme.palette.primary1Color}}>Emerald </span>
+        <span style={{color: muiTheme.palette.secondaryTextColor}}>Wallet</span>
       </Col>
     </Row>
     <Row center="xs" style={{paddingTop: '40px', height: '40px'}}>
@@ -36,15 +35,6 @@ const Render = ({ message, level, ready, needSetup }) => {
       </Col>
     </Row>
   </div>;
-
-  const logoStyles = {
-    row: {
-      paddingTop: '150px',
-    },
-    img: {
-      height: 128,
-    },
-  };
 
   if (needSetup) {
     return (
@@ -60,9 +50,9 @@ const Render = ({ message, level, ready, needSetup }) => {
 
   return (
     <Grid id="welcome-screen" style={{maxWidth: '1150px'}}>
-      <Row center="xs" style={logoStyles.row}>
+      <Row center="xs" middle="xs" style={{paddingTop: '6%'}}>
         <Col xs>
-          <LogoIcon width="128px" height="128px" />
+          <LogoIcon width="250" height="250" />
         </Col>
       </Row>
       {body}
@@ -87,6 +77,6 @@ const Welcome = connect(
   }),
   (dispatch, ownProps) => ({
   })
-)(Render);
+)(muiThemeable()(Render));
 
 export default Welcome;
