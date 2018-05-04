@@ -21,8 +21,8 @@ const HorizontalAddressWithIdentity = (props) => {
 
 const passwordFields = (props) => {
   if (props.useLedger) {
-    return null
-  };
+    return null;
+  }
   return (
     <Row>
       <div style={styles.left}>
