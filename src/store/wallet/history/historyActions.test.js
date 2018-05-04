@@ -6,7 +6,6 @@ import ActionTypes from './actionTypes';
 
 
 describe('historyActions/refreshTransaction', () => {
-
   const getState = () => ({
     wallet: {
       history: fromJS({
