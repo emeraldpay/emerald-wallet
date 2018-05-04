@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Account } from 'emerald-js-ui';
 import { Trash as DeleteIcon } from 'emerald-js-ui/lib/icons3';
 import { IconButton } from 'material-ui';
@@ -8,7 +9,7 @@ import Addressbook from '../../../store/vault/addressbook';
 
 import styles from './Contact.scss';
 
-const Render = ({ address, onDeleteAddress }) => (
+const Render = ({ address, onDeleteAddress, muiTheme }) => (
   <div className={styles.container}>
     <div>
       <Account
@@ -19,7 +20,7 @@ const Render = ({ address, onDeleteAddress }) => (
     </div>
     <div>
       <IconButton onClick={onDeleteAddress}>
-        <DeleteIcon/>
+        <DeleteIcon style={{color: muiTheme.palette.secondaryTextColor}}/>
       </IconButton>
     </div>
   </div>
@@ -44,4 +45,4 @@ const Address = connect(
   })
 )(Render);
 
-export default Address;
+export default muiThemeable()(Address);

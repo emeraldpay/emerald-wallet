@@ -42,14 +42,6 @@ export const TransactionShow = (props: Props) => {
     textAlign: 'right',
   };
 
-  const repeatButtonStyle = {
-    height: '40px',
-    fontSize: '14px',
-    fontWeight: '500',
-    borderRadius: '1px',
-    backgroundColor: '#EEE',
-  };
-
   const blockNumber = transaction.get('blockNumber');
   const txStatus = blockNumber ? 'success' : 'queue';
   const fiatAmount = transaction.get('value') ?
@@ -179,7 +171,6 @@ export const TransactionShow = (props: Props) => {
             <ButtonGroup>
               <Button
                 onClick={ () => props.cancel() }
-                style={repeatButtonStyle}
                 label="DASHBOARD" />
               <Button
                 primary
