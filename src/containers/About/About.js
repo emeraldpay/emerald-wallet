@@ -16,8 +16,8 @@ class AboutClass extends React.Component {
     };
     return (
       <div style={{ padding: '30px', position: 'relative' }}>
-        <div style={{ position: 'absolute', top: '-100px', right: '-160px' }}>
-          <EtcLogo height="300px" width="300px" />
+        <div style={{ position: 'absolute', top: '-100px', right: '-175px' }}>
+          <EtcLogo height="350px" width="350px" />
         </div>
         <h2 style={{ color: muiTheme.palette.primary1Color, fontWeight: '200', paddingBottom: '0px', marginBottom: '5px' }}>Emerald Wallet</h2>
         <div style={{ marginBottom: '20px' }}>{version}</div>
