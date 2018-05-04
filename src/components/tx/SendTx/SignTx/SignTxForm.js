@@ -18,6 +18,34 @@ const HorizontalAddressWithIdentity = (props) => {
   );
 };
 
+
+const passwordFields = (props) => {
+  if (props.useLedger) {
+    return null
+  };
+  return (
+    <Row>
+      <div style={styles.left}>
+        <div style={styles.fieldName}>
+          Password
+        </div>
+      </div>
+      <div style={styles.right}>
+        <Field
+          name="password"
+          type="password"
+          style={{ minWidth: '600px' }}
+          component={TextField}
+          hintText="Enter your Password"
+          underlineShow={false}
+          fullWidth={true}
+          validate={[required]}
+        />
+      </div>
+    </Row>
+  );
+};
+
 const displayFlexCenter = {
   display: 'flex',
   justifyContent: 'center',
@@ -50,25 +78,7 @@ const SignTx = muiThemeable()((props) => {
       </div>
       <Divider style={{ marginTop: '35px' }} />
       <Form style={{ marginTop: '0' }}>
-        <Row>
-          <div style={styles.left}>
-            <div style={styles.fieldName}>
-              Password
-            </div>
-          </div>
-          <div style={styles.right}>
-            <Field
-              name="password"
-              type="password"
-              style={{ minWidth: '600px' }}
-              component={TextField}
-              hintText="Enter your Password"
-              underlineShow={false}
-              fullWidth={true}
-              validate={[required]}
-            />
-          </div>
-        </Row>
+        {passwordFields(props)}
         <Row>
           <div style={styles.left} />
           <div style={{ paddingTop: '10px', ...styles.right }}>
