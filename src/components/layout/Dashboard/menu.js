@@ -9,7 +9,7 @@ import {
   AddCircle as AddIcon,
   Download as DownloadIcon,
   Token1 as TokenIcon,
-  List as ListIcon,
+  Book as BookIcon,
 } from 'emerald-js-ui/lib/icons3';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 
@@ -138,7 +138,7 @@ class DashboardMenu extends React.Component {
               primaryText="Address Book"
               secondaryText="View and edit contacts"
               onClick={ addressBook }
-              leftIcon={<ListIcon />}
+              leftIcon={<BookIcon />}
             />
           </List>
         </Popover>
