@@ -229,7 +229,7 @@ export default connect(
 
           return ledger.actions.closeConnection().then(() => {
             if (useLedger) {
-              // dispatch(screen.actions.showDialog('sign-transaction', data));
+              dispatch(screen.actions.showDialog('sign-transaction', data));
             }
 
             return dispatch(
