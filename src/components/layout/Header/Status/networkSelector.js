@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { DropDownMenu } from 'material-ui';
+import { DropDownMenu, IconButton } from 'material-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Network as NetworkIcon, NetworkDisconnected as NetworkDisconnectedIcon } from 'emerald-js-ui/lib/icons3';
 import { Networks, findNetwork } from '../../../../lib/networks';
@@ -53,12 +53,16 @@ class NetworkSelectorRender extends React.Component {
   render() {
     const { chain, geth, onNetworkChange, connecting, muiTheme } = this.props;
     let icon;
-    if (connecting) {
+    if (connecting) { // shanejonas: the wrapping span's here are to get around some coloring issues with material-ui's dropdown + iconbutton
       icon =
-        <NetworkDisconnectedIcon />;
+        <span>
+          <NetworkDisconnectedIcon style={{color: muiTheme.palette.secondaryTextColor}}/>
+        </span>;
     } else {
       icon =
-        <NetworkIcon />;
+        <span>
+          <NetworkIcon style={{color: muiTheme.palette.secondaryTextColor}}/>
+        </span>;
     }
 
     const styles = getStyles(this.props);
@@ -80,12 +84,13 @@ class NetworkSelectorRender extends React.Component {
         menuStyle={{
           border: `1px solid ${muiTheme.palette.borderColor}`,
           backgroundColor: muiTheme.palette.alternateTextColor,
+          color: muiTheme.palette.secondaryTextColor,
           paddingTop: '12px',
           paddingBottom: '12px',
           maxWidth: '280px',
           boxShadow: `${muiTheme.palette.secondaryTextColor} 0px 0px 50px 0px`,
         }}
-        iconStyle={{left: '-40px', marginLeft: '20px'}}
+        iconStyle={{left: '-40px', marginLeft: '20px', stroke: muiTheme.palette.secondaryTextColor, color: muiTheme.palette.secondaryTextColor}}
         iconButton={icon}
         labelStyle={ styles.label }>
         { Networks.map((net) =>

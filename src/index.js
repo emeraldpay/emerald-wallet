@@ -19,7 +19,6 @@ import './bootstrapButtons.scss';
 const log = createLogger('index');
 
 const muiTheme = getMuiTheme(theme);
-muiTheme.dropDownMenu.accentColor = muiTheme.palette.secondaryTextColor;
 
 function start() {
   log.info('Starting Emerald Wallet...');
