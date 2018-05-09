@@ -37,8 +37,7 @@ const Status = ({ block, progress, peerCount, showDetails, connecting, switchNet
 
   return (
     <div style={styles.block}>
-      {icon}
-      <NetworkSelector onNetworkChange={ switchNetwork }/>
+      <NetworkSelector connecting={connecting} onNetworkChange={ switchNetwork }/>
     </div>
   );
 };
