@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { DropDownMenu } from 'material-ui';
+import { DropDownMenu, IconButton } from 'material-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
+import { Network as NetworkIcon, NetworkDisconnected as NetworkDisconnectedIcon } from 'emerald-js-ui/lib/icons3';
 import { Networks, findNetwork } from '../../../../lib/networks';
 
 
@@ -32,23 +33,40 @@ class ExtendedMenuItem extends React.Component {
 ExtendedMenuItem.muiName = 'MenuItem';
 
 
+function getStyles(props) {
+  const { muiTheme } = props;
+  return {
+    main: {
+      marginRight: '-20px',
+      paddingRight: '10px',
+      height: muiTheme.spacing.desktopToolbarHeight, /* gagarin55: this is extremely important hack to align DropDownMenu vertically */
+    },
+    label: {
+      color: muiTheme.palette.secondaryTextColor,
+      fontSize: '16px',
+      paddingRight: '10px',
+    },
+  };
+}
+
 class NetworkSelectorRender extends React.Component {
   render() {
-    const { chain, geth, onNetworkChange, muiTheme } = this.props;
-    const styles = {
-      main: {
-        marginRight: '-20px',
-        paddingRight: '10px',
-        color: muiTheme.palette.alternateTextColor,
-        height: muiTheme.spacing.desktopToolbarHeight, /* gagarin55: this is extremely important hack to align DropDownMenu vertically */
-      },
-      label: {
-        color: muiTheme.palette.secondaryTextColor,
-        fontSize: '16px',
-        paddingLeft: '5px',
-        paddingRight: '30px',
-      },
-    };
+    const { chain, geth, onNetworkChange, connecting, muiTheme } = this.props;
+    let icon;
+    if (connecting) { // shanejonas: the wrapping span's here are to get around some coloring issues with material-ui's dropdown + iconbutton
+      icon =
+        <span>
+          <NetworkDisconnectedIcon style={{color: muiTheme.palette.secondaryTextColor}}/>
+        </span>;
+    } else {
+      icon =
+        <span>
+          <NetworkIcon style={{color: muiTheme.palette.secondaryTextColor}}/>
+        </span>;
+    }
+
+    const styles = getStyles(this.props);
+
     const isCurrentNetwork = (net) => (net.chain.id === chain.get('id')
             && (net.geth.url === geth.get('url')));
     const currentNetwork = findNetwork(geth.get('url'), chain.get('id')) || {};
@@ -66,12 +84,14 @@ class NetworkSelectorRender extends React.Component {
         menuStyle={{
           border: `1px solid ${muiTheme.palette.borderColor}`,
           backgroundColor: muiTheme.palette.alternateTextColor,
+          color: muiTheme.palette.secondaryTextColor,
           paddingTop: '12px',
           paddingBottom: '12px',
           maxWidth: '280px',
           boxShadow: `${muiTheme.palette.secondaryTextColor} 0px 0px 50px 0px`,
         }}
-        iconStyle={{display: 'none'}}
+        iconStyle={{left: '-40px', marginLeft: '20px', stroke: muiTheme.palette.secondaryTextColor, color: muiTheme.palette.secondaryTextColor}}
+        iconButton={icon}
         labelStyle={ styles.label }>
         { Networks.map((net) =>
           <ExtendedMenuItem
