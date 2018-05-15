@@ -4,6 +4,7 @@ import BigNumber from 'bignumber.js';
 import { intervalRates } from '../../store/config';
 import createLogger from '../../utils/logger';
 import ActionTypes from './actionTypes';
+import history from '../wallet/history';
 
 const log = createLogger('networkActions');
 
@@ -33,22 +34,6 @@ export function loadHeight(watch) {
     });
 }
 
-// TODO: remove it ?
-// export function loadNetworkVersion() {
-//   return (dispatch, getState, api) =>
-//     api.geth.net.version().then((result) => {
-//       dispatch({
-//         type: ActionTypes.PEER_COUNT,
-//         id: `${parseInt(result, 10) + 60}`,
-//       });
-
-//       if (getState().launcher.get('chain').get('id') !== result) {
-//         // TODO: our full node on not expected chain - should we alarm ?
-
-//       }
-//     });
-// }
-
 export function loadPeerCount() {
   return (dispatch, getState, api) =>
     api.geth.net.peerCount().then((result) => {
@@ -61,17 +46,24 @@ export function loadPeerCount() {
     });
 }
 
+export function loadAddressTransactions(...props) {
+  return (dispatch, getState, api) => {
+    console.log('ABOUT TO CALL LOAD ADD TX', api.geth.eth.getAddressTransactions);
+    return api.geth.eth.getAddressTransactions(...props).then((result) => {
+      return api.geth.ext.getTransactions(result).then((txes) => {
+        return Promise.all(txes.map((tx) => dispatch(history.actions.trackTx(tx.result))));
+      })
+    }).catch((e) => {
+      console.log('ERROR:', e);
+    });
+  }
+}
+
 export function loadSyncing() {
   return (dispatch, getState, api) => {
     const repeat = getState().launcher.getIn(['geth', 'type']) === 'local';
     return api.geth.eth.getSyncing().then((result) => {
-      // const syncing = getState().network.get('sync').get('syncing');
       if (typeof result === 'object') {
-        // TODO: hz, remove it ?
-        // if (!syncing) {
-        //     dispatch(loadNetworkVersion());
-        // }
-
         dispatch({
           type: ActionTypes.SYNCING,
           syncing: true,

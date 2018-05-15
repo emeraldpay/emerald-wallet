@@ -22,6 +22,11 @@ log.info('userData: ', app.getPath('userData'));
 log.info(`Chain: ${JSON.stringify(settings.getChain())}`);
 log.info('Settings: ', settings.toJS());
 
+
+app.on('synced-chain', () => {
+
+});
+
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.

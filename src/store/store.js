@@ -72,6 +72,19 @@ function refreshAll() {
     store.dispatch(network.actions.loadPeerCount());
     store.dispatch(network.actions.loadSyncing());
   }
+
+  const syncing = state.network.getIn(['sync', 'syncing']);
+
+  console.log('REFRESH ALL: LOAD ADDRESS TRANSACTIONS');
+
+  const address = state.accounts.get('accounts').toJS();
+  console.log('address=', );
+  const addy = address[0].id;
+
+  if (addy) {
+    store.dispatch(network.actions.loadAddressTransactions(addy, 0, 0, '', '', -1, -1, false));
+  }
+
   setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
 }
 
