@@ -77,13 +77,9 @@ function refreshAll() {
 
   console.log('REFRESH ALL: LOAD ADDRESS TRANSACTIONS');
 
-  const address = state.accounts.get('accounts').toJS();
-  console.log('address=', );
-  const addy = address[0].id;
-
-  if (addy) {
-    store.dispatch(network.actions.loadAddressTransactions(addy, 0, 0, '', '', -1, -1, false));
-  }
+  state.accounts.get('accounts').forEach((account) => {
+    store.dispatch(network.actions.loadAddressTransactions(account.get('id'), 0, 0, '', '', -1, -1, false));
+  });
 
   setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
 }

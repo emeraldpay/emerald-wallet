@@ -33,15 +33,13 @@ class LocalGeth {
         const env = Object.assign({}, process.env, {PATH: `${process.env.PATH}:.`});
         log.debug(`Geth atxi build options: [${options}], ${bin}`);
         const proc = spawn(bin, options, { env });
-        proc.stdout.on('data', (data) => {
-          console.log('ON DATA ATXIBUILD', data.toString());
-        });
-        proc.stderr.on('data', (data) => {
-          console.log('ON ERROR ATXIBUILD', data.toString());
-        });
-        proc.on('exit', () => {
-          console.log('ON EXITED ATXIBUILD')
-          resolve()
+        proc.on('exit', (exitCode) => {
+          if (exitCode === 0) {
+            resolve();
+          } else {
+            reject();
+          }
+
         });
       });
     });
