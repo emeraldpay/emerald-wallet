@@ -2,6 +2,7 @@ import { connect } from 'react-redux';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import Header from './header';
 import screen from '../../../store/wallet/screen';
+import Launcher from '../../../store/launcher';
 
 export default muiThemeable()(connect(
   (state, ownProps) => {
@@ -10,12 +11,14 @@ export default muiThemeable()(connect(
     const tip = state.network.getIn(['sync', 'highestBlock'], -1);
     const progress = (curBlock / tip) * 100;
     const invalidNumber = Number.isNaN(progress) || (!Number.isFinite(progress));
+    const showFiat = Launcher.selectors.getChainName(state).toLowerCase() === 'mainnet';
 
     return {
       network: state.network.toJS(),
       showProgress: showProgress && !invalidNumber,
       progress: invalidNumber ? 0 : progress,
       tip,
+      showFiat,
     };
   },
   (dispatch, ownProps) => ({

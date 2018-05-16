@@ -4,35 +4,58 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Wei } from 'emerald-js';
 import { EtcSimple } from 'emerald-js-ui/lib/icons3';
+import { FlatButton } from 'material-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import accounts from '../../../../store/vault/accounts';
-
-import styles from './Total.scss';
+import Accounts from '../../../../store/vault/accounts';
+import WalletSettings from '../../../../store/wallet/settings';
+import { Currency } from '../../../../lib/currency';
 
 type Props = {
-  total: string
+  total: string,
+  showFiat?: boolean,
+  fiatAmount?: string,
+  fiatCurrency?: string,
 };
 
-const Total = ({ total, muiTheme }: Props) => {
-  const totalFormatted = `${total} ETC`;
+const Total = ({ total, showFiat, fiatAmount, fiatCurrency, muiTheme }: Props) => {
+  let totalFormatted = `${total} ETC`;
+  if (showFiat && fiatAmount) {
+    totalFormatted = `${totalFormatted} - ${fiatAmount} ${fiatCurrency}`;
+  }
   return (
-    <div className={styles.container}>
-      <div><EtcSimple style={{color: muiTheme.palette.secondaryTextColor}}/></div>
-      <div className={styles.label} style={{color: muiTheme.palette.secondaryTextColor}}>{totalFormatted}</div>
-    </div>
+    <FlatButton
+      disabled={true}
+      label={totalFormatted}
+      style={{color: muiTheme.palette.secondaryTextColor, lineHeight: 'inherit'}}
+      labelStyle={{
+        textTransform: 'none',
+        fontWeight: 'normal',
+        fontSize: '16px',
+      }}
+      icon={<EtcSimple style={{color: muiTheme.palette.secondaryTextColor}}/>}
+    />
   );
 };
 
 Total.propTypes = {
+  showFiat: PropTypes.bool,
   total: PropTypes.string.isRequired,
 };
 
 export default connect(
   (state, ownProps) => {
     // Sum of balances of all known accounts.
-    const total: Wei = accounts.selectors.selectTotalBalance(state);
+    const total: Wei = Accounts.selectors.selectTotalBalance(state);
+    const fiatCurrency = WalletSettings.selectors.fiatCurrency(state);
+    const fiatRate = WalletSettings.selectors.fiatRate(state);
+    let fiatAmount;
+    if (fiatRate && fiatCurrency) {
+      fiatAmount = Currency.format(Currency.convert(total.getEther(), fiatRate), fiatCurrency);
+    }
 
     return {
+      fiatCurrency,
+      fiatAmount,
       total: total.getEther(),
     };
   },
