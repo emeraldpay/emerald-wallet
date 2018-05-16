@@ -22,7 +22,7 @@ const styles = {
 };
 
 const Header = (props) => {
-  const { openSettings, muiTheme, network, showProgress, progress, tip } = props;
+  const { openSettings, muiTheme, network, showProgress, progress, tip, showFiat } = props;
 
   const showProgressBar = (show) => {
     if (!show) {
@@ -88,7 +88,7 @@ const Header = (props) => {
         zDepth={0}
         iconElementRight={
           <div style={styles.appBarRight}>
-            <Total />
+            <Total showFiat={showFiat} />
             <BlockDisplay />
             <Status />
             <SettingsButton />

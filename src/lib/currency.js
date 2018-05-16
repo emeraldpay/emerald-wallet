@@ -15,6 +15,7 @@ export class Currency {
     switch (currencySymbol.toUpperCase()) {
       case 'RUB': return 'ru-RU';
       case 'USD': return 'en-US';
+      case 'AUD': return 'en-AU';
       case 'EUR': return 'de-DE';
       case 'CNY': return 'zh-CN';
       case 'KRW': return 'ko-KR';

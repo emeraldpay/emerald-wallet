@@ -39,6 +39,7 @@ export class Settings extends React.Component {
                 <MenuItem key="cny" value="cny" label="CNY" primaryText="CNY" />
                 <MenuItem key="rub" value="rub" label="RUB" primaryText="RUB" />
                 <MenuItem key="krw" value="krw" label="KRW" primaryText="KRW" />
+                <MenuItem key="aud" value="aud" label="AUD" primaryText="AUD" />
               </Field>
             </div>
           </Row>

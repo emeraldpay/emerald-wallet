@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { DropDownMenu, IconButton } from 'material-ui';
+import { DropDownMenu } from 'material-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Network as NetworkIcon, NetworkDisconnected as NetworkDisconnectedIcon } from 'emerald-js-ui/lib/icons3';
 import { Networks, findNetwork } from '../../../../lib/networks';

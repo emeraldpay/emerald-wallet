@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-
+import WalletSettings from '../../../store/wallet/settings';
 import { Currency } from '../../../lib/currency';
 
 const defaultStyles = {
@@ -57,8 +57,8 @@ export class Balance extends React.Component {
 
 export default connect(
   (state, ownProps) => {
-    const fiatCurrency = state.wallet.settings.get('localeCurrency');
-    const fiatRate = state.wallet.settings.get('localeRate');
+    const fiatCurrency = WalletSettings.selectors.fiatCurrency(state);
+    const fiatRate = WalletSettings.selectors.fiatRate(state);
     return {
       symbol: ownProps.symbol,
       balance: ownProps.balance,

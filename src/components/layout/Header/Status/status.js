@@ -1,10 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import LinearProgress from 'material-ui/LinearProgress';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import { Network as NetworkIcon, NetworkDisconnected as NetworkDisconnectedIcon } from 'emerald-js-ui/lib/icons3';
-import { separateThousands } from '../../../../lib/convert';
 import { waitForServicesRestart } from '../../../../store/store';
 import NetworkSelector from './networkSelector';
 import launcher from '../../../../store/launcher';
@@ -12,10 +9,6 @@ import wallet from '../../../../store/wallet';
 
 const Status = ({ block, progress, peerCount, showDetails, connecting, switchNetwork, chain, geth, muiTheme }) => {
   const styles = {
-    // details: {
-    //   color: muiTheme.palette.alternateTextColor,
-    //   lineHeight: '16px',
-    // },
     block: {
       marginLeft: '10px',
       display: 'flex',
@@ -24,16 +17,6 @@ const Status = ({ block, progress, peerCount, showDetails, connecting, switchNet
       justifyContent: 'center',
     },
   };
-
-  let icon = null;
-
-  if (connecting) {
-    icon =
-      <NetworkDisconnectedIcon style={{color: muiTheme.palette.secondaryTextColor}} />;
-  } else {
-    icon =
-      <NetworkIcon style={{color: muiTheme.palette.secondaryTextColor}} />;
-  }
 
   return (
     <div style={styles.block}>
