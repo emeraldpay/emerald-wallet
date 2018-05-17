@@ -20,6 +20,14 @@ endif::[]
 
 
 ## Development instructions
+The recommended way to assert that you are using the correct version of node is to use https://github.com/nodenv/nodenv[nodenv], which will shim the `node` and `npm` commands and assert that the `local` version is set to what is specified in https://github.com/ETCDEVTeam/emerald-wallet/blob/master/.node-version[.node-version].
+
+Once nodenv is installed:
+
+```shell
+$ nodenv install
+```
+
 The supported version of `node` is `v6`. If you run into build errors, please make sure that you are using NodeV6 by running `node --version`.
 
 `package.json`: This is where scripts that get run when you use `npm run blah` get defined.
