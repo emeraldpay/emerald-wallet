@@ -126,7 +126,7 @@ export class AccountShow extends React.Component {
                     <ButtonGroup>
                       <Button
                         primary
-                        label="Add ETC"
+                        label="Deposit"
                         onClick={ showReceiveDialog }
                       />
                       <Button
