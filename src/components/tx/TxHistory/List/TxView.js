@@ -7,7 +7,6 @@ import CircularProgress from 'material-ui/CircularProgress';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Account as AddressAvatar } from 'emerald-js-ui';
 import { ArrowRight as ArrowRightIcon, Repeat as RepeatIcon } from 'emerald-js-ui/lib/icons';
-import { convert } from 'emerald-js';
 import AccountBalance from '../../../accounts/Balance';
 import TokenUnits from '../../../../lib/tokenUnits';
 import { link, tables } from '../../../../lib/styles';
