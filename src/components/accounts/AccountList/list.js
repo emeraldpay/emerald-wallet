@@ -21,13 +21,13 @@ const AccountList = translate('accounts')((props) => {
   const { accounts, showFiat } = props;
   const { openAccount, createTx, showReceiveDialog, muiTheme } = props;
   return (
-    <div className={ styles.container } style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
+    <div className={ styles.container } >
       {accounts.map((account) => {
         const className = cx({
           listItem: true,
           hiddenListItem: account.get('hidden'),
         });
-        return (<div className={ className } key={ account.get('id') }>
+        return (<div className={ className } key={ account.get('id') } style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
           <Account
             showFiat={ showFiat }
             account={ account }

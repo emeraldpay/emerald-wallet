@@ -29,6 +29,11 @@ export class Account extends React.Component {
     render() {
       const { account, muiTheme } = this.props;
       const { showFiat } = this.props;
+      const fiatStyle = {
+        fontSize: '16px',
+        lineHeight: '19px',
+        color: muiTheme.palette.secondaryTextColor,
+      };
 
       // TODO: we convert Wei to TokenUnits here
       const balance = account.get('balance') ? new TokenUnits(account.get('balance').value(), 18) : null;
@@ -37,11 +42,21 @@ export class Account extends React.Component {
         <Card>
           <CardText>
             <Row>
+              <Col xs={5}>
+                <AddressAvatar
+                  identity
+                  editable
+                  addr={ account.get('id') }
+                  description={ account.get('description') }
+                  primary={ account.get('name') }
+                  onAddressClick={ this.onAddressClick }
+                />
+              </Col>
               <Col xs={3}>
                 <div className={ styles.identityIconContainer }>
-                  <IdentityIcon id={ account.get('id') } />
                   <div style={{marginLeft: '10px'}}>
                     {balance && <AccountBalance
+                      fiatStyle={fiatStyle}
                       balance={ balance }
                       symbol="ETC"
                       showFiat={ showFiat }
@@ -50,21 +65,12 @@ export class Account extends React.Component {
                   </div>
                 </div>
               </Col>
-              <Col xs={5}>
-                <AddressAvatar
-                  editable
-                  addr={ account.get('id') }
-                  description={ account.get('description') }
-                  primary={ account.get('name') }
-                  onAddressClick={ this.onAddressClick }
-                />
-              </Col>
               <Col xs={4}>
                 <div className={ styles.actionsContainer }>
                   <ButtonGroup>
                     <SecondaryMenu account={account} />
                     <Button
-                      label="Add ETC"
+                      label="Deposit"
                       onClick={ this.onAddEtcClick }
                     />
                     <Button

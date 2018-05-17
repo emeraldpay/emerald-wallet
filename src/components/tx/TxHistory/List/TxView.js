@@ -57,10 +57,17 @@ export const TxView = (props) => {
 
   const txValue = tx.get('value') ? new TokenUnits(tx.get('value'), 18) : null;
 
+  const fiatStyle = {
+    fontSize: '16px',
+    lineHeight: '19px',
+    color: muiTheme.palette.secondaryTextColor,
+  };
+
   return (
     <TableRow selectable={false}>
-      <TableRowColumn style={{ ...tables.mediumStyle, paddingLeft: '0', ...styles.tablePadding }}>
+      <TableRowColumn style={{ width: 80, paddingLeft: '0', ...styles.tablePadding }}>
         {txValue && <AccountBalance
+          fiatStyle={fiatStyle}
           symbol="ETC"
           showFiat={ showFiat }
           balance={ txValue }
