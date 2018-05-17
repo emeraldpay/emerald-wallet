@@ -7,7 +7,6 @@ import CircularProgress from 'material-ui/CircularProgress';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Account as AddressAvatar } from 'emerald-js-ui';
 import { ArrowRight as ArrowRightIcon, Repeat as RepeatIcon } from 'emerald-js-ui/lib/icons';
-import { convert } from 'emerald-js';
 import AccountBalance from '../../../accounts/Balance';
 import TokenUnits from '../../../../lib/tokenUnits';
 import { link, tables } from '../../../../lib/styles';
@@ -57,10 +56,17 @@ export const TxView = (props) => {
 
   const txValue = tx.get('value') ? new TokenUnits(tx.get('value'), 18) : null;
 
+  const fiatStyle = {
+    fontSize: '16px',
+    lineHeight: '19px',
+    color: muiTheme.palette.secondaryTextColor,
+  };
+
   return (
     <TableRow selectable={false}>
-      <TableRowColumn style={{ ...tables.mediumStyle, paddingLeft: '0', ...styles.tablePadding }}>
+      <TableRowColumn style={{ width: 80, paddingLeft: '0', ...styles.tablePadding }}>
         {txValue && <AccountBalance
+          fiatStyle={fiatStyle}
           symbol="ETC"
           showFiat={ showFiat }
           balance={ txValue }
