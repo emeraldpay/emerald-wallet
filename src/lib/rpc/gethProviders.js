@@ -30,3 +30,14 @@ export const GastrackerMainnet = {
     name: 'mainnet',
   },
 };
+
+export const ChainkoreaMainnet = {
+  geth: {
+    type: 'remote',
+    url: 'https://node.classicexplorer.org',
+  },
+  chain: {
+    id: 61,
+    name: 'mainnet',
+  },
+};
