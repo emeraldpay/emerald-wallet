@@ -26,6 +26,18 @@ export const Networks = [
   {
     geth: {
       type: 'remote',
+      url: 'https://node.classicexplorer.org',
+    },
+    chain: {
+      id: 61,
+      name: 'mainnet',
+    },
+    title: 'Mainnet (Chainkorea)',
+    id: 'chainkorea/mainnet',
+  },
+  {
+    geth: {
+      type: 'remote',
       url: 'https://mew.epool.io/',
     },
     chain: {
