@@ -139,7 +139,6 @@ describe('historyReducer', () => {
       },
     });
 
-    console.log(state.toJS());
     // action
     const action = {
       type: ActionTypes.UPDATE_TX,

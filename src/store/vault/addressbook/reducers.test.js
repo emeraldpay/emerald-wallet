@@ -9,7 +9,6 @@ describe('Addressbook/reducers', () => {
       address: '0x123',
       description: 'desc1',
     });
-    console.log(state.toJS());
     expect(state.get('addressBook').toJS()).toHaveLength(1);
 
     state = reducer(state, {
