@@ -96,7 +96,7 @@ export const CreateTxForm = (props) => {
     iconButtonElement={<IconButton><BookIcon /></IconButton>}
     onItemClick={handleSelect}
   >
-    {addressBook.map((account) =>
+    {addressBook && addressBook.map((account) =>
       <MenuItem
         key={account.get('address')}
         value={account.get('address')}

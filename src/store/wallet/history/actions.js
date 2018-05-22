@@ -22,11 +22,15 @@ function loadPersistedTransactions(state): Array<Transaction> {
 
 export function trackTx(tx) {
   return (dispatch, getState) => {
-    dispatch({
-      type: ActionTypes.TRACK_TX,
-      tx,
-    });
+    dispatch(trackTxAction(tx));
     persistTransactions(getState());
+  };
+}
+
+export function trackTxAction(tx) {
+  return {
+    type: ActionTypes.TRACK_TX,
+    tx,
   };
 }
 

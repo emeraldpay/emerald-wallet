@@ -25,20 +25,23 @@ import createLogger from '../utils/logger';
 
 const log = createLogger('store');
 
-const toJs = (state) => {
-  const toJsState = {};
-  for (const prop in state) {
-    if (state[prop].toJS) {
-      toJsState[prop] = state[prop].toJS();
-    } else {
-      toJsState[prop] = toJs(state[prop]);
-    }
-  }
-  return toJsState;
-};
+const stateTransformer = (state) => ({
+  accounts: state.accounts.toJS(),
+  addressBook: state.addressBook.toJS(),
+  tokens: state.tokens.toJS(),
+  network: state.network.toJS(),
+  launcher: state.launcher.toJS(),
+  ledger: state.ledger.toJS(),
+  form: state.form,
+  wallet: {
+    history: state.wallet.history.toJS(),
+    screen: state.wallet.screen.toJS(),
+    settings: state.wallet.settings.toJS(),
+  },
+});
 
 const loggerMiddleware = createReduxLogger({
-  stateTransformer: toJs,
+  stateTransformer,
   diff: true,
   collapsed: true,
   duration: true,
