@@ -34,7 +34,7 @@ export function toDuration(timestamp) {
 
 // TODO: Handle locales
 export function toDate(timestamp) {
-  return new Date(timestamp).toJSON();
+  return new Date(timestamp * 1000).toUTCString();
 }
 
 export function parseString(hex: string) {

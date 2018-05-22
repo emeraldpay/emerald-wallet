@@ -6,7 +6,7 @@ import launcher from '../../../../store/launcher';
 import accounts from '../../../../store/vault/accounts';
 import wallet from '../../../../store/wallet';
 import screen from '../../../../store/wallet/screen';
-import { refreshTransaction } from '../../../../store/wallet/history/historyActions';
+import WalletHistory from '../../../../store/wallet/history';
 
 import TxView from './TxView';
 
@@ -43,7 +43,7 @@ export default connect(
     },
     refreshTx: () => {
       const hash = ownProps.tx.get('hash');
-      dispatch(refreshTransaction(hash));
+      dispatch(WalletHistory.actions.refreshTransaction(hash));
     },
   })
 )(TxView);
