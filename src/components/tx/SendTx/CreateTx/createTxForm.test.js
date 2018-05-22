@@ -7,8 +7,7 @@ import theme from 'emerald-js-ui/src/theme.json';
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import TokenUnits from 'lib/tokenUnits';
 import { Currency } from 'lib/currency';
-import { CreateTxForm } from './createTxForm';
-import CreateTxFormRedux from './createTxForm';
+import { CreateTxForm, default as CreateTxFormRedux } from './createTxForm';
 import { createStore } from '../../../../store/store';
 
 const mockMuiTheme = {
