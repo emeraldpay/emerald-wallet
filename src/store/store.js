@@ -1,6 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import thunkMiddleware from 'redux-thunk';
-import createReduxLogger from 'redux-logger';
 import { createStore as createReduxStore, applyMiddleware, combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
 import { ipcRenderer } from 'electron';
@@ -21,47 +20,10 @@ import launcherReducers from './launcher/launcherReducers';
 import walletReducers from './wallet/walletReducers';
 import deployedTokens from '../lib/deployedTokens';
 
+import reduxLogger from '../utils/redux-logger';
 import createLogger from '../utils/logger';
 
 const log = createLogger('store');
-
-const stateTransformer = (state) => ({
-  accounts: state.accounts.toJS(),
-  addressBook: state.addressBook.toJS(),
-  tokens: state.tokens.toJS(),
-  network: state.network.toJS(),
-  launcher: state.launcher.toJS(),
-  ledger: state.ledger.toJS(),
-  form: state.form,
-  wallet: {
-    history: state.wallet.history.toJS(),
-    screen: state.wallet.screen.toJS(),
-    settings: state.wallet.settings.toJS(),
-  },
-});
-
-const loggerMiddleware = createReduxLogger({
-  stateTransformer,
-  diff: true,
-  collapsed: true,
-  duration: true,
-  timestamp: false,
-  colors: {
-    title: (action) => {
-      if (action.type.indexOf('ACCOUNT') === 0) { return 'CadetBlue'; }
-      if (action.type.indexOf('TOKEN') === 0) { return 'DarkGreen'; }
-      if (action.type.indexOf('LAUNCHER') === 0) { return 'Indigo'; }
-      if (action.type.indexOf('WALLET') === 0) { return 'LightSeaGreen'; }
-      if (action.type.indexOf('NETWORK') === 0) { return 'SaddleBrown'; }
-      if (action.type.indexOf('LEDGER') === 0) { return 'Tan'; }
-      if (action.type.indexOf('SETTINGS') === 0) { return 'SandyBrown'; }
-      if (action.type.indexOf('SCREEN') === 0) { return 'PowderBlue'; }
-
-      // @@ convention for redux based libs
-      if (action.type.indexOf('@@') === 0) { return 'LightGrey'; }
-    },
-  },
-});
 
 const reducers = {
   accounts: accounts.reducer,
@@ -85,7 +47,7 @@ export const createStore = (_api) => createReduxStore(
   combineReducers(reducers),
   applyMiddleware(
     thunkMiddleware.withExtraArgument(_api),
-    loggerMiddleware
+    reduxLogger
   )
 );
 
