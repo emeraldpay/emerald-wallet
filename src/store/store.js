@@ -25,23 +25,39 @@ import createLogger from '../utils/logger';
 
 const log = createLogger('store');
 
-const stateTransformer = (state) => ({
-  accounts: state.accounts.toJS(),
-  addressBook: state.addressBook.toJS(),
-  tokens: state.tokens.toJS(),
-  network: state.network.toJS(),
-  launcher: state.launcher.toJS(),
-  ledger: state.ledger.toJS(),
-  form: state.form,
-  wallet: {
-    history: state.wallet.history.toJS(),
-    screen: state.wallet.screen.toJS(),
-    settings: state.wallet.settings.toJS(),
-  },
-});
+const toJs = (state) => {
+  const toJsState = {};
+  for (const prop in state) {
+    if (state[prop].toJS) {
+      toJsState[prop] = state[prop].toJS();
+    } else {
+      toJsState[prop] = toJs(state[prop]);
+    }
+  }
+  return toJsState;
+};
 
 const loggerMiddleware = createReduxLogger({
-  stateTransformer,
+  stateTransformer: toJs,
+  diff: true,
+  collapsed: true,
+  duration: true,
+  timestamp: false,
+  colors: {
+    title: (action) => {
+      if (action.type.indexOf('ACCOUNT') === 0) { return 'CadetBlue'; }
+      if (action.type.indexOf('TOKEN') === 0) { return 'DarkGreen'; }
+      if (action.type.indexOf('LAUNCHER') === 0) { return 'Indigo'; }
+      if (action.type.indexOf('WALLET') === 0) { return 'LightSeaGreen'; }
+      if (action.type.indexOf('NETWORK') === 0) { return 'SaddleBrown'; }
+      if (action.type.indexOf('LEDGER') === 0) { return 'Tan'; }
+      if (action.type.indexOf('SETTINGS') === 0) { return 'SandyBrown'; }
+      if (action.type.indexOf('SCREEN') === 0) { return 'PowderBlue'; }
+
+      // @@ convention for redux based libs
+      if (action.type.indexOf('@@') === 0) { return 'LightGrey'; }
+    },
+  },
 });
 
 const reducers = {
