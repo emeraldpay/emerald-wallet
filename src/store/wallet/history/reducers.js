@@ -130,7 +130,7 @@ function onUpdateTxs(state, action) {
       action.transactions.forEach((t) => {
         const pos = txs.findKey((tx) => tx.get('hash') === t.hash);
         if (pos >= 0) {
-          txs = txs.update(pos, (tx) => tx.mergeWith((o, n) => n, createTx(t)));
+          txs = txs.update(pos, (tx) => tx.mergeWith((o, n) => n || o, createTx(t)));
         }
       });
       return txs;
