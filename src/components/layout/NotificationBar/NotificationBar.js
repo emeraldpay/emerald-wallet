@@ -1,15 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Snackbar from 'material-ui/Snackbar';
-import { orange300, red900 } from 'material-ui/styles/colors';
+import { orange300 } from 'material-ui/styles/colors';
 import screen from 'store/wallet/screen';
-
-const colors = {
-  success: '#47B04B',
-  error: red900,
-  info: '#171717',
-  warning: orange300,
-};
+import muiThemeable from 'material-ui/styles/muiThemeable';
 
 
 class NotificationBar extends React.Component {
@@ -27,10 +21,28 @@ class NotificationBar extends React.Component {
   }
 
   render() {
+    const { muiTheme } = this.props;
+    const colors = {
+      success: muiTheme.palette.primary1Color,
+      error: muiTheme.palette.accent1Color,
+      info: muiTheme.palette.textColor,
+      warning: orange300,
+    };
     return (
       <Snackbar
         bodyStyle={{
-          backgroundColor: colors[this.props.notificationType || 'info'],
+          backgroundColor: muiTheme.palette.alternateTextColor,
+          boxShadow: `${muiTheme.palette.shadowColor} 0px 0px 50px 0px`,
+        }}
+        contentStyle={{
+          color: colors[this.props.notificationType],
+        }}
+        style={{
+          bottom: 'auto',
+          top: '-55px',
+          left: 'auto',
+          right: 0,
+          transform: this.state.open ? 'translate3d(0, 85px, 0)' : 'translate3d(0, 0, 0)',
         }}
         open={this.state.open}
         message={this.props.notificationMessage || ''}
@@ -53,4 +65,4 @@ export default connect(
       dispatch(screen.actions.closeNotification());
     },
   })
-)(NotificationBar);
+)(muiThemeable()(NotificationBar));
