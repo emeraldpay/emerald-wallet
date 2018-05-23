@@ -11,7 +11,7 @@ import Immutable from 'immutable';
 import { cardSpace } from 'lib/styles';
 import Addressbook from '../../store/vault/addressbook';
 import { gotoScreen } from '../../store/wallet/screen/screenActions';
-import AddressEdit from './edit';
+import AddressEdit from './EditContact';
 
 
 class CardEdit extends React.Component {

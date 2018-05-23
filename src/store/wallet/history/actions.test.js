@@ -1,6 +1,6 @@
 import { fromJS } from 'immutable';
 import { EthRpc, JsonRpc } from 'emerald-js';
-import { processPending, refreshTransaction } from './historyActions';
+import { processPending, refreshTransaction } from './actions';
 import { loadTransactions } from './historyStorage';
 import ActionTypes from './actionTypes';
 

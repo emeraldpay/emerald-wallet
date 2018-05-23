@@ -4,6 +4,7 @@ import { loadTransactions, storeTransactions } from './historyStorage';
 describe('historyStorage', () => {
   it('store and load txs', () => {
     const trans = [{
+      timestamp: 123456789,
       hash: '0x1234',
       value: new BigNumber(1),
     }];
@@ -14,5 +15,6 @@ describe('historyStorage', () => {
     expect(loaded).toHaveLength(1);
     expect(loaded[0].hash).toEqual('0x1234');
     expect(loaded[0].value).toEqual(new BigNumber(1));
+    expect(loaded[0].timestamp).toEqual(123456789);
   });
 });

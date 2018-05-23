@@ -6,7 +6,8 @@ import { IconButton } from 'material-ui';
 import CircularProgress from 'material-ui/CircularProgress';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Account as AddressAvatar } from 'emerald-js-ui';
-import { ArrowRight as ArrowRightIcon, Repeat as RepeatIcon } from 'emerald-js-ui/lib/icons';
+import { Forward as ArrowRightIcon } from 'emerald-js-ui/lib/icons3';
+import { Repeat as RepeatIcon } from 'emerald-js-ui/lib/icons';
 import AccountBalance from '../../../accounts/Balance';
 import TokenUnits from '../../../../lib/tokenUnits';
 import { link, tables } from '../../../../lib/styles';
@@ -74,10 +75,10 @@ export const TxView = (props) => {
           withAvatar={ false }
         /> }
       </TableRowColumn>
-      <TableRowColumn style={{...tables.mediumStyle, ...link, ...styles.tablePadding}} >
+      <TableRowColumn style={{width: 60, ...link, ...styles.tablePadding}} >
         { txStatus }
       </TableRowColumn>
-      <TableRowColumn>
+      <TableRowColumn style={{paddingLeft: '5px'}}>
         <AddressAvatar
           addr={tx.get('from')}
           primary={fromAccount.get('name')}
@@ -85,9 +86,9 @@ export const TxView = (props) => {
         />
       </TableRowColumn>
       <TableRowColumn className={classes.columnArrow} style={{textOverflow: 'inherit', ...styles.tablePadding}}>
-        <ArrowRightIcon color="#DDDDDD" />
+        <ArrowRightIcon style={{color: muiTheme.palette.secondaryTextColor}} />
       </TableRowColumn>
-      <TableRowColumn style={styles.tablePadding}>
+      <TableRowColumn style={{paddingLeft: '5px', ...styles.tablePadding}}sss>
         {tx.get('to') &&
         <AddressAvatar
           addr={tx.get('to')}

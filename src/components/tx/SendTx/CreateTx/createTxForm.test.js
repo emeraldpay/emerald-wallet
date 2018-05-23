@@ -1,13 +1,34 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { Provider } from 'react-redux';
+import { shallow, mount } from 'enzyme';
 import BigNumber from 'bignumber.js';
+import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
+import theme from 'emerald-js-ui/src/theme.json';
+import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import TokenUnits from 'lib/tokenUnits';
 import { Currency } from 'lib/currency';
-import { CreateTxForm } from './createTxForm';
+import { CreateTxForm, default as CreateTxFormRedux } from './createTxForm';
+import { createStore } from '../../../../store/store';
 
 const mockMuiTheme = {
   palette: {},
 };
+
+const muiTheme = getMuiTheme(theme);
+
+test('redux form instance', () => {
+  const store = createStore(null);
+  const instance = mount(
+    <Provider store={store}>
+      <MuiThemeProvider muiTheme={muiTheme}>
+        <CreateTxFormRedux
+          balance={{symbol: '', value: 0}}
+          tokens={[]}
+          accounts={[]}
+        />
+      </MuiThemeProvider>
+    </Provider>);
+});
 
 test('It shows tx value in fiat', () => {
   const tokenValue = new TokenUnits(new BigNumber(123456789), 8);

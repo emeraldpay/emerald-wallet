@@ -1,5 +1,5 @@
-import * as actions from './historyActions';
-import reducer from './historyReducers';
+import * as actions from './actions';
+import reducer from './reducers';
 import * as selectors from './selectors';
 
 export default { actions, reducer, selectors };

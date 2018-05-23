@@ -4,6 +4,7 @@ import type { Transaction } from './types';
 import ActionTypes from './actionTypes';
 import { address as isAddress} from '../../../lib/validators';
 import { storeTransactions, loadTransactions } from './historyStorage';
+import { allTrackedTxs, selectByHash } from './selectors';
 
 const log = createLogger('historyActions');
 const txStoreKey = (chainId) => `chain-${chainId}-trackedTransactions`;
@@ -12,7 +13,7 @@ const currentChainId = (state) => state.wallet.history.get('chainId');
 function persistTransactions(state) {
   storeTransactions(
     txStoreKey(currentChainId(state)),
-    state.wallet.history.get('trackedTransactions').toJS());
+    allTrackedTxs(state).toJS());
 }
 
 function loadPersistedTransactions(state): Array<Transaction> {
@@ -21,11 +22,15 @@ function loadPersistedTransactions(state): Array<Transaction> {
 
 export function trackTx(tx) {
   return (dispatch, getState) => {
-    dispatch({
-      type: ActionTypes.TRACK_TX,
-      tx,
-    });
+    dispatch(trackTxAction(tx));
     persistTransactions(getState());
+  };
+}
+
+export function trackTxAction(tx) {
+  return {
+    type: ActionTypes.TRACK_TX,
+    tx,
   };
 }
 
@@ -62,7 +67,6 @@ export function refreshTransactions(hashes: Array<string>) {
   return (dispatch, getState, api) => {
     api.geth.ext.getTransactions(hashes).then((txs) => {
       const found = [];
-
       txs.forEach((t) => {
         if (t.result && typeof t.result === 'object') {
           found.push(t.result);
@@ -72,6 +76,19 @@ export function refreshTransactions(hashes: Array<string>) {
       dispatch({
         type: ActionTypes.UPDATE_TXS,
         transactions: found,
+      });
+
+      // update timestamps
+      const state = getState();
+      found.forEach((t) => {
+        const tx = selectByHash(state, t.hash);
+        if (tx && !tx.get('timestamp')) {
+          api.geth.eth.getBlock(tx.get('blockNumber'))
+            .then((block) => dispatch({
+              type: ActionTypes.UPDATE_TX,
+              tx: { hash: t.hash, timestamp: block.timestamp },
+            }));
+        }
       });
     });
   };
@@ -110,7 +127,7 @@ export function refreshTransaction(hash: string) {
  */
 export function refreshTrackedTransactions() {
   return (dispatch, getState) => {
-    const hashes = getState().wallet.history.get('trackedTransactions')
+    const hashes = allTrackedTxs(getState())
       .filter((tx) => tx.get('totalRetries', 0) <= 10)
       .map((tx) => tx.get('hash'));
 

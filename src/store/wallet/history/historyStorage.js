@@ -52,5 +52,6 @@ function restoreTx(tx): Transaction {
     data: tx.data,
     blockHash: tx.blockHash,
     blockNumber: tx.blockNumber,
+    timestamp: tx.timestamp,
   };
 }

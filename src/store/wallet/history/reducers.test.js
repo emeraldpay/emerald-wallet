@@ -2,7 +2,7 @@ import Immutable from 'immutable';
 import BigNumber from 'bignumber.js';
 import { convert, Wei } from 'emerald-js';
 
-import historyReducers from './historyReducers';
+import historyReducers from './reducers';
 import ActionTypes from './actionTypes';
 import { loadTransactions, storeTransactions } from './historyStorage';
 
@@ -82,7 +82,7 @@ describe('historyReducer', () => {
       nonce: '0x4',
       to: '0x0d5fa90814e60f2a6cb7bad13d150ba0640d08b9',
       transactionIndex: '0x0',
-      value: '0x12',
+      value: toBigNumber('0x12'),
       input: 'fckef',
     };
 
@@ -107,7 +107,50 @@ describe('historyReducer', () => {
     // This is inconsistency in ethereum api
     expect(trackedTxs.data).toEqual(tx.input);
     expect(trackedTxs.hash).toEqual(tx.hash);
-    expect(trackedTxs.value).toEqual(toBigNumber(tx.value));
+    expect(trackedTxs.value).toEqual(tx.value);
+  });
+
+  it('should update TX timestamp', () => {
+    const tx = {
+      blockHash: '0xc87e5117923e756e5d262ef230374b73ebe47f232b0f029fa65cf6614d959100',
+      blockNumber: '0x17',
+      from: '0x0178537bb1d7bb412101cdb7389c28fd4cf5ac0a',
+      gas: '0x47e7c4',
+      gasPrice: '0x174876e800',
+      hash: '0x42a46d800b7c5b230ccf5aaa98d1726cad3d621eda0a67fa364322ad3b1d9adc',
+      nonce: '0x4',
+      to: '0x0d5fa90814e60f2a6cb7bad13d150ba0640d08b9',
+      transactionIndex: '0x0',
+      value: toBigNumber('0x12'),
+      input: 'fckef',
+    };
+
+    // prepare state
+    let state = historyReducers(null, {
+      type: ActionTypes.TRACK_TX,
+      tx: {
+        blockHash: '0xc87e5117923e756e5d262ef230374b73ebe47f232b0f029fa65cf6614d959100',
+        blockNumber: '0x17',
+        hash: tx.hash,
+        gas: '0x47e7c4',
+        gasPrice: '0x174876e800',
+        nonce: '0x4',
+        value: tx.value,
+      },
+    });
+
+    // action
+    const action = {
+      type: ActionTypes.UPDATE_TX,
+      tx: {
+        hash: tx.hash,
+        timestamp: 123456789,
+      },
+    };
+    state = historyReducers(state, action);
+    const trackedTxs = state.get('trackedTransactions').last().toJS();
+    expect(trackedTxs.timestamp).toEqual(123456789);
+    expect(trackedTxs.value).toEqual(tx.value);
   });
 
   it('should handle UPDATE_TXS', () => {

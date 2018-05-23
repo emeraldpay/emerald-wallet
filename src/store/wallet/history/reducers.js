@@ -35,10 +35,11 @@ function createTx(data) {
   if (data.from !== '0x0000000000000000000000000000000000000000') {
     tx = tx.set('from', data.from);
   }
-  tx = tx.set('value', toBigNumber(data.value));
-  tx = tx.set('gasPrice', toBigNumber(data.gasPrice));
-  tx = tx.set('gas', toBigNumber(data.gas).toNumber());
-  tx = tx.set('nonce', toBigNumber(data.nonce).toNumber());
+  tx = tx.set('value', data.value ? toBigNumber(data.value) : data.value);
+  tx = tx.set('gasPrice', data.gasPrice ? toBigNumber(data.gasPrice) : data.gasPrice);
+  tx = tx.set('gas', data.gas ? toBigNumber(data.gas).toNumber() : data.gas);
+  tx = tx.set('nonce', data.nonce ? toBigNumber(data.nonce).toNumber() : data.nonce);
+  tx = tx.set('timestamp', data.timestamp);
 
   // If is not pending, fill in finalized attributes.
   if (typeof data.blockNumber !== 'undefined' && data.blockNumber !== null) {
@@ -115,7 +116,7 @@ function onUpdateTx(state, action) {
     return state.update('trackedTransactions', (txs) => {
       const pos = txs.findKey((tx) => tx.get('hash') === action.tx.hash);
       if (pos >= 0) {
-        txs = txs.update(pos, (tx) => tx.mergeWith((o, n) => n, createTx(action.tx)));
+        txs = txs.update(pos, (tx) => tx.mergeWith((o, n) => n || o, createTx(action.tx)));
       }
       return txs;
     });
@@ -129,7 +130,7 @@ function onUpdateTxs(state, action) {
       action.transactions.forEach((t) => {
         const pos = txs.findKey((tx) => tx.get('hash') === t.hash);
         if (pos >= 0) {
-          txs = txs.update(pos, (tx) => tx.mergeWith((o, n) => n, createTx(t)));
+          txs = txs.update(pos, (tx) => tx.mergeWith((o, n) => n || o, createTx(t)));
         }
       });
       return txs;

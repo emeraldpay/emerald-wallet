@@ -1,5 +1,10 @@
 import TokenUnits from '../../../lib/tokenUnits';
 
+export const allTrackedTxs = (state) => state.wallet.history.get('trackedTransactions');
+export const selectByHash = (state, hash) => state.wallet.history
+  .get('trackedTransactions')
+  .find((tx) => tx.get('hash') === hash);
+
 export const searchTransactions = (searchValue, transactionsToSearch) => {
   if (transactionsToSearch.size === 0) {
     return transactionsToSearch;
