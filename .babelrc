@@ -1,5 +1,4 @@
 {
-  "presets": ["es2015", "stage-2", "react", "flow"],
-  "plugins": ["flow-react-proptypes"]
-
+  "presets": ["@babel/preset-env", "@babel/preset-react", "@babel/preset-flow"],
+  "plugins": ["flow-react-proptypes",  "@babel/plugin-proposal-class-properties"]
 }

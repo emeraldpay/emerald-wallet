@@ -13,7 +13,7 @@ const forElectron = process.argv.indexOf('--for-electron') >= 0;
 const config = {
   target: 'electron-renderer', // 'web',
   entry: {
-    index: path.join(srcDir, 'index.js'),
+    index: ['@babel/polyfill', path.join(srcDir, 'index.js')],
   },
   plugins: [
     new webpack.optimize.CommonsChunkPlugin({name: 'index', filename: 'index.js'}),
@@ -36,7 +36,7 @@ const config = {
       path.join(__dirname, 'node_modules'),
     ],
     alias: {
-      'babel-polyfill': path.join(__dirname, 'babel-polyfill/dist/polyfill.js'),
+      'babel-polyfill': path.join(__dirname, '@babel/polyfill/dist/polyfill.js'),
     },
   },
   module: {
@@ -47,7 +47,7 @@ const config = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['es2015', 'react', 'stage-2', 'flow'],
+            presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-flow'],
           },
         },
       },

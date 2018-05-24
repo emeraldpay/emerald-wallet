@@ -20,9 +20,7 @@ import { readConfig, listenElectron, connecting, loadClientVersion } from './lau
 import launcherReducers from './launcher/launcherReducers';
 import walletReducers from './wallet/walletReducers';
 import deployedTokens from '../lib/deployedTokens';
-
-import getWalletVersion from '../../scripts/get-wallet-version';
-
+import getWalletVersion from '../utils/get-wallet-version';
 import createLogger from '../utils/logger';
 
 const log = createLogger('store');
@@ -154,26 +152,30 @@ export function stopSync() {
   // TODO
 }
 
-export function start() {
+export const start = async () => {
   try {
     store.dispatch(readConfig());
     store.dispatch(settings.actions.loadSettings());
-    const versionDetails = getWalletVersion().then((versionDetails) => {
-      if (!versionDetails.isLatest) {
-        const message = [
-          'A new version of Emerald Wallet is available.',
-          `Please upgrade to ${versionDetails.tag}.`,
-          `${versionDetails.downloadLink}`
-        ].join(' ');
-        store.dispatch(screen.actions.showNotification(message, 'warning', 3000));
-      }
-    });
+
+    const versionDetails = await getWalletVersion();
+
+    if (!versionDetails.isLatest) {
+      const params = [
+        `A new version of Emerald Wallet is available (${versionDetails.tag}).`,
+        'info',
+        20 * 1000,
+        'Update',
+        screen.actions.openLink(versionDetails.downloadLink)
+      ];
+
+      store.dispatch(screen.actions.showNotification(...params));
+    }
   } catch (e) {
     log.error(e);
   }
   store.dispatch(listenElectron());
   store.dispatch(screen.actions.gotoScreen('welcome'));
-}
+};
 
 export function waitForServices() {
   const unsubscribe = store.subscribe(() => {
