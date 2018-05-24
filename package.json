@@ -60,7 +60,6 @@
   },
   "homepage": "https://github.com/ETCDEVTeam/emerald-wallet",
   "dependencies": {
-    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.47",
     "bignumber.js": "4.0.0",
     "classnames": "^2.2.5",
     "devtron": "^1.4.0",
@@ -113,6 +112,7 @@
   "devDependencies": {
     "@babel/core": "^7.0.0-beta.47",
     "@babel/plugin-proposal-class-properties": "^7.0.0-beta.47",
+    "@babel/plugin-proposal-object-rest-spread": "^7.0.0-beta.47",
     "@babel/polyfill": "^7.0.0-beta.47",
     "@babel/preset-env": "^7.0.0-beta.47",
     "@babel/preset-flow": "^7.0.0-beta.47",
@@ -120,7 +120,9 @@
     "@elastic/webpack-directory-name-as-main": "2.0.2",
     "@storybook/react": "3.2.18",
     "aws-sdk": "2.91.0",
+    "babel-core": "^7.0.0-bridge.0",
     "babel-eslint": "^8.2.3",
+    "babel-loader": "^8.0.0-beta.3",
     "babel-plugin-flow-react-proptypes": "^24.0.0",
     "babel-plugin-syntax-async-functions": "^6.13.0",
     "copy-webpack-plugin": "1.1.1",
@@ -143,6 +145,7 @@
     "identity-obj-proxy": "^3.0.0",
     "imports-loader": "0.7.1",
     "jest": "^22.2.1",
+    "jest-fetch-mock": "1.0.6",
     "minimist": "^1.2.0",
     "node-sass": "4.5.2",
     "react-test-renderer": "^15.6.1",
@@ -208,7 +211,8 @@
       "<rootDir>/src/"
     ],
     "setupFiles": [
-      "<rootDir>/src/__mocks__/localStorageMock.js"
+      "<rootDir>/src/__mocks__/localStorageMock.js",
+      "<rootDir>/src/__mocks__/node-fetch.js"
     ]
   }
 }

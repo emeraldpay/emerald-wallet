@@ -1,4 +1,4 @@
-jest.mock('../package.json', () => ({version: '123.123.123'}));
+jest.mock('../../package.json', () => ({version: '123.123.123'}));
 
 import getWalletVersion from './get-wallet-version';
 import fetch from 'node-fetch';
