@@ -2,7 +2,7 @@ import React from 'react';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Logo as EtcLogo } from 'emerald-js-ui/lib/icons';
 import { Button } from 'emerald-js-ui';
-import version from '../../version';
+import {version} from '../../../package.json';
 
 const year = new Date().getFullYear();
 
