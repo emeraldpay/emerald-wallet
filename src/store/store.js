@@ -75,8 +75,6 @@ function refreshAll() {
 
   const syncing = state.network.getIn(['sync', 'syncing']);
 
-  console.log('REFRESH ALL: LOAD ADDRESS TRANSACTIONS');
-
   state.accounts.get('accounts').forEach((account) => {
     store.dispatch(network.actions.loadAddressTransactions(account.get('id'), 0, 0, '', '', -1, -1, false));
   });
