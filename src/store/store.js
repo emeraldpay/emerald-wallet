@@ -1,5 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import thunkMiddleware from 'redux-thunk';
+import createReduxLogger from 'redux-logger';
 import { createStore as createReduxStore, applyMiddleware, combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
 import { ipcRenderer } from 'electron';
@@ -19,9 +20,9 @@ import { readConfig, listenElectron, connecting, loadClientVersion } from './lau
 import launcherReducers from './launcher/launcherReducers';
 import walletReducers from './wallet/walletReducers';
 import deployedTokens from '../lib/deployedTokens';
-
-import reduxLogger from '../utils/redux-logger';
+import getWalletVersion from '../utils/get-wallet-version';
 import createLogger from '../utils/logger';
+import reduxLogger from '../utils/redux-logger';
 
 const log = createLogger('store');
 
@@ -43,13 +44,20 @@ const reducers = {
  *
  * @param _api
  */
-export const createStore = (_api) => createReduxStore(
-  combineReducers(reducers),
-  applyMiddleware(
+export const createStore = (_api) => {
+  const storeMiddleware = [
     thunkMiddleware.withExtraArgument(_api),
-    reduxLogger
-  )
-);
+  ];
+
+  if (process.env.NODE_ENV !== 'test') {
+    storeMiddleware.push(reduxLogger);
+  }
+
+  return createReduxStore(
+    combineReducers(reducers),
+    applyMiddleware(...storeMiddleware)
+  );
+};
 
 export const store = createStore(api);
 
@@ -114,7 +122,23 @@ export function stopSync() {
   // TODO
 }
 
-export function start() {
+function newWalletVersionCheck() {
+  getWalletVersion().then((versionDetails) => {
+    if (!versionDetails.isLatest) {
+      const params = [
+        `A new version of Emerald Wallet is available (${versionDetails.tag}).`,
+        'info',
+        20 * 1000,
+        'Update',
+        screen.actions.openLink(versionDetails.downloadLink),
+      ];
+
+      store.dispatch(screen.actions.showNotification(...params));
+    }
+  });
+}
+
+export const start = () => {
   try {
     store.dispatch(readConfig());
     store.dispatch(settings.actions.loadSettings());
@@ -123,7 +147,8 @@ export function start() {
   }
   store.dispatch(listenElectron());
   store.dispatch(screen.actions.gotoScreen('welcome'));
-}
+  newWalletVersionCheck();
+};
 
 export function waitForServices() {
   const unsubscribe = store.subscribe(() => {
