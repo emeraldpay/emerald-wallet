@@ -34,9 +34,9 @@ const Addr = ({ addr, alreadyAdded, selectedValue, onSelected, ...otherProps }) 
 
   const hasPath = addr.get('hdpath') !== null;
   const hasAddr = addr.get('address') !== null;
-
   const address = addr.get('address');
   const selectable = hasPath && hasAddr && !alreadyAdded;
+  const balance = addr.get('value');
 
   return (
     <TableRow {...otherProps} selectable={ false }>
@@ -58,11 +58,12 @@ const Addr = ({ addr, alreadyAdded, selectedValue, onSelected, ...otherProps }) 
       </TableRowColumn>
       <TableRowColumn style={tables.mediumStyle}>{ addr.get('hdpath') }</TableRowColumn>
       <TableRowColumn style={tables.mediumStyle}>
-        <AccountBalance
-          balance={ addr.get('value') }
+        {balance && <AccountBalance
+          symbol="ETC"
+          balance={ balance }
           showFiat={ true }
           withAvatar={ false }
-        />
+        />}
       </TableRowColumn>
       <TableRowColumn style={tables.shortStyle}>
         {usedLabel}

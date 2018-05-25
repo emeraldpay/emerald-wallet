@@ -15,6 +15,7 @@ const style = {
   closeIcon: {
     width: '15px',
     height: '15px',
+    color: 'white',
   },
 };
 
@@ -34,7 +35,7 @@ export const WaitConnectionDialog = ({ onCancel }) => {
             onTouchTap={ onCancel }
             iconStyle={ style.closeIcon }
             tooltip="Close">
-            <CloseIcon color='white' />
+            <CloseIcon />
           </IconButton>
         </div>
       </div>
