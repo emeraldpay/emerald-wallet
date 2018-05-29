@@ -51,9 +51,9 @@ export function loadAddressTransactions(...props) {
     return api.geth.eth.getAddressTransactions(...props).then((result) => {
       return api.geth.ext.getTransactions(result).then((txes) => {
         return Promise.all(txes.map((tx) => dispatch(history.actions.trackTx(tx.result))));
-      })
-    })
-  }
+      });
+    });
+  };
 }
 
 export function loadSyncing() {
