@@ -7,8 +7,8 @@ export const intervalRates = {
   // (whilei: development: loading so often slows things a lot for me and clutters logs; that's why I have
   // stand-in times here for development)
   // Continue is repeating timeouts.
-  continueLoadSyncRate: minute, // prod: second
-  continueLoadHeightRate: 5 * minute, // prod: 5 * second
-  continueRefreshAllTxRate: 60 * second, // prod: 2 * second
-  continueRefreshLongRate: 900 * second, // 5 o'clock somewhere.
+  continueLoadSyncRate: 15 * second, // prod: second
+  continueLoadHeightRate: 1 * minute, // prod: 5 * second
+  continueRefreshAllTxRate: 20 * second, // prod: 2 * second
+  continueRefreshLongRate: 60 * second, // 5 o'clock somewhere.
 };
