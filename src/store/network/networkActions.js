@@ -48,14 +48,11 @@ export function loadPeerCount() {
 
 export function loadAddressTransactions(...props) {
   return (dispatch, getState, api) => {
-    console.log('ABOUT TO CALL LOAD ADD TX', api.geth.eth.getAddressTransactions);
     return api.geth.eth.getAddressTransactions(...props).then((result) => {
       return api.geth.ext.getTransactions(result).then((txes) => {
         return Promise.all(txes.map((tx) => dispatch(history.actions.trackTx(tx.result))));
       })
-    }).catch((e) => {
-      console.log('ERROR:', e);
-    });
+    })
   }
 }
 
