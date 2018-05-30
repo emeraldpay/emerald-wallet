@@ -1,3 +1,4 @@
+const { JsonRpc, HttpTransport, Vault, VaultJsonRpcProvider, VaultInMemoryProvider } = require('emerald-js');
 const log = require('./logger');
 const { LocalGeth, NoneGeth, RemoteGeth } = require('./launcher');
 const { LocalConnector } = require('./vault/launcher');
@@ -53,6 +54,10 @@ class Services {
     this.connectorStatus = STATUS.NOT_STARTED;
     this.gethStatus = STATUS.NOT_STARTED;
     this.notify = new UserNotify(webContents);
+    this.emerald = new Vault(
+      new VaultJsonRpcProvider(
+        new JsonRpc(
+          new HttpTransport('http://127.0.0.1:1920'))));
     log.info(`Run services from ${getBinDir()}`);
   }
 
@@ -138,6 +143,7 @@ class Services {
     log.info('use REMOTE RPC');
     return this.tryExistingGeth(this.setup.geth.url).then((chain) => {
       this.setup.chain = chain;
+      this.setup.geth.clientVersion = chain.clientVersion;
       this.gethStatus = STATUS.READY;
 
       this.notify.info(`Use Remote RPC API at ${this.setup.geth.url}`);
@@ -155,6 +161,7 @@ class Services {
 
         this.gethStatus = STATUS.READY;
         this.setup.geth.url = LOCAL_RPC_URL;
+        this.setup.geth.clientVersion = chain.clientVersion;
         this.setup.geth.type = 'local';
 
         this.notify.info('Use Local Existing RPC API');
@@ -190,8 +197,10 @@ class Services {
             waitRpc(this.geth.getUrl()).then((clientVersion) => {
               this.gethStatus = STATUS.READY;
               log.info(`RPC is ready: ${clientVersion}`);
+
               this.setup.geth.url = this.geth.getUrl();
               this.setup.geth.type = 'local';
+              this.setup.geth.clientVersion = clientVersion;
 
               this.notify.info('Local Geth RPC API is ready');
               this.notify.chain(this.setup.chain.name, this.setup.chain.id);
@@ -249,6 +258,11 @@ class Services {
         emerald.stderr.on('data', (data) => {
           log.debug(`[emerald] ${data}`); // always log emerald data
           if (/Connector started on/.test(data)) {
+            // call rpc to get current version of emerald vault
+            this.emerald.currentVersion().then((version) => {
+              this.setup.connector.version = version;
+            });
+
             this.connectorStatus = STATUS.READY;
             this.notifyConnectorStatus();
             resolve(this.connector);
@@ -280,6 +294,7 @@ class Services {
     this.notify.status(SERVICES.CONNECTOR, {
       url: this.setup.connector.url,
       status: connectorStatus,
+      version: this.setup.connector.version,
     });
   }
 
@@ -289,6 +304,7 @@ class Services {
       url: this.setup.geth.url,
       type: this.setup.geth.type,
       status: gethStatus,
+      version: this.setup.geth.clientVersion,
     });
   }
 }
