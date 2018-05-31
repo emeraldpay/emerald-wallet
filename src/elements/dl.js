@@ -1,9 +1,6 @@
 // @flow
 import React from 'react';
 
-import { Card, CardHeader } from 'material-ui/Card';
-import { noShadow, link } from 'lib/styles';
-
 export const DescriptionList = (props: {children: any}) => {
   const style = {
     width: '100%',
