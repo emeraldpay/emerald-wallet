@@ -88,7 +88,7 @@ export const TxView = (props) => {
       <TableRowColumn className={classes.columnArrow} style={{textOverflow: 'inherit', ...styles.tablePadding}}>
         <ArrowRightIcon style={{color: muiTheme.palette.secondaryTextColor}} />
       </TableRowColumn>
-      <TableRowColumn style={{paddingLeft: '5px', ...styles.tablePadding}}sss>
+      <TableRowColumn style={{paddingLeft: '5px', ...styles.tablePadding}}>
         {tx.get('to') &&
         <AddressAvatar
           addr={tx.get('to')}

@@ -1,7 +1,22 @@
 import { fromJS } from 'immutable';
 import { Wei } from 'emerald-js';
 
-import { selectTotalBalance } from './selectors';
+import { selectTotalBalance, selectAccount } from './selectors';
+
+describe('selectAccount', () => {
+  it('should handle checksumed address', () => {
+    const addr = '0x93Bf3B39AcaCd8992a31181d985541B368A5307d';
+    const state = {
+      accounts: fromJS({
+        accounts: [{
+          id: addr.toLowerCase(),
+        }],
+      }),
+    };
+    const acc = selectAccount(state, addr);
+    expect(acc).toBeDefined();
+  });
+});
 
 describe('selectTotalBalance', () => {
   it('returns zero if no accounts', () => {

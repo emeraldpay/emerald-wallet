@@ -302,7 +302,7 @@ CreateTxForm.propTypes = {
   pristine: PropTypes.bool.isRequired,
   submitting: PropTypes.bool.isRequired,
   cancel: PropTypes.func.isRequired,
-  fiatRate: PropTypes.string.isRequired,
+  fiatRate: PropTypes.number.isRequired,
   value: PropTypes.number.isRequired,
   balance: PropTypes.object.isRequired,
   fromAddr: PropTypes.string.isRequired,

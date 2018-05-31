@@ -165,9 +165,7 @@ AccountShow.propTypes = {
 
 export default connect(
   (state, ownProps) => {
-    let account = ownProps.account;
-
-    account = accounts.selectors.selectAccount(state, account.get('id'));
+    const account = accounts.selectors.selectAccount(state, ownProps.account.get('id'));
     let transactions = Immutable.List();
     let tokensBalances = Immutable.List();
 
@@ -177,7 +175,7 @@ export default connect(
         state.wallet.history.get('trackedTransactions'));
       tokensBalances = tokens.selectors.balancesByAddress(state.tokens, account.get('id'));
     } else {
-      log.warn("Can't find account in general list of accounts", account.get('id'));
+      log.warn("Can't find account in general list of accounts", ownProps.account.get('id'));
     }
 
     return {

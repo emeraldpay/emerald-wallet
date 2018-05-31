@@ -10,6 +10,7 @@ class NotificationBar extends React.Component {
   constructor(props) {
     super(props);
     this.state = { open: false };
+    this.onActionClick = this.onActionClick.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
@@ -18,6 +19,10 @@ class NotificationBar extends React.Component {
     } else {
       this.setState({ open: false });
     }
+  }
+
+  onActionClick() {
+    this.props.onActionClick(this.props.notificationActionToDispatchOnActionClick);
   }
 
   render() {
@@ -48,6 +53,8 @@ class NotificationBar extends React.Component {
         message={this.props.notificationMessage || ''}
         autoHideDuration={this.props.notificationDuration || 3000}
         onRequestClose={this.props.onRequestClose}
+        action={this.props.notificationActionText}
+        onActionClick={this.onActionClick}
       />
     );
   }
@@ -59,10 +66,15 @@ export default connect(
     notificationMessage: state.wallet.screen.get('notificationMessage'),
     notificationDuration: state.wallet.screen.get('notificationDuration'),
     notificationType: state.wallet.screen.get('notificationType'),
+    notificationActionText: state.wallet.screen.get('notificationActionText'),
+    notificationActionToDispatchOnActionClick: state.wallet.screen.get('notificationActionToDispatchOnActionClick'),
   }),
   (dispatch, ownProps) => ({
     onRequestClose: () => {
       dispatch(screen.actions.closeNotification());
+    },
+    onActionClick: (action) => {
+      dispatch(action);
     },
   })
 )(muiThemeable()(NotificationBar));

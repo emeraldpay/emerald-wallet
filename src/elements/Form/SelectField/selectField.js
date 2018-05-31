@@ -14,7 +14,7 @@ const baseStyle = {
   paddingRight: '10px',
 };
 
-export const SelectField = (props: { style: Object }) => {
+export const SelectField = (props: { style?: Object }) => {
   const { style } = props;
   return (<ReduxFormSelectField {...props} style={{ ...style, ...baseStyle }} />);
 };

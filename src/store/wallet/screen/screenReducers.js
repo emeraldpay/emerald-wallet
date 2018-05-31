@@ -1,3 +1,4 @@
+import {shell} from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import Immutable from 'immutable';
 
 const initial = Immutable.fromJS({
@@ -41,7 +42,9 @@ function onNotificationOpen(state, action) {
     return state
       .set('notificationMessage', action.message)
       .set('notificationType', action.notificationType)
-      .set('notificationDuration', action.duration);
+      .set('notificationDuration', action.duration)
+      .set('notificationActionText', action.actionText)
+      .set('notificationActionToDispatchOnActionClick', action.actionToDispatchOnActionClick);
   }
   return state;
 }
@@ -55,6 +58,13 @@ function onNotificationClose(state, action) {
   return state;
 }
 
+function onOpenLink(state, {type, linkUrl}) {
+  if (type === 'SCREEN/OPEN_LINK') {
+    shell.openExternal(linkUrl);
+  }
+  return state;
+}
+
 export default function screenReducers(state, action) {
   state = state || initial;
   state = onOpen(state, action);
@@ -62,5 +72,6 @@ export default function screenReducers(state, action) {
   state = onDialog(state, action);
   state = onNotificationOpen(state, action);
   state = onNotificationClose(state, action);
+  state = onOpenLink(state, action);
   return state;
 }

@@ -17,6 +17,7 @@ class LocalGeth {
     this.rpcPort = rpcPort || 8545;
   }
 
+
   launch() {
     return new Promise((resolve, reject) => {
       log.info(`Starting Geth... [bin: ${this.bin} network: ${this.network}, port: ${this.rpcPort}]`);
@@ -33,7 +34,10 @@ class LocalGeth {
             '--rpc-port', this.rpcPort,
             '--rpc-cors-domain', 'http://localhost:8000',
             '--cache=1024',
+            '--rpc-api=eth,net,web3,geth', // need geth here for tx by address
             '--fast', // (auto-disables when at or upon reaching current bc height)
+            '--atxi', // this enables tx by address index in geth > 5.0
+            '--atxi.auto-build', // this enables tx backwards indexing by address index in geth > 5.4
             '--log-dir', logTarget,
           ];
 
