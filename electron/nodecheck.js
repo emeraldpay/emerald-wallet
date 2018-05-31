@@ -4,12 +4,12 @@ const { JsonRpc, HttpTransport, EthRpc, NodeChecker } = require('emerald-js');
 const log = require('./logger');
 
 
-const check = function (url) {
+function check(url) {
   const checker = new NodeChecker(new EthRpc(new JsonRpc(new HttpTransport(url))));
   return checker.check();
-};
+}
 
-const waitRpc = function (url) {
+function waitRpc(url) {
   const checker = new NodeChecker(new EthRpc(new JsonRpc(new HttpTransport(url))));
   return new Promise((resolve, reject) => {
     const retry = (n) => {
@@ -24,7 +24,7 @@ const waitRpc = function (url) {
     };
     retry(30);
   });
-};
+}
 
 module.exports = {
   check,

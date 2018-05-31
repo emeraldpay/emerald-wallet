@@ -7,4 +7,11 @@ module.exports = (services) => {
     log.debug('on get-status');
     services.notifyStatus();
   });
+
+  ipcMain.on('get-version', (event) => {
+    event.sender.send('get-version-result', {
+      geth: services.setup.geth.clientVersion,
+      connector: services.setup.connector.version,
+    });
+  });
 };
