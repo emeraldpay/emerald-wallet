@@ -7,6 +7,7 @@ import { address } from 'lib/validators';
 import { connect } from 'react-redux';
 import { SubmissionError, change, formValueSelector } from 'redux-form';
 import Tokens from 'store/vault/tokens';
+import Screen from '../../../../store/wallet/screen';
 import createLogger from '../../../../utils/logger';
 import CreateTxForm from './createTxForm';
 
@@ -18,7 +19,6 @@ const DefaultGas = 21000;
 const DefaultTokenGas = 23890;
 
 const selector = formValueSelector('createTx');
-const getGasPrice = (state) => state.network.get('gasPrice');
 
 export const selectBalance = (state, account) => {
   if (!account.get('balance')) {
@@ -82,10 +82,14 @@ const CreateTx = connect(
         dispatch(change('createTx', 'gas', DefaultGas));
       }
     },
-    handleSelect: (event, item) => {
-      dispatch(change('createTx', 'to', item.props.value));
+    onSelectReceipient: (event, item) => {
+      if (item.props.value === 'ADD_NEW_CONTACT') {
+        dispatch(Screen.actions.gotoScreen('address-book'));
+      } else {
+        dispatch(change('createTx', 'to', item.props.value));
+      }
     },
-    cancel: () => {
+    onCancel: () => {
       ownProps.goDashboard();
     },
     onSubmit: (data) => {

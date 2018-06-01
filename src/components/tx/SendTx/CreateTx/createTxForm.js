@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { Field, reduxForm } from 'redux-form';
 import { RadioButtonGroup } from 'redux-form-material-ui';
 import { MenuItem, IconButton, IconMenu } from 'material-ui';
-import { Button, IdentityIcon, ButtonGroup, LinkButton, WarningText, Warning } from 'emerald-js-ui';
+import { Button, IdentityIcon, ButtonGroup, LinkButton, WarningText, Warning, Account } from 'emerald-js-ui';
 import { Book as BookIcon } from 'emerald-js-ui/lib/icons3';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { positive, number, required, address } from 'lib/validators';
@@ -12,12 +12,10 @@ import TextField from '../../../../elements/Form/TextField';
 import SelectField from '../../../../elements/Form/SelectField';
 import HelpText from '../../../../elements/HelpText';
 import AccountBalance from '../../../accounts/Balance';
-import SelectAddressField from './selectAddressField';
-
-import classes from './createTxForm.scss';
-
+import SelectAddressField from './SelectAddressField';
 import { Currency } from '../../../../lib/currency';
 
+import classes from './createTxForm.scss';
 
 const textEtc = {
   fontSize: '20px',
@@ -48,44 +46,16 @@ const InputWithIcon = (props) => {
   );
 };
 
-/**
- * Address with IdentityIcon. We show it in from field select control
- */
-const AddressWithIcon = ({ accountAddress, name }) => {
-  const style = {
-    div: {
-      display: 'flex',
-      alignItems: 'center',
-    },
-    address: {
-      marginLeft: '5px',
-      fontSize: '16px',
-      color: '#191919',
-    },
-  };
-  return (
-    <div style={style.div}>
-      <IdentityIcon size={30} id={accountAddress} />
-      <div style={style.address}>{name || accountAddress}</div>
-    </div>
-  );
-};
-
-
 export const CreateTxForm = (props) => {
   const { accounts, balance, handleSubmit, invalid, pristine, submitting, muiTheme } = props;
-  const { addressBook, handleSelect, tokens, token, isToken } = props;
+  const { addressBook, onSelectReceipient, tokens, token, isToken } = props;
   const { onEntireBalance, onChangeToken, onChangeAccount, onChangeGasLimit } = props;
   const { fiatRate, fiatCurrency, value, fee } = props;
-  const { error, cancel } = props;
+  const { error, onCancel } = props;
   const { useLedger, ledgerConnected } = props;
   const showFiat = !isToken && props.showFiat;
 
   const sendDisabled = pristine || submitting || invalid || (useLedger && !ledgerConnected);
-
-  const sendButton = <Button primary
-    label="Create Transaction"
-    onClick={handleSubmit} />;
 
   let sendMessage = null;
   if (useLedger && !ledgerConnected) {
@@ -93,26 +63,33 @@ export const CreateTxForm = (props) => {
   }
 
   const RecipientPopupMenu = (<IconMenu
+    iconStyle={{ color: muiTheme.palette.secondaryTextColor }}
     iconButtonElement={<IconButton><BookIcon /></IconButton>}
-    onItemClick={handleSelect}
+    onItemClick={onSelectReceipient}
   >
-    {addressBook && addressBook.map((account) =>
+    {addressBook && addressBook.size > 0 && addressBook.map((account) =>
       <MenuItem
         key={account.get('address')}
         value={account.get('address')}
         primaryText={
-          <AddressWithIcon
+          <Account
+            identity
+            identityProps={{ size: 30 }}
+            addr={account.get('address')}
             name={account.get('name')}
-            accountAddress={account.get('address')}
-          />}
+            abbreviated
+          />
+        }
       />
     )}
-    {/*
-           <Divider />
-           {addressBook.map((account) =>
-           <MenuItem key={account.get('id')} value={account.get('id')} primaryText={account.get('id')} />
-           )}
-           */}
+    {addressBook && addressBook.size === 0 &&
+      <MenuItem
+        value="ADD_NEW_CONTACT"
+        primaryText={
+          <div>Address book is empty. Click to add contact.</div>
+        }
+      />
+    }
   </IconMenu>);
 
   return (
@@ -223,52 +200,44 @@ export const CreateTxForm = (props) => {
       <Row>
         <div style={styles.left}>
           <div style={styles.fieldName}>
-            Gas Limit
+            Transaction Fee
           </div>
         </div>
 
         <div style={styles.right}>
-          <Field
-            name="gas"
-            onChange={onChangeGasLimit}
-            component={TextField}
-            underlineShow={false}
-            validate={[required, number, positive]}
-          />
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{maxWidth: '290px'}}>
+              <Field
+                name="gas"
+                onChange={onChangeGasLimit}
+                component={TextField}
+                rightIcon={<span style={{ color: muiTheme.palette.secondaryTextColor }}>GAS</span>}
+                underlineShow={false}
+                validate={[required, number, positive]}
+              />
+            </div>
+            <div style={{ marginLeft: '20px' }}>
+              <AccountBalance
+                balance={fee}
+                symbol="ETC"
+                precision={6}
+                fiatStyle={textFiat}
+                coinsStyle={{...textEtc, color: muiTheme.palette.secondaryTextColor}}
+              />
+            </div>
+          </div>
         </div>
       </Row>
-      <Row>
-        <div style={styles.left}>
-          <div style={styles.fieldName}>Transaction Fee</div>
-        </div>
-        <div style={styles.right}>
-          <AccountBalance
-            balance={fee}
-            symbol="ETC"
-            precision={6}
-            fiatStyle={textFiat}
-            coinsStyle={textEtc}
-          />
-        </div>
-      </Row>
-
-      {/* <Row>
-         <Col xs={12}>
-         <Field name="gas"
-         component={TextField}
-         floatingLabelText="Gas Amount"
-         hintText="21000"
-         validate={[required, number, positive]}
-         />
-         </Col>
-         </Row>*/}
-
       <Row>
         <div style={styles.left} />
         <div style={{ ...styles.right }}>
           <ButtonGroup>
-            <Button label="Cancel" onClick={cancel} />
-            {sendButton}
+            <Button label="Cancel" onClick={onCancel} />
+            <Button
+              primary
+              label="Create Transaction"
+              onClick={handleSubmit}
+            />
           </ButtonGroup>
         </div>
       </Row>
@@ -307,8 +276,7 @@ CreateTxForm.propTypes = {
   balance: PropTypes.object.isRequired,
   fromAddr: PropTypes.string.isRequired,
   onEntireBalance: PropTypes.func.isRequired,
-
-  handleSelect: PropTypes.func.isRequired,
+  onSelectReceipient: PropTypes.func.isRequired,
   tokens: PropTypes.object.isRequired,
   token: PropTypes.object,
   isToken: PropTypes.string,
