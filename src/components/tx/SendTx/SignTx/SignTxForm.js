@@ -1,3 +1,4 @@
+import { trimEnd } from 'lodash';
 import { Button, ButtonGroup, IdentityIcon } from 'emerald-js-ui';
 import { ArrowRight } from 'emerald-js-ui/lib/icons3';
 import { required } from 'lib/validators';
@@ -53,7 +54,7 @@ const displayFlexCenter = {
 };
 
 const SignTx = muiThemeable()((props) => {
-  const { value, fiatRate, fiatCurrency, fee, to, from, tx } = props;
+  const { value, fiatRate, fiatCurrency, fee, tx } = props;
   const { onCancel, handleSubmit } = props;
 
   // const USDValue = Currency.format(Currency.convert(value, fiatRate, 2), fiatCurrency);
@@ -61,20 +62,22 @@ const SignTx = muiThemeable()((props) => {
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '50px' }}>
-        <HorizontalAddressWithIdentity accountId={from} />
+        <HorizontalAddressWithIdentity accountId={tx.from} />
         <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div style={{ ...displayFlexCenter, flexDirection: 'column' }}>
             {/* <div>{USDValue} USD</div> */}
-            <div style={{fontSize: '28px'}}>{value} {tx.symbol}</div>
+            <div style={{fontSize: '28px'}}>{trimEnd(value, '0')} {tx.symbol}</div>
           </div>
           <div style={{display: 'flex'}}>
             <ArrowRight />
           </div>
         </div>
-        <HorizontalAddressWithIdentity accountId={to} />
+        <HorizontalAddressWithIdentity accountId={tx.to} />
       </div>
       <div style={{ paddingTop: '35px', display: 'flex', justifyContent: 'center' }}>
-        <span style={{ color: props.muiTheme.palette.secondaryTextColor }}>Plus a {fee.getDecimalized()} ETC fee for 21000 GAS</span>
+        <span style={{ color: props.muiTheme.palette.secondaryTextColor }}>
+          Plus a {trimEnd(fee.getDecimalized(), '0')} ETC fee for 21000 GAS
+        </span>
       </div>
       <Divider style={{ marginTop: '35px' }} />
       <Form style={{ marginTop: '0' }}>
@@ -83,11 +86,7 @@ const SignTx = muiThemeable()((props) => {
           <div style={styles.left} />
           <div style={{ paddingTop: '10px', ...styles.right }}>
             <ButtonGroup>
-              <Button
-                style={{ color: props.muiTheme.palette.alternateTextColor, paddingRight: '5px' }}
-                label="Back"
-                onClick={onCancel}
-              />
+              <Button label="Cancel" onClick={onCancel} />
               <Button primary label="Sign & Send Transaction" onClick={handleSubmit} />
             </ButtonGroup>
           </div>

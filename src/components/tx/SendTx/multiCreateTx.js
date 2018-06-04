@@ -79,10 +79,6 @@ class MultiPageCreateTx extends React.Component {
     this.getPage = this.getPage.bind(this);
   }
 
-  // nextPage = () => {
-  //   this.setState({ page: this.state.page + 1 });
-  // }
-
   onCreateTransaction = (data, nativeTx, tx) => {
     // Store both tx in state to pass it to Sign form
     this.setState({ tx, nativeTx, page: PAGES.PASSWORD });
@@ -95,7 +91,14 @@ class MultiPageCreateTx extends React.Component {
       case PAGES.TX:
         return (<CreateTx {...this.props} onCreateTransaction={this.onCreateTransaction} />);
       case PAGES.PASSWORD:
-        return (<SignTx tx={tx} nativeTx={nativeTx} onSubmit={this.props.signAndSend} {...this.props} />);
+        return (
+          <SignTx
+            tx={tx}
+            nativeTx={nativeTx}
+            onSubmit={this.props.signAndSend}
+            onCancel={this.props.goDashboard}
+            {...this.props}
+          />);
       case PAGES.DETAILS:
         return (<TransactionShow hash={ this.props.hash } accountId={ this.props.accountId }/>);
       default: return null;
