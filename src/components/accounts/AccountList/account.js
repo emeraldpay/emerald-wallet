@@ -45,7 +45,6 @@ export class Account extends React.Component {
               <Col xs={5}>
                 <AddressAvatar
                   identity
-                  editable
                   addr={ account.get('id') }
                   description={ account.get('description') }
                   primary={ account.get('name') }
