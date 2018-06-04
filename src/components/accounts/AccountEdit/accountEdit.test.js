@@ -4,6 +4,6 @@ import { AccountEdit } from './accountEdit';
 
 describe('AccountEdit', () => {
   it('renders without crash', () => {
-    const component = shallow(<AccountEdit />);
+    const component = shallow(<AccountEdit muiTheme={{palette: {}}}/>);
   });
 });

@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
 import React from 'react';
+import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Field, reduxForm } from 'redux-form';
 import { Card, CardText } from 'material-ui';
 import { TextField } from 'redux-form-material-ui';
@@ -8,36 +9,18 @@ import { required, address } from '../../../lib/validators';
 import { cardSpace } from '../../../lib/styles';
 
 
-export const AccountEdit = ({ handleSubmit, blockAddress, invalid, pristine, submitting, cancel }) => (
+export const AccountEdit = ({ muiTheme, handleSubmit, blockAddress, invalid, pristine, submitting, cancel }) => (
   <Card style={cardSpace}>
     <CardText expandable={false}>
       <form onSubmit={handleSubmit}>
-        <div>
-          <Field
-            name="address"
-            component={TextField}
-            type="text"
-            hintText="ETC Address"
-            disabled={blockAddress}
-            fullWidth={true}
-            validate={[required, address]}
-          />
-        </div>
         <div>
           <Field
             name="name"
             component={TextField}
             type="text"
             floatingLabelText="Account Name"
+            floatingLabelStyle={{color: muiTheme.palette.textColor}}
             validate={required}
-          />
-        </div>
-        <div>
-          <Field
-            name="description"
-            component={TextField}
-            type="text"
-            floatingLabelText="Account Description"
           />
         </div>
         <ButtonGroup>
@@ -58,7 +41,7 @@ export const AccountEdit = ({ handleSubmit, blockAddress, invalid, pristine, sub
 
 export const AccountEditForm = reduxForm({
   form: 'AddressForm',
-  fields: ['name', 'address', 'description'],
+  fields: ['name', 'address'],
 })(AccountEdit);
 
 export default connect(
@@ -78,4 +61,4 @@ export default connect(
       ownProps.cancel();
     },
   })
-)(AccountEditForm);
+)(muiThemeable()(AccountEditForm));
