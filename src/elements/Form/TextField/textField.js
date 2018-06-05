@@ -42,7 +42,7 @@ export const TextField = ({ rightIcon, error, style, leftIcon, fieldStyle, ...ot
   const textFieldStyle = invalid ? {...defaultStyle, color: '#BC0000' } : defaultStyle;
   return (
     <div style={ containerStyle }>
-      { leftIcon } <ReduxFormTextField { ...other } style={{...fieldStyle, ...textFieldStyle}} />{ rightIcon }
+      { leftIcon } <ReduxFormTextField errorStyle={{bottom: '-4px'}} { ...other } style={{...fieldStyle, ...textFieldStyle}} />{ rightIcon }
     </div>
   );
 };
