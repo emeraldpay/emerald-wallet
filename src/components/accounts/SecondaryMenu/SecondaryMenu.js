@@ -42,17 +42,17 @@ export const SecondaryMenu = ({ account, onPrint, onExport, onHide, onUnhide, ch
   };
   const isHardware = account.get('hardware', false);
   return (
-    <IconMenu iconButtonElement={<IconButton><MoreHorizontalIcon /></IconButton>}>
+    <IconMenu useLayerForClickAway={true} iconButtonElement={<IconButton><MoreHorizontalIcon /></IconButton>}>
       {!isHardware &&
-            <MenuItem
-              leftIcon={<ExportIcon />}
-              primaryText='EXPORT'
-              onTouchTap={ onExport(chain) }/> }
+       <MenuItem
+         leftIcon={<ExportIcon />}
+         primaryText='EXPORT'
+         onTouchTap={ onExport(chain) }/> }
       {!isHardware &&
-            <MenuItem
-              leftIcon={<PrintIcon />}
-              primaryText='PRINT'
-              onTouchTap={ onPrint(chain) }/> }
+       <MenuItem
+         leftIcon={<PrintIcon />}
+         primaryText='PRINT'
+         onTouchTap={ onPrint(chain) }/> }
 
       { !account.get('hidden') && renderHide(chain, account, onHide, colors) }
       { account.get('hidden') && renderUnhide(chain, account, onUnhide) }
