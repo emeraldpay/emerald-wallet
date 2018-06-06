@@ -33,13 +33,13 @@ export const TxView = (props) => {
   // TODO: move tx status to own component
   // TODO: timestamp
   let txStatus = null;
-  const numConfirmed = currentBlockHeight - blockNumber;
+  const numConfirmed = Math.max(currentBlockHeight - blockNumber, 0);
 
   if (blockNumber && confirmationBlockNumber > currentBlockHeight) {
     txStatus = (
       <div>
         <div style={{color: successColor}} onClick={ openTx }>Success</div>
-        <div style={{fontSize: '9px'}} onClick={ openTx }>{numConfirmed} / {numConfirmations}</div>
+        <div style={{fontSize: '9px', textAlign: 'center'}} onClick={ openTx }>{numConfirmed} / {numConfirmations}</div>
       </div>
     );
   } else if (blockNumber && confirmationBlockNumber <= currentBlockHeight) {
