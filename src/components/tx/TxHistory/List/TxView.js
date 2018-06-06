@@ -36,11 +36,10 @@ export const TxView = (props) => {
   const numConfirmed = currentBlockHeight - blockNumber;
 
   if (blockNumber && confirmationBlockNumber > currentBlockHeight) {
-    const percent = Math.floor((numConfirmed / numConfirmations) * 100);
     txStatus = (
       <div>
-        <div style={{color: successColor}} onClick={ openTx }>Success ({percent}%)</div>
-        <div style={{fontSize: '9px'}} onClick={ openTx }>{numConfirmed} / {numConfirmations} confirmations</div>
+        <div style={{color: successColor}} onClick={ openTx }>Success</div>
+        <div style={{fontSize: '9px'}} onClick={ openTx }>{numConfirmed} / {numConfirmations}</div>
       </div>
     );
   } else if (blockNumber && confirmationBlockNumber <= currentBlockHeight) {
