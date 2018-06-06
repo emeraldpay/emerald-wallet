@@ -12,7 +12,7 @@ let menu;
 
 const createWindow = function (openDevTools) {
   // Create the browser window.
-  mainWindow = new electron.BrowserWindow({ width: 1200, height: 650 });
+  mainWindow = new electron.BrowserWindow({ width: 1200, height: 650, minWidth: 1200, minHeight: 650 });
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
