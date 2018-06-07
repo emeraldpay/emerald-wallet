@@ -100,6 +100,8 @@ const SignTxForm = reduxForm({
   form: 'createTx',
   fields: ['password'],
   destroyOnUnmount: false,
+  enableReinitialize: true,
+  forceUnregisterOnUnmount: true,
 })(SignTx);
 
 export default SignTxForm;
