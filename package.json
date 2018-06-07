@@ -114,7 +114,7 @@
     "uuid": "3.1.0"
   },
   "devDependencies": {
-    "electron": "1.7.12",
+    "electron": "1.8.2-beta5",
     "@elastic/webpack-directory-name-as-main": "2.0.2",
     "@storybook/react": "3.2.18",
     "aws-sdk": "2.91.0",
