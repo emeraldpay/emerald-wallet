@@ -288,6 +288,8 @@ CreateTxForm.propTypes = {
 export default reduxForm({
   form: 'createTx',
   destroyOnUnmount: false,
+  forceUnregisterOnUnmount: true,
+  enableReinitialize: true,
   fields: ['to', 'from', 'value', 'token', 'gasPrice', 'gas', 'isTransfer'],
 })(muiThemeable()(CreateTxForm));
 

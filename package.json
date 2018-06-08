@@ -104,7 +104,7 @@
     "react-tap-event-plugin": "^2.0.1",
     "react-transition-group": "^1.1.2",
     "redux": "3.6.0",
-    "redux-form": "6.5.0",
+    "redux-form": "7.3.0",
     "redux-form-material-ui": "^4.2.0",
     "redux-logger": "2.8.1",
     "redux-thunk": "2.2.0",

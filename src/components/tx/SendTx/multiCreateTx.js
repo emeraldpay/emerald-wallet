@@ -125,8 +125,7 @@ class MultiPageCreateTx extends React.Component {
 
 export default connect(
   (state, ownProps) => {
-    const fromAddr = (selector(state, 'from') ? selector(state, 'from') : ownProps.account.get('id'));
-    const account = accounts.selectors.selectAccount(state, fromAddr);
+    const account = ownProps.account;
     const allTokens = state.tokens.get('tokens');
     const balance = selectBalance(state, account);
     const gasPrice = getGasPrice(state);
@@ -137,9 +136,9 @@ export default connect(
     const useLedger = account.get('hardware', false);
     const ledgerConnected = state.ledger.get('connected');
 
-    const gasLimit = selector(state, 'gas') ? new BigNumber(selector(state, 'gas')) : new BigNumber(DefaultGas);
+    const gasLimit = new BigNumber(DefaultGas);
 
-    let value = (selector(state, 'value')) ? selector(state, 'value') : 0;
+    let value = 0;
     let to;
     // Transaction is passed in if this is a repeat transaction
     if (ownProps.transaction) {
@@ -158,7 +157,7 @@ export default connect(
         gasPrice,
         fee,
         to,
-        from: selector(state, 'from') || ownProps.account.get('id'),
+        from: ownProps.account.get('id'),
         gas: DefaultGas,
         token: '',
         isTransfer: 'true',
@@ -166,7 +165,7 @@ export default connect(
         value,
       },
       to,
-      from: selector(state, 'from') || ownProps.account.get('id'),
+      from: ownProps.account.get('id'),
       showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
       accounts: accounts.selectors.getAll(state, Immutable.List()),
       tokens: allTokens.unshift(Immutable.fromJS({ address: '', symbol: 'ETC' })),
@@ -175,7 +174,6 @@ export default connect(
       fiatCurrency,
       value,
       balance,
-      fromAddr,
       useLedger,
       ledgerConnected,
       fee,
