@@ -11,21 +11,20 @@ export function gotoScreen(screen, item = null) {
   };
 }
 
-export function showError(msg) {
+export function showError(msg: Error) {
   log.error('Show error', msg);
-  if (typeof msg === 'object') {
-    msg = msg.message;
-  }
+
   return {
     type: 'SCREEN/ERROR',
-    message: msg,
+    error: msg
   };
+
 }
 
 export function closeError() {
   return {
     type: 'SCREEN/ERROR',
-    message: null,
+    error: null,
   };
 }
 
