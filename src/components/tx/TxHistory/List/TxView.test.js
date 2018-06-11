@@ -1,7 +1,12 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS } from 'immutable';
+
 import { TxView } from './TxView';
+
+jest.mock('../../../../i18n/i18n.js', () => {
+  return {};
+});
 
 const mockMuiTheme = {
   palette: {},
