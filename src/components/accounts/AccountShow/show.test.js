@@ -1,6 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS } from 'immutable';
+
 import { AccountShow } from './show';
 
 const mockMuiTheme = {

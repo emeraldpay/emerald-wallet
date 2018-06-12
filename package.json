@@ -215,6 +215,7 @@
     "setupFiles": [
       "<rootDir>/src/__mocks__/localStorageMock.js",
       "<rootDir>/src/__mocks__/node-fetch.js",
+      "<rootDir>/src/__mocks__/i18n.js",
       "<rootDir>/src/setupTests.js"
     ]
   }
