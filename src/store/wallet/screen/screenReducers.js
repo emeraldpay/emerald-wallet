@@ -21,9 +21,7 @@ function onOpen(state, action) {
 
 function onError(state, action) {
   if (action.type === 'SCREEN/ERROR') {
-    return state
-      .set('error', action.message)
-      .set('dialog', null).set('dialogItem', null);
+    return state.set('error', action.error);
   }
   return state;
 }

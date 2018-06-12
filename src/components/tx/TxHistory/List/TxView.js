@@ -12,6 +12,7 @@ import AccountBalance from '../../../accounts/Balance';
 import TokenUnits from '../../../../lib/tokenUnits';
 import { link, tables } from '../../../../lib/styles';
 import classes from './list.scss';
+import i18n from '../../../../i18n/i18n';
 
 const styles = {
   repeatIcon: {
@@ -35,6 +36,16 @@ export const TxView = (props) => {
   let txStatus = null;
   const numConfirmed = Math.max(currentBlockHeight - blockNumber, 0);
 
+  const timestampEvent = new Date(tx.get('timestamp') * 1000);
+  const options = {
+    year: 'numeric',
+    month: 'numeric',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+  };
+  const ts = timestampEvent.toLocaleDateString(i18n.languange, options);
+
   if (blockNumber && confirmationBlockNumber > currentBlockHeight) {
     txStatus = (
       <div>
@@ -44,7 +55,10 @@ export const TxView = (props) => {
     );
   } else if (blockNumber && confirmationBlockNumber <= currentBlockHeight) {
     txStatus = (
-      <span style={{color: successColor}} onClick={ openTx }>Success</span>
+      <div>
+        <span style={{color: successColor}} onClick={ openTx }>Success</span> <br />
+        <span style={{fontSize: '9px', color: muiTheme.palette.secondaryTextColor}} onClick={ openTx }>{ts}</span>
+      </div>
     );
   } else {
     txStatus = (
