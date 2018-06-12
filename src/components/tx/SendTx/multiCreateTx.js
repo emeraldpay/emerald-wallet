@@ -89,7 +89,7 @@ class MultiPageCreateTx extends React.Component {
     const { t, backLabel } = this.props;
     switch (page) {
       case PAGES.TX:
-        return (<CreateTx {...this.props} onCreateTransaction={this.onCreateTransaction} />);
+        return (<CreateTx {...this.props} onSubmit={this.onCreateTransaction} />);
       case PAGES.PASSWORD:
         return (
           <SignTx
@@ -138,34 +138,33 @@ export default connect(
 
     const gasLimit = new BigNumber(DefaultGas);
 
-    let value = 0;
-    let to;
+    let value = selector(state, 'value') || 0;
+    let toAccount;
     // Transaction is passed in if this is a repeat transaction
     if (ownProps.transaction) {
-      if (ownProps.toAccount === undefined) to = ownProps.transaction.get('to');
-      else to = ownProps.toAccount.get('id');
+      if (ownProps.toAccount === undefined) toAccount = ownProps.transaction.get('to');
+      else toAccount = ownProps.toAccount.get('id');
 
       value = new Wei(ownProps.transaction.get('value')).getEther();
-    } else {
-      to = selector(state, 'to');
     }
 
-    const fee = new TokenUnits(gasPrice.mul(gasLimit).value(), 18);
+    const gas = selector(state, 'gas') || DefaultGas;
+    const fee = new TokenUnits(gasPrice.mul(gas).value(), 18);
 
     return {
       initialValues: {
         gasPrice,
         fee,
-        to,
+        to: toAccount,
         from: ownProps.account.get('id'),
-        gas: DefaultGas,
-        token: '',
+        gas,
+        token: selector(state, 'token') || '',
         isTransfer: 'true',
         tokens: allTokens,
         value,
       },
-      to,
-      from: ownProps.account.get('id'),
+      to: selector(state, 'to'),
+      from: selector(state, 'from') || ownProps.account.get('id'),
       showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
       accounts: accounts.selectors.getAll(state, Immutable.List()),
       tokens: allTokens.unshift(Immutable.fromJS({ address: '', symbol: 'ETC' })),
@@ -187,7 +186,7 @@ export default connect(
     signAndSend: (data) => {
       const useLedger = ownProps.account.get('hardware', false);
 
-      // TODO: moved tx creation to CreatTransation handler
+      // TODO: moved tx creation to CreateTransaction handler
       let tx;
       // 1. Create TX here
       if (Address.isValid(data.token)) {

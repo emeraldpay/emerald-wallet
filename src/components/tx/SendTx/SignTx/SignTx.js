@@ -53,9 +53,15 @@ const displayFlexCenter = {
   alignItems: 'center',
 };
 
+<<<<<<< HEAD:src/components/tx/SendTx/SignTx/SignTx.js
 export const SignTx = ((props) => {
   const { fiatRate, fiatCurrency, fee, tx, nativeTx } = props;
   const { onCancel, handleSubmit, muiTheme } = props;
+=======
+const SignTx = muiThemeable()((props) => {
+  const { value, fiatRate, fiatCurrency, fee, tx, gas, token } = props;
+  const { onCancel, handleSubmit } = props;
+>>>>>>> problem: token sending not working:src/components/tx/SendTx/SignTx/SignTxForm.js
 
   // const USDValue = Currency.format(Currency.convert(value, fiatRate, 2), fiatCurrency);
 
@@ -75,8 +81,13 @@ export const SignTx = ((props) => {
         <HorizontalAddressWithIdentity accountId={tx.to} />
       </div>
       <div style={{ paddingTop: '35px', display: 'flex', justifyContent: 'center' }}>
+<<<<<<< HEAD:src/components/tx/SendTx/SignTx/SignTx.js
         <span style={{ color: muiTheme.palette.secondaryTextColor }}>
           Plus a {trimEnd(fee.getDecimalized(), '0')} ETC fee for 21000 GAS
+=======
+        <span style={{ color: props.muiTheme.palette.secondaryTextColor }}>
+          Plus {trimEnd(fee.getDecimalized(), '0')} ETC for gas.
+>>>>>>> problem: token sending not working:src/components/tx/SendTx/SignTx/SignTxForm.js
         </span>
       </div>
       <Divider style={{ marginTop: '35px' }} />
@@ -100,7 +111,6 @@ const SignTxForm = reduxForm({
   form: 'createTx',
   fields: ['password'],
   destroyOnUnmount: false,
-  enableReinitialize: true,
   forceUnregisterOnUnmount: true,
 })(muiThemeable()(SignTx));
 

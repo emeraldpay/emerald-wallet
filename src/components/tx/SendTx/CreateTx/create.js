@@ -92,57 +92,6 @@ const CreateTx = connect(
     onCancel: () => {
       ownProps.goDashboard();
     },
-    onSubmit: (data) => {
-      // TODO: In this handler we should create native tx and estimate gas
-
-      const tx = {
-        from: data.from,
-        to: data.to,
-        gas: data.gas,
-        gasPrice: data.gasPrice,
-        value: convert.toBigNumber(data.value),
-      };
-
-      let nativeTx;
-      // 1. Create TX here
-      if (Address.isValid(data.token)) {
-        // Token TX
-        const tokenInfo = data.tokens.find((t) => t.get('address') === data.token);
-        if (!tokenInfo) {
-          throw new SubmissionError(`Unknown token ${data.token}`);
-        }
-        tx.symbol = tokenInfo.get('symbol');
-        const decimals = convert.toNumber(tokenInfo.get('decimals'));
-        const tokenUnits: BigNumber = toBaseUnits(convert.toBigNumber(data.value), decimals);
-        const txData = Tokens.actions.createTokenTxData(
-          data.to,
-          tokenUnits,
-          data.isTransfer);
-
-        nativeTx = {
-          from: data.from,
-          gasPrice: toHex(data.gasPrice.value()),
-          gas: toHex(data.gas),
-          to: data.token,
-          value: convert.toHex(0),
-          data: txData,
-        };
-      } else {
-        // Ordinary Tx
-        nativeTx = {
-          from: data.from,
-          gasPrice: toHex(data.gasPrice.value()),
-          gas: toHex(data.gas),
-          to: data.to,
-          value: toHex(etherToWei(data.value)),
-        };
-        tx.symbol = 'ETC';
-      }
-
-      if (ownProps.onCreateTransaction) {
-        ownProps.onCreateTransaction(data, nativeTx, tx);
-      }
-    },
   })
 )(CreateTxForm);
 
