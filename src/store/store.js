@@ -23,6 +23,7 @@ import deployedTokens from '../lib/deployedTokens';
 import getWalletVersion from '../utils/get-wallet-version';
 import createLogger from '../utils/logger';
 import reduxLogger from '../utils/redux-logger';
+import reduxMiddleware from './middleware';
 
 const log = createLogger('store');
 
@@ -46,27 +47,7 @@ const reducers = {
  */
 export const createStore = (_api) => {
   const storeMiddleware = [
-    (store) => {
-      return (next) => {
-        return (action) => {
-          const returnVal = next(action);
-          if (!returnVal) { return returnVal; }
-
-          if (returnVal.catch) {
-            returnVal.catch((e) => {
-              if (e.stack === "TypeError: Failed to fetch") {
-                // Hack because underlying fetch library issue:
-                // https://github.com/github/fetch/issues/201#issuecomment-308213104
-                const stack = `${e.stack} \n While processing action: \n ${action.toString()}`;
-                e.stack = stack;
-              }
-              store.dispatch(screen.actions.showError(e));
-            });
-          }
-          return returnVal;
-        };
-      };
-    },
+    reduxMiddleware.promiseCatchAll,
     thunkMiddleware.withExtraArgument(_api),
   ];
 
