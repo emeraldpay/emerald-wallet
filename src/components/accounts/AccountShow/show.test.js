@@ -4,10 +4,6 @@ import { fromJS } from 'immutable';
 
 import { AccountShow } from './show';
 
-jest.mock('../../../i18n/i18n.js', () => {
-  return {};
-});
-
 const mockMuiTheme = {
   palette: {},
 };
