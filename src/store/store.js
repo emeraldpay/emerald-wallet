@@ -23,6 +23,7 @@ import deployedTokens from '../lib/deployedTokens';
 import getWalletVersion from '../utils/get-wallet-version';
 import createLogger from '../utils/logger';
 import reduxLogger from '../utils/redux-logger';
+import reduxMiddleware from './middleware';
 
 const log = createLogger('store');
 
@@ -46,6 +47,7 @@ const reducers = {
  */
 export const createStore = (_api) => {
   const storeMiddleware = [
+    reduxMiddleware.promiseCatchAll,
     thunkMiddleware.withExtraArgument(_api),
   ];
 
@@ -64,7 +66,7 @@ export const store = createStore(api);
 function refreshAll() {
   store.dispatch(accounts.actions.loadPendingTransactions());
   store.dispatch(history.actions.refreshTrackedTransactions());
-  store.dispatch(network.actions.loadHeight());
+  store.dispatch(network.actions.loadHeight(false));
   store.dispatch(accounts.actions.loadAccountsList());
 
   const state = store.getState();
