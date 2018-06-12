@@ -46,6 +46,27 @@ const reducers = {
  */
 export const createStore = (_api) => {
   const storeMiddleware = [
+    (store) => {
+      return (next) => {
+        return (action) => {
+          const returnVal = next(action);
+          if (!returnVal) { return returnVal; }
+
+          if (returnVal.catch) {
+            returnVal.catch((e) => {
+              if (e.stack === "TypeError: Failed to fetch") {
+                // Hack because underlying fetch library issue:
+                // https://github.com/github/fetch/issues/201#issuecomment-308213104
+                const stack = `${e.stack} \n While processing action: \n ${action.toString()}`;
+                e.stack = stack;
+              }
+              store.dispatch(screen.actions.showError(e));
+            });
+          }
+          return returnVal;
+        };
+      };
+    },
     thunkMiddleware.withExtraArgument(_api),
   ];
 
