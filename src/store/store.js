@@ -71,13 +71,13 @@ function refreshAll() {
   if (state.launcher.getIn(['geth', 'type']) === 'local') {
     store.dispatch(network.actions.loadPeerCount());
     store.dispatch(network.actions.loadSyncing());
+    state.accounts.get('accounts').forEach((account) => {
+      store.dispatch(network.actions.loadAddressTransactions(account.get('id'), 0, 0, '', '', -1, -1, false));
+    });
   }
 
   const syncing = state.network.getIn(['sync', 'syncing']);
 
-  state.accounts.get('accounts').forEach((account) => {
-    store.dispatch(network.actions.loadAddressTransactions(account.get('id'), 0, 0, '', '', -1, -1, false));
-  });
 
   setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
 }
