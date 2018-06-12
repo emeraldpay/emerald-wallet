@@ -53,9 +53,9 @@ const displayFlexCenter = {
   alignItems: 'center',
 };
 
-const SignTx = muiThemeable()((props) => {
-  const { value, fiatRate, fiatCurrency, fee, tx } = props;
-  const { onCancel, handleSubmit } = props;
+export const SignTx = ((props) => {
+  const { fiatRate, fiatCurrency, fee, tx, nativeTx } = props;
+  const { onCancel, handleSubmit, muiTheme } = props;
 
   // const USDValue = Currency.format(Currency.convert(value, fiatRate, 2), fiatCurrency);
 
@@ -66,7 +66,7 @@ const SignTx = muiThemeable()((props) => {
         <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div style={{ ...displayFlexCenter, flexDirection: 'column' }}>
             {/* <div>{USDValue} USD</div> */}
-            <div style={{fontSize: '28px'}}>{trimEnd(value, '0')} {tx.symbol}</div>
+            <div style={{fontSize: '28px'}}>{tx.value.toFixed()} {tx.symbol}</div>
           </div>
           <div style={{display: 'flex'}}>
             <ArrowRight />
@@ -75,7 +75,7 @@ const SignTx = muiThemeable()((props) => {
         <HorizontalAddressWithIdentity accountId={tx.to} />
       </div>
       <div style={{ paddingTop: '35px', display: 'flex', justifyContent: 'center' }}>
-        <span style={{ color: props.muiTheme.palette.secondaryTextColor }}>
+        <span style={{ color: muiTheme.palette.secondaryTextColor }}>
           Plus a {trimEnd(fee.getDecimalized(), '0')} ETC fee for 21000 GAS
         </span>
       </div>
@@ -102,6 +102,6 @@ const SignTxForm = reduxForm({
   destroyOnUnmount: false,
   enableReinitialize: true,
   forceUnregisterOnUnmount: true,
-})(SignTx);
+})(muiThemeable()(SignTx));
 
 export default SignTxForm;
