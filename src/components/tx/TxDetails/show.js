@@ -211,9 +211,12 @@ export default connect(
     const toAccount = Tx.get('to') ?
       accounts.find((acct) => acct.get('id') === Tx.get('to')) : null;
 
+    const showRepeat = !!fromAccount;
+
     return {
       goBack: ownProps.goBack,
       openAccount: ownProps.openAccount,
+      showRepeat,
       repeatTx: ownProps.repeatTx,
       showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
       transaction: Tx,
