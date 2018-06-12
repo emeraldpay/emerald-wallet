@@ -16,9 +16,8 @@ export function showError(msg: Error) {
 
   return {
     type: 'SCREEN/ERROR',
-    error: msg
+    error: msg,
   };
-
 }
 
 export function closeError() {
