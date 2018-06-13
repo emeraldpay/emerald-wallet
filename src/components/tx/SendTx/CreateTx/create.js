@@ -100,6 +100,7 @@ const CreateTx = connect(
         to: data.to,
         gas: data.gas,
         gasPrice: data.gasPrice,
+        value: convert.toBigNumber(data.value),
       };
 
       let nativeTx;
