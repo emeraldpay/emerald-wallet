@@ -21,20 +21,21 @@ import classes from './show.scss';
 const log = createLogger('TxDetails');
 
 type Props = {
-    showFiat: boolean,
-    goBack: (?any) => void,
-    openAccount: (?any) => void,
-    currentCurrency: string,
-    fromAccount: any,
-    toAccount: any,
-    rates: Map<string, number>,
-    transaction: any,
-    account: ?any
+  showFiat: boolean,
+  goBack: (?any) => void,
+  openAccount: (?any) => void,
+  currentCurrency: string,
+  fromAccount: any,
+  toAccount: any,
+  rates: Map<string, number>,
+  transaction: any,
+  account: ?any,
+  showRepeat: boolean,
 }
 
 export const TransactionShow = (props: Props) => {
   const { transaction, account, fromAccount, toAccount, openAccount, goBack, repeatTx, muiTheme } = props;
-  const { showFiat, rates, currentCurrency } = props;
+  const { showFiat, rates, currentCurrency, showRepeat } = props;
 
   const fieldNameStyle = {
     color: '#747474',
@@ -50,6 +51,12 @@ export const TransactionShow = (props: Props) => {
 
   const backButtonLabel = account ? 'Account' : 'Dashboard';
   const backButton = <DashboardButton label={ backButtonLabel } onClick={ () => goBack(account) }/>;
+  const optionallyDisplayRepeatButton = () => {
+    if (showRepeat) {
+      return <Button primary onClick={ () => repeatTx(transaction, toAccount, fromAccount) } label="REPEAT TRANSACTION" />;
+    }
+  };
+
   return (
     <Form caption="Ethereum Classic Transfer" backButton={ backButton } style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
       <Row>
@@ -172,10 +179,7 @@ export const TransactionShow = (props: Props) => {
               <Button
                 onClick={ () => props.cancel() }
                 label="DASHBOARD" />
-              <Button
-                primary
-                onClick={ () => repeatTx(transaction, toAccount, fromAccount) }
-                label="REPEAT TRANSACTION" />
+              {optionallyDisplayRepeatButton()}
             </ButtonGroup>
           </div>
         </div>
@@ -211,9 +215,12 @@ export default connect(
     const toAccount = Tx.get('to') ?
       accounts.find((acct) => acct.get('id') === Tx.get('to')) : null;
 
+    const showRepeat = !!fromAccount;
+
     return {
       goBack: ownProps.goBack,
       openAccount: ownProps.openAccount,
+      showRepeat,
       repeatTx: ownProps.repeatTx,
       showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
       transaction: Tx,
