@@ -23,6 +23,7 @@ import deployedTokens from '../lib/deployedTokens';
 import getWalletVersion from '../utils/get-wallet-version';
 import createLogger from '../utils/logger';
 import reduxLogger from '../utils/redux-logger';
+import reduxMiddleware from './middleware';
 
 const log = createLogger('store');
 
@@ -46,6 +47,7 @@ const reducers = {
  */
 export const createStore = (_api) => {
   const storeMiddleware = [
+    reduxMiddleware.promiseCatchAll,
     thunkMiddleware.withExtraArgument(_api),
   ];
 
@@ -64,20 +66,20 @@ export const store = createStore(api);
 function refreshAll() {
   store.dispatch(accounts.actions.loadPendingTransactions());
   store.dispatch(history.actions.refreshTrackedTransactions());
-  store.dispatch(network.actions.loadHeight());
+  store.dispatch(network.actions.loadHeight(false));
   store.dispatch(accounts.actions.loadAccountsList());
 
   const state = store.getState();
   if (state.launcher.getIn(['geth', 'type']) === 'local') {
     store.dispatch(network.actions.loadPeerCount());
     store.dispatch(network.actions.loadSyncing());
+    state.accounts.get('accounts').forEach((account) => {
+      store.dispatch(network.actions.loadAddressTransactions(account.get('id'), 0, 0, '', '', -1, -1, false));
+    });
   }
 
   const syncing = state.network.getIn(['sync', 'syncing']);
 
-  state.accounts.get('accounts').forEach((account) => {
-    store.dispatch(network.actions.loadAddressTransactions(account.get('id'), 0, 0, '', '', -1, -1, false));
-  });
 
   setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
 }

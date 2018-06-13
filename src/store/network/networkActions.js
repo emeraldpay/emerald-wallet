@@ -8,8 +8,6 @@ import history from '../wallet/history';
 
 const log = createLogger('networkActions');
 
-let watchingHeight = false;
-
 export function switchChain({ chain, chainId }) {
   return (dispatch, getState) => {
     dispatch({
@@ -21,29 +19,25 @@ export function switchChain({ chain, chainId }) {
 }
 
 export function loadHeight(watch) {
-  return (dispatch, getState, api) =>
-    api.geth.eth.getBlockNumber().then((result) => {
+  return (dispatch, getState, api) => {
+    return api.geth.eth.getBlockNumber().then((result) => {
       dispatch({
         type: ActionTypes.BLOCK,
         height: result,
       });
-      if (watch && !watchingHeight) {
-        watchingHeight = true;
-        setTimeout(() => dispatch(loadHeight(true)), intervalRates.continueLoadHeightRate);
-      }
     });
+  };
 }
 
 export function loadPeerCount() {
-  return (dispatch, getState, api) =>
-    api.geth.net.peerCount().then((result) => {
-      if (getState().network.get('peerCount') !== convert.toNumber(result)) {
-        dispatch({
-          type: ActionTypes.PEER_COUNT,
-          peerCount: result,
-        });
-      }
+  return (dispatch, getState, api) => {
+    return api.geth.net.peerCount().then((result) => {
+      dispatch({
+        type: ActionTypes.PEER_COUNT,
+        peerCount: result,
+      });
     });
+  };
 }
 
 export function loadAddressTransactions(...props) {
@@ -58,36 +52,31 @@ export function loadAddressTransactions(...props) {
 
 export function loadSyncing() {
   return (dispatch, getState, api) => {
-    const repeat = getState().launcher.getIn(['geth', 'type']) === 'local';
     return api.geth.eth.getSyncing().then((result) => {
       if (typeof result === 'object') {
-        dispatch({
+        return dispatch({
           type: ActionTypes.SYNCING,
           syncing: true,
           status: result,
         });
-        if (repeat) {
-          setTimeout(() => dispatch(loadSyncing()), intervalRates.continueLoadSyncRate);
-        }
-      } else {
-        dispatch({
-          type: ActionTypes.SYNCING,
-          syncing: false,
-        });
-        setTimeout(() => dispatch(loadHeight(true)), intervalRates.continueLoadSyncRate);
       }
+
+      dispatch({
+        type: ActionTypes.SYNCING,
+        syncing: false,
+      });
     });
   };
 }
 
 export function getGasPrice() {
   return (dispatch, getState, api) => {
-    api.geth.eth.gasPrice().then((result) => {
+    return api.geth.eth.gasPrice().then((result) => {
       dispatch({
         type: ActionTypes.GAS_PRICE,
         value: result,
       });
-    }).catch((error) => log.error(error));
+    });
   };
 }
 
