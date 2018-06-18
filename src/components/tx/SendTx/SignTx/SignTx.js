@@ -4,10 +4,9 @@ import { ArrowRight } from 'emerald-js-ui/lib/icons3';
 import { required } from 'lib/validators';
 import { Divider } from 'material-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
+import {Input} from 'emerald-js-ui';
 import React from 'react';
-import { Field, reduxForm } from 'redux-form';
 import { Form, Row, styles } from '../../../../elements/Form';
-import TextField from '../../../../elements/Form/TextField';
 import { Currency } from '../../../../lib/currency';
 
 const HorizontalAddressWithIdentity = (props) => {
@@ -32,15 +31,14 @@ const passwordFields = (props) => {
         </div>
       </div>
       <div style={styles.right}>
-        <Field
+        <Input
           name="password"
           type="password"
+          onChange={props.onChange}
           style={{ minWidth: '600px' }}
-          component={TextField}
           hintText="Enter your Password"
           underlineShow={false}
           fullWidth={true}
-          validate={[required]}
         />
       </div>
     </Row>
@@ -53,15 +51,14 @@ const displayFlexCenter = {
   alignItems: 'center',
 };
 
-<<<<<<< HEAD:src/components/tx/SendTx/SignTx/SignTx.js
-export const SignTx = ((props) => {
-  const { fiatRate, fiatCurrency, fee, tx, nativeTx } = props;
-  const { onCancel, handleSubmit, muiTheme } = props;
-=======
 const SignTx = muiThemeable()((props) => {
   const { value, fiatRate, fiatCurrency, fee, tx, gas, token } = props;
   const { onCancel, handleSubmit } = props;
->>>>>>> problem: token sending not working:src/components/tx/SendTx/SignTx/SignTxForm.js
+  const { onCancel, onChangePassword, onSubmit } = props;
+
+  const onChange = (event, value) => {
+    onChangePassword(value);
+  }
 
   // const USDValue = Currency.format(Currency.convert(value, fiatRate, 2), fiatCurrency);
 
@@ -81,24 +78,19 @@ const SignTx = muiThemeable()((props) => {
         <HorizontalAddressWithIdentity accountId={tx.to} />
       </div>
       <div style={{ paddingTop: '35px', display: 'flex', justifyContent: 'center' }}>
-<<<<<<< HEAD:src/components/tx/SendTx/SignTx/SignTx.js
-        <span style={{ color: muiTheme.palette.secondaryTextColor }}>
-          Plus a {trimEnd(fee.getDecimalized(), '0')} ETC fee for 21000 GAS
-=======
         <span style={{ color: props.muiTheme.palette.secondaryTextColor }}>
-          Plus {trimEnd(fee.getDecimalized(), '0')} ETC for gas.
->>>>>>> problem: token sending not working:src/components/tx/SendTx/SignTx/SignTxForm.js
+          Plus {fee} ETC for gas.
         </span>
       </div>
       <Divider style={{ marginTop: '35px' }} />
       <Form style={{ marginTop: '0' }}>
-        {passwordFields(props)}
+        {passwordFields({...props, onChange})}
         <Row>
           <div style={styles.left} />
           <div style={{ paddingTop: '10px', ...styles.right }}>
             <ButtonGroup>
               <Button label="Cancel" onClick={onCancel} />
-              <Button primary label="Sign & Send Transaction" onClick={handleSubmit} />
+              <Button primary label="Sign & Send Transaction" onClick={onSubmit} />
             </ButtonGroup>
           </div>
         </Row>
@@ -107,11 +99,4 @@ const SignTx = muiThemeable()((props) => {
   );
 });
 
-const SignTxForm = reduxForm({
-  form: 'createTx',
-  fields: ['password'],
-  destroyOnUnmount: false,
-  forceUnregisterOnUnmount: true,
-})(muiThemeable()(SignTx));
-
-export default SignTxForm;
+export default SignTx;

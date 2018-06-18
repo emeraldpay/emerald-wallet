@@ -7,7 +7,6 @@ import AddressBook from '../../components/addressbook/ContactList';
 import AccountShow from '../../components/accounts/AccountShow';
 import AddressShow from '../../components/addressbook/show';
 import AddressAdd from '../../components/addressbook/AddContact';
-import CreateTx from '../../components/tx/SendTx';
 import TransactionShow from '../../components/tx/TxDetails';
 import MnemonicWizard from '../../components/accounts/MnemonicWizard';
 import AddToken from '../../components/tokens/AddToken/add';
@@ -24,9 +23,12 @@ import ExportPaperWallet from '../../components/accounts/ExportPaperWallet';
 import GenerateAccount from '../../components/accounts/GenerateAccount';
 
 import WalletScreen from '../../store/wallet/screen';
+import MultiCreateTransaction from '../MultiCreateTransaction';
 
 const log = createLogger('screen');
 
+const mockOwnAddresses = ['0x00', '0x03', '0x004'];
+const mockAddressBookAddresses = ['0x00', '0x0111', '0x006'];
 
 const Screen = ({ screen, screenItem }) => {
   log.debug('Show screen: ', screen);
@@ -52,13 +54,24 @@ const Screen = ({ screen, screenItem }) => {
   } else if (screen === 'transaction') {
     return <TransactionShow hash={ screenItem.hash } accountId={ screenItem.accountId }/>;
   } else if (screen === 'create-tx') {
-    return <CreateTx account={ screenItem }/>;
-  } else if (screen === 'repeat-tx') {
-    return <CreateTx
-      account={ screenItem.fromAccount }
-      toAccount={ screenItem.toAccount }
-      transaction={ screenItem.transaction }
+    return <MultiCreateTransaction
+      account={ screenItem }
+      currency={'USD'}
+      balance={'115.15515'}
+      fiatBalance={'2815.55'}
+      tokenSymbols={['ETC', 'BEC']}
+      addressBookAddresses={mockAddressBookAddresses}
+      ownAddresses={mockOwnAddresses}
+      txFee={'0.0042'}
+      txFeeFiat={'1'}
     />;
+  } else if (screen === 'repeat-tx') {
+    return <div />;
+    /* <CreateTx
+     *   account={ screenItem.fromAccount }
+     *   toAccount={ screenItem.toAccount }
+     *   transaction={ screenItem.transaction }
+     * />;*/
   } else if (screen === 'landing-generate') {
     return <GenerateAccount onBackScreen="landing" backLabel="Back"/>;
   } else if (screen === 'generate') {
