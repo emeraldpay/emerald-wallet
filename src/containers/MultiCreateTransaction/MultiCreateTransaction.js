@@ -90,7 +90,7 @@ class MultiCreateTransaction extends React.Component {
   }
 
   onChangeAmount(amount) {
-    this.setTransaction('amount', amount || '0');
+    this.setTransaction('amount', amount);
   }
 
   componentDidMount() {
