@@ -12,6 +12,9 @@ import { TextField } from 'redux-form-material-ui';
 import DashboardButton from 'components/common/DashboardButton';
 import Checkbox from 'elements/Form/Checkbox';
 
+import { Page } from 'emerald-js-ui';
+import { Back } from 'emerald-js-ui/lib/icons3';
+
 import screen from '../../store/wallet/screen';
 import settings from '../../store/wallet/settings';
 import accounts from '../../store/vault/accounts';
@@ -20,9 +23,10 @@ import i18n from '../../i18n/i18n';
 
 export class Settings extends React.Component {
   render() {
-    const { goDashboard, handleSubmit, t, muiTheme } = this.props;
+    const { goDashboard, handleSubmit, t } = this.props;
     return (
-      <Form caption="Settings" backButton={ <DashboardButton onClick={ goDashboard } /> } style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
+      <Page title="Settings" leftIcon={<Back onClick={goDashboard} />}>
+        <div style={{paddingTop: '30px'}} />
         <div>
           <Row>
             <div style={styles.left}>
@@ -119,7 +123,8 @@ export class Settings extends React.Component {
             </div>
           </Row>
         </div>
-      </Form>
+        <div style={{paddingBottom: '20px'}} />
+      </Page>
     );
   }
 }

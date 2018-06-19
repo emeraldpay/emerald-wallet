@@ -9,54 +9,60 @@ import TextField from '../../../elements/Form/TextField';
 import screen from '../../../store/wallet/screen';
 import accounts from '../../../store/vault/accounts';
 
+import { Page } from 'emerald-js-ui';
+import { Back } from 'emerald-js-ui/lib/icons3';
+
 import styles from './exportPaperWallet.scss';
 
 class ExportPaperWallet extends React.Component {
-    static propTypes = {
-      accountId: PropTypes.string,
-      onBack: PropTypes.func,
-      handleSubmit: PropTypes.func,
-    };
+  static propTypes = {
+    accountId: PropTypes.string,
+    onBack: PropTypes.func,
+    handleSubmit: PropTypes.func,
+  };
 
-    render() {
-      const { accountId, onBack, handleSubmit } = this.props;
+  render() {
+    const { accountId, onBack, handleSubmit } = this.props;
 
-      return (
-        <Form caption="Print Paper Wallet" backButton={ <DashboardButton onClick={ onBack }/> } >
-          <Row>
-            <div style={formStyles.left}/>
-            <div style={formStyles.right}>
-              { accountId }
-            </div>
-          </Row>
-          <Row>
-            <div style={formStyles.left}>
-            </div>
-            <div style={formStyles.right}>
-              <div style={{ width: '100%' }}>
-                <div className={styles.passwordLabel}>Enter a password</div>
-                <div className={styles.passwordSubLabel}>
-                                Password needs for confirm all wallet operations.</div>
-                <div style={{ marginTop: '30px' }}>
-                  <Field
-                    name="password"
-                    type="password"
-                    component={ TextField }
-                    fullWidth={ true }
-                    underlineShow={ false }
-                  />
-                </div>
+    return (
+      <Page title="Print Paper Wallet" leftIcon={<Back onClick={onBack}/> } >
+        <div style={{paddingTop: '30px'}} />
+        <Row>
+          <div style={formStyles.left}/>
+          <div style={formStyles.right}>
+            { accountId }
+          </div>
+        </Row>
+        <Row>
+          <div style={formStyles.left}>
+          </div>
+          <div style={formStyles.right}>
+            <div style={{ width: '100%' }}>
+              <div className={styles.passwordLabel}>Enter a password</div>
+              <div className={styles.passwordSubLabel}>
+                Password needs for confirm all wallet operations.</div>
+              <div style={{ marginTop: '30px' }}>
+                <Field
+                  name="password"
+                  type="password"
+                  component={ TextField }
+                  fullWidth={ true }
+                  underlineShow={ false }
+                />
               </div>
             </div>
-          </Row>
-          <Row>
-            <div style={formStyles.left}/>
-            <div style={formStyles.right}>
-              <Button primary label="EXPORT" onClick={ handleSubmit } />
-            </div>
-          </Row>
-        </Form>);
-    }
+          </div>
+        </Row>
+        <Row>
+          <div style={formStyles.left}/>
+          <div style={formStyles.right}>
+            <Button primary label="EXPORT" onClick={ handleSubmit } />
+          </div>
+        </Row>
+        <div style={{paddingBottom: '20px'}} />
+      </Page>
+    );
+  }
 }
 
 

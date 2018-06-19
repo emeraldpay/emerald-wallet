@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {Fragment} from 'react';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -7,7 +7,7 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import QRCode from 'qrcode.react';
 import TokenUnits from 'lib/tokenUnits';
 import { Button, IdentityIcon, Account as AddressAvatar, ButtonGroup } from 'emerald-js-ui';
-import { Form, styles, Row } from 'elements/Form';
+import { styles, Row } from 'elements/Form';
 import DashboardButton from 'components/common/DashboardButton';
 import accounts from '../../../store/vault/accounts';
 import tokens from '../../../store/vault/tokens';
@@ -21,6 +21,8 @@ import AccountBalance from '../Balance';
 import SecondaryMenu from '../SecondaryMenu';
 import classes from './show.scss';
 import TokenBalances from '../TokenBalances';
+import { Page } from 'emerald-js-ui';
+import { Back } from 'emerald-js-ui/lib/icons3';
 
 const log = createLogger('AccountShow');
 
@@ -59,10 +61,12 @@ export class AccountShow extends React.Component {
     const balance = account.get('balance') ? new TokenUnits(account.get('balance').value(), 18) : null;
 
     return (
-      <div>
-        <div style={{display: 'flex', alignItems: 'stretch', border: `1px solid ${muiTheme.palette.borderColor}`}}>
-          <div style={{flexGrow: 1}}>
-            <Form caption="Account" backButton={ <DashboardButton onClick={ goBack }/> }>
+      <Fragment>
+        <Page title="Account" leftIcon={ <Back onClick={goBack} /> }>
+          <div style={{paddingTop: '30px'}} />
+
+          <div style={{ display: 'flex', alignItems: 'center' }}>
+            <div style={{flexGrow: 2}}>
               <Row>
                 <div id="left-column" style={styles.left}>
                   <div style={{display: 'flex', justifyContent: 'flex-end'}}>
@@ -95,30 +99,30 @@ export class AccountShow extends React.Component {
                 </div>
                 <div style={ styles.right }>
                   {!this.state.edit && <AddressAvatar
-                    editable
-                    addr={account.get('id')}
-                    description={account.get('description')}
-                    name={account.get('name')}
-                    onEditClick={this.handleEdit}
+                                         editable
+                                         addr={account.get('id')}
+                                         description={account.get('description')}
+                                         name={account.get('name')}
+                                         onEditClick={this.handleEdit}
                   />}
                   {this.state.edit && <AccountEdit
-                    account={account}
-                    submit={this.handleSave}
-                    cancel={this.cancelEdit}
+                                        account={account}
+                                        submit={this.handleSave}
+                                        cancel={this.cancelEdit}
                   />}
                 </div>
               </Row>
               { account.get('hardware', false) &&
-                            <Row>
-                              <div style={styles.left}>
-                                <div style={styles.fieldName}>
-                                        HD Path
-                                </div>
-                              </div>
-                              <div style={ styles.right }>
-                                { account.get('hdpath') }
-                              </div>
-                            </Row> }
+                <Row>
+                  <div style={styles.left}>
+                    <div style={styles.fieldName}>
+                      HD Path
+                    </div>
+                  </div>
+                  <div style={ styles.right }>
+                    { account.get('hdpath') }
+                  </div>
+                </Row> }
               <Row>
                 <div style={styles.left}/>
                 <div style={styles.right}>
@@ -139,16 +143,20 @@ export class AccountShow extends React.Component {
                   </div>
                 </div>
               </Row>
-            </Form>
+            </div>
+
+            <div className={ classes.qrCodeContainer }>
+              <QRCode value={ account.get('id') } />
+            </div>
           </div>
-          <div className={ classes.qrCodeContainer }>
-            <QRCode value={ account.get('id') } />
-          </div>
-        </div>
+
+          <div style={{paddingBottom: '20px'}} />
+        </Page>
+
         <div className={ classes.transContainer }>
           <TransactionsList transactions={ transactions } accountId={ account.get('id') } />
         </div>
-      </div>
+      </Fragment>
     );
   }
 }

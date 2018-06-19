@@ -15,7 +15,8 @@ import TxStatus from './status';
 import { Currency } from '../../../lib/currency';
 import createLogger from '../../../utils/logger';
 import TxInputData from './TxInputData';
-
+import { Page } from 'emerald-js-ui';
+import { Back } from 'emerald-js-ui/lib/icons3';
 import classes from './show.scss';
 
 const log = createLogger('TxDetails');
@@ -49,16 +50,9 @@ export const TransactionShow = (props: Props) => {
     Currency.format(new Wei(transaction.get('value')).getFiat(rates.get(currentCurrency.toUpperCase())), currentCurrency) :
     '';
 
-  const backButtonLabel = account ? 'Account' : 'Dashboard';
-  const backButton = <DashboardButton label={ backButtonLabel } onClick={ () => goBack(account) }/>;
-  const optionallyDisplayRepeatButton = () => {
-    if (showRepeat) {
-      return <Button primary onClick={ () => repeatTx(transaction, toAccount, fromAccount) } label="REPEAT TRANSACTION" />;
-    }
-  };
-
   return (
-    <Form caption="Ethereum Classic Transfer" backButton={ backButton } style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
+    <Page title="Transaction Details" leftIcon={ <Back onClick={() => goBack(account)} /> }>
+      <div style={{paddingTop: '30px'}} />
       <Row>
         <div style={styles.left}>
           <div style={fieldNameStyle}>Date</div>
@@ -128,12 +122,12 @@ export const TransactionShow = (props: Props) => {
         </div>
         <div style={{...styles.right, alignItems: 'center'}}>
           {transaction.get('to') &&
-          <Account
-            addr={transaction.get('to')}
-            identity
-            identityProps={{size: 30}}
-            onClick={ () => openAccount(toAccount) }
-          />}
+           <Account
+             addr={transaction.get('to')}
+             identity
+             identityProps={{size: 30}}
+             onClick={ () => openAccount(toAccount) }
+           />}
         </div>
       </Row>
 
@@ -184,8 +178,9 @@ export const TransactionShow = (props: Props) => {
           </div>
         </div>
       </Row>
-
-    </Form>);
+      <div style={{paddingBottom: '20px'}} />
+    </Page>
+  );
 };
 
 TransactionShow.propTypes = {

@@ -10,6 +10,8 @@ import DashboardButton from 'components/common/DashboardButton';
 import Advice from './advice';
 import styles from './passwordDialog.scss';
 import getLoadingIcon from '../getLoadingIcon';
+import { Page } from 'emerald-js-ui';
+import { Back } from 'emerald-js-ui/lib/icons3';
 
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -47,8 +49,8 @@ class PasswordDialog extends React.Component {
 
   onPassphraseChange = (newValue) => {
     const passphraseError = (newValue.length === 0 || newValue.length >= MIN_PASSWORD_LENGTH) ?
-      null :
-      this.state.passphraseError;
+                            null :
+                            this.state.passphraseError;
 
     this.setState({
       passphrase: newValue,
@@ -72,14 +74,15 @@ class PasswordDialog extends React.Component {
     const { passphraseError } = this.state;
 
     return (
-      <Form caption={ t('generate.title') } backButton={ <DashboardButton onClick={ onDashboard } label={backLabel}/> }>
+      <Page title={ t('generate.title') } leftIcon={<Back onClick={onDashboard} />}>
+        <div style={{paddingTop: '30px'}} />
         <Row>
           <div style={ formStyles.left }/>
           <div style={ formStyles.right }>
             <div style={{ width: '100%' }}>
               <div className={ styles.passwordLabel }>Enter a strong password</div>
               <div className={ styles.passwordSubLabel }>
-                        This password will be required to confirm all account operations.
+                This password will be required to confirm all account operations.
               </div>
               <div style={{ marginTop: '30px' }}>
                 <PasswordInput
@@ -97,7 +100,7 @@ class PasswordDialog extends React.Component {
             <Warning fullWidth={ true }>
               <WarningHeader>Don&#39;t forget it.</WarningHeader>
               <WarningText>If you forget password, you will lose your account with all
-                            funds.</WarningText>
+                funds.</WarningText>
             </Warning>
           </div>
         </Row>
@@ -124,7 +127,7 @@ class PasswordDialog extends React.Component {
             <Advice
               title="Advice"
               text={ <div>You can use a word or phrase as password. Write it in short text.<br/>
-                        Only you know where password is. It is safer than write a password only.
+                Only you know where password is. It is safer than write a password only.
               </div>}
             />
           </div>
@@ -141,7 +144,8 @@ class PasswordDialog extends React.Component {
             />
           </div>
         </Row>
-      </Form>
+        <div style={{paddingBottom: '20px'}} />
+      </Page>
     );
   }
 }
