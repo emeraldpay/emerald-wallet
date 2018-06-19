@@ -63,8 +63,6 @@ export class AccountShow extends React.Component {
     return (
       <Fragment>
         <Page title="Account" leftIcon={ <Back onClick={goBack} /> }>
-          <div style={{paddingTop: '30px'}} />
-
           <div style={{ display: 'flex', alignItems: 'center' }}>
             <div style={{flexGrow: 2}}>
               <Row>

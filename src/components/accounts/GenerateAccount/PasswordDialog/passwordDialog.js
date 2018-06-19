@@ -75,7 +75,6 @@ class PasswordDialog extends React.Component {
 
     return (
       <Page title={ t('generate.title') } leftIcon={<Back onClick={onDashboard} />}>
-        <div style={{paddingTop: '30px'}} />
         <Row>
           <div style={ formStyles.left }/>
           <div style={ formStyles.right }>
@@ -144,7 +143,6 @@ class PasswordDialog extends React.Component {
             />
           </div>
         </Row>
-        <div style={{paddingBottom: '20px'}} />
       </Page>
     );
   }

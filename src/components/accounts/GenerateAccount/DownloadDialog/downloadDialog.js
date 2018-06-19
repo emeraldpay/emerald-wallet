@@ -11,7 +11,6 @@ export const DownloadDialog = (props) => {
   const { accountId, onDownload, onBack, t } = props;
   return (
     <Page title={ t('generate.title') } leftIcon={ <Back onClick={onBack} /> }>
-      <div style={{paddingTop: '30px'}} />
       <Row>
         <div style={formStyles.left}/>
         <div style={formStyles.right}>
@@ -51,8 +50,6 @@ export const DownloadDialog = (props) => {
           <Button primary onClick={ onDownload } label="Download account key file" icon={getLoadingIcon(props)} disabled={props.loading}/>
         </div>
       </Row>
-
-      <div style={{paddingBottom: '20px'}} />
     </Page>
   );
 };

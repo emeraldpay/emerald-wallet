@@ -26,7 +26,6 @@ export class Settings extends React.Component {
     const { goDashboard, handleSubmit, t } = this.props;
     return (
       <Page title="Settings" leftIcon={<Back onClick={goDashboard} />}>
-        <div style={{paddingTop: '30px'}} />
         <div>
           <Row>
             <div style={styles.left}>
@@ -123,7 +122,6 @@ export class Settings extends React.Component {
             </div>
           </Row>
         </div>
-        <div style={{paddingBottom: '20px'}} />
       </Page>
     );
   }

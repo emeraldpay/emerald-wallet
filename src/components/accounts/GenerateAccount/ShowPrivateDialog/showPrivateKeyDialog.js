@@ -12,7 +12,6 @@ const ShowPrivateDialog = (props) => {
 
   return (
     <Page title={ t('generate.title') } leftIcon={<Back onClick={onBack} />}>
-      <div style={{paddingTop: '30px'}} />
       <Row>
         <div style={ formStyles.left }/>
         <div style={ formStyles.right }>
@@ -62,8 +61,6 @@ const ShowPrivateDialog = (props) => {
           <Button primary onClick={ onNext } label="Next" />
         </div>
       </Row>
-
-      <div style={{paddingBottom: '20px'}} />
     </Page>
   );
 };

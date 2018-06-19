@@ -34,7 +34,6 @@ class AccountPropertiesDialog extends React.Component {
       const { onSkip } = this.props;
       return (
         <Page title="Set account properties">
-          <div style={{paddingTop: '30px'}} />
           <Row>
             <div style={ formStyles.left }>
               <div style={ formStyles.fieldName }>Account name</div>
@@ -68,7 +67,6 @@ class AccountPropertiesDialog extends React.Component {
               </ButtonGroup>
             </div>
           </Row>
-          <div style={{paddingBottom: '20px'}} />
         </Page>
       );
     }

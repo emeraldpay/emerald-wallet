@@ -26,7 +26,6 @@ class ExportPaperWallet extends React.Component {
 
     return (
       <Page title="Print Paper Wallet" leftIcon={<Back onClick={onBack}/> } >
-        <div style={{paddingTop: '30px'}} />
         <Row>
           <div style={formStyles.left}/>
           <div style={formStyles.right}>
@@ -59,7 +58,6 @@ class ExportPaperWallet extends React.Component {
             <Button primary label="EXPORT" onClick={ handleSubmit } />
           </div>
         </Row>
-        <div style={{paddingBottom: '20px'}} />
       </Page>
     );
   }

@@ -52,7 +52,6 @@ export const TransactionShow = (props: Props) => {
 
   return (
     <Page title="Transaction Details" leftIcon={ <Back onClick={() => goBack(account)} /> }>
-      <div style={{paddingTop: '30px'}} />
       <Row>
         <div style={styles.left}>
           <div style={fieldNameStyle}>Date</div>
@@ -164,21 +163,21 @@ export const TransactionShow = (props: Props) => {
       </Row>
       <br />
 
-      <Row>
+      <Row style={{marginBottom: 0}}>
         <div style={styles.left}>
         </div>
         <div style={styles.right}>
-          <div>
-            <ButtonGroup>
-              <Button
-                onClick={ () => props.cancel() }
-                label="DASHBOARD" />
-              {optionallyDisplayRepeatButton()}
-            </ButtonGroup>
-          </div>
+          <ButtonGroup>
+            <Button
+              onClick={ () => props.cancel() }
+              label="DASHBOARD" />
+            <Button
+              primary
+              onClick={ () => repeatTx(transaction, toAccount, fromAccount) }
+              label="REPEAT TRANSACTION" />
+          </ButtonGroup>
         </div>
       </Row>
-      <div style={{paddingBottom: '20px'}} />
     </Page>
   );
 };
