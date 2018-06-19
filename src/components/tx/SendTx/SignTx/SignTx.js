@@ -53,8 +53,7 @@ const displayFlexCenter = {
 
 const SignTx = muiThemeable()((props) => {
   const { value, fiatRate, fiatCurrency, fee, tx, gas, token } = props;
-  const { onCancel, handleSubmit } = props;
-  const { onCancel, onChangePassword, onSubmit } = props;
+  const { onCancel, onChangePassword, onSubmit, useLedger } = props;
 
   const onChange = (event, value) => {
     onChangePassword(value);

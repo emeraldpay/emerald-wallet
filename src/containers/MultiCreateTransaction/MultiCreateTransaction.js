@@ -13,6 +13,9 @@ import TransactionShow from '../../components/tx/TxDetails';
 import accounts from 'store/vault/accounts';
 import { connect } from 'react-redux';
 import screen from 'store/wallet/screen';
+import { traceValidate } from '../../components/tx/SendTx/utils';
+import network from 'store/network';
+import ledger from 'store/ledger/';
 
 const { toHex } = convert;
 
@@ -32,6 +35,7 @@ class MultiCreateTransaction extends React.Component {
     tokenSymbols: PropTypes.arrayOf(PropTypes.string).isRequired,
     addressBookAddresses: PropTypes.arrayOf(PropTypes.string).isRequired,
     ownAddresses: PropTypes.arrayOf(PropTypes.string).isRequired,
+    accountAddress: PropTypes.string,
     txFee: PropTypes.string.isRequired,
     txFeeFiat: PropTypes.string.isRequired,
   };
@@ -90,8 +94,14 @@ class MultiCreateTransaction extends React.Component {
   }
 
   componentDidMount() {
-    this.setTransaction('token', this.props.tokenSymbols[0]);
-    this.setTransaction('gasPrice', this.props.gasPrice);
+    this.setState({
+      transaction: {
+        ...this.state.transaction,
+        from: this.props.accountAddress,
+        token: this.props.tokenSymbols[0],
+        gasPrice: this.props.gasPrice
+      }
+    });
   }
 
   onSubmitCreateTransaction() {
@@ -112,8 +122,8 @@ class MultiCreateTransaction extends React.Component {
       case PAGES.TX:
         return (
           <CreateTransaction
-            {...this.state.transaction}
             {...this.props}
+            {...this.state.transaction}
             onChangeFrom={this.onChangeFrom}
             onChangeToken={this.onChangeToken}
             onChangeGasLimit={this.onChangeGasLimit}
@@ -127,6 +137,7 @@ class MultiCreateTransaction extends React.Component {
           <SignTxForm
             tx={this.state.transaction}
             onChangePassword={this.onChangePassword}
+            useLedger={this.props.useLedger}
             onSubmit={this.onSubmitSignTxForm}
           />
         )
@@ -152,7 +163,7 @@ const ThemedCreateTransaction = muiThemeable()(MultiCreateTransaction);
 export default connect(
   (state, ownProps) => {
     const account = ownProps.account;
-    const allTokens = state.tokens.get('tokens').concat([fromJS({address: '', symbol: 'ETC', name: 'ETC'})]);
+    const allTokens = state.tokens.get('tokens').concat([fromJS({address: '', symbol: 'ETC', name: 'ETC'})]).reverse();
     const balance = new Wei(account.get('balance').value()).getEther().toString();
     const gasPrice = state.network.get('gasPrice');
 
@@ -169,6 +180,7 @@ export default connect(
     const tokenSymbols = allTokens.toJS().map((i) => i.name);
 
     return {
+      accountAddress: account.get('id'),
       currency,
       balance,
       gasPrice,
@@ -188,7 +200,7 @@ export default connect(
       dispatch(screen.actions.gotoScreen('home', ownProps.account));
     },
     signAndSend: ({transaction, allTokens}) => {
-      /* const useLedger = ownProps.account.get('hardware', false);*/
+      const useLedger = ownProps.account.get('hardware', false);
 
       const tokenInfo = allTokens.find((t) => t.get('name') === transaction.token);
 
@@ -202,16 +214,12 @@ export default connect(
       // TODO: moved tx creation to CreateTransaction handler
       // 1. Create TX here
       if (Address.isValid(tokenInfo.get('address'))) {
-        console.log('im a token', tokenInfo.toJS());
         const decimals = convert.toNumber(tokenInfo.get('decimals'));
         const tokenUnits: BigNumber = convert.toBaseUnits(convert.toBigNumber(transaction.amount), decimals || 18);
-        console.log('bignum==========amount====', convert.toBigNumber(transaction.amount));
         const txData = Tokens.actions.createTokenTxData(
           transaction.to,
           tokenUnits,
           'true');
-        console.log('txData=', txData);
-        debugger
         return dispatch(
           accounts.actions.sendTransaction(
             transaction.from,
@@ -225,15 +233,30 @@ export default connect(
         );
       }
 
-      return dispatch(
-        accounts.actions.sendTransaction(
-          transaction.from,
-          transaction.password,
-          transaction.to,
-          toHex(gasLimit),
-          toHex(gasPrice),
-          toHex(toAmount)
-        )
-      );
+      return traceValidate({
+        from: transaction.from,
+        to: transaction.to,
+        gas: toHex(gasLimit),
+        gasPricce: toHex(gasPrice),
+        value: toHex(toAmount)
+      }, dispatch, network.actions.estimateGas).then((estimateGas) => {
+        dispatch(ledger.actions.setWatch(false));
+
+        return ledger.actions.closeConnection().then(() => {
+          if (useLedger) {
+            dispatch(screen.actions.showDialog('sign-transaction', transaction));
+          }
+          return dispatch(
+            accounts.actions.sendTransaction(
+              transaction.from,
+              transaction.password,
+              transaction.to,
+              toHex(gasLimit),
+              toHex(gasPrice),
+              toHex(toAmount)
+            )
+          );
+        })
+      });
     }
   }))(MultiCreateTransaction);
