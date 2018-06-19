@@ -54,17 +54,7 @@ const Screen = ({ screen, screenItem }) => {
   } else if (screen === 'transaction') {
     return <TransactionShow hash={ screenItem.hash } accountId={ screenItem.accountId }/>;
   } else if (screen === 'create-tx') {
-    return <MultiCreateTransaction
-      account={ screenItem }
-      currency={'USD'}
-      balance={'115.15515'}
-      fiatBalance={'2815.55'}
-      tokenSymbols={['ETC', 'BEC']}
-      addressBookAddresses={mockAddressBookAddresses}
-      ownAddresses={mockOwnAddresses}
-      txFee={'0.0042'}
-      txFeeFiat={'1'}
-    />;
+    return <MultiCreateTransaction account={ screenItem } />;
   } else if (screen === 'repeat-tx') {
     return <div />;
     /* <CreateTx

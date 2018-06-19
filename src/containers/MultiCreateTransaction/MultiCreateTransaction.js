@@ -1,7 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import BigNumber from 'bignumber.js';
-import { Wei, convert } from 'emerald-js';
+import Tokens from 'store/vault/tokens';
+import { fromJS } from 'immutable';
+import { Address, Wei, convert } from 'emerald-js';
 import { etherToWei } from 'lib/convert';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { CreateTransaction, Page } from 'emerald-js-ui';
@@ -99,12 +101,10 @@ class MultiCreateTransaction extends React.Component {
   }
 
   onSubmitSignTxForm() {
-    this.props.signAndSend(this.state.transaction).then(() => {
-      // submit properly
-      this.setState({
-        page: PAGES.DETAILS,
-      });
-    });
+    this.props.signAndSend({
+      transaction: this.state.transaction,
+      allTokens: this.props.allTokens
+    })
   }
 
   getPage() {
@@ -152,7 +152,7 @@ const ThemedCreateTransaction = muiThemeable()(MultiCreateTransaction);
 export default connect(
   (state, ownProps) => {
     const account = ownProps.account;
-    const allTokens = state.tokens.get('tokens');
+    const allTokens = state.tokens.get('tokens').concat([fromJS({address: '', symbol: 'ETC', name: 'ETC'})]);
     const balance = new Wei(account.get('balance').value()).getEther().toString();
     const gasPrice = state.network.get('gasPrice');
 
@@ -166,7 +166,7 @@ export default connect(
     const ownAddresses = accounts.selectors.getAll(state).toJS().map((i) => i.id);
 
     const fee = new Wei(gasPrice.mul(DEFAULT_GAS_LIMIT).value()).getEther();
-    const tokenSymbols = [{address: '', symbol: 'ETC', name: 'ETC'}].concat(allTokens.toJS()).map((i) => i.name);
+    const tokenSymbols = allTokens.toJS().map((i) => i.name);
 
     return {
       currency,
@@ -180,86 +180,60 @@ export default connect(
       txFeeFiat: fee * fiatRate,
       useLedger,
       ledgerConnected,
+      allTokens
     };
   },
   (dispatch, ownProps) => ({
     goDashboard: () => {
       dispatch(screen.actions.gotoScreen('home', ownProps.account));
     },
-    signAndSend: (tx) => {
+    signAndSend: ({transaction, allTokens}) => {
       /* const useLedger = ownProps.account.get('hardware', false);*/
 
+      const tokenInfo = allTokens.find((t) => t.get('name') === transaction.token);
+
+      const toAmount = etherToWei(parseFloat(transaction.amount).toFixed());
+      const gasLimit = new Wei(parseInt(transaction.gasLimit, 10)).getValue();
+      const gasPrice = new Wei(parseInt(transaction.gasPrice, 10)).getValue();
+
+      if (!tokenInfo) {
+        throw new SubmissionError(`Unknown token ${data.token}`);
+      }
       // TODO: moved tx creation to CreateTransaction handler
       // 1. Create TX here
-      /* if (Address.isValid(data.token)) {
-       *   // Token TX
-       *   const tokenInfo = data.tokens.find((t) => t.get('address') === data.token);
-       *   if (!tokenInfo) {
-       *     throw new SubmissionError(`Unknown token ${data.token}`);
-       *   }
-
-       *   const decimals = convert.toNumber(tokenInfo.get('decimals'));
-       *   const tokenUnits: BigNumber = convert.toBaseUnits(convert.toBigNumber(data.value), decimals);
-       *   const txData = Tokens.actions.createTokenTxData(
-       *     data.to,
-       *     tokenUnits,
-       *     data.isTransfer);
-
-       *   tx = {
-       *     from: data.from,
-       *     gasPrice: toHex(data.gasPrice.value()),
-       *     gas: toHex(data.gas),
-       *     to: data.token,
-       *     value: convert.toHex(0),
-       *     data: txData,
-       *   };
-       * } else {*/
-        // Ordinary Tx
-      /* }*/
-
-
-      const toAmount = etherToWei(parseFloat(tx.amount).toFixed());
-      const gasLimit = new Wei(parseInt(tx.gasLimit, 10)).getValue();
-      const gasPrice = new Wei(parseInt(tx.gasPrice, 10)).getValue();
+      if (Address.isValid(tokenInfo.get('address'))) {
+        console.log('im a token', tokenInfo.toJS());
+        const decimals = convert.toNumber(tokenInfo.get('decimals'));
+        const tokenUnits: BigNumber = convert.toBaseUnits(convert.toBigNumber(transaction.amount), decimals || 18);
+        console.log('bignum==========amount====', convert.toBigNumber(transaction.amount));
+        const txData = Tokens.actions.createTokenTxData(
+          transaction.to,
+          tokenUnits,
+          'true');
+        console.log('txData=', txData);
+        debugger
+        return dispatch(
+          accounts.actions.sendTransaction(
+            transaction.from,
+            transaction.password,
+            tokenInfo.get('address'),
+            toHex(gasLimit),
+            toHex(gasPrice),
+            convert.toHex(0),
+            txData
+          )
+        );
+      }
 
       return dispatch(
         accounts.actions.sendTransaction(
-          tx.from,
-          tx.password,
-          tx.to,
+          transaction.from,
+          transaction.password,
+          transaction.to,
           toHex(gasLimit),
           toHex(gasPrice),
           toHex(toAmount)
         )
       );
     }
-
-      // 2. Validate Trace and then Send TX
-      /* return traceValidate(tx, dispatch, network.actions.estimateGas)
-       *   .then((estimatedGas) => {
-       *     dispatch(ledger.actions.setWatch(false));
-
-       *     return ledger.actions.closeConnection().then(() => {
-       *       if (useLedger) {
-       *         dispatch(screen.actions.showDialog('sign-transaction', data));
-       *       }
-
-       *       return dispatch(
-       *         accounts.actions.sendTransaction(
-       *           tx.from,
-       *           data.password,
-       *           tx.to,
-       *           tx.gas,
-       *           tx.gasPrice,
-       *           tx.value,
-       *           tx.data)
-       *       );
-       *     });
-       *   })
-       *   .then(() => {
-       *     dispatch(reset('createTx'));
-       *   })
-       *   .catch((err) => {
-       *     throw new SubmissionError({ _error: (err.message || JSON.stringify(err)) });
-       *   });*/
   }))(MultiCreateTransaction);
