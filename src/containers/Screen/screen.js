@@ -22,6 +22,7 @@ import PaperWallet from '../PaperWallet';
 import ExportPaperWallet from '../../components/accounts/ExportPaperWallet';
 import GenerateAccount from '../../components/accounts/GenerateAccount';
 
+import { Wei } from 'emerald-js';
 import WalletScreen from '../../store/wallet/screen';
 import MultiCreateTransaction from '../MultiCreateTransaction';
 
@@ -56,12 +57,11 @@ const Screen = ({ screen, screenItem }) => {
   } else if (screen === 'create-tx') {
     return <MultiCreateTransaction account={ screenItem } />;
   } else if (screen === 'repeat-tx') {
-    return <div />;
-    /* <CreateTx
-     *   account={ screenItem.fromAccount }
-     *   toAccount={ screenItem.toAccount }
-     *   transaction={ screenItem.transaction }
-     * />;*/
+    const {transaction, toAccount, fromAccount} = screenItem;
+    const amount = new Wei(transaction.get('value')).getEther();
+    const to = toAccount.get('id');
+    const gasLimit = transaction.get('gas');
+    return <MultiCreateTransaction account={ fromAccount } to={to} amount={amount} gasLimit={gasLimit} />;
   } else if (screen === 'landing-generate') {
     return <GenerateAccount onBackScreen="landing" backLabel="Back"/>;
   } else if (screen === 'generate') {

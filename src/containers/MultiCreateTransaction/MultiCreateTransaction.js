@@ -54,7 +54,7 @@ class MultiCreateTransaction extends React.Component {
     this.state = {
       transaction: {
         gasLimit: DEFAULT_GAS_LIMIT,
-        amount: '0', 
+        amount: '0',
       },
       page: PAGES.TX
     };
@@ -70,27 +70,27 @@ class MultiCreateTransaction extends React.Component {
   }
 
   onChangeFrom(from) {
-    this.setTransaction('from', from)
+    this.setTransaction('from', from);
   }
 
   onChangeTo(to) {
-    this.setTransaction('to', to)
+    this.setTransaction('to', to);
   }
 
   onChangeToken(token) {
-    this.setTransaction('token', token)
+    this.setTransaction('token', token);
   }
 
   onChangePassword(password) {
-    this.setTransaction('password', password)
+    this.setTransaction('password', password);
   }
 
   onChangeGasLimit(value) {
-    this.setTransaction('gasLimit', value || DEFAULT_GAS_LIMIT)
+    this.setTransaction('gasLimit', value || DEFAULT_GAS_LIMIT);
   }
 
   onChangeAmount(amount) {
-    this.setTransaction('amount', amount || '0')
+    this.setTransaction('amount', amount || '0');
   }
 
   componentDidMount() {
@@ -99,8 +99,11 @@ class MultiCreateTransaction extends React.Component {
         ...this.state.transaction,
         from: this.props.accountAddress,
         token: this.props.tokenSymbols[0],
-        gasPrice: this.props.gasPrice
-      }
+        gasPrice: this.props.gasPrice,
+        amount: this.props.amount,
+        to: this.props.to,
+        gasLimit: this.props.gasLimit,
+      },
     });
   }
 
