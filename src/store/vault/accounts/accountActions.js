@@ -239,7 +239,7 @@ export function sendTransaction(from: string, passphrase: string, to: ?string, g
   const passPhrase = passphrase || ''; // for HW key
   return (dispatch, getState, api) => {
     const chain = currentChain(getState());
-    getNonce(api, from)
+    return getNonce(api, from)
       .then(withNonce(originalTx))
       .then((tx) =>
         signTx(api, tx, passPhrase, chain)

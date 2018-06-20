@@ -52,10 +52,7 @@ class MultiCreateTransaction extends React.Component {
     this.onChangePassword = this.onChangePassword.bind(this);
     this.getPage = this.getPage.bind(this);
     this.state = {
-      transaction: {
-        gasLimit: DEFAULT_GAS_LIMIT,
-        amount: '0',
-      },
+      transaction: {},
       page: PAGES.TX
     };
   }
@@ -97,7 +94,7 @@ class MultiCreateTransaction extends React.Component {
     this.setState({
       transaction: {
         ...this.state.transaction,
-        from: this.props.accountAddress,
+        from: this.props.selectedFromAccount,
         token: this.props.tokenSymbols[0],
         gasPrice: this.props.gasPrice,
         amount: this.props.amount,
@@ -116,25 +113,41 @@ class MultiCreateTransaction extends React.Component {
   onSubmitSignTxForm() {
     this.props.signAndSend({
       transaction: this.state.transaction,
-      allTokens: this.props.allTokens
-    })
+      allTokens: this.props.allTokens,
+    });
   }
 
   getPage() {
+    if (!this.state.transaction.from) { return null; }
+
     switch (this.state.page) {
       case PAGES.TX:
         return (
           <CreateTransaction
-            {...this.props}
-            {...this.state.transaction}
+            to={this.state.transaction.to}
+            from={this.state.transaction.from}
+            token={this.state.transaction.token}
+            amount={this.state.transaction.amount}
+            gasLimit={this.state.transaction.gasLimit}
+            txFee={this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit)}
+            txFeeFiat={this.props.getTxFeeFiatForGasLimit(this.state.transaction.gasLimit)}
+
+            balance={this.props.getBalanceForAddress(this.state.transaction.from, this.state.transaction.token)}
+            fiatBalance={this.props.getFiatForAddress(this.state.transaction.from, this.state.transaction.token)}
+
+            currency={this.props.currency}
+            tokenSymbols={this.props.tokenSymbols}
+            addressBookAddresses={this.props.addressBookAddresses}
+            ownAddresses={this.props.ownAddresses}
+
             onChangeFrom={this.onChangeFrom}
             onChangeToken={this.onChangeToken}
             onChangeGasLimit={this.onChangeGasLimit}
             onChangeAmount={this.onChangeAmount}
             onChangeTo={this.onChangeTo}
             onSubmit={this.onSubmitCreateTransaction}
-            />
-        )
+          />
+        );
       case PAGES.PASSWORD:
         return (
           <SignTxForm
@@ -144,11 +157,11 @@ class MultiCreateTransaction extends React.Component {
             useLedger={this.props.useLedger}
             onSubmit={this.onSubmitSignTxForm}
           />
-        )
+        );
       case PAGES.DETAILS:
         return (
           <TransactionShow hash={this.state.transaction.hash} accountId={this.state.transaction.from}/>
-        )
+        );
       default: return null
     }
   }
@@ -168,7 +181,6 @@ export default connect(
   (state, ownProps) => {
     const account = ownProps.account;
     const allTokens = state.tokens.get('tokens').concat([fromJS({address: '', symbol: 'ETC', name: 'ETC'})]).reverse();
-    const balance = new Wei(account.get('balance').value()).getEther().toString();
     const gasPrice = state.network.get('gasPrice');
 
     const fiatRate = state.wallet.settings.get('localeRate');
@@ -180,21 +192,41 @@ export default connect(
     const addressBookAddresses = state.addressBook.get('addressBook').toJS().map((i) => i.address);
     const ownAddresses = accounts.selectors.getAll(state).toJS().map((i) => i.id);
 
-    const fee = new Wei(gasPrice.mul(DEFAULT_GAS_LIMIT).value()).getEther();
     const tokenSymbols = allTokens.toJS().map((i) => i.name);
 
     return {
-      accountAddress: account.get('id'),
+      amount: ownProps.amount || '0',
+      gasLimit: ownProps.gasLimit || DEFAULT_GAS_LIMIT,
+      token: 'ETC',
+      selectedFromAccount: account.get('id'),
+      getBalanceForAddress: (address, token) => {
+        if (token === "ETC") {
+          const selectedAccount = state.accounts.get('accounts').find((acnt) => acnt.get('id') === address);
+          const newBalance = selectedAccount.get('balance');
+          return newBalance.getEther().toString();
+        }
+
+        return state.tokens
+          .get('balances')
+          .get(address)
+          .find((t) => t.get('symbol') === token)
+          .get('balance')
+          .getDecimalized();
+
+      },
+      getFiatForAddress: (address, token) => {
+        if (token !== 'ETC') { return "??"; }
+        const selectedAccount = state.accounts.get('accounts').find((acnt) => acnt.get('id') === address);
+        const newBalance = selectedAccount.get('balance');
+        return newBalance.getFiat(fiatRate).toString();
+      },
+      getTxFeeForGasLimit: (gasLimit) => new Wei(gasPrice.mul(gasLimit).value()).getEther().toString(),
+      getTxFeeFiatForGasLimit: (gasLimit) => new Wei(gasPrice.mul(gasLimit).value()).getFiat(fiatRate).toString(),
       currency,
-      balance,
       gasPrice,
-      fiatBalance: (fiatRate * balance).toFixed(),
-      fiatRate,
       tokenSymbols,
       addressBookAddresses,
       ownAddresses,
-      txFee: fee.toString(),
-      txFeeFiat: fee * fiatRate,
       useLedger,
       ledgerConnected,
       allTokens
@@ -209,16 +241,17 @@ export default connect(
 
       const tokenInfo = allTokens.find((t) => t.get('name') === transaction.token);
 
-      const toAmount = etherToWei(parseFloat(transaction.amount).toFixed());
+      const toAmount = etherToWei(transaction.amount);
       const gasLimit = new Wei(parseInt(transaction.gasLimit, 10)).getValue();
       const gasPrice = new Wei(parseInt(transaction.gasPrice, 10)).getValue();
 
       if (!tokenInfo) {
         throw new SubmissionError(`Unknown token ${data.token}`);
       }
+
       // TODO: moved tx creation to CreateTransaction handler
       // 1. Create TX here
-      if (Address.isValid(tokenInfo.get('address'))) {
+      if (transaction.token !== 'ETC') {
         const decimals = convert.toNumber(tokenInfo.get('decimals'));
         const tokenUnits: BigNumber = convert.toBaseUnits(convert.toBigNumber(transaction.amount), decimals || 18);
         const txData = Tokens.actions.createTokenTxData(
@@ -235,15 +268,15 @@ export default connect(
             convert.toHex(0),
             txData
           )
-        );
+        )
       }
 
       return traceValidate({
         from: transaction.from,
         to: transaction.to,
         gas: toHex(gasLimit),
-        gasPricce: toHex(gasPrice),
-        value: toHex(toAmount)
+        gasPrice: toHex(gasPrice),
+        value: toHex(toAmount),
       }, dispatch, network.actions.estimateGas).then((estimateGas) => {
         dispatch(ledger.actions.setWatch(false));
 
@@ -260,8 +293,8 @@ export default connect(
               toHex(gasPrice),
               toHex(toAmount)
             )
-          );
-        })
+          )
+        });
       });
     }
   }))(MultiCreateTransaction);
