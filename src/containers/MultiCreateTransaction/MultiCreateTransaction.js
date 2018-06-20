@@ -138,6 +138,7 @@ class MultiCreateTransaction extends React.Component {
       case PAGES.PASSWORD:
         return (
           <SignTxForm
+            fiatRate={this.props.fiateRate}
             tx={this.state.transaction}
             onChangePassword={this.onChangePassword}
             useLedger={this.props.useLedger}
@@ -188,6 +189,7 @@ export default connect(
       balance,
       gasPrice,
       fiatBalance: (fiatRate * balance).toFixed(),
+      fiatRate,
       tokenSymbols,
       addressBookAddresses,
       ownAddresses,

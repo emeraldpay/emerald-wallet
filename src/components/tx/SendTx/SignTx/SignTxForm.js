@@ -59,7 +59,7 @@ const SignTx = muiThemeable()((props) => {
     onChangePassword(value);
   }
 
-  // const USDValue = Currency.format(Currency.convert(value, fiatRate, 2), fiatCurrency);
+  //const USDValue = Currency.format(Currency.convert(tx.amount, fiatRate, 2), fiatCurrency);
 
   return (
     <div>
@@ -68,7 +68,7 @@ const SignTx = muiThemeable()((props) => {
         <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div style={{ ...displayFlexCenter, flexDirection: 'column' }}>
             {/* <div>{USDValue} USD</div> */}
-            <div style={{fontSize: '28px'}}>{tx.amount.toFixed()} {tx.token}</div>
+            <div style={{fontSize: '28px'}}>{tx.amount} {tx.token}</div>
           </div>
           <div style={{display: 'flex'}}>
             <ArrowRight />
@@ -78,7 +78,7 @@ const SignTx = muiThemeable()((props) => {
       </div>
       <div style={{ paddingTop: '35px', display: 'flex', justifyContent: 'center' }}>
         <span style={{ color: props.muiTheme.palette.secondaryTextColor }}>
-          Plus {fee} ETC for gas.
+          Plus {fee} ETC for {gas} GAS.
         </span>
       </div>
       <Divider style={{ marginTop: '35px' }} />
