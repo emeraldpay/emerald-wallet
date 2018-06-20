@@ -10,8 +10,9 @@ describe('tokens/AddToken', () => {
 
   it('onSubmit dispatch valid actions to store', () => {
     const store = {
-      getState: () => {},
-      dispatch: () => Promise.resolve(),
+      subscribe() {},
+      getState() {},
+      dispatch() { return Promise.resolve() }
     };
     const component = shallow(<ConnectedAddToken />, {context: { store}});
     expect(component.props().onSubmit({token: {}})).toBeDefined();

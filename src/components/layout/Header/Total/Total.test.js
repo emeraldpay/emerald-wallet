@@ -6,7 +6,8 @@ import Total from './';
 
 function createStore() {
   return {
-    getState: () => {
+    subscribe() {},
+    getState() {
       return {
         wallet: {
           settings: fromJS({}),

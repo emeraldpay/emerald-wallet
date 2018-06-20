@@ -5,7 +5,8 @@ import TokensList from './';
 
 function createStore() {
   return {
-    getState: () => {
+    subscribe() {},
+    getState() {
       return {
         tokens: fromJS({
           tokens: [{}, {}],
