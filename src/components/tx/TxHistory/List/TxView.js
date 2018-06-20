@@ -2,12 +2,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
-import { IconButton } from 'material-ui';
 import CircularProgress from 'material-ui/CircularProgress';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Account as AddressAvatar } from 'emerald-js-ui';
 import { Forward as ArrowRightIcon } from 'emerald-js-ui/lib/icons3';
-import { Repeat as RepeatIcon } from 'emerald-js-ui/lib/icons';
 import AccountBalance from '../../../accounts/Balance';
 import TokenUnits from '../../../../lib/tokenUnits';
 import { link, tables } from '../../../../lib/styles';
@@ -15,10 +13,6 @@ import classes from './list.scss';
 import i18n from '../../../../i18n/i18n';
 
 const styles = {
-  repeatIcon: {
-    width: '15px',
-    height: '15px',
-  },
   tablePadding: {
     paddingTop: '15px',
     paddingBottom: '15px',
@@ -27,7 +21,7 @@ const styles = {
 
 
 export const TxView = (props) => {
-  const { showFiat, tx, openTx, openAccount, refreshTx, toAccount, fromAccount, numConfirmations, currentBlockHeight, muiTheme } = props;
+  const { showFiat, tx, openTx, openAccount, toAccount, fromAccount, numConfirmations, currentBlockHeight, muiTheme } = props;
   const blockNumber = tx.get('blockNumber');
   const confirmationBlockNumber = blockNumber + numConfirmations;
   const successColor = muiTheme.palette.primary1Color;
@@ -78,7 +72,7 @@ export const TxView = (props) => {
 
   return (
     <TableRow selectable={false}>
-      <TableRowColumn style={{ width: 80, paddingLeft: '0', ...styles.tablePadding }}>
+      <TableRowColumn style={{ width: 100, paddingLeft: '0', ...styles.tablePadding }}>
         {txValue && <AccountBalance
           fiatStyle={fiatStyle}
           symbol="ETC"
@@ -109,11 +103,6 @@ export const TxView = (props) => {
           onAddressClick={() => openAccount(tx.get('to'))}
         />}
       </TableRowColumn>
-      <TableRowColumn style={{...tables.shortStyle, paddingRight: '0', textAlign: 'right', ...styles.tablePadding}}>
-        <IconButton onClick={ refreshTx } iconStyle={ styles.repeatIcon }>
-          <RepeatIcon />
-        </IconButton>
-      </TableRowColumn>
     </TableRow>
   );
 };
@@ -126,7 +115,6 @@ TxView.propTypes = {
   toAccount: PropTypes.object.isRequired,
   fromAccount: PropTypes.object.isRequired,
   openTx: PropTypes.func.isRequired,
-  refreshTx: PropTypes.func.isRequired,
   currentBlockHeight: PropTypes.number.isRequired,
   numConfirmations: PropTypes.number.isRequired,
 };
