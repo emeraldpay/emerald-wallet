@@ -61,8 +61,8 @@ class MultiCreateTransaction extends React.Component {
     this.setState({
       transaction: {
         ...this.state.transaction,
-        [key]: val
-      }
+        [key]: val,
+      },
     });
   }
 
@@ -102,6 +102,10 @@ class MultiCreateTransaction extends React.Component {
         gasLimit: this.props.gasLimit,
       },
     });
+  }
+
+  onCancelCreateTransaction() {
+    this.props.onCancel();
   }
 
   onSubmitCreateTransaction() {
@@ -146,6 +150,7 @@ class MultiCreateTransaction extends React.Component {
             onChangeAmount={this.onChangeAmount}
             onChangeTo={this.onChangeTo}
             onSubmit={this.onSubmitCreateTransaction}
+            onCancel={this.onCancelCreateTransaction}
           />
         );
       case PAGES.PASSWORD:
@@ -156,19 +161,20 @@ class MultiCreateTransaction extends React.Component {
             onChangePassword={this.onChangePassword}
             useLedger={this.props.useLedger}
             onSubmit={this.onSubmitSignTxForm}
+            onCancel={this.onCancelCreateTransaction}
           />
         );
       case PAGES.DETAILS:
         return (
           <TransactionShow hash={this.state.transaction.hash} accountId={this.state.transaction.from}/>
         );
-      default: return null
+      default: return null;
     }
   }
 
   render() {
     return (
-      <Page title="Create Transaction" leftIcon={<Back onClick={this.props.goDashboard}/>}>
+      <Page title="Create Transaction" leftIcon={<Back onClick={this.props.onCancel}/>}>
         {this.getPage()}
       </Page>
     )
@@ -233,7 +239,7 @@ export default connect(
     };
   },
   (dispatch, ownProps) => ({
-    goDashboard: () => {
+    onCancel: () => {
       dispatch(screen.actions.gotoScreen('home', ownProps.account));
     },
     signAndSend: ({transaction, allTokens}) => {
