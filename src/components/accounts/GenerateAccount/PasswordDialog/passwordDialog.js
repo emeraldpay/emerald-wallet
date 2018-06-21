@@ -1,17 +1,15 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
+import { Button, Warning, WarningHeader, WarningText, Page } from 'emerald-js-ui';
 import { Field, reduxForm } from 'redux-form';
 import TextField from 'elements/Form/TextField';
 import { required } from 'lib/validators';
-import { Form, Row, styles as formStyles } from 'elements/Form';
+import { Row, styles as formStyles } from 'elements/Form';
 import PasswordInput from 'elements/PasswordInput';
-import DashboardButton from 'components/common/DashboardButton';
+import { Back } from 'emerald-js-ui/lib/icons3';
 import Advice from './advice';
 import styles from './passwordDialog.scss';
 import getLoadingIcon from '../getLoadingIcon';
-import { Page } from 'emerald-js-ui';
-import { Back } from 'emerald-js-ui/lib/icons3';
 
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -49,8 +47,8 @@ class PasswordDialog extends React.Component {
 
   onPassphraseChange = (newValue) => {
     const passphraseError = (newValue.length === 0 || newValue.length >= MIN_PASSWORD_LENGTH) ?
-                            null :
-                            this.state.passphraseError;
+      null :
+      this.state.passphraseError;
 
     this.setState({
       passphrase: newValue,
@@ -70,7 +68,7 @@ class PasswordDialog extends React.Component {
   }
 
   render() {
-    const { onDashboard, t, backLabel } = this.props;
+    const { onDashboard, t } = this.props;
     const { passphraseError } = this.state;
 
     return (

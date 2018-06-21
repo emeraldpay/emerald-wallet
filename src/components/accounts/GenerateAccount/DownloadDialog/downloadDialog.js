@@ -1,14 +1,12 @@
 import React from 'react';
-import { Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
+import { Button, Warning, WarningHeader, WarningText, Page } from 'emerald-js-ui';
 import { Row, styles as formStyles } from 'elements/Form';
+import { Back } from 'emerald-js-ui/lib/icons3';
 import getLoadingIcon from '../getLoadingIcon';
 import styles from './downloadDialog.scss';
 
-import { Page } from 'emerald-js-ui';
-import { Back } from 'emerald-js-ui/lib/icons3';
-
 export const DownloadDialog = (props) => {
-  const { accountId, onDownload, onBack, t } = props;
+  const { onDownload, onBack, t } = props;
   return (
     <Page title={ t('generate.title') } leftIcon={ <Back onClick={onBack} /> }>
       <Row>

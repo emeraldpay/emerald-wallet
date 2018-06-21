@@ -12,7 +12,7 @@ describe('tokens/AddToken', () => {
     const store = {
       subscribe() {},
       getState() {},
-      dispatch() { return Promise.resolve() }
+      dispatch() { return Promise.resolve(); },
     };
     const component = shallow(<ConnectedAddToken />, {context: { store}});
     expect(component.props().onSubmit({token: {}})).toBeDefined();

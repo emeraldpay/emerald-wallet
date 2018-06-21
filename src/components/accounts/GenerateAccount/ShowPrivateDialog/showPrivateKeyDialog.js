@@ -1,8 +1,7 @@
 import React from 'react';
 import QRCode from 'qrcode.react';
-import { Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
+import { Button, Warning, WarningHeader, WarningText, Page } from 'emerald-js-ui';
 import { Row, styles as formStyles } from 'elements/Form';
-import { Page } from 'emerald-js-ui';
 import { Back } from 'emerald-js-ui/lib/icons3';
 
 import styles from './showPrivateKeyDialog.scss';

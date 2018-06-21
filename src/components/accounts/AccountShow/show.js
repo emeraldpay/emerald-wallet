@@ -6,9 +6,9 @@ import People from 'material-ui/svg-icons/social/people';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import QRCode from 'qrcode.react';
 import TokenUnits from 'lib/tokenUnits';
-import { Button, IdentityIcon, Account as AddressAvatar, ButtonGroup } from 'emerald-js-ui';
+import { Button, IdentityIcon, Account as AddressAvatar, ButtonGroup, Page } from 'emerald-js-ui';
 import { styles, Row } from 'elements/Form';
-import DashboardButton from 'components/common/DashboardButton';
+import { Back } from 'emerald-js-ui/lib/icons3';
 import accounts from '../../../store/vault/accounts';
 import tokens from '../../../store/vault/tokens';
 import screen from '../../../store/wallet/screen';
@@ -21,8 +21,6 @@ import AccountBalance from '../Balance';
 import SecondaryMenu from '../SecondaryMenu';
 import classes from './show.scss';
 import TokenBalances from '../TokenBalances';
-import { Page } from 'emerald-js-ui';
-import { Back } from 'emerald-js-ui/lib/icons3';
 
 const log = createLogger('AccountShow');
 
@@ -53,10 +51,8 @@ export class AccountShow extends React.Component {
 
   render() {
     const { account, tokensBalances } = this.props;
-    const { showFiat, goBack, transactions, createTx, showReceiveDialog, muiTheme } = this.props;
+    const { showFiat, goBack, transactions, createTx, showReceiveDialog } = this.props;
     // TODO: show pending balance too
-    const pending = account.get('balancePending') ? `(${account.get('balancePending').getEther()} pending)` : null;
-
     // TODO: we convert Wei to TokenUnits here
     const balance = account.get('balance') ? new TokenUnits(account.get('balance').value(), 18) : null;
 
@@ -97,16 +93,16 @@ export class AccountShow extends React.Component {
                 </div>
                 <div style={ styles.right }>
                   {!this.state.edit && <AddressAvatar
-                                         editable
-                                         addr={account.get('id')}
-                                         description={account.get('description')}
-                                         name={account.get('name')}
-                                         onEditClick={this.handleEdit}
+                    editable
+                    addr={account.get('id')}
+                    description={account.get('description')}
+                    name={account.get('name')}
+                    onEditClick={this.handleEdit}
                   />}
                   {this.state.edit && <AccountEdit
-                                        account={account}
-                                        submit={this.handleSave}
-                                        cancel={this.cancelEdit}
+                    account={account}
+                    submit={this.handleSave}
+                    cancel={this.cancelEdit}
                   />}
                 </div>
               </Row>

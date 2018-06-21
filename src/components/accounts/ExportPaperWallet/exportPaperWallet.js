@@ -2,15 +2,12 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
-import DashboardButton from 'components/common/DashboardButton';
-import { Button } from 'emerald-js-ui';
-import { Form, Row, styles as formStyles } from '../../../elements/Form';
+import { Button, Page } from 'emerald-js-ui';
+import { Back } from 'emerald-js-ui/lib/icons3';
+import { Row, styles as formStyles } from '../../../elements/Form';
 import TextField from '../../../elements/Form/TextField';
 import screen from '../../../store/wallet/screen';
 import accounts from '../../../store/vault/accounts';
-
-import { Page } from 'emerald-js-ui';
-import { Back } from 'emerald-js-ui/lib/icons3';
 
 import styles from './exportPaperWallet.scss';
 

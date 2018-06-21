@@ -1,10 +1,9 @@
 import { trimEnd } from 'lodash';
-import { Button, ButtonGroup, IdentityIcon } from 'emerald-js-ui';
+import { Button, ButtonGroup, IdentityIcon, Input } from 'emerald-js-ui';
 import { ArrowRight } from 'emerald-js-ui/lib/icons3';
 import { required } from 'lib/validators';
 import { Divider } from 'material-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import {Input} from 'emerald-js-ui';
 import React from 'react';
 import { Form, Row, styles } from '../../../../elements/Form';
 import { Currency } from '../../../../lib/currency';
@@ -55,11 +54,11 @@ const SignTx = muiThemeable()((props) => {
   const { value, fiatRate, fiatCurrency, fee, tx, gas, token } = props;
   const { onCancel, onChangePassword, onSubmit, useLedger } = props;
 
-  const onChange = (event, value) => {
-    onChangePassword(value);
-  }
+  const onChange = (event, val) => {
+    onChangePassword(val);
+  };
 
-  //const USDValue = Currency.format(Currency.convert(tx.amount, fiatRate, 2), fiatCurrency);
+  // const USDValue = Currency.format(Currency.convert(tx.amount, fiatRate, 2), fiatCurrency);
 
   return (
     <div>

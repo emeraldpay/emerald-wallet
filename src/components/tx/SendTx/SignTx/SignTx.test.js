@@ -10,12 +10,12 @@ const mockMuiTheme = {
 
 describe('SignTxForm', () => {
   it('should render tx value correctly', () => {
-    let tx = {
+    const tx = {
       amount: convert.toBigNumber('100.0000'),
     };
     const fee = new TokenUnits(2000, 18);
 
-    let component = shallow(<SignTxForm muiTheme={mockMuiTheme} tx={tx} fee={fee} />);
+    const component = shallow(<SignTxForm muiTheme={mockMuiTheme} tx={tx} fee={fee} />);
     expect(component).toBeDefined();
     /* expect(component.findWhere((n) => n.text() === '100')).toHaveLength(1);
 

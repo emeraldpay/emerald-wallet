@@ -1,8 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import CircularProgress from 'material-ui/CircularProgress';
-import createLogger from '../../utils/logger';
+import { Wei } from 'emerald-js';
 
+import createLogger from '../../utils/logger';
 import AddressBook from '../../components/addressbook/ContactList';
 import AccountShow from '../../components/accounts/AccountShow';
 import AddressShow from '../../components/addressbook/show';
@@ -21,15 +22,10 @@ import Settings from '../../components/settings';
 import PaperWallet from '../PaperWallet';
 import ExportPaperWallet from '../../components/accounts/ExportPaperWallet';
 import GenerateAccount from '../../components/accounts/GenerateAccount';
-
-import { Wei } from 'emerald-js';
 import WalletScreen from '../../store/wallet/screen';
 import MultiCreateTransaction from '../MultiCreateTransaction';
 
 const log = createLogger('screen');
-
-const mockOwnAddresses = ['0x00', '0x03', '0x004'];
-const mockAddressBookAddresses = ['0x00', '0x0111', '0x006'];
 
 const Screen = ({ screen, screenItem }) => {
   log.debug('Show screen: ', screen);

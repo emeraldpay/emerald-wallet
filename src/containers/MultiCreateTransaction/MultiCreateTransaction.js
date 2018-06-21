@@ -3,27 +3,27 @@ import PropTypes from 'prop-types';
 import BigNumber from 'bignumber.js';
 import Tokens from 'store/vault/tokens';
 import { fromJS } from 'immutable';
-import { Address, Wei, convert } from 'emerald-js';
+import { Wei, convert } from 'emerald-js';
 import { etherToWei } from 'lib/convert';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { CreateTransaction, Page } from 'emerald-js-ui';
 import { Back } from 'emerald-js-ui/lib/icons3';
-import SignTxForm from '../../components/tx/SendTx/SignTx'
-import TransactionShow from '../../components/tx/TxDetails';
-import accounts from 'store/vault/accounts';
 import { connect } from 'react-redux';
-import screen from 'store/wallet/screen';
-import { traceValidate } from '../../components/tx/SendTx/utils';
+import accounts from 'store/vault/accounts';
 import network from 'store/network';
+import screen from 'store/wallet/screen';
 import ledger from 'store/ledger/';
+import { traceValidate } from '../../components/tx/SendTx/utils';
+import SignTxForm from '../../components/tx/SendTx/SignTx';
+import TransactionShow from '../../components/tx/TxDetails';
 
 const { toHex } = convert;
 
 const PAGES = {
   TX: 1,
   SIGN: 2,
-  DETAILS: 3
-}
+  DETAILS: 3,
+};
 
 const DEFAULT_GAS_LIMIT = '21000';
 
@@ -53,7 +53,7 @@ class MultiCreateTransaction extends React.Component {
     this.getPage = this.getPage.bind(this);
     this.state = {
       transaction: {},
-      page: PAGES.TX
+      page: PAGES.TX,
     };
   }
 
@@ -177,11 +177,9 @@ class MultiCreateTransaction extends React.Component {
       <Page title="Create Transaction" leftIcon={<Back onClick={this.props.onCancel}/>}>
         {this.getPage()}
       </Page>
-    )
+    );
   }
 }
-
-const ThemedCreateTransaction = muiThemeable()(MultiCreateTransaction);
 
 export default connect(
   (state, ownProps) => {
@@ -206,7 +204,7 @@ export default connect(
       token: 'ETC',
       selectedFromAccount: account.get('id'),
       getBalanceForAddress: (address, token) => {
-        if (token === "ETC") {
+        if (token === 'ETC') {
           const selectedAccount = state.accounts.get('accounts').find((acnt) => acnt.get('id') === address);
           const newBalance = selectedAccount.get('balance');
           return newBalance.getEther().toString();
@@ -218,10 +216,9 @@ export default connect(
           .find((t) => t.get('symbol') === token)
           .get('balance')
           .getDecimalized();
-
       },
       getFiatForAddress: (address, token) => {
-        if (token !== 'ETC') { return "??"; }
+        if (token !== 'ETC') { return '??'; }
         const selectedAccount = state.accounts.get('accounts').find((acnt) => acnt.get('id') === address);
         const newBalance = selectedAccount.get('balance');
         return newBalance.getFiat(fiatRate).toString();
@@ -235,7 +232,7 @@ export default connect(
       ownAddresses,
       useLedger,
       ledgerConnected,
-      allTokens
+      allTokens,
     };
   },
   (dispatch, ownProps) => ({
@@ -251,15 +248,9 @@ export default connect(
       const gasLimit = new Wei(parseInt(transaction.gasLimit, 10)).getValue();
       const gasPrice = new Wei(parseInt(transaction.gasPrice, 10)).getValue();
 
-      if (!tokenInfo) {
-        throw new SubmissionError(`Unknown token ${data.token}`);
-      }
-
-      // TODO: moved tx creation to CreateTransaction handler
-      // 1. Create TX here
       if (transaction.token !== 'ETC') {
         const decimals = convert.toNumber(tokenInfo.get('decimals'));
-        const tokenUnits: BigNumber = convert.toBaseUnits(convert.toBigNumber(transaction.amount), decimals || 18);
+        const tokenUnits = convert.toBaseUnits(convert.toBigNumber(transaction.amount), decimals || 18);
         const txData = Tokens.actions.createTokenTxData(
           transaction.to,
           tokenUnits,
@@ -274,7 +265,7 @@ export default connect(
             convert.toHex(0),
             txData
           )
-        )
+        );
       }
 
       return traceValidate({
@@ -283,7 +274,7 @@ export default connect(
         gas: toHex(gasLimit),
         gasPrice: toHex(gasPrice),
         value: toHex(toAmount),
-      }, dispatch, network.actions.estimateGas).then((estimateGas) => {
+      }, dispatch, network.actions.estimateGas).then(() => {
         dispatch(ledger.actions.setWatch(false));
 
         return ledger.actions.closeConnection().then(() => {
@@ -299,8 +290,8 @@ export default connect(
               toHex(gasPrice),
               toHex(toAmount)
             )
-          )
+          );
         });
       });
-    }
+    },
   }))(MultiCreateTransaction);

@@ -5,14 +5,13 @@ import { MenuItem } from 'material-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { translate } from 'react-i18next';
 
-import { Form, styles, Row } from 'elements/Form';
-import { Button } from 'emerald-js-ui';
-import SelectField from 'elements/Form/SelectField';
 import { TextField } from 'redux-form-material-ui';
-import DashboardButton from 'components/common/DashboardButton';
+import { Button, Page } from 'emerald-js-ui';
+// todo: make this 1 import
+import { styles, Row } from 'elements/Form';
+import SelectField from 'elements/Form/SelectField';
 import Checkbox from 'elements/Form/Checkbox';
 
-import { Page } from 'emerald-js-ui';
 import { Back } from 'emerald-js-ui/lib/icons3';
 
 import screen from '../../store/wallet/screen';
