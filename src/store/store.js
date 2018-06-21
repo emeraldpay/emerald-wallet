@@ -51,7 +51,7 @@ export const createStore = (_api) => {
     thunkMiddleware.withExtraArgument(_api),
   ];
 
-  if (process.env.NODE_ENV !== 'debug') {
+  if (process.env.NODE_ENV !== 'test') {
     storeMiddleware.push(reduxLogger);
   }
 
