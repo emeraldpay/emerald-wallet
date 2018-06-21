@@ -76,7 +76,7 @@ function refreshAll() {
   if (state.launcher.getIn(['geth', 'type']) === 'local') {
     promises = promises.concat([
       store.dispatch(network.actions.loadPeerCount()),
-      store.dispatch(network.actions.loadSyncing())
+      store.dispatch(network.actions.loadSyncing()),
     ]);
   }
 
@@ -125,17 +125,18 @@ export function startSync() {
   }
 
   refreshAll().then(() => {
-    const accounts = store.getState().accounts.get('accounts');
-
+    // dispatch them in series
     const historyForAddress = (a) => {
-      return store.dispatch(network.actions.loadAddressTransactions(a.first().get('id'), 0, 0, '', '', -1, -1, false))
+      const params = [a.first().get('id'), 0, 0, '', '', -1, -1, false];
+      return store.dispatch(network.actions.loadAddressTransactions(...params))
         .then(() => {
           if (a.size > 1) {
             historyForAddress(a.rest());
           }
         });
     };
-    historyForAddress(accounts);
+
+    historyForAddress(store.getState().accounts.get('accounts'));
   });
 
   setTimeout(refreshLong, 3 * intervalRates.second);
