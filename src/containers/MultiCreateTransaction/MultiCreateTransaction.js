@@ -245,8 +245,9 @@ export default connect(
       const tokenInfo = allTokens.find((t) => t.get('name') === transaction.token);
 
       const toAmount = etherToWei(transaction.amount);
-      const gasLimit = new Wei(parseInt(transaction.gasLimit, 10)).getValue();
-      const gasPrice = new Wei(parseInt(transaction.gasPrice, 10)).getValue();
+
+      const gasLimit = new Wei(transaction.gasLimit).getValue();
+      const gasPrice = transaction.gasPrice.getValue();
 
       if (transaction.token !== 'ETC') {
         const decimals = convert.toNumber(tokenInfo.get('decimals'));
