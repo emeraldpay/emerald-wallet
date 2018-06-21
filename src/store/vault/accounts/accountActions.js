@@ -5,7 +5,7 @@ import { loadTokensBalances } from '../tokens/tokenActions';
 import screen from '../../wallet/screen';
 import history from '../../wallet/history';
 import launcher from '../../launcher';
-
+import network from '../../network';
 import ActionTypes from './actionTypes';
 import createLogger from '../../../utils/logger';
 
@@ -151,12 +151,12 @@ export function createAccount(passphrase: string, name: string = '', description
           name,
           description,
         });
+        dispatch(network.actions.loadAddressTransactions(result, 0, 0, '', '', -1, -1, false));
         dispatch(loadAccountBalance(result));
         return result;
       }).catch(screen.actions.catchError(dispatch));
   };
 }
-
 export function updateAccount(address: string, name: string, description?: string) {
   return (dispatch, getState, api) => {
     const chain = currentChain(getState());
@@ -306,6 +306,7 @@ export function importJson(data, name: string, description: string) {
           type: ActionTypes.ADD_ACCOUNT,
           accountId: result,
         });
+        dispatch(network.actions.loadAddressTransactions(result, 0, 0, '', '', -1, -1, false));
         dispatch(loadAccountBalance(result));
         return result;
       }
@@ -327,6 +328,7 @@ export function importMnemonic(passphrase: string, mnemonic: string, hdPath: str
           type: ActionTypes.ADD_ACCOUNT,
           accountId: result,
         });
+        dispatch(network.actions.loadAddressTransactions(result, 0, 0, '', '', -1, -1, false));
         dispatch(loadAccountBalance(result));
         return result;
       }

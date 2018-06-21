@@ -64,24 +64,26 @@ export const createStore = (_api) => {
 export const store = createStore(api);
 
 function refreshAll() {
-  store.dispatch(accounts.actions.loadPendingTransactions());
-  store.dispatch(history.actions.refreshTrackedTransactions());
-  store.dispatch(network.actions.loadHeight(false));
-  store.dispatch(accounts.actions.loadAccountsList());
+  let promises = [
+    store.dispatch(accounts.actions.loadPendingTransactions()),
+    store.dispatch(history.actions.refreshTrackedTransactions()),
+    store.dispatch(network.actions.loadHeight(false)),
+    store.dispatch(accounts.actions.loadAccountsList()),
+  ];
 
   const state = store.getState();
+
   if (state.launcher.getIn(['geth', 'type']) === 'local') {
-    store.dispatch(network.actions.loadPeerCount());
-    store.dispatch(network.actions.loadSyncing());
-    state.accounts.get('accounts').forEach((account) => {
-      store.dispatch(network.actions.loadAddressTransactions(account.get('id'), 0, 0, '', '', -1, -1, false));
-    });
+    promises = promises.concat([
+      store.dispatch(network.actions.loadPeerCount()),
+      store.dispatch(network.actions.loadSyncing()),
+    ]);
   }
 
-  const syncing = state.network.getIn(['sync', 'syncing']);
-
-
+  // Main loop that will refresh UI as needed
   setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
+
+  return Promise.all(promises);
 }
 
 function refreshLong() {
@@ -122,7 +124,21 @@ export function startSync() {
     known.forEach((token) => store.dispatch(tokens.actions.addToken(token)));
   }
 
-  refreshAll();
+  refreshAll().then(() => {
+    // dispatch them in series
+    const historyForAddress = (a) => {
+      const params = [a.first().get('id'), 0, 0, '', '', -1, -1, false];
+      return store.dispatch(network.actions.loadAddressTransactions(...params))
+        .then(() => {
+          if (a.size > 1) {
+            historyForAddress(a.rest());
+          }
+        });
+    };
+
+    historyForAddress(store.getState().accounts.get('accounts'));
+  });
+
   setTimeout(refreshLong, 3 * intervalRates.second);
   store.dispatch(connecting(false));
 }

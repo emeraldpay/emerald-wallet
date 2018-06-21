@@ -22,8 +22,8 @@ function loadPersistedTransactions(state): Array<Transaction> {
 
 export function trackTx(tx) {
   return (dispatch, getState) => {
-    dispatch(trackTxAction(tx));
     persistTransactions(getState());
+    return dispatch(trackTxAction(tx));
   };
 }
 
