@@ -4,10 +4,11 @@ import PropTypes from 'prop-types';
 import { Map } from 'immutable';
 import { connect } from 'react-redux';
 import { convert, Wei } from 'emerald-js';
-import { Account, Button, ButtonGroup } from 'emerald-js-ui';
+import { Account, Button, ButtonGroup, Page } from 'emerald-js-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import launcher from 'store/launcher';
 import DashboardButton from 'components/common/DashboardButton';
+import { Back } from 'emerald-js-ui/lib/icons3';
 import { gotoScreen } from '../../../store/wallet/screen/screenActions';
 import { toDate } from '../../../lib/convert';
 import { Form, styles, Row } from '../../../elements/Form';
@@ -15,7 +16,6 @@ import TxStatus from './status';
 import { Currency } from '../../../lib/currency';
 import createLogger from '../../../utils/logger';
 import TxInputData from './TxInputData';
-
 import classes from './show.scss';
 
 const log = createLogger('TxDetails');
@@ -49,16 +49,8 @@ export const TransactionShow = (props: Props) => {
     Currency.format(new Wei(transaction.get('value')).getFiat(rates.get(currentCurrency.toUpperCase())), currentCurrency) :
     '';
 
-  const backButtonLabel = account ? 'Account' : 'Dashboard';
-  const backButton = <DashboardButton label={ backButtonLabel } onClick={ () => goBack(account) }/>;
-  const optionallyDisplayRepeatButton = () => {
-    if (showRepeat) {
-      return <Button primary onClick={ () => repeatTx(transaction, toAccount, fromAccount) } label="REPEAT TRANSACTION" />;
-    }
-  };
-
   return (
-    <Form caption="Ethereum Classic Transfer" backButton={ backButton } style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
+    <Page title="Transaction Details" leftIcon={ <Back onClick={() => goBack(account)} /> }>
       <Row>
         <div style={styles.left}>
           <div style={fieldNameStyle}>Date</div>
@@ -128,12 +120,12 @@ export const TransactionShow = (props: Props) => {
         </div>
         <div style={{...styles.right, alignItems: 'center'}}>
           {transaction.get('to') &&
-          <Account
-            addr={transaction.get('to')}
-            identity
-            identityProps={{size: 30}}
-            onClick={ () => openAccount(toAccount) }
-          />}
+           <Account
+             addr={transaction.get('to')}
+             identity
+             identityProps={{size: 30}}
+             onClick={ () => openAccount(toAccount) }
+           />}
         </div>
       </Row>
 
@@ -170,22 +162,23 @@ export const TransactionShow = (props: Props) => {
       </Row>
       <br />
 
-      <Row>
+      <Row style={{marginBottom: 0}}>
         <div style={styles.left}>
         </div>
         <div style={styles.right}>
-          <div>
-            <ButtonGroup>
-              <Button
-                onClick={ () => props.cancel() }
-                label="DASHBOARD" />
-              {optionallyDisplayRepeatButton()}
-            </ButtonGroup>
-          </div>
+          <ButtonGroup>
+            <Button
+              onClick={ () => props.cancel() }
+              label="DASHBOARD" />
+            <Button
+              primary
+              onClick={ () => repeatTx(transaction, toAccount, fromAccount) }
+              label="REPEAT TRANSACTION" />
+          </ButtonGroup>
         </div>
       </Row>
-
-    </Form>);
+    </Page>
+  );
 };
 
 TransactionShow.propTypes = {

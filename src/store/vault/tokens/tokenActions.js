@@ -184,13 +184,7 @@ export function addToken(token: TokenInfo) {
         address: token.address,
         name: token.symbol,
       });
-      return dispatch({
-        type: ActionTypes.SET_INFO,
-        address: token.address,
-        totalSupply: token.totalSupply,
-        decimals: token.decimals,
-        symbol: token.symbol,
-      });
+      return loadTokenDetails(token.address);
     });
   };
 }

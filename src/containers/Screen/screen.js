@@ -1,13 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import CircularProgress from 'material-ui/CircularProgress';
-import createLogger from '../../utils/logger';
+import { Wei } from 'emerald-js';
 
+import createLogger from '../../utils/logger';
 import AddressBook from '../../components/addressbook/ContactList';
 import AccountShow from '../../components/accounts/AccountShow';
 import AddressShow from '../../components/addressbook/show';
 import AddressAdd from '../../components/addressbook/AddContact';
-import CreateTx from '../../components/tx/SendTx';
 import TransactionShow from '../../components/tx/TxDetails';
 import MnemonicWizard from '../../components/accounts/MnemonicWizard';
 import AddToken from '../../components/tokens/AddToken/add';
@@ -22,11 +22,10 @@ import Settings from '../../components/settings';
 import PaperWallet from '../PaperWallet';
 import ExportPaperWallet from '../../components/accounts/ExportPaperWallet';
 import GenerateAccount from '../../components/accounts/GenerateAccount';
-
 import WalletScreen from '../../store/wallet/screen';
+import MultiCreateTransaction from '../MultiCreateTransaction';
 
 const log = createLogger('screen');
-
 
 const Screen = ({ screen, screenItem }) => {
   log.debug('Show screen: ', screen);
@@ -52,13 +51,13 @@ const Screen = ({ screen, screenItem }) => {
   } else if (screen === 'transaction') {
     return <TransactionShow hash={ screenItem.hash } accountId={ screenItem.accountId }/>;
   } else if (screen === 'create-tx') {
-    return <CreateTx account={ screenItem }/>;
+    return <MultiCreateTransaction account={ screenItem } />;
   } else if (screen === 'repeat-tx') {
-    return <CreateTx
-      account={ screenItem.fromAccount }
-      toAccount={ screenItem.toAccount }
-      transaction={ screenItem.transaction }
-    />;
+    const {transaction, toAccount, fromAccount} = screenItem;
+    const amount = new Wei(transaction.get('value')).getEther();
+    const to = toAccount.get('id');
+    const gasLimit = transaction.get('gas');
+    return <MultiCreateTransaction account={ fromAccount } to={to} amount={amount} gasLimit={gasLimit} />;
   } else if (screen === 'landing-generate') {
     return <GenerateAccount onBackScreen="landing" backLabel="Back"/>;
   } else if (screen === 'generate') {

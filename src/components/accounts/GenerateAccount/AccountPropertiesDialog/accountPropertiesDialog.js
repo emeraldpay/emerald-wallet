@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Button, ButtonGroup, LinkButton, Input } from 'emerald-js-ui';
-import { Form, Row, styles as formStyles } from '../../../../elements/Form';
+import { Button, ButtonGroup, LinkButton, Input, Page } from 'emerald-js-ui';
+import { Row, styles as formStyles } from '../../../../elements/Form';
 
 class AccountPropertiesDialog extends React.Component {
     static propTypes = {
@@ -30,9 +30,9 @@ class AccountPropertiesDialog extends React.Component {
     };
 
     render() {
-      const { onSkip, t } = this.props;
+      const { onSkip } = this.props;
       return (
-        <Form caption="Set account properties">
+        <Page title="Set account properties">
           <Row>
             <div style={ formStyles.left }>
               <div style={ formStyles.fieldName }>Account name</div>
@@ -66,7 +66,7 @@ class AccountPropertiesDialog extends React.Component {
               </ButtonGroup>
             </div>
           </Row>
-        </Form>
+        </Page>
       );
     }
 }

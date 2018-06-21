@@ -1,25 +1,26 @@
 import React from 'react';
-import { Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
-import { Form, Row, styles as formStyles } from 'elements/Form';
+import { Button, Warning, WarningHeader, WarningText, Page } from 'emerald-js-ui';
+import { Row, styles as formStyles } from 'elements/Form';
+import { Back } from 'emerald-js-ui/lib/icons3';
 import getLoadingIcon from '../getLoadingIcon';
 import styles from './downloadDialog.scss';
 
 export const DownloadDialog = (props) => {
-  const { accountId, onDownload, onBack, t } = props;
+  const { onDownload, onBack, t } = props;
   return (
-    <Form caption={ t('generate.title') } onCancel={ onBack }>
+    <Page title={ t('generate.title') } leftIcon={ <Back onClick={onBack} /> }>
       <Row>
         <div style={formStyles.left}/>
         <div style={formStyles.right}>
           <div>
             <div className={ styles.title }>
-                            Download the Account Key File
+              Download the Account Key File
             </div>
             <div className={ styles.subTitle }>
-                            And save the copy in a safe place (not on this computer).
+              And save the copy in a safe place (not on this computer).
             </div>
             <div className={ styles.description }>
-                            You need an Account Key File to make all operations with an account. In order to manage or create transactions from this Ethereum Classic Account, you will need this file.  You will also need the strong password you created earlier.
+              You need an Account Key File to make all operations with an account. In order to manage or create transactions from this Ethereum Classic Account, you will need this file.  You will also need the strong password you created earlier.
 
             </div>
           </div>
@@ -47,7 +48,7 @@ export const DownloadDialog = (props) => {
           <Button primary onClick={ onDownload } label="Download account key file" icon={getLoadingIcon(props)} disabled={props.loading}/>
         </div>
       </Row>
-    </Form>
+    </Page>
   );
 };
 

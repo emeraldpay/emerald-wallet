@@ -5,12 +5,14 @@ import { MenuItem } from 'material-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { translate } from 'react-i18next';
 
-import { Form, styles, Row } from 'elements/Form';
-import { Button } from 'emerald-js-ui';
-import SelectField from 'elements/Form/SelectField';
 import { TextField } from 'redux-form-material-ui';
-import DashboardButton from 'components/common/DashboardButton';
+import { Button, Page } from 'emerald-js-ui';
+// todo: make this 1 import
+import { styles, Row } from 'elements/Form';
+import SelectField from 'elements/Form/SelectField';
 import Checkbox from 'elements/Form/Checkbox';
+
+import { Back } from 'emerald-js-ui/lib/icons3';
 
 import screen from '../../store/wallet/screen';
 import settings from '../../store/wallet/settings';
@@ -20,9 +22,9 @@ import i18n from '../../i18n/i18n';
 
 export class Settings extends React.Component {
   render() {
-    const { goDashboard, handleSubmit, t, muiTheme } = this.props;
+    const { goDashboard, handleSubmit, t } = this.props;
     return (
-      <Form caption="Settings" backButton={ <DashboardButton onClick={ goDashboard } /> } style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
+      <Page title="Settings" leftIcon={<Back onClick={goDashboard} />}>
         <div>
           <Row>
             <div style={styles.left}>
@@ -119,7 +121,7 @@ export class Settings extends React.Component {
             </div>
           </Row>
         </div>
-      </Form>
+      </Page>
     );
   }
 }

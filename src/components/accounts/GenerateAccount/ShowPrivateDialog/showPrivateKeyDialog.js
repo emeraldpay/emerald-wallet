@@ -1,7 +1,8 @@
 import React from 'react';
 import QRCode from 'qrcode.react';
-import { Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
-import { Form, Row, styles as formStyles } from 'elements/Form';
+import { Button, Warning, WarningHeader, WarningText, Page } from 'emerald-js-ui';
+import { Row, styles as formStyles } from 'elements/Form';
+import { Back } from 'emerald-js-ui/lib/icons3';
 
 import styles from './showPrivateKeyDialog.scss';
 
@@ -9,15 +10,15 @@ const ShowPrivateDialog = (props) => {
   const { onBack, onNext, privateKey, t } = props;
 
   return (
-    <Form caption={ t('generate.title') } onCancel={ onBack }>
+    <Page title={ t('generate.title') } leftIcon={<Back onClick={onBack} />}>
       <Row>
         <div style={ formStyles.left }/>
         <div style={ formStyles.right }>
           <div>
             <div className={ styles.title }>Print this</div>
             <div className={ styles.subTitle }>
-                            This is the unencrypted text version of your private key, meaning no password is necessary.
-                            It helps if you forget your password.
+              This is the unencrypted text version of your private key, meaning no password is necessary.
+              It helps if you forget your password.
             </div>
           </div>
         </div>
@@ -29,7 +30,7 @@ const ShowPrivateDialog = (props) => {
           <Warning>
             <WarningHeader>Keep it in safety</WarningHeader>
             <WarningText>
-                            If someone gains access to your unencrypted private key, they will be able to access your account and funds without a password.
+              If someone gains access to your unencrypted private key, they will be able to access your account and funds without a password.
             </WarningText>
           </Warning>
         </div>
@@ -59,7 +60,7 @@ const ShowPrivateDialog = (props) => {
           <Button primary onClick={ onNext } label="Next" />
         </div>
       </Row>
-    </Form>
+    </Page>
   );
 };
 
