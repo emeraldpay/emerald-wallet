@@ -5,6 +5,7 @@ import Immutable from 'immutable';
 import { IconButton } from 'material-ui';
 import { Trash as DeleteIcon } from 'emerald-js-ui/lib/icons3';
 import { Input } from 'emerald-js-ui';
+import tokens from '../../../store/vault/tokens';
 
 import styles from './list.scss';
 
@@ -34,7 +35,7 @@ const Token = (props) => {
         />
       </div>
       <div>
-        <IconButton iconStyle={ deleteIconStyle }>
+        <IconButton onClick={ () => props.onDelete(token) } iconStyle={ deleteIconStyle }>
           <DeleteIcon/>
         </IconButton>
       </div>
@@ -46,11 +47,11 @@ Token.propTypes = {
   token: PropTypes.object.isRequired,
 };
 
-const TokensList = ({ tokens }) => {
+const TokensList = ({ tokens, onDelete }) => {
   return (
     <div>
       { tokens.map((token) =>
-        <Token key={ token.get('address') } token={ token }/>)}
+        <Token {...{onDelete}} key={ token.get('address') } {...{token}}/>)}
     </div>
   );
 };
@@ -61,8 +62,13 @@ function mapStateToProps(state, ownProps) {
   };
 }
 
+const mapDispatchToProps = (dispatch, ownProps) => ({
+  onDelete: (token) => {
+    dispatch(tokens.actions.removeToken(token.get('address')));
+  }
+});
+
 export default connect(
   mapStateToProps,
-  null
+  mapDispatchToProps
 )(TokensList);
-

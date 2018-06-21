@@ -26,7 +26,6 @@ const initialToken = Map({
 });
 
 // ----- UTILITY FUNCTIONS
-
 function addToken(state, address, name) {
   return state.update('tokens', (tokens) => {
     const pos = tokens.findKey((tok) => tok.get('address') === address);
@@ -68,6 +67,16 @@ function updateToken(state, id, f) {
 }
 
 // ----- REDUCERS
+
+function onRemoveToken(state, action) {
+  if (action.type === ActionTypes.REMOVE_TOKEN) {
+    return state.set(
+      'tokens',
+      state.get('tokens').filterNot((token) => token.get('address') === action.address)
+    );
+  }
+  return state;
+}
 
 function onLoading(state, action) {
   switch (action.type) {
@@ -169,5 +178,6 @@ export default function tokenReducers(state, action) {
   state = onSetTokenBalance(state, action);
   state = onSetTokensBalances(state, action);
   state = onResetBalances(state, action);
+  state = onRemoveToken(state, action);
   return state;
 }

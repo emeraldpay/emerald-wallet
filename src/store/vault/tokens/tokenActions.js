@@ -189,6 +189,10 @@ export function addToken(token: TokenInfo) {
   };
 }
 
+export function removeToken(address: string) {
+  return (dispatch, getState, api) => dispatch({ type: ActionTypes.REMOVE_TOKEN, address });
+}
+
 // FIXME: deprecated
 export function traceCall(from: string, to: string, gas: string, gasPrice: string, value: string, data: string) {
   return (dispatch, getState, api) => {
