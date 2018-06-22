@@ -97,10 +97,12 @@ export function loadTokenDetails(tokenAddress: string): () => Promise<any> {
 
 export function fetchTokenDetails(tokenAddress: string): () => Promise<any> {
   return (dispatch, getState, api) => {
+    const contractCallBase = {to: tokenAddress};
+
     return Promise.all([
-      api.geth.eth.call(tokenAddress, tokenContract.functionToData('totalSupply')),
-      api.geth.eth.call(tokenAddress, tokenContract.functionToData('decimals')),
-      api.geth.eth.call(tokenAddress, tokenContract.functionToData('symbol')),
+      api.geth.eth.call({ ...contractCallBase, data: tokenContract.functionToData('totalSupply') }),
+      api.geth.eth.call({ ...contractCallBase, data: tokenContract.functionToData('decimals') }),
+      api.geth.eth.call({ ...contractCallBase, data: tokenContract.functionToData('symbol') }),
     ]).then((results) => {
       return {
         address: tokenAddress,
@@ -187,6 +189,10 @@ export function addToken(token: TokenInfo) {
       return loadTokenDetails(token.address);
     });
   };
+}
+
+export function removeToken(address: string) {
+  return (dispatch, getState, api) => dispatch({ type: ActionTypes.REMOVE_TOKEN, address });
 }
 
 // FIXME: deprecated

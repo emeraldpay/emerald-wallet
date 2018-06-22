@@ -119,6 +119,7 @@ function mapDispatchToProps(dispatch, ownProps) {
           .then(dispatch(reset('addToken')))
           .then(dispatch(tokens.actions.loadTokenBalances(data)));
       }
+
       return dispatch(tokens.actions.fetchTokenDetails(data.address))
         .then((result) => {
           return dispatch(change('addToken', 'token', result));
