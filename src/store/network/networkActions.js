@@ -46,6 +46,8 @@ export function loadAddressTransactions(...props) {
       return api.geth.ext.getTransactions(result).then((txes) => {
         return Promise.all(txes.map((tx) => dispatch(history.actions.trackTx(tx.result))));
       });
+    }).catch((e) => {
+      log.error(e);
     });
   };
 }
