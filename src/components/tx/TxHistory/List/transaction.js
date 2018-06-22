@@ -20,12 +20,15 @@ export default connect(
     const toAccount = getAccount(ownProps.tx.get('to'));
     const fromAccount = getAccount(ownProps.tx.get('from'));
 
+    const token = state.tokens.get('tokens').find((t) => t.get('address') === ownProps.tx.get('to'));
+
     return {
       showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
       currentBlockHeight: state.network.getIn(['currentBlock', 'height']),
       tx: ownProps.tx,
       toAccount,
       fromAccount,
+      token,
       numConfirmations: state.wallet.settings.get('numConfirmations'),
     };
   },
