@@ -103,12 +103,12 @@ export function fetchTokenDetails(tokenAddress: string): () => Promise<any> {
       api.geth.eth.call({ ...contractCallBase, data: tokenContract.functionToData('totalSupply') }),
       api.geth.eth.call({ ...contractCallBase, data: tokenContract.functionToData('decimals') }),
       api.geth.eth.call({ ...contractCallBase, data: tokenContract.functionToData('symbol') }),
-    ]).then((results) => {
+    ]).then(([totalSupply, decimals, symbol]) => {
       return {
         address: tokenAddress,
-        totalSupply: results[0],
-        decimals: results[1],
-        symbol: parseString(results[2]),
+        totalSupply,
+        decimals,
+        symbol: parseString(symbol[2]),
       };
     });
   };
