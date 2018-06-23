@@ -47,18 +47,6 @@ const Render = ({ handleSubmit, blockAddress, invalid, pristine, submitting, can
           type="text"
           validate={required} /></div>
     </Row>
-    {/* <Row>
-      <div style={formStyles.left}>
-        <div style={formStyles.fieldName}>Description</div>
-      </div>
-      <div style={formStyles.right} >
-        <Field
-          underlineShow={false}
-          name="description"
-          component={TextField}
-          type="text"
-        /></div>
-    </Row> */}
     <Row>
       <div style={formStyles.left} />
       <div style={formStyles.right}>

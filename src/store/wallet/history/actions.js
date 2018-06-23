@@ -36,11 +36,12 @@ export function trackTxAction(tx) {
 
 export function processPending(transactions: Array<any>) {
   return (dispatch, getState) => {
-    dispatch({
+    persistTransactions(getState());
+
+    return dispatch({
       type: ActionTypes.PENDING_TX,
       txList: transactions,
     });
-    persistTransactions(getState());
   };
 }
 
@@ -65,7 +66,7 @@ export function init(chainId: number) {
 
 export function refreshTransactions(hashes: Array<string>) {
   return (dispatch, getState, api) => {
-    api.geth.ext.getTransactions(hashes).then((txs) => {
+    return api.geth.ext.getTransactions(hashes).then((txs) => {
       const found = [];
       txs.forEach((t) => {
         if (t.result && typeof t.result === 'object') {
@@ -80,16 +81,23 @@ export function refreshTransactions(hashes: Array<string>) {
 
       // update timestamps
       const state = getState();
-      found.forEach((t) => {
+      const promises = found.map((t) => {
         const tx = selectByHash(state, t.hash);
-        if (tx && !tx.get('timestamp')) {
-          api.geth.eth.getBlock(tx.get('blockNumber'))
-            .then((block) => dispatch({
+
+        if (!tx || tx.get('timestamp')) {
+          return Promise.resolve();
+        }
+
+        return api.geth.eth.getBlock(tx.get('blockNumber'))
+          .then((block) => {
+            return dispatch({
               type: ActionTypes.UPDATE_TX,
               tx: { hash: t.hash, timestamp: block.timestamp },
-            }));
-        }
+            });
+          });
       });
+
+      return Promise.all(promises);
     });
   };
 }
@@ -131,7 +139,21 @@ export function refreshTrackedTransactions() {
       .filter((tx) => tx.get('totalRetries', 0) <= 10)
       .map((tx) => tx.get('hash'));
 
-    chunk(hashes.toArray(), 20).forEach((group) => dispatch(refreshTransactions(group)));
+    const promises = chunk(hashes.toArray(), 20)
+      .map((group) => () => dispatch(refreshTransactions(group)));
+
+    const runSeries = (proms) => {
+      if (proms.length === 0) { return true; }
+      const prom = proms[0]();
+
+      if (proms.length > 1) {
+        prom.then(() => runSeries(promises.slice(1)));
+      }
+
+      return prom;
+    };
+
+    return runSeries(promises);
   };
 }
 

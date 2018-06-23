@@ -36,7 +36,7 @@ export function readConfig() {
 
 export function loadClientVersion() {
   return (dispatch) => {
-    api.geth.web3.clientVersion().then((result) => {
+    return api.geth.web3.clientVersion().then((result) => {
       dispatch({
         type: 'LAUNCHER/CONFIG',
         config: {

@@ -12,13 +12,13 @@ function connection(): Promise<any> {
   return new Promise((resolve, reject) => {
     if (typeof window.process !== 'undefined') {
       const remote = global.require('electron').remote;
-      remote.getGlobal('ledger')
+      return remote.getGlobal('ledger')
         .connect()
         .then(resolve)
         .catch(reject);
     } else {
       // create U2F connection, which will work _only_ in Chrome + SSL webpage
-      LedgerComm.create_async()
+      return LedgerComm.create_async()
         .then((comm) => resolve(new LedgerEth(comm)))
         .catch(reject);
     }
@@ -29,12 +29,12 @@ export function closeConnection(): Promise<any> {
   return new Promise((resolve, reject) => {
     if (typeof window.process !== 'undefined') {
       const remote = global.require('electron').remote;
-      remote.getGlobal('ledger')
+      return remote.getGlobal('ledger')
         .disconnect()
         .then(resolve)
         .catch(reject);
     } else {
-      resolve({});
+      return resolve({});
     }
   });
 }
