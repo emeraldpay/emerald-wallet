@@ -79,7 +79,7 @@ function refreshAll() {
   }
 
   return Promise.all(promises).then(() => {
-    requestIdleCallback(refreshAll, { timeout: intervalRates.continueRefreshAllTxRate });
+    setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
   });
 }
 
