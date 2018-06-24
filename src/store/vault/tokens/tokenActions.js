@@ -108,7 +108,7 @@ export function fetchTokenDetails(tokenAddress: string): () => Promise<any> {
         address: tokenAddress,
         totalSupply,
         decimals,
-        symbol: parseString(symbol[2]),
+        symbol: parseString(symbol),
       };
     });
   };
@@ -186,7 +186,7 @@ export function addToken(token: TokenInfo) {
         address: token.address,
         name: token.symbol,
       });
-      return loadTokenDetails(token.address);
+      return dispatch(loadTokenDetails(token.address));
     });
   };
 }

@@ -120,6 +120,7 @@ export function startSync() {
 
   // deployed tokens
   const known = deployedTokens[+chainId];
+
   if (known) {
     known.forEach((token) => store.dispatch(tokens.actions.addToken(token)));
   }

@@ -196,7 +196,7 @@ export default connect(
     const addressBookAddresses = state.addressBook.get('addressBook').toJS().map((i) => i.address);
     const ownAddresses = accounts.selectors.getAll(state).toJS().map((i) => i.id);
 
-    const tokenSymbols = allTokens.toJS().map((i) => i.name);
+    const tokenSymbols = allTokens.toJS().map((i) => i.symbol);
 
     return {
       amount: ownProps.amount || '0',
@@ -242,7 +242,7 @@ export default connect(
     signAndSend: ({transaction, allTokens}) => {
       const useLedger = ownProps.account.get('hardware', false);
 
-      const tokenInfo = allTokens.find((t) => t.get('name') === transaction.token);
+      const tokenInfo = allTokens.find((t) => t.get('symbol') === transaction.token);
 
       const toAmount = etherToWei(transaction.amount);
 

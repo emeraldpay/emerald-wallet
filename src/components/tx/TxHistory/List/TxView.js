@@ -80,7 +80,7 @@ export const TxView = (props) => {
 
   if (token) {
     const decodedTxData = decoder.decodeData(tx.get('data'));
-    symbol = token.get('name');
+    symbol = token.get('symbol');
     if (decodedTxData.inputs.length > 0) {
       const decimals = token.get('decimals');
       let d = 18;
