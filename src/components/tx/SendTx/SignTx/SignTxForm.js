@@ -51,7 +51,7 @@ const displayFlexCenter = {
 };
 
 const SignTx = muiThemeable()((props) => {
-  const { value, fiatRate, fiatCurrency, fee, tx, gas, token } = props;
+  const { value, fiatRate, fiatCurrency, txFee, tx } = props;
   const { onCancel, onChangePassword, onSubmit, useLedger } = props;
 
   const onChange = (event, val) => {
@@ -77,7 +77,7 @@ const SignTx = muiThemeable()((props) => {
       </div>
       <div style={{ paddingTop: '35px', display: 'flex', justifyContent: 'center' }}>
         <span style={{ color: props.muiTheme.palette.secondaryTextColor }}>
-          Plus {fee} ETC for {gas} GAS.
+          Plus {txFee} ETC for {tx.gasLimit} GAS.
         </span>
       </div>
       <Divider style={{ marginTop: '35px' }} />
