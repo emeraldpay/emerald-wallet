@@ -158,6 +158,7 @@ class MultiCreateTransaction extends React.Component {
           <SignTxForm
             fiatRate={this.props.fiateRate}
             tx={this.state.transaction}
+            txFee={this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit)}
             onChangePassword={this.onChangePassword}
             useLedger={this.props.useLedger}
             onSubmit={this.onSubmitSignTxForm}
