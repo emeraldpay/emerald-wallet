@@ -22,8 +22,9 @@ export default connect(
 
     const token = state.tokens.get('tokens').find((t) => t.get('address') === ownProps.tx.get('to'));
 
+    const showFiat = !token && launcher.selectors.getChainName(state).toLowerCase() === 'mainnet';
     return {
-      showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
+      showFiat,
       currentBlockHeight: state.network.getIn(['currentBlock', 'height']),
       tx: ownProps.tx,
       toAccount,
