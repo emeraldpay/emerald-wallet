@@ -3,13 +3,13 @@ import { translate } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
-import { Button, Warning, WarningText, WarningHeader } from 'emerald-js-ui';
+import { Button, Warning, WarningText, WarningHeader, Page } from 'emerald-js-ui';
+import { Back } from 'emerald-js-ui/lib/icons3';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 
-import DashboardButton from 'components/common/DashboardButton';
 import screen from 'store/wallet/screen';
 import accountsModule from 'store/vault/accounts';
-import { Form, Row, styles as formStyles } from 'elements/Form/index';
+import { Row, styles as formStyles } from 'elements/Form/index';
 
 import FileDropField from './fileDropField';
 
@@ -48,11 +48,11 @@ class ImportJson extends React.Component {
     }
 
     render() {
-      const { t, onDashboard, backLabel, muiTheme } = this.props;
+      const { t, onDashboard } = this.props;
       const { file, fileError } = this.state;
 
       return (
-        <Form caption={ t('import.title') } backButton={ <DashboardButton onClick={ onDashboard } label={backLabel}/> } style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
+        <Page title={ t('import.title') } leftIcon={<Back onClick={onDashboard} />}>
           {fileError && (
             <Row>
               <div style={ formStyles.left }/>
@@ -82,7 +82,7 @@ class ImportJson extends React.Component {
               </div>
             </Row>)
           }
-        </Form>
+        </Page>
       );
     }
 }
