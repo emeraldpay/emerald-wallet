@@ -66,9 +66,9 @@ export const store = createStore(api);
 function refreshAll() {
   let promises = [
     store.dispatch(accounts.actions.loadPendingTransactions()),
-    store.dispatch(history.actions.refreshTrackedTransactions()),
     store.dispatch(network.actions.loadHeight(false)),
     store.dispatch(accounts.actions.loadAccountsList()),
+    store.dispatch(history.actions.refreshTrackedTransactions()),
   ];
 
   const state = store.getState();
