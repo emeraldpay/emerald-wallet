@@ -2,12 +2,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
-import { Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
+import { Page, Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
+import { Back } from 'emerald-js-ui/lib/icons3';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { required, passwordMatch, minLength } from 'lib/validators';
-import { Form, Row, styles as formStyles } from 'elements/Form';
+import { Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
-import DashboardButton from 'components/common/DashboardButton';
 
 import screen from 'store/wallet/screen';
 import HdPath from 'components/common/HdPath';
@@ -26,10 +26,9 @@ const HdPathFormField = (props) => {
 
 export class ImportMnemonic extends React.Component {
   render() {
-    const { onBack, backLabel, invalid, handleSubmit, error, muiTheme } = this.props;
+    const { onBack, invalid, handleSubmit, error } = this.props;
     return (
-      <Form caption="Import Mnemonic" backButton={ <DashboardButton onClick={ onBack } label={ backLabel }/> } >
-
+      <Page title="Import Mnemonic" leftIcon={ <Back onClick={onBack} /> }>
         <Row>
           <div style={ formStyles.left }/>
           <div style={ formStyles.right }>
@@ -136,7 +135,7 @@ export class ImportMnemonic extends React.Component {
             </div>
           </Row>
         )}
-      </Form>
+      </Page>
     );
   }
 }
