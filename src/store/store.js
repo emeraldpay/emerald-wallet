@@ -79,7 +79,7 @@ function refreshAll() {
   }
 
   return Promise.all(promises).then(() => {
-    setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
+    requestIdleCallback(refreshAll, { timeout: intervalRates.continueRefreshAllTxRate });
   });
 }
 
@@ -90,7 +90,7 @@ function refreshLong() {
     });
 }
 
-const REFRESH_SYNCING_MAX_CHECKS = 10;
+const REFRESH_SYNCING_MAX_CHECKS = 100;
 function refreshSyncing(syncingStarted = false, iteration = 0) {
   return store
     .dispatch(network.actions.loadSyncing())
@@ -110,8 +110,7 @@ function refreshSyncing(syncingStarted = false, iteration = 0) {
 
         if (iteration < REFRESH_SYNCING_MAX_CHECKS || syncingStarted) {
           requestIdleCallback(
-            () => refreshSyncing(syncingStarted, iteration).then(resolve),
-            { timeout: intervalRates.second }
+            () => refreshSyncing(syncingStarted, iteration).then(resolve)
           );
         } else {
           resolve(false);
