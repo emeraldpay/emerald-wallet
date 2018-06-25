@@ -104,10 +104,6 @@ class MultiCreateTransaction extends React.Component {
     });
   }
 
-  onCancelCreateTransaction() {
-    this.props.onCancel();
-  }
-
   onSubmitCreateTransaction() {
     this.setState({
       page: PAGES.PASSWORD,
@@ -150,7 +146,8 @@ class MultiCreateTransaction extends React.Component {
             onChangeAmount={this.onChangeAmount}
             onChangeTo={this.onChangeTo}
             onSubmit={this.onSubmitCreateTransaction}
-            onCancel={this.onCancelCreateTransaction}
+            onCancel={this.props.onCancel}
+            onEmptyAddressBookClick={this.props.onEmptyAddressBookClick}
           />
         );
       case PAGES.PASSWORD:
@@ -162,7 +159,7 @@ class MultiCreateTransaction extends React.Component {
             onChangePassword={this.onChangePassword}
             useLedger={this.props.useLedger}
             onSubmit={this.onSubmitSignTxForm}
-            onCancel={this.onCancelCreateTransaction}
+            onCancel={this.props.onCancel}
           />
         );
       case PAGES.DETAILS:
@@ -237,9 +234,8 @@ export default connect(
     };
   },
   (dispatch, ownProps) => ({
-    onCancel: () => {
-      dispatch(screen.actions.gotoScreen('home', ownProps.account));
-    },
+    onCancel: () => dispatch(screen.actions.gotoScreen('home', ownProps.account)),
+    onEmptyAddressBookClick: () => dispatch(screen.actions.gotoScreen('add-address')),
     signAndSend: ({transaction, allTokens}) => {
       const useLedger = ownProps.account.get('hardware', false);
 
