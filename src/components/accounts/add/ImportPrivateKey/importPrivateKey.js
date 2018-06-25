@@ -3,12 +3,12 @@ import React from 'react';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { Field, reduxForm, SubmissionError } from 'redux-form';
-import { Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
+import { Page, Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
+import { Back } from 'emerald-js-ui/lib/icons3';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import { Form, Row, styles as formStyles } from 'elements/Form';
+import { Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
-import DashboardButton from 'components/common/DashboardButton';
 import accounts from 'store/vault/accounts';
 import screen from 'store/wallet/screen';
 import { required, passwordMatch, minLength } from 'lib/validators';
@@ -27,9 +27,9 @@ function getLoadingIcon(submitting) {
 
 export class ImportPrivateKey extends React.Component {
   render() {
-    const { onBack, error, handleSubmit, submitting, muiTheme } = this.props;
+    const { onBack, error, handleSubmit, submitting } = this.props;
     return (
-      <Form caption="Import Private Key" backButton={ <DashboardButton onClick={ onBack }/> } style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
+      <Page title="Import Private Key" leftIcon={ <Back onClick={ onBack }/> }>
         <Row>
           <div style={formStyles.left}/>
           <div style={formStyles.right}>
@@ -111,7 +111,7 @@ export class ImportPrivateKey extends React.Component {
             </div>
           </Row>
         )}
-      </Form>
+      </Page>
     );
   }
 }
