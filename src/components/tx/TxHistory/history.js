@@ -67,7 +67,7 @@ export default connect(
     const transactionsAccounts = state.wallet.history.get('trackedTransactions', new List());
     const txs = ownProps.transactions || transactionsAccounts;
     return {
-      transactions: txs.reverse(),
+      transactions: txs.sortBy((tx) => tx.get('timestamp')).reverse(),
       accounts: state.accounts.get('accounts', new List()),
       accountId: ownProps.accountId,
     };
