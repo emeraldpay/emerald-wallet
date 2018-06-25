@@ -40,7 +40,8 @@ export function loadTokenBalanceOf(token: TokenInfo, accountId: string) {
         });
       });
     }
-    throw new Error(`Invalid token info ${JSON.stringify(token)}`);
+
+    return Promise.reject(new Error(`Invalid token info ${JSON.stringify(token)}`));
   };
 }
 
@@ -158,7 +159,7 @@ export function loadTokenList() {
       type: ActionTypes.LOADING,
     });
     const chain = launcher.selectors.getChainName(getState());
-    api.emerald.listContracts(chain).then((result) => {
+    return api.emerald.listContracts(chain).then((result) => {
       // TODO: After features support
       // const tokens = result ? result.filter((contract) => {
       //     contract.features = contract.features || [];
@@ -171,7 +172,8 @@ export function loadTokenList() {
         type: ActionTypes.SET_LIST,
         tokens,
       });
-      tokens.map((token) => dispatch(loadTokenDetails(token.address)));
+
+      return Promise.all(tokens.map((token) => dispatch(loadTokenDetails(token.address))));
     });
   };
 }
@@ -192,7 +194,7 @@ export function addToken(token: TokenInfo) {
 }
 
 export function removeToken(address: string) {
-  return (dispatch, getState, api) => dispatch({ type: ActionTypes.REMOVE_TOKEN, address });
+  return (dispatch, getState) => dispatch({ type: ActionTypes.REMOVE_TOKEN, address });
 }
 
 // FIXME: deprecated

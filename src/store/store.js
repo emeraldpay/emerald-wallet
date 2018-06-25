@@ -68,7 +68,6 @@ function refreshAll() {
     store.dispatch(accounts.actions.loadPendingTransactions()),
     store.dispatch(history.actions.refreshTrackedTransactions()),
     store.dispatch(network.actions.loadHeight(false)),
-    store.dispatch(accounts.actions.loadAccountsList()),
   ];
 
   const state = store.getState();
@@ -76,27 +75,51 @@ function refreshAll() {
   if (state.launcher.getIn(['geth', 'type']) === 'local') {
     promises = promises.concat([
       store.dispatch(network.actions.loadPeerCount()),
-      store.dispatch(network.actions.loadSyncing()),
     ]);
   }
 
-  // Main loop that will refresh UI as needed
-  setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
-
-  return Promise.all(promises);
+  return Promise.all(promises).then(() => {
+    requestIdleCallback(refreshAll, { timeout: intervalRates.continueRefreshAllTxRate });
+  });
 }
 
 function refreshLong() {
-  store.dispatch(settings.actions.getExchangeRates());
-  setTimeout(refreshLong, intervalRates.continueRefreshLongRate);
+  store.dispatch(settings.actions.getExchangeRates())
+    .then(() => {
+      setTimeout(refreshLong, intervalRates.continueRefreshLongRate);
+    });
+}
+
+const REFRESH_SYNCING_MAX_CHECKS = 100;
+function refreshSyncing(syncingStarted = false, iteration = 0) {
+  return store
+    .dispatch(network.actions.loadSyncing())
+    .then(({syncing}) => {
+      iteration++;
+      return new Promise((resolve, reject) => {
+        if (syncing) {
+          syncingStarted = true;
+        } else if (syncingStarted) {
+          const finishedSyncing = !syncing;
+
+          if (finishedSyncing) {
+            resolve(true);
+            return;
+          }
+        }
+
+        if (iteration < REFRESH_SYNCING_MAX_CHECKS || syncingStarted) {
+          requestIdleCallback(
+            () => refreshSyncing(syncingStarted, iteration).then(resolve)
+          );
+        } else {
+          resolve(false);
+        }
+      });
+    });
 }
 
 export function startSync() {
-  store.dispatch(network.actions.getGasPrice());
-  store.dispatch(loadClientVersion());
-  store.dispatch(Addressbook.actions.loadAddressBook());
-  store.dispatch(tokens.actions.loadTokenList());
-
   const state = store.getState();
 
   const chain = state.launcher.getIn(['chain', 'name']);
@@ -108,48 +131,47 @@ export function startSync() {
     store.dispatch(ledger.actions.setBaseHD("m/44'/61'/1'/0"));
   }
 
-  if (state.launcher.getIn(['geth', 'type']) !== 'remote') {
-    // check for syncing
-    setTimeout(() => store.dispatch(network.actions.loadSyncing()), intervalRates.second); // prod: intervalRates.second
-    // double check for syncing
-    setTimeout(() => store.dispatch(network.actions.loadSyncing()), 2 * intervalRates.minute); // prod: 30 * this.second
-  }
-
   const chainId = state.launcher.getIn(['chain', 'id']);
-  store.dispatch(history.actions.init(chainId));
+
+  const promiseChain = store.dispatch(network.actions.getGasPrice())
+    .then(() => store.dispatch(loadClientVersion()))
+    .then(() => store.dispatch(Addressbook.actions.loadAddressBook()))
+    .then(() => store.dispatch(tokens.actions.loadTokenList()))
+    .then(() => store.dispatch(history.actions.init(chainId)));
+
+  if (state.launcher.getIn(['geth', 'type']) !== 'remote') {
+    promiseChain.then(() => refreshSyncing());
+  }
 
   // deployed tokens
   const known = deployedTokens[+chainId];
 
   if (known) {
-    known.forEach((token) => store.dispatch(tokens.actions.addToken(token)));
+    promiseChain.then(() => Promise.all(known.map((token) => store.dispatch(tokens.actions.addToken(token)))));
   }
 
-  refreshAll().then(() => {
-    // dispatch them in series
-    const historyForAddress = (a) => {
-      const params = [a.first().get('id'), 0, 0, '', '', -1, -1, false];
-      return store.dispatch(network.actions.loadAddressTransactions(...params))
-        .then(() => {
-          if (a.size > 1) {
-            historyForAddress(a.rest());
-          }
-        });
-    };
+  return promiseChain
+    .then(refreshAll)
+    .then(() => {
+      // dispatch them in series
+      const historyForAddress = (a) => {
+        const params = [a.first().get('id'), 0, 0, '', '', -1, -1, false];
+        return store.dispatch(network.actions.loadAddressTransactions(...params))
+          .then(() => {
+            if (a.size > 1) {
+              historyForAddress(a.rest());
+            }
+          });
+      };
 
-    historyForAddress(store.getState().accounts.get('accounts'));
-  });
-
-  setTimeout(refreshLong, 3 * intervalRates.second);
-  store.dispatch(connecting(false));
-}
-
-export function stopSync() {
-  // TODO
+      historyForAddress(store.getState().accounts.get('accounts'));
+    })
+    .then(() => store.dispatch(connecting(false)))
+    .then(() => setTimeout(refreshLong, 3 * intervalRates.second));
 }
 
 function newWalletVersionCheck() {
-  getWalletVersion().then((versionDetails) => {
+  return getWalletVersion().then((versionDetails) => {
     if (!versionDetails.isLatest) {
       const params = [
         `A new version of Emerald Wallet is available (${versionDetails.tag}).`,

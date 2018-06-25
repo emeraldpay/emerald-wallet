@@ -8,7 +8,7 @@ export function loadAddressBook() {
       type: ActionTypes.LOADING,
     });
     const chain = launcher.selectors.getChainName(getState());
-    api.emerald.listAddresses(chain).then((result) => {
+    return api.emerald.listAddresses(chain).then((result) => {
       dispatch({
         type: ActionTypes.SET_BOOK,
         addressBook: result,

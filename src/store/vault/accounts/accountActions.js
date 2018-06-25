@@ -27,18 +27,19 @@ const log = createLogger('accountActions');
 
 export function loadAccountBalance(address: string) {
   return (dispatch, getState, api) => {
-    api.geth.eth.getBalance(address).then((result) => {
+    const tokens = getState().tokens;
+
+    return api.geth.eth.getBalance(address).then((result) => {
       dispatch({
         type: ActionTypes.SET_BALANCE,
         accountId: address,
         value: result,
       });
+
+      if (!tokens.get('loading')) {
+        return dispatch(loadTokensBalances(address));
+      }
     });
-    // Tokens
-    const tokens = getState().tokens;
-    if (!tokens.get('loading')) {
-      dispatch(loadTokensBalances(address));
-    }
   };
 }
 
@@ -47,7 +48,7 @@ export function loadAccountBalance(address: string) {
  */
 function fetchBalances(addresses: Array<string>) {
   return (dispatch, getState, api) => {
-    api.geth.ext.getBalances(addresses).then((balances) => {
+    return api.geth.ext.getBalances(addresses).then((balances) => {
       addresses.forEach((address) => {
         if (balances[address]) {
           dispatch({
@@ -57,15 +58,15 @@ function fetchBalances(addresses: Array<string>) {
           });
         }
       });
+      // ERC20 Tokens
+      const tokens = getState().tokens;
+      if (!tokens.get('loading')) {
+        const promises = addresses.map((address) => dispatch(loadTokensBalances(address)));
+
+        return Promise.all(promises);
+      }
     });
 
-    // ERC20 Tokens
-    const tokens = getState().tokens;
-    if (!tokens.get('loading')) {
-      addresses.forEach((address) => {
-        dispatch(loadTokensBalances(address));
-      });
-    }
   };
 }
 
@@ -75,11 +76,11 @@ function fetchBalances(addresses: Array<string>) {
 function fetchHdPaths() {
   return (dispatch, getState, api) => {
     const chain = currentChain(getState());
-    getState().accounts.get('accounts')
+    const promises = getState().accounts.get('accounts')
       .filter((a) => a.get('hardware', false))
-      .forEach((a) => {
+      .map((a) => {
         const address = a.get('id');
-        api.emerald.exportAccount(address, chain).then((result) => {
+        return api.emerald.exportAccount(address, chain).then((result) => {
           dispatch({
             type: ActionTypes.SET_HD_PATH,
             accountId: address,
@@ -87,32 +88,35 @@ function fetchHdPaths() {
           });
         });
       });
+
+    return Promise.all(promises);
   };
 }
 
 export function loadAccountsList() {
   log.debug('Calling loadAccountsList()');
   return (dispatch, getState, api) => {
-    dispatch({
-      type: ActionTypes.LOADING,
-    });
+    dispatch({ type: ActionTypes.LOADING });
+
     const chain = currentChain(getState());
     const showHidden = getState().wallet.settings.get('showHiddenAccounts', false);
+
     return api.emerald.listAccounts(chain, showHidden).then((result) => {
       dispatch({
         type: ActionTypes.SET_LIST,
         accounts: result,
       });
-      dispatch(fetchHdPaths());
-      dispatch(fetchBalances(result.map((account) => account.address)));
+      return dispatch(fetchHdPaths()).then(() => {
+        return dispatch(fetchBalances(result.map((account) => account.address)));
+      });
     });
   };
 }
 
 export function loadAccountTxCount(accountId: string) {
   return (dispatch, getState, api) => {
-    api.geth.eth.getTransactionCount(accountId).then((result) => {
-      dispatch({
+    return api.geth.eth.getTransactionCount(accountId).then((result) => {
+      return dispatch({
         type: ActionTypes.SET_TXCOUNT,
         accountId,
         value: result,
@@ -175,21 +179,22 @@ export function updateAccount(address: string, name: string, description?: strin
 function unwrap(list) {
   return new Promise((resolve, reject) => {
     if (list.length === 1) {
-      resolve(list[0]);
+      return resolve(list[0]);
     } else {
-      reject(new Error(`Invalid list size ${list.length}`));
+      return reject(new Error(`Invalid list size ${list.length}`));
     }
   });
 }
 
 function onTxSend(dispatch, sourceTx: Transaction) {
   return (txHash: string) => {
-    dispatch(loadAccountBalance(sourceTx.from));
     const sentTx = Object.assign({}, sourceTx, {hash: txHash});
 
-    // TODO: dependency on wallet/history module!
-    dispatch(history.actions.trackTx(sentTx));
-    dispatch(screen.actions.gotoScreen('transaction', sentTx));
+    return dispatch(loadAccountBalance(sourceTx.from)).then(() => {
+      // TODO: dependency on wallet/history module!
+      dispatch(history.actions.trackTx(sentTx));
+      dispatch(screen.actions.gotoScreen('transaction', sentTx));
+    });
   };
 }
 
@@ -241,12 +246,11 @@ export function sendTransaction(from: string, passphrase: string, to: ?string, g
     const chain = currentChain(getState());
     return getNonce(api, from)
       .then(withNonce(originalTx))
-      .then((tx) =>
-        signTx(api, tx, passPhrase, chain)
-          .then(unwrap)
-          .then(verifySender(from))
-          .then((signed) => api.geth.eth.sendRawTransaction(signed))
-          .then(onTxSend(dispatch, tx))
+      .then((tx) => signTx(api, tx, passPhrase, chain)
+        .then(unwrap)
+        .then(verifySender(from))
+        .then((signed) => api.geth.eth.sendRawTransaction(signed))
+        .then(() => onTxSend(dispatch, tx))
       )
       .catch(screen.actions.catchError(dispatch));
   };
@@ -267,7 +271,7 @@ export function createContract(accountId: string, passphrase: string, gas, gasPr
     api.emerald.signTransaction(txData, { chain })
       .then(unwrap)
       .then(api.geth.eth.sendRawTransaction)
-      .then(onTxSend(dispatch, txData))
+      .then(() => onTxSend(dispatch, txData))
       .catch(log.error);
   };
 }
@@ -306,9 +310,8 @@ export function importJson(data, name: string, description: string) {
           type: ActionTypes.ADD_ACCOUNT,
           accountId: result,
         });
-        dispatch(network.actions.loadAddressTransactions(result, 0, 0, '', '', -1, -1, false));
-        dispatch(loadAccountBalance(result));
-        return result;
+        return dispatch(network.actions.loadAddressTransactions(result, 0, 0, '', '', -1, -1, false))
+          .then(() => dispatch(loadAccountBalance(result)));
       }
       throw new Error(result);
     });
@@ -328,10 +331,10 @@ export function importMnemonic(passphrase: string, mnemonic: string, hdPath: str
           type: ActionTypes.ADD_ACCOUNT,
           accountId: result,
         });
-        dispatch(network.actions.loadAddressTransactions(result, 0, 0, '', '', -1, -1, false));
-        dispatch(loadAccountBalance(result));
-        return result;
+        return dispatch(network.actions.loadAddressTransactions(result, 0, 0, '', '', -1, -1, false))
+          .then(() => dispatch(loadAccountBalance(result)));
       }
+
       throw new Error(result);
     });
   };
@@ -382,9 +385,7 @@ export function hideAccount(accountId: string) {
     const chain = currentChain(getState());
 
     return api.emerald.hideAccount(accountId, chain)
-      .then((result) => {
-        return result;
-      }).catch(screen.actions.catchError(dispatch));
+      .catch(screen.actions.catchError(dispatch));
   };
 }
 
@@ -393,9 +394,7 @@ export function unhideAccount(accountId: string) {
     const chain = currentChain(getState());
 
     return api.emerald.unhideAccount(accountId, chain)
-      .then((result) => {
-        return result;
-      }).catch(screen.actions.catchError(dispatch));
+      .catch(screen.actions.catchError(dispatch));
   };
 }
 

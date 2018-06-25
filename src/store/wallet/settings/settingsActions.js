@@ -31,8 +31,8 @@ export function loadSettings() {
 
 export function getExchangeRates() {
   return (dispatch) => {
-    getRates.call().then((result) => {
-      dispatch({
+    return getRates.call().then((result) => {
+      return dispatch({
         type: ActionTypes.EXCHANGE_RATES,
         rates: result,
       });

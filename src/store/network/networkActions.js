@@ -63,7 +63,7 @@ export function loadSyncing() {
         });
       }
 
-      dispatch({
+      return dispatch({
         type: ActionTypes.SYNCING,
         syncing: false,
       });
