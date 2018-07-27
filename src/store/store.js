@@ -4,6 +4,8 @@ import createReduxLogger from 'redux-logger';
 import { createStore as createReduxStore, applyMiddleware, combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
 import { ipcRenderer } from 'electron';
+import EthereumQRPlugin from 'ethereum-qr-code'
+import { fromJS } from 'immutable';
 
 import { api } from '../lib/rpc/api';
 import { intervalRates } from './config';
@@ -26,6 +28,7 @@ import reduxLogger from '../utils/redux-logger';
 import reduxMiddleware from './middleware';
 
 const log = createLogger('store');
+const qr = new EthereumQRPlugin()
 
 const reducers = {
   accounts: accounts.reducer,
@@ -36,7 +39,8 @@ const reducers = {
   ledger: ledger.reducer,
   form: formReducer,
   wallet: walletReducers,
-};
+}
+
 
 /**
  * Creates Redux store with API as dependency injection.
@@ -166,6 +170,20 @@ export const start = () => {
   }
   store.dispatch(listenElectron());
   store.dispatch(screen.actions.gotoScreen('welcome'));
+
+  ipcRenderer.on('protocol', (event, request) => {
+    log.info('BEFORE READSTRINGJSON');
+    console.log('BEFORE READSTRIJGJSJ');
+    const paymentParams = qr.readStringToJSON(request.url);
+    log.info('AFTER READSTRINGJSON', JSON.stringify(paymentParams));
+    console.log('AFTER READSTRIJGJSJ');
+    const transaction = {
+      amount: paymentParams.value,
+      gas: paymentParams.gas
+    };
+    const account = store.getState().accounts.get('accounts').first();
+    store.dispatch(screen.actions.gotoScreen('repeat-tx', {transaction: fromJS(transaction), toAccount: fromJS({id: paymentParams.to}), fromAccount: account}));
+  });
   newWalletVersionCheck();
 };
 
