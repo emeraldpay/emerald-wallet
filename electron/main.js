@@ -1,4 +1,6 @@
 const app = require('electron').app; // eslint-disable-line import/no-extraneous-dependencies
+const protocol = require('electron').protocol; // eslint-disable-line import/no-extraneous-dependencies
+const path = require('path');
 
 const Settings = require('./settings');
 const mainWindow = require('./mainWindow');
@@ -22,7 +24,6 @@ log.info('userData: ', app.getPath('userData'));
 log.info(`Chain: ${JSON.stringify(settings.getChain())}`);
 log.info('Settings: ', settings.toJS());
 
-// This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
@@ -35,6 +36,7 @@ app.on('ready', () => {
     .catch((err) => log.error('Failed to start Services:', err));
 
   ipc({ settings, services });
+
 
   app.on('quit', () => {
     return services.shutdown()
