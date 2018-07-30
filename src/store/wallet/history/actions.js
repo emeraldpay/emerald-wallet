@@ -24,7 +24,6 @@ function loadPersistedTransactions(state): Array<Transaction> {
 }
 
 function updateAndTrack(dispatch, getState, api, txs) {
-  console.log('updateAndTrack');
   const pendingTxs = txs.filter((tx) => tx.blockNumber === undefined);
   const nonPendingTxs = txs.filter((tx) => pendingTxs.indexOf(tx) === -1);
 
@@ -47,7 +46,6 @@ function updateAndTrack(dispatch, getState, api, txs) {
         dispatch({type: ActionTypes.TRACK_TXS, txs: transactions});
       });
   }
-  console.log(nonPendingTxs, pendingTxs);
 
   persistTransactions(getState());
   return returnPromise;
