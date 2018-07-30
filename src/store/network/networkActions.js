@@ -8,6 +8,11 @@ import history from '../wallet/history';
 
 const log = createLogger('networkActions');
 
+const handleFailedToFetch = (err) => {
+  if (err.message.includes('Failed to fetch')) { return; }
+  throw err;
+};
+
 export function switchChain({ chain, chainId }) {
   return (dispatch, getState) => {
     dispatch({
@@ -25,7 +30,7 @@ export function loadHeight(watch) {
         type: ActionTypes.BLOCK,
         height: result,
       });
-    });
+    }).catch(handleFailedToFetch);
   };
 }
 
@@ -36,7 +41,7 @@ export function loadPeerCount() {
         type: ActionTypes.PEER_COUNT,
         peerCount: result,
       });
-    });
+    }).catch(handleFailedToFetch);
   };
 }
 
@@ -73,7 +78,7 @@ export function loadSyncing() {
         type: ActionTypes.SYNCING,
         syncing: false,
       });
-    });
+    }).catch(handleFailedToFetch);
   };
 }
 
@@ -84,7 +89,7 @@ export function getGasPrice() {
         type: ActionTypes.GAS_PRICE,
         value: result,
       });
-    });
+    }).catch(handleFailedToFetch);
   };
 }
 
