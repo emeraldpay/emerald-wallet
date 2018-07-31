@@ -143,7 +143,7 @@ export function createAccount(passphrase: string, name: string = '', description
           name,
           description,
         });
-        dispatch(network.actions.loadAddressesTransactions([ result ]));
+        dispatch(network.actions.loadAddressesTransactions([result]));
         dispatch(loadAccountBalance(result));
         return result;
       }).catch(screen.actions.catchError(dispatch));
