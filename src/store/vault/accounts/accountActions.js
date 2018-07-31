@@ -143,7 +143,7 @@ export function createAccount(passphrase: string, name: string = '', description
           name,
           description,
         });
-        dispatch(network.actions.loadAddressTransactions(result, 0, 0, '', '', -1, -1, false));
+        dispatch(network.actions.loadAddressesTransactions([ result ]));
         dispatch(loadAccountBalance(result));
         return result;
       }).catch(screen.actions.catchError(dispatch));
@@ -298,7 +298,7 @@ export function importJson(data, name: string, description: string) {
           type: ActionTypes.ADD_ACCOUNT,
           accountId: result,
         });
-        dispatch(network.actions.loadAddressTransactions(result, 0, 0, '', '', -1, -1, false));
+        dispatch(network.actions.loadAddressesTransactions([result]));
         dispatch(loadAccountBalance(result));
         return result;
       }
@@ -320,7 +320,7 @@ export function importMnemonic(passphrase: string, mnemonic: string, hdPath: str
           type: ActionTypes.ADD_ACCOUNT,
           accountId: result,
         });
-        dispatch(network.actions.loadAddressTransactions(result, 0, 0, '', '', -1, -1, false));
+        dispatch(network.actions.loadAddressesTransactions([result]));
         dispatch(loadAccountBalance(result));
         return result;
       }
