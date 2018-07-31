@@ -91,6 +91,10 @@ function refreshLong() {
   setTimeout(refreshLong, intervalRates.continueRefreshLongRate);
 }
 
+const historyForAddress = () => {
+
+};
+
 export function startSync() {
   store.dispatch(network.actions.getGasPrice());
   store.dispatch(loadClientVersion());
@@ -126,18 +130,7 @@ export function startSync() {
   }
 
   refreshAll().then(() => {
-    // dispatch them in series
-    const historyForAddress = (a) => {
-      const params = [a.first().get('id'), 0, 0, '', '', -1, -1, false];
-      return store.dispatch(network.actions.loadAddressTransactions(...params))
-        .then(() => {
-          if (a.size > 1) {
-            historyForAddress(a.rest());
-          }
-        });
-    };
-
-    historyForAddress(store.getState().accounts.get('accounts'));
+    store.dispatch(network.actions.loadAddressesTransactions(store.getState().accounts.get('accounts').map((account) => account.get('id'))));
   });
 
   setTimeout(refreshLong, 3 * intervalRates.second);

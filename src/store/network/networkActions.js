@@ -45,16 +45,45 @@ export function loadPeerCount() {
   };
 }
 
+export function loadAddressesTransactions(addresses) {
+  return (dispatch, getState, api) => {
+    const addressTransactionPromises = addresses.map((address) => {
+      return api.geth.eth.getAddressTransactions(address, 0, 0, 'tf', 'sc', -1, -1, false);
+    }).toJS();
+
+    Promise.all(addressTransactionPromises).then((transactionsByAccount) => {
+      const results = transactionsByAccount.reduce((m, r) => m.concat(r), []);
+      const uniqueTransactions = Array.from(new Set(results));
+      if (results.length === 0) { return; }
+
+      const trackedTxs = getState().wallet.history.get('trackedTransactions');
+      const untrackedResults = uniqueTransactions.filter((txHash) => {
+        const isAlreadyTracked = !trackedTxs.find((tx) => txHash === tx.get('hash'));
+        return isAlreadyTracked;
+      });
+
+      if (untrackedResults.length === 0) { return; }
+
+      return api.geth.ext.getTransactions(untrackedResults).then((txes) => {
+        return dispatch(history.actions.trackTxs(txes.map((tx) => tx.result)));
+      });
+    });
+  };
+}
+
 export function loadAddressTransactions(...props) {
   return (dispatch, getState, api) => {
+    console.log(...props);
     return api.geth.eth.getAddressTransactions(...props).then((results) => {
       if (results.length === 0) { return; }
 
       const trackedTxs = getState().wallet.history.get('trackedTransactions');
-      const isAlreadyTracked = trackedTxs.find((tx) => results.indexOf(tx.get('hash')) !== -1);
-      if (isAlreadyTracked) { return null; }
+      const untrackedResults = results.filter((txHash) => {
+        const isAlreadyTracked = !!trackedTxs.find((tx) => txHash === tx.get('hash'));
+        return isAlreadyTracked;
+      });
 
-      return api.geth.ext.getTransactions(results).then((txes) => {
+      return api.geth.ext.getTransactions(untrackedResults).then((txes) => {
         return dispatch(history.actions.trackTxs(txes.map((tx) => tx.result)));
       });
     }).catch((e) => {
