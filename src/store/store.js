@@ -172,18 +172,29 @@ export const start = () => {
   store.dispatch(screen.actions.gotoScreen('welcome'));
 
   ipcRenderer.on('protocol', (event, request) => {
-    log.info('BEFORE READSTRINGJSON');
-    console.log('BEFORE READSTRIJGJSJ');
     const paymentParams = qr.readStringToJSON(request.url);
-    log.info('AFTER READSTRINGJSON', JSON.stringify(paymentParams));
-    console.log('AFTER READSTRIJGJSJ');
     const transaction = {
       amount: paymentParams.value,
       gas: paymentParams.gas
     };
-    const account = store.getState().accounts.get('accounts').first();
-    store.dispatch(screen.actions.gotoScreen('repeat-tx', {transaction: fromJS(transaction), toAccount: fromJS({id: paymentParams.to}), fromAccount: account}));
+
+    const state = store.getState();
+    const accounts = state.accounts.get('accounts');
+
+    let fromAccount = accounts.first();
+    if (paymentParams.from) {
+      fromAccount = accounts.find(
+        (account) => account.get('id') === paymentParams.from
+      ) || fromAccount;
+    }
+
+    store.dispatch(screen.actions.gotoScreen('repeat-tx', {
+      transaction: fromJS(transaction),
+      toAccount: fromJS({id: paymentParams.to}),
+      fromAccount,
+    }));
   });
+
   newWalletVersionCheck();
 };
 
