@@ -26,6 +26,7 @@ const createWindow = function (openDevTools) {
     devToolsLog(`ETHEREUM HTTP PROTOCOL CALLED: ${JSON.stringify(request)}`);
 
     mainWindow.webContents.send('protocol', request);
+    callback('foobar');
   }, (err) => {
     if (err) {
       return console.error(err);
@@ -47,11 +48,10 @@ const createWindow = function (openDevTools) {
     devtron.install();
   }
 
-  // Prevent opening external links in electron.
-  /* mainWindow.webContents.on('will-navigate', (e, _url) => {
-   *   e.preventDefault()
-   *   electron.shell.openExternal(_url);
-   * });*/
+  mainWindow.webContents.on('will-navigate', (e, _url) => {
+    e.preventDefault();
+    electron.shell.openExternal(_url);
+  });
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {
