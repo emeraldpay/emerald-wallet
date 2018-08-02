@@ -1,3 +1,4 @@
+import { fromJS } from 'immutable';
 import BigNumber from 'bignumber.js';
 import reducer from './tokenReducers';
 import ActionTypes from './actionTypes';
@@ -37,8 +38,7 @@ describe('tokenReducer', () => {
     // do
     state = reducer(state, {
       type: ActionTypes.SET_TOKENS_BALANCES,
-      accountId: '0x123456789',
-      balances: [{ tokenAddress: '0x1123', amount: '0x01'}],
+      tokenBalances: [{ accountAddress: '0x123456789', tokenAddress: '0x1123', amount: '0x01'}],
     });
 
     // assert
@@ -63,10 +63,11 @@ describe('tokenReducer', () => {
     state = reducer(state, {
       type: ActionTypes.SET_TOKEN_BALANCE,
       accountId: 'id1',
-      token: {
+      token: fromJS({
         address: '0x2',
         decimals: '0x2',
-      },
+        symbol: 'BEC',
+      }),
       value: '0x1',
     });
 
@@ -77,11 +78,11 @@ describe('tokenReducer', () => {
     state = reducer(state, {
       type: ActionTypes.SET_TOKEN_BALANCE,
       accountId: 'id1',
-      token: {
+      token: fromJS({
         address: '0x2',
         decimals: '0x2',
         symbol: 'BEC',
-      },
+      }),
       value: '0x2',
     });
     expect(state.get('balances').get('id1').first().get('symbol')).toEqual('BEC');

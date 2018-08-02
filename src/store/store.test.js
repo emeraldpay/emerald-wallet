@@ -22,7 +22,7 @@ describe('store', () => {
 
   it('should dispatch tx history actions', () => {
     const store = createStore(null);
-    store.dispatch(WalletHistory.actions.trackTxAction({hash: '0x12', to: null}));
+    store.dispatch(WalletHistory.actions.trackTx({hash: '0x12', to: null}));
     store.dispatch(Ledger.actions.setWatch(true));
   });
 });

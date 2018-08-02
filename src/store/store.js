@@ -66,9 +66,9 @@ export const store = createStore(api);
 function refreshAll() {
   let promises = [
     store.dispatch(accounts.actions.loadPendingTransactions()),
-    store.dispatch(history.actions.refreshTrackedTransactions()),
     store.dispatch(network.actions.loadHeight(false)),
     store.dispatch(accounts.actions.loadAccountsList()),
+    store.dispatch(history.actions.refreshTrackedTransactions()),
   ];
 
   const state = store.getState();
@@ -90,6 +90,10 @@ function refreshLong() {
   store.dispatch(settings.actions.getExchangeRates());
   setTimeout(refreshLong, intervalRates.continueRefreshLongRate);
 }
+
+const historyForAddress = () => {
+
+};
 
 export function startSync() {
   store.dispatch(network.actions.getGasPrice());
@@ -126,18 +130,7 @@ export function startSync() {
   }
 
   refreshAll().then(() => {
-    // dispatch them in series
-    const historyForAddress = (a) => {
-      const params = [a.first().get('id'), 0, 0, '', '', -1, -1, false];
-      return store.dispatch(network.actions.loadAddressTransactions(...params))
-        .then(() => {
-          if (a.size > 1) {
-            historyForAddress(a.rest());
-          }
-        });
-    };
-
-    historyForAddress(store.getState().accounts.get('accounts'));
+    store.dispatch(network.actions.loadAddressesTransactions(store.getState().accounts.get('accounts').map((account) => account.get('id'))));
   });
 
   setTimeout(refreshLong, 3 * intervalRates.second);

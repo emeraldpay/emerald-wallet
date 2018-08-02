@@ -106,6 +106,25 @@ function onSetBalance(state, action) {
   return state;
 }
 
+function onSetBalances(state, action) {
+  if (action.type === ActionTypes.SET_BALANCES) {
+    const accounts = action.accountBalances.forEach(({accountId, balance}) => {
+      state = updateAccount(state, accountId, (acc) => {
+        // Update balance only if it's changed
+        const newBalance = new Wei(balance);
+        const currentBalance = acc.get('balance');
+        if (currentBalance && currentBalance.equals(newBalance)) {
+          return acc.set('balancePending', null);
+        }
+        return acc
+          .set('balance', newBalance)
+          .set('balancePending', null);
+      });
+    });
+  }
+  return state;
+}
+
 function onSetTxCount(state, action) {
   if (action.type === ActionTypes.SET_TXCOUNT) {
     return updateAccount(state, action.accountId, (acc) =>
@@ -156,6 +175,7 @@ export default function accountsReducers(state, action) {
   state = onAddAccount(state, action);
   state = onUpdateAccount(state, action);
   state = onSetBalance(state, action);
+  state = onSetBalances(state, action);
   state = onSetTxCount(state, action);
   state = onPendingBalance(state, action);
   state = onSetHdPath(state, action);

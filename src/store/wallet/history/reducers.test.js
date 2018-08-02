@@ -1,4 +1,4 @@
-import Immutable from 'immutable';
+import { fromJS, List } from 'immutable';
 import BigNumber from 'bignumber.js';
 import { convert, Wei } from 'emerald-js';
 
@@ -12,7 +12,7 @@ describe('historyReducer', () => {
   it('should store and load txs correctly', () => {
     // prepare
     let state = historyReducers(null, {});
-    expect(state.get('trackedTransactions')).toEqual(Immutable.List());
+    expect(state.get('trackedTransactions')).toEqual(List());
     state = historyReducers(state, {
       type: ActionTypes.TRACK_TX,
       tx: {
@@ -42,7 +42,7 @@ describe('historyReducer', () => {
 
   it('should add pending TX or update existent', () => {
     let state = historyReducers(null, {});
-    expect(state.get('trackedTransactions')).toEqual(Immutable.List());
+    expect(state.get('trackedTransactions')).toEqual(List());
     state = historyReducers(state, {
       type: ActionTypes.TRACK_TX,
       tx: {
@@ -71,7 +71,7 @@ describe('historyReducer', () => {
     expect(state.get('trackedTransactions').size).toBe(2);
   });
 
-  it('should update TX data with tx.input', () => {
+  it('should update TXS data with tx.input', () => {
     const tx = {
       blockHash: '0xc87e5117923e756e5d262ef230374b73ebe47f232b0f029fa65cf6614d959100',
       blockNumber: '0x17',
@@ -99,8 +99,8 @@ describe('historyReducer', () => {
 
     // action
     const action = {
-      type: ActionTypes.UPDATE_TX,
-      tx,
+      type: ActionTypes.UPDATE_TXS,
+      transactions: [tx],
     };
     state = historyReducers(state, action);
     const trackedTxs = state.get('trackedTransactions').last().toJS();
@@ -110,7 +110,7 @@ describe('historyReducer', () => {
     expect(trackedTxs.value).toEqual(tx.value);
   });
 
-  it('should update TX timestamp', () => {
+  it('should update TXS timestamp', () => {
     const tx = {
       blockHash: '0xc87e5117923e756e5d262ef230374b73ebe47f232b0f029fa65cf6614d959100',
       blockNumber: '0x17',
@@ -126,27 +126,24 @@ describe('historyReducer', () => {
     };
 
     // prepare state
-    let state = historyReducers(null, {
+    let state = historyReducers(fromJS({
+      trackedTransactions: new List(),
+    }), {
       type: ActionTypes.TRACK_TX,
-      tx: {
-        blockHash: '0xc87e5117923e756e5d262ef230374b73ebe47f232b0f029fa65cf6614d959100',
-        blockNumber: '0x17',
-        hash: tx.hash,
-        gas: '0x47e7c4',
-        gasPrice: '0x174876e800',
-        nonce: '0x4',
-        value: tx.value,
-      },
+      tx,
     });
 
     // action
     const action = {
-      type: ActionTypes.UPDATE_TX,
-      tx: {
-        hash: tx.hash,
-        timestamp: 123456789,
-      },
+      type: ActionTypes.UPDATE_TXS,
+      transactions: [
+        {
+          hash: tx.hash,
+          timestamp: 123456789,
+        },
+      ],
     };
+
     state = historyReducers(state, action);
     const trackedTxs = state.get('trackedTransactions').last().toJS();
     expect(trackedTxs.timestamp).toEqual(123456789);

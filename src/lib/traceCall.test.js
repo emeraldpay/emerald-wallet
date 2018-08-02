@@ -9,7 +9,6 @@ describe('ParityTracer', () => {
     };
     const tracer = new ParityTracer(tx);
     const call = tracer.buildRequest();
-    console.log(call);
     expect(call.method).toBe('trace_call');
     expect(call.params[0].from).toBe(tx.from);
   });
@@ -951,7 +950,6 @@ describe('ParityTracer', () => {
       };
 
       const result = ParityTracer.estimateGasFromTrace(tx, trace);
-      console.log(result.toString(10));
     });
   });
 });
