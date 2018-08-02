@@ -20,7 +20,6 @@
   ],
   "scripts": {
     "setup": "npm install && flow-typed install",
-    "build": "node build-web --no-watch",
     "build:web": "node build-web --for-electron",
     "build:web:nowatch": "node build-web --no-watch --for-electron",
     "build:all": "node build-web --for-electron",
@@ -38,7 +37,8 @@
     "dist:nobuild": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never",
     "flow": "flow",
     "getemerald": "cross-env ELECTRON_RUN_AS_NODE=true ./node_modules/.bin/electron ./scripts/download-emerald.js",
-    "storybook": "start-storybook -p 9001 -c .storybook"
+    "storybook": "start-storybook -p 9001 -c .storybook",
+    "simp": "build"
   },
   "keywords": [
     "react",
@@ -206,6 +206,7 @@
     "protocols": [
       {
         "name": "ethereum",
+        "role": "Viewer",
         "schemes": [
           "ethereum"
         ]
