@@ -21,13 +21,16 @@ const createWindow = function (openDevTools) {
   // Create the browser window.
   mainWindow = new electron.BrowserWindow({ width: 1200, height: 650, minWidth: 1200, minHeight: 650 });
 
-  protocol.registerStringProtocol('ethereum', (request, callback) => {
+  protocol.interceptStringProtocol('ethereum', (request, callback) => {
     ////didnt freeze
     devToolsLog(`ETHEREUM HTTP PROTOCOL CALLED: ${JSON.stringify(request)}`);
 
     mainWindow.webContents.send('protocol', request);
     callback('foobar');
   }, (err) => {
+    log.info('hit error handler');
+    devToolsLog("SHIT IS BUSTEDDDD");
+    devToolsLog(err);
     if (err) {
       return console.error(err);
     }
