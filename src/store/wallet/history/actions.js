@@ -24,7 +24,7 @@ function loadPersistedTransactions(state): Array<Transaction> {
 }
 
 function updateAndTrack(dispatch, getState, api, txs) {
-  const pendingTxs = txs.filter((tx) => tx.blockNumber === undefined);
+  const pendingTxs = txs.filter((tx) => !tx.blockNumber);
   const nonPendingTxs = txs.filter((tx) => pendingTxs.indexOf(tx) === -1);
 
   let returnPromise;
@@ -35,8 +35,7 @@ function updateAndTrack(dispatch, getState, api, txs) {
 
   if (nonPendingTxs.length !== 0) {
     const blockNumbers = nonPendingTxs.map((tx) => tx.blockNumber);
-    returnPromise = api.geth.ext.getBlocksByNumbers(blockNumbers)
-      .then((blocks) => {
+    returnPromise = api.geth.ext.getBlocksByNumbers(blockNumbers).then((blocks) => {
         return nonPendingTxs.map((tx) => ({
           ...tx,
           timestamp: blocks.find(({ hash }) => hash === tx.blockHash).timestamp,
@@ -78,9 +77,9 @@ const txUnconfirmed = (state, tx) => {
   const currentBlock = state.network.get('currentBlock').get('height');
   const txBlockNumber = tx.get('blockNumber');
 
-  const txIsPending = txBlockNumber === null;
-
-  if (txIsPending) { return true; }
+  if (!txBlockNumber) {
+    return true;
+  }
 
   const numConfirmsForTx = txBlockNumber - currentBlock;
 
@@ -100,18 +99,25 @@ export function refreshTrackedTransactions() {
       .filter((tx) => txUnconfirmed(state, tx))
       .map((tx) => tx.get('hash'));
 
-    if (hashes.length === 0) return;
+    if (hashes.size === 0) {
+      return;
+    };
 
-    return api.geth.ext.getTransactions(hashes).then((result) => {
-      dispatch({ type: ActionTypes.UPDATE_TXS, transactions: result.map((r) => r.result) });
-      /** TODO: Check for input data **/
-      if ((result.creates !== undefined) && (isAddress(result.creates) === undefined)) {
-        dispatch({
-          type: 'CONTRACT/UPDATE_CONTRACT',
-          tx: result,
-          address: result.creates,
-        });
-      }
+    return api.geth.ext.getTransactions(hashes).then((results) => {
+      const transactions = results.map((r) => r.result).filter((tx) => tx.blockNumber);
+
+      if (transactions.length === 0) { return; }
+
+      return api.geth.ext.getBlocksByNumbers(transactions.map((tx) => tx.blockNumber)).then((blocks) => {
+        return transactions.map((tx) => ({
+          ...tx,
+          timestamp: blocks.find(({ hash }) => hash === tx.blockHash).timestamp,
+        }));
+      });
+    }).then((transactions) => {
+      if (!transactions || transactions.length === 0) { return; }
+
+      dispatch({ type: ActionTypes.UPDATE_TXS, transactions });
 
       return persistTransactions(getState());
     });
