@@ -113,7 +113,9 @@
     "roboto-fontface": "0.7.0",
     "store": "^2.0.4",
     "typeface-rubik": "0.0.43",
-    "uuid": "3.1.0"
+    "uuid": "3.1.0",
+    "electron-log": "^2.2.6",
+    "electron-store": "^1.1.0"
   },
   "devDependencies": {
     "@elastic/webpack-directory-name-as-main": "2.0.2",
@@ -133,9 +135,9 @@
     "copy-webpack-plugin": "1.1.1",
     "cross-env": "^5.1.1",
     "css-loader": "0.28.0",
-    "electron": "^2.0.5",
-    "electron-builder": "^19.52.1",
-    "electron-rebuild": "^1.7.3",
+    "electron": "^2.0.6",
+    "electron-builder": "^20.26.1",
+    "electron-rebuild": "^1.8.2",
     "enzyme": "3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
     "eslint-config-airbnb-base": "11.1.3",
@@ -164,7 +166,7 @@
     "webpack-dev-server": "2.4.2"
   },
   "build": {
-    "appId": "com.ethereumclassic.emeraldwallet",
+    "appId": "com.ethereumclassic.emeraldwallet.test",
     "artifactName": "${productName}-${os}-${arch}-${env.APP_VERSION_GIT_TAG}.${ext}",
     "compression": "normal",
     "asar": true,
@@ -206,7 +208,6 @@
     "protocols": [
       {
         "name": "ethereum",
-        "role": "Viewer",
         "schemes": [
           "ethereum"
         ]
