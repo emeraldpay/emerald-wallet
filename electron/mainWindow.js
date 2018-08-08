@@ -20,8 +20,11 @@ function devToolsLog(s) {
 const createWindow = function (openDevTools) {
   // Create the browser window.
   mainWindow = new electron.BrowserWindow({ width: 1200, height: 650, minWidth: 1200, minHeight: 650 });
+  protocol.unregisterProtocol('ethereum', (err) => {
+    console.log('done', err);
+  })
 
-  protocol.interceptStringProtocol('ethereum', (request, callback) => {
+  protocol.registerStringProtocol('ethereum', (request, callback) => {
     ////didnt freeze
     devToolsLog(`ETHEREUM HTTP PROTOCOL CALLED: ${JSON.stringify(request)}`);
 
