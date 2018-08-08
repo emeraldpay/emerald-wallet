@@ -136,7 +136,7 @@
     "cross-env": "^5.1.1",
     "css-loader": "0.28.0",
     "electron": "^2.0.6",
-    "electron-builder": "^20.26.1",
+    "electron-builder": "20.27.1",
     "electron-rebuild": "^1.8.2",
     "enzyme": "3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
