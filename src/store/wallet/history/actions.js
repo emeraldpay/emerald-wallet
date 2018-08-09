@@ -36,11 +36,11 @@ function updateAndTrack(dispatch, getState, api, txs) {
   if (nonPendingTxs.length !== 0) {
     const blockNumbers = nonPendingTxs.map((tx) => tx.blockNumber);
     returnPromise = api.geth.ext.getBlocksByNumbers(blockNumbers).then((blocks) => {
-        return nonPendingTxs.map((tx) => ({
-          ...tx,
-          timestamp: blocks.find(({ hash }) => hash === tx.blockHash).timestamp,
-        }));
-      })
+      return nonPendingTxs.map((tx) => ({
+        ...tx,
+        timestamp: blocks.find(({ hash }) => hash === tx.blockHash).timestamp,
+      }));
+    })
       .then((transactions) => {
         dispatch({type: ActionTypes.TRACK_TXS, txs: transactions});
       });
@@ -101,7 +101,7 @@ export function refreshTrackedTransactions() {
 
     if (hashes.size === 0) {
       return;
-    };
+    }
 
     return api.geth.ext.getTransactions(hashes).then((results) => {
       const transactions = results.map((r) => r.result).filter((tx) => tx.blockNumber);
