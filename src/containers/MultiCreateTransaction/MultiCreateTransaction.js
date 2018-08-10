@@ -51,10 +51,15 @@ class MultiCreateTransaction extends React.Component {
     this.onChangeAmount = this.onChangeAmount.bind(this);
     this.onChangePassword = this.onChangePassword.bind(this);
     this.getPage = this.getPage.bind(this);
+    this.onMaxClicked = this.onMaxClicked.bind(this);
     this.state = {
       transaction: {},
       page: PAGES.TX,
     };
+  }
+
+  get balance() {
+    return this.props.getBalanceForAddress(this.state.transaction.from, this.state.transaction.token);
   }
 
   setTransaction(key, val) {
@@ -117,6 +122,12 @@ class MultiCreateTransaction extends React.Component {
     });
   }
 
+  onMaxClicked() {
+    const txFee = new BigNumber(this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit));
+    const amount = new BigNumber(this.balance).sub(txFee).valueOf();
+    this.setTransaction('amount', amount);
+  }
+
   getPage() {
     if (!this.state.transaction.from) { return null; }
 
@@ -148,6 +159,7 @@ class MultiCreateTransaction extends React.Component {
             onSubmit={this.onSubmitCreateTransaction}
             onCancel={this.props.onCancel}
             onEmptyAddressBookClick={this.props.onEmptyAddressBookClick}
+          onMaxClicked={this.onMaxClicked}
           />
         );
       case PAGES.PASSWORD:
