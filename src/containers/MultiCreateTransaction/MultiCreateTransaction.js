@@ -123,8 +123,9 @@ class MultiCreateTransaction extends React.Component {
   }
 
   onMaxClicked() {
-    const txFee = new BigNumber(this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit));
+    const txFee = this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit);
     const amount = new BigNumber(this.balance).sub(txFee).valueOf();
+
     this.setTransaction('amount', amount);
   }
 
@@ -159,7 +160,7 @@ class MultiCreateTransaction extends React.Component {
             onSubmit={this.onSubmitCreateTransaction}
             onCancel={this.props.onCancel}
             onEmptyAddressBookClick={this.props.onEmptyAddressBookClick}
-          onMaxClicked={this.onMaxClicked}
+            onMaxClicked={this.onMaxClicked}
           />
         );
       case PAGES.PASSWORD:
