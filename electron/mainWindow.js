@@ -20,9 +20,6 @@ function devToolsLog(s) {
 const createWindow = function (openDevTools) {
   // Create the browser window.
   mainWindow = new electron.BrowserWindow({ width: 1200, height: 650, minWidth: 1200, minHeight: 650 });
-  protocol.unregisterProtocol('ethereum', (err) => {
-    console.log('done', err);
-  })
 
   protocol.registerStringProtocol('ethereum', (request, callback) => {
     ////didnt freeze
@@ -54,10 +51,10 @@ const createWindow = function (openDevTools) {
     devtron.install();
   }
 
-  mainWindow.webContents.on('will-navigate', (e, _url) => {
-    e.preventDefault();
-    electron.shell.openExternal(_url);
-  });
+  /* mainWindow.webContents.on('will-navigate', (e, _url) => {
+   *   e.preventDefault();
+   *   electron.shell.openExternal(_url);
+   * });*/
 
   // Emitted when the window is closed.
   mainWindow.on('closed', () => {
