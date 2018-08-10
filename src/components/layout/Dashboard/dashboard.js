@@ -2,7 +2,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
-import FlatButton from 'material-ui/FlatButton';
 import Immutable from 'immutable';
 import CircularProgress from 'material-ui/CircularProgress';
 import TransactionsHistory from '../../../components/tx/TxHistory';
@@ -36,14 +35,12 @@ const Dashboard = (props) => {
 
   return (
     <div>
-      <a href="#" onClick={() => window.open("ethereum:0x7cB57B5A97eAbe94205C07890BE4c1aD31E486A8?gas=4200&value=150&from=0xc8af13a04404eee57129da36b30adddc015052a0")} > click me </a>
+      <Header />
+      <AccountsList/>
+      <TransactionsHistory/>
     </div>
   );
 };
-
-/* <Header />
- * <AccountsList/>
- * <TransactionsHistory/>*/
 
 Dashboard.propTypes = {
   connecting: PropTypes.bool.isRequired,
