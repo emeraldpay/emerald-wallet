@@ -198,7 +198,7 @@ export const start = () => {
   newWalletVersionCheck();
 };
 
-export function waitForServices() {
+export function waitForServices(cb) {
   const unsubscribe = store.subscribe(() => {
     const state = store.getState();
     if (state.launcher.get('terms') === 'v1'
@@ -218,6 +218,7 @@ export function waitForServices() {
           }
         });
       }
+      cb();
     }
   });
 
@@ -261,5 +262,7 @@ export function screenHandlers() {
   });
 }
 
-waitForServices();
+waitForServices(() => {
+  ipcRenderer.send('wallet-ready');
+});
 screenHandlers();
