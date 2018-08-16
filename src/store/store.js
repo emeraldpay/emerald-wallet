@@ -6,6 +6,8 @@ import { reducer as formReducer } from 'redux-form';
 import { ipcRenderer } from 'electron';
 import EthereumQRPlugin from 'ethereum-qr-code'
 import { fromJS } from 'immutable';
+import * as qs from 'qs';
+import Contract from '../lib/contract';
 
 import { api } from '../lib/rpc/api';
 import { intervalRates } from './config';
@@ -79,7 +81,7 @@ function refreshAll() {
 
   if (state.launcher.getIn(['geth', 'type']) === 'local') {
     promises = promises.concat([
-      store.dispatch(network.actions.loadPeerCount()),
+      /* store.dispatch(network.actions.loadPeerCount()),*/
       store.dispatch(network.actions.loadSyncing()),
     ]);
   }
@@ -172,10 +174,23 @@ export const start = () => {
   store.dispatch(screen.actions.gotoScreen('welcome'));
 
   ipcRenderer.on('protocol', (event, request) => {
-    const paymentParams = qr.readStringToJSON(request.url);
+    const paymentParams = qs.parse(request.url.split('?')[1]);
+    console.log('paymentParams', paymentParams);
+    const abi = [paymentParams.functionSignature];
+    const contract = new Contract(abi);
+    const args = {};
+    paymentParams.argsDefaults.forEach((i) => {
+      args[i.name] = i.value;
+    });
+    const data = contract.functionToData(paymentParams.functionSignature.name, args);
     const transaction = {
       amount: paymentParams.value,
-      gas: paymentParams.gas
+      gas: paymentParams.gas,
+      typedData: {
+        name: paymentParams.functionSignature.name,
+        argsDefaults: paymentParams.argsDefaults
+      },
+      data
     };
 
     const state = store.getState();

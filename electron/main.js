@@ -60,7 +60,6 @@ app.on('ready', () => {
 
   // Protocol handler for osx
   app.on('open-url', function (event, url) {
-    event.preventDefault();
     log.info("open-url INSIDE event: " + url)
     webContents.send('protocol', {url});
   });
