@@ -38,6 +38,8 @@ class MultiCreateTransaction extends React.Component {
     accountAddress: PropTypes.string,
     txFee: PropTypes.string.isRequired,
     txFeeFiat: PropTypes.string.isRequired,
+    data: PropTypes.object,
+    typedData: PropTypes.object,
   };
 
   constructor() {
@@ -105,6 +107,8 @@ class MultiCreateTransaction extends React.Component {
         amount: this.props.amount,
         to: this.props.to,
         gasLimit: this.props.gasLimit,
+        data: this.props.data,
+        typedData: this.props.typedData
       },
     });
   }
@@ -132,6 +136,8 @@ class MultiCreateTransaction extends React.Component {
   getPage() {
     if (!this.state.transaction.from) { return null; }
 
+    console.log(this.state.transaction.data);
+
     switch (this.state.page) {
       case PAGES.TX:
         return (
@@ -146,7 +152,8 @@ class MultiCreateTransaction extends React.Component {
 
             balance={this.props.getBalanceForAddress(this.state.transaction.from, this.state.transaction.token)}
             fiatBalance={this.props.getFiatForAddress(this.state.transaction.from, this.state.transaction.token)}
-
+            data={this.state.transaction.data}
+            typedData={this.state.transaction.typedData}
             currency={this.props.currency}
             tokenSymbols={this.props.tokenSymbols}
             addressBookAddresses={this.props.addressBookAddresses}
@@ -171,6 +178,7 @@ class MultiCreateTransaction extends React.Component {
             txFee={this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit)}
             onChangePassword={this.onChangePassword}
             useLedger={this.props.useLedger}
+            typedData={this.state.transaction.typedData}
             onSubmit={this.onSubmitSignTxForm}
             onCancel={this.props.onCancel}
           />
@@ -212,7 +220,9 @@ export default connect(
     return {
       amount: ownProps.amount || '0',
       gasLimit: ownProps.gasLimit || DEFAULT_GAS_LIMIT,
+      typedData: ownProps.typedData,
       token: 'ETC',
+      data: ownProps.data,
       selectedFromAccount: account.get('id'),
       getBalanceForAddress: (address, token) => {
         if (token === 'ETC') {
@@ -258,6 +268,20 @@ export default connect(
 
       const gasLimit = new Wei(transaction.gasLimit).getValue();
       const gasPrice = transaction.gasPrice.getValue();
+
+      if (transaction.data) {
+        return dispatch(
+          accounts.actions.sendTransaction(
+            transaction.from,
+            transaction.password,
+            transaction.to,
+            toHex(gasLimit),
+            toHex(gasPrice),
+            convert.toHex(0),
+            transaction.data
+          )
+        );
+      }
 
       if (transaction.token !== 'ETC') {
         const decimals = convert.toNumber(tokenInfo.get('decimals'));
