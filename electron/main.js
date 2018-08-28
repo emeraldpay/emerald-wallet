@@ -43,6 +43,7 @@ app.on('ready', () => {
 
   log.info('args', process.argv.join(','));
 
+  // handle case for app-open
   ipcMain.on('wallet-ready', () => {
     setTimeout(() => {
       log.info('protocolCalls', protocolCalls);
@@ -60,13 +61,18 @@ app.on('ready', () => {
 
   // Protocol handler for osx
   app.on('open-url', function (event, url) {
+    event.preventDefault();
     log.info("open-url INSIDE event: " + url)
     webContents.send('protocol', {url});
   });
 });
 
+
 // Protocol handler for osx
 function protocolHandler(event, url) {
+  if (protocolCalls.length > 0) {
+    return;
+  }
   protocolCalls.push(url);
   log.info("open-url OUTSIDE event: " + url)
 }

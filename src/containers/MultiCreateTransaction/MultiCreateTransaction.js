@@ -42,8 +42,8 @@ class MultiCreateTransaction extends React.Component {
     typedData: PropTypes.object,
   };
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.onChangeFrom = this.onChangeFrom.bind(this);
     this.onChangeTo = this.onChangeTo.bind(this);
     this.onChangeToken = this.onChangeToken.bind(this);
@@ -56,7 +56,7 @@ class MultiCreateTransaction extends React.Component {
     this.onMaxClicked = this.onMaxClicked.bind(this);
     this.state = {
       transaction: {},
-      page: PAGES.TX,
+      page: props.typedData ? PAGES.PASSWORD : PAGES.TX,
     };
   }
 
