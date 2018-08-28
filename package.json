@@ -67,7 +67,7 @@
     "electron-log": "^2.2.6",
     "electron-store": "^1.1.0",
     "emerald-js": "git+https://github.com/ETCDEVTeam/emerald-js.git#v0.1.6",
-    "emerald-js-ui": "git+https://github.com/ETCDEVTeam/emerald-js-ui.git#fix/create-tx-max",
+    "emerald-js-ui": "git+https://github.com/ETCDEVTeam/emerald-js-ui.git#v0.0.30",
     "es6-promise": "4.1.1",
     "eslint": "4.2.0",
     "eslint-nibble": "4.2.1",
