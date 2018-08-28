@@ -179,19 +179,30 @@ export const start = () => {
     const abi = [paymentParams.functionSignature];
     const contract = new Contract(abi);
     const args = {};
-    paymentParams.argsDefaults.forEach((i) => {
-      args[i.name] = i.value;
-    });
-    const data = contract.functionToData(paymentParams.functionSignature.name, args);
-    const transaction = {
+    let data;
+
+    const isContractFunction = paymentParams.mode && paymentParams.mode === 'contract_function';
+    if (isContractFunction) {
+      paymentParams.argsDefaults.forEach((i) => {
+        args[i.name] = i.value;
+      });
+      data = contract.functionToData(paymentParams.functionSignature.name, args);
+    }
+
+    let transaction = {
       amount: paymentParams.value,
       gas: paymentParams.gas,
-      typedData: {
-        name: paymentParams.functionSignature.name,
-        argsDefaults: paymentParams.argsDefaults
-      },
-      data
     };
+    if (isContractFunction) {
+      transaction = {
+        ...transaction,
+        typedData: {
+          name: paymentParams.functionSignature.name,
+          argsDefaults: paymentParams.argsDefaults
+        },
+        data
+      }
+    }
 
     const state = store.getState();
     const accounts = state.accounts.get('accounts');

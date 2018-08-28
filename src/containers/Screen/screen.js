@@ -54,7 +54,7 @@ const Screen = ({ screen, screenItem }) => {
     return <MultiCreateTransaction account={ screenItem } />;
   } else if (screen === 'repeat-tx') {
     const {transaction, toAccount, fromAccount} = screenItem;
-    const amount = new Wei(transaction.get('value')).getEther();
+    const amount = new Wei(transaction.get('amount')).getEther();
     const to = toAccount.get('id');
     const gasLimit = transaction.get('gas');
     const data = transaction.get('data');
