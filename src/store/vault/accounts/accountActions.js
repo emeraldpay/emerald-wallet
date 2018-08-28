@@ -339,37 +339,39 @@ export function importWallet(wallet, name: string, description: string) {
 
 export function loadPendingTransactions() {
   return (dispatch, getState, api) =>
-    api.geth.eth.getBlockByNumber('pending', true)
-      .then((result) => {
-        const addrs = getState().accounts.get('accounts')
-          .map((acc) => acc.get('id'));
-        const txes = result.transactions.filter((t) =>
-          (addrs.includes(t.to) || addrs.includes(t.from))
-        );
-        // TODO: dependency on wallet/history module
-        if (txes.length === 0) { return; }
-
-        dispatch(history.actions.trackTxs(txes));
-
-        for (const tx of txes) {
-          const disp = {
-            type: ActionTypes.PENDING_BALANCE,
-            value: tx.value,
-            gas: tx.gas,
-            gasPrice: tx.gasPrice,
-            from: '',
-            to: '',
-          };
-          if (addrs.includes(tx.from)) {
-            disp.from = tx.from;
-            dispatch(disp);
-          }
-          if (addrs.includes(tx.to)) {
-            disp.to = tx.to;
-            dispatch(disp);
-          }
+    api.geth.eth.getBlockByNumber('pending', true).then((result) => {
+      const addrs = getState().accounts.get('accounts').map((acc) => acc.get('id'));
+      const txes = result.transactions.filter(
+        (t) => addrs.includes(t.to) || addrs.includes(t.from)
+      ).map((tx) => {
+        if (tx.blockNumber) {
+          delete tx.blockNumber;
         }
+        return tx;
       });
+      if (txes.length === 0) { return; }
+
+      dispatch(history.actions.trackTxs(txes));
+
+      for (const tx of txes) {
+        const disp = {
+          type: ActionTypes.PENDING_BALANCE,
+          value: tx.value,
+          gas: tx.gas,
+          gasPrice: tx.gasPrice,
+          from: '',
+          to: '',
+        };
+        if (addrs.includes(tx.from)) {
+          disp.from = tx.from;
+          dispatch(disp);
+        }
+        if (addrs.includes(tx.to)) {
+          disp.to = tx.to;
+          dispatch(disp);
+        }
+      }
+    });
 }
 
 export function hideAccount(accountId: string) {
