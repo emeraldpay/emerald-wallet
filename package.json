@@ -113,9 +113,7 @@
     "roboto-fontface": "0.7.0",
     "store": "^2.0.4",
     "typeface-rubik": "0.0.43",
-    "uuid": "3.1.0",
-    "electron-log": "^2.2.6",
-    "electron-store": "^1.1.0"
+    "uuid": "3.1.0"
   },
   "devDependencies": {
     "@elastic/webpack-directory-name-as-main": "2.0.2",
