@@ -277,7 +277,7 @@ export default connect(
             transaction.to,
             toHex(gasLimit),
             toHex(gasPrice),
-            convert.toHex(0),
+            convert.toHex(toAmount || 0),
             transaction.data
           )
         );
