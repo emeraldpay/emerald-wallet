@@ -26,7 +26,7 @@
     "build:all:nowatch": "node build-web --no-watch --for-electron",
     "start:web": "node ./node_modules/.bin/webpack-dev-server --content-base ./app --inline --port 8000",
     "start:electron": "cross-env NODE_ENV=development ./node_modules/.bin/electron .",
-    "start:electron:getemerald": "bash dependencies.sh && NODE_ENV=development ./node_modules/.bin/electron .",
+    "start:electron:getemerald": "getemerald && NODE_ENV=development ./node_modules/.bin/electron .",
     "test:watch": "jest --watchAll",
     "test": "cross-env ELECTRON_RUN_AS_NODE=true ./node_modules/.bin/electron ./node_modules/.bin/jest",
     "test:coverage": "ELECTRON_RUN_AS_NODE=true ./node_modules/.bin/electron ./node_modules/.bin/jest --coverage && codecov",
