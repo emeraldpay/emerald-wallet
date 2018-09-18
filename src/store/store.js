@@ -4,10 +4,11 @@ import createReduxLogger from 'redux-logger';
 import { createStore as createReduxStore, applyMiddleware, combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
 import { ipcRenderer } from 'electron';
-import EthereumQRPlugin from 'ethereum-qr-code'
+import EthereumQRPlugin from 'ethereum-qr-code';
 import { fromJS } from 'immutable';
 import * as qs from 'qs';
 import Contract from '../lib/contract';
+import { startProtocolListener } from './protocol';
 
 import { api } from '../lib/rpc/api';
 import { intervalRates } from './config';
@@ -29,8 +30,10 @@ import createLogger from '../utils/logger';
 import reduxLogger from '../utils/redux-logger';
 import reduxMiddleware from './middleware';
 
+import { onceServicesRestart, onceServicesStart } from './triggers';
+
 const log = createLogger('store');
-const qr = new EthereumQRPlugin()
+const qr = new EthereumQRPlugin();
 
 const reducers = {
   accounts: accounts.reducer,
@@ -41,7 +44,7 @@ const reducers = {
   ledger: ledger.reducer,
   form: formReducer,
   wallet: walletReducers,
-}
+};
 
 
 /**
@@ -96,10 +99,6 @@ function refreshLong() {
   store.dispatch(settings.actions.getExchangeRates());
   setTimeout(refreshLong, intervalRates.continueRefreshLongRate);
 }
-
-const historyForAddress = () => {
-
-};
 
 export function startSync() {
   store.dispatch(network.actions.getGasPrice());
@@ -173,81 +172,27 @@ export const start = () => {
   store.dispatch(listenElectron());
   store.dispatch(screen.actions.gotoScreen('welcome'));
 
-  ipcRenderer.on('protocol', (event, request) => {
-    const paymentParams = qs.parse(request.url.split('?')[1]);
-    console.log('paymentParams', paymentParams);
-    const abi = [paymentParams.functionSignature];
-    const contract = new Contract(abi);
-    const args = {};
-    let data;
-
-    const isContractFunction = paymentParams.mode && paymentParams.mode === 'contract_function';
-    if (isContractFunction) {
-      paymentParams.argsDefaults.forEach((i) => {
-        args[i.name] = i.value;
-      });
-      data = contract.functionToData(paymentParams.functionSignature.name, args);
-    }
-
-    let transaction = {
-      amount: paymentParams.value,
-      gas: paymentParams.gas,
-    };
-    if (isContractFunction) {
-      transaction = {
-        ...transaction,
-        typedData: {
-          name: paymentParams.functionSignature.name,
-          argsDefaults: paymentParams.argsDefaults
-        },
-        data
-      }
-    }
-
-    const state = store.getState();
-    const accounts = state.accounts.get('accounts');
-
-    let fromAccount = accounts.first();
-    if (paymentParams.from) {
-      fromAccount = accounts.find(
-        (account) => account.get('id') === paymentParams.from
-      ) || fromAccount;
-    }
-
-    store.dispatch(screen.actions.gotoScreen('repeat-tx', {
-      transaction: fromJS(transaction),
-      toAccount: fromJS({id: paymentParams.to}),
-      fromAccount,
-    }));
-  });
-
   newWalletVersionCheck();
 };
 
-export function waitForServices(cb) {
-  const unsubscribe = store.subscribe(() => {
-    const state = store.getState();
-    if (state.launcher.get('terms') === 'v1'
-            && state.launcher.getIn(['geth', 'status']) === 'ready'
-            && state.launcher.getIn(['connector', 'status']) === 'ready') {
-      unsubscribe();
-      log.info('All services are ready to use by Wallet');
-      startSync();
-      // If not first run, go right to home when ready.
-      if (state.wallet.screen.get('screen') === 'welcome') { //  && !state.launcher.get('firstRun'))
-        store.dispatch(accounts.actions.loadAccountsList()).then(() => {
-          const loadedAccounts = store.getState().accounts.get('accounts');
-          if (loadedAccounts.count() > 0) {
-            store.dispatch(screen.actions.gotoScreen('home'));
-          } else {
-            store.dispatch(screen.actions.gotoScreen('landing'));
-          }
-        });
-      }
-      cb();
+function loadInitalScreen() {
+  startSync();
+  const state = store.getState();
+  // If not first run, go right to home when ready.
+  store.dispatch(accounts.actions.loadAccountsList()).then(() => {
+    if (!store.getState().accounts || !store.getState().accounts.get('accounts')) {
+      return;
+    }
+    const loadedAccounts = store.getState().accounts.get('accounts');
+    if (loadedAccounts.count() > 0) {
+      store.dispatch(screen.actions.gotoScreen('home'));
+    } else {
+      store.dispatch(screen.actions.gotoScreen('landing'));
     }
   });
+}
 
+function checkStatus() {
   function checkServiceStatus() {
     // hack to make some stuff work in storybook: @shanejonas
     if (!ipcRenderer) {
@@ -255,18 +200,15 @@ export function waitForServices(cb) {
     }
     ipcRenderer.send('get-status');
   }
+
   setTimeout(checkServiceStatus, 2000);
 }
 
 export function waitForServicesRestart() {
   store.dispatch(connecting(true));
-  const unsubscribe = store.subscribe(() => {
-    const state = store.getState();
-    if (state.launcher.getIn(['geth', 'status']) !== 'ready'
-            || state.launcher.getIn(['connector', 'status']) !== 'ready') {
-      unsubscribe();
-      waitForServices();
-    }
+
+  onceServicesRestart(store).then(() => {
+    loadInitalScreen();
   });
 }
 
@@ -288,7 +230,9 @@ export function screenHandlers() {
   });
 }
 
-waitForServices(() => {
-  ipcRenderer.send('wallet-ready');
+startProtocolListener(store);
+onceServicesStart(store).then(() => {
+  loadInitalScreen();
 });
+checkStatus();
 screenHandlers();

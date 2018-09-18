@@ -97,6 +97,27 @@ class MultiCreateTransaction extends React.Component {
     this.setTransaction('amount', amount);
   }
 
+  componentDidUpdate(prevProps) {
+    const {from, to, value, data } = prevProps;
+    const props = this.props;
+    if (from !== props.from || to !== props.to || value !== props.value || data !== props.data) {
+      this.setState({
+        page: props.typedData ? PAGES.PASSWORD : PAGES.TX,
+        transaction: {
+          ...this.state.transaction,
+          from: this.props.selectedFromAccount,
+          token: this.props.tokenSymbols[0],
+          gasPrice: this.props.gasPrice,
+          amount: this.props.amount,
+          to: this.props.to,
+          gasLimit: this.props.gasLimit,
+          data: this.props.data,
+          typedData: this.props.typedData
+        },
+      });
+    }
+  }
+
   componentDidMount() {
     this.setState({
       transaction: {
@@ -135,8 +156,6 @@ class MultiCreateTransaction extends React.Component {
 
   getPage() {
     if (!this.state.transaction.from) { return null; }
-
-    console.log(this.state.transaction.data);
 
     switch (this.state.page) {
       case PAGES.TX:

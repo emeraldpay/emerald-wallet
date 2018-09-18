@@ -1,6 +1,4 @@
-const app = require('electron').app; // eslint-disable-line import/no-extraneous-dependencies
-const ipcMain = require('electron').ipcMain; // eslint-disable-line import/no-extraneous-dependencies
-const protocol = require('electron').protocol; // eslint-disable-line import/no-extraneous-dependencies
+const { app, ipcMain }  = require('electron');
 const path = require('path');
 
 const Settings = require('./settings');
@@ -9,6 +7,7 @@ const Services = require('./services').Services;
 const LedgerApi = require('./ledger').LedgerApi;
 const ipc = require('./ipc');
 const log = require('./logger');
+const { startProtocolHandler, registerProtocol } = require('./protocol');
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
@@ -25,8 +24,8 @@ log.info('userData: ', app.getPath('userData'));
 log.info(`Chain: ${JSON.stringify(settings.getChain())}`);
 log.info('Settings: ', settings.toJS());
 
-app.setAsDefaultProtocolClient('ethereum');
-const protocolCalls = [];
+registerProtocol();
+startProtocolHandler();
 
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -43,41 +42,12 @@ app.on('ready', () => {
 
   log.info('args', process.argv.join(','));
 
-  // handle case for app-open
-  ipcMain.on('wallet-ready', () => {
-    setTimeout(() => {
-      log.info('protocolCalls', protocolCalls);
-      if (protocolCalls.length > 0) {
-        webContents.send('protocol', {url: protocolCalls[0]});
-      }
-    }, 5000)
-  })
-
   app.on('quit', () => {
     return services.shutdown()
       .then(() => log.info('All services are stopped'))
       .catch((e) => log.error('Failed to stop services:', e));
   });
-
-  // Protocol handler for osx
-  app.on('open-url', function (event, url) {
-    event.preventDefault();
-    log.info("open-url INSIDE event: " + url)
-    webContents.send('protocol', {url});
-  });
 });
-
-
-// Protocol handler for osx
-function protocolHandler(event, url) {
-  if (protocolCalls.length > 0) {
-    return;
-  }
-  protocolCalls.push(url);
-  log.info("open-url OUTSIDE event: " + url)
-}
-
-app.on('open-url', protocolHandler);
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
