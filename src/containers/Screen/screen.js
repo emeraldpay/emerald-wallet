@@ -54,10 +54,12 @@ const Screen = ({ screen, screenItem }) => {
     return <MultiCreateTransaction account={ screenItem } />;
   } else if (screen === 'repeat-tx') {
     const {transaction, toAccount, fromAccount} = screenItem;
-    const amount = new Wei(transaction.get('value')).getEther();
+    const amount = new Wei(transaction.get('amount')).getEther();
     const to = toAccount.get('id');
     const gasLimit = transaction.get('gas');
-    return <MultiCreateTransaction account={ fromAccount } to={to} amount={amount} gasLimit={gasLimit} />;
+    const data = transaction.get('data');
+    const typedData = transaction.get('typedData');
+    return <MultiCreateTransaction account={ fromAccount } to={to} amount={amount} gasLimit={gasLimit} data={data} typedData={typedData}/>;
   } else if (screen === 'landing-generate') {
     return <GenerateAccount onBackScreen="landing" backLabel="Back"/>;
   } else if (screen === 'generate') {

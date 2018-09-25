@@ -20,14 +20,13 @@
   ],
   "scripts": {
     "setup": "npm install && flow-typed install",
-    "build": "node build-web --no-watch",
     "build:web": "node build-web --for-electron",
     "build:web:nowatch": "node build-web --no-watch --for-electron",
     "build:all": "node build-web --for-electron",
     "build:all:nowatch": "node build-web --no-watch --for-electron",
     "start:web": "node ./node_modules/.bin/webpack-dev-server --content-base ./app --inline --port 8000",
     "start:electron": "cross-env NODE_ENV=development ./node_modules/.bin/electron .",
-    "start:electron:getemerald": "bash dependencies.sh && NODE_ENV=development ./node_modules/.bin/electron .",
+    "start:electron:getemerald": "getemerald && NODE_ENV=development ./node_modules/.bin/electron .",
     "test:watch": "jest --watchAll",
     "test": "cross-env ELECTRON_RUN_AS_NODE=true ./node_modules/.bin/electron ./node_modules/.bin/jest",
     "test:coverage": "ELECTRON_RUN_AS_NODE=true ./node_modules/.bin/electron ./node_modules/.bin/jest --coverage && codecov",
@@ -38,7 +37,8 @@
     "dist:nobuild": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never",
     "flow": "flow",
     "getemerald": "cross-env ELECTRON_RUN_AS_NODE=true ./node_modules/.bin/electron ./scripts/download-emerald.js",
-    "storybook": "start-storybook -p 9001 -c .storybook"
+    "storybook": "start-storybook -p 9001 -c .storybook",
+    "simp": "build"
   },
   "keywords": [
     "react",
@@ -73,6 +73,7 @@
     "eslint-nibble": "4.2.1",
     "eslint-plugin-flowtype": "2.39.1",
     "ethereum-input-data-decoder": "0.0.11",
+    "ethereum-qr-code": "^0.3.0",
     "ethereumjs-abi": "0.6.4",
     "ethereumjs-tx": "1.3.3",
     "ethereumjs-util": "^5.1.2",
@@ -132,9 +133,9 @@
     "copy-webpack-plugin": "1.1.1",
     "cross-env": "^5.1.1",
     "css-loader": "0.28.0",
-    "electron": "^2.0.5",
-    "electron-builder": "^19.52.1",
-    "electron-rebuild": "^1.7.3",
+    "electron": "^2.0.6",
+    "electron-builder": "20.27.1",
+    "electron-rebuild": "^1.8.2",
     "enzyme": "3.3.0",
     "enzyme-adapter-react-16": "^1.1.1",
     "eslint-config-airbnb-base": "11.1.3",
@@ -163,7 +164,7 @@
     "webpack-dev-server": "2.4.2"
   },
   "build": {
-    "appId": "com.ethereumclassic.emeraldwallet",
+    "appId": "com.ethereumclassic.emeraldwallet.test",
     "artifactName": "${productName}-${os}-${arch}-${env.APP_VERSION_GIT_TAG}.${ext}",
     "compression": "normal",
     "asar": true,
@@ -201,7 +202,15 @@
           "path": "/Applications"
         }
       ]
-    }
+    },
+    "protocols": [
+      {
+        "name": "ethereum",
+        "schemes": [
+          "ethereum"
+        ]
+      }
+    ]
   },
   "jest": {
     "coverageDirectory": "./coverage/",

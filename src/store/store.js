@@ -4,6 +4,10 @@ import createReduxLogger from 'redux-logger';
 import { createStore as createReduxStore, applyMiddleware, combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
 import { ipcRenderer } from 'electron';
+import EthereumQRPlugin from 'ethereum-qr-code'
+import { fromJS } from 'immutable';
+import * as qs from 'qs';
+import Contract from '../lib/contract';
 
 import { api } from '../lib/rpc/api';
 import { intervalRates } from './config';
@@ -26,6 +30,7 @@ import reduxLogger from '../utils/redux-logger';
 import reduxMiddleware from './middleware';
 
 const log = createLogger('store');
+const qr = new EthereumQRPlugin()
 
 const reducers = {
   accounts: accounts.reducer,
@@ -36,7 +41,8 @@ const reducers = {
   ledger: ledger.reducer,
   form: formReducer,
   wallet: walletReducers,
-};
+}
+
 
 /**
  * Creates Redux store with API as dependency injection.
@@ -75,7 +81,7 @@ function refreshAll() {
 
   if (state.launcher.getIn(['geth', 'type']) === 'local') {
     promises = promises.concat([
-      store.dispatch(network.actions.loadPeerCount()),
+      /* store.dispatch(network.actions.loadPeerCount()),*/
       store.dispatch(network.actions.loadSyncing()),
     ]);
   }
@@ -166,10 +172,59 @@ export const start = () => {
   }
   store.dispatch(listenElectron());
   store.dispatch(screen.actions.gotoScreen('welcome'));
+
+  ipcRenderer.on('protocol', (event, request) => {
+    const paymentParams = qs.parse(request.url.split('?')[1]);
+    console.log('paymentParams', paymentParams);
+    const abi = [paymentParams.functionSignature];
+    const contract = new Contract(abi);
+    const args = {};
+    let data;
+
+    const isContractFunction = paymentParams.mode && paymentParams.mode === 'contract_function';
+    if (isContractFunction) {
+      paymentParams.argsDefaults.forEach((i) => {
+        args[i.name] = i.value;
+      });
+      data = contract.functionToData(paymentParams.functionSignature.name, args);
+    }
+
+    let transaction = {
+      amount: paymentParams.value,
+      gas: paymentParams.gas,
+    };
+    if (isContractFunction) {
+      transaction = {
+        ...transaction,
+        typedData: {
+          name: paymentParams.functionSignature.name,
+          argsDefaults: paymentParams.argsDefaults
+        },
+        data
+      }
+    }
+
+    const state = store.getState();
+    const accounts = state.accounts.get('accounts');
+
+    let fromAccount = accounts.first();
+    if (paymentParams.from) {
+      fromAccount = accounts.find(
+        (account) => account.get('id') === paymentParams.from
+      ) || fromAccount;
+    }
+
+    store.dispatch(screen.actions.gotoScreen('repeat-tx', {
+      transaction: fromJS(transaction),
+      toAccount: fromJS({id: paymentParams.to}),
+      fromAccount,
+    }));
+  });
+
   newWalletVersionCheck();
 };
 
-export function waitForServices() {
+export function waitForServices(cb) {
   const unsubscribe = store.subscribe(() => {
     const state = store.getState();
     if (state.launcher.get('terms') === 'v1'
@@ -189,6 +244,7 @@ export function waitForServices() {
           }
         });
       }
+      cb();
     }
   });
 
@@ -232,5 +288,7 @@ export function screenHandlers() {
   });
 }
 
-waitForServices();
+waitForServices(() => {
+  ipcRenderer.send('wallet-ready');
+});
 screenHandlers();
