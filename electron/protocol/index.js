@@ -21,27 +21,12 @@ function protocolHandler(event, url) {
 }
 
 function startProtocolHandler() {
-
+  app.setAsDefaultProtocolClient('ethereum');
   app.on('will-finish-launching', () => {
     app.on('open-url', protocolHandler);
   });
 }
 
-function registerProtocol() {
-  app.setAsDefaultProtocolClient('ethereum');
-
-  // protocol.interceptStringProtocol('ethereum', (request, callback) => {
-  //   ////didnt freeze
-  //   log.info('is this actually doing anything at all??');
-  //   const wc = getMainWebContents();
-  //   wc.send('protocol', request);
-  // }, (err) => {
-  //   log.info('hit error handler');
-  //   if (err) { log.error(err); }
-  // });
-}
-
 module.exports = {
-  startProtocolHandler,
-  registerProtocol
+  startProtocolHandler
 };
