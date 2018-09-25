@@ -2,7 +2,7 @@ const DefaultGeth = {
   format: 'v1',
   channel: 'stable',
   app: {
-    version: '5.2.0',
+    version: '5.5.1',
   },
   download: [
     {
@@ -11,13 +11,14 @@ const DefaultGeth = {
         {
           type: 'https',
           pack: 'zip',
-          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v5.4.0/geth-classic-osx-v5.4.0-4851b12.zip',
+          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v5.5.1/geth-classic-osx-v5.5.1-8a3bc2d.zip',
+          
         },
       ],
       signatures: [
         {
           type: 'pgp',
-          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v5.4.0/geth-classic-osx-v5.4.0-4851b12.zip.asc',
+          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v5.5.1/geth-classic-osx-v5.5.1-8a3bc2d.zip.asc',
         },
       ],
     },
@@ -27,13 +28,13 @@ const DefaultGeth = {
         {
           type: 'https',
           pack: 'zip',
-          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v5.4.0/geth-classic-win64-v5.4.0-4851b12.zip',
+          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v5.5.1/geth-classic-win64-v5.5.1-8a3bc2d.zip',
         },
       ],
       signatures: [
         {
           type: 'pgp',
-          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v5.4.0/geth-classic-win64-v5.4.0-4851b12.zip.asc',
+          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v5.5.1/geth-classic-win64-v5.5.1-8a3bc2d.zip.asc',
         },
       ],
     },
@@ -43,13 +44,13 @@ const DefaultGeth = {
         {
           type: 'https',
           pack: 'zip',
-          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v5.4.0/geth-classic-linux-v5.4.0-4851b12.zip',
+          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v5.5.1/geth-classic-linux-v5.5.1-8a3bc2d.zip',
         },
       ],
       signatures: [
         {
           type: 'pgp',
-          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v5.4.0/geth-classic-linux-v5.4.0-4851b12.zip.asc',
+          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v5.5.1/geth-classic-linux-v5.5.1-8a3bc2d.zip.asc',
         },
       ],
     },
