@@ -12,7 +12,7 @@ const DefaultGeth = {
           type: 'https',
           pack: 'zip',
           url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v5.5.1/geth-classic-osx-v5.5.1-8a3bc2d.zip',
-          
+
         },
       ],
       signatures: [
