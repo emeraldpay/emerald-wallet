@@ -2,10 +2,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { PlayCircle } from 'emerald-js-ui/lib/icons3';
-import { Grid, Row, Col } from 'react-flexbox-grid/lib/index';
+import { Row, Col } from 'react-flexbox-grid/lib/index';
 import FlatButton from 'material-ui/FlatButton';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import launcher from 'store/launcher';
 import { waitForServicesRestart } from 'store/store';
 
 const Render = ({ save, muiTheme }) => {
@@ -41,7 +40,6 @@ const OpenWallet = connect(
   }),
   (dispatch, ownProps) => ({
     save: () => {
-      dispatch(launcher.actions.saveSettings());
       waitForServicesRestart();
     },
   })

@@ -92,6 +92,7 @@
     "node-pre-gyp": "0.6.36",
     "prop-types": "^15.4.2",
     "qrcode.react": "0.7.2",
+    "qs": "^6.5.2",
     "react": "16.2.0",
     "react-addons-test-utils": "^15.6.0",
     "react-bootstrap": "^0.31.2",
@@ -163,7 +164,7 @@
     "webpack-dev-server": "2.4.2"
   },
   "build": {
-    "appId": "com.ethereumclassic.emeraldwallet.test",
+    "appId": "com.ethereumclassic.emeraldwallet",
     "artifactName": "${productName}-${os}-${arch}-${env.APP_VERSION_GIT_TAG}.${ext}",
     "compression": "normal",
     "asar": true,
@@ -217,7 +218,8 @@
       "src/**/*.js"
     ],
     "moduleNameMapper": {
-      "\\.(scss|less)$": "identity-obj-proxy"
+      "\\.(scss|less)$": "identity-obj-proxy",
+      "electron": "<rootDir>/src/electron-mock.js"
     },
     "modulePaths": [
       "<rootDir>/src/"

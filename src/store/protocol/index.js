@@ -1,11 +1,12 @@
 import * as qs from 'qs';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import { fromJS } from 'immutable';
 
 import screen from '../wallet/screen';
 import Contract from '../../lib/contract';
 import createLogger from '../../utils/logger';
 import { onceServicesStart, onceAccountsLoaded } from '../triggers';
+
 const log = createLogger('launcherActions');
 
 const protocolLinkHandler = (request, state, dispatch) => {
@@ -24,14 +25,14 @@ const protocolLinkHandler = (request, state, dispatch) => {
     contractCallArgs.data = contract.functionToData(paymentParams.functionSignature.name, args) || undefined;
     contractCallArgs.typedData = {
       name: paymentParams.functionSignature.name,
-      argsDefaults: paymentParams.argsDefaults
+      argsDefaults: paymentParams.argsDefaults,
     };
   }
 
   const transaction = fromJS({
     amount: paymentParams.value,
     gas: paymentParams.gas,
-    ...contractCallArgs
+    ...contractCallArgs,
   });
 
   const toAccount = fromJS({ id: paymentParams.to });

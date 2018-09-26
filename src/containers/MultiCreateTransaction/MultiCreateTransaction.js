@@ -112,7 +112,7 @@ class MultiCreateTransaction extends React.Component {
           to: this.props.to,
           gasLimit: this.props.gasLimit,
           data: this.props.data,
-          typedData: this.props.typedData
+          typedData: this.props.typedData,
         },
       });
     }
@@ -129,7 +129,7 @@ class MultiCreateTransaction extends React.Component {
         to: this.props.to,
         gasLimit: this.props.gasLimit,
         data: this.props.data,
-        typedData: this.props.typedData
+        typedData: this.props.typedData,
       },
     });
   }

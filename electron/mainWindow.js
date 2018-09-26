@@ -11,7 +11,6 @@ const log = require('./logger');
 let mainWindow;
 let menu;
 
-
 const createWindow = function (openDevTools) {
   // Create the browser window.
   mainWindow = new electron.BrowserWindow({ width: 1200, height: 650, minWidth: 1200, minHeight: 650 });
@@ -29,12 +28,6 @@ const createWindow = function (openDevTools) {
     devtron.install();
   }
 
-  /* mainWindow.webContents.on('will-navigate', (e, _url) => {
-   *   e.preventDefault();
-   *   electron.shell.openExternal(_url);
-   * });*/
-
-  // Emitted when the window is closed.
   mainWindow.on('closed', () => {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time

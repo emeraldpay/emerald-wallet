@@ -1,4 +1,4 @@
-const { app, ipcMain }  = require('electron');
+const { app, ipcMain } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path');
 
 const Settings = require('./settings');

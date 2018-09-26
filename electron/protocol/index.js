@@ -1,4 +1,4 @@
-const { app, protocol, webContents } = require('electron');
+const { app, protocol, webContents } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const log = require('../logger');
 
 const getMainWebContents = () => webContents
@@ -6,18 +6,9 @@ const getMainWebContents = () => webContents
   .find((webcontent) => !!webcontent.browserWindowOptions);
 
 function protocolHandler(event, url) {
-  if (event) { event.preventDefault(); }
-  // need to ignore other windows such as chrome dev tools
+  event.preventDefault();
   const wc = getMainWebContents();
-
-  if (!wc) {
-    log.info('not sure we ever actually hit this anymore');
-    setTimeout(() => protocolHandler(null, url), 500);
-    return;
-  }
-
   wc.send('protocol', { url });
-  log.info("open-url: " + url);
 }
 
 function startProtocolHandler() {
@@ -28,5 +19,5 @@ function startProtocolHandler() {
 }
 
 module.exports = {
-  startProtocolHandler
+  startProtocolHandler,
 };

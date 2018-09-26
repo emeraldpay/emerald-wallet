@@ -55,32 +55,32 @@ const displayFlexCenter = {
 const TypedData = (props) => {
   const { typedData } = props;
   if (!typedData) { return null; }
-  console.log('typedData', typedData);
+
   const listStyle = {
-    cursor: 'default'
-  }
+    cursor: 'default',
+  };
   const listProps = {
     disableTouchRipple: true,
     hoverColor: 'transparent',
     autoGenerateNestedIndicator: false,
-    initiallyOpen: true
-  }
+    initiallyOpen: true,
+  };
   const getNestedItems = () => {
-    return typedData.get('argsDefaults').toJS().map((item) => {
+    return typedData.get('argsDefaults').toJS().map((item, i) => {
       return (
-        <ListItem {...listProps} style={listStyle} primaryText={item.name} secondaryText={item.value} />
-      )
-    })
-  }
+        <ListItem key={i} {...listProps} style={listStyle} primaryText={item.name} secondaryText={item.value} />
+      );
+    });
+  };
   return (
     <div>
       <List>
-        <ListItem {...listProps} style={listStyle} primaryText="Method to be called" secondaryText={typedData.get('name')} /> 
+        <ListItem {...listProps} style={listStyle} primaryText="Method to be called" secondaryText={typedData.get('name')} />
         <ListItem {...listProps} style={listStyle} primaryText="Params" nestedItems={getNestedItems()}/>
       </List>
     </div>
-  )
-}
+  );
+};
 
 const SignTx = muiThemeable()((props) => {
   const { value, fiatRate, fiatCurrency, txFee, tx } = props;
