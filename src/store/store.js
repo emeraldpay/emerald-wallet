@@ -4,7 +4,6 @@ import createReduxLogger from 'redux-logger';
 import { createStore as createReduxStore, applyMiddleware, combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
 import { ipcRenderer } from 'electron';
-import EthereumQRPlugin from 'ethereum-qr-code';
 import { fromJS } from 'immutable';
 import * as qs from 'qs';
 import Contract from '../lib/contract';
@@ -33,7 +32,6 @@ import reduxMiddleware from './middleware';
 import { onceServicesRestart, onceServicesStart } from './triggers';
 
 const log = createLogger('store');
-const qr = new EthereumQRPlugin();
 
 const reducers = {
   accounts: accounts.reducer,
