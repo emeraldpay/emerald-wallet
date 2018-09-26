@@ -73,7 +73,6 @@
     "eslint-nibble": "4.2.1",
     "eslint-plugin-flowtype": "2.39.1",
     "ethereum-input-data-decoder": "0.0.11",
-    "ethereum-qr-code": "^0.3.0",
     "ethereumjs-abi": "0.6.4",
     "ethereumjs-tx": "1.3.3",
     "ethereumjs-util": "^5.1.2",

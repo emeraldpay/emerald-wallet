@@ -2,8 +2,8 @@ const { app, protocol, webContents } = require('electron');
 const log = require('../logger');
 
 const getMainWebContents = () => webContents
-      .getAllWebContents()
-      .find((webcontent) => !!webcontent.browserWindowOptions);
+  .getAllWebContents()
+  .find((webcontent) => !!webcontent.browserWindowOptions);
 
 function protocolHandler(event, url) {
   if (event) { event.preventDefault(); }
