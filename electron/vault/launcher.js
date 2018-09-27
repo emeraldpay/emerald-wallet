@@ -77,7 +77,6 @@ class LocalConnector {
       const bin = this.emeraldExecutable();
       const appData = (process.env.APPDATA || os.homedir());
       const emeraldHomeDir = `${appData}${path.join('/.emerald', this.chain.name, 'keystore/')}`;
-      console.log(`balls${emeraldHomeDir}`);
       fs.access(bin, fs.constants.F_OK | fs.constants.R_OK | fs.constants.X_OK, (err) => {
         if (err) {
           log.error(`File ${bin} doesn't exist or doesn't have execution flag`);

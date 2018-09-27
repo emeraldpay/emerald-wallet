@@ -20,6 +20,7 @@
   ],
   "scripts": {
     "setup": "npm install && flow-typed install",
+    "build": "node build-web --no-watch",
     "build:web": "node build-web --for-electron",
     "build:web:nowatch": "node build-web --no-watch --for-electron",
     "build:all": "node build-web --for-electron",
