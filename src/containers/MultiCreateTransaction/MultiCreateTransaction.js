@@ -38,10 +38,12 @@ class MultiCreateTransaction extends React.Component {
     accountAddress: PropTypes.string,
     txFee: PropTypes.string.isRequired,
     txFeeFiat: PropTypes.string.isRequired,
+    data: PropTypes.object,
+    typedData: PropTypes.object,
   };
 
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.onChangeFrom = this.onChangeFrom.bind(this);
     this.onChangeTo = this.onChangeTo.bind(this);
     this.onChangeToken = this.onChangeToken.bind(this);
@@ -54,7 +56,7 @@ class MultiCreateTransaction extends React.Component {
     this.onMaxClicked = this.onMaxClicked.bind(this);
     this.state = {
       transaction: {},
-      page: PAGES.TX,
+      page: props.typedData ? PAGES.PASSWORD : PAGES.TX,
     };
   }
 
@@ -95,6 +97,27 @@ class MultiCreateTransaction extends React.Component {
     this.setTransaction('amount', amount);
   }
 
+  componentDidUpdate(prevProps) {
+    const {from, to, value, data } = prevProps;
+    const props = this.props;
+    if (from !== props.from || to !== props.to || value !== props.value || data !== props.data) {
+      this.setState({
+        page: props.typedData ? PAGES.PASSWORD : PAGES.TX,
+        transaction: {
+          ...this.state.transaction,
+          from: this.props.selectedFromAccount,
+          token: this.props.tokenSymbols[0],
+          gasPrice: this.props.gasPrice,
+          amount: this.props.amount,
+          to: this.props.to,
+          gasLimit: this.props.gasLimit,
+          data: this.props.data,
+          typedData: this.props.typedData,
+        },
+      });
+    }
+  }
+
   componentDidMount() {
     this.setState({
       transaction: {
@@ -105,6 +128,8 @@ class MultiCreateTransaction extends React.Component {
         amount: this.props.amount,
         to: this.props.to,
         gasLimit: this.props.gasLimit,
+        data: this.props.data,
+        typedData: this.props.typedData,
       },
     });
   }
@@ -146,7 +171,8 @@ class MultiCreateTransaction extends React.Component {
 
             balance={this.props.getBalanceForAddress(this.state.transaction.from, this.state.transaction.token)}
             fiatBalance={this.props.getFiatForAddress(this.state.transaction.from, this.state.transaction.token)}
-
+            data={this.state.transaction.data}
+            typedData={this.state.transaction.typedData}
             currency={this.props.currency}
             tokenSymbols={this.props.tokenSymbols}
             addressBookAddresses={this.props.addressBookAddresses}
@@ -171,6 +197,7 @@ class MultiCreateTransaction extends React.Component {
             txFee={this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit)}
             onChangePassword={this.onChangePassword}
             useLedger={this.props.useLedger}
+            typedData={this.state.transaction.typedData}
             onSubmit={this.onSubmitSignTxForm}
             onCancel={this.props.onCancel}
           />
@@ -212,7 +239,9 @@ export default connect(
     return {
       amount: ownProps.amount || '0',
       gasLimit: ownProps.gasLimit || DEFAULT_GAS_LIMIT,
+      typedData: ownProps.typedData,
       token: 'ETC',
+      data: ownProps.data,
       selectedFromAccount: account.get('id'),
       getBalanceForAddress: (address, token) => {
         if (token === 'ETC') {
@@ -258,6 +287,20 @@ export default connect(
 
       const gasLimit = new Wei(transaction.gasLimit).getValue();
       const gasPrice = transaction.gasPrice.getValue();
+
+      if (transaction.data) {
+        return dispatch(
+          accounts.actions.sendTransaction(
+            transaction.from,
+            transaction.password,
+            transaction.to,
+            toHex(gasLimit),
+            toHex(gasPrice),
+            convert.toHex(toAmount || 0),
+            transaction.data
+          )
+        );
+      }
 
       if (transaction.token !== 'ETC') {
         const decimals = convert.toNumber(tokenInfo.get('decimals'));

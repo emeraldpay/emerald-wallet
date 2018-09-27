@@ -1,4 +1,5 @@
-const app = require('electron').app; // eslint-disable-line import/no-extraneous-dependencies
+const { app, ipcMain } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
+const path = require('path');
 
 const Settings = require('./settings');
 const mainWindow = require('./mainWindow');
@@ -6,10 +7,10 @@ const Services = require('./services').Services;
 const LedgerApi = require('./ledger').LedgerApi;
 const ipc = require('./ipc');
 const log = require('./logger');
+const { startProtocolHandler } = require('./protocol');
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
-
 
 const settings = new Settings();
 
@@ -22,7 +23,8 @@ log.info('userData: ', app.getPath('userData'));
 log.info(`Chain: ${JSON.stringify(settings.getChain())}`);
 log.info('Settings: ', settings.toJS());
 
-// This method will be called when Electron has finished
+startProtocolHandler();
+
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
@@ -35,6 +37,8 @@ app.on('ready', () => {
     .catch((err) => log.error('Failed to start Services:', err));
 
   ipc({ settings, services });
+
+  log.info('args', process.argv.join(','));
 
   app.on('quit', () => {
     return services.shutdown()

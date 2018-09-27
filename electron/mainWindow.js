@@ -4,6 +4,7 @@ const darwinMenu = require('./menus/darwin');
 const path = require('path');
 const url = require('url');
 const devtron = require('devtron');
+const log = require('./logger');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -26,13 +27,7 @@ const createWindow = function (openDevTools) {
     mainWindow.webContents.openDevTools();
     devtron.install();
   }
-  // Prevent opening external links in electron.
-  mainWindow.webContents.on('will-navigate', (e, _url) => {
-    e.preventDefault();
-    electron.shell.openExternal(_url);
-  });
 
-  // Emitted when the window is closed.
   mainWindow.on('closed', () => {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time
@@ -51,6 +46,7 @@ const createWindow = function (openDevTools) {
 
   return mainWindow.webContents;
 };
+
 
 module.exports = {
   mainWindow,

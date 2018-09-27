@@ -1,6 +1,7 @@
 // @flow
 import EthereumTx from 'ethereumjs-tx';
 import { convert, Wallet, Address } from 'emerald-js';
+import { fromJS } from 'immutable';
 import { loadTokensBalances } from '../tokens/tokenActions';
 import screen from '../../wallet/screen';
 import history from '../../wallet/history';
@@ -143,7 +144,7 @@ export function createAccount(passphrase: string, name: string = '', description
           name,
           description,
         });
-        dispatch(network.actions.loadAddressesTransactions([result]));
+        dispatch(network.actions.loadAddressesTransactions(fromJS([result])));
         dispatch(loadAccountBalance(result));
         return result;
       }).catch(screen.actions.catchError(dispatch));
@@ -298,7 +299,7 @@ export function importJson(data, name: string, description: string) {
           type: ActionTypes.ADD_ACCOUNT,
           accountId: result,
         });
-        dispatch(network.actions.loadAddressesTransactions([result]));
+        dispatch(network.actions.loadAddressesTransactions(fromJS([result])));
         dispatch(loadAccountBalance(result));
         return result;
       }
@@ -320,7 +321,7 @@ export function importMnemonic(passphrase: string, mnemonic: string, hdPath: str
           type: ActionTypes.ADD_ACCOUNT,
           accountId: result,
         });
-        dispatch(network.actions.loadAddressesTransactions([result]));
+        dispatch(network.actions.loadAddressesTransactions(fromJS([result])));
         dispatch(loadAccountBalance(result));
         return result;
       }

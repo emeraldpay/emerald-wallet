@@ -4,6 +4,10 @@ import createReduxLogger from 'redux-logger';
 import { createStore as createReduxStore, applyMiddleware, combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
 import { ipcRenderer } from 'electron';
+import { fromJS } from 'immutable';
+import * as qs from 'qs';
+import Contract from '../lib/contract';
+import { startProtocolListener } from './protocol';
 
 import { api } from '../lib/rpc/api';
 import { intervalRates } from './config';
@@ -25,6 +29,8 @@ import createLogger from '../utils/logger';
 import reduxLogger from '../utils/redux-logger';
 import reduxMiddleware from './middleware';
 
+import { onceServicesRestart, onceServicesStart, onceAccountsLoaded } from './triggers';
+
 const log = createLogger('store');
 
 const reducers = {
@@ -37,6 +43,7 @@ const reducers = {
   form: formReducer,
   wallet: walletReducers,
 };
+
 
 /**
  * Creates Redux store with API as dependency injection.
@@ -75,7 +82,6 @@ function refreshAll() {
 
   if (state.launcher.getIn(['geth', 'type']) === 'local') {
     promises = promises.concat([
-      store.dispatch(network.actions.loadPeerCount()),
       store.dispatch(network.actions.loadSyncing()),
     ]);
   }
@@ -91,25 +97,23 @@ function refreshLong() {
   setTimeout(refreshLong, intervalRates.continueRefreshLongRate);
 }
 
-const historyForAddress = () => {
-
-};
-
 export function startSync() {
-  store.dispatch(network.actions.getGasPrice());
-  store.dispatch(loadClientVersion());
-  store.dispatch(Addressbook.actions.loadAddressBook());
-  store.dispatch(tokens.actions.loadTokenList());
-
   const state = store.getState();
+
+  const promises = [
+    store.dispatch(network.actions.getGasPrice()),
+    store.dispatch(loadClientVersion()),
+    store.dispatch(Addressbook.actions.loadAddressBook()),
+    store.dispatch(tokens.actions.loadTokenList()),
+  ];
 
   const chain = state.launcher.getIn(['chain', 'name']);
 
   if (chain === 'mainnet') {
-    store.dispatch(ledger.actions.setBaseHD("m/44'/60'/160720'/0'"));
+    promises.push(store.dispatch(ledger.actions.setBaseHD("m/44'/60'/160720'/0'")));
   } else if (chain === 'morden') {
     // FIXME ledger throws "Invalid status 6804" for 44'/62'/0'/0
-    store.dispatch(ledger.actions.setBaseHD("m/44'/61'/1'/0"));
+    promises.push(store.dispatch(ledger.actions.setBaseHD("m/44'/61'/1'/0")));
   }
 
   if (state.launcher.getIn(['geth', 'type']) !== 'remote') {
@@ -120,21 +124,26 @@ export function startSync() {
   }
 
   const chainId = state.launcher.getIn(['chain', 'id']);
-  store.dispatch(history.actions.init(chainId));
+  promises.push(store.dispatch(history.actions.init(chainId)));
 
   // deployed tokens
   const known = deployedTokens[+chainId];
 
   if (known) {
-    known.forEach((token) => store.dispatch(tokens.actions.addToken(token)));
+    known.forEach((token) => promises.push(store.dispatch(tokens.actions.addToken(token))));
   }
 
-  refreshAll().then(() => {
-    store.dispatch(network.actions.loadAddressesTransactions(store.getState().accounts.get('accounts').map((account) => account.get('id'))));
-  });
-
   setTimeout(refreshLong, 3 * intervalRates.second);
-  store.dispatch(connecting(false));
+
+  promises.push(
+    refreshAll()
+      .then(() => store.dispatch(network.actions.loadAddressesTransactions(
+        store.getState().accounts.get('accounts').map((account) => account.get('id'))
+      )))
+      .then(() => store.dispatch(connecting(false)))
+  );
+
+  return Promise.all(promises);
 }
 
 export function stopSync() {
@@ -165,33 +174,19 @@ export const start = () => {
     log.error(e);
   }
   store.dispatch(listenElectron());
-  store.dispatch(screen.actions.gotoScreen('welcome'));
+
   newWalletVersionCheck();
 };
 
-export function waitForServices() {
-  const unsubscribe = store.subscribe(() => {
-    const state = store.getState();
-    if (state.launcher.get('terms') === 'v1'
-            && state.launcher.getIn(['geth', 'status']) === 'ready'
-            && state.launcher.getIn(['connector', 'status']) === 'ready') {
-      unsubscribe();
-      log.info('All services are ready to use by Wallet');
-      startSync();
-      // If not first run, go right to home when ready.
-      if (state.wallet.screen.get('screen') === 'welcome') { //  && !state.launcher.get('firstRun'))
-        store.dispatch(accounts.actions.loadAccountsList()).then(() => {
-          const loadedAccounts = store.getState().accounts.get('accounts');
-          if (loadedAccounts.count() > 0) {
-            store.dispatch(screen.actions.gotoScreen('home'));
-          } else {
-            store.dispatch(screen.actions.gotoScreen('landing'));
-          }
-        });
-      }
-    }
-  });
+function loadInitalScreen() {
+  const currentScreen = store.getState().screen.get('screen');
 
+  if (screen === 'landing' || screen === 'welcome') {
+    store.dispatch(screen.actions.gotoScreen('home'));
+  }
+}
+
+function checkStatus() {
   function checkServiceStatus() {
     // hack to make some stuff work in storybook: @shanejonas
     if (!ipcRenderer) {
@@ -199,18 +194,15 @@ export function waitForServices() {
     }
     ipcRenderer.send('get-status');
   }
+
   setTimeout(checkServiceStatus, 2000);
 }
 
 export function waitForServicesRestart() {
   store.dispatch(connecting(true));
-  const unsubscribe = store.subscribe(() => {
-    const state = store.getState();
-    if (state.launcher.getIn(['geth', 'status']) !== 'ready'
-            || state.launcher.getIn(['connector', 'status']) !== 'ready') {
-      unsubscribe();
-      waitForServices();
-    }
+
+  onceServicesRestart(store).then(() => {
+    loadInitalScreen();
   });
 }
 
@@ -232,5 +224,8 @@ export function screenHandlers() {
   });
 }
 
-waitForServices();
+startProtocolListener(store);
+onceServicesStart(store).then(startSync).then(() => store.dispatch(screen.actions.gotoScreen('landing')));
+onceAccountsLoaded(store).then(loadInitalScreen);
+checkStatus();
 screenHandlers();
