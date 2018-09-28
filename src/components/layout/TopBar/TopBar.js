@@ -5,7 +5,13 @@ import { Button } from 'emerald-js-ui';
 import { Add as AddIcon } from 'emerald-js-ui/lib/icons3';
 import Screen from '../../../store/wallet/screen';
 
-import styles from './TopBar.scss';
+const styles = {
+  container: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+};
 
 /**
  * First dumb implementation of TopBar
@@ -14,7 +20,7 @@ export class TopBar extends React.Component {
   render() {
     const { onAccounts, onNewContact, muiTheme } = this.props;
     return (
-      <div className={styles.container}>
+      <div style={styles.container}>
         <div>
           <Button
             label="ACCOUNTS"
@@ -39,4 +45,3 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export default muiThemeable()(connect(null, mapDispatchToProps)(TopBar));
-

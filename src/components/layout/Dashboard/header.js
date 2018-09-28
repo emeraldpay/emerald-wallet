@@ -5,16 +5,29 @@ import { translate } from 'react-i18next';
 import { gotoScreen, showDialog } from '../../../store/wallet/screen/screenActions';
 import Menu from './menu';
 
-import classes from './header.scss';
+const styles = {
+  header: {
+    display: 'flex',
+    height: '50px',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    marginTop: '8px',
+  },
+
+  title: {
+    fontSize: '14px',
+    fontWeight: '500',
+  },
+};
 
 class Header extends React.Component {
   render() {
     const { generate, importJson, importLedger, importPrivateKey, importMnemonic, addToken, createMnemonic, showAddressBook } = this.props;
     const { t } = this.props;
     return (
-      <div className={ classes.header }>
+      <div style={ styles.header }>
         <div>
-          <span className={ classes.title }>{ t('list.title') }</span>
+          <span style={ styles.title }>{ t('list.title') }</span>
         </div>
         <Menu
           generate={ generate }
@@ -27,7 +40,8 @@ class Header extends React.Component {
           addToken={ addToken }
           t={ t }
         />
-      </div>);
+      </div>
+    );
   }
 }
 
