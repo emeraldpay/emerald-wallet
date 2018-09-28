@@ -1,12 +1,8 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import thunkMiddleware from 'redux-thunk';
-import createReduxLogger from 'redux-logger';
 import { createStore as createReduxStore, applyMiddleware, combineReducers } from 'redux';
 import { reducer as formReducer } from 'redux-form';
 import { ipcRenderer } from 'electron';
-import { fromJS } from 'immutable';
-import * as qs from 'qs';
-import Contract from '../lib/contract';
 import { startProtocolListener } from './protocol';
 
 import { api } from '../lib/rpc/api';
@@ -98,7 +94,6 @@ function refreshLong() {
 }
 
 export function startSync() {
-  console.log('start sync');
   const state = store.getState();
 
   const promises = [
