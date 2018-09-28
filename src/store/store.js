@@ -29,7 +29,7 @@ import createLogger from '../utils/logger';
 import reduxLogger from '../utils/redux-logger';
 import reduxMiddleware from './middleware';
 
-import { onceServicesRestart, onceServicesStart, onceAccountsLoaded, onceHasAccountsWithBalances } from './triggers';
+import { onceServicesStart, onceAccountsLoaded, onceHasAccountsWithBalances } from './triggers';
 
 const log = createLogger('store');
 
@@ -212,12 +212,16 @@ export function screenHandlers() {
 startProtocolListener(store);
 
 function getInitialScreen() {
-  if (store.getState().launcher.get('firstRun')) {
-    return store.dispatch(screen.actions.gotoScreen('welcome'));
+  // First things first, always go to welcome screen. This shows a nice spinner
+  store.dispatch(screen.actions.gotoScreen('welcome'));
+
+  if (store.getState().launcher.get('firstRun') === true) {
+    return; // stay on the welcome screen.
   }
 
   return onceAccountsLoaded(store).then(() => {
     const accountSize = store.getState().accounts.get('accounts').size;
+
     if (accountSize === 0) {
       return store.dispatch(screen.actions.gotoScreen('landing'));
     }
