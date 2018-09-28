@@ -32,9 +32,9 @@ app.on('ready', () => {
   const webContents = mainWindow.createWindow(isDev);
 
   const services = new Services(webContents);
-  services.useSettings(settings.toJS())
-    .then(() => services.start())
-    .catch((err) => log.error('Failed to start Services:', err));
+  services.useSettings(settings.toJS());
+
+  services.start().catch((err) => log.error('Failed to start Services:', err));
 
   ipc({ settings, services });
 
