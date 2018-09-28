@@ -1,4 +1,4 @@
-const { app, protocol, webContents } = require('electron');
+const { app, protocol, webContents } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const log = require('../logger');
 
 const getMainWebContents = () => webContents
@@ -16,7 +16,7 @@ function protocolHandler(event, url) {
   }
 
   wc.send('protocol', { url });
-  log.info("open-url: " + url);
+  log.info(`open-url: ${url}`);
 }
 
 function startProtocolHandler() {
@@ -27,5 +27,5 @@ function startProtocolHandler() {
 }
 
 module.exports = {
-  startProtocolHandler
+  startProtocolHandler,
 };
