@@ -250,9 +250,11 @@ class Services {
         this.connectorStatus = STATUS.STARTING;
 
         emerald.on('exit', (code) => {
-          // this.connectorStatus = STATUS.NOT_STARTED;
-          // log.error(`Emerald Connector process exited with code: ${code}`);
-          // this.connector.proc = null;
+          if (!this.startedExternally) {
+            this.connectorStatus = STATUS.NOT_STARTED;
+            log.error(`Emerald Connector process exited with code: ${code}`);
+            this.connector.proc = null;
+          }
         });
 
         emerald.on('uncaughtException', (e) => {
@@ -268,6 +270,7 @@ class Services {
           if (data.includes("KeyFile storage error")) {
             // connect to the one that already exists
             log.info('Got the error we wanted');
+            this.startedExternally = true;
             return onVaultReady();
           }
 
