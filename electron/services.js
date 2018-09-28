@@ -275,7 +275,7 @@ class Services {
           }
 
           if (/Connector started on/.test(data)) {
-            onVaultReady();
+           return onVaultReady();
           }
         });
       });
