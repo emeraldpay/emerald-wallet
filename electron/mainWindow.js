@@ -4,7 +4,6 @@ const darwinMenu = require('./menus/darwin');
 const path = require('path');
 const url = require('url');
 const devtron = require('devtron');
-const log = require('./logger');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -46,7 +45,6 @@ const createWindow = function (openDevTools) {
 
   return mainWindow.webContents;
 };
-
 
 module.exports = {
   mainWindow,
