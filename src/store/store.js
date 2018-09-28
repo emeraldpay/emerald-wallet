@@ -221,7 +221,7 @@ function getInitialScreen() {
       return store.dispatch(screen.actions.gotoScreen('landing'));
     }
 
-    onceHasAccountsWithBalances(store).then(() => {
+    return onceHasAccountsWithBalances(store).then(() => {
       return store.dispatch(screen.actions.gotoScreen('home'));
     });
   });

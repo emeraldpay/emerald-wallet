@@ -7,7 +7,7 @@ import FlatButton from 'material-ui/FlatButton';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import screen from '../../store/wallet/screen';
 
-const Render = ({ save, muiTheme }) => {
+const Render = ({ muiTheme, numberOfAccounts, nextPage }) => {
   return (
     <Row>
       <Col xs={12}>
@@ -24,7 +24,7 @@ const Render = ({ save, muiTheme }) => {
         <FlatButton label="Open Wallet"
           icon={<PlayCircle style={{color: muiTheme.palette.alternateTextColor}}/>}
           style={{backgroundColor: muiTheme.palette.primary1Color, color: muiTheme.palette.alternateTextColor}}
-          onClick={save}/>
+          onClick={() => nextPage(numberOfAccounts)}/>
       </Col>
     </Row>
   );
@@ -37,10 +37,11 @@ Render.propTypes = {
 
 const OpenWallet = connect(
   (state, ownProps) => ({
+    numberOfAccounts: state.accounts.get('accounts').size,
   }),
-  (dispatch, ownProps) => ({
-    save: () => {
-      dispatch(screen.actions.gotoScreen('landing'));
+  (dispatch, ownProps, state) => ({
+    nextPage: (numberOfAccounts) => {
+      dispatch(screen.actions.gotoScreen(numberOfAccounts === 0 ? 'landing' : 'home'));
     },
   })
 )(Render);
