@@ -29,7 +29,7 @@ import createLogger from '../utils/logger';
 import reduxLogger from '../utils/redux-logger';
 import reduxMiddleware from './middleware';
 
-import { onceServicesRestart, onceServicesStart, onceAccountsLoaded } from './triggers';
+import { onceServicesRestart, onceServicesStart, onceAccountsLoaded, onceHasAccountsWithBalances } from './triggers';
 
 const log = createLogger('store');
 
@@ -175,18 +175,9 @@ export const start = () => {
     log.error(e);
   }
   store.dispatch(listenElectron());
-  store.dispatch(screen.actions.gotoScreen('welcome'));
-
+  getInitialScreen();
   newWalletVersionCheck();
 };
-
-function loadInitalScreen() {
-  const currentScreen = store.getState().wallet.screen.get('screen');
-
-  if (currentScreen === 'landing' || currentScreen === 'welcome') {
-    store.dispatch(screen.actions.gotoScreen('home'));
-  }
-}
 
 function checkStatus() {
   function checkServiceStatus() {
@@ -200,17 +191,9 @@ function checkStatus() {
   setTimeout(checkServiceStatus, 2000);
 }
 
-export function waitForServicesRestart() {
-  store.dispatch(connecting(true));
-
-  onceServicesRestart(store).then(() => {
-    loadInitalScreen();
-  });
-}
-
 export function screenHandlers() {
   let prevScreen = null;
-  const unsubscribe = store.subscribe(() => {
+  store.subscribe(() => {
     const state = store.getState();
     const curScreen = state.wallet.screen.get('screen');
     const justOpened = prevScreen !== curScreen;
@@ -227,7 +210,24 @@ export function screenHandlers() {
 }
 
 startProtocolListener(store);
+
+function getInitialScreen() {
+  if (store.getState().launcher.get('firstRun')) {
+    return store.dispatch(screen.actions.gotoScreen('welcome'));
+  }
+
+  return onceAccountsLoaded(store).then(() => {
+    const accountSize = store.getState().accounts.get('accounts').size;
+    if (accountSize === 0) {
+      return store.dispatch(screen.actions.gotoScreen('landing'));
+    }
+
+    onceHasAccountsWithBalances(store).then(() => {
+      return store.dispatch(screen.actions.gotoScreen('home'));
+    });
+  });
+}
+
 onceServicesStart(store).then(startSync);
-onceAccountsLoaded(store).then(loadInitalScreen);
 checkStatus();
 screenHandlers();
