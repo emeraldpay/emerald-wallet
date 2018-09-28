@@ -13,9 +13,6 @@ import Main from './components/layout/Main/main';
 import createLogger from './utils/logger';
 import About from './containers/About';
 
-import './index.scss';
-import './bootstrapButtons.scss';
-
 const log = createLogger('index');
 
 const muiTheme = getMuiTheme(theme);

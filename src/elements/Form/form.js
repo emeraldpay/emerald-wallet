@@ -1,7 +1,6 @@
 // @flow
 import React from 'react';
 import { Card } from 'emerald-js-ui';
-import formStyles from './form.scss';
 
 export const styles = {
   fieldName: {
@@ -26,11 +25,15 @@ export const styles = {
     marginBottom: '19px',
     alignItems: 'center',
   },
+  form: {
+    paddingTop: '41px',
+    paddingBottom: '41px',
+  },
 };
 
 export const Row = (props: {children: any}) => {
   return (
-    <div className={ formStyles.formRow }>
+    <div style={ styles.formRow }>
       {props.children}
     </div>
   );
@@ -49,7 +52,7 @@ export class Form extends React.Component {
     const { children, caption, backButton, style } = this.props;
     return (
       <Card style={style}>
-        <div className={ formStyles.form }>
+        <div style={ styles.form }>
           <div style={styles.formRow}>
             <div style={styles.left}>
               { backButton }

@@ -149,14 +149,11 @@
     "flow-typed": "^2.1.5",
     "fs-extra": "^0.30.0",
     "glob": "^7.0.3",
-    "identity-obj-proxy": "^3.0.0",
     "imports-loader": "0.7.1",
     "jest": "^22.2.1",
     "minimist": "^1.2.0",
-    "node-sass": "4.5.2",
     "react-test-renderer": "^15.6.1",
     "recursive-readdir-sync": "^1.0.6",
-    "sass-loader": "6.0.3",
     "shebang-loader": "0.0.1",
     "storybook-addon-material-ui": "0.8.2",
     "style-loader": "0.16.1",
@@ -219,7 +216,6 @@
       "src/**/*.js"
     ],
     "moduleNameMapper": {
-      "\\.(scss|less)$": "identity-obj-proxy",
       "electron": "<rootDir>/src/electron-mock.js"
     },
     "modulePaths": [
