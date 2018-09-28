@@ -9,7 +9,23 @@ import TextField from '../../../elements/Form/TextField';
 import screen from '../../../store/wallet/screen';
 import accounts from '../../../store/vault/accounts';
 
-import styles from './exportPaperWallet.scss';
+const styles = {
+  passwordLabel: {
+   height: '24px',
+    width: '190px',
+    color: '#191919',
+    fontSize: '16px',
+    fontWeight: '500',
+    lineHeight: '24px',
+  },
+  passwordSubLabel: {
+    height: '22px',
+    width: '320px',
+    color: '#191919',
+    fontSize: '14px',
+    lineHeight: '22px',
+  },
+};
 
 class ExportPaperWallet extends React.Component {
   static propTypes = {
@@ -34,8 +50,8 @@ class ExportPaperWallet extends React.Component {
           </div>
           <div style={formStyles.right}>
             <div style={{ width: '100%' }}>
-              <div className={styles.passwordLabel}>Enter a password</div>
-              <div className={styles.passwordSubLabel}>
+              <div style={styles.passwordLabel}>Enter a password</div>
+              <div style={styles.passwordSubLabel}>
                 Password needs for confirm all wallet operations.</div>
               <div style={{ marginTop: '30px' }}>
                 <Field

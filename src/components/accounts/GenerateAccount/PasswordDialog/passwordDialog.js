@@ -8,10 +8,27 @@ import { Row, styles as formStyles } from 'elements/Form';
 import PasswordInput from 'elements/PasswordInput';
 import { Back } from 'emerald-js-ui/lib/icons3';
 import Advice from './advice';
-import styles from './passwordDialog.scss';
 import getLoadingIcon from '../getLoadingIcon';
 
 const MIN_PASSWORD_LENGTH = 8;
+
+const styles = {
+  passwordLabel: {
+    height: '24px',
+    width: '190px',
+    color: '#191919',
+    fontSize: '16px',
+    fontWeight: '500',
+    lineHeight: '24px',
+  },
+
+  passwordSubLabel: {
+    height: '22px',
+    color: '#191919',
+    fontSize: '14px',
+    lineHeight: '22px',
+  },
+};
 
 class PasswordDialog extends React.Component {
   static propTypes = {
@@ -152,4 +169,3 @@ const passwordDialogForm = reduxForm({
 })(PasswordDialog);
 
 export default passwordDialogForm;
-

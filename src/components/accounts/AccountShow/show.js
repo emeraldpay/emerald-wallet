@@ -19,10 +19,20 @@ import AccountEdit from '../AccountEdit';
 import TransactionsList from '../../tx/TxHistory';
 import AccountBalance from '../Balance';
 import SecondaryMenu from '../SecondaryMenu';
-import classes from './show.scss';
 import TokenBalances from '../TokenBalances';
 
 const log = createLogger('AccountShow');
+
+const styles = {
+  transContainer: {
+    marginTop: '20px',
+  },
+
+  qrCodeContainer: {
+    flexBasis: '30%',
+    backgroundColor: 'white',
+  },
+};
 
 export class AccountShow extends React.Component {
   constructor(props) {
@@ -139,7 +149,7 @@ export class AccountShow extends React.Component {
               </Row>
             </div>
 
-            <div className={ classes.qrCodeContainer }>
+            <div style={ styles.qrCodeContainer }>
               <QRCode value={ account.get('id') } />
             </div>
           </div>
@@ -147,7 +157,7 @@ export class AccountShow extends React.Component {
           <div style={{paddingBottom: '20px'}} />
         </Page>
 
-        <div className={ classes.transContainer }>
+        <div styles={ styles.transContainer }>
           <TransactionsList transactions={ transactions } accountId={ account.get('id') } />
         </div>
       </Fragment>

@@ -11,7 +11,19 @@ import screen from '../../../store/wallet/screen';
 import launcher from '../../../store/launcher';
 import Account from './account';
 
-import styles from './list.scss';
+const styles = {
+  container: {
+    marginBottom: '10px',
+  },
+
+  listItem: {
+    marginBottom: '10px',
+  },
+
+  hiddenListItem: {
+    opacity: '0.4',
+  },
+};
 
 const log = createLogger('AccountList');
 const cx = classNames.bind(styles);
@@ -21,7 +33,7 @@ const AccountList = translate('accounts')((props) => {
   const { accounts, showFiat } = props;
   const { openAccount, createTx, showReceiveDialog, muiTheme } = props;
   return (
-    <div className={ styles.container } >
+    <div style={ styles.container } >
       {accounts.map((account) => {
         const className = cx({
           listItem: true,
@@ -63,4 +75,3 @@ export default connect(
     },
   })
 )(muiThemeable()(AccountList));
-

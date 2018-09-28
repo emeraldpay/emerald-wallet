@@ -4,7 +4,41 @@ import { Button, Warning, WarningHeader, WarningText, Page } from 'emerald-js-ui
 import { Row, styles as formStyles } from 'elements/Form';
 import { Back } from 'emerald-js-ui/lib/icons3';
 
-import styles from './showPrivateKeyDialog.scss';
+const styles = {
+  title: {
+    fontSize: '16px',
+    fontWeight: '500',
+    lineHeight: '24px',
+  },
+
+  subTitle: {
+    fontSize: '14px',
+    lineHeight: '22px',
+  },
+
+  keyTitle: {
+    color: '#191919',
+    fontSize: '14px',
+    fontWeight: '500',
+    lineHeight: '24px',
+  },
+
+  key: {
+    fontSize: '14px',
+    lineHeight: '22px',
+    overflowWrap: 'break-word',
+  },
+
+  privKeyContainer: {
+    marginLeft: '30px',
+    overflow: 'hidden',
+  },
+
+  privKeyColumn: {
+    alignItems: 'flex-start !important',
+  },
+};
+
 
 const ShowPrivateDialog = (props) => {
   const { onBack, onNext, privateKey, t } = props;
@@ -15,8 +49,8 @@ const ShowPrivateDialog = (props) => {
         <div style={ formStyles.left }/>
         <div style={ formStyles.right }>
           <div>
-            <div className={ styles.title }>Print this</div>
-            <div className={ styles.subTitle }>
+            <div style={ styles.title }>Print this</div>
+            <div style={ styles.subTitle }>
               This is the unencrypted text version of your private key, meaning no password is necessary.
               It helps if you forget your password.
             </div>
@@ -38,16 +72,16 @@ const ShowPrivateDialog = (props) => {
 
       <Row>
         <div style={ formStyles.left } />
-        <div style={ formStyles.right } className={ styles.privKeyColumn }>
+        <div style={ formStyles.right } style={ styles.privKeyColumn }>
           <div>
             <QRCode
               size={ 100 }
               value={ privateKey }
             />
           </div>
-          <div className={ styles.privKeyContainer }>
-            <div className={ styles.keyTitle }>Unencrypted Private Key</div>
-            <div className={ styles.key }>
+          <div style={ styles.privKeyContainer }>
+            <div style={ styles.keyTitle }>Unencrypted Private Key</div>
+            <div style={ styles.key }>
               { privateKey }
             </div>
           </div>

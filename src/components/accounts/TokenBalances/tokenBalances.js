@@ -1,21 +1,33 @@
 import React from 'react';
 
-import styles from './tokenBalances.scss';
+const styles = {
+  table: {
+    fontSize: '14px',
+  },
+
+  tableRow: {
+    height: '21.5px',
+  },
+
+  symbol: {
+    fontWeight: '500',
+  },
+};
 
 const TokenBalances = ({ balances }) => {
   if (!balances) {
     return null;
   }
   return (
-    <table className={ styles.table }>
+    <table style={ styles.table }>
       <tbody>
         { balances.map((token) => (
-          <tr className={ styles.tableRow } key={ token.get('address') } >
-            <td className={ styles.tableColumn }>
+          <tr style={ styles.tableRow } key={ token.get('address') } >
+            <td style={ styles.tableColumn }>
               { token.get('balance').getDecimalized() }
             </td>
-            <td className={ styles.tableColumn }>
-              <span className={ styles.symbol }> { token.get('symbol') }</span>
+            <td>
+              <span style={ styles.symbol }> { token.get('symbol') }</span>
             </td>
           </tr>))
         }

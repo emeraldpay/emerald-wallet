@@ -14,7 +14,23 @@ import screen from 'store/wallet/screen';
 import { required, passwordMatch, minLength } from 'lib/validators';
 import CircularProgress from 'material-ui/CircularProgress';
 
-import styles from './importPrivateKey.scss';
+const styles = {
+  passwordLabel: {
+    height: '24px',
+    width: '190px',
+    color: '#191919',
+    fontSize: '16px',
+    fontWeight: '500',
+    lineHeight: '24px',
+  },
+
+  passwordSubLabel: {
+    height: '22px',
+    color: '#191919',
+    fontSize: '14px',
+    lineHeight: '22px',
+  },
+};
 
 function getLoadingIcon(submitting) {
   if (submitting) {
@@ -34,8 +50,8 @@ export class ImportPrivateKey extends React.Component {
           <div style={formStyles.left}/>
           <div style={formStyles.right}>
             <div style={{width: '100%'}}>
-              <div className={styles.passwordLabel}>Enter a strong password</div>
-              <div className={styles.passwordSubLabel}>This password will be required to confirm all account
+              <div style={styles.passwordLabel}>Enter a strong password</div>
+              <div style={styles.passwordSubLabel}>This password will be required to confirm all account
                                     operations.
               </div>
               <div style={{marginTop: '30px'}}>
@@ -81,7 +97,7 @@ export class ImportPrivateKey extends React.Component {
           </div>
           <div style={formStyles.right}>
             <div style={{width: '100%'}}>
-              <div className={ styles.passwordLabel }>Enter a private key</div>
+              <div style={ styles.passwordLabel }>Enter a private key</div>
               <div>
                 <Field
                   name="privateKey"
@@ -152,4 +168,3 @@ export default connect(
     },
   })
 )(muiThemeable()(importForm));
-

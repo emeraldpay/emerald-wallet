@@ -8,7 +8,24 @@ import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../Balance';
 import TokenUnits from '../../../lib/tokenUnits';
 
-import styles from './account.scss';
+const styles = {
+  tokensDivider: {
+    backgroundColor: '#F5F5F5',
+    height: '2px',
+    width: '100%',
+    border: 'none',
+  },
+  identityIconContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+
+  actionsContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  }
+};
 
 export class Account extends React.Component {
     static propTypes = {
@@ -52,7 +69,7 @@ export class Account extends React.Component {
                 />
               </Col>
               <Col xs={3}>
-                <div className={ styles.identityIconContainer }>
+                <div style={ styles.identityIconContainer }>
                   <div style={{marginLeft: '10px'}}>
                     {balance && <AccountBalance
                       fiatStyle={fiatStyle}
@@ -65,7 +82,7 @@ export class Account extends React.Component {
                 </div>
               </Col>
               <Col xs={4}>
-                <div className={ styles.actionsContainer }>
+                <div style={ styles.actionsContainer }>
                   <ButtonGroup>
                     <SecondaryMenu account={account} />
                     <Button

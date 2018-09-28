@@ -7,7 +7,15 @@ import screen from '../../../store/wallet/screen';
 import accounts from '../../../store/vault/accounts';
 import history from '../../../store/wallet/history';
 
-import styles from './hideAccountDialog.scss';
+const styles = {
+  title: {
+    color: '#191919',
+    fontSize: '14px',
+    fontWeight: '500',
+    lineHeight: '24px',
+    textTransform: 'uppercase',
+  },
+};
 
 export class HideAccountDialog extends React.Component {
   render() {
@@ -17,7 +25,7 @@ export class HideAccountDialog extends React.Component {
       <Dialog modal={true} open={true} onRequestClose={ onClose } contentStyle={{maxWidth: '600px'}}>
         <div style={{width: '100%'}}>
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-            <div className={styles.title}>Are you Sure you want to hide this account?</div>
+            <div style={styles.title}>Are you Sure you want to hide this account?</div>
           </div>
           <div style={{marginRight: '20px'}}>
             <Warning>
