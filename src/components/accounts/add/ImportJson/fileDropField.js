@@ -11,7 +11,7 @@ const styles = {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center',
-  };,
+  },
 
   label: {
     margin: '10px',
