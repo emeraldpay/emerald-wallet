@@ -7,7 +7,25 @@ import { Trash as DeleteIcon } from 'emerald-js-ui/lib/icons3';
 import { Input } from 'emerald-js-ui';
 import tokensStore from '../../../store/vault/tokens';
 
-import styles from './list.scss';
+const styles = {
+  tokenItemContainer: {
+    display: 'flex',
+    marginTop: '10px',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  addressInput: {
+    marginLeft: '4px',
+    minWidth: '405px',
+    fontSize: '16px',
+  },
+
+  symbolInput: {
+    maxWidth: '80px',
+    fontSize: '16px',
+  },
+};
 
 const deleteIconStyle = {
   width: '19px',
@@ -20,14 +38,14 @@ const Token = (props) => {
   const symbol = token.get('symbol');
 
   return (
-    <div className={ styles.tokenItemContainer }>
-      <div className={ styles.symbolInput }>
+    <div style={ styles.tokenItemContainer }>
+      <div style={ styles.symbolInput }>
         <Input
           value={ symbol }
           underlineShow={ false }
         />
       </div>
-      <div className={ styles.addressInput }>
+      <div style={ styles.addressInput }>
         <Input
           value={ tokenAddress }
           underlineShow={ false }

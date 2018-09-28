@@ -9,7 +9,11 @@ import { required, address } from 'lib/validators';
 import TokenUnits from 'lib/tokenUnits';
 import tokens from '../../../store/vault/tokens';
 
-import styles from './add.scss';
+const styles = {
+  actionButtons: {
+    marginTop: '10px',
+  },
+};
 
 export class AddToken extends React.Component {
     static propTypes = {
@@ -46,7 +50,7 @@ export class AddToken extends React.Component {
                           validate={ [required, address] }
                         />
                       </div>
-                      <div className={ styles.actionButtons }>
+                      <div style={ styles.actionButtons }>
                         <Button
                           primary
                           label="Submit"
@@ -82,7 +86,7 @@ export class AddToken extends React.Component {
                           </table>
                         </div>
 
-                        <div className={ styles.actionButtons }>
+                        <div style={ styles.actionButtons }>
                           <ButtonGroup>
                             <Button
                               primary
