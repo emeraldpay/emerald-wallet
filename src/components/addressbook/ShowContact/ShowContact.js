@@ -7,10 +7,18 @@ import { IconButton } from 'material-ui';
 import { gotoScreen } from '../../../store/wallet/screen/screenActions';
 import Addressbook from '../../../store/vault/addressbook';
 
-import styles from './ShowContact.scss';
+const styles = {
+  container: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'white',
+    padding: '10px',
+  },
+};
 
 export const ShowContact = ({ address, onDeleteAddress, onEditAddress, muiTheme }) => (
-  <div className={styles.container}>
+  <div style={styles.container}>
     <div>
       <Account
         identity
