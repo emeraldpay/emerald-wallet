@@ -6,8 +6,7 @@ const { toNumber } = convert;
 
 const initial = Immutable.fromJS({
   accounts: [],
-  loading: false,
-
+  loading: true,
 });
 
 const initialAccount = Immutable.Map({

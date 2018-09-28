@@ -48,7 +48,7 @@ export function loadAccountBalance(address: string) {
  */
 function fetchBalances(addresses: Array<string>) {
   return (dispatch, getState, api) => {
-    api.geth.ext.getBalances(addresses).then((balances) => {
+    return api.geth.ext.getBalances(addresses).then((balances) => {
       dispatch({
         type: ActionTypes.SET_BALANCES,
         accountBalances: addresses.map((addr) => ({ accountId: addr, balance: balances[addr] })),
@@ -56,7 +56,7 @@ function fetchBalances(addresses: Array<string>) {
 
       const tokens = getState().tokens;
       if (!tokens.get('loading')) {
-        dispatch(loadTokensBalances(addresses));
+        return dispatch(loadTokensBalances(addresses));
       }
     });
   };
@@ -67,28 +67,29 @@ function fetchBalances(addresses: Array<string>) {
  */
 function fetchHdPaths() {
   return (dispatch, getState, api) => {
+    const promises = [];
     const chain = currentChain(getState());
     getState().accounts.get('accounts')
       .filter((a) => a.get('hardware', false))
       .forEach((a) => {
         const address = a.get('id');
-        api.emerald.exportAccount(address, chain).then((result) => {
-          dispatch({
+        promises.push(api.emerald.exportAccount(address, chain).then((result) => {
+          return dispatch({
             type: ActionTypes.SET_HD_PATH,
             accountId: address,
             hdpath: JSON.parse(result).crypto.hd_path,
           });
-        });
+        }));
       });
+
+    return Promise.all(promises);
   };
 }
 
 export function loadAccountsList() {
-  log.debug('Calling loadAccountsList()');
   return (dispatch, getState, api) => {
-    dispatch({
-      type: ActionTypes.LOADING,
-    });
+    dispatch({ type: ActionTypes.LOADING });
+
     const chain = currentChain(getState());
     const showHidden = getState().wallet.settings.get('showHiddenAccounts', false);
     return api.emerald.listAccounts(chain, showHidden).then((result) => {
@@ -96,8 +97,10 @@ export function loadAccountsList() {
         type: ActionTypes.SET_LIST,
         accounts: result,
       });
-      dispatch(fetchHdPaths());
-      return dispatch(fetchBalances(result.map((account) => account.address)));
+
+      return dispatch(fetchHdPaths()).then(() => {
+        return dispatch(fetchBalances(result.map((account) => account.address)));
+      });
     });
   };
 }

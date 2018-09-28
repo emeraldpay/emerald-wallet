@@ -29,7 +29,7 @@ import createLogger from '../utils/logger';
 import reduxLogger from '../utils/redux-logger';
 import reduxMiddleware from './middleware';
 
-import { onceServicesRestart, onceServicesStart, onceAccountsLoaded } from './triggers';
+import { onceServicesStart, onceAccountsLoaded, onceHasAccountsWithBalances } from './triggers';
 
 const log = createLogger('store');
 
@@ -98,6 +98,7 @@ function refreshLong() {
 }
 
 export function startSync() {
+  console.log('start sync');
   const state = store.getState();
 
   const promises = [
@@ -174,17 +175,9 @@ export const start = () => {
     log.error(e);
   }
   store.dispatch(listenElectron());
-
+  getInitialScreen();
   newWalletVersionCheck();
 };
-
-function loadInitalScreen() {
-  const currentScreen = store.getState().screen.get('screen');
-
-  if (screen === 'landing' || screen === 'welcome') {
-    store.dispatch(screen.actions.gotoScreen('home'));
-  }
-}
 
 function checkStatus() {
   function checkServiceStatus() {
@@ -198,17 +191,9 @@ function checkStatus() {
   setTimeout(checkServiceStatus, 2000);
 }
 
-export function waitForServicesRestart() {
-  store.dispatch(connecting(true));
-
-  onceServicesRestart(store).then(() => {
-    loadInitalScreen();
-  });
-}
-
 export function screenHandlers() {
   let prevScreen = null;
-  const unsubscribe = store.subscribe(() => {
+  store.subscribe(() => {
     const state = store.getState();
     const curScreen = state.wallet.screen.get('screen');
     const justOpened = prevScreen !== curScreen;
@@ -225,7 +210,28 @@ export function screenHandlers() {
 }
 
 startProtocolListener(store);
-onceServicesStart(store).then(startSync).then(() => store.dispatch(screen.actions.gotoScreen('landing')));
-onceAccountsLoaded(store).then(loadInitalScreen);
+
+function getInitialScreen() {
+  // First things first, always go to welcome screen. This shows a nice spinner
+  store.dispatch(screen.actions.gotoScreen('welcome'));
+
+  if (store.getState().launcher.get('firstRun') === true) {
+    return; // stay on the welcome screen.
+  }
+
+  return onceAccountsLoaded(store).then(() => {
+    const accountSize = store.getState().accounts.get('accounts').size;
+
+    if (accountSize === 0) {
+      return store.dispatch(screen.actions.gotoScreen('landing'));
+    }
+
+    onceHasAccountsWithBalances(store).then(() => {
+      return store.dispatch(screen.actions.gotoScreen('home'));
+    });
+  });
+}
+
+onceServicesStart(store).then(startSync);
 checkStatus();
 screenHandlers();
