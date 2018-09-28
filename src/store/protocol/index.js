@@ -5,7 +5,7 @@ import { fromJS } from 'immutable';
 import screen from '../wallet/screen';
 import Contract from '../../lib/contract';
 import createLogger from '../../utils/logger';
-import { onceServicesStart, onceAccountsLoaded } from '../triggers';
+import { onceServicesStart, onceAccountsLoaded, onceHasAccountsWithBalances } from '../triggers';
 
 const log = createLogger('launcherActions');
 
@@ -50,6 +50,7 @@ export function startProtocolListener(store) {
   ipcRenderer.on('protocol', (event, request) => {
     onceServicesStart(store)
       .then(() => onceAccountsLoaded(store))
+      .then(() => onceHasAccountsWithBalances(store))
       .then(() => protocolLinkHandler(request, store.getState(), store.dispatch));
   });
 }

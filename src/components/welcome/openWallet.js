@@ -5,7 +5,7 @@ import { PlayCircle } from 'emerald-js-ui/lib/icons3';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import FlatButton from 'material-ui/FlatButton';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import { waitForServicesRestart } from 'store/store';
+import screen from '../../store/wallet/screen';
 
 const Render = ({ save, muiTheme }) => {
   return (
@@ -40,7 +40,7 @@ const OpenWallet = connect(
   }),
   (dispatch, ownProps) => ({
     save: () => {
-      waitForServicesRestart();
+      dispatch(screen.actions.gotoScreen('landing'));
     },
   })
 )(Render);
