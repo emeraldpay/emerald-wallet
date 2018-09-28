@@ -10,7 +10,6 @@ import { Forward as ArrowRightIcon } from 'emerald-js-ui/lib/icons3';
 import AccountBalance from '../../../accounts/Balance';
 import TokenUnits from '../../../../lib/tokenUnits';
 import { link, tables } from '../../../../lib/styles';
-import classes from './list.scss';
 import i18n from '../../../../i18n/i18n';
 import { TokenAbi } from '../../../../lib/erc20';
 

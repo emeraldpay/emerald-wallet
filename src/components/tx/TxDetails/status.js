@@ -1,6 +1,5 @@
 import React from 'react';
 import CircularProgress from 'material-ui/CircularProgress';
-import styles from './status.scss';
 
 const styles = {
   success: {

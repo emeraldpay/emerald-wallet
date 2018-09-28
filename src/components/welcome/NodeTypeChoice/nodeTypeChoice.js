@@ -9,7 +9,6 @@ import { GastrackerMainnet, MainnetLocal } from '../../../lib/rpc/gethProviders'
 import FullNodeLogo from './fullNodeLogo';
 import RemoteNodeLogo from './remoteNodeLogo';
 
-import classes from './nodeTypeChoice.scss';
 const styles = {
   container: {
     paddingTop: '40px',
