@@ -8,7 +8,26 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import { tables } from '../../../../lib/styles';
 import Transaction from './transaction';
 
-import classes from './list.scss';
+const styles = {
+  columnName: {
+    textTransform: 'uppercase',
+    fontSize: '11px !important',
+    fontWeight: '500 !important',
+    letterSpacing: '1px',
+    lineHeight: '16px',
+  },
+
+  amountColumn: {
+    paddingLeft: '0 !important',
+    width: '100px',
+  },
+
+  columnArrow: {
+    paddingLeft: '0px !important',
+    paddingRight: '0px !important',
+    width: '24px',
+  },
+};
 
 type Props = {
     transactions: Array<any>,
@@ -34,15 +53,15 @@ const TransactionsList = (props: Props) => {
       <Table selectable={ false } fixedHeader={ true } style={{background: muiTheme.palette.alternateTextColor}}>
         <TableHeader displaySelectAll={ false } adjustForCheckbox={ false }>
           <TableRow>
-            <TableHeaderColumn className={ cx(classes.columnName, classes.amountColumn) } style={{width: 100}} >
+            <TableHeaderColumn style={ cx(styles.columnName, styles.amountColumn) } style={{width: 100}} >
                             Amount
             </TableHeaderColumn>
-            <TableHeaderColumn className={classes.columnName} style={{ width: 60 }}>
+            <TableHeaderColumn style={styles.columnName} style={{ width: 60 }}>
                             Status
             </TableHeaderColumn>
-            <TableHeaderColumn className={classes.columnName} style={{paddingLeft: '5px'}}>From</TableHeaderColumn>
-            <TableHeaderColumn className={classes.columnArrow}>&nbsp;</TableHeaderColumn>
-            <TableHeaderColumn className={classes.columnName} style={{paddingLeft: '5px'}}>To</TableHeaderColumn>
+            <TableHeaderColumn style={styles.columnName} style={{paddingLeft: '5px'}}>From</TableHeaderColumn>
+            <TableHeaderColumn style={styles.columnArrow}>&nbsp;</TableHeaderColumn>
+            <TableHeaderColumn style={styles.columnName} style={{paddingLeft: '5px'}}>To</TableHeaderColumn>
           </TableRow>
         </TableHeader>
         <TableBody displayRowCheckbox={ false }>

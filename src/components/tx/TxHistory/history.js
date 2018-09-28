@@ -10,7 +10,11 @@ import { searchTransactions, filterTransactions } from '../../../store/wallet/hi
 import Header from './Header';
 import TxList from './List';
 
-import styles from './history.scss';
+const styles = {
+  container: {
+    padding: '30px 30px 20px',
+  },
+};
 
 type Props = {
   accountId: string,
@@ -53,7 +57,7 @@ class TransactionsHistory extends React.Component<Props, State> {
   render() {
     return (
       <Card>
-        <div className={ styles.container } style={{border: `1px solid ${this.props.muiTheme.palette.borderColor}`}}>
+        <div style={ styles.container } style={{border: `1px solid ${this.props.muiTheme.palette.borderColor}`}}>
           <Header onTxFilterChange={this.onTxFilterChange} value={this.state.txFilter} onSearchChange={this.onSearchChange}/>
           <TxList transactions={ this.state.displayedTransactions } accountId={ this.props.accountId }/>
         </div>

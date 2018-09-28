@@ -5,9 +5,35 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import TextField from '../../../../elements/Form/TextField';
 import Filter from './filter';
 
-import classes from './header.scss';
-
 const styles = {
+  headerContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  headerTitle: {
+    color: '#191919',
+    fontSize: '14px',
+    fontWeight: '500',
+    lineHeight: '24px',
+    textTransform: 'uppercase',
+  },
+
+  filter: {
+    marginLeft: '40px',
+    maxWidth: '186px',
+  },
+
+  headerMain: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+
+  search: {
+    maxHeight: '40px',
+  },
+
   searchIcon: {
     width: '14px',
     height: '14px',
@@ -16,12 +42,12 @@ const styles = {
 
 const Header = ({onTxFilterChange, onSearchChange, muiTheme}) => {
   return (
-    <div className={ classes.headerContainer }>
-      <div className={ classes.headerMain }>
-        <div className={ classes.headerTitle }>History</div>
-        <div className={ classes.filter }><Filter onChange={onTxFilterChange}/></div>
+    <div style={ styles.headerContainer }>
+      <div style={ styles.headerMain }>
+        <div style={ styles.headerTitle }>History</div>
+        <div style={ styles.filter }><Filter onChange={onTxFilterChange}/></div>
       </div>
-      <div className={ classes.search }>
+      <div style={ styles.search }>
         <TextField
           rightIcon={ <SearchIcon style={ styles.searchIcon } /> }
           onChange={onSearchChange}

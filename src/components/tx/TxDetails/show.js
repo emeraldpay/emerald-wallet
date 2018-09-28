@@ -16,7 +16,17 @@ import TxStatus from './status';
 import { Currency } from '../../../lib/currency';
 import createLogger from '../../../utils/logger';
 import TxInputData from './TxInputData';
-import classes from './show.scss';
+
+const styles = {
+  value: {
+    marginBottom: '5px',
+  },
+
+  txData: {
+    overflowX: 'auto',
+    overflowWrap: 'break-word',
+  },
+};
 
 const log = createLogger('TxDetails');
 
@@ -66,10 +76,10 @@ export const TransactionShow = (props: Props) => {
         <div style={styles.right}>
           <div style={{display: 'flex'}}>
             <div>
-              <div className={ classes.value }>
+              <div style={ styles.value }>
                 { transaction.get('value') ? `${new Wei(transaction.get('value')).getEther()} ETC` : '--' }
               </div>
-              {showFiat && <div className={ classes.value }>
+      {showFiat && <div style={ styles.value }>
                 { fiatAmount }
               </div> }
             </div>
@@ -146,7 +156,7 @@ export const TransactionShow = (props: Props) => {
           <div style={fieldNameStyle}>Input Data</div>
         </div>
         <div style={styles.right}>
-          <div className={ classes.txData }>
+          <div style={ styles.txData }>
             <TxInputData data={transaction.get('data')} />
           </div>
         </div>
