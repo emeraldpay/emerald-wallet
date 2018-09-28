@@ -3,7 +3,16 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { AutoComplete } from 'material-ui';
 
-import styles from './hdPath.scss';
+const styles = {
+  container: {
+    border: '1px solid #DDDDDD',
+    boxSizing: 'border-box',
+    borderRadius: '1px',
+    paddingLeft: '10px',
+    paddingRight: '10px',
+  },
+};
+
 
 const predefinedHdPaths = [
   'm/44\'/60\'/160720\'/0\'',
@@ -28,7 +37,7 @@ class HdPath extends React.Component {
   render() {
     const { value } = this.props;
     return (
-      <div className={ styles.container }>
+      <div style={ styles.container }>
         <AutoComplete
           searchText={ value }
           filter={ AutoComplete.noFilter }
@@ -45,4 +54,3 @@ class HdPath extends React.Component {
 
 
 export default HdPath;
-
