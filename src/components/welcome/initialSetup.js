@@ -43,7 +43,7 @@ const Render = ({ rpcType, terms }) => {
       <Row>
         <Col xs={12}>
           <Stepper activeStep={activeStep}>
-            { steps.map((s) => s) }
+            { steps }
           </Stepper>
         </Col>
       </Row>
