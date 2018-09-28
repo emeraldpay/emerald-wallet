@@ -6,9 +6,7 @@ import IconButton from 'material-ui/IconButton';
 import { Close as CloseIcon } from 'emerald-js-ui/lib/icons3';
 import screen from 'store/wallet/screen';
 
-import styles from './waitDialog.scss';
-
-const style = {
+const styles = {
   closeButton: {
     float: 'right',
   },
@@ -16,6 +14,49 @@ const style = {
     width: '15px',
     height: '15px',
     color: 'white',
+  },
+  header: {
+    background: 'url("./ledger.png")',
+    backgroundSize: '600px 188px',
+    width: '600px',
+    height: '188px',
+  },
+
+  content: {
+    paddingLeft: '30px',
+    paddingTop: '14px',
+  },
+
+  title: {
+    color: '#191919',
+    marginTop: '30px',
+    marginBottom: '20px',
+    fontSize: '22px',
+    lineHeight: '24px',
+  },
+
+  buyLedger: {
+    color: '#747474',
+    fontSize: '14px',
+    lineHeight: '22px',
+  },
+
+  instructions: {
+    color: '#191919',
+    fontSize: '14px',
+    lineHeight: '22px',
+  },
+
+  dialogBody: {
+    padding: '0 !important',
+  },
+
+  dialogContent: {
+    maxWidth: '600px !important',
+  },
+
+  dialogPaper: {
+    backgroundColor: 'white !important',
   },
 };
 
@@ -28,25 +69,25 @@ export const WaitConnectionDialog = ({ onCancel }) => {
       contentClassName={ styles.dialogContent }
       paperClassName={ styles.dialogPaper }
     >
-      <div className={ styles.header }>
+      <div style={ styles.header }>
         <div>
           <IconButton
-            style={ style.closeButton }
+            style={ styles.closeButton }
             onTouchTap={ onCancel }
-            iconStyle={ style.closeIcon }
+            iconStyle={ styles.closeIcon }
             tooltip="Close">
             <CloseIcon />
           </IconButton>
         </div>
       </div>
-      <div className={ styles.content }>
-        <div className={ styles.buyLedger }>
+      <div style={ styles.content }>
+        <div style={ styles.buyLedger }>
                     Ledger Nano S. Where to buy?
         </div>
-        <div className={ styles.title }>
+        <div style={ styles.title }>
                     Waiting for Ledger Connection...
         </div>
-        <div className={ styles.instructions }>
+        <div style={ styles.instructions }>
           <ol>
             <li>Connect your Ledger Nano S device</li>
             <li>Open the Ethereum Application on Ledger device</li>
@@ -75,4 +116,3 @@ export default connect(
     },
   })
 )(WaitConnectionDialog);
-

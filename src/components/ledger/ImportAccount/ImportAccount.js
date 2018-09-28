@@ -9,13 +9,18 @@ import { Form, Row, styles as formStyles } from 'elements/Form';
 import AddrList from './addrlist';
 import Pager from './pager';
 
-import styles from './ImportAccount.scss';
-
 type Props = {
   onInit: Function,
   onBackScreen: ?Function,
   hdbase: string,
 }
+
+const styles = {
+  row: {
+    marginLeft: '14.75px',
+    marginRight: '14.75px',
+  },
+};
 
 class ImportAccount extends React.Component<Props> {
   componentDidMount() {
@@ -43,10 +48,10 @@ class ImportAccount extends React.Component<Props> {
           </div>
         </Row>
         <Row>
-          <div className={styles.row}><AddrList /></div>
+          <div style={styles.row}><AddrList /></div>
         </Row>
         <Row>
-          <div className={styles.row}>
+          <div style={styles.row}>
             <ButtonGroup>
               <Button
                 label="Add Selected"
