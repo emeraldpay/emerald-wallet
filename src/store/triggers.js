@@ -24,7 +24,7 @@ export function onceServicesStart(store) {
   return new Promise((resolve, reject) => handleTrigger(check, resolve, store));
 }
 
-export function onceAccountsLoaded(store) {
+export function onceHasAccountsWithBalances(store) {
   const check = () => {
     const { accounts } = store.getState();
     const allAccounts = accounts.get('accounts');
@@ -35,6 +35,14 @@ export function onceAccountsLoaded(store) {
   return new Promise((resolve, reject) => handleTrigger(check, resolve, store));
 }
 
+export function onceAccountsLoaded(store) {
+  const check = () => {
+    const { accounts } = store.getState();
+    return !accounts.get('loading') && accounts.get('accounts');
+  };
+
+  return new Promise((resolve, reject) => handleTrigger(check, resolve, store));
+}
 
 export function onceAnyServiceDead(store) {
   const check = () => {

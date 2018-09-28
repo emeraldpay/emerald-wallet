@@ -1,7 +1,6 @@
 import React from 'react';
 import FlatButton from 'material-ui/FlatButton';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
-import { Logo as LogoIcon } from 'emerald-js-ui/lib/icons';
 import Divider from 'material-ui/Divider';
 import { Button } from 'emerald-js-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
