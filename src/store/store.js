@@ -98,6 +98,7 @@ function refreshLong() {
 }
 
 export function startSync() {
+  console.log('start sync');
   const state = store.getState();
 
   const promises = [
@@ -174,14 +175,15 @@ export const start = () => {
     log.error(e);
   }
   store.dispatch(listenElectron());
+  store.dispatch(screen.actions.gotoScreen('welcome'));
 
   newWalletVersionCheck();
 };
 
 function loadInitalScreen() {
-  const currentScreen = store.getState().screen.get('screen');
+  const currentScreen = store.getState().wallet.screen.get('screen');
 
-  if (screen === 'landing' || screen === 'welcome') {
+  if (currentScreen === 'landing' || currentScreen === 'welcome') {
     store.dispatch(screen.actions.gotoScreen('home'));
   }
 }
@@ -225,7 +227,7 @@ export function screenHandlers() {
 }
 
 startProtocolListener(store);
-onceServicesStart(store).then(startSync).then(() => store.dispatch(screen.actions.gotoScreen('landing')));
+onceServicesStart(store).then(startSync);
 onceAccountsLoaded(store).then(loadInitalScreen);
 checkStatus();
 screenHandlers();
