@@ -1,0 +1,5 @@
+{
+    "lang": "Sprache", // Language
+    "currency": "Gleichwertige Währung", // Equivalent currency
+    "showHiddenAccounts": "Versteckte Konten" // Hidden Accounts
+}
