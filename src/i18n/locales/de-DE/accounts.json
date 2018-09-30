@@ -1,0 +1,59 @@
+{
+    "show": {
+        "header": "Konto: {{account}}", // Account
+        "description": {
+            "title": "Konto Beschreibung:", // Account Description
+            "address": "Adresse:", // Address
+            "sentTransactions": "Sende Transaktionen:", // Sent Transactions
+            "etherBalance": "Ether Balance:", // Ether Balance
+            "tokenBalances": "Token Balances:" // Token Balances
+        },
+        "send": "Senden", // Send
+        "value": "{{value}} Ether" // Ether
+    },
+    "list": {
+        "title": "KONTOS", // ACCOUNTS
+        "subtitle": "Liste von Adressen die Sie auf dem Ethereum Classic Blockchain kontrollierst", // List of addresses you're controlling on Ethereum Classic blockchain
+        "create": "Konto erstellen", // Create Account
+        "popupMenuLabel": "KONTOS UND TOKENS" // ACCOUNTS AND TOKENS
+    },
+    "add": {
+        "title": "Konto hinzufügen", // Add Account
+        "generate": {
+            "title": "Generieren", // Generate
+            "subtitle": "Generiert einen neues private/öffentliches Schlüssel Paar " // Generates a new private/public key pair
+        },
+        "mnemonic": {
+            "title": "Generiere Mnemonic", // Generate Mnemonic
+            "subtitle": "Generiert einen neues Mnemonic Konto" // Generates a new mnemonic account
+        },
+        "import": {
+            "title": "Importiere JSON", // Import JSON
+            "subtitle": "Importiert ein JSON format von Parity/Geth" // Import key from Parity/Geth in JSON format
+        },
+        "importPrivateKey": {
+            "title": "Importiere Privaten Schlüssel", // Import Private Key
+            "subtitle": "Importiert einen Privaten Schlüssel in Hexadezimal Format" // Import private key in hex format
+        },
+        "importMnemonic": {
+            "title": "Importiere Mnemonic Phrase", // Import Mnemonic phrase
+            "subtitle": "Importiert eine BIP039 Mnemonic Phrase" // Import BIP039 mnemonic phrase
+        },
+        "token": {
+            "title": "Token hinzufügen", // Add Token
+            "subtitle": Token mit Adresse hinzufügen" // Add Token by address
+        }
+    },
+    "generate": {
+        "title": "Generiere neues Konto",  // Generate New Account
+        "name": "Konto Name (optional)", // Account Name (optional)
+        "description": "Beschreibung (optional)", // Description (optional)
+        "password": "Geben Sie ein starkes Passwort ein", // Please Enter a Strong Password
+        "passwordConfirm": "Bestätigen Sie das Passwort" // Re-Enter Password
+    },
+    "import": {
+        "title": "Importeire Konto", // Import Accoun
+        "name": "Konto Name (optional)", // Account Name (optional)
+        "description": "Beschreibung (optional)" //Description (optional)
+    }
+}
