@@ -324,21 +324,21 @@ export default connect(
 
       return traceValidate({
         from: transaction.from,
+        password: transaction.password !== '' ? transaction.password : null,
         to: transaction.to,
         gas: toHex(gasLimit),
         gasPrice: toHex(gasPrice),
         value: toHex(toAmount),
-      }, dispatch, network.actions.estimateGas).then(() => {
-        dispatch(ledger.actions.setWatch(false));
-
-        return ledger.actions.closeConnection().then(() => {
-          if (useLedger) {
-            dispatch(screen.actions.showDialog('sign-transaction', transaction));
-          }
+      }, dispatch, network.actions.estimateGas)
+        .then(() => dispatch(ledger.actions.setWatch(false)))
+        .then(() => dispatch(ledger.actions.setConnected(false)))
+        .then(() => ledger.actions.closeConnection())
+        .then(() => (useLedger ? dispatch(screen.actions.showDialog('sign-transaction', transaction)) : null))
+        .then(() => {
           return dispatch(
             accounts.actions.sendTransaction(
               transaction.from,
-              transaction.password,
+              transaction.password !== '' ? transaction.password : null,
               transaction.to,
               toHex(gasLimit),
               toHex(gasPrice),
@@ -346,6 +346,6 @@ export default connect(
             )
           );
         });
-      });
     },
-  }))(MultiCreateTransaction);
+  })
+)(MultiCreateTransaction);

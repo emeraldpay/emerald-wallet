@@ -11,7 +11,7 @@ import WaitDialog from '../WaitDialog';
 const Container = (props) => {
   const { connected, ...passProps } = props;
   if (!connected) {
-    return (<WaitDialog />);
+    return (<WaitDialog onClose={ props.onCancel } />);
   }
   return (
     <ImportAccount {...passProps} />
