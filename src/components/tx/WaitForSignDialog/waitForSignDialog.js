@@ -39,6 +39,7 @@ export default connect(
   },
   (dispatch, ownProps) => ({
     handleClose: () => {
+      dispatch(screen.actions.closeDialog());
     },
   })
 )(WaitForSignDialog);
