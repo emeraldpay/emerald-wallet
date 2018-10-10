@@ -68,6 +68,7 @@ export const store = createStore(api);
 
 function refreshAll() {
   let promises = [
+    store.dispatch(network.actions.getGasPrice()),
     store.dispatch(accounts.actions.loadPendingTransactions()),
     store.dispatch(network.actions.loadHeight(false)),
     store.dispatch(accounts.actions.loadAccountsList()),
