@@ -60,4 +60,3 @@ class AboutClass extends React.Component {
 const About = muiThemeable()(AboutClass);
 
 export default About;
-

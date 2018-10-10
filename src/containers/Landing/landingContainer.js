@@ -1,6 +1,7 @@
 import { connect } from 'react-redux';
 import Landing from '../../components/landing';
 import screen from '../../store/wallet/screen';
+import ledger from '../../store/ledger';
 
 export default connect(
   (state, ownProps) => ({
@@ -18,9 +19,6 @@ export default connect(
     },
     onLedger() {
       dispatch(screen.actions.gotoScreen('landing-add-from-ledger', 'landing'));
-    },
-    onLedgerWait() {
-      dispatch(screen.actions.showDialog('ledger-wait'));
     },
   })
 )(Landing);

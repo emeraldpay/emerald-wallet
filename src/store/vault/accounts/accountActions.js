@@ -237,13 +237,13 @@ export function sendTransaction(from: string, passphrase: string, to: ?string, g
     const chain = currentChain(getState());
     return getNonce(api, from)
       .then(withNonce(originalTx))
-      .then((tx) =>
+      .then((tx) => {
         signTx(api, tx, passPhrase, chain)
           .then(unwrap)
           .then(verifySender(from))
           .then((signed) => api.geth.eth.sendRawTransaction(signed))
           .then(onTxSend(dispatch, tx))
-      )
+      })
       .catch(screen.actions.catchError(dispatch));
   };
 }

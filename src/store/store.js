@@ -27,6 +27,7 @@ import reduxMiddleware from './middleware';
 
 import { onceServicesStart, onceAccountsLoaded, onceHasAccountsWithBalances } from './triggers';
 
+
 const log = createLogger('store');
 
 const reducers = {
@@ -194,7 +195,7 @@ export function screenHandlers() {
     const justOpened = prevScreen !== curScreen;
     prevScreen = curScreen;
     if (justOpened) {
-      if (curScreen === 'create-tx' || curScreen === 'add-from-ledger' || curScreen === 'landing' || curScreen === 'landing-add-from-ledger') {
+      if (curScreen === 'create-tx' || curScreen === 'add-from-ledger' || curScreen === 'landing-add-from-ledger') {
         store.dispatch(ledger.actions.setWatch(true));
         store.dispatch(ledger.actions.watchConnection());
       } else {

@@ -8,8 +8,6 @@ const electronDir = path.join(__dirname, 'electron');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-const forElectron = process.argv.indexOf('--for-electron') >= 0;
-
 const config = {
   target: 'electron-renderer', // 'web',
   entry: {
