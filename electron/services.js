@@ -222,7 +222,7 @@ class Services {
         return this.startRemoteRpc().then(resolve).catch(reject);
       } else if (this.setup.geth.launchType === LAUNCH_TYPE.AUTO
                  || this.setup.geth.launchType === LAUNCH_TYPE.LOCAL_RUN) {
-        return this.startLocalRpc().then(resolve).catch(reject);
+        return this.startAutoRpc().then(resolve).catch(reject);
       }
 
       return reject(new Error(`Invalid Geth launch type ${this.setup.geth.launchType}`));
@@ -244,7 +244,7 @@ class Services {
           this.notifyConnectorStatus();
           resolve(this.connector);
         });
-      }
+      };
 
       return this.connector.launch().then((emerald) => {
         this.connectorStatus = STATUS.STARTING;
@@ -267,7 +267,7 @@ class Services {
         emerald.stderr.on('data', (data) => {
           log.debug(`[emerald] ${data}`); // always log emerald data
 
-          if (data.includes("KeyFile storage error")) {
+          if (data.includes('KeyFile storage error')) {
             // connect to the one that already exists
             log.info('Got the error we wanted');
             this.startedExternally = true;
@@ -275,7 +275,7 @@ class Services {
           }
 
           if (/Connector started on/.test(data)) {
-           return onVaultReady();
+            return onVaultReady();
           }
         });
       });
