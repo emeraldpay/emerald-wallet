@@ -324,6 +324,7 @@ export default connect(
 
       return traceValidate({
         from: transaction.from,
+        password: transaction.password !== '' ? transaction.password : null,
         to: transaction.to,
         gas: toHex(gasLimit),
         gasPrice: toHex(gasPrice),
@@ -337,6 +338,7 @@ export default connect(
           return dispatch(
             accounts.actions.sendTransaction(
               transaction.from,
+              transaction.password !== '' ? transaction.password : null,
               transaction.to,
               toHex(gasLimit),
               toHex(gasPrice),

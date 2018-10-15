@@ -5,7 +5,6 @@ import createLogger from '../../utils/logger';
 import ActionTypes from './actionTypes';
 
 const log = createLogger('ledgerActions');
-
 function connection(): Promise<any> {
   log.debug('getting a ledger connection');
   const remote = global.require('electron').remote;

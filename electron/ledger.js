@@ -2,6 +2,7 @@ const AppEth = require("@ledgerhq/hw-app-eth").default;
 const Transport = require("@ledgerhq/hw-transport-node-hid").default;
 const log = require('electron-log');
 
+require('es6-promise').polyfill();
 class LedgerApi {
   constructor() {
     this.appEth = null;
@@ -91,6 +92,7 @@ class LedgerApi {
             return resolve(result);
           })
           .catch((e) => {
+            log.error(e);
             reject(e);
           });
       });
