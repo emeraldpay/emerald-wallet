@@ -27,7 +27,6 @@ import reduxMiddleware from './middleware';
 
 import { onceServicesStart, onceAccountsLoaded, onceHasAccountsWithBalances } from './triggers';
 
-
 const log = createLogger('store');
 
 const reducers = {

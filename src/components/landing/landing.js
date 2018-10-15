@@ -5,7 +5,7 @@ import Divider from 'material-ui/Divider';
 import { Button } from 'emerald-js-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 
-const Landing = ({ onGenerate, onImportJson, onImportPrivateKey, onLedger, onLedgerWait, connected, muiTheme }) => {
+const Landing = ({ onGenerate, onImportJson, onImportPrivateKey, onLedger, muiTheme }) => {
   const styles = {
     addAccount: {
       color: muiTheme.palette.textColor,

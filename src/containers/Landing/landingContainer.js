@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
 import Landing from '../../components/landing';
 import screen from '../../store/wallet/screen';
-import ledger from '../../store/ledger';
 
 export default connect(
   (state, ownProps) => ({
