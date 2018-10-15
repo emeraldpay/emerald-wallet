@@ -25,13 +25,12 @@ class LedgerApi {
       .reduce((promiseChain, job) => promiseChain.then(job), Promise.resolve())
       .then(() => {
         log.debug('all promises completed');
+        this.jobsQueueTimer = setTimeout(() => this.runQueuedJobs(), 100);
       })
       .catch((e) => {
         log.error(e);
-      })
-      .finally((e) => {
         this.jobsQueueTimer = setTimeout(() => this.runQueuedJobs(), 100);
-      });
+      })
   }
 
   startQueue() {

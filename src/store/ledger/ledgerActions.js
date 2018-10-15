@@ -66,29 +66,32 @@ export function setConnected(value) {
   return (dispatch, getState) => {
     if (value === false) { clearTimeout(isWatchingConnection); }
 
+    const promises = [];
     if (getState().ledger.get('connected') !== value) {
-      dispatch({ type: ActionTypes.CONNECTED, value});
+      promises.push(dispatch({ type: ActionTypes.CONNECTED, value}));
       if (value) {
-        return dispatch(getAddresses());
+        promises.push(dispatch(getAddresses()));
       }
     }
+    return Promise.all(promises);
   };
 }
 
 export function checkConnected() {
   return (dispatch, getState) => {
     return connection().then((ledgerApi) => {
-      console.log('Got a transport connection... checking status now');
       return ledgerApi.getStatus()
         .then(() => ledgerApi.getAddress("m/44'/60'/160720'/0'"))
         .then(() => dispatch(setConnected(true)))
         .catch((err) => {
           log.debug('Cannot get ledger status. Ensure the ledger has the etc app open');
+          log.debug(err);
           return dispatch(setConnected(false)).then(() => ledgerApi.disconnect());
         });
       })
       .catch((e) => {
         log.debug('error connecting. Device is locked or not plugged in.');
+        log.debug(e);
         return dispatch(setConnected(false));
       });
   };
