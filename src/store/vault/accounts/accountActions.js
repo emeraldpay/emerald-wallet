@@ -232,18 +232,17 @@ export function sendTransaction(from: string, passphrase: string, to: ?string, g
     data,
     nonce: '',
   };
-  const passPhrase = passphrase || ''; // for HW key
   return (dispatch, getState, api) => {
     const chain = currentChain(getState());
     return getNonce(api, from)
       .then(withNonce(originalTx))
-      .then((tx) =>
-        signTx(api, tx, passPhrase, chain)
+      .then((tx) => {
+        return signTx(api, tx, passphrase, chain)
           .then(unwrap)
           .then(verifySender(from))
           .then((signed) => api.geth.eth.sendRawTransaction(signed))
-          .then(onTxSend(dispatch, tx))
-      )
+          .then(onTxSend(dispatch, tx));
+      })
       .catch(screen.actions.catchError(dispatch));
   };
 }
