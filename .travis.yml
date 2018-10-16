@@ -60,6 +60,8 @@ addons:
     - ubuntu-toolchain-r-test
     packages:
     - g++-4.8
+    - build-essential
+    - libudev-dev
     - libusb-1.0-0
     - libusb-1.0-0-dev
     # - gcc-multilib
