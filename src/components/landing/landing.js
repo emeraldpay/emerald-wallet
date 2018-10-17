@@ -5,7 +5,7 @@ import Divider from 'material-ui/Divider';
 import { Button } from 'emerald-js-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 
-const Landing = ({ onGenerate, onImportJson, onImportPrivateKey, onLedger, onLedgerWait, connected, muiTheme }) => {
+const Landing = ({ onGenerate, onImportJson, onImportPrivateKey, onLedger, muiTheme }) => {
   const styles = {
     addAccount: {
       color: muiTheme.palette.textColor,
@@ -52,7 +52,7 @@ const Landing = ({ onGenerate, onImportJson, onImportPrivateKey, onLedger, onLed
                 <div style={styles.addAccountButtons}>
                   <FlatButton primary onClick={onImportJson} label="From Keystore File (UTC/JSON)" />
                   <FlatButton primary onClick={onImportPrivateKey} label="From Private key" />
-                  <FlatButton primary onClick={connected ? onLedger : onLedgerWait} label="Ledger Nano S" />
+                  <FlatButton primary onClick={onLedger} label="Ledger Nano S" />
                 </div>
               </div>
             </Col>

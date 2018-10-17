@@ -1,58 +1,29 @@
 // @flow
-import LedgerEth from 'ledgerco/src/ledger-eth';
-import LedgerComm from 'ledgerco/src/ledger-comm-u2f';
 import uuid from 'uuid/v4';
 import launcher from '../launcher';
 import createLogger from '../../utils/logger';
 import ActionTypes from './actionTypes';
 
 const log = createLogger('ledgerActions');
-
 function connection(): Promise<any> {
-  return new Promise((resolve, reject) => {
-    if (typeof window.process !== 'undefined') {
-      const remote = global.require('electron').remote;
-      remote.getGlobal('ledger')
-        .connect()
-        .then(resolve)
-        .catch(reject);
-    } else {
-      // create U2F connection, which will work _only_ in Chrome + SSL webpage
-      LedgerComm.create_async()
-        .then((comm) => resolve(new LedgerEth(comm)))
-        .catch(reject);
-    }
-  });
+  log.debug('getting a ledger connection');
+  const remote = global.require('electron').remote;
+  return remote.getGlobal('ledger').connect();
 }
 
 export function closeConnection(): Promise<any> {
-  return new Promise((resolve, reject) => {
-    if (typeof window.process !== 'undefined') {
-      const remote = global.require('electron').remote;
-      remote.getGlobal('ledger')
-        .disconnect()
-        .then(resolve)
-        .catch(reject);
-    } else {
-      resolve({});
-    }
-  });
+  log.debug('closing connection to ledger');
+  const remote = global.require('electron').remote;
+  return remote.getGlobal('ledger').disconnect();
 }
 
 function loadInfo(hdpath: string, addr: string) {
   return (dispatch, getState, api) => {
-    api.geth.eth.getBalance(addr).then((result) => {
-      dispatch({
-        type: ActionTypes.ADDR_BALANCE,
-        hdpath,
-        value: result,
-      });
-    });
-    api.geth.eth.getTransactionCount(addr).then((result) => {
-      dispatch({
-        type: ActionTypes.ADDR_TXCOUNT,
-        hdpath,
-        value: result,
+    return api.geth.eth.getBalance(addr).then((balance) => {
+      dispatch({ type: ActionTypes.ADDR_BALANCE, hdpath, value: balance });
+
+      return api.geth.eth.getTransactionCount(addr).then((count) => {
+        dispatch({ type: ActionTypes.ADDR_TXCOUNT, hdpath, value: count });
       });
     });
   };
@@ -60,8 +31,8 @@ function loadInfo(hdpath: string, addr: string) {
 
 export function getAddress(hdpath: string) {
   return (dispatch) => {
-    connection()
-      .then((conn) => conn.getAddress(hdpath))
+    return connection()
+      .then((ledgerApi) => ledgerApi.getAddress(hdpath))
       .then((addr) => {
         dispatch({
           type: ActionTypes.ADDR,
@@ -69,9 +40,8 @@ export function getAddress(hdpath: string) {
           addr: addr.address,
         });
         // TODO: consider batch request for all addresses
-        dispatch(loadInfo(hdpath, addr.address));
-      })
-      .catch((err) => log.error('Failed to get Ledger connection', err));
+        return dispatch(loadInfo(hdpath, addr.address));
+      });
   };
 }
 
@@ -83,49 +53,60 @@ function start(index, hdpath) {
   };
 }
 
+let isWatchingConnection = false;
+export function setConnected(value) {
+  return (dispatch, getState) => {
+    if (value === false) { clearTimeout(isWatchingConnection); }
+
+    const promises = [];
+    if (getState().ledger.get('connected') !== value) {
+      promises.push(dispatch({ type: ActionTypes.CONNECTED, value}));
+      if (value) {
+        promises.push(dispatch(getAddresses()));
+      }
+    }
+    return Promise.all(promises);
+  };
+}
+
 export function checkConnected() {
   return (dispatch, getState) => {
-    const connected = (value) => {
-      return () => {
-        if (getState().ledger.get('connected') !== value) {
-          dispatch({ type: ActionTypes.CONNECTED, value});
-          if (value) {
-            dispatch(getAddresses());
-          }
-        }
-      };
-    };
-
-    connection().then((conn) => {
-      conn.getStatus()
-        .then(connected(true))
+    return connection().then((ledgerApi) => {
+      return ledgerApi.getStatus()
+        .then(() => ledgerApi.getAddress("m/44'/60'/160720'/0'"))
+        .then(() => dispatch(setConnected(true)))
         .catch((err) => {
-          conn.disconnect();
-          dispatch({ type: ActionTypes.CONNECTED, value: false});
+          log.debug('Cannot get ledger status. Ensure the ledger has the etc app open');
+          log.debug(err);
+          return dispatch(setConnected(false)).then(() => ledgerApi.disconnect());
         });
-    }).catch(connected(false));
+    })
+      .catch((e) => {
+        log.debug('error connecting. Device is locked or not plugged in.');
+        log.debug(e);
+        return dispatch(setConnected(false));
+      });
   };
 }
 
 export function watchConnection() {
   return (dispatch, getState) => {
-    let connectionStart = null;
-    const fn = () => {
-      const state = getState();
-      const dialogDisplayed = state.wallet.screen.get(('dialog')) !== null;
-      if (!dialogDisplayed) {
-        dispatch(checkConnected());
-      }
-      connectionStart();
-    };
-    connectionStart = () => {
+    const connectionStart = () => {
       const state = getState();
       const watchEnabled = state.ledger.get('watch', false);
       if (watchEnabled) {
-        setTimeout(fn, 1000);
+        return dispatch(checkConnected()).then(() => {
+          isWatchingConnection = setTimeout(connectionStart, 3000);
+        });
       }
+      isWatchingConnection = setTimeout(connectionStart, 3000);
+      return Promise.resolve();
     };
-    connectionStart();
+
+    if (isWatchingConnection === false) {
+      isWatchingConnection = true;
+      connectionStart();
+    }
   };
 }
 
@@ -145,19 +126,26 @@ export function selectAddr(addr: ?string) {
 
 export function getAddresses(offset: number = 0, count: number = 5) {
   return (dispatch, getState) => {
-    const hdbase = getState().ledger.getIn(['hd', 'base']);
     // let offset = getState().ledger.getIn(['hd', 'offset']);
+    const hdbase = getState().ledger.getIn(['hd', 'base']);
+
     dispatch({
       type: ActionTypes.SET_HDOFFSET,
       value: offset,
     });
+
     dispatch(selectAddr(null));
+
     log.info('Load addresses', hdbase, count);
+
+    const promises = [];
     for (let i = 0; i < count; i++) {
       const hdpath = [hdbase, i + offset].join('/');
       dispatch(start(i, hdpath));
-      dispatch(getAddress(hdpath));
+      promises.push(dispatch(getAddress(hdpath)));
     }
+
+    return Promise.all(promises);
   };
 }
 
@@ -204,4 +192,3 @@ export function importSelected() {
     });
   };
 }
-

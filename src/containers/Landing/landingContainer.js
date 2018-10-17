@@ -19,8 +19,5 @@ export default connect(
     onLedger() {
       dispatch(screen.actions.gotoScreen('landing-add-from-ledger', 'landing'));
     },
-    onLedgerWait() {
-      dispatch(screen.actions.showDialog('ledger-wait'));
-    },
   })
 )(Landing);
