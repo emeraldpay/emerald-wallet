@@ -9,24 +9,27 @@ function protocolHandler(event, url) {
   if (event) { event.preventDefault(); }
 
   const wc = getMainWebContents();
-
   if (!wc) {
     setTimeout(() => protocolHandler(null, url), 500);
     return;
   }
 
-  wc.send('protocol', { url });
-  log.info(`open-url: ${url}`);
+  wc.on('did-finish-load', () => wc.send('protocol', { url }));
 }
-
 
 function startProtocolHandler() {
   app.setAsDefaultProtocolClient('ethereum');
+
   app.on('will-finish-launching', () => {
     app.on('open-url', protocolHandler);
   });
+
+  if (process.argv[1] && process.argv[1].includes('ethereum:')) {
+    protocolHandler(null, process.argv[1]);
+  }
 }
 
 module.exports = {
   startProtocolHandler,
+  protocolHandler,
 };

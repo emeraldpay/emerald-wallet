@@ -1,8 +1,8 @@
-const { app } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
-
+const { app, BrowserWindow } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
+const { protocolHandler } = require('./protocol');
 const log = require('./logger');
 
-function assertSingletonWindow(state) {
+function assertSingletonWindow() {
   const gotTheLock = app.requestSingleInstanceLock();
 
   if (!gotTheLock) {
@@ -11,14 +11,15 @@ function assertSingletonWindow(state) {
   }
 
   app.on('second-instance', (event, commandLine, workingDirectory) => {
-    // Someone tried to run a second instance, we should focus our window.
-    console.log('no window existed!');
-    if (state.window) {
-      log.debug('already existing window!');
-      if (state.window.isMinimized()) {
-        state.window.restore();
+    const window = BrowserWindow.getAllWindows()[0];
+
+    if (window) {
+      if (window.isMinimized()) {
+        window.restore();
       }
-      state.window.focus();
+      window.focus();
+
+      protocolHandler(event, commandLine[1]);
     }
   });
 }
