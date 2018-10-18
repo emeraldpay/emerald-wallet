@@ -43,7 +43,7 @@ const createWindow = function (openDevTools) {
   electron.Menu.setApplicationMenu(menu);
   mainWindow.setMenu(menu);
 
-  return mainWindow.webContents;
+  return mainWindow;
 };
 
 module.exports = {

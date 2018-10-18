@@ -19,6 +19,7 @@ function protocolHandler(event, url) {
   log.info(`open-url: ${url}`);
 }
 
+
 function startProtocolHandler() {
   app.setAsDefaultProtocolClient('ethereum');
   app.on('will-finish-launching', () => {
