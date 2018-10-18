@@ -24,27 +24,21 @@ log.info('userData: ', app.getPath('userData'));
 log.info(`Chain: ${JSON.stringify(settings.getChain())}`);
 log.info('Settings: ', settings.toJS());
 
-// Must be run before binding to app.on('ready')
-
-const state = { window: null };
-assertSingletonWindow(state);
+assertSingletonWindow();
 startProtocolHandler();
-
 
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   log.info('Starting Emerald...');
-  state.window = mainWindow.createWindow(isDev);
+  const browserWindow = mainWindow.createWindow(isDev);
 
-  const services = new Services(state.window.webContents);
+  const services = new Services(browserWindow.webContents);
   services.useSettings(settings.toJS());
 
   services.start().catch((err) => log.error('Failed to start Services:', err));
 
   ipc({ settings, services });
-
-  log.info('args', process.argv.join(','));
 
   app.on('quit', () => {
     return services.shutdown()
