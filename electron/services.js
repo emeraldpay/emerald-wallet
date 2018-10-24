@@ -71,7 +71,7 @@ class Services {
     if (!isValidChain(settings.chain)) {
       this.gethStatus = STATUS.WRONG_SETTINGS;
       this.connectorStatus = STATUS.WRONG_SETTINGS;
-      throw new Error(`Wrong chain ${JSON.stringify(settings.chain)}`);
+      return Promise.reject(new Error(`Wrong chain ${JSON.stringify(settings.chain)}`));
     }
 
     // Set desired chain
@@ -89,7 +89,7 @@ class Services {
     }
 
     log.debug('New Services setup', this.setup);
-    return this.setup;
+    return Promise.resolve(this.setup);
   }
 
   start() {

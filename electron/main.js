@@ -34,18 +34,14 @@ app.on('ready', () => {
   const browserWindow = mainWindow.createWindow(isDev);
 
   const services = new Services(browserWindow.webContents);
-  services.useSettings(settings.toJS());
-
-  services.start().catch((err) => log.error('Failed to start Services:', err));
-
   ipc({ settings, services });
+  app.on('quit', () => services.shutdown());
 
-  app.on('quit', () => {
-    return services.shutdown()
-      .then(() => log.info('All services are stopped'))
-      .catch((e) => log.error('Failed to stop services:', e));
-  });
+  services.useSettings(settings.toJS())
+    .then(() => services.start())
+    .then(() => ipc({ settings, services }));
 });
+
 
 // Quit when all windows are closed.
 app.on('window-all-closed', () => {
