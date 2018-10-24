@@ -65,6 +65,8 @@ export function useRpc(gethProvider) {
       type: 'LAUNCHER/SETTINGS',
       updated: true,
     });
+
+    return dispatch(saveSettings());
   };
 }
 
@@ -85,8 +87,6 @@ export function saveSettings(extraSettings) {
     const settings = { geth, chain, ...extraSettings };
 
     log.info('Save settings', settings);
-
-    // waitForServicesRestart();
 
     ipcRenderer.send('settings', settings);
 
