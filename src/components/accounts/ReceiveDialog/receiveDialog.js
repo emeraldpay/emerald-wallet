@@ -5,7 +5,6 @@ import {Address as AccountAddress} from 'emerald-js-ui';
 import CloseButton from 'elements/CloseButton';
 
 import classes from './receiveDialog.scss';
-import DepositOptions from './DepositOptions';
 
 const styles = {
   address: {
@@ -32,7 +31,6 @@ const ReceiveDialog = ({ account, onClose }) => {
         </div>
         <div>
           <div className={ classes.depositOptionsContainer }>
-            <DepositOptions address={address} />
             <CloseButton onClick={ onClose } />
           </div>
           <div style={{marginTop: '30px', marginLeft: '30px'}}>
