@@ -29,6 +29,12 @@ const protocolLinkHandler = (request, state, dispatch) => {
     };
   }
 
+  const isContractConstructor = paymentParams.mode && paymentParams.mode === 'contract_constructor';
+  if (isContractConstructor) {
+    // do constructory things
+    contractCallArgs.data = paymentParams.data;
+  }
+
   const transaction = fromJS({
     amount: paymentParams.value,
     gas: paymentParams.gas,
