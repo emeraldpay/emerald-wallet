@@ -25,19 +25,20 @@ const protocolLinkHandler = (request, state, dispatch) => {
     contractCallArgs.data = contract.functionToData(paymentParams.functionSignature.name, args) || undefined;
     contractCallArgs.typedData = {
       name: paymentParams.functionSignature.name,
-      argsDefaults: paymentParams.argsDefaults,
+      argsDefaults: paymentParams.argsDefaults
     };
   }
 
   const isContractConstructor = paymentParams.mode && paymentParams.mode === 'contract_constructor';
+
   if (isContractConstructor) {
-    // do constructory things
     contractCallArgs.data = paymentParams.data;
   }
 
   const transaction = fromJS({
     amount: paymentParams.value,
     gas: paymentParams.gas,
+    mode: paymentParams.mode,
     ...contractCallArgs,
   });
 

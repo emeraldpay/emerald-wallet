@@ -39,6 +39,7 @@ class MultiCreateTransaction extends React.Component {
     txFee: PropTypes.string.isRequired,
     txFeeFiat: PropTypes.string.isRequired,
     data: PropTypes.object,
+    mode: PropTypes.string,
     typedData: PropTypes.object,
   };
 
@@ -56,7 +57,7 @@ class MultiCreateTransaction extends React.Component {
     this.onMaxClicked = this.onMaxClicked.bind(this);
     this.state = {
       transaction: {},
-      page: props.typedData ? PAGES.PASSWORD : PAGES.TX,
+      page: props.mode ? PAGES.PASSWORD : PAGES.TX,
     };
   }
 
@@ -102,7 +103,7 @@ class MultiCreateTransaction extends React.Component {
     const props = this.props;
     if (from !== props.from || to !== props.to || value !== props.value || data !== props.data) {
       this.setState({
-        page: props.typedData ? PAGES.PASSWORD : PAGES.TX,
+        page: props.mode ? PAGES.PASSWORD : PAGES.TX,
         transaction: {
           ...this.state.transaction,
           from: this.props.selectedFromAccount,
@@ -140,7 +141,8 @@ class MultiCreateTransaction extends React.Component {
     });
   }
 
-  onSubmitSignTxForm() {
+  onSubmitSignTxForm() 
+{
     this.props.signAndSend({
       transaction: this.state.transaction,
       allTokens: this.props.allTokens,
@@ -199,6 +201,7 @@ class MultiCreateTransaction extends React.Component {
             useLedger={this.props.useLedger}
             typedData={this.state.transaction.typedData}
             onSubmit={this.onSubmitSignTxForm}
+            mode={this.props.mode}
             onCancel={this.props.onCancel}
           />
         );
