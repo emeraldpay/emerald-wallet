@@ -141,8 +141,7 @@ class MultiCreateTransaction extends React.Component {
     });
   }
 
-  onSubmitSignTxForm() 
-{
+  onSubmitSignTxForm() {
     this.props.signAndSend({
       transaction: this.state.transaction,
       allTokens: this.props.allTokens,

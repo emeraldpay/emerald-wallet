@@ -25,7 +25,7 @@ const protocolLinkHandler = (request, state, dispatch) => {
     contractCallArgs.data = contract.functionToData(paymentParams.functionSignature.name, args) || undefined;
     contractCallArgs.typedData = {
       name: paymentParams.functionSignature.name,
-      argsDefaults: paymentParams.argsDefaults
+      argsDefaults: paymentParams.argsDefaults,
     };
   }
 
