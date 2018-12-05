@@ -82,6 +82,28 @@ const TypedData = (props) => {
   );
 };
 
+
+const getTypedDataOrDeploy = (props) => {
+  if (props.mode === 'contract_function') {
+    return (
+      <React.Fragment>
+        <Divider style={{ marginTop: '35px' }} />,
+        <TypedData typedData={props.typedData} />,
+        <Divider style={{ marginTop: '35px' }} />,
+      </React.Fragment>
+    );
+  }
+
+  if (props.mode === 'contract_constructor') {
+    return (
+      <React.Fragment>
+        <h3>Contract Deploy</h3>,
+        <Divider style={{ marginTop: '35px' }} />,
+      </React.Fragment>
+    );
+  }
+};
+
 const SignTx = muiThemeable()((props) => {
   const { value, fiatRate, fiatCurrency, txFee, tx } = props;
   const { onCancel, onChangePassword, onSubmit, useLedger, typedData } = props;
@@ -112,9 +134,9 @@ const SignTx = muiThemeable()((props) => {
           Plus {txFee} ETC for {tx.gasLimit} GAS.
         </span>
       </div>
-      <Divider style={{ marginTop: '35px' }} />
-      <TypedData typedData={typedData} />
-      <Divider style={{ marginTop: '35px' }} />
+      {
+        getTypedDataOrDeploy(props)
+      }
       <Form style={{ marginTop: '0' }}>
         {passwordFields({...props, onChange})}
         <Row>

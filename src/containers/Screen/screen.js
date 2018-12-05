@@ -59,7 +59,8 @@ const Screen = ({ screen, screenItem }) => {
     const gasLimit = transaction.get('gas');
     const data = transaction.get('data');
     const typedData = transaction.get('typedData');
-    return <MultiCreateTransaction account={ fromAccount } to={to} amount={amount} gasLimit={gasLimit} data={data} typedData={typedData}/>;
+    const mode = transaction.get('mode');
+    return <MultiCreateTransaction account={ fromAccount } to={to} amount={amount} gasLimit={gasLimit} data={data} typedData={typedData} mode={mode}/>;
   } else if (screen === 'landing-generate') {
     return <GenerateAccount onBackScreen="landing" backLabel="Back"/>;
   } else if (screen === 'generate') {
