@@ -10,6 +10,9 @@ import { Form, Row, styles } from '../../../../elements/Form';
 import { Currency } from '../../../../lib/currency';
 
 const HorizontalAddressWithIdentity = (props) => {
+  if (props.hide) {
+    return null
+  }
   return (
     <div style={{display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center'}}>
       <IdentityIcon size={60} id={props.accountId} />
@@ -87,9 +90,9 @@ const getTypedDataOrDeploy = (props) => {
   if (props.mode === 'contract_function') {
     return (
       <React.Fragment>
-        <Divider style={{ marginTop: '35px' }} />,
-        <TypedData typedData={props.typedData} />,
-        <Divider style={{ marginTop: '35px' }} />,
+        <Divider style={{ marginTop: '35px' }} />
+        <TypedData typedData={props.typedData} />
+        <Divider style={{ marginTop: '35px' }} />
       </React.Fragment>
     );
   }
@@ -97,8 +100,8 @@ const getTypedDataOrDeploy = (props) => {
   if (props.mode === 'contract_constructor') {
     return (
       <React.Fragment>
-        <h3>Contract Deploy</h3>,
-        <Divider style={{ marginTop: '35px' }} />,
+        <div>CONTRACT DEPLOY</div>
+        <Divider style={{ marginTop: '35px' }} />
       </React.Fragment>
     );
   }
@@ -113,21 +116,22 @@ const SignTx = muiThemeable()((props) => {
   };
 
   // const USDValue = Currency.format(Currency.convert(tx.amount, fiatRate, 2), fiatCurrency);
+  const hideAccounts = tx.to === '0';
 
   return (
     <div>
       <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '50px' }}>
-        <HorizontalAddressWithIdentity accountId={tx.from} />
+        <HorizontalAddressWithIdentity accountId={tx.from} hide={hideAccounts}/>
         <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'space-between' }}>
           <div style={{ ...displayFlexCenter, flexDirection: 'column' }}>
             {/* <div>{USDValue} USD</div> */}
             <div style={{fontSize: '28px'}}>{tx.amount} {tx.token}</div>
           </div>
-          <div style={{display: 'flex'}}>
+          <div style={{display: hideAccounts ? 'none' : 'flex'}}>
             <ArrowRight />
           </div>
         </div>
-        <HorizontalAddressWithIdentity accountId={tx.to} />
+        <HorizontalAddressWithIdentity accountId={tx.to} hide={hideAccounts}/>
       </div>
       <div style={{ paddingTop: '35px', display: 'flex', justifyContent: 'center' }}>
         <span style={{ color: props.muiTheme.palette.secondaryTextColor }}>
