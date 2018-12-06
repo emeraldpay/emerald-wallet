@@ -11,7 +11,7 @@ import { Currency } from '../../../../lib/currency';
 
 const HorizontalAddressWithIdentity = (props) => {
   if (props.hide) {
-    return null
+    return null;
   }
   return (
     <div style={{display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center'}}>
