@@ -34,7 +34,7 @@ deploy_script:
   - ps: >-
       If (($env:APPVEYOR_REPO_BRANCH -eq 'master') -or ($env:APPVEYOR_REPO_TAG -eq 'true')) {
           echo "Deploy to http://builds.etcdevteam.com/emerald-wallet/$env:VERSION_BASE/"
-          echo %GCP_JSON% > gcloud-appveyor.json
+          echo "$env:GCP_JSON" > gcloud-appveyor.json
           janus.exe deploy -to="builds.etcdevteam.com/emerald-wallet/$env:VERSION_BASE/" -files="./dist/*.exe" -key="./gcloud-appveyor.json"
           rm gcloud-appveyor.json
       }
