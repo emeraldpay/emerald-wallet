@@ -1,7 +1,7 @@
 os: Visual Studio 2015
 environment:
   GCP_PASSWD:
-    secure: EYln0RTOPClcGR+ek/bjNwoi7AQ8uuNl5CSTjr/oqKlpoFk3iJdYDxYHMBAiY9cCG+MxvmnM5U+hDD8VvuS2S0fX90tVarWg9CX0e3Imm2w=
+    secure: /kPjA5Ff2c6ZDhU7y6TiUWiR4Jr4uXyLKWan35EXXTI=
 install:
   - set PATH=C:\msys64\mingw64\bin;C:\msys64\usr\bin\;%PATH%
   # Install janus.
