@@ -1,9 +1,8 @@
 os: Visual Studio 2015
 environment:
-  GCP_PASSWD:
-    secure: /kPjA5Ff2c6ZDhU7y6TiUWiR4Jr4uXyLKWan35EXXTI=
+  GCP_JSON:
+    secure: 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
 install:
-  - gpg2 --version
   - set PATH=C:\msys64\mingw64\bin;C:\msys64\usr\bin\;%PATH%
   # Install janus.
   - curl -sL https://raw.githubusercontent.com/ethereumproject/janus/master/get-windows.sh | bash
@@ -35,9 +34,7 @@ deploy_script:
   - ps: >-
       If (($env:APPVEYOR_REPO_BRANCH -eq 'master') -or ($env:APPVEYOR_REPO_TAG -eq 'true')) {
           echo "Deploy to http://builds.etcdevteam.com/emerald-wallet/$env:VERSION_BASE/"
-          # For GPG 2.x
-          # gpg --pinentry-mode loopback --batch --passphrase %GCP_PASSWD% --decrypt gcloud-appveyor.json.enc > gcloud-appveyor.json
-          # Appveyor has GPG 1.4
-          echo %GCP_PASSWD% | gpg --batch --yes --passphrase-fd 0 gcloud-appveyor.json.enc > gcloud-appveyor.json
+          echo %GCP_JSON% > gcloud-appveyor.json
           janus.exe deploy -to="builds.etcdevteam.com/emerald-wallet/$env:VERSION_BASE/" -files="./dist/*.exe" -key="./gcloud-appveyor.json"
+          rm gcloud-appveyor.json
       }
