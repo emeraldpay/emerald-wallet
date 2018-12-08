@@ -3,6 +3,8 @@ environment:
   GCP_PASSWD:
     secure: /kPjA5Ff2c6ZDhU7y6TiUWiR4Jr4uXyLKWan35EXXTI=
 install:
+  - openssl aes-256-cbc -d -in gcloud-appveyor.json.enc -k $env:GCP_PASSWD -out gcloud-appveyor.json -md md5
+  - dir
   - set PATH=C:\msys64\mingw64\bin;C:\msys64\usr\bin\;%PATH%
   # Install janus.
   - curl -sL https://raw.githubusercontent.com/ethereumproject/janus/master/get-windows.sh | bash
@@ -34,8 +36,6 @@ deploy_script:
   - ps: >-
       If (($env:APPVEYOR_REPO_BRANCH -eq 'master') -or ($env:APPVEYOR_REPO_TAG -eq 'true')) {
           echo "Deploy to http://builds.etcdevteam.com/emerald-wallet/$env:VERSION_BASE/"
-          openssl aes-256-cbc -d -in gcloud-appveyor.json.enc -k $env:GCP_PASSWD -out gcloud-appveyor.json
-          dir
           janus.exe deploy -to="builds.etcdevteam.com/emerald-wallet/$env:VERSION_BASE/" -files="./dist/*.exe" -key="./gcloud-appveyor.json"
           rm gcloud-appveyor.json
       }
