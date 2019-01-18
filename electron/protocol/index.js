@@ -13,7 +13,7 @@ function protocolHandler(event, url) {
     setTimeout(() => protocolHandler(null, url), 500);
     return;
   }
-
+  wc.send('protocol', { url });
   wc.on('did-finish-load', () => wc.send('protocol', { url }));
 }
 

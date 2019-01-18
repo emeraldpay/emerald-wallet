@@ -10,7 +10,7 @@ import { Networks, findNetwork } from '../../../../lib/networks';
 class ExtendedMenuItem extends React.Component {
   render() {
     const {muiTheme, checked, onClick, net} = this.props;
-    const networkType = net.geth.type === 'local' ? 'Full Node' : 'Light Node';
+    const networkType = net.geth.type === 'local' ? 'Full Node' : 'Remote Node';
     const textColor = checked ? muiTheme.palette.primary1Color : muiTheme.palette.secondaryTextColor;
     return (
       <div
