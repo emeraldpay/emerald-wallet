@@ -22,9 +22,9 @@ import i18n from '../../i18n/i18n';
 
 export class Settings extends React.Component {
   render() {
-    const { goDashboard, handleSubmit, t } = this.props;
+    const { goBack, handleSubmit, t } = this.props;
     return (
-      <Page title="Settings" leftIcon={<Back onClick={goDashboard} />}>
+      <Page title="Settings" leftIcon={<Back onClick={goBack} />}>
         <div>
           <Row>
             <div style={styles.left}>
@@ -143,8 +143,8 @@ export default connect(
     };
   },
   (dispatch, ownProps) => ({
-    goDashboard: () => {
-      dispatch(screen.actions.gotoScreen('home'));
+    goBack: () => {
+      dispatch(screen.actions.goBack());
     },
 
     onSubmit: (data) => {

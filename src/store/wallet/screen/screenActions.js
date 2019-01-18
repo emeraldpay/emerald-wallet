@@ -43,6 +43,12 @@ export function closeDialog() {
   };
 }
 
+export function goBack() {
+  return {
+    type: 'SCREEN/GO_BACK',
+  };
+}
+
 export function catchError(dispatch) {
   return (err) => {
     dispatch(showError(err));
