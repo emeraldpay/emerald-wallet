@@ -1,3 +1,6 @@
+require("babel-polyfill");
+require("regenerator-runtime/runtime");
+
 const { app, ipcMain } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path');
 

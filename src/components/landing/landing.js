@@ -37,7 +37,7 @@ const Landing = ({ onGenerate, onImportJson, onImportPrivateKey, onLedger, muiTh
                 </span>
                 <br />
                 <br />
-                <a href="http://ethereumclassic.org">
+                <a href="http://ethereumclassic.org" target="_blank">
                   <Button label="More about ethereum classic" />
                 </a>
                 <br />

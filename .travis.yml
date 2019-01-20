@@ -33,6 +33,7 @@ before_script:
   # `npm install` is automatic
   - npm install -g node-gyp license-checker
   - npm install -g codecov
+  - npm install
   - npm run getemerald
 script:
   # Install Janus

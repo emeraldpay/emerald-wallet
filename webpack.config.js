@@ -13,7 +13,7 @@ const forElectron = process.argv.indexOf('--for-electron') >= 0;
 const config = {
   target: 'electron-renderer', // 'web',
   entry: {
-    index: path.join(srcDir, 'index.js'),
+    index: [path.join(srcDir, 'index.js')],
   },
   plugins: [
     new webpack.optimize.CommonsChunkPlugin({name: 'index', filename: 'index.js'}),
@@ -47,7 +47,7 @@ const config = {
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['es2015', 'react', 'stage-2', 'flow'],
+            presets: ['env', 'react', 'stage-0', 'flow'],
           },
         },
       },
