@@ -1,5 +1,5 @@
 // @flow
-import { EthRpc, JsonRpc, HttpTransport, Vault, VaultJsonRpcProvider, VaultInMemoryProvider } from 'emerald-js';
+import { EthRpc, JsonRpc, HttpTransport, Vault, VaultJsonRpcProvider, VaultInMemoryProvider } from '@emeraldplatform/emerald-js';
 
 export default class Api {
     emerald: Vault;

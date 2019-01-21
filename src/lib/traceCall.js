@@ -1,5 +1,5 @@
 // @flow
-import { EthRpc, convert } from 'emerald-js';
+import { EthRpc, convert } from '@emeraldplatform/emerald-js';
 import BigNumber from 'bignumber.js';
 
 type Call = {

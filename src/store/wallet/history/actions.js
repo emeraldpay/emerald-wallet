@@ -1,10 +1,7 @@
 // @flow
-import {convert} from 'emerald-js';
-
 import createLogger from '../../../utils/logger';
 import type { Transaction } from './types';
 import ActionTypes from './actionTypes';
-import { address as isAddress} from '../../../lib/validators';
 import { storeTransactions, loadTransactions } from './historyStorage';
 import { allTrackedTxs } from './selectors';
 

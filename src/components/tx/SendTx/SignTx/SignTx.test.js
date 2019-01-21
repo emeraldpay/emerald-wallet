@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { convert } from 'emerald-js';
+import { convert } from '@emeraldplatform/emerald-js';
 import SignTxForm from './SignTxForm';
 import TokenUnits from '../../../../lib/tokenUnits';
 

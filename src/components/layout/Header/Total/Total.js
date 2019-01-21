@@ -2,7 +2,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Wei } from 'emerald-js';
+import { Wei } from '@emeraldplatform/emerald-js';
 import { EtcSimple } from 'emerald-js-ui/lib/icons3';
 import { FlatButton } from 'material-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
