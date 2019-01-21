@@ -9,6 +9,7 @@ import launcher from '../../launcher';
 import network from '../../network';
 import ActionTypes from './actionTypes';
 import createLogger from '../../../utils/logger';
+import { dispatchRpcError } from '../../wallet/screen/screenActions';
 
 const currentChain = (state) => launcher.selectors.getChainName(state);
 
@@ -34,7 +35,7 @@ export function loadAccountBalance(address: string) {
         accountId: address,
         value: result,
       });
-    });
+    }).catch(dispatchRpcError(dispatch));
     // Tokens
     const tokens = getState().tokens;
     if (!tokens.get('loading')) {
@@ -58,7 +59,7 @@ function fetchBalances(addresses: Array<string>) {
       if (!tokens.get('loading')) {
         return dispatch(loadTokensBalances(addresses));
       }
-    });
+    }).catch(dispatchRpcError(dispatch));
   };
 }
 
@@ -113,7 +114,7 @@ export function loadAccountTxCount(accountId: string) {
         accountId,
         value: result,
       });
-    });
+    }).catch(dispatchRpcError(dispatch));
   };
 }
 

@@ -4,7 +4,7 @@ import type { Transaction } from './types';
 import ActionTypes from './actionTypes';
 import { storeTransactions, loadTransactions } from './historyStorage';
 import { allTrackedTxs } from './selectors';
-
+import { dispatchRpcError } from '../../wallet/screen/screenActions';
 
 const log = createLogger('historyActions');
 const txStoreKey = (chainId) => `chain-${chainId}-trackedTransactions`;
@@ -40,7 +40,7 @@ function updateAndTrack(dispatch, getState, api, txs) {
     })
       .then((transactions) => {
         dispatch({type: ActionTypes.TRACK_TXS, txs: transactions});
-      });
+      }).catch(dispatchRpcError(dispatch));
   }
 
   persistTransactions(getState());
@@ -117,6 +117,6 @@ export function refreshTrackedTransactions() {
       dispatch({ type: ActionTypes.UPDATE_TXS, transactions });
 
       return persistTransactions(getState());
-    });
+    }).catch(dispatchRpcError(dispatch));
   };
 }
