@@ -1,6 +1,6 @@
 const os = require('os');
 const process = require('process');
-const { Downloader, getPlatformConfig } = require('emerald-js/lib/download');
+const { Downloader, getPlatformConfig } = require('@emeraldplatform/emerald-js/lib/download');
 
 const config = {
   format: 'v1',
