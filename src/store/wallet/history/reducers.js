@@ -1,5 +1,5 @@
 import { fromJS, Map } from 'immutable';
-import { convert } from 'emerald-js';
+import { convert } from '@emeraldplatform/emerald-js';
 
 import ActionTypes from './actionTypes';
 

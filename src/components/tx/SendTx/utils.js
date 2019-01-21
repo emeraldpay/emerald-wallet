@@ -1,5 +1,5 @@
 // @flow
-import { convert } from 'emerald-js';
+import { convert } from '@emeraldplatform/emerald-js';
 
 export const traceValidate = (tx, dispatch, estimateGas): Promise<number> => {
   return new Promise((resolve, reject) => {

@@ -1,5 +1,5 @@
 import Immutable from 'immutable';
-import { convert, Wei } from 'emerald-js';
+import { convert, Wei } from '@emeraldplatform/emerald-js';
 
 import ActionTypes from './actionTypes';
 

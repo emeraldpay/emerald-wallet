@@ -1,5 +1,4 @@
 // @flow
-import { convert } from 'emerald-js';
 import BigNumber from 'bignumber.js';
 import { intervalRates } from '../../store/config';
 import createLogger from '../../utils/logger';

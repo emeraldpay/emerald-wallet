@@ -1,4 +1,4 @@
-const { JsonRpc, HttpTransport, Vault, VaultJsonRpcProvider, VaultInMemoryProvider } = require('emerald-js');
+const { JsonRpc, HttpTransport, Vault, VaultJsonRpcProvider, VaultInMemoryProvider } = require('@emeraldplatform/emerald-js');
 const log = require('./logger');
 const { LocalGeth, NoneGeth, RemoteGeth } = require('./launcher');
 const { LocalConnector } = require('./vault/launcher');

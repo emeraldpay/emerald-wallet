@@ -1,4 +1,4 @@
-import { EthRpc, JsonRpc } from 'emerald-js';
+import { EthRpc, JsonRpc } from '@emeraldplatform/emerald-js';
 import { fromJS } from 'immutable';
 import { loadSyncing, loadHeight } from './networkActions';
 import ActionTypes from './actionTypes';

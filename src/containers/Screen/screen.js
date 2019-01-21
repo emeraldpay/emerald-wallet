@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import CircularProgress from 'material-ui/CircularProgress';
-import { Wei } from 'emerald-js';
+import { Wei } from '@emeraldplatform/emerald-js';
 
 import createLogger from '../../utils/logger';
 import AddressBook from '../../components/addressbook/ContactList';

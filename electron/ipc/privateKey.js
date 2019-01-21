@@ -1,5 +1,5 @@
 const ipcMain = require('electron').ipcMain; // eslint-disable-line import/no-extraneous-dependencies
-const Wallet = require('emerald-js').Wallet;
+const Wallet = require('@emeraldplatform/emerald-js').Wallet;
 
 module.exports = () => {
   ipcMain.on('get-private-key', (event, {keyfile, passphrase}) => {

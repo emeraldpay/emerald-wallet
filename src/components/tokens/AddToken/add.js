@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { convert } from 'emerald-js';
+import { convert } from '@emeraldplatform/emerald-js';
 import { connect } from 'react-redux';
 import { Field, reduxForm, change, formValueSelector, reset, SubmissionError } from 'redux-form';
 import TextField from 'elements/Form/TextField';
