@@ -28,7 +28,7 @@ const ErrorDialog = ({ open, error, message, handleClose, handleSubmit }) => {
       onRequestClose={handleClose}
     >
       <p>
-        <strong>ERROR:</strong> An unexpected error has occured. Please restart & update emerald wallet.
+        <strong>ERROR:</strong> An unexpected error has occurred. Please restart & update emerald wallet.
       </p>
       <p>
         The error was: {message}
