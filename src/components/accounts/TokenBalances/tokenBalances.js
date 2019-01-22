@@ -1,21 +1,34 @@
 import React from 'react';
+import withStyles from 'react-jss';
 
-import styles from './tokenBalances.scss';
+const styles2 = {
+  table: {
+    fontSize: '14px',
+  },
+  tableRow: {
+    height: '21.5px',
+  },
+  tableColumn: {
+  },
+  symbol: {
+    fontWeight: 500,
+  },
+};
 
-const TokenBalances = ({ balances }) => {
+const TokenBalances = ({ classes, balances }) => {
   if (!balances) {
     return null;
   }
   return (
-    <table className={ styles.table }>
+    <table className={ classes.table }>
       <tbody>
         { balances.map((token) => (
-          <tr className={ styles.tableRow } key={ token.get('address') } >
-            <td className={ styles.tableColumn }>
+          <tr className={ classes.tableRow } key={ token.get('address') } >
+            <td className={ classes.tableColumn }>
               { token.get('balance').getDecimalized() }
             </td>
-            <td className={ styles.tableColumn }>
-              <span className={ styles.symbol }> { token.get('symbol') }</span>
+            <td className={ classes.tableColumn }>
+              <span className={ classes.symbol }> { token.get('symbol') }</span>
             </td>
           </tr>))
         }
@@ -23,4 +36,4 @@ const TokenBalances = ({ balances }) => {
     </table>);
 };
 
-export default TokenBalances;
+export default withStyles(styles2)(TokenBalances);

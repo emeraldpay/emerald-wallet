@@ -1,7 +1,18 @@
-// @flow
 import React from 'react';
+import withStyles from 'react-jss';
 import { Card } from 'emerald-js-ui';
-import formStyles from './form.scss';
+
+const styles2 = {
+  form: {
+    paddingTop: '41px',
+    paddingBottom: '41px',
+  },
+  formRow: {
+    display: 'flex',
+    marginBottom: '19px',
+    alignItems: 'center',
+  },
+};
 
 export const styles = {
   fieldName: {
@@ -28,42 +39,33 @@ export const styles = {
   },
 };
 
-export const Row = (props: {children: any}) => {
+export const Row = withStyles(styles2)((props) => {
+  const { classes, children } = props;
   return (
-    <div className={ formStyles.formRow }>
-      {props.children}
+    <div className={classes.formRow}>
+      {children}
     </div>
   );
-};
+});
 
-
-export class Form extends React.Component {
-  props: {
-    backButton: Element,
-    caption: string,
-    children: Element,
-    style: Object
-  }
-
-  render() {
-    const { children, caption, backButton, style } = this.props;
-    return (
-      <Card style={style}>
-        <div className={ formStyles.form }>
-          <div style={styles.formRow}>
-            <div style={styles.left}>
-              { backButton }
-            </div>
-            <div style={styles.right}>
-              <div style={{fontSize: '22px'}}>
-                {caption}
-              </div>
-            </div>
+export const Form = withStyles(styles2)((props) => {
+  const { children, caption, backButton, style, classes } = props;
+  return (
+    <Card style={style}>
+      <div className={classes.form}>
+        <div style={styles.formRow}>
+          <div style={styles.left}>
+            {backButton}
           </div>
-          <div style={{paddingTop: '30px'}}>
-            {children}
+          <div style={styles.right}>
+            <div style={{ fontSize: '22px' }}>
+              {caption}
+            </div>
           </div>
         </div>
-      </Card>);
-  }
-}
+        <div style={{ paddingTop: '30px' }}>
+          {children}
+        </div>
+      </div>
+    </Card>);
+});
