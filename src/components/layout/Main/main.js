@@ -8,8 +8,6 @@ import NotificationBar from '../NotificationBar';
 import ErrorDialog from '../../common/ErrorDialog';
 import Dialog from '../../../containers/Dialog';
 
-import './main.scss';
-
 const maxWidth = '1150px';
 
 const Render = translate('common')(({ muiTheme, ...props }) => {

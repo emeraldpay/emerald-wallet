@@ -1,10 +1,42 @@
 import React from 'react';
+import withStyles from 'react-jss';
 import QRCode from 'qrcode.react';
 import Dialog from 'material-ui/Dialog';
 import {Address as AccountAddress} from 'emerald-js-ui';
 import CloseButton from 'elements/CloseButton';
 
-import classes from './receiveDialog.scss';
+
+export const styles2 = {
+  container: {
+    display: 'flex',
+  },
+  title: {
+    color: '#191919',
+    fontSize: '14px',
+    fontWeight: '500',
+    lineHeight: '24px',
+    paddingTop: '12px',
+    paddingBottom: '12px',
+    textTransform: 'uppercase',
+  },
+  note: {
+    marginTop: '16px',
+    color: '#747474',
+    fontSize: '14px',
+    lineHeight: '22px',
+  },
+  headerText: {
+    color: '#191919',
+    fontSize: '14px',
+    fontWeight: '500',
+    lineHeight: '24px',
+  },
+  depositOptionsContainer: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+};
 
 const styles = {
   address: {
@@ -14,8 +46,7 @@ const styles = {
   },
 };
 
-
-const ReceiveDialog = ({ account, onClose }) => {
+const ReceiveDialog = ({ account, onClose, classes }) => {
   const qrCodeSize = 150;
   const address = account.get('id');
   return (
@@ -48,4 +79,4 @@ const ReceiveDialog = ({ account, onClose }) => {
     </Dialog>);
 };
 
-export default ReceiveDialog;
+export default withStyles(styles2)(ReceiveDialog);
