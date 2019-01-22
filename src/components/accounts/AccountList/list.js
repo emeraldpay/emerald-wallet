@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import withStyles from 'react-jss';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import { translate } from 'react-i18next';
@@ -11,17 +12,27 @@ import screen from '../../../store/wallet/screen';
 import launcher from '../../../store/launcher';
 import Account from './account';
 
-import styles from './list.scss';
+const styles2 = {
+  container: {
+    marginBottom: '10px',
+  },
+  listItem: {
+    marginBottom: '10px',
+  },
+  hiddenListItem: {
+    opacity: 0.4,
+  },
+};
 
 const log = createLogger('AccountList');
-const cx = classNames.bind(styles);
+const cx = classNames.bind(styles2);
 
 const AccountList = translate('accounts')((props) => {
   log.trace('Rendering AccountList');
-  const { accounts, showFiat } = props;
+  const { accounts, showFiat, classes } = props;
   const { openAccount, createTx, showReceiveDialog, muiTheme } = props;
   return (
-    <div className={ styles.container } >
+    <div className={ classes.container } >
       {accounts.map((account) => {
         const className = cx({
           listItem: true,
@@ -46,6 +57,8 @@ AccountList.propTypes = {
   accounts: PropTypes.object.isRequired,
 };
 
+const StyledAccountList = withStyles(styles2)(AccountList);
+
 export default connect(
   (state, ownProps) => ({
     accounts: state.accounts.get('accounts', Immutable.List()),
@@ -62,5 +75,5 @@ export default connect(
       dispatch(screen.actions.showDialog('receive', account));
     },
   })
-)(muiThemeable()(AccountList));
+)(muiThemeable()(StyledAccountList));
 

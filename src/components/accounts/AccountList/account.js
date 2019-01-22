@@ -1,4 +1,5 @@
 import React from 'react';
+import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import { CardText } from 'material-ui/Card';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
@@ -8,7 +9,23 @@ import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../Balance';
 import TokenUnits from '../../../lib/tokenUnits';
 
-import styles from './account.scss';
+const styles2 = {
+  tokensDivider: {
+    backgroundColor: '#F5F5F5',
+    height: '2px',
+    width: '100%',
+    border: 'none',
+  },
+  identityIconContainer: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  actionsContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+};
 
 export class Account extends React.Component {
     static propTypes = {
@@ -18,6 +35,7 @@ export class Account extends React.Component {
       createTx: PropTypes.func,
       showReceiveDialog: PropTypes.func,
       showFiat: PropTypes.bool,
+      classes: PropTypes.object,
     };
 
     onSendClick = () => this.props.createTx(this.props.account);
@@ -27,8 +45,7 @@ export class Account extends React.Component {
     onAddEtcClick = () => this.props.showReceiveDialog(this.props.account);
 
     render() {
-      const { account, muiTheme } = this.props;
-      const { showFiat } = this.props;
+      const { account, muiTheme, classes, showFiat } = this.props;
       const fiatStyle = {
         fontSize: '16px',
         lineHeight: '19px',
@@ -52,7 +69,7 @@ export class Account extends React.Component {
                 />
               </Col>
               <Col xs={3}>
-                <div className={ styles.identityIconContainer }>
+                <div className={ classes.identityIconContainer }>
                   <div style={{marginLeft: '10px'}}>
                     {balance && <AccountBalance
                       fiatStyle={fiatStyle}
@@ -65,7 +82,7 @@ export class Account extends React.Component {
                 </div>
               </Col>
               <Col xs={4}>
-                <div className={ styles.actionsContainer }>
+                <div className={ classes.actionsContainer }>
                   <ButtonGroup>
                     <SecondaryMenu account={account} />
                     <Button
@@ -86,4 +103,4 @@ export class Account extends React.Component {
     }
 }
 
-export default muiThemeable()(Account);
+export default muiThemeable()(withStyles(styles2)(Account));
