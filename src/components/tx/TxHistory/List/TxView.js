@@ -14,6 +14,7 @@ import classes from './list.scss';
 import i18n from '../../../../i18n/i18n';
 import { TokenAbi } from '../../../../lib/erc20';
 
+// TODO: replace it own implementation
 const InputDataDecoder = require('ethereum-input-data-decoder');
 
 const decoder = new InputDataDecoder(TokenAbi);

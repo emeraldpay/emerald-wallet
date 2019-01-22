@@ -1,6 +1,7 @@
 // @flow
 import React from 'react';
 import PropTypes from 'prop-types';
+import withStyles from 'react-jss';
 import { Map } from 'immutable';
 import { connect } from 'react-redux';
 import { convert, Wei } from '@emeraldplatform/emerald-js';
@@ -15,7 +16,16 @@ import TxStatus from './status';
 import { Currency } from '../../../lib/currency';
 import createLogger from '../../../utils/logger';
 import TxInputData from './TxInputData';
-import classes from './show.scss';
+
+export const styles2 = {
+  value: {
+    marginBottom: '5px',
+  },
+  txData: {
+    overflowX: 'auto',
+    overflowWrap: 'break-word',
+  },
+};
 
 const log = createLogger('TxDetails');
 
@@ -33,7 +43,7 @@ type Props = {
 }
 
 export const TransactionShow = (props: Props) => {
-  const { transaction, account, fromAccount, toAccount, openAccount, goBack, repeatTx, muiTheme } = props;
+  const { transaction, account, fromAccount, toAccount, openAccount, goBack, repeatTx, classes } = props;
   const { showFiat, rates, currentCurrency, showRepeat } = props;
 
   const fieldNameStyle = {
@@ -243,4 +253,4 @@ export default connect(
       dispatch(gotoScreen('repeat-tx', {transaction, toAccount, fromAccount}));
     },
   })
-)(muiThemeable()(TransactionShow));
+)(muiThemeable()(withStyles(styles2)(TransactionShow)));

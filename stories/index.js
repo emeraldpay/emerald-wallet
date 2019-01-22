@@ -1,5 +1,4 @@
 import 'typeface-rubik/index.css';
-import '../src/index.scss';
 import './About';
 import './Landing';
 import './DashboardButton';

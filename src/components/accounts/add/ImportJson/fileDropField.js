@@ -1,7 +1,23 @@
 import React from 'react';
+import withStyles from 'react-jss';
 import Dropzone from 'react-dropzone';
 import { Button } from 'emerald-js-ui';
-import styles from './fileDropField.scss';
+
+export const styles2 = {
+  container: {
+    height: '262px',
+    width: '100%',
+    border: '2px dashed #E6E6E6',
+    display: 'flex',
+    flexDirection: 'column',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  label: {
+    margin: '10px',
+    color: '#747474',
+  },
+};
 
 class FileDropField extends React.Component {
   constructor(props) {
@@ -20,16 +36,16 @@ class FileDropField extends React.Component {
     }
 
     render() {
-      const { name } = this.props;
+      const { name, classes } = this.props;
       const { file } = this.state;
       return (
-        <Dropzone name={ name } className={ styles.container } multiple={ false } onDrop={ this.onDrop }>
+        <Dropzone name={ name } className={ classes.container } multiple={ false } onDrop={ this.onDrop }>
           { file && (
-            <div className={ styles.label }>
+            <div className={ classes.label }>
               { file.name }
             </div>
           )}
-          { !file && (<div className={ styles.label }>Drag & drop Account Key File here to upload</div>)}
+          { !file && (<div className={ classes.label }>Drag & drop Account Key File here to upload</div>)}
 
           <div>
             <Button primary label="Select account key file" />
@@ -39,4 +55,4 @@ class FileDropField extends React.Component {
     }
 }
 
-export default FileDropField;
+export default withStyles(styles2)(FileDropField);

@@ -1,4 +1,5 @@
 import React, {Fragment} from 'react';
+import withStyles from 'react-jss';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
@@ -19,8 +20,17 @@ import AccountEdit from '../AccountEdit';
 import TransactionsList from '../../tx/TxHistory';
 import AccountBalance from '../Balance';
 import SecondaryMenu from '../SecondaryMenu';
-import classes from './show.scss';
 import TokenBalances from '../TokenBalances';
+
+export const styles2 = {
+  transContainer: {
+    marginTop: '20px',
+  },
+  qrCodeContainer: {
+    flexBasis: '30%',
+    backgroundColor: 'white',
+  },
+};
 
 const log = createLogger('AccountShow');
 
@@ -50,7 +60,7 @@ export class AccountShow extends React.Component {
   }
 
   render() {
-    const { account, tokensBalances } = this.props;
+    const { account, tokensBalances, classes } = this.props;
     const { showFiat, goBack, transactions, createTx, showReceiveDialog } = this.props;
     // TODO: show pending balance too
     // TODO: we convert Wei to TokenUnits here
@@ -208,4 +218,4 @@ export default connect(
       });
     },
   })
-)(muiThemeable()(AccountShow));
+)(muiThemeable()(withStyles(styles2)(AccountShow)));

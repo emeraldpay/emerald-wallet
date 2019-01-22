@@ -2,8 +2,11 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS } from 'immutable';
 import { Account } from 'emerald-js-ui';
-import { TransactionShow } from './show';
+import { TransactionShow, styles2 } from './show';
 import TxInputData from './TxInputData';
+
+const reduceClasses = (prev, curr) => Object.assign({}, prev, { [curr]: curr });
+const classes = Object.keys(styles2).reduce(reduceClasses, {});
 
 const mockMuiTheme = {
   palette: {},
@@ -16,7 +19,7 @@ describe('TransactionShow', () => {
       hash: '0x01',
       data: '0xDADA',
     });
-    const component = shallow(<TransactionShow transaction={tx} muiTheme={mockMuiTheme}/>);
+    const component = shallow(<TransactionShow classes={classes} transaction={tx} muiTheme={mockMuiTheme}/>);
     const inputComps = component.find(TxInputData);
     expect(inputComps).toHaveLength(1);
     expect(inputComps.first().props().data).toEqual(tx.get('data'));
@@ -27,7 +30,7 @@ describe('TransactionShow', () => {
       hash: '0x01',
       data: '0xDADA',
     });
-    const component = shallow(<TransactionShow transaction={tx} muiTheme={mockMuiTheme}/>);
+    const component = shallow(<TransactionShow classes={classes} transaction={tx} muiTheme={mockMuiTheme}/>);
     expect(component.find(Account)).toHaveLength(1);
   });
 });
