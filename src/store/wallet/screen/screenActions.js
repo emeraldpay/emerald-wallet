@@ -2,6 +2,7 @@
 import createLogger from '../../../utils/logger';
 
 const log = createLogger('screenActions');
+const logRpc = createLogger('network');
 
 export function gotoScreen(screen, item = null) {
   return {
@@ -68,6 +69,13 @@ export function showNotification(message, notificationType, duration, actionText
     duration,
     actionText,
     actionToDispatchOnActionClick,
+  };
+}
+
+export function dispatchRpcError(dispatch) {
+  return (err) => {
+    logRpc.warn('RPC Error', err);
+    dispatch(showNotification('Remote server connection failure', 'warning', 2000, null, null));
   };
 }
 

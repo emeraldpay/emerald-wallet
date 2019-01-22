@@ -3,6 +3,7 @@ import uuid from 'uuid/v4';
 import launcher from '../launcher';
 import createLogger from '../../utils/logger';
 import ActionTypes from './actionTypes';
+import { dispatchRpcError } from '../wallet/screen/screenActions';
 
 const log = createLogger('ledgerActions');
 function connection(): Promise<any> {
@@ -25,7 +26,7 @@ function loadInfo(hdpath: string, addr: string) {
       return api.geth.eth.getTransactionCount(addr).then((count) => {
         dispatch({ type: ActionTypes.ADDR_TXCOUNT, hdpath, value: count });
       });
-    });
+    }).catch(dispatchRpcError(dispatch));
   };
 }
 

@@ -7,6 +7,7 @@ import { detect as detectTraceCall } from '../../../lib/traceCall';
 import launcher from '../../../store/launcher';
 import ActionTypes from './actionTypes';
 import createLogger from '../../../utils/logger';
+import { dispatchRpcError } from '../../wallet/screen/screenActions';
 
 const tokenContract = new Contract(TokenAbi);
 
@@ -38,7 +39,7 @@ export function loadTokenBalanceOf(token: TokenInfo, accountId: string) {
           token,
           value: result,
         });
-      });
+      }).catch(dispatchRpcError(dispatch));
     }
     throw new Error(`Invalid token info ${JSON.stringify(token)}`);
   };
@@ -70,7 +71,7 @@ export function loadTokenBalances(token: TokenInfo) {
             token,
           });
         });
-      });
+      }).catch(dispatchRpcError(dispatch));
     }
   };
 }
@@ -91,7 +92,7 @@ export function loadTokenDetails(tokenAddress: string): () => Promise<any> {
         decimals: results.decimals.result,
         symbol: parseString(results.symbol.result),
       });
-    });
+    }).catch(dispatchRpcError(dispatch));
   };
 }
 
@@ -110,7 +111,7 @@ export function fetchTokenDetails(tokenAddress: string): () => Promise<any> {
         decimals,
         symbol: parseString(symbol),
       };
-    });
+    }).catch(dispatchRpcError(dispatch));
   };
 }
 
@@ -147,7 +148,7 @@ export function loadTokensBalances(addresses: string) {
         type: ActionTypes.SET_TOKENS_BALANCES,
         tokenBalances,
       });
-    });
+    }).catch(dispatchRpcError(dispatch));
   };
 }
 

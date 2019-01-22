@@ -17,6 +17,7 @@ import ledger from './ledger';
 import Addressbook from './vault/addressbook';
 
 import { readConfig, listenElectron, connecting, loadClientVersion } from './launcher/launcherActions';
+import { showError } from './wallet/screen/screenActions';
 import launcherReducers from './launcher/launcherReducers';
 import walletReducers from './wallet/walletReducers';
 import deployedTokens from '../lib/deployedTokens';
@@ -137,6 +138,10 @@ export function startSync() {
         store.getState().accounts.get('accounts').map((account) => account.get('id'))
       )))
       .then(() => store.dispatch(connecting(false)))
+      .catch((err) => {
+        log.error('Failed to do initial sync', err);
+        store.dispatch(showError(err));
+      })
   );
 
   return Promise.all(promises);
