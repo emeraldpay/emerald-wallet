@@ -1,5 +1,6 @@
 // @flow
 import React from 'react';
+import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import { Wei, convert } from '@emeraldplatform/emerald-js';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
@@ -10,7 +11,6 @@ import { Forward as ArrowRightIcon } from 'emerald-js-ui/lib/icons3';
 import AccountBalance from '../../../accounts/Balance';
 import TokenUnits from '../../../../lib/tokenUnits';
 import { link, tables } from '../../../../lib/styles';
-import classes from './list.scss';
 import i18n from '../../../../i18n/i18n';
 import { TokenAbi } from '../../../../lib/erc20';
 
@@ -18,6 +18,15 @@ import { TokenAbi } from '../../../../lib/erc20';
 const InputDataDecoder = require('ethereum-input-data-decoder');
 
 const decoder = new InputDataDecoder(TokenAbi);
+
+export const styles2 = {
+  columnArrow: {
+    paddingLeft: '0px !important',
+    paddingRight: '0px !important',
+    width: '24px',
+  },
+};
+
 
 const styles = {
   tablePadding: {
@@ -29,6 +38,7 @@ const styles = {
 
 export const TxView = (props) => {
   const { token, showFiat, tx, openTx, openAccount, toAccount, fromAccount, numConfirmations, currentBlockHeight, muiTheme } = props;
+  const { classes } = props;
   const blockNumber = tx.get('blockNumber');
   const confirmationBlockNumber = blockNumber + numConfirmations;
   const successColor = muiTheme.palette.primary1Color;
@@ -141,4 +151,5 @@ TxView.propTypes = {
   numConfirmations: PropTypes.number.isRequired,
 };
 
-export default muiThemeable()(TxView);
+const StyledTxView = withStyles(styles2)(TxView);
+export default muiThemeable()(StyledTxView);
