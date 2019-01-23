@@ -1,5 +1,6 @@
 // @flow
 import React from 'react';
+import withStyles from 'react-jss';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Button, ButtonGroup } from 'emerald-js-ui';
 import { AddCircle as AddIcon } from 'emerald-js-ui/lib/icons3';
@@ -9,7 +10,12 @@ import { Form, Row, styles as formStyles } from 'elements/Form';
 import AddrList from './addrlist';
 import Pager from './pager';
 
-import styles from './ImportAccount.scss';
+const styles2 = {
+  row: {
+    marginLeft: '14.75px',
+    marginRight: '14.75px',
+  },
+};
 
 type Props = {
   onInit: Function,
@@ -27,6 +33,7 @@ class ImportAccount extends React.Component<Props> {
   render() {
     const { hdbase, changeBaseHD, muiTheme, selected } = this.props;
     const { onAddSelected, onCancel, onDashboard } = this.props;
+    const { classes } = this.props;
     return (
       <Form
         caption="Import Ledger hardware account"
@@ -43,10 +50,10 @@ class ImportAccount extends React.Component<Props> {
           </div>
         </Row>
         <Row>
-          <div className={styles.row}><AddrList /></div>
+          <div className={classes.row}><AddrList /></div>
         </Row>
         <Row>
-          <div className={styles.row}>
+          <div className={classes.row}>
             <ButtonGroup>
               <Button
                 label="Add Selected"
@@ -67,4 +74,4 @@ class ImportAccount extends React.Component<Props> {
   }
 }
 
-export default muiThemeable()(ImportAccount);
+export default muiThemeable()(withStyles(styles2)(ImportAccount));

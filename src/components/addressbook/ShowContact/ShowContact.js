@@ -1,4 +1,5 @@
 import React from 'react';
+import withStyles from 'react-jss';
 import { connect } from 'react-redux';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Account } from 'emerald-js-ui';
@@ -7,10 +8,18 @@ import { IconButton } from 'material-ui';
 import { gotoScreen } from '../../../store/wallet/screen/screenActions';
 import Addressbook from '../../../store/vault/addressbook';
 
-import styles from './ShowContact.scss';
+export const styles2 = {
+  container: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'white',
+    padding: '10px',
+  },
+};
 
-export const ShowContact = ({ address, onDeleteAddress, onEditAddress, muiTheme }) => (
-  <div className={styles.container}>
+export const ShowContact = ({ address, onDeleteAddress, onEditAddress, muiTheme, classes }) => (
+  <div className={classes.container}>
     <div>
       <Account
         identity
@@ -29,6 +38,8 @@ export const ShowContact = ({ address, onDeleteAddress, onEditAddress, muiTheme 
   </div>
 );
 
+const StyledShowContact = withStyles(styles2)(ShowContact);
+
 const Address = connect(
   (state, ownProps) => ({
   }),
@@ -46,6 +57,6 @@ const Address = connect(
         });
     }),
   })
-)(ShowContact);
+)(StyledShowContact);
 
 export default muiThemeable()(Address);
