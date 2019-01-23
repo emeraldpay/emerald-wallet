@@ -1,12 +1,68 @@
 import React from 'react';
+import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Dialog from 'material-ui/Dialog';
 import IconButton from 'material-ui/IconButton';
 import { Close as CloseIcon } from 'emerald-js-ui/lib/icons3';
 import screen from 'store/wallet/screen';
+import BackgroundImage from './ledger.png';
 
-import styles from './waitDialog.scss';
+export const styles2 = {
+  header: {
+    background: `url(${BackgroundImage})`,
+    backgroundSize: '600px 188px',
+    width: '600px',
+    height: '188px',
+  },
+  content: {
+    paddingLeft: '30px',
+    paddingTop: '14px',
+    ol: {
+      counterReset: 'mcounter',
+      paddingLeft: 0,
+    },
+    li: {
+      listStyle: 'none',
+    },
+    'li:before': {
+      counterIncrement: 'mcounter',
+      content: 'counter(mcounter) "."',
+      color: '#747474',
+      fontSize: '14px',
+      lineHeight: '26px',
+      display: 'inline-block',
+      minWidth: '12px',
+      marginRight: '5px',
+    },
+  },
+  title: {
+    marginTop: '30px',
+    marginBottom: '20px',
+    color: '#191919',
+    fontSize: '22px',
+    lineHeight: '24px',
+  },
+  buyLedger: {
+    color: '#747474',
+    fontSize: '14px',
+    lineHeight: '22px',
+  },
+  instructions: {
+    color: '#191919',
+    fontSize: '14px',
+    lineHeight: '22px',
+  },
+  dialogBody: {
+    padding: '0 !important',
+  },
+  dialogContent: {
+    maxWidth: '600px !important',
+  },
+  dialogPaper: {
+    backgroundColor: 'white !important',
+  },
+};
 
 const style = {
   closeButton: {
@@ -19,16 +75,16 @@ const style = {
   },
 };
 
-export const WaitConnectionDialog = ({ onCancel }) => {
+export const WaitConnectionDialog = ({ onCancel, classes }) => {
   return (
     <Dialog
       modal={ true }
       open={ true }
-      bodyClassName={ styles.dialogBody }
-      contentClassName={ styles.dialogContent }
-      paperClassName={ styles.dialogPaper }
+      bodyClassName={ classes.dialogBody }
+      contentClassName={ classes.dialogContent }
+      paperClassName={ classes.dialogPaper }
     >
-      <div className={ styles.header }>
+      <div className={ classes.header }>
         <div>
           <IconButton
             style={ style.closeButton }
@@ -39,14 +95,14 @@ export const WaitConnectionDialog = ({ onCancel }) => {
           </IconButton>
         </div>
       </div>
-      <div className={ styles.content }>
-        <div className={ styles.buyLedger }>
+      <div className={ classes.content }>
+        <div className={ classes.buyLedger }>
                     Ledger Nano S. Where to buy?
         </div>
-        <div className={ styles.title }>
+        <div className={ classes.title }>
                     Waiting for Ledger Connection...
         </div>
-        <div className={ styles.instructions }>
+        <div className={ classes.instructions }>
           <ol>
             <li>Connect your Ledger Nano S device</li>
             <li>Open the Ethereum Application on Ledger device</li>
@@ -62,6 +118,8 @@ WaitConnectionDialog.propTypes = {
   onCancel: PropTypes.func,
 };
 
+const StyledDialog = withStyles(styles2)(WaitConnectionDialog);
+
 export default connect(
   (state, ownProps) => ({
   }),
@@ -74,4 +132,4 @@ export default connect(
       }
     },
   })
-)(WaitConnectionDialog);
+)(StyledDialog);

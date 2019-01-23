@@ -12,7 +12,6 @@ import {store, start as startStore} from './store/store';
 import Main from './components/layout/Main/main';
 import createLogger from './utils/logger';
 import About from './containers/About';
-
 import './bootstrapButtons.scss';
 
 const log = createLogger('index');
