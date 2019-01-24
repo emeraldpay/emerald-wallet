@@ -1,25 +1,44 @@
 import React from 'react';
+import withStyles from 'react-jss';
 import { Button, Warning, WarningHeader, WarningText, Page } from 'emerald-js-ui';
 import { Row, styles as formStyles } from 'elements/Form';
 import { Back } from 'emerald-js-ui/lib/icons3';
 import getLoadingIcon from '../getLoadingIcon';
-import styles from './downloadDialog.scss';
+
+export const styles2 = {
+  description: {
+    color: '#747474',
+    fontSize: '14px',
+    lineHeight: '22px',
+    marginBottom: '20px',
+    marginTop: '7px',
+  },
+  title: {
+    fontSize: '16px',
+    fontWeight: '500',
+    lineHeight: '24px',
+  },
+  subTitle: {
+    fontSize: '14px',
+    lineHeight: '22px',
+  },
+};
 
 export const DownloadDialog = (props) => {
-  const { onDownload, onBack, t } = props;
+  const { onDownload, onBack, t, classes } = props;
   return (
     <Page title={ t('generate.title') } leftIcon={ <Back onClick={onBack} /> }>
       <Row>
         <div style={formStyles.left}/>
         <div style={formStyles.right}>
           <div>
-            <div className={ styles.title }>
+            <div className={ classes.title }>
               Download the Account Key File
             </div>
-            <div className={ styles.subTitle }>
+            <div className={ classes.subTitle }>
               And save the copy in a safe place (not on this computer).
             </div>
-            <div className={ styles.description }>
+            <div className={ classes.description }>
               You need an Account Key File to make all operations with an account. In order to manage or create transactions from this Ethereum Classic Account, you will need this file.  You will also need the strong password you created earlier.
 
             </div>
@@ -45,7 +64,13 @@ export const DownloadDialog = (props) => {
       <Row>
         <div style={formStyles.left}/>
         <div style={formStyles.right}>
-          <Button primary onClick={ onDownload } label="Download account key file" icon={getLoadingIcon(props)} disabled={props.loading}/>
+          <Button
+            primary
+            onClick={ onDownload }
+            label="Download account key file"
+            icon={getLoadingIcon(props)}
+            disabled={props.loading}
+          />
         </div>
       </Row>
     </Page>
@@ -53,4 +78,4 @@ export const DownloadDialog = (props) => {
 };
 
 
-export default DownloadDialog;
+export default withStyles(styles2)(DownloadDialog);

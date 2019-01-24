@@ -1,7 +1,4 @@
 import React from 'react';
-import muiThemeable from 'material-ui/styles/muiThemeable';
-import { Logo as EtcLogo } from 'emerald-js-ui/lib/icons';
-import { Button } from 'emerald-js-ui';
 import { shell } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import About from './About';
 
@@ -16,11 +13,15 @@ class AboutClass extends React.Component {
       shell.openExternal(url);
     };
     const onButtonClick = () => {
-      const url = 'https://www.etcdevteam.com/support.html';
+      const url = 'https://emeraldwallet.io';
       shell.openExternal(url);
     };
     return (
-      <About onButtonClick={onButtonClick} onHelpClick={helpClick} onLicenseClick={licenseClick} />
+      <About
+        onButtonClick={onButtonClick}
+        onHelpClick={helpClick}
+        onLicenseClick={licenseClick}
+      />
     );
   }
 }

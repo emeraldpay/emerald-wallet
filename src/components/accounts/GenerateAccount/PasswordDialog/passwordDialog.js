@@ -1,4 +1,5 @@
 import React from 'react';
+import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import { Button, Warning, WarningHeader, WarningText, Page } from 'emerald-js-ui';
 import { Field, reduxForm } from 'redux-form';
@@ -8,10 +9,26 @@ import { Row, styles as formStyles } from 'elements/Form';
 import PasswordInput from 'elements/PasswordInput';
 import { Back } from 'emerald-js-ui/lib/icons3';
 import Advice from './advice';
-import styles from './passwordDialog.scss';
 import getLoadingIcon from '../getLoadingIcon';
 
 const MIN_PASSWORD_LENGTH = 8;
+
+export const styles2 = {
+  passwordLabel: {
+    height: '24px',
+    width: '190px',
+    color: '#191919',
+    fontSize: '16px',
+    fontWeight: 500,
+    lineHeight: '24px',
+  },
+  passwordSubLabel: {
+    height: '22px',
+    color: '#191919',
+    fontSize: '14px',
+    lineHeight: '22px',
+  },
+};
 
 class PasswordDialog extends React.Component {
   static propTypes = {
@@ -68,7 +85,7 @@ class PasswordDialog extends React.Component {
   }
 
   render() {
-    const { onDashboard, t } = this.props;
+    const { onDashboard, t, classes } = this.props;
     const { passphraseError } = this.state;
 
     return (
@@ -77,8 +94,8 @@ class PasswordDialog extends React.Component {
           <div style={ formStyles.left }/>
           <div style={ formStyles.right }>
             <div style={{ width: '100%' }}>
-              <div className={ styles.passwordLabel }>Enter a strong password</div>
-              <div className={ styles.passwordSubLabel }>
+              <div className={ classes.passwordLabel }>Enter a strong password</div>
+              <div className={ classes.passwordSubLabel }>
                 This password will be required to confirm all account operations.
               </div>
               <div style={{ marginTop: '30px' }}>
@@ -146,10 +163,12 @@ class PasswordDialog extends React.Component {
   }
 }
 
+const StyledPasswordDialog = withStyles(styles2)(PasswordDialog);
+
 const passwordDialogForm = reduxForm({
   form: 'confirmGeneratePassword',
   fields: ['confirmPassword'],
-})(PasswordDialog);
+})(StyledPasswordDialog);
 
 export default passwordDialogForm;
 

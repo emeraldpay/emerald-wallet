@@ -4,7 +4,7 @@ import { ToggleButtonGroup, ToggleButton } from 'react-bootstrap';
 
 /**
  * TODO: After Material-UI v 1.0 release switch to ToggleButton
- * (see: https://github.com/callemall/material-ui/pull/7551)
+ * (see: https://material-ui.com/lab/toggle-button/)
  *
  */
 

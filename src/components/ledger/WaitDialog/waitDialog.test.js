@@ -1,6 +1,5 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-
 import { WaitConnectionDialog, styles2 } from './waitDialog';
 
 const reduceClasses = (prev, curr) => Object.assign({}, prev, { [curr]: curr });
