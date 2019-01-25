@@ -1,8 +1,7 @@
 // @flow
-import BigNumber from 'bignumber.js';
+import { Contract } from '@emeraldplatform/contracts';
 import { parseString } from '../../../lib/convert';
 import { TokenAbi } from '../../../lib/erc20';
-import Contract from '../../../lib/contract';
 import { detect as detectTraceCall } from '../../../lib/traceCall';
 import launcher from '../../../store/launcher';
 import ActionTypes from './actionTypes';

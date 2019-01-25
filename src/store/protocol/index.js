@@ -1,9 +1,9 @@
 import * as qs from 'qs';
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import { fromJS } from 'immutable';
+import { Contract } from '@emeraldplatform/contracts';
 
 import screen from '../wallet/screen';
-import Contract from '../../lib/contract';
 import createLogger from '../../utils/logger';
 import { onceServicesStart, onceAccountsLoaded, onceHasAccountsWithBalances } from '../triggers';
 

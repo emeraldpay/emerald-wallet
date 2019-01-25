@@ -61,7 +61,8 @@
   },
   "homepage": "https://github.com/ETCDEVTeam/emerald-wallet",
   "dependencies": {
-    "@emeraldplatform/emerald-js": "^0.4.0",
+    "@emeraldplatform/contracts": "0.4.1",
+    "@emeraldplatform/emerald-js": "0.4.1",
     "@ledgerhq/hw-app-eth": "^4.32.0",
     "@ledgerhq/hw-transport-node-hid": "^4.33.3",
     "babel-polyfill": "^6.26.0",
