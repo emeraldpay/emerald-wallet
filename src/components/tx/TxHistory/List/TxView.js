@@ -10,7 +10,6 @@ import { Account as AddressAvatar } from 'emerald-js-ui';
 import { Forward as ArrowRightIcon } from 'emerald-js-ui/lib/icons3';
 import AccountBalance from '../../../accounts/Balance';
 import TokenUnits from '../../../../lib/tokenUnits';
-import { link, tables } from '../../../../lib/styles';
 import i18n from '../../../../i18n/i18n';
 import { TokenAbi } from '../../../../lib/erc20';
 
@@ -32,6 +31,9 @@ const styles = {
   tablePadding: {
     paddingTop: '15px',
     paddingBottom: '15px',
+  },
+  txStatus: {
+    cursor: 'pointer',
   },
 };
 
@@ -114,7 +116,7 @@ export const TxView = (props) => {
           withAvatar={ false }
         /> }
       </TableRowColumn>
-      <TableRowColumn style={{width: 60, ...link, ...styles.tablePadding}} >
+      <TableRowColumn style={{width: 60, ...styles.txStatus, ...styles.tablePadding}} >
         { txStatus }
       </TableRowColumn>
       <TableRowColumn style={{paddingLeft: '5px'}}>

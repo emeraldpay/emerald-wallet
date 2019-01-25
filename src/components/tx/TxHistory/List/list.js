@@ -5,8 +5,6 @@ import PropTypes from 'prop-types';
 import cx from 'classnames';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-
-import { tables } from '../../../../lib/styles';
 import Transaction from './transaction';
 
 

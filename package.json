@@ -124,7 +124,6 @@
   "devDependencies": {
     "@elastic/webpack-directory-name-as-main": "2.0.2",
     "@storybook/react": "3.2.18",
-    "aws-sdk": "2.91.0",
     "babel-core": "^6.26.3",
     "babel-eslint": "^7.2.3",
     "babel-loader": "^7.1.0",
