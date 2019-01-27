@@ -1,23 +1,38 @@
 import React from 'react';
-
+import withStyles from 'react-jss';
 import { AdviceIcon } from 'elements/Icons';
 
-import styles from './advice.scss';
+const styles2 = {
+  title: {
+    fontSize: '16px',
+    fontWeight: 500,
+    lineHeight: '24px',
+  },
+  text: {
+    fontSize: '14px',
+    lineHeight: '22px',
+  },
+  container: {
+    display: 'flex',
+  },
+  adviceIcon: {
+    marginRight: '20px',
+  },
+};
 
 const Advice = (props) => {
-  const { title, text } = props;
-
+  const { title, text, classes } = props;
   return (
-    <div className={ styles.container } >
-      <div className={ styles.adviceIcon }>
+    <div className={ classes.container } >
+      <div className={ classes.adviceIcon }>
         <AdviceIcon/>
       </div>
       <div>
-        <div className={ styles.title }>{ title }</div>
-        <div className={ styles.text }>{ text }</div>
+        <div className={ classes.title }>{ title }</div>
+        <div className={ classes.text }>{ text }</div>
       </div>
     </div>
   );
 };
 
-export default Advice;
+export default withStyles(styles2)(Advice);

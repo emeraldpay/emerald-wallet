@@ -1,4 +1,5 @@
 import React from 'react';
+import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
@@ -7,7 +8,23 @@ import { Trash as DeleteIcon } from 'emerald-js-ui/lib/icons3';
 import { Input } from 'emerald-js-ui';
 import tokensStore from '../../../store/vault/tokens';
 
-import styles from './list.scss';
+const styles2 = {
+  tokenItemContainer: {
+    marginTop: '10px',
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  addressInput: {
+    marginLeft: '4px',
+    minWidth: '405px',
+    fontSize: '16px',
+  },
+  symbolInput: {
+    maxWidth: '80px',
+    fontSize: '16px',
+  },
+};
 
 const deleteIconStyle = {
   width: '19px',
@@ -15,19 +32,19 @@ const deleteIconStyle = {
 };
 
 const Token = (props) => {
-  const { token } = props;
+  const { token, classes } = props;
   const tokenAddress = token.get('address');
   const symbol = token.get('symbol');
 
   return (
-    <div className={ styles.tokenItemContainer }>
-      <div className={ styles.symbolInput }>
+    <div className={ classes.tokenItemContainer }>
+      <div className={ classes.symbolInput }>
         <Input
           value={ symbol }
           underlineShow={ false }
         />
       </div>
-      <div className={ styles.addressInput }>
+      <div className={ classes.addressInput }>
         <Input
           value={ tokenAddress }
           underlineShow={ false }
@@ -47,11 +64,13 @@ Token.propTypes = {
   token: PropTypes.object.isRequired,
 };
 
+const StyledToken = withStyles(styles2)(Token);
+
 const TokensList = ({ tokens, onDelete }) => {
   return (
     <div>
       { tokens.map((token) =>
-        <Token {...{onDelete}} key={ token.get('address') } {...{token}}/>)}
+        <StyledToken {...{onDelete}} key={ token.get('address') } {...{token}}/>)}
     </div>
   );
 };

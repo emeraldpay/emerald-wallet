@@ -1,11 +1,10 @@
 // @flow
 import React from 'react';
+import withStyles from 'react-jss';
 import { Search as SearchIcon } from 'emerald-js-ui/lib/icons3';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import TextField from '../../../../elements/Form/TextField';
 import Filter from './filter';
-
-import classes from './header.scss';
 
 const styles = {
   searchIcon: {
@@ -14,7 +13,33 @@ const styles = {
   },
 };
 
-const Header = ({onTxFilterChange, onSearchChange, muiTheme}) => {
+const styles2 = {
+  headerContainer: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  headerTitle: {
+    color: '#191919',
+    fontSize: '14px',
+    fontWeight: '500',
+    lineHeight: '24px',
+    textTransform: 'uppercase',
+  },
+  filter: {
+    marginLeft: '40px',
+    maxWidth: '186px',
+  },
+  headerMain: {
+    display: 'flex',
+    alignItems: 'center',
+  },
+  search: {
+    maxHeight: '40px',
+  },
+};
+
+const Header = ({onTxFilterChange, onSearchChange, muiTheme, classes}) => {
   return (
     <div className={ classes.headerContainer }>
       <div className={ classes.headerMain }>
@@ -35,4 +60,4 @@ const Header = ({onTxFilterChange, onSearchChange, muiTheme}) => {
   );
 };
 
-export default muiThemeable()(Header);
+export default muiThemeable()(withStyles(styles2)(Header));

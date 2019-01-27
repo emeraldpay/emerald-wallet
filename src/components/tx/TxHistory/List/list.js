@@ -1,14 +1,31 @@
 // @flow
 import React from 'react';
+import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-
-import { tables } from '../../../../lib/styles';
 import Transaction from './transaction';
 
-import classes from './list.scss';
+
+const styles2 = {
+  columnName: {
+    textTransform: 'uppercase',
+    fontSize: '11px !important',
+    fontWeight: '500 !important',
+    letterSpacing: '1px',
+    lineHeight: '16px',
+  },
+  amountColumn: {
+    paddingLeft: '0 !important',
+    width: '100px',
+  },
+  columnArrow: {
+    paddingLeft: '0px !important',
+    paddingRight: '0px !important',
+    width: '24px',
+  },
+};
 
 type Props = {
     transactions: Array<any>,
@@ -25,7 +42,7 @@ const renderEmptyTransactions = (transactions, muiTheme) => {
 };
 
 const TransactionsList = (props: Props) => {
-  const { transactions, accountId, muiTheme } = props;
+  const { transactions, accountId, muiTheme, classes } = props;
   if (!transactions) {
     return (<div>Loading...</div>);
   }
@@ -58,5 +75,5 @@ TransactionsList.propTypes = {
   transactions: PropTypes.object.isRequired,
 };
 
-
-export default muiThemeable()(TransactionsList);
+const StyledTransactionsList = withStyles(styles2)(TransactionsList);
+export default muiThemeable()(StyledTransactionsList);

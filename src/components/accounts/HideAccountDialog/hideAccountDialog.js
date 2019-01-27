@@ -1,23 +1,32 @@
 import React from 'react';
+import withStyles from 'react-jss';
 import { connect } from 'react-redux';
-import { Dialog, IconButton } from 'material-ui';
+import { Dialog } from 'material-ui';
 import { Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
 
 import screen from '../../../store/wallet/screen';
 import accounts from '../../../store/vault/accounts';
 import history from '../../../store/wallet/history';
 
-import styles from './hideAccountDialog.scss';
+export const styles2 = {
+  title: {
+    color: '#191919',
+    fontSize: '14px',
+    fontWeight: 500,
+    lineHeight: '24px',
+    textTransform: 'uppercase',
+  },
+};
 
 export class HideAccountDialog extends React.Component {
   render() {
-    const { onClose, handleConfirmHide, chain } = this.props;
+    const { onClose, handleConfirmHide, chain, classes } = this.props;
 
     return (
       <Dialog modal={true} open={true} onRequestClose={ onClose } contentStyle={{maxWidth: '600px'}}>
         <div style={{width: '100%'}}>
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
-            <div className={styles.title}>Are you Sure you want to hide this account?</div>
+            <div className={classes.title}>Are you Sure you want to hide this account?</div>
           </div>
           <div style={{marginRight: '20px'}}>
             <Warning>
@@ -46,6 +55,8 @@ export class HideAccountDialog extends React.Component {
   }
 }
 
+const StyledHideAccountDialog = withStyles(styles2)(HideAccountDialog);
+
 export default connect(
   (state, ownProps) => ({
     address: ownProps.address,
@@ -58,8 +69,7 @@ export default connect(
       dispatch(history.actions.refreshTrackedTransactions());
       dispatch(accounts.actions.loadAccountsList());
       dispatch(accounts.actions.loadPendingTransactions());
-
       dispatch(screen.actions.gotoScreen('home'));
     },
   })
-)(HideAccountDialog);
+)(StyledHideAccountDialog);

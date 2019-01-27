@@ -1,13 +1,42 @@
 import React from 'react';
+import withStyles from 'react-jss';
 import QRCode from 'qrcode.react';
 import { Button, Warning, WarningHeader, WarningText, Page } from 'emerald-js-ui';
 import { Row, styles as formStyles } from 'elements/Form';
 import { Back } from 'emerald-js-ui/lib/icons3';
 
-import styles from './showPrivateKeyDialog.scss';
+const styles2 = {
+  title: {
+    fontSize: '16px',
+    fontWeight: 500,
+    lineHeight: '24px',
+  },
+  subTitle: {
+    fontSize: '14px',
+    lineHeight: '22px',
+  },
+  keyTitle: {
+    color: '#191919',
+    fontSize: '14px',
+    fontWeight: 500,
+    lineHeight: '24px',
+  },
+  key: {
+    fontSize: '14px',
+    lineHeight: '22px',
+    overflowWrap: 'break-word',
+  },
+  privKeyContainer: {
+    marginLeft: '30px',
+    overflow: 'hidden',
+  },
+  privKeyColumn: {
+    alignItems: 'flex-start !important',
+  },
+};
 
 const ShowPrivateDialog = (props) => {
-  const { onBack, onNext, privateKey, t } = props;
+  const { onBack, onNext, privateKey, t, classes } = props;
 
   return (
     <Page title={ t('generate.title') } leftIcon={<Back onClick={onBack} />}>
@@ -15,8 +44,8 @@ const ShowPrivateDialog = (props) => {
         <div style={ formStyles.left }/>
         <div style={ formStyles.right }>
           <div>
-            <div className={ styles.title }>Print this</div>
-            <div className={ styles.subTitle }>
+            <div className={ classes.title }>Print this</div>
+            <div className={ classes.subTitle }>
               This is the unencrypted text version of your private key, meaning no password is necessary.
               It helps if you forget your password.
             </div>
@@ -38,16 +67,16 @@ const ShowPrivateDialog = (props) => {
 
       <Row>
         <div style={ formStyles.left } />
-        <div style={ formStyles.right } className={ styles.privKeyColumn }>
+        <div style={ formStyles.right } className={ classes.privKeyColumn }>
           <div>
             <QRCode
               size={ 100 }
               value={ privateKey }
             />
           </div>
-          <div className={ styles.privKeyContainer }>
-            <div className={ styles.keyTitle }>Unencrypted Private Key</div>
-            <div className={ styles.key }>
+          <div className={ classes.privKeyContainer }>
+            <div className={ classes.keyTitle }>Unencrypted Private Key</div>
+            <div className={ classes.key }>
               { privateKey }
             </div>
           </div>
@@ -64,4 +93,4 @@ const ShowPrivateDialog = (props) => {
   );
 };
 
-export default ShowPrivateDialog;
+export default withStyles(styles2)(ShowPrivateDialog);

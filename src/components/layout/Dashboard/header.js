@@ -1,16 +1,29 @@
 import React from 'react';
+import withStyles from 'react-jss';
 import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
 
 import { gotoScreen, showDialog } from '../../../store/wallet/screen/screenActions';
 import Menu from './menu';
 
-import classes from './header.scss';
+const styles2 = {
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    marginTop: '8px',
+    height: '50px',
+  },
+  title: {
+    fontSize: '14px',
+    fontWeight: '500',
+  },
+};
 
-class Header extends React.Component {
+export class Header extends React.Component {
   render() {
     const { generate, importJson, importLedger, importPrivateKey, importMnemonic, addToken, createMnemonic, showAddressBook } = this.props;
-    const { t } = this.props;
+    const { t, classes } = this.props;
     return (
       <div className={ classes.header }>
         <div>
@@ -30,6 +43,8 @@ class Header extends React.Component {
       </div>);
   }
 }
+
+const StyledHeader = withStyles(styles2)(Header);
 
 export default translate('accounts')(
   connect(
@@ -60,5 +75,5 @@ export default translate('accounts')(
         dispatch(showDialog('tokens'));
       },
     })
-  )(Header)
+  )(StyledHeader)
 );

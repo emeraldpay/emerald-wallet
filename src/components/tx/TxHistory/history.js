@@ -1,5 +1,6 @@
 // @flow
 import React from 'react';
+import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { List } from 'immutable';
@@ -10,7 +11,11 @@ import { searchTransactions, filterTransactions } from '../../../store/wallet/hi
 import Header from './Header';
 import TxList from './List';
 
-import styles from './history.scss';
+const styles2 = {
+  container: {
+    padding: '30px 30px 20px',
+  },
+};
 
 type Props = {
   accountId: string,
@@ -51,9 +56,10 @@ class TransactionsHistory extends React.Component<Props, State> {
     });
   }
   render() {
+    const { classes } = this.props;
     return (
       <Card>
-        <div className={ styles.container } style={{border: `1px solid ${this.props.muiTheme.palette.borderColor}`}}>
+        <div className={ classes.container } style={{border: `1px solid ${this.props.muiTheme.palette.borderColor}`}}>
           <Header onTxFilterChange={this.onTxFilterChange} value={this.state.txFilter} onSearchChange={this.onSearchChange}/>
           <TxList transactions={ this.state.displayedTransactions } accountId={ this.props.accountId }/>
         </div>
@@ -61,6 +67,8 @@ class TransactionsHistory extends React.Component<Props, State> {
     );
   }
 }
+
+const StyledTransactionsHistory = withStyles(styles2)(TransactionsHistory);
 
 export default connect(
   (state, ownProps) => {
@@ -74,4 +82,4 @@ export default connect(
   },
   (dispatch, ownProps) => ({
   })
-)(muiThemeable()(TransactionsHistory));
+)(muiThemeable()(StyledTransactionsHistory));

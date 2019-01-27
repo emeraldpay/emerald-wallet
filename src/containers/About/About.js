@@ -42,7 +42,7 @@ class AboutClass extends React.Component {
           Emerald Vault: {connector}
         </div>
         <div style={{ paddingTop: '60px', marginBottom: '60px' }}>
-          <Button onClick={onButtonClick} primary label='Buy us a Pizza' />
+          <Button onClick={onButtonClick} primary label='emeraldwallet.io' />
         </div>
         <div style={{ fontSize: '14px' }}>
           <div style={{ paddingBottom: '5px' }}>Copyright &copy; 2017-{year} ETCDEVTeam</div>

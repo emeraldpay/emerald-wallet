@@ -219,6 +219,7 @@ function verifySender(expected) {
 }
 
 function signTx(api, tx: Transaction, passphrase: string, chain: string) {
+  log.trace('Calling emerald api to sign tx');
   return api.emerald.signTransaction(tx, passphrase, chain);
 }
 

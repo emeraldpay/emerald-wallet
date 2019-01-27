@@ -1,5 +1,6 @@
 // @flow
 import React from 'react';
+import withStyles from 'react-jss';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import { Page, Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
@@ -12,7 +13,29 @@ import TextField from 'elements/Form/TextField';
 import screen from 'store/wallet/screen';
 import HdPath from 'components/common/HdPath';
 
-import styles from './importMnemonic.scss';
+export const styles2 = {
+  passwordLabel: {
+    height: '24px',
+    width: '190px',
+    color: '#191919',
+    fontSize: '16px',
+    fontWeight: '500',
+    lineHeight: '24px',
+  },
+  mnemonicLabel: {
+    height: '24px',
+    color: '#191919',
+    fontSize: '16px',
+    fontWeight: '500',
+    lineHeight: '24px',
+  },
+  passwordSubLabel: {
+    height: '22px',
+    color: '#191919',
+    fontSize: '14px',
+    lineHeight: '22px',
+  },
+};
 
 /**
  * Wrapper for redux-form Field component
@@ -26,15 +49,15 @@ const HdPathFormField = (props) => {
 
 export class ImportMnemonic extends React.Component {
   render() {
-    const { onBack, invalid, handleSubmit, error } = this.props;
+    const { onBack, invalid, handleSubmit, error, classes } = this.props;
     return (
       <Page title="Import Mnemonic" leftIcon={ <Back onClick={onBack} /> }>
         <Row>
           <div style={ formStyles.left }/>
           <div style={ formStyles.right }>
             <div style={{width: '100%'}}>
-              <div className={ styles.passwordLabel }>Enter a strong password</div>
-              <div className={ styles.passwordSubLabel }>This password will be required to confirm all account
+              <div className={ classes.passwordLabel }>Enter a strong password</div>
+              <div className={ classes.passwordSubLabel }>This password will be required to confirm all account
                         operations.
               </div>
               <div style={{marginTop: '30px'}}>
@@ -79,7 +102,7 @@ export class ImportMnemonic extends React.Component {
           <div style={ formStyles.left }/>
           <div style={ formStyles.right }>
             <div style={{width: '100%'}}>
-              <div className={ styles.mnemonicLabel }>HD derivation path</div>
+              <div className={ classes.mnemonicLabel }>HD derivation path</div>
               <div>
                 <Field
                   name="hdpath"
@@ -96,7 +119,7 @@ export class ImportMnemonic extends React.Component {
           </div>
           <div style={formStyles.right}>
             <div style={{width: '100%'}}>
-              <div className={ styles.mnemonicLabel }>Enter a mnemonic phrase</div>
+              <div className={ classes.mnemonicLabel }>Enter a mnemonic phrase</div>
               <div>
                 <Field
                   multiLine={ true }
@@ -143,7 +166,7 @@ export class ImportMnemonic extends React.Component {
 const importForm = reduxForm({
   form: 'importMnemonic',
   fields: ['password', 'mnemonic', 'hdpath'],
-})(ImportMnemonic);
+})(withStyles(styles2)(ImportMnemonic));
 
 export default connect(
   (state, ownProps) => ({
@@ -166,4 +189,3 @@ export default connect(
     },
   })
 )(muiThemeable()(importForm));
-

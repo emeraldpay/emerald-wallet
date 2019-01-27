@@ -1,5 +1,6 @@
 // @flow
 import React from 'react';
+import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import { Wei, convert } from '@emeraldplatform/emerald-js';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
@@ -9,25 +10,37 @@ import { Account as AddressAvatar } from 'emerald-js-ui';
 import { Forward as ArrowRightIcon } from 'emerald-js-ui/lib/icons3';
 import AccountBalance from '../../../accounts/Balance';
 import TokenUnits from '../../../../lib/tokenUnits';
-import { link, tables } from '../../../../lib/styles';
-import classes from './list.scss';
 import i18n from '../../../../i18n/i18n';
 import { TokenAbi } from '../../../../lib/erc20';
 
+// TODO: replace it with own implementation
 const InputDataDecoder = require('ethereum-input-data-decoder');
 
 const decoder = new InputDataDecoder(TokenAbi);
+
+export const styles2 = {
+  columnArrow: {
+    paddingLeft: '0px !important',
+    paddingRight: '0px !important',
+    width: '24px',
+  },
+};
+
 
 const styles = {
   tablePadding: {
     paddingTop: '15px',
     paddingBottom: '15px',
   },
+  txStatus: {
+    cursor: 'pointer',
+  },
 };
 
 
 export const TxView = (props) => {
   const { token, showFiat, tx, openTx, openAccount, toAccount, fromAccount, numConfirmations, currentBlockHeight, muiTheme } = props;
+  const { classes } = props;
   const blockNumber = tx.get('blockNumber');
   const confirmationBlockNumber = blockNumber + numConfirmations;
   const successColor = muiTheme.palette.primary1Color;
@@ -103,7 +116,7 @@ export const TxView = (props) => {
           withAvatar={ false }
         /> }
       </TableRowColumn>
-      <TableRowColumn style={{width: 60, ...link, ...styles.tablePadding}} >
+      <TableRowColumn style={{width: 60, ...styles.txStatus, ...styles.tablePadding}} >
         { txStatus }
       </TableRowColumn>
       <TableRowColumn style={{paddingLeft: '5px'}}>
@@ -140,4 +153,5 @@ TxView.propTypes = {
   numConfirmations: PropTypes.number.isRequired,
 };
 
-export default muiThemeable()(TxView);
+const StyledTxView = withStyles(styles2)(TxView);
+export default muiThemeable()(StyledTxView);

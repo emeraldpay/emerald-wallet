@@ -1,4 +1,5 @@
 import React from 'react';
+import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import { convert } from '@emeraldplatform/emerald-js';
 import { connect } from 'react-redux';
@@ -9,7 +10,11 @@ import { required, address } from 'lib/validators';
 import TokenUnits from 'lib/tokenUnits';
 import tokens from '../../../store/vault/tokens';
 
-import styles from './add.scss';
+export const styles2 = {
+  actionButtons: {
+    marginTop: '10px',
+  },
+};
 
 export class AddToken extends React.Component {
     static propTypes = {
@@ -23,7 +28,7 @@ export class AddToken extends React.Component {
 
     render() {
       const { token, handleSubmit, invalid, pristine, submitting } = this.props;
-      const { clearToken } = this.props;
+      const { clearToken, classes } = this.props;
 
       const total = (tokenData) => new TokenUnits(
         convert.toBigNumber(tokenData.totalSupply),
@@ -46,7 +51,7 @@ export class AddToken extends React.Component {
                           validate={ [required, address] }
                         />
                       </div>
-                      <div className={ styles.actionButtons }>
+                      <div className={ classes.actionButtons }>
                         <Button
                           primary
                           label="Submit"
@@ -82,7 +87,7 @@ export class AddToken extends React.Component {
                           </table>
                         </div>
 
-                        <div className={ styles.actionButtons }>
+                        <div className={ classes.actionButtons }>
                           <ButtonGroup>
                             <Button
                               primary
@@ -106,10 +111,12 @@ export class AddToken extends React.Component {
     }
 }
 
+const StyledAddToken = withStyles(styles2)(AddToken);
+
 const AddTokenForm = reduxForm({
   form: 'addToken',
   fields: ['address', 'name', 'token'],
-})(AddToken);
+})(StyledAddToken);
 
 function mapDispatchToProps(dispatch, ownProps) {
   return {

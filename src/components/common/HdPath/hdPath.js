@@ -1,9 +1,18 @@
 // @flow
 import React from 'react';
+import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import { AutoComplete } from 'material-ui';
 
-import styles from './hdPath.scss';
+export const styles = {
+  container: {
+    boxSizing: 'border-box',
+    border: '1px solid #DDDDDD',
+    borderRadius: '1px',
+    paddingLeft: '10px',
+    paddingRight: '10px',
+  },
+};
 
 const predefinedHdPaths = [
   'm/44\'/60\'/160720\'/0\'',
@@ -13,7 +22,7 @@ const predefinedHdPaths = [
   'm/44\'/60\'/0\'',
 ];
 
-class HdPath extends React.Component {
+export class HdPath extends React.Component {
   static propTypes = {
     onChange: PropTypes.func,
     value: PropTypes.string,
@@ -26,9 +35,9 @@ class HdPath extends React.Component {
   }
 
   render() {
-    const { value } = this.props;
+    const { value, classes } = this.props;
     return (
-      <div className={ styles.container }>
+      <div className={ classes.container }>
         <AutoComplete
           searchText={ value }
           filter={ AutoComplete.noFilter }
@@ -44,5 +53,5 @@ class HdPath extends React.Component {
 }
 
 
-export default HdPath;
+export default withStyles(styles)(HdPath);
 
