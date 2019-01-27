@@ -3,6 +3,7 @@ import { api } from '../../lib/rpc/api';
 // import { waitForServicesRestart } from 'store/store';
 import screen from '../wallet/screen';
 import createLogger from '../../utils/logger';
+import { dispatchRpcError } from '../wallet/screen/screenActions';
 
 const log = createLogger('launcherActions');
 
@@ -49,7 +50,7 @@ export function loadClientVersion() {
         type: 'LAUNCHER/SETTINGS',
         updated: true,
       });
-    });
+    }).catch(dispatchRpcError(dispatch));
   };
 }
 
