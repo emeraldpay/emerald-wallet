@@ -61,7 +61,7 @@ export default connect(
       const title = encodeURIComponent(error.message);
       const body = encodeURIComponent(`\`\`\` \n${error.stack}\n \`\`\``);
 
-      const buttonLink = `https://github.com/ETCDEVTeam/emerald-wallet/issues/new?title=${title}&body=${body}`;
+      const buttonLink = `https://emeraldwallet.io/support?title=${title}&body=${body}`;
 
       dispatch(screen.actions.openLink(buttonLink));
     },

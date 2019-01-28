@@ -5,7 +5,7 @@ import About from './About';
 class AboutClass extends React.Component {
   render() {
     const helpClick = () => {
-      const url = 'https://github.com/ETCDEVTeam/emerald-wallet/';
+      const url = 'https://emeraldwallet.io/support';
       shell.openExternal(url);
     };
     const licenseClick = () => {

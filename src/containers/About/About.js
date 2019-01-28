@@ -45,7 +45,7 @@ class AboutClass extends React.Component {
           <Button onClick={onButtonClick} primary label='emeraldwallet.io' />
         </div>
         <div style={{ fontSize: '14px' }}>
-          <div style={{ paddingBottom: '5px' }}>Copyright &copy; 2017-{year} ETCDEVTeam</div>
+          <div style={{ paddingBottom: '5px' }}>Copyright &copy; 2017-{year} ETCDEV GmbH</div>
           <div> Licensed under <a onClick={onLicenseClick} style={styles.links} href="#">Apache License 2.0</a>
             <span style={{ float: 'right', textAlign: 'right' }}>
               <a onClick={onHelpClick} style={styles.links} href="#">Help & Support</a>
