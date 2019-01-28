@@ -7,7 +7,7 @@ export default (current) => {
     .then((latest) => latest.releases['emerald-wallet'])
     .then((release) => ({
       isLatest: release.version === `${currentVersion}`,
-      tag: release.version,
-      downloadLink: 'http://emeraldwallet.io/download',
+      tag: `v${release.version}`,
+      downloadLink: 'https://emeraldwallet.io/download',
     }));
 };

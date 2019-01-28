@@ -9,7 +9,7 @@ describe('isLatest', () => {
   });
 
   it('returns true for isLatest if on the latest version', (done) => {
-    fetch.mockResponse(JSON.stringify({ tag_name: 'v123.123.123'}));
+    fetch.mockResponse(JSON.stringify({ releases: {'emerald-wallet': {version: '123.123.123'}}}));
     getWalletVersion().then(({isLatest}) => {
       expect(isLatest).toBe(true);
       done();
@@ -17,8 +17,8 @@ describe('isLatest', () => {
   });
 
   it('returns a download link', (done) => {
-    const stubDownloadLink = 'example.com';
-    fetch.mockResponse(JSON.stringify({ html_url: stubDownloadLink }));
+    const stubDownloadLink = 'https://emeraldwallet.io/download';
+    fetch.mockResponse(JSON.stringify({releases: {'emerald-wallet': {version: '123.123.123'}}}));
     getWalletVersion().then(({downloadLink}) => {
       expect(downloadLink).toBe(stubDownloadLink);
       done();
@@ -27,7 +27,7 @@ describe('isLatest', () => {
 
   it('returns a tag', (done) => {
     const stubTag = 'v1.2.3';
-    fetch.mockResponse(JSON.stringify({ tag_name: stubTag }));
+    fetch.mockResponse(JSON.stringify({releases: {'emerald-wallet': {version: '1.2.3'}}}));
     getWalletVersion().then(({tag}) => {
       expect(tag).toBe(stubTag);
       done();
