@@ -9,21 +9,10 @@ export const MainnetLocal = {
   },
 };
 
-export const MainnetEpool = {
+export const RemoteMainnet = {
   geth: {
     type: 'remote',
-    url: 'https://mewapi.epool.io',
-  },
-  chain: {
-    id: 61,
-    name: 'mainnet',
-  },
-};
-
-export const GastrackerMainnet = {
-  geth: {
-    type: 'remote',
-    url: 'https://web3.gastracker.io',
+    url: 'https://web3.emeraldwallet.io',
   },
   chain: {
     id: 61,

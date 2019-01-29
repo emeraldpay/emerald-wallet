@@ -19,6 +19,9 @@ class Settings {
       name: 'settings',
       defaults: DEFAULTS,
     });
+    if (this.settings.get('geth.url') === 'https://web3.gastracker.io') {
+      this.settings.set('geth.url', 'https://web3.emeraldwallet.io');
+    }
   }
 
   /**

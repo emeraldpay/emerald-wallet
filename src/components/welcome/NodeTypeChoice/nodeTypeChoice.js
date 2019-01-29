@@ -6,7 +6,7 @@ import cx from 'classnames';
 import { Button, Card } from 'emerald-js-ui';
 
 import { useRpc } from '../../../store/launcher/launcherActions';
-import { GastrackerMainnet, MainnetLocal } from '../../../lib/rpc/gethProviders';
+import { RemoteMainnet, MainnetLocal } from '../../../lib/rpc/gethProviders';
 import FullNodeLogo from './fullNodeLogo';
 import RemoteNodeLogo from './remoteNodeLogo';
 
@@ -107,7 +107,7 @@ export default connect(
       dispatch(useRpc(MainnetLocal));
     },
     useRemoteNode: () => {
-      dispatch(useRpc(GastrackerMainnet));
+      dispatch(useRpc(RemoteMainnet));
     },
   })
 )(StyledNodeTypeChoice);
