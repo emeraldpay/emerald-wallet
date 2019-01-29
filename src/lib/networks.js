@@ -14,26 +14,14 @@ export const Networks = [
   {
     geth: {
       type: 'remote',
-      url: 'https://web3.gastracker.io',
+      url: 'https://web3.emeraldwallet.io',
     },
     chain: {
       id: 61,
       name: 'mainnet',
     },
-    title: 'Mainnet (gastracker.io)',
+    title: 'Mainnet',
     id: 'gastracker/mainnet',
-  },
-  {
-    geth: {
-      type: 'remote',
-      url: 'https://mew.epool.io/',
-    },
-    chain: {
-      id: 61,
-      name: 'mainnet',
-    },
-    title: 'Mainnet (epool.io)',
-    id: 'epool/mainnet',
   },
   {
     geth: {
@@ -50,13 +38,13 @@ export const Networks = [
   {
     geth: {
       type: 'remote',
-      url: 'https://web3.gastracker.io/morden',
+      url: 'https://web3.emeraldwallet.io/morden',
     },
     chain: {
       id: 62,
       name: 'morden',
     },
-    title: 'Morden (gastracker.io)',
+    title: 'Morden Testnet',
     id: 'remote/morden',
   },
 ];
