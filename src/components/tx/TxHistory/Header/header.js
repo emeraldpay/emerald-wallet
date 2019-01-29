@@ -39,12 +39,16 @@ const styles2 = {
   },
 };
 
-const Header = ({onTxFilterChange, onSearchChange, muiTheme, classes}) => {
+const Header = ({
+  onTxFilterChange, onSearchChange, muiTheme, classes, txFilterValue,
+}) => {
   return (
     <div className={ classes.headerContainer }>
       <div className={ classes.headerMain }>
         <div className={ classes.headerTitle }>History</div>
-        <div className={ classes.filter }><Filter onChange={onTxFilterChange}/></div>
+        <div className={ classes.filter }>
+          <Filter onChange={onTxFilterChange} value={txFilterValue}/>
+        </div>
       </div>
       <div className={ classes.search }>
         <TextField

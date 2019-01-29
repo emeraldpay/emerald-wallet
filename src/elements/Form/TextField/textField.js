@@ -16,7 +16,9 @@ type Props = {
   fullWidth: boolean,
 }
 
-export const TextField = ({ rightIcon, error, style, leftIcon, fieldStyle, ...other }: Props) => {
+export const TextField = ({
+  rightIcon, error, style, leftIcon, fieldStyle, ...other
+}: Props) => {
   const container = {
     boxSizing: 'border-box',
     border: '1px solid',

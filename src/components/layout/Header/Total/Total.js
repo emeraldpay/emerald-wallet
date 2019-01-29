@@ -17,7 +17,9 @@ type Props = {
   fiatCurrency?: string,
 };
 
-const Total = ({ total, showFiat, fiatAmount, fiatCurrency, muiTheme }: Props) => {
+const Total = ({
+  total, showFiat, fiatAmount, fiatCurrency, muiTheme,
+}: Props) => {
   let totalFormatted = `${total} ETC`;
   if (showFiat && fiatAmount) {
     totalFormatted = `${totalFormatted} - ${fiatAmount} ${fiatCurrency}`;

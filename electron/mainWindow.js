@@ -1,9 +1,9 @@
 const electron = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
-const winLinuxMenu = require('./menus/win-linux');
-const darwinMenu = require('./menus/darwin');
 const path = require('path');
 const url = require('url');
 const devtron = require('devtron');
+const darwinMenu = require('./menus/darwin');
+const winLinuxMenu = require('./menus/win-linux');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -12,7 +12,9 @@ let menu;
 
 const createWindow = function (openDevTools) {
   // Create the browser window.
-  mainWindow = new electron.BrowserWindow({ width: 1200, height: 650, minWidth: 1200, minHeight: 650 });
+  mainWindow = new electron.BrowserWindow({
+    width: 1200, height: 650, minWidth: 1200, minHeight: 650,
+  });
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({

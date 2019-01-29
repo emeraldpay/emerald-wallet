@@ -2,7 +2,7 @@ import { shallow } from 'enzyme';
 import React from 'react';
 import { fromJS } from 'immutable';
 import { Wei } from '@emeraldplatform/emerald-js';
-import Total from './';
+import Total from '.';
 
 function createStore() {
   return {

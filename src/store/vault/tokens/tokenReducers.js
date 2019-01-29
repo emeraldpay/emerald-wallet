@@ -36,19 +36,20 @@ function addToken(state, address, name) {
   });
 }
 
-function updateTokenBalance(tokenBalances, token, value) {
-  const pos = tokenBalances.findIndex((tok) => tok.get('address') === token.get('address'));
+function updateTokenBalance(tokenBalances, token /* TokenInfo */, value) {
+  const pos = tokenBalances.findIndex((tok) => tok.get('address') === token.address);
   const balance = new TokenUnits(
     convert.toBigNumber(value),
-    convert.toBigNumber(token.decimals));
+    convert.toBigNumber(token.decimals)
+  );
 
   if (pos >= 0) {
-    return tokenBalances.update(pos, (tok) => tok.set('balance', balance));
+    return tokenBalances.update(pos, (t) => t.set('balance', balance));
   }
 
   const newToken = fromJS({
-    address: token.get('address'),
-    symbol: token.get('symbol'),
+    address: token.address,
+    symbol: token.symbol,
     balance,
   });
 
@@ -100,7 +101,8 @@ function onSetTokenList(state, action) {
 function calcToken(tok) {
   const amount = new TokenUnits(
     toBigNumber(tok.get('totalSupply', '0x0')),
-    toBigNumber(tok.get('decimals', '0x0')));
+    toBigNumber(tok.get('decimals', '0x0'))
+  );
 
   return tok.set('total', amount);
 }
@@ -148,8 +150,12 @@ function onSetTokensBalances(state, action) {
     action.tokenBalances.forEach(({accountAddress, tokenAddress, amount}) => {
       const addressBalances = allBalances.get(accountAddress, new List());
       const tokenInfo = state.get('tokens').find((t) => t.get('address') === tokenAddress);
-
-      allBalances = allBalances.set(accountAddress, updateTokenBalance(addressBalances, tokenInfo, amount));
+      if (tokenInfo) {
+        allBalances = allBalances.set(
+          accountAddress,
+          updateTokenBalance(addressBalances, tokenInfo.toJS(), amount)
+        );
+      }
     });
 
     return state.set('balances', allBalances);

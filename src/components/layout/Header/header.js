@@ -22,7 +22,9 @@ const styles = {
 };
 
 const Header = (props) => {
-  const { openSettings, muiTheme, network, showProgress, progress, tip, showFiat } = props;
+  const {
+    openSettings, muiTheme, network, showProgress, progress, tip, showFiat,
+  } = props;
 
   const showProgressBar = (show) => {
     if (!show) {
@@ -70,7 +72,7 @@ const Header = (props) => {
   const SettingsButton = () => (
     <FlatButton
       hoverColor="transparent"
-      onTouchTap={ openSettings }
+      onClick={ openSettings }
       style={{color: muiTheme.palette.secondaryTextColor}}
       label="Settings"
       labelStyle={styles.buttons.label}

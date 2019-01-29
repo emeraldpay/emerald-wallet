@@ -9,7 +9,9 @@ import { Networks, findNetwork } from '../../../../lib/networks';
 
 class ExtendedMenuItem extends React.Component {
   render() {
-    const {muiTheme, checked, onClick, net} = this.props;
+    const {
+      muiTheme, checked, onClick, net,
+    } = this.props;
     const networkType = net.geth.type === 'local' ? 'Full Node' : 'Remote Node';
     const textColor = checked ? muiTheme.palette.primary1Color : muiTheme.palette.secondaryTextColor;
     return (
@@ -51,18 +53,18 @@ function getStyles(props) {
 
 class NetworkSelectorRender extends React.Component {
   render() {
-    const { chain, geth, onNetworkChange, connecting, muiTheme } = this.props;
+    const {
+      chain, geth, onNetworkChange, connecting, muiTheme,
+    } = this.props;
     let icon;
     if (connecting) { // shanejonas: the wrapping span's here are to get around some coloring issues with material-ui's dropdown + iconbutton
-      icon =
-        <span>
-          <NetworkDisconnectedIcon style={{color: muiTheme.palette.secondaryTextColor}}/>
-        </span>;
+      icon = <span>
+        <NetworkDisconnectedIcon style={{color: muiTheme.palette.secondaryTextColor}}/>
+      </span>;
     } else {
-      icon =
-        <span>
-          <NetworkIcon style={{color: muiTheme.palette.secondaryTextColor}}/>
-        </span>;
+      icon = <span>
+        <NetworkIcon style={{color: muiTheme.palette.secondaryTextColor}}/>
+      </span>;
     }
 
     const styles = getStyles(this.props);
@@ -90,20 +92,20 @@ class NetworkSelectorRender extends React.Component {
           maxWidth: '280px',
           boxShadow: `${muiTheme.palette.secondaryTextColor} 0px 0px 50px 0px`,
         }}
-        iconStyle={{left: '-40px', marginLeft: '20px', stroke: muiTheme.palette.secondaryTextColor, color: muiTheme.palette.secondaryTextColor}}
+        iconStyle={{
+          left: '-40px', marginLeft: '20px', stroke: muiTheme.palette.secondaryTextColor, color: muiTheme.palette.secondaryTextColor,
+        }}
         iconButton={icon}
         labelStyle={ styles.label }>
-        { Networks.map((net) =>
-          <ExtendedMenuItem
-            value={net.id}
-            key={net.id}
-            primaryText={net.title}
-            checked={isCurrentNetwork(net)}
-            onClick={() => networkClick(net)}
-            net={net}
-            muiTheme={muiTheme}
-          />
-        )}
+        { Networks.map((net) => <ExtendedMenuItem
+          value={net.id}
+          key={net.id}
+          primaryText={net.title}
+          checked={isCurrentNetwork(net)}
+          onClick={() => networkClick(net)}
+          net={net}
+          muiTheme={muiTheme}
+        />)}
       </DropDownMenu>);
   }
 }

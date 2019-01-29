@@ -3,7 +3,9 @@ import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import { convert } from '@emeraldplatform/emerald-js';
 import { connect } from 'react-redux';
-import { Field, reduxForm, change, formValueSelector, reset, SubmissionError } from 'redux-form';
+import {
+  Field, reduxForm, change, formValueSelector, reset, SubmissionError
+} from 'redux-form';
 import TextField from 'elements/Form/TextField';
 import { Button, ButtonGroup } from 'emerald-js-ui';
 import { required, address } from 'lib/validators';
@@ -27,18 +29,21 @@ export class AddToken extends React.Component {
     };
 
     render() {
-      const { token, handleSubmit, invalid, pristine, submitting } = this.props;
+      const {
+        token, handleSubmit, invalid, pristine, submitting,
+      } = this.props;
       const { clearToken, classes } = this.props;
 
       const total = (tokenData) => new TokenUnits(
         convert.toBigNumber(tokenData.totalSupply),
-        convert.toBigNumber(tokenData.decimals));
+        convert.toBigNumber(tokenData.decimals)
+      );
 
       return (
         <div>
           <form onSubmit={ handleSubmit }>
-            { !token &&
-                    <div>
+            { !token
+                    && <div>
                       <div>
                         <Field
                           name="address"
@@ -61,8 +66,8 @@ export class AddToken extends React.Component {
                       </div>
                     </div>
             }
-            { token &&
-                    (
+            { token
+                    && (
                       <div>
                         <div>
                           <table>

@@ -43,4 +43,3 @@ export const DescriptionData = (props: {children: any}) => {
     </dd>
   );
 };
-

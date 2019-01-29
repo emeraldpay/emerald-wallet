@@ -1,7 +1,9 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import QRCode from 'qrcode.react';
-import { Button, Warning, WarningHeader, WarningText, Page } from 'emerald-js-ui';
+import {
+  Button, Warning, WarningHeader, WarningText, Page
+} from 'emerald-js-ui';
 import { Row, styles as formStyles } from 'elements/Form';
 import { Back } from 'emerald-js-ui/lib/icons3';
 
@@ -36,7 +38,9 @@ const styles2 = {
 };
 
 const ShowPrivateDialog = (props) => {
-  const { onBack, onNext, privateKey, t, classes } = props;
+  const {
+    onBack, onNext, privateKey, t, classes,
+  } = props;
 
   return (
     <Page title={ t('generate.title') } leftIcon={<Back onClick={onBack} />}>

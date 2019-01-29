@@ -32,9 +32,9 @@ export default class TokenUnits extends Record({ value: ZERO, decimals: 0 }) {
   }
 
   convert(r: number, decimals: number = 2): string {
-    const rate = (r === null || typeof r === 'undefined') ?
-      ZERO :
-      new BigNumber(r.toString());
+    const rate = (r === null || typeof r === 'undefined')
+      ? ZERO
+      : new BigNumber(r.toString());
     const divisor = new BigNumber(10).pow(this.decimals);
     return this.value.dividedBy(divisor).mul(rate).toFixed(decimals);
   }

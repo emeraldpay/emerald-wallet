@@ -9,7 +9,9 @@ import { required, address } from '../../../lib/validators';
 import { cardSpace } from '../../../lib/styles';
 
 
-export const AccountEdit = ({ muiTheme, handleSubmit, blockAddress, invalid, pristine, submitting, cancel }) => (
+export const AccountEdit = ({
+  muiTheme, handleSubmit, blockAddress, invalid, pristine, submitting, cancel,
+}) => (
   <Card style={cardSpace}>
     <CardText expandable={false}>
       <form onSubmit={handleSubmit}>

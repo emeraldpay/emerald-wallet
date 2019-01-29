@@ -5,8 +5,6 @@ import Terms from './Terms';
 export default connect(
   (state, ownProps) => ({}),
   (dispatch, ownProps) => ({
-    onAgree: () =>
-      dispatch(launcher.actions.agreeOnTerms('v1')),
+    onAgree: () => dispatch(launcher.actions.agreeOnTerms('v1')),
   })
 )(Terms);
-

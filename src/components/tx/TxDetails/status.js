@@ -37,7 +37,7 @@ const Status = (props) => {
   const { status, classes } = props;
   if (status === 'success') {
     return (<div className={ classes.success }>Success</div>);
-  } else if (status === 'queue') {
+  } if (status === 'queue') {
     return (
       <div className={ classes.queue }>
         <CircularProgress color="black" size={15} thickness={1.5}/>&nbsp; In Queue

@@ -49,7 +49,9 @@ export const Row = withStyles(styles2)((props) => {
 });
 
 export const Form = withStyles(styles2)((props) => {
-  const { children, caption, backButton, style, classes } = props;
+  const {
+    children, caption, backButton, style, classes,
+  } = props;
   return (
     <Card style={style}>
       <div className={classes.form}>

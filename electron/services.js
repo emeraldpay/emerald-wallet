@@ -1,9 +1,11 @@
-const { JsonRpc, HttpTransport, Vault, VaultJsonRpcProvider, VaultInMemoryProvider } = require('@emeraldplatform/emerald-js');
+const {
+  JsonRpc, HttpTransport, Vault, VaultJsonRpcProvider, VaultInMemoryProvider,
+} = require('@emeraldplatform/emerald-js');
 const log = require('./logger');
 const { LocalGeth, NoneGeth, RemoteGeth } = require('./launcher');
 const { LocalConnector } = require('./vault/launcher');
-const UserNotify = require('./userNotify').UserNotify;
-const newGethDownloader = require('./geth/downloader').newGethDownloader;
+const UserNotify = require('./userNotify').UserNotify; // eslint-disable-line
+const newGethDownloader = require('./geth/downloader').newGethDownloader; // eslint-disable-line
 const { check, waitRpc } = require('./nodecheck');
 const { getBinDir, getLogDir, isValidChain } = require('./utils');
 
@@ -57,7 +59,10 @@ class Services {
     this.emerald = new Vault(
       new VaultJsonRpcProvider(
         new JsonRpc(
-          new HttpTransport('http://127.0.0.1:1920'))));
+          new HttpTransport('http://127.0.0.1:1920')
+        )
+      )
+    );
     log.info(`Run services from ${getBinDir()}`);
   }
 
@@ -106,7 +111,8 @@ class Services {
       shuttingDown.push(
         this.geth.shutdown()
           .then(() => { this.gethStatus = STATUS.NOT_STARTED; })
-          .then(() => this.notifyEthRpcStatus()));
+          .then(() => this.notifyEthRpcStatus())
+      );
     }
 
     if (this.connector) {
@@ -218,9 +224,9 @@ class Services {
     return new Promise((resolve, reject) => {
       if (this.setup.geth.launchType === LAUNCH_TYPE.NONE) {
         return resolve(this.startNoneRpc());
-      } else if (this.setup.geth.launchType === LAUNCH_TYPE.REMOTE_URL) {
+      } if (this.setup.geth.launchType === LAUNCH_TYPE.REMOTE_URL) {
         return this.startRemoteRpc().then(resolve).catch(reject);
-      } else if (this.setup.geth.launchType === LAUNCH_TYPE.AUTO
+      } if (this.setup.geth.launchType === LAUNCH_TYPE.AUTO
                  || this.setup.geth.launchType === LAUNCH_TYPE.LOCAL_RUN) {
         return this.startAutoRpc().then(resolve).catch(reject);
       }

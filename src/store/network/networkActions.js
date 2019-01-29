@@ -1,6 +1,6 @@
 // @flow
 import BigNumber from 'bignumber.js';
-import { intervalRates } from '../../store/config';
+import { intervalRates } from '../config';
 import createLogger from '../../utils/logger';
 import ActionTypes from './actionTypes';
 import history from '../wallet/history';

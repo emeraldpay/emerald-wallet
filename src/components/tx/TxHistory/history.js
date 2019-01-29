@@ -36,7 +36,8 @@ class TransactionsHistory extends React.Component<Props, State> {
       displayedTransactions: this.props.transactions,
     };
   }
-  componentWillReceiveProps(nextProps) {
+
+  UNSAFE_componentWillReceiveProps(nextProps) { // eslint-disable-line
     if (nextProps.transactions) {
       this.setState({
         ...this.state,
@@ -44,23 +45,31 @@ class TransactionsHistory extends React.Component<Props, State> {
       });
     }
   }
+
   onSearchChange = (e) => {
     return this.setState({
       displayedTransactions: searchTransactions(e.target.value, this.props.transactions),
     });
   }
-  onTxFilterChange = (value) => {
+
+  onTxFilterChange = (event, value) => {
+    const { accountId, transactions, accounts } = this.props;
     this.setState({
       txFilter: value,
-      displayedTransactions: filterTransactions(value, this.props.accountId, this.props.transactions, this.props.accounts),
+      displayedTransactions: filterTransactions(value, accountId, transactions, accounts),
     });
   }
+
   render() {
     const { classes } = this.props;
     return (
       <Card>
         <div className={ classes.container } style={{border: `1px solid ${this.props.muiTheme.palette.borderColor}`}}>
-          <Header onTxFilterChange={this.onTxFilterChange} value={this.state.txFilter} onSearchChange={this.onSearchChange}/>
+          <Header
+            onTxFilterChange={this.onTxFilterChange}
+            txFilterValue={this.state.txFilter}
+            onSearchChange={this.onSearchChange}
+          />
           <TxList transactions={ this.state.displayedTransactions } accountId={ this.props.accountId }/>
         </div>
       </Card>

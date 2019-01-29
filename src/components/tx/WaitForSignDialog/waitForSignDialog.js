@@ -11,7 +11,7 @@ const WaitForSignDialog = ({ open, transaction, handleClose }) => {
       key="cancel"
       label="Cancel"
       primary={true}
-      onTouchTap={handleClose}
+      onClick={handleClose}
     />,
   ];
 
@@ -43,4 +43,3 @@ export default connect(
     },
   })
 )(WaitForSignDialog);
-

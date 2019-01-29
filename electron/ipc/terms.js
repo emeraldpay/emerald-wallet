@@ -1,4 +1,4 @@
-const ipcMain = require('electron').ipcMain; // eslint-disable-line import/no-extraneous-dependencies
+const { ipcMain } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const log = require('electron-log');
 
 module.exports = function (settings) {

@@ -25,10 +25,7 @@ export function toDuration(timestamp) {
     if (val > 0) { dur.push({ label: u.label, val }); }
   });
   // convert object to string representation
-  dur.toString = () =>
-    dur.reverse().slice(0, 2).map((d) =>
-      `${d.val} ${d.val === 1 ? d.label.slice(0, -1) : d.label}`
-    ).join(', ');
+  dur.toString = () => dur.reverse().slice(0, 2).map((d) => `${d.val} ${d.val === 1 ? d.label.slice(0, -1) : d.label}`).join(', ');
   return dur;
 }
 
@@ -114,7 +111,7 @@ export function estimateGasFromTrace(dataObj, trace): BigNumber {
     estGas = recurCheckBalance(result);
     estGas = estGas < 0 ? -1 : estGas + 5000;
   } else {
-    let stateDiff = (trace || {}).stateDiff;
+    let { stateDiff } = (trace || {});
     stateDiff = stateDiff && (stateDiff[dataObj.from.toLowerCase()] || {}).balance['*'];
     if (stateDiff) {
       const fromState = new BigNumber(stateDiff.from);
@@ -153,13 +150,12 @@ export function functionToData(func, inputs) {
   });
   const data = Buffer.concat([
     ethAbi.methodID(func.get('name'), types),
-    ethAbi.rawEncode(types, values)]
-  ).toString('hex');
+    ethAbi.rawEncode(types, values)]).toString('hex');
   return `0x${data}`;
 }
 
 export function dataToParams(func, data) {
-  data = new Buffer(data.replace('0x', ''), 'hex');
+  data = Buffer.from(data.replace('0x', ''), 'hex');
   const types = func.get('outputs').map((output) => output.get('type')).toArray();
   const params = ethAbi.rawDecode(types, data);
   return func.get('outputs').map((o, i) => ({

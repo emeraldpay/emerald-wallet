@@ -1,7 +1,5 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import injectTapEventPlugin from 'react-tap-event-plugin';
-
 import getMuiTheme from 'material-ui/styles/getMuiTheme';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import theme from 'emerald-js-ui/src/theme.json';
@@ -13,7 +11,6 @@ import {start as startStore} from './store/store';
 import createLogger from './utils/logger';
 import About from './containers/About';
 import App from './containers/App';
-import './bootstrapButtons.scss';
 
 const log = createLogger('index');
 
@@ -23,11 +20,8 @@ function start() {
   log.info('Starting Emerald Wallet...');
 
   // set document background to theme canvas color
-  const canvasColor = theme.palette.canvasColor;
+  const { canvasColor } = theme.palette;
   document.body.style.backgroundColor = canvasColor;
-
-  // Needed for onTouchTap
-  injectTapEventPlugin();
 
   ReactDOM.render(<App />, document.getElementById('app'));
 

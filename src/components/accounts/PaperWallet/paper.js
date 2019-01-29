@@ -81,7 +81,9 @@ export const styles2 = {
 };
 
 export const PaperWallet = (props) => {
-  const { address, privKey, onCancel, classes } = props;
+  const {
+    address, privKey, onCancel, classes,
+  } = props;
 
   const Logo = (
     <div className={classes.logoContainer}>

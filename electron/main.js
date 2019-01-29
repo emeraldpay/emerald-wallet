@@ -6,8 +6,8 @@ const path = require('path');
 
 const Settings = require('./settings');
 const mainWindow = require('./mainWindow');
-const Services = require('./services').Services;
-const LedgerApi = require('./ledger').LedgerApi;
+const { Services } = require('./services');
+const { LedgerApi } = require('./ledger');
 const ipc = require('./ipc');
 const log = require('./logger');
 const { startProtocolHandler } = require('./protocol');
@@ -35,7 +35,6 @@ startProtocolHandler();
 app.on('ready', () => {
   log.info('Starting Emerald...');
   const browserWindow = mainWindow.createWindow(isDev);
-
   const services = new Services(browserWindow.webContents);
   ipc({ settings, services });
   app.on('quit', () => services.shutdown());

@@ -3,7 +3,9 @@ import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import { CardText } from 'material-ui/Card';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
-import { Button, IdentityIcon, Account as AddressAvatar, ButtonGroup, Card } from 'emerald-js-ui';
+import {
+  Button, IdentityIcon, Account as AddressAvatar, ButtonGroup, Card
+} from 'emerald-js-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../Balance';
@@ -45,7 +47,9 @@ export class Account extends React.Component {
     onAddEtcClick = () => this.props.showReceiveDialog(this.props.account);
 
     render() {
-      const { account, muiTheme, classes, showFiat } = this.props;
+      const {
+        account, muiTheme, classes, showFiat,
+      } = this.props;
       const fiatStyle = {
         fontSize: '16px',
         lineHeight: '19px',

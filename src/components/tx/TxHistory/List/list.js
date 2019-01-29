@@ -3,7 +3,9 @@ import React from 'react';
 import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
-import { Table, TableBody, TableHeader, TableHeaderColumn, TableRow } from 'material-ui/Table';
+import {
+  Table, TableBody, TableHeader, TableHeaderColumn, TableRow
+} from 'material-ui/Table';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import Transaction from './transaction';
 
@@ -42,7 +44,9 @@ const renderEmptyTransactions = (transactions, muiTheme) => {
 };
 
 const TransactionsList = (props: Props) => {
-  const { transactions, accountId, muiTheme, classes } = props;
+  const {
+    transactions, accountId, muiTheme, classes,
+  } = props;
   if (!transactions) {
     return (<div>Loading...</div>);
   }

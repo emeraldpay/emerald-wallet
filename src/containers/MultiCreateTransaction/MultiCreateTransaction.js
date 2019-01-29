@@ -98,8 +98,10 @@ class MultiCreateTransaction extends React.Component {
   }
 
   componentDidUpdate(prevProps) {
-    const {from, to, value, data } = prevProps;
-    const props = this.props;
+    const {
+      from, to, value, data,
+    } = prevProps;
+    const props = this.props; // eslint-disable-line
     if (from !== props.from || to !== props.to || value !== props.value || data !== props.data) {
       this.setState({
         page: props.mode ? PAGES.PASSWORD : PAGES.TX,
@@ -222,7 +224,7 @@ class MultiCreateTransaction extends React.Component {
 
 export default connect(
   (state, ownProps) => {
-    const account = ownProps.account;
+    const { account } = ownProps;
     const allTokens = state.tokens.get('tokens').concat([fromJS({address: '', symbol: 'ETC', name: 'ETC'})]).reverse();
     const gasPrice = state.network.get('gasPrice');
 
@@ -251,12 +253,7 @@ export default connect(
           return newBalance.getEther().toString();
         }
 
-        return state.tokens
-          .get('balances')
-          .get(address)
-          .find((t) => t.get('symbol') === token)
-          .get('balance')
-          .getDecimalized();
+        return Tokens.selectors.balanceByTokenSymbol(state.tokens, token, address).getDecimalized();
       },
       getFiatForAddress: (address, token) => {
         if (token !== 'ETC') { return '??'; }
@@ -309,7 +306,8 @@ export default connect(
         const txData = Tokens.actions.createTokenTxData(
           transaction.to,
           tokenUnits,
-          'true');
+          'true'
+        );
         return dispatch(
           accounts.actions.sendTransaction(
             transaction.from,

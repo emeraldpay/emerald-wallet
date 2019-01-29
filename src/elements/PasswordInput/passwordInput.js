@@ -71,4 +71,3 @@ export default class PasswordInput extends React.Component {
       );
     }
 }
-

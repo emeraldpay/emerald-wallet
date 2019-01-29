@@ -1,4 +1,4 @@
-/** Abbreviated ABI for ERC20-compatible tokens **/
+/** Abbreviated ABI for ERC20-compatible tokens * */
 export const TokenAbi = [
   {
     name: 'approve',

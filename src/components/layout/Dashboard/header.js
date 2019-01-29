@@ -22,7 +22,9 @@ const styles2 = {
 
 export class Header extends React.Component {
   render() {
-    const { generate, importJson, importLedger, importPrivateKey, importMnemonic, addToken, createMnemonic, showAddressBook } = this.props;
+    const {
+      generate, importJson, importLedger, importPrivateKey, importMnemonic, addToken, createMnemonic, showAddressBook,
+    } = this.props;
     const { t, classes } = this.props;
     return (
       <div className={ classes.header }>

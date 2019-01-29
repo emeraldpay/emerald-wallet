@@ -15,13 +15,13 @@ const log = createLogger('Dialog');
 const Dialog = ({ dialog, item, handleClose }) => {
   if (!dialog) {
     return <div/>;
-  } else if (dialog === 'sign-transaction') {
+  } if (dialog === 'sign-transaction') {
     return <WaitForSign/>;
-  } else if (dialog === 'receive') {
+  } if (dialog === 'receive') {
     return <ReceiveDialog account={ item } onClose= { handleClose }/>;
-  } else if (dialog === 'tokens') {
+  } if (dialog === 'tokens') {
     return <TokensDialog onClose={ handleClose } />;
-  } else if (dialog === 'hide-account') {
+  } if (dialog === 'hide-account') {
     return <HideAccountDialog address={ item } onClose={ handleClose } />;
   }
   log.error('Unsupported dialog', dialog);

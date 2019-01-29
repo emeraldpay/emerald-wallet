@@ -5,7 +5,9 @@ import withStyles from 'react-jss';
 import { Map } from 'immutable';
 import { connect } from 'react-redux';
 import { convert, Wei } from '@emeraldplatform/emerald-js';
-import { Account, Button, ButtonGroup, Page } from 'emerald-js-ui';
+import {
+  Account, Button, ButtonGroup, Page
+} from 'emerald-js-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import launcher from 'store/launcher';
 import { Back } from 'emerald-js-ui/lib/icons3';
@@ -43,8 +45,12 @@ type Props = {
 }
 
 export const TransactionShow = (props: Props) => {
-  const { transaction, account, fromAccount, toAccount, openAccount, goBack, repeatTx, classes } = props;
-  const { showFiat, rates, currentCurrency, showRepeat } = props;
+  const {
+    transaction, account, fromAccount, toAccount, openAccount, goBack, repeatTx, classes,
+  } = props;
+  const {
+    showFiat, rates, currentCurrency, showRepeat,
+  } = props;
 
   const fieldNameStyle = {
     color: '#747474',
@@ -54,9 +60,9 @@ export const TransactionShow = (props: Props) => {
 
   const blockNumber = transaction.get('blockNumber');
   const txStatus = blockNumber ? 'success' : 'queue';
-  const fiatAmount = transaction.get('value') ?
-    Currency.format(new Wei(transaction.get('value')).getFiat(rates.get(currentCurrency.toUpperCase())), currentCurrency) :
-    '';
+  const fiatAmount = transaction.get('value')
+    ? Currency.format(new Wei(transaction.get('value')).getFiat(rates.get(currentCurrency.toUpperCase())), currentCurrency)
+    : '';
 
   return (
     <Page title="Transaction Details" leftIcon={ <Back onClick={() => goBack(account)} /> }>
@@ -128,8 +134,8 @@ export const TransactionShow = (props: Props) => {
           <div style={fieldNameStyle}>To</div>
         </div>
         <div style={{...styles.right, alignItems: 'center'}}>
-          {transaction.get('to') &&
-           <Account
+          {transaction.get('to')
+           && <Account
              addr={transaction.get('to')}
              identity
              identityProps={{size: 30}}
@@ -212,10 +218,10 @@ export default connect(
     if (!Tx) {
       log.error("Can't find tx for hash", ownProps.hash);
     }
-    const fromAccount = Tx.get('from') ?
-      accounts.find((acct) => acct.get('id') === Tx.get('from')) : null;
-    const toAccount = Tx.get('to') ?
-      accounts.find((acct) => acct.get('id') === Tx.get('to')) : null;
+    const fromAccount = Tx.get('from')
+      ? accounts.find((acct) => acct.get('id') === Tx.get('from')) : null;
+    const toAccount = Tx.get('to')
+      ? accounts.find((acct) => acct.get('id') === Tx.get('to')) : null;
 
     const showRepeat = !!fromAccount;
 

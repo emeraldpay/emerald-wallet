@@ -1,4 +1,4 @@
-const ipcMain = require('electron').ipcMain; // eslint-disable-line import/no-extraneous-dependencies
+const { ipcMain } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const log = require('electron-log');
 
 const { isValidChain } = require('../utils');
@@ -14,7 +14,7 @@ module.exports = (settings, services) => {
     }
 
     if (newSettings.chain) {
-      const chain = newSettings.chain;
+      const { chain } = newSettings;
 
       if (!isValidChain(chain)) {
         log.error(`Unknown chain: ${JSON.stringify(chain)}`);

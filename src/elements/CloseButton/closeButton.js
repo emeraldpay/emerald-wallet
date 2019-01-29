@@ -13,7 +13,7 @@ const CloseButton = (props: { onClick: any, className: string }) => {
     <IconButton
       iconStyle={ smallIcon }
       className={ props.className }
-      onTouchTap={ props.onClick }
+      onClick={ props.onClick }
       tooltip="Close">
       <CloseIcon/>
     </IconButton>

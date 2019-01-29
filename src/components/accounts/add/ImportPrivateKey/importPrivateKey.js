@@ -4,7 +4,9 @@ import withStyles from 'react-jss';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { Field, reduxForm, SubmissionError } from 'redux-form';
-import { Page, Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
+import {
+  Page, Button, Warning, WarningHeader, WarningText
+} from 'emerald-js-ui';
 import { Back } from 'emerald-js-ui/lib/icons3';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Row, styles as formStyles } from 'elements/Form';
@@ -43,7 +45,9 @@ function getLoadingIcon(submitting) {
 
 export class ImportPrivateKey extends React.Component {
   render() {
-    const { onBack, error, handleSubmit, submitting, classes } = this.props;
+    const {
+      onBack, error, handleSubmit, submitting, classes,
+    } = this.props;
     return (
       <Page title="Import Private Key" leftIcon={ <Back onClick={ onBack }/> }>
         <Row>
@@ -168,4 +172,3 @@ export default connect(
     },
   })
 )(muiThemeable()(importForm));
-

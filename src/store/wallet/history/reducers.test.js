@@ -57,11 +57,14 @@ describe('historyReducer', () => {
     state = historyReducers(state, {
       type: ActionTypes.PENDING_TX,
       txList: [
-        {hash: 'hash1',
+        {
+          hash: 'hash1',
           gas: '0x47e7c4',
           gasPrice: '0x174876e800',
-          nonce: '0x4'},
-        {hash: 'hash2',
+          nonce: '0x4',
+        },
+        {
+          hash: 'hash2',
           gas: '0x47e7c4',
           gasPrice: '0x174876e800',
           nonce: '0x4',

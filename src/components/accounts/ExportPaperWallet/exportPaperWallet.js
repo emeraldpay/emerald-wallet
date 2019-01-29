@@ -36,7 +36,9 @@ class ExportPaperWallet extends React.Component {
   };
 
   render() {
-    const { accountId, onBack, handleSubmit, classes } = this.props;
+    const {
+      accountId, onBack, handleSubmit, classes,
+    } = this.props;
 
     return (
       <Page title="Print Paper Wallet" leftIcon={<Back onClick={onBack}/> } >
@@ -100,4 +102,5 @@ export default connect(
       dispatch(screen.actions.gotoScreen('home'));
     },
 
-  }))(exportForm);
+  })
+)(exportForm);

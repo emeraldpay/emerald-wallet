@@ -36,7 +36,9 @@ export class Balance extends React.Component {
   };
 
   render() {
-    const { balance, showFiat, fiatCurrency, fiatRate, precision = 3, symbol } = this.props;
+    const {
+      balance, showFiat, fiatCurrency, fiatRate, precision = 3, symbol,
+    } = this.props;
     const { fiatStyle, coinsStyle } = this.props;
     let fiatAmount = null;
     if (showFiat && balance && fiatRate) {

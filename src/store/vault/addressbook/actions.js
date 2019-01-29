@@ -32,19 +32,18 @@ export function addAddress(address, name, description) {
 }
 
 export function updateAddress(id, name, description) {
-  return (dispatch) =>
-    rpc.call('emerald_updateAddress', [{
-      id,
+  return (dispatch) => rpc.call('emerald_updateAddress', [{
+    id,
+    name,
+    description,
+  }]).then((result) => {
+    dispatch({
+      type: ActionTypes.UPDATE_ADDRESS,
+      addressId: id,
       name,
       description,
-    }]).then((result) => {
-      dispatch({
-        type: ActionTypes.UPDATE_ADDRESS,
-        addressId: id,
-        name,
-        description,
-      });
     });
+  });
 }
 
 export function deleteAddress(address) {
