@@ -44,6 +44,7 @@ const ShowPrivateDialog = (props) => {
 
   return (
     <Page title={ t('generate.title') } leftIcon={<Back onClick={onBack} />}>
+      <div>
       <Row>
         <div style={ formStyles.left }/>
         <div style={ formStyles.right }>
@@ -93,6 +94,7 @@ const ShowPrivateDialog = (props) => {
           <Button primary onClick={ onNext } label="Next" />
         </div>
       </Row>
+      </div>
     </Page>
   );
 };

@@ -32,6 +32,7 @@ export const DownloadDialog = (props) => {
   } = props;
   return (
     <Page title={ t('generate.title') } leftIcon={ <Back onClick={onBack} /> }>
+      <div>
       <Row>
         <div style={formStyles.left}/>
         <div style={formStyles.right}>
@@ -77,6 +78,7 @@ export const DownloadDialog = (props) => {
           />
         </div>
       </Row>
+      </div>
     </Page>
   );
 };

@@ -93,6 +93,7 @@ class PasswordDialog extends React.Component {
 
     return (
       <Page title={ t('generate.title') } leftIcon={<Back onClick={onDashboard} />}>
+        <div>
         <Row>
           <div style={ formStyles.left }/>
           <div style={ formStyles.right }>
@@ -161,6 +162,7 @@ class PasswordDialog extends React.Component {
             />
           </div>
         </Row>
+        </div>
       </Page>
     );
   }
