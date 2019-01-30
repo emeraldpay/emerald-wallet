@@ -94,74 +94,74 @@ class PasswordDialog extends React.Component {
     return (
       <Page title={ t('generate.title') } leftIcon={<Back onClick={onDashboard} />}>
         <div>
-        <Row>
-          <div style={ formStyles.left }/>
-          <div style={ formStyles.right }>
-            <div style={{ width: '100%' }}>
-              <div className={ classes.passwordLabel }>Enter a strong password</div>
-              <div className={ classes.passwordSubLabel }>
-                This password will be required to confirm all account operations.
-              </div>
-              <div style={{ marginTop: '30px' }}>
-                <PasswordInput
-                  onChange={ this.onPassphraseChange }
-                  error={ passphraseError }
-                />
+          <Row>
+            <div style={ formStyles.left }/>
+            <div style={ formStyles.right }>
+              <div style={{ width: '100%' }}>
+                <div className={ classes.passwordLabel }>Enter a strong password</div>
+                <div className={ classes.passwordSubLabel }>
+                  This password will be required to confirm all account operations.
+                </div>
+                <div style={{ marginTop: '30px' }}>
+                  <PasswordInput
+                    onChange={ this.onPassphraseChange }
+                    error={ passphraseError }
+                  />
+                </div>
               </div>
             </div>
-          </div>
-        </Row>
+          </Row>
 
-        <Row>
-          <div style={ formStyles.left }/>
-          <div style={ formStyles.right }>
-            <Warning fullWidth={ true }>
-              <WarningHeader>Don&#39;t forget it.</WarningHeader>
-              <WarningText>If you forget password, you will lose your account with all
-                funds.</WarningText>
-            </Warning>
-          </div>
-        </Row>
+          <Row>
+            <div style={ formStyles.left }/>
+            <div style={ formStyles.right }>
+              <Warning fullWidth={ true }>
+                <WarningHeader>Don&#39;t forget it.</WarningHeader>
+                <WarningText>If you forget password, you will lose your account with all
+                  funds.</WarningText>
+              </Warning>
+            </div>
+          </Row>
 
-        <Row>
-          <div style={formStyles.left} />
-          <div style={formStyles.right}>
-            <Field
-              hintText="Confirm Password"
-              name="confirmPassword"
-              type="password"
-              component={TextField}
-              fullWidth={true}
-              underlineShow={false}
-              onChange={this.onConfirmChange.bind(this)}
-              validate={[required, this.passwordMatch.bind(this)]}
-            />
-          </div>
-        </Row>
+          <Row>
+            <div style={formStyles.left} />
+            <div style={formStyles.right}>
+              <Field
+                hintText="Confirm Password"
+                name="confirmPassword"
+                type="password"
+                component={TextField}
+                fullWidth={true}
+                underlineShow={false}
+                onChange={this.onConfirmChange.bind(this)}
+                validate={[required, this.passwordMatch.bind(this)]}
+              />
+            </div>
+          </Row>
 
-        <Row>
-          <div style={formStyles.left}/>
-          <div style={formStyles.right}>
-            <Advice
-              title="Advice"
-              text={ <div>You can use a word or phrase as password. Write it in short text.<br/>
-                Only you know where password is. It is safer than write a password only.
-              </div>}
-            />
-          </div>
-        </Row>
+          <Row>
+            <div style={formStyles.left}/>
+            <div style={formStyles.right}>
+              <Advice
+                title="Advice"
+                text={ <div>You can use a word or phrase as password. Write it in short text.<br/>
+                  Only you know where password is. It is safer than write a password only.
+                </div>}
+              />
+            </div>
+          </Row>
 
-        <Row>
-          <div style={formStyles.left}/>
-          <div style={formStyles.right}>
-            <Button
-              primary onClick={ this.handleGenerate }
-              label="Generate Account"
-              icon={ getLoadingIcon(this.props) }
-              disabled={ this.props.loading }
-            />
-          </div>
-        </Row>
+          <Row>
+            <div style={formStyles.left}/>
+            <div style={formStyles.right}>
+              <Button
+                primary onClick={ this.handleGenerate }
+                label="Generate Account"
+                icon={ getLoadingIcon(this.props) }
+                disabled={ this.props.loading }
+              />
+            </div>
+          </Row>
         </div>
       </Page>
     );
