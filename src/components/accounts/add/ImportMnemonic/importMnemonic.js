@@ -56,6 +56,7 @@ export class ImportMnemonic extends React.Component {
     } = this.props;
     return (
       <Page title="Import Mnemonic" leftIcon={ <Back onClick={onBack} /> }>
+        <div>
         <Row>
           <div style={ formStyles.left }/>
           <div style={ formStyles.right }>
@@ -162,6 +163,7 @@ export class ImportMnemonic extends React.Component {
             </div>
           </Row>
         )}
+        </div>
       </Page>
     );
   }
