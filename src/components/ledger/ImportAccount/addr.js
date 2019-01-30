@@ -22,7 +22,9 @@ const style = {
   },
 };
 
-const Addr = ({ addr, alreadyAdded, selectedValue, onSelected, ...otherProps }) => {
+const Addr = ({
+  addr, alreadyAdded, selectedValue, onSelected, ...otherProps
+}) => {
   let usedLabel;
   if (alreadyAdded) {
     usedLabel = 'Imported';
@@ -43,8 +45,8 @@ const Addr = ({ addr, alreadyAdded, selectedValue, onSelected, ...otherProps }) 
       <TableRowColumn style={tables.wideStyle}>
         <div style={ style.addrContainer }>
           <div>
-            { address &&
-                        <RadioButtonGroup name="addrRadio" valueSelected={ selectedValue } onChange={ onSelected }>
+            { address
+                        && <RadioButtonGroup name="addrRadio" valueSelected={ selectedValue } onChange={ onSelected }>
                           <RadioButton
                             disabled={ !selectable }
                             value={ address }
@@ -78,7 +80,7 @@ Addr.propTypes = {
 export default connect(
   (state, ownProps) => {
     const accounts = state.accounts.get('accounts');
-    const addr = ownProps.addr;
+    const { addr } = ownProps;
     let alreadyAdded = false;
     try {
       const addrId = (addr.get('address') || '---R').toLowerCase();

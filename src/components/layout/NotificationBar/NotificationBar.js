@@ -13,7 +13,7 @@ class NotificationBar extends React.Component {
     this.onActionClick = this.onActionClick.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
+  UNSAFE_componentWillReceiveProps(nextProps) { // eslint-disable-line
     if (nextProps.notificationMessage) {
       this.setState({ open: true });
     } else {

@@ -1,6 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Card, CardActions, CardHeader, CardText } from 'material-ui/Card';
+import {
+  Card, CardActions, CardHeader, CardText
+} from 'material-ui/Card';
 import FlatButton from 'material-ui/FlatButton';
 import Create from 'material-ui/svg-icons/content/create';
 import DeleteSweep from 'material-ui/svg-icons/content/delete-sweep';
@@ -62,7 +64,9 @@ class CardEdit extends React.Component {
   }
 }
 
-const Render = ({ address, editAddress, onDeleteAddress, expanded }) => {
+const Render = ({
+  address, editAddress, onDeleteAddress, expanded,
+}) => {
   return (
     <div>
       <Card style={cardSpace}>

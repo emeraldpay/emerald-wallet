@@ -1,6 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import thunkMiddleware from 'redux-thunk';
-import { createStore as createReduxStore, applyMiddleware, combineReducers } from 'redux';
+import {
+  createStore as createReduxStore,
+  applyMiddleware,
+  combineReducers
+} from 'redux';
 import { reducer as formReducer } from 'redux-form';
 import { ipcRenderer } from 'electron';
 import { startProtocolListener } from './protocol';
@@ -16,7 +20,12 @@ import tokens from './vault/tokens';
 import ledger from './ledger';
 import Addressbook from './vault/addressbook';
 
-import { readConfig, listenElectron, connecting, loadClientVersion } from './launcher/launcherActions';
+import {
+  readConfig,
+  listenElectron,
+  connecting,
+  loadClientVersion
+} from './launcher/launcherActions';
 import { showError } from './wallet/screen/screenActions';
 import launcherReducers from './launcher/launcherReducers';
 import walletReducers from './wallet/walletReducers';
@@ -26,7 +35,11 @@ import createLogger from '../utils/logger';
 import reduxLogger from '../utils/redux-logger';
 import reduxMiddleware from './middleware';
 
-import { onceServicesStart, onceAccountsLoaded, onceHasAccountsWithBalances } from './triggers';
+import {
+  onceServicesStart,
+  onceAccountsLoaded,
+  onceHasAccountsWithBalances
+} from './triggers';
 
 const log = createLogger('store');
 
@@ -40,7 +53,6 @@ const reducers = {
   form: formReducer,
   wallet: walletReducers,
 };
-
 
 /**
  * Creates Redux store with API as dependency injection.
@@ -78,9 +90,7 @@ function refreshAll() {
   const state = store.getState();
 
   if (state.launcher.getIn(['geth', 'type']) === 'local') {
-    promises = promises.concat([
-      store.dispatch(network.actions.loadSyncing()),
-    ]);
+    promises = promises.concat([store.dispatch(network.actions.loadSyncing())]);
   }
 
   // Main loop that will refresh UI as needed
@@ -107,7 +117,9 @@ export function startSync() {
   const chain = state.launcher.getIn(['chain', 'name']);
 
   if (chain === 'mainnet') {
-    promises.push(store.dispatch(ledger.actions.setBaseHD("m/44'/60'/160720'/0'")));
+    promises.push(
+      store.dispatch(ledger.actions.setBaseHD("m/44'/60'/160720'/0'"))
+    );
   } else if (chain === 'morden') {
     // FIXME ledger throws "Invalid status 6804" for 44'/62'/0'/0
     promises.push(store.dispatch(ledger.actions.setBaseHD("m/44'/61'/1'/0")));
@@ -115,9 +127,15 @@ export function startSync() {
 
   if (state.launcher.getIn(['geth', 'type']) !== 'remote') {
     // check for syncing
-    setTimeout(() => store.dispatch(network.actions.loadSyncing()), intervalRates.second); // prod: intervalRates.second
+    setTimeout(
+      () => store.dispatch(network.actions.loadSyncing()),
+      intervalRates.second
+    ); // prod: intervalRates.second
     // double check for syncing
-    setTimeout(() => store.dispatch(network.actions.loadSyncing()), 2 * intervalRates.minute); // prod: 30 * this.second
+    setTimeout(
+      () => store.dispatch(network.actions.loadSyncing()),
+      2 * intervalRates.minute
+    ); // prod: 30 * this.second
   }
 
   const chainId = state.launcher.getIn(['chain', 'id']);
@@ -134,9 +152,14 @@ export function startSync() {
 
   promises.push(
     refreshAll()
-      .then(() => store.dispatch(network.actions.loadAddressesTransactions(
-        store.getState().accounts.get('accounts').map((account) => account.get('id'))
-      )))
+      .then(() => store.dispatch(
+        network.actions.loadAddressesTransactions(
+          store
+            .getState()
+            .accounts.get('accounts')
+            .map((account) => account.get('id'))
+        )
+      ))
       .then(() => store.dispatch(connecting(false)))
       .catch((err) => {
         log.error('Failed to do initial sync', err);
@@ -199,7 +222,11 @@ export function screenHandlers() {
     const justOpened = prevScreen !== curScreen;
     prevScreen = curScreen;
     if (justOpened) {
-      if (curScreen === 'create-tx' || curScreen === 'add-from-ledger' || curScreen === 'landing-add-from-ledger') {
+      if (
+        curScreen === 'create-tx'
+        || curScreen === 'add-from-ledger'
+        || curScreen === 'landing-add-from-ledger'
+      ) {
         store.dispatch(ledger.actions.setWatch(true));
         store.dispatch(ledger.actions.watchConnection());
       } else {

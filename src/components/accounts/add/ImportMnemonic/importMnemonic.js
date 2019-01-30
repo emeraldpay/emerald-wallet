@@ -3,7 +3,9 @@ import React from 'react';
 import withStyles from 'react-jss';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
-import { Page, Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
+import {
+  Page, Button, Warning, WarningHeader, WarningText
+} from 'emerald-js-ui';
 import { Back } from 'emerald-js-ui/lib/icons3';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { required, passwordMatch, minLength } from 'lib/validators';
@@ -49,7 +51,9 @@ const HdPathFormField = (props) => {
 
 export class ImportMnemonic extends React.Component {
   render() {
-    const { onBack, invalid, handleSubmit, error, classes } = this.props;
+    const {
+      onBack, invalid, handleSubmit, error, classes,
+    } = this.props;
     return (
       <Page title="Import Mnemonic" leftIcon={ <Back onClick={onBack} /> }>
         <Row>

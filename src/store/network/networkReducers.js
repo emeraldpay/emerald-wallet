@@ -27,15 +27,11 @@ const initial = Immutable.fromJS({
 function onSyncing(state, action) {
   if (action.type === ActionTypes.SYNCING) {
     if (action.syncing) {
-      return state.update('sync', (sync) =>
-        sync.set('syncing', true)
-          .set('startingBlock', toNumber(action.status.startingBlock))
-          .set('currentBlock', toNumber(action.status.currentBlock))
-          .set('highestBlock', toNumber(action.status.highestBlock))
-      ).update('currentBlock', (b) =>
-        b.set('height', toNumber(action.status.currentBlock))
-          .set('hash', null)
-      );
+      return state.update('sync', (sync) => sync.set('syncing', true)
+        .set('startingBlock', toNumber(action.status.startingBlock))
+        .set('currentBlock', toNumber(action.status.currentBlock))
+        .set('highestBlock', toNumber(action.status.highestBlock))).update('currentBlock', (b) => b.set('height', toNumber(action.status.currentBlock))
+        .set('hash', null));
     }
     return state.setIn(['sync', 'syncing'], false);
   }
@@ -44,10 +40,8 @@ function onSyncing(state, action) {
 
 function onHeight(state, action) {
   if (action.type === ActionTypes.BLOCK) {
-    return state.update('currentBlock', (b) =>
-      b.set('height', toNumber(action.height))
-        .set('hash', null)
-    );
+    return state.update('currentBlock', (b) => b.set('height', toNumber(action.height))
+      .set('hash', null));
   }
   return state;
 }

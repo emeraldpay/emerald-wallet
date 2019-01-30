@@ -13,4 +13,3 @@ describe('About page', () => {
     const component = shallow(<About muiTheme={mockMuiTheme}/>);
   });
 });
-

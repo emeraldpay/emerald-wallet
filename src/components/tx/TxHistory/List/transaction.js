@@ -35,12 +35,11 @@ export default connect(
   },
   (dispatch, ownProps) => ({
     openTx: () => {
-      const tx = ownProps.tx;
+      const { tx } = ownProps;
       dispatch(screen.actions.gotoScreen('transaction', {
         hash: tx.get('hash'),
         accountId: ownProps.accountId,
-      })
-      );
+      }));
     },
     openAccount: (address: string) => {
       dispatch(wallet.actions.showAccountDetails(address));
@@ -51,4 +50,3 @@ export default connect(
     },
   })
 )(TxView);
-

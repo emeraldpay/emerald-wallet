@@ -25,9 +25,9 @@ export class Currency {
 
   static convert(value: string, rate: number, decimals: number = 2): string {
     const v = new BigNumber(value, 10);
-    const r = (rate === null || typeof rate === 'undefined') ?
-      new BigNumber(0) :
-      new BigNumber(rate.toString());
+    const r = (rate === null || typeof rate === 'undefined')
+      ? new BigNumber(0)
+      : new BigNumber(rate.toString());
     return v.mul(r).toFixed(decimals);
   }
 }

@@ -71,7 +71,9 @@ class DashboardMenu extends React.Component {
   }
 
   render() {
-    const { generate, importJson, importLedger, importPrivateKey, importMnemonic, createMnemonic, addressBook } = this.props;
+    const {
+      generate, importJson, importLedger, importPrivateKey, importMnemonic, createMnemonic, addressBook,
+    } = this.props;
     const { t, style, muiTheme } = this.props;
     return (
       <div style={ style }>

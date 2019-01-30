@@ -3,7 +3,9 @@ import withStyles from 'react-jss';
 import { required } from 'lib/validators';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
-import { Field, reduxForm, SubmissionError, change, formValueSelector } from 'redux-form';
+import {
+  Field, reduxForm, SubmissionError, change, formValueSelector
+} from 'redux-form';
 import { Button, Warning, WarningText } from 'emerald-js-ui';
 
 import TextField from 'elements/Form/TextField';
@@ -36,7 +38,9 @@ const validateConfirm = (value, allValues, props, name) => {
 
 export class ConfirmMnemonic extends React.Component {
   render() {
-    const { onBack, backLabel, invalid, handleSubmit, error, classes } = this.props;
+    const {
+      onBack, backLabel, invalid, handleSubmit, error, classes,
+    } = this.props;
     return (
       <Form caption="Confirm Mnemonic" backButton={ <DashboardButton onClick={ onBack } label={ backLabel }/> }>
         <Row>

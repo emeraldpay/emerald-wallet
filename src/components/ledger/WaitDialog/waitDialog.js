@@ -88,7 +88,7 @@ export const WaitConnectionDialog = ({ onCancel, classes }) => {
         <div>
           <IconButton
             style={ style.closeButton }
-            onTouchTap={ onCancel }
+            onClick={ onCancel }
             iconStyle={ style.closeIcon }
             tooltip="Close">
             <CloseIcon />

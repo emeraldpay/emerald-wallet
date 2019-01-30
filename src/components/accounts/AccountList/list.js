@@ -30,7 +30,9 @@ const cx = classNames.bind(styles2);
 const AccountList = translate('accounts')((props) => {
   log.trace('Rendering AccountList');
   const { accounts, showFiat, classes } = props;
-  const { openAccount, createTx, showReceiveDialog, muiTheme } = props;
+  const {
+    openAccount, createTx, showReceiveDialog, muiTheme,
+  } = props;
   return (
     <div className={ classes.container } >
       {accounts.map((account) => {
@@ -76,4 +78,3 @@ export default connect(
     },
   })
 )(muiThemeable()(StyledAccountList));
-

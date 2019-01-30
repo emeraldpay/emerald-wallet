@@ -8,7 +8,9 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Logo as LogoIcon } from 'emerald-js-ui/lib/icons';
 import InitialSetup from './initialSetup';
 
-const Render = ({ message, level, needSetup, muiTheme }) => {
+const Render = ({
+  message, level, needSetup, muiTheme,
+}) => {
   let messageBlock = null;
   if (message) {
     const messageStyle = {

@@ -37,7 +37,7 @@ export function loadAccountBalance(address: string) {
       });
     }).catch(dispatchRpcError(dispatch));
     // Tokens
-    const tokens = getState().tokens;
+    const { tokens } = getState();
     if (!tokens.get('loading')) {
       dispatch(loadTokensBalances([address]));
     }
@@ -55,7 +55,7 @@ function fetchBalances(addresses: Array<string>) {
         accountBalances: addresses.map((addr) => ({ accountId: addr, balance: balances[addr] })),
       });
 
-      const tokens = getState().tokens;
+      const { tokens } = getState();
       if (!tokens.get('loading')) {
         return dispatch(loadTokensBalances(addresses));
       }
@@ -195,27 +195,24 @@ function getNonce(api, address: string) {
 }
 
 function withNonce(tx: Transaction): (nonce: string) => Promise<Transaction> {
-  return (nonce) => new Promise((resolve, reject) =>
-    resolve(Object.assign({}, tx, { nonce: convert.toHex(nonce) }))
-  );
+  return (nonce) => new Promise((resolve, reject) => resolve(Object.assign({}, tx, { nonce: convert.toHex(nonce) })));
 }
 
 function verifySender(expected) {
-  return (raw: string) =>
-    new Promise((resolve, reject) => {
-      const tx = new EthereumTx(raw);
-      if (tx.verifySignature()) {
-        if (`0x${tx.getSenderAddress().toString('hex').toLowerCase()}` !== expected.toLowerCase()) {
-          log.error(`WRONG SENDER: 0x${tx.getSenderAddress().toString('hex')} != ${expected}`);
-          reject(new Error('Emerald Vault returned signature from wrong Sender'));
-        } else {
-          resolve(raw);
-        }
+  return (raw: string) => new Promise((resolve, reject) => {
+    const tx = new EthereumTx(raw);
+    if (tx.verifySignature()) {
+      if (`0x${tx.getSenderAddress().toString('hex').toLowerCase()}` !== expected.toLowerCase()) {
+        log.error(`WRONG SENDER: 0x${tx.getSenderAddress().toString('hex')} != ${expected}`);
+        reject(new Error('Emerald Vault returned signature from wrong Sender'));
       } else {
-        log.error(`Invalid signature: ${raw}`);
-        reject(new Error('Emerald Vault returned invalid signature for the transaction'));
+        resolve(raw);
       }
-    });
+    } else {
+      log.error(`Invalid signature: ${raw}`);
+      reject(new Error('Emerald Vault returned invalid signature for the transaction'));
+    }
+  });
 }
 
 function signTx(api, tx: Transaction, passphrase: string, chain: string) {
@@ -280,7 +277,7 @@ function readWalletFile(wallet) {
         data.filename = wallet.name;
         resolve(data);
       } catch (e) {
-        reject({error: e});
+        reject({error: e}); // eslint-disable-line
       }
     };
   });
@@ -343,40 +340,39 @@ export function importWallet(wallet, name: string, description: string) {
 }
 
 export function loadPendingTransactions() {
-  return (dispatch, getState, api) =>
-    api.geth.eth.getBlockByNumber('pending', true).then((result) => {
-      const addrs = getState().accounts.get('accounts').map((acc) => acc.get('id'));
-      const txes = result.transactions.filter(
-        (t) => addrs.includes(t.to) || addrs.includes(t.from)
-      ).map((tx) => {
-        if (tx.blockNumber) {
-          delete tx.blockNumber;
-        }
-        return tx;
-      });
-      if (txes.length === 0) { return; }
-
-      dispatch(history.actions.trackTxs(txes));
-
-      for (const tx of txes) {
-        const disp = {
-          type: ActionTypes.PENDING_BALANCE,
-          value: tx.value,
-          gas: tx.gas,
-          gasPrice: tx.gasPrice,
-          from: '',
-          to: '',
-        };
-        if (addrs.includes(tx.from)) {
-          disp.from = tx.from;
-          dispatch(disp);
-        }
-        if (addrs.includes(tx.to)) {
-          disp.to = tx.to;
-          dispatch(disp);
-        }
+  return (dispatch, getState, api) => api.geth.eth.getBlockByNumber('pending', true).then((result) => {
+    const addrs = getState().accounts.get('accounts').map((acc) => acc.get('id'));
+    const txes = result.transactions.filter(
+      (t) => addrs.includes(t.to) || addrs.includes(t.from)
+    ).map((tx) => {
+      if (tx.blockNumber) {
+        delete tx.blockNumber;
       }
+      return tx;
     });
+    if (txes.length === 0) { return; }
+
+    dispatch(history.actions.trackTxs(txes));
+
+    for (const tx of txes) {
+      const disp = {
+        type: ActionTypes.PENDING_BALANCE,
+        value: tx.value,
+        gas: tx.gas,
+        gasPrice: tx.gasPrice,
+        from: '',
+        to: '',
+      };
+      if (addrs.includes(tx.from)) {
+        disp.from = tx.from;
+        dispatch(disp);
+      }
+      if (addrs.includes(tx.to)) {
+        disp.to = tx.to;
+        dispatch(disp);
+      }
+    }
+  });
 }
 
 export function hideAccount(accountId: string) {

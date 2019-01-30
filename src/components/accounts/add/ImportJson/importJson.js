@@ -3,7 +3,9 @@ import { translate } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
-import { Button, Warning, WarningText, WarningHeader, Page } from 'emerald-js-ui';
+import {
+  Button, Warning, WarningText, WarningHeader, Page
+} from 'emerald-js-ui';
 import { Back } from 'emerald-js-ui/lib/icons3';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 
@@ -113,4 +115,3 @@ export default connect(
     },
   })
 )(translate('accounts')(muiThemeable()(ImportJson)));
-

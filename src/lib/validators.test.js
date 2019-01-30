@@ -1,4 +1,6 @@
-import { number, address, required, positive, hex, isJson, passwordMatch } from './validators';
+import {
+  number, address, required, positive, hex, isJson, passwordMatch
+} from './validators';
 
 describe('Field Validators', () => {
   it('valid required', () => {

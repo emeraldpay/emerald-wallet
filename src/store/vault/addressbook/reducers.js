@@ -13,9 +13,7 @@ const initialContact = Immutable.Map({
 });
 
 function addAddress(state, address) {
-  return state.update('addressBook', (addresses) =>
-    addresses.push(initialContact.merge(address))
-  );
+  return state.update('addressBook', (addresses) => addresses.push(initialContact.merge(address)));
 }
 
 function updateAddress(state, id, f) {
@@ -43,8 +41,7 @@ function onSetAddressBook(state, action) {
     case ActionTypes.SET_BOOK:
       return state
         .set('addressBook',
-          Immutable.fromJS(action.addressBook || [])
-        )
+          Immutable.fromJS(action.addressBook || []))
         .set('loading', false);
     default:
       return state;
@@ -64,13 +61,11 @@ function onAddAddress(state, action) {
 
 function onUpdateAddress(state, action) {
   if (action.type === ActionTypes.UPDATE_ADDRESS) {
-    return updateAddress(state, action.addressId, (addr) =>
-      addr.merge({
-        name: action.name,
-        id: action.addressId,
-        description: action.description,
-      })
-    );
+    return updateAddress(state, action.addressId, (addr) => addr.merge({
+      name: action.name,
+      id: action.addressId,
+      description: action.description,
+    }));
   }
   return state;
 }

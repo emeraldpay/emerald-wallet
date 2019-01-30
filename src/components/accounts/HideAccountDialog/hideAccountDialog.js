@@ -2,7 +2,9 @@ import React from 'react';
 import withStyles from 'react-jss';
 import { connect } from 'react-redux';
 import { Dialog } from 'material-ui';
-import { Button, Warning, WarningHeader, WarningText } from 'emerald-js-ui';
+import {
+  Button, Warning, WarningHeader, WarningText
+} from 'emerald-js-ui';
 
 import screen from '../../../store/wallet/screen';
 import accounts from '../../../store/vault/accounts';
@@ -20,7 +22,9 @@ export const styles2 = {
 
 export class HideAccountDialog extends React.Component {
   render() {
-    const { onClose, handleConfirmHide, chain, classes } = this.props;
+    const {
+      onClose, handleConfirmHide, chain, classes,
+    } = this.props;
 
     return (
       <Dialog modal={true} open={true} onRequestClose={ onClose } contentStyle={{maxWidth: '600px'}}>

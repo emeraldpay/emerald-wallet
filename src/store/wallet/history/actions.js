@@ -4,7 +4,7 @@ import type { Transaction } from './types';
 import ActionTypes from './actionTypes';
 import { storeTransactions, loadTransactions } from './historyStorage';
 import { allTrackedTxs } from './selectors';
-import { dispatchRpcError } from '../../wallet/screen/screenActions';
+import { dispatchRpcError } from '../screen/screenActions';
 
 const log = createLogger('historyActions');
 const txStoreKey = (chainId) => `chain-${chainId}-trackedTransactions`;
@@ -13,7 +13,8 @@ const currentChainId = (state) => state.wallet.history.get('chainId');
 function persistTransactions(state) {
   storeTransactions(
     txStoreKey(currentChainId(state)),
-    allTrackedTxs(state).toJS());
+    allTrackedTxs(state).toJS()
+  );
 }
 
 function loadPersistedTransactions(state): Array<Transaction> {

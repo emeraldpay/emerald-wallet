@@ -5,7 +5,9 @@ import { Button } from 'emerald-js-ui';
 
 import screen from 'store/wallet/screen';
 
-const ErrorDialog = ({ open, error, message, handleClose, handleSubmit }) => {
+const ErrorDialog = ({
+  open, error, message, handleClose, handleSubmit,
+}) => {
   const actions = [
     <Button
       key="submitButton"

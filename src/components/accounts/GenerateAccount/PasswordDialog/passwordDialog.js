@@ -1,7 +1,9 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
-import { Button, Warning, WarningHeader, WarningText, Page } from 'emerald-js-ui';
+import {
+  Button, Warning, WarningHeader, WarningText, Page
+} from 'emerald-js-ui';
 import { Field, reduxForm } from 'redux-form';
 import TextField from 'elements/Form/TextField';
 import { required } from 'lib/validators';
@@ -63,9 +65,9 @@ class PasswordDialog extends React.Component {
   }
 
   onPassphraseChange = (newValue) => {
-    const passphraseError = (newValue.length === 0 || newValue.length >= MIN_PASSWORD_LENGTH) ?
-      null :
-      this.state.passphraseError;
+    const passphraseError = (newValue.length === 0 || newValue.length >= MIN_PASSWORD_LENGTH)
+      ? null
+      : this.state.passphraseError;
 
     this.setState({
       passphrase: newValue,
@@ -78,6 +80,7 @@ class PasswordDialog extends React.Component {
       confirmPassword: val.currentTarget.value,
     });
   }
+
   passwordMatch(value) {
     const password = this.state.passphrase;
     const confirmPassword = value;
@@ -171,4 +174,3 @@ const passwordDialogForm = reduxForm({
 })(StyledPasswordDialog);
 
 export default passwordDialogForm;
-

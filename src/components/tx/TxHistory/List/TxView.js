@@ -39,7 +39,9 @@ const styles = {
 
 
 export const TxView = (props) => {
-  const { token, showFiat, tx, openTx, openAccount, toAccount, fromAccount, numConfirmations, currentBlockHeight, muiTheme } = props;
+  const {
+    token, showFiat, tx, openTx, openAccount, toAccount, fromAccount, numConfirmations, currentBlockHeight, muiTheme,
+  } = props;
   const { classes } = props;
   const blockNumber = tx.get('blockNumber');
   const confirmationBlockNumber = blockNumber + numConfirmations;
@@ -130,8 +132,8 @@ export const TxView = (props) => {
         <ArrowRightIcon style={{color: muiTheme.palette.secondaryTextColor}} />
       </TableRowColumn>
       <TableRowColumn style={{paddingLeft: '5px', ...styles.tablePadding}}>
-        {tx.get('to') &&
-        <AddressAvatar
+        {tx.get('to')
+        && <AddressAvatar
           addr={tx.get('to')}
           primary={toAccount.get('name')}
           onAddressClick={() => openAccount(tx.get('to'))}

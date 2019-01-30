@@ -2,12 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import { waitForServicesRestart } from '../../../../store/store';
 import NetworkSelector from './networkSelector';
 import launcher from '../../../../store/launcher';
 import wallet from '../../../../store/wallet';
 
-const Status = ({ block, progress, peerCount, showDetails, connecting, switchNetwork, chain, geth, muiTheme }) => {
+const Status = ({
+  block, progress, peerCount, showDetails, connecting, switchNetwork, chain, geth, muiTheme,
+}) => {
   const styles = {
     block: {
       marginLeft: '10px',
@@ -50,7 +51,7 @@ export default connect(
       const peerCount = state.network.get('peerCount');
       const progress = (curBlock / tip) * 100;
       return {
-        progress: isNaN(progress) || (!isFinite(progress)) ? 0 : progress,
+        progress: isNaN(progress) || (!isFinite(progress)) ? 0 : progress, // eslint-disable-line
         peerCount,
         ...props,
       };
@@ -61,7 +62,6 @@ export default connect(
     switchNetwork: (net) => {
       dispatch(launcher.actions.useRpc({ geth: net.geth, chain: net.chain }));
       dispatch(launcher.actions.saveSettings({ chain: net.chain, geth: net.geth }));
-      waitForServicesRestart();
       dispatch(wallet.actions.switchEndpoint({ chainId: net.chain.id, chain: net.chain.name }));
     },
   })

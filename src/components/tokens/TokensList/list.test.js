@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme';
 import React from 'react';
 import { fromJS } from 'immutable';
-import TokensList from './';
+import TokensList from '.';
 
 function createStore() {
   return {

@@ -27,4 +27,3 @@ export default muiThemeable()(connect(
     },
   })
 )(Header));
-

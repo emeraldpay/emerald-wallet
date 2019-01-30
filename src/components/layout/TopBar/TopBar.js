@@ -19,7 +19,9 @@ export const styles2 = {
  */
 export class TopBar extends React.Component {
   render() {
-    const { onAccounts, onNewContact, muiTheme, classes } = this.props;
+    const {
+      onAccounts, onNewContact, muiTheme, classes,
+    } = this.props;
     return (
       <div className={classes.container}>
         <div>
@@ -48,4 +50,3 @@ const mapDispatchToProps = (dispatch) => ({
 });
 
 export default muiThemeable()(connect(null, mapDispatchToProps)(StyledTopBar));
-

@@ -10,7 +10,9 @@ const titleStyle = {
   fontWeight: '400',
 };
 
-const Render = ({ handleSubmit, blockAddress, invalid, pristine, submitting, cancel, title }) => (
+const Render = ({
+  handleSubmit, blockAddress, invalid, pristine, submitting, cancel, title,
+}) => (
   <Form>
     <Row>
       <div style={formStyles.left}>

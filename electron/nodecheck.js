@@ -1,6 +1,8 @@
 require('es6-promise').polyfill();
 
-const { JsonRpc, HttpTransport, EthRpc, NodeChecker } = require('@emeraldplatform/emerald-js');
+const {
+  JsonRpc, HttpTransport, EthRpc, NodeChecker,
+} = require('@emeraldplatform/emerald-js');
 const log = require('./logger');
 
 

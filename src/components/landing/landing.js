@@ -5,7 +5,9 @@ import Divider from 'material-ui/Divider';
 import { Button } from 'emerald-js-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 
-const Landing = ({ onGenerate, onImportJson, onImportPrivateKey, onLedger, muiTheme }) => {
+const Landing = ({
+  onGenerate, onImportJson, onImportPrivateKey, onLedger, muiTheme,
+}) => {
   const styles = {
     addAccount: {
       color: muiTheme.palette.textColor,
@@ -27,7 +29,9 @@ const Landing = ({ onGenerate, onImportJson, onImportPrivateKey, onLedger, muiTh
         <div style={{flexGrow: 1}}>
           <Row style={{padding: 0, margin: 0}}>
             <Col style={{backgroundColor: muiTheme.palette.canvasColor, padding: 0}} xs={12}>
-              <div style={{display: 'flex', alignItems: 'center', marginLeft: '80px', marginTop: '60px'}}>
+              <div style={{
+                display: 'flex', alignItems: 'center', marginLeft: '80px', marginTop: '60px',
+              }}>
                 <div style={{fontWeight: '500', marginLeft: '80px', color: muiTheme.palette.primary1Color}}>WELCOME TO EMERALD WALLET</div>
               </div>
               <br />

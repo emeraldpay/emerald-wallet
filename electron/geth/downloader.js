@@ -1,7 +1,7 @@
 const os = require('os');
+const { Downloader, getPlatformConfig } = require('@emeraldplatform/emerald-js/lib/download');
 const log = require('../logger');
 const signers = require('./signers');
-const { Downloader, getPlatformConfig } = require('@emeraldplatform/emerald-js/lib/download');
 const { DefaultGeth } = require('./config');
 
 function newGethDownloader(notify, dir) {

@@ -2,15 +2,17 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { IconMenu, IconButton, MenuItem } from 'material-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import { Print as PrintIcon, Export as ExportIcon, ViewVisible as ViewVisibleIcon, ViewHidden as ViewHiddenIcon, MoreHorizontal as MoreHorizontalIcon } from 'emerald-js-ui/lib/icons3';
+import {
+  Print as PrintIcon, Export as ExportIcon, ViewVisible as ViewVisibleIcon, ViewHidden as ViewHiddenIcon, MoreHorizontal as MoreHorizontalIcon
+} from 'emerald-js-ui/lib/icons3';
 import { api } from 'lib/rpc/api';
 import saveAs from 'lib/saveAs';
 import screen from '../../../store/wallet/screen';
 import history from '../../../store/wallet/history';
 import accounts from '../../../store/vault/accounts';
 
-const hasBalance = (account) => (account.get('balance', null) === null) ||
-  (account.get('balance') && account.get('balance').value().gt(0));
+const hasBalance = (account) => (account.get('balance', null) === null)
+  || (account.get('balance') && account.get('balance').value().gt(0));
 
 const renderHide = (chain, account, onHide, { disabledColor }) => {
   const disabled = hasBalance(account);
@@ -35,7 +37,9 @@ const renderUnhide = (chain, account, onUnhide) => {
   );
 };
 
-export const SecondaryMenu = ({ account, onPrint, onExport, onHide, onUnhide, chain, muiTheme }) => {
+export const SecondaryMenu = ({
+  account, onPrint, onExport, onHide, onUnhide, chain, muiTheme,
+}) => {
   const colors = {
     textColor: muiTheme.palette.textColor,
     disabledColor: muiTheme.palette.disabledColor,
@@ -43,16 +47,16 @@ export const SecondaryMenu = ({ account, onPrint, onExport, onHide, onUnhide, ch
   const isHardware = account.get('hardware', false);
   return (
     <IconMenu useLayerForClickAway={true} iconButtonElement={<IconButton><MoreHorizontalIcon /></IconButton>}>
-      {!isHardware &&
-       <MenuItem
+      {!isHardware
+       && <MenuItem
          leftIcon={<ExportIcon />}
          primaryText='EXPORT'
-         onTouchTap={ onExport(chain) }/> }
-      {!isHardware &&
-       <MenuItem
+         onClick={ onExport(chain) }/> }
+      {!isHardware
+       && <MenuItem
          leftIcon={<PrintIcon />}
          primaryText='PRINT'
-         onTouchTap={ onPrint(chain) }/> }
+         onClick={ onPrint(chain) }/> }
 
       { !account.get('hidden') && renderHide(chain, account, onHide, colors) }
       { account.get('hidden') && renderUnhide(chain, account, onUnhide) }
@@ -101,4 +105,3 @@ export default connect(
     },
   })
 )(muiThemeable()(SecondaryMenu));
-

@@ -14,9 +14,9 @@ import AddToken from '../../components/tokens/AddToken/add';
 import LedgerImport from '../../components/ledger/ImportAccount';
 import ImportJson from '../../components/accounts/add/ImportJson';
 import ImportPrivateKey from '../../components/accounts/add/ImportPrivateKey';
-import ImportMnemonic from '../../containers/ImportMnemonic';
+import ImportMnemonic from '../ImportMnemonic';
 import Welcome from '../../components/welcome/welcome';
-import Landing from '../../containers/Landing';
+import Landing from '../Landing';
 import Dashboard from '../../components/layout/Dashboard';
 import Settings from '../../components/settings';
 import PaperWallet from '../PaperWallet';
@@ -34,25 +34,26 @@ const Screen = ({ screen, screenItem }) => {
     return (<div>
       <CircularProgress size={50} secondary/> Initializing...
     </div>);
-  } else if (screen === 'home') {
+  } if (screen === 'home') {
     return (<Dashboard />);
-  } else if (screen === 'address-book') {
+  } if (screen === 'address-book') {
     return <AddressBook />;
-  } else if (screen === 'address') {
+  } if (screen === 'address') {
     return <AddressShow address={ screenItem }/>;
-  } else if (screen === 'add-address') {
+  } if (screen === 'add-address') {
     return <AddressAdd />;
-  } else if (screen === 'landing-add-from-ledger') {
+  } if (screen === 'landing-add-from-ledger') {
     return <LedgerImport onBackScreen={screenItem} />;
-  } else if (screen === 'add-from-ledger') {
+  } if (screen === 'add-from-ledger') {
     return <LedgerImport />;
-  } else if (screen === 'account') {
+  } if (screen === 'account') {
     return <AccountShow account={ screenItem }/>;
-  } else if (screen === 'transaction') {
+  } if (screen === 'transaction') {
     return <TransactionShow hash={ screenItem.hash } accountId={ screenItem.accountId }/>;
-  } else if (screen === 'create-tx') {
+  } if (screen === 'create-tx') {
     return <MultiCreateTransaction account={ screenItem } />;
-  } else if (screen === 'repeat-tx') {
+  }
+  if (screen === 'repeat-tx') {
     const {transaction, toAccount, fromAccount} = screenItem;
     const amount = new Wei(transaction.get('amount')).getEther();
     const to = toAccount.get('id');
@@ -61,33 +62,47 @@ const Screen = ({ screen, screenItem }) => {
     const typedData = transaction.get('typedData');
     const mode = transaction.get('mode');
     return <MultiCreateTransaction account={ fromAccount } to={to} amount={amount} gasLimit={gasLimit} data={data} typedData={typedData} mode={mode}/>;
-  } else if (screen === 'landing-generate') {
+  }
+  if (screen === 'landing-generate') {
     return <GenerateAccount onBackScreen="landing" backLabel="Back"/>;
-  } else if (screen === 'generate') {
+  }
+  if (screen === 'generate') {
     return <GenerateAccount />;
-  } else if (screen === 'importjson') {
+  }
+  if (screen === 'importjson') {
     return <ImportJson />;
-  } else if (screen === 'landing-importjson') {
+  }
+  if (screen === 'landing-importjson') {
     return <ImportJson onBackScreen="landing" backLabel="Back"/>;
-  } else if (screen === 'import-private-key') {
+  }
+  if (screen === 'import-private-key') {
     return <ImportPrivateKey />;
-  } else if (screen === 'landing-import-private-key') {
+  }
+  if (screen === 'landing-import-private-key') {
     return <ImportPrivateKey onBackScreen="landing" />;
-  } else if (screen === 'import-mnemonic') {
+  }
+  if (screen === 'import-mnemonic') {
     return <ImportMnemonic />;
-  } else if (screen === 'new-mnemonic') {
+  }
+  if (screen === 'new-mnemonic') {
     return <MnemonicWizard />;
-  } else if (screen === 'add-token') {
+  }
+  if (screen === 'add-token') {
     return <AddToken />;
-  } else if (screen === 'landing') {
+  }
+  if (screen === 'landing') {
     return <Landing />;
-  } else if (screen === 'welcome') {
+  }
+  if (screen === 'welcome') {
     return <Welcome />;
-  } else if (screen === 'settings') {
+  }
+  if (screen === 'settings') {
     return <Settings />;
-  } else if (screen === 'paper-wallet') {
+  }
+  if (screen === 'paper-wallet') {
     return <PaperWallet address={ screenItem.address } privKey={ screenItem.privKey } />;
-  } else if (screen === 'export-paper-wallet') {
+  }
+  if (screen === 'export-paper-wallet') {
     return <ExportPaperWallet accountId={ screenItem } />;
   }
 

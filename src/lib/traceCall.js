@@ -121,7 +121,7 @@ export class ParityTracer implements ITracer {
         estGas = recurCheckBalance(result);
         estGas = estGas < 0 ? -1 : estGas + 5000;
       } else {
-        let stateDiff = (trace || {}).stateDiff;
+        let { stateDiff } = (trace || {});
         stateDiff = stateDiff && (stateDiff[dataObj.from.toLowerCase()] || {}).balance['*'];
         if (stateDiff) {
           const fromState = new BigNumber(stateDiff.from);
@@ -146,6 +146,7 @@ class ClassicGethTracer implements ITracer {
     constructor(tx: Transaction) {
       this.tx = tx;
     }
+
     buildRequest(): Call {
       const params = [{
         from: this.tx.from,
@@ -196,7 +197,7 @@ export function detect(ethRpc: EthRpc): Promise<any> {
             }
             throw err;
           });
-      } else if (error.code === -32602) {
+      } if (error.code === -32602) {
         // method found but wrong params, it's Ok
         // We still use eth_estimatedGas instead of trace_call
         return (tx) => new CommonCallTracer(tx);

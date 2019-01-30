@@ -69,8 +69,7 @@ const StyledToken = withStyles(styles2)(Token);
 const TokensList = ({ tokens, onDelete }) => {
   return (
     <div>
-      { tokens.map((token) =>
-        <StyledToken {...{onDelete}} key={ token.get('address') } {...{token}}/>)}
+      { tokens.map((token) => <StyledToken {...{onDelete}} key={ token.get('address') } {...{token}}/>)}
     </div>
   );
 };

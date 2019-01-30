@@ -8,7 +8,7 @@ const saveAs = (uri, filename) => {
     link.click();
     document.body.removeChild(link); // remove the link when done
   } else {
-    location.replace(uri);
+    location.replace(uri); // eslint-disable-line
   }
 };
 

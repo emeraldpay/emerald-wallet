@@ -1,7 +1,7 @@
 const log = require('electron-log');
 const fs = require('fs');
 const path = require('path');
-const app = require('electron').app; // eslint-disable-line import/no-extraneous-dependencies
+const app = require('electron').app; // eslint-disable-line
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';

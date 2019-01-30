@@ -8,13 +8,13 @@ import { dispatchRpcError } from '../wallet/screen/screenActions';
 const log = createLogger('ledgerActions');
 function connection(): Promise<any> {
   log.debug('getting a ledger connection');
-  const remote = global.require('electron').remote;
+  const { remote } = global.require('electron');
   return remote.getGlobal('ledger').connect();
 }
 
 export function closeConnection(): Promise<any> {
   log.debug('closing connection to ledger');
-  const remote = global.require('electron').remote;
+  const { remote } = global.require('electron');
   return remote.getGlobal('ledger').disconnect();
 }
 
@@ -173,7 +173,7 @@ function createAccountData(address: string, hdpath: string) {
 
 export function importSelected() {
   return (dispatch, getState, api) => {
-    const ledger = getState().ledger;
+    const { ledger } = getState();
     const selected = ledger.get('selectedAddr');
     const addresses = ledger.get('addresses');
     const chain = launcher.selectors.getChainName(getState());

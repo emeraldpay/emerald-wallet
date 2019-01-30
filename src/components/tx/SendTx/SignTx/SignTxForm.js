@@ -1,6 +1,8 @@
 import React from 'react';
 import { trimEnd } from 'lodash';
-import { Button, ButtonGroup, IdentityIcon, Input } from 'emerald-js-ui';
+import {
+  Button, ButtonGroup, IdentityIcon, Input
+} from 'emerald-js-ui';
 import { ArrowRight } from 'emerald-js-ui/lib/icons3';
 import { required } from 'lib/validators';
 import { Divider } from 'material-ui';
@@ -14,7 +16,9 @@ const HorizontalAddressWithIdentity = (props) => {
     return null;
   }
   return (
-    <div style={{display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center'}}>
+    <div style={{
+      display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center',
+    }}>
       <IdentityIcon size={60} id={props.accountId} />
       <div style={{paddingTop: '10px'}}>{props.accountId}</div>
     </div>
@@ -108,8 +112,12 @@ const getTypedDataOrDeploy = (props) => {
 };
 
 const SignTx = muiThemeable()((props) => {
-  const { value, fiatRate, fiatCurrency, txFee, tx } = props;
-  const { onCancel, onChangePassword, onSubmit, useLedger, typedData } = props;
+  const {
+    value, fiatRate, fiatCurrency, txFee, tx,
+  } = props;
+  const {
+    onCancel, onChangePassword, onSubmit, useLedger, typedData,
+  } = props;
 
   const onChange = (event, val) => {
     onChangePassword(val);
@@ -122,7 +130,9 @@ const SignTx = muiThemeable()((props) => {
     <div>
       <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '50px' }}>
         <HorizontalAddressWithIdentity accountId={tx.from} hide={hideAccounts}/>
-        <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <div style={{
+          display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'space-between',
+        }}>
           <div style={{ ...displayFlexCenter, flexDirection: 'column' }}>
             {/* <div>{USDValue} USD</div> */}
             <div style={{fontSize: '28px'}}>{tx.amount} {tx.token}</div>

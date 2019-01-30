@@ -25,6 +25,6 @@ describe('SignTxForm', () => {
 
      * component = shallow(<SignTxForm muiTheme={mockMuiTheme} tx={tx} fee={fee} />);
      * expect(component).toBeDefined();
-     * expect(component.findWhere((n) => n.text() === '100.012')).toHaveLength(1);*/
+     * expect(component.findWhere((n) => n.text() === '100.012')).toHaveLength(1); */
   });
 });

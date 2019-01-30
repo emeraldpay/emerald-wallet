@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { AddToken, styles2 } from './add';
-import ConnectedAddToken from './';
+import ConnectedAddToken from '.';
 
 const reduceClasses = (prev, curr) => Object.assign({}, prev, { [curr]: curr });
 const classes = Object.keys(styles2).reduce(reduceClasses, {});
@@ -21,4 +21,3 @@ describe('tokens/AddToken', () => {
     expect(component.props().onSubmit({token: {}})).toBeDefined();
   });
 });
-
