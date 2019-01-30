@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { PlayCircle } from 'emerald-js-ui/lib/icons3';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
@@ -28,11 +27,6 @@ const Render = ({ muiTheme, numberOfAccounts, nextPage }) => {
       </Col>
     </Row>
   );
-};
-
-
-Render.propTypes = {
-  save: PropTypes.func.isRequired,
 };
 
 const OpenWallet = connect(
