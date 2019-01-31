@@ -5,7 +5,7 @@ import Tokens from 'store/vault/tokens';
 import { fromJS } from 'immutable';
 import { Wei, convert } from '@emeraldplatform/emerald-js';
 import { etherToWei } from 'lib/convert';
-import { CreateTransaction, Page } from 'emerald-js-ui';
+import { Page } from 'emerald-js-ui';
 import { Back } from 'emerald-js-ui/lib/icons3';
 import { connect } from 'react-redux';
 import accounts from 'store/vault/accounts';
@@ -15,6 +15,7 @@ import ledger from 'store/ledger/';
 import { traceValidate } from '../../components/tx/SendTx/utils';
 import SignTxForm from '../../components/tx/SendTx/SignTx';
 import TransactionShow from '../../components/tx/TxDetails';
+import CreateTransaction from '../../components/tx/CreateTransaction';
 
 const { toHex } = convert;
 
