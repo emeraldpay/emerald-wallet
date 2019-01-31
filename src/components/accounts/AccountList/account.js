@@ -31,7 +31,6 @@ const styles2 = {
 
 export class Account extends React.Component {
     static propTypes = {
-      tokensBalances: PropTypes.object.isRequired,
       account: PropTypes.object.isRequired,
       openAccount: PropTypes.func.isRequired,
       createTx: PropTypes.func,

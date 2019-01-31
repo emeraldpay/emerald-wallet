@@ -40,6 +40,9 @@ export function loadPeerCount() {
 
 export function loadAddressesTransactions(addresses) {
   return (dispatch, getState, api) => {
+    if (getState().launcher.getIn(['geth', 'type']) === 'remote') {
+      return;
+    }
     const addressTransactionPromises = addresses.map((address) => {
       return api.geth.eth.getAddressTransactions(address, 0, 0, 'tf', 'sc', -1, -1, false);
     }).toJS();

@@ -32,7 +32,7 @@ const Screen = ({ screen, screenItem }) => {
 
   if (screen === null) {
     return (<div>
-      <CircularProgress size={50} secondary/> Initializing...
+      <CircularProgress size={50} /> Initializing...
     </div>);
   } if (screen === 'home') {
     return (<Dashboard />);

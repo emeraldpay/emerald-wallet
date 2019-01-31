@@ -44,55 +44,57 @@ const ShowPrivateDialog = (props) => {
 
   return (
     <Page title={ t('generate.title') } leftIcon={<Back onClick={onBack} />}>
-      <Row>
-        <div style={ formStyles.left }/>
-        <div style={ formStyles.right }>
-          <div>
-            <div className={ classes.title }>Print this</div>
-            <div className={ classes.subTitle }>
-              This is the unencrypted text version of your private key, meaning no password is necessary.
-              It helps if you forget your password.
+      <div>
+        <Row>
+          <div style={ formStyles.left }/>
+          <div style={ formStyles.right }>
+            <div>
+              <div className={ classes.title }>Print this</div>
+              <div className={ classes.subTitle }>
+                This is the unencrypted text version of your private key, meaning no password is necessary.
+                It helps if you forget your password.
+              </div>
             </div>
           </div>
-        </div>
-      </Row>
+        </Row>
 
-      <Row>
-        <div style={ formStyles.left }/>
-        <div style={ formStyles.right }>
-          <Warning>
-            <WarningHeader>Keep it in safety</WarningHeader>
-            <WarningText>
-              If someone gains access to your unencrypted private key, they will be able to access your account and funds without a password.
-            </WarningText>
-          </Warning>
-        </div>
-      </Row>
-
-      <Row>
-        <div style={ formStyles.left } />
-        <div style={ formStyles.right } className={ classes.privKeyColumn }>
-          <div>
-            <QRCode
-              size={ 100 }
-              value={ privateKey }
-            />
+        <Row>
+          <div style={ formStyles.left }/>
+          <div style={ formStyles.right }>
+            <Warning>
+              <WarningHeader>Keep it in safety</WarningHeader>
+              <WarningText>
+                If someone gains access to your unencrypted private key, they will be able to access your account and funds without a password.
+              </WarningText>
+            </Warning>
           </div>
-          <div className={ classes.privKeyContainer }>
-            <div className={ classes.keyTitle }>Unencrypted Private Key</div>
-            <div className={ classes.key }>
-              { privateKey }
+        </Row>
+
+        <Row>
+          <div style={ formStyles.left } />
+          <div style={ formStyles.right } className={ classes.privKeyColumn }>
+            <div>
+              <QRCode
+                size={ 100 }
+                value={ privateKey }
+              />
+            </div>
+            <div className={ classes.privKeyContainer }>
+              <div className={ classes.keyTitle }>Unencrypted Private Key</div>
+              <div className={ classes.key }>
+                { privateKey }
+              </div>
             </div>
           </div>
-        </div>
-      </Row>
+        </Row>
 
-      <Row>
-        <div style={ formStyles.left }/>
-        <div style={ formStyles.right }>
-          <Button primary onClick={ onNext } label="Next" />
-        </div>
-      </Row>
+        <Row>
+          <div style={ formStyles.left }/>
+          <div style={ formStyles.right }>
+            <Button primary onClick={ onNext } label="Next" />
+          </div>
+        </Row>
+      </div>
     </Page>
   );
 };

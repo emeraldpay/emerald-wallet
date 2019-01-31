@@ -67,7 +67,7 @@ const NodeTypeChoice = ({ useFullNode, useRemoteNode, classes }) => {
             </div>
             <div className={ classes.rectangleItem }>
               <Button
-                primary
+                primary={false}
                 label="Full Node"
                 onClick={ useFullNode }
               />
@@ -82,7 +82,7 @@ const NodeTypeChoice = ({ useFullNode, useRemoteNode, classes }) => {
               <Button
                 label="Remote Node"
                 onClick={ useRemoteNode }
-              />
+                primary={true}/>
             </div>
           </div>
         </div>

@@ -73,7 +73,7 @@ export class AccountShow extends React.Component {
     return (
       <Fragment>
         <Page title="Account" leftIcon={ <Back onClick={goBack} /> }>
-          <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{ display: 'flex', alignItems: 'center', paddingBottom: '20px' }}>
             <div style={{flexGrow: 2}}>
               <Row>
                 <div id="left-column" style={styles.left}>
@@ -157,8 +157,6 @@ export class AccountShow extends React.Component {
               <QRCode value={ account.get('id') } />
             </div>
           </div>
-
-          <div style={{paddingBottom: '20px'}} />
         </Page>
 
         <div className={ classes.transContainer }>

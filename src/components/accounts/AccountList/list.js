@@ -6,7 +6,6 @@ import Immutable from 'immutable';
 import { translate } from 'react-i18next';
 import classNames from 'classnames/bind';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import createLogger from '../../../utils/logger';
 
 import screen from '../../../store/wallet/screen';
 import launcher from '../../../store/launcher';
@@ -24,11 +23,9 @@ const styles2 = {
   },
 };
 
-const log = createLogger('AccountList');
 const cx = classNames.bind(styles2);
 
 const AccountList = translate('accounts')((props) => {
-  log.trace('Rendering AccountList');
   const { accounts, showFiat, classes } = props;
   const {
     openAccount, createTx, showReceiveDialog, muiTheme,
