@@ -18,7 +18,7 @@ const isProd = process.env.NODE_ENV === 'production';
 
 if (isDev) {
   log.warn('START IN DEVELOPMENT MODE');
-  app.setPath('userData', path.resolve('./.emerald-dev/userData'))
+  app.setPath('userData', path.resolve('./.emerald-dev/userData'));
 }
 
 const settings = new Settings();

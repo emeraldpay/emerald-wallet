@@ -112,9 +112,11 @@ class LocalConnector {
         } else {
           const options = [
             '-v',
-            isDev ? '--base-path='+path.resolve('./.emerald-dev/vault') : '',
-            'server',
           ];
+          if (isDev) {
+            options.push(`--base-path=${path.resolve('./.emerald-dev/vault')}`);
+          }
+          options.push('server');
           log.debug(`Emerald bin: ${bin}, args: ${options}`);
           this.proc = spawn(bin, options);
           resolve(this.proc);
