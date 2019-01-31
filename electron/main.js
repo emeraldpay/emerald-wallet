@@ -16,6 +16,11 @@ const assertSingletonWindow = require('./singletonWindow');
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
 
+if (isDev) {
+  log.warn('START IN DEVELOPMENT MODE');
+  app.setPath('userData', path.resolve('./.emerald-dev/userData'));
+}
+
 const settings = new Settings();
 
 global.ledger = new LedgerApi();

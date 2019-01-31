@@ -6,6 +6,8 @@ const os = require('os');
 const { checkExists } = require('../utils');
 const log = require('../logger');
 
+const isDev = process.env.NODE_ENV === 'development';
+
 class LocalConnector {
   // TODO: assert params
   constructor(bin, chain) {
@@ -110,8 +112,11 @@ class LocalConnector {
         } else {
           const options = [
             '-v',
-            'server',
           ];
+          if (isDev) {
+            options.push(`--base-path=${path.resolve('./.emerald-dev/vault')}`);
+          }
+          options.push('server');
           log.debug(`Emerald bin: ${bin}, args: ${options}`);
           this.proc = spawn(bin, options);
           resolve(this.proc);

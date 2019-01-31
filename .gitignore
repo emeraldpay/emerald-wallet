@@ -13,3 +13,4 @@ logs/
 coverage/
 flow-typed/
 package-lock.json
+.emerald-dev
