@@ -5,7 +5,7 @@ import theme from '../../newTheme';
 
 const Btn = (props) => {
   const {
-    primary, onClick, label, icon, href, variant,
+    primary, onClick, label, icon, href, variant, ...restProps
   } = props;
   const style = {
     fontSize: '15px',
@@ -23,7 +23,7 @@ const Btn = (props) => {
         variant={variant || 'contained'}
         style={style}
         onClick={onClick}
-        {...props}
+        {...restProps}
       >
         {icon}
         {label}

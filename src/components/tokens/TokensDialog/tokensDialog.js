@@ -5,7 +5,7 @@ import CloseButton from 'elements/CloseButton';
 import AddToken from '../AddToken';
 import TokensList from '../TokensList/list';
 
-const styles2 = {
+const styles = {
   header: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -20,8 +20,6 @@ const styles2 = {
   },
   closeButton: {
     float: 'right',
-    width: '15px',
-    height: '15px',
   },
   tokens: {
     marginTop: '5px',
@@ -59,4 +57,4 @@ export class TokensDialog extends React.Component {
   }
 }
 
-export default withStyles(styles2)(TokensDialog);
+export default withStyles(styles)(TokensDialog);

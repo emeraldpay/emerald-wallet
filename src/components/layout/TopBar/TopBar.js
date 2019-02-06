@@ -3,7 +3,7 @@ import withStyles from 'react-jss';
 import { connect } from 'react-redux';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import Button from 'elements/Button';
-import { Add as AddIcon } from 'emerald-js-ui/lib/icons3';
+import { Add as AddIcon } from '@emeraldplatform/ui-icons';
 import Screen from '../../../store/wallet/screen';
 
 export const styles2 = {
@@ -33,7 +33,7 @@ export class TopBar extends React.Component {
         <div>
           <Button
             label="NEW CONTACT"
-            icon={<AddIcon style={{color: muiTheme.palette.alternateTextColor}} />}
+            icon={<AddIcon />}
             onClick={onNewContact}
           />
         </div>

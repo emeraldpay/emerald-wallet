@@ -1,9 +1,8 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import QRCode from 'qrcode.react';
-import IconButton from 'material-ui/IconButton';
-import ActionPrint from 'material-ui/svg-icons/action/print';
-import ActionCancel from 'material-ui/svg-icons/navigation/cancel';
+import IconButton from '@material-ui/core/IconButton';
+import { Print, Close } from '@emeraldplatform/ui-icons';
 
 import { LogoIcon } from '../../../elements/Icons';
 
@@ -131,10 +130,10 @@ export const PaperWallet = (props) => {
       <div>{Wallet}</div>
       <div>
         <IconButton onClick={() => window.print()}>
-          <ActionPrint />
+          <Print />
         </IconButton>
         <IconButton onClick={ onCancel }>
-          <ActionCancel />
+          <Close />
         </IconButton>
       </div>
     </div>);
