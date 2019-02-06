@@ -3,9 +3,9 @@ import withStyles from 'react-jss';
 import { connect } from 'react-redux';
 import { Dialog } from 'material-ui';
 import {
-  Button, Warning, WarningHeader, WarningText
+  Warning, WarningHeader, WarningText
 } from 'emerald-js-ui';
-
+import Button from 'elements/Button';
 import screen from '../../../store/wallet/screen';
 import accounts from '../../../store/vault/accounts';
 import history from '../../../store/wallet/history';

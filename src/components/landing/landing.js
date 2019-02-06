@@ -1,9 +1,9 @@
 import React from 'react';
 import FlatButton from 'material-ui/FlatButton';
-import { Row, Col } from 'react-flexbox-grid/lib/index';
 import Divider from 'material-ui/Divider';
-import { Button } from 'emerald-js-ui';
+import Grid from '@material-ui/core/Grid';
 import muiThemeable from 'material-ui/styles/muiThemeable';
+import Button from '../../elements/Button';
 
 const Landing = ({
   onGenerate, onImportJson, onImportPrivateKey, onLedger, muiTheme,
@@ -27,8 +27,8 @@ const Landing = ({
     <div>
       <div style={{display: 'flex', alignItems: 'stretch'}}>
         <div style={{flexGrow: 1}}>
-          <Row style={{padding: 0, margin: 0}}>
-            <Col style={{backgroundColor: muiTheme.palette.canvasColor, padding: 0}} xs={12}>
+          <Grid container style={{padding: 0, margin: 0}}>
+            <Grid item style={{backgroundColor: muiTheme.palette.canvasColor, padding: 0}} xs={12}>
               <div style={{
                 display: 'flex', alignItems: 'center', marginLeft: '80px', marginTop: '60px',
               }}>
@@ -41,9 +41,7 @@ const Landing = ({
                 </span>
                 <br />
                 <br />
-                <a href="http://ethereumclassic.org" target="_blank" rel="noreferrer noopener">
-                  <Button label="More about ethereum classic" />
-                </a>
+                <Button href="http://ethereumclassic.org" target="_blank" rel="noreferrer noopener" label="More about ethereum classic" />
                 <br />
                 <br />
                 <Button primary onClick={onGenerate} label="Generate New Account" />
@@ -54,13 +52,13 @@ const Landing = ({
               <div style={{marginLeft: '145px', marginBottom: '70px'}}>
                 <div style={styles.addAccount}>Add Account</div>
                 <div style={styles.addAccountButtons}>
-                  <FlatButton primary onClick={onImportJson} label="From Keystore File (UTC/JSON)" />
-                  <FlatButton primary onClick={onImportPrivateKey} label="From Private key" />
-                  <FlatButton primary onClick={onLedger} label="Ledger Nano S" />
+                  <Button variant="text" primary onClick={onImportJson} label="From Keystore File (UTC/JSON)" />
+                  <Button variant="text" primary onClick={onImportPrivateKey} label="From Private key" />
+                  <Button variant="text" primary onClick={onLedger} label="Ledger Nano S" />
                 </div>
               </div>
-            </Col>
-          </Row>
+            </Grid>
+          </Grid>
         </div>
       </div>
     </div>

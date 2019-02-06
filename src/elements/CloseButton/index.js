@@ -1,1 +1,1 @@
-export { default } from './closeButton';
+export { default } from './CloseButton';

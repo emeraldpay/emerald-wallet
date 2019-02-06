@@ -6,7 +6,8 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import { translate } from 'react-i18next';
 
 import { TextField } from 'redux-form-material-ui';
-import { Button, Page } from 'emerald-js-ui';
+import { Page } from 'emerald-js-ui';
+import Button from 'elements/Button';
 // todo: make this 1 import
 import { styles, Row } from 'elements/Form';
 import SelectField from 'elements/Form/SelectField';
@@ -20,7 +21,7 @@ import accounts from '../../store/vault/accounts';
 
 import i18n from '../../i18n/i18n';
 
-export class Settings extends React.Component {
+class Settings extends React.Component {
   render() {
     const { goBack, handleSubmit, t } = this.props;
     return (
@@ -117,7 +118,11 @@ export class Settings extends React.Component {
           <Row>
             <div style={ styles.left } />
             <div style={ styles.right }>
-              <Button primary label="SAVE" onClick={ handleSubmit } />
+              <Button
+                primary={ true }
+                label="SAVE"
+                onClick={ handleSubmit }
+              />
             </div>
           </Row>
         </div>

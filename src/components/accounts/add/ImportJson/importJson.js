@@ -4,11 +4,11 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import {
-  Button, Warning, WarningText, WarningHeader, Page
+  Warning, WarningText, WarningHeader, Page
 } from 'emerald-js-ui';
 import { Back } from 'emerald-js-ui/lib/icons3';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-
+import Button from 'elements/Button';
 import screen from 'store/wallet/screen';
 import accountsModule from 'store/vault/accounts';
 import { Row, styles as formStyles } from 'elements/Form/index';

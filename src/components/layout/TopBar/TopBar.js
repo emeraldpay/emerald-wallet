@@ -2,7 +2,7 @@ import React from 'react';
 import withStyles from 'react-jss';
 import { connect } from 'react-redux';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import { Button } from 'emerald-js-ui';
+import Button from 'elements/Button';
 import { Add as AddIcon } from 'emerald-js-ui/lib/icons3';
 import Screen from '../../../store/wallet/screen';
 

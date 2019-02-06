@@ -6,8 +6,8 @@ import { connect } from 'react-redux';
 import {
   Field, reduxForm, SubmissionError, change, formValueSelector
 } from 'redux-form';
-import { Button, Warning, WarningText } from 'emerald-js-ui';
-
+import { Warning, WarningText } from 'emerald-js-ui';
+import Button from 'elements/Button';
 import TextField from 'elements/Form/TextField';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import DashboardButton from 'components/common/DashboardButton';

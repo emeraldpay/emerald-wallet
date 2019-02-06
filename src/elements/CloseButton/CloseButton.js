@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import { IconButton } from 'material-ui';
+import IconButton from '@material-ui/core/IconButton';
 import { Close as CloseIcon } from 'emerald-js-ui/lib/icons3';
 
 const smallIcon = {

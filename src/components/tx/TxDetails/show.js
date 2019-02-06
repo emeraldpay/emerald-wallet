@@ -6,14 +6,16 @@ import { Map } from 'immutable';
 import { connect } from 'react-redux';
 import { convert, Wei } from '@emeraldplatform/emerald-js';
 import {
-  Account, Button, ButtonGroup, Page
+  Account, ButtonGroup, Page
 } from 'emerald-js-ui';
+
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import launcher from 'store/launcher';
 import { Back } from 'emerald-js-ui/lib/icons3';
 import { gotoScreen } from '../../../store/wallet/screen/screenActions';
 import { toDate } from '../../../lib/convert';
-import { Form, styles, Row } from '../../../elements/Form';
+import { styles, Row } from '../../../elements/Form';
+import Button from '../../../elements/Button';
 import TxStatus from './status';
 import { Currency } from '../../../lib/currency';
 import createLogger from '../../../utils/logger';

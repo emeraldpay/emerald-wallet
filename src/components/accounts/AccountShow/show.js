@@ -3,13 +3,13 @@ import withStyles from 'react-jss';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import People from 'material-ui/svg-icons/social/people';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import QRCode from 'qrcode.react';
 import TokenUnits from 'lib/tokenUnits';
 import {
-  Button, IdentityIcon, Account as AddressAvatar, ButtonGroup, Page
+  IdentityIcon, Account as AddressAvatar, ButtonGroup, Page
 } from 'emerald-js-ui';
+import Button from 'elements/Button';
 import { styles, Row } from 'elements/Form';
 import { Back } from 'emerald-js-ui/lib/icons3';
 import accounts from '../../../store/vault/accounts';
@@ -102,7 +102,6 @@ export class AccountShow extends React.Component {
               <Row>
                 <div style={styles.left}>
                   <div style={styles.fieldName}>
-                    <People />
                   </div>
                 </div>
                 <div style={ styles.right }>

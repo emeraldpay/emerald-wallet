@@ -1,6 +1,6 @@
 import React from 'react';
 import withStyles from 'react-jss';
-import FlatButton from 'material-ui/FlatButton';
+import Button from '@material-ui/core/Button';
 import { Back as BackIcon } from 'emerald-js-ui/lib/icons3';
 
 export const styles = {
@@ -20,14 +20,14 @@ export const styles = {
 export const DashboardButton = (props) => {
   const { onClick, label, classes } = props;
   return (
-    <FlatButton onClick={ onClick } >
+    <Button onClick={ onClick } >
       <div className={ classes.button }>
         <div className={ classes.iconContainer }>
           <BackIcon />
         </div>
         <div>{ label || 'Dashboard' }</div>
       </div>
-    </FlatButton>
+    </Button>
   );
 };
 

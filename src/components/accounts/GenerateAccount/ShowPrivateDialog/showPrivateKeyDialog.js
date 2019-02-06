@@ -2,8 +2,9 @@ import React from 'react';
 import withStyles from 'react-jss';
 import QRCode from 'qrcode.react';
 import {
-  Button, Warning, WarningHeader, WarningText, Page
+  Warning, WarningHeader, WarningText, Page
 } from 'emerald-js-ui';
+import Button from 'elements/Button';
 import { Row, styles as formStyles } from 'elements/Form';
 import { Back } from 'emerald-js-ui/lib/icons3';
 

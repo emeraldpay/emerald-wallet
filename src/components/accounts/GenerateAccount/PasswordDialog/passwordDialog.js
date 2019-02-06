@@ -2,9 +2,10 @@ import React from 'react';
 import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import {
-  Button, Warning, WarningHeader, WarningText, Page
+  Warning, WarningHeader, WarningText, Page
 } from 'emerald-js-ui';
 import { Field, reduxForm } from 'redux-form';
+import Button from 'elements/Button';
 import TextField from 'elements/Form/TextField';
 import { required } from 'lib/validators';
 import { Row, styles as formStyles } from 'elements/Form';

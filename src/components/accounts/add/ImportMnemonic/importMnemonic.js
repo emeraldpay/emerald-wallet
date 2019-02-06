@@ -4,14 +4,14 @@ import withStyles from 'react-jss';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import {
-  Page, Button, Warning, WarningHeader, WarningText
+  Page, Warning, WarningHeader, WarningText
 } from 'emerald-js-ui';
 import { Back } from 'emerald-js-ui/lib/icons3';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { required, passwordMatch, minLength } from 'lib/validators';
 import { Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
-
+import Button from 'elements/Button';
 import screen from 'store/wallet/screen';
 import HdPath from 'components/common/HdPath';
 

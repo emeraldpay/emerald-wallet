@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Dialog from 'material-ui/Dialog';
-import { Button } from 'emerald-js-ui';
+import Button from 'elements/Button';
 
 import screen from 'store/wallet/screen';
 

@@ -1,10 +1,10 @@
 import React from 'react';
-import { trimEnd } from 'lodash';
 import {
-  Button, ButtonGroup, IdentityIcon, Input
+  ButtonGroup, IdentityIcon, Input
 } from 'emerald-js-ui';
 import { ArrowRight } from 'emerald-js-ui/lib/icons3';
 import { required } from 'lib/validators';
+import Button from 'elements/Button';
 import { Divider } from 'material-ui';
 import { List, ListItem } from 'material-ui/List';
 import muiThemeable from 'material-ui/styles/muiThemeable';

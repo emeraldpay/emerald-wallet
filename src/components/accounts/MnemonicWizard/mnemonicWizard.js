@@ -95,8 +95,8 @@ class MnemonicWizard extends React.Component {
 
 
   render() {
-    const { gotoDashboard, muiTheme } = this.props;
-    const { page, mnemonic, formData } = this.state;
+    const { muiTheme } = this.props;
+    const { page } = this.state;
     if (!page) { return null; }
     return (
       <div style={{border: `1px solid ${muiTheme.palette.borderColor}`}} >

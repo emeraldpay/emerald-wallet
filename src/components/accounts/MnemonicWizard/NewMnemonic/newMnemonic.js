@@ -1,10 +1,12 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  Button, Warning, WarningHeader, WarningText, Input
+  Warning, WarningHeader, WarningText, Input
 } from 'emerald-js-ui';
+
 import DashboardButton from 'components/common/DashboardButton';
 import { Form, Row, styles as formStyles } from 'elements/Form';
+import Button from 'elements/Button';
 
 export class NewMnemonic extends React.Component {
   static propTypes = {

@@ -4,8 +4,9 @@ import PropTypes from 'prop-types';
 import { CardText } from 'material-ui/Card';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import {
-  Button, IdentityIcon, Account as AddressAvatar, ButtonGroup, Card
+  Account as AddressAvatar, ButtonGroup, Card
 } from 'emerald-js-ui';
+import Button from 'elements/Button';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../Balance';

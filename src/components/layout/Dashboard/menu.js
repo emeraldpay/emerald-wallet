@@ -1,6 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { FlatButton, Popover } from 'material-ui';
+import Button from '@material-ui/core/Button';
+import { withStyles } from '@material-ui/core/styles';
+import { Popover } from 'material-ui';
 import { List, ListItem } from 'material-ui/List';
 import {
   Ledger as LedgerIcon,
@@ -22,6 +24,12 @@ const styles = {
   },
   addIcon: {
     marginBottom: '2px',
+  },
+};
+
+const styles2 = {
+  buttonText: {
+    paddingRight: 0,
   },
 };
 
@@ -74,17 +82,21 @@ class DashboardMenu extends React.Component {
     const {
       generate, importJson, importLedger, importPrivateKey, importMnemonic, createMnemonic, addressBook,
     } = this.props;
-    const { t, style, muiTheme } = this.props;
+    const {
+      t, style, muiTheme, classes,
+    } = this.props;
     return (
       <div style={ style }>
-        <FlatButton
+        <Button
           onClick={ this.openMenu }
           label={ t('list.popupMenuLabel') }
-          labelStyle={ styles.buttonLabel }
+          classes={{text: classes.buttonText}}
           style={{color: muiTheme.palette.primary1Color}}
           hoverColor="transparent"
-          icon={<AddIcon style={{color: muiTheme.palette.secondaryTextColor, ...styles.addIcon}} />}
-        />
+        >
+          <AddIcon style={{color: muiTheme.palette.secondaryTextColor, ...styles.addIcon}} />
+          { t('list.popupMenuLabel') }
+        </Button>
         <Popover
           open={this.state.open}
           anchorEl={this.state.anchorEl}
@@ -149,4 +161,4 @@ class DashboardMenu extends React.Component {
   }
 }
 
-export default muiThemeable()(DashboardMenu);
+export default withStyles(styles2)(muiThemeable()(DashboardMenu));

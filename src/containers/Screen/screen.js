@@ -6,7 +6,7 @@ import { Wei } from '@emeraldplatform/emerald-js';
 import createLogger from '../../utils/logger';
 import AddressBook from '../../components/addressbook/ContactList';
 import AccountShow from '../../components/accounts/AccountShow';
-import AddressShow from '../../components/addressbook/show';
+import AddressShow from '../../components/addressbook/AddressShow';
 import AddressAdd from '../../components/addressbook/AddContact';
 import TransactionShow from '../../components/tx/TxDetails';
 import MnemonicWizard from '../../components/accounts/MnemonicWizard';

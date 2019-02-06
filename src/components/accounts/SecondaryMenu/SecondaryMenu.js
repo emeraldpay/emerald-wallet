@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { IconMenu, IconButton, MenuItem } from 'material-ui';
+import { IconMenu, MenuItem } from 'material-ui';
+import IconButton from '@material-ui/core/IconButton';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import {
   Print as PrintIcon, Export as ExportIcon, ViewVisible as ViewVisibleIcon, ViewHidden as ViewHiddenIcon, MoreHorizontal as MoreHorizontalIcon
