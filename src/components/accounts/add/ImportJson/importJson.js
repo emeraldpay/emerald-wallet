@@ -4,9 +4,10 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import {
-  Warning, WarningText, WarningHeader, Page
+  Warning, WarningText, WarningHeader
 } from 'emerald-js-ui';
-import { Back } from 'emerald-js-ui/lib/icons3';
+import { Page } from '@emeraldplatform/ui';
+import { Back } from '@emeraldplatform/ui-icons';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import Button from 'elements/Button';
 import screen from 'store/wallet/screen';

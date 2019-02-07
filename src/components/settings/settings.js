@@ -6,15 +6,13 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import { translate } from 'react-i18next';
 
 import { TextField } from 'redux-form-material-ui';
-import { Page } from 'emerald-js-ui';
+import { Page } from '@emeraldplatform/ui';
+import { Back } from '@emeraldplatform/ui-icons';
 import Button from 'elements/Button';
 // todo: make this 1 import
 import { styles, Row } from 'elements/Form';
 import SelectField from 'elements/Form/SelectField';
 import Checkbox from 'elements/Form/Checkbox';
-
-import { Back } from 'emerald-js-ui/lib/icons3';
-
 import screen from '../../store/wallet/screen';
 import settings from '../../store/wallet/settings';
 import accounts from '../../store/vault/accounts';

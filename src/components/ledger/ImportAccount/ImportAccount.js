@@ -2,11 +2,12 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import { Button, ButtonGroup } from 'emerald-js-ui';
-import { AddCircle as AddIcon } from 'emerald-js-ui/lib/icons3';
+import { ButtonGroup } from 'emerald-js-ui';
+import { AddCircle as AddIcon } from '@emeraldplatform/ui-icons';
 import DashboardButton from 'components/common/DashboardButton';
 import HDPath from 'components/common/HdPath';
 import { Form, Row, styles as formStyles } from 'elements/Form';
+import Button from 'elements/Button';
 import AddrList from './addrlist';
 import Pager from './pager';
 

@@ -1,8 +1,9 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import {
-  Warning, WarningHeader, WarningText, Page
+  Warning, WarningHeader, WarningText
 } from 'emerald-js-ui';
+import { Page } from '@emeraldplatform/ui';
 import Button from 'elements/Button';
 import { Row, styles as formStyles } from 'elements/Form';
 import { Back } from 'emerald-js-ui/lib/icons3';

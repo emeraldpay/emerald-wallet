@@ -3,8 +3,8 @@ import PropTypes from 'prop-types';
 import {
   Warning, WarningHeader, WarningText, Input
 } from 'emerald-js-ui';
-
-import DashboardButton from 'components/common/DashboardButton';
+import { Page } from '@emeraldplatform/ui';
+import { Back } from '@emeraldplatform/ui-icons';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import Button from 'elements/Button';
 
@@ -21,7 +21,7 @@ export class NewMnemonic extends React.Component {
       onBack, mnemonic, onGenerate, onContinue,
     } = this.props;
     return (
-      <Form caption="New Mnemonic account" backButton={ <DashboardButton onClick={ onBack }/> }>
+      <Page title="New Mnemonic account" leftIcon={ <Back onClick={ onBack }/> }>
         <Row>
           <div style={formStyles.left}/>
           <div style={formStyles.right}>
@@ -61,7 +61,7 @@ export class NewMnemonic extends React.Component {
           </div>
         </Row>
         { this.state && this.state.error }
-      </Form>
+      </Page>
     );
   }
 }

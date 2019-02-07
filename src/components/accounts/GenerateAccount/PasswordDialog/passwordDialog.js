@@ -2,10 +2,10 @@ import React from 'react';
 import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import {
-  Warning, WarningHeader, WarningText, Page
+  Warning, WarningHeader, WarningText
 } from 'emerald-js-ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import IconButton from '@material-ui/core/IconButton';
+import { Page } from '@emeraldplatform/ui';
 import { Field, reduxForm } from 'redux-form';
 import Button from 'elements/Button';
 import TextField from 'elements/Form/TextField';
@@ -94,7 +94,7 @@ class PasswordDialog extends React.Component {
     const { passphraseError } = this.state;
 
     return (
-      <Page title={ t('generate.title') } leftIcon={<IconButton><Back onClick={onDashboard} /></IconButton>}>
+      <Page title={ t('generate.title') } leftIcon={<Back onClick={onDashboard} />}>
         <div>
           <Row>
             <div style={ formStyles.left }/>

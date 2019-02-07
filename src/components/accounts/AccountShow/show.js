@@ -7,11 +7,12 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import QRCode from 'qrcode.react';
 import TokenUnits from 'lib/tokenUnits';
 import {
-  IdentityIcon, Account as AddressAvatar, ButtonGroup, Page
+  IdentityIcon, Account as AddressAvatar, ButtonGroup
 } from 'emerald-js-ui';
 import Button from 'elements/Button';
 import { styles, Row } from 'elements/Form';
-import { Back } from 'emerald-js-ui/lib/icons3';
+import { Back } from '@emeraldplatform/ui-icons';
+import { Page } from '@emeraldplatform/ui';
 import accounts from '../../../store/vault/accounts';
 import tokens from '../../../store/vault/tokens';
 import screen from '../../../store/wallet/screen';

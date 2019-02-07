@@ -74,7 +74,6 @@ class MnemonicWizard extends React.Component {
             mnemonic={ mnemonic }
             onContinue={ this.gotoConfirm }
             onBack={ this.gotoGenerate }
-            backLabel="Back"
           />
         );
 
@@ -85,7 +84,6 @@ class MnemonicWizard extends React.Component {
             onContinue={ this.gotoConfirm }
             onBack={ this.gotoImport }
             formData={ formData }
-            backLabel="Back"
           />
         );
 

@@ -1,8 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  ButtonGroup, Input, Page
+  ButtonGroup, Input
 } from 'emerald-js-ui';
+import { Page } from '@emeraldplatform/ui';
 import { Row, styles as formStyles } from '../../../../elements/Form';
 import Button from '../../../../elements/Button';
 

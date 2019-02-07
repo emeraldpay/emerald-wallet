@@ -2,10 +2,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { withStyles } from '@material-ui/core';
 import { Wei } from '@emeraldplatform/emerald-js';
-import { EtcSimple } from 'emerald-js-ui/lib/icons3';
-import { FlatButton } from 'material-ui';
-import muiThemeable from 'material-ui/styles/muiThemeable';
+import { EtcSimple } from '@emeraldplatform/ui-icons';
+import Button from '../../../../elements/Button';
 import Accounts from '../../../../store/vault/accounts';
 import WalletSettings from '../../../../store/wallet/settings';
 import { Currency } from '../../../../lib/currency';
@@ -17,24 +17,32 @@ type Props = {
   fiatCurrency?: string,
 };
 
+const styles = {
+  text: {
+    textTransform: 'none',
+    fontWeight: 'normal',
+    fontSize: '16px',
+  },
+  root: {
+    lineHeight: 'inherit',
+  },
+};
+
 const Total = ({
-  total, showFiat, fiatAmount, fiatCurrency, muiTheme,
+  total, showFiat, fiatAmount, fiatCurrency, classes,
 }: Props) => {
   let totalFormatted = `${total} ETC`;
   if (showFiat && fiatAmount) {
     totalFormatted = `${totalFormatted} - ${fiatAmount} ${fiatCurrency}`;
   }
   return (
-    <FlatButton
+    <Button
+      color="secondary"
+      variant="text"
       disabled={true}
       label={totalFormatted}
-      style={{color: muiTheme.palette.secondaryTextColor, lineHeight: 'inherit'}}
-      labelStyle={{
-        textTransform: 'none',
-        fontWeight: 'normal',
-        fontSize: '16px',
-      }}
-      icon={<EtcSimple style={{color: muiTheme.palette.secondaryTextColor}}/>}
+      classes={classes}
+      icon={<EtcSimple />}
     />
   );
 };
@@ -43,6 +51,8 @@ Total.propTypes = {
   showFiat: PropTypes.bool,
   total: PropTypes.string.isRequired,
 };
+
+const StyledTotal = withStyles(styles)(Total);
 
 export default connect(
   (state, ownProps) => {
@@ -62,4 +72,4 @@ export default connect(
     };
   },
   (dispatch, ownProps) => ({})
-)(muiThemeable()(Total));
+)(StyledTotal);

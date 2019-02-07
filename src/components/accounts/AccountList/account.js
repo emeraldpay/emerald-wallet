@@ -1,8 +1,8 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
+import Grid from '@material-ui/core/Grid';
 import { CardText } from 'material-ui/Card';
-import { Row, Col } from 'react-flexbox-grid/lib/index';
 import {
   Account as AddressAvatar, ButtonGroup, Card
 } from 'emerald-js-ui';
@@ -62,8 +62,8 @@ export class Account extends React.Component {
       return (
         <Card>
           <CardText>
-            <Row>
-              <Col xs={5}>
+            <Grid container>
+              <Grid item xs={5}>
                 <AddressAvatar
                   identity
                   addr={ account.get('id') }
@@ -71,8 +71,8 @@ export class Account extends React.Component {
                   primary={ account.get('name') }
                   onAddressClick={ this.onAddressClick }
                 />
-              </Col>
-              <Col xs={3}>
+              </Grid>
+              <Grid item xs={3}>
                 <div className={ classes.identityIconContainer }>
                   <div style={{marginLeft: '10px'}}>
                     {balance && <AccountBalance
@@ -84,8 +84,8 @@ export class Account extends React.Component {
                     {!balance && 'loading...'}
                   </div>
                 </div>
-              </Col>
-              <Col xs={4}>
+              </Grid>
+              <Grid item xs={4}>
                 <div className={ classes.actionsContainer }>
                   <ButtonGroup>
                     <SecondaryMenu account={account} />
@@ -100,8 +100,8 @@ export class Account extends React.Component {
                     />
                   </ButtonGroup>
                 </div>
-              </Col>
-            </Row>
+              </Grid>
+            </Grid>
           </CardText>
         </Card>);
     }
