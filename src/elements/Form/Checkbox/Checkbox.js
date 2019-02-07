@@ -1,6 +1,7 @@
 // @flow
 import React from 'react';
-import { Checkbox as IntCheckbox} from 'emerald-js-ui';
+// TODO: fix it to import from root of package
+import IntCheckbox from '@emeraldplatform/ui/lib/components/Checkbox';
 
 /**
  * Wrapper for redux-form Field

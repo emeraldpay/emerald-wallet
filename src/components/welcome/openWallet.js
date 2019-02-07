@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { PlayCircle } from 'emerald-js-ui/lib/icons3';
+import { PlayCircle } from '@emeraldplatform/ui-icons';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import Button from '../../elements/Button';
 import screen from '../../store/wallet/screen';
 
-const Render = ({ muiTheme, numberOfAccounts, nextPage }) => {
+const Render = ({ numberOfAccounts, nextPage }) => {
   return (
     <Row>
       <Col xs={12}>
@@ -21,9 +21,9 @@ const Render = ({ muiTheme, numberOfAccounts, nextPage }) => {
       </Col>
       <Col xs={12}>
         <Button
+          primary
           label="Open Wallet"
-          icon={<PlayCircle style={{color: muiTheme.palette.alternateTextColor}}/>}
-          style={{backgroundColor: muiTheme.palette.primary1Color, color: muiTheme.palette.alternateTextColor}}
+          icon={<PlayCircle />}
           onClick={() => nextPage(numberOfAccounts)}
         />
       </Col>

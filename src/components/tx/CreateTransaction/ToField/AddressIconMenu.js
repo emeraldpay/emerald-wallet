@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { IconMenu, MenuItem } from 'material-ui';
-import { Book } from 'emerald-js-ui/lib/icons3';
+import { Book } from '@emeraldplatform/ui-icons';
 import AddressIconMenuItem from './AddressIconMenuItem';
 
 class AddressIconMenu extends React.Component {

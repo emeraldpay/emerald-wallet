@@ -1,10 +1,12 @@
 import React from 'react';
-import { AppBar, FlatButton, LinearProgress } from 'material-ui';
-import { Block as BlockIcon, Settings as SettingsIcon } from 'emerald-js-ui/lib/icons3';
+import { AppBar, LinearProgress } from 'material-ui';
+import { withStyles } from '@material-ui/core';
+import { Block as BlockIcon, Settings as SettingsIcon } from '@emeraldplatform/ui-icons';
 import SyncWarning from '../../../containers/SyncWarning';
 import Status from './Status';
 import Total from './Total';
 import { separateThousands } from '../../../lib/convert';
+import Button from '../../../elements/Button';
 
 const styles = {
   appBarRight: {
@@ -52,32 +54,48 @@ const Header = (props) => {
     );
   };
 
-  const BlockDisplay = () => {
+  const blockDisplayStyles = {
+    text: {
+      textTransform: 'none',
+      fontWeight: 'normal',
+      fontSize: '16px',
+    },
+  };
+
+  const BlockDisplay = ({classes}) => {
     const displayProgress = parseInt(100 - progress, 10);
     const label = showProgress ? `${separateThousands(tip - network.currentBlock.height)} blocks left (${displayProgress}%)` : separateThousands(network.currentBlock.height, ' ');
     return (
       <div style={{marginTop: showProgress ? '7px' : null}}>
-        <FlatButton
+        <Button
+          variant="text"
+          color="secondary"
           disabled={true}
           label={label}
-          style={{color: muiTheme.palette.secondaryTextColor, lineHeight: 'inherit'}}
-          labelStyle={styles.buttons.label}
-          icon={<BlockIcon style={{color: muiTheme.palette.secondaryTextColor}}/>}
+          classes={{
+            text: classes.text,
+          }}
+          icon={<BlockIcon />}
         />
         {showProgressBar(showProgress)}
       </div>
     );
   };
 
-  const SettingsButton = () => (
-    <FlatButton
-      hoverColor="transparent"
+  const StyledBlockDisplay = withStyles(blockDisplayStyles)(BlockDisplay);
+
+  const SettingsButton = ({classes}) => (
+    <Button
+      variant="text"
       onClick={ openSettings }
-      style={{color: muiTheme.palette.secondaryTextColor}}
       label="Settings"
-      labelStyle={styles.buttons.label}
-      icon={<SettingsIcon style={{color: muiTheme.palette.secondaryTextColor}}/>}
+      classes={{
+        text: classes.text,
+      }}
+      icon={<SettingsIcon />}
     />);
+
+  const StyledSettingsButton = withStyles(blockDisplayStyles)(SettingsButton);
 
   return (
     <div>
@@ -91,9 +109,9 @@ const Header = (props) => {
         iconElementRight={
           <div style={styles.appBarRight}>
             <Total showFiat={showFiat} />
-            <BlockDisplay />
+            <StyledBlockDisplay />
             <Status />
-            <SettingsButton />
+            <StyledSettingsButton />
           </div>
         }
       />

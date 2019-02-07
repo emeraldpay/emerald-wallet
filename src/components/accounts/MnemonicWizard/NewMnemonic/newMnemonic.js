@@ -5,7 +5,7 @@ import {
 } from 'emerald-js-ui';
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import { Form, Row, styles as formStyles } from 'elements/Form';
+import { Row, styles as formStyles } from 'elements/Form';
 import Button from 'elements/Button';
 
 export class NewMnemonic extends React.Component {

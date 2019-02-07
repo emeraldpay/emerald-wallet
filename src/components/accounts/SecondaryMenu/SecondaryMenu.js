@@ -5,7 +5,7 @@ import IconButton from '@material-ui/core/IconButton';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import {
   Print as PrintIcon, Export as ExportIcon, ViewVisible as ViewVisibleIcon, ViewHidden as ViewHiddenIcon, MoreHorizontal as MoreHorizontalIcon
-} from 'emerald-js-ui/lib/icons3';
+} from '@emeraldplatform/ui-icons';
 import { api } from 'lib/rpc/api';
 import saveAs from 'lib/saveAs';
 import screen from '../../../store/wallet/screen';

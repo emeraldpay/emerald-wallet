@@ -1,7 +1,6 @@
 // @flow
 import React from 'react';
 import withStyles from 'react-jss';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { List } from 'immutable';
 import { Card } from 'emerald-js-ui';

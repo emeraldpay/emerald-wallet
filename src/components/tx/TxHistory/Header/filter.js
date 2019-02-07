@@ -3,12 +3,6 @@ import React from 'react';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
-/**
- * TODO: After Material-UI v 1.0 release switch to ToggleButton
- * (see: https://material-ui.com/lab/toggle-button/)
- *
- */
-
 type Props = {
   value: string,
   onChange: Function

@@ -1,5 +1,4 @@
 import React from 'react';
-import FlatButton from 'material-ui/FlatButton';
 import Divider from 'material-ui/Divider';
 import Grid from '@material-ui/core/Grid';
 import muiThemeable from 'material-ui/styles/muiThemeable';

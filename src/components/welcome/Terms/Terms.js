@@ -1,10 +1,9 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
-import { Check2 as CheckIcon } from 'emerald-js-ui/lib/icons3';
-import muiThemeable from 'material-ui/styles/muiThemeable';
+import { Check2 as CheckIcon } from '@emeraldplatform/ui-icons';
 import Button from '../../../elements/Button';
 
-export const Terms = ({ onAgree, muiTheme }) => {
+export const Terms = ({ onAgree }) => {
   const style = {
     width: '100%',
     height: '250px',
@@ -59,7 +58,7 @@ export const Terms = ({ onAgree, muiTheme }) => {
         <Button
           label="I Agree"
           primary={true}
-          icon={<CheckIcon style={{ color: muiTheme.palette.alternateTextColor }} />}
+          icon={<CheckIcon />}
           onClick={onAgree} />
       </Grid>
 
@@ -67,4 +66,4 @@ export const Terms = ({ onAgree, muiTheme }) => {
   );
 };
 
-export default muiThemeable()(Terms);
+export default Terms;

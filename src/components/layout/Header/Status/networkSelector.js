@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { DropDownMenu } from 'material-ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import { Network as NetworkIcon, NetworkDisconnected as NetworkDisconnectedIcon } from 'emerald-js-ui/lib/icons3';
+import { Network as NetworkIcon, NetworkDisconnected as NetworkDisconnectedIcon } from '@emeraldplatform/ui-icons';
 import { Networks, findNetwork } from '../../../../lib/networks';
 
 
@@ -59,11 +59,11 @@ class NetworkSelectorRender extends React.Component {
     let icon;
     if (connecting) { // shanejonas: the wrapping span's here are to get around some coloring issues with material-ui's dropdown + iconbutton
       icon = <span>
-        <NetworkDisconnectedIcon style={{color: muiTheme.palette.secondaryTextColor}}/>
+        <NetworkDisconnectedIcon />
       </span>;
     } else {
       icon = <span>
-        <NetworkIcon style={{color: muiTheme.palette.secondaryTextColor}}/>
+        <NetworkIcon />
       </span>;
     }
 

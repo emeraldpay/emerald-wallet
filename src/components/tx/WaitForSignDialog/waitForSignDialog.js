@@ -1,13 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import Dialog from 'material-ui/Dialog';
-import FlatButton from 'material-ui/FlatButton';
 import CircularProgress from 'material-ui/CircularProgress';
 import screen from 'store/wallet/screen';
+import Button from 'elements/Button';
 
 const WaitForSignDialog = ({ open, transaction, handleClose }) => {
   const actions = [
-    <FlatButton
+    <Button
       key="cancel"
       label="Cancel"
       primary={true}

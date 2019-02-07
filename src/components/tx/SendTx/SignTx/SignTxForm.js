@@ -2,7 +2,7 @@ import React from 'react';
 import {
   ButtonGroup, IdentityIcon, Input
 } from 'emerald-js-ui';
-import { ArrowRight } from 'emerald-js-ui/lib/icons3';
+import { ArrowRight } from '@emeraldplatform/ui-icons';
 import { required } from 'lib/validators';
 import Button from 'elements/Button';
 import { Divider } from 'material-ui';

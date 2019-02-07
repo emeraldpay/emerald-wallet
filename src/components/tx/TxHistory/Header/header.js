@@ -1,7 +1,7 @@
 // @flow
 import React from 'react';
 import withStyles from 'react-jss';
-import { Search as SearchIcon } from 'emerald-js-ui/lib/icons3';
+import { Search as SearchIcon } from '@emeraldplatform/ui-icons';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import TextField from '../../../../elements/Form/TextField';
 import Filter from './filter';

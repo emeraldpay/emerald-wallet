@@ -2,12 +2,12 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
-import { Wei, convert } from '@emeraldplatform/emerald-js';
+import { convert } from '@emeraldplatform/emerald-js';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
 import CircularProgress from 'material-ui/CircularProgress';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Account as AddressAvatar } from 'emerald-js-ui';
-import { Forward as ArrowRightIcon } from 'emerald-js-ui/lib/icons3';
+import { Forward as ArrowRightIcon } from '@emeraldplatform/ui-icons';
 import AccountBalance from '../../../accounts/Balance';
 import TokenUnits from '../../../../lib/tokenUnits';
 import i18n from '../../../../i18n/i18n';
