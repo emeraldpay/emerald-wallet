@@ -8,7 +8,6 @@ import {
 } from 'emerald-js-ui';
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import Button from 'elements/Button';
 import screen from 'store/wallet/screen';
 import accountsModule from 'store/vault/accounts';
@@ -115,4 +114,4 @@ export default connect(
       dispatch(screen.actions.gotoScreen('home'));
     },
   })
-)(translate('accounts')(muiThemeable()(ImportJson)));
+)(translate('accounts')(ImportJson));
