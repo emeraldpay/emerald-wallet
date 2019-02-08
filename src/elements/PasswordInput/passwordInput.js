@@ -1,8 +1,8 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { ViewVisible as EyeIcon } from 'emerald-js-ui/lib/icons3';
+import { ViewVisible as EyeIcon } from '@emeraldplatform/ui-icons';
 import { Warning, WarningText } from 'emerald-js-ui';
-import { IconButton } from 'material-ui';
+import IconButton from '@material-ui/core/IconButton';
 import TextField from '../Form/TextField';
 
 
@@ -47,7 +47,7 @@ export default class PasswordInput extends React.Component {
       };
 
       const EyeIconButton = (
-        <IconButton iconStyle={iconStyle} onClick={this.handleEyeClick}>
+        <IconButton style={iconStyle} onClick={this.handleEyeClick}>
           <EyeIcon />
         </IconButton>
       );

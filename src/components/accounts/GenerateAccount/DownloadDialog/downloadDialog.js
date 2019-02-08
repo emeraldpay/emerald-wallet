@@ -4,9 +4,9 @@ import {
   Warning, WarningHeader, WarningText
 } from 'emerald-js-ui';
 import { Page } from '@emeraldplatform/ui';
+import { Back } from '@emeraldplatform/ui-icons';
 import Button from 'elements/Button';
 import { Row, styles as formStyles } from 'elements/Form';
-import { Back } from 'emerald-js-ui/lib/icons3';
 import getLoadingIcon from '../getLoadingIcon';
 
 export const styles2 = {

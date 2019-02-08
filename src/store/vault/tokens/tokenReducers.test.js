@@ -1,4 +1,3 @@
-import { fromJS } from 'immutable';
 import BigNumber from 'bignumber.js';
 import reducer from './tokenReducers';
 import ActionTypes from './actionTypes';

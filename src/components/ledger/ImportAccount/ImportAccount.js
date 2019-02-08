@@ -3,8 +3,8 @@ import React from 'react';
 import withStyles from 'react-jss';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { ButtonGroup } from 'emerald-js-ui';
-import { AddCircle as AddIcon } from '@emeraldplatform/ui-icons';
-import DashboardButton from 'components/common/DashboardButton';
+import { Page } from '@emeraldplatform/ui';
+import { AddCircle as AddIcon, Back } from '@emeraldplatform/ui-icons';
 import HDPath from 'components/common/HdPath';
 import { Form, Row, styles as formStyles } from 'elements/Form';
 import Button from 'elements/Button';
@@ -38,10 +38,9 @@ class ImportAccount extends React.Component<Props> {
     const { onAddSelected, onCancel, onDashboard } = this.props;
     const { classes } = this.props;
     return (
-      <Form
-        caption="Import Ledger hardware account"
-        backButton={<DashboardButton onClick={onDashboard} />}
-        style={{border: `1px solid ${muiTheme.palette.borderColor}`}}
+      <Page
+        title="Import Ledger hardware account"
+        backButton={<Back onClick={onDashboard} />}
       >
         <Row>
           <div style={formStyles.left}>
@@ -72,7 +71,7 @@ class ImportAccount extends React.Component<Props> {
             </ButtonGroup>
           </div>
         </Row>
-      </Form>
+      </Page>
     );
   }
 }

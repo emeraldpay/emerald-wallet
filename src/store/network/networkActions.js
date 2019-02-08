@@ -1,5 +1,4 @@
 // @flow
-import BigNumber from 'bignumber.js';
 import { intervalRates } from '../config';
 import createLogger from '../../utils/logger';
 import ActionTypes from './actionTypes';

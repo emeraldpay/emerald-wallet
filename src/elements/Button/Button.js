@@ -1,7 +1,7 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
 import { MuiThemeProvider } from '@material-ui/core/styles';
-import theme from '../../newTheme';
+import theme from '@emeraldplatform/ui/lib/theme';
 
 const Btn = (props) => {
   const {

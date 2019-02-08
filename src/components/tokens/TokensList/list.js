@@ -26,11 +26,6 @@ const styles2 = {
   },
 };
 
-const deleteIconStyle = {
-  width: '19px',
-  height: '19px',
-};
-
 const Token = (props) => {
   const { token, classes } = props;
   const tokenAddress = token.get('address');
