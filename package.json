@@ -63,7 +63,7 @@
   "dependencies": {
     "@emeraldplatform/contracts": "0.4.1",
     "@emeraldplatform/emerald-js": "^0.4.2-alpha.5.0",
-    "@emeraldplatform/ui": "^0.4.2-alpha.5.0",
+    "@emeraldplatform/ui": "^0.4.2-alpha.5.1",
     "@emeraldplatform/ui-icons": "^0.4.2-alpha.2",
     "@ledgerhq/hw-app-eth": "^4.32.0",
     "@ledgerhq/hw-transport-node-hid": "^4.33.3",
