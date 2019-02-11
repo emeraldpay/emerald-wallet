@@ -65,7 +65,7 @@ const Header = ({
             InputProps={{
               endAdornment: (
                 <InputAdornment position="end">
-                  <SearchIcon />
+                  <IconButton disabled><SearchIcon /></IconButton>
                 </InputAdornment>
               ),
             }}

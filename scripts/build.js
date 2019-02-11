@@ -4,7 +4,7 @@ const webpack = require('webpack');
 
 const watch = process.argv.indexOf('--no-watch') < 0;
 
-const config = require('./webpack.config.js');
+const config = require('../webpack.config.js');
 
 // var electronCompiler = webpack(require('./electron/webpack.electron'));
 const compiler = webpack(config);
