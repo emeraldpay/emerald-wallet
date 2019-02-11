@@ -7,7 +7,7 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import QRCode from 'qrcode.react';
 import TokenUnits from 'lib/tokenUnits';
 import {
-  IdentityIcon, Account as AddressAvatar, ButtonGroup
+  ButtonGroup, Account as AddressAvatar, IdentityIcon
 } from 'emerald-js-ui';
 import Button from 'elements/Button';
 import { styles, Row } from 'elements/Form';
@@ -108,7 +108,7 @@ export class AccountShow extends React.Component {
                 <div style={ styles.right }>
                   {!this.state.edit && <AddressAvatar
                     editable
-                    addr={account.get('id')}
+                    id={account.get('id')}
                     description={account.get('description')}
                     name={account.get('name')}
                     onEditClick={this.handleEdit}

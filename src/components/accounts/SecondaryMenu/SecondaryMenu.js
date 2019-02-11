@@ -1,7 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { IconMenu, MenuItem } from 'material-ui';
+import { IconMenu } from 'material-ui';
 import IconButton from '@material-ui/core/IconButton';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import MenuItem from '@material-ui/core/MenuItem';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import {
   Print as PrintIcon, Export as ExportIcon, ViewVisible as ViewVisibleIcon, ViewHidden as ViewHiddenIcon, MoreHorizontal as MoreHorizontalIcon
@@ -21,20 +24,23 @@ const renderHide = (chain, account, onHide, { disabledColor }) => {
     color: disabledColor,
   } : null;
   return (
-    <MenuItem
-      disabled={ disabled }
-      leftIcon={<ViewHiddenIcon style={iconStyle} />}
-      primaryText='HIDE'
-      onClick={ onHide(chain) }/>
+    <MenuItem disabled={disabled} onClick={onHide(chain)}>
+      <ListItemIcon>
+        <ViewHiddenIcon />
+      </ListItemIcon>
+      <ListItemText primary='HIDE' />
+    </MenuItem>
   );
 };
 
 const renderUnhide = (chain, account, onUnhide) => {
   return (
-    <MenuItem
-      leftIcon={<ViewVisibleIcon />}
-      primaryText='UNHIDE'
-      onClick={ onUnhide(chain) }/>
+    <MenuItem onClick={onUnhide(chain)}>
+      <ListItemIcon>
+        <ViewVisibleIcon />
+      </ListItemIcon>
+      <ListItemText primary='UNHIDE' />
+    </MenuItem>
   );
 };
 
@@ -49,15 +55,19 @@ export const SecondaryMenu = ({
   return (
     <IconMenu useLayerForClickAway={true} iconButtonElement={<IconButton><MoreHorizontalIcon /></IconButton>}>
       {!isHardware
-       && <MenuItem
-         leftIcon={<ExportIcon />}
-         primaryText='EXPORT'
-         onClick={ onExport(chain) }/> }
+        && <MenuItem onClick={ onExport(chain) }>
+          <ListItemIcon>
+            <ExportIcon />
+          </ListItemIcon>
+          <ListItemText primary='EXPORT'/>
+        </MenuItem> }
       {!isHardware
-       && <MenuItem
-         leftIcon={<PrintIcon />}
-         primaryText='PRINT'
-         onClick={ onPrint(chain) }/> }
+        && <MenuItem onClick={onPrint(chain)}>
+          <ListItemIcon>
+            <PrintIcon />
+          </ListItemIcon>
+          <ListItemText primary='PRINT' />
+        </MenuItem> }
 
       { !account.get('hidden') && renderHide(chain, account, onHide, colors) }
       { account.get('hidden') && renderUnhide(chain, account, onUnhide) }

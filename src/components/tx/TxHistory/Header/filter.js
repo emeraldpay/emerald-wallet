@@ -1,7 +1,14 @@
 // @flow
 import React from 'react';
 import ToggleButton from '@material-ui/lab/ToggleButton';
+import { withStyles } from '@material-ui/core/styles';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
+
+const styles = {
+  selected: {
+    boxShadow: 'none',
+  },
+};
 
 type Props = {
   value: string,
@@ -10,9 +17,10 @@ type Props = {
 
 class Filter extends React.Component<Props> {
   render() {
-    const { value, onChange } = this.props;
+    const { value, onChange, classes } = this.props;
     return (
       <ToggleButtonGroup
+        classes={{ selected: classes.selected }}
         exclusive
         value={value || 'ALL'}
         onChange={onChange}
@@ -25,4 +33,4 @@ class Filter extends React.Component<Props> {
   }
 }
 
-export default Filter;
+export default withStyles(styles)(Filter);

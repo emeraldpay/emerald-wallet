@@ -3,7 +3,11 @@ import React from 'react';
 import withStyles from 'react-jss';
 import { Search as SearchIcon } from '@emeraldplatform/ui-icons';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import TextField from '../../../../elements/Form/TextField';
+import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import IconButton from '@material-ui/core/IconButton';
+import { MuiThemeProvider } from '@material-ui/core/styles';
+import theme from '@emeraldplatform/ui/lib/theme';
 import Filter from './filter';
 
 const styles = {
@@ -40,28 +44,36 @@ const styles2 = {
 };
 
 const Header = ({
-  onTxFilterChange, onSearchChange, muiTheme, classes, txFilterValue,
+  onTxFilterChange, onSearchChange, classes, txFilterValue,
 }) => {
   return (
-    <div className={ classes.headerContainer }>
-      <div className={ classes.headerMain }>
-        <div className={ classes.headerTitle }>History</div>
-        <div className={ classes.filter }>
-          <Filter onChange={onTxFilterChange} value={txFilterValue}/>
+    <MuiThemeProvider theme={theme} >
+      <div className={classes.headerContainer}>
+        <div className={classes.headerMain}>
+          <div className={classes.headerTitle}>History</div>
+          <div className={classes.filter}>
+            <Filter onChange={onTxFilterChange} value={txFilterValue} />
+          </div>
+        </div>
+        <div className={classes.search}>
+          {/* TODO: use emeraldplatform/ui/Input */}
+          <TextField
+            onChange={onSearchChange}
+            style={{ maxHeight: '40px' }}
+            placeholder="Search for amount or hash"
+            underlineShow={false}
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <SearchIcon />
+                </InputAdornment>
+              ),
+            }}
+          />
         </div>
       </div>
-      <div className={ classes.search }>
-        <TextField
-          rightIcon={ <SearchIcon style={ styles.searchIcon } /> }
-          onChange={onSearchChange}
-          style={{ maxHeight: '40px' }}
-          hintText="Search for amount or hash"
-          hintStyle={{color: muiTheme.palette.primary3Color, fontWeight: '200', fontSize: '15px'}}
-          underlineShow={ false }
-        />
-      </div>
-    </div>
+    </MuiThemeProvider>
   );
 };
 
-export default muiThemeable()(withStyles(styles2)(Header));
+export default (withStyles(styles2)(Header));

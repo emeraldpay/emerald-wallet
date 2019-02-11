@@ -6,10 +6,10 @@ import { ButtonGroup } from 'emerald-js-ui';
 import { Page } from '@emeraldplatform/ui';
 import { AddCircle as AddIcon, Back } from '@emeraldplatform/ui-icons';
 import HDPath from 'components/common/HdPath';
-import { Form, Row, styles as formStyles } from 'elements/Form';
+import { Row, styles as formStyles } from 'elements/Form';
 import Button from 'elements/Button';
-import AddrList from './addrlist';
-import Pager from './pager';
+import AddrList from './AddrList';
+import Pager from './Pager';
 
 const styles2 = {
   row: {
@@ -38,10 +38,7 @@ class ImportAccount extends React.Component<Props> {
     const { onAddSelected, onCancel, onDashboard } = this.props;
     const { classes } = this.props;
     return (
-      <Page
-        title="Import Ledger hardware account"
-        backButton={<Back onClick={onDashboard} />}
-      >
+      <Page title="Import Ledger hardware account" leftIcon={<Back onClick={onDashboard} />}>
         <Row>
           <div style={formStyles.left}>
             <div style={formStyles.fieldName}>HD derivation path</div>

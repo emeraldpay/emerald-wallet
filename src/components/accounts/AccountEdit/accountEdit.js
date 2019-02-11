@@ -9,7 +9,7 @@ import Button from '../../../elements/Button';
 import { required } from '../../../lib/validators';
 import { cardSpace } from '../../../lib/styles';
 
-
+// TODO: Get rid of redux-form
 export const AccountEdit = ({
   muiTheme, handleSubmit, invalid, pristine, submitting, cancel,
 }) => (
