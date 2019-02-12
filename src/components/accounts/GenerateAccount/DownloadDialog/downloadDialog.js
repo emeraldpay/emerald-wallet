@@ -7,7 +7,7 @@ import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import Button from 'elements/Button';
 import { Row, styles as formStyles } from 'elements/Form';
-import getLoadingIcon from '../getLoadingIcon';
+import LoadingIcon from '../LoadingIcon';
 
 export const styles2 = {
   description: {
@@ -75,7 +75,7 @@ export const DownloadDialog = (props) => {
               primary
               onClick={ onDownload }
               label="Download account key file"
-              icon={getLoadingIcon(props)}
+              icon={<LoadingIcon {...props} />}
               disabled={props.loading}
             />
           </div>

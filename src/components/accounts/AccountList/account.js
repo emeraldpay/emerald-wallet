@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
 import { CardText } from 'material-ui/Card';
 import {
-  Account as AddressAvatar, ButtonGroup, Card
+  ButtonGroup, Card, Account as AddressAvatar
 } from 'emerald-js-ui';
 import Button from 'elements/Button';
 import muiThemeable from 'material-ui/styles/muiThemeable';
@@ -58,19 +58,19 @@ export class Account extends React.Component {
 
       // TODO: we convert Wei to TokenUnits here
       const balance = account.get('balance') ? new TokenUnits(account.get('balance').value(), 18) : null;
-
+      const accId = account.get('id');
       return (
         <Card>
           <CardText>
             <Grid container>
               <Grid item xs={5}>
-                <AddressAvatar
+                { accId && <AddressAvatar
                   identity
-                  addr={ account.get('id') }
+                  addr={ accId }
                   description={ account.get('description') }
                   primary={ account.get('name') }
                   onAddressClick={ this.onAddressClick }
-                />
+                /> }
               </Grid>
               <Grid item xs={3}>
                 <div className={ classes.identityIconContainer }>

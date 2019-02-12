@@ -129,7 +129,7 @@ export const TxView = (props) => {
         />
       </TableRowColumn>
       <TableRowColumn className={classes.columnArrow} style={{textOverflow: 'inherit', ...styles.tablePadding}}>
-        <ArrowRightIcon style={{color: muiTheme.palette.secondaryTextColor}} />
+        <ArrowRightIcon color="secondary"/>
       </TableRowColumn>
       <TableRowColumn style={{paddingLeft: '5px', ...styles.tablePadding}}>
         {tx.get('to')

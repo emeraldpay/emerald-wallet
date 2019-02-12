@@ -13,7 +13,7 @@ import { required } from 'lib/validators';
 import { Row, styles as formStyles } from 'elements/Form';
 import PasswordInput from 'elements/PasswordInput';
 import Advice from './advice';
-import getLoadingIcon from '../getLoadingIcon';
+import LoadingIcon from '../LoadingIcon';
 
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -159,7 +159,7 @@ class PasswordDialog extends React.Component {
               <Button
                 primary onClick={ this.handleGenerate }
                 label="Generate Account"
-                icon={ getLoadingIcon(this.props) }
+                icon={ <LoadingIcon {...this.props} /> }
                 disabled={ this.props.loading }
               />
             </div>
