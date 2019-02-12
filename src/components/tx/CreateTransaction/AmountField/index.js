@@ -1,6 +1,7 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
-import { Input, Button } from 'emerald-js-ui';
+import { Input } from 'emerald-js-ui';
+import Button from 'elements/Button';
 import FormLabel from '../FormLabel';
 
 class AmountField extends React.Component {
@@ -35,10 +36,6 @@ class AmountField extends React.Component {
   buttonStyles = {
     height: '30px',
     minWidth: '35px',
-    lineHeight: '30px',
-  };
-
-  buttonLabelStyles = {
     fontSize: '11px',
   };
 
@@ -59,7 +56,6 @@ class AmountField extends React.Component {
 
         <Button
           style={this.buttonStyles}
-          labelStyle={this.buttonLabelStyles}
           primary
           label="MAX"
           onClick={this.props.onMaxClicked}

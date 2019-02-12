@@ -2,13 +2,14 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import { Button, ButtonGroup } from 'emerald-js-ui';
-import { AddCircle as AddIcon } from 'emerald-js-ui/lib/icons3';
-import DashboardButton from 'components/common/DashboardButton';
+import { ButtonGroup } from 'emerald-js-ui';
+import { Page } from '@emeraldplatform/ui';
+import { AddCircle as AddIcon, Back } from '@emeraldplatform/ui-icons';
 import HDPath from 'components/common/HdPath';
-import { Form, Row, styles as formStyles } from 'elements/Form';
-import AddrList from './addrlist';
-import Pager from './pager';
+import { Row, styles as formStyles } from 'elements/Form';
+import Button from 'elements/Button';
+import AddrList from './AddrList';
+import Pager from './Pager';
 
 const styles2 = {
   row: {
@@ -37,11 +38,7 @@ class ImportAccount extends React.Component<Props> {
     const { onAddSelected, onCancel, onDashboard } = this.props;
     const { classes } = this.props;
     return (
-      <Form
-        caption="Import Ledger hardware account"
-        backButton={<DashboardButton onClick={onDashboard} />}
-        style={{border: `1px solid ${muiTheme.palette.borderColor}`}}
-      >
+      <Page title="Import Ledger hardware account" leftIcon={<Back onClick={onDashboard} />}>
         <Row>
           <div style={formStyles.left}>
             <div style={formStyles.fieldName}>HD derivation path</div>
@@ -71,7 +68,7 @@ class ImportAccount extends React.Component<Props> {
             </ButtonGroup>
           </div>
         </Row>
-      </Form>
+      </Page>
     );
   }
 }

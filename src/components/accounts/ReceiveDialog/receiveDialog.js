@@ -2,9 +2,8 @@ import React from 'react';
 import withStyles from 'react-jss';
 import QRCode from 'qrcode.react';
 import Dialog from 'material-ui/Dialog';
-import {Address as AccountAddress} from 'emerald-js-ui';
+import {Address as AccountAddress} from '@emeraldplatform/ui';
 import CloseButton from 'elements/CloseButton';
-
 
 export const styles2 = {
   container: {

@@ -80,18 +80,12 @@ export const createStore = (_api) => {
 export const store = createStore(api);
 
 function refreshAll() {
-  let promises = [
+  const promises = [
     store.dispatch(accounts.actions.loadPendingTransactions()),
     store.dispatch(network.actions.loadHeight(false)),
     store.dispatch(accounts.actions.loadAccountsList()),
     store.dispatch(history.actions.refreshTrackedTransactions()),
   ];
-
-  const state = store.getState();
-
-  if (state.launcher.getIn(['geth', 'type']) === 'local') {
-    promises = promises.concat([store.dispatch(network.actions.loadSyncing())]);
-  }
 
   // Main loop that will refresh UI as needed
   setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
@@ -101,6 +95,7 @@ function refreshAll() {
 
 function refreshLong() {
   store.dispatch(settings.actions.getExchangeRates());
+  store.dispatch(network.actions.loadSyncing());
   setTimeout(refreshLong, intervalRates.continueRefreshLongRate);
 }
 

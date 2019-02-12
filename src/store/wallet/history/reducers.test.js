@@ -1,6 +1,6 @@
 import { fromJS, List } from 'immutable';
 import BigNumber from 'bignumber.js';
-import { convert, Wei } from '@emeraldplatform/emerald-js';
+import { convert } from '@emeraldplatform/emerald-js';
 
 import historyReducers from './reducers';
 import ActionTypes from './actionTypes';

@@ -4,11 +4,12 @@ import PropTypes from 'prop-types';
 import { convert } from '@emeraldplatform/emerald-js';
 import { connect } from 'react-redux';
 import {
-  Field, reduxForm, change, formValueSelector, reset, SubmissionError
+  Field, reduxForm, change, formValueSelector, reset
 } from 'redux-form';
 import TextField from 'elements/Form/TextField';
-import { Button, ButtonGroup } from 'emerald-js-ui';
+import { ButtonGroup } from 'emerald-js-ui';
 import { required, address } from 'lib/validators';
+import Button from 'elements/Button';
 import TokenUnits from 'lib/tokenUnits';
 import tokens from '../../../store/vault/tokens';
 

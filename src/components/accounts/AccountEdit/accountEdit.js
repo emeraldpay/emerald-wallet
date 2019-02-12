@@ -4,13 +4,14 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Field, reduxForm } from 'redux-form';
 import { Card, CardText } from 'material-ui';
 import { TextField } from 'redux-form-material-ui';
-import { Button, ButtonGroup } from 'emerald-js-ui';
-import { required, address } from '../../../lib/validators';
+import { ButtonGroup } from 'emerald-js-ui';
+import Button from '../../../elements/Button';
+import { required } from '../../../lib/validators';
 import { cardSpace } from '../../../lib/styles';
 
-
+// TODO: Get rid of redux-form
 export const AccountEdit = ({
-  muiTheme, handleSubmit, blockAddress, invalid, pristine, submitting, cancel,
+  muiTheme, handleSubmit, invalid, pristine, submitting, cancel,
 }) => (
   <Card style={cardSpace}>
     <CardText expandable={false}>
@@ -28,7 +29,6 @@ export const AccountEdit = ({
         <ButtonGroup>
           <Button
             label="Cancel"
-            secondary={true}
             onClick={cancel} />
           <Button
             primary

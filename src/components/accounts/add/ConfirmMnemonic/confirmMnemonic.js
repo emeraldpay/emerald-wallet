@@ -4,13 +4,14 @@ import { required } from 'lib/validators';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import {
-  Field, reduxForm, SubmissionError, change, formValueSelector
+  Field, reduxForm, SubmissionError
 } from 'redux-form';
-import { Button, Warning, WarningText } from 'emerald-js-ui';
-
+import { Warning, WarningText } from 'emerald-js-ui';
+import { Page } from '@emeraldplatform/ui';
+import { Back } from '@emeraldplatform/ui-icons';
+import Button from 'elements/Button';
 import TextField from 'elements/Form/TextField';
 import { Form, Row, styles as formStyles } from 'elements/Form';
-import DashboardButton from 'components/common/DashboardButton';
 import accounts from 'store/vault/accounts';
 import screen from 'store/wallet/screen';
 
@@ -39,10 +40,10 @@ const validateConfirm = (value, allValues, props, name) => {
 export class ConfirmMnemonic extends React.Component {
   render() {
     const {
-      onBack, backLabel, invalid, handleSubmit, error, classes,
+      onBack, invalid, handleSubmit, error, classes,
     } = this.props;
     return (
-      <Form caption="Confirm Mnemonic" backButton={ <DashboardButton onClick={ onBack } label={ backLabel }/> }>
+      <Page title="Confirm Mnemonic" leftIcon={ <Back onClick={ onBack } /> }>
         <Row>
           <div style={formStyles.left}>
           </div>
@@ -87,7 +88,7 @@ export class ConfirmMnemonic extends React.Component {
             </div>
           </Row>
         )}
-      </Form>
+      </Page>
     );
   }
 }

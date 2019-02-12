@@ -3,8 +3,8 @@ import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
-import { IconButton } from 'material-ui';
-import { Trash as DeleteIcon } from 'emerald-js-ui/lib/icons3';
+import IconButton from '@material-ui/core/IconButton';
+import { Trash as DeleteIcon } from '@emeraldplatform/ui-icons';
 import { Input } from 'emerald-js-ui';
 import tokensStore from '../../../store/vault/tokens';
 
@@ -24,11 +24,6 @@ const styles2 = {
     maxWidth: '80px',
     fontSize: '16px',
   },
-};
-
-const deleteIconStyle = {
-  width: '19px',
-  height: '19px',
 };
 
 const Token = (props) => {
@@ -52,8 +47,8 @@ const Token = (props) => {
         />
       </div>
       <div>
-        <IconButton onClick={ () => props.onDelete(token) } iconStyle={ deleteIconStyle }>
-          <DeleteIcon/>
+        <IconButton onClick={ () => props.onDelete(token) } >
+          <DeleteIcon />
         </IconButton>
       </div>
     </div>

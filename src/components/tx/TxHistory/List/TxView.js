@@ -2,12 +2,12 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
-import { Wei, convert } from '@emeraldplatform/emerald-js';
+import { convert } from '@emeraldplatform/emerald-js';
 import { TableRow, TableRowColumn } from 'material-ui/Table';
 import CircularProgress from 'material-ui/CircularProgress';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Account as AddressAvatar } from 'emerald-js-ui';
-import { Forward as ArrowRightIcon } from 'emerald-js-ui/lib/icons3';
+import { Forward as ArrowRightIcon } from '@emeraldplatform/ui-icons';
 import AccountBalance from '../../../accounts/Balance';
 import TokenUnits from '../../../../lib/tokenUnits';
 import i18n from '../../../../i18n/i18n';
@@ -129,7 +129,7 @@ export const TxView = (props) => {
         />
       </TableRowColumn>
       <TableRowColumn className={classes.columnArrow} style={{textOverflow: 'inherit', ...styles.tablePadding}}>
-        <ArrowRightIcon style={{color: muiTheme.palette.secondaryTextColor}} />
+        <ArrowRightIcon color="secondary"/>
       </TableRowColumn>
       <TableRowColumn style={{paddingLeft: '5px', ...styles.tablePadding}}>
         {tx.get('to')

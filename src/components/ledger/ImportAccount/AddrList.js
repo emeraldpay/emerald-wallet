@@ -1,13 +1,15 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import {
   Table, TableBody, TableHeader, TableHeaderColumn, TableRow
 } from 'material-ui/Table';
 import { tables } from 'lib/styles';
 import ledger from '../../../store/ledger';
-import Addr from './addr';
+import Addr from './Addr';
 
+/**
+ * AddrList allows select only one address
+ * */
 class AddrList extends React.Component {
     handleAddrSelection = (value) => {
       if (this.props.setSelectedAddr) {

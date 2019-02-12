@@ -1,17 +1,18 @@
 // @flow
 import React from 'react';
+import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import withStyles from 'react-jss';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { Field, reduxForm, SubmissionError } from 'redux-form';
 import {
-  Page, Button, Warning, WarningHeader, WarningText
+  Warning, WarningHeader, WarningText
 } from 'emerald-js-ui';
-import { Back } from 'emerald-js-ui/lib/icons3';
-import muiThemeable from 'material-ui/styles/muiThemeable';
+import { Page } from '@emeraldplatform/ui';
+import { Back } from '@emeraldplatform/ui-icons';
+import Button from 'elements/Button';
 import { Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
-import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import accounts from 'store/vault/accounts';
 import screen from 'store/wallet/screen';
 import { required, passwordMatch, minLength } from 'lib/validators';
@@ -171,4 +172,4 @@ export default connect(
       }
     },
   })
-)(muiThemeable()(importForm));
+)(importForm);

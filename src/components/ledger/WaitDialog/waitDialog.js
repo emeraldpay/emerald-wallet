@@ -3,8 +3,8 @@ import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Dialog from 'material-ui/Dialog';
-import IconButton from 'material-ui/IconButton';
-import { Close as CloseIcon } from 'emerald-js-ui/lib/icons3';
+import IconButton from '@material-ui/core/IconButton';
+import { Close as CloseIcon } from '@emeraldplatform/ui-icons';
 import screen from 'store/wallet/screen';
 import BackgroundImage from './ledger.png';
 
@@ -89,9 +89,8 @@ export const WaitConnectionDialog = ({ onCancel, classes }) => {
           <IconButton
             style={ style.closeButton }
             onClick={ onCancel }
-            iconStyle={ style.closeIcon }
             tooltip="Close">
-            <CloseIcon />
+            <CloseIcon style={ style.closeIcon }/>
           </IconButton>
         </div>
       </div>

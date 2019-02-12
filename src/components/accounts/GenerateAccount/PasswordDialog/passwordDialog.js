@@ -2,16 +2,18 @@ import React from 'react';
 import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import {
-  Button, Warning, WarningHeader, WarningText, Page
+  Warning, WarningHeader, WarningText
 } from 'emerald-js-ui';
+import { Back } from '@emeraldplatform/ui-icons';
+import { Page } from '@emeraldplatform/ui';
 import { Field, reduxForm } from 'redux-form';
+import Button from 'elements/Button';
 import TextField from 'elements/Form/TextField';
 import { required } from 'lib/validators';
 import { Row, styles as formStyles } from 'elements/Form';
 import PasswordInput from 'elements/PasswordInput';
-import { Back } from 'emerald-js-ui/lib/icons3';
 import Advice from './advice';
-import getLoadingIcon from '../getLoadingIcon';
+import LoadingIcon from '../LoadingIcon';
 
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -157,7 +159,7 @@ class PasswordDialog extends React.Component {
               <Button
                 primary onClick={ this.handleGenerate }
                 label="Generate Account"
-                icon={ getLoadingIcon(this.props) }
+                icon={ <LoadingIcon {...this.props} /> }
                 disabled={ this.props.loading }
               />
             </div>

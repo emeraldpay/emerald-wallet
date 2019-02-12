@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import {
   Card, CardActions, CardHeader, CardText
 } from 'material-ui/Card';
-import FlatButton from 'material-ui/FlatButton';
 import Create from 'material-ui/svg-icons/content/create';
 import DeleteSweep from 'material-ui/svg-icons/content/delete-sweep';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
@@ -11,6 +10,7 @@ import { DescriptionList, DescriptionTitle, DescriptionData } from 'elements/dl'
 import QRCode from 'qrcode.react';
 import Immutable from 'immutable';
 import { cardSpace } from 'lib/styles';
+import Button from 'elements/Button';
 import Addressbook from '../../store/vault/addressbook';
 import { gotoScreen } from '../../store/wallet/screen/screenActions';
 import AddressEdit from './EditContact';
@@ -40,12 +40,12 @@ class CardEdit extends React.Component {
     return (
       <Card style={cardSpace} expanded={this.state.expanded} onExpandChange={this.handleExpandChange}>
         <CardActions>
-          <FlatButton
+          <Button
             label="Edit"
             onClick={this.handleExpand}
             icon={<Create />}
           />
-          <FlatButton
+          <Button
             label="Forget"
             onClick={this.props.onDelete}
             icon={<DeleteSweep />}

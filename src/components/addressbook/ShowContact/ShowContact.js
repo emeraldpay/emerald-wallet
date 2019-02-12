@@ -3,7 +3,7 @@ import withStyles from 'react-jss';
 import { connect } from 'react-redux';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Account } from 'emerald-js-ui';
-import { Trash as DeleteIcon, Pen1 as EditIcon } from 'emerald-js-ui/lib/icons3';
+import { Trash as DeleteIcon, Pen1 as EditIcon } from '@emeraldplatform/ui-icons';
 import { IconButton } from 'material-ui';
 import { gotoScreen } from '../../../store/wallet/screen/screenActions';
 import Addressbook from '../../../store/vault/addressbook';
