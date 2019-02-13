@@ -93,7 +93,7 @@ export const Terms = ({ onAgree }) => {
           </p>
         </div>
       </Grid>
-      <Grid xs style={{ paddingTop: '20px' }}>
+      <Grid item xs style={{ paddingTop: '20px' }}>
         <Button
           label="I Agree"
           primary={true}
