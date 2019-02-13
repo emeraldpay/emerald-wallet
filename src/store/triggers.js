@@ -1,3 +1,5 @@
+import { TERMS_VERSION } from './config';
+
 const handleTrigger = (check, resolve, store) => {
   // check once with current state.
   //   Avoids having to wait for next state update.
@@ -18,7 +20,7 @@ const handleTrigger = (check, resolve, store) => {
 export function onceServicesStart(store) {
   const check = () => {
     const { terms, geth, connector } = store.getState().launcher.toJS();
-    return terms === 'v1' && geth.status === 'ready' && connector.status === 'ready';
+    return terms === TERMS_VERSION && geth.status === 'ready' && connector.status === 'ready';
   };
 
   return new Promise((resolve, reject) => handleTrigger(check, resolve, store));

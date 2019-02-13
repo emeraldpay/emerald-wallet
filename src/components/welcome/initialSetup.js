@@ -6,12 +6,13 @@ import { Step, Stepper, StepLabel } from 'material-ui/Stepper';
 import Terms from './Terms';
 import OpenWallet from './openWallet';
 import NodeTypeChoice from './NodeTypeChoice';
+import { TERMS_VERSION } from '../../store/config';
 
 const Render = ({ rpcType, terms }) => {
   let step = null;
   let activeStep = 0;
 
-  if (terms !== 'v1') {
+  if (terms !== TERMS_VERSION) {
     step = <Terms/>;
   } else if (rpcType === 'none') {
     activeStep = 1;

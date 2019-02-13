@@ -12,3 +12,5 @@ export const intervalRates = {
   continueRefreshAllTxRate: 20 * second, // prod: 2 * second
   continueRefreshLongRate: 60 * second, // 5 o'clock somewhere.
 };
+
+export const TERMS_VERSION = '2019-02-12';
