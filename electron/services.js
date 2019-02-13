@@ -6,7 +6,7 @@ const { LocalGeth, NoneGeth, RemoteGeth } = require('./launcher');
 const { LocalConnector } = require('./vault/launcher');
 const UserNotify = require('./userNotify').UserNotify; // eslint-disable-line
 const newGethDownloader = require('./geth/downloader').newGethDownloader; // eslint-disable-line
-const { check, waitRpc } = require('./nodecheck');
+const { check, waitRpc, initFetcher } = require('./nodecheck');
 const { getBinDir, getLogDir, isValidChain } = require('./utils');
 
 require('es6-promise').polyfill();
@@ -53,6 +53,7 @@ const DEFAULT_SETUP = {
 class Services {
   constructor(webContents) {
     this.setup = Object.assign({}, DEFAULT_SETUP);
+    initFetcher();
     this.connectorStatus = STATUS.NOT_STARTED;
     this.gethStatus = STATUS.NOT_STARTED;
     this.notify = new UserNotify(webContents);
