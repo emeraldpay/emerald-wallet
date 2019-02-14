@@ -41,7 +41,7 @@ class LedgerApi {
   connect() {
     if (this.appEth !== null) { return new Promise((resolve) => resolve(this)); }
 
-    return Transport.create(500, 500).then((transport) => {
+    return Transport.create().then((transport) => {
       this.transport = transport;
       this.appEth = new AppEth(transport);
       this.startQueue();
