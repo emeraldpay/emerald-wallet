@@ -7,7 +7,7 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import QRCode from 'qrcode.react';
 import TokenUnits from 'lib/tokenUnits';
 import {
-  ButtonGroup, Account as AddressAvatar, IdentityIcon
+  ButtonGroup, Account as AddressAvatar, IdentityIcon, Address
 } from 'emerald-js-ui';
 import Button from 'elements/Button';
 import { styles, Row } from 'elements/Form';
@@ -83,6 +83,14 @@ export class AccountShow extends React.Component {
                   </div>
                 </div>
                 <div style={styles.right}>
+                  <Address id={account.get('id')}/>
+                </div>
+              </Row>
+
+              <Row>
+                <div style={ styles.left }>
+                </div>
+                <div style={ styles.right }>
                   <AccountBalance
                     showFiat={ showFiat }
                     coinsStyle={{fontSize: '20px', lineHeight: '24px'}}
