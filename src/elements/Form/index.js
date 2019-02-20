@@ -1,9 +1,6 @@
-import { Form, styles, Row } from './form';
-
-export default Form;
+import { styles, Row } from './form';
 
 export {
-  Form,
   Row,
   styles
 };

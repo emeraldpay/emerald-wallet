@@ -11,7 +11,7 @@ import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import Button from 'elements/Button';
 import TextField from 'elements/Form/TextField';
-import { Form, Row, styles as formStyles } from 'elements/Form';
+import { Row, styles as formStyles } from 'elements/Form';
 import accounts from 'store/vault/accounts';
 import screen from 'store/wallet/screen';
 

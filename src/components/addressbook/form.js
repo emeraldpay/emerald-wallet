@@ -1,9 +1,10 @@
 import React from 'react';
 import { Field, reduxForm } from 'redux-form';
+import { Page } from '@emeraldplatform/ui';
 import { ButtonGroup } from 'emerald-js-ui';
 import TextField from 'elements/Form/TextField';
 import { required, address } from 'lib/validators';
-import { Form, Row, styles as formStyles } from 'elements/Form';
+import { Row, styles as formStyles } from 'elements/Form';
 import Button from 'elements/Button';
 
 const titleStyle = {
@@ -14,7 +15,7 @@ const titleStyle = {
 const Render = ({
   handleSubmit, blockAddress, invalid, pristine, submitting, cancel, title,
 }) => (
-  <Form>
+  <Page>
     <Row>
       <div style={formStyles.left}>
       </div>
@@ -79,7 +80,7 @@ const Render = ({
         </ButtonGroup>
       </div>
     </Row>
-  </Form>
+  </Page>
 );
 
 export const AddressForm = reduxForm({
