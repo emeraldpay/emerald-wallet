@@ -2,7 +2,7 @@ import React from 'react';
 import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import Dialog from 'material-ui/Dialog';
+import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
 import { Close as CloseIcon } from '@emeraldplatform/ui-icons';
 import screen from 'store/wallet/screen';

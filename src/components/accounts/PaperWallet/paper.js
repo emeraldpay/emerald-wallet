@@ -6,7 +6,7 @@ import { Print, Close } from '@emeraldplatform/ui-icons';
 
 import { LogoIcon } from '../../../elements/Icons';
 
-export const styles2 = {
+export const styles = {
   container: {
     height: '230px',
     width: '545px',
@@ -139,4 +139,4 @@ export const PaperWallet = (props) => {
     </div>);
 };
 
-export default withStyles(styles2)(PaperWallet);
+export default withStyles(styles)(PaperWallet);

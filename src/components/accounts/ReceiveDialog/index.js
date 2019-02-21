@@ -1,1 +1,1 @@
-export { default } from './receiveDialog';
+export { default } from './ReceiveDialog';
