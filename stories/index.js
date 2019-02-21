@@ -1,7 +1,6 @@
 import 'typeface-rubik/index.css';
 import './About';
 import './Landing';
-import './DashboardButton';
 import './TxHistory';
 import './AccountEdit';
 import './Terms';

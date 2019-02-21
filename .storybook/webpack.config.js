@@ -1,8 +1,16 @@
 const path = require('path');
+const srcDir = path.join(__dirname, '../src');
 
 module.exports = {
   node: {
     fs: 'empty'
+  },
+  resolve: {
+    modules: [
+      // Add src/ dir for resolving for i18next-resource-store-loader
+      path.resolve(srcDir),
+      path.join(__dirname, '../node_modules')
+    ]
   },
   module: {
     rules: [
