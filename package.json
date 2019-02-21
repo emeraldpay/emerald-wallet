@@ -8,7 +8,7 @@
   "contributors": [
     "Igor Artamonov <splix@etcdevteam.com>",
     "Elaine Ou <elaine@ethereumclassic.org>",
-    "gagarin55 <gagarin55@protonmail.com>",
+    "Yuriy Gagarin <gagarin55@protonmail.com>",
     "Isaac Ardis",
     "Shane Jonas <jonas.shane@gmail.com>"
   ],
@@ -41,12 +41,12 @@
   "keywords": [
     "react",
     "blockchain",
-    "material design",
-    "material-ui",
     "ethereum",
     "ethereum classic",
     "etc",
-    "dapp"
+    "dapp",
+    "wallet",
+    "cryptocurrency"
   ],
   "repository": {
     "type": "git",
@@ -133,7 +133,7 @@
     "copy-webpack-plugin": "^4.5.3",
     "cross-env": "^5.1.1",
     "css-loader": "0.28.0",
-    "electron": "4.0.2",
+    "electron": "4.0.5",
     "electron-builder": "20.38.5",
     "electron-rebuild": "^1.8.2",
     "enzyme": "3.3.0",

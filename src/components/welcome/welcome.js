@@ -5,7 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {MuiThemeProvider, withStyles} from '@material-ui/core/styles';
 import theme from '@emeraldplatform/ui/lib/theme';
-import {Logo as LogoIcon} from 'emerald-js-ui/lib/icons';
+import LogoIcon from '../common/Logo';
 import InitialSetup from './initialSetup';
 
 const getStyles = (t) => ({

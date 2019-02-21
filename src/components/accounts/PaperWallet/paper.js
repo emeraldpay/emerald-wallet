@@ -2,9 +2,7 @@ import React from 'react';
 import withStyles from 'react-jss';
 import QRCode from 'qrcode.react';
 import IconButton from '@material-ui/core/IconButton';
-import { Print, Close } from '@emeraldplatform/ui-icons';
-
-import { LogoIcon } from '../../../elements/Icons';
+import { Print, Close, CurrencyEtc } from '@emeraldplatform/ui-icons';
 
 export const styles = {
   container: {
@@ -87,7 +85,7 @@ export const PaperWallet = (props) => {
   const Logo = (
     <div className={classes.logoContainer}>
       <div className={classes.logoIcon }>
-        <LogoIcon width="17px" height="33px" />
+        <CurrencyEtc fontSize="large" width="17px" height="33px" />
       </div>
     </div>
   );
