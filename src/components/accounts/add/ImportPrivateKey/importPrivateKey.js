@@ -5,18 +5,17 @@ import withStyles from 'react-jss';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { Field, reduxForm, SubmissionError } from 'redux-form';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import {
-  Warning, WarningHeader, WarningText
-} from 'emerald-js-ui';
-import { Page } from '@emeraldplatform/ui';
+  Page, Warning, WarningHeader, WarningText
+} from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import Button from 'elements/Button';
+import Button from 'components/common/Button';
 import { Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
 import accounts from 'store/vault/accounts';
 import screen from 'store/wallet/screen';
 import { required, passwordMatch, minLength } from 'lib/validators';
-import CircularProgress from 'material-ui/CircularProgress';
 
 export const styles2 = {
   passwordLabel: {
@@ -118,7 +117,13 @@ export class ImportPrivateKey extends React.Component {
         <Row>
           <div style={formStyles.left}/>
           <div style={formStyles.right}>
-            <Button primary label="Import" onClick={ handleSubmit } disabled={ submitting } icon={getLoadingIcon(submitting) }/>
+            <Button
+              primary
+              label="Import"
+              onClick={ handleSubmit }
+              disabled={ submitting }
+              icon={getLoadingIcon(submitting) }
+            />
           </div>
         </Row>
 

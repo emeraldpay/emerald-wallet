@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Warning } from 'emerald-js-ui';
-import TextField from '../Form/TextField';
+import { Warning } from '@emeraldplatform/ui';
+import TextField from '../../../elements/Form/TextField';
 import PasswordInput from './passwordInput';
 
 

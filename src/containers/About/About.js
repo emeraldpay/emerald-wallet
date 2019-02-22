@@ -2,7 +2,7 @@ import React from 'react';
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import LogoIcon from '../../components/common/Logo';
-import Button from '../../elements/Button';
+import Button from '../../components/common/Button';
 import {version} from '../../../package.json';
 
 const year = new Date().getFullYear();

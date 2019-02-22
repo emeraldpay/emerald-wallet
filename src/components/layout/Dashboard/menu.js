@@ -17,7 +17,7 @@ import {
   Book as BookIcon,
 } from '@emeraldplatform/ui-icons';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import Button from '../../../elements/Button';
+import Button from '../../common/Button';
 
 const styles2 = {
   buttonText: {

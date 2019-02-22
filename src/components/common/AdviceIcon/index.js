@@ -1,5 +1,3 @@
 import AdviceIcon from './adviceIcon';
 
-export {
-  AdviceIcon,
-};
+export default AdviceIcon;

@@ -6,7 +6,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import {Address as AccountAddress} from '@emeraldplatform/ui';
 import {MuiThemeProvider} from '@material-ui/core/styles';
 import theme from '@emeraldplatform/ui/lib/theme';
-import CloseButton from 'elements/CloseButton';
+import CloseButton from 'components/common/CloseButton';
 
 export const styles = {
   container: {

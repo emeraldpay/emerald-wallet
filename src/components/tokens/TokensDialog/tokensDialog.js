@@ -2,7 +2,7 @@ import React from 'react';
 import withStyles from 'react-jss';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
-import CloseButton from 'elements/CloseButton';
+import CloseButton from 'components/common/CloseButton';
 import AddToken from '../AddToken';
 import TokensList from '../TokensList/list';
 

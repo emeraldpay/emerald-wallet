@@ -1,6 +1,5 @@
 import React from 'react';
 import withStyles from 'react-jss';
-import { Card } from 'emerald-js-ui';
 
 const styles2 = {
   form: {

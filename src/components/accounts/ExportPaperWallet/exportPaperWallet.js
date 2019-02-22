@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import Button from '../../../elements/Button';
+import Button from '../../common/Button';
 import { Row, styles as formStyles } from '../../../elements/Form';
 import TextField from '../../../elements/Form/TextField';
 import screen from '../../../store/wallet/screen';

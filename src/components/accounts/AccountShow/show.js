@@ -11,7 +11,7 @@ import TokenUnits from 'lib/tokenUnits';
 import {
   ButtonGroup, Account as AddressAvatar, IdentityIcon, Address
 } from 'emerald-js-ui';
-import Button from 'elements/Button';
+import Button from 'components/common/Button';
 import { styles, Row } from 'elements/Form';
 import { Back } from '@emeraldplatform/ui-icons';
 import { Page } from '@emeraldplatform/ui';

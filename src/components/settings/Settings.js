@@ -8,7 +8,7 @@ import { translate } from 'react-i18next';
 import theme from '@emeraldplatform/ui/lib/theme';
 import { Back } from '@emeraldplatform/ui-icons';
 
-import Button from 'elements/Button';
+import Button from 'components/common/Button';
 import { styles, Row } from 'elements/Form';
 import screen from '../../store/wallet/screen';
 import settings from '../../store/wallet/settings';

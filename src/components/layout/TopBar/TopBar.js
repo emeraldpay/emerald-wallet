@@ -1,12 +1,11 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import { connect } from 'react-redux';
-import muiThemeable from 'material-ui/styles/muiThemeable';
-import Button from 'elements/Button';
+import Button from 'components/common/Button';
 import { Add as AddIcon } from '@emeraldplatform/ui-icons';
 import Screen from '../../../store/wallet/screen';
 
-export const styles2 = {
+export const styles = {
   container: {
     display: 'flex',
     alignItems: 'center',
@@ -20,7 +19,7 @@ export const styles2 = {
 export class TopBar extends React.Component {
   render() {
     const {
-      onAccounts, onNewContact, muiTheme, classes,
+      onAccounts, onNewContact, classes,
     } = this.props;
     return (
       <div className={classes.container}>
@@ -42,11 +41,11 @@ export class TopBar extends React.Component {
   }
 }
 
-const StyledTopBar = withStyles(styles2)(TopBar);
+const StyledTopBar = withStyles(styles)(TopBar);
 
 const mapDispatchToProps = (dispatch) => ({
   onAccounts: () => dispatch(Screen.actions.gotoScreen('home')),
   onNewContact: () => dispatch(Screen.actions.gotoScreen('add-address')),
 });
 
-export default muiThemeable()(connect(null, mapDispatchToProps)(StyledTopBar));
+export default connect(null, mapDispatchToProps)(StyledTopBar);

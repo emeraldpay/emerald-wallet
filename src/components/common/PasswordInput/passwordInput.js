@@ -1,9 +1,9 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { ViewVisible as EyeIcon } from '@emeraldplatform/ui-icons';
-import { Warning, WarningText } from 'emerald-js-ui';
+import { Warning, WarningText } from '@emeraldplatform/ui';
 import IconButton from '@material-ui/core/IconButton';
-import TextField from '../Form/TextField';
+import TextField from '../../../elements/Form/TextField';
 
 
 export default class PasswordInput extends React.Component {

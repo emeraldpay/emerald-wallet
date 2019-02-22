@@ -6,7 +6,7 @@ import { Back } from '@emeraldplatform/ui-icons';
 import {
   Warning, WarningHeader, WarningText
 } from 'emerald-js-ui';
-import Button from 'elements/Button';
+import Button from 'components/common/Button';
 import { Row, styles as formStyles } from 'elements/Form';
 
 const styles2 = {

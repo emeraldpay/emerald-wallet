@@ -1,17 +1,16 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
-import {
-  Warning, WarningHeader, WarningText
-} from 'emerald-js-ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import { Page } from '@emeraldplatform/ui';
+import {
+  Page, Warning, WarningHeader, WarningText
+} from '@emeraldplatform/ui';
 import { Field, reduxForm } from 'redux-form';
-import Button from 'elements/Button';
+import Button from 'components/common/Button';
 import TextField from 'elements/Form/TextField';
 import { required } from 'lib/validators';
 import { Row, styles as formStyles } from 'elements/Form';
-import PasswordInput from 'elements/PasswordInput';
+import PasswordInput from 'components/common/PasswordInput';
 import Advice from './advice';
 import LoadingIcon from '../LoadingIcon';
 
@@ -64,7 +63,7 @@ class PasswordDialog extends React.Component {
     }
 
     onGenerate(passphrase);
-  }
+  };
 
   onPassphraseChange = (newValue) => {
     const passphraseError = (newValue.length === 0 || newValue.length >= MIN_PASSWORD_LENGTH)
@@ -75,7 +74,7 @@ class PasswordDialog extends React.Component {
       passphrase: newValue,
       passphraseError,
     });
-  }
+  };
 
   onConfirmChange(val) {
     this.setState({
@@ -157,7 +156,8 @@ class PasswordDialog extends React.Component {
             <div style={formStyles.left}/>
             <div style={formStyles.right}>
               <Button
-                primary onClick={ this.handleGenerate }
+                primary
+                onClick={ this.handleGenerate }
                 label="Generate Account"
                 icon={ <LoadingIcon {...this.props} /> }
                 disabled={ this.props.loading }

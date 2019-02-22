@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import Button from '../../../../elements/Button';
+import Button from '../../../common/Button';
 import { NewMnemonic } from './newMnemonic';
 
 describe('When mnemonic is empty NewMnemonic', () => {

@@ -5,7 +5,7 @@ import { ButtonGroup } from 'emerald-js-ui';
 import TextField from 'elements/Form/TextField';
 import { required, address } from 'lib/validators';
 import { Row, styles as formStyles } from 'elements/Form';
-import Button from 'elements/Button';
+import Button from 'components/common/Button';
 
 const titleStyle = {
   fontSize: '18px',

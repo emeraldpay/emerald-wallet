@@ -4,7 +4,7 @@ import {
 } from 'emerald-js-ui';
 import { ArrowRight } from '@emeraldplatform/ui-icons';
 import { required } from 'lib/validators';
-import Button from 'elements/Button';
+import Button from 'components/common/Button';
 import { Divider } from '@material-ui/core';
 import { List, ListItem } from 'material-ui/List';
 import muiThemeable from 'material-ui/styles/muiThemeable';
