@@ -118,8 +118,8 @@
   },
   "devDependencies": {
     "@elastic/webpack-directory-name-as-main": "2.0.2",
-    "@storybook/addon-actions": "^4.1.13",
-    "@storybook/react": "^4.1.13",
+    "@storybook/addon-actions": "4.1.13",
+    "@storybook/react": "4.1.13",
     "babel-core": "^6.26.3",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^7.1.0",
@@ -144,8 +144,8 @@
     "eslint-plugin-flowtype": "^2.39.1",
     "eslint-plugin-import": "^2.15.0",
     "eslint-plugin-react": "^7.12.4",
-    "extract-text-webpack-plugin": "2.1.0",
-    "file-loader": "0.11.1",
+    "extract-text-webpack-plugin": "4.0.0-beta.0",
+    "file-loader": "3.0.1",
     "flow-bin": "0.59.0",
     "flow-typed": "^2.1.5",
     "fs-extra": "^0.30.0",
@@ -153,6 +153,7 @@
     "identity-obj-proxy": "^3.0.0",
     "imports-loader": "0.7.1",
     "jest": "22.2.1",
+    "mini-css-extract-plugin": "^0.5.0",
     "minimist": "^1.2.0",
     "node-abi": "^2.5.1",
     "react-test-renderer": "^15.6.1",
@@ -162,7 +163,7 @@
     "style-loader": "0.16.1",
     "url-loader": "^1.1.2",
     "usb": "1.5.0",
-    "webpack": "2.6.1"
+    "webpack": "4.29.5"
   },
   "build": {
     "appId": "com.ethereumclassic.emeraldwallet",

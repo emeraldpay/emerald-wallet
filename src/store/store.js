@@ -1,11 +1,4 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import thunkMiddleware from 'redux-thunk';
-import {
-  createStore as createReduxStore,
-  applyMiddleware,
-  combineReducers
-} from 'redux';
-import { reducer as formReducer } from 'redux-form';
 import { ipcRenderer } from 'electron';
 import { startProtocolListener } from './protocol';
 
@@ -27,13 +20,11 @@ import {
   loadClientVersion
 } from './launcher/launcherActions';
 import { showError } from './wallet/screen/screenActions';
-import launcherReducers from './launcher/launcherReducers';
-import walletReducers from './wallet/walletReducers';
+
 import deployedTokens from '../lib/deployedTokens';
 import getWalletVersion from '../utils/get-wallet-version';
 import createLogger from '../utils/logger';
-import reduxLogger from '../utils/redux-logger';
-import reduxMiddleware from './middleware';
+import { createStore } from './createStore';
 
 import {
   onceServicesStart,
@@ -42,40 +33,6 @@ import {
 } from './triggers';
 
 const log = createLogger('store');
-
-const reducers = {
-  accounts: accounts.reducer,
-  addressBook: Addressbook.reducer,
-  tokens: tokens.reducer,
-  network: network.reducer,
-  launcher: launcherReducers,
-  ledger: ledger.reducer,
-  form: formReducer,
-  wallet: walletReducers,
-};
-
-/**
- * Creates Redux store with API as dependency injection.
- *
- * Injecting api allows to write unit tests.
- *
- * @param _api
- */
-export const createStore = (_api) => {
-  const storeMiddleware = [
-    reduxMiddleware.promiseCatchAll,
-    thunkMiddleware.withExtraArgument(_api),
-  ];
-
-  if (process.env.NODE_ENV !== 'test') {
-    storeMiddleware.push(reduxLogger);
-  }
-
-  return createReduxStore(
-    combineReducers(reducers),
-    applyMiddleware(...storeMiddleware)
-  );
-};
 
 export const store = createStore(api);
 
