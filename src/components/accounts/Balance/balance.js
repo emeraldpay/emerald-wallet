@@ -27,7 +27,7 @@ export class Balance extends React.Component {
     coinsStyle: PropTypes.object,
     fiatStyle: PropTypes.object,
     fiatCurrency: PropTypes.string,
-  }
+  };
 
   static defaultProps = {
     showFiat: false,

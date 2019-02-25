@@ -35,11 +35,11 @@ const Dashboard = (props) => {
   }
 
   return (
-    <div>
+    <MuiThemeProvider theme={theme}>
       <Header/>
       <AccountsList/>
       <TransactionsHistory/>
-    </div>
+    </MuiThemeProvider>
   );
 };
 
