@@ -20,9 +20,9 @@
   ],
   "scripts": {
     "setup": "npm install && flow-typed install",
-    "build": "node scripts/build.js --no-watch",
-    "build:all": "node scripts/build.js",
-    "build:all:nowatch": "node scripts/build.js --no-watch",
+    "build": "node ./scripts/build.js --no-watch",
+    "build:all": "node ./scripts/build.js",
+    "build:all:nowatch": "node ./scripts/build.js --no-watch",
     "start:electron": "cross-env NODE_ENV=development ./node_modules/.bin/electron .",
     "start:electron:getemerald": "getemerald && NODE_ENV=development ./node_modules/.bin/electron .",
     "test:watch": "jest --watchAll",

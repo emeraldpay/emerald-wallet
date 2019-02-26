@@ -16,7 +16,7 @@ import { gotoScreen } from '../../../store/wallet/screen/screenActions';
 import { toDate } from '../../../lib/convert';
 import { styles, Row } from '../../../elements/Form';
 import Button from '../../common/Button';
-import TxStatus from './status';
+import TxStatus from './TxStatus';
 import { Currency } from '../../../lib/currency';
 import createLogger from '../../../utils/logger';
 import TxInputData from './TxInputData';

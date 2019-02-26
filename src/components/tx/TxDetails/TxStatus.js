@@ -2,7 +2,7 @@ import React from 'react';
 import withStyles from 'react-jss';
 import CircularProgress from 'material-ui/CircularProgress';
 
-const styles = {
+export const styles = {
   success: {
     height: '30px',
     width: '81px',
@@ -33,7 +33,7 @@ const styles = {
   },
 };
 
-const Status = (props) => {
+export const TxStatus = (props) => {
   const { status, classes } = props;
   if (status === 'success') {
     return (<div className={ classes.success }>Success</div>);
@@ -51,4 +51,4 @@ const Status = (props) => {
   );
 };
 
-export default withStyles(styles)(Status);
+export default withStyles(styles)(TxStatus);
