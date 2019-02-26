@@ -4,8 +4,6 @@ import {connect} from 'react-redux';
 import Immutable from 'immutable';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import {MuiThemeProvider} from '@material-ui/core/styles';
-import theme from '@emeraldplatform/ui/lib/theme';
 import TransactionsHistory from '../../tx/TxHistory';
 import AccountsList from '../../accounts/AccountList';
 import Header from './header';
@@ -21,25 +19,23 @@ const Dashboard = (props) => {
   const {connecting, statusMessage} = props;
   if (connecting) {
     return (
-      <MuiThemeProvider theme={theme}>
-        <Grid container direction="column" alignItems='center' justify="center">
-          <Grid item>
-            <CircularProgress size={50}/>
-          </Grid>
-          <Grid>
-            <div style={styles.statusMessage}>{statusMessage}</div>
-          </Grid>
+      <Grid container direction="column" alignItems='center' justify="center">
+        <Grid item>
+          <CircularProgress size={50}/>
         </Grid>
-      </MuiThemeProvider>
+        <Grid>
+          <div style={styles.statusMessage}>{statusMessage}</div>
+        </Grid>
+      </Grid>
     );
   }
 
   return (
-    <MuiThemeProvider theme={theme}>
+    <React.Fragment>
       <Header/>
       <AccountsList/>
       <TransactionsHistory/>
-    </MuiThemeProvider>
+    </React.Fragment>
   );
 };
 
