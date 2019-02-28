@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react';
+import React from 'react';
 import withStyles from 'react-jss';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
@@ -8,13 +8,13 @@ import theme from '@emeraldplatform/ui/lib/theme';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import QRCode from 'qrcode.react';
 import TokenUnits from 'lib/tokenUnits';
+import { Account as AddressAvatar } from 'emerald-js-ui';
+import { Back } from '@emeraldplatform/ui-icons';
 import {
-  ButtonGroup, Account as AddressAvatar, IdentityIcon, Address
-} from 'emerald-js-ui';
+  Page, IdentityIcon, Address, ButtonGroup
+} from '@emeraldplatform/ui';
 import Button from 'components/common/Button';
 import { styles, Row } from 'elements/Form';
-import { Back } from '@emeraldplatform/ui-icons';
-import { Page } from '@emeraldplatform/ui';
 import accounts from '../../../store/vault/accounts';
 import tokens from '../../../store/vault/tokens';
 import screen from '../../../store/wallet/screen';
@@ -50,7 +50,7 @@ export class AccountShow extends React.Component {
 
   handleEdit = () => {
     this.setState({ edit: true });
-  }
+  };
 
   handleSave = (data) => {
     this.props.editAccount(data)
@@ -58,11 +58,11 @@ export class AccountShow extends React.Component {
         this.setState({ edit: false });
         log.debug(result);
       });
-  }
+  };
 
   cancelEdit = () => {
     this.setState({ edit: false });
-  }
+  };
 
   render() {
     const { account, tokensBalances, classes } = this.props;
@@ -125,7 +125,7 @@ export class AccountShow extends React.Component {
                 <div style={ styles.right }>
                   {!this.state.edit && <AddressAvatar
                     editable
-                    id={ acc.id }
+                    address={ acc.id }
                     description={ acc.description }
                     name={ acc.name }
                     onEditClick={ this.handleEdit }

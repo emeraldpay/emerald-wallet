@@ -49,7 +49,7 @@ function onSetAddressBook(state, action) {
 }
 
 function onAddAddress(state, action) {
-  if (action.type === ActionTypes.ADD_ADDRESS) {
+  if (action.type === ActionTypes.ADD_CONTACT) {
     return addAddress(state, {
       address: action.address,
       name: action.name,

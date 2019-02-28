@@ -1,8 +1,8 @@
 import BigNumber from 'bignumber.js';
 import Immutable from 'immutable';
 import {
-  /* fromTokens, */ mweiToWei, etherToWei, estimateGasFromTrace, transformToFullName,
-  dataToParams, getFunctionSignature, separateThousands
+  mweiToWei, etherToWei, estimateGasFromTrace, transformToFullName,
+  getFunctionSignature, separateThousands
 } from './convert';
 
 describe('Number formatting', () => {
@@ -11,22 +11,6 @@ describe('Number formatting', () => {
     expect(separateThousands(123456789, '*')).toEqual('123*456*789');
   });
 });
-
-
-// describe('Token Converter', () => {
-//     it('convert token number to value', () => {
-//         expect(fromTokens(1234, 8).toString()).toEqual('123400000000');
-//     });
-//     it('convert token number to value', () => {
-//         expect(fromTokens(1234, 8)).toEqual(new BigNumber('123400000000'));
-//     });
-//     it('convert token string to value', () => {
-//         expect(fromTokens('1234', 2).toString()).toEqual('123400');
-//     });
-//     it('convert token decimals to value', () => {
-//         expect(fromTokens('0.01', 8).toString()).toEqual('1000000');
-//     });
-// });
 
 const balanceOf = {
   constant: true,
@@ -57,34 +41,6 @@ describe('Function Converter', () => {
   });
   it('get function signature from ABI', () => {
     expect(getFunctionSignature(Immutable.fromJS(balanceOf))).toEqual('70a08231');
-  });
-});
-
-describe('Data to Params Converter', () => {
-  const fxn = {
-    inputs: [{ name: '_owner', type: 'address' }],
-    name: 'balanceOf',
-    outputs: [{ name: 'balance', type: 'uint32' }],
-  };
-  let data = '000000000000000000000000000000000000000000000000000000000000002a';
-  it('convert data to number', () => {
-    expect(dataToParams(Immutable.fromJS(fxn), data).last().value.toString()).toEqual('42');
-  });
-  it('convert data to number', () => {
-    data = '0x000000000000000000000000000000000000000000000000000000000000002a';
-    expect(dataToParams(Immutable.fromJS(fxn), data).last().value.toString()).toEqual('42');
-  });
-  it('convert data to array of numbers', () => {
-    fxn.outputs = [{ name: 'balance', type: 'uint256[]' }];
-    data = '00000000000000000000000000000000000000000000000000000000000000200000000000000000000000000000000000000000000000000000000000000003000000000000000000000000000000000000000000000000000000000000000100000000000000000000000000000000000000000000000000000000000000020000000000000000000000000000000000000000000000000000000000000003';
-    expect(dataToParams(Immutable.fromJS(fxn), data).last().value.toString()).toEqual('1,2,3');
-  });
-  it('convert data to array of outputs', () => {
-    fxn.outputs = [{ name: 'balance', type: 'uint32' },
-      { name: 'success', type: 'bool' }];
-    data = '0000000000000000000000000000000000000000000000000000000000000001000000000000000000000000000000000000000000000000000000000000002a';
-    expect(dataToParams(Immutable.fromJS(fxn), data).size).toEqual(2);
-    expect(dataToParams(Immutable.fromJS(fxn), data).last().value).toEqual(false);
   });
 });
 

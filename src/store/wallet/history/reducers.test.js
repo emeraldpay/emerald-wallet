@@ -1,6 +1,6 @@
 import { fromJS, List } from 'immutable';
 import BigNumber from 'bignumber.js';
-import { convert } from '@emeraldplatform/emerald-js';
+import { convert } from '@emeraldplatform/core';
 
 import historyReducers from './reducers';
 import ActionTypes from './actionTypes';
@@ -97,6 +97,7 @@ describe('historyReducer', () => {
         gas: '0x47e7c4',
         gasPrice: '0x174876e800',
         nonce: '0x4',
+        value: toBigNumber('0x4'),
       },
     });
 
@@ -110,7 +111,7 @@ describe('historyReducer', () => {
     // This is inconsistency in ethereum api
     expect(trackedTxs.data).toEqual(tx.input);
     expect(trackedTxs.hash).toEqual(tx.hash);
-    expect(trackedTxs.value).toEqual(tx.value);
+    expect(trackedTxs.value.comparedTo(tx.value)).toEqual(0);
   });
 
   it('should update TXS timestamp', () => {
@@ -150,7 +151,7 @@ describe('historyReducer', () => {
     state = historyReducers(state, action);
     const trackedTxs = state.get('trackedTransactions').last().toJS();
     expect(trackedTxs.timestamp).toEqual(123456789);
-    expect(trackedTxs.value).toEqual(tx.value);
+    expect(trackedTxs.value.comparedTo(tx.value)).toEqual(0);
   });
 
   it('should handle UPDATE_TXS', () => {

@@ -7,7 +7,7 @@ import createLogger from '../../utils/logger';
 import AddressBook from '../../components/addressbook/ContactList';
 import AccountShow from '../../components/accounts/AccountShow';
 import AddressShow from '../../components/addressbook/AddressShow';
-import AddressAdd from '../../components/addressbook/AddContact';
+import AddContact from '../../components/addressbook/AddContact';
 import TransactionShow from '../../components/tx/TxDetails';
 import MnemonicWizard from '../../components/accounts/MnemonicWizard';
 import AddToken from '../../components/tokens/AddToken/add';
@@ -41,7 +41,7 @@ const Screen = ({ screen, screenItem }) => {
   } if (screen === 'address') {
     return <AddressShow address={ screenItem }/>;
   } if (screen === 'add-address') {
-    return <AddressAdd />;
+    return <AddContact />;
   } if (screen === 'landing-add-from-ledger') {
     return <LedgerImport onBackScreen={screenItem} />;
   } if (screen === 'add-from-ledger') {

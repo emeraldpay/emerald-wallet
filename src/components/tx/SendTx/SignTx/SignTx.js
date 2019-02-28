@@ -1,7 +1,8 @@
 import React from 'react';
 import {
-  ButtonGroup, IdentityIcon, Input
+  IdentityIcon, Input
 } from 'emerald-js-ui';
+import { ButtonGroup } from '@emeraldplatform/ui';
 import { ArrowRight } from '@emeraldplatform/ui-icons';
 import { required } from 'lib/validators';
 import Button from 'components/common/Button';

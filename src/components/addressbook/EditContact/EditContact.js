@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { AddressForm } from '../form';
+import ContactForm from '../ContactForm';
 
 const AddressEdit = connect(
   (state, ownProps) => ({
@@ -19,6 +19,6 @@ const AddressEdit = connect(
       ownProps.onCancel();
     },
   })
-)(AddressForm);
+)(ContactForm);
 
 export default AddressEdit;

@@ -6,7 +6,7 @@ export const Networks = [
     },
     chain: {
       id: 61,
-      name: 'mainnet',
+      name: 'etc',
     },
     title: 'Mainnet',
     id: 'local/mainnet',
@@ -18,7 +18,7 @@ export const Networks = [
     },
     chain: {
       id: 61,
-      name: 'mainnet',
+      name: 'etc',
     },
     title: 'Mainnet',
     id: 'gastracker/mainnet',

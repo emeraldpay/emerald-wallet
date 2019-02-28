@@ -14,7 +14,7 @@ describe('historyStorage', () => {
 
     expect(loaded).toHaveLength(1);
     expect(loaded[0].hash).toEqual('0x1234');
-    expect(loaded[0].value).toEqual(new BigNumber(1));
+    expect(loaded[0].value.comparedTo(new BigNumber(1))).toEqual(0);
     expect(loaded[0].timestamp).toEqual(123456789);
   });
 });

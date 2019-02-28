@@ -1,5 +1,5 @@
 // @flow
-import { convert } from '@emeraldplatform/emerald-js';
+import { convert } from '@emeraldplatform/core';
 import type { Transaction } from './types';
 
 const { toBigNumber } = convert;

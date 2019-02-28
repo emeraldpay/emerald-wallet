@@ -45,21 +45,15 @@ type Props = {
     accountId: string,
 };
 
-const renderEmptyTransactions = (transactions, muiTheme) => {
-  if (transactions.size === 0) {
-    return (
-      <div style={{paddingTop: '20px', color: muiTheme.palette.secondaryTextColor}}> There are no transactions. </div>
-    );
-  }
-  return null;
-};
-
 const TransactionsList = (props: Props) => {
   const {
     transactions, accountId, muiTheme, classes,
   } = props;
   if (!transactions) {
     return (<div>Loading...</div>);
+  }
+  if (transactions.size === 0) {
+    return (<div style={{paddingTop: '20px', color: muiTheme.palette.secondaryTextColor}}> There are no transactions. </div>);
   }
   return (
     <div>
@@ -79,7 +73,6 @@ const TransactionsList = (props: Props) => {
         </TableHead>
         <TableBody displayRowCheckbox={ false }>
           { transactions.map((tx) => <Transaction key={tx.get('hash')} tx={tx} accountId={ accountId } />) }
-          { renderEmptyTransactions(transactions, muiTheme) }
         </TableBody>
       </Table>
     </div>

@@ -22,7 +22,7 @@ export function addAddress(address, name, description) {
     const chain = launcher.selectors.getChainName(getState());
     return api.emerald.importAddress({address, name, description}, chain).then((result) => {
       dispatch({
-        type: ActionTypes.ADD_ADDRESS,
+        type: ActionTypes.ADD_CONTACT,
         address,
         name,
         description,

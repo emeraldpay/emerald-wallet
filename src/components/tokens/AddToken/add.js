@@ -1,7 +1,7 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
-import { convert } from '@emeraldplatform/emerald-js';
+import { convert } from '@emeraldplatform/core';
 import { connect } from 'react-redux';
 import {
   Field, reduxForm, change, formValueSelector, reset

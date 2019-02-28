@@ -5,10 +5,7 @@ import withStyles from 'react-jss';
 import { Map } from 'immutable';
 import { connect } from 'react-redux';
 import { convert, Wei } from '@emeraldplatform/emerald-js';
-import {
-  Account, ButtonGroup
-} from 'emerald-js-ui';
-import { Page } from '@emeraldplatform/ui';
+import { Page, ButtonGroup, Account } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import launcher from 'store/launcher';

@@ -1,5 +1,5 @@
 import Immutable from 'immutable';
-import { convert } from '@emeraldplatform/emerald-js';
+import { convert } from '@emeraldplatform/core';
 import TokenUnits from '../../lib/tokenUnits';
 import ActionTypes from './actionTypes';
 

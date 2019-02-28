@@ -1,6 +1,7 @@
 // @flow
 import EthereumTx from 'ethereumjs-tx';
 import { convert, Wallet, Address } from '@emeraldplatform/emerald-js';
+import { EthAddress } from '@emeraldplatform/core';
 import { fromJS } from 'immutable';
 import { loadTokensBalances } from '../tokens/tokenActions';
 import screen from '../../wallet/screen';
@@ -293,7 +294,7 @@ export function importJson(data, name: string, description: string) {
         type: ActionTypes.IMPORT_WALLET,
         accountId: result,
       });
-      if (Address.isValid(result)) {
+      if ((new EthAddress(result)).isValid()) {
         dispatch({
           name,
           description,
@@ -317,7 +318,7 @@ export function importMnemonic(passphrase: string, mnemonic: string, hdPath: str
         type: ActionTypes.IMPORT_WALLET,
         accountId: result,
       });
-      if (Address.isValid(result)) {
+      if ((new EthAddress(result)).isValid()) {
         dispatch({
           type: ActionTypes.ADD_ACCOUNT,
           accountId: result,

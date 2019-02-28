@@ -2,7 +2,7 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
-import { convert } from '@emeraldplatform/emerald-js';
+import { convert } from '@emeraldplatform/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';

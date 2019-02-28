@@ -1,6 +1,6 @@
 const os = require('os');
 const process = require('process');
-const { Downloader, getPlatformConfig } = require('@emeraldplatform/emerald-js/lib/download');
+const { Downloader, getPlatformConfig } = require('@emeraldplatform/util');
 
 const config = {
   format: 'v1',
@@ -123,7 +123,12 @@ downloader.on('error', (error) => {
 });
 
 downloader.downloadIfNotExists()
-  .then(() => process.exit(0))
+  .then((result) => {
+    if (result === 'exists') {
+      console.log('emerald exists.');
+    }
+    process.exit(0);
+  })
   .catch((error) => {
     console.error('Error during downloading emerald-cli:', error);
     process.exit(1);

@@ -1,26 +1,24 @@
 // @flow
-import {
-  EthRpc, JsonRpc, HttpTransport, Vault, VaultJsonRpcProvider, VaultInMemoryProvider
-} from '@emeraldplatform/emerald-js';
+import {EthRpc} from '@emeraldplatform/eth-rpc';
+import {JsonRpc, HttpTransport} from '@emeraldplatform/rpc';
+import {Vault, JsonRpcProvider as VaultJsonRpcProvider} from '@emeraldplatform/vault';
 
 export default class Api {
-    emerald: Vault;
-
-    constructor() {
-      this.emerald = new Vault(
-        new VaultJsonRpcProvider(
-          new JsonRpc(
-            new HttpTransport('http://127.0.0.1:1920')
-          )
+  constructor() {
+    this.emerald = new Vault(
+      new VaultJsonRpcProvider(
+        new JsonRpc(
+          new HttpTransport('http://127.0.0.1:1920')
         )
-      );
-      // this.emerald = new Vault(new VaultInMemoryProvider());
-      this.geth = null;
-    }
+      )
+    );
+    // this.emerald = new Vault(new VaultInMemoryProvider());
+    this.geth = null;
+  }
 
-    updateGethUrl(url) {
-      this.geth = new EthRpc(new JsonRpc(new HttpTransport(url)));
-    }
+  updateGethUrl(url) {
+    this.geth = new EthRpc(new JsonRpc(new HttpTransport(url)));
+  }
 }
 
 export const api = new Api();
