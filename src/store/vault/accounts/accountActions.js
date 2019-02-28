@@ -1,7 +1,8 @@
 // @flow
 import EthereumTx from 'ethereumjs-tx';
-import { convert, Wallet, Address } from '@emeraldplatform/emerald-js';
+import { convert, Address } from '@emeraldplatform/emerald-js';
 import { EthAddress } from '@emeraldplatform/core';
+import { EthAccount } from '@emeraldplatform/eth-account';
 import { fromJS } from 'immutable';
 import { loadTokensBalances } from '../tokens/tokenActions';
 import screen from '../../wallet/screen';
@@ -123,7 +124,7 @@ export function exportPrivateKey(passphrase: string, accountId: string) {
   return (dispatch, getState, api) => {
     const chain = currentChain(getState());
     return api.emerald.exportAccount(accountId, chain).then((result) => {
-      const wallet = Wallet.fromV3(result, passphrase);
+      const wallet = EthAccount.fromV3(result, passphrase);
       return wallet.getPrivateKeyString();
     });
   };
