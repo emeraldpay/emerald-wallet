@@ -19,7 +19,7 @@ const Dashboard = (props) => {
   const {connecting, statusMessage} = props;
   if (connecting) {
     return (
-      <Grid container direction="column" alignItems='center' justify="center">
+      <Grid container direction="column" alignItems="center" justify="center">
         <Grid item>
           <CircularProgress size={50}/>
         </Grid>
