@@ -1,14 +1,15 @@
 import React from 'react';
 import {
-  ButtonGroup, IdentityIcon, Input
+  IdentityIcon, Input
 } from 'emerald-js-ui';
+import { ButtonGroup } from '@emeraldplatform/ui';
 import { ArrowRight } from '@emeraldplatform/ui-icons';
 import { required } from 'lib/validators';
-import Button from 'elements/Button';
-import { Divider } from 'material-ui';
+import Button from 'components/common/Button';
+import { Divider } from '@material-ui/core';
 import { List, ListItem } from 'material-ui/List';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import { Form, Row, styles } from '../../../../elements/Form';
+import { Row, styles } from '../../../../elements/Form';
 import { Currency } from '../../../../lib/currency';
 
 const HorizontalAddressWithIdentity = (props) => {
@@ -151,7 +152,7 @@ const SignTx = muiThemeable()((props) => {
       {
         getTypedDataOrDeploy(props)
       }
-      <Form style={{ marginTop: '0' }}>
+      <div style={{ marginTop: '10px' }}>
         {passwordFields({...props, onChange})}
         <Row>
           <div style={styles.left} />
@@ -162,7 +163,7 @@ const SignTx = muiThemeable()((props) => {
             </ButtonGroup>
           </div>
         </Row>
-      </Form>
+      </div>
     </div>
   );
 });

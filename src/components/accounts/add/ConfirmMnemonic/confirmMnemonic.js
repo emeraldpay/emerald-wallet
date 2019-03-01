@@ -6,12 +6,11 @@ import { connect } from 'react-redux';
 import {
   Field, reduxForm, SubmissionError
 } from 'redux-form';
-import { Warning, WarningText } from 'emerald-js-ui';
-import { Page } from '@emeraldplatform/ui';
+import { Page, Warning, WarningText } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import Button from 'elements/Button';
+import Button from 'components/common/Button';
 import TextField from 'elements/Form/TextField';
-import { Form, Row, styles as formStyles } from 'elements/Form';
+import { Row, styles as formStyles } from 'elements/Form';
 import accounts from 'store/vault/accounts';
 import screen from 'store/wallet/screen';
 

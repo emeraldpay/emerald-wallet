@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import { Account } from 'emerald-js-ui';
+import { Account } from '@emeraldplatform/ui';
 import { MenuItem } from 'material-ui';
 
 class AddressIconMenuItem extends React.Component {
@@ -32,7 +32,7 @@ class AddressIconMenuItem extends React.Component {
         onClick={this.onClick}
         style={menuStyle}
         primaryText={
-          <Account identityProps={{size: 30}} addr={this.props.address} identity={true} hideCopy={true} />
+          <Account identityProps={{size: 30}} address={this.props.address} identity={true} hideCopy={true} />
         }
       />
     );

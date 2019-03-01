@@ -2,9 +2,10 @@ require('es6-promise').polyfill();
 const os = require('os');
 const { app } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 
-const {
-  JsonRpc, HttpTransport, EthRpc, NodeChecker,
-} = require('@emeraldplatform/emerald-js');
+const { EthRpc } = require('@emeraldplatform/eth-rpc');
+const { JsonRpc, HttpTransport } = require('@emeraldplatform/rpc');
+const { NodeChecker } = require('@emeraldplatform/eth-node');
+
 const log = require('./logger');
 
 const headers = {

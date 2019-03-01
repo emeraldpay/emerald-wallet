@@ -62,7 +62,7 @@ class ToField extends React.Component {
 
   inputStyles = {
     flexGrow: 5,
-  }
+  };
 
   render() {
     return (

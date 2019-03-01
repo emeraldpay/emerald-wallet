@@ -1,9 +1,9 @@
 import { shallow } from 'enzyme';
 import React from 'react';
-import { TopBar, styles2 } from './TopBar';
+import { TopBar, styles } from './TopBar';
 
 const reduceClasses = (prev, curr) => Object.assign({}, prev, { [curr]: curr });
-const classes = Object.keys(styles2).reduce(reduceClasses, {});
+const classes = Object.keys(styles).reduce(reduceClasses, {});
 
 const mockMuiTheme = {
   palette: {},

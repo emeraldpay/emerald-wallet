@@ -1,9 +1,9 @@
 import { connect } from 'react-redux';
 import Addressbook from '../../../store/vault/addressbook';
 import { gotoScreen } from '../../../store/wallet/screen/screenActions';
-import { AddressForm } from '../form';
+import ContactForm from '../ContactForm';
 
-const AddressAdd = connect(
+const AddContact = connect(
   (state, ownProps) => ({
     blockAddress: false,
     title: 'Add Contact',
@@ -20,6 +20,6 @@ const AddressAdd = connect(
       dispatch(gotoScreen('address-book'));
     },
   })
-)(AddressForm);
+)(ContactForm);
 
-export default AddressAdd;
+export default AddContact;

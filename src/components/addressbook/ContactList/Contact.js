@@ -25,7 +25,7 @@ class Contact extends React.Component {
     this.setState({
       currentState: States.EDIT,
     });
-  }
+  };
 
   render() {
     const { currentState } = this.state;

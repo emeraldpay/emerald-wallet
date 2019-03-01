@@ -1,6 +1,5 @@
-const {
-  JsonRpc, HttpTransport, Vault, VaultJsonRpcProvider, VaultInMemoryProvider,
-} = require('@emeraldplatform/emerald-js');
+const { JsonRpc, HttpTransport } = require('@emeraldplatform/rpc');
+const { Vault, JsonRpcProvider } = require('@emeraldplatform/vault');
 const log = require('./logger');
 const { LocalGeth, NoneGeth, RemoteGeth } = require('./launcher');
 const { LocalConnector } = require('./vault/launcher');
@@ -58,7 +57,7 @@ class Services {
     this.gethStatus = STATUS.NOT_STARTED;
     this.notify = new UserNotify(webContents);
     this.emerald = new Vault(
-      new VaultJsonRpcProvider(
+      new JsonRpcProvider(
         new JsonRpc(
           new HttpTransport('http://127.0.0.1:1920')
         )

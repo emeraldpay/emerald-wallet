@@ -1,7 +1,7 @@
 import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Check2 as CheckIcon } from '@emeraldplatform/ui-icons';
-import Button from '../../../elements/Button';
+import Button from '../../common/Button';
 
 export const Terms = ({ onAgree }) => {
   const style = {

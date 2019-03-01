@@ -25,9 +25,9 @@ const styles2 = {
 const ContactList = ({ addressBook, muiTheme, classes }) => {
   let list;
   if (addressBook.size > 0) {
-    list = addressBook.map((addr) => (
-      <div key={addr.get('address')} style={{ border: `1px solid ${muiTheme.palette.borderColor}` }} className={classes.listItem}>
-        <Contact address={addr} />
+    list = addressBook.map((contact) => (
+      <div key={contact.get('address')} style={{ border: `1px solid ${muiTheme.palette.borderColor}` }} className={classes.listItem}>
+        <Contact address={contact} />
       </div>));
   } else {
     list = (

@@ -1,7 +1,7 @@
 import 'typeface-rubik/index.css';
-import './About';
+// TODO: fix - remove electron deps
+// import './About';
 import './Landing';
-import './DashboardButton';
 import './TxHistory';
 import './AccountEdit';
 import './Terms';

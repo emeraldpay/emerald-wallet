@@ -1,7 +1,7 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
-import { convert } from '@emeraldplatform/emerald-js';
+import { convert } from '@emeraldplatform/core';
 import { connect } from 'react-redux';
 import {
   Field, reduxForm, change, formValueSelector, reset
@@ -9,7 +9,7 @@ import {
 import TextField from 'elements/Form/TextField';
 import { ButtonGroup } from 'emerald-js-ui';
 import { required, address } from 'lib/validators';
-import Button from 'elements/Button';
+import Button from 'components/common/Button';
 import TokenUnits from 'lib/tokenUnits';
 import tokens from '../../../store/vault/tokens';
 

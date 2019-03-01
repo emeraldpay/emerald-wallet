@@ -1,7 +1,7 @@
 import React from 'react';
 import { shallow } from 'enzyme';
 import { fromJS } from 'immutable';
-import { Account } from 'emerald-js-ui';
+import { Account } from '@emeraldplatform/ui';
 import { TransactionShow, styles2 } from './show';
 import TxInputData from './TxInputData';
 

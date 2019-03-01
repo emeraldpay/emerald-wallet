@@ -1,6 +1,5 @@
 import React from 'react';
 import withStyles from 'react-jss';
-import { Card } from 'emerald-js-ui';
 
 const styles2 = {
   form: {
@@ -48,26 +47,27 @@ export const Row = withStyles(styles2)((props) => {
   );
 });
 
-export const Form = withStyles(styles2)((props) => {
-  const {
-    children, caption, backButton, style, classes,
-  } = props;
-  return (
-    <Card style={style}>
-      <div className={classes.form}>
-        <div style={styles.formRow}>
-          <div style={styles.left}>
-            {backButton}
-          </div>
-          <div style={styles.right}>
-            <div style={{ fontSize: '22px' }}>
-              {caption}
-            </div>
-          </div>
-        </div>
-        <div style={{ paddingTop: '30px' }}>
-          {children}
-        </div>
-      </div>
-    </Card>);
-});
+// TODO: depricated
+// export const Form = withStyles(styles2)((props) => {
+//   const {
+//     children, caption, backButton, style, classes,
+//   } = props;
+//   return (
+//     <Card style={style}>
+//       <div className={classes.form}>
+//         <div style={styles.formRow}>
+//           <div style={styles.left}>
+//             {backButton}
+//           </div>
+//           <div style={styles.right}>
+//             <div style={{ fontSize: '22px' }}>
+//               {caption}
+//             </div>
+//           </div>
+//         </div>
+//         <div style={{ paddingTop: '30px' }}>
+//           {children}
+//         </div>
+//       </div>
+//     </Card>);
+// });

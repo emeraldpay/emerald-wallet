@@ -14,7 +14,7 @@ const createAboutPage = () => {
     show: false,
   });
   browserWindow.setMenu(null);
-
+  browserWindow.setMenuBarVisibility(false);
   // and load the about.html.
   browserWindow.loadURL(url.format({
     pathname: path.join(__dirname, '../app/about.html'),

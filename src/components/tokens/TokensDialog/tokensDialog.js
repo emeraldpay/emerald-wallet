@@ -1,7 +1,8 @@
 import React from 'react';
 import withStyles from 'react-jss';
-import { Dialog } from 'material-ui';
-import CloseButton from 'elements/CloseButton';
+import Dialog from '@material-ui/core/Dialog';
+import DialogContent from '@material-ui/core/DialogContent';
+import CloseButton from 'components/common/CloseButton';
 import AddToken from '../AddToken';
 import TokensList from '../TokensList/list';
 
@@ -36,8 +37,8 @@ export class TokensDialog extends React.Component {
     const { onClose, classes } = this.props;
 
     return (
-      <Dialog modal={true} open={true} onRequestClose={ onClose } contentStyle={{maxWidth: '600px'}}>
-        <div style={{width: '100%'}}>
+      <Dialog open={true} onClose={ onClose } >
+        <DialogContent>
           <div className={ classes.header }>
             <div className={classes.title}>Add token by address</div>
             <div>
@@ -52,7 +53,7 @@ export class TokensDialog extends React.Component {
               <AddToken/>
             </div>
           </div>
-        </div>
+        </DialogContent>
       </Dialog>);
   }
 }

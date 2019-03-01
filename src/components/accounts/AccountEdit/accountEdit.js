@@ -1,59 +1,78 @@
 import { connect } from 'react-redux';
 import React from 'react';
-import muiThemeable from 'material-ui/styles/muiThemeable';
-import { Field, reduxForm } from 'redux-form';
-import { Card, CardText } from 'material-ui';
-import { TextField } from 'redux-form-material-ui';
-import { ButtonGroup } from 'emerald-js-ui';
-import Button from '../../../elements/Button';
-import { required } from '../../../lib/validators';
-import { cardSpace } from '../../../lib/styles';
+import { Close as CancelIcon, Checkmark as SubmitIcon } from '@emeraldplatform/ui-icons';
+import TextField from '@material-ui/core/TextField';
+import { withStyles } from '@material-ui/core/styles';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import IconButton from '@material-ui/core/IconButton';
 
-// TODO: Get rid of redux-form
-export const AccountEdit = ({
-  muiTheme, handleSubmit, invalid, pristine, submitting, cancel,
-}) => (
-  <Card style={cardSpace}>
-    <CardText expandable={false}>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <Field
-            name="name"
-            component={TextField}
-            type="text"
-            floatingLabelText="Account Name"
-            floatingLabelStyle={{color: muiTheme.palette.textColor}}
-            validate={required}
-          />
-        </div>
-        <ButtonGroup>
-          <Button
-            label="Cancel"
-            onClick={cancel} />
-          <Button
-            primary
-            label="Save"
-            type="submit"
-            disabled={pristine || submitting || invalid} />
-        </ButtonGroup>
-      </form>
-    </CardText>
-  </Card>
-);
+export const styles = {
+  nameTextField: {
+    fontSize: '14px',
+  },
+};
 
-export const AccountEditForm = reduxForm({
-  form: 'AddressForm',
-  fields: ['name', 'address'],
-})(AccountEdit);
+/**
+ * Allows inline editing account's name
+ */
+export class AccountEdit extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      name: this.props.name,
+    };
+  }
+
+  handleChange = (event) => {
+    this.setState({
+      name: event.target.value,
+    });
+  };
+
+  handleSave = () => {
+    if (this.props.onSubmit) {
+      this.props.onSubmit({
+        address: this.props.address,
+        name: this.state.name,
+      });
+    }
+  };
+
+  render() {
+    const {
+      cancel, classes,
+    } = this.props;
+    const { name } = this.state;
+
+    return (
+      <TextField
+        value={name}
+        onChange={this.handleChange}
+        style={{ maxHeight: '40px' }}
+        placeholder="Account name"
+        underlineShow={false}
+        fullWidth={true}
+        InputProps={{
+          className: classes.nameTextField,
+          endAdornment: (
+            <InputAdornment position="end">
+              <IconButton onClick={cancel}><CancelIcon /></IconButton>
+              <IconButton color="primary" onClick={this.handleSave}>
+                <SubmitIcon />
+              </IconButton>
+            </InputAdornment>
+          ),
+        }}
+      />
+    );
+  }
+}
+
+const StyledAccountEdit = withStyles(styles)(AccountEdit);
 
 export default connect(
   (state, ownProps) => ({
     blockAddress: true,
-    initialValues: {
-      name: ownProps.account.get('name'),
-      address: ownProps.account.get('id'),
-      description: ownProps.account.get('description'),
-    },
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data) => {
@@ -63,4 +82,4 @@ export default connect(
       ownProps.cancel();
     },
   })
-)(muiThemeable()(AccountEditForm));
+)(StyledAccountEdit);

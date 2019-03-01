@@ -1,12 +1,13 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { AccountEdit, styles } from './accountEdit';
+import { TxStatus, styles } from './TxStatus';
 
 const reduceClasses = (prev, curr) => Object.assign({}, prev, { [curr]: curr });
 const classes = Object.keys(styles).reduce(reduceClasses, {});
 
-describe('AccountEdit', () => {
-  it('renders without crash', () => {
-    const component = shallow(<AccountEdit classes={classes}/>);
+describe('TxStatus', () => {
+  it('should render without crash', () => {
+    const wrapper = shallow(<TxStatus classes={classes}/>);
+    expect(wrapper).toBeDefined();
   });
 });

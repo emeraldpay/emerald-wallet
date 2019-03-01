@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { ButtonGroup } from 'emerald-js-ui';
-import Button from 'elements/Button';
+import Button from 'components/common/Button';
 import FormFieldWrapper from './FormFieldWrapper';
 import FromField from './FromField';
 import FormLabel from './FormLabel';

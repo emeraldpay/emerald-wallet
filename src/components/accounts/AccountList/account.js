@@ -2,11 +2,12 @@ import React from 'react';
 import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import Grid from '@material-ui/core/Grid';
+import { Account as AddressAvatar, ButtonGroup } from '@emeraldplatform/ui';
 import { CardText } from 'material-ui/Card';
 import {
-  ButtonGroup, Card, Account as AddressAvatar
+  Card
 } from 'emerald-js-ui';
-import Button from 'elements/Button';
+import Button from 'components/common/Button';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../Balance';
@@ -66,10 +67,10 @@ export class Account extends React.Component {
               <Grid item xs={5}>
                 { accId && <AddressAvatar
                   identity
-                  addr={ accId }
+                  address={ accId }
                   description={ account.get('description') }
-                  primary={ account.get('name') }
-                  onAddressClick={ this.onAddressClick }
+                  name={ account.get('name') }
+                  onClick={ this.onAddressClick }
                 /> }
               </Grid>
               <Grid item xs={3}>

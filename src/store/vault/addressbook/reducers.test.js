@@ -4,7 +4,7 @@ import ActionTypes from './actionTypes';
 describe('Addressbook/reducers', () => {
   it('should delete contact on ADDRESS/DELETE_ADDRESS', () => {
     let state = reducer(null, {
-      type: ActionTypes.ADD_ADDRESS,
+      type: ActionTypes.ADD_CONTACT,
       name: 'name1',
       address: '0x123',
       description: 'desc1',

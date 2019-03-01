@@ -1,18 +1,20 @@
-import React, {Fragment} from 'react';
+import React from 'react';
 import withStyles from 'react-jss';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { MuiThemeProvider } from '@material-ui/core/styles';
+import theme from '@emeraldplatform/ui/lib/theme';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import QRCode from 'qrcode.react';
 import TokenUnits from 'lib/tokenUnits';
-import {
-  ButtonGroup, Account as AddressAvatar, IdentityIcon, Address
-} from 'emerald-js-ui';
-import Button from 'elements/Button';
-import { styles, Row } from 'elements/Form';
+import { Account as AddressAvatar } from 'emerald-js-ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import { Page } from '@emeraldplatform/ui';
+import {
+  Page, IdentityIcon, Address, ButtonGroup
+} from '@emeraldplatform/ui';
+import Button from 'components/common/Button';
+import { styles, Row } from 'elements/Form';
 import accounts from '../../../store/vault/accounts';
 import tokens from '../../../store/vault/tokens';
 import screen from '../../../store/wallet/screen';
@@ -48,7 +50,7 @@ export class AccountShow extends React.Component {
 
   handleEdit = () => {
     this.setState({ edit: true });
-  }
+  };
 
   handleSave = (data) => {
     this.props.editAccount(data)
@@ -56,11 +58,11 @@ export class AccountShow extends React.Component {
         this.setState({ edit: false });
         log.debug(result);
       });
-  }
+  };
 
   cancelEdit = () => {
     this.setState({ edit: false });
-  }
+  };
 
   render() {
     const { account, tokensBalances, classes } = this.props;
@@ -70,20 +72,27 @@ export class AccountShow extends React.Component {
     // TODO: show pending balance too
     // TODO: we convert Wei to TokenUnits here
     const balance = account.get('balance') ? new TokenUnits(account.get('balance').value(), 18) : null;
+    const acc = {
+      id: account.get('id'),
+      description: account.get('description'),
+      name: account.get('name'),
+      hdpath: account.get('hdpath'),
+      hardware: account.get('hardware', false),
+    };
 
     return (
-      <Fragment>
+      <MuiThemeProvider theme={ theme }>
         <Page title="Account" leftIcon={ <Back onClick={goBack} /> }>
           <div style={{ display: 'flex', alignItems: 'center', paddingBottom: '20px' }}>
             <div style={{flexGrow: 2}}>
               <Row>
                 <div id="left-column" style={styles.left}>
                   <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-                    <IdentityIcon id={account.get('id')} />
+                    <IdentityIcon id={acc.id} />
                   </div>
                 </div>
                 <div style={styles.right}>
-                  <Address id={account.get('id')}/>
+                  <Address id={acc.id}/>
                 </div>
               </Row>
 
@@ -116,19 +125,20 @@ export class AccountShow extends React.Component {
                 <div style={ styles.right }>
                   {!this.state.edit && <AddressAvatar
                     editable
-                    id={account.get('id')}
-                    description={account.get('description')}
-                    name={account.get('name')}
-                    onEditClick={this.handleEdit}
+                    address={ acc.id }
+                    description={ acc.description }
+                    name={ acc.name }
+                    onEditClick={ this.handleEdit }
                   />}
                   {this.state.edit && <AccountEdit
-                    account={account}
+                    name={ acc.name }
+                    address={ acc.id }
                     submit={this.handleSave}
                     cancel={this.cancelEdit}
                   />}
                 </div>
               </Row>
-              { account.get('hardware', false)
+              { acc.hardware
                 && <Row>
                   <div style={styles.left}>
                     <div style={styles.fieldName}>
@@ -136,7 +146,7 @@ export class AccountShow extends React.Component {
                     </div>
                   </div>
                   <div style={ styles.right }>
-                    { account.get('hdpath') }
+                    { acc.hdpath }
                   </div>
                 </Row> }
               <Row>
@@ -162,15 +172,15 @@ export class AccountShow extends React.Component {
             </div>
 
             <div className={ classes.qrCodeContainer }>
-              <QRCode value={ account.get('id') } />
+              <QRCode value={ acc.id } />
             </div>
           </div>
         </Page>
 
         <div className={ classes.transContainer }>
-          <TransactionsList transactions={ transactions } accountId={ account.get('id') } />
+          <TransactionsList transactions={ transactions } accountId={ acc.id } />
         </div>
-      </Fragment>
+      </MuiThemeProvider>
     );
   }
 }

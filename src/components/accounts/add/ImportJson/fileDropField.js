@@ -1,7 +1,7 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import Dropzone from 'react-dropzone';
-import Button from 'elements/Button';
+import Button from 'components/common/Button';
 
 export const styles2 = {
   container: {

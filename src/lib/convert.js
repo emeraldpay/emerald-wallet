@@ -1,7 +1,6 @@
 // @flow
 import BigNumber from 'bignumber.js';
 import ethUtil from 'ethereumjs-util';
-import ethAbi from 'ethereumjs-abi';
 
 /*
   Convert unix timestamp to time elapsed
@@ -72,10 +71,6 @@ export function getDataObj(to, func, arrVals) {
   return { to, data: func + val };
 }
 
-// export function fromTokens(value: number|string|BigNumber, decimals: number): BigNumber {
-//     return new BigNumber(value).times(new BigNumber(10).pow(decimals));
-// }
-
 export function mweiToWei(val: number | string | BigNumber) {
   const m = new BigNumber(10).pow(6);
   return new BigNumber(val).mul(m).round(0, BigNumber.ROUND_HALF_DOWN);
@@ -124,12 +119,10 @@ export function estimateGasFromTrace(dataObj, trace): BigNumber {
   return estGas;
 }
 
-
 export function etherToWei(val) {
   const m = new BigNumber(10).pow(18);
   return new BigNumber(val).mul(m).round(0, BigNumber.ROUND_HALF_DOWN);
 }
-
 
 export function transformToFullName(func) {
   const typeName = func.get('inputs').map((i) => i.get('type')).join();
@@ -139,30 +132,6 @@ export function transformToFullName(func) {
 export function getFunctionSignature(func) {
   const fullName = transformToFullName(func);
   return ethUtil.sha3(fullName).toString('hex').slice(0, 8);
-}
-
-export function functionToData(func, inputs) {
-  const types = [];
-  const values = [];
-  func.get('inputs').forEach((input) => {
-    types.push(input.get('type'));
-    values.push(inputs[input.get('name')]);
-  });
-  const data = Buffer.concat([
-    ethAbi.methodID(func.get('name'), types),
-    ethAbi.rawEncode(types, values)]).toString('hex');
-  return `0x${data}`;
-}
-
-export function dataToParams(func, data) {
-  data = Buffer.from(data.replace('0x', ''), 'hex');
-  const types = func.get('outputs').map((output) => output.get('type')).toArray();
-  const params = ethAbi.rawDecode(types, data);
-  return func.get('outputs').map((o, i) => ({
-    type: o.get('type'),
-    name: o.get('name'),
-    value: (params[i] instanceof BigNumber) ? params[i].toString() : params[i],
-  }));
 }
 
 export function separateThousands(number, separator) {

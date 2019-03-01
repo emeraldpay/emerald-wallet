@@ -10,7 +10,7 @@ import { DescriptionList, DescriptionTitle, DescriptionData } from 'elements/dl'
 import QRCode from 'qrcode.react';
 import Immutable from 'immutable';
 import { cardSpace } from 'lib/styles';
-import Button from 'elements/Button';
+import Button from 'components/common/Button';
 import Addressbook from '../../store/vault/addressbook';
 import { gotoScreen } from '../../store/wallet/screen/screenActions';
 import AddressEdit from './EditContact';

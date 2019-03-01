@@ -1,5 +1,5 @@
 import { fromJS } from 'immutable';
-import { createStore } from './store';
+import { createStore } from './createStore';
 import Ledger from './ledger';
 import Screen from './wallet/screen';
 import WalletHistory from './wallet/history';

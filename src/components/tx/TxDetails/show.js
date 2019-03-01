@@ -5,18 +5,15 @@ import withStyles from 'react-jss';
 import { Map } from 'immutable';
 import { connect } from 'react-redux';
 import { convert, Wei } from '@emeraldplatform/emerald-js';
-import {
-  Account, ButtonGroup
-} from 'emerald-js-ui';
-import { Page } from '@emeraldplatform/ui';
+import { Page, ButtonGroup, Account } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import launcher from 'store/launcher';
 import { gotoScreen } from '../../../store/wallet/screen/screenActions';
 import { toDate } from '../../../lib/convert';
 import { styles, Row } from '../../../elements/Form';
-import Button from '../../../elements/Button';
-import TxStatus from './status';
+import Button from '../../common/Button';
+import TxStatus from './TxStatus';
 import { Currency } from '../../../lib/currency';
 import createLogger from '../../../utils/logger';
 import TxInputData from './TxInputData';

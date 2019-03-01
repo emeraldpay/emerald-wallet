@@ -1,6 +1,6 @@
 import React from 'react';
 import withStyles from 'react-jss';
-import { AdviceIcon } from 'elements/Icons';
+import AdviceIcon from 'components/common/AdviceIcon';
 
 const styles2 = {
   title: {

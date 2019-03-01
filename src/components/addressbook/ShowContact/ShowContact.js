@@ -1,14 +1,13 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import { connect } from 'react-redux';
-import muiThemeable from 'material-ui/styles/muiThemeable';
-import { Account } from 'emerald-js-ui';
+import { Account } from '@emeraldplatform/ui';
 import { Trash as DeleteIcon, Pen1 as EditIcon } from '@emeraldplatform/ui-icons';
-import { IconButton } from 'material-ui';
+import IconButton from '@material-ui/core/IconButton';
 import { gotoScreen } from '../../../store/wallet/screen/screenActions';
 import Addressbook from '../../../store/vault/addressbook';
 
-export const styles2 = {
+export const styles = {
   container: {
     display: 'flex',
     alignItems: 'center',
@@ -25,22 +24,22 @@ export const ShowContact = ({
     <div>
       <Account
         identity
-        addr={address.get('address')}
+        address={address.get('address')}
         name={address.get('name')}
       />
     </div>
     <div>
       <IconButton onClick={onDeleteAddress}>
-        <DeleteIcon style={{color: muiTheme.palette.secondaryTextColor}}/>
+        <DeleteIcon />
       </IconButton>
       <IconButton onClick={onEditAddress}>
-        <EditIcon style={{color: muiTheme.palette.secondaryTextColor}} />
+        <EditIcon />
       </IconButton>
     </div>
   </div>
 );
 
-const StyledShowContact = withStyles(styles2)(ShowContact);
+const StyledShowContact = withStyles(styles)(ShowContact);
 
 const Address = connect(
   (state, ownProps) => ({
@@ -61,4 +60,4 @@ const Address = connect(
   })
 )(StyledShowContact);
 
-export default muiThemeable()(Address);
+export default Address;

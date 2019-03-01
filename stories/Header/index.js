@@ -1,11 +1,10 @@
 import React from 'react';
 import { storiesOf } from '@storybook/react';
-// import { action } from '@storybook/addon-actions';
 import Header from '../../src/components/layout/Header';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import { fromJS } from 'immutable';
-import { Wei } from 'emerald-js';
+import { Wei } from '@emeraldplatform/emerald-js';
 
 storiesOf('Header', module)
   .add('default', () => {

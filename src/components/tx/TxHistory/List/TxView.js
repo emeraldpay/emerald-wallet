@@ -2,11 +2,12 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
-import { convert } from '@emeraldplatform/emerald-js';
-import { TableRow, TableRowColumn } from 'material-ui/Table';
-import CircularProgress from 'material-ui/CircularProgress';
+import { convert } from '@emeraldplatform/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import TableCell from '@material-ui/core/TableCell';
+import TableRow from '@material-ui/core/TableRow';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import { Account as AddressAvatar } from 'emerald-js-ui';
+import { Account as AddressAvatar } from '@emeraldplatform/ui';
 import { Forward as ArrowRightIcon } from '@emeraldplatform/ui-icons';
 import AccountBalance from '../../../accounts/Balance';
 import TokenUnits from '../../../../lib/tokenUnits';
@@ -22,21 +23,32 @@ export const styles2 = {
   columnArrow: {
     paddingLeft: '0px !important',
     paddingRight: '0px !important',
+    paddingTop: '15px',
+    paddingBottom: '15px',
     width: '24px',
+    textOverflow: 'inherit',
   },
-};
-
-
-const styles = {
-  tablePadding: {
+  columnValue: {
+    width: 100,
+    paddingLeft: '0',
     paddingTop: '15px',
     paddingBottom: '15px',
   },
-  txStatus: {
+  columnStatus: {
+    width: 60,
     cursor: 'pointer',
+    paddingTop: '15px',
+    paddingBottom: '15px',
+  },
+  columnFrom: {
+    paddingLeft: '5px',
+  },
+  columnTo: {
+    paddingTop: '15px',
+    paddingBottom: '15px',
+    paddingLeft: '5px',
   },
 };
-
 
 export const TxView = (props) => {
   const {
@@ -59,7 +71,7 @@ export const TxView = (props) => {
     hour: 'numeric',
     minute: 'numeric',
   };
-  const ts = timestampEvent.toLocaleDateString(i18n.languange, options);
+  const timeStamp = timestampEvent.toLocaleDateString(i18n.languange, options);
 
   if (blockNumber && confirmationBlockNumber > currentBlockHeight) {
     txStatus = (
@@ -72,7 +84,7 @@ export const TxView = (props) => {
     txStatus = (
       <div>
         <span style={{color: successColor}} onClick={ openTx }>Success</span> <br />
-        <span style={{fontSize: '9px', color: muiTheme.palette.secondaryTextColor}} onClick={ openTx }>{ts}</span>
+        <span style={{fontSize: '9px', color: muiTheme.palette.secondaryTextColor}} onClick={ openTx }>{timeStamp}</span>
       </div>
     );
   } else {
@@ -108,7 +120,7 @@ export const TxView = (props) => {
 
   return (
     <TableRow selectable={false}>
-      <TableRowColumn style={{ width: 100, paddingLeft: '0', ...styles.tablePadding }}>
+      <TableCell className={classes.columnValue}>
         {txValue && <AccountBalance
           fiatStyle={fiatStyle}
           symbol={ symbol }
@@ -117,28 +129,28 @@ export const TxView = (props) => {
           onClick={ openTx }
           withAvatar={ false }
         /> }
-      </TableRowColumn>
-      <TableRowColumn style={{width: 60, ...styles.txStatus, ...styles.tablePadding}} >
+      </TableCell>
+      <TableCell className={classes.columnStatus} >
         { txStatus }
-      </TableRowColumn>
-      <TableRowColumn style={{paddingLeft: '5px'}}>
+      </TableCell>
+      <TableCell className={classes.columnFrom}>
         <AddressAvatar
-          addr={tx.get('from')}
+          address={tx.get('from')}
           primary={fromAccount.get('name')}
           onAddressClick={() => openAccount(tx.get('from'))}
         />
-      </TableRowColumn>
-      <TableRowColumn className={classes.columnArrow} style={{textOverflow: 'inherit', ...styles.tablePadding}}>
+      </TableCell>
+      <TableCell className={classes.columnArrow}>
         <ArrowRightIcon color="secondary"/>
-      </TableRowColumn>
-      <TableRowColumn style={{paddingLeft: '5px', ...styles.tablePadding}}>
+      </TableCell>
+      <TableCell className={classes.columnTo}>
         {tx.get('to')
         && <AddressAvatar
-          addr={tx.get('to')}
+          address={tx.get('to')}
           primary={toAccount.get('name')}
           onAddressClick={() => openAccount(tx.get('to'))}
         />}
-      </TableRowColumn>
+      </TableCell>
     </TableRow>
   );
 };

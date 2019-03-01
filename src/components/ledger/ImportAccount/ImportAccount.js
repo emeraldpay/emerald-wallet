@@ -7,7 +7,7 @@ import { Page } from '@emeraldplatform/ui';
 import { AddCircle as AddIcon, Back } from '@emeraldplatform/ui-icons';
 import HDPath from 'components/common/HdPath';
 import { Row, styles as formStyles } from 'elements/Form';
-import Button from 'elements/Button';
+import Button from 'components/common/Button';
 import AddrList from './AddrList';
 import Pager from './Pager';
 

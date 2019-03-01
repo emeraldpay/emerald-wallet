@@ -1,6 +1,4 @@
-const fs = require('fs');
 const path = require('path');
-const webpack = require('webpack');
 
 const srcDir = path.join(__dirname, 'src');
 
@@ -8,12 +6,12 @@ const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const config = {
+  mode: 'production',
   target: 'electron-renderer', // 'web',
   entry: {
     index: [path.join(srcDir, 'index.js')],
   },
   plugins: [
-    new webpack.optimize.CommonsChunkPlugin({name: 'index', filename: 'index.js'}),
     new ExtractTextPlugin({filename: '[name].css'}),
     new CopyWebpackPlugin([
       { from: path.join(srcDir, 'index.html'), to: './' },

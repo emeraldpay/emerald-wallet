@@ -1,5 +1,4 @@
 import { convert } from '@emeraldplatform/emerald-js';
-import BigNumber from 'bignumber.js';
 import TokenUnits from './tokenUnits';
 
 

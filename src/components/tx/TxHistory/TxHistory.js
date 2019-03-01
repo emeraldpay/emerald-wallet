@@ -1,32 +1,32 @@
 // @flow
 import React from 'react';
 import withStyles from 'react-jss';
-import { connect } from 'react-redux';
-import { List } from 'immutable';
-import { Card } from 'emerald-js-ui';
+import {connect} from 'react-redux';
+import {List} from 'immutable';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import { MuiThemeProvider } from '@material-ui/core/styles';
-import theme from '@emeraldplatform/ui/lib/theme';
-import { searchTransactions, filterTransactions } from '../../../store/wallet/history/selectors';
+import {searchTransactions, filterTransactions} from '../../../store/wallet/history/selectors';
 import Header from './Header';
 import TxList from './List';
 
 const styles2 = {
   container: {
     padding: '30px 30px 20px',
+    backgroundColor: 'white',
   },
 };
 
-type Props = {
+type
+Props = {
   accountId: string,
   transactions: any,
   accounts: any
-}
+};
 
-type State = {
+type
+State = {
   txFilter: string,
   displayedTransactions: Object
-}
+};
 
 class TransactionsHistory extends React.Component<Props, State> {
   constructor(props) {
@@ -50,31 +50,27 @@ class TransactionsHistory extends React.Component<Props, State> {
     return this.setState({
       displayedTransactions: searchTransactions(e.target.value, this.props.transactions),
     });
-  }
+  };
 
   onTxFilterChange = (event, value) => {
-    const { accountId, transactions, accounts } = this.props;
+    const {accountId, transactions, accounts} = this.props;
     this.setState({
       txFilter: value,
       displayedTransactions: filterTransactions(value, accountId, transactions, accounts),
     });
-  }
+  };
 
   render() {
-    const { classes } = this.props;
+    const {classes} = this.props;
     return (
-      <MuiThemeProvider theme={theme} >
-        <Card>
-          <div className={ classes.container } style={{border: `1px solid ${this.props.muiTheme.palette.borderColor}`}}>
-            <Header
-              onTxFilterChange={this.onTxFilterChange}
-              txFilterValue={this.state.txFilter}
-              onSearchChange={this.onSearchChange}
-            />
-            <TxList transactions={ this.state.displayedTransactions } accountId={ this.props.accountId }/>
-          </div>
-        </Card>
-      </MuiThemeProvider>
+      <div className={classes.container} style={{border: `1px solid ${this.props.muiTheme.palette.borderColor}`}}>
+        <Header
+          onTxFilterChange={this.onTxFilterChange}
+          txFilterValue={this.state.txFilter}
+          onSearchChange={this.onSearchChange}
+        />
+        <TxList transactions={this.state.displayedTransactions} accountId={this.props.accountId}/>
+      </div>
     );
   }
 }
@@ -91,6 +87,5 @@ export default connect(
       accountId: ownProps.accountId,
     };
   },
-  (dispatch, ownProps) => ({
-  })
+  (dispatch, ownProps) => ({})
 )(muiThemeable()(StyledTransactionsHistory));

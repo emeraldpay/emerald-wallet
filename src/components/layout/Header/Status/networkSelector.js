@@ -10,7 +10,7 @@ import { withStyles } from '@material-ui/core';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Network as NetworkIcon, NetworkDisconnected as NetworkDisconnectedIcon } from '@emeraldplatform/ui-icons';
 import { Networks, findNetwork } from '../../../../lib/networks';
-import Button from '../../../../elements/Button';
+import Button from '../../../common/Button';
 
 
 class ExtendedMenuItem extends React.Component {

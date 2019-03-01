@@ -3,9 +3,11 @@ import React from 'react';
 import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
-import {
-  Table, TableBody, TableHeader, TableHeaderColumn, TableRow
-} from 'material-ui/Table';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import Transaction from './transaction';
 
@@ -18,9 +20,18 @@ const styles2 = {
     letterSpacing: '1px',
     lineHeight: '16px',
   },
+  columnFrom: {
+    paddingLeft: '5px',
+  },
+  columnTo: {
+    paddingLeft: '5px',
+  },
   amountColumn: {
     paddingLeft: '0 !important',
     width: '100px',
+  },
+  statusColumn: {
+    width: '60',
   },
   columnArrow: {
     paddingLeft: '0px !important',
@@ -34,15 +45,6 @@ type Props = {
     accountId: string,
 };
 
-const renderEmptyTransactions = (transactions, muiTheme) => {
-  if (transactions.size === 0) {
-    return (
-      <div style={{paddingTop: '20px', color: muiTheme.palette.secondaryTextColor}}> There are no transactions. </div>
-    );
-  }
-  return null;
-};
-
 const TransactionsList = (props: Props) => {
   const {
     transactions, accountId, muiTheme, classes,
@@ -50,25 +52,27 @@ const TransactionsList = (props: Props) => {
   if (!transactions) {
     return (<div>Loading...</div>);
   }
+  if (transactions.size === 0) {
+    return (<div style={{paddingTop: '20px', color: muiTheme.palette.secondaryTextColor}}> There are no transactions. </div>);
+  }
   return (
     <div>
       <Table selectable={ false } fixedHeader={ true } style={{background: muiTheme.palette.alternateTextColor}}>
-        <TableHeader displaySelectAll={ false } adjustForCheckbox={ false }>
+        <TableHead displaySelectAll={ false } adjustForCheckbox={ false }>
           <TableRow>
-            <TableHeaderColumn className={ cx(classes.columnName, classes.amountColumn) } style={{width: 100}} >
+            <TableCell className={ cx(classes.columnName, classes.amountColumn) }>
                             Amount
-            </TableHeaderColumn>
-            <TableHeaderColumn className={classes.columnName} style={{ width: 60 }}>
+            </TableCell>
+            <TableCell className={ cx(classes.columnName, classes.statusColumn)}>
                             Status
-            </TableHeaderColumn>
-            <TableHeaderColumn className={classes.columnName} style={{paddingLeft: '5px'}}>From</TableHeaderColumn>
-            <TableHeaderColumn className={classes.columnArrow}>&nbsp;</TableHeaderColumn>
-            <TableHeaderColumn className={classes.columnName} style={{paddingLeft: '5px'}}>To</TableHeaderColumn>
+            </TableCell>
+            <TableCell className={ cx(classes.columnFrom, classes.columnName) }>From</TableCell>
+            <TableCell className={classes.columnArrow}>&nbsp;</TableCell>
+            <TableCell className={ cx(classes.columnTo, classes.columnName) }>To</TableCell>
           </TableRow>
-        </TableHeader>
+        </TableHead>
         <TableBody displayRowCheckbox={ false }>
           { transactions.map((tx) => <Transaction key={tx.get('hash')} tx={tx} accountId={ accountId } />) }
-          { renderEmptyTransactions(transactions, muiTheme) }
         </TableBody>
       </Table>
     </div>

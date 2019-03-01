@@ -8,7 +8,7 @@ import {
 } from 'emerald-js-ui';
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import Button from 'elements/Button';
+import Button from 'components/common/Button';
 import screen from 'store/wallet/screen';
 import accountsModule from 'store/vault/accounts';
 import { Row, styles as formStyles } from 'elements/Form/index';
