@@ -14,4 +14,3 @@ coverage/
 flow-typed/
 package-lock.json
 .emerald-dev
-lerna-debug.log
