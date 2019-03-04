@@ -14,17 +14,17 @@ const Btn = (props) => {
     ...props.style,
   };
   return (
-      <Button
-        color={primary ? 'primary' : 'secondary'}
-        href={href}
-        variant={variant || 'contained'}
-        style={style}
-        onClick={onClick}
-        {...restProps}
-      >
-        {icon}
-        {label}
-      </Button>
+    <Button
+      color={primary ? 'primary' : 'secondary'}
+      href={href}
+      variant={variant || 'contained'}
+      style={style}
+      onClick={onClick}
+      {...restProps}
+    >
+      {icon}
+      {label}
+    </Button>
   );
 };
 
