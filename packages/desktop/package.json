@@ -35,7 +35,8 @@
 		"dist:nobuild": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never",
 		"flow": "flow",
 		"getemerald": "cross-env ELECTRON_RUN_AS_NODE=true ./node_modules/.bin/electron ./scripts/download-emerald.js",
-		"storybook": "start-storybook -p 9001 -c .storybook"
+		"storybook": "start-storybook -p 9001 -c .storybook",
+		"build:dist": "yarn getemerald && yarn dist"
 	},
 	"keywords": [
 		"react",

@@ -3,7 +3,9 @@
   "private": true,
   "scripts": {
     "build": "CI=true lerna run build --stream",
-    "test": "CI=true lerna run test --stream"
+    "test": "CI=true lerna run test --stream",
+    "lint": "CI=true lerna run lint --stream",
+    "build:dist": "CI=true lerna run build:dist --stream"
   },
   "devDependencies": {
     "lerna": "^3.13.0"
