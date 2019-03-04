@@ -1,7 +1,5 @@
 import React from 'react';
 import Button from '@material-ui/core/Button';
-import { MuiThemeProvider } from '@material-ui/core/styles';
-import theme from '@emeraldplatform/ui/lib/theme';
 
 const Btn = (props) => {
   const {
@@ -16,7 +14,6 @@ const Btn = (props) => {
     ...props.style,
   };
   return (
-    <MuiThemeProvider theme={theme}>
       <Button
         color={primary ? 'primary' : 'secondary'}
         href={href}
@@ -28,7 +25,6 @@ const Btn = (props) => {
         {icon}
         {label}
       </Button>
-    </MuiThemeProvider>
   );
 };
 
