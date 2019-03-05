@@ -1,9 +1,8 @@
 import React from 'react';
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import LogoIcon from '../../components/common/Logo';
-import { Button } from 'ui';
-import {version} from '../../../package.json';
+import { Button, Logo } from 'ui';
+import { version } from '../../../package.json';
 
 const year = new Date().getFullYear();
 
@@ -36,7 +35,7 @@ class AboutClass extends React.Component {
     return (
       <div style={{ padding: '30px', position: 'relative' }}>
         <div style={{ position: 'absolute', top: '-100px', right: '-185px' }}>
-          <LogoIcon height="350px" width="350px" />
+          <Logo height="350px" width="350px" />
         </div>
         <h2 style={{
           color: muiTheme.palette.primary1Color, fontWeight: '200', paddingBottom: '0px', marginBottom: '5px',

@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { shallow } from 'enzyme';
-import Button from './Button';
+import Logo from './Logo';
 
-describe('Button', () => {
+describe('Logo', () => {
   it('should be created without crash', () => {
-    const component = shallow(<Button/>);
+    const component = shallow(<Logo/>);
     expect(component).toBeDefined();
   });
 });

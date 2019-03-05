@@ -1,9 +1,9 @@
-import * as React from 'react';
+import React from 'react';
 import { shallow } from 'enzyme';
+import Terms from './Terms';
 
-// import { Terms } from './Terms';
-
-
-it('renders without crashing', () => {
-  // shallow(<Terms />);
+describe('Terms', () => {
+  it('renders without crashing', () => {
+    const component = shallow(<Terms />);
+  });
 });

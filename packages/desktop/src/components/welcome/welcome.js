@@ -1,11 +1,10 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
+import {Logo} from 'ui';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import {MuiThemeProvider, withStyles} from '@material-ui/core/styles';
-import theme from '@emeraldplatform/ui/lib/theme';
-import LogoIcon from '../common/Logo';
+import {withStyles} from '@material-ui/core/styles';
 import InitialSetup from './initialSetup';
 
 const getStyles = (t) => ({
@@ -42,10 +41,9 @@ const Render = ({
   }
 
   return (
-    <MuiThemeProvider theme={theme}>
       <Grid container direction='column' justify="center" alignItems='center' style={{maxWidth: '1150px'}}>
         <Grid item xs style={{paddingTop: '6%'}}>
-          <LogoIcon width="250" height="250"/>
+          <Logo width="250" height="250"/>
         </Grid>
         <Grid item>
           <Grid container direction="column">
@@ -63,7 +61,6 @@ const Render = ({
           </div>
         </Grid>
       </Grid>
-    </MuiThemeProvider>
   );
 };
 

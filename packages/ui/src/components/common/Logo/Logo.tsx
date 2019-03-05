@@ -1,7 +1,11 @@
-// @flow
-import React from 'react';
+import * as React from 'react';
 
-const LogoIcon = (props: { height: string, width: string }) => (
+interface Props {
+  height?: string;
+  width?: string;
+}
+
+const Logo = (props: Props) => (
   <svg xmlns="http://www.w3.org/2000/svg" width={props.width || '64'} height={props.height || '64'} viewBox='0 0 64 64'>
     <path fill="#00c853" d="M32 56L16 32 32 8l16 24-16 24z" />
     <path opacity=".5" d="M38.4 36.8L40 44l8-12-9.6 4.8z" />
@@ -15,4 +19,4 @@ const LogoIcon = (props: { height: string, width: string }) => (
 );
 
 
-export default LogoIcon;
+export default Logo;
