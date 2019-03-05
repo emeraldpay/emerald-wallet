@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
+import { Terms } from 'ui';
 import launcher from '../../../store/launcher';
-import Terms from './Terms';
 import { TERMS_VERSION } from '../../../store/config';
 
 export default connect(

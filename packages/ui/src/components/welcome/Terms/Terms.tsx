@@ -1,13 +1,18 @@
-import React from 'react';
+import * as React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { Check2 as CheckIcon } from '@emeraldplatform/ui-icons';
-import { Button } from 'ui';
+import Button from '../../common/Button';
+import {OverflowYProperty} from "csstype";
 
-export const Terms = ({ onAgree }) => {
+interface Props {
+  onAgree?: any;
+}
+
+export const Terms = ({ onAgree } : Props) => {
   const style = {
     width: '100%',
     height: '250px',
-    overflowY: 'scroll',
+    overflowY: 'scroll' as OverflowYProperty,
   };
 
   return (
