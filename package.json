@@ -5,7 +5,8 @@
     "build": "CI=true lerna run build --stream",
     "test": "CI=true lerna run test --stream",
     "lint": "CI=true lerna run lint --stream",
-    "build:dist": "CI=true lerna run build:dist --stream"
+    "build:dist": "CI=true lerna run build:dist --stream",
+    "test:coverge": "CI=true lerna run test:coverage --stream"
   },
   "devDependencies": {
     "lerna": "^3.13.0"
