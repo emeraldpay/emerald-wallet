@@ -12,19 +12,19 @@ import Dialog from '../../../containers/Dialog';
 
 const maxWidth = '1150px';
 
-const Render = translate('common')(({ muiTheme, ...props }) => {
+const Render = translate('common')(({muiTheme, ...props}) => {
   return (
-    <div style={{height: '100%', backgroundColor: muiTheme.palette.canvasColor}}>
-      {props.screen !== 'paper-wallet' && (!props.launcherType || props.launcherType !== 'none') && <Header />}
-      <div style={{margin: '20px auto', maxWidth}}>
-        <MuiThemeProvider theme={theme}>
-          <Screen />
-        </MuiThemeProvider>
+    <MuiThemeProvider theme={theme}>
+      <div style={{height: '100%', backgroundColor: muiTheme.palette.canvasColor}}>
+        {props.screen !== 'paper-wallet' && (!props.launcherType || props.launcherType !== 'none') && <Header/>}
+        <div style={{margin: '20px auto', maxWidth}}>
+          <Screen/>
+        </div>
+        <ErrorDialog/>
+        <NotificationBar/>
+        <Dialog/>
       </div>
-      <ErrorDialog />
-      <NotificationBar />
-      <Dialog />
-    </div>
+    </MuiThemeProvider>
   );
 });
 

@@ -2,7 +2,7 @@ import React from 'react';
 import Divider from 'material-ui/Divider';
 import Grid from '@material-ui/core/Grid';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import Button from '../common/Button';
+import { Button } from 'ui';
 
 const Landing = ({
   onGenerate, onImportJson, onImportPrivateKey, onLedger, muiTheme,

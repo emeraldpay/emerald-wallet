@@ -6,7 +6,7 @@ import SyncWarning from '../../../containers/SyncWarning';
 import Status from './Status';
 import Total from './Total';
 import { separateThousands } from '../../../lib/convert';
-import Button from '../../common/Button';
+import { Button } from 'ui';
 
 const styles = {
   appBarRight: {

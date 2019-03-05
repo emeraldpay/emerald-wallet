@@ -5,7 +5,7 @@ import {
 } from 'emerald-js-ui';
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import Button from 'components/common/Button';
+import { Button } from 'ui';
 import { Row, styles as formStyles } from 'elements/Form';
 import LoadingIcon from '../LoadingIcon';
 

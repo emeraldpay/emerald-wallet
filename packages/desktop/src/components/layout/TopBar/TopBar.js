@@ -1,7 +1,7 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import { connect } from 'react-redux';
-import Button from 'components/common/Button';
+import { Button } from 'ui';
 import { Add as AddIcon } from '@emeraldplatform/ui-icons';
 import Screen from '../../../store/wallet/screen';
 

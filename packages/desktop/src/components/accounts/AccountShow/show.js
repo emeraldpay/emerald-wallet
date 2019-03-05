@@ -13,7 +13,7 @@ import { Back } from '@emeraldplatform/ui-icons';
 import {
   Page, IdentityIcon, Address, ButtonGroup
 } from '@emeraldplatform/ui';
-import Button from 'components/common/Button';
+import { Button } from 'ui';
 import { styles, Row } from 'elements/Form';
 import accounts from '../../../store/vault/accounts';
 import tokens from '../../../store/vault/tokens';

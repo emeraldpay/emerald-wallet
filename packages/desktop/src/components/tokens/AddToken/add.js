@@ -9,7 +9,7 @@ import {
 import TextField from 'elements/Form/TextField';
 import { ButtonGroup } from 'emerald-js-ui';
 import { required, address } from 'lib/validators';
-import Button from 'components/common/Button';
+import { Button } from 'ui';
 import TokenUnits from 'lib/tokenUnits';
 import tokens from '../../../store/vault/tokens';
 

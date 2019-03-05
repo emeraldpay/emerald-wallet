@@ -1,7 +1,7 @@
 require('babel-polyfill'); // eslint-disable-line import/no-unresolved
 require('regenerator-runtime/runtime');
-
-const { app, ipcMain } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
+const os = require('os');
+const { app, ipcMain, session } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path');
 
 const Settings = require('./settings');
@@ -39,6 +39,15 @@ startProtocolHandler();
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   log.info('Starting Emerald', app.getVersion());
+
+  const details = [os.platform(), os.release(), os.arch(), app.getLocale()].join('; ');
+  const agent = `Electron/${process.versions.electron} (${details}) EmeraldWallet/${app.getVersion()} (+https://emeraldwallet.io) Chrome/${process.versions.chrome} node-fetch/1.0`;
+
+  session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
+    details.requestHeaders['User-Agent'] = agent;
+    callback({ cancel: false, requestHeaders: details.requestHeaders });
+  });
+
   const browserWindow = mainWindow.createWindow(isDev);
   const services = new Services(browserWindow.webContents);
   ipc({ settings, services });

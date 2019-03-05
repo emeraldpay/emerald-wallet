@@ -8,7 +8,7 @@ import {
 } from 'redux-form';
 import { Page, Warning, WarningText } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import Button from 'components/common/Button';
+import { Button } from 'ui';
 import TextField from 'elements/Form/TextField';
 import { Row, styles as formStyles } from 'elements/Form';
 import accounts from 'store/vault/accounts';

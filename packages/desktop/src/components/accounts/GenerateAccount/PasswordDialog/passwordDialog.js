@@ -6,7 +6,7 @@ import {
   Page, Warning, WarningHeader, WarningText
 } from '@emeraldplatform/ui';
 import { Field, reduxForm } from 'redux-form';
-import Button from 'components/common/Button';
+import { Button } from 'ui';
 import TextField from 'elements/Form/TextField';
 import { required } from 'lib/validators';
 import { Row, styles as formStyles } from 'elements/Form';

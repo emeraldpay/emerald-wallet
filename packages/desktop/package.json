@@ -20,8 +20,8 @@
 	],
 	"scripts": {
 		"setup": "npm install && flow-typed install",
-		"build": "node ./scripts/build.js --no-watch",
-		"build:all": "node ./scripts/build.js",
+		"build": "rimraf app/ && node ./scripts/build.js --no-watch",
+		"build:all": "rimraf app/ && node ./scripts/build.js",
 		"build:all:nowatch": "node ./scripts/build.js --no-watch",
 		"start:electron": "cross-env NODE_ENV=development ./node_modules/.bin/electron .",
 		"start:electron:getemerald": "getemerald && NODE_ENV=development ./node_modules/.bin/electron .",
@@ -165,6 +165,7 @@
 		"node-abi": "^2.5.1",
 		"react-test-renderer": "^15.6.1",
 		"recursive-readdir-sync": "^1.0.6",
+		"rimraf": "^2.6.3",
 		"shebang-loader": "0.0.1",
 		"storybook-addon-material-ui": "0.8.2",
 		"style-loader": "0.16.1",

@@ -5,7 +5,7 @@ import {
 } from 'emerald-js-ui';
 import { Page } from '@emeraldplatform/ui';
 import { Row, styles as formStyles } from '../../../../elements/Form';
-import Button from '../../../common/Button';
+import { Button } from 'ui';
 
 class AccountPropertiesDialog extends React.Component {
     static propTypes = {
