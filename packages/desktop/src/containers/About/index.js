@@ -1,6 +1,6 @@
 import React from 'react';
 import { shell } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
-import About from './About';
+import AboutContainer from './About';
 
 class AboutClass extends React.Component {
   render() {
@@ -17,7 +17,7 @@ class AboutClass extends React.Component {
       shell.openExternal(url);
     };
     return (
-      <About
+      <AboutContainer
         onButtonClick={onButtonClick}
         onHelpClick={helpClick}
         onLicenseClick={licenseClick}

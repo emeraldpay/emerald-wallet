@@ -7,12 +7,12 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import {withStyles} from '@material-ui/core/styles';
 import InitialSetup from './initialSetup';
 
-const getStyles = (t) => ({
+const getStyles = (theme) => ({
   brandPart1: {
-    color: t.palette.primary.main,
+    color: theme.palette.primary.main,
   },
   brandPart2: {
-    color: t.palette.secondary.main,
+    color: theme.palette.secondary.main,
   },
 });
 
@@ -71,6 +71,8 @@ Render.propTypes = {
   needSetup: PropTypes.bool.isRequired,
 };
 
+const StyledWelcome = withStyles(getStyles)(Render);
+
 const Welcome = connect(
   (state, ownProps) => ({
     message: state.launcher.getIn(['message', 'text']),
@@ -81,6 +83,7 @@ const Welcome = connect(
       || state.launcher.get('settingsUpdated') === true,
   }),
   (dispatch, ownProps) => ({})
-)(withStyles(getStyles(theme))(Render));
+)(StyledWelcome);
+
 
 export default Welcome;
