@@ -16,9 +16,12 @@ jobs:
               npm install -g lerna
 
       - run:
+          name: Lerna bootstrap
+          command: lerna bootstrap
+
+      - run:
           name: Tests and linting
           command: |
-              lerna bootstrap
               yarn test
               yarn lint
 
