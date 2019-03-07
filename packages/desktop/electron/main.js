@@ -40,8 +40,8 @@ startProtocolHandler();
 app.on('ready', () => {
   log.info('Starting Emerald', app.getVersion());
 
-  const details = [os.platform(), os.release(), os.arch(), app.getLocale()].join('; ');
-  const agent = `Electron/${process.versions.electron} (${details}) EmeraldWallet/${app.getVersion()} (+https://emeraldwallet.io) Chrome/${process.versions.chrome} node-fetch/1.0`;
+  const platform = [os.platform(), os.release(), os.arch(), app.getLocale()].join('; ');
+  const agent = `Electron/${process.versions.electron} (${platform}) EmeraldWallet/${app.getVersion()} (+https://emeraldwallet.io) Chrome/${process.versions.chrome} node-fetch/1.0`;
 
   session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
     details.requestHeaders['User-Agent'] = agent;

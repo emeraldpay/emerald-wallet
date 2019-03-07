@@ -1,12 +1,12 @@
 import React from 'react';
 import { AppBar, LinearProgress } from 'material-ui';
 import { withStyles } from '@material-ui/core';
+import { Button } from 'ui';
 import { Block as BlockIcon, Settings as SettingsIcon } from '@emeraldplatform/ui-icons';
 import SyncWarning from '../../../containers/SyncWarning';
 import Status from './Status';
 import Total from './Total';
 import { separateThousands } from '../../../lib/convert';
-import { Button } from 'ui';
 
 const styles = {
   appBarRight: {

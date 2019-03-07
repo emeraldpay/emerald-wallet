@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {
-  ButtonGroup, Input
+  Input
 } from 'emerald-js-ui';
-import { Page } from '@emeraldplatform/ui';
-import { Row, styles as formStyles } from '../../../../elements/Form';
 import { Button } from 'ui';
+import { Page, ButtonGroup } from '@emeraldplatform/ui';
+import { Row, styles as formStyles } from '../../../../elements/Form';
 
 class AccountPropertiesDialog extends React.Component {
     static propTypes = {
@@ -13,7 +13,7 @@ class AccountPropertiesDialog extends React.Component {
       onSkip: PropTypes.func,
       onBack: PropTypes.func,
       t: PropTypes.func,
-    }
+    };
 
     constructor(props) {
       super(props);

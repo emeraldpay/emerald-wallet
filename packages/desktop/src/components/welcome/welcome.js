@@ -16,9 +16,10 @@ const getStyles = (theme) => ({
   },
 });
 
-const Render = ({
-  message, level, needSetup, classes,
-}) => {
+const Render = (props) => {
+  const {
+    message, level, needSetup, classes,
+  } = props;
   let messageBlock = null;
   if (message) {
     const messageStyle = {
@@ -41,26 +42,26 @@ const Render = ({
   }
 
   return (
-      <Grid container direction='column' justify="center" alignItems='center' style={{maxWidth: '1150px'}}>
-        <Grid item xs style={{paddingTop: '6%'}}>
-          <Logo width="250" height="250"/>
-        </Grid>
-        <Grid item>
-          <Grid container direction="column">
-            <Grid item justify="center" alignItems="center" xs>
-              <div style={{fontSize: '42px'}}>
-                <span className={classes.brandPart1}>Emerald </span>
-                <span className={classes.brandPart2}>Wallet</span>
-              </div>
-            </Grid>
+    <Grid container direction='column' justify="center" alignItems='center' style={{maxWidth: '1150px'}}>
+      <Grid item xs style={{paddingTop: '6%'}}>
+        <Logo width="250" height="250"/>
+      </Grid>
+      <Grid item>
+        <Grid container direction="column">
+          <Grid item justify="center" alignItems="center" xs>
+            <div style={{fontSize: '42px'}}>
+              <span className={classes.brandPart1}>Emerald </span>
+              <span className={classes.brandPart2}>Wallet</span>
+            </div>
           </Grid>
         </Grid>
-        <Grid item xs style={{paddingTop: '40px', height: '40px'}}>
-          <div>
-            {messageBlock}
-          </div>
-        </Grid>
       </Grid>
+      <Grid item xs style={{paddingTop: '40px', height: '40px'}}>
+        <div>
+          {messageBlock}
+        </div>
+      </Grid>
+    </Grid>
   );
 };
 

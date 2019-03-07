@@ -1,6 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
+import { Button } from 'ui';
 import ClickAwayListener from '@material-ui/core/ClickAwayListener';
 import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
@@ -10,8 +11,6 @@ import { withStyles } from '@material-ui/core';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Network as NetworkIcon, NetworkDisconnected as NetworkDisconnectedIcon } from '@emeraldplatform/ui-icons';
 import { Networks, findNetwork } from '../../../../lib/networks';
-import { Button } from 'ui';
-
 
 class ExtendedMenuItem extends React.Component {
   render() {
