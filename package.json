@@ -2,11 +2,11 @@
   "name": "emerald-wallet",
   "private": true,
   "scripts": {
-    "build": "CI=true lerna run build --stream",
-    "test": "CI=true lerna run test --stream",
-    "lint": "CI=true lerna run lint --stream",
-    "build:dist": "CI=true lerna run build:dist --stream",
-    "test:coverage": "CI=true lerna run test:coverage --stream"
+    "build": "lerna run build --stream",
+    "test": "lerna run test --stream",
+    "lint": "lerna run lint --stream",
+    "build:dist": "lerna run build:dist --stream",
+    "test:coverage": "lerna run test:coverage --stream"
   },
   "devDependencies": {
     "lerna": "^3.13.0"
