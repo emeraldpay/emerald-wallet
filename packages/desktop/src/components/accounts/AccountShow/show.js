@@ -13,7 +13,7 @@ import { Back } from '@emeraldplatform/ui-icons';
 import {
   Page, IdentityIcon, Address, ButtonGroup
 } from '@emeraldplatform/ui';
-import { Button } from 'ui';
+import { Button, InlineEdit } from 'ui';
 import { styles, Row } from 'elements/Form';
 import accounts from '../../../store/vault/accounts';
 import tokens from '../../../store/vault/tokens';
@@ -21,7 +21,6 @@ import screen from '../../../store/wallet/screen';
 import history from '../../../store/wallet/history';
 import launcher from '../../../store/launcher';
 import createLogger from '../../../utils/logger';
-import AccountEdit from '../AccountEdit';
 import TransactionsList from '../../tx/TxHistory';
 import AccountBalance from '../Balance';
 import SecondaryMenu from '../SecondaryMenu';
@@ -130,11 +129,12 @@ export class AccountShow extends React.Component {
                     name={ acc.name }
                     onEditClick={ this.handleEdit }
                   />}
-                  {this.state.edit && <AccountEdit
-                    name={ acc.name }
-                    address={ acc.id }
-                    submit={this.handleSave}
-                    cancel={this.cancelEdit}
+                  {this.state.edit && <InlineEdit
+                    placeholder="Account name"
+                    initialValue={ acc.name }
+                    id={ acc.id }
+                    onSave={this.handleSave}
+                    onCancel={this.cancelEdit}
                   />}
                 </div>
               </Row>
@@ -232,7 +232,7 @@ export default connect(
     },
     editAccount: (data) => {
       return new Promise((resolve, reject) => {
-        dispatch(accounts.actions.updateAccount(data.address, data.name, data.description))
+        dispatch(accounts.actions.updateAccount(data.id, data.value, data.description))
           .then((response) => {
             resolve(response);
           });

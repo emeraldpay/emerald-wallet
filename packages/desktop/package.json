@@ -32,7 +32,7 @@
 		"lint-fix": "npm run lint -- --fix",
 		"postinstall": "electron-rebuild && yarn rebuild:modules",
 		"rebuild:modules": "electron-builder install-app-deps",
-		"dist": "npm run build:all:nowatch && electron-builder --publish never",
+		"dist": "yarn build:all:nowatch && electron-builder --publish never",
 		"dist:nobuild": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never",
 		"flow": "flow",
 		"getemerald": "cross-env ELECTRON_RUN_AS_NODE=true ./node_modules/.bin/electron ./scripts/download-emerald.js",
