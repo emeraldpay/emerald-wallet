@@ -27,9 +27,9 @@ test_script:
   # CSC...=false env var disables app signing for osx, can't hurt to have it here too.
   # But probably useless, since the dist script build for _current_ operating system.
   - npm run dist
-#artifacts:
-#  - path: './dist/*.exe'
-#    name: emerald-wallet
+artifacts:
+  - path: './dist/*.exe'
+    name: emerald-wallet
 deploy_script:
   - openssl aes-256-cbc -d -in gcloud-appveyor.json.enc -k %GCP_PASSWD% -out gcloud-appveyor.json -md sha256
   - ps: >-
