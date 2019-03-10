@@ -71,7 +71,7 @@ export default connect(
       dispatch(screen.actions.gotoScreen('create-tx', account));
     },
     showReceiveDialog: (account) => {
-      dispatch(screen.actions.showDialog('receive', account));
+      dispatch(screen.actions.showDialog('receive', account.get('id')));
     },
   })
 )(muiThemeable()(StyledAccountList));

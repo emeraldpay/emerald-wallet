@@ -9,7 +9,7 @@
   "scripts": {
     "build": "rimraf lib/ && tsc",
     "build:dist": "rimraf lib/ && tsc",
-    "test": "",
+    "test": "jest",
     "test:coverage": ""
   },
   "dependencies": {

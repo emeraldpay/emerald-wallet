@@ -225,7 +225,7 @@ export default connect(
     },
     showReceiveDialog: () => {
       const { account } = ownProps;
-      dispatch(screen.actions.showDialog('receive', account));
+      dispatch(screen.actions.showDialog('receive', account.get('id')));
     },
     goBack: () => {
       dispatch(screen.actions.gotoScreen('home'));

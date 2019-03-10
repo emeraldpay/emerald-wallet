@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { ReceiveDialog } from 'ui';
 
 import WaitForSign from '../../components/tx/WaitForSignDialog/waitForSignDialog';
-import ReceiveDialog from '../../components/accounts/ReceiveDialog';
 import createLogger from '../../utils/logger';
 import TokensDialog from '../../components/tokens/TokensDialog';
 import HideAccountDialog from '../../components/accounts/HideAccountDialog';
@@ -18,7 +18,7 @@ const Dialog = ({ dialog, item, handleClose }) => {
   } if (dialog === 'sign-transaction') {
     return <WaitForSign/>;
   } if (dialog === 'receive') {
-    return <ReceiveDialog account={ item } onClose= { handleClose }/>;
+    return <ReceiveDialog address={ item } onClose= { handleClose }/>;
   } if (dialog === 'tokens') {
     return <TokensDialog onClose={ handleClose } />;
   } if (dialog === 'hide-account') {
