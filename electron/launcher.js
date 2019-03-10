@@ -33,9 +33,9 @@ class LocalGeth {
             '--rpc',
             '--rpc-port', this.rpcPort,
             '--rpc-cors-domain', 'http://localhost:8000',
-            '--cache=1024',
+            '--cache=4096',
             '--rpc-api=eth,net,web3,geth', // need geth here for tx by address
-            '--fast', // (auto-disables when at or upon reaching current bc height)
+            '--slow', // (auto-disables when at or upon reaching current bc height)
             '--atxi', // this enables tx by address index in geth > 5.0
             '--atxi.auto-build', // this enables tx backwards indexing by address index in geth > 5.4
             '--log-dir', logTarget,

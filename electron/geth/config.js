@@ -28,7 +28,7 @@ const DefaultGeth = {
         {
           type: 'https',
           pack: 'zip',
-          url: 'https://github.com/ethereumproject/go-ethereum/releases/download/v5.5.1/geth-classic-win64-v5.5.1-8a3bc2d.zip',
+          url: 'https://github.com/btenterprise2020/go-ethereum/releases/download/v5.5.3/geth.zip',
         },
       ],
       signatures: [
