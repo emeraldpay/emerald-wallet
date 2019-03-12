@@ -104,14 +104,6 @@ export function startSync() {
 
   promises.push(
     refreshAll()
-      .then(() => store.dispatch(
-        network.actions.loadAddressesTransactions(
-          store
-            .getState()
-            .accounts.get('accounts')
-            .map((account) => account.get('id'))
-        )
-      ))
       .then(() => store.dispatch(connecting(false)))
       .catch((err) => {
         log.error('Failed to do initial sync', err);

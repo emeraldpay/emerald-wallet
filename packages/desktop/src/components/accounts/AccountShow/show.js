@@ -3,8 +3,6 @@ import withStyles from 'react-jss';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { MuiThemeProvider } from '@material-ui/core/styles';
-import theme from '@emeraldplatform/ui/lib/theme';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import QRCode from 'qrcode.react';
 import TokenUnits from 'lib/tokenUnits';
@@ -80,7 +78,7 @@ export class AccountShow extends React.Component {
     };
 
     return (
-      <MuiThemeProvider theme={ theme }>
+      <div>
         <Page title="Account" leftIcon={ <Back onClick={goBack} /> }>
           <div style={{ display: 'flex', alignItems: 'center', paddingBottom: '20px' }}>
             <div style={{flexGrow: 2}}>
@@ -180,7 +178,7 @@ export class AccountShow extends React.Component {
         <div className={ classes.transContainer }>
           <TransactionsList transactions={ transactions } accountId={ acc.id } />
         </div>
-      </MuiThemeProvider>
+      </div>
     );
   }
 }

@@ -1,14 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { IconMenu } from 'material-ui';
-import IconButton from '@material-ui/core/IconButton';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
-import MenuItem from '@material-ui/core/MenuItem';
-import muiThemeable from 'material-ui/styles/muiThemeable';
-import {
-  Print as PrintIcon, Export as ExportIcon, ViewVisible as ViewVisibleIcon, ViewHidden as ViewHiddenIcon, MoreHorizontal as MoreHorizontalIcon
-} from '@emeraldplatform/ui-icons';
+import { AccountActionsMenu } from 'ui';
+
 import { api } from 'lib/rpc/api';
 import saveAs from 'lib/saveAs';
 import screen from '../../../store/wallet/screen';
@@ -18,67 +11,13 @@ import accounts from '../../../store/vault/accounts';
 const hasBalance = (account) => (account.get('balance', null) === null)
   || (account.get('balance') && account.get('balance').value().gt(0));
 
-const renderHide = (chain, account, onHide, { disabledColor }) => {
-  const disabled = hasBalance(account);
-  const iconStyle = disabled ? {
-    color: disabledColor,
-  } : null;
-  return (
-    <MenuItem disabled={disabled} onClick={onHide(chain)}>
-      <ListItemIcon>
-        <ViewHiddenIcon />
-      </ListItemIcon>
-      <ListItemText primary='HIDE' />
-    </MenuItem>
-  );
-};
-
-const renderUnhide = (chain, account, onUnhide) => {
-  return (
-    <MenuItem onClick={onUnhide(chain)}>
-      <ListItemIcon>
-        <ViewVisibleIcon />
-      </ListItemIcon>
-      <ListItemText primary='UNHIDE' />
-    </MenuItem>
-  );
-};
-
-export const SecondaryMenu = ({
-  account, onPrint, onExport, onHide, onUnhide, chain, muiTheme,
-}) => {
-  const colors = {
-    textColor: muiTheme.palette.textColor,
-    disabledColor: muiTheme.palette.disabledColor,
-  };
-  const isHardware = account.get('hardware', false);
-  return (
-    <IconMenu useLayerForClickAway={true} iconButtonElement={<IconButton><MoreHorizontalIcon /></IconButton>}>
-      {!isHardware
-        && <MenuItem onClick={ onExport(chain) }>
-          <ListItemIcon>
-            <ExportIcon />
-          </ListItemIcon>
-          <ListItemText primary='EXPORT'/>
-        </MenuItem> }
-      {!isHardware
-        && <MenuItem onClick={onPrint(chain)}>
-          <ListItemIcon>
-            <PrintIcon />
-          </ListItemIcon>
-          <ListItemText primary='PRINT' />
-        </MenuItem> }
-
-      { !account.get('hidden') && renderHide(chain, account, onHide, colors) }
-      { account.get('hidden') && renderUnhide(chain, account, onUnhide) }
-
-    </IconMenu>
-  );
-};
-
 export default connect(
   (state, ownProps) => ({
     chain: state.launcher.getIn(['chain', 'name']),
+    showPrint: !ownProps.account.get('hardware', false),
+    showExport: !ownProps.account.get('hardware', false),
+    hiddenAccount: ownProps.account.get('hidden'),
+    canHide: !hasBalance(ownProps.account),
   }),
   (dispatch, ownProps) => ({
     onPrint: (chain) => () => {
@@ -115,4 +54,4 @@ export default connect(
       });
     },
   })
-)(muiThemeable()(SecondaryMenu));
+)(AccountActionsMenu);

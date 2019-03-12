@@ -37,35 +37,6 @@ export function loadPeerCount() {
   };
 }
 
-export function loadAddressesTransactions(addresses) {
-  return (dispatch, getState, api) => {
-    if (getState().launcher.getIn(['geth', 'type']) === 'remote') {
-      return;
-    }
-    const addressTransactionPromises = addresses.map((address) => {
-      return api.geth.eth.getAddressTransactions(address, 0, 0, 'tf', 'sc', -1, -1, false);
-    }).toJS();
-
-    Promise.all(addressTransactionPromises).then((transactionsByAccount) => {
-      const results = transactionsByAccount.reduce((m, r) => m.concat(r), []);
-      const uniqueTransactions = Array.from(new Set(results));
-      if (results.length === 0) { return; }
-
-      const trackedTxs = getState().wallet.history.get('trackedTransactions');
-      const untrackedResults = uniqueTransactions.filter((txHash) => {
-        const isAlreadyTracked = !trackedTxs.find((tx) => txHash === tx.get('hash'));
-        return isAlreadyTracked;
-      });
-
-      if (untrackedResults.length === 0) { return; }
-
-      return api.geth.ext.getTransactions(untrackedResults).then((txes) => {
-        return dispatch(history.actions.trackTxs(txes.map((tx) => tx.result)));
-      });
-    }).catch(dispatchRpcError(dispatch));
-  };
-}
-
 export function loadSyncing() {
   return (dispatch, getState, api) => {
     return api.geth.eth.getSyncing().then((result) => {
