@@ -13,18 +13,18 @@ jobs:
               npm -v
               node -v
               curl -sL https://raw.githubusercontent.com/ethereumproject/janus/master/get.sh | bash
+              npm install -g lerna
+
+      - run:
+          name: Lerna bootstrap
+          command: lerna bootstrap
 
       - run:
           name: Tests and linting
           command: |
-              npm i
-              npm run test
-              npm run lint
-
-      - run:
-          name: Download Emerald-CLI
-          command: |
-              npm run getemerald
+              yarn build
+              yarn test
+              yarn lint
 
       - run:
           name: Build distributive
@@ -32,7 +32,7 @@ jobs:
               export PATH=$PATH:$PWD/janusbin
               export APP_VERSION_GIT_TAG="$(janus version -format 'TAG_OR_NIGHTLY')"
               echo "Building app version $APP_VERSION_GIT_TAG"
-              npm run dist
+              yarn build:dist
 
       - deploy:
           name: Deploy to builds.etcdevteam.com

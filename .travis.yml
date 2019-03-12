@@ -32,26 +32,25 @@ matrix:
 before_script:
   # `npm install` is automatic
   - npm install -g node-gyp license-checker
-  - npm install -g codecov
-  - npm install
-  - npm run getemerald
+  - npm install -g codecov yarn lerna
+  - lerna bootstrap
+
 script:
   # Install Janus
-  - curl -sL https://raw.githubusercontent.com/ethereumproject/janus/master/get.sh | bash
+  - curl -sL https://raw.githubusercontent.com/ETCDEVTeam/janus/master/get.sh | bash
   - export PATH=$PATH:$PWD/janusbin
   - export APP_VERSION_GIT_TAG="$(janus version -format 'TAG_OR_NIGHTLY')"
   - echo "Building app version $APP_VERSION_GIT_TAG"
   - if [[ $(license-checker --production --exclude '(GPL-2.0 OR MIT)' | grep GPL) ]]; then license-checker --production | grep -C 1 GPL && false; fi
-  - npm run build
-  - npm run test:coverage
-  - if [[ $FULL_CHECK == "true" ]]; then npm run lint --silent; fi
-  - if [[ $FULL_CHECK == "true" ]]; then npm run flow --silent; fi
+  - yarn build
+  - yarn test:coverage
+  - if [[ $FULL_CHECK == "true" ]]; then yarn lint; fi
   # Don't build releases for lint tests.
   # Env var disables build signing.
-  - if [[ "$FULL_CHECK" == "false" ]]; then env CSC_IDENTITY_AUTO_DISCOVERY=false npm run dist; fi
+  - if [[ "$FULL_CHECK" == "false" ]]; then env CSC_IDENTITY_AUTO_DISCOVERY=false yarn build:dist; fi
 after_success:
   # Show dist directory contents after a successful build.
-  - if [[ "$FULL_CHECK" == "false" ]]; then ls -l ./dist/; fi
+  - if [[ "$FULL_CHECK" == "false" ]]; then ls -l ./packages/desktop/dist/; fi
 before_deploy:
   # Set up GCP
   - openssl aes-256-cbc -k "$GCP_PASSWD" -in gcloud-travis.json.enc -out .gcloud.json -d
