@@ -26,13 +26,13 @@ export class HdPath extends React.Component {
   static propTypes = {
     onChange: PropTypes.func,
     value: PropTypes.string,
-  }
+  };
 
   onUpdateInput = (searchText: string, dataSource: Array<any>, params: any) => {
     if (this.props.onChange) {
       this.props.onChange(searchText);
     }
-  }
+  };
 
   render() {
     const { value, classes } = this.props;

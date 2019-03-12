@@ -1,14 +1,12 @@
 // @flow
 import EthereumTx from 'ethereumjs-tx';
-import { convert, Address } from '@emeraldplatform/emerald-js';
+import { convert } from '@emeraldplatform/emerald-js';
 import { EthAddress } from '@emeraldplatform/core';
 import { EthAccount } from '@emeraldplatform/eth-account';
-import { fromJS } from 'immutable';
 import { loadTokensBalances } from '../tokens/tokenActions';
 import screen from '../../wallet/screen';
 import history from '../../wallet/history';
 import launcher from '../../launcher';
-import network from '../../network';
 import ActionTypes from './actionTypes';
 import createLogger from '../../../utils/logger';
 import { dispatchRpcError } from '../../wallet/screen/screenActions';
@@ -98,7 +96,10 @@ export function loadAccountsList() {
     return api.emerald.listAccounts(chain, showHidden).then((result) => {
       dispatch({
         type: ActionTypes.SET_LIST,
-        accounts: result,
+        accounts: result.map(a => ({
+          ...a,
+          blockchain: chain,
+        })),
       });
 
       return dispatch(fetchHdPaths()).then(() => {
@@ -149,6 +150,7 @@ export function createAccount(passphrase: string, name: string = '', description
           accountId: result,
           name,
           description,
+          blockchain: chain,
         });
         dispatch(loadAccountBalance(result));
         return result;

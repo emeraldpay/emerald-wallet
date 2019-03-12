@@ -3,7 +3,7 @@ import accountReducers from './accountReducers';
 import ActionTypes from './actionTypes';
 
 describe('accountReducers', () => {
-  it('should store hidden flag', () => {
+  it('SET_LIST should store accounts correctly', () => {
     let state = accountReducers(null, {});
     // do
     state = accountReducers(state, {
@@ -14,14 +14,16 @@ describe('accountReducers', () => {
         description: 'desc1',
         hidden: true,
         hardware: false,
+        blockchain: 'etc',
       }],
     });
     // assert
     expect(state.get('accounts').last().get('hardware')).toEqual(false);
     expect(state.get('accounts').last().get('hidden')).toEqual(true);
+    expect(state.get('accounts').last().get('blockchain')).toEqual('etc');
   });
 
-  it('should set hd path', () => {
+  it('ADD_ACCOUNT should set hd path', () => {
     // prepare
     let state = accountReducers(null, {});
     expect(state.get('accounts')).toEqual(Immutable.List());
@@ -49,7 +51,7 @@ describe('accountReducers', () => {
     expect(state.get('accounts').last().get('hdpath')).toEqual('hdpath1');
   });
 
-  it('should add only non existent account', () => {
+  it('ADD_ACCOUNT should add only non existent account', () => {
     let state = accountReducers(null, {});
     expect(state.get('accounts')).toEqual(Immutable.List());
     state = accountReducers(state, {
@@ -57,10 +59,12 @@ describe('accountReducers', () => {
       accountId: 'id1',
       name: 'name1',
       description: 'desc1',
+      blockchain: 'etc',
     });
     expect(state.get('accounts').size).toEqual(1);
     expect(state.get('accounts').last().get('id')).toEqual('id1');
     expect(state.get('accounts').last().get('name')).toEqual('name1');
+    expect(state.get('accounts').last().get('blockchain')).toEqual('etc');
 
     // add again
     state = accountReducers(state, {

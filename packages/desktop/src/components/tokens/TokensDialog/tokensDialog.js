@@ -2,7 +2,8 @@ import React from 'react';
 import withStyles from 'react-jss';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
-import CloseButton from 'components/common/CloseButton';
+import IconButton from '@material-ui/core/IconButton';
+import { Close as CloseIcon } from '@emeraldplatform/ui-icons';
 import AddToken from '../AddToken';
 import TokensList from '../TokensList/list';
 
@@ -42,7 +43,12 @@ export class TokensDialog extends React.Component {
           <div className={ classes.header }>
             <div className={classes.title}>Add token by address</div>
             <div>
-              <CloseButton className={ classes.closeButton } onClick={ onClose }/>
+              <IconButton
+                className={ classes.closeButton }
+                onClick={ onClose }
+                tooltip="Close">
+                <CloseIcon />
+              </IconButton>
             </div>
           </div>
           <div>

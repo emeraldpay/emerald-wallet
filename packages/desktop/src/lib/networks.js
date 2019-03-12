@@ -8,7 +8,7 @@ export const Networks = [
       id: 61,
       name: 'mainnet',
     },
-    title: 'Mainnet',
+    title: 'Ethereum Classic',
     id: 'local/mainnet',
   },
   {
@@ -20,7 +20,7 @@ export const Networks = [
       id: 61,
       name: 'mainnet',
     },
-    title: 'Mainnet',
+    title: 'Ethereum Classic',
     id: 'gastracker/mainnet',
   },
   {

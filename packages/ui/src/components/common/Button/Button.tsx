@@ -9,6 +9,8 @@ interface Props {
   icon?: any;
   href?: string;
   variant?: any;
+  target?: any;
+  rel?: any;
 }
 
 const Btn = (props: Props) => {

@@ -18,15 +18,17 @@ const initialAccount = Immutable.Map({
   name: null,
   description: null,
   hidden: false,
+  blockchain: null,
 });
 
-function addAccount(state, id, name, description) {
+function addAccount(state, id, name, description, blockchain) {
   return state.update('accounts', (accounts) => {
     const pos = accounts.findKey((acc) => acc.get('id') === id);
     if (pos >= 0) {
       return accounts;
     }
-    const newAccount = initialAccount.mergeWith((o, n) => o || n, Immutable.fromJS({ id, name, description }));
+    const newAccount = initialAccount
+      .mergeWith((o, n) => o || n, Immutable.fromJS({ id, name, description, blockchain }));
     return accounts.push(newAccount);
   });
 }
@@ -66,6 +68,7 @@ function onSetAccountsList(state, action) {
       id: acc.get('address'),
       hardware: acc.get('hardware'),
       hidden: acc.get('hidden'),
+      blockchain: acc.get('blockchain'),
     })).map((acc) => getExisting(acc.get('id')).merge(acc));
     return state
       .set('accounts', updatedList)
@@ -134,7 +137,7 @@ function onSetHdPath(state, action) {
 
 function onAddAccount(state, action) {
   if (action.type === ActionTypes.ADD_ACCOUNT) {
-    return addAccount(state, action.accountId, action.name, action.description);
+    return addAccount(state, action.accountId, action.name, action.description, action.blockchain);
   }
   return state;
 }
