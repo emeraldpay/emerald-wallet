@@ -6,9 +6,7 @@ class SyncWarningContainer extends React.Component {
   render() {
     const { currentBlock, highestBlock } = this.props;
     if (currentBlock && highestBlock && (highestBlock - currentBlock >= 20)) {
-      return (
-          <SyncWarning {...this.props} />
-        );
+      return (<SyncWarning {...this.props} />);
     }
     return null;
   }

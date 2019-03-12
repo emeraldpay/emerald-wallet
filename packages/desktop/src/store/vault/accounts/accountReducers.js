@@ -27,8 +27,9 @@ function addAccount(state, id, name, description, blockchain) {
     if (pos >= 0) {
       return accounts;
     }
-    const newAccount = initialAccount
-      .mergeWith((o, n) => o || n, Immutable.fromJS({ id, name, description, blockchain }));
+    const newAccount = initialAccount.mergeWith((o, n) => o || n, Immutable.fromJS({
+      id, name, description, blockchain,
+    }));
     return accounts.push(newAccount);
   });
 }

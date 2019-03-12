@@ -96,7 +96,7 @@ export function loadAccountsList() {
     return api.emerald.listAccounts(chain, showHidden).then((result) => {
       dispatch({
         type: ActionTypes.SET_LIST,
-        accounts: result.map(a => ({
+        accounts: result.map((a) => ({
           ...a,
           blockchain: chain,
         })),
