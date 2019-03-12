@@ -7,7 +7,7 @@ echo "Deploy to http://builds.etcdevteam.com/emerald-wallet/$VERSION_BASE/"
 
 mkdir deploy
 
-mv dist/*.dmg dist/*.zip deploy/
+mv packages/desktop/dist/*.dmg packages/desktop/dist/*.zip deploy/
 
 janus deploy -to="builds.etcdevteam.com/emerald-wallet/$VERSION_BASE/" -files="deploy/*" -key=".circleci/gcloud-circleci.json.enc"
 
