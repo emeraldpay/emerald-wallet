@@ -1,5 +1,5 @@
 // @flow
-import EthereumTx from 'ethereumjs-tx';
+import { EthereumTx } from 'core';
 import { convert } from '@emeraldplatform/emerald-js';
 import { EthAddress } from '@emeraldplatform/core';
 import { EthAccount } from '@emeraldplatform/eth-account';
@@ -203,9 +203,9 @@ function withNonce(tx: Transaction): (nonce: string) => Promise<Transaction> {
 
 function verifySender(expected) {
   return (raw: string) => new Promise((resolve, reject) => {
-    const tx = new EthereumTx(raw);
+    const tx = EthereumTx.fromRaw(raw);
     if (tx.verifySignature()) {
-      if (`0x${tx.getSenderAddress().toString('hex').toLowerCase()}` !== expected.toLowerCase()) {
+      if (`0x${tx.getSenderAddress().toLowerCase()}` !== expected.toLowerCase()) {
         log.error(`WRONG SENDER: 0x${tx.getSenderAddress().toString('hex')} != ${expected}`);
         reject(new Error('Emerald Vault returned signature from wrong Sender'));
       } else {

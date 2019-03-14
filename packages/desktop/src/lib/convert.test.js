@@ -1,8 +1,7 @@
 import BigNumber from 'bignumber.js';
 import Immutable from 'immutable';
 import {
-  mweiToWei, etherToWei, estimateGasFromTrace, transformToFullName,
-  getFunctionSignature, separateThousands
+  mweiToWei, etherToWei, estimateGasFromTrace, transformToFullName, separateThousands
 } from './convert';
 
 describe('Number formatting', () => {
@@ -35,12 +34,6 @@ describe('Function Converter', () => {
   });
   it('get full name from ABI', () => {
     expect(transformToFullName(Immutable.fromJS(transfer))).toEqual('transfer(address,uint256)');
-  });
-  it('get function signature from ABI', () => {
-    expect(getFunctionSignature(Immutable.fromJS(transfer))).toEqual('a9059cbb');
-  });
-  it('get function signature from ABI', () => {
-    expect(getFunctionSignature(Immutable.fromJS(balanceOf))).toEqual('70a08231');
   });
 });
 
