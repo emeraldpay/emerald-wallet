@@ -2,6 +2,7 @@
   "name": "emerald-wallet",
   "private": true,
   "scripts": {
+    "clean:node_modules": "rimraf node_modules packages/*/node_modules",
     "build": "lerna run build --stream",
     "test": "lerna run test --stream",
     "lint": "lerna run lint --stream",

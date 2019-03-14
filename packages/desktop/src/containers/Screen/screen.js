@@ -18,7 +18,7 @@ import ImportMnemonic from '../ImportMnemonic';
 import Welcome from '../../components/welcome/welcome';
 import Landing from '../Landing';
 import Dashboard from '../../components/layout/Dashboard';
-import Settings from '../../components/settings';
+import Settings from '../Settings';
 import PaperWallet from '../PaperWallet';
 import ExportPaperWallet from '../../components/accounts/ExportPaperWallet';
 import GenerateAccount from '../../components/accounts/GenerateAccount';

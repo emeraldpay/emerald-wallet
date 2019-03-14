@@ -1,4 +1,4 @@
-import { convert } from '@emeraldplatform/emerald-js';
+import { convert } from '@emeraldplatform/core';
 import TokenUnits from './tokenUnits';
 
 

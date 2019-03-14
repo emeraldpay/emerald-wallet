@@ -1,9 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { PaperWallet } from '@emeraldwallet/ui';
 
 import screen from 'store/wallet/screen';
-import PaperWallet from '../../components/accounts/PaperWallet';
-
 
 export default connect(
   (state, ownProps) => ({}),

@@ -1,7 +1,7 @@
 import React, { Fragment } from 'react';
 import PropTypes from 'prop-types';
 import { Input } from 'emerald-js-ui';
-import { Button } from 'ui';
+import { Button } from '@emeraldwallet/ui';
 import FormLabel from '../FormLabel';
 
 class AmountField extends React.Component {
@@ -10,7 +10,7 @@ class AmountField extends React.Component {
     amount: PropTypes.string.isRequired,
     balance: PropTypes.string.isRequired,
     onMaxClicked: PropTypes.func.isRequired,
-  }
+  };
 
   constructor() {
     super();

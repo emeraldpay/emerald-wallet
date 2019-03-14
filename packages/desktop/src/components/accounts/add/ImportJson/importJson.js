@@ -4,11 +4,10 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import {
-  Warning, WarningText, WarningHeader
-} from 'emerald-js-ui';
-import { Page } from '@emeraldplatform/ui';
+  Page, Warning, WarningText, WarningHeader
+} from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import { Button } from 'ui';
+import { Button } from '@emeraldwallet/ui';
 import screen from 'store/wallet/screen';
 import accountsModule from 'store/vault/accounts';
 import { Row, styles as formStyles } from 'elements/Form/index';
@@ -22,7 +21,7 @@ class ImportJson extends React.Component {
       accounts: PropTypes.object,
       t: PropTypes.func,
       onDashboard: PropTypes.func,
-    }
+    };
 
     constructor(props) {
       super(props);

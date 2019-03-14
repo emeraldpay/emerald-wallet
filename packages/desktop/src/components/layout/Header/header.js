@@ -1,7 +1,7 @@
 import React from 'react';
 import { AppBar, LinearProgress } from 'material-ui';
 import { withStyles } from '@material-ui/core';
-import { Button } from 'ui';
+import { Button } from '@emeraldwallet/ui';
 import { Block as BlockIcon, Settings as SettingsIcon } from '@emeraldplatform/ui-icons';
 import SyncWarning from '../../../containers/SyncWarning';
 import Status from './Status';

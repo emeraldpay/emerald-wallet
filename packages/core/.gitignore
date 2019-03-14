@@ -14,5 +14,5 @@ logs/
 coverage/
 flow-typed/
 package-lock.json
-yarn.lock
 .emerald-dev
+yarn-error.log

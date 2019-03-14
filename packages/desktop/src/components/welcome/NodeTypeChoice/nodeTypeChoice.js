@@ -3,7 +3,7 @@ import {withStyles} from '@material-ui/core/styles';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import cx from 'classnames';
-import { Button } from 'ui';
+import { Button } from '@emeraldwallet/ui';
 import {useRpc} from '../../../store/launcher/launcherActions';
 import {RemoteMainnet, MainnetLocal} from '../../../lib/rpc/gethProviders';
 import FullNodeLogo from './fullNodeLogo';

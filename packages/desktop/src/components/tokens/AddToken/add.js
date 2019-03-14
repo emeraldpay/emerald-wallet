@@ -7,9 +7,9 @@ import {
   Field, reduxForm, change, formValueSelector, reset
 } from 'redux-form';
 import TextField from 'elements/Form/TextField';
-import { ButtonGroup } from 'emerald-js-ui';
 import { required, address } from 'lib/validators';
-import { Button } from 'ui';
+import { ButtonGroup } from '@emeraldplatform/ui';
+import { Button } from '@emeraldwallet/ui';
 import TokenUnits from 'lib/tokenUnits';
 import tokens from '../../../store/vault/tokens';
 

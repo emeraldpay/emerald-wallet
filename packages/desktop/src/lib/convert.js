@@ -1,6 +1,5 @@
 // @flow
 import BigNumber from 'bignumber.js';
-import ethUtil from 'ethereumjs-util';
 
 /*
   Convert unix timestamp to time elapsed
@@ -127,11 +126,6 @@ export function etherToWei(val) {
 export function transformToFullName(func) {
   const typeName = func.get('inputs').map((i) => i.get('type')).join();
   return `${func.get('name')}(${typeName})`;
-}
-
-export function getFunctionSignature(func) {
-  const fullName = transformToFullName(func);
-  return ethUtil.sha3(fullName).toString('hex').slice(0, 8);
 }
 
 export function separateThousands(number, separator) {

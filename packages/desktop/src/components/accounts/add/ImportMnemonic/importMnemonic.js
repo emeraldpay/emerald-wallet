@@ -12,7 +12,7 @@ import muiThemeable from 'material-ui/styles/muiThemeable';
 import { required, passwordMatch, minLength } from 'lib/validators';
 import { Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
-import { Button } from 'ui';
+import { Button } from '@emeraldwallet/ui';
 import screen from 'store/wallet/screen';
 import HdPath from 'components/common/HdPath';
 

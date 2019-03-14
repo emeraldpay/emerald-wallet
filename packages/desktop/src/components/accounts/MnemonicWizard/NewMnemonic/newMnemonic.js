@@ -6,7 +6,7 @@ import {
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import { Row, styles as formStyles } from 'elements/Form';
-import { Button } from 'ui';
+import { Button } from '@emeraldwallet/ui';
 
 export class NewMnemonic extends React.Component {
   static propTypes = {

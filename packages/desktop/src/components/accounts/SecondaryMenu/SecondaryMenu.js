@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { AccountActionsMenu } from 'ui';
+import { AccountActionsMenu } from '@emeraldwallet/ui';
 
 import { api } from 'lib/rpc/api';
 import saveAs from 'lib/saveAs';

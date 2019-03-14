@@ -1,7 +1,7 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import Dropzone from 'react-dropzone';
-import { Button } from 'ui';
+import { Button } from '@emeraldwallet/ui';
 
 export const styles2 = {
   container: {
@@ -33,7 +33,7 @@ class FileDropField extends React.Component {
         file: filesToUpload[0],
       });
       onChange(filesToUpload[0]);
-    }
+    };
 
     render() {
       const { name, classes } = this.props;

@@ -2,7 +2,7 @@ import React from 'react';
 import {ipcRenderer} from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import {MuiThemeProvider} from '@material-ui/core/styles';
 import theme from '@emeraldplatform/ui/lib/theme';
-import {About} from 'ui';
+import {About} from '@emeraldwallet/ui';
 import {version} from '../../../package.json';
 
 class AboutContainer extends React.Component {

@@ -1,8 +1,9 @@
-import React from 'react';
-import withStyles from 'react-jss';
-import QRCode from 'qrcode.react';
+import * as React from 'react';
+import { withStyles } from '@material-ui/core/styles';
+import * as QRCode from 'qrcode.react';
 import IconButton from '@material-ui/core/IconButton';
 import { Print, Close, CurrencyEtc } from '@emeraldplatform/ui-icons';
+import {CSSProperties} from "@material-ui/core/styles/withStyles";
 
 export const styles = {
   container: {
@@ -24,20 +25,20 @@ export const styles = {
     lineHeight: '24px',
     fontSize: '12px',
     fontWeight: 500,
-    textAlign: 'right',
-  },
+    textAlign: "right",
+  } as CSSProperties,
   privateValue: {
     lineHeight: '24px',
     textAlign: 'right',
     fontSize: '12px',
-  },
+  } as CSSProperties,
   title: {
     backgroundColor: '#000000',
     color: '#FFFFFF',
     letterSpacing: '2px',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
+    fontWeight: "bold",
+    textAlign: "center",
+  } as CSSProperties,
   main: {
     paddingLeft: '16px',
     paddingRight: '16px',
@@ -62,7 +63,7 @@ export const styles = {
     display: 'flex',
     justifyContent: 'flex-end',
     flexDirection: 'column',
-  },
+  } as CSSProperties,
   notesCaption: {
     opacity: 0.5,
     color: '#191919',
@@ -77,7 +78,14 @@ export const styles = {
   },
 };
 
-export const PaperWallet = (props) => {
+interface Props {
+  address: string;
+  privKey: string;
+  onCancel?: any;
+  classes?: any;
+}
+
+export const PaperWallet = (props: Props) => {
   const {
     address, privKey, onCancel, classes,
   } = props;
