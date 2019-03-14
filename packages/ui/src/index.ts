@@ -7,3 +7,4 @@ export { default as ReceiveDialog } from './components/accounts/ReceiveDialog';
 export { default as AccountActionsMenu } from './components/accounts/AccountActionsMenu';
 export { default as Landing } from './components/Landing';
 export { default as PaperWallet } from './components/accounts/PaperWallet';
+export { default as Settings } from './components/Settings';

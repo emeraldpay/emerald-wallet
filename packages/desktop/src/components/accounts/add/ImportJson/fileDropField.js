@@ -33,7 +33,7 @@ class FileDropField extends React.Component {
         file: filesToUpload[0],
       });
       onChange(filesToUpload[0]);
-    }
+    };
 
     render() {
       const { name, classes } = this.props;
