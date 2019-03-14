@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { Terms } from 'ui';
+import { Terms } from '@emeraldwallet/ui';
 import launcher from '../../../store/launcher';
 import { TERMS_VERSION } from '../../../store/config';
 

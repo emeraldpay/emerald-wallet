@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { Button } from 'ui';
+import { Button } from '@emeraldwallet/ui';
 import { NewMnemonic } from './newMnemonic';
 
 describe('When mnemonic is empty NewMnemonic', () => {

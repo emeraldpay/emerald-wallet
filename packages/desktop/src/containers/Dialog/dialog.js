@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { ReceiveDialog } from 'ui';
+import { ReceiveDialog } from '@emeraldwallet/ui';
 
 import WaitForSign from '../../components/tx/WaitForSignDialog/waitForSignDialog';
 import createLogger from '../../utils/logger';

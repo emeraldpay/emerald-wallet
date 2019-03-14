@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import withStyles from 'react-jss';
 import { Map } from 'immutable';
 import { connect } from 'react-redux';
-import { Button } from 'ui';
+import { Button } from '@emeraldwallet/ui';
 import { convert, Wei } from '@emeraldplatform/emerald-js';
 import { Page, ButtonGroup, Account } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';

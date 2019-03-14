@@ -4,7 +4,7 @@ import {Page, ButtonGroup} from '@emeraldplatform/ui';
 import TextField from 'elements/Form/TextField';
 import {required, address} from 'lib/validators';
 import {Row, styles as formStyles} from 'elements/Form';
-import { Button } from 'ui';
+import { Button } from '@emeraldwallet/ui';
 
 const titleStyle = {
   fontSize: '18px',

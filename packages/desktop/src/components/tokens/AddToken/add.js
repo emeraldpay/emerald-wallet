@@ -8,7 +8,8 @@ import {
 } from 'redux-form';
 import TextField from 'elements/Form/TextField';
 import { required, address } from 'lib/validators';
-import { Button, ButtonGroup } from 'ui';
+import { ButtonGroup } from '@emeraldplatform/ui';
+import { Button } from '@emeraldwallet/ui';
 import TokenUnits from 'lib/tokenUnits';
 import tokens from '../../../store/vault/tokens';
 

@@ -5,7 +5,7 @@ import { Dialog } from 'material-ui';
 import {
   Warning, WarningHeader, WarningText
 } from 'emerald-js-ui';
-import { Button } from 'ui';
+import { Button } from '@emeraldwallet/ui';
 import screen from '../../../store/wallet/screen';
 import accounts from '../../../store/vault/accounts';
 import history from '../../../store/wallet/history';

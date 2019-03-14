@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { withStyles } from '@material-ui/core';
 import { Wei } from '@emeraldplatform/emerald-js';
 import { EtcSimple } from '@emeraldplatform/ui-icons';
-import { Button } from 'ui';
+import { Button } from '@emeraldwallet/ui';
 import Accounts from '../../../../store/vault/accounts';
 import WalletSettings from '../../../../store/wallet/settings';
 import { Currency } from '../../../../lib/currency';

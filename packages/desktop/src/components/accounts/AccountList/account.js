@@ -7,7 +7,7 @@ import { CardText } from 'material-ui/Card';
 import {
   Card
 } from 'emerald-js-ui';
-import { Button } from 'ui';
+import { Button } from '@emeraldwallet/ui';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../Balance';

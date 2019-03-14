@@ -1,5 +1,5 @@
 import { connect } from 'react-redux';
-import { Landing } from 'ui';
+import { Landing } from '@emeraldwallet/ui';
 import screen from '../../store/wallet/screen';
 
 export default connect(

@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { PlayCircle } from '@emeraldplatform/ui-icons';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import { Button } from 'ui';
+import { Button } from '@emeraldwallet/ui';
 import screen from '../../store/wallet/screen';
 
 const Render = ({ numberOfAccounts, nextPage }) => {

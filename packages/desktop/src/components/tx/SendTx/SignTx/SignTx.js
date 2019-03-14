@@ -5,7 +5,7 @@ import {
 import { ButtonGroup } from '@emeraldplatform/ui';
 import { ArrowRight } from '@emeraldplatform/ui-icons';
 import { required } from 'lib/validators';
-import { Button } from 'ui';
+import { Button } from '@emeraldwallet/ui';
 import { Divider } from '@material-ui/core';
 import { List, ListItem } from 'material-ui/List';
 import muiThemeable from 'material-ui/styles/muiThemeable';
