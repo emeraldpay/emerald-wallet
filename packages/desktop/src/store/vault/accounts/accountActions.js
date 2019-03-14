@@ -206,7 +206,7 @@ function verifySender(expected) {
     const tx = EthereumTx.fromRaw(raw);
     if (tx.verifySignature()) {
       if (`0x${tx.getSenderAddress().toLowerCase()}` !== expected.toLowerCase()) {
-        log.error(`WRONG SENDER: 0x${tx.getSenderAddress().toString('hex')} != ${expected}`);
+        log.error(`WRONG SENDER: 0x${tx.getSenderAddress()} != ${expected}`);
         reject(new Error('Emerald Vault returned signature from wrong Sender'));
       } else {
         resolve(raw);
@@ -219,7 +219,7 @@ function verifySender(expected) {
 }
 
 function signTx(api, tx: Transaction, passphrase: string, chain: string) {
-  log.trace('Calling emerald api to sign tx');
+  log.trace(`Calling emerald api to sign tx from ${tx.from} to ${tx.to}`);
   return api.emerald.signTransaction(tx, passphrase, chain);
 }
 
