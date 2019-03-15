@@ -1,14 +1,12 @@
 const Store = require('electron-store');
+const { URL_FOR_CHAIN } = require('./utils');
 
 const DEFAULTS = {
   version: 1,
-  geth: {
-    type: 'none',
-    url: '',
-  },
+  geth: URL_FOR_CHAIN.mainnet,
   chain: {
-    name: null,
-    id: null,
+    name: 'mainnet',
+    id: 61,
   },
   terms: 'none',
 };

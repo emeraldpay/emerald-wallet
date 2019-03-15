@@ -5,7 +5,6 @@ import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { Step, Stepper, StepLabel } from 'material-ui/Stepper';
 import Terms from './Terms';
 import OpenWallet from './openWallet';
-import NodeTypeChoice from './NodeTypeChoice';
 import { TERMS_VERSION } from '../../store/config';
 
 const Render = ({ rpcType, terms }) => {
@@ -14,11 +13,8 @@ const Render = ({ rpcType, terms }) => {
 
   if (terms !== TERMS_VERSION) {
     step = <Terms/>;
-  } else if (rpcType === 'none') {
-    activeStep = 1;
-    step = <NodeTypeChoice/>;
   } else {
-    activeStep = 2;
+    activeStep = 1;
     step = <OpenWallet/>;
   }
 
@@ -26,11 +22,6 @@ const Render = ({ rpcType, terms }) => {
   steps.push(
     <Step key="terms">
       <StepLabel>User Agreement</StepLabel>
-    </Step>
-  );
-  steps.push(
-    <Step key="select-rpc">
-      <StepLabel>Select RPC type</StepLabel>
     </Step>
   );
   steps.push(
