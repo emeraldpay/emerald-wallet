@@ -29,6 +29,10 @@ class ServerConnect {
       new JsonRpcProvider(new JsonRpc(this.createHttpTransport('http://127.0.0.1:1920')))
     );
   }
+
+  getUserAgent() {
+    return this.headers['User-Agent'];
+  }
 }
 
 module.exports = {

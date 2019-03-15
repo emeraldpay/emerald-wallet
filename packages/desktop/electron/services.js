@@ -1,11 +1,9 @@
-const { JsonRpc, HttpTransport } = require('@emeraldplatform/rpc');
-const { Vault, JsonRpcProvider } = require('@emeraldplatform/vault');
 const log = require('./logger');
 const { LocalGeth, NoneGeth, RemoteGeth } = require('./launcher');
 const { LocalConnector } = require('./vault/launcher');
 const UserNotify = require('./userNotify').UserNotify; // eslint-disable-line
 const newGethDownloader = require('./geth/downloader').newGethDownloader; // eslint-disable-line
-const { check, waitRpc, initFetcher } = require('./nodecheck');
+const { check, waitRpc } = require('./nodecheck');
 const { getBinDir, getLogDir, isValidChain } = require('./utils');
 
 require('es6-promise').polyfill();
@@ -50,19 +48,13 @@ const DEFAULT_SETUP = {
 
 
 class Services {
-  constructor(webContents) {
+  constructor(webContents, serverConnect) {
     this.setup = Object.assign({}, DEFAULT_SETUP);
-    initFetcher();
     this.connectorStatus = STATUS.NOT_STARTED;
     this.gethStatus = STATUS.NOT_STARTED;
     this.notify = new UserNotify(webContents);
-    this.emerald = new Vault(
-      new JsonRpcProvider(
-        new JsonRpc(
-          new HttpTransport('http://127.0.0.1:1920')
-        )
-      )
-    );
+    this.emerald = serverConnect.connectEmerald();
+    this.serverConnect = serverConnect;
     log.info(`Run services from ${getBinDir()}`);
   }
 
@@ -125,7 +117,7 @@ class Services {
 
   tryExistingGeth(url) {
     return new Promise((resolve, reject) => {
-      check(url).then((status) => {
+      check(url, this.serverConnect).then((status) => {
         resolve({
           name: status.chain,
           id: status.chainId,
@@ -191,7 +183,7 @@ class Services {
             log.error(`geth process exited with code: ${code}`);
           });
           if (geth.pid > 0) {
-            waitRpc(this.geth.getUrl()).then((clientVersion) => {
+            waitRpc(this.geth.getUrl(), this.serverConnect).then((clientVersion) => {
               this.gethStatus = STATUS.READY;
               log.info(`RPC is ready: ${clientVersion}`);
 
