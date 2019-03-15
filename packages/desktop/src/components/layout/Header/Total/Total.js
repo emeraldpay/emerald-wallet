@@ -8,7 +8,7 @@ import { EtcSimple } from '@emeraldplatform/ui-icons';
 import { Button } from '@emeraldwallet/ui';
 import Accounts from '../../../../store/vault/accounts';
 import WalletSettings from '../../../../store/wallet/settings';
-import { Currency } from '../../../../lib/currency';
+import { Currency } from '@emeraldwallet/core';
 
 type Props = {
   total: string,

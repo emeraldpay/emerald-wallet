@@ -8,3 +8,4 @@ export { default as AccountActionsMenu } from './components/accounts/AccountActi
 export { default as Landing } from './components/Landing';
 export { default as PaperWallet } from './components/accounts/PaperWallet';
 export { default as Settings } from './components/Settings';
+export { default as TxDetails } from './components/tx/TxDetails';

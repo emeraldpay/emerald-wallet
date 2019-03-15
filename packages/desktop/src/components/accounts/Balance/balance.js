@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import WalletSettings from '../../../store/wallet/settings';
-import { Currency } from '../../../lib/currency';
+import { Currency } from '@emeraldwallet/core';
 
 const defaultStyles = {
   fiat: {

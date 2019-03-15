@@ -16,6 +16,7 @@
   "dependencies": {
     "@emeraldplatform/ui": "^0.5.0-beta.1",
     "@emeraldplatform/ui-icons": "^0.4.3",
+    "@emeraldwallet/core": "^1.2.1",
     "@material-ui/core": "^3.9.2",
     "qrcode.react": "^0.9.3",
     "react": "^16.8.3",
@@ -34,6 +35,7 @@
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.10.0",
     "jest": "24.1.0",
+    "jest-canvas-mock": "^2.0.0-beta.1",
     "rimraf": "^2.6.3",
     "ts-jest": "^24.0.0",
     "typescript": "^3.3.3333"
