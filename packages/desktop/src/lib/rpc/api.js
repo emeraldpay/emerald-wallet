@@ -1,23 +1,19 @@
 // @flow
-import {EthRpc} from '@emeraldplatform/eth-rpc';
-import {JsonRpc, HttpTransport} from '@emeraldplatform/rpc';
-import {Vault, JsonRpcProvider as VaultJsonRpcProvider} from '@emeraldplatform/vault';
 
 export default class Api {
   constructor() {
-    this.emerald = new Vault(
-      new VaultJsonRpcProvider(
-        new JsonRpc(
-          new HttpTransport('http://127.0.0.1:1920')
-        )
-      )
-    );
+    this.emerald = Api.getConnector().connectEmerald();
     // this.emerald = new Vault(new VaultInMemoryProvider());
     this.geth = null;
   }
 
   updateGethUrl(url) {
-    this.geth = new EthRpc(new JsonRpc(new HttpTransport(url)));
+    this.geth = Api.getConnector().connectEth(url);
+  }
+
+  static getConnector() {
+    const { remote } = global.require('electron');
+    return remote.getGlobal('serverConnect');
   }
 }
 

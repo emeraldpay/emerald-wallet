@@ -12,6 +12,7 @@ const ipc = require('./ipc');
 const log = require('./logger');
 const { startProtocolHandler } = require('./protocol');
 const assertSingletonWindow = require('./singletonWindow');
+const { ServerConnect } = require('./serverConnect');
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
@@ -27,6 +28,7 @@ global.ledger = new LedgerApi();
 global.launcherConfig = {
   get: () => settings.toJS(),
 };
+global.serverConnect = new ServerConnect();
 
 log.info('userData: ', app.getPath('userData'));
 log.info(`Chain: ${JSON.stringify(settings.getChain())}`);
@@ -47,6 +49,8 @@ app.on('ready', () => {
     details.requestHeaders['User-Agent'] = agent;
     callback({ cancel: false, requestHeaders: details.requestHeaders });
   });
+
+  global.serverConnect.init();
 
   const browserWindow = mainWindow.createWindow(isDev);
   const services = new Services(browserWindow.webContents);
