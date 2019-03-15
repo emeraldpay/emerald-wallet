@@ -17,7 +17,6 @@ class ExtendedMenuItem extends React.Component {
     const {
       muiTheme, checked, onClick, net,
     } = this.props;
-    const networkType = net.geth.type === 'local' ? 'Full Node' : 'Remote Node';
     const textColor = checked ? muiTheme.palette.primary1Color : muiTheme.palette.secondaryTextColor;
     return (
       <div
@@ -32,7 +31,6 @@ class ExtendedMenuItem extends React.Component {
         }}
       >
         <div style={{ color: textColor }}>{net.title}</div>
-        <div style={{ color: textColor, paddingTop: '3px' }}>{networkType}</div>
       </div>
     );
   }
