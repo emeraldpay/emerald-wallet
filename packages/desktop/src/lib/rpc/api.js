@@ -1,4 +1,7 @@
 // @flow
+import createLogger from '../../utils/logger';
+
+const log = createLogger('api');
 
 export default class Api {
   constructor() {
@@ -8,7 +11,16 @@ export default class Api {
   }
 
   updateGethUrl(url) {
+    if (!url) {
+      log.warn('Disconnecting from Geth');
+      this.geth = null;
+      return;
+    }
     this.geth = Api.getConnector().connectEth(url);
+  }
+
+  updateChain(name) {
+    this.geth = Api.getConnector().connectEthChain(name);
   }
 
   static getConnector() {

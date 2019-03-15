@@ -2,13 +2,12 @@ const log = require('./logger');
 const { LocalGeth, NoneGeth, RemoteGeth } = require('./launcher');
 const { LocalConnector } = require('./vault/launcher');
 const UserNotify = require('./userNotify').UserNotify; // eslint-disable-line
-const newGethDownloader = require('./geth/downloader').newGethDownloader; // eslint-disable-line
 const { check, waitRpc } = require('./nodecheck');
-const { getBinDir, getLogDir, isValidChain } = require('./utils');
+const {
+  getBinDir, getLogDir, isValidChain, URL_FOR_CHAIN,
+} = require('./utils');
 
 require('es6-promise').polyfill();
-
-const LOCAL_RPC_URL = 'http://localhost:8545';
 
 const SERVICES = {
   CONNECTOR: 'connector',
@@ -37,12 +36,7 @@ const DEFAULT_SETUP = {
     launchType: LAUNCH_TYPE.LOCAL_RUN,
     url: 'http://127.0.0.1:1920',
   },
-
-  geth: {
-    launchType: LAUNCH_TYPE.NONE,
-    url: null,
-    type: null,
-  },
+  geth: URL_FOR_CHAIN.mainnet,
   chain: null,
 };
 
@@ -75,15 +69,7 @@ class Services {
     this.setup.chain = settings.chain;
 
     // Set Geth
-    this.setup.geth = settings.geth;
-
-    if (this.setup.geth.type === 'remote') {
-      this.setup.geth.launchType = LAUNCH_TYPE.REMOTE_URL;
-    } else if (this.setup.geth.type === 'local') {
-      this.setup.geth.launchType = LAUNCH_TYPE.AUTO;
-    } else {
-      this.setup.geth.launchType = LAUNCH_TYPE.NONE;
-    }
+    this.setup.geth = URL_FOR_CHAIN[settings.chain.name];
 
     log.debug('New Services setup', this.setup);
     return Promise.resolve(this.setup);
@@ -127,13 +113,9 @@ class Services {
     });
   }
 
-  startNoneRpc() {
-    this.notify.error('Ethereum connection type is not configured');
-    return new NoneGeth();
-  }
-
   startRemoteRpc() {
     log.info('use REMOTE RPC');
+    this.setup.geth = URL_FOR_CHAIN[this.setup.chain.name];
     return this.tryExistingGeth(this.setup.geth.url).then((chain) => {
       this.setup.chain = chain;
       this.setup.geth.clientVersion = chain.clientVersion;
@@ -146,85 +128,10 @@ class Services {
     });
   }
 
-  startAutoRpc() {
-    return this.tryExistingGeth(LOCAL_RPC_URL).then((chain) => {
-      this.setup.chain = chain;
-      log.info('Use Local Existing RPC API');
-
-      this.gethStatus = STATUS.READY;
-      this.setup.geth.url = LOCAL_RPC_URL;
-      this.setup.geth.clientVersion = chain.clientVersion;
-      this.setup.geth.type = 'local';
-
-      this.notify.info('Use Local Existing RPC API');
-      this.notify.chain(this.setup.chain.name, this.setup.chain.id);
-      this.notifyEthRpcStatus();
-
-
-      return new LocalGeth(null, getLogDir(), this.setup.chain.name, 8545);
-    }).catch((e) => {
-      log.error(e);
-      log.info("Can't find existing RPC. Try to launch");
-      return this.startLocalRpc();
-    });
-  }
-
-  startLocalRpc() {
-    return new Promise((resolve, reject) => {
-      const gethDownloader = newGethDownloader(this.notify, getBinDir());
-      gethDownloader.downloadIfNotExists().then(() => {
-        this.notify.info('Launching Geth backend');
-        this.gethStatus = STATUS.STARTING;
-        this.geth = new LocalGeth(getBinDir(), getLogDir(), this.setup.chain.name, 8545);
-
-        this.geth.launch().then((geth) => {
-          geth.on('exit', (code) => {
-            this.gethStatus = STATUS.NOT_STARTED;
-            log.error(`geth process exited with code: ${code}`);
-          });
-          if (geth.pid > 0) {
-            waitRpc(this.geth.getUrl(), this.serverConnect).then((clientVersion) => {
-              this.gethStatus = STATUS.READY;
-              log.info(`RPC is ready: ${clientVersion}`);
-
-              this.setup.geth.url = this.geth.getUrl();
-              this.setup.geth.type = 'local';
-              this.setup.geth.clientVersion = clientVersion;
-
-              this.notify.info('Local Geth RPC API is ready');
-              this.notify.chain(this.setup.chain.name, this.setup.chain.id);
-              this.notifyEthRpcStatus();
-
-              resolve(this.geth);
-            }).catch(reject);
-          } else {
-            reject(new Error('Geth not launched'));
-          }
-        }).catch(reject);
-      }).catch((err) => {
-        log.error('Unable to download Geth', err);
-        this.notify.info(`Unable to download Geth: ${err}`);
-        reject(err);
-      });
-    });
-  }
-
   startGeth() {
     this.gethStatus = STATUS.NOT_STARTED;
     this.notifyEthRpcStatus('not ready');
-
-    return new Promise((resolve, reject) => {
-      if (this.setup.geth.launchType === LAUNCH_TYPE.NONE) {
-        return resolve(this.startNoneRpc());
-      } if (this.setup.geth.launchType === LAUNCH_TYPE.REMOTE_URL) {
-        return this.startRemoteRpc().then(resolve).catch(reject);
-      } if (this.setup.geth.launchType === LAUNCH_TYPE.AUTO
-                 || this.setup.geth.launchType === LAUNCH_TYPE.LOCAL_RUN) {
-        return this.startAutoRpc().then(resolve).catch(reject);
-      }
-
-      return reject(new Error(`Invalid Geth launch type ${this.setup.geth.launchType}`));
-    });
+    return this.startRemoteRpc();
   }
 
   startConnector() {

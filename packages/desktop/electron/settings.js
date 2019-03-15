@@ -19,9 +19,8 @@ class Settings {
       name: 'settings',
       defaults: DEFAULTS,
     });
-    if (this.settings.get('geth.url') === 'https://web3.gastracker.io') {
-      this.settings.set('geth.url', 'https://web3.emeraldwallet.io');
-    }
+    // not used anymore
+    this.settings.delete('geth');
   }
 
   /**
@@ -38,14 +37,6 @@ class Settings {
 
   setChain(chain) {
     this.settings.set('chain', chain);
-    return this;
-  }
-
-  setGeth(geth) {
-    this.settings.set('geth', {
-      url: geth.url,
-      type: geth.type,
-    });
     return this;
   }
 

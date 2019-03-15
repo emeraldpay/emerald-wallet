@@ -12,7 +12,7 @@ export const MainnetLocal = {
 export const RemoteMainnet = {
   geth: {
     type: 'remote',
-    url: 'https://web3.emeraldwallet.io',
+    url: 'https://web3.emeraldwallet.io/etc',
   },
   chain: {
     id: 61,
