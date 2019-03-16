@@ -12,6 +12,7 @@ const ipc = require('./ipc');
 const log = require('./logger');
 const { startProtocolHandler } = require('./protocol');
 const assertSingletonWindow = require('./singletonWindow');
+const { ServerConnect } = require('./serverConnect');
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
@@ -27,6 +28,8 @@ global.ledger = new LedgerApi();
 global.launcherConfig = {
   get: () => settings.toJS(),
 };
+const serverConnect = new ServerConnect();
+global.serverConnect = serverConnect;
 
 log.info('userData: ', app.getPath('userData'));
 log.info(`Chain: ${JSON.stringify(settings.getChain())}`);
@@ -40,16 +43,16 @@ startProtocolHandler();
 app.on('ready', () => {
   log.info('Starting Emerald', app.getVersion());
 
-  const platform = [os.platform(), os.release(), os.arch(), app.getLocale()].join('; ');
-  const agent = `Electron/${process.versions.electron} (${platform}) EmeraldWallet/${app.getVersion()} (+https://emeraldwallet.io) Chrome/${process.versions.chrome} node-fetch/1.0`;
+  serverConnect.init();
 
   session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
-    details.requestHeaders['User-Agent'] = agent;
+    details.requestHeaders['User-Agent'] = serverConnect.getUserAgent();
     callback({ cancel: false, requestHeaders: details.requestHeaders });
   });
 
+
   const browserWindow = mainWindow.createWindow(isDev);
-  const services = new Services(browserWindow.webContents);
+  const services = new Services(browserWindow.webContents, serverConnect);
   ipc({ settings, services });
   app.on('quit', () => services.shutdown());
 

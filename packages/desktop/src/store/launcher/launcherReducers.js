@@ -65,7 +65,10 @@ function onConfig(state, action) {
     }
 
     // TODO: remove this hack
-    api.updateGethUrl(state.getIn(['geth', 'url']));
+    if (typeof state.getIn(['chain', 'name']) === 'string') {
+      // api.updateGethUrl(state.getIn(['geth', 'url']));
+      api.updateChain(state.getIn(['chain', 'name']));
+    }
     return state;
   }
   return state;
@@ -83,7 +86,7 @@ function onMessage(state, action) {
 
 function onServiceStatus(state, action) {
   if (action.type === 'LAUNCHER/SERVICE_STATUS') {
-    return state.setIn([action.service, 'status'], action.mode.status);
+    return state.update(action.service, (service) => service.merge(Immutable.fromJS(action.mode)));
   }
   return state;
 }

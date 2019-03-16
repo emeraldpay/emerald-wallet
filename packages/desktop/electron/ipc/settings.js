@@ -9,10 +9,6 @@ module.exports = (settings, services) => {
 
     log.info('Update settings', newSettings);
 
-    if (newSettings.geth) {
-      settings.setGeth(newSettings.geth);
-    }
-
     if (newSettings.chain) {
       const { chain } = newSettings;
 

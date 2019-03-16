@@ -1,14 +1,12 @@
 const Store = require('electron-store');
+const { URL_FOR_CHAIN } = require('./utils');
 
 const DEFAULTS = {
   version: 1,
-  geth: {
-    type: 'none',
-    url: '',
-  },
+  geth: URL_FOR_CHAIN.mainnet,
   chain: {
-    name: null,
-    id: null,
+    name: 'mainnet',
+    id: 61,
   },
   terms: 'none',
 };
@@ -19,9 +17,8 @@ class Settings {
       name: 'settings',
       defaults: DEFAULTS,
     });
-    if (this.settings.get('geth.url') === 'https://web3.gastracker.io') {
-      this.settings.set('geth.url', 'https://web3.emeraldwallet.io');
-    }
+    // not used anymore
+    this.settings.delete('geth');
   }
 
   /**
@@ -38,14 +35,6 @@ class Settings {
 
   setChain(chain) {
     this.settings.set('chain', chain);
-    return this;
-  }
-
-  setGeth(geth) {
-    this.settings.set('geth', {
-      url: geth.url,
-      type: geth.type,
-    });
     return this;
   }
 

@@ -75,6 +75,18 @@ function isValidChain(chain) {
   return found.length === 1;
 }
 
+const URL_FOR_CHAIN = {
+  mainnet: {
+    launchType: 3,
+    url: 'https://web3.emeraldwallet.io/etc',
+    type: 'remote',
+  },
+  morden: {
+    launchType: 3,
+    url: 'https://web3.emeraldwallet.io/morden',
+    type: 'remote',
+  },
+};
 
 module.exports = {
   checkExists,
@@ -82,4 +94,5 @@ module.exports = {
   getBinDir,
   getLogDir,
   isValidChain,
+  URL_FOR_CHAIN,
 };
