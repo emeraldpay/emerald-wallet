@@ -3,6 +3,17 @@ import createLogger from '../../utils/logger';
 
 const log = createLogger('api');
 
+class NullConnect {
+  connectEth(url) {
+  }
+
+  connectEthChain(name) {
+  }
+
+  connectEmerald() {
+  }
+}
+
 export default class Api {
   constructor() {
     this.emerald = Api.getConnector().connectEmerald();
@@ -24,7 +35,17 @@ export default class Api {
   }
 
   static getConnector() {
+    // TODO workaround for testing, should be properly mocked
+    if (typeof global.require !== 'function') {
+      console.warn('Electron Remote is not available');
+      return new NullConnect();
+    }
     const { remote } = global.require('electron');
+    // TODO workaround for testing, should be properly mocked
+    if (typeof remote !== 'object' || typeof remote.getGlobal !== 'function') {
+      console.warn('Electron Remote is not available');
+      return new NullConnect();
+    }
     return remote.getGlobal('serverConnect');
   }
 }
