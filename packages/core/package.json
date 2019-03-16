@@ -10,7 +10,7 @@
     "build": "rimraf lib/ && tsc",
     "build:dist": "rimraf lib/ && tsc",
     "test": "jest",
-    "test:coverage": ""
+    "test:coverage": "jest --coverage && codecov"
   },
   "dependencies": {
     "bignumber.js": "^8.1.1",
