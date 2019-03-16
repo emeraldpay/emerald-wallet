@@ -2,7 +2,8 @@
 import BigNumber from 'bignumber.js';
 
 export const enum CurrencySymbol {
-  RUB = "RUB"
+  RUB = "RUB",
+  USD = "USD"
 }
 
 export class Currency {
@@ -11,6 +12,7 @@ export class Currency {
       style: 'currency',
       currency,
       minimumFractionDigits: 2,
+      currencyDisplay: "symbol"
     });
     return formatter.format(value);
   }
@@ -18,7 +20,7 @@ export class Currency {
   static locale(currencySymbol: string): string {
     switch (currencySymbol.toUpperCase()) {
       case CurrencySymbol.RUB: return 'ru-RU';
-      case 'USD': return 'en-US';
+      case CurrencySymbol.USD: return 'en-US';
       case 'AUD': return 'en-AU';
       case 'EUR': return 'de-DE';
       case 'CNY': return 'zh-CN';
