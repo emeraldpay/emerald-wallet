@@ -126,8 +126,8 @@ export class ParityTracer implements ITracer {
         if (stateDiff) {
           const fromState = new BigNumber(stateDiff.from);
           const toState = new BigNumber(stateDiff.to);
-          estGas = fromState.sub(toState);
-          estGas = (dataObj.from.toLowerCase() === dataObj.to.toLowerCase()) ? estGas : estGas.sub(value);
+          estGas = fromState.minus(toState);
+          estGas = (dataObj.from.toLowerCase() === dataObj.to.toLowerCase()) ? estGas : estGas.minus(value);
         }
         if (estGas.lt(0) || estGas.eq(gasLimit)) {
           return null;

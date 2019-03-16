@@ -944,7 +944,7 @@
     bignumber.js "^8.0.2"
     ethereumjs-util "^6.1.0"
 
-"@emeraldplatform/emerald-js@0.5.0-beta.1", "@emeraldplatform/emerald-js@^0.5.0-beta.1":
+"@emeraldplatform/emerald-js@^0.5.0-beta.1":
   version "0.5.0-beta.1"
   resolved "https://registry.yarnpkg.com/@emeraldplatform/emerald-js/-/emerald-js-0.5.0-beta.1.tgz#26e92b3e7b7264f1535bb35f3ba3fc7411e70f5d"
   integrity sha512-qZ9zrpRPsBkzUd8jYDkZGGtzFp3isSmeGWJP8hAmaKTvLB6MemzBBCP2rYfhr0CcUCyUoVBnUhFhR3cvi4U/+g==
@@ -960,6 +960,17 @@
     isomorphic-fetch "^2.2.1"
     kbpgp "^2.0.76"
     mz "^2.7.0"
+    qs "^6.6.0"
+
+"@emeraldplatform/emerald-js@^0.5.0-beta.2":
+  version "0.5.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@emeraldplatform/emerald-js/-/emerald-js-0.5.0-beta.2.tgz#de7be7a42fe5004126f66deabe88356dcc71b039"
+  integrity sha512-PXg1QF31AzZE8DY5OusM7WlVmX/OINTKO0NbudVyHQZv05j6qoaVWvJVcgMO/t3ejBk4QUksld2bzr+wjz83ww==
+  dependencies:
+    assert "^1.4.1"
+    bignumber.js "^8.1.1"
+    follow-redirects "^1.2.6"
+    isomorphic-fetch "^2.2.1"
     qs "^6.6.0"
 
 "@emeraldplatform/eth-account@^0.5.0-beta.0":
