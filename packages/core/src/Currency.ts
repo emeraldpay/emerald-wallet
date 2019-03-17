@@ -1,13 +1,13 @@
 // @flow
 import BigNumber from 'bignumber.js';
 
-export const enum CurrencySymbol {
+export const enum CurrencyCode {
   RUB = "RUB",
   USD = "USD"
 }
 
 export class Currency {
-  static format(value: number, currency: CurrencySymbol): string {
+  static format(value: number, currency: CurrencyCode): string {
     const formatter = new Intl.NumberFormat(Currency.locale(currency), {
       style: 'currency',
       currency,
@@ -19,8 +19,8 @@ export class Currency {
 
   static locale(currencySymbol: string): string {
     switch (currencySymbol.toUpperCase()) {
-      case CurrencySymbol.RUB: return 'ru-RU';
-      case CurrencySymbol.USD: return 'en-US';
+      case CurrencyCode.RUB: return 'ru-RU';
+      case CurrencyCode.USD: return 'en-US';
       case 'AUD': return 'en-AU';
       case 'EUR': return 'de-DE';
       case 'CNY': return 'zh-CN';
