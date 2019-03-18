@@ -4,9 +4,11 @@ const srcDir = path.join(__dirname, 'src');
 
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
+const devMode = process.argv.indexOf('--dev') >= 0;
 
 const config = {
-  mode: 'production',
+  mode: devMode ? 'development' : 'production',
+  devtool: devMode ? 'source-map': false,
   target: 'electron-renderer', // 'web',
   entry: {
     index: [path.join(srcDir, 'index.js')],
