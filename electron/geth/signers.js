@@ -166,6 +166,38 @@ const tzdybalPgp = '-----BEGIN PGP PUBLIC KEY BLOCK-----\n'
   + '=H/rV\n'
   + '-----END PGP PUBLIC KEY BLOCK-----';
 
+const btenterprisePgp = '-----BEGIN PGP PUBLIC KEY BLOCK-----\n'
+  + '\n'
+  + 'mQENBFyE4r8BCADA+ZxDJpSps7pd+GMeE2BA62c0bv5yrx61LK/OyJYvaG07/oef\n'
+  + 'V4lkPnYzVpycQWua4y1EeO0J9onP7mJLcc9Am2biHYkLBR29ir1qqBxaQdF/20PH\n'
+  + 'OkcK3D2W9iV+oDO+9/Afn5vVivsTIscChsKBTp4SlwU9y9GhnrlyOLpPsMa5xZo3\n'
+  + 'FHBQeOLwaEtPHxBuDfXtN19ROeqhfRvmwF73B5CTyXbhyzQISIHNp8hsWFXBoYfQ\n'
+  + 'lDajQyxdDzGmJrQLpsAgJbuMRhHCjtJSgw29N/uaWyuVTu02/PXunrxd9bXCoTTv\n'
+  + 'DLUSXWiCJ5McD78mevpuR7ZH+/vhebTyJjB9ABEBAAG0KkJUIEVudGVycHJpc2Ug\n'
+  + 'PGJ0ZW50ZXJwcmlzZTIwMjBAZ21haWwuY29tPokBVAQTAQgAPhYhBGnwWcfD60Rt\n'
+  + 'OebyN9m7ctcfG910BQJchOK/AhsDBQkDw1NxBQsJCAcCBhUKCQgLAgQWAgMBAh4B\n'
+  + 'AheAAAoJENm7ctcfG910Ug8H/3PSW1RVWzGpoaQAfjmGi1Rjhn7OBE4rjDVdGlv+\n'
+  + 'lHTs99EH3hTA7g/PoK6brmOGgS2bm7PraT/cSSl3Dw2wMAEo67TMr5GOsbq+/4zf\n'
+  + 'pZLSRm1iTN8hCjK4zD2uoDH09IHNIQyYcU2iGzu69AjkXTE8xEsTkUFoMwb941po\n'
+  + 'EXPIMHB6VSODY4H+pQ6ngMkk3uCuTr1aJlSr1gRAqPOA5Lwh/WeVnIkISXwJ54r3\n'
+  + 'f73WmS92/HKzlaQRcS430BU5vO6oeCPnlrMPgKGJNvYJijXOLptfFooEx+qNypVo\n'
+  + 'u7hbCqedYH8FkXXDprhV2TTHzJVieMlBbyKh8BvzIsglujO5AQ0EXITivwEIALg8\n'
+  + 'acXcHmF1l6ylqH9NYTIzapu0fAycCDBSESEU0X9/YVw7asuZwIxcxpeiiKhI3Gy5\n'
+  + 'mPYSX5QEexgEMCWIIHwvr2uNK2XZlR8j2ROI/KBIERmmK7ncxtEMtmsyXHEs9pMl\n'
+  + 't4x3h0e4mRFxkzEevIhEJFJ/8wcVJ/Cezcam7e83xJD90wuMjIXg2TxMYaqCzXjR\n'
+  + 'ke4SyTeXrJyQRKe7SInQn/7uuD2oiq4WYa7KLLw0x4rxWBz9tcc9xTWpNZng3LYO\n'
+  + '6s/DDORQgmUWltwKbiV61HI6RlnXsNyczmdaT7Re+JHhaqgz0ZyTH6US8dqbqZRW\n'
+  + 'Tb99x6RhG4DVISw8ANMAEQEAAYkBPAQYAQgAJhYhBGnwWcfD60RtOebyN9m7ctcf\n'
+  + 'G910BQJchOK/AhsMBQkDw1NxAAoJENm7ctcfG910y1oH/1PtYu2Ni2hBgoYaJUgV\n'
+  + 'XrPl69dn1/YHRfG79N2aGILB6EHn8u5kRyukwYZgz8jCFZGlxN+Skabc2emLEVSk\n'
+  + 'pJYOP8/Ng8MhlP+YUCEWBVN5MX/AYwAEhko6Lt//qY6ByQRfOzlOQ9zhS5yCVdme\n'
+  + 'mKBf9eZGnmr74TkEvzGinaACyAinxwOTBdtxLkP91Bs9xvr7z4Q1whUtJ59++YOI\n'
+  + 'DA8oTwawb/UhGgQhtk8wYvwbNYNwj68SMFQsg7JIdkVTyLFCmH5n8I0L4omUug+H\n'
+  + 'v53TxEJxQf3R++t28gJYIPICRkdsJbEuRImFpXkEJlclw3kkc7wXHQEYcYKZSOP5\n'
+  + 'zr8=\n'
+  + '=xKuB\n'
+  + '-----END PGP PUBLIC KEY BLOCK-----';
+
 module.exports = {
-  publicKeys: [splixPgp, whileiPgp, tzdybalPgp],
+  publicKeys: [splixPgp, whileiPgp, tzdybalPgp, btenterprisePgp],
 };
