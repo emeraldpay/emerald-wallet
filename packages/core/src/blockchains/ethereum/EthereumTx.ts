@@ -1,10 +1,11 @@
-import EthTx from 'ethereumjs-tx';
 import {Transaction} from "../types";
 
-class EthereumTx implements Transaction {
-  internalTx: EthTx;
+const EthTx = require('ethereumjs-tx');
 
-  constructor(tx: EthTx) {
+class EthereumTx implements Transaction {
+  internalTx: any;
+
+  constructor(tx: any) {
     this.internalTx = tx;
   }
 

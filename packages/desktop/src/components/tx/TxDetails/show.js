@@ -1,209 +1,14 @@
-// @flow
 import React from 'react';
-import PropTypes from 'prop-types';
-import withStyles from 'react-jss';
-import { Map } from 'immutable';
 import { connect } from 'react-redux';
-import { Button } from '@emeraldwallet/ui';
-import { convert, Wei } from '@emeraldplatform/emerald-js';
-import { Page, ButtonGroup, Account } from '@emeraldplatform/ui';
-import { Back } from '@emeraldplatform/ui-icons';
-import muiThemeable from 'material-ui/styles/muiThemeable';
+import { TxDetails } from '@emeraldwallet/ui';
 import launcher from 'store/launcher';
 import { gotoScreen } from '../../../store/wallet/screen/screenActions';
-import { toDate } from '../../../lib/convert';
-import { styles, Row } from '../../../elements/Form';
-import TxStatus from './TxStatus';
-import { Currency } from '../../../lib/currency';
 import createLogger from '../../../utils/logger';
-import TxInputData from './TxInputData';
-
-export const styles2 = {
-  value: {
-    marginBottom: '5px',
-  },
-  txData: {
-    overflowX: 'auto',
-    overflowWrap: 'break-word',
-  },
-};
 
 const log = createLogger('TxDetails');
 
-type Props = {
-  showFiat: boolean,
-  goBack: (?any) => void,
-  openAccount: (?any) => void,
-  currentCurrency: string,
-  fromAccount: any,
-  toAccount: any,
-  rates: Map<string, number>,
-  transaction: any,
-  account: ?any,
-  showRepeat: boolean,
-}
-
-export const TransactionShow = (props: Props) => {
-  const {
-    transaction, account, fromAccount, toAccount, openAccount, goBack, repeatTx, classes,
-  } = props;
-  const {
-    showFiat, rates, currentCurrency, showRepeat,
-  } = props;
-
-  const fieldNameStyle = {
-    color: '#747474',
-    fontSize: '16px',
-    textAlign: 'right',
-  };
-
-  const blockNumber = transaction.get('blockNumber');
-  const txStatus = blockNumber ? 'success' : 'queue';
-  const fiatAmount = transaction.get('value')
-    ? Currency.format(new Wei(transaction.get('value')).getFiat(rates.get(currentCurrency.toUpperCase())), currentCurrency)
-    : '';
-
-  return (
-    <Page title="Transaction Details" leftIcon={ <Back onClick={() => goBack(account)} /> }>
-      <Row>
-        <div style={styles.left}>
-          <div style={fieldNameStyle}>Date</div>
-        </div>
-        <div style={styles.right}>
-          {transaction.get('timestamp') ? toDate(transaction.get('timestamp')) : null}
-        </div>
-      </Row>
-      <Row>
-        <div style={styles.left}>
-          <div style={fieldNameStyle}>Value</div>
-        </div>
-        <div style={styles.right}>
-          <div style={{display: 'flex'}}>
-            <div>
-              <div className={ classes.value }>
-                { transaction.get('value') ? `${new Wei(transaction.get('value')).getEther()} ETC` : '--' }
-              </div>
-              {showFiat && <div className={ classes.value }>
-                { fiatAmount }
-              </div> }
-            </div>
-            <div>
-              <TxStatus status={ txStatus } />
-            </div>
-          </div>
-        </div>
-      </Row>
-      <br />
-      <br />
-
-      <Row>
-        <div style={styles.left}>
-          <div style={fieldNameStyle}>Hash</div>
-        </div>
-        <div style={styles.right}>
-          {transaction.get('hash')}
-        </div>
-      </Row>
-
-      <Row>
-        <div style={styles.left}>
-          <div style={fieldNameStyle}>Nonce</div>
-        </div>
-        <div style={styles.right}>
-          { transaction.get('nonce') }
-        </div>
-      </Row>
-
-      <Row>
-        <div style={styles.left}>
-          <div style={fieldNameStyle}>From</div>
-        </div>
-        <div style={{...styles.right, alignItems: 'center'}}>
-          <Account
-            addr={transaction.get('from')}
-            identity
-            identityProps={{size: 30}}
-            onClick={ () => openAccount(fromAccount) }
-          />
-        </div>
-      </Row>
-
-      <Row>
-        <div style={styles.left}>
-          <div style={fieldNameStyle}>To</div>
-        </div>
-        <div style={{...styles.right, alignItems: 'center'}}>
-          {transaction.get('to')
-           && <Account
-             addr={transaction.get('to')}
-             identity
-             identityProps={{size: 30}}
-             onClick={ () => openAccount(toAccount) }
-           />}
-        </div>
-      </Row>
-
-      <br />
-      <br />
-
-      <Row>
-        <div style={styles.left}>
-          <div style={fieldNameStyle}>Block</div>
-        </div>
-        <div style={styles.right}>
-          { blockNumber ? convert.toNumber(blockNumber) : 'pending' }
-        </div>
-      </Row>
-
-      <Row>
-        <div style={styles.left}>
-          <div style={fieldNameStyle}>Input Data</div>
-        </div>
-        <div style={styles.right}>
-          <div className={ classes.txData }>
-            <TxInputData data={transaction.get('data')} />
-          </div>
-        </div>
-      </Row>
-
-      <Row>
-        <div style={styles.left}>
-          <div style={fieldNameStyle}>GAS</div>
-        </div>
-        <div style={styles.right}>
-          {transaction.get('gas') ? transaction.get('gas') : null}
-        </div>
-      </Row>
-      <br />
-
-      <Row style={{marginBottom: 0}}>
-        <div style={styles.left}>
-        </div>
-        <div style={styles.right}>
-          <ButtonGroup>
-            <Button
-              onClick={ () => props.cancel() }
-              label="DASHBOARD" />
-            <Button
-              primary
-              onClick={ () => repeatTx(transaction, toAccount, fromAccount) }
-              label="REPEAT TRANSACTION" />
-          </ButtonGroup>
-        </div>
-      </Row>
-    </Page>
-  );
-};
-
-TransactionShow.propTypes = {
-  transaction: PropTypes.object.isRequired,
-  rates: PropTypes.object.isRequired,
-  openAccount: PropTypes.func.isRequired,
-  goBack: PropTypes.func.isRequired,
-};
-
 export default connect(
-  (state, ownProps): Props => {
+  (state, ownProps) => {
     const accounts = state.accounts.get('accounts');
     const account = accounts.find(
       (acct) => acct.get('id') === ownProps.accountId
@@ -230,7 +35,7 @@ export default connect(
       showRepeat,
       repeatTx: ownProps.repeatTx,
       showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
-      transaction: Tx,
+      transaction: Tx.toJS(),
       account,
       rates,
       currentCurrency,
@@ -258,4 +63,4 @@ export default connect(
       dispatch(gotoScreen('repeat-tx', {transaction, toAccount, fromAccount}));
     },
   })
-)(muiThemeable()(withStyles(styles2)(TransactionShow)));
+)(TxDetails);

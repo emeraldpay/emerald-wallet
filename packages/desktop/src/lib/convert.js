@@ -72,7 +72,7 @@ export function getDataObj(to, func, arrVals) {
 
 export function mweiToWei(val: number | string | BigNumber) {
   const m = new BigNumber(10).pow(6);
-  return new BigNumber(val).mul(m).round(0, BigNumber.ROUND_HALF_DOWN);
+  return new BigNumber(val).multipliedBy(m).decimalPlaces(0, BigNumber.ROUND_HALF_DOWN);
 }
 
 /**
@@ -110,8 +110,8 @@ export function estimateGasFromTrace(dataObj, trace): BigNumber {
     if (stateDiff) {
       const fromState = new BigNumber(stateDiff.from);
       const toState = new BigNumber(stateDiff.to);
-      estGas = fromState.sub(toState);
-      estGas = (dataObj.from.toLowerCase() === dataObj.to.toLowerCase()) ? estGas : estGas.sub(value);
+      estGas = fromState.minus(toState);
+      estGas = (dataObj.from.toLowerCase() === dataObj.to.toLowerCase()) ? estGas : estGas.minus(value);
     }
     if (estGas.lt(0) || estGas.eq(gasLimit)) { estGas = null; }
   }
@@ -120,7 +120,7 @@ export function estimateGasFromTrace(dataObj, trace): BigNumber {
 
 export function etherToWei(val) {
   const m = new BigNumber(10).pow(18);
-  return new BigNumber(val).mul(m).round(0, BigNumber.ROUND_HALF_DOWN);
+  return new BigNumber(val).multipliedBy(m).decimalPlaces(0, BigNumber.ROUND_HALF_DOWN);
 }
 
 export function transformToFullName(func) {

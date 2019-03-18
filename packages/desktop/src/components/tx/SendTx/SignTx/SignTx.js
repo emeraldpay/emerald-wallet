@@ -2,6 +2,7 @@ import React from 'react';
 import {
   IdentityIcon, Input
 } from 'emerald-js-ui';
+import { Currency } from '@emeraldwallet/core';
 import { ButtonGroup } from '@emeraldplatform/ui';
 import { ArrowRight } from '@emeraldplatform/ui-icons';
 import { required } from 'lib/validators';
@@ -10,7 +11,6 @@ import { Divider } from '@material-ui/core';
 import { List, ListItem } from 'material-ui/List';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Row, styles } from '../../../../elements/Form';
-import { Currency } from '../../../../lib/currency';
 
 const HorizontalAddressWithIdentity = (props) => {
   if (props.hide) {
