@@ -14,7 +14,7 @@
     "storybook": "start-storybook -p 9001 -c .storybook"
   },
   "dependencies": {
-    "@emeraldplatform/ui": "^0.5.0-beta.1",
+    "@emeraldplatform/ui": "^0.5.0-beta.3",
     "@emeraldplatform/ui-icons": "^0.4.3",
     "@emeraldwallet/core": "^1.2.1",
     "@material-ui/core": "^3.9.2",

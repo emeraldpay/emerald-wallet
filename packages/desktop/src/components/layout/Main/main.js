@@ -6,7 +6,7 @@ import theme from '@emeraldplatform/ui/lib/theme';
 import Screen from '../../../containers/Screen/screen';
 import Header from '../Header';
 import NotificationBar from '../NotificationBar';
-import ErrorDialog from '../../common/ErrorDialog';
+import ErrorDialog from '../../../containers/ErrorDialog';
 import Dialog from '../../../containers/Dialog';
 
 const maxWidth = '1150px';

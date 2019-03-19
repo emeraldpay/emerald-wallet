@@ -20,6 +20,14 @@ export const showAccountDetails = (address: string) => {
   };
 };
 
+export const onOpenWallet = () => {
+  return (dispatch, getState) => {
+    const numberOfAccounts = getState().accounts.get('accounts').size;
+    dispatch(screen.actions.gotoScreen(numberOfAccounts === 0 ? 'landing' : 'home'));
+  };
+};
+
+
 export const switchEndpoint = (chain: {chainId: number, chain: string}) => {
   return (dispatch, getState) => {
     dispatch(history.actions.init(chain.chainId));
