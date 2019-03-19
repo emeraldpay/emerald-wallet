@@ -1,15 +1,14 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { OpenWallet } from '@emeraldwallet/ui';
-import screen from '../../store/wallet/screen';
+import Wallet from '../../store/wallet';
 
 export default connect(
   (state, ownProps) => ({
   }),
-  (dispatch, ownProps, state) => ({
+  (dispatch, ownProps) => ({
     nextPage: () => {
-      const numberOfAccounts = state.accounts.get('accounts').size;
-      dispatch(screen.actions.gotoScreen(numberOfAccounts === 0 ? 'landing' : 'home'));
+      dispatch(Wallet.actions.onOpenWallet());
     },
   })
 )(OpenWallet);

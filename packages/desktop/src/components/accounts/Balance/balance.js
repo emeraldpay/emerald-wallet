@@ -42,7 +42,7 @@ export class Balance extends React.Component {
     const { fiatStyle, coinsStyle } = this.props;
     let fiatAmount = null;
     if (showFiat && balance && fiatRate) {
-      fiatAmount = Currency.format(balance.convert(fiatRate), fiatCurrency);
+      fiatAmount = Currency.format(Currency.convert(balance.value.toString(10), fiatRate), fiatCurrency);
     }
 
     return (

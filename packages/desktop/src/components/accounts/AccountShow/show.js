@@ -20,7 +20,7 @@ import history from '../../../store/wallet/history';
 import launcher from '../../../store/launcher';
 import createLogger from '../../../utils/logger';
 import TransactionsList from '../../tx/TxHistory';
-import AccountBalance from '../Balance';
+import Balance from '../Balance';
 import SecondaryMenu from '../SecondaryMenu';
 import TokenBalances from '../TokenBalances';
 
@@ -97,7 +97,7 @@ export class AccountShow extends React.Component {
                 <div style={ styles.left }>
                 </div>
                 <div style={ styles.right }>
-                  <AccountBalance
+                  <Balance
                     showFiat={ showFiat }
                     coinsStyle={{fontSize: '20px', lineHeight: '24px'}}
                     balance={ balance }
