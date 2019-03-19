@@ -36,6 +36,6 @@ export default class TokenUnits extends Record({ value: ZERO, decimals: 0 }) {
       ? ZERO
       : new BigNumber(r.toString());
     const divisor = new BigNumber(10).pow(this.decimals);
-    return this.value.dividedBy(divisor).mul(rate).toFixed(decimals);
+    return this.value.dividedBy(divisor).multipliedBy(rate).toFixed(decimals);
   }
 }
