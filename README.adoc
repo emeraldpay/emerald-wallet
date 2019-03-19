@@ -43,11 +43,11 @@ sudo apt-get install libudev-dev libusb-1.0-0 libusb-1.0-0-dev
 
 ####  NPM packages
 
-This will install dependencies saved in `package.json` and `flow-typed` repository.
+This will install dependencies.
 
 
 ```shell
-$ npm run setup
+$ lerna bootstrap
 ```
 
 

@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import BigNumber from 'bignumber.js';
 import Tokens from 'store/vault/tokens';
 import { fromJS } from 'immutable';
+import { Currency } from '@emeraldwallet/core';
 import { Wei, convert } from '@emeraldplatform/emerald-js';
 import { etherToWei } from 'lib/convert';
 import { Page } from '@emeraldplatform/ui';
@@ -16,6 +17,7 @@ import { traceValidate } from '../../components/tx/SendTx/utils';
 import SignTxForm from '../../components/tx/SendTx/SignTx';
 import TransactionShow from '../../components/tx/TxDetails';
 import CreateTransaction from '../../components/tx/CreateTransaction';
+import { txFee, txFeeFiat } from './util';
 
 const { toHex } = convert;
 
@@ -151,9 +153,8 @@ class MultiCreateTransaction extends React.Component {
   }
 
   onMaxClicked() {
-    const txFee = this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit);
-    const amount = new BigNumber(this.balance).sub(txFee).valueOf();
-
+    const fee = this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit);
+    const amount = new BigNumber(this.balance).minus(fee).valueOf();
     this.setTransaction('amount', amount);
   }
 
@@ -227,7 +228,7 @@ export default connect(
   (state, ownProps) => {
     const { account } = ownProps;
     const allTokens = state.tokens.get('tokens').concat([fromJS({address: '', symbol: 'ETC', name: 'ETC'})]).reverse();
-    const gasPrice = state.network.get('gasPrice');
+    const gasPrice = network.selectors.gasPrice(state);
 
     const fiatRate = state.wallet.settings.get('localeRate');
     const currency = state.wallet.settings.get('localeCurrency');
@@ -262,8 +263,8 @@ export default connect(
         const newBalance = selectedAccount.get('balance');
         return newBalance.getFiat(fiatRate).toString();
       },
-      getTxFeeForGasLimit: (gasLimit) => new Wei(gasPrice.mul(gasLimit).value()).getEther().toString(),
-      getTxFeeFiatForGasLimit: (gasLimit) => new Wei(gasPrice.mul(gasLimit).value()).getFiat(fiatRate).toString(),
+      getTxFeeForGasLimit: (gasLimit) => txFee(gasPrice, gasLimit),
+      getTxFeeFiatForGasLimit: (gasLimit) => txFeeFiat(gasPrice, gasLimit, fiatRate),
       currency,
       gasPrice,
       tokenSymbols,
@@ -285,7 +286,7 @@ export default connect(
       const toAmount = etherToWei(transaction.amount);
 
       const gasLimit = new Wei(transaction.gasLimit).getValue();
-      const gasPrice = transaction.gasPrice.getValue();
+      const { gasPrice } = transaction;
 
       if (transaction.data) {
         return dispatch(

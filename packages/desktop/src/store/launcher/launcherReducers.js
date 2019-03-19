@@ -1,6 +1,8 @@
 import Immutable from 'immutable';
 import { api } from '../../lib/rpc/api';
 
+const STATUS_NOT_READY = 'not ready';
+
 const initial = Immutable.fromJS({
   firstRun: false,
   settingsUpdated: false,
@@ -13,13 +15,13 @@ const initial = Immutable.fromJS({
 
   geth: {
     url: '',
-    status: 'not ready',
+    status: STATUS_NOT_READY,
     type: 'none',
   },
 
   connector: {
     url: '',
-    status: 'not ready',
+    status: STATUS_NOT_READY,
   },
 
   message: {
@@ -49,11 +51,11 @@ function setStoredFirstRun() {
 function onConfig(state, action) {
   if (action.type === 'LAUNCHER/CONFIG') {
     setTimeout(setStoredFirstRun, 10000); // HACK
-
+    const newGeth = { ...action.config.geth, status: STATUS_NOT_READY };
     state = state
       .set('launcherType', action.launcherType)
       .set('firstRun', getStoredFirstRun()) // action.firstRun
-      .update('geth', (geth) => geth.merge(Immutable.fromJS(action.config.geth || {})))
+      .update('geth', (geth) => geth.merge(Immutable.fromJS(newGeth || {})))
       .update('chain', (chain) => chain.merge(Immutable.fromJS(action.config.chain || {})));
 
     if (action.config.terms) {
