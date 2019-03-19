@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { ErrorDialog} from "@emeraldwallet/ui";
+import { ErrorDialog} from '@emeraldwallet/ui';
 import screen from 'store/wallet/screen';
 
 export default connect(

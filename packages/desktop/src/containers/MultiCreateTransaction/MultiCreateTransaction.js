@@ -17,7 +17,7 @@ import { traceValidate } from '../../components/tx/SendTx/utils';
 import SignTxForm from '../../components/tx/SendTx/SignTx';
 import TransactionShow from '../../components/tx/TxDetails';
 import CreateTransaction from '../../components/tx/CreateTransaction';
-import { txFee, txFeeFiat } from "./util";
+import { txFee, txFeeFiat } from './util';
 
 const { toHex } = convert;
 
@@ -153,12 +153,8 @@ class MultiCreateTransaction extends React.Component {
   }
 
   onMaxClicked() {
-    console.log('gasLimit'+this.state.transaction.gasLimit);
-    const txFee = this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit);
-    console.log("txFee" + txFee);
-    const amount = new BigNumber(this.balance).minus(txFee).valueOf();
-
-    console.log('amount' + amount);
+    const fee = this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit);
+    const amount = new BigNumber(this.balance).minus(fee).valueOf();
     this.setTransaction('amount', amount);
   }
 
@@ -290,7 +286,7 @@ export default connect(
       const toAmount = etherToWei(transaction.amount);
 
       const gasLimit = new Wei(transaction.gasLimit).getValue();
-      const gasPrice = transaction.gasPrice;
+      const { gasPrice } = transaction;
 
       if (transaction.data) {
         return dispatch(

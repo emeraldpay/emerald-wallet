@@ -1,4 +1,4 @@
-import {Currency} from "@emeraldwallet/core";
+import {Currency} from '@emeraldwallet/core';
 import { fromBaseUnits } from '@emeraldplatform/core';
 import BigNumber from 'bignumber.js';
 

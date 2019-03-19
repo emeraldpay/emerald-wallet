@@ -24,7 +24,7 @@ export const onOpenWallet = () => {
   return (dispatch, getState) => {
     const numberOfAccounts = getState().accounts.get('accounts').size;
     dispatch(screen.actions.gotoScreen(numberOfAccounts === 0 ? 'landing' : 'home'));
-  }
+  };
 };
 
 
