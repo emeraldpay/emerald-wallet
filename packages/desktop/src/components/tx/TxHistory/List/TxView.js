@@ -2,14 +2,13 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
-import { convert } from '@emeraldplatform/core';
+import { convert, InputDataDecoder } from '@emeraldplatform/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Account as AddressAvatar } from '@emeraldplatform/ui';
 import { Forward as ArrowRightIcon } from '@emeraldplatform/ui-icons';
-import { InputDataDecoder } from "@emeraldplatform/core";
 import AccountBalance from '../../../accounts/Balance';
 import TokenUnits from '../../../../lib/tokenUnits';
 import i18n from '../../../../i18n/i18n';
