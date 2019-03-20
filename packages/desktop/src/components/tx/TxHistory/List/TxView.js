@@ -2,7 +2,7 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
-import { convert } from '@emeraldplatform/core';
+import { convert, InputDataDecoder } from '@emeraldplatform/core';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
@@ -13,9 +13,6 @@ import AccountBalance from '../../../accounts/Balance';
 import TokenUnits from '../../../../lib/tokenUnits';
 import i18n from '../../../../i18n/i18n';
 import { TokenAbi } from '../../../../lib/erc20';
-
-// TODO: replace it with own implementation
-const InputDataDecoder = require('ethereum-input-data-decoder');
 
 const decoder = new InputDataDecoder(TokenAbi);
 
@@ -90,7 +87,7 @@ export const TxView = (props) => {
   } else {
     txStatus = (
       <span style={{color: muiTheme.palette.primary3Color}} onClick={ openTx }>
-        <CircularProgress color={muiTheme.palette.textColor} size={15} thickness={1.5}/> In Queue
+        <CircularProgress color="secondary" size={15} thickness={1.5}/> In Queue
       </span>
     );
   }
