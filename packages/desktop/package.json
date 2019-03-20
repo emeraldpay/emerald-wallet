@@ -23,6 +23,7 @@
     "setup": "npm install && flow-typed install",
     "build": "rimraf app/ && node ./scripts/build.js --no-watch",
     "build:all": "rimraf app/ && node ./scripts/build.js",
+    "build:all:dev": "rimraf app/ && node ./scripts/build.js --dev",
     "build:all:nowatch": "node ./scripts/build.js --no-watch",
     "start:electron": "cross-env NODE_ENV=development ./node_modules/.bin/electron .",
     "start:electron:getemerald": "getemerald && NODE_ENV=development ./node_modules/.bin/electron .",
