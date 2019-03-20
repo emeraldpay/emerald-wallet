@@ -1,5 +1,4 @@
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
-import { api } from '../../lib/rpc/api';
 // import { waitForServicesRestart } from 'store/store';
 import screen from '../wallet/screen';
 import createLogger from '../../utils/logger';
@@ -36,7 +35,7 @@ export function readConfig() {
 }
 
 export function loadClientVersion() {
-  return (dispatch) => {
+  return (dispatch, getState, api) => {
     api.geth.web3.clientVersion().then((result) => {
       dispatch({
         type: 'LAUNCHER/CONFIG',

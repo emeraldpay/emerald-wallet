@@ -78,13 +78,13 @@ With these caveats in mind, __you can run__:
 _Terminal 1_
 ```shell
 # This will begin a live-watching compiler for ./src/ and ./electron/ folders
-$ npm run build:all
+$ yarn build:all:dev
 ```
 
 _Terminal 2_
 ```shell
 # This will begin the simulated electron app pulling from those compiled sources.
-$ npm run start:electron
+$ yarn start:electron
 ```
 
 ### Logs

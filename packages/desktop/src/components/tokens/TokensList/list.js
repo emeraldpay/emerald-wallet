@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import IconButton from '@material-ui/core/IconButton';
 import { Trash as DeleteIcon } from '@emeraldplatform/ui-icons';
-import { Input } from 'emerald-js-ui';
+import { Input } from '@emeraldplatform/ui';
 import tokensStore from '../../../store/vault/tokens';
 
 const styles2 = {
