@@ -6,7 +6,7 @@ const config = {
   format: 'v1',
   channel: 'stable',
   app: {
-    version: '0.25.0',
+    version: '0.25.3',
   },
   download: [
     {
@@ -15,13 +15,13 @@ const config = {
         {
           type: 'https',
           pack: 'zip',
-          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-v0.25.0/emerald-cli-mac-v0.25.0+4-4a7771a.zip',
+          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-v0.25.3/emerald-cli-mac-v0.25.3+1-878528b.zip',
         },
       ],
       signatures: [
         {
           type: 'pgp',
-          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-v0.25.0/emerald-cli-mac-v0.25.0+4-4a7771a.zip.asc',
+          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-v0.25.3/emerald-cli-mac-v0.25.3+1-878528b.zip.asc',
         },
       ],
     },
@@ -31,13 +31,13 @@ const config = {
         {
           type: 'https',
           pack: 'zip',
-          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-v0.25.0/emerald-cli-win-v0.25.0+4-4a7771a.zip',
+          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-v0.25.3/emerald-cli-win-v0.25.3+1-878528b.zip',
         },
       ],
       signatures: [
         {
           type: 'pgp',
-          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-v0.25.0/emerald-cli-win-v0.25.0+4-4a7771a.zip.asc',
+          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-v0.25.3/emerald-cli-win-v0.25.3+1-878528b.zip.asc',
         },
       ],
     },
@@ -47,13 +47,13 @@ const config = {
         {
           type: 'https',
           pack: 'zip',
-          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-v0.25.0/emerald-cli-linux-v0.25.0+4-4a7771a.zip',
+          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-v0.25.3/emerald-cli-linux-v0.25.3+1-878528b.zip',
         },
       ],
       signatures: [
         {
           type: 'pgp',
-          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-v0.25.0/emerald-cli-linux-v0.25.0+4-4a7771a.zip.asc',
+          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-v0.25.3/emerald-cli-linux-v0.25.3+1-878528b.zip.asc',
         },
       ],
     },
