@@ -68,6 +68,7 @@ function deleteIfExists(filePath) {
 const knownChains = [
   { name: 'mainnet', id: 61 },
   { name: 'morden', id: 62 },
+  { name: 'eth', id: 1 },
 ];
 
 function isValidChain(chain) {
@@ -84,6 +85,11 @@ const URL_FOR_CHAIN = {
   morden: {
     launchType: 3,
     url: 'https://web3.emeraldwallet.io/morden',
+    type: 'remote',
+  },
+  eth: {
+    launchType: 3,
+    url: 'https://web3.emeraldwallet.io/eth',
     type: 'remote',
   },
 };
