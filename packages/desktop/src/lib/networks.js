@@ -10,7 +10,7 @@ export const Networks = [
     },
     title: 'Ethereum',
     id: 'remote/eth',
-    coin: "ETH",
+    coin: 'ETH',
   },
   {
     geth: {
@@ -23,7 +23,7 @@ export const Networks = [
     },
     title: 'Ethereum Classic',
     id: 'remote/etc',
-    coin: "ETC",
+    coin: 'ETC',
   },
   {
     geth: {
@@ -36,7 +36,7 @@ export const Networks = [
     },
     title: 'Morden Testnet',
     id: 'remote/morden',
-    coin: "MORDEN",
+    coin: 'MORDEN',
   },
 ];
 
