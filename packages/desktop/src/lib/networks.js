@@ -2,6 +2,19 @@ export const Networks = [
   {
     geth: {
       type: 'remote',
+      url: 'https://web3.emeraldwallet.io/eth',
+    },
+    chain: {
+      id: 1,
+      name: 'eth',
+    },
+    title: 'Ethereum',
+    id: 'remote/eth',
+    coin: 'ETH',
+  },
+  {
+    geth: {
+      type: 'remote',
       url: 'https://web3.emeraldwallet.io/etc',
     },
     chain: {
@@ -9,7 +22,8 @@ export const Networks = [
       name: 'mainnet',
     },
     title: 'Ethereum Classic',
-    id: 'gastracker/mainnet',
+    id: 'remote/etc',
+    coin: 'ETC',
   },
   {
     geth: {
@@ -22,6 +36,7 @@ export const Networks = [
     },
     title: 'Morden Testnet',
     id: 'remote/morden',
+    coin: 'MORDEN',
   },
 ];
 
