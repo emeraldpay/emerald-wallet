@@ -1,8 +1,6 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import muiThemeable from 'material-ui/styles/muiThemeable';
+import * as React from 'react';
 import { ButtonGroup } from '@emeraldplatform/ui';
-import { Button } from '@emeraldwallet/ui';
+import Button from '../../../common/Button';
 import FormFieldWrapper from './FormFieldWrapper';
 import FromField from './FromField';
 import FormLabel from './FormLabel';
@@ -11,50 +9,45 @@ import ToField from './ToField';
 import AmountField from './AmountField';
 import GasLimitField from './GasLimitField';
 
-function getStyles(muiTheme) {
+function getStyles() {
   return {
     width: '800px',
   };
 }
 
-class CreateTransaction extends React.Component {
-  static propTypes = {
-    from: PropTypes.string.isRequired,
-    token: PropTypes.string.isRequired,
-    tokenSymbols: PropTypes.string.isRequired,
-    balance: PropTypes.string.isRequired,
-    amount: PropTypes.string.isRequired,
-    addressBookAddresses: PropTypes.arrayOf(PropTypes.string).isRequired,
-    to: PropTypes.string.isRequired,
-    currency: PropTypes.string.isRequired,
-    gasLimit: PropTypes.string.isRequired,
-    txFee: PropTypes.string.isRequired,
-    fiatBalance: PropTypes.string.isRequired,
-    ownAddresses: PropTypes.arrayOf(PropTypes.string).isRequired,
-    muiTheme: PropTypes.object.isRequired,
-    onSubmit: PropTypes.func.isRequired,
-    onCancel: PropTypes.func.isRequired,
-    onChangeTo: PropTypes.func.isRequired,
-    onChangeAmount: PropTypes.func.isRequired,
-    onChangeFrom: PropTypes.func.isRequired,
-    onChangeGasLimit: PropTypes.func.isRequired,
-    onChangeToken: PropTypes.func.isRequired,
-    onEmptyAddressBookClick: PropTypes.func.isRequired,
-    onMaxClicked: PropTypes.func.isRequired,
-  };
+export interface Props {
+  from?: string;
+  token: string;
+  tokenSymbols?: Array<string>;
+  balance: string;
+  amount: string;
+  addressBookAddresses?: Array<string>;
+  to?: string;
+  currency?: string;
+  gasLimit: string;
+  txFeeFiat?: string;
+  txFee: string;
+  fiatBalance?: string;
+  ownAddresses?: Array<string>;
+  onSubmit?: Function;
+  onCancel?: any;
+  onChangeTo?: any;
+  onChangeAmount?: any;
+  onChangeFrom?: any;
+  onChangeGasLimit?: any;
+  onChangeToken?: any;
+  onEmptyAddressBookClick?: any;
+  onMaxClicked?: any;
+}
 
-  constructor() {
-    super();
-    this.getDisabled = this.getDisabled.bind(this);
-  }
-
-  getDisabled() {
+class CreateTransaction extends React.Component<Props> {
+  getDisabled = () => {
     return !this.props.to || !this.props.from || this.props.amount === '';
-  }
+  };
 
   render() {
     return (
-      <div style={getStyles(this.props.muiTheme)}>
+      <div style={getStyles()}>
         <FormFieldWrapper>
           <FromField
             onChangeAccount={this.props.onChangeFrom}
@@ -69,7 +62,7 @@ class CreateTransaction extends React.Component {
             selectedToken={this.props.token}
             tokenSymbols={this.props.tokenSymbols}
             balance={this.props.balance}
-            currency={this.props.currency}
+            fiatCurrency={this.props.currency}
             fiatBalance={this.props.fiatBalance}
           />
         </FormFieldWrapper>
@@ -99,15 +92,22 @@ class CreateTransaction extends React.Component {
             txFee={this.props.txFee}
             token={this.props.token}
             txFeeFiat={this.props.txFeeFiat}
-            currency={this.props.currency}
+            fiatCurrency={this.props.currency}
           />
         </FormFieldWrapper>
 
         <FormFieldWrapper style={{ paddingBottom: '0px' }}>
           <FormLabel />
           <ButtonGroup style={{flexGrow: 5}}>
-            <Button label="Cancel" onClick={this.props.onCancel}/>
-            <Button disabled={this.getDisabled()} primary label="Create Transaction" onClick={this.props.onSubmit}/>
+            <Button
+              label="Cancel"
+              onClick={this.props.onCancel}/>
+            <Button
+              disabled={this.getDisabled()}
+              primary
+              label="Create Transaction"
+              onClick={this.props.onSubmit}
+            />
           </ButtonGroup>
         </FormFieldWrapper>
       </div>
@@ -116,4 +116,4 @@ class CreateTransaction extends React.Component {
 }
 
 
-export default muiThemeable()(CreateTransaction);
+export default CreateTransaction;

@@ -4,7 +4,8 @@ import BigNumber from 'bignumber.js';
 import Tokens from 'store/vault/tokens';
 import { fromJS } from 'immutable';
 import { Currency } from '@emeraldwallet/core';
-import { Wei, convert } from '@emeraldplatform/emerald-js';
+import { Wei } from '@emeraldplatform/emerald-js';
+import { convert, toBaseUnits } from '@emeraldplatform/core';
 import { etherToWei } from 'lib/convert';
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
@@ -16,8 +17,9 @@ import ledger from 'store/ledger/';
 import { traceValidate } from '../../components/tx/SendTx/utils';
 import SignTxForm from '../../components/tx/SendTx/SignTx';
 import TransactionShow from '../../components/tx/TxDetails';
-import CreateTransaction from '../../components/tx/CreateTransaction';
+import { CreateTx } from '@emeraldwallet/ui';
 import { txFee, txFeeFiat } from './util';
+import Wallet from 'store/wallet';
 
 const { toHex } = convert;
 
@@ -164,7 +166,7 @@ class MultiCreateTransaction extends React.Component {
     switch (this.state.page) {
       case PAGES.TX:
         return (
-          <CreateTransaction
+          <CreateTx
             to={this.state.transaction.to}
             from={this.state.transaction.from}
             token={this.state.transaction.token}
@@ -249,13 +251,7 @@ export default connect(
       data: ownProps.data,
       selectedFromAccount: account.get('id'),
       getBalanceForAddress: (address, token) => {
-        if (token === 'ETC') {
-          const selectedAccount = state.accounts.get('accounts').find((acnt) => acnt.get('id') === address);
-          const newBalance = selectedAccount.get('balance');
-          return newBalance.getEther().toString();
-        }
-
-        return Tokens.selectors.balanceByTokenSymbol(state.tokens, token, address).getDecimalized();
+        return Wallet.selectors.balance(state, address, token);
       },
       getFiatForAddress: (address, token) => {
         if (token !== 'ETC') { return '??'; }
@@ -304,7 +300,7 @@ export default connect(
 
       if (transaction.token !== 'ETC') {
         const decimals = convert.toNumber(tokenInfo.get('decimals'));
-        const tokenUnits = convert.toBaseUnits(convert.toBigNumber(transaction.amount), decimals || 18);
+        const tokenUnits = toBaseUnits(convert.toBigNumber(transaction.amount), decimals || 18);
         const txData = Tokens.actions.createTokenTxData(
           transaction.to,
           tokenUnits,
