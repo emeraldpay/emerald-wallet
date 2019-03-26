@@ -8,6 +8,7 @@ storiesOf('CreateTx', module)
   .add('default', () => (
     <CreateTx
       token="ETC"
+      txFeeToken="ETH"
       balance="5"
       amount="1"
       gasLimit="200"

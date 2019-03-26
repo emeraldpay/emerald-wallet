@@ -36,8 +36,12 @@ class AddressIconMenu extends React.Component<Props, State> {
   }
 
   onClick() {
-    this.setState(state => ({ menuOpen: !state.menuOpen }));
+    this.setState(state => ({menuOpen: !state.menuOpen}));
   }
+
+  handleClose = () => {
+    this.setState({menuOpen: false});
+  };
 
   setMenuOpen(status: boolean) {
     this.setState({menuOpen: status});
@@ -72,6 +76,7 @@ class AddressIconMenu extends React.Component<Props, State> {
         <Menu
           anchorEl={this.anchorEl}
           open={this.state.menuOpen}
+          onClose={this.handleClose}
         >
           {this.renderAddresses()}
         </Menu>

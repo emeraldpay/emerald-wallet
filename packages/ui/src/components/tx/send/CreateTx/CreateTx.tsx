@@ -27,6 +27,7 @@ export interface Props {
   gasLimit: string;
   txFeeFiat?: string;
   txFee: string;
+  txFeeToken: string;
   fiatBalance?: string;
   ownAddresses?: Array<string>;
   onSubmit?: Function;
@@ -90,7 +91,7 @@ class CreateTransaction extends React.Component<Props> {
             onChangeGasLimit={this.props.onChangeGasLimit}
             gasLimit={this.props.gasLimit}
             txFee={this.props.txFee}
-            token={this.props.token}
+            txFeeToken={this.props.txFeeToken}
             txFeeFiat={this.props.txFeeFiat}
             fiatCurrency={this.props.currency}
           />

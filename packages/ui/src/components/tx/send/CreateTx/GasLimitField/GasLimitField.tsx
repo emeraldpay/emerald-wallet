@@ -20,7 +20,7 @@ function getStyles(theme?: any) {
 interface Props {
   onChangeGasLimit?: any;
   txFee: string;
-  token: string;
+  txFeeToken: string;
   gasLimit: string;
   txFeeFiat?: string;
   fiatCurrency?: string;
@@ -38,6 +38,7 @@ export class GasLimitField extends React.Component<Props> {
   }
 
   render() {
+    const { txFeeToken, txFee } = this.props;
     return (
       <React.Fragment>
         <FormLabel>Gas Limit</FormLabel>
@@ -50,7 +51,7 @@ export class GasLimitField extends React.Component<Props> {
           />
         </div>
         <div className={this.props.classes.container}>
-          {this.props.txFee} ETC / {this.props.txFeeFiat} {this.props.fiatCurrency}
+          {txFee} {txFeeToken} / {this.props.txFeeFiat} {this.props.fiatCurrency}
         </div>
       </React.Fragment>
     );

@@ -166,6 +166,7 @@ class MultiCreateTransaction extends React.Component {
           <CreateTx
             to={this.state.transaction.to}
             from={this.state.transaction.from}
+            txFeeSymbol={this.props.txFeeSymbol}
             token={this.state.transaction.token}
             amount={this.state.transaction.amount}
             gasLimit={this.state.transaction.gasLimit}
@@ -226,7 +227,9 @@ class MultiCreateTransaction extends React.Component {
 export default connect(
   (state, ownProps) => {
     const { account } = ownProps;
-    const allTokens = state.tokens.get('tokens').concat([fromJS({address: '', symbol: 'ETC', name: 'ETC'})]).reverse();
+    const blockchain = Wallet.selectors.currentBlockchain(state);
+    const txFeeSymbol = (blockchain && blockchain.params.tokenSymbol) || '';
+    const allTokens = state.tokens.get('tokens').concat([fromJS({address: '', symbol: txFeeSymbol, name: txFeeSymbol})]).reverse();
     const gasPrice = network.selectors.gasPrice(state);
 
     const fiatRate = state.wallet.settings.get('localeRate');
@@ -244,14 +247,15 @@ export default connect(
       amount: ownProps.amount || '0',
       gasLimit: ownProps.gasLimit || DEFAULT_GAS_LIMIT,
       typedData: ownProps.typedData,
-      token: 'ETC',
+      token: txFeeSymbol,
+      txFeeSymbol,
       data: ownProps.data,
       selectedFromAccount: account.get('id'),
       getBalanceForAddress: (address, token) => {
         return Wallet.selectors.balance(state, address, token);
       },
       getFiatForAddress: (address, token) => {
-        if (token !== 'ETC') { return '??'; }
+        if (token !== txFeeSymbol) { return '??'; }
         const selectedAccount = state.accounts.get('accounts').find((acnt) => acnt.get('id') === address);
         const newBalance = selectedAccount.get('balance');
         return newBalance.getFiat(fiatRate).toString();

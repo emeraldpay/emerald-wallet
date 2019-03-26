@@ -7,7 +7,15 @@ const classes = Object.keys({container:{}}).reduce(reduceClasses, {});
 
 describe('GasLimitField', () => {
   it('it renders without crash', () => {
-    const wrapper = shallow(<GasLimitField gasLimit="2100" txFeeFiat="" txFee="2" token="ETC" fiatCurrency="USD" classes={classes}/>);
+    const wrapper = shallow(
+      <GasLimitField
+        gasLimit="2100"
+        txFeeFiat=""
+        txFee="2"
+        txFeeToken="ETC"
+        fiatCurrency="USD"
+        classes={classes}
+      />);
     expect(wrapper).toBeDefined();
   });
 });
