@@ -1,0 +1,40 @@
+{
+  "name": "@emeraldwallet/erc20",
+  "version": "1.2.1",
+  "description": "ERC20 Tokens",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "author": "ETCDEV GmbH",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "rimraf lib/ && tsc",
+    "build:dist": "rimraf lib/ && tsc",
+    "test": "jest",
+    "test:coverage": "jest --coverage && codecov"
+  },
+  "dependencies": {
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.9",
+    "@types/node": "^11.10.4",
+    "jest": "^24.1.0",
+    "rimraf": "^2.6.3",
+    "ts-jest": "^24.0.0",
+    "typescript": "3.3.4000"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      "<rootDir>/lib/",
+      "<rootDir>/node_modules/"
+    ],
+    "setupFiles": [
+      "<rootDir>/jest.setup.ts"
+    ],
+    "coverageDirectory": "./coverage/",
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ]
+  }
+}

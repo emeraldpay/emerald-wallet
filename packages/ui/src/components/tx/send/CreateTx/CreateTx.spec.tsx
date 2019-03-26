@@ -9,6 +9,7 @@ describe('CreateTx', () => {
       <CreateTx
         token="ETH"
         txFee="1000000"
+        txFeeToken="ETH"
         gasLimit="1000000"
         amount="1"
         balance="5"
@@ -18,6 +19,7 @@ describe('CreateTx', () => {
     const mounted = mount(<CreateTx
       token="ETH"
       txFee="1000000"
+      txFeeToken="ETH"
       gasLimit="1000000"
       amount="1"
       balance="5"

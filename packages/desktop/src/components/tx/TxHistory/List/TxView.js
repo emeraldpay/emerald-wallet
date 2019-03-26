@@ -3,6 +3,7 @@ import React from 'react';
 import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import { convert, InputDataDecoder } from '@emeraldplatform/core';
+import { abi as TokenAbi } from '@emeraldwallet/erc20';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
@@ -12,7 +13,6 @@ import { Forward as ArrowRightIcon } from '@emeraldplatform/ui-icons';
 import AccountBalance from '../../../accounts/Balance';
 import TokenUnits from '../../../../lib/tokenUnits';
 import i18n from '../../../../i18n/i18n';
-import { TokenAbi } from '../../../../lib/erc20';
 
 const decoder = new InputDataDecoder(TokenAbi);
 

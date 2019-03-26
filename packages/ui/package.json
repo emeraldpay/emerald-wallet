@@ -9,7 +9,7 @@
   "scripts": {
     "build:dist": "rimraf lib/ && tsc",
     "build": "rimraf lib/ && tsc",
-    "test": "jest --env=jsdom",
+    "test": "jest --no-cache --env=jsdom",
     "test:coverage": "jest --env=jsdom --coverage && codecov",
     "storybook": "start-storybook -p 9001 -c .storybook"
   },

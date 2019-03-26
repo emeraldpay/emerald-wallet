@@ -1,7 +1,7 @@
 // @flow
 import { Contract } from '@emeraldplatform/contracts';
+import { abi as TokenAbi } from '@emeraldwallet/erc20';
 import { parseString } from '../../../lib/convert';
-import { TokenAbi } from '../../../lib/erc20';
 import { detect as detectTraceCall } from '../../../lib/traceCall';
 import launcher from '../../launcher';
 import ActionTypes from './actionTypes';

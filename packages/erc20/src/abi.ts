@@ -1,5 +1,5 @@
 /** Abbreviated ABI for ERC20-compatible tokens * */
-export const TokenAbi = [
+const TokenAbi = [
   {
     name: 'approve',
     inputs: [
@@ -56,3 +56,5 @@ export const TokenAbi = [
     outputs: [{name: '', type: 'uint8'}],
   },
 ];
+
+export default TokenAbi;
