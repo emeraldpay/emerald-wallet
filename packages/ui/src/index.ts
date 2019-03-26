@@ -12,3 +12,4 @@ export { default as Settings } from './components/Settings';
 export { default as TxDetails } from './components/tx/TxDetails';
 export { default as ErrorDialog } from './components/common/ErrorDialog';
 export { default as CreateTx } from './components/tx/send/CreateTx';
+export { default as SignTx } from './components/tx/send/SignTx';

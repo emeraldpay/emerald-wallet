@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import BigNumber from 'bignumber.js';
 import Tokens from 'store/vault/tokens';
 import { fromJS } from 'immutable';
-import { Currency } from '@emeraldwallet/core';
+import { CreateTx, SignTx } from '@emeraldwallet/ui';
 import { Wei } from '@emeraldplatform/emerald-js';
 import { convert, toBaseUnits } from '@emeraldplatform/core';
 import { etherToWei } from 'lib/convert';
@@ -14,12 +14,9 @@ import accounts from 'store/vault/accounts';
 import network from 'store/network';
 import screen from 'store/wallet/screen';
 import ledger from 'store/ledger/';
-import { traceValidate } from '../../components/tx/SendTx/utils';
-import SignTxForm from '../../components/tx/SendTx/SignTx';
-import TransactionShow from '../../components/tx/TxDetails';
-import { CreateTx } from '@emeraldwallet/ui';
-import { txFee, txFeeFiat } from './util';
 import Wallet from 'store/wallet';
+import TransactionShow from '../../components/tx/TxDetails';
+import { txFee, txFeeFiat, traceValidate } from './util';
 
 const { toHex } = convert;
 
@@ -197,7 +194,7 @@ class MultiCreateTransaction extends React.Component {
         );
       case PAGES.PASSWORD:
         return (
-          <SignTxForm
+          <SignTx
             fiatRate={this.props.fiateRate}
             tx={this.state.transaction}
             txFee={this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit)}

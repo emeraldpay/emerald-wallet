@@ -33,7 +33,9 @@ class ToField extends React.Component<Props, State> {
   }
 
   onChangeTo(event: any, value: any) {
-    this.props.onChangeTo(value);
+    if (this.props.onChangeTo) {
+      this.props.onChangeTo(value);
+    }
 
     if (!value) {
       this.setState({errorText: 'Required'});
