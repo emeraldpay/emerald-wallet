@@ -9,6 +9,12 @@ function createStore() {
     subscribe() {},
     getState() {
       return {
+        launcher: fromJS({
+          geth: {},
+        }),
+        network: fromJS({
+          chain: {},
+        }),
         wallet: {
           settings: fromJS({}),
         },

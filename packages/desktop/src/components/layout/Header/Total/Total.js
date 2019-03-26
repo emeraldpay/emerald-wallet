@@ -8,6 +8,7 @@ import { Wei } from '@emeraldplatform/emerald-js';
 import { EtcSimple } from '@emeraldplatform/ui-icons';
 import { Button } from '@emeraldwallet/ui';
 import Accounts from '../../../../store/vault/accounts';
+import Wallet from '../../../../store/wallet';
 import WalletSettings from '../../../../store/wallet/settings';
 
 type Props = {
@@ -29,9 +30,9 @@ const styles = {
 };
 
 const Total = ({
-  total, showFiat, fiatAmount, fiatCurrency, classes,
+  total, showFiat, fiatAmount, fiatCurrency, classes, tokenSymbol,
 }: Props) => {
-  let totalFormatted = `${total} ETC`;
+  let totalFormatted = `${total} ${tokenSymbol}`;
   if (showFiat && fiatAmount) {
     totalFormatted = `${totalFormatted} - ${fiatAmount} ${fiatCurrency}`;
   }
@@ -57,6 +58,7 @@ const StyledTotal = withStyles(styles)(Total);
 export default connect(
   (state, ownProps) => {
     // Sum of balances of all known accounts.
+    const blockchain = Wallet.selectors.currentBlockchain(state);
     const total: Wei = Accounts.selectors.selectTotalBalance(state);
     const fiatCurrency = WalletSettings.selectors.fiatCurrency(state);
     const fiatRate = WalletSettings.selectors.fiatRate(state);
@@ -69,6 +71,7 @@ export default connect(
       fiatCurrency,
       fiatAmount,
       total: total.getEther(),
+      tokenSymbol: (blockchain && blockchain.params.tokenSymbol) || '',
     };
   },
   (dispatch, ownProps) => ({})
