@@ -340,17 +340,19 @@ export function importWallet(wallet, name: string, description: string) {
   };
 }
 
+function clearBlock(tx) {
+  return {
+    ...tx,
+    blockNumber: null,
+  };
+}
+
 export function loadPendingTransactions() {
   return (dispatch, getState, api) => api.geth.eth.getBlockByNumber('pending', true).then((result) => {
     const addrs = getState().accounts.get('accounts').map((acc) => acc.get('id'));
     const txes = result.transactions.filter(
       (t) => addrs.includes(t.to) || addrs.includes(t.from)
-    ).map((tx) => {
-      if (tx.blockNumber) {
-        delete tx.blockNumber;
-      }
-      return tx;
-    });
+    ).map((tx) => clearBlock(tx));
     if (txes.length === 0) { return; }
 
     dispatch(history.actions.trackTxs(txes));

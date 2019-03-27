@@ -37,20 +37,16 @@ export class Balance extends React.Component {
 
   render() {
     const {
-      balance, showFiat, fiatCurrency, fiatRate, precision = 3, symbol,
+      balance, showFiat, fiatCurrency, fiatRate, precision = 3, symbol, fiatAmount,
     } = this.props;
     const { fiatStyle, coinsStyle } = this.props;
-    let fiatAmount = null;
-    if (showFiat && balance && fiatRate) {
-      fiatAmount = Currency.format(Currency.convert(balance.value.toString(10), fiatRate), fiatCurrency);
-    }
 
     return (
       <div>
         <span style={coinsStyle}>
           {balance ? balance.getDecimalized(precision) : '-'} {symbol}
         </span>
-        <br />
+        {fiatAmount && <br /> }
         {fiatAmount && <span style={fiatStyle}>{fiatAmount} {fiatCurrency}</span> }
       </div>
     );
@@ -61,11 +57,16 @@ export default connect(
   (state, ownProps) => {
     const fiatCurrency = WalletSettings.selectors.fiatCurrency(state);
     const fiatRate = WalletSettings.selectors.fiatRate(state);
+    let fiatAmount = null;
+    if (ownProps.showFiat && ownProps.balance && fiatRate) {
+      fiatAmount = Currency.format(Currency.convert(ownProps.balance.value.toString(10), fiatRate), fiatCurrency);
+    }
     return {
       symbol: ownProps.symbol,
       balance: ownProps.balance,
       fiatCurrency,
       fiatRate,
+      fiatAmount,
     };
   },
   (dispatch, ownProps) => ({})

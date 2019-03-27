@@ -11,11 +11,12 @@ interface Props {
   variant?: any;
   target?: any;
   rel?: any;
+  disabled?: boolean;
 }
 
 const Btn = (props: Props) => {
   const {
-    primary, onClick, label, icon, href, variant, ...restProps
+    primary, onClick, label, icon, href, variant, disabled, ...restProps
   } = props;
   const style = {
     fontSize: '15px',
@@ -27,6 +28,7 @@ const Btn = (props: Props) => {
   };
   return (
     <Button
+      disabled={disabled}
       color={primary ? 'primary' : 'secondary'}
       href={href}
       variant={variant || 'contained'}

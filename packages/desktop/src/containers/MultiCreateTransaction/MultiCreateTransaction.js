@@ -3,8 +3,9 @@ import PropTypes from 'prop-types';
 import BigNumber from 'bignumber.js';
 import Tokens from 'store/vault/tokens';
 import { fromJS } from 'immutable';
-import { Currency } from '@emeraldwallet/core';
-import { Wei, convert } from '@emeraldplatform/emerald-js';
+import { CreateTx, SignTx } from '@emeraldwallet/ui';
+import { Wei } from '@emeraldplatform/emerald-js';
+import { convert, toBaseUnits } from '@emeraldplatform/core';
 import { etherToWei } from 'lib/convert';
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
@@ -13,11 +14,9 @@ import accounts from 'store/vault/accounts';
 import network from 'store/network';
 import screen from 'store/wallet/screen';
 import ledger from 'store/ledger/';
-import { traceValidate } from '../../components/tx/SendTx/utils';
-import SignTxForm from '../../components/tx/SendTx/SignTx';
+import Wallet from 'store/wallet';
 import TransactionShow from '../../components/tx/TxDetails';
-import CreateTransaction from '../../components/tx/CreateTransaction';
-import { txFee, txFeeFiat } from './util';
+import { txFee, txFeeFiat, traceValidate } from './util';
 
 const { toHex } = convert;
 
@@ -164,9 +163,10 @@ class MultiCreateTransaction extends React.Component {
     switch (this.state.page) {
       case PAGES.TX:
         return (
-          <CreateTransaction
+          <CreateTx
             to={this.state.transaction.to}
             from={this.state.transaction.from}
+            txFeeSymbol={this.props.txFeeSymbol}
             token={this.state.transaction.token}
             amount={this.state.transaction.amount}
             gasLimit={this.state.transaction.gasLimit}
@@ -195,7 +195,7 @@ class MultiCreateTransaction extends React.Component {
         );
       case PAGES.PASSWORD:
         return (
-          <SignTxForm
+          <SignTx
             fiatRate={this.props.fiateRate}
             tx={this.state.transaction}
             txFee={this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit)}
@@ -227,7 +227,9 @@ class MultiCreateTransaction extends React.Component {
 export default connect(
   (state, ownProps) => {
     const { account } = ownProps;
-    const allTokens = state.tokens.get('tokens').concat([fromJS({address: '', symbol: 'ETC', name: 'ETC'})]).reverse();
+    const blockchain = Wallet.selectors.currentBlockchain(state);
+    const txFeeSymbol = (blockchain && blockchain.params.tokenSymbol) || '';
+    const allTokens = state.tokens.get('tokens').concat([fromJS({address: '', symbol: txFeeSymbol, name: txFeeSymbol})]).reverse();
     const gasPrice = network.selectors.gasPrice(state);
 
     const fiatRate = state.wallet.settings.get('localeRate');
@@ -245,20 +247,15 @@ export default connect(
       amount: ownProps.amount || '0',
       gasLimit: ownProps.gasLimit || DEFAULT_GAS_LIMIT,
       typedData: ownProps.typedData,
-      token: 'ETC',
+      token: txFeeSymbol,
+      txFeeSymbol,
       data: ownProps.data,
       selectedFromAccount: account.get('id'),
       getBalanceForAddress: (address, token) => {
-        if (token === 'ETC') {
-          const selectedAccount = state.accounts.get('accounts').find((acnt) => acnt.get('id') === address);
-          const newBalance = selectedAccount.get('balance');
-          return newBalance.getEther().toString();
-        }
-
-        return Tokens.selectors.balanceByTokenSymbol(state.tokens, token, address).getDecimalized();
+        return Wallet.selectors.balance(state, address, token);
       },
       getFiatForAddress: (address, token) => {
-        if (token !== 'ETC') { return '??'; }
+        if (token !== txFeeSymbol) { return '??'; }
         const selectedAccount = state.accounts.get('accounts').find((acnt) => acnt.get('id') === address);
         const newBalance = selectedAccount.get('balance');
         return newBalance.getFiat(fiatRate).toString();
@@ -304,7 +301,7 @@ export default connect(
 
       if (transaction.token !== 'ETC') {
         const decimals = convert.toNumber(tokenInfo.get('decimals'));
-        const tokenUnits = convert.toBaseUnits(convert.toBigNumber(transaction.amount), decimals || 18);
+        const tokenUnits = toBaseUnits(convert.toBigNumber(transaction.amount), decimals || 18);
         const txData = Tokens.actions.createTokenTxData(
           transaction.to,
           tokenUnits,

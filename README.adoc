@@ -1,5 +1,5 @@
-Emerald - Ethereum Classic Wallet
-=================================
+Emerald - Ethereum and Ethereum Classic Wallet
+==============================================
 
 :rootdir: .
 :imagesdir: {rootdir}/images
@@ -28,7 +28,7 @@ Once nodenv is installed:
 $ nodenv install
 ```
 
-The required version of `node` >= `v8`. 
+The required version of `node` >= `v8`.
 
 ### Dependencies
 

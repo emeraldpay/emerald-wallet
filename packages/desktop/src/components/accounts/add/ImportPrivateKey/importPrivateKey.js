@@ -11,6 +11,7 @@ import {
 } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import { Button } from '@emeraldwallet/ui';
+import { utils } from '@emeraldwallet/core';
 import { Row, styles as formStyles } from 'elements/Form';
 import TextField from 'elements/Form/TextField';
 import accounts from 'store/vault/accounts';
@@ -154,7 +155,8 @@ export default connect(
   (dispatch, ownProps) => ({
     onSubmit: (data) => {
       return new Promise((resolve, reject) => {
-        ipcRenderer.send('get-private-key-to-keyfile', {privateKey: data.privateKey, password: data.password});
+        const privateKey = utils.addHexPrefix(data.privateKey.trim());
+        ipcRenderer.send('get-private-key-to-keyfile', {privateKey, password: data.password});
         ipcRenderer.once('recieve-private-key-to-keyfile', (event, keyFile) => {
           // import key file
           return dispatch(accounts.actions.importWallet(new Blob([keyFile]), '', ''))

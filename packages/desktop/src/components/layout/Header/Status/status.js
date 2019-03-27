@@ -7,7 +7,7 @@ import launcher from '../../../../store/launcher';
 import wallet from '../../../../store/wallet';
 
 const Status = ({
-  block, progress, peerCount, showDetails, connecting, switchNetwork, chain, geth, muiTheme,
+  block, progress, peerCount, showDetails, connecting, switchNetwork,
 }) => {
   const styles = {
     block: {
