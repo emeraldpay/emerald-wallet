@@ -33,5 +33,6 @@ export const switchEndpoint = (chain: {chainId: number, chain: string}) => {
     dispatch(history.actions.init(chain.chainId));
     dispatch(network.actions.switchChain(chain));
     dispatch(tokens.actions.resetBalances());
+    dispatch(screen.actions.gotoScreen('home'));
   };
 };

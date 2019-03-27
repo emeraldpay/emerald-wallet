@@ -3,7 +3,6 @@ import withStyles from 'react-jss';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import QRCode from 'qrcode.react';
 import TokenUnits from 'lib/tokenUnits';
 import {Account as AddressAvatar} from 'emerald-js-ui';
@@ -237,4 +236,4 @@ export default connect(
       });
     },
   })
-)(muiThemeable()(withStyles(styles2)(AccountShow)));
+)(withStyles(styles2)(AccountShow));
