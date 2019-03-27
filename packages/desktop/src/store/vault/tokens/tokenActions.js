@@ -7,6 +7,7 @@ import launcher from '../../launcher';
 import ActionTypes from './actionTypes';
 import createLogger from '../../../utils/logger';
 import { dispatchRpcError } from '../../wallet/screen/screenActions';
+import deployedTokens from '../../../lib/deployedTokens';
 
 const tokenContract = new Contract(TokenAbi);
 
@@ -21,6 +22,12 @@ type TokenInfo = {
 export function resetBalances() {
   return {
     type: ActionTypes.RESET_BALANCES,
+  };
+}
+
+export function reset() {
+  return {
+    type: ActionTypes.RESET,
   };
 }
 
@@ -174,6 +181,28 @@ export function loadTokenList() {
         tokens,
       });
       tokens.map((token) => dispatch(loadTokenDetails(token.address)));
+    });
+  };
+}
+
+/**
+ * Add default tokens for particular chain to vault and state
+ * @param chainId
+ */
+export function addDefault(chainId) {
+  return (dispatch, getState, api) => {
+    const chain = launcher.selectors.getChainName(getState());
+    const tokens = deployedTokens[+chainId] || [];
+    tokens.forEach((t) => {
+      api.emerald.importContract(t.address, t.symbol, '', chain).then(() => {
+        // TODO: maybe replace with one action
+        dispatch({
+          type: ActionTypes.ADD_TOKEN,
+          address: t.address,
+          name: t.symbol,
+        });
+        dispatch(loadTokenDetails(t.address));
+      });
     });
   };
 }

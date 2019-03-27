@@ -2,17 +2,16 @@ import React from 'react';
 import withStyles from 'react-jss';
 import Immutable from 'immutable';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import muiThemeable from 'material-ui/styles/muiThemeable';
+import {connect} from 'react-redux';
 import QRCode from 'qrcode.react';
 import TokenUnits from 'lib/tokenUnits';
-import { Account as AddressAvatar } from 'emerald-js-ui';
-import { Back } from '@emeraldplatform/ui-icons';
+import {Account as AddressAvatar} from 'emerald-js-ui';
+import {Back} from '@emeraldplatform/ui-icons';
 import {
   Page, IdentityIcon, Address, ButtonGroup
 } from '@emeraldplatform/ui';
-import { Button, InlineEdit } from '@emeraldwallet/ui';
-import { styles, Row } from 'elements/Form';
+import {Button, InlineEdit} from '@emeraldwallet/ui';
+import {styles, Row} from 'elements/Form';
 import accounts from '../../../store/vault/accounts';
 import tokens from '../../../store/vault/tokens';
 import screen from '../../../store/wallet/screen';
@@ -46,23 +45,23 @@ export class AccountShow extends React.Component {
   }
 
   handleEdit = () => {
-    this.setState({ edit: true });
+    this.setState({edit: true});
   };
 
   handleSave = (data) => {
     this.props.editAccount(data)
       .then((result) => {
-        this.setState({ edit: false });
+        this.setState({edit: false});
         log.debug(result);
       });
   };
 
   cancelEdit = () => {
-    this.setState({ edit: false });
+    this.setState({edit: false});
   };
 
   render() {
-    const { account, tokensBalances, classes } = this.props;
+    const {account, tokensBalances, classes} = this.props;
     const {
       showFiat, goBack, transactions, createTx, showReceiveDialog,
     } = this.props;
@@ -79,13 +78,13 @@ export class AccountShow extends React.Component {
 
     return (
       <div>
-        <Page title="Account" leftIcon={ <Back onClick={goBack} /> }>
-          <div style={{ display: 'flex', alignItems: 'center', paddingBottom: '20px' }}>
+        <Page title="Account" leftIcon={<Back onClick={goBack}/>}>
+          <div style={{display: 'flex', alignItems: 'center', paddingBottom: '20px'}}>
             <div style={{flexGrow: 2}}>
               <Row>
                 <div id="left-column" style={styles.left}>
                   <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-                    <IdentityIcon id={acc.id} />
+                    <IdentityIcon id={acc.id}/>
                   </div>
                 </div>
                 <div style={styles.right}>
@@ -94,23 +93,23 @@ export class AccountShow extends React.Component {
               </Row>
 
               <Row>
-                <div style={ styles.left }>
+                <div style={styles.left}>
                 </div>
-                <div style={ styles.right }>
-                  <Balance
-                    showFiat={ showFiat }
+                <div style={styles.right}>
+                  {balance && <Balance
+                    showFiat={showFiat}
                     coinsStyle={{fontSize: '20px', lineHeight: '24px'}}
-                    balance={ balance }
+                    balance={balance}
                     symbol="ETC"
-                  />
+                  />}
                 </div>
               </Row>
 
               <Row>
-                <div style={ styles.left }>
+                <div style={styles.left}>
                 </div>
-                <div style={ styles.right }>
-                  <TokenBalances balances={ tokensBalances }/>
+                <div style={styles.right}>
+                  <TokenBalances balances={tokensBalances}/>
                 </div>
               </Row>
 
@@ -119,34 +118,34 @@ export class AccountShow extends React.Component {
                   <div style={styles.fieldName}>
                   </div>
                 </div>
-                <div style={ styles.right }>
+                <div style={styles.right}>
                   {!this.state.edit && <AddressAvatar
                     editable
-                    address={ acc.id }
-                    description={ acc.description }
-                    name={ acc.name }
-                    onEditClick={ this.handleEdit }
+                    address={acc.id}
+                    description={acc.description}
+                    name={acc.name}
+                    onEditClick={this.handleEdit}
                   />}
                   {this.state.edit && <InlineEdit
                     placeholder="Account name"
-                    initialValue={ acc.name }
-                    id={ acc.id }
+                    initialValue={acc.name}
+                    id={acc.id}
                     onSave={this.handleSave}
                     onCancel={this.cancelEdit}
                   />}
                 </div>
               </Row>
-              { acc.hardware
-                && <Row>
-                  <div style={styles.left}>
-                    <div style={styles.fieldName}>
-                      HD Path
-                    </div>
+              {acc.hardware
+              && <Row>
+                <div style={styles.left}>
+                  <div style={styles.fieldName}>
+                    HD Path
                   </div>
-                  <div style={ styles.right }>
-                    { acc.hdpath }
-                  </div>
-                </Row> }
+                </div>
+                <div style={styles.right}>
+                  {acc.hdpath}
+                </div>
+              </Row>}
               <Row>
                 <div style={styles.left}/>
                 <div style={styles.right}>
@@ -155,28 +154,28 @@ export class AccountShow extends React.Component {
                       <Button
                         primary
                         label="Deposit"
-                        onClick={ showReceiveDialog }
+                        onClick={showReceiveDialog}
                       />
                       <Button
                         primary
                         label="Send"
-                        onClick={ createTx }
+                        onClick={createTx}
                       />
-                      <SecondaryMenu account={ account } />
+                      <SecondaryMenu account={account}/>
                     </ButtonGroup>
                   </div>
                 </div>
               </Row>
             </div>
 
-            <div className={ classes.qrCodeContainer }>
-              <QRCode value={ acc.id } />
+            <div className={classes.qrCodeContainer}>
+              <QRCode value={acc.id}/>
             </div>
           </div>
         </Page>
 
-        <div className={ classes.transContainer }>
-          <TransactionsList transactions={ transactions } accountId={ acc.id } />
+        <div className={classes.transContainer}>
+          <TransactionsList transactions={transactions} accountId={acc.id}/>
         </div>
       </div>
     );
@@ -218,11 +217,11 @@ export default connect(
   },
   (dispatch, ownProps) => ({
     createTx: () => {
-      const { account } = ownProps;
+      const {account} = ownProps;
       dispatch(screen.actions.gotoScreen('create-tx', account));
     },
     showReceiveDialog: () => {
-      const { account } = ownProps;
+      const {account} = ownProps;
       dispatch(screen.actions.showDialog('receive', account.get('id')));
     },
     goBack: () => {
@@ -237,4 +236,4 @@ export default connect(
       });
     },
   })
-)(muiThemeable()(withStyles(styles2)(AccountShow)));
+)(withStyles(styles2)(AccountShow));

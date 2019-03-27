@@ -3,7 +3,11 @@ import BigNumber from 'bignumber.js';
 
 export const enum CurrencyCode {
   RUB = "RUB",
-  USD = "USD"
+  USD = "USD",
+  EUR = "EUR",
+  AUD = "AUD",
+  CNY = "CNY",
+  KRW = "KRW",
 }
 
 export class Currency {
@@ -21,10 +25,10 @@ export class Currency {
     switch (currencySymbol.toUpperCase()) {
       case CurrencyCode.RUB: return 'ru-RU';
       case CurrencyCode.USD: return 'en-US';
-      case 'AUD': return 'en-AU';
-      case 'EUR': return 'de-DE';
-      case 'CNY': return 'zh-CN';
-      case 'KRW': return 'ko-KR';
+      case CurrencyCode.AUD: return 'en-AU';
+      case CurrencyCode.EUR: return 'de-DE';
+      case CurrencyCode.CNY: return 'zh-CN';
+      case CurrencyCode.KRW: return 'ko-KR';
       default: return 'en-US';
     }
   }

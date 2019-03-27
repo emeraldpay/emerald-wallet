@@ -21,7 +21,6 @@ import {
 } from './launcher/launcherActions';
 import { showError } from './wallet/screen/screenActions';
 
-import deployedTokens from '../lib/deployedTokens';
 import getWalletVersion from '../utils/get-wallet-version';
 import createLogger from '../utils/logger';
 import { createStore } from './createStore';
@@ -59,14 +58,18 @@ function refreshLong() {
 export function startSync() {
   const state = store.getState();
 
+  const chain = state.launcher.getIn(['chain', 'name']);
+  const chainId = state.launcher.getIn(['chain', 'id']);
+
+
   const promises = [
     store.dispatch(network.actions.getGasPrice()),
     store.dispatch(loadClientVersion()),
     store.dispatch(Addressbook.actions.loadAddressBook()),
+    store.dispatch(history.actions.init(chainId)),
     store.dispatch(tokens.actions.loadTokenList()),
+    store.dispatch(tokens.actions.addDefault(chainId)),
   ];
-
-  const chain = state.launcher.getIn(['chain', 'name']);
 
   if (chain === 'mainnet') {
     promises.push(
@@ -88,16 +91,6 @@ export function startSync() {
       () => store.dispatch(network.actions.loadSyncing()),
       2 * intervalRates.minute
     ); // prod: 30 * this.second
-  }
-
-  const chainId = state.launcher.getIn(['chain', 'id']);
-  promises.push(store.dispatch(history.actions.init(chainId)));
-
-  // deployed tokens
-  const known = deployedTokens[+chainId];
-
-  if (known) {
-    known.forEach((token) => promises.push(store.dispatch(tokens.actions.addToken(token))));
   }
 
   setTimeout(refreshLong, 3 * intervalRates.second);

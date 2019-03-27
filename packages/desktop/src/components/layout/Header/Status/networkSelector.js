@@ -46,11 +46,6 @@ ExtendedMenuItem.muiName = 'MenuItem';
 //       paddingRight: '10px',
 //       height: muiTheme.spacing.desktopToolbarHeight, /* gagarin55: this is extremely important hack to align DropDownMenu vertically */
 //     },
-//     label: {
-//       color: muiTheme.palette.secondaryTextColor,
-//       fontSize: '16px',
-//       paddingRight: '10px',
-//     },
 //   };
 // }
 
@@ -118,8 +113,7 @@ class NetworkSelectorRender extends React.Component {
     //     iconStyle={{
     //       left: '-40px', marginLeft: '20px', stroke: muiTheme.palette.secondaryTextColor, color: muiTheme.palette.secondaryTextColor,
     //     }}
-    //     iconButton={icon}
-    //     labelStyle={ styles.label }>
+    //     iconButton={icon}>
     // { Networks.map((net) => <ExtendedMenuItem
     //   value={net.id}
     //   key={net.id}
