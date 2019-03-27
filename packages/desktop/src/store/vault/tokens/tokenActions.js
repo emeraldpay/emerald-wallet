@@ -25,6 +25,12 @@ export function resetBalances() {
   };
 }
 
+export function reset() {
+  return {
+    type: ActionTypes.RESET,
+  };
+}
+
 /**
  * Load balance of particular token for particular account
  */

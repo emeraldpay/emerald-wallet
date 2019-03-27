@@ -170,6 +170,13 @@ function onResetBalances(state, action) {
   return state;
 }
 
+function onReset(state, action) {
+  if (action.type === ActionTypes.RESET) {
+    return initial;
+  }
+  return state;
+}
+
 
 // ---- REDUCER
 
@@ -183,5 +190,6 @@ export default function tokenReducers(state, action) {
   state = onSetTokensBalances(state, action);
   state = onResetBalances(state, action);
   state = onRemoveToken(state, action);
+  state = onReset(state, action);
   return state;
 }
