@@ -1,9 +1,12 @@
 import React from 'react';
-import { connect } from 'react-redux';
-import { TxDetails } from '@emeraldwallet/ui';
+import {connect} from 'react-redux';
+import {TxDetails} from '@emeraldwallet/ui';
+import {Currency} from '@emeraldwallet/core';
+import {Wei} from '@emeraldplatform/emerald-js';
 import launcher from 'store/launcher';
-import { gotoScreen } from '../../../store/wallet/screen/screenActions';
+import {gotoScreen} from '../../../store/wallet/screen/screenActions';
 import createLogger from '../../../utils/logger';
+import WalletSettings from '../../../store/wallet/settings';
 
 const log = createLogger('TxDetails');
 
@@ -13,8 +16,6 @@ export default connect(
     const account = accounts.find(
       (acct) => acct.get('id') === ownProps.accountId
     );
-    const rates = state.wallet.settings.get('rates');
-    const currentCurrency = state.wallet.settings.get('localeCurrency');
 
     const Tx = state.wallet.history.get('trackedTransactions').find(
       (tx) => tx.get('hash') === ownProps.hash
@@ -29,16 +30,22 @@ export default connect(
 
     const showRepeat = !!fromAccount;
 
+    let fiatAmount = null;
+    const currentCurrency = state.wallet.settings.get('localeCurrency');
+    if (launcher.selectors.getChainName(state).toLowerCase() === 'mainnet') {
+      const fiatRate = WalletSettings.selectors.fiatRate(state);
+      const coins = new Wei(Tx.get('value')).getEther();
+      fiatAmount = Currency.format(Number(Currency.convert(coins, fiatRate)), currentCurrency);
+    }
     return {
       goBack: ownProps.goBack,
       openAccount: ownProps.openAccount,
       showRepeat,
       repeatTx: ownProps.repeatTx,
-      showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
       transaction: Tx.toJS(),
       account,
-      rates,
-      currentCurrency,
+      fiatAmount,
+      fiatCurrency: currentCurrency,
       fromAccount,
       toAccount,
     };

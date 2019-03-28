@@ -1,4 +1,5 @@
 import * as React from 'react';
+import BigNumber from 'bignumber.js';
 import { shallow, mount } from 'enzyme';
 import { Account } from '@emeraldplatform/ui';
 import { TxDetails, styles } from './TxDetails';
@@ -10,12 +11,15 @@ const classes = Object.keys(styles).reduce(reduceClasses, {});
 describe('TxDetails', () => {
   it('should render nested components correctly', () => {
     const tx = {
-      hash: '0x01',
+      hash: '0x95c1767c33c37ef93de48897c1001679d947bd7f082fdf4e772c534ae180b9c8',
       data: '0xDADA',
       from: '0x1234',
-      to: '0x9876'
+      to: '0x9876',
+      gas: 21000,
+      gasPrice: new BigNumber('30000000000'),
+      value: new BigNumber('100999370000000000000'),
     };
-    const component = mount(<TxDetails classes={classes} transaction={tx} />);
+    const component = mount(<TxDetails classes={classes} fiatAmount="100" transaction={tx} />);
     expect(component).toBeDefined();
   });
 

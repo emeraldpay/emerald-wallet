@@ -35,13 +35,14 @@ export const styles = (theme?: any) => ({
 interface Props {
   classes?: any;
   onGenerate?: any;
+  onAboutClick?: any;
   onImportJson?: any;
   onImportPrivateKey?: any;
   onLedger?: any;
 }
 
 export const Landing = ({
-  onGenerate, onImportJson, onImportPrivateKey, onLedger, classes,
+  onGenerate, onImportJson, onImportPrivateKey, onLedger, classes, onAboutClick,
 }: Props) => {
 
   return (
@@ -62,7 +63,7 @@ export const Landing = ({
                 </span>
                 <br />
                 <br />
-                <Button href="http://ethereumclassic.org" target="_blank" rel="noreferrer noopener" label="More about ethereum classic" />
+                <Button onClick={onAboutClick} label="More about ethereum classic" />
                 <br />
                 <br />
                 <Button primary onClick={onGenerate} label="Generate New Account" />
