@@ -32,6 +32,8 @@ const styles2 = {
   },
   statusColumn: {
     width: '60',
+    paddingLeft: '0px',
+    paddingRight: 'inherit',
   },
   columnArrow: {
     paddingLeft: '0px !important',

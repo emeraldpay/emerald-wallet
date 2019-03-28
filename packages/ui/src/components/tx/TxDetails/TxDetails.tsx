@@ -50,6 +50,7 @@ interface Props {
   toAccount?: any,
   rates?: Map<string, number>,
   transaction: any,
+  tokenSymbol: string,
   account?: any,
   classes?: any;
   repeatTx?: any;
@@ -78,7 +79,7 @@ export class TxDetails extends React.Component<Props> {
 
   render() {
     const {
-      transaction, fromAccount, toAccount, openAccount, repeatTx, classes,
+      transaction, fromAccount, toAccount, openAccount, repeatTx, classes, tokenSymbol,
     } = this.props;
     const {
       fiatCurrency, fiatAmount,
@@ -104,7 +105,7 @@ export class TxDetails extends React.Component<Props> {
             <div style={{display: 'flex'}}>
               <div>
                 <div className={ classes.value }>
-                  { transaction.value ? `${new Wei(transaction.value).getEther()} ETC` : '--' }
+                  { transaction.value ? `${new Wei(transaction.value).getEther()} ${tokenSymbol}` : '--' }
                 </div>
                 {fiatAmount && <div className={ classes.value }>
                   { fiatAmount } { fiatCurrency }

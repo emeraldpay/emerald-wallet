@@ -7,6 +7,7 @@ import launcher from 'store/launcher';
 import {gotoScreen} from '../../../store/wallet/screen/screenActions';
 import createLogger from '../../../utils/logger';
 import WalletSettings from '../../../store/wallet/settings';
+import Wallet from '../../../store/wallet';
 
 const log = createLogger('TxDetails');
 
@@ -37,12 +38,14 @@ export default connect(
       const coins = new Wei(Tx.get('value')).getEther();
       fiatAmount = Currency.format(Number(Currency.convert(coins, fiatRate)), currentCurrency);
     }
+    const blockchain = Wallet.selectors.currentBlockchain(state);
     return {
       goBack: ownProps.goBack,
       openAccount: ownProps.openAccount,
       showRepeat,
       repeatTx: ownProps.repeatTx,
       transaction: Tx.toJS(),
+      tokenSymbol: (blockchain && blockchain.params.tokenSymbol) || '',
       account,
       fiatAmount,
       fiatCurrency: currentCurrency,

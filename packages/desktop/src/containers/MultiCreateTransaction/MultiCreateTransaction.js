@@ -299,7 +299,8 @@ export default connect(
         );
       }
 
-      if (transaction.token !== 'ETC') {
+      // TODO: refactor this check
+      if ((transaction.token !== 'ETC') && (transaction.token !== 'ETH')) {
         const decimals = convert.toNumber(tokenInfo.get('decimals'));
         const tokenUnits = toBaseUnits(convert.toBigNumber(transaction.amount), decimals || 18);
         const txData = Tokens.actions.createTokenTxData(

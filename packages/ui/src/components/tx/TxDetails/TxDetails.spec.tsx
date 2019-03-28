@@ -19,7 +19,7 @@ describe('TxDetails', () => {
       gasPrice: new BigNumber('30000000000'),
       value: new BigNumber('100999370000000000000'),
     };
-    const component = mount(<TxDetails classes={classes} fiatAmount="100" transaction={tx} />);
+    const component = mount(<TxDetails tokenSymbol="ETC" classes={classes} fiatAmount="100" transaction={tx} />);
     expect(component).toBeDefined();
   });
 
@@ -28,7 +28,7 @@ describe('TxDetails', () => {
       hash: '0x01',
       data: '0xDADA',
     };
-    const component = shallow(<TxDetails classes={classes} transaction={tx} />);
+    const component = shallow(<TxDetails tokenSymbol="ETC" classes={classes} transaction={tx} />);
     const inputComps = component.find(TxInputData);
     expect(inputComps).toHaveLength(1);
     expect(inputComps.first().props().data).toEqual(tx.data);
@@ -39,7 +39,7 @@ describe('TxDetails', () => {
       hash: '0x01',
       data: '0xDADA',
     };
-    const component = shallow(<TxDetails classes={classes} transaction={tx} />);
+    const component = shallow(<TxDetails tokenSymbol="ETC" classes={classes} transaction={tx} />);
     expect(component.find(Account)).toHaveLength(1);
   });
 });

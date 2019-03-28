@@ -36,6 +36,7 @@ export const styles2 = {
     cursor: 'pointer',
     paddingTop: '15px',
     paddingBottom: '15px',
+    paddingLeft: '0px',
   },
   columnFrom: {
     paddingLeft: '5px',

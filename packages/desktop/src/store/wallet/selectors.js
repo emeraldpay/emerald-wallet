@@ -3,7 +3,8 @@ import network from 'store/network';
 import {findNetwork} from 'lib/networks';
 
 export const balance = (state, address, token) => {
-  if (token === 'ETC') {
+  const blockchain = currentBlockchain(state);
+  if (token === blockchain.params.tokenSymbol) {
     const selectedAccount = state.accounts.get('accounts').find((acnt) => acnt.get('id') === address);
     const newBalance = selectedAccount.get('balance');
     return newBalance.getEther().toString();
