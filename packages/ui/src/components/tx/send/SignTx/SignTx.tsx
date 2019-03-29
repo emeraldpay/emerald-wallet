@@ -6,7 +6,7 @@ import {Divider, List, ListItem, ListItemText} from '@material-ui/core';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Button from '../../../common/Button';
 
-const styles2 = (theme?: any) => ({
+const styles = (theme?: any) => ({
   formRow: {
     display: 'flex',
     marginBottom: '19px',
@@ -215,6 +215,6 @@ class SignTx extends React.Component<Props, State> {
   }
 }
 
-const StyledSignTx = withStyles(styles2)(SignTx);
+const StyledSignTx = withStyles(styles)(SignTx);
 
 export default StyledSignTx;
