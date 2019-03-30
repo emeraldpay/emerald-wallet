@@ -121,9 +121,9 @@ class Services {
 
     return new Promise((resolve, reject) => {
       if (this.setup.geth.launchType === LAUNCH_TYPE.NONE) {
-        return resolve(this.startNoneRpc());
+        resolve(this.startNoneRpc());
       } if (this.setup.geth.launchType === LAUNCH_TYPE.REMOTE_URL) {
-        return resolve(this.startRemoteRpc());
+        resolve(this.startRemoteRpc());
       } else {
         reject(new Error(`Invalid Geth launch type ${this.setup.geth.launchType}`));
       }

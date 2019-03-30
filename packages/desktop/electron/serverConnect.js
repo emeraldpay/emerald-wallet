@@ -1,6 +1,10 @@
 const { JsonRpcProvider, Vault} = require('@emeraldplatform/vault');
-const { DefaultJsonRpc, HttpTransport, RevalidatingJsonRpc, VerifyingJsonRpc, RotatingJsonRpc } = require('@emeraldplatform/rpc');
-const { EthRpc, VerifyMinPeers, VerifyNotSyncing, VerifyGenesis, VerifyBlockHash } = require('@emeraldplatform/eth-rpc');
+const {
+  DefaultJsonRpc, HttpTransport, RevalidatingJsonRpc, VerifyingJsonRpc, RotatingJsonRpc,
+} = require('@emeraldplatform/rpc');
+const {
+  EthRpc, VerifyMinPeers, VerifyNotSyncing, VerifyGenesis, VerifyBlockHash,
+} = require('@emeraldplatform/eth-rpc');
 const { app } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const os = require('os');
 const log = require('./logger');
@@ -11,13 +15,13 @@ const CHAIN_VERIFY = {
     new VerifyMinPeers(3),
     new VerifyNotSyncing(),
     new VerifyGenesis('0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3'),
-    new VerifyBlockHash(1920000, '0x94365e3a8c0b35089c1d1195081fe7489b528a84b22199c916180db8b28ade7f')
+    new VerifyBlockHash(1920000, '0x94365e3a8c0b35089c1d1195081fe7489b528a84b22199c916180db8b28ade7f'),
   ],
   eth: [
     new VerifyMinPeers(3),
     new VerifyNotSyncing(),
     new VerifyGenesis('0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3'),
-    new VerifyBlockHash(1920000, '0x4985f5ca3d2afbec36529aa96f74de3cc10a2a4a6c44f2157a57d2c6059a11bb ')
+    new VerifyBlockHash(1920000, '0x4985f5ca3d2afbec36529aa96f74de3cc10a2a4a6c44f2157a57d2c6059a11bb '),
   ],
   morden: [
     new VerifyMinPeers(1),
@@ -75,11 +79,11 @@ class ServerConnect {
     }
     this.revalidate = localRevalidate;
     localRevalidate.listener = (status) => {
-      log.info("Local Node Available: " + status);
+      log.info(`Local Node Available: ${status}`);
     };
     localRevalidate.revalidate()
-      .then(() => log.info("Verified local node"))
-      .catch(() => log.info("Failed to verify local node"));
+      .then(() => log.info('Verified local node'))
+      .catch(() => log.info('Failed to verify local node'));
     localRevalidate.start();
 
     return new EthRpc(
