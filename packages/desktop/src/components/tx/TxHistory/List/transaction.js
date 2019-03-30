@@ -8,13 +8,13 @@ import accounts from '../../../../store/vault/accounts';
 import wallet from '../../../../store/wallet';
 import screen from '../../../../store/wallet/screen';
 import WalletHistory from '../../../../store/wallet/history';
-import AccountBalance from '../../../accounts/Balance';
+import Balance from '../../../accounts/Balance';
 import i18n from '../../../../i18n/i18n';
 import TokenUnits from '../../../../lib/tokenUnits';
 
 function txValueRenderer(showFiat) {
   return function renderer(balance, ticker) {
-    return (<AccountBalance
+    return (<Balance
       // fiatStyle={fiatStyle}
       symbol={ ticker }
       showFiat={ showFiat }

@@ -1,5 +1,4 @@
-// @flow
-import React from 'react';
+import * as React from 'react';
 import ToggleButton from '@material-ui/lab/ToggleButton';
 import { withStyles } from '@material-ui/core/styles';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
@@ -10,9 +9,10 @@ const styles = {
   },
 };
 
-type Props = {
-  value: string,
-  onChange: Function
+interface Props {
+  value: string;
+  onChange?: any;
+  classes?: any;
 }
 
 class Filter extends React.Component<Props> {

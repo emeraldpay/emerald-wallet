@@ -11,7 +11,6 @@ import TableRow from '@material-ui/core/TableRow';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import Transaction from './transaction';
 
-
 const styles2 = {
   columnName: {
     textTransform: 'uppercase',

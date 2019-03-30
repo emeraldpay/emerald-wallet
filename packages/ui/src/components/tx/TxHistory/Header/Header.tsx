@@ -1,11 +1,10 @@
-// @flow
-import React from 'react';
-import withStyles from 'react-jss';
+import * as React from 'react';
+import withStyles, {CSSProperties} from '@material-ui/core/styles/withStyles';
 import { Search as SearchIcon } from '@emeraldplatform/ui-icons';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
-import Filter from './filter';
+import Filter from './Filter';
 
 const styles2 = {
   headerContainer: {
@@ -16,10 +15,10 @@ const styles2 = {
   headerTitle: {
     color: '#191919',
     fontSize: '14px',
-    fontWeight: '500',
+    fontWeight: 500,
     lineHeight: '24px',
     textTransform: 'uppercase',
-  },
+  } as CSSProperties,
   filter: {
     marginLeft: '40px',
     maxWidth: '186px',
@@ -36,9 +35,16 @@ const styles2 = {
   },
 };
 
+interface  Props {
+  onTxFilterChange?: any;
+  onSearchChange?: any;
+  classes?: any;
+  txFilterValue?: any;
+}
+
 const Header = ({
   onTxFilterChange, onSearchChange, classes, txFilterValue,
-}) => {
+}: Props) => {
   return (
     <div className={classes.headerContainer}>
       <div className={classes.headerMain}>
@@ -51,9 +57,7 @@ const Header = ({
         {/* TODO: use emeraldplatform/ui/Input */}
         <TextField
           onChange={onSearchChange}
-          style={{ maxHeight: '40px' }}
           placeholder="Search for amount or hash"
-          underlineShow={false}
           InputProps={{
             className: classes.searchTextField,
             endAdornment: (
