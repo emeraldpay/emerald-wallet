@@ -45,7 +45,7 @@ export default connect(
       showRepeat,
       repeatTx: ownProps.repeatTx,
       transaction: Tx.toJS(),
-      tokenSymbol: (blockchain && blockchain.params.tokenSymbol) || '',
+      tokenSymbol: (blockchain && blockchain.params.coinTicker) || '',
       account,
       fiatAmount,
       fiatCurrency: currentCurrency,

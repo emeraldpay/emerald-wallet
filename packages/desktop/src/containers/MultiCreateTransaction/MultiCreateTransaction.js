@@ -228,7 +228,7 @@ export default connect(
   (state, ownProps) => {
     const { account } = ownProps;
     const blockchain = Wallet.selectors.currentBlockchain(state);
-    const txFeeSymbol = (blockchain && blockchain.params.tokenSymbol) || '';
+    const txFeeSymbol = (blockchain && blockchain.params.coinTicker) || '';
     const allTokens = state.tokens.get('tokens').concat([fromJS({address: '', symbol: txFeeSymbol, name: txFeeSymbol})]).reverse();
     const gasPrice = network.selectors.gasPrice(state);
 

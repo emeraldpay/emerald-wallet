@@ -1,8 +1,9 @@
 import {BlockchainParams} from '../types';
+import {CoinTicker} from '../CoinTicker';
 
 class EthereumParams implements BlockchainParams {
   decimals: number = 18;
-  tokenSymbol: string = "ETH";
+  coinTicker: string = CoinTicker.ETH;
 
 }
 

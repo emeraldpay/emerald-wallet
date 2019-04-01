@@ -14,4 +14,4 @@ const tx = {
 };
 
 storiesOf('TxDetails', module)
-  .add('default', () => (<TxDetails fiatAmount="100.1" transaction={tx}/>));
+  .add('default', () => (<TxDetails tokenSymbol="ETH" fiatAmount="100.1" transaction={tx}/>));

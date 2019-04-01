@@ -8,5 +8,5 @@ export interface Transaction {
  */
 export interface BlockchainParams {
   decimals: number;
-  tokenSymbol: string;
+  coinTicker: string;
 }

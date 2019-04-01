@@ -5,8 +5,8 @@ import { Map } from 'immutable';
 import TxView from '@emeraldwallet/ui/lib/components/tx/TxHistory/TxList/TxItem';
 import launcher from '../../../../store/launcher';
 import accounts from '../../../../store/vault/accounts';
-import wallet from '../../../../store/wallet';
 import screen from '../../../../store/wallet/screen';
+import Wallet from '../../../../store/wallet';
 import WalletHistory from '../../../../store/wallet/history';
 import Balance from '../../../accounts/Balance';
 import i18n from '../../../../i18n/i18n';
@@ -38,7 +38,11 @@ export default connect(
     const token = state.tokens.get('tokens').find((t) => t.get('address') === tx.to);
 
     const showFiat = !token && launcher.selectors.getChainName(state).toLowerCase() === 'mainnet';
+
+    const blockchain = Wallet.selectors.currentBlockchain(state);
+
     return {
+      coinTicker: (blockchain && blockchain.params.coinTicker) || '',
       amountRenderer: txValueRenderer(showFiat),
       lang: i18n.language,
       tx,
@@ -61,7 +65,7 @@ export default connect(
       }));
     },
     openAccount: (address: string) => {
-      dispatch(wallet.actions.showAccountDetails(address));
+      dispatch(Wallet.actions.showAccountDetails(address));
     },
     refreshTx: () => {
       const hash = ownProps.tx.get('hash');

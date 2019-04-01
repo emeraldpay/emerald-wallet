@@ -60,6 +60,7 @@ interface Props {
   classes: any;
   token?: any;
   lang?: any;
+  coinTicker?: string;
 }
 
 const timeStampFormatter = (lang: any) => (timestamp: any) => {
@@ -82,13 +83,13 @@ const defaultAmountRenderer = ((balance: Units, ticker: any) => {
 export const TxItem = (props: Props) => {
   const renderAmount = props.amountRenderer || defaultAmountRenderer;
   const {
-    tx, openTx, openAccount, toAccount, fromAccount, netParams, token,
+    tx, openTx, openAccount, toAccount, fromAccount, netParams, token, coinTicker
   } = props;
   const { classes } = props;
 
   const txValue = tx.value ? new Units(tx.value.toFixed(), 18) : null;
 
-  let symbol = 'ETC';
+  let symbol = coinTicker || '';
   let balance = txValue;
 
   if (token) {
