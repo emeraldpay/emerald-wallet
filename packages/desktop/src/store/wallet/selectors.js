@@ -1,6 +1,7 @@
 import tokens from 'store/vault/tokens';
 import network from 'store/network';
 import {findNetwork} from 'lib/networks';
+import launcher from "../launcher";
 
 export const balance = (state, address, token) => {
   const blockchain = currentBlockchain(state);
@@ -18,4 +19,9 @@ export const currentBlockchain = (state) => {
   const currentEndpoint = state.launcher.get('geth').toJS();
   const net = findNetwork(currentEndpoint.url, currentChain.id) || {};
   return net.blockchain;
+};
+
+export const showFiat = (state) => {
+  const chainName = launcher.selectors.getChainName(state);
+  return (chainName === 'mainnet' || chainName === 'etc');
 };

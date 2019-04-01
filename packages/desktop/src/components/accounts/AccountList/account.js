@@ -1,19 +1,17 @@
 import React from 'react';
-import withStyles from 'react-jss';
-import PropTypes from 'prop-types';
+import withStyles from '@material-ui/core/styles/withStyles';
+import withTheme from '@material-ui/core/styles/withTheme';
 import Grid from '@material-ui/core/Grid';
+import Card from '@material-ui/core/Card';
+import CardContent from '@material-ui/core/CardContent';
+import PropTypes from 'prop-types';
 import { Account as AddressAvatar, ButtonGroup } from '@emeraldplatform/ui';
-import { CardText } from 'material-ui/Card';
-import {
-  Card
-} from 'emerald-js-ui';
 import { Button } from '@emeraldwallet/ui';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../Balance';
 import TokenUnits from '../../../lib/tokenUnits';
 
-const styles2 = {
+const styles2 = (theme) => ({
   tokensDivider: {
     backgroundColor: '#F5F5F5',
     height: '2px',
@@ -29,7 +27,11 @@ const styles2 = {
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
-};
+  card: {
+    borderRadius: '1px',
+    boxShadow: 'none',
+  },
+});
 
 export class Account extends React.Component {
     static propTypes = {
@@ -49,20 +51,20 @@ export class Account extends React.Component {
 
     render() {
       const {
-        account, muiTheme, classes, showFiat,
+        account, theme, classes, showFiat, coinTicker,
       } = this.props;
       const fiatStyle = {
         fontSize: '16px',
         lineHeight: '19px',
-        color: muiTheme.palette.secondaryTextColor,
+        color: theme.palette.text.secondary,
       };
 
       // TODO: we convert Wei to TokenUnits here
       const balance = account.get('balance') ? new TokenUnits(account.get('balance').value(), 18) : null;
       const accId = account.get('id');
       return (
-        <Card>
-          <CardText>
+        <Card className={classes.card}>
+          <CardContent>
             <Grid container>
               <Grid container item xs={5}>
                 { accId && <AddressAvatar
@@ -79,7 +81,7 @@ export class Account extends React.Component {
                     {balance && <AccountBalance
                       fiatStyle={fiatStyle}
                       balance={ balance }
-                      symbol="ETC"
+                      symbol={ coinTicker }
                       showFiat={ showFiat }
                     />}
                     {!balance && 'loading...'}
@@ -103,9 +105,9 @@ export class Account extends React.Component {
                 </div>
               </Grid>
             </Grid>
-          </CardText>
+          </CardContent>
         </Card>);
     }
 }
 
-export default muiThemeable()(withStyles(styles2)(Account));
+export default withTheme()(withStyles(styles2)(Account));

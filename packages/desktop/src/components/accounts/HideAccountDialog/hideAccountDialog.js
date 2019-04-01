@@ -4,13 +4,13 @@ import { connect } from 'react-redux';
 import { Dialog } from 'material-ui';
 import {
   Warning, WarningHeader, WarningText
-} from 'emerald-js-ui';
+} from '@emeraldplatform/ui';
 import { Button } from '@emeraldwallet/ui';
 import screen from '../../../store/wallet/screen';
 import accounts from '../../../store/vault/accounts';
 import history from '../../../store/wallet/history';
 
-export const styles2 = {
+export const styles = {
   title: {
     color: '#191919',
     fontSize: '14px',
@@ -59,7 +59,7 @@ export class HideAccountDialog extends React.Component {
   }
 }
 
-const StyledHideAccountDialog = withStyles(styles2)(HideAccountDialog);
+const StyledHideAccountDialog = withStyles(styles)(HideAccountDialog);
 
 export default connect(
   (state, ownProps) => ({

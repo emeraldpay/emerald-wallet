@@ -5,23 +5,22 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import QRCode from 'qrcode.react';
 import TokenUnits from 'lib/tokenUnits';
-import {Account as AddressAvatar} from 'emerald-js-ui';
 import {Back} from '@emeraldplatform/ui-icons';
 import {
-  Page, IdentityIcon, Address, ButtonGroup
+  Page, IdentityIcon, ButtonGroup, Account as AddressAvatar
 } from '@emeraldplatform/ui';
-import {Button, InlineEdit} from '@emeraldwallet/ui';
+import { Button, InlineEdit } from '@emeraldwallet/ui';
 import {styles, Row} from 'elements/Form';
 import accounts from '../../../store/vault/accounts';
 import tokens from '../../../store/vault/tokens';
 import screen from '../../../store/wallet/screen';
 import history from '../../../store/wallet/history';
-import launcher from '../../../store/launcher';
 import createLogger from '../../../utils/logger';
 import TransactionsList from '../../tx/TxHistory';
 import Balance from '../Balance';
 import SecondaryMenu from '../SecondaryMenu';
 import TokenBalances from '../TokenBalances';
+import Wallet from '../../../store/wallet';
 
 export const styles2 = {
   transContainer: {
@@ -61,7 +60,9 @@ export class AccountShow extends React.Component {
   };
 
   render() {
-    const {account, tokensBalances, classes} = this.props;
+    const {
+      account, coinTicker, tokensBalances, classes,
+    } = this.props;
     const {
       showFiat, goBack, transactions, createTx, showReceiveDialog,
     } = this.props;
@@ -88,7 +89,21 @@ export class AccountShow extends React.Component {
                   </div>
                 </div>
                 <div style={styles.right}>
-                  <Address id={acc.id}/>
+                  {!this.state.edit && <AddressAvatar
+                    editable
+                    address={acc.id}
+                    description={acc.description}
+                    name={acc.name}
+                    onEditClick={this.handleEdit}
+                    addressProps={{hideCopy: false}}
+                  />}
+                  {this.state.edit && <InlineEdit
+                    placeholder="Account name"
+                    initialValue={acc.name}
+                    id={acc.id}
+                    onSave={this.handleSave}
+                    onCancel={this.cancelEdit}
+                  />}
                 </div>
               </Row>
 
@@ -100,7 +115,7 @@ export class AccountShow extends React.Component {
                     showFiat={showFiat}
                     coinsStyle={{fontSize: '20px', lineHeight: '24px'}}
                     balance={balance}
-                    symbol="ETC"
+                    symbol={coinTicker}
                   />}
                 </div>
               </Row>
@@ -110,29 +125,6 @@ export class AccountShow extends React.Component {
                 </div>
                 <div style={styles.right}>
                   <TokenBalances balances={tokensBalances}/>
-                </div>
-              </Row>
-
-              <Row>
-                <div style={styles.left}>
-                  <div style={styles.fieldName}>
-                  </div>
-                </div>
-                <div style={styles.right}>
-                  {!this.state.edit && <AddressAvatar
-                    editable
-                    address={acc.id}
-                    description={acc.description}
-                    name={acc.name}
-                    onEditClick={this.handleEdit}
-                  />}
-                  {this.state.edit && <InlineEdit
-                    placeholder="Account name"
-                    initialValue={acc.name}
-                    id={acc.id}
-                    onSave={this.handleSave}
-                    onCancel={this.cancelEdit}
-                  />}
                 </div>
               </Row>
               {acc.hardware
@@ -208,11 +200,14 @@ export default connect(
       log.warn("Can't find account in general list of accounts", ownProps.account.get('id'));
     }
 
+    const blockchain = Wallet.selectors.currentBlockchain(state);
+
     return {
-      showFiat: launcher.selectors.getChainName(state) === 'mainnet',
+      showFiat: Wallet.selectors.showFiat(state),
       tokensBalances,
       account,
       transactions,
+      coinTicker: (blockchain && blockchain.params.coinTicker) || '',
     };
   },
   (dispatch, ownProps) => ({
