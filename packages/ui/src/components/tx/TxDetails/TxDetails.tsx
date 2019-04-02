@@ -1,6 +1,5 @@
 import * as React from 'react';
 import withStyles, {CSSProperties} from '@material-ui/core/styles/withStyles';
-import { Currency } from '@emeraldwallet/core';
 import { Wei } from '@emeraldplatform/emerald-js';
 import { convert } from '@emeraldplatform/core';
 import { Page, ButtonGroup, Account } from '@emeraldplatform/ui';
@@ -43,14 +42,15 @@ export const styles = {
 };
 
 interface Props {
-  showFiat?: boolean,
+  fiatAmount?: string,
+  fiatCurrency?: string,
   goBack?: (a?: any) => void,
   openAccount?: (a?: any) => void,
-  currentCurrency?: string,
   fromAccount?: any,
   toAccount?: any,
   rates?: Map<string, number>,
   transaction: any,
+  tokenSymbol: string,
   account?: any,
   classes?: any;
   repeatTx?: any;
@@ -79,19 +79,14 @@ export class TxDetails extends React.Component<Props> {
 
   render() {
     const {
-      transaction, fromAccount, toAccount, openAccount, repeatTx, classes,
+      transaction, fromAccount, toAccount, openAccount, repeatTx, classes, tokenSymbol,
     } = this.props;
     const {
-      showFiat, rates, currentCurrency,
+      fiatCurrency, fiatAmount,
     } = this.props;
 
     const blockNumber = transaction.blockNumber;
     const txStatus = blockNumber ? 'success' : 'queue';
-    const fiatAmount = transaction.value;
-    //
-    // ? Currency.format(new Wei(transaction.get('value')).getFiat(rates.get(currentCurrency.toUpperCase())), currentCurrency)
-    // : '';
-    //
     return (
       <Page title="Transaction Details" leftIcon={ <Back onClick={this.handleBack} /> }>
         <div className={classes.formRow}>
@@ -110,10 +105,10 @@ export class TxDetails extends React.Component<Props> {
             <div style={{display: 'flex'}}>
               <div>
                 <div className={ classes.value }>
-                  { transaction.value ? `${new Wei(transaction.value).getEther()} ETC` : '--' }
+                  { transaction.value ? `${new Wei(transaction.value).getEther()} ${tokenSymbol}` : '--' }
                 </div>
-                {showFiat && <div className={ classes.value }>
-                  { fiatAmount }
+                {fiatAmount && <div className={ classes.value }>
+                  { fiatAmount } { fiatCurrency }
                 </div> }
               </div>
               <div>

@@ -1,5 +1,6 @@
 require('babel-polyfill'); // eslint-disable-line import/no-unresolved
 require('regenerator-runtime/runtime');
+const { ServerConnect } = require('@emeraldwallet/services');
 const os = require('os');
 const { app, ipcMain, session } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path');
@@ -12,7 +13,7 @@ const ipc = require('./ipc');
 const log = require('./logger');
 const { startProtocolHandler } = require('./protocol');
 const assertSingletonWindow = require('./singletonWindow');
-const { ServerConnect } = require('./serverConnect');
+const { URL_FOR_CHAIN } = require('./utils');
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
@@ -28,7 +29,7 @@ global.ledger = new LedgerApi();
 global.launcherConfig = {
   get: () => settings.toJS(),
 };
-const serverConnect = new ServerConnect();
+const serverConnect = new ServerConnect(URL_FOR_CHAIN, app.getVersion(), app.getLocale(), log);
 global.serverConnect = serverConnect;
 
 log.info('userData: ', app.getPath('userData'));
@@ -43,7 +44,7 @@ startProtocolHandler();
 app.on('ready', () => {
   log.info('Starting Emerald', app.getVersion());
 
-  serverConnect.init();
+  serverConnect.init(process.versions);
 
   session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
     details.requestHeaders['User-Agent'] = serverConnect.getUserAgent();

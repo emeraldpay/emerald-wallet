@@ -2,10 +2,10 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import {connect} from 'react-redux';
+import Header from '@emeraldwallet/ui/lib/components/tx/TxHistory/Header';
 import {List} from 'immutable';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import {searchTransactions, filterTransactions} from '../../../store/wallet/history/selectors';
-import Header from './Header';
 import TxList from './List';
 
 const styles2 = {

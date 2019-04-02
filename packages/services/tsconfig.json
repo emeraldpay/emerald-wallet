@@ -2,9 +2,10 @@
   "compilerOptions": {
     "outDir": "./lib",
     "declaration": true,
+    "module": "commonjs",
+    "moduleResolution": "node",
     "strict": true,
-    "jsx": "react",
-    "rootDirs": ["src", "stories"]
+    "rootDirs": ["src"]
   },
   "include": [
     "src/**/*.ts"
