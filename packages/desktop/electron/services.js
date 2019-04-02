@@ -101,37 +101,33 @@ class Services {
     return Promise.all(shuttingDown);
   }
 
-  tryExistingGeth(url) {
-    return new Promise((resolve, reject) => {
-      check(url, this.serverConnect).then((status) => {
-        resolve({
-          name: status.chain,
-          id: status.chainId,
-          clientVersion: status.clientVersion,
-        });
-      }).catch(reject);
-    });
+  startNoneRpc() {
+    this.notify.error('Ethereum connection type is not configured');
+    return new NoneGeth();
   }
 
   startRemoteRpc() {
     log.info('use REMOTE RPC');
-    this.setup.geth = URL_FOR_CHAIN[this.setup.chain.name];
-    return this.tryExistingGeth(this.setup.geth.url).then((chain) => {
-      this.setup.chain = chain;
-      this.setup.geth.clientVersion = chain.clientVersion;
-      this.gethStatus = STATUS.READY;
-
-      this.notify.info(`Use Remote RPC API at ${this.setup.geth.url}`);
-      this.notify.chain(this.setup.chain.name, this.setup.chain.id);
-      this.notifyEthRpcStatus();
-      return new RemoteGeth(null, null);
-    });
+    this.gethStatus = STATUS.READY;
+    this.notify.info(`Use Remote RPC API at ${this.setup.geth.url}`);
+    this.notify.chain(this.setup.chain.name, this.setup.chain.id);
+    this.notifyEthRpcStatus();
+    return new RemoteGeth(null, null);
   }
 
   startGeth() {
     this.gethStatus = STATUS.NOT_STARTED;
     this.notifyEthRpcStatus('not ready');
-    return this.startRemoteRpc();
+
+    return new Promise((resolve, reject) => {
+      if (this.setup.geth.launchType === LAUNCH_TYPE.NONE) {
+        resolve(this.startNoneRpc());
+      } if (this.setup.geth.launchType === LAUNCH_TYPE.REMOTE_URL) {
+        resolve(this.startRemoteRpc());
+      } else {
+        reject(new Error(`Invalid Geth launch type ${this.setup.geth.launchType}`));
+      }
+    });
   }
 
   startConnector() {
