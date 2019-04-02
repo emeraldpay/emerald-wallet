@@ -1,7 +1,7 @@
 import tokens from 'store/vault/tokens';
 import network from 'store/network';
 import {findNetwork} from 'lib/networks';
-import launcher from "../launcher";
+import launcher from '../launcher';
 
 export const balance = (state, address, token) => {
   const blockchain = currentBlockchain(state);

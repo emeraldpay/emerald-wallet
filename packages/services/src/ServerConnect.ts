@@ -1,16 +1,13 @@
-const { JsonRpcProvider, Vault} = require('@emeraldplatform/vault');
-const {
+import { JsonRpcProvider, Vault} from '@emeraldplatform/vault';
+import {
   DefaultJsonRpc, HttpTransport, RevalidatingJsonRpc, VerifyingJsonRpc, RotatingJsonRpc,
-} = require('@emeraldplatform/rpc');
-const {
+} from '@emeraldplatform/rpc';
+import {
   EthRpc, VerifyMinPeers, VerifyNotSyncing, VerifyGenesis, VerifyBlockHash,
-} = require('@emeraldplatform/eth-rpc');
-const { app } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
+} from '@emeraldplatform/eth-rpc';
 const os = require('os');
-const log = require('./logger');
-const { URL_FOR_CHAIN } = require('./utils');
 
-const CHAIN_VERIFY = {
+const CHAIN_VERIFY: {[key:string]: any} = {
   mainnet: [
     new VerifyMinPeers(3),
     new VerifyNotSyncing(),
@@ -31,59 +28,70 @@ const CHAIN_VERIFY = {
 };
 
 class ServerConnect {
-  constructor() {
+  chainUrls: any;
+  headers: any;
+  appVersion: any;
+  locale: any;
+  revalidate: any;
+  log: any;
+
+  constructor(chainUrls: any, appVersion: string, locale: any, log: any) {
+    this.log = log;
+    this.chainUrls = chainUrls;
+    this.appVersion = appVersion;
+    this.locale = locale;
     this.headers = {
-      'User-Agent': `EmeraldWallet/${app.getVersion()}`,
+      'User-Agent': `EmeraldWallet/${appVersion}`,
     };
   }
 
-  init() {
-    const details = [os.platform(), os.release(), os.arch(), app.getLocale()].join('; ');
-    this.headers['User-Agent'] = `Electron/${process.versions.electron} (${details}) EmeraldWallet/${app.getVersion()} (+https://emeraldwallet.io) Chrome/${process.versions.chrome} node-fetch/1.0`;
+  init(versions: any) {
+    const details = [os.platform(), os.release(), os.arch(), this.locale].join('; ');
+    this.headers['User-Agent'] = `Electron/${versions.electron} (${details}) EmeraldWallet/${this.appVersion} (+https://emeraldwallet.io) Chrome/${versions.chrome} node-fetch/1.0`;
   }
 
-  createHttpTransport(url) {
+  createHttpTransport(url: string) {
     return new HttpTransport(url, this.headers);
   }
 
   // DEPRECATED
-  connectEth(url) {
+  connectEth(url: string) {
     if (!url) {
-      log.error('Empty JSON RPC URL is provided');
+      this.log.error('Empty JSON RPC URL is provided');
       return null;
     }
-    const chain = Object.entries(URL_FOR_CHAIN).find((entry) => entry[1].url === url);
+    const chain = Object.entries(this.chainUrls).find((entry: any) => entry[1].url === url);
     if (!chain) {
-      log.error('Unsupported JSON RPC URL is provided');
+      this.log.error('Unsupported JSON RPC URL is provided');
       return null;
     }
     return this.connectEthChain(chain[0]);
   }
 
-  connectEthChain(name) {
-    const chain = URL_FOR_CHAIN[name];
+  connectEthChain(name: string) {
+    const chain = this.chainUrls[name];
     if (!chain) {
-      log.error('Unknown chain', name);
+      this.log.error('Unknown chain', name);
       return null;
     }
     const verifiers = CHAIN_VERIFY[name];
     if (typeof verifiers === 'undefined') {
-      log.error('No verifiers for chain', name);
+      this.log.error('No verifiers for chain', name);
       return null;
     }
     const local = new VerifyingJsonRpc(new DefaultJsonRpc(new HttpTransport('http://127.0.0.1:8545')));
-    verifiers.forEach((v) => local.verifyWith(v));
+    verifiers.forEach((v: any) => local.verifyWith(v));
     const localRevalidate = new RevalidatingJsonRpc(15000, local);
     if (typeof this.revalidate !== 'undefined') {
       this.revalidate.stop();
     }
     this.revalidate = localRevalidate;
     localRevalidate.listener = (status) => {
-      log.info(`Local Node Available: ${status}`);
+      this.log.info(`Local Node Available: ${status}`);
     };
     localRevalidate.revalidate()
-      .then(() => log.info('Verified local node'))
-      .catch(() => log.info('Failed to verify local node'));
+      .then(() => this.log.info('Verified local node'))
+      .catch(() => this.log.info('Failed to verify local node'));
     localRevalidate.start();
 
     return new EthRpc(
@@ -102,6 +110,4 @@ class ServerConnect {
   }
 }
 
-module.exports = {
-  ServerConnect,
-};
+export default ServerConnect;
