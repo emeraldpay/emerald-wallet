@@ -93,11 +93,9 @@ function onServiceStatus(state, action) {
 }
 
 function onChain(state, action) {
-  // if (action.type === 'LAUNCHER/CHAIN') {
-  //     return state.update('chain', (chain) =>
-  //         chain.set('name', action.chain).set('id', action.chainId)
-  //     );
-  // }
+  if (action.type === 'LAUNCHER/CHAIN') {
+    return state.update('chain', (chain) => chain.set('name', action.chain).set('id', action.chainId));
+  }
   return state;
 }
 
