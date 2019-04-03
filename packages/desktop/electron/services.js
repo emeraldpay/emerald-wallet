@@ -1,5 +1,5 @@
 const log = require('./logger');
-const { LocalGeth, NoneGeth, RemoteGeth } = require('./launcher');
+const { NoneGeth, RemoteGeth } = require('./launcher');
 const { LocalConnector } = require('./vault/launcher');
 const UserNotify = require('./userNotify').UserNotify; // eslint-disable-line
 const { check, waitRpc } = require('./nodecheck');
@@ -59,39 +59,36 @@ class Services {
      *
      */
   useSettings(settings) {
-    if (!isValidChain(settings.chain)) {
+    if (isValidChain(settings.chain)) {
+      const chainChanged = !this.setup.chain || this.setup.chain.name !== settings.chain.name;
+      this.setup.chain = settings.chain;
+      this.setup.geth = URL_FOR_CHAIN[settings.chain.name];
+      log.debug('New Services setup', this.setup);
+      this.gethStatus = STATUS.NOT_STARTED;
+      if (chainChanged) {
+        return this.shutdownRpc();
+      }
+    } else {
       this.gethStatus = STATUS.WRONG_SETTINGS;
-      this.connectorStatus = STATUS.WRONG_SETTINGS;
-      return Promise.reject(new Error(`Wrong chain ${JSON.stringify(settings.chain)}`));
     }
-
-    // Set desired chain
-    this.setup.chain = settings.chain;
-
-    // Set Geth
-    this.setup.geth = URL_FOR_CHAIN[settings.chain.name];
-
-    log.debug('New Services setup', this.setup);
     return Promise.resolve(this.setup);
   }
 
   start() {
-    return Promise.all([
-      this.startGeth(),
-      this.startConnector(),
-    ]);
+    const services = [];
+    if (this.gethStatus === STATUS.NOT_STARTED) {
+      services.push(this.startGeth());
+    }
+    if (this.connectorStatus === STATUS.NOT_STARTED) {
+      services.push(this.startConnector());
+    }
+    return Promise.all(services);
   }
 
   shutdown() {
     const shuttingDown = [];
 
-    if (this.geth) {
-      shuttingDown.push(
-        this.geth.shutdown()
-          .then(() => { this.gethStatus = STATUS.NOT_STARTED; })
-          .then(() => this.notifyEthRpcStatus())
-      );
-    }
+    shuttingDown.push(this.shutdownRpc());
 
     if (this.connector) {
       shuttingDown.push(this.connector.shutdown()
@@ -104,13 +101,11 @@ class Services {
   shutdownRpc() {
     const shuttingDown = [];
 
-    if (this.geth) {
-      shuttingDown.push(
-        this.geth.shutdown()
-          .then(() => { this.gethStatus = STATUS.NOT_STARTED; })
-          .then(() => this.notifyEthRpcStatus())
-      );
-    }
+    shuttingDown.push(
+      this.serverConnect.disconnect()
+        .then(() => { this.gethStatus = STATUS.NOT_STARTED; })
+        .then(() => this.notifyEthRpcStatus())
+    );
     return Promise.all(shuttingDown);
   }
 
@@ -129,14 +124,18 @@ class Services {
   }
 
   startGeth() {
-    this.gethStatus = STATUS.NOT_STARTED;
-    this.notifyEthRpcStatus('not ready');
-
     return new Promise((resolve, reject) => {
+      this.gethStatus = STATUS.NOT_STARTED;
+      this.notifyEthRpcStatus('not ready');
+
       if (this.setup.geth.launchType === LAUNCH_TYPE.NONE) {
-        resolve(this.startNoneRpc());
+        const geth = this.startNoneRpc();
+        this.geth = geth;
+        resolve(geth);
       } if (this.setup.geth.launchType === LAUNCH_TYPE.REMOTE_URL) {
-        resolve(this.startRemoteRpc());
+        const geth = this.startRemoteRpc();
+        this.geth = geth;
+        resolve(geth);
       } else {
         reject(new Error(`Invalid Geth launch type ${this.setup.geth.launchType}`));
       }

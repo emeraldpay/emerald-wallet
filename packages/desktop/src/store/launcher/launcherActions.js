@@ -139,3 +139,11 @@ export function connecting(value) {
     value,
   };
 }
+
+export function setChain(chain, chainId) {
+  return {
+    type: 'LAUNCHER/CHAIN',
+    chain,
+    chainId,
+  };
+}

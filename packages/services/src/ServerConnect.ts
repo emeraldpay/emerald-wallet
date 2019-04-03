@@ -32,7 +32,7 @@ class ServerConnect {
   headers: any;
   appVersion: any;
   locale: any;
-  revalidate: any;
+  revalidate?: RevalidatingJsonRpc;
   log: any;
 
   constructor(chainUrls: any, appVersion: string, locale: any, log: any) {
@@ -97,6 +97,15 @@ class ServerConnect {
     return new EthRpc(
       new RotatingJsonRpc(localRevalidate, new DefaultJsonRpc(this.createHttpTransport(chain.url)))
     );
+  }
+
+  disconnect(): Promise<any> {
+    return new Promise((resolve, reject) => {
+        if (this.revalidate) {
+          this.revalidate.stop();
+        }
+        resolve();
+    })
   }
 
   connectEmerald() {
