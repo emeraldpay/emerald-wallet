@@ -101,6 +101,19 @@ class Services {
     return Promise.all(shuttingDown);
   }
 
+  shutdownRpc() {
+    const shuttingDown = [];
+
+    if (this.geth) {
+      shuttingDown.push(
+        this.geth.shutdown()
+          .then(() => { this.gethStatus = STATUS.NOT_STARTED; })
+          .then(() => this.notifyEthRpcStatus())
+      );
+    }
+    return Promise.all(shuttingDown);
+  }
+
   startNoneRpc() {
     this.notify.error('Ethereum connection type is not configured');
     return new NoneGeth();

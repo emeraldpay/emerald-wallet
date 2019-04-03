@@ -15,9 +15,9 @@ export const balance = (state, address, token) => {
 };
 
 export const currentBlockchain = (state) => {
-  const currentChain = network.selectors.chain(state).toJS();
+  const currentChain = state.launcher.getIn(['chain', 'id']);
   const currentEndpoint = state.launcher.get('geth').toJS();
-  const net = findNetwork(currentEndpoint.url, currentChain.id) || {};
+  const net = findNetwork(currentEndpoint.url, currentChain) || {};
   return net.blockchain;
 };
 

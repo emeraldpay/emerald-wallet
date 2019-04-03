@@ -22,7 +22,8 @@ module.exports = (settings, services) => {
     }
 
     // Restart services with new settings
-    services.shutdown()
+    // We do not restart Emerald vault after switching
+    services.shutdownRpc()
       .then(() => services.notifyStatus())
       .then(() => services.useSettings(settings.toJS()))
       .then(() => services.start())
