@@ -3,11 +3,6 @@ const { URL_FOR_CHAIN } = require('./utils');
 
 const DEFAULTS = {
   version: 1,
-  geth: URL_FOR_CHAIN.mainnet,
-  chain: {
-    name: 'mainnet',
-    id: 61,
-  },
   terms: 'none',
 };
 
