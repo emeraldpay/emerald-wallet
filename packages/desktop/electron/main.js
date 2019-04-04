@@ -59,7 +59,8 @@ app.on('ready', () => {
 
   services.useSettings(settings.toJS())
     .then(() => services.start())
-    .then(() => ipc({ settings, services }));
+    .then(() => ipc({ settings, services }))
+    .catch((err) => log.error('Invalid settings', err));
 });
 
 

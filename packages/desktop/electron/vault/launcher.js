@@ -10,9 +10,8 @@ const isDev = process.env.NODE_ENV === 'development';
 
 class LocalConnector {
   // TODO: assert params
-  constructor(bin, chain) {
+  constructor(bin) {
     this.bin = bin;
-    this.chain = chain;
   }
 
   emeraldExecutable() {
@@ -76,9 +75,10 @@ class LocalConnector {
      */
   importKeyFiles() {
     return new Promise((resolve, reject) => {
+      const chainName = 'mainnet';
       const bin = this.emeraldExecutable();
       const appData = (process.env.APPDATA || os.homedir());
-      const emeraldHomeDir = `${appData}${path.join('/.emerald', this.chain.name, 'keystore/')}`;
+      const emeraldHomeDir = `${appData}${path.join('/.emerald', chainName, 'keystore/')}`;
       fs.access(bin, fs.constants.F_OK | fs.constants.R_OK | fs.constants.X_OK, (err) => {
         if (err) {
           log.error(`File ${bin} doesn't exist or doesn't have execution flag`);
@@ -87,7 +87,7 @@ class LocalConnector {
           const options = [
             'account',
             'import',
-            `--chain=${this.chain.name}`,
+            `--chain=${chainName}`,
             '--all',
             emeraldHomeDir,
           ];
