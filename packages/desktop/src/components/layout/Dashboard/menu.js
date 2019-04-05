@@ -25,6 +25,10 @@ const styles2 = {
   },
 };
 
+const ButtonStyle = {
+  hoverColor: 'transparent',
+};
+
 const MenuButton = ({ label, onClick, classes }) => {
   return (
     <Button
@@ -32,7 +36,7 @@ const MenuButton = ({ label, onClick, classes }) => {
       primary
       onClick={onClick}
       classes={{ text: classes.buttonText }}
-      hoverColor="transparent"
+      style={ButtonStyle}
       label={label}
       icon={<AddIcon/>} />
   );
@@ -49,7 +53,7 @@ class DashboardMenu extends React.Component {
     createMnemonic: PropTypes.func,
     t: PropTypes.func.isRequired,
     style: PropTypes.object,
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -66,13 +70,13 @@ class DashboardMenu extends React.Component {
       open: true,
       anchorEl: event.currentTarget,
     });
-  }
+  };
 
   handleRequestClose = () => {
     this.setState({
       open: false,
     });
-  }
+  };
 
   handleAddToken = () => {
     this.setState({
@@ -81,7 +85,7 @@ class DashboardMenu extends React.Component {
     if (this.props.addToken) {
       this.props.addToken();
     }
-  }
+  };
 
   render() {
     const {
