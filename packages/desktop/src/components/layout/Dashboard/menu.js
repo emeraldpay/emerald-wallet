@@ -25,10 +25,6 @@ const styles2 = {
   },
 };
 
-const ButtonStyle = {
-  hoverColor: 'transparent',
-};
-
 const MenuButton = ({ label, onClick, classes }) => {
   return (
     <Button
@@ -36,7 +32,7 @@ const MenuButton = ({ label, onClick, classes }) => {
       primary
       onClick={onClick}
       classes={{ text: classes.buttonText }}
-      style={ButtonStyle}
+      style={{hoverColor: 'transparent'}}
       label={label}
       icon={<AddIcon/>} />
   );
