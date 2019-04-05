@@ -23,16 +23,16 @@ class ToField extends React.Component<Props, State> {
   }
 
   componentDidMount() {
-    this.onChangeTo(null, this.props.to);
+    this.onChangeTo(this.props.to);
   }
 
   componentDidUpdate(prevProps: any) {
     if (prevProps.to !== this.props.to) {
-      this.onChangeTo(null, this.props.to);
+      this.onChangeTo(this.props.to);
     }
   }
 
-  onChangeTo(event: any, value: any) {
+  onChangeTo(value: any) {
     if (this.props.onChangeTo) {
       this.props.onChangeTo(value);
     }
@@ -43,6 +43,11 @@ class ToField extends React.Component<Props, State> {
       this.setState({errorText: null});
     }
   }
+
+  handleInputChange = (event: any) => {
+    const { value } = event.target;
+    this.onChangeTo(value);
+  };
 
   getLeftIcon() {
     if (!this.props.to) {
@@ -59,7 +64,7 @@ class ToField extends React.Component<Props, State> {
   getRightIcon() {
     return (
       <AddressIconMenu
-        onChange={(val: any) => this.onChangeTo(null, val)}
+        onChange={(val: any) => this.onChangeTo(val)}
         addressBookAddresses={this.props.addressBookAddresses}
         onEmptyAddressBookClick={this.props.onEmptyAddressBookClick}
       />
@@ -80,7 +85,7 @@ class ToField extends React.Component<Props, State> {
             rightIcon={this.getRightIcon()}
             value={this.props.to}
             errorText={this.state.errorText}
-            onChange={this.onChangeTo}
+            onChange={this.handleInputChange}
           />
         </div>
       </React.Fragment>
