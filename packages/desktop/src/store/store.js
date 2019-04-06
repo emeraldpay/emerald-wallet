@@ -28,7 +28,8 @@ import { createStore } from './createStore';
 import {
   onceServicesStart,
   onceAccountsLoaded,
-  onceHasAccountsWithBalances
+  onceHasAccountsWithBalances,
+  onceChainSet
 } from './triggers';
 
 const log = createLogger('store');
@@ -196,6 +197,8 @@ function getInitialScreen() {
   });
 }
 
-onceServicesStart(store).then(startSync);
+Promise
+  .all([onceServicesStart(store), onceChainSet(store)])
+  .then(startSync);
 checkStatus();
 screenHandlers();
