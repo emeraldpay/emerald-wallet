@@ -6,6 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {withStyles} from '@material-ui/core/styles';
 import InitialSetup from './initialSetup';
+import { TERMS_VERSION } from '../../store/config';
 
 const getStyles = (theme) => ({
   brandPart1: {
@@ -48,7 +49,7 @@ const Render = (props) => {
       </Grid>
       <Grid item>
         <Grid container direction="column">
-          <Grid item justify="center" alignItems="center" xs>
+          <Grid item xs>
             <div style={{fontSize: '42px'}}>
               <span className={classes.brandPart1}>Emerald </span>
               <span className={classes.brandPart2}>Wallet</span>
@@ -74,15 +75,21 @@ Render.propTypes = {
 
 const StyledWelcome = withStyles(getStyles)(Render);
 
+function isEmpty(val) {
+  return typeof val === 'undefined' || (typeof val === 'string' && val.length === 0);
+}
+
 const Welcome = connect(
-  (state, ownProps) => ({
-    message: state.launcher.getIn(['message', 'text']),
-    level: state.launcher.getIn(['message', 'level']),
-    ready: state.launcher.getIn(['geth', 'status']) === 'ready' && state.launcher.getIn(['connector', 'status']) === 'ready',
-    needSetup: state.launcher.get('terms') !== 'v1'
-      || state.launcher.getIn(['geth', 'type']) === 'none'
-      || state.launcher.get('settingsUpdated') === true,
-  }),
+  (state, ownProps) => {
+    return ({
+      message: state.launcher.getIn(['message', 'text']),
+      level: state.launcher.getIn(['message', 'level']),
+      ready: state.launcher.getIn(['geth', 'status']) === 'ready' && state.launcher.getIn(['connector', 'status']) === 'ready',
+      needSetup: state.launcher.get('configured') && (
+        state.launcher.get('terms') !== TERMS_VERSION
+        || isEmpty(state.launcher.getIn(['chain', 'name']))),
+    });
+  },
   (dispatch, ownProps) => ({})
 )(StyledWelcome);
 

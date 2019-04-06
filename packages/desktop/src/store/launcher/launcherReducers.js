@@ -9,6 +9,7 @@ const initial = Immutable.fromJS({
   connecting: true,
   launcherType: 'web',
   terms: 'none',
+  configured: false,
   chain: {
     client: null,
   },
@@ -52,6 +53,7 @@ function onConfig(state, action) {
   if (action.type === 'LAUNCHER/CONFIG') {
     setTimeout(setStoredFirstRun, 10000); // HACK
     state = state
+      .set('configured', true)
       .set('launcherType', action.launcherType)
       .set('firstRun', getStoredFirstRun()) // action.firstRun
       .update('geth', (geth) => geth.merge(Immutable.fromJS(action.config.geth || {})))

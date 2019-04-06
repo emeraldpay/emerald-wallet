@@ -26,6 +26,15 @@ export function onceServicesStart(store) {
   return new Promise((resolve, reject) => handleTrigger(check, resolve, store));
 }
 
+export function onceChainSet(store) {
+  const check = () => {
+    const chain = store.getState().launcher.get('chain').toJS();
+    return typeof chain === 'object' && typeof chain.name === 'string' && chain.name;
+  };
+
+  return new Promise((resolve, reject) => handleTrigger(check, resolve, store));
+}
+
 export function onceHasAccountsWithBalances(store) {
   const check = () => {
     const { accounts } = store.getState();
