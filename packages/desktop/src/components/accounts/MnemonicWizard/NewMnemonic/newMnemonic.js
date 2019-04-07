@@ -1,9 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  Warning, WarningHeader, WarningText, Input
-} from 'emerald-js-ui';
-import { Page } from '@emeraldplatform/ui';
+import { Page, Warning, WarningHeader, WarningText, Input } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import { Row, styles as formStyles } from 'elements/Form';
 import { Button } from '@emeraldwallet/ui';

@@ -89,7 +89,7 @@ const OpenWallet = ({ connectETC, connectETH }: Props) => {
           </Typography>
         </Grid>
       </Grid>
-      <Grid container spacing={16}>
+      <Grid container spacing={10}>
         <Grid item xs={6}>
           {selectETH}
         </Grid>

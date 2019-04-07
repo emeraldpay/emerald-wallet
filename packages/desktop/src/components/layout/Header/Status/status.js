@@ -1,7 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import NetworkSelector from './networkSelector';
 import launcher from '../../../../store/launcher';
 import wallet from '../../../../store/wallet';
@@ -65,4 +64,4 @@ export default connect(
       dispatch(wallet.actions.switchEndpoint({ chainId: net.chain.id, chain: net.chain.name }));
     },
   })
-)(muiThemeable()(Status));
+)(Status);

@@ -1,6 +1,6 @@
 import React from 'react';
 import {ipcRenderer, shell} from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
-import {MuiThemeProvider} from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/styles';
 import theme from '@emeraldplatform/ui/lib/theme';
 import {About} from '@emeraldwallet/ui';
 import {version} from '../../../package.json';
@@ -39,7 +39,7 @@ class AboutContainer extends React.Component {
   render() {
     const {connector} = this.state;
     return (
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <About
           appVersion={version}
           vaultVersion={connector}
@@ -48,7 +48,7 @@ class AboutContainer extends React.Component {
           onHelpClick={this.onHelpClick}
           onLicenseClick={this.onLicenseClick}
         />
-      </MuiThemeProvider>);
+      </ThemeProvider>);
   }
 }
 

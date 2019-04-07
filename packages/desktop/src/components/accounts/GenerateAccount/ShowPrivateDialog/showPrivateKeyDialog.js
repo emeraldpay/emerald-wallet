@@ -1,11 +1,8 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import QRCode from 'qrcode.react';
-import { Page } from '@emeraldplatform/ui';
+import { Page, Warning, WarningHeader, WarningText } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import {
-  Warning, WarningHeader, WarningText
-} from 'emerald-js-ui';
 import { Button } from '@emeraldwallet/ui';
 import { Row, styles as formStyles } from 'elements/Form';
 

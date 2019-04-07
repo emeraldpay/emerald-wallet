@@ -1,6 +1,6 @@
 import * as React from 'react';
 import BigNumber from 'bignumber.js';
-import withStyles from '@material-ui/core/styles/withStyles';
+import { withStyles } from '@material-ui/styles';
 import { Units } from '@emeraldwallet/core';
 import {convert, fromBaseUnits, InputDataDecoder} from '@emeraldplatform/core';
 import { abi as TokenAbi } from '@emeraldwallet/erc20';
@@ -123,8 +123,8 @@ export const TxItem = (props: Props) => {
       <TableCell className={classes.columnFrom}>
         <AddressAvatar
           address={tx.from}
-          primary={fromAccount.name}
-          onAddressClick={() => openAccount(tx.from)}
+          name={fromAccount.name}
+          onClick={() => openAccount(tx.from)}
         />
       </TableCell>
       <TableCell className={classes.columnArrow}>
@@ -134,8 +134,8 @@ export const TxItem = (props: Props) => {
         {tx.to
         && <AddressAvatar
           address={tx.to}
-          primary={toAccount.name}
-          onAddressClick={() => openAccount(tx.to)}
+          name={toAccount.name}
+          onClick={() => openAccount(tx.to)}
         />}
       </TableCell>
     </TableRow>

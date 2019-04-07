@@ -4,7 +4,7 @@ import Radio from '@material-ui/core/Radio';
 import log from 'electron-log';
 import { TableRowColumn, TableRow } from 'material-ui/Table';
 import { tables } from 'lib/styles';
-import { Address as AccountAddress } from 'emerald-js-ui';
+import { Address as AccountAddress } from '@emeraldplatform/ui';
 import AccountBalance from '../../accounts/Balance';
 
 

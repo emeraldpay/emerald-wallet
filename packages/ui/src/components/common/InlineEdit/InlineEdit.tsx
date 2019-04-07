@@ -1,7 +1,8 @@
 import * as React from 'react';
 import {Close as CancelIcon, Checkmark as SubmitIcon} from '@emeraldplatform/ui-icons';
 import TextField from '@material-ui/core/TextField';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/styles';
+
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 

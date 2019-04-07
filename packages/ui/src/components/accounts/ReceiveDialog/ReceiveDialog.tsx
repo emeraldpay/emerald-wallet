@@ -1,12 +1,13 @@
 import * as React from 'react';
 import * as QRCode from 'qrcode.react';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/styles';
+
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import IconButton from '@material-ui/core/IconButton';
 import {Address as AccountAddress} from '@emeraldplatform/ui';
-import {Close as CloseIcon} from "@emeraldplatform/ui-icons";
-import {CSSProperties} from "@material-ui/core/styles/withStyles";
+import {Close as CloseIcon} from '@emeraldplatform/ui-icons';
+import {CSSProperties} from '@material-ui/styles';
 
 export const styles = {
   container: {

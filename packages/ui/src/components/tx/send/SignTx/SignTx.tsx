@@ -3,7 +3,7 @@ import {ButtonGroup, Input, IdentityIcon} from '@emeraldplatform/ui';
 import {ArrowRight} from '@emeraldplatform/ui-icons';
 //import { required } from 'lib/validators';
 import {Divider, List, ListItem, ListItemText} from '@material-ui/core';
-import withStyles from '@material-ui/core/styles/withStyles';
+import {withStyles} from '@material-ui/styles';
 import Button from '../../../common/Button';
 
 const styles = (theme?: any) => ({
@@ -41,6 +41,7 @@ interface Props {
   };
   amountWei: any; //TODO Wei object
   txFee?: any;
+  txFeeCurrency?: any;
   fiatCurrency?: any;
   fiatRate?: any;
   value?: any;
@@ -148,7 +149,7 @@ class SignTx extends React.Component<Props, State> {
 
   render() {
     const {
-      value, fiatRate, fiatCurrency, txFee, tx, classes, amountWei
+      value, fiatRate, fiatCurrency, txFee, txFeeCurrency, tx, classes, amountWei
     } = this.props;
     const {
       onCancel, onChangePassword, onSubmit,
@@ -176,7 +177,7 @@ class SignTx extends React.Component<Props, State> {
         </div>
         <div style={{paddingTop: '35px', display: 'flex', justifyContent: 'center'}}>
         <span className={classes.fee}>
-          Plus {txFee} ETC for {tx.gasLimit} GAS.
+          Plus {txFee} {txFeeCurrency} for {tx.gasLimit} GAS.
         </span>
         </div>
         {

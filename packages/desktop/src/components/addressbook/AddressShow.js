@@ -3,8 +3,8 @@ import { connect } from 'react-redux';
 import {
   Card, CardActions, CardHeader, CardText
 } from 'material-ui/Card';
-import Create from 'material-ui/svg-icons/content/create';
-import DeleteSweep from 'material-ui/svg-icons/content/delete-sweep';
+import Create from '@material-ui/icons/Create';
+import DeleteSweep from '@material-ui/icons/DeleteSweep';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { DescriptionList, DescriptionTitle, DescriptionData } from 'elements/dl';
 import QRCode from 'qrcode.react';

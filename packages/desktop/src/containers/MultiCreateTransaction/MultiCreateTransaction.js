@@ -18,7 +18,7 @@ import Wallet from 'store/wallet';
 import TransactionShow from '../../components/tx/TxDetails';
 import { txFee, txFeeFiat, traceValidate } from './util';
 
-const { toHex } = convert;
+const { toHex, quantitiesToHex } = convert;
 
 const PAGES = {
   TX: 1,
@@ -215,6 +215,7 @@ class MultiCreateTransaction extends React.Component {
             tx={this.state.transaction}
             amountWei={this.state.amountWei}
             txFee={this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit).getEther(6)}
+            txFeeCurrency={this.props.txFeeSymbol}
             onChangePassword={this.onChangePassword}
             useLedger={this.props.useLedger}
             typedData={this.state.transaction.typedData}

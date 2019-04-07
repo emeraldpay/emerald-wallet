@@ -1,5 +1,5 @@
 import * as React from 'react';
-import withStyles, {CSSProperties} from '@material-ui/core/styles/withStyles';
+import { withStyles, CSSProperties } from '@material-ui/styles';
 
 const styles = (theme?: any) => ({
   root: {
@@ -17,7 +17,7 @@ interface Props {
   classes?: any;
 }
 
-class Label extends React.Component<Props> {
+export class Label extends React.Component<Props> {
   render() {
     return (<label className={this.props.classes.root}>{this.props.children}</label>);
   }

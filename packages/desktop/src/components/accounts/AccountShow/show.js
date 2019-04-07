@@ -16,7 +16,7 @@ import tokens from '../../../store/vault/tokens';
 import screen from '../../../store/wallet/screen';
 import history from '../../../store/wallet/history';
 import createLogger from '../../../utils/logger';
-import TransactionsList from '../../tx/TxHistory';
+// import TransactionsList from '../../tx/TxHistory';
 import Balance from '../Balance';
 import SecondaryMenu from '../SecondaryMenu';
 import TokenBalances from '../TokenBalances';
@@ -167,7 +167,7 @@ export class AccountShow extends React.Component {
         </Page>
 
         <div className={classes.transContainer}>
-          <TransactionsList transactions={transactions} accountId={acc.id}/>
+          {/*<TransactionsList transactions={transactions} accountId={acc.id}/>*/}
         </div>
       </div>
     );

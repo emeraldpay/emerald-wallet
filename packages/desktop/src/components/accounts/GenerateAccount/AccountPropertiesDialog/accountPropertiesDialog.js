@@ -1,10 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {
-  Input
-} from 'emerald-js-ui';
 import { Button } from '@emeraldwallet/ui';
-import { Page, ButtonGroup } from '@emeraldplatform/ui';
+import { Page, ButtonGroup, Input } from '@emeraldplatform/ui';
 import { Row, styles as formStyles } from '../../../../elements/Form';
 
 class AccountPropertiesDialog extends React.Component {

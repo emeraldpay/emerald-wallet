@@ -13,6 +13,7 @@ const tx = {
 storiesOf('SignTx', module)
   .add('default', () => (
     <SignTx
+      amountWei={{}}
       tx={tx}
 
     />));

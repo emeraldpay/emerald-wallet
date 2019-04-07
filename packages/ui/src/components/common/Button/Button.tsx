@@ -12,6 +12,7 @@ interface Props {
   target?: any;
   rel?: any;
   disabled?: boolean;
+  classes?: any;
 }
 
 const Btn = (props: Props) => {
@@ -28,13 +29,14 @@ const Btn = (props: Props) => {
   };
   return (
     <Button
-      disabled={disabled}
-      color={primary ? 'primary' : 'secondary'}
-      href={href}
-      variant={variant || 'contained'}
-      style={style}
-      onClick={onClick}
-      {...restProps}
+      // size='medium'
+      // disabled={disabled}
+      // color={primary ? 'primary' : 'secondary'}
+      // href={href}
+      // variant={variant || 'contained'}
+      // style={style}
+      // onClick={onClick}
+      // {...restProps}
     >
       {icon}
       {label}

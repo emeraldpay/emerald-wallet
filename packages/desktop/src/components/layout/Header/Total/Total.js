@@ -3,7 +3,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Currency } from '@emeraldwallet/core';
-import { withStyles } from '@material-ui/core';
+import { withStyles } from '@material-ui/styles';
 import { Wei } from '@emeraldplatform/emerald-js';
 import { CurrencyEtc, CurrencyEth } from '@emeraldplatform/ui-icons';
 import { Button } from '@emeraldwallet/ui';

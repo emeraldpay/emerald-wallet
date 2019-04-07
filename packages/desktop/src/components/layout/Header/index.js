@@ -1,10 +1,9 @@
 import { connect } from 'react-redux';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import Header from './header';
 import screen from '../../../store/wallet/screen';
 import Launcher from '../../../store/launcher';
 
-export default muiThemeable()(connect(
+export default (connect(
   (state, ownProps) => {
     const showProgress = state.launcher.getIn(['geth', 'type']) === 'local' && state.network.getIn(['sync', 'syncing']);
     const curBlock = state.network.getIn(['currentBlock', 'height'], -1);

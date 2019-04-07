@@ -1,6 +1,6 @@
 import React from 'react';
 import { AppBar, LinearProgress } from 'material-ui';
-import { withStyles } from '@material-ui/core';
+import { withStyles } from '@material-ui/styles';
 import { Button } from '@emeraldwallet/ui';
 import { Block as BlockIcon, Settings as SettingsIcon } from '@emeraldplatform/ui-icons';
 import SyncWarning from '../../../containers/SyncWarning';
@@ -37,7 +37,7 @@ const Header = (props) => {
         <LinearProgress
           disabled={showProgress}
           mode="determinate"
-          color={muiTheme.palette.primary1Color}
+          color={muiTheme && muiTheme.palette.primary1Color}
           value={progress}
           style={{height: '2px'}}
         />
@@ -48,8 +48,8 @@ const Header = (props) => {
   const EmeraldTitle = () => {
     return (
       <div>
-        <span style={{color: muiTheme.palette.primary1Color}}>Emerald </span>
-        <span style={{color: muiTheme.palette.secondaryTextColor}}>Wallet</span>
+        <span style={{color: muiTheme && muiTheme.palette.primary1Color}}>Emerald </span>
+        <span style={{color: muiTheme && muiTheme.palette.secondaryTextColor}}>Wallet</span>
       </div>
     );
   };
@@ -97,11 +97,16 @@ const Header = (props) => {
 
   const StyledSettingsButton = withStyles(blockDisplayStyles)(SettingsButton);
 
+  const appBarStyle = {
+    backgroundColor: muiTheme && muiTheme.palette.alternateTextColor,
+    borderBottom: `1px solid ${muiTheme && muiTheme.palette.borderColor}`
+  };
+
   return (
     <div>
       <AppBar
         title={<EmeraldTitle />}
-        style={{backgroundColor: muiTheme.palette.alternateTextColor, borderBottom: `1px solid ${muiTheme.palette.borderColor}`}}
+        style={appBarStyle}
         titleStyle={{fontSize: '16px'}}
         showMenuIconButton={false}
         iconStyleRight={styles.appBarRight}

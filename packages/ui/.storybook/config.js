@@ -1,12 +1,12 @@
 import React from 'react';
 import {configure, addDecorator} from '@storybook/react';
-import {MuiThemeProvider} from '@material-ui/core/styles';
+import {ThemeProvider} from '@material-ui/styles';
 import theme from '@emeraldplatform/ui/lib/theme';
 
 const req = require.context('../stories/', true, /\.tsx$/);
 
 function loadStories() {
-  addDecorator((story) => (<MuiThemeProvider theme={theme}>{story()}</MuiThemeProvider>))
+  addDecorator((story) => (<ThemeProvider theme={theme}>{story()}</ThemeProvider>));
   req.keys().forEach((filename) => req(filename))
 }
 

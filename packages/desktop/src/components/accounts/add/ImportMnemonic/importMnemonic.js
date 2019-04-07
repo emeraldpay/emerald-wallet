@@ -3,10 +3,7 @@ import React from 'react';
 import withStyles from 'react-jss';
 import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
-import {
-  Warning, WarningHeader, WarningText
-} from 'emerald-js-ui';
-import { Page } from '@emeraldplatform/ui';
+import { Page, Warning, WarningHeader, WarningText } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import muiThemeable from 'material-ui/styles/muiThemeable';
 import { required, passwordMatch, minLength } from 'lib/validators';

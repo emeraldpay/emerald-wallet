@@ -12,9 +12,9 @@
     "test:coverage": "jest --coverage --passWithNoTests&& codecov"
   },
   "dependencies": {
-    "@emeraldplatform/eth-rpc": "^0.5.0-beta.8",
-    "@emeraldplatform/rpc": "^0.5.0-beta.8",
-    "@emeraldplatform/vault": "^0.5.0-beta.8"
+    "@emeraldplatform/eth-rpc": "^0.5.0-gamma.0",
+    "@emeraldplatform/rpc": "^0.5.0-gamma.0",
+    "@emeraldplatform/vault": "^0.5.0-gamma.0"
   },
   "devDependencies": {
     "@types/jest": "^24.0.9",
@@ -22,7 +22,7 @@
     "jest": "^24.1.0",
     "rimraf": "^2.6.3",
     "ts-jest": "^24.0.0",
-    "typescript": "3.3.4000"
+    "typescript": "3.4.2"
   },
   "jest": {
     "preset": "ts-jest",

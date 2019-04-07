@@ -69,7 +69,7 @@ class TransactionsHistory extends React.Component<Props, State> {
           txFilterValue={this.state.txFilter}
           onSearchChange={this.onSearchChange}
         />
-        <TxList transactions={this.state.displayedTransactions} accountId={this.props.accountId}/>
+        {/*<TxList transactions={this.state.displayedTransactions} accountId={this.props.accountId}/>*/}
       </div>
     );
   }
