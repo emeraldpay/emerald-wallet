@@ -13,7 +13,7 @@
     },
     "list": {
         "title": "账户列表",
-        "subtitle": "以太经典链上您目前控制的账户地址",
+        "subtitle": "链上您目前控制的账户地址",
         "create": "创建新账户",
         "popupMenuLabel": "ACCOUNTS AND TOKENS"
     },

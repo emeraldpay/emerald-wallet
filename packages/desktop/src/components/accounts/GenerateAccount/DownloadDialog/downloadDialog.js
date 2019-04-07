@@ -46,7 +46,9 @@ export const DownloadDialog = (props) => {
                 And save the copy in a safe place (not on this computer).
               </div>
               <div className={ classes.description }>
-                You need an Account Key File to make all operations with an account. In order to manage or create transactions from this Ethereum Classic Account, you will need this file.  You will also need the strong password you created earlier.
+                You need an Account Key File to make all operations with an account. In order to manage or create
+                transactions from this Account, you will need this file.  You will also need
+                the strong password you created earlier.
 
               </div>
             </div>

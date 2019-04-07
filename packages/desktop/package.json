@@ -14,7 +14,7 @@
     "Shane Jonas <jonas.shane@gmail.com>"
   ],
   "version": "1.2.1",
-  "description": "Emerald - Ethereum Classic Wallet",
+  "description": "Emerald - Cryptocurrency Wallet",
   "main": "./electron/main.js",
   "moduleRoots": [
     "src/lib"
@@ -176,7 +176,7 @@
     "webpack": "4.29.5"
   },
   "build": {
-    "appId": "com.ethereumclassic.emeraldwallet",
+    "appId": "io.emeraldwallet.desktop",
     "artifactName": "${productName}-${os}-${arch}-${env.APP_VERSION_GIT_TAG}.${ext}",
     "compression": "normal",
     "asar": true,
