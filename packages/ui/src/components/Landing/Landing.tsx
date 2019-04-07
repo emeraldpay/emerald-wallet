@@ -58,12 +58,8 @@ export const Landing = ({
               </div>
               <br />
               <div style={{marginLeft: '150px', padding: '10px', maxWidth: '700px'}}>
-                <span className={classes.aboutClassic}>
-      Emerald Wallet runs on the Ethereum Classic platform. Ethereum Classic is a decentralized platform that runs smart contracts: applications that run exactly as programmed without any possibility of downtime, censorship, fraud or third party interference.
-                </span>
                 <br />
-                <br />
-                <Button onClick={onAboutClick} label="More about ethereum classic" />
+                <Button onClick={onAboutClick} label="More about supported tokens" />
                 <br />
                 <br />
                 <Button primary onClick={onGenerate} label="Generate New Account" />

@@ -13,7 +13,7 @@
     },
     "list": {
         "title": "ACCOUNTS",
-        "subtitle": "List of addresses you're controlling on Ethereum Classic blockchain",
+        "subtitle": "List of addresses you're controlling on blockchain",
         "create": "Create Account",
         "popupMenuLabel": "ACCOUNTS AND TOKENS"
     },

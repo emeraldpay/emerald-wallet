@@ -13,7 +13,7 @@
     },
     "list": {
         "title": "CARTEIRAS",
-        "subtitle": "Lista de endereços que você tem na blockchain do Ethereum Clássico",
+        "subtitle": "Lista de endereços que você tem na blockchain",
         "create": "Criar Conta"
     },
     "add": {
