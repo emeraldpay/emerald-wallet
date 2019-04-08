@@ -5,6 +5,8 @@ import {
 import {
   EthRpc, VerifyMinPeers, VerifyNotSyncing, VerifyGenesis, VerifyBlockHash,
 } from '@emeraldplatform/eth-rpc';
+import HttpTransportAdapter from './HttpTransport';
+
 const os = require('os');
 
 const CHAIN_VERIFY: {[key:string]: any} = {
@@ -51,7 +53,7 @@ class ServerConnect {
   }
 
   createHttpTransport(url: string) {
-    return new HttpTransport(url, this.headers);
+    return new HttpTransportAdapter(new HttpTransport(url, this.headers));
   }
 
   // DEPRECATED
