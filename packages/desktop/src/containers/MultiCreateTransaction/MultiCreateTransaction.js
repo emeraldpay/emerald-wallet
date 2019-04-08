@@ -153,7 +153,7 @@ class MultiCreateTransaction extends React.Component {
 
   onMaxClicked() {
     const fee = this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit);
-    const amount = new BigNumber(this.balance).minus(fee).valueOf();
+    const amount = this.balance.sub(fee);
     this.setTransaction('amount', amount);
   }
 
@@ -168,12 +168,12 @@ class MultiCreateTransaction extends React.Component {
             from={this.state.transaction.from}
             txFeeSymbol={this.props.txFeeSymbol}
             token={this.state.transaction.token}
-            amount={this.state.transaction.amount}
+            amount={this.state.transaction.amount.getEther(6)}
             gasLimit={this.state.transaction.gasLimit}
-            txFee={this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit)}
+            txFee={this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit).getEther(6)}
             txFeeFiat={this.props.getTxFeeFiatForGasLimit(this.state.transaction.gasLimit)}
 
-            balance={this.props.getBalanceForAddress(this.state.transaction.from, this.state.transaction.token)}
+            balance={this.props.getBalanceForAddress(this.state.transaction.from, this.state.transaction.token).getEther(6)}
             fiatBalance={this.props.getFiatForAddress(this.state.transaction.from, this.state.transaction.token)}
             data={this.state.transaction.data}
             typedData={this.state.transaction.typedData}
@@ -198,7 +198,7 @@ class MultiCreateTransaction extends React.Component {
           <SignTx
             fiatRate={this.props.fiateRate}
             tx={this.state.transaction}
-            txFee={this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit)}
+            txFee={this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit).getEther(6)}
             onChangePassword={this.onChangePassword}
             useLedger={this.props.useLedger}
             typedData={this.state.transaction.typedData}
@@ -244,7 +244,7 @@ export default connect(
     const tokenSymbols = allTokens.toJS().map((i) => i.symbol);
 
     return {
-      amount: ownProps.amount || '0',
+      amount: new Wei(ownProps.amount || '0'),
       gasLimit: ownProps.gasLimit || DEFAULT_GAS_LIMIT,
       typedData: ownProps.typedData,
       token: txFeeSymbol,
@@ -252,7 +252,7 @@ export default connect(
       data: ownProps.data,
       selectedFromAccount: account.get('id'),
       getBalanceForAddress: (address, token) => {
-        return Wallet.selectors.balance(state, address, token);
+        return Wallet.selectors.balanceWei(state, address, token);
       },
       getFiatForAddress: (address, token) => {
         if (token !== txFeeSymbol) { return '??'; }
@@ -280,10 +280,10 @@ export default connect(
 
       const tokenInfo = allTokens.find((t) => t.get('symbol') === transaction.token);
 
-      const toAmount = etherToWei(transaction.amount);
+      const toAmount = transaction.amount.value().toString();
 
       const gasLimit = new Wei(transaction.gasLimit).getValue();
-      const { gasPrice } = transaction;
+      const gasPrice = transaction.gasPrice.toString();
 
       if (transaction.data) {
         return dispatch(
