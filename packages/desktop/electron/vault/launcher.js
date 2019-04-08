@@ -34,7 +34,7 @@ class LocalConnector {
       log.debug('Checking if emerald exists:', bin);
       checkExists(bin).then((exists) => {
         if (!exists) {
-          log.debug('emerald not found');
+          log.warn(`emerald not found at ${bin}`);
           // check that included binary path exists
           // if it does exist, move it to this.bin/
           const cargoEmeraldPath = path.join(process.env.HOME, '.cargo', 'bin', 'emerald');
