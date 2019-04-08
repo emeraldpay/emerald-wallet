@@ -2,11 +2,10 @@
 import {Currency} from '@emeraldwallet/core';
 import { fromBaseUnits, convert } from '@emeraldplatform/core';
 import BigNumber from 'bignumber.js';
+import { Wei } from '@emeraldplatform/emerald-js';
 
 export function txFee(gasPrice, gasLimit) {
-  const wei = (new BigNumber(gasPrice)).multipliedBy(new BigNumber(gasLimit));
-  const ether = fromBaseUnits(wei, 18);
-  return ether.toFixed(5);
+  return new Wei((new BigNumber(gasPrice)).multipliedBy(new BigNumber(gasLimit)));
 }
 
 export function txFeeFiat(gasPrice, gasLimit, rate) {

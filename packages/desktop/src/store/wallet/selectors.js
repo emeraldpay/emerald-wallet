@@ -1,8 +1,8 @@
 import tokens from 'store/vault/tokens';
-import network from 'store/network';
 import {findNetwork} from 'lib/networks';
 import launcher from '../launcher';
 
+// DEPRECATED
 export const balance = (state, address, token) => {
   const blockchain = currentBlockchain(state);
   if (token === blockchain.params.coinTicker) {
@@ -12,6 +12,16 @@ export const balance = (state, address, token) => {
   }
 
   return tokens.selectors.balanceByTokenSymbol(state.tokens, token, address).getDecimalized();
+};
+
+export const balanceWei = (state, address, token) => {
+  const blockchain = currentBlockchain(state);
+  if (token === blockchain.params.coinTicker) {
+    const selectedAccount = state.accounts.get('accounts').find((acnt) => acnt.get('id') === address);
+    return selectedAccount.get('balance');
+  }
+
+  return tokens.selectors.balanceByTokenSymbol(state.tokens, token, address);
 };
 
 export const currentBlockchain = (state) => {

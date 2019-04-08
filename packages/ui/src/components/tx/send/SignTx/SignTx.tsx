@@ -36,7 +36,7 @@ interface Props {
     from: string;
     to: string;
     token: string;
-    amount: string;
+    amount: any; //TODO Wei object
     gasLimit: string;
   };
   txFee?: any;
@@ -165,7 +165,7 @@ class SignTx extends React.Component<Props, State> {
           }}>
             <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
               {/* <div>{USDValue} USD</div> */}
-              <div style={{fontSize: '28px'}}>{tx.amount} {tx.token}</div>
+              <div style={{fontSize: '28px'}}>{tx.amount.getEther(6)} {tx.token}</div>
             </div>
             <div style={{display: hideAccounts ? 'none' : 'flex'}}>
               <ArrowRight/>
