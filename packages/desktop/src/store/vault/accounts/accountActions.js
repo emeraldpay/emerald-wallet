@@ -78,7 +78,7 @@ function fetchHdPaths() {
           return dispatch({
             type: ActionTypes.SET_HD_PATH,
             accountId: address,
-            hdpath: JSON.parse(result).crypto.hd_path,
+            hdpath: result.crypto.hd_path,
           });
         }));
       });
@@ -161,7 +161,7 @@ export function updateAccount(address: string, name: string, description?: strin
   return (dispatch, getState, api) => {
     const chain = currentChain(getState());
     return api.emerald.updateAccount(address, name, description, chain)
-      .then((result) => {
+      .then(() => {
         dispatch({
           type: ActionTypes.UPDATE_ACCOUNT,
           address,
@@ -198,7 +198,7 @@ function getNonce(api, address: string) {
 }
 
 function withNonce(tx: Transaction): (nonce: string) => Promise<Transaction> {
-  return (nonce) => new Promise((resolve, reject) => resolve(Object.assign({}, tx, { nonce: convert.toHex(nonce) })));
+  return (nonce) => new Promise((resolve) => resolve(Object.assign({}, tx, { nonce: convert.toHex(nonce) })));
 }
 
 function verifySender(expected) {
