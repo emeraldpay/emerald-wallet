@@ -283,9 +283,9 @@ export default connect(
       const toAmount = transaction.amount.value();
 
       const gasLimit = new Wei(transaction.gasLimit).value();
-      const gasPrice = transaction.gasPrice;
+      const { gasPrice } = transaction;
 
-      //TODO refactor it
+      // TODO refactor it
       const toAmountStr = `0x${toAmount.toString(16)}`;
       const gasLimitStr = `0x${gasLimit.toString(16)}`;
       const gasPriceStr = `0x${gasPrice.toString(16)}`;
