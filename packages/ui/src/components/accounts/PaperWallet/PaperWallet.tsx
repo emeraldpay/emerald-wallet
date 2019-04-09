@@ -4,6 +4,7 @@ import * as QRCode from 'qrcode.react';
 import IconButton from '@material-ui/core/IconButton';
 import { Print, Close, CurrencyEtc } from '@emeraldplatform/ui-icons';
 import {CSSProperties} from "@material-ui/core/styles/withStyles";
+import { EmeraldLine } from './EmeraldLogo';
 
 export const styles = {
   container: {
@@ -74,7 +75,7 @@ export const styles = {
     minWidth: '33px',
   },
   logoIcon: {
-    transform: 'rotate(-90deg)',
+    paddingTop: '5px',
   },
 };
 
@@ -93,14 +94,14 @@ export const PaperWallet = (props: Props) => {
   const Logo = (
     <div className={classes.logoContainer}>
       <div className={classes.logoIcon }>
-        <CurrencyEtc fontSize="large" width="17px" height="33px" />
+        <EmeraldLine />
       </div>
     </div>
   );
 
   const Wallet = (
     <div className={classes.container}>
-      <div className={classes.title}>MY EMERALD WALLET</div>
+      <div className={classes.title}>EMERALD WALLET</div>
       <div className={classes.main}>
         <div className={classes.addressBlock}>
           <div>
@@ -134,7 +135,7 @@ export const PaperWallet = (props: Props) => {
   return (
     <div>
       <div>{Wallet}</div>
-      <div>
+      <div className="no-print">
         <IconButton onClick={() => window.print()}>
           <Print />
         </IconButton>

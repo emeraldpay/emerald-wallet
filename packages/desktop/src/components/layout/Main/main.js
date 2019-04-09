@@ -14,7 +14,7 @@ const maxWidth = '1150px';
 const Render = translate('common')((props) => {
   return (
     <MuiThemeProvider theme={theme}>
-      <div style={{height: '100%', backgroundColor: theme.palette.background.default}}>
+      <div style={{height: '100%', backgroundColor: theme.palette.background.default}} className="application">
         {props.screen !== 'paper-wallet' && (!props.launcherType || props.launcherType !== 'none') && <Header/>}
         <div style={{margin: '20px auto', maxWidth}}>
           <Screen/>
