@@ -280,10 +280,15 @@ export default connect(
 
       const tokenInfo = allTokens.find((t) => t.get('symbol') === transaction.token);
 
-      const toAmount = transaction.amount.value().toString();
+      const toAmount = transaction.amount.value();
 
-      const gasLimit = new Wei(transaction.gasLimit).getValue();
-      const gasPrice = transaction.gasPrice.toString();
+      const gasLimit = new Wei(transaction.gasLimit).value();
+      const { gasPrice } = transaction;
+
+      // TODO refactor it
+      const toAmountStr = `0x${toAmount.toString(16)}`;
+      const gasLimitStr = `0x${gasLimit.toString(16)}`;
+      const gasPriceStr = `0x${gasPrice.toString(16)}`;
 
       if (transaction.data) {
         return dispatch(
@@ -291,9 +296,9 @@ export default connect(
             transaction.from,
             transaction.password,
             transaction.to,
-            toHex(gasLimit),
-            toHex(gasPrice),
-            convert.toHex(toAmount || 0),
+            gasLimitStr,
+            gasPriceStr,
+            toAmountStr,
             transaction.data
           )
         );
@@ -313,8 +318,8 @@ export default connect(
             transaction.from,
             transaction.password,
             tokenInfo.get('address'),
-            toHex(gasLimit),
-            toHex(gasPrice),
+            gasLimitStr,
+            gasPriceStr,
             convert.toHex(0),
             txData
           )
@@ -325,9 +330,9 @@ export default connect(
         from: transaction.from,
         password: transaction.password !== '' ? transaction.password : null,
         to: transaction.to,
-        gas: toHex(gasLimit),
-        gasPrice: toHex(gasPrice),
-        value: toHex(toAmount),
+        gas: gasLimitStr,
+        gasPrice: gasPriceStr,
+        value: toAmountStr,
       }, dispatch, network.actions.estimateGas)
         .then(() => dispatch(ledger.actions.setWatch(false)))
         .then(() => dispatch(ledger.actions.setConnected(false)))
@@ -339,9 +344,9 @@ export default connect(
               transaction.from,
               transaction.password !== '' ? transaction.password : null,
               transaction.to,
-              toHex(gasLimit),
-              toHex(gasPrice),
-              toHex(toAmount)
+              gasLimitStr,
+              gasPriceStr,
+              toAmountStr
             )
           );
         });
