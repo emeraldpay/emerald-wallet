@@ -33,20 +33,16 @@ class ImportJson extends React.Component {
 
     submitFile = () => {
       const { importFile, showAccount } = this.props;
-      importFile(this.state.file).then((result) => {
-        if (result.error) {
-          this.setState({ fileError: result.error.toString() });
-        } else {
-          showAccount(Immutable.fromJS({id: result}));
-        }
-      });
-    }
+      importFile(this.state.file)
+        .then((result) => showAccount(Immutable.fromJS({id: result})))
+        .catch((err) => this.setState({ fileError: err.message }));
+    };
 
     onFileChange = (file) => {
       this.setState({
         file,
       });
-    }
+    };
 
     render() {
       const { t, onDashboard } = this.props;
@@ -95,8 +91,8 @@ export default connect(
     importFile: (file) => {
       return new Promise((resolve, reject) => {
         dispatch(accountsModule.actions.importWallet(file, '', ''))
-          .then((accountId) => resolve(accountId))
-          .catch((response) => resolve(response));
+          .then(resolve)
+          .catch(reject);
       });
     },
     showAccount: (account) => {

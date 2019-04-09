@@ -269,18 +269,18 @@ export function createContract(accountId: string, passphrase: string, gas, gasPr
   };
 }
 
-function readWalletFile(wallet) {
+function readWalletFile(walletFile) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.readAsText(wallet);
+    reader.readAsText(walletFile);
     reader.onload = (event) => {
-      let data;
+      const fileContent = event.target.result;
       try {
-        data = JSON.parse(event.target.result);
-        data.filename = wallet.name;
-        resolve(data);
+        const json = JSON.parse(fileContent);
+        json.filename = walletFile.name;
+        resolve(json);
       } catch (e) {
-        reject({error: e}); // eslint-disable-line
+        reject(new Error('Invalid or corrupted Wallet file, cannot be imported')); // eslint-disable-line
       }
     };
   });

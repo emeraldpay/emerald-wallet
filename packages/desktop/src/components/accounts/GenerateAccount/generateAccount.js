@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import muiThemeable from 'material-ui/styles/muiThemeable';
-import saveAs from '../../../lib/saveAs';
+import { saveJson } from '../../../lib/saveAs';
 import accounts from '../../../store/vault/accounts';
 import screen from '../../../store/wallet/screen';
 import PasswordDialog from './PasswordDialog';
@@ -39,7 +39,7 @@ class GenerateAccount extends React.Component<Props, State> {
     dispatch: PropTypes.func,
     t: PropTypes.func.isRequired,
     backLabel: PropTypes.string,
-  }
+  };
 
   constructor(props) {
     super(props);
@@ -78,16 +78,7 @@ class GenerateAccount extends React.Component<Props, State> {
     this.props.dispatch(accounts.actions.exportKeyFile(accountId)).then((result) => {
       ipcRenderer.send('get-private-key', {keyfile: result, passphrase});
       ipcRenderer.once('recieve-private-key', (event, privateKey) => {
-        const fileData = {
-          filename: `${accountId}.json`,
-          mime: 'text/plain',
-          contents: result,
-        };
-
-        // Give encrypted key file to user
-        const blob = new Blob([fileData.contents], {type: fileData.mime});
-        const url = URL.createObjectURL(blob);
-        saveAs(url, fileData.filename);
+        saveJson(result, `${accountId}.json`);
 
         this.setState({
           loading: false,
@@ -97,23 +88,23 @@ class GenerateAccount extends React.Component<Props, State> {
         });
       });
     });
-  }
+  };
 
   editAccountProps = () => {
     this.setState({
       page: PAGES.ACCOUNT_PROPS,
     });
-  }
+  };
 
   skipAccountProps = () => {
     this.props.dispatch(screen.actions.gotoScreen('home'));
-  }
+  };
 
   updateAccountProps = (name: string) => {
     const { dispatch } = this.props;
     dispatch(accounts.actions.updateAccount(this.state.accountId, name))
       .then(() => dispatch(screen.actions.gotoScreen('home')));
-  }
+  };
 
   goToDashboard = () => {
     if (this.props.onBackScreen) {
@@ -121,7 +112,7 @@ class GenerateAccount extends React.Component<Props, State> {
     } else {
       this.props.dispatch(screen.actions.gotoScreen('home'));
     }
-  }
+  };
 
   getPage() {
     const { page, privateKey, accountId } = this.state;
