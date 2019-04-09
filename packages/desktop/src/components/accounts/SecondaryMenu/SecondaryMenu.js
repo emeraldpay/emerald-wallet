@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { AccountActionsMenu } from '@emeraldwallet/ui';
 
 import { api } from 'lib/rpc/api';
-import saveAs from 'lib/saveAs';
+import { saveJson } from 'lib/saveAs';
 import screen from '../../../store/wallet/screen';
 import history from '../../../store/wallet/history';
 import accounts from '../../../store/vault/accounts';
@@ -42,15 +42,7 @@ export default connect(
       const address = ownProps.account.get('id');
 
       api.emerald.exportAccount(address, chain).then((result) => {
-        const fileData = {
-          filename: `${address}.json`,
-          mime: 'text/plain',
-          contents: result,
-        };
-
-        const blob = new Blob([fileData.contents], {type: fileData.mime});
-        const url = URL.createObjectURL(blob);
-        saveAs(url, fileData.filename);
+        saveJson(result, `${address}.json`);
       });
     },
   })
