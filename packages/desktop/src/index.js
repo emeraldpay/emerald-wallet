@@ -3,6 +3,7 @@ import ReactDOM from 'react-dom';
 import theme from 'emerald-js-ui/src/theme.json';
 import 'typeface-rubik/index.css';
 import {I18nextProvider} from 'react-i18next';
+import BigNumber from 'bignumber.js';
 import i18n from './i18n/i18n';
 import {start as startStore} from './store/store';
 
@@ -40,3 +41,4 @@ const showAbout = () => {
 window.ETCEMERALD = window.ETCEMERALD || {};
 window.ETCEMERALD.start = start;
 window.ETCEMERALD.showAbout = showAbout;
+BigNumber.config({ EXPONENTIAL_AT: 27 });

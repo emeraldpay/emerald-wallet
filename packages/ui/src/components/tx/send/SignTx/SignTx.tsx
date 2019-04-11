@@ -36,9 +36,10 @@ interface Props {
     from: string;
     to: string;
     token: string;
-    amount: any; //TODO Wei object
+    amount: string;
     gasLimit: string;
   };
+  amountWei: any; //TODO Wei object
   txFee?: any;
   fiatCurrency?: any;
   fiatRate?: any;
@@ -147,7 +148,7 @@ class SignTx extends React.Component<Props, State> {
 
   render() {
     const {
-      value, fiatRate, fiatCurrency, txFee, tx, classes,
+      value, fiatRate, fiatCurrency, txFee, tx, classes, amountWei
     } = this.props;
     const {
       onCancel, onChangePassword, onSubmit,
@@ -165,7 +166,7 @@ class SignTx extends React.Component<Props, State> {
           }}>
             <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
               {/* <div>{USDValue} USD</div> */}
-              <div style={{fontSize: '28px'}}>{tx.amount.getEther(6)} {tx.token}</div>
+              <div style={{fontSize: '28px'}} title={amountWei.value().toString() + " Wei"}>{amountWei.getEther(6)} {tx.token}</div>
             </div>
             <div style={{display: hideAccounts ? 'none' : 'flex'}}>
               <ArrowRight/>
