@@ -28,6 +28,17 @@ const PAGES = {
 
 const DEFAULT_GAS_LIMIT = '21000';
 
+// TODO move to Wei class
+const weis = new BigNumber(10).pow(18);
+function parseEther(ether) {
+  try {
+    return new Wei(weis.multipliedBy(new BigNumber(ether)));
+  } catch (e) {
+    console.warn(`Invalid ether value ${ether}`);
+  }
+  return new Wei(0);
+}
+
 class MultiCreateTransaction extends React.Component {
   static propTypes = {
     currency: PropTypes.string.isRequired,
@@ -97,6 +108,7 @@ class MultiCreateTransaction extends React.Component {
 
   onChangeAmount(amount) {
     this.setTransaction('amount', amount);
+    this.setState({amountWei: parseEther(amount)});
   }
 
   componentDidUpdate(prevProps) {
@@ -107,6 +119,7 @@ class MultiCreateTransaction extends React.Component {
     if (from !== props.from || to !== props.to || value !== props.value || data !== props.data) {
       this.setState({
         page: props.mode ? PAGES.PASSWORD : PAGES.TX,
+        amountWei: this.props.amountWei,
         transaction: {
           ...this.state.transaction,
           from: this.props.selectedFromAccount,
@@ -124,6 +137,7 @@ class MultiCreateTransaction extends React.Component {
 
   componentDidMount() {
     this.setState({
+      amountWei: this.props.amountWei,
       transaction: {
         ...this.state.transaction,
         from: this.props.selectedFromAccount,
@@ -148,18 +162,19 @@ class MultiCreateTransaction extends React.Component {
     this.props.signAndSend({
       transaction: this.state.transaction,
       allTokens: this.props.allTokens,
+      amountWei: this.state.amountWei,
     });
   }
 
   onMaxClicked() {
     const fee = this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit);
     const amount = this.balance.sub(fee);
-    this.setTransaction('amount', amount);
+    this.setTransaction('amount', amount.getEther(6));
+    this.setState({amountWei: amount});
   }
 
   getPage() {
     if (!this.state.transaction.from) { return null; }
-
     switch (this.state.page) {
       case PAGES.TX:
         return (
@@ -168,7 +183,7 @@ class MultiCreateTransaction extends React.Component {
             from={this.state.transaction.from}
             txFeeSymbol={this.props.txFeeSymbol}
             token={this.state.transaction.token}
-            amount={this.state.transaction.amount.getEther(6)}
+            amount={this.state.transaction.amount}
             gasLimit={this.state.transaction.gasLimit}
             txFee={this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit).getEther(6)}
             txFeeFiat={this.props.getTxFeeFiatForGasLimit(this.state.transaction.gasLimit)}
@@ -198,6 +213,7 @@ class MultiCreateTransaction extends React.Component {
           <SignTx
             fiatRate={this.props.fiateRate}
             tx={this.state.transaction}
+            amountWei={this.state.amountWei}
             txFee={this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit).getEther(6)}
             onChangePassword={this.onChangePassword}
             useLedger={this.props.useLedger}
@@ -244,7 +260,8 @@ export default connect(
     const tokenSymbols = allTokens.toJS().map((i) => i.symbol);
 
     return {
-      amount: new Wei(ownProps.amount || '0'),
+      amount: ownProps.amount || '0',
+      amountWei: parseEther(ownProps.amount || '0'),
       gasLimit: ownProps.gasLimit || DEFAULT_GAS_LIMIT,
       typedData: ownProps.typedData,
       token: txFeeSymbol,
@@ -275,12 +292,12 @@ export default connect(
   (dispatch, ownProps) => ({
     onCancel: () => dispatch(screen.actions.gotoScreen('home', ownProps.account)),
     onEmptyAddressBookClick: () => dispatch(screen.actions.gotoScreen('add-address')),
-    signAndSend: ({transaction, allTokens}) => {
+    signAndSend: ({transaction, allTokens, amountWei}) => {
       const useLedger = ownProps.account.get('hardware', false);
 
       const tokenInfo = allTokens.find((t) => t.get('symbol') === transaction.token);
 
-      const toAmount = transaction.amount.value();
+      const toAmount = amountWei.value();
 
       const gasLimit = new Wei(transaction.gasLimit).value();
       const { gasPrice } = transaction;
