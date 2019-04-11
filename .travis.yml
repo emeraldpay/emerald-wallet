@@ -75,7 +75,7 @@ deploy:
     script: ./gcloud-deploy.sh
     skip_cleanup: true
     on:
-      branch: master
+      branch: v1.3.x
 
   - provider: script
     script: ./gcloud-deploy.sh
