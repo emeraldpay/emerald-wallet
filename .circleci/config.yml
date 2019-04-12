@@ -31,7 +31,7 @@ jobs:
           command: |
               export PATH=$PATH:$PWD/janusbin
               export APP_VERSION_GIT_TAG="$(gitversion /showvariable FullSemVer)-$(gitversion /showvariable ShortSha)"
-              echo "Building app version $APP_VERSION_GIT_TAG"
+              echo Building app version $APP_VERSION_GIT_TAG
               yarn build:dist
 
       - deploy:

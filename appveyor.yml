@@ -11,7 +11,7 @@ install:
   - ps: $env:VERSION_BASE = "v$(gitversion.exe /showvariable Major).$(gitversion.exe /showvariable Minor).x"
   # expected by Electron Builder config
   - ps: $env:APP_VERSION_GIT_TAG="$(gitversion.exe /showvariable FullSemVer)-$(gitversion.exe /showvariable ShortSha)"
-  - echo %VERSION_BASE% %VERSION_GIT_TAG%
+  - echo %VERSION_BASE% %APP_VERSION_GIT_TAG%
   # Set up build dependencies.
   - ps: Install-Product node 8 x64
   - set CI=true
