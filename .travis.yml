@@ -28,6 +28,11 @@ matrix:
       env: CCX=gcc-4.8 FULL_CHECK=false
     - os: linux
       env: CCX=gcc-4.8 FULL_CHECK=true
+
+# Need for gitvesion
+git:
+  depth: 9999999
+
 before_install:
   - echo Installing GitVersion...
   - wget https://github.com/GitTools/GitVersion/releases/download/v4.0.0-beta.12/GitVersion_4.0.0-beta0012.zip
@@ -35,7 +40,6 @@ before_install:
   - echo "#!/bin/bash" > gitversion
   - echo "mono GitVersion/GitVersion.exe" >> gitversion
   - chmod 755 gitversion
-  - export PATH=$PATH:$PWD/gitversion
   - ./gitversion /version
 
 before_script:
@@ -48,7 +52,7 @@ script:
   # Install Janus
   - curl -sL https://raw.githubusercontent.com/ETCDEVTeam/janus/master/get.sh | bash
   - export PATH=$PATH:$PWD/janusbin
-  - export APP_VERSION_GIT_TAG="$(gitversion /showvariable FullSemVer)-$(gitversion /showvariable ShortSha)"
+  - export APP_VERSION_GIT_TAG="$(./gitversion /showvariable FullSemVer)-$(./gitversion /showvariable ShortSha)"
   - echo Building app version $APP_VERSION_GIT_TAG
   - if [[ $(license-checker --production --exclude '(GPL-2.0 OR MIT)' | grep GPL) ]]; then license-checker --production | grep -C 1 GPL && false; fi
   - yarn build
