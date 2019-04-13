@@ -40,7 +40,6 @@ before_install:
   - echo "#!/bin/bash" > gitversion
   - echo 'mono GitVersion/GitVersion.exe "$@"' >> gitversion
   - chmod 755 gitversion
-  - ln -S $(pwd)/gitversion /usr/local/bin/gitversion
 
 before_script:
   # `npm install` is automatic
@@ -51,7 +50,7 @@ before_script:
 script:
   - git fetch --unshallow
   - ./gitversion /version
-  - gitversion
+  - ./gitversion
   # Install Janus
   - curl -sL https://raw.githubusercontent.com/ETCDEVTeam/janus/master/get.sh | bash
   - export PATH=$PATH:$PWD/janusbin
