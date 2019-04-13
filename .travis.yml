@@ -43,8 +43,7 @@ before_install:
   - ./gitversion /version
   - echo Janus...
   - curl -sL https://raw.githubusercontent.com/ETCDEVTeam/janus/master/get.sh | bash
-  - export PATH=$PATH:$PWD/janusbin:$PWD/gitversion
-  - gitversion /version
+  - export PATH=$PATH:$PWD/janusbin
 
 before_script:
   - ./gitversion
