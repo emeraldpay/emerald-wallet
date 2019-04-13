@@ -38,9 +38,9 @@ before_install:
   - wget https://github.com/GitTools/GitVersion/releases/download/v4.0.0-beta.12/GitVersion_4.0.0-beta0012.zip
   - unzip GitVersion_4.0.0-beta0012.zip -d GitVersion
   - echo "#!/bin/bash" > gitversion
-  - echo "mono GitVersion/GitVersion.exe" >> gitversion
+  - echo 'mono GitVersion/GitVersion.exe "$@"' >> gitversion
   - chmod 755 gitversion
-  - ./gitversion /version
+  - ln -S $(pwd)/gitversion /usr/local/bin/gitversion
 
 before_script:
   # `npm install` is automatic
@@ -49,6 +49,9 @@ before_script:
   - lerna bootstrap
 
 script:
+  - git fetch --unshallow
+  - ./gitversion /version
+  - gitversion
   # Install Janus
   - curl -sL https://raw.githubusercontent.com/ETCDEVTeam/janus/master/get.sh | bash
   - export PATH=$PATH:$PWD/janusbin
