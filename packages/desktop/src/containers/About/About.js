@@ -4,6 +4,7 @@ import {MuiThemeProvider} from '@material-ui/core/styles';
 import theme from '@emeraldplatform/ui/lib/theme';
 import {About} from '@emeraldwallet/ui';
 import {version} from '../../../package.json';
+import gitversion from '../../../gitversion.json';
 
 class AboutContainer extends React.Component {
   constructor(props) {
@@ -15,7 +16,6 @@ class AboutContainer extends React.Component {
     ipcRenderer.send('get-version');
     ipcRenderer.once('get-version-result', (event, result) => {
       this.setState({
-        geth: result.geth,
         connector: result.connector,
       });
     });
@@ -37,13 +37,13 @@ class AboutContainer extends React.Component {
   };
 
   render() {
-    const {geth, connector} = this.state;
+    const {connector} = this.state;
     return (
       <MuiThemeProvider theme={theme}>
         <About
           appVersion={version}
-          endpointVersion={geth}
           vaultVersion={connector}
+          gitVersion={gitversion}
           onButtonClick={this.onButtonClick}
           onHelpClick={this.onHelpClick}
           onLicenseClick={this.onLicenseClick}
