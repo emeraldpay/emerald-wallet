@@ -30,10 +30,12 @@ matrix:
       env: CCX=gcc-4.8 FULL_CHECK=true
 before_install:
   - echo Installing GitVersion...
-  - dotnet tool install -g GitVersion.Tool --version '4.0.1-*'
-  - echo Cleaning up NuGet lock files...
-  - rm -rf /tmp/NuGetScratch/lock
-  - dotnet gitversion /version
+  - wget https://github.com/GitTools/GitVersion/releases/download/v4.0.0-beta.12/GitVersion_4.0.0-beta0012.zip
+  - unzip GitVersion_4.0.0-beta0012.zip -d GitVersion
+  - echo "#!/bin/bash" > gitversion
+  - ech0 "mono GitVersion/GitVersion.exe" >> gitversion
+  - chmod 755 gitversion
+  - ./gitversion /version
 
 before_script:
   # `npm install` is automatic
@@ -45,7 +47,7 @@ script:
   # Install Janus
   - curl -sL https://raw.githubusercontent.com/ETCDEVTeam/janus/master/get.sh | bash
   - export PATH=$PATH:$PWD/janusbin
-  - export APP_VERSION_GIT_TAG="$(gitversion /showvariable FullSemVer)-$(gitversion /showvariable ShortSha)"
+  - export APP_VERSION_GIT_TAG="$(./gitversion /showvariable FullSemVer)-$(./gitversion /showvariable ShortSha)"
   - echo Building app version $APP_VERSION_GIT_TAG
   - if [[ $(license-checker --production --exclude '(GPL-2.0 OR MIT)' | grep GPL) ]]; then license-checker --production | grep -C 1 GPL && false; fi
   - yarn build
@@ -70,7 +72,8 @@ addons:
     - libudev-dev
     - libusb-1.0-0
     - libusb-1.0-0-dev
-    - dotnet-sdk-2.1
+    - mono-complete
+    - libcurl3
     # - gcc-multilib
     # - g++-multilib
     # - gcc-4.8-multilib
