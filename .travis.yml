@@ -29,14 +29,14 @@ matrix:
     - os: linux
       env: CCX=gcc-4.8 FULL_CHECK=true
 
-# Need for gitvesion
+# Need for gitversion
 git:
   depth: false
 
 before_install:
   - echo Installing GitVersion...
-  - wget https://github.com/GitTools/GitVersion/releases/download/v4.0.0/GitVersion-bin-coreclr-v4.0.0.zip
-  - unzip GitVersion-bin-coreclr-v4.0.0.zip -d GitVersion
+  - wget https://github.com/GitTools/GitVersion/releases/download/v4.0.0/GitVersion-bin-net40-v4.0.0.zip
+  - unzip GitVersion-bin-net40-v4.0.0.zip -d GitVersion
   - echo "#!/bin/bash" > gitversion
   - echo 'mono GitVersion/GitVersion.exe "$@"' >> gitversion
   - chmod 755 gitversion
