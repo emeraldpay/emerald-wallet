@@ -35,7 +35,7 @@ git:
 
 before_install:
   - echo Installing GitVersion...
-  - wget https://github.com/GitTools/GitVersion/releases/download/v4.0.0-beta.12/GitVersion_4.0.0-beta0012.zip
+  - wget https://github.com/GitTools/GitVersion/releases/download/v4.0.0/GitVersion-bin-coreclr-v4.0.0.zip
   - unzip GitVersion_4.0.0-beta0012.zip -d GitVersion
   - echo "#!/bin/bash" > gitversion
   - echo 'mono GitVersion/GitVersion.exe "$@"' >> gitversion
@@ -53,7 +53,7 @@ before_script:
 
 script:
   - export APP_VERSION_GIT_TAG="$(./gitversion /showvariable FullSemVer)-$(./gitversion /showvariable ShortSha)"
-  - echo Building app version $APP_VERSION_GIT_TAG
+  - echo "Building app version $APP_VERSION_GIT_TAG"
   - if [[ $(license-checker --production --exclude '(GPL-2.0 OR MIT)' | grep GPL) ]]; then license-checker --production | grep -C 1 GPL && false; fi
   - yarn build
   - yarn test:coverage
