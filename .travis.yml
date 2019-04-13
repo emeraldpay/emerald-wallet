@@ -41,6 +41,10 @@ before_install:
   - echo 'mono GitVersion/GitVersion.exe "$@"' >> gitversion
   - chmod 755 gitversion
   - ./gitversion /version
+  - echo Janus...
+  - curl -sL https://raw.githubusercontent.com/ETCDEVTeam/janus/master/get.sh | bash
+  - export PATH=$PATH:$PWD/janusbin:$PWD/gitversion
+  - gitversion /version
 
 before_script:
   - ./gitversion
@@ -49,9 +53,6 @@ before_script:
   - lerna bootstrap
 
 script:
-  # Install Janus
-  - curl -sL https://raw.githubusercontent.com/ETCDEVTeam/janus/master/get.sh | bash
-  - export PATH=$PATH:$PWD/janusbin
   - export APP_VERSION_GIT_TAG="$(./gitversion /showvariable FullSemVer)-$(./gitversion /showvariable ShortSha)"
   - echo Building app version $APP_VERSION_GIT_TAG
   - if [[ $(license-checker --production --exclude '(GPL-2.0 OR MIT)' | grep GPL) ]]; then license-checker --production | grep -C 1 GPL && false; fi
