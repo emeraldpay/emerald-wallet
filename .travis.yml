@@ -28,7 +28,13 @@ matrix:
       env: CCX=gcc-4.8 FULL_CHECK=false
     - os: linux
       env: CCX=gcc-4.8 FULL_CHECK=true
-# before_install:
+before_install:
+  - echo Installing GitVersion...
+  - dotnet tool install -g GitVersion.Tool --version '4.0.1-*'
+  - echo Cleaning up NuGet lock files...
+  - rm -rf /tmp/NuGetScratch/lock
+  - GitVersion.Tool /version
+
 before_script:
   # `npm install` is automatic
   - npm install -g node-gyp license-checker
