@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-VERSION_BASE=$(janus version -format='v%M.%m.x')
+VERSION_BASE="v$(./gitversion /showvariable Major).$(./gitversion /showvariable Minor).x"
 echo "Deploy to http://builds.etcdevteam.com/emerald-wallet/$VERSION_BASE/"
 
 mkdir deploy

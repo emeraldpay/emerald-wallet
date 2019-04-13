@@ -5,14 +5,13 @@ environment:
 install:
   - set PATH=C:\msys64\mingw64\bin;C:\msys64\usr\bin\;%PATH%
   # Install janus.
-  - curl -sL https://raw.githubusercontent.com/ethereumproject/janus/master/get-windows.sh | bash
+  - curl -sL https://raw.githubusercontent.com/ETCDEVTeam/janus/master/get-windows.sh | bash
   - set PATH=./janusbin;%PATH%
   # Set up version from git tags.
-  - ps: $env:VERSION_BASE = "$(janus.exe version -format='v%M.%m.x')"
-  - ps: $env:VERSION = "$(janus.exe version -format='v%M.%m.%C-%S')"
+  - ps: $env:VERSION_BASE = "v$(gitversion.exe /showvariable Major).$(gitversion.exe /showvariable Minor).x"
   # expected by Electron Builder config
-  - ps: $env:APP_VERSION_GIT_TAG="$(janus version -format 'TAG_OR_NIGHTLY')"
-  - echo %VERSION_BASE% %VERSION%
+  - ps: $env:APP_VERSION_GIT_TAG="$(gitversion.exe /showvariable FullSemVer)-$(gitversion.exe /showvariable ShortSha)"
+  - echo %VERSION_BASE% %APP_VERSION_GIT_TAG%
   # Set up build dependencies.
   - ps: Install-Product node 8 x64
   - set CI=true

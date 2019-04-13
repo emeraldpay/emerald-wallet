@@ -28,18 +28,31 @@ matrix:
       env: CCX=gcc-4.8 FULL_CHECK=false
     - os: linux
       env: CCX=gcc-4.8 FULL_CHECK=true
-# before_install:
+
+# Need for gitversion
+git:
+  depth: false
+
+before_install:
+  - echo Installing GitVersion...
+  - wget https://github.com/GitTools/GitVersion/releases/download/v4.0.0/GitVersion-bin-net40-v4.0.0.zip
+  - unzip GitVersion-bin-net40-v4.0.0.zip -d GitVersion
+  - echo "#!/bin/bash" > gitversion
+  - echo 'mono GitVersion/GitVersion.exe "$@"' >> gitversion
+  - chmod 755 gitversion
+  - ./gitversion /version
+  - echo Janus...
+  - curl -sL https://raw.githubusercontent.com/ETCDEVTeam/janus/master/get.sh | bash
+  - export PATH=$PATH:$PWD/janusbin
+
 before_script:
-  # `npm install` is automatic
+  - ./gitversion
   - npm install -g node-gyp license-checker
   - npm install -g codecov yarn lerna
   - lerna bootstrap
 
 script:
-  # Install Janus
-  - curl -sL https://raw.githubusercontent.com/ETCDEVTeam/janus/master/get.sh | bash
-  - export PATH=$PATH:$PWD/janusbin
-  - export APP_VERSION_GIT_TAG="$(janus version -format 'TAG_OR_NIGHTLY')"
+  - export APP_VERSION_GIT_TAG="$(./gitversion /showvariable FullSemVer)-$(./gitversion /showvariable ShortSha)"
   - echo "Building app version $APP_VERSION_GIT_TAG"
   - if [[ $(license-checker --production --exclude '(GPL-2.0 OR MIT)' | grep GPL) ]]; then license-checker --production | grep -C 1 GPL && false; fi
   - yarn build
@@ -64,6 +77,8 @@ addons:
     - libudev-dev
     - libusb-1.0-0
     - libusb-1.0-0-dev
+    - mono-complete
+    - libcurl3
     # - gcc-multilib
     # - g++-multilib
     # - gcc-4.8-multilib

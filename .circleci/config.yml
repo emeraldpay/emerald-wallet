@@ -12,8 +12,9 @@ jobs:
           command: |
               npm -v
               node -v
-              curl -sL https://raw.githubusercontent.com/ethereumproject/janus/master/get.sh | bash
+              curl -sL https://raw.githubusercontent.com/ETCDEVTeam/janus/master/get.sh | bash
               npm install -g lerna
+              brew install gitversion
 
       - run:
           name: Lerna bootstrap
@@ -30,8 +31,8 @@ jobs:
           name: Build distributive
           command: |
               export PATH=$PATH:$PWD/janusbin
-              export APP_VERSION_GIT_TAG="$(janus version -format 'TAG_OR_NIGHTLY')"
-              echo "Building app version $APP_VERSION_GIT_TAG"
+              export APP_VERSION_GIT_TAG="$(gitversion /showvariable FullSemVer)-$(gitversion /showvariable ShortSha)"
+              echo Building app version $APP_VERSION_GIT_TAG
               yarn build:dist
 
       - deploy:
