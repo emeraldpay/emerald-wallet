@@ -33,9 +33,10 @@ before_install:
   - wget https://github.com/GitTools/GitVersion/releases/download/v4.0.0-beta.12/GitVersion_4.0.0-beta0012.zip
   - unzip GitVersion_4.0.0-beta0012.zip -d GitVersion
   - echo "#!/bin/bash" > gitversion
-  - ech0 "mono GitVersion/GitVersion.exe" >> gitversion
+  - echo "mono GitVersion/GitVersion.exe" >> gitversion
   - chmod 755 gitversion
-  - ./gitversion /version
+  - export PATH=$PATH:$PWD/gitversion
+  - gitversion /version
 
 before_script:
   # `npm install` is automatic
@@ -47,7 +48,7 @@ script:
   # Install Janus
   - curl -sL https://raw.githubusercontent.com/ETCDEVTeam/janus/master/get.sh | bash
   - export PATH=$PATH:$PWD/janusbin
-  - export APP_VERSION_GIT_TAG="$(./gitversion /showvariable FullSemVer)-$(./gitversion /showvariable ShortSha)"
+  - export APP_VERSION_GIT_TAG="$(gitversion /showvariable FullSemVer)-$(gitversion /showvariable ShortSha)"
   - echo Building app version $APP_VERSION_GIT_TAG
   - if [[ $(license-checker --production --exclude '(GPL-2.0 OR MIT)' | grep GPL) ]]; then license-checker --production | grep -C 1 GPL && false; fi
   - yarn build
