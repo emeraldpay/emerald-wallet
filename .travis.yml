@@ -36,7 +36,7 @@ git:
 before_install:
   - echo Installing GitVersion...
   - wget https://github.com/GitTools/GitVersion/releases/download/v4.0.0/GitVersion-bin-coreclr-v4.0.0.zip
-  - unzip GitVersion_4.0.0-beta0012.zip -d GitVersion
+  - unzip GitVersion-bin-coreclr-v4.0.0.zip -d GitVersion
   - echo "#!/bin/bash" > gitversion
   - echo 'mono GitVersion/GitVersion.exe "$@"' >> gitversion
   - chmod 755 gitversion
