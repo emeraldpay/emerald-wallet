@@ -31,7 +31,7 @@ matrix:
 
 # Need for gitvesion
 git:
-  depth: 9999999
+  depth: false
 
 before_install:
   - echo Installing GitVersion...
@@ -40,17 +40,15 @@ before_install:
   - echo "#!/bin/bash" > gitversion
   - echo 'mono GitVersion/GitVersion.exe "$@"' >> gitversion
   - chmod 755 gitversion
+  - ./gitversion /version
 
 before_script:
-  # `npm install` is automatic
+  - ./gitversion
   - npm install -g node-gyp license-checker
   - npm install -g codecov yarn lerna
   - lerna bootstrap
 
 script:
-  - git fetch --unshallow
-  - ./gitversion /version
-  - ./gitversion
   # Install Janus
   - curl -sL https://raw.githubusercontent.com/ETCDEVTeam/janus/master/get.sh | bash
   - export PATH=$PATH:$PWD/janusbin
