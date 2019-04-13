@@ -102,7 +102,7 @@ export function refreshTrackedTransactions() {
     }
 
     return api.geth.ext.getTransactions(hashes.toJS()).then((results) => {
-      const transactions = results.map((r) => r.result).filter((tx) => tx && tx.blockNumber);
+      const transactions = results.filter((tx) => tx && tx.blockNumber);
 
       if (transactions.length === 0) { return; }
 
