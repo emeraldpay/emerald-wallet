@@ -14,6 +14,7 @@ jobs:
               node -v
               curl -sL https://raw.githubusercontent.com/ETCDEVTeam/janus/master/get.sh | bash
               npm install -g lerna
+              brew install gitversion
 
       - run:
           name: Lerna bootstrap
