@@ -31,6 +31,7 @@ jobs:
           name: Build distributive
           command: |
               export PATH=$PATH:$PWD/janusbin
+              gitversion > packages/desktop/gitversion.json
               export APP_VERSION_GIT_TAG="$(gitversion /showvariable FullSemVer)-$(gitversion /showvariable ShortSha)"
               echo Building app version $APP_VERSION_GIT_TAG
               yarn build:dist

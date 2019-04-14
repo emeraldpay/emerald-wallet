@@ -57,4 +57,20 @@ describe('isLatest', () => {
       done();
     });
   });
+
+  it('returns false for isLatest if on the previous version 1.3.0-alpha', (done) => {
+    fetch.mockResponse(JSON.stringify({ releases: {'emerald-wallet': {version: '1.3.0-alpha'}}}));
+    getWalletVersion().then(({isLatest}) => {
+      expect(isLatest).toBe(false);
+      done();
+    });
+  });
+
+  it('returns false for isLatest if on the previous version 1.3.0-beta.1', (done) => {
+    fetch.mockResponse(JSON.stringify({ releases: {'emerald-wallet': {version: '1.3.0-beta.1'}}}));
+    getWalletVersion().then(({isLatest}) => {
+      expect(isLatest).toBe(false);
+      done();
+    });
+  });
 });

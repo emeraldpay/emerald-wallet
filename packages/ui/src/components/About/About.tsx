@@ -25,8 +25,8 @@ export const styles = (theme?: any) => ({
 
 interface Props {
   appVersion?: string;
-  endpointVersion?: string;
   vaultVersion?: string;
+  gitVersion?: any;
   onButtonClick?: any;
   onHelpClick?: any;
   onLicenseClick?: any;
@@ -36,9 +36,10 @@ interface Props {
 export class About extends React.Component<Props> {
   render() {
     const {
-      classes, onButtonClick, onHelpClick, onLicenseClick,
+      classes, onButtonClick, onHelpClick, onLicenseClick
     } = this.props;
-    const {appVersion, endpointVersion, vaultVersion} = this.props;
+    const {appVersion,  vaultVersion} = this.props;
+    const gitVersion = this.props.gitVersion || {};
 
     return (
       <div style={{padding: '30px', position: 'relative'}}>
@@ -48,8 +49,9 @@ export class About extends React.Component<Props> {
         <h2 className={classes.appName}>Emerald Wallet</h2>
         <div style={{marginBottom: '20px'}}>{appVersion}</div>
         <div className={classes.componentsVer}>
-          RPC Endpoint: {endpointVersion}<br/>
-          Emerald Vault: {vaultVersion}
+          Full Version: {gitVersion.FullSemVer}<br/>
+          Vault Version: {vaultVersion}<br/>
+          Build: {gitVersion.BuildMetaDataPadded} {gitVersion.ShortSha} {gitVersion.CommitDate}<br/>
         </div>
         <div style={{paddingTop: '60px', marginBottom: '60px'}}>
           <Button onClick={onButtonClick} primary label='emeraldwallet.io'/>

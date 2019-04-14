@@ -8,6 +8,7 @@ install:
   - curl -sL https://raw.githubusercontent.com/ETCDEVTeam/janus/master/get-windows.sh | bash
   - set PATH=./janusbin;%PATH%
   # Set up version from git tags.
+  - gitversion.exe > packages/desktop/gitversion.json
   - ps: $env:VERSION_BASE = "v$(gitversion.exe /showvariable Major).$(gitversion.exe /showvariable Minor).x"
   # expected by Electron Builder config
   - ps: $env:APP_VERSION_GIT_TAG="$(gitversion.exe /showvariable FullSemVer)-$(gitversion.exe /showvariable ShortSha)"
