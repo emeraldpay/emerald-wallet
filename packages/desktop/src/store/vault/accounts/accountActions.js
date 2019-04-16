@@ -235,10 +235,10 @@ export function sendTransaction(from: string, passphrase: string, to: ?string, g
     nonce: '',
   };
   return (dispatch, getState, api) => {
-    var chain = currentChain(getState());
+    let chain = currentChain(getState());
     if (chain === 'morden') {
-      //otherwise RPC server gives 'wrong-sender'
-      //vault has different chain-id settings for etc and eth morden. server uses etc morden.
+      // otherwise RPC server gives 'wrong-sender'
+      // vault has different chain-id settings for etc and eth morden. server uses etc morden.
       chain = 'etc-morden';
     }
     return getNonce(api, from)
