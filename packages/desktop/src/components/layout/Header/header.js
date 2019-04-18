@@ -1,5 +1,5 @@
 import React from 'react';
-import { AppBar, LinearProgress } from 'material-ui';
+import { AppBar, LinearProgress } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import { Button } from '@emeraldwallet/ui';
 import { Block as BlockIcon, Settings as SettingsIcon } from '@emeraldplatform/ui-icons';
