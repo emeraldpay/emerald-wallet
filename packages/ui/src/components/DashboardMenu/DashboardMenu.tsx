@@ -1,12 +1,10 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import { withStyles } from '@material-ui/core/styles';
-import { Popover } from 'material-ui';
+import * as React from 'react';
+import { withStyles } from '@material-ui/styles';
+import Popover from '@material-ui/core/Popover';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
-
 import {
   Ledger as LedgerIcon,
   Key as KeyIcon,
@@ -16,14 +14,13 @@ import {
   Token1 as TokenIcon,
   Book as BookIcon,
 } from '@emeraldplatform/ui-icons';
-import muiThemeable from 'material-ui/styles/muiThemeable';
-import { Button } from '@emeraldwallet/ui';
+import Button from '../common/Button';
 
-const styles2 = {
+const styles2 = (theme?: any) => ( {
   buttonText: {
     paddingRight: 0,
   },
-};
+});
 
 const MenuButton = ({ label, onClick, classes }) => {
   return (
@@ -38,19 +35,26 @@ const MenuButton = ({ label, onClick, classes }) => {
   );
 };
 
-class DashboardMenu extends React.Component {
-  static propTypes = {
-    addToken: PropTypes.func,
-    generate: PropTypes.func,
-    importJson: PropTypes.func,
-    importLedger: PropTypes.func,
-    importPrivateKey: PropTypes.func,
-    importMnemonic: PropTypes.func,
-    createMnemonic: PropTypes.func,
-    t: PropTypes.func.isRequired,
-    style: PropTypes.object,
-  };
+interface Props {
+  addToken?: any;
+  generate?: any;
+  importJson?: any;
+  importLedger?: any;
+  importPrivateKey?: any;
+  importMnemonic?: any;
+  createMnemonic?: any;
+  addressBook?: any;
+  t?: any;
+  style?: any;
+  classes?: any;
+}
 
+interface State {
+  open: boolean;
+  anchorEl?: any;
+}
+
+class DashboardMenu extends React.Component<Props, State> {
   constructor(props) {
     super(props);
     this.state = {
@@ -88,8 +92,9 @@ class DashboardMenu extends React.Component {
       generate, importJson, importLedger, importPrivateKey, importMnemonic, createMnemonic, addressBook,
     } = this.props;
     const {
-      t, style, muiTheme, classes,
+      style, classes,
     } = this.props;
+    const t = this.props.t || ((str: string) => (str));
     return (
       <div style={ style }>
         <MenuButton label={ t('list.popupMenuLabel')} onClick={this.openMenu} classes={classes} />
@@ -97,10 +102,10 @@ class DashboardMenu extends React.Component {
           open={this.state.open}
           anchorEl={this.state.anchorEl}
           anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-          targetOrigin={{horizontal: 'left', vertical: 'top'}}
-          onRequestClose={this.handleRequestClose}
+          // targetOrigin={{horizontal: 'left', vertical: 'top'}}
+          onClose={this.handleRequestClose}
         >
-          <List style={{border: `1px solid ${muiTheme.palette.borderColor}`}}>
+          <List>
             <ListItem button onClick={importLedger}>
               <ListItemIcon>
                 <LedgerIcon />
@@ -156,4 +161,4 @@ class DashboardMenu extends React.Component {
   }
 }
 
-export default withStyles(styles2)(muiThemeable()(DashboardMenu));
+export default withStyles(styles2)(DashboardMenu);

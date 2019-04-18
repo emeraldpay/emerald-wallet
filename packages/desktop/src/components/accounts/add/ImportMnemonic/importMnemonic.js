@@ -5,13 +5,11 @@ import { connect } from 'react-redux';
 import { Field, reduxForm } from 'redux-form';
 import { Page, Warning, WarningHeader, WarningText } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import { required, passwordMatch, minLength } from 'lib/validators';
 import { Row, styles as formStyles } from 'elements/Form';
-import TextField from 'elements/Form/TextField';
-import { Button } from '@emeraldwallet/ui';
+// import TextField from 'elements/Form/TextField';
+import { Button, HdPath } from '@emeraldwallet/ui';
 import screen from 'store/wallet/screen';
-import HdPath from 'components/common/HdPath';
 
 export const styles2 = {
   passwordLabel: {
@@ -192,4 +190,4 @@ export default connect(
       }
     },
   })
-)(muiThemeable()(importForm));
+)(importForm);

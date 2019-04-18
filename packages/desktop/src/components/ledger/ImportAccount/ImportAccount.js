@@ -1,12 +1,10 @@
 // @flow
 import React from 'react';
 import withStyles from 'react-jss';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import { Page, ButtonGroup } from '@emeraldplatform/ui';
 import { AddCircle as AddIcon, Back } from '@emeraldplatform/ui-icons';
-import HDPath from 'components/common/HdPath';
 import { Row, styles as formStyles } from 'elements/Form';
-import { Button } from '@emeraldwallet/ui';
+import { Button, HdPath } from '@emeraldwallet/ui';
 import AddrList from './AddrList';
 import Pager from './Pager';
 
@@ -32,7 +30,7 @@ class ImportAccount extends React.Component<Props> {
 
   render() {
     const {
-      hdbase, changeBaseHD, muiTheme, selected,
+      hdbase, changeBaseHD, selected,
     } = this.props;
     const { onAddSelected, onCancel, onDashboard } = this.props;
     const { classes } = this.props;
@@ -72,4 +70,4 @@ class ImportAccount extends React.Component<Props> {
   }
 }
 
-export default muiThemeable()(withStyles(styles2)(ImportAccount));
+export default withStyles(styles2)(ImportAccount);

@@ -1,7 +1,6 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import { connect } from 'react-redux';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import Immutable from 'immutable';
 import Contact from './Contact';
 import TopBar from '../../layout/TopBar';
@@ -54,6 +53,6 @@ const AddressBook = connect(
   }),
   (dispatch, ownProps) => ({
   })
-)(muiThemeable()(StyledContactList));
+)((StyledContactList));
 
 export default AddressBook;

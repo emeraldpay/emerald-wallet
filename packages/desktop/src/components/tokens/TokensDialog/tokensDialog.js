@@ -4,7 +4,7 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import IconButton from '@material-ui/core/IconButton';
 import { Close as CloseIcon } from '@emeraldplatform/ui-icons';
-import AddToken from '../AddToken';
+//import AddToken from '../AddToken';
 import TokensList from '../TokensList/list';
 
 const styles = {
@@ -56,7 +56,7 @@ export class TokensDialog extends React.Component {
               <TokensList/>
             </div>
             <div className={classes.addToken}>
-              <AddToken/>
+              {/*<AddToken/>*/}
             </div>
           </div>
         </DialogContent>

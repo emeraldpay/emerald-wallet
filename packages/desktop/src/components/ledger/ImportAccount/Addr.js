@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Radio from '@material-ui/core/Radio';
 import log from 'electron-log';
-import { TableRowColumn, TableRow } from 'material-ui/Table';
+// import { TableRowColumn, TableRow } from 'material-ui/Table';
 import { tables } from 'lib/styles';
 import { Address as AccountAddress } from '@emeraldplatform/ui';
 import AccountBalance from '../../accounts/Balance';
@@ -38,39 +38,39 @@ const Addr = ({
   const address = addr.get('address');
   const selectable = hasPath && hasAddr && !alreadyAdded;
   const balance = addr.get('value');
-
-  return (
-    <TableRow {...otherProps} selectable={false}>
-      <TableRowColumn style={tables.wideStyle}>
-        <div style={style.addrContainer}>
-          <div>
-            {address
-              && <Radio
-                checked={selectedValue === address}
-                disabled={!selectable}
-                value={address}
-                onChange={onSelected}
-              />}
-          </div>
-          <div>
-            {address && <AccountAddress id={address} />}
-          </div>
-        </div>
-      </TableRowColumn>
-      <TableRowColumn style={tables.mediumStyle}>{addr.get('hdpath')}</TableRowColumn>
-      <TableRowColumn style={tables.mediumStyle}>
-        {balance && <AccountBalance
-          symbol="ETC"
-          balance={balance}
-          showFiat={true}
-          withAvatar={false}
-        />}
-      </TableRowColumn>
-      <TableRowColumn style={tables.shortStyle}>
-        {usedLabel}
-      </TableRowColumn>
-    </TableRow>
-  );
+  return (<div>Stub</div>)
+  // return (
+  //   <TableRow {...otherProps} selectable={false}>
+  //     <TableRowColumn style={tables.wideStyle}>
+  //       <div style={style.addrContainer}>
+  //         <div>
+  //           {address
+  //             && <Radio
+  //               checked={selectedValue === address}
+  //               disabled={!selectable}
+  //               value={address}
+  //               onChange={onSelected}
+  //             />}
+  //         </div>
+  //         <div>
+  //           {address && <AccountAddress id={address} />}
+  //         </div>
+  //       </div>
+  //     </TableRowColumn>
+  //     <TableRowColumn style={tables.mediumStyle}>{addr.get('hdpath')}</TableRowColumn>
+  //     <TableRowColumn style={tables.mediumStyle}>
+  //       {balance && <AccountBalance
+  //         symbol="ETC"
+  //         balance={balance}
+  //         showFiat={true}
+  //         withAvatar={false}
+  //       />}
+  //     </TableRowColumn>
+  //     <TableRowColumn style={tables.shortStyle}>
+  //       {usedLabel}
+  //     </TableRowColumn>
+  //   </TableRow>
+  // );
 };
 
 export default connect(

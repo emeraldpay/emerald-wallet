@@ -4,7 +4,6 @@ import screen from 'store/wallet/screen';
 import accounts from 'store/vault/accounts';
 import Immutable from 'immutable';
 import { SubmissionError } from 'redux-form';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 
 import ImportMnemonic from '../../components/accounts/add/ImportMnemonic';
 
@@ -31,4 +30,4 @@ export default connect(
       dispatch(screen.actions.gotoScreen('home'));
     },
   })
-)(muiThemeable()(ImportMnemonic));
+)(ImportMnemonic);

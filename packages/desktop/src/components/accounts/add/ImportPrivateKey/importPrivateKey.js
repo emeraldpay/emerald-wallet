@@ -13,7 +13,7 @@ import { Back } from '@emeraldplatform/ui-icons';
 import { Button } from '@emeraldwallet/ui';
 import { utils } from '@emeraldwallet/core';
 import { Row, styles as formStyles } from 'elements/Form';
-import TextField from 'elements/Form/TextField';
+// import TextField from 'elements/Form/TextField';
 import accounts from 'store/vault/accounts';
 import screen from 'store/wallet/screen';
 import { required, passwordMatch, minLength } from 'lib/validators';
@@ -60,15 +60,15 @@ export class ImportPrivateKey extends React.Component {
                                     operations.
               </div>
               <div style={{marginTop: '30px'}}>
-                <Field
-                  name="password"
-                  type="password"
-                  hintText="At least 8 characters"
-                  component={TextField}
-                  fullWidth={true}
-                  underlineShow={false}
-                  validate={ [required, minLength(8)] }
-                />
+                {/*<Field*/}
+                {/*  name="password"*/}
+                {/*  type="password"*/}
+                {/*  hintText="At least 8 characters"*/}
+                {/*  component={TextField}*/}
+                {/*  fullWidth={true}*/}
+                {/*  underlineShow={false}*/}
+                {/*  validate={ [required, minLength(8)] }*/}
+                {/*/>*/}
               </div>
             </div>
           </div>
@@ -85,15 +85,15 @@ export class ImportPrivateKey extends React.Component {
         <Row>
           <div style={formStyles.left} />
           <div style={formStyles.right}>
-            <Field
-              hintText="Confirm Password"
-              name="confirmPassword"
-              type="password"
-              component={TextField}
-              fullWidth={true}
-              underlineShow={false}
-              validate={[required, passwordMatch]}
-            />
+            {/*<Field*/}
+            {/*  hintText="Confirm Password"*/}
+            {/*  name="confirmPassword"*/}
+            {/*  type="password"*/}
+            {/*  component={TextField}*/}
+            {/*  fullWidth={true}*/}
+            {/*  underlineShow={false}*/}
+            {/*  validate={[required, passwordMatch]}*/}
+            {/*/>*/}
           </div>
         </Row>
 
@@ -104,12 +104,12 @@ export class ImportPrivateKey extends React.Component {
             <div style={{width: '100%'}}>
               <div className={ classes.passwordLabel }>Enter a private key</div>
               <div>
-                <Field
-                  name="privateKey"
-                  component={ TextField }
-                  fullWidth={ true }
-                  underlineShow={ false }
-                />
+                {/*<Field*/}
+                {/*  name="privateKey"*/}
+                {/*  component={ TextField }*/}
+                {/*  fullWidth={ true }*/}
+                {/*  underlineShow={ false }*/}
+                {/*/>*/}
               </div>
             </div>
           </div>

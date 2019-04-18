@@ -6,11 +6,10 @@ import {
   Page, Warning, WarningHeader, WarningText
 } from '@emeraldplatform/ui';
 import { Field, reduxForm } from 'redux-form';
-import { Button } from '@emeraldwallet/ui';
-import TextField from 'elements/Form/TextField';
+import { Button, PasswordInput } from '@emeraldwallet/ui';
+// import TextField from 'elements/Form/TextField';
 import { required } from 'lib/validators';
 import { Row, styles as formStyles } from 'elements/Form';
-import PasswordInput from 'components/common/PasswordInput';
 import Advice from './advice';
 import LoadingIcon from '../LoadingIcon';
 
@@ -127,16 +126,16 @@ class PasswordDialog extends React.Component {
           <Row>
             <div style={formStyles.left} />
             <div style={formStyles.right}>
-              <Field
-                hintText="Confirm Password"
-                name="confirmPassword"
-                type="password"
-                component={TextField}
-                fullWidth={true}
-                underlineShow={false}
-                onChange={this.onConfirmChange.bind(this)}
-                validate={[required, this.passwordMatch.bind(this)]}
-              />
+              {/*<Field*/}
+              {/*  hintText="Confirm Password"*/}
+              {/*  name="confirmPassword"*/}
+              {/*  type="password"*/}
+              {/*  component={TextField}*/}
+              {/*  fullWidth={true}*/}
+              {/*  underlineShow={false}*/}
+              {/*  onChange={this.onConfirmChange.bind(this)}*/}
+              {/*  validate={[required, this.passwordMatch.bind(this)]}*/}
+              {/*/>*/}
             </div>
           </Row>
 

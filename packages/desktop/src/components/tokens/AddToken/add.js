@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import {
   Field, reduxForm, change, formValueSelector, reset
 } from 'redux-form';
-import TextField from 'elements/Form/TextField';
+// import TextField from 'elements/Form/TextField';
 import { required, address } from 'lib/validators';
 import { ButtonGroup } from '@emeraldplatform/ui';
 import { Button } from '@emeraldwallet/ui';
@@ -46,16 +46,16 @@ export class AddToken extends React.Component {
             { !token
                     && <div>
                       <div>
-                        <Field
-                          name="address"
-                          component={ TextField }
-                          underlineShow={ false }
-                          fullWidth={ true }
-                          hintText="Token Contract Address"
-                          type="text"
-                          label="Token Contract Address"
-                          validate={ [required, address] }
-                        />
+                        {/*<Field*/}
+                        {/*  name="address"*/}
+                        {/*  component={ TextField }*/}
+                        {/*  underlineShow={ false }*/}
+                        {/*  fullWidth={ true }*/}
+                        {/*  hintText="Token Contract Address"*/}
+                        {/*  type="text"*/}
+                        {/*  label="Token Contract Address"*/}
+                        {/*  validate={ [required, address] }*/}
+                        {/*/>*/}
                       </div>
                       <div className={ classes.actionButtons }>
                         <Button

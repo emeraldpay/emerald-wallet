@@ -13,7 +13,7 @@ const maxWidth = '1150px';
 
 const Render = translate('common')((props) => {
   return (
-    <div theme={theme}>
+    <ThemeProvider theme={theme}>
       <div style={{height: '100%', backgroundColor: theme.palette.background.default}} className="application">
         {props.screen !== 'paper-wallet' && (!props.launcherType || props.launcherType !== 'none') && <Header/>}
         <div style={{margin: '20px auto', maxWidth}}>
@@ -23,7 +23,7 @@ const Render = translate('common')((props) => {
         <NotificationBar/>
         <Dialog/>
       </div>
-    </div>
+    </ThemeProvider>
   );
 });
 

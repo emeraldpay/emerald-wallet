@@ -4,7 +4,6 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import { saveJson } from '../../../lib/saveAs';
 import accounts from '../../../store/vault/accounts';
 import screen from '../../../store/wallet/screen';
@@ -147,4 +146,4 @@ class GenerateAccount extends React.Component<Props, State> {
   }
 }
 
-export default connect()(translate('accounts')(muiThemeable()(GenerateAccount)));
+export default connect()(translate('accounts')(GenerateAccount));

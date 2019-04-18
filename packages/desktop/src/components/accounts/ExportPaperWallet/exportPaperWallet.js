@@ -7,7 +7,7 @@ import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import { Button } from '@emeraldwallet/ui';
 import { Row, styles as formStyles } from '../../../elements/Form';
-import TextField from '../../../elements/Form/TextField';
+// import TextField from '../../../elements/Form/TextField';
 import screen from '../../../store/wallet/screen';
 import accounts from '../../../store/vault/accounts';
 
@@ -58,13 +58,13 @@ class ExportPaperWallet extends React.Component {
               <div className={classes.passwordSubLabel}>
                 Password needs for confirm all wallet operations.</div>
               <div style={{ marginTop: '30px' }}>
-                <Field
-                  name="password"
-                  type="password"
-                  component={ TextField }
-                  fullWidth={ true }
-                  underlineShow={ false }
-                />
+                {/*<Field*/}
+                {/*  name="password"*/}
+                {/*  type="password"*/}
+                {/*  component={ TextField }*/}
+                {/*  fullWidth={ true }*/}
+                {/*  underlineShow={ false }*/}
+                {/*/>*/}
               </div>
             </div>
           </div>

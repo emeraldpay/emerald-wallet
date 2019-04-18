@@ -1,10 +1,9 @@
 import React from 'react';
 import withStyles from 'react-jss';
-import { connect } from 'react-redux';
-import { translate } from 'react-i18next';
-
-import { gotoScreen, showDialog } from '../../../store/wallet/screen/screenActions';
-import Menu from './menu';
+import {connect} from 'react-redux';
+import {translate} from 'react-i18next';
+import {DashboardMenu as Menu} from '@emeraldwallet/ui';
+import {gotoScreen, showDialog} from '../../../store/wallet/screen/screenActions';
 
 const styles2 = {
   header: {
@@ -25,22 +24,22 @@ export class Header extends React.Component {
     const {
       generate, importJson, importLedger, importPrivateKey, importMnemonic, addToken, createMnemonic, showAddressBook,
     } = this.props;
-    const { t, classes } = this.props;
+    const {t, classes} = this.props;
     return (
-      <div className={ classes.header }>
+      <div className={classes.header}>
         <div>
-          <span className={ classes.title }>{ t('list.title') }</span>
+          <span className={classes.title}>{t('list.title')}</span>
         </div>
         <Menu
-          generate={ generate }
-          importJson={ importJson }
-          importLedger={ importLedger }
-          importPrivateKey={ importPrivateKey }
-          importMnemonic={ importMnemonic }
-          createMnemonic={ createMnemonic }
-          addressBook={ showAddressBook }
-          addToken={ addToken }
-          t={ t }
+          generate={generate}
+          importJson={importJson}
+          importLedger={importLedger}
+          importPrivateKey={importPrivateKey}
+          importMnemonic={importMnemonic}
+          createMnemonic={createMnemonic}
+          addressBook={showAddressBook}
+          addToken={addToken}
+          t={t}
         />
       </div>);
   }

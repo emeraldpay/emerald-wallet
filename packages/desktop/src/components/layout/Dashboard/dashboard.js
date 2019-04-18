@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import Immutable from 'immutable';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
-// import TransactionsHistory from '../../tx/TxHistory';
+import TransactionsHistory from '../../tx/TxHistory';
 import AccountsList from '../../accounts/AccountList';
 import Header from './header';
 
@@ -34,7 +34,7 @@ const Dashboard = (props) => {
     <React.Fragment>
       <Header/>
       <AccountsList/>
-      {/*<TransactionsHistory/>*/}
+      <TransactionsHistory/>
     </React.Fragment>
   );
 };

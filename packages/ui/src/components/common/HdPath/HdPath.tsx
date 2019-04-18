@@ -1,8 +1,5 @@
-// @flow
-import React from 'react';
-import withStyles from 'react-jss';
-import PropTypes from 'prop-types';
-import { AutoComplete } from 'material-ui';
+import * as React from 'react';
+import {CSSProperties, withStyles} from '@material-ui/styles';
 
 export const styles = {
   container: {
@@ -11,7 +8,7 @@ export const styles = {
     borderRadius: '1px',
     paddingLeft: '10px',
     paddingRight: '10px',
-  },
+  } as CSSProperties,
 };
 
 const predefinedHdPaths = [
@@ -22,12 +19,13 @@ const predefinedHdPaths = [
   'm/44\'/60\'/0\'',
 ];
 
-export class HdPath extends React.Component {
-  static propTypes = {
-    onChange: PropTypes.func,
-    value: PropTypes.string,
-  };
+interface Props {
+  onChange?: any;
+  value?: string;
+  classes?: any;
+}
 
+export class HdPath extends React.Component<Props> {
   onUpdateInput = (searchText: string, dataSource: Array<any>, params: any) => {
     if (this.props.onChange) {
       this.props.onChange(searchText);
@@ -38,15 +36,15 @@ export class HdPath extends React.Component {
     const { value, classes } = this.props;
     return (
       <div className={ classes.container }>
-        <AutoComplete
-          searchText={ value }
-          filter={ AutoComplete.noFilter }
-          openOnFocus={ true }
-          dataSource={ predefinedHdPaths }
-          onUpdateInput={ this.onUpdateInput }
-          underlineShow={ false }
-          fullWidth={ true }
-        />
+        {/*<AutoComplete*/}
+        {/*  searchText={ value }*/}
+        {/*  filter={ AutoComplete.noFilter }*/}
+        {/*  openOnFocus={ true }*/}
+        {/*  dataSource={ predefinedHdPaths }*/}
+        {/*  onUpdateInput={ this.onUpdateInput }*/}
+        {/*  underlineShow={ false }*/}
+        {/*  fullWidth={ true }*/}
+        {/*/>*/}
       </div>
     );
   }

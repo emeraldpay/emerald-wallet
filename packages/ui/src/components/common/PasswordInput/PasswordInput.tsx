@@ -1,27 +1,35 @@
-import React from 'react';
-import PropTypes from 'prop-types';
+import * as React from 'react';
 import { ViewVisible as EyeIcon } from '@emeraldplatform/ui-icons';
-import { Warning, WarningText } from '@emeraldplatform/ui';
+import { Warning, WarningText, Input } from '@emeraldplatform/ui';
 import IconButton from '@material-ui/core/IconButton';
-import TextField from '../../../elements/Form/TextField';
 
+interface Props {
+  onChange?: any;
+  error?: string;
+}
 
-export default class PasswordInput extends React.Component {
-    static propTypes = {
-      onChange: PropTypes.func,
-      error: PropTypes.string,
-    }
+interface State {
+  value: string;
+  showPassword: boolean;
+}
 
-    constructor(props) {
+export class PasswordInput extends React.Component<Props, State> {
+    constructor(props: Props) {
       super(props);
       this.state = {
+        value: '',
         showPassword: false,
       };
     }
 
-    onInputChange = (event, newValue) => {
+    onInputChange = (event: any) => {
       const { onChange } = this.props;
-      onChange(newValue);
+      if (onChange) {
+        onChange(event.target.value);
+      }
+      this.setState({
+        value: event.target.value,
+      })
     };
 
     handleEyeClick = () => {
@@ -29,7 +37,7 @@ export default class PasswordInput extends React.Component {
       this.setState({
         showPassword: !showPassword,
       });
-    }
+    };
 
     renderWarning = () => (
       <div style={{ marginTop: '10px' }}>
@@ -55,15 +63,13 @@ export default class PasswordInput extends React.Component {
       return (
         <div>
           <div>
-            <TextField
-              error={ error }
+            <Input
+              value={ this.state.value }
+              // error={ error }
               rightIcon={ EyeIconButton }
               onChange={ this.onInputChange }
-              hintText="At least 8 characters"
+              // hintText="At least 8 characters"
               type={showPassword ? 'text' : 'password'}
-              name="password"
-              fullWidth={ true }
-              underlineShow={ false }
             />
           </div>
           { error && this.renderWarning() }
@@ -71,3 +77,5 @@ export default class PasswordInput extends React.Component {
       );
     }
 }
+
+export default PasswordInput;

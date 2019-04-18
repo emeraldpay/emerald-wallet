@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import {
-  Table, TableBody, TableHeader, TableHeaderColumn, TableRow
-} from 'material-ui/Table';
+// import {
+//   Table, TableBody, TableHeader, TableHeaderColumn, TableRow
+// } from 'material-ui/Table';
 import { tables } from 'lib/styles';
 import ledger from '../../../store/ledger';
 import Addr from './Addr';
@@ -19,26 +19,27 @@ class AddrList extends React.Component {
 
     render() {
       const { addresses, selectedAddress } = this.props;
-      return (
-        <Table selectable={ false }>
-          <TableHeader displaySelectAll={ false } adjustForCheckbox={ false }>
-            <TableRow>
-              <TableHeaderColumn style={tables.wideStyle}>ADDRESS</TableHeaderColumn>
-              <TableHeaderColumn style={tables.mediumStyle}>HD PATH</TableHeaderColumn>
-              <TableHeaderColumn style={tables.mediumStyle}>BALANCE</TableHeaderColumn>
-              <TableHeaderColumn style={tables.shortStyle}>STATUS</TableHeaderColumn>
-            </TableRow>
-          </TableHeader>
-          <TableBody deselectOnClickaway={ false }>
-            { addresses.map((addr) => <Addr
-              selectedValue={ selectedAddress }
-              onSelected={ this.handleAddrSelection }
-              key={ addr.get('hdpath') }
-              addr={ addr }
-            />)}
-          </TableBody>
-        </Table>
-      );
+      return <div>Stub</div>
+      // return (
+      //   <Table selectable={ false }>
+      //     <TableHeader displaySelectAll={ false } adjustForCheckbox={ false }>
+      //       <TableRow>
+      //         <TableHeaderColumn style={tables.wideStyle}>ADDRESS</TableHeaderColumn>
+      //         <TableHeaderColumn style={tables.mediumStyle}>HD PATH</TableHeaderColumn>
+      //         <TableHeaderColumn style={tables.mediumStyle}>BALANCE</TableHeaderColumn>
+      //         <TableHeaderColumn style={tables.shortStyle}>STATUS</TableHeaderColumn>
+      //       </TableRow>
+      //     </TableHeader>
+      //     <TableBody deselectOnClickaway={ false }>
+      //       { addresses.map((addr) => <Addr
+      //         selectedValue={ selectedAddress }
+      //         onSelected={ this.handleAddrSelection }
+      //         key={ addr.get('hdpath') }
+      //         addr={ addr }
+      //       />)}
+      //     </TableBody>
+      //   </Table>
+      // );
     }
 }
 

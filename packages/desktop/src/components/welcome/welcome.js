@@ -79,7 +79,7 @@ function isEmpty(val) {
   return typeof val === 'undefined' || (typeof val === 'string' && val.length === 0);
 }
 
-const Welcome = connect(
+export default connect(
   (state, ownProps) => {
     return ({
       message: state.launcher.getIn(['message', 'text']),
@@ -92,5 +92,3 @@ const Welcome = connect(
   },
   (dispatch, ownProps) => ({})
 )(StyledWelcome);
-
-export default Welcome;

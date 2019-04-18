@@ -1,7 +1,7 @@
 import React from 'react';
 import {Field, reduxForm} from 'redux-form';
 import {Page, ButtonGroup} from '@emeraldplatform/ui';
-import TextField from 'elements/Form/TextField';
+// import TextField from 'elements/Form/TextField';
 import {required, address} from 'lib/validators';
 import {Row, styles as formStyles} from 'elements/Form';
 import { Button } from '@emeraldwallet/ui';
@@ -31,15 +31,15 @@ class ContactForm extends React.Component {
             <div style={formStyles.fieldName}>Address</div>
           </div>
           <div style={formStyles.right}>
-            <Field
-              underlineShow={false}
-              name="address"
-              component={TextField}
-              type="text"
-              disabled={blockAddress}
-              fullWidth={true}
-              validate={[required, address]}
-            />
+            {/*<Field*/}
+            {/*  underlineShow={false}*/}
+            {/*  name="address"*/}
+            {/*  component={TextField}*/}
+            {/*  type="text"*/}
+            {/*  disabled={blockAddress}*/}
+            {/*  fullWidth={true}*/}
+            {/*  validate={[required, address]}*/}
+            {/*/>*/}
           </div>
         </Row>
         <Row>
@@ -47,12 +47,13 @@ class ContactForm extends React.Component {
             <div style={formStyles.fieldName}>Name</div>
           </div>
           <div style={formStyles.right}>
-            <Field
-              underlineShow={false}
-              name="name"
-              component={TextField}
-              type="text"
-              validate={required}/></div>
+            {/*<Field*/}
+            {/*  underlineShow={false}*/}
+            {/*  name="name"*/}
+            {/*  component={TextField}*/}
+            {/*  type="text"*/}
+            {/*  validate={required}/>*/}
+          </div>
         </Row>
         {/* <Row>
       <div style={formStyles.left}>
