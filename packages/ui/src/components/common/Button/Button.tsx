@@ -30,13 +30,13 @@ const Btn = (props: Props) => {
   return (
     <Button
       // size='medium'
-      // disabled={disabled}
-      // color={primary ? 'primary' : 'secondary'}
+      disabled={disabled}
+      color={primary ? 'primary' : 'secondary'}
       // href={href}
-      // variant={variant || 'contained'}
+      variant={variant || 'contained'}
       // style={style}
-      // onClick={onClick}
-      // {...restProps}
+      onClick={onClick}
+      {...restProps}
     >
       {icon}
       {label}

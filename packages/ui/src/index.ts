@@ -11,7 +11,7 @@ export { default as Landing } from './components/Landing';
 export { default as PaperWallet } from './components/accounts/PaperWallet';
 export { default as Settings } from './components/Settings';
 export { default as ErrorDialog } from './components/common/ErrorDialog';
-
+export { default as NotificationBar } from './components/common/NotificationBar';
 export { default as TxDetails } from './components/tx/TxDetails';
 export { default as CreateTx } from './components/tx/send/CreateTx';
 export { default as SignTx } from './components/tx/send/SignTx';
