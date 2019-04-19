@@ -1,6 +1,6 @@
 import React from 'react';
 import {AppBar, LinearProgress, Toolbar} from '@material-ui/core';
-import {withStyles, withTheme} from '@material-ui/styles';
+import {withStyles} from '@material-ui/styles';
 import {Button} from '@emeraldwallet/ui';
 import {Block as BlockIcon, Settings as SettingsIcon} from '@emeraldplatform/ui-icons';
 import SyncWarning from '../../../containers/SyncWarning';
@@ -24,7 +24,6 @@ const styles = (theme) => ({
   },
   appBarRoot: {
     backgroundColor: theme.palette.primary.contrastText,
-    borderBottom: `1px solid ${theme.palette.secondary.main}`
   },
 });
 
@@ -96,7 +95,7 @@ const Header = (props) => {
   return (
     <div>
       <div className={props.classes.appBarRoot}>
-        <AppBar color="inherit">
+        <AppBar position="static" color="inherit">
           <Toolbar>
             <EmeraldTitle />
             <div className={props.classes.appBarRight}>
@@ -113,5 +112,4 @@ const Header = (props) => {
   );
 };
 
-const StyledHeader = withStyles(styles)(Header);
-export default StyledHeader;
+export default withStyles(styles)(Header);

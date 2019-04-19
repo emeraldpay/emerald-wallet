@@ -47,7 +47,7 @@
   },
   "jest": {
     "preset": "ts-jest",
-    "testEnvironment": "node",
+    "testEnvironment": "jsdom",
     "testPathIgnorePatterns": [
       "<rootDir>/lib/",
       "<rootDir>/node_modules/"

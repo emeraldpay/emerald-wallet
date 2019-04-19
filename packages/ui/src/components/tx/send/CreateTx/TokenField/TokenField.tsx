@@ -8,7 +8,7 @@ import FormLabel from '../FormLabel';
 function getStyles(theme?: any) {
   return {
     balance: {
-      color: theme.palette.text.secondary,
+      color: theme.palette && theme.palette.text.secondary,
       wordSpacing: '3px',
       letterSpacing: '1px',
       fontWeight: 200,
