@@ -8,6 +8,11 @@ env:
 cache:
   directories:
     - "node_modules"
+    - "packages/core/node_modules"
+    - "packages/desktop/node_modules"
+    - "packages/erc20/node_modules"
+    - "packages/services/node_modules"
+    - "packages/ui/node_modules"
 
 # Need for gitversion
 git:
@@ -58,12 +63,7 @@ addons:
     - libusb-1.0-0-dev
     - mono-complete
     - libcurl3
-    # - gcc-multilib
-    # - g++-multilib
-    # - gcc-4.8-multilib
-    # - g++-4.8-multilib
-    # - ia32-libs
-    # - libc6-dev #predefs
+
 deploy:
   - provider: script
     script: ./gcloud-deploy.sh
