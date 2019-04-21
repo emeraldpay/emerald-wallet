@@ -9,6 +9,10 @@
       "npmClientArgs": [
         "--ignore-engines"
       ]
+    },
+    "version": {
+      "message": "solution: publish %s",
+      "allowBranch": ["master", "release/*"]
     }
   }
 }
