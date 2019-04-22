@@ -10,18 +10,18 @@ import launcher from '../../../store/launcher';
 import Account from './account';
 import Wallet from '../../../store/wallet';
 
-const styles2 = (theme) =>({
+const styles = (theme) =>({
   container: {
     marginBottom: '10px',
   },
   listItem: {
     marginBottom: '10px',
-    border: `1px solid ${theme.palette.secondary.main}`,
+    border: `1px solid ${theme.palette.divider}`,
   },
   hiddenListItem: {
     opacity: 0.4,
     marginBottom: '10px',
-    border: `1px solid ${theme.palette.secondary.main}`,
+    border: `1px solid ${theme.palette.divider}`,
   },
 });
 
@@ -56,7 +56,7 @@ AccountList.propTypes = {
   accounts: PropTypes.object.isRequired,
 };
 
-const StyledAccountList = withStyles(styles2)(AccountList);
+const StyledAccountList = withStyles(styles)(AccountList);
 
 export default connect(
   (state, ownProps) => {

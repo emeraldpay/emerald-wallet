@@ -11,7 +11,7 @@ const styles2 = (theme) => ({
   container: {
     padding: '30px 30px 20px',
     backgroundColor: 'white',
-    border: `1px solid ${theme.palette.secondary.main}`,
+    border: `1px solid ${theme.palette.divider}`,
   },
 });
 

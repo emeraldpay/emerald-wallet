@@ -4,6 +4,7 @@ export { default as Logo} from './components/common/Logo';
 export { default as Terms } from './components/welcome/Terms';
 export { default as OpenWallet } from './components/welcome/OpenWallet';
 export { default as About } from './components/About';
+export { default as ImportMnemonic } from './components/accounts/ImportMnemonic';
 export { default as ReceiveDialog } from './components/accounts/ReceiveDialog';
 export { default as AccountActionsMenu } from './components/accounts/AccountActionsMenu';
 export { default as Balance } from './components/accounts/Balance';
