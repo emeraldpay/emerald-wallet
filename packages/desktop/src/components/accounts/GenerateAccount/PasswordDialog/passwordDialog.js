@@ -3,7 +3,7 @@ import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import { Back } from '@emeraldplatform/ui-icons';
 import {
-  Page, Warning, WarningHeader, WarningText
+  Page, Warning, WarningHeader, WarningText, Input
 } from '@emeraldplatform/ui';
 import { Field, reduxForm } from 'redux-form';
 import { Button, PasswordInput } from '@emeraldwallet/ui';
@@ -42,6 +42,7 @@ class PasswordDialog extends React.Component {
     this.state = {
       passphrase: '',
       passphraseError: null,
+      confirmError: null,
       confirmPassword: null,
     };
   }
@@ -58,7 +59,9 @@ class PasswordDialog extends React.Component {
     }
 
     if (passphrase !== confirmPassword) {
-      return;
+      return this.setState({
+        confirmError: `Passwords does not match`,
+      });
     }
 
     onGenerate(passphrase);
@@ -77,7 +80,7 @@ class PasswordDialog extends React.Component {
 
   onConfirmChange(val) {
     this.setState({
-      confirmPassword: val.currentTarget.value,
+      confirmPassword: val.target.value,
     });
   }
 
@@ -89,7 +92,7 @@ class PasswordDialog extends React.Component {
 
   render() {
     const { onDashboard, t, classes } = this.props;
-    const { passphraseError } = this.state;
+    const { passphraseError, confirmError, confirmPassword } = this.state;
 
     return (
       <Page title={ t('generate.title') } leftIcon={<Back onClick={onDashboard} />}>
@@ -126,16 +129,14 @@ class PasswordDialog extends React.Component {
           <Row>
             <div style={formStyles.left} />
             <div style={formStyles.right}>
-              {/*<Field*/}
-              {/*  hintText="Confirm Password"*/}
-              {/*  name="confirmPassword"*/}
-              {/*  type="password"*/}
-              {/*  component={TextField}*/}
-              {/*  fullWidth={true}*/}
-              {/*  underlineShow={false}*/}
-              {/*  onChange={this.onConfirmChange.bind(this)}*/}
-              {/*  validate={[required, this.passwordMatch.bind(this)]}*/}
-              {/*/>*/}
+              <Input
+                errorText={confirmError}
+                value={confirmPassword}
+                placeholder="Confirm Password"
+                name="confirmPassword"
+                type="password"
+                onChange={this.onConfirmChange.bind(this)}
+              />
             </div>
           </Row>
 

@@ -6,10 +6,9 @@ import { connect } from 'react-redux';
 import {
   Field, reduxForm, SubmissionError
 } from 'redux-form';
-import { Page, Warning, WarningText } from '@emeraldplatform/ui';
+import { Page, Warning, WarningText, Input } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import { Button } from '@emeraldwallet/ui';
-// import TextField from 'elements/Form/TextField';
 import { Row, styles as formStyles } from 'elements/Form';
 import accounts from 'store/vault/accounts';
 import screen from 'store/wallet/screen';
@@ -50,16 +49,12 @@ export class ConfirmMnemonic extends React.Component {
             <div style={{width: '100%'}}>
               <div className={ classes.mnemonicLabel }>Confirm your mnemonic phrase</div>
               <div>
-                {/*<Field*/}
-                {/*  multiLine={ true }*/}
-                {/*  rowsMax={ 4 }*/}
-                {/*  rows={ 2 }*/}
-                {/*  name="mnemonic"*/}
-                {/*  component={ TextField }*/}
-                {/*  fullWidth={ true }*/}
-                {/*  underlineShow={ false }*/}
-                {/*  validate={ [required, validateConfirm] }*/}
-                {/*/>*/}
+                <Input
+                  multiline={ true }
+                  rowsMax={ 4 }
+                  rows={ 4 }
+                  value={this.props.mnemonic }
+                />
               </div>
             </div>
           </div>

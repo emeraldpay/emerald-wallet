@@ -1,11 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import { ImportMnemonic, NewMnemonic } from '@emeraldwallet/ui';
+import ConfirmMnemonic from '../add/ConfirmMnemonic';
 import screen from 'store/wallet/screen';
 import accounts from 'store/vault/accounts';
-
-import ImportMnemonic from '../add/ImportMnemonic';
-import ConfirmMnemonic from '../add/ConfirmMnemonic';
-import NewMnemonic from './NewMnemonic';
 
 const PAGES = {
   GENERATE: 1,
@@ -50,7 +48,6 @@ class MnemonicWizard extends React.Component {
     });
   };
 
-
   getPage() {
     const { gotoDashboard } = this.props;
     const { page, mnemonic, formData } = this.state;
@@ -69,7 +66,7 @@ class MnemonicWizard extends React.Component {
         return (
           <ImportMnemonic
             mnemonic={ mnemonic }
-            onContinue={ this.gotoConfirm }
+            onSubmit={ this.gotoConfirm }
             onBack={ this.gotoGenerate }
           />
         );
@@ -87,7 +84,6 @@ class MnemonicWizard extends React.Component {
       default: return null;
     }
   }
-
 
   render() {
     const { page } = this.state;

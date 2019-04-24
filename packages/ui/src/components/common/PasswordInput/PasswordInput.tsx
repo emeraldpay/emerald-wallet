@@ -65,10 +65,10 @@ export class PasswordInput extends React.Component<Props, State> {
           <div>
             <Input
               value={ this.state.value }
-              // error={ error }
+              errorText={ error }
               rightIcon={ EyeIconButton }
               onChange={ this.onInputChange }
-              // hintText="At least 8 characters"
+              placeholder="At least 8 characters"
               type={showPassword ? 'text' : 'password'}
             />
           </div>

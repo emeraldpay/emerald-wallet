@@ -4,14 +4,17 @@ import screen from 'store/wallet/screen';
 import accounts from 'store/vault/accounts';
 import Immutable from 'immutable';
 import { SubmissionError } from 'redux-form';
-
-import ImportMnemonic from '../../components/accounts/add/ImportMnemonic';
+import { ImportMnemonic } from '@emeraldwallet/ui';
 
 export default connect(
   (state, ownProps) => ({
+    initialValues: {
+      mnemonic: ownProps.mnemonic,
+      hdpath: "m/44'/60'/160720'/0'",
+    },
   }),
   (dispatch, ownProps) => ({
-    onContinue: (data) => {
+    onSubmit: (data) => {
       return dispatch(accounts.actions.importMnemonic(data.password, data.mnemonic, data.hdpath, '', ''))
         .then((result) => {
           if (result.error) {

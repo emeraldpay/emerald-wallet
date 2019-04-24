@@ -1109,10 +1109,27 @@
     bignumber.js "8.0.2"
     ethereumjs-abi "0.6.7"
 
+"@emeraldplatform/contracts@^0.5.0-rc.0":
+  version "0.5.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@emeraldplatform/contracts/-/contracts-0.5.0-rc.0.tgz#ca4c811187049ffd58389cb35b09deed1dc7df84"
+  integrity sha512-UtZZS1uHs1ElvkG6SOCu0YJHM1ppuO5Yl/DrLD+ZATHn05X/2deh3F9wRydxU3zHKyMg2MLF+6RkQd2LePq34A==
+  dependencies:
+    bignumber.js "8.0.2"
+    ethereumjs-abi "0.6.7"
+
 "@emeraldplatform/core@^0.5.0-gamma.0":
   version "0.5.0-gamma.0"
   resolved "https://registry.yarnpkg.com/@emeraldplatform/core/-/core-0.5.0-gamma.0.tgz#a780d45da4741dc2f5b225bdab9cb0fa4baf753e"
   integrity sha512-wiCpQM/qECp6rrd7SpUGxxoV1iDH5CiutY9Itq5c4mkl9GDd6F6NRm/G26pBLAIxhnLkbPeY5Y1gg3H1KChq1Q==
+  dependencies:
+    bignumber.js "8.0.2"
+    ethereumjs-abi "0.6.7"
+    ethereumjs-util "6.1.0"
+
+"@emeraldplatform/core@^0.5.0-rc.0":
+  version "0.5.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@emeraldplatform/core/-/core-0.5.0-rc.0.tgz#054580221fb05dcd4a0919f745b1721f474a5c4c"
+  integrity sha512-PZksqpuc0eLjCc8wJjpgtZz+Tse6c8fMJ2vlvKrpJKp/JHBrCIQxmhwJe+azJji5kel4enCqem/zgaJqibZEsQ==
   dependencies:
     bignumber.js "8.0.2"
     ethereumjs-abi "0.6.7"
@@ -1156,6 +1173,23 @@
     "@emeraldplatform/rpc" "^0.5.0-gamma.0"
     bignumber.js "8.0.2"
 
+"@emeraldplatform/eth-rpc@^0.5.0-rc.0":
+  version "0.5.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@emeraldplatform/eth-rpc/-/eth-rpc-0.5.0-rc.0.tgz#3cb137d4db6f119adcb5295bf73328531f983951"
+  integrity sha512-Eq6F026YCiDVsvxO1Q3t8VgkiwyKvZ+Y7k9tqQz7S4Dnv126moDDUm+KDxi/rVrr5V8IS/b9YG8oxbg1bvm5cw==
+  dependencies:
+    "@emeraldplatform/core" "^0.5.0-rc.0"
+    "@emeraldplatform/rpc" "^0.5.0-rc.0"
+    bignumber.js "8.0.2"
+
+"@emeraldplatform/eth@^0.5.0-rc.0":
+  version "0.5.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@emeraldplatform/eth/-/eth-0.5.0-rc.0.tgz#1d0cb12293bd0250791508656515f1112797a4af"
+  integrity sha512-GtkXYOUU2hiNyPx3GCuQgwemKHNSwLOD4YIQHM03cEE0YC3F3Q0QiuxFKW1mpEIAoB7SOM9LoAXhMulvaqpGXg==
+  dependencies:
+    bignumber.js "8.0.2"
+    qs "6.7.0"
+
 "@emeraldplatform/rpc@^0.5.0-gamma.0":
   version "0.5.0-gamma.0"
   resolved "https://registry.yarnpkg.com/@emeraldplatform/rpc/-/rpc-0.5.0-gamma.0.tgz#d9e5ac795b5f69eb3b6545f855a48ea2927f8dd8"
@@ -1163,25 +1197,32 @@
   dependencies:
     isomorphic-fetch "^2.2.1"
 
-"@emeraldplatform/ui-icons@^0.5.0-gamma.0":
-  version "0.5.0-gamma.0"
-  resolved "https://registry.yarnpkg.com/@emeraldplatform/ui-icons/-/ui-icons-0.5.0-gamma.0.tgz#52d66a0e1d5e8e37c21b38cfeb6a04254361dedc"
-  integrity sha512-PzlqDZpft9tjl5vUMu/Axye9ZKcIaLPJrvSIMwOdoP8q7yS/EFeDk83EYrM2EjTKxq8/diT3yePyBOZDqaElgQ==
+"@emeraldplatform/rpc@^0.5.0-rc.0":
+  version "0.5.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@emeraldplatform/rpc/-/rpc-0.5.0-rc.0.tgz#ecb1ca5d28e1e813c5b5eb3f6055153340be099c"
+  integrity sha512-7F+w2q9eDWPFyWXl1GuW1rxfCf6tYCwC5HUWQWTXRbAqWaNGfHJDXVm1o+nMkrxdMvdMXx+YSTWZEGnyMbHctw==
+  dependencies:
+    isomorphic-fetch "^2.2.1"
+
+"@emeraldplatform/ui-icons@^0.5.0-rc.0":
+  version "0.5.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@emeraldplatform/ui-icons/-/ui-icons-0.5.0-rc.0.tgz#b08ceb4b256d81542712f789039ac68ec3464276"
+  integrity sha512-mie6Z7Ul/yA5Anb4jQBKCj6pljHxOxIvT+kPEuup3BVc7L8UnPorgJ7dMPNwKCI7btCkgM4PhADaUxOl/N7bVA==
   dependencies:
     "@material-ui/core" "^4.0.0-alpha.6"
     react "^16.8.6"
 
-"@emeraldplatform/ui@^0.5.0-gamma.0":
-  version "0.5.0-gamma.0"
-  resolved "https://registry.yarnpkg.com/@emeraldplatform/ui/-/ui-0.5.0-gamma.0.tgz#cee07544808868c9eb41e1531063fb5cd9cc05a5"
-  integrity sha512-ahVQosFLoBZ0ourqhYeBYvzj1rLMY/YZdFdEiM2rPkoQSOxb1HsWge2b1MJE4xqhn1ndtmhcoLsN9msriDVxwQ==
+"@emeraldplatform/ui@^0.5.0-rc.0":
+  version "0.5.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@emeraldplatform/ui/-/ui-0.5.0-rc.0.tgz#8313cac33567ee83ac677c0c9c1d49f61ef76f95"
+  integrity sha512-riftGXQFlTHLg44vAzfU1yTHK7E7sqBijNK+yF+pX0TjMKRP/3eSY7+ED1nJTYislOBpGb2mJFaUpQm4Tz+pAw==
   dependencies:
-    "@emeraldplatform/contracts" "^0.5.0-gamma.0"
-    "@emeraldplatform/emerald-js" "^0.5.0-gamma.0"
-    "@emeraldplatform/eth-rpc" "^0.5.0-gamma.0"
-    "@emeraldplatform/rpc" "^0.5.0-gamma.0"
-    "@emeraldplatform/ui-icons" "^0.5.0-gamma.0"
-    "@emeraldplatform/vault" "^0.5.0-gamma.0"
+    "@emeraldplatform/contracts" "^0.5.0-rc.0"
+    "@emeraldplatform/eth" "^0.5.0-rc.0"
+    "@emeraldplatform/eth-rpc" "^0.5.0-rc.0"
+    "@emeraldplatform/rpc" "^0.5.0-rc.0"
+    "@emeraldplatform/ui-icons" "^0.5.0-rc.0"
+    "@emeraldplatform/vault" "^0.5.0-rc.0"
     "@material-ui/core" "^4.0.0-alpha.6"
     classnames "^2.2.6"
     copy-to-clipboard "^3.0.8"
@@ -1206,6 +1247,15 @@
   dependencies:
     "@emeraldplatform/core" "^0.5.0-gamma.0"
     "@emeraldplatform/rpc" "^0.5.0-gamma.0"
+    ethereumjs-wallet "0.6.3"
+
+"@emeraldplatform/vault@^0.5.0-rc.0":
+  version "0.5.0-rc.0"
+  resolved "https://registry.yarnpkg.com/@emeraldplatform/vault/-/vault-0.5.0-rc.0.tgz#828aaa7b261ab7550bd90bdaffd882ccec86693c"
+  integrity sha512-O73XIHTFhAiDpAjog0Ad05/TtbXA91eeG2ZOjG6h2VgLAqdkgsXkjAHjPpRapZ/tYUq7BJnOVmryUnLnYdFR7A==
+  dependencies:
+    "@emeraldplatform/core" "^0.5.0-rc.0"
+    "@emeraldplatform/rpc" "^0.5.0-rc.0"
     ethereumjs-wallet "0.6.3"
 
 "@emotion/cache@^0.8.8":
@@ -14707,7 +14757,7 @@ qs@6.5.2, qs@~6.5.2:
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.5.2.tgz#cb3ae806e8740444584ef154ce8ee98d403f3e36"
   integrity sha512-N5ZAX4/LxJmF+7wN74pUD6qAh9/wnvdQcjq9TZjevvXzSUo7bfmw91saqMjzGS2xq91/odN2dW/WOl7qQHNDGA==
 
-qs@^6.5.2, qs@^6.6.0:
+qs@6.7.0, qs@^6.5.2, qs@^6.6.0:
   version "6.7.0"
   resolved "https://registry.yarnpkg.com/qs/-/qs-6.7.0.tgz#41dc1a015e3d581f1621776be31afb2876a9b1bc"
   integrity sha512-VCdBRNFTX1fyE7Nb6FYoURo/SPe62QCaAyzJvUjwRaIsc+NePBEniHlvxFmmX56+HZphIGtV0XeCirBtpDrTyQ==

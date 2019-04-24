@@ -52,6 +52,7 @@ interface Props {
   classes: any;
   error?: any;
   invalid?: any;
+  mnemonic?: string;
 }
 
 interface State {
@@ -65,7 +66,7 @@ export class ImportMnemonic extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      mnemonic: '',
+      mnemonic: props.mnemonic || '',
       hdpath: '',
       password: '',
       confirmedPassword: '',
@@ -180,7 +181,7 @@ export class ImportMnemonic extends React.Component<Props, State> {
                     onChange={this.handleMnemonicChange}
                     multiline={true}
                     rowsMax={4}
-                    rows={2}
+                    rows={4}
                   />
                 </div>
               </div>
