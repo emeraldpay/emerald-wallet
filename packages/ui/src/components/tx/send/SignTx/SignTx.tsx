@@ -5,6 +5,7 @@ import {ArrowRight} from '@emeraldplatform/ui-icons';
 import {Divider, List, ListItem, ListItemText} from '@material-ui/core';
 import withStyles from '@material-ui/core/styles/withStyles';
 import Button from '../../../common/Button';
+import {Wei, Units} from "@emeraldplatform/eth";
 
 const styles = (theme?: any) => ({
   formRow: {
@@ -39,8 +40,8 @@ interface Props {
     amount: string;
     gasLimit: string;
   };
-  amountWei: any; //TODO Wei object
-  txFee?: any;
+  amount: Wei;
+  txFee?: Wei;
   fiatCurrency?: any;
   fiatRate?: any;
   value?: any;
@@ -148,7 +149,7 @@ class SignTx extends React.Component<Props, State> {
 
   render() {
     const {
-      value, fiatRate, fiatCurrency, txFee, tx, classes, amountWei
+      value, fiatRate, fiatCurrency, txFee, tx, classes, amount
     } = this.props;
     const {
       onCancel, onChangePassword, onSubmit,
@@ -166,7 +167,7 @@ class SignTx extends React.Component<Props, State> {
           }}>
             <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
               {/* <div>{USDValue} USD</div> */}
-              <div style={{fontSize: '28px'}} title={amountWei.value().toString() + " Wei"}>{amountWei.getEther(6)} {tx.token}</div>
+              <div style={{fontSize: '28px'}} title={amount.toString(Units.WEI, 0, true)}>{amount.toEther(6)} {tx.token}</div>
             </div>
             <div style={{display: hideAccounts ? 'none' : 'flex'}}>
               <ArrowRight/>
@@ -176,7 +177,7 @@ class SignTx extends React.Component<Props, State> {
         </div>
         <div style={{paddingTop: '35px', display: 'flex', justifyContent: 'center'}}>
         <span className={classes.fee}>
-          Plus {txFee} ETC for {tx.gasLimit} GAS.
+          Plus {txFee ? txFee.toString(Units.ETHER, 6, true) : '?'} ETC for {tx.gasLimit} GAS.
         </span>
         </div>
         {

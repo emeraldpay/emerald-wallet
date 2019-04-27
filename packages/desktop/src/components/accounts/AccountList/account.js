@@ -10,6 +10,7 @@ import { Button } from '@emeraldwallet/ui';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../Balance';
 import TokenUnits from '../../../lib/tokenUnits';
+import {Units} from "@emeraldplatform/eth";
 
 const styles2 = (theme) => ({
   tokensDivider: {
@@ -60,7 +61,7 @@ export class Account extends React.Component {
       };
 
       // TODO: we convert Wei to TokenUnits here
-      const balance = account.get('balance') ? new TokenUnits(account.get('balance').value(), 18) : null;
+      const balance = account.get('balance') ? new TokenUnits(account.get('balance').toWei(), 18) : null;
       const accId = account.get('id');
       return (
         <Card className={classes.card}>

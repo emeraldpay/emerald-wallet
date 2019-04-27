@@ -21,6 +21,7 @@ import Balance from '../Balance';
 import SecondaryMenu from '../SecondaryMenu';
 import TokenBalances from '../TokenBalances';
 import Wallet from '../../../store/wallet';
+import {Units} from "@emeraldplatform/eth/lib/wei";
 
 export const styles2 = {
   transContainer: {
@@ -68,7 +69,7 @@ export class AccountShow extends React.Component {
     } = this.props;
     // TODO: show pending balance too
     // TODO: we convert Wei to TokenUnits here
-    const balance = account.get('balance') ? new TokenUnits(account.get('balance').value(), 18) : null;
+    const balance = account.get('balance') ? new TokenUnits(account.get('balance').toWei(), 18) : null;
     const acc = {
       id: account.get('id'),
       description: account.get('description'),

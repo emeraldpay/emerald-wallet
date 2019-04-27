@@ -2,11 +2,12 @@ import * as React from 'react';
 import {Input} from '@emeraldplatform/ui';
 import Button from '../../../../common/Button';
 import FormLabel from '../FormLabel';
+import { Wei, Units } from '@emeraldplatform/eth';
 
 interface Props {
-  onChangeAmount?: any;
-  amount: string;
-  balance: string,
+  onChangeAmount?: Function;
+  amount?: Wei;
+  balance: Wei,
   onMaxClicked?: any;
 }
 
@@ -57,7 +58,7 @@ class AmountField extends React.Component<Props, State> {
             // containerStyle={this.inputStyles}
             // min="0"
             // max={this.props.balance}
-            value={this.props.amount}
+            value={this.props.amount ? this.props.amount.toUnit(Units.ETHER).toString() : ''}
             onChange={this.handleChangeAmount}
             errorText={errorText}
           />
