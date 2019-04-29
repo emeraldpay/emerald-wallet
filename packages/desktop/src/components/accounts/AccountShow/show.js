@@ -21,7 +21,6 @@ import Balance from '../Balance';
 import SecondaryMenu from '../SecondaryMenu';
 import TokenBalances from '../TokenBalances';
 import Wallet from '../../../store/wallet';
-import {Units} from "@emeraldplatform/eth/lib/wei";
 
 export const styles2 = {
   transContainer: {

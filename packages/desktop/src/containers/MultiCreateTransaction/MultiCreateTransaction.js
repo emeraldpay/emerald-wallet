@@ -4,8 +4,7 @@ import BigNumber from 'bignumber.js';
 import Tokens from 'store/vault/tokens';
 import { fromJS } from 'immutable';
 import { CreateTx, SignTx } from '@emeraldwallet/ui';
-import { Wei } from '@emeraldplatform/eth';
-import {Units} from "@emeraldplatform/eth/lib/wei";
+import { Wei, Units } from '@emeraldplatform/eth';
 import { convert, toBaseUnits } from '@emeraldplatform/core';
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
@@ -96,10 +95,12 @@ class MultiCreateTransaction extends React.Component {
     this.setTransaction('gasLimit', value || DEFAULT_GAS_LIMIT);
   }
 
+  /**
+   * @param amount Wei class
+   */
   onChangeAmount(amount) {
-    console.log('change amount', amount);
-    this.setTransaction('amount', amount);
-    this.setState({amount: new Wei(amount, Units.ETHER)});
+    this.setTransaction('amount', amount.toString());
+    this.setState({amount: amount});
   }
 
   componentDidUpdate(prevProps) {

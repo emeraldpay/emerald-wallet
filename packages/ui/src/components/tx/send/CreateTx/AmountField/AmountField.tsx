@@ -13,6 +13,7 @@ interface Props {
 
 interface State {
   errorText: string | null;
+  amountStr: string;
 }
 
 class AmountField extends React.Component<Props, State> {
@@ -20,19 +21,32 @@ class AmountField extends React.Component<Props, State> {
     super(props);
     this.state = {
       errorText: null,
+      amountStr: props.amount ? props.amount.toString(Units.ETHER, 6, false, false) : '0',
     };
   }
 
   handleChangeAmount = (event: any) => {
-    const amount = event.target.value;
-    if (this.props.onChangeAmount) {
-      this.props.onChangeAmount(amount);
-    }
-
-    if (!amount && amount !== 0) {
+    var amount = event.target.value || '';
+    this.setState({amountStr: amount});
+    amount = amount.trim();
+    if (amount == '') {
       this.setState({errorText: 'Required'});
-    } else {
+      return;
+    }
+    try {
+      const parsed = parseFloat(amount);
+      if (parsed < 0) {
+        this.setState({errorText: 'value must be positive number'});
+        return
+      }
+      const wei = new Wei(parsed, Units.ETHER);
       this.setState({errorText: null});
+
+      if (this.props.onChangeAmount) {
+        this.props.onChangeAmount(wei);
+      }
+    } catch (e) {
+      this.setState({errorText: 'Invalid value'});
     }
   };
 
@@ -58,7 +72,7 @@ class AmountField extends React.Component<Props, State> {
             // containerStyle={this.inputStyles}
             // min="0"
             // max={this.props.balance}
-            value={this.props.amount ? this.props.amount.toUnit(Units.ETHER).toString() : ''}
+            value={this.state.amountStr}
             onChange={this.handleChangeAmount}
             errorText={errorText}
           />
