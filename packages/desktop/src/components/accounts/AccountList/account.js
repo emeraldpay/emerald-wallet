@@ -10,7 +10,6 @@ import { Button } from '@emeraldwallet/ui';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../Balance';
 import TokenUnits from '../../../lib/tokenUnits';
-import { Units } from '@emeraldplatform/eth';
 
 const styles2 = (theme) => ({
   tokensDivider: {
