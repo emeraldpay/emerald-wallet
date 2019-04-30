@@ -13,12 +13,13 @@ class AboutContainer extends React.Component {
   }
 
   componentDidMount() {
-    ipcRenderer.send('get-version');
     ipcRenderer.once('get-version-result', (event, result) => {
       this.setState({
         connector: result.connector,
+        os: result.os,
       });
     });
+    ipcRenderer.send('get-version');
   }
 
   helpClick = () => {
@@ -37,13 +38,14 @@ class AboutContainer extends React.Component {
   };
 
   render() {
-    const {connector} = this.state;
+    const {connector, os} = this.state;
     return (
       <MuiThemeProvider theme={theme}>
         <About
           appVersion={version}
           vaultVersion={connector}
           gitVersion={gitversion}
+          osVersion={os}
           onButtonClick={this.onButtonClick}
           onHelpClick={this.onHelpClick}
           onLicenseClick={this.onLicenseClick}
