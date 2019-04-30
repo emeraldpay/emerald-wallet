@@ -6,7 +6,6 @@ import { fromJS } from 'immutable';
 import { CreateTx, SignTx } from '@emeraldwallet/ui';
 import { Wei } from '@emeraldplatform/emerald-js';
 import { convert, toBaseUnits } from '@emeraldplatform/core';
-import { etherToWei } from 'lib/convert';
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import { connect } from 'react-redux';
@@ -17,8 +16,6 @@ import ledger from 'store/ledger/';
 import Wallet from 'store/wallet';
 import TransactionShow from '../../components/tx/TxDetails';
 import { txFee, txFeeFiat, traceValidate } from './util';
-
-const { toHex, quantitiesToHex } = convert;
 
 const PAGES = {
   TX: 1,

@@ -5,9 +5,7 @@ import { Back } from '@emeraldplatform/ui-icons';
 import {
   Page, Warning, WarningHeader, WarningText, Input
 } from '@emeraldplatform/ui';
-import { Field, reduxForm } from 'redux-form';
 import { Button, PasswordInput } from '@emeraldwallet/ui';
-// import TextField from 'elements/Form/TextField';
 import { required } from 'lib/validators';
 import { Row, styles as formStyles } from 'elements/Form';
 import Advice from './advice';
@@ -170,11 +168,4 @@ class PasswordDialog extends React.Component {
   }
 }
 
-const StyledPasswordDialog = withStyles(styles2)(PasswordDialog);
-
-const passwordDialogForm = reduxForm({
-  form: 'confirmGeneratePassword',
-  fields: ['confirmPassword'],
-})(StyledPasswordDialog);
-
-export default passwordDialogForm;
+export default withStyles(styles2)(PasswordDialog);

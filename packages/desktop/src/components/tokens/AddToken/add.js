@@ -3,9 +3,9 @@ import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import { convert } from '@emeraldplatform/core';
 import { connect } from 'react-redux';
-import {
-  Field, reduxForm, change, formValueSelector, reset
-} from 'redux-form';
+// import {
+//   Field, reduxForm, change, formValueSelector, reset
+// } from 'redux-form';
 // import TextField from 'elements/Form/TextField';
 import { required, address } from 'lib/validators';
 import { ButtonGroup } from '@emeraldplatform/ui';
@@ -119,10 +119,6 @@ export class AddToken extends React.Component {
 
 const StyledAddToken = withStyles(styles2)(AddToken);
 
-const AddTokenForm = reduxForm({
-  form: 'addToken',
-  fields: ['address', 'name', 'token'],
-})(StyledAddToken);
 
 function mapDispatchToProps(dispatch, ownProps) {
   return {
@@ -153,4 +149,4 @@ function mapStateToProps(state, ownProps) {
 export default connect(
   mapStateToProps,
   mapDispatchToProps
-)(AddTokenForm);
+)(StyledAddToken);

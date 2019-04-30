@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { withStyles } from '@material-ui/styles';
-
 import * as QRCode from 'qrcode.react';
 import IconButton from '@material-ui/core/IconButton';
 import { Print, Close, CurrencyEtc } from '@emeraldplatform/ui-icons';

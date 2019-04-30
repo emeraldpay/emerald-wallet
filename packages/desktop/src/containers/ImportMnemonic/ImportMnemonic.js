@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import screen from 'store/wallet/screen';
 import accounts from 'store/vault/accounts';
 import Immutable from 'immutable';
-import { SubmissionError } from 'redux-form';
 import { ImportMnemonic } from '@emeraldwallet/ui';
 
 export default connect(
@@ -18,14 +17,14 @@ export default connect(
       return dispatch(accounts.actions.importMnemonic(data.password, data.mnemonic, data.hdpath, '', ''))
         .then((result) => {
           if (result.error) {
-            throw new SubmissionError({ _error: result.error.toString() });
+            throw new Error(result.error.toString());
           } else {
             // show page with account details
             dispatch(screen.actions.gotoScreen('account', Immutable.fromJS({id: result})));
           }
         }).catch((error) => {
           console.error(error);
-          throw new SubmissionError({ _error: error.toString() });
+          throw new Error(error.toString());
         });
     },
 

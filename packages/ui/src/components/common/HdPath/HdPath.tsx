@@ -4,7 +4,6 @@ import Paper from "@material-ui/core/Paper";
 import MenuItem from "@material-ui/core/MenuItem";
 import TextField from '@material-ui/core/TextField';
 import {CSSProperties, withStyles} from '@material-ui/styles';
-import {Input} from '@emeraldplatform/ui';
 
 export const styles = (theme) => ({
   container: {
@@ -50,7 +49,7 @@ interface State {
 }
 
 function renderInputComponent(inputProps) {
-  const { classes, inputRef = () => {}, ref, ...other } = inputProps;
+  const { classes, inputRef = () => {}, ref, endAdornment, ...other } = inputProps;
 
   return (
     <TextField
@@ -62,7 +61,8 @@ function renderInputComponent(inputProps) {
         },
         classes: {
           input: classes.input
-        }
+        },
+        endAdornment,
       }}
       {...other}
     />
@@ -83,12 +83,6 @@ export class HdPath extends React.Component<Props, State> {
   state = {
     suggestion: [],
     value: ''
-  };
-
-  onUpdateInput = (searchText: string, dataSource: Array<any>, params: any) => {
-    if (this.props.onChange) {
-      this.props.onChange(searchText);
-    }
   };
 
   handleChange = (event, { newValue }) => {
@@ -119,6 +113,7 @@ export class HdPath extends React.Component<Props, State> {
     return (
       <div className={ classes.container }>
         <Autosuggest
+          shouldRenderSuggestions = {(val) => (true)}
           renderInputComponent = {renderInputComponent}
           suggestions = {predefinedHdPaths}
           onSuggestionsFetchRequested = {this.handleSuggestionsFetchRequested}

@@ -1182,10 +1182,10 @@
     "@emeraldplatform/rpc" "^0.5.0-rc.0"
     bignumber.js "8.0.2"
 
-"@emeraldplatform/eth@^0.5.0-rc.0":
-  version "0.5.0-rc.0"
-  resolved "https://registry.yarnpkg.com/@emeraldplatform/eth/-/eth-0.5.0-rc.0.tgz#1d0cb12293bd0250791508656515f1112797a4af"
-  integrity sha512-GtkXYOUU2hiNyPx3GCuQgwemKHNSwLOD4YIQHM03cEE0YC3F3Q0QiuxFKW1mpEIAoB7SOM9LoAXhMulvaqpGXg==
+"@emeraldplatform/eth@^0.5.0-rc.2":
+  version "0.5.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@emeraldplatform/eth/-/eth-0.5.0-rc.2.tgz#33d2aacbb6292d11fd132144c1e6a01834938f89"
+  integrity sha512-uB6gin4hyewYm2BXcb9S547plnMQps2eLKJnFjcsFy2+9/z8xXqCI+D5q91sRdgVGydrSbtL+nydl+uKQ5IJDQ==
   dependencies:
     bignumber.js "8.0.2"
     qs "6.7.0"
@@ -1212,13 +1212,13 @@
     "@material-ui/core" "^4.0.0-alpha.6"
     react "^16.8.6"
 
-"@emeraldplatform/ui@^0.5.0-rc.0":
-  version "0.5.0-rc.0"
-  resolved "https://registry.yarnpkg.com/@emeraldplatform/ui/-/ui-0.5.0-rc.0.tgz#8313cac33567ee83ac677c0c9c1d49f61ef76f95"
-  integrity sha512-riftGXQFlTHLg44vAzfU1yTHK7E7sqBijNK+yF+pX0TjMKRP/3eSY7+ED1nJTYislOBpGb2mJFaUpQm4Tz+pAw==
+"@emeraldplatform/ui@^0.5.0-rc.2":
+  version "0.5.0-rc.2"
+  resolved "https://registry.yarnpkg.com/@emeraldplatform/ui/-/ui-0.5.0-rc.2.tgz#ea516e4256d7f4fdd83be38c3a794eac6196a24e"
+  integrity sha512-EynULDU3WN6wDl0tb4y2gEQm/OUM6fvfwsWrTUv6zeSaSua/wmQMPgnrihnkmQRdsYbOgvHtb6qHpq4N0VAaTw==
   dependencies:
     "@emeraldplatform/contracts" "^0.5.0-rc.0"
-    "@emeraldplatform/eth" "^0.5.0-rc.0"
+    "@emeraldplatform/eth" "^0.5.0-rc.2"
     "@emeraldplatform/eth-rpc" "^0.5.0-rc.0"
     "@emeraldplatform/rpc" "^0.5.0-rc.0"
     "@emeraldplatform/ui-icons" "^0.5.0-rc.0"
@@ -8205,11 +8205,6 @@ es5-shim@^4.5.10:
   resolved "https://registry.yarnpkg.com/es5-shim/-/es5-shim-4.5.13.tgz#5d88062de049f8969f83783f4a4884395f21d28b"
   integrity sha512-xi6hh6gsvDE0MaW4Vp1lgNEBpVcCXRWfPXj5egDvtgLz4L9MEvNwYEMdJH+JJinWkwa8c3c3o5HduV7dB/e1Hw==
 
-es6-error@^4.1.1:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/es6-error/-/es6-error-4.1.1.tgz#9e3af407459deed47e9a91f9b885a84eb05c561d"
-  integrity sha512-Um/+FxMr9CISWh0bi5Zv0iOD+4cFh5qLeks1qhAopKVAJw3drgKbKySikp7wGhDL0HPeaja0P5ULZrxLkniUVg==
-
 es6-iterator@~2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/es6-iterator/-/es6-iterator-2.0.3.tgz#a7de889141a05a94b0854403b2d0a0fbfa98f3b7"
@@ -14882,11 +14877,6 @@ rc@^1.0.1, rc@^1.1.6, rc@^1.2.1, rc@^1.2.7:
     minimist "^1.2.0"
     strip-json-comments "~2.0.1"
 
-react-addons-test-utils@^15.6.0:
-  version "15.6.2"
-  resolved "https://registry.yarnpkg.com/react-addons-test-utils/-/react-addons-test-utils-15.6.2.tgz#c12b6efdc2247c10da7b8770d185080a7b047156"
-  integrity sha1-wStu/cIkfBDae4dw0YUICnsEcVY=
-
 react-autosuggest@^9.4.3:
   version "9.4.3"
   resolved "https://registry.yarnpkg.com/react-autosuggest/-/react-autosuggest-9.4.3.tgz#eb46852422a48144ab9f39fb5470319222f26c7c"
@@ -15141,7 +15131,7 @@ react-is@16.7.0:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.7.0.tgz#c1bd21c64f1f1364c6f70695ec02d69392f41bfa"
   integrity sha512-Z0VRQdF4NPDoI0tsXVMLkJLiwEBa+RP66g0xDHxgxysxSoCUccSten4RTF/UFvZF1dZvZ9Zu1sx+MDXwcOR34g==
 
-react-is@^16.7.0, react-is@^16.8.0, react-is@^16.8.1, react-is@^16.8.2, react-is@^16.8.4, react-is@^16.8.6:
+react-is@^16.7.0, react-is@^16.8.0, react-is@^16.8.1, react-is@^16.8.4, react-is@^16.8.6:
   version "16.8.6"
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-16.8.6.tgz#5bbc1e2d29141c9fbdfed456343fe2bc430a6a16"
   integrity sha512-aUk3bHfZ2bRSVFFbbeVS4i+lNPZr3/WM5jT2J5omUVV1zzcs1nAaf3l51ctA5FFvCRbhrH0bdAsRRQddFJZPtA==
@@ -15202,17 +15192,17 @@ react-popper@^1.3.3:
     typed-styles "^0.0.7"
     warning "^4.0.2"
 
-react-redux@^6.0.1:
-  version "6.0.1"
-  resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-6.0.1.tgz#0d423e2c1cb10ada87293d47e7de7c329623ba4d"
-  integrity sha512-T52I52Kxhbqy/6TEfBv85rQSDz6+Y28V/pf52vDWs1YRXG19mcFOGfHnY2HsNFHyhP+ST34Aih98fvt6tqwVcQ==
+react-redux@^7.0.2:
+  version "7.0.2"
+  resolved "https://registry.yarnpkg.com/react-redux/-/react-redux-7.0.2.tgz#34b280a3482aaf60e7d4a504b1295165cbe6b86a"
+  integrity sha512-uKRuMgQt8dWbcz0U75oFK5tDo3boyAKrqvf/j94vpqRFFZfyDDy4kofUgloFIGyuKTq2Zz51zgK9RzOTFXk5ew==
   dependencies:
-    "@babel/runtime" "^7.3.1"
+    "@babel/runtime" "^7.4.3"
     hoist-non-react-statics "^3.3.0"
     invariant "^2.2.4"
     loose-envify "^1.4.0"
     prop-types "^15.7.2"
-    react-is "^16.8.2"
+    react-is "^16.8.6"
 
 react-resize-detector@^4.0.5:
   version "4.1.3"
@@ -15601,22 +15591,6 @@ reduce-function-call@^1.0.1:
   integrity sha1-WiAL+S4ON3UXUv5FsKszD9S2vpk=
   dependencies:
     balanced-match "^0.4.2"
-
-redux-form@^8.1.0:
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/redux-form/-/redux-form-8.1.0.tgz#087b39eaa96b6f5cc0764a30eca10e0459884cce"
-  integrity sha512-d2+0OaJpSq3kwkbPtFlG3W/HENWLxX8NqqTHSOnfgIrID/9faH/rxejLa1X3HChilCTm71zWe/g9zaLPCMCofQ==
-  dependencies:
-    "@babel/runtime" "^7.2.0"
-    es6-error "^4.1.1"
-    hoist-non-react-statics "^3.2.1"
-    invariant "^2.2.4"
-    is-promise "^2.1.0"
-    lodash "^4.17.11"
-    lodash-es "^4.17.11"
-    prop-types "^15.6.1"
-    react-is "^16.7.0"
-    react-lifecycles-compat "^3.0.4"
 
 redux-logger@2.8.1:
   version "2.8.1"

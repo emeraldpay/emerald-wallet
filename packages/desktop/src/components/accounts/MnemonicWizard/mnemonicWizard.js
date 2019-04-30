@@ -75,7 +75,6 @@ class MnemonicWizard extends React.Component {
         return (
           <ConfirmMnemonic
             mnemonic={ mnemonic }
-            onContinue={ this.gotoConfirm }
             onBack={ this.gotoImport }
             formData={ formData }
           />

@@ -4,7 +4,7 @@ import { withStyles } from '@material-ui/styles';
 import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
 const styles = {
-  selected: {
+  root: {
     boxShadow: 'none',
   },
 };
@@ -20,7 +20,7 @@ class Filter extends React.Component<Props> {
     const { value, onChange, classes } = this.props;
     return (
       <ToggleButtonGroup
-        classes={{ selected: classes.selected }}
+        classes={{ root: classes.root }}
         exclusive
         value={value || 'ALL'}
         onChange={onChange}

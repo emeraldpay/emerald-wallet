@@ -5,6 +5,9 @@ export { default as Terms } from './components/welcome/Terms';
 export { default as OpenWallet } from './components/welcome/OpenWallet';
 export { default as About } from './components/About';
 export { default as ImportMnemonic } from './components/accounts/ImportMnemonic';
+export { default as ConfirmMnemonic } from './components/accounts/ConfirmMnemonic';
+export { default as ImportPrivateKey } from './components/accounts/ImportPrivateKey';
+export { default as ExportPaperWallet } from './components/accounts/ExportPaperWallet';
 export { default as NewMnemonic } from './components/accounts/NewMnemonic';
 export { default as ReceiveDialog } from './components/accounts/ReceiveDialog';
 export { default as AccountActionsMenu } from './components/accounts/AccountActionsMenu';
@@ -20,3 +23,5 @@ export { default as TxDetails } from './components/tx/TxDetails';
 export { default as CreateTx } from './components/tx/send/CreateTx';
 export { default as SignTx } from './components/tx/send/SignTx';
 export { default as DashboardMenu } from './components/DashboardMenu';
+
+export { default as ContactForm } from './components/addressbook/ContactForm';
