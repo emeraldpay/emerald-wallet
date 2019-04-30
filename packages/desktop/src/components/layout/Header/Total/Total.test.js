@@ -1,7 +1,7 @@
 import { shallow } from 'enzyme';
 import React from 'react';
 import { fromJS } from 'immutable';
-import { Wei } from '@emeraldplatform/emerald-js';
+import { Wei } from '@emeraldplatform/eth';
 import Total from '.';
 
 function createStore() {
@@ -32,6 +32,6 @@ function createStore() {
 describe('Header/Total', () => {
   it('renders total balance from store', () => {
     const component = shallow(<Total />, {context: {store: createStore()}});
-    expect(component.props().total).toEqual('0.00300');
+    expect(component.props().total).toEqual('0.003');
   });
 });

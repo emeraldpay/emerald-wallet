@@ -4,7 +4,7 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Currency } from '@emeraldwallet/core';
 import { withStyles } from '@material-ui/core';
-import { Wei } from '@emeraldplatform/emerald-js';
+import { Wei } from '@emeraldplatform/eth';
 import { CurrencyEtc, CurrencyEth } from '@emeraldplatform/ui-icons';
 import { Button } from '@emeraldwallet/ui';
 import Accounts from '../../../../store/vault/accounts';
@@ -74,13 +74,13 @@ export default connect(
     const fiatRate = WalletSettings.selectors.fiatRate(state);
     let fiatAmount;
     if (fiatRate && fiatCurrency) {
-      fiatAmount = Currency.format(Currency.convert(total.getEther(), fiatRate), fiatCurrency);
+      fiatAmount = Currency.format(Currency.convert(total.toEther(), fiatRate), fiatCurrency);
     }
 
     return {
       fiatCurrency,
       fiatAmount,
-      total: total.getEther(),
+      total: total.toEther(),
       tokenSymbol: (blockchain && blockchain.params.coinTicker) || '',
     };
   },

@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import CircularProgress from 'material-ui/CircularProgress';
-import { Wei } from '@emeraldplatform/emerald-js';
+import { Wei } from '@emeraldplatform/eth';
 
 import createLogger from '../../utils/logger';
 import AddressBook from '../../components/addressbook/ContactList';
@@ -55,7 +55,7 @@ const Screen = ({ screen, screenItem }) => {
   }
   if (screen === 'repeat-tx') {
     const {transaction, toAccount, fromAccount} = screenItem;
-    const amount = new Wei(transaction.get('amount')).getEther();
+    const amount = new Wei(transaction.get('amount')).toEther();
     const to = toAccount.get('id');
     const gasLimit = transaction.get('gas');
     const data = transaction.get('data');

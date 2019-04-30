@@ -4,7 +4,7 @@ import Header from '../../src/components/layout/Header';
 import { Provider } from 'react-redux';
 import { createStore } from 'redux';
 import { fromJS } from 'immutable';
-import { Wei } from '@emeraldplatform/emerald-js';
+import { Wei } from '@emeraldplatform/eth';
 
 storiesOf('Header', module)
   .add('default', () => {
