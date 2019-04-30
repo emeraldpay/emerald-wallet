@@ -16,7 +16,7 @@ class AboutContainer extends React.Component {
     ipcRenderer.once('get-version-result', (event, result) => {
       this.setState({
         connector: result.connector,
-        os: result.os
+        os: result.os,
       });
     });
     ipcRenderer.send('get-version');
