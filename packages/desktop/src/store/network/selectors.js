@@ -1,5 +1,5 @@
 export function gasPrice(state) {
-  return state.network.get('gasPrice').value();
+  return state.network.get('gasPrice').toWei();
 }
 
 export function chain(state) {

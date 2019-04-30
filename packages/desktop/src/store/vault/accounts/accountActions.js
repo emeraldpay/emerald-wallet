@@ -1,7 +1,6 @@
 // @flow
 import { EthereumTx } from '@emeraldwallet/core';
-import { convert } from '@emeraldplatform/emerald-js';
-import { EthAddress } from '@emeraldplatform/core';
+import { convert, EthAddress } from '@emeraldplatform/core';
 import { EthAccount } from '@emeraldplatform/eth-account';
 import { loadTokensBalances } from '../tokens/tokenActions';
 import screen from '../../wallet/screen';

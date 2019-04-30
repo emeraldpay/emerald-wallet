@@ -1,16 +1,15 @@
 // @flow
 import {Currency} from '@emeraldwallet/core';
-import { fromBaseUnits, convert } from '@emeraldplatform/core';
-import BigNumber from 'bignumber.js';
-import { Wei } from '@emeraldplatform/emerald-js';
+import { convert } from '@emeraldplatform/core';
+import { Wei } from '@emeraldplatform/eth';
 
 export function txFee(gasPrice, gasLimit) {
-  return new Wei((new BigNumber(gasPrice)).multipliedBy(new BigNumber(gasLimit)));
+  return new Wei(gasPrice).mul(convert.toBigNumber(gasLimit));
 }
 
 export function txFeeFiat(gasPrice, gasLimit, rate) {
-  const wei = (new BigNumber(gasPrice)).multipliedBy(new BigNumber(gasLimit));
-  const ether = fromBaseUnits(wei, 18);
+  const wei = new Wei(gasPrice).mul(convert.toBigNumber(gasLimit));
+  const ether = wei.toEther(18);
   return Currency.convert(ether.toString(), rate);
 }
 

@@ -5,6 +5,9 @@ import { Record } from 'immutable';
 const ZERO = new BigNumber(0);
 const ONE = new BigNumber(1);
 
+/**
+ * @deprecated
+ */
 export default class TokenUnits extends Record({ value: ZERO, decimals: 0 }) {
   constructor(value: BigNumber, decimals: BigNumber | number) {
     if (!value) {

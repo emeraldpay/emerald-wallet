@@ -1,5 +1,5 @@
 // @flow
-import { Wei } from '@emeraldplatform/emerald-js';
+import { Wei } from '@emeraldplatform/eth';
 import { List } from 'immutable';
 
 export const getAll = (state, defaultValue) => state.accounts.get('accounts', defaultValue);

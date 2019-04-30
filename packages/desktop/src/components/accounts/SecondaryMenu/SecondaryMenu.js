@@ -9,7 +9,7 @@ import history from '../../../store/wallet/history';
 import accounts from '../../../store/vault/accounts';
 
 const hasBalance = (account) => (account.get('balance', null) === null)
-  || (account.get('balance') && account.get('balance').value().gt(0));
+  || (account.get('balance') && account.get('balance').toWei().gt(0));
 
 export default connect(
   (state, ownProps) => ({

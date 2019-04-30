@@ -1,6 +1,6 @@
 import * as React from 'react';
 import withStyles, {CSSProperties} from '@material-ui/core/styles/withStyles';
-import { Wei } from '@emeraldplatform/emerald-js';
+import { Wei } from '@emeraldplatform/eth';
 import { convert } from '@emeraldplatform/core';
 import { Page, ButtonGroup, Account } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
@@ -105,7 +105,7 @@ export class TxDetails extends React.Component<Props> {
             <div style={{display: 'flex'}}>
               <div>
                 <div className={ classes.value }>
-                  { transaction.value ? `${new Wei(transaction.value).getEther()} ${tokenSymbol}` : '--' }
+                  { transaction.value ? `${new Wei(transaction.value).toEther()} ${tokenSymbol}` : '--' }
                 </div>
                 {fiatAmount && <div className={ classes.value }>
                   { fiatAmount } { fiatCurrency }

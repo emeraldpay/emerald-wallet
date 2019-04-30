@@ -1,5 +1,6 @@
 import * as React from 'react';
 import { ButtonGroup } from '@emeraldplatform/ui';
+import { Wei } from '@emeraldplatform/eth';
 import Button from '../../../common/Button';
 import FormFieldWrapper from './FormFieldWrapper';
 import FromField from './FromField';
@@ -19,21 +20,21 @@ export interface Props {
   from?: string;
   token: string;
   tokenSymbols?: Array<string>;
-  balance: string;
-  amount: string;
+  balance: Wei;
+  amount?: Wei;
   addressBookAddresses?: Array<string>;
   to?: string;
   currency?: string;
   gasLimit: string;
   txFeeFiat?: string;
-  txFee: string;
+  txFee: Wei;
   txFeeToken: string;
   fiatBalance?: string;
   ownAddresses?: Array<string>;
   onSubmit?: Function;
   onCancel?: any;
   onChangeTo?: any;
-  onChangeAmount?: any;
+  onChangeAmount?: Function;
   onChangeFrom?: any;
   onChangeGasLimit?: any;
   onChangeToken?: any;
@@ -43,7 +44,7 @@ export interface Props {
 
 class CreateTransaction extends React.Component<Props> {
   getDisabled = () => {
-    return !this.props.to || !this.props.from || this.props.amount === '';
+    return !this.props.to || !this.props.from || this.props.amount == null;
   };
 
   render() {
