@@ -14,6 +14,7 @@ interface Props {
 interface State {
   errorText: string | null;
   amountStr: string;
+  original: Wei;
 }
 
 class AmountField extends React.Component<Props, State> {
@@ -22,7 +23,20 @@ class AmountField extends React.Component<Props, State> {
     this.state = {
       errorText: null,
       amountStr: props.amount ? props.amount.toString(Units.ETHER, 6, false, false) : '0',
+      original: props.amount || Wei.ZERO
     };
+  }
+
+  static getDerivedStateFromProps(props: Props, state: State) {
+    const amount = props.amount || Wei.ZERO;
+    if (!state.original.equals(amount)) {
+      return {
+        errorText: null,
+        original: amount,
+        amountStr: amount.toString(Units.ETHER, 6, false, false)
+      };
+    }
+    return null;
   }
 
   handleChangeAmount = (event: any) => {
@@ -62,7 +76,8 @@ class AmountField extends React.Component<Props, State> {
   };
 
   render() {
-    const { errorText } = this.state;
+    const { errorText, amountStr } = this.state;
+    const { amount } = this.props;
     return (
       <React.Fragment>
         <FormLabel>Amount</FormLabel>
