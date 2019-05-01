@@ -36,7 +36,7 @@ export const Networks = [
     },
     chain: {
       id: 62,
-      name: 'etc-morden',
+      name: 'morden',
     },
     title: 'Morden Testnet',
     id: 'remote/morden',
