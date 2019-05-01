@@ -9,8 +9,11 @@ module.exports = (settings, services) => {
 
     log.info('Update settings', newSettings);
 
-    if (newSettings.chain) {
-      const { chain } = newSettings;
+    if (newSettings.chain && typeof newSettings.chain === 'object') {
+      let { chain } = newSettings;
+      if (chain.name === 'etc-morden') {
+        chain = Object.assign({}, chain, {name: 'morden'});
+      }
 
       if (!isValidChain(chain)) {
         log.error(`Unknown chain: ${JSON.stringify(chain)}`);
