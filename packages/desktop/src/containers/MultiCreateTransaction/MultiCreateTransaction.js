@@ -99,7 +99,8 @@ class MultiCreateTransaction extends React.Component {
    * @param amount Wei class
    */
   onChangeAmount(amount) {
-    if (typeof amount !== 'object' || !Wei.prototype.isPrototypeOf(amount)) {
+    // TODO check if Wei instance
+    if (typeof amount !== 'object') {
       return;
     }
     this.setTransaction('amount', amount.toEther());
