@@ -1,6 +1,6 @@
 import * as React from 'react';
 import {ViewVisible as EyeIcon} from '@emeraldplatform/ui-icons';
-import {Warning, WarningText, Input} from '@emeraldplatform/ui';
+import {Input} from '@emeraldplatform/ui';
 import IconButton from '@material-ui/core/IconButton';
 
 interface Props {
@@ -27,27 +27,17 @@ export class PasswordInput extends React.Component<Props, State> {
     };
   }
 
-  onInputChange = (event: any) => {
+  private handleInputChange = (event: any) => {
     const { onChange } = this.props;
-    if (onChange) {
-      onChange(event.target.value);
-    }
+    onChange && onChange(event.target.value);
   };
 
-  handleEyeClick = () => {
+  private handleEyeClick = () => {
     const {showPassword} = this.state;
     this.setState({
       showPassword: !showPassword,
     });
   };
-
-  renderMinLengthWarning = (minLength: number) => (
-    <div style={{marginTop: '10px'}}>
-      <Warning>
-        <WarningText>Password must be minimum {minLength} characters.</WarningText>
-      </Warning>
-    </div>
-  );
 
   render() {
     const {error, minLength, password} = this.props;
@@ -64,22 +54,21 @@ export class PasswordInput extends React.Component<Props, State> {
 
     const tooShort = password && (password.length < minLength);
     const placeHolderStr = `At least ${minLength} characters`;
+    const errorText = (tooShort && `Password must be minimum ${minLength} characters.` ) || error;
     return (
-      <div>
         <div>
           <Input
             value={password}
-            errorText={error}
+            errorText={errorText}
             rightIcon={EyeIconButton}
-            onChange={this.onInputChange}
+            onChange={this.handleInputChange}
             placeholder={placeHolderStr}
             type={showPassword ? 'text' : 'password'}
           />
         </div>
-        {tooShort && this.renderMinLengthWarning(minLength)}
-      </div>
     );
   }
+
 }
 
 export default PasswordInput;

@@ -4,13 +4,13 @@ import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
+import {NewAccountProps} from '@emeraldwallet/ui';
 import { saveJson } from '../../../lib/saveAs';
 import accounts from '../../../store/vault/accounts';
 import screen from '../../../store/wallet/screen';
 import PasswordDialog from './PasswordDialog';
 import DownloadDialog from './DownloadDialog';
 import ShowPrivateDialog from './ShowPrivateDialog';
-import AccountPropertiesDialog from './AccountPropertiesDialog';
 
 const PAGES = {
   PASSWORD: 1,
@@ -125,7 +125,7 @@ class GenerateAccount extends React.Component<Props, State> {
         return (<ShowPrivateDialog t={ t } privateKey={ privateKey } onNext={ this.editAccountProps }/>);
       case PAGES.ACCOUNT_PROPS:
         return (
-          <AccountPropertiesDialog
+          <NewAccountProps
             t={ t }
             onSave={ this.updateAccountProps }
             onSkip={ this.skipAccountProps }

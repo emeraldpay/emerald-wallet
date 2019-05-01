@@ -25,3 +25,5 @@ export { default as SignTx } from './components/tx/send/SignTx';
 export { default as DashboardMenu } from './components/DashboardMenu';
 
 export { default as ContactForm } from './components/addressbook/ContactForm';
+
+export { default as NewAccountProps } from './components/accounts/GenerateAccount/AccountPropsDialog';

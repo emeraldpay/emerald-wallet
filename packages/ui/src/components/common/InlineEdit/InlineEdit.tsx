@@ -8,7 +8,7 @@ import IconButton from '@material-ui/core/IconButton';
 
 export const styles = {
   textField: {
-    fontSize: '14px',
+    // fontSize: '14px',
   },
 };
 
@@ -67,7 +67,7 @@ export class InlineEdit extends React.Component<Props, State> {
       <TextField
         value={currentValue}
         onChange={this.handleChange}
-        style={{maxHeight: '40px'}}
+        // style={{maxHeight: '40px'}}
         placeholder={placeholder}
         fullWidth={true}
         InputProps={{

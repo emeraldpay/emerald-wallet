@@ -90,7 +90,7 @@ class PasswordDialog extends React.Component {
 
   render() {
     const { onDashboard, t, classes } = this.props;
-    const { passphraseError, confirmError, confirmPassword } = this.state;
+    const { passphraseError, confirmError, confirmPassword, passphrase } = this.state;
 
     return (
       <Page title={ t('generate.title') } leftIcon={<Back onClick={onDashboard} />}>
@@ -105,6 +105,7 @@ class PasswordDialog extends React.Component {
                 </div>
                 <div style={{ marginTop: '30px' }}>
                   <PasswordInput
+                    password={ passphrase }
                     onChange={ this.onPassphraseChange }
                     error={ passphraseError }
                   />
