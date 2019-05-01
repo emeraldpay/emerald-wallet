@@ -33,12 +33,7 @@ function createStore() {
 
 describe('Header/Total', () => {
   it('renders total balance from store', () => {
-<<<<<<< HEAD
     const component = mount(<Provider store={createStore()}><Total /></Provider>);
-    expect(component.find(Total).children().first().props().total).toEqual('0.00300');
-=======
-    const component = shallow(<Total />, {context: {store: createStore()}});
-    expect(component.props().total).toEqual('0.003');
->>>>>>> master
+    expect(component.find(Total).children().first().props().total).toEqual('0.003');
   });
 });
