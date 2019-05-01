@@ -99,7 +99,10 @@ class MultiCreateTransaction extends React.Component {
    * @param amount Wei class
    */
   onChangeAmount(amount) {
-    this.setTransaction('amount', amount.toString());
+    if (typeof amount !== 'object' || !Wei.prototype.isPrototypeOf(amount)) {
+      return;
+    }
+    this.setTransaction('amount', amount.toEther());
     this.setState({amount: amount});
   }
 
@@ -161,8 +164,7 @@ class MultiCreateTransaction extends React.Component {
   onMaxClicked() {
     const fee = this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit);
     const amount = this.balance.sub(fee);
-    this.setTransaction('amount', amount.toString(Units.WEI));
-    this.setState({amount: amount});
+    this.onChangeAmount(amount);
   }
 
   getPage() {
