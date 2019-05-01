@@ -27,6 +27,7 @@ interface Props {
   appVersion?: string;
   vaultVersion?: string;
   gitVersion?: any;
+  osVersion?: any;
   onButtonClick?: any;
   onHelpClick?: any;
   onLicenseClick?: any;
@@ -40,6 +41,7 @@ export class About extends React.Component<Props> {
     } = this.props;
     const {appVersion,  vaultVersion} = this.props;
     const gitVersion = this.props.gitVersion || {};
+    const osVersion = this.props.osVersion || {};
 
     return (
       <div style={{padding: '30px', position: 'relative'}}>
@@ -52,11 +54,10 @@ export class About extends React.Component<Props> {
           Full Version: {gitVersion.FullSemVer}<br/>
           Vault Version: {vaultVersion}<br/>
           Build: {gitVersion.BuildMetaDataPadded} {gitVersion.ShortSha} {gitVersion.CommitDate}<br/>
+          OS: {osVersion.arch} {osVersion.platform} {osVersion.release}<br/>
         </div>
-        <div style={{paddingTop: '60px', marginBottom: '60px'}}>
-          <Button onClick={onButtonClick} primary label='emeraldwallet.io'/>
-        </div>
-        <div style={{fontSize: '14px'}}>
+        <div style={{fontSize: '14px', marginTop: '80px'}}>
+          <div style={{paddingBottom: '5px'}}>Website <a onClick={onButtonClick} href="#" className={classes.links}>https://emeraldwallet.io</a></div>
           <div style={{paddingBottom: '5px'}}>Copyright &copy; 2017-{year} ETCDEV GmbH</div>
           <div> Licensed under <a onClick={onLicenseClick} className={classes.links} href="#">Apache License 2.0</a>
             <span style={{float: 'right', textAlign: 'right'}}>

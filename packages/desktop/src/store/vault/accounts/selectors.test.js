@@ -1,5 +1,5 @@
 import { fromJS } from 'immutable';
-import { Wei } from '@emeraldplatform/emerald-js';
+import { Wei } from '@emeraldplatform/eth';
 
 import { selectTotalBalance, selectAccount } from './selectors';
 

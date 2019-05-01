@@ -2,7 +2,7 @@ import React from 'react';
 import {connect} from 'react-redux';
 import {TxDetails} from '@emeraldwallet/ui';
 import {Currency} from '@emeraldwallet/core';
-import {Wei} from '@emeraldplatform/emerald-js';
+import {Wei} from '@emeraldplatform/eth';
 import launcher from 'store/launcher';
 import {gotoScreen} from '../../../store/wallet/screen/screenActions';
 import createLogger from '../../../utils/logger';
@@ -35,7 +35,7 @@ export default connect(
     const currentCurrency = state.wallet.settings.get('localeCurrency');
     if (launcher.selectors.getChainName(state).toLowerCase() === 'mainnet') {
       const fiatRate = WalletSettings.selectors.fiatRate(state);
-      const coins = new Wei(Tx.get('value')).getEther();
+      const coins = new Wei(Tx.get('value')).toEther();
       fiatAmount = Currency.format(Number(Currency.convert(coins, fiatRate)), currentCurrency);
     }
     const blockchain = Wallet.selectors.currentBlockchain(state);

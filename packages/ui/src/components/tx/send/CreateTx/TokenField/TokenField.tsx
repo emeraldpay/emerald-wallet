@@ -4,6 +4,7 @@ import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 
 import FormLabel from '../FormLabel';
+import {Wei} from "@emeraldplatform/eth";
 
 function getStyles(theme?: any) {
   return {
@@ -21,7 +22,7 @@ interface Props {
   onChangeToken?: any;
   selectedToken?: string;
   tokenSymbols?: Array<string>;
-  balance?: string;
+  balance?: Wei;
   fiatBalance?: string;
   fiatCurrency?: string;
   classes?: any;
@@ -52,7 +53,7 @@ export class TokenField extends React.Component<Props> {
         </TextField>
 
         <div className={classes.balance}>
-          {this.props.balance} {this.props.selectedToken} / {this.props.fiatBalance} {this.props.fiatCurrency}
+          {this.props.balance ? this.props.balance.toString() : '?'} {this.props.selectedToken} / {this.props.fiatBalance} {this.props.fiatCurrency}
         </div>
       </React.Fragment>
     );

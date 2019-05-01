@@ -15,13 +15,13 @@ const config = {
         {
           type: 'https',
           pack: 'zip',
-          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-v0.25.5/emerald-cli-mac-v0.25.5-5cc40e2.zip',
+          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-0.25.6/emerald-cli-mac-v0.25.6-4a4f1e5.zip',
         },
       ],
       signatures: [
         {
           type: 'pgp',
-          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-v0.25.5/emerald-cli-mac-v0.25.5-5cc40e2.zip.asc',
+          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-0.25.6/emerald-cli-mac-v0.25.6-4a4f1e5.zip.asc',
         },
       ],
     },
@@ -31,13 +31,13 @@ const config = {
         {
           type: 'https',
           pack: 'zip',
-          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-v0.25.5/emerald-cli-win-v0.25.5-5cc40e2.zip',
+          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-0.25.6/emerald-cli-win-v0.25.6-4a4f1e5.zip',
         },
       ],
       signatures: [
         {
           type: 'pgp',
-          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-v0.25.5/emerald-cli-win-v0.25.5-5cc40e2.zip.asc',
+          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-0.25.6/emerald-cli-win-v0.25.6-4a4f1e5.zip.asc',
         },
       ],
     },
@@ -47,13 +47,13 @@ const config = {
         {
           type: 'https',
           pack: 'zip',
-          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-v0.25.5/emerald-cli-linux-v0.25.5-5cc40e2.zip',
+          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-0.25.6/emerald-cli-linux-v0.25.6-4a4f1e5.zip',
         },
       ],
       signatures: [
         {
           type: 'pgp',
-          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-v0.25.5/emerald-cli-linux-v0.25.5-5cc40e2.zip.asc',
+          url: 'https://dl.emeraldwallet.io/releases/emerald-cli-0.25.6/emerald-cli-linux-v0.25.6-4a4f1e5.zip.asc',
         },
       ],
     },
