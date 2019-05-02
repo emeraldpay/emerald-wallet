@@ -80,6 +80,7 @@
     "@ledgerhq/hw-transport-node-hid": "4.35.0",
     "@material-ui/core": "^4.0.0-alpha.8",
     "@material-ui/icons": "^4.0.0-alpha.1",
+    "@material-ui/styles": "^4.0.0-beta.0",
     "babel-polyfill": "^6.26.0",
     "bignumber.js": "^8.1.1",
     "classnames": "^2.2.5",
@@ -98,6 +99,9 @@
     "lib": "^2.2.5",
     "lodash": "^4.17.10",
     "node-fetch": "^2.1.2",
+    "os": "^0.1.1",
+    "path": "^0.12.7",
+    "process": "^0.11.10",
     "prop-types": "^15.4.2",
     "qrcode.react": "0.7.2",
     "qs": "^6.5.2",
@@ -118,6 +122,7 @@
     "semver": "5.6.0",
     "store": "^2.0.4",
     "typeface-rubik": "0.0.43",
+    "url": "^0.11.0",
     "uuid": "3.1.0"
   },
   "devDependencies": {
@@ -142,10 +147,10 @@
     "electron-rebuild": "1.8.4",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.12.1",
-    "eslint": "^5.12.1",
+    "eslint": "^5.16.0",
     "eslint-config-airbnb-base": "^13.1.0",
-    "eslint-import-resolver-webpack": "^0.10.1",
-    "eslint-plugin-import": "^2.15.0",
+    "eslint-import-resolver-webpack": "^0.11.1",
+    "eslint-plugin-import": "^2.17.2",
     "eslint-plugin-react": "^7.12.4",
     "extract-text-webpack-plugin": "4.0.0-beta.0",
     "file-loader": "3.0.1",
@@ -167,7 +172,7 @@
     "style-loader": "0.16.1",
     "url-loader": "^1.1.2",
     "usb": "1.5.0",
-    "webpack": "4.29.5"
+    "webpack": "4.30.0"
   },
   "build": {
     "appId": "io.emeraldwallet.desktop",

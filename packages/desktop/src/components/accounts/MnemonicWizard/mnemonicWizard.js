@@ -1,9 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { ImportMnemonic, NewMnemonic } from '@emeraldwallet/ui';
-import ConfirmMnemonic from '../add/ConfirmMnemonic';
 import screen from 'store/wallet/screen';
 import accounts from 'store/vault/accounts';
+import ConfirmMnemonic from '../add/ConfirmMnemonic';
 
 const PAGES = {
   GENERATE: 1,

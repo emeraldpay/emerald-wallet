@@ -7,6 +7,7 @@ import { tables } from 'lib/styles';
 import { Address as AccountAddress } from '@emeraldplatform/ui';
 import AccountBalance from '../../accounts/Balance';
 
+// TODO: Move to UI
 
 const style = {
   used: {
@@ -38,7 +39,7 @@ const Addr = ({
   const address = addr.get('address');
   const selectable = hasPath && hasAddr && !alreadyAdded;
   const balance = addr.get('value');
-  return (<div>Stub</div>)
+  return (<div>Stub</div>);
   // return (
   //   <TableRow {...otherProps} selectable={false}>
   //     <TableRowColumn style={tables.wideStyle}>

@@ -12,16 +12,14 @@ const styles2 = (theme) => ({
   },
   listItem: {
     marginTop: '10px',
-    border: `1px solid ${theme.palette && theme.palette.divider}`
-
+    border: `1px solid ${theme.palette && theme.palette.divider}`,
   },
   noItems: {
     backgroundColor: 'white',
     padding: '10px',
     marginTop: '10px',
     textAlign: 'center',
-    border: `1px solid ${theme.palette && theme.palette.divider}`
-
+    border: `1px solid ${theme.palette && theme.palette.divider}`,
   },
 });
 

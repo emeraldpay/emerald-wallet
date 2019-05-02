@@ -1,9 +1,9 @@
 import React from 'react';
+import { Wei } from '@emeraldplatform/eth';
 import { shallow, mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import { fromJS } from 'immutable';
 import Total from './Total';
-import { Wei } from '@emeraldplatform/eth';
 
 function createStore() {
   return {

@@ -41,7 +41,7 @@ class ImportAccount extends React.Component<Props> {
             <div style={formStyles.fieldName}>HD derivation path</div>
           </div>
           <div style={formStyles.right}>
-            <HDPath value={hdbase} onChange={changeBaseHD} />
+            <HdPath value={hdbase} onChange={changeBaseHD} />
             <div style={{ marginLeft: '5px' }}><Pager /></div>
           </div>
         </Row>

@@ -58,7 +58,7 @@ class PasswordDialog extends React.Component {
 
     if (passphrase !== confirmPassword) {
       return this.setState({
-        confirmError: `Passwords does not match`,
+        confirmError: 'Passwords does not match',
       });
     }
 
@@ -90,7 +90,9 @@ class PasswordDialog extends React.Component {
 
   render() {
     const { onDashboard, t, classes } = this.props;
-    const { passphraseError, confirmError, confirmPassword, passphrase } = this.state;
+    const {
+      passphraseError, confirmError, confirmPassword, passphrase,
+    } = this.state;
 
     return (
       <Page title={ t('generate.title') } leftIcon={<Back onClick={onDashboard} />}>

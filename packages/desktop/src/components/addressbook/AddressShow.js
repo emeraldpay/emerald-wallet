@@ -67,36 +67,37 @@ import AddressEdit from './EditContact';
 const Render = ({
   address, editAddress, onDeleteAddress, expanded,
 }) => {
-  return (
-    <div>
-      {/*<Card style={cardSpace}>*/}
-      {/*  <CardHeader*/}
-      {/*    title={address.get('name')}*/}
-      {/*    subtitle={`Address: ${address.get('address')}`}*/}
-      {/*    actAsExpander={true}*/}
-      {/*    showExpandableButton={true}*/}
-      {/*  />*/}
-      {/*  <CardText expandable={true}>*/}
-      {/*    <Row>*/}
-      {/*      <Col xs={8}>*/}
-      {/*        <DescriptionList>*/}
-      {/*          <DescriptionTitle>Description:</DescriptionTitle>*/}
-      {/*          <DescriptionData>{address.get('description')}</DescriptionData>*/}
-      {/*        </DescriptionList>*/}
-      {/*      </Col>*/}
-      {/*      <Col xs={4} md={2} mdOffset={2}>*/}
-      {/*        <QRCode value={address.get('address')} />*/}
-      {/*      </Col>*/}
-      {/*    </Row>*/}
-      {/*  </CardText>*/}
-      {/*</Card>*/}
-      {/*<CardEdit*/}
-      {/*  onDelete={onDeleteAddress}*/}
-      {/*  onSubmit={editAddress}*/}
-      {/*  address={address}*/}
-      {/*/>*/}
-    </div>
-  );
+  return (<div>Stub</div>);
+  // return (
+  //   <div>
+  //     <Card style={cardSpace}>
+  //       <CardHeader
+  //         title={address.get('name')}
+  //         subtitle={`Address: ${address.get('address')}`}
+  //         actAsExpander={true}
+  //         showExpandableButton={true}
+  //       />
+  //       <CardText expandable={true}>
+  //         <Row>
+  //           <Col xs={8}>
+  //             <DescriptionList>
+  //               <DescriptionTitle>Description:</DescriptionTitle>
+  //               <DescriptionData>{address.get('description')}</DescriptionData>
+  //             </DescriptionList>
+  //           </Col>
+  //           <Col xs={4} md={2} mdOffset={2}>
+  //             <QRCode value={address.get('address')} />
+  //           </Col>
+  //         </Row>
+  //       </CardText>
+  //     </Card>
+  //     <CardEdit
+  //       onDelete={onDeleteAddress}
+  //       onSubmit={editAddress}
+  //       address={address}
+  //     />
+  //   </div>
+  // );
 };
 
 const AddressShow = connect(

@@ -1,11 +1,9 @@
 import React from 'react';
 import { convert } from '@emeraldplatform/core';
+import {InputTokenAddress, AddToken} from '@emeraldwallet/ui';
 import { connect } from 'react-redux';
 import TokenUnits from 'lib/tokenUnits';
 import tokens from '../../../store/vault/tokens';
-
-import {InputTokenAddress, AddToken} from '@emeraldwallet/ui';
-
 
 export class NewCustomToken extends React.Component {
     state = {};
@@ -16,21 +14,22 @@ export class NewCustomToken extends React.Component {
         onFetchToken(address)
           .then((result) => this.setState({
             token: result,
-          }))
+          }));
       }
     };
 
     handleCancel = () => {
       this.setState({
         token: null,
-      })
+      });
     };
 
     handleAddToken = () => {
       const { onSubmit } = this.props;
       const { token } = this.state;
-      onSubmit && onSubmit(token).then(this.setState({token: null}));
-
+      if (onSubmit) {
+        onSubmit(token).then(this.setState({token: null}));
+      }
     };
 
     render() {
@@ -72,7 +71,7 @@ function mapDispatchToProps(dispatch, ownProps) {
     },
     onFetchToken: (address) => {
       return dispatch(tokens.actions.fetchTokenDetails(address));
-    }
+    },
   };
 }
 

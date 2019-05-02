@@ -1,8 +1,8 @@
 import React from 'react';
+import {Provider} from 'react-redux';
 import { shallow, mount } from 'enzyme';
 import { NewCustomToken } from './add';
 import ConnectedAddToken from '.';
-import {Provider} from "react-redux";
 
 describe('tokens/AddToken', () => {
   it('renders without crash', () => {

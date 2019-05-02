@@ -1,6 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {withStyles} from "@material-ui/styles";
+import {withStyles} from '@material-ui/styles';
 import {connect} from 'react-redux';
 import Immutable from 'immutable';
 import {translate} from 'react-i18next';
@@ -10,7 +10,7 @@ import launcher from '../../../store/launcher';
 import Account from './account';
 import Wallet from '../../../store/wallet';
 
-const styles = (theme) =>({
+const styles = (theme) => ({
   container: {
     marginBottom: '10px',
   },

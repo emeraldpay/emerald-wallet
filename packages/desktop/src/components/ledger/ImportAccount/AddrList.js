@@ -19,7 +19,7 @@ class AddrList extends React.Component {
 
     render() {
       const { addresses, selectedAddress } = this.props;
-      return <div>Stub</div>
+      return (<div>Stub</div>);
       // return (
       //   <Table selectable={ false }>
       //     <TableHeader displaySelectAll={ false } adjustForCheckbox={ false }>
