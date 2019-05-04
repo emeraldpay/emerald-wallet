@@ -1,6 +1,6 @@
 const { ipcMain } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const log = require('electron-log');
-const os = require('os');
+const os = require('os'); // eslint-disable-line
 
 module.exports = (services) => {
   ipcMain.on('get-status', (event) => {
