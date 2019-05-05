@@ -7253,7 +7253,7 @@ electron-publish@20.38.5:
     lazy-val "^1.0.3"
     mime "^2.4.0"
 
-electron-rebuild@1.8.4:
+electron-rebuild@^1.8.4:
   version "1.8.4"
   resolved "https://registry.yarnpkg.com/electron-rebuild/-/electron-rebuild-1.8.4.tgz#cd5384d38c2d6b4463103e375f3779d7abbae19b"
   integrity sha512-QBUZg1due+R0bww5rNd4gEcsKczyhxyLrxSFZlKihwHRxaiHrGut532JAUe0fRz+VIU4WNSfNKyZ/ZwSGjaDhA==

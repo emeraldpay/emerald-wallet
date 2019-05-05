@@ -28,6 +28,7 @@ export { default as ContactForm } from './components/addressbook/ContactForm';
 
 export { default as NewAccountProps } from './components/accounts/GenerateAccount/AccountPropsDialog';
 
-
 export { default as AddToken } from './components/tokens/NewCustomToken/AddToken';
 export { default as InputTokenAddress } from './components/tokens/NewCustomToken/InputTokenAddress';
+
+export { default as LedgerAddrList} from './components/ledger/ImportAccount/AddressList';

@@ -8,7 +8,7 @@ import { Button, HdPath } from '@emeraldwallet/ui';
 import AddrList from './AddrList';
 import Pager from './Pager';
 
-const styles2 = {
+const styles = {
   row: {
     marginLeft: '14.75px',
     marginRight: '14.75px',
@@ -70,4 +70,4 @@ class ImportAccount extends React.Component<Props> {
   }
 }
 
-export default withStyles(styles2)(ImportAccount);
+export default withStyles(styles)(ImportAccount);
