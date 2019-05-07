@@ -1,7 +1,7 @@
 {
   "name": "@emeraldwallet/desktop",
   "productName": "EmeraldWallet",
-  "private": false,
+  "private": true,
   "author": {
     "name": "Igor Artamonov",
     "email": "splix@etcdevteam.com"
@@ -32,8 +32,7 @@
     "test:coverage": "ELECTRON_RUN_AS_NODE=true ./node_modules/.bin/electron ./node_modules/.bin/jest --coverage && codecov",
     "lint": "eslint ./src/ ./electron/",
     "lint-fix": "npm run lint -- --fix",
-    "postinstall": "yarn electron:rebuild && yarn rebuild:modules",
-    "electron:rebuild": "node ../../node_modules/electron-rebuild/lib/src/cli.js",
+    "postinstall": "electron-rebuild && yarn rebuild:modules",
     "rebuild:modules": "electron-builder install-app-deps",
     "dist": "yarn build:all:nowatch && electron-builder --publish never",
     "dist:nobuild": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never",
@@ -61,6 +60,9 @@
     "url": "https://github.com/ETCDEVTeam/emerald-wallet/issues"
   },
   "homepage": "https://github.com/ETCDEVTeam/emerald-wallet",
+  "workspaces": {
+    "nohoist": ["electron-rebuild", "electron-rebuild/**"]
+  },
   "dependencies": {
     "@emeraldplatform/contracts": "^0.5.0-gamma.0",
     "@emeraldplatform/core": "^0.5.0-gamma.0",
