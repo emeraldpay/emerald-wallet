@@ -9,7 +9,7 @@ export default connect(
     selectedAddress: state.ledger.get('selectedAddr'),
     addresses: state.ledger.get('addresses'),
     accounts: state.accounts.get('accounts'),
-    balanceRender: (balance) => (<AccountBalance symbol="ETC" balance={balance} showFiat={true} withAvatar={false} />),
+    balanceRender: (balance) => (<AccountBalance symbol="ETC" balance={balance} showFiat={true} withAvatar={false} />), // eslint-disable-line
   }),
   (dispatch, ownProps) => ({
     setSelectedAddr: (addr) => {
