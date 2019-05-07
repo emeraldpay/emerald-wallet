@@ -3,7 +3,7 @@
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import ActionTypes from './actionTypes';
 import screen from '../screen';
-import createLogger from "../../../utils/logger";
+import createLogger from '../../../utils/logger';
 
 const log = createLogger('settingsActions');
 

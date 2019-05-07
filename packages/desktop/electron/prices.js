@@ -1,16 +1,15 @@
-const { PricesClient, GetRateRequest, GetRateReply, GetRateReplyItem, credentials } = require('@emeraldplatform/grpc');
+const { PricesClient, GetRateRequest, credentials } = require('@emeraldplatform/grpc'); // eslint-disable-line import/no-unresolved
 const { ipcMain } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const log = require('./logger');
 
 class Prices {
-
   constructor(webContents) {
     this.webContents = webContents;
     this.froms = ['ETC', 'ETH', 'MORDEN'];
     this.to = 'USD';
     ipcMain.on('prices/setCurrency', (event, to) => {
       to = to.toUpperCase();
-      log.info("set pricese", to);
+      log.info('set prices', to);
       if (this.to !== to) {
         this.to = to;
         this.stop();
@@ -22,21 +21,21 @@ class Prices {
 
   start() {
     this.stop();
-    let cred = credentials.createInsecure();
+    const cred = credentials.createInsecure();
     try {
       this.client = new PricesClient('localhost:8090', cred);
     } catch (e) {
       log.error('Unable to connect', e);
       return;
     }
-    let req = new GetRateRequest();
+    const req = new GetRateRequest();
     this.froms.forEach((from) => req.addFrom(from));
     req.setTo(this.to);
     log.info(`Listen for prices, to ${this.to}`);
-    let stream = this.client.streamRates(req);
+    const stream = this.client.streamRates(req);
     const self = this;
 
-    stream.on("data", (data) => {
+    stream.on('data', (data) => {
       try {
         const result = {};
         data.getItemsList().forEach((item) => {
@@ -46,21 +45,20 @@ class Prices {
         });
         self.webContents.send('prices/rate', result);
       } catch (e) {
-        log.warn("Failed to send prices", e)
+        log.warn('Failed to send prices', e);
       }
     });
   }
 
   stop() {
     if (this.client) {
-      log.info("Closing prices listener");
+      log.info('Closing prices listener');
       this.client.close();
       this.client = null;
     }
   }
-
 }
 
 module.exports = {
-  Prices
+  Prices,
 };
