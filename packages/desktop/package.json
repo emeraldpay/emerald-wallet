@@ -61,7 +61,7 @@
   },
   "homepage": "https://github.com/ETCDEVTeam/emerald-wallet",
   "workspaces": {
-    "nohoist": ["electron-rebuild", "electron-rebuild/**"]
+    "nohoist": ["electron-rebuild", "electron-rebuild/**", "electron-builder", "electron-builder/**"]
   },
   "dependencies": {
     "@emeraldplatform/contracts": "^0.5.0-gamma.0",
