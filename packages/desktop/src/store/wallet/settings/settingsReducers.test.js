@@ -14,8 +14,8 @@ describe('settingsReducers', () => {
     state = settingsReducers(state, {
       type: ActionTypes.EXCHANGE_RATES,
       rates: {
-        EUR: 5,
-        USD: 10,
+        ETC: 5,
+        ETH: 10,
       },
     });
 
