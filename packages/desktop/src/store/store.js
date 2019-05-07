@@ -51,7 +51,6 @@ function refreshAll() {
 }
 
 function refreshLong() {
-  store.dispatch(settings.actions.getExchangeRates());
   store.dispatch(network.actions.loadSyncing());
   setTimeout(refreshLong, intervalRates.continueRefreshLongRate);
 }
@@ -62,6 +61,7 @@ export function startSync() {
   const chain = state.launcher.getIn(['chain', 'name']);
   const chainId = state.launcher.getIn(['chain', 'id']);
 
+  store.dispatch(settings.actions.listenPrices());
 
   const promises = [
     store.dispatch(network.actions.getGasPrice()),
