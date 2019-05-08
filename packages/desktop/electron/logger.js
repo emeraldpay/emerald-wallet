@@ -1,5 +1,5 @@
 const log = require('electron-log');
-const process = require('process');
+const process = require('process'); // eslint-disable-line
 
 const isDev = process.env.NODE_ENV === 'development';
 

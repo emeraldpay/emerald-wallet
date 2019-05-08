@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
+import { ContactForm } from '@emeraldwallet/ui';
 import Addressbook from '../../../store/vault/addressbook';
 import { gotoScreen } from '../../../store/wallet/screen/screenActions';
-import ContactForm from '../ContactForm';
 
 const AddContact = connect(
   (state, ownProps) => ({
@@ -16,7 +16,7 @@ const AddContact = connect(
           dispatch(gotoScreen('address-book'));
         });
     }),
-    cancel: () => {
+    onCancel: () => {
       dispatch(gotoScreen('address-book'));
     },
   })

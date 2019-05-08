@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
-import {MuiThemeProvider} from '@material-ui/core/styles';
+import { ThemeProvider } from '@material-ui/styles';
 import theme from '@emeraldplatform/ui/lib/theme';
 import Screen from '../../../containers/Screen/screen';
 import Header from '../Header';
@@ -13,7 +13,7 @@ const maxWidth = '1150px';
 
 const Render = translate('common')((props) => {
   return (
-    <MuiThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
       <div style={{height: '100%', backgroundColor: theme.palette.background.default}} className="application">
         {props.screen !== 'paper-wallet' && (!props.launcherType || props.launcherType !== 'none') && <Header/>}
         <div style={{margin: '20px auto', maxWidth}}>
@@ -23,7 +23,7 @@ const Render = translate('common')((props) => {
         <NotificationBar/>
         <Dialog/>
       </div>
-    </MuiThemeProvider>
+    </ThemeProvider>
   );
 });
 

@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import {
-  Card, CardActions, CardHeader, CardText
-} from 'material-ui/Card';
-import Create from 'material-ui/svg-icons/content/create';
-import DeleteSweep from 'material-ui/svg-icons/content/delete-sweep';
+// import {
+//   Card, CardActions, CardHeader, CardText
+// } from 'material-ui/Card';
+import Create from '@material-ui/icons/Create';
+import DeleteSweep from '@material-ui/icons/DeleteSweep';
 import { Row, Col } from 'react-flexbox-grid/lib/index';
 import { DescriptionList, DescriptionTitle, DescriptionData } from 'elements/dl';
 import QRCode from 'qrcode.react';
@@ -16,87 +16,88 @@ import { gotoScreen } from '../../store/wallet/screen/screenActions';
 import AddressEdit from './EditContact';
 
 
-class CardEdit extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      expanded: false,
-    };
-  }
-
-  handleExpandChange = (expanded) => {
-    this.setState({ expanded });
-  }
-
-  handleExpand = () => {
-    this.setState({ expanded: true });
-  }
-
-  handleReduce = () => {
-    this.setState({ expanded: false });
-  }
-
-  render() {
-    return (
-      <Card style={cardSpace} expanded={this.state.expanded} onExpandChange={this.handleExpandChange}>
-        <CardActions>
-          <Button
-            label="Edit"
-            onClick={this.handleExpand}
-            icon={<Create />}
-          />
-          <Button
-            label="Forget"
-            onClick={this.props.onDelete}
-            icon={<DeleteSweep />}
-          />
-        </CardActions>
-        <CardText expandable={true}>
-          <CardActions>
-            <AddressEdit
-              address={this.props.address}
-              cancel={this.handleReduce}
-              submit={this.props.onSubmit} />
-          </CardActions>
-        </CardText>
-      </Card>
-    );
-  }
-}
+// class CardEdit extends React.Component {
+//   constructor(props) {
+//     super(props);
+//     this.state = {
+//       expanded: false,
+//     };
+//   }
+//
+//   handleExpandChange = (expanded) => {
+//     this.setState({ expanded });
+//   }
+//
+//   handleExpand = () => {
+//     this.setState({ expanded: true });
+//   }
+//
+//   handleReduce = () => {
+//     this.setState({ expanded: false });
+//   }
+//
+//   render() {
+//     return (
+//       <Card style={cardSpace} expanded={this.state.expanded} onExpandChange={this.handleExpandChange}>
+//         <CardActions>
+//           <Button
+//             label="Edit"
+//             onClick={this.handleExpand}
+//             icon={<Create />}
+//           />
+//           <Button
+//             label="Forget"
+//             onClick={this.props.onDelete}
+//             icon={<DeleteSweep />}
+//           />
+//         </CardActions>
+//         <CardText expandable={true}>
+//           <CardActions>
+//             <AddressEdit
+//               address={this.props.address}
+//               cancel={this.handleReduce}
+//               submit={this.props.onSubmit} />
+//           </CardActions>
+//         </CardText>
+//       </Card>
+//     );
+//   }
+// }
 
 const Render = ({
   address, editAddress, onDeleteAddress, expanded,
 }) => {
-  return (
-    <div>
-      <Card style={cardSpace}>
-        <CardHeader
-          title={address.get('name')}
-          subtitle={`Address: ${address.get('address')}`}
-          actAsExpander={true}
-          showExpandableButton={true}
-        />
-        <CardText expandable={true}>
-          <Row>
-            <Col xs={8}>
-              <DescriptionList>
-                <DescriptionTitle>Description:</DescriptionTitle>
-                <DescriptionData>{address.get('description')}</DescriptionData>
-              </DescriptionList>
-            </Col>
-            <Col xs={4} md={2} mdOffset={2}>
-              <QRCode value={address.get('address')} />
-            </Col>
-          </Row>
-        </CardText>
-      </Card>
-      <CardEdit
-        onDelete={onDeleteAddress}
-        onSubmit={editAddress}
-        address={address}
-      />
-    </div>
-  );
+  return (<div>Stub</div>);
+  // return (
+  //   <div>
+  //     <Card style={cardSpace}>
+  //       <CardHeader
+  //         title={address.get('name')}
+  //         subtitle={`Address: ${address.get('address')}`}
+  //         actAsExpander={true}
+  //         showExpandableButton={true}
+  //       />
+  //       <CardText expandable={true}>
+  //         <Row>
+  //           <Col xs={8}>
+  //             <DescriptionList>
+  //               <DescriptionTitle>Description:</DescriptionTitle>
+  //               <DescriptionData>{address.get('description')}</DescriptionData>
+  //             </DescriptionList>
+  //           </Col>
+  //           <Col xs={4} md={2} mdOffset={2}>
+  //             <QRCode value={address.get('address')} />
+  //           </Col>
+  //         </Row>
+  //       </CardText>
+  //     </Card>
+  //     <CardEdit
+  //       onDelete={onDeleteAddress}
+  //       onSubmit={editAddress}
+  //       address={address}
+  //     />
+  //   </div>
+  // );
 };
 
 const AddressShow = connect(

@@ -1,7 +1,7 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import { connect } from 'react-redux';
-import { Dialog } from 'material-ui';
+import Dialog from '@material-ui/core/Dialog';
 import {
   Warning, WarningHeader, WarningText
 } from '@emeraldplatform/ui';

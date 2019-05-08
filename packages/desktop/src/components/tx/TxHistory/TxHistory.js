@@ -1,19 +1,19 @@
 // @flow
 import React from 'react';
-import withStyles from 'react-jss';
+import {withStyles} from '@material-ui/styles';
 import {connect} from 'react-redux';
 import Header from '@emeraldwallet/ui/lib/components/tx/TxHistory/Header';
 import {List} from 'immutable';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import {searchTransactions, filterTransactions} from '../../../store/wallet/history/selectors';
 import TxList from './List';
 
-const styles2 = {
+const styles2 = (theme) => ({
   container: {
     padding: '30px 30px 20px',
     backgroundColor: 'white',
+    border: `1px solid ${theme.palette.divider}`,
   },
-};
+});
 
 type
 Props = {
@@ -63,7 +63,7 @@ class TransactionsHistory extends React.Component<Props, State> {
   render() {
     const {classes} = this.props;
     return (
-      <div className={classes.container} style={{border: `1px solid ${this.props.muiTheme.palette.borderColor}`}}>
+      <div className={classes.container}>
         <Header
           onTxFilterChange={this.onTxFilterChange}
           txFilterValue={this.state.txFilter}
@@ -88,4 +88,4 @@ export default connect(
     };
   },
   (dispatch, ownProps) => ({})
-)(muiThemeable()(StyledTransactionsHistory));
+)(StyledTransactionsHistory);

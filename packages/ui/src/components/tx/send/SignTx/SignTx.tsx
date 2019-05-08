@@ -3,7 +3,7 @@ import {ButtonGroup, Input, IdentityIcon} from '@emeraldplatform/ui';
 import {ArrowRight} from '@emeraldplatform/ui-icons';
 //import { required } from 'lib/validators';
 import {Divider, List, ListItem, ListItemText} from '@material-ui/core';
-import withStyles from '@material-ui/core/styles/withStyles';
+import {withStyles} from '@material-ui/styles';
 import Button from '../../../common/Button';
 import {Wei, Units} from "@emeraldplatform/eth";
 
@@ -40,6 +40,7 @@ interface Props {
     amount: string;
     gasLimit: string;
   };
+  txFeeCurrency?: any;
   amount: Wei;
   txFee?: Wei;
   fiatCurrency?: any;
@@ -149,7 +150,7 @@ class SignTx extends React.Component<Props, State> {
 
   render() {
     const {
-      value, fiatRate, fiatCurrency, txFee, tx, classes, amount
+      value, fiatRate, fiatCurrency, txFee, tx, classes, amount, txFeeCurrency
     } = this.props;
     const {
       onCancel, onChangePassword, onSubmit,
@@ -177,7 +178,7 @@ class SignTx extends React.Component<Props, State> {
         </div>
         <div style={{paddingTop: '35px', display: 'flex', justifyContent: 'center'}}>
         <span className={classes.fee}>
-          Plus {txFee ? txFee.toString(Units.ETHER, 6, true) : '?'} ETC for {tx.gasLimit} GAS.
+          Plus {txFee ? txFee.toString(Units.ETHER, 6, true) : '?'} {txFeeCurrency} for {tx.gasLimit} GAS.
         </span>
         </div>
         {
@@ -191,13 +192,11 @@ class SignTx extends React.Component<Props, State> {
             </div>
             <div className={classes.right}>
               <Input
-                // name="password"
                 value={this.state.password}
                 type="password"
                 onChange={this.handlePasswordChange}
                 // style={{ minWidth: '600px' }}
-                // hintText="Enter your Password"
-                // fullWidth={true}
+                placeholder="Enter your Password"
               />
             </div>
           </div>)}

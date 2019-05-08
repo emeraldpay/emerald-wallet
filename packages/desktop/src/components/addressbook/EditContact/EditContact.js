@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
-import ContactForm from '../ContactForm';
+import { ContactForm } from '@emeraldwallet/ui';
 
-const AddressEdit = connect(
+const EditContact = connect(
   (state, ownProps) => ({
     blockAddress: true,
     title: 'Edit Contact',
@@ -21,4 +21,4 @@ const AddressEdit = connect(
   })
 )(ContactForm);
 
-export default AddressEdit;
+export default EditContact;

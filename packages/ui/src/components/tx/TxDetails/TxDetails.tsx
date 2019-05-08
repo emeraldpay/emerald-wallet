@@ -1,5 +1,5 @@
 import * as React from 'react';
-import withStyles, {CSSProperties} from '@material-ui/core/styles/withStyles';
+import { withStyles, CSSProperties } from '@material-ui/styles';
 import { Wei } from '@emeraldplatform/eth';
 import { convert } from '@emeraldplatform/core';
 import { Page, ButtonGroup, Account } from '@emeraldplatform/ui';

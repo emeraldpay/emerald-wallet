@@ -4,20 +4,20 @@ import {connect} from 'react-redux';
 import {Logo} from '@emeraldwallet/ui';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import {withStyles} from '@material-ui/core/styles';
+import {withStyles} from '@material-ui/styles';
 import InitialSetup from './initialSetup';
 import { TERMS_VERSION } from '../../store/config';
 
 const getStyles = (theme) => ({
   brandPart1: {
-    color: theme.palette.primary.main,
+    color: theme.palette && theme.palette.primary.main,
   },
   brandPart2: {
-    color: theme.palette.secondary.main,
+    color: theme.palette && theme.palette.secondary.main,
   },
 });
 
-const Render = (props) => {
+const Welcome = (props) => {
   const {
     message, level, needSetup, classes,
   } = props;
@@ -66,20 +66,20 @@ const Render = (props) => {
   );
 };
 
-Render.propTypes = {
+Welcome.propTypes = {
   message: PropTypes.string,
   level: PropTypes.number,
   ready: PropTypes.bool.isRequired,
   needSetup: PropTypes.bool.isRequired,
 };
 
-const StyledWelcome = withStyles(getStyles)(Render);
+const StyledWelcome = withStyles(getStyles)(Welcome);
 
 function isEmpty(val) {
   return typeof val === 'undefined' || (typeof val === 'string' && val.length === 0);
 }
 
-const Welcome = connect(
+export default connect(
   (state, ownProps) => {
     return ({
       message: state.launcher.getIn(['message', 'text']),
@@ -92,6 +92,3 @@ const Welcome = connect(
   },
   (dispatch, ownProps) => ({})
 )(StyledWelcome);
-
-
-export default Welcome;

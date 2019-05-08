@@ -1,14 +1,15 @@
 import React from 'react';
-import { AppBar, LinearProgress } from 'material-ui';
-import { withStyles } from '@material-ui/core';
-import { Button } from '@emeraldwallet/ui';
-import { Block as BlockIcon, Settings as SettingsIcon } from '@emeraldplatform/ui-icons';
+import {AppBar, LinearProgress, Toolbar} from '@material-ui/core';
+import {withStyles} from '@material-ui/styles';
+import {Button} from '@emeraldwallet/ui';
+import {Block as BlockIcon, Settings as SettingsIcon} from '@emeraldplatform/ui-icons';
 import SyncWarning from '../../../containers/SyncWarning';
 import Status from './Status';
 import Total from './Total';
-import { separateThousands } from '../../../lib/convert';
+import {separateThousands} from '../../../lib/convert';
+import EmeraldTitle from './Title';
 
-const styles = {
+const styles = (theme) => ({
   appBarRight: {
     display: 'flex',
     alignItems: 'center',
@@ -21,11 +22,14 @@ const styles = {
       fontSize: '16px',
     },
   },
-};
+  appBarRoot: {
+    backgroundColor: theme.palette.primary.contrastText,
+  },
+});
 
 const Header = (props) => {
   const {
-    openSettings, muiTheme, network, showProgress, progress, tip, showFiat,
+    openSettings, theme, network, showProgress, progress, tip, showFiat,
   } = props;
 
   const showProgressBar = (show) => {
@@ -37,19 +41,10 @@ const Header = (props) => {
         <LinearProgress
           disabled={showProgress}
           mode="determinate"
-          color={muiTheme.palette.primary1Color}
+          color={theme.palette.primary.main}
           value={progress}
           style={{height: '2px'}}
         />
-      </div>
-    );
-  };
-
-  const EmeraldTitle = () => {
-    return (
-      <div>
-        <span style={{color: muiTheme.palette.primary1Color}}>Emerald </span>
-        <span style={{color: muiTheme.palette.secondaryTextColor}}>Wallet</span>
       </div>
     );
   };
@@ -75,7 +70,7 @@ const Header = (props) => {
           classes={{
             text: classes.text,
           }}
-          icon={<BlockIcon />}
+          icon={<BlockIcon/>}
         />
         {showProgressBar(showProgress)}
       </div>
@@ -87,37 +82,34 @@ const Header = (props) => {
   const SettingsButton = ({classes}) => (
     <Button
       variant="text"
-      onClick={ openSettings }
+      onClick={openSettings}
       label="Settings"
       classes={{
         text: classes.text,
       }}
-      icon={<SettingsIcon />}
+      icon={<SettingsIcon/>}
     />);
 
   const StyledSettingsButton = withStyles(blockDisplayStyles)(SettingsButton);
 
   return (
     <div>
-      <AppBar
-        title={<EmeraldTitle />}
-        style={{backgroundColor: muiTheme.palette.alternateTextColor, borderBottom: `1px solid ${muiTheme.palette.borderColor}`}}
-        titleStyle={{fontSize: '16px'}}
-        showMenuIconButton={false}
-        iconStyleRight={styles.appBarRight}
-        zDepth={0}
-        iconElementRight={
-          <div style={styles.appBarRight}>
-            <Total showFiat={showFiat} />
-            <StyledBlockDisplay />
-            <Status />
-            <StyledSettingsButton />
-          </div>
-        }
-      />
-      <SyncWarning />
+      <div className={props.classes.appBarRoot}>
+        <AppBar position="static" color="inherit">
+          <Toolbar>
+            <EmeraldTitle />
+            <div className={props.classes.appBarRight}>
+              <Total showFiat={showFiat}/>
+              <StyledBlockDisplay/>
+              <Status/>
+              <StyledSettingsButton/>
+            </div>
+          </Toolbar>
+        </AppBar>
+      </div>
+      <SyncWarning/>
     </div>
   );
 };
 
-export default Header;
+export default withStyles(styles)(Header);

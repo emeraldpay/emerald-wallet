@@ -1,13 +1,14 @@
 import * as React from 'react';
 import {Close as CancelIcon, Checkmark as SubmitIcon} from '@emeraldplatform/ui-icons';
 import TextField from '@material-ui/core/TextField';
-import {withStyles} from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/styles';
+
 import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
 
 export const styles = {
   textField: {
-    fontSize: '14px',
+    // fontSize: '14px',
   },
 };
 
@@ -66,7 +67,7 @@ export class InlineEdit extends React.Component<Props, State> {
       <TextField
         value={currentValue}
         onChange={this.handleChange}
-        style={{maxHeight: '40px'}}
+        // style={{maxHeight: '40px'}}
         placeholder={placeholder}
         fullWidth={true}
         InputProps={{

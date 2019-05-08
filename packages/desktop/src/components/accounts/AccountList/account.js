@@ -1,5 +1,5 @@
 import React from 'react';
-import withStyles from '@material-ui/core/styles/withStyles';
+import { withStyles } from '@material-ui/styles';
 import withTheme from '@material-ui/core/styles/withTheme';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
@@ -110,4 +110,4 @@ export class Account extends React.Component {
     }
 }
 
-export default withTheme()(withStyles(styles2)(Account));
+export default withTheme((withStyles(styles2)(Account)));

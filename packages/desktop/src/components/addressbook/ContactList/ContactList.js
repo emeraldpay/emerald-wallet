@@ -1,37 +1,38 @@
 import React from 'react';
-import withStyles from 'react-jss';
+import {withStyles} from '@material-ui/styles';
 import { connect } from 'react-redux';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import Immutable from 'immutable';
 import Contact from './Contact';
 import TopBar from '../../layout/TopBar';
 
-const styles2 = {
+const styles2 = (theme) => ({
   container: {
     marginBottom: '10px',
     marginTop: '5px',
   },
   listItem: {
     marginTop: '10px',
+    border: `1px solid ${theme.palette && theme.palette.divider}`,
   },
   noItems: {
     backgroundColor: 'white',
     padding: '10px',
     marginTop: '10px',
     textAlign: 'center',
+    border: `1px solid ${theme.palette && theme.palette.divider}`,
   },
-};
+});
 
-const ContactList = ({ addressBook, muiTheme, classes }) => {
+const ContactList = ({ addressBook, classes }) => {
   let list;
   if (addressBook.size > 0) {
     list = addressBook.map((contact) => (
-      <div key={contact.get('address')} style={{ border: `1px solid ${muiTheme.palette.borderColor}` }} className={classes.listItem}>
+      <div key={contact.get('address')} className={classes.listItem}>
         <Contact address={contact} />
       </div>));
   } else {
     list = (
-      <div style={{ border: `1px solid ${muiTheme.palette.borderColor}` }} className={classes.noItems}>
+      <div className={classes.noItems}>
         There are no contacts. Add one.
       </div>);
   }
@@ -54,6 +55,6 @@ const AddressBook = connect(
   }),
   (dispatch, ownProps) => ({
   })
-)(muiThemeable()(StyledContactList));
+)((StyledContactList));
 
 export default AddressBook;

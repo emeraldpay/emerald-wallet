@@ -1,6 +1,6 @@
 // @flow
 import React from 'react';
-import withStyles from 'react-jss';
+import {withStyles, withTheme} from '@material-ui/styles';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import Table from '@material-ui/core/Table';
@@ -8,7 +8,6 @@ import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import muiThemeable from 'material-ui/styles/muiThemeable';
 import Transaction from './transaction';
 
 const styles2 = {
@@ -48,17 +47,17 @@ type Props = {
 
 const TransactionsList = (props: Props) => {
   const {
-    transactions, accountId, muiTheme, classes,
+    transactions, accountId, theme, classes,
   } = props;
   if (!transactions) {
     return (<div>Loading...</div>);
   }
   if (transactions.size === 0) {
-    return (<div style={{paddingTop: '20px', color: muiTheme.palette.secondaryTextColor}}> There are no transactions. </div>);
+    return (<div style={{paddingTop: '20px', color: theme.palette.text.secondary}}> There are no transactions. </div>);
   }
   return (
     <div>
-      <Table selectable={ false } fixedHeader={ true } style={{background: muiTheme.palette.alternateTextColor}}>
+      <Table selectable={ false } fixedHeader={ true } style={{background: theme.palette.primary.contrastText}}>
         <TableHead displaySelectAll={ false } adjustForCheckbox={ false }>
           <TableRow>
             <TableCell className={ cx(classes.columnName, classes.amountColumn) }>
@@ -85,4 +84,4 @@ TransactionsList.propTypes = {
 };
 
 const StyledTransactionsList = withStyles(styles2)(TransactionsList);
-export default muiThemeable()(StyledTransactionsList);
+export default withTheme(StyledTransactionsList);

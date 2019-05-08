@@ -16,7 +16,7 @@ install:
   # Set up build dependencies.
   - ps: Install-Product node 8 x64
   - set CI=true
-  - npm install -g npm windows-build-tools@1.3.2 node-gyp lerna yarn
+  - npm install -g npm windows-build-tools@4.0.0 node-gyp lerna yarn@1.13.0
   - ps: $env:Path += ";$env:USERPROFILE\.windows-build-tools\python27"
   - set PATH=%APPDATA%\npm;%PATH%
   - npm config set python %USERPROFILE%\.windows-build-tools\python27\python.exe

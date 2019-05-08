@@ -1,5 +1,5 @@
 import * as React from 'react';
-import withStyles from '@material-ui/core/styles/withStyles';
+import { withStyles } from '@material-ui/styles';
 import {Input} from '@emeraldplatform/ui';
 
 import FormLabel from '../FormLabel';
@@ -8,7 +8,7 @@ import {Wei, Units} from "@emeraldplatform/eth";
 function getStyles(theme?: any) {
   return {
     container: {
-      color: theme.palette.text.secondary,
+      color: theme.palette && theme.palette.text.secondary,
       wordSpacing: '3px',
       letterSpacing: '1px',
       fontWeight: 200,

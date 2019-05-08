@@ -3,14 +3,11 @@ import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import { Back } from '@emeraldplatform/ui-icons';
 import {
-  Page, Warning, WarningHeader, WarningText
+  Page, Warning, WarningHeader, WarningText, Input
 } from '@emeraldplatform/ui';
-import { Field, reduxForm } from 'redux-form';
-import { Button } from '@emeraldwallet/ui';
-import TextField from 'elements/Form/TextField';
+import { Button, PasswordInput } from '@emeraldwallet/ui';
 import { required } from 'lib/validators';
 import { Row, styles as formStyles } from 'elements/Form';
-import PasswordInput from 'components/common/PasswordInput';
 import Advice from './advice';
 import LoadingIcon from '../LoadingIcon';
 
@@ -43,6 +40,7 @@ class PasswordDialog extends React.Component {
     this.state = {
       passphrase: '',
       passphraseError: null,
+      confirmError: null,
       confirmPassword: null,
     };
   }
@@ -59,7 +57,9 @@ class PasswordDialog extends React.Component {
     }
 
     if (passphrase !== confirmPassword) {
-      return;
+      return this.setState({
+        confirmError: 'Passwords does not match',
+      });
     }
 
     onGenerate(passphrase);
@@ -78,7 +78,7 @@ class PasswordDialog extends React.Component {
 
   onConfirmChange(val) {
     this.setState({
-      confirmPassword: val.currentTarget.value,
+      confirmPassword: val.target.value,
     });
   }
 
@@ -90,7 +90,9 @@ class PasswordDialog extends React.Component {
 
   render() {
     const { onDashboard, t, classes } = this.props;
-    const { passphraseError } = this.state;
+    const {
+      passphraseError, confirmError, confirmPassword, passphrase,
+    } = this.state;
 
     return (
       <Page title={ t('generate.title') } leftIcon={<Back onClick={onDashboard} />}>
@@ -105,6 +107,7 @@ class PasswordDialog extends React.Component {
                 </div>
                 <div style={{ marginTop: '30px' }}>
                   <PasswordInput
+                    password={ passphrase }
                     onChange={ this.onPassphraseChange }
                     error={ passphraseError }
                   />
@@ -127,15 +130,13 @@ class PasswordDialog extends React.Component {
           <Row>
             <div style={formStyles.left} />
             <div style={formStyles.right}>
-              <Field
-                hintText="Confirm Password"
+              <Input
+                errorText={confirmError}
+                value={confirmPassword}
+                placeholder="Confirm Password"
                 name="confirmPassword"
                 type="password"
-                component={TextField}
-                fullWidth={true}
-                underlineShow={false}
                 onChange={this.onConfirmChange.bind(this)}
-                validate={[required, this.passwordMatch.bind(this)]}
               />
             </div>
           </Row>
@@ -170,11 +171,4 @@ class PasswordDialog extends React.Component {
   }
 }
 
-const StyledPasswordDialog = withStyles(styles2)(PasswordDialog);
-
-const passwordDialogForm = reduxForm({
-  form: 'confirmGeneratePassword',
-  fields: ['confirmPassword'],
-})(StyledPasswordDialog);
-
-export default passwordDialogForm;
+export default withStyles(styles2)(PasswordDialog);

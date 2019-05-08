@@ -1,7 +1,7 @@
 const { spawn, spawnSync } = require('child_process');
-const path = require('path');
+const path = require('path'); // eslint-disable-line
 const fs = require('fs');
-const os = require('os');
+const os = require('os'); // eslint-disable-line
 
 const { checkExists } = require('../utils');
 const log = require('../logger');
