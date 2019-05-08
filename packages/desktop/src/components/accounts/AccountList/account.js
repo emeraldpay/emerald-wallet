@@ -66,7 +66,7 @@ export class Account extends React.Component {
         <Card className={classes.card}>
           <CardContent>
             <Grid container>
-              <Grid container item xs={5}>
+              <Grid container item xs={6}>
                 { accId && <AddressAvatar
                   identity
                   address={ accId }
@@ -75,7 +75,7 @@ export class Account extends React.Component {
                   onClick={ this.onAddressClick }
                 /> }
               </Grid>
-              <Grid container item xs={3}>
+              <Grid container item xs={2}>
                 <div className={ classes.identityIconContainer }>
                   <div style={{marginLeft: '10px'}}>
                     {balance && <AccountBalance

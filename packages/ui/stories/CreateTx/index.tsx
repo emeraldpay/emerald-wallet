@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {storiesOf} from '@storybook/react';
+import { Wei } from '@emeraldplatform/eth';
 import AmountField from '../../src/components/tx/send/CreateTx/AmountField';
 import FromField from '../../src/components/tx/send/CreateTx/FromField';
 import ToField from '../../src/components/tx/send/CreateTx/ToField';
@@ -10,12 +11,12 @@ storiesOf('CreateTx', module)
     <CreateTx
       token="ETC"
       txFeeToken="ETH"
-      balance="5"
-      amount="1"
+      amount={new Wei("10000000")}
       gasLimit="200"
-      txFee="1"
+      balance={new Wei("10000000")}
+      txFee={new Wei("1000000")}
     />))
-  .add('AmountField', () => (<AmountField amount={"0"} balance={"100"}/>))
+  .add('AmountField', () => (<AmountField amount={new Wei("10000000")} />))
   .add('FromField', () => (<FromField accounts={['0x1', '02']}/>))
   .add('ToField', () => (<ToField />));
 

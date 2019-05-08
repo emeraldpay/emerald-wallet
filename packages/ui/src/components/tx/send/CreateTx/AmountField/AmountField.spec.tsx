@@ -6,16 +6,14 @@ import { Wei, Units } from '@emeraldplatform/eth';
 describe('AmountField', () => {
   it('should renders without crash', () => {
     const amount = new Wei(0);
-    const balance = new Wei(1, Units.ETHER);
-    const wrapper = shallow(<AmountField amount={amount} balance={balance} />);
+    const wrapper = shallow(<AmountField amount={amount} />);
     expect(wrapper).toBeDefined();
   });
 
   it('should call onChangeAmount', () => {
     const onChangeAmount = jest.fn();
     const amount = new Wei(0);
-    const balance = new Wei(1, Units.ETHER);
-    const wrapper = shallow(<AmountField amount={amount} balance={balance} onChangeAmount={onChangeAmount}/>);
+    const wrapper = shallow(<AmountField amount={amount} onChangeAmount={onChangeAmount}/>);
     wrapper.find('Input').simulate('change', {target: {value:'567'}});
     expect(onChangeAmount.mock.calls.length).toBe(1);
     expect(onChangeAmount.mock.calls[0][0].toString()).toBe('567');

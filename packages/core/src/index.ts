@@ -4,7 +4,7 @@ export { EthereumTx, Ethereum as EthereumBlockchain } from './blockchains/ethere
 
 export { Currency, CurrencyCode } from './Currency';
 
-export { default as Units } from './Units';
+export { default as Units, IUnits } from './Units';
 
 export { EthereumClassic as EthereumClassicBlockchain } from './blockchains/ethereum-classic';
 

@@ -1,8 +1,9 @@
 export { default as Button} from './components/common/Button';
 export { default as InlineEdit } from './components/common/InlineEdit';
 export { default as Logo} from './components/common/Logo';
-export { default as Terms } from './components/welcome/Terms';
-export { default as OpenWallet } from './components/welcome/OpenWallet';
+
+export { default as InitialSetup } from './components/welcome/InitialSetup';
+
 export { default as About } from './components/About';
 export { default as ImportMnemonic } from './components/accounts/ImportMnemonic';
 export { default as ConfirmMnemonic } from './components/accounts/ConfirmMnemonic';

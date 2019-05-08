@@ -35,7 +35,7 @@ const Welcome = (props) => {
   if (needSetup) {
     return (
       <Grid container justify='center' alignItems='center'>
-        <Grid item xs={8}>
+        <Grid item xs={10}>
           <InitialSetup/>
         </Grid>
       </Grid>

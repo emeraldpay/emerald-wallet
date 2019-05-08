@@ -1,68 +1,33 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { Row, Col } from 'react-flexbox-grid/lib/index';
-import Stepper from '@material-ui/core/Stepper';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
-import Terms from './Terms';
-import OpenWallet from './openWallet';
+import { InitialSetup } from '@emeraldwallet/ui';
 import { TERMS_VERSION } from '../../store/config';
+import launcher from '../../store/launcher';
+import Wallet from '../../store/wallet';
+import { switchEndpoint } from '../../store/wallet/walletActions';
+import { saveSettings, setChain } from '../../store/launcher/launcherActions';
+import { api } from '../../lib/rpc/api';
 
-const Render = ({ rpcType, terms }) => {
-  let step = null;
-  let activeStep = 0;
-
-  if (terms !== TERMS_VERSION) {
-    step = <Terms/>;
-  } else {
-    activeStep = 1;
-    step = <OpenWallet/>;
-  }
-
-  const steps = [];
-  steps.push(
-    <Step key="terms">
-      <StepLabel>User Agreement</StepLabel>
-    </Step>
-  );
-  steps.push(
-    <Step key="open-wallet">
-      <StepLabel>Open Wallet</StepLabel>
-    </Step>
-  );
-
-  return (
-    <div>
-      <Row>
-        <Col xs={12}>
-          <Stepper activeStep={activeStep}>
-            { steps }
-          </Stepper>
-        </Col>
-      </Row>
-      <Row>
-        <Col xs={12}>
-          { step }
-        </Col>
-      </Row>
-    </div>
-  );
-};
-
-
-Render.propTypes = {
-  rpcType: PropTypes.string.isRequired,
-  terms: PropTypes.string.isRequired,
-};
-
-const InitialSetup = connect(
+export default connect(
   (state, ownProps) => ({
-    rpcType: state.launcher.getIn(['geth', 'type']) || 'none',
+    currentTermsVersion: TERMS_VERSION,
     terms: state.launcher.get('terms'),
   }),
   (dispatch, ownProps) => ({
+    onTermsAgreed: () => dispatch(launcher.actions.agreeOnTerms(TERMS_VERSION)),
+    connectETC: () => {
+      api.updateChain('mainnet');
+      dispatch(setChain('mainnet', 61));
+      dispatch(saveSettings({}));
+      dispatch(switchEndpoint({chain: 'mainnet', chainId: 61}));
+      dispatch(Wallet.actions.onOpenWallet());
+    },
+    connectETH: () => {
+      api.updateChain('eth');
+      dispatch(setChain('eth', 1));
+      dispatch(saveSettings({}));
+      dispatch(switchEndpoint({chain: 'eth', chainId: 1}));
+      dispatch(Wallet.actions.onOpenWallet());
+    },
   })
-)(Render);
-
-export default InitialSetup;
+)(InitialSetup);

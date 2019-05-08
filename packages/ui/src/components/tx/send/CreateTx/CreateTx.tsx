@@ -80,7 +80,6 @@ class CreateTransaction extends React.Component<Props> {
 
         <FormFieldWrapper>
           <AmountField
-            balance={this.props.balance}
             amount={this.props.amount}
             onChangeAmount={this.props.onChangeAmount}
             onMaxClicked={this.props.onMaxClicked}
