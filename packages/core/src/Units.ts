@@ -1,11 +1,16 @@
 import BigNumber from 'bignumber.js';
 
+export interface IUnits {
+  amount: string;
+  decimals: number;
+}
+
 /**
  * Type for every currency base units
  * Ethereum - wei
  * Bitcoin - satoshi
  */
-class Units {
+class Units implements IUnits {
   amount: string;
   decimals: number;
 

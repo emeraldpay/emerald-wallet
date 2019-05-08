@@ -1,7 +1,9 @@
 import * as React from 'react';
+import {withStyles} from '@material-ui/styles';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import CardActions from '@material-ui/core/CardActions';
 import Typography from '@material-ui/core/Typography';
 import Button from '../../common/Button';
 import { PlayCircle } from '@emeraldplatform/ui-icons';
@@ -9,9 +11,16 @@ import { PlayCircle } from '@emeraldplatform/ui-icons';
 import {ETC, ETH} from './Logos';
 import * as CSS from 'csstype';
 
+const styles = {
+  card: {
+    minHeight: '200px'
+  }
+};
+
 interface Props {
   connectETH: Function;
   connectETC: Function;
+  classes: any;
 }
 
 const styleLogo: CSS.Properties = {
@@ -27,10 +36,10 @@ const styleHelp: CSS.Properties = {
   paddingTop: "40px"
 };
 
-const OpenWallet = ({ connectETC, connectETH }: Props) => {
+const OpenWallet = ({ connectETC, connectETH, classes }: Props) => {
 
   const selectETH = (
-    <Card>
+    <Card className={classes.card}>
       <Grid container>
         <Grid item xs={8}>
           <CardContent style={styleContent}>
@@ -38,12 +47,14 @@ const OpenWallet = ({ connectETC, connectETH }: Props) => {
               Connect to Ethereum (ETH) blockchain
             </Typography>
           </CardContent>
-          <Button
-            // primary
-            label="Ethereum"
-            icon={<PlayCircle />}
-            onClick={connectETH}
-          />
+          <CardActions>
+            <Button
+              // primary
+              label="Ethereum"
+              icon={<PlayCircle />}
+              onClick={connectETH}
+            />
+          </CardActions>
         </Grid>
         <Grid item xs={4}>
           <div style={styleLogo}>
@@ -55,7 +66,7 @@ const OpenWallet = ({ connectETC, connectETH }: Props) => {
   );
 
   const selectETC = (
-    <Card>
+    <Card className={classes.card}>
       <Grid container>
         <Grid item xs={8}>
           <CardContent style={styleContent}>
@@ -63,12 +74,14 @@ const OpenWallet = ({ connectETC, connectETH }: Props) => {
               Connect to Ethereum Classic (ETC) blockchain
             </Typography>
           </CardContent>
-          <Button
-            // primary
-            label="Ethereum Classic"
-            icon={<PlayCircle />}
-            onClick={connectETC}
-          />
+          <CardActions>
+            <Button
+              // primary
+              label="Ethereum Classic"
+              icon={<PlayCircle />}
+              onClick={connectETC}
+            />
+          </CardActions>
         </Grid>
         <Grid item xs={4}>
           <div style={styleLogo}>
@@ -79,7 +92,6 @@ const OpenWallet = ({ connectETC, connectETH }: Props) => {
     </Card>
   );
 
-
   return (
     <Grid>
       <Grid container>
@@ -89,7 +101,7 @@ const OpenWallet = ({ connectETC, connectETH }: Props) => {
           </Typography>
         </Grid>
       </Grid>
-      <Grid container spacing={10}>
+      <Grid container spacing={5}>
         <Grid item xs={6}>
           {selectETH}
         </Grid>
@@ -107,4 +119,4 @@ const OpenWallet = ({ connectETC, connectETH }: Props) => {
   );
 };
 
-export default OpenWallet;
+export default withStyles(styles)(OpenWallet);

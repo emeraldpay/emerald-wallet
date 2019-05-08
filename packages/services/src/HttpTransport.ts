@@ -10,7 +10,6 @@ class HttpTransportAdapter implements Transport {
     this.transport = transport;
   }
   request(req: Array<JsonRpcRequest>): Promise<Array<any>> {
-    console.error(JSON.stringify(req));
     return this.transport.request(req)
       .then(result => result);
   }
