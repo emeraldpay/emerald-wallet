@@ -14,11 +14,16 @@
   "dependencies": {
     "@emeraldplatform/eth-rpc": "^0.5.0-gamma.0",
     "@emeraldplatform/rpc": "^0.5.0-gamma.0",
-    "@emeraldplatform/vault": "^0.5.0-gamma.0"
+    "@emeraldplatform/vault": "^0.5.0-gamma.0",
+    "@emeraldplatform/grpc": "0.3.1",
+    "google-protobuf": "3.7.1",
+    "grpc": "1.20.3",
+    "text-encoding": "0.7.0"
   },
   "devDependencies": {
     "@types/jest": "^24.0.9",
     "@types/node": "^11.10.4",
+    "@types/text-encoding": "0.0.35",
     "jest": "^24.1.0",
     "rimraf": "^2.6.3",
     "ts-jest": "^24.0.0",
