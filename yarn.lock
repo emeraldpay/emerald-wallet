@@ -1190,11 +1190,12 @@
     bignumber.js "8.0.2"
     qs "6.7.0"
 
-"@emeraldplatform/grpc@0.3.0":
-  version "0.3.0"
-  resolved "https://registry.yarnpkg.com/@emeraldplatform/grpc/-/grpc-0.3.0.tgz#068235e1a17eec0661efc5e1dda54a6d779e98b2"
-  integrity sha512-0d2VuGyTsvyNSlGYUQWrvJHFoNtrjpIW5FggUyUBAbfl1fYAhC+oO7aP4sqnobTOso8Cf+maqdk+agD04IT5sw==
+"@emeraldplatform/grpc@0.3.1":
+  version "0.3.1"
+  resolved "https://registry.yarnpkg.com/@emeraldplatform/grpc/-/grpc-0.3.1.tgz#6952e8e7dc435a4f3e179491728122fa6f2d98d4"
+  integrity sha512-HntKviQixWt4mlHekCmU+wRdplfC9fVjHgV34yzW1bKvEsK4Aa9rrKwtQHTKEXpagz8Fa+LDkohB9xBgA5Lfyg==
   dependencies:
+    "@types/google-protobuf" "3.2.7"
     google-protobuf "3.7.1"
     grpc "1.20.3"
     protobufjs "6.8.8"
@@ -3199,6 +3200,11 @@
   dependencies:
     "@types/cheerio" "*"
     "@types/react" "*"
+
+"@types/google-protobuf@3.2.7":
+  version "3.2.7"
+  resolved "https://registry.yarnpkg.com/@types/google-protobuf/-/google-protobuf-3.2.7.tgz#9576ed5dd62cdb1c9f952522028a03b7cb2b69b5"
+  integrity sha512-Pb9wl5qDEwfnJeeu6Zpn5Y+waLrKETStqLZXHMGCTbkNuBBudPy4qOGN6veamyeoUBwTm2knOVeP/FlHHhhmzA==
 
 "@types/istanbul-lib-coverage@*", "@types/istanbul-lib-coverage@^2.0.0":
   version "2.0.1"
