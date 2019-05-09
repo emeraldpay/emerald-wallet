@@ -29,10 +29,10 @@ class FromField extends React.Component<Props> {
       <React.Fragment>
         <FormLabel>From</FormLabel>
         <AccountSelect
-          onChangeAccount={this.onChangeAccount}
+          onChange={this.onChangeAccount}
           selectedAccount={selectedAccount}
           accounts={accounts}
-          containerStyle={this.inputStyles}
+          // containerStyle={this.inputStyles}
         />
       </React.Fragment>
     );

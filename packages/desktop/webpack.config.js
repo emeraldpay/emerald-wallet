@@ -31,6 +31,7 @@ const config = {
       path.resolve(srcDir),
       path.join(__dirname, 'electron'),
       path.join(__dirname, 'node_modules'),
+      path.join(__dirname, '../../node_modules'),
     ],
     alias: {
       'babel-polyfill': path.join(__dirname, 'babel-polyfill/dist/polyfill.js'),
@@ -42,13 +43,13 @@ const config = {
         test: /\.(js|jsx|es6)$/,
         exclude: /(node_modules)/,
         include: [
-          path.resolve(__dirname, 'src'),
-          path.resolve(__dirname, 'node_modules/ui')
+          path.resolve(__dirname, 'src')
         ],
         use: {
           loader: 'babel-loader',
           options: {
-            presets: ['env', 'react', 'stage-0', 'flow'],
+            presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-flow'],
+            plugins: ['@babel/plugin-proposal-class-properties']
           },
         },
       },

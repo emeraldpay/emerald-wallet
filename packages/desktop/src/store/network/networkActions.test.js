@@ -1,5 +1,5 @@
 import { EthRpc } from '@emeraldplatform/eth-rpc';
-import { JsonRpc } from '@emeraldplatform/rpc';
+import { DefaultJsonRpc } from '@emeraldplatform/rpc';
 import { fromJS } from 'immutable';
 import { loadSyncing, loadHeight } from './networkActions';
 import ActionTypes from './actionTypes';
@@ -15,12 +15,13 @@ describe('networkActions/loadSyncing', () => {
 
   it('should call sync rpc endpoint', () => {
     const fakeTransport = {
-      request: () => Promise.resolve({
+      request: () => Promise.resolve([{
+        id: 1,
         result: false,
-      }),
+      }]),
     };
 
-    const ethRpc = new EthRpc(new JsonRpc(fakeTransport));
+    const ethRpc = new EthRpc(new DefaultJsonRpc(fakeTransport));
     const dispatch = jest.fn();
 
     return loadSyncing()(dispatch, getState, { geth: ethRpc }).then(() => {
@@ -38,11 +39,12 @@ describe('networkActions/loadHeight', () => {
   });
   it('should call getBlockNumber rpc endpoint', () => {
     const fakeTransport = {
-      request: () => Promise.resolve({
+      request: () => Promise.resolve([{
+        id: 1,
         result: 0xc,
-      }),
+      }]),
     };
-    const ethRpc = new EthRpc(new JsonRpc(fakeTransport));
+    const ethRpc = new EthRpc(new DefaultJsonRpc(fakeTransport));
     const dispatch = jest.fn();
     return loadHeight(false)(dispatch, getState, { geth: ethRpc }).then(() => {
       expect(dispatch).toBeCalledWith({

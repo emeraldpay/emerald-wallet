@@ -43,7 +43,6 @@ const Token = (props) => {
         <Input
           value={ tokenAddress }
           underlineShow={ false }
-
         />
       </div>
       <div>

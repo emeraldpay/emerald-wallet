@@ -1,5 +1,5 @@
 import React from 'react';
-import withStyles from '@material-ui/core/styles/withStyles';
+import { withStyles } from '@material-ui/styles';
 import withTheme from '@material-ui/core/styles/withTheme';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
@@ -66,7 +66,7 @@ export class Account extends React.Component {
         <Card className={classes.card}>
           <CardContent>
             <Grid container>
-              <Grid container item xs={5}>
+              <Grid container item xs={6}>
                 { accId && <AddressAvatar
                   identity
                   address={ accId }
@@ -75,7 +75,7 @@ export class Account extends React.Component {
                   onClick={ this.onAddressClick }
                 /> }
               </Grid>
-              <Grid container item xs={3}>
+              <Grid container item xs={2}>
                 <div className={ classes.identityIconContainer }>
                   <div style={{marginLeft: '10px'}}>
                     {balance && <AccountBalance
@@ -110,4 +110,4 @@ export class Account extends React.Component {
     }
 }
 
-export default withTheme()(withStyles(styles2)(Account));
+export default withTheme((withStyles(styles2)(Account)));

@@ -32,7 +32,7 @@ class AddressIconMenuItem extends React.Component<Props> {
           identityProps={{size: 30}}
           address={this.props.address}
           identity={true}
-          hideCopy={true}
+          addressProps={{hideCopy: true}}
         />
       </MenuItem>
     );

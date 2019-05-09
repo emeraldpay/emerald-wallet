@@ -7,7 +7,7 @@ import { Wei, Units } from '@emeraldplatform/eth';
 interface Props {
   onChangeAmount?: Function;
   amount?: Wei;
-  balance: Wei,
+  // balance: Wei,
   onMaxClicked?: any;
 }
 
@@ -40,7 +40,7 @@ class AmountField extends React.Component<Props, State> {
   }
 
   handleChangeAmount = (event: any) => {
-    var amount = event.target.value || '';
+    let amount = event.target.value || '';
     this.setState({amountStr: amount});
     amount = amount.trim();
     if (amount == '') {
@@ -87,7 +87,7 @@ class AmountField extends React.Component<Props, State> {
             // containerStyle={this.inputStyles}
             // min="0"
             // max={this.props.balance}
-            value={this.state.amountStr}
+            value={amountStr}
             onChange={this.handleChangeAmount}
             errorText={errorText}
           />

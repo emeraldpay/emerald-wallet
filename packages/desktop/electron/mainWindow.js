@@ -1,6 +1,6 @@
 const electron = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
-const path = require('path');
-const url = require('url');
+const path = require('path'); // eslint-disable-line
+const url = require('url'); // eslint-disable-line
 const devtron = require('devtron');
 const darwinMenu = require('./menus/darwin');
 const winLinuxMenu = require('./menus/win-linux');

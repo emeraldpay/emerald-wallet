@@ -1,5 +1,5 @@
 import * as React from 'react';
-import withStyles, {CSSProperties} from '@material-ui/core/styles/withStyles';
+import {withStyles, CSSProperties} from '@material-ui/styles';
 import { Search as SearchIcon } from '@emeraldplatform/ui-icons';
 import TextField from '@material-ui/core/TextField';
 import InputAdornment from '@material-ui/core/InputAdornment';

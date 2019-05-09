@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { withStyles } from '@material-ui/core/styles';
+import { withStyles } from '@material-ui/styles';
 import * as QRCode from 'qrcode.react';
 import IconButton from '@material-ui/core/IconButton';
 import { Print, Close, CurrencyEtc } from '@emeraldplatform/ui-icons';
-import {CSSProperties} from "@material-ui/core/styles/withStyles";
 import { EmeraldLine } from './EmeraldLogo';
+import {CSSProperties} from "@material-ui/styles";
 
 export const styles = {
   container: {

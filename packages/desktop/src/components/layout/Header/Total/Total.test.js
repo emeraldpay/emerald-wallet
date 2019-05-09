@@ -1,11 +1,13 @@
-import { shallow } from 'enzyme';
 import React from 'react';
-import { fromJS } from 'immutable';
 import { Wei } from '@emeraldplatform/eth';
-import Total from '.';
+import { shallow, mount } from 'enzyme';
+import { Provider } from 'react-redux';
+import { fromJS } from 'immutable';
+import Total from './Total';
 
 function createStore() {
   return {
+    dispatch() {},
     subscribe() {},
     getState() {
       return {
@@ -31,7 +33,7 @@ function createStore() {
 
 describe('Header/Total', () => {
   it('renders total balance from store', () => {
-    const component = shallow(<Total />, {context: {store: createStore()}});
-    expect(component.props().total).toEqual('0.003');
+    const component = mount(<Provider store={createStore()}><Total /></Provider>);
+    expect(component.find(Total).children().first().props().total).toEqual('0.003');
   });
 });

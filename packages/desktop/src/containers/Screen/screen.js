@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import CircularProgress from 'material-ui/CircularProgress';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { Wei } from '@emeraldplatform/eth';
 
 import createLogger from '../../utils/logger';
@@ -34,11 +34,14 @@ const Screen = ({ screen, screenItem }) => {
     return (<div>
       <CircularProgress size={50} secondary="true" /> Initializing...
     </div>);
-  } if (screen === 'home') {
+  }
+  if (screen === 'home') {
     return (<Dashboard />);
-  } if (screen === 'address-book') {
+  }
+  if (screen === 'address-book') {
     return <AddressBook />;
-  } if (screen === 'address') {
+  }
+  if (screen === 'address') {
     return <AddressShow address={ screenItem }/>;
   } if (screen === 'add-address') {
     return <AddContact />;

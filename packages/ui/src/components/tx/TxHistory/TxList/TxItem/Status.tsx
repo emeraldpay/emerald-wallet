@@ -1,19 +1,19 @@
 import * as React from 'react';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import withStyles from "@material-ui/core/styles/withStyles";
+import { withStyles } from '@material-ui/styles';
 
 const styles = (theme: any) => ({
   inQueue: {
-    color: theme.palette.text.secondary,
+    color: theme.palette && theme.palette.text.secondary,
   },
   inBlockchain: {
-    color: theme.palette.primary.main,
+    color: theme.palette && theme.palette.primary.main,
   },
   confirmed: {
-    color: theme.palette.primary.main,
+    color: theme.palette && theme.palette.primary.main,
   },
   timestamp: {
-    color: theme.palette.text.secondary,
+    color: theme.palette && theme.palette.text.secondary,
   }
 });
 

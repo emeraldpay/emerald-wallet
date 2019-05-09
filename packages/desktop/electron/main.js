@@ -1,9 +1,8 @@
 require('babel-polyfill'); // eslint-disable-line import/no-unresolved
 require('regenerator-runtime/runtime');
 const { ServerConnect } = require('@emeraldwallet/services');
-const os = require('os');
 const { app, ipcMain, session } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
-const path = require('path');
+const path = require('path'); // eslint-disable-line
 
 const Settings = require('./settings');
 const mainWindow = require('./mainWindow');
