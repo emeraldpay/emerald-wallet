@@ -1190,18 +1190,10 @@
     bignumber.js "8.0.2"
     qs "6.7.0"
 
-"@emeraldplatform/grpc@0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@emeraldplatform/grpc/-/grpc-0.1.0.tgz#23b213168e3464c103e8751663a95f7a9188e704"
-  integrity sha512-kHYvyKpJwO7lUdDg1sFeLA8GltWpdCWPFxyQsoouTLpzElEdecvrCcFsFSuKoJ/sbPGxQBe92snZ7O5WxvZ+HQ==
-  dependencies:
-    google-protobuf "3.7.1"
-    grpc "1.20.3"
-
-"@emeraldplatform/grpc@0.2.0":
-  version "0.2.0"
-  resolved "https://registry.yarnpkg.com/@emeraldplatform/grpc/-/grpc-0.2.0.tgz#d9c8bf07a70b87d07b716817d854f52d3e6ab507"
-  integrity sha512-ndQQNcOkkY9/j0VA01Z1K7km/nVV5WRXBEdBJ0/WPoqd30Jym/uwfdungd6VZQrBhbuXlGAvINwLWNAoih9LxA==
+"@emeraldplatform/grpc@0.3.0":
+  version "0.3.0"
+  resolved "https://registry.yarnpkg.com/@emeraldplatform/grpc/-/grpc-0.3.0.tgz#068235e1a17eec0661efc5e1dda54a6d779e98b2"
+  integrity sha512-0d2VuGyTsvyNSlGYUQWrvJHFoNtrjpIW5FggUyUBAbfl1fYAhC+oO7aP4sqnobTOso8Cf+maqdk+agD04IT5sw==
   dependencies:
     google-protobuf "3.7.1"
     grpc "1.20.3"
