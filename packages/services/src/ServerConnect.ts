@@ -6,6 +6,7 @@ import {
   EthRpc, VerifyMinPeers, VerifyNotSyncing, VerifyGenesis, VerifyBlockHash,
 } from '@emeraldplatform/eth-rpc';
 import HttpTransportAdapter from './HttpTransport';
+import GrpcTransport from './GrpcTransport';
 
 const os = require('os');
 
@@ -97,7 +98,7 @@ class ServerConnect {
     localRevalidate.start();
 
     return new EthRpc(
-      new RotatingJsonRpc(localRevalidate, new DefaultJsonRpc(this.createHttpTransport(chain.url)))
+      new RotatingJsonRpc(localRevalidate, new DefaultJsonRpc(new GrpcTransport(name, 'localhost:8090')))
     );
   }
 
