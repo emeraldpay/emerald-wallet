@@ -1,8 +1,7 @@
+const { LocalConnector } = require('@emeraldwallet/vault');
 const log = require('./logger');
 const { NoneGeth, RemoteGeth } = require('./launcher');
-const { LocalConnector } = require('./vault/launcher');
 const UserNotify = require('./userNotify').UserNotify; // eslint-disable-line
-const { check, waitRpc } = require('./nodecheck');
 const {
   getBinDir, getLogDir, isValidChain, URL_FOR_CHAIN,
 } = require('./utils');
@@ -147,7 +146,7 @@ class Services {
       this.connectorStatus = STATUS.NOT_STARTED;
       this.notifyConnectorStatus();
 
-      this.connector = new LocalConnector(getBinDir(), this.setup.chain);
+      this.connector = new LocalConnector(getBinDir(), log);
 
       const onVaultReady = () => {
         this.emerald.currentVersion().then((version) => {

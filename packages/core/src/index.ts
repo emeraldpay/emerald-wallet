@@ -10,3 +10,6 @@ export { EthereumClassic as EthereumClassicBlockchain } from './blockchains/ethe
 
 import * as utils from './utils';
 export { utils };
+
+export { default as ILogger } from './ILogger';
+export { default as DefaultLogger } from './DefaultLogger';
