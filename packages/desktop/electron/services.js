@@ -1,3 +1,4 @@
+const { ChainListener } = require('@emeraldwallet/services');
 const log = require('./logger');
 const { NoneGeth, RemoteGeth } = require('./launcher');
 const { LocalConnector } = require('./vault/launcher');
@@ -6,7 +7,6 @@ const { check, waitRpc } = require('./nodecheck');
 const {
   getBinDir, getLogDir, isValidChain, URL_FOR_CHAIN,
 } = require('./utils');
-
 require('es6-promise').polyfill();
 
 const SERVICES = {
@@ -49,6 +49,7 @@ class Services {
     this.notify = new UserNotify(webContents);
     this.emerald = serverConnect.connectEmerald();
     this.serverConnect = serverConnect;
+    this.blockchainStatus = new BlockchainStatus(webContents);
     log.info(`Run services from ${getBinDir()}`);
   }
 
@@ -66,6 +67,7 @@ class Services {
       log.debug('New Services setup', this.setup);
       this.gethStatus = STATUS.NOT_STARTED;
       if (chainChanged) {
+        this.blockchainStatus.start(settings.chain.name);
         return this.shutdownRpc();
       }
     } else {
@@ -229,6 +231,31 @@ class Services {
       status: gethStatus,
       version: this.setup.geth.clientVersion,
     });
+  }
+}
+
+class BlockchainStatus {
+  constructor(webContents) {
+    this.webContents = webContents;
+  }
+
+  start(chain) {
+    if (chain === 'mainnet') {
+      chain = 'etc';
+    }
+    this.stop();
+    this.listener = new ChainListener(chain, 'localhost:8090');
+    const {webContents} = this;
+    this.listener.subscribe((head) => {
+      webContents.send('store', 'NETWORK/BLOCK', {height: head.height, hash: head.hash});
+    });
+  }
+
+  stop() {
+    if (this.listener) {
+      this.listener.stop();
+    }
+    this.listener = null;
   }
 }
 

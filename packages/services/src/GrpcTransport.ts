@@ -4,7 +4,8 @@ import {
   BlockchainClient,
   CallBlockchainRequest,
   CallBlockchainItem,
-  CallBlockchainReplyItem
+  CallBlockchainReplyItem,
+  ChainSpec, chainByCode
 } from '@emeraldplatform/grpc';
 import { TextEncoder, TextDecoder } from 'text-encoding';
 
@@ -13,7 +14,7 @@ import { TextEncoder, TextDecoder } from 'text-encoding';
  */
 class GrpcTransport implements Transport {
   client: BlockchainClient;
-  chain: string;
+  chain: ChainSpec;
 
   constructor(chain: string, host: string) {
     const cred = credentials.createInsecure();
@@ -21,12 +22,12 @@ class GrpcTransport implements Transport {
     if (chain === 'mainnet') {
       chain = 'etc';
     }
-    this.chain = chain;
+    this.chain = chainByCode(chain.toUpperCase());
   }
   request(req: Array<JsonRpcRequest>): Promise<Array<any>> {
     return new Promise((resolve, reject) => {
       const request = new CallBlockchainRequest();
-      request.setChain(this.chain);
+      request.setChain(this.chain.id);
       req.forEach((json) => {
         const item = new CallBlockchainItem();
         item.setId(json.id);
