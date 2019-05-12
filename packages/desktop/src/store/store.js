@@ -39,7 +39,6 @@ export const store = createStore(api);
 function refreshAll() {
   const promises = [
     store.dispatch(accounts.actions.loadPendingTransactions()),
-    store.dispatch(network.actions.loadHeight(false)),
     store.dispatch(accounts.actions.loadAccountsList()),
     store.dispatch(history.actions.refreshTrackedTransactions()),
   ];
@@ -128,6 +127,18 @@ function newWalletVersionCheck() {
   });
 }
 
+export function electronToStore() {
+  return (dispatch) => {
+    log.debug('Running launcher listener for Redux');
+    ipcRenderer.on('store', (event, type, message) => {
+      dispatch({
+        type: type,
+        ...message,
+      });
+    });
+  };
+}
+
 export const start = () => {
   try {
     store.dispatch(readConfig());
@@ -136,6 +147,7 @@ export const start = () => {
     log.error(e);
   }
   store.dispatch(listenElectron());
+  store.dispatch(electronToStore());
   getInitialScreen();
   newWalletVersionCheck();
 };
