@@ -15,17 +15,6 @@ export function switchChain({ chain, chainId }) {
   };
 }
 
-export function loadHeight(watch) {
-  return (dispatch, getState, api) => {
-    return api.geth.eth.getBlockNumber().then((result) => {
-      dispatch({
-        type: ActionTypes.BLOCK,
-        height: result,
-      });
-    }).catch(dispatchRpcError(dispatch));
-  };
-}
-
 export function loadPeerCount() {
   return (dispatch, getState, api) => {
     return api.geth.net.peerCount().then((result) => {
