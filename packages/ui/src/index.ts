@@ -1,6 +1,7 @@
 export { default as Button} from './components/common/Button';
 export { default as InlineEdit } from './components/common/InlineEdit';
-export { default as Logo} from './components/common/Logo';
+export { default as Logo } from './components/common/Logo';
+export { default as Pager } from './components/common/Pager';
 
 export { default as InitialSetup } from './components/welcome/InitialSetup';
 

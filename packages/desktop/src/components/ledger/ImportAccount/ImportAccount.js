@@ -4,9 +4,8 @@ import withStyles from 'react-jss';
 import { Page, ButtonGroup } from '@emeraldplatform/ui';
 import { AddCircle as AddIcon, Back } from '@emeraldplatform/ui-icons';
 import { Row, styles as formStyles } from 'elements/Form';
-import { Button, HdPath } from '@emeraldwallet/ui';
+import { Button, HdPath, Pager } from '@emeraldwallet/ui';
 import AddrList from './AddrList';
-import Pager from './Pager';
 
 const styles = {
   row: {

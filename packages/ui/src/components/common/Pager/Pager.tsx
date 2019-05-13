@@ -1,23 +1,29 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import * as React from 'react';
 import { ArrowLeft as ArrowLeftIcon, ArrowRight as ArrowRightIcon } from '@emeraldplatform/ui-icons';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
-import ledger from 'store/ledger';
+import {CSSProperties} from "@material-ui/styles";
 
 const pageSize = 5;
 
-const Pager = ({ offset, setOffset }) => {
-  const offsetStyle = {
-    textAlign: 'center',
-    fontSize: '16px',
-    fontWeight: 900,
-    marginTop: '8px',
-  };
+interface Props {
+  offset?: any;
+  setOffset?: any;
+}
+
+const offsetStyle = {
+  textAlign: 'center',
+  fontSize: '16px',
+  fontWeight: 900,
+  marginTop: '8px',
+} as CSSProperties;
+
+const Pager = ({ offset, setOffset }: Props) => {
+
   return (
     <Grid container alignItems="center">
       <Grid item xs={5} style={{textAlign: 'right'}}>
-        <IconButton disabled={offset - pageSize < 0} onClick={() => setOffset(offset - pageSize)}ssss>
+        <IconButton disabled={offset - pageSize < 0} onClick={() => setOffset(offset - pageSize)}>
           <ArrowLeftIcon />
         </IconButton>
       </Grid>
@@ -33,13 +39,4 @@ const Pager = ({ offset, setOffset }) => {
   );
 };
 
-export default connect(
-  (state, ownProps) => ({
-    offset: state.ledger.getIn(['hd', 'offset']),
-  }),
-  (dispatch, ownProps) => ({
-    setOffset: (offset) => {
-      dispatch(ledger.actions.getAddresses(offset, pageSize));
-    },
-  })
-)(Pager);
+export default Pager;
