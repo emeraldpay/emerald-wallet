@@ -1,5 +1,5 @@
 import React from 'react';
-import withStyles from 'react-jss';
+import {withStyles} from '@material-ui/styles';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Dialog from '@material-ui/core/Dialog';
@@ -8,7 +8,7 @@ import { Close as CloseIcon } from '@emeraldplatform/ui-icons';
 import screen from 'store/wallet/screen';
 import BackgroundImage from './ledger.png';
 
-export const styles2 = {
+export const styles2 = (theme) => ({
   header: {
     background: `url(${BackgroundImage})`,
     backgroundSize: '600px 188px',
@@ -62,7 +62,10 @@ export const styles2 = {
   dialogPaper: {
     backgroundColor: 'white !important',
   },
-};
+  links: {
+    color: theme.palette.primary.main,
+  },
+});
 
 const style = {
   closeButton: {
@@ -96,7 +99,7 @@ export const WaitConnectionDialog = ({ onCancel, classes }) => {
       </div>
       <div className={ classes.content }>
         <div className={ classes.buyLedger }>
-                    Ledger Nano S. Where to buy?
+          Ledger Nano S. <a onClick={() => {}} className={classes.links} href="#">Where to buy?</a>
         </div>
         <div className={ classes.title }>
                     Waiting for Ledger Connection...
