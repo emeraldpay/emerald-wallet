@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {withStyles} from '@material-ui/styles';
-import Button from '../common/Button';
 import Logo from '../common/Logo';
 
 const year = new Date().getFullYear();

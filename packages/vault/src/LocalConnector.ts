@@ -1,17 +1,21 @@
-const { spawn, spawnSync } = require('child_process');
-const path = require('path'); // eslint-disable-line
-const fs = require('fs');
-const os = require('os'); // eslint-disable-line
+import {ChildProcess, spawn, spawnSync} from 'child_process';
+import * as fs from 'fs';
+import { ILogger, DefaultLogger } from '@emeraldwallet/core';
 
-const { checkExists } = require('../utils');
-const log = require('../logger');
+const path = require('path');
+const os = require('os');
 
 const isDev = process.env.NODE_ENV === 'development';
 
 class LocalConnector {
+  bin: string;
+  proc: ChildProcess | null = null;
+  log: ILogger;
+
   // TODO: assert params
-  constructor(bin) {
+  constructor(bin: string, log?: ILogger) {
     this.bin = bin;
+    this.log = log || new DefaultLogger();
   }
 
   emeraldExecutable() {
@@ -31,16 +35,18 @@ class LocalConnector {
   migrateIfNotExists() {
     return new Promise((resolve, reject) => {
       const bin = this.emeraldExecutable();
-      log.debug('Checking if emerald exists:', bin);
-      checkExists(bin).then((exists) => {
+      this.log.debug('Checking if emerald exists:', bin);
+      this.checkExists(bin).then((exists) => {
         if (!exists) {
-          log.warn(`emerald not found at ${bin}`);
+          this.log.warn(`emerald not found at ${bin}`);
           // check that included binary path exists
           // if it does exist, move it to this.bin/
           const cargoEmeraldPath = path.join(process.env.HOME, '.cargo', 'bin', 'emerald');
-          log.debug('cargo installed emerald path:', cargoEmeraldPath);
-          checkExists(cargoEmeraldPath).then((emBinaryExists) => {
-            log.debug('cargo installed emerald path exists:', emBinaryExists);
+
+          this.log.debug('cargo installed emerald path:', cargoEmeraldPath);
+
+          this.checkExists(cargoEmeraldPath).then((emBinaryExists) => {
+            this.log.debug('cargo installed emerald path exists:', emBinaryExists);
             if (!emBinaryExists) {
               reject(new Error('No packaged emerald binary found.'));
             }
@@ -51,7 +57,7 @@ class LocalConnector {
             ws.on('close', () => {
               fs.chmod(bin, 0o755, (moderr) => {
                 if (moderr) {
-                  log.error('Failed to set emerald executable flag', moderr);
+                  this.log.error('Failed to set emerald executable flag', moderr);
                   reject(moderr);
                 }
                 resolve(true);
@@ -61,7 +67,7 @@ class LocalConnector {
           });
         } else {
           // Assuming the emerald found is valid (perms, etc).
-          log.debug('OK: emerald exists: ', bin);
+          this.log.debug('OK: emerald exists: ', bin);
           resolve(true);
         }
       });
@@ -70,9 +76,9 @@ class LocalConnector {
 
 
   /**
-     * It runs "emerald import --all" to import old key files from vault version before v0.12
-     * TODO: sooner or later it should be removed
-     */
+   * It runs "emerald import --all" to import old key files from vault version before v0.12
+   * TODO: sooner or later it should be removed
+   */
   importKeyFiles() {
     return new Promise((resolve, reject) => {
       const chainName = 'mainnet';
@@ -81,7 +87,7 @@ class LocalConnector {
       const emeraldHomeDir = `${appData}${path.join('/.emerald', chainName, 'keystore/')}`;
       fs.access(bin, fs.constants.F_OK | fs.constants.R_OK | fs.constants.X_OK, (err) => {
         if (err) {
-          log.error(`File ${bin} doesn't exist or doesn't have execution flag`);
+          this.log.error(`File ${bin} doesn't exist or doesn't have execution flag`);
           reject(err);
         } else {
           const options = [
@@ -91,10 +97,10 @@ class LocalConnector {
             '--all',
             emeraldHomeDir,
           ];
-          log.debug(`Emerald bin: ${bin}, args: ${options}`);
+          this.log.debug(`Emerald bin: ${bin}, args: ${options}`);
           const result = spawnSync(bin, options);
           if (result) {
-            log.debug(`Emerald execution status: ${result.status}`);
+            this.log.debug(`Emerald execution status: ${result.status}`);
           }
           resolve(result);
         }
@@ -107,7 +113,7 @@ class LocalConnector {
       const bin = this.emeraldExecutable();
       fs.access(bin, fs.constants.F_OK | fs.constants.R_OK | fs.constants.X_OK, (err) => {
         if (err) {
-          log.error(`File ${bin} doesn't exist or doesn't have execution flag`);
+          this.log.error(`File ${bin} doesn't exist or doesn't have execution flag`);
           reject(err);
         } else {
           const options = [
@@ -117,7 +123,7 @@ class LocalConnector {
             options.push(`--base-path=${path.resolve('./.emerald-dev/vault')}`);
           }
           options.push('server');
-          log.debug(`Emerald bin: ${bin}, args: ${options}`);
+          this.log.debug(`Emerald bin: ${bin}, args: ${options}`);
           this.proc = spawn(bin, options);
           resolve(this.proc);
         }
@@ -127,7 +133,7 @@ class LocalConnector {
 
   launch() {
     return new Promise((resolve, reject) => {
-      log.info('Starting Emerald Connector...');
+      this.log.info('Starting Emerald Connector...');
       this.migrateIfNotExists()
         .then(this.importKeyFiles.bind(this))
         .then(this.start.bind(this))
@@ -137,7 +143,7 @@ class LocalConnector {
   }
 
   shutdown() {
-    log.info('Shutting down Local Connector');
+    this.log.info('Shutting down Local Connector');
     return new Promise((resolve, reject) => {
       if (!this.proc) {
         resolve('not_started');
@@ -148,14 +154,32 @@ class LocalConnector {
         this.proc = null;
       });
       this.proc.on('error', (err) => {
-        log.error('Failed to shutdown Emerald Connector', err);
+        this.log.error('Failed to shutdown Emerald Connector', err);
         reject(err);
       });
       this.proc.kill();
     });
   }
+
+  checkExists(target: string): Promise<boolean> {
+    return new Promise((resolve) => {
+      fs.access(target, fs.constants.R_OK | fs.constants.X_OK, (err) => {
+        if (err) {
+          resolve(false);
+        } else {
+          fs.stat(target, (e, stat) => {
+            if (e) {
+              resolve(false);
+            } else if (!stat.isFile() || stat.size === 0) {
+              resolve(false);
+            } else {
+              resolve(true);
+            }
+          });
+        }
+      });
+    });
+  }
 }
 
-module.exports = {
-  LocalConnector,
-};
+export default LocalConnector;
