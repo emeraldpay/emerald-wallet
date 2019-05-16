@@ -1,13 +1,15 @@
 import {JsonRpcRequest, Transport} from '@emeraldplatform/rpc';
 import {
   credentials,
-  BlockchainClient,
+  // @ts-ignore
+  BlockchainClientPb as BlockchainClient,
   CallBlockchainRequest,
   CallBlockchainItem,
   CallBlockchainReplyItem,
   ChainSpec, chainByCode
 } from '@emeraldplatform/grpc';
 import { TextEncoder, TextDecoder } from 'text-encoding';
+import {ServiceError} from "grpc";
 
 /**
  * It should be used for request/response trace in dev version
@@ -46,7 +48,7 @@ class GrpcTransport implements Transport {
       response.on('end', () => {
         resolve(result);
       });
-      response.on('error', (err) => {
+      response.on('error', (err: ServiceError) => {
         reject(err)
       })
     });

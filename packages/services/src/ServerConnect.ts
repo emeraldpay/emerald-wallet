@@ -99,6 +99,7 @@ class ServerConnect {
 
     return new EthRpc(
       new RotatingJsonRpc(localRevalidate, new DefaultJsonRpc(new GrpcTransport(name, 'localhost:8090')))
+      // new RotatingJsonRpc(localRevalidate, new DefaultJsonRpc(this.createHttpTransport(chain.url)))
     );
   }
 
