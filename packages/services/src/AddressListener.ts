@@ -1,10 +1,16 @@
 import {
+  AccountStatus,
+  AnyAddress,
+  chainByCode,
+  ChainSpec,
   credentials,
-  MultiAddress, SingleAddress, AnyAddress, TrackClient, AccountStatus, TrackAccountRequest,
-  ChainSpec, chainByCode
+  MultiAddress,
+  SingleAddress,
+  TrackAccountRequest,
+  TrackClient
 } from '@emeraldplatform/grpc';
 import BigNumber from 'bignumber.js';
-import { TextEncoder, TextDecoder } from 'text-encoding';
+import * as grpc from 'grpc';
 import {ClientReadableStream} from 'grpc';
 
 type AccountStatusEvent = {
@@ -52,19 +58,21 @@ export class AddressListener {
     request.setAddress(pbAnyAddr);
     request.setTransactions(false);
 
-    const response = this.client.trackAccount(request);
-    response.on('data', (data: AccountStatus) => {
-      if (handler) {
-        handler({
-          address: '0x'+Buffer.from(data.getAddress_asU8()).toString('hex'),
-          balance: new BigNumber(Buffer.from(data.getBalance_asU8()).toString('hex'), 16).toString()
-        })
-      }
+    this.client.trackAccount(request, (response: grpc.ClientReadableStream<AccountStatus>) => {
+      response.on('data', (data: AccountStatus) => {
+        if (handler) {
+          handler({
+            address: '0x' + Buffer.from(data.getAddress_asU8()).toString('hex'),
+            balance: new BigNumber(Buffer.from(data.getBalance_asU8()).toString('hex'), 16).toString()
+          })
+        }
+      });
+      response.on('end', () => {
+      });
+      response.on('error', (err) => {
+        console.warn("response error", err)
+      });
+      this.response = response;
     });
-    response.on('end', () => {
-    });
-    response.on('error', (err) => {
-    });
-    this.response = response;
   }
 }
