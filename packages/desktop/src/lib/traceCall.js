@@ -177,33 +177,16 @@ class ClassicGethTracer implements ITracer {
  * @param ethRpc
  */
 export function detect(ethRpc: EthRpc): Promise<any> {
-  return ethRpc.raw('trace_call', [])
-    .then(() => {
-      // If this call successful it means RPC works in wrong way,
-      // will use esimateGas method
-      return (tx) => new CommonCallTracer(tx);
-    })
-    .catch((error) => {
-      if (error.code === -32601) {
-        // method not found, try another
-        return ethRpc.raw('eth_traceCall', [])
-          .then(() => (tx) => new ClassicGethTracer(tx))
-          .catch((err) => {
-            if (err.code === -32601) {
-              return (tx) => new CommonCallTracer(tx);
-            }
-            // if eth_traceCall works, but wrong params
-            if (err.code === -32602) {
-              return (tx) => new ClassicGethTracer(tx);
-            }
-            throw err;
-          });
-      } if (error.code === -32602) {
-        // method found but wrong params, it's Ok
-        // We still use eth_estimatedGas instead of trace_call
+  return ethRpc.raw('eth_traceCall', [])
+    .then(() => (tx) => new ClassicGethTracer(tx))
+    .catch((err) => {
+      if (err.code === -32601) {
         return (tx) => new CommonCallTracer(tx);
-        // return (tx) => new ParityTracer(tx);
       }
-      throw error;
+      // if eth_traceCall works, but wrong params
+      if (err.code === -32602) {
+        return (tx) => new ClassicGethTracer(tx);
+      }
+      throw err;
     });
 }

@@ -159,10 +159,10 @@ export function updateAccount(address: string, name: string, description?: strin
 
 function unwrap(list) {
   return new Promise((resolve, reject) => {
-    if (list.length === 1) {
+    if (list && list.length === 1) {
       resolve(list[0]);
     } else {
-      reject(new Error(`Invalid list size ${list.length}`));
+      reject(new Error(`Invalid list size ${list}`));
     }
   });
 }
@@ -236,26 +236,6 @@ export function sendTransaction(from: string, passphrase: string, to: ?string, g
           .then(onTxSend(dispatch, tx));
       })
       .catch(screen.actions.catchError(dispatch));
-  };
-}
-
-export function createContract(accountId: string, passphrase: string, gas, gasPrice, data) {
-  const txData = {
-    passphrase,
-    gas,
-    gasPrice,
-    data,
-    from: accountId,
-    nonce: '',
-    value: '0x0',
-  };
-  return (dispatch, getState, api) => {
-    const chain = currentChain(getState());
-    api.emerald.signTransaction(txData, { chain })
-      .then(unwrap)
-      .then(api.geth.eth.sendRawTransaction)
-      .then(onTxSend(dispatch, txData))
-      .catch(log.error);
   };
 }
 

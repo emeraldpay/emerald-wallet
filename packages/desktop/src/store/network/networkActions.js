@@ -15,36 +15,6 @@ export function switchChain({ chain, chainId }) {
   };
 }
 
-export function loadPeerCount() {
-  return (dispatch, getState, api) => {
-    return api.geth.net.peerCount().then((result) => {
-      dispatch({
-        type: ActionTypes.PEER_COUNT,
-        peerCount: result,
-      });
-    }).catch(dispatchRpcError(dispatch));
-  };
-}
-
-export function loadSyncing() {
-  return (dispatch, getState, api) => {
-    return api.geth.eth.getSyncing().then((result) => {
-      if (typeof result === 'object') {
-        return dispatch({
-          type: ActionTypes.SYNCING,
-          syncing: true,
-          status: result,
-        });
-      }
-
-      dispatch({
-        type: ActionTypes.SYNCING,
-        syncing: false,
-      });
-    }).catch(dispatchRpcError(dispatch));
-  };
-}
-
 export function getGasPrice() {
   return (dispatch, getState, api) => {
     return api.geth.eth.gasPrice().then((result) => {
