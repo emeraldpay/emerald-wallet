@@ -15,41 +15,13 @@ const initial = Immutable.fromJS({
     height: 0,
     hash: null,
   },
-  sync: {
-    syncing: false,
-    startingBlock: null,
-    currentBlock: null,
-    highestBlock: null,
-  },
-  peerCount: 0,
   gasPrice: new Wei(23000000000),
 });
-
-function onSyncing(state, action) {
-  if (action.type === ActionTypes.SYNCING) {
-    if (action.syncing) {
-      return state.update('sync', (sync) => sync.set('syncing', true)
-        .set('startingBlock', toNumber(action.status.startingBlock))
-        .set('currentBlock', toNumber(action.status.currentBlock))
-        .set('highestBlock', toNumber(action.status.highestBlock))).update('currentBlock', (b) => b.set('height', toNumber(action.status.currentBlock))
-        .set('hash', null));
-    }
-    return state.setIn(['sync', 'syncing'], false);
-  }
-  return state;
-}
 
 function onHeight(state, action) {
   if (action.type === ActionTypes.BLOCK) {
     return state.update('currentBlock', (b) => b.set('height', toNumber(action.height))
       .set('hash', null));
-  }
-  return state;
-}
-
-function onPeerCount(state, action) {
-  if (action.type === ActionTypes.PEER_COUNT) {
-    return state.set('peerCount', toNumber(action.peerCount));
   }
   return state;
 }
@@ -75,9 +47,7 @@ function onGasPrice(state, action) {
 
 export default function networkReducers(state, action) {
   state = state || initial;
-  state = onSyncing(state, action);
   state = onHeight(state, action);
-  state = onPeerCount(state, action);
   state = onSwitchChain(state, action);
   state = onGasPrice(state, action);
   return state;
