@@ -345,7 +345,7 @@ export function loadPendingTransactions() {
         dispatch(disp);
       }
     }
-  });
+  }).catch(dispatchRpcError(dispatch));
 }
 
 export function hideAccount(accountId: string) {

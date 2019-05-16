@@ -111,8 +111,9 @@ export function refreshTrackedTransactions() {
           ...tx,
           timestamp: blocks.find(({ hash }) => hash === tx.blockHash).timestamp,
         }));
-      });
-    }).then((transactions) => {
+      }).catch(dispatchRpcError(dispatch));
+    }).catch(dispatchRpcError(dispatch))
+      .then((transactions) => {
       if (!transactions || transactions.length === 0) { return; }
 
       dispatch({ type: ActionTypes.UPDATE_TXS, transactions });
