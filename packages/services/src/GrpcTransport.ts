@@ -11,6 +11,9 @@ import {
 import { TextEncoder, TextDecoder } from 'text-encoding';
 import {ServiceError} from "grpc";
 
+const decoder =  new TextDecoder('utf-8');
+const encoder = new TextEncoder();
+
 /**
  * It should be used for request/response trace in dev version
  */
@@ -27,18 +30,18 @@ class GrpcTransport implements Transport {
     this.chain = chainByCode(chain.toUpperCase());
   }
   request(req: Array<JsonRpcRequest>): Promise<Array<any>> {
+    const request = new CallBlockchainRequest();
+    request.setChain(this.chain.id);
+    req.forEach((json) => {
+      const item = new CallBlockchainItem();
+      item.setId(json.id);
+      item.setName(json.method);
+      item.setPayload(encoder.encode(JSON.stringify(json.params)));
+      request.addItems(item);
+    });
+
     return new Promise((resolve, reject) => {
-      const request = new CallBlockchainRequest();
-      request.setChain(this.chain.id);
-      req.forEach((json) => {
-        const item = new CallBlockchainItem();
-        item.setId(json.id);
-        item.setName(json.method);
-        item.setPayload(new TextEncoder().encode(JSON.stringify(json.params)));
-        request.addItems(item);
-      });
       const response = this.client.call(request);
-      const decoder =  new TextDecoder('utf-8');
       const result: Array<any> = [];
       response.on('data', (data: CallBlockchainReplyItem) => {
         const bytes: Uint8Array = data.getPayload_asU8();

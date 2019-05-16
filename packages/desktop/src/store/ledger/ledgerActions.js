@@ -25,7 +25,7 @@ function loadInfo(hdpath: string, addr: string) {
 
       return api.geth.eth.getTransactionCount(addr).then((count) => {
         dispatch({ type: ActionTypes.ADDR_TXCOUNT, hdpath, value: count });
-      });
+      }).catch(dispatchRpcError(dispatch));
     }).catch(dispatchRpcError(dispatch));
   };
 }
