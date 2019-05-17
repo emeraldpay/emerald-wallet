@@ -1,5 +1,5 @@
 import React from 'react';
-import {AppBar, LinearProgress, Toolbar} from '@material-ui/core';
+import {AppBar, Toolbar} from '@material-ui/core';
 import {withStyles} from '@material-ui/styles';
 import {Button} from '@emeraldwallet/ui';
 import {Block as BlockIcon, Settings as SettingsIcon} from '@emeraldplatform/ui-icons';
@@ -29,25 +29,8 @@ const styles = (theme) => ({
 
 const Header = (props) => {
   const {
-    openSettings, theme, network, showProgress, progress, tip, showFiat,
+    openSettings, theme, network, showFiat,
   } = props;
-
-  const showProgressBar = (show) => {
-    if (!show) {
-      return null;
-    }
-    return (
-      <div style={{padding: '0px 5px 5px 5px'}}>
-        <LinearProgress
-          disabled={showProgress}
-          mode="determinate"
-          color={theme.palette.primary.main}
-          value={progress}
-          style={{height: '2px'}}
-        />
-      </div>
-    );
-  };
 
   const blockDisplayStyles = {
     text: {
@@ -58,10 +41,9 @@ const Header = (props) => {
   };
 
   const BlockDisplay = ({classes}) => {
-    const displayProgress = parseInt(100 - progress, 10);
-    const label = showProgress ? `${separateThousands(tip - network.currentBlock.height)} blocks left (${displayProgress}%)` : separateThousands(network.currentBlock.height, ' ');
+    const label = separateThousands(network.currentBlock.height, ' ');
     return (
-      <div style={{marginTop: showProgress ? '7px' : null}}>
+      <div style={{marginTop: '7px'}}>
         <Button
           variant="text"
           color="secondary"
@@ -72,7 +54,6 @@ const Header = (props) => {
           }}
           icon={<BlockIcon/>}
         />
-        {showProgressBar(showProgress)}
       </div>
     );
   };

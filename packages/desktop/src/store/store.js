@@ -16,8 +16,7 @@ import Addressbook from './vault/addressbook';
 import {
   readConfig,
   listenElectron,
-  connecting,
-  loadClientVersion
+  connecting
 } from './launcher/launcherActions';
 import { showError } from './wallet/screen/screenActions';
 
@@ -49,11 +48,6 @@ function refreshAll() {
   return Promise.all(promises);
 }
 
-function refreshLong() {
-  store.dispatch(network.actions.loadSyncing());
-  setTimeout(refreshLong, intervalRates.continueRefreshLongRate);
-}
-
 export function startSync() {
   const state = store.getState();
 
@@ -64,7 +58,6 @@ export function startSync() {
 
   const promises = [
     store.dispatch(network.actions.getGasPrice()),
-    store.dispatch(loadClientVersion()),
     store.dispatch(Addressbook.actions.loadAddressBook()),
     store.dispatch(history.actions.init(chainId)),
     store.dispatch(tokens.actions.loadTokenList()),
@@ -79,21 +72,6 @@ export function startSync() {
     // FIXME ledger throws "Invalid status 6804" for 44'/62'/0'/0
     promises.push(store.dispatch(ledger.actions.setBaseHD("m/44'/61'/1'/0")));
   }
-
-  if (state.launcher.getIn(['geth', 'type']) !== 'remote') {
-    // check for syncing
-    setTimeout(
-      () => store.dispatch(network.actions.loadSyncing()),
-      intervalRates.second
-    ); // prod: intervalRates.second
-    // double check for syncing
-    setTimeout(
-      () => store.dispatch(network.actions.loadSyncing()),
-      2 * intervalRates.minute
-    ); // prod: 30 * this.second
-  }
-
-  setTimeout(refreshLong, 3 * intervalRates.second);
 
   promises.push(
     refreshAll()
