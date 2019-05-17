@@ -1,4 +1,5 @@
 // @flow
+import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import { EthereumTx } from '@emeraldwallet/core';
 import { convert, EthAddress } from '@emeraldplatform/core';
 import { EthAccount } from '@emeraldplatform/eth-account';
@@ -44,25 +45,6 @@ export function loadAccountBalance(address: string) {
 }
 
 /**
- * Updates balances in one batch request
- */
-function fetchBalances(addresses: Array<string>) {
-  return (dispatch, getState, api) => {
-    return api.geth.ext.getBalances(addresses).then((balances) => {
-      dispatch({
-        type: ActionTypes.SET_BALANCES,
-        accountBalances: addresses.map((addr) => ({ accountId: addr, balance: balances[addr] })),
-      });
-
-      const { tokens } = getState();
-      if (!tokens.get('loading')) {
-        return dispatch(loadTokensBalances(addresses));
-      }
-    }).catch(dispatchRpcError(dispatch));
-  };
-}
-
-/**
  * Retrieves HD paths for hardware accounts
  */
 function fetchHdPaths() {
@@ -90,20 +72,24 @@ export function loadAccountsList() {
   return (dispatch, getState, api) => {
     dispatch({ type: ActionTypes.LOADING });
 
+    const existing = getState().accounts.get('accounts').map((account) => account.get('id')).toJS();
     const chain = currentChain(getState());
     const showHidden = getState().wallet.settings.get('showHiddenAccounts', false);
     return api.emerald.listAccounts(chain, showHidden).then((result) => {
+      const fetched = result.map((account) => account.address);
+      const notChanges = existing.length === fetched.length && fetched.every((x) => existing.includes(x));
+      if (notChanges) {
+        return;
+      }
       dispatch({
         type: ActionTypes.SET_LIST,
-        accounts: result.map((a) => ({
-          ...a,
+        accounts: result.map((account) => ({
+          ...account,
           blockchain: chain,
         })),
       });
-
-      return dispatch(fetchHdPaths()).then(() => {
-        return dispatch(fetchBalances(result.map((account) => account.address)));
-      });
+      dispatch(fetchHdPaths());
+      ipcRenderer.send('subscribe-balance', fetched);
     });
   };
 }

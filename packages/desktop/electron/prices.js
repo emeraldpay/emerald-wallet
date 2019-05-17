@@ -32,21 +32,21 @@ class Prices {
     this.froms.forEach((from) => req.addFrom(from));
     req.setTo(this.to);
     log.info(`Listen for prices, to ${this.to}`);
-    const stream = this.client.streamRates(req);
     const self = this;
-
-    stream.on('data', (data) => {
-      try {
-        const result = {};
-        data.getItemsList().forEach((item) => {
-          if (item.getTo() === self.to && self.froms.indexOf(item.getFrom()) >= 0) {
-            result[item.getFrom()] = item.getRate();
-          }
-        });
-        self.webContents.send('prices/rate', result);
-      } catch (e) {
-        log.warn('Failed to send prices', e);
-      }
+    this.client.streamRates(req, (stream) => {
+      stream.on('data', (data) => {
+        try {
+          const result = {};
+          data.getItemsList().forEach((item) => {
+            if (item.getTo() === self.to && self.froms.indexOf(item.getFrom()) >= 0) {
+              result[item.getFrom()] = item.getRate();
+            }
+          });
+          self.webContents.send('prices/rate', result);
+        } catch (e) {
+          log.warn('Failed to send prices', e);
+        }
+      });
     });
   }
 

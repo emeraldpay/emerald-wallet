@@ -8,20 +8,21 @@ import TableRow from '@material-ui/core/TableRow';
 
 import {styles} from './styles';
 import AddrListItem from './AddrListItem';
+import {LedgerAddress, Selectable} from './types';
+
 
 interface Props {
-  selectedAddress?: any;
-  addresses?: any;
+  addresses?: Array<LedgerAddress & Selectable>;
   setSelectedAddr?: any;
   classes?: any;
   accounts?: any;
   balanceRender?: any;
 }
 
-function isAlreadyAdded(addr: any, accounts: any) {
+function isAlreadyAdded(addr: LedgerAddress, accounts: any) {
   let alreadyAdded = false;
   try {
-    const addrId = (addr.get('address') || '---R').toLowerCase();
+    const addrId = (addr.address || '---R').toLowerCase();
     alreadyAdded = accounts.some((a) => a.get('id', '---L').toLowerCase() === addrId);
   } catch (e) {
   }
@@ -39,7 +40,7 @@ class AddrList extends React.Component<Props> {
     };
 
     render() {
-      const { selectedAddress, classes, accounts, balanceRender } = this.props;
+      const { classes, accounts, balanceRender } = this.props;
       const addresses = this.props.addresses || [];
 
       return (
@@ -54,9 +55,8 @@ class AddrList extends React.Component<Props> {
           </TableHead>
           <TableBody>
             { addresses.map((addr) => <AddrListItem
-              selectedValue={ selectedAddress }
               onSelected={ this.handleAddrSelection }
-              key={ addr.get('hdpath') }
+              key={ addr.hdpath }
               alreadyAdded = { isAlreadyAdded(addr, accounts) }
               addr={ addr }
               balanceRender={ balanceRender }

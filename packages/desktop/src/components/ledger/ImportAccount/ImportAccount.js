@@ -1,72 +1,71 @@
 // @flow
 import React from 'react';
-import withStyles from 'react-jss';
-import { Page, ButtonGroup } from '@emeraldplatform/ui';
-import { AddCircle as AddIcon, Back } from '@emeraldplatform/ui-icons';
-import { Row, styles as formStyles } from 'elements/Form';
-import { Button, HdPath, Pager } from '@emeraldwallet/ui';
-import AddrList from './AddrList';
+import { connect } from 'react-redux';
+import { WaitLedgerDialog, LedgerImportAccount } from '@emeraldwallet/ui';
+import { fromJS } from 'immutable';
+import ledger from '../../../store/ledger';
+import screen from '../../../store/wallet/screen';
+import Accounts from '../../../store/vault/accounts';
+import AccountBalance from '../../accounts/Balance/balance';
 
-const styles = {
-  row: {
-    marginLeft: '14.75px',
-    marginRight: '14.75px',
-  },
+const Container = (props) => {
+  const { connected, ...passProps } = props;
+  if (!connected) {
+    return (<WaitLedgerDialog onClose={ props.onCancel } />);
+  }
+  return (
+    <LedgerImportAccount {...passProps} />
+  );
 };
 
-type Props = {
-  onInit: Function,
-  onBackScreen: ?Function,
-  hdbase: string,
-}
+const pageSize = 5;
 
-class ImportAccount extends React.Component<Props> {
-  componentDidMount() {
-    if (this.props.onInit) {
-      this.props.onInit();
-    }
-  }
-
-  render() {
-    const {
-      hdbase, changeBaseHD, selected,
-    } = this.props;
-    const { onAddSelected, onCancel, onDashboard } = this.props;
-    const { classes } = this.props;
-    return (
-      <Page title="Import Ledger hardware account" leftIcon={<Back onClick={onDashboard} />}>
-        <Row>
-          <div style={formStyles.left}>
-            <div style={formStyles.fieldName}>HD derivation path</div>
-          </div>
-          <div style={formStyles.right}>
-            <HdPath value={hdbase} onChange={changeBaseHD} />
-            <div style={{ marginLeft: '5px' }}><Pager /></div>
-          </div>
-        </Row>
-        <Row>
-          <div className={classes.row}><AddrList /></div>
-        </Row>
-        <Row>
-          <div className={classes.row}>
-            <ButtonGroup>
-              <Button
-                label="Add Selected"
-                disabled={!selected}
-                primary={true}
-                onClick={onAddSelected}
-                icon={<AddIcon />}
-              />
-              <Button
-                label="Cancel"
-                onClick={onCancel}
-              />
-            </ButtonGroup>
-          </div>
-        </Row>
-      </Page>
-    );
-  }
-}
-
-export default withStyles(styles)(ImportAccount);
+export default connect(
+  (state, ownProps) => ({
+    pagerOffset: state.ledger.getIn(['hd', 'offset']),
+    hdbase: state.ledger.getIn(['hd', 'base']),
+    connected: state.ledger.get('connected'),
+    selected: state.ledger.get('selectedAddr') !== null,
+    selectedAddress: state.ledger.get('selectedAddr'),
+    addresses: state.ledger.get('addresses').toJS(),
+    accounts: state.accounts.get('accounts'),
+    balanceRender: (balance) => (<AccountBalance symbol="ETC" balance={balance} showFiat={true} withAvatar={false} />), // eslint-disable-line
+  }),
+  (dispatch, ownProps) => ({
+    setPagerOffset: (offset) => {
+      dispatch(ledger.actions.getAddresses(offset, pageSize));
+    },
+    setSelectedAddr: (addr) => {
+      dispatch(ledger.actions.selectAddr(addr));
+    },
+    changeBaseHD: (hdpath: string) => {
+      dispatch(ledger.actions.setBaseHD(hdpath));
+      dispatch(ledger.actions.getAddresses());
+    },
+    onInit: () => dispatch(ledger.actions.getAddresses()),
+    onBack: () => {
+      if (ownProps.onBackScreen) {
+        return dispatch(screen.actions.gotoScreen(ownProps.onBackScreen));
+      }
+      dispatch(screen.actions.gotoScreen('home'));
+    },
+    onAddSelected: () => {
+      let acc = null;
+      dispatch(ledger.actions.importSelected())
+        .then((address) => {
+          acc = fromJS({ id: address });
+          return dispatch(Accounts.actions.loadAccountsList());
+        })
+        .then(() => {
+          // go to account details only when accounts updated
+          return dispatch(screen.actions.gotoScreen('account', acc));
+        });
+    },
+    onCancel: () => {
+      if (ownProps.onBackScreen) {
+        return dispatch(screen.actions.gotoScreen(ownProps.onBackScreen));
+      }
+      dispatch(screen.actions.gotoScreen('home'));
+    },
+  })
+)(Container);

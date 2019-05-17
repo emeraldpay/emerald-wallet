@@ -6,6 +6,7 @@ import {
 
 import { TextEncoder, TextDecoder } from 'text-encoding';
 import {ClientReadableStream} from 'grpc';
+import * as grpc from "grpc";
 
 type ChainStatus = {
   height: number,
@@ -39,17 +40,14 @@ export class ChainListener {
 
   subscribe(handler: HeadListener) {
     const request = this.chain.toProtobuf();
-    const response = this.client.streamHead(request);
-    response.on('data', (data: ChainHead) => {
-      // console.log(`New blockchain height. Chain: ${data.getChain()}, height: ${data.getHeight()}`);
-      if (handler) {
-        handler({height: data.getHeight(), hash: data.getHash()})
-      }
-    });
-    response.on('end', () => {
-    });
-    response.on('error', (err) => {
-    });
-    this.response = response;
+    this.client.streamHead(request, (response: grpc.ClientReadableStream<ChainHead>) => {
+      response.on('data', (data: ChainHead) => {
+        // console.log(`New blockchain height. Chain: ${data.getChain()}, height: ${data.getHeight()}`);
+        if (handler) {
+          handler({height: data.getHeight(), hash: data.getHash()})
+        }
+      });
+      this.response = response;
+    })
   }
 }

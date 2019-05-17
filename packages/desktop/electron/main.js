@@ -14,6 +14,7 @@ const { startProtocolHandler } = require('./protocol');
 const assertSingletonWindow = require('./singletonWindow');
 const { URL_FOR_CHAIN } = require('./utils');
 const { Prices } = require('./prices');
+const { BalanceIpc } = require('./ipc/balance');
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
@@ -64,6 +65,9 @@ app.on('ready', () => {
 
   const prices = new Prices(browserWindow.webContents, isDev);
   prices.start();
+
+  const balanceIpc = new BalanceIpc(browserWindow.webContents);
+  balanceIpc.start(settings.getChain().name);
 });
 
 

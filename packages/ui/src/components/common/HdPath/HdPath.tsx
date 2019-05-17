@@ -82,7 +82,7 @@ function renderSuggestion(suggestion, { query, isHighlighted }) {
 export class HdPath extends React.Component<Props, State> {
   state = {
     suggestion: [],
-    value: ''
+    value: this.props.value
   };
 
   handleChange = (event, { newValue }) => {

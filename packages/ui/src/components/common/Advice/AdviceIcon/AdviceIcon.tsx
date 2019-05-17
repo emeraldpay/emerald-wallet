@@ -1,7 +1,11 @@
-// @flow
-import React from 'react';
+import * as React from 'react';
 
-const AdviceIcon = ({height, width}) => (
+interface Props {
+  height?: any;
+  width?: any;
+}
+
+const AdviceIcon = ({height, width}: Props) => (
   <svg width={ `${width}px` } height={ `${height}px` } viewBox={`0 0 ${width} ${height}`} version="1.1" xmlns="http://www.w3.org/2000/svg">
     <g id="Page-1" stroke="none" strokeWidth="1" fill="none" fillRule="evenodd">
       <g id="New-Wallet" transform="translate(-354.000000, -470.000000)" fillRule="nonzero">
