@@ -1,14 +1,11 @@
-import React from 'react';
-import {withStyles} from '@material-ui/styles';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import * as React from 'react';
+import {withStyles, CSSProperties} from '@material-ui/styles';
 import Dialog from '@material-ui/core/Dialog';
 import IconButton from '@material-ui/core/IconButton';
-import { Close as CloseIcon } from '@emeraldplatform/ui-icons';
-import screen from 'store/wallet/screen';
-import BackgroundImage from './ledger.png';
+import {Close as CloseIcon} from '@emeraldplatform/ui-icons';
+import * as BackgroundImage from './ledger.png';
 
-export const styles2 = (theme) => ({
+export const styles2 = (theme?: any) => ({
   header: {
     background: `url(${BackgroundImage})`,
     backgroundSize: '600px 188px',
@@ -65,6 +62,9 @@ export const styles2 = (theme) => ({
   links: {
     color: theme.palette.primary.main,
   },
+  closeButton: {
+    float: 'right',
+  } as CSSProperties,
 });
 
 const style = {
@@ -78,33 +78,32 @@ const style = {
   },
 };
 
-export const WaitConnectionDialog = ({ onCancel, classes }) => {
+interface Props {
+  onClose?: any;
+  classes?: any;
+}
+
+export const WaitConnectionDialog = ({onClose, classes}: Props) => {
   return (
-    <Dialog
-      modal={ true }
-      open={ true }
-      bodyClassName={ classes.dialogBody }
-      contentClassName={ classes.dialogContent }
-      paperClassName={ classes.dialogPaper }
-    >
-      <div className={ classes.header }>
+    <Dialog open={true}>
+      <div className={classes.header}>
         <div>
           <IconButton
-            style={ style.closeButton }
-            onClick={ onCancel }
-            tooltip="Close">
-            <CloseIcon style={ style.closeIcon }/>
+            className={classes.closeButton}
+            onClick={onClose}>
+            <CloseIcon style={style.closeIcon}/>
           </IconButton>
         </div>
       </div>
-      <div className={ classes.content }>
-        <div className={ classes.buyLedger }>
-          Ledger Nano S. <a onClick={() => {}} className={classes.links} href="#">Where to buy?</a>
+      <div className={classes.content}>
+        <div className={classes.buyLedger}>
+          Ledger Nano S. <a onClick={() => {
+        }} className={classes.links} href="#">Where to buy?</a>
         </div>
-        <div className={ classes.title }>
-                    Waiting for Ledger Connection...
+        <div className={classes.title}>
+          Waiting for Ledger Connection...
         </div>
-        <div className={ classes.instructions }>
+        <div className={classes.instructions}>
           <ol>
             <li>Connect your Ledger Nano S device</li>
             <li>Open the Ethereum Application on Ledger device</li>
@@ -116,22 +115,4 @@ export const WaitConnectionDialog = ({ onCancel, classes }) => {
   );
 };
 
-WaitConnectionDialog.propTypes = {
-  onCancel: PropTypes.func,
-};
-
-const StyledDialog = withStyles(styles2)(WaitConnectionDialog);
-
-export default connect(
-  (state, ownProps) => ({
-  }),
-  (dispatch, ownProps) => ({
-    onCancel: () => {
-      if (ownProps.onClose) {
-        ownProps.onClose();
-      } else {
-        dispatch(screen.actions.gotoScreen('home'));
-      }
-    },
-  })
-)(StyledDialog);
+export default withStyles(styles2)(WaitConnectionDialog);

@@ -5,10 +5,9 @@ import { Back } from '@emeraldplatform/ui-icons';
 import {
   Page, Warning, WarningHeader, WarningText, Input
 } from '@emeraldplatform/ui';
-import { Button, PasswordInput } from '@emeraldwallet/ui';
+import { Button, PasswordInput, Advice } from '@emeraldwallet/ui';
 import { required } from 'lib/validators';
 import { Row, styles as formStyles } from 'elements/Form';
-import Advice from './advice';
 import LoadingIcon from '../LoadingIcon';
 
 const MIN_PASSWORD_LENGTH = 8;
@@ -33,7 +32,7 @@ export const styles2 = {
 class PasswordDialog extends React.Component {
   static propTypes = {
     onGenerate: PropTypes.func,
-  }
+  };
 
   constructor(props) {
     super(props);

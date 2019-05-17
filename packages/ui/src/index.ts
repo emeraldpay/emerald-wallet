@@ -1,7 +1,9 @@
+// common
 export { default as Button} from './components/common/Button';
 export { default as InlineEdit } from './components/common/InlineEdit';
 export { default as Logo } from './components/common/Logo';
 export { default as Pager } from './components/common/Pager';
+export { default as Advice } from './components/common/Advice';
 
 export { default as InitialSetup } from './components/welcome/InitialSetup';
 
@@ -33,4 +35,5 @@ export { default as NewAccountProps } from './components/accounts/GenerateAccoun
 export { default as AddToken } from './components/tokens/NewCustomToken/AddToken';
 export { default as InputTokenAddress } from './components/tokens/NewCustomToken/InputTokenAddress';
 
-export { default as LedgerAddrList} from './components/ledger/ImportAccount/AddressList';
+export { default as LedgerImportAccount} from './components/ledger/ImportAccount';
+export { default as WaitLedgerDialog } from './components/ledger/WaitDialog';

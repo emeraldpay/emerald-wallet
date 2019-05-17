@@ -1,6 +1,6 @@
-import React from 'react';
-import withStyles from 'react-jss';
-import AdviceIcon from 'components/common/AdviceIcon';
+import * as React from 'react';
+import {withStyles} from '@material-ui/styles';
+import AdviceIcon from './AdviceIcon';
 
 const styles2 = {
   title: {
@@ -20,7 +20,13 @@ const styles2 = {
   },
 };
 
-const Advice = (props) => {
+interface Props {
+  title?: any;
+  text?: any;
+  classes?: any;
+}
+
+const Advice = (props: Props) => {
   const { title, text, classes } = props;
   return (
     <div className={ classes.container } >

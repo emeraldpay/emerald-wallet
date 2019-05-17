@@ -4,9 +4,8 @@ import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import {CSSProperties} from "@material-ui/styles";
 
-const pageSize = 5;
-
 interface Props {
+  pageSize?: number;
   offset?: any;
   setOffset?: any;
 }
@@ -18,8 +17,8 @@ const offsetStyle = {
   marginTop: '8px',
 } as CSSProperties;
 
-const Pager = ({ offset, setOffset }: Props) => {
-
+const Pager = ({ offset, setOffset, ...other }: Props) => {
+  const pageSize = other.pageSize || 5;
   return (
     <Grid container alignItems="center">
       <Grid item xs={5} style={{textAlign: 'right'}}>

@@ -7,8 +7,8 @@
   "author": "ETCDEV GmbH",
   "license": "Apache-2.0",
   "scripts": {
-    "build:dist": "rimraf lib/ && tsc",
-    "build": "rimraf lib/ && tsc",
+    "build:dist": "rimraf lib/ && tsc && yarn copyfiles -u 1 src/**/*.png lib/",
+    "build": "rimraf lib/ && tsc && yarn copyfiles -u 1 src/**/*.png lib/",
     "test": "jest --no-cache --env=jsdom",
     "test:coverage": "jest --env=jsdom --coverage && codecov",
     "storybook": "start-storybook -p 9001 -c .storybook"
@@ -23,15 +23,14 @@
     "@material-ui/core": "^4.0.0-beta.1",
     "@material-ui/lab": "^4.0.0-alpha.10",
     "@material-ui/styles": "^4.0.0-beta.1",
-    "@storybook/react": "^5.1.0-alpha.32",
     "bignumber.js": "8.0.2",
     "qrcode.react": "^0.9.3",
     "react": "^16.8.6",
     "react-autosuggest": "^9.4.3"
   },
   "devDependencies": {
-    "@storybook/addon-actions": "^5.1.0-alpha.30",
-    "@storybook/react": "^5.1.0-alpha.32",
+    "@storybook/addon-actions": "5.1.0-alpha.32",
+    "@storybook/react": "5.1.0-alpha.32",
     "@types/enzyme": "^3.9.0",
     "@types/enzyme-adapter-react-16": "^1.0.5",
     "@types/jest": "^24.0.11",
@@ -40,10 +39,12 @@
     "@types/react-autosuggest": "^9.3.7",
     "@types/storybook__react": "^4.0.1",
     "awesome-typescript-loader": "^5.2.1",
+    "copyfiles": "^2.1.0",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.12.1",
     "jest": "^24.7.1",
     "jest-canvas-mock": "^2.0.0-beta.1",
+    "jest-transform-stub": "^2.0.0",
     "rimraf": "^2.6.3",
     "ts-jest": "^24.0.2",
     "typescript": "3.4.2"
@@ -62,6 +63,9 @@
     "collectCoverageFrom": [
       "src/**/*.ts",
       "src/**/*.tsx"
-    ]
+    ],
+    "transform": {
+      ".+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "jest-transform-stub"
+    }
   }
 }

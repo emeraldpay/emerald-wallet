@@ -6,7 +6,7 @@ import TableRow from '@material-ui/core/TableRow';
 import {Address as AccountAddress} from '@emeraldplatform/ui';
 
 import {styles as tableStyles} from './styles';
-
+import {LedgerAddress, Selectable} from './types';
 
 const style = {
   used: {
@@ -22,11 +22,10 @@ const style = {
 };
 
 interface Props {
-  addr?: any;
+  addr?: LedgerAddress & Selectable;
   classes?: any;
   onSelected?: any;
   alreadyAdded?: any;
-  selectedValue?: any;
   balanceRender?: any;
 }
 
@@ -40,43 +39,42 @@ class Addr extends React.Component<Props> {
 
   render() {
     const {
-      addr, alreadyAdded, selectedValue, classes,
+      addr, alreadyAdded, classes,
     } = this.props;
     let usedLabel;
 
     if (alreadyAdded) {
       usedLabel = 'Imported';
-    } else if (addr.get('txcount') > 0) {
+    } else if (addr.txcount > 0) {
       usedLabel = 'Used';
     } else {
       usedLabel = 'New';
     }
 
-    const hasPath = addr.get('hdpath') !== null;
-    const hasAddr = addr.get('address') !== null;
-    const address = addr.get('address');
+    const hasPath = addr.hdpath !== null;
+    const hasAddr = addr.address !== null;
     const selectable = hasPath && hasAddr && !alreadyAdded;
-    const balance = addr.get('value');
+    const balance = addr.value;
     const balanceRender = this.props.balanceRender || ((b) => JSON.stringify(b));
     return (
       <TableRow>
         <TableCell className={classes.wideStyle}>
           <div style={style.addrContainer}>
             <div>
-              {address
+              {addr.address
               && <Radio
-                checked={selectedValue === address}
+                checked={addr.selected}
                 disabled={!selectable}
-                value={address}
+                value={addr.address}
                 onChange={this.handleSelected}
               />}
             </div>
             <div>
-              {address && <AccountAddress id={address}/>}
+              {addr.address && <AccountAddress id={addr.address}/>}
             </div>
           </div>
         </TableCell>
-        <TableCell className={classes.mediumStyle}>{addr.get('hdpath')}</TableCell>
+        <TableCell className={classes.mediumStyle}>{addr.hdpath}</TableCell>
         <TableCell className={classes.mediumStyle}>
           {balance && balanceRender(balance)}
         </TableCell>

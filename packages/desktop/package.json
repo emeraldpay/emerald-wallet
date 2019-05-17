@@ -20,7 +20,6 @@
     "src/lib"
   ],
   "scripts": {
-    "setup": "npm install && flow-typed install",
     "build": "rimraf app/ && node ./scripts/build.js --no-watch",
     "build:all": "rimraf app/ && node ./scripts/build.js",
     "build:all:dev": "rimraf app/ && node ./scripts/build.js --dev",
@@ -32,14 +31,12 @@
     "test:coverage": "ELECTRON_RUN_AS_NODE=true ./node_modules/.bin/electron ./node_modules/.bin/jest --coverage && codecov",
     "lint": "eslint ./src/ ./electron/",
     "lint-fix": "npm run lint -- --fix",
-    "postinstall": "electron-rebuild && yarn rebuild:modules && yarn rebuild:grpc",
+    "postinstall": "electron-rebuild && yarn rebuild:modules",
     "rebuild:modules": "electron-builder install-app-deps",
-    "rebuild:grpc": "npm rebuild grpc --runtime=electron --target=4.1.0",
     "dist": "yarn build:all:nowatch && electron-builder --publish never",
     "dist:nobuild": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never",
     "flow": "flow",
     "getemerald": "cross-env ELECTRON_RUN_AS_NODE=true ./node_modules/.bin/electron ./scripts/download-emerald.js",
-    "storybook": "start-storybook -p 9001 -c .storybook",
     "build:dist": "yarn getemerald && yarn dist"
   },
   "keywords": [
@@ -139,8 +136,6 @@
     "@babel/preset-flow": "^7.0.0",
     "@babel/preset-react": "^7.0.0",
     "@elastic/webpack-directory-name-as-main": "2.0.2",
-    "@storybook/addon-actions": "4.1.13",
-    "@storybook/react": "4.1.13",
     "babel-eslint": "^10.0.1",
     "babel-loader": "^8.0.5",
     "babel-plugin-flow-react-proptypes": "9.1.0",
