@@ -4,7 +4,7 @@ import {
   applyMiddleware,
   combineReducers
 } from 'redux';
-// import {reducer as formReducer} from 'redux-form';
+import { addresses } from '@emeraldwallet/store';
 import accounts from './vault/accounts';
 import Addressbook from './vault/addressbook';
 import tokens from './vault/tokens';
@@ -22,8 +22,9 @@ const reducers = {
   network: network.reducer,
   launcher: launcherReducers,
   ledger: ledger.reducer,
-  // form: formReducer,
   wallet: walletReducers,
+  addresses: addresses.reducer,
+
 };
 /**
  * Creates Redux store with API as dependency injection.

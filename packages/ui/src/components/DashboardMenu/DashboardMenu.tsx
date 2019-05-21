@@ -22,19 +22,6 @@ const styles2 = (theme?: any) => ( {
   },
 });
 
-const MenuButton = ({ label, onClick, classes }) => {
-  return (
-    <Button
-      variant="text"
-      primary
-      onClick={onClick}
-      classes={{ text: classes.buttonText }}
-      style={{hoverColor: 'transparent'}}
-      label={label}
-      icon={<AddIcon/>} />
-  );
-};
-
 interface Props {
   addToken?: any;
   generate?: any;
@@ -97,12 +84,19 @@ class DashboardMenu extends React.Component<Props, State> {
     const t = this.props.t || ((str: string) => (str));
     return (
       <div style={ style }>
-        <MenuButton label={ t('list.popupMenuLabel')} onClick={this.openMenu} classes={classes} />
+        <Button
+          variant="text"
+          primary
+          onClick={this.openMenu}
+          classes={{ text: classes.buttonText }}
+          style={{hoverColor: 'transparent'}}
+          label={t('list.popupMenuLabel')}
+          icon={<AddIcon/>}
+        />
         <Popover
           open={this.state.open}
           anchorEl={this.state.anchorEl}
           anchorOrigin={{horizontal: 'left', vertical: 'bottom'}}
-          // targetOrigin={{horizontal: 'left', vertical: 'top'}}
           onClose={this.handleRequestClose}
         >
           <List>

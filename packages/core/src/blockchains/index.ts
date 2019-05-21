@@ -1,1 +1,1 @@
-export { BlockchainCode } from './blockchains';
+export { BlockchainCode, Blockchains } from './blockchains';

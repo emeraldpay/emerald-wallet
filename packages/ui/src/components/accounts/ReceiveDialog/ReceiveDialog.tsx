@@ -55,7 +55,10 @@ export const styles = {
 };
 
 interface Props {
-  address: string;
+  address: {
+    value: string;
+    coinTicker: string;
+  }
   onClose?: any;
   classes?: any;
 }
@@ -78,12 +81,12 @@ const ReceiveDialog = ({address, onClose, classes}: Props) => {
         </div>
         <div className={classes.container}>
           <div style={{marginTop: '30px', marginRight: '15px'}}>
-            <QRCode value={address} size={qrCodeSize}/>
+            <QRCode value={address.value} size={qrCodeSize}/>
           </div>
           <div style={{marginTop: '0px'}}>
-            <div className={classes.headerText}>Top up your account with ETC</div>
+            <div className={classes.headerText}>Top up your account with {address.coinTicker}</div>
             <div className={classes.address}>
-              <AccountAddress id={address}/>
+              <AccountAddress id={address.value}/>
             </div>
             <div className={classes.note}>
               Share your account address and use it to top up your account with ETC from any other service.
