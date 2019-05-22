@@ -161,7 +161,7 @@
     "identity-obj-proxy": "^3.0.0",
     "imports-loader": "0.7.1",
     "jest": "^24.7.1",
-    "jest-fetch-mock": "^2.1.2",
+    "jest-fetch-mock": "1.0.6",
     "mini-css-extract-plugin": "^0.5.0",
     "minimist": "^1.2.0",
     "node-abi": "^2.5.1",

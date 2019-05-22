@@ -1,3 +1,4 @@
+import { IServerConnect } from '@emeraldwallet/core';
 import { JsonRpcProvider, Vault} from '@emeraldplatform/vault';
 import {
   DefaultJsonRpc, HttpTransport, RevalidatingJsonRpc, VerifyingJsonRpc, RotatingJsonRpc,
@@ -37,10 +38,7 @@ const CHAIN_VERIFY: {[key:string]: any} = {
   ],
 };
 
-export interface IServerConnect {
-  connectEmerald(): Vault;
-  connectEthChain(name: string): null | EthRpc;
-}
+
 
 class ServerConnect implements IServerConnect {
   chainUrls: any;

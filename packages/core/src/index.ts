@@ -13,3 +13,5 @@ export { utils };
 
 export { default as ILogger } from './ILogger';
 export { default as DefaultLogger } from './DefaultLogger';
+
+export { IServerConnect } from './IServerConnect';

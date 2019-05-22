@@ -1,4 +1,4 @@
-import {Api} from '@emeraldwallet/services';
+import {BlockchainCode} from '@emeraldwallet/core';
 
 class NullConnect {
   connectEthChain(name) {
@@ -23,5 +23,22 @@ function getConnector() {
   }
   return remote.getGlobal('serverConnect');
 }
+
+
+
+export class Api {
+
+  constructor(connector) {
+    this.emerald = connector.connectEmerald();
+    this.chains = {};
+    this.chains[BlockchainCode.ETC] = connector.connectEthChain(BlockchainCode.ETC);
+    this.chains[BlockchainCode.ETH] = connector.connectEthChain(BlockchainCode.ETH);
+  }
+
+  chain(code) {
+    return this.chains[code];
+  }
+}
+
 
 export const api = new Api(getConnector());
