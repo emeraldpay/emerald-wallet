@@ -2,7 +2,7 @@ import {
   IAddressesState, AddressesAction, LoadingAction, Actions, SetListAction,
 } from "./types";
 
-const INITIAL_STATE: IAddressesState = {
+export const INITIAL_STATE: IAddressesState = {
   addresses: [],
   loading: true,
 };
