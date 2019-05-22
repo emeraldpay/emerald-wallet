@@ -11,6 +11,13 @@ import GrpcTransport from './GrpcTransport';
 const os = require('os');
 
 const CHAIN_VERIFY: {[key:string]: any} = {
+  etc: [
+    new VerifyMinPeers(3),
+    new VerifyNotSyncing(),
+    new VerifyGenesis('0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3'),
+    new VerifyBlockHash(1920000, '0x94365e3a8c0b35089c1d1195081fe7489b528a84b22199c916180db8b28ade7f'),
+  ],
+  // DEPRECATED
   mainnet: [
     new VerifyMinPeers(3),
     new VerifyNotSyncing(),
@@ -30,7 +37,12 @@ const CHAIN_VERIFY: {[key:string]: any} = {
   ],
 };
 
-class ServerConnect {
+export interface IServerConnect {
+  connectEmerald(): Vault;
+  connectEthChain(name: string): null | EthRpc;
+}
+
+class ServerConnect implements IServerConnect {
   chainUrls: any;
   headers: any;
   appVersion: any;
@@ -71,7 +83,7 @@ class ServerConnect {
     return this.connectEthChain(chain[0]);
   }
 
-  connectEthChain(name: string) {
+  connectEthChain(name: string): null | EthRpc {
     const chain = this.chainUrls[name];
     if (!chain) {
       this.log.error('Unknown chain', name);
@@ -112,7 +124,7 @@ class ServerConnect {
     })
   }
 
-  connectEmerald() {
+  connectEmerald(): Vault {
     return new Vault(
       new JsonRpcProvider(new DefaultJsonRpc(this.createHttpTransport('http://127.0.0.1:1920')))
     );

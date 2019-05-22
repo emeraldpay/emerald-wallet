@@ -2,7 +2,7 @@
 import { Contract } from '@emeraldplatform/contracts';
 import { abi as TokenAbi } from '@emeraldwallet/erc20';
 import { parseString } from '../../../lib/convert';
-import { detect as detectTraceCall } from '../../../lib/traceCall';
+// import { detect as detectTraceCall } from '../../../lib/traceCall';
 import launcher from '../../launcher';
 import ActionTypes from './actionTypes';
 import createLogger from '../../../utils/logger';
@@ -227,19 +227,19 @@ export function removeToken(address: string) {
 }
 
 // FIXME: deprecated
-export function traceCall(from: string, to: string, gas: string, gasPrice: string, value: string, data: string) {
-  return (dispatch, getState, api) => {
-    // TODO: We shouldn't detect trace api each time, we need to do it only once
-    return detectTraceCall(api.geth).then((constructor) => {
-      const tracer = constructor({
-        from, to, gas, gasPrice, value, data,
-      });
-      const call = tracer.buildRequest();
-      return api.geth.raw(call.method, call.params)
-        .then((result) => tracer.estimateGas(result));
-    });
-  };
-}
+// export function traceCall(from: string, to: string, gas: string, gasPrice: string, value: string, data: string) {
+//   return (dispatch, getState, api) => {
+//     // TODO: We shouldn't detect trace api each time, we need to do it only once
+//     return detectTraceCall(api.geth).then((constructor) => {
+//       const tracer = constructor({
+//         from, to, gas, gasPrice, value, data,
+//       });
+//       const call = tracer.buildRequest();
+//       return api.geth.raw(call.method, call.params)
+//         .then((result) => tracer.estimateGas(result));
+//     });
+//   };
+// }
 
 export function createTokenTxData(to: string, amount: BigNumber, isTransfer: boolean): string {
   const value = amount.toString(10);

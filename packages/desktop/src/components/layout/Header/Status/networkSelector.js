@@ -15,19 +15,18 @@ class ExtendedMenuItem extends React.Component {
     } = this.props;
     const textColor = checked ? theme.palette.primary.main : theme.palette.text.secondary;
     return (
-        <div
-          onClick={onClick}
-          style={{
-            cursor: 'pointer',
-            padding: '5px 80px 5px 40px',
-            fontSize: '14px',
-            borderLeft: checked ? `5px solid ${theme.palette.primary.main}` : '',
-            marginLeft: checked ? '' : '5px',
-            lineHeight: '20px',
-          }}
-        >
-          <div style={{color: textColor}}>{net.title}</div>
-        </div>
+      <div
+        onClick={onClick}
+        style={{
+          cursor: 'pointer',
+          padding: '5px 80px 5px 40px',
+          fontSize: '14px',
+          borderLeft: checked ? `5px solid ${theme.palette.primary.main}` : '',
+          marginLeft: checked ? '' : '5px',
+          lineHeight: '20px',
+        }}>
+        <div style={{color: textColor}}>{net.title}</div>
+      </div>
     );
   }
 }

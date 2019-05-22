@@ -69,7 +69,6 @@ function onConfig(state, action) {
 
     // TODO: remove this hack
     if (typeof state.getIn(['chain', 'name']) === 'string') {
-      // api.updateGethUrl(state.getIn(['geth', 'url']));
       api.updateChain(state.getIn(['chain', 'name']));
     }
     return state;

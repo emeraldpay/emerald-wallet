@@ -1,12 +1,6 @@
-// @flow
-import createLogger from '../../utils/logger';
-
-const log = createLogger('api');
+import {Api} from '@emeraldwallet/services';
 
 class NullConnect {
-  connectEth(url) {
-  }
-
   connectEthChain(name) {
   }
 
@@ -14,41 +8,20 @@ class NullConnect {
   }
 }
 
-export default class Api {
-  constructor() {
-    this.emerald = Api.getConnector().connectEmerald();
-    // this.emerald = new Vault(new VaultInMemoryProvider());
-    this.geth = null;
-  }
 
-  // DEPRECATED
-  updateGethUrl(url) {
-    if (!url) {
-      log.warn('Disconnecting from Geth');
-      this.geth = null;
-      return;
-    }
-    this.geth = Api.getConnector().connectEth(url);
+function getConnector() {
+  // TODO workaround for testing, should be properly mocked
+  if (typeof global.require !== 'function') {
+    console.warn('Electron Remote is not available');
+    return new NullConnect();
   }
-
-  updateChain(name) {
-    this.geth = Api.getConnector().connectEthChain(name);
+  const { remote } = global.require('electron');
+  // TODO workaround for testing, should be properly mocked
+  if (typeof remote !== 'object' || typeof remote.getGlobal !== 'function') {
+    console.warn('Electron Remote is not available');
+    return new NullConnect();
   }
-
-  static getConnector() {
-    // TODO workaround for testing, should be properly mocked
-    if (typeof global.require !== 'function') {
-      console.warn('Electron Remote is not available');
-      return new NullConnect();
-    }
-    const { remote } = global.require('electron');
-    // TODO workaround for testing, should be properly mocked
-    if (typeof remote !== 'object' || typeof remote.getGlobal !== 'function') {
-      console.warn('Electron Remote is not available');
-      return new NullConnect();
-    }
-    return remote.getGlobal('serverConnect');
-  }
+  return remote.getGlobal('serverConnect');
 }
 
-export const api = new Api();
+export const api = new Api(getConnector());
