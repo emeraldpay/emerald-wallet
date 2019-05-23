@@ -7,13 +7,26 @@ const colorHash = new ColorHash({
 
 const LOGGING_MAX_STATE_DEPTH = 5;
 const toJs = (state, depth = 0) => {
-  if (depth >= LOGGING_MAX_STATE_DEPTH) { return state; }
+  if (depth >= LOGGING_MAX_STATE_DEPTH) {
+    return state;
+  }
 
   depth += 1;
 
   if (!state) { return state; }
-  if (typeof state.toJS === 'function') { return state.toJS(); }
-  if (state instanceof Array) { return state.map((item) => toJs(item, depth)); }
+  if (typeof state.toJS === 'function') {
+    return state.toJS();
+  }
+  if (state instanceof Array) {
+    return state.map((item) => toJs(item, depth));
+  }
+  if (state instanceof Map) {
+    const o = {};
+    state.forEach((v, key) => {
+      o[key] = toJs(v, depth);
+    });
+    return o;
+  }
   if (state instanceof Object) {
     return Object.keys(state).reduce((o, key) => {
       o[key] = toJs(state[key], depth);

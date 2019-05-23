@@ -9,7 +9,7 @@ class NullConnect {
 }
 
 
-function getConnector() {
+export function getConnector() {
   // TODO workaround for testing, should be properly mocked
   if (typeof global.require !== 'function') {
     console.warn('Electron Remote is not available');
@@ -25,20 +25,16 @@ function getConnector() {
 }
 
 
-
 export class Api {
-
-  constructor(connector) {
+  constructor(connector, chains) {
     this.emerald = connector.connectEmerald();
-    this.chains = {};
-    this.chains[BlockchainCode.ETC] = connector.connectEthChain(BlockchainCode.ETC);
-    this.chains[BlockchainCode.ETH] = connector.connectEthChain(BlockchainCode.ETH);
+    this.chains = new Map();
+    chains.forEach((c) => {
+      this.chains.set(c, connector.connectEthChain(c));
+    });
   }
 
   chain(code) {
-    return this.chains[code];
+    return this.chains.get(code);
   }
 }
-
-
-export const api = new Api(getConnector());

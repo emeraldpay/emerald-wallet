@@ -215,9 +215,7 @@ function signTx(api, tx: Transaction, passphrase: string, chain: string) {
   return api.emerald.signTransaction(tx, passphrase, chain);
 }
 
-export function sendTransaction(from: string, passphrase: string, to: ?string, gas: string,
-                                gasPrice: string, value: string, data?: string)
-{
+export function sendTransaction(from: string, passphrase: string, to, gas, gasPrice: string, value: string, data) {
   const originalTx: Transaction = {
     from,
     to,

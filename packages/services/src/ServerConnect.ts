@@ -68,18 +68,18 @@ class ServerConnect implements IServerConnect {
   }
 
   // DEPRECATED
-  connectEth(url: string) {
-    if (!url) {
-      this.log.error('Empty JSON RPC URL is provided');
-      return null;
-    }
-    const chain = Object.entries(this.chainUrls).find((entry: any) => entry[1].url === url);
-    if (!chain) {
-      this.log.error('Unsupported JSON RPC URL is provided');
-      return null;
-    }
-    return this.connectEthChain(chain[0]);
-  }
+  // connectEth(url: string) {
+  //   if (!url) {
+  //     this.log.error('Empty JSON RPC URL is provided');
+  //     return null;
+  //   }
+  //   const chain = Object.entries(this.chainUrls).find((entry: any) => entry[1].url === url);
+  //   if (!chain) {
+  //     this.log.error('Unsupported JSON RPC URL is provided');
+  //     return null;
+  //   }
+  //   return this.connectEthChain(chain[0]);
+  // }
 
   connectEthChain(name: string): null | EthRpc {
     const chain = this.chainUrls[name];

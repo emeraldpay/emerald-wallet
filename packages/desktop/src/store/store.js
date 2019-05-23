@@ -2,7 +2,7 @@
 import { ipcRenderer } from 'electron';
 import { startProtocolListener } from './protocol';
 
-import { api } from '../lib/rpc/api';
+import { Api, getConnector } from '../lib/rpc/api';
 import { intervalRates } from './config';
 import history from './wallet/history';
 import accounts from './vault/accounts';
@@ -31,7 +31,11 @@ import {
   onceChainSet
 } from './triggers';
 
+import {blockchains} from '../config';
+
 const log = createLogger('store');
+
+const api = new Api(getConnector(), blockchains);
 
 export const store = createStore(api);
 
@@ -111,7 +115,7 @@ export function electronToStore() {
     ipcRenderer.on('store', (event, type, message) => {
       dispatch({
         type: type,
-        ...message,
+        payload: message,
       });
     });
   };

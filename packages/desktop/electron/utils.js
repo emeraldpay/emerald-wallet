@@ -80,6 +80,11 @@ function isValidChain(chain) {
 }
 
 const URL_FOR_CHAIN = {
+  etc: {
+    launchType: 3,
+    url: 'https://web3.emeraldwallet.io/etc',
+    type: 'remote',
+  },
   mainnet: {
     launchType: 3,
     url: 'https://web3.emeraldwallet.io/etc',

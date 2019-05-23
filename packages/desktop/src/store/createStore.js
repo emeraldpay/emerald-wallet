@@ -4,7 +4,7 @@ import {
   applyMiddleware,
   combineReducers
 } from 'redux';
-import { addresses } from '@emeraldwallet/store';
+import { addresses, blockchains } from '@emeraldwallet/store';
 import accounts from './vault/accounts';
 import Addressbook from './vault/addressbook';
 import tokens from './vault/tokens';
@@ -24,6 +24,7 @@ const reducers = {
   ledger: ledger.reducer,
   wallet: walletReducers,
   addresses: addresses.reducer,
+  blockchains: blockchains.reducer,
 
 };
 /**

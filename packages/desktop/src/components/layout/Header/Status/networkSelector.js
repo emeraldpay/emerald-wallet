@@ -1,5 +1,4 @@
 import React from 'react';
-import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import {Button} from '@emeraldwallet/ui';
 import Menu from '@material-ui/core/Menu';
@@ -54,7 +53,6 @@ const selectorStyles = {
 };
 
 class NetworkSelectorRender extends React.Component {
-
   constructor(props) {
     super(props);
     this.state = {
@@ -88,7 +86,6 @@ class NetworkSelectorRender extends React.Component {
 
     // Returns function which handles selection
     const createSelectionHandler = (net) => (event) => {
-
       this.setState({
         anchorEl: null,
       });
@@ -146,12 +143,6 @@ class NetworkSelectorRender extends React.Component {
 }
 
 const StyledNetSelector = withStyles(selectorStyles)(withTheme(NetworkSelectorRender));
-
-NetworkSelectorRender.propTypes = {
-  onNetworkChange: PropTypes.func,
-  geth: PropTypes.object,
-  chain: PropTypes.object,
-};
 
 const NetworkSelector = connect(
   (state, ownProps) => ({
