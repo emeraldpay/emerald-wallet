@@ -4,6 +4,7 @@ import {
   applyMiddleware,
   combineReducers
 } from 'redux';
+import createSagaMiddleware from 'redux-saga';
 import { addresses, blockchains } from '@emeraldwallet/store';
 import accounts from './vault/accounts';
 import Addressbook from './vault/addressbook';
@@ -27,6 +28,7 @@ const reducers = {
   blockchains: blockchains.reducer,
 
 };
+
 /**
  * Creates Redux store with API as dependency injection.
  *
@@ -35,7 +37,9 @@ const reducers = {
  * @param _api
  */
 export const createStore = (_api) => {
+  const sagaMiddleware = createSagaMiddleware();
   const storeMiddleware = [
+    sagaMiddleware,
     reduxMiddleware.promiseCatchAll,
     thunkMiddleware.withExtraArgument(_api),
   ];
@@ -44,8 +48,12 @@ export const createStore = (_api) => {
     storeMiddleware.push(reduxLogger);
   }
 
-  return createReduxStore(
+  const store = createReduxStore(
     combineReducers(reducers),
     applyMiddleware(...storeMiddleware)
   );
+
+  sagaMiddleware.run(blockchains.sagas.gasPriceSaga);
+
+  return store;
 };

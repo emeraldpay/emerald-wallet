@@ -1,4 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
+import { blockchains } from '@emeraldwallet/store';
 import { ipcRenderer } from 'electron';
 import { startProtocolListener } from './protocol';
 
@@ -31,11 +32,11 @@ import {
   onceChainSet
 } from './triggers';
 
-import {blockchains} from '../config';
+import {blockchains as supported} from '../config';
 
 const log = createLogger('store');
 
-const api = new Api(getConnector(), blockchains);
+const api = new Api(getConnector(), supported);
 
 export const store = createStore(api);
 
@@ -61,7 +62,8 @@ export function startSync() {
   store.dispatch(settings.actions.listenPrices());
 
   const promises = [
-    store.dispatch(network.actions.getGasPrice()),
+    // store.dispatch(network.actions.getGasPrice()),
+    store.dispatch(blockchains.actions.fetchGasPriceAction("etc")),
     store.dispatch(Addressbook.actions.loadAddressBook()),
     store.dispatch(history.actions.init(chainId)),
     store.dispatch(tokens.actions.loadTokenList()),

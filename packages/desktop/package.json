@@ -117,6 +117,7 @@
     "react-transition-group": "^2.5.3",
     "redux": "^4.0.1",
     "redux-logger": "2.8.1",
+    "redux-saga": "^1.0.2",
     "redux-thunk": "^2.3.0",
     "regenerator-runtime": "^0.13.1",
     "semver": "5.6.0",
