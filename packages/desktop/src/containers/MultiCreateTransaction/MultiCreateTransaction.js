@@ -299,7 +299,7 @@ export default connect(
         );
       }
 
-      if (transaction.token !== 'ETC') {
+      if (transaction.token !== 'XSM') {
         const decimals = convert.toNumber(tokenInfo.get('decimals'));
         const tokenUnits = toBaseUnits(convert.toBigNumber(transaction.amount), decimals || 18);
         const txData = Tokens.actions.createTokenTxData(

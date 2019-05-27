@@ -42,7 +42,7 @@ class ServerConnect {
 
   connectEmerald() {
     return new Vault(
-      new JsonRpcProvider(new JsonRpc(this.createHttpTransport('http://127.0.0.1:1920')))
+      new JsonRpcProvider(new JsonRpc(this.createHttpTransport('http://127.0.0.1:8545')))
     );
   }
 

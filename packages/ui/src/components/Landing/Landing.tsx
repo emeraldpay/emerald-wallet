@@ -58,11 +58,11 @@ export const Landing = ({
               <br />
               <div style={{marginLeft: '150px', padding: '10px', maxWidth: '700px'}}>
                 <span className={classes.aboutClassic}>
-      Emerald Wallet runs on the Ethereum Classic platform. Ethereum Classic is a decentralized platform that runs smart contracts: applications that run exactly as programmed without any possibility of downtime, censorship, fraud or third party interference.
+      Smilo Wallet runs on the Smilo platform. Smilo is a decentralized platform that runs smart contracts: applications that run exactly as programmed without any possibility of downtime, censorship, fraud or third party interference.
                 </span>
                 <br />
                 <br />
-                <Button href="http://ethereumclassic.org" target="_blank" rel="noreferrer noopener" label="More about ethereum classic" />
+                <Button href="http://ethereumclassic.org" target="_blank" rel="noreferrer noopener" label="More about Smilo" />
                 <br />
                 <br />
                 <Button primary onClick={onGenerate} label="Generate New Account" />

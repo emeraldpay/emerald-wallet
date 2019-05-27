@@ -14,7 +14,7 @@ const log = createLogger('index');
 
 
 function start() {
-  log.info('Starting Emerald Wallet...');
+  log.info('Starting Smilo Wallet...');
 
   // set document background to theme canvas color
   const {canvasColor} = theme.palette;

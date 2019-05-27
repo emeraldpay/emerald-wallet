@@ -13,10 +13,10 @@ const OpenWallet = ({ nextPage }: Props) => {
       <Grid item xs={12}>
         <div style={{fontWeight: 300}}>
           <p>
-            Welcome to Emerald Wallet. Thanks for trying it out!<br/>
+            Welcome to Smilo Wallet. Thanks for trying it out!<br/>
           </p>
           <p>
-            Made with ❤️&nbsp; by <strong>ETCDEV</strong> and <strong>many wonderful contributors</strong>.
+            Made with ❤️&nbsp; by <strong>Smilo</strong> and <strong>many wonderful contributors</strong>.
           </p>
         </div>
       </Grid>

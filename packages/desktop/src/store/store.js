@@ -73,11 +73,11 @@ export function startSync() {
 
   if (chain === 'mainnet') {
     promises.push(
-      store.dispatch(ledger.actions.setBaseHD("m/44'/60'/160720'/0'"))
+      store.dispatch(ledger.actions.setBaseHD("m/44'/60'/20080914'/0'"))
     );
-  } else if (chain === 'morden') {
-    // FIXME ledger throws "Invalid status 6804" for 44'/62'/0'/0
-    promises.push(store.dispatch(ledger.actions.setBaseHD("m/44'/61'/1'/0")));
+  } else if (chain === 'testnet') {
+    // FIXME ledger throws "Invalid status 6804" for 44'/20080914'/0'/0
+    promises.push(store.dispatch(ledger.actions.setBaseHD("m/44'/20080914'/1'/0")));
   }
 
   if (state.launcher.getIn(['geth', 'type']) !== 'remote') {
@@ -115,7 +115,7 @@ function newWalletVersionCheck() {
   getWalletVersion().then((versionDetails) => {
     if (!versionDetails.isLatest) {
       const params = [
-        `A new version of Emerald Wallet is available (${versionDetails.tag}).`,
+        `A new version of Smilo Wallet is available (${versionDetails.tag}).`,
         'info',
         20 * 1000,
         'Update',

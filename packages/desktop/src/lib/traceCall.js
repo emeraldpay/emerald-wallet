@@ -138,7 +138,7 @@ export class ParityTracer implements ITracer {
 }
 
 /**
- * Ethereum Classic Geth implementation has eth_callTrace method
+ * Smilo Geth implementation has eth_callTrace method
  */
 class ClassicGethTracer implements ITracer {
     tx: Transaction;

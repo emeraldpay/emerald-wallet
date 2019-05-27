@@ -7,9 +7,9 @@ describe('CreateTx', () => {
   it('it renders without crash', () => {
     const wrapper = shallow(
       <CreateTx
-        token="ETH"
+        token="XSM"
         txFee="1000000"
-        txFeeToken="ETH"
+        txFeeToken="XSM"
         gasLimit="1000000"
         amount="1"
         balance="5"
@@ -17,9 +17,9 @@ describe('CreateTx', () => {
     expect(wrapper).toBeDefined();
 
     const mounted = mount(<CreateTx
-      token="ETH"
+      token="XSM"
       txFee="1000000"
-      txFeeToken="ETH"
+      txFeeToken="XSM"
       gasLimit="1000000"
       amount="1"
       balance="5"

@@ -8,7 +8,7 @@ const isProd = process.env.NODE_ENV === 'production';
 
 function getBinDir() {
   // Use project base dir for development.
-  return isDev ? './' : process.resourcesPath;
+  return "bin";
 }
 
 function getLogDir() {
@@ -66,9 +66,8 @@ function deleteIfExists(filePath) {
 
 
 const knownChains = [
-  { name: 'mainnet', id: 61 },
-  { name: 'morden', id: 62 },
-  { name: 'eth', id: 1 },
+  { name: 'mainnet', id: 20080914 },
+  { name: 'testnet', id: 10 },
 ];
 
 function isValidChain(chain) {
@@ -79,19 +78,14 @@ function isValidChain(chain) {
 const URL_FOR_CHAIN = {
   mainnet: {
     launchType: 3,
-    url: 'https://web3.emeraldwallet.io/etc',
+    url: 'https://api.smilo.network/',
     type: 'remote',
   },
-  morden: {
+  testnet: {
     launchType: 3,
-    url: 'https://web3.emeraldwallet.io/morden',
+    url: 'https://testnet-wallet.smilo.network/api',
     type: 'remote',
-  },
-  eth: {
-    launchType: 3,
-    url: 'https://web3.emeraldwallet.io/eth',
-    type: 'remote',
-  },
+  }
 };
 
 module.exports = {

@@ -175,7 +175,7 @@ class SignTx extends React.Component<Props, State> {
         </div>
         <div style={{paddingTop: '35px', display: 'flex', justifyContent: 'center'}}>
         <span className={classes.fee}>
-          Plus {txFee} ETC for {tx.gasLimit} GAS.
+          Plus {txFee} XSM for {tx.gasLimit} GAS.
         </span>
         </div>
         {

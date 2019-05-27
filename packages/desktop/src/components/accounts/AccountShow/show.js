@@ -100,7 +100,7 @@ export class AccountShow extends React.Component {
                     showFiat={showFiat}
                     coinsStyle={{fontSize: '20px', lineHeight: '24px'}}
                     balance={balance}
-                    symbol="ETC"
+                    symbol="XSM"
                   />}
                 </div>
               </Row>

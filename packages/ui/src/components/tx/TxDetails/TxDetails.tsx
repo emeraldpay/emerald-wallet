@@ -110,7 +110,7 @@ export class TxDetails extends React.Component<Props> {
             <div style={{display: 'flex'}}>
               <div>
                 <div className={ classes.value }>
-                  { transaction.value ? `${new Wei(transaction.value).getEther()} ETC` : '--' }
+                  { transaction.value ? `${new Wei(transaction.value).getEther()} XSM` : '--' }
                 </div>
                 {showFiat && <div className={ classes.value }>
                   { fiatAmount }

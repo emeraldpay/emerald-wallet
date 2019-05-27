@@ -60,7 +60,7 @@ const Addr = ({
       <TableRowColumn style={tables.mediumStyle}>{addr.get('hdpath')}</TableRowColumn>
       <TableRowColumn style={tables.mediumStyle}>
         {balance && <AccountBalance
-          symbol="ETC"
+          symbol="XSM"
           balance={balance}
           showFiat={true}
           withAvatar={false}

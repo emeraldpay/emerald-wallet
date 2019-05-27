@@ -4,45 +4,31 @@ export const Networks = [
   {
     geth: {
       type: 'remote',
-      url: 'https://web3.emeraldwallet.io/eth',
+      url: 'https://api.smilo.network',
     },
     chain: {
-      id: 1,
-      name: 'eth',
+      id: 20080914,
+      name: 'xsm',
     },
-    title: 'Ethereum',
-    id: 'remote/eth',
-    coin: 'ETH',
+    title: 'Smilo mainnet',
+    id: 'remote/xsm',
+    coin: 'XSM',
     blockchain: new EthereumBlockchain(),
   },
   {
     geth: {
       type: 'remote',
-      url: 'https://web3.emeraldwallet.io/etc',
+      url: 'https://testnet-wallet.smilo.network/api',
     },
     chain: {
-      id: 61,
-      name: 'mainnet',
+      id: 10,
+      name: 'testnet',
     },
-    title: 'Ethereum Classic',
-    id: 'remote/etc',
-    coin: 'ETC',
-    blockchain: new EthereumClassicBlockchain(),
-  },
-  {
-    geth: {
-      type: 'remote',
-      url: 'https://web3.emeraldwallet.io/morden',
-    },
-    chain: {
-      id: 62,
-      name: 'morden',
-    },
-    title: 'Morden Testnet',
-    id: 'remote/morden',
-    coin: 'MORDEN',
-    blockchain: new EthereumClassicBlockchain(),
-  },
+    title: 'Smilo Testnet',
+    id: 'remote/xsm',
+    coin: 'XSM',
+    blockchain: new EthereumBlockchain(),
+  }
 ];
 
 

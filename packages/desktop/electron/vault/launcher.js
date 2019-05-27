@@ -15,54 +15,34 @@ class LocalConnector {
     this.chain = chain;
   }
 
-  emeraldExecutable() {
-    const suffix = os.platform() === 'win32' ? '.exe' : '';
-    return path.resolve(path.join(this.bin, `emerald${suffix}`));
+  gethExecutable() {
+    const p = path.join(path.join(__dirname,"../../../../bin"), `geth`);
+    log.debug("Loading GETH client: ", p);
+    return path.resolve(p);
   }
 
   // It would be nice to refactor so we can reuse functions
   // - chmod to executable
   // - check if exists
   // - move
-  // - get bin path for executable (eg this.emeraldBin?)
+  // - get bin path for executable (eg this.gethBin?)
   //
-  // This will migrate from cargo bin path emerald to project dir if emerald
+  // This will migrate from cargo bin path geth to project dir if geth
   // is already installed to the cargo bin path and does not exist in the project "bin" path,
   // which is the project base dir.
   migrateIfNotExists() {
     return new Promise((resolve, reject) => {
-      const bin = this.emeraldExecutable();
-      log.debug('Checking if emerald exists:', bin);
+      const bin = this.gethExecutable();
+      log.debug('Checking if geth exists:', bin);
       checkExists(bin).then((exists) => {
         if (!exists) {
-          log.debug('emerald not found');
+          log.debug('geth not found');
           // check that included binary path exists
           // if it does exist, move it to this.bin/
-          const cargoEmeraldPath = path.join(process.env.HOME, '.cargo', 'bin', 'emerald');
-          log.debug('cargo installed emerald path:', cargoEmeraldPath);
-          checkExists(cargoEmeraldPath).then((emBinaryExists) => {
-            log.debug('cargo installed emerald path exists:', emBinaryExists);
-            if (!emBinaryExists) {
-              reject(new Error('No packaged emerald binary found.'));
-            }
-            const rs = fs.createReadStream(cargoEmeraldPath);
-            const ws = fs.createWriteStream(bin);
-            rs.on('error', (err) => { reject(err); });
-            ws.on('error', (err) => { reject(err); });
-            ws.on('close', () => {
-              fs.chmod(bin, 0o755, (moderr) => {
-                if (moderr) {
-                  log.error('Failed to set emerald executable flag', moderr);
-                  reject(moderr);
-                }
-                resolve(true);
-              });
-            });
-            rs.pipe(ws);
-          });
+          resolve(false);
         } else {
-          // Assuming the emerald found is valid (perms, etc).
-          log.debug('OK: emerald exists: ', bin);
+          // Assuming the geth found is valid (perms, etc).
+          log.debug('OK: geth exists: ', bin);
           resolve(true);
         }
       });
@@ -71,14 +51,14 @@ class LocalConnector {
 
 
   /**
-     * It runs "emerald import --all" to import old key files from vault version before v0.12
+     * It runs "geth import --all" to import old key files from vault version before v0.12
      * TODO: sooner or later it should be removed
      */
   importKeyFiles() {
     return new Promise((resolve, reject) => {
-      const bin = this.emeraldExecutable();
+      const bin = this.gethExecutable();
       const appData = (process.env.APPDATA || os.homedir());
-      const emeraldHomeDir = `${appData}${path.join('/.emerald', this.chain.name, 'keystore/')}`;
+      const gethHomeDir = `${appData}${path.join('/.geth', this.chain.name, 'keystore/')}`;
       fs.access(bin, fs.constants.F_OK | fs.constants.R_OK | fs.constants.X_OK, (err) => {
         if (err) {
           log.error(`File ${bin} doesn't exist or doesn't have execution flag`);
@@ -89,12 +69,12 @@ class LocalConnector {
             'import',
             `--chain=${this.chain.name}`,
             '--all',
-            emeraldHomeDir,
+            gethHomeDir,
           ];
-          log.debug(`Emerald bin: ${bin}, args: ${options}`);
+          log.debug(`Geth bin: ${bin}, args: ${options}`);
           const result = spawnSync(bin, options);
           if (result) {
-            log.debug(`Emerald execution status: ${result.status}`);
+            log.debug(`Geth execution status: ${result.status}`);
           }
           resolve(result);
         }
@@ -104,20 +84,26 @@ class LocalConnector {
 
   start() {
     return new Promise((resolve, reject) => {
-      const bin = this.emeraldExecutable();
+      const bin = this.gethExecutable();
       fs.access(bin, fs.constants.F_OK | fs.constants.R_OK | fs.constants.X_OK, (err) => {
         if (err) {
           log.error(`File ${bin} doesn't exist or doesn't have execution flag`);
           reject(err);
         } else {
-          const options = [
-            '-v',
+          let options = [
+            '--sport',
           ];
           if (isDev) {
-            options.push(`--base-path=${path.resolve('./.emerald-dev/vault')}`);
+            options = [
+              '--testnet'
+            ];
+            options.push(`--datadir=${path.resolve('./.geth-dev/vault')}`);
           }
-          options.push('server');
-          log.debug(`Emerald bin: ${bin}, args: ${options}`);
+          options.push("--rpc");
+          // options.push("-rpcapi=admin,db,eth,debug,miner,net,shh,txpool,personal,web3");
+
+
+          log.debug(`Geth bin: ${bin}, args: ${options}`);
           this.proc = spawn(bin, options);
           resolve(this.proc);
         }
@@ -127,7 +113,7 @@ class LocalConnector {
 
   launch() {
     return new Promise((resolve, reject) => {
-      log.info('Starting Emerald Connector...');
+      log.info('Starting Geth Connector...');
       this.migrateIfNotExists()
         .then(this.importKeyFiles.bind(this))
         .then(this.start.bind(this))
@@ -148,7 +134,7 @@ class LocalConnector {
         this.proc = null;
       });
       this.proc.on('error', (err) => {
-        log.error('Failed to shutdown Emerald Connector', err);
+        log.error('Failed to shutdown Geth Connector', err);
         reject(err);
       });
       this.proc.kill();

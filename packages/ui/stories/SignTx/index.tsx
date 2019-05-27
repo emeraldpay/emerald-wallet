@@ -5,7 +5,7 @@ import SignTx from '../../src/components/tx/send/SignTx';
 const tx = {
   from: '0x123',
   to: '0x456,',
-  token: 'ETH',
+  token: 'XSM',
   amount: '100',
   gasLimit: '2100'
 };

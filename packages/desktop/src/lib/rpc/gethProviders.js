@@ -4,7 +4,7 @@ export const MainnetLocal = {
     url: 'http://127.0.0.1:8545',
   },
   chain: {
-    id: 61,
+    id: 20080914,
     name: 'mainnet',
   },
 };
@@ -12,10 +12,10 @@ export const MainnetLocal = {
 export const RemoteMainnet = {
   geth: {
     type: 'remote',
-    url: 'https://web3.emeraldwallet.io/etc',
+    url: 'https://api.smilo.network',
   },
   chain: {
-    id: 61,
+    id: 20080914,
     name: 'mainnet',
   },
 };

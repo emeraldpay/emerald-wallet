@@ -20,12 +20,12 @@ export const Terms = ({ onAgree } : Props) => {
       <Grid item xs={12}>
         <div style={style}>
           <p>
-            End-User License Agreement for Emerald Wallet<br/>
+            End-User License Agreement for Smilo Wallet<br/>
             Last updated: 12 February 2019
           </p>
           <p>
             This End-User License Agreement (&quot;EULA&quot; or &quot;AGREEMENT&quot;) is a legal agreement between
-            you (either an individual or a single entity) and ETCDEV GmbH (&quot;COMPANY&quot;), including all
+            you (either an individual or a single entity) and Smilo Foundation (&quot;COMPANY&quot;), including all
             contributors to source code of this Software identified above, which includes computer software and
             may include associated media, printed materials, and “online” or electronic documentation (“SOFTWARE”).
           </p>
@@ -84,7 +84,7 @@ export const Terms = ({ onAgree } : Props) => {
             YOU EXPRESSLY UNDERSTAND AND AGREE THAT AUTHORS SHALL NOT BE LIABLE FOR ANY DIRECT,
             INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL OR EXEMPLARY DAMAGES, INCLUDING BUT NOT
             LIMITED TO, DAMAGES FOR LOSS OF PROFITS, GOODWILL, USE, DATA OR OTHER INTANGIBLE LOSSES
-            (EVEN IF AUTHORS OR ETHEREUM CLASSIC MEMBERS HAS BEEN ADVISED OF THE POSSIBILITY OF
+            (EVEN IF AUTHORS OR SMILO MEMBERS HAS BEEN ADVISED OF THE POSSIBILITY OF
             SUCH DAMAGES) RELATED TO THE SOFTWARE, including, for example: (i) the use or the inability
             to use the SOFTWARE; (ii) the cost of procurement of substitute goods and services
             resulting from any goods,

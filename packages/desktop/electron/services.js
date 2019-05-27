@@ -34,7 +34,7 @@ const LAUNCH_TYPE = {
 const DEFAULT_SETUP = {
   connector: {
     launchType: LAUNCH_TYPE.LOCAL_RUN,
-    url: 'http://127.0.0.1:1920',
+    url: 'http://127.0.0.1:8545',
   },
   geth: URL_FOR_CHAIN.mainnet,
   chain: null,
@@ -157,7 +157,7 @@ class Services {
         emerald.on('exit', (code) => {
           if (!this.startedExternally) {
             this.connectorStatus = STATUS.NOT_STARTED;
-            log.error(`Emerald Connector process exited with code: ${code}`);
+            log.error(`Smilo Connector process exited with code: ${code}`);
             this.connector.proc = null;
           }
         });
@@ -167,7 +167,7 @@ class Services {
         });
 
         const logTargetDir = getLogDir();
-        log.debug('Emerald log target dir:', logTargetDir);
+        log.debug('Smilo log target dir:', logTargetDir);
 
         emerald.stderr.on('data', (data) => {
           log.debug(`[emerald] ${data}`); // always log emerald data

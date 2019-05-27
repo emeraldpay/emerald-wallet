@@ -1,5 +1,4 @@
 export enum BlockchainCode {
-  ETC = "etc",
-  ETH = "eth",
-  Morden = "morden",
+  XSM = "xsm",
+  Testnet = "testnet",
 }

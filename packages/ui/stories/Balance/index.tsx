@@ -7,7 +7,7 @@ storiesOf('Balance', module)
     <Balance
       balance={"10501000000000000000"}
       decimals={18}
-      symbol="ETC"
+      symbol="XSM"
       fiatCurrency="USD"
       fiatRate={4.75}
       showFiat={true}

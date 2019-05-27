@@ -50,7 +50,7 @@ const Render = (props) => {
         <Grid container direction="column">
           <Grid item justify="center" alignItems="center" xs>
             <div style={{fontSize: '42px'}}>
-              <span className={classes.brandPart1}>Emerald </span>
+              <span className={classes.brandPart1}>Smilo </span>
               <span className={classes.brandPart2}>Wallet</span>
             </div>
           </Grid>

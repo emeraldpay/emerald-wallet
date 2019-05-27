@@ -1,6 +1,7 @@
 {
   "packages": [
-    "packages/*"
+    "packages/*",
+    "../emerald-js/packages/*"
   ],
   "version": "1.2.1",
   "npmClient": "yarn",

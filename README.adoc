@@ -1,4 +1,4 @@
-Emerald - Ethereum and Ethereum Classic Wallet
+Smilo - Smilo Wallet
 ==============================================
 
 :rootdir: .

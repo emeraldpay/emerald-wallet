@@ -45,17 +45,17 @@ export class About extends React.Component<Props> {
         <div style={{position: 'absolute', top: '-100px', right: '-185px'}}>
           <Logo height="350px" width="350px"/>
         </div>
-        <h2 className={classes.appName}>Emerald Wallet</h2>
+        <h2 className={classes.appName}>Smilo Wallet</h2>
         <div style={{marginBottom: '20px'}}>{appVersion}</div>
         <div className={classes.componentsVer}>
           RPC Endpoint: {endpointVersion}<br/>
-          Emerald Vault: {vaultVersion}
+          Smilo version: {vaultVersion}
         </div>
         <div style={{paddingTop: '60px', marginBottom: '60px'}}>
-          <Button onClick={onButtonClick} primary label='emeraldwallet.io'/>
+          <Button onClick={onButtonClick} primary label='smilo.io'/>
         </div>
         <div style={{fontSize: '14px'}}>
-          <div style={{paddingBottom: '5px'}}>Copyright &copy; 2017-{year} ETCDEV GmbH</div>
+          <div style={{paddingBottom: '5px'}}>Copyright &copy; 2017-{year} Smilo Foundation, Copyright &copy; 2017-{year} ETCDEV GmbH </div>
           <div> Licensed under <a onClick={onLicenseClick} className={classes.links} href="#">Apache License 2.0</a>
             <span style={{float: 'right', textAlign: 'right'}}>
               <a onClick={onHelpClick} href="#" className={classes.links}>Help & Support</a>

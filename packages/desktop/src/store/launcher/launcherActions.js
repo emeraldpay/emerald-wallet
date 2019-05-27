@@ -116,7 +116,7 @@ export function listenElectron() {
           // Launcher sent chain different from what user has chosen
           // Alert !
           dispatch(screen.actions.showError(
-            new Error(`Launcher connected to invalid chain: [${message.chain}, ${message.chainId}]`)
+            new Error(`Launcher connected to invalid chain: [${message.chainId}, ${getState().launcher.getIn(['chain', 'id'])}]`)
           ));
         } else {
           dispatch({

@@ -7,8 +7,8 @@ import CreateTx from '../../src/components/tx/send/CreateTx';
 storiesOf('CreateTx', module)
   .add('default', () => (
     <CreateTx
-      token="ETC"
-      txFeeToken="ETH"
+      token="XSM"
+      txFeeToken="XSM"
       balance="5"
       amount="1"
       gasLimit="200"

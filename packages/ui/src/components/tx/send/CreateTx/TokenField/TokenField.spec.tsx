@@ -13,6 +13,6 @@ describe('TokenField', () => {
 
   it('should not crash without onChange handler', () => {
     const wrapper = shallow<TokenField>(<TokenField classes={classes}/>);
-    wrapper.instance().onChangeToken({target: { value: "ETC"}});
+    wrapper.instance().onChangeToken({target: { value: "XSM"}});
   });
 });

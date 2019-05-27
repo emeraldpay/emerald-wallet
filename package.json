@@ -3,7 +3,9 @@
   "private": true,
   "scripts": {
     "clean:node_modules": "rimraf node_modules packages/*/node_modules",
-    "build": "lerna run build --stream",
+    "dev": "lerna run build:all:nowatch && lerna run start:electron",
+    "build": "lerna run build:all:dev",
+    "start": "lerna run start:electron",
     "test": "lerna run test --stream",
     "lint": "lerna run lint --stream",
     "build:dist": "lerna run build:dist --stream",

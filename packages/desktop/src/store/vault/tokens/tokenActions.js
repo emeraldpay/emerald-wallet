@@ -159,7 +159,7 @@ export function loadTokensBalances(addresses: string) {
 }
 
 /**
- * Load ERC20 contracts from Emerald Vault, gets token details from smart contract
+ * Load ERC20 contracts from Smilo Vault, gets token details from smart contract
  */
 export function loadTokenList() {
   return (dispatch, getState, api) => {

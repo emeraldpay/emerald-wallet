@@ -6,7 +6,7 @@ const DEFAULTS = {
   geth: URL_FOR_CHAIN.mainnet,
   chain: {
     name: 'mainnet',
-    id: 61,
+    id: 20080914,
   },
   terms: 'none',
 };

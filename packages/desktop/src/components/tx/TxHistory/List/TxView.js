@@ -99,7 +99,7 @@ export const TxView = (props) => {
     lineHeight: '19px',
     color: muiTheme.palette.secondaryTextColor,
   };
-  let symbol = 'ETC';
+  let symbol = 'XSM';
   let balance = txValue;
 
   if (token) {

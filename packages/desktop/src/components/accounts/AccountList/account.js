@@ -79,7 +79,7 @@ export class Account extends React.Component {
                     {balance && <AccountBalance
                       fiatStyle={fiatStyle}
                       balance={ balance }
-                      symbol="ETC"
+                      symbol="XSM"
                       showFiat={ showFiat }
                     />}
                     {!balance && 'loading...'}

@@ -12,7 +12,7 @@ describe('GasLimitField', () => {
         gasLimit="2100"
         txFeeFiat=""
         txFee="2"
-        txFeeToken="ETC"
+        txFeeToken="XSM"
         fiatCurrency="USD"
         classes={classes}
       />);

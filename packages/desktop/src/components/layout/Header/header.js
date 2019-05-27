@@ -48,7 +48,7 @@ const Header = (props) => {
   const EmeraldTitle = () => {
     return (
       <div>
-        <span style={{color: muiTheme.palette.primary1Color}}>Emerald </span>
+        <span style={{color: muiTheme.palette.primary1Color}}>Smilo </span>
         <span style={{color: muiTheme.palette.secondaryTextColor}}>Wallet</span>
       </div>
     );
