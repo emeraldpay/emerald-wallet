@@ -36,7 +36,7 @@ const DEFAULT_SETUP = {
     launchType: LAUNCH_TYPE.LOCAL_RUN,
     url: 'http://127.0.0.1:8545',
   },
-  geth: URL_FOR_CHAIN.mainnet,
+  geth: URL_FOR_CHAIN.testnet,
   chain: null,
 };
 

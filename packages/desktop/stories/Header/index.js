@@ -31,12 +31,12 @@ storiesOf('Header', module)
       launcher: fromJS({
         connecting: false,
         chain: {
-          id: 61,
+          id: 20080914,
           name: 'mainnet',
         },
         geth: {
           url: 'http://127.0.0.1:8545',
-          id: 61,
+          id: 20080914,
           type: 'local',
         },
       }),
@@ -73,12 +73,12 @@ storiesOf('Header', module)
       launcher: fromJS({
         connecting: true,
         chain: {
-          id: 61,
+          id: 20080914,
           name: 'mainnet',
         },
         geth: {
           url: 'http://127.0.0.1:8545',
-          id: 61,
+          id: 20080914,
           type: 'local',
         },
       }),
@@ -115,12 +115,12 @@ storiesOf('Header', module)
       launcher: fromJS({
         connecting: true,
         chain: {
-          id: 61,
+          id: 20080914,
           name: 'mainnet',
         },
         geth: {
-          url: 'https://web3.gastracker.io',
-          id: 61,
+          url: 'https://api.smilo.network',
+          id: 20080914,
           type: 'remote',
         },
       }),

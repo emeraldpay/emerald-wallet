@@ -1,4 +1,4 @@
-import {EthereumBlockchain, EthereumClassicBlockchain} from '@emeraldwallet/core';
+import {EthereumBlockchain, EthereumClassicBlockchain, SmiloBlockchain} from '@emeraldwallet/core';
 
 export const Networks = [
   {
@@ -11,9 +11,9 @@ export const Networks = [
       name: 'xsm',
     },
     title: 'Smilo mainnet',
-    id: 'remote/xsm',
+    id: 'remote/mainnet',
     coin: 'XSM',
-    blockchain: new EthereumBlockchain(),
+    blockchain: new SmiloBlockchain(),
   },
   {
     geth: {
@@ -25,9 +25,9 @@ export const Networks = [
       name: 'testnet',
     },
     title: 'Smilo Testnet',
-    id: 'remote/xsm',
+    id: 'remote/testnet',
     coin: 'XSM',
-    blockchain: new EthereumBlockchain(),
+    blockchain: new SmiloBlockchain(),
   }
 ];
 

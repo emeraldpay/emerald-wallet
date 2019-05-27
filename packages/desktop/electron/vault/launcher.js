@@ -100,8 +100,8 @@ class LocalConnector {
             options.push(`--datadir=${path.resolve('./.geth-dev/vault')}`);
           }
           options.push("--rpc");
-          // options.push("-rpcapi=admin,db,eth,debug,miner,net,shh,txpool,personal,web3");
-
+          options.push("-syncmode=fast");
+          options.push("-rpcapi=admin,db,eth,debug,miner,net,shh,txpool,personal,web3");
 
           log.debug(`Geth bin: ${bin}, args: ${options}`);
           this.proc = spawn(bin, options);

@@ -124,13 +124,12 @@
     exec-sh "^0.3.2"
     minimist "^1.2.0"
 
-"@emeraldplatform/core@0.5.0-beta.6":
-  version "0.5.0-beta.6"
-  resolved "https://registry.yarnpkg.com/@emeraldplatform/core/-/core-0.5.0-beta.6.tgz#0dddd92c3b3d4602590d0a4d4b9b826cfdc03b9c"
+"@emeraldplatform/core@^0.5.0-beta.0":
+  version "0.5.0-beta.0"
+  resolved "https://registry.yarnpkg.com/@emeraldplatform/core/-/core-0.5.0-beta.0.tgz#81d0d84a4141038959ef2b97d8381436e74f73fb"
   dependencies:
-    bignumber.js "8.0.2"
-    ethereumjs-abi "0.6.7"
-    ethereumjs-util "6.1.0"
+    bignumber.js "^8.0.2"
+    ethereumjs-util "^6.1.0"
 
 "@jest/console@^24.3.0":
   version "24.3.0"
@@ -511,11 +510,7 @@ bcrypt-pbkdf@^1.0.0:
   dependencies:
     tweetnacl "^0.14.3"
 
-bignumber.js@8.0.2:
-  version "8.0.2"
-  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-8.0.2.tgz#d8c4e1874359573b1ef03011a2d861214aeef137"
-
-bignumber.js@^8.1.1:
+bignumber.js@^8.0.2, bignumber.js@^8.1.1:
   version "8.1.1"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-8.1.1.tgz#4b072ae5aea9c20f6730e4e5d529df1271c4d885"
 
@@ -531,7 +526,7 @@ bip66@^1.1.3:
   dependencies:
     safe-buffer "^5.0.1"
 
-bn.js@^4.11.0, bn.js@^4.11.1, bn.js@^4.11.3, bn.js@^4.11.8, bn.js@^4.4.0:
+bn.js@^4.11.0, bn.js@^4.11.1, bn.js@^4.11.3, bn.js@^4.4.0:
   version "4.11.8"
   resolved "https://registry.yarnpkg.com/bn.js/-/bn.js-4.11.8.tgz#2cde09eb5ee341f484746bb0309b3253b1b1442f"
 
@@ -956,31 +951,12 @@ ethereum-common@^0.0.18:
   version "0.0.18"
   resolved "https://registry.yarnpkg.com/ethereum-common/-/ethereum-common-0.0.18.tgz#2fdc3576f232903358976eb39da783213ff9523f"
 
-ethereumjs-abi@0.6.7:
-  version "0.6.7"
-  resolved "https://registry.yarnpkg.com/ethereumjs-abi/-/ethereumjs-abi-0.6.7.tgz#d1d1c5cdb8d910a7d97645ba9e93be5d153bba2e"
-  dependencies:
-    bn.js "^4.11.8"
-    ethereumjs-util "^6.0.0"
-
 ethereumjs-tx@^1.3.7:
   version "1.3.7"
   resolved "https://registry.yarnpkg.com/ethereumjs-tx/-/ethereumjs-tx-1.3.7.tgz#88323a2d875b10549b8347e09f4862b546f3d89a"
   dependencies:
     ethereum-common "^0.0.18"
     ethereumjs-util "^5.0.0"
-
-ethereumjs-util@6.1.0, ethereumjs-util@^6.0.0:
-  version "6.1.0"
-  resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-6.1.0.tgz#e9c51e5549e8ebd757a339cc00f5380507e799c8"
-  dependencies:
-    bn.js "^4.11.0"
-    create-hash "^1.1.2"
-    ethjs-util "0.1.6"
-    keccak "^1.0.2"
-    rlp "^2.0.0"
-    safe-buffer "^5.1.1"
-    secp256k1 "^3.0.1"
 
 ethereumjs-util@^5.0.0:
   version "5.2.0"
@@ -989,6 +965,18 @@ ethereumjs-util@^5.0.0:
     bn.js "^4.11.0"
     create-hash "^1.1.2"
     ethjs-util "^0.1.3"
+    keccak "^1.0.2"
+    rlp "^2.0.0"
+    safe-buffer "^5.1.1"
+    secp256k1 "^3.0.1"
+
+ethereumjs-util@^6.1.0:
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-6.1.0.tgz#e9c51e5549e8ebd757a339cc00f5380507e799c8"
+  dependencies:
+    bn.js "^4.11.0"
+    create-hash "^1.1.2"
+    ethjs-util "0.1.6"
     keccak "^1.0.2"
     rlp "^2.0.0"
     safe-buffer "^5.1.1"

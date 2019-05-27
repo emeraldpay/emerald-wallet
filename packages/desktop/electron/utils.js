@@ -71,7 +71,7 @@ const knownChains = [
 ];
 
 function isValidChain(chain) {
-  const found = knownChains.filter((c) => c.name === chain.name && c.id === parseInt(chain.id, 10));
+  const found = knownChains.filter((c) => c.name === chain.name && (c.id === parseInt(chain.id, 10) ));
   return found.length === 1;
 }
 

@@ -53,7 +53,7 @@ export const Landing = ({
               <div style={{
                 display: 'flex', alignItems: 'center', marginLeft: '80px', marginTop: '60px',
               }}>
-                <div className={classes.welcome}>WELCOME TO EMERALD WALLET</div>
+                <div className={classes.welcome}>WELCOME TO SMILO WALLET</div>
               </div>
               <br />
               <div style={{marginLeft: '150px', padding: '10px', maxWidth: '700px'}}>

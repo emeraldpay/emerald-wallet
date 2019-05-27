@@ -1,6 +1,7 @@
 export { BlockchainCode } from './blockchains';
 
 export { EthereumTx, Ethereum as EthereumBlockchain } from './blockchains/ethereum';
+export { SmiloTx, Smilo as SmiloBlockchain } from './blockchains/smilo';
 
 export { Currency, CurrencyCode } from './Currency';
 

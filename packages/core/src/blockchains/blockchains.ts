@@ -1,4 +1,4 @@
 export enum BlockchainCode {
-  XSM = "xsm",
+  Mainet = "mainnet",
   Testnet = "testnet",
 }
