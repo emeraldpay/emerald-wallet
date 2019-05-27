@@ -15,6 +15,7 @@ const assertSingletonWindow = require('./singletonWindow');
 const { URL_FOR_CHAIN } = require('./utils');
 const { Prices } = require('./prices');
 const { BalanceIpc } = require('./ipc/balance');
+const { TransactionIpc } = require('./ipc/transactions');
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
@@ -68,6 +69,9 @@ app.on('ready', () => {
 
   const balanceIpc = new BalanceIpc(browserWindow.webContents);
   balanceIpc.start(settings.getChain().name);
+
+  const transactionIpc = new TransactionIpc(browserWindow.webContents);
+  transactionIpc.start(settings.getChain().name);
 });
 
 

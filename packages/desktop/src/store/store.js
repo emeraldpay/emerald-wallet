@@ -39,7 +39,6 @@ function refreshAll() {
   const promises = [
     store.dispatch(accounts.actions.loadPendingTransactions()),
     store.dispatch(accounts.actions.loadAccountsList()),
-    store.dispatch(history.actions.refreshTrackedTransactions()),
   ];
 
   // Main loop that will refresh UI as needed
@@ -62,6 +61,7 @@ export function startSync() {
     store.dispatch(history.actions.init(chainId)),
     store.dispatch(tokens.actions.loadTokenList()),
     store.dispatch(tokens.actions.addDefault(chainId)),
+    store.dispatch(history.actions.refreshTrackedTransactions()),
   ];
 
   if (chain === 'mainnet') {
