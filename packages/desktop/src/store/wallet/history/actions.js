@@ -1,21 +1,14 @@
 // @flow
+import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import createLogger from '../../../utils/logger';
 import type { Transaction } from './types';
 import ActionTypes from './actionTypes';
-import { storeTransactions, loadTransactions } from './historyStorage';
+import { loadTransactions } from './historyStorage';
 import { allTrackedTxs } from './selectors';
-import { dispatchRpcError } from '../screen/screenActions';
 
 const log = createLogger('historyActions');
 const txStoreKey = (chainId) => `chain-${chainId}-trackedTransactions`;
 const currentChainId = (state) => state.wallet.history.get('chainId');
-
-function persistTransactions(state) {
-  storeTransactions(
-    txStoreKey(currentChainId(state)),
-    allTrackedTxs(state).toJS()
-  );
-}
 
 function loadPersistedTransactions(state): Array<Transaction> {
   return loadTransactions(txStoreKey(currentChainId(state)));
@@ -23,29 +16,12 @@ function loadPersistedTransactions(state): Array<Transaction> {
 
 function updateAndTrack(dispatch, getState, api, txs) {
   const pendingTxs = txs.filter((tx) => !tx.blockNumber);
-  const nonPendingTxs = txs.filter((tx) => pendingTxs.indexOf(tx) === -1);
-
-  let returnPromise;
-
   if (pendingTxs.length !== 0) {
     dispatch({type: ActionTypes.TRACK_TXS, txs: pendingTxs});
   }
-
-  if (nonPendingTxs.length !== 0) {
-    const blockNumbers = nonPendingTxs.map((tx) => tx.blockNumber);
-    returnPromise = api.geth.ext.getBlocksByNumbers(blockNumbers).then((blocks) => {
-      return nonPendingTxs.map((tx) => ({
-        ...tx,
-        timestamp: blocks.find(({ hash }) => hash === tx.blockHash).timestamp,
-      }));
-    })
-      .then((transactions) => {
-        dispatch({type: ActionTypes.TRACK_TXS, txs: transactions});
-      }).catch(dispatchRpcError(dispatch));
-  }
-
-  persistTransactions(getState());
-  return returnPromise;
+  txs.forEach((tx) => {
+    ipcRenderer.send('subscribe-tx', tx.hash);
+  });
 }
 
 
@@ -89,35 +65,12 @@ const txUnconfirmed = (state, tx) => {
  * Refresh only tx with totalRetries <= 10
  */
 export function refreshTrackedTransactions() {
-  return (dispatch, getState, api) => {
+  return (dispatch, getState) => {
     const state = getState();
-
-    const hashes = allTrackedTxs(state)
+    allTrackedTxs(state)
       .filter((tx) => tx.get('totalRetries', 0) <= 10)
       .filter((tx) => txUnconfirmed(state, tx))
-      .map((tx) => tx.get('hash'));
-
-    if (hashes.size === 0) {
-      return;
-    }
-
-    return api.geth.ext.getTransactions(hashes.toJS()).then((results) => {
-      const transactions = results.filter((tx) => tx && tx.blockNumber);
-
-      if (transactions.length === 0) { return; }
-
-      return api.geth.ext.getBlocksByNumbers(transactions.map((tx) => tx.blockNumber)).then((blocks) => {
-        return transactions.map((tx) => ({
-          ...tx,
-          timestamp: blocks.find(({ hash }) => hash === tx.blockHash).timestamp,
-        }));
-      }).catch(dispatchRpcError(dispatch));
-    }).catch(dispatchRpcError(dispatch)).then((transactions) => {
-      if (!transactions || transactions.length === 0) { return; }
-
-      dispatch({ type: ActionTypes.UPDATE_TXS, transactions });
-
-      return persistTransactions(getState());
-    }).catch(dispatchRpcError(dispatch));
+      .map((tx) => tx.get('hash'))
+      .forEach((hash) => ipcRenderer.send('subscribe-tx', hash));
   };
 }
