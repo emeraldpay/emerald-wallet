@@ -4,7 +4,7 @@ import {
   applyMiddleware,
   combineReducers
 } from 'redux';
-import {reducer as formReducer} from 'redux-form';
+// import {reducer as formReducer} from 'redux-form';
 import accounts from './vault/accounts';
 import Addressbook from './vault/addressbook';
 import tokens from './vault/tokens';
@@ -22,7 +22,7 @@ const reducers = {
   network: network.reducer,
   launcher: launcherReducers,
   ledger: ledger.reducer,
-  form: formReducer,
+  // form: formReducer,
   wallet: walletReducers,
 };
 /**

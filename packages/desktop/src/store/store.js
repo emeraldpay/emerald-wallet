@@ -16,8 +16,7 @@ import Addressbook from './vault/addressbook';
 import {
   readConfig,
   listenElectron,
-  connecting,
-  loadClientVersion
+  connecting
 } from './launcher/launcherActions';
 import { showError } from './wallet/screen/screenActions';
 
@@ -28,7 +27,8 @@ import { createStore } from './createStore';
 import {
   onceServicesStart,
   onceAccountsLoaded,
-  onceHasAccountsWithBalances
+  onceHasAccountsWithBalances,
+  onceChainSet
 } from './triggers';
 
 const log = createLogger('store');
@@ -38,9 +38,7 @@ export const store = createStore(api);
 function refreshAll() {
   const promises = [
     store.dispatch(accounts.actions.loadPendingTransactions()),
-    store.dispatch(network.actions.loadHeight(false)),
     store.dispatch(accounts.actions.loadAccountsList()),
-    store.dispatch(history.actions.refreshTrackedTransactions()),
   ];
 
   // Main loop that will refresh UI as needed
@@ -49,26 +47,21 @@ function refreshAll() {
   return Promise.all(promises);
 }
 
-function refreshLong() {
-  store.dispatch(settings.actions.getExchangeRates());
-  store.dispatch(network.actions.loadSyncing());
-  setTimeout(refreshLong, intervalRates.continueRefreshLongRate);
-}
-
 export function startSync() {
   const state = store.getState();
 
   const chain = state.launcher.getIn(['chain', 'name']);
   const chainId = state.launcher.getIn(['chain', 'id']);
 
+  store.dispatch(settings.actions.listenPrices());
 
   const promises = [
     store.dispatch(network.actions.getGasPrice()),
-    store.dispatch(loadClientVersion()),
     store.dispatch(Addressbook.actions.loadAddressBook()),
     store.dispatch(history.actions.init(chainId)),
     store.dispatch(tokens.actions.loadTokenList()),
     store.dispatch(tokens.actions.addDefault(chainId)),
+    store.dispatch(history.actions.refreshTrackedTransactions()),
   ];
 
   if (chain === 'mainnet') {
@@ -79,21 +72,6 @@ export function startSync() {
     // FIXME ledger throws "Invalid status 6804" for 44'/20080914'/0'/0
     promises.push(store.dispatch(ledger.actions.setBaseHD("m/44'/20080914'/1'/0")));
   }
-
-  if (state.launcher.getIn(['geth', 'type']) !== 'remote') {
-    // check for syncing
-    setTimeout(
-      () => store.dispatch(network.actions.loadSyncing()),
-      intervalRates.second
-    ); // prod: intervalRates.second
-    // double check for syncing
-    setTimeout(
-      () => store.dispatch(network.actions.loadSyncing()),
-      2 * intervalRates.minute
-    ); // prod: 30 * this.second
-  }
-
-  setTimeout(refreshLong, 3 * intervalRates.second);
 
   promises.push(
     refreshAll()
@@ -127,6 +105,18 @@ function newWalletVersionCheck() {
   });
 }
 
+export function electronToStore() {
+  return (dispatch) => {
+    log.debug('Running launcher listener for Redux');
+    ipcRenderer.on('store', (event, type, message) => {
+      dispatch({
+        type: type,
+        ...message,
+      });
+    });
+  };
+}
+
 export const start = () => {
   try {
     store.dispatch(readConfig());
@@ -135,6 +125,7 @@ export const start = () => {
     log.error(e);
   }
   store.dispatch(listenElectron());
+  store.dispatch(electronToStore());
   getInitialScreen();
   newWalletVersionCheck();
 };
@@ -196,6 +187,8 @@ function getInitialScreen() {
   });
 }
 
-onceServicesStart(store).then(startSync);
+Promise
+  .all([onceServicesStart(store), onceChainSet(store)])
+  .then(startSync);
 checkStatus();
 screenHandlers();

@@ -1,9 +1,11 @@
 import tokens from 'store/vault/tokens';
-import network from 'store/network';
 import {findNetwork} from 'lib/networks';
+import launcher from '../launcher';
 
+// DEPRECATED
 export const balance = (state, address, token) => {
-  if (token === 'ETC') {
+  const blockchain = currentBlockchain(state);
+  if (token === blockchain.params.coinTicker) {
     const selectedAccount = state.accounts.get('accounts').find((acnt) => acnt.get('id') === address);
     const newBalance = selectedAccount.get('balance');
     return newBalance.getEther().toString();
@@ -12,9 +14,24 @@ export const balance = (state, address, token) => {
   return tokens.selectors.balanceByTokenSymbol(state.tokens, token, address).getDecimalized();
 };
 
+export const balanceWei = (state, address, token) => {
+  const blockchain = currentBlockchain(state);
+  if (token === blockchain.params.coinTicker) {
+    const selectedAccount = state.accounts.get('accounts').find((acnt) => acnt.get('id') === address);
+    return selectedAccount.get('balance');
+  }
+
+  return tokens.selectors.balanceByTokenSymbol(state.tokens, token, address);
+};
+
 export const currentBlockchain = (state) => {
-  const currentChain = network.selectors.chain(state).toJS();
+  const currentChain = state.launcher.getIn(['chain', 'id']);
   const currentEndpoint = state.launcher.get('geth').toJS();
-  const net = findNetwork(currentEndpoint.url, currentChain.id) || {};
+  const net = findNetwork(currentEndpoint.url, currentChain) || {};
   return net.blockchain;
+};
+
+export const showFiat = (state) => {
+  const chainName = launcher.selectors.getChainName(state);
+  return (chainName === 'mainnet' || chainName === 'etc');
 };

@@ -10,6 +10,7 @@ describe('Balance', () => {
         balance="1"
         decimals={2}
       />);
+    expect(component).toBeDefined();
   });
 
   it('does not show fiat by default', () => {

@@ -3,4 +3,4 @@ import { storiesOf } from '@storybook/react';
 import OpenWallet from '../../src/components/welcome/OpenWallet';
 
 storiesOf('OpenWallet', module)
-  .add('default', () => (<OpenWallet />));
+  .add('default', () => (<OpenWallet connectETC={() => ({})} connectETH={() => ({})}/>));

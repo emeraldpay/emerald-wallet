@@ -30,13 +30,13 @@ const ErrorDialog = ({
       </DialogContent>
       <DialogActions>
         <Button
-          key="submitButton"
+          // key="submitButton"
           label="Submit A Bug Ticket"
           primary={false}
           onClick={() => handleSubmit(error)}
         />
         <Button
-          key="closeButton"
+          // key="closeButton"
           label="Close"
           primary={true}
           onClick={handleClose}

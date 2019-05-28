@@ -1,9 +1,10 @@
 import React from 'react';
-import {ipcRenderer} from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
-import {MuiThemeProvider} from '@material-ui/core/styles';
+import {ipcRenderer, shell} from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
+import { ThemeProvider } from '@material-ui/styles';
 import theme from '@emeraldplatform/ui/lib/theme';
 import {About} from '@emeraldwallet/ui';
 import {version} from '../../../package.json';
+import gitversion from '../../../gitversion.json';
 
 class AboutContainer extends React.Component {
   constructor(props) {
@@ -12,31 +13,44 @@ class AboutContainer extends React.Component {
   }
 
   componentDidMount() {
-    ipcRenderer.send('get-version');
     ipcRenderer.once('get-version-result', (event, result) => {
       this.setState({
-        geth: result.geth,
         connector: result.connector,
+        os: result.os,
       });
     });
+    ipcRenderer.send('get-version');
   }
 
+  helpClick = () => {
+    const url = 'https://emeraldwallet.io/support';
+    shell.openExternal(url);
+  };
+
+  licenseClick = () => {
+    const url = 'https://github.com/ETCDEVTeam/emerald-wallet/blob/master/LICENSE';
+    shell.openExternal(url);
+  };
+
+  onButtonClick = () => {
+    const url = 'https://emeraldwallet.io';
+    shell.openExternal(url);
+  };
+
   render() {
-    const {
-      onButtonClick, onHelpClick, onLicenseClick,
-    } = this.props;
-    const {geth, connector} = this.state;
+    const {connector, os} = this.state;
     return (
-      <MuiThemeProvider theme={theme}>
+      <ThemeProvider theme={theme}>
         <About
           appVersion={version}
-          endpointVersion={geth}
           vaultVersion={connector}
-          onButtonClick={onButtonClick}
-          onHelpClick={onHelpClick}
-          onLicenseClick={onLicenseClick}
+          gitVersion={gitversion}
+          osVersion={os}
+          onButtonClick={this.onButtonClick}
+          onHelpClick={this.onHelpClick}
+          onLicenseClick={this.onLicenseClick}
         />
-      </MuiThemeProvider>);
+      </ThemeProvider>);
   }
 }
 

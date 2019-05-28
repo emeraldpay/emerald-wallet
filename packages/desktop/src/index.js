@@ -1,8 +1,9 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import theme from 'emerald-js-ui/src/theme.json';
+import theme from '@emeraldplatform/ui/lib/theme';
 import 'typeface-rubik/index.css';
 import {I18nextProvider} from 'react-i18next';
+import BigNumber from 'bignumber.js';
 import i18n from './i18n/i18n';
 import {start as startStore} from './store/store';
 
@@ -17,7 +18,7 @@ function start() {
   log.info('Starting Smilo Wallet...');
 
   // set document background to theme canvas color
-  const {canvasColor} = theme.palette;
+  const canvasColor = theme.palette.background.default;
   document.body.style.backgroundColor = canvasColor;
 
   ReactDOM.render(<App/>, document.getElementById('app'));
@@ -27,7 +28,7 @@ function start() {
 
 const showAbout = () => {
   // set document background to theme canvas color
-  const canvasColor = theme.palette.alternateTextColor;
+  const canvasColor = theme.palette.background.default;
   document.body.style.backgroundColor = canvasColor;
   const AboutWindow = () => (
     <I18nextProvider i18n={i18n}>
@@ -40,3 +41,4 @@ const showAbout = () => {
 window.ETCEMERALD = window.ETCEMERALD || {};
 window.ETCEMERALD.start = start;
 window.ETCEMERALD.showAbout = showAbout;
+BigNumber.config({ EXPONENTIAL_AT: 27 });

@@ -4,19 +4,20 @@ import {connect} from 'react-redux';
 import {Logo} from '@emeraldwallet/ui';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import {withStyles} from '@material-ui/core/styles';
+import {withStyles} from '@material-ui/styles';
 import InitialSetup from './initialSetup';
+import { TERMS_VERSION } from '../../store/config';
 
 const getStyles = (theme) => ({
   brandPart1: {
-    color: theme.palette.primary.main,
+    color: theme.palette && theme.palette.primary.main,
   },
   brandPart2: {
-    color: theme.palette.secondary.main,
+    color: theme.palette && theme.palette.secondary.main,
   },
 });
 
-const Render = (props) => {
+const Welcome = (props) => {
   const {
     message, level, needSetup, classes,
   } = props;
@@ -34,7 +35,7 @@ const Render = (props) => {
   if (needSetup) {
     return (
       <Grid container justify='center' alignItems='center'>
-        <Grid item xs={8}>
+        <Grid item xs={10}>
           <InitialSetup/>
         </Grid>
       </Grid>
@@ -48,7 +49,7 @@ const Render = (props) => {
       </Grid>
       <Grid item>
         <Grid container direction="column">
-          <Grid item justify="center" alignItems="center" xs>
+          <Grid item xs>
             <div style={{fontSize: '42px'}}>
               <span className={classes.brandPart1}>Smilo </span>
               <span className={classes.brandPart2}>Wallet</span>
@@ -65,26 +66,29 @@ const Render = (props) => {
   );
 };
 
-Render.propTypes = {
+Welcome.propTypes = {
   message: PropTypes.string,
   level: PropTypes.number,
   ready: PropTypes.bool.isRequired,
   needSetup: PropTypes.bool.isRequired,
 };
 
-const StyledWelcome = withStyles(getStyles)(Render);
+const StyledWelcome = withStyles(getStyles)(Welcome);
 
-const Welcome = connect(
-  (state, ownProps) => ({
-    message: state.launcher.getIn(['message', 'text']),
-    level: state.launcher.getIn(['message', 'level']),
-    ready: state.launcher.getIn(['geth', 'status']) === 'ready' && state.launcher.getIn(['connector', 'status']) === 'ready',
-    needSetup: state.launcher.get('terms') !== 'v1'
-      || state.launcher.getIn(['geth', 'type']) === 'none'
-      || state.launcher.get('settingsUpdated') === true,
-  }),
+function isEmpty(val) {
+  return typeof val === 'undefined' || (typeof val === 'string' && val.length === 0);
+}
+
+export default connect(
+  (state, ownProps) => {
+    return ({
+      message: state.launcher.getIn(['message', 'text']),
+      level: state.launcher.getIn(['message', 'level']),
+      ready: state.launcher.getIn(['geth', 'status']) === 'ready' && state.launcher.getIn(['connector', 'status']) === 'ready',
+      needSetup: state.launcher.get('configured') && (
+        state.launcher.get('terms') !== TERMS_VERSION
+        || isEmpty(state.launcher.getIn(['chain', 'name']))),
+    });
+  },
   (dispatch, ownProps) => ({})
 )(StyledWelcome);
-
-
-export default Welcome;

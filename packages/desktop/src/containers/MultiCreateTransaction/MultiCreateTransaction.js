@@ -4,9 +4,8 @@ import BigNumber from 'bignumber.js';
 import Tokens from 'store/vault/tokens';
 import { fromJS } from 'immutable';
 import { CreateTx, SignTx } from '@emeraldwallet/ui';
-import { Wei } from '@emeraldplatform/emerald-js';
+import { Wei, Units } from '@emeraldplatform/eth';
 import { convert, toBaseUnits } from '@emeraldplatform/core';
-import { etherToWei } from 'lib/convert';
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import { connect } from 'react-redux';
@@ -18,8 +17,6 @@ import Wallet from 'store/wallet';
 import TransactionShow from '../../components/tx/TxDetails';
 import { txFee, txFeeFiat, traceValidate } from './util';
 
-const { toHex } = convert;
-
 const PAGES = {
   TX: 1,
   SIGN: 2,
@@ -28,16 +25,17 @@ const PAGES = {
 
 const DEFAULT_GAS_LIMIT = '21000';
 
+
 class MultiCreateTransaction extends React.Component {
   static propTypes = {
     currency: PropTypes.string.isRequired,
-    balance: PropTypes.string.isRequired,
+    balance: PropTypes.object.isRequired,
     fiatBalance: PropTypes.string.isRequired,
     tokenSymbols: PropTypes.arrayOf(PropTypes.string).isRequired,
     addressBookAddresses: PropTypes.arrayOf(PropTypes.string).isRequired,
     ownAddresses: PropTypes.arrayOf(PropTypes.string).isRequired,
     accountAddress: PropTypes.string,
-    txFee: PropTypes.string.isRequired,
+    txFee: PropTypes.object.isRequired,
     txFeeFiat: PropTypes.string.isRequired,
     data: PropTypes.object,
     mode: PropTypes.string,
@@ -95,8 +93,16 @@ class MultiCreateTransaction extends React.Component {
     this.setTransaction('gasLimit', value || DEFAULT_GAS_LIMIT);
   }
 
+  /**
+   * @param amount Wei class
+   */
   onChangeAmount(amount) {
-    this.setTransaction('amount', amount);
+    // TODO check if Wei instance
+    if (typeof amount !== 'object') {
+      return;
+    }
+    this.setTransaction('amount', amount.toEther());
+    this.setState({amount: amount});
   }
 
   componentDidUpdate(prevProps) {
@@ -107,6 +113,7 @@ class MultiCreateTransaction extends React.Component {
     if (from !== props.from || to !== props.to || value !== props.value || data !== props.data) {
       this.setState({
         page: props.mode ? PAGES.PASSWORD : PAGES.TX,
+        amount: this.props.amount,
         transaction: {
           ...this.state.transaction,
           from: this.props.selectedFromAccount,
@@ -124,6 +131,7 @@ class MultiCreateTransaction extends React.Component {
 
   componentDidMount() {
     this.setState({
+      amount: this.props.amount,
       transaction: {
         ...this.state.transaction,
         from: this.props.selectedFromAccount,
@@ -148,18 +156,18 @@ class MultiCreateTransaction extends React.Component {
     this.props.signAndSend({
       transaction: this.state.transaction,
       allTokens: this.props.allTokens,
+      amount: this.state.amount,
     });
   }
 
   onMaxClicked() {
     const fee = this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit);
-    const amount = new BigNumber(this.balance).minus(fee).valueOf();
-    this.setTransaction('amount', amount);
+    const amount = this.balance.sub(fee);
+    this.onChangeAmount(amount);
   }
 
   getPage() {
     if (!this.state.transaction.from) { return null; }
-
     switch (this.state.page) {
       case PAGES.TX:
         return (
@@ -168,7 +176,7 @@ class MultiCreateTransaction extends React.Component {
             from={this.state.transaction.from}
             txFeeSymbol={this.props.txFeeSymbol}
             token={this.state.transaction.token}
-            amount={this.state.transaction.amount}
+            amount={this.state.amount}
             gasLimit={this.state.transaction.gasLimit}
             txFee={this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit)}
             txFeeFiat={this.props.getTxFeeFiatForGasLimit(this.state.transaction.gasLimit)}
@@ -198,6 +206,8 @@ class MultiCreateTransaction extends React.Component {
           <SignTx
             fiatRate={this.props.fiateRate}
             tx={this.state.transaction}
+            txFeeCurrency={this.props.txFeeSymbol}
+            amount={this.state.amount}
             txFee={this.props.getTxFeeForGasLimit(this.state.transaction.gasLimit)}
             onChangePassword={this.onChangePassword}
             useLedger={this.props.useLedger}
@@ -228,7 +238,7 @@ export default connect(
   (state, ownProps) => {
     const { account } = ownProps;
     const blockchain = Wallet.selectors.currentBlockchain(state);
-    const txFeeSymbol = (blockchain && blockchain.params.tokenSymbol) || '';
+    const txFeeSymbol = (blockchain && blockchain.params.coinTicker) || '';
     const allTokens = state.tokens.get('tokens').concat([fromJS({address: '', symbol: txFeeSymbol, name: txFeeSymbol})]).reverse();
     const gasPrice = network.selectors.gasPrice(state);
 
@@ -244,7 +254,7 @@ export default connect(
     const tokenSymbols = allTokens.toJS().map((i) => i.symbol);
 
     return {
-      amount: ownProps.amount || '0',
+      amount: ownProps.amount || Wei.ZERO,
       gasLimit: ownProps.gasLimit || DEFAULT_GAS_LIMIT,
       typedData: ownProps.typedData,
       token: txFeeSymbol,
@@ -252,7 +262,7 @@ export default connect(
       data: ownProps.data,
       selectedFromAccount: account.get('id'),
       getBalanceForAddress: (address, token) => {
-        return Wallet.selectors.balance(state, address, token);
+        return Wallet.selectors.balanceWei(state, address, token);
       },
       getFiatForAddress: (address, token) => {
         if (token !== txFeeSymbol) { return '??'; }
@@ -275,15 +285,16 @@ export default connect(
   (dispatch, ownProps) => ({
     onCancel: () => dispatch(screen.actions.gotoScreen('home', ownProps.account)),
     onEmptyAddressBookClick: () => dispatch(screen.actions.gotoScreen('add-address')),
-    signAndSend: ({transaction, allTokens}) => {
+    signAndSend: ({transaction, allTokens, amount}) => {
       const useLedger = ownProps.account.get('hardware', false);
 
       const tokenInfo = allTokens.find((t) => t.get('symbol') === transaction.token);
 
-      const toAmount = etherToWei(transaction.amount);
+      const gasLimit = convert.toBigNumber(transaction.gasLimit);
 
-      const gasLimit = new Wei(transaction.gasLimit).getValue();
-      const { gasPrice } = transaction;
+      const toAmountStr = amount.toHex();
+      const gasLimitStr = `0x${gasLimit.toString(16)}`;
+      const gasPriceStr = `0x${transaction.gasPrice.toString(16)}`;
 
       if (transaction.data) {
         return dispatch(
@@ -291,15 +302,16 @@ export default connect(
             transaction.from,
             transaction.password,
             transaction.to,
-            toHex(gasLimit),
-            toHex(gasPrice),
-            convert.toHex(toAmount || 0),
+            gasLimitStr,
+            gasPriceStr,
+            toAmountStr,
             transaction.data
           )
         );
       }
 
-      if (transaction.token !== 'XSM') {
+      // TODO: refactor this check
+      if ((transaction.token !== 'XSM') && (transaction.token !== 'XSM')) {
         const decimals = convert.toNumber(tokenInfo.get('decimals'));
         const tokenUnits = toBaseUnits(convert.toBigNumber(transaction.amount), decimals || 18);
         const txData = Tokens.actions.createTokenTxData(
@@ -312,8 +324,8 @@ export default connect(
             transaction.from,
             transaction.password,
             tokenInfo.get('address'),
-            toHex(gasLimit),
-            toHex(gasPrice),
+            gasLimitStr,
+            gasPriceStr,
             convert.toHex(0),
             txData
           )
@@ -324,9 +336,9 @@ export default connect(
         from: transaction.from,
         password: transaction.password !== '' ? transaction.password : null,
         to: transaction.to,
-        gas: toHex(gasLimit),
-        gasPrice: toHex(gasPrice),
-        value: toHex(toAmount),
+        gas: gasLimitStr,
+        gasPrice: gasPriceStr,
+        value: toAmountStr,
       }, dispatch, network.actions.estimateGas)
         .then(() => dispatch(ledger.actions.setWatch(false)))
         .then(() => dispatch(ledger.actions.setConnected(false)))
@@ -338,9 +350,9 @@ export default connect(
               transaction.from,
               transaction.password !== '' ? transaction.password : null,
               transaction.to,
-              toHex(gasLimit),
-              toHex(gasPrice),
-              toHex(toAmount)
+              gasLimitStr,
+              gasPriceStr,
+              toAmountStr
             )
           );
         });

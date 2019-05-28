@@ -5,7 +5,7 @@ import {Checkbox, Page} from '@emeraldplatform/ui';
 import {Back} from '@emeraldplatform/ui-icons';
 import Button from '../common/Button';
 import {TranslateFn} from '../types';
-import withStyles from "@material-ui/core/styles/withStyles";
+import { withStyles } from '@material-ui/styles';
 import {TextAlignProperty} from "csstype";
 
 const styles = {

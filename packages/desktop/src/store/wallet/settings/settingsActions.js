@@ -1,7 +1,11 @@
 // @flow
-import { getRates } from '../../../lib/marketApi';
+// import { getRates } from '../../../lib/marketApi';
+import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import ActionTypes from './actionTypes';
 import screen from '../screen';
+import createLogger from '../../../utils/logger';
+
+const log = createLogger('settingsActions');
 
 export function loadSettings() {
   return (dispatch, getState) => {
@@ -12,6 +16,7 @@ export function loadSettings() {
         type: ActionTypes.SET_LOCALE_CURRENCY,
         currency: localeCurrency,
       });
+      ipcRenderer.send('prices/setCurrency', localeCurrency);
 
       const localStorageShowHiddenAccounts = localStorage.getItem('showHiddenAccounts') || 'false';
       const showHiddenAccounts = JSON.parse(localStorageShowHiddenAccounts);
@@ -29,12 +34,12 @@ export function loadSettings() {
   };
 }
 
-export function getExchangeRates() {
-  return (dispatch) => {
-    getRates.call().then((result) => {
+export function listenPrices() {
+  return (dispatch, getState) => {
+    ipcRenderer.on('prices/rate', (event, rates) => {
       dispatch({
         type: ActionTypes.EXCHANGE_RATES,
-        rates: result,
+        rates,
       });
     });
   };
@@ -42,6 +47,7 @@ export function getExchangeRates() {
 
 export function update(settings: { language: string, localeCurrency: string, showHiddenAccounts: boolean, numConfirmations: number }) {
   return (dispatch, getState) => {
+    ipcRenderer.send('prices/setCurrency', settings.localeCurrency);
     return Promise.all([
       dispatch({
         type: ActionTypes.SET_LOCALE_CURRENCY,

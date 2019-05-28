@@ -7,17 +7,16 @@ import Grow from '@material-ui/core/Grow';
 import Paper from '@material-ui/core/Paper';
 import Popper from '@material-ui/core/Popper';
 import MenuList from '@material-ui/core/MenuList';
-import { withStyles } from '@material-ui/core';
-import muiThemeable from 'material-ui/styles/muiThemeable';
+import { withStyles, withTheme } from '@material-ui/styles';
 import { Network as NetworkIcon, NetworkDisconnected as NetworkDisconnectedIcon } from '@emeraldplatform/ui-icons';
 import { Networks, findNetwork } from '../../../../lib/networks';
 
 class ExtendedMenuItem extends React.Component {
   render() {
     const {
-      muiTheme, checked, onClick, net,
+      theme, checked, onClick, net,
     } = this.props;
-    const textColor = checked ? muiTheme.palette.primary1Color : muiTheme.palette.secondaryTextColor;
+    const textColor = checked ? theme.palette.primary.main : theme.palette.text.secondary;
     return (
       <div
         onClick={onClick}
@@ -25,7 +24,7 @@ class ExtendedMenuItem extends React.Component {
           cursor: 'pointer',
           padding: '5px 80px 5px 40px',
           fontSize: '14px',
-          borderLeft: checked ? `5px solid ${muiTheme.palette.primary1Color}` : '',
+          borderLeft: checked ? `5px solid ${theme.palette.primary.main}` : '',
           marginLeft: checked ? '' : '5px',
           lineHeight: '20px',
         }}
@@ -75,7 +74,7 @@ class NetworkSelectorRender extends React.Component {
 
   render() {
     const {
-      chain, geth, onNetworkChange, connecting, muiTheme, classes,
+      chain, geth, onNetworkChange, connecting, theme, classes,
     } = this.props;
     const icon = connecting ? <NetworkDisconnectedIcon /> : <NetworkIcon />;
 
@@ -159,7 +158,7 @@ class NetworkSelectorRender extends React.Component {
                       checked={isCurrentNetwork(net)}
                       onClick={createSelectionHandler(net)}
                       net={net}
-                      muiTheme={muiTheme}
+                      theme={theme}
                     />)}
                   </MenuList>
                 </ClickAwayListener>
@@ -172,7 +171,7 @@ class NetworkSelectorRender extends React.Component {
   }
 }
 
-const StyledNetSelector = withStyles(selectorStyles)(NetworkSelectorRender);
+const StyledNetSelector = withStyles(selectorStyles)(withTheme(NetworkSelectorRender));
 
 NetworkSelectorRender.propTypes = {
   onNetworkChange: PropTypes.func,
@@ -186,6 +185,6 @@ const NetworkSelector = connect(
     geth: state.launcher.get('geth'),
   }),
   (dispatch, ownProps) => ({})
-)(muiThemeable()(StyledNetSelector));
+)(StyledNetSelector);
 
 export default NetworkSelector;

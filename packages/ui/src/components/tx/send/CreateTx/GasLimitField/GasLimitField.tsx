@@ -1,13 +1,14 @@
 import * as React from 'react';
-import withStyles from '@material-ui/core/styles/withStyles';
+import { withStyles } from '@material-ui/styles';
 import {Input} from '@emeraldplatform/ui';
 
 import FormLabel from '../FormLabel';
+import {Wei, Units} from "@emeraldplatform/eth";
 
 function getStyles(theme?: any) {
   return {
     container: {
-      color: theme.palette.text.secondary,
+      color: theme.palette && theme.palette.text.secondary,
       wordSpacing: '3px',
       letterSpacing: '1px',
       fontWeight: 200,
@@ -18,8 +19,8 @@ function getStyles(theme?: any) {
 }
 
 interface Props {
-  onChangeGasLimit?: any;
-  txFee: string;
+  onChangeGasLimit?: Function;
+  txFee: Wei;
   txFeeToken: string;
   gasLimit: string;
   txFeeFiat?: string;
@@ -34,7 +35,9 @@ export class GasLimitField extends React.Component<Props> {
   }
 
   onChangeGasLimit(event: any) {
-    this.props.onChangeGasLimit(event.target.value);
+    if (this.props.onChangeGasLimit) {
+      this.props.onChangeGasLimit(event.target.value);
+    }
   }
 
   render() {
@@ -51,7 +54,7 @@ export class GasLimitField extends React.Component<Props> {
           />
         </div>
         <div className={this.props.classes.container}>
-          {txFee} {txFeeToken} / {this.props.txFeeFiat} {this.props.fiatCurrency}
+          {txFee.toString(Units.ETHER, 6, true)} {txFeeToken} / {this.props.txFeeFiat} {this.props.fiatCurrency}
         </div>
       </React.Fragment>
     );

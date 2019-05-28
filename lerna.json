@@ -3,11 +3,21 @@
     "packages/*",
     "../emerald-js/packages/*"
   ],
-  "version": "1.2.1",
+  "version": "1.3.3",
   "npmClient": "yarn",
+  "useWorkspaces": true,
   "command": {
     "bootstrap": {
-      "npmClientArgs": ["--ignore-engines"]
+      "npmClientArgs": [
+        "--ignore-engines"
+      ]
+    },
+    "version": {
+      "message": "solution: publish %s",
+      "allowBranch": [
+        "master",
+        "release/*"
+      ]
     }
   }
 }

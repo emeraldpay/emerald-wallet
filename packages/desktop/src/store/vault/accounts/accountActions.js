@@ -1,7 +1,7 @@
 // @flow
+import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import { EthereumTx } from '@emeraldwallet/core';
-import { convert } from '@emeraldplatform/emerald-js';
-import { EthAddress } from '@emeraldplatform/core';
+import { convert, EthAddress } from '@emeraldplatform/core';
 import { EthAccount } from '@emeraldplatform/eth-account';
 import { loadTokensBalances } from '../tokens/tokenActions';
 import screen from '../../wallet/screen';
@@ -45,25 +45,6 @@ export function loadAccountBalance(address: string) {
 }
 
 /**
- * Updates balances in one batch request
- */
-function fetchBalances(addresses: Array<string>) {
-  return (dispatch, getState, api) => {
-    return api.geth.ext.getBalances(addresses).then((balances) => {
-      dispatch({
-        type: ActionTypes.SET_BALANCES,
-        accountBalances: addresses.map((addr) => ({ accountId: addr, balance: balances[addr] })),
-      });
-
-      const { tokens } = getState();
-      if (!tokens.get('loading')) {
-        return dispatch(loadTokensBalances(addresses));
-      }
-    }).catch(dispatchRpcError(dispatch));
-  };
-}
-
-/**
  * Retrieves HD paths for hardware accounts
  */
 function fetchHdPaths() {
@@ -78,7 +59,7 @@ function fetchHdPaths() {
           return dispatch({
             type: ActionTypes.SET_HD_PATH,
             accountId: address,
-            hdpath: JSON.parse(result).crypto.hd_path,
+            hdpath: result.crypto.hd_path,
           });
         }));
       });
@@ -91,20 +72,24 @@ export function loadAccountsList() {
   return (dispatch, getState, api) => {
     dispatch({ type: ActionTypes.LOADING });
 
+    const existing = getState().accounts.get('accounts').map((account) => account.get('id')).toJS();
     const chain = currentChain(getState());
     const showHidden = getState().wallet.settings.get('showHiddenAccounts', false);
     return api.emerald.listAccounts(chain, showHidden).then((result) => {
+      const fetched = result.map((account) => account.address);
+      const notChanges = existing.length === fetched.length && fetched.every((x) => existing.includes(x));
+      if (notChanges) {
+        return;
+      }
       dispatch({
         type: ActionTypes.SET_LIST,
-        accounts: result.map((a) => ({
-          ...a,
+        accounts: result.map((account) => ({
+          ...account,
           blockchain: chain,
         })),
       });
-
-      return dispatch(fetchHdPaths()).then(() => {
-        return dispatch(fetchBalances(result.map((account) => account.address)));
-      });
+      dispatch(fetchHdPaths());
+      ipcRenderer.send('subscribe-balance', fetched);
     });
   };
 }
@@ -161,7 +146,7 @@ export function updateAccount(address: string, name: string, description?: strin
   return (dispatch, getState, api) => {
     const chain = currentChain(getState());
     return api.emerald.updateAccount(address, name, description, chain)
-      .then((result) => {
+      .then(() => {
         dispatch({
           type: ActionTypes.UPDATE_ACCOUNT,
           address,
@@ -174,10 +159,10 @@ export function updateAccount(address: string, name: string, description?: strin
 
 function unwrap(list) {
   return new Promise((resolve, reject) => {
-    if (list.length === 1) {
+    if (list && list.length === 1) {
       resolve(list[0]);
     } else {
-      reject(new Error(`Invalid list size ${list.length}`));
+      reject(new Error(`Invalid list size ${list}`));
     }
   });
 }
@@ -198,7 +183,7 @@ function getNonce(api, address: string) {
 }
 
 function withNonce(tx: Transaction): (nonce: string) => Promise<Transaction> {
-  return (nonce) => new Promise((resolve, reject) => resolve(Object.assign({}, tx, { nonce: convert.toHex(nonce) })));
+  return (nonce) => new Promise((resolve) => resolve(Object.assign({}, tx, { nonce: convert.toHex(nonce) })));
 }
 
 function verifySender(expected) {
@@ -235,7 +220,12 @@ export function sendTransaction(from: string, passphrase: string, to: ?string, g
     nonce: '',
   };
   return (dispatch, getState, api) => {
-    const chain = currentChain(getState());
+    let chain = currentChain(getState());
+    if (chain === 'morden') {
+      // otherwise RPC server gives 'wrong-sender'
+      // vault has different chain-id settings for etc and eth morden. server uses etc morden.
+      chain = 'etc-morden';
+    }
     return getNonce(api, from)
       .then(withNonce(originalTx))
       .then((tx) => {
@@ -249,38 +239,18 @@ export function sendTransaction(from: string, passphrase: string, to: ?string, g
   };
 }
 
-export function createContract(accountId: string, passphrase: string, gas, gasPrice, data) {
-  const txData = {
-    passphrase,
-    gas,
-    gasPrice,
-    data,
-    from: accountId,
-    nonce: '',
-    value: '0x0',
-  };
-  return (dispatch, getState, api) => {
-    const chain = currentChain(getState());
-    api.emerald.signTransaction(txData, { chain })
-      .then(unwrap)
-      .then(api.geth.eth.sendRawTransaction)
-      .then(onTxSend(dispatch, txData))
-      .catch(log.error);
-  };
-}
-
-function readWalletFile(wallet) {
+function readWalletFile(walletFile) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
-    reader.readAsText(wallet);
+    reader.readAsText(walletFile);
     reader.onload = (event) => {
-      let data;
+      const fileContent = event.target.result;
       try {
-        data = JSON.parse(event.target.result);
-        data.filename = wallet.name;
-        resolve(data);
+        const json = JSON.parse(fileContent);
+        json.filename = walletFile.name;
+        resolve(json);
       } catch (e) {
-        reject({error: e}); // eslint-disable-line
+        reject(new Error('Invalid or corrupted Wallet file, cannot be imported')); // eslint-disable-line
       }
     };
   });
@@ -375,7 +345,7 @@ export function loadPendingTransactions() {
         dispatch(disp);
       }
     }
-  });
+  }).catch(dispatchRpcError(dispatch));
 }
 
 export function hideAccount(accountId: string) {

@@ -1,9 +1,8 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import {
-  Warning, WarningHeader, WarningText
-} from 'emerald-js-ui';
-import { Page } from '@emeraldplatform/ui';
+  Page, Warning, WarningHeader, WarningText
+} from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import { Button } from '@emeraldwallet/ui';
 import { Row, styles as formStyles } from 'elements/Form';
@@ -46,7 +45,9 @@ export const DownloadDialog = (props) => {
                 And save the copy in a safe place (not on this computer).
               </div>
               <div className={ classes.description }>
-                You need an Account Key File to make all operations with an account. In order to manage or create transactions from this Smilo Account, you will need this file.  You will also need the strong password you created earlier.
+                You need an Account Key File to make all operations with an account. In order to manage or create
+                transactions from this Account, you will need this file.  You will also need
+                the strong password you created earlier.
 
               </div>
             </div>

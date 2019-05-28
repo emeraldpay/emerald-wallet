@@ -1,7 +1,8 @@
 import * as React from 'react';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
-import withStyles, {CSSProperties} from "@material-ui/core/styles/withStyles";
+import { withStyles, CSSProperties } from '@material-ui/styles';
+
 import Button from '../common/Button';
 
 export const styles = (theme?: any) => ({
@@ -35,13 +36,14 @@ export const styles = (theme?: any) => ({
 interface Props {
   classes?: any;
   onGenerate?: any;
+  onAboutClick?: any;
   onImportJson?: any;
   onImportPrivateKey?: any;
   onLedger?: any;
 }
 
 export const Landing = ({
-  onGenerate, onImportJson, onImportPrivateKey, onLedger, classes,
+  onGenerate, onImportJson, onImportPrivateKey, onLedger, classes, onAboutClick,
 }: Props) => {
 
   return (
@@ -57,12 +59,8 @@ export const Landing = ({
               </div>
               <br />
               <div style={{marginLeft: '150px', padding: '10px', maxWidth: '700px'}}>
-                <span className={classes.aboutClassic}>
-      Smilo Wallet runs on the Smilo platform. Smilo is a decentralized platform that runs smart contracts: applications that run exactly as programmed without any possibility of downtime, censorship, fraud or third party interference.
-                </span>
                 <br />
-                <br />
-                <Button href="http://ethereumclassic.org" target="_blank" rel="noreferrer noopener" label="More about Smilo" />
+                <Button onClick={onAboutClick} label="More about supported tokens" />
                 <br />
                 <br />
                 <Button primary onClick={onGenerate} label="Generate New Account" />

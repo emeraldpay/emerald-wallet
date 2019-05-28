@@ -1,6 +1,5 @@
 import * as React from 'react';
-import withStyles from "@material-ui/core/styles/withStyles";
-import Button from '../common/Button';
+import {withStyles} from '@material-ui/styles';
 import Logo from '../common/Logo';
 
 const year = new Date().getFullYear();
@@ -25,8 +24,9 @@ export const styles = (theme?: any) => ({
 
 interface Props {
   appVersion?: string;
-  endpointVersion?: string;
   vaultVersion?: string;
+  gitVersion?: any;
+  osVersion?: any;
   onButtonClick?: any;
   onHelpClick?: any;
   onLicenseClick?: any;
@@ -36,9 +36,11 @@ interface Props {
 export class About extends React.Component<Props> {
   render() {
     const {
-      classes, onButtonClick, onHelpClick, onLicenseClick,
+      classes, onButtonClick, onHelpClick, onLicenseClick
     } = this.props;
-    const {appVersion, endpointVersion, vaultVersion} = this.props;
+    const {appVersion,  vaultVersion} = this.props;
+    const gitVersion = this.props.gitVersion || {};
+    const osVersion = this.props.osVersion || {};
 
     return (
       <div style={{padding: '30px', position: 'relative'}}>
@@ -48,14 +50,14 @@ export class About extends React.Component<Props> {
         <h2 className={classes.appName}>Smilo Wallet</h2>
         <div style={{marginBottom: '20px'}}>{appVersion}</div>
         <div className={classes.componentsVer}>
-          RPC Endpoint: {endpointVersion}<br/>
-          Smilo version: {vaultVersion}
+          Full Version: {gitVersion.FullSemVer}<br/>
+          Vault Version: {vaultVersion}<br/>
+          Build: {gitVersion.BuildMetaDataPadded} {gitVersion.ShortSha} {gitVersion.CommitDate}<br/>
+          OS: {osVersion.arch} {osVersion.platform} {osVersion.release}<br/>
         </div>
-        <div style={{paddingTop: '60px', marginBottom: '60px'}}>
-          <Button onClick={onButtonClick} primary label='smilo.io'/>
-        </div>
-        <div style={{fontSize: '14px'}}>
-          <div style={{paddingBottom: '5px'}}>Copyright &copy; 2017-{year} Smilo Foundation, Copyright &copy; 2017-{year} ETCDEV GmbH </div>
+        <div style={{fontSize: '14px', marginTop: '80px'}}>
+          <div style={{paddingBottom: '5px'}}>Website <a onClick={onButtonClick} href="#" className={classes.links}>https://emeraldwallet.io</a></div>
+          <div style={{paddingBottom: '5px'}}>Copyright &copy; 2019-{year} Smilo Foundation, Copyright &copy; 2017-{year} ETCDEV GmbH</div>
           <div> Licensed under <a onClick={onLicenseClick} className={classes.links} href="#">Apache License 2.0</a>
             <span style={{float: 'right', textAlign: 'right'}}>
               <a onClick={onHelpClick} href="#" className={classes.links}>Help & Support</a>

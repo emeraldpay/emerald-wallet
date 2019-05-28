@@ -34,25 +34,6 @@ export function readConfig() {
   };
 }
 
-export function loadClientVersion() {
-  return (dispatch, getState, api) => {
-    api.geth.web3.clientVersion().then((result) => {
-      dispatch({
-        type: 'LAUNCHER/CONFIG',
-        config: {
-          chain: {
-            client: result,
-          },
-        },
-      });
-      dispatch({
-        type: 'LAUNCHER/SETTINGS',
-        updated: true,
-      });
-    }).catch(dispatchRpcError(dispatch));
-  };
-}
-
 export function useRpc(gethProvider) {
   return (dispatch) => {
     dispatch({
@@ -109,8 +90,6 @@ export function listenElectron() {
         ...message,
       });
 
-      const state = getState();
-
       if (type === 'CHAIN') {
         if (getState().launcher.getIn(['chain', 'id']) !== message.chainId) {
           // Launcher sent chain different from what user has chosen
@@ -125,10 +104,6 @@ export function listenElectron() {
           });
         }
       }
-
-      if (isEthRpcReady(state)) {
-        dispatch(loadClientVersion());
-      }
     });
   };
 }
@@ -137,5 +112,13 @@ export function connecting(value) {
   return {
     type: 'LAUNCHER/CONNECTING',
     value,
+  };
+}
+
+export function setChain(chain, chainId) {
+  return {
+    type: 'LAUNCHER/CHAIN',
+    chain,
+    chainId,
   };
 }

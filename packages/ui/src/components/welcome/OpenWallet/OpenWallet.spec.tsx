@@ -4,7 +4,7 @@ import OpenWallet from './OpenWallet';
 
 describe('OpenWallet', () => {
   it('renders without crashing', () => {
-    const component = shallow(<OpenWallet />);
+    const component = shallow(<OpenWallet connectETC={jest.fn} connectETH={jest.fn} />);
     expect(component).toBeDefined();
   });
 });

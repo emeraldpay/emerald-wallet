@@ -1,7 +1,6 @@
 import { fromJS } from 'immutable';
 import { refreshTrackedTransactions } from './actions';
-import { loadTransactions } from './historyStorage';
-import ActionTypes from './actionTypes';
+import { ipcRenderer } from '../../../__mocks__/electron-mock';
 
 
 describe('historyActions/refreshTrackedTransactions', () => {
@@ -22,14 +21,12 @@ describe('historyActions/refreshTrackedTransactions', () => {
     },
   });
 
-  it('should call eth.getTransaction rpc endpoint', () => {
-    const mockGetTransactions = jest.fn(() => Promise.resolve([]));
-    const ethRpc = { geth: { ext: { getTransactions: mockGetTransactions } } };
+  it('should subscribe through electron', () => {
     const dispatch = jest.fn();
-
     const hash = '0x123';
-    return refreshTrackedTransactions(hash)(dispatch, getState, ethRpc).then(() => {
-      expect(mockGetTransactions).toHaveBeenCalled();
-    });
+
+    refreshTrackedTransactions(hash)(dispatch, getState);
+
+    expect(ipcRenderer.send).toHaveBeenCalledWith('subscribe-tx', '0x123');
   });
 });

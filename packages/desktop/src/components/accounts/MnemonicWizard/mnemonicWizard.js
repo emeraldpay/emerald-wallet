@@ -1,14 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import muiThemeable from 'material-ui/styles/muiThemeable';
+import { ImportMnemonic, NewMnemonic } from '@emeraldwallet/ui';
 import screen from 'store/wallet/screen';
 import accounts from 'store/vault/accounts';
-
-import ImportMnemonic from '../add/ImportMnemonic';
 import ConfirmMnemonic from '../add/ConfirmMnemonic';
-
-
-import NewMnemonic from './NewMnemonic';
 
 const PAGES = {
   GENERATE: 1,
@@ -38,21 +33,20 @@ class MnemonicWizard extends React.Component {
     this.setState({
       page: PAGES.IMPORT,
     });
-  }
+  };
 
   gotoGenerate = () => {
     this.setState({
       page: PAGES.GENERATE,
     });
-  }
+  };
 
   gotoConfirm = (formData) => {
     this.setState({
       page: PAGES.CONFIRM,
       formData,
     });
-  }
-
+  };
 
   getPage() {
     const { gotoDashboard } = this.props;
@@ -72,7 +66,7 @@ class MnemonicWizard extends React.Component {
         return (
           <ImportMnemonic
             mnemonic={ mnemonic }
-            onContinue={ this.gotoConfirm }
+            onSubmit={ this.gotoConfirm }
             onBack={ this.gotoGenerate }
           />
         );
@@ -81,7 +75,6 @@ class MnemonicWizard extends React.Component {
         return (
           <ConfirmMnemonic
             mnemonic={ mnemonic }
-            onContinue={ this.gotoConfirm }
             onBack={ this.gotoImport }
             formData={ formData }
           />
@@ -91,15 +84,13 @@ class MnemonicWizard extends React.Component {
     }
   }
 
-
   render() {
-    const { muiTheme } = this.props;
     const { page } = this.state;
     if (!page) { return null; }
     return (
-      <div style={{border: `1px solid ${muiTheme.palette.borderColor}`}} >
+      <React.Fragment>
         {this.getPage()}
-      </div>
+      </React.Fragment>
     );
   }
 }
@@ -118,4 +109,4 @@ export default connect(
     },
 
   })
-)(muiThemeable()(MnemonicWizard));
+)(MnemonicWizard);

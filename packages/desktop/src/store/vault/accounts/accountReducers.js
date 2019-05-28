@@ -1,5 +1,6 @@
 import Immutable from 'immutable';
-import { convert, Wei } from '@emeraldplatform/emerald-js';
+import { convert } from '@emeraldplatform/core';
+import { Wei } from '@emeraldplatform/eth';
 import ActionTypes from './actionTypes';
 
 const { toNumber } = convert;

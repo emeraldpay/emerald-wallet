@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import CircularProgress from 'material-ui/CircularProgress';
-import { Wei } from '@emeraldplatform/emerald-js';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { Wei } from '@emeraldplatform/eth';
 
 import createLogger from '../../utils/logger';
 import AddressBook from '../../components/addressbook/ContactList';
@@ -34,11 +34,14 @@ const Screen = ({ screen, screenItem }) => {
     return (<div>
       <CircularProgress size={50} secondary="true" /> Initializing...
     </div>);
-  } if (screen === 'home') {
+  }
+  if (screen === 'home') {
     return (<Dashboard />);
-  } if (screen === 'address-book') {
+  }
+  if (screen === 'address-book') {
     return <AddressBook />;
-  } if (screen === 'address') {
+  }
+  if (screen === 'address') {
     return <AddressShow address={ screenItem }/>;
   } if (screen === 'add-address') {
     return <AddContact />;
@@ -55,7 +58,7 @@ const Screen = ({ screen, screenItem }) => {
   }
   if (screen === 'repeat-tx') {
     const {transaction, toAccount, fromAccount} = screenItem;
-    const amount = new Wei(transaction.get('amount')).getEther();
+    const amount = new Wei(transaction.get('amount')).toEther();
     const to = toAccount.get('id');
     const gasLimit = transaction.get('gas');
     const data = transaction.get('data');

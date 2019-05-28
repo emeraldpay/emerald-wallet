@@ -21,6 +21,7 @@ export default class Api {
     this.geth = null;
   }
 
+  // DEPRECATED
   updateGethUrl(url) {
     if (!url) {
       log.warn('Disconnecting from Geth');

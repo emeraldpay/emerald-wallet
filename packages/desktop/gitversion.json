@@ -1,0 +1,12 @@
+{
+  "1 WARNING": "AUTOMATICALLY GENERATED ON CI SERVER",
+  "2 WARNING": "DO NOT EDIT",
+  "3 WARNING": "FOR TESTING INSTALL https://github.com/GitTools/GitVersion AND EXECUTE `gitversion > gitversion.json`",
+  "AN EXAMPLE BELOW": ">>>>",
+
+  "BuildMetaDataPadded":"0001",
+  "SemVer":"0.0.0-development",
+  "FullSemVer":"0.0.0-development",
+  "ShortSha":"cafe42",
+  "CommitDate":"2019-04-12"
+}

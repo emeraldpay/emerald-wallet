@@ -3,9 +3,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { Currency } from '@emeraldwallet/core';
-import { withStyles } from '@material-ui/core';
-import { Wei } from '@emeraldplatform/emerald-js';
-import { EtcSimple } from '@emeraldplatform/ui-icons';
+import { withStyles } from '@material-ui/styles';
+import { Wei } from '@emeraldplatform/eth';
+import { CurrencyEtc, CurrencyEth } from '@emeraldplatform/ui-icons';
 import { Button } from '@emeraldwallet/ui';
 import Accounts from '../../../../store/vault/accounts';
 import Wallet from '../../../../store/wallet';
@@ -29,6 +29,16 @@ const styles = {
   },
 };
 
+const CoinSymbol = ({ coinTicker }) => {
+  if (coinTicker === 'ETH') {
+    return (<CurrencyEth />);
+  }
+  if (coinTicker === 'ETC') {
+    return (<CurrencyEtc />);
+  }
+  return null;
+};
+
 const Total = ({
   total, showFiat, fiatAmount, fiatCurrency, classes, tokenSymbol,
 }: Props) => {
@@ -43,7 +53,7 @@ const Total = ({
       disabled={true}
       label={totalFormatted}
       classes={classes}
-      icon={<EtcSimple />}
+      icon={<CoinSymbol coinTicker={tokenSymbol} />}
     />
   );
 };
@@ -64,14 +74,14 @@ export default connect(
     const fiatRate = WalletSettings.selectors.fiatRate(state);
     let fiatAmount;
     if (fiatRate && fiatCurrency) {
-      fiatAmount = Currency.format(Currency.convert(total.getEther(), fiatRate), fiatCurrency);
+      fiatAmount = Currency.format(Currency.convert(total.toEther(), fiatRate), fiatCurrency);
     }
 
     return {
       fiatCurrency,
       fiatAmount,
-      total: total.getEther(),
-      tokenSymbol: (blockchain && blockchain.params.tokenSymbol) || '',
+      total: total.toEther(),
+      tokenSymbol: (blockchain && blockchain.params.coinTicker) || '',
     };
   },
   (dispatch, ownProps) => ({})

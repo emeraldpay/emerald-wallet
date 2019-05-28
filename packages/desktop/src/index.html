@@ -13,7 +13,17 @@
             margin-left: 0;
             margin-right: 0;
         }
-       </style>
+    </style>
+    <style>
+      @media print {
+        .no-print, .no-print * {
+          display: none !important;
+        }
+        body, .application {
+          background-color: #ffffff !important;
+        }
+      }
+    </style>
 </head>
 
 <body>

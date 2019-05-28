@@ -1,12 +1,11 @@
+const { LocalConnector } = require('@emeraldwallet/vault');
+const { ChainListener } = require('@emeraldwallet/services');
 const log = require('./logger');
-const { LocalGeth, NoneGeth, RemoteGeth } = require('./launcher');
-const { LocalConnector } = require('./vault/launcher');
+const { NoneGeth, RemoteGeth } = require('./launcher');
 const UserNotify = require('./userNotify').UserNotify; // eslint-disable-line
-const { check, waitRpc } = require('./nodecheck');
 const {
   getBinDir, getLogDir, isValidChain, URL_FOR_CHAIN,
 } = require('./utils');
-
 require('es6-promise').polyfill();
 
 const SERVICES = {
@@ -49,6 +48,7 @@ class Services {
     this.notify = new UserNotify(webContents);
     this.emerald = serverConnect.connectEmerald();
     this.serverConnect = serverConnect;
+    this.blockchainStatus = new BlockchainStatus(webContents);
     log.info(`Run services from ${getBinDir()}`);
   }
 
@@ -59,39 +59,37 @@ class Services {
      *
      */
   useSettings(settings) {
-    if (!isValidChain(settings.chain)) {
+    if (isValidChain(settings.chain)) {
+      const chainChanged = !this.setup.chain || this.setup.chain.name !== settings.chain.name;
+      this.setup.chain = settings.chain;
+      this.setup.geth = URL_FOR_CHAIN[settings.chain.name];
+      log.debug('New Services setup', this.setup);
+      this.gethStatus = STATUS.NOT_STARTED;
+      if (chainChanged) {
+        this.blockchainStatus.start(settings.chain.name);
+        return this.shutdownRpc();
+      }
+    } else {
       this.gethStatus = STATUS.WRONG_SETTINGS;
-      this.connectorStatus = STATUS.WRONG_SETTINGS;
-      return Promise.reject(new Error(`Wrong chain ${JSON.stringify(settings.chain)}`));
     }
-
-    // Set desired chain
-    this.setup.chain = settings.chain;
-
-    // Set Geth
-    this.setup.geth = URL_FOR_CHAIN[settings.chain.name];
-
-    log.debug('New Services setup', this.setup);
     return Promise.resolve(this.setup);
   }
 
   start() {
-    return Promise.all([
-      this.startGeth(),
-      this.startConnector(),
-    ]);
+    const services = [];
+    if (this.gethStatus === STATUS.NOT_STARTED) {
+      services.push(this.startGeth());
+    }
+    if (this.connectorStatus === STATUS.NOT_STARTED) {
+      services.push(this.startConnector());
+    }
+    return Promise.all(services);
   }
 
   shutdown() {
     const shuttingDown = [];
 
-    if (this.geth) {
-      shuttingDown.push(
-        this.geth.shutdown()
-          .then(() => { this.gethStatus = STATUS.NOT_STARTED; })
-          .then(() => this.notifyEthRpcStatus())
-      );
-    }
+    shuttingDown.push(this.shutdownRpc());
 
     if (this.connector) {
       shuttingDown.push(this.connector.shutdown()
@@ -101,37 +99,48 @@ class Services {
     return Promise.all(shuttingDown);
   }
 
-  tryExistingGeth(url) {
-    return new Promise((resolve, reject) => {
-      check(url, this.serverConnect).then((status) => {
-        resolve({
-          name: status.chain,
-          id: status.chainId,
-          clientVersion: status.clientVersion,
-        });
-      }).catch(reject);
-    });
+  shutdownRpc() {
+    const shuttingDown = [];
+
+    shuttingDown.push(
+      this.serverConnect.disconnect()
+        .then(() => { this.gethStatus = STATUS.NOT_STARTED; })
+        .then(() => this.notifyEthRpcStatus())
+    );
+    return Promise.all(shuttingDown);
+  }
+
+  startNoneRpc() {
+    this.notify.error('Ethereum connection type is not configured');
+    return new NoneGeth();
   }
 
   startRemoteRpc() {
     log.info('use REMOTE RPC');
-    this.setup.geth = URL_FOR_CHAIN[this.setup.chain.name];
-    return this.tryExistingGeth(this.setup.geth.url).then((chain) => {
-      this.setup.chain = chain;
-      this.setup.geth.clientVersion = chain.clientVersion;
-      this.gethStatus = STATUS.READY;
-
-      this.notify.info(`Use Remote RPC API at ${this.setup.geth.url}`);
-      this.notify.chain(this.setup.chain.name, this.setup.chain.id);
-      this.notifyEthRpcStatus();
-      return new RemoteGeth(null, null);
-    });
+    this.gethStatus = STATUS.READY;
+    this.notify.info(`Use Remote RPC API at ${this.setup.geth.url}`);
+    this.notify.chain(this.setup.chain.name, this.setup.chain.id);
+    this.notifyEthRpcStatus();
+    return new RemoteGeth(null, null);
   }
 
   startGeth() {
-    this.gethStatus = STATUS.NOT_STARTED;
-    this.notifyEthRpcStatus('not ready');
-    return this.startRemoteRpc();
+    return new Promise((resolve, reject) => {
+      this.gethStatus = STATUS.NOT_STARTED;
+      this.notifyEthRpcStatus('not ready');
+
+      if (this.setup.geth.launchType === LAUNCH_TYPE.NONE) {
+        const geth = this.startNoneRpc();
+        this.geth = geth;
+        resolve(geth);
+      } if (this.setup.geth.launchType === LAUNCH_TYPE.REMOTE_URL) {
+        const geth = this.startRemoteRpc();
+        this.geth = geth;
+        resolve(geth);
+      } else {
+        reject(new Error(`Invalid Geth launch type ${this.setup.geth.launchType}`));
+      }
+    });
   }
 
   startConnector() {
@@ -139,7 +148,7 @@ class Services {
       this.connectorStatus = STATUS.NOT_STARTED;
       this.notifyConnectorStatus();
 
-      this.connector = new LocalConnector(getBinDir(), this.setup.chain);
+      this.connector = new LocalConnector(getBinDir(), log);
 
       const onVaultReady = () => {
         this.emerald.currentVersion().then((version) => {
@@ -221,6 +230,31 @@ class Services {
       status: gethStatus,
       version: this.setup.geth.clientVersion,
     });
+  }
+}
+
+class BlockchainStatus {
+  constructor(webContents) {
+    this.webContents = webContents;
+  }
+
+  start(chain) {
+    if (chain === 'mainnet') {
+      chain = 'etc';
+    }
+    this.stop();
+    this.listener = new ChainListener(chain, 'localhost:8090');
+    const {webContents} = this;
+    this.listener.subscribe((head) => {
+      webContents.send('store', 'NETWORK/BLOCK', {height: head.height, hash: head.hash});
+    });
+  }
+
+  stop() {
+    if (this.listener) {
+      this.listener.stop();
+    }
+    this.listener = null;
   }
 }
 
