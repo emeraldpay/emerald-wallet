@@ -40,18 +40,25 @@ function createTx(data) {
   tx = tx.set('gas', data.gas ? toBigNumber(data.gas).toNumber() : data.gas);
   tx = tx.set('nonce', data.nonce ? toBigNumber(data.nonce).toNumber() : data.nonce);
   tx = tx.set('timestamp', data.timestamp);
+  if (data.nonce) {
+    tx = tx.set('nonce', toNumber(data.nonce));
+  }
+  if (typeof data.replayProtected !== 'undefined') {
+    tx = tx.set('replayProtected', data.replayProtected);
+  }
+  if (data.data || data.input) {
+    // This is due to great inconsistency in original Eth API (sometimes data, sometimes input)
+    tx = tx.set('data', data.data || data.input);
+  }
 
   // If is not pending, fill in finalized attributes.
   if (typeof data.blockNumber !== 'undefined' && data.blockNumber !== null) {
     tx = tx.merge({
       blockHash: data.blockHash,
       blockNumber: toNumber(data.blockNumber),
-      nonce: toNumber(data.nonce),
-      replayProtected: data.replayProtected,
-      // This is due to great inconsistency in original Eth API (sometimes data, sometimes input)
-      data: (data.data || data.input),
     });
   }
+
   return tx;
 }
 
