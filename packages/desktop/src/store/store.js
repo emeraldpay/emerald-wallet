@@ -42,7 +42,7 @@ export const store = createStore(api);
 
 function refreshAll() {
   const promises = [
-    store.dispatch(accounts.actions.loadPendingTransactions()),
+    // store.dispatch(accounts.actions.loadPendingTransactions()), // TODO: Fix it
     store.dispatch(accounts.actions.loadAccountsList()),
     store.dispatch(history.actions.refreshTrackedTransactions()),
   ];
@@ -62,13 +62,13 @@ export function startSync() {
   store.dispatch(settings.actions.listenPrices());
 
   const promises = [
-    // store.dispatch(network.actions.getGasPrice()),
-    store.dispatch(blockchains.actions.fetchGasPriceAction("etc")),
     store.dispatch(Addressbook.actions.loadAddressBook()),
     store.dispatch(history.actions.init(chainId)),
     store.dispatch(tokens.actions.loadTokenList()),
     store.dispatch(tokens.actions.addDefault(chainId)),
   ];
+
+  supported.forEach((code) => promises.push(store.dispatch(blockchains.actions.fetchGasPriceAction(code))));
 
   if (chain === 'mainnet') {
     promises.push(
@@ -194,7 +194,7 @@ function getInitialScreen() {
 }
 
 Promise
-  .all([onceServicesStart(store), onceChainSet(store)])
+  .all([onceServicesStart(store)])
   .then(startSync);
 checkStatus();
 screenHandlers();

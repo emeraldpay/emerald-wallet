@@ -1,9 +1,9 @@
 import {ActionTypes, FetchGasPriceAction, GasPriceAction} from "./types";
 
-export function setGasPriceAction(blockchainCode: string, gasPrice: number) : GasPriceAction {
+export function setGasPriceAction(blockchainCode: string, gasPrice: string) : GasPriceAction {
   return {
     type: ActionTypes.GAS_PRICE,
-    payload: { blockchain: blockchainCode, gasPrice: gasPrice }
+    payload: { chain: blockchainCode, gasPrice: gasPrice }
   }
 }
 

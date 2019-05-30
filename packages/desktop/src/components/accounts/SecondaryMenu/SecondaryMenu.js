@@ -34,7 +34,7 @@ export default connect(
       // refresh account data
       dispatch(history.actions.refreshTrackedTransactions());
       dispatch(accounts.actions.loadAccountsList());
-      dispatch(accounts.actions.loadPendingTransactions());
+      // dispatch(accounts.actions.loadPendingTransactions()); // TODO: do we need it ?
 
       dispatch(screen.actions.gotoScreen('home'));
     },

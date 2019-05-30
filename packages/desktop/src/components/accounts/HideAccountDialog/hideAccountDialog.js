@@ -23,7 +23,7 @@ export const styles = {
 export class HideAccountDialog extends React.Component {
   render() {
     const {
-      onClose, handleConfirmHide, chain, classes,
+      onClose, handleConfirmHide, classes,
     } = this.props;
 
     return (
@@ -70,9 +70,10 @@ export default connect(
       dispatch(accounts.actions.hideAccount(ownProps.address));
 
       // refresh account data
-      dispatch(history.actions.refreshTrackedTransactions());
-      dispatch(accounts.actions.loadAccountsList());
-      dispatch(accounts.actions.loadPendingTransactions());
+      // TODO: do we need it ???
+      // dispatch(history.actions.refreshTrackedTransactions());
+      // dispatch(accounts.actions.loadAccountsList());
+      // dispatch(accounts.actions.loadPendingTransactions());
       dispatch(screen.actions.gotoScreen('home'));
     },
   })

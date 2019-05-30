@@ -84,10 +84,8 @@ export default connect(
     return ({
       message: state.launcher.getIn(['message', 'text']),
       level: state.launcher.getIn(['message', 'level']),
-      ready: state.launcher.getIn(['geth', 'status']) === 'ready' && state.launcher.getIn(['connector', 'status']) === 'ready',
-      needSetup: state.launcher.get('configured') && (
-        state.launcher.get('terms') !== TERMS_VERSION
-        || isEmpty(state.launcher.getIn(['chain', 'name']))),
+      ready: state.launcher.getIn(['connector', 'status']) === 'ready',
+      needSetup: state.launcher.get('configured') && (state.launcher.get('terms') !== TERMS_VERSION),
     });
   },
   (dispatch, ownProps) => ({})

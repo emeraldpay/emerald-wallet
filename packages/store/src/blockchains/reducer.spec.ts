@@ -8,4 +8,9 @@ describe('blockchains reducer', () => {
     state = reducer(state, { type: ActionTypes.BLOCK, payload: {chain: "etc", height: 114 } });
     expect(state).toEqual(INITIAL_STATE.set("etc", { gasPrice: 0, height: 114 }));
   });
+
+  it('handles Actions.GAS_PRICE', () => {
+    let state = reducer(undefined, { type: ActionTypes.GAS_PRICE, payload: {chain: "etc", gasPrice: 850000 } });
+    expect(state).toEqual(INITIAL_STATE.set("etc", { gasPrice: 850000, height: null }));
+  })
 });

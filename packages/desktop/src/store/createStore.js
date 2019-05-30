@@ -53,7 +53,7 @@ export const createStore = (_api) => {
     applyMiddleware(...storeMiddleware)
   );
 
-  sagaMiddleware.run(blockchains.sagas.gasPriceSaga);
+  sagaMiddleware.run(blockchains.sagas.watchRequestGasPrice, _api);
 
   return store;
 };

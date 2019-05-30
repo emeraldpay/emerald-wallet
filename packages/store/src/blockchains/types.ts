@@ -1,6 +1,6 @@
 export interface IBlockchain {
   height: number | null;
-  gasPrice: any;
+  gasPrice: any | null;
 }
 
 export interface IBlockchainsState extends Map<string, IBlockchain> {

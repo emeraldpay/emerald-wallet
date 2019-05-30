@@ -19,8 +19,8 @@ const handleTrigger = (check, resolve, store) => {
 
 export function onceServicesStart(store) {
   const check = () => {
-    const { terms, geth, connector } = store.getState().launcher.toJS();
-    return terms === TERMS_VERSION && geth.status === 'ready' && connector.status === 'ready';
+    const { terms, connector } = store.getState().launcher.toJS();
+    return terms === TERMS_VERSION && connector.status === 'ready';
   };
 
   return new Promise((resolve, reject) => handleTrigger(check, resolve, store));

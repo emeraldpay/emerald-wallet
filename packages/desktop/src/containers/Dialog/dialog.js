@@ -35,10 +35,10 @@ export default connect(
   }),
   (dispatch, ownProps) => ({
     handleClose: () => {
-      // refresh data when dialogs close
-      dispatch(WalletHistory.actions.refreshTrackedTransactions());
-      dispatch(accounts.actions.loadAccountsList());
-      dispatch(accounts.actions.loadPendingTransactions());
+      // TODO: do we need it ? -  refresh data when dialogs close
+      // dispatch(WalletHistory.actions.refreshTrackedTransactions());
+      // dispatch(accounts.actions.loadAccountsList());
+      // dispatch(accounts.actions.loadPendingTransactions());
 
       dispatch(closeDialog());
     },
