@@ -1006,10 +1006,10 @@
     bignumber.js "8.0.2"
     qs "6.7.0"
 
-"@emeraldplatform/grpc@0.6.0":
-  version "0.6.0"
-  resolved "https://registry.yarnpkg.com/@emeraldplatform/grpc/-/grpc-0.6.0.tgz#92c1f6033e9db9765d4107d56f254c7fa4ba7a48"
-  integrity sha512-aspXglFqn8IbVInCuq6Ault3csGZbubVOJrCNBW2SXj7kI36FyWq6ZjbcZf0e1ANgGAeo7pKv9boU53V2t6lwQ==
+"@emeraldplatform/grpc@0.6.1":
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/@emeraldplatform/grpc/-/grpc-0.6.1.tgz#ddffb80b42fa0b1897aad6e9d92ab68d111f5009"
+  integrity sha512-un0BjIrZi9Tt/BktOBQl9e8WIPDPtYZ4VKuN8ubAvN2hJL6lkHmTwgUFUL0NWH+/3iBxyIcOmQlPGivXVfZ1lA==
   dependencies:
     "@types/google-protobuf" "3.2.7"
     google-protobuf "3.7.1"
