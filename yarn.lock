@@ -1006,15 +1006,17 @@
     bignumber.js "8.0.2"
     qs "6.7.0"
 
-"@emeraldplatform/grpc@0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@emeraldplatform/grpc/-/grpc-0.5.1.tgz#3e8c50d9a05c00487a32f3be7a9423b4c1416a63"
-  integrity sha512-zJ76yLac8G6pVY7vRDvVqKO03InmMD5UJujbRHpcgUBN83DI+qjNbYUrdH4L6+kUwhyWyC2zM70N5i9PcC97Kg==
+"@emeraldplatform/grpc@0.6.0":
+  version "0.6.0"
+  resolved "https://registry.yarnpkg.com/@emeraldplatform/grpc/-/grpc-0.6.0.tgz#92c1f6033e9db9765d4107d56f254c7fa4ba7a48"
+  integrity sha512-aspXglFqn8IbVInCuq6Ault3csGZbubVOJrCNBW2SXj7kI36FyWq6ZjbcZf0e1ANgGAeo7pKv9boU53V2t6lwQ==
   dependencies:
     "@types/google-protobuf" "3.2.7"
     google-protobuf "3.7.1"
     grpc "1.20.3"
+    hash.js "1.1.7"
     protobufjs "6.8.8"
+    text-encoding "0.7.0"
 
 "@emeraldplatform/rpc@^0.5.0-gamma.0", "@emeraldplatform/rpc@^0.5.0-rc.0":
   version "0.5.0-rc.0"
@@ -8407,7 +8409,7 @@ hash-base@^3.0.0:
     inherits "^2.0.1"
     safe-buffer "^5.0.1"
 
-hash.js@^1.0.0, hash.js@^1.0.3:
+hash.js@1.1.7, hash.js@^1.0.0, hash.js@^1.0.3:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/hash.js/-/hash.js-1.1.7.tgz#0babca538e8d4ee4a0f8988d68866537a003cf42"
   integrity sha512-taOaskGt4z4SOANNseOviYDvjEJinIkRgmp7LbKP2YTTmVxWBl87s/uzK9r+44BclBSp2X7K1hqeNfz9JbBeXA==

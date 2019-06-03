@@ -2,8 +2,9 @@ const { TxListener } = require('@emeraldwallet/services');
 const { ipcMain } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 
 class TransactionIpc {
-  constructor(webContents) {
+  constructor(webContents, credentials) {
     this.webContents = webContents;
+    this.credentials = credentials;
   }
 
   stop() {
@@ -14,7 +15,7 @@ class TransactionIpc {
 
   start(chain) {
     this.stop();
-    const subscriber = new TxListener(chain, 'localhost:8090');
+    const subscriber = new TxListener(chain, '127.0.0.1:8090', this.credentials);
     this.subscriber = subscriber;
     const {webContents} = this;
     ipcMain.on('subscribe-tx', (_, hash) => {

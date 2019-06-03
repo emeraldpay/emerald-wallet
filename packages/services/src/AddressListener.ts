@@ -3,7 +3,6 @@ import {
   AnyAddress,
   chainByCode,
   ChainSpec,
-  credentials,
   MultiAddress,
   SingleAddress,
   TrackAccountRequest,
@@ -11,7 +10,7 @@ import {
 } from '@emeraldplatform/grpc';
 import BigNumber from 'bignumber.js';
 import * as grpc from 'grpc';
-import {ClientReadableStream} from 'grpc';
+import {ChannelCredentials, ClientReadableStream} from 'grpc';
 
 type AccountStatusEvent = {
   address: string,
@@ -27,9 +26,8 @@ export class AddressListener {
   chain: ChainSpec;
   response?: ClientReadableStream<AccountStatus>;
 
-  constructor(chain: string, host: string) {
-    const cred = credentials.createInsecure();
-    this.client = new TrackClient(host, cred);
+  constructor(chain: string, host: string, credentials: ChannelCredentials) {
+    this.client = new TrackClient(host, credentials);
     if (chain === 'mainnet') {
       chain = 'etc';
     }
@@ -70,7 +68,7 @@ export class AddressListener {
       response.on('end', () => {
       });
       response.on('error', (err) => {
-        console.warn("response error", err)
+        console.warn("response error addr", err)
       });
       this.response = response;
     });

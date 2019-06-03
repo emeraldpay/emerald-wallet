@@ -3,10 +3,11 @@ const { ipcMain } = require('electron'); // eslint-disable-line import/no-extran
 const log = require('./logger');
 
 class Prices {
-  constructor(webContents) {
+  constructor(webContents, credentials) {
     this.webContents = webContents;
     this.froms = ['ETC', 'ETH', 'MORDEN'];
     this.to = 'USD';
+    this.credentials = credentials;
     ipcMain.on('prices/setCurrency', (event, to) => {
       to = to.toUpperCase();
       log.info('set prices', to);
@@ -21,9 +22,8 @@ class Prices {
 
   start() {
     this.stop();
-    const cred = credentials.createInsecure();
     try {
-      this.client = new PricesClient('localhost:8090', cred);
+      this.client = new PricesClient('localhost:8090', this.credentials);
     } catch (e) {
       log.error('Unable to connect', e);
       return;

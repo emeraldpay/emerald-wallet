@@ -1,13 +1,12 @@
 import {
   chainByCode,
   ChainSpec,
-  credentials,
   TrackTxRequest,
   TrackClient,
   TxStatus
 } from '@emeraldplatform/grpc';
 import * as grpc from 'grpc';
-import {ClientReadableStream} from 'grpc';
+import {ChannelCredentials, ClientReadableStream} from 'grpc';
 
 type TxStatusEvent = {
   txid: string,
@@ -28,9 +27,8 @@ export class TxListener {
   chain: ChainSpec;
   response?: ClientReadableStream<TxStatus>;
 
-  constructor(chain: string, host: string) {
-    const cred = credentials.createInsecure();
-    this.client = new TrackClient(host, cred);
+  constructor(chain: string, host: string, credentials: ChannelCredentials) {
+    this.client = new TrackClient(host, credentials);
     if (chain === 'mainnet') {
       chain = 'etc';
     }
@@ -67,7 +65,7 @@ export class TxListener {
       response.on('end', () => {
       });
       response.on('error', (err) => {
-        console.warn("response error", err)
+        console.warn("response error tx", err)
       });
       this.response = response;
     });

@@ -15,7 +15,7 @@
     "@emeraldplatform/eth-rpc": "^0.5.0-gamma.0",
     "@emeraldplatform/rpc": "^0.5.0-gamma.0",
     "@emeraldplatform/vault": "^0.5.0-gamma.0",
-    "@emeraldplatform/grpc": "0.5.2",
+    "@emeraldplatform/grpc": "0.6.0",
     "google-protobuf": "3.7.1",
     "grpc": "1.20.3",
     "text-encoding": "0.7.0"
