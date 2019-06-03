@@ -41,14 +41,14 @@ const DEFAULT_SETUP = {
 
 
 class Services {
-  constructor(webContents, serverConnect, credentials) {
+  constructor(webContents, serverConnect, apiAccess) {
     this.setup = Object.assign({}, DEFAULT_SETUP);
     this.connectorStatus = STATUS.NOT_STARTED;
     this.gethStatus = STATUS.NOT_STARTED;
     this.notify = new UserNotify(webContents);
     this.emerald = serverConnect.connectEmerald();
     this.serverConnect = serverConnect;
-    this.blockchainStatus = new BlockchainStatus(webContents, credentials);
+    this.blockchainStatus = new BlockchainStatus(webContents, apiAccess);
     log.info(`Run services from ${getBinDir()}`);
   }
 
@@ -234,9 +234,9 @@ class Services {
 }
 
 class BlockchainStatus {
-  constructor(webContents, credentials) {
+  constructor(webContents, apiAccess) {
     this.webContents = webContents;
-    this.credentials = credentials;
+    this.apiAccess = apiAccess;
   }
 
   start(chain) {
@@ -244,7 +244,7 @@ class BlockchainStatus {
       chain = 'etc';
     }
     this.stop();
-    this.listener = new ChainListener(chain, '127.0.0.1:8090', this.credentials);
+    this.listener = this.apiAccess.newChainListener(chain);
     const {webContents} = this;
     this.listener.subscribe((head) => {
       webContents.send('store', 'NETWORK/BLOCK', {height: head.height, hash: head.hash});

@@ -27,8 +27,8 @@ export class TxListener {
   chain: ChainSpec;
   response?: ClientReadableStream<TxStatus>;
 
-  constructor(chain: string, host: string, credentials: ChannelCredentials) {
-    this.client = new TrackClient(host, credentials);
+  constructor(chain: string, client: TrackClient) {
+    this.client = client;
     if (chain === 'mainnet') {
       chain = 'etc';
     }

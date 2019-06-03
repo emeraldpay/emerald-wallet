@@ -3,7 +3,6 @@ import {
   ChainSpec, chainByCode
 } from '@emeraldplatform/grpc';
 
-import { TextEncoder, TextDecoder } from 'text-encoding';
 import {ChannelCredentials, ClientReadableStream} from 'grpc';
 import * as grpc from "grpc";
 
@@ -21,8 +20,8 @@ export class ChainListener {
   chain: ChainSpec;
   response?: ClientReadableStream<ChainHead>;
 
-  constructor(chain: string, host: string, credentials: ChannelCredentials) {
-    this.client = new BlockchainClient(host, credentials);
+  constructor(chain: string, client: BlockchainClient) {
+    this.client = client;
     if (chain === 'mainnet') {
       chain = 'etc';
     }

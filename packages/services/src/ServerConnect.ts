@@ -7,7 +7,7 @@ import {
 } from '@emeraldplatform/eth-rpc';
 import HttpTransportAdapter from './HttpTransport';
 import GrpcTransport from './GrpcTransport';
-import {ChannelCredentials} from "grpc";
+import {BlockchainClient} from "@emeraldplatform/grpc";
 
 const os = require('os');
 
@@ -38,14 +38,14 @@ class ServerConnect {
   locale: any;
   revalidate?: RevalidatingJsonRpc;
   log: any;
-  credentials: ChannelCredentials;
+  blockchainClient: BlockchainClient;
 
-  constructor(chainUrls: any, appVersion: string, locale: any, log: any, credentials: ChannelCredentials) {
+  constructor(chainUrls: any, appVersion: string, locale: any, log: any, blockchainClient: BlockchainClient) {
     this.log = log;
     this.chainUrls = chainUrls;
     this.appVersion = appVersion;
     this.locale = locale;
-    this.credentials = credentials;
+    this.blockchainClient = blockchainClient;
     this.headers = {
       'User-Agent': `EmeraldWallet/${appVersion}`,
     };
@@ -101,8 +101,7 @@ class ServerConnect {
     localRevalidate.start();
 
     return new EthRpc(
-      new RotatingJsonRpc(localRevalidate, new DefaultJsonRpc(new GrpcTransport(name, '127.0.0.1:8090', this.credentials)))
-      // new RotatingJsonRpc(localRevalidate, new DefaultJsonRpc(this.createHttpTransport(chain.url)))
+      new RotatingJsonRpc(localRevalidate, new DefaultJsonRpc(new GrpcTransport(name, this.blockchainClient)))
     );
   }
 
