@@ -1,12 +1,11 @@
 import {JsonRpcRequest, Transport} from '@emeraldplatform/rpc';
 import {
-  credentials,
   // @ts-ignore
-  BlockchainClientPb as BlockchainClient,
+  BlockchainClient,
   CallBlockchainRequest,
   CallBlockchainItem,
   CallBlockchainReplyItem,
-  ChainSpec, chainByCode
+  ChainSpec, chainByCode,
 } from '@emeraldplatform/grpc';
 import { TextEncoder, TextDecoder } from 'text-encoding';
 import {ServiceError} from "grpc";
@@ -21,9 +20,8 @@ class GrpcTransport implements Transport {
   client: BlockchainClient;
   chain: ChainSpec;
 
-  constructor(chain: string, host: string) {
-    const cred = credentials.createInsecure();
-    this.client = new BlockchainClient(host, cred);
+  constructor(chain: string, client: BlockchainClient) {
+    this.client = client;
     if (chain === 'mainnet') {
       chain = 'etc';
     }
@@ -41,19 +39,20 @@ class GrpcTransport implements Transport {
     });
 
     return new Promise((resolve, reject) => {
-      const response = this.client.call(request);
-      const result: Array<any> = [];
-      response.on('data', (data: CallBlockchainReplyItem) => {
-        const bytes: Uint8Array = data.getPayload_asU8();
-        let json = JSON.parse(decoder.decode(bytes));
-        result.push(json);
+      this.client.call(request,(response) => {
+        const result: Array<any> = [];
+        response.on('data', (data: CallBlockchainReplyItem) => {
+          const bytes: Uint8Array = data.getPayload_asU8();
+          let json = JSON.parse(decoder.decode(bytes));
+          result.push(json);
+        });
+        response.on('end', () => {
+          resolve(result);
+        });
+        response.on('error', (err: ServiceError) => {
+          reject(err)
+        })
       });
-      response.on('end', () => {
-        resolve(result);
-      });
-      response.on('error', (err: ServiceError) => {
-        reject(err)
-      })
     });
   }
 }

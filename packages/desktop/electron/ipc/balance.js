@@ -2,8 +2,9 @@ const { AddressListener } = require('@emeraldwallet/services');
 const { ipcMain } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 
 class BalanceIpc {
-  constructor(webContents) {
+  constructor(webContents, apiAccess) {
     this.webContents = webContents;
+    this.apiAccess = apiAccess;
   }
 
   stop() {
@@ -14,7 +15,7 @@ class BalanceIpc {
 
   start(chain) {
     this.stop();
-    const subscriber = new AddressListener(chain, 'localhost:8090');
+    const subscriber = this.apiAccess.newAddressListener(chain);
     this.subscriber = subscriber;
     const {webContents} = this;
     ipcMain.on('subscribe-balance', (_, addresses) => {

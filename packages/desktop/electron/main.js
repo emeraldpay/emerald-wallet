@@ -1,6 +1,7 @@
 require('babel-polyfill'); // eslint-disable-line import/no-unresolved
 require('regenerator-runtime/runtime');
-const { ServerConnect } = require('@emeraldwallet/services');
+const { ServerConnect, EmeraldApiAccessDev} = require('@emeraldwallet/services');
+const {emeraldCredentials} = require('@emeraldplatform/grpc');
 const { app, ipcMain, session } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path'); // eslint-disable-line
 
@@ -25,13 +26,15 @@ if (isDev) {
   app.setPath('userData', path.resolve('./.emerald-dev/userData'));
 }
 
+const apiAccess = new EmeraldApiAccessDev();
+
 const settings = new Settings();
 
 global.ledger = new LedgerApi();
 global.launcherConfig = {
   get: () => settings.toJS(),
 };
-const serverConnect = new ServerConnect(URL_FOR_CHAIN, app.getVersion(), app.getLocale(), log);
+const serverConnect = new ServerConnect(URL_FOR_CHAIN, app.getVersion(), app.getLocale(), log, apiAccess.blockchainClient);
 global.serverConnect = serverConnect;
 
 log.info('userData: ', app.getPath('userData'));
@@ -55,7 +58,7 @@ app.on('ready', () => {
 
 
   const browserWindow = mainWindow.createWindow(isDev);
-  const services = new Services(browserWindow.webContents, serverConnect);
+  const services = new Services(browserWindow.webContents, serverConnect, apiAccess);
   ipc({ settings, services });
   app.on('quit', () => services.shutdown());
 
@@ -64,13 +67,13 @@ app.on('ready', () => {
     .then(() => ipc({ settings, services }))
     .catch((err) => log.error('Invalid settings', err));
 
-  const prices = new Prices(browserWindow.webContents, isDev);
+  const prices = new Prices(browserWindow.webContents, apiAccess);
   prices.start();
 
-  const balanceIpc = new BalanceIpc(browserWindow.webContents);
+  const balanceIpc = new BalanceIpc(browserWindow.webContents, apiAccess);
   balanceIpc.start(settings.getChain().name);
 
-  const transactionIpc = new TransactionIpc(browserWindow.webContents);
+  const transactionIpc = new TransactionIpc(browserWindow.webContents, apiAccess);
   transactionIpc.start(settings.getChain().name);
 });
 

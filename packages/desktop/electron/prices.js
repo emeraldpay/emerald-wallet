@@ -1,12 +1,13 @@
-const { PricesClient, GetRateRequest, credentials } = require('@emeraldplatform/grpc'); // eslint-disable-line import/no-unresolved
+const { PricesListener } = require('@emeraldwallet/services');
 const { ipcMain } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const log = require('./logger');
 
 class Prices {
-  constructor(webContents) {
+  constructor(webContents, apiAccess) {
     this.webContents = webContents;
     this.froms = ['ETC', 'ETH', 'MORDEN'];
     this.to = 'USD';
+    this.apiAccess = apiAccess;
     ipcMain.on('prices/setCurrency', (event, to) => {
       to = to.toUpperCase();
       log.info('set prices', to);
@@ -21,40 +22,19 @@ class Prices {
 
   start() {
     this.stop();
-    const cred = credentials.createInsecure();
-    try {
-      this.client = new PricesClient('localhost:8090', cred);
-    } catch (e) {
-      log.error('Unable to connect', e);
-      return;
-    }
-    const req = new GetRateRequest();
-    this.froms.forEach((from) => req.addFrom(from));
-    req.setTo(this.to);
+    this.listener = this.apiAccess.newPricesListener();
     log.info(`Listen for prices, to ${this.to}`);
     const self = this;
-    this.client.streamRates(req, (stream) => {
-      stream.on('data', (data) => {
-        try {
-          const result = {};
-          data.getItemsList().forEach((item) => {
-            if (item.getTo() === self.to && self.froms.indexOf(item.getFrom()) >= 0) {
-              result[item.getFrom()] = item.getRate();
-            }
-          });
-          self.webContents.send('prices/rate', result);
-        } catch (e) {
-          log.warn('Failed to send prices', e);
-        }
-      });
+    this.listener.subscribe(this.froms, this.to, (result) => {
+      self.webContents.send('prices/rate', result);
     });
   }
 
   stop() {
-    if (this.client) {
+    if (this.listener) {
       log.info('Closing prices listener');
-      this.client.close();
-      this.client = null;
+      this.listener.close();
+      this.listener = null;
     }
   }
 }
