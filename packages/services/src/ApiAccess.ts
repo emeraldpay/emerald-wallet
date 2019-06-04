@@ -5,7 +5,7 @@ import {ChainListener} from "./ChainListener";
 import {TxListener} from "./TxListener";
 import {PriceListener} from "./PricesListener";
 
-const certDevelopment = Buffer.from("-----BEGIN CERTIFICATE-----\n" +
+const certDevelopment = "-----BEGIN CERTIFICATE-----\n" +
   "MIIFmDCCA4CgAwIBAgIBATANBgkqhkiG9w0BAQsFADBsMQswCQYDVQQGEwJDSDEM\n" +
   "MAoGA1UEBxMDWnVnMRcwFQYDVQQKEw5FbWVyYWxkUGF5IERldjEaMBgGA1UECxMR\n" +
   "RW1lcmFsZFBheSBEZXYgQ0ExGjAYBgNVBAMTEWNhLmVtZXJhbGRwYXkuZGV2MB4X\n" +
@@ -36,7 +36,7 @@ const certDevelopment = Buffer.from("-----BEGIN CERTIFICATE-----\n" +
   "oOk0aiq7BErxKEV7FvmQMHB251xAFkVXIrhv7ObtWqk4n5pS6/NocclwcFqhkjpu\n" +
   "2tq1OLVhNNyRpwjLygMQUt42Ok4j/L+A1uEzNOp17/Yv6gsB6m0eUuBaLN6lKrvF\n" +
   "VKI3QbdAxjkzJ3Zzas9a87SJWrbBgWCeHq0xNECt0RZOX1OfriOofLrmUbI=\n" +
-  "-----END CERTIFICATE-----\n", "utf8");
+  "-----END CERTIFICATE-----\n";
 
 export class EmeraldApiAccess {
   private readonly address: string;
@@ -45,7 +45,7 @@ export class EmeraldApiAccess {
   public readonly blockchainClient: BlockchainClient;
   public readonly pricesClient: MarketClient;
 
-  constructor(addr: string, cert: Buffer) {
+  constructor(addr: string, cert: string) {
     this.address = addr;
     this.credentials = emeraldCredentials(addr, cert);
     this.blockchainClient = new BlockchainClient(addr, this.credentials);
