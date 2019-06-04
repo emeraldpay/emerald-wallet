@@ -1,5 +1,5 @@
 import {AddressListener} from "./AddressListener";
-import {BlockchainClient, emeraldCredentials, PricesClient} from "@emeraldplatform/grpc";
+import {BlockchainClient, emeraldCredentials, MarketClient} from "@emeraldplatform/grpc";
 import {ChannelCredentials} from "grpc";
 import {ChainListener} from "./ChainListener";
 import {TxListener} from "./TxListener";
@@ -43,13 +43,13 @@ export class EmeraldApiAccess {
   private readonly credentials: ChannelCredentials;
 
   public readonly blockchainClient: BlockchainClient;
-  public readonly pricesClient: PricesClient;
+  public readonly pricesClient: MarketClient;
 
   constructor(addr: string, cert: Buffer) {
     this.address = addr;
     this.credentials = emeraldCredentials(addr, cert);
     this.blockchainClient = new BlockchainClient(addr, this.credentials);
-    this.pricesClient = new PricesClient(addr, this.credentials);
+    this.pricesClient = new MarketClient(addr, this.credentials);
   }
 
   newAddressListener(chain: string): AddressListener {
