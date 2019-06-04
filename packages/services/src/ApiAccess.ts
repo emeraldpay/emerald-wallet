@@ -4,6 +4,9 @@ import {ChannelCredentials} from "grpc";
 import {ChainListener} from "./ChainListener";
 import {TxListener} from "./TxListener";
 import {PriceListener} from "./PricesListener";
+import * as os from 'os';
+import {app} from 'electron';
+
 
 const certDevelopment = "-----BEGIN CERTIFICATE-----\n" +
   "MIIFmDCCA4CgAwIBAgIBATANBgkqhkiG9w0BAQsFADBsMQswCQYDVQQGEwJDSDEM\n" +
@@ -47,7 +50,14 @@ export class EmeraldApiAccess {
 
   constructor(addr: string, cert: string) {
     this.address = addr;
-    this.credentials = emeraldCredentials(addr, cert);
+    const platform = [os.platform(), os.release(), os.arch(), app.getLocale()].join('; ');
+    const agent = [
+      `Electron/${process.versions.electron} (${platform})`,
+      `EmeraldWallet/${app.getVersion()} (+https://emeraldwallet.io)`,
+      `Chrome/${process.versions.chrome}`
+    ];
+
+    this.credentials = emeraldCredentials(addr, cert, agent);
     this.blockchainClient = new BlockchainClient(addr, this.credentials);
     this.pricesClient = new MarketClient(addr, this.credentials);
   }

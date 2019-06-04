@@ -1,7 +1,6 @@
 require('babel-polyfill'); // eslint-disable-line import/no-unresolved
 require('regenerator-runtime/runtime');
 const { ServerConnect, EmeraldApiAccessDev} = require('@emeraldwallet/services');
-const {emeraldCredentials} = require('@emeraldplatform/grpc');
 const { app, ipcMain, session } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path'); // eslint-disable-line
 
@@ -26,16 +25,12 @@ if (isDev) {
   app.setPath('userData', path.resolve('./.emerald-dev/userData'));
 }
 
-const apiAccess = new EmeraldApiAccessDev();
-
 const settings = new Settings();
 
 global.ledger = new LedgerApi();
 global.launcherConfig = {
   get: () => settings.toJS(),
 };
-const serverConnect = new ServerConnect(URL_FOR_CHAIN, app.getVersion(), app.getLocale(), log, apiAccess.blockchainClient);
-global.serverConnect = serverConnect;
 
 log.info('userData: ', app.getPath('userData'));
 log.info(`Chain: ${JSON.stringify(settings.getChain())}`);
@@ -49,6 +44,9 @@ startProtocolHandler();
 app.on('ready', () => {
   log.info('Starting Emerald', app.getVersion());
 
+  const apiAccess = new EmeraldApiAccessDev();
+  const serverConnect = new ServerConnect(URL_FOR_CHAIN, app.getVersion(), app.getLocale(), log, apiAccess.blockchainClient);
+  global.serverConnect = serverConnect;
   serverConnect.init(process.versions);
 
   session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
