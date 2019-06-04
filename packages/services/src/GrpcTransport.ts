@@ -39,7 +39,7 @@ class GrpcTransport implements Transport {
     });
 
     return new Promise((resolve, reject) => {
-      this.client.call(request,(response) => {
+      this.client.nativeCall(request,(response) => {
         const result: Array<any> = [];
         response.on('data', (data: CallBlockchainReplyItem) => {
           const bytes: Uint8Array = data.getPayload_asU8();

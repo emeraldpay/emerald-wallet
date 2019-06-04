@@ -6,7 +6,7 @@ import {
   MultiAddress,
   SingleAddress,
   TrackAccountRequest,
-  TrackClient
+  BlockchainClient
 } from '@emeraldplatform/grpc';
 import BigNumber from 'bignumber.js';
 import * as grpc from 'grpc';
@@ -22,11 +22,11 @@ interface HeadListener {
 }
 
 export class AddressListener {
-  client: TrackClient;
+  client: BlockchainClient;
   chain: ChainSpec;
   response?: ClientReadableStream<AccountStatus>;
 
-  constructor(chain: string, client: TrackClient) {
+  constructor(chain: string, client: BlockchainClient) {
     this.client = client;
     if (chain === 'mainnet') {
       chain = 'etc';

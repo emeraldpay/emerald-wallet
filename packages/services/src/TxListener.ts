@@ -2,7 +2,7 @@ import {
   chainByCode,
   ChainSpec,
   TrackTxRequest,
-  TrackClient,
+  BlockchainClient,
   TxStatus
 } from '@emeraldplatform/grpc';
 import * as grpc from 'grpc';
@@ -23,11 +23,11 @@ interface TxStatusHandler {
 }
 
 export class TxListener {
-  client: TrackClient;
+  client: BlockchainClient;
   chain: ChainSpec;
   response?: ClientReadableStream<TxStatus>;
 
-  constructor(chain: string, client: TrackClient) {
+  constructor(chain: string, client: BlockchainClient) {
     this.client = client;
     if (chain === 'mainnet') {
       chain = 'etc';
