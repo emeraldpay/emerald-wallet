@@ -45,7 +45,7 @@ export class AddressListener {
     const pbMultiAddr = new MultiAddress();
     addresses.forEach((it) => {
       const pbAddr = new SingleAddress();
-      pbAddr.setAddress(Uint8Array.from(Buffer.from(it.substring(2), 'hex')));
+      pbAddr.setAddress(it);
       pbMultiAddr.addAddresses(pbAddr);
     });
     const pbAnyAddr = new AnyAddress();
