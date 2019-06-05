@@ -1,6 +1,6 @@
 import {
   GetRateReply, GetRateRequest,
-  PricesClient,
+  MarketClient,
 } from "@emeraldplatform/grpc";
 import {ClientReadableStream} from "grpc";
 import * as grpc from "grpc";
@@ -8,10 +8,10 @@ import * as grpc from "grpc";
 export type PriceHandler = (prices: {[key: string]: string}) => void;
 
 export class PriceListener {
-  client: PricesClient;
+  client: MarketClient;
   response?: ClientReadableStream<GetRateReply>;
 
-  constructor(client: PricesClient) {
+  constructor(client: MarketClient) {
     this.client = client;
   }
 

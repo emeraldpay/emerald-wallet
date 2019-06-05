@@ -1,11 +1,14 @@
 import {AddressListener} from "./AddressListener";
-import {BlockchainClient, emeraldCredentials, PricesClient, TrackClient} from "@emeraldplatform/grpc";
+import {BlockchainClient, emeraldCredentials, MarketClient} from "@emeraldplatform/grpc";
 import {ChannelCredentials} from "grpc";
 import {ChainListener} from "./ChainListener";
 import {TxListener} from "./TxListener";
 import {PriceListener} from "./PricesListener";
+import * as os from 'os';
+import {app} from 'electron';
 
-const certDevelopment = Buffer.from("-----BEGIN CERTIFICATE-----\n" +
+
+const certDevelopment = "-----BEGIN CERTIFICATE-----\n" +
   "MIIFmDCCA4CgAwIBAgIBATANBgkqhkiG9w0BAQsFADBsMQswCQYDVQQGEwJDSDEM\n" +
   "MAoGA1UEBxMDWnVnMRcwFQYDVQQKEw5FbWVyYWxkUGF5IERldjEaMBgGA1UECxMR\n" +
   "RW1lcmFsZFBheSBEZXYgQ0ExGjAYBgNVBAMTEWNhLmVtZXJhbGRwYXkuZGV2MB4X\n" +
@@ -36,26 +39,31 @@ const certDevelopment = Buffer.from("-----BEGIN CERTIFICATE-----\n" +
   "oOk0aiq7BErxKEV7FvmQMHB251xAFkVXIrhv7ObtWqk4n5pS6/NocclwcFqhkjpu\n" +
   "2tq1OLVhNNyRpwjLygMQUt42Ok4j/L+A1uEzNOp17/Yv6gsB6m0eUuBaLN6lKrvF\n" +
   "VKI3QbdAxjkzJ3Zzas9a87SJWrbBgWCeHq0xNECt0RZOX1OfriOofLrmUbI=\n" +
-  "-----END CERTIFICATE-----\n", "utf8");
+  "-----END CERTIFICATE-----\n";
 
 export class EmeraldApiAccess {
   private readonly address: string;
   private readonly credentials: ChannelCredentials;
 
   public readonly blockchainClient: BlockchainClient;
-  public readonly trackClient: TrackClient;
-  public readonly pricesClient: PricesClient;
+  public readonly pricesClient: MarketClient;
 
-  constructor(addr: string, cert: Buffer) {
+  constructor(addr: string, cert: string, id: string) {
     this.address = addr;
-    this.credentials = emeraldCredentials(addr, cert);
+    const platform = [os.platform(), os.release(), os.arch(), app.getLocale()].join('; ');
+    const agent = [
+      `Electron/${process.versions.electron} (${platform})`,
+      `EmeraldWallet/${app.getVersion()} (+https://emeraldwallet.io)`,
+      `Chrome/${process.versions.chrome}`
+    ];
+
+    this.credentials = emeraldCredentials(addr, cert, agent, id);
     this.blockchainClient = new BlockchainClient(addr, this.credentials);
-    this.trackClient = new TrackClient(addr, this.credentials);
-    this.pricesClient = new PricesClient(addr, this.credentials);
+    this.pricesClient = new MarketClient(addr, this.credentials);
   }
 
   newAddressListener(chain: string): AddressListener {
-    return new AddressListener(chain, this.trackClient);
+    return new AddressListener(chain, this.blockchainClient);
   }
 
   newChainListener(chain: string): ChainListener {
@@ -63,7 +71,7 @@ export class EmeraldApiAccess {
   }
 
   newTxListener(chain: string): TxListener {
-    return new TxListener(chain, this.trackClient)
+    return new TxListener(chain, this.blockchainClient)
   }
 
   newPricesListener(): PriceListener {
@@ -73,7 +81,7 @@ export class EmeraldApiAccess {
 
 export class EmeraldApiAccessDev extends EmeraldApiAccess {
 
-  constructor() {
-    super("127.0.0.1:8090", certDevelopment);
+  constructor(id: string) {
+    super("127.0.0.1:8090", certDevelopment, id);
   }
 }

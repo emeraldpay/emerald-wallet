@@ -33,13 +33,13 @@ class GrpcTransport implements Transport {
     req.forEach((json) => {
       const item = new CallBlockchainItem();
       item.setId(json.id);
-      item.setName(json.method);
+      item.setTarget(json.method);
       item.setPayload(encoder.encode(JSON.stringify(json.params)));
       request.addItems(item);
     });
 
     return new Promise((resolve, reject) => {
-      this.client.call(request,(response) => {
+      this.client.nativeCall(request,(response) => {
         const result: Array<any> = [];
         response.on('data', (data: CallBlockchainReplyItem) => {
           const bytes: Uint8Array = data.getPayload_asU8();

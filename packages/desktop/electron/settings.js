@@ -1,9 +1,11 @@
 const Store = require('electron-store');
+const uuid = require('uuid/v4');
 const { URL_FOR_CHAIN } = require('./utils');
 
 const DEFAULTS = {
   version: 1,
   terms: 'none',
+  id: uuid(),
 };
 
 class Settings {
@@ -36,6 +38,10 @@ class Settings {
   setTerms(v) {
     this.settings.set('terms', v);
     return this;
+  }
+
+  getId() {
+    return this.settings.get('id');
   }
 }
 
