@@ -1,6 +1,6 @@
 require('babel-polyfill'); // eslint-disable-line import/no-unresolved
 require('regenerator-runtime/runtime');
-const { ServerConnect } = require('@emeraldwallet/services');
+const { ServerConnect, EmeraldApiAccessDev} = require('@emeraldwallet/services');
 const { app, ipcMain, session } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path'); // eslint-disable-line
 
@@ -32,8 +32,6 @@ global.ledger = new LedgerApi();
 global.launcherConfig = {
   get: () => settings.toJS(),
 };
-const serverConnect = new ServerConnect(URL_FOR_CHAIN, app.getVersion(), app.getLocale(), log);
-global.serverConnect = serverConnect;
 
 log.info('userData: ', app.getPath('userData'));
 log.info(`Chain: ${JSON.stringify(settings.getChain())}`);
@@ -47,6 +45,9 @@ startProtocolHandler();
 app.on('ready', () => {
   log.info('Starting Emerald', app.getVersion());
 
+  const apiAccess = new EmeraldApiAccessDev(settings.getId());
+  const serverConnect = new ServerConnect(URL_FOR_CHAIN, app.getVersion(), app.getLocale(), log, apiAccess.blockchainClient);
+  global.serverConnect = serverConnect;
   serverConnect.init(process.versions);
 
   session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
@@ -56,10 +57,10 @@ app.on('ready', () => {
 
 
   const browserWindow = mainWindow.createWindow(isDev);
-  const services = new Services(browserWindow.webContents, serverConnect);
+  const services = new Services(browserWindow.webContents, serverConnect, apiAccess);
   ipc({ settings, services });
 
-  const services2 = createServices2(browserWindow.webContents);
+  const services2 = createServices2(browserWindow.webContents, apiAccess);
 
   app.on('quit', () => {
     services.shutdown();
@@ -74,13 +75,13 @@ app.on('ready', () => {
     .then(() => ipc({ settings, services }))
     .catch((err) => log.error('Invalid settings', err));
 
-  const prices = new Prices(browserWindow.webContents, isDev);
+  const prices = new Prices(browserWindow.webContents, apiAccess);
   prices.start();
 
-  const balanceIpc = new BalanceIpc(browserWindow.webContents);
+  const balanceIpc = new BalanceIpc(browserWindow.webContents, apiAccess);
   balanceIpc.start(settings.getChain().name);
 
-  const transactionIpc = new TransactionIpc(browserWindow.webContents);
+  const transactionIpc = new TransactionIpc(browserWindow.webContents, apiAccess);
   transactionIpc.start(settings.getChain().name);
 });
 

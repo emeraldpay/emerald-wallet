@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { ReceiveDialog } from '@emeraldwallet/ui';
-
 import WaitForSign from '../../components/tx/WaitForSignDialog/waitForSignDialog';
 import createLogger from '../../utils/logger';
 import TokensDialog from '../../components/tokens/TokensDialog';
@@ -30,8 +29,8 @@ const Dialog = ({ dialog, item, handleClose }) => {
 
 export default connect(
   (state, ownProps) => ({
-    dialog: state.wallet.screen.get('dialog'),
-    item: state.wallet.screen.get('dialogItem'),
+    dialog: state.screen.get('dialog'),
+    item: state.screen.get('dialogItem'),
   }),
   (dispatch, ownProps) => ({
     handleClose: () => {

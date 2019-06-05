@@ -1,13 +1,12 @@
 import {
   chainByCode,
   ChainSpec,
-  credentials,
   TrackTxRequest,
-  TrackClient,
+  BlockchainClient,
   TxStatus
 } from '@emeraldplatform/grpc';
 import * as grpc from 'grpc';
-import {ClientReadableStream} from 'grpc';
+import {ChannelCredentials, ClientReadableStream} from 'grpc';
 
 type TxStatusEvent = {
   txid: string,
@@ -24,13 +23,12 @@ interface TxStatusHandler {
 }
 
 export class TxListener {
-  client: TrackClient;
+  client: BlockchainClient;
   chain: ChainSpec;
   response?: ClientReadableStream<TxStatus>;
 
-  constructor(chain: string, host: string) {
-    const cred = credentials.createInsecure();
-    this.client = new TrackClient(host, cred);
+  constructor(chain: string, client: BlockchainClient) {
+    this.client = client;
     if (chain === 'mainnet') {
       chain = 'etc';
     }
@@ -47,19 +45,20 @@ export class TxListener {
   subscribe(hash: string, handler: TxStatusHandler) {
     const request = new TrackTxRequest();
     request.setChain(this.chain.id);
-    request.setId(Uint8Array.from(Buffer.from(hash.substring(2), 'hex')));
+    request.setTxid(hash);
     request.setConfirmations(12);
 
     this.client.trackTx(request, (response: grpc.ClientReadableStream<TxStatus>) => {
       response.on('data', (data: TxStatus) => {
-        if (handler) {
+        const block = data.getBlock();
+        if (handler && block) {
           handler({
-            txid: '0x' + Buffer.from(data.getId_asU8()).toString('hex'),
+            txid: data.getTxid(),
             broadcasted: data.getBroadcasted(),
             mined: data.getMined(),
-            blockHash: Buffer.from(data.getBlockhash_asU8()).toString('hex'),
-            blockNumber: data.getBlockheight(),
-            timestamp: data.getBlocktimestamp(),
+            blockHash: Buffer.from(block.getHash_asU8()).toString('hex'),
+            blockNumber: block.getHeight(),
+            timestamp: block.getTimestamp(),
             confirmations: data.getConfirmations(),
           })
         }
@@ -67,7 +66,7 @@ export class TxListener {
       response.on('end', () => {
       });
       response.on('error', (err) => {
-        console.warn("response error", err)
+        console.warn("response error tx", err)
       });
       this.response = response;
     });

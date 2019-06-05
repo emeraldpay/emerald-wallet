@@ -2,7 +2,7 @@ import React from 'react';
 import {Provider} from 'react-redux';
 import { I18nextProvider } from 'react-i18next';
 import { Theme } from '@emeraldplatform/ui';
-import {ThemeProvider} from '@material-ui/styles';
+import { ThemeProvider } from '@material-ui/styles';
 
 import Header from '../../components/layout/Header';
 import NotificationBar from '../../components/layout/NotificationBar';
@@ -21,7 +21,7 @@ const App = () => (
     <Provider store={ store }>
       <ThemeProvider theme={ Theme }>
         <div style={{height: '100%', backgroundColor: Theme.palette.background.default}} className="application">
-          {store.getState().wallet.screen.get('screen') !== 'paper-wallet' && <Header/>}
+          {store.getState().screen.get('screen') !== 'paper-wallet' && <Header/>}
           <div style={{margin: '20px auto', maxWidth}}>
             <Screen />
           </div>

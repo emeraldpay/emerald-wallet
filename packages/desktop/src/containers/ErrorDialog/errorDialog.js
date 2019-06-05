@@ -10,10 +10,11 @@ export default connect(
     };
 
     if (props.open) {
+      const err = screen.selectors.getError(state);
       props = {
         ...props,
-        error: screen.selectors.getError(state),
-        message: screen.selectors.getError(state).message,
+        error: err,
+        message: err && err.message,
       };
     }
 

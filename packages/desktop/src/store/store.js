@@ -8,7 +8,6 @@ import { intervalRates } from './config';
 import history from './wallet/history';
 import accounts from './vault/accounts';
 import network from './network';
-// import screen from './wallet/screen';
 import settings from './wallet/settings';
 import tokens from './vault/tokens';
 import ledger from './ledger';
@@ -68,6 +67,7 @@ export function startSync() {
     store.dispatch(history.actions.refreshTrackedTransactions()),
   ];
 
+  // request gas price for each chain
   supported.forEach((code) => promises.push(store.dispatch(blockchains.actions.fetchGasPriceAction(code))));
 
   if (chain === 'mainnet') {
@@ -115,6 +115,7 @@ export function electronToStore() {
   return (dispatch) => {
     log.debug('Running launcher listener for Redux');
     ipcRenderer.on('store', (event, type, message) => {
+      log.debug(`Got from IPC event: ${event} type: ${type} message: ${JSON.stringify(message)}`);
       dispatch({
         type: type,
         payload: message,
@@ -152,20 +153,21 @@ export function screenHandlers() {
   let prevScreen = null;
   store.subscribe(() => {
     const state = store.getState();
-    const curScreen = state.wallet.screen.get('screen');
+    const curScreen = screen.selectors.getCurrentScreen(state);
     const justOpened = prevScreen !== curScreen;
     prevScreen = curScreen;
     if (justOpened) {
-      if (
-        curScreen === 'create-tx'
-        || curScreen === 'add-from-ledger'
-        || curScreen === 'landing-add-from-ledger'
-      ) {
-        store.dispatch(ledger.actions.setWatch(true));
-        store.dispatch(ledger.actions.watchConnection());
-      } else {
-        store.dispatch(ledger.actions.setWatch(false));
-      }
+      // TODO: Fix it
+      // if (
+      //   curScreen === 'create-tx'
+      //   || curScreen === 'add-from-ledger'
+      //   || curScreen === 'landing-add-from-ledger'
+      // ) {
+      //   store.dispatch(ledger.actions.setWatch(true));
+      //   store.dispatch(ledger.actions.watchConnection());
+      // } else {
+      //   store.dispatch(ledger.actions.setWatch(false));
+      // }
     }
   });
 }

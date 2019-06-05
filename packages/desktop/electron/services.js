@@ -40,13 +40,14 @@ const DEFAULT_SETUP = {
 
 
 class Services {
-  constructor(webContents, serverConnect) {
+  constructor(webContents, serverConnect, apiAccess) {
     this.setup = Object.assign({}, DEFAULT_SETUP);
     this.connectorStatus = STATUS.NOT_STARTED;
     this.gethStatus = STATUS.NOT_STARTED;
     this.notify = new UserNotify(webContents);
     this.emerald = serverConnect.connectEmerald();
     this.serverConnect = serverConnect;
+
     log.info(`Run services from ${getBinDir()}`);
   }
 
@@ -229,7 +230,6 @@ class Services {
     });
   }
 }
-
 
 module.exports = {
   Services,

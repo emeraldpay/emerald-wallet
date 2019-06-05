@@ -28,7 +28,7 @@ import MultiCreateTransaction from '../MultiCreateTransaction';
 const log = createLogger('screen');
 
 const Screen = (props) => {
-  log.debug('Show screen: ', screen);
+  log.debug('Show screen: ', props.screen);
 
   if (props.screen === null) {
     return (<div>

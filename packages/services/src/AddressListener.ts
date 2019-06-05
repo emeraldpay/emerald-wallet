@@ -1,17 +1,17 @@
 import {
-  AccountStatus,
+  AddressStatus,
   AnyAddress,
   chainByCode,
   ChainSpec,
-  credentials,
   MultiAddress,
   SingleAddress,
-  TrackAccountRequest,
-  TrackClient
+  TrackAddressRequest,
+  BlockchainClient,
+  Asset
 } from '@emeraldplatform/grpc';
 import BigNumber from 'bignumber.js';
 import * as grpc from 'grpc';
-import {ClientReadableStream} from 'grpc';
+import {ChannelCredentials, ClientReadableStream} from 'grpc';
 
 type AccountStatusEvent = {
   address: string,
@@ -23,13 +23,12 @@ interface HeadListener {
 }
 
 export class AddressListener {
-  client: TrackClient;
+  client: BlockchainClient;
   chain: ChainSpec;
-  response?: ClientReadableStream<AccountStatus>;
+  response?: ClientReadableStream<AddressStatus>;
 
-  constructor(chain: string, host: string) {
-    const cred = credentials.createInsecure();
-    this.client = new TrackClient(host, cred);
+  constructor(chain: string, client: BlockchainClient) {
+    this.client = client;
     if (chain === 'mainnet') {
       chain = 'etc';
     }
@@ -47,22 +46,26 @@ export class AddressListener {
     const pbMultiAddr = new MultiAddress();
     addresses.forEach((it) => {
       const pbAddr = new SingleAddress();
-      pbAddr.setAddress(Uint8Array.from(Buffer.from(it.substring(2), 'hex')));
+      pbAddr.setAddress(it);
       pbMultiAddr.addAddresses(pbAddr);
     });
     const pbAnyAddr = new AnyAddress();
     pbAnyAddr.setAddressMulti(pbMultiAddr);
 
-    const request = new TrackAccountRequest();
-    request.setChain(this.chain.id);
+    const asset = new Asset();
+    asset.setChain(this.chain.id);
+    asset.setCode("Ether");
+    const request = new TrackAddressRequest();
+    request.setAsset(asset);
     request.setAddress(pbAnyAddr);
-    request.setTransactions(false);
+    request.setIncludeTransactions(false);
 
-    this.client.trackAccount(request, (response: grpc.ClientReadableStream<AccountStatus>) => {
-      response.on('data', (data: AccountStatus) => {
-        if (handler) {
+    this.client.trackAddress(request, (response: grpc.ClientReadableStream<AddressStatus>) => {
+      response.on('data', (data: AddressStatus) => {
+        let address = data.getAddress();
+        if (handler && data && address) {
           handler({
-            address: '0x' + Buffer.from(data.getAddress_asU8()).toString('hex'),
+            address: address.getAddress(),
             balance: new BigNumber(Buffer.from(data.getBalance_asU8()).toString('hex'), 16).toString()
           })
         }
@@ -70,7 +73,7 @@ export class AddressListener {
       response.on('end', () => {
       });
       response.on('error', (err) => {
-        console.warn("response error", err)
+        console.warn("response error addr", err)
       });
       this.response = response;
     });

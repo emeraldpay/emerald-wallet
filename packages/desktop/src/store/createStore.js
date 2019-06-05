@@ -1,4 +1,5 @@
 import thunkMiddleware from 'redux-thunk';
+import {fromJS} from 'immutable';
 import {
   createStore as createReduxStore,
   applyMiddleware,
@@ -27,7 +28,6 @@ const reducers = {
   addresses: addresses.reducer,
   blockchains: blockchains.reducer,
   screen: screen.reducer,
-
 };
 
 /**

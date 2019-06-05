@@ -8,8 +8,10 @@ import createLogger from '../../../utils/logger';
 const log = createLogger('settingsActions');
 
 export function loadSettings() {
+  log.debug('Loading settings...');
   return (dispatch, getState) => {
     if (localStorage) {
+      log.debug('Found local storage.');
       let localeCurrency = localStorage.getItem('localeCurrency');
       localeCurrency = (localeCurrency === null) ? 'USD' : localeCurrency;
       dispatch({
