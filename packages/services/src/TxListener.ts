@@ -45,19 +45,20 @@ export class TxListener {
   subscribe(hash: string, handler: TxStatusHandler) {
     const request = new TrackTxRequest();
     request.setChain(this.chain.id);
-    request.setId(Uint8Array.from(Buffer.from(hash.substring(2), 'hex')));
+    request.setTxid(hash);
     request.setConfirmations(12);
 
     this.client.trackTx(request, (response: grpc.ClientReadableStream<TxStatus>) => {
       response.on('data', (data: TxStatus) => {
-        if (handler) {
+        const block = data.getBlock();
+        if (handler && block) {
           handler({
-            txid: '0x' + Buffer.from(data.getId_asU8()).toString('hex'),
+            txid: data.getTxid(),
             broadcasted: data.getBroadcasted(),
             mined: data.getMined(),
-            blockHash: Buffer.from(data.getBlockhash_asU8()).toString('hex'),
-            blockNumber: data.getBlockheight(),
-            timestamp: data.getBlocktimestamp(),
+            blockHash: Buffer.from(block.getHash_asU8()).toString('hex'),
+            blockNumber: block.getHeight(),
+            timestamp: block.getTimestamp(),
             confirmations: data.getConfirmations(),
           })
         }

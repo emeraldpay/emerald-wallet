@@ -33,7 +33,7 @@ class GrpcTransport implements Transport {
     req.forEach((json) => {
       const item = new CallBlockchainItem();
       item.setId(json.id);
-      item.setName(json.method);
+      item.setTarget(json.method);
       item.setPayload(encoder.encode(JSON.stringify(json.params)));
       request.addItems(item);
     });
