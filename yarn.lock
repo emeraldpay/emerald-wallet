@@ -962,7 +962,7 @@
     bignumber.js "8.0.2"
     ethereumjs-abi "0.6.7"
 
-"@emeraldplatform/core@^0.5.0", "@emeraldplatform/core@^0.5.0-beta.0", "@emeraldplatform/core@^0.5.0-gamma.0":
+"@emeraldplatform/core@^0.5.0", "@emeraldplatform/core@^0.5.0-gamma.0":
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/@emeraldplatform/core/-/core-0.5.0.tgz#eff87c57f2b5d7e61f5da1c6d4975613de8956e9"
   integrity sha512-NVzKC36pgaLjYQrxaEWV/kzpw1rn16SaA1MAXFkZvzvdMqQSHAiFj5HgN5+Km1A0cyYOlAaAHyFIq7LcOO2NlA==
@@ -1056,7 +1056,7 @@
     mz "2.7.0"
     os "0.1.1"
 
-"@emeraldplatform/vault@^0.5.0-gamma.0", "@emeraldplatform/vault@^0.5.0-rc.4":
+"@emeraldplatform/vault@^0.5.0-rc.4":
   version "0.5.0"
   resolved "https://registry.yarnpkg.com/@emeraldplatform/vault/-/vault-0.5.0.tgz#4e915b52e45ae29be04c5fd217821b6ec9e962d8"
   integrity sha512-1guSAI1d9O+/E9fUJPxrnd5VZYgvheWxh31H3spI53Xx+fAJWb0j50i547h6IbAcYNYEz2h9NG0K/G2BbLyhIg==
