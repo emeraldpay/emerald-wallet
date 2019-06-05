@@ -1,7 +1,7 @@
 import { fromJS } from 'immutable';
 import { createStore } from './createStore';
 import Ledger from './ledger';
-import Screen from './wallet/screen';
+import { screen } from './index';
 import WalletHistory from './wallet/history';
 
 describe('store', () => {
@@ -17,7 +17,7 @@ describe('store', () => {
 
   it('should dispatch screen actions', () => {
     const store = createStore(null);
-    store.dispatch(Screen.actions.gotoScreen('create-tx', fromJS({id: '0x123', name: null})));
+    store.dispatch(screen.actions.gotoScreen('create-tx', fromJS({id: '0x123', name: null})));
   });
 
   it('should dispatch tx history actions', () => {

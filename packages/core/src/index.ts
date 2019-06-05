@@ -1,4 +1,4 @@
-export { BlockchainCode } from './blockchains';
+export { BlockchainCode, Blockchains } from './blockchains';
 
 export { EthereumTx, Ethereum as EthereumBlockchain } from './blockchains/ethereum';
 
@@ -13,3 +13,6 @@ export { utils };
 
 export { default as ILogger } from './ILogger';
 export { default as DefaultLogger } from './DefaultLogger';
+
+export { IServerConnect } from './IServerConnect';
+export { IApi } from './IApi';

@@ -1,14 +1,13 @@
 import React from 'react';
+import {Blockchains} from '@emeraldwallet/core';
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/styles';
 import {connect} from 'react-redux';
 import Immutable from 'immutable';
 import {translate} from 'react-i18next';
-
-import screen from '../../../store/wallet/screen';
+import {screen} from '../../../store';
 import launcher from '../../../store/launcher';
 import Account from './account';
-import Wallet from '../../../store/wallet';
 
 const styles = (theme) => ({
   container: {
@@ -27,10 +26,10 @@ const styles = (theme) => ({
 
 const AccountList = translate('accounts')((props) => {
   const {
-    coinTicker, accounts, showFiat, classes,
+    accounts, showFiat, classes,
   } = props;
   const {
-    openAccount, createTx, showReceiveDialog, theme,
+    openAccount, createTx, showReceiveDialog,
   } = props;
   return (
     <div className={classes.container}>
@@ -43,7 +42,6 @@ const AccountList = translate('accounts')((props) => {
             openAccount={openAccount}
             createTx={createTx}
             showReceiveDialog={showReceiveDialog}
-            coinTicker={coinTicker}
           />
         </div>);
       })}
@@ -60,9 +58,7 @@ const StyledAccountList = withStyles(styles)(AccountList);
 
 export default connect(
   (state, ownProps) => {
-    const blockchain = Wallet.selectors.currentBlockchain(state);
     return {
-      coinTicker: (blockchain && blockchain.params.coinTicker) || '',
       accounts: state.accounts.get('accounts', Immutable.List()),
       showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
     };
@@ -75,7 +71,11 @@ export default connect(
       dispatch(screen.actions.gotoScreen('create-tx', account));
     },
     showReceiveDialog: (account) => {
-      dispatch(screen.actions.showDialog('receive', account.get('id')));
+      const address = {
+        value: account.get('id'),
+        coinTicker: Blockchains[account.get('blockchain')].params.coinTicker,
+      };
+      dispatch(screen.actions.showDialog('receive', address));
     },
   })
 )((StyledAccountList));

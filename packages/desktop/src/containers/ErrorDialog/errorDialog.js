@@ -1,19 +1,20 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { ErrorDialog} from '@emeraldwallet/ui';
-import screen from 'store/wallet/screen';
+import { screen } from 'store';
 
 export default connect(
   (state, ownProps) => {
     let props = {
-      open: state.wallet.screen.get('error') !== null,
+      open: screen.selectors.getError(state) !== null,
     };
 
     if (props.open) {
+      const err = screen.selectors.getError(state);
       props = {
         ...props,
-        error: state.wallet.screen.get('error'),
-        message: state.wallet.screen.get('error').message,
+        error: err,
+        message: err && err.message,
       };
     }
 

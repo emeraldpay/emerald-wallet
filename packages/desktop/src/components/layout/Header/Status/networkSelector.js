@@ -1,15 +1,11 @@
 import React from 'react';
-import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
-import { Button } from '@emeraldwallet/ui';
-import ClickAwayListener from '@material-ui/core/ClickAwayListener';
-import Grow from '@material-ui/core/Grow';
-import Paper from '@material-ui/core/Paper';
-import Popper from '@material-ui/core/Popper';
-import MenuList from '@material-ui/core/MenuList';
-import { withStyles, withTheme } from '@material-ui/styles';
-import { Network as NetworkIcon, NetworkDisconnected as NetworkDisconnectedIcon } from '@emeraldplatform/ui-icons';
-import { Networks, findNetwork } from '../../../../lib/networks';
+import {connect} from 'react-redux';
+import {Button} from '@emeraldwallet/ui';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import {withStyles, withTheme} from '@material-ui/styles';
+import {Network as NetworkIcon, NetworkDisconnected as NetworkDisconnectedIcon} from '@emeraldplatform/ui-icons';
+import {Networks, findNetwork} from '../../../../lib/networks';
 
 class ExtendedMenuItem extends React.Component {
   render() {
@@ -27,13 +23,13 @@ class ExtendedMenuItem extends React.Component {
           borderLeft: checked ? `5px solid ${theme.palette.primary.main}` : '',
           marginLeft: checked ? '' : '5px',
           lineHeight: '20px',
-        }}
-      >
-        <div style={{ color: textColor }}>{net.title}</div>
+        }}>
+        <div style={{color: textColor}}>{net.title}</div>
       </div>
     );
   }
 }
+
 ExtendedMenuItem.muiName = 'MenuItem';
 
 
@@ -57,26 +53,30 @@ const selectorStyles = {
 };
 
 class NetworkSelectorRender extends React.Component {
-  state = {
-    open: false,
+  constructor(props) {
+    super(props);
+    this.state = {
+      anchorEl: null,
+    };
+  }
+
+  handleToggle = (event) => {
+    this.setState({
+      anchorEl: event.currentTarget,
+    });
   };
 
-  handleToggle = () => {
-    this.setState((state) => ({ open: !state.open }));
-  };
-
-  handleClose = (event) => {
-    if (this.anchorEl.contains(event.target)) {
-      return;
-    }
-    this.setState({ open: false });
+  handleClose = () => {
+    this.setState({
+      anchorEl: null,
+    });
   };
 
   render() {
     const {
       chain, geth, onNetworkChange, connecting, theme, classes,
     } = this.props;
-    const icon = connecting ? <NetworkDisconnectedIcon /> : <NetworkIcon />;
+    const icon = connecting ? <NetworkDisconnectedIcon/> : <NetworkIcon/>;
 
     // const styles = getStyles(this.props);
 
@@ -86,53 +86,23 @@ class NetworkSelectorRender extends React.Component {
 
     // Returns function which handles selection
     const createSelectionHandler = (net) => (event) => {
-      if (this.anchorEl.contains(event.target)) {
-        return;
-      }
-      this.setState({ open: false });
+      this.setState({
+        anchorEl: null,
+      });
+
       if (!isCurrentNetwork(net)) {
         onNetworkChange(net);
       }
     };
 
-    // return (
-    //   <DropDownMenu
-    //     value={ currentNetwork.id }
-    //     style={ styles.main }
-    //     underlineStyle={{ display: 'none' }}
-    //     menuStyle={{
-    //       border: `1px solid ${muiTheme.palette.borderColor}`,
-    //       backgroundColor: muiTheme.palette.alternateTextColor,
-    //       color: muiTheme.palette.secondaryTextColor,
-    //       paddingTop: '12px',
-    //       paddingBottom: '12px',
-    //       maxWidth: '280px',
-    //       boxShadow: `${muiTheme.palette.secondaryTextColor} 0px 0px 50px 0px`,
-    //     }}
-    //     iconStyle={{
-    //       left: '-40px', marginLeft: '20px', stroke: muiTheme.palette.secondaryTextColor, color: muiTheme.palette.secondaryTextColor,
-    //     }}
-    //     iconButton={icon}>
-    // { Networks.map((net) => <ExtendedMenuItem
-    //   value={net.id}
-    //   key={net.id}
-    //   primaryText={net.title}
-    //   checked={isCurrentNetwork(net)}
-    //   onClick={() => networkClick(net)}
-    //   net={net}
-    //   muiTheme={muiTheme}
-    // />)}
-    //   </DropDownMenu>);
-
-    const { open } = this.state;
+    const {anchorEl} = this.state;
 
     return (
       <div>
         <Button
           variant="text"
           color="secondary"
-          buttonRef={(node) => { this.anchorEl = node; }}
-          aria-owns={open ? 'menu-list-grow' : undefined}
+          aria-owns={anchorEl ? 'networks-menu' : undefined}
           aria-haspopup="true"
           onClick={this.handleToggle}
           icon={icon}
@@ -141,43 +111,38 @@ class NetworkSelectorRender extends React.Component {
             text: classes.buttonText,
           }}
         />
-        <Popper open={open} anchorEl={this.anchorEl} transition disablePortal>
-          {({ TransitionProps, placement }) => (
-            <Grow
-              {...TransitionProps}
-              id="menu-list-grow"
-              style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
-            >
-              <Paper>
-                <ClickAwayListener onClickAway={this.handleClose}>
-                  <MenuList>
-                    {Networks.map((net) => <ExtendedMenuItem
-                      value={net.id}
-                      key={net.id}
-                      primaryText={net.title}
-                      checked={isCurrentNetwork(net)}
-                      onClick={createSelectionHandler(net)}
-                      net={net}
-                      theme={theme}
-                    />)}
-                  </MenuList>
-                </ClickAwayListener>
-              </Paper>
-            </Grow>
-          )}
-        </Popper>
+        <Menu
+          elevation={0}
+          getContentAnchorEl={null}
+          anchorOrigin={{
+            vertical: 'bottom',
+            horizontal: 'left',
+          }}
+          transformOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          id="networks-menu"
+          open={Boolean(anchorEl)}
+          anchorEl={anchorEl}
+          onClose={this.handleClose}
+        >
+          {Networks.map((net) => <ExtendedMenuItem
+            value={net.id}
+            key={net.id}
+            primaryText={net.title}
+            checked={isCurrentNetwork(net)}
+            onClick={createSelectionHandler(net)}
+            net={net}
+            theme={theme}
+          />)}
+        </Menu>
       </div>
     );
   }
 }
 
 const StyledNetSelector = withStyles(selectorStyles)(withTheme(NetworkSelectorRender));
-
-NetworkSelectorRender.propTypes = {
-  onNetworkChange: PropTypes.func,
-  geth: PropTypes.object,
-  chain: PropTypes.object,
-};
 
 const NetworkSelector = connect(
   (state, ownProps) => ({

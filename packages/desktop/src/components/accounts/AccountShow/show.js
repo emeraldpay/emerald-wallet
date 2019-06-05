@@ -10,10 +10,11 @@ import {
   Page, IdentityIcon, ButtonGroup, Account as AddressAvatar
 } from '@emeraldplatform/ui';
 import { Button, InlineEdit } from '@emeraldwallet/ui';
+import {Blockchains} from '@emeraldwallet/core';
 import {styles, Row} from 'elements/Form';
+import { screen } from 'store';
 import accounts from '../../../store/vault/accounts';
 import tokens from '../../../store/vault/tokens';
-import screen from '../../../store/wallet/screen';
 import history from '../../../store/wallet/history';
 import createLogger from '../../../utils/logger';
 import TransactionsList from '../../tx/TxHistory';
@@ -61,7 +62,7 @@ export class AccountShow extends React.Component {
 
   render() {
     const {
-      account, coinTicker, tokensBalances, classes,
+      account, tokensBalances, classes,
     } = this.props;
     const {
       showFiat, goBack, transactions, createTx, showReceiveDialog,
@@ -75,7 +76,10 @@ export class AccountShow extends React.Component {
       name: account.get('name'),
       hdpath: account.get('hdpath'),
       hardware: account.get('hardware', false),
+      blockchain: account.get('blockchain'),
     };
+
+    const { coinTicker } = Blockchains[acc.blockchain].params;
 
     return (
       <div>
@@ -200,14 +204,11 @@ export default connect(
       log.warn("Can't find account in general list of accounts", ownProps.account.get('id'));
     }
 
-    const blockchain = Wallet.selectors.currentBlockchain(state);
-
     return {
       showFiat: Wallet.selectors.showFiat(state),
       tokensBalances,
       account,
       transactions,
-      coinTicker: (blockchain && blockchain.params.coinTicker) || '',
     };
   },
   (dispatch, ownProps) => ({

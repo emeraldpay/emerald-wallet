@@ -1,7 +1,6 @@
 import * as React from 'react';
-import ToggleButton from '@material-ui/lab/ToggleButton';
+import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import { withStyles } from '@material-ui/styles';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
 const styles = {
   root: {

@@ -1,28 +1,29 @@
 // @flow
-import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
-import { EthereumTx } from '@emeraldwallet/core';
-import { convert, EthAddress } from '@emeraldplatform/core';
-import { EthAccount } from '@emeraldplatform/eth-account';
-import { loadTokensBalances } from '../tokens/tokenActions';
-import screen from '../../wallet/screen';
+import {ipcRenderer} from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
+import {EthereumTx, BlockchainCode} from '@emeraldwallet/core';
+import {convert, EthAddress} from '@emeraldplatform/core';
+import {EthAccount} from '@emeraldplatform/eth-account';
+import {loadTokensBalances} from '../tokens/tokenActions';
+import {screen} from '../..';
 import history from '../../wallet/history';
 import launcher from '../../launcher';
 import ActionTypes from './actionTypes';
 import createLogger from '../../../utils/logger';
-import { dispatchRpcError } from '../../wallet/screen/screenActions';
+import {dispatchRpcError} from '../../wallet/screen/screenActions';
 
 const currentChain = (state) => launcher.selectors.getChainName(state);
 
-type Transaction = {
-    from: string,
-    // Can also be null or void
-    to: ?string,
-    value: string,
-    nonce: string,
-    gas: string,
-    gasPrice: string,
-    // Can either be void or omitted altogether. Cannot be null
-    data?: string,
+type
+Transaction = {
+  from: string,
+  // Can also be null or void
+  to: ?string,
+  value: string,
+  nonce: string,
+  gas: string,
+  gasPrice: string,
+  // Can either be void or omitted altogether. Cannot be null
+  data?: string,
 }
 
 const log = createLogger('accountActions');
@@ -37,7 +38,7 @@ export function loadAccountBalance(address: string) {
       });
     }).catch(dispatchRpcError(dispatch));
     // Tokens
-    const { tokens } = getState();
+    const {tokens} = getState();
     if (!tokens.get('loading')) {
       dispatch(loadTokensBalances([address]));
     }
@@ -50,12 +51,11 @@ export function loadAccountBalance(address: string) {
 function fetchHdPaths() {
   return (dispatch, getState, api) => {
     const promises = [];
-    const chain = currentChain(getState());
     getState().accounts.get('accounts')
       .filter((a) => a.get('hardware', false))
       .forEach((a) => {
         const address = a.get('id');
-        promises.push(api.emerald.exportAccount(address, chain).then((result) => {
+        promises.push(api.emerald.exportAccount(address, a.get('blockchain')).then((result) => {
           return dispatch({
             type: ActionTypes.SET_HD_PATH,
             accountId: address,
@@ -70,25 +70,31 @@ function fetchHdPaths() {
 
 export function loadAccountsList() {
   return (dispatch, getState, api) => {
-    dispatch({ type: ActionTypes.LOADING });
+    dispatch({type: ActionTypes.LOADING});
+    const showHidden = getState().wallet.settings.get('showHiddenAccounts', false);
 
     const existing = getState().accounts.get('accounts').map((account) => account.get('id')).toJS();
-    const chain = currentChain(getState());
-    const showHidden = getState().wallet.settings.get('showHiddenAccounts', false);
-    return api.emerald.listAccounts(chain, showHidden).then((result) => {
+
+    // request addresses for all chains we support
+    return Promise.all([
+      api.emerald.listAccounts(BlockchainCode.ETC, showHidden).then((res) => res.map((a) => ({...a, blockchain: BlockchainCode.ETC}))),
+      api.emerald.listAccounts(BlockchainCode.ETH, showHidden).then((res) => res.map((a) => ({...a, blockchain: BlockchainCode.ETH}))),
+    ]).then((results) => {
+      const result = results[0].concat(results[1]);
+
+      // TODO: in case both chains have one address it won't work
       const fetched = result.map((account) => account.address);
       const notChanges = existing.length === fetched.length && fetched.every((x) => existing.includes(x));
       if (notChanges) {
         return;
       }
+
       dispatch({
         type: ActionTypes.SET_LIST,
-        accounts: result.map((account) => ({
-          ...account,
-          blockchain: chain,
-        })),
+        accounts: result,
       });
       dispatch(fetchHdPaths());
+
       ipcRenderer.send('subscribe-balance', fetched);
     });
   };
@@ -142,7 +148,8 @@ export function createAccount(passphrase: string, name: string = '', description
       }).catch(screen.actions.catchError(dispatch));
   };
 }
-export function updateAccount(address: string, name: string, description?: string) {
+
+export function updateAccount(address, name, description) {
   return (dispatch, getState, api) => {
     const chain = currentChain(getState());
     return api.emerald.updateAccount(address, name, description, chain)
@@ -183,7 +190,7 @@ function getNonce(api, address: string) {
 }
 
 function withNonce(tx: Transaction): (nonce: string) => Promise<Transaction> {
-  return (nonce) => new Promise((resolve) => resolve(Object.assign({}, tx, { nonce: convert.toHex(nonce) })));
+  return (nonce) => new Promise((resolve) => resolve(Object.assign({}, tx, {nonce: convert.toHex(nonce)})));
 }
 
 function verifySender(expected) {
@@ -208,8 +215,7 @@ function signTx(api, tx: Transaction, passphrase: string, chain: string) {
   return api.emerald.signTransaction(tx, passphrase, chain);
 }
 
-export function sendTransaction(from: string, passphrase: string, to: ?string, gas: string,
-  gasPrice: string, value: string, data?: string) {
+export function sendTransaction(from: string, passphrase: string, to, gas, gasPrice: string, value: string, data) {
   const originalTx: Transaction = {
     from,
     to,
@@ -323,7 +329,9 @@ export function loadPendingTransactions() {
     const txes = result.transactions.filter(
       (t) => addrs.includes(t.to) || addrs.includes(t.from)
     ).map((tx) => clearBlock(tx));
-    if (txes.length === 0) { return; }
+    if (txes.length === 0) {
+      return;
+    }
 
     dispatch(history.actions.trackTxs(txes));
 
@@ -359,11 +367,11 @@ export function hideAccount(accountId: string) {
   };
 }
 
-export function unhideAccount(accountId: string) {
+export function unhideAccount(address: string) {
   return (dispatch, getState, api) => {
     const chain = currentChain(getState());
 
-    return api.emerald.unhideAccount(accountId, chain)
+    return api.emerald.unhideAccount(address, chain)
       .then((result) => {
         return result;
       }).catch(screen.actions.catchError(dispatch));

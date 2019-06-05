@@ -1,5 +1,5 @@
 import Immutable from 'immutable';
-import { api } from '../../lib/rpc/api';
+// import { api } from '../../lib/rpc/api';
 
 const STATUS_NOT_READY = 'not ready';
 
@@ -68,10 +68,9 @@ function onConfig(state, action) {
     }
 
     // TODO: remove this hack
-    if (typeof state.getIn(['chain', 'name']) === 'string') {
-      // api.updateGethUrl(state.getIn(['geth', 'url']));
-      api.updateChain(state.getIn(['chain', 'name']));
-    }
+    // if (typeof state.getIn(['chain', 'name']) === 'string') {
+    //   api.updateChain(state.getIn(['chain', 'name']));
+    // }
     return state;
   }
   return state;

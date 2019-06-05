@@ -22,42 +22,42 @@ import Settings from '../Settings';
 import PaperWallet from '../PaperWallet';
 import ExportPaperWallet from '../../components/accounts/ExportPaperWallet';
 import GenerateAccount from '../../components/accounts/GenerateAccount';
-import WalletScreen from '../../store/wallet/screen';
+import { screen } from '../../store';
 import MultiCreateTransaction from '../MultiCreateTransaction';
 
 const log = createLogger('screen');
 
-const Screen = ({ screen, screenItem }) => {
-  log.debug('Show screen: ', screen);
+const Screen = (props) => {
+  log.debug('Show screen: ', props.screen);
 
-  if (screen === null) {
+  if (props.screen === null) {
     return (<div>
       <CircularProgress size={50} secondary="true" /> Initializing...
     </div>);
   }
-  if (screen === 'home') {
+  if (props.screen === 'home') {
     return (<Dashboard />);
   }
-  if (screen === 'address-book') {
+  if (props.screen === 'address-book') {
     return <AddressBook />;
   }
-  if (screen === 'address') {
-    return <AddressShow address={ screenItem }/>;
-  } if (screen === 'add-address') {
+  if (props.screen === 'address') {
+    return <AddressShow address={ props.screenItem }/>;
+  } if (props.screen === 'add-address') {
     return <AddContact />;
-  } if (screen === 'landing-add-from-ledger') {
-    return <LedgerImport onBackScreen={screenItem} />;
-  } if (screen === 'add-from-ledger') {
+  } if (props.screen === 'landing-add-from-ledger') {
+    return <LedgerImport onBackScreen={props.screenItem} />;
+  } if (props.screen === 'add-from-ledger') {
     return <LedgerImport />;
-  } if (screen === 'account') {
-    return <AccountShow account={ screenItem }/>;
-  } if (screen === 'transaction') {
-    return <TransactionShow hash={ screenItem.hash } accountId={ screenItem.accountId }/>;
-  } if (screen === 'create-tx') {
-    return <MultiCreateTransaction account={ screenItem } />;
+  } if (props.screen === 'account') {
+    return <AccountShow account={ props.screenItem }/>;
+  } if (props.screen === 'transaction') {
+    return <TransactionShow hash={ props.screenItem.hash } accountId={ props.screenItem.accountId }/>;
+  } if (props.screen === 'create-tx') {
+    return <MultiCreateTransaction account={ props.screenItem } />;
   }
-  if (screen === 'repeat-tx') {
-    const {transaction, toAccount, fromAccount} = screenItem;
+  if (props.screen === 'repeat-tx') {
+    const {transaction, toAccount, fromAccount} = props.screenItem;
     const amount = new Wei(transaction.get('amount')).toEther();
     const to = toAccount.get('id');
     const gasLimit = transaction.get('gas');
@@ -66,47 +66,47 @@ const Screen = ({ screen, screenItem }) => {
     const mode = transaction.get('mode');
     return <MultiCreateTransaction account={ fromAccount } to={to} amount={amount} gasLimit={gasLimit} data={data} typedData={typedData} mode={mode}/>;
   }
-  if (screen === 'landing-generate') {
+  if (props.screen === 'landing-generate') {
     return <GenerateAccount onBackScreen="landing" backLabel="Back"/>;
   }
-  if (screen === 'generate') {
+  if (props.screen === 'generate') {
     return <GenerateAccount />;
   }
-  if (screen === 'importjson') {
+  if (props.screen === 'importjson') {
     return <ImportJson />;
   }
-  if (screen === 'landing-importjson') {
+  if (props.screen === 'landing-importjson') {
     return <ImportJson onBackScreen="landing" backLabel="Back"/>;
   }
-  if (screen === 'import-private-key') {
+  if (props.screen === 'import-private-key') {
     return <ImportPrivateKey />;
   }
-  if (screen === 'landing-import-private-key') {
+  if (props.screen === 'landing-import-private-key') {
     return <ImportPrivateKey onBackScreen="landing" />;
   }
-  if (screen === 'import-mnemonic') {
+  if (props.screen === 'import-mnemonic') {
     return <ImportMnemonic />;
   }
-  if (screen === 'new-mnemonic') {
+  if (props.screen === 'new-mnemonic') {
     return <MnemonicWizard />;
   }
-  if (screen === 'add-token') {
+  if (props.screen === 'add-token') {
     return <AddToken />;
   }
-  if (screen === 'landing') {
+  if (props.screen === 'landing') {
     return <Landing />;
   }
-  if (screen === 'welcome') {
+  if (props.screen === 'welcome') {
     return <Welcome />;
   }
-  if (screen === 'settings') {
+  if (props.screen === 'settings') {
     return <Settings />;
   }
-  if (screen === 'paper-wallet') {
-    return <PaperWallet address={ screenItem.address } privKey={ screenItem.privKey } />;
+  if (props.screen === 'paper-wallet') {
+    return <PaperWallet address={ props.screenItem.address } privKey={ props.screenItem.privKey } />;
   }
-  if (screen === 'export-paper-wallet') {
-    return <ExportPaperWallet accountId={ screenItem } />;
+  if (props.screen === 'export-paper-wallet') {
+    return <ExportPaperWallet accountId={ props.screenItem } />;
   }
 
   return (
@@ -117,6 +117,6 @@ const Screen = ({ screen, screenItem }) => {
 };
 
 export default connect(
-  (state, ownProps) => WalletScreen.selectors.getCurrentScreen(state),
+  (state, ownProps) => screen.selectors.getCurrentScreen(state),
   (dispatch, ownProps) => ({})
 )(Screen);

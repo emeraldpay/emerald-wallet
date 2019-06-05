@@ -1,5 +1,4 @@
 const { LocalConnector } = require('@emeraldwallet/vault');
-const { ChainListener } = require('@emeraldwallet/services');
 const log = require('./logger');
 const { NoneGeth, RemoteGeth } = require('./launcher');
 const UserNotify = require('./userNotify').UserNotify; // eslint-disable-line
@@ -48,7 +47,7 @@ class Services {
     this.notify = new UserNotify(webContents);
     this.emerald = serverConnect.connectEmerald();
     this.serverConnect = serverConnect;
-    this.blockchainStatus = new BlockchainStatus(webContents, apiAccess);
+
     log.info(`Run services from ${getBinDir()}`);
   }
 
@@ -66,7 +65,6 @@ class Services {
       log.debug('New Services setup', this.setup);
       this.gethStatus = STATUS.NOT_STARTED;
       if (chainChanged) {
-        this.blockchainStatus.start(settings.chain.name);
         return this.shutdownRpc();
       }
     } else {
@@ -232,33 +230,6 @@ class Services {
     });
   }
 }
-
-class BlockchainStatus {
-  constructor(webContents, apiAccess) {
-    this.webContents = webContents;
-    this.apiAccess = apiAccess;
-  }
-
-  start(chain) {
-    if (chain === 'mainnet') {
-      chain = 'etc';
-    }
-    this.stop();
-    this.listener = this.apiAccess.newChainListener(chain);
-    const {webContents} = this;
-    this.listener.subscribe((head) => {
-      webContents.send('store', 'NETWORK/BLOCK', {height: head.height, hash: head.hash});
-    });
-  }
-
-  stop() {
-    if (this.listener) {
-      this.listener.stop();
-    }
-    this.listener = null;
-  }
-}
-
 
 module.exports = {
   Services,

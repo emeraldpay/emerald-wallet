@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { WaitLedgerDialog, LedgerImportAccount } from '@emeraldwallet/ui';
 import { fromJS } from 'immutable';
 import ledger from '../../../store/ledger';
-import screen from '../../../store/wallet/screen';
+import { screen } from '../../../store';
 import Accounts from '../../../store/vault/accounts';
 import AccountBalance from '../../accounts/Balance/balance';
 

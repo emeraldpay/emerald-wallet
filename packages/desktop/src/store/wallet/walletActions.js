@@ -1,6 +1,6 @@
 // @flow
 import accounts from '../vault/accounts';
-import screen from './screen';
+import { screen } from '..';
 import history from './history';
 import network from '../network';
 import tokens from '../vault/tokens';

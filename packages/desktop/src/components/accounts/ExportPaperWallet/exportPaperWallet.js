@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { ExportPaperWallet } from '@emeraldwallet/ui';
-import screen from '../../../store/wallet/screen';
+import { screen } from '../../../store';
 import accounts from '../../../store/vault/accounts';
 
 export default connect(

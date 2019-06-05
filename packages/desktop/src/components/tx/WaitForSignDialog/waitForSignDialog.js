@@ -2,8 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Dialog from '@material-ui/core/Dialog';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import screen from 'store/wallet/screen';
 import { Button } from '@emeraldwallet/ui';
+import { screen } from 'store';
 
 const WaitForSignDialog = ({ open, transaction, handleClose }) => {
   const actions = [

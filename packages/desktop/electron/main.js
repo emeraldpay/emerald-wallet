@@ -7,6 +7,7 @@ const path = require('path'); // eslint-disable-line
 const Settings = require('./settings');
 const mainWindow = require('./mainWindow');
 const { Services } = require('./services');
+const { createServices2 } = require('./services2');
 const { LedgerApi } = require('./ledger');
 const ipc = require('./ipc');
 const log = require('./logger');
@@ -58,10 +59,19 @@ app.on('ready', () => {
   const browserWindow = mainWindow.createWindow(isDev);
   const services = new Services(browserWindow.webContents, serverConnect, apiAccess);
   ipc({ settings, services });
-  app.on('quit', () => services.shutdown());
+
+  const services2 = createServices2(browserWindow.webContents, apiAccess);
+
+  app.on('quit', () => {
+    services.shutdown();
+    services2.stop();
+  });
 
   services.useSettings(settings.toJS())
-    .then(() => services.start())
+    .then(() => {
+      services.start();
+      services2.start();
+    })
     .then(() => ipc({ settings, services }))
     .catch((err) => log.error('Invalid settings', err));
 

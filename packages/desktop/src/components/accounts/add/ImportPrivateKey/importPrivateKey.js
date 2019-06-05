@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { ImportPrivateKey } from '@emeraldwallet/ui';
 import { utils } from '@emeraldwallet/core';
 import accounts from 'store/vault/accounts';
-import screen from 'store/wallet/screen';
+import { screen } from '@emeraldwallet/store';
 
 export default connect(
   (state, ownProps) => ({

@@ -1,6 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import screen from 'store/wallet/screen';
+import { screen } from 'store';
 import accounts from 'store/vault/accounts';
 import Immutable from 'immutable';
 import { ImportMnemonic } from '@emeraldwallet/ui';

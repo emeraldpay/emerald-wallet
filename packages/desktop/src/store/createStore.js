@@ -1,10 +1,12 @@
 import thunkMiddleware from 'redux-thunk';
+import {fromJS} from 'immutable';
 import {
   createStore as createReduxStore,
   applyMiddleware,
   combineReducers
 } from 'redux';
-// import {reducer as formReducer} from 'redux-form';
+import createSagaMiddleware from 'redux-saga';
+import { addresses, blockchains, screen } from '@emeraldwallet/store';
 import accounts from './vault/accounts';
 import Addressbook from './vault/addressbook';
 import tokens from './vault/tokens';
@@ -22,9 +24,12 @@ const reducers = {
   network: network.reducer,
   launcher: launcherReducers,
   ledger: ledger.reducer,
-  // form: formReducer,
   wallet: walletReducers,
+  addresses: addresses.reducer,
+  blockchains: blockchains.reducer,
+  screen: screen.reducer,
 };
+
 /**
  * Creates Redux store with API as dependency injection.
  *
@@ -33,7 +38,9 @@ const reducers = {
  * @param _api
  */
 export const createStore = (_api) => {
+  const sagaMiddleware = createSagaMiddleware();
   const storeMiddleware = [
+    sagaMiddleware,
     reduxMiddleware.promiseCatchAll,
     thunkMiddleware.withExtraArgument(_api),
   ];
@@ -42,8 +49,12 @@ export const createStore = (_api) => {
     storeMiddleware.push(reduxLogger);
   }
 
-  return createReduxStore(
+  const store = createReduxStore(
     combineReducers(reducers),
     applyMiddleware(...storeMiddleware)
   );
+
+  sagaMiddleware.run(blockchains.sagas.watchRequestGasPrice, _api);
+
+  return store;
 };

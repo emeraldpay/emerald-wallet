@@ -2,9 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { AccountActionsMenu } from '@emeraldwallet/ui';
 
-import { api } from 'lib/rpc/api';
+// import { api } from 'lib/rpc/api';
 import { saveJson } from 'lib/saveAs';
-import screen from '../../../store/wallet/screen';
+import { screen } from '../../../store';
 import history from '../../../store/wallet/history';
 import accounts from '../../../store/vault/accounts';
 
@@ -34,16 +34,16 @@ export default connect(
       // refresh account data
       dispatch(history.actions.refreshTrackedTransactions());
       dispatch(accounts.actions.loadAccountsList());
-      dispatch(accounts.actions.loadPendingTransactions());
+      // dispatch(accounts.actions.loadPendingTransactions()); // TODO: do we need it ?
 
       dispatch(screen.actions.gotoScreen('home'));
     },
     onExport: (chain) => () => {
       const address = ownProps.account.get('id');
-
-      api.emerald.exportAccount(address, chain).then((result) => {
-        saveJson(result, `${address}.json`);
-      });
+      throw Error('NOT IMPLEMEMTED');
+      // api.emerald.exportAccount(address, chain).then((result) => {
+      //   saveJson(result, `${address}.json`);
+      // });
     },
   })
 )(AccountActionsMenu);

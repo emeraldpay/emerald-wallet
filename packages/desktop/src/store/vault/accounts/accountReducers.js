@@ -89,9 +89,10 @@ function onUpdateAccount(state, action) {
 
 function onSetBalance(state, action) {
   if (action.type === ActionTypes.SET_BALANCE) {
-    return updateAccount(state, action.accountId, (acc) => {
+    const { accountId, value } = action.payload;
+    return updateAccount(state, accountId, (acc) => {
       // Update balance only if it's changed
-      const newBalance = new Wei(action.value);
+      const newBalance = new Wei(value);
       const currentBalance = acc.get('balance');
       if (currentBalance && currentBalance.equals(newBalance)) {
         return acc.set('balancePending', null);

@@ -7,6 +7,7 @@ import CardContent from '@material-ui/core/CardContent';
 import PropTypes from 'prop-types';
 import { Account as AddressAvatar, ButtonGroup } from '@emeraldplatform/ui';
 import { Button } from '@emeraldwallet/ui';
+import { Blockchains } from '@emeraldwallet/core';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../Balance';
 import TokenUnits from '../../../lib/tokenUnits';
@@ -51,13 +52,15 @@ export class Account extends React.Component {
 
     render() {
       const {
-        account, theme, classes, showFiat, coinTicker,
+        account, theme, classes, showFiat,
       } = this.props;
       const fiatStyle = {
         fontSize: '16px',
         lineHeight: '19px',
         color: theme.palette.text.secondary,
       };
+
+      const { coinTicker } = Blockchains[account.get('blockchain')].params;
 
       // TODO: we convert Wei to TokenUnits here
       const balance = account.get('balance') ? new TokenUnits(account.get('balance').toWei(), 18) : null;

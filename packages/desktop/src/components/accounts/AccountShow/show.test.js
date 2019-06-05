@@ -16,6 +16,7 @@ test('Shows HD path for hardware account', () => {
     id: '0x1234',
     hardware: true,
     hdpath: 'HD/PATH',
+    blockchain: 'etc',
   });
   const wrapper = shallow(<AccountShow classes={classes} muiTheme={mockMuiTheme} account={ account }/>);
   expect(wrapper.containsAnyMatchingElements([<div key="1">HD/PATH</div>])).toBeTruthy();

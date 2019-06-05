@@ -5,7 +5,7 @@ import { Map } from 'immutable';
 import TxView from '@emeraldwallet/ui/lib/components/tx/TxHistory/TxList/TxItem';
 import launcher from '../../../../store/launcher';
 import accounts from '../../../../store/vault/accounts';
-import screen from '../../../../store/wallet/screen';
+import { screen } from '../../../../store';
 import Wallet from '../../../../store/wallet';
 import WalletHistory from '../../../../store/wallet/history';
 import Balance from '../../../accounts/Balance';

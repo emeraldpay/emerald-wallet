@@ -8,9 +8,9 @@ import {
 } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import { Button } from '@emeraldwallet/ui';
-import screen from 'store/wallet/screen';
 import accountsModule from 'store/vault/accounts';
 import { Row, styles as formStyles } from 'elements/Form/index';
+import { screen } from 'store';
 
 import FileDropField from './fileDropField';
 

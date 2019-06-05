@@ -1,13 +1,13 @@
 /* eslint-disable import/no-extraneous-dependencies */
+import { blockchains, screen } from '@emeraldwallet/store';
 import { ipcRenderer } from 'electron';
 import { startProtocolListener } from './protocol';
 
-import { api } from '../lib/rpc/api';
+import { Api, getConnector } from '../lib/rpc/api';
 import { intervalRates } from './config';
 import history from './wallet/history';
 import accounts from './vault/accounts';
 import network from './network';
-import screen from './wallet/screen';
 import settings from './wallet/settings';
 import tokens from './vault/tokens';
 import ledger from './ledger';
@@ -18,7 +18,7 @@ import {
   listenElectron,
   connecting
 } from './launcher/launcherActions';
-import { showError } from './wallet/screen/screenActions';
+// import { showError } from './wallet/screen/screenActions';
 
 import getWalletVersion from '../utils/get-wallet-version';
 import createLogger from '../utils/logger';
@@ -31,13 +31,17 @@ import {
   onceChainSet
 } from './triggers';
 
+import {blockchains as supported} from '../config';
+
 const log = createLogger('store');
+
+const api = new Api(getConnector(), supported);
 
 export const store = createStore(api);
 
 function refreshAll() {
   const promises = [
-    store.dispatch(accounts.actions.loadPendingTransactions()),
+    // store.dispatch(accounts.actions.loadPendingTransactions()), // TODO: Fix it
     store.dispatch(accounts.actions.loadAccountsList()),
   ];
 
@@ -56,13 +60,15 @@ export function startSync() {
   store.dispatch(settings.actions.listenPrices());
 
   const promises = [
-    store.dispatch(network.actions.getGasPrice()),
     store.dispatch(Addressbook.actions.loadAddressBook()),
     store.dispatch(history.actions.init(chainId)),
     store.dispatch(tokens.actions.loadTokenList()),
     store.dispatch(tokens.actions.addDefault(chainId)),
     store.dispatch(history.actions.refreshTrackedTransactions()),
   ];
+
+  // request gas price for each chain
+  supported.forEach((code) => promises.push(store.dispatch(blockchains.actions.fetchGasPriceAction(code))));
 
   if (chain === 'mainnet') {
     promises.push(
@@ -78,7 +84,7 @@ export function startSync() {
       .then(() => store.dispatch(connecting(false)))
       .catch((err) => {
         log.error('Failed to do initial sync', err);
-        store.dispatch(showError(err));
+        store.dispatch(screen.actions.showError(err));
       })
   );
 
@@ -109,9 +115,10 @@ export function electronToStore() {
   return (dispatch) => {
     log.debug('Running launcher listener for Redux');
     ipcRenderer.on('store', (event, type, message) => {
+      log.debug(`Got from IPC event: ${event} type: ${type} message: ${JSON.stringify(message)}`);
       dispatch({
         type: type,
-        ...message,
+        payload: message,
       });
     });
   };
@@ -146,20 +153,21 @@ export function screenHandlers() {
   let prevScreen = null;
   store.subscribe(() => {
     const state = store.getState();
-    const curScreen = state.wallet.screen.get('screen');
+    const curScreen = screen.selectors.getCurrentScreen(state);
     const justOpened = prevScreen !== curScreen;
     prevScreen = curScreen;
     if (justOpened) {
-      if (
-        curScreen === 'create-tx'
-        || curScreen === 'add-from-ledger'
-        || curScreen === 'landing-add-from-ledger'
-      ) {
-        store.dispatch(ledger.actions.setWatch(true));
-        store.dispatch(ledger.actions.watchConnection());
-      } else {
-        store.dispatch(ledger.actions.setWatch(false));
-      }
+      // TODO: Fix it
+      // if (
+      //   curScreen === 'create-tx'
+      //   || curScreen === 'add-from-ledger'
+      //   || curScreen === 'landing-add-from-ledger'
+      // ) {
+      //   store.dispatch(ledger.actions.setWatch(true));
+      //   store.dispatch(ledger.actions.watchConnection());
+      // } else {
+      //   store.dispatch(ledger.actions.setWatch(false));
+      // }
     }
   });
 }
@@ -188,7 +196,7 @@ function getInitialScreen() {
 }
 
 Promise
-  .all([onceServicesStart(store), onceChainSet(store)])
+  .all([onceServicesStart(store)])
   .then(startSync);
 checkStatus();
 screenHandlers();
