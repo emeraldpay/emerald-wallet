@@ -44,7 +44,7 @@ startProtocolHandler();
 app.on('ready', () => {
   log.info('Starting Emerald', app.getVersion());
 
-  const apiAccess = new EmeraldApiAccessDev();
+  const apiAccess = new EmeraldApiAccessDev(settings.getId());
   const serverConnect = new ServerConnect(URL_FOR_CHAIN, app.getVersion(), app.getLocale(), log, apiAccess.blockchainClient);
   global.serverConnect = serverConnect;
   serverConnect.init(process.versions);

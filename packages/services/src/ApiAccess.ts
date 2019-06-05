@@ -48,7 +48,7 @@ export class EmeraldApiAccess {
   public readonly blockchainClient: BlockchainClient;
   public readonly pricesClient: MarketClient;
 
-  constructor(addr: string, cert: string) {
+  constructor(addr: string, cert: string, id: string) {
     this.address = addr;
     const platform = [os.platform(), os.release(), os.arch(), app.getLocale()].join('; ');
     const agent = [
@@ -57,7 +57,7 @@ export class EmeraldApiAccess {
       `Chrome/${process.versions.chrome}`
     ];
 
-    this.credentials = emeraldCredentials(addr, cert, agent);
+    this.credentials = emeraldCredentials(addr, cert, agent, id);
     this.blockchainClient = new BlockchainClient(addr, this.credentials);
     this.pricesClient = new MarketClient(addr, this.credentials);
   }
@@ -81,7 +81,7 @@ export class EmeraldApiAccess {
 
 export class EmeraldApiAccessDev extends EmeraldApiAccess {
 
-  constructor() {
-    super("127.0.0.1:8090", certDevelopment);
+  constructor(id: string) {
+    super("127.0.0.1:8090", certDevelopment, id);
   }
 }
