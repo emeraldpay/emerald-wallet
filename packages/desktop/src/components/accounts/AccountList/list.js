@@ -5,7 +5,7 @@ import {withStyles} from '@material-ui/styles';
 import {connect} from 'react-redux';
 import Immutable from 'immutable';
 import {translate} from 'react-i18next';
-import screen from '../../../store/wallet/screen';
+import {screen} from '../../../store';
 import launcher from '../../../store/launcher';
 import Account from './account';
 

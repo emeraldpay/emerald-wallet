@@ -1,4 +1,4 @@
-import screen from '../wallet/screen';
+import { screen } from '..';
 
 export default (store) => {
   return (next) => {

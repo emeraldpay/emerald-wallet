@@ -1,6 +1,6 @@
 import { connect } from 'react-redux';
 import Header from './header';
-import screen from '../../../store/wallet/screen';
+import { screen } from '../../../store';
 import Launcher from '../../../store/launcher';
 
 export default (connect(

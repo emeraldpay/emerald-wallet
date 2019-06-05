@@ -5,7 +5,7 @@ import {
   combineReducers
 } from 'redux';
 import createSagaMiddleware from 'redux-saga';
-import { addresses, blockchains } from '@emeraldwallet/store';
+import { addresses, blockchains, screen } from '@emeraldwallet/store';
 import accounts from './vault/accounts';
 import Addressbook from './vault/addressbook';
 import tokens from './vault/tokens';
@@ -26,6 +26,7 @@ const reducers = {
   wallet: walletReducers,
   addresses: addresses.reducer,
   blockchains: blockchains.reducer,
+  screen: screen.reducer,
 
 };
 

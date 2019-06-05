@@ -1,6 +1,6 @@
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 // import { waitForServicesRestart } from 'store/store';
-import screen from '../wallet/screen';
+import { screen } from '..';
 import createLogger from '../../utils/logger';
 import { dispatchRpcError } from '../wallet/screen/screenActions';
 

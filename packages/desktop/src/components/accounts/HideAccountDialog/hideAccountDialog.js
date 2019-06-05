@@ -6,7 +6,7 @@ import {
   Warning, WarningHeader, WarningText
 } from '@emeraldplatform/ui';
 import { Button } from '@emeraldwallet/ui';
-import screen from '../../../store/wallet/screen';
+import { screen } from '../../../store';
 import accounts from '../../../store/vault/accounts';
 import history from '../../../store/wallet/history';
 

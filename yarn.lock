@@ -1005,17 +1005,7 @@
     bignumber.js "8.0.2"
     qs "6.7.0"
 
-"@emeraldplatform/grpc@^0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@emeraldplatform/grpc/-/grpc-0.5.1.tgz#3e8c50d9a05c00487a32f3be7a9423b4c1416a63"
-  integrity sha512-zJ76yLac8G6pVY7vRDvVqKO03InmMD5UJujbRHpcgUBN83DI+qjNbYUrdH4L6+kUwhyWyC2zM70N5i9PcC97Kg==
-  dependencies:
-    "@types/google-protobuf" "3.2.7"
-    google-protobuf "3.7.1"
-    grpc "1.20.3"
-    protobufjs "6.8.8"
-
-"@emeraldplatform/grpc@^0.5.2":
+"@emeraldplatform/grpc@0.5.2":
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/@emeraldplatform/grpc/-/grpc-0.5.2.tgz#a8282b11994851d46bdc6719abe82d282fd5d36c"
   integrity sha512-Y+ga9YVbv1n0UtWXG2nSG92B6HSQmqNkCTespAYdiDmLNr1zZWtx9hsG9f4qrVHkIiV0FIu8Hh+B3WFTrE/YCA==
@@ -2024,7 +2014,7 @@
     npmlog "^4.1.2"
     write-file-atomic "^2.3.0"
 
-"@material-ui/core@^4.0.0-beta.1", "@material-ui/core@^4.0.0-rc.0":
+"@material-ui/core@^4.0.0-rc.0":
   version "4.0.0-rc.0"
   resolved "https://registry.yarnpkg.com/@material-ui/core/-/core-4.0.0-rc.0.tgz#313ba18cdf4baeaa6c2efb1e38a88ac5b064dce4"
   integrity sha512-DRaCGcXd+aQs98lLvmVBAAFxqsB6UEdGw5GLBTZlKKCpAXF2UuwWxqXfJiBIJXkT0aX9rMq9EgUfaq5vRIW+iA==
@@ -2049,18 +2039,43 @@
     react-transition-group "^4.0.0"
     warning "^4.0.1"
 
-"@material-ui/lab@^4.0.0-alpha.10":
-  version "4.0.0-alpha.11"
-  resolved "https://registry.yarnpkg.com/@material-ui/lab/-/lab-4.0.0-alpha.11.tgz#8b491ce625516697b72965d07e87ae0d4e3b95be"
-  integrity sha512-JBfBQFy29KzRnAb6bPjNuOt2zYCug4Y2Qz7j/cGQYsCuxjK0tyq/Y/bV3QFxzm5H3K+3wv8RDzh5PWwhm6D76A==
+"@material-ui/core@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@material-ui/core/-/core-4.0.2.tgz#c7a07c1d1b13b94adf479d7267b51cb682fcb279"
+  integrity sha512-k7o95UIupTp14lsO9hejmswuPZsmWUafOBNaptHN+Pv8CBp/vW+hD6peuThgUpeGesrCuL2/yTpHB/9JkO9rNg==
   dependencies:
     "@babel/runtime" "^7.2.0"
-    "@material-ui/utils" "^4.0.0-beta.1"
+    "@material-ui/styles" "^4.0.2"
+    "@material-ui/system" "^4.0.2"
+    "@material-ui/types" "^4.0.1"
+    "@material-ui/utils" "^4.0.1"
+    "@types/react-transition-group" "^2.0.16"
+    clsx "^1.0.2"
+    convert-css-length "^2.0.0"
+    csstype "^2.5.2"
+    debounce "^1.1.0"
+    deepmerge "^3.0.0"
+    hoist-non-react-statics "^3.2.1"
+    is-plain-object "^3.0.0"
+    normalize-scroll-left "^0.2.0"
+    popper.js "^1.14.1"
+    prop-types "^15.7.2"
+    react-event-listener "^0.6.6"
+    react-transition-group "^4.0.0"
+    warning "^4.0.1"
+
+"@material-ui/lab@^4.0.0-alpha.15":
+  version "4.0.0-alpha.15"
+  resolved "https://registry.yarnpkg.com/@material-ui/lab/-/lab-4.0.0-alpha.15.tgz#f86e1fcbdc6e0c98877e2d1f65cd1840a025a957"
+  integrity sha512-ixO6YxO0fFro2mt9C0dwrcgbpaNQEVszaDxWgKXaTFHIkXZDV4cY+XM0otV2o7DZVVfjvB5aAvyNsb0+db1JPA==
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+    "@material-ui/utils" "^4.0.1"
     clsx "^1.0.2"
     keycode "^2.1.9"
     prop-types "^15.7.2"
 
-"@material-ui/styles@^4.0.0-beta.1", "@material-ui/styles@^4.0.0-rc.0":
+"@material-ui/styles@^4.0.0-rc.0":
   version "4.0.0-rc.0"
   resolved "https://registry.yarnpkg.com/@material-ui/styles/-/styles-4.0.0-rc.0.tgz#c805bdd2439bee0259a2b2d24fc7fc4fce4a1cd3"
   integrity sha512-TUb0j9gIZDPoIzEr4TEOVCWo3EeDW4J61B3CR2VVgXiaLneU/l0wzRg1KzalVBjw6Bq/97D+wPBTL+uE4wD3xg==
@@ -2069,6 +2084,29 @@
     "@emotion/hash" "^0.7.1"
     "@material-ui/types" "^4.0.0-rc.0"
     "@material-ui/utils" "^4.0.0-rc.0"
+    clsx "^1.0.2"
+    deepmerge "^3.0.0"
+    hoist-non-react-statics "^3.2.1"
+    jss "^10.0.0-alpha.16"
+    jss-plugin-camel-case "^10.0.0-alpha.16"
+    jss-plugin-default-unit "^10.0.0-alpha.16"
+    jss-plugin-global "^10.0.0-alpha.16"
+    jss-plugin-nested "^10.0.0-alpha.16"
+    jss-plugin-props-sort "^10.0.0-alpha.16"
+    jss-plugin-rule-value-function "^10.0.0-alpha.16"
+    jss-plugin-vendor-prefixer "^10.0.0-alpha.16"
+    prop-types "^15.7.2"
+    warning "^4.0.1"
+
+"@material-ui/styles@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@material-ui/styles/-/styles-4.0.2.tgz#05805b26bfcd876f883b098e4be50d813b1c5fde"
+  integrity sha512-RUM+2G++2X4M6cbZ/K/PzAdxdSdqIU4zhZ82YYIcEz/OgCx72HC68+VrYxoy7nEjZ9E6R+9JmPPS7CO8O1oPmw==
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+    "@emotion/hash" "^0.7.1"
+    "@material-ui/types" "^4.0.1"
+    "@material-ui/utils" "^4.0.1"
     clsx "^1.0.2"
     deepmerge "^3.0.0"
     hoist-non-react-statics "^3.2.1"
@@ -2093,15 +2131,39 @@
     prop-types "^15.7.2"
     warning "^4.0.1"
 
+"@material-ui/system@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@material-ui/system/-/system-4.0.2.tgz#224a75b4168994cb2e903849cc1d608e3cc327f1"
+  integrity sha512-gpLYcDycJjK8tvWI9ZKrVLdGjFQ/YJM74TvhIMkP5ML453ZtPuFzMLt6FVEKp8okWxFEgYXVBNNSB4IF3Yig8g==
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+    deepmerge "^3.0.0"
+    prop-types "^15.7.2"
+    warning "^4.0.1"
+
 "@material-ui/types@^4.0.0-rc.0":
   version "4.0.0-rc.0"
   resolved "https://registry.yarnpkg.com/@material-ui/types/-/types-4.0.0-rc.0.tgz#a50a021ea636fc4ed39e8d1fd311fe0fc299e8e3"
   integrity sha512-HPABgVuPLMqOxPym5wBdYE89V7QL+TjQ29QEAapZPcg/3j1C+SMZC9kq7YKLw2Mh9Nwx+gfc4N3eBe95+SDYOA==
 
-"@material-ui/utils@^4.0.0-beta.1", "@material-ui/utils@^4.0.0-rc.0":
+"@material-ui/types@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@material-ui/types/-/types-4.0.1.tgz#a05fe801a10604d99e593303df9e843868008d4f"
+  integrity sha512-FGhogU9l4s+ycMcC3hhOAvu5hcWa5TVSCCGUf4NOUF904ythroWSAvcCHn92NjftXZ8WZqmtPjL1K/d90Pq/3Q==
+
+"@material-ui/utils@^4.0.0-rc.0":
   version "4.0.0-rc.0"
   resolved "https://registry.yarnpkg.com/@material-ui/utils/-/utils-4.0.0-rc.0.tgz#c147d3c74aa1d540fa9bc3e6ab2dd08cc2380f22"
   integrity sha512-nSCkPDJ1LFeX2L4ZQu0eLB7pV6ZGrmZPpnsd8HjcmuE32fuG/7sLymIVqSh/CARZS2j/N9lV0/6Km8q0/93Lug==
+  dependencies:
+    "@babel/runtime" "^7.2.0"
+    prop-types "^15.7.2"
+    react-is "^16.8.0"
+
+"@material-ui/utils@^4.0.1":
+  version "4.0.1"
+  resolved "https://registry.yarnpkg.com/@material-ui/utils/-/utils-4.0.1.tgz#ea3ab6fe4eea9588713813cff6eca33bda3519f6"
+  integrity sha512-mWRcMQIrqsXGze73tx3hNfB1NUu+BL/oIQI7TImyuhsia1EQXw3bPVBjgwTzqM6MqfXw6eh1fR45Di+WN5hASA==
   dependencies:
     "@babel/runtime" "^7.2.0"
     prop-types "^15.7.2"
@@ -5829,6 +5891,14 @@ convert-css-length@^1.0.2:
     console-polyfill "^0.1.2"
     parse-unit "^1.0.1"
 
+convert-css-length@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/convert-css-length/-/convert-css-length-2.0.0.tgz#0c60ff686e70625ef7f3fd305a2f61f33a96c289"
+  integrity sha512-ygBgHNzImHJ/kjgqdzC0oaY2+EMID3s88/CZD2C9O1stM3PwsOwXzzlFTTkZy/bPZe0wjyt1UoYjilfunQGjlw==
+  dependencies:
+    console-polyfill "^0.1.2"
+    parse-unit "^1.0.1"
+
 convert-source-map@^1.1.0, convert-source-map@^1.4.0, convert-source-map@^1.5.0, convert-source-map@^1.5.1:
   version "1.6.0"
   resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-1.6.0.tgz#51b537a8c43e0f04dec1993bffcdd504e758ac20"
@@ -8792,6 +8862,11 @@ immutable@3.8.1:
   resolved "https://registry.yarnpkg.com/immutable/-/immutable-3.8.1.tgz#200807f11ab0f72710ea485542de088075f68cd2"
   integrity sha1-IAgH8Rqw9ycQ6khVQt4IgHX2jNI=
 
+immutable@^4.0.0-rc.12:
+  version "4.0.0-rc.12"
+  resolved "https://registry.yarnpkg.com/immutable/-/immutable-4.0.0-rc.12.tgz#ca59a7e4c19ae8d9bf74a97bdf0f6e2f2a5d0217"
+  integrity sha512-0M2XxkZLx/mi3t8NVwIm1g8nHoEmM9p9UBl/G9k4+hm0kBgOVdMV/B3CY5dQ8qG8qc80NN4gDV4HQv6FTJ5q7A==
+
 import-cwd@^2.0.0:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/import-cwd/-/import-cwd-2.1.0.tgz#aa6cf36e722761285cb371ec6519f53e2435b0a9"
@@ -11479,6 +11554,11 @@ normalize-scroll-left@^0.1.2:
   version "0.1.2"
   resolved "https://registry.yarnpkg.com/normalize-scroll-left/-/normalize-scroll-left-0.1.2.tgz#6b79691ba79eb5fb107fa5edfbdc06b55caee2aa"
   integrity sha512-F9YMRls0zCF6BFIE2YnXDRpHPpfd91nOIaNdDgrx5YMoPLo8Wqj+6jNXHQsYBavJeXP4ww8HCt0xQAKc5qk2Fg==
+
+normalize-scroll-left@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/normalize-scroll-left/-/normalize-scroll-left-0.2.0.tgz#9445d74275f303cc661e113329aefa492f58114c"
+  integrity sha512-t5oCENZJl8TGusJKoCJm7+asaSsPuNmK6+iEjrZ5TyBj2f02brCRsd4c83hwtu+e5d4LCSBZ0uoDlMjBo+A8yA==
 
 normalize-url@2.0.1:
   version "2.0.1"

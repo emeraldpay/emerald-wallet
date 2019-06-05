@@ -4,7 +4,7 @@ import { AccountActionsMenu } from '@emeraldwallet/ui';
 
 // import { api } from 'lib/rpc/api';
 import { saveJson } from 'lib/saveAs';
-import screen from '../../../store/wallet/screen';
+import { screen } from '../../../store';
 import history from '../../../store/wallet/history';
 import accounts from '../../../store/vault/accounts';
 

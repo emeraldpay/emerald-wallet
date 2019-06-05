@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { blockchains } from '@emeraldwallet/store';
+import { blockchains, screen } from '@emeraldwallet/store';
 import { ipcRenderer } from 'electron';
 import { startProtocolListener } from './protocol';
 
@@ -8,7 +8,7 @@ import { intervalRates } from './config';
 import history from './wallet/history';
 import accounts from './vault/accounts';
 import network from './network';
-import screen from './wallet/screen';
+// import screen from './wallet/screen';
 import settings from './wallet/settings';
 import tokens from './vault/tokens';
 import ledger from './ledger';
@@ -19,7 +19,7 @@ import {
   listenElectron,
   connecting
 } from './launcher/launcherActions';
-import { showError } from './wallet/screen/screenActions';
+// import { showError } from './wallet/screen/screenActions';
 
 import getWalletVersion from '../utils/get-wallet-version';
 import createLogger from '../utils/logger';
@@ -84,7 +84,7 @@ export function startSync() {
       .then(() => store.dispatch(connecting(false)))
       .catch((err) => {
         log.error('Failed to do initial sync', err);
-        store.dispatch(showError(err));
+        store.dispatch(screen.actions.showError(err));
       })
   );
 

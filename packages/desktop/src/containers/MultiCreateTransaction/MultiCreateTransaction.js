@@ -1,6 +1,5 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import BigNumber from 'bignumber.js';
 import Tokens from 'store/vault/tokens';
 import { fromJS } from 'immutable';
 import { CreateTx, SignTx } from '@emeraldwallet/ui';
@@ -11,7 +10,7 @@ import { Back } from '@emeraldplatform/ui-icons';
 import { connect } from 'react-redux';
 import accounts from 'store/vault/accounts';
 import network from 'store/network';
-import screen from 'store/wallet/screen';
+import { screen } from 'store';
 import ledger from 'store/ledger/';
 import Wallet from 'store/wallet';
 import TransactionShow from '../../components/tx/TxDetails';

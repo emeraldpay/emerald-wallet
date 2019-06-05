@@ -2,7 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
 import { Settings } from '@emeraldwallet/ui';
-import screen from '../../store/wallet/screen';
+import { screen } from '../../store';
 import settings from '../../store/wallet/settings';
 import accounts from '../../store/vault/accounts';
 import i18n from '../../i18n/i18n';

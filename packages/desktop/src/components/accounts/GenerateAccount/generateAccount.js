@@ -7,7 +7,7 @@ import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extrane
 import {NewAccountProps} from '@emeraldwallet/ui';
 import { saveJson } from '../../../lib/saveAs';
 import accounts from '../../../store/vault/accounts';
-import screen from '../../../store/wallet/screen';
+import { screen } from '../../../store';
 import PasswordDialog from './PasswordDialog';
 import DownloadDialog from './DownloadDialog';
 import ShowPrivateDialog from './ShowPrivateDialog';

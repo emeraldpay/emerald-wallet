@@ -4,7 +4,7 @@ import {EthereumTx, BlockchainCode} from '@emeraldwallet/core';
 import {convert, EthAddress} from '@emeraldplatform/core';
 import {EthAccount} from '@emeraldplatform/eth-account';
 import {loadTokensBalances} from '../tokens/tokenActions';
-import screen from '../../wallet/screen';
+import {screen} from '../..';
 import history from '../../wallet/history';
 import launcher from '../../launcher';
 import ActionTypes from './actionTypes';

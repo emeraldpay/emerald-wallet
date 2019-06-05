@@ -12,9 +12,9 @@ import {
 import { Button, InlineEdit } from '@emeraldwallet/ui';
 import {Blockchains} from '@emeraldwallet/core';
 import {styles, Row} from 'elements/Form';
+import { screen } from 'store';
 import accounts from '../../../store/vault/accounts';
 import tokens from '../../../store/vault/tokens';
-import screen from '../../../store/wallet/screen';
 import history from '../../../store/wallet/history';
 import createLogger from '../../../utils/logger';
 import TransactionsList from '../../tx/TxHistory';

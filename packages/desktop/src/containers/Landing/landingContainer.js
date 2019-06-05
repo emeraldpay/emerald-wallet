@@ -1,7 +1,7 @@
 import { connect } from 'react-redux';
 import { shell } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import { Landing } from '@emeraldwallet/ui';
-import screen from '../../store/wallet/screen';
+import { screen } from 'store';
 
 export default connect(
   (state, ownProps) => ({
