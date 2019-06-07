@@ -1,4 +1,4 @@
-import { ActionTypes } from './types';
+import {ActionTypes, DialogAction} from './types';
 
 export function gotoScreen(screen: any, item = null) {
   return {
@@ -30,7 +30,7 @@ export function showDialog(name: string, item = null) {
   };
 }
 
-export function closeDialog() {
+export function closeDialog(): DialogAction {
   return {
     type: ActionTypes.DIALOG,
     value: null,

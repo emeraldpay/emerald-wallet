@@ -2,7 +2,6 @@ import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extrane
 // import { waitForServicesRestart } from 'store/store';
 import { screen } from '..';
 import createLogger from '../../utils/logger';
-import { dispatchRpcError } from '../wallet/screen/screenActions';
 
 const log = createLogger('launcherActions');
 

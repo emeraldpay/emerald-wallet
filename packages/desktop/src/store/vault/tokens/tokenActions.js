@@ -6,8 +6,10 @@ import { parseString } from '../../../lib/convert';
 import launcher from '../../launcher';
 import ActionTypes from './actionTypes';
 import createLogger from '../../../utils/logger';
-import { dispatchRpcError } from '../../wallet/screen/screenActions';
 import deployedTokens from '../../../lib/deployedTokens';
+import { screen } from '../..';
+
+const { dispatchRpcError } = screen.actions;
 
 const tokenContract = new Contract(TokenAbi);
 

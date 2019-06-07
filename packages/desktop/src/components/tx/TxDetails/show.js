@@ -4,11 +4,12 @@ import {TxDetails} from '@emeraldwallet/ui';
 import {Currency} from '@emeraldwallet/core';
 import {Wei} from '@emeraldplatform/eth';
 import launcher from 'store/launcher';
-import {gotoScreen} from '../../../store/wallet/screen/screenActions';
+import {screen} from '../../../store';
 import createLogger from '../../../utils/logger';
 import WalletSettings from '../../../store/wallet/settings';
 import Wallet from '../../../store/wallet';
 
+const {gotoScreen} = screen.actions;
 const log = createLogger('TxDetails');
 
 export default connect(

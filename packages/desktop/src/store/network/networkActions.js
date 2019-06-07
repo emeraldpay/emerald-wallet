@@ -3,7 +3,7 @@ import { intervalRates } from '../config';
 import createLogger from '../../utils/logger';
 import ActionTypes from './actionTypes';
 import history from '../wallet/history';
-import { dispatchRpcError } from '../wallet/screen/screenActions';
+import { screen } from '..';
 
 export function switchChain({ chain, chainId }) {
   return (dispatch, getState) => {
@@ -22,7 +22,7 @@ export function getGasPrice() {
         type: ActionTypes.GAS_PRICE,
         value: result,
       });
-    }).catch(dispatchRpcError(dispatch));
+    }).catch(screen.actions.dispatchRpcError(dispatch));
   };
 }
 

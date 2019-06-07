@@ -4,13 +4,13 @@ import {EthereumTx, BlockchainCode} from '@emeraldwallet/core';
 import {convert, EthAddress} from '@emeraldplatform/core';
 import {EthAccount} from '@emeraldplatform/eth-account';
 import {loadTokensBalances} from '../tokens/tokenActions';
-import {screen} from '../..';
 import history from '../../wallet/history';
 import launcher from '../../launcher';
 import ActionTypes from './actionTypes';
 import createLogger from '../../../utils/logger';
-import {dispatchRpcError} from '../../wallet/screen/screenActions';
+import { screen } from '../..';
 
+const { dispatchRpcError } = screen.actions;
 const currentChain = (state) => launcher.selectors.getChainName(state);
 
 type
@@ -91,7 +91,7 @@ export function loadAccountsList() {
 
       dispatch({
         type: ActionTypes.SET_LIST,
-        accounts: result,
+        payload: result,
       });
       dispatch(fetchHdPaths());
 

@@ -3,8 +3,9 @@ import withStyles from 'react-jss';
 import {connect} from 'react-redux';
 import {translate} from 'react-i18next';
 import {DashboardMenu as Menu} from '@emeraldwallet/ui';
-import {gotoScreen, showDialog} from '../../../store/wallet/screen/screenActions';
+import {screen} from '../../../store';
 
+const {gotoScreen, showDialog} = screen.actions;
 const styles2 = {
   header: {
     display: 'flex',

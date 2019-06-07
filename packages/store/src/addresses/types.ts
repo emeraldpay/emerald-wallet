@@ -1,11 +1,9 @@
-import {v1 as uuidv1} from 'uuid';
 
 /**
  * Account contains of many addresses, each Address
  * belongs to particular blockchain.
  */
 export class Address {
-  id: string;
   value: string; // Address value itself
   hardware: boolean;
   balance: any;
@@ -17,7 +15,6 @@ export class Address {
   blockchain: string;
 
   constructor(value: string, blockchain: string) {
-    this.id = uuidv1();
     this.value = value;
     this.hidden = false;
     this.hardware = false;
@@ -50,8 +47,16 @@ export interface SetListAction {
   payload: any;
 }
 
+export interface SetBalanceAction {
+  type: Actions.SET_BALANCE;
+  payload: any;
+}
+
 export interface LoadingAction {
   type: Actions.LOADING;
 }
 
-export type AddressesAction = SetListAction | LoadingAction;
+export type AddressesAction =
+  | SetListAction
+  | LoadingAction
+  | SetBalanceAction;

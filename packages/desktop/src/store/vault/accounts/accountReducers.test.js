@@ -8,7 +8,7 @@ describe('accountReducers', () => {
     // do
     state = accountReducers(state, {
       type: ActionTypes.SET_LIST,
-      accounts: [{
+      payload: [{
         accountId: 'address',
         name: 'name1',
         description: 'desc1',

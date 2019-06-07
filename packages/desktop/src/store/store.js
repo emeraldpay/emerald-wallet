@@ -12,6 +12,7 @@ import settings from './wallet/settings';
 import tokens from './vault/tokens';
 import ledger from './ledger';
 import Addressbook from './vault/addressbook';
+import { addresses } from '.';
 
 import {
   readConfig,
@@ -183,7 +184,7 @@ function getInitialScreen() {
   }
 
   return onceAccountsLoaded(store).then(() => {
-    const accountSize = store.getState().accounts.get('accounts').size;
+    const accountSize = addresses.selectors.all(store.getState()).size;
 
     if (accountSize === 0) {
       return store.dispatch(screen.actions.gotoScreen('landing'));
