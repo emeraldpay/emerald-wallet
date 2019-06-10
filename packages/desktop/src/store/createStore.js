@@ -1,5 +1,5 @@
 import thunkMiddleware from 'redux-thunk';
-import {fromJS} from 'immutable';
+
 import {
   createStore as createReduxStore,
   applyMiddleware,

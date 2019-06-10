@@ -3,7 +3,6 @@ import accountReducers from './accountReducers';
 import ActionTypes from './actionTypes';
 
 describe('accountReducers', () => {
-
   it('ADD_ACCOUNT should set hd path', () => {
     // prepare
     let state = accountReducers(null, {});
