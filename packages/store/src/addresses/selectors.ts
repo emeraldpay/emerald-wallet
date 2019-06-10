@@ -1,4 +1,5 @@
+import { moduleName } from "./types";
 
 export function all(state: any) {
-  return state.addresses.get('addresses');
+  return state[moduleName].get('addresses');
 }

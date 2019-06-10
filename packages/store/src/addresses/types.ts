@@ -1,3 +1,4 @@
+export const moduleName = "addresses";
 
 /**
  * Account contains of many addresses, each Address

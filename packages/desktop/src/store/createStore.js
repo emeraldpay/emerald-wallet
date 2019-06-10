@@ -25,7 +25,7 @@ const reducers = {
   launcher: launcherReducers,
   ledger: ledger.reducer,
   wallet: walletReducers,
-  addresses: addresses.reducer,
+  [addresses.moduleName]: addresses.reducer,
   blockchains: blockchains.reducer,
   screen: screen.reducer,
 };
