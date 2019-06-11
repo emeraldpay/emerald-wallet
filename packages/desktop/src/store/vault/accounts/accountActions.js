@@ -176,7 +176,7 @@ function unwrap(list) {
 
 function onTxSend(dispatch, sourceTx: Transaction) {
   return (txHash: string) => {
-    dispatch(loadAccountBalance(sourceTx.from));
+    // dispatch(loadAccountBalance(sourceTx.from));
     const sentTx = Object.assign({}, sourceTx, {hash: txHash});
 
     // TODO: dependency on wallet/history module!
@@ -185,8 +185,8 @@ function onTxSend(dispatch, sourceTx: Transaction) {
   };
 }
 
-function getNonce(api, address: string) {
-  return api.geth.eth.getTransactionCount(address);
+function getNonce(api, chain, address: string) {
+  return api.chain(chain).eth.getTransactionCount(address);
 }
 
 function withNonce(tx: Transaction): (nonce: string) => Promise<Transaction> {
@@ -211,11 +211,16 @@ function verifySender(expected) {
 }
 
 function signTx(api, tx: Transaction, passphrase: string, chain: string) {
-  log.trace(`Calling emerald api to sign tx from ${tx.from} to ${tx.to}`);
+  log.trace(`Calling emerald api to sign tx from ${tx.from} to ${tx.to} in ${chain} blockchain`);
+  if (chain === 'morden') {
+    // otherwise RPC server gives 'wrong-sender'
+    // vault has different chain-id settings for etc and eth morden. server uses etc morden.
+    chain = 'etc-morden';
+  }
   return api.emerald.signTransaction(tx, passphrase, chain);
 }
 
-export function sendTransaction(from: string, passphrase: string, to, gas, gasPrice: string, value: string, data) {
+export function sendTransaction(chain, from: string, passphrase: string, to, gas, gasPrice: string, value: string, data) {
   const originalTx: Transaction = {
     from,
     to,
@@ -226,19 +231,13 @@ export function sendTransaction(from: string, passphrase: string, to, gas, gasPr
     nonce: '',
   };
   return (dispatch, getState, api) => {
-    let chain = currentChain(getState());
-    if (chain === 'morden') {
-      // otherwise RPC server gives 'wrong-sender'
-      // vault has different chain-id settings for etc and eth morden. server uses etc morden.
-      chain = 'etc-morden';
-    }
-    return getNonce(api, from)
+    return getNonce(api, chain, from)
       .then(withNonce(originalTx))
       .then((tx) => {
         return signTx(api, tx, passphrase, chain)
           .then(unwrap)
           .then(verifySender(from))
-          .then((signed) => api.geth.eth.sendRawTransaction(signed))
+          .then((signed) => api.chain(chain).eth.sendRawTransaction(signed))
           .then(onTxSend(dispatch, tx));
       })
       .catch(screen.actions.catchError(dispatch));

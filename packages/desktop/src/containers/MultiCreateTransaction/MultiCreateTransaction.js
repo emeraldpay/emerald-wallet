@@ -287,6 +287,7 @@ export default connect(
     onCancel: () => dispatch(screen.actions.gotoScreen('home', ownProps.account)),
     onEmptyAddressBookClick: () => dispatch(screen.actions.gotoScreen('add-address')),
     signAndSend: ({transaction, allTokens, amount}) => {
+      const chain = ownProps.account.get('blockchain');
       const useLedger = ownProps.account.get('hardware', false);
 
       const tokenInfo = allTokens.find((t) => t.get('symbol') === transaction.token);
@@ -300,6 +301,7 @@ export default connect(
       if (transaction.data) {
         return dispatch(
           accounts.actions.sendTransaction(
+            chain,
             transaction.from,
             transaction.password,
             transaction.to,
@@ -322,6 +324,7 @@ export default connect(
         );
         return dispatch(
           accounts.actions.sendTransaction(
+            chain,
             transaction.from,
             transaction.password,
             tokenInfo.get('address'),
@@ -333,7 +336,7 @@ export default connect(
         );
       }
 
-      return traceValidate({
+      return traceValidate(chain, {
         from: transaction.from,
         password: transaction.password !== '' ? transaction.password : null,
         to: transaction.to,
@@ -348,6 +351,7 @@ export default connect(
         .then(() => {
           return dispatch(
             accounts.actions.sendTransaction(
+              chain,
               transaction.from,
               transaction.password !== '' ? transaction.password : null,
               transaction.to,

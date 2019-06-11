@@ -13,9 +13,9 @@ export function txFeeFiat(gasPrice, gasLimit, rate) {
   return Currency.convert(ether.toString(), rate);
 }
 
-export const traceValidate = (tx, dispatch, estimateGas): Promise<number> => {
+export const traceValidate = (chain, tx, dispatch, estimateGas): Promise<number> => {
   return new Promise((resolve, reject) => {
-    dispatch(estimateGas(tx.from, tx.to, tx.gas, tx.gasPrice, tx.value, tx.data))
+    dispatch(estimateGas(chain, tx))
       .then((gasEst) => {
         if (!gasEst) {
           reject('Invalid Transaction'); // eslint-disable-line

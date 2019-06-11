@@ -137,7 +137,7 @@ function onTrackedTxNotFound(state, action) {
 function onUpdateTxs(state, action) {
   if (action.type === ActionTypes.UPDATE_TXS) {
     return state.update('trackedTransactions', (txs) => {
-      action.transactions.forEach((t) => {
+      action.payload.transactions.forEach((t) => {
         const pos = txs.findKey((tx) => tx.get('hash') === t.hash);
         if (pos >= 0) {
           txs = txs.update(pos, (tx) => tx.mergeWith((o, n) => n || o, createTx(t)));
