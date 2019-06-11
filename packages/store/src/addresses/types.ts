@@ -30,7 +30,7 @@ export interface IAddressesState {
   loading: boolean;
 }
 
-export enum Actions {
+export enum ActionTypes {
   SET_BALANCE = 'ACCOUNT/SET_BALANCE',
   SET_BALANCES = 'ACCOUNT/SET_BALANCES',
   LOADING = 'ACCOUNT/LOADING',
@@ -43,21 +43,27 @@ export enum Actions {
   SET_TXCOUNT = 'ACCOUNT/SET_TXCOUNT',
 }
 
+export interface UpdateAddressAction {
+  type: ActionTypes.UPDATE_ACCOUNT;
+  payload: any;
+}
+
 export interface SetListAction {
-  type: Actions.SET_LIST;
+  type: ActionTypes.SET_LIST;
   payload: any;
 }
 
 export interface SetBalanceAction {
-  type: Actions.SET_BALANCE;
+  type: ActionTypes.SET_BALANCE;
   payload: any;
 }
 
 export interface LoadingAction {
-  type: Actions.LOADING;
+  type: ActionTypes.LOADING;
 }
 
 export type AddressesAction =
   | SetListAction
   | LoadingAction
-  | SetBalanceAction;
+  | SetBalanceAction
+  | UpdateAddressAction;

@@ -156,9 +156,11 @@ export function updateAccount(address, name, description) {
       .then(() => {
         dispatch({
           type: ActionTypes.UPDATE_ACCOUNT,
-          address,
-          name,
-          description,
+          payload: {
+            address,
+            name,
+            description,
+          }
         });
       });
   };

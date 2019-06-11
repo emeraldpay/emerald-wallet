@@ -1,11 +1,11 @@
 import { fromJS } from 'immutable';
-import { Actions } from './types';
+import { ActionTypes } from './types';
 import { reducer, INITIAL_STATE } from "./reducer";
 
 describe('addresses reducer', () => {
   it('handles Actions.LOADING', () => {
 
-    const state = reducer(undefined, { type: Actions.LOADING });
+    const state = reducer(undefined, { type: ActionTypes.LOADING });
     expect(state).toEqual(fromJS({
       ...(INITIAL_STATE.toJS()),
       loading: true,
@@ -15,7 +15,7 @@ describe('addresses reducer', () => {
   it('SET_LIST should store addresses correctly', () => {
     // do
     let state: any = reducer(undefined, {
-      type: Actions.SET_LIST,
+      type: ActionTypes.SET_LIST,
       payload: [{
         accountId: 'address',
         name: 'name1',

@@ -79,13 +79,14 @@ function updateAccount(state, id, f) {
 //   return state;
 // }
 
-function onUpdateAccount(state, action) {
-  if (action.type === ActionTypes.UPDATE_ACCOUNT) {
-    return updateAccount(state, action.address, (acc) => acc.set('name', action.name)
-      .set('description', action.description));
-  }
-  return state;
-}
+// function onUpdateAccount(state, action) {
+//   if (action.type === ActionTypes.UPDATE_ACCOUNT) {
+//     return updateAccount(state, action.address, (acc) => acc
+//       .set('name', action.name)
+//       .set('description', action.description));
+//   }
+//   return state;
+// }
 
 // function onSetBalance(state, action) {
 //   if (action.type === ActionTypes.SET_BALANCE) {
@@ -168,7 +169,7 @@ export default function accountsReducers(state, action) {
   // state = onLoading(state, action);
   // state = onSetAccountsList(state, action);
   state = onAddAccount(state, action);
-  state = onUpdateAccount(state, action);
+  // state = onUpdateAccount(state, action);
   // state = onSetBalance(state, action);
   state = onSetBalances(state, action);
   state = onSetTxCount(state, action);

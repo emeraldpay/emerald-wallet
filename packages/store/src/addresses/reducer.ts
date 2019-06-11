@@ -1,7 +1,7 @@
 import { fromJS, Map } from 'immutable';
 import { Wei } from '@emeraldplatform/eth';
 import {
-  IAddressesState, AddressesAction, LoadingAction, Actions, SetListAction, SetBalanceAction,
+  IAddressesState, AddressesAction, LoadingAction, ActionTypes, SetListAction, SetBalanceAction, UpdateAddressAction,
 } from "./types";
 
 export const INITIAL_STATE = fromJS({
@@ -62,31 +62,39 @@ function updateAccount(state: any, id: string, f: any) {
 
 
 function onSetBalance(state: any, action: SetBalanceAction) {
-    const { accountId, value } = action.payload;
-    return updateAccount(state, accountId, (acc: any) => {
-      // Update balance only if it's changed
-      const newBalance = new Wei(value);
-      const currentBalance = acc.get('balance');
-      if (currentBalance && currentBalance.equals(newBalance)) {
-        return acc.set('balancePending', null);
-      }
-      return acc
-        .set('balance', newBalance)
-        .set('balancePending', null);
-    });
+  const { accountId, value } = action.payload;
+  return updateAccount(state, accountId, (acc: any) => {
+    // Update balance only if it's changed
+    const newBalance = new Wei(value);
+    const currentBalance = acc.get('balance');
+    if (currentBalance && currentBalance.equals(newBalance)) {
+      return acc.set('balancePending', null);
+    }
+    return acc
+      .set('balance', newBalance)
+      .set('balancePending', null);
+  });
 }
 
+function onUpdateAccount(state: any, action: UpdateAddressAction) {
+  const { address, name, description } = action.payload;
+  return updateAccount(state, address, (acc: any) => acc
+    .set('name', name)
+    .set('description', description));
+}
 
 export function reducer(
   state: any = INITIAL_STATE,
   action: AddressesAction
 ): IAddressesState {
   switch(action.type) {
-    case Actions.SET_BALANCE:
+    case ActionTypes.UPDATE_ACCOUNT:
+      return onUpdateAccount(state, action);
+    case ActionTypes.SET_BALANCE:
       return onSetBalance(state, action);
-    case Actions.LOADING:
+    case ActionTypes.LOADING:
       return onLoading(state, action);
-    case Actions.SET_LIST:
+    case ActionTypes.SET_LIST:
       return onSetList(state, action);
     default:
       return state;
