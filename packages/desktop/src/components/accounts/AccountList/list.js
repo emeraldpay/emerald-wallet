@@ -3,9 +3,8 @@ import {Blockchains} from '@emeraldwallet/core';
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/styles';
 import {connect} from 'react-redux';
-import Immutable from 'immutable';
 import {translate} from 'react-i18next';
-import {screen} from '../../../store';
+import {screen, addresses} from '../../../store';
 import launcher from '../../../store/launcher';
 import Account from './account';
 
@@ -59,7 +58,7 @@ const StyledAccountList = withStyles(styles)(AccountList);
 export default connect(
   (state, ownProps) => {
     return {
-      accounts: state.accounts.get('accounts', Immutable.List()),
+      accounts: addresses.selectors.all(state),
       showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
     };
   },

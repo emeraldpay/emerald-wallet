@@ -1,5 +1,6 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import {Blockchains} from '@emeraldwallet/core';
 import Tokens from 'store/vault/tokens';
 import { fromJS } from 'immutable';
 import { CreateTx, SignTx } from '@emeraldwallet/ui';
@@ -10,7 +11,7 @@ import { Back } from '@emeraldplatform/ui-icons';
 import { connect } from 'react-redux';
 import accounts from 'store/vault/accounts';
 import network from 'store/network';
-import { screen } from 'store';
+import { screen, addresses } from 'store';
 import ledger from 'store/ledger/';
 import Wallet from 'store/wallet';
 import TransactionShow from '../../components/tx/TxDetails';
@@ -236,7 +237,8 @@ class MultiCreateTransaction extends React.Component {
 export default connect(
   (state, ownProps) => {
     const { account } = ownProps;
-    const blockchain = Wallet.selectors.currentBlockchain(state);
+    const chain = account.get('blockchain');
+    const blockchain = Blockchains[chain];
     const txFeeSymbol = (blockchain && blockchain.params.coinTicker) || '';
     const allTokens = state.tokens.get('tokens').concat([fromJS({address: '', symbol: txFeeSymbol, name: txFeeSymbol})]).reverse();
     const gasPrice = network.selectors.gasPrice(state);
@@ -248,7 +250,7 @@ export default connect(
     const ledgerConnected = state.ledger.get('connected');
 
     const addressBookAddresses = state.addressBook.get('addressBook').toJS().map((i) => i.address);
-    const ownAddresses = accounts.selectors.getAll(state).toJS().map((i) => i.id);
+    const ownAddresses = addresses.selectors.all(state).toJS().map((i) => i.id);
 
     const tokenSymbols = allTokens.toJS().map((i) => i.symbol);
 
@@ -261,11 +263,11 @@ export default connect(
       data: ownProps.data,
       selectedFromAccount: account.get('id'),
       getBalanceForAddress: (address, token) => {
-        return Wallet.selectors.balanceWei(state, address, token);
+        return Wallet.selectors.balanceWei(state, chain, address, token);
       },
       getFiatForAddress: (address, token) => {
         if (token !== txFeeSymbol) { return '??'; }
-        const selectedAccount = state.accounts.get('accounts').find((acnt) => acnt.get('id') === address);
+        const selectedAccount = addresses.selectors.find(state, address, chain);
         const newBalance = selectedAccount.get('balance');
         return newBalance.getFiat(fiatRate).toString();
       },

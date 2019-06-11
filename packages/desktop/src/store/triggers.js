@@ -48,8 +48,7 @@ export function onceHasAccountsWithBalances(store) {
 
 export function onceAccountsLoaded(store) {
   const check = () => {
-    const { accounts } = store.getState();
-    return accounts.get('loading') === false;
+    return addresses.selectors.isLoading(store.getState()) === false;
   };
 
   return new Promise((resolve, reject) => handleTrigger(check, resolve, store));

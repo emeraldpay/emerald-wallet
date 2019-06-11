@@ -10,7 +10,6 @@ import { Button } from '@emeraldwallet/ui';
 import { Blockchains } from '@emeraldwallet/core';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../Balance';
-import TokenUnits from '../../../lib/tokenUnits';
 
 const styles2 = (theme) => ({
   tokensDivider: {
@@ -48,7 +47,7 @@ export class Account extends React.Component {
 
     onAddressClick = () => this.props.openAccount(this.props.account);
 
-    onAddEtcClick = () => this.props.showReceiveDialog(this.props.account);
+    handleDepositClick = () => this.props.showReceiveDialog(this.props.account);
 
     render() {
       const {
@@ -62,8 +61,7 @@ export class Account extends React.Component {
 
       const { coinTicker } = Blockchains[account.get('blockchain')].params;
 
-      // TODO: we convert Wei to TokenUnits here
-      const balance = account.get('balance') ? new TokenUnits(account.get('balance').toWei(), 18) : null;
+      const balance = account.get('balance');
       const accId = account.get('id');
       return (
         <Card className={classes.card}>
@@ -83,7 +81,8 @@ export class Account extends React.Component {
                   <div style={{marginLeft: '10px'}}>
                     {balance && <AccountBalance
                       fiatStyle={fiatStyle}
-                      balance={ balance }
+                      balance={ balance.toWei().toString(10) }
+                      decimals={ 18 }
                       symbol={ coinTicker }
                       showFiat={ showFiat }
                     />}
@@ -97,7 +96,7 @@ export class Account extends React.Component {
                     <SecondaryMenu account={account} />
                     <Button
                       label="Deposit"
-                      onClick={ this.onAddEtcClick }
+                      onClick={ this.handleDepositClick }
                     />
                     <Button
                       label="Send"

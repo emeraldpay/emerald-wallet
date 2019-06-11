@@ -89,7 +89,7 @@ const ReceiveDialog = ({address, onClose, classes}: Props) => {
               <AccountAddress id={address.value}/>
             </div>
             <div className={classes.note}>
-              Share your account address and use it to top up your account with ETC from any other service.
+              Share your account address and use it to top up your account with {address.coinTicker} from any other service.
               It may take some time for your coins be deposited.
             </div>
           </div>

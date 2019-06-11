@@ -8,12 +8,8 @@ export default connect(
     const fiatCurrency = WalletSettings.selectors.fiatCurrency(state);
     const fiatRate = WalletSettings.selectors.fiatRate(state);
     return {
-      symbol: ownProps.symbol,
-      balance: ownProps.balance.value.toString(10),
-      decimals: ownProps.balance.decimals,
       fiatCurrency,
       fiatRate,
-      showFiat: ownProps.showFiat,
     };
   },
   null
