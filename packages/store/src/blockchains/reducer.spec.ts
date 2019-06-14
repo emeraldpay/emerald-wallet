@@ -1,5 +1,6 @@
-import { ActionTypes } from './types';
+import {ActionTypes, moduleName} from './types';
 import { reducer, INITIAL_STATE } from "./reducer";
+import * as selectors from "./selectors";
 
 describe('blockchains reducer', () => {
   it('handles Actions.BLOCK', () => {
@@ -12,5 +13,6 @@ describe('blockchains reducer', () => {
   it('handles Actions.GAS_PRICE', () => {
     let state = reducer(undefined, { type: ActionTypes.GAS_PRICE, payload: {chain: "etc", gasPrice: 850000 } });
     expect(state).toEqual(INITIAL_STATE.set("etc", { gasPrice: 850000, height: null }));
+    expect(selectors.gasPrice({[moduleName]: state}, "etc")).toEqual(850000);
   })
 });

@@ -4,13 +4,13 @@ import {EthereumTx, BlockchainCode} from '@emeraldwallet/core';
 import {convert, EthAddress} from '@emeraldplatform/core';
 import {EthAccount} from '@emeraldplatform/eth-account';
 import {loadTokensBalances} from '../tokens/tokenActions';
-import {screen} from '../..';
 import history from '../../wallet/history';
 import launcher from '../../launcher';
 import ActionTypes from './actionTypes';
 import createLogger from '../../../utils/logger';
-import {dispatchRpcError} from '../../wallet/screen/screenActions';
+import { screen } from '../..';
 
+const { dispatchRpcError } = screen.actions;
 const currentChain = (state) => launcher.selectors.getChainName(state);
 
 type
@@ -91,7 +91,7 @@ export function loadAccountsList() {
 
       dispatch({
         type: ActionTypes.SET_LIST,
-        accounts: result,
+        payload: result,
       });
       dispatch(fetchHdPaths());
 
@@ -156,9 +156,11 @@ export function updateAccount(address, name, description) {
       .then(() => {
         dispatch({
           type: ActionTypes.UPDATE_ACCOUNT,
-          address,
-          name,
-          description,
+          payload: {
+            address,
+            name,
+            description,
+          },
         });
       });
   };
@@ -174,19 +176,19 @@ function unwrap(list) {
   });
 }
 
-function onTxSend(dispatch, sourceTx: Transaction) {
+function onTxSend(dispatch, sourceTx: Transaction, chain) {
   return (txHash: string) => {
-    dispatch(loadAccountBalance(sourceTx.from));
-    const sentTx = Object.assign({}, sourceTx, {hash: txHash});
+    // dispatch(loadAccountBalance(sourceTx.from));
+    const sentTx = {...sourceTx, hash: txHash};
 
     // TODO: dependency on wallet/history module!
-    dispatch(history.actions.trackTx(sentTx));
+    dispatch(history.actions.trackTx(sentTx, chain));
     dispatch(screen.actions.gotoScreen('transaction', sentTx));
   };
 }
 
-function getNonce(api, address: string) {
-  return api.geth.eth.getTransactionCount(address);
+function getNonce(api, chain, address: string) {
+  return api.chain(chain).eth.getTransactionCount(address);
 }
 
 function withNonce(tx: Transaction): (nonce: string) => Promise<Transaction> {
@@ -211,11 +213,16 @@ function verifySender(expected) {
 }
 
 function signTx(api, tx: Transaction, passphrase: string, chain: string) {
-  log.trace(`Calling emerald api to sign tx from ${tx.from} to ${tx.to}`);
+  log.trace(`Calling emerald api to sign tx from ${tx.from} to ${tx.to} in ${chain} blockchain`);
+  if (chain === 'morden') {
+    // otherwise RPC server gives 'wrong-sender'
+    // vault has different chain-id settings for etc and eth morden. server uses etc morden.
+    chain = 'etc-morden';
+  }
   return api.emerald.signTransaction(tx, passphrase, chain);
 }
 
-export function sendTransaction(from: string, passphrase: string, to, gas, gasPrice: string, value: string, data) {
+export function sendTransaction(chain, from: string, passphrase: string, to, gas, gasPrice: string, value: string, data) {
   const originalTx: Transaction = {
     from,
     to,
@@ -226,20 +233,14 @@ export function sendTransaction(from: string, passphrase: string, to, gas, gasPr
     nonce: '',
   };
   return (dispatch, getState, api) => {
-    let chain = currentChain(getState());
-    if (chain === 'morden') {
-      // otherwise RPC server gives 'wrong-sender'
-      // vault has different chain-id settings for etc and eth morden. server uses etc morden.
-      chain = 'etc-morden';
-    }
-    return getNonce(api, from)
+    return getNonce(api, chain, from)
       .then(withNonce(originalTx))
       .then((tx) => {
         return signTx(api, tx, passphrase, chain)
           .then(unwrap)
           .then(verifySender(from))
-          .then((signed) => api.geth.eth.sendRawTransaction(signed))
-          .then(onTxSend(dispatch, tx));
+          .then((signed) => api.chain(chain).eth.sendRawTransaction(signed))
+          .then(onTxSend(dispatch, tx, chain));
       })
       .catch(screen.actions.catchError(dispatch));
   };

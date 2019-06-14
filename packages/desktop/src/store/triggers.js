@@ -1,4 +1,5 @@
 import { TERMS_VERSION } from './config';
+import { addresses } from '.';
 
 const handleTrigger = (check, resolve, store) => {
   // check once with current state.
@@ -37,8 +38,7 @@ export function onceChainSet(store) {
 
 export function onceHasAccountsWithBalances(store) {
   const check = () => {
-    const { accounts } = store.getState();
-    const allAccounts = accounts.get('accounts');
+    const allAccounts = addresses.selectors.all(store.getState());
     const eachHasBalance = allAccounts.reduce((memo, account) => memo && account.get('balance') !== null, true);
     return allAccounts.size > 0 && eachHasBalance;
   };
@@ -48,8 +48,7 @@ export function onceHasAccountsWithBalances(store) {
 
 export function onceAccountsLoaded(store) {
   const check = () => {
-    const { accounts } = store.getState();
-    return accounts.get('loading') === false;
+    return addresses.selectors.isLoading(store.getState()) === false;
   };
 
   return new Promise((resolve, reject) => handleTrigger(check, resolve, store));

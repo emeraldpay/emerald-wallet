@@ -1,3 +1,5 @@
+import {Blockchains} from '@emeraldwallet/core';
+import {addresses} from '..';
 import tokens from 'store/vault/tokens';
 import {findNetwork} from 'lib/networks';
 import launcher from '../launcher';
@@ -14,10 +16,10 @@ export const balance = (state, address, token) => {
   return tokens.selectors.balanceByTokenSymbol(state.tokens, token, address).getDecimalized();
 };
 
-export const balanceWei = (state, address, token) => {
-  const blockchain = currentBlockchain(state);
+export const balanceWei = (state, chain, address, token) => {
+  const blockchain = Blockchains[chain];
   if (token === blockchain.params.coinTicker) {
-    const selectedAccount = state.accounts.get('accounts').find((acnt) => acnt.get('id') === address);
+    const selectedAccount = addresses.selectors.find(state, address, chain);
     return selectedAccount.get('balance');
   }
 

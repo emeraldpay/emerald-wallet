@@ -3,26 +3,6 @@ import accountReducers from './accountReducers';
 import ActionTypes from './actionTypes';
 
 describe('accountReducers', () => {
-  it('SET_LIST should store accounts correctly', () => {
-    let state = accountReducers(null, {});
-    // do
-    state = accountReducers(state, {
-      type: ActionTypes.SET_LIST,
-      accounts: [{
-        accountId: 'address',
-        name: 'name1',
-        description: 'desc1',
-        hidden: true,
-        hardware: false,
-        blockchain: 'etc',
-      }],
-    });
-    // assert
-    expect(state.get('accounts').last().get('hardware')).toEqual(false);
-    expect(state.get('accounts').last().get('hidden')).toEqual(true);
-    expect(state.get('accounts').last().get('blockchain')).toEqual('etc');
-  });
-
   it('ADD_ACCOUNT should set hd path', () => {
     // prepare
     let state = accountReducers(null, {});

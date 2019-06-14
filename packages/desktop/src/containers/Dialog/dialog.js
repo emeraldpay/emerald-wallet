@@ -7,7 +7,7 @@ import TokensDialog from '../../components/tokens/TokensDialog';
 import HideAccountDialog from '../../components/accounts/HideAccountDialog';
 import WalletHistory from '../../store/wallet/history';
 import accounts from '../../store/vault/accounts';
-import { closeDialog } from '../../store/wallet/screen/screenActions';
+import { screen } from '../../store';
 
 const log = createLogger('Dialog');
 
@@ -39,7 +39,7 @@ export default connect(
       // dispatch(accounts.actions.loadAccountsList());
       // dispatch(accounts.actions.loadPendingTransactions());
 
-      dispatch(closeDialog());
+      dispatch(screen.actions.closeDialog());
     },
   })
 )(Dialog);

@@ -104,7 +104,7 @@ describe('historyReducer', () => {
     // action
     const action = {
       type: ActionTypes.UPDATE_TXS,
-      transactions: [tx],
+      payload: [tx],
     };
     state = historyReducers(state, action);
     const trackedTxs = state.get('trackedTransactions').last().toJS();
@@ -140,12 +140,7 @@ describe('historyReducer', () => {
     // action
     const action = {
       type: ActionTypes.UPDATE_TXS,
-      transactions: [
-        {
-          hash: tx.hash,
-          timestamp: 123456789,
-        },
-      ],
+      payload: [{hash: tx.hash, timestamp: 123456789}],
     };
 
     state = historyReducers(state, action);
@@ -196,7 +191,7 @@ describe('historyReducer', () => {
     // do
     state = historyReducers(state, {
       type: ActionTypes.UPDATE_TXS,
-      transactions: txs,
+      payload: txs,
     });
 
     // assert

@@ -21,7 +21,14 @@ class BalanceIpc {
     ipcMain.on('subscribe-balance', (_, addresses) => {
       subscriber.stop();
       subscriber.subscribe(addresses, (event) => {
-        webContents.send('store', 'ACCOUNT/SET_BALANCE', {accountId: event.address, value: event.balance});
+        const action = {
+          type: 'ACCOUNT/SET_BALANCE',
+          payload: {
+            accountId: event.address,
+            value: event.balance,
+          },
+        };
+        webContents.send('store', action);
       });
     });
   }

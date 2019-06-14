@@ -4,8 +4,10 @@ import { connect } from 'react-redux';
 import { Account } from '@emeraldplatform/ui';
 import { Trash as DeleteIcon, Pen1 as EditIcon } from '@emeraldplatform/ui-icons';
 import IconButton from '@material-ui/core/IconButton';
-import { gotoScreen } from '../../../store/wallet/screen/screenActions';
+import { screen } from '../../../store';
 import Addressbook from '../../../store/vault/addressbook';
+
+const { gotoScreen } = screen.actions;
 
 export const styles = {
   container: {

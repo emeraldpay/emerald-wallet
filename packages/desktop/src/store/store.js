@@ -12,6 +12,7 @@ import settings from './wallet/settings';
 import tokens from './vault/tokens';
 import ledger from './ledger';
 import Addressbook from './vault/addressbook';
+import { addresses } from '.';
 
 import {
   readConfig,
@@ -61,7 +62,7 @@ export function startSync() {
 
   const promises = [
     store.dispatch(Addressbook.actions.loadAddressBook()),
-    store.dispatch(history.actions.init(chainId)),
+    store.dispatch(history.actions.init(supported)),
     store.dispatch(tokens.actions.loadTokenList()),
     store.dispatch(tokens.actions.addDefault(chainId)),
     store.dispatch(history.actions.refreshTrackedTransactions()),
@@ -114,12 +115,9 @@ function newWalletVersionCheck() {
 export function electronToStore() {
   return (dispatch) => {
     log.debug('Running launcher listener for Redux');
-    ipcRenderer.on('store', (event, type, message) => {
-      log.debug(`Got from IPC event: ${event} type: ${type} message: ${JSON.stringify(message)}`);
-      dispatch({
-        type: type,
-        payload: message,
-      });
+    ipcRenderer.on('store', (event, action) => {
+      log.debug(`Got from IPC event: ${event} action: ${JSON.stringify(action)}`);
+      dispatch(action);
     });
   };
 }
@@ -183,7 +181,7 @@ function getInitialScreen() {
   }
 
   return onceAccountsLoaded(store).then(() => {
-    const accountSize = store.getState().accounts.get('accounts').size;
+    const accountSize = addresses.selectors.all(store.getState()).size;
 
     if (accountSize === 0) {
       return store.dispatch(screen.actions.gotoScreen('landing'));

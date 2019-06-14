@@ -45,65 +45,66 @@ function updateAccount(state, id, f) {
   });
 }
 
-function onLoading(state, action) {
-  switch (action.type) {
-    case ActionTypes.LOADING:
-      return state.set('loading', true);
-    default:
-      return state;
-  }
-}
+// function onLoading(state, action) {
+//   switch (action.type) {
+//     case ActionTypes.LOADING:
+//       return state.set('loading', true);
+//     default:
+//       return state;
+//   }
+// }
 
-function onSetAccountsList(state, action) {
-  if (action.type === ActionTypes.SET_LIST) {
-    const existingAccounts = state.get('accounts');
-    const getExisting = (id) => {
-      const pos = existingAccounts.findKey((x) => x.get('id') === id);
-      if (pos >= 0) {
-        return existingAccounts.get(pos);
-      }
-      return initialAccount;
-    };
-    const updatedList = Immutable.fromJS(action.accounts).map((acc) => Immutable.fromJS({
-      name: acc.get('name'),
-      description: acc.get('description'),
-      id: acc.get('address'),
-      hardware: acc.get('hardware'),
-      hidden: acc.get('hidden'),
-      blockchain: acc.get('blockchain'),
-    })).map((acc) => getExisting(acc.get('id')).merge(acc));
-    return state
-      .set('accounts', updatedList)
-      .set('loading', false);
-  }
-  return state;
-}
+// function onSetAccountsList(state, action) {
+//   if (action.type === ActionTypes.SET_LIST) {
+//     const existingAccounts = state.get('accounts');
+//     const getExisting = (id) => {
+//       const pos = existingAccounts.findKey((x) => x.get('id') === id);
+//       if (pos >= 0) {
+//         return existingAccounts.get(pos);
+//       }
+//       return initialAccount;
+//     };
+//     const updatedList = Immutable.fromJS(action.accounts).map((acc) => Immutable.fromJS({
+//       name: acc.get('name'),
+//       description: acc.get('description'),
+//       id: acc.get('address'),
+//       hardware: acc.get('hardware'),
+//       hidden: acc.get('hidden'),
+//       blockchain: acc.get('blockchain'),
+//     })).map((acc) => getExisting(acc.get('id')).merge(acc));
+//     return state
+//       .set('accounts', updatedList)
+//       .set('loading', false);
+//   }
+//   return state;
+// }
 
-function onUpdateAccount(state, action) {
-  if (action.type === ActionTypes.UPDATE_ACCOUNT) {
-    return updateAccount(state, action.address, (acc) => acc.set('name', action.name)
-      .set('description', action.description));
-  }
-  return state;
-}
+// function onUpdateAccount(state, action) {
+//   if (action.type === ActionTypes.UPDATE_ACCOUNT) {
+//     return updateAccount(state, action.address, (acc) => acc
+//       .set('name', action.name)
+//       .set('description', action.description));
+//   }
+//   return state;
+// }
 
-function onSetBalance(state, action) {
-  if (action.type === ActionTypes.SET_BALANCE) {
-    const { accountId, value } = action.payload;
-    return updateAccount(state, accountId, (acc) => {
-      // Update balance only if it's changed
-      const newBalance = new Wei(value);
-      const currentBalance = acc.get('balance');
-      if (currentBalance && currentBalance.equals(newBalance)) {
-        return acc.set('balancePending', null);
-      }
-      return acc
-        .set('balance', newBalance)
-        .set('balancePending', null);
-    });
-  }
-  return state;
-}
+// function onSetBalance(state, action) {
+//   if (action.type === ActionTypes.SET_BALANCE) {
+//     const { accountId, value } = action.payload;
+//     return updateAccount(state, accountId, (acc) => {
+//       // Update balance only if it's changed
+//       const newBalance = new Wei(value);
+//       const currentBalance = acc.get('balance');
+//       if (currentBalance && currentBalance.equals(newBalance)) {
+//         return acc.set('balancePending', null);
+//       }
+//       return acc
+//         .set('balance', newBalance)
+//         .set('balancePending', null);
+//     });
+//   }
+//   return state;
+// }
 
 function onSetBalances(state, action) {
   if (action.type === ActionTypes.SET_BALANCES) {
@@ -165,11 +166,11 @@ function onPendingBalance(state, action) {
 
 export default function accountsReducers(state, action) {
   state = state || initial;
-  state = onLoading(state, action);
-  state = onSetAccountsList(state, action);
+  // state = onLoading(state, action);
+  // state = onSetAccountsList(state, action);
   state = onAddAccount(state, action);
-  state = onUpdateAccount(state, action);
-  state = onSetBalance(state, action);
+  // state = onUpdateAccount(state, action);
+  // state = onSetBalance(state, action);
   state = onSetBalances(state, action);
   state = onSetTxCount(state, action);
   state = onPendingBalance(state, action);

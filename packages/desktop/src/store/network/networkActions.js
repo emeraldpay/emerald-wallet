@@ -3,7 +3,7 @@ import { intervalRates } from '../config';
 import createLogger from '../../utils/logger';
 import ActionTypes from './actionTypes';
 import history from '../wallet/history';
-import { dispatchRpcError } from '../wallet/screen/screenActions';
+import { screen } from '..';
 
 export function switchChain({ chain, chainId }) {
   return (dispatch, getState) => {
@@ -22,13 +22,16 @@ export function getGasPrice() {
         type: ActionTypes.GAS_PRICE,
         value: result,
       });
-    }).catch(dispatchRpcError(dispatch));
+    }).catch(screen.actions.dispatchRpcError(dispatch));
   };
 }
 
-export function estimateGas(from: string, to: string, gas: string, gasPrice: string, value: string, data: string) {
+export function estimateGas(chain, tx) {
+  const {
+    from, to, gas, gasPrice, value, data,
+  } = tx;
   return (dispatch, getState, api) => {
-    return api.geth.eth.estimateGas({
+    return api.chain(chain).eth.estimateGas({
       from,
       to,
       gas,

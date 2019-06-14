@@ -12,7 +12,7 @@ import Immutable from 'immutable';
 import { cardSpace } from 'lib/styles';
 import { Button } from '@emeraldwallet/ui';
 import Addressbook from '../../store/vault/addressbook';
-import { gotoScreen } from '../../store/wallet/screen/screenActions';
+import { screen } from '../../store';
 import AddressEdit from './EditContact';
 
 
@@ -119,7 +119,7 @@ const AddressShow = connect(
       const address = ownProps.addressId;
       dispatch(Addressbook.actions.deleteAddress(address))
         .then((response) => {
-          dispatch(gotoScreen('address-book'));
+          dispatch(screen.actions.gotoScreen('address-book'));
           resolve(response);
         });
     }),

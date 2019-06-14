@@ -1,1 +1,1 @@
-export { screen } from '@emeraldwallet/store';
+export { screen, addresses, blockchains } from '@emeraldwallet/store';

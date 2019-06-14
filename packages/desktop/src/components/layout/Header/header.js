@@ -1,13 +1,14 @@
 import React from 'react';
+import {connect} from 'react-redux';
 import {AppBar, Toolbar} from '@material-ui/core';
 import {withStyles} from '@material-ui/styles';
-import {Button} from '@emeraldwallet/ui';
+import {Button, Status} from '@emeraldwallet/ui';
 import {Block as BlockIcon, Settings as SettingsIcon} from '@emeraldplatform/ui-icons';
 import SyncWarning from '../../../containers/SyncWarning';
-import Status from './Status';
 import Total from './Total';
 import {separateThousands} from '../../../lib/convert';
 import EmeraldTitle from './Title';
+import { blockchains } from '../../../store';
 
 const styles = (theme) => ({
   appBarRight: {
@@ -81,8 +82,7 @@ const Header = (props) => {
             <EmeraldTitle />
             <div className={props.classes.appBarRight}>
               <Total showFiat={showFiat}/>
-              <StyledBlockDisplay/>
-              <Status/>
+              <Status blockchains={props.chains}/>
               <StyledSettingsButton/>
             </div>
           </Toolbar>
@@ -93,4 +93,20 @@ const Header = (props) => {
   );
 };
 
-export default withStyles(styles)(Header);
+const StyledHeader = withStyles(styles)(Header);
+
+const mapStateToProps = (state, ownProps) => {
+  const chains = [];
+  const curr = blockchains.selectors.all(state);
+  for (const code of curr.keys()) {
+    chains.push({
+      title: code,
+      height: separateThousands(curr.get(code).height, ' '),
+    });
+  }
+  return {
+    chains,
+  };
+};
+
+export default connect(mapStateToProps, null)(StyledHeader);

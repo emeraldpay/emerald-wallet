@@ -4,7 +4,6 @@ import Immutable from 'immutable';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import QRCode from 'qrcode.react';
-import TokenUnits from 'lib/tokenUnits';
 import {Back} from '@emeraldplatform/ui-icons';
 import {
   Page, IdentityIcon, ButtonGroup, Account as AddressAvatar
@@ -69,7 +68,7 @@ export class AccountShow extends React.Component {
     } = this.props;
     // TODO: show pending balance too
     // TODO: we convert Wei to TokenUnits here
-    const balance = account.get('balance') ? new TokenUnits(account.get('balance').toWei(), 18) : null;
+    const balance = account.get('balance');
     const acc = {
       id: account.get('id'),
       description: account.get('description'),
@@ -118,7 +117,8 @@ export class AccountShow extends React.Component {
                   {balance && <Balance
                     showFiat={showFiat}
                     coinsStyle={{fontSize: '20px', lineHeight: '24px'}}
-                    balance={balance}
+                    balance={balance.toWei().toString(10)}
+                    decimals={18}
                     symbol={coinTicker}
                   />}
                 </div>
@@ -190,7 +190,7 @@ AccountShow.propTypes = {
 
 export default connect(
   (state, ownProps) => {
-    const account = accounts.selectors.selectAccount(state, ownProps.account.get('id'));
+    const { account } = ownProps;
     let transactions = Immutable.List();
     let tokensBalances = Immutable.List();
 
@@ -201,7 +201,7 @@ export default connect(
       );
       tokensBalances = tokens.selectors.balancesByAddress(state.tokens, account.get('id'));
     } else {
-      log.warn("Can't find account in general list of accounts", ownProps.account.get('id'));
+      log.warn("Can't find account in general list of accounts", account.get('id'));
     }
 
     return {
@@ -218,7 +218,11 @@ export default connect(
     },
     showReceiveDialog: () => {
       const {account} = ownProps;
-      dispatch(screen.actions.showDialog('receive', account.get('id')));
+      const address = {
+        value: account.get('id'),
+        coinTicker: Blockchains[account.get('blockchain')].params.coinTicker,
+      };
+      dispatch(screen.actions.showDialog('receive', address));
     },
     goBack: () => {
       dispatch(screen.actions.gotoScreen('home'));
