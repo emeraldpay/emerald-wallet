@@ -26,14 +26,3 @@ export const onOpenWallet = () => {
     dispatch(screen.actions.gotoScreen(numberOfAccounts === 0 ? 'landing' : 'home'));
   };
 };
-
-export const switchEndpoint = (chain: {chainId: number, chain: string}) => {
-  return (dispatch, getState) => {
-    dispatch(history.actions.init(chain.chainId));
-    dispatch(network.actions.switchChain(chain));
-    dispatch(accounts.actions.loadAccountsList());
-    dispatch(tokens.actions.reset());
-    dispatch(tokens.actions.addDefault(chain.chainId));
-    dispatch(tokens.actions.loadTokenList());
-  };
-};

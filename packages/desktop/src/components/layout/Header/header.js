@@ -30,7 +30,7 @@ const styles = (theme) => ({
 
 const Header = (props) => {
   const {
-    openSettings, theme, network, showFiat
+    openSettings, theme, network, showFiat,
   } = props;
 
   const blockDisplayStyles = {
@@ -102,10 +102,10 @@ const mapStateToProps = (state, ownProps) => {
     chains.push({
       title: code,
       height: separateThousands(curr.get(code).height, ' '),
-    })
+    });
   }
   return {
-    chains
+    chains,
   };
 };
 

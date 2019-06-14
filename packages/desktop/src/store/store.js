@@ -62,7 +62,7 @@ export function startSync() {
 
   const promises = [
     store.dispatch(Addressbook.actions.loadAddressBook()),
-    store.dispatch(history.actions.init(chainId)),
+    store.dispatch(history.actions.init(supported)),
     store.dispatch(tokens.actions.loadTokenList()),
     store.dispatch(tokens.actions.addDefault(chainId)),
     store.dispatch(history.actions.refreshTrackedTransactions()),

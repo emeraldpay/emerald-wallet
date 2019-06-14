@@ -25,7 +25,7 @@ class BalanceIpc {
           type: 'ACCOUNT/SET_BALANCE',
           payload: {
             accountId: event.address,
-            value: event.balance
+            value: event.balance,
           },
         };
         webContents.send('store', action);

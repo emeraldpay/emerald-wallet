@@ -176,13 +176,13 @@ function unwrap(list) {
   });
 }
 
-function onTxSend(dispatch, sourceTx: Transaction) {
+function onTxSend(dispatch, sourceTx: Transaction, chain) {
   return (txHash: string) => {
     // dispatch(loadAccountBalance(sourceTx.from));
-    const sentTx = Object.assign({}, sourceTx, {hash: txHash});
+    const sentTx = {...sourceTx, hash: txHash};
 
     // TODO: dependency on wallet/history module!
-    dispatch(history.actions.trackTx(sentTx));
+    dispatch(history.actions.trackTx(sentTx, chain));
     dispatch(screen.actions.gotoScreen('transaction', sentTx));
   };
 }
@@ -240,7 +240,7 @@ export function sendTransaction(chain, from: string, passphrase: string, to, gas
           .then(unwrap)
           .then(verifySender(from))
           .then((signed) => api.chain(chain).eth.sendRawTransaction(signed))
-          .then(onTxSend(dispatch, tx));
+          .then(onTxSend(dispatch, tx, chain));
       })
       .catch(screen.actions.catchError(dispatch));
   };

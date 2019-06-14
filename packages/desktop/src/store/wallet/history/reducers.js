@@ -40,6 +40,7 @@ function createTx(data) {
   tx = tx.set('gas', data.gas ? toBigNumber(data.gas).toNumber() : data.gas);
   tx = tx.set('nonce', data.nonce ? toBigNumber(data.nonce).toNumber() : data.nonce);
   tx = tx.set('timestamp', data.timestamp);
+  tx = tx.set('chainId', data.chainId);
   if (data.nonce) {
     tx = tx.set('nonce', toNumber(data.nonce));
   }
@@ -137,7 +138,7 @@ function onTrackedTxNotFound(state, action) {
 function onUpdateTxs(state, action) {
   if (action.type === ActionTypes.UPDATE_TXS) {
     return state.update('trackedTransactions', (txs) => {
-      action.payload.transactions.forEach((t) => {
+      action.payload.forEach((t) => {
         const pos = txs.findKey((tx) => tx.get('hash') === t.hash);
         if (pos >= 0) {
           txs = txs.update(pos, (tx) => tx.mergeWith((o, n) => n || o, createTx(t)));

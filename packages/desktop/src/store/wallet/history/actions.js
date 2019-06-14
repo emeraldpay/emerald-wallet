@@ -1,4 +1,5 @@
 // @flow
+import { Blockchains } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import createLogger from '../../../utils/logger';
 import type { Transaction } from './types';
@@ -10,31 +11,35 @@ const log = createLogger('historyActions');
 const txStoreKey = (chainId) => `chain-${chainId}-trackedTransactions`;
 const currentChainId = (state) => state.wallet.history.get('chainId');
 
-function persistTransactions(state) {
+const getChainId = (chainCode) => Blockchains[chainCode].params.chainId;
+
+function persistTransactions(state, chainId) {
+  const txs = allTrackedTxs(state).toJS().filter((t) => (t.chainId === chainId));
   storeTransactions(
-    txStoreKey(currentChainId(state)),
-    allTrackedTxs(state).toJS()
+    txStoreKey(chainId),
+    txs
   );
 }
 
-function loadPersistedTransactions(state): Array<Transaction> {
-  const chainId = currentChainId(state);
+function loadPersistedTransactions(state, chainId) {
   const loaded = loadTransactions(txStoreKey(chainId));
 
   const txs = loaded.map((tx) => ({
-      ...tx,
-      chainId: chainId,
+    ...tx,
+    chainId,
   }));
   return txs;
 }
 
-function updateAndTrack(dispatch, getState, api, txs) {
-  const pendingTxs = txs.filter((tx) => !tx.blockNumber);
+function updateAndTrack(dispatch, getState, api, txs, chain) {
+  const chainId = getChainId(chain);
+
+  const pendingTxs = txs.filter((tx) => !tx.blockNumber).map((t) => ({...t, chainId}));
   if (pendingTxs.length !== 0) {
     dispatch({type: ActionTypes.TRACK_TXS, txs: pendingTxs});
   }
 
-  persistTransactions(getState());
+  persistTransactions(getState(), chainId);
 
   txs.forEach((tx) => {
     ipcRenderer.send('subscribe-tx', tx.hash);
@@ -42,16 +47,21 @@ function updateAndTrack(dispatch, getState, api, txs) {
 }
 
 
-export function trackTx(tx) { return (...args) => updateAndTrack(...args, [tx]); }
-export function trackTxs(txs) { return (...args) => updateAndTrack(...args, txs); }
+export function trackTx(tx, chain) { return (...args) => updateAndTrack(...args, [tx], chain); }
+export function trackTxs(txs, chain) { return (...args) => updateAndTrack(...args, txs, chain); }
 
-export function init(chainId: number) {
+export function init(chains) {
   return (dispatch, getState) => {
-    log.debug(`Loading persisted transactions...`);
+    log.debug('Loading persisted transactions...');
 
+    const storedTxs = [];
 
-    // load history for chain
-    const storedTxs = loadPersistedTransactions(getState());
+    for (const chain of chains) {
+      // load history for chain
+      const chainId = getChainId(chain);
+      storedTxs.push(...loadPersistedTransactions(getState(), chainId));
+    }
+
     dispatch({
       type: ActionTypes.LOAD_STORED_TXS,
       transactions: storedTxs,

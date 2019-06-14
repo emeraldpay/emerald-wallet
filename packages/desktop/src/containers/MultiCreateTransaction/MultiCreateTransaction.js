@@ -11,7 +11,7 @@ import { Back } from '@emeraldplatform/ui-icons';
 import { connect } from 'react-redux';
 import accounts from 'store/vault/accounts';
 import network from 'store/network';
-import { screen, addresses } from 'store';
+import { screen, addresses, blockchains } from 'store';
 import ledger from 'store/ledger/';
 import Wallet from 'store/wallet';
 import TransactionShow from '../../components/tx/TxDetails';
@@ -241,7 +241,7 @@ export default connect(
     const blockchain = Blockchains[chain];
     const txFeeSymbol = (blockchain && blockchain.params.coinTicker) || '';
     const allTokens = state.tokens.get('tokens').concat([fromJS({address: '', symbol: txFeeSymbol, name: txFeeSymbol})]).reverse();
-    const gasPrice = network.selectors.gasPrice(state);
+    const gasPrice = blockchains.selectors.gasPrice(state, chain);
 
     const fiatRate = state.wallet.settings.get('localeRate');
     const currency = state.wallet.settings.get('localeCurrency');
