@@ -115,12 +115,9 @@ function newWalletVersionCheck() {
 export function electronToStore() {
   return (dispatch) => {
     log.debug('Running launcher listener for Redux');
-    ipcRenderer.on('store', (event, type, message) => {
-      log.debug(`Got from IPC event: ${event} type: ${type} message: ${JSON.stringify(message)}`);
-      dispatch({
-        type: type,
-        payload: message,
-      });
+    ipcRenderer.on('store', (event, action) => {
+      log.debug(`Got from IPC event: ${event} action: ${JSON.stringify(action)}`);
+      dispatch(action);
     });
   };
 }

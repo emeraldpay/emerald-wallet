@@ -160,7 +160,7 @@ export function updateAccount(address, name, description) {
             address,
             name,
             description,
-          }
+          },
         });
       });
   };

@@ -14,7 +14,7 @@ import {
   Token1 as TokenIcon,
   Book as BookIcon,
 } from '@emeraldplatform/ui-icons';
-import Button from '../common/Button';
+import Button from '../../common/Button';
 
 const styles2 = (theme?: any) => ( {
   buttonText: {

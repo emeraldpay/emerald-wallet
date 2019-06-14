@@ -1,3 +1,5 @@
+export const moduleName = "blockchains";
+
 export interface IBlockchain {
   height: number | null;
   gasPrice: any | null;

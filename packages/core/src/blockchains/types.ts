@@ -9,4 +9,5 @@ export interface Transaction {
 export interface BlockchainParams {
   decimals: number;
   coinTicker: string;
+  chainId: number;
 }

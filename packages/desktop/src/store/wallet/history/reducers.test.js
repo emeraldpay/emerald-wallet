@@ -141,7 +141,7 @@ describe('historyReducer', () => {
     const action = {
       type: ActionTypes.UPDATE_TXS,
       payload: {
-        transactions: [{ hash: tx.hash, timestamp: 123456789 }]
+        transactions: [{hash: tx.hash, timestamp: 123456789}],
       },
     };
 

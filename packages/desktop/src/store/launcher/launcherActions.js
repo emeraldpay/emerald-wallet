@@ -77,6 +77,7 @@ export function saveSettings(extraSettings) {
   };
 }
 
+//TODO: depricated
 export function listenElectron() {
   return (dispatch, getState) => {
     log.debug('Running launcher listener');

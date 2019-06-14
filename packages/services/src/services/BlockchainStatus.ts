@@ -1,3 +1,4 @@
+import {blockchains} from '@emeraldwallet/store';
 import {ChainListener} from "../ChainListener";
 import {IService} from './Services';
 
@@ -23,11 +24,12 @@ export class BlockchainStatus implements IService {
     this.listener = this.apiAccess.newChainListener(this.chain);
     const {webContents} = this;
     this.listener!.subscribe((head) => {
-      webContents.send('store', 'BLOCKCHAINS/BLOCK', {
+      const action = blockchains.actions.blockAction({
         chain: this.chain,
         height: head.height,
         hash: head.hash
       });
+      webContents.send('store', action);
     });
   }
 

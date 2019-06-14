@@ -218,7 +218,11 @@ export default connect(
     },
     showReceiveDialog: () => {
       const {account} = ownProps;
-      dispatch(screen.actions.showDialog('receive', account.get('id')));
+      const address = {
+        value: account.get('id'),
+        coinTicker: Blockchains[account.get('blockchain')].params.coinTicker,
+      };
+      dispatch(screen.actions.showDialog('receive', address));
     },
     goBack: () => {
       dispatch(screen.actions.gotoScreen('home'));

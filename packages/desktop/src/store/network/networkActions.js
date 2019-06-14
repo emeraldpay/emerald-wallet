@@ -27,7 +27,9 @@ export function getGasPrice() {
 }
 
 export function estimateGas(chain, tx) {
-  const { from, to, gas, gasPrice, value, data} = tx;
+  const {
+    from, to, gas, gasPrice, value, data,
+  } = tx;
   return (dispatch, getState, api) => {
     return api.chain(chain).eth.estimateGas({
       from,

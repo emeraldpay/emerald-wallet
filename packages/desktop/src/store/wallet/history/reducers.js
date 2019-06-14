@@ -149,15 +149,6 @@ function onUpdateTxs(state, action) {
   return state;
 }
 
-function onChainChanged(state, action) {
-  if (action.type === ActionTypes.CHAIN_CHANGED) {
-    return state
-      .set('chainId', action.chainId)
-      .set('trackedTransactions', fromJS([]));
-  }
-  return state;
-}
-
 export default function historyReducers(state, action) {
   state = state || initial;
   state = onTrackTx(state, action);
@@ -166,6 +157,5 @@ export default function historyReducers(state, action) {
   state = onTrackedTxNotFound(state, action);
   state = onUpdateTxs(state, action);
   state = onPendingTx(state, action);
-  state = onChainChanged(state, action);
   return state;
 }
