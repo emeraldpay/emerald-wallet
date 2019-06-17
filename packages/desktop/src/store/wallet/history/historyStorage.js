@@ -44,9 +44,9 @@ export function loadTransactions(key: string, chainId): Array<Transaction> {
 function id2chain(id) {
   switch (id) {
     case 1:
-      return "eth";
+      return 'eth';
     case 61:
-      return "etc";
+      return 'etc';
     default:
       return null;
   }
