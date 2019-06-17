@@ -15,8 +15,6 @@ const { startProtocolHandler } = require('./protocol');
 const assertSingletonWindow = require('./singletonWindow');
 const { URL_FOR_CHAIN } = require('./utils');
 const { Prices } = require('./prices');
-const { BalanceIpc } = require('./ipc/balance');
-const { TransactionIpc } = require('./ipc/transactions');
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
@@ -34,7 +32,6 @@ global.launcherConfig = {
 };
 
 log.info('userData: ', app.getPath('userData'));
-log.info(`Chain: ${JSON.stringify(settings.getChain())}`);
 log.info('Settings: ', settings.toJS());
 
 assertSingletonWindow();
@@ -60,7 +57,7 @@ app.on('ready', () => {
   const services = new Services(browserWindow.webContents, serverConnect, apiAccess);
   ipc({ settings, services });
 
-  const services2 = createServices2(browserWindow.webContents, apiAccess);
+  const services2 = createServices2(ipcMain, browserWindow.webContents, apiAccess);
 
   app.on('quit', () => {
     services.shutdown();
@@ -77,12 +74,6 @@ app.on('ready', () => {
 
   const prices = new Prices(browserWindow.webContents, apiAccess);
   prices.start();
-
-  const balanceIpc = new BalanceIpc(browserWindow.webContents, apiAccess);
-  balanceIpc.start(settings.getChain().name);
-
-  const transactionIpc = new TransactionIpc(browserWindow.webContents, apiAccess);
-  transactionIpc.start(settings.getChain().name);
 });
 
 

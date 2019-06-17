@@ -10,7 +10,6 @@ import Wallet from '../../../../store/wallet';
 import WalletHistory from '../../../../store/wallet/history';
 import Balance from '../../../accounts/Balance';
 import i18n from '../../../../i18n/i18n';
-import TokenUnits from '../../../../lib/tokenUnits';
 
 function txValueRenderer(showFiat) {
   return function renderer(balance, ticker) {
@@ -18,7 +17,8 @@ function txValueRenderer(showFiat) {
       // fiatStyle={fiatStyle}
       symbol={ ticker }
       showFiat={ showFiat }
-      balance={ new TokenUnits(balance.amount, balance.decimals) }
+      balance={ balance.amount }
+      decimals={ balance.decimals }
       withAvatar={ false }
     />);
   };
