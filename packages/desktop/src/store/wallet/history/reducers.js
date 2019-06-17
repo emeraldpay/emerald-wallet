@@ -41,6 +41,7 @@ function createTx(data) {
   tx = tx.set('nonce', data.nonce ? toBigNumber(data.nonce).toNumber() : data.nonce);
   tx = tx.set('timestamp', data.timestamp);
   tx = tx.set('chainId', data.chainId);
+  tx = tx.set('chain', data.chain);
   if (data.nonce) {
     tx = tx.set('nonce', toNumber(data.nonce));
   }
