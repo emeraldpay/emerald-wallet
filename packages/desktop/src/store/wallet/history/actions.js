@@ -22,7 +22,7 @@ function persistTransactions(state, chainId) {
 }
 
 function loadPersistedTransactions(state, chainId) {
-  const loaded = loadTransactions(txStoreKey(chainId));
+  const loaded = loadTransactions(txStoreKey(chainId), chainId);
 
   const txs = loaded.map((tx) => ({
     ...tx,

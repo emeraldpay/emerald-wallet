@@ -1,13 +1,12 @@
 import React from 'react';
 import {connect} from 'react-redux';
 import {TxDetails} from '@emeraldwallet/ui';
-import {Currency} from '@emeraldwallet/core';
+import {Blockchains, Currency} from '@emeraldwallet/core';
 import {Wei} from '@emeraldplatform/eth';
 import launcher from 'store/launcher';
 import {screen} from '../../../store';
 import createLogger from '../../../utils/logger';
 import WalletSettings from '../../../store/wallet/settings';
-import Wallet from '../../../store/wallet';
 
 const {gotoScreen} = screen.actions;
 const log = createLogger('TxDetails');
@@ -39,13 +38,14 @@ export default connect(
       const coins = new Wei(Tx.get('value')).toEther();
       fiatAmount = Currency.format(Number(Currency.convert(coins, fiatRate)), currentCurrency);
     }
-    const blockchain = Wallet.selectors.currentBlockchain(state);
+    const tx = Tx.toJS();
+    const blockchain = Blockchains[tx.chain];
     return {
       goBack: ownProps.goBack,
       openAccount: ownProps.openAccount,
       showRepeat,
       repeatTx: ownProps.repeatTx,
-      transaction: Tx.toJS(),
+      transaction: tx,
       tokenSymbol: (blockchain && blockchain.params.coinTicker) || '',
       account,
       fiatAmount,

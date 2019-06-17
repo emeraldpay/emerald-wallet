@@ -16,7 +16,7 @@ export function storeTransactions(key: string, txs: Array<Transaction>): void {
 /**
  * Restore transaction from JSON stored in localStorage
  */
-export function loadTransactions(key: string): Array<Transaction> {
+export function loadTransactions(key: string, chainId): Array<Transaction> {
   if (localStorage) {
     // check old history
     // Will be removed after stable release
@@ -31,9 +31,25 @@ export function loadTransactions(key: string): Array<Transaction> {
         txs = JSON.parse(storedTxs);
       }
     }
-    return txs.map(restoreTx);
+    return txs
+      .map((t) => ({
+        ...t,
+        chainId: t.chainId || chainId,
+      }))
+      .map(restoreTx);
   }
   return [];
+}
+
+function id2chain(id) {
+  switch (id) {
+    case 1:
+      return 'eth';
+    case 61:
+      return 'etc';
+    default:
+      return null;
+  }
 }
 
 /**
@@ -53,5 +69,7 @@ function restoreTx(tx): Transaction {
     blockHash: tx.blockHash,
     blockNumber: tx.blockNumber,
     timestamp: tx.timestamp,
+    chain: tx.chain || id2chain(tx.chainId),
+    chainId: tx.chainId,
   };
 }

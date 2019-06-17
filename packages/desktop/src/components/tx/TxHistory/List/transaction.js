@@ -2,6 +2,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Map } from 'immutable';
+import {Blockchains} from '@emeraldwallet/core';
 import TxView from '@emeraldwallet/ui/lib/components/tx/TxHistory/TxList/TxItem';
 import launcher from '../../../../store/launcher';
 import accounts from '../../../../store/vault/accounts';
@@ -39,7 +40,7 @@ export default connect(
 
     const showFiat = !token && launcher.selectors.getChainName(state).toLowerCase() === 'mainnet';
 
-    const blockchain = Wallet.selectors.currentBlockchain(state);
+    const blockchain = Blockchains[tx.chain];
 
     return {
       coinTicker: (blockchain && blockchain.params.coinTicker) || '',
