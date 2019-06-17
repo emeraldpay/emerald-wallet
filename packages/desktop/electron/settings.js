@@ -26,10 +26,6 @@ class Settings {
     return this.settings.store;
   }
 
-  getChain() {
-    return this.settings.get('chain');
-  }
-
   setChain(chain) {
     this.settings.set('chain', chain);
     return this;

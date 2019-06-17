@@ -83,5 +83,4 @@ TransactionsList.propTypes = {
   transactions: PropTypes.object.isRequired,
 };
 
-const StyledTransactionsList = withStyles(styles2)(TransactionsList);
-export default withTheme(StyledTransactionsList);
+export default withTheme(withStyles(styles2)(TransactionsList));
