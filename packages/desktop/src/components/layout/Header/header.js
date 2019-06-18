@@ -100,6 +100,7 @@ const mapStateToProps = (state, ownProps) => {
   const curr = blockchains.selectors.all(state);
   for (const code of curr.keys()) {
     chains.push({
+      id: code,
       title: code,
       height: separateThousands(curr.get(code).height, ' '),
     });
