@@ -85,7 +85,8 @@ export function loadAccountsList() {
       // TODO: in case both chains have one address it won't work
       const fetched = result.map((account) => account.address);
       const notChanges = existing.length === fetched.length && fetched.every((x) => existing.includes(x));
-      if (notChanges) {
+      const firstLoad = getState().accounts.get('loading');
+      if (notChanges && !firstLoad) {
         return;
       }
 
