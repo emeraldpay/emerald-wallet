@@ -4,6 +4,7 @@ import {Page, Warning, WarningHeader, WarningText, Input} from '@emeraldplatform
 import {Back} from '@emeraldplatform/ui-icons';
 import Button from '../../common/Button';
 import HdPath from '../../common/HdPath';
+import ChainSelector from '../../common/ChainSelector';
 
 export const styles = {
   passwordLabel: {
@@ -60,6 +61,7 @@ interface State {
   confirmedPassword: string;
   hdpath: string;
   mnemonic: string;
+  chain: string
 }
 
 export class ImportMnemonic extends React.Component<Props, State> {
@@ -70,6 +72,7 @@ export class ImportMnemonic extends React.Component<Props, State> {
       hdpath: '',
       password: '',
       confirmedPassword: '',
+      chain: 'ETH'
     }
   }
 
@@ -87,8 +90,8 @@ export class ImportMnemonic extends React.Component<Props, State> {
 
   handleSubmit = () => {
     if (this.props.onSubmit) {
-      const {mnemonic, password, hdpath} = this.state;
-      this.props.onSubmit({mnemonic, password, hdpath});
+      const {chain, mnemonic, password, hdpath} = this.state;
+      this.props.onSubmit({chain, mnemonic, password, hdpath});
     }
   };
 
@@ -104,12 +107,18 @@ export class ImportMnemonic extends React.Component<Props, State> {
     });
   };
 
+  handleChainChange = (value: string) => {
+    this.setState({
+      chain: value
+    });
+  };
+
   render() {
     const {
       onBack, invalid, error, classes,
     } = this.props;
     const {
-      password, confirmedPassword, hdpath, mnemonic,
+      chain, password, confirmedPassword, hdpath, mnemonic,
     } = this.state;
     const confirmPwdErrorText = (confirmedPassword.length > 0 && password != confirmedPassword) ? "Password does not match" : null;
     return (
@@ -197,6 +206,7 @@ export class ImportMnemonic extends React.Component<Props, State> {
                 disabled={invalid}
                 onClick={this.handleSubmit}
               />
+              <ChainSelector onChange={this.handleChainChange} value={chain}/>
             </div>
           </div>
 

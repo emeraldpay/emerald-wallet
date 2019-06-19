@@ -31,6 +31,7 @@ type State = {
   accountId: string,
   passphrase?: string,
   privateKey?: string,
+  chain: string,
 }
 
 class GenerateAccount extends React.Component<Props, State> {
@@ -46,44 +47,47 @@ class GenerateAccount extends React.Component<Props, State> {
       loading: false,
       page: PAGES.PASSWORD,
       accountId: '',
+      chain: 'ETH',
     };
   }
 
-  generate = (passphrase) => {
+  generate = (passphrase, chain) => {
     this.setState({
       loading: true,
     });
 
     // Create new account
-    this.props.dispatch(accounts.actions.createAccount(passphrase))
+    this.props.dispatch(accounts.actions.createAccount(chain, passphrase))
       .then((accountId) => {
         this.setState({
           loading: false,
           accountId,
           passphrase,
+          chain,
           page: PAGES.DOWNLOAD,
         });
       });
   };
 
   download = () => {
-    const { passphrase, accountId } = this.state;
+    const { chain, passphrase, accountId } = this.state;
 
     this.setState({
       loading: true,
     });
 
     // Get encrypted key file from emerald vault
-    this.props.dispatch(accounts.actions.exportKeyFile(accountId)).then((result) => {
+    this.props.dispatch(accounts.actions.exportKeyFile(chain, accountId)).then((result) => {
       ipcRenderer.send('get-private-key', {keyfile: result, passphrase});
       ipcRenderer.once('recieve-private-key', (event, privateKey) => {
-        saveJson(result, `${accountId}.json`);
+        saveJson(result, `${chain}-${accountId}.json`);
 
         this.setState({
           loading: false,
           page: PAGES.SHOW_PRIVATE,
           privateKey,
           accountId,
+          chain,
         });
       });
     });

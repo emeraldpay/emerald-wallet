@@ -62,8 +62,17 @@ export interface LoadingAction {
   type: ActionTypes.LOADING;
 }
 
+export interface AddAccountAction {
+  type: ActionTypes.ADD_ACCOUNT;
+  name: string,
+  description: string,
+  accountId: string,
+  blockchain: string
+}
+
 export type AddressesAction =
   | SetListAction
   | LoadingAction
   | SetBalanceAction
-  | UpdateAddressAction;
+  | UpdateAddressAction
+  | AddAccountAction;

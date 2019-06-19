@@ -11,7 +11,7 @@ export default connect(
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data) => {
-      return dispatch(accounts.actions.importMnemonic(ownProps.formData.password, ownProps.formData.mnemonic, ownProps.formData.hdpath, '', ''))
+      return dispatch(accounts.actions.importMnemonic(ownProps.formData.chain, ownProps.formData.password, ownProps.formData.mnemonic, ownProps.formData.hdpath, '', ''))
         .then((result) => {
           if (result.error) {
             throw new Error(result.error.toString());

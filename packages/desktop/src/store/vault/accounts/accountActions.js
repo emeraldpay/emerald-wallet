@@ -28,19 +28,12 @@ Transaction = {
 
 const log = createLogger('accountActions');
 
-export function loadAccountBalance(address: string) {
-  return (dispatch, getState, api) => {
-    api.geth.eth.getBalance(address).then((result) => {
-      dispatch({
-        type: ActionTypes.SET_BALANCE,
-        accountId: address,
-        value: result,
-      });
-    }).catch(dispatchRpcError(dispatch));
-    // Tokens
+export function loadAccountBalance(chain: string, address: string) {
+  ipcRenderer.send('subscribe-balance', [address]);
+  return (dispatch, getState) => {
     const {tokens} = getState();
     if (!tokens.get('loading')) {
-      dispatch(loadTokensBalances([address]));
+      dispatch(loadTokensBalances(chain, [address]));
     }
   };
 }
@@ -123,17 +116,16 @@ export function exportPrivateKey(passphrase: string, accountId: string) {
   };
 }
 
-export function exportKeyFile(accountId: string) {
+export function exportKeyFile(chain: string, accountId: string) {
+  chain = chain.toLowerCase();
   return (dispatch, getState, api) => {
-    const chain = currentChain(getState());
     return api.emerald.exportAccount(accountId, chain);
   };
 }
 
-export function createAccount(passphrase: string, name: string = '', description: string = '') {
+export function createAccount(chain: string, passphrase: string, name: string = '', description: string = '') {
+  chain = chain.toLowerCase();
   return (dispatch, getState, api) => {
-    const chain = currentChain(getState());
-
     return api.emerald.newAccount(passphrase, name, description, chain)
       .then((result) => {
         log.debug(`Account ${result} created`);
@@ -144,7 +136,7 @@ export function createAccount(passphrase: string, name: string = '', description
           description,
           blockchain: chain,
         });
-        dispatch(loadAccountBalance(result));
+        dispatch(loadAccountBalance(chain, result));
         return result;
       }).catch(screen.actions.catchError(dispatch));
   };
@@ -264,12 +256,11 @@ function readWalletFile(walletFile) {
   });
 }
 
-export function importJson(data, name: string, description: string) {
+export function importJson(chain: string, data, name: string, description: string) {
   return (dispatch, getState, api) => {
-    const chain = currentChain(getState());
     data.name = name;
     data.description = description;
-    return api.emerald.importAccount(data, chain).then((result) => {
+    return api.emerald.importAccount(data, chain.toLowerCase()).then((result) => {
       dispatch({
         type: ActionTypes.IMPORT_WALLET,
         accountId: result,
@@ -280,8 +271,9 @@ export function importJson(data, name: string, description: string) {
           description,
           type: ActionTypes.ADD_ACCOUNT,
           accountId: result,
+          blockchain: chain.toLowerCase(),
         });
-        dispatch(loadAccountBalance(result));
+        dispatch(loadAccountBalance(chain, result));
         return result;
       }
       throw new Error(result);
@@ -289,10 +281,9 @@ export function importJson(data, name: string, description: string) {
   };
 }
 
-export function importMnemonic(passphrase: string, mnemonic: string, hdPath: string, name: string, description: string) {
+export function importMnemonic(chain: string, passphrase: string, mnemonic: string, hdPath: string, name: string, description: string) {
   return (dispatch, getState, api) => {
-    const chain = currentChain(getState());
-    return api.emerald.importMnemonic(passphrase, name, description, mnemonic, hdPath, chain).then((result) => {
+    return api.emerald.importMnemonic(passphrase, name, description, mnemonic, hdPath, chain.toLowerCase()).then((result) => {
       dispatch({
         type: ActionTypes.IMPORT_WALLET,
         accountId: result,
@@ -302,7 +293,7 @@ export function importMnemonic(passphrase: string, mnemonic: string, hdPath: str
           type: ActionTypes.ADD_ACCOUNT,
           accountId: result,
         });
-        dispatch(loadAccountBalance(result));
+        dispatch(loadAccountBalance(chain, result));
         return result;
       }
       throw new Error(result);
@@ -310,10 +301,10 @@ export function importMnemonic(passphrase: string, mnemonic: string, hdPath: str
   };
 }
 
-export function importWallet(wallet, name: string, description: string) {
+export function importWallet(chain: string, wallet, name: string, description: string) {
   return (dispatch, getState) => {
     return readWalletFile(wallet).then((data) => {
-      return dispatch(importJson(data, name, description));
+      return dispatch(importJson(chain, data, name, description));
     });
   };
 }

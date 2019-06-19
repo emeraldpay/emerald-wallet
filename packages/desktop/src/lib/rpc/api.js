@@ -30,11 +30,11 @@ export class Api {
     this.emerald = connector.connectEmerald();
     this.chains = new Map();
     chains.forEach((c) => {
-      this.chains.set(c, connector.connectEthChain(c));
+      this.chains.set(c.toLowerCase(), connector.connectEthChain(c));
     });
   }
 
   chain(code) {
-    return this.chains.get(code);
+    return this.chains.get(code.toLowerCase());
   }
 }

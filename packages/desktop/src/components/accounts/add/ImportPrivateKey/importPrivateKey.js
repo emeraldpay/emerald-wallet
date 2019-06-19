@@ -18,7 +18,7 @@ export default connect(
         ipcRenderer.send('get-private-key-to-keyfile', {privateKey, password: data.password});
         ipcRenderer.once('recieve-private-key-to-keyfile', (event, keyFile) => {
           // import key file
-          return dispatch(accounts.actions.importWallet(new Blob([keyFile]), '', ''))
+          return dispatch(accounts.actions.importWallet(data.chain, new Blob([keyFile]), '', ''))
             .then((result) => {
               if (result.error) {
                 dispatch(screen.actions.showError(new Error(result.error.toString())));

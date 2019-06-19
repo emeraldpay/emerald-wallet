@@ -7,6 +7,7 @@ import {
 import { Back } from '@emeraldplatform/ui-icons';
 import Button from '../../common/Button';
 import PasswordInput from '../../common/PasswordInput';
+import ChainSelector from "../../common/ChainSelector/ChainSelector";
 
 
 export const styles = {
@@ -65,15 +66,18 @@ interface State {
   confirmPassword?: string;
   privateKey?: string;
   confirmError?: any;
+  chain: string
 }
 
 export class ImportPrivateKey extends React.Component<Props, State> {
-  state = {} as State;
+  state = {
+    chain: 'ETH'
+  } as State;
 
   handleSubmit = () => {
     if (this.props.onSubmit && (this.state.confirmError == null)) {
-      const { password, privateKey } = this.state;
-      this.props.onSubmit({password, privateKey: privateKey || ''});
+      const { chain, password, privateKey } = this.state;
+      this.props.onSubmit({chain, password, privateKey: privateKey || ''});
     }
   };
 
@@ -95,12 +99,17 @@ export class ImportPrivateKey extends React.Component<Props, State> {
     this.setState({ password: newPwd });
   };
 
+  handleChainChange = (value: string) => {
+    this.setState({
+      chain: value
+    });
+  };
 
   render() {
     const {
       onBack, submitting, classes, error,
     } = this.props;
-    const { privateKey, confirmPassword, password } = this.state;
+    const { chain, privateKey, confirmPassword, password } = this.state;
 
     const invalid = ((password || '').length < PasswordInput.DEFAULT_MIN_LENGTH) ||
       ((privateKey || '').length == 0) ||
@@ -173,6 +182,7 @@ export class ImportPrivateKey extends React.Component<Props, State> {
               disabled={ submitting || invalid }
               icon={getLoadingIcon(submitting) }
             />
+            <ChainSelector onChange={this.handleChainChange} value={chain}/>
           </div>
         </div>
 

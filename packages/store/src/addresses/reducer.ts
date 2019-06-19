@@ -1,7 +1,14 @@
 import { fromJS, Map } from 'immutable';
 import { Wei } from '@emeraldplatform/eth';
 import {
-  IAddressesState, AddressesAction, LoadingAction, ActionTypes, SetListAction, SetBalanceAction, UpdateAddressAction,
+  IAddressesState,
+  AddressesAction,
+  LoadingAction,
+  ActionTypes,
+  SetListAction,
+  SetBalanceAction,
+  UpdateAddressAction,
+  AddAccountAction,
 } from "./types";
 
 export const INITIAL_STATE = fromJS({
@@ -83,6 +90,21 @@ function onUpdateAccount(state: any, action: UpdateAddressAction) {
     .set('description', description));
 }
 
+function onAddAccount(state: any, action: AddAccountAction) {
+  const {accountId, name, description, blockchain} = action;
+  return state.update('addresses', (accounts: any) => {
+    const pos = accounts.findKey((acc: any) => acc.get('id') === accountId && acc.get('blockchain') === blockchain);
+    if (pos >= 0) {
+      return accounts;
+    }
+    const values = fromJS({
+      id: accountId, name, description, blockchain,
+    });
+    const newAccount = initialAccount.merge(values);
+    return accounts.push(newAccount);
+  });
+}
+
 export function reducer(
   state: any = INITIAL_STATE,
   action: AddressesAction
@@ -96,6 +118,8 @@ export function reducer(
       return onLoading(state, action);
     case ActionTypes.SET_LIST:
       return onSetList(state, action);
+    case ActionTypes.ADD_ACCOUNT:
+      return onAddAccount(state, action);
     default:
       return state;
   }
