@@ -26,7 +26,7 @@ export { default as PasswordInput } from './components/common/PasswordInput';
 export { default as TxDetails } from './components/tx/TxDetails';
 export { default as CreateTx } from './components/tx/send/CreateTx';
 export { default as SignTx } from './components/tx/send/SignTx';
-
+export { default as ChainSelector } from './components/common/ChainSelector';
 // Layout
 export { default as DashboardMenu } from './components/layout/DashboardMenu';
 export { default as Status } from './components/layout/Header/Status';

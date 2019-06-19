@@ -127,9 +127,10 @@ export function fetchTokenDetails(tokenAddress: string): () => Promise<any> {
 /**
  * Load balances of all known tokens for particular address
  *
- * @param address
+ * @param chain
+ * @param addresses
  */
-export function loadTokensBalances(addresses: string) {
+export function loadTokensBalances(chain: string, addresses: string[]) {
   return (dispatch: any, getState: any, api: any) => {
     const tokens = getState().tokens.get('tokens').toJS();
     // build batch call request
@@ -142,7 +143,7 @@ export function loadTokensBalances(addresses: string) {
       });
     }));
 
-    return api.geth.ext.batchCall(batch).then((results) => {
+    return api.chain(chain).ext.batchCall(batch).then((results) => {
       const tokenBalances = [];
       tokens.forEach((token) => addresses.forEach((addr) => {
         tokenBalances.push({

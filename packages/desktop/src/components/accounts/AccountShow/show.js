@@ -78,7 +78,7 @@ export class AccountShow extends React.Component {
       blockchain: account.get('blockchain'),
     };
 
-    const { coinTicker } = Blockchains[acc.blockchain].params;
+    const { coinTicker } = Blockchains[acc.blockchain || 'eth'].params;
 
     return (
       <div>

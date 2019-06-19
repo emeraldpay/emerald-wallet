@@ -10,31 +10,6 @@ const initial = Immutable.fromJS({
   loading: true,
 });
 
-const initialAccount = Immutable.Map({
-  id: null,
-  hardware: false,
-  balance: null,
-  balancePending: null,
-  txcount: null,
-  name: null,
-  description: null,
-  hidden: false,
-  blockchain: null,
-});
-
-function addAccount(state, id, name, description, blockchain) {
-  return state.update('accounts', (accounts) => {
-    const pos = accounts.findKey((acc) => acc.get('id') === id);
-    if (pos >= 0) {
-      return accounts;
-    }
-    const newAccount = initialAccount.mergeWith((o, n) => o || n, Immutable.fromJS({
-      id, name, description, blockchain,
-    }));
-    return accounts.push(newAccount);
-  });
-}
-
 function updateAccount(state, id, f) {
   return state.update('accounts', (accounts) => {
     const pos = accounts.findKey((acc) => acc.get('id') === id);
@@ -139,13 +114,6 @@ function onSetHdPath(state, action) {
   return state;
 }
 
-function onAddAccount(state, action) {
-  if (action.type === ActionTypes.ADD_ACCOUNT) {
-    return addAccount(state, action.accountId, action.name, action.description, action.blockchain);
-  }
-  return state;
-}
-
 function onPendingBalance(state, action) {
   if (action.type === ActionTypes.PENDING_BALANCE) {
     let bal;
@@ -168,7 +136,6 @@ export default function accountsReducers(state, action) {
   state = state || initial;
   // state = onLoading(state, action);
   // state = onSetAccountsList(state, action);
-  state = onAddAccount(state, action);
   // state = onUpdateAccount(state, action);
   // state = onSetBalance(state, action);
   state = onSetBalances(state, action);

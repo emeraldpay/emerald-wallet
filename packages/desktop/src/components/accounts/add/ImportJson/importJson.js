@@ -7,7 +7,7 @@ import {
   Page, Warning, WarningText, WarningHeader
 } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import { Button } from '@emeraldwallet/ui';
+import { Button, ChainSelector } from '@emeraldwallet/ui';
 import accountsModule from 'store/vault/accounts';
 import { Row, styles as formStyles } from 'elements/Form/index';
 import { screen } from 'store';
@@ -28,12 +28,13 @@ class ImportJson extends React.Component {
       this.state = {
         fileError: null,
         file: null,
+        chain: 'ETH',
       };
     }
 
     submitFile = () => {
       const { importFile, showAccount } = this.props;
-      importFile(this.state.file)
+      importFile(this.state.chain, this.state.file)
         .then((result) => showAccount(Immutable.fromJS({id: result})))
         .catch((err) => this.setState({ fileError: err.message }));
     };
@@ -44,9 +45,15 @@ class ImportJson extends React.Component {
       });
     };
 
+    onChainChange = (chain) => {
+      this.setState({
+        chain,
+      });
+    };
+
     render() {
       const { t, onDashboard } = this.props;
-      const { file, fileError } = this.state;
+      const { file, fileError, chain } = this.state;
 
       return (
         <Page title={ t('import.title') } leftIcon={<Back onClick={onDashboard} />}>
@@ -76,6 +83,7 @@ class ImportJson extends React.Component {
               <div style={ formStyles.left }/>
               <div style={ formStyles.right }>
                 <Button primary onClick={ this.submitFile } label={ t('common:submit') }/>
+                <ChainSelector onChange={ this.onChainChange } value={chain}/>
               </div>
             </Row>)
           }
@@ -88,9 +96,9 @@ export default connect(
   (state, ownProps) => ({
   }),
   (dispatch, ownProps) => ({
-    importFile: (file) => {
+    importFile: (chain, file) => {
       return new Promise((resolve, reject) => {
-        dispatch(accountsModule.actions.importWallet(file, '', ''))
+        dispatch(accountsModule.actions.importWallet(chain, file, '', ''))
           .then(resolve)
           .catch(reject);
       });
