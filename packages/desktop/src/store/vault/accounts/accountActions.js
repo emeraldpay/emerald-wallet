@@ -123,17 +123,16 @@ export function exportPrivateKey(passphrase: string, accountId: string) {
   };
 }
 
-export function exportKeyFile(accountId: string) {
+export function exportKeyFile(chain: string, accountId: string) {
+  chain = chain.toLowerCase();
   return (dispatch, getState, api) => {
-    const chain = currentChain(getState());
     return api.emerald.exportAccount(accountId, chain);
   };
 }
 
-export function createAccount(passphrase: string, name: string = '', description: string = '') {
+export function createAccount(chain: string, passphrase: string, name: string = '', description: string = '') {
+  chain = chain.toLowerCase();
   return (dispatch, getState, api) => {
-    const chain = currentChain(getState());
-
     return api.emerald.newAccount(passphrase, name, description, chain)
       .then((result) => {
         log.debug(`Account ${result} created`);

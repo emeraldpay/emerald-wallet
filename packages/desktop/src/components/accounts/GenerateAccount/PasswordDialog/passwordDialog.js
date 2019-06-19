@@ -5,7 +5,9 @@ import { Back } from '@emeraldplatform/ui-icons';
 import {
   Page, Warning, WarningHeader, WarningText, Input
 } from '@emeraldplatform/ui';
-import { Button, PasswordInput, Advice } from '@emeraldwallet/ui';
+import {
+  Button, PasswordInput, Advice, ChainSelector
+} from '@emeraldwallet/ui';
 import { required } from 'lib/validators';
 import { Row, styles as formStyles } from 'elements/Form';
 import LoadingIcon from '../LoadingIcon';
@@ -41,12 +43,13 @@ class PasswordDialog extends React.Component {
       passphraseError: null,
       confirmError: null,
       confirmPassword: null,
+      chain: 'ETH',
     };
   }
 
   handleGenerate = () => {
     const { onGenerate } = this.props;
-    const { passphrase, confirmPassword } = this.state;
+    const { passphrase, confirmPassword, chain } = this.state;
 
     // validate passphrase
     if (passphrase.length < MIN_PASSWORD_LENGTH) {
@@ -61,7 +64,7 @@ class PasswordDialog extends React.Component {
       });
     }
 
-    onGenerate(passphrase);
+    onGenerate(passphrase, chain);
   };
 
   onPassphraseChange = (newValue) => {
@@ -81,6 +84,12 @@ class PasswordDialog extends React.Component {
     });
   }
 
+  onChainChange = (chain) => {
+    this.setState({
+      chain: chain.toLowerCase(),
+    });
+  };
+
   passwordMatch(value) {
     const password = this.state.passphrase;
     const confirmPassword = value;
@@ -90,7 +99,7 @@ class PasswordDialog extends React.Component {
   render() {
     const { onDashboard, t, classes } = this.props;
     const {
-      passphraseError, confirmError, confirmPassword, passphrase,
+      passphraseError, confirmError, confirmPassword, passphrase, chain,
     } = this.state;
 
     return (
@@ -162,6 +171,7 @@ class PasswordDialog extends React.Component {
                 icon={ <LoadingIcon {...this.props} /> }
                 disabled={ this.props.loading }
               />
+              <ChainSelector onChange={ this.onChainChange } value={ chain }/>
             </div>
           </Row>
         </div>
