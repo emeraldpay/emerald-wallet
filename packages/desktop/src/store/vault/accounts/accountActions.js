@@ -29,15 +29,8 @@ Transaction = {
 const log = createLogger('accountActions');
 
 export function loadAccountBalance(chain: string, address: string) {
-  return (dispatch, getState, api) => {
-    api.chain(chain).eth.getBalance(address).then((result) => {
-      dispatch({
-        type: ActionTypes.SET_BALANCE,
-        accountId: address,
-        value: result,
-      });
-    }).catch(dispatchRpcError(dispatch));
-    // Tokens
+  ipcRenderer.send('subscribe-balance', [address]);
+  return (dispatch, getState) => {
     const {tokens} = getState();
     if (!tokens.get('loading')) {
       dispatch(loadTokensBalances(chain, [address]));
