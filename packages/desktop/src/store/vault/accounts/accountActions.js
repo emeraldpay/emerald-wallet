@@ -45,7 +45,7 @@ export function loadAccountBalance(chain: string, address: string) {
 function fetchHdPaths() {
   return (dispatch, getState, api) => {
     const promises = [];
-    getState().accounts.get('accounts')
+    getState().addresses.get('addresses')
       .filter((a) => a.get('hardware', false))
       .forEach((a) => {
         const address = a.get('id');
@@ -67,7 +67,7 @@ export function loadAccountsList() {
     dispatch({type: ActionTypes.LOADING});
     const showHidden = getState().wallet.settings.get('showHiddenAccounts', false);
 
-    const existing = getState().accounts.get('accounts').map((account) => account.get('id')).toJS();
+    const existing = getState().addresses.get('addresses').map((account) => account.get('id')).toJS();
 
     // request addresses for all chains we support
     return Promise.all([
@@ -79,7 +79,7 @@ export function loadAccountsList() {
       // TODO: in case both chains have one address it won't work
       const fetched = result.map((account) => account.address);
       const notChanged = existing.length === fetched.length && fetched.every((x) => existing.includes(x));
-      const firstLoad = getState().accounts.get('loading');
+      const firstLoad = existing.length === 0;
       if (notChanged && !firstLoad) {
         return;
       }
@@ -326,7 +326,7 @@ function clearBlock(tx) {
 
 export function loadPendingTransactions() {
   return (dispatch, getState, api) => api.geth.eth.getBlockByNumber('pending', true).then((result) => {
-    const addrs = getState().accounts.get('accounts').map((acc) => acc.get('id'));
+    const addrs = getState().addresses.get('addresses').map((acc) => acc.get('id'));
     const txes = result.transactions.filter(
       (t) => addrs.includes(t.to) || addrs.includes(t.from)
     ).map((tx) => clearBlock(tx));
