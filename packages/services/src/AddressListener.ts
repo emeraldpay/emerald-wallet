@@ -12,6 +12,7 @@ import {
 import BigNumber from 'bignumber.js';
 import * as grpc from 'grpc';
 import {ChannelCredentials, ClientReadableStream} from 'grpc';
+import extractChain from "./extractChain";
 
 type AccountStatusEvent = {
   address: string,
@@ -24,15 +25,10 @@ interface HeadListener {
 
 export class AddressListener {
   client: BlockchainClient;
-  chain: ChainSpec;
   response?: ClientReadableStream<AddressStatus>;
 
-  constructor(chain: string, client: BlockchainClient) {
+  constructor(client: BlockchainClient) {
     this.client = client;
-    if (chain === 'mainnet') {
-      chain = 'etc';
-    }
-    this.chain = chainByCode(chain.toUpperCase());
   }
 
   stop() {
@@ -42,7 +38,8 @@ export class AddressListener {
     this.response = undefined;
   }
 
-  subscribe(addresses: string[], handler: HeadListener) {
+  subscribe(chainCode: string, addresses: string[], handler: HeadListener) {
+    const chain = extractChain(chainCode);
     const pbMultiAddr = new MultiAddress();
     addresses.forEach((it) => {
       const pbAddr = new SingleAddress();
@@ -53,7 +50,7 @@ export class AddressListener {
     pbAnyAddr.setAddressMulti(pbMultiAddr);
 
     const asset = new Asset();
-    asset.setChain(this.chain.id);
+    asset.setChain(chain.id);
     asset.setCode("Ether");
     const request = new TrackAddressRequest();
     request.setAsset(asset);

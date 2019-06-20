@@ -6,38 +6,33 @@ export class BalanceListener implements IService {
   private apiAccess: any;
   private webContents: any;
   private ipcMain: any;
-  private readonly chain: string;
-  private subscriber: AddressListener | null = null;
+  private subscribers: AddressListener[];
 
-  constructor(chain: string, ipcMain: any, webContents: any, apiAccess: any) {
-    if (chain === 'mainnet') {
-      chain = 'etc';
-    }
+  constructor(ipcMain: any, webContents: any, apiAccess: any) {
     this.ipcMain = ipcMain;
     this.webContents = webContents;
     this.apiAccess = apiAccess;
-    this.chain = chain;
-    this.id = `BalanceIpcListener-${chain}`;
+    this.id = `BalanceIpcListener`;
+    this.subscribers = []
   }
 
   stop() {
-    if (this.subscriber) {
-      this.subscriber.stop();
-    }
+    this.subscribers.forEach((s) => s.stop())
   }
 
   start() {
-    this.stop();
-    const subscriber = this.apiAccess.newAddressListener(this.chain);
-    this.subscriber = subscriber;
     const {webContents} = this;
-    this.ipcMain.on('subscribe-balance', (_: any, addresses: any) => {
-      subscriber.stop();
-      subscriber.subscribe(addresses, (event: any) => {
+    this.ipcMain.on('subscribe-balance', (_: any, chain: string, addresses: any) => {
+      if (chain === 'mainnet') {
+        chain = 'etc';
+      }
+      const subscriber = this.apiAccess.newAddressListener();
+      this.subscribers.push(subscriber);
+      subscriber.subscribe(chain, addresses, (event: any) => {
         const action = {
           type: 'ACCOUNT/SET_BALANCE',
           payload: {
-            chain: this.chain,
+            chain: chain,
             accountId: event.address,
             value: event.balance,
           },

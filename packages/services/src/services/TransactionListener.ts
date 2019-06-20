@@ -6,36 +6,28 @@ export class TransactionListener {
   private apiAccess: any;
   private webContents: any;
   private ipcMain: any;
-  private readonly chain: string;
-  private subscriber: TxListener | null = null;
+  private subscriber: TxListener[] = [];
 
-  constructor(chain: string, ipcMain: any, webContents: any, apiAccess: any) {
+  constructor(ipcMain: any, webContents: any, apiAccess: any) {
     this.webContents = webContents;
     this.apiAccess = apiAccess;
-    if (chain === 'mainnet') {
-      chain = 'etc';
-    }
-    this.chain = chain;
     this.ipcMain = ipcMain;
-    this.id = `TransactionListener-${chain}`;
+    this.id = `TransactionListener`;
   }
 
   stop() {
-    if (this.subscriber) {
-      this.subscriber.stop();
-    }
+    this.subscriber.forEach((x) => x.stop());
   }
 
   start() {
-    this.stop();
-    const subscriber = this.apiAccess.newTxListener(this.chain);
-    this.subscriber = subscriber;
     const {webContents} = this;
-    this.ipcMain.on('subscribe-tx', (_: any, hash: string) => {
-      subscriber.subscribe(hash, (event: any) => {
+    this.ipcMain.on('subscribe-tx', (_: any, chain: string, hash: string) => {
+      const subscriber = this.apiAccess.newTxListener();
+      this.subscriber.push(subscriber);
+      subscriber.subscribe(chain, hash, (event: any) => {
         // console.log("update for tx", hash);
         const action = txhistory.actions.updateTxs([{
-          chain: this.chain,
+          chain: chain,
           hash: event.txid,
           blockNumber: event.blockNumber,
           timestamp: event.timestamp,

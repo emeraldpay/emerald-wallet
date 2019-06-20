@@ -62,16 +62,16 @@ export class EmeraldApiAccess {
     this.pricesClient = new MarketClient(addr, this.credentials);
   }
 
-  newAddressListener(chain: string): AddressListener {
-    return new AddressListener(chain, this.blockchainClient);
+  newAddressListener(): AddressListener {
+    return new AddressListener(this.blockchainClient);
   }
 
-  newChainListener(chain: string): ChainListener {
-    return new ChainListener(chain, this.blockchainClient);
+  newChainListener(): ChainListener {
+    return new ChainListener(this.blockchainClient);
   }
 
-  newTxListener(chain: string): TxListener {
-    return new TxListener(chain, this.blockchainClient)
+  newTxListener(): TxListener {
+    return new TxListener(this.blockchainClient)
   }
 
   newPricesListener(): PriceListener {

@@ -5,6 +5,7 @@ import {
 
 import {ChannelCredentials, ClientReadableStream} from 'grpc';
 import * as grpc from "grpc";
+import extractChain from "./extractChain";
 
 type ChainStatus = {
   height: number,
@@ -17,15 +18,10 @@ interface HeadListener {
 
 export class ChainListener {
   client: BlockchainClient;
-  chain: ChainSpec;
   response?: ClientReadableStream<ChainHead>;
 
-  constructor(chain: string, client: BlockchainClient) {
+  constructor(client: BlockchainClient) {
     this.client = client;
-    if (chain === 'mainnet') {
-      chain = 'etc';
-    }
-    this.chain = chainByCode(chain.toUpperCase());
   }
 
   stop() {
@@ -35,8 +31,9 @@ export class ChainListener {
     this.response = undefined;
   }
 
-  subscribe(handler: HeadListener) {
-    const request = this.chain.toProtobuf();
+  subscribe(chainCode: string, handler: HeadListener) {
+    const chain = extractChain(chainCode);
+    const request = chain.toProtobuf();
     this.client.streamHead(request, (response: grpc.ClientReadableStream<ChainHead>) => {
       response.on('data', (data: ChainHead) => {
         // console.log(`New blockchain height. Chain: ${data.getChain()}, height: ${data.getHeight()}`);
