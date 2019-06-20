@@ -7,6 +7,7 @@ import {
 } from '@emeraldplatform/grpc';
 import * as grpc from 'grpc';
 import {ChannelCredentials, ClientReadableStream} from 'grpc';
+import extractChain from "./extractChain";
 
 type TxStatusEvent = {
   txid: string,
@@ -24,15 +25,10 @@ interface TxStatusHandler {
 
 export class TxListener {
   client: BlockchainClient;
-  chain: ChainSpec;
   response?: ClientReadableStream<TxStatus>;
 
-  constructor(chain: string, client: BlockchainClient) {
+  constructor(client: BlockchainClient) {
     this.client = client;
-    if (chain === 'mainnet') {
-      chain = 'etc';
-    }
-    this.chain = chainByCode(chain.toUpperCase());
   }
 
   stop() {
@@ -42,9 +38,10 @@ export class TxListener {
     this.response = undefined;
   }
 
-  subscribe(hash: string, handler: TxStatusHandler) {
+  subscribe(chainCode: string, hash: string, handler: TxStatusHandler) {
+    const chain = extractChain(chainCode);
     const request = new TrackTxRequest();
-    request.setChain(this.chain.id);
+    request.setChain(chain.id);
     request.setTxid(hash);
     request.setConfirmations(12);
 

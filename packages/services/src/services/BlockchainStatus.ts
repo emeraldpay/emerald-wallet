@@ -21,9 +21,9 @@ export class BlockchainStatus implements IService {
 
   start() {
     this.stop();
-    this.listener = this.apiAccess.newChainListener(this.chain);
+    this.listener = this.apiAccess.newChainListener();
     const {webContents} = this;
-    this.listener!.subscribe((head) => {
+    this.listener!.subscribe(this.chain,(head) => {
       const action = blockchains.actions.blockAction({
         chain: this.chain,
         height: head.height,

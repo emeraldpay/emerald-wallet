@@ -1,5 +1,6 @@
 // @flow
 import {ipcRenderer} from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
+import _ from 'lodash';
 import {EthereumTx, BlockchainCode} from '@emeraldwallet/core';
 import {convert, EthAddress} from '@emeraldplatform/core';
 import {EthAccount} from '@emeraldplatform/eth-account';
@@ -29,7 +30,7 @@ Transaction = {
 const log = createLogger('accountActions');
 
 export function loadAccountBalance(chain: string, address: string) {
-  ipcRenderer.send('subscribe-balance', [address]);
+  ipcRenderer.send('subscribe-balance', chain, [address]);
   return (dispatch, getState) => {
     const {tokens} = getState();
     if (!tokens.get('loading')) {
@@ -77,9 +78,9 @@ export function loadAccountsList() {
 
       // TODO: in case both chains have one address it won't work
       const fetched = result.map((account) => account.address);
-      const notChanges = existing.length === fetched.length && fetched.every((x) => existing.includes(x));
+      const notChanged = existing.length === fetched.length && fetched.every((x) => existing.includes(x));
       const firstLoad = getState().accounts.get('loading');
-      if (notChanges && !firstLoad) {
+      if (notChanged && !firstLoad) {
         return;
       }
 
@@ -89,7 +90,14 @@ export function loadAccountsList() {
       });
       dispatch(fetchHdPaths());
 
-      ipcRenderer.send('subscribe-balance', fetched);
+      const addedFull = result.filter((x) => existing.indexOf(x.address) < 0);
+      const byChain = _.groupBy(addedFull, (a) => a.blockchain);
+      Object.entries(byChain).forEach((kv) => {
+        const chain = kv[0];
+        const addresses = kv[1];
+        const chainAddresses = addresses.map((acc) => acc.address);
+        ipcRenderer.send('subscribe-balance', chain, chainAddresses);
+      });
     });
   };
 }

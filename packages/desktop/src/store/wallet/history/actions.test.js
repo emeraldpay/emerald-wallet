@@ -16,7 +16,7 @@ describe('historyActions/refreshTrackedTransactions', () => {
       }),
       history: fromJS({
         chainId: 'morden',
-        trackedTransactions: [{numConfirmations: 0, hash: '0x123'}],
+        trackedTransactions: [{numConfirmations: 0, hash: '0x123', chain: 'ETH'}],
       }),
     },
   });
@@ -27,6 +27,6 @@ describe('historyActions/refreshTrackedTransactions', () => {
 
     refreshTrackedTransactions(hash)(dispatch, getState);
 
-    expect(ipcRenderer.send).toHaveBeenCalledWith('subscribe-tx', '0x123');
+    expect(ipcRenderer.send).toHaveBeenCalledWith('subscribe-tx', 'ETH', '0x123');
   });
 });

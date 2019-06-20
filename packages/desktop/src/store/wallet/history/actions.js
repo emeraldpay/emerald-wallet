@@ -34,7 +34,7 @@ function loadPersistedTransactions(state, chainId) {
 function updateAndTrack(dispatch, getState, api, txs, chain) {
   const chainId = getChainId(chain);
 
-  const pendingTxs = txs.filter((tx) => !tx.blockNumber).map((t) => ({...t, chainId}));
+  const pendingTxs = txs.filter((tx) => !tx.blockNumber).map((t) => ({...t, chainId, chain}));
   if (pendingTxs.length !== 0) {
     dispatch({type: ActionTypes.TRACK_TXS, txs: pendingTxs});
   }
@@ -42,7 +42,7 @@ function updateAndTrack(dispatch, getState, api, txs, chain) {
   persistTransactions(getState(), chainId);
 
   txs.forEach((tx) => {
-    ipcRenderer.send('subscribe-tx', tx.hash);
+    ipcRenderer.send('subscribe-tx', chain, tx.hash);
   });
 }
 
@@ -92,7 +92,6 @@ export function refreshTrackedTransactions() {
     allTrackedTxs(state)
       .filter((tx) => tx.get('totalRetries', 0) <= 10)
       .filter((tx) => txUnconfirmed(state, tx))
-      .map((tx) => tx.get('hash'))
-      .forEach((hash) => ipcRenderer.send('subscribe-tx', hash));
+      .forEach((tx) => ipcRenderer.send('subscribe-tx', tx.get('chain'), tx.get('hash')));
   };
 }
