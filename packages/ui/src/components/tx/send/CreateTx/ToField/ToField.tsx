@@ -13,13 +13,14 @@ interface Props {
 
 interface State {
   errorText: string | null;
+  toStr: string | null;
 }
 
 class ToField extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.onChangeTo = this.onChangeTo.bind(this);
-    this.state = {errorText: null};
+    this.state = {errorText: null, toStr: props.to || '0x'};
   }
 
   componentDidMount() {
@@ -36,6 +37,7 @@ class ToField extends React.Component<Props, State> {
     if (this.props.onChangeTo) {
       this.props.onChangeTo(value);
     }
+    this.setState({toStr: value});
 
     if (!value) {
       this.setState({errorText: 'Required'});
@@ -83,7 +85,7 @@ class ToField extends React.Component<Props, State> {
           <Input
             leftIcon={this.getLeftIcon()}
             rightIcon={this.getRightIcon()}
-            value={this.props.to}
+            value={this.state.toStr}
             errorText={this.state.errorText}
             onChange={this.handleInputChange}
           />

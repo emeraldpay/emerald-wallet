@@ -34,9 +34,9 @@ export function estimateGas(chain, tx) {
     return api.chain(chain).eth.estimateGas({
       from,
       to,
-      gas,
-      gasPrice,
-      value,
+      gas: `0x${gas.toString(16)}`,
+      gasPrice: gasPrice.toHex(),
+      value: value.toHex(),
       data,
     });
   };

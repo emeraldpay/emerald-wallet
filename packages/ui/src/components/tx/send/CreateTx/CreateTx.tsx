@@ -1,6 +1,5 @@
 import * as React from 'react';
-import { ButtonGroup } from '@emeraldplatform/ui';
-import { Wei } from '@emeraldplatform/eth';
+import {ButtonGroup} from '@emeraldplatform/ui';
 import Button from '../../../common/Button';
 import FormFieldWrapper from './FormFieldWrapper';
 import FromField from './FromField';
@@ -9,6 +8,7 @@ import TokenField from './TokenField';
 import ToField from './ToField';
 import AmountField from './AmountField';
 import GasLimitField from './GasLimitField';
+import {CreateEthereumTx, ValidationResult} from "@emeraldwallet/workflow";
 
 function getStyles() {
   return {
@@ -17,17 +17,12 @@ function getStyles() {
 }
 
 export interface Props {
-  from?: string;
+  tx: CreateEthereumTx,
   token: string;
   tokenSymbols?: Array<string>;
-  balance: Wei;
-  amount?: Wei;
   addressBookAddresses?: Array<string>;
-  to?: string;
   currency?: string;
-  gasLimit: string;
   txFeeFiat?: string;
-  txFee: Wei;
   txFeeToken: string;
   fiatBalance?: string;
   ownAddresses?: Array<string>;
@@ -44,7 +39,7 @@ export interface Props {
 
 class CreateTransaction extends React.Component<Props> {
   getDisabled = () => {
-    return !this.props.to || !this.props.from || this.props.amount == null;
+    return this.props.tx.validate() != ValidationResult.OK;
   };
 
   render() {
@@ -53,7 +48,7 @@ class CreateTransaction extends React.Component<Props> {
         <FormFieldWrapper>
           <FromField
             onChangeAccount={this.props.onChangeFrom}
-            selectedAccount={this.props.from}
+            selectedAccount={this.props.tx.from}
             accounts={this.props.ownAddresses}
           />
         </FormFieldWrapper>
@@ -63,7 +58,7 @@ class CreateTransaction extends React.Component<Props> {
             onChangeToken={this.props.onChangeToken}
             selectedToken={this.props.token}
             tokenSymbols={this.props.tokenSymbols}
-            balance={this.props.balance}
+            balance={this.props.tx.totalBalance}
             fiatCurrency={this.props.currency}
             fiatBalance={this.props.fiatBalance}
           />
@@ -72,7 +67,7 @@ class CreateTransaction extends React.Component<Props> {
         <FormFieldWrapper>
           <ToField
             onChangeTo={this.props.onChangeTo}
-            to={this.props.to}
+            to={this.props.tx.to}
             addressBookAddresses={this.props.addressBookAddresses}
             onEmptyAddressBookClick={this.props.onEmptyAddressBookClick}
           />
@@ -80,7 +75,7 @@ class CreateTransaction extends React.Component<Props> {
 
         <FormFieldWrapper>
           <AmountField
-            amount={this.props.amount}
+            amount={this.props.tx.amount}
             onChangeAmount={this.props.onChangeAmount}
             onMaxClicked={this.props.onMaxClicked}
           />
@@ -89,8 +84,8 @@ class CreateTransaction extends React.Component<Props> {
         <FormFieldWrapper>
           <GasLimitField
             onChangeGasLimit={this.props.onChangeGasLimit}
-            gasLimit={this.props.gasLimit}
-            txFee={this.props.txFee}
+            gasLimit={this.props.tx.gas.toString()}
+            txFee={this.props.tx.gasPrice}
             txFeeToken={this.props.txFeeToken}
             txFeeFiat={this.props.txFeeFiat}
             fiatCurrency={this.props.currency}
