@@ -32,7 +32,7 @@ const TxDefaults: TxDetails = {
 function toPlainDetails(tx: TxDetails): TxDetailsPlain {
   return {
     from: tx.from,
-    to: tx.from,
+    to: tx.to,
     target: tx.target.valueOf(),
     amount: tx.amount.toString(Units.WEI, 0, false),
     totalBalance: tx.totalBalance == null ? undefined : tx.totalBalance.toString(Units.WEI, 0, false),

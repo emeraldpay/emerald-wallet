@@ -22,7 +22,7 @@ describe('CreateEthereumTx', () => {
 
   it ('fails to validated if set only to', () => {
     const tx = new CreateEthereumTx();
-    tx.to = '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
 
     expect(tx.validate()).toBe(ValidationResult.NO_FROM);
   });
@@ -30,7 +30,7 @@ describe('CreateEthereumTx', () => {
   it ('validates is set from/to', () => {
     const tx = new CreateEthereumTx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, Units.ETHER));
-    tx.to = '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
 
     expect(tx.validate()).toBe(ValidationResult.OK);
   });
@@ -38,7 +38,7 @@ describe('CreateEthereumTx', () => {
   it ('insufficient funds if send whole balance', () => {
     const tx = new CreateEthereumTx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, Units.ETHER));
-    tx.to = '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.amount = new Wei(1, Units.ETHER);
     tx.gasPrice = new Wei(10000, Units.MWEI);
 
@@ -120,7 +120,7 @@ describe('CreateEthereumTx', () => {
   it ('target fails if total is less than whole balance', () => {
     const tx = new CreateEthereumTx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, Units.ETHER));
-    tx.to = '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.SEND_ALL;
     tx.amount = new Wei("999579999999999990", Units.WEI);
     tx.gasPrice = new Wei(10000, Units.MWEI);
@@ -133,7 +133,7 @@ describe('CreateEthereumTx', () => {
   it ('no-target succeeds if total is less than whole balance', () => {
     const tx = new CreateEthereumTx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, Units.ETHER));
-    tx.to = '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.MANUAL;
     tx.amount = new Wei("999579999999999990", Units.WEI);
     tx.gasPrice = new Wei(10000, Units.MWEI);
@@ -146,7 +146,7 @@ describe('CreateEthereumTx', () => {
   it ('target fails if total is more than whole balance', () => {
     const tx = new CreateEthereumTx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, Units.ETHER));
-    tx.to = '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.SEND_ALL;
     tx.amount = new Wei("999580000000000001", Units.WEI);
     tx.gasPrice = new Wei(10000, Units.MWEI);
@@ -163,7 +163,7 @@ describe('CreateEthereumTx', () => {
   it ('target succeeds if total is equal whole balance', () => {
     const tx = new CreateEthereumTx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, Units.ETHER));
-    tx.to = '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.SEND_ALL;
     tx.amount = new Wei("999580000000000000", Units.WEI);
     tx.gasPrice = new Wei(10000, Units.MWEI);
@@ -181,7 +181,7 @@ describe('CreateEthereumTx', () => {
   it ('rebalance to match whole balance', () => {
     const tx = new CreateEthereumTx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, Units.ETHER));
-    tx.to = '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.SEND_ALL;
     tx.amount = new Wei("999580000000500000", Units.WEI);
     tx.gasPrice = new Wei(10000, Units.MWEI);
@@ -203,7 +203,7 @@ describe('CreateEthereumTx', () => {
   it ('rebalance ignored without totalBalance', () => {
     const tx = new CreateEthereumTx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, Units.ETHER));
-    tx.to = '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.SEND_ALL;
     tx.amount = new Wei("999580000000500000", Units.WEI);
     tx.gasPrice = new Wei(10000, Units.MWEI);
@@ -226,7 +226,7 @@ describe('CreateEthereumTx', () => {
   it ('rebalance doesn nothing for no-target', () => {
     const tx = new CreateEthereumTx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, Units.ETHER));
-    tx.to = '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.MANUAL;
     tx.amount = new Wei("999580000000500000", Units.WEI);
     tx.gasPrice = new Wei(10000, Units.MWEI);
@@ -244,7 +244,7 @@ describe('CreateEthereumTx', () => {
   it ('doesnt rebalance small value', () => {
     const tx = new CreateEthereumTx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei("1000000000000", Units.WEI));
-    tx.to = '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.SEND_ALL;
     tx.amount = new Wei("999580000000500000", Units.WEI);
     tx.gasPrice = new Wei(10000, Units.MWEI);
@@ -263,7 +263,7 @@ describe('CreateEthereumTx', () => {
   it ('dumps plain', () => {
     const tx = new CreateEthereumTx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei("1000000000057", Units.WEI));
-    tx.to = '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.SEND_ALL;
     tx.amount = new Wei("999580000000500002", Units.WEI);
     tx.gasPrice = new Wei(10007, Units.MWEI);
@@ -273,7 +273,7 @@ describe('CreateEthereumTx', () => {
 
     expect(dump.from).toBe('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
     expect(dump.totalBalance).toBe('1000000000057');
-    expect(dump.to).toBe('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
+    expect(dump.to).toBe('0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd');
     expect(dump.target).toBe(1);
     expect(dump.amount).toBe('999580000000500002');
     expect(dump.gasPrice).toBe('10007000000');
@@ -284,7 +284,7 @@ describe('CreateEthereumTx', () => {
     const dump: TxDetailsPlain = {
       from: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       totalBalance: '1000000000057',
-      to: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
+      to: '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd',
       target: 1,
       amount: '999580000000500002',
       gasPrice: '10007000000',
@@ -295,7 +295,7 @@ describe('CreateEthereumTx', () => {
 
     expect(tx.from).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
     expect(tx.totalBalance != null ? tx.totalBalance.value : null).toEqual(new Wei("1000000000057", Units.WEI).value);
-    expect(tx.to).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
+    expect(tx.to).toEqual('0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd');
     expect(tx.target).toEqual(TxTarget.SEND_ALL);
     expect(tx.amount.value).toEqual(new Wei("999580000000500002", Units.WEI).value);
     expect(tx.gasPrice.value).toEqual(new Wei(10007, Units.MWEI).value);
@@ -307,7 +307,7 @@ describe('CreateEthereumTx', () => {
     const dump: TxDetailsPlain = {
       from: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       totalBalance: '1000000000057',
-      to: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
+      to: '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd',
       target: 0,
       amount: '999580000000500002',
       gasPrice: '10007000000',
@@ -318,7 +318,7 @@ describe('CreateEthereumTx', () => {
 
     expect(tx.from).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
     expect(tx.totalBalance != null ? tx.totalBalance.value : null).toEqual(new Wei("1000000000057", Units.WEI).value);
-    expect(tx.to).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
+    expect(tx.to).toEqual('0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd');
     expect(tx.target).toEqual(TxTarget.MANUAL);
     expect(tx.amount.value).toEqual(new Wei("999580000000500002", Units.WEI).value);
     expect(tx.gasPrice.value).toEqual(new Wei(10007, Units.MWEI).value);

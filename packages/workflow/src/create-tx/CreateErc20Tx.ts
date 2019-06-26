@@ -52,7 +52,7 @@ const TxDefaults: ERC20TxDetails = {
 function toPlainDetails(tx: ERC20TxDetails): ERC20TxDetailsPlain {
   return {
     from: tx.from,
-    to: tx.from,
+    to: tx.to,
     erc20: tx.erc20,
     target: tx.target.valueOf(),
     amount: tx.amount.toString(10),
