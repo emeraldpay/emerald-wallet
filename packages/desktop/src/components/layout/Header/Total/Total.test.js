@@ -3,6 +3,7 @@ import { Wei } from '@emeraldplatform/eth';
 import { shallow, mount } from 'enzyme';
 import { Provider } from 'react-redux';
 import { fromJS } from 'immutable';
+import BigNumber from 'bignumber.js';
 import Total from './Total';
 
 function createStore() {
@@ -18,12 +19,19 @@ function createStore() {
           chain: {},
         }),
         wallet: {
-          settings: fromJS({}),
+          settings: fromJS({
+            localeCurrency: 'USD',
+            rates: {
+              ETH: '234.56',
+              ETC: '7.89',
+            },
+          }),
         },
-        accounts: fromJS({
-          accounts: [
-            {balance: new Wei(1000000000000000)},
-            {balance: new Wei(2000000000000000)},
+        addresses: fromJS({
+          addresses: [
+            {balance: new Wei(1000000000000000), blockchain: 'eth'},
+            {balance: new Wei(2000000000000000), blockchain: 'eth'},
+            {balance: new Wei(3000000000000000), blockchain: 'etc'},
           ],
         }),
       };
@@ -34,6 +42,14 @@ function createStore() {
 describe('Header/Total', () => {
   it('renders total balance from store', () => {
     const component = mount(<Provider store={createStore()}><Total /></Provider>);
-    expect(component.find(Total).children().first().props().total).toEqual('0.003');
+    // ETH
+    // (1000000000000000 + 2000000000000000) / 10^18 × 234.56
+    // = 0.70368
+    // ETC
+    // 3000000000000000 / 10^18 × 7.89
+    // = 0.02367
+    // 0.70368 + 0.02367
+    // = 0.72735
+    expect(component.find(Total).children().first().props().total).toEqual(new BigNumber('0.72'));
   });
 });
