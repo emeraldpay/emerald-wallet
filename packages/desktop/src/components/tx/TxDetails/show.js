@@ -34,7 +34,7 @@ export default connect(
     let fiatAmount = null;
     const currentCurrency = state.wallet.settings.get('localeCurrency');
     if (launcher.selectors.getChainName(state).toLowerCase() === 'mainnet') {
-      const fiatRate = WalletSettings.selectors.fiatRate(state);
+      const fiatRate = WalletSettings.selectors.fiatRate(account.get('blockchain'), state);
       const coins = new Wei(Tx.get('value')).toEther();
       fiatAmount = Currency.format(Number(Currency.convert(coins, fiatRate)), currentCurrency);
     }

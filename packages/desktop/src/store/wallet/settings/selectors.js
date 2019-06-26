@@ -1,2 +1,2 @@
 export const fiatCurrency = (state) => state.wallet.settings.get('localeCurrency');
-export const fiatRate = (state) => state.wallet.settings.get('localeRate');
+export const fiatRate = (chain, state) => state.wallet.settings.getIn(['rates', chain.toUpperCase()]);
