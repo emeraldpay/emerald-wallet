@@ -6,6 +6,7 @@ import {Divider, List, ListItem, ListItemText} from '@material-ui/core';
 import {withStyles} from '@material-ui/styles';
 import Button from '../../../common/Button';
 import {Wei, Units} from "@emeraldplatform/eth";
+import {CreateEthereumTx, TxDetails} from "@emeraldwallet/workflow";
 
 const styles = (theme?: any) => ({
   formRow: {
@@ -33,19 +34,9 @@ const styles = (theme?: any) => ({
 
 
 interface Props {
-  tx: {
-    from: string;
-    to: string;
-    token: string;
-    amount: string;
-    gasLimit: string;
-  };
-  txFeeCurrency?: any;
-  amount: Wei;
-  txFee?: Wei;
+  tx: CreateEthereumTx,
   fiatCurrency?: any;
   fiatRate?: any;
-  value?: any;
   onCancel?: any;
   onChangePassword?: any;
   onSubmit?: any;
@@ -150,14 +141,14 @@ class SignTx extends React.Component<Props, State> {
 
   render() {
     const {
-      value, fiatRate, fiatCurrency, txFee, tx, classes, amount, txFeeCurrency
+      classes, tx
     } = this.props;
     const {
-      onCancel, onChangePassword, onSubmit,
+      onCancel, onSubmit,
     } = this.props;
-
     // const USDValue = Currency.format(Currency.convert(tx.amount, fiatRate, 2), fiatCurrency);
     const hideAccounts = tx.to === '0';
+    const display = tx.display();
 
     return (
       <div>
@@ -168,7 +159,7 @@ class SignTx extends React.Component<Props, State> {
           }}>
             <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
               {/* <div>{USDValue} USD</div> */}
-              <div style={{fontSize: '28px'}} title={amount.toString(Units.WEI, 0, true)}>{amount.toEther(6)} {tx.token}</div>
+              <div style={{fontSize: '28px'}} title={tx.amount.toString(Units.WEI, 0, true)}>{display.amount()} {display.amountUnit()}</div>
             </div>
             <div style={{display: hideAccounts ? 'none' : 'flex'}}>
               <ArrowRight/>
@@ -178,7 +169,7 @@ class SignTx extends React.Component<Props, State> {
         </div>
         <div style={{paddingTop: '35px', display: 'flex', justifyContent: 'center'}}>
         <span className={classes.fee}>
-          Plus {txFee ? txFee.toString(Units.ETHER, 6, true) : '?'} {txFeeCurrency} for {tx.gasLimit} GAS.
+          Plus {display.feeCost()} {display.feeCostUnit()} for {display.fee()} {display.feeUnit()}.
         </span>
         </div>
         {

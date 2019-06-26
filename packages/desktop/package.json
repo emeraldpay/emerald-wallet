@@ -84,6 +84,7 @@
     "@emeraldwallet/store": "^1.3.0",
     "@emeraldwallet/ui": "^1.3.3",
     "@emeraldwallet/vault": "^1.3.0",
+    "@emeraldwallet/workflow": "^1.3.0",
     "@ledgerhq/hw-app-eth": "4.35.0",
     "@ledgerhq/hw-transport-node-hid": "4.35.0",
     "@material-ui/core": "^4.0.2",

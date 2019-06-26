@@ -4,6 +4,7 @@ import _ from 'lodash';
 import {EthereumTx, BlockchainCode} from '@emeraldwallet/core';
 import {convert, EthAddress} from '@emeraldplatform/core';
 import {EthAccount} from '@emeraldplatform/eth-account';
+import { Wei } from '@emeraldplatform/eth';
 import {loadTokensBalances} from '../tokens/tokenActions';
 import history from '../../wallet/history';
 import launcher from '../../launcher';
@@ -223,13 +224,13 @@ function signTx(api, tx: Transaction, passphrase: string, chain: string) {
   return api.emerald.signTransaction(tx, passphrase, chain);
 }
 
-export function sendTransaction(chain, from: string, passphrase: string, to, gas, gasPrice: string, value: string, data) {
+export function sendTransaction(chain, from: string, passphrase: string, to: string, gas: number, gasPrice: Wei, value: Wei, data: string) {
   const originalTx: Transaction = {
     from,
     to,
-    gas,
-    gasPrice,
-    value,
+    gas: convert.toHex(gas),
+    gasPrice: gasPrice.toHex(),
+    value: value.toHex(),
     data,
     nonce: '',
   };

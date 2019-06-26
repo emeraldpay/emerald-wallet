@@ -1,0 +1,53 @@
+{
+  "name": "@emeraldwallet/workflow",
+  "version": "1.3.0",
+  "description": "Emerald Wallet Workflow and Business Logic components",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "author": "ETCDEV GmbH",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "rimraf lib/ && tsc",
+    "build:dist": "rimraf lib/ && tsc",
+    "test": "jest",
+    "test:coverage": "jest --coverage && codecov"
+  },
+  "devDependencies": {
+    "@types/jest": "^24.0.9",
+    "@types/node": "^11.10.4",
+    "@types/uuid": "^3.4.4",
+    "jest": "^24.1.0",
+    "rimraf": "^2.6.3",
+    "ts-jest": "^24.0.0",
+    "typescript": "3.4.2"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      "<rootDir>/lib/",
+      "<rootDir>/node_modules/"
+    ],
+    "setupFiles": [
+      "<rootDir>/jest.setup.ts"
+    ],
+    "globals": {
+      "ts-jest": {
+        "diagnostics": {
+          "warnOnly": true
+        }
+      }
+    },
+    "coverageDirectory": "./coverage/",
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ]
+  },
+  "dependencies": {
+    "@emeraldplatform/eth": "^0.5.0-rc.2",
+    "@emeraldwallet/core": "^1.3.0",
+    "immutable": "3.8.2",
+    "redux-saga": "^1.0.2",
+    "uuid": "^3.3.2"
+  }
+}
