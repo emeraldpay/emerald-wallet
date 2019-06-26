@@ -31,6 +31,13 @@
     "setupFiles": [
       "<rootDir>/jest.setup.ts"
     ],
+    "globals": {
+      "ts-jest": {
+        "diagnostics": {
+          "warnOnly": true
+        }
+      }
+    },
     "coverageDirectory": "./coverage/",
     "collectCoverageFrom": [
       "src/**/*.ts"

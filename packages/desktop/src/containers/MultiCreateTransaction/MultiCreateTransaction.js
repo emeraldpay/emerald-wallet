@@ -210,7 +210,6 @@ class MultiCreateTransaction extends React.Component {
         return (
           <SignTx
             fiatRate={this.props.fiatRate}
-            token={this.state.token}
             tx={tx}
             txFeeCurrency={this.props.txFeeSymbol}
             onChangePassword={this.onChangePassword}

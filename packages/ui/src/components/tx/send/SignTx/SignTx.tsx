@@ -35,8 +35,6 @@ const styles = (theme?: any) => ({
 
 interface Props {
   tx: CreateEthereumTx,
-  token: string,
-  txFeeCurrency?: any;
   fiatCurrency?: any;
   fiatRate?: any;
   onCancel?: any;
@@ -143,13 +141,14 @@ class SignTx extends React.Component<Props, State> {
 
   render() {
     const {
-      classes, tx, txFeeCurrency, token
+      classes, tx
     } = this.props;
     const {
-      onCancel, onChangePassword, onSubmit,
+      onCancel, onSubmit,
     } = this.props;
     // const USDValue = Currency.format(Currency.convert(tx.amount, fiatRate, 2), fiatCurrency);
     const hideAccounts = tx.to === '0';
+    const display = tx.display();
 
     return (
       <div>
@@ -160,7 +159,7 @@ class SignTx extends React.Component<Props, State> {
           }}>
             <div style={{display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
               {/* <div>{USDValue} USD</div> */}
-              <div style={{fontSize: '28px'}} title={tx.amount.toString(Units.WEI, 0, true)}>{tx.amount.toEther(6)} {token}</div>
+              <div style={{fontSize: '28px'}} title={tx.amount.toString(Units.WEI, 0, true)}>{display.amount()} {display.amountUnit()}</div>
             </div>
             <div style={{display: hideAccounts ? 'none' : 'flex'}}>
               <ArrowRight/>
@@ -170,7 +169,7 @@ class SignTx extends React.Component<Props, State> {
         </div>
         <div style={{paddingTop: '35px', display: 'flex', justifyContent: 'center'}}>
         <span className={classes.fee}>
-          Plus {tx.getFees().toString(Units.ETHER, 6, true)} {txFeeCurrency} for {tx.gas.toString()} GAS.
+          Plus {display.feeCost()} {display.feeCostUnit()} for {display.fee()} {display.feeUnit()}.
         </span>
         </div>
         {

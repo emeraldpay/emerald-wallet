@@ -1,6 +1,7 @@
 import { Wei, Units } from "@emeraldplatform/eth";
 import { TxTarget, ValidationResult, targetFromNumber } from './types';
 import BigNumber from 'bignumber.js';
+import {DisplayEtherTx, DisplayTx} from "..";
 
 export type TxDetails = {
   from?: string;
@@ -81,6 +82,10 @@ export class CreateEthereumTx implements TxDetails {
 
   dump(): TxDetailsPlain {
     return toPlainDetails(this);
+  }
+
+  display(): DisplayTx {
+    return new DisplayEtherTx(this);
   }
 
   setFrom(from: string, balance: Wei) {
