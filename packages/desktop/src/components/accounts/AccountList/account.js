@@ -1,12 +1,13 @@
 import React from 'react';
-import { withStyles } from '@material-ui/styles';
+import { withStyles, makeStyles, createStyles } from '@material-ui/styles';
 import withTheme from '@material-ui/core/styles/withTheme';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
+import Avatar from '@material-ui/core/Avatar';
 import PropTypes from 'prop-types';
 import { Account as AddressAvatar, ButtonGroup } from '@emeraldplatform/ui';
-import { Button } from '@emeraldwallet/ui';
+import { Button, CoinAvatar } from '@emeraldwallet/ui';
 import { Blockchains } from '@emeraldwallet/core';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../Balance';
@@ -30,6 +31,9 @@ const styles2 = (theme) => ({
   card: {
     borderRadius: '1px',
     boxShadow: 'none',
+  },
+  coinCard: {
+    paddingTop: '8px',
   },
 });
 
@@ -67,6 +71,9 @@ export class Account extends React.Component {
         <Card className={classes.card}>
           <CardContent>
             <Grid container>
+              <Grid container item xs={1} className={classes.coinCard}>
+                <CoinAvatar chain={account.get('blockchain')} />
+              </Grid>
               <Grid container item xs={6}>
                 { accId && <AddressAvatar
                   identity
@@ -90,7 +97,7 @@ export class Account extends React.Component {
                   </div>
                 </div>
               </Grid>
-              <Grid item xs={4}>
+              <Grid item xs={3}>
                 <div className={ classes.actionsContainer }>
                   <ButtonGroup>
                     <SecondaryMenu account={account} />

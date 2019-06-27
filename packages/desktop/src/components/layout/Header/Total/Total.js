@@ -8,12 +8,11 @@ import MenuList from '@material-ui/core/MenuList';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import Avatar from '@material-ui/core/Avatar';
 import { BlockchainCode } from '@emeraldwallet/core';
 import { withStyles } from '@material-ui/styles';
 import { Wei } from '@emeraldplatform/eth';
 import { CurrencyEtc, CurrencyEth} from '@emeraldplatform/ui-icons';
-import { Button } from '@emeraldwallet/ui';
+import { Button, CoinAvatar } from '@emeraldwallet/ui';
 import Accounts from '../../../../store/vault/accounts';
 import WalletSettings from '../../../../store/wallet/settings';
 
@@ -103,9 +102,7 @@ class TotalButton extends React.Component<Props, State> {
               const fiat = `${c.fiatAmount.toFixed(2)} ${fiatCurrency}`;
               return (<ListItem key={c.chain}>
                 <ListItemAvatar>
-                  <Avatar>
-                    <CoinSymbol coinTicker={c.chain.toUpperCase()} />
-                  </Avatar>
+                  <CoinAvatar chain={c.chain}/>
                 </ListItemAvatar>
                 <ListItemText primary={ether} secondary={fiat} />
               </ListItem>);
