@@ -10,6 +10,7 @@ const initialContact = Immutable.Map({
   name: null,
   address: null,
   description: null,
+  blockchain: null,
 });
 
 function addAddress(state, address) {

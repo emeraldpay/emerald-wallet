@@ -5,8 +5,8 @@ import { ipcRenderer } from '../../../__mocks__/electron-mock';
 
 describe('historyActions/refreshTrackedTransactions', () => {
   const getState = () => ({
-    network: fromJS({
-      currentBlock: {
+    blockchains: fromJS({
+      eth: {
         height: 100,
       },
     }),

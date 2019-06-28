@@ -49,8 +49,9 @@ startProtocolHandler();
 app.on('ready', () => {
   log.info('Starting Emerald', app.getVersion());
 
+  log.info('... setup API access');
   const apiAccess = new EmeraldApiAccessDev(settings.getId());
-  const serverConnect = new ServerConnect(URL_FOR_CHAIN, app.getVersion(), app.getLocale(), log, apiAccess.blockchainClient);
+  const serverConnect = new ServerConnect(app.getVersion(), app.getLocale(), log, apiAccess.blockchainClient);
   global.serverConnect = serverConnect;
   serverConnect.init(process.versions);
 
@@ -60,29 +61,30 @@ app.on('ready', () => {
   });
 
 
+  log.info('... create window');
   const browserWindow = mainWindow.createWindow(isDev);
   onceReady(() => {
     sendMode(browserWindow.webContents, mode);
   });
 
   const services = new Services(browserWindow.webContents, serverConnect, apiAccess);
-  ipc({ settings, services });
 
+  log.info('... setup services 2');
   const services2 = createServices2(ipcMain, browserWindow.webContents, apiAccess);
 
   app.on('quit', () => {
-    services.shutdown();
+    services.shutdown().catch(console.error);
     services2.stop();
   });
 
-  services.useSettings(settings.toJS())
-    .then(() => {
-      services.start();
-      services2.start();
-    })
+  log.info('... start services');
+  services.start()
+    .then(() => services2.start())
     .then(() => ipc({ settings, services }))
+    .then(() => log.info('... services started'))
     .catch((err) => log.error('Invalid settings', err));
 
+  log.info('... subscribe for prices');
   const prices = new Prices(browserWindow.webContents, apiAccess, mode.chains, mode.currencies[0]);
   prices.start();
 });

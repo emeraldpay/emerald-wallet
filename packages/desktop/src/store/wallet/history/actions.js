@@ -1,5 +1,6 @@
 // @flow
 import { Blockchains } from '@emeraldwallet/core';
+import { blockchains } from '@emeraldwallet/store';
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import createLogger from '../../../utils/logger';
 import type { Transaction } from './types';
@@ -11,7 +12,7 @@ const log = createLogger('historyActions');
 const txStoreKey = (chainId) => `chain-${chainId}-trackedTransactions`;
 const currentChainId = (state) => state.wallet.history.get('chainId');
 
-const getChainId = (chainCode) => Blockchains[chainCode].params.chainId;
+const getChainId = (chainCode) => Blockchains[chainCode.toLowerCase()].params.chainId;
 
 function persistTransactions(state, chainId) {
   const txs = allTrackedTxs(state).toJS().filter((t) => (t.chainId === chainId));
@@ -70,7 +71,8 @@ export function init(chains) {
 }
 
 const txUnconfirmed = (state, tx) => {
-  const currentBlock = state.network.get('currentBlock').get('height');
+  const chainCode = tx.get('chain').toLowerCase();
+  const currentBlock = blockchains.selectors.getHeight(state, chainCode);
   const txBlockNumber = tx.get('blockNumber');
 
   if (!txBlockNumber) {

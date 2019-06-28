@@ -15,14 +15,10 @@ export default connect(
   (dispatch, ownProps) => ({
     onTermsAgreed: () => dispatch(launcher.actions.agreeOnTerms(TERMS_VERSION)),
     connectETC: () => {
-      // api.updateChain('mainnet');
-      dispatch(setChain('mainnet', 61));
       dispatch(saveSettings({}));
       dispatch(Wallet.actions.onOpenWallet());
     },
     connectETH: () => {
-      // api.updateChain('eth');
-      dispatch(setChain('eth', 1));
       dispatch(saveSettings({}));
       dispatch(Wallet.actions.onOpenWallet());
     },

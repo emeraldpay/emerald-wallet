@@ -42,7 +42,6 @@ const CHAIN_VERIFY: {[key:string]: any} = {
 
 
 class ServerConnect implements IServerConnect {
-  chainUrls: any;
   headers: any;
   appVersion: any;
   locale: any;
@@ -50,9 +49,8 @@ class ServerConnect implements IServerConnect {
   log: any;
   blockchainClient: BlockchainClient;
 
-  constructor(chainUrls: any, appVersion: string, locale: any, log: any, blockchainClient: BlockchainClient) {
+  constructor(appVersion: string, locale: any, log: any, blockchainClient: BlockchainClient) {
     this.log = log;
-    this.chainUrls = chainUrls;
     this.appVersion = appVersion;
     this.locale = locale;
     this.blockchainClient = blockchainClient;
@@ -70,26 +68,7 @@ class ServerConnect implements IServerConnect {
     return new HttpTransportAdapter(new HttpTransport(url, this.headers));
   }
 
-  // DEPRECATED
-  // connectEth(url: string) {
-  //   if (!url) {
-  //     this.log.error('Empty JSON RPC URL is provided');
-  //     return null;
-  //   }
-  //   const chain = Object.entries(this.chainUrls).find((entry: any) => entry[1].url === url);
-  //   if (!chain) {
-  //     this.log.error('Unsupported JSON RPC URL is provided');
-  //     return null;
-  //   }
-  //   return this.connectEthChain(chain[0]);
-  // }
-
   connectEthChain(name: string): null | EthRpc {
-    const chain = this.chainUrls[name];
-    if (!chain) {
-      this.log.error('Unknown chain', name);
-      return null;
-    }
     const verifiers = CHAIN_VERIFY[name];
     if (typeof verifiers === 'undefined') {
       this.log.error('No verifiers for chain', name);

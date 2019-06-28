@@ -10,15 +10,6 @@ const initial = Immutable.fromJS({
   launcherType: 'web',
   terms: 'none',
   configured: false,
-  chain: {
-    client: null,
-  },
-
-  geth: {
-    url: '',
-    status: STATUS_NOT_READY,
-    type: 'none',
-  },
 
   connector: {
     url: '',
@@ -55,22 +46,12 @@ function onConfig(state, action) {
     state = state
       .set('configured', true)
       .set('launcherType', action.launcherType)
-      .set('firstRun', getStoredFirstRun()) // action.firstRun
-      .update('geth', (geth) => geth.merge(Immutable.fromJS(action.config.geth || {})))
-      .update('chain', (chain) => chain.merge(Immutable.fromJS(action.config.chain || {})));
+      .set('firstRun', getStoredFirstRun()); // action.firstRun
 
     if (action.config.terms) {
       state = state.set('terms', action.config.terms);
     }
 
-    if (action.config.chain) {
-      state = state.setIn(['chain', 'client'], action.config.chain.client);
-    }
-
-    // TODO: remove this hack
-    // if (typeof state.getIn(['chain', 'name']) === 'string') {
-    //   api.updateChain(state.getIn(['chain', 'name']));
-    // }
     return state;
   }
   return state;
@@ -89,13 +70,6 @@ function onMessage(state, action) {
 function onServiceStatus(state, action) {
   if (action.type === 'LAUNCHER/SERVICE_STATUS') {
     return state.update(action.service, (service) => service.merge(Immutable.fromJS(action.mode)));
-  }
-  return state;
-}
-
-function onChain(state, action) {
-  if (action.type === 'LAUNCHER/CHAIN') {
-    return state.update('chain', (chain) => chain.set('name', action.chain).set('id', action.chainId));
   }
   return state;
 }
@@ -126,7 +100,6 @@ export default function launcherReducers(state, action) {
   state = onConfig(state, action);
   state = onMessage(state, action);
   state = onServiceStatus(state, action);
-  state = onChain(state, action);
   state = onSettingUpdate(state, action);
   state = onTerms(state, action);
   state = onConnecting(state, action);
