@@ -15,13 +15,20 @@ const { startProtocolHandler } = require('./protocol');
 const assertSingletonWindow = require('./singletonWindow');
 const { URL_FOR_CHAIN } = require('./utils');
 const { Prices } = require('./prices');
+const {
+  DevMode, LocalMode, ProdMode, sendMode,
+} = require('./mode');
+const { onceReady } = require('./ready');
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
+let mode;
+
 
 if (isDev) {
   log.warn('START IN DEVELOPMENT MODE');
   app.setPath('userData', path.resolve('./.emerald-dev/userData'));
+  mode = LocalMode;
 }
 
 const settings = new Settings();
@@ -54,6 +61,10 @@ app.on('ready', () => {
 
 
   const browserWindow = mainWindow.createWindow(isDev);
+  onceReady(() => {
+    sendMode(browserWindow.webContents, mode);
+  });
+
   const services = new Services(browserWindow.webContents, serverConnect, apiAccess);
   ipc({ settings, services });
 
@@ -72,7 +83,7 @@ app.on('ready', () => {
     .then(() => ipc({ settings, services }))
     .catch((err) => log.error('Invalid settings', err));
 
-  const prices = new Prices(browserWindow.webContents, apiAccess);
+  const prices = new Prices(browserWindow.webContents, apiAccess, mode.chains, mode.currencies[0]);
   prices.start();
 });
 

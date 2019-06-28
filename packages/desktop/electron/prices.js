@@ -3,10 +3,10 @@ const { ipcMain } = require('electron'); // eslint-disable-line import/no-extran
 const log = require('./logger');
 
 class Prices {
-  constructor(webContents, apiAccess) {
+  constructor(webContents, apiAccess, from, currency) {
     this.webContents = webContents;
-    this.froms = ['ETC', 'ETH', 'MORDEN'];
-    this.to = 'USD';
+    this.froms = from;
+    this.to = currency;
     this.apiAccess = apiAccess;
     ipcMain.on('prices/setCurrency', (event, to) => {
       to = to.toUpperCase();
