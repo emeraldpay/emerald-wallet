@@ -198,3 +198,4 @@ Promise
   .then(startSync);
 checkStatus();
 screenHandlers();
+ipcRenderer.send('emerald-ready');

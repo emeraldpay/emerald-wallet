@@ -7,6 +7,11 @@ const initial = Immutable.fromJS({
   localeCurrency: 'USD',
   localeRate: null,
   showHiddenAccounts: false,
+  mode: {
+    id: 'default',
+    chains: ['ETH', 'ETC'],
+    currencies: ['USD', 'EUR', 'BTC', 'USDT'],
+  },
 });
 
 function onSetLocaleCurrency(state, action) {
@@ -57,11 +62,19 @@ function onSetConfirmations(state, action) {
   return state;
 }
 
+function onSetMode(state, action) {
+  if (action.type === ActionTypes.MODE) {
+    return state.set('mode', Immutable.fromJS(action.payload));
+  }
+  return state;
+}
+
 export default function accountsReducers(state, action) {
   state = state || initial;
   state = onSetLocaleCurrency(state, action);
   state = onExchangeRates(state, action);
   state = onSetShowHiddenAccounts(state, action);
   state = onSetConfirmations(state, action);
+  state = onSetMode(state, action);
   return state;
 }

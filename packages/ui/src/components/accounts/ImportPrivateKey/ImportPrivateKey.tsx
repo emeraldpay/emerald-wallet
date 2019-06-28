@@ -8,6 +8,7 @@ import { Back } from '@emeraldplatform/ui-icons';
 import Button from '../../common/Button';
 import PasswordInput from '../../common/PasswordInput';
 import ChainSelector from "../../common/ChainSelector/ChainSelector";
+import { Blockchain } from "@emeraldwallet/core";
 
 
 export const styles = {
@@ -54,6 +55,7 @@ function getLoadingIcon(submitting) {
 }
 
 interface Props {
+  chains: Blockchain[],
   onBack?: any;
   error?: any;
   onSubmit?: any;
@@ -70,9 +72,12 @@ interface State {
 }
 
 export class ImportPrivateKey extends React.Component<Props, State> {
-  state = {
-    chain: 'ETH'
-  } as State;
+  constructor(props: Props) {
+    super(props);
+    this.state = {
+      chain: props.chains.length > 0 ? props.chains[0].params.coinTicker : '',
+    };
+  }
 
   handleSubmit = () => {
     if (this.props.onSubmit && (this.state.confirmError == null)) {
@@ -107,7 +112,7 @@ export class ImportPrivateKey extends React.Component<Props, State> {
 
   render() {
     const {
-      onBack, submitting, classes, error,
+      onBack, submitting, classes, error, chains,
     } = this.props;
     const { chain, privateKey, confirmPassword, password } = this.state;
 
@@ -182,7 +187,7 @@ export class ImportPrivateKey extends React.Component<Props, State> {
               disabled={ submitting || invalid }
               icon={getLoadingIcon(submitting) }
             />
-            <ChainSelector onChange={this.handleChainChange} value={chain}/>
+            <ChainSelector onChange={this.handleChainChange} value={chain} chains={chains}/>
           </div>
         </div>
 

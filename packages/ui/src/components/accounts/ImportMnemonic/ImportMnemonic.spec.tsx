@@ -7,7 +7,7 @@ const classes = Object.keys(styles).reduce(reduceClasses, {});
 
 describe('ImportMnemonic', () => {
   it('renders without crash', () => {
-    const component = shallow(<ImportMnemonic classes={classes} />);
+    const component = shallow(<ImportMnemonic classes={classes} chains={[]}/>);
     expect(component).toBeDefined();
   });
 });

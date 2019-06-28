@@ -1,9 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { ImportMnemonic, NewMnemonic } from '@emeraldwallet/ui';
-import { screen } from 'store';
-import accounts from 'store/vault/accounts';
+import { screen } from '../../../store';
+import accounts from '../../../store/vault/accounts';
 import ConfirmMnemonic from '../add/ConfirmMnemonic';
+import settings from '../../../store/wallet/settings';
 
 const PAGES = {
   GENERATE: 1,
@@ -49,8 +50,10 @@ class MnemonicWizard extends React.Component {
   };
 
   getPage() {
-    const { gotoDashboard } = this.props;
-    const { page, mnemonic, formData } = this.state;
+    const { gotoDashboard, chains } = this.props;
+    const {
+      page, mnemonic, formData,
+    } = this.state;
     switch (page) {
       case PAGES.GENERATE:
         return (
@@ -68,6 +71,7 @@ class MnemonicWizard extends React.Component {
             mnemonic={ mnemonic }
             onSubmit={ this.gotoConfirm }
             onBack={ this.gotoGenerate }
+            chains={ chains }
           />
         );
 
@@ -98,6 +102,7 @@ class MnemonicWizard extends React.Component {
 
 export default connect(
   (state, ownProps) => ({
+    chains: settings.selectors.currentChains(state),
   }),
   (dispatch, ownProps) => ({
 

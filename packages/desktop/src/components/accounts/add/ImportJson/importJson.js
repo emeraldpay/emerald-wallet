@@ -13,6 +13,7 @@ import { Row, styles as formStyles } from 'elements/Form/index';
 import { screen } from 'store';
 
 import FileDropField from './fileDropField';
+import settings from '../../../../store/wallet/settings';
 
 class ImportJson extends React.Component {
     static propTypes = {
@@ -28,7 +29,7 @@ class ImportJson extends React.Component {
       this.state = {
         fileError: null,
         file: null,
-        chain: 'ETH',
+        chain: props.chains.length > 0 ? props.chains[0].params.coinTicker : '',
       };
     }
 
@@ -52,7 +53,7 @@ class ImportJson extends React.Component {
     };
 
     render() {
-      const { t, onDashboard } = this.props;
+      const { t, onDashboard, chains } = this.props;
       const { file, fileError, chain } = this.state;
 
       return (
@@ -83,7 +84,7 @@ class ImportJson extends React.Component {
               <div style={ formStyles.left }/>
               <div style={ formStyles.right }>
                 <Button primary onClick={ this.submitFile } label={ t('common:submit') }/>
-                <ChainSelector onChange={ this.onChainChange } value={chain}/>
+                <ChainSelector onChange={ this.onChainChange } value={chain} chains={ chains }/>
               </div>
             </Row>)
           }
@@ -94,6 +95,7 @@ class ImportJson extends React.Component {
 
 export default connect(
   (state, ownProps) => ({
+    chains: settings.selectors.currentChains(state),
   }),
   (dispatch, ownProps) => ({
     importFile: (chain, file) => {

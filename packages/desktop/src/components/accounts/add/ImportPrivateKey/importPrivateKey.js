@@ -7,9 +7,11 @@ import { ImportPrivateKey } from '@emeraldwallet/ui';
 import { utils } from '@emeraldwallet/core';
 import accounts from 'store/vault/accounts';
 import { screen } from '@emeraldwallet/store';
+import settings from '../../../../store/wallet/settings';
 
 export default connect(
   (state, ownProps) => ({
+    chains: settings.selectors.currentChains(state),
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data) => {

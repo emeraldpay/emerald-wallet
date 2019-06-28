@@ -1,4 +1,5 @@
 import React from 'react';
+import { connect } from 'react-redux';
 import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import { Back } from '@emeraldplatform/ui-icons';
@@ -8,9 +9,9 @@ import {
 import {
   Button, PasswordInput, Advice, ChainSelector
 } from '@emeraldwallet/ui';
-import { required } from 'lib/validators';
 import { Row, styles as formStyles } from 'elements/Form';
 import LoadingIcon from '../LoadingIcon';
+import settings from '../../../../store/wallet/settings';
 
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -43,7 +44,7 @@ class PasswordDialog extends React.Component {
       passphraseError: null,
       confirmError: null,
       confirmPassword: null,
-      chain: 'ETH',
+      chain: props.chains.length > 0 ? props.chains[0].params.coinTicker : '',
     };
   }
 
@@ -97,7 +98,9 @@ class PasswordDialog extends React.Component {
   }
 
   render() {
-    const { onDashboard, t, classes } = this.props;
+    const {
+      onDashboard, t, classes, chains,
+    } = this.props;
     const {
       passphraseError, confirmError, confirmPassword, passphrase, chain,
     } = this.state;
@@ -171,7 +174,7 @@ class PasswordDialog extends React.Component {
                 icon={ <LoadingIcon {...this.props} /> }
                 disabled={ this.props.loading }
               />
-              <ChainSelector onChange={ this.onChainChange } value={ chain }/>
+              <ChainSelector onChange={ this.onChainChange } value={ chain } chains={ chains }/>
             </div>
           </Row>
         </div>
@@ -180,4 +183,12 @@ class PasswordDialog extends React.Component {
   }
 }
 
-export default withStyles(styles2)(PasswordDialog);
+const StyledPasswordDialog = withStyles(styles2)(PasswordDialog);
+
+export default connect(
+  (state, ownProps) => {
+    return {
+      chains: settings.selectors.currentChains(state),
+    };
+  }
+)(StyledPasswordDialog);

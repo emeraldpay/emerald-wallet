@@ -7,7 +7,7 @@ const classes = Object.keys(styles).reduce(reduceClasses, {});
 
 describe('ChainSelector', () => {
   it('creates ChainSelector', () => {
-    const component = shallow(<ChainSelector classes={classes} value="ETH" />);
+    const component = shallow(<ChainSelector classes={classes} value="ETH" chains={[]}/>);
     expect(component).toBeDefined();
   });
 });
