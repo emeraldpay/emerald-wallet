@@ -8,7 +8,7 @@ const classes = Object.keys(styles).reduce(reduceClasses, {});
 
 describe('ImportPrivateKey', () => {
   it('renders without crash', () => {
-    const component = shallow(<ImportPrivateKey classes={classes} />);
+    const component = shallow(<ImportPrivateKey classes={classes} chains={[]}/>);
     expect(component).toBeDefined();
   });
 });

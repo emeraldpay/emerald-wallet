@@ -6,6 +6,7 @@ import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
+import {Blockchain} from "@emeraldwallet/core";
 
 export const styles = (theme) => ({
   container: {
@@ -22,19 +23,15 @@ export const styles = (theme) => ({
 });
 
 interface Props {
+  chains: Blockchain[];
   onChange?: any;
   value?: string;
   classes?: any;
 }
 
 interface State {
-  value?: any;
+  value?: string;
 }
-
-const blockchains = [
-  {code: "ETH", title: "Ethereum"},
-  {code: "ETC", title: "Ethereum Classic"},
-];
 
 export class ChainSelector extends React.Component<Props, State> {
   state = {
@@ -54,22 +51,22 @@ export class ChainSelector extends React.Component<Props, State> {
   }
 
   render() {
-    const { classes } = this.props;
+    const { classes, chains } = this.props;
     const { value } = this.state;
     return (
       <div className={ classes.container }>
         <FormControl className={classes.formControl}>
           <InputLabel htmlFor="chain-helper">Blockchain</InputLabel>
           <Select
-            value={value || "ETH"}
+            value={value.toUpperCase()}
             input={<Input name="chain" id="chain-helper" />}
             onChange={this.handleChange.bind(this)}
             displayEmpty
             name="chain"
             className={classes.selectChain}
           >
-            {blockchains.map( (chain) =>
-              <MenuItem value={chain.code} key={chain.code}>{chain.title}</MenuItem>
+            {chains.map( (chain: Blockchain) =>
+              <MenuItem value={chain.params.coinTicker} key={chain.params.coinTicker}>{chain.getTitle()}</MenuItem>
             )}
           </Select>
           {/*<FormHelperText>Select blockchain</FormHelperText>*/}

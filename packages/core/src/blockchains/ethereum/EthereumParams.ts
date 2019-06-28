@@ -1,10 +1,14 @@
 import {BlockchainParams} from '../types';
-import {CoinTicker} from '../CoinTicker';
 
 class EthereumParams implements BlockchainParams {
   decimals: number = 18;
-  coinTicker: string = CoinTicker.ETH;
-  chainId = 1;
+  coinTicker: string;
+  chainId: number;
+
+  constructor(coinTicker: string, chainId: number) {
+    this.coinTicker = coinTicker;
+    this.chainId = chainId;
+  }
 }
 
 export default EthereumParams;

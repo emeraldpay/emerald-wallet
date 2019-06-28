@@ -1,4 +1,4 @@
-import {EthereumBlockchain, EthereumClassicBlockchain} from '@emeraldwallet/core';
+import {Blockchains, BlockchainCode} from '@emeraldwallet/core';
 
 export const Networks = [
   {
@@ -13,7 +13,7 @@ export const Networks = [
     title: 'Ethereum',
     id: 'remote/eth',
     coin: 'ETH',
-    blockchain: new EthereumBlockchain(),
+    blockchain: Blockchains[BlockchainCode.ETH],
   },
   {
     geth: {
@@ -27,7 +27,7 @@ export const Networks = [
     title: 'Ethereum Classic',
     id: 'remote/etc',
     coin: 'ETC',
-    blockchain: new EthereumClassicBlockchain(),
+    blockchain: Blockchains[BlockchainCode.ETC],
   },
   {
     geth: {
@@ -41,7 +41,7 @@ export const Networks = [
     title: 'Morden Testnet',
     id: 'remote/morden',
     coin: 'MORDEN',
-    blockchain: new EthereumClassicBlockchain(),
+    blockchain: Blockchains[BlockchainCode.Morden],
   },
 ];
 
