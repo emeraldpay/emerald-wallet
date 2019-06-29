@@ -104,26 +104,6 @@ export function loadTokenDetails(chain: string, tokenAddress: string): () => Pro
   };
 }
 
-export function fetchTokenDetails(chain: string, tokenAddress: string): () => Promise<any> {
-  return (dispatch, getState, api) => {
-    const contractCallBase = {to: tokenAddress};
-
-    return Promise.all([
-      api.chain(chain).eth.call({ ...contractCallBase, data: tokenContract.functionToData('totalSupply') }),
-      api.chain(chain).eth.call({ ...contractCallBase, data: tokenContract.functionToData('decimals') }),
-      api.chain(chain).eth.call({ ...contractCallBase, data: tokenContract.functionToData('symbol') }),
-    ]).then(([totalSupply, decimals, symbol]) => {
-      return {
-        address: tokenAddress,
-        totalSupply,
-        decimals,
-        symbol: parseString(symbol),
-      };
-    }).catch(dispatchRpcError(dispatch));
-  };
-}
-
-
 /**
  * Load balances of all known tokens for particular address
  *
@@ -207,45 +187,4 @@ export function addDefault(chain: string, chainId) {
       });
     });
   };
-}
-
-export function addToken(chain: string, token: TokenInfo) {
-  return (dispatch, getState, api) => {
-    return api.emerald.importContract(token.address, token.symbol, '', chain).then(() => {
-      // TODO: maybe replace with one action
-      dispatch({
-        type: ActionTypes.ADD_TOKEN,
-        address: token.address,
-        name: token.symbol,
-      });
-      return dispatch(loadTokenDetails(chain, token.address));
-    });
-  };
-}
-
-export function removeToken(address: string) {
-  return (dispatch, getState, api) => dispatch({ type: ActionTypes.REMOVE_TOKEN, address });
-}
-
-// FIXME: deprecated
-// export function traceCall(from: string, to: string, gas: string, gasPrice: string, value: string, data: string) {
-//   return (dispatch, getState, api) => {
-//     // TODO: We shouldn't detect trace api each time, we need to do it only once
-//     return detectTraceCall(api.geth).then((constructor) => {
-//       const tracer = constructor({
-//         from, to, gas, gasPrice, value, data,
-//       });
-//       const call = tracer.buildRequest();
-//       return api.geth.raw(call.method, call.params)
-//         .then((result) => tracer.estimateGas(result));
-//     });
-//   };
-// }
-
-export function createTokenTxData(to: string, amount: BigNumber, isTransfer: boolean): string {
-  const value = amount.toString(10);
-  if (isTransfer === 'true') {
-    return tokenContract.functionToData('transfer', { _to: to, _value: value });
-  }
-  return tokenContract.functionToData('approve', { _spender: to, _amount: value });
 }
