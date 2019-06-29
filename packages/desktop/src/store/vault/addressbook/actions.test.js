@@ -11,12 +11,9 @@ describe('Addressbook actions', () => {
     };
     const state = {
       launcher: fromJS({
-        chain: {
-          name: 'mainnet',
-        },
       }),
     };
-    loadAddressBook()(dispatch, () => state, api);
+    loadAddressBook('etc')(dispatch, () => state, api);
     expect(api.emerald.listAddresses).toHaveBeenCalled();
   });
 });

@@ -205,7 +205,7 @@ export default connect(
     }
 
     return {
-      showFiat: Wallet.selectors.showFiat(state),
+      showFiat: true,
       tokensBalances,
       account,
       transactions,

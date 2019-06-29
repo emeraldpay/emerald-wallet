@@ -1,8 +1,10 @@
+import { Wei } from "@emeraldplatform/eth";
+
 export const moduleName = "blockchains";
 
 export interface IBlockchain {
   height: number | null;
-  gasPrice: any | null;
+  gasPrice: Wei | null;
 }
 
 export interface IBlockchainsState extends Map<string, IBlockchain> {
@@ -22,7 +24,10 @@ export interface BlockAction {
 
 export interface GasPriceAction {
   type: ActionTypes.GAS_PRICE;
-  payload: any;
+  payload: {
+    chain: string,
+    gasPrice: Wei
+  };
 }
 
 export interface FetchGasPriceAction {

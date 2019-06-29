@@ -1,4 +1,6 @@
-import {BlockchainCode} from '@emeraldwallet/core';
+import createLogger from '../../utils/logger';
+
+const log = createLogger('api');
 
 class NullConnect {
   connectEthChain(name) {
@@ -26,11 +28,18 @@ export function getConnector() {
 
 
 export class Api {
-  constructor(connector, chains) {
+  constructor(connector) {
+    this.connector = connector;
     this.emerald = connector.connectEmerald();
     this.chains = new Map();
+  }
+
+  connectChains(chains) {
     chains.forEach((c) => {
-      this.chains.set(c.toLowerCase(), connector.connectEthChain(c));
+      if (!this.chains.has(c.toLowerCase())) {
+        log.info(`Setting up connection to ${c}`);
+        this.chains.set(c.toLowerCase(), this.connector.connectEthChain(c));
+      }
     });
   }
 

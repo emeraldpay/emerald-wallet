@@ -7,10 +7,8 @@ import { Api, getConnector } from '../lib/rpc/api';
 import { intervalRates } from './config';
 import history from './wallet/history';
 import accounts from './vault/accounts';
-import network from './network';
 import settings from './wallet/settings';
 import tokens from './vault/tokens';
-import ledger from './ledger';
 import Addressbook from './vault/addressbook';
 import { addresses } from '.';
 
@@ -29,14 +27,12 @@ import {
   onceServicesStart,
   onceAccountsLoaded,
   onceHasAccountsWithBalances,
-  onceChainSet
+  onceModeSet,
 } from './triggers';
-
-import {blockchains as supported} from '../config';
 
 const log = createLogger('store');
 
-const api = new Api(getConnector(), supported);
+const api = new Api(getConnector());
 
 export const store = createStore(api);
 
@@ -53,32 +49,41 @@ function refreshAll() {
 }
 
 export function startSync() {
-  const state = store.getState();
-
-  const chain = state.launcher.getIn(['chain', 'name']);
-  const chainId = state.launcher.getIn(['chain', 'id']);
-
+  log.info('Start synchronization');
   store.dispatch(settings.actions.listenPrices());
 
   const promises = [
-    store.dispatch(Addressbook.actions.loadAddressBook()),
-    store.dispatch(history.actions.init(supported)),
-    store.dispatch(tokens.actions.loadTokenList()),
-    store.dispatch(tokens.actions.addDefault(chainId)),
-    store.dispatch(history.actions.refreshTrackedTransactions()),
+    // store.dispatch(history.actions.refreshTrackedTransactions()),
   ];
 
-  // request gas price for each chain
-  supported.forEach((code) => promises.push(store.dispatch(blockchains.actions.fetchGasPriceAction(code))));
+  promises.push(
+    onceModeSet(store).then(() => {
+      const loadAllChain = [];
+      const supported = settings.selectors.currentChains(store.getState());
+      const codes = supported.map((chain) => chain.params.coinTicker.toLowerCase());
+      log.info('Configured to use chains', codes);
 
-  if (chain === 'mainnet') {
-    promises.push(
-      store.dispatch(ledger.actions.setBaseHD("m/44'/60'/160720'/0'"))
-    );
-  } else if (chain === 'morden') {
-    // FIXME ledger throws "Invalid status 6804" for 44'/62'/0'/0
-    promises.push(store.dispatch(ledger.actions.setBaseHD("m/44'/61'/1'/0")));
-  }
+      store.dispatch(history.actions.init(codes));
+      api.connectChains(codes);
+
+      supported.forEach((chain) => {
+        // const {chainId} = chain.params;
+        const chainCode = chain.params.coinTicker.toLowerCase();
+        const loadChain = [];
+        // request tokens
+        // loadChain.push(store.dispatch(tokens.actions.loadTokenList(chainCode)));
+        // loadChain.push(store.dispatch(tokens.actions.addDefault(chainCode, chainId)));
+        // address book
+        loadChain.push(store.dispatch(Addressbook.actions.loadAddressBook(chainCode)));
+        // request gas price for each chain
+        loadChain.push(store.dispatch(blockchains.actions.fetchGasPriceAction(chainCode)));
+        loadAllChain.push(
+          Promise.all(loadChain).catch((e) => log.error(`Failed to load chain ${chainCode}`, e))
+        );
+      });
+      return Promise.all(loadAllChain).catch((e) => log.error('Failed to load chains', e));
+    })
+  );
 
   promises.push(
     refreshAll()
@@ -88,8 +93,9 @@ export function startSync() {
         store.dispatch(screen.actions.showError(err));
       })
   );
-
-  return Promise.all(promises);
+  return Promise.all(promises)
+    .then(() => log.info('Initial synchronization finished'))
+    .catch((e) => log.error('Failed to start synchronization', e));
 }
 
 export function stopSync() {

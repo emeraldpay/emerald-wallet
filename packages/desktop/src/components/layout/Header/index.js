@@ -5,7 +5,7 @@ import Launcher from '../../../store/launcher';
 
 export default (connect(
   (state, ownProps) => {
-    const showFiat = Launcher.selectors.getChainName(state).toLowerCase() === 'mainnet';
+    const showFiat = true;
 
     return {
       network: state.network.toJS(),

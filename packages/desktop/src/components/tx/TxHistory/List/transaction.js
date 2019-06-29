@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { Map } from 'immutable';
 import {Blockchains} from '@emeraldwallet/core';
 import TxView from '@emeraldwallet/ui/lib/components/tx/TxHistory/TxList/TxItem';
-import launcher from '../../../../store/launcher';
+import { blockchains } from '@emeraldwallet/store';
 import accounts from '../../../../store/vault/accounts';
 import { screen } from '../../../../store';
 import Wallet from '../../../../store/wallet';
@@ -38,7 +38,7 @@ export default connect(
 
     const token = state.tokens.get('tokens').find((t) => t.get('address') === tx.to);
 
-    const showFiat = !token && launcher.selectors.getChainName(state).toLowerCase() === 'mainnet';
+    const showFiat = !token;
 
     const blockchain = Blockchains[tx.chain];
 
@@ -52,7 +52,7 @@ export default connect(
       token: (token && token.toJS()) || null,
       netParams: {
         requiredConfirmations: state.wallet.settings.get('numConfirmations'),
-        currentBlockHeight: state.network.getIn(['currentBlock', 'height']),
+        currentBlockHeight: blockchains.selectors.getHeight(state, blockchain && blockchain.params.coinTicker),
       },
     };
   },

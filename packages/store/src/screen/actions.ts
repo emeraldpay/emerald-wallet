@@ -68,7 +68,7 @@ export function showNotification(message: any, notificationType: any, duration: 
 
 export function dispatchRpcError(dispatch: any) {
   return (err: any) => {
-    // logRpc.warn('RPC Error', err && err.message ? err.message : '');
+    // console.warn('RPC Error', err && err.message ? err.message : '');
     dispatch(showNotification('Remote server connection failure', 'warning', 2000, null, null));
   };
 }

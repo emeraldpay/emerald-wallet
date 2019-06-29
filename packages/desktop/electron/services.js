@@ -1,15 +1,11 @@
 const { LocalConnector } = require('@emeraldwallet/vault');
 const log = require('./logger');
-const { NoneGeth, RemoteGeth } = require('./launcher');
 const UserNotify = require('./userNotify').UserNotify; // eslint-disable-line
-const {
-  getBinDir, getLogDir, isValidChain, URL_FOR_CHAIN,
-} = require('./utils');
+const {getBinDir, getLogDir} = require('./utils');
 require('es6-promise').polyfill();
 
 const SERVICES = {
   CONNECTOR: 'connector',
-  GETH: 'geth',
 };
 
 const STATUS = {
@@ -34,8 +30,6 @@ const DEFAULT_SETUP = {
     launchType: LAUNCH_TYPE.LOCAL_RUN,
     url: 'http://127.0.0.1:1920',
   },
-  geth: URL_FOR_CHAIN.mainnet,
-  chain: null,
 };
 
 
@@ -43,7 +37,6 @@ class Services {
   constructor(webContents, serverConnect, apiAccess) {
     this.setup = Object.assign({}, DEFAULT_SETUP);
     this.connectorStatus = STATUS.NOT_STARTED;
-    this.gethStatus = STATUS.NOT_STARTED;
     this.notify = new UserNotify(webContents);
     this.emerald = serverConnect.connectEmerald();
     this.serverConnect = serverConnect;
@@ -51,37 +44,8 @@ class Services {
     log.info(`Run services from ${getBinDir()}`);
   }
 
-  /**
-     * Configure services with new settings
-     *
-     * @param settings - plain JavaScript object with settings
-     *
-     */
-  useSettings(settings) {
-    if (isValidChain(settings.chain)) {
-      const chainChanged = !this.setup.chain || this.setup.chain.name !== settings.chain.name;
-      this.setup.chain = settings.chain;
-      this.setup.geth = URL_FOR_CHAIN[settings.chain.name];
-      log.debug('New Services setup', this.setup);
-      this.gethStatus = STATUS.NOT_STARTED;
-      if (chainChanged) {
-        return this.shutdownRpc();
-      }
-    } else {
-      this.gethStatus = STATUS.WRONG_SETTINGS;
-    }
-    return Promise.resolve(this.setup);
-  }
-
   start() {
-    const services = [];
-    if (this.gethStatus === STATUS.NOT_STARTED) {
-      services.push(this.startGeth());
-    }
-    if (this.connectorStatus === STATUS.NOT_STARTED) {
-      services.push(this.startConnector());
-    }
-    return Promise.all(services);
+    return this.startConnector();
   }
 
   shutdown() {
@@ -98,47 +62,7 @@ class Services {
   }
 
   shutdownRpc() {
-    const shuttingDown = [];
-
-    shuttingDown.push(
-      this.serverConnect.disconnect()
-        .then(() => { this.gethStatus = STATUS.NOT_STARTED; })
-        .then(() => this.notifyEthRpcStatus())
-    );
-    return Promise.all(shuttingDown);
-  }
-
-  startNoneRpc() {
-    this.notify.error('Ethereum connection type is not configured');
-    return new NoneGeth();
-  }
-
-  startRemoteRpc() {
-    log.info('use REMOTE RPC');
-    this.gethStatus = STATUS.READY;
-    this.notify.info(`Use Remote RPC API at ${this.setup.geth.url}`);
-    this.notify.chain(this.setup.chain.name, this.setup.chain.id);
-    this.notifyEthRpcStatus();
-    return new RemoteGeth(null, null);
-  }
-
-  startGeth() {
-    return new Promise((resolve, reject) => {
-      this.gethStatus = STATUS.NOT_STARTED;
-      this.notifyEthRpcStatus('not ready');
-
-      if (this.setup.geth.launchType === LAUNCH_TYPE.NONE) {
-        const geth = this.startNoneRpc();
-        this.geth = geth;
-        resolve(geth);
-      } if (this.setup.geth.launchType === LAUNCH_TYPE.REMOTE_URL) {
-        const geth = this.startRemoteRpc();
-        this.geth = geth;
-        resolve(geth);
-      } else {
-        reject(new Error(`Invalid Geth launch type ${this.setup.geth.launchType}`));
-      }
-    });
+    return this.serverConnect.disconnect();
   }
 
   startConnector() {
@@ -197,7 +121,6 @@ class Services {
   notifyStatus() {
     return new Promise((resolve, reject) => {
       this.notifyConnectorStatus(Services.statusName(this.connectorStatus));
-      this.notifyEthRpcStatus(Services.statusName(this.gethStatus));
       resolve('ok');
     });
   }
@@ -217,16 +140,6 @@ class Services {
       url: this.setup.connector.url,
       status: connectorStatus,
       version: this.setup.connector.version,
-    });
-  }
-
-  notifyEthRpcStatus() {
-    const gethStatus = Services.statusName(this.gethStatus);
-    this.notify.status(SERVICES.GETH, {
-      url: this.setup.geth.url,
-      type: this.setup.geth.type,
-      status: gethStatus,
-      version: this.setup.geth.clientVersion,
     });
   }
 }

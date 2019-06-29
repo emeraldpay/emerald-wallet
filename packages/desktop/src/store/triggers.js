@@ -27,10 +27,15 @@ export function onceServicesStart(store) {
   return new Promise((resolve, reject) => handleTrigger(check, resolve, store));
 }
 
-export function onceChainSet(store) {
+export function onceModeSet(store) {
   const check = () => {
-    const chain = store.getState().launcher.get('chain').toJS();
-    return typeof chain === 'object' && typeof chain.name === 'string' && chain.name;
+    const mode = store.getState().wallet.settings.get('mode');
+    console.warn('mode', mode);
+    // if (typeof mode !== 'object') {
+    //   return false;
+    // }
+    const { id, chains } = mode.toJS();
+    return id !== 'default' && chains.length > 0;
   };
 
   return new Promise((resolve, reject) => handleTrigger(check, resolve, store));
@@ -56,8 +61,8 @@ export function onceAccountsLoaded(store) {
 
 export function onceAnyServiceDead(store) {
   const check = () => {
-    const { terms, geth, connector } = store.getState().launcher.toJS();
-    return geth.status !== 'ready' || connector.status !== 'ready';
+    const { connector } = store.getState().launcher.toJS();
+    return connector.status !== 'ready';
   };
 
   return new Promise((resolve, reject) => handleTrigger(check, resolve, store));
@@ -65,8 +70,8 @@ export function onceAnyServiceDead(store) {
 
 export function onceServicesRestart(store) {
   const check = () => {
-    const { terms, geth, connector } = store.getState().launcher.toJS();
-    return geth.status !== 'ready' || connector.status !== 'ready';
+    const { connector } = store.getState().launcher.toJS();
+    return connector.status !== 'ready';
   };
 
   return new Promise((resolve, reject) => handleTrigger(check, resolve, store));

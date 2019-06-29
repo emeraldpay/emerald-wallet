@@ -36,11 +36,11 @@ export function reset() {
 /**
  * Load balance of particular token for particular account
  */
-export function loadTokenBalanceOf(token: TokenInfo, accountId: string) {
+export function loadTokenBalanceOf(chain, token: TokenInfo, accountId: string) {
   return (dispatch: any, getState: any, api: any) => {
     if (token.address) {
       const data = tokenContract.functionToData('balanceOf', { _owner: accountId });
-      return api.geth.eth.call(token.address, data).then((result) => {
+      return api.chain(chain).eth.call(token.address, data).then((result) => {
         dispatch({
           type: ActionTypes.SET_TOKEN_BALANCE,
           accountId,
@@ -56,7 +56,7 @@ export function loadTokenBalanceOf(token: TokenInfo, accountId: string) {
 /**
  * For every account load balance of particular token
  */
-export function loadTokenBalances(token: TokenInfo) {
+export function loadTokenBalances(chain: string, token: TokenInfo) {
   return (dispatch, getState, api) => {
     const { accounts } = getState();
     if (!accounts.get('loading')) {
@@ -70,7 +70,7 @@ export function loadTokenBalances(token: TokenInfo) {
         });
       });
 
-      return api.geth.ext.batchCall(batch).then((results: Array<any>) => {
+      return api.chain(chain).ext.batchCall(batch).then((results: Array<any>) => {
         accounts.get('accounts').forEach((acct) => {
           dispatch({
             type: ActionTypes.SET_TOKEN_BALANCE,
@@ -84,7 +84,7 @@ export function loadTokenBalances(token: TokenInfo) {
   };
 }
 
-export function loadTokenDetails(tokenAddress: string): () => Promise<any> {
+export function loadTokenDetails(chain: string, tokenAddress: string): () => Promise<any> {
   return (dispatch, getState, api) => {
     const batch = [
       { id: 'totalSupply', to: tokenAddress, data: tokenContract.functionToData('totalSupply') },
@@ -92,7 +92,7 @@ export function loadTokenDetails(tokenAddress: string): () => Promise<any> {
       { id: 'symbol', to: tokenAddress, data: tokenContract.functionToData('symbol') },
     ];
 
-    return api.geth.ext.batchCall(batch).then((results: Array<any>) => {
+    return api.chain(chain).ext.batchCall(batch).then((results: Array<any>) => {
       dispatch({
         type: ActionTypes.SET_INFO,
         address: tokenAddress,
@@ -104,14 +104,14 @@ export function loadTokenDetails(tokenAddress: string): () => Promise<any> {
   };
 }
 
-export function fetchTokenDetails(tokenAddress: string): () => Promise<any> {
+export function fetchTokenDetails(chain: string, tokenAddress: string): () => Promise<any> {
   return (dispatch, getState, api) => {
     const contractCallBase = {to: tokenAddress};
 
     return Promise.all([
-      api.geth.eth.call({ ...contractCallBase, data: tokenContract.functionToData('totalSupply') }),
-      api.geth.eth.call({ ...contractCallBase, data: tokenContract.functionToData('decimals') }),
-      api.geth.eth.call({ ...contractCallBase, data: tokenContract.functionToData('symbol') }),
+      api.chain(chain).eth.call({ ...contractCallBase, data: tokenContract.functionToData('totalSupply') }),
+      api.chain(chain).eth.call({ ...contractCallBase, data: tokenContract.functionToData('decimals') }),
+      api.chain(chain).eth.call({ ...contractCallBase, data: tokenContract.functionToData('symbol') }),
     ]).then(([totalSupply, decimals, symbol]) => {
       return {
         address: tokenAddress,
@@ -164,12 +164,11 @@ export function loadTokensBalances(chain: string, addresses: string[]) {
 /**
  * Load ERC20 contracts from Emerald Vault, gets token details from smart contract
  */
-export function loadTokenList() {
+export function loadTokenList(chain) {
   return (dispatch, getState, api) => {
     dispatch({
       type: ActionTypes.LOADING,
     });
-    const chain = launcher.selectors.getChainName(getState());
     api.emerald.listContracts(chain).then((result) => {
       // TODO: After features support
       // const tokens = result ? result.filter((contract) => {
@@ -183,18 +182,18 @@ export function loadTokenList() {
         type: ActionTypes.SET_LIST,
         tokens,
       });
-      tokens.map((token) => dispatch(loadTokenDetails(token.address)));
+      tokens.map((token) => dispatch(loadTokenDetails(chain, token.address)));
     });
   };
 }
 
 /**
  * Add default tokens for particular chain to vault and state
+ * @param chain
  * @param chainId
  */
-export function addDefault(chainId) {
+export function addDefault(chain: string, chainId) {
   return (dispatch, getState, api) => {
-    const chain = launcher.selectors.getChainName(getState());
     const tokens = deployedTokens[+chainId] || [];
     tokens.forEach((t) => {
       api.emerald.importContract(t.address, t.symbol, '', chain).then(() => {
@@ -204,15 +203,14 @@ export function addDefault(chainId) {
           address: t.address,
           name: t.symbol,
         });
-        dispatch(loadTokenDetails(t.address));
+        dispatch(loadTokenDetails(chain, t.address));
       });
     });
   };
 }
 
-export function addToken(token: TokenInfo) {
+export function addToken(chain: string, token: TokenInfo) {
   return (dispatch, getState, api) => {
-    const chain = launcher.selectors.getChainName(getState());
     return api.emerald.importContract(token.address, token.symbol, '', chain).then(() => {
       // TODO: maybe replace with one action
       dispatch({
@@ -220,7 +218,7 @@ export function addToken(token: TokenInfo) {
         address: token.address,
         name: token.symbol,
       });
-      return dispatch(loadTokenDetails(token.address));
+      return dispatch(loadTokenDetails(chain, token.address));
     });
   };
 }

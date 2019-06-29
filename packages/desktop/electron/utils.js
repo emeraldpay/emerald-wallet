@@ -44,7 +44,6 @@ function checkExists(target) {
   });
 }
 
-
 function deleteIfExists(filePath) {
   return new Promise((resolve, reject) => {
     fs.access(filePath, fs.constants.W_OK, (err) => {
@@ -64,49 +63,9 @@ function deleteIfExists(filePath) {
   });
 }
 
-
-const knownChains = [
-  { name: 'mainnet', id: 61 },
-  { name: 'morden', id: 62 },
-  { name: 'eth', id: 1 },
-];
-
-function isValidChain(chain) {
-  if (chain && typeof chain === 'object') {
-    const found = knownChains.filter((c) => c.name === chain.name && c.id === parseInt(chain.id, 10));
-    return found.length === 1;
-  }
-  return false;
-}
-
-const URL_FOR_CHAIN = {
-  etc: {
-    launchType: 3,
-    url: 'https://web3.emeraldwallet.io/etc',
-    type: 'remote',
-  },
-  mainnet: {
-    launchType: 3,
-    url: 'https://web3.emeraldwallet.io/etc',
-    type: 'remote',
-  },
-  morden: {
-    launchType: 3,
-    url: 'https://web3.emeraldwallet.io/morden',
-    type: 'remote',
-  },
-  eth: {
-    launchType: 3,
-    url: 'https://web3.emeraldwallet.io/eth',
-    type: 'remote',
-  },
-};
-
 module.exports = {
   checkExists,
   deleteIfExists,
   getBinDir,
   getLogDir,
-  isValidChain,
-  URL_FOR_CHAIN,
 };

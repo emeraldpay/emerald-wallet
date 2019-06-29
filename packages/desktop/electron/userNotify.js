@@ -21,12 +21,6 @@ class UserNotify {
       this.webContents.send('launcher', 'SERVICE_STATUS', {service: name, mode});
     }
   }
-
-  chain(chain, chainId) {
-    if (this.webContents) {
-      this.webContents.send('launcher', 'CHAIN', { chain, chainId });
-    }
-  }
 }
 
 module.exports = {

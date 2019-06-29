@@ -5,7 +5,6 @@ import {withStyles} from '@material-ui/styles';
 import {connect} from 'react-redux';
 import {translate} from 'react-i18next';
 import {screen, addresses} from '../../../store';
-import launcher from '../../../store/launcher';
 import Account from './account';
 
 const styles = (theme) => ({
@@ -59,7 +58,7 @@ export default connect(
   (state, ownProps) => {
     return {
       accounts: addresses.selectors.all(state),
-      showFiat: launcher.selectors.getChainName(state).toLowerCase() === 'mainnet',
+      showFiat: true,
     };
   },
   (dispatch, ownProps) => ({

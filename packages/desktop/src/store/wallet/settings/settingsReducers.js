@@ -35,7 +35,7 @@ function onExchangeRates(state, action) {
   if (action.type === ActionTypes.EXCHANGE_RATES) {
     return state
       .set('rates', Immutable.fromJS(action.rates))
-      .set('localeRate', action.rates.ETC);
+      .set('localeRate', action.rates ? action.rates.ETC : null);
   }
   return state;
 }
