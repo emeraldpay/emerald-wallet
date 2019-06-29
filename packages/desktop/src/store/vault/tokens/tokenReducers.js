@@ -26,15 +26,7 @@ const initialToken = Map({
 });
 
 // ----- UTILITY FUNCTIONS
-function addToken(state, address, name) {
-  return state.update('tokens', (tokens) => {
-    const pos = tokens.findKey((tok) => tok.get('address') === address);
-    if (pos >= 0) {
-      return tokens;
-    }
-    return tokens.push(initialToken.merge({ address, name }));
-  });
-}
+
 
 function updateTokenBalance(tokenBalances, token /* TokenInfo */, value) {
   const pos = tokenBalances.findIndex((tok) => tok.get('address') === token.address);
@@ -120,13 +112,6 @@ function onSetTokenInfo(state, action) {
   return state;
 }
 
-function onAddToken(state, action) {
-  if (action.type === ActionTypes.ADD_TOKEN) {
-    return addToken(state, action.address, action.name);
-  }
-  return state;
-}
-
 function onSetTokenBalance(state, action) {
   if (action.type === ActionTypes.SET_TOKEN_BALANCE) {
     if (!action.token) {
@@ -184,7 +169,6 @@ export default function tokenReducers(state, action) {
   state = state || initial;
   state = onLoading(state, action);
   state = onSetTokenList(state, action);
-  state = onAddToken(state, action);
   state = onSetTokenInfo(state, action);
   state = onSetTokenBalance(state, action);
   state = onSetTokensBalances(state, action);

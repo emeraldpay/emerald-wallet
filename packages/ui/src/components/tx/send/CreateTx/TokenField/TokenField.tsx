@@ -45,6 +45,7 @@ export class TokenField extends React.Component<Props> {
           select
           value={selectedToken}
           onChange={this.onChangeToken}
+          disabled={true}
         >
           {tokenSymbols.map((symbol) => <MenuItem
             key={symbol}

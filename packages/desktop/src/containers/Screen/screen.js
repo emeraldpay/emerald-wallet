@@ -10,7 +10,6 @@ import AddressShow from '../../components/addressbook/AddressShow';
 import AddContact from '../../components/addressbook/AddContact';
 import TransactionShow from '../../components/tx/TxDetails';
 import MnemonicWizard from '../../components/accounts/MnemonicWizard';
-import AddToken from '../../components/tokens/AddToken/add';
 import LedgerImport from '../../components/ledger/ImportAccount';
 import ImportJson from '../../components/accounts/add/ImportJson';
 import ImportPrivateKey from '../../components/accounts/add/ImportPrivateKey';
@@ -89,9 +88,6 @@ const Screen = (props) => {
   }
   if (props.screen === 'new-mnemonic') {
     return <MnemonicWizard />;
-  }
-  if (props.screen === 'add-token') {
-    return <AddToken />;
   }
   if (props.screen === 'landing') {
     return <Landing />;
