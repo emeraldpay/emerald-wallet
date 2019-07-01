@@ -13,7 +13,6 @@ import App from './containers/App';
 
 const log = createLogger('index');
 
-
 function start() {
   log.info('Starting Emerald Wallet...');
 

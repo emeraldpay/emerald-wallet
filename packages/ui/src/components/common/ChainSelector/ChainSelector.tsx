@@ -40,7 +40,7 @@ export class ChainSelector extends React.Component<Props, State> {
 
   constructor(props: Readonly<Props>) {
     super(props);
-    this.state.value = props.value || 'ETH';
+    this.state.value = props.value || (props.chains.length > 0 ? props.chains[0].params.coinTicker : 'ETH');
   }
 
   handleChange(event: React.ChangeEvent<{ name?: string; value: string }>) {

@@ -1,6 +1,6 @@
 import { fromJS } from 'immutable';
+import { ledger } from '@emeraldwallet/store';
 import { createStore } from './createStore';
-import Ledger from './ledger';
 import { screen } from './index';
 import WalletHistory from './wallet/history';
 
@@ -12,7 +12,7 @@ describe('store', () => {
 
   it('should dispatch ledger actions', () => {
     const store = createStore(null);
-    store.dispatch(Ledger.actions.setWatch(true));
+    store.dispatch(ledger.actions.setWatch(true));
   });
 
   it('should dispatch screen actions', () => {
@@ -23,6 +23,6 @@ describe('store', () => {
   it('should dispatch tx history actions', () => {
     const store = createStore(null);
     store.dispatch(WalletHistory.actions.trackTx({hash: '0x12', to: null}, 'etc'));
-    store.dispatch(Ledger.actions.setWatch(true));
+    store.dispatch(ledger.actions.setWatch(true));
   });
 });

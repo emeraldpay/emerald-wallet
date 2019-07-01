@@ -7,6 +7,10 @@ import {Address as AccountAddress} from '@emeraldplatform/ui';
 
 import {styles as tableStyles} from './styles';
 import {LedgerAddress, Selectable} from './types';
+import {IApi} from "@emeraldwallet/core";
+import {Wei} from "@emeraldplatform/eth";
+import Balance from "../../../accounts/Balance/Balance";
+import BigNumber from "bignumber.js";
 
 const style = {
   used: {
@@ -26,10 +30,20 @@ interface Props {
   classes?: any;
   onSelected?: any;
   alreadyAdded?: any;
-  balanceRender?: any;
+  chain?: string;
+  api: IApi;
 }
 
-class Addr extends React.Component<Props> {
+interface State {
+  balance: Wei
+}
+
+class Addr extends React.Component<Props, State> {
+
+  constructor(props: Readonly<Props>) {
+    super(props);
+    this.state = {balance: Wei.ZERO}
+  }
 
   handleSelected = (event: any, checked: boolean) => {
     if (checked && this.props.onSelected) {
@@ -37,9 +51,33 @@ class Addr extends React.Component<Props> {
     }
   };
 
+  componentDidMount(): void {
+    this.loadBalance();
+  }
+
+  componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any): void {
+    this.loadBalance();
+  }
+
+  loadBalance(): void {
+    const chain = this.props.chain;
+    if (!chain || !this.props.addr || !this.props.addr.address) {
+      return;
+    }
+    const address = this.props.addr.address;
+    this.props.api.chain(chain).eth.getBalance(address)
+      .then((balance: BigNumber) => {
+        const newBalance = new Wei(balance);
+        if (!newBalance.equals(this.state.balance)) {
+          this.setState({balance: newBalance});
+        }
+      })
+      .catch((e) => console.error(`Unable to load balance for ${address} on ${chain}`, e));
+  }
+
   render() {
     const {
-      addr, alreadyAdded, classes,
+      addr, alreadyAdded, classes, chain
     } = this.props;
     let usedLabel;
 
@@ -54,8 +92,13 @@ class Addr extends React.Component<Props> {
     const hasPath = addr.hdpath !== null;
     const hasAddr = addr.address !== null;
     const selectable = hasPath && hasAddr && !alreadyAdded;
-    const balance = addr.value;
-    const balanceRender = this.props.balanceRender || ((b) => JSON.stringify(b));
+    const {balance} = this.state;
+
+    let balanceRender = null;
+    if (balance) {
+      balanceRender = <Balance symbol="ETC" balance={balance.toEther()} showFiat={false} decimals={3} />;
+    }
+
     return (
       <TableRow>
         <TableCell className={classes.wideStyle}>
@@ -70,13 +113,13 @@ class Addr extends React.Component<Props> {
               />}
             </div>
             <div>
-              {addr.address && <AccountAddress id={addr.address}/>}
+              {addr.address && <AccountAddress id={addr.address} showCheck={false}/>}
             </div>
           </div>
         </TableCell>
         <TableCell className={classes.mediumStyle}>{addr.hdpath}</TableCell>
         <TableCell className={classes.mediumStyle}>
-          {balance && balanceRender(balance)}
+          {balanceRender}
         </TableCell>
         <TableCell className={classes.shortStyle}>
           {usedLabel}
