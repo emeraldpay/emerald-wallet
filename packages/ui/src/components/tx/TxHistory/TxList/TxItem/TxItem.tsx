@@ -7,7 +7,7 @@ import { abi as TokenAbi } from '@emeraldwallet/erc20';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
 import { Account as AddressAvatar } from '@emeraldplatform/ui';
-import { Forward as ArrowRightIcon } from '@emeraldplatform/ui-icons';
+import {ArrowDown} from '@emeraldplatform/ui-icons';
 import TxStatus from './Status';
 
 const decoder = new InputDataDecoder(TokenAbi);
@@ -22,25 +22,26 @@ export const styles2 = {
     textOverflow: 'inherit',
   },
   columnValue: {
-    width: 100,
+    width: "100px",
     paddingLeft: '0',
     paddingTop: '15px',
     paddingBottom: '15px',
   },
   columnStatus: {
-    width: 60,
+    width: "100px",
     cursor: 'pointer',
     paddingTop: '15px',
     paddingBottom: '15px',
     paddingLeft: '0px',
   },
-  columnFrom: {
+  columnAddresses: {
+    width: "150px",
     paddingLeft: '5px',
   },
-  columnTo: {
-    paddingTop: '15px',
-    paddingBottom: '15px',
-    paddingLeft: '5px',
+  highlighted: {
+    shortenedAddress: {
+      color: "#ff0000",
+    }
   },
 };
 
@@ -110,6 +111,22 @@ export const TxItem = (props: Props) => {
       <TableCell className={classes.columnValue}>
         {txValue && (<div onClick={openTx}>{renderAmount(balance, symbol)}</div>)}
       </TableCell>
+      <TableCell className={classes.columnArrow}>
+        <ArrowDown color="secondary"/>
+      </TableCell>
+      <TableCell className={classes.columnAddresses}>
+        <AddressAvatar
+          address={tx.from}
+          name={fromAccount.name}
+          onClick={() => openAccount(tx.from)}
+        />
+        {tx.to
+        && <AddressAvatar
+          address={tx.to}
+          name={toAccount.name}
+          onClick={() => openAccount(tx.to)}
+        />}
+      </TableCell>
       <TableCell className={classes.columnStatus} >
         <TxStatus
           currentBlockHeight={netParams.currentBlockHeight}
@@ -119,24 +136,6 @@ export const TxItem = (props: Props) => {
           timeStampFormatter={timeStampFormatter(props.lang)}
           onClick={openTx}
         />
-      </TableCell>
-      <TableCell className={classes.columnFrom}>
-        <AddressAvatar
-          address={tx.from}
-          name={fromAccount.name}
-          onClick={() => openAccount(tx.from)}
-        />
-      </TableCell>
-      <TableCell className={classes.columnArrow}>
-        <ArrowRightIcon color="secondary"/>
-      </TableCell>
-      <TableCell className={classes.columnTo}>
-        {tx.to
-        && <AddressAvatar
-          address={tx.to}
-          name={toAccount.name}
-          onClick={() => openAccount(tx.to)}
-        />}
       </TableCell>
     </TableRow>
   );

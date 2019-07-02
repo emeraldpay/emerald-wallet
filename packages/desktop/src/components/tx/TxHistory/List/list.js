@@ -18,18 +18,16 @@ const styles2 = {
     letterSpacing: '1px',
     lineHeight: '16px',
   },
-  columnFrom: {
+  columnAddresses: {
     paddingLeft: '5px',
-  },
-  columnTo: {
-    paddingLeft: '5px',
+    width: '150px',
   },
   amountColumn: {
     paddingLeft: '0 !important',
     width: '100px',
   },
   statusColumn: {
-    width: '60',
+    width: '100px',
     paddingLeft: '0px',
     paddingRight: 'inherit',
   },
@@ -60,15 +58,10 @@ const TransactionsList = (props: Props) => {
       <Table selectable={ false } fixedHeader={ true } style={{background: theme.palette.primary.contrastText}}>
         <TableHead displaySelectAll={ false } adjustForCheckbox={ false }>
           <TableRow>
-            <TableCell className={ cx(classes.columnName, classes.amountColumn) }>
-                            Amount
-            </TableCell>
-            <TableCell className={ cx(classes.columnName, classes.statusColumn)}>
-                            Status
-            </TableCell>
-            <TableCell className={ cx(classes.columnFrom, classes.columnName) }>From</TableCell>
+            <TableCell className={ cx(classes.columnName, classes.amountColumn) }>Amount</TableCell>
             <TableCell className={classes.columnArrow}>&nbsp;</TableCell>
-            <TableCell className={ cx(classes.columnTo, classes.columnName) }>To</TableCell>
+            <TableCell className={ cx(classes.columnAddresses, classes.columnName) }>From -> To</TableCell>
+            <TableCell className={ cx(classes.columnName, classes.statusColumn)}>Status</TableCell>
           </TableRow>
         </TableHead>
         <TableBody displayRowCheckbox={ false }>

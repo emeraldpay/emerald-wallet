@@ -33,7 +33,7 @@ const styles2 = (theme) => ({
     boxShadow: 'none',
   },
   coinCard: {
-    paddingTop: '8px',
+    alignItems: 'center',
   },
 });
 
