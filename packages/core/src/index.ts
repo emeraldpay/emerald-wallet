@@ -1,4 +1,4 @@
-export { BlockchainCode, Blockchains, Blockchain } from './blockchains';
+export { BlockchainCode, Blockchains, Blockchain, blockchainByName } from './blockchains';
 
 export { EthereumTx, Ethereum as EthereumBlockchain } from './blockchains/ethereum';
 

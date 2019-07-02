@@ -7,7 +7,7 @@ import {Address as AccountAddress} from '@emeraldplatform/ui';
 
 import {styles as tableStyles} from './styles';
 import {LedgerAddress, Selectable} from './types';
-import {IApi} from "@emeraldwallet/core";
+import {IApi, blockchainByName} from "@emeraldwallet/core";
 import {Wei} from "@emeraldplatform/eth";
 import Balance from "../../../accounts/Balance/Balance";
 import BigNumber from "bignumber.js";
@@ -96,7 +96,7 @@ class Addr extends React.Component<Props, State> {
 
     let balanceRender = null;
     if (balance) {
-      balanceRender = <Balance symbol="ETC" balance={balance.toEther()} showFiat={false} decimals={3} />;
+      balanceRender = <Balance symbol={blockchainByName(chain).params.coinTicker} balance={balance} showFiat={false} decimals={3} />;
     }
 
     return (

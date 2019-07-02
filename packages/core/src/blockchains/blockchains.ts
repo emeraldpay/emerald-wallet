@@ -21,12 +21,12 @@ export const Blockchains: {[key: string]: Blockchain} = {
   [BlockchainCode.Kovan]: new Ethereum(new EthereumParams(CoinTicker.KOVAN, 42, "m/44'/60'/160720'/0'"), "Ethereum Kovan Testnet"),
 };
 
-export function codeByName(name: string): string {
+export function blockchainCodeByName(name: string): string {
   return all.find((code) => code == name.toLowerCase()) || BlockchainCode.Unknown;
 }
 
-export function chainByName(name: string): Blockchain {
-  const code = codeByName(name);
+export function blockchainByName(name: string): Blockchain {
+  const code = blockchainCodeByName(name);
   if (!Blockchains[code]) {
     throw new Error(`Unsupported chain: ${code}`);
   }
