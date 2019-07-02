@@ -3,7 +3,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { WaitLedgerDialog, LedgerImportAccount } from '@emeraldwallet/ui';
 import { fromJS } from 'immutable';
-import { ledger, blockchains } from '@emeraldwallet/store';
+import { ledger } from '@emeraldwallet/store';
 import { screen } from '../../../store';
 import Accounts from '../../../store/vault/accounts';
 import settings from '../../../store/wallet/settings';
@@ -54,7 +54,7 @@ export default connect(
       let acc = null;
       dispatch(ledger.actions.importSelected(chain))
         .then((address) => {
-          acc = fromJS({ id: address });
+          acc = fromJS({ id: address, blockchain: chain });
           return dispatch(Accounts.actions.loadAccountsList());
         })
         .then(() => {

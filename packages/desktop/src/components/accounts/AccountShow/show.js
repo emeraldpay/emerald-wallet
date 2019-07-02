@@ -11,7 +11,7 @@ import {
 import { Button, InlineEdit } from '@emeraldwallet/ui';
 import {Blockchains} from '@emeraldwallet/core';
 import {styles, Row} from 'elements/Form';
-import { screen } from 'store';
+import { screen, addresses } from '@emeraldwallet/store';
 import accounts from '../../../store/vault/accounts';
 import tokens from '../../../store/vault/tokens';
 import history from '../../../store/wallet/history';
@@ -20,7 +20,6 @@ import TransactionsList from '../../tx/TxHistory';
 import Balance from '../Balance';
 import SecondaryMenu from '../SecondaryMenu';
 import TokenBalances from '../TokenBalances';
-import Wallet from '../../../store/wallet';
 
 export const styles2 = {
   transContainer: {
@@ -190,7 +189,13 @@ AccountShow.propTypes = {
 
 export default connect(
   (state, ownProps) => {
-    const { account } = ownProps;
+    const accountPassed = ownProps.account;
+    // reload account from store, because it can be passed with id only if it was just imported
+    const account = addresses.selectors.find(state, accountPassed.get('id'), accountPassed.get('blockchain'));
+    if (typeof account === 'undefined') {
+      log.error('Unknown account', account.toJS());
+      return {};
+    }
     let transactions = Immutable.List();
     let tokensBalances = Immutable.List();
 

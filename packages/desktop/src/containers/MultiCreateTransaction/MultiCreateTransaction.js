@@ -7,7 +7,7 @@ import { Wei, Units } from '@emeraldplatform/eth';
 import { convert, toBaseUnits } from '@emeraldplatform/core';
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import {Blockchains} from '@emeraldwallet/core';
+import { blockchainByName } from '@emeraldwallet/core';
 import { CreateEthereumTx, TxTarget, ValidationResult } from '@emeraldwallet/workflow';
 import { CreateTx, SignTx } from '@emeraldwallet/ui';
 import { ledger } from '@emeraldwallet/store';
@@ -310,7 +310,7 @@ export default connect(
   (state, ownProps) => {
     const { account } = ownProps;
     const chain = account.get('blockchain');
-    const blockchain = Blockchains[chain.toLowerCase()];
+    const blockchain = blockchainByName(chain);
     const txFeeSymbol = (blockchain && blockchain.params.coinTicker) || '';
     const allTokens = state.tokens.get('tokens').concat([fromJS({address: '', symbol: txFeeSymbol, name: txFeeSymbol})]).reverse();
     const gasPrice = blockchains.selectors.gasPrice(state, chain);

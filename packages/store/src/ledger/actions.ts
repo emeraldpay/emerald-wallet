@@ -194,11 +194,11 @@ function createAccountData(address: string, hdpath: string): any {
 export function importSelected(chain: BlockchainCode): Dispatched<AddressSelected> {
   return (dispatch, getState, api) => {
     const { ledger } = getState();
-    const selected = ledger.get('selectedAddr');
+    const selected = ledger.get('selectedAddr').toLowerCase();
     const addresses = ledger.get('addresses');
 
-    const account = addresses.find((a: any) => a.get('address') === selected);
-    const address = account.get('address');
+    const account = addresses.find((a: any) => a.get('address').toLowerCase() === selected);
+    const address = account.get('address').toLowerCase();
     const hdpath = account.get('hdpath');
 
     const data = createAccountData(address, hdpath);
