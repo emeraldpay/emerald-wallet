@@ -14,6 +14,7 @@ const styles = (theme: any) => ({
   },
   timestamp: {
     color: theme.palette && theme.palette.text.secondary,
+    fontSize: "12px"
   }
 });
 
