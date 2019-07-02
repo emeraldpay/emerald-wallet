@@ -6,12 +6,13 @@ import {
   combineReducers
 } from 'redux';
 import createSagaMiddleware from 'redux-saga';
-import { addresses, blockchains, screen } from '@emeraldwallet/store';
+import {
+  addresses, blockchains, screen, ledger,
+} from '@emeraldwallet/store';
 import accounts from './vault/accounts';
 import Addressbook from './vault/addressbook';
 import tokens from './vault/tokens';
 import network from './network';
-import ledger from './ledger';
 import reduxLogger from '../utils/redux-logger';
 import reduxMiddleware from './middleware';
 import launcherReducers from './launcher/launcherReducers';

@@ -1,5 +1,5 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { blockchains, screen } from '@emeraldwallet/store';
+import { blockchains, screen, ledger } from '@emeraldwallet/store';
 import { ipcRenderer } from 'electron';
 import { startProtocolListener } from './protocol';
 
@@ -33,8 +33,8 @@ import {
 const log = createLogger('store');
 
 const api = new Api(getConnector());
-
 export const store = createStore(api);
+global.api = api;
 
 function refreshAll() {
   const promises = [
@@ -78,7 +78,8 @@ export function startSync() {
         // request gas price for each chain
         loadChain.push(store.dispatch(blockchains.actions.fetchGasPriceAction(chainCode)));
         loadAllChain.push(
-          Promise.all(loadChain).catch((e) => log.error(`Failed to load chain ${chainCode}`, e))
+          Promise.all(loadChain)
+            .catch((e) => log.error(`Failed to load chain ${chainCode}`, e))
         );
       });
       return Promise.all(loadAllChain).catch((e) => log.error('Failed to load chains', e));
@@ -157,21 +158,20 @@ export function screenHandlers() {
   let prevScreen = null;
   store.subscribe(() => {
     const state = store.getState();
-    const curScreen = screen.selectors.getCurrentScreen(state);
-    const justOpened = prevScreen !== curScreen;
+    const curScreen = screen.selectors.getCurrentScreen(state).screen;
+    const justOpened = prevScreen !== curScreen && typeof curScreen === 'string';
     prevScreen = curScreen;
     if (justOpened) {
-      // TODO: Fix it
-      // if (
-      //   curScreen === 'create-tx'
-      //   || curScreen === 'add-from-ledger'
-      //   || curScreen === 'landing-add-from-ledger'
-      // ) {
-      //   store.dispatch(ledger.actions.setWatch(true));
-      //   store.dispatch(ledger.actions.watchConnection());
-      // } else {
-      //   store.dispatch(ledger.actions.setWatch(false));
-      // }
+      if (
+        curScreen === 'create-tx'
+        || curScreen === 'add-from-ledger'
+        || curScreen === 'landing-add-from-ledger'
+      ) {
+        store.dispatch(ledger.actions.setWatch(true));
+        store.dispatch(ledger.actions.watchConnection());
+      } else {
+        store.dispatch(ledger.actions.setWatch(false));
+      }
     }
   });
 }

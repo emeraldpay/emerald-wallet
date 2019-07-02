@@ -8,7 +8,7 @@ import {
   SetListAction,
   SetBalanceAction,
   UpdateAddressAction,
-  AddAccountAction,
+  AddAccountAction, SetHDPath,
 } from "./types";
 
 export const INITIAL_STATE = fromJS({
@@ -19,6 +19,7 @@ export const INITIAL_STATE = fromJS({
 const initialAccount = Map({
   id: null,
   hardware: false,
+  hdpath: null,
   balance: null,
   balancePending: null,
   txcount: null,
@@ -49,6 +50,7 @@ function onSetList(state: any, action: SetListAction) {
     description: acc.get('description'),
     id: acc.get('address'),
     hardware: acc.get('hardware'),
+    hdpath: acc.get('hdpath'),
     hidden: acc.get('hidden'),
     blockchain: acc.get('blockchain'),
   })).map((acc: any) => getExisting(acc.get('id')).merge(acc));
@@ -105,6 +107,13 @@ function onAddAccount(state: any, action: AddAccountAction) {
   });
 }
 
+function onSetHdPath(state: any, action: SetHDPath) {
+  if (action.type === ActionTypes.SET_HD_PATH) {
+    return updateAccount(state, action.accountId, (acc: any) => acc.set('hdpath', action.hdpath));
+  }
+  return state;
+}
+
 export function reducer(
   state: any = INITIAL_STATE,
   action: AddressesAction
@@ -120,6 +129,8 @@ export function reducer(
       return onSetList(state, action);
     case ActionTypes.ADD_ACCOUNT:
       return onAddAccount(state, action);
+    case ActionTypes.SET_HD_PATH:
+      return onSetHdPath(state, action);
     default:
       return state;
   }

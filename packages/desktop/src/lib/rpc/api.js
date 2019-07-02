@@ -44,6 +44,10 @@ export class Api {
   }
 
   chain(code) {
-    return this.chains.get(code.toLowerCase());
+    code = code.toLowerCase();
+    if (!this.chains.has(code)) {
+      throw new Error(`Unsupported chain: ${code}`);
+    }
+    return this.chains.get(code);
   }
 }

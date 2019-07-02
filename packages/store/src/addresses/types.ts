@@ -70,9 +70,17 @@ export interface AddAccountAction {
   blockchain: string
 }
 
+export interface SetHDPath {
+  type: ActionTypes.SET_HD_PATH;
+  accountId: string;
+  hdpath: string;
+}
+
 export type AddressesAction =
   | SetListAction
   | LoadingAction
   | SetBalanceAction
   | UpdateAddressAction
-  | AddAccountAction;
+  | AddAccountAction
+  | SetHDPath
+  ;

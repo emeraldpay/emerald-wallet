@@ -83,4 +83,31 @@ describe('addresses reducer', () => {
     expect(state.get('addresses').size).toEqual(2);
   });
 
+  it('ADD_ACCOUNT should set hd path', () => {
+    // prepare
+    let state: any = reducer(undefined, {
+      type: ActionTypes.ADD_ACCOUNT,
+      accountId: 'id1',
+      name: 'name1',
+      description: 'desc1',
+      blockchain: 'eth'
+    });
+    expect(state.get('addresses').size).toEqual(1);
+    expect(state.get('addresses').last().get('id')).toEqual('id1');
+    expect(state.get('addresses').last().get('name')).toEqual('name1');
+
+    // do
+    state = reducer(state, {
+      type: ActionTypes.SET_HD_PATH,
+      accountId: 'id1',
+      hdpath: 'hdpath1',
+    });
+
+    // assert
+    expect(state.get('addresses').size).toEqual(1);
+    expect(state.get('addresses').last().get('id')).toEqual('id1');
+    expect(state.get('addresses').last().get('name')).toEqual('name1');
+    expect(state.get('addresses').last().get('hdpath')).toEqual('hdpath1');
+  });
+
 });

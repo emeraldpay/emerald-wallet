@@ -9,6 +9,7 @@ import TableRow from '@material-ui/core/TableRow';
 import {styles} from './styles';
 import AddrListItem from './AddrListItem';
 import {LedgerAddress, Selectable} from './types';
+import {IApi} from "@emeraldwallet/core";
 
 
 interface Props {
@@ -16,7 +17,8 @@ interface Props {
   setSelectedAddr?: any;
   classes?: any;
   accounts?: any;
-  balanceRender?: any;
+  chain?: string;
+  api: IApi
 }
 
 function isAlreadyAdded(addr: LedgerAddress, accounts: any) {
@@ -40,7 +42,7 @@ class AddrList extends React.Component<Props> {
     };
 
     render() {
-      const { classes, accounts, balanceRender } = this.props;
+      const { classes, accounts, chain, api } = this.props;
       const addresses = this.props.addresses || [];
 
       return (
@@ -59,7 +61,8 @@ class AddrList extends React.Component<Props> {
               key={ addr.hdpath }
               alreadyAdded = { isAlreadyAdded(addr, accounts) }
               addr={ addr }
-              balanceRender={ balanceRender }
+              chain={ chain }
+              api={api}
             />)}
           </TableBody>
         </Table>

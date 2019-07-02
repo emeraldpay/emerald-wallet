@@ -3,10 +3,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { WaitLedgerDialog, LedgerImportAccount } from '@emeraldwallet/ui';
 import { fromJS } from 'immutable';
-import ledger from '../../../store/ledger';
+import { ledger } from '@emeraldwallet/store';
 import { screen } from '../../../store';
 import Accounts from '../../../store/vault/accounts';
-import AccountBalance from '../../accounts/Balance/balance';
+import settings from '../../../store/wallet/settings';
 
 const Container = (props) => {
   const { connected, ...passProps } = props;
@@ -22,14 +22,15 @@ const pageSize = 5;
 
 export default connect(
   (state, ownProps) => ({
-    pagerOffset: state.ledger.getIn(['hd', 'offset']),
-    hdbase: state.ledger.getIn(['hd', 'base']),
-    connected: state.ledger.get('connected'),
-    selected: state.ledger.get('selectedAddr') !== null,
-    selectedAddress: state.ledger.get('selectedAddr'),
-    addresses: state.ledger.get('addresses').toJS(),
-    accounts: state.accounts.get('accounts'),
-    balanceRender: (balance) => (<AccountBalance symbol="ETC" balance={balance} showFiat={true} withAvatar={false} />), // eslint-disable-line
+    pagerOffset: ledger.selectors.getOffset(state),
+    hdbase: ledger.selectors.getHdBase(state),
+    connected: ledger.selectors.isConnected(state),
+    selected: ledger.selectors.hasSelected(state),
+    selectedAddress: ledger.selectors.getSelected(state),
+    addresses: ledger.selectors.getAddresses(state),
+    accounts: state.addresses.get('addresses'),
+    chains: settings.selectors.currentChains(state),
+    api: global.api,
   }),
   (dispatch, ownProps) => ({
     setPagerOffset: (offset) => {
@@ -49,11 +50,11 @@ export default connect(
       }
       dispatch(screen.actions.gotoScreen('home'));
     },
-    onAddSelected: () => {
+    onAddSelected: (chain) => {
       let acc = null;
-      dispatch(ledger.actions.importSelected())
+      dispatch(ledger.actions.importSelected(chain))
         .then((address) => {
-          acc = fromJS({ id: address });
+          acc = fromJS({ id: address, blockchain: chain });
           return dispatch(Accounts.actions.loadAccountsList());
         })
         .then(() => {

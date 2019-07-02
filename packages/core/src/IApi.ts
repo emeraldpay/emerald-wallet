@@ -7,5 +7,5 @@ import {EthRpc} from "@emeraldplatform/eth-rpc";
  */
 export interface IApi {
   emerald: Vault;
-  chain(name: BlockchainCode): null | EthRpc;
+  chain(name: BlockchainCode | string): EthRpc;
 }
