@@ -107,13 +107,6 @@ function onSetTxCount(state, action) {
   return state;
 }
 
-function onSetHdPath(state, action) {
-  if (action.type === ActionTypes.SET_HD_PATH) {
-    return updateAccount(state, action.accountId, (acc) => acc.set('hdpath', action.hdpath));
-  }
-  return state;
-}
-
 function onPendingBalance(state, action) {
   if (action.type === ActionTypes.PENDING_BALANCE) {
     let bal;
@@ -141,6 +134,5 @@ export default function accountsReducers(state, action) {
   state = onSetBalances(state, action);
   state = onSetTxCount(state, action);
   state = onPendingBalance(state, action);
-  state = onSetHdPath(state, action);
   return state;
 }

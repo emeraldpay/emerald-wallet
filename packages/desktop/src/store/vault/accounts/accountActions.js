@@ -47,7 +47,7 @@ function fetchHdPaths() {
   return (dispatch, getState, api) => {
     const promises = [];
     getState().addresses.get('addresses')
-      .filter((a) => a.get('hardware', false))
+      .filter((a) => a.get('hardware', true))
       .forEach((a) => {
         const address = a.get('id');
         promises.push(api.emerald.exportAccount(address, a.get('blockchain')).then((result) => {
