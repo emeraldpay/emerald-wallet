@@ -38,7 +38,7 @@ export class ChainListener {
       response.on('data', (data: ChainHead) => {
         // console.log(`New blockchain height. Chain: ${data.getChain()}, height: ${data.getHeight()}`);
         if (handler) {
-          handler({height: data.getHeight(), hash: data.getHash()})
+          handler({height: data.getHeight(), hash: data.getBlockId()})
         }
       });
       this.response = response;

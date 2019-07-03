@@ -2,9 +2,9 @@ import {JsonRpcRequest, Transport} from '@emeraldplatform/rpc';
 import {
   // @ts-ignore
   BlockchainClient,
-  CallBlockchainRequest,
-  CallBlockchainItem,
-  CallBlockchainReplyItem,
+  NativeCallRequest,
+  NativeCallItem,
+  NativeCallReplyItem,
   ChainSpec, chainByCode,
 } from '@emeraldplatform/grpc';
 import { TextEncoder, TextDecoder } from 'text-encoding';
@@ -28,10 +28,10 @@ class GrpcTransport implements Transport {
     this.chain = chainByCode(chain.toUpperCase());
   }
   request(req: Array<JsonRpcRequest>): Promise<Array<any>> {
-    const request = new CallBlockchainRequest();
+    const request = new NativeCallRequest();
     request.setChain(this.chain.id);
     req.forEach((json) => {
-      const item = new CallBlockchainItem();
+      const item = new NativeCallItem();
       item.setId(json.id);
       item.setTarget(json.method);
       item.setPayload(encoder.encode(JSON.stringify(json.params)));
@@ -41,7 +41,7 @@ class GrpcTransport implements Transport {
     return new Promise((resolve, reject) => {
       this.client.nativeCall(request,(response) => {
         const result: Array<any> = [];
-        response.on('data', (data: CallBlockchainReplyItem) => {
+        response.on('data', (data: NativeCallReplyItem) => {
           const bytes: Uint8Array = data.getPayload_asU8();
           let json = JSON.parse(decoder.decode(bytes));
           result.push(json);

@@ -1,7 +1,7 @@
 import {
   chainByCode,
   ChainSpec,
-  TrackTxRequest,
+  TxStatusRequest,
   BlockchainClient,
   TxStatus
 } from '@emeraldplatform/grpc';
@@ -40,20 +40,20 @@ export class TxListener {
 
   subscribe(chainCode: string, hash: string, handler: TxStatusHandler) {
     const chain = extractChain(chainCode);
-    const request = new TrackTxRequest();
+    const request = new TxStatusRequest();
     request.setChain(chain.id);
-    request.setTxid(hash);
-    request.setConfirmations(12);
+    request.setTxId(hash);
+    request.setConfirmationLimit(12);
 
-    this.client.trackTx(request, (response: grpc.ClientReadableStream<TxStatus>) => {
+    this.client.streamTxStatus(request, (response: grpc.ClientReadableStream<TxStatus>) => {
       response.on('data', (data: TxStatus) => {
         const block = data.getBlock();
         if (handler && block) {
           handler({
-            txid: data.getTxid(),
+            txid: data.getTxId(),
             broadcasted: data.getBroadcasted(),
             mined: data.getMined(),
-            blockHash: Buffer.from(block.getHash_asU8()).toString('hex'),
+            blockHash: block.getBlockId(),
             blockNumber: block.getHeight(),
             timestamp: block.getTimestamp(),
             confirmations: data.getConfirmations(),
