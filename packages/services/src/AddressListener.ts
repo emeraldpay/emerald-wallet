@@ -1,11 +1,11 @@
 import {
-  AddressStatus,
+  AddressBalance,
   AnyAddress,
   chainByCode,
   ChainSpec,
   MultiAddress,
   SingleAddress,
-  TrackAddressRequest,
+  BalanceRequest,
   BlockchainClient,
   Asset
 } from '@emeraldplatform/grpc';
@@ -25,7 +25,7 @@ interface HeadListener {
 
 export class AddressListener {
   client: BlockchainClient;
-  response?: ClientReadableStream<AddressStatus>;
+  response?: ClientReadableStream<AddressBalance>;
 
   constructor(client: BlockchainClient) {
     this.client = client;
@@ -52,18 +52,17 @@ export class AddressListener {
     const asset = new Asset();
     asset.setChain(chain.id);
     asset.setCode("Ether");
-    const request = new TrackAddressRequest();
+    const request = new BalanceRequest();
     request.setAsset(asset);
     request.setAddress(pbAnyAddr);
-    request.setIncludeTransactions(false);
 
-    this.client.trackAddress(request, (response: grpc.ClientReadableStream<AddressStatus>) => {
-      response.on('data', (data: AddressStatus) => {
+    this.client.streamBalance(request, (response: grpc.ClientReadableStream<AddressBalance>) => {
+      response.on('data', (data: AddressBalance) => {
         let address = data.getAddress();
         if (handler && data && address) {
           handler({
             address: address.getAddress(),
-            balance: new BigNumber(Buffer.from(data.getBalance_asU8()).toString('hex'), 16).toString()
+            balance: data.getBalance(),
           })
         }
       });
