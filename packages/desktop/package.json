@@ -25,6 +25,7 @@
     "build:all:dev": "rimraf app/ && node ./scripts/build.js --dev",
     "build:all:nowatch": "node ./scripts/build.js --no-watch",
     "start:electron": "cross-env NODE_ENV=development ./node_modules/.bin/electron .",
+    "start:electron:local": "cross-env NODE_ENV=development ./node_modules/.bin/electron . --localMode",
     "start:electron:getemerald": "getemerald && NODE_ENV=development ./node_modules/.bin/electron .",
     "test:watch": "jest --watchAll",
     "test": "cross-env ELECTRON_RUN_AS_NODE=true ./node_modules/.bin/electron ./node_modules/.bin/jest --no-cache",
