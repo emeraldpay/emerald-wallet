@@ -1,6 +1,6 @@
 import {
   BlockchainClient, ChainHead,
-  ChainSpec, chainByCode
+  ChainSpec, chainByCode, CHAINS
 } from '@emeraldplatform/grpc';
 
 import {ChannelCredentials, ClientReadableStream} from 'grpc';
@@ -33,6 +33,10 @@ export class ChainListener {
 
   subscribe(chainCode: string, handler: HeadListener) {
     const chain = extractChain(chainCode);
+    if (chain.code == CHAINS.UNSPECIFIED.code) {
+      console.warn("Unknown chain: ", chainCode, "Ignoring.");
+      return;
+    }
     const request = chain.toProtobuf();
     this.client.streamHead(request, (response: grpc.ClientReadableStream<ChainHead>) => {
       response.on('data', (data: ChainHead) => {

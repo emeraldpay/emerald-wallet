@@ -1,2 +1,2 @@
-export { BlockchainCode, Blockchains, blockchainByName } from './blockchains';
+export { BlockchainCode, Blockchains, blockchainByName, blockchainById } from './blockchains';
 export { Blockchain } from './Blockchain';

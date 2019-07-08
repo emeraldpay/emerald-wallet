@@ -79,7 +79,7 @@ app.on('ready', () => {
   const services = new Services(browserWindow.webContents, serverConnect, apiAccess);
 
   log.info('... setup services 2');
-  const services2 = createServices2(ipcMain, browserWindow.webContents, apiAccess);
+  const services2 = createServices2(ipcMain, browserWindow.webContents, apiAccess, apiMode.chains);
 
   app.on('quit', () => {
     services.shutdown().catch(console.error);

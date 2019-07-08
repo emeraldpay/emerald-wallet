@@ -12,8 +12,6 @@ export enum BlockchainCode {
   Unknown = "unknown"
 }
 
-const all = [BlockchainCode.ETC, BlockchainCode.ETH, BlockchainCode.Morden, BlockchainCode.Kovan];
-
 export const Blockchains: {[key: string]: Blockchain} = {
   [BlockchainCode.ETH]: new Ethereum(new EthereumParams(CoinTicker.ETH, 1,"m/44'/60'/0'/0'"), "Ethereum"),
   [BlockchainCode.ETC]: new Ethereum(new EthereumParams(CoinTicker.ETC, 61, "m/44'/61'/0'/0'"), "Ethereum Classic"),
@@ -21,8 +19,11 @@ export const Blockchains: {[key: string]: Blockchain} = {
   [BlockchainCode.Kovan]: new Ethereum(new EthereumParams(CoinTicker.KOVAN, 42, "m/44'/60'/160720'/0'"), "Ethereum Kovan Testnet"),
 };
 
+const allCodes = [BlockchainCode.ETC, BlockchainCode.ETH, BlockchainCode.Morden, BlockchainCode.Kovan];
+const allChains = allCodes.map((code) => Blockchains[code]);
+
 export function blockchainCodeByName(name: string): string {
-  return all.find((code) => code == name.toLowerCase()) || BlockchainCode.Unknown;
+  return allCodes.find((code) => code == name.toLowerCase()) || BlockchainCode.Unknown;
 }
 
 export function blockchainByName(name: string): Blockchain {
@@ -31,4 +32,11 @@ export function blockchainByName(name: string): Blockchain {
     throw new Error(`Unsupported chain: ${code}`);
   }
   return Blockchains[code];
+}
+
+export function blockchainById(id?: number): Blockchain | undefined {
+  if (typeof id === 'undefined') {
+    return undefined;
+  }
+  return allChains.find((chain) => chain.params.chainId == id);
 }

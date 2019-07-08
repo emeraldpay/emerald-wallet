@@ -2,7 +2,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Map } from 'immutable';
-import {Blockchains} from '@emeraldwallet/core';
+import {Blockchains, blockchainById } from '@emeraldwallet/core';
 import TxView from '@emeraldwallet/ui/lib/components/tx/TxHistory/TxList/TxItem';
 import { blockchains } from '@emeraldwallet/store';
 import accounts from '../../../../store/vault/accounts';
@@ -39,11 +39,10 @@ export default connect(
     const token = state.tokens.get('tokens').find((t) => t.get('address') === tx.to);
 
     const showFiat = !token;
-
-    const blockchain = Blockchains[tx.chain];
+    const blockchain = tx.chain ? Blockchains[tx.chain] : blockchainById(tx.chainId);
 
     return {
-      coinTicker: (blockchain && blockchain.params.coinTicker) || '',
+      coinTicker: (blockchain && blockchain.params.coinTicker) || '-',
       amountRenderer: txValueRenderer(showFiat),
       lang: i18n.language,
       tx,
@@ -52,7 +51,7 @@ export default connect(
       token: (token && token.toJS()) || null,
       netParams: {
         requiredConfirmations: state.wallet.settings.get('numConfirmations'),
-        currentBlockHeight: blockchains.selectors.getHeight(state, blockchain && blockchain.params.coinTicker),
+        currentBlockHeight: blockchains.selectors.getHeight(state, blockchain && blockchain.params.coinTicker || '-'),
       },
     };
   },

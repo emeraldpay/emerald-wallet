@@ -8,6 +8,7 @@ export const enum CurrencyCode {
   AUD = "AUD",
   CNY = "CNY",
   KRW = "KRW",
+  MONOPOLY = "MONOPOLY",
 }
 
 export class Currency {
