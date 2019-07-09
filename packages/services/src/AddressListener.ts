@@ -7,11 +7,9 @@ import {
   SingleAddress,
   BalanceRequest,
   BlockchainClient,
-  Asset
+  Asset,
+  ClientReadable
 } from '@emeraldplatform/grpc';
-import BigNumber from 'bignumber.js';
-import * as grpc from 'grpc';
-import {ChannelCredentials, ClientReadableStream} from 'grpc';
 import extractChain from "./extractChain";
 
 type AccountStatusEvent = {
@@ -25,7 +23,7 @@ interface HeadListener {
 
 export class AddressListener {
   client: BlockchainClient;
-  response?: ClientReadableStream<AddressBalance>;
+  response?: ClientReadable<AddressBalance>;
 
   constructor(client: BlockchainClient) {
     this.client = client;
@@ -56,7 +54,7 @@ export class AddressListener {
     request.setAsset(asset);
     request.setAddress(pbAnyAddr);
 
-    this.client.streamBalance(request, (response: grpc.ClientReadableStream<AddressBalance>) => {
+    this.client.streamBalance(request, (response: ClientReadable<AddressBalance>) => {
       response.on('data', (data: AddressBalance) => {
         let address = data.getAddress();
         if (handler && data && address) {

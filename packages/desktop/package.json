@@ -74,7 +74,7 @@
     "@emeraldplatform/eth-account": "^0.5.0-gamma.0",
     "@emeraldplatform/eth-node": "^0.5.0-gamma.0",
     "@emeraldplatform/eth-rpc": "^0.5.0-gamma.0",
-    "@emeraldplatform/grpc": "0.8.1",
+    "@emeraldplatform/grpc": "0.8.2",
     "@emeraldplatform/rpc": "^0.5.0-gamma.0",
     "@emeraldplatform/ui": "^0.5.0-rc.4",
     "@emeraldplatform/ui-icons": "^0.5.0-rc.4",

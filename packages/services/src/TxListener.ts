@@ -3,10 +3,9 @@ import {
   ChainSpec,
   TxStatusRequest,
   BlockchainClient,
-  TxStatus
+  TxStatus,
+  ClientReadable
 } from '@emeraldplatform/grpc';
-import * as grpc from 'grpc';
-import {ChannelCredentials, ClientReadableStream} from 'grpc';
 import extractChain from "./extractChain";
 
 type TxStatusEvent = {
@@ -25,7 +24,7 @@ interface TxStatusHandler {
 
 export class TxListener {
   client: BlockchainClient;
-  response?: ClientReadableStream<TxStatus>;
+  response?: ClientReadable<TxStatus>;
 
   constructor(client: BlockchainClient) {
     this.client = client;
@@ -45,7 +44,7 @@ export class TxListener {
     request.setTxId(hash);
     request.setConfirmationLimit(12);
 
-    this.client.streamTxStatus(request, (response: grpc.ClientReadableStream<TxStatus>) => {
+    this.client.streamTxStatus(request, (response: ClientReadable<TxStatus>) => {
       response.on('data', (data: TxStatus) => {
         const block = data.getBlock();
         if (handler && block) {

@@ -1,10 +1,9 @@
 import {
   BlockchainClient, ChainHead,
-  ChainSpec, chainByCode, CHAINS
+  ChainSpec, chainByCode, CHAINS,
+  ClientReadable
 } from '@emeraldplatform/grpc';
 
-import {ChannelCredentials, ClientReadableStream} from 'grpc';
-import * as grpc from "grpc";
 import extractChain from "./extractChain";
 
 type ChainStatus = {
@@ -18,7 +17,7 @@ interface HeadListener {
 
 export class ChainListener {
   client: BlockchainClient;
-  response?: ClientReadableStream<ChainHead>;
+  response?: ClientReadable<ChainHead>;
 
   constructor(client: BlockchainClient) {
     this.client = client;
@@ -38,7 +37,7 @@ export class ChainListener {
       return;
     }
     const request = chain.toProtobuf();
-    this.client.streamHead(request, (response: grpc.ClientReadableStream<ChainHead>) => {
+    this.client.streamHead(request, (response: ClientReadable<ChainHead>) => {
       response.on('data', (data: ChainHead) => {
         // console.log(`New blockchain height. Chain: ${data.getChain()}, height: ${data.getHeight()}`);
         if (handler) {
