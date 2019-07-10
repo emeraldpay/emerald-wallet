@@ -116,7 +116,7 @@ export class AccountShow extends React.Component {
                   {balance && <Balance
                     showFiat={showFiat}
                     coinsStyle={{fontSize: '20px', lineHeight: '24px'}}
-                    balance={balance.toWei().toString(10)}
+                    balance={balance}
                     decimals={18}
                     symbol={coinTicker}
                   />}

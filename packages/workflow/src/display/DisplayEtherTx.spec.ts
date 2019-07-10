@@ -20,7 +20,7 @@ describe('DisplayEtherTx', () => {
     expect(display.amountUnit()).toBe("Ether");
     expect(display.fee()).toBe("21000");
     expect(display.feeUnit()).toBe("Gas");
-    expect(display.feeCost()).toBe("0.000210147");
+    expect(display.feeCost()).toBe("0.00021");
     expect(display.feeCostUnit()).toBe("Ether");
   });
 
@@ -39,7 +39,7 @@ describe('DisplayEtherTx', () => {
     expect(display.amountUnit()).toBe("Ether");
     expect(display.fee()).toBe("21000");
     expect(display.feeUnit()).toBe("Gas");
-    expect(display.feeCost()).toBe("0.000210147");
+    expect(display.feeCost()).toBe("0.00021");
     expect(display.feeCostUnit()).toBe("Ether");
   });
 
@@ -58,7 +58,7 @@ describe('DisplayEtherTx', () => {
     expect(display.amountUnit()).toBe("Ether");
     expect(display.fee()).toBe("21000");
     expect(display.feeUnit()).toBe("Gas");
-    expect(display.feeCost()).toBe("0.000210147");
+    expect(display.feeCost()).toBe("0.00021");
     expect(display.feeCostUnit()).toBe("Ether");
   });
 

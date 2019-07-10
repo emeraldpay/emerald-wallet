@@ -131,7 +131,7 @@ export class CreateERC20Tx implements ERC20TxDetails {
     if (this.getTotal().isGreaterThan(this.totalTokenBalance)) {
       return ValidationResult.INSUFFICIENT_TOKEN_FUNDS;
     }
-    if (this.getFees().value.isGreaterThan(this.totalEtherBalance.value)) {
+    if (this.getFees().isGreaterThan(this.totalEtherBalance)) {
       return ValidationResult.INSUFFICIENT_FUNDS;
     }
     return ValidationResult.OK;
@@ -152,10 +152,7 @@ export class CreateERC20Tx implements ERC20TxDetails {
     if (this.totalEtherBalance == null) {
       return null
     }
-    //TODO upgrade to latest Wei from emerald-js
-    const res = new Wei(0);
-    res.value = this.totalEtherBalance.value.minus(this.getFees().value);
-    return res;
+    return this.totalEtherBalance.minus(this.getFees());
   }
 
   getFees(): Wei {
