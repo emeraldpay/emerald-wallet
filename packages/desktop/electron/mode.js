@@ -4,10 +4,11 @@ const LocalMode = {
   currencies: ['USD', 'EUR', 'USDT', 'BTC'],
 };
 
+// TODO have only testnets here
 const DevMode = {
   id: 'development',
-  chains: ['KOVAN', 'MORDEN'],
-  currencies: ['MONOPOLY'],
+  chains: ['KOVAN', 'MORDEN', 'ETH', 'ETC'],
+  currencies: ['USD', 'MONOPOLY'],
 };
 
 const ProdMode = {

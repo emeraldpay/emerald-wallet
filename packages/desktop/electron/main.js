@@ -1,6 +1,6 @@
 require('babel-polyfill'); // eslint-disable-line import/no-unresolved
 require('regenerator-runtime/runtime');
-const { ServerConnect, EmeraldApiAccessDev} = require('@emeraldwallet/services');
+const { ServerConnect, EmeraldApiAccessLocal, EmeraldApiAccessDev} = require('@emeraldwallet/services');
 const { app, ipcMain, session } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path'); // eslint-disable-line
 
@@ -22,13 +22,15 @@ const { onceReady } = require('./ready');
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
-let mode;
+let apiMode;
 
 
 if (isDev) {
   log.warn('START IN DEVELOPMENT MODE');
   app.setPath('userData', path.resolve('./.emerald-dev/userData'));
-  mode = LocalMode;
+  const appArgs = process.argv.slice(2);
+  const notLocal = appArgs.every((value) => value !== '--localMode');
+  apiMode = notLocal ? DevMode : LocalMode;
 }
 
 const settings = new Settings();
@@ -40,6 +42,7 @@ global.launcherConfig = {
 
 log.info('userData: ', app.getPath('userData'));
 log.info('Settings: ', settings.toJS());
+log.info('Api Mode: ', apiMode.id);
 
 assertSingletonWindow();
 startProtocolHandler();
@@ -50,7 +53,13 @@ app.on('ready', () => {
   log.info('Starting Emerald', app.getVersion());
 
   log.info('... setup API access');
-  const apiAccess = new EmeraldApiAccessDev(settings.getId());
+  let apiAccess;
+  if (apiMode === LocalMode) {
+    apiAccess = new EmeraldApiAccessLocal(settings.getId());
+  } else {
+    apiAccess = new EmeraldApiAccessDev(settings.getId());
+  }
+  log.info('Connect to', apiAccess.address);
   const serverConnect = new ServerConnect(app.getVersion(), app.getLocale(), log, apiAccess.blockchainClient);
   global.serverConnect = serverConnect;
   serverConnect.init(process.versions);
@@ -64,13 +73,13 @@ app.on('ready', () => {
   log.info('... create window');
   const browserWindow = mainWindow.createWindow(isDev);
   onceReady(() => {
-    sendMode(browserWindow.webContents, mode);
+    sendMode(browserWindow.webContents, apiMode);
   });
 
   const services = new Services(browserWindow.webContents, serverConnect, apiAccess);
 
   log.info('... setup services 2');
-  const services2 = createServices2(ipcMain, browserWindow.webContents, apiAccess);
+  const services2 = createServices2(ipcMain, browserWindow.webContents, apiAccess, apiMode.chains);
 
   app.on('quit', () => {
     services.shutdown().catch(console.error);
@@ -85,8 +94,16 @@ app.on('ready', () => {
     .catch((err) => log.error('Invalid settings', err));
 
   log.info('... subscribe for prices');
-  const prices = new Prices(browserWindow.webContents, apiAccess, mode.chains, mode.currencies[0]);
+  const prices = new Prices(browserWindow.webContents, apiAccess, apiMode.chains, apiMode.currencies[0]);
   prices.start();
+
+  apiAccess.statusListener((status) => {
+    const action = {
+      type: 'CONN/SET_STATUS',
+      status,
+    };
+    browserWindow.webContents.send('store', action);
+  });
 });
 
 

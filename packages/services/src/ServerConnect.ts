@@ -37,6 +37,11 @@ const CHAIN_VERIFY: {[key:string]: any} = {
     new VerifyNotSyncing(),
     new VerifyGenesis('0x0cd786a2425d16f152c658316c423e6ce1181e15c3295826d7c9904cba9ce303'),
   ],
+  kovan: [
+    new VerifyMinPeers(1),
+    new VerifyNotSyncing(),
+    new VerifyGenesis('0xa3c565fc15c7478862d50ccd6561e3c06b24cc509bf388941c25ea985ce32cb9'),
+  ],
 };
 
 
