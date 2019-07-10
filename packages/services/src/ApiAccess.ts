@@ -1,6 +1,12 @@
 import {AddressListener} from "./AddressListener";
-import {BlockchainClient, emeraldCredentials, MarketClient} from "@emeraldplatform/grpc";
-import {ChannelCredentials} from "grpc";
+import {
+  AuthenticationStatus,
+  BlockchainClient,
+  ConnectionStatus,
+  CredentialsContext,
+  emeraldCredentials,
+  MarketClient
+} from "@emeraldplatform/grpc";
 import {ChainListener} from "./ChainListener";
 import {TxListener} from "./TxListener";
 import {PriceListener} from "./PricesListener";
@@ -74,12 +80,32 @@ const certDev = "-----BEGIN CERTIFICATE-----\n" +
   "MwdfWdNfjQ7l+DFpz+mH6s/T/RjBWg==\n" +
   "-----END CERTIFICATE-----";
 
+
+export enum Status {
+  CONNECTED = "CONNECTED",
+  CONNECTION_ISSUES = "CONNECTION_ISSUES",
+  DISCONNECTED = "DISCONNECTED"
+}
+export type StatusListener = (state: Status) => void;
+
+type ConnectionState = {
+  authenticated: boolean;
+  blockchainConnected: boolean;
+  pricesConnected: boolean;
+  connectedAt: Date;
+}
+
 export class EmeraldApiAccess {
   private readonly address: string;
-  private readonly credentials: ChannelCredentials;
+  private readonly credentials: CredentialsContext;
 
   public readonly blockchainClient: BlockchainClient;
   public readonly pricesClient: MarketClient;
+
+  private listener?: StatusListener;
+  private currentState?: Status = undefined;
+
+  private connectionState: ConnectionState;
 
   constructor(addr: string, cert: string, id: string) {
     this.address = addr;
@@ -89,10 +115,35 @@ export class EmeraldApiAccess {
       `EmeraldWallet/${app.getVersion()} (+https://emeraldwallet.io)`,
       `Chrome/${process.versions.chrome}`
     ];
+    this.connectionState = {
+      authenticated: false,
+      blockchainConnected: false,
+      pricesConnected: false,
+      connectedAt: new Date()
+    };
 
     this.credentials = emeraldCredentials(addr, cert, agent, id);
-    this.blockchainClient = new BlockchainClient(addr, this.credentials);
-    this.pricesClient = new MarketClient(addr, this.credentials);
+    this.blockchainClient = new BlockchainClient(addr, this.credentials.getChannelCredentials());
+    this.pricesClient = new MarketClient(addr, this.credentials.getChannelCredentials());
+
+    this.credentials.setListener((status: AuthenticationStatus) => {
+      this.connectionState.authenticated = status == AuthenticationStatus.AUTHENTICATED;
+      this.verifyConnection();
+    });
+    this.blockchainClient.setConnectionListener((status) => {
+      this.connectionState.blockchainConnected = status == ConnectionStatus.CONNECTED;
+      this.verifyConnection();
+    });
+    this.pricesClient.setConnectionListener((status) => {
+      this.connectionState.pricesConnected = status == ConnectionStatus.CONNECTED;
+      this.verifyConnection();
+    });
+    this.periodicCheck();
+  }
+
+  protected periodicCheck() {
+    this.verifyOffline();
+    setTimeout(this.periodicCheck.bind(this), 1000);
   }
 
   newAddressListener(): AddressListener {
@@ -109,6 +160,49 @@ export class EmeraldApiAccess {
 
   newPricesListener(): PriceListener {
     return new PriceListener(this.pricesClient);
+  }
+
+  statusListener(listener: StatusListener) {
+    this.listener = listener;
+    if (typeof this.currentState !== "undefined") {
+      listener(this.currentState);
+    }
+  }
+
+  protected verifyConnection() {
+    const status = this.connectionState;
+    const connected = status.authenticated
+      && status.blockchainConnected
+      && status.pricesConnected;
+    if (!connected) {
+      this.verifyOffline();
+    } else {
+      this.connectionState.connectedAt = new Date();
+      this.setStatus(Status.CONNECTED);
+    }
+  }
+
+  protected verifyOffline() {
+    const now = new Date();
+    const offlinePeriod = now.getTime() - this.connectionState.connectedAt.getTime();
+    const PERIOD_OK = 5000;
+    const PERIOD_ISSUES = 15000;
+    if (offlinePeriod < PERIOD_OK) {
+      this.setStatus(Status.CONNECTED);
+    } else if (offlinePeriod < PERIOD_ISSUES) {
+      this.setStatus(Status.CONNECTION_ISSUES);
+    } else {
+      this.setStatus(Status.DISCONNECTED);
+    }
+  }
+
+  protected setStatus(state: Status) {
+    if (typeof this.currentState === 'undefined' || this.currentState != state) {
+      this.currentState = state;
+      if (this.listener) {
+        this.listener(state);
+      }
+    }
   }
 }
 

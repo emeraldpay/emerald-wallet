@@ -6,6 +6,7 @@ import { ThemeProvider } from '@material-ui/styles';
 
 import Header from '../../components/layout/Header';
 import NotificationBar from '../../components/layout/NotificationBar';
+import ConnectionStatus from '../../components/layout/ConnectionStatus';
 
 import Screen from '../Screen';
 import ErrorDialog from '../ErrorDialog';
@@ -28,6 +29,7 @@ const App = () => (
           <ErrorDialog/>
           <NotificationBar/>
           <Dialog/>
+          <ConnectionStatus/>
         </div>
       </ThemeProvider>
     </Provider>
