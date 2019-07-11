@@ -88,7 +88,7 @@ export class Account extends React.Component {
                   <div style={{marginLeft: '10px'}}>
                     {balance && <AccountBalance
                       fiatStyle={fiatStyle}
-                      balance={ balance.toWei().toString(10) }
+                      balance={ balance }
                       decimals={ 18 }
                       symbol={ coinTicker }
                       showFiat={ showFiat }

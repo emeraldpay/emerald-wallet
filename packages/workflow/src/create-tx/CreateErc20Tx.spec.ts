@@ -114,7 +114,7 @@ describe('CreateErc20Tx', () => {
     tx.amount = new BigNumber(100);
 
     expect(tx.getFees()).toBeDefined();
-    expect((tx.getFees() || '?').toString()).toEqual('0.0015');
+    expect((tx.getFees() || '?').toString(Units.ETHER, 6)).toEqual('0.0015');
   });
 
   it('fees are calculated if total not set', () => {
@@ -127,7 +127,7 @@ describe('CreateErc20Tx', () => {
     tx.amount = new BigNumber(100);
 
     expect(tx.getFees()).toBeDefined();
-    expect((tx.getFees() || '?').toString()).toEqual('0.0015');
+    expect((tx.getFees() || '?').toString(Units.ETHER, 6)).toEqual('0.0015');
   });
 
   it('fees change', () => {
@@ -139,7 +139,7 @@ describe('CreateErc20Tx', () => {
     tx.amount = new BigNumber(100);
 
     expect(tx.getFeesChange()).toBeDefined();
-    expect((tx.getFeesChange() || '?').toString()).toEqual('0.9985');
+    expect((tx.getFeesChange() || '?').toString(Units.ETHER, 6)).toEqual('0.9985');
   });
 
   it('fees change are null if total not set', () => {

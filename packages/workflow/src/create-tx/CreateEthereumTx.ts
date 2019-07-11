@@ -100,7 +100,7 @@ export class CreateEthereumTx implements TxDetails {
     if (this.to == null) {
       return ValidationResult.NO_TO;
     }
-    if (this.getTotal().value.isGreaterThan(this.totalBalance.value)) {
+    if (this.getTotal().isGreaterThan(this.totalBalance)) {
       return ValidationResult.INSUFFICIENT_FUNDS;
     }
     return ValidationResult.OK;
@@ -124,10 +124,7 @@ export class CreateEthereumTx implements TxDetails {
     if (this.totalBalance == null) {
       return null
     }
-    //TODO upgrade to latest Wei from emerald-js
-    const res = new Wei(0);
-    res.value = this.totalBalance.value.minus(this.getTotal().value);
-    return res;
+    return this.totalBalance.minus(this.getTotal());
   }
 
   getFees(): Wei {
@@ -139,12 +136,9 @@ export class CreateEthereumTx implements TxDetails {
       if (this.totalBalance == null) {
         return false;
       }
-      //TODO upgrade to latest Wei from emerald-js
-      const amount = this.totalBalance.value.minus(this.getFees().value);
+      const amount = this.totalBalance.minus(this.getFees());
       if (amount.isPositive() || amount.isZero()) {
-        const res = new Wei(0);
-        res.value = amount;
-        this.amount = res;
+        this.amount = amount;
         return true;
       }
       return false;
