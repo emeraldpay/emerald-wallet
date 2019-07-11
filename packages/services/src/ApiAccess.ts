@@ -99,7 +99,7 @@ type ConnectionState = {
 
 const PERIOD_OK = 10000;
 const PERIOD_ISSUES = PERIOD_OK * 3;
-const PERIOD_PING = PERIOD_OK - 7500;
+const PERIOD_PING = PERIOD_OK - 1500;
 
 export class EmeraldApiAccess {
   private readonly address: string;
