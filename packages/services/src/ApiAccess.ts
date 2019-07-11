@@ -6,7 +6,7 @@ import {
   CredentialsContext,
   emeraldCredentials,
   MarketClient,
-  DiagnoseClient
+  MonitoringClient
 } from "@emeraldplatform/grpc";
 import {ChainListener} from "./ChainListener";
 import {TxListener} from "./TxListener";
@@ -107,7 +107,7 @@ export class EmeraldApiAccess {
 
   public readonly blockchainClient: BlockchainClient;
   public readonly pricesClient: MarketClient;
-  private diagnoseClient: DiagnoseClient;
+  private monitoringClient: MonitoringClient;
 
   private listener?: StatusListener;
   private currentState?: Status = undefined;
@@ -133,7 +133,7 @@ export class EmeraldApiAccess {
     this.credentials = emeraldCredentials(addr, cert, agent, id);
     this.blockchainClient = new BlockchainClient(addr, this.credentials.getChannelCredentials());
     this.pricesClient = new MarketClient(addr, this.credentials.getChannelCredentials());
-    this.diagnoseClient = new DiagnoseClient(addr, this.credentials.getChannelCredentials());
+    this.monitoringClient = new MonitoringClient(addr, this.credentials.getChannelCredentials());
 
     this.credentials.setListener((status: AuthenticationStatus) => {
       this.connectionState.authenticated = status == AuthenticationStatus.AUTHENTICATED;
@@ -147,7 +147,7 @@ export class EmeraldApiAccess {
       this.connectionState.pricesConnected = status == ConnectionStatus.CONNECTED;
       this.verifyConnection();
     });
-    this.diagnoseClient.setConnectionListener((status) => {
+    this.monitoringClient.setConnectionListener((status) => {
       this.connectionState.diagConnected = status == ConnectionStatus.CONNECTED;
       this.verifyConnection();
     });
@@ -210,7 +210,7 @@ export class EmeraldApiAccess {
   }
 
   protected ping() {
-    this.diagnoseClient.ping();
+    this.monitoringClient.ping();
     setTimeout(this.ping.bind(this), PERIOD_PING);
   }
 
