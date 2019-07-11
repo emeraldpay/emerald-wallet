@@ -1,5 +1,5 @@
 import {
-  GetRateReply, GetRateRequest,
+  GetRatesResponse, GetRatesRequest, Pair, Rate,
   MarketClient,
   ClientReadable
 } from "@emeraldplatform/grpc";
@@ -8,7 +8,7 @@ export type PriceHandler = (prices: {[key: string]: string}) => void;
 
 export class PriceListener {
   client: MarketClient;
-  response?: ClientReadable<GetRateReply>;
+  response?: ClientReadable<GetRatesResponse>;
 
   constructor(client: MarketClient) {
     this.client = client;
@@ -21,29 +21,25 @@ export class PriceListener {
     this.response = undefined;
   }
 
-  subscribe(froms: string[], to: string, handler: PriceHandler) {
-    const request = new GetRateRequest();
-    froms.forEach((from) => request.addFrom(from));
-    request.setTo(to);
-
-    this.client.streamRates(request, (response: ClientReadable<GetRateReply>) => {
-      response.on('data', (data: GetRateReply) => {
-        if (handler) {
-          const result: {[key: string]: string} = {};
-          data.getItemsList().forEach((item) => {
-            if (item.getTo() === to && froms.indexOf(item.getFrom()) >= 0) {
-              result[item.getFrom()] = item.getRate();
-            }
-          });
-          handler(result)
-        }
-      });
-      response.on('end', () => {
-      });
-      response.on('error', (err) => {
-        console.warn("response error", err)
-      });
-      this.response = response;
+  request(froms: string[], to: string, handler: PriceHandler) {
+    const request = new GetRatesRequest();
+    froms.forEach((from) => {
+      const pair = new Pair();
+      pair.setBase(from);
+      pair.setTarget(to);
+      request.addPairs(pair)
     });
+
+    this.client.getRates(request).then((resp) => {
+      if (handler) {
+        const result: {[key: string]: string} = {};
+        resp.getRatesList().forEach((item) => {
+          if (item.getTarget() === to && froms.indexOf(item.getBase()) >= 0) {
+            result[item.getBase()] = item.getRate();
+          }
+        });
+        handler(result)
+      }
+    }).catch((_) => {});
   }
 }

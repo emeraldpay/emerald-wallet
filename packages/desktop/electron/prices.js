@@ -1,4 +1,3 @@
-const { PricesListener } = require('@emeraldwallet/services');
 const { ipcMain } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const log = require('./logger');
 
@@ -23,11 +22,16 @@ class Prices {
   start() {
     this.stop();
     this.listener = this.apiAccess.newPricesListener();
-    log.info(`Listen for prices, to ${this.to}`);
+    this.fetch();
+  }
+
+  fetch() {
+    log.info(`Request for prices, to ${this.to}`);
     const self = this;
-    this.listener.subscribe(this.froms, this.to, (result) => {
+    this.listener.request(this.froms, this.to, (result) => {
       self.webContents.send('prices/rate', result);
     });
+    setTimeout(this.fetch.bind(this), 60000);
   }
 
   stop() {
