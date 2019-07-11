@@ -37,7 +37,7 @@ export class ChainListener {
       return;
     }
     const request = chain.toProtobuf();
-    this.client.streamHead(request, (response: ClientReadable<ChainHead>) => {
+    this.client.subscribeHead(request, (response: ClientReadable<ChainHead>) => {
       response.on('data', (data: ChainHead) => {
         // console.log(`New blockchain height. Chain: ${data.getChain()}, height: ${data.getHeight()}`);
         if (handler) {
