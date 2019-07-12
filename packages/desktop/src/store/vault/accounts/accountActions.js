@@ -103,17 +103,17 @@ export function loadAccountsList() {
   };
 }
 
-export function loadAccountTxCount(accountId: string) {
-  return (dispatch, getState, api) => {
-    api.geth.eth.getTransactionCount(accountId).then((result) => {
-      dispatch({
-        type: ActionTypes.SET_TXCOUNT,
-        accountId,
-        value: result,
-      });
-    }).catch(dispatchRpcError(dispatch));
-  };
-}
+// export function loadAccountTxCount(accountId: string) {
+//   return (dispatch, getState, api) => {
+//     api.geth.eth.getTransactionCount(accountId).then((result) => {
+//       dispatch({
+//         type: ActionTypes.SET_TXCOUNT,
+//         accountId,
+//         value: result,
+//       });
+//     }).catch(dispatchRpcError(dispatch));
+//   };
+// }
 
 export function exportPrivateKey(passphrase: string, accountId: string) {
   return (dispatch, getState, api) => {
