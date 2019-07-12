@@ -54,7 +54,7 @@ export class AddressListener {
     request.setAsset(asset);
     request.setAddress(pbAnyAddr);
 
-    this.client.streamBalance(request, (response: ClientReadable<AddressBalance>) => {
+    this.client.subscribeBalance(request, (response: ClientReadable<AddressBalance>) => {
       response.on('data', (data: AddressBalance) => {
         let address = data.getAddress();
         if (handler && data && address) {

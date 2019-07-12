@@ -5,7 +5,8 @@ import {
   ConnectionStatus,
   CredentialsContext,
   emeraldCredentials,
-  MarketClient
+  MarketClient,
+  MonitoringClient
 } from "@emeraldplatform/grpc";
 import {ChainListener} from "./ChainListener";
 import {TxListener} from "./TxListener";
@@ -92,8 +93,13 @@ type ConnectionState = {
   authenticated: boolean;
   blockchainConnected: boolean;
   pricesConnected: boolean;
+  diagConnected: boolean;
   connectedAt: Date;
 }
+
+const PERIOD_OK = 10000;
+const PERIOD_ISSUES = PERIOD_OK * 3;
+const PERIOD_PING = PERIOD_OK - 1500;
 
 export class EmeraldApiAccess {
   private readonly address: string;
@@ -101,6 +107,7 @@ export class EmeraldApiAccess {
 
   public readonly blockchainClient: BlockchainClient;
   public readonly pricesClient: MarketClient;
+  private monitoringClient: MonitoringClient;
 
   private listener?: StatusListener;
   private currentState?: Status = undefined;
@@ -119,12 +126,14 @@ export class EmeraldApiAccess {
       authenticated: false,
       blockchainConnected: false,
       pricesConnected: false,
-      connectedAt: new Date()
+      diagConnected: false,
+      connectedAt: new Date(),
     };
 
     this.credentials = emeraldCredentials(addr, cert, agent, id);
     this.blockchainClient = new BlockchainClient(addr, this.credentials.getChannelCredentials());
     this.pricesClient = new MarketClient(addr, this.credentials.getChannelCredentials());
+    this.monitoringClient = new MonitoringClient(addr, this.credentials.getChannelCredentials());
 
     this.credentials.setListener((status: AuthenticationStatus) => {
       this.connectionState.authenticated = status == AuthenticationStatus.AUTHENTICATED;
@@ -138,7 +147,12 @@ export class EmeraldApiAccess {
       this.connectionState.pricesConnected = status == ConnectionStatus.CONNECTED;
       this.verifyConnection();
     });
+    this.monitoringClient.setConnectionListener((status) => {
+      this.connectionState.diagConnected = status == ConnectionStatus.CONNECTED;
+      this.verifyConnection();
+    });
     this.periodicCheck();
+    this.ping();
   }
 
   protected periodicCheck() {
@@ -173,7 +187,8 @@ export class EmeraldApiAccess {
     const status = this.connectionState;
     const connected = status.authenticated
       && status.blockchainConnected
-      && status.pricesConnected;
+      && status.pricesConnected
+      && status.diagConnected;
     if (!connected) {
       this.verifyOffline();
     } else {
@@ -185,8 +200,6 @@ export class EmeraldApiAccess {
   protected verifyOffline() {
     const now = new Date();
     const offlinePeriod = now.getTime() - this.connectionState.connectedAt.getTime();
-    const PERIOD_OK = 5000;
-    const PERIOD_ISSUES = 15000;
     if (offlinePeriod < PERIOD_OK) {
       this.setStatus(Status.CONNECTED);
     } else if (offlinePeriod < PERIOD_ISSUES) {
@@ -194,6 +207,11 @@ export class EmeraldApiAccess {
     } else {
       this.setStatus(Status.DISCONNECTED);
     }
+  }
+
+  protected ping() {
+    this.monitoringClient.ping();
+    setTimeout(this.ping.bind(this), PERIOD_PING);
   }
 
   protected setStatus(state: Status) {

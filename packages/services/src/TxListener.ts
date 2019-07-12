@@ -44,7 +44,7 @@ export class TxListener {
     request.setTxId(hash);
     request.setConfirmationLimit(12);
 
-    this.client.streamTxStatus(request, (response: ClientReadable<TxStatus>) => {
+    this.client.subscribeTxStatus(request, (response: ClientReadable<TxStatus>) => {
       response.on('data', (data: TxStatus) => {
         const block = data.getBlock();
         if (handler && block) {
