@@ -77,4 +77,5 @@ export type LedgerAction =
   | AddressSelected
   | SetListHDPath
   | Watch
-  | SetBaseHD;
+  | SetBaseHD
+  | LoadAddrInfoAction;

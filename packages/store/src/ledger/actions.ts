@@ -152,7 +152,6 @@ function onceConnectionState(getState: GetState, value: boolean): Promise<any> {
 //   };
 // }
 
-
 export function getAddress(hdpath: string): Dispatched<Address> {
   return (dispatch) => {
     return connection()
