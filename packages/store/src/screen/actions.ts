@@ -1,6 +1,8 @@
-import {ActionTypes, DialogAction} from './types';
+import {ActionTypes, DialogAction, OpenAction} from './types';
+import * as addresses from '../addresses'
+import {Dispatched} from "../types";
 
-export function gotoScreen(screen: any, item = null) {
+export function gotoScreen(screen: any, item = null): OpenAction {
   return {
     type: ActionTypes.OPEN,
     screen,
@@ -77,4 +79,14 @@ export function closeNotification() {
   return {
     type: ActionTypes.NOTIFICATION_CLOSE,
   };
+}
+
+export function goHome(): Dispatched<OpenAction> {
+  return (dispatch, getState) => {
+    const accountSize = addresses.selectors.all(getState()).size;
+    if (accountSize === 0) {
+      return dispatch(gotoScreen('landing'));
+    }
+    return dispatch(gotoScreen('home'));
+  }
 }
