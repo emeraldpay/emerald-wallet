@@ -4,7 +4,6 @@ import Immutable from 'immutable';
 const STATUS_NOT_READY = 'not ready';
 
 const initial = Immutable.fromJS({
-  firstRun: false,
   settingsUpdated: false,
   connecting: true,
   launcherType: 'web',
@@ -22,31 +21,11 @@ const initial = Immutable.fromJS({
   },
 });
 
-// TODO: replace me with FS persistent storage along with user settings, eg
-// - window dimensions,
-// - rpc/geth/connector prefs
-function getStoredFirstRun() {
-  if (window.localStorage) {
-    const val = window.localStorage.getItem('emerald_firstRun');
-    if (typeof val !== 'undefined' && JSON.parse(val) === false) {
-      return false;
-    }
-  }
-  return true;
-}
-function setStoredFirstRun() {
-  if (window.localStorage) {
-    window.localStorage.setItem('emerald_firstRun', JSON.stringify(false));
-  }
-}
-
 function onConfig(state, action) {
   if (action.type === 'LAUNCHER/CONFIG') {
-    setTimeout(setStoredFirstRun, 10000); // HACK
     state = state
       .set('configured', true)
-      .set('launcherType', action.launcherType)
-      .set('firstRun', getStoredFirstRun()); // action.firstRun
+      .set('launcherType', action.launcherType);
 
     if (action.config.terms) {
       state = state.set('terms', action.config.terms);

@@ -182,10 +182,6 @@ function getInitialScreen() {
   // First things first, always go to welcome screen. This shows a nice spinner
   store.dispatch(screen.actions.gotoScreen('welcome'));
 
-  if (store.getState().launcher.get('firstRun') === true) {
-    return; // stay on the welcome screen.
-  }
-
   return onceAccountsLoaded(store).then(() => {
     const accountSize = addresses.selectors.all(store.getState()).size;
 
