@@ -13,6 +13,16 @@ interface ItemProps {
   textColor: any;
 }
 
+function getChainName(code) {
+  switch (code.toLowerCase()) {
+    case 'etc': return 'Ethereum Classic';
+    case 'eth': return 'Ethereum';
+    case 'kovan': return 'Kovan Testnet';
+    case 'morden': return 'Morden Testnet';
+    default: return code;
+  }
+}
+
 class ExtendedMenuItem extends React.Component<ItemProps> {
   render() {
     const {
@@ -27,7 +37,7 @@ class ExtendedMenuItem extends React.Component<ItemProps> {
           marginLeft: '0px',
           lineHeight: '20px',
         }}>
-        <Grid item style={{color: textColor}}>{title}</Grid>
+        <Grid item style={{color: textColor}}>{getChainName(title)}</Grid>
         <Grid item>
           <Grid container style={{color: textColor}}>
             <BlockIcon /><div>{height}</div>
@@ -37,20 +47,6 @@ class ExtendedMenuItem extends React.Component<ItemProps> {
     );
   }
 }
-
-// ExtendedMenuItem.muiName = 'MenuItem';
-
-
-// function getStyles(props) {
-//   const { muiTheme } = props;
-//   return {
-//     main: {
-//       marginRight: '-20px',
-//       paddingRight: '10px',
-//       height: muiTheme.spacing.desktopToolbarHeight, /* gagarin55: this is extremely important hack to align DropDownMenu vertically */
-//     },
-//   };
-// }
 
 const selectorStyles = {
   buttonText: {
