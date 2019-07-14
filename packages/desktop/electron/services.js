@@ -1,4 +1,5 @@
 const { LocalConnector } = require('@emeraldwallet/vault');
+const path = require('path'); // eslint-disable-line
 const log = require('./logger');
 const UserNotify = require('./userNotify').UserNotify; // eslint-disable-line
 const {getBinDir, getLogDir} = require('./utils');
@@ -34,12 +35,13 @@ const DEFAULT_SETUP = {
 
 
 class Services {
-  constructor(webContents, serverConnect, apiAccess) {
+  constructor(webContents, serverConnect, apiAccess, dataDir) {
     this.setup = Object.assign({}, DEFAULT_SETUP);
     this.connectorStatus = STATUS.NOT_STARTED;
     this.notify = new UserNotify(webContents);
     this.emerald = serverConnect.connectEmerald();
     this.serverConnect = serverConnect;
+    this.dataDir = dataDir;
 
     log.info(`Run services from ${getBinDir()}`);
   }
@@ -70,7 +72,7 @@ class Services {
       this.connectorStatus = STATUS.NOT_STARTED;
       this.notifyConnectorStatus();
 
-      this.connector = new LocalConnector(getBinDir(), log);
+      this.connector = new LocalConnector(getBinDir(), this.dataDir ? path.resolve(path.join(this.dataDir, '/vault')) : null, log);
 
       const onVaultReady = () => {
         this.emerald.currentVersion().then((version) => {

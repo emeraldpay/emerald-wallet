@@ -13,7 +13,6 @@ const ipc = require('./ipc');
 const log = require('./logger');
 const { startProtocolHandler } = require('./protocol');
 const assertSingletonWindow = require('./singletonWindow');
-const { URL_FOR_CHAIN } = require('./utils');
 const { Prices } = require('./prices');
 const {
   DevMode, LocalMode, ProdMode, sendMode,
@@ -24,12 +23,14 @@ const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
 let apiMode;
 
+let dataDir = null;
 
 if (isDev) {
   log.warn('START IN DEVELOPMENT MODE');
-  app.setPath('userData', path.resolve('./.emerald-dev/userData'));
   const appArgs = process.argv.slice(2);
   const notLocal = appArgs.every((value) => value !== '--localMode');
+  dataDir = notLocal ? './.emerald-dev' : './.emerald-dev-local';
+  app.setPath('userData', path.resolve(path.join(dataDir, '/userData')));
   apiMode = notLocal ? DevMode : LocalMode;
 }
 
@@ -76,7 +77,7 @@ app.on('ready', () => {
     sendMode(browserWindow.webContents, apiMode);
   });
 
-  const services = new Services(browserWindow.webContents, serverConnect, apiAccess);
+  const services = new Services(browserWindow.webContents, serverConnect, apiAccess, dataDir);
 
   log.info('... setup services 2');
   const services2 = createServices2(ipcMain, browserWindow.webContents, apiAccess, apiMode.chains);
