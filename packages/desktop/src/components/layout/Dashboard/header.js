@@ -3,7 +3,7 @@ import withStyles from 'react-jss';
 import {connect} from 'react-redux';
 import {translate} from 'react-i18next';
 import {DashboardMenu as Menu} from '@emeraldwallet/ui';
-import {screen} from '../../../store';
+import {screen} from '@emeraldwallet/store';
 
 const {gotoScreen, showDialog} = screen.actions;
 const styles2 = {

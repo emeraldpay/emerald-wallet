@@ -5,16 +5,19 @@ import { fromJS } from 'immutable';
 import { connect } from 'react-redux';
 import { Wei, Units } from '@emeraldplatform/eth';
 import { convert, toBaseUnits } from '@emeraldplatform/core';
+import {
+  screen,
+  addresses,
+  blockchains,
+  ledger,
+} from '@emeraldwallet/store';
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import { blockchainByName } from '@emeraldwallet/core';
 import { CreateEthereumTx, TxTarget, ValidationResult } from '@emeraldwallet/workflow';
 import { CreateTx, SignTx } from '@emeraldwallet/ui';
-import { ledger } from '@emeraldwallet/store';
 import Tokens from '../../store/vault/tokens';
-import accounts from '../../store/vault/accounts';
 import network from '../../store/network';
-import { screen, addresses, blockchains } from '../../store';
 import Wallet from '../../store/wallet';
 import TransactionShow from '../../components/tx/TxDetails';
 import { txFeeFiat, traceValidate } from './util';
@@ -251,7 +254,7 @@ function signAndSendToken(dispatch, ownProps, args) {
     'true'
   );
   return dispatch(
-    accounts.actions.sendTransaction(
+    addresses.actions.sendTransaction(
       chain,
       transaction.from,
       password,
@@ -284,7 +287,7 @@ function signAndSendEther(dispatch, ownProps, {transaction, password}) {
     .then(() => (useLedger ? dispatch(screen.actions.showDialog('sign-transaction', transaction)) : null))
     .then(() => {
       return dispatch(
-        accounts.actions.sendTransaction(
+        addresses.actions.sendTransaction(
           chain,
           transaction.from,
           password,

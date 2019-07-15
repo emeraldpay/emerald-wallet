@@ -75,10 +75,6 @@ Welcome.propTypes = {
 
 const StyledWelcome = withStyles(getStyles)(Welcome);
 
-function isEmpty(val) {
-  return typeof val === 'undefined' || (typeof val === 'string' && val.length === 0);
-}
-
 export default connect(
   (state, ownProps) => {
     return ({

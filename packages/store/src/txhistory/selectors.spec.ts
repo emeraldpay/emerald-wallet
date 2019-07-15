@@ -59,7 +59,8 @@ describe('history selectors', () => {
   describe('filterTransactions', () => {
     it('returns empty array if no transactions', () => {
       const transactions = fromJS([]);
-      const filterResults = filterTransactions('ALL', null, transactions);
+      const accounts = fromJS([]);
+      const filterResults = filterTransactions('ALL', null, transactions, accounts);
       expect(filterResults.size).toEqual(0);
     });
     it('matches ALL to everything', () => {
@@ -78,6 +79,7 @@ describe('history selectors', () => {
 
       const filterResults = filterTransactions('IN', null, transactions, accounts);
       expect(filterResults.size).toEqual(1);
+      expect(filterResults.get(0).get("hash")).toEqual("0x02");
     });
     it('matches OUT to "from" field', () => {
       const transactions = fromJS(fixture);

@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { ImportMnemonic, NewMnemonic } from '@emeraldwallet/ui';
-import { screen } from '../../../store';
-import accounts from '../../../store/vault/accounts';
+import { screen, addresses } from '@emeraldwallet/store';
 import ConfirmMnemonic from '../add/ConfirmMnemonic';
 import settings from '../../../store/wallet/settings';
 
@@ -107,7 +106,7 @@ export default connect(
   (dispatch, ownProps) => ({
 
     generateMnemonic: () => {
-      return dispatch(accounts.actions.generateMnemonic());
+      return dispatch(addresses.actions.generateMnemonic());
     },
     gotoDashboard: () => {
       dispatch(screen.actions.gotoScreen('home'));

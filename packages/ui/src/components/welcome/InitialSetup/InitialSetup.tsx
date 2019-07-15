@@ -5,13 +5,10 @@ import StepLabel from '@material-ui/core/StepLabel';
 import Grid from '@material-ui/core/Grid';
 
 import Terms from '../Terms';
-import OpenWallet from '../OpenWallet';
 
 interface Props {
   terms?: any;
   onTermsAgreed?: any;
-  connectETH?: any;
-  connectETC?: any;
   currentTermsVersion?: any;
 }
 
@@ -19,7 +16,7 @@ class InitialSetup extends React.Component<Props> {
 
   render() {
     const {
-      terms, onTermsAgreed, connectETH, connectETC, currentTermsVersion,
+      terms, onTermsAgreed, currentTermsVersion,
     } = this.props;
 
     let step = null;
@@ -29,7 +26,6 @@ class InitialSetup extends React.Component<Props> {
       step = <Terms onAgree={onTermsAgreed}/>;
     } else {
       activeStep = 1;
-      step = <OpenWallet connectETC={connectETC} connectETH={connectETH}/>;
     }
 
     const steps = [];

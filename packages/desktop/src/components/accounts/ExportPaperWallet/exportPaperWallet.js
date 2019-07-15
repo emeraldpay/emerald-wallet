@@ -1,8 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { ExportPaperWallet } from '@emeraldwallet/ui';
-import { screen } from '../../../store';
-import accounts from '../../../store/vault/accounts';
+import { screen, addresses } from '@emeraldwallet/store';
 
 export default connect(
   (state, ownProps) => ({
@@ -10,7 +9,7 @@ export default connect(
   (dispatch, ownProps) => ({
     onSubmit: (password) => {
       const address = ownProps.accountId;
-      dispatch(accounts.actions.exportPrivateKey(password, address))
+      dispatch(addresses.actions.exportPrivateKey(password, address))
         .then((privKey) => {
           return dispatch(screen.actions.gotoScreen('paper-wallet', { address, privKey }));
         })

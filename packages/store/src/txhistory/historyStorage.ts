@@ -1,7 +1,7 @@
-// @flow
 import { convert } from '@emeraldplatform/core';
-import type { Transaction } from './types';
-
+import {blockchainById} from "@emeraldwallet/core";
+import { Transaction } from '../types';
+import BigNumber from 'bignumber.js';
 const { toBigNumber } = convert;
 
 /**
@@ -16,7 +16,7 @@ export function storeTransactions(key: string, txs: Array<Transaction>): void {
 /**
  * Restore transaction from JSON stored in localStorage
  */
-export function loadTransactions(key: string, chainId): Array<Transaction> {
+export function loadTransactions(key: string, chainId: number): Array<Transaction> {
   if (localStorage) {
     // check old history
     // Will be removed after stable release
@@ -26,13 +26,13 @@ export function loadTransactions(key: string, chainId): Array<Transaction> {
       txs = JSON.parse(old);
       localStorage.removeItem('trackedTransactions');
     } else {
-      const storedTxs: ?string = localStorage.getItem(key);
+      const storedTxs = localStorage.getItem(key);
       if (storedTxs) {
         txs = JSON.parse(storedTxs);
       }
     }
     return txs
-      .map((t) => ({
+      .map((t: any) => ({
         ...t,
         chainId: t.chainId || chainId,
       }))
@@ -41,26 +41,15 @@ export function loadTransactions(key: string, chainId): Array<Transaction> {
   return [];
 }
 
-function id2chain(id) {
-  switch (id) {
-    case 1:
-      return 'eth';
-    case 61:
-      return 'etc';
-    default:
-      return null;
-  }
-}
-
 /**
  * Converts parsed JSON object to typed Transaction object
  */
-function restoreTx(tx): Transaction {
+function restoreTx(tx: any): Transaction {
   return {
-    value: (tx.value && typeof tx.value === 'string') ? toBigNumber(tx.value) : null,
+    value: (tx.value && typeof tx.value === 'string') ? toBigNumber(tx.value) : new BigNumber(0),
     hash: tx.hash,
     input: tx.input,
-    gasPrice: (tx.gasPrice && typeof tx.gasPrice === 'string') ? toBigNumber(tx.gasPrice) : null,
+    gasPrice: (tx.gasPrice && typeof tx.gasPrice === 'string') ? toBigNumber(tx.gasPrice) : new BigNumber(0),
     gas: tx.gas,
     to: tx.to,
     from: tx.from,
@@ -69,7 +58,7 @@ function restoreTx(tx): Transaction {
     blockHash: tx.blockHash,
     blockNumber: tx.blockNumber,
     timestamp: tx.timestamp,
-    chain: tx.chain || id2chain(tx.chainId),
+    chain: tx.chain || ( blockchainById(tx.chainId) ? blockchainById(tx.chainId)!.params.coinTicker : null),
     chainId: tx.chainId,
   };
 }

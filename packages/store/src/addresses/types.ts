@@ -1,3 +1,6 @@
+import {BlockchainCode} from "@emeraldwallet/core";
+import {List, Map} from "immutable";
+
 export const moduleName = "addresses";
 
 /**
@@ -30,9 +33,11 @@ export interface IAddressesState {
   loading: boolean;
 }
 
+export type AddressMap = Map<string, any>;
+export type AddressList = List<AddressMap>;
+
 export enum ActionTypes {
   SET_BALANCE = 'ACCOUNT/SET_BALANCE',
-  SET_BALANCES = 'ACCOUNT/SET_BALANCES',
   LOADING = 'ACCOUNT/LOADING',
   ADD_ACCOUNT = 'ACCOUNT/ADD_ACCOUNT',
   SET_LIST = 'ACCOUNT/SET_LIST',
@@ -51,6 +56,7 @@ export interface UpdateAddressAction {
 export interface SetListAction {
   type: ActionTypes.SET_LIST;
   payload: any;
+  chain?: BlockchainCode
 }
 
 export interface SetBalanceAction {
@@ -70,17 +76,39 @@ export interface AddAccountAction {
   blockchain: string
 }
 
-export interface SetHDPath {
+export interface SetHDPathAction {
   type: ActionTypes.SET_HD_PATH;
   accountId: string;
   hdpath: string;
 }
 
+export interface SetTxCountAction {
+  type: ActionTypes.SET_TXCOUNT;
+  accountId: string;
+  value: number;
+}
+
+export interface ImportWalletAction {
+  type: ActionTypes.IMPORT_WALLET;
+  accountId: string;
+}
+
+export interface PendingBalanceAction {
+  type: ActionTypes.PENDING_BALANCE;
+  value: string,
+  gas: string,
+  gasPrice: string,
+  from: string,
+  to: string,
+}
 export type AddressesAction =
   | SetListAction
   | LoadingAction
   | SetBalanceAction
   | UpdateAddressAction
   | AddAccountAction
-  | SetHDPath
+  | SetHDPathAction
+  | SetTxCountAction
+  | ImportWalletAction
+  | PendingBalanceAction
   ;

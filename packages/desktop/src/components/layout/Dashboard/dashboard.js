@@ -4,6 +4,7 @@ import {connect} from 'react-redux';
 import Immutable from 'immutable';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import {addresses} from '@emeraldwallet/store';
 import TransactionsHistory from '../../tx/TxHistory';
 import AccountsList from '../../accounts/AccountList';
 import Header from './header';
@@ -46,7 +47,7 @@ Dashboard.propTypes = {
 
 export default connect(
   (state, ownProps) => ({
-    accounts: state.accounts.get('accounts', Immutable.List()),
+    accounts: addresses.selectors.all(state),
     connecting: state.launcher.get('connecting'),
     statusMessage: state.launcher.get('message').get('text'),
   }),

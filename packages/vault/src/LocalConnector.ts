@@ -9,12 +9,14 @@ const isDev = process.env.NODE_ENV === 'development';
 
 class LocalConnector {
   bin: string;
+  dataDir: string;
   proc: ChildProcess | null = null;
   log: ILogger;
 
   // TODO: assert params
-  constructor(bin: string, log?: ILogger) {
+  constructor(bin: string, dataDir: string, log?: ILogger) {
     this.bin = bin;
+    this.dataDir = dataDir || path.join(process.env.APPDATA || os.homedir(), ".emerald");
     this.log = log || new DefaultLogger();
   }
 
@@ -119,8 +121,9 @@ class LocalConnector {
           const options = [
             '-v',
           ];
-          if (isDev) {
-            options.push(`--base-path=${path.resolve('./.emerald-dev/vault')}`);
+          if (this.dataDir) {
+            this.log.warn("SPECIFY CUSTOM DIR FOR VAULT");
+            options.push(`--base-path=${this.dataDir}`);
           }
           options.push('server');
           this.log.debug(`Emerald bin: ${bin}, args: ${options}`);

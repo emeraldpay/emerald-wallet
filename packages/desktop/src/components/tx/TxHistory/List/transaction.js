@@ -4,11 +4,9 @@ import { connect } from 'react-redux';
 import { Map } from 'immutable';
 import {Blockchains, blockchainById } from '@emeraldwallet/core';
 import TxView from '@emeraldwallet/ui/lib/components/tx/TxHistory/TxList/TxItem';
-import { blockchains } from '@emeraldwallet/store';
-import accounts from '../../../../store/vault/accounts';
+import { blockchains, txhistory, addresses } from '@emeraldwallet/store';
 import { screen } from '../../../../store';
 import Wallet from '../../../../store/wallet';
-import WalletHistory from '../../../../store/wallet/history';
 import Balance from '../../../accounts/Balance';
 import i18n from '../../../../i18n/i18n';
 
@@ -28,7 +26,7 @@ function txValueRenderer(showFiat) {
 export default connect(
   (state, ownProps) => {
     const getAccount = (addr) => {
-      const acc = accounts.selectors.selectAccount(state, addr);
+      const acc = addresses.selectors.findByAddress(state, addr);
       return acc || Map({});
     };
 
@@ -69,7 +67,7 @@ export default connect(
     },
     refreshTx: () => {
       const hash = ownProps.tx.get('hash');
-      dispatch(WalletHistory.actions.refreshTransaction(hash));
+      dispatch(txhistory.actions.refreshTransaction(hash));
     },
   })
 )(TxView);

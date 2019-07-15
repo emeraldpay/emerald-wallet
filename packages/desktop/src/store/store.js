@@ -1,16 +1,19 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { blockchains, screen, ledger } from '@emeraldwallet/store';
+import {
+  blockchains,
+  screen,
+  ledger,
+  txhistory,
+  addresses,
+} from '@emeraldwallet/store';
 import { ipcRenderer } from 'electron';
 import { startProtocolListener } from './protocol';
 
 import { Api, getConnector } from '../lib/rpc/api';
 import { intervalRates } from './config';
-import history from './wallet/history';
-import accounts from './vault/accounts';
 import settings from './wallet/settings';
 import tokens from './vault/tokens';
 import Addressbook from './vault/addressbook';
-import { addresses } from '.';
 
 import {
   readConfig,
@@ -39,7 +42,7 @@ global.api = api;
 function refreshAll() {
   const promises = [
     // store.dispatch(accounts.actions.loadPendingTransactions()), // TODO: Fix it
-    store.dispatch(accounts.actions.loadAccountsList()),
+    store.dispatch(addresses.actions.loadAccountsList()),
   ];
 
   // Main loop that will refresh UI as needed
@@ -63,7 +66,7 @@ export function startSync() {
       const codes = supported.map((chain) => chain.params.coinTicker.toLowerCase());
       log.info('Configured to use chains', codes);
 
-      store.dispatch(history.actions.init(codes));
+      store.dispatch(txhistory.actions.init(codes));
       api.connectChains(codes);
 
       supported.forEach((chain) => {
@@ -181,10 +184,6 @@ startProtocolListener(store);
 function getInitialScreen() {
   // First things first, always go to welcome screen. This shows a nice spinner
   store.dispatch(screen.actions.gotoScreen('welcome'));
-
-  if (store.getState().launcher.get('firstRun') === true) {
-    return; // stay on the welcome screen.
-  }
 
   return onceAccountsLoaded(store).then(() => {
     const accountSize = addresses.selectors.all(store.getState()).size;

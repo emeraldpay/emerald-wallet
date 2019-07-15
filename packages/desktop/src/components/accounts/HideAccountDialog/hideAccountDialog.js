@@ -6,9 +6,8 @@ import {
   Warning, WarningHeader, WarningText
 } from '@emeraldplatform/ui';
 import { Button } from '@emeraldwallet/ui';
+import {addresses} from '@emeraldwallet/store';
 import { screen } from '../../../store';
-import accounts from '../../../store/vault/accounts';
-import history from '../../../store/wallet/history';
 
 export const styles = {
   title: {
@@ -67,7 +66,7 @@ export default connect(
   }),
   (dispatch, ownProps) => ({
     handleConfirmHide: () => {
-      dispatch(accounts.actions.hideAccount(ownProps.address));
+      dispatch(addresses.actions.hideAccount(ownProps.address));
 
       // refresh account data
       // TODO: do we need it ???

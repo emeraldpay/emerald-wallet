@@ -4,11 +4,11 @@ import {AppBar, Toolbar} from '@material-ui/core';
 import {withStyles} from '@material-ui/styles';
 import {Button, Status} from '@emeraldwallet/ui';
 import {Block as BlockIcon, Settings as SettingsIcon} from '@emeraldplatform/ui-icons';
+import { blockchains } from '@emeraldwallet/store';
 import SyncWarning from '../../../containers/SyncWarning';
 import Total from './Total';
 import {separateThousands} from '../../../lib/convert';
 import EmeraldTitle from './Title';
-import { blockchains } from '../../../store';
 
 const styles = (theme) => ({
   appBarRight: {

@@ -3,6 +3,7 @@ export enum ActionTypes {
   ERROR = 'SCREEN/ERROR',
   DIALOG = 'SCREEN/DIALOG',
   GO_BACK = 'SCREEN/GO_BACK',
+  GO_HOME = 'SCREEN/GO_HOME',
   OPEN_LINK = 'SCREEN/OPEN_LINK',
   NOTIFICATION_SHOW = 'SCREEN/NOTIFICATION_SHOW',
   NOTIFICATION_CLOSE = 'SCREEN/NOTIFICATION_CLOSE',
@@ -55,6 +56,10 @@ export interface OpenLinkAction {
   linkUrl: any;
 }
 
+export interface GoHomeAction {
+  type: ActionTypes.GO_HOME;
+}
+
 export type ScreenAction =
   | OpenAction
   | ErrorAction
@@ -62,4 +67,5 @@ export type ScreenAction =
   | GoBackAction
   | OpenLinkAction
   | ShowNotificationAction
-  | CloseNotificationAction;
+  | CloseNotificationAction
+  | GoHomeAction;

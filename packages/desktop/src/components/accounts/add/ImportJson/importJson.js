@@ -8,9 +8,8 @@ import {
 } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import { Button, ChainSelector } from '@emeraldwallet/ui';
-import accountsModule from 'store/vault/accounts';
+import { screen, addresses } from '@emeraldwallet/store';
 import { Row, styles as formStyles } from 'elements/Form/index';
-import { screen } from 'store';
 
 import FileDropField from './fileDropField';
 import settings from '../../../../store/wallet/settings';
@@ -100,7 +99,7 @@ export default connect(
   (dispatch, ownProps) => ({
     importFile: (chain, file) => {
       return new Promise((resolve, reject) => {
-        dispatch(accountsModule.actions.importWallet(chain, file, '', ''))
+        dispatch(addresses.actions.importWallet(chain, file, '', ''))
           .then(resolve)
           .catch(reject);
       });

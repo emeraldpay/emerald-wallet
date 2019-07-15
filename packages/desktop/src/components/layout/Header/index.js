@@ -1,7 +1,6 @@
 import { connect } from 'react-redux';
+import { screen } from '@emeraldwallet/store';
 import Header from './header';
-import { screen } from '../../../store';
-import Launcher from '../../../store/launcher';
 
 export default (connect(
   (state, ownProps) => {

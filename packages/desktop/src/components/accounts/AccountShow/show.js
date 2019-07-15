@@ -9,12 +9,10 @@ import {
   Page, IdentityIcon, ButtonGroup, Account as AddressAvatar
 } from '@emeraldplatform/ui';
 import { Button, InlineEdit } from '@emeraldwallet/ui';
-import {Blockchains} from '@emeraldwallet/core';
+import { blockchainByName } from '@emeraldwallet/core';
 import {styles, Row} from 'elements/Form';
-import { screen, addresses } from '@emeraldwallet/store';
-import accounts from '../../../store/vault/accounts';
+import { screen, addresses, txhistory } from '@emeraldwallet/store';
 import tokens from '../../../store/vault/tokens';
-import history from '../../../store/wallet/history';
 import createLogger from '../../../utils/logger';
 import TransactionsList from '../../tx/TxHistory';
 import Balance from '../Balance';
@@ -47,7 +45,8 @@ export class AccountShow extends React.Component {
   };
 
   handleSave = (data) => {
-    this.props.editAccount(data)
+    const updated = {blockchain: this.props.account.get('blockchain'), ...data};
+    this.props.editAccount(updated)
       .then((result) => {
         this.setState({edit: false});
         log.debug(result);
@@ -77,7 +76,7 @@ export class AccountShow extends React.Component {
       blockchain: account.get('blockchain'),
     };
 
-    const { coinTicker } = Blockchains[acc.blockchain || 'eth'].params;
+    const { coinTicker } = blockchainByName(acc.blockchain).params;
 
     return (
       <div>
@@ -200,7 +199,7 @@ export default connect(
     let tokensBalances = Immutable.List();
 
     if (account && account.get('id')) {
-      transactions = history.selectors.searchTransactions(
+      transactions = txhistory.selectors.searchTransactions(
         account.get('id'),
         state.wallet.history.get('trackedTransactions')
       );
@@ -225,7 +224,7 @@ export default connect(
       const {account} = ownProps;
       const address = {
         value: account.get('id'),
-        coinTicker: Blockchains[account.get('blockchain')].params.coinTicker,
+        coinTicker: blockchainByName(account.get('blockchain')).params.coinTicker,
       };
       dispatch(screen.actions.showDialog('receive', address));
     },
@@ -234,7 +233,7 @@ export default connect(
     },
     editAccount: (data) => {
       return new Promise((resolve, reject) => {
-        dispatch(accounts.actions.updateAccount(data.id, data.value, data.description))
+        dispatch(addresses.actions.updateAccount(data.blockchain, data.id, data.value, data.description))
           .then((response) => {
             resolve(response);
           });

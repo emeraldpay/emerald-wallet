@@ -5,9 +5,8 @@ import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import {NewAccountProps} from '@emeraldwallet/ui';
+import { screen, addresses } from '@emeraldwallet/store';
 import { saveJson } from '../../../lib/saveAs';
-import accounts from '../../../store/vault/accounts';
-import { screen } from '../../../store';
 import PasswordDialog from './PasswordDialog';
 import DownloadDialog from './DownloadDialog';
 import ShowPrivateDialog from './ShowPrivateDialog';
@@ -57,7 +56,7 @@ class GenerateAccount extends React.Component<Props, State> {
     });
 
     // Create new account
-    this.props.dispatch(accounts.actions.createAccount(chain, passphrase))
+    this.props.dispatch(addresses.actions.createAccount(chain, passphrase))
       .then((accountId) => {
         this.setState({
           loading: false,
@@ -77,7 +76,7 @@ class GenerateAccount extends React.Component<Props, State> {
     });
 
     // Get encrypted key file from emerald vault
-    this.props.dispatch(accounts.actions.exportKeyFile(chain, accountId)).then((result) => {
+    this.props.dispatch(addresses.actions.exportKeyFile(chain, accountId)).then((result) => {
       ipcRenderer.send('get-private-key', {keyfile: result, passphrase});
       ipcRenderer.once('recieve-private-key', (event, privateKey) => {
         saveJson(result, `${chain}-${accountId}.json`);
@@ -105,7 +104,7 @@ class GenerateAccount extends React.Component<Props, State> {
 
   updateAccountProps = (name: string) => {
     const { dispatch } = this.props;
-    dispatch(accounts.actions.updateAccount(this.state.accountId, name))
+    dispatch(addresses.actions.updateAccount(this.state.chain, this.state.accountId, name))
       .then(() => dispatch(screen.actions.gotoScreen('home')));
   };
 
