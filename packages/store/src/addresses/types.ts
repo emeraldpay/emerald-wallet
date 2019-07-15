@@ -79,12 +79,14 @@ export interface SetHDPathAction {
   type: ActionTypes.SET_HD_PATH;
   accountId: string;
   hdpath: string;
+  blockchain: BlockchainCode;
 }
 
 export interface SetTxCountAction {
   type: ActionTypes.SET_TXCOUNT;
   accountId: string;
   value: number;
+  blockchain: BlockchainCode;
 }
 
 export interface ImportWalletAction {
@@ -94,11 +96,12 @@ export interface ImportWalletAction {
 
 export interface PendingBalanceAction {
   type: ActionTypes.PENDING_BALANCE;
-  value: string,
-  gas: string,
-  gasPrice: string,
-  from: string,
-  to: string,
+  value: string;
+  gas: string;
+  gasPrice: string;
+  from: string;
+  to: string;
+  blockchain: BlockchainCode;
 }
 export type AddressesAction =
   | SetListAction

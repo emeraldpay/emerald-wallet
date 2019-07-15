@@ -23,7 +23,7 @@ export type Transaction = {
   input?: string,
 
   replayProtected?: boolean,
-  chain: BlockchainCode,
+  blockchain: BlockchainCode,
   chainId?: number,
 
   timestamp?: Date,

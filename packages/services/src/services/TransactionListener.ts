@@ -21,13 +21,13 @@ export class TransactionListener {
 
   start() {
     const {webContents} = this;
-    this.ipcMain.on('subscribe-tx', (_: any, chain: string, hash: string) => {
+    this.ipcMain.on('subscribe-tx', (_: any, blockchain: string, hash: string) => {
       const subscriber = this.apiAccess.newTxListener();
       this.subscriber.push(subscriber);
-      subscriber.subscribe(chain, hash, (event: any) => {
+      subscriber.subscribe(blockchain, hash, (event: any) => {
         // console.log("update for tx", hash);
         const action = txhistory.actions.updateTxs([{
-          chain: chain,
+          blockchain,
           hash: event.txid,
           blockNumber: event.blockNumber,
           timestamp: event.timestamp,

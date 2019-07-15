@@ -1,6 +1,7 @@
 import {fromJS} from 'immutable';
 import {ActionTypes} from './types';
 import {INITIAL_STATE, reducer} from "./reducer";
+import {BlockchainCode} from "@emeraldwallet/core";
 
 describe('addresses reducer', () => {
   it('handles Actions.LOADING', () => {
@@ -116,6 +117,7 @@ describe('addresses reducer', () => {
       type: ActionTypes.SET_HD_PATH,
       accountId: 'id1',
       hdpath: 'hdpath1',
+      blockchain: BlockchainCode.ETH
     });
 
     // assert

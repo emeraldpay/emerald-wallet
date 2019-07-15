@@ -25,7 +25,7 @@ export interface BlockAction {
 export interface GasPriceAction {
   type: ActionTypes.GAS_PRICE;
   payload: {
-    chain: string,
+    blockchain: string,
     gasPrice: Wei
   };
 }

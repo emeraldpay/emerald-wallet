@@ -35,7 +35,7 @@ class ImportJson extends React.Component {
     submitFile = () => {
       const { importFile, showAccount } = this.props;
       importFile(this.state.chain, this.state.file)
-        .then((result) => showAccount(Immutable.fromJS({id: result})))
+        .then((result) => showAccount(Immutable.fromJS({id: result, blockchain: this.state.chain.toLowerCase()})))
         .catch((err) => this.setState({ fileError: err.message }));
     };
 
@@ -97,9 +97,9 @@ export default connect(
     chains: settings.selectors.currentChains(state),
   }),
   (dispatch, ownProps) => ({
-    importFile: (chain, file) => {
+    importFile: (blockchain, file) => {
       return new Promise((resolve, reject) => {
-        dispatch(addresses.actions.importWallet(chain, file, '', ''))
+        dispatch(addresses.actions.importWallet(blockchain, file, '', ''))
           .then(resolve)
           .catch(reject);
       });

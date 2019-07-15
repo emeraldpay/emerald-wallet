@@ -22,7 +22,11 @@ const allCodes = [BlockchainCode.ETC, BlockchainCode.ETH, BlockchainCode.Morden,
 const allChains = allCodes.map((code) => Blockchains[code]);
 
 export function blockchainCodeByName(name: string): string {
-  return allCodes.find((code) => code == name.toLowerCase()) || BlockchainCode.Unknown;
+  if (!name) {
+    throw new Error('Empty chain name passed');
+  }
+  const cleanName = name.toLowerCase();
+  return allCodes.find((code) => code == cleanName) || BlockchainCode.Unknown;
 }
 
 export function blockchainByName(name: string): Blockchain {

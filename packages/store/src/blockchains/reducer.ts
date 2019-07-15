@@ -4,7 +4,7 @@ export const INITIAL_STATE: IBlockchainsState = new Map();
 
 
 function onBlock(state: IBlockchainsState, payload: any): IBlockchainsState {
-  const current = state.get(payload.chain);
+  const current = state.get(payload.blockchain);
   const newState = current ?
     {
       ...current,
@@ -14,11 +14,11 @@ function onBlock(state: IBlockchainsState, payload: any): IBlockchainsState {
       height: payload.height,
     };
 
-  return state.set(payload.chain, newState);
+  return state.set(payload.blockchain, newState);
 }
 
 function onGasPrice(state: IBlockchainsState, payload: any): IBlockchainsState {
-  const current = state.get(payload.chain);
+  const current = state.get(payload.blockchain);
   const newState = current ?
     {
       ...current,
@@ -28,7 +28,7 @@ function onGasPrice(state: IBlockchainsState, payload: any): IBlockchainsState {
       gasPrice: payload.gasPrice,
     };
 
-  return state.set(payload.chain, newState);
+  return state.set(payload.blockchain, newState);
 }
 
 export function reducer(

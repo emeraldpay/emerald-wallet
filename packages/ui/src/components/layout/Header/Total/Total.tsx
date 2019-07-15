@@ -96,11 +96,11 @@ class TotalButton extends React.Component<Props, State> {
         >
           <MenuList>
             {byChain.map((c) => {
-              const ether = `${c.total.toEther(3)} ${c.chain.toUpperCase()}`;
+              const ether = `${c.total.toEther(3)} ${c.blockchain.toUpperCase()}`;
               const fiat = `${c.fiatAmount.toFixed(2)} ${fiatCurrency}`;
-              return (<ListItem key={c.chain}>
+              return (<ListItem key={c.blockchain}>
                 <ListItemAvatar>
-                  <CoinAvatar chain={c.chain}/>
+                  <CoinAvatar chain={c.blockchain}/>
                 </ListItemAvatar>
                 <ListItemText primary={ether} secondary={fiat} />
               </ListItem>);
