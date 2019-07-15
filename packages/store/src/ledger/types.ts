@@ -10,6 +10,7 @@ export enum ActionTypes {
   ADDR_SELECTED = 'LEDGER/ADDR_SELECTED',
   SET_HDOFFSET = 'LEDGER/SET_HDOFFSET',
   SET_BASEHD = 'LEDGER/SET_BASEHD',
+  LOAD_ADDR_INFO = 'LEDGER/LOAD_ADDR_INFO',
 }
 
 export interface Address {
@@ -61,6 +62,12 @@ export interface SetBaseHD {
   value: string;
 }
 
+export interface LoadAddrInfoAction {
+  type: ActionTypes.LOAD_ADDR_INFO
+  payload: any;
+}
+
+
 export type LedgerAction =
   | Address
   | AddressBalance
@@ -70,4 +77,5 @@ export type LedgerAction =
   | AddressSelected
   | SetListHDPath
   | Watch
-  | SetBaseHD;
+  | SetBaseHD
+  | LoadAddrInfoAction;

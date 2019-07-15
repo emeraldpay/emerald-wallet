@@ -134,24 +134,23 @@ function onceConnectionState(getState: GetState, value: boolean): Promise<any> {
   })
 }
 
-function loadInfo(chain: BlockchainCode, hdpath: string, addr: string): Dispatched<AddressBalance | AddressTxCount> {
-  return (dispatch, getState, api) => {
-    const ethApi = api.chain(chain).eth;
-    return ethApi.getBalance(addr)
-      .then((balance: BigNumber) => {
-        dispatch({ type: ActionTypes.ADDR_BALANCE, hdpath, value: new Wei(balance)});
-        return ethApi.getTransactionCount(addr)
-          .then((count) => dispatch({
-            type: ActionTypes.ADDR_TXCOUNT,
-            hdpath,
-            value: count
-          }))
-          .catch(screenActions.dispatchRpcError(dispatch));
-      })
-      .catch(screenActions.dispatchRpcError(dispatch));
-  };
-}
-
+// function loadInfo(chain: BlockchainCode, hdpath: string, addr: string): Dispatched<AddressBalance | AddressTxCount> {
+//   return (dispatch, getState, api) => {
+//     const ethApi = api.chain(chain).eth;
+//     return ethApi.getBalance(addr)
+//       .then((balance: BigNumber) => {
+//         dispatch({ type: ActionTypes.ADDR_BALANCE, hdpath, value: new Wei(balance)});
+//         return ethApi.getTransactionCount(addr)
+//           .then((count) => dispatch({
+//             type: ActionTypes.ADDR_TXCOUNT,
+//             hdpath,
+//             value: count
+//           }))
+//           .catch(screenActions.dispatchRpcError(dispatch));
+//       })
+//       .catch(screenActions.dispatchRpcError(dispatch));
+//   };
+// }
 
 export function getAddress(hdpath: string): Dispatched<Address> {
   return (dispatch) => {
