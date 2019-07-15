@@ -17,7 +17,7 @@ describe('addresses reducer', () => {
     let state: any = reducer(undefined, {
       type: ActionTypes.SET_LIST,
       payload: [{
-        accountId: 'address',
+        address: 'address',
         name: 'name1',
         description: 'desc1',
         hidden: true,
@@ -25,10 +25,25 @@ describe('addresses reducer', () => {
         blockchain: 'etc',
       }],
     });
+    console.log(state.toJS());
     // assert
     expect(state.get('addresses').last().get('hardware')).toEqual(false);
     expect(state.get('addresses').last().get('hidden')).toEqual(true);
     expect(state.get('addresses').last().get('blockchain')).toEqual('etc');
+
+    state = reducer(state, {
+      type: ActionTypes.SET_LIST,
+      payload: [{
+        address: 'address2',
+        name: 'name2',
+        description: 'desc2',
+        hidden: false,
+        hardware: false,
+        blockchain: 'eth',
+      }],
+    });
+
+    expect(state.get('addresses').size).toEqual(2);
   });
 
   it('ADD_ACCOUNT should add only non existent account', () => {

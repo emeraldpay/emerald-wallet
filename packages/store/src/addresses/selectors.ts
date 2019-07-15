@@ -13,6 +13,7 @@ export function find(state: any, address: string, chain: string): AddressMap | u
   if (!address) {
     return undefined;
   }
+  return all(state).find((a: any) => a.get('id') === address && a.get('blockchain') === chain);
 }
 
 export function findAllChains(state: any, address: string): AddressList {

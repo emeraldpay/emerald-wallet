@@ -1,6 +1,6 @@
 import {EthAddress} from '@emeraldplatform/core';
 import {Blockchain} from "../Blockchain";
-import {BlockchainParams} from "../types";
+import BlockchainParams from "../BlockchainParams";
 
 export default class Ethereum implements Blockchain {
   params: BlockchainParams;

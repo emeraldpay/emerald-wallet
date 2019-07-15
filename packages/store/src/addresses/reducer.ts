@@ -41,6 +41,7 @@ type AddressList =  List<Map<string, any>>
 
 function onSetList(state: any, action: SetListAction) {
   const existingAccounts: AddressList = state.get('addresses');
+
   const getExisting = (id: string, chain: BlockchainCode) => {
     const pos = existingAccounts.findKey((x: any) => x.get('id') === id && x.get('blockchain') === chain);
     if (pos >= 0) {
@@ -50,7 +51,7 @@ function onSetList(state: any, action: SetListAction) {
   };
   const addresses = action.payload;
 
-  const updatedList: AddressList = fromJS(addresses).map((acc: any) => fromJS({
+  const newList: AddressList = fromJS(addresses).map((acc: any) => fromJS({
     name: acc.get('name'),
     description: acc.get('description'),
     id: acc.get('address'),
@@ -60,17 +61,16 @@ function onSetList(state: any, action: SetListAction) {
     blockchain: acc.get('blockchain'),
   })).map((acc: any) => getExisting(acc.get('id'), acc.get('blockchain')).merge(acc));
 
-  let resultingList = null;
-
-  if (action.chain) {
-    const otherChains: Iterable<number, Map<string, any>> = existingAccounts.filter((acc) => acc!.get('blockchain') !== action.chain);
-    resultingList = updatedList.merge(otherChains.toList());
-  } else {
-    resultingList = updatedList;
-  }
+  let resultList = existingAccounts;
+  newList.forEach((acc: any) => {
+    const pos = resultList.find((x: any) => x.get('id') === acc.get('id') && x.get('blockchain') === acc.get('blockchain'));
+    if (!pos) {
+      resultList = resultList.push(acc);
+    }
+  });
 
   return state
-    .set('addresses', resultingList)
+    .set('addresses', resultList)
     .set('loading', false);
 }
 
