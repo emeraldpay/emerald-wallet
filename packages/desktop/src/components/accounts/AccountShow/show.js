@@ -192,7 +192,7 @@ export default connect(
     // reload account from store, because it can be passed with id only if it was just imported
     const account = addresses.selectors.find(state, accountPassed.get('id'), accountPassed.get('blockchain'));
     if (typeof account === 'undefined') {
-      log.error('Unknown account', accountPassed);
+      log.error('Unknown account', typeof accountPassed === 'undefined' || typeof accountPassed.toJS !== 'function' ? accountPassed : accountPassed.toJS());
       return {};
     }
     let transactions = Immutable.List();

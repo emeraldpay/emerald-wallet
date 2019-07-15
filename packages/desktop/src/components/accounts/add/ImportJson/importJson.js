@@ -35,7 +35,7 @@ class ImportJson extends React.Component {
     submitFile = () => {
       const { importFile, showAccount } = this.props;
       importFile(this.state.chain, this.state.file)
-        .then((result) => showAccount(Immutable.fromJS({id: result})))
+        .then((result) => showAccount(Immutable.fromJS({id: result, blockchain: this.state.chain.toLowerCase()})))
         .catch((err) => this.setState({ fileError: err.message }));
     };
 

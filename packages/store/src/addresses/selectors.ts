@@ -13,14 +13,18 @@ export function find(state: any, address: string, chain: string): AddressMap | u
   if (!address) {
     return undefined;
   }
-  return all(state).find((a: any) => a.get('id') === address && a.get('blockchain') === chain);
+  return all(state).find((a: any) =>
+    a.get('id').toLowerCase() === address.toLowerCase() && a.get('blockchain').toLowerCase() === chain.toLowerCase()
+  );
 }
 
 export function findAllChains(state: any, address: string): AddressList {
   if (!address) {
     return List.of();
   }
-  return all(state).filter((a: any) => a.get('id') === address.toLowerCase()).toList();
+  return all(state).filter((a: any) =>
+    a.get('id') === address.toLowerCase().toLowerCase()
+  ).toList();
 }
 
 export function balanceByChain(state: any, chain: BlockchainCode): Wei {
