@@ -34,14 +34,10 @@ const DEFAULT_GAS_LIMIT = '21000';
 class MultiCreateTransaction extends React.Component {
   static propTypes = {
     currency: PropTypes.string.isRequired,
-    balance: PropTypes.object.isRequired,
-    fiatBalance: PropTypes.string.isRequired,
     tokenSymbols: PropTypes.arrayOf(PropTypes.string).isRequired,
     addressBookAddresses: PropTypes.arrayOf(PropTypes.string).isRequired,
     ownAddresses: PropTypes.arrayOf(PropTypes.string).isRequired,
     accountAddress: PropTypes.string,
-    txFee: PropTypes.object.isRequired,
-    txFeeFiat: PropTypes.string.isRequired,
     data: PropTypes.object,
     mode: PropTypes.string,
     typedData: PropTypes.object,
@@ -63,6 +59,7 @@ class MultiCreateTransaction extends React.Component {
     this.state = {
       transaction: tx.dump(),
       page: props.mode ? PAGES.PASSWORD : PAGES.TX,
+      token: props.token,
     };
   }
 
@@ -150,7 +147,7 @@ class MultiCreateTransaction extends React.Component {
       amount: this.props.amount,
       data: this.props.data,
       typedData: this.props.typedData,
-      token: this.props.tokenSymbols[0],
+      token: this.props.token,
       transaction: MultiCreateTransaction.txFromProps(this.props).dump(),
     });
   }
@@ -314,7 +311,7 @@ export default connect(
     const { account } = ownProps;
     const chain = account.get('blockchain');
     const blockchain = blockchainByName(chain);
-    const txFeeSymbol = (blockchain && blockchain.params.coinTicker) || '';
+    const txFeeSymbol = blockchain.params.coinTicker;
     const allTokens = state.tokens.get('tokens').concat([fromJS({address: '', symbol: txFeeSymbol, name: txFeeSymbol})]).reverse();
     const gasPrice = blockchains.selectors.gasPrice(state, chain);
     const fiatRate = state.wallet.settings.get('localeRate');
@@ -323,8 +320,8 @@ export default connect(
       amount: ownProps.amount || Wei.ZERO,
       gasLimit: ownProps.gasLimit || DEFAULT_GAS_LIMIT,
       typedData: ownProps.typedData,
-      token: txFeeSymbol,
-      txFeeSymbol: txFeeSymbol,
+      token: blockchain.params.coinTicker,
+      txFeeSymbol,
       data: ownProps.data,
       selectedFromAccount: account.get('id'),
       getBalanceForAddress: (address, token) => {
@@ -338,13 +335,13 @@ export default connect(
       },
       getTxFeeFiatForGasLimit: (gasLimit) => txFeeFiat(gasPrice, gasLimit, fiatRate),
       currency: state.wallet.settings.get('localeCurrency'),
-      gasPrice: gasPrice,
+      gasPrice,
       tokenSymbols: allTokens.toJS().map((i) => i.symbol),
       addressBookAddresses: state.addressBook.get('addressBook').toJS().map((i) => i.address),
       ownAddresses: addresses.selectors.all(state).toJS().map((i) => i.id),
       useLedger: account.get('hardware', false),
       ledgerConnected: state.ledger.get('connected'),
-      allTokens: allTokens,
+      allTokens,
     };
   },
 

@@ -13,7 +13,7 @@ interface Props {
 
 interface State {
   errorText: string | null;
-  toStr: string | null;
+  toStr?: string;
 }
 
 class ToField extends React.Component<Props, State> {

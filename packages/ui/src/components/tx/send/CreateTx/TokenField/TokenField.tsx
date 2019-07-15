@@ -20,8 +20,8 @@ function getStyles(theme?: any) {
 
 interface Props {
   onChangeToken?: any;
-  selectedToken?: string;
-  tokenSymbols?: Array<string>;
+  selectedToken: string;
+  tokenSymbols: Array<string>;
   balance?: Wei;
   fiatBalance?: string;
   fiatCurrency?: string;
