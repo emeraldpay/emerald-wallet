@@ -1,4 +1,4 @@
-import {BlockchainParams} from "./types";
+import BlockchainParams from "./BlockchainParams";
 
 export interface Blockchain {
   params: BlockchainParams;

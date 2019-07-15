@@ -25,19 +25,15 @@ function txValueRenderer(showFiat) {
 
 export default connect(
   (state, ownProps) => {
-    const getAccount = (addr) => {
-      const acc = addresses.selectors.findByAddress(state, addr);
-      return acc || Map({});
-    };
-
     const tx = (ownProps.tx && ownProps.tx.toJS()) || {};
-    const toAccount = getAccount(tx.to);
-    const fromAccount = getAccount(tx.from);
+    const blockchain = tx.chain ? Blockchains[tx.chain] : blockchainById(tx.chainId);
+
+    const toAccount = addresses.selectors.find(state, tx.to, tx.chain) || Map({});
+    const fromAccount = addresses.selectors.find(state, tx.from, tx.chain) || Map({});
 
     const token = state.tokens.get('tokens').find((t) => t.get('address') === tx.to);
 
     const showFiat = !token;
-    const blockchain = tx.chain ? Blockchains[tx.chain] : blockchainById(tx.chainId);
 
     return {
       coinTicker: (blockchain && blockchain.params.coinTicker) || '-',

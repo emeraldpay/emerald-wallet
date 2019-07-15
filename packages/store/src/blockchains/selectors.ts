@@ -12,7 +12,7 @@ export function gasPrice(state: any, chain: string): Wei {
 export function getHeight(state: any, chain: string): number {
   const data = state[moduleName].get(chain.toLowerCase());
   if (!data) {
-    console.error('unknown chain', chain);
+    console.error('unknown chain: ' + chain, chain);
     return 0;
   }
   if (!data.height) {

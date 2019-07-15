@@ -56,7 +56,6 @@ export interface UpdateAddressAction {
 export interface SetListAction {
   type: ActionTypes.SET_LIST;
   payload: any;
-  chain?: BlockchainCode
 }
 
 export interface SetBalanceAction {

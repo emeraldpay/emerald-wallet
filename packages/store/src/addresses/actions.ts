@@ -2,21 +2,24 @@ import {ipcRenderer} from 'electron';
 import {blockchainByName, BlockchainCode, EthereumTx, IApi} from "@emeraldwallet/core";
 import {convert, EthAddress} from '@emeraldplatform/core';
 import {Wei} from "@emeraldplatform/eth";
-const EthAccount = require('@emeraldplatform/eth-account').EthAccount;
 import {
   ActionTypes,
   AddAccountAction,
-  Address, ImportWalletAction,
-  LoadingAction, PendingBalanceAction,
+  ImportWalletAction,
+  LoadingAction,
+  PendingBalanceAction,
   SetHDPathAction,
   SetListAction,
-  SetTxCountAction, UpdateAddressAction
+  SetTxCountAction,
+  UpdateAddressAction
 } from "./types";
 import {Dispatched, Transaction} from "../types";
 import * as selectors from "./selectors";
-import {dispatchRpcError, catchError, gotoScreen} from "../screen/actions";
+import {catchError, dispatchRpcError, gotoScreen} from "../screen/actions";
 import {Dispatch} from "react";
 import * as history from '../txhistory';
+
+const EthAccount = require('@emeraldplatform/eth-account').EthAccount;
 
 /**
  * Retrieves HD paths for hardware accounts
@@ -44,14 +47,16 @@ function fetchHdPaths(): Dispatched<SetHDPathAction> {
   };
 }
 
-export function loadAccountsList(): Dispatched<SetListAction | LoadingAction | SetHDPathAction> {
+export function loadAccountsList(chains: Array<BlockchainCode>): Dispatched<SetListAction | LoadingAction | SetHDPathAction> {
+  if (!chains) {
+    chains = [BlockchainCode.ETH, BlockchainCode.ETC, BlockchainCode.Morden, BlockchainCode.Kovan];
+  }
   return (dispatch, getState, api) => {
     dispatch({type: ActionTypes.LOADING});
     const showHidden = getState().wallet.settings.get('showHiddenAccounts', false);
 
     // TODO read from wallet settings
-    ['ETH', 'ETC'].forEach((chainName) => {
-      const chainCode = blockchainByName(chainName).params.coinTicker;
+    chains.forEach((chainCode) => {
       api.emerald.listAccounts(chainCode.toLowerCase(), showHidden)
         .then((res) => res.map((a) => ({...a, blockchain: chainCode})))
         .then((result) => {
@@ -66,11 +71,7 @@ export function loadAccountsList(): Dispatched<SetListAction | LoadingAction | S
             return;
           }
 
-          dispatch({
-            type: ActionTypes.SET_LIST,
-            payload: result,
-            chain: chainCode as BlockchainCode
-          });
+          dispatch(setListAction(result));
           dispatch(fetchHdPaths());
 
           const addedAddresses = result
@@ -80,6 +81,13 @@ export function loadAccountsList(): Dispatched<SetListAction | LoadingAction | S
         })
     });
   };
+}
+
+function setListAction(addresses: any): SetListAction {
+  return {
+    type: ActionTypes.SET_LIST,
+    payload: addresses,
+  }
 }
 
 export function loadAccountBalance(chain: BlockchainCode, address: string) {
