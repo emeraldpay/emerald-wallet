@@ -64,7 +64,7 @@ class MultiCreateTransaction extends React.Component {
   }
 
   get balance() {
-    return this.props.getBalanceForAddress(this.state.transaction.from, this.state.token);
+    return this.props.getBalanceForAddress(this.transaction.from, this.state.token);
   }
 
   get transaction() {
@@ -77,6 +77,11 @@ class MultiCreateTransaction extends React.Component {
 
   onChangeFrom(from) {
     const tx = this.transaction;
+    if (typeof from === 'undefined') {
+      tx.setFrom(null, Wei.ZERO);
+      this.transaction = tx;
+      return;
+    }
     const balance = this.props.getBalanceForAddress(from, this.state.token);
     tx.setFrom(from, balance);
     this.transaction = tx;
