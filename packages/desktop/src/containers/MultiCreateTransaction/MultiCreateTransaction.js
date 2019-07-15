@@ -338,7 +338,7 @@ export default connect(
       gasPrice,
       tokenSymbols: allTokens.toJS().map((i) => i.symbol),
       addressBookAddresses: state.addressBook.get('addressBook').toJS().map((i) => i.address),
-      ownAddresses: addresses.selectors.all(state).toJS().map((i) => i.id),
+      ownAddresses: addresses.selectors.allByBlockchain(state, blockchain.params.code).toJS().map((i) => i.id),
       useLedger: account.get('hardware', false),
       ledgerConnected: state.ledger.get('connected'),
       allTokens,
