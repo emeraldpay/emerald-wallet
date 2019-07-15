@@ -33,7 +33,7 @@ const AccountList = translate('accounts')((props) => {
     <div className={classes.container}>
       {accounts.map((account) => {
         const className = account.get('hidden') ? classes.hiddenListItem : classes.listItem;
-        return (<div className={className} key={account.get('id')}>
+        return (<div className={className} key={`${account.get('blockchain')}-${account.get('id')}`}>
           <Account
             showFiat={showFiat}
             account={account}
