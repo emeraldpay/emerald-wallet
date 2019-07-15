@@ -97,9 +97,9 @@ export default connect(
     chains: settings.selectors.currentChains(state),
   }),
   (dispatch, ownProps) => ({
-    importFile: (chain, file) => {
+    importFile: (blockchain, file) => {
       return new Promise((resolve, reject) => {
-        dispatch(addresses.actions.importWallet(chain, file, '', ''))
+        dispatch(addresses.actions.importWallet(blockchain, file, '', ''))
           .then(resolve)
           .catch(reject);
       });

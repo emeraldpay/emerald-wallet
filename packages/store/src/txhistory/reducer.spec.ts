@@ -25,7 +25,7 @@ describe('historyReducer', () => {
         nonce: '0x4',
         from: '0x0',
         to: '0x1',
-        chain: BlockchainCode.Morden,
+        blockchain: BlockchainCode.Morden,
         chainId: 62
       },
     });
@@ -59,7 +59,7 @@ describe('historyReducer', () => {
         nonce: '0x4',
         from: '0x0',
         to: '0x0',
-        chain: BlockchainCode.Morden
+        blockchain: BlockchainCode.Morden
       },
     });
     expect(state.get('trackedTransactions').size).toBe(1);
@@ -75,7 +75,7 @@ describe('historyReducer', () => {
           nonce: '0x4',
           from: '0x0',
           to: '0x0',
-          chain: BlockchainCode.Morden
+          blockchain: BlockchainCode.Morden
         },
         {
           value: toBigNumber('0x0'),
@@ -85,7 +85,7 @@ describe('historyReducer', () => {
           nonce: '0x4',
           from: '0x0',
           to: '0x0',
-          chain: BlockchainCode.Morden
+          blockchain: BlockchainCode.Morden
 
         },
       ],
@@ -120,7 +120,7 @@ describe('historyReducer', () => {
         value: toBigNumber('0x4'),
         from: '0x0',
         to: '0x0',
-        chain: BlockchainCode.Morden
+        blockchain: BlockchainCode.Morden
       },
     });
 
@@ -150,7 +150,7 @@ describe('historyReducer', () => {
       transactionIndex: '0x0',
       value: toBigNumber('0x12'),
       input: 'fckef',
-      chain: BlockchainCode.Morden
+      blockchain: BlockchainCode.Morden
     };
 
     // prepare state
@@ -175,7 +175,7 @@ describe('historyReducer', () => {
           from: '0x0',
           to: '0x0',
           nonce: 0,
-          chain: BlockchainCode.Morden
+          blockchain: BlockchainCode.Morden
         }],
     };
 

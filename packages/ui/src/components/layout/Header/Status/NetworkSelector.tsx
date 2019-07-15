@@ -5,22 +5,13 @@ import {CSSProperties, withStyles, withTheme} from '@material-ui/styles';
 import {
   Network as NetworkIcon, NetworkDisconnected as NetworkDisconnectedIcon, Block as BlockIcon
 } from '@emeraldplatform/ui-icons';
+import { blockchainByName } from '@emeraldwallet/core';
 import Button from '../../../common/Button';
 
 interface ItemProps {
   title: string;
   height?: any;
   textColor: any;
-}
-
-function getChainName(code) {
-  switch (code.toLowerCase()) {
-    case 'etc': return 'Ethereum Classic';
-    case 'eth': return 'Ethereum';
-    case 'kovan': return 'Kovan Testnet';
-    case 'morden': return 'Morden Testnet';
-    default: return code;
-  }
 }
 
 class ExtendedMenuItem extends React.Component<ItemProps> {
@@ -37,7 +28,7 @@ class ExtendedMenuItem extends React.Component<ItemProps> {
           marginLeft: '0px',
           lineHeight: '20px',
         }}>
-        <Grid item style={{color: textColor}}>{getChainName(title)}</Grid>
+        <Grid item style={{color: textColor}}>{blockchainByName(title).getTitle()}</Grid>
         <Grid item>
           <Grid container style={{color: textColor}}>
             <BlockIcon /><div>{height}</div>

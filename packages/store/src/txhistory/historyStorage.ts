@@ -58,7 +58,7 @@ function restoreTx(tx: any): Transaction {
     blockHash: tx.blockHash,
     blockNumber: tx.blockNumber,
     timestamp: tx.timestamp,
-    chain: tx.chain || ( blockchainById(tx.chainId) ? blockchainById(tx.chainId)!.params.code : null),
+    blockchain: tx.blockchain || ( blockchainById(tx.chainId) ? blockchainById(tx.chainId)!.params.code : null),
     chainId: tx.chainId,
   };
 }

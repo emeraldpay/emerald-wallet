@@ -1,6 +1,6 @@
 import {fromJS, Iterable, List, Map} from 'immutable';
 import { Wei } from '@emeraldplatform/eth';
-import {BlockchainCode} from "@emeraldwallet/core";
+import {BlockchainCode, blockchainByName} from "@emeraldwallet/core";
 import {
   IAddressesState,
   AddressesAction,
@@ -40,18 +40,18 @@ function onLoading(state: any, action: LoadingAction): any {
 type AddressList =  List<Map<string, any>>
 
 function onSetList(state: any, action: SetListAction) {
-  const existingAccounts: AddressList = state.get('addresses');
+  const existingAddresses: AddressList = state.get('addresses');
 
-  const getExisting = (id: string, chain: BlockchainCode) => {
-    const pos = existingAccounts.findKey((x: any) => x.get('id') === id && x.get('blockchain') === chain);
+  const getExisting = (id: string, blockchain: BlockchainCode) => {
+    const pos = existingAddresses.findKey((x: any) => x.get('id') === id && x.get('blockchain') === blockchain);
     if (pos >= 0) {
-      return existingAccounts.get(pos);
+      return existingAddresses.get(pos);
     }
     return initialAccount;
   };
-  const addresses = action.payload;
+  const addedAddressesPlain = action.payload;
 
-  const newList: AddressList = fromJS(addresses).map((acc: any) => fromJS({
+  const addedAddresses: AddressList = fromJS(addedAddressesPlain).map((acc: any) => fromJS({
     name: acc.get('name'),
     description: acc.get('description'),
     id: acc.get('address'),
@@ -59,12 +59,16 @@ function onSetList(state: any, action: SetListAction) {
     hdpath: acc.get('hdpath'),
     hidden: acc.get('hidden'),
     blockchain: acc.get('blockchain'),
-  })).map((acc: any) => getExisting(acc.get('id'), acc.get('blockchain')).merge(acc));
+  })).map((acc: any) =>
+    getExisting(acc.get('id'), acc.get('blockchain')).merge(acc)
+  );
 
-  let resultList = existingAccounts;
-  newList.forEach((acc: any) => {
-    const pos = resultList.find((x: any) => x.get('id') === acc.get('id') && x.get('blockchain') === acc.get('blockchain'));
-    if (!pos) {
+  let resultList = existingAddresses;
+  addedAddresses.forEach((acc: any) => {
+    const existingAddress = resultList.find((x: any) =>
+      x.get('id') === acc.get('id') && x.get('blockchain') === acc.get('blockchain')
+    );
+    if (!existingAddress) {
       resultList = resultList.push(acc);
     }
   });
@@ -74,9 +78,11 @@ function onSetList(state: any, action: SetListAction) {
     .set('loading', false);
 }
 
-function updateAccount(state: any, id: string, f: any) {
+function updateAccount(state: any, id: string, blockchain: BlockchainCode, f: any) {
   return state.update('addresses', (accounts: any) => {
-    const pos = accounts.findKey((acc: any) => acc.get('id') === id);
+    const pos = accounts.findKey((acc: any) =>
+      acc.get('id') === id && acc.get('blockchain').toLowerCase() == blockchain.toLowerCase()
+    );
     if (pos >= 0) {
       return accounts.update(pos, f);
     }
@@ -87,7 +93,8 @@ function updateAccount(state: any, id: string, f: any) {
 
 function onSetBalance(state: any, action: SetBalanceAction) {
   const { accountId, value } = action.payload;
-  return updateAccount(state, accountId, (acc: any) => {
+  const blockchain = blockchainByName(action.payload.blockchain).params.code;
+  return updateAccount(state, accountId,  blockchain,(acc: any) => {
     // Update balance only if it's changed
     const newBalance = new Wei(value);
     const currentBalance = acc.get('balance');
@@ -102,7 +109,8 @@ function onSetBalance(state: any, action: SetBalanceAction) {
 
 function onUpdateAccount(state: any, action: UpdateAddressAction) {
   const { address, name, description } = action.payload;
-  return updateAccount(state, address, (acc: any) => acc
+  const blockchain = blockchainByName(action.payload.blockchain).params.code;
+  return updateAccount(state, address, blockchain,(acc: any) => acc
     .set('name', name)
     .set('description', description));
 }
@@ -124,28 +132,31 @@ function onAddAccount(state: any, action: AddAccountAction) {
 
 function onSetHdPath(state: any, action: SetHDPathAction) {
   if (action.type === ActionTypes.SET_HD_PATH) {
-    return updateAccount(state, action.accountId, (acc: any) => acc.set('hdpath', action.hdpath));
+    const blockchain = blockchainByName(action.blockchain).params.code;
+    return updateAccount(state, action.accountId, blockchain,(acc: any) => acc.set('hdpath', action.hdpath));
   }
   return state;
 }
 
 function onSetTxCount(state: any, action: SetTxCountAction) {
   if (action.type === ActionTypes.SET_TXCOUNT) {
-    return updateAccount(state, action.accountId, (acc: any) => acc.set('txcount', action.value));
+    const blockchain = blockchainByName(action.blockchain).params.code;
+    return updateAccount(state, action.accountId, blockchain, (acc: any) => acc.set('txcount', action.value));
   }
   return state;
 }
 
 function onPendingBalance(state: any, action: PendingBalanceAction) {
   if (action.type === ActionTypes.PENDING_BALANCE) {
+    const blockchain = blockchainByName(action.blockchain).params.code;
     let bal;
     if (action.to) {
-      return updateAccount(state, action.to, (acc: any) => {
+      return updateAccount(state, action.to, blockchain,(acc: any) => {
         bal = acc.get('balance').plus(new Wei(action.value));
         return acc.set('balancePending', bal);
       });
     } if (action.from) {
-      return updateAccount(state, action.from, (acc: any) => {
+      return updateAccount(state, action.from, blockchain,(acc: any) => {
         bal = acc.get('balance').sub(new Wei(action.value));
         return acc.set('balancePending', bal);
       });

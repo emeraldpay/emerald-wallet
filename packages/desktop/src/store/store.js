@@ -29,7 +29,7 @@ import { createStore } from './createStore';
 import {
   onceServicesStart,
   onceAccountsLoaded,
-  onceHasAccountsWithBalances,
+  onceBalancesSet,
   onceModeSet,
 } from './triggers';
 
@@ -192,7 +192,7 @@ function getInitialScreen() {
       return store.dispatch(screen.actions.gotoScreen('landing'));
     }
 
-    return onceHasAccountsWithBalances(store).then(() => {
+    return onceBalancesSet(store).then(() => {
       return store.dispatch(screen.actions.gotoScreen('home'));
     });
   });

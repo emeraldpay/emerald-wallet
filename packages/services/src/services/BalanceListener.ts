@@ -22,17 +22,17 @@ export class BalanceListener implements IService {
 
   start() {
     const {webContents} = this;
-    this.ipcMain.on('subscribe-balance', (_: any, chain: string, addresses: any) => {
-      if (chain === 'mainnet') {
-        chain = 'etc';
+    this.ipcMain.on('subscribe-balance', (_: any, blockchain: string, addresses: any) => {
+      if (blockchain === 'mainnet') {
+        blockchain = 'etc';
       }
       const subscriber = this.apiAccess.newAddressListener();
       this.subscribers.push(subscriber);
-      subscriber.subscribe(chain, addresses, (event: any) => {
+      subscriber.subscribe(blockchain, addresses, (event: any) => {
         const action = {
           type: 'ACCOUNT/SET_BALANCE',
           payload: {
-            chain: chain,
+            blockchain: blockchain,
             accountId: event.address,
             value: event.balance,
           },

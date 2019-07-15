@@ -37,7 +37,7 @@ export function onceModeSet(store) {
   return new Promise((resolve, reject) => handleTrigger(check, resolve, store));
 }
 
-export function onceHasAccountsWithBalances(store) {
+export function onceBalancesSet(store) {
   const check = () => {
     const allAccounts = addresses.selectors.all(store.getState());
     const eachHasBalance = allAccounts.reduce((memo, account) => memo && account.get('balance') !== null, true);

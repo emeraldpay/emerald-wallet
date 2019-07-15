@@ -27,9 +27,9 @@ function loadPersistedTransactions(state: any, chainId: number) {
   return txs;
 }
 
-function updateAndTrack(dispatch: Dispatch<any>, getState: Function, api: IApi, txs: Transaction[], chain: BlockchainCode) {
-  const chainId = Blockchains[chain].params.chainId;
-  const pendingTxs = txs.filter((tx) => !tx.blockNumber).map((t) => ({...t, chainId, chain}));
+function updateAndTrack(dispatch: Dispatch<any>, getState: Function, api: IApi, txs: Transaction[], blockchain: BlockchainCode) {
+  const chainId = blockchainByName(blockchain).params.chainId;
+  const pendingTxs = txs.filter((tx) => !tx.blockNumber).map((t) => ({...t, chainId, blockchain}));
   if (pendingTxs.length !== 0) {
     dispatch({type: ActionTypes.TRACK_TXS, txs: pendingTxs});
   }
@@ -37,16 +37,16 @@ function updateAndTrack(dispatch: Dispatch<any>, getState: Function, api: IApi, 
   persistTransactions(getState(), chainId);
 
   txs.forEach((tx) => {
-    ipcRenderer.send('subscribe-tx', chain, tx.hash);
+    ipcRenderer.send('subscribe-tx', blockchain, tx.hash);
   });
 }
 
 
-export function trackTx(tx: Transaction, chain: BlockchainCode) {
-  return (dispatch: Dispatch<any>, getState: Function, api: IApi) => updateAndTrack(dispatch, getState, api, [tx], chain);
+export function trackTx(tx: Transaction, blockchain: BlockchainCode) {
+  return (dispatch: Dispatch<any>, getState: Function, api: IApi) => updateAndTrack(dispatch, getState, api, [tx], blockchain);
 }
-export function trackTxs(txs: Transaction[], chain: BlockchainCode) {
-  return (dispatch: Dispatch<any>, getState: Function, api: IApi) => updateAndTrack(dispatch, getState, api, txs, chain);
+export function trackTxs(txs: Transaction[], blockchain: BlockchainCode) {
+  return (dispatch: Dispatch<any>, getState: Function, api: IApi) => updateAndTrack(dispatch, getState, api, txs, blockchain);
 }
 
 export function init(chains: BlockchainCode[]): Dispatched<HistoryAction> {
@@ -55,9 +55,9 @@ export function init(chains: BlockchainCode[]): Dispatched<HistoryAction> {
 
     const storedTxs = [];
 
-    for (const chain of chains) {
+    for (const blockchain of chains) {
       // load history for chain
-      const chainId = blockchainByName(chain).params.chainId;
+      const chainId = blockchainByName(blockchain).params.chainId;
       storedTxs.push(...loadPersistedTransactions(getState(), chainId));
     }
 
@@ -69,7 +69,7 @@ export function init(chains: BlockchainCode[]): Dispatched<HistoryAction> {
 }
 
 const txUnconfirmed = (state: any, tx: any) => {
-  const chainCode = tx.get('chain').toLowerCase();
+  const chainCode = tx.get('blockchain').toLowerCase();
   const currentBlock = blockchains.selectors.getHeight(state, chainCode);
   const txBlockNumber = tx.get('blockNumber');
 
@@ -92,7 +92,7 @@ export function refreshTrackedTransactions(): Dispatched<HistoryAction> {
     allTrackedTxs(state)
       .filter((tx: any) => tx.get('totalRetries', 0) <= 10)
       .filter((tx: any) => txUnconfirmed(state, tx))
-      .forEach((tx: any) => ipcRenderer.send('subscribe-tx', tx.get('chain'), tx.get('hash')));
+      .forEach((tx: any) => ipcRenderer.send('subscribe-tx', tx.get('blockchain'), tx.get('hash')));
   };
 }
 

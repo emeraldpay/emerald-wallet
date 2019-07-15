@@ -15,7 +15,7 @@ describe('historyActions/refreshTrackedTransactions', () => {
       }),
       history: fromJS({
         chainId: 'morden',
-        trackedTransactions: [{numConfirmations: 0, hash: '0x123', chain: 'ETH'}],
+        trackedTransactions: [{numConfirmations: 0, hash: '0x123', blockchain: 'ETH'}],
       }),
     },
   });

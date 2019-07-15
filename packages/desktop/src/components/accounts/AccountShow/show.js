@@ -222,9 +222,11 @@ export default connect(
     },
     showReceiveDialog: () => {
       const {account} = ownProps;
+      const blockchain = blockchainByName(account.get('blockchain'));
       const address = {
         value: account.get('id'),
-        coinTicker: blockchainByName(account.get('blockchain')).params.coinTicker,
+        blockchain: blockchain.params.code,
+        coinTicker: blockchain.params.coinTicker,
       };
       dispatch(screen.actions.showDialog('receive', address));
     },

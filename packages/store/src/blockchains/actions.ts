@@ -6,7 +6,7 @@ import BigNumber from "bignumber.js";
 export function setGasPriceAction(blockchainCode: string, gasPrice: Wei) : GasPriceAction {
   return {
     type: ActionTypes.GAS_PRICE,
-    payload: { chain: blockchainCode, gasPrice: gasPrice }
+    payload: { blockchain: blockchainCode, gasPrice: gasPrice }
   }
 }
 
@@ -18,7 +18,7 @@ export function fetchGasPriceAction(blockchainCode: string): any {
   };
 }
 
-export function blockAction(payload: {hash: string, height: any, chain: any}): BlockAction {
+export function blockAction(payload: {hash: string, height: any, blockchain: any}): BlockAction {
   return {
     type: ActionTypes.BLOCK,
     payload,

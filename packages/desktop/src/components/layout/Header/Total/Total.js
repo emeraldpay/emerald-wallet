@@ -17,15 +17,15 @@ export default connect(
     // TODO use configured chains
     const chains = [BlockchainCode.ETC, BlockchainCode.ETH];
     let total = new BigNumber(0);
-    chains.forEach((chain) => {
-      const chainTotal: Wei = addresses.selectors.balanceByChain(state, chain);
-      const fiatRate = WalletSettings.selectors.fiatRate(chain, state);
+    chains.forEach((blockchain) => {
+      const chainTotal: Wei = addresses.selectors.balanceByChain(state, blockchain);
+      const fiatRate = WalletSettings.selectors.fiatRate(blockchain, state);
       let fiatAmount = new BigNumber(0);
       if (fiatRate && fiatCurrency) {
         fiatAmount = fiatAmount.plus(chainTotal.toExchange(fiatRate));
       }
       byChain.push({
-        chain,
+        blockchain,
         total: chainTotal,
         fiatRate,
         fiatAmount,

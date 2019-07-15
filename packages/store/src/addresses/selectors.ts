@@ -9,12 +9,12 @@ export function all(state: any): AddressList {
 
 export const isLoading = (state: any): boolean => state[moduleName].get('loading');
 
-export function find(state: any, address: string, chain: string): AddressMap | undefined {
+export function find(state: any, address: string, blockchain: string): AddressMap | undefined {
   if (!address) {
     return undefined;
   }
   return all(state).find((a: any) =>
-    a.get('id').toLowerCase() === address.toLowerCase() && a.get('blockchain').toLowerCase() === chain.toLowerCase()
+    a.get('id').toLowerCase() === address.toLowerCase() && a.get('blockchain').toLowerCase() === blockchain.toLowerCase()
   );
 }
 
@@ -27,9 +27,9 @@ export function findAllChains(state: any, address: string): AddressList {
   ).toList();
 }
 
-export function balanceByChain(state: any, chain: BlockchainCode): Wei {
+export function balanceByChain(state: any, blockchain: BlockchainCode): Wei {
   return all(state)
-    .filter((a: any) => a.get('blockchain').toLowerCase() === chain.toLowerCase())
+    .filter((a: any) => a.get('blockchain').toLowerCase() === blockchain.toLowerCase())
     .map((a: any) => (a.get('balance') ? a.get('balance') : Wei.ZERO))
     .reduce((r: Wei | undefined, val: Wei | undefined) => r!.plus(val!), Wei.ZERO)
       || Wei.ZERO
