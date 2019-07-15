@@ -1,5 +1,6 @@
-import { fromJS, Map } from 'immutable';
+import {fromJS, Iterable, List, Map} from 'immutable';
 import { Wei } from '@emeraldplatform/eth';
+import {BlockchainCode} from "@emeraldwallet/core";
 import {
   IAddressesState,
   AddressesAction,
@@ -8,7 +9,10 @@ import {
   SetListAction,
   SetBalanceAction,
   UpdateAddressAction,
-  AddAccountAction, SetHDPath,
+  AddAccountAction,
+  SetHDPathAction,
+  SetTxCountAction,
+  PendingBalanceAction,
 } from "./types";
 
 export const INITIAL_STATE = fromJS({
@@ -33,11 +37,12 @@ function onLoading(state: any, action: LoadingAction): any {
   return state.set('loading', true);
 }
 
+type AddressList =  List<Map<string, any>>
 
 function onSetList(state: any, action: SetListAction) {
-  const existingAccounts = state.get('addresses');
-  const getExisting = (id: string) => {
-    const pos = existingAccounts.findKey((x: any) => x.get('id') === id);
+  const existingAccounts: AddressList = state.get('addresses');
+  const getExisting = (id: string, chain: BlockchainCode) => {
+    const pos = existingAccounts.findKey((x: any) => x.get('id') === id && x.get('blockchain') === chain);
     if (pos >= 0) {
       return existingAccounts.get(pos);
     }
@@ -45,7 +50,7 @@ function onSetList(state: any, action: SetListAction) {
   };
   const addresses = action.payload;
 
-  const updatedList = fromJS(addresses).map((acc: any) => fromJS({
+  const updatedList: AddressList = fromJS(addresses).map((acc: any) => fromJS({
     name: acc.get('name'),
     description: acc.get('description'),
     id: acc.get('address'),
@@ -53,9 +58,19 @@ function onSetList(state: any, action: SetListAction) {
     hdpath: acc.get('hdpath'),
     hidden: acc.get('hidden'),
     blockchain: acc.get('blockchain'),
-  })).map((acc: any) => getExisting(acc.get('id')).merge(acc));
+  })).map((acc: any) => getExisting(acc.get('id'), acc.get('blockchain')).merge(acc));
+
+  let resultingList = null;
+
+  if (action.chain) {
+    const otherChains: Iterable<number, Map<string, any>> = existingAccounts.filter((acc) => acc!.get('blockchain') !== action.chain);
+    resultingList = updatedList.merge(otherChains.toList());
+  } else {
+    resultingList = updatedList;
+  }
+
   return state
-    .set('addresses', updatedList)
+    .set('addresses', resultingList)
     .set('loading', false);
 }
 
@@ -107,9 +122,34 @@ function onAddAccount(state: any, action: AddAccountAction) {
   });
 }
 
-function onSetHdPath(state: any, action: SetHDPath) {
+function onSetHdPath(state: any, action: SetHDPathAction) {
   if (action.type === ActionTypes.SET_HD_PATH) {
     return updateAccount(state, action.accountId, (acc: any) => acc.set('hdpath', action.hdpath));
+  }
+  return state;
+}
+
+function onSetTxCount(state: any, action: SetTxCountAction) {
+  if (action.type === ActionTypes.SET_TXCOUNT) {
+    return updateAccount(state, action.accountId, (acc: any) => acc.set('txcount', action.value));
+  }
+  return state;
+}
+
+function onPendingBalance(state: any, action: PendingBalanceAction) {
+  if (action.type === ActionTypes.PENDING_BALANCE) {
+    let bal;
+    if (action.to) {
+      return updateAccount(state, action.to, (acc: any) => {
+        bal = acc.get('balance').plus(new Wei(action.value));
+        return acc.set('balancePending', bal);
+      });
+    } if (action.from) {
+      return updateAccount(state, action.from, (acc: any) => {
+        bal = acc.get('balance').sub(new Wei(action.value));
+        return acc.set('balancePending', bal);
+      });
+    }
   }
   return state;
 }
@@ -131,6 +171,10 @@ export function reducer(
       return onAddAccount(state, action);
     case ActionTypes.SET_HD_PATH:
       return onSetHdPath(state, action);
+    case ActionTypes.SET_TXCOUNT:
+      return onSetTxCount(state, action);
+    case ActionTypes.PENDING_BALANCE:
+      return onPendingBalance(state, action);
     default:
       return state;
   }

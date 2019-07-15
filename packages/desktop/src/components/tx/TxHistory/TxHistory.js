@@ -3,8 +3,8 @@ import React from 'react';
 import {withStyles} from '@material-ui/styles';
 import {connect} from 'react-redux';
 import Header from '@emeraldwallet/ui/lib/components/tx/TxHistory/Header';
+import {txhistory, addresses} from '@emeraldwallet/store';
 import {List} from 'immutable';
-import {searchTransactions, filterTransactions} from '../../../store/wallet/history/selectors';
 import TxList from './List';
 
 const styles2 = (theme) => ({
@@ -41,14 +41,14 @@ class TransactionsHistory extends React.Component<Props, State> {
     if (nextProps.transactions) {
       this.setState({
         ...this.state,
-        displayedTransactions: filterTransactions(this.state.txFilter, this.props.accountId, nextProps.transactions, this.props.accounts),
+        displayedTransactions: txhistory.selectors.filterTransactions(this.state.txFilter, this.props.accountId, nextProps.transactions, this.props.accounts),
       });
     }
   }
 
   onSearchChange = (e) => {
     return this.setState({
-      displayedTransactions: searchTransactions(e.target.value, this.props.transactions),
+      displayedTransactions: txhistory.selectors.searchTransactions(e.target.value, this.props.transactions),
     });
   };
 
@@ -56,7 +56,7 @@ class TransactionsHistory extends React.Component<Props, State> {
     const {accountId, transactions, accounts} = this.props;
     this.setState({
       txFilter: value,
-      displayedTransactions: filterTransactions(value, accountId, transactions, accounts),
+      displayedTransactions: txhistory.selectors.filterTransactions(value, accountId, transactions, accounts),
     });
   };
 
@@ -79,11 +79,10 @@ const StyledTransactionsHistory = withStyles(styles2)(TransactionsHistory);
 
 export default connect(
   (state, ownProps) => {
-    const transactionsAccounts = state.wallet.history.get('trackedTransactions', new List());
-    const txs = ownProps.transactions || transactionsAccounts;
+    const txs = ownProps.transactions || txhistory.selectors.allTrackedTxs(state);
     return {
       transactions: txs.sortBy((tx) => tx.get('timestamp')).reverse(),
-      accounts: state.accounts.get('accounts', new List()),
+      accounts: addresses.selectors.all(state),
       accountId: ownProps.accountId,
     };
   },

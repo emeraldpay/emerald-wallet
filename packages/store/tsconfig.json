@@ -6,7 +6,13 @@
     "moduleResolution": "node",
     "strict": true,
     "rootDirs": ["src"],
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "lib": [
+      "dom",
+      "es5",
+      "scripthost",
+      "es2015.promise"
+    ]
   },
   "include": [
     "src/**/*.ts"

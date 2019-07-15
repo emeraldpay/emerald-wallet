@@ -1,7 +1,16 @@
 import { fromJS, Map } from 'immutable';
 import { convert } from '@emeraldplatform/core';
 
-import ActionTypes from './actionTypes';
+import {
+  ActionTypes,
+  HistoryAction,
+  LoadStoredTxsAction,
+  PendingTxAction, TrackedTxNotFoundAction,
+  TrackTxAction,
+  TrackTxsAction,
+  UpdateTxsAction,
+} from './types';
+import {Transaction} from "../types";
 
 const { toNumber, toBigNumber } = convert;
 
@@ -11,11 +20,9 @@ const initial = fromJS({
 });
 
 const initialTx = Map({
-  hash: null,
   blockNumber: null,
   timestamp: null,
   from: null,
-  to: null,
   value: null,
   data: null,
   gas: null,
@@ -23,15 +30,16 @@ const initialTx = Map({
   nonce: null,
 });
 
-function isTracked(state, tx) {
-  return state.get('trackedTransactions').some((x) => tx.get('hash') === x.get('hash'));
+function isTracked(state: any, tx: any) {
+  return state.get('trackedTransactions').some((x: any) => tx.get('hash') === x.get('hash'));
 }
 
-function createTx(data) {
-  let tx = initialTx.merge({
+function createTx(data: Transaction) {
+  const values: {[key: string]: any} = {
     hash: data.hash,
     to: data.to,
-  });
+  };
+  let tx: Map<string, any> = initialTx.merge(values);
   if (data.from !== '0x0000000000000000000000000000000000000000') {
     tx = tx.set('from', data.from);
   }
@@ -64,10 +72,10 @@ function createTx(data) {
   return tx;
 }
 
-function onTrackTxs(state, action) {
+function onTrackTxs(state: any, action: TrackTxsAction) {
   if (action.type === ActionTypes.TRACK_TXS) {
     const transactions = action.txs.map(createTx);
-    return state.update('trackedTransactions', (trackedTransactions) => {
+    return state.update('trackedTransactions', (trackedTransactions: any) => {
       transactions.forEach((tx) => {
         if (!isTracked(state, tx)) {
           trackedTransactions = trackedTransactions.push(tx);
@@ -80,23 +88,23 @@ function onTrackTxs(state, action) {
   return state;
 }
 
-function onTrackTx(state, action) {
+function onTrackTx(state: any, action: TrackTxAction): any {
   if (action.type === ActionTypes.TRACK_TX) {
     const data = createTx(action.tx);
     if (isTracked(state, data)) {
       return state;
     }
-    return state.update('trackedTransactions', (txs) => txs.push(data));
+    return state.update('trackedTransactions', (txs: any) => txs.push(data));
   }
   return state;
 }
 
-function onPendingTx(state, action) {
+function onPendingTx(state: any, action: PendingTxAction): any {
   if (action.type === ActionTypes.PENDING_TX) {
     let txes = state.get('trackedTransactions');
     for (const tx of action.txList) {
       // In case of dupe pending txs.
-      const pos = txes.findKey((Tx) => Tx.get('hash') === tx.hash);
+      const pos = txes.findKey((Tx: any) => Tx.get('hash') === tx.hash);
       if (pos >= 0) {
         txes = txes.set(pos, createTx(tx));
       } else {
@@ -108,7 +116,7 @@ function onPendingTx(state, action) {
   return state;
 }
 
-function onLoadStoredTransactions(state, action) {
+function onLoadStoredTransactions(state: any, action: LoadStoredTxsAction) {
   if (action.type === ActionTypes.LOAD_STORED_TXS) {
     let txs = fromJS([]);
     for (const tx of action.transactions) {
@@ -122,13 +130,13 @@ function onLoadStoredTransactions(state, action) {
 /**
  * When full node can't find our tx
  */
-function onTrackedTxNotFound(state, action) {
+function onTrackedTxNotFound(state: any, action: TrackedTxNotFoundAction) {
   if (action.type === ActionTypes.TRACKED_TX_NOTFOUND) {
-    return state.update('trackedTransactions', (txes) => {
-      const pos = txes.findKey((tx) => tx.get('hash') === action.hash);
+    return state.update('trackedTransactions', (txes: any) => {
+      const pos = txes.findKey((tx: any) => tx.get('hash') === action.hash);
       if (pos >= 0) {
         // increase total retries counter
-        txes = txes.update(pos, (tx) => tx.set('totalRetries', (tx.get('totalRetries') || 0) + 1));
+        txes = txes.update(pos, (tx: any) => tx.set('totalRetries', (tx.get('totalRetries') || 0) + 1));
       }
       return txes;
     });
@@ -136,13 +144,13 @@ function onTrackedTxNotFound(state, action) {
   return state;
 }
 
-function onUpdateTxs(state, action) {
+function onUpdateTxs(state: any, action: UpdateTxsAction) {
   if (action.type === ActionTypes.UPDATE_TXS) {
-    return state.update('trackedTransactions', (txs) => {
+    return state.update('trackedTransactions', (txs: any) => {
       action.payload.forEach((t) => {
-        const pos = txs.findKey((tx) => tx.get('hash') === t.hash);
+        const pos = txs.findKey((tx: any) => tx.get('hash') === t.hash);
         if (pos >= 0) {
-          txs = txs.update(pos, (tx) => tx.mergeWith((o, n) => n || o, createTx(t)));
+          txs = txs.update(pos, (tx: any) => tx.mergeWith((o: any, n: any) => n || o, createTx(t)));
         }
       });
       return txs;
@@ -151,13 +159,29 @@ function onUpdateTxs(state, action) {
   return state;
 }
 
-export default function historyReducers(state, action) {
-  state = state || initial;
-  state = onTrackTx(state, action);
-  state = onTrackTxs(state, action);
-  state = onLoadStoredTransactions(state, action);
-  state = onTrackedTxNotFound(state, action);
-  state = onUpdateTxs(state, action);
-  state = onPendingTx(state, action);
+export function reducer(
+  state: any,
+  action: HistoryAction | null
+): any {
+  if (!state) {
+    state = initial;
+  }
+  if (!action) {
+    return state;
+  }
+  switch(action.type) {
+    case ActionTypes.TRACK_TX:
+      return onTrackTx(state, action);
+    case ActionTypes.TRACK_TXS:
+      return onTrackTxs(state, action);
+    case ActionTypes.LOAD_STORED_TXS:
+      return onLoadStoredTransactions(state, action);
+    case ActionTypes.TRACKED_TX_NOTFOUND:
+      return onTrackedTxNotFound(state, action);
+    case ActionTypes.UPDATE_TXS:
+      return onUpdateTxs(state, action);
+    case ActionTypes.PENDING_TX:
+      return onPendingTx(state, action);
+  }
   return state;
 }

@@ -6,7 +6,7 @@ export function all(state: any) {
 }
 
 export function gasPrice(state: any, chain: string): Wei {
-  return state[moduleName].get(chain).gasPrice;
+  return state[moduleName].get(chain.toLowerCase()).gasPrice;
 }
 
 export function getHeight(state: any, chain: string): number {

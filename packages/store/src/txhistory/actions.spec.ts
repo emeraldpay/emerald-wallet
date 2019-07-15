@@ -1,7 +1,6 @@
 import { fromJS } from 'immutable';
 import { refreshTrackedTransactions } from './actions';
-import { ipcRenderer } from '../../../__mocks__/electron-mock';
-
+import { ipcRenderer } from 'electron';
 
 describe('historyActions/refreshTrackedTransactions', () => {
   const getState = () => ({
@@ -25,7 +24,7 @@ describe('historyActions/refreshTrackedTransactions', () => {
     const dispatch = jest.fn();
     const hash = '0x123';
 
-    refreshTrackedTransactions(hash)(dispatch, getState);
+    refreshTrackedTransactions()(dispatch, getState, undefined);
 
     expect(ipcRenderer.send).toHaveBeenCalledWith('subscribe-tx', 'ETH', '0x123');
   });

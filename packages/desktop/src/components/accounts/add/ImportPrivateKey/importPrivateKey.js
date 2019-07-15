@@ -5,8 +5,7 @@ import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { ImportPrivateKey } from '@emeraldwallet/ui';
 import { utils } from '@emeraldwallet/core';
-import accounts from 'store/vault/accounts';
-import { screen } from '@emeraldwallet/store';
+import { screen, addresses } from '@emeraldwallet/store';
 import settings from '../../../../store/wallet/settings';
 
 export default connect(
@@ -20,7 +19,7 @@ export default connect(
         ipcRenderer.send('get-private-key-to-keyfile', {privateKey, password: data.password});
         ipcRenderer.once('recieve-private-key-to-keyfile', (event, keyFile) => {
           // import key file
-          return dispatch(accounts.actions.importWallet(data.chain, new Blob([keyFile]), '', ''))
+          return dispatch(addresses.actions.importWallet(data.chain, new Blob([keyFile]), '', ''))
             .then((result) => {
               if (result.error) {
                 dispatch(screen.actions.showError(new Error(result.error.toString())));

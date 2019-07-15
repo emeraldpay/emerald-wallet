@@ -4,11 +4,10 @@ import withTheme from '@material-ui/core/styles/withTheme';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import Avatar from '@material-ui/core/Avatar';
 import PropTypes from 'prop-types';
 import { Account as AddressAvatar, ButtonGroup } from '@emeraldplatform/ui';
 import { Button, CoinAvatar } from '@emeraldwallet/ui';
-import { Blockchains } from '@emeraldwallet/core';
+import { blockchainByName } from '@emeraldwallet/core';
 import SecondaryMenu from '../SecondaryMenu';
 import AccountBalance from '../Balance';
 
@@ -63,7 +62,7 @@ export class Account extends React.Component {
         color: theme.palette.text.secondary,
       };
 
-      const { coinTicker } = Blockchains[account.get('blockchain')].params;
+      const { coinTicker } = blockchainByName(account.get('blockchain')).params;
 
       const balance = account.get('balance');
       const accId = account.get('id');

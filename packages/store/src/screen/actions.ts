@@ -2,7 +2,7 @@ import {ActionTypes, DialogAction, OpenAction} from './types';
 import * as addresses from '../addresses'
 import {Dispatched} from "../types";
 
-export function gotoScreen(screen: any, item = null): OpenAction {
+export function gotoScreen(screen: any, item: any = null): OpenAction {
   return {
     type: ActionTypes.OPEN,
     screen,

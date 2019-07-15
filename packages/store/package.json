@@ -23,18 +23,29 @@
   },
   "jest": {
     "preset": "ts-jest",
-    "testEnvironment": "node",
+    "testEnvironment": "jsdom",
     "testPathIgnorePatterns": [
       "<rootDir>/lib/",
       "<rootDir>/node_modules/"
     ],
     "setupFiles": [
-      "<rootDir>/jest.setup.ts"
+      "<rootDir>/jest.setup.ts",
+      "<rootDir>/src/__mocks__/localStorageMock.ts"
     ],
+    "moduleNameMapper": {
+      "electron": "<rootDir>/src/__mocks__/electronMock.ts"
+    },
     "coverageDirectory": "./coverage/",
     "collectCoverageFrom": [
       "src/**/*.ts"
-    ]
+    ],
+    "globals": {
+      "ts-jest": {
+        "diagnostics": {
+          "warnOnly": true
+        }
+      }
+    }
   },
   "dependencies": {
     "@emeraldplatform/eth": "0.5.1",

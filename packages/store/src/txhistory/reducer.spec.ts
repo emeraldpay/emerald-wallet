@@ -1,33 +1,39 @@
-import { fromJS, List } from 'immutable';
+import {fromJS, List} from 'immutable';
 import BigNumber from 'bignumber.js';
-import { convert } from '@emeraldplatform/core';
+import {convert} from '@emeraldplatform/core';
 
-import historyReducers from './reducers';
-import ActionTypes from './actionTypes';
-import { loadTransactions, storeTransactions } from './historyStorage';
+import {reducer as historyReducers} from './reducer';
+import {ActionTypes, TrackTxAction, UpdateTxsAction} from './types';
+import {loadTransactions, storeTransactions} from './historyStorage';
+import {BlockchainCode} from "@emeraldwallet/core";
+import {Transaction} from "../types";
 
 const { toNumber, toBigNumber } = convert;
 
 describe('historyReducer', () => {
   it('should store and load txs correctly', () => {
     // prepare
-    let state = historyReducers(null, {});
+    let state = historyReducers(null, null);
     expect(state.get('trackedTransactions')).toEqual(List());
     state = historyReducers(state, {
       type: ActionTypes.TRACK_TX,
       tx: {
         hash: 'hash1',
-        value: '0x1',
+        value: toBigNumber('0x1'),
         gas: '0x47e7c4',
         gasPrice: '0x174876e800',
         nonce: '0x4',
+        from: '0x0',
+        to: '0x1',
+        chain: BlockchainCode.Morden,
+        chainId: 62
       },
     });
     expect(state.get('trackedTransactions').size).toBe(1);
 
 
     storeTransactions('k', state.get('trackedTransactions').toJS());
-    const loaded = loadTransactions('k');
+    const loaded = loadTransactions('k', 62);
 
     // load restored txs to state
     state = historyReducers(state, {
@@ -41,15 +47,19 @@ describe('historyReducer', () => {
   });
 
   it('should add pending TX or update existent', () => {
-    let state = historyReducers(null, {});
+    let state = historyReducers(null, null);
     expect(state.get('trackedTransactions')).toEqual(List());
     state = historyReducers(state, {
       type: ActionTypes.TRACK_TX,
       tx: {
+        value: toBigNumber('0x0'),
         hash: 'hash1',
         gas: '0x47e7c4',
         gasPrice: '0x174876e800',
         nonce: '0x4',
+        from: '0x0',
+        to: '0x0',
+        chain: BlockchainCode.Morden
       },
     });
     expect(state.get('trackedTransactions').size).toBe(1);
@@ -58,16 +68,25 @@ describe('historyReducer', () => {
       type: ActionTypes.PENDING_TX,
       txList: [
         {
+          value: toBigNumber('0x0'),
           hash: 'hash1',
           gas: '0x47e7c4',
           gasPrice: '0x174876e800',
           nonce: '0x4',
+          from: '0x0',
+          to: '0x0',
+          chain: BlockchainCode.Morden
         },
         {
+          value: toBigNumber('0x0'),
           hash: 'hash2',
           gas: '0x47e7c4',
           gasPrice: '0x174876e800',
           nonce: '0x4',
+          from: '0x0',
+          to: '0x0',
+          chain: BlockchainCode.Morden
+
         },
       ],
     });
@@ -75,7 +94,7 @@ describe('historyReducer', () => {
   });
 
   it('should update TXS data with tx.input', () => {
-    const tx = {
+    const tx: Transaction = {
       blockHash: '0xc87e5117923e756e5d262ef230374b73ebe47f232b0f029fa65cf6614d959100',
       blockNumber: '0x17',
       from: '0x0178537bb1d7bb412101cdb7389c28fd4cf5ac0a',
@@ -84,6 +103,7 @@ describe('historyReducer', () => {
       hash: '0x42a46d800b7c5b230ccf5aaa98d1726cad3d621eda0a67fa364322ad3b1d9adc',
       nonce: '0x4',
       to: '0x0d5fa90814e60f2a6cb7bad13d150ba0640d08b9',
+      // @ts-ignore
       transactionIndex: '0x0',
       value: toBigNumber('0x12'),
       input: 'fckef',
@@ -98,11 +118,14 @@ describe('historyReducer', () => {
         gasPrice: '0x174876e800',
         nonce: '0x4',
         value: toBigNumber('0x4'),
+        from: '0x0',
+        to: '0x0',
+        chain: BlockchainCode.Morden
       },
     });
 
     // action
-    const action = {
+    const action: UpdateTxsAction = {
       type: ActionTypes.UPDATE_TXS,
       payload: [tx],
     };
@@ -127,31 +150,45 @@ describe('historyReducer', () => {
       transactionIndex: '0x0',
       value: toBigNumber('0x12'),
       input: 'fckef',
+      chain: BlockchainCode.Morden
     };
 
     // prepare state
     let state = historyReducers(fromJS({
-      trackedTransactions: new List(),
+      trackedTransactions: List.of(),
     }), {
       type: ActionTypes.TRACK_TX,
-      tx,
+      tx
     });
 
+    const now = new Date();
+
     // action
-    const action = {
+    const action: UpdateTxsAction = {
       type: ActionTypes.UPDATE_TXS,
-      payload: [{hash: tx.hash, timestamp: 123456789}],
+      payload: [
+        {hash: tx.hash,
+          timestamp: now,
+          value: toBigNumber('0x12'),
+          gas: '0x0',
+          gasPrice: '0x0',
+          from: '0x0',
+          to: '0x0',
+          nonce: 0,
+          chain: BlockchainCode.Morden
+        }],
     };
 
     state = historyReducers(state, action);
     const trackedTxs = state.get('trackedTransactions').last().toJS();
-    expect(trackedTxs.timestamp).toEqual(123456789);
+    expect(trackedTxs.timestamp).toEqual(now);
     expect(trackedTxs.value.comparedTo(tx.value)).toEqual(0);
   });
 
   it('should handle UPDATE_TXS', () => {
     // prepare
-    const txs = [{
+
+    const txs: Transaction[] = [{
       blockHash: '0xc87e5117923e756e5d262ef230374b73ebe47f232b0f029fa65cf6614d959100',
       blockNumber: '0x17',
       from: '0x0178537bb1d7bb412101cdb7389c28fd4cf5ac0a',
@@ -160,23 +197,25 @@ describe('historyReducer', () => {
       hash: '0x42a46d800b7c5b230ccf5aaa98d1726cad3d621eda0a67fa364322ad3b1d9adc',
       nonce: '0x4',
       to: '0x0d5fa90814e60f2a6cb7bad13d150ba0640d08b9',
+      // @ts-ignore
       transactionIndex: '0x0',
-      value: '0x12',
+      value: toBigNumber('0x12'),
       input: 'fckef',
     },
-    {
-      blockHash: '0xc87e5117923e756e5d262ef230374b73ebe47f232b0f029fa65cf6614d959100',
-      blockNumber: '0x17',
-      from: '0x0178537bb1d7bb412101cdb7389c28fd4cf5ac0a',
-      gas: '0x47e7c4',
-      gasPrice: '0x174876e800',
-      hash: '0x42a46d800b7c5b230ccf5aaa98d1726cad3d621eda0a67fa364322ad3b1d9add',
-      nonce: '0x4',
-      to: '0x0d5fa90814e60f2a6cb7bad13d150ba0640d08b9',
-      transactionIndex: '0x0',
-      value: '0x12',
-      input: 'fckef',
-    }];
+      {
+        blockHash: '0xc87e5117923e756e5d262ef230374b73ebe47f232b0f029fa65cf6614d959100',
+        blockNumber: '0x17',
+        from: '0x0178537bb1d7bb412101cdb7389c28fd4cf5ac0a',
+        gas: '0x47e7c4',
+        gasPrice: '0x174876e800',
+        hash: '0x42a46d800b7c5b230ccf5aaa98d1726cad3d621eda0a67fa364322ad3b1d9add',
+        nonce: '0x4',
+        to: '0x0d5fa90814e60f2a6cb7bad13d150ba0640d08b9',
+        // @ts-ignore
+        transactionIndex: '0x0',
+        value: toBigNumber('0x12'),
+        input: 'fckef',
+      }];
 
     let state = historyReducers(null, {
       type: ActionTypes.TRACK_TX,

@@ -1,6 +1,7 @@
 import {fromJS} from "immutable";
 import {Wei} from "@emeraldplatform/eth";
-import { selectTotalBalance } from './selectors';
+import {balanceByChain} from './selectors';
+import {BlockchainCode} from "@emeraldwallet/core";
 
 describe('selectTotalBalance', () => {
   it('returns zero if no accounts', () => {
@@ -10,7 +11,7 @@ describe('selectTotalBalance', () => {
       }),
     };
 
-    const total = selectTotalBalance('eth', state);
+    const total = balanceByChain(state, BlockchainCode.ETH);
     expect(total).toEqual(Wei.ZERO);
   });
 
@@ -24,7 +25,7 @@ describe('selectTotalBalance', () => {
       }),
     };
 
-    const total = selectTotalBalance('etc', state);
+    const total = balanceByChain(state, BlockchainCode.ETC);
     expect(total.equals(new Wei(1234))).toBeTruthy();
   });
 
@@ -42,7 +43,7 @@ describe('selectTotalBalance', () => {
       }),
     };
 
-    const total = selectTotalBalance('eth', state);
+    const total = balanceByChain(state, BlockchainCode.ETH);
     expect(total.equals(new Wei(1245))).toBeTruthy();
   });
 
@@ -64,10 +65,10 @@ describe('selectTotalBalance', () => {
       }),
     };
 
-    const total = selectTotalBalance('eth', state);
+    const total = balanceByChain(state, BlockchainCode.ETH);
     expect(total.equals(new Wei(1245))).toBeTruthy();
 
-    const totalEtc = selectTotalBalance('etc', state);
+    const totalEtc = balanceByChain(state, BlockchainCode.ETC);
     expect(totalEtc.equals(new Wei(51))).toBeTruthy();
   });
 });

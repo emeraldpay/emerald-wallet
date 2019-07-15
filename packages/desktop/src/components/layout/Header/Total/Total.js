@@ -14,10 +14,11 @@ export default connect(
     // Sum of balances of all known accounts.
     const fiatCurrency = WalletSettings.selectors.fiatCurrency(state);
     const byChain = [];
+    // TODO use configured chains
     const chains = [BlockchainCode.ETC, BlockchainCode.ETH];
     let total = new BigNumber(0);
     chains.forEach((chain) => {
-      const chainTotal: Wei = addresses.selectors.selectTotalBalance(chain, state);
+      const chainTotal: Wei = addresses.selectors.balanceByChain(state, chain);
       const fiatRate = WalletSettings.selectors.fiatRate(chain, state);
       let fiatAmount = new BigNumber(0);
       if (fiatRate && fiatCurrency) {

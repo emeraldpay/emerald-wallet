@@ -2,9 +2,8 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { translate } from 'react-i18next';
 import { Settings } from '@emeraldwallet/ui';
-import { screen } from '../../store';
+import { screen, addresses } from '@emeraldwallet/store';
 import settings from '../../store/wallet/settings';
-import accounts from '../../store/vault/accounts';
 import i18n from '../../i18n/i18n';
 
 const TranslatedSettings = translate('settings')(Settings);
@@ -32,7 +31,7 @@ export default connect(
       };
       i18n.changeLanguage(data.language);
       dispatch(settings.actions.update(newSettings));
-      dispatch(accounts.actions.loadAccountsList());
+      dispatch(addresses.actions.loadAccountsList());
     },
   })
 )(TranslatedSettings);

@@ -1,9 +1,5 @@
 // @flow
-import accounts from '../vault/accounts';
-import { screen, addresses } from '..';
-import history from './history';
-import network from '../network';
-import tokens from '../vault/tokens';
+import { screen, addresses } from '@emeraldwallet/store';
 
 /**
  * Shows account details page if address in the vault or notification otherwise.

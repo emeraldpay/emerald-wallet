@@ -1,12 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { AccountActionsMenu } from '@emeraldwallet/ui';
-
-// import { api } from 'lib/rpc/api';
-import { saveJson } from 'lib/saveAs';
-import { screen } from '../../../store';
-import history from '../../../store/wallet/history';
-import accounts from '../../../store/vault/accounts';
+import {addresses, txhistory, screen} from '@emeraldwallet/store';
 
 const hasBalance = (account) => (account.get('balance', null) === null)
   || (account.get('balance') && account.get('balance').toWei().gt(0));
@@ -30,10 +25,10 @@ export default connect(
     },
     onUnhide: (chain) => () => {
       const address = ownProps.account.get('id');
-      dispatch(accounts.actions.unhideAccount(address));
+      dispatch(addresses.actions.unhideAccount(address));
       // refresh account data
-      dispatch(history.actions.refreshTrackedTransactions());
-      dispatch(accounts.actions.loadAccountsList());
+      dispatch(txhistory.actions.refreshTrackedTransactions());
+      dispatch(addresses.actions.loadAccountsList());
       // dispatch(accounts.actions.loadPendingTransactions()); // TODO: do we need it ?
 
       dispatch(screen.actions.gotoScreen('home'));

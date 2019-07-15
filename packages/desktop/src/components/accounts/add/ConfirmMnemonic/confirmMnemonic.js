@@ -2,8 +2,7 @@ import React from 'react';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { ConfirmMnemonic } from '@emeraldwallet/ui';
-import { screen } from '@emeraldwallet/store';
-import accounts from 'store/vault/accounts';
+import { screen, addresses } from '@emeraldwallet/store';
 
 export default connect(
   (state, ownProps) => ({
@@ -11,7 +10,7 @@ export default connect(
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data) => {
-      return dispatch(accounts.actions.importMnemonic(ownProps.formData.chain, ownProps.formData.password, ownProps.formData.mnemonic, ownProps.formData.hdpath, '', ''))
+      return dispatch(addresses.actions.importMnemonic(ownProps.formData.chain, ownProps.formData.password, ownProps.formData.mnemonic, ownProps.formData.hdpath, '', ''))
         .then((result) => {
           if (result.error) {
             throw new Error(result.error.toString());
