@@ -53,11 +53,10 @@ export default connect(
       dispatch(ledger.actions.importSelected(chain))
         .then((address) => {
           acc = fromJS({ id: address, blockchain: chain });
-          return dispatch(addresses.actions.loadAccountsList());
-        })
-        .then(() => {
-          // go to account details only when accounts updated
-          return dispatch(screen.actions.gotoScreen('account', acc));
+          return dispatch(addresses.actions.loadAccountsList(null, () => {
+            // go to account details only when accounts updated
+            dispatch(screen.actions.gotoScreen('account', acc));
+          }));
         });
     },
     onCancel: () => {

@@ -5,7 +5,6 @@ import {Wei} from "@emeraldplatform/eth";
 import {
   ActionTypes,
   AddAccountAction,
-  ImportWalletAction,
   LoadingAction,
   PendingBalanceAction,
   SetHDPathAction,
@@ -48,11 +47,15 @@ function fetchHdPaths(): Dispatched<SetHDPathAction> {
   };
 }
 
-export function loadAccountsList(blockchains: Array<BlockchainCode>): Dispatched<SetListAction | LoadingAction | SetHDPathAction> {
+export function loadAccountsList(blockchains: Array<BlockchainCode>, onLoaded?: Function): Dispatched<SetListAction | LoadingAction | SetHDPathAction> {
   if (!blockchains) {
     console.warn("Chains are not passed");
     //TODO use chains from settings
     blockchains = [BlockchainCode.ETH, BlockchainCode.ETC, BlockchainCode.Morden, BlockchainCode.Kovan];
+  }
+  let toLoad = blockchains.length;
+  if (toLoad == 0 && onLoaded) {
+    onLoaded();
   }
   return (dispatch, getState, api) => {
     dispatch({type: ActionTypes.LOADING});
@@ -69,18 +72,20 @@ export function loadAccountsList(blockchains: Array<BlockchainCode>): Dispatched
 
           const fetched = result.map((account) => account.address);
           const notChanged = existing.length === fetched.length && fetched.every((x) => existing.includes(x));
+          const changed = !notChanged;
           const firstLoad = existing.length === 0;
-          if (notChanged && !firstLoad) {
-            return;
+          if (changed || firstLoad) {
+            dispatch(setListAction(result));
+            dispatch(fetchHdPaths());
+            const addedAddresses = result
+              .filter((x) => existing.indexOf(x.address) < 0)
+              .map((acc) => acc.address);
+            ipcRenderer.send('subscribe-balance', blockchainCode, addedAddresses);
           }
-
-          dispatch(setListAction(result));
-          dispatch(fetchHdPaths());
-
-          const addedAddresses = result
-            .filter((x) => existing.indexOf(x.address) < 0)
-            .map((acc) => acc.address);
-          ipcRenderer.send('subscribe-balance', blockchainCode, addedAddresses);
+          toLoad--;
+          if (toLoad <= 0 && onLoaded) {
+            onLoaded();
+          }
         })
     });
   };
@@ -286,15 +291,11 @@ function readWalletFile(walletFile: File) {
   });
 }
 
-export function importJson(blockchain: BlockchainCode, data: any, name: string, description: string): Dispatched<ImportWalletAction | AddAccountAction> {
+export function importJson(blockchain: BlockchainCode, data: any, name: string, description: string): Dispatched<AddAccountAction> {
   return (dispatch, getState, api) => {
     data.name = name;
     data.description = description;
     return api.emerald.importAccount(data, blockchain.toLowerCase()).then((result) => {
-      dispatch({
-        type: ActionTypes.IMPORT_WALLET,
-        accountId: result,
-      });
       if ((new EthAddress(result)).isValid()) {
         dispatch({
           name,
@@ -312,13 +313,10 @@ export function importJson(blockchain: BlockchainCode, data: any, name: string, 
 }
 
 export function importMnemonic(blockchain: BlockchainCode,
-                               passphrase: string, mnemonic: string, hdPath: string, name: string, description: string): Dispatched<ImportWalletAction | AddAccountAction> {
+                               passphrase: string, mnemonic: string, hdPath: string, name: string, description: string): Dispatched<AddAccountAction> {
+  console.log("import mn", arguments);
   return (dispatch, getState, api) => {
     return api.emerald.importMnemonic(passphrase, name, description, mnemonic, hdPath, blockchain.toLowerCase()).then((result: string) => {
-      dispatch({
-        type: ActionTypes.IMPORT_WALLET,
-        accountId: result,
-      });
       if ((new EthAddress(result)).isValid()) {
         dispatch({
           type: ActionTypes.ADD_ACCOUNT,
@@ -334,7 +332,7 @@ export function importMnemonic(blockchain: BlockchainCode,
   };
 }
 
-export function importWallet(blockchain: BlockchainCode, wallet: File, name: string, description: string): Dispatched<ImportWalletAction | AddAccountAction> {
+export function importWallet(blockchain: BlockchainCode, wallet: File, name: string, description: string): Dispatched<AddAccountAction> {
   return (dispatch, getState) => {
     return readWalletFile(wallet).then((data) => {
       return dispatch(importJson(blockchain, data, name, description));
