@@ -10,9 +10,6 @@ import {
 } from "./types";
 import {GetState, Dispatched} from "../types";
 import {BlockchainCode} from "@emeraldwallet/core";
-import BigNumber from "bignumber.js"
-import {Wei} from "@emeraldplatform/eth";
-import {actions as screenActions} from "../screen";
 import {remote} from 'electron';
 import uuid = require("uuid");
 
@@ -190,7 +187,7 @@ function createAccountData(address: string, hdpath: string): any {
   };
 }
 
-export function importSelected(chain: BlockchainCode): Dispatched<AddressSelected> {
+export function importSelected(blockchain: BlockchainCode): Dispatched<AddressSelected> {
   return (dispatch, getState, api) => {
     const { ledger } = getState();
     const selected = ledger.get('selectedAddr').toLowerCase();
@@ -204,7 +201,7 @@ export function importSelected(chain: BlockchainCode): Dispatched<AddressSelecte
 
     console.info('Import Ledger address', data);
 
-    return api.emerald.importAccount(data, chain).then(() => {
+    return api.emerald.importAccount(data, blockchain).then(() => {
       // clean selected address
       dispatch(selectAddr(undefined));
       return address;

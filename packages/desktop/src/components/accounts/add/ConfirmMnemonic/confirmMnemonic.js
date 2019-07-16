@@ -10,13 +10,13 @@ export default connect(
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data) => {
-      return dispatch(addresses.actions.importMnemonic(ownProps.formData.chain, ownProps.formData.password, ownProps.formData.mnemonic, ownProps.formData.hdpath, '', ''))
+      return dispatch(addresses.actions.importMnemonic(ownProps.formData.blockchain, ownProps.formData.password, ownProps.formData.mnemonic, ownProps.formData.hdpath, '', ''))
         .then((result) => {
           if (result.error) {
             throw new Error(result.error.toString());
           } else {
             // show page with account details
-            dispatch(screen.actions.gotoScreen('account', Immutable.fromJS({id: result})));
+            dispatch(screen.actions.gotoScreen('account', Immutable.fromJS({id: result, blockchain: ownProps.formData.blockchain})));
           }
         }).catch((error) => {
           console.error(error);

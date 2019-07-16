@@ -43,7 +43,6 @@ export enum ActionTypes {
   SET_LIST = 'ACCOUNT/SET_LIST',
   SET_HD_PATH = 'ACCOUNT/SET_HD_PATH',
   UPDATE_ACCOUNT = 'ACCOUNT/UPDATE_ACCOUNT',
-  IMPORT_WALLET = 'ACCOUNT/IMPORT_WALLET',
   PENDING_BALANCE = 'ACCOUNT/PENDING_BALANCE',
   SET_TXCOUNT = 'ACCOUNT/SET_TXCOUNT',
 }
@@ -89,11 +88,6 @@ export interface SetTxCountAction {
   blockchain: BlockchainCode;
 }
 
-export interface ImportWalletAction {
-  type: ActionTypes.IMPORT_WALLET;
-  accountId: string;
-}
-
 export interface PendingBalanceAction {
   type: ActionTypes.PENDING_BALANCE;
   value: string;
@@ -111,6 +105,5 @@ export type AddressesAction =
   | AddAccountAction
   | SetHDPathAction
   | SetTxCountAction
-  | ImportWalletAction
   | PendingBalanceAction
   ;

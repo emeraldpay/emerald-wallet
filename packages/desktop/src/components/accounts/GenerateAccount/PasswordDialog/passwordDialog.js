@@ -35,6 +35,7 @@ export const styles2 = {
 class PasswordDialog extends React.Component {
   static propTypes = {
     onGenerate: PropTypes.func,
+    blockchains: PropTypes.array.isRequired,
   };
 
   constructor(props) {
@@ -44,13 +45,13 @@ class PasswordDialog extends React.Component {
       passphraseError: null,
       confirmError: null,
       confirmPassword: null,
-      chain: props.chains.length > 0 ? props.chains[0].params.coinTicker : '',
+      blockchain: props.blockchains.length > 0 ? props.blockchains[0].params.code : '',
     };
   }
 
   handleGenerate = () => {
     const { onGenerate } = this.props;
-    const { passphrase, confirmPassword, chain } = this.state;
+    const { passphrase, confirmPassword, blockchain } = this.state;
 
     // validate passphrase
     if (passphrase.length < MIN_PASSWORD_LENGTH) {
@@ -65,7 +66,7 @@ class PasswordDialog extends React.Component {
       });
     }
 
-    onGenerate(passphrase, chain);
+    onGenerate(passphrase, blockchain);
   };
 
   onPassphraseChange = (newValue) => {
@@ -85,9 +86,9 @@ class PasswordDialog extends React.Component {
     });
   }
 
-  onChainChange = (chain) => {
+  onChainChange = (blockchain) => {
     this.setState({
-      chain: chain.toLowerCase(),
+      blockchain: blockchain.toLowerCase(),
     });
   };
 
@@ -99,10 +100,10 @@ class PasswordDialog extends React.Component {
 
   render() {
     const {
-      onDashboard, t, classes, chains,
+      onDashboard, t, classes, blockchains,
     } = this.props;
     const {
-      passphraseError, confirmError, confirmPassword, passphrase, chain,
+      passphraseError, confirmError, confirmPassword, passphrase, blockchain,
     } = this.state;
 
     return (
@@ -174,7 +175,7 @@ class PasswordDialog extends React.Component {
                 icon={ <LoadingIcon {...this.props} /> }
                 disabled={ this.props.loading }
               />
-              <ChainSelector onChange={ this.onChainChange } value={ chain } chains={ chains }/>
+              <ChainSelector onChange={ this.onChainChange } value={ blockchain } chains={ blockchains }/>
             </div>
           </Row>
         </div>
@@ -188,7 +189,7 @@ const StyledPasswordDialog = withStyles(styles2)(PasswordDialog);
 export default connect(
   (state, ownProps) => {
     return {
-      chains: settings.selectors.currentChains(state),
+      blockchains: settings.selectors.currentChains(state),
     };
   }
 )(StyledPasswordDialog);

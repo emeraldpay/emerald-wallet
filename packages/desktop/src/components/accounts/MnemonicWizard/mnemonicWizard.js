@@ -49,7 +49,7 @@ class MnemonicWizard extends React.Component {
   };
 
   getPage() {
-    const { gotoDashboard, chains } = this.props;
+    const { gotoDashboard, blockchains } = this.props;
     const {
       page, mnemonic, formData,
     } = this.state;
@@ -70,7 +70,7 @@ class MnemonicWizard extends React.Component {
             mnemonic={ mnemonic }
             onSubmit={ this.gotoConfirm }
             onBack={ this.gotoGenerate }
-            chains={ chains }
+            blockchains={ blockchains }
           />
         );
 
@@ -101,7 +101,7 @@ class MnemonicWizard extends React.Component {
 
 export default connect(
   (state, ownProps) => ({
-    chains: settings.selectors.currentChains(state),
+    blockchains: settings.selectors.currentChains(state),
   }),
   (dispatch, ownProps) => ({
 

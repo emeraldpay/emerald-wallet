@@ -23,7 +23,7 @@ interface Props {
   onInit?(): void;
   onBack?(): void;
   onCancel?(): void;
-  onAddSelected?(chain: string): void;
+  onAddSelected?(blockchain: string): void;
   changeBaseHD?(): void;
   setSelectedAddr?(address: string): void;
   accounts?: any;
@@ -32,21 +32,21 @@ interface Props {
   selectedAddress?: any;
   hdbase: string;
   pagerOffset?: number;
-  chains: Blockchain[]
+  blockchains: Blockchain[]
   setPagerOffset?(offset: number): void;
   api: IApi
 }
 
 interface State {
-  chain?: string
+  blockchain?: string
 }
 
 class ImportAccount extends React.Component<Props, State> {
 
   constructor(props: Readonly<Props>) {
     super(props);
-    const chain = props.chains.length > 0 ? props.chains[0].params.coinTicker : 'ETH';
-    this.state = {chain: chain};
+    const blockchain = props.blockchains.length > 0 ? props.blockchains[0].params.code : 'ETH';
+    this.state = {blockchain: blockchain};
   }
 
   componentDidMount() {
@@ -55,22 +55,22 @@ class ImportAccount extends React.Component<Props, State> {
     }
   }
 
-  chainSelected(chain: string) {
+  chainSelected(blockchain: string) {
     this.setState({
-      chain: chain
+      blockchain: blockchain
     });
   }
 
   addSelected() {
-    this.props.onAddSelected(this.state.chain.toLowerCase());
+    this.props.onAddSelected(this.state.blockchain.toLowerCase());
   }
 
   render() {
     const {
       hdbase, changeBaseHD, selected, selectedAddress, setSelectedAddr, accounts, addresses,
     } = this.props;
-    const {onAddSelected, onCancel, onBack, chains, api } = this.props;
-    const { chain } = this.state;
+    const {onAddSelected, onCancel, onBack, blockchains, api } = this.props;
+    const { blockchain } = this.state;
 
     // mark each address whether it selected or not
     const newAddresses = addresses.map((a: LedgerAddress) => ({...a, selected: a.address === selectedAddress}));
@@ -83,7 +83,7 @@ class ImportAccount extends React.Component<Props, State> {
           }
           rightColumn={
             <React.Fragment>
-              <ChainSelector chains={chains} value={chain} onChange={this.chainSelected.bind(this)}/>
+              <ChainSelector chains={blockchains} value={blockchain} onChange={this.chainSelected.bind(this)}/>
               <HdPath value={hdbase} onChange={changeBaseHD}/>
               <div style={{marginLeft: '5px'}}>
                 <Pager offset={this.props.pagerOffset} setOffset={this.props.setPagerOffset}/>
@@ -93,7 +93,7 @@ class ImportAccount extends React.Component<Props, State> {
         />
         <div style={styles.row}>
           <AddrList
-            chain={chain}
+            blockchain={blockchain}
             setSelectedAddr={setSelectedAddr}
             accounts={accounts}
             addresses={newAddresses}

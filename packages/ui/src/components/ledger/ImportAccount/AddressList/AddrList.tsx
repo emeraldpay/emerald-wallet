@@ -17,7 +17,7 @@ interface Props {
   setSelectedAddr?: any;
   classes?: any;
   accounts?: any;
-  chain?: string;
+  blockchain?: string;
   api: IApi
 }
 
@@ -42,7 +42,7 @@ class AddrList extends React.Component<Props> {
     };
 
     render() {
-      const { classes, accounts, chain, api } = this.props;
+      const { classes, accounts, blockchain, api } = this.props;
       const addresses = this.props.addresses || [];
 
       return (
@@ -61,7 +61,7 @@ class AddrList extends React.Component<Props> {
               key={ addr.hdpath }
               alreadyAdded = { isAlreadyAdded(addr, accounts) }
               addr={ addr }
-              chain={ chain }
+              blockchain={ blockchain }
               api={api}
             />)}
           </TableBody>

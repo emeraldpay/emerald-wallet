@@ -30,7 +30,7 @@ interface Props {
   classes?: any;
   onSelected?: any;
   alreadyAdded?: any;
-  chain?: string;
+  blockchain?: string;
   api: IApi;
 }
 
@@ -60,24 +60,24 @@ class Addr extends React.Component<Props, State> {
   }
 
   loadBalance(): void {
-    const chain = this.props.chain;
-    if (!chain || !this.props.addr || !this.props.addr.address) {
+    const blockchain = this.props.blockchain;
+    if (!blockchain || !this.props.addr || !this.props.addr.address) {
       return;
     }
     const address = this.props.addr.address;
-    this.props.api.chain(chain).eth.getBalance(address)
+    this.props.api.chain(blockchain).eth.getBalance(address)
       .then((balance: BigNumber) => {
         const newBalance = new Wei(balance);
         if (!newBalance.equals(this.state.balance)) {
           this.setState({balance: newBalance});
         }
       })
-      .catch((e) => console.error(`Unable to load balance for ${address} on ${chain}`, e));
+      .catch((e) => console.error(`Unable to load balance for ${address} on ${blockchain}`, e));
   }
 
   render() {
     const {
-      addr, alreadyAdded, classes, chain
+      addr, alreadyAdded, classes, blockchain
     } = this.props;
     let usedLabel;
 
@@ -96,7 +96,7 @@ class Addr extends React.Component<Props, State> {
 
     let balanceRender = null;
     if (balance) {
-      balanceRender = <Balance symbol={blockchainByName(chain).params.coinTicker} balance={balance} showFiat={false} decimals={3} />;
+      balanceRender = <Balance symbol={blockchainByName(blockchain).params.coinTicker} balance={balance} showFiat={false} decimals={3} />;
     }
 
     return (
