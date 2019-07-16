@@ -4,17 +4,26 @@ import {BlockchainCode} from "@emeraldwallet/core";
 import {Wei} from "@emeraldplatform/eth";
 
 export function all(state: any): AddressList {
-  return state[moduleName].get('addresses');
+  return state[moduleName]
+    .get('addresses')
+    .filter((address: any) => typeof address !== 'undefined')
+    .toList();
+}
+
+export function allByBlockchain(state: any, blockchain: BlockchainCode): AddressList {
+  return all(state)
+    .filter((address) => address!.get('blockchain').toLowerCase() === blockchain.toLowerCase())
+    .toList();
 }
 
 export const isLoading = (state: any): boolean => state[moduleName].get('loading');
 
-export function find(state: any, address: string, blockchain: string): AddressMap | undefined {
+export function find(state: any, address: string, blockchain: BlockchainCode): AddressMap | undefined {
   if (!address) {
     return undefined;
   }
-  return all(state).find((a: any) =>
-    a.get('id').toLowerCase() === address.toLowerCase() && a.get('blockchain').toLowerCase() === blockchain.toLowerCase()
+  return allByBlockchain(state, blockchain).find((a: any) =>
+    a.get('id').toLowerCase() === address.toLowerCase()
   );
 }
 
@@ -28,8 +37,7 @@ export function findAllChains(state: any, address: string): AddressList {
 }
 
 export function balanceByChain(state: any, blockchain: BlockchainCode): Wei {
-  return all(state)
-    .filter((a: any) => a.get('blockchain').toLowerCase() === blockchain.toLowerCase())
+  return allByBlockchain(state, blockchain)
     .map((a: any) => (a.get('balance') ? a.get('balance') : Wei.ZERO))
     .reduce((r: Wei | undefined, val: Wei | undefined) => r!.plus(val!), Wei.ZERO)
       || Wei.ZERO

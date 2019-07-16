@@ -14,8 +14,8 @@ class FromField extends React.Component<Props> {
     this.onChangeAccount = this.onChangeAccount.bind(this);
   }
 
-  onChangeAccount(list: any, index: any) {
-    this.props.onChangeAccount(list[index]);
+  onChangeAccount(value: string) {
+    this.props.onChangeAccount(value);
   }
 
   inputStyles = {

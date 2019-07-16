@@ -170,12 +170,14 @@ export function updateAccount(blockchain: BlockchainCode, address: string, name:
   };
 }
 
-function unwrap<T>(list: T[] | null): Promise<T> {
+function unwrap(value: string[] | string | null): Promise<string> {
   return new Promise((resolve, reject) => {
-    if (list && list.length === 1) {
-      resolve(list[0]);
+    if (typeof value === 'string') {
+      resolve(value)
+    } if (value && value.length === 1) {
+      resolve(value[0]);
     } else {
-      reject(new Error(`Invalid list size ${list}`));
+      reject(new Error(`Invalid list size ${value}`));
     }
   });
 }
@@ -197,7 +199,7 @@ function getNonce(api: IApi, blockchain: BlockchainCode, address: string): Promi
 }
 
 function withNonce(tx: Transaction): (nonce: number) => Promise<Transaction> {
-  return (nonce) => new Promise((resolve) => resolve(Object.assign({}, tx, {nonce: convert.toHex(nonce)})));
+  return (nonce) => new Promise((resolve) => resolve(Object.assign({}, tx, {nonce: convert.quantitiesToHex(nonce)})));
 }
 
 function verifySender(expected: string): (a: string) => Promise<string> {
@@ -217,14 +219,23 @@ function verifySender(expected: string): (a: string) => Promise<string> {
   });
 }
 
-function signTx(api: IApi, tx: Transaction, passphrase: string, blockchain: string): Promise<string> {
-  console.trace(`Calling emerald api to sign tx from ${tx.from} to ${tx.to} in ${blockchain} blockchain`);
+function signTx(api: IApi, tx: Transaction, passphrase: string, blockchain: string): Promise<string | string[]> {
+  console.debug(`Calling emerald api to sign tx from ${tx.from} to ${tx.to} in ${blockchain} blockchain`);
   if (blockchain === 'morden') {
     // otherwise RPC server gives 'wrong-sender'
     // vault has different chain-id settings for etc and eth morden. server uses etc morden.
     blockchain = 'etc-morden';
   }
-  return api.emerald.signTransaction(tx, passphrase, blockchain.toLowerCase());
+  const plainTx = {
+    from: tx.from,
+    to: tx.to,
+    gas: tx.gas,
+    gasPrice: tx.gasPrice,
+    value: tx.value,
+    data: tx.data,
+    nonce: tx.nonce
+  };
+  return api.emerald.signTransaction(plainTx, passphrase, blockchain.toLowerCase());
 }
 
 export function sendTransaction(blockchain: BlockchainCode,
@@ -244,7 +255,7 @@ export function sendTransaction(blockchain: BlockchainCode,
       .then(withNonce(originalTx))
       .then((tx) => {
         return signTx(api, tx, passphrase, blockchain)
-          // .then(unwrap)
+          .then(unwrap)
           .then(verifySender(from))
           .then((signed) => api.chain(blockchain).eth.sendRawTransaction(signed))
           .then(onTxSend(dispatch, tx, blockchain));

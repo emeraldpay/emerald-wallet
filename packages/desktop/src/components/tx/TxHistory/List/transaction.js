@@ -2,7 +2,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Map } from 'immutable';
-import {Blockchains, blockchainById } from '@emeraldwallet/core';
+import {blockchainById, blockchainByName } from '@emeraldwallet/core';
 import TxView from '@emeraldwallet/ui/lib/components/tx/TxHistory/TxList/TxItem';
 import { blockchains, txhistory, addresses } from '@emeraldwallet/store';
 import { screen } from '../../../../store';
@@ -26,17 +26,17 @@ function txValueRenderer(showFiat) {
 export default connect(
   (state, ownProps) => {
     const tx = (ownProps.tx && ownProps.tx.toJS()) || {};
-    const blockchain = tx.chain ? Blockchains[tx.chain] : blockchainById(tx.chainId);
+    const blockchain = tx.blockchain ? blockchainByName(tx.blockchain) : blockchainById(tx.chainId);
 
-    const toAccount = addresses.selectors.find(state, tx.to, tx.chain) || Map({});
-    const fromAccount = addresses.selectors.find(state, tx.from, tx.chain) || Map({});
+    const toAccount = addresses.selectors.find(state, tx.to, blockchain.params.code) || Map({});
+    const fromAccount = addresses.selectors.find(state, tx.from, blockchain.params.code) || Map({});
 
     const token = state.tokens.get('tokens').find((t) => t.get('address') === tx.to);
 
     const showFiat = !token;
 
     return {
-      coinTicker: (blockchain && blockchain.params.coinTicker) || '-',
+      coinTicker: blockchain.params.coinTicker,
       amountRenderer: txValueRenderer(showFiat),
       lang: i18n.language,
       tx,
@@ -45,7 +45,7 @@ export default connect(
       token: (token && token.toJS()) || null,
       netParams: {
         requiredConfirmations: state.wallet.settings.get('numConfirmations'),
-        currentBlockHeight: blockchains.selectors.getHeight(state, blockchain && blockchain.params.coinTicker || '-'),
+        currentBlockHeight: blockchains.selectors.getHeight(state, blockchain.params.coinTicker),
       },
     };
   },
