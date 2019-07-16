@@ -16,7 +16,7 @@ class LocalConnector {
   // TODO: assert params
   constructor(bin: string, dataDir: string, log?: ILogger) {
     this.bin = bin;
-    this.dataDir = dataDir || path.join(process.env.APPDATA || os.homedir(), ".emerald");
+    this.dataDir = dataDir;
     this.log = log || new DefaultLogger();
   }
 
@@ -122,7 +122,7 @@ class LocalConnector {
             '-v',
           ];
           if (this.dataDir) {
-            this.log.warn("SPECIFY CUSTOM DIR FOR VAULT");
+            this.log.warn(`SPECIFY CUSTOM DIR FOR VAULT: ${this.dataDir}`);
             options.push(`--base-path=${this.dataDir}`);
           }
           options.push('server');
