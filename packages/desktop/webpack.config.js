@@ -18,6 +18,7 @@ const config = {
     new CopyWebpackPlugin([
       { from: path.join(srcDir, 'index.html'), to: './' },
       { from: path.join(srcDir, 'about.html'), to: './' },
+      { from: path.join(__dirname, 'build/icons/512x512.png'), to: './icons/'}
     ], {copyUnmodified: true}),
   ],
   output: {
