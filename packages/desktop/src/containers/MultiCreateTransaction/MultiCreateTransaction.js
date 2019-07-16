@@ -13,7 +13,7 @@ import {
 } from '@emeraldwallet/store';
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import { blockchainByName } from '@emeraldwallet/core';
+import { blockchainByName, Blockchains } from '@emeraldwallet/core';
 import { CreateEthereumTx, TxTarget, ValidationResult } from '@emeraldwallet/workflow';
 import { CreateTx, SignTx } from '@emeraldwallet/ui';
 import Tokens from '../../store/vault/tokens';
@@ -303,9 +303,10 @@ function signAndSendEther(dispatch, ownProps, {transaction, password}) {
 }
 
 function signAndSend(dispatch, ownProps, args) {
-  // TODO: refactor this check
+  const chain = ownProps.account.get('blockchain');
+  const { coinTicker } = Blockchains[chain].params;
   const token = args.token.toUpperCase();
-  if ((token !== 'ETC') && (token !== 'ETH')) {
+  if (token !== coinTicker) {
     return signAndSendToken(dispatch, ownProps, args);
   }
   return signAndSendEther(dispatch, ownProps, args);

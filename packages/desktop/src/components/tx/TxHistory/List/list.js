@@ -55,8 +55,8 @@ const TransactionsList = (props: Props) => {
   }
   return (
     <div>
-      <Table selectable={ false } fixedHeader={ true } style={{background: theme.palette.primary.contrastText}}>
-        <TableHead displaySelectAll={ false } adjustForCheckbox={ false }>
+      <Table style={{background: theme.palette.primary.contrastText}}>
+        <TableHead>
           <TableRow>
             <TableCell className={ cx(classes.columnName, classes.amountColumn) }>Amount</TableCell>
             <TableCell className={classes.columnArrow}>&nbsp;</TableCell>
@@ -64,7 +64,7 @@ const TransactionsList = (props: Props) => {
             <TableCell className={ cx(classes.columnName, classes.statusColumn)}>Status</TableCell>
           </TableRow>
         </TableHead>
-        <TableBody displayRowCheckbox={ false }>
+        <TableBody>
           { transactions.map((tx) => <Transaction key={tx.get('hash')} tx={tx} accountId={ accountId } />) }
         </TableBody>
       </Table>
