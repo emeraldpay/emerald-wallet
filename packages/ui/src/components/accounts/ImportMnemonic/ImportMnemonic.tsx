@@ -49,13 +49,16 @@ export const styles = {
 };
 
 interface Props {
-  chains: Blockchain[],
+  blockchains: Blockchain[],
   onSubmit?: any;
   onBack?: any;
   classes: any;
   error?: any;
   invalid?: any;
   mnemonic?: string;
+  initialValues: {
+    hdpath: string
+  }
 }
 
 interface State {
@@ -63,7 +66,7 @@ interface State {
   confirmedPassword: string;
   hdpath: string;
   mnemonic: string;
-  chain: string
+  blockchain: string
 }
 
 export class ImportMnemonic extends React.Component<Props, State> {
@@ -71,10 +74,10 @@ export class ImportMnemonic extends React.Component<Props, State> {
     super(props);
     this.state = {
       mnemonic: props.mnemonic || '',
-      hdpath: '',
+      hdpath: this.props.initialValues.hdpath,
       password: '',
       confirmedPassword: '',
-      chain: props.chains.length > 0 ? props.chains[0].params.coinTicker : '',
+      blockchain: props.blockchains.length > 0 ? props.blockchains[0].params.code : '',
     }
   }
 
@@ -92,8 +95,8 @@ export class ImportMnemonic extends React.Component<Props, State> {
 
   handleSubmit = () => {
     if (this.props.onSubmit) {
-      const {chain, mnemonic, password, hdpath} = this.state;
-      this.props.onSubmit({chain, mnemonic, password, hdpath});
+      const {blockchain, mnemonic, password, hdpath} = this.state;
+      this.props.onSubmit({blockchain, mnemonic, password, hdpath});
     }
   };
 
@@ -111,16 +114,16 @@ export class ImportMnemonic extends React.Component<Props, State> {
 
   handleChainChange = (value: string) => {
     this.setState({
-      chain: value
+      blockchain: value
     });
   };
 
   render() {
     const {
-      onBack, invalid, error, classes, chains,
+      onBack, invalid, error, classes, blockchains,
     } = this.props;
     const {
-      chain, password, confirmedPassword, hdpath, mnemonic,
+      blockchain, password, confirmedPassword, hdpath, mnemonic,
     } = this.state;
     const confirmPwdErrorText = (confirmedPassword.length > 0 && password != confirmedPassword) ? "Password does not match" : null;
     return (
@@ -208,7 +211,7 @@ export class ImportMnemonic extends React.Component<Props, State> {
                 disabled={invalid}
                 onClick={this.handleSubmit}
               />
-              <ChainSelector onChange={this.handleChainChange} value={chain} chains={chains}/>
+              <ChainSelector onChange={this.handleChainChange} value={blockchain} chains={blockchains}/>
             </div>
           </div>
 

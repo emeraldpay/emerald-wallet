@@ -27,7 +27,7 @@ export default connect(
     selectedAddress: ledger.selectors.getSelected(state),
     addresses: ledger.selectors.getAddresses(state),
     accounts: state.addresses.get('addresses'),
-    chains: settings.selectors.currentChains(state),
+    blockchains: settings.selectors.currentChains(state),
     api: global.api,
   }),
   (dispatch, ownProps) => ({
@@ -48,11 +48,11 @@ export default connect(
       }
       dispatch(screen.actions.gotoScreen('home'));
     },
-    onAddSelected: (chain) => {
+    onAddSelected: (blockchain) => {
       let acc = null;
-      dispatch(ledger.actions.importSelected(chain))
+      dispatch(ledger.actions.importSelected(blockchain))
         .then((address) => {
-          acc = fromJS({ id: address, blockchain: chain });
+          acc = fromJS({ id: address, blockchain });
           return dispatch(addresses.actions.loadAccountsList(null, () => {
             // go to account details only when accounts updated
             dispatch(screen.actions.gotoScreen('account', acc));

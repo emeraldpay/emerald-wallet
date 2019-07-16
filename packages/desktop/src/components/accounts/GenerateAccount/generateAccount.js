@@ -30,7 +30,7 @@ type State = {
   accountId: string,
   passphrase?: string,
   privateKey?: string,
-  chain: string,
+  blockchain: string,
 }
 
 class GenerateAccount extends React.Component<Props, State> {
@@ -46,47 +46,47 @@ class GenerateAccount extends React.Component<Props, State> {
       loading: false,
       page: PAGES.PASSWORD,
       accountId: '',
-      chain: 'ETH',
+      blockchain: 'ETH',
     };
   }
 
-  generate = (passphrase, chain) => {
+  generate = (passphrase, blockchain) => {
     this.setState({
       loading: true,
     });
 
     // Create new account
-    this.props.dispatch(addresses.actions.createAccount(chain, passphrase))
+    this.props.dispatch(addresses.actions.createAccount(blockchain, passphrase))
       .then((accountId) => {
         this.setState({
           loading: false,
           accountId,
           passphrase,
-          chain,
+          blockchain,
           page: PAGES.DOWNLOAD,
         });
       });
   };
 
   download = () => {
-    const { chain, passphrase, accountId } = this.state;
+    const { blockchain, passphrase, accountId } = this.state;
 
     this.setState({
       loading: true,
     });
 
     // Get encrypted key file from emerald vault
-    this.props.dispatch(addresses.actions.exportKeyFile(chain, accountId)).then((result) => {
+    this.props.dispatch(addresses.actions.exportKeyFile(blockchain, accountId)).then((result) => {
       ipcRenderer.send('get-private-key', {keyfile: result, passphrase});
       ipcRenderer.once('recieve-private-key', (event, privateKey) => {
-        saveJson(result, `${chain}-${accountId}.json`);
+        saveJson(result, `${blockchain}-${accountId}.json`);
 
         this.setState({
           loading: false,
           page: PAGES.SHOW_PRIVATE,
           privateKey,
           accountId,
-          chain,
+          blockchain,
         });
       });
     });
@@ -104,7 +104,7 @@ class GenerateAccount extends React.Component<Props, State> {
 
   updateAccountProps = (name: string) => {
     const { dispatch } = this.props;
-    dispatch(addresses.actions.updateAccount(this.state.chain, this.state.accountId, name))
+    dispatch(addresses.actions.updateAccount(this.state.blockchain, this.state.accountId, name))
       .then(() => dispatch(screen.actions.gotoScreen('home')));
   };
 

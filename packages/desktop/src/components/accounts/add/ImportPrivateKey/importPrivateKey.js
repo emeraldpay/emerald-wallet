@@ -10,7 +10,7 @@ import settings from '../../../../store/wallet/settings';
 
 export default connect(
   (state, ownProps) => ({
-    chains: settings.selectors.currentChains(state),
+    blockchains: settings.selectors.currentChains(state),
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data) => {
@@ -19,13 +19,13 @@ export default connect(
         ipcRenderer.send('get-private-key-to-keyfile', {privateKey, password: data.password});
         ipcRenderer.once('recieve-private-key-to-keyfile', (event, keyFile) => {
           // import key file
-          return dispatch(addresses.actions.importWallet(data.chain, new Blob([keyFile]), '', ''))
+          return dispatch(addresses.actions.importWallet(data.blockchain, new Blob([keyFile]), '', ''))
             .then((result) => {
               if (result.error) {
                 dispatch(screen.actions.showError(new Error(result.error.toString())));
               } else {
                 // show page with account details
-                resolve(dispatch(screen.actions.gotoScreen('account', Immutable.fromJS({id: result}))));
+                resolve(dispatch(screen.actions.gotoScreen('account', Immutable.fromJS({id: result, blockchain: data.blockchain}))));
               }
             });
         });

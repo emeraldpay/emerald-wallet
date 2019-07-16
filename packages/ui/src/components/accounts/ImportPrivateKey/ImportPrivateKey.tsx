@@ -55,7 +55,7 @@ function getLoadingIcon(submitting) {
 }
 
 interface Props {
-  chains: Blockchain[],
+  blockchains: Blockchain[],
   onBack?: any;
   error?: any;
   onSubmit?: any;
@@ -68,21 +68,21 @@ interface State {
   confirmPassword?: string;
   privateKey?: string;
   confirmError?: any;
-  chain: string
+  blockchain: string
 }
 
 export class ImportPrivateKey extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      chain: props.chains.length > 0 ? props.chains[0].params.coinTicker : '',
+      blockchain: props.blockchains.length > 0 ? props.blockchains[0].params.code : '',
     };
   }
 
   handleSubmit = () => {
     if (this.props.onSubmit && (this.state.confirmError == null)) {
-      const { chain, password, privateKey } = this.state;
-      this.props.onSubmit({chain, password, privateKey: privateKey || ''});
+      const { blockchain, password, privateKey } = this.state;
+      this.props.onSubmit({blockchain, password, privateKey: privateKey || ''});
     }
   };
 
@@ -106,15 +106,15 @@ export class ImportPrivateKey extends React.Component<Props, State> {
 
   handleChainChange = (value: string) => {
     this.setState({
-      chain: value
+      blockchain: value
     });
   };
 
   render() {
     const {
-      onBack, submitting, classes, error, chains,
+      onBack, submitting, classes, error, blockchains,
     } = this.props;
-    const { chain, privateKey, confirmPassword, password } = this.state;
+    const { blockchain, privateKey, confirmPassword, password } = this.state;
 
     const invalid = ((password || '').length < PasswordInput.DEFAULT_MIN_LENGTH) ||
       ((privateKey || '').length == 0) ||
@@ -187,7 +187,7 @@ export class ImportPrivateKey extends React.Component<Props, State> {
               disabled={ submitting || invalid }
               icon={getLoadingIcon(submitting) }
             />
-            <ChainSelector onChange={this.handleChainChange} value={chain} chains={chains}/>
+            <ChainSelector onChange={this.handleChainChange} value={blockchain} chains={blockchains}/>
           </div>
         </div>
 

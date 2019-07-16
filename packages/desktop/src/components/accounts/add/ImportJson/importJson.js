@@ -21,6 +21,7 @@ class ImportJson extends React.Component {
       accounts: PropTypes.object,
       t: PropTypes.func,
       onDashboard: PropTypes.func,
+      blockchains: PropTypes.array.isRequired,
     };
 
     constructor(props) {
@@ -28,14 +29,14 @@ class ImportJson extends React.Component {
       this.state = {
         fileError: null,
         file: null,
-        chain: props.chains.length > 0 ? props.chains[0].params.coinTicker : '',
+        blockchain: props.blockchains.length > 0 ? props.blockchains[0].params.code : '',
       };
     }
 
     submitFile = () => {
       const { importFile, showAccount } = this.props;
-      importFile(this.state.chain, this.state.file)
-        .then((result) => showAccount(Immutable.fromJS({id: result, blockchain: this.state.chain.toLowerCase()})))
+      importFile(this.state.blockchain, this.state.file)
+        .then((result) => showAccount(Immutable.fromJS({id: result, blockchain: this.state.blockchain.toLowerCase()})))
         .catch((err) => this.setState({ fileError: err.message }));
     };
 
@@ -45,15 +46,15 @@ class ImportJson extends React.Component {
       });
     };
 
-    onChainChange = (chain) => {
+    onChainChange = (blockchain) => {
       this.setState({
-        chain,
+        blockchain,
       });
     };
 
     render() {
-      const { t, onDashboard, chains } = this.props;
-      const { file, fileError, chain } = this.state;
+      const { t, onDashboard, blockchains } = this.props;
+      const { file, fileError, blockchain } = this.state;
 
       return (
         <Page title={ t('import.title') } leftIcon={<Back onClick={onDashboard} />}>
@@ -83,7 +84,7 @@ class ImportJson extends React.Component {
               <div style={ formStyles.left }/>
               <div style={ formStyles.right }>
                 <Button primary onClick={ this.submitFile } label={ t('common:submit') }/>
-                <ChainSelector onChange={ this.onChainChange } value={chain} chains={ chains }/>
+                <ChainSelector onChange={ this.onChainChange } value={blockchain} chains={ blockchains }/>
               </div>
             </Row>)
           }
@@ -94,7 +95,7 @@ class ImportJson extends React.Component {
 
 export default connect(
   (state, ownProps) => ({
-    chains: settings.selectors.currentChains(state),
+    blockchains: settings.selectors.currentChains(state),
   }),
   (dispatch, ownProps) => ({
     importFile: (blockchain, file) => {

@@ -9,19 +9,19 @@ export default connect(
   (state, ownProps) => ({
     initialValues: {
       mnemonic: ownProps.mnemonic,
-      hdpath: "m/44'/60'/160720'/0'",
+      hdpath: "m/44'/60'/0'/0'",
     },
-    chains: settings.selectors.currentChains(state),
+    blockchains: settings.selectors.currentChains(state),
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data) => {
-      return dispatch(addresses.actions.importMnemonic(data.chain, data.password, data.mnemonic, data.hdpath, '', ''))
+      return dispatch(addresses.actions.importMnemonic(data.blockchain, data.password, data.mnemonic, data.hdpath, '', ''))
         .then((result) => {
           if (result.error) {
             throw new Error(result.error.toString());
           } else {
             // show page with account details
-            dispatch(screen.actions.gotoScreen('account', Immutable.fromJS({id: result})));
+            dispatch(screen.actions.gotoScreen('account', Immutable.fromJS({id: result, blockchain: data.blockchain})));
           }
         }).catch((error) => {
           console.error(error);
