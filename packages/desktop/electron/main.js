@@ -1,6 +1,11 @@
 require('babel-polyfill'); // eslint-disable-line import/no-unresolved
 require('regenerator-runtime/runtime');
-const { ServerConnect, EmeraldApiAccessLocal, EmeraldApiAccessDev} = require('@emeraldwallet/services');
+const {
+  ServerConnect,
+  EmeraldApiAccessLocal,
+  EmeraldApiAccessDev,
+  EmeraldApiAccessProd,
+} = require('@emeraldwallet/services');
 const { app, ipcMain, session } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path'); // eslint-disable-line
 
@@ -32,6 +37,9 @@ if (isDev) {
   dataDir = notLocal ? './.emerald-dev' : './.emerald-dev-local';
   app.setPath('userData', path.resolve(path.join(dataDir, '/userData')));
   apiMode = notLocal ? DevMode : LocalMode;
+} else {
+  log.warn('START IN PRODUCTION MODE');
+  apiMode = ProdMode;
 }
 
 const settings = new Settings();
@@ -55,7 +63,9 @@ app.on('ready', () => {
 
   log.info('... setup API access');
   let apiAccess;
-  if (apiMode === LocalMode) {
+  if (apiMode.id === ProdMode.id) {
+    apiAccess = new EmeraldApiAccessProd(settings.getId());
+  } else if (apiMode.id === LocalMode.id) {
     apiAccess = new EmeraldApiAccessLocal(settings.getId());
   } else {
     apiAccess = new EmeraldApiAccessDev(settings.getId());

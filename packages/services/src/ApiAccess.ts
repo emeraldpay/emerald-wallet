@@ -81,6 +81,33 @@ const certDev = "-----BEGIN CERTIFICATE-----\n" +
   "MwdfWdNfjQ7l+DFpz+mH6s/T/RjBWg==\n" +
   "-----END CERTIFICATE-----";
 
+const certProd = "-----BEGIN CERTIFICATE-----\n" +
+  "MIIEqTCCApGgAwIBAgIRAJz5sfnSdw0Q2pW1rWWKi6cwDQYJKoZIhvcNAQELBQAw\n" +
+  "SDETMBEGA1UEChMKRW1lcmFsZFBheTEWMBQGA1UECxMNRW1lcmFsZFBheSBDQTEZ\n" +
+  "MBcGA1UEAxMQY2EuZW1lcmFsZHBheS5pbzAeFw0xOTA3MTYxODI1MjdaFw0yMTAx\n" +
+  "MTYxODE3MzVaMFIxEzARBgNVBAoTCkVtZXJhbGRQYXkxHzAdBgNVBAsTFkVtZXJh\n" +
+  "bGRQYXkgR1JQQyBTZXJ2ZXIxGjAYBgNVBAMTEWFwaS5lbWVyYWxkcGF5LmlvMIIB\n" +
+  "IjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsnlDUvZUzoCERnJ2siyp0zfq\n" +
+  "runRGjXdm1QD6eIP6VDFH74lcjcaDipUOQQYNZw90rWQPDCWAqO8Tbyz7fMn5qmO\n" +
+  "R1LNF+GVBaX6oTk5rvBsE8DFvDUD5J9v0Em61fRDiqe5n7RQnSlQ1mQ1OefiCwph\n" +
+  "lrnEs++rJ4CXUnlcWwg+vE5ttQAk7EiyImCEjXvdKIKRv+IpYF1Ahm9G6l6ebLKb\n" +
+  "fkd1nLZFuKi50qsIaOCpHbooAmpsuml7K9wOheGnHZexYuWyQdmIlyv9HRsVY00i\n" +
+  "ZEuUmgAGsGPIcVhixAMXLLiaJCuQQiEkwYh5y6vr62EU7CQfejyb7CnZffEmCwID\n" +
+  "AQABo4GDMIGAMA4GA1UdDwEB/wQEAwIDuDAdBgNVHSUEFjAUBggrBgEFBQcDAQYI\n" +
+  "KwYBBQUHAwIwHQYDVR0OBBYEFKWKVjHgcX9exAcBby6I3pXaKeWkMB8GA1UdIwQY\n" +
+  "MBaAFEkfa4owd4YkBjPINFdUc4HgfhsfMA8GA1UdEQQIMAaHBCJicSQwDQYJKoZI\n" +
+  "hvcNAQELBQADggIBACiMTujj42RlcUdqkv70kKK/PPebAoFI+899BgNK6AiaPS3a\n" +
+  "pUQUwdu6PyFwzJPMUpl2DlUCVlHGQQw6hLPVxV4S/PxEmfoCdoDg/Z7E10PbY2qg\n" +
+  "JO74ItrN0bYJJsFYacYwCiSfQYjz8dmYjlSL3Kh/rEN1gSeD4p1lXsGOOUajr0vP\n" +
+  "qSqG3M4jfEq4Hfw5sGp1sttg+uuKtOFMwbuJ2lweiHHM0pF/qKxhRRUe30Hvq1Ch\n" +
+  "y/dBrre4xaRvzxNsEL2L9GE39GaoImIoRIU7S5vV4I4hbcJ8A90VRSoX+4J+4wHd\n" +
+  "RhQYgTJoCJtV+DcuffhSmt9c3pIf0okJPsBmEA+udZrIHpKH3Ur2cX0vMlMfrr6/\n" +
+  "jWOcq2TS7DlQKjpDytZMZ+p8tGgKKyMcgaES7AD2r08j4uHqQz9dxEhI6/yf62cn\n" +
+  "OhOktzzzEo9phL1wqqIHig6FKgHLfGSE26wBazzWI5R4VEnZdWsgaSZyNxPjeYe5\n" +
+  "H61fIKjYoCBDSZRfqdXNceekIt9SlyoDrxJOvpecyqF1WOgFIdG3gdRLpxc8SwXZ\n" +
+  "KRyLylr012MmjbidYw5n5NKEf7MFKX0CD/001d0Qa5O5anp5B+NE9Hwc9ockkPaW\n" +
+  "DmQ/4UNGV1gJpX7NQISGfgI2SZWAlJrLEgD0f/ZN2+647nOFH8BOQRfLrwUv\n" +
+  "-----END CERTIFICATE-----\n";
 
 export enum Status {
   CONNECTED = "CONNECTED",
@@ -233,5 +260,11 @@ export class EmeraldApiAccessDev extends EmeraldApiAccess {
 export class EmeraldApiAccessLocal extends EmeraldApiAccess {
   constructor(id: string) {
     super("127.0.0.1:8090", certLocal, id);
+  }
+}
+
+export class EmeraldApiAccessProd extends EmeraldApiAccess {
+  constructor(id: string) {
+    super("34.98.113.36:443", certProd, id);
   }
 }
