@@ -5,7 +5,7 @@ import {CSSProperties, withStyles, withTheme} from '@material-ui/styles';
 import {
   Network as NetworkIcon, NetworkDisconnected as NetworkDisconnectedIcon, Block as BlockIcon
 } from '@emeraldplatform/ui-icons';
-import { blockchainByName } from '@emeraldwallet/core';
+import { blockchainByName, utils } from '@emeraldwallet/core';
 import Button from '../../../common/Button';
 
 interface ItemProps {
@@ -31,7 +31,7 @@ class ExtendedMenuItem extends React.Component<ItemProps> {
         <Grid item style={{color: textColor}}>{blockchainByName(title).getTitle()}</Grid>
         <Grid item>
           <Grid container style={{color: textColor}}>
-            <BlockIcon /><div>{height}</div>
+            <BlockIcon /><div>{utils.separateThousands(height, ' ')}</div>
           </Grid>
         </Grid>
       </Grid>
@@ -81,12 +81,10 @@ class NetworkSelectorRender extends React.Component<Props, State> {
     const {
       theme, classes,
     } = this.props;
-
-    const icon = <NetworkIcon/>;
+    const blockchains = this.props.blockchains || [];
+    const icon = blockchains.length > 0 ? <NetworkIcon/> : <NetworkDisconnectedIcon/>;
 
     // const styles = getStyles(this.props);
-
-    const blockchains = this.props.blockchains || [];
 
     const {anchorEl} = this.state;
 

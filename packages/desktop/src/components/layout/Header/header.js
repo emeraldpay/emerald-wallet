@@ -3,11 +3,10 @@ import {connect} from 'react-redux';
 import {AppBar, Toolbar} from '@material-ui/core';
 import {withStyles} from '@material-ui/styles';
 import {Button, Status} from '@emeraldwallet/ui';
-import {Block as BlockIcon, Settings as SettingsIcon} from '@emeraldplatform/ui-icons';
+import {Settings as SettingsIcon} from '@emeraldplatform/ui-icons';
 import { blockchains } from '@emeraldwallet/store';
 import SyncWarning from '../../../containers/SyncWarning';
 import Total from './Total';
-import {separateThousands} from '../../../lib/convert';
 import EmeraldTitle from './Title';
 
 const styles = (theme) => ({
@@ -40,26 +39,6 @@ const Header = (props) => {
       fontSize: '16px',
     },
   };
-
-  const BlockDisplay = ({classes}) => {
-    const label = separateThousands(network.currentBlock.height, ' ');
-    return (
-      <div style={{marginTop: '7px'}}>
-        <Button
-          variant="text"
-          color="secondary"
-          disabled={true}
-          label={label}
-          classes={{
-            text: classes.text,
-          }}
-          icon={<BlockIcon/>}
-        />
-      </div>
-    );
-  };
-
-  const StyledBlockDisplay = withStyles(blockDisplayStyles)(BlockDisplay);
 
   const SettingsButton = ({classes}) => (
     <Button
@@ -102,7 +81,7 @@ const mapStateToProps = (state, ownProps) => {
     chains.push({
       id: code,
       title: code,
-      height: separateThousands(curr.get(code).height, ' '),
+      height: curr.get(code).height,
     });
   }
   return {
