@@ -1,13 +1,13 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
-import Immutable from 'immutable';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {addresses} from '@emeraldwallet/store';
 import TransactionsHistory from '../../tx/TxHistory';
 import AccountsList from '../../accounts/AccountList';
 import Header from './header';
+import Landing from '../../../containers/Landing';
 
 const styles = {
   statusMessage: {
@@ -17,7 +17,7 @@ const styles = {
 };
 
 const Dashboard = (props) => {
-  const {connecting, statusMessage} = props;
+  const {connecting, statusMessage, addrs} = props;
   if (connecting) {
     return (
       <Grid container direction="column" alignItems="center" justify="center">
@@ -29,6 +29,10 @@ const Dashboard = (props) => {
         </Grid>
       </Grid>
     );
+  }
+
+  if (addrs.size === 0) {
+    return (<Landing />);
   }
 
   return (
@@ -47,7 +51,7 @@ Dashboard.propTypes = {
 
 export default connect(
   (state, ownProps) => ({
-    accounts: addresses.selectors.all(state),
+    addrs: addresses.selectors.all(state),
     connecting: state.launcher.get('connecting'),
     statusMessage: state.launcher.get('message').get('text'),
   }),

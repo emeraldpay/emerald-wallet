@@ -1,15 +1,8 @@
 import BigNumber from 'bignumber.js';
 import Immutable from 'immutable';
 import {
-  mweiToWei, etherToWei, estimateGasFromTrace, transformToFullName, separateThousands
+  mweiToWei, etherToWei, estimateGasFromTrace, transformToFullName,
 } from './convert';
-
-describe('Number formatting', () => {
-  it('format number with separated thousands', () => {
-    expect(separateThousands(123456789, ' ')).toEqual('123 456 789');
-    expect(separateThousands(123456789, '*')).toEqual('123*456*789');
-  });
-});
 
 const balanceOf = {
   constant: true,

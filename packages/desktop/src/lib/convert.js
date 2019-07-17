@@ -128,6 +128,7 @@ export function transformToFullName(func) {
   return `${func.get('name')}(${typeName})`;
 }
 
-export function separateThousands(number, separator) {
-  return parseInt(number, 10).toLocaleString('en').split(',').join(separator);
-}
+// depricated
+// export function separateThousands(number, separator) {
+//   return parseInt(number, 10).toLocaleString('en').split(',').join(separator);
+// }
