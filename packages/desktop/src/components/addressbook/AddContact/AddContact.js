@@ -1,22 +1,20 @@
 import { connect } from 'react-redux';
 import { ContactForm } from '@emeraldwallet/ui';
-import Addressbook from '../../../store/vault/addressbook';
-import { screen } from '../../../store';
+import { screen, addressBook } from '@emeraldwallet/store';
+import settings from '../../../store/wallet/settings';
 
 const { gotoScreen } = screen.actions;
 const AddContact = connect(
   (state, ownProps) => ({
     blockAddress: false,
     title: 'Add Contact',
+    blockchains: settings.selectors.currentChains(state),
   }),
   (dispatch, ownProps) => ({
-    onSubmit: (data) => new Promise((resolve, reject) => {
-      dispatch(Addressbook.actions.addAddress(data.address, data.name, data.description))
-        .then((response) => {
-          resolve(response);
-          dispatch(gotoScreen('address-book'));
-        });
-    }),
+    onSubmit: (data) => {
+      const chain = data.blockchain.toLowerCase();
+      dispatch(addressBook.actions.addContactAction(chain, data.address, data.name, data.description));
+    },
     onCancel: () => {
       dispatch(gotoScreen('address-book'));
     },

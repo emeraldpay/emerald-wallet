@@ -1,7 +1,7 @@
 import React from 'react';
 import {withStyles} from '@material-ui/styles';
 import { connect } from 'react-redux';
-import Immutable from 'immutable';
+import { addressBook } from '@emeraldwallet/store';
 import Contact from './Contact';
 import TopBar from '../../layout/TopBar';
 
@@ -23,11 +23,11 @@ const styles2 = (theme) => ({
   },
 });
 
-const ContactList = ({ addressBook, classes }) => {
+const ContactList = ({ contacts, classes }) => {
   let list;
-  if (addressBook.size > 0) {
-    list = addressBook.map((contact) => (
-      <div key={contact.get('address')} className={classes.listItem}>
+  if (contacts.length > 0) {
+    list = contacts.map((contact) => (
+      <div key={contact.address} className={classes.listItem}>
         <Contact address={contact} />
       </div>));
   } else {
@@ -51,7 +51,7 @@ const StyledContactList = withStyles(styles2)(ContactList);
 
 const AddressBook = connect(
   (state, ownProps) => ({
-    addressBook: state.addressBook.get('addressBook', Immutable.List()),
+    contacts: addressBook.selectors.all(state),
   }),
   (dispatch, ownProps) => ({
   })

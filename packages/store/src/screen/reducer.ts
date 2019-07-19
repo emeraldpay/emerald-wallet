@@ -1,7 +1,6 @@
 import {shell} from 'electron';
 import {fromJS} from 'immutable';
 import {IScreenState, ActionTypes, ScreenAction} from './types';
-import * as addresses from "../addresses";
 
 const INITIAL_STATE: IScreenState = {
   screen: null,

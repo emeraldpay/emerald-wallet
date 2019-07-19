@@ -12,7 +12,7 @@ describe('blockchains reducer', () => {
   });
 
   it('handles Actions.GAS_PRICE', () => {
-    let state = reducer(undefined, { type: ActionTypes.GAS_PRICE, payload: {chain: "etc", gasPrice: new Wei(850000) } });
+    let state = reducer(undefined, { type: ActionTypes.GAS_PRICE, payload: {blockchain: "etc", gasPrice: new Wei(850000) } });
     expect(state).toEqual(INITIAL_STATE.set("etc", { gasPrice: new Wei(850000), height: null }));
     expect(selectors.gasPrice({[moduleName]: state}, "etc").toString(Units.WEI)).toEqual("850000");
   })

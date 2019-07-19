@@ -2,6 +2,7 @@ import * as React from 'react';
 import {CSSProperties, withStyles} from '@material-ui/styles';
 import {Page, ButtonGroup, Input} from '@emeraldplatform/ui';
 import Button from '../../common/Button';
+import ChainSelector from "../../common/ChainSelector";
 
 export const styles = {
   formRow: {
@@ -38,11 +39,13 @@ interface Props {
   onCancel?: any;
   onSubmit?: any;
   title?: string;
+  blockchains?: any;
 }
 
 interface State {
   name?: string;
   address?: string;
+  blockchain?: string;
 }
 
 export class ContactForm extends React.Component<Props, State> {
@@ -50,6 +53,7 @@ export class ContactForm extends React.Component<Props, State> {
     super(props);
     this.state = {
       ...this.props.initialValues,
+      blockchain: (props.blockchains && props.blockchains.length > 0) ? props.blockchains[0].params.code : ''
     }
   }
 
@@ -61,13 +65,20 @@ export class ContactForm extends React.Component<Props, State> {
 
   handleSubmit = () => {
     if (this.props.onSubmit) {
-      this.props.onSubmit();
+      const { address, name, blockchain } = this.state;
+      this.props.onSubmit({blockchain, address, name, description:''});
     }
   };
 
   handleAddressChange = (event: any) => {
     this.setState({
       address: event.target.value,
+    })
+  };
+
+  handleChainChange = (chain: any) => {
+    this.setState({
+      blockchain: chain,
     })
   };
 
@@ -79,8 +90,12 @@ export class ContactForm extends React.Component<Props, State> {
 
   render() {
     const {
-      blockAddress, title, classes,
+      blockAddress, title, classes, blockchains
     } = this.props;
+
+    const {
+      blockchain
+    } = this.state;
 
     const {
       name, address
@@ -88,6 +103,20 @@ export class ContactForm extends React.Component<Props, State> {
 
     return (
       <Page title={title}>
+        <div className={classes.formRow}>
+          <div className={classes.left}>
+            <div className={classes.fieldName}>
+              Blockchain
+            </div>
+          </div>
+          <div className={classes.right}>
+            <ChainSelector
+              onChange={this.handleChainChange}
+              value={blockchain}
+              chains={blockchains}
+            />
+          </div>
+        </div>
         <div className={classes.formRow}>
           <div className={classes.left}>
             <div className={classes.fieldName}>Address</div>
