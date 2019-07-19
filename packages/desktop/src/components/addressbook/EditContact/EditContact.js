@@ -6,9 +6,9 @@ const EditContact = connect(
     blockAddress: true,
     title: 'Edit Contact',
     initialValues: {
-      name: ownProps.address.get('name'),
-      address: ownProps.address.get('address'),
-      description: ownProps.address.get('description'),
+      name: ownProps.address.name,
+      address: ownProps.address.address,
+      description: ownProps.address.description,
     },
   }),
   (dispatch, ownProps) => ({

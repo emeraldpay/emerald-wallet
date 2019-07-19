@@ -5,6 +5,7 @@ import {
   ledger,
   txhistory,
   addresses,
+  addressBook,
 } from '@emeraldwallet/store';
 import { ipcRenderer } from 'electron';
 import { startProtocolListener } from './protocol';
@@ -13,7 +14,6 @@ import { Api, getConnector } from '../lib/rpc/api';
 import { intervalRates } from './config';
 import settings from './wallet/settings';
 import tokens from './vault/tokens';
-import Addressbook from './vault/addressbook';
 
 import {
   readConfig,
@@ -63,7 +63,7 @@ export function startSync() {
     onceModeSet(store).then(() => {
       const loadAllChain = [];
       const supported = settings.selectors.currentChains(store.getState());
-      const codes = supported.map((chain) => chain.params.coinTicker.toLowerCase());
+      const codes = supported.map((chain) => chain.params.code);
       log.info('Configured to use chains', codes);
 
       store.dispatch(txhistory.actions.init(codes));
@@ -71,13 +71,13 @@ export function startSync() {
 
       supported.forEach((chain) => {
         // const {chainId} = chain.params;
-        const chainCode = chain.params.coinTicker.toLowerCase();
+        const chainCode = chain.params.code;
         const loadChain = [];
         // request tokens
         // loadChain.push(store.dispatch(tokens.actions.loadTokenList(chainCode)));
         // loadChain.push(store.dispatch(tokens.actions.addDefault(chainCode, chainId)));
         // address book
-        loadChain.push(store.dispatch(Addressbook.actions.loadAddressBook(chainCode)));
+        loadChain.push(store.dispatch(addressBook.actions.loadAddressBook(chainCode)));
         // request gas price for each chain
         loadChain.push(store.dispatch(blockchains.actions.fetchGasPriceAction(chainCode)));
         loadAllChain.push(

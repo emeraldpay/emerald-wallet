@@ -6,7 +6,6 @@ import { Wei } from '@emeraldplatform/eth';
 import createLogger from '../../utils/logger';
 import AddressBook from '../../components/addressbook/ContactList';
 import AccountShow from '../../components/accounts/AccountShow';
-import AddressShow from '../../components/addressbook/AddressShow';
 import AddContact from '../../components/addressbook/AddContact';
 import TransactionShow from '../../components/tx/TxDetails';
 import MnemonicWizard from '../../components/accounts/MnemonicWizard';
@@ -40,11 +39,10 @@ const Screen = (props) => {
   if (props.screen === 'address-book') {
     return <AddressBook />;
   }
-  if (props.screen === 'address') {
-    return <AddressShow address={ props.screenItem }/>;
-  } if (props.screen === 'add-address') {
+  if (props.screen === 'add-address') {
     return <AddContact />;
-  } if (props.screen === 'landing-add-from-ledger') {
+  }
+  if (props.screen === 'landing-add-from-ledger') {
     return <LedgerImport onBackScreen={props.screenItem} />;
   } if (props.screen === 'add-from-ledger') {
     return <LedgerImport />;

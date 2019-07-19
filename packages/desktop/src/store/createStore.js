@@ -7,9 +7,8 @@ import {
 } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import {
-  addresses, blockchains, screen, ledger, connection
+  addresses, blockchains, screen, ledger, connection, addressBook
 } from '@emeraldwallet/store';
-import Addressbook from './vault/addressbook';
 import tokens from './vault/tokens';
 import network from './network';
 import reduxLogger from '../utils/redux-logger';
@@ -18,7 +17,7 @@ import launcherReducers from './launcher/launcherReducers';
 import walletReducers from './wallet/walletReducers';
 
 const reducers = {
-  addressBook: Addressbook.reducer,
+  addressBook: addressBook.reducer,
   tokens: tokens.reducer,
   network: network.reducer,
   launcher: launcherReducers,
@@ -54,8 +53,9 @@ export const createStore = (_api) => {
     applyMiddleware(...storeMiddleware)
   );
 
-  sagaMiddleware.run(blockchains.sagas.watchRequestGasPrice, _api);
+  sagaMiddleware.run(blockchains.sagas.root, _api);
   sagaMiddleware.run(ledger.sagas.root, _api);
+  sagaMiddleware.run(addressBook.sagas.root, _api);
 
   return store;
 };

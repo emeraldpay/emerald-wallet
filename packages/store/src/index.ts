@@ -4,5 +4,14 @@ import * as blockchains from './blockchains';
 import * as screen from './screen';
 import * as ledger from './ledger';
 import * as connection from './conn';
+import * as addressBook from './address-book';
 
-export { addresses, blockchains, screen, txhistory, ledger, connection };
+export {
+  addressBook,
+  addresses,
+  blockchains,
+  screen,
+  txhistory,
+  ledger,
+  connection
+};

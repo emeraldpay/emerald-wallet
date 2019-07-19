@@ -10,6 +10,7 @@ import {
   addresses,
   blockchains,
   ledger,
+  addressBook,
 } from '@emeraldwallet/store';
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
@@ -343,7 +344,7 @@ export default connect(
       currency: state.wallet.settings.get('localeCurrency'),
       gasPrice,
       tokenSymbols: allTokens.toJS().map((i) => i.symbol),
-      addressBookAddresses: state.addressBook.get('addressBook').toJS().map((i) => i.address),
+      addressBookAddresses: addressBook.selectors.all(state).map((i) => i.address),
       ownAddresses: addresses.selectors.allByBlockchain(state, blockchain.params.code).toJS().map((i) => i.id),
       useLedger: account.get('hardware', false),
       ledgerConnected: state.ledger.get('connected'),

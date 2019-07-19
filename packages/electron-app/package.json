@@ -1,7 +1,7 @@
 {
-  "name": "@emeraldwallet/store",
+  "name": "@emeraldwallet/electron-app",
   "version": "2.0.1",
-  "description": "Emerald Redux store",
+  "description": "Emerald Wallet Electron Shell",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "author": "ETCDEV GmbH",
@@ -9,12 +9,11 @@
   "scripts": {
     "build": "rimraf lib/ && tsc",
     "build:dist": "rimraf lib/ && tsc",
-    "test": "jest",
-    "test:coverage": "jest --coverage && codecov"
+    "test": "jest --passWithNoTests",
+    "test:coverage": "jest --passWithNoTests --coverage && codecov"
   },
   "devDependencies": {
     "@types/jest": "^24.0.9",
-    "@types/lodash": "^4.14.136",
     "@types/node": "^11.10.4",
     "@types/uuid": "^3.4.4",
     "jest": "^24.1.0",
@@ -24,21 +23,13 @@
   },
   "jest": {
     "preset": "ts-jest",
-    "testEnvironment": "jsdom",
+    "testEnvironment": "node",
     "testPathIgnorePatterns": [
       "<rootDir>/lib/",
       "<rootDir>/node_modules/"
     ],
     "setupFiles": [
-      "<rootDir>/jest.setup.ts",
-      "<rootDir>/src/__mocks__/localStorageMock.ts"
-    ],
-    "moduleNameMapper": {
-      "electron": "<rootDir>/src/__mocks__/electronMock.ts"
-    },
-    "coverageDirectory": "./coverage/",
-    "collectCoverageFrom": [
-      "src/**/*.ts"
+      "<rootDir>/jest.setup.ts"
     ],
     "globals": {
       "ts-jest": {
@@ -46,14 +37,15 @@
           "warnOnly": true
         }
       }
-    }
+    },
+    "coverageDirectory": "./coverage/",
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ]
   },
   "dependencies": {
     "@emeraldplatform/eth": "0.5.1",
     "@emeraldwallet/core": "^2.0.1",
-    "immutable": "3.8.2",
-    "lodash": "^4.17.14",
-    "redux-saga": "^1.0.2",
     "uuid": "^3.3.2"
   }
 }
