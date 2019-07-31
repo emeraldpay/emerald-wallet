@@ -34,8 +34,6 @@ export { default as Status } from './components/layout/Header/Status';
 export { default as Total } from './components/layout/Header/Total';
 export { default as ConnectionStatus } from './components/layout/ConnectionStatus';
 
-export { default as ContactForm } from './components/addressbook/ContactForm';
-
 export { default as NewAccountProps } from './components/accounts/GenerateAccount/AccountPropsDialog';
 
 export { default as LedgerImportAccount} from './components/ledger/ImportAccount';
