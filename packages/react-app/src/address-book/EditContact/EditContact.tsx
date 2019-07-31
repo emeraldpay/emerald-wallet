@@ -1,8 +1,8 @@
 import { connect } from 'react-redux';
-import { ContactForm } from '@emeraldwallet/ui';
+import ContactForm from '../ContactForm';
 
 const EditContact = connect(
-  (state, ownProps) => ({
+  (state, ownProps: any) => ({
     blockAddress: true,
     title: 'Edit Contact',
     initialValues: {
@@ -12,7 +12,7 @@ const EditContact = connect(
     },
   }),
   (dispatch, ownProps) => ({
-    onSubmit: (data) => {
+    onSubmit: (data: any) => {
       ownProps.submit(data);
     },
     cancel: () => {

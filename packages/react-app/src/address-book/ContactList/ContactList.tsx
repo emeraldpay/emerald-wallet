@@ -1,11 +1,12 @@
-import React from 'react';
-import {withStyles} from '@material-ui/styles';
+import * as React from 'react';
+import { withStyles, CSSProperties } from '@material-ui/styles';
 import { connect } from 'react-redux';
 import { addressBook } from '@emeraldwallet/store';
-import Contact from './Contact';
-import TopBar from '../../layout/TopBar';
 
-const styles2 = (theme) => ({
+import Contact from './Contact';
+import TopBar from '../../TopBar';
+
+const styles = (theme: any) => ({
   container: {
     marginBottom: '10px',
     marginTop: '5px',
@@ -20,13 +21,18 @@ const styles2 = (theme) => ({
     marginTop: '10px',
     textAlign: 'center',
     border: `1px solid ${theme.palette && theme.palette.divider}`,
-  },
+  } as CSSProperties,
 });
 
-const ContactList = ({ contacts, classes }) => {
+interface Props {
+  contacts?: any;
+  classes: any;
+}
+
+const ContactList = ({ contacts, classes }: Props) => {
   let list;
   if (contacts.length > 0) {
-    list = contacts.map((contact) => (
+    list = contacts.map((contact: any) => (
       <div key={contact.address} className={classes.listItem}>
         <Contact address={contact} />
       </div>));
@@ -47,7 +53,7 @@ const ContactList = ({ contacts, classes }) => {
   );
 };
 
-const StyledContactList = withStyles(styles2)(ContactList);
+const StyledContactList = withStyles(styles)(ContactList);
 
 const AddressBook = connect(
   (state, ownProps) => ({

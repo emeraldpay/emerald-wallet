@@ -1,8 +1,7 @@
 import * as React from 'react';
 import {CSSProperties, withStyles} from '@material-ui/styles';
 import {Page, ButtonGroup, Input} from '@emeraldplatform/ui';
-import Button from '../../common/Button';
-import ChainSelector from "../../common/ChainSelector";
+import {Button, ChainSelector} from "@emeraldwallet/ui";
 
 export const styles = {
   formRow: {
@@ -29,7 +28,7 @@ export const styles = {
   } as CSSProperties,
 };
 
-interface Props {
+export interface Props {
   classes: any;
   initialValues?: {
     name?: string;
@@ -102,7 +101,7 @@ export class ContactForm extends React.Component<Props, State> {
     } = this.state;
 
     return (
-      <Page title={title}>
+      <Page title={title || ''}>
         <div className={classes.formRow}>
           <div className={classes.left}>
             <div className={classes.fieldName}>
