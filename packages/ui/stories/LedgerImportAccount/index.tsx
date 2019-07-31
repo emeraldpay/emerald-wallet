@@ -1,10 +1,13 @@
 import * as React from 'react';
 import {storiesOf} from '@storybook/react';
 import ImportAccount from '../../src/components/ledger/ImportAccount';
+import {IApi} from "@emeraldwallet/core";
 
 storiesOf('LedgerImportAccount', module)
   .add('default', () => (
     <ImportAccount
+      api={{} as IApi}
+      blockchains={[]}
       hdbase="m/44'/60'/160720'/0'"
       selected={false}
       addresses={[
@@ -15,6 +18,8 @@ storiesOf('LedgerImportAccount', module)
   ))
   .add('with selected', () => (
     <ImportAccount
+      api={{} as IApi}
+      blockchains={[]}
       hdbase="m/44'/60'/160720'/0'"
       selected={false}
       selectedAddress='0x9FCaFcca8aec0367abB35fBd161c241f7b79891B'

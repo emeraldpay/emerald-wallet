@@ -8,7 +8,7 @@ const hasBalance = (account) => (account.get('balance', null) === null)
 
 export default connect(
   (state, ownProps) => ({
-    chain: state.launcher.getIn(['chain', 'name']),
+    chain: ownProps.account.get('blockchain'),
     showPrint: !ownProps.account.get('hardware', false),
     showExport: !ownProps.account.get('hardware', false),
     hiddenAccount: ownProps.account.get('hidden'),
@@ -17,15 +17,15 @@ export default connect(
   (dispatch, ownProps) => ({
     onPrint: (chain) => () => {
       const address = ownProps.account.get('id');
-      dispatch(screen.actions.gotoScreen('export-paper-wallet', address));
+      dispatch(screen.actions.gotoScreen('export-paper-wallet', {address, blockchain: chain}));
     },
     onHide: (chain) => () => {
       const address = ownProps.account.get('id');
-      dispatch(screen.actions.showDialog('hide-account', address));
+      dispatch(screen.actions.showDialog('hide-account', {address, blockchain: chain}));
     },
     onUnhide: (chain) => () => {
       const address = ownProps.account.get('id');
-      dispatch(addresses.actions.unhideAccount(address));
+      dispatch(addresses.actions.unhideAccount(chain, address));
       // refresh account data
       dispatch(txhistory.actions.refreshTrackedTransactions());
       dispatch(addresses.actions.loadAccountsList());

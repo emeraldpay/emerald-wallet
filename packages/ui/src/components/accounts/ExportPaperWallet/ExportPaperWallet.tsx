@@ -6,7 +6,7 @@ import Button from '../../common/Button';
 import PasswordInput from '../../common/PasswordInput';
 
 
-export const styles2 = {
+export const styles = {
   passwordLabel: {
     height: '24px',
     width: '190px',
@@ -54,6 +54,11 @@ interface State {
 }
 
 export class ExportPaperWallet extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+    this.state = {};
+  }
+
   handleSubmit = () => {
     if (this.props.onSubmit) {
       this.props.onSubmit(this.state.password);
@@ -70,6 +75,9 @@ export class ExportPaperWallet extends React.Component<Props, State> {
     const {
       accountId, onBack, classes,
     } = this.props;
+    const {
+      password,
+    } = this.state;
 
     return (
       <Page title="Print Paper Wallet" leftIcon={<Back onClick={onBack}/> } >
@@ -88,6 +96,7 @@ export class ExportPaperWallet extends React.Component<Props, State> {
                 Password needs for confirm all wallet operations.</div>
               <div style={{ marginTop: '30px' }}>
                 <PasswordInput
+                  password={password}
                   onChange={this.handlePasswordChange}
                 />
               </div>
@@ -105,5 +114,5 @@ export class ExportPaperWallet extends React.Component<Props, State> {
   }
 }
 
-export default withStyles(styles2)(ExportPaperWallet);
+export default withStyles(styles)(ExportPaperWallet);
 

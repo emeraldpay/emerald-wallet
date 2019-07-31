@@ -100,7 +100,7 @@ const Screen = (props) => {
     return <PaperWallet address={ props.screenItem.address } privKey={ props.screenItem.privKey } />;
   }
   if (props.screen === 'export-paper-wallet') {
-    return <ExportPaperWallet accountId={ props.screenItem } />;
+    return <ExportPaperWallet accountId={ props.screenItem.address } blockchain={ props.screenItem.blockchain } />;
   }
 
   return (

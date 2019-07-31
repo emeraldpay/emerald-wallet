@@ -9,9 +9,10 @@ export default connect(
   (dispatch, ownProps) => ({
     onSubmit: (password) => {
       const address = ownProps.accountId;
-      dispatch(addresses.actions.exportPrivateKey(password, address))
+      const chain = ownProps.blockchain;
+      dispatch(addresses.actions.exportPrivateKey(chain, password, address))
         .then((privKey) => {
-          return dispatch(screen.actions.gotoScreen('paper-wallet', { address, privKey }));
+          return dispatch(screen.actions.gotoScreen('paper-wallet', { address, privKey, blockchain: chain }));
         })
         .catch((err) => dispatch(screen.actions.showError(err)));
     },
