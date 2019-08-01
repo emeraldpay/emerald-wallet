@@ -1,7 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { AccountActionsMenu } from '@emeraldwallet/ui';
-import {addresses, txhistory, screen} from '@emeraldwallet/store';
+import { addresses, txhistory, screen } from '@emeraldwallet/store';
+import { saveJson } from '../../../lib/saveAs';
 
 const hasBalance = (account) => (account.get('balance', null) === null)
   || (account.get('balance') && account.get('balance').toWei().gt(0));
@@ -35,10 +36,10 @@ export default connect(
     },
     onExport: (chain) => () => {
       const address = ownProps.account.get('id');
-      throw Error('NOT IMPLEMEMTED');
-      // api.emerald.exportAccount(address, chain).then((result) => {
-      //   saveJson(result, `${address}.json`);
-      // });
+      dispatch(addresses.actions.exportKeyFile(chain, address))
+        .then((result) => {
+          saveJson(result, `${chain}-${address}.json`);
+        });
     },
   })
 )(AccountActionsMenu);
