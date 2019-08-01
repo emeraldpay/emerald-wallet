@@ -1,6 +1,6 @@
 {
   "name": "@emeraldwallet/react-app",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Emerald Wallet React Application",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -54,9 +54,9 @@
   "dependencies": {
     "@emeraldplatform/eth": "0.5.1",
     "@emeraldplatform/ui-icons": "^0.5.1",
-    "@emeraldwallet/core": "^2.0.1",
-    "@emeraldwallet/store": "^2.0.1",
-    "@emeraldwallet/ui": "^2.0.1",
+    "@emeraldwallet/core": "^2.0.2",
+    "@emeraldwallet/store": "^2.0.2",
+    "@emeraldwallet/ui": "^2.0.2",
     "@material-ui/styles": "^4.3.0",
     "react": "^16.8.6",
     "react-redux": "^7.1.0"

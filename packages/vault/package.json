@@ -1,6 +1,6 @@
 {
   "name": "@emeraldwallet/vault",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Emerald vault interop",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -36,6 +36,6 @@
     ]
   },
   "dependencies": {
-    "@emeraldwallet/core": "^2.0.1"
+    "@emeraldwallet/core": "^2.0.2"
   }
 }

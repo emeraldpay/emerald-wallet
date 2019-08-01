@@ -1,6 +1,6 @@
 {
   "name": "@emeraldwallet/store",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Emerald Redux store",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -50,7 +50,7 @@
   },
   "dependencies": {
     "@emeraldplatform/eth": "0.5.1",
-    "@emeraldwallet/core": "^2.0.1",
+    "@emeraldwallet/core": "^2.0.2",
     "immutable": "3.8.2",
     "lodash": "^4.17.14",
     "redux-saga": "^1.0.2",
