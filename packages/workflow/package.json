@@ -1,6 +1,6 @@
 {
   "name": "@emeraldwallet/workflow",
-  "version": "2.0.1",
+  "version": "2.0.2",
   "description": "Emerald Wallet Workflow and Business Logic components",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -45,7 +45,7 @@
   },
   "dependencies": {
     "@emeraldplatform/eth": "0.5.1",
-    "@emeraldwallet/core": "^2.0.1",
+    "@emeraldwallet/core": "^2.0.2",
     "uuid": "^3.3.2"
   }
 }
