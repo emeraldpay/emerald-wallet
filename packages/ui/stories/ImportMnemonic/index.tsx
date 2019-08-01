@@ -4,4 +4,4 @@ import { action } from '@storybook/addon-actions';
 import ImportMnemonic from '../../src/components/accounts/ImportMnemonic';
 
 storiesOf('ImportMnemonic', module)
-  .add('default', () => (<ImportMnemonic onSubmit={action('onSubmit')}/>));
+  .add('default', () => (<ImportMnemonic blockchains={[]} initialValues={{hdpath: ''}} onSubmit={action('onSubmit')}/>));

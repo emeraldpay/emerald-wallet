@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import ShowContact from '../ShowContact';
 import EditContact from '../EditContact';
 
@@ -7,8 +7,16 @@ const States = {
   EDIT: 'EDIT',
 };
 
-class Contact extends React.Component {
-  constructor(props) {
+interface State {
+  currentState: any;
+}
+
+interface Props {
+  address: string;
+}
+
+class Contact extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
     this.state = {
       currentState: States.SHOW,

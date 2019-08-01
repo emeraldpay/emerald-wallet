@@ -82,6 +82,7 @@
     "@emeraldplatform/util": "0.5.1",
     "@emeraldwallet/core": "^2.0.1",
     "@emeraldwallet/erc20": "^2.0.0",
+    "@emeraldwallet/react-app": "^2.0.1",
     "@emeraldwallet/services": "^2.0.1",
     "@emeraldwallet/store": "^2.0.1",
     "@emeraldwallet/ui": "^2.0.1",

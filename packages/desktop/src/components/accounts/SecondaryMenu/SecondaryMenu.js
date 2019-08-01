@@ -1,14 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { AccountActionsMenu } from '@emeraldwallet/ui';
-import {addresses, txhistory, screen} from '@emeraldwallet/store';
+import { addresses, txhistory, screen } from '@emeraldwallet/store';
+import { saveJson } from '../../../lib/saveAs';
 
 const hasBalance = (account) => (account.get('balance', null) === null)
   || (account.get('balance') && account.get('balance').toWei().gt(0));
 
 export default connect(
   (state, ownProps) => ({
-    chain: state.launcher.getIn(['chain', 'name']),
+    chain: ownProps.account.get('blockchain'),
     showPrint: !ownProps.account.get('hardware', false),
     showExport: !ownProps.account.get('hardware', false),
     hiddenAccount: ownProps.account.get('hidden'),
@@ -17,15 +18,15 @@ export default connect(
   (dispatch, ownProps) => ({
     onPrint: (chain) => () => {
       const address = ownProps.account.get('id');
-      dispatch(screen.actions.gotoScreen('export-paper-wallet', address));
+      dispatch(screen.actions.gotoScreen('export-paper-wallet', {address, blockchain: chain}));
     },
     onHide: (chain) => () => {
       const address = ownProps.account.get('id');
-      dispatch(screen.actions.showDialog('hide-account', address));
+      dispatch(screen.actions.showDialog('hide-account', {address, blockchain: chain}));
     },
     onUnhide: (chain) => () => {
       const address = ownProps.account.get('id');
-      dispatch(addresses.actions.unhideAccount(address));
+      dispatch(addresses.actions.unhideAccount(chain, address));
       // refresh account data
       dispatch(txhistory.actions.refreshTrackedTransactions());
       dispatch(addresses.actions.loadAccountsList());
@@ -35,10 +36,10 @@ export default connect(
     },
     onExport: (chain) => () => {
       const address = ownProps.account.get('id');
-      throw Error('NOT IMPLEMEMTED');
-      // api.emerald.exportAccount(address, chain).then((result) => {
-      //   saveJson(result, `${address}.json`);
-      // });
+      dispatch(addresses.actions.exportKeyFile(chain, address))
+        .then((result) => {
+          saveJson(result, `${chain}-${address}.json`);
+        });
     },
   })
 )(AccountActionsMenu);

@@ -2,11 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Wei } from '@emeraldplatform/eth';
+import { ContactList as AddressBook, AddContact } from '@emeraldwallet/react-app';
 
 import createLogger from '../../utils/logger';
-import AddressBook from '../../components/addressbook/ContactList';
 import AccountShow from '../../components/accounts/AccountShow';
-import AddContact from '../../components/addressbook/AddContact';
 import TransactionShow from '../../components/tx/TxDetails';
 import MnemonicWizard from '../../components/accounts/MnemonicWizard';
 import LedgerImport from '../../components/ledger/ImportAccount';
@@ -100,7 +99,7 @@ const Screen = (props) => {
     return <PaperWallet address={ props.screenItem.address } privKey={ props.screenItem.privKey } />;
   }
   if (props.screen === 'export-paper-wallet') {
-    return <ExportPaperWallet accountId={ props.screenItem } />;
+    return <ExportPaperWallet accountId={ props.screenItem.address } blockchain={ props.screenItem.blockchain } />;
   }
 
   return (

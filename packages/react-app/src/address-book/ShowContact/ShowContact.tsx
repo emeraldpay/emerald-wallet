@@ -1,11 +1,11 @@
-import React from 'react';
+import * as React from 'react';
 import withStyles from 'react-jss';
 import { connect } from 'react-redux';
 import { CoinAvatar} from '@emeraldwallet/ui';
 import { Account } from '@emeraldplatform/ui';
 import { Trash as DeleteIcon, Pen1 as EditIcon } from '@emeraldplatform/ui-icons';
 import IconButton from '@material-ui/core/IconButton';
-import { addressBook } from '../../../store';
+import { addressBook } from '@emeraldwallet/store';
 
 
 export const styles = {
@@ -18,9 +18,16 @@ export const styles = {
   },
 };
 
+interface Props {
+  classes: any;
+  address: any;
+  onDeleteAddress?: any;
+  onEditAddress?: any;
+}
+
 export const ShowContact = ({
   address, onDeleteAddress, onEditAddress, classes,
-}) => (
+}: Props) => (
   <div className={classes.container}>
     <div>
       <CoinAvatar chain={address.blockchain} />
@@ -48,7 +55,7 @@ const StyledShowContact = withStyles(styles)(ShowContact);
 const Address = connect(
   (state, ownProps) => ({
   }),
-  (dispatch, ownProps) => ({
+  (dispatch, ownProps: any) => ({
     openAddress: () => {
       // const address = ownProps.address;
       // dispatch(gotoScreen('address', address.get('address')));

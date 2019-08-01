@@ -5,6 +5,7 @@ import * as screen from './screen';
 import * as ledger from './ledger';
 import * as connection from './conn';
 import * as addressBook from './address-book';
+import * as settings from './settings';
 
 export {
   addressBook,
@@ -13,5 +14,6 @@ export {
   screen,
   txhistory,
   ledger,
-  connection
+  connection,
+  settings,
 };

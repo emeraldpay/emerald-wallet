@@ -5,7 +5,6 @@ import {withStyles} from '@material-ui/styles';
 import {Button, Status} from '@emeraldwallet/ui';
 import {Settings as SettingsIcon} from '@emeraldplatform/ui-icons';
 import { blockchains } from '@emeraldwallet/store';
-import SyncWarning from '../../../containers/SyncWarning';
 import Total from './Total';
 import EmeraldTitle from './Title';
 
@@ -67,7 +66,6 @@ const Header = (props) => {
           </Toolbar>
         </AppBar>
       </div>
-      <SyncWarning/>
     </div>
   );
 };
