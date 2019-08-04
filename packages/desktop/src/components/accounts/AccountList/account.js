@@ -1,5 +1,5 @@
 import React from 'react';
-import { withStyles, makeStyles, createStyles } from '@material-ui/styles';
+import { withStyles } from '@material-ui/styles';
 import withTheme from '@material-ui/core/styles/withTheme';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
@@ -8,10 +8,10 @@ import PropTypes from 'prop-types';
 import { Account as AddressAvatar, ButtonGroup } from '@emeraldplatform/ui';
 import { Button, CoinAvatar } from '@emeraldwallet/ui';
 import { blockchainByName } from '@emeraldwallet/core';
-import SecondaryMenu from '../SecondaryMenu';
+import { AccountActions } from '@emeraldwallet/react-app';
 import AccountBalance from '../Balance';
 
-const styles2 = (theme) => ({
+const styles = (theme) => ({
   tokensDivider: {
     backgroundColor: '#F5F5F5',
     height: '2px',
@@ -99,7 +99,7 @@ export class Account extends React.Component {
               <Grid item xs={3}>
                 <div className={ classes.actionsContainer }>
                   <ButtonGroup>
-                    <SecondaryMenu account={account} />
+                    <AccountActions account={account} />
                     <Button
                       label="Deposit"
                       onClick={ this.handleDepositClick }
@@ -118,4 +118,4 @@ export class Account extends React.Component {
     }
 }
 
-export default withTheme((withStyles(styles2)(Account)));
+export default withTheme((withStyles(styles)(Account)));

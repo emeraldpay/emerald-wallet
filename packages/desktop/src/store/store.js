@@ -6,14 +6,16 @@ import {
   txhistory,
   addresses,
   addressBook,
+  settings,
 } from '@emeraldwallet/store';
-import { ipcRenderer } from 'electron';
-import { startProtocolListener } from './protocol';
+import {ipcRenderer} from 'electron';
+import {startProtocolListener} from './protocol';
 
-import { Api, getConnector } from '../lib/rpc/api';
-import { intervalRates } from './config';
-import settings from './wallet/settings';
+import {Api, getConnector} from '../lib/rpc/api';
+import {intervalRates} from './config';
 import tokens from './vault/tokens';
+
+import {default as WalletSettings} from './wallet/settings';
 
 import {
   readConfig,
@@ -24,7 +26,7 @@ import {
 
 import getWalletVersion from '../utils/get-wallet-version';
 import createLogger from '../utils/logger';
-import { createStore } from './createStore';
+import {createStore} from './createStore';
 
 import {
   onceServicesStart,
@@ -53,40 +55,44 @@ function refreshAll() {
 
 export function startSync() {
   log.info('Start synchronization');
-  store.dispatch(settings.actions.listenPrices());
+  store.dispatch(WalletSettings.actions.listenPrices());
 
   const promises = [
     // store.dispatch(history.actions.refreshTrackedTransactions()),
   ];
 
   promises.push(
-    onceModeSet(store).then(() => {
-      const loadAllChain = [];
-      const supported = settings.selectors.currentChains(store.getState());
-      const codes = supported.map((chain) => chain.params.code);
-      log.info('Configured to use chains', codes);
+    onceModeSet(store)
+      .then(() => {
+        return store.dispatch(addresses.actions.loadAccountsList());
+      })
+      .then(() => {
+        const loadAllChain = [];
+        const supported = settings.selectors.currentChains(store.getState());
+        const codes = supported.map((chain) => chain.params.code);
+        log.info('Configured to use chains', codes);
 
-      store.dispatch(txhistory.actions.init(codes));
-      api.connectChains(codes);
+        store.dispatch(txhistory.actions.init(codes));
+        api.connectChains(codes);
 
-      supported.forEach((chain) => {
-        // const {chainId} = chain.params;
-        const chainCode = chain.params.code;
-        const loadChain = [];
-        // request tokens
-        // loadChain.push(store.dispatch(tokens.actions.loadTokenList(chainCode)));
-        // loadChain.push(store.dispatch(tokens.actions.addDefault(chainCode, chainId)));
-        // address book
-        loadChain.push(store.dispatch(addressBook.actions.loadAddressBook(chainCode)));
-        // request gas price for each chain
-        loadChain.push(store.dispatch(blockchains.actions.fetchGasPriceAction(chainCode)));
-        loadAllChain.push(
-          Promise.all(loadChain)
-            .catch((e) => log.error(`Failed to load chain ${chainCode}`, e))
-        );
-      });
-      return Promise.all(loadAllChain).catch((e) => log.error('Failed to load chains', e));
-    })
+        supported.forEach((chain) => {
+          // const {chainId} = chain.params;
+          const chainCode = chain.params.code;
+          const loadChain = [];
+          // request tokens
+          // loadChain.push(store.dispatch(tokens.actions.loadTokenList(chainCode)));
+          // loadChain.push(store.dispatch(tokens.actions.addDefault(chainCode, chainId)));
+          // address book
+          loadChain.push(store.dispatch(addressBook.actions.loadAddressBook(chainCode)));
+          // request gas price for each chain
+          loadChain.push(store.dispatch(blockchains.actions.fetchGasPriceAction(chainCode)));
+          loadAllChain.push(
+            Promise.all(loadChain)
+              .catch((e) => log.error(`Failed to load chain ${chainCode}`, e))
+          );
+        });
+        return Promise.all(loadAllChain).catch((e) => log.error('Failed to load chains', e));
+      })
   );
 
   promises.push(
@@ -135,7 +141,7 @@ export function electronToStore() {
 export const start = () => {
   try {
     store.dispatch(readConfig());
-    store.dispatch(settings.actions.loadSettings());
+    store.dispatch(WalletSettings.actions.loadSettings());
   } catch (e) {
     log.error(e);
   }

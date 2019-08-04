@@ -54,6 +54,7 @@
     "immutable": "3.8.2",
     "lodash": "^4.17.14",
     "redux-saga": "^1.0.2",
+    "redux-thunk": "^2.3.0",
     "uuid": "^3.3.2"
   }
 }

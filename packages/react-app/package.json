@@ -59,6 +59,7 @@
     "@emeraldwallet/ui": "^2.0.2",
     "@material-ui/styles": "^4.3.0",
     "react": "^16.8.6",
-    "react-redux": "^7.1.0"
+    "react-redux": "^7.1.0",
+    "redux-thunk": "^2.3.0"
   }
 }

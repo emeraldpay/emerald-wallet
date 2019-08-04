@@ -4,7 +4,7 @@ import {BlockchainCode, blockchainByName} from "@emeraldwallet/core";
 import {
   IAddressesState,
   AddressesAction,
-  LoadingAction,
+  SetLoadingAction,
   ActionTypes,
   SetListAction,
   SetBalanceAction,
@@ -33,8 +33,8 @@ const initialAccount = Map({
   blockchain: null,
 });
 
-function onLoading(state: any, action: LoadingAction): any {
-  return state.set('loading', true);
+function onLoading(state: any, action: SetLoadingAction): any {
+  return state.set('loading', action.payload);
 }
 
 type AddressList =  List<Map<string, any>>
@@ -73,9 +73,7 @@ function onSetList(state: any, action: SetListAction) {
     }
   });
 
-  return state
-    .set('addresses', resultList)
-    .set('loading', false);
+  return state.set('addresses', resultList);
 }
 
 function updateAccount(state: any, id: string, blockchain: BlockchainCode, f: any) {
@@ -89,7 +87,6 @@ function updateAccount(state: any, id: string, blockchain: BlockchainCode, f: an
     return accounts;
   });
 }
-
 
 function onSetBalance(state: any, action: SetBalanceAction) {
   const { accountId, value } = action.payload;

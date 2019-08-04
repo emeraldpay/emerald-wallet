@@ -9,6 +9,7 @@ import {
   Page, IdentityIcon, ButtonGroup, Account as AddressAvatar
 } from '@emeraldplatform/ui';
 import { Button, InlineEdit } from '@emeraldwallet/ui';
+import { AccountActions } from '@emeraldwallet/react-app';
 import { blockchainByName } from '@emeraldwallet/core';
 import {styles, Row} from 'elements/Form';
 import { screen, addresses, txhistory } from '@emeraldwallet/store';
@@ -16,7 +17,6 @@ import tokens from '../../../store/vault/tokens';
 import createLogger from '../../../utils/logger';
 import TransactionsList from '../../tx/TxHistory';
 import Balance from '../Balance';
-import SecondaryMenu from '../SecondaryMenu';
 import TokenBalances from '../TokenBalances';
 
 export const styles2 = {
@@ -155,7 +155,7 @@ export class AccountShow extends React.Component {
                         label="Send"
                         onClick={createTx}
                       />
-                      <SecondaryMenu account={account}/>
+                      <AccountActions account={account}/>
                     </ButtonGroup>
                   </div>
                 </div>

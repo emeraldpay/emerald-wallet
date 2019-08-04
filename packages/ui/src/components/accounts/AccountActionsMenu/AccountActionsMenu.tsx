@@ -12,7 +12,7 @@ import Paper from "@material-ui/core/Paper";
 import ClickAwayListener from "@material-ui/core/ClickAwayListener";
 import MenuList from "@material-ui/core/MenuList";
 
-interface Props {
+export interface Props {
   chain: string;
   hiddenAccount: boolean;
   canHide: boolean;
