@@ -24,7 +24,7 @@ export function closeError() {
   };
 }
 
-export function showDialog(name: string, item = null) {
+export function showDialog(name: string, item: any = null): DialogAction {
   return {
     type: ActionTypes.DIALOG,
     value: name,

@@ -62,8 +62,9 @@ export interface SetBalanceAction {
   payload: any;
 }
 
-export interface LoadingAction {
+export interface SetLoadingAction {
   type: ActionTypes.LOADING;
+  payload: boolean;
 }
 
 export interface AddAccountAction {
@@ -99,7 +100,7 @@ export interface PendingBalanceAction {
 }
 export type AddressesAction =
   | SetListAction
-  | LoadingAction
+  | SetLoadingAction
   | SetBalanceAction
   | UpdateAddressAction
   | AddAccountAction

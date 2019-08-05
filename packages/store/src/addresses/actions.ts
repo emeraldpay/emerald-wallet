@@ -1,14 +1,14 @@
 import {ipcRenderer} from 'electron';
-import {blockchainByName, BlockchainCode, EthereumTx, IApi} from "@emeraldwallet/core";
+import {Blockchain, blockchainByName, BlockchainCode, EthereumTx, IApi} from "@emeraldwallet/core";
 import {convert, EthAddress} from '@emeraldplatform/core';
 import {Wei} from "@emeraldplatform/eth";
 import {
   ActionTypes,
   AddAccountAction,
-  LoadingAction,
   PendingBalanceAction,
   SetHDPathAction,
   SetListAction,
+  SetLoadingAction,
   SetTxCountAction,
   UpdateAddressAction
 } from "./types";
@@ -17,6 +17,7 @@ import * as selectors from "./selectors";
 import {catchError, dispatchRpcError, gotoScreen} from "../screen/actions";
 import {Dispatch} from "react";
 import * as history from '../txhistory';
+import * as settings from '../settings';
 
 const EthAccount = require('@emeraldplatform/eth-account').EthAccount;
 
@@ -47,22 +48,24 @@ function fetchHdPaths(): Dispatched<SetHDPathAction> {
   };
 }
 
-export function loadAccountsList(blockchains: Array<BlockchainCode>, onLoaded?: Function): Dispatched<SetListAction | LoadingAction | SetHDPathAction> {
-  if (!blockchains) {
-    console.warn("Chains are not passed");
-    //TODO use chains from settings
-    blockchains = [BlockchainCode.ETH, BlockchainCode.ETC, BlockchainCode.Morden, BlockchainCode.Kovan];
-  }
-  let toLoad = blockchains.length;
-  if (toLoad == 0 && onLoaded) {
-    onLoaded();
-  }
-  return (dispatch, getState, api) => {
-    dispatch({type: ActionTypes.LOADING});
-    const showHidden = getState().wallet.settings.get('showHiddenAccounts', false);
+export function setLoadingAction(loading: boolean): SetLoadingAction {
+  return {
+    type: ActionTypes.LOADING,
+    payload: loading,
+  };
+}
 
-    // TODO read from wallet settings
-    blockchains.forEach((blockchainCode) => {
+export function loadAccountsList(onLoaded?: Function): Dispatched<SetListAction | SetLoadingAction | SetHDPathAction> {
+
+  return (dispatch, getState, api) => {
+    const blockchains: any = settings.selectors.currentChains(getState());
+    const showHidden = settings.selectors.showHiddenAccounts(getState());
+    let toLoad = blockchains.length;
+
+    dispatch(setLoadingAction(true));
+
+    blockchains.forEach((blockchain: Blockchain) => {
+      const blockchainCode = blockchain.params.code;
       api.emerald.listAccounts(blockchainCode.toLowerCase(), showHidden)
         .then((res) => res.map((a) => ({...a, blockchain: blockchainCode})))
         .then((result) => {
@@ -83,8 +86,11 @@ export function loadAccountsList(blockchains: Array<BlockchainCode>, onLoaded?: 
             ipcRenderer.send('subscribe-balance', blockchainCode, addedAddresses);
           }
           toLoad--;
-          if (toLoad <= 0 && onLoaded) {
-            onLoaded();
+          if (toLoad <= 0) {
+            if (onLoaded) {
+              onLoaded();
+            }
+            dispatch(setLoadingAction(false));
           }
         })
     });
@@ -138,8 +144,8 @@ export function createAccount(blockchain: BlockchainCode, passphrase: string, na
   };
 }
 
-export function exportPrivateKey(blockchain: BlockchainCode, passphrase: string, accountId: string): Dispatched<any> {
-  return (dispatch, getState, api) => {
+export function exportPrivateKey(blockchain: BlockchainCode, passphrase: string, accountId: string): any {
+  return (dispatch: any, getState: any, api: IApi) => {
     return api.emerald.exportAccount(accountId, blockchain.toLowerCase()).then((result) => {
       const wallet = EthAccount.fromV3(result, passphrase);
       return wallet.getPrivateKeyString();
@@ -147,8 +153,8 @@ export function exportPrivateKey(blockchain: BlockchainCode, passphrase: string,
   };
 }
 
-export function exportKeyFile(blockchain: BlockchainCode, accountId: string): Dispatched<any> {
-  return (dispatch, getState, api) => {
+export function exportKeyFile(blockchain: BlockchainCode, accountId: string): any {
+  return (dispatch: any, getState: any, api: IApi) => {
     return api.emerald.exportAccount(accountId, blockchain.toLowerCase());
   };
 }

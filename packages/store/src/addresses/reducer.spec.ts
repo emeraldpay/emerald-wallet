@@ -6,7 +6,7 @@ import {BlockchainCode} from "@emeraldwallet/core";
 describe('addresses reducer', () => {
   it('handles Actions.LOADING', () => {
 
-    const state = reducer(undefined, { type: ActionTypes.LOADING });
+    const state = reducer(undefined, { type: ActionTypes.LOADING, payload: true });
     expect(state).toEqual(fromJS({
       ...(INITIAL_STATE.toJS()),
       loading: true,

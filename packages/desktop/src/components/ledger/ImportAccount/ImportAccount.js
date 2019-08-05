@@ -53,7 +53,7 @@ export default connect(
       dispatch(ledger.actions.importSelected(blockchain))
         .then((address) => {
           acc = fromJS({ id: address, blockchain });
-          return dispatch(addresses.actions.loadAccountsList(null, () => {
+          return dispatch(addresses.actions.loadAccountsList(() => {
             // go to account details only when accounts updated
             dispatch(screen.actions.gotoScreen('account', acc));
           }));
