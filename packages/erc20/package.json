@@ -1,6 +1,6 @@
 {
   "name": "@emeraldwallet/erc20",
-  "version": "2.0.2",
+  "version": "2.0.3",
   "description": "ERC20 Tokens",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
