@@ -8,11 +8,10 @@ import {
 } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import { Button, ChainSelector } from '@emeraldwallet/ui';
-import { screen, addresses } from '@emeraldwallet/store';
+import { screen, addresses, settings } from '@emeraldwallet/store';
 import { Row, styles as formStyles } from 'elements/Form/index';
 
 import FileDropField from './fileDropField';
-import settings from '../../../../store/wallet/settings';
 
 class ImportJson extends React.Component {
     static propTypes = {
