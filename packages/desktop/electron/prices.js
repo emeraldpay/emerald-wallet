@@ -37,7 +37,7 @@ class Prices {
   stop() {
     if (this.listener) {
       log.info('Closing prices listener');
-      this.listener.close();
+      this.listener.stop();
       this.listener = null;
     }
   }
