@@ -2,8 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
 import { ImportMnemonic } from '@emeraldwallet/ui';
-import { screen, addresses } from '@emeraldwallet/store';
-import settings from '../../store/wallet/settings';
+import { screen, addresses, settings } from '@emeraldwallet/store';
 
 export default connect(
   (state, ownProps) => ({

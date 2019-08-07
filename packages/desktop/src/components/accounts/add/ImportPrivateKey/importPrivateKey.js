@@ -5,8 +5,7 @@ import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { ImportPrivateKey } from '@emeraldwallet/ui';
 import { utils } from '@emeraldwallet/core';
-import { screen, addresses } from '@emeraldwallet/store';
-import settings from '../../../../store/wallet/settings';
+import { screen, addresses, settings } from '@emeraldwallet/store';
 
 export default connect(
   (state, ownProps) => ({

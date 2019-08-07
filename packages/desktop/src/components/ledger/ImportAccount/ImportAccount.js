@@ -3,8 +3,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { WaitLedgerDialog, LedgerImportAccount } from '@emeraldwallet/ui';
 import { fromJS } from 'immutable';
-import { ledger, addresses, screen } from '@emeraldwallet/store';
-import settings from '../../../store/wallet/settings';
+import {
+  ledger, addresses, screen, settings,
+} from '@emeraldwallet/store';
 
 const Container = (props) => {
   const { connected, ...passProps } = props;

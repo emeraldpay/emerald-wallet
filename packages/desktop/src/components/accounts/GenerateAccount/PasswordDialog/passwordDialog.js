@@ -9,9 +9,9 @@ import {
 import {
   Button, PasswordInput, Advice, ChainSelector
 } from '@emeraldwallet/ui';
+import {settings} from '@emeraldwallet/store';
 import { Row, styles as formStyles } from 'elements/Form';
 import LoadingIcon from '../LoadingIcon';
-import settings from '../../../../store/wallet/settings';
 
 const MIN_PASSWORD_LENGTH = 8;
 
