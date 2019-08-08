@@ -2,7 +2,7 @@
 
 image:https://img.shields.io/circleci/project/github/ETCDEVTeam/emerald-wallet/master.svg?label=CircleCI[CircleCI branch]
 image:https://img.shields.io/travis/ETCDEVTeam/emerald-wallet.svg?label=Travis[Travis (.org)]
-image:https://img.shields.io/appveyor/ci/ETCDEVTeam/emerald-wallet.svg?label=AppVeyor[AppVeyor]
+image:https://img.shields.io/appveyor/ci/ETCDEVTeam/emerald-wallet/master?label=AppVeyor[AppVeyor branch]
 image:https://codecov.io/gh/ETCDEVTeam/emerald-wallet/branch/master/graph/badge.svg[Codecov, link=https://codecov.io/gh/ETCDEVTeam/emerald-wallet]
 image:https://img.shields.io/github/license/ETCDEVTeam/emerald-wallet.svg?maxAge=2592000["License", link="https://github.com/ETCDEVTeam/emerald-wallet/blob/master/LICENSE"]
 
@@ -91,8 +91,7 @@ Electron and Emerald logs persisted in:
 You can also use a variety of alternate build options, eg.
 
 ```
-$ npm run build:all:nowatch
-$ npm run build:web
+$ yarn build:all:nowatch
 ```
 
 === Building distributions in development
@@ -123,12 +122,12 @@ Clear out any persisted settings or userdata from previous trials
 == Run tests
 
 ```
-npm run test:watch
+yarn test:watch
 ```
 
 or for single run:
 ```
-npm test
+yarn test
 ```
 
 == Contact

@@ -6,13 +6,13 @@ const {
   EmeraldApiAccessDev,
   EmeraldApiAccessProd,
 } = require('@emeraldwallet/services');
+const { createServices } = require('@emeraldwallet/electron-app');
 const { app, ipcMain, session } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path'); // eslint-disable-line
 
 const Settings = require('./settings');
 const mainWindow = require('./mainWindow');
 const { Services } = require('./services');
-const { createServices2 } = require('./services2');
 const { LedgerApi } = require('./ledger');
 const ipc = require('./ipc');
 const log = require('./logger');
@@ -90,7 +90,7 @@ app.on('ready', () => {
   const services = new Services(browserWindow.webContents, serverConnect, apiAccess, dataDir);
 
   log.info('... setup services 2');
-  const services2 = createServices2(ipcMain, browserWindow.webContents, apiAccess, apiMode.chains);
+  const services2 = createServices(ipcMain, browserWindow.webContents, apiAccess, apiMode.chains);
 
   app.on('quit', () => {
     services.shutdown().catch(console.error);
@@ -105,7 +105,7 @@ app.on('ready', () => {
     .catch((err) => log.error('Invalid settings', err));
 
   log.info('... subscribe for prices');
-  const prices = new Prices(browserWindow.webContents, apiAccess, apiMode.chains, apiMode.currencies[0]);
+  const prices = new Prices(ipcMain, browserWindow.webContents, apiAccess, apiMode.chains, apiMode.currencies[0]);
   prices.start();
 
   apiAccess.statusListener((status) => {

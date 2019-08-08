@@ -9,14 +9,13 @@ import {
   Page, IdentityIcon, ButtonGroup, Account as AddressAvatar
 } from '@emeraldplatform/ui';
 import { Button, InlineEdit } from '@emeraldwallet/ui';
-import { AccountActions } from '@emeraldwallet/react-app';
+import { AccountActions, Balance } from '@emeraldwallet/react-app';
 import { blockchainByName } from '@emeraldwallet/core';
-import {styles, Row} from 'elements/Form';
+import {styles, Row} from 'elements/Form'; // TODO: refactor it !
 import { screen, addresses, txhistory } from '@emeraldwallet/store';
 import tokens from '../../../store/vault/tokens';
 import createLogger from '../../../utils/logger';
 import TransactionsList from '../../tx/TxHistory';
-import Balance from '../Balance';
 import TokenBalances from '../TokenBalances';
 
 export const styles2 = {

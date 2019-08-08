@@ -17,7 +17,7 @@ const defaultStyles = {
   },
 };
 
-interface Props {
+export interface Props {
   symbol: string;
 
   /**

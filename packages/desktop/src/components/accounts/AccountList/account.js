@@ -8,8 +8,7 @@ import PropTypes from 'prop-types';
 import { Account as AddressAvatar, ButtonGroup } from '@emeraldplatform/ui';
 import { Button, CoinAvatar } from '@emeraldwallet/ui';
 import { blockchainByName } from '@emeraldwallet/core';
-import { AccountActions } from '@emeraldwallet/react-app';
-import AccountBalance from '../Balance';
+import { AccountActions, Balance as AccountBalance } from '@emeraldwallet/react-app';
 
 const styles = (theme) => ({
   tokensDivider: {

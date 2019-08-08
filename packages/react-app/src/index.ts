@@ -4,3 +4,6 @@ export { default as AddContact } from './address-book/AddContact';
 
 // accounts
 export { default as AccountActions } from './accounts/AccountActions';
+
+// common
+export { default as Balance } from './common/Balance';
