@@ -1,13 +1,13 @@
-const { ipcMain } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const log = require('./logger');
 
 class Prices {
-  constructor(webContents, apiAccess, from, currency) {
+  constructor(ipcMain, webContents, apiAccess, from, currency) {
+    this.ipcMain = ipcMain;
     this.webContents = webContents;
     this.froms = from;
     this.to = currency;
     this.apiAccess = apiAccess;
-    ipcMain.on('prices/setCurrency', (event, to) => {
+    this.ipcMain.on('prices/setCurrency', (event, to) => {
       to = to.toUpperCase();
       log.info('set prices', to);
       if (this.to !== to) {

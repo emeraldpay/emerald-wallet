@@ -46,6 +46,7 @@
   "dependencies": {
     "@emeraldplatform/eth": "0.5.1",
     "@emeraldwallet/core": "^2.0.3",
+    "@emeraldwallet/services": "^2.0.3",
     "uuid": "^3.3.2"
   }
 }
