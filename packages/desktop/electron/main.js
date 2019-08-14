@@ -53,7 +53,7 @@ log.info('Settings: ', settings.toJS());
 log.info('Api Mode: ', apiMode.id);
 
 const options = {
-  aboutWndPath:  path.join(__dirname, '../app/about.html'),
+  aboutWndPath: path.join(__dirname, '../app/about.html'),
   mainWndPath: path.join(__dirname, '../app/index.html'),
   appIconPath: path.join(__dirname, '../app/icons/512x512.png'),
   openDevTools: isDev,
