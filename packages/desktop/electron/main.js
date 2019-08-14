@@ -57,6 +57,7 @@ const options = {
   mainWndPath: path.join(__dirname, '../app/index.html'),
   appIconPath: path.join(__dirname, '../app/icons/512x512.png'),
   openDevTools: isDev,
+  logFile: log.transports.file.file,
 };
 
 assertSingletonWindow();

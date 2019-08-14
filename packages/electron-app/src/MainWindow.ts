@@ -1,4 +1,4 @@
-import { BrowserWindow, Menu } from 'electron';
+import {BrowserWindow, Menu, shell} from 'electron';
 import darwinMenu from './menus/darwin';
 import winLinuxMenu from './menus/win-linux';
 import { createAboutPage } from './AboutWindow';
@@ -52,6 +52,9 @@ const createWindow = function (options: any): BrowserWindow {
   const menuHandlers = {
     onAbout: () => {
       createAboutPage(options);
+    },
+    onOpenLog: () => {
+      shell.openItem(options.logFile);
     }
   };
 

@@ -1,7 +1,3 @@
-import { shell } from 'electron';
-
-const log = require('electron-log');
-
 export default function (window: any, menuHandlers: any): any {
   return [{
     label: 'Emerald',
@@ -83,7 +79,7 @@ export default function (window: any, menuHandlers: any): any {
       {
         label: 'Open Logs',
         click() {
-          shell.openItem(log.transports.file.file);
+          menuHandlers.onOpenLog();
         },
       },
       {
