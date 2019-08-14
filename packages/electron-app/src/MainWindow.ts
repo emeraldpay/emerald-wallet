@@ -1,34 +1,43 @@
-const electron = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
-const path = require('path'); // eslint-disable-line
-const url = require('url'); // eslint-disable-line
+import { BrowserWindow, Menu } from 'electron';
+import darwinMenu from './menus/darwin';
+import winLinuxMenu from './menus/win-linux';
+import { createAboutPage } from './AboutWindow';
+
+const url = require('url');
 const devtron = require('devtron');
-const darwinMenu = require('./menus/darwin');
-const winLinuxMenu = require('./menus/win-linux');
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
-let mainWindow;
+let mainWindow: BrowserWindow | null;
 let menu;
 
-const createWindow = function (openDevTools) {
+export function getMainWindow(options: any) {
+  if (mainWindow) {
+    return mainWindow;
+  }
+  createWindow(options);
+  return mainWindow;
+}
+
+const createWindow = function (options: any): BrowserWindow {
   // Create the browser window.
-  mainWindow = new electron.BrowserWindow({
+  mainWindow = new BrowserWindow({
     width: 1200,
     height: 650,
     minWidth: 1200,
     minHeight: 650,
-    icon: path.join(__dirname, '../app/icons/512x512.png'),
+    icon: options.appIconPath,
   });
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
-    pathname: path.join(__dirname, '../app/index.html'),
+    pathname: options.mainWndPath,
     protocol: 'file:',
     slashes: true,
   }));
 
   // Open the DevTools.
-  if (openDevTools) {
+  if (options.openDevTools) {
     mainWindow.webContents.openDevTools();
     devtron.install();
   }
@@ -40,19 +49,20 @@ const createWindow = function (openDevTools) {
     mainWindow = null;
   });
 
+  const menuHandlers = {
+    onAbout: () => {
+      createAboutPage(options);
+    }
+  };
+
   // Menu
   if (process.platform === 'darwin') {
-    menu = electron.Menu.buildFromTemplate(darwinMenu(mainWindow));
+    menu = Menu.buildFromTemplate(darwinMenu(mainWindow, menuHandlers));
   } else {
-    menu = electron.Menu.buildFromTemplate(winLinuxMenu(mainWindow));
+    menu = Menu.buildFromTemplate(winLinuxMenu(mainWindow, menuHandlers));
   }
-  electron.Menu.setApplicationMenu(menu);
+  Menu.setApplicationMenu(menu);
   mainWindow.setMenu(menu);
 
   return mainWindow;
-};
-
-module.exports = {
-  mainWindow,
-  createWindow,
 };
