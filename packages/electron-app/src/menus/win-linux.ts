@@ -1,8 +1,4 @@
-const { shell } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
-const logger = require('../logger');
-const createAboutPage = require('../about');
-
-module.exports = function (window) {
+export default function (window: any, menuHandlers: any): any {
   return [
     {
       label: '&Emerald',
@@ -37,7 +33,7 @@ module.exports = function (window) {
         {
           label: 'Open Logs',
           click() {
-            shell.openItem(logger.transports.file.file);
+            menuHandlers.onOpenLog();
           },
         },
       ],
@@ -47,7 +43,9 @@ module.exports = function (window) {
       submenu: [
         {
           label: '&About',
-          click() { createAboutPage(); },
+          click() {
+            menuHandlers.onAbout();
+          },
         },
       ],
     },

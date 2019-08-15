@@ -6,12 +6,11 @@ const {
   EmeraldApiAccessDev,
   EmeraldApiAccessProd,
 } = require('@emeraldwallet/services');
-const { createServices } = require('@emeraldwallet/electron-app');
+const { createServices, getMainWindow } = require('@emeraldwallet/electron-app');
 const { app, ipcMain, session } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path'); // eslint-disable-line
 
 const Settings = require('./settings');
-const mainWindow = require('./mainWindow');
 const { Services } = require('./services');
 const { LedgerApi } = require('./ledger');
 const ipc = require('./ipc');
@@ -26,8 +25,8 @@ const { onceReady } = require('./ready');
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
-let apiMode;
 
+let apiMode;
 let dataDir = null;
 
 if (isDev) {
@@ -52,6 +51,14 @@ global.launcherConfig = {
 log.info('userData: ', app.getPath('userData'));
 log.info('Settings: ', settings.toJS());
 log.info('Api Mode: ', apiMode.id);
+
+const options = {
+  aboutWndPath: path.join(__dirname, '../app/about.html'),
+  mainWndPath: path.join(__dirname, '../app/index.html'),
+  appIconPath: path.join(__dirname, '../app/icons/512x512.png'),
+  openDevTools: isDev,
+  logFile: log.transports.file.file,
+};
 
 assertSingletonWindow();
 startProtocolHandler();
@@ -82,7 +89,7 @@ app.on('ready', () => {
 
 
   log.info('... create window');
-  const browserWindow = mainWindow.createWindow(isDev);
+  const browserWindow = getMainWindow(options);
   onceReady(() => {
     sendMode(browserWindow.webContents, apiMode);
   });
@@ -130,7 +137,5 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (mainWindow.mainWindow === null) {
-    mainWindow.createWindow(isDev);
-  }
+  getMainWindow(options);
 });

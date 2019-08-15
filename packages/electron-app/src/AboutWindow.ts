@@ -1,10 +1,9 @@
-// Create the browser window.
-const electron = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
-const path = require('path'); // eslint-disable-line
-const url = require('url'); // eslint-disable-line
+import { BrowserWindow } from 'electron';
 
-const createAboutPage = () => {
-  const browserWindow = new electron.BrowserWindow({
+const url = require('url');
+
+export const createAboutPage = (options: any) => {
+  const browserWindow = new BrowserWindow({
     width: 700,
     height: 410,
     titleBarStyle: 'hidden',
@@ -17,7 +16,7 @@ const createAboutPage = () => {
   browserWindow.setMenuBarVisibility(false);
   // and load the about.html.
   browserWindow.loadURL(url.format({
-    pathname: path.join(__dirname, '../app/about.html'),
+    pathname: options.aboutWndPath,
     protocol: 'file:',
     slashes: true,
   }));
@@ -26,5 +25,3 @@ const createAboutPage = () => {
     browserWindow.show();
   });
 };
-
-module.exports = createAboutPage;
