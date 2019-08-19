@@ -1,6 +1,7 @@
 import { fromJS } from 'immutable';
 import { refreshTrackedTransactions } from './actions';
 import { ipcRenderer } from 'electron';
+import {IApi} from '@emeraldwallet/core';
 
 describe('historyActions/refreshTrackedTransactions', () => {
   const getState = () => ({
@@ -24,7 +25,7 @@ describe('historyActions/refreshTrackedTransactions', () => {
     const dispatch = jest.fn();
     const hash = '0x123';
 
-    refreshTrackedTransactions()(dispatch, getState, undefined);
+    refreshTrackedTransactions()(dispatch, getState, {} as IApi);
 
     expect(ipcRenderer.send).toHaveBeenCalledWith('subscribe-tx', 'ETH', '0x123');
   });

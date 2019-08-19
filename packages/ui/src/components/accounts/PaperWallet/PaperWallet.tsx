@@ -79,7 +79,7 @@ export const styles = {
   },
 };
 
-interface Props {
+export interface Props {
   address: string;
   privKey: string;
   onCancel?: any;
