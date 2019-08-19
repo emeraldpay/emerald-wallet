@@ -58,9 +58,7 @@ const Screen = (props) => {
     const amount = new Wei(transaction.value);
     const to = toAccount.get('id');
     const gasLimit = transaction.gas;
-    const data = transaction.data;
-    const typedData = transaction.typedData;
-    const mode = transaction.mode;
+    const { data, typedData, mode } = transaction;
     return <MultiCreateTransaction account={ fromAccount } to={to} amount={amount} gasLimit={gasLimit} data={data} typedData={typedData} mode={mode}/>;
   }
   if (props.screen === 'landing-generate') {
