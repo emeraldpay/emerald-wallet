@@ -4,7 +4,7 @@ import {
   TxStatus,
   ClientReadable
 } from '@emeraldplatform/grpc';
-import extractChain from "./extractChain";
+import extractChain from "../extractChain";
 
 type TxStatusEvent = {
   txid: string,

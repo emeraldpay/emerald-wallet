@@ -9,7 +9,7 @@ import {
   MonitoringClient
 } from "@emeraldplatform/grpc";
 import {ChainListener} from "./ChainListener";
-import {TxListener} from "./TxListener";
+import {TxListener} from "./services/TxListener";
 import {PriceListener} from "./PricesListener";
 import * as os from 'os';
 import {app} from 'electron';
