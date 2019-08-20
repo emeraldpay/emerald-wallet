@@ -2,7 +2,9 @@ import React from 'react';
 import { connect } from 'react-redux';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Wei } from '@emeraldplatform/eth';
-import { ContactList as AddressBook, AddContact } from '@emeraldwallet/react-app';
+import {
+  ContactList as AddressBook, AddContact, PaperWallet,
+} from '@emeraldwallet/react-app';
 
 import createLogger from '../../utils/logger';
 import AccountShow from '../../components/accounts/AccountShow';
@@ -16,7 +18,6 @@ import Welcome from '../../components/welcome/welcome';
 import Landing from '../Landing';
 import Dashboard from '../../components/layout/Dashboard';
 import Settings from '../Settings';
-import PaperWallet from '../PaperWallet';
 import ExportPaperWallet from '../../components/accounts/ExportPaperWallet';
 import GenerateAccount from '../../components/accounts/GenerateAccount';
 import { screen } from '../../store';
@@ -54,12 +55,10 @@ const Screen = (props) => {
   }
   if (props.screen === 'repeat-tx') {
     const {transaction, toAccount, fromAccount} = props.screenItem;
-    const amount = new Wei(transaction.get('amount')).toEther();
+    const amount = new Wei(transaction.value);
     const to = toAccount.get('id');
-    const gasLimit = transaction.get('gas');
-    const data = transaction.get('data');
-    const typedData = transaction.get('typedData');
-    const mode = transaction.get('mode');
+    const gasLimit = transaction.gas;
+    const { data, typedData, mode } = transaction;
     return <MultiCreateTransaction account={ fromAccount } to={to} amount={amount} gasLimit={gasLimit} data={data} typedData={typedData} mode={mode}/>;
   }
   if (props.screen === 'landing-generate') {

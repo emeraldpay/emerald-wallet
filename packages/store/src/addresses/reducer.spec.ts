@@ -48,7 +48,7 @@ describe('addresses reducer', () => {
   });
 
   it('ADD_ACCOUNT should add only non existent account', () => {
-    let state: any = reducer(undefined, { type: ActionTypes.LOADING });
+    let state: any = reducer(undefined, { type: ActionTypes.LOADING, payload: true });
     expect(state.get('addresses').size).toEqual(0);
     state = reducer(state, {
       type: ActionTypes.ADD_ACCOUNT,
@@ -74,7 +74,7 @@ describe('addresses reducer', () => {
   });
 
   it('ADD_ACCOUNT should add same account for another chain', () => {
-    let state: any = reducer(undefined, { type: ActionTypes.LOADING });
+    let state: any = reducer(undefined, { type: ActionTypes.LOADING, payload: true });
     expect(state.get('addresses').size).toEqual(0);
     state = reducer(state, {
       type: ActionTypes.ADD_ACCOUNT,

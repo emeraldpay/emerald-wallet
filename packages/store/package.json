@@ -39,14 +39,7 @@
     "coverageDirectory": "./coverage/",
     "collectCoverageFrom": [
       "src/**/*.ts"
-    ],
-    "globals": {
-      "ts-jest": {
-        "diagnostics": {
-          "warnOnly": true
-        }
-      }
-    }
+    ]
   },
   "dependencies": {
     "@emeraldplatform/eth": "0.5.1",

@@ -5,5 +5,8 @@ export { default as AddContact } from './address-book/AddContact';
 // accounts
 export { default as AccountActions } from './accounts/AccountActions';
 
+// export
+export { default as PaperWallet } from './export/PaperWallet';
+
 // common
 export { default as Balance } from './common/Balance';

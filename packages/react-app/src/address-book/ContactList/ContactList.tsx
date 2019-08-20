@@ -4,7 +4,7 @@ import { connect } from 'react-redux';
 import { addressBook } from '@emeraldwallet/store';
 
 import Contact from './Contact';
-import TopBar from '../../TopBar';
+import TopBar from '../../common/TopBar';
 
 const styles = (theme: any) => ({
   container: {
