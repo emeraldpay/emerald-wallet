@@ -1,4 +1,4 @@
-import { TxListener } from '../TxListener';
+import { TxListener } from './TxListener';
 import { txhistory } from '@emeraldwallet/store';
 
 export class TransactionListener {

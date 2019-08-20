@@ -1,6 +1,4 @@
 import {
-  chainByCode,
-  ChainSpec,
   TxStatusRequest,
   BlockchainClient,
   TxStatus,
