@@ -7,7 +7,7 @@ import {
 } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import {
-  addresses, blockchains, screen, ledger, connection, addressBook
+  addresses, blockchains, screen, ledger, connection, addressBook, txhistory
 } from '@emeraldwallet/store';
 import tokens from './vault/tokens';
 import network from './network';
@@ -56,6 +56,6 @@ export const createStore = (_api) => {
   sagaMiddleware.run(blockchains.sagas.root, _api);
   sagaMiddleware.run(ledger.sagas.root, _api);
   sagaMiddleware.run(addressBook.sagas.root, _api);
-
+  sagaMiddleware.run(txhistory.sagas.root, _api);
   return store;
 };

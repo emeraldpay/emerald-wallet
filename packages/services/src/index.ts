@@ -6,6 +6,6 @@ export {Services} from './services/Services'
 export {BlockchainStatus} from './services/BlockchainStatus';
 export {BalanceListener} from './services/BalanceListener';
 export {TransactionListener} from './services/TransactionListener';
-export {TxListener} from './TxListener';
+export {TxListener} from './services/TxListener';
 export {EmeraldApiAccess, EmeraldApiAccessDev, EmeraldApiAccessLocal, EmeraldApiAccessProd} from './ApiAccess';
 export {PriceListener} from './PricesListener';

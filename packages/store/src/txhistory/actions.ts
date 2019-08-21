@@ -9,7 +9,7 @@ import { allTrackedTxs } from './selectors';
 
 const txStoreKey = (chainId: number) => `chain-${chainId}-trackedTransactions`;
 
-function persistTransactions(state: any, chainId: number) {
+export function persistTransactions(state: any, chainId: number) {
   const txs = allTrackedTxs(state).toJS().filter((t: Transaction) => (t.chainId === chainId));
   storeTransactions(
     txStoreKey(chainId),
