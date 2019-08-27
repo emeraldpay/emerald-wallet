@@ -28,6 +28,8 @@ export { default as CreateTx } from './components/tx/send/CreateTx';
 export { default as SignTx } from './components/tx/send/SignTx';
 export { default as ChainSelector } from './components/common/ChainSelector';
 export { CoinIcon, CoinAvatar } from './components/common/CoinIcon';
+export { default as FormRow } from './components/common/FormRow';
+
 // Layout
 export { default as DashboardMenu } from './components/layout/DashboardMenu';
 export { default as Status } from './components/layout/Header/Status';
