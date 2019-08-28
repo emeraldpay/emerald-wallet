@@ -53,7 +53,8 @@
   },
   "dependencies": {
     "@emeraldplatform/eth": "0.5.1",
-    "@emeraldplatform/ui-icons": "^0.5.1",
+    "@emeraldplatform/ui": "^0.5.2",
+    "@emeraldplatform/ui-icons": "^0.5.2",
     "@emeraldwallet/core": "^2.0.3",
     "@emeraldwallet/store": "^2.0.3",
     "@emeraldwallet/ui": "^2.0.3",

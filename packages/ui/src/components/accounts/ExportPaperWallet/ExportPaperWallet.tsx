@@ -42,7 +42,7 @@ export const styles = {
   },
 };
 
-interface Props {
+export interface Props {
   classes: any;
   onBack?: any;
   onSubmit?: any;

@@ -8,6 +8,7 @@ export { default as AccountDetailsView } from './accounts/AccountDetails/Account
 
 // export
 export { default as PaperWallet } from './export/PaperWallet';
+export { default as ExportPaperWallet } from './export/ExportPaperWallet';
 
 // common
 export { default as Balance } from './common/Balance';
