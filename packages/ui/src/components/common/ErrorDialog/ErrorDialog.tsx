@@ -4,7 +4,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Button from '../Button';
 
-interface Props {
+export interface Props {
   open?: boolean;
   error?: any;
   message?: any;

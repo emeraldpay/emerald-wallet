@@ -13,3 +13,4 @@ export { default as ExportPaperWallet } from './export/ExportPaperWallet';
 
 // common
 export { default as Balance } from './common/Balance';
+export { default as ErrorDialog } from './common/ErrorDialog';

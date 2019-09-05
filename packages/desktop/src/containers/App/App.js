@@ -1,7 +1,8 @@
 import React from 'react';
-import {Provider} from 'react-redux';
+import { Provider } from 'react-redux';
 import { I18nextProvider } from 'react-i18next';
 import { Theme } from '@emeraldplatform/ui';
+import { ErrorDialog} from '@emeraldwallet/react-app';
 import { ThemeProvider } from '@material-ui/styles';
 
 import Header from '../../components/layout/Header';
@@ -9,7 +10,6 @@ import NotificationBar from '../../components/layout/NotificationBar';
 import ConnectionStatus from '../../components/layout/ConnectionStatus';
 
 import Screen from '../Screen';
-import ErrorDialog from '../ErrorDialog';
 import Dialog from '../Dialog';
 
 import i18n from '../../i18n/i18n';
