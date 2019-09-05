@@ -1,13 +1,13 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
-import { AccountDetailsView } from '@emeraldwallet/react-app';
+import { AccountDetailsView, TokenBalances } from '@emeraldwallet/react-app';
 import { blockchainByName } from '@emeraldwallet/core';
 import { screen, addresses, txhistory } from '@emeraldwallet/store';
+
 import tokens from '../../../store/vault/tokens';
 import createLogger from '../../../utils/logger';
 import TransactionsList from '../../tx/TxHistory';
-import TokenBalances from '../TokenBalances';
 
 export const styles2 = {
   transContainer: {
