@@ -53,11 +53,13 @@
   },
   "dependencies": {
     "@emeraldplatform/eth": "0.5.1",
-    "@emeraldplatform/ui-icons": "^0.5.1",
+    "@emeraldplatform/ui": "^0.5.2",
+    "@emeraldplatform/ui-icons": "^0.5.2",
     "@emeraldwallet/core": "^2.0.3",
     "@emeraldwallet/store": "^2.0.3",
     "@emeraldwallet/ui": "^2.0.3",
     "@material-ui/styles": "^4.3.0",
+    "qrcode.react": "^0.9.3",
     "react": "^16.8.6",
     "react-redux": "^7.1.0",
     "redux-thunk": "^2.3.0"

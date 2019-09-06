@@ -1,22 +1,13 @@
 import React from 'react';
-import withStyles from 'react-jss';
 import Immutable from 'immutable';
-import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
-import QRCode from 'qrcode.react';
-import {Back} from '@emeraldplatform/ui-icons';
-import {
-  Page, IdentityIcon, ButtonGroup, Account as AddressAvatar
-} from '@emeraldplatform/ui';
-import { Button, InlineEdit } from '@emeraldwallet/ui';
-import { AccountActions, Balance } from '@emeraldwallet/react-app';
+import { connect } from 'react-redux';
+import { AccountDetailsView, TokenBalances } from '@emeraldwallet/react-app';
 import { blockchainByName } from '@emeraldwallet/core';
-import {styles, Row} from 'elements/Form'; // TODO: refactor it !
 import { screen, addresses, txhistory } from '@emeraldwallet/store';
+
 import tokens from '../../../store/vault/tokens';
 import createLogger from '../../../utils/logger';
 import TransactionsList from '../../tx/TxHistory';
-import TokenBalances from '../TokenBalances';
 
 export const styles2 = {
   transContainer: {
@@ -29,161 +20,6 @@ export const styles2 = {
 };
 
 const log = createLogger('AccountShow');
-
-export class AccountShow extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {
-      edit: false,
-      showModal: false,
-    };
-  }
-
-  handleEdit = () => {
-    this.setState({edit: true});
-  };
-
-  handleSave = (data) => {
-    const updated = {blockchain: this.props.account.get('blockchain'), ...data};
-    this.props.editAccount(updated)
-      .then((result) => {
-        this.setState({edit: false});
-        log.debug(result);
-      });
-  };
-
-  cancelEdit = () => {
-    this.setState({edit: false});
-  };
-
-  render() {
-    const {
-      account, tokensBalances, classes,
-    } = this.props;
-    const {
-      showFiat, goBack, transactions, createTx, showReceiveDialog,
-    } = this.props;
-    // TODO: show pending balance too
-    // TODO: we convert Wei to TokenUnits here
-    const balance = account.get('balance');
-    const acc = {
-      id: account.get('id'),
-      description: account.get('description'),
-      name: account.get('name'),
-      hdpath: account.get('hdpath'),
-      hardware: account.get('hardware', false),
-      blockchain: account.get('blockchain'),
-    };
-
-    const { coinTicker } = blockchainByName(acc.blockchain).params;
-
-    return (
-      <div>
-        <Page title="Account" leftIcon={<Back onClick={goBack}/>}>
-          <div style={{display: 'flex', alignItems: 'center', paddingBottom: '20px'}}>
-            <div style={{flexGrow: 2}}>
-              <Row>
-                <div id="left-column" style={styles.left}>
-                  <div style={{display: 'flex', justifyContent: 'flex-end'}}>
-                    <IdentityIcon id={acc.id}/>
-                  </div>
-                </div>
-                <div style={styles.right}>
-                  {!this.state.edit && <AddressAvatar
-                    editable
-                    address={acc.id}
-                    description={acc.description}
-                    name={acc.name}
-                    onEditClick={this.handleEdit}
-                    addressProps={{hideCopy: false}}
-                  />}
-                  {this.state.edit && <InlineEdit
-                    placeholder="Account name"
-                    initialValue={acc.name}
-                    id={acc.id}
-                    onSave={this.handleSave}
-                    onCancel={this.cancelEdit}
-                  />}
-                </div>
-              </Row>
-
-              <Row>
-                <div style={styles.left}>
-                </div>
-                <div style={styles.right}>
-                  {balance && <Balance
-                    showFiat={showFiat}
-                    coinsStyle={{fontSize: '20px', lineHeight: '24px'}}
-                    balance={balance}
-                    decimals={18}
-                    symbol={coinTicker}
-                  />}
-                </div>
-              </Row>
-
-              <Row>
-                <div style={styles.left}>
-                </div>
-                <div style={styles.right}>
-                  <TokenBalances balances={tokensBalances}/>
-                </div>
-              </Row>
-              {acc.hardware
-              && <Row>
-                <div style={styles.left}>
-                  <div style={styles.fieldName}>
-                    HD Path
-                  </div>
-                </div>
-                <div style={styles.right}>
-                  {acc.hdpath}
-                </div>
-              </Row>}
-              <Row>
-                <div style={styles.left}/>
-                <div style={styles.right}>
-                  <div>
-                    <ButtonGroup>
-                      <Button
-                        primary
-                        label="Deposit"
-                        onClick={showReceiveDialog}
-                      />
-                      <Button
-                        primary
-                        label="Send"
-                        onClick={createTx}
-                      />
-                      <AccountActions account={account}/>
-                    </ButtonGroup>
-                  </div>
-                </div>
-              </Row>
-            </div>
-
-            <div className={classes.qrCodeContainer}>
-              <QRCode value={acc.id}/>
-            </div>
-          </div>
-        </Page>
-
-        <div className={classes.transContainer}>
-          <TransactionsList transactions={transactions} accountId={acc.id}/>
-        </div>
-      </div>
-    );
-  }
-}
-
-AccountShow.propTypes = {
-  showFiat: PropTypes.bool,
-  account: PropTypes.object.isRequired,
-  goBack: PropTypes.func.isRequired,
-  transactions: PropTypes.object.isRequired,
-  editAccount: PropTypes.func,
-  createTx: PropTypes.func,
-  showReceiveDialog: PropTypes.func,
-};
 
 export default connect(
   (state, ownProps) => {
@@ -209,9 +45,10 @@ export default connect(
 
     return {
       showFiat: true,
-      tokensBalances,
+      tokens: (<TokenBalances balances={tokensBalances}/>),
       account,
       transactions,
+      txList: (<TransactionsList transactions={transactions} accountId={account.get('id')}/>),
     };
   },
   (dispatch, ownProps) => ({
@@ -241,4 +78,4 @@ export default connect(
       });
     },
   })
-)(withStyles(styles2)(AccountShow));
+)(AccountDetailsView);

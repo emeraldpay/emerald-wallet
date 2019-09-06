@@ -77,7 +77,7 @@
     "@emeraldplatform/eth-rpc": "0.5.1",
     "@emeraldplatform/grpc": "0.10.0",
     "@emeraldplatform/rpc": "0.5.1",
-    "@emeraldplatform/ui": "0.5.1",
+    "@emeraldplatform/ui": "^0.5.2",
     "@emeraldplatform/ui-icons": "0.5.1",
     "@emeraldplatform/util": "0.5.1",
     "@emeraldwallet/core": "^2.0.3",
