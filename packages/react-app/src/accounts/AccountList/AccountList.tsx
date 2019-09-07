@@ -1,12 +1,11 @@
-import React from 'react';
+import * as React from 'react';
 import {Blockchains} from '@emeraldwallet/core';
-import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/styles';
 import {connect} from 'react-redux';
 import {screen, addresses} from '@emeraldwallet/store';
-import Account from './account';
+import Account from './AccountItem';
 
-const styles = (theme) => ({
+const styles = (theme: any) => ({
   container: {
     marginBottom: '10px',
   },
@@ -21,7 +20,16 @@ const styles = (theme) => ({
   },
 });
 
-const AccountList = ((props) => {
+interface IAccountListProps {
+  showFiat: boolean;
+  accounts: any;
+  classes: any;
+  openAccount: any;
+  createTx: any;
+  showReceiveDialog: any;
+}
+
+const AccountList = ((props: IAccountListProps) => {
   const {
     accounts, showFiat, classes,
   } = props;
@@ -30,7 +38,7 @@ const AccountList = ((props) => {
   } = props;
   return (
     <div className={classes.container}>
-      {accounts.map((account) => {
+      {accounts.map((account: any) => {
         const className = account.get('hidden') ? classes.hiddenListItem : classes.listItem;
         return (<div className={className} key={`${account.get('blockchain')}-${account.get('id')}`}>
           <Account
@@ -46,10 +54,6 @@ const AccountList = ((props) => {
   );
 });
 
-AccountList.propTypes = {
-  showFiat: PropTypes.bool,
-  accounts: PropTypes.object.isRequired,
-};
 
 const StyledAccountList = withStyles(styles)(AccountList);
 
@@ -61,13 +65,13 @@ export default connect(
     };
   },
   (dispatch, ownProps) => ({
-    openAccount: (account) => {
+    openAccount: (account: any) => {
       dispatch(screen.actions.gotoScreen('account', account));
     },
-    createTx: (account) => {
+    createTx: (account: any) => {
       dispatch(screen.actions.gotoScreen('create-tx', account));
     },
-    showReceiveDialog: (account) => {
+    showReceiveDialog: (account: any) => {
       const address = {
         value: account.get('id'),
         coinTicker: Blockchains[account.get('blockchain')].params.coinTicker,

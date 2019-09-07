@@ -1,11 +1,11 @@
 import React from 'react';
 import PropTypes from 'prop-types';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import {addresses} from '@emeraldwallet/store';
+import { addresses } from '@emeraldwallet/store';
+import { AccountList } from '@emeraldwallet/react-app';
 import TransactionsHistory from '../../tx/TxHistory';
-import AccountsList from '../../accounts/AccountList';
 import Header from './header';
 import Landing from '../../../containers/Landing';
 
@@ -38,7 +38,7 @@ const Dashboard = (props) => {
   return (
     <React.Fragment>
       <Header/>
-      <AccountsList/>
+      <AccountList/>
       <TransactionsHistory/>
     </React.Fragment>
   );

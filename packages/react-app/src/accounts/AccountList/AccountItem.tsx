@@ -1,16 +1,17 @@
-import React from 'react';
+import * as React from 'react';
 import { withStyles } from '@material-ui/styles';
 import withTheme from '@material-ui/core/styles/withTheme';
 import Grid from '@material-ui/core/Grid';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import PropTypes from 'prop-types';
 import { Account as AddressAvatar, ButtonGroup } from '@emeraldplatform/ui';
 import { Button, CoinAvatar } from '@emeraldwallet/ui';
 import { blockchainByName } from '@emeraldwallet/core';
-import { AccountActions, Balance as AccountBalance } from '@emeraldwallet/react-app';
 
-const styles = (theme) => ({
+import AccountActions from '../AccountActions';
+import AccountBalance from '../../common/Balance';
+
+const styles = (theme: any) => ({
   tokensDivider: {
     backgroundColor: '#F5F5F5',
     height: '2px',
@@ -35,15 +36,18 @@ const styles = (theme) => ({
   },
 });
 
-export class Account extends React.Component {
-    static propTypes = {
-      account: PropTypes.object.isRequired,
-      openAccount: PropTypes.func.isRequired,
-      createTx: PropTypes.func,
-      showReceiveDialog: PropTypes.func,
-      showFiat: PropTypes.bool,
-      classes: PropTypes.object,
-    };
+
+interface IAccountProps {
+  account: any;
+  openAccount: any;
+  createTx: any;
+  showReceiveDialog: any;
+  showFiat: any;
+  classes: any;
+  theme: any;
+}
+
+export class Account extends React.Component<IAccountProps> {
 
     onSendClick = () => this.props.createTx(this.props.account);
 
@@ -76,7 +80,6 @@ export class Account extends React.Component {
                 { accId && <AddressAvatar
                   identity
                   address={ accId }
-                  description={ account.get('description') }
                   name={ account.get('name') }
                   onClick={ this.onAddressClick }
                 /> }
@@ -85,7 +88,7 @@ export class Account extends React.Component {
                 <div className={ classes.identityIconContainer }>
                   <div style={{marginLeft: '10px'}}>
                     {balance && <AccountBalance
-                      fiatStyle={fiatStyle}
+                      fiatStyle={ fiatStyle }
                       balance={ balance }
                       decimals={ 18 }
                       symbol={ coinTicker }

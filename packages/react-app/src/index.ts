@@ -3,7 +3,7 @@ export { default as ContactList } from './address-book/ContactList';
 export { default as AddContact } from './address-book/AddContact';
 
 // accounts
-export { default as AccountActions } from './accounts/AccountActions';
+export { default as AccountList } from './accounts/AccountList';
 export { default as AccountDetailsView } from './accounts/AccountDetails/AccountDetailsView';
 export { default as TokenBalances } from './accounts/TokenBalances';
 
