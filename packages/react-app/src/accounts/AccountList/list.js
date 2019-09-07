@@ -3,8 +3,7 @@ import {Blockchains} from '@emeraldwallet/core';
 import PropTypes from 'prop-types';
 import {withStyles} from '@material-ui/styles';
 import {connect} from 'react-redux';
-import {translate} from 'react-i18next';
-import {screen, addresses} from '../../../store';
+import {screen, addresses} from '@emeraldwallet/store';
 import Account from './account';
 
 const styles = (theme) => ({
@@ -22,7 +21,7 @@ const styles = (theme) => ({
   },
 });
 
-const AccountList = translate('accounts')((props) => {
+const AccountList = ((props) => {
   const {
     accounts, showFiat, classes,
   } = props;

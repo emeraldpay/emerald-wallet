@@ -2,7 +2,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { translate } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import {NewAccountProps} from '@emeraldwallet/ui';
 import { screen, addresses } from '@emeraldwallet/store';
@@ -149,4 +149,4 @@ class GenerateAccount extends React.Component<Props, State> {
   }
 }
 
-export default connect()(translate('accounts')(GenerateAccount));
+export default connect()(withTranslation('accounts')(GenerateAccount));

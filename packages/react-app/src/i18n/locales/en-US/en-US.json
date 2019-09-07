@@ -1,0 +1,80 @@
+{
+  "accounts": {
+    "show": {
+      "header": "Account: {{account}}",
+      "description": {
+        "title": "Account Description:",
+        "address": "Address:",
+        "sentTransactions": "Sent Transactions:",
+        "etherBalance": "Ether Balance:",
+        "tokenBalances": "Token Balances:"
+      },
+      "send": "Send",
+      "value": "{{value}} Ether"
+    },
+    "list": {
+      "title": "ACCOUNTS",
+      "subtitle": "List of addresses you're controlling on blockchain",
+      "create": "Create Account",
+      "popupMenuLabel": "ACCOUNTS AND TOKENS"
+    },
+    "add": {
+      "title": "Add Account",
+      "generate": {
+        "title": "Generate",
+        "subtitle": "Generates a new private/public key pair"
+      },
+      "mnemonic": {
+        "title": "Generate Mnemonic",
+        "subtitle": "Generates a new mnemonic account"
+      },
+      "import": {
+        "title": "Import JSON",
+        "subtitle": "Import key from Parity/Geth in JSON format"
+      },
+      "importPrivateKey": {
+        "title": "Import Private Key",
+        "subtitle": "Import private key in hex format"
+      },
+      "importMnemonic": {
+        "title": "Import Mnemonic phrase",
+        "subtitle": "Import BIP039 mnemonic phrase"
+      },
+      "token": {
+        "title": "Add Token",
+        "subtitle": "Add Token by address"
+      }
+    },
+    "generate": {
+      "title": "Generate New Account",
+      "name": "Account Name (optional)",
+      "description": "Description (optional)",
+      "password": "Please Enter a Strong Password",
+      "passwordConfirm": "Re-Enter Password"
+    },
+    "import": {
+      "title": "Import Account",
+      "name": "Account Name (optional)",
+      "description": "Description (optional)"
+    }
+  },
+  "common": {
+    "title": "Emerald - Ethereum Classic Wallet",
+    "menu": {
+      "home": "Home",
+      "addressBook": "Address Book",
+      "contracts": "Contracts",
+      "network": "Network"
+    },
+    "submit": "Submit",
+    "clear": "Clear Values",
+    "done": "Done",
+    "cancel": "Cancel"
+  },
+  "settings": {
+    "lang": "Language",
+    "currency": "Equivalent currency",
+    "showHiddenAccounts": "Hidden Accounts",
+    "confirmations": "Confirmations"
+  }
+}

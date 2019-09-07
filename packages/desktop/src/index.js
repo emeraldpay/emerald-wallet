@@ -5,7 +5,7 @@ import 'typeface-rubik/index.css';
 import 'typeface-roboto-mono/index.css';
 import {I18nextProvider} from 'react-i18next';
 import BigNumber from 'bignumber.js';
-import i18n from './i18n/i18n';
+import { i18n } from '@emeraldwallet/react-app';
 import {start as startStore} from './store/store';
 
 import createLogger from './utils/logger';

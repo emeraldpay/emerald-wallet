@@ -14,3 +14,10 @@ export { default as ExportPaperWallet } from './export/ExportPaperWallet';
 // common
 export { default as Balance } from './common/Balance';
 export { default as ErrorDialog } from './common/ErrorDialog';
+
+// i18n
+export { default as i18n } from './i18n';
+
+// layout
+export { default as ConnectionStatus } from './layout/ConnectionStatus';
+export { default as NotificationBar } from './layout/NotificationBar';

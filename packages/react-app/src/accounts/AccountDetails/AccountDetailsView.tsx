@@ -1,7 +1,8 @@
 import * as React from 'react';
 import withStyles from 'react-jss';
+import { WithTranslation, withTranslation } from 'react-i18next';
 import * as QRCode from 'qrcode.react';
-import {Back} from '@emeraldplatform/ui-icons';
+import { Back } from '@emeraldplatform/ui-icons';
 import {
   Page, IdentityIcon, ButtonGroup, Account as AddressAvatar
 } from '@emeraldplatform/ui';
@@ -33,12 +34,16 @@ export interface Props {
   tokens?: React.ReactElement;
 }
 
+
+type AccountShowProps = Props & WithTranslation;
+
 export interface State {
   edit: boolean;
 }
 
-export class AccountShow extends React.Component<Props, State> {
-  constructor(props: Props) {
+export class AccountShow extends React.Component<AccountShowProps, State> {
+
+  constructor(props: AccountShowProps) {
     super(props);
     this.state = {
       edit: false,
@@ -63,7 +68,7 @@ export class AccountShow extends React.Component<Props, State> {
 
   render() {
     const {
-      account, classes,
+      account, classes, t,
     } = this.props;
     const {
       showFiat, goBack, createTx, showReceiveDialog,
@@ -140,7 +145,7 @@ export class AccountShow extends React.Component<Props, State> {
                       />
                       <Button
                         primary
-                        label="Send"
+                        label={t('accounts.show.send')}
                         onClick={createTx}
                       />
                       <AccountActions account={account}/>
@@ -165,4 +170,4 @@ export class AccountShow extends React.Component<Props, State> {
   }
 }
 
-export default withStyles(styles)(AccountShow);
+export default withStyles(styles)(withTranslation('translation')(AccountShow));

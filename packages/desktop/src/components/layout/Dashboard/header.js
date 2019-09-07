@@ -1,7 +1,7 @@
 import React from 'react';
 import withStyles from 'react-jss';
 import {connect} from 'react-redux';
-import {translate} from 'react-i18next';
+import {withTranslation} from 'react-i18next';
 import {DashboardMenu as Menu} from '@emeraldwallet/ui';
 import {screen} from '@emeraldwallet/store';
 
@@ -29,7 +29,7 @@ export class Header extends React.Component {
     return (
       <div className={classes.header}>
         <div>
-          <span className={classes.title}>{t('list.title')}</span>
+          <span className={classes.title}>{t('accounts.list.title')}</span>
         </div>
         <Menu
           generate={generate}
@@ -48,7 +48,7 @@ export class Header extends React.Component {
 
 const StyledHeader = withStyles(styles2)(Header);
 
-export default translate('accounts')(
+export default withTranslation()(
   connect(
     (state, ownProps) => ({}),
     (dispatch, ownProps) => ({

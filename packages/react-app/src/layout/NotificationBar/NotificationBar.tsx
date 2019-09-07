@@ -1,7 +1,6 @@
-import React from 'react';
 import { connect } from 'react-redux';
 import { NotificationBar } from '@emeraldwallet/ui';
-import { screen } from 'store';
+import { screen } from '@emeraldwallet/store';
 
 export default connect(
   (state, ownProps) => {
@@ -11,7 +10,7 @@ export default connect(
     onRequestClose: () => {
       dispatch(screen.actions.closeNotification());
     },
-    onActionClick: (action) => {
+    onActionClick: (action: any) => {
       dispatch(action);
     },
   })

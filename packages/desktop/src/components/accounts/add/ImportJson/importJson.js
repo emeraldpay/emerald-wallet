@@ -1,5 +1,5 @@
 import React from 'react';
-import { translate } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import Immutable from 'immutable';
@@ -118,4 +118,4 @@ export default connect(
       dispatch(screen.actions.gotoScreen('home'));
     },
   })
-)(translate('accounts')(ImportJson));
+)(withTranslation('accounts')(ImportJson));

@@ -5,7 +5,7 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 import orange from '@material-ui/core/colors/orange';
 import { withStyles } from '@material-ui/core/styles';
 
-interface Props {
+export interface Props {
   onActionClick?: any;
   onRequestClose?: any;
   notificationActionToDispatchOnActionClick?: any;
