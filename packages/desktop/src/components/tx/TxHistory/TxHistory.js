@@ -16,7 +16,7 @@ const styles2 = (theme) => ({
 });
 
 type
-Props = {
+ILandingProps = {
   accountId: string,
   transactions: any,
   accounts: any
@@ -28,7 +28,7 @@ State = {
   displayedTransactions: Object
 };
 
-class TransactionsHistory extends React.Component<Props, State> {
+class TransactionsHistory extends React.Component<ILandingProps, State> {
   constructor(props) {
     super(props);
     this.state = {

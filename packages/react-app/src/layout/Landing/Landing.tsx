@@ -1,12 +1,10 @@
 import { connect } from 'react-redux';
-import { shell } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
+import { shell } from 'electron';
 import { Landing } from '@emeraldwallet/ui';
-import { screen } from 'store';
+import { screen } from '@emeraldwallet/store';
 
 export default connect(
-  (state, ownProps) => ({
-    connected: state.ledger.get('connected'),
-  }),
+  null,
   (dispatch, ownProps) => ({
     onAboutClick() {
       const url = 'https://emeraldwallet.io/coins';
@@ -22,7 +20,7 @@ export default connect(
       dispatch(screen.actions.gotoScreen('landing-import-private-key'));
     },
     onLedger() {
-      dispatch(screen.actions.gotoScreen('landing-add-from-ledger', 'landing'));
+      dispatch(screen.actions.gotoScreen('landing-add-from-ledger', 'home'));
     },
   })
 )(Landing);

@@ -18,7 +18,7 @@ const PAGES = {
   ACCOUNT_PROPS: 4,
 };
 
-type Props = {
+type ILandingProps = {
   dispatch: any,
   t: any,
   backLabel: string,
@@ -33,7 +33,7 @@ type State = {
   blockchain: string,
 }
 
-class GenerateAccount extends React.Component<Props, State> {
+class GenerateAccount extends React.Component<ILandingProps, State> {
   static propTypes = {
     dispatch: PropTypes.func,
     t: PropTypes.func.isRequired,
@@ -121,7 +121,13 @@ class GenerateAccount extends React.Component<Props, State> {
     const { t, backLabel } = this.props;
     switch (page) {
       case PAGES.PASSWORD:
-        return (<PasswordDialog loading={this.state.loading} t={ t } onGenerate={ this.generate } backLabel={backLabel} onDashboard={ this.goToDashboard } />);
+        return (<PasswordDialog
+          loading={this.state.loading}
+          t={ t }
+          onGenerate={ this.generate }
+          backLabel={backLabel}
+          onDashboard={ this.goToDashboard }
+        />);
       case PAGES.DOWNLOAD:
         return (<DownloadDialog accountId={ accountId } loading={this.state.loading} t={ t } onDownload={ this.download }/>);
       case PAGES.SHOW_PRIVATE:
@@ -149,4 +155,4 @@ class GenerateAccount extends React.Component<Props, State> {
   }
 }
 
-export default connect()(withTranslation('accounts')(GenerateAccount));
+export default connect()(withTranslation()(GenerateAccount));

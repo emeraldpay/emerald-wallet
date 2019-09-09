@@ -15,10 +15,3 @@ export const showAccountDetails = (address: string) => {
     }
   };
 };
-
-export const onOpenWallet = () => {
-  return (dispatch, getState) => {
-    const numberOfAccounts = addresses.selectors.all(getState()).size;
-    dispatch(screen.actions.gotoScreen(numberOfAccounts === 0 ? 'landing' : 'home'));
-  };
-};

@@ -56,7 +56,7 @@ class ImportJson extends React.Component {
       const { file, fileError, blockchain } = this.state;
 
       return (
-        <Page title={ t('import.title') } leftIcon={<Back onClick={onDashboard} />}>
+        <Page title={ t('accounts.import.title') } leftIcon={<Back onClick={onDashboard} />}>
           {fileError && (
             <Row>
               <div style={ formStyles.left }/>
@@ -82,7 +82,7 @@ class ImportJson extends React.Component {
             <Row>
               <div style={ formStyles.left }/>
               <div style={ formStyles.right }>
-                <Button primary onClick={ this.submitFile } label={ t('common:submit') }/>
+                <Button primary onClick={ this.submitFile } label={ t('common.submit') }/>
                 <ChainSelector onChange={ this.onChainChange } value={blockchain} chains={ blockchains }/>
               </div>
             </Row>)
@@ -118,4 +118,4 @@ export default connect(
       dispatch(screen.actions.gotoScreen('home'));
     },
   })
-)(withTranslation('accounts')(ImportJson));
+)(withTranslation()(ImportJson));

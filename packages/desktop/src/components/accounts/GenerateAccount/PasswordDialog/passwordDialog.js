@@ -4,13 +4,12 @@ import withStyles from 'react-jss';
 import PropTypes from 'prop-types';
 import { Back } from '@emeraldplatform/ui-icons';
 import {
-  Page, Warning, WarningHeader, WarningText, Input
+  Page, Warning, WarningHeader, WarningText, Input,
 } from '@emeraldplatform/ui';
 import {
-  Button, PasswordInput, Advice, ChainSelector
+  Button, PasswordInput, Advice, ChainSelector, FormRow
 } from '@emeraldwallet/ui';
 import {settings} from '@emeraldwallet/store';
-import { Row, styles as formStyles } from 'elements/Form';
 import LoadingIcon from '../LoadingIcon';
 
 const MIN_PASSWORD_LENGTH = 8;
@@ -109,39 +108,39 @@ class PasswordDialog extends React.Component {
     return (
       <Page title={ t('generate.title') } leftIcon={<Back onClick={onDashboard} />}>
         <div>
-          <Row>
-            <div style={ formStyles.left }/>
-            <div style={ formStyles.right }>
-              <div style={{ width: '100%' }}>
-                <div className={ classes.passwordLabel }>Enter a strong password</div>
-                <div className={ classes.passwordSubLabel }>
-                  This password will be required to confirm all account operations.
-                </div>
-                <div style={{ marginTop: '30px' }}>
-                  <PasswordInput
-                    password={ passphrase }
-                    onChange={ this.onPassphraseChange }
-                    error={ passphraseError }
-                  />
-                </div>
+          <FormRow
+            rightColumn={
+              <ChainSelector onChange={ this.onChainChange } value={ blockchain } chains={ blockchains }/>
+            }
+          />
+          <FormRow rightColumn={
+            <div style={{ width: '100%' }}>
+              <div className={ classes.passwordLabel }>Enter a strong password</div>
+              <div className={ classes.passwordSubLabel }>
+                This password will be required to confirm all account operations.
               </div>
-            </div>
-          </Row>
+              <div style={{ marginTop: '30px' }}>
+                <PasswordInput
+                  password={ passphrase }
+                  onChange={ this.onPassphraseChange }
+                  error={ passphraseError }
+                />
+              </div>
+            </div>}
+          />
 
-          <Row>
-            <div style={ formStyles.left }/>
-            <div style={ formStyles.right }>
+          <FormRow
+            rightColumn={
               <Warning fullWidth={ true }>
                 <WarningHeader>Don&#39;t forget it.</WarningHeader>
                 <WarningText>If you forget password, you will lose your account with all
                   funds.</WarningText>
               </Warning>
-            </div>
-          </Row>
+            }
+          />
 
-          <Row>
-            <div style={formStyles.left} />
-            <div style={formStyles.right}>
+          <FormRow
+            rightColumn={
               <Input
                 errorText={confirmError}
                 value={confirmPassword}
@@ -150,24 +149,22 @@ class PasswordDialog extends React.Component {
                 type="password"
                 onChange={this.onConfirmChange.bind(this)}
               />
-            </div>
-          </Row>
+            }
+          />
 
-          <Row>
-            <div style={formStyles.left}/>
-            <div style={formStyles.right}>
+          <FormRow
+            rightColumn={
               <Advice
                 title="Advice"
                 text={ <div>You can use a word or phrase as password. Write it in short text.<br/>
                   Only you know where password is. It is safer than write a password only.
                 </div>}
               />
-            </div>
-          </Row>
+            }
+          />
 
-          <Row>
-            <div style={formStyles.left}/>
-            <div style={formStyles.right}>
+          <FormRow
+            rightColumn={
               <Button
                 primary
                 onClick={ this.handleGenerate }
@@ -175,9 +172,8 @@ class PasswordDialog extends React.Component {
                 icon={ <LoadingIcon {...this.props} /> }
                 disabled={ this.props.loading }
               />
-              <ChainSelector onChange={ this.onChainChange } value={ blockchain } chains={ blockchains }/>
-            </div>
-          </Row>
+            }
+          />
         </div>
       </Page>
     );

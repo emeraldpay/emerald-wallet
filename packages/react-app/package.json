@@ -59,6 +59,7 @@
     "@emeraldwallet/store": "^2.0.3",
     "@emeraldwallet/ui": "^2.0.3",
     "@material-ui/styles": "^4.3.0",
+    "electron": "4.1.0",
     "i18next": "^17.0.13",
     "i18next-browser-languagedetector": "^3.0.3",
     "qrcode.react": "^0.9.3",
