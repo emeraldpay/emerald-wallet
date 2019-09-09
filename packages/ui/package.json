@@ -16,8 +16,8 @@
   "dependencies": {
     "@emeraldplatform/core": "0.5.1",
     "@emeraldplatform/eth": "0.5.1",
-    "@emeraldplatform/ui": "0.5.1",
-    "@emeraldplatform/ui-icons": "0.5.1",
+    "@emeraldplatform/ui": "^0.5.2",
+    "@emeraldplatform/ui-icons": "^0.5.2",
     "@emeraldwallet/core": "^2.0.3",
     "@emeraldwallet/erc20": "^2.0.3",
     "@emeraldwallet/workflow": "^2.0.3",

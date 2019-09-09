@@ -1,7 +1,7 @@
 import {Wei} from "@emeraldplatform/eth";
-import {moduleName} from "./types";
+import {IBlockchainsState, moduleName} from "./types";
 
-export function all(state: any) {
+export function all(state: any): IBlockchainsState {
   return state[moduleName];
 }
 

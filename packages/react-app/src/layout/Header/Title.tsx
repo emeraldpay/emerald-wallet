@@ -1,7 +1,7 @@
-import React from 'react';
+import * as React from 'react';
 import {withTheme} from '@material-ui/styles';
 
-const EmeraldTitle = ({theme}) => {
+const EmeraldTitle = ({theme}: {theme: any}) => {
   return (
     <div style={{fontSize: '16px', flexGrow: 1}}>
       <span style={{color: theme.palette.primary.main}}>Emerald </span>

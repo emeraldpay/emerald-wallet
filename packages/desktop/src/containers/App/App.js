@@ -3,11 +3,10 @@ import { Provider } from 'react-redux';
 import { I18nextProvider } from 'react-i18next';
 import { Theme } from '@emeraldplatform/ui';
 import {
-  ErrorDialog, NotificationBar, ConnectionStatus, i18n,
+  ErrorDialog, NotificationBar, ConnectionStatus, Header, i18n,
 } from '@emeraldwallet/react-app';
 import { ThemeProvider } from '@material-ui/styles';
 
-import Header from '../../components/layout/Header';
 import Screen from '../Screen';
 import Dialog from '../Dialog';
 

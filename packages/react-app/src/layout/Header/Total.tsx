@@ -1,5 +1,4 @@
-// @flow
-import React from 'react';
+import * as React from 'react';
 import { connect } from 'react-redux';
 import BigNumber from 'bignumber.js';
 import { BlockchainCode } from '@emeraldwallet/core';
@@ -11,7 +10,7 @@ export default connect(
   (state, ownProps) => {
     // Sum of balances of all known accounts.
     const fiatCurrency = settings.selectors.fiatCurrency(state);
-    const byChain = [];
+    const byChain: Array<any> = [];
     // TODO use configured chains
     const chains = [BlockchainCode.ETC, BlockchainCode.ETH];
     let total = new BigNumber(0);

@@ -21,3 +21,4 @@ export { default as i18n } from './i18n';
 // layout
 export { default as ConnectionStatus } from './layout/ConnectionStatus';
 export { default as NotificationBar } from './layout/NotificationBar';
+export { default as Header } from './layout/Header';
