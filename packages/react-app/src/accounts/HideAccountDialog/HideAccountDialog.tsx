@@ -1,13 +1,12 @@
-import React from 'react';
-import withStyles from 'react-jss';
+import * as React from 'react';
+import {CSSProperties, withStyles} from '@material-ui/styles';
 import { connect } from 'react-redux';
 import Dialog from '@material-ui/core/Dialog';
 import {
   Warning, WarningHeader, WarningText
 } from '@emeraldplatform/ui';
 import { Button } from '@emeraldwallet/ui';
-import {addresses} from '@emeraldwallet/store';
-import { screen } from '../../../store';
+import { addresses, screen } from '@emeraldwallet/store';
 
 export const styles = {
   title: {
@@ -16,18 +15,24 @@ export const styles = {
     fontWeight: 500,
     lineHeight: '24px',
     textTransform: 'uppercase',
-  },
+  } as CSSProperties,
 };
 
-export class HideAccountDialog extends React.Component {
+interface Props {
+  onClose: any;
+  handleConfirmHide: any;
+  classes: any;
+}
+
+export class HideAccountDialog extends React.Component<Props> {
   render() {
     const {
       onClose, handleConfirmHide, classes,
     } = this.props;
 
     return (
-      <Dialog modal={true} open={true} onRequestClose={ onClose } contentStyle={{maxWidth: '600px'}}>
-        <div style={{width: '100%'}}>
+      <Dialog open={true} onClose={ onClose }>
+        <div style={{maxWidth: '600px', width: '100%'}}>
           <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
             <div className={classes.title}>Are you Sure you want to hide this account?</div>
           </div>
@@ -61,12 +66,11 @@ export class HideAccountDialog extends React.Component {
 const StyledHideAccountDialog = withStyles(styles)(HideAccountDialog);
 
 export default connect(
-  (state, ownProps) => ({
-    address: ownProps.address,
+  (state, ownProps: any) => ({
   }),
   (dispatch, ownProps) => ({
     handleConfirmHide: () => {
-      dispatch(addresses.actions.hideAccount(ownProps.address));
+      dispatch(addresses.actions.hideAccount(ownProps.account) as any);
 
       // refresh account data
       // TODO: do we need it ???

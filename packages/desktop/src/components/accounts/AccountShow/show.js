@@ -23,7 +23,7 @@ const log = createLogger('AccountShow');
 
 export default connect(
   (state, ownProps) => {
-    const accountPassed = ownProps.account;
+    const accountPassed = Immutable.fromJS(ownProps.account);
     // reload account from store, because it can be passed with id only if it was just imported
     const account = addresses.selectors.find(state, accountPassed.get('id'), accountPassed.get('blockchain'));
     if (typeof account === 'undefined') {

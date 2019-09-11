@@ -6,10 +6,14 @@ export { default as AddContact } from './address-book/AddContact';
 export { default as AccountList } from './accounts/AccountList';
 export { default as AccountDetailsView } from './accounts/AccountDetails/AccountDetailsView';
 export { default as TokenBalances } from './accounts/TokenBalances';
+export { default as HideAccountDialog } from './accounts/HideAccountDialog';
 
 // export
 export { default as PaperWallet } from './export/PaperWallet';
 export { default as ExportPaperWallet } from './export/ExportPaperWallet';
+
+// import
+export { default as ImportJson } from './import/ImportJson';
 
 // common
 export { default as Balance } from './common/Balance';

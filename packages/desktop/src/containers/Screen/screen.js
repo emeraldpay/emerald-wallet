@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Wei } from '@emeraldplatform/eth';
 import {
-  ContactList as AddressBook, AddContact, PaperWallet, ExportPaperWallet,
+  ContactList as AddressBook, AddContact, PaperWallet, ExportPaperWallet, ImportJson,
 } from '@emeraldwallet/react-app';
 
 import createLogger from '../../utils/logger';
@@ -11,7 +11,6 @@ import AccountShow from '../../components/accounts/AccountShow';
 import TransactionShow from '../../components/tx/TxDetails';
 import MnemonicWizard from '../../components/accounts/MnemonicWizard';
 import LedgerImport from '../../components/ledger/ImportAccount';
-import ImportJson from '../../components/accounts/add/ImportJson';
 import ImportPrivateKey from '../../components/accounts/add/ImportPrivateKey';
 import ImportMnemonic from '../ImportMnemonic';
 import Welcome from '../../components/welcome/welcome';

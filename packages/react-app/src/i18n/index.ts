@@ -1,5 +1,5 @@
 import { initReactI18next } from "react-i18next";
-import { en_US, zh_CN } from './locales';
+import { en_US, zh_CN, pt_BR, ko_KR } from './locales';
 
 // Couldn't import this fucking module, require it
 const i18n = require('i18next').default;
@@ -19,7 +19,8 @@ i18n
 
 i18n.addResourceBundle('en-US', 'translation', en_US);
 i18n.addResourceBundle('zh-CN', 'translation', zh_CN);
+i18n.addResourceBundle('pt-BR', 'translation', pt_BR);
+i18n.addResourceBundle('ko-KR', 'translation', ko_KR);
 
-console.debug(i18n);
 
 export default i18n;
