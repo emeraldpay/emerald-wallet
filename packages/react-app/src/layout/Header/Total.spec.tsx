@@ -5,11 +5,15 @@ import { Provider } from 'react-redux';
 import { fromJS } from 'immutable';
 import BigNumber from 'bignumber.js';
 import Total from './Total';
+import {AnyAction, Store} from 'redux';
 
 function createStore() {
   return {
     dispatch() {},
-    subscribe() {},
+    subscribe() {
+      return () => {}
+    },
+    replaceReducer() {},
     getState() {
       return {
         launcher: fromJS({
@@ -41,7 +45,7 @@ function createStore() {
 
 describe('Header/Total', () => {
   it('renders total balance from store', () => {
-    const component = mount(<Provider store={createStore()}><Total /></Provider>);
+    const component = mount(<Provider store={createStore() as any}><Total /></Provider>);
     // ETH
     // (1000000000000000 + 2000000000000000) / 10^18 × 234.56
     // = 0.70368
