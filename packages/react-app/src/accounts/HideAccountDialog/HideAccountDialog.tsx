@@ -19,8 +19,8 @@ export const styles = {
 };
 
 interface Props {
-  onClose: any;
-  handleConfirmHide: any;
+  onClose?: any;
+  handleConfirmHide?: any;
   classes: any;
 }
 

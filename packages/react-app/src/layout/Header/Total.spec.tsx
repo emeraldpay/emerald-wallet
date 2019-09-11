@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react';
 import { Wei } from '@emeraldplatform/eth';
 import { shallow, mount } from 'enzyme';
 import { Provider } from 'react-redux';

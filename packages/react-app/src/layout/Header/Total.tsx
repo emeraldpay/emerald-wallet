@@ -36,5 +36,5 @@ export default connect(
       total,
     };
   },
-  (dispatch, ownProps) => ({})
+  null
 )(Total);

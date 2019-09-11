@@ -7,7 +7,7 @@ const classes = Object.keys(styles).reduce(reduceClasses, {});
 
 describe('HideAccountDialog', () => {
   it('renders without crash', () => {
-    const component = shallow(<HideAccountDialog classes={classes} t={ () => ('') }/>);
+    const component = shallow(<HideAccountDialog classes={classes} />);
     expect(component).toBeDefined();
   });
 });
