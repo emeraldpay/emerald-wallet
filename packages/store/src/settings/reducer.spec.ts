@@ -1,11 +1,10 @@
-import settingsReducers from './settingsReducers';
-import ActionTypes from './actionTypes';
+import settingsReducers from './reducer';
+import {ActionTypes} from './types';
 
 describe('settingsReducers', () => {
   it('EXCHANGE_RATES should update locale currency rate', () => {
     // prepare
-    let state = settingsReducers(null, {});
-    state = settingsReducers(state, {
+    let state = settingsReducers(undefined, {
       type: ActionTypes.SET_LOCALE_CURRENCY,
       currency: 'EUR',
     });
@@ -25,9 +24,8 @@ describe('settingsReducers', () => {
 
   it('should store locale currency in uppercase', () => {
     // prepare
-    let state = settingsReducers(null, {});
     // do
-    state = settingsReducers(state, {
+    let state = settingsReducers(undefined, {
       type: ActionTypes.SET_LOCALE_CURRENCY,
       currency: 'eur',
     });
@@ -38,9 +36,8 @@ describe('settingsReducers', () => {
 
   it('SET_SHOW_HIDDEN_ACCOUNTS should update state', () => {
     // prepare
-    let state = settingsReducers(null, {});
     // do
-    state = settingsReducers(state, {
+    let state = settingsReducers(undefined, {
       type: ActionTypes.SET_SHOW_HIDDEN_ACCOUNTS,
       show: true,
     });

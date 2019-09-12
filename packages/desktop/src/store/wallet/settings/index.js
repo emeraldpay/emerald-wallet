@@ -1,4 +1,4 @@
+import {settings} from '@emeraldwallet/store';
 import * as actions from './settingsActions';
-import reducer from './settingsReducers';
 
-export default { actions, reducer };
+export default { actions, reducer: settings.reducer };

@@ -26,7 +26,6 @@ describe('addresses reducer', () => {
         blockchain: 'etc',
       }],
     });
-    console.log(state.toJS());
     // assert
     expect(state.get('addresses').last().get('hardware')).toEqual(false);
     expect(state.get('addresses').last().get('hidden')).toEqual(true);

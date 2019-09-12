@@ -6,7 +6,7 @@ import { Settings } from '@emeraldwallet/ui';
 import { screen, addresses } from '@emeraldwallet/store';
 import settings from '../../store/wallet/settings';
 
-const TranslatedSettings = withTranslation('settings')(Settings);
+const TranslatedSettings = withTranslation('translation')(Settings);
 
 export default connect(
   (state, ownProps) => {

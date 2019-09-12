@@ -1,5 +1,4 @@
 // @flow
-// import { getRates } from '../../../lib/marketApi';
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import ActionTypes from './actionTypes';
 import { screen } from '../..';

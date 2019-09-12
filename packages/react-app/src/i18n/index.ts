@@ -11,7 +11,7 @@ i18n
   .init({
     fallbackLng: 'en-US',
     debug: true,
-    ns: ['translation'],
+    ns: ['translation', 'settings'],
     defaultNS: 'translation'
   })
   .then(() => console.debug('i18n initialized successfully'))

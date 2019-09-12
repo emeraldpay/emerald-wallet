@@ -1,10 +1,9 @@
-// @flow
 import { screen, addresses } from '@emeraldwallet/store';
 
 /**
  * Shows account details page if address in the vault or notification otherwise.
  */
-export const showAccountDetails = (address: string) => {
+export const showAccountDetails = (address) => {
   return (dispatch, getState) => {
     const state = getState();
     const acc = addresses.selectors.find(state, address, '');
