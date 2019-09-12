@@ -16,7 +16,7 @@ import {
 } from '@emeraldplatform/ui-icons';
 import Button from '../../common/Button';
 
-const styles2 = (theme?: any) => ( {
+const styles = (theme?: any) => ( {
   buttonText: {
     paddingRight: 0,
   },
@@ -90,7 +90,7 @@ class DashboardMenu extends React.Component<Props, State> {
           onClick={this.openMenu}
           classes={{ text: classes.buttonText }}
           style={{hoverColor: 'transparent'}}
-          label={t('list.popupMenuLabel')}
+          label={t('accounts.list.popupMenuLabel')}
           icon={<AddIcon/>}
         />
         <Popover
@@ -110,31 +110,31 @@ class DashboardMenu extends React.Component<Props, State> {
               <ListItemIcon>
                 <KeypairIcon />
               </ListItemIcon>
-              <ListItemText primary={t('add.generate.title')} secondary={t('add.generate.subtitle')} />
+              <ListItemText primary={t('accounts.add.generate.title')} secondary={t('accounts.add.generate.subtitle')} />
             </ListItem>
             <ListItem button onClick={ createMnemonic }>
               <ListItemIcon>
                 <AddIcon />
               </ListItemIcon>
-              <ListItemText primary={t('add.mnemonic.title')} secondary={t('add.mnemonic.subtitle')} />
+              <ListItemText primary={t('accounts.add.mnemonic.title')} secondary={t('accounts.add.mnemonic.subtitle')} />
             </ListItem>
             <ListItem button onClick={ importJson }>
               <ListItemIcon>
                 <DownloadIcon />
               </ListItemIcon>
-              <ListItemText primary={t('add.import.title')} secondary={t('add.import.subtitle')} />
+              <ListItemText primary={t('accounts.add.import.title')} secondary={t('accounts.add.import.subtitle')} />
             </ListItem>
             <ListItem button onClick={importPrivateKey}>
               <ListItemIcon>
                 <KeyIcon />
               </ListItemIcon>
-              <ListItemText primary={ t('add.importPrivateKey.title') } secondary={ t('add.importPrivateKey.subtitle') } />
+              <ListItemText primary={ t('accounts.add.importPrivateKey.title') } secondary={ t('accounts.add.importPrivateKey.subtitle') } />
             </ListItem>
             <ListItem button onClick={ importMnemonic }>
               <ListItemIcon>
                 <DownloadIcon />
               </ListItemIcon>
-              <ListItemText primary={ t('add.importMnemonic.title') } secondary={ t('add.importMnemonic.subtitle') } />
+              <ListItemText primary={ t('accounts.add.importMnemonic.title') } secondary={ t('accounts.add.importMnemonic.subtitle') } />
             </ListItem>
             <ListItem button onClick={ addressBook }>
               <ListItemIcon>
@@ -149,4 +149,4 @@ class DashboardMenu extends React.Component<Props, State> {
   }
 }
 
-export default withStyles(styles2)(DashboardMenu);
+export default withStyles(styles)(DashboardMenu);
