@@ -2,7 +2,7 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
-import { translate } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import {NewAccountProps} from '@emeraldwallet/ui';
 import { screen, addresses } from '@emeraldwallet/store';
@@ -18,7 +18,7 @@ const PAGES = {
   ACCOUNT_PROPS: 4,
 };
 
-type Props = {
+type ILandingProps = {
   dispatch: any,
   t: any,
   backLabel: string,
@@ -33,7 +33,7 @@ type State = {
   blockchain: string,
 }
 
-class GenerateAccount extends React.Component<Props, State> {
+class GenerateAccount extends React.Component<ILandingProps, State> {
   static propTypes = {
     dispatch: PropTypes.func,
     t: PropTypes.func.isRequired,
@@ -121,7 +121,13 @@ class GenerateAccount extends React.Component<Props, State> {
     const { t, backLabel } = this.props;
     switch (page) {
       case PAGES.PASSWORD:
-        return (<PasswordDialog loading={this.state.loading} t={ t } onGenerate={ this.generate } backLabel={backLabel} onDashboard={ this.goToDashboard } />);
+        return (<PasswordDialog
+          loading={this.state.loading}
+          t={ t }
+          onGenerate={ this.generate }
+          backLabel={backLabel}
+          onDashboard={ this.goToDashboard }
+        />);
       case PAGES.DOWNLOAD:
         return (<DownloadDialog accountId={ accountId } loading={this.state.loading} t={ t } onDownload={ this.download }/>);
       case PAGES.SHOW_PRIVATE:
@@ -149,4 +155,4 @@ class GenerateAccount extends React.Component<Props, State> {
   }
 }
 
-export default connect()(translate('accounts')(GenerateAccount));
+export default connect()(withTranslation()(GenerateAccount));

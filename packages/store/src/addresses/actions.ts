@@ -1,5 +1,7 @@
 import {ipcRenderer} from 'electron';
-import {Blockchain, blockchainByName, BlockchainCode, EthereumTx, IApi} from "@emeraldwallet/core";
+import {
+  Blockchain, blockchainByName, BlockchainCode, EthereumTx, IApi, IAccount,
+} from "@emeraldwallet/core";
 import {convert, EthAddress} from '@emeraldplatform/core';
 import {Wei} from "@emeraldplatform/eth";
 import {
@@ -320,7 +322,6 @@ export function importJson(blockchain: BlockchainCode, data: any, name: string, 
 
 export function importMnemonic(blockchain: BlockchainCode,
                                passphrase: string, mnemonic: string, hdPath: string, name: string, description: string): Dispatched<AddAccountAction> {
-  console.log("import mn", arguments);
   return (dispatch, getState, api) => {
     return api.emerald.importMnemonic(passphrase, name, description, mnemonic, hdPath, blockchain.toLowerCase()).then((result: string) => {
       if ((new EthAddress(result)).isValid()) {
@@ -396,11 +397,10 @@ export function loadPendingTransactions(): Dispatched<PendingBalanceAction> {
   };
 }
 
-export function hideAccount(accountId: string): Dispatched<any> {
+export function hideAccount(account: IAccount): Dispatched<any> {
   return (dispatch, getState, api) => {
-    selectors.findAllChains(getState(), accountId).forEach((acc: any) =>
-      api.emerald.hideAccount(accountId, acc.get('blockchain').toLowerCase())
-        .catch(catchError(dispatch)));
+    api.emerald.hideAccount(account.id, account.blockchain)
+      .catch(catchError(dispatch));
   };
 }
 

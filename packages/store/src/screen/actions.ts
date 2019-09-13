@@ -83,10 +83,6 @@ export function closeNotification() {
 
 export function goHome(): Dispatched<OpenAction> {
   return (dispatch, getState) => {
-    const accountSize = addresses.selectors.all(getState()).size;
-    if (accountSize === 0) {
-      return dispatch(gotoScreen('landing'));
-    }
     return dispatch(gotoScreen('home'));
   }
 }

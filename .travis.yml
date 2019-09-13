@@ -44,7 +44,7 @@ script:
   - yarn build
   - yarn test:coverage
   - yarn lint
-  - env CSC_IDENTITY_AUTO_DISCOVERY=false yarn build:dist
+  - travis_wait env CSC_IDENTITY_AUTO_DISCOVERY=false yarn build:dist
 after_success:
   # Show dist directory contents after a successful build.
   - ls -l ./packages/desktop/dist/

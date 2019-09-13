@@ -30,7 +30,7 @@
       ".+\\.(css|styl|less|sass|scss|png|jpg|ttf|woff|woff2)$": "jest-transform-stub"
     },
     "preset": "ts-jest",
-    "testEnvironment": "node",
+    "testEnvironment": "jsdom",
     "testPathIgnorePatterns": [
       "<rootDir>/lib/",
       "<rootDir>/node_modules/"
@@ -59,8 +59,13 @@
     "@emeraldwallet/store": "^2.0.3",
     "@emeraldwallet/ui": "^2.0.3",
     "@material-ui/styles": "^4.3.0",
+    "electron": "4.1.0",
+    "i18next": "^17.0.13",
+    "i18next-browser-languagedetector": "^3.0.3",
     "qrcode.react": "^0.9.3",
     "react": "^16.8.6",
+    "react-dropzone": "6",
+    "react-i18next": "^10.12.2",
     "react-redux": "^7.1.0",
     "redux-thunk": "^2.3.0"
   }

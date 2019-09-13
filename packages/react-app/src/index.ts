@@ -3,14 +3,27 @@ export { default as ContactList } from './address-book/ContactList';
 export { default as AddContact } from './address-book/AddContact';
 
 // accounts
-export { default as AccountActions } from './accounts/AccountActions';
+export { default as AccountList } from './accounts/AccountList';
 export { default as AccountDetailsView } from './accounts/AccountDetails/AccountDetailsView';
 export { default as TokenBalances } from './accounts/TokenBalances';
+export { default as HideAccountDialog } from './accounts/HideAccountDialog';
 
 // export
 export { default as PaperWallet } from './export/PaperWallet';
 export { default as ExportPaperWallet } from './export/ExportPaperWallet';
 
+// import
+export { default as ImportJson } from './import/ImportJson';
+
 // common
 export { default as Balance } from './common/Balance';
 export { default as ErrorDialog } from './common/ErrorDialog';
+
+// i18n
+export { default as i18n } from './i18n';
+
+// layout
+export { default as ConnectionStatus } from './layout/ConnectionStatus';
+export { default as NotificationBar } from './layout/NotificationBar';
+export { default as Header } from './layout/Header';
+export { default as Landing } from './layout/Landing';

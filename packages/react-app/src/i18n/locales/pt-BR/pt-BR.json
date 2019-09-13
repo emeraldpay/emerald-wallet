@@ -1,0 +1,74 @@
+{
+  "accounts": {
+    "show": {
+      "header": "Conta: {{account}}",
+      "description": {
+        "title": "Descrição da conta:",
+        "address": "Endereço:",
+        "sentTransactions": "Transações enviadas:",
+        "etherBalance": "Saldo de Ether:",
+        "tokenBalances": "Saldo de Tokens:"
+      },
+      "send": "Enviar",
+      "value": "{{value}} Ether"
+    },
+    "list": {
+      "title": "CARTEIRAS",
+      "subtitle": "Lista de endereços que você tem na blockchain",
+      "create": "Criar Conta"
+    },
+    "add": {
+      "title": "Adicionar Conta",
+      "generate": {
+        "title": "Gerar",
+        "subtitle": "Gerar novo par de chave pública/privada"
+      },
+      "mnemonic": {
+        "title": "Generate Mnemonic",
+        "subtitle": "Generates a new mnemonic account"
+      },
+      "import": {
+        "title": "Importar JSON",
+        "subtitle": "Importar chave do Parity/Geth no formato JSON"
+      },
+      "importPrivateKey": {
+        "title": "Importar chave privada",
+        "subtitle": "Importar chave privada em formato hexadecimal"
+      },
+      "importMnemonic": {
+        "title": "Import Mnemonic phrase",
+        "subtitle": "Import BIP039 mnemonic phrase"
+      }
+    },
+    "generate": {
+      "title": "Gerar Carteira",
+      "name": "Nome da Conta (opcional)",
+      "description": "Descrição (opcional)",
+      "password": "Por favor, insira uma senha forte",
+      "passwordConfirm": "Insira senha novamente"
+    },
+    "import": {
+      "title": "Importar Carteira",
+      "name": "Nome da Conta (opcional)",
+      "description": "Descrição (opcional)"
+    }
+  },
+  "common": {
+    "title": "Emerald - Carteira Ethereum Clássico",
+    "menu": {
+      "home": "Principal",
+      "addressBook": "Catálogo de Endereços",
+      "contracts": "Contratos",
+      "network": "Rede"
+    },
+    "submit": "Enviar",
+    "clear": "Limpar Valores",
+    "done": "Feito",
+    "cancel": "Cancelar"
+  },
+  "settings": {
+    "lang": "Linguagem",
+    "currency": "Equivalent currency",
+    "showHiddenAccounts": "Hidden Accounts"
+  }
+}

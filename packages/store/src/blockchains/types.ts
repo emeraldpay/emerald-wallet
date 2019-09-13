@@ -7,9 +7,7 @@ export interface IBlockchain {
   gasPrice: Wei | null;
 }
 
-export interface IBlockchainsState extends Map<string, IBlockchain> {
-
-}
+export type IBlockchainsState = Map<string, IBlockchain>;
 
 export enum ActionTypes {
   BLOCK = 'BLOCKCHAINS/BLOCK',

@@ -43,7 +43,7 @@ export default connect<PropsFromState, DispatchFromProps, OwnProps>(
     },
     onHide: (chain: string) => () => {
       const address = ownProps.account.get('id');
-      dispatch(screen.actions.showDialog('hide-account', {address, blockchain: chain}));
+      dispatch(screen.actions.showDialog('hide-account', {id: address, blockchain: chain}));
     },
     onUnhide: (chain: BlockchainCode) => () => {
       const address = ownProps.account.get('id');

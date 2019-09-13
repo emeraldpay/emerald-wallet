@@ -1,12 +1,12 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { translate } from 'react-i18next';
+import { withTranslation } from 'react-i18next';
+import { i18n } from '@emeraldwallet/react-app';
 import { Settings } from '@emeraldwallet/ui';
 import { screen, addresses } from '@emeraldwallet/store';
 import settings from '../../store/wallet/settings';
-import i18n from '../../i18n/i18n';
 
-const TranslatedSettings = translate('settings')(Settings);
+const TranslatedSettings = withTranslation('translation')(Settings);
 
 export default connect(
   (state, ownProps) => {

@@ -194,18 +194,6 @@ function getInitialScreen() {
   return onceAccountsLoaded(store).then(() => {
     // We display home screen which will decide show landing or accounts list
     store.dispatch(screen.actions.gotoScreen('home'));
-
-    // depricated ===
-    // const accountSize = addresses.selectors.all(store.getState()).size;
-    //
-    // if (accountSize === 0) {
-    //   return store.dispatch(screen.actions.gotoScreen('landing'));
-    // }
-    //
-    // return onceBalancesSet(store).then(() => {
-    //   return store.dispatch(screen.actions.gotoScreen('home'));
-    // });
-    // ===
   });
 }
 

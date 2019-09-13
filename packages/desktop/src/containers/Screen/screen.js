@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Wei } from '@emeraldplatform/eth';
 import {
-  ContactList as AddressBook, AddContact, PaperWallet, ExportPaperWallet,
+  ContactList as AddressBook, AddContact, PaperWallet, ExportPaperWallet, ImportJson,
 } from '@emeraldwallet/react-app';
 
 import createLogger from '../../utils/logger';
@@ -11,12 +11,10 @@ import AccountShow from '../../components/accounts/AccountShow';
 import TransactionShow from '../../components/tx/TxDetails';
 import MnemonicWizard from '../../components/accounts/MnemonicWizard';
 import LedgerImport from '../../components/ledger/ImportAccount';
-import ImportJson from '../../components/accounts/add/ImportJson';
 import ImportPrivateKey from '../../components/accounts/add/ImportPrivateKey';
 import ImportMnemonic from '../ImportMnemonic';
 import Welcome from '../../components/welcome/welcome';
-import Landing from '../Landing';
-import Dashboard from '../../components/layout/Dashboard';
+import Home from '../Home';
 import Settings from '../Settings';
 import GenerateAccount from '../../components/accounts/GenerateAccount';
 import { screen } from '../../store';
@@ -33,7 +31,7 @@ const Screen = (props) => {
     </div>);
   }
   if (props.screen === 'home') {
-    return (<Dashboard />);
+    return (<Home />);
   }
   if (props.screen === 'address-book') {
     return <AddressBook />;
@@ -61,7 +59,7 @@ const Screen = (props) => {
     return <MultiCreateTransaction account={ fromAccount } to={to} amount={amount} gasLimit={gasLimit} data={data} typedData={typedData} mode={mode}/>;
   }
   if (props.screen === 'landing-generate') {
-    return <GenerateAccount onBackScreen="landing" backLabel="Back"/>;
+    return <GenerateAccount backLabel="Back"/>;
   }
   if (props.screen === 'generate') {
     return <GenerateAccount />;
@@ -70,22 +68,19 @@ const Screen = (props) => {
     return <ImportJson />;
   }
   if (props.screen === 'landing-importjson') {
-    return <ImportJson onBackScreen="landing" backLabel="Back"/>;
+    return <ImportJson backLabel="Back"/>;
   }
   if (props.screen === 'import-private-key') {
     return <ImportPrivateKey />;
   }
   if (props.screen === 'landing-import-private-key') {
-    return <ImportPrivateKey onBackScreen="landing" />;
+    return <ImportPrivateKey />;
   }
   if (props.screen === 'import-mnemonic') {
     return <ImportMnemonic />;
   }
   if (props.screen === 'new-mnemonic') {
     return <MnemonicWizard />;
-  }
-  if (props.screen === 'landing') {
-    return <Landing />;
   }
   if (props.screen === 'welcome') {
     return <Welcome />;

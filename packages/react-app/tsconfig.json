@@ -6,7 +6,8 @@
     "module": "commonjs",
     "moduleResolution": "node",
     "strict": true,
-    "rootDirs": ["src"]
+    "rootDirs": ["src"],
+    "resolveJsonModule": true,
   },
   "include": [
     "src/**/*.ts"

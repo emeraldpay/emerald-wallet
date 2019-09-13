@@ -10,7 +10,7 @@ import { CurrencyEtc, CurrencyEth} from '@emeraldplatform/ui-icons';
 import { CoinAvatar } from '../../../common/CoinIcon';
 import Button from '../../../common/Button';
 
-interface Props {
+export interface Props {
   total: any;
   fiatCurrency?: string;
   byChain: any;

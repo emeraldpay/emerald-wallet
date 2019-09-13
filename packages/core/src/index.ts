@@ -14,3 +14,5 @@ export { default as DefaultLogger } from './DefaultLogger';
 
 export { IServerConnect } from './IServerConnect';
 export { IApi } from './IApi';
+
+export { IAccount } from './IAccount';

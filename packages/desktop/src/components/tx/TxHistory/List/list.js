@@ -38,12 +38,12 @@ const styles2 = {
   },
 };
 
-type Props = {
+type ILandingProps = {
     transactions: Array<any>,
     accountId: string,
 };
 
-const TransactionsList = (props: Props) => {
+const TransactionsList = (props: ILandingProps) => {
   const {
     transactions, accountId, theme, classes,
   } = props;

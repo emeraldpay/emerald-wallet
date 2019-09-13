@@ -4,9 +4,9 @@ import SnackbarContent from '@material-ui/core/SnackbarContent';
 import { withStyles } from '@material-ui/core/styles';
 import { amber } from '@material-ui/core/colors';
 import { Warning } from "@emeraldplatform/ui-icons";
-import {FloatProperty} from "csstype";
+import { FloatProperty } from "csstype";
 
-interface Props {
+export interface Props {
   classes?: any;
   status: string;
 }

@@ -5,7 +5,7 @@ import {Checkbox, Page} from '@emeraldplatform/ui';
 import {Back} from '@emeraldplatform/ui-icons';
 import Button from '../common/Button';
 import {TranslateFn} from '../types';
-import { withStyles } from '@material-ui/styles';
+import {withStyles} from '@material-ui/styles';
 import {TextAlignProperty} from "csstype";
 
 const styles = {
@@ -101,7 +101,7 @@ export class Settings extends React.Component<Props, State> {
       <Page title="Settings" leftIcon={<Back onClick={goBack}/>}>
         <div className={classes.formRow}>
           <div className={classes.left}>
-            <div className={classes.fieldName}>{t('currency')}</div>
+            <div className={classes.fieldName}>{t('settings.currency')}</div>
           </div>
           <div className={classes.right}>
             <TextField
@@ -122,7 +122,7 @@ export class Settings extends React.Component<Props, State> {
         <div className={classes.formRow}>
           <div className={classes.left}>
             <div className={classes.fieldName}>
-              {t('lang')}
+              {t('settings.lang')}
             </div>
           </div>
           <div className={classes.right}>
@@ -142,7 +142,7 @@ export class Settings extends React.Component<Props, State> {
         <div className={classes.formRow}>
           <div className={classes.left}>
             <div className={classes.fieldName}>
-              {t('showHiddenAccounts')}
+              {t('settings.showHiddenAccounts')}
             </div>
           </div>
           <div className={classes.right}>
@@ -156,7 +156,7 @@ export class Settings extends React.Component<Props, State> {
         <div className={classes.formRow}>
           <div className={classes.left}>
             <div className={classes.fieldName}>
-              {t('confirmations')}
+              {t('settings.confirmations')}
             </div>
           </div>
           <div className={classes.right}>

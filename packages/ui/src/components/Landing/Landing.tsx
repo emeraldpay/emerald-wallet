@@ -33,7 +33,7 @@ export const styles = (theme?: any) => ({
   }
 });
 
-interface Props {
+export interface ILandingProps {
   classes?: any;
   onGenerate?: any;
   onAboutClick?: any;
@@ -44,7 +44,7 @@ interface Props {
 
 export const Landing = ({
   onGenerate, onImportJson, onImportPrivateKey, onLedger, classes, onAboutClick,
-}: Props) => {
+}: ILandingProps) => {
 
   return (
     <div>
