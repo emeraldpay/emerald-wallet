@@ -3,12 +3,11 @@ import { connect } from 'react-redux';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Wei } from '@emeraldplatform/eth';
 import {
-  ContactList as AddressBook, AddContact, PaperWallet, ExportPaperWallet, ImportJson,
+  ContactList as AddressBook, AddContact, PaperWallet, ExportPaperWallet, ImportJson, TxDetails,
 } from '@emeraldwallet/react-app';
 
 import createLogger from '../../utils/logger';
 import AccountShow from '../../components/accounts/AccountShow';
-import TransactionShow from '../../components/tx/TxDetails';
 import MnemonicWizard from '../../components/accounts/MnemonicWizard';
 import LedgerImport from '../../components/ledger/ImportAccount';
 import ImportPrivateKey from '../../components/accounts/add/ImportPrivateKey';
@@ -46,7 +45,7 @@ const Screen = (props) => {
   } if (props.screen === 'account') {
     return <AccountShow account={ props.screenItem }/>;
   } if (props.screen === 'transaction') {
-    return <TransactionShow hash={ props.screenItem.hash } accountId={ props.screenItem.accountId }/>;
+    return <TxDetails hash={ props.screenItem.hash } accountId={ props.screenItem.accountId }/>;
   } if (props.screen === 'create-tx') {
     return <MultiCreateTransaction account={ props.screenItem } />;
   }

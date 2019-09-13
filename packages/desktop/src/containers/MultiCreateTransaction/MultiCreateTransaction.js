@@ -17,10 +17,10 @@ import { Back } from '@emeraldplatform/ui-icons';
 import { blockchainByName, Blockchains } from '@emeraldwallet/core';
 import { CreateEthereumTx, TxTarget, ValidationResult } from '@emeraldwallet/workflow';
 import { CreateTx, SignTx } from '@emeraldwallet/ui';
+import { TxDetails } from '@emeraldwallet/react-app';
 import Tokens from '../../store/vault/tokens';
 import network from '../../store/network';
 import Wallet from '../../store/wallet';
-import TransactionShow from '../../components/tx/TxDetails';
 import { txFeeFiat, traceValidate } from './util';
 
 const PAGES = {
@@ -228,7 +228,7 @@ class MultiCreateTransaction extends React.Component {
         );
       case PAGES.DETAILS:
         return (
-          <TransactionShow hash={this.state.hash} accountId={this.state.transaction.from}/>
+          <TxDetails hash={this.state.hash} accountId={this.state.transaction.from}/>
         );
       default: return null;
     }

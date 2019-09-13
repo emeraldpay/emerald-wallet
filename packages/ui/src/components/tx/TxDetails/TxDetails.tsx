@@ -41,7 +41,7 @@ export const styles = {
   },
 };
 
-interface Props {
+export interface Props {
   fiatAmount?: string,
   fiatCurrency?: string,
   goBack?: (a?: any) => void,
@@ -77,9 +77,16 @@ export class TxDetails extends React.Component<Props> {
     }
   };
 
+  handleRepeatClick = () => {
+    if (this.props.repeatTx) {
+      const {transaction, toAccount, fromAccount} = this.props;
+      this.props.repeatTx(transaction, toAccount, fromAccount);
+    }
+  };
+
   render() {
     const {
-      transaction, fromAccount, toAccount, openAccount, repeatTx, classes, tokenSymbol,
+      transaction, classes, tokenSymbol,
     } = this.props;
     const {
       fiatCurrency, fiatAmount,
@@ -94,7 +101,7 @@ export class TxDetails extends React.Component<Props> {
             <div className={classes.fieldName}>Date</div>
           </div>
           <div style={styles.right}>
-            {transaction.timestamp ? new Date(transaction.timestamp * 1000).toUTCString() : null}
+            {transaction.timestamp ? new Date(transaction.timestamp * 1000).toUTCString() : 'pending'}
           </div>
         </div>
         <div className={classes.formRow}>
@@ -210,7 +217,7 @@ export class TxDetails extends React.Component<Props> {
                 label="DASHBOARD" />
               <Button
                 primary
-                onClick={ () => repeatTx(transaction, toAccount, fromAccount) }
+                onClick={this.handleRepeatClick}
                 label="REPEAT TRANSACTION" />
             </ButtonGroup>
           </div>

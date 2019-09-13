@@ -27,3 +27,6 @@ export { default as ConnectionStatus } from './layout/ConnectionStatus';
 export { default as NotificationBar } from './layout/NotificationBar';
 export { default as Header } from './layout/Header';
 export { default as Landing } from './layout/Landing';
+
+// tx
+export { default as TxDetails } from './tx/TxDetails';
