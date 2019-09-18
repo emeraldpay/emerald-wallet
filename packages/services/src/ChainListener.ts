@@ -1,39 +1,37 @@
 import {
-  BlockchainClient, ChainHead,
-  ChainSpec, chainByCode, CHAINS,
+  BlockchainClient, chainByCode,
+  ChainHead, CHAINS, ChainSpec,
   ClientReadable
 } from '@emeraldplatform/grpc';
 
-import extractChain from "./extractChain";
+import extractChain from './extractChain';
 
-type ChainStatus = {
-  height: number,
-  hash: string
+interface ChainStatus {
+  height: number;
+  hash: string;
 }
 
-interface HeadListener {
-  (status: ChainStatus): void;
-}
+type HeadListener = (status: ChainStatus) => void;
 
 export class ChainListener {
-  client: BlockchainClient;
-  response?: ClientReadable<ChainHead>;
+  public client: BlockchainClient;
+  public response?: ClientReadable<ChainHead>;
 
-  constructor(client: BlockchainClient) {
+  constructor (client: BlockchainClient) {
     this.client = client;
   }
 
-  stop() {
+  public stop () {
     if (this.response) {
       this.response.cancel();
     }
     this.response = undefined;
   }
 
-  subscribe(chainCode: string, handler: HeadListener) {
+  public subscribe (chainCode: string, handler: HeadListener) {
     const chain = extractChain(chainCode);
     if (chain.code == CHAINS.UNSPECIFIED.code) {
-      console.warn("Unknown chain: ", chainCode, "Ignoring.");
+      console.warn('Unknown chain: ', chainCode, 'Ignoring.');
       return;
     }
     const request = chain.toProtobuf();
@@ -41,10 +39,10 @@ export class ChainListener {
       response.on('data', (data: ChainHead) => {
         // console.log(`New blockchain height. Chain: ${data.getChain()}, height: ${data.getHeight()}`);
         if (handler) {
-          handler({height: data.getHeight(), hash: data.getBlockId()})
+          handler({ height: data.getHeight(), hash: data.getBlockId() });
         }
       });
       this.response = response;
-    })
+    });
   }
 }

@@ -1,33 +1,33 @@
 import {
-  GetRatesResponse, GetRatesRequest, Pair, Rate,
-  MarketClient,
-  ClientReadable
-} from "@emeraldplatform/grpc";
+  ClientReadable, GetRatesRequest, GetRatesResponse, MarketClient,
+  Pair,
+  Rate
+} from '@emeraldplatform/grpc';
 
 export type PriceHandler = (prices: {[key: string]: string}) => void;
 
 export class PriceListener {
-  client: MarketClient;
-  response?: ClientReadable<GetRatesResponse>;
+  public client: MarketClient;
+  public response?: ClientReadable<GetRatesResponse>;
 
-  constructor(client: MarketClient) {
+  constructor (client: MarketClient) {
     this.client = client;
   }
 
-  stop() {
+  public stop () {
     if (this.response) {
       this.response.cancel();
     }
     this.response = undefined;
   }
 
-  request(froms: string[], to: string, handler: PriceHandler) {
+  public request (froms: string[], to: string, handler: PriceHandler) {
     const request = new GetRatesRequest();
     froms.forEach((from) => {
       const pair = new Pair();
       pair.setBase(from);
       pair.setTarget(to);
-      request.addPairs(pair)
+      request.addPairs(pair);
     });
 
     this.client.getRates(request).then((resp) => {
@@ -38,7 +38,7 @@ export class PriceListener {
             result[item.getBase()] = item.getRate();
           }
         });
-        handler(result)
+        handler(result);
       }
     }).catch((_) => {});
   }

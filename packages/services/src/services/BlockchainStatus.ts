@@ -1,15 +1,15 @@
-import {blockchains} from '@emeraldwallet/store';
-import {ChainListener} from "../ChainListener";
-import {IService} from './Services';
+import { blockchains } from '@emeraldwallet/store';
+import { ChainListener } from '../ChainListener';
+import { IService } from './Services';
 
 export class BlockchainStatus implements IService {
-  id: string;
+  public id: string;
   private apiAccess: any;
   private webContents: any;
   private readonly chain: string;
   private listener: ChainListener | null = null;
 
-  constructor(chain: string, webContents: any, apiAccess: any) {
+  constructor (chain: string, webContents: any, apiAccess: any) {
     if (chain === 'mainnet') {
       chain = 'etc';
     }
@@ -19,10 +19,10 @@ export class BlockchainStatus implements IService {
     this.apiAccess = apiAccess;
   }
 
-  start() {
+  public start () {
     this.stop();
     this.listener = this.apiAccess.newChainListener();
-    const {webContents} = this;
+    const { webContents } = this;
     this.listener!.subscribe(this.chain,(head) => {
       const action = blockchains.actions.blockAction({
         blockchain: this.chain,
@@ -33,7 +33,7 @@ export class BlockchainStatus implements IService {
     });
   }
 
-  stop() {
+  public stop () {
     if (this.listener) {
       this.listener.stop();
     }

@@ -1,6 +1,6 @@
-import {chainByCode, ChainSpec} from "@emeraldplatform/grpc";
+import { chainByCode, ChainSpec } from '@emeraldplatform/grpc';
 
-export default function extractChain(chain: string): ChainSpec {
+export default function extractChain (chain: string): ChainSpec {
   if (chain.toLowerCase() === 'mainnet') {
     chain = 'etc';
   }

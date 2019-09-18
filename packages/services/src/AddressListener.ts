@@ -1,42 +1,40 @@
 import {
   AddressBalance,
   AnyAddress,
-  chainByCode,
-  ChainSpec,
-  MultiAddress,
-  SingleAddress,
+  Asset,
   BalanceRequest,
   BlockchainClient,
-  Asset,
-  ClientReadable
+  chainByCode,
+  ChainSpec,
+  ClientReadable,
+  MultiAddress,
+  SingleAddress
 } from '@emeraldplatform/grpc';
-import extractChain from "./extractChain";
+import extractChain from './extractChain';
 
-type AccountStatusEvent = {
-  address: string,
-  balance: string,
+interface AccountStatusEvent {
+  address: string;
+  balance: string;
 }
 
-interface HeadListener {
-  (status: AccountStatusEvent): void;
-}
+type HeadListener = (status: AccountStatusEvent) => void;
 
 export class AddressListener {
-  client: BlockchainClient;
-  response?: ClientReadable<AddressBalance>;
+  public client: BlockchainClient;
+  public response?: ClientReadable<AddressBalance>;
 
-  constructor(client: BlockchainClient) {
+  constructor (client: BlockchainClient) {
     this.client = client;
   }
 
-  stop() {
+  public stop () {
     if (this.response) {
       this.response.cancel();
     }
     this.response = undefined;
   }
 
-  subscribe(chainCode: string, addresses: string[], handler: HeadListener) {
+  public subscribe (chainCode: string, addresses: string[], handler: HeadListener) {
     const chain = extractChain(chainCode);
     const pbMultiAddr = new MultiAddress();
     addresses.forEach((it) => {
@@ -49,25 +47,25 @@ export class AddressListener {
 
     const asset = new Asset();
     asset.setChain(chain.id);
-    asset.setCode("Ether");
+    asset.setCode('Ether');
     const request = new BalanceRequest();
     request.setAsset(asset);
     request.setAddress(pbAnyAddr);
 
     this.client.subscribeBalance(request, (response: ClientReadable<AddressBalance>) => {
       response.on('data', (data: AddressBalance) => {
-        let address = data.getAddress();
+        const address = data.getAddress();
         if (handler && data && address) {
           handler({
             address: address.getAddress(),
-            balance: data.getBalance(),
-          })
+            balance: data.getBalance()
+          });
         }
       });
       response.on('end', () => {
       });
       response.on('error', (err) => {
-        console.warn("response error addr", err)
+        console.warn('response error addr', err);
       });
       this.response = response;
     });

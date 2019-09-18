@@ -1,4 +1,4 @@
-import extractChain from "./extractChain";
+import extractChain from './extractChain';
 
 describe('chainUtils', () => {
   it('works for eth', () => {
