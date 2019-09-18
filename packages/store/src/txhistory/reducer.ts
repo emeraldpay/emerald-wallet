@@ -1,6 +1,6 @@
-import { fromJS, Map } from 'immutable';
 import { convert } from '@emeraldplatform/core';
-
+import { fromJS, Map } from 'immutable';
+import { Transaction } from '../types';
 import {
   ActionTypes,
   HistoryAction,
@@ -9,15 +9,14 @@ import {
   TrackedTxNotFoundAction,
   TrackTxAction,
   TrackTxsAction,
-  UpdateTxsAction,
+  UpdateTxsAction
 } from './types';
-import {Transaction} from "../types";
 
 const { toNumber, toBigNumber } = convert;
 
 const initial = fromJS({
   trackedTransactions: [],
-  chainId: null,
+  chainId: null
 });
 
 const initialTx = Map({
@@ -28,17 +27,17 @@ const initialTx = Map({
   data: null,
   gas: null,
   gasPrice: null,
-  nonce: null,
+  nonce: null
 });
 
-function isTracked(state: any, tx: any) {
+function isTracked (state: any, tx: any) {
   return state.get('trackedTransactions').some((x: any) => tx.get('hash') === x.get('hash'));
 }
 
-function createTx(data: Transaction) {
+function createTx (data: Transaction) {
   const values: {[key: string]: any} = {
     hash: data.hash,
-    to: data.to,
+    to: data.to
   };
   let tx: Map<string, any> = initialTx.merge(values);
   if (data.from !== '0x0000000000000000000000000000000000000000') {
@@ -66,14 +65,14 @@ function createTx(data: Transaction) {
   if (typeof data.blockNumber !== 'undefined' && data.blockNumber !== null) {
     tx = tx.merge({
       blockHash: data.blockHash,
-      blockNumber: toNumber(data.blockNumber),
+      blockNumber: toNumber(data.blockNumber)
     });
   }
 
   return tx;
 }
 
-function onTrackTxs(state: any, action: TrackTxsAction) {
+function onTrackTxs (state: any, action: TrackTxsAction) {
   if (action.type === ActionTypes.TRACK_TXS) {
     const transactions = action.txs.map(createTx);
     return state.update('trackedTransactions', (trackedTransactions: any) => {
@@ -89,7 +88,7 @@ function onTrackTxs(state: any, action: TrackTxsAction) {
   return state;
 }
 
-function onTrackTx(state: any, action: TrackTxAction): any {
+function onTrackTx (state: any, action: TrackTxAction): any {
   if (action.type === ActionTypes.TRACK_TX) {
     const data = createTx(action.tx);
     if (isTracked(state, data)) {
@@ -100,7 +99,7 @@ function onTrackTx(state: any, action: TrackTxAction): any {
   return state;
 }
 
-function onPendingTx(state: any, action: PendingTxAction): any {
+function onPendingTx (state: any, action: PendingTxAction): any {
   if (action.type === ActionTypes.PENDING_TX) {
     let txes = state.get('trackedTransactions');
     for (const tx of action.txList) {
@@ -117,7 +116,7 @@ function onPendingTx(state: any, action: PendingTxAction): any {
   return state;
 }
 
-function onLoadStoredTransactions(state: any, action: LoadStoredTxsAction) {
+function onLoadStoredTransactions (state: any, action: LoadStoredTxsAction) {
   if (action.type === ActionTypes.LOAD_STORED_TXS) {
     let txs = fromJS([]);
     for (const tx of action.transactions) {
@@ -131,7 +130,7 @@ function onLoadStoredTransactions(state: any, action: LoadStoredTxsAction) {
 /**
  * When full node can't find our tx
  */
-function onTrackedTxNotFound(state: any, action: TrackedTxNotFoundAction) {
+function onTrackedTxNotFound (state: any, action: TrackedTxNotFoundAction) {
   if (action.type === ActionTypes.TRACKED_TX_NOTFOUND) {
     return state.update('trackedTransactions', (txes: any) => {
       const pos = txes.findKey((tx: any) => tx.get('hash') === action.hash);
@@ -145,7 +144,7 @@ function onTrackedTxNotFound(state: any, action: TrackedTxNotFoundAction) {
   return state;
 }
 
-function onUpdateTxs(state: any, action: UpdateTxsAction) {
+function onUpdateTxs (state: any, action: UpdateTxsAction) {
   if (action.type === ActionTypes.UPDATE_TXS) {
     return state.update('trackedTransactions', (txs: any) => {
       action.payload.forEach((t) => {
@@ -160,7 +159,7 @@ function onUpdateTxs(state: any, action: UpdateTxsAction) {
   return state;
 }
 
-export function reducer(
+export function reducer (
   state: any,
   action: HistoryAction | null
 ): any {
@@ -170,7 +169,7 @@ export function reducer(
   if (!action) {
     return state;
   }
-  switch(action.type) {
+  switch (action.type) {
     case ActionTypes.TRACK_TX:
       return onTrackTx(state, action);
     case ActionTypes.TRACK_TXS:

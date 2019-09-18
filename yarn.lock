@@ -1229,7 +1229,7 @@
   resolved "https://registry.yarnpkg.com/@elastic/webpack-directory-name-as-main/-/webpack-directory-name-as-main-2.0.2.tgz#c50eb4b8b7e1db181533eb4a568bcab4eaa88c73"
   integrity sha1-xQ60uLfh2xgVM+tKVovKtOqojHM=
 
-"@emeraldplatform/contracts@0.5.1":
+"@emeraldplatform/contracts@0.5.1", "@emeraldplatform/contracts@^0.5.1":
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/@emeraldplatform/contracts/-/contracts-0.5.1.tgz#f1cde5eb18bed81908a146ab4da3fb1a2987d5a6"
   integrity sha512-WUu4e9ejsXJdgEEpBsWBFRIxriMHdtsBgYbhkaNivt/6qQU3cWYI3cT16PuboBR7yae+feS1djqc1EPRjktBxg==

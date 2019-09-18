@@ -1,39 +1,39 @@
+import { BlockchainCode } from '@emeraldwallet/core';
+import { remote } from 'electron';
+import uuid = require('uuid');
+import { Dispatched, GetState } from '../types';
 import {
   ActionTypes,
-  AddressBalance,
   Address,
+  AddressBalance,
+  AddressSelected,
   AddressTxCount,
   Connected,
-  SetHDOffset,
-  AddressSelected,
-  SetListHDPath, Watch, SetBaseHD
-} from "./types";
-import {GetState, Dispatched} from "../types";
-import {BlockchainCode} from "@emeraldwallet/core";
-import {remote} from 'electron';
-import uuid = require("uuid");
+  SetBaseHD,
+  SetHDOffset, SetListHDPath, Watch
+} from './types';
 
-export function setWatch(value: boolean): Watch {
+export function setWatch (value: boolean): Watch {
   return {
     type: ActionTypes.WATCH,
-    value,
+    value
   };
 }
 
-function connection(): Promise<any> {
+function connection (): Promise<any> {
   console.debug('getting a ledger connection');
   return remote.getGlobal('ledger').connect();
 }
 
-export function closeConnection(): Promise<any> {
+export function closeConnection (): Promise<any> {
   console.debug('closing connection to ledger');
   return remote.getGlobal('ledger').disconnect();
 }
 
-export function setConnected(value: boolean): Dispatched<Connected | Dispatched<any>> {
+export function setConnected (value: boolean): Dispatched<Connected | Dispatched<any>> {
   return (dispatch, getState) => {
     if (getState().ledger.get('connected') !== value) {
-      dispatch({ type: ActionTypes.CONNECTED, value});
+      dispatch({ type: ActionTypes.CONNECTED, value });
       if (value) {
         dispatch(getAddresses());
       }
@@ -41,14 +41,14 @@ export function setConnected(value: boolean): Dispatched<Connected | Dispatched<
   };
 }
 
-export function getAddresses(offset: number = 0, count: number = 5): Dispatched<SetHDOffset | AddressSelected | SetListHDPath | Dispatched<any>> {
+export function getAddresses (offset: number = 0, count: number = 5): Dispatched<SetHDOffset | AddressSelected | SetListHDPath | Dispatched<any>> {
   return (dispatch, getState) => {
     // let offset = getState().ledger.getIn(['hd', 'offset']);
     const hdbase = getState().ledger.getIn(['hd', 'base']);
 
     dispatch({
       type: ActionTypes.SET_HDOFFSET,
-      value: offset,
+      value: offset
     });
 
     dispatch(selectAddr(undefined));
@@ -63,24 +63,22 @@ export function getAddresses(offset: number = 0, count: number = 5): Dispatched<
   };
 }
 
-function start(index: number, hdpath: string): SetListHDPath {
+function start (index: number, hdpath: string): SetListHDPath {
   return {
     type: ActionTypes.SET_LIST_HDPATH,
     index,
-    hdpath,
+    hdpath
   };
 }
 
-export function selectAddr(addr?: string): AddressSelected {
+export function selectAddr (addr?: string): AddressSelected {
   return {
     type: ActionTypes.ADDR_SELECTED,
-    value: addr,
+    value: addr
   };
 }
 
-
-
-export function checkConnected(): Dispatched<Connected> {
+export function checkConnected (): Dispatched<Connected> {
   return (dispatch, getState) => {
     return connection().then((ledgerApi) => {
       return ledgerApi.getStatus()
@@ -102,7 +100,7 @@ export function checkConnected(): Dispatched<Connected> {
   };
 }
 
-export function watchConnection(): Dispatched<Connected> {
+export function watchConnection (): Dispatched<Connected> {
   return (dispatch, getState) => {
     const connectionStart = () => {
       const state = getState();
@@ -118,9 +116,9 @@ export function watchConnection(): Dispatched<Connected> {
   };
 }
 
-function onceConnectionState(getState: GetState, value: boolean): Promise<any> {
+function onceConnectionState (getState: GetState, value: boolean): Promise<any> {
   return new Promise((resolve) => {
-    const check = function() {
+    const check = function () {
       if (getState().ledger.get('connected') == value) {
         resolve(true);
       } else {
@@ -128,7 +126,7 @@ function onceConnectionState(getState: GetState, value: boolean): Promise<any> {
       }
     };
     check();
-  })
+  });
 }
 
 // function loadInfo(chain: BlockchainCode, hdpath: string, addr: string): Dispatched<AddressBalance | AddressTxCount> {
@@ -149,7 +147,7 @@ function onceConnectionState(getState: GetState, value: boolean): Promise<any> {
 //   };
 // }
 
-export function getAddress(hdpath: string): Dispatched<Address> {
+export function getAddress (hdpath: string): Dispatched<Address> {
   return (dispatch) => {
     return connection()
       .then((ledgerApi) => ledgerApi.getAddress(hdpath))
@@ -157,23 +155,23 @@ export function getAddress(hdpath: string): Dispatched<Address> {
         dispatch({
           type: ActionTypes.ADDR,
           hdpath,
-          addr: addr.address,
+          addr: addr.address
         });
         // TODO: consider batch request for all addresses
         // return dispatch(loadInfo(chain, hdpath, addr.address));
       })
-      .catch((e) => console.error("Ledger access failure", e));
+      .catch((e) => console.error('Ledger access failure', e));
   };
 }
 
-export function setBaseHD(hdpath: string): SetBaseHD {
+export function setBaseHD (hdpath: string): SetBaseHD {
   return {
     type: ActionTypes.SET_BASEHD,
-    value: hdpath,
+    value: hdpath
   };
 }
 
-function createAccountData(address: string, hdpath: string): any {
+function createAccountData (address: string, hdpath: string): any {
   return {
     version: 3,
     id: uuid(),
@@ -182,12 +180,12 @@ function createAccountData(address: string, hdpath: string): any {
     crypto: {
       cipher: 'hardware',
       hardware: 'ledger-nano-s:v1',
-      hd_path: hdpath,
-    },
+      hd_path: hdpath
+    }
   };
 }
 
-export function importSelected(blockchain: BlockchainCode): Dispatched<AddressSelected> {
+export function importSelected (blockchain: BlockchainCode): Dispatched<AddressSelected> {
   return (dispatch, getState, api) => {
     const { ledger } = getState();
     const selected = ledger.get('selectedAddr').toLowerCase();
