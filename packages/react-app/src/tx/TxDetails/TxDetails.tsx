@@ -1,16 +1,16 @@
+import { Wei } from '@emeraldplatform/eth';
+import { Blockchains, Currency } from '@emeraldwallet/core';
+import { screen, settings, txhistory } from '@emeraldwallet/store';
+import { TxDetails } from '@emeraldwallet/ui';
 import * as React from 'react';
-import {connect} from 'react-redux';
-import {TxDetails} from '@emeraldwallet/ui';
-import {Blockchains, Currency} from '@emeraldwallet/core';
-import {settings, screen, txhistory} from '@emeraldwallet/store';
-import {Wei} from '@emeraldplatform/eth';
+import { connect } from 'react-redux';
 
-const {gotoScreen} = screen.actions;
+const { gotoScreen } = screen.actions;
 
 export interface ITxDetailsProps {
-  hash: string,
-  repeatTx: any,
-  goBack: any,
+  hash: string;
+  repeatTx: any;
+  goBack: any;
 }
 
 export default connect(
@@ -39,7 +39,7 @@ export default connect(
       fiatAmount,
       fiatCurrency: currentCurrency,
       fromAccount,
-      toAccount,
+      toAccount
     };
   },
   (dispatch, ownProps) => ({
@@ -59,7 +59,7 @@ export default connect(
       }
     },
     repeatTx: (transaction: any, toAccount: any, fromAccount: any) => {
-      dispatch(gotoScreen('repeat-tx', {transaction, toAccount, fromAccount}));
-    },
+      dispatch(gotoScreen('repeat-tx', { transaction, toAccount, fromAccount }));
+    }
   })
 )(TxDetails);

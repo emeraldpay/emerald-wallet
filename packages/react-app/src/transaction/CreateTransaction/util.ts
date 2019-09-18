@@ -1,8 +1,8 @@
-import {BlockchainCode, Currency} from '@emeraldwallet/core';
 import { convert } from '@emeraldplatform/core';
 import { Wei } from '@emeraldplatform/eth';
+import { BlockchainCode, Currency } from '@emeraldwallet/core';
 
-export function txFeeFiat(gasPrice: any, gasLimit: number, rate: number): string {
+export function txFeeFiat (gasPrice: any, gasLimit: number, rate: number): string {
   const wei = new Wei(gasPrice).mul(convert.toBigNumber(gasLimit));
   const ether = wei.toEther(18);
   return Currency.convert(ether.toString(), rate);
