@@ -5,7 +5,6 @@ import { Back } from '@emeraldplatform/ui-icons';
 import Button from '../../common/Button';
 import PasswordInput from '../../common/PasswordInput';
 
-
 export const styles = {
   passwordLabel: {
     height: '24px',

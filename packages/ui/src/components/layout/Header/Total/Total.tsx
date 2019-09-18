@@ -6,7 +6,6 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
 import {CSSProperties, withStyles} from '@material-ui/styles';
 import { CurrencyEtc, CurrencyEth} from '@emeraldplatform/ui-icons';
-
 import { CoinAvatar } from '../../../common/CoinIcon';
 import Button from '../../../common/Button';
 

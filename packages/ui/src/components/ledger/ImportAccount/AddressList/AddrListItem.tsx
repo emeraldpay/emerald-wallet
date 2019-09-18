@@ -1,28 +1,27 @@
-import * as React from 'react';
-import {withStyles} from '@material-ui/styles';
+import { Wei } from '@emeraldplatform/eth';
+import { Address as AccountAddress } from '@emeraldplatform/ui';
+import { blockchainByName, IApi } from '@emeraldwallet/core';
 import Radio from '@material-ui/core/Radio';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
-import {Address as AccountAddress} from '@emeraldplatform/ui';
-
-import {styles as tableStyles} from './styles';
-import {LedgerAddress, Selectable} from './types';
-import {IApi, blockchainByName} from "@emeraldwallet/core";
-import {Wei} from "@emeraldplatform/eth";
-import Balance from "../../../accounts/Balance/Balance";
-import BigNumber from "bignumber.js";
+import { withStyles } from '@material-ui/styles';
+import BigNumber from 'bignumber.js';
+import * as React from 'react';
+import Balance from '../../../accounts/Balance/Balance';
+import { styles as tableStyles } from './styles';
+import { LedgerAddress, Selectable } from './types';
 
 const style = {
   used: {
-    color: '#999',
+    color: '#999'
   },
   usedIcon: {
-    fontSize: '14px',
+    fontSize: '14px'
   },
   addrContainer: {
     display: 'flex',
-    alignItems: 'center',
-  },
+    alignItems: 'center'
+  }
 };
 
 interface Props {
@@ -35,31 +34,31 @@ interface Props {
 }
 
 interface State {
-  balance: Wei
+  balance: Wei;
 }
 
 class Addr extends React.Component<Props, State> {
 
-  constructor(props: Readonly<Props>) {
+  constructor (props: Readonly<Props>) {
     super(props);
-    this.state = {balance: Wei.ZERO}
+    this.state = { balance: Wei.ZERO };
   }
 
-  handleSelected = (event: any, checked: boolean) => {
+  public handleSelected = (event: any, checked: boolean) => {
     if (checked && this.props.onSelected) {
       this.props.onSelected(event.target.value);
     }
-  };
+  }
 
-  componentDidMount(): void {
+  public componentDidMount (): void {
     this.loadBalance();
   }
 
-  componentDidUpdate(prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any): void {
+  public componentDidUpdate (prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any): void {
     this.loadBalance();
   }
 
-  loadBalance(): void {
+  public loadBalance (): void {
     const blockchain = this.props.blockchain;
     if (!blockchain || !this.props.addr || !this.props.addr.address) {
       return;
@@ -69,13 +68,13 @@ class Addr extends React.Component<Props, State> {
       .then((balance: BigNumber) => {
         const newBalance = new Wei(balance);
         if (!newBalance.equals(this.state.balance)) {
-          this.setState({balance: newBalance});
+          this.setState({ balance: newBalance });
         }
       })
       .catch((e) => console.error(`Unable to load balance for ${address} on ${blockchain}`, e));
   }
 
-  render() {
+  public render () {
     const {
       addr, alreadyAdded, classes, blockchain
     } = this.props;
@@ -92,7 +91,7 @@ class Addr extends React.Component<Props, State> {
     const hasPath = addr.hdpath !== null;
     const hasAddr = addr.address !== null;
     const selectable = hasPath && hasAddr && !alreadyAdded;
-    const {balance} = this.state;
+    const { balance } = this.state;
 
     let balanceRender = null;
     if (balance) {

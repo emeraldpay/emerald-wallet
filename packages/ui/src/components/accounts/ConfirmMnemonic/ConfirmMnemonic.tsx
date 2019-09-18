@@ -1,6 +1,5 @@
 import * as React from 'react';
 import {withStyles} from '@material-ui/styles';
-
 import { Page, Warning, WarningText, Input } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import Button from '../../common/Button';

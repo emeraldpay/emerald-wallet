@@ -1,14 +1,14 @@
+import { reducer } from './reducer';
 import * as selectors from './selectors';
-import {reducer} from "./reducer";
-import {ActionTypes} from "./types";
+import { ActionTypes } from './types';
 
 describe('blockchain selectors', () => {
-  it('all shoud return map', () => {
+  it('all should return map', () => {
 
-    let state = reducer(undefined, { type: ActionTypes.BLOCK, payload: {blockchain: "etc", height: 112 } });
-    state = reducer(state, { type: ActionTypes.BLOCK, payload: {blockchain: "eth", height: 2112 } });
+    let state = reducer(undefined, { type: ActionTypes.BLOCK, payload: { blockchain: 'etc', height: 112 } });
+    state = reducer(state, { type: ActionTypes.BLOCK, payload: { blockchain: 'eth', height: 2112 } });
     const globalState = {
-      blockchains: state,
+      blockchains: state
     };
 
     const result = selectors.all(globalState);

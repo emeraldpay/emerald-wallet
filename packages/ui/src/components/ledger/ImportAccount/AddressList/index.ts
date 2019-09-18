@@ -1,1 +1,1 @@
-export {default} from './AddrList';
+export { default } from './AddrList';

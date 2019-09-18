@@ -1,4 +1,4 @@
-import {reducer} from './reducer';
+import { reducer } from './reducer';
 import * as types from './types';
 
 describe('screen reducer', () => {
@@ -10,7 +10,7 @@ describe('screen reducer', () => {
       type: 'SCREEN/NOTIFICATION_SHOW',
       message: 'Settings saved',
       notificationType: 'success',
-      duration: 3000,
+      duration: 3000
     } as types.ShowNotificationAction);
 
     // assert
@@ -23,7 +23,7 @@ describe('screen reducer', () => {
       type: 'SCREEN/NOTIFICATION_SHOW',
       message: 'Settings saved - 2',
       notificationType: 'warning',
-      duration: 1000,
+      duration: 1000
     } as types.ShowNotificationAction);
 
     // assert
@@ -39,7 +39,7 @@ describe('screen reducer', () => {
       type: 'SCREEN/NOTIFICATION_SHOW',
       message: 'Settings saved',
       notificationType: 'success',
-      duration: 3000,
+      duration: 3000
     } as types.ShowNotificationAction);
     expect(state.get('notificationMessage')).toEqual('Settings saved');
     expect(state.get('notificationType')).toEqual('success');
@@ -47,7 +47,7 @@ describe('screen reducer', () => {
 
     // do
     state = reducer(state, {
-      type: 'SCREEN/NOTIFICATION_CLOSE',
+      type: 'SCREEN/NOTIFICATION_CLOSE'
     } as types.CloseNotificationAction);
 
     // assert

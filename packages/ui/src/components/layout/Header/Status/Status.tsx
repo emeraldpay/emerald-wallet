@@ -1,5 +1,5 @@
+import { CSSProperties } from '@material-ui/styles';
 import * as React from 'react';
-import {CSSProperties} from "@material-ui/styles";
 import NetworkSelector from './NetworkSelector';
 
 const styles = {
@@ -8,12 +8,12 @@ const styles = {
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-  } as CSSProperties,
+    justifyContent: 'center'
+  } as CSSProperties
 };
 
 interface Props {
-  blockchains: Array<any>
+  blockchains: any[];
 }
 
 const Status = (props: Props) => {
@@ -24,7 +24,4 @@ const Status = (props: Props) => {
   );
 };
 
-
-
 export default Status;
-

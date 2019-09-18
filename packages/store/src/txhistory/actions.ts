@@ -1,4 +1,4 @@
-import { blockchainByName, BlockchainCode, Blockchains, IApi } from '@emeraldwallet/core';
+import { blockchainByName, BlockchainCode, IApi } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 import { Dispatch } from 'react';
 import * as blockchains from '../blockchains';

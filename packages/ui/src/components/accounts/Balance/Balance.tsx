@@ -1,20 +1,20 @@
-import * as React from 'react';
-import BigNumber from 'bignumber.js';
 import { fromBaseUnits } from '@emeraldplatform/core';
-import {Currency, CurrencyCode} from '@emeraldwallet/core';
-import {Wei} from "@emeraldplatform/eth";
+import { Wei } from '@emeraldplatform/eth';
+import { Currency, CurrencyCode } from '@emeraldwallet/core';
+import BigNumber from 'bignumber.js';
+import * as React from 'react';
 
 const defaultStyles = {
   fiat: {
     color: '#191919',
     fontSize: '14px',
-    lineHeight: '16px',
+    lineHeight: '16px'
   },
   coins: {
     lineHeight: '24px',
     fontSize: '16px',
-    color: '#191919',
-  },
+    color: '#191919'
+  }
 };
 
 export interface Props {
@@ -37,15 +37,15 @@ export interface Props {
 }
 
 export class Balance extends React.Component<Props> {
-  static defaultProps = {
+  public static defaultProps = {
     showFiat: false,
     fiatStyle: defaultStyles.fiat,
-    coinsStyle: defaultStyles.coins,
+    coinsStyle: defaultStyles.coins
   };
 
-  render() {
+  public render () {
     const {
-      balance, showFiat, fiatCurrency, fiatRate, symbol, decimals,
+      balance, showFiat, fiatCurrency, fiatRate, symbol, decimals
     } = this.props;
 
     let fiatAmount = null;
@@ -59,15 +59,15 @@ export class Balance extends React.Component<Props> {
     } else if (typeof balance === 'object') {
       coinsStr = balance.toEther(decimals, true);
     }
-    const {fiatStyle, coinsStyle} = this.props;
+    const { fiatStyle, coinsStyle } = this.props;
 
     return (
       <div>
-        <span id="balance" style={coinsStyle}>
+        <span id='balance' style={coinsStyle}>
           {balance ? coinsStr : '-'} {symbol}
         </span>
         {fiatAmount && <br/>}
-        {fiatAmount && <span id="fiat" style={fiatStyle}>{fiatAmount} {fiatCurrency}</span>}
+        {fiatAmount && <span id='fiat' style={fiatStyle}>{fiatAmount} {fiatCurrency}</span>}
       </div>
     );
   }

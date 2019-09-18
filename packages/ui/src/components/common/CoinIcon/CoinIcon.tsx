@@ -1,8 +1,8 @@
-import * as React from "react";
-import {CurrencyBtc, CurrencyEtc, CurrencyEth, CurrencyUsd, CurrencyUsdt} from "@emeraldplatform/ui-icons";
+import { CurrencyBtc, CurrencyEtc, CurrencyEth, CurrencyUsd, CurrencyUsdt } from '@emeraldplatform/ui-icons';
+import * as React from 'react';
 
 interface Props {
-  chain: string
+  chain: string;
 }
 
 const CoinIcon = (props: Props) => {

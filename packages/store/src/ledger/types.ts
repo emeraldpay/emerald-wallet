@@ -1,4 +1,4 @@
-import { Wei } from "@emeraldplatform/eth";
+import { Wei } from '@emeraldplatform/eth';
 
 export enum ActionTypes {
   ADDR_BALANCE = 'LEDGER/ADDR_BALANCE',
@@ -10,7 +10,7 @@ export enum ActionTypes {
   ADDR_SELECTED = 'LEDGER/ADDR_SELECTED',
   SET_HDOFFSET = 'LEDGER/SET_HDOFFSET',
   SET_BASEHD = 'LEDGER/SET_BASEHD',
-  LOAD_ADDR_INFO = 'LEDGER/LOAD_ADDR_INFO',
+  LOAD_ADDR_INFO = 'LEDGER/LOAD_ADDR_INFO'
 }
 
 export interface Address {
@@ -22,7 +22,7 @@ export interface Address {
 export interface AddressBalance {
   type: ActionTypes.ADDR_BALANCE;
   hdpath: string;
-  value: Wei
+  value: Wei;
 }
 
 export interface AddressTxCount {
@@ -48,8 +48,8 @@ export interface AddressSelected {
 
 export interface SetListHDPath {
   type: ActionTypes.SET_LIST_HDPATH;
-  index: number,
-  hdpath: string
+  index: number;
+  hdpath: string;
 }
 
 export interface Watch {
@@ -63,10 +63,9 @@ export interface SetBaseHD {
 }
 
 export interface LoadAddrInfoAction {
-  type: ActionTypes.LOAD_ADDR_INFO
+  type: ActionTypes.LOAD_ADDR_INFO;
   payload: any;
 }
-
 
 export type LedgerAction =
   | Address

@@ -1,7 +1,6 @@
 import * as React from 'react';
 import * as QRCode from 'qrcode.react';
 import { withStyles } from '@material-ui/styles';
-
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import IconButton from '@material-ui/core/IconButton';
