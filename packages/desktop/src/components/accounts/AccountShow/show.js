@@ -3,9 +3,8 @@ import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { AccountDetailsView, TokenBalances } from '@emeraldwallet/react-app';
 import { blockchainByName } from '@emeraldwallet/core';
-import { screen, addresses, txhistory } from '@emeraldwallet/store';
+import { screen, addresses, txhistory, tokens } from '@emeraldwallet/store';
 
-import tokens from '../../../store/vault/tokens';
 import createLogger from '../../../utils/logger';
 import TransactionsList from '../../tx/TxHistory';
 
@@ -23,32 +22,33 @@ const log = createLogger('AccountShow');
 
 export default connect(
   (state, ownProps) => {
-    const accountPassed = Immutable.fromJS(ownProps.account);
+    const accountPassed = ownProps.account;
     // reload account from store, because it can be passed with id only if it was just imported
-    const account = addresses.selectors.find(state, accountPassed.get('id'), accountPassed.get('blockchain'));
+    const account = addresses.selectors.find(state, accountPassed.id, accountPassed.blockchain);
     if (typeof account === 'undefined') {
-      log.error('Unknown account', typeof accountPassed === 'undefined' || typeof accountPassed.toJS !== 'function' ? accountPassed : accountPassed.toJS());
+      log.error('Unknown account',
+        typeof accountPassed === 'undefined' || typeof accountPassed.toJS !== 'function' ? accountPassed : accountPassed.toJS());
       return {};
     }
     let transactions = Immutable.List();
     let tokensBalances = Immutable.List();
 
-    if (account && account.get('id')) {
+    if (account && account.id) {
       transactions = txhistory.selectors.searchTransactions(
-        account.get('id'),
+        account.id,
         state.wallet.history.get('trackedTransactions')
       );
-      tokensBalances = tokens.selectors.balancesByAddress(state.tokens, account.get('id'));
+      tokensBalances = tokens.selectors.selectBalances(state, account.id, account.blockchain);
     } else {
-      log.warn("Can't find account in general list of accounts", account.get('id'));
+      log.warn("Can't find account in general list of accounts", account.id);
     }
 
     return {
       showFiat: true,
-      tokens: (<TokenBalances balances={tokensBalances}/>),
+      tokens: (<TokenBalances balances={tokensBalances} loadTokens={ownProps.loadTokens}/>),
       account,
       transactions,
-      txList: (<TransactionsList transactions={transactions} accountId={account.get('id')}/>),
+      txList: (<TransactionsList transactions={transactions} accountId={account.id}/>),
     };
   },
   (dispatch, ownProps) => ({
@@ -58,9 +58,9 @@ export default connect(
     },
     showReceiveDialog: () => {
       const {account} = ownProps;
-      const blockchain = blockchainByName(account.get('blockchain'));
+      const blockchain = blockchainByName(account.blockchain);
       const address = {
-        value: account.get('id'),
+        value: account.id,
         blockchain: blockchain.params.code,
         coinTicker: blockchain.params.coinTicker,
       };
@@ -68,6 +68,9 @@ export default connect(
     },
     goBack: () => {
       dispatch(screen.actions.gotoScreen('home'));
+    },
+    loadTokens: (chain, token, address) => {
+      dispatch(tokens.actions.requestTokenBalance(chain, token, address));
     },
     editAccount: (data) => {
       return new Promise((resolve, reject) => {

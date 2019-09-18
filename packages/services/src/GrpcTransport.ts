@@ -28,6 +28,7 @@ class GrpcTransport implements Transport {
     this.chain = chainByCode(chain.toUpperCase());
   }
   request(req: Array<JsonRpcRequest>): Promise<Array<any>> {
+    console.error(JSON.stringify(req));
     const request = new NativeCallRequest();
     request.setChain(this.chain.id);
     req.forEach((json) => {
@@ -39,7 +40,7 @@ class GrpcTransport implements Transport {
     });
 
     return new Promise((resolve, reject) => {
-      this.client.nativeCall(request,(response) => {
+      this.client.nativeCall(request, (response) => {
         const result: Array<any> = [];
         response.on('data', (data: NativeCallReplyItem) => {
           const bytes: Uint8Array = data.getPayload_asU8();

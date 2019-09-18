@@ -1,7 +1,7 @@
 import * as React from 'react';
-import withStyles from 'react-jss';
+import { withStyles } from '@material-ui/styles';
 import { connect } from 'react-redux';
-import { CoinAvatar} from '@emeraldwallet/ui';
+import { CoinAvatar } from '@emeraldwallet/ui';
 import { Account } from '@emeraldplatform/ui';
 import { Trash as DeleteIcon, Pen1 as EditIcon } from '@emeraldplatform/ui-icons';
 import IconButton from '@material-ui/core/IconButton';

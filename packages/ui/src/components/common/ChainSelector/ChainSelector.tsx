@@ -4,11 +4,10 @@ import {CSSProperties, withStyles} from '@material-ui/styles';
 import FormControl from '@material-ui/core/FormControl';
 import Select from '@material-ui/core/Select';
 import InputLabel from '@material-ui/core/InputLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import Input from '@material-ui/core/Input';
-import {Blockchain} from "@emeraldwallet/core";
+import {Blockchain, BlockchainCode} from "@emeraldwallet/core";
 
-export const styles = (theme) => ({
+export const styles = (theme: any) => ({
   container: {
     position: "relative"
   } as CSSProperties,
@@ -25,7 +24,7 @@ export const styles = (theme) => ({
 interface Props {
   chains: Blockchain[];
   onChange?: any;
-  value?: string;
+  value?: BlockchainCode;
   classes?: any;
 }
 
@@ -40,14 +39,16 @@ export class ChainSelector extends React.Component<Props, State> {
 
   constructor(props: Readonly<Props>) {
     super(props);
-    this.state.value = props.value || (props.chains.length > 0 ? props.chains[0].params.coinTicker : 'ETH');
+    this.state.value = props.value || (props.chains.length > 0 ? props.chains[0].params.code : BlockchainCode.ETH);
   }
 
   handleChange(event: React.ChangeEvent<{ name?: string; value: string }>) {
     this.setState({
       value: event.target.value
     });
-    this.props.onChange(event.target.value);
+    if (this.props.onChange) {
+      this.props.onChange(event.target.value);
+    }
   }
 
   render() {
@@ -58,7 +59,7 @@ export class ChainSelector extends React.Component<Props, State> {
         <FormControl className={classes.formControl}>
           <InputLabel htmlFor="chain-helper">Blockchain</InputLabel>
           <Select
-            value={value.toUpperCase()}
+            value={value}
             input={<Input name="chain" id="chain-helper" />}
             onChange={this.handleChange.bind(this)}
             displayEmpty
@@ -66,7 +67,7 @@ export class ChainSelector extends React.Component<Props, State> {
             className={classes.selectChain}
           >
             {chains.map( (chain: Blockchain) =>
-              <MenuItem value={chain.params.coinTicker} key={chain.params.coinTicker}>{chain.getTitle()}</MenuItem>
+              <MenuItem value={chain.params.code} key={chain.params.coinTicker}>{chain.getTitle()}</MenuItem>
             )}
           </Select>
           {/*<FormHelperText>Select blockchain</FormHelperText>*/}

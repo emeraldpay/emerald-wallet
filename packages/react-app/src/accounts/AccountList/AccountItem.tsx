@@ -6,7 +6,7 @@ import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import { Account as AddressAvatar, ButtonGroup } from '@emeraldplatform/ui';
 import { Button, CoinAvatar } from '@emeraldwallet/ui';
-import { blockchainByName } from '@emeraldwallet/core';
+import {blockchainByName, IAccount} from '@emeraldwallet/core';
 
 import AccountActions from '../AccountActions';
 import AccountBalance from '../../common/Balance';
@@ -36,9 +36,8 @@ const styles = (theme: any) => ({
   },
 });
 
-
 interface IAccountProps {
-  account: any;
+  account: IAccount;
   openAccount: any;
   createTx: any;
   showReceiveDialog: any;
@@ -65,22 +64,21 @@ export class Account extends React.Component<IAccountProps> {
         color: theme.palette.text.secondary,
       };
 
-      const { coinTicker } = blockchainByName(account.get('blockchain')).params;
+      const { coinTicker } = blockchainByName(account.blockchain).params;
 
-      const balance = account.get('balance');
-      const accId = account.get('id');
+      const balance = account.balance;
       return (
         <Card className={classes.card}>
           <CardContent>
             <Grid container>
               <Grid container item xs={1} className={classes.coinCard}>
-                <CoinAvatar chain={account.get('blockchain')} />
+                <CoinAvatar chain={account.blockchain} />
               </Grid>
               <Grid container item xs={6}>
-                { accId && <AddressAvatar
+                { account.id && <AddressAvatar
                   identity
-                  address={ accId }
-                  name={ account.get('name') }
+                  address={ account.id }
+                  name={ account.name }
                   onClick={ this.onAddressClick }
                 /> }
               </Grid>
@@ -108,7 +106,7 @@ export class Account extends React.Component<IAccountProps> {
                     />
                     <Button
                       label="Send"
-                      disabled={ !account.get('balance') }
+                      disabled={ !account.balance }
                       onClick={ this.onSendClick }
                     />
                   </ButtonGroup>
@@ -120,4 +118,4 @@ export class Account extends React.Component<IAccountProps> {
     }
 }
 
-export default withTheme((withStyles(styles)(Account)));
+export default withTheme(withStyles(styles)(Account));

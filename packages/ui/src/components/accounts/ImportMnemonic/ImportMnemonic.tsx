@@ -1,8 +1,8 @@
 import * as React from 'react';
 import {withStyles} from '@material-ui/styles';
-import {Page, Warning, WarningHeader, WarningText, Input} from '@emeraldplatform/ui';
+import {Input, Page, Warning, WarningHeader, WarningText} from '@emeraldplatform/ui';
 import {Back} from '@emeraldplatform/ui-icons';
-import { Blockchain } from "@emeraldwallet/core";
+import {Blockchain, BlockchainCode} from "@emeraldwallet/core";
 import Button from '../../common/Button';
 import HdPath from '../../common/HdPath';
 import ChainSelector from '../../common/ChainSelector';
@@ -48,7 +48,7 @@ export const styles = {
   },
 };
 
-interface Props {
+export interface Props {
   blockchains: Blockchain[],
   onSubmit?: any;
   onBack?: any;
@@ -66,7 +66,7 @@ interface State {
   confirmedPassword: string;
   hdpath: string;
   mnemonic: string;
-  blockchain: string
+  blockchain: BlockchainCode;
 }
 
 export class ImportMnemonic extends React.Component<Props, State> {
@@ -77,7 +77,7 @@ export class ImportMnemonic extends React.Component<Props, State> {
       hdpath: this.props.initialValues.hdpath,
       password: '',
       confirmedPassword: '',
-      blockchain: props.blockchains.length > 0 ? props.blockchains[0].params.code : '',
+      blockchain: props.blockchains.length > 0 ? props.blockchains[0].params.code : BlockchainCode.ETH,
     }
   }
 
@@ -112,7 +112,7 @@ export class ImportMnemonic extends React.Component<Props, State> {
     });
   };
 
-  handleChainChange = (value: string) => {
+  handleChainChange = (value: BlockchainCode) => {
     this.setState({
       blockchain: value
     });

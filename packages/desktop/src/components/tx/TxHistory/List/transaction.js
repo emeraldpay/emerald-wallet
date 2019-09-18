@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import { Map } from 'immutable';
 import {blockchainById, blockchainByName } from '@emeraldwallet/core';
 import TxView from '@emeraldwallet/ui/lib/components/tx/TxHistory/TxList/TxItem';
-import { blockchains, txhistory, addresses } from '@emeraldwallet/store';
+import { blockchains, txhistory, addresses, settings, screen } from '@emeraldwallet/store';
 import { Balance, i18n } from '@emeraldwallet/react-app';
-import { screen } from '../../../../store';
+
 import Wallet from '../../../../store/wallet';
 
 function txValueRenderer(showFiat) {
@@ -29,7 +29,8 @@ export default connect(
     const toAccount = addresses.selectors.find(state, tx.to, blockchain.params.code) || Map({});
     const fromAccount = addresses.selectors.find(state, tx.from, blockchain.params.code) || Map({});
 
-    const token = state.tokens.get('tokens').find((t) => t.get('address') === tx.to);
+    // TODO: fix it !
+    const token = null; //state.tokens.get('tokens').find((t) => t.get('address') === tx.to);
 
     const showFiat = !token;
 
@@ -42,7 +43,7 @@ export default connect(
       fromAccount: (fromAccount && fromAccount.toJS()) || {},
       token: (token && token.toJS()) || null,
       netParams: {
-        requiredConfirmations: state.wallet.settings.get('numConfirmations'),
+        requiredConfirmations: settings.selectors.numConfirms(state),
         currentBlockHeight: blockchains.selectors.getHeight(state, blockchain.params.coinTicker),
       },
     };

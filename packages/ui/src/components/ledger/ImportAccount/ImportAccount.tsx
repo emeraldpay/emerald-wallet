@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Page, ButtonGroup} from '@emeraldplatform/ui';
+import {ButtonGroup, Page} from '@emeraldplatform/ui';
 import {AddCircle as AddIcon, Back} from '@emeraldplatform/ui-icons';
 
 import Button from '../../common/Button';
@@ -9,8 +9,7 @@ import FormRow from '../../common/FormRow';
 import AddrList from './AddressList';
 import {LedgerAddress} from "./AddressList/types";
 import ChainSelector from "../../common/ChainSelector";
-import {Blockchain} from "@emeraldwallet/core";
-import {IApi} from "@emeraldwallet/core";
+import {Blockchain, BlockchainCode, IApi} from "@emeraldwallet/core";
 
 const styles = {
   row: {
@@ -38,14 +37,14 @@ interface Props {
 }
 
 interface State {
-  blockchain?: string
+  blockchain?: BlockchainCode
 }
 
 class ImportAccount extends React.Component<Props, State> {
 
   constructor(props: Readonly<Props>) {
     super(props);
-    const blockchain = props.blockchains.length > 0 ? props.blockchains[0].params.code : 'ETH';
+    const blockchain = props.blockchains.length > 0 ? props.blockchains[0].params.code : BlockchainCode.ETH;
     this.state = {blockchain: blockchain};
   }
 
@@ -55,7 +54,7 @@ class ImportAccount extends React.Component<Props, State> {
     }
   }
 
-  chainSelected(blockchain: string) {
+  chainSelected(blockchain: BlockchainCode) {
     this.setState({
       blockchain: blockchain
     });
@@ -69,7 +68,7 @@ class ImportAccount extends React.Component<Props, State> {
     const {
       hdbase, changeBaseHD, selected, selectedAddress, setSelectedAddr, accounts, addresses,
     } = this.props;
-    const {onAddSelected, onCancel, onBack, blockchains, api } = this.props;
+    const { onAddSelected, onCancel, onBack, blockchains, api } = this.props;
     const { blockchain } = this.state;
 
     // mark each address whether it selected or not

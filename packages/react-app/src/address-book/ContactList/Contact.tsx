@@ -37,7 +37,6 @@ class Contact extends React.Component<Props, State> {
 
   render() {
     const { currentState } = this.state;
-
     if (currentState === States.SHOW) {
       return (<ShowContact onEditAddress={this.handleEditAddress} {...this.props} />);
     }

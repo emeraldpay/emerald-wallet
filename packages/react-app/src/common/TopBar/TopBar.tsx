@@ -1,5 +1,5 @@
 import * as React from 'react';
-import withStyles from 'react-jss';
+import { withStyles } from '@material-ui/styles';
 import { connect } from 'react-redux';
 import { Button } from '@emeraldwallet/ui';
 import { Add as AddIcon } from '@emeraldplatform/ui-icons';

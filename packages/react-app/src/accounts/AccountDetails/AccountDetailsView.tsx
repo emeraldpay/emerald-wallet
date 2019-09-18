@@ -1,5 +1,5 @@
 import * as React from 'react';
-import withStyles from 'react-jss';
+import { withStyles } from '@material-ui/styles';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import * as QRCode from 'qrcode.react';
 import { Back } from '@emeraldplatform/ui-icons';
@@ -7,7 +7,7 @@ import {
   Page, IdentityIcon, ButtonGroup, Account as AddressAvatar
 } from '@emeraldplatform/ui';
 import { Button, InlineEdit, FormRow } from '@emeraldwallet/ui';
-import { blockchainByName } from '@emeraldwallet/core';
+import {blockchainByName, BlockchainCode, IAccount} from '@emeraldwallet/core';
 
 import AccountActions from '../AccountActions';
 import Balance from '../../common/Balance';
@@ -25,15 +25,16 @@ export const styles = {
 export interface Props {
   classes: any;
   showFiat: boolean;
-  account: any;
+  account: IAccount;
+  balance: any;
   goBack?: any;
   editAccount?:any;
   createTx?: any;
   showReceiveDialog?: any;
   txList?: React.Component;
   tokens?: React.ReactElement;
+  loadTokens?: any;
 }
-
 
 type AccountShowProps = Props & WithTranslation;
 
@@ -42,7 +43,6 @@ export interface State {
 }
 
 export class AccountShow extends React.Component<AccountShowProps, State> {
-
   constructor(props: AccountShowProps) {
     super(props);
     this.state = {
@@ -50,12 +50,28 @@ export class AccountShow extends React.Component<AccountShowProps, State> {
     };
   }
 
+  componentDidMount(): void {
+    console.log('AccountShow.componentDidMount');
+    if (this.props.loadTokens) {
+      const blockchain = this.props.account.blockchain;
+      if (blockchain != BlockchainCode.ETC)
+        return;
+      const address = this.props.account.id;
+      const tkn = {
+        address: '0x085fb4f24031eaedbc2b611aa528f22343eb52db',
+        symbol: 'BEC',
+        decimals: '0x08',
+      };
+      this.props.loadTokens(blockchain, tkn, address);
+    }
+  }
+
   handleEdit = () => {
     this.setState({edit: true});
   };
 
   handleSave = (data: any) => {
-    const updated = {blockchain: this.props.account.get('blockchain'), ...data};
+    const updated = {blockchain: this.props.account.blockchain, ...data};
     this.props.editAccount(updated)
       .then((result: any) => {
         this.setState({edit: false});
@@ -75,14 +91,14 @@ export class AccountShow extends React.Component<AccountShowProps, State> {
     } = this.props;
     // TODO: show pending balance too
     // TODO: we convert Wei to TokenUnits here
-    const balance = account.get('balance');
     const acc = {
-      id: account.get('id'),
-      description: account.get('description'),
-      name: account.get('name'),
-      hdpath: account.get('hdpath'),
-      hardware: account.get('hardware', false),
-      blockchain: account.get('blockchain'),
+      balance: account.balance,
+      id: account.id,
+      description: account.description,
+      name: account.name,
+      hdpath: account.hdpath,
+      hardware: account.hardware || false,
+      blockchain: account.blockchain,
     };
 
     const { coinTicker } = blockchainByName(acc.blockchain).params;
@@ -117,10 +133,10 @@ export class AccountShow extends React.Component<AccountShowProps, State> {
               />
               <FormRow
                 rightColumn={
-                  balance && <Balance
+                  acc.balance && <Balance
                     showFiat={showFiat}
                     coinsStyle={{fontSize: '20px', lineHeight: '24px'}}
-                    balance={balance}
+                    balance={acc.balance}
                     decimals={18}
                     symbol={coinTicker}
                   />
@@ -132,7 +148,7 @@ export class AccountShow extends React.Component<AccountShowProps, State> {
               {acc.hardware
               && <FormRow
                 leftColumn={<span>HD Path</span>}
-                rightColumn={acc.hdpath}
+                rightColumn={<div>{acc.hdpath}</div>}
               /> }
               <FormRow
                 rightColumn={
@@ -153,7 +169,6 @@ export class AccountShow extends React.Component<AccountShowProps, State> {
                   </div>
                 }
               />
-
             </div>
 
             <div className={classes.qrCodeContainer}>

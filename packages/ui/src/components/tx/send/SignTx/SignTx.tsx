@@ -5,8 +5,8 @@ import {ArrowRight} from '@emeraldplatform/ui-icons';
 import {Divider, List, ListItem, ListItemText} from '@material-ui/core';
 import {withStyles} from '@material-ui/styles';
 import Button from '../../../common/Button';
-import {Wei, Units} from "@emeraldplatform/eth";
-import {CreateEthereumTx, TxDetails} from "@emeraldwallet/workflow";
+import {Units} from "@emeraldplatform/eth";
+import {CreateEthereumTx} from "@emeraldwallet/workflow";
 
 const styles = (theme?: any) => ({
   formRow: {

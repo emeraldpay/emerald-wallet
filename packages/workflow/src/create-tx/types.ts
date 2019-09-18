@@ -4,8 +4,8 @@ export enum TxTarget {
 }
 
 export function targetFromNumber(i: number): TxTarget {
-  if (i == TxTarget.SEND_ALL.valueOf()) {
-    return TxTarget.SEND_ALL
+  if (i === TxTarget.SEND_ALL.valueOf()) {
+    return TxTarget.SEND_ALL;
   }
   return TxTarget.MANUAL;
 }

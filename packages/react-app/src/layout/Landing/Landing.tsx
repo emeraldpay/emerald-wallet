@@ -19,6 +19,9 @@ export default connect(
     onImportPrivateKey() {
       dispatch(screen.actions.gotoScreen('landing-import-private-key'));
     },
+    onImportMnemonic() {
+      dispatch(screen.actions.gotoScreen('import-mnemonic', 'home'))
+    },
     onLedger() {
       dispatch(screen.actions.gotoScreen('landing-add-from-ledger', 'home'));
     },

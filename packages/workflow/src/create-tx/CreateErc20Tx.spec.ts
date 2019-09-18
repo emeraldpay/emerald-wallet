@@ -1,8 +1,7 @@
-import {CreateERC20Tx, ERC20TxDetailsPlain, TransferType} from './CreateErc20Tx';
-import {TxTarget, ValidationResult} from './types';
-import {Units, Wei} from "@emeraldplatform/eth";
+import { Units, Wei } from '@emeraldplatform/eth';
 import BigNumber from 'bignumber.js';
-import {CreateEthereumTx, TxDetailsPlain} from "./CreateEthereumTx";
+import { CreateERC20Tx, IERC20TxDetailsPlain, TransferType } from './CreateErc20Tx';
+import { TxTarget, ValidationResult } from './types';
 
 describe('CreateErc20Tx', () => {
   it('creates tx', () => {
@@ -11,7 +10,7 @@ describe('CreateErc20Tx', () => {
     expect(tx.validate()).toBe(ValidationResult.NO_FROM);
     expect(tx.target).toBe(TxTarget.MANUAL);
     expect(tx.transferType).toBe(TransferType.STANDARD);
-    expect(tx.amount.toString()).toBe("0");
+    expect(tx.amount.toString()).toBe('0');
   });
 
   it('invalid without from', () => {
@@ -46,7 +45,7 @@ describe('CreateErc20Tx', () => {
   it('invalid without enough tokens', () => {
     const tx = new CreateERC20Tx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new BigNumber(100), new Wei(1, Units.ETHER));
-    tx.to =  '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.amount = new BigNumber(101);
 
     expect(tx.validate()).toBe(ValidationResult.INSUFFICIENT_TOKEN_FUNDS);
@@ -55,7 +54,7 @@ describe('CreateErc20Tx', () => {
   it('invalid without enough ether', () => {
     const tx = new CreateERC20Tx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new BigNumber(100), new Wei(1, Units.WEI));
-    tx.to =  '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.gasPrice = new Wei(10000, Units.MWEI);
     tx.amount = new BigNumber(100);
 
@@ -65,7 +64,7 @@ describe('CreateErc20Tx', () => {
   it('valid', () => {
     const tx = new CreateERC20Tx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new BigNumber(100), new Wei(1, Units.ETHER));
-    tx.to =  '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.gasPrice = new Wei(10000, Units.MWEI);
     tx.amount = new BigNumber(100);
 
@@ -75,7 +74,7 @@ describe('CreateErc20Tx', () => {
   it('zero change', () => {
     const tx = new CreateERC20Tx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new BigNumber(100), new Wei(1, Units.ETHER));
-    tx.to =  '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.gasPrice = new Wei(10000, Units.MWEI);
     tx.amount = new BigNumber(100);
 
@@ -86,7 +85,7 @@ describe('CreateErc20Tx', () => {
   it('has change', () => {
     const tx = new CreateERC20Tx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new BigNumber(100), new Wei(1, Units.ETHER));
-    tx.to =  '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.gasPrice = new Wei(10000, Units.MWEI);
     tx.amount = new BigNumber(50);
 
@@ -98,7 +97,7 @@ describe('CreateErc20Tx', () => {
     const tx = new CreateERC20Tx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new BigNumber(100), new Wei(1, Units.ETHER));
     tx.totalTokenBalance = undefined;
-    tx.to =  '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.gasPrice = new Wei(10000, Units.MWEI);
     tx.amount = new BigNumber(50);
 
@@ -108,7 +107,7 @@ describe('CreateErc20Tx', () => {
   it('fees', () => {
     const tx = new CreateERC20Tx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new BigNumber(100), new Wei(1, Units.ETHER));
-    tx.to =  '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.gasPrice = new Wei(10000, Units.MWEI);
     tx.gas = new BigNumber(150000);
     tx.amount = new BigNumber(100);
@@ -133,7 +132,7 @@ describe('CreateErc20Tx', () => {
   it('fees change', () => {
     const tx = new CreateERC20Tx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new BigNumber(100), new Wei(1, Units.ETHER));
-    tx.to =  '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.gasPrice = new Wei(10000, Units.MWEI);
     tx.gas = new BigNumber(150000);
     tx.amount = new BigNumber(100);
@@ -146,7 +145,7 @@ describe('CreateErc20Tx', () => {
     const tx = new CreateERC20Tx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new BigNumber(100), new Wei(1, Units.ETHER));
     tx.totalEtherBalance = undefined;
-    tx.to =  '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.gasPrice = new Wei(10000, Units.MWEI);
     tx.gas = new BigNumber(150000);
     tx.amount = new BigNumber(100);
@@ -157,7 +156,7 @@ describe('CreateErc20Tx', () => {
   it('rebalance to max sets max', () => {
     const tx = new CreateERC20Tx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new BigNumber(100), new Wei(1, Units.ETHER));
-    tx.to =  '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.amount = new BigNumber(20);
     tx.target = TxTarget.SEND_ALL;
 
@@ -169,7 +168,7 @@ describe('CreateErc20Tx', () => {
   it('rebalance to manual doenst change amount', () => {
     const tx = new CreateERC20Tx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new BigNumber(100), new Wei(1, Units.ETHER));
-    tx.to =  '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.amount = new BigNumber(20);
     tx.target = TxTarget.MANUAL;
 
@@ -188,25 +187,22 @@ describe('CreateErc20Tx', () => {
     tx.amount = new BigNumber(20);
     tx.target = TxTarget.SEND_ALL;
 
-
     expect(tx.getTotal()).toEqual(new BigNumber(20));
     expect(tx.rebalance()).toBeFalsy();
     expect(tx.getTotal()).toEqual(new BigNumber(20));
   });
 
-  it ('dumps plain', () => {
+  it('dumps plain', () => {
     const tx = new CreateERC20Tx();
     tx.erc20 = '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD';
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new BigNumber(100), new Wei(1, Units.ETHER));
-    tx.to =  '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
+    tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.amount = new BigNumber(20);
     tx.gasPrice = new Wei(10007, Units.MWEI);
     tx.gas = new BigNumber(42011);
     tx.target = TxTarget.SEND_ALL;
 
     const dump = tx.dump();
-
-    console.log('dump', dump);
 
     expect(dump.from).toBe('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
     expect(dump.erc20).toBe('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
@@ -220,8 +216,8 @@ describe('CreateErc20Tx', () => {
     expect(dump.transferType).toBe(0);
   });
 
-  it ('reads from dumps', () => {
-    const dump: ERC20TxDetailsPlain = {
+  it('reads from dumps', () => {
+    const dump: IERC20TxDetailsPlain = {
       from: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       erc20: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       totalEtherBalance: '1000000000057',
@@ -237,19 +233,19 @@ describe('CreateErc20Tx', () => {
     const tx = CreateERC20Tx.fromPlain(dump);
 
     expect(tx.from).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
-    expect(tx.totalEtherBalance != null ? tx.totalEtherBalance.value : null).toEqual(new Wei("1000000000057", Units.WEI).value);
-    expect(tx.totalTokenBalance != null ? tx.totalTokenBalance : null).toEqual(new BigNumber("2000000000015"));
+    expect(tx.totalEtherBalance != null ? tx.totalEtherBalance.value : null).toEqual(new Wei('1000000000057', Units.WEI).value);
+    expect(tx.totalTokenBalance != null ? tx.totalTokenBalance : null).toEqual(new BigNumber('2000000000015'));
     expect(tx.erc20).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
     expect(tx.to).toEqual('0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd');
     expect(tx.target).toEqual(TxTarget.SEND_ALL);
-    expect(tx.amount).toEqual(new BigNumber("999580000000500002"));
+    expect(tx.amount).toEqual(new BigNumber('999580000000500002'));
     expect(tx.gasPrice.value).toEqual(new Wei(10007, Units.MWEI).value);
     expect(tx.gas).toEqual(new BigNumber(42011));
     expect(tx.transferType).toEqual(TransferType.STANDARD);
   });
 
-  it ('reads from dumps - delegate mode', () => {
-    const dump: ERC20TxDetailsPlain = {
+  it('reads from dumps - delegate mode', () => {
+    const dump: IERC20TxDetailsPlain = {
       from: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       erc20: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       totalEtherBalance: '1000000000057',
@@ -265,12 +261,12 @@ describe('CreateErc20Tx', () => {
     const tx = CreateERC20Tx.fromPlain(dump);
 
     expect(tx.from).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
-    expect(tx.totalEtherBalance != null ? tx.totalEtherBalance.value : null).toEqual(new Wei("1000000000057", Units.WEI).value);
-    expect(tx.totalTokenBalance != null ? tx.totalTokenBalance : null).toEqual(new BigNumber("2000000000015"));
+    expect(tx.totalEtherBalance != null ? tx.totalEtherBalance.value : null).toEqual(new Wei('1000000000057', Units.WEI).value);
+    expect(tx.totalTokenBalance != null ? tx.totalTokenBalance : null).toEqual(new BigNumber('2000000000015'));
     expect(tx.erc20).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
     expect(tx.to).toEqual('0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd');
     expect(tx.target).toEqual(TxTarget.SEND_ALL);
-    expect(tx.amount).toEqual(new BigNumber("999580000000500002"));
+    expect(tx.amount).toEqual(new BigNumber('999580000000500002'));
     expect(tx.gasPrice.value).toEqual(new Wei(10007, Units.MWEI).value);
     expect(tx.gas).toEqual(new BigNumber(42011));
     expect(tx.transferType).toEqual(TransferType.DELEGATE);

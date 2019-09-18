@@ -12,6 +12,12 @@
     "test": "jest",
     "test:coverage": "jest --coverage && codecov"
   },
+  "dependencies": {
+    "@emeraldplatform/eth": "0.5.1",
+    "@emeraldwallet/core": "^2.0.3",
+    "bignumber.js": "8.0.2",
+    "uuid": "^3.3.2"
+  },
   "devDependencies": {
     "@types/jest": "^24.0.9",
     "@types/node": "^11.10.4",
@@ -42,10 +48,5 @@
     "collectCoverageFrom": [
       "src/**/*.ts"
     ]
-  },
-  "dependencies": {
-    "@emeraldplatform/eth": "0.5.1",
-    "@emeraldwallet/core": "^2.0.3",
-    "uuid": "^3.3.2"
   }
 }

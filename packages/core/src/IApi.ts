@@ -1,5 +1,5 @@
 import {Vault} from "@emeraldplatform/vault";
-import {BlockchainCode} from './blockchains/blockchains';
+import {BlockchainCode} from './blockchains';
 import {EthRpc} from "@emeraldplatform/eth-rpc";
 
 /**

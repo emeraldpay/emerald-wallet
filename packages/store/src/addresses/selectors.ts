@@ -1,6 +1,6 @@
 import {Address, AddressList, AddressMap, moduleName} from "./types";
 import {List, Map} from "immutable";
-import {BlockchainCode} from "@emeraldwallet/core";
+import {BlockchainCode, IAccount} from "@emeraldwallet/core";
 import {Wei} from "@emeraldplatform/eth";
 
 export function all(state: any): AddressList {
@@ -18,13 +18,18 @@ export function allByBlockchain(state: any, blockchain: BlockchainCode): Address
 
 export const isLoading = (state: any): boolean => state[moduleName].get('loading');
 
-export function find(state: any, address: string, blockchain: BlockchainCode): AddressMap | undefined {
+export function find(state: any, address: string, blockchain: BlockchainCode): IAccount | undefined {
   if (!address) {
     return undefined;
   }
-  return allByBlockchain(state, blockchain).find((a: any) =>
+  const result = allByBlockchain(state, blockchain).find((a: any) =>
     a.get('id').toLowerCase() === address.toLowerCase()
   );
+
+  if (result) {
+    return result.toJS() as IAccount;
+  }
+  return undefined;
 }
 
 export function findAllChains(state: any, address: string): AddressList {

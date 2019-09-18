@@ -2,9 +2,10 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { ReceiveDialog } from '@emeraldwallet/ui';
 import { HideAccountDialog } from '@emeraldwallet/react-app';
+import { screen } from '@emeraldwallet/store';
+
 import WaitForSign from '../../components/tx/WaitForSignDialog/waitForSignDialog';
 import createLogger from '../../utils/logger';
-import { screen } from '../../store';
 
 const log = createLogger('Dialog');
 

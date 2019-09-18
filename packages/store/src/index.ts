@@ -6,6 +6,7 @@ import * as ledger from './ledger';
 import * as connection from './conn';
 import * as addressBook from './address-book';
 import * as settings from './settings';
+import * as tokens from './tokens';
 
 export {
   addressBook,
@@ -16,4 +17,5 @@ export {
   ledger,
   connection,
   settings,
+  tokens,
 };

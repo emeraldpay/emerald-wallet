@@ -8,3 +8,5 @@ export const currentChains = (state: any) => state.wallet.settings.getIn(['mode'
   .map((chain: any) => Blockchains[chain.toLowerCase()]);
 
 export const showHiddenAccounts = (state: any): boolean => state.wallet.settings.get('showHiddenAccounts', false);
+
+export const numConfirms = (state: any) => state.wallet.settings.get('numConfirmations');

@@ -1,20 +1,20 @@
-import {targetFromNumber, TxTarget, ValidationResult} from "./types";
-import {Units, Wei} from "@emeraldplatform/eth";
-import BigNumber from "bignumber.js";
+import { Units, Wei } from '@emeraldplatform/eth';
+import BigNumber from 'bignumber.js';
+import { targetFromNumber, TxTarget, ValidationResult } from './types';
 
 export enum TransferType {
   STANDARD,
   DELEGATE
 }
 
-export function transferFromNumber(i: number): TransferType {
-  if (i == TransferType.DELEGATE.valueOf()) {
+export function transferFromNumber (i: number): TransferType {
+  if (i === TransferType.DELEGATE.valueOf()) {
     return TransferType.DELEGATE;
   }
   return TransferType.STANDARD;
 }
 
-export type ERC20TxDetails = {
+export interface IERC20TxDetails {
   from?: string;
   to?: string;
   erc20: string;
@@ -27,7 +27,7 @@ export type ERC20TxDetails = {
   transferType: TransferType;
 }
 
-export type ERC20TxDetailsPlain = {
+export interface IERC20TxDetailsPlain {
   from?: string;
   to?: string;
   erc20: string;
@@ -40,7 +40,7 @@ export type ERC20TxDetailsPlain = {
   transferType: number;
 }
 
-const TxDefaults: ERC20TxDetails = {
+const TxDefaults: IERC20TxDetails = {
   erc20: '',
   target: TxTarget.MANUAL,
   amount: new BigNumber(0),
@@ -49,7 +49,7 @@ const TxDefaults: ERC20TxDetails = {
   transferType: TransferType.STANDARD
 };
 
-function toPlainDetails(tx: ERC20TxDetails): ERC20TxDetailsPlain {
+function toPlainDetails (tx: IERC20TxDetails): IERC20TxDetailsPlain {
   return {
     from: tx.from,
     to: tx.to,
@@ -61,10 +61,10 @@ function toPlainDetails(tx: ERC20TxDetails): ERC20TxDetailsPlain {
     gasPrice: tx.gasPrice.toString(Units.WEI, 0, false),
     gas: tx.gas.toNumber(),
     transferType: tx.transferType.valueOf()
-  }
+  };
 }
 
-function fromPlainDetails(plain: ERC20TxDetailsPlain): ERC20TxDetails {
+function fromPlainDetails (plain: IERC20TxDetailsPlain): IERC20TxDetails {
   return {
     from: plain.from,
     to: plain.to,
@@ -76,22 +76,26 @@ function fromPlainDetails(plain: ERC20TxDetailsPlain): ERC20TxDetails {
     gasPrice: new Wei(plain.gasPrice, Units.WEI),
     gas: new BigNumber(plain.gas),
     transferType: transferFromNumber(plain.transferType)
-  }
+  };
 }
 
-export class CreateERC20Tx implements ERC20TxDetails {
-  from?: string;
-  to?: string;
-  erc20: string;
-  target: TxTarget;
-  amount: BigNumber;
-  totalTokenBalance?: BigNumber;
-  totalEtherBalance?: Wei;
-  gasPrice: Wei;
-  gas: BigNumber;
-  transferType: TransferType;
+export class CreateERC20Tx implements IERC20TxDetails {
 
-  constructor(source?: ERC20TxDetails) {
+  public static fromPlain (details: IERC20TxDetailsPlain): CreateERC20Tx {
+    return new CreateERC20Tx(fromPlainDetails(details));
+  }
+  public from?: string;
+  public to?: string;
+  public erc20: string;
+  public target: TxTarget;
+  public amount: BigNumber;
+  public totalTokenBalance?: BigNumber;
+  public totalEtherBalance?: Wei;
+  public gasPrice: Wei;
+  public gas: BigNumber;
+  public transferType: TransferType;
+
+  constructor (source?: IERC20TxDetails) {
     if (!source) {
       source = TxDefaults;
     }
@@ -107,21 +111,17 @@ export class CreateERC20Tx implements ERC20TxDetails {
     this.transferType = source.transferType;
   }
 
-  static fromPlain(details: ERC20TxDetailsPlain): CreateERC20Tx {
-    return new CreateERC20Tx(fromPlainDetails(details));
-  }
-
-  dump(): ERC20TxDetailsPlain {
+  public dump (): IERC20TxDetailsPlain {
     return toPlainDetails(this);
   }
 
-  setFrom(from: string, tokenBalance: BigNumber, etherBalance: Wei) {
+  public setFrom (from: string, tokenBalance: BigNumber, etherBalance: Wei) {
     this.from = from;
     this.totalTokenBalance = tokenBalance;
     this.totalEtherBalance = etherBalance;
   }
 
-  validate(): ValidationResult {
+  public validate (): ValidationResult {
     if (this.from == null || this.totalTokenBalance == null || this.totalEtherBalance == null) {
       return ValidationResult.NO_FROM;
     }
@@ -137,30 +137,30 @@ export class CreateERC20Tx implements ERC20TxDetails {
     return ValidationResult.OK;
   }
 
-  getTotal(): BigNumber {
+  public getTotal (): BigNumber {
     return this.amount;
   }
 
-  getChange(): (BigNumber | null) {
+  public getChange (): (BigNumber | null) {
     if (this.totalTokenBalance == null) {
-      return null
+      return null;
     }
     return this.totalTokenBalance.minus(this.getTotal());
   }
 
-  getFeesChange(): (Wei | null) {
+  public getFeesChange (): (Wei | null) {
     if (this.totalEtherBalance == null) {
-      return null
+      return null;
     }
     return this.totalEtherBalance.minus(this.getFees());
   }
 
-  getFees(): Wei {
+  public getFees (): Wei {
     return new Wei(this.gas.multipliedBy(this.gasPrice.value));
   }
 
-  rebalance(): Boolean {
-    if (this.target == TxTarget.SEND_ALL) {
+  public rebalance (): boolean {
+    if (this.target === TxTarget.SEND_ALL) {
       if (this.totalTokenBalance == null) {
         return false;
       }
@@ -170,11 +170,11 @@ export class CreateERC20Tx implements ERC20TxDetails {
     return true;
   }
 
-  debug(): String {
+  public debug (): string {
     const change = this.getChange();
     return `Send ${this.from} -> ${this.to} of ${this.amount} using ${this.gas} at ${this.gasPrice.toString(Units.MWEI, undefined, true)}.\n` +
       `Total to send: ${this.getTotal()} of token, pay ${this.getFees()} of Ether fees,` +
-      `account has ${this.totalTokenBalance}, will have ${change}`
+      `account has ${this.totalTokenBalance}, will have ${change}`;
 
   }
 }

@@ -1,18 +1,22 @@
-import * as React from 'react';
-import ListItemText from "@material-ui/core/ListItemText";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import MenuItem from "@material-ui/core/MenuItem";
-import IconButton from "@material-ui/core/IconButton";
 import {
-  Print as PrintIcon, Export as ExportIcon, ViewVisible as ViewVisibleIcon, ViewHidden as ViewHiddenIcon, MoreHorizontal as MoreHorizontalIcon
+  Export as ExportIcon,
+  MoreHorizontal as MoreHorizontalIcon,
+  Print as PrintIcon,
+  ViewHidden as ViewHiddenIcon,
+  ViewVisible as ViewVisibleIcon
 } from '@emeraldplatform/ui-icons';
-import {Popper} from "@material-ui/core";
-import Grow from "@material-ui/core/Grow";
-import Paper from "@material-ui/core/Paper";
-import ClickAwayListener from "@material-ui/core/ClickAwayListener";
-import MenuList from "@material-ui/core/MenuList";
+import { Popper } from '@material-ui/core';
+import ClickAwayListener from '@material-ui/core/ClickAwayListener';
+import Grow from '@material-ui/core/Grow';
+import IconButton from '@material-ui/core/IconButton';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import MenuItem from '@material-ui/core/MenuItem';
+import MenuList from '@material-ui/core/MenuList';
+import Paper from '@material-ui/core/Paper';
+import * as React from 'react';
 
-export interface Props {
+export interface IProps {
   chain: string;
   hiddenAccount: boolean;
   canHide: boolean;
@@ -24,44 +28,44 @@ export interface Props {
   onExport?: any;
 }
 
-interface State {
+interface IState {
   open: boolean;
 }
 
-export class AccountActionsMenu extends React.Component<Props, State> {
-  state = {
-    open: false,
+export class AccountActionsMenu extends React.Component<IProps, IState> {
+  public state = {
+    open: false
   };
-  anchorEl: any;
+  public anchorEl: any;
 
-  handleToggle = () => {
-    this.setState(state => ({ open: !state.open }));
-  };
+  public handleToggle = () => {
+    this.setState((state) => ({ open: !state.open }));
+  }
 
-  handleClose = (event: {target: any}) => {
+  public handleClose = (event: {target: any}) => {
     if (this.anchorEl.contains(event.target)) {
       return;
     }
     this.setState({ open: false });
-  };
+  }
 
-  handleExport = () => {
+  public handleExport = () => {
     this.props.onExport(this.props.chain)();
-  };
+  }
 
-  handlePrint = () => {
+  public handlePrint = () => {
     this.props.onPrint(this.props.chain)();
-  };
+  }
 
-  handleHide = () => {
+  public handleHide = () => {
     this.props.onHide(this.props.chain)();
-  };
+  }
 
-  handleUnhide = () => {
+  public handleUnhide = () => {
     this.props.onUnhide(this.props.chain)();
-  };
+  }
 
-  renderHide = (disabled: boolean) => {
+  public renderHide = (disabled: boolean) => {
     return (
       <MenuItem disabled={disabled} onClick={this.handleHide}>
         <ListItemIcon>
@@ -70,9 +74,9 @@ export class AccountActionsMenu extends React.Component<Props, State> {
         <ListItemText primary='HIDE' />
       </MenuItem>
     );
-  };
+  }
 
-  renderUnhide = () => {
+  public renderUnhide = () => {
     return (
       <MenuItem onClick={this.handleUnhide}>
         <ListItemIcon>
@@ -81,27 +85,27 @@ export class AccountActionsMenu extends React.Component<Props, State> {
         <ListItemText primary='UNHIDE' />
       </MenuItem>
     );
-  };
+  }
 
-  render() {
+  public render () {
     const {
-      hiddenAccount, showPrint, showExport, canHide,
+      hiddenAccount, showPrint, showExport, canHide
     } = this.props;
     const { open } = this.state;
 
     return (
       <div>
         <IconButton
-          buttonRef={node => {
+          buttonRef={(node) => {
             this.anchorEl = node;
           }}
           aria-owns={open ? 'menu-list-grow' : undefined}
-          aria-haspopup="true"
+          aria-haspopup='true'
           onClick={this.handleToggle}
         >
           <MoreHorizontalIcon/>
         </IconButton>
-        <Popper open={open} anchorEl={this.anchorEl} transition>
+        <Popper open={open} anchorEl={this.anchorEl} transition={true}>
           {({ TransitionProps, placement }) => (
             <Grow
               {...TransitionProps}
@@ -136,7 +140,7 @@ export class AccountActionsMenu extends React.Component<Props, State> {
         </Popper>
       </div>
     );
-  };
+  }
 }
 
 export default AccountActionsMenu;

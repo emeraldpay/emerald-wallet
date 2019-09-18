@@ -1,7 +1,7 @@
 // @flow
 
 /**
- * Map chain id on tokens array
+ * Map chain on tokens array
  *
  */
 const Tokens = {};

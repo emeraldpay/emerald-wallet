@@ -1,7 +1,8 @@
 import * as React from 'react';
 import {CSSProperties, withStyles} from '@material-ui/styles';
-import {Page, ButtonGroup, Input} from '@emeraldplatform/ui';
+import {ButtonGroup, Input, Page} from '@emeraldplatform/ui';
 import {Button, ChainSelector} from "@emeraldwallet/ui";
+import {BlockchainCode} from "@emeraldwallet/core";
 
 export const styles = {
   formRow: {
@@ -44,7 +45,7 @@ export interface Props {
 interface State {
   name?: string;
   address?: string;
-  blockchain?: string;
+  blockchain?: BlockchainCode;
 }
 
 export class ContactForm extends React.Component<Props, State> {
@@ -52,7 +53,7 @@ export class ContactForm extends React.Component<Props, State> {
     super(props);
     this.state = {
       ...this.props.initialValues,
-      blockchain: (props.blockchains && props.blockchains.length > 0) ? props.blockchains[0].params.code : ''
+      blockchain: (props.blockchains && props.blockchains.length > 0) ? props.blockchains[0].params.code : BlockchainCode.ETH
     }
   }
 
@@ -91,15 +92,9 @@ export class ContactForm extends React.Component<Props, State> {
     const {
       blockAddress, title, classes, blockchains
     } = this.props;
-
     const {
-      blockchain
+      blockchain, name, address
     } = this.state;
-
-    const {
-      name, address
-    } = this.state;
-
     return (
       <Page title={title || ''}>
         <div className={classes.formRow}>

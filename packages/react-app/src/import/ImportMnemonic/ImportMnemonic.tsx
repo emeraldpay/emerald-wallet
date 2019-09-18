@@ -1,11 +1,15 @@
-import React from 'react';
+import * as React from 'react';
 import { connect } from 'react-redux';
-import Immutable from 'immutable';
 import { ImportMnemonic } from '@emeraldwallet/ui';
 import { screen, addresses, settings } from '@emeraldwallet/store';
+import { BlockchainCode } from "@emeraldwallet/core";
+
+export interface IInputMnemonicProps {
+  mnemonic: string;
+}
 
 export default connect(
-  (state, ownProps) => ({
+  (state, ownProps: IInputMnemonicProps) => ({
     initialValues: {
       mnemonic: ownProps.mnemonic,
       hdpath: "m/44'/60'/0'/0'",
@@ -13,16 +17,16 @@ export default connect(
     blockchains: settings.selectors.currentChains(state),
   }),
   (dispatch, ownProps) => ({
-    onSubmit: (data) => {
-      return dispatch(addresses.actions.importMnemonic(data.blockchain, data.password, data.mnemonic, data.hdpath, '', ''))
-        .then((result) => {
+    onSubmit: (data: {blockchain: BlockchainCode, password: string, mnemonic: string, hdpath: string}) => {
+      return dispatch(addresses.actions.importMnemonic(data.blockchain, data.password, data.mnemonic, data.hdpath, '', '') as any)
+        .then((result: any) => {
           if (result.error) {
             throw new Error(result.error.toString());
           } else {
             // show page with account details
-            dispatch(screen.actions.gotoScreen('account', Immutable.fromJS({id: result, blockchain: data.blockchain})));
+            dispatch(screen.actions.gotoScreen('account', {id: result, blockchain: data.blockchain}));
           }
-        }).catch((error) => {
+        }).catch((error: any) => {
           console.error(error);
           throw new Error(error.toString());
         });

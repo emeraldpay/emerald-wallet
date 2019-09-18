@@ -1,0 +1,9 @@
+{
+  "extends": ["tslint:latest", "tslint-react", "tslint-config-standard"],
+  "linterOptions": {
+    "exclude": ["**/node_modules/**", "**/lib/**"]
+  },
+  "rules": {
+    "semicolon": true
+  }
+}

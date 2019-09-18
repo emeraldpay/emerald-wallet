@@ -5,14 +5,6 @@ import createLogger from '../../utils/logger';
 
 const log = createLogger('launcherActions');
 
-function isEthRpcReady(state) {
-  return state.launcher.getIn(['geth', 'status']) === 'ready';
-}
-
-function isVaultReady(state) {
-  return state.launcher.getIn(['connector', 'status']) === 'ready';
-}
-
 export function readConfig() {
   if (typeof window.process !== 'undefined') {
     const { remote } = global.require('electron');

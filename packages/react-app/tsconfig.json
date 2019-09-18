@@ -1,13 +1,14 @@
 {
   "compilerOptions": {
     "outDir": "./lib",
+    "target": "es5",
     "jsx": "react",
     "declaration": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "strict": true,
     "rootDirs": ["src"],
-    "resolveJsonModule": true,
+    "resolveJsonModule": true
   },
   "include": [
     "src/**/*.ts"

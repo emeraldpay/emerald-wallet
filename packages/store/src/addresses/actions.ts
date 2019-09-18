@@ -1,6 +1,6 @@
 import {ipcRenderer} from 'electron';
 import {
-  Blockchain, blockchainByName, BlockchainCode, EthereumTx, IApi, IAccount,
+  Blockchain, blockchainByName, BlockchainCode, EthereumTx, IApi, IAccount, blockchains,
 } from "@emeraldwallet/core";
 import {convert, EthAddress} from '@emeraldplatform/core';
 import {Wei} from "@emeraldplatform/eth";
@@ -266,7 +266,7 @@ export function sendTransaction(blockchain: BlockchainCode,
   return (dispatch, getState, api) => {
     return getNonce(api, blockchain, from)
       .then(withNonce(originalTx))
-      .then((tx) => {
+      .then((tx: Transaction) => {
         return signTx(api, tx, passphrase, blockchain)
           .then(unwrap)
           .then(verifySender(from))
@@ -323,7 +323,10 @@ export function importJson(blockchain: BlockchainCode, data: any, name: string, 
 export function importMnemonic(blockchain: BlockchainCode,
                                passphrase: string, mnemonic: string, hdPath: string, name: string, description: string): Dispatched<AddAccountAction> {
   return (dispatch, getState, api) => {
-    return api.emerald.importMnemonic(passphrase, name, description, mnemonic, hdPath, blockchain.toLowerCase()).then((result: string) => {
+    if (!blockchains.isValidChain(blockchain)) {
+      throw new Error("Invalid chain code: " + blockchain);
+    }
+    return api.emerald.importMnemonic(passphrase, name, description, mnemonic, hdPath, blockchain).then((result: string) => {
       if ((new EthAddress(result)).isValid()) {
         dispatch({
           type: ActionTypes.ADD_ACCOUNT,

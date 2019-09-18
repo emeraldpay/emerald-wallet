@@ -1,6 +1,6 @@
-import {ChildProcess, spawn, spawnSync} from 'child_process';
+import { DefaultLogger, ILogger } from '@emeraldwallet/core';
+import { ChildProcess, spawn, spawnSync } from 'child_process';
 import * as fs from 'fs';
-import { ILogger, DefaultLogger } from '@emeraldwallet/core';
 
 const path = require('path');
 const os = require('os');
@@ -8,19 +8,19 @@ const os = require('os');
 const isDev = process.env.NODE_ENV === 'development';
 
 class LocalConnector {
-  bin: string;
-  dataDir: string;
-  proc: ChildProcess | null = null;
-  log: ILogger;
+  public bin: string;
+  public dataDir: string;
+  public proc: ChildProcess | null = null;
+  public log: ILogger;
 
   // TODO: assert params
-  constructor(bin: string, dataDir: string, log?: ILogger) {
+  constructor (bin: string, dataDir: string, log?: ILogger) {
     this.bin = bin;
     this.dataDir = dataDir;
     this.log = log || new DefaultLogger();
   }
 
-  emeraldExecutable() {
+  public emeraldExecutable () {
     const suffix = os.platform() === 'win32' ? '.exe' : '';
     return path.resolve(path.join(this.bin, `emerald${suffix}`));
   }
@@ -34,7 +34,7 @@ class LocalConnector {
   // This will migrate from cargo bin path emerald to project dir if emerald
   // is already installed to the cargo bin path and does not exist in the project "bin" path,
   // which is the project base dir.
-  migrateIfNotExists() {
+  public migrateIfNotExists () {
     return new Promise((resolve, reject) => {
       const bin = this.emeraldExecutable();
       this.log.debug('Checking if emerald exists:', bin);
@@ -76,12 +76,11 @@ class LocalConnector {
     });
   }
 
-
   /**
    * It runs "emerald import --all" to import old key files from vault version before v0.12
    * TODO: sooner or later it should be removed
    */
-  importKeyFiles() {
+  public importKeyFiles () {
     return new Promise((resolve, reject) => {
       const chainName = 'mainnet';
       const bin = this.emeraldExecutable();
@@ -97,7 +96,7 @@ class LocalConnector {
             'import',
             `--chain=${chainName}`,
             '--all',
-            emeraldHomeDir,
+            emeraldHomeDir
           ];
           this.log.debug(`Emerald bin: ${bin}, args: ${options}`);
           const result = spawnSync(bin, options);
@@ -110,7 +109,7 @@ class LocalConnector {
     });
   }
 
-  start() {
+  public start () {
     return new Promise((resolve, reject) => {
       const bin = this.emeraldExecutable();
       fs.access(bin, fs.constants.F_OK | fs.constants.R_OK | fs.constants.X_OK, (err) => {
@@ -119,7 +118,7 @@ class LocalConnector {
           reject(err);
         } else {
           const options = [
-            '-v',
+            '-v'
           ];
           if (this.dataDir) {
             this.log.warn(`SPECIFY CUSTOM DIR FOR VAULT: ${this.dataDir}`);
@@ -134,7 +133,7 @@ class LocalConnector {
     });
   }
 
-  launch() {
+  public launch () {
     return new Promise((resolve, reject) => {
       this.log.info('Starting Emerald Connector...');
       this.migrateIfNotExists()
@@ -145,7 +144,7 @@ class LocalConnector {
     });
   }
 
-  shutdown() {
+  public shutdown () {
     this.log.info('Shutting down Local Connector');
     return new Promise((resolve, reject) => {
       if (!this.proc) {
@@ -164,7 +163,7 @@ class LocalConnector {
     });
   }
 
-  checkExists(target: string): Promise<boolean> {
+  public checkExists (target: string): Promise<boolean> {
     return new Promise((resolve) => {
       fs.access(target, fs.constants.R_OK | fs.constants.X_OK, (err) => {
         if (err) {

@@ -39,11 +39,12 @@ export interface ILandingProps {
   onAboutClick?: any;
   onImportJson?: any;
   onImportPrivateKey?: any;
+  onImportMnemonic?: any;
   onLedger?: any;
 }
 
 export const Landing = ({
-  onGenerate, onImportJson, onImportPrivateKey, onLedger, classes, onAboutClick,
+  onGenerate, onImportJson, onImportPrivateKey, onLedger, classes, onAboutClick, onImportMnemonic,
 }: ILandingProps) => {
 
   return (
@@ -73,6 +74,7 @@ export const Landing = ({
                 <div className={classes.addAccountButtons}>
                   <Button variant="text" primary onClick={onImportJson} label="From Keystore File (UTC/JSON)" />
                   <Button variant="text" primary onClick={onImportPrivateKey} label="From Private key" />
+                  <Button variant="text" primary onClick={onImportMnemonic} label="From Mnemonic phrase" />
                   <Button variant="text" primary onClick={onLedger} label="Ledger Nano S" />
                 </div>
               </div>

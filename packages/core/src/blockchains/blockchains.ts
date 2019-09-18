@@ -21,6 +21,10 @@ export const Blockchains: {[key: string]: Blockchain} = {
 const allCodes = [BlockchainCode.ETC, BlockchainCode.ETH, BlockchainCode.Morden, BlockchainCode.Kovan];
 const allChains = allCodes.map((code) => Blockchains[code]);
 
+export function isValidChain(code: any): boolean {
+  return Blockchains[code] ? true : false;
+}
+
 export function blockchainCodeByName(name: string): string {
   if (!name) {
     throw new Error('Empty chain name passed');

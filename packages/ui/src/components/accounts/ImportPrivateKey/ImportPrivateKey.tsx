@@ -1,14 +1,12 @@
 import * as React from 'react';
 import {withStyles} from '@material-ui/styles';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import {
-  Page, Warning, WarningHeader, WarningText, Input
-} from '@emeraldplatform/ui';
-import { Back } from '@emeraldplatform/ui-icons';
+import {Input, Page, Warning, WarningHeader, WarningText} from '@emeraldplatform/ui';
+import {Back} from '@emeraldplatform/ui-icons';
 import Button from '../../common/Button';
 import PasswordInput from '../../common/PasswordInput';
 import ChainSelector from "../../common/ChainSelector/ChainSelector";
-import { Blockchain } from "@emeraldwallet/core";
+import {Blockchain, BlockchainCode} from "@emeraldwallet/core";
 
 
 export const styles = {
@@ -68,14 +66,14 @@ interface State {
   confirmPassword?: string;
   privateKey?: string;
   confirmError?: any;
-  blockchain: string
+  blockchain: BlockchainCode;
 }
 
 export class ImportPrivateKey extends React.Component<Props, State> {
   constructor(props: Props) {
     super(props);
     this.state = {
-      blockchain: props.blockchains.length > 0 ? props.blockchains[0].params.code : '',
+      blockchain: props.blockchains.length > 0 ? props.blockchains[0].params.code : BlockchainCode.ETH,
     };
   }
 
@@ -104,7 +102,7 @@ export class ImportPrivateKey extends React.Component<Props, State> {
     this.setState({ password: newPwd });
   };
 
-  handleChainChange = (value: string) => {
+  handleChainChange = (value: BlockchainCode) => {
     this.setState({
       blockchain: value
     });

@@ -43,7 +43,7 @@ const AccountList = ((props: IAccountListProps) => {
         return (<div className={className} key={`${account.get('blockchain')}-${account.get('id')}`}>
           <Account
             showFiat={showFiat}
-            account={account}
+            account={account.toJS()}
             openAccount={openAccount}
             createTx={createTx}
             showReceiveDialog={showReceiveDialog}
