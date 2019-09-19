@@ -1,7 +1,7 @@
+import { BlockchainCode } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
-import {BlockchainCode} from "@emeraldwallet/core";
-import {List, Map} from "immutable";
-import {Transaction} from "../types";
+import { List, Map } from 'immutable';
+import { Transaction } from '../types';
 
 export enum ActionTypes {
   TRACK_TX = 'WALLET/HISTORY/TRACK_TX',
@@ -41,7 +41,6 @@ export interface UpdateTxsAction {
   type: ActionTypes.UPDATE_TXS;
   payload: Transaction[];
 }
-
 
 export type HistoryAction =
   TrackTxAction

@@ -9,9 +9,9 @@ function onBlock (state: IBlockchainsState, payload: any): IBlockchainsState {
     ...current,
     height: payload.height
   } : {
-      gasPrice: null,
-      height: payload.height
-    };
+    gasPrice: null,
+    height: payload.height
+  };
 
   return state.set(payload.blockchain, newState);
 }
@@ -23,9 +23,9 @@ function onGasPrice (state: IBlockchainsState, payload: any): IBlockchainsState 
     ...current,
     gasPrice: payload.gasPrice
   } : {
-      height: null,
-      gasPrice: payload.gasPrice
-    };
+    height: null,
+    gasPrice: payload.gasPrice
+  };
 
   return state.set(payload.blockchain, newState);
 }

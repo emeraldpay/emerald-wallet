@@ -251,7 +251,7 @@ function signTx (api: IApi, tx: Transaction, passphrase: string, blockchain: str
 }
 
 export function sendTransaction (blockchain: BlockchainCode,
-                                from: string, passphrase: string, to: string, gas: number, gasPrice: Wei, value: Wei, data: string): Dispatched<any> {
+                                 from: string, passphrase: string, to: string, gas: number, gasPrice: Wei, value: Wei, data: string): Dispatched<any> {
   const originalTx: Transaction = {
     from,
     to,
@@ -320,7 +320,7 @@ export function importJson (blockchain: BlockchainCode, data: any, name: string,
 }
 
 export function importMnemonic (blockchain: BlockchainCode,
-                               passphrase: string, mnemonic: string, hdPath: string, name: string, description: string): Dispatched<AddAccountAction> {
+                                passphrase: string, mnemonic: string, hdPath: string, name: string, description: string): Dispatched<AddAccountAction> {
   return (dispatch, getState, api) => {
     if (!blockchains.isValidChain(blockchain)) {
       throw new Error('Invalid chain code: ' + blockchain);

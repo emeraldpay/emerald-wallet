@@ -1,9 +1,9 @@
-import {takeEvery, select, put} from 'redux-saga/effects';
-import {ActionTypes, UpdateTxsAction} from "./types";
-import {persistTransactions} from "./actions";
-import {Blockchains} from "@emeraldwallet/core";
+import { Blockchains } from '@emeraldwallet/core';
+import { put, select, takeEvery } from 'redux-saga/effects';
+import { persistTransactions } from './actions';
+import { ActionTypes, UpdateTxsAction } from './types';
 
-function* processUpdateTxs(action: UpdateTxsAction) {
+function* processUpdateTxs (action: UpdateTxsAction) {
   // Persist tx history
   const state = yield select();
   action.payload.forEach((tx) => {
@@ -12,6 +12,6 @@ function* processUpdateTxs(action: UpdateTxsAction) {
   });
 }
 
-export function* root() {
-  yield takeEvery(ActionTypes.UPDATE_TXS, processUpdateTxs)
+export function* root () {
+  yield takeEvery(ActionTypes.UPDATE_TXS, processUpdateTxs);
 }

@@ -1,13 +1,13 @@
-import {Dispatch} from "react";
-import {IApi} from "@emeraldwallet/core";
-import BigNumber from "bignumber.js";
-import {BlockchainCode} from "@emeraldwallet/core";
+import { IApi } from '@emeraldwallet/core';
+import { BlockchainCode } from '@emeraldwallet/core';
+import BigNumber from 'bignumber.js';
+import { Dispatch } from 'react';
 
-export type State = {[key: string]: any};
+export interface State {[key: string]: any}
 export type GetState = () => State;
 export type Dispatched<T> = (dispatch: Dispatch<T | Dispatched<T>>, getState: GetState, api: IApi) => void;
 
-export type Transaction = {
+export interface Transaction {
   hash?: string,
 
   from: string,
@@ -29,4 +29,4 @@ export type Transaction = {
   timestamp?: Date,
   blockHash?: string,
   blockNumber?: string | number,
-};
+}
