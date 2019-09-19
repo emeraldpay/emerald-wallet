@@ -1,1 +1,1 @@
-export {default} from './CreateTx';
+export { default } from './CreateTx';

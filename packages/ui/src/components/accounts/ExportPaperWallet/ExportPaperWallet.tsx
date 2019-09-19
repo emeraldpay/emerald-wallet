@@ -1,7 +1,7 @@
-import * as React from 'react';
-import { withStyles } from '@material-ui/styles';
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
+import { withStyles } from '@material-ui/styles';
+import * as React from 'react';
 import Button from '../../common/Button';
 import PasswordInput from '../../common/PasswordInput';
 
@@ -12,24 +12,24 @@ export const styles = {
     color: '#191919',
     fontSize: '16px',
     fontWeight: 500,
-    lineHeight: '24px',
+    lineHeight: '24px'
   },
   passwordSubLabel: {
     height: '22px',
     width: '320px',
     color: '#191919',
     fontSize: '14px',
-    lineHeight: '22px',
+    lineHeight: '22px'
   },
   formRow: {
     display: 'flex',
     marginBottom: '19px',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   left: {
     flexBasis: '20%',
     marginLeft: '14.75px',
-    marginRight: '14.75px',
+    marginRight: '14.75px'
   },
   right: {
     flexGrow: 2,
@@ -37,8 +37,8 @@ export const styles = {
     alignItems: 'center',
     marginLeft: '14.75px',
     marginRight: '14.75px',
-    maxWidth: '580px',
-  },
+    maxWidth: '580px'
+  }
 };
 
 export interface Props {
@@ -53,37 +53,37 @@ interface State {
 }
 
 export class ExportPaperWallet extends React.Component<Props, State> {
-  constructor(props: Props) {
+  constructor (props: Props) {
     super(props);
     this.state = {};
   }
 
-  handleSubmit = () => {
+  public handleSubmit = () => {
     if (this.props.onSubmit) {
       this.props.onSubmit(this.state.password);
     }
-  };
+  }
 
-  handlePasswordChange = (newPassword) => {
+  public handlePasswordChange = (newPassword) => {
     this.setState({
-      password: newPassword,
-    })
-  };
+      password: newPassword
+    });
+  }
 
-  render() {
+  public render () {
     const {
-      accountId, onBack, classes,
+      accountId, onBack, classes
     } = this.props;
     const {
-      password,
+      password
     } = this.state;
 
     return (
-      <Page title="Print Paper Wallet" leftIcon={<Back onClick={onBack}/> } >
+      <Page title='Print Paper Wallet' leftIcon={<Back onClick={onBack}/>} >
         <div className={classes.formRow}>
           <div className={classes.left}/>
           <div className={classes.right}>
-            { accountId }
+            {accountId}
           </div>
         </div>
         <div className={classes.formRow}>
@@ -105,7 +105,7 @@ export class ExportPaperWallet extends React.Component<Props, State> {
         <div className={classes.formRow}>
           <div className={classes.left}/>
           <div className={classes.right}>
-            <Button primary label="EXPORT" onClick={ this.handleSubmit } />
+            <Button primary={true} label='EXPORT' onClick={this.handleSubmit} />
           </div>
         </div>
       </Page>
@@ -114,4 +114,3 @@ export class ExportPaperWallet extends React.Component<Props, State> {
 }
 
 export default withStyles(styles)(ExportPaperWallet);
-

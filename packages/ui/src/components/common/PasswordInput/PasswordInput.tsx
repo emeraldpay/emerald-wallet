@@ -1,7 +1,7 @@
-import * as React from 'react';
-import {ViewVisible as EyeIcon} from '@emeraldplatform/ui-icons';
-import {Input} from '@emeraldplatform/ui';
+import { Input } from '@emeraldplatform/ui';
+import { ViewVisible as EyeIcon } from '@emeraldplatform/ui-icons';
 import IconButton from '@material-ui/core/IconButton';
+import * as React from 'react';
 
 interface Props {
   password?: string;
@@ -15,35 +15,23 @@ interface State {
 }
 
 export class PasswordInput extends React.Component<Props, State> {
-  static DEFAULT_MIN_LENGTH = 8;
-  static defaultProps = {
-    minLength: PasswordInput.DEFAULT_MIN_LENGTH,
+  public static DEFAULT_MIN_LENGTH = 8;
+  public static defaultProps = {
+    minLength: PasswordInput.DEFAULT_MIN_LENGTH
   };
 
-  constructor(props: Props) {
+  constructor (props: Props) {
     super(props);
     this.state = {
-      showPassword: false,
+      showPassword: false
     };
   }
 
-  private handleInputChange = (event: any) => {
-    const { onChange } = this.props;
-    onChange && onChange(event.target.value);
-  };
-
-  private handleEyeClick = () => {
-    const {showPassword} = this.state;
-    this.setState({
-      showPassword: !showPassword,
-    });
-  };
-
-  render() {
-    const {error, minLength, password} = this.props;
-    const {showPassword} = this.state;
+  public render () {
+    const { error, minLength, password } = this.props;
+    const { showPassword } = this.state;
     const iconStyle = {
-      color: showPassword ? 'green' : '',
+      color: showPassword ? 'green' : ''
     };
 
     const EyeIconButton = (
@@ -54,7 +42,7 @@ export class PasswordInput extends React.Component<Props, State> {
 
     const tooShort = password && (password.length < minLength);
     const placeHolderStr = `At least ${minLength} characters`;
-    const errorText = (tooShort && `Password must be minimum ${minLength} characters.` ) || error;
+    const errorText = (tooShort && `Password must be minimum ${minLength} characters.`) || error;
     return (
         <div>
           <Input
@@ -67,6 +55,18 @@ export class PasswordInput extends React.Component<Props, State> {
           />
         </div>
     );
+  }
+
+  private handleInputChange = (event: any) => {
+    const { onChange } = this.props;
+    onChange && onChange(event.target.value);
+  }
+
+  private handleEyeClick = () => {
+    const { showPassword } = this.state;
+    this.setState({
+      showPassword: !showPassword
+    });
   }
 
 }

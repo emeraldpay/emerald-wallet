@@ -1,9 +1,9 @@
-import * as React from 'react';
-import { shallow, mount } from 'enzyme';
-import CreateTx from './CreateTx';
-import { Wei, Units } from '@emeraldplatform/eth';
-import {CreateEthereumTx} from '@emeraldwallet/workflow';
+import { Units, Wei } from '@emeraldplatform/eth';
+import { CreateEthereumTx } from '@emeraldwallet/workflow';
 import BigNumber from 'bignumber.js';
+import { mount, shallow } from 'enzyme';
+import * as React from 'react';
+import CreateTx from './CreateTx';
 
 describe('CreateTx', () => {
   it('it renders without crash', () => {
@@ -15,16 +15,16 @@ describe('CreateTx', () => {
 
     const wrapper = shallow(
       <CreateTx
-        token="ETH"
+        token='ETH'
         tx={tx}
-        txFeeToken="ETH"
+        txFeeToken='ETH'
       />);
     expect(wrapper).toBeDefined();
 
     const mounted = mount(<CreateTx
-      token="ETH"
+      token='ETH'
       tx={tx}
-      txFeeToken="ETH"
+      txFeeToken='ETH'
     />);
     expect(mounted).toBeDefined();
   });

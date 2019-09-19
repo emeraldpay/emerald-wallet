@@ -1,26 +1,26 @@
-import * as React from "react";
-import Avatar from "@material-ui/core/Avatar";
-import CoinIcon from "./CoinIcon";
-import {createStyles, makeStyles} from "@material-ui/styles";
+import Avatar from '@material-ui/core/Avatar';
+import { createStyles, makeStyles } from '@material-ui/styles';
+import * as React from 'react';
+import CoinIcon from './CoinIcon';
 
 const colors = {
   eth: '#627eea',
-  etc: '#00c957',
+  etc: '#00c957'
 };
 
 const useStyles = makeStyles(
   createStyles({
     eth: {
-      backgroundColor: colors.eth,
+      backgroundColor: colors.eth
     },
     etc: {
-      backgroundColor: colors.etc,
-    },
+      backgroundColor: colors.etc
+    }
   })
 );
 
 interface Props {
-  chain: string,
+  chain: string;
 }
 
 const CoinAvatar = (props: Props) => {
@@ -36,7 +36,7 @@ const CoinAvatar = (props: Props) => {
 
   return (<Avatar className={className}>
     <CoinIcon chain={chain}/>
-  </Avatar>)
+  </Avatar>);
 };
 
 export default CoinAvatar;

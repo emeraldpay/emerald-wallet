@@ -1,1 +1,1 @@
-export {default} from './TxItem';
+export { default } from './TxItem';

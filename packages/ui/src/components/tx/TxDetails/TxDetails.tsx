@@ -1,35 +1,35 @@
-import * as React from 'react';
-import { withStyles, CSSProperties } from '@material-ui/styles';
-import { Wei } from '@emeraldplatform/eth';
 import { convert } from '@emeraldplatform/core';
-import { Page, ButtonGroup, Account } from '@emeraldplatform/ui';
+import { Wei } from '@emeraldplatform/eth';
+import { Account, ButtonGroup, Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
+import { CSSProperties, withStyles } from '@material-ui/styles';
+import * as React from 'react';
 import Button from '../../common/Button';
-import TxStatus from './TxStatus';
 import TxInputData from './TxInputData';
+import TxStatus from './TxStatus';
 
 export const styles = {
   value: {
-    marginBottom: '5px',
+    marginBottom: '5px'
   },
   txData: {
     overflowX: 'auto',
-    overflowWrap: 'break-word',
+    overflowWrap: 'break-word'
   } as CSSProperties,
   fieldName: {
     color: '#747474',
     fontSize: '16px',
-    textAlign: 'right',
+    textAlign: 'right'
   } as CSSProperties,
   formRow: {
     display: 'flex',
     marginBottom: '19px',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   left: {
     flexBasis: '20%',
     marginLeft: '14.75px',
-    marginRight: '14.75px',
+    marginRight: '14.75px'
   },
   right: {
     flexGrow: 2,
@@ -37,21 +37,21 @@ export const styles = {
     alignItems: 'center',
     marginLeft: '14.75px',
     marginRight: '14.75px',
-    maxWidth: '580px',
-  },
+    maxWidth: '580px'
+  }
 };
 
 export interface Props {
-  fiatAmount?: string,
-  fiatCurrency?: string,
-  goBack?: (a?: any) => void,
-  openAccount?: (a?: any) => void,
-  fromAccount?: any,
-  toAccount?: any,
-  rates?: Map<string, number>,
-  transaction: any,
-  tokenSymbol: string,
-  account?: any,
+  fiatAmount?: string;
+  fiatCurrency?: string;
+  goBack?: (a?: any) => void;
+  openAccount?: (a?: any) => void;
+  fromAccount?: any;
+  toAccount?: any;
+  rates?: Map<string, number>;
+  transaction: any;
+  tokenSymbol: string;
+  account?: any;
   classes?: any;
   repeatTx?: any;
   cancel?: any;
@@ -59,43 +59,43 @@ export interface Props {
 
 export class TxDetails extends React.Component<Props> {
 
-  handleBack = () => {
+  public handleBack = () => {
     if (this.props.goBack) {
       this.props.goBack(this.props.account);
     }
-  };
+  }
 
-  handleFromClick = () => {
+  public handleFromClick = () => {
     if (this.props.openAccount) {
-      this.props.openAccount(this.props.fromAccount)
+      this.props.openAccount(this.props.fromAccount);
     }
-  };
+  }
 
-  handleToClick = () => {
+  public handleToClick = () => {
     if (this.props.openAccount) {
-      this.props.openAccount(this.props.toAccount)
+      this.props.openAccount(this.props.toAccount);
     }
-  };
+  }
 
-  handleRepeatClick = () => {
+  public handleRepeatClick = () => {
     if (this.props.repeatTx) {
-      const {transaction, toAccount, fromAccount} = this.props;
+      const { transaction, toAccount, fromAccount } = this.props;
       this.props.repeatTx(transaction, toAccount, fromAccount);
     }
-  };
+  }
 
-  render() {
+  public render () {
     const {
-      transaction, classes, tokenSymbol,
+      transaction, classes, tokenSymbol
     } = this.props;
     const {
-      fiatCurrency, fiatAmount,
+      fiatCurrency, fiatAmount
     } = this.props;
 
     const blockNumber = transaction.blockNumber;
     const txStatus = blockNumber ? 'success' : 'queue';
     return (
-      <Page title="Transaction Details" leftIcon={ <Back onClick={this.handleBack} /> }>
+      <Page title='Transaction Details' leftIcon={<Back onClick={this.handleBack} />}>
         <div className={classes.formRow}>
           <div style={styles.left}>
             <div className={classes.fieldName}>Date</div>
@@ -109,17 +109,17 @@ export class TxDetails extends React.Component<Props> {
             <div className={classes.fieldName}>Value</div>
           </div>
           <div style={styles.right}>
-            <div style={{display: 'flex'}}>
+            <div style={{ display: 'flex' }}>
               <div>
-                <div className={ classes.value }>
-                  { transaction.value ? `${new Wei(transaction.value).toEther()} ${tokenSymbol}` : '--' }
+                <div className={classes.value}>
+                  {transaction.value ? `${new Wei(transaction.value).toEther()} ${tokenSymbol}` : '--'}
                 </div>
-                {fiatAmount && <div className={ classes.value }>
-                  { fiatAmount } { fiatCurrency }
+                {fiatAmount && <div className={classes.value}>
+                  {fiatAmount} {fiatCurrency}
                 </div> }
               </div>
               <div>
-                <TxStatus status={ txStatus } />
+                <TxStatus status={txStatus} />
               </div>
             </div>
           </div>
@@ -141,7 +141,7 @@ export class TxDetails extends React.Component<Props> {
             <div className={classes.fieldName}>Nonce</div>
           </div>
           <div style={styles.right}>
-            { transaction.nonce }
+            {transaction.nonce}
           </div>
         </div>
 
@@ -149,11 +149,11 @@ export class TxDetails extends React.Component<Props> {
           <div style={styles.left}>
             <div className={classes.fieldName}>From</div>
           </div>
-          <div style={{...styles.right, alignItems: 'center'}}>
+          <div style={{ ...styles.right, alignItems: 'center' }}>
             <Account
               address={transaction.from}
-              identity
-              identityProps={{size: 30}}
+              identity={true}
+              identityProps={{ size: 30 }}
               onClick={this.handleFromClick}
             />
           </div>
@@ -163,12 +163,12 @@ export class TxDetails extends React.Component<Props> {
           <div style={styles.left}>
             <div className={classes.fieldName}>To</div>
           </div>
-          <div style={{...styles.right, alignItems: 'center'}}>
+          <div style={{ ...styles.right, alignItems: 'center' }}>
             {transaction.to
             && <Account
               address={transaction.to}
-              identity
-              identityProps={{size: 30}}
+              identity={true}
+              identityProps={{ size: 30 }}
               onClick={this.handleToClick}
             />}
           </div>
@@ -182,7 +182,7 @@ export class TxDetails extends React.Component<Props> {
             <div className={classes.fieldName}>Block</div>
           </div>
           <div style={styles.right}>
-            { blockNumber ? convert.toNumber(blockNumber) : 'pending' }
+            {blockNumber ? convert.toNumber(blockNumber) : 'pending'}
           </div>
         </div>
 
@@ -191,7 +191,7 @@ export class TxDetails extends React.Component<Props> {
             <div className={classes.fieldName}>Input Data</div>
           </div>
           <div style={styles.right}>
-            <div className={ classes.txData }>
+            <div className={classes.txData}>
               <TxInputData data={transaction.data} />
             </div>
           </div>
@@ -208,17 +208,16 @@ export class TxDetails extends React.Component<Props> {
         <br />
 
         <div className={classes.formRow}>
-          <div style={styles.left}>
-          </div>
+          <div style={styles.left}/>
           <div style={styles.right}>
             <ButtonGroup>
               <Button
-                onClick={ () => this.props.cancel() }
-                label="DASHBOARD" />
+                onClick={() => this.props.cancel()}
+                label='DASHBOARD' />
               <Button
-                primary
+                primary={true}
                 onClick={this.handleRepeatClick}
-                label="REPEAT TRANSACTION" />
+                label='REPEAT TRANSACTION' />
             </ButtonGroup>
           </div>
         </div>

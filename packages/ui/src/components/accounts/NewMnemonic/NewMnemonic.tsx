@@ -1,19 +1,19 @@
-import * as React from 'react';
-import {withStyles} from '@material-ui/styles';
-import { Page, Warning, WarningHeader, WarningText, Input } from '@emeraldplatform/ui';
+import { Input, Page, Warning, WarningHeader, WarningText } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
+import { withStyles } from '@material-ui/styles';
+import * as React from 'react';
 import Button from '../../common/Button';
 
 export const styles = {
   formRow: {
     display: 'flex',
     marginBottom: '19px',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   left: {
     flexBasis: '20%',
     marginLeft: '14.75px',
-    marginRight: '14.75px',
+    marginRight: '14.75px'
   },
   right: {
     flexGrow: 2,
@@ -21,8 +21,8 @@ export const styles = {
     alignItems: 'center',
     marginLeft: '14.75px',
     marginRight: '14.75px',
-    maxWidth: '580px',
-  },
+    maxWidth: '580px'
+  }
 };
 
 interface Props {
@@ -35,16 +35,16 @@ interface Props {
 
 export class NewMnemonic extends React.Component<Props> {
 
-  render() {
+  public render () {
     const {
-      onBack, mnemonic, onGenerate, onContinue, classes,
+      onBack, mnemonic, onGenerate, onContinue, classes
     } = this.props;
     return (
-      <Page title="New Mnemonic account" leftIcon={ <Back onClick={ onBack }/> }>
+      <Page title='New Mnemonic account' leftIcon={<Back onClick={onBack}/>}>
         <div className={classes.formRow}>
           <div className={classes.left}/>
           <div className={classes.right}>
-            <Warning fullWidth={ true }>
+            <Warning fullWidth={true}>
               <WarningHeader>Keep this phrase in a safe place.</WarningHeader>
               <WarningText>If you lose this phrase you will not be able to recover your account.</WarningText>
             </Warning>
@@ -53,15 +53,15 @@ export class NewMnemonic extends React.Component<Props> {
         <div className={classes.formRow}>
           <div className={classes.left}/>
           <div className={classes.right}>
-            <div style={{width: '100%'}}>
+            <div style={{ width: '100%' }}>
               <div>Mnemonic phrase</div>
               <div>
                 <Input
-                  disabled={ true }
-                  value={ mnemonic }
-                  multiline={ true }
-                  rowsMax={ 4 }
-                  rows={ 4 }
+                  disabled={true}
+                  value={mnemonic}
+                  multiline={true}
+                  rowsMax={4}
+                  rows={4}
                 />
               </div>
             </div>
@@ -71,8 +71,8 @@ export class NewMnemonic extends React.Component<Props> {
         <div className={classes.formRow}>
           <div className={classes.left}/>
           <div className={classes.right}>
-            { mnemonic && <Button primary label="Continue" onClick={ onContinue } /> }
-            { !mnemonic && <Button primary label="Generate" onClick={ onGenerate } /> }
+            {mnemonic && <Button primary={true} label='Continue' onClick={onContinue} />}
+            {!mnemonic && <Button primary={true} label='Generate' onClick={onGenerate} />}
           </div>
         </div>
       </Page>

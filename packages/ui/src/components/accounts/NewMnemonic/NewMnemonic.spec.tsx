@@ -1,9 +1,9 @@
-import * as React from 'react';
 import { shallow } from 'enzyme';
+import * as React from 'react';
 import Button from '../../common/Button';
 import { NewMnemonic, styles } from './NewMnemonic';
 
-const reduceClasses = (prev, curr) => Object.assign({}, prev, { [curr]: curr });
+const reduceClasses = (prev, curr) => ({...prev,  [curr]: curr});
 const classes = Object.keys(styles).reduce(reduceClasses, {});
 
 describe('When mnemonic is empty NewMnemonic', () => {
@@ -15,7 +15,7 @@ describe('When mnemonic is empty NewMnemonic', () => {
 
 describe('When mnemonic not empty NewMnemonic', () => {
   it('renders Continue button', () => {
-    const component = shallow(<NewMnemonic classes={classes} mnemonic="some mnemonic"/>);
+    const component = shallow(<NewMnemonic classes={classes} mnemonic='some mnemonic'/>);
     expect(component.find(Button).props().label).toEqual('Continue');
   });
 });

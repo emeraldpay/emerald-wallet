@@ -1,11 +1,11 @@
-import * as React from 'react';
-import Menu from '@material-ui/core/Menu';
-import Grid from '@material-ui/core/Grid';
-import {CSSProperties, withStyles, withTheme} from '@material-ui/styles';
 import {
-  Network as NetworkIcon, NetworkDisconnected as NetworkDisconnectedIcon, Block as BlockIcon
+  Block as BlockIcon, Network as NetworkIcon, NetworkDisconnected as NetworkDisconnectedIcon
 } from '@emeraldplatform/ui-icons';
 import { blockchainByName, utils } from '@emeraldwallet/core';
+import Grid from '@material-ui/core/Grid';
+import Menu from '@material-ui/core/Menu';
+import { CSSProperties, withStyles, withTheme } from '@material-ui/styles';
+import * as React from 'react';
 import Button from '../../../common/Button';
 
 interface ItemProps {
@@ -15,22 +15,22 @@ interface ItemProps {
 }
 
 class ExtendedMenuItem extends React.Component<ItemProps> {
-  render() {
+  public render () {
     const {
       textColor, title, height
     } = this.props;
     return (
-      <Grid container direction="column"
+      <Grid container={true} direction='column'
         style={{
           padding: '5px 80px 5px 40px',
           fontSize: '14px',
           borderLeft: '',
           marginLeft: '0px',
-          lineHeight: '20px',
+          lineHeight: '20px'
         }}>
-        <Grid item style={{color: textColor}}>{blockchainByName(title).getTitle()}</Grid>
-        <Grid item>
-          <Grid container style={{color: textColor}}>
+        <Grid item={true} style={{ color: textColor }}>{blockchainByName(title).getTitle()}</Grid>
+        <Grid item={true}>
+          <Grid container={true} style={{ color: textColor }}>
             <BlockIcon /><div>{utils.separateThousands(height, ' ')}</div>
           </Grid>
         </Grid>
@@ -43,12 +43,12 @@ const selectorStyles = {
   buttonText: {
     textTransform: 'none',
     fontSize: '16px',
-    paddingRight: '10px',
-  } as CSSProperties,
+    paddingRight: '10px'
+  } as CSSProperties
 };
 
 interface Props {
-  blockchains: Array<any>;
+  blockchains: any[];
   classes: any;
   theme: any;
 }
@@ -58,46 +58,46 @@ interface State {
 }
 
 class NetworkSelectorRender extends React.Component<Props, State> {
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.state = {
-      anchorEl: null,
+      anchorEl: null
     };
   }
 
-  handleToggle = (event) => {
+  public handleToggle = (event) => {
     this.setState({
-      anchorEl: event.currentTarget,
+      anchorEl: event.currentTarget
     });
-  };
+  }
 
-  handleClose = () => {
+  public handleClose = () => {
     this.setState({
-      anchorEl: null,
+      anchorEl: null
     });
-  };
+  }
 
-  render() {
+  public render () {
     const {
-      theme, classes,
+      theme, classes
     } = this.props;
     const blockchains = this.props.blockchains || [];
     const icon = blockchains.length > 0 ? <NetworkIcon/> : <NetworkDisconnectedIcon/>;
 
     // const styles = getStyles(this.props);
 
-    const {anchorEl} = this.state;
+    const { anchorEl } = this.state;
 
     return (
       <div>
         <Button
-          variant="text"
+          variant='text'
           // aria-owns={anchorEl ? 'networks-menu' : undefined}
           // aria-haspopup="true"
           onClick={this.handleToggle}
           icon={icon}
           classes={{
-            text: classes.buttonText,
+            text: classes.buttonText
           }}
         />
         <Menu
@@ -105,13 +105,13 @@ class NetworkSelectorRender extends React.Component<Props, State> {
           getContentAnchorEl={null}
           anchorOrigin={{
             vertical: 'bottom',
-            horizontal: 'left',
+            horizontal: 'left'
           }}
           transformOrigin={{
             vertical: 'top',
-            horizontal: 'left',
+            horizontal: 'left'
           }}
-          id="networks-menu"
+          id='networks-menu'
           open={Boolean(anchorEl)}
           anchorEl={anchorEl}
           onClose={this.handleClose}

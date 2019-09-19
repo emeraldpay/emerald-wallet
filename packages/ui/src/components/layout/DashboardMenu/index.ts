@@ -1,1 +1,1 @@
-export {default} from './DashboardMenu';
+export { default } from './DashboardMenu';

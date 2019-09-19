@@ -1,1 +1,1 @@
-export {default} from './ImportPrivateKey';
+export { default } from './ImportPrivateKey';

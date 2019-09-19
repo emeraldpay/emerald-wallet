@@ -1,5 +1,5 @@
-import * as React from 'react';
 import Button from '@material-ui/core/Button';
+import * as React from 'react';
 
 interface Props {
   style?: any;
@@ -25,7 +25,7 @@ const Btn = (props: Props) => {
     // lineHeight: '18px',
     height: '40px',
     fontFamily: 'inherit',
-    ...props.style,
+    ...props.style
   };
   return (
     <Button

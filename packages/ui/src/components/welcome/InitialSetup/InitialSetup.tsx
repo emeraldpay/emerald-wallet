@@ -1,8 +1,8 @@
-import * as React from 'react';
-import Stepper from '@material-ui/core/Stepper';
+import Grid from '@material-ui/core/Grid';
 import Step from '@material-ui/core/Step';
 import StepLabel from '@material-ui/core/StepLabel';
-import Grid from '@material-ui/core/Grid';
+import Stepper from '@material-ui/core/Stepper';
+import * as React from 'react';
 
 import Terms from '../Terms';
 
@@ -14,9 +14,9 @@ interface Props {
 
 class InitialSetup extends React.Component<Props> {
 
-  render() {
+  public render () {
     const {
-      terms, onTermsAgreed, currentTermsVersion,
+      terms, onTermsAgreed, currentTermsVersion
     } = this.props;
 
     let step = null;
@@ -30,28 +30,28 @@ class InitialSetup extends React.Component<Props> {
 
     const steps = [];
     steps.push(
-      <Step key="terms">
+      <Step key='terms'>
         <StepLabel>User Agreement</StepLabel>
       </Step>
     );
     steps.push(
-      <Step key="open-wallet">
+      <Step key='open-wallet'>
         <StepLabel>Open Wallet</StepLabel>
       </Step>
     );
 
     return (
       <Grid>
-        <Grid container>
-          <Grid item xs={12}>
+        <Grid container={true}>
+          <Grid item={true} xs={12}>
             <Stepper activeStep={activeStep}>
-              { steps }
+              {steps}
             </Stepper>
           </Grid>
         </Grid>
-        <Grid container>
-          <Grid item xs={12}>
-            { step }
+        <Grid container={true}>
+          <Grid item={true} xs={12}>
+            {step}
           </Grid>
         </Grid>
       </Grid>
@@ -60,4 +60,3 @@ class InitialSetup extends React.Component<Props> {
 }
 
 export default InitialSetup;
-

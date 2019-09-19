@@ -1,13 +1,13 @@
-import * as React from 'react';
 import BigNumber from 'bignumber.js';
 import { mount } from 'enzyme';
-import { TxItem, styles2 } from './TxItem';
+import * as React from 'react';
+import { styles2, TxItem } from './TxItem';
 
-const reduceClasses = (prev: any, curr: any) => Object.assign({}, prev, { [curr]: curr });
+const reduceClasses = (prev: any, curr: any) => ({...prev,  [curr]: curr});
 const classes = Object.keys(styles2).reduce(reduceClasses, {});
 
 const theme = {
-  palette: {},
+  palette: {}
 };
 
 const tx = {
@@ -26,10 +26,10 @@ describe('TxItem', () => {
         openAccount={() => {}}
         openTx={() => {}}
         netParams={
-          {
-            currentBlockHeight: 100,
-            requiredConfirmations: 12,
-          }
+        {
+          currentBlockHeight: 100,
+          requiredConfirmations: 12
+        }
         }
         classes={classes}
         tx={tx}

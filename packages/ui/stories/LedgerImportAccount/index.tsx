@@ -1,7 +1,7 @@
+import { IApi } from '@emeraldwallet/core';
+import { storiesOf } from '@storybook/react';
 import * as React from 'react';
-import {storiesOf} from '@storybook/react';
 import ImportAccount from '../../src/components/ledger/ImportAccount';
-import {IApi} from "@emeraldwallet/core";
 
 storiesOf('LedgerImportAccount', module)
   .add('default', () => (
@@ -11,8 +11,8 @@ storiesOf('LedgerImportAccount', module)
       hdbase="m/44'/60'/160720'/0'"
       selected={false}
       addresses={[
-        {address: '0x9FCaFcca8aec0367abB35fBd161c241f7b79891B', hdpath: "m/44'/60'/160720'/0'"},
-        {address: '0x2b66DD4EB5af85ebFcCD4b538E87729FB9556764', hdpath: "m/44'/60'/160720'/0'"}
+        { address: '0x9FCaFcca8aec0367abB35fBd161c241f7b79891B', hdpath: "m/44'/60'/160720'/0'" },
+        { address: '0x2b66DD4EB5af85ebFcCD4b538E87729FB9556764', hdpath: "m/44'/60'/160720'/0'" }
       ]}
     />
   ))
@@ -24,8 +24,8 @@ storiesOf('LedgerImportAccount', module)
       selected={false}
       selectedAddress='0x9FCaFcca8aec0367abB35fBd161c241f7b79891B'
       addresses={[
-        {address: '0x9FCaFcca8aec0367abB35fBd161c241f7b79891B', hdpath: "m/44'/60'/160720'/0'"},
-        {address: '0x2b66DD4EB5af85ebFcCD4b538E87729FB9556764', hdpath: "m/44'/60'/160720'/0'"}
+        { address: '0x9FCaFcca8aec0367abB35fBd161c241f7b79891B', hdpath: "m/44'/60'/160720'/0'" },
+        { address: '0x2b66DD4EB5af85ebFcCD4b538E87729FB9556764', hdpath: "m/44'/60'/160720'/0'" }
       ]}
     />
   ));

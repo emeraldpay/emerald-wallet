@@ -1,13 +1,13 @@
-import * as React from 'react';
-import MenuItem from '@material-ui/core/MenuItem';
-import Menu from '@material-ui/core/Menu';
+import { Book } from '@emeraldplatform/ui-icons';
 import IconButton from '@material-ui/core/IconButton';
-import {Book} from '@emeraldplatform/ui-icons';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import * as React from 'react';
 import AddressIconMenuItem from './AddressIconMenuItem';
 
 interface Props {
-  addressBookAddresses?: Array<string>;
-  onEmptyAddressBookClick?: any,
+  addressBookAddresses?: string[];
+  onEmptyAddressBookClick?: any;
   onChange?: Function;
 }
 
@@ -16,9 +16,9 @@ interface State {
 }
 
 class AddressIconMenu extends React.Component<Props, State> {
-  anchorEl: any;
+  public anchorEl: any;
 
-  constructor(props: Props) {
+  constructor (props: Props) {
     super(props);
     this.onChange = this.onChange.bind(this);
     this.onClick = this.onClick.bind(this);
@@ -28,27 +28,27 @@ class AddressIconMenu extends React.Component<Props, State> {
     };
   }
 
-  onChange(address: string) {
+  public onChange (address: string) {
     this.setMenuOpen(false);
     if (this.props.onChange) {
       this.props.onChange(address);
     }
   }
 
-  onClick() {
-    this.setState(state => ({menuOpen: !state.menuOpen}));
+  public onClick () {
+    this.setState((state) => ({ menuOpen: !state.menuOpen }));
   }
 
-  handleClose = () => {
-    this.setState({menuOpen: false});
-  };
-
-  setMenuOpen(status: boolean) {
-    this.setState({menuOpen: status});
+  public handleClose = () => {
+    this.setState({ menuOpen: false });
   }
 
-  renderAddresses() {
-    const {addressBookAddresses, onEmptyAddressBookClick} = this.props;
+  public setMenuOpen (status: boolean) {
+    this.setState({ menuOpen: status });
+  }
+
+  public renderAddresses () {
+    const { addressBookAddresses, onEmptyAddressBookClick } = this.props;
     if ((!addressBookAddresses) || (addressBookAddresses.length === 0)) {
       return (
         <MenuItem onClick={onEmptyAddressBookClick}>
@@ -62,11 +62,11 @@ class AddressIconMenu extends React.Component<Props, State> {
     );
   }
 
-  render() {
+  public render () {
     return (
       <div>
         <IconButton
-          buttonRef={node => {
+          buttonRef={(node) => {
             this.anchorEl = node;
           }}
           onClick={this.onClick}

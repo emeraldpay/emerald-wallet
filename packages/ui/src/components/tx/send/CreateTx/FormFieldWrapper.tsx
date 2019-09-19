@@ -1,12 +1,12 @@
 import * as React from 'react';
 
-function getStyles(style?: any) {
+function getStyles (style?: any) {
   return {
     display: 'flex',
     alignItems: 'center',
     marginBottom: 0,
     paddingBottom: '20px',
-    ...style,
+    ...style
   };
 }
 
@@ -16,11 +16,11 @@ interface Props {
 }
 
 class FormFieldWrapper extends React.Component<Props> {
-  static defaultProps = {
-    style: {},
+  public static defaultProps = {
+    style: {}
   };
 
-  render() {
+  public render () {
     const { style, children } = this.props;
     return (
       <div style={getStyles(style)}>

@@ -1,1 +1,1 @@
-export {default} from './AdviceIcon';
+export { default } from './AdviceIcon';
