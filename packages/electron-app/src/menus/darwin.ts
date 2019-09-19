@@ -4,64 +4,64 @@ export default function (window: any, menuHandlers: any): any {
     submenu: [
       {
         label: 'About',
-        click() {
+        click () {
           menuHandlers.onAbout();
-          },
+        }
       },
       {
-        type: 'separator',
+        type: 'separator'
       },
       {
         role: 'services',
-        submenu: [],
+        submenu: []
       },
       {
-        type: 'separator',
+        type: 'separator'
       },
       {
-        role: 'hide',
+        role: 'hide'
       },
       {
-        role: 'hideothers',
+        role: 'hideothers'
       },
       {
-        role: 'unhide',
+        role: 'unhide'
       },
       {
-        type: 'separator',
+        type: 'separator'
       },
       {
-        role: 'quit',
-      },
-    ],
+        role: 'quit'
+      }
+    ]
   }, {
     label: 'Edit',
     submenu: [
       {
-        role: 'undo',
+        role: 'undo'
       },
       {
-        role: 'redo',
+        role: 'redo'
       },
       {
-        type: 'separator',
+        type: 'separator'
       },
       {
-        role: 'cut',
+        role: 'cut'
       },
       {
-        role: 'copy',
+        role: 'copy'
       },
       {
-        role: 'paste',
+        role: 'paste'
       },
       {
-        role: 'delete',
+        role: 'delete'
       },
       {
-        role: 'selectall',
-      },
-    ],
+        role: 'selectall'
+      }
+    ]
   },
   {
     label: 'View',
@@ -69,48 +69,48 @@ export default function (window: any, menuHandlers: any): any {
       {
         label: 'Reload',
         accelerator: 'CmdOrCtrl+R',
-        click() { window.webContents.reload(); },
+        click () { window.webContents.reload(); }
       },
       {
         label: 'Developer Tools',
         accelerator: 'Alt+Command+I',
-        click() { window.toggleDevTools(); },
+        click () { window.toggleDevTools(); }
       },
       {
         label: 'Open Logs',
-        click() {
+        click () {
           menuHandlers.onOpenLog();
-        },
+        }
       },
       {
-        type: 'separator',
+        type: 'separator'
       },
       {
-        role: 'resetzoom',
+        role: 'resetzoom'
       },
       {
-        role: 'zoomin',
+        role: 'zoomin'
       },
       {
-        role: 'zoomout',
+        role: 'zoomout'
       },
       {
-        type: 'separator',
+        type: 'separator'
       },
       {
-        role: 'togglefullscreen',
-      },
-    ],
+        role: 'togglefullscreen'
+      }
+    ]
   },
   {
     label: 'Help',
     submenu: [
       {
         label: 'About',
-        click() {
+        click () {
           menuHandlers.onAbout();
-          },
-      },
-    ],
+        }
+      }
+    ]
   }];
-};
+}

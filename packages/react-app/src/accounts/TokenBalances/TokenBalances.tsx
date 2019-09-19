@@ -1,53 +1,44 @@
+import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
-import {withStyles} from '@material-ui/styles';
 
 export const styles = {
-  table: {
-    fontSize: '14px',
-  },
-  tableRow: {
-    height: '21.5px',
-  },
-  tableColumn: {
-  },
   symbol: {
-    fontWeight: 500,
+    fontWeight: 500
   },
+  table: {
+    fontSize: '14px'
+  },
+  tableColumn: {},
+  tableRow: {
+    height: '21.5px'
+  }
 };
 
-export type Balances = Array<{
-  address: string;
-  symbol: string;
-  balance: {
-    value: string | number;
-    decimals: number;
-  }
-}>;
-
-export interface Props {
+export interface IProps {
   classes: any;
-  balances: Balances;
+  balances: any[];
 }
 
-export const TokenBalances = ({ classes, balances }: Props) => {
+export const TokenBalances = ({ classes, balances }: IProps) => {
   if (!balances) {
     return null;
   }
   return (
-    <table className={ classes.table }>
+    <table className={classes.table}>
       <tbody>
-        { balances.map((token) => (
-          <tr className={ classes.tableRow } key={ token.address } >
-            <td className={ classes.tableColumn }>
-              { token.balance.value }
-            </td>
-            <td className={ classes.tableColumn }>
-              <span className={ classes.symbol }> { token.symbol }</span>
-            </td>
-          </tr>))
-        }
+      { balances.map((token) => (
+        <tr className={classes.tableRow} key={token.tokenId}>
+          <td className={classes.tableColumn}>
+            {token.unitsValue}
+          </td>
+          <td className={classes.tableColumn}>
+            <span className={classes.symbol}> {token.symbol}</span>
+          </td>
+        </tr>
+      ))}
       </tbody>
-    </table>);
+    </table>
+  );
 };
 
 export default withStyles(styles)(TokenBalances);

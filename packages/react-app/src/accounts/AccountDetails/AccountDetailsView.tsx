@@ -1,34 +1,33 @@
-import * as React from 'react';
-import { withStyles } from '@material-ui/styles';
-import { WithTranslation, withTranslation } from 'react-i18next';
-import * as QRCode from 'qrcode.react';
-import { Back } from '@emeraldplatform/ui-icons';
 import {
-  Page, IdentityIcon, ButtonGroup, Account as AddressAvatar
+  Account as AddressAvatar, ButtonGroup, IdentityIcon, Page
 } from '@emeraldplatform/ui';
-import { Button, InlineEdit, FormRow } from '@emeraldwallet/ui';
-import {blockchainByName, BlockchainCode, IAccount} from '@emeraldwallet/core';
-
-import AccountActions from '../AccountActions';
+import { Back } from '@emeraldplatform/ui-icons';
+import { blockchainByName, BlockchainCode, IAccount } from '@emeraldwallet/core';
+import { Button, FormRow, InlineEdit } from '@emeraldwallet/ui';
+import { withStyles } from '@material-ui/styles';
+import * as QRCode from 'qrcode.react';
+import * as React from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
+import { registry } from '@emeraldwallet/erc20';
 import Balance from '../../common/Balance';
+import AccountActions from '../AccountActions';
 
 export const styles = {
   transContainer: {
-    marginTop: '20px',
+    marginTop: '20px'
   },
   qrCodeContainer: {
     flexBasis: '30%',
-    backgroundColor: 'white',
-  },
+    backgroundColor: 'white'
+  }
 };
 
-export interface Props {
+export interface IProps {
   classes: any;
   showFiat: boolean;
   account: IAccount;
-  balance: any;
   goBack?: any;
-  editAccount?:any;
+  editAccount?: any;
   createTx?: any;
   showReceiveDialog?: any;
   txList?: React.Component;
@@ -36,58 +35,56 @@ export interface Props {
   loadTokens?: any;
 }
 
-type AccountShowProps = Props & WithTranslation;
+type AccountShowProps = IProps & WithTranslation;
 
 export interface State {
   edit: boolean;
 }
 
 export class AccountShow extends React.Component<AccountShowProps, State> {
-  constructor(props: AccountShowProps) {
+  constructor (props: AccountShowProps) {
     super(props);
     this.state = {
-      edit: false,
+      edit: false
     };
   }
 
-  componentDidMount(): void {
-    console.log('AccountShow.componentDidMount');
+  public componentDidMount (): void {
     if (this.props.loadTokens) {
-      const blockchain = this.props.account.blockchain;
-      if (blockchain != BlockchainCode.ETC)
-        return;
-      const address = this.props.account.id;
-      const tkn = {
-        address: '0x085fb4f24031eaedbc2b611aa528f22343eb52db',
-        symbol: 'BEC',
-        decimals: '0x08',
-      };
-      this.props.loadTokens(blockchain, tkn, address);
+      const { blockchain, id } = this.props.account;
+
+      // Look up all known tokens for current blockchain
+      const _tokens = registry.all()[blockchain as BlockchainCode];
+
+      // Request balance for each token for current address
+      _tokens.forEach((t: any) => {
+        this.props.loadTokens(blockchain, t, id);
+      });
     }
   }
 
-  handleEdit = () => {
-    this.setState({edit: true});
-  };
+  public handleEdit = () => {
+    this.setState({ edit: true });
+  }
 
-  handleSave = (data: any) => {
-    const updated = {blockchain: this.props.account.blockchain, ...data};
+  public handleSave = (data: any) => {
+    const updated = { blockchain: this.props.account.blockchain, ...data };
     this.props.editAccount(updated)
       .then((result: any) => {
-        this.setState({edit: false});
+        this.setState({ edit: false });
       });
-  };
+  }
 
-  cancelEdit = () => {
-    this.setState({edit: false});
-  };
+  public cancelEdit = () => {
+    this.setState({ edit: false });
+  }
 
-  render() {
+  public render () {
     const {
-      account, classes, t,
+      account, classes, t
     } = this.props;
     const {
-      showFiat, goBack, createTx, showReceiveDialog,
+      showFiat, goBack, createTx, showReceiveDialog
     } = this.props;
     // TODO: show pending balance too
     // TODO: we convert Wei to TokenUnits here
@@ -98,31 +95,31 @@ export class AccountShow extends React.Component<AccountShowProps, State> {
       name: account.name,
       hdpath: account.hdpath,
       hardware: account.hardware || false,
-      blockchain: account.blockchain,
+      blockchain: account.blockchain
     };
 
     const { coinTicker } = blockchainByName(acc.blockchain).params;
 
     return (
       <div>
-        <Page title="Account" leftIcon={<Back onClick={goBack}/>}>
-          <div style={{display: 'flex', alignItems: 'center', paddingBottom: '20px'}}>
-            <div style={{flexGrow: 2}}>
+        <Page title='Account' leftIcon={<Back onClick={goBack}/>}>
+          <div style={{ display: 'flex', alignItems: 'center', paddingBottom: '20px' }}>
+            <div style={{ flexGrow: 2 }}>
               <FormRow
-                leftColumn={<div style={{display: 'flex', justifyContent: 'flex-end'}}>
+                leftColumn={<div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <IdentityIcon id={acc.id}/>
                 </div>}
                 rightColumn={
                   <React.Fragment>
                     {!this.state.edit && <AddressAvatar
-                      editable
+                      editable={true}
                       address={acc.id}
                       name={acc.name}
                       onEditClick={this.handleEdit}
-                      addressProps={{hideCopy: false}}
+                      addressProps={{ hideCopy: false }}
                     />}
                     {this.state.edit && <InlineEdit
-                      placeholder="Account name"
+                      placeholder='Account name'
                       initialValue={acc.name}
                       id={acc.id}
                       onSave={this.handleSave}
@@ -135,7 +132,7 @@ export class AccountShow extends React.Component<AccountShowProps, State> {
                 rightColumn={
                   acc.balance && <Balance
                     showFiat={showFiat}
-                    coinsStyle={{fontSize: '20px', lineHeight: '24px'}}
+                    coinsStyle={{ fontSize: '20px', lineHeight: '24px' }}
                     balance={acc.balance}
                     decimals={18}
                     symbol={coinTicker}
@@ -155,12 +152,12 @@ export class AccountShow extends React.Component<AccountShowProps, State> {
                   <div>
                     <ButtonGroup>
                       <Button
-                        primary
-                        label="Deposit"
+                        primary={true}
+                        label='Deposit'
                         onClick={showReceiveDialog}
                       />
                       <Button
-                        primary
+                        primary={true}
                         label={t('accounts.show.send')}
                         onClick={createTx}
                       />

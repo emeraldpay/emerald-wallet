@@ -1,19 +1,19 @@
+import { ButtonGroup, Input, Page } from '@emeraldplatform/ui';
+import { BlockchainCode } from '@emeraldwallet/core';
+import { Button, ChainSelector } from '@emeraldwallet/ui';
+import { CSSProperties, withStyles } from '@material-ui/styles';
 import * as React from 'react';
-import {CSSProperties, withStyles} from '@material-ui/styles';
-import {ButtonGroup, Input, Page} from '@emeraldplatform/ui';
-import {Button, ChainSelector} from "@emeraldwallet/ui";
-import {BlockchainCode} from "@emeraldwallet/core";
 
 export const styles = {
   formRow: {
     display: 'flex',
     marginBottom: '19px',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   left: {
     flexBasis: '20%',
     marginLeft: '14.75px',
-    marginRight: '14.75px',
+    marginRight: '14.75px'
   },
   right: {
     flexGrow: 2,
@@ -21,12 +21,12 @@ export const styles = {
     alignItems: 'center',
     marginLeft: '14.75px',
     marginRight: '14.75px',
-    maxWidth: '580px',
+    maxWidth: '580px'
   },
   fieldName: {
     fontSize: '16px',
-    textAlign: 'right',
-  } as CSSProperties,
+    textAlign: 'right'
+  } as CSSProperties
 };
 
 export interface Props {
@@ -34,7 +34,7 @@ export interface Props {
   initialValues?: {
     name?: string;
     address?: string;
-  },
+  };
   blockAddress?: boolean;
   onCancel?: any;
   onSubmit?: any;
@@ -49,46 +49,46 @@ interface State {
 }
 
 export class ContactForm extends React.Component<Props, State> {
-  constructor(props: Props) {
+  constructor (props: Props) {
     super(props);
     this.state = {
       ...this.props.initialValues,
       blockchain: (props.blockchains && props.blockchains.length > 0) ? props.blockchains[0].params.code : BlockchainCode.ETH
-    }
+    };
   }
 
-  handleCancel = () => {
+  public handleCancel = () => {
     if (this.props.onCancel) {
       this.props.onCancel();
     }
-  };
+  }
 
-  handleSubmit = () => {
+  public handleSubmit = () => {
     if (this.props.onSubmit) {
       const { address, name, blockchain } = this.state;
-      this.props.onSubmit({blockchain, address, name, description:''});
+      this.props.onSubmit({ blockchain, address, name, description: '' });
     }
-  };
+  }
 
-  handleAddressChange = (event: any) => {
+  public handleAddressChange = (event: any) => {
     this.setState({
-      address: event.target.value,
-    })
-  };
+      address: event.target.value
+    });
+  }
 
-  handleChainChange = (chain: any) => {
+  public handleChainChange = (chain: any) => {
     this.setState({
-      blockchain: chain,
-    })
-  };
+      blockchain: chain
+    });
+  }
 
-  handleNameChange = (event: any) => {
+  public handleNameChange = (event: any) => {
     this.setState({
-      name: event.target.value,
-    })
-  };
+      name: event.target.value
+    });
+  }
 
-  render() {
+  public render () {
     const {
       blockAddress, title, classes, blockchains
     } = this.props;
@@ -119,7 +119,7 @@ export class ContactForm extends React.Component<Props, State> {
             <Input
               onChange={this.handleAddressChange}
               value={address}
-              type="text"
+              type='text'
               disabled={blockAddress}
             />
           </div>
@@ -132,7 +132,7 @@ export class ContactForm extends React.Component<Props, State> {
             <Input
               onChange={this.handleNameChange}
               value={name}
-              type="text"
+              type='text'
             />
           </div>
         </div>
@@ -142,12 +142,12 @@ export class ContactForm extends React.Component<Props, State> {
           <div className={classes.right}>
             <ButtonGroup>
               <Button
-                label="Cancel"
+                label='Cancel'
                 onClick={this.handleCancel}
               />
               <Button
-                primary
-                label="Save"
+                primary={true}
+                label='Save'
                 onClick={this.handleSubmit}
               />
             </ButtonGroup>

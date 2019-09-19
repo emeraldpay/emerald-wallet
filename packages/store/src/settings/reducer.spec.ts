@@ -1,12 +1,12 @@
 import settingsReducers from './reducer';
-import {ActionTypes} from './types';
+import { ActionTypes } from './types';
 
 describe('settingsReducers', () => {
   it('EXCHANGE_RATES should update locale currency rate', () => {
     // prepare
     let state = settingsReducers(undefined, {
       type: ActionTypes.SET_LOCALE_CURRENCY,
-      currency: 'EUR',
+      currency: 'EUR'
     });
 
     // do
@@ -14,8 +14,8 @@ describe('settingsReducers', () => {
       type: ActionTypes.EXCHANGE_RATES,
       rates: {
         ETC: 5,
-        ETH: 10,
-      },
+        ETH: 10
+      }
     });
 
     // assert
@@ -25,9 +25,9 @@ describe('settingsReducers', () => {
   it('should store locale currency in uppercase', () => {
     // prepare
     // do
-    let state = settingsReducers(undefined, {
+    const state = settingsReducers(undefined, {
       type: ActionTypes.SET_LOCALE_CURRENCY,
-      currency: 'eur',
+      currency: 'eur'
     });
 
     // assert
@@ -37,9 +37,9 @@ describe('settingsReducers', () => {
   it('SET_SHOW_HIDDEN_ACCOUNTS should update state', () => {
     // prepare
     // do
-    let state = settingsReducers(undefined, {
+    const state = settingsReducers(undefined, {
       type: ActionTypes.SET_SHOW_HIDDEN_ACCOUNTS,
-      show: true,
+      show: true
     });
 
     // assert

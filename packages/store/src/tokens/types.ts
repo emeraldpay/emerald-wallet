@@ -11,7 +11,9 @@ export interface ITokenBalance {
 
 export type ITokensState = {
   [chain in BlockchainCode]?: {
-    [address: string]: ITokenBalance[] | null;
+    [address: string]: {
+      [tokenId: string]: ITokenBalance
+    };
   };
 };
 

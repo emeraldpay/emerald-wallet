@@ -1,21 +1,17 @@
-import * as React from 'react';
 import { shallow } from 'enzyme';
-import { fromJS } from 'immutable';
+import * as React from 'react';
 
 import AccountShow from './AccountDetailsView';
 
-describe("AccountDetailsView", () => {
+describe('AccountDetailsView', () => {
   it('Shows HD path for hardware account', () => {
-    const account = fromJS({
-      id: '0x1234',
+    const account = {
+      blockchain: 'etc',
       hardware: true,
       hdpath: 'HD/PATH',
-      blockchain: 'etc',
-    });
+      id: '0x1234'
+    };
     const wrapper = shallow(<AccountShow showFiat={false} account={account}/>);
     expect(wrapper).toBeDefined();
   });
 });
-
-
-

@@ -1,8 +1,8 @@
 import {
-  Services, BlockchainStatus, BalanceListener, TransactionListener,
+  BalanceListener, BlockchainStatus, Services, TransactionListener
 } from '@emeraldwallet/services';
 
-export function createServices(ipcMain: any, webContents: any, apiAccess: any, chains: any): Services {
+export function createServices (ipcMain: any, webContents: any, apiAccess: any, chains: any): Services {
   const services = new Services();
   services.add(new BalanceListener(ipcMain, webContents, apiAccess));
   services.add(new TransactionListener(ipcMain, webContents, apiAccess));

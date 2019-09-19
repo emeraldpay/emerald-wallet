@@ -1,6 +1,6 @@
 export interface IAccount {
   readonly id: string;
-  blockchain: any;
+  readonly blockchain: any;
   hdpath?: string;
   hardware?: boolean;
   hidden?: boolean;

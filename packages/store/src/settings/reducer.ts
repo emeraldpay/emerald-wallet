@@ -1,4 +1,4 @@
-import {fromJS} from 'immutable';
+import { fromJS } from 'immutable';
 import {
   ActionTypes,
   ISettingsState, SetExchRatesAction,
@@ -17,11 +17,11 @@ const initial = fromJS({
   mode: {
     id: 'default',
     chains: ['ETH', 'ETC'],
-    currencies: ['USD', 'EUR', 'BTC', 'USDT'],
-  },
+    currencies: ['USD', 'EUR', 'BTC', 'USDT']
+  }
 });
 
-function onSetLocaleCurrency(state: ISettingsState, action: SetLocaleCurrencyAction) {
+function onSetLocaleCurrency (state: ISettingsState, action: SetLocaleCurrencyAction) {
   const currency = action.currency.toUpperCase();
   const rate = state.get('rates', {}).get(currency);
 
@@ -35,14 +35,14 @@ function onSetLocaleCurrency(state: ISettingsState, action: SetLocaleCurrencyAct
     .set('localeRate', rate);
 }
 
-function onExchangeRates(state: ISettingsState, action: SetExchRatesAction) {
+function onExchangeRates (state: ISettingsState, action: SetExchRatesAction) {
   return state
     .set('rates', fromJS(action.rates))
     .set('localeRate', action.rates ? action.rates.ETC : null);
 
 }
 
-function onSetShowHiddenAccounts(state: ISettingsState, action: SetShowHiddenAccsAction) {
+function onSetShowHiddenAccounts (state: ISettingsState, action: SetShowHiddenAccsAction) {
   // persist settings
   if (localStorage) {
     localStorage.setItem('showHiddenAccounts', action.show);
@@ -50,7 +50,7 @@ function onSetShowHiddenAccounts(state: ISettingsState, action: SetShowHiddenAcc
   return state.set('showHiddenAccounts', action.show);
 }
 
-function onSetConfirmations(state: ISettingsState, action: SetNumConfirmAction) {
+function onSetConfirmations (state: ISettingsState, action: SetNumConfirmAction) {
   // persist settings
   if (localStorage) {
     localStorage.setItem('numConfirmations', action.numConfirmations);
@@ -58,11 +58,11 @@ function onSetConfirmations(state: ISettingsState, action: SetNumConfirmAction) 
   return state.set('numConfirmations', action.numConfirmations);
 }
 
-function onSetMode(state: ISettingsState, action: SetModeAction) {
+function onSetMode (state: ISettingsState, action: SetModeAction) {
   return state.set('mode', fromJS(action.payload));
 }
 
-export default function reducer(state: ISettingsState, action: SettingsAction) {
+export default function reducer (state: ISettingsState, action: SettingsAction) {
   state = state || initial;
   switch (action.type) {
     case ActionTypes.MODE:

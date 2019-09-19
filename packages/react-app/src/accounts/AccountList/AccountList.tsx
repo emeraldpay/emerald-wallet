@@ -1,23 +1,23 @@
+import { Blockchains } from '@emeraldwallet/core';
+import { addresses, screen } from '@emeraldwallet/store';
+import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
-import {Blockchains} from '@emeraldwallet/core';
-import {withStyles} from '@material-ui/styles';
-import {connect} from 'react-redux';
-import {screen, addresses} from '@emeraldwallet/store';
+import { connect } from 'react-redux';
 import Account from './AccountItem';
 
 const styles = (theme: any) => ({
   container: {
-    marginBottom: '10px',
+    marginBottom: '10px'
   },
   listItem: {
     marginBottom: '10px',
-    border: `1px solid ${theme.palette.divider}`,
+    border: `1px solid ${theme.palette.divider}`
   },
   hiddenListItem: {
     opacity: 0.4,
     marginBottom: '10px',
-    border: `1px solid ${theme.palette.divider}`,
-  },
+    border: `1px solid ${theme.palette.divider}`
+  }
 });
 
 interface IAccountListProps {
@@ -31,10 +31,10 @@ interface IAccountListProps {
 
 const AccountList = ((props: IAccountListProps) => {
   const {
-    accounts, showFiat, classes,
+    accounts, showFiat, classes
   } = props;
   const {
-    openAccount, createTx, showReceiveDialog,
+    openAccount, createTx, showReceiveDialog
   } = props;
   return (
     <div className={classes.container}>
@@ -54,14 +54,13 @@ const AccountList = ((props: IAccountListProps) => {
   );
 });
 
-
 const StyledAccountList = withStyles(styles)(AccountList);
 
 export default connect(
   (state, ownProps) => {
     return {
       accounts: addresses.selectors.all(state),
-      showFiat: true,
+      showFiat: true
     };
   },
   (dispatch, ownProps) => ({
@@ -74,9 +73,9 @@ export default connect(
     showReceiveDialog: (account: any) => {
       const address = {
         value: account.get('id'),
-        coinTicker: Blockchains[account.get('blockchain')].params.coinTicker,
+        coinTicker: Blockchains[account.get('blockchain')].params.coinTicker
       };
       dispatch(screen.actions.showDialog('receive', address));
-    },
+    }
   })
 )((StyledAccountList));
