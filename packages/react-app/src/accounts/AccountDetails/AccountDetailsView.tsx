@@ -3,12 +3,12 @@ import {
 } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import { blockchainByName, BlockchainCode, IAccount } from '@emeraldwallet/core';
+import { registry } from '@emeraldwallet/erc20';
 import { Button, FormRow, InlineEdit } from '@emeraldwallet/ui';
 import { withStyles } from '@material-ui/styles';
 import * as QRCode from 'qrcode.react';
 import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
-import { registry } from '@emeraldwallet/erc20';
 import Balance from '../../common/Balance';
 import AccountActions from '../AccountActions';
 

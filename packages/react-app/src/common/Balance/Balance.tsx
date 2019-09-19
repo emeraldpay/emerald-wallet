@@ -1,7 +1,7 @@
+import { settings } from '@emeraldwallet/store';
+import { Balance } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Balance } from '@emeraldwallet/ui';
-import { settings } from '@emeraldwallet/store';
 
 export default connect(
   (state, ownProps: any) => {
@@ -9,7 +9,7 @@ export default connect(
     const fiatRate = settings.selectors.fiatRate(ownProps.symbol, state);
     return {
       fiatCurrency,
-      fiatRate,
+      fiatRate
     };
   },
   null

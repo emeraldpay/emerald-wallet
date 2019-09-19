@@ -1,45 +1,45 @@
-import * as React from 'react';
 import { Wei } from '@emeraldplatform/eth';
-import { shallow, mount } from 'enzyme';
-import { Provider } from 'react-redux';
-import { fromJS } from 'immutable';
 import BigNumber from 'bignumber.js';
+import { mount, shallow } from 'enzyme';
+import { fromJS } from 'immutable';
+import * as React from 'react';
+import { Provider } from 'react-redux';
+import { AnyAction, Store } from 'redux';
 import Total from './Total';
-import {AnyAction, Store} from 'redux';
 
-function createStore() {
+function createStore () {
   return {
-    dispatch() {},
-    subscribe() {
-      return () => {}
+    dispatch () {},
+    subscribe () {
+      return () => {};
     },
-    replaceReducer() {},
-    getState() {
+    replaceReducer () {},
+    getState () {
       return {
         launcher: fromJS({
-          geth: {},
+          geth: {}
         }),
         network: fromJS({
-          chain: {},
+          chain: {}
         }),
         wallet: {
           settings: fromJS({
             localeCurrency: 'USD',
             rates: {
               ETH: '234.56',
-              ETC: '7.89',
-            },
-          }),
+              ETC: '7.89'
+            }
+          })
         },
         addresses: fromJS({
           addresses: [
-            {balance: new Wei(1000000000000000), blockchain: 'eth'},
-            {balance: new Wei(2000000000000000), blockchain: 'eth'},
-            {balance: new Wei(3000000000000000), blockchain: 'etc'},
-          ],
-        }),
+            { balance: new Wei(1000000000000000), blockchain: 'eth' },
+            { balance: new Wei(2000000000000000), blockchain: 'eth' },
+            { balance: new Wei(3000000000000000), blockchain: 'etc' }
+          ]
+        })
       };
-    },
+    }
   };
 }
 

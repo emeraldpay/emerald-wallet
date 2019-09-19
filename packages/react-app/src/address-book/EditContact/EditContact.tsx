@@ -8,8 +8,8 @@ const EditContact = connect(
     initialValues: {
       name: ownProps.address.name,
       address: ownProps.address.address,
-      description: ownProps.address.description,
-    },
+      description: ownProps.address.description
+    }
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data: any) => {
@@ -17,7 +17,7 @@ const EditContact = connect(
     },
     cancel: () => {
       ownProps.onCancel();
-    },
+    }
   })
 )(ContactForm);
 
