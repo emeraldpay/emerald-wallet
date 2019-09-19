@@ -4,6 +4,7 @@
     "exclude": ["**/node_modules/**", "**/lib/**"]
   },
   "rules": {
-    "semicolon": true
+    "semicolon": true,
+    "no-implicit-dependencies": [true, "dev"]
   }
 }

@@ -10,4 +10,4 @@ const blockchains = [
 ];
 
 storiesOf('ChainSelector', module)
-  .add('default', () => (<ChainSelector chains={blockchains} onChange={action('onChange')} />) );
+  .add('default', () => (<ChainSelector chains={blockchains} onChange={action('onChange')} />));

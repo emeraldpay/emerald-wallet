@@ -4,6 +4,4 @@ import DashboardMenu from '../../src/components/layout/DashboardMenu';
 
 storiesOf('DashboardMenu', module)
   .add('default', () => (
-    <DashboardMenu
-
-    />));
+    <DashboardMenu />));
