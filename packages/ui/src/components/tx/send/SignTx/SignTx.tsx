@@ -1,7 +1,7 @@
 import { Units } from '@emeraldplatform/eth';
 import { ButtonGroup, IdentityIcon, Input } from '@emeraldplatform/ui';
 import { ArrowRight } from '@emeraldplatform/ui-icons';
-import { CreateEthereumTx } from '@emeraldwallet/workflow';
+import { workflow  } from '@emeraldwallet/core';
 import { Divider, List, ListItem, ListItemText } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
@@ -31,8 +31,8 @@ const styles = (theme?: any) => ({
   }
 });
 
-interface Props {
-  tx: CreateEthereumTx;
+interface IProps {
+  tx: workflow.CreateEthereumTx;
   fiatCurrency?: any;
   fiatRate?: any;
   onCancel?: any;
@@ -44,7 +44,7 @@ interface Props {
   classes?: any;
 }
 
-interface State {
+interface IState {
   password: string;
 }
 
@@ -102,7 +102,7 @@ const TypedData = (props: { typedData: any; }) => {
   );
 };
 
-const getTypedDataOrDeploy = (props: Props) => {
+const getTypedDataOrDeploy = (props: IProps) => {
   if (props.mode === 'contract_function') {
     return (
       <React.Fragment>
@@ -123,8 +123,8 @@ const getTypedDataOrDeploy = (props: Props) => {
   }
 };
 
-class SignTx extends React.Component<Props, State> {
-  constructor (props: Props) {
+class SignTx extends React.Component<IProps, IState> {
+  constructor (props: IProps) {
     super(props);
     this.state = { password: '' };
   }
@@ -204,6 +204,4 @@ class SignTx extends React.Component<Props, State> {
   }
 }
 
-const StyledSignTx = withStyles(styles)(SignTx);
-
-export default StyledSignTx;
+export default withStyles(styles)(SignTx);

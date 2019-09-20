@@ -28,7 +28,6 @@ class GrpcTransport implements Transport {
     this.chain = chainByCode(chain.toUpperCase());
   }
   public request (req: JsonRpcRequest[]): Promise<any[]> {
-    console.error(JSON.stringify(req));
     const request = new NativeCallRequest();
     request.setChain(this.chain.id);
     req.forEach((json) => {

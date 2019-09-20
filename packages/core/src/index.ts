@@ -3,6 +3,9 @@ export { BlockchainCode, Blockchains, Blockchain, blockchainByName, blockchainBy
 import * as blockchains from './blockchains';
 export { blockchains };
 
+import * as workflow from './workflow';
+export { workflow };
+
 export { EthereumTx, Ethereum as EthereumBlockchain } from './blockchains/ethereum';
 
 export { Currency, CurrencyCode } from './Currency';

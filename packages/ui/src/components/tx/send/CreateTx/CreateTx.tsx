@@ -1,5 +1,5 @@
 import { ButtonGroup } from '@emeraldplatform/ui';
-import { CreateEthereumTx, ValidationResult } from '@emeraldwallet/workflow';
+import { workflow } from '@emeraldwallet/core';
 import * as React from 'react';
 import Button from '../../../common/Button';
 import AmountField from './AmountField';
@@ -16,7 +16,10 @@ function getStyles () {
   };
 }
 
-export interface Props {
+type CreateEthereumTx = workflow.CreateEthereumTx;
+const { ValidationResult } = workflow;
+
+export interface IProps {
   tx: CreateEthereumTx;
   token: string;
   tokenSymbols?: string[];
@@ -37,9 +40,9 @@ export interface Props {
   onMaxClicked?: any;
 }
 
-class CreateTransaction extends React.Component<Props> {
+class CreateTransaction extends React.Component<IProps> {
   public getDisabled = () => {
-    return this.props.tx.validate() != ValidationResult.OK;
+    return this.props.tx.validate() !== ValidationResult.OK;
   }
 
   public render () {
@@ -97,7 +100,8 @@ class CreateTransaction extends React.Component<Props> {
           <ButtonGroup style={{ flexGrow: 5 }}>
             <Button
               label='Cancel'
-              onClick={this.props.onCancel}/>
+              onClick={this.props.onCancel}
+            />
             <Button
               disabled={this.getDisabled()}
               primary={true}

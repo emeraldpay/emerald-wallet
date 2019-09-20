@@ -13,7 +13,7 @@
     "test:coverage": "jest --passWithNoTests --coverage && codecov"
   },
   "dependencies": {
-    "@emeraldplatform/core": "^0.5.2",
+    "@emeraldplatform/core": "^0.5.4",
     "@emeraldplatform/eth": "0.5.1",
     "@emeraldplatform/ui": "^0.5.2",
     "@emeraldplatform/ui-icons": "^0.5.2",

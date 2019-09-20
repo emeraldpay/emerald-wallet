@@ -66,11 +66,11 @@ function toPlainDetails (tx: IERC20TxDetails): IERC20TxDetailsPlain {
 
 function fromPlainDetails (plain: IERC20TxDetailsPlain): IERC20TxDetails {
   return {
-    from: plain.from,
-    to: plain.to,
-    erc20: plain.erc20,
-    target: targetFromNumber(plain.target),
     amount: new BigNumber(plain.amount, 10),
+    erc20: plain.erc20,
+    from: plain.from,
+    target: targetFromNumber(plain.target),
+    to: plain.to,
     totalTokenBalance: plain.totalTokenBalance == null ? undefined : new BigNumber(plain.totalTokenBalance, 10),
     totalEtherBalance: plain.totalEtherBalance == null ? undefined : new Wei(plain.totalEtherBalance, Units.WEI),
     gasPrice: new Wei(plain.gasPrice, Units.WEI),

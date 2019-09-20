@@ -17,11 +17,9 @@ export const traceValidate = (chain: BlockchainCode, tx: any, dispatch: any, est
         } else if (gasEst > tx.gas.toNumber()) {
           reject(`Insufficient Gas. Expected ${gasEst}`);
         } else {
-          console.error('Gas estimation' + gasEst);
           resolve(gasEst);
         }
       }).catch((error: any) => {
-        console.error('ERRROR ' + error);
         reject(error);
       });
   });

@@ -5,19 +5,19 @@ import BigNumber from 'bignumber.js';
 import * as React from 'react';
 
 const defaultStyles = {
+  coins: {
+    color: '#191919',
+    fontSize: '16px',
+    lineHeight: '24px'
+  },
   fiat: {
     color: '#191919',
     fontSize: '14px',
     lineHeight: '16px'
-  },
-  coins: {
-    lineHeight: '24px',
-    fontSize: '16px',
-    color: '#191919'
   }
 };
 
-export interface Props {
+export interface IProps {
   symbol: string;
 
   /**
@@ -36,11 +36,11 @@ export interface Props {
   fiatStyle?: any;
 }
 
-export class Balance extends React.Component<Props> {
+export class Balance extends React.Component<IProps> {
   public static defaultProps = {
-    showFiat: false,
+    coinsStyle: defaultStyles.coins,
     fiatStyle: defaultStyles.fiat,
-    coinsStyle: defaultStyles.coins
+    showFiat: false
   };
 
   public render () {
@@ -53,7 +53,9 @@ export class Balance extends React.Component<Props> {
     if (typeof balance === 'string') {
       const coins = fromBaseUnits(new BigNumber(balance), decimals);
       if (showFiat && fiatRate && fiatCurrency) {
-        fiatAmount = Currency.format(Number(Currency.convert(coins.toString(), fiatRate)), fiatCurrency as CurrencyCode);
+        fiatAmount = Currency.format(
+          Number(Currency.convert(coins.toString(), fiatRate)),
+          fiatCurrency as CurrencyCode);
       }
       coinsStr = coins.toString();
     } else if (typeof balance === 'object') {

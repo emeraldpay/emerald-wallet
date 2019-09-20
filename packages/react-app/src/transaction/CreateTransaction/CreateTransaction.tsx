@@ -2,7 +2,7 @@ import { convert, toBaseUnits } from '@emeraldplatform/core';
 import { Units, Wei } from '@emeraldplatform/eth';
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import { blockchainByName, BlockchainCode, Blockchains, IAccount } from '@emeraldwallet/core';
+import { blockchainByName, BlockchainCode, Blockchains, IAccount, workflow } from '@emeraldwallet/core';
 import { registry } from '@emeraldwallet/erc20';
 import {
   addressBook,
@@ -14,11 +14,13 @@ import {
   tokens
 } from '@emeraldwallet/store';
 import { CreateTx, SignTx } from '@emeraldwallet/ui';
-import { CreateEthereumTx, TxTarget } from '@emeraldwallet/workflow';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { traceValidate, txFeeFiat } from './util';
+
+type CreateEthereumTx = workflow.CreateEthereumTx;
+const { TxTarget } = workflow;
 
 enum PAGES {
   TX = 1,
@@ -83,7 +85,7 @@ class CreateTransaction extends React.Component<ICreateTxProps, ICreateTxState> 
   }
 
   get transaction (): CreateEthereumTx {
-    return CreateEthereumTx.fromPlain(this.state.transaction);
+    return workflow.CreateEthereumTx.fromPlain(this.state.transaction);
   }
 
   set transaction (tx) {
@@ -91,7 +93,7 @@ class CreateTransaction extends React.Component<ICreateTxProps, ICreateTxState> 
   }
 
   public static txFromProps (props: ICreateTxProps) {
-    const tx = new CreateEthereumTx();
+    const tx = new workflow.CreateEthereumTx();
     tx.from = props.selectedFromAccount;
     tx.totalBalance = props.balance || props.getBalanceForAddress(tx.from!, props.token);
     tx.gasPrice = props.gasPrice;

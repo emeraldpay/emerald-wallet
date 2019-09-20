@@ -1,6 +1,5 @@
 import { convert, EthAddress } from '@emeraldplatform/core';
 import { Wei } from '@emeraldplatform/eth';
-import { EthAccount } from '@emeraldplatform/eth-account';
 import {
   Blockchain, blockchainByName, BlockchainCode, blockchains, EthereumTx, IAccount, IApi
 } from '@emeraldwallet/core';
@@ -22,6 +21,8 @@ import {
   UpdateAddressAction
 } from './types';
 
+const EthAccount = require('@emeraldplatform/eth-account').EthAccount;
+
 /**
  * Retrieves HD paths for hardware accounts
  */
@@ -41,7 +42,7 @@ function fetchHdPaths (): Dispatched<SetHDPathAction> {
               blockchain: a.get('blockchain')
             });
           })
-          .catch((err) => console.warn('Unable to get HDPath from Vault'))
+          .catch((err: any) => console.warn('Unable to get HDPath from Vault'))
         );
       });
 
@@ -59,13 +60,13 @@ export function setLoadingAction (loading: boolean): SetLoadingAction {
 export function loadAccountsList (onLoaded?: Function): Dispatched<SetListAction | SetLoadingAction | SetHDPathAction> {
 
   return (dispatch, getState, api) => {
-    const blockchains: any = settings.selectors.currentChains(getState());
+    const chains: any = settings.selectors.currentChains(getState());
     const showHidden = settings.selectors.showHiddenAccounts(getState());
-    let toLoad = blockchains.length;
+    let toLoad = chains.length;
 
     dispatch(setLoadingAction(true));
 
-    blockchains.forEach((blockchain: Blockchain) => {
+    chains.forEach((blockchain: Blockchain) => {
       const blockchainCode = blockchain.params.code;
       api.emerald.listAccounts(blockchainCode.toLowerCase(), showHidden)
         .then((res) => res.map((a) => ({ ...a, blockchain: blockchainCode })))

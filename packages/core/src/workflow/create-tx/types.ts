@@ -3,7 +3,7 @@ export enum TxTarget {
   SEND_ALL
 }
 
-export function targetFromNumber(i: number): TxTarget {
+export function targetFromNumber (i: number): TxTarget {
   if (i === TxTarget.SEND_ALL.valueOf()) {
     return TxTarget.SEND_ALL;
   }

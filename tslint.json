@@ -6,6 +6,7 @@
   "rules": {
     "semicolon": true,
     "no-implicit-dependencies": [true, "dev"],
-    "jsx-no-multiline-js": false
+    "jsx-no-multiline-js": false,
+    "object-literal-sort-keys": false
   }
 }

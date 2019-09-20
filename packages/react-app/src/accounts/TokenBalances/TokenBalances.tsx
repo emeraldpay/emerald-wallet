@@ -1,3 +1,4 @@
+import { fromBaseUnits } from '@emeraldplatform/core';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
 
@@ -29,7 +30,7 @@ export const TokenBalances = ({ classes, balances }: IProps) => {
       { balances.map((token) => (
         <tr className={classes.tableRow} key={token.tokenId}>
           <td className={classes.tableColumn}>
-            {token.unitsValue}
+            {fromBaseUnits(token.unitsValue, token.decimals).toString()}
           </td>
           <td className={classes.tableColumn}>
             <span className={classes.symbol}> {token.symbol}</span>
