@@ -25,7 +25,6 @@ jobs:
           command: |
               yarn build
               yarn test
-              yarn lint
 
       - run:
           name: Build distributive
