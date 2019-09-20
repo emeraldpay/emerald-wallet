@@ -1,4 +1,4 @@
 export interface Transaction {
-  verifySignature(): boolean;
-  getSenderAddress(): string;
+  verifySignature (): boolean;
+  getSenderAddress (): string;
 }

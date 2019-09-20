@@ -5,6 +5,7 @@
   },
   "rules": {
     "semicolon": true,
-    "no-implicit-dependencies": [true, "dev"]
+    "no-implicit-dependencies": [true, "dev"],
+    "jsx-no-multiline-js": false
   }
 }

@@ -1,7 +1,7 @@
 /**
  * Parameters of particular blockchain
  */
-import {BlockchainCode} from "./blockchains";
+import { BlockchainCode } from './blockchains';
 
 export default interface BlockchainParams {
   decimals: number;

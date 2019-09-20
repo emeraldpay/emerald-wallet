@@ -30,68 +30,67 @@ type Props = ImportJsonProps & WithTranslation;
 
 class ImportJson extends React.Component<Props, ImportJsonState> {
   constructor (props: Props) {
-      super(props);
-      this.state = {
-        fileError: null,
-        file: null,
-        blockchain: props.blockchains.length > 0 ? props.blockchains[0].params.code : ''
-      };
-    }
+    super(props);
+    this.state = {
+      fileError: null,
+      file: null,
+      blockchain: props.blockchains.length > 0 ? props.blockchains[0].params.code : ''
+    };
+  }
 
   public submitFile = () => {
-      const { importFile, showAccount } = this.props;
-      importFile(this.state.blockchain, this.state.file)
+    const { importFile, showAccount } = this.props;
+    importFile(this.state.blockchain, this.state.file)
         .then((result: any) => showAccount({ id: result, blockchain: this.state.blockchain.toLowerCase() }))
         .catch((err: any) => this.setState({ fileError: err.message }));
-    }
+  }
 
   public onFileChange = (file: any) => {
-      this.setState({
-        file
-      });
-    }
+    this.setState({
+      file
+    });
+  }
 
   public onChainChange = (blockchain: any) => {
-      this.setState({
-        blockchain
-      });
-    }
+    this.setState({
+      blockchain
+    });
+  }
 
   public render () {
-      const { t, onDashboard, blockchains } = this.props;
-      const { file, fileError, blockchain } = this.state;
+    const { t, onDashboard, blockchains } = this.props;
+    const { file, fileError, blockchain } = this.state;
 
-      return (
+    return (
         <Page title={t('accounts.import.title')} leftIcon={<Back onClick={onDashboard} />}>
-          {fileError && (<FormRow
-              rightColumn={
+          {fileError && (
+            <FormRow
+              rightColumn={(
                 <Warning fullWidth={true}>
                   <WarningHeader>File error</WarningHeader>
                   <WarningText>{fileError}</WarningText>
                 </Warning>
-              }
-            />)}
+              )}
+            />
+            )}
 
           <FormRow
-            rightColumn={
-              <FileDropField
-                name='wallet'
-                onChange={this.onFileChange}
-              />
-            }
+            rightColumn={<FileDropField name='wallet' onChange={this.onFileChange} />}
           />
 
-          {file && (<FormRow
-              rightColumn={
-                <React.Fragment>
-                  <Button primary={true} onClick={this.submitFile} label={t('common.submit')}/>
-                  <ChainSelector onChange={this.onChainChange} value={blockchain} chains={blockchains}/>
-                </React.Fragment>
-              }
-            />)}
+          {file && (
+            <FormRow
+              rightColumn={(
+                  <React.Fragment>
+                    <Button primary={true} onClick={this.submitFile} label={t('common.submit')}/>
+                    <ChainSelector onChange={this.onChainChange} value={blockchain} chains={blockchains}/>
+                  </React.Fragment>
+                )}
+            />
+            )}
         </Page>
-      );
-    }
+    );
+  }
 }
 
 export default connect(

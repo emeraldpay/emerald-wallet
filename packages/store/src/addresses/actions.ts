@@ -1,5 +1,6 @@
 import { convert, EthAddress } from '@emeraldplatform/core';
 import { Wei } from '@emeraldplatform/eth';
+import { EthAccount } from '@emeraldplatform/eth-account';
 import {
   Blockchain, blockchainByName, BlockchainCode, blockchains, EthereumTx, IAccount, IApi
 } from '@emeraldwallet/core';
@@ -20,8 +21,6 @@ import {
   SetTxCountAction,
   UpdateAddressAction
 } from './types';
-
-const EthAccount = require('@emeraldplatform/eth-account').EthAccount;
 
 /**
  * Retrieves HD paths for hardware accounts

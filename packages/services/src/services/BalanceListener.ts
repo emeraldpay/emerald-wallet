@@ -21,8 +21,7 @@ export class BalanceListener implements IService {
   }
 
   public start () {
-    const { webContents } = this;
-    this.ipcMain.on('subscribe-balance', (_: any, blockchain: string, addresses: any) => {
+    this.ipcMain.on('subscribe-balance', (_: any, blockchain: string, addresses: string[]) => {
       if (blockchain === 'mainnet') {
         blockchain = 'etc';
       }
@@ -37,7 +36,7 @@ export class BalanceListener implements IService {
             value: event.balance
           }
         };
-        webContents.send('store', action);
+        this.webContents.send('store', action);
       });
     });
   }

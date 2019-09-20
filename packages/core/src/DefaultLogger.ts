@@ -1,16 +1,16 @@
 import ILogger from './ILogger';
 
 export default class DefaultLogger implements ILogger {
-  debug(...params: any[]) {
+  public debug (...params: any[]) {
 
-  };
-  error(...params: any[]) {
+  }
+  public error (...params: any[]) {
 
-  };
-  warn(...params: any[]) {
+  }
+  public warn (...params: any[]) {
 
-  };
-  info(...params: any[]) {
+  }
+  public info (...params: any[]) {
 
-  };
+  }
 }

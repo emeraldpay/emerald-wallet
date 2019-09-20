@@ -1,4 +1,4 @@
-export { BlockchainCode, Blockchains, Blockchain, blockchainByName, blockchainById} from './blockchains';
+export { BlockchainCode, Blockchains, Blockchain, blockchainByName, blockchainById } from './blockchains';
 
 import * as blockchains from './blockchains';
 export { blockchains };
