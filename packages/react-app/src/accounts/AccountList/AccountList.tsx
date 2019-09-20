@@ -1,4 +1,4 @@
-import { Blockchains } from '@emeraldwallet/core';
+import {Blockchains, IAccount} from '@emeraldwallet/core';
 import { addresses, screen } from '@emeraldwallet/store';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
@@ -9,14 +9,14 @@ const styles = (theme: any) => ({
   container: {
     marginBottom: '10px'
   },
-  listItem: {
-    marginBottom: '10px',
-    border: `1px solid ${theme.palette.divider}`
-  },
   hiddenListItem: {
+    border: `1px solid ${theme.palette.divider}`,
     opacity: 0.4,
-    marginBottom: '10px',
-    border: `1px solid ${theme.palette.divider}`
+    marginBottom: '10px'
+  },
+  listItem: {
+    border: `1px solid ${theme.palette.divider}`,
+    marginBottom: '10px'
   }
 });
 
@@ -64,16 +64,16 @@ export default connect(
     };
   },
   (dispatch, ownProps) => ({
-    openAccount: (account: any) => {
-      dispatch(screen.actions.gotoScreen('account', account));
-    },
     createTx: (account: any) => {
       dispatch(screen.actions.gotoScreen('create-tx', account));
     },
-    showReceiveDialog: (account: any) => {
+    openAccount: (account: any) => {
+      dispatch(screen.actions.gotoScreen('account', account));
+    },
+    showReceiveDialog: (account: IAccount) => {
       const address = {
-        value: account.get('id'),
-        coinTicker: Blockchains[account.get('blockchain')].params.coinTicker
+        coinTicker: Blockchains[account.blockchain].params.coinTicker,
+        value: account.id
       };
       dispatch(screen.actions.showDialog('receive', address));
     }

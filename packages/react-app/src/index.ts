@@ -33,3 +33,4 @@ export { default as Landing } from './layout/Landing';
 export { default as TxDetails } from './tx/TxDetails';
 
 export { default as CreateTransaction } from './transaction/CreateTransaction';
+export { default as WaitForSignDialog } from './transaction/WaitForSignDialog';
