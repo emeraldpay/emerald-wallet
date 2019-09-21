@@ -11,10 +11,10 @@ export interface IUnits {
  * Bitcoin - satoshi
  */
 class Units implements IUnits {
-  amount: string;
-  decimals: number;
+  public amount: string;
+  public decimals: number;
 
-  constructor(amount: string, decimals: number) {
+  constructor (amount: string, decimals: number) {
     const bAmount = new BigNumber(amount);
     if (bAmount.isNaN()) {
       throw new Error('Invalid value of amount: ' + amount);

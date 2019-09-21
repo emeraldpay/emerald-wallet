@@ -1,7 +1,6 @@
+import { BlockchainCode } from '@emeraldwallet/core';
 import * as selectors from './selectors';
-import {moduleName} from "./types";
-import {BlockchainCode} from "@emeraldwallet/core";
-
+import { moduleName } from './types';
 
 describe('all', () => {
   const state = {
@@ -12,7 +11,7 @@ describe('all', () => {
           '0x123': {
             address: '0x123',
             name: 'name1',
-            blockchain: BlockchainCode.ETC,
+            blockchain: BlockchainCode.ETC
           }
         },
         [BlockchainCode.ETH]: {
@@ -22,8 +21,8 @@ describe('all', () => {
           },
           '0x333': {
             address: '0x333',
-            name: 'name3',
-          },
+            name: 'name3'
+          }
         }
       }
     }
@@ -32,5 +31,5 @@ describe('all', () => {
   it('should return array of contacts', () => {
     const result = selectors.all(state);
     expect(result.length).toEqual(3);
-  })
+  });
 });

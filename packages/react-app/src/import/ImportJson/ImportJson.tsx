@@ -1,13 +1,13 @@
-import * as React from 'react';
-import {WithTranslation, withTranslation} from 'react-i18next';
-import { connect } from 'react-redux';
-import {BlockchainCode, IAccount} from '@emeraldwallet/core';
 import {
-  Page, Warning, WarningText, WarningHeader
+  Page, Warning, WarningHeader, WarningText
 } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
+import { BlockchainCode, IAccount } from '@emeraldwallet/core';
+import { addresses, screen, settings } from '@emeraldwallet/store';
 import { Button, ChainSelector, FormRow } from '@emeraldwallet/ui';
-import { screen, addresses, settings } from '@emeraldwallet/store';
+import * as React from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
 
 import FileDropField from './FileDropField';
 
@@ -16,7 +16,7 @@ interface ImportJsonProps {
   showAccount: (account: IAccount) => void;
   accounts: any;
   onDashboard: any;
-  blockchains: Array<any>;
+  blockchains: any[];
   onBackScreen?: any;
 }
 
@@ -29,74 +29,73 @@ interface ImportJsonState {
 type Props = ImportJsonProps & WithTranslation;
 
 class ImportJson extends React.Component<Props, ImportJsonState> {
-    constructor(props: Props) {
-      super(props);
-      this.state = {
-        fileError: null,
-        file: null,
-        blockchain: props.blockchains.length > 0 ? props.blockchains[0].params.code : '',
-      };
-    }
+  constructor (props: Props) {
+    super(props);
+    this.state = {
+      fileError: null,
+      file: null,
+      blockchain: props.blockchains.length > 0 ? props.blockchains[0].params.code : ''
+    };
+  }
 
-    submitFile = () => {
-      const { importFile, showAccount } = this.props;
-      importFile(this.state.blockchain, this.state.file)
-        .then((result: any) => showAccount({id: result, blockchain: this.state.blockchain.toLowerCase()}))
+  public submitFile = () => {
+    const { importFile, showAccount } = this.props;
+    importFile(this.state.blockchain, this.state.file)
+        .then((result: any) => showAccount({ id: result, blockchain: this.state.blockchain.toLowerCase() }))
         .catch((err: any) => this.setState({ fileError: err.message }));
-    };
+  }
 
-    onFileChange = (file: any) => {
-      this.setState({
-        file,
-      });
-    };
+  public onFileChange = (file: any) => {
+    this.setState({
+      file
+    });
+  }
 
-    onChainChange = (blockchain: any) => {
-      this.setState({
-        blockchain,
-      });
-    };
+  public onChainChange = (blockchain: any) => {
+    this.setState({
+      blockchain
+    });
+  }
 
-    render() {
-      const { t, onDashboard, blockchains } = this.props;
-      const { file, fileError, blockchain } = this.state;
+  public render () {
+    const { t, onDashboard, blockchains } = this.props;
+    const { file, fileError, blockchain } = this.state;
 
-      return (
-        <Page title={ t('accounts.import.title') } leftIcon={<Back onClick={onDashboard} />}>
-          {fileError && (<FormRow
-              rightColumn={
-                <Warning fullWidth={ true }>
+    return (
+        <Page title={t('accounts.import.title')} leftIcon={<Back onClick={onDashboard} />}>
+          {fileError && (
+            <FormRow
+              rightColumn={(
+                <Warning fullWidth={true}>
                   <WarningHeader>File error</WarningHeader>
-                  <WarningText>{ fileError }</WarningText>
+                  <WarningText>{fileError}</WarningText>
                 </Warning>
-              }
-            />)}
+              )}
+            />
+            )}
 
           <FormRow
-            rightColumn={
-              <FileDropField
-                name="wallet"
-                onChange={ this.onFileChange }
-              />
-            }
+            rightColumn={<FileDropField name='wallet' onChange={this.onFileChange} />}
           />
 
-          {file && (<FormRow
-              rightColumn={
-                <React.Fragment>
-                  <Button primary onClick={ this.submitFile } label={ t('common.submit') }/>
-                  <ChainSelector onChange={ this.onChainChange } value={blockchain} chains={ blockchains }/>
-                </React.Fragment>
-              }
-            />)}
+          {file && (
+            <FormRow
+              rightColumn={(
+                  <React.Fragment>
+                    <Button primary={true} onClick={this.submitFile} label={t('common.submit')}/>
+                    <ChainSelector onChange={this.onChainChange} value={blockchain} chains={blockchains}/>
+                  </React.Fragment>
+                )}
+            />
+            )}
         </Page>
-      );
-    }
+    );
+  }
 }
 
 export default connect(
   (state, ownProps) => ({
-    blockchains: settings.selectors.currentChains(state),
+    blockchains: settings.selectors.currentChains(state)
   }),
   (dispatch, ownProps: Props) => ({
     importFile: (blockchain: BlockchainCode, file: any) => {
@@ -118,6 +117,6 @@ export default connect(
     },
     cancel: () => {
       dispatch(screen.actions.gotoScreen('home'));
-    },
+    }
   })
 )(withTranslation()(ImportJson));

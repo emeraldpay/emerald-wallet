@@ -1,7 +1,7 @@
-import {BrowserWindow, Menu, shell} from 'electron';
+import { BrowserWindow, Menu, shell } from 'electron';
+import { createAboutPage } from './AboutWindow';
 import darwinMenu from './menus/darwin';
 import winLinuxMenu from './menus/win-linux';
-import { createAboutPage } from './AboutWindow';
 
 const url = require('url');
 const devtron = require('devtron');
@@ -11,7 +11,7 @@ const devtron = require('devtron');
 let mainWindow: BrowserWindow | null;
 let menu;
 
-export function getMainWindow(options: any) {
+export function getMainWindow (options: any) {
   if (mainWindow) {
     return mainWindow;
   }
@@ -26,14 +26,14 @@ const createWindow = function (options: any): BrowserWindow {
     height: 650,
     minWidth: 1200,
     minHeight: 650,
-    icon: options.appIconPath,
+    icon: options.appIconPath
   });
 
   // and load the index.html of the app.
   mainWindow.loadURL(url.format({
     pathname: options.mainWndPath,
     protocol: 'file:',
-    slashes: true,
+    slashes: true
   }));
 
   // Open the DevTools.

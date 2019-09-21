@@ -1,13 +1,12 @@
-import * as React from 'react';
-import BigNumber from 'bignumber.js';
-import { withStyles } from '@material-ui/styles';
-import { Units } from '@emeraldwallet/core';
-import {convert, fromBaseUnits, InputDataDecoder} from '@emeraldplatform/core';
-import { abi as TokenAbi } from '@emeraldwallet/erc20';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
+import { convert, fromBaseUnits, InputDataDecoder } from '@emeraldplatform/core';
 import { Account as AddressAvatar } from '@emeraldplatform/ui';
-import {ArrowDown} from '@emeraldplatform/ui-icons';
+import { ArrowDown } from '@emeraldplatform/ui-icons';
+import { Units } from '@emeraldwallet/core';
+import { abi as TokenAbi } from '@emeraldwallet/erc20';
+import { TableCell, TableRow } from '@material-ui/core';
+import { withStyles } from '@material-ui/styles';
+import BigNumber from 'bignumber.js';
+import * as React from 'react';
 import TxStatus from './Status';
 
 const decoder = new InputDataDecoder(TokenAbi);
@@ -19,30 +18,30 @@ export const styles2 = {
     paddingTop: '15px',
     paddingBottom: '15px',
     width: '24px',
-    textOverflow: 'inherit',
+    textOverflow: 'inherit'
   },
   columnValue: {
-    width: "100px",
+    width: '100px',
     paddingLeft: '0',
     paddingTop: '15px',
-    paddingBottom: '15px',
+    paddingBottom: '15px'
   },
   columnStatus: {
-    width: "100px",
+    width: '100px',
     cursor: 'pointer',
     paddingTop: '15px',
     paddingBottom: '15px',
-    paddingLeft: '0px',
+    paddingLeft: '0px'
   },
   columnAddresses: {
-    width: "150px",
-    paddingLeft: '5px',
+    width: '150px',
+    paddingLeft: '5px'
   },
   highlighted: {
     shortenedAddress: {
-      color: "#ff0000",
+      color: '#ff0000'
     }
-  },
+  }
 };
 
 interface NetworkParams {
@@ -71,7 +70,7 @@ const timeStampFormatter = (lang: any) => (timestamp: any) => {
     month: 'numeric',
     day: 'numeric',
     hour: 'numeric',
-    minute: 'numeric',
+    minute: 'numeric'
   };
   return timestampEvent.toLocaleDateString(lang, options);
 };
@@ -112,7 +111,7 @@ export const TxItem = (props: Props) => {
         {txValue && (<div onClick={openTx}>{renderAmount(balance, symbol)}</div>)}
       </TableCell>
       <TableCell className={classes.columnArrow}>
-        <ArrowDown color="secondary"/>
+        <ArrowDown color='secondary'/>
       </TableCell>
       <TableCell className={classes.columnAddresses}>
         <AddressAvatar

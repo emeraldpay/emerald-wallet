@@ -1,6 +1,6 @@
+import { BlockchainCode } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
 import { loadTransactions, storeTransactions } from './historyStorage';
-import {BlockchainCode} from "@emeraldwallet/core";
 
 describe('historyStorage', () => {
   it('store and load txs', () => {
@@ -13,10 +13,10 @@ describe('historyStorage', () => {
       chainId: 100,
       gasPrice: '0x0',
       gas: '0x0',
-      from: "0x0",
-      to: "0x0",
+      from: '0x0',
+      to: '0x0',
       nonce: 1,
-      blockchain: BlockchainCode.Morden,
+      blockchain: BlockchainCode.Morden
     }];
 
     storeTransactions('key1', trans);

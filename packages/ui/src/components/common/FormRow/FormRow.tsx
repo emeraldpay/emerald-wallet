@@ -1,16 +1,16 @@
+import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
-import {withStyles} from '@material-ui/styles';
 
 export const styles = {
   formRow: {
     display: 'flex',
     marginBottom: '19px',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   left: {
     flexBasis: '20%',
     marginLeft: '14.75px',
-    marginRight: '14.75px',
+    marginRight: '14.75px'
   },
   right: {
     flexGrow: 2,
@@ -18,18 +18,18 @@ export const styles = {
     alignItems: 'center',
     marginLeft: '14.75px',
     marginRight: '14.75px',
-    maxWidth: '580px',
-  },
+    maxWidth: '580px'
+  }
 };
 
 export interface FormRowProps {
-  leftColumn?: React.ReactElement,
-  rightColumn?: React.ReactElement,
+  leftColumn?: React.ReactElement;
+  rightColumn?: React.ReactElement;
   classes: any;
 }
 
 export class FormRow extends React.Component<FormRowProps> {
-  render() {
+  public render () {
     const { classes, leftColumn, rightColumn } = this.props;
     return (
       <div className={classes.formRow}>

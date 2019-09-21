@@ -1,14 +1,13 @@
-import * as React from 'react';
-import Menu from '@material-ui/core/Menu';
-import MenuList from '@material-ui/core/MenuList';
-import ListItemText from '@material-ui/core/ListItemText';
+import { CurrencyEtc, CurrencyEth } from '@emeraldplatform/ui-icons';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import {CSSProperties, withStyles} from '@material-ui/styles';
-import { CurrencyEtc, CurrencyEth} from '@emeraldplatform/ui-icons';
-
-import { CoinAvatar } from '../../../common/CoinIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import Menu from '@material-ui/core/Menu';
+import MenuList from '@material-ui/core/MenuList';
+import { CSSProperties, withStyles } from '@material-ui/styles';
+import * as React from 'react';
 import Button from '../../../common/Button';
+import { CoinAvatar } from '../../../common/CoinIcon';
 
 export interface Props {
   total: any;
@@ -25,11 +24,11 @@ const styles = {
   text: {
     textTransform: 'none',
     fontWeight: 'normal',
-    fontSize: '16px',
+    fontSize: '16px'
   } as CSSProperties,
   root: {
-    lineHeight: 'inherit',
-  },
+    lineHeight: 'inherit'
+  }
 };
 
 const CoinSymbol = ({ coinTicker }) => {
@@ -43,35 +42,35 @@ const CoinSymbol = ({ coinTicker }) => {
 };
 
 class TotalButton extends React.Component<Props, State> {
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.state = {
-      anchorEl: null,
+      anchorEl: null
     };
   }
 
-  handleToggle = (event) => {
+  public handleToggle = (event) => {
     this.setState({
-      anchorEl: event.currentTarget,
+      anchorEl: event.currentTarget
     });
-  };
+  }
 
-  handleClose = () => {
+  public handleClose = () => {
     this.setState({
-      anchorEl: null,
+      anchorEl: null
     });
-  };
+  }
 
-  render() {
+  public render () {
     const {
-      total, byChain, fiatCurrency, classes,
+      total, byChain, fiatCurrency, classes
     } = this.props;
     const { anchorEl } = this.state;
     const totalFormatted = `${total.toFixed(2)} ${fiatCurrency}`;
     return (
       <div>
         <Button
-          variant="text"
+          variant='text'
           disabled={false}
           label={totalFormatted}
           classes={classes}
@@ -83,13 +82,13 @@ class TotalButton extends React.Component<Props, State> {
           getContentAnchorEl={null}
           anchorOrigin={{
             vertical: 'bottom',
-            horizontal: 'left',
+            horizontal: 'left'
           }}
           transformOrigin={{
             vertical: 'top',
-            horizontal: 'left',
+            horizontal: 'left'
           }}
-          id="totals"
+          id='totals'
           open={Boolean(anchorEl)}
           anchorEl={anchorEl}
           onClose={this.handleClose}
@@ -111,7 +110,6 @@ class TotalButton extends React.Component<Props, State> {
     );
   }
 }
-
 
 const StyledTotal = withStyles(styles)(TotalButton);
 

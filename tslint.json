@@ -1,0 +1,12 @@
+{
+  "extends": ["tslint:latest", "tslint-react", "tslint-config-standard"],
+  "linterOptions": {
+    "exclude": ["**/node_modules/**", "**/lib/**"]
+  },
+  "rules": {
+    "semicolon": true,
+    "no-implicit-dependencies": [true, "dev"],
+    "jsx-no-multiline-js": false,
+    "object-literal-sort-keys": false
+  }
+}

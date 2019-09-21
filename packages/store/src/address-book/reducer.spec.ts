@@ -1,18 +1,18 @@
-import {INITIAL_STATE, reducer} from "./reducer";
+import { BlockchainCode } from '@emeraldwallet/core';
 import {
+  contactDeletedAction,
   newContactAddedAction,
-  setLoadingAction,
   setAddressBook,
-  contactDeletedAction
-} from "./actions";
-import {BlockchainCode} from "@emeraldwallet/core";
+  setLoadingAction
+} from './actions';
+import { INITIAL_STATE, reducer } from './reducer';
 
 describe('address book reducer', () => {
   it('handles Actions.LOADING', () => {
     let state = reducer(undefined, setLoadingAction(true));
-    expect(state).toEqual({...INITIAL_STATE, loading: true});
+    expect(state).toEqual({ ...INITIAL_STATE, loading: true });
     state = reducer(undefined, setLoadingAction(false));
-    expect(state).toEqual({...INITIAL_STATE, loading: false});
+    expect(state).toEqual({ ...INITIAL_STATE, loading: false });
   });
 
   it('should delete contact on ADDRESSBOOK/DELETE_ADDRESS', () => {
@@ -36,7 +36,7 @@ describe('address book reducer', () => {
       { address: '0x2' }
     ];
     const chain = BlockchainCode.Morden;
-    let state = reducer(undefined, setAddressBook(chain, contacts));
+    const state = reducer(undefined, setAddressBook(chain, contacts));
 
     expect(state).toEqual({
       loading: false,
@@ -44,14 +44,14 @@ describe('address book reducer', () => {
         [BlockchainCode.Morden]: {
           '0x1': {
             address: '0x1',
-            blockchain: BlockchainCode.Morden,
+            blockchain: BlockchainCode.Morden
           },
           '0x2': {
             address: '0x2',
-            blockchain: BlockchainCode.Morden,
-          },
+            blockchain: BlockchainCode.Morden
+          }
         }
       }
-    })
-  })
+    });
+  });
 });

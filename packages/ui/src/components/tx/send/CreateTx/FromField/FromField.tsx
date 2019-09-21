@@ -1,28 +1,28 @@
-import * as React from 'react';
 import { AccountSelect } from '@emeraldplatform/ui';
+import * as React from 'react';
 import FormLabel from '../FormLabel';
 
 interface Props {
-  onChangeAccount?: any,
+  onChangeAccount?: any;
   accounts?: any;
-  selectedAccount?: string,
+  selectedAccount?: string;
 }
 
 class FromField extends React.Component<Props> {
-  constructor(props: Props) {
+
+  public inputStyles = {
+    flexGrow: 5
+  };
+  constructor (props: Props) {
     super(props);
     this.onChangeAccount = this.onChangeAccount.bind(this);
   }
 
-  onChangeAccount(value: string) {
+  public onChangeAccount (value: string) {
     this.props.onChangeAccount(value);
   }
 
-  inputStyles = {
-    flexGrow: 5,
-  };
-
-  render() {
+  public render () {
     const accounts = this.props.accounts || [];
     const selectedAccount = this.props.selectedAccount || '';
     return (

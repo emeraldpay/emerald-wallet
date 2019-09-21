@@ -1,31 +1,34 @@
+import { ButtonGroup } from '@emeraldplatform/ui';
+import { workflow } from '@emeraldwallet/core';
 import * as React from 'react';
-import {ButtonGroup} from '@emeraldplatform/ui';
 import Button from '../../../common/Button';
-import FormFieldWrapper from './FormFieldWrapper';
-import FromField from './FromField';
-import FormLabel from './FormLabel';
-import TokenField from './TokenField';
-import ToField from './ToField';
 import AmountField from './AmountField';
+import FormFieldWrapper from './FormFieldWrapper';
+import FormLabel from './FormLabel';
+import FromField from './FromField';
 import GasLimitField from './GasLimitField';
-import {CreateEthereumTx, ValidationResult} from "@emeraldwallet/workflow";
+import ToField from './ToField';
+import TokenField from './TokenField';
 
-function getStyles() {
+function getStyles () {
   return {
-    width: '800px',
+    width: '800px'
   };
 }
 
-export interface Props {
-  tx: CreateEthereumTx,
+type CreateEthereumTx = workflow.CreateEthereumTx;
+const { ValidationResult } = workflow;
+
+export interface IProps {
+  tx: CreateEthereumTx;
   token: string;
-  tokenSymbols?: Array<string>;
-  addressBookAddresses?: Array<string>;
+  tokenSymbols?: string[];
+  addressBookAddresses?: string[];
   currency?: string;
   txFeeFiat?: string;
   txFeeToken: string;
   fiatBalance?: string;
-  ownAddresses?: Array<string>;
+  ownAddresses?: string[];
   onSubmit?: Function;
   onCancel?: any;
   onChangeTo?: any;
@@ -37,12 +40,12 @@ export interface Props {
   onMaxClicked?: any;
 }
 
-class CreateTransaction extends React.Component<Props> {
-  getDisabled = () => {
-    return this.props.tx.validate() != ValidationResult.OK;
-  };
+class CreateTransaction extends React.Component<IProps> {
+  public getDisabled = () => {
+    return this.props.tx.validate() !== ValidationResult.OK;
+  }
 
-  render() {
+  public render () {
     return (
       <div style={getStyles()}>
         <FormFieldWrapper>
@@ -94,14 +97,15 @@ class CreateTransaction extends React.Component<Props> {
 
         <FormFieldWrapper style={{ paddingBottom: '0px' }}>
           <FormLabel />
-          <ButtonGroup style={{flexGrow: 5}}>
+          <ButtonGroup style={{ flexGrow: 5 }}>
             <Button
-              label="Cancel"
-              onClick={this.props.onCancel}/>
+              label='Cancel'
+              onClick={this.props.onCancel}
+            />
             <Button
               disabled={this.getDisabled()}
-              primary
-              label="Create Transaction"
+              primary={true}
+              label='Create Transaction'
               onClick={this.props.onSubmit}
             />
           </ButtonGroup>
@@ -110,6 +114,5 @@ class CreateTransaction extends React.Component<Props> {
     );
   }
 }
-
 
 export default CreateTransaction;

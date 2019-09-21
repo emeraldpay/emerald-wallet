@@ -1,15 +1,15 @@
-import { Blockchains, BlockchainCode, IApi, blockchainByName } from '@emeraldwallet/core';
-import * as blockchains from '../blockchains';
+import { blockchainByName, BlockchainCode, IApi } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
-import {ActionTypes, HistoryAction, UpdateTxsAction} from './types';
-import {Dispatched, Transaction} from "../types";
-import {Dispatch} from "react";
+import { Dispatch } from 'react';
+import * as blockchains from '../blockchains';
+import { Dispatched, Transaction } from '../types';
 import { loadTransactions, storeTransactions } from './historyStorage';
 import { allTrackedTxs } from './selectors';
+import { ActionTypes, HistoryAction, UpdateTxsAction } from './types';
 
 const txStoreKey = (chainId: number) => `chain-${chainId}-trackedTransactions`;
 
-export function persistTransactions(state: any, chainId: number) {
+export function persistTransactions (state: any, chainId: number) {
   const txs = allTrackedTxs(state).toJS().filter((t: Transaction) => (t.chainId === chainId));
   storeTransactions(
     txStoreKey(chainId),
@@ -17,21 +17,21 @@ export function persistTransactions(state: any, chainId: number) {
   );
 }
 
-function loadPersistedTransactions(state: any, chainId: number) {
+function loadPersistedTransactions (state: any, chainId: number) {
   const loaded = loadTransactions(txStoreKey(chainId), chainId);
 
   const txs = loaded.map((tx) => ({
     ...tx,
-    chainId,
+    chainId
   }));
   return txs;
 }
 
-function updateAndTrack(dispatch: Dispatch<any>, getState: Function, api: IApi, txs: Transaction[], blockchain: BlockchainCode) {
+function updateAndTrack (dispatch: Dispatch<any>, getState: Function, api: IApi, txs: Transaction[], blockchain: BlockchainCode) {
   const chainId = blockchainByName(blockchain).params.chainId;
-  const pendingTxs = txs.filter((tx) => !tx.blockNumber).map((t) => ({...t, chainId, blockchain}));
+  const pendingTxs = txs.filter((tx) => !tx.blockNumber).map((t) => ({ ...t, chainId, blockchain }));
   if (pendingTxs.length !== 0) {
-    dispatch({type: ActionTypes.TRACK_TXS, txs: pendingTxs});
+    dispatch({ type: ActionTypes.TRACK_TXS, txs: pendingTxs });
   }
 
   persistTransactions(getState(), chainId);
@@ -41,15 +41,14 @@ function updateAndTrack(dispatch: Dispatch<any>, getState: Function, api: IApi, 
   });
 }
 
-
-export function trackTx(tx: Transaction, blockchain: BlockchainCode) {
+export function trackTx (tx: Transaction, blockchain: BlockchainCode) {
   return (dispatch: Dispatch<any>, getState: Function, api: IApi) => updateAndTrack(dispatch, getState, api, [tx], blockchain);
 }
-export function trackTxs(txs: Transaction[], blockchain: BlockchainCode) {
+export function trackTxs (txs: Transaction[], blockchain: BlockchainCode) {
   return (dispatch: Dispatch<any>, getState: Function, api: IApi) => updateAndTrack(dispatch, getState, api, txs, blockchain);
 }
 
-export function init(chains: BlockchainCode[]): Dispatched<HistoryAction> {
+export function init (chains: BlockchainCode[]): Dispatched<HistoryAction> {
   return (dispatch, getState) => {
     console.debug('Loading persisted transactions...');
 
@@ -63,7 +62,7 @@ export function init(chains: BlockchainCode[]): Dispatched<HistoryAction> {
 
     dispatch({
       type: ActionTypes.LOAD_STORED_TXS,
-      transactions: storedTxs,
+      transactions: storedTxs
     });
   };
 }
@@ -86,7 +85,7 @@ const txUnconfirmed = (state: any, tx: any) => {
 /**
  * Refresh only tx with totalRetries <= 10
  */
-export function refreshTrackedTransactions(): Dispatched<HistoryAction> {
+export function refreshTrackedTransactions (): Dispatched<HistoryAction> {
   return (dispatch, getState) => {
     const state = getState();
     allTrackedTxs(state)
@@ -96,9 +95,9 @@ export function refreshTrackedTransactions(): Dispatched<HistoryAction> {
   };
 }
 
-export function updateTxs(transactions: any): UpdateTxsAction {
+export function updateTxs (transactions: any): UpdateTxsAction {
   return {
     type: ActionTypes.UPDATE_TXS,
     payload: transactions
-  }
+  };
 }

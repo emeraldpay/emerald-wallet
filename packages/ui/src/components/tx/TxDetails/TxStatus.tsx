@@ -1,5 +1,5 @@
+import { CSSProperties, withStyles } from '@material-ui/styles';
 import * as React from 'react';
-import { withStyles, CSSProperties } from '@material-ui/styles';
 
 import CircularProgress from '@material-ui/core/CircularProgress';
 
@@ -16,10 +16,10 @@ export const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: '10px',
+    marginLeft: '10px'
   },
   queue: {
-    boxSizing: "border-box",
+    boxSizing: 'border-box',
     height: '30px',
     width: '117px',
     border: '1px solid #DDDDDD',
@@ -30,8 +30,8 @@ export const styles = {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: '10px',
-  } as CSSProperties,
+    marginLeft: '10px'
+  } as CSSProperties
 };
 
 interface Props {
@@ -42,10 +42,10 @@ interface Props {
 export const TxStatus = (props: Props) => {
   const { status, classes } = props;
   if (status === 'success') {
-    return (<div className={ classes.success }>Success</div>);
+    return (<div className={classes.success}>Success</div>);
   } if (status === 'queue') {
     return (
-      <div className={ classes.queue }>
+      <div className={classes.queue}>
         <CircularProgress size={15} thickness={1.5}/>&nbsp; In Queue
       </div>
     );

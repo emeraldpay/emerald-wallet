@@ -8,4 +8,3 @@ export interface LedgerAddress {
 export interface Selectable {
   selected?: boolean;
 }
-

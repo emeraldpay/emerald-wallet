@@ -1,27 +1,27 @@
-import * as React from 'react';
-import TextField from '@material-ui/core/TextField';
+import { Checkbox, Page } from '@emeraldplatform/ui';
+import { Back } from '@emeraldplatform/ui-icons';
 import MenuItem from '@material-ui/core/MenuItem';
-import {Checkbox, Page} from '@emeraldplatform/ui';
-import {Back} from '@emeraldplatform/ui-icons';
+import TextField from '@material-ui/core/TextField';
+import { withStyles } from '@material-ui/styles';
+import { TextAlignProperty } from 'csstype';
+import * as React from 'react';
 import Button from '../common/Button';
-import {TranslateFn} from '../types';
-import {withStyles} from '@material-ui/styles';
-import {TextAlignProperty} from "csstype";
+import { TranslateFn } from '../types';
 
 const styles = {
   formRow: {
     display: 'flex',
     marginBottom: '19px',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   fieldName: {
     fontSize: '16px',
-    textAlign: "right" as TextAlignProperty,
+    textAlign: 'right' as TextAlignProperty
   },
   left: {
     flexBasis: '20%',
     marginLeft: '14.75px',
-    marginRight: '14.75px',
+    marginRight: '14.75px'
   },
   right: {
     flexGrow: 2,
@@ -29,8 +29,8 @@ const styles = {
     alignItems: 'center',
     marginLeft: '14.75px',
     marginRight: '14.75px',
-    maxWidth: '580px',
-  },
+    maxWidth: '580px'
+  }
 };
 
 interface Props {
@@ -52,70 +52,70 @@ interface State {
 }
 
 export class Settings extends React.Component<Props, State> {
-  constructor(props: Props) {
+  constructor (props: Props) {
     super(props);
     this.state = {
       showHiddenAccounts: this.props.showHiddenAccounts,
       currency: this.props.currency.toLowerCase(),
       language: this.props.language,
-      numConfirmations: this.props.numConfirmations,
+      numConfirmations: this.props.numConfirmations
     };
   }
 
-  handleShowHiddenChange = (event: any, isChecked: boolean) => {
+  public handleShowHiddenChange = (event: any, isChecked: boolean) => {
     this.setState({
-      showHiddenAccounts: isChecked,
+      showHiddenAccounts: isChecked
     });
-  };
+  }
 
-  handleCurrencyChange = (event: any) => {
+  public handleCurrencyChange = (event: any) => {
     this.setState({
-      currency: event.target.value,
+      currency: event.target.value
     });
-  };
+  }
 
-  handleLangChange = (event: any) => {
+  public handleLangChange = (event: any) => {
     this.setState({
-      language: event.target.value,
+      language: event.target.value
     });
-  };
+  }
 
-  handleConfirmsChange = (event: any) => {
+  public handleConfirmsChange = (event: any) => {
     this.setState({
-      numConfirmations: event.target.value,
+      numConfirmations: event.target.value
     });
-  };
+  }
 
-  handleSave = () => {
+  public handleSave = () => {
     if (this.props.onSubmit) {
       this.props.onSubmit(this.state);
     }
-  };
+  }
 
-  render() {
-    const {goBack, t, classes} = this.props;
+  public render () {
+    const { goBack, t, classes } = this.props;
     const {
-      showHiddenAccounts, currency, language, numConfirmations,
+      showHiddenAccounts, currency, language, numConfirmations
     } = this.state;
     return (
-      <Page title="Settings" leftIcon={<Back onClick={goBack}/>}>
+      <Page title='Settings' leftIcon={<Back onClick={goBack}/>}>
         <div className={classes.formRow}>
           <div className={classes.left}>
             <div className={classes.fieldName}>{t('settings.currency')}</div>
           </div>
           <div className={classes.right}>
             <TextField
-              select
-              fullWidth
+              select={true}
+              fullWidth={true}
               value={currency}
               onChange={this.handleCurrencyChange}
             >
-              <MenuItem key="eur" value="eur">EUR</MenuItem>
-              <MenuItem key="usd" value="usd">USD</MenuItem>
-              <MenuItem key="cny" value="cny">CNY</MenuItem>
-              <MenuItem key="rub" value="rub">RUB</MenuItem>
-              <MenuItem key="krw" value="krw">KRW</MenuItem>
-              <MenuItem key="aud" value="aud">AUD</MenuItem>
+              <MenuItem key='eur' value='eur'>EUR</MenuItem>
+              <MenuItem key='usd' value='usd'>USD</MenuItem>
+              <MenuItem key='cny' value='cny'>CNY</MenuItem>
+              <MenuItem key='rub' value='rub'>RUB</MenuItem>
+              <MenuItem key='krw' value='krw'>KRW</MenuItem>
+              <MenuItem key='aud' value='aud'>AUD</MenuItem>
             </TextField>
           </div>
         </div>
@@ -127,15 +127,15 @@ export class Settings extends React.Component<Props, State> {
           </div>
           <div className={classes.right}>
             <TextField
-              select
+              select={true}
               value={language}
-              fullWidth
+              fullWidth={true}
               onChange={this.handleLangChange}
             >
-              <MenuItem key="en-US" value="en-US">English (US)</MenuItem>
-              <MenuItem key="zh-CN" value="zh-CN">中文</MenuItem>
-              <MenuItem key="pt-BR" value="pt-BR">Portugese</MenuItem>
-              <MenuItem key="ko-KR" value="ko-KR">Korean</MenuItem>
+              <MenuItem key='en-US' value='en-US'>English (US)</MenuItem>
+              <MenuItem key='zh-CN' value='zh-CN'>中文</MenuItem>
+              <MenuItem key='pt-BR' value='pt-BR'>Portugese</MenuItem>
+              <MenuItem key='ko-KR' value='ko-KR'>Korean</MenuItem>
             </TextField>
           </div>
         </div>
@@ -148,7 +148,7 @@ export class Settings extends React.Component<Props, State> {
           <div className={classes.right}>
             <Checkbox
               checked={showHiddenAccounts}
-              label="Show accounts you have hidden"
+              label='Show accounts you have hidden'
               onCheck={this.handleShowHiddenChange}
             />
           </div>
@@ -161,11 +161,11 @@ export class Settings extends React.Component<Props, State> {
           </div>
           <div className={classes.right}>
             <TextField
-              fullWidth
+              fullWidth={true}
               value={numConfirmations}
-              margin="normal"
-              type="number"
-              required
+              margin='normal'
+              type='number'
+              required={true}
               onChange={this.handleConfirmsChange}
               // helperText="Number of confirmations for a transaction to be considered successful"
             />
@@ -176,7 +176,7 @@ export class Settings extends React.Component<Props, State> {
           <div className={classes.right}>
             <Button
               primary={true}
-              label="SAVE"
+              label='SAVE'
               onClick={this.handleSave}
             />
           </div>

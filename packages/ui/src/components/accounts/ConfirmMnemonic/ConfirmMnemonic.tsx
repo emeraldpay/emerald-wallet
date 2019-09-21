@@ -1,8 +1,7 @@
-import * as React from 'react';
-import {withStyles} from '@material-ui/styles';
-
-import { Page, Warning, WarningText, Input } from '@emeraldplatform/ui';
+import { Input, Page, Warning, WarningText } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
+import { withStyles } from '@material-ui/styles';
+import * as React from 'react';
 import Button from '../../common/Button';
 
 export const styles2 = {
@@ -12,24 +11,24 @@ export const styles2 = {
     color: '#191919',
     fontSize: '16px',
     fontWeight: 500,
-    lineHeight: '24px',
+    lineHeight: '24px'
   },
   mnemonicLabel: {
     height: '24px',
     color: '#191919',
     fontSize: '16px',
     fontWeight: 500,
-    lineHeight: '24px',
+    lineHeight: '24px'
   },
   formRow: {
     display: 'flex',
     marginBottom: '19px',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   left: {
     flexBasis: '20%',
     marginLeft: '14.75px',
-    marginRight: '14.75px',
+    marginRight: '14.75px'
   },
   right: {
     flexGrow: 2,
@@ -37,8 +36,8 @@ export const styles2 = {
     alignItems: 'center',
     marginLeft: '14.75px',
     marginRight: '14.75px',
-    maxWidth: '580px',
-  },
+    maxWidth: '580px'
+  }
 };
 
 interface Props {
@@ -50,30 +49,30 @@ interface Props {
 }
 
 export class ConfirmMnemonic extends React.Component<Props> {
-  handleSubmit = () => {
+  public handleSubmit = () => {
     const { onSubmit, mnemonic } = this.props;
     if (onSubmit) {
       onSubmit(mnemonic);
     }
-  };
+  }
 
-  render() {
+  public render () {
     const {
-      onBack, error, classes, mnemonic,
+      onBack, error, classes, mnemonic
     } = this.props;
     return (
-      <Page title="Confirm Mnemonic" leftIcon={ <Back onClick={ onBack } /> }>
+      <Page title='Confirm Mnemonic' leftIcon={<Back onClick={onBack} />}>
         <div className={classes.formRow}>
           <div className={classes.left}/>
           <div className={classes.right}>
-            <div style={{width: '100%'}}>
-              <div className={ classes.mnemonicLabel }>Confirm your mnemonic phrase</div>
+            <div style={{ width: '100%' }}>
+              <div className={classes.mnemonicLabel}>Confirm your mnemonic phrase</div>
               <div>
                 <Input
-                  multiline={ true }
-                  rowsMax={ 4 }
-                  rows={ 4 }
-                  value={mnemonic }
+                  multiline={true}
+                  rowsMax={4}
+                  rows={4}
+                  value={mnemonic}
                 />
               </div>
             </div>
@@ -84,9 +83,9 @@ export class ConfirmMnemonic extends React.Component<Props> {
           <div className={classes.left}/>
           <div className={classes.right}>
             <Button
-              primary
-              label="Import"
-              onClick={ this.handleSubmit }
+              primary={true}
+              label='Import'
+              onClick={this.handleSubmit}
             />
           </div>
         </div>

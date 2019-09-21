@@ -3,8 +3,7 @@ import { connect } from 'react-redux';
 import { withTranslation } from 'react-i18next';
 import { i18n } from '@emeraldwallet/react-app';
 import { Settings } from '@emeraldwallet/ui';
-import { screen, addresses } from '@emeraldwallet/store';
-import settings from '../../store/wallet/settings';
+import { screen, addresses, settings } from '@emeraldwallet/store';
 
 const TranslatedSettings = withTranslation('translation')(Settings);
 

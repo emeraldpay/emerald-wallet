@@ -14,7 +14,9 @@
   },
   "dependencies": {
     "@emeraldplatform/core": "0.5.1",
-    "bignumber.js": "^8.1.1",
+    "@emeraldplatform/eth": "^0.5.1",
+    "@emeraldplatform/eth-rpc": "^0.5.3",
+    "bignumber.js": "8.0.2",
     "ethereumjs-tx": "^1.3.7"
   },
   "devDependencies": {

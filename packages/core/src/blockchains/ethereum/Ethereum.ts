@@ -1,21 +1,21 @@
-import {EthAddress} from '@emeraldplatform/core';
-import {Blockchain} from "../Blockchain";
-import BlockchainParams from "../BlockchainParams";
+import { EthAddress } from '@emeraldplatform/core';
+import { Blockchain } from '../Blockchain';
+import BlockchainParams from '../BlockchainParams';
 
 export default class Ethereum implements Blockchain {
-  params: BlockchainParams;
-  title: string;
+  public params: BlockchainParams;
+  public title: string;
 
-  constructor(params: BlockchainParams, title: string) {
+  constructor (params: BlockchainParams, title: string) {
     this.params = params;
     this.title = title;
   }
 
-  isValidAddress(address: string): boolean {
+  public isValidAddress (address: string): boolean {
     return EthAddress.fromHexString(address).isValid();
   }
 
-  getTitle(): string {
+  public getTitle (): string {
     return this.title;
   }
 }

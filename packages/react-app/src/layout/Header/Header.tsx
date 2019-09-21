@@ -1,31 +1,30 @@
+import { Settings as SettingsIcon } from '@emeraldplatform/ui-icons';
+import { blockchains, screen } from '@emeraldwallet/store';
+import { Button, Status } from '@emeraldwallet/ui';
+import { AppBar, Toolbar } from '@material-ui/core';
+import { CSSProperties, withStyles } from '@material-ui/styles';
 import * as React from 'react';
-import {connect} from 'react-redux';
-import {FontWeightProperty, TextTransformProperty} from "csstype";
-import {AppBar, Toolbar} from '@material-ui/core';
-import {withStyles} from '@material-ui/styles';
-import {Button, Status} from '@emeraldwallet/ui';
-import {Settings as SettingsIcon} from '@emeraldplatform/ui-icons';
-import {blockchains, screen} from '@emeraldwallet/store';
+import { connect } from 'react-redux';
 
-import Total from './Total';
 import EmeraldTitle from './Title';
+import Total from './Total';
 
 const styles = (theme: any) => ({
   appBarRight: {
     display: 'flex',
     alignItems: 'center',
-    marginTop: 'inherit',
+    marginTop: 'inherit'
   },
   buttons: {
     label: {
       textTransform: 'none',
       fontWeight: 'normal',
-      fontSize: '16px',
-    },
+      fontSize: '16px'
+    }
   },
   appBarRoot: {
-    backgroundColor: theme.palette.primary.contrastText,
-  },
+    backgroundColor: theme.palette.primary.contrastText
+  }
 });
 
 export interface IHeaderProps {
@@ -36,19 +35,19 @@ export interface IHeaderProps {
 
 const blockDisplayStyles = {
   text: {
-    textTransform: 'none' as TextTransformProperty,
-    fontWeight: 'normal' as FontWeightProperty,
+    fontWeight: 'normal',
     fontSize: '16px',
-  },
+    textTransform: 'none'
+  } as CSSProperties
 };
 
-const SettingsButton = ({classes, onClick}: {classes: any, onClick: any}) => (
+const SettingsButton = ({ classes, onClick }: {classes: any, onClick: any}) => (
   <Button
-    variant="text"
+    variant='text'
     onClick={onClick}
-    label="Settings"
+    label='Settings'
     classes={{
-      text: classes.text,
+      text: classes.text
     }}
     icon={<SettingsIcon/>}
   />);
@@ -57,13 +56,13 @@ const StyledSettingsButton = withStyles(blockDisplayStyles)(SettingsButton);
 
 const Header = (props: IHeaderProps) => {
   const {
-    openSettings,
+    openSettings
   } = props;
 
   return (
     <div>
       <div className={props.classes.appBarRoot}>
-        <AppBar position="static" color="inherit">
+        <AppBar position='static' color='inherit'>
           <Toolbar>
             <EmeraldTitle />
             <div className={props.classes.appBarRight}>
@@ -81,25 +80,25 @@ const Header = (props: IHeaderProps) => {
 const StyledHeader = withStyles(styles)(Header);
 
 const mapStateToProps = (state: any, ownProps: any) => {
-  const chains: Array<any> = [];
+  const chains: any[] = [];
   const curr = blockchains.selectors.all(state);
   curr.forEach((v: { height: any; }, code: any) => {
     chains.push({
       id: code,
       title: code,
-      height: v.height,
+      height: v.height
     });
   });
   return {
     chains,
-    showFiat: true,
+    showFiat: true
   };
 };
 
 const mapDispatchToProps = (dispatch: any, ownProps: any) => ({
   openSettings: () => {
     dispatch(screen.actions.gotoScreen('settings'));
-  },
+  }
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(StyledHeader);

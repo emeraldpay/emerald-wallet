@@ -1,16 +1,16 @@
+import { Wei } from '@emeraldplatform/eth';
+import { BlockchainCode } from '@emeraldwallet/core';
+import { addresses, settings } from '@emeraldwallet/store';
+import { Total } from '@emeraldwallet/ui';
+import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import BigNumber from 'bignumber.js';
-import { BlockchainCode } from '@emeraldwallet/core';
-import { Wei } from '@emeraldplatform/eth';
-import { Total } from '@emeraldwallet/ui';
-import { addresses, settings } from '@emeraldwallet/store';
 
 export default connect(
   (state, ownProps) => {
     // Sum of balances of all known accounts.
     const fiatCurrency = settings.selectors.fiatCurrency(state);
-    const byChain: Array<any> = [];
+    const byChain: any[] = [];
     // TODO use configured chains
     const chains = [BlockchainCode.ETC, BlockchainCode.ETH];
     let total = new BigNumber(0);
@@ -25,7 +25,7 @@ export default connect(
         blockchain,
         total: chainTotal,
         fiatRate,
-        fiatAmount,
+        fiatAmount
       });
       total = total.plus(fiatAmount);
     });
@@ -33,7 +33,7 @@ export default connect(
     return {
       fiatCurrency,
       byChain,
-      total,
+      total
     };
   },
   null

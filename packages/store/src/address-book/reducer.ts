@@ -1,25 +1,25 @@
-import {ActionTypes, AddressBookAction, IAddressBookState} from './types';
-import {BlockchainCode} from "@emeraldwallet/core";
+import { BlockchainCode } from '@emeraldwallet/core';
+import { ActionTypes, AddressBookAction, IAddressBookState } from './types';
 
 export const INITIAL_STATE: IAddressBookState = {
   loading: false,
-  contacts: {},
+  contacts: {}
 };
 
-function onLoading(state: IAddressBookState, loading: boolean): IAddressBookState {
+function onLoading (state: IAddressBookState, loading: boolean): IAddressBookState {
   return {
     ...state,
-    loading,
+    loading
   };
 }
 
-function onSetAddressBook(state: IAddressBookState, action: any): IAddressBookState {
+function onSetAddressBook (state: IAddressBookState, action: any): IAddressBookState {
   const { blockchain, contacts } = action;
   const newContacts: {
     [chain in BlockchainCode]?: any
   } = {};
   contacts.forEach((v: any) => {
-    newContacts[v.address as BlockchainCode] = {...v, blockchain}
+    newContacts[v.address as BlockchainCode] = { ...v, blockchain };
   });
   return {
     ...state,
@@ -30,11 +30,11 @@ function onSetAddressBook(state: IAddressBookState, action: any): IAddressBookSt
   };
 }
 
-function onNewContactAdded(state: IAddressBookState, contact: any): IAddressBookState {
+function onNewContactAdded (state: IAddressBookState, contact: any): IAddressBookState {
   const chain = contact.blockchain as BlockchainCode;
   const contacts = {
     ...state.contacts[chain],
-    [contact.address]: contact,
+    [contact.address]: contact
   };
 
   return {
@@ -42,22 +42,22 @@ function onNewContactAdded(state: IAddressBookState, contact: any): IAddressBook
     contacts: {
       ...state.contacts,
       [chain]: {
-        ...contacts,
+        ...contacts
       }
     }
   };
 }
 
-function onContactDeleted(state: IAddressBookState, contact: any): IAddressBookState {
+function onContactDeleted (state: IAddressBookState, contact: any): IAddressBookState {
   delete state.contacts[contact.blockchain as BlockchainCode][contact.address];
-  return {...state};
+  return { ...state };
 }
 
-export function reducer(
+export function reducer (
   state: IAddressBookState = INITIAL_STATE,
   action: AddressBookAction
 ): IAddressBookState {
-  switch(action.type) {
+  switch (action.type) {
     case ActionTypes.LOADING:
       return onLoading(state, action.payload);
     case ActionTypes.NEW_ADDRESS_ADDED:

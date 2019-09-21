@@ -1,18 +1,19 @@
-import * as React from 'react';
 import { shallow } from 'enzyme';
+import * as React from 'react';
 
-import { TokenBalances, styles } from './TokenBalances';
+import { styles, TokenBalances } from './TokenBalances';
 
-const reduceClasses = (prev: any, curr: any) => Object.assign({}, prev, { [curr]: curr });
+const reduceClasses = (prev: any, curr: any) => ({ ...prev, [curr]: curr });
 const classes = Object.keys(styles).reduce(reduceClasses, {});
 
-
-describe("TokenBalances", () => {
+describe('TokenBalances', () => {
   it('should renders without crash', () => {
     const balances = [{
+      tokenId: '0xE',
       address: '0x1234',
-      balance: { value: 1, decimals: 8 },
-      symbol: 'DAI',
+      unitsValue: '1',
+      decimals: 8,
+      symbol: 'DAI'
     }];
     const wrapper = shallow(<TokenBalances classes={classes} balances={balances}/>);
     expect(wrapper).toBeDefined();

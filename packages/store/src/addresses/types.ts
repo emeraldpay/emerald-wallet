@@ -1,24 +1,24 @@
-import {BlockchainCode} from "@emeraldwallet/core";
-import {List, Map} from "immutable";
+import { BlockchainCode } from '@emeraldwallet/core';
+import { List, Map } from 'immutable';
 
-export const moduleName = "addresses";
+export const moduleName = 'addresses';
 
 /**
  * Account contains of many addresses, each Address
  * belongs to particular blockchain.
  */
 export class Address {
-  value: string; // Address value itself
-  hardware: boolean;
-  balance: any;
-  balancePending: any;
-  txcount: number;
-  name: string | null = null;
-  description: string | null;
-  hidden: boolean;
-  blockchain: string;
+  public value: string; // Address value itself
+  public hardware: boolean;
+  public balance: any;
+  public balancePending: any;
+  public txcount: number;
+  public name: string | null = null;
+  public description: string | null;
+  public hidden: boolean;
+  public blockchain: string;
 
-  constructor(value: string, blockchain: string) {
+  constructor (value: string, blockchain: string) {
     this.value = value;
     this.hidden = false;
     this.hardware = false;
@@ -44,7 +44,7 @@ export enum ActionTypes {
   SET_HD_PATH = 'ACCOUNT/SET_HD_PATH',
   UPDATE_ACCOUNT = 'ACCOUNT/UPDATE_ACCOUNT',
   PENDING_BALANCE = 'ACCOUNT/PENDING_BALANCE',
-  SET_TXCOUNT = 'ACCOUNT/SET_TXCOUNT',
+  SET_TXCOUNT = 'ACCOUNT/SET_TXCOUNT'
 }
 
 export interface UpdateAddressAction {
@@ -69,10 +69,10 @@ export interface SetLoadingAction {
 
 export interface AddAccountAction {
   type: ActionTypes.ADD_ACCOUNT;
-  name: string,
-  description: string,
-  accountId: string,
-  blockchain: string
+  name: string;
+  description: string;
+  accountId: string;
+  blockchain: string;
 }
 
 export interface SetHDPathAction {

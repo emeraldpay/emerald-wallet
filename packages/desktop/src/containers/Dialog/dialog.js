@@ -1,10 +1,10 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { ReceiveDialog } from '@emeraldwallet/ui';
-import { HideAccountDialog } from '@emeraldwallet/react-app';
-import WaitForSign from '../../components/tx/WaitForSignDialog/waitForSignDialog';
+import { HideAccountDialog, WaitForSignDialog } from '@emeraldwallet/react-app';
+import { screen } from '@emeraldwallet/store';
+
 import createLogger from '../../utils/logger';
-import { screen } from '../../store';
 
 const log = createLogger('Dialog');
 
@@ -12,7 +12,7 @@ const Dialog = ({ dialog, item, handleClose }) => {
   if (!dialog) {
     return <div/>;
   } if (dialog === 'sign-transaction') {
-    return <WaitForSign/>;
+    return <WaitForSignDialog/>;
   } if (dialog === 'receive') {
     return <ReceiveDialog address={ item } onClose= { handleClose }/>;
   } if (dialog === 'hide-account') {

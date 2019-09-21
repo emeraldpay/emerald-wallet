@@ -1,7 +1,7 @@
-import {fromJS} from 'immutable';
-import {ActionTypes} from './types';
-import {INITIAL_STATE, reducer} from "./reducer";
-import {BlockchainCode} from "@emeraldwallet/core";
+import { BlockchainCode } from '@emeraldwallet/core';
+import { fromJS } from 'immutable';
+import { INITIAL_STATE, reducer } from './reducer';
+import { ActionTypes } from './types';
 
 describe('addresses reducer', () => {
   it('handles Actions.LOADING', () => {
@@ -9,7 +9,7 @@ describe('addresses reducer', () => {
     const state = reducer(undefined, { type: ActionTypes.LOADING, payload: true });
     expect(state).toEqual(fromJS({
       ...(INITIAL_STATE.toJS()),
-      loading: true,
+      loading: true
     }));
   });
 
@@ -23,8 +23,8 @@ describe('addresses reducer', () => {
         description: 'desc1',
         hidden: true,
         hardware: false,
-        blockchain: 'etc',
-      }],
+        blockchain: 'etc'
+      }]
     });
     // assert
     expect(state.get('addresses').last().get('hardware')).toEqual(false);
@@ -39,8 +39,8 @@ describe('addresses reducer', () => {
         description: 'desc2',
         hidden: false,
         hardware: false,
-        blockchain: 'eth',
-      }],
+        blockchain: 'eth'
+      }]
     });
 
     expect(state.get('addresses').size).toEqual(2);
@@ -54,7 +54,7 @@ describe('addresses reducer', () => {
       accountId: 'id1',
       name: 'name1',
       description: 'desc1',
-      blockchain: 'etc',
+      blockchain: 'etc'
     });
     expect(state.get('addresses').size).toEqual(1);
     expect(state.get('addresses').last().get('id')).toEqual('id1');
@@ -67,7 +67,7 @@ describe('addresses reducer', () => {
       accountId: 'id1',
       name: 'name1',
       description: 'desc1',
-      blockchain: 'etc',
+      blockchain: 'etc'
     });
     expect(state.get('addresses').size).toEqual(1);
   });
@@ -80,7 +80,7 @@ describe('addresses reducer', () => {
       accountId: 'id1',
       name: 'name1',
       description: 'desc1',
-      blockchain: 'etc',
+      blockchain: 'etc'
     });
     expect(state.get('addresses').size).toEqual(1);
     expect(state.get('addresses').last().get('id')).toEqual('id1');
@@ -93,7 +93,7 @@ describe('addresses reducer', () => {
       accountId: 'id1',
       name: 'name1',
       description: 'desc1',
-      blockchain: 'eth',
+      blockchain: 'eth'
     });
     expect(state.get('addresses').size).toEqual(2);
   });

@@ -43,7 +43,7 @@ script:
   - if [[ $(license-checker --production --exclude '(GPL-2.0 OR MIT)' | grep GPL) ]]; then license-checker --production | grep -C 1 GPL && false; fi
   - yarn build
   - yarn test:coverage
-  - yarn lint
+  # - yarn lint:ts
   - travis_wait env CSC_IDENTITY_AUTO_DISCOVERY=false yarn build:dist
 after_success:
   # Show dist directory contents after a successful build.

@@ -1,10 +1,10 @@
-import * as React from 'react';
+import { Warning } from '@emeraldplatform/ui-icons';
+import { amber } from '@material-ui/core/colors';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import { withStyles } from '@material-ui/core/styles';
-import { amber } from '@material-ui/core/colors';
-import { Warning } from "@emeraldplatform/ui-icons";
-import { FloatProperty } from "csstype";
+import { FloatProperty } from 'csstype';
+import * as React from 'react';
 
 export interface Props {
   classes?: any;
@@ -19,31 +19,30 @@ const styles = (theme) => ({
   none: {
   },
   issues: {
-    backgroundColor: amber[700],
+    backgroundColor: amber[700]
   },
   disconnected: {
-    backgroundColor: theme.palette.error.dark,
+    backgroundColor: theme.palette.error.dark
   },
 
   icon: {
-    float: "left" as FloatProperty,
-    marginRight: "10px",
+    float: 'left' as FloatProperty,
+    marginRight: '10px'
   },
   message: {
-    display: "inline"
+    display: 'inline'
   }
 });
 
-
 class ConnectionStatus extends React.Component<Props, State> {
-  constructor(props) {
+  constructor (props) {
     super(props);
     this.state = { open: props.open || false };
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps: Props) { // eslint-disable-line
+  public UNSAFE_componentWillReceiveProps (nextProps: Props) { // eslint-disable-line
     if (nextProps.status) {
-      if (nextProps.status === "CONNECTED" || typeof nextProps.status === "undefined") {
+      if (nextProps.status === 'CONNECTED' || typeof nextProps.status === 'undefined') {
         this.setState({ open: false });
       } else {
         this.setState({ open: true });
@@ -51,16 +50,16 @@ class ConnectionStatus extends React.Component<Props, State> {
     }
   }
 
-  render() {
+  public render () {
     const { classes } = this.props;
     let message = null;
-    let type = "none";
-    if (this.props.status === "CONNECTION_ISSUES") {
-      message = "Connection issues, please check your Internet connection";
-      type = "issues";
-    } else if (this.props.status === "DISCONNECTED") {
-      message = "Unable to connect to Emerald Services. Please check your Internet connection";
-      type = "disconnected";
+    let type = 'none';
+    if (this.props.status === 'CONNECTION_ISSUES') {
+      message = 'Connection issues, please check your Internet connection';
+      type = 'issues';
+    } else if (this.props.status === 'DISCONNECTED') {
+      message = 'Unable to connect to Emerald Services. Please check your Internet connection';
+      type = 'disconnected';
     }
     return (
       <Snackbar

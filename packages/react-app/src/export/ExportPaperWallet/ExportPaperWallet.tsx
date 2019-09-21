@@ -1,7 +1,7 @@
+import { addresses, screen } from '@emeraldwallet/store';
+import { ExportPaperWallet } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { ExportPaperWallet } from '@emeraldwallet/ui';
-import { screen, addresses } from '@emeraldwallet/store';
 
 export default connect(
   (state, ownProps) => ({
@@ -18,7 +18,7 @@ export default connect(
     },
     onBack: () => {
       dispatch(screen.actions.gotoScreen('home'));
-    },
+    }
 
   })
 )(ExportPaperWallet);

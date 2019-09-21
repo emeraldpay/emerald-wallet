@@ -1,1 +1,1 @@
-export {default} from './ImportJson';
+export { default } from './ImportJson';

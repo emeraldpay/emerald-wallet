@@ -1,23 +1,23 @@
-import {Transaction} from "../types";
+import { Transaction } from '../types';
 
 const EthTx = require('ethereumjs-tx');
 
 class EthereumTx implements Transaction {
-  internalTx: any;
 
-  constructor(tx: any) {
+  public static fromRaw (hex: string): Transaction {
+    return new EthereumTx(new EthTx(hex));
+  }
+  public internalTx: any;
+
+  constructor (tx: any) {
     this.internalTx = tx;
   }
 
-  static fromRaw(hex: string): Transaction {
-    return new EthereumTx(new EthTx(hex));
-  }
-
-  verifySignature(): boolean {
+  public verifySignature (): boolean {
     return this.internalTx.verifySignature();
   }
 
-  getSenderAddress(): string {
+  public getSenderAddress (): string {
     return this.internalTx.getSenderAddress().toString('hex');
   }
 }

@@ -1,5 +1,5 @@
 export enum ActionTypes {
-  SET_STATUS = 'CONN/SET_STATUS',
+  SET_STATUS = 'CONN/SET_STATUS'
 }
 
 export interface SetStatus {

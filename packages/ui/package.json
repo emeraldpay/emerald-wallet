@@ -1,7 +1,7 @@
 {
   "name": "@emeraldwallet/ui",
   "version": "2.0.3",
-  "description": "UI components for Emerald wallet",
+  "description": "UI components for Emerald Wallet",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "author": "ETCDEV GmbH",
@@ -13,6 +13,9 @@
     "test:coverage": "jest --env=jsdom --coverage && codecov",
     "storybook": "start-storybook -p 9001 -c .storybook"
   },
+  "peerDependencies": {
+    "react": "*"
+  },
   "dependencies": {
     "@emeraldplatform/core": "0.5.1",
     "@emeraldplatform/eth": "0.5.1",
@@ -20,26 +23,26 @@
     "@emeraldplatform/ui-icons": "^0.5.2",
     "@emeraldwallet/core": "^2.0.3",
     "@emeraldwallet/erc20": "^2.0.3",
-    "@emeraldwallet/workflow": "^2.0.3",
     "@material-ui/core": "^4.2.0",
     "@material-ui/lab": "^4.0.0-alpha.19",
     "@material-ui/styles": "^4.2.0",
     "bignumber.js": "8.0.2",
     "qrcode.react": "^0.9.3",
-    "react": "^16.8.6",
     "react-autosuggest": "^9.4.3"
   },
   "devDependencies": {
-    "@storybook/addon-actions": "5.1.0-alpha.32",
-    "@storybook/react": "5.1.0-alpha.32",
+    "@babel/core": "^7.6.0",
+    "@storybook/addon-actions": "^5.2.0",
+    "@storybook/react": "^5.2.0",
     "@types/enzyme": "^3.9.0",
     "@types/enzyme-adapter-react-16": "^1.0.5",
     "@types/jest": "^24.0.11",
     "@types/node": "^11.10.4",
     "@types/qrcode.react": "^0.8.2",
     "@types/react-autosuggest": "^9.3.7",
-    "@types/storybook__react": "^4.0.1",
+    "@types/webpack-env": "^1.14.0",
     "awesome-typescript-loader": "^5.2.1",
+    "babel-loader": "^8.0.6",
     "copyfiles": "^2.1.0",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.12.1",

@@ -1,14 +1,14 @@
 import BlockchainParams from '../BlockchainParams';
-import {BlockchainCode} from "../blockchains";
+import { BlockchainCode } from '../blockchains';
 
 class EthereumParams implements BlockchainParams {
-  decimals: number = 18;
-  coinTicker: string;
-  chainId: number;
-  hdPath: string;
-  code: BlockchainCode;
+  public decimals: number = 18;
+  public coinTicker: string;
+  public chainId: number;
+  public hdPath: string;
+  public code: BlockchainCode;
 
-  constructor(code: BlockchainCode, coinTicker: string, chainId: number, hdPaths: string) {
+  constructor (code: BlockchainCode, coinTicker: string, chainId: number, hdPaths: string) {
     this.code = code;
     this.coinTicker = coinTicker;
     this.chainId = chainId;

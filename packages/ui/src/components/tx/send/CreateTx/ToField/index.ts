@@ -1,1 +1,1 @@
-export {default} from './ToField';
+export { default } from './ToField';

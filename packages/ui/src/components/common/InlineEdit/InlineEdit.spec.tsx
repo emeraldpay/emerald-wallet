@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { shallow } from 'enzyme';
+import * as React from 'react';
 import InlineEdit from './InlineEdit';
 
 describe('InlineEdit', () => {
@@ -8,5 +8,3 @@ describe('InlineEdit', () => {
     expect(component).toBeDefined();
   });
 });
-
-

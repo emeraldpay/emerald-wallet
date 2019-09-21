@@ -1,8 +1,8 @@
 import { shallow } from 'enzyme';
 import * as React from 'react';
-import { TopBar, styles } from './TopBar';
+import { styles, TopBar } from './TopBar';
 
-const reduceClasses = (prev: any, curr: any) => Object.assign({}, prev, { [curr]: curr });
+const reduceClasses = (prev: any, curr: any) => ({...prev,  [curr]: curr});
 const classes = Object.keys(styles).reduce(reduceClasses, {});
 
 describe('TopBar', () => {

@@ -1,6 +1,6 @@
-import { connect } from 'react-redux';
-import { NotificationBar } from '@emeraldwallet/ui';
 import { screen } from '@emeraldwallet/store';
+import { NotificationBar } from '@emeraldwallet/ui';
+import { connect } from 'react-redux';
 
 export default connect(
   (state, ownProps) => {
@@ -12,6 +12,6 @@ export default connect(
     },
     onActionClick: (action: any) => {
       dispatch(action);
-    },
+    }
   })
 )(NotificationBar);

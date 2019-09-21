@@ -1,11 +1,11 @@
-import * as React from 'react';
 import { shallow } from 'enzyme';
+import * as React from 'react';
 // import { convert } from '@emeraldplatform/emerald-js';
 import SignTx from './SignTx';
 // import TokenUnits from '../../../../lib/tokenUnits';
 
 const mockMuiTheme = {
-  palette: {},
+  palette: {}
 };
 
 describe('SignTx', () => {

@@ -1,23 +1,23 @@
-import * as React from 'react';
-import Grid from '@material-ui/core/Grid';
 import { Check2 as CheckIcon } from '@emeraldplatform/ui-icons';
+import { Grid } from '@material-ui/core';
+import { CSSProperties } from '@material-ui/styles';
+import * as React from 'react';
 import Button from '../../common/Button';
-import {OverflowYProperty} from "csstype";
 
 interface Props {
   onAgree?: any;
 }
 
-export const Terms = ({ onAgree } : Props) => {
+export const Terms = ({ onAgree }: Props) => {
   const style = {
     width: '100%',
     height: '250px',
-    overflowY: 'scroll' as OverflowYProperty,
-  };
+    overflowY: 'scroll'
+  } as CSSProperties;
 
   return (
-    <Grid container direction="column" justify="center" alignItems="center">
-      <Grid item xs={12}>
+    <Grid container={true} direction='column' justify='center' alignItems='center'>
+      <Grid item={true} xs={12}>
         <div style={style}>
           <p>
             End-User License Agreement for Emerald Wallet<br/>
@@ -98,9 +98,9 @@ export const Terms = ({ onAgree } : Props) => {
           </p>
         </div>
       </Grid>
-      <Grid item xs style={{ paddingTop: '20px' }}>
+      <Grid item={true} xs={true} style={{ paddingTop: '20px' }}>
         <Button
-          label="I Agree"
+          label='I Agree'
           primary={true}
           icon={<CheckIcon />}
           onClick={onAgree} />

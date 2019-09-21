@@ -12,11 +12,32 @@
     "test": "jest --passWithNoTests",
     "test:coverage": "jest --passWithNoTests --coverage && codecov"
   },
+  "dependencies": {
+    "@emeraldplatform/core": "^0.5.4",
+    "@emeraldplatform/eth": "0.5.1",
+    "@emeraldplatform/ui": "^0.5.2",
+    "@emeraldplatform/ui-icons": "^0.5.2",
+    "@emeraldwallet/core": "^2.0.3",
+    "@emeraldwallet/erc20": "^2.0.3",
+    "@emeraldwallet/store": "^2.0.3",
+    "@emeraldwallet/ui": "^2.0.3",
+    "@material-ui/core": "^4.4.2",
+    "@material-ui/styles": "^4.3.0",
+    "i18next": "^17.0.13",
+    "i18next-browser-languagedetector": "^3.0.3",
+    "qrcode.react": "^0.9.3",
+    "react": "16.8",
+    "react-dropzone": "6",
+    "react-i18next": "^10.12.2",
+    "react-redux": "^7.1.0",
+    "redux-thunk": "^2.3.0"
+  },
   "devDependencies": {
     "@types/jest": "^24.0.9",
     "@types/node": "^11.10.4",
     "@types/react-redux": "^7.1.1",
     "@types/uuid": "^3.4.4",
+    "electron": "4.1.0",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
     "jest": "^24.1.0",
@@ -50,23 +71,5 @@
       "src/**/*.ts",
       "src/**/*.tsx"
     ]
-  },
-  "dependencies": {
-    "@emeraldplatform/eth": "0.5.1",
-    "@emeraldplatform/ui": "^0.5.2",
-    "@emeraldplatform/ui-icons": "^0.5.2",
-    "@emeraldwallet/core": "^2.0.3",
-    "@emeraldwallet/store": "^2.0.3",
-    "@emeraldwallet/ui": "^2.0.3",
-    "@material-ui/styles": "^4.3.0",
-    "electron": "4.1.0",
-    "i18next": "^17.0.13",
-    "i18next-browser-languagedetector": "^3.0.3",
-    "qrcode.react": "^0.9.3",
-    "react": "^16.8.6",
-    "react-dropzone": "6",
-    "react-i18next": "^10.12.2",
-    "react-redux": "^7.1.0",
-    "redux-thunk": "^2.3.0"
   }
 }

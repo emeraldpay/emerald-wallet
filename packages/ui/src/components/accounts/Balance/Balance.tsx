@@ -1,23 +1,23 @@
-import * as React from 'react';
-import BigNumber from 'bignumber.js';
 import { fromBaseUnits } from '@emeraldplatform/core';
-import {Currency, CurrencyCode} from '@emeraldwallet/core';
-import {Wei} from "@emeraldplatform/eth";
+import { Wei } from '@emeraldplatform/eth';
+import { Currency, CurrencyCode } from '@emeraldwallet/core';
+import BigNumber from 'bignumber.js';
+import * as React from 'react';
 
 const defaultStyles = {
+  coins: {
+    color: '#191919',
+    fontSize: '16px',
+    lineHeight: '24px'
+  },
   fiat: {
     color: '#191919',
     fontSize: '14px',
-    lineHeight: '16px',
-  },
-  coins: {
-    lineHeight: '24px',
-    fontSize: '16px',
-    color: '#191919',
-  },
+    lineHeight: '16px'
+  }
 };
 
-export interface Props {
+export interface IProps {
   symbol: string;
 
   /**
@@ -36,16 +36,16 @@ export interface Props {
   fiatStyle?: any;
 }
 
-export class Balance extends React.Component<Props> {
-  static defaultProps = {
-    showFiat: false,
-    fiatStyle: defaultStyles.fiat,
+export class Balance extends React.Component<IProps> {
+  public static defaultProps = {
     coinsStyle: defaultStyles.coins,
+    fiatStyle: defaultStyles.fiat,
+    showFiat: false
   };
 
-  render() {
+  public render () {
     const {
-      balance, showFiat, fiatCurrency, fiatRate, symbol, decimals,
+      balance, showFiat, fiatCurrency, fiatRate, symbol, decimals
     } = this.props;
 
     let fiatAmount = null;
@@ -53,21 +53,23 @@ export class Balance extends React.Component<Props> {
     if (typeof balance === 'string') {
       const coins = fromBaseUnits(new BigNumber(balance), decimals);
       if (showFiat && fiatRate && fiatCurrency) {
-        fiatAmount = Currency.format(Number(Currency.convert(coins.toString(), fiatRate)), fiatCurrency as CurrencyCode);
+        fiatAmount = Currency.format(
+          Number(Currency.convert(coins.toString(), fiatRate)),
+          fiatCurrency as CurrencyCode);
       }
       coinsStr = coins.toString();
     } else if (typeof balance === 'object') {
       coinsStr = balance.toEther(decimals, true);
     }
-    const {fiatStyle, coinsStyle} = this.props;
+    const { fiatStyle, coinsStyle } = this.props;
 
     return (
       <div>
-        <span id="balance" style={coinsStyle}>
+        <span id='balance' style={coinsStyle}>
           {balance ? coinsStr : '-'} {symbol}
         </span>
         {fiatAmount && <br/>}
-        {fiatAmount && <span id="fiat" style={fiatStyle}>{fiatAmount} {fiatCurrency}</span>}
+        {fiatAmount && <span id='fiat' style={fiatStyle}>{fiatAmount} {fiatCurrency}</span>}
       </div>
     );
   }

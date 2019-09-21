@@ -1,6 +1,6 @@
-import {BlockchainCode} from "@emeraldwallet/core";
+import { BlockchainCode } from '@emeraldwallet/core';
 
-export const moduleName = "addressBook";
+export const moduleName = 'addressBook';
 
 export enum ActionTypes {
   LOAD = 'ADDRESSBOOK/LOAD',
@@ -10,7 +10,7 @@ export enum ActionTypes {
   NEW_ADDRESS_ADDED = 'ADDRESSBOOK/NEW_CONTACT_ADDED',
   DELETE_ADDRESS = 'ADDRESSBOOK/DELETE_ADDRESS',
   ADDRESS_DELETED = 'ADDRESSBOOK/ADDRESS_DELETED',
-  SET_BOOK = 'ADDRESSBOOK/SET_BOOK',
+  SET_BOOK = 'ADDRESSBOOK/SET_BOOK'
 }
 
 export interface IAddressBookState {
@@ -44,11 +44,11 @@ export interface DeleteContactAction {
 }
 
 export interface ContactDeletedAction {
-  type: ActionTypes.ADDRESS_DELETED,
+  type: ActionTypes.ADDRESS_DELETED;
   payload: {
     blockchain: any;
     address: string;
-  }
+  };
 }
 
 export interface LoadContactsAction {
@@ -57,13 +57,12 @@ export interface LoadContactsAction {
 }
 
 export interface SetAddressBookAction {
-  type: ActionTypes.SET_BOOK,
+  type: ActionTypes.SET_BOOK;
   payload: {
     blockchain: any;
     contacts: any;
   };
 }
-
 
 export type AddressBookAction =
   | AddContactAction

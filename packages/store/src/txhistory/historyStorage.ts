@@ -1,13 +1,13 @@
 import { convert } from '@emeraldplatform/core';
-import {blockchainById} from "@emeraldwallet/core";
-import { Transaction } from '../types';
+import { blockchainById } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
+import { Transaction } from '../types';
 const { toBigNumber } = convert;
 
 /**
  * Store transaction as JSON in localStorage
  */
-export function storeTransactions(key: string, txs: Array<Transaction>): void {
+export function storeTransactions (key: string, txs: Transaction[]): void {
   if (localStorage) {
     localStorage.setItem(key, JSON.stringify(txs));
   }
@@ -16,7 +16,7 @@ export function storeTransactions(key: string, txs: Array<Transaction>): void {
 /**
  * Restore transaction from JSON stored in localStorage
  */
-export function loadTransactions(key: string, chainId: number): Array<Transaction> {
+export function loadTransactions (key: string, chainId: number): Transaction[] {
   if (localStorage) {
     // check old history
     // Will be removed after stable release
@@ -34,7 +34,7 @@ export function loadTransactions(key: string, chainId: number): Array<Transactio
     return txs
       .map((t: any) => ({
         ...t,
-        chainId: t.chainId || chainId,
+        chainId: t.chainId || chainId
       }))
       .map(restoreTx);
   }
@@ -44,7 +44,7 @@ export function loadTransactions(key: string, chainId: number): Array<Transactio
 /**
  * Converts parsed JSON object to typed Transaction object
  */
-function restoreTx(tx: any): Transaction {
+function restoreTx (tx: any): Transaction {
   return {
     value: (tx.value && typeof tx.value === 'string') ? toBigNumber(tx.value) : new BigNumber(0),
     hash: tx.hash,
@@ -58,7 +58,7 @@ function restoreTx(tx: any): Transaction {
     blockHash: tx.blockHash,
     blockNumber: tx.blockNumber,
     timestamp: tx.timestamp,
-    blockchain: tx.blockchain || ( blockchainById(tx.chainId) ? blockchainById(tx.chainId)!.params.code : null),
-    chainId: tx.chainId,
+    blockchain: tx.blockchain || (blockchainById(tx.chainId) ? blockchainById(tx.chainId)!.params.code : null),
+    chainId: tx.chainId
   };
 }

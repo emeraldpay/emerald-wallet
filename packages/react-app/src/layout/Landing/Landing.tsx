@@ -1,26 +1,29 @@
-import { connect } from 'react-redux';
-import { shell } from 'electron';
-import { Landing } from '@emeraldwallet/ui';
 import { screen } from '@emeraldwallet/store';
+import { Landing } from '@emeraldwallet/ui';
+import { shell } from 'electron';
+import { connect } from 'react-redux';
 
 export default connect(
   null,
   (dispatch, ownProps) => ({
-    onAboutClick() {
+    onAboutClick () {
       const url = 'https://emeraldwallet.io/coins';
       shell.openExternal(url);
     },
-    onGenerate() {
+    onGenerate () {
       dispatch(screen.actions.gotoScreen('landing-generate'));
     },
-    onImportJson() {
+    onImportJson () {
       dispatch(screen.actions.gotoScreen('landing-importjson'));
     },
-    onImportPrivateKey() {
+    onImportPrivateKey () {
       dispatch(screen.actions.gotoScreen('landing-import-private-key'));
     },
-    onLedger() {
-      dispatch(screen.actions.gotoScreen('landing-add-from-ledger', 'home'));
+    onImportMnemonic () {
+      dispatch(screen.actions.gotoScreen('import-mnemonic', 'home'));
     },
+    onLedger () {
+      dispatch(screen.actions.gotoScreen('landing-add-from-ledger', 'home'));
+    }
   })
 )(Landing);

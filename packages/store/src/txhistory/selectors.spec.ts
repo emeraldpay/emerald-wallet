@@ -1,20 +1,20 @@
-import { fromJS } from 'immutable';
 import BigNumber from 'bignumber.js';
-import { searchTransactions, filterTransactions } from './selectors';
+import { fromJS } from 'immutable';
+import { filterTransactions, searchTransactions } from './selectors';
 
 const fixture = [
   {
     to: '0x123',
     from: '0x999',
     hash: '0x000',
-    value: new BigNumber(4444),
+    value: new BigNumber(4444)
   },
   {
     to: '0x456',
     from: '0x01',
     hash: '0x02',
-    value: new BigNumber(3333),
-  },
+    value: new BigNumber(3333)
+  }
 ];
 
 describe('history selectors', () => {
@@ -25,7 +25,7 @@ describe('history selectors', () => {
           to: null,
           from: '0x999',
           hash: null,
-          value: new BigNumber(4444),
+          value: new BigNumber(4444)
         }]);
       const searchResults = searchTransactions('999', transactions);
       expect(searchResults.size).toEqual(1);
@@ -73,20 +73,20 @@ describe('history selectors', () => {
       const transactions = fromJS(fixture);
       const accounts = fromJS([
         {
-          id: '0x456',
-        },
+          id: '0x456'
+        }
       ]);
 
       const filterResults = filterTransactions('IN', null, transactions, accounts);
       expect(filterResults.size).toEqual(1);
-      expect(filterResults.get(0).get("hash")).toEqual("0x02");
+      expect(filterResults.get(0).get('hash')).toEqual('0x02');
     });
     it('matches OUT to "from" field', () => {
       const transactions = fromJS(fixture);
       const accounts = fromJS([
         {
-          id: '0x01',
-        },
+          id: '0x01'
+        }
       ]);
       const filterResults = filterTransactions('OUT', null, transactions, accounts);
       expect(filterResults.size).toEqual(1);

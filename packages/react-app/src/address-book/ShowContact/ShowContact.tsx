@@ -1,12 +1,11 @@
-import * as React from 'react';
-import withStyles from 'react-jss';
-import { connect } from 'react-redux';
-import { CoinAvatar} from '@emeraldwallet/ui';
 import { Account } from '@emeraldplatform/ui';
-import { Trash as DeleteIcon, Pen1 as EditIcon } from '@emeraldplatform/ui-icons';
-import IconButton from '@material-ui/core/IconButton';
+import { Pen1 as EditIcon, Trash as DeleteIcon } from '@emeraldplatform/ui-icons';
 import { addressBook } from '@emeraldwallet/store';
-
+import { CoinAvatar } from '@emeraldwallet/ui';
+import IconButton from '@material-ui/core/IconButton';
+import { withStyles } from '@material-ui/styles';
+import * as React from 'react';
+import { connect } from 'react-redux';
 
 export const styles = {
   container: {
@@ -14,8 +13,8 @@ export const styles = {
     alignItems: 'center',
     justifyContent: 'space-between',
     backgroundColor: 'white',
-    padding: '10px',
-  },
+    padding: '10px'
+  }
 };
 
 interface Props {
@@ -26,7 +25,7 @@ interface Props {
 }
 
 export const ShowContact = ({
-  address, onDeleteAddress, onEditAddress, classes,
+  address, onDeleteAddress, onEditAddress, classes
 }: Props) => (
   <div className={classes.container}>
     <div>
@@ -34,7 +33,7 @@ export const ShowContact = ({
     </div>
     <div>
       <Account
-        identity
+        identity={true}
         address={address.address}
         name={address.name}
       />
@@ -63,7 +62,7 @@ const Address = connect(
     onDeleteAddress: () => {
       const { address } = ownProps;
       dispatch(addressBook.actions.deleteContactAction(address.blockchain, address.address));
-    },
+    }
   })
 )(StyledShowContact);
 

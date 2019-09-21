@@ -1,28 +1,27 @@
-import {IService} from "./Services";
-import {AddressListener} from "../AddressListener";
+import { AddressListener } from '../AddressListener';
+import { IService } from './Services';
 
 export class BalanceListener implements IService {
-  id: string;
+  public id: string;
   private apiAccess: any;
   private webContents: any;
   private ipcMain: any;
   private subscribers: AddressListener[];
 
-  constructor(ipcMain: any, webContents: any, apiAccess: any) {
+  constructor (ipcMain: any, webContents: any, apiAccess: any) {
     this.ipcMain = ipcMain;
     this.webContents = webContents;
     this.apiAccess = apiAccess;
     this.id = `BalanceIpcListener`;
-    this.subscribers = []
+    this.subscribers = [];
   }
 
-  stop() {
-    this.subscribers.forEach((s) => s.stop())
+  public stop () {
+    this.subscribers.forEach((s) => s.stop());
   }
 
-  start() {
-    const {webContents} = this;
-    this.ipcMain.on('subscribe-balance', (_: any, blockchain: string, addresses: any) => {
+  public start () {
+    this.ipcMain.on('subscribe-balance', (_: any, blockchain: string, addresses: string[]) => {
       if (blockchain === 'mainnet') {
         blockchain = 'etc';
       }
@@ -32,12 +31,12 @@ export class BalanceListener implements IService {
         const action = {
           type: 'ACCOUNT/SET_BALANCE',
           payload: {
-            blockchain: blockchain,
+            blockchain,
             accountId: event.address,
-            value: event.balance,
-          },
+            value: event.balance
+          }
         };
-        webContents.send('store', action);
+        this.webContents.send('store', action);
       });
     });
   }

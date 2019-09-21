@@ -1,10 +1,10 @@
 import * as React from 'react';
-import ShowContact from '../ShowContact';
 import EditContact from '../EditContact';
+import ShowContact from '../ShowContact';
 
 const States = {
   SHOW: 'SHOW',
-  EDIT: 'EDIT',
+  EDIT: 'EDIT'
 };
 
 interface State {
@@ -16,28 +16,27 @@ interface Props {
 }
 
 class Contact extends React.Component<Props, State> {
-  constructor(props: Props) {
+  constructor (props: Props) {
     super(props);
     this.state = {
-      currentState: States.SHOW,
+      currentState: States.SHOW
     };
   }
 
-  handleCancelEdit = () => {
+  public handleCancelEdit = () => {
     this.setState({
-      currentState: States.SHOW,
+      currentState: States.SHOW
     });
-  };
+  }
 
-  handleEditAddress = () => {
+  public handleEditAddress = () => {
     this.setState({
-      currentState: States.EDIT,
+      currentState: States.EDIT
     });
-  };
+  }
 
-  render() {
+  public render () {
     const { currentState } = this.state;
-
     if (currentState === States.SHOW) {
       return (<ShowContact onEditAddress={this.handleEditAddress} {...this.props} />);
     }

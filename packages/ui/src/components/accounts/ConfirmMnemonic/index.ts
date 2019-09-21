@@ -1,1 +1,1 @@
-export {default} from './ConfirmMnemonic';
+export { default } from './ConfirmMnemonic';

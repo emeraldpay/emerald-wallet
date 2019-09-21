@@ -1,23 +1,23 @@
+import {Blockchains, IAccount} from '@emeraldwallet/core';
+import { addresses, screen } from '@emeraldwallet/store';
+import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
-import {Blockchains} from '@emeraldwallet/core';
-import {withStyles} from '@material-ui/styles';
-import {connect} from 'react-redux';
-import {screen, addresses} from '@emeraldwallet/store';
+import { connect } from 'react-redux';
 import Account from './AccountItem';
 
 const styles = (theme: any) => ({
   container: {
-    marginBottom: '10px',
-  },
-  listItem: {
-    marginBottom: '10px',
-    border: `1px solid ${theme.palette.divider}`,
+    marginBottom: '10px'
   },
   hiddenListItem: {
-    opacity: 0.4,
-    marginBottom: '10px',
     border: `1px solid ${theme.palette.divider}`,
+    opacity: 0.4,
+    marginBottom: '10px'
   },
+  listItem: {
+    border: `1px solid ${theme.palette.divider}`,
+    marginBottom: '10px'
+  }
 });
 
 interface IAccountListProps {
@@ -31,10 +31,10 @@ interface IAccountListProps {
 
 const AccountList = ((props: IAccountListProps) => {
   const {
-    accounts, showFiat, classes,
+    accounts, showFiat, classes
   } = props;
   const {
-    openAccount, createTx, showReceiveDialog,
+    openAccount, createTx, showReceiveDialog
   } = props;
   return (
     <div className={classes.container}>
@@ -43,7 +43,7 @@ const AccountList = ((props: IAccountListProps) => {
         return (<div className={className} key={`${account.get('blockchain')}-${account.get('id')}`}>
           <Account
             showFiat={showFiat}
-            account={account}
+            account={account.toJS()}
             openAccount={openAccount}
             createTx={createTx}
             showReceiveDialog={showReceiveDialog}
@@ -54,29 +54,28 @@ const AccountList = ((props: IAccountListProps) => {
   );
 });
 
-
 const StyledAccountList = withStyles(styles)(AccountList);
 
 export default connect(
   (state, ownProps) => {
     return {
       accounts: addresses.selectors.all(state),
-      showFiat: true,
+      showFiat: true
     };
   },
   (dispatch, ownProps) => ({
-    openAccount: (account: any) => {
-      dispatch(screen.actions.gotoScreen('account', account));
-    },
     createTx: (account: any) => {
       dispatch(screen.actions.gotoScreen('create-tx', account));
     },
-    showReceiveDialog: (account: any) => {
+    openAccount: (account: any) => {
+      dispatch(screen.actions.gotoScreen('account', account));
+    },
+    showReceiveDialog: (account: IAccount) => {
       const address = {
-        value: account.get('id'),
-        coinTicker: Blockchains[account.get('blockchain')].params.coinTicker,
+        coinTicker: Blockchains[account.blockchain].params.coinTicker,
+        value: account.id
       };
       dispatch(screen.actions.showDialog('receive', address));
-    },
+    }
   })
 )((StyledAccountList));

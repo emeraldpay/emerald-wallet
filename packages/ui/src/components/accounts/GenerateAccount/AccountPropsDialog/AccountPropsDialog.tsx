@@ -1,5 +1,5 @@
+import { ButtonGroup, Input, Page } from '@emeraldplatform/ui';
 import * as React from 'react';
-import {Page, ButtonGroup, Input} from '@emeraldplatform/ui';
 
 import Button from '../../../common/Button';
 import FormRow from '../../../common/FormRow';
@@ -14,35 +14,35 @@ interface State {
 }
 
 class AccountPropsDialog extends React.Component<Props, State> {
-  state = {} as State;
+  public state = {} as State;
 
-  handleSave = () => {
-    const {onSave} = this.props;
+  public handleSave = () => {
+    const { onSave } = this.props;
     if (onSave) {
       onSave(this.state.name);
     }
-  };
+  }
 
-  handleNameChange = (event) => {
+  public handleNameChange = (event) => {
     this.setState({
-      name: event.target.value,
+      name: event.target.value
     });
-  };
+  }
 
-  render() {
-    const {onSkip} = this.props;
-    const {name} = this.state;
+  public render () {
+    const { onSkip } = this.props;
+    const { name } = this.state;
 
     return (
-      <Page title="Set account properties">
+      <Page title='Set account properties'>
         <FormRow
-          leftColumn={<div style={{fontSize: '16px', textAlign: 'right'}}>Account name</div>}
+          leftColumn={<div style={{ fontSize: '16px', textAlign: 'right' }}>Account name</div>}
           rightColumn={
-            <div style={{width: '100%'}}>
+            <div style={{ width: '100%' }}>
               <Input
                 value={name}
                 onChange={this.handleNameChange}
-                placeholder="if needed"
+                placeholder='if needed'
               />
             </div>}
         />
@@ -50,14 +50,14 @@ class AccountPropsDialog extends React.Component<Props, State> {
           rightColumn={
             <ButtonGroup>
               <Button
-                primary
+                primary={true}
                 onClick={this.handleSave}
-                label="Save"
+                label='Save'
               />
               <Button
-                variant="text"
+                variant='text'
                 onClick={onSkip}
-                label="Skip"
+                label='Skip'
               />
             </ButtonGroup>
           }

@@ -1,5 +1,5 @@
+import { addressBook, screen, settings } from '@emeraldwallet/store';
 import { connect } from 'react-redux';
-import { screen, addressBook, settings } from '@emeraldwallet/store';
 import ContactForm from '../ContactForm';
 
 const { gotoScreen } = screen.actions;
@@ -7,7 +7,7 @@ const AddContact = connect(
   (state, ownProps) => ({
     blockAddress: false,
     title: 'Add Contact',
-    blockchains: settings.selectors.currentChains(state),
+    blockchains: settings.selectors.currentChains(state)
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data: any) => {
@@ -16,7 +16,7 @@ const AddContact = connect(
     },
     onCancel: () => {
       dispatch(gotoScreen('address-book'));
-    },
+    }
   })
 )(ContactForm);
 

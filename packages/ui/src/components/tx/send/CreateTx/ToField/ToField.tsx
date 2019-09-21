@@ -1,13 +1,13 @@
+import { IdentityIcon, Input } from '@emeraldplatform/ui';
 import * as React from 'react';
-import {Input, IdentityIcon} from '@emeraldplatform/ui';
 
 import FormLabel from '../FormLabel';
 import AddressIconMenu from './AddressIconMenu';
 
 interface Props {
   onChangeTo?: any;
-  to?: string,
-  addressBookAddresses?: Array<any>,
+  to?: string;
+  addressBookAddresses?: any[];
   onEmptyAddressBookClick?: Function;
 }
 
@@ -17,41 +17,45 @@ interface State {
 }
 
 class ToField extends React.Component<Props, State> {
-  constructor(props: Props) {
+
+  public inputStyles = {
+    flexGrow: 5
+  };
+  constructor (props: Props) {
     super(props);
     this.onChangeTo = this.onChangeTo.bind(this);
-    this.state = {errorText: null, toStr: props.to || '0x'};
+    this.state = { errorText: null, toStr: props.to || '0x' };
   }
 
-  componentDidMount() {
+  public componentDidMount () {
     this.onChangeTo(this.props.to);
   }
 
-  componentDidUpdate(prevProps: any) {
+  public componentDidUpdate (prevProps: any) {
     if (prevProps.to !== this.props.to) {
       this.onChangeTo(this.props.to);
     }
   }
 
-  onChangeTo(value: any) {
+  public onChangeTo (value: any) {
     if (this.props.onChangeTo) {
       this.props.onChangeTo(value);
     }
-    this.setState({toStr: value});
+    this.setState({ toStr: value });
 
     if (!value) {
-      this.setState({errorText: 'Required'});
+      this.setState({ errorText: 'Required' });
     } else {
-      this.setState({errorText: null});
+      this.setState({ errorText: null });
     }
   }
 
-  handleInputChange = (event: any) => {
+  public handleInputChange = (event: any) => {
     const { value } = event.target;
     this.onChangeTo(value);
-  };
+  }
 
-  getLeftIcon() {
+  public getLeftIcon () {
     if (!this.props.to) {
       return null;
     }
@@ -63,7 +67,7 @@ class ToField extends React.Component<Props, State> {
     );
   }
 
-  getRightIcon() {
+  public getRightIcon () {
     return (
       <AddressIconMenu
         onChange={(val: any) => this.onChangeTo(val)}
@@ -73,11 +77,7 @@ class ToField extends React.Component<Props, State> {
     );
   }
 
-  inputStyles = {
-    flexGrow: 5,
-  };
-
-  render() {
+  public render () {
     return (
       <React.Fragment>
         <FormLabel>To</FormLabel>

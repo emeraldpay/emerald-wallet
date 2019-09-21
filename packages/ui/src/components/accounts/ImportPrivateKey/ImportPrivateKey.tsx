@@ -1,15 +1,12 @@
-import * as React from 'react';
-import {withStyles} from '@material-ui/styles';
-import CircularProgress from '@material-ui/core/CircularProgress';
-import {
-  Page, Warning, WarningHeader, WarningText, Input
-} from '@emeraldplatform/ui';
+import { Input, Page, Warning, WarningHeader, WarningText } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
+import { Blockchain, BlockchainCode } from '@emeraldwallet/core';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { withStyles } from '@material-ui/styles';
+import * as React from 'react';
 import Button from '../../common/Button';
+import ChainSelector from '../../common/ChainSelector/ChainSelector';
 import PasswordInput from '../../common/PasswordInput';
-import ChainSelector from "../../common/ChainSelector/ChainSelector";
-import { Blockchain } from "@emeraldwallet/core";
-
 
 export const styles = {
   passwordLabel: {
@@ -17,23 +14,23 @@ export const styles = {
     color: '#191919',
     fontSize: '16px',
     fontWeight: 500,
-    lineHeight: '24px',
+    lineHeight: '24px'
   },
   passwordSubLabel: {
     height: '22px',
     color: '#191919',
     fontSize: '14px',
-    lineHeight: '22px',
+    lineHeight: '22px'
   },
   formRow: {
     display: 'flex',
     marginBottom: '19px',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   left: {
     flexBasis: '20%',
     marginLeft: '14.75px',
-    marginRight: '14.75px',
+    marginRight: '14.75px'
   },
   right: {
     flexGrow: 2,
@@ -41,11 +38,11 @@ export const styles = {
     alignItems: 'center',
     marginLeft: '14.75px',
     marginRight: '14.75px',
-    maxWidth: '580px',
-  },
+    maxWidth: '580px'
+  }
 };
 
-function getLoadingIcon(submitting) {
+function getLoadingIcon (submitting) {
   if (submitting) {
     return (
       <CircularProgress size={25}/>
@@ -55,7 +52,7 @@ function getLoadingIcon(submitting) {
 }
 
 interface Props {
-  blockchains: Blockchain[],
+  blockchains: Blockchain[];
   onBack?: any;
   error?: any;
   onSubmit?: any;
@@ -68,51 +65,51 @@ interface State {
   confirmPassword?: string;
   privateKey?: string;
   confirmError?: any;
-  blockchain: string
+  blockchain: BlockchainCode;
 }
 
 export class ImportPrivateKey extends React.Component<Props, State> {
-  constructor(props: Props) {
+  constructor (props: Props) {
     super(props);
     this.state = {
-      blockchain: props.blockchains.length > 0 ? props.blockchains[0].params.code : '',
+      blockchain: props.blockchains.length > 0 ? props.blockchains[0].params.code : BlockchainCode.ETH
     };
   }
 
-  handleSubmit = () => {
+  public handleSubmit = () => {
     if (this.props.onSubmit && (this.state.confirmError == null)) {
       const { blockchain, password, privateKey } = this.state;
-      this.props.onSubmit({blockchain, password, privateKey: privateKey || ''});
+      this.props.onSubmit({ blockchain, password, privateKey: privateKey || '' });
     }
-  };
+  }
 
-  handleConfirmPwdChange = (event: any) => {
+  public handleConfirmPwdChange = (event: any) => {
     const confirmPassword = event.target.value;
     if (this.state.password != confirmPassword) {
-      this.setState({confirmError: "Password must match"});
+      this.setState({ confirmError: 'Password must match' });
     } else {
-      this.setState({ confirmError: null })
+      this.setState({ confirmError: null });
     }
     this.setState({ confirmPassword });
-  };
+  }
 
-  handlePrivateKeyChange = (event: any) => {
+  public handlePrivateKeyChange = (event: any) => {
     this.setState({ privateKey: event.target.value });
-  };
+  }
 
-  handlePasswordChange = (newPwd: any) => {
+  public handlePasswordChange = (newPwd: any) => {
     this.setState({ password: newPwd });
-  };
+  }
 
-  handleChainChange = (value: string) => {
+  public handleChainChange = (value: BlockchainCode) => {
     this.setState({
       blockchain: value
     });
-  };
+  }
 
-  render() {
+  public render () {
     const {
-      onBack, submitting, classes, error, blockchains,
+      onBack, submitting, classes, error, blockchains
     } = this.props;
     const { blockchain, privateKey, confirmPassword, password } = this.state;
 
@@ -121,16 +118,16 @@ export class ImportPrivateKey extends React.Component<Props, State> {
       (password !== confirmPassword);
 
     return (
-      <Page title="Import Private Key" leftIcon={ <Back onClick={ onBack }/> }>
+      <Page title='Import Private Key' leftIcon={<Back onClick={onBack}/>}>
         <div className={classes.formRow}>
           <div className={classes.left}/>
           <div className={classes.right}>
-            <div style={{width: '100%'}}>
+            <div style={{ width: '100%' }}>
               <div className={classes.passwordLabel}>Enter a strong password</div>
               <div className={classes.passwordSubLabel}>This password will be required to confirm all account
                                     operations.
               </div>
-              <div style={{marginTop: '30px'}}>
+              <div style={{ marginTop: '30px' }}>
                 <PasswordInput
                   password={password}
                   onChange={this.handlePasswordChange}
@@ -142,7 +139,7 @@ export class ImportPrivateKey extends React.Component<Props, State> {
         <div className={classes.formRow}>
           <div className={classes.left}/>
           <div className={classes.right}>
-            <Warning fullWidth={ true }>
+            <Warning fullWidth={true}>
               <WarningHeader>Don&#39;t forget it.</WarningHeader>
               <WarningText>If you forget this password, you will lose access to the account and its funds.</WarningText>
             </Warning>
@@ -153,8 +150,8 @@ export class ImportPrivateKey extends React.Component<Props, State> {
           <div className={classes.right}>
             <Input
               errorText={this.state.confirmError}
-              placeholder="Confirm Password"
-              type="password"
+              placeholder='Confirm Password'
+              type='password'
               value={confirmPassword}
               onChange={this.handleConfirmPwdChange}
             />
@@ -164,13 +161,13 @@ export class ImportPrivateKey extends React.Component<Props, State> {
         <div className={classes.formRow}>
           <div className={classes.left}/>
           <div className={classes.right}>
-            <div style={{width: '100%'}}>
-              <div className={ classes.passwordLabel }>Enter a private key</div>
+            <div style={{ width: '100%' }}>
+              <div className={classes.passwordLabel}>Enter a private key</div>
               <div>
                 <Input
                   value={privateKey}
                   onChange={this.handlePrivateKeyChange}
-                  placeholder="Private key in hex format"
+                  placeholder='Private key in hex format'
                 />
               </div>
             </div>
@@ -181,11 +178,11 @@ export class ImportPrivateKey extends React.Component<Props, State> {
           <div className={classes.left}/>
           <div className={classes.right}>
             <Button
-              primary
-              label="Import"
-              onClick={ this.handleSubmit }
-              disabled={ submitting || invalid }
-              icon={getLoadingIcon(submitting) }
+              primary={true}
+              label='Import'
+              onClick={this.handleSubmit}
+              disabled={submitting || invalid}
+              icon={getLoadingIcon(submitting)}
             />
             <ChainSelector onChange={this.handleChainChange} value={blockchain} chains={blockchains}/>
           </div>

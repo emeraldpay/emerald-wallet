@@ -1,8 +1,8 @@
+import { Units, Wei } from '@emeraldplatform/eth';
+import { Input } from '@emeraldplatform/ui';
 import * as React from 'react';
-import {Input} from '@emeraldplatform/ui';
 import Button from '../../../../common/Button';
 import FormLabel from '../FormLabel';
-import { Wei, Units } from '@emeraldplatform/eth';
 
 interface Props {
   onChangeAmount?: Function;
@@ -18,16 +18,8 @@ interface State {
 }
 
 class AmountField extends React.Component<Props, State> {
-  constructor(props: Props) {
-    super(props);
-    this.state = {
-      errorText: null,
-      amountStr: props.amount ? props.amount.toString(Units.ETHER, 6, false, false) : '0',
-      original: props.amount || Wei.ZERO
-    };
-  }
 
-  static getDerivedStateFromProps(props: Props, state: State) {
+  public static getDerivedStateFromProps (props: Props, state: State) {
     const amount = props.amount || Wei.ZERO;
     if (!state.original.equals(amount)) {
       return {
@@ -39,43 +31,51 @@ class AmountField extends React.Component<Props, State> {
     return null;
   }
 
-  handleChangeAmount = (event: any) => {
+  public inputStyles = {
+    width: '200px',
+    marginRight: '10px'
+  };
+
+  public buttonStyles = {
+    height: '30px',
+    minWidth: '35px',
+    fontSize: '11px'
+  };
+  constructor (props: Props) {
+    super(props);
+    this.state = {
+      errorText: null,
+      amountStr: props.amount ? props.amount.toString(Units.ETHER, 6, false, false) : '0',
+      original: props.amount || Wei.ZERO
+    };
+  }
+
+  public handleChangeAmount = (event: any) => {
     let amount = event.target.value || '';
-    this.setState({amountStr: amount});
+    this.setState({ amountStr: amount });
     amount = amount.trim();
     if (amount == '') {
-      this.setState({errorText: 'Required'});
+      this.setState({ errorText: 'Required' });
       return;
     }
     try {
       const parsed = parseFloat(amount);
       if (parsed < 0) {
-        this.setState({errorText: 'value must be positive number'});
-        return
+        this.setState({ errorText: 'value must be positive number' });
+        return;
       }
       const wei = new Wei(parsed, Units.ETHER);
-      this.setState({errorText: null});
+      this.setState({ errorText: null });
 
       if (this.props.onChangeAmount) {
         this.props.onChangeAmount(wei);
       }
     } catch (e) {
-      this.setState({errorText: 'Invalid value'});
+      this.setState({ errorText: 'Invalid value' });
     }
-  };
+  }
 
-  inputStyles = {
-    width: '200px',
-    marginRight: '10px',
-  };
-
-  buttonStyles = {
-    height: '30px',
-    minWidth: '35px',
-    fontSize: '11px',
-  };
-
-  render() {
+  public render () {
     const { errorText, amountStr } = this.state;
     const { amount } = this.props;
     return (
@@ -83,7 +83,7 @@ class AmountField extends React.Component<Props, State> {
         <FormLabel>Amount</FormLabel>
         <div style={this.inputStyles}>
           <Input
-            type="number"
+            type='number'
             // containerStyle={this.inputStyles}
             // min="0"
             // max={this.props.balance}
@@ -94,8 +94,8 @@ class AmountField extends React.Component<Props, State> {
         </div>
         <Button
           style={this.buttonStyles}
-          primary
-          label="MAX"
+          primary={true}
+          label='MAX'
           onClick={this.props.onMaxClicked}
         />
       </React.Fragment>

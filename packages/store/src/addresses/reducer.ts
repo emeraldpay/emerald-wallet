@@ -1,23 +1,23 @@
-import {fromJS, Iterable, List, Map} from 'immutable';
 import { Wei } from '@emeraldplatform/eth';
-import {BlockchainCode, blockchainByName} from "@emeraldwallet/core";
+import { blockchainByName, BlockchainCode } from '@emeraldwallet/core';
+import { fromJS, List, Map } from 'immutable';
 import {
-  IAddressesState,
-  AddressesAction,
-  SetLoadingAction,
   ActionTypes,
-  SetListAction,
-  SetBalanceAction,
-  UpdateAddressAction,
   AddAccountAction,
-  SetHDPathAction,
-  SetTxCountAction,
+  AddressesAction,
+  IAddressesState,
   PendingBalanceAction,
-} from "./types";
+  SetBalanceAction,
+  SetHDPathAction,
+  SetListAction,
+  SetLoadingAction,
+  SetTxCountAction,
+  UpdateAddressAction
+} from './types';
 
 export const INITIAL_STATE = fromJS({
   addresses: [],
-  loading: true,
+  loading: true
 });
 
 const initialAccount = Map({
@@ -30,16 +30,16 @@ const initialAccount = Map({
   name: null,
   description: null,
   hidden: false,
-  blockchain: null,
+  blockchain: null
 });
 
-function onLoading(state: any, action: SetLoadingAction): any {
+function onLoading (state: any, action: SetLoadingAction): any {
   return state.set('loading', action.payload);
 }
 
-type AddressList =  List<Map<string, any>>
+type AddressList =  List<Map<string, any>>;
 
-function onSetList(state: any, action: SetListAction) {
+function onSetList (state: any, action: SetListAction) {
   const existingAddresses: AddressList = state.get('addresses');
 
   const getExisting = (id: string, blockchain: BlockchainCode) => {
@@ -58,7 +58,7 @@ function onSetList(state: any, action: SetListAction) {
     hardware: acc.get('hardware'),
     hdpath: acc.get('hdpath'),
     hidden: acc.get('hidden'),
-    blockchain: acc.get('blockchain'),
+    blockchain: acc.get('blockchain')
   })).map((acc: any) =>
     getExisting(acc.get('id'), acc.get('blockchain')).merge(acc)
   );
@@ -76,7 +76,7 @@ function onSetList(state: any, action: SetListAction) {
   return state.set('addresses', resultList);
 }
 
-function updateAccount(state: any, id: string, blockchain: BlockchainCode, f: any) {
+function updateAccount (state: any, id: string, blockchain: BlockchainCode, f: any) {
   return state.update('addresses', (accounts: any) => {
     const pos = accounts.findKey((acc: any) =>
       acc.get('id') === id && acc.get('blockchain').toLowerCase() == blockchain.toLowerCase()
@@ -88,7 +88,7 @@ function updateAccount(state: any, id: string, blockchain: BlockchainCode, f: an
   });
 }
 
-function onSetBalance(state: any, action: SetBalanceAction) {
+function onSetBalance (state: any, action: SetBalanceAction) {
   const { accountId, value } = action.payload;
   const blockchain = blockchainByName(action.payload.blockchain).params.code;
   return updateAccount(state, accountId,  blockchain,(acc: any) => {
@@ -104,7 +104,7 @@ function onSetBalance(state: any, action: SetBalanceAction) {
   });
 }
 
-function onUpdateAccount(state: any, action: UpdateAddressAction) {
+function onUpdateAccount (state: any, action: UpdateAddressAction) {
   const { address, name, description } = action.payload;
   const blockchain = blockchainByName(action.payload.blockchain).params.code;
   return updateAccount(state, address, blockchain,(acc: any) => acc
@@ -112,22 +112,22 @@ function onUpdateAccount(state: any, action: UpdateAddressAction) {
     .set('description', description));
 }
 
-function onAddAccount(state: any, action: AddAccountAction) {
-  const {accountId, name, description, blockchain} = action;
+function onAddAccount (state: any, action: AddAccountAction) {
+  const { accountId, name, description, blockchain } = action;
   return state.update('addresses', (accounts: any) => {
     const pos = accounts.findKey((acc: any) => acc.get('id') === accountId && acc.get('blockchain') === blockchain);
     if (pos >= 0) {
       return accounts;
     }
     const values = fromJS({
-      id: accountId, name, description, blockchain,
+      id: accountId, name, description, blockchain
     });
     const newAccount = initialAccount.merge(values);
     return accounts.push(newAccount);
   });
 }
 
-function onSetHdPath(state: any, action: SetHDPathAction) {
+function onSetHdPath (state: any, action: SetHDPathAction) {
   if (action.type === ActionTypes.SET_HD_PATH) {
     const blockchain = blockchainByName(action.blockchain).params.code;
     return updateAccount(state, action.accountId, blockchain,(acc: any) => acc.set('hdpath', action.hdpath));
@@ -135,7 +135,7 @@ function onSetHdPath(state: any, action: SetHDPathAction) {
   return state;
 }
 
-function onSetTxCount(state: any, action: SetTxCountAction) {
+function onSetTxCount (state: any, action: SetTxCountAction) {
   if (action.type === ActionTypes.SET_TXCOUNT) {
     const blockchain = blockchainByName(action.blockchain).params.code;
     return updateAccount(state, action.accountId, blockchain, (acc: any) => acc.set('txcount', action.value));
@@ -143,7 +143,7 @@ function onSetTxCount(state: any, action: SetTxCountAction) {
   return state;
 }
 
-function onPendingBalance(state: any, action: PendingBalanceAction) {
+function onPendingBalance (state: any, action: PendingBalanceAction) {
   if (action.type === ActionTypes.PENDING_BALANCE) {
     const blockchain = blockchainByName(action.blockchain).params.code;
     let bal;
@@ -162,11 +162,11 @@ function onPendingBalance(state: any, action: PendingBalanceAction) {
   return state;
 }
 
-export function reducer(
+export function reducer (
   state: any = INITIAL_STATE,
   action: AddressesAction
 ): IAddressesState {
-  switch(action.type) {
+  switch (action.type) {
     case ActionTypes.UPDATE_ACCOUNT:
       return onUpdateAccount(state, action);
     case ActionTypes.SET_BALANCE:

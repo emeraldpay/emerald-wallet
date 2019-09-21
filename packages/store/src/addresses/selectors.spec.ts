@@ -1,14 +1,14 @@
-import {fromJS} from "immutable";
-import {Wei} from "@emeraldplatform/eth";
-import {balanceByChain} from './selectors';
-import {BlockchainCode} from "@emeraldwallet/core";
+import { Wei } from '@emeraldplatform/eth';
+import { BlockchainCode } from '@emeraldwallet/core';
+import { fromJS } from 'immutable';
+import { balanceByChain } from './selectors';
 
 describe('selectTotalBalance', () => {
   it('returns zero if no accounts', () => {
     const state = {
       addresses: fromJS({
-        addresses: [],
-      }),
+        addresses: []
+      })
     };
 
     const total = balanceByChain(state, BlockchainCode.ETH);
@@ -20,9 +20,9 @@ describe('selectTotalBalance', () => {
       addresses: fromJS({
         addresses: [{
           balance: new Wei(1234),
-          blockchain: 'etc',
-        }],
-      }),
+          blockchain: 'etc'
+        }]
+      })
     };
 
     const total = balanceByChain(state, BlockchainCode.ETC);
@@ -34,13 +34,13 @@ describe('selectTotalBalance', () => {
       addresses: fromJS({
         addresses: [{
           balance: new Wei(1234),
-          blockchain: 'eth',
+          blockchain: 'eth'
         },
           {
             balance: new Wei(11),
-            blockchain: 'eth',
-          }],
-      }),
+            blockchain: 'eth'
+          }]
+      })
     };
 
     const total = balanceByChain(state, BlockchainCode.ETH);
@@ -52,17 +52,17 @@ describe('selectTotalBalance', () => {
       addresses: fromJS({
         addresses: [{
           balance: new Wei(1234),
-          blockchain: 'eth',
+          blockchain: 'eth'
         },
           {
             balance: new Wei(51),
-            blockchain: 'etc',
+            blockchain: 'etc'
           },
           {
             balance: new Wei(11),
-            blockchain: 'eth',
-          }],
-      }),
+            blockchain: 'eth'
+          }]
+      })
     };
 
     const total = balanceByChain(state, BlockchainCode.ETH);

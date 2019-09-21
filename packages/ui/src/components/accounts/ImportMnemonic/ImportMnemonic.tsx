@@ -1,55 +1,38 @@
+import { Input, Page, Warning, WarningHeader, WarningText } from '@emeraldplatform/ui';
+import { Back } from '@emeraldplatform/ui-icons';
+import { Blockchain, BlockchainCode } from '@emeraldwallet/core';
+import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
-import {withStyles} from '@material-ui/styles';
-import {Page, Warning, WarningHeader, WarningText, Input} from '@emeraldplatform/ui';
-import {Back} from '@emeraldplatform/ui-icons';
-import { Blockchain } from "@emeraldwallet/core";
 import Button from '../../common/Button';
-import HdPath from '../../common/HdPath';
 import ChainSelector from '../../common/ChainSelector';
+import FormRow from '../../common/FormRow';
+import HdPath from '../../common/HdPath';
 
 export const styles = {
-  passwordLabel: {
-    height: '24px',
-    color: '#191919',
-    fontSize: '16px',
-    fontWeight: 500,
-    lineHeight: '24px',
-  },
   mnemonicLabel: {
-    height: '24px',
     color: '#191919',
     fontSize: '16px',
     fontWeight: 500,
-    lineHeight: '24px',
+    height: '24px',
+    lineHeight: '24px'
+  },
+  passwordLabel: {
+    color: '#191919',
+    fontSize: '16px',
+    fontWeight: 500,
+    height: '24px',
+    lineHeight: '24px'
   },
   passwordSubLabel: {
-    height: '22px',
     color: '#191919',
     fontSize: '14px',
-    lineHeight: '22px',
-  },
-  formRow: {
-    display: 'flex',
-    marginBottom: '19px',
-    alignItems: 'center',
-  },
-  left: {
-    flexBasis: '20%',
-    marginLeft: '14.75px',
-    marginRight: '14.75px',
-  },
-  right: {
-    flexGrow: 2,
-    display: 'flex',
-    alignItems: 'center',
-    marginLeft: '14.75px',
-    marginRight: '14.75px',
-    maxWidth: '580px',
-  },
+    height: '22px',
+    lineHeight: '22px'
+  }
 };
 
-interface Props {
-  blockchains: Blockchain[],
+export interface IProps {
+  blockchains: Blockchain[];
   onSubmit?: any;
   onBack?: any;
   classes: any;
@@ -58,136 +41,132 @@ interface Props {
   mnemonic?: string;
   initialValues: {
     hdpath: string
-  }
+  };
 }
 
-interface State {
+interface IState {
   password: string;
   confirmedPassword: string;
   hdpath: string;
   mnemonic: string;
-  blockchain: string
+  blockchain: BlockchainCode;
 }
 
-export class ImportMnemonic extends React.Component<Props, State> {
-  constructor(props: Props) {
+export class ImportMnemonic extends React.Component<IProps, IState> {
+  constructor (props: IProps) {
     super(props);
     this.state = {
-      mnemonic: props.mnemonic || '',
-      hdpath: this.props.initialValues.hdpath,
-      password: '',
+      blockchain: props.blockchains.length > 0 ? props.blockchains[0].params.code : BlockchainCode.ETH,
       confirmedPassword: '',
-      blockchain: props.blockchains.length > 0 ? props.blockchains[0].params.code : '',
-    }
+      hdpath: this.props.initialValues.hdpath,
+      mnemonic: props.mnemonic || '',
+      password: ''
+    };
   }
 
-  handlePasswordChange = (event: any) => {
+  public handlePasswordChange = (event: any) => {
     this.setState({
       password: event.target.value
     });
-  };
+  }
 
-  handleConfirmedPasswordChange = (event: any) => {
+  public handleConfirmedPasswordChange = (event: any) => {
     this.setState({
       confirmedPassword: event.target.value
     });
-  };
+  }
 
-  handleSubmit = () => {
+  public handleSubmit = () => {
     if (this.props.onSubmit) {
-      const {blockchain, mnemonic, password, hdpath} = this.state;
-      this.props.onSubmit({blockchain, mnemonic, password, hdpath});
+      const { blockchain, mnemonic, password, hdpath } = this.state;
+      this.props.onSubmit({ blockchain, mnemonic, password, hdpath });
     }
-  };
+  }
 
-  handleHdPathChange = (hdpath) => {
+  public handleHdPathChange = (hdpath) => {
     this.setState({
       hdpath
-    })
-  };
+    });
+  }
 
-  handleMnemonicChange = (event: any) => {
+  public handleMnemonicChange = (event: any) => {
     this.setState({
       mnemonic: event.target.value
     });
-  };
+  }
 
-  handleChainChange = (value: string) => {
+  public handleChainChange = (value: BlockchainCode) => {
     this.setState({
       blockchain: value
     });
-  };
+  }
 
-  render() {
+  public render () {
     const {
-      onBack, invalid, error, classes, blockchains,
+      onBack, invalid, error, classes, blockchains
     } = this.props;
     const {
-      blockchain, password, confirmedPassword, hdpath, mnemonic,
+      blockchain, password, confirmedPassword, hdpath, mnemonic
     } = this.state;
-    const confirmPwdErrorText = (confirmedPassword.length > 0 && password != confirmedPassword) ? "Password does not match" : null;
+    const confirmPwdErrorText = (confirmedPassword.length > 0 && password !== confirmedPassword) ? 'Password does not match' : null;
     return (
-      <Page title="Import Mnemonic" leftIcon={<Back onClick={onBack}/>}>
+      <Page title='Import Mnemonic' leftIcon={<Back onClick={onBack}/>}>
         <div>
-          <div className={classes.formRow}>
-            <div className={classes.left}/>
-            <div className={classes.right}>
-              <div style={{width: '100%'}}>
+          <FormRow
+            rightColumn={(
+              <div style={{ width: '100%' }}>
                 <div className={classes.passwordLabel}>Enter a strong password</div>
                 <div className={classes.passwordSubLabel}>This password will be required to confirm all account
                   operations.
                 </div>
-                <div style={{marginTop: '30px'}}>
+                <div style={{ marginTop: '30px' }}>
                   <Input
-                    placeholder="At least 8 characters"
-                    type="password"
+                    placeholder='At least 8 characters'
+                    type='password'
                     value={password}
                     onChange={this.handlePasswordChange}
                   />
                 </div>
               </div>
-            </div>
-          </div>
-          <div className={classes.formRow}>
-            <div className={classes.left}/>
-            <div className={classes.right}>
+            )}
+          />
+
+          <FormRow
+            rightColumn={(
               <Warning fullWidth={true}>
                 <WarningHeader>Don&#39;t forget it.</WarningHeader>
                 <WarningText>If you forget this password, you will lose access to the account and its
                   funds.</WarningText>
               </Warning>
-            </div>
-          </div>
-          <div className={classes.formRow}>
-            <div className={classes.left}/>
-            <div className={classes.right}>
+            )}
+          />
+
+          <FormRow
+            rightColumn={(
               <Input
-                placeholder="Confirm Password"
-                type="password"
+                placeholder='Confirm Password'
+                type='password'
                 onChange={this.handleConfirmedPasswordChange}
                 value={confirmedPassword}
                 errorText={confirmPwdErrorText}
               />
-            </div>
-          </div>
+            )}
+          />
 
-          <div className={classes.formRow}>
-            <div className={classes.left}/>
-            <div className={classes.right}>
-              <div style={{width: '100%'}}>
+          <FormRow
+            rightColumn={(
+              <div style={{ width: '100%' }}>
                 <div className={classes.mnemonicLabel}>HD derivation path</div>
                 <div>
                   <HdPath value={hdpath} onChange={this.handleHdPathChange}/>
                 </div>
               </div>
-            </div>
-          </div>
+            )}
+          />
 
-          <div className={classes.formRow}>
-            <div className={classes.left}>
-            </div>
-            <div className={classes.right}>
-              <div style={{width: '100%'}}>
+          <FormRow
+            rightColumn={(
+              <div style={{ width: '100%' }}>
                 <div className={classes.mnemonicLabel}>Enter a mnemonic phrase</div>
                 <div>
                   <Input
@@ -199,31 +178,31 @@ export class ImportMnemonic extends React.Component<Props, State> {
                   />
                 </div>
               </div>
-            </div>
-          </div>
+            )}
+          />
 
-          <div className={classes.formRow}>
-            <div className={classes.left}/>
-            <div className={classes.right}>
-              <Button
-                primary
-                label="Continue"
-                disabled={invalid}
-                onClick={this.handleSubmit}
-              />
-              <ChainSelector onChange={this.handleChainChange} value={blockchain} chains={blockchains}/>
-            </div>
-          </div>
+          <FormRow
+            rightColumn={(
+              <React.Fragment>
+                <Button
+                  primary={true}
+                  label='Continue'
+                  disabled={invalid}
+                  onClick={this.handleSubmit}
+                />
+                <ChainSelector onChange={this.handleChainChange} value={blockchain} chains={blockchains}/>
+              </React.Fragment>
+            )}
+          />
 
           {error && (
-            <div className={classes.formRow}>
-              <div className={classes.left}/>
-              <div className={classes.right}>
+            <FormRow
+              rightColumn={(
                 <Warning>
                   <WarningText>{error}</WarningText>
                 </Warning>
-              </div>
-            </div>
+              )}
+            />
           )}
         </div>
       </Page>

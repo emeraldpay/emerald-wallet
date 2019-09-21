@@ -1,1 +1,1 @@
-export {default} from './Advice';
+export { default } from './Advice';

@@ -1,6 +1,6 @@
-import { Wei } from "@emeraldplatform/eth";
+import { Wei } from '@emeraldplatform/eth';
 
-export const moduleName = "blockchains";
+export const moduleName = 'blockchains';
 
 export interface IBlockchain {
   height: number | null;
@@ -29,7 +29,7 @@ export interface GasPriceAction {
 }
 
 export interface FetchGasPriceAction {
-  type: ActionTypes.FETCH_GAS_PRICE
+  type: ActionTypes.FETCH_GAS_PRICE;
   payload: any;
 }
 

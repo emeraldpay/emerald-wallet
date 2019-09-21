@@ -8,9 +8,9 @@ export default function (window: any, menuHandlers: any): any {
           accelerator: 'Ctrl+W',
           click: () => {
             window.close();
-          },
-        },
-      ],
+          }
+        }
+      ]
     },
     {
       label: '&View',
@@ -18,36 +18,36 @@ export default function (window: any, menuHandlers: any): any {
         {
           label: '&Reload',
           accelerator: 'Ctrl+R',
-          click: () => { window.webContents.reload(); },
+          click: () => { window.webContents.reload(); }
         },
         {
           label: 'Toggle &Full Screen',
           accelerator: 'F11',
-          click: () => { window.setFullScreen(!window.isFullScreen()); },
+          click: () => { window.setFullScreen(!window.isFullScreen()); }
         },
         {
           label: 'Toggle &Developer Tools',
           accelerator: 'Alt+Ctrl+I',
-          click: () => { window.toggleDevTools(); },
+          click: () => { window.toggleDevTools(); }
         },
         {
           label: 'Open Logs',
-          click() {
+          click () {
             menuHandlers.onOpenLog();
-          },
-        },
-      ],
+          }
+        }
+      ]
     },
     {
       label: '&Help',
       submenu: [
         {
           label: '&About',
-          click() {
+          click () {
             menuHandlers.onAbout();
-          },
-        },
-      ],
-    },
+          }
+        }
+      ]
+    }
   ];
-};
+}

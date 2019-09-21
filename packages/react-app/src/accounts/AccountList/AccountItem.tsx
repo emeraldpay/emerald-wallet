@@ -1,44 +1,43 @@
-import * as React from 'react';
-import { withStyles } from '@material-ui/styles';
-import withTheme from '@material-ui/core/styles/withTheme';
-import Grid from '@material-ui/core/Grid';
+import { Account as AddressAvatar, ButtonGroup } from '@emeraldplatform/ui';
+import { blockchainByName, IAccount } from '@emeraldwallet/core';
+import { Button, CoinAvatar } from '@emeraldwallet/ui';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
-import { Account as AddressAvatar, ButtonGroup } from '@emeraldplatform/ui';
-import { Button, CoinAvatar } from '@emeraldwallet/ui';
-import { blockchainByName } from '@emeraldwallet/core';
+import Grid from '@material-ui/core/Grid';
+import withTheme from '@material-ui/core/styles/withTheme';
+import { withStyles } from '@material-ui/styles';
+import * as React from 'react';
 
-import AccountActions from '../AccountActions';
 import AccountBalance from '../../common/Balance';
+import AccountActions from '../AccountActions';
 
 const styles = (theme: any) => ({
   tokensDivider: {
     backgroundColor: '#F5F5F5',
     height: '2px',
     width: '100%',
-    border: 'none',
+    border: 'none'
   },
   identityIconContainer: {
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   actionsContainer: {
     display: 'flex',
     alignItems: 'center',
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-end'
   },
   card: {
     borderRadius: '1px',
-    boxShadow: 'none',
+    boxShadow: 'none'
   },
   coinCard: {
-    alignItems: 'center',
-  },
+    alignItems: 'center'
+  }
 });
 
-
 interface IAccountProps {
-  account: any;
+  account: IAccount;
   openAccount: any;
   createTx: any;
   showReceiveDialog: any;
@@ -49,67 +48,66 @@ interface IAccountProps {
 
 export class Account extends React.Component<IAccountProps> {
 
-    onSendClick = () => this.props.createTx(this.props.account);
+  public onSendClick = () => this.props.createTx(this.props.account);
 
-    onAddressClick = () => this.props.openAccount(this.props.account);
+  public onAddressClick = () => this.props.openAccount(this.props.account);
 
-    handleDepositClick = () => this.props.showReceiveDialog(this.props.account);
+  public handleDepositClick = () => this.props.showReceiveDialog(this.props.account);
 
-    render() {
+  public render () {
       const {
-        account, theme, classes, showFiat,
+        account, theme, classes, showFiat
       } = this.props;
       const fiatStyle = {
         fontSize: '16px',
         lineHeight: '19px',
-        color: theme.palette.text.secondary,
+        color: theme.palette.text.secondary
       };
 
-      const { coinTicker } = blockchainByName(account.get('blockchain')).params;
+      const { coinTicker } = blockchainByName(account.blockchain).params;
 
-      const balance = account.get('balance');
-      const accId = account.get('id');
+      const balance = account.balance;
       return (
         <Card className={classes.card}>
           <CardContent>
-            <Grid container>
-              <Grid container item xs={1} className={classes.coinCard}>
-                <CoinAvatar chain={account.get('blockchain')} />
+            <Grid container={true}>
+              <Grid container={true} item={true} xs={1} className={classes.coinCard}>
+                <CoinAvatar chain={account.blockchain} />
               </Grid>
-              <Grid container item xs={6}>
-                { accId && <AddressAvatar
-                  identity
-                  address={ accId }
-                  name={ account.get('name') }
-                  onClick={ this.onAddressClick }
+              <Grid container={true} item={true} xs={6}>
+                { account.id && <AddressAvatar
+                  identity={true}
+                  address={account.id}
+                  name={account.name}
+                  onClick={this.onAddressClick}
                 /> }
               </Grid>
-              <Grid container item xs={2}>
-                <div className={ classes.identityIconContainer }>
-                  <div style={{marginLeft: '10px'}}>
+              <Grid container={true} item={true} xs={2}>
+                <div className={classes.identityIconContainer}>
+                  <div style={{ marginLeft: '10px' }}>
                     {balance && <AccountBalance
-                      fiatStyle={ fiatStyle }
-                      balance={ balance }
-                      decimals={ 18 }
-                      symbol={ coinTicker }
-                      showFiat={ showFiat }
+                      fiatStyle={fiatStyle}
+                      balance={balance}
+                      decimals={18}
+                      symbol={coinTicker}
+                      showFiat={showFiat}
                     />}
                     {!balance && 'loading...'}
                   </div>
                 </div>
               </Grid>
-              <Grid item xs={3}>
-                <div className={ classes.actionsContainer }>
+              <Grid item={true} xs={3}>
+                <div className={classes.actionsContainer}>
                   <ButtonGroup>
                     <AccountActions account={account} />
                     <Button
-                      label="Deposit"
-                      onClick={ this.handleDepositClick }
+                      label='Deposit'
+                      onClick={this.handleDepositClick}
                     />
                     <Button
-                      label="Send"
-                      disabled={ !account.get('balance') }
-                      onClick={ this.onSendClick }
+                      label='Send'
+                      disabled={!account.balance}
+                      onClick={this.onSendClick}
                     />
                   </ButtonGroup>
                 </div>
@@ -120,4 +118,4 @@ export class Account extends React.Component<IAccountProps> {
     }
 }
 
-export default withTheme((withStyles(styles)(Account)));
+export default withTheme(withStyles(styles)(Account));

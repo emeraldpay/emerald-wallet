@@ -1,5 +1,5 @@
+import { mount, shallow } from 'enzyme';
 import * as React from 'react';
-import { shallow, mount } from 'enzyme';
 import Pager from './Pager';
 
 describe('Pager', () => {

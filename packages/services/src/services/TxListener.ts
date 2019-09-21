@@ -1,41 +1,39 @@
 import {
-  TxStatusRequest,
   BlockchainClient,
+  ClientReadable,
   TxStatus,
-  ClientReadable
+  TxStatusRequest
 } from '@emeraldplatform/grpc';
-import extractChain from "../extractChain";
+import extractChain from '../extractChain';
 
-type TxStatusEvent = {
-  txid: string,
-  broadcasted: boolean,
-  mined: boolean,
-  blockHash: string,
-  blockNumber: number,
-  timestamp: number,
-  confirmations: number
+interface TxStatusEvent {
+  txid: string;
+  broadcasted: boolean;
+  mined: boolean;
+  blockHash: string;
+  blockNumber: number;
+  timestamp: number;
+  confirmations: number;
 }
 
-interface TxStatusHandler {
-  (status: TxStatusEvent): void;
-}
+type TxStatusHandler = (status: TxStatusEvent) => void;
 
 export class TxListener {
-  client: BlockchainClient;
-  response?: ClientReadable<TxStatus>;
+  public client: BlockchainClient;
+  public response?: ClientReadable<TxStatus>;
 
-  constructor(client: BlockchainClient) {
+  constructor (client: BlockchainClient) {
     this.client = client;
   }
 
-  stop() {
+  public stop () {
     if (this.response) {
       this.response.cancel();
     }
     this.response = undefined;
   }
 
-  subscribe(chainCode: string, hash: string, handler: TxStatusHandler) {
+  public subscribe (chainCode: string, hash: string, handler: TxStatusHandler) {
     const chain = extractChain(chainCode);
     const request = new TxStatusRequest();
     request.setChain(chain.id);
@@ -53,14 +51,14 @@ export class TxListener {
             blockHash: block.getBlockId(),
             blockNumber: block.getHeight(),
             timestamp: block.getTimestamp(),
-            confirmations: data.getConfirmations(),
-          })
+            confirmations: data.getConfirmations()
+          });
         }
       });
       response.on('end', () => {
       });
       response.on('error', (err) => {
-        console.warn("response error tx", err)
+        console.warn('response error tx', err);
       });
       this.response = response;
     });

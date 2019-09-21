@@ -1,19 +1,19 @@
-import * as React from 'react';
-import { withStyles } from '@material-ui/styles';
-import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
+import TextField from '@material-ui/core/TextField';
+import { withStyles } from '@material-ui/styles';
+import * as React from 'react';
 
+import { Wei } from '@emeraldplatform/eth';
 import FormLabel from '../FormLabel';
-import {Wei} from "@emeraldplatform/eth";
 
-function getStyles(theme?: any) {
+function getStyles (theme?: any) {
   return {
     balance: {
       color: theme.palette && theme.palette.text.secondary,
       wordSpacing: '3px',
       letterSpacing: '1px',
       fontWeight: 200,
-      paddingLeft: '20px',
+      paddingLeft: '20px'
     }
   };
 }
@@ -21,7 +21,7 @@ function getStyles(theme?: any) {
 interface Props {
   onChangeToken?: any;
   selectedToken: string;
-  tokenSymbols: Array<string>;
+  tokenSymbols: string[];
   balance?: Wei;
   fiatBalance?: string;
   fiatCurrency?: string;
@@ -29,20 +29,20 @@ interface Props {
 }
 
 export class TokenField extends React.Component<Props> {
-  onChangeToken = (event: any) => {
+  public onChangeToken = (event: any) => {
     if (this.props.onChangeToken) {
       this.props.onChangeToken(event.target.value);
     }
-  };
+  }
 
-  render() {
-    const {classes, selectedToken} = this.props;
+  public render () {
+    const { classes, selectedToken } = this.props;
     const tokenSymbols = this.props.tokenSymbols || [];
     return (
       <React.Fragment>
         <FormLabel>Token</FormLabel>
         <TextField
-          select
+          select={true}
           value={selectedToken}
           onChange={this.onChangeToken}
           disabled={true}

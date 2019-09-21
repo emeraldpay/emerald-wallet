@@ -46,24 +46,3 @@ export function listenPrices() {
   };
 }
 
-export function update(settings: { language: string, localeCurrency: string, showHiddenAccounts: boolean, numConfirmations: number }) {
-  return (dispatch, getState) => {
-    ipcRenderer.send('prices/setCurrency', settings.localeCurrency);
-    return Promise.all([
-      dispatch({
-        type: ActionTypes.SET_LOCALE_CURRENCY,
-        currency: settings.localeCurrency,
-      }),
-      dispatch({
-        type: ActionTypes.SET_SHOW_HIDDEN_ACCOUNTS,
-        show: settings.showHiddenAccounts,
-      }),
-      dispatch({
-        type: ActionTypes.NUM_CONFIRMATIONS,
-        numConfirmations: parseInt(settings.numConfirmations, 10),
-      }),
-    ]).then(() => {
-      return dispatch(screen.actions.showNotification('Settings has been saved', 'success', 3000));
-    });
-  };
-}

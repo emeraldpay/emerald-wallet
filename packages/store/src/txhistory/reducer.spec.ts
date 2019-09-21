@@ -1,12 +1,12 @@
-import {fromJS, List} from 'immutable';
+import { convert } from '@emeraldplatform/core';
 import BigNumber from 'bignumber.js';
-import {convert} from '@emeraldplatform/core';
+import { fromJS, List } from 'immutable';
 
-import {reducer as historyReducers} from './reducer';
-import {ActionTypes, TrackTxAction, UpdateTxsAction} from './types';
-import {loadTransactions, storeTransactions} from './historyStorage';
-import {BlockchainCode} from "@emeraldwallet/core";
-import {Transaction} from "../types";
+import { BlockchainCode } from '@emeraldwallet/core';
+import { Transaction } from '../types';
+import { loadTransactions, storeTransactions } from './historyStorage';
+import { reducer as historyReducers } from './reducer';
+import { ActionTypes, TrackTxAction, UpdateTxsAction } from './types';
 
 const { toNumber, toBigNumber } = convert;
 
@@ -27,10 +27,9 @@ describe('historyReducer', () => {
         to: '0x1',
         blockchain: BlockchainCode.Morden,
         chainId: 62
-      },
+      }
     });
     expect(state.get('trackedTransactions').size).toBe(1);
-
 
     storeTransactions('k', state.get('trackedTransactions').toJS());
     const loaded = loadTransactions('k', 62);
@@ -38,7 +37,7 @@ describe('historyReducer', () => {
     // load restored txs to state
     state = historyReducers(state, {
       type: ActionTypes.LOAD_STORED_TXS,
-      transactions: loaded,
+      transactions: loaded
     });
 
     expect(state.get('trackedTransactions').size).toBe(1);
@@ -60,7 +59,7 @@ describe('historyReducer', () => {
         from: '0x0',
         to: '0x0',
         blockchain: BlockchainCode.Morden
-      },
+      }
     });
     expect(state.get('trackedTransactions').size).toBe(1);
 
@@ -87,8 +86,8 @@ describe('historyReducer', () => {
           to: '0x0',
           blockchain: BlockchainCode.Morden
 
-        },
-      ],
+        }
+      ]
     });
     expect(state.get('trackedTransactions').size).toBe(2);
   });
@@ -106,7 +105,7 @@ describe('historyReducer', () => {
       // @ts-ignore
       transactionIndex: '0x0',
       value: toBigNumber('0x12'),
-      input: 'fckef',
+      input: 'fckef'
     };
 
     // prepare state
@@ -121,13 +120,13 @@ describe('historyReducer', () => {
         from: '0x0',
         to: '0x0',
         blockchain: BlockchainCode.Morden
-      },
+      }
     });
 
     // action
     const action: UpdateTxsAction = {
       type: ActionTypes.UPDATE_TXS,
-      payload: [tx],
+      payload: [tx]
     };
     state = historyReducers(state, action);
     const trackedTxs = state.get('trackedTransactions').last().toJS();
@@ -155,7 +154,7 @@ describe('historyReducer', () => {
 
     // prepare state
     let state = historyReducers(fromJS({
-      trackedTransactions: List.of(),
+      trackedTransactions: List.of()
     }), {
       type: ActionTypes.TRACK_TX,
       tx
@@ -176,7 +175,7 @@ describe('historyReducer', () => {
           to: '0x0',
           nonce: 0,
           blockchain: BlockchainCode.Morden
-        }],
+        }]
     };
 
     state = historyReducers(state, action);
@@ -200,7 +199,7 @@ describe('historyReducer', () => {
       // @ts-ignore
       transactionIndex: '0x0',
       value: toBigNumber('0x12'),
-      input: 'fckef',
+      input: 'fckef'
     },
       {
         blockHash: '0xc87e5117923e756e5d262ef230374b73ebe47f232b0f029fa65cf6614d959100',
@@ -214,23 +213,23 @@ describe('historyReducer', () => {
         // @ts-ignore
         transactionIndex: '0x0',
         value: toBigNumber('0x12'),
-        input: 'fckef',
+        input: 'fckef'
       }];
 
     let state = historyReducers(null, {
       type: ActionTypes.TRACK_TX,
-      tx: txs[0],
+      tx: txs[0]
     });
 
     state = historyReducers(state, {
       type: ActionTypes.TRACK_TX,
-      tx: txs[1],
+      tx: txs[1]
     });
 
     // do
     state = historyReducers(state, {
       type: ActionTypes.UPDATE_TXS,
-      payload: txs,
+      payload: txs
     });
 
     // assert

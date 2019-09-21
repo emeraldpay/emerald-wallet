@@ -1,26 +1,26 @@
-import { TxListener } from './TxListener';
 import { txhistory } from '@emeraldwallet/store';
+import { TxListener } from './TxListener';
 
 export class TransactionListener {
-  id: string;
+  public id: string;
   private apiAccess: any;
   private webContents: any;
   private ipcMain: any;
   private subscriber: TxListener[] = [];
 
-  constructor(ipcMain: any, webContents: any, apiAccess: any) {
+  constructor (ipcMain: any, webContents: any, apiAccess: any) {
     this.webContents = webContents;
     this.apiAccess = apiAccess;
     this.ipcMain = ipcMain;
     this.id = `TransactionListener`;
   }
 
-  stop() {
+  public stop () {
     this.subscriber.forEach((x) => x.stop());
   }
 
-  start() {
-    const {webContents} = this;
+  public start () {
+    const { webContents } = this;
     this.ipcMain.on('subscribe-tx', (_: any, blockchain: string, hash: string) => {
       const subscriber = this.apiAccess.newTxListener();
       this.subscriber.push(subscriber);
@@ -30,7 +30,7 @@ export class TransactionListener {
           blockchain,
           hash: event.txid,
           blockNumber: event.blockNumber,
-          timestamp: event.timestamp,
+          timestamp: event.timestamp
         }]);
         webContents.send('store', action);
       });

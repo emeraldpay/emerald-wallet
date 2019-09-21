@@ -1,11 +1,11 @@
-import * as React from 'react';
+import { Input } from '@emeraldplatform/ui';
 import { withStyles } from '@material-ui/styles';
-import {Input} from '@emeraldplatform/ui';
+import * as React from 'react';
 
+import { Units, Wei } from '@emeraldplatform/eth';
 import FormLabel from '../FormLabel';
-import {Wei, Units} from "@emeraldplatform/eth";
 
-function getStyles(theme?: any) {
+function getStyles (theme?: any) {
   return {
     container: {
       color: theme.palette && theme.palette.text.secondary,
@@ -13,7 +13,7 @@ function getStyles(theme?: any) {
       letterSpacing: '1px',
       fontWeight: 200,
       paddingLeft: '20px',
-      fontSize: '14px',
+      fontSize: '14px'
     }
   };
 }
@@ -29,25 +29,25 @@ interface Props {
 }
 
 export class GasLimitField extends React.Component<Props> {
-  constructor(props: Props) {
+  constructor (props: Props) {
     super(props);
     this.onChangeGasLimit = this.onChangeGasLimit.bind(this);
   }
 
-  onChangeGasLimit(event: any) {
+  public onChangeGasLimit (event: any) {
     if (this.props.onChangeGasLimit) {
       this.props.onChangeGasLimit(event.target.value);
     }
   }
 
-  render() {
+  public render () {
     const { txFeeToken, txFee } = this.props;
     return (
       <React.Fragment>
         <FormLabel>Gas Limit</FormLabel>
-        <div style={{width: "200px"}}>
+        <div style={{ width: '200px' }}>
           <Input
-            type="number"
+            type='number'
             value={this.props.gasLimit}
             // min="21000"
             onChange={this.onChangeGasLimit}

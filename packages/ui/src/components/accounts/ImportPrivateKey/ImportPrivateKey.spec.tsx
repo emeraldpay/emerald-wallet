@@ -1,10 +1,9 @@
-import * as React from 'react';
 import { shallow } from 'enzyme';
+import * as React from 'react';
 import { ImportPrivateKey, styles } from './ImportPrivateKey';
 
-const reduceClasses = (prev, curr) => Object.assign({}, prev, { [curr]: curr });
+const reduceClasses = (prev, curr) => ({...prev,  [curr]: curr});
 const classes = Object.keys(styles).reduce(reduceClasses, {});
-
 
 describe('ImportPrivateKey', () => {
   it('renders without crash', () => {

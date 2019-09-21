@@ -1,33 +1,33 @@
-import {JsonRpcRequest, Transport} from '@emeraldplatform/rpc';
 import {
   // @ts-ignore
   BlockchainClient,
-  NativeCallRequest,
+  chainByCode,
+  ChainSpec,
   NativeCallItem,
-  NativeCallReplyItem,
-  ChainSpec, chainByCode,
+  NativeCallReplyItem, NativeCallRequest
 } from '@emeraldplatform/grpc';
-import { TextEncoder, TextDecoder } from 'text-encoding';
-import {ServiceError} from "grpc";
+import { JsonRpcRequest, Transport } from '@emeraldplatform/rpc';
+import { ServiceError } from 'grpc';
+import { TextDecoder, TextEncoder } from 'text-encoding';
 
-const decoder =  new TextDecoder('utf-8');
+const decoder = new TextDecoder('utf-8');
 const encoder = new TextEncoder();
 
 /**
  * It should be used for request/response trace in dev version
  */
 class GrpcTransport implements Transport {
-  client: BlockchainClient;
-  chain: ChainSpec;
+  public client: BlockchainClient;
+  public chain: ChainSpec;
 
-  constructor(chain: string, client: BlockchainClient) {
+  constructor (chain: string, client: BlockchainClient) {
     this.client = client;
     if (chain === 'mainnet') {
       chain = 'etc';
     }
     this.chain = chainByCode(chain.toUpperCase());
   }
-  request(req: Array<JsonRpcRequest>): Promise<Array<any>> {
+  public request (req: JsonRpcRequest[]): Promise<any[]> {
     const request = new NativeCallRequest();
     request.setChain(this.chain.id);
     req.forEach((json) => {
@@ -39,19 +39,19 @@ class GrpcTransport implements Transport {
     });
 
     return new Promise((resolve, reject) => {
-      this.client.nativeCall(request,(response) => {
-        const result: Array<any> = [];
+      this.client.nativeCall(request, (response) => {
+        const result: any[] = [];
         response.on('data', (data: NativeCallReplyItem) => {
           const bytes: Uint8Array = data.getPayload_asU8();
-          let json = JSON.parse(decoder.decode(bytes));
+          const json = JSON.parse(decoder.decode(bytes));
           result.push(json);
         });
         response.on('end', () => {
           resolve(result);
         });
         response.on('error', (err: ServiceError) => {
-          reject(err)
-        })
+          reject(err);
+        });
       });
     });
   }

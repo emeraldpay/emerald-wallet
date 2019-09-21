@@ -1,17 +1,17 @@
-import {TransactionMap, TransactionsList} from "./types";
-import {Units, Wei} from "@emeraldplatform/eth";
-import {List, Map} from "immutable";
+import { Units, Wei } from '@emeraldplatform/eth';
+import { List, Map } from 'immutable';
+import { TransactionMap, TransactionsList } from './types';
 
-export function allTrackedTxs(state: any): List<Map<string, any>> {
+export function allTrackedTxs (state: any): List<Map<string, any>> {
   return state.wallet.history.get('trackedTransactions');
 }
 
-export function selectByHash(state: any, hash: string): Map<string, any> {
+export function selectByHash (state: any, hash: string): Map<string, any> {
   return allTrackedTxs(state)
     .find((tx: any) => tx.get('hash') === hash);
 }
 
-export function searchTransactions(searchValue: string, transactionsToSearch: TransactionsList): TransactionsList {
+export function searchTransactions (searchValue: string, transactionsToSearch: TransactionsList): TransactionsList {
   if (transactionsToSearch.size === 0) {
     return transactionsToSearch;
   }
@@ -47,7 +47,7 @@ const getFieldForFilter = (txFilter: string) => {
   return 'unknown';
 };
 
-export function filterTransactions(filterValue: string, accountId: string | null, transactionsToFilter: TransactionsList, accounts: List<Map<string, any>>): TransactionsList {
+export function filterTransactions (filterValue: string, accountId: string | null, transactionsToFilter: TransactionsList, accounts: List<Map<string, any>>): TransactionsList {
   if (filterValue === 'ALL') {
     return transactionsToFilter;
   }

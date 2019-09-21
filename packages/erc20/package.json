@@ -34,5 +34,8 @@
     "collectCoverageFrom": [
       "src/**/*.ts"
     ]
+  },
+  "dependencies": {
+    "@emeraldwallet/core": "^2.0.3"
   }
 }
