@@ -10,7 +10,7 @@ export const createAboutPage = (options: any) => {
     resizable: false,
     minimizable: false,
     maximizable: false,
-    show: false,
+    show: false
   });
   browserWindow.setMenu(null);
   browserWindow.setMenuBarVisibility(false);
@@ -18,7 +18,7 @@ export const createAboutPage = (options: any) => {
   browserWindow.loadURL(url.format({
     pathname: options.aboutWndPath,
     protocol: 'file:',
-    slashes: true,
+    slashes: true
   }));
 
   browserWindow.once('ready-to-show', () => {

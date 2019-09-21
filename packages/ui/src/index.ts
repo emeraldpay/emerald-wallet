@@ -1,5 +1,5 @@
 // common
-export { default as Button} from './components/common/Button';
+export { default as Button } from './components/common/Button';
 export { default as InlineEdit } from './components/common/InlineEdit';
 export { default as Logo } from './components/common/Logo';
 export { default as Pager } from './components/common/Pager';
@@ -38,5 +38,5 @@ export { default as ConnectionStatus } from './components/layout/ConnectionStatu
 
 export { default as NewAccountProps } from './components/accounts/GenerateAccount/AccountPropsDialog';
 
-export { default as LedgerImportAccount} from './components/ledger/ImportAccount';
+export { default as LedgerImportAccount } from './components/ledger/ImportAccount';
 export { default as WaitLedgerDialog } from './components/ledger/WaitDialog';

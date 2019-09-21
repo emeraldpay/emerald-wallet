@@ -2,7 +2,7 @@ import { shallow } from 'enzyme';
 import * as React from 'react';
 import { styles, TxStatus } from './TxStatus';
 
-const reduceClasses = (prev: any, curr: any) => ({...prev,  [curr]: curr});
+const reduceClasses = (prev: any, curr: any) => ({ ...prev,  [curr]: curr });
 const classes = Object.keys(styles).reduce(reduceClasses, {});
 
 describe('TxStatus', () => {

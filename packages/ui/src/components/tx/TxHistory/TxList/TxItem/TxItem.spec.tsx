@@ -3,7 +3,7 @@ import { mount } from 'enzyme';
 import * as React from 'react';
 import { styles2, TxItem } from './TxItem';
 
-const reduceClasses = (prev: any, curr: any) => ({...prev,  [curr]: curr});
+const reduceClasses = (prev: any, curr: any) => ({ ...prev,  [curr]: curr });
 const classes = Object.keys(styles2).reduce(reduceClasses, {});
 
 const theme = {

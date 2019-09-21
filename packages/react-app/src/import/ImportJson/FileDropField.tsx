@@ -40,8 +40,8 @@ class FileDropField extends React.Component<IFileDropFieldProps, IFileDropFieldS
   public onDrop = (filesToUpload: any, rejectedFiles: any, e: any) => {
     const { onChange } = this.props;
     this.setState({
-        file: filesToUpload[0]
-      });
+      file: filesToUpload[0]
+    });
     onChange(filesToUpload[0]);
   }
 
@@ -59,7 +59,7 @@ class FileDropField extends React.Component<IFileDropFieldProps, IFileDropFieldS
             </div>
           </div>
         </Dropzone>
-      );
+    );
   }
 }
 

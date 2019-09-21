@@ -167,14 +167,14 @@ describe('historyReducer', () => {
       type: ActionTypes.UPDATE_TXS,
       payload: [
         {hash: tx.hash,
-          timestamp: now,
-          value: toBigNumber('0x12'),
-          gas: '0x0',
-          gasPrice: '0x0',
-          from: '0x0',
-          to: '0x0',
-          nonce: 0,
-          blockchain: BlockchainCode.Morden
+         timestamp: now,
+         value: toBigNumber('0x12'),
+         gas: '0x0',
+         gasPrice: '0x0',
+         from: '0x0',
+         to: '0x0',
+         nonce: 0,
+         blockchain: BlockchainCode.Morden
         }]
     };
 

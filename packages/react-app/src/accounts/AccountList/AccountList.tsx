@@ -1,4 +1,4 @@
-import {Blockchains, IAccount} from '@emeraldwallet/core';
+import { Blockchains, IAccount } from '@emeraldwallet/core';
 import { addresses, screen } from '@emeraldwallet/store';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';

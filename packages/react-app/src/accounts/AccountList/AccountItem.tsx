@@ -55,19 +55,19 @@ export class Account extends React.Component<IAccountProps> {
   public handleDepositClick = () => this.props.showReceiveDialog(this.props.account);
 
   public render () {
-      const {
+    const {
         account, theme, classes, showFiat
       } = this.props;
-      const fiatStyle = {
-        fontSize: '16px',
-        lineHeight: '19px',
-        color: theme.palette.text.secondary
-      };
+    const fiatStyle = {
+      fontSize: '16px',
+      lineHeight: '19px',
+      color: theme.palette.text.secondary
+    };
 
-      const { coinTicker } = blockchainByName(account.blockchain).params;
+    const { coinTicker } = blockchainByName(account.blockchain).params;
 
-      const balance = account.balance;
-      return (
+    const balance = account.balance;
+    return (
         <Card className={classes.card}>
           <CardContent>
             <Grid container={true}>
@@ -115,7 +115,7 @@ export class Account extends React.Component<IAccountProps> {
             </Grid>
           </CardContent>
         </Card>);
-    }
+  }
 }
 
 export default withTheme(withStyles(styles)(Account));
