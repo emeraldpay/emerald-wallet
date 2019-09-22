@@ -13,10 +13,11 @@ import {
   settings,
   tokens
 } from '@emeraldwallet/store';
-import { CreateTx, SignTx } from '@emeraldwallet/ui';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import CreateTx from '../CreateTx';
+import SignTx from '../SignTx';
 import { traceValidate, txFeeFiat } from './util';
 
 type CreateEthereumTx = workflow.CreateEthereumTx;
@@ -282,7 +283,7 @@ function signAndSendToken (dispatch: any, ownProps: IOwnProps, args: any) {
     true
   );
   return dispatch(
-    addresses.actions.sendTransaction(
+    addresses.actions.signTransaction(
       chain,
       transaction.from,
       password,
@@ -315,7 +316,7 @@ function signAndSendEther (dispatch: any, ownProps: IOwnProps, { transaction, pa
     .then(() => (useLedger ? dispatch(screen.actions.showDialog('sign-transaction', transaction)) : null))
     .then(() => {
       return dispatch(
-        addresses.actions.sendTransaction(
+        addresses.actions.signTransaction(
           chain,
           transaction.from!,
           password,
@@ -329,7 +330,7 @@ function signAndSendEther (dispatch: any, ownProps: IOwnProps, { transaction, pa
     });
 }
 
-function signAndSend (dispatch: any, ownProps: IOwnProps, args: any) {
+function sign (dispatch: any, ownProps: IOwnProps, args: any) {
   const chain = ownProps.account.blockchain;
   const { coinTicker } = Blockchains[chain].params;
   const token = args.token.toUpperCase();
@@ -386,6 +387,11 @@ export default connect(
   (dispatch, ownProps: IOwnProps) => ({
     onCancel: () => dispatch(screen.actions.gotoScreen('home', ownProps.account)),
     onEmptyAddressBookClick: () => dispatch(screen.actions.gotoScreen('add-address')),
-    signAndSend: (args: any) => signAndSend(dispatch, ownProps, args)
+    signAndSend: (args: any) => {
+      sign(dispatch, ownProps, args)
+        .then((result: any) => {
+          dispatch(screen.actions.gotoScreen('broadcast-tx', result));
+        });
+    }
   })
 )(CreateTransaction);

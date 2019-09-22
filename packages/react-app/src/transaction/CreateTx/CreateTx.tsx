@@ -1,7 +1,7 @@
 import { ButtonGroup } from '@emeraldplatform/ui';
 import { workflow } from '@emeraldwallet/core';
 import * as React from 'react';
-import Button from '../../../common/Button';
+import { Button } from '@emeraldwallet/ui';
 import AmountField from './AmountField';
 import FormFieldWrapper from './FormFieldWrapper';
 import FormLabel from './FormLabel';
@@ -22,7 +22,7 @@ const { ValidationResult } = workflow;
 export interface IProps {
   tx: CreateEthereumTx;
   token: string;
-  tokenSymbols?: string[];
+  tokenSymbols: string[];
   addressBookAddresses?: string[];
   currency?: string;
   txFeeFiat?: string;

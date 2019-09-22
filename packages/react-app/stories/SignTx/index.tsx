@@ -3,7 +3,7 @@ import { workflow } from '@emeraldwallet/core';
 import { storiesOf } from '@storybook/react';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
-import SignTx from '../../src/components/tx/send/SignTx';
+import SignTx from '../../src/transaction/SignTx';
 
 const tx = {
   from: '0x123',

@@ -1,10 +1,10 @@
 import * as React from 'react';
 
-interface Props {
+interface ITxInputDataProps {
   data?: string;
 }
 
-const TxInputData = (props: Props) => {
+const TxInputData = (props: ITxInputDataProps) => {
   const { data } = props;
 
   if (!data) {

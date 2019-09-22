@@ -18,6 +18,7 @@ describe('CreateTx', () => {
         token='ETH'
         tx={tx}
         txFeeToken='ETH'
+        tokenSymbols={[]}
       />
       );
     expect(wrapper).toBeDefined();
@@ -27,6 +28,7 @@ describe('CreateTx', () => {
         token='ETH'
         tx={tx}
         txFeeToken='ETH'
+        tokenSymbols={[]}
       />
       );
     expect(mounted).toBeDefined();

@@ -10,12 +10,12 @@ function getStyles (style?: any) {
   };
 }
 
-interface Props {
+interface IProps {
   children?: any;
   style?: any;
 }
 
-class FormFieldWrapper extends React.Component<Props> {
+class FormFieldWrapper extends React.Component<IProps> {
   public static defaultProps = {
     style: {}
   };

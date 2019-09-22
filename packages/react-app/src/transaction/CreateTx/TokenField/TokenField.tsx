@@ -1,9 +1,7 @@
-import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
+import { Wei } from '@emeraldplatform/eth';
+import { MenuItem, TextField } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
-
-import { Wei } from '@emeraldplatform/eth';
 import FormLabel from '../FormLabel';
 
 function getStyles (theme?: any) {
@@ -18,7 +16,7 @@ function getStyles (theme?: any) {
   };
 }
 
-interface Props {
+interface IProps {
   onChangeToken?: any;
   selectedToken: string;
   tokenSymbols: string[];
@@ -28,7 +26,7 @@ interface Props {
   classes?: any;
 }
 
-export class TokenField extends React.Component<Props> {
+export class TokenField extends React.Component<IProps> {
   public onChangeToken = (event: any) => {
     if (this.props.onChangeToken) {
       this.props.onChangeToken(event.target.value);
@@ -45,12 +43,8 @@ export class TokenField extends React.Component<Props> {
           select={true}
           value={selectedToken}
           onChange={this.onChangeToken}
-          disabled={true}
         >
-          {tokenSymbols.map((symbol) => <MenuItem
-            key={symbol}
-            value={symbol}
-          >{symbol}</MenuItem>)}
+          {tokenSymbols.map((symbol) => (<MenuItem key={symbol} value={symbol}>{symbol}</MenuItem>))}
         </TextField>
 
         <div className={classes.balance}>

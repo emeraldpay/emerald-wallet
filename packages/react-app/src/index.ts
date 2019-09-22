@@ -15,6 +15,7 @@ export { default as ExportPaperWallet } from './export/ExportPaperWallet';
 // import
 export { default as ImportJson } from './import/ImportJson';
 export { default as ImportMnemonic } from './import/ImportMnemonic';
+export { default as ImportPrivateKey } from './import/ImportPrivateKey';
 
 // common
 export { default as Balance } from './common/Balance';
@@ -34,3 +35,5 @@ export { default as TxDetails } from './tx/TxDetails';
 
 export { default as CreateTransaction } from './transaction/CreateTransaction';
 export { default as WaitForSignDialog } from './transaction/WaitForSignDialog';
+export { default as BroadcastTx } from './transaction/BroadcastTx';
+export { default as SignTx } from './transaction/SignTx';

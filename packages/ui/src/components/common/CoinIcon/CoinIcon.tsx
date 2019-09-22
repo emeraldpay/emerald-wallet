@@ -1,11 +1,11 @@
 import { CurrencyBtc, CurrencyEtc, CurrencyEth, CurrencyUsd, CurrencyUsdt } from '@emeraldplatform/ui-icons';
 import * as React from 'react';
 
-interface Props {
+interface ICoinIconProps {
   chain: string;
 }
 
-const CoinIcon = (props: Props) => {
+const CoinIcon = (props: ICoinIconProps) => {
   if (props.chain.toUpperCase() === 'BTC') {
     return (<CurrencyBtc />);
   }
@@ -20,6 +20,12 @@ const CoinIcon = (props: Props) => {
   }
   if (props.chain.toUpperCase() === 'USDT') {
     return (<CurrencyUsdt />);
+  }
+  if (props.chain.toUpperCase() === 'MORDEN') {
+    return (<React.Fragment>M</React.Fragment>);
+  }
+  if (props.chain.toUpperCase() === 'KOVAN') {
+    return (<React.Fragment>K</React.Fragment>);
   }
   return null;
 };

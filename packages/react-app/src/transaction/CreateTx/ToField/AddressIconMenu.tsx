@@ -1,24 +1,22 @@
 import { Book } from '@emeraldplatform/ui-icons';
-import IconButton from '@material-ui/core/IconButton';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import { IconButton, Menu, MenuItem } from '@material-ui/core';
 import * as React from 'react';
 import AddressIconMenuItem from './AddressIconMenuItem';
 
-interface Props {
+interface IProps {
   addressBookAddresses?: string[];
   onEmptyAddressBookClick?: any;
-  onChange?: Function;
+  onChange?: (address: string) => void;
 }
 
-interface State {
+interface IState {
   menuOpen: boolean;
 }
 
-class AddressIconMenu extends React.Component<Props, State> {
+class AddressIconMenu extends React.Component<IProps, IState> {
   public anchorEl: any;
 
-  constructor (props: Props) {
+  constructor (props: IProps) {
     super(props);
     this.onChange = this.onChange.bind(this);
     this.onClick = this.onClick.bind(this);

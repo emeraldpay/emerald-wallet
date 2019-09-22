@@ -1,11 +1,11 @@
 import { Units } from '@emeraldplatform/eth';
 import { ButtonGroup, IdentityIcon, Input } from '@emeraldplatform/ui';
 import { ArrowRight } from '@emeraldplatform/ui-icons';
-import { workflow  } from '@emeraldwallet/core';
+import { workflow } from '@emeraldwallet/core';
+import { Button } from '@emeraldwallet/ui';
 import { Divider, List, ListItem, ListItemText } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
-import Button from '../../../common/Button';
 
 const styles = (theme?: any) => ({
   formRow: {
@@ -53,9 +53,7 @@ const HorizontalAddressWithIdentity = (props: { hide: boolean; address: string; 
     return null;
   }
   return (
-    <div style={{
-      display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center'
-    }}>
+    <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'center' }}>
       <IdentityIcon size={60} id={props.address}/>
       <div style={{ paddingTop: '10px' }}>{props.address}</div>
     </div>
@@ -150,7 +148,7 @@ class SignTx extends React.Component<IProps, IState> {
     return (
       <div>
         <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '50px' }}>
-          <HorizontalAddressWithIdentity address={tx.from} hide={hideAccounts}/>
+          <HorizontalAddressWithIdentity address={tx.from!} hide={hideAccounts}/>
           <div style={{
             display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'space-between'
           }}>
@@ -162,7 +160,7 @@ class SignTx extends React.Component<IProps, IState> {
               <ArrowRight/>
             </div>
           </div>
-          <HorizontalAddressWithIdentity address={tx.to} hide={hideAccounts}/>
+          <HorizontalAddressWithIdentity address={tx.to!} hide={hideAccounts}/>
         </div>
         <div style={{ paddingTop: '35px', display: 'flex', justifyContent: 'center' }}>
         <span className={classes.fee}>
@@ -194,7 +192,7 @@ class SignTx extends React.Component<IProps, IState> {
             <div className={classes.right} style={{ paddingTop: '10px' }}>
               <ButtonGroup>
                 <Button label='Cancel' onClick={onCancel}/>
-                <Button primary={true} label='Sign & Send Transaction' onClick={onSubmit}/>
+                <Button primary={true} label='Sign Transaction' onClick={onSubmit}/>
               </ButtonGroup>
             </div>
           </div>

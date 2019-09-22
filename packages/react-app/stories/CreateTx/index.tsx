@@ -3,10 +3,10 @@ import { workflow } from '@emeraldwallet/core';
 import { storiesOf } from '@storybook/react';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
-import CreateTx from '../../src/components/tx/send/CreateTx';
-import AmountField from '../../src/components/tx/send/CreateTx/AmountField';
-import FromField from '../../src/components/tx/send/CreateTx/FromField';
-import ToField from '../../src/components/tx/send/CreateTx/ToField';
+import CreateTx from '../../src/transaction/CreateTx';
+import AmountField from '../../src/transaction/CreateTx/AmountField';
+import FromField from '../../src/transaction/CreateTx/FromField';
+import ToField from '../../src/transaction/CreateTx/ToField';
 
 const txDetails = {
   token: 'ETC',

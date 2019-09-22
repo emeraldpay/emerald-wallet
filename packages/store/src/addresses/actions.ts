@@ -187,7 +187,8 @@ function unwrap (value: string[] | string | null): Promise<string> {
   return new Promise((resolve, reject) => {
     if (typeof value === 'string') {
       resolve(value);
-    } if (value && value.length === 1) {
+    }
+    if (value && value.length === 1) {
       resolve(value[0]);
     } else {
       reject(new Error(`Invalid list size ${value}`));
@@ -195,7 +196,10 @@ function unwrap (value: string[] | string | null): Promise<string> {
   });
 }
 
-function onTxSend (dispatch: Dispatch<any>, sourceTx: Transaction, blockchain: BlockchainCode) {
+/**
+ * Called after Tx sent
+ */
+function onTxSent (dispatch: Dispatch<any>, sourceTx: Transaction, blockchain: BlockchainCode) {
   return (txHash: string) => {
     // dispatch(loadAccountBalance(sourceTx.from));
     const sentTx = { ...sourceTx, hash: txHash };
@@ -270,13 +274,46 @@ export function sendTransaction (blockchain: BlockchainCode,
           .then(unwrap)
           .then(verifySender(from))
           .then((signed) => api.chain(blockchain).eth.sendRawTransaction(signed))
-          .then(onTxSend(dispatch, tx, blockchain));
+          .then(onTxSent(dispatch, tx, blockchain));
       })
       .catch(catchError(dispatch));
   };
 }
 
-function readWalletFile (walletFile: File) {
+export function signTransaction (blockchain: BlockchainCode,
+                                 from: string, passphrase: string, to: string, gas: number, gasPrice: Wei, value: Wei, data: string): Dispatched<any> {
+  const originalTx: Transaction = {
+    from,
+    to,
+    gas: convert.toHex(gas),
+    gasPrice: gasPrice.toHex(),
+    value: value.toHex(),
+    data,
+    nonce: '',
+    blockchain
+  };
+  return (dispatch, getState, api) => {
+    return getNonce(api, blockchain, from)
+      .then(withNonce(originalTx))
+      .then((tx: Transaction) => {
+        return signTx(api, tx, passphrase, blockchain)
+          .then(unwrap)
+          .then(verifySender(from))
+          .then((signed) => ({ tx, signed }));
+      })
+      .catch(catchError(dispatch));
+  };
+}
+
+export function broadcastTx (chain: BlockchainCode, tx: any, signedTx: any): any {
+  return (dispatch: any, getState: any, api: IApi) => {
+    return api.chain(chain).eth.sendRawTransaction(signedTx)
+      .then(onTxSent(dispatch, tx, chain))
+      .catch(catchError(dispatch));
+  };
+}
+
+function readWalletFile (walletFile: Blob) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsText(walletFile);
@@ -289,7 +326,7 @@ function readWalletFile (walletFile: File) {
       const fileContent = event.target.result;
       try {
         const json = JSON.parse(fileContent);
-        json.filename = walletFile.name;
+        // json.filename = walletFile.name;
         resolve(json);
       } catch (e) {
         reject(new Error('Invalid or corrupted Wallet file, cannot be imported'));
@@ -341,7 +378,7 @@ export function importMnemonic (blockchain: BlockchainCode,
   };
 }
 
-export function importWallet (blockchain: BlockchainCode, wallet: File, name: string, description: string): Dispatched<AddAccountAction> {
+export function importWallet (blockchain: BlockchainCode, wallet: Blob, name: string, description: string): Dispatched<AddAccountAction> {
   return (dispatch, getState) => {
     return readWalletFile(wallet).then((data) => {
       return dispatch(importJson(blockchain, data, name, description));

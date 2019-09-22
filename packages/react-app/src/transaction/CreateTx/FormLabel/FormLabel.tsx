@@ -13,11 +13,11 @@ const styles = (theme?: any) => ({
   } as CSSProperties
 });
 
-interface Props {
+interface IProps {
   classes?: any;
 }
 
-export class Label extends React.Component<Props> {
+export class Label extends React.Component<IProps> {
   public render () {
     const { classes, children } = this.props;
     return (<label className={classes.root}>{children}</label>);

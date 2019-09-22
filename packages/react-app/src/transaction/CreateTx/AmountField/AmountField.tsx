@@ -1,25 +1,25 @@
 import { Units, Wei } from '@emeraldplatform/eth';
 import { Input } from '@emeraldplatform/ui';
 import * as React from 'react';
-import Button from '../../../../common/Button';
+import { Button } from '@emeraldwallet/ui';
 import FormLabel from '../FormLabel';
 
-interface Props {
+interface IProps {
   onChangeAmount?: Function;
   amount?: Wei;
   // balance: Wei,
   onMaxClicked?: any;
 }
 
-interface State {
+interface IState {
   errorText: string | null;
   amountStr: string;
   original: Wei;
 }
 
-class AmountField extends React.Component<Props, State> {
+class AmountField extends React.Component<IProps, IState> {
 
-  public static getDerivedStateFromProps (props: Props, state: State) {
+  public static getDerivedStateFromProps (props: IProps, state: IState) {
     const amount = props.amount || Wei.ZERO;
     if (!state.original.equals(amount)) {
       return {
@@ -41,7 +41,7 @@ class AmountField extends React.Component<Props, State> {
     minWidth: '35px',
     fontSize: '11px'
   };
-  constructor (props: Props) {
+  constructor (props: IProps) {
     super(props);
     this.state = {
       errorText: null,
