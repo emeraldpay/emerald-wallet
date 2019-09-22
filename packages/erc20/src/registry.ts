@@ -15,7 +15,13 @@ export const registry = {
     ],
     [BlockchainCode.ETH]: [],
     [BlockchainCode.Morden]: [],
-    [BlockchainCode.Kovan]: [],
+    [BlockchainCode.Kovan]: [
+      {
+        address: '0xaFF4481D10270F50f203E0763e2597776068CBc5',
+        decimals: 18,
+        symbol: 'WEENUS'
+      }
+    ],
     [BlockchainCode.Unknown]: []
   } as TokensCollection,
   all: () => {

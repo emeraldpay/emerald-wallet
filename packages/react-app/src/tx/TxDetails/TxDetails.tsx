@@ -17,8 +17,8 @@ export default connect(
   (state: any, ownProps: ITxDetailsProps) => {
     const tx = txhistory.selectors.selectByHash(state, ownProps.hash);
     const chain = tx.get('blockchain');
-    const fromAccount = tx.get('from') ? addresses.selectors.find(state, tx.get('from'), chain) : null;
-    const toAccount = tx.get('to') ? addresses.selectors.find(state, tx.get('to'), chain) : null;
+    const fromAccount = tx.get('from') ? addresses.selectors.find(state, tx.get('from'), chain) : undefined;
+    const toAccount = tx.get('to') ? addresses.selectors.find(state, tx.get('to'), chain) : undefined;
     const account = fromAccount || toAccount;
     const showRepeat = !!fromAccount;
     const currentCurrency = settings.selectors.fiatCurrency(state);

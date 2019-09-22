@@ -361,6 +361,7 @@ export default connect(
       data: ownProps.data,
       selectedFromAccount: account.id,
       getBalanceForAddress: (address: string, token: any) => {
+        console.error('get balance for ' + token);
         // TODO: handle token for ERC20 case
         return addresses.selectors.find(state, address, chain)!.balance;
       },
