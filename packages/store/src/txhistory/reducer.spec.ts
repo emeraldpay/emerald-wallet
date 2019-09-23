@@ -6,7 +6,7 @@ import { BlockchainCode } from '@emeraldwallet/core';
 import { Transaction } from '../types';
 import { loadTransactions, storeTransactions } from './historyStorage';
 import { reducer as historyReducers } from './reducer';
-import { ActionTypes, TrackTxAction, UpdateTxsAction } from './types';
+import { ActionTypes, ITrackTxAction, IUpdateTxsAction } from './types';
 
 const { toNumber, toBigNumber } = convert;
 
@@ -124,7 +124,7 @@ describe('historyReducer', () => {
     });
 
     // action
-    const action: UpdateTxsAction = {
+    const action: IUpdateTxsAction = {
       type: ActionTypes.UPDATE_TXS,
       payload: [tx]
     };
@@ -163,7 +163,7 @@ describe('historyReducer', () => {
     const now = new Date();
 
     // action
-    const action: UpdateTxsAction = {
+    const action: IUpdateTxsAction = {
       type: ActionTypes.UPDATE_TXS,
       payload: [
         {hash: tx.hash,

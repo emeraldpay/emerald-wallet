@@ -5,7 +5,7 @@ import * as blockchains from '../blockchains';
 import { Dispatched, Transaction } from '../types';
 import { loadTransactions, storeTransactions } from './historyStorage';
 import { allTrackedTxs } from './selectors';
-import { ActionTypes, HistoryAction, UpdateTxsAction } from './types';
+import { ActionTypes, HistoryAction, IUpdateTxsAction } from './types';
 
 const txStoreKey = (chainId: number) => `chain-${chainId}-trackedTransactions`;
 
@@ -95,7 +95,7 @@ export function refreshTrackedTransactions (): Dispatched<HistoryAction> {
   };
 }
 
-export function updateTxs (transactions: any): UpdateTxsAction {
+export function updateTxs (transactions: any): IUpdateTxsAction {
   return {
     type: ActionTypes.UPDATE_TXS,
     payload: transactions
