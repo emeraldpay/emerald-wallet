@@ -12,6 +12,11 @@
       "es5",
       "scripthost",
       "es2015.promise"
+    ],
+    "typeRoots": [
+      "./typings",
+      "node_modules/@types",
+      "../../node_modules/@types"
     ]
   },
   "include": [

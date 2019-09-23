@@ -1,12 +1,14 @@
-import { Units, Wei } from '@emeraldplatform/eth';
+import { toBaseUnits } from '@emeraldplatform/core';
 import { Input } from '@emeraldplatform/ui';
-import * as React from 'react';
+import { IUnits, Units } from '@emeraldwallet/core';
 import { Button } from '@emeraldwallet/ui';
+import * as React from 'react';
 import FormLabel from '../FormLabel';
 
 interface IProps {
-  onChangeAmount?: Function;
-  amount?: Wei;
+  onChangeAmount?: (amount: IUnits) => void;
+  amount?: IUnits;
+  tokenDecimals: number;
   // balance: Wei,
   onMaxClicked?: any;
 }
@@ -14,18 +16,18 @@ interface IProps {
 interface IState {
   errorText: string | null;
   amountStr: string;
-  original: Wei;
+  original: IUnits;
 }
 
 class AmountField extends React.Component<IProps, IState> {
 
   public static getDerivedStateFromProps (props: IProps, state: IState) {
-    const amount = props.amount || Wei.ZERO;
+    const amount = props.amount || new Units(0, props.tokenDecimals);
     if (!state.original.equals(amount)) {
       return {
         errorText: null,
         original: amount,
-        amountStr: amount.toString(Units.ETHER, 6, false, false)
+        amountStr: amount.toString()
       };
     }
     return null;
@@ -41,12 +43,13 @@ class AmountField extends React.Component<IProps, IState> {
     minWidth: '35px',
     fontSize: '11px'
   };
+
   constructor (props: IProps) {
     super(props);
     this.state = {
       errorText: null,
-      amountStr: props.amount ? props.amount.toString(Units.ETHER, 6, false, false) : '0',
-      original: props.amount || Wei.ZERO
+      amountStr: props.amount ? props.amount.toString() : '0',
+      original: props.amount || new Units(0, props.tokenDecimals)
     };
   }
 
@@ -54,7 +57,7 @@ class AmountField extends React.Component<IProps, IState> {
     let amount = event.target.value || '';
     this.setState({ amountStr: amount });
     amount = amount.trim();
-    if (amount == '') {
+    if (amount === '') {
       this.setState({ errorText: 'Required' });
       return;
     }
@@ -64,11 +67,11 @@ class AmountField extends React.Component<IProps, IState> {
         this.setState({ errorText: 'value must be positive number' });
         return;
       }
-      const wei = new Wei(parsed, Units.ETHER);
+      const v = toBaseUnits(parsed.toString(10), this.props.tokenDecimals);
       this.setState({ errorText: null });
 
       if (this.props.onChangeAmount) {
-        this.props.onChangeAmount(wei);
+        this.props.onChangeAmount(new Units(v.toString(10), this.props.tokenDecimals));
       }
     } catch (e) {
       this.setState({ errorText: 'Invalid value' });
@@ -77,7 +80,6 @@ class AmountField extends React.Component<IProps, IState> {
 
   public render () {
     const { errorText, amountStr } = this.state;
-    const { amount } = this.props;
     return (
       <React.Fragment>
         <FormLabel>Amount</FormLabel>

@@ -1,14 +1,14 @@
 import { convert, EthAddress } from '@emeraldplatform/core';
 import { Wei } from '@emeraldplatform/eth';
 import {
-  Blockchain, blockchainByName, BlockchainCode, blockchains, EthereumTx, IAccount, IApi
+  Blockchain, blockchainByName, BlockchainCode, Blockchains, blockchains, EthereumTx, IAccount, IApi
 } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 import { Dispatch } from 'react';
 import { catchError, dispatchRpcError, gotoScreen } from '../screen/actions';
 import * as settings from '../settings';
 import * as history from '../txhistory';
-import { Dispatched, Transaction } from '../types';
+import { Dispatched, ITransaction } from '../types';
 import * as selectors from './selectors';
 import {
   ActionTypes,
@@ -199,7 +199,7 @@ function unwrap (value: string[] | string | null): Promise<string> {
 /**
  * Called after Tx sent
  */
-function onTxSent (dispatch: Dispatch<any>, sourceTx: Transaction, blockchain: BlockchainCode) {
+function onTxSent (dispatch: Dispatch<any>, sourceTx: ITransaction, blockchain: BlockchainCode) {
   return (txHash: string) => {
     // dispatch(loadAccountBalance(sourceTx.from));
     const sentTx = { ...sourceTx, hash: txHash };
@@ -214,14 +214,17 @@ function getNonce (api: IApi, blockchain: BlockchainCode, address: string): Prom
   return api.chain(blockchain).eth.getTransactionCount(address);
 }
 
-function withNonce (tx: Transaction): (nonce: number) => Promise<Transaction> {
+function withNonce (tx: ITransaction): (nonce: number) => Promise<ITransaction> {
   return (nonce) => new Promise((resolve) => resolve({ ...tx, nonce: convert.quantitiesToHex(nonce) }));
 }
 
-function verifySender (expected: string): (a: string) => Promise<string> {
-  return (raw: string) => new Promise((resolve, reject) => {
-    const tx = EthereumTx.fromRaw(raw);
+function verifySender (expected: string): (a: string, c: BlockchainCode) => Promise<string> {
+  return (raw: string, chain: BlockchainCode) => new Promise((resolve, reject) => {
+    // Find chain id
+    const chainId = Blockchains[chain].params.chainId;
+    const tx = EthereumTx.fromRaw(raw, chainId);
     if (tx.verifySignature()) {
+      console.debug('Tx signature verified');
       if (`0x${tx.getSenderAddress().toLowerCase()}` !== expected.toLowerCase()) {
         console.error(`WRONG SENDER: 0x${tx.getSenderAddress()} != ${expected}`);
         reject(new Error('Emerald Vault returned signature from wrong Sender'));
@@ -235,7 +238,7 @@ function verifySender (expected: string): (a: string) => Promise<string> {
   });
 }
 
-function signTx (api: IApi, tx: Transaction, passphrase: string, blockchain: string): Promise<string | string[]> {
+function signTx (api: IApi, tx: ITransaction, passphrase: string, blockchain: string): Promise<string | string[]> {
   console.debug(`Calling emerald api to sign tx from ${tx.from} to ${tx.to} in ${blockchain} blockchain`);
   if (blockchain === 'morden') {
     // otherwise RPC server gives 'wrong-sender'
@@ -251,12 +254,17 @@ function signTx (api: IApi, tx: Transaction, passphrase: string, blockchain: str
     data: tx.data,
     nonce: tx.nonce
   };
-  return api.emerald.signTransaction(plainTx, passphrase, blockchain.toLowerCase());
+  console.debug(`Trying to sign tx: ${plainTx}`);
+  return api.emerald.signTransaction(plainTx, passphrase, blockchain.toLowerCase())
+    .then((result: any) => {
+      console.debug(`Signing result = ${result}`);
+      return result;
+    });
 }
 
 export function sendTransaction (blockchain: BlockchainCode,
                                  from: string, passphrase: string, to: string, gas: number, gasPrice: Wei, value: Wei, data: string): Dispatched<any> {
-  const originalTx: Transaction = {
+  const originalTx: ITransaction = {
     from,
     to,
     gas: convert.toHex(gas),
@@ -269,10 +277,10 @@ export function sendTransaction (blockchain: BlockchainCode,
   return (dispatch, getState, api) => {
     return getNonce(api, blockchain, from)
       .then(withNonce(originalTx))
-      .then((tx: Transaction) => {
+      .then((tx: ITransaction) => {
         return signTx(api, tx, passphrase, blockchain)
           .then(unwrap)
-          .then(verifySender(from))
+          .then((rawTx) => verifySender(from)(rawTx, blockchain))
           .then((signed) => api.chain(blockchain).eth.sendRawTransaction(signed))
           .then(onTxSent(dispatch, tx, blockchain));
       })
@@ -282,7 +290,7 @@ export function sendTransaction (blockchain: BlockchainCode,
 
 export function signTransaction (blockchain: BlockchainCode,
                                  from: string, passphrase: string, to: string, gas: number, gasPrice: Wei, value: Wei, data: string): Dispatched<any> {
-  const originalTx: Transaction = {
+  const originalTx: ITransaction = {
     from,
     to,
     gas: convert.toHex(gas),
@@ -292,13 +300,14 @@ export function signTransaction (blockchain: BlockchainCode,
     nonce: '',
     blockchain
   };
+
   return (dispatch, getState, api) => {
     return getNonce(api, blockchain, from)
       .then(withNonce(originalTx))
-      .then((tx: Transaction) => {
+      .then((tx: ITransaction) => {
         return signTx(api, tx, passphrase, blockchain)
           .then(unwrap)
-          .then(verifySender(from))
+          .then((rawTx) => verifySender(from)(rawTx, blockchain))
           .then((signed) => ({ tx, signed }));
       })
       .catch(catchError(dispatch));

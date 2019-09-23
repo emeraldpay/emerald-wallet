@@ -1,5 +1,5 @@
 import { List, Map } from 'immutable';
-import { Transaction } from '../types';
+import { ITransaction } from '../types';
 
 export enum ActionTypes {
   TRACK_TX = 'WALLET/HISTORY/TRACK_TX',
@@ -12,22 +12,22 @@ export enum ActionTypes {
 
 export interface ITrackTxAction {
   type: ActionTypes.TRACK_TX;
-  tx: Transaction;
+  tx: ITransaction;
 }
 
 export interface ITrackTxsAction {
   type: ActionTypes.TRACK_TXS;
-  txs: Transaction[];
+  txs: ITransaction[];
 }
 
 export interface ILoadStoredTxsAction {
   type: ActionTypes.LOAD_STORED_TXS;
-  transactions: Transaction[];
+  transactions: ITransaction[];
 }
 
 export interface IPendingTxAction {
   type: ActionTypes.PENDING_TX;
-  txList: Transaction[];
+  txList: ITransaction[];
 }
 
 export interface ITrackedTxNotFoundAction {
@@ -37,7 +37,7 @@ export interface ITrackedTxNotFoundAction {
 
 export interface IUpdateTxsAction {
   type: ActionTypes.UPDATE_TXS;
-  payload: Transaction[];
+  payload: ITransaction[];
 }
 
 export type HistoryAction =

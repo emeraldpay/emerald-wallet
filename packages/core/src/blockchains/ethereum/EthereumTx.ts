@@ -1,12 +1,10 @@
-import { Transaction as EthTx } from 'ethereumjs-tx';
+import { Transaction as EthTx } from '@emeraldplatform/eth-account';
 import { ITransaction } from '../types';
-
-// const EthTx = require('ethereumjs-tx');
 
 class EthereumTx implements ITransaction {
 
-  public static fromRaw (hex: string): ITransaction {
-    return new EthereumTx(new EthTx(hex));
+  public static fromRaw (hex: string, chainId: any): ITransaction {
+    return new EthereumTx(new EthTx(hex, { chain: chainId }));
   }
   public internalTx: EthTx;
 

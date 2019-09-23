@@ -3,7 +3,7 @@ import BigNumber from 'bignumber.js';
 import { fromJS, List } from 'immutable';
 
 import { BlockchainCode } from '@emeraldwallet/core';
-import { Transaction } from '../types';
+import { ITransaction } from '../types';
 import { loadTransactions, storeTransactions } from './historyStorage';
 import { reducer as historyReducers } from './reducer';
 import { ActionTypes, ITrackTxAction, IUpdateTxsAction } from './types';
@@ -93,7 +93,7 @@ describe('historyReducer', () => {
   });
 
   it('should update TXS data with tx.input', () => {
-    const tx: Transaction = {
+    const tx: ITransaction = {
       blockHash: '0xc87e5117923e756e5d262ef230374b73ebe47f232b0f029fa65cf6614d959100',
       blockNumber: '0x17',
       from: '0x0178537bb1d7bb412101cdb7389c28fd4cf5ac0a',
@@ -187,7 +187,7 @@ describe('historyReducer', () => {
   it('should handle UPDATE_TXS', () => {
     // prepare
 
-    const txs: Transaction[] = [{
+    const txs: ITransaction[] = [{
       blockHash: '0xc87e5117923e756e5d262ef230374b73ebe47f232b0f029fa65cf6614d959100',
       blockNumber: '0x17',
       from: '0x0178537bb1d7bb412101cdb7389c28fd4cf5ac0a',

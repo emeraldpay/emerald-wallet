@@ -1,6 +1,6 @@
 import { convert } from '@emeraldplatform/core';
 import { fromJS, Map } from 'immutable';
-import { Transaction } from '../types';
+import { ITransaction } from '../types';
 import {
   ActionTypes,
   HistoryAction,
@@ -34,7 +34,7 @@ function isTracked (state: any, tx: any) {
   return state.get('trackedTransactions').some((x: any) => tx.get('hash') === x.get('hash'));
 }
 
-function createTx (data: Transaction) {
+function createTx (data: ITransaction) {
   const values: {[key: string]: any} = {
     hash: data.hash,
     to: data.to

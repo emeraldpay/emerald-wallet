@@ -1,7 +1,8 @@
-import { Units, Wei } from '@emeraldplatform/eth';
+import { Units as EthUnits, Wei } from '@emeraldplatform/eth';
 import BigNumber from 'bignumber.js';
 import { DisplayEtherTx, IDisplayTx } from '..';
-import { targetFromNumber, TxTarget, ValidationResult } from './types';
+import { IUnits, Units } from '../../Units';
+import { ITx, targetFromNumber, TxTarget, ValidationResult } from './types';
 
 export interface ITxDetails {
   from?: string;
@@ -13,7 +14,7 @@ export interface ITxDetails {
   gas: BigNumber;
 }
 
-export interface TxDetailsPlain {
+export interface ITxDetailsPlain {
   from?: string;
   to?: string;
   target: number;
@@ -30,33 +31,33 @@ const TxDefaults: ITxDetails = {
   target: TxTarget.MANUAL
 };
 
-function toPlainDetails (tx: ITxDetails): TxDetailsPlain {
+function toPlainDetails (tx: ITxDetails): ITxDetailsPlain {
   return {
-    amount: tx.amount.toString(Units.WEI, 0, false),
+    amount: tx.amount.toString(EthUnits.WEI, 0, false),
     from: tx.from,
     gas: tx.gas.toNumber(),
-    gasPrice: tx.gasPrice.toString(Units.WEI, 0, false),
+    gasPrice: tx.gasPrice.toString(EthUnits.WEI, 0, false),
     target: tx.target.valueOf(),
     to: tx.to,
-    totalBalance: tx.totalBalance == null ? undefined : tx.totalBalance.toString(Units.WEI, 0, false)
+    totalBalance: tx.totalBalance == null ? undefined : tx.totalBalance.toString(EthUnits.WEI, 0, false)
   };
 }
 
-function fromPlainDetails (plain: TxDetailsPlain): ITxDetails {
+function fromPlainDetails (plain: ITxDetailsPlain): ITxDetails {
   return {
-    amount: new Wei(plain.amount, Units.WEI),
+    amount: new Wei(plain.amount, EthUnits.WEI),
     from: plain.from,
     gas: new BigNumber(plain.gas),
-    gasPrice: new Wei(plain.gasPrice, Units.WEI),
+    gasPrice: new Wei(plain.gasPrice, EthUnits.WEI),
     target: targetFromNumber(plain.target),
     to: plain.to,
-    totalBalance: plain.totalBalance == null ? undefined : new Wei(plain.totalBalance, Units.WEI)
+    totalBalance: plain.totalBalance == null ? undefined : new Wei(plain.totalBalance, EthUnits.WEI)
   };
 }
 
-export class CreateEthereumTx implements ITxDetails {
+export class CreateEthereumTx implements ITxDetails, ITx {
 
-  public static fromPlain (details: TxDetailsPlain): CreateEthereumTx {
+  public static fromPlain (details: ITxDetailsPlain): CreateEthereumTx {
     return new CreateEthereumTx(fromPlainDetails(details));
   }
   public from?: string;
@@ -80,7 +81,7 @@ export class CreateEthereumTx implements ITxDetails {
     this.gas = details.gas;
   }
 
-  public dump (): TxDetailsPlain {
+  public dump (): ITxDetailsPlain {
     return toPlainDetails(this);
   }
 
@@ -93,6 +94,20 @@ export class CreateEthereumTx implements ITxDetails {
       this.from = from;
     }
     this.totalBalance = balance;
+  }
+
+  public getTotalBalance (): IUnits {
+    return this.totalBalance ?
+      new Units(this.totalBalance.value.toString(10), 18) :
+      new Units(0, 18);
+  }
+
+  public getAmount (): IUnits {
+    return new Units(this.amount.toWei().toString(10), 18);
+  }
+
+  public setAmount (a: IUnits) {
+    this.amount = new Wei(a.amount, EthUnits.WEI);
   }
 
   public validate (): ValidationResult {
@@ -150,10 +165,10 @@ export class CreateEthereumTx implements ITxDetails {
 
   public debug (): string {
     const change = this.getChange();
-    return `Send ${this.from} -> ${this.to} of ${this.amount.toEther()} using ${this.gas} at ${this.gasPrice.toString(Units.MWEI, undefined, true)}.\n` +
+    return `Send ${this.from} -> ${this.to} of ${this.amount.toEther()} using ${this.gas} at ${this.gasPrice.toString(EthUnits.MWEI, undefined, true)}.\n` +
            `Total to send: ${this.getTotal()} (${this.getFees()} are fees),` +
-              `account has ${this.totalBalance} (${this.totalBalance == null ? null : this.totalBalance.toString(Units.WEI)} Wei), ` +
-              `will have ${change} (${change == null ? null : change.toString(Units.WEI)} Wei)`;
+              `account has ${this.totalBalance} (${this.totalBalance == null ? null : this.totalBalance.toString(EthUnits.WEI)} Wei), ` +
+              `will have ${change} (${change == null ? null : change.toString(EthUnits.WEI)} Wei)`;
 
   }
 

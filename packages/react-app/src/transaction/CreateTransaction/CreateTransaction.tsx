@@ -1,8 +1,8 @@
 import { convert, toBaseUnits } from '@emeraldplatform/core';
-import { Units, Wei } from '@emeraldplatform/eth';
+import { Units as EthUnits, Wei } from '@emeraldplatform/eth';
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import { blockchainByName, BlockchainCode, Blockchains, IAccount, workflow } from '@emeraldwallet/core';
+import { blockchainByName, BlockchainCode, Blockchains, IAccount, IUnits, workflow } from '@emeraldwallet/core';
 import { registry } from '@emeraldwallet/erc20';
 import {
   addressBook,
@@ -102,6 +102,7 @@ class CreateTransaction extends React.Component<ICreateTxProps, ICreateTxState> 
     tx.gas = new BigNumber(props.gasLimit || DEFAULT_GAS_LIMIT);
     return tx;
   }
+
   constructor (props: ICreateTxProps) {
     super(props);
     this.onChangeFrom = this.onChangeFrom.bind(this);
@@ -154,16 +155,13 @@ class CreateTransaction extends React.Component<ICreateTxProps, ICreateTxState> 
     this.transaction = tx;
   }
 
-  /**
-   * @param amount Wei class
-   */
-  public onChangeAmount = (amount: any) => {
+  public onChangeAmount = (amount: IUnits) => {
     // TODO check if Wei instance
     if (typeof amount !== 'object') {
       return;
     }
     const tx = this.transaction;
-    tx.amount = amount;
+    tx.setAmount(amount);
     tx.target = TxTarget.MANUAL;
     this.transaction = tx;
   }

@@ -1,7 +1,7 @@
 import { ButtonGroup } from '@emeraldplatform/ui';
-import { workflow } from '@emeraldwallet/core';
-import * as React from 'react';
+import { IUnits, workflow } from '@emeraldwallet/core';
 import { Button } from '@emeraldwallet/ui';
+import * as React from 'react';
 import AmountField from './AmountField';
 import FormFieldWrapper from './FormFieldWrapper';
 import FormLabel from './FormLabel';
@@ -16,11 +16,10 @@ function getStyles () {
   };
 }
 
-type CreateEthereumTx = workflow.CreateEthereumTx;
 const { ValidationResult } = workflow;
 
 export interface IProps {
-  tx: CreateEthereumTx;
+  tx: workflow.CreateEthereumTx | workflow.CreateERC20Tx;
   token: string;
   tokenSymbols: string[];
   addressBookAddresses?: string[];
@@ -32,7 +31,7 @@ export interface IProps {
   onSubmit?: Function;
   onCancel?: any;
   onChangeTo?: any;
-  onChangeAmount?: Function;
+  onChangeAmount?: (amount: IUnits) => void;
   onChangeFrom?: any;
   onChangeGasLimit?: any;
   onChangeToken?: any;
@@ -61,7 +60,7 @@ class CreateTransaction extends React.Component<IProps> {
             onChangeToken={this.props.onChangeToken}
             selectedToken={this.props.token}
             tokenSymbols={this.props.tokenSymbols}
-            balance={this.props.tx.totalBalance}
+            balance={this.props.tx.getTotalBalance()}
             fiatCurrency={this.props.currency}
             fiatBalance={this.props.fiatBalance}
           />
@@ -78,7 +77,8 @@ class CreateTransaction extends React.Component<IProps> {
 
         <FormFieldWrapper>
           <AmountField
-            amount={this.props.tx.amount}
+            tokenDecimals={18}
+            amount={this.props.tx.getAmount()}
             onChangeAmount={this.props.onChangeAmount}
             onMaxClicked={this.props.onMaxClicked}
           />

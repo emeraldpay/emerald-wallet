@@ -1,3 +1,5 @@
+import { IUnits } from '../../Units';
+
 export enum TxTarget {
   MANUAL,
   SEND_ALL
@@ -16,4 +18,10 @@ export enum ValidationResult {
   NO_TO,
   INSUFFICIENT_FUNDS,
   INSUFFICIENT_TOKEN_FUNDS
+}
+
+export interface ITx {
+  getTotalBalance: () => IUnits;
+  getAmount: () => IUnits;
+  setAmount: (amount: IUnits) => void;
 }

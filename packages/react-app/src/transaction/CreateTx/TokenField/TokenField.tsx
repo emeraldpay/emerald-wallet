@@ -1,4 +1,4 @@
-import { Wei } from '@emeraldplatform/eth';
+import { IUnits } from '@emeraldwallet/core';
 import { MenuItem, TextField } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
@@ -20,7 +20,7 @@ interface IProps {
   onChangeToken?: any;
   selectedToken: string;
   tokenSymbols: string[];
-  balance?: Wei;
+  balance?: IUnits;
   fiatBalance?: string;
   fiatCurrency?: string;
   classes?: any;

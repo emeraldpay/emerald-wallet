@@ -13,13 +13,14 @@
     "test:coverage": "jest --coverage && codecov"
   },
   "dependencies": {
-    "@emeraldplatform/core": "0.5.1",
+    "@emeraldplatform/core": "0.5.4",
     "@emeraldplatform/eth": "^0.5.1",
+    "@emeraldplatform/eth-account": "0.5.7",
     "@emeraldplatform/eth-rpc": "^0.5.3",
-    "bignumber.js": "8.0.2",
-    "ethereumjs-tx": "2.1.1"
+    "bignumber.js": "8.0.2"
   },
   "devDependencies": {
+    "@types/bn.js": "^4.11.5",
     "@types/jest": "^24.0.9",
     "@types/node": "^11.10.4",
     "jest": "^24.1.0",

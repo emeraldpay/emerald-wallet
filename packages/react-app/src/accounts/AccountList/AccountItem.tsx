@@ -1,9 +1,7 @@
 import { Account as AddressAvatar, ButtonGroup } from '@emeraldplatform/ui';
 import { blockchainByName, IAccount } from '@emeraldwallet/core';
 import { Button, CoinAvatar } from '@emeraldwallet/ui';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Grid from '@material-ui/core/Grid';
+import { Card, CardContent, Grid } from '@material-ui/core';
 import withTheme from '@material-ui/core/styles/withTheme';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
@@ -65,8 +63,8 @@ export class Account extends React.Component<IAccountProps> {
     };
 
     const { coinTicker } = blockchainByName(account.blockchain).params;
-
     const balance = account.balance;
+
     return (
         <Card className={classes.card}>
           <CardContent>
@@ -85,13 +83,15 @@ export class Account extends React.Component<IAccountProps> {
               <Grid container={true} item={true} xs={2}>
                 <div className={classes.identityIconContainer}>
                   <div style={{ marginLeft: '10px' }}>
-                    {balance && <AccountBalance
-                      fiatStyle={fiatStyle}
-                      balance={balance}
-                      decimals={18}
-                      symbol={coinTicker}
-                      showFiat={showFiat}
-                    />}
+                    {balance && (
+                      <AccountBalance
+                        fiatStyle={fiatStyle}
+                        balance={balance}
+                        decimals={6}
+                        symbol={coinTicker}
+                        showFiat={showFiat}
+                      />
+                      )}
                     {!balance && 'loading...'}
                   </div>
                 </div>
