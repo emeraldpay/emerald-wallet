@@ -6,7 +6,12 @@
     "moduleResolution": "node",
     "strict": true,
     "rootDirs": ["src"],
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "typeRoots": [
+      "./typings",
+      "node_modules/@types",
+      "../../node_modules/@types"
+    ]
   },
   "include": [
     "src/**/*.ts"

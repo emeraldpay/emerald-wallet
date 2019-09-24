@@ -1,4 +1,4 @@
-import { Transaction as EthTx } from '@emeraldplatform/eth-account';
+import { Transaction as EthTx } from 'ethereumjs-tx';
 import { ITransaction } from '../types';
 
 class EthereumTx implements ITransaction {
