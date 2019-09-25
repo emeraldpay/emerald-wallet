@@ -1246,10 +1246,10 @@
     ethereumjs-abi "0.6.7"
     ethereumjs-util "6.1.0"
 
-"@emeraldplatform/core@0.5.4", "@emeraldplatform/core@^0.5.4":
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/@emeraldplatform/core/-/core-0.5.4.tgz#8e6a63d953e9acd24e6c6fb29051ec47ca70edc5"
-  integrity sha512-8y1COX090H/r1PgHihs3xW88URY7qGbzQZToSSJbEBnSSq53gZhvt0XjvTI7TPWZJDZaTU0McqoRgyOzE78WQg==
+"@emeraldplatform/core@0.5.8":
+  version "0.5.8"
+  resolved "https://registry.yarnpkg.com/@emeraldplatform/core/-/core-0.5.8.tgz#84502944737443cc4e5b9bbd20150c1fc4410d19"
+  integrity sha512-r/sbQ3HzDz+t5lsRevbg9FcStOWHEJAcUoqWqsMSOxBPE7bPxjGfSKQTmoT6Kv/uDIHEn7fEzDsZuz3DkOnWMA==
   dependencies:
     bignumber.js "8.0.2"
     ethereumjs-abi "0.6.7"
@@ -1258,6 +1258,14 @@
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/@emeraldplatform/core/-/core-0.5.2.tgz#028a3cd6e82c2a382ca3df90759254b3114f2555"
   integrity sha512-8lvrttxY4bPY063C1YxcqUDbqhHyiBIR03ClMjo5QSlD4nJC4bmMHokojbuVbNvV+9qWsvS45DgNj8BGFBRN7A==
+  dependencies:
+    bignumber.js "8.0.2"
+    ethereumjs-abi "0.6.7"
+
+"@emeraldplatform/core@^0.5.4":
+  version "0.5.4"
+  resolved "https://registry.yarnpkg.com/@emeraldplatform/core/-/core-0.5.4.tgz#8e6a63d953e9acd24e6c6fb29051ec47ca70edc5"
+  integrity sha512-8y1COX090H/r1PgHihs3xW88URY7qGbzQZToSSJbEBnSSq53gZhvt0XjvTI7TPWZJDZaTU0McqoRgyOzE78WQg==
   dependencies:
     bignumber.js "8.0.2"
     ethereumjs-abi "0.6.7"

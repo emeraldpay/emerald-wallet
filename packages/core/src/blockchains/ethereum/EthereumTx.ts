@@ -1,3 +1,4 @@
+import { Address, EthAddress } from '@emeraldplatform/core';
 import Common from 'ethereumjs-common';
 import { Transaction as EthTx } from 'ethereumjs-tx';
 import { ITransaction } from '../types';
@@ -28,12 +29,12 @@ class EthereumTx implements ITransaction {
     return this.internalTx.verifySignature();
   }
 
-  public getSenderAddress (): string {
-    return this.internalTx.getSenderAddress().toString('hex');
+  public getSenderAddress (): Address {
+    return EthAddress.fromHexString('0x' + this.internalTx.getSenderAddress().toString('hex'));
   }
 
-  public getRecipientAddress (): string {
-    return this.internalTx.to.toString('hex');
+  public getRecipientAddress (): Address {
+    return EthAddress.fromHexString('0x' + this.internalTx.to.toString('hex'));
   }
 
   public getValue (): any {

@@ -225,8 +225,8 @@ function verifySender (expected: string): (a: string, c: BlockchainCode) => Prom
     const tx = EthereumTx.fromRaw(raw, chainId);
     if (tx.verifySignature()) {
       console.debug('Tx signature verified');
-      if (`0x${tx.getSenderAddress().toLowerCase()}` !== expected.toLowerCase()) {
-        console.error(`WRONG SENDER: 0x${tx.getSenderAddress()} != ${expected}`);
+      if (!tx.getSenderAddress().equals(EthAddress.fromHexString(expected))) {
+        console.error(`WRONG SENDER: 0x${tx.getSenderAddress().toString()} != ${expected}`);
         reject(new Error('Emerald Vault returned signature from wrong Sender'));
       } else {
         resolve(raw);

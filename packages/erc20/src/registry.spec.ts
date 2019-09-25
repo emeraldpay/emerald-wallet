@@ -8,4 +8,10 @@ describe('registry', () => {
     expect(token.address).toEqual('0x085fb4f24031eaedbc2b611aa528f22343eb52db');
     expect(token.decimals).toEqual(8);
   });
+
+  it('should find by token address', () => {
+    const token = registry.byAddress(BlockchainCode.ETC, '0x085fb4f24031eaedbc2b611aa528f22343eb52db');
+    expect(token).toBeDefined();
+    expect(token.symbol).toEqual('BEC');
+  });
 });

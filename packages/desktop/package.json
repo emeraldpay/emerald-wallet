@@ -70,7 +70,7 @@
   },
   "dependencies": {
     "@emeraldplatform/contracts": "0.5.1",
-    "@emeraldplatform/core": "^0.5.4",
+    "@emeraldplatform/core": "0.5.8",
     "@emeraldplatform/eth": "0.5.1",
     "@emeraldplatform/eth-account": "0.5.7",
     "@emeraldplatform/eth-node": "0.5.1",

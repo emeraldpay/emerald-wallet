@@ -1,5 +1,6 @@
 const { app, BrowserWindow } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
-const { protocolHandler } = require('./protocol');
+const { protocolHandler } = require('@emeraldwallet/electron-app').protocol;
+
 const log = require('./logger');
 
 function assertSingletonWindow() {

@@ -34,5 +34,13 @@ export const registry = {
       throw new Error(`Could not find token with symbol ${symbol} for chain ${chain}`);
     }
     return result[0];
+  },
+  byAddress: (chain: BlockchainCode, address: string) => {
+    const forChain: any[] = registry.tokens[chain];
+    const result = forChain.filter((v) => v.address.toLowerCase() === address.toLowerCase());
+    if (result.length >= 1) {
+      return result[0];
+    }
+    return null;
   }
 };

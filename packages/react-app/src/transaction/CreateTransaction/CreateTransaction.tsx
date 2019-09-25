@@ -153,6 +153,11 @@ class CreateTransaction extends React.Component<ICreateTxProps, ICreateTxState> 
         tx.gas = BigNumber.max(tx.gas, new BigNumber(DEFAULT_ERC20_GAS_LIMIT));
         this.transaction = tx;
       }
+    } else {
+      // Gas for ordinary transaction
+      const tx = this.transaction;
+      tx.gas = BigNumber.max(tx.gas, new BigNumber(DEFAULT_GAS_LIMIT));
+      this.transaction = tx;
     }
     this.setState({ token: tokenSymbol });
   }

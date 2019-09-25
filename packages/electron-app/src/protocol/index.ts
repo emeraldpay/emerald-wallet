@@ -1,11 +1,10 @@
-const { app, protocol, webContents } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
-const log = require('../logger');
+import { app, webContents } from 'electron';
 
 const getMainWebContents = () => webContents
   .getAllWebContents()
-  .find((webcontent) => !!webcontent.browserWindowOptions);
+  .find((webcontent: any) => !!webcontent.browserWindowOptions);
 
-function protocolHandler(event, url) {
+export function protocolHandler (event: any, url: string) {
   if (event) { event.preventDefault(); }
 
   const wc = getMainWebContents();
@@ -17,7 +16,7 @@ function protocolHandler(event, url) {
   wc.on('did-finish-load', () => wc.send('protocol', { url }));
 }
 
-function startProtocolHandler() {
+export function startProtocolHandler () {
   app.setAsDefaultProtocolClient('ethereum');
 
   app.on('will-finish-launching', () => {
@@ -28,8 +27,3 @@ function startProtocolHandler() {
     protocolHandler(null, process.argv[1]);
   }
 }
-
-module.exports = {
-  startProtocolHandler,
-  protocolHandler,
-};
