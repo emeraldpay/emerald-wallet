@@ -4,4 +4,4 @@ import * as React from 'react';
 import HdPath from '../../src/components/common/HdPath';
 
 storiesOf('HdPath', module)
-  .add('default', () => (<HdPath onChange={action('onChange')} />));
+  .add('default', () => (<HdPath value={''} onChange={action('onChange')} />));

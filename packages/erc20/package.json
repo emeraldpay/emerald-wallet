@@ -36,6 +36,7 @@
     ]
   },
   "dependencies": {
+    "@emeraldplatform/core": "0.5.4",
     "@emeraldwallet/core": "^2.0.3"
   }
 }

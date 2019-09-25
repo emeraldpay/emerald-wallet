@@ -1,7 +1,6 @@
 import { Checkbox, Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import MenuItem from '@material-ui/core/MenuItem';
-import TextField from '@material-ui/core/TextField';
+import { MenuItem, TextField } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import { TextAlignProperty } from 'csstype';
 import * as React from 'react';
@@ -33,7 +32,7 @@ const styles = {
   }
 };
 
-interface Props {
+interface IProps {
   t: TranslateFn;
   onSubmit?: any;
   goBack?: any;
@@ -44,15 +43,15 @@ interface Props {
   language: string;
 }
 
-interface State {
+interface IState {
   currency: string;
   language: string;
   showHiddenAccounts: boolean;
   numConfirmations: number;
 }
 
-export class Settings extends React.Component<Props, State> {
-  constructor (props: Props) {
+export class Settings extends React.Component<IProps, IState> {
+  constructor (props: IProps) {
     super(props);
     this.state = {
       showHiddenAccounts: this.props.showHiddenAccounts,

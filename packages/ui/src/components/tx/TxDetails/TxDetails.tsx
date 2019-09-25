@@ -115,9 +115,11 @@ export class TxDetails extends React.Component<ITxDetailsProps> {
                 <div className={classes.value}>
                   {transaction.value ? `${new Wei(transaction.value).toEther()} ${tokenSymbol}` : '--'}
                 </div>
-                {fiatAmount && (<div className={classes.value}>
-                  {fiatAmount} {fiatCurrency}
-                </div>) }
+                {fiatAmount && (
+                  <div className={classes.value}>
+                    {fiatAmount} {fiatCurrency}
+                  </div>
+                )}
               </div>
               <div>
                 <TxStatus status={txStatus} />
@@ -165,13 +167,14 @@ export class TxDetails extends React.Component<ITxDetailsProps> {
             <div className={classes.fieldName}>To</div>
           </div>
           <div style={{ ...styles.right, alignItems: 'center' }}>
-            {transaction.to
-            && <Account
-              address={transaction.to}
-              identity={true}
-              identityProps={{ size: 30 }}
-              onClick={this.handleToClick}
-            />}
+            {transaction.to && (
+              <Account
+                address={transaction.to}
+                identity={true}
+                identityProps={{ size: 30 }}
+                onClick={this.handleToClick}
+              />
+            )}
           </div>
         </div>
 

@@ -29,8 +29,10 @@ enum PAGES {
 }
 
 const DEFAULT_GAS_LIMIT = '21000';
+const DEFAULT_ERC20_GAS_LIMIT = '40000';
 
 interface ICreateTxProps {
+  chain: BlockchainCode;
   useLedger: boolean;
   currency: string;
   tokenSymbols: string[];
@@ -141,8 +143,18 @@ class CreateTransaction extends React.Component<ICreateTxProps, ICreateTxState> 
     this.transaction = tx;
   }
 
-  public onChangeToken = (token: any) => {
-    this.setState({ token });
+  public onChangeToken = (tokenSymbol: any) => {
+    const currentChain = Blockchains[this.props.chain];
+    if (currentChain.params.coinTicker !== tokenSymbol) {
+      const tokenInfo = registry.bySymbol(this.props.chain, tokenSymbol);
+      if (tokenInfo) {
+        // Adjust Gas Limit
+        const tx = this.transaction;
+        tx.gas = BigNumber.max(tx.gas, new BigNumber(DEFAULT_ERC20_GAS_LIMIT));
+        this.transaction = tx;
+      }
+    }
+    this.setState({ token: tokenSymbol });
   }
 
   public onChangePassword = (password: string) => {
@@ -351,6 +363,7 @@ export default connect(
     const fiatRate = state.wallet.settings.get('localeRate');
 
     return {
+      chain,
       amount: ownProps.amount || Wei.ZERO,
       gasLimit: ownProps.gasLimit || DEFAULT_GAS_LIMIT,
       typedData: ownProps.typedData,

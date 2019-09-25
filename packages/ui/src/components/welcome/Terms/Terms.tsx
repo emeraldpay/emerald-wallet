@@ -4,11 +4,11 @@ import { CSSProperties } from '@material-ui/styles';
 import * as React from 'react';
 import Button from '../../common/Button';
 
-interface Props {
+interface IProps {
   onAgree?: any;
 }
 
-export const Terms = ({ onAgree }: Props) => {
+export const Terms = ({ onAgree }: IProps) => {
   const style = {
     width: '100%',
     height: '250px',

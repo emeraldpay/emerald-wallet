@@ -6,6 +6,8 @@ import createLogger from '../../../utils/logger';
 
 const log = createLogger('settingsActions');
 
+// TODO: move to store/settings
+
 export function loadSettings() {
   log.debug('Loading settings...');
   return (dispatch, getState) => {

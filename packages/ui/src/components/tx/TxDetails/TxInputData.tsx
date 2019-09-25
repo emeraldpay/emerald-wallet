@@ -15,6 +15,7 @@ const TxInputData = (props: ITxInputDataProps) => {
   }
   return (
     <textarea
+      readOnly={true}
       rows={10}
       value={data}
     />

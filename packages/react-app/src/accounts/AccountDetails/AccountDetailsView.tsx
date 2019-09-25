@@ -111,13 +111,15 @@ export class AccountShow extends React.Component<AccountShowProps, State> {
                 </div>}
                 rightColumn={
                   <React.Fragment>
-                    {!this.state.edit && <AddressAvatar
-                      editable={true}
-                      address={acc.id}
-                      name={acc.name}
-                      onEditClick={this.handleEdit}
-                      addressProps={{ hideCopy: false }}
-                    />}
+                    {!this.state.edit && (
+                      <AddressAvatar
+                        editable={true}
+                        address={acc.id}
+                        name={acc.name}
+                        onEditClick={this.handleEdit}
+                        addressProps={{ hideCopy: false }}
+                      />
+                      )}
                     {this.state.edit && <InlineEdit
                       placeholder='Account name'
                       initialValue={acc.name}

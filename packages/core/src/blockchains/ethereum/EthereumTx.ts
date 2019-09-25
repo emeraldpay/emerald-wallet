@@ -1,9 +1,17 @@
+import Common from 'ethereumjs-common';
 import { Transaction as EthTx } from 'ethereumjs-tx';
 import { ITransaction } from '../types';
 
 class EthereumTx implements ITransaction {
 
   public static fromRaw (hex: string, chainId: any): ITransaction {
+    if (chainId === 62 || chainId === 61) {
+      // Because ethereumjs-tx doesn't support MORDEN and ETC
+      const custom = Common.forCustomChain(1, {
+        chainId
+      }, 'byzantium');
+      return new EthereumTx(new EthTx(hex, { common: custom }));
+    }
     return new EthereumTx(new EthTx(hex, { chain: chainId }));
   }
   public internalTx: EthTx;
@@ -30,6 +38,10 @@ class EthereumTx implements ITransaction {
 
   public getValue (): any {
     return '0x' + this.internalTx.value.toString('hex');
+  }
+
+  public getData (): any {
+    return this.internalTx.data.toString('hex');
   }
 }
 

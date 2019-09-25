@@ -25,23 +25,6 @@ export function readConfig() {
   };
 }
 
-export function useRpc(gethProvider) {
-  return (dispatch) => {
-    dispatch({
-      type: 'LAUNCHER/CONFIG',
-      config: {
-        ...gethProvider,
-      },
-    });
-    dispatch({
-      type: 'LAUNCHER/SETTINGS',
-      updated: true,
-    });
-
-    return dispatch(saveSettings());
-  };
-}
-
 export function agreeOnTerms(v) {
   ipcRenderer.send('terms', v);
   return {
@@ -107,10 +90,11 @@ export function connecting(value) {
   };
 }
 
-export function setChain(chain, chainId) {
-  return {
-    type: 'LAUNCHER/CHAIN',
-    chain,
-    chainId,
-  };
-}
+// TODO: remove
+// export function setChain(chain, chainId) {
+//   return {
+//     type: 'LAUNCHER/CHAIN',
+//     chain,
+//     chainId,
+//   };
+// }

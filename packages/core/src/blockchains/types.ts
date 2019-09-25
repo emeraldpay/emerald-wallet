@@ -4,4 +4,5 @@ export interface ITransaction {
   getRecipientAddress (): string;
   getValue (): any;
   getHash (): string;
+  getData (): any;
 }

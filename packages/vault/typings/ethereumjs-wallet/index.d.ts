@@ -15,36 +15,36 @@ limitations under the License.
 */
 declare module 'ethereumjs-wallet' {
   class Wallet {
-    static fromPrivateKey(key: Buffer): Wallet
-    static fromV3(json: string, password: string): Wallet
-    getPrivateKey(): Buffer
-    getPrivateKeyString(): string
-    getAddressString(): string
-    toV3String(password: string, opts?: any): string;
+    public static fromPrivateKey (key: Buffer): Wallet;
+    public static fromV3 (json: string, password: string): Wallet;
+    public getPrivateKey (): Buffer;
+    public getPrivateKeyString (): string;
+    public getAddressString (): string;
+    public toV3String (password: string, opts?: any): string;
   }
 
   namespace Wallet {}
 
-  export = Wallet
+  export = Wallet;
 }
 
 declare module 'ethereumjs-wallet/hdkey' {
 
   class Wallet {
-    static fromPrivateKey(key: Buffer): Wallet
-    static fromV3(json: string, password: string): Wallet
-    getPrivateKey(): Buffer
-    getAddressString(): string
+    public static fromPrivateKey (key: Buffer): Wallet;
+    public static fromV3 (json: string, password: string): Wallet;
+    public getPrivateKey (): Buffer;
+    public getAddressString (): string;
   }
 
   class EthereumHDKey {
-    privateExtendedKey (): string
-    publicExtendedKey (): string
-    derivePath (path: string): EthereumHDKey
-    deriveChild (index: number): EthereumHDKey
-    getWallet (): Wallet
+    public privateExtendedKey (): string;
+    public publicExtendedKey (): string;
+    public derivePath (path: string): EthereumHDKey;
+    public deriveChild (index: number): EthereumHDKey;
+    public getWallet (): Wallet;
   }
 
-  export function fromMasterSeed(seed: Buffer): EthereumHDKey
-  export function fromExtendedKey(base58key: string): EthereumHDKey
+  export function fromMasterSeed (seed: Buffer): EthereumHDKey;
+  export function fromExtendedKey (base58key: string): EthereumHDKey;
 }

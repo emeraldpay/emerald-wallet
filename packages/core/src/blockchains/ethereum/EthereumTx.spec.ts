@@ -21,5 +21,4 @@ describe('EthereumTx', () => {
     const tx = EthereumTx.fromRaw('0xf86c8203be85012a05f20082520894532c801e9cc47dd8b165e04d60dc4809d184ea9186c724990520008026a0757a98c3e116bf1dc3f0b2e6d6c5d42cd5e3bd7edb8385b7e31acc6aac1d67afa0616c169a9297bc04cec57be60184d9c8f524e6768a9395475548851572e031e9', 1);
     expect(tx.verifySignature()).toBeTruthy();
   });
-
 });
