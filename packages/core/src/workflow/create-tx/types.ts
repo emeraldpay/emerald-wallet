@@ -1,4 +1,7 @@
 import { IUnits } from '../../Units';
+import {Wei} from "@emeraldplatform/eth";
+import BigNumber from "bignumber.js";
+import {TransferType} from "./CreateErc20Tx";
 
 export enum TxTarget {
   MANUAL,
@@ -22,6 +25,21 @@ export enum ValidationResult {
 
 export interface ITx {
   getTotalBalance: () => IUnits;
+  setTotalBalance: (total: IUnits) => void;
   getAmount: () => IUnits;
   setAmount: (amount: IUnits) => void;
+}
+
+export interface ITxDetailsPlain {
+  from?: string;
+  to?: string;
+  erc20?: string;
+  target: number;
+  amount: string;
+  amountDecimals: number;
+  totalTokenBalance?: string;
+  totalEtherBalance?: string;
+  gasPrice: string;
+  gas: number;
+  transferType?: number;
 }

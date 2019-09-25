@@ -2,7 +2,7 @@ import { Units as EthUnits, Wei } from '@emeraldplatform/eth';
 import BigNumber from 'bignumber.js';
 import { DisplayEtherTx, IDisplayTx } from '..';
 import { IUnits, Units } from '../../Units';
-import { ITx, targetFromNumber, TxTarget, ValidationResult } from './types';
+import { ITx, ITxDetailsPlain, targetFromNumber, TxTarget, ValidationResult } from './types';
 
 export interface ITxDetails {
   from?: string;
@@ -12,16 +12,6 @@ export interface ITxDetails {
   totalBalance?: Wei;
   gasPrice: Wei;
   gas: BigNumber;
-}
-
-export interface ITxDetailsPlain {
-  from?: string;
-  to?: string;
-  target: number;
-  amount: string;
-  totalBalance?: string;
-  gasPrice: string;
-  gas: number;
 }
 
 const TxDefaults: ITxDetails = {
@@ -39,7 +29,9 @@ function toPlainDetails (tx: ITxDetails): ITxDetailsPlain {
     gasPrice: tx.gasPrice.toString(EthUnits.WEI, 0, false),
     target: tx.target.valueOf(),
     to: tx.to,
-    totalBalance: tx.totalBalance == null ? undefined : tx.totalBalance.toString(EthUnits.WEI, 0, false)
+    totalTokenBalance: tx.totalBalance == null ? undefined : tx.totalBalance.toString(EthUnits.WEI, 0, false),
+    amountDecimals: 18,
+    totalEtherBalance: tx.totalBalance == null ? undefined : tx.totalBalance.toString(EthUnits.WEI, 0, false)
   };
 }
 
@@ -51,7 +43,7 @@ function fromPlainDetails (plain: ITxDetailsPlain): ITxDetails {
     gasPrice: new Wei(plain.gasPrice, EthUnits.WEI),
     target: targetFromNumber(plain.target),
     to: plain.to,
-    totalBalance: plain.totalBalance == null ? undefined : new Wei(plain.totalBalance, EthUnits.WEI)
+    totalBalance: plain.totalTokenBalance == null ? undefined : new Wei(plain.totalTokenBalance, EthUnits.WEI)
   };
 }
 
@@ -170,6 +162,10 @@ export class CreateEthereumTx implements ITxDetails, ITx {
               `account has ${this.totalBalance} (${this.totalBalance == null ? null : this.totalBalance.toString(EthUnits.WEI)} Wei), ` +
               `will have ${change} (${change == null ? null : change.toString(EthUnits.WEI)} Wei)`;
 
+  }
+
+  public setTotalBalance (total: IUnits): void {
+    this.totalBalance = new Wei(total.amount, EthUnits.WEI);
   }
 
 }

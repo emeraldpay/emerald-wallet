@@ -2,18 +2,18 @@ import { AccountSelect } from '@emeraldplatform/ui';
 import * as React from 'react';
 import FormLabel from '../FormLabel';
 
-interface Props {
+interface IProps {
   onChangeAccount?: any;
-  accounts?: any;
+  accounts?: string[];
   selectedAccount?: string;
 }
 
-class FromField extends React.Component<Props> {
+class FromField extends React.Component<IProps> {
 
   public inputStyles = {
     flexGrow: 5
   };
-  constructor (props: Props) {
+  constructor (props: IProps) {
     super(props);
     this.onChangeAccount = this.onChangeAccount.bind(this);
   }

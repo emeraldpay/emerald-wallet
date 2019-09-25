@@ -32,7 +32,7 @@ const styles = (theme?: any) => ({
 });
 
 interface IProps {
-  tx: workflow.CreateEthereumTx;
+  tx: workflow.CreateEthereumTx | workflow.CreateERC20Tx;
   fiatCurrency?: any;
   fiatRate?: any;
   onCancel?: any;
@@ -171,21 +171,22 @@ class SignTx extends React.Component<IProps, IState> {
           getTypedDataOrDeploy(this.props)
         }
         <div style={{ marginTop: '10px' }}>
-          {!this.props.useLedger &&
-          (<div className={classes.formRow}>
-            <div className={classes.left}>
-              <div className={classes.fieldName}>Password</div>
+          {!this.props.useLedger && (
+            <div className={classes.formRow}>
+              <div className={classes.left}>
+                <div className={classes.fieldName}>Password</div>
+              </div>
+              <div className={classes.right}>
+                <Input
+                  value={this.state.password}
+                  type='password'
+                  onChange={this.handlePasswordChange}
+                  // style={{ minWidth: '600px' }}
+                  placeholder='Enter your Password'
+                />
+              </div>
             </div>
-            <div className={classes.right}>
-              <Input
-                value={this.state.password}
-                type='password'
-                onChange={this.handlePasswordChange}
-                // style={{ minWidth: '600px' }}
-                placeholder='Enter your Password'
-              />
-            </div>
-          </div>)}
+          )}
 
           <div className={classes.formRow}>
             <div className={classes.left}/>

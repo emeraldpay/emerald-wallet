@@ -1350,6 +1350,18 @@
     "@material-ui/core" "^4.3.3"
     react "^16.8.6"
 
+"@emeraldplatform/ui@0.5.8":
+  version "0.5.8"
+  resolved "https://registry.yarnpkg.com/@emeraldplatform/ui/-/ui-0.5.8.tgz#a7c1d795ea2bfeb59ec26dd395967368803fc8e6"
+  integrity sha512-SYgPlFB6Q6MjzNeGHwT5sP5v1UZ8BKVTrT6KZ4ZedY1SxWUNN/Ou/o6xTr55wbw2z+ZKYMTd8+jrFoImoJ1wEA==
+  dependencies:
+    "@emeraldplatform/ui-icons" "^0.5.2"
+    "@material-ui/core" "^4.3.3"
+    classnames "^2.2.6"
+    copy-to-clipboard "^3.0.8"
+    qs "^6.5.2"
+    react "^16.8.6"
+
 "@emeraldplatform/ui@^0.5.2":
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/@emeraldplatform/ui/-/ui-0.5.2.tgz#11caffed88f34a4350d859fa15b0556d3a0e2902"
@@ -5498,11 +5510,6 @@ bignumber.js@8.0.2:
   version "8.0.2"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-8.0.2.tgz#d8c4e1874359573b1ef03011a2d861214aeef137"
   integrity sha512-EiuvFrnbv0jFixEQ9f58jo7X0qI2lNGIr/MxntmVzQc5JUweDSh8y8hbTCAomFtqwUPIOWcLXP0VEOSZTG7FFw==
-
-bignumber.js@^8.1.1:
-  version "8.1.1"
-  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-8.1.1.tgz#4b072ae5aea9c20f6730e4e5d529df1271c4d885"
-  integrity sha512-QD46ppGintwPGuL1KqmwhR0O+N2cZUg8JG/VzwI2e28sM9TqHjQB10lI4QAaMHVbLzwVLLAwEglpKPViWX+5NQ==
 
 binary-extensions@^1.0.0:
   version "1.13.1"

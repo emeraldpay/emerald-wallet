@@ -1,14 +1,15 @@
 import { Units as EthUnits, Wei } from '@emeraldplatform/eth';
 import BigNumber from 'bignumber.js';
+import { DisplayErc20Tx, IDisplayTx } from '..';
 import { IUnits, Units } from '../../Units';
-import { ITx, targetFromNumber, TxTarget, ValidationResult } from './types';
+import { ITx, ITxDetailsPlain, targetFromNumber, TxTarget, ValidationResult } from './types';
 
 export enum TransferType {
   STANDARD,
   DELEGATE
 }
 
-export function transferFromNumber (i: number): TransferType {
+export function transferFromNumber (i?: number): TransferType {
   if (i === TransferType.DELEGATE.valueOf()) {
     return TransferType.DELEGATE;
   }
@@ -28,20 +29,6 @@ export interface IERC20TxDetails {
   transferType: TransferType;
 }
 
-export interface IERC20TxDetailsPlain {
-  from?: string;
-  to?: string;
-  erc20: string;
-  target: number;
-  amount: string;
-  tokenDecimals: number;
-  totalTokenBalance?: string;
-  totalEtherBalance?: string;
-  gasPrice: string;
-  gas: number;
-  transferType: number;
-}
-
 const TxDefaults: IERC20TxDetails = {
   erc20: '',
   target: TxTarget.MANUAL,
@@ -51,14 +38,14 @@ const TxDefaults: IERC20TxDetails = {
   transferType: TransferType.STANDARD
 };
 
-function toPlainDetails (tx: IERC20TxDetails): IERC20TxDetailsPlain {
+function toPlainDetails (tx: IERC20TxDetails): ITxDetailsPlain {
   return {
     from: tx.from,
     to: tx.to,
     erc20: tx.erc20,
     target: tx.target.valueOf(),
     amount: tx.amount.amount,
-    tokenDecimals: tx.amount.decimals,
+    amountDecimals: tx.amount.decimals,
     totalTokenBalance: tx.totalTokenBalance == null ? undefined : tx.totalTokenBalance.amount,
     totalEtherBalance: tx.totalEtherBalance == null ? undefined : tx.totalEtherBalance.toString(EthUnits.WEI, 0, false),
     gasPrice: tx.gasPrice.toString(EthUnits.WEI, 0, false),
@@ -67,15 +54,15 @@ function toPlainDetails (tx: IERC20TxDetails): IERC20TxDetailsPlain {
   };
 }
 
-function fromPlainDetails (plain: IERC20TxDetailsPlain): IERC20TxDetails {
+function fromPlainDetails (plain: ITxDetailsPlain): IERC20TxDetails {
   return {
-    amount: new Units(plain.amount, plain.tokenDecimals),
-    erc20: plain.erc20,
+    amount: new Units(plain.amount, plain.amountDecimals),
+    erc20: plain.erc20 || '',
     from: plain.from,
     target: targetFromNumber(plain.target),
     to: plain.to,
     totalTokenBalance: plain.totalTokenBalance == null ? undefined
-      : new Units(plain.totalTokenBalance, plain.tokenDecimals),
+      : new Units(plain.totalTokenBalance, plain.amountDecimals),
     totalEtherBalance: plain.totalEtherBalance == null ? undefined : new Wei(plain.totalEtherBalance, EthUnits.WEI),
     gasPrice: new Wei(plain.gasPrice, EthUnits.WEI),
     gas: new BigNumber(plain.gas),
@@ -85,7 +72,7 @@ function fromPlainDetails (plain: IERC20TxDetailsPlain): IERC20TxDetails {
 
 export class CreateERC20Tx implements IERC20TxDetails, ITx {
 
-  public static fromPlain (details: IERC20TxDetailsPlain): CreateERC20Tx {
+  public static fromPlain (details: ITxDetailsPlain): CreateERC20Tx {
     return new CreateERC20Tx(fromPlainDetails(details));
   }
   public from?: string;
@@ -115,6 +102,10 @@ export class CreateERC20Tx implements IERC20TxDetails, ITx {
     this.transferType = source.transferType;
   }
 
+  public display (): IDisplayTx {
+    return new DisplayErc20Tx(this);
+  }
+
   public getTotalBalance (): IUnits {
     return this.totalTokenBalance ? this.totalTokenBalance : new Units(0, this.amount.decimals);
   }
@@ -127,7 +118,7 @@ export class CreateERC20Tx implements IERC20TxDetails, ITx {
     this.amount = a;
   }
 
-  public dump (): IERC20TxDetailsPlain {
+  public dump (): ITxDetailsPlain {
     return toPlainDetails(this);
   }
 
@@ -192,5 +183,9 @@ export class CreateERC20Tx implements IERC20TxDetails, ITx {
       `Total to send: ${this.getTotal()} of token, pay ${this.getFees()} of Ether fees,` +
       `account has ${this.totalTokenBalance}, will have ${change}`;
 
+  }
+
+  public setTotalBalance (total: IUnits): void {
+    this.totalTokenBalance = total;
   }
 }

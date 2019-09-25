@@ -1,8 +1,8 @@
 import { Units as EthUnits, Wei } from '@emeraldplatform/eth';
 import BigNumber from 'bignumber.js';
 import { Units } from '../../Units';
-import { CreateERC20Tx, IERC20TxDetailsPlain, TransferType } from './CreateErc20Tx';
-import { TxTarget, ValidationResult } from './types';
+import { CreateERC20Tx, TransferType } from './CreateErc20Tx';
+import {ITxDetailsPlain, TxTarget, ValidationResult} from './types';
 
 describe('CreateErc20Tx', () => {
   it('creates tx', () => {
@@ -218,12 +218,12 @@ describe('CreateErc20Tx', () => {
   });
 
   it('reads from dumps', () => {
-    const dump: IERC20TxDetailsPlain = {
+    const dump: ITxDetailsPlain = {
       from: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       erc20: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       totalEtherBalance: '1000000000057',
       totalTokenBalance: '2000000000015',
-      tokenDecimals: 8,
+      amountDecimals: 8,
       to: '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd',
       target: 1,
       amount: '999580000000500002',
@@ -247,12 +247,12 @@ describe('CreateErc20Tx', () => {
   });
 
   it('reads from dumps - delegate mode', () => {
-    const dump: IERC20TxDetailsPlain = {
+    const dump: ITxDetailsPlain = {
       from: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       erc20: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       totalEtherBalance: '1000000000057',
       totalTokenBalance: '2000000000015',
-      tokenDecimals: 8,
+      amountDecimals: 8,
       to: '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd',
       target: 1,
       amount: '999580000000500002',

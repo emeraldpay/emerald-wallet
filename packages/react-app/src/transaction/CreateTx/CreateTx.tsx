@@ -51,7 +51,7 @@ class CreateTransaction extends React.Component<IProps> {
           <FromField
             onChangeAccount={this.props.onChangeFrom}
             selectedAccount={this.props.tx.from}
-            accounts={this.props.ownAddresses}
+            accounts={[this.props.tx.from!]}
           />
         </FormFieldWrapper>
 
