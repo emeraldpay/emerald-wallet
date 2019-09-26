@@ -1,5 +1,5 @@
 language: node_js
-node_js: 8
+node_js: 10
 os:
   - linux
 env:
@@ -31,6 +31,7 @@ before_install:
   - export PATH=$PATH:$PWD/janusbin
 
 before_script:
+  - tsc -V
   - ./gitversion
   - npm install -g node-gyp license-checker
   - npm install -g codecov yarn lerna
