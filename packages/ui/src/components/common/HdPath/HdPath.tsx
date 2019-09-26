@@ -90,7 +90,6 @@ export class HdPath extends React.Component<IProps, IState> {
     this.setState({
       value: newValue
     });
-
   }
 
   public handleSuggestionsFetchRequested = ({ value }) => {
