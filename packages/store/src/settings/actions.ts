@@ -30,3 +30,14 @@ export function update (settings: ISettings) {
     });
   };
 }
+
+export function listenPrices () {
+  return (dispatch: any, getState: any) => {
+    ipcRenderer.on('prices/rate', (event: any, rates: any) => {
+      dispatch({
+        type: ActionTypes.EXCHANGE_RATES,
+        rates
+      });
+    });
+  };
+}

@@ -55,11 +55,9 @@ function refreshAll() {
 
 export function startSync() {
   log.info('Start synchronization');
-  store.dispatch(WalletSettings.actions.listenPrices());
+  store.dispatch(settings.actions.listenPrices());
 
-  const promises = [
-    // store.dispatch(history.actions.refreshTrackedTransactions()),
-  ];
+  const promises = [];
 
   promises.push(
     onceModeSet(store)
@@ -72,7 +70,6 @@ export function startSync() {
         const codes = supported.map((chain) => chain.params.code);
         log.info('Configured to use chains', codes);
 
-        store.dispatch(txhistory.actions.init(codes));
         api.connectChains(codes);
 
         supported.forEach((chain) => {
@@ -91,6 +88,10 @@ export function startSync() {
               .catch((e) => log.error(`Failed to load chain ${chainCode}`, e))
           );
         });
+
+        store.dispatch(txhistory.actions.init(codes));
+        store.dispatch(txhistory.actions.refreshTrackedTransactions());
+
         return Promise.all(loadAllChain).catch((e) => log.error('Failed to load chains', e));
       })
   );

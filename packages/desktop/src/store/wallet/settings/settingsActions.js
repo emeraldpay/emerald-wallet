@@ -37,14 +37,4 @@ export function loadSettings() {
   };
 }
 
-export function listenPrices() {
-  return (dispatch, getState) => {
-    ipcRenderer.on('prices/rate', (event, rates) => {
-      dispatch({
-        type: ActionTypes.EXCHANGE_RATES,
-        rates,
-      });
-    });
-  };
-}
 
