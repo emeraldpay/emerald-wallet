@@ -4,6 +4,12 @@ type TokensCollection = {
   [code in BlockchainCode]: any[];
 };
 
+export interface ITokenInfo {
+  address: string;
+  decimals: number;
+  symbol: string;
+}
+
 export const registry = {
   tokens: {
     [BlockchainCode.ETC]: [
@@ -27,7 +33,7 @@ export const registry = {
   all: () => {
     return registry.tokens;
   },
-  bySymbol: (chain: BlockchainCode, symbol: string) => {
+  bySymbol: (chain: BlockchainCode, symbol: string): ITokenInfo => {
     const forChain: any[] = registry.tokens[chain];
     const result = forChain.filter((v) => v.symbol === symbol);
     if (result.length < 1) {
@@ -35,7 +41,7 @@ export const registry = {
     }
     return result[0];
   },
-  byAddress: (chain: BlockchainCode, address: string) => {
+  byAddress: (chain: BlockchainCode, address: string): ITokenInfo | null => {
     const forChain: any[] = registry.tokens[chain];
     const result = forChain.filter((v) => v.address.toLowerCase() === address.toLowerCase());
     if (result.length >= 1) {

@@ -7,6 +7,7 @@ import { Button, FormRow } from '@emeraldwallet/ui';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import {fromBaseUnits} from "@emeraldplatform/core";
 
 interface IBroadcastTxViewProps {
   tx: any;
@@ -45,6 +46,7 @@ export class BroadcastTxView extends React.Component<IBroadcastTxViewProps> {
       const tokenInfo = registry.byAddress(currentChain.params.code, decoded.getRecipientAddress().toString());
       if (tokenInfo) {
         coinSymbol = tokenInfo.symbol;
+        erc20Tx.value = fromBaseUnits(erc20Tx.value, tokenInfo.decimals).toString(10);
       }
     }
 
