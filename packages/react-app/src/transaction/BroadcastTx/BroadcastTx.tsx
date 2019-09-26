@@ -1,4 +1,6 @@
-import { convert } from '@emeraldplatform/eth';
+import { fromBaseUnits } from '@emeraldplatform/core';
+import { Units as EthUnits, Wei } from '@emeraldplatform/eth';
+import { convert } from '@emeraldplatform/core'
 import { Account, ButtonGroup, Page } from '@emeraldplatform/ui';
 import { Blockchains, EthereumTx } from '@emeraldwallet/core';
 import { decodeData, registry } from '@emeraldwallet/erc20';
@@ -7,7 +9,6 @@ import { Button, FormRow } from '@emeraldwallet/ui';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import {fromBaseUnits} from "@emeraldplatform/core";
 
 interface IBroadcastTxViewProps {
   tx: any;
@@ -50,6 +51,8 @@ export class BroadcastTxView extends React.Component<IBroadcastTxViewProps> {
       }
     }
 
+    const wei = new Wei(convert.toNumber(decoded.getValue()));
+    const etherValue = wei.toString(EthUnits.ETHER, 18);
     return (
       <Page title='Publish Transaction'>
         <FormRow
@@ -67,7 +70,7 @@ export class BroadcastTxView extends React.Component<IBroadcastTxViewProps> {
             />
             <FormRow
               leftColumn={<div className={classes.fieldName}>Amount</div>}
-              rightColumn={<div>{decoded.getValue()} {coinSymbol}</div>}
+              rightColumn={<div data-testid='token-amount'>{etherValue} {coinSymbol}</div>}
             />
           </React.Fragment>
         )}
@@ -79,7 +82,7 @@ export class BroadcastTxView extends React.Component<IBroadcastTxViewProps> {
             />
             <FormRow
               leftColumn={<div className={classes.fieldName}>Amount</div>}
-              rightColumn={<div>{erc20Tx.value} {coinSymbol}</div>}
+              rightColumn={<div data-testid='token-amount'>{erc20Tx.value} {coinSymbol}</div>}
             />
           </React.Fragment>
         )}

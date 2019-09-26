@@ -1,6 +1,6 @@
 import { Wei } from '@emeraldplatform/eth';
 import { Blockchains, Currency } from '@emeraldwallet/core';
-import { screen, settings, txhistory, addresses } from '@emeraldwallet/store';
+import { addresses, screen, settings, txhistory } from '@emeraldwallet/store';
 import { TxDetails } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';

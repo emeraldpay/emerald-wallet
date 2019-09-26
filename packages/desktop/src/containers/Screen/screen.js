@@ -52,7 +52,7 @@ const Screen = (props) => {
   if (props.screen === 'repeat-tx') {
     const {transaction, toAccount, fromAccount} = props.screenItem;
     const amount = new Wei(transaction.value);
-    const to = toAccount.get('id');
+    const to = (toAccount && toAccount.id) || transaction.to;
     const gasLimit = transaction.gas;
     const { data, typedData, mode } = transaction;
     return (
