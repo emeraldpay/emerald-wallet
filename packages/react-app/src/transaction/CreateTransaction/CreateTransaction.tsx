@@ -11,7 +11,8 @@ import {
   ledger,
   screen,
   settings,
-  tokens
+  tokens,
+  transaction
 } from '@emeraldwallet/store';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
@@ -193,24 +194,6 @@ class CreateTransaction extends React.Component<ICreateTxProps, ICreateTxState> 
     this.transaction = tx;
   }
 
-  // public componentDidUpdate (prevProps: ICreateTxProps) {
-  //   console.error('componentDidUpdate');
-  //   const {
-  //     from, to, value, data
-  //   } = prevProps;
-  //   const props = this.props;
-  //   if (from !== props.from || to !== props.to || value !== props.value || data !== props.data) {
-  //     this.setState({
-  //       page: props.mode ? PAGES.SIGN : PAGES.TX,
-  //       token: this.props.tokenSymbols[0],
-  //       data: this.props.data,
-  //       typedData: this.props.typedData,
-  //       transaction: CreateTransaction.txFromProps(this.props).dump()
-  //     });
-  //   }
-  //   console.error('this.state.transaction: '+ JSON.stringify(this.state.transaction));
-  // }
-
   public componentDidMount () {
     this.setState({
       amount: this.props.amount,
@@ -312,59 +295,59 @@ class CreateTransaction extends React.Component<ICreateTxProps, ICreateTxState> 
 
 function signTokenTx (dispatch: any, ownProps: IOwnProps, args: any) {
   const {
-    transaction, password, token
+    password, token
   } = args;
   const chain = ownProps.account.blockchain;
   const tokenInfo = registry.bySymbol(chain, token);
-  const tokenUnits = toBaseUnits(convert.toBigNumber(transaction.amount), tokenInfo.decimals || 18);
+  const tokenUnits = toBaseUnits(convert.toBigNumber(args.transaction.amount), tokenInfo.decimals || 18);
 
   const txData = tokens.actions.createTokenTxData(
-    transaction.to,
+    args.transaction.to,
     tokenUnits,
     true
   );
   return dispatch(
-    addresses.actions.signTransaction(
+    transaction.actions.signTransaction(
       chain,
-      transaction.from,
+      args.transaction.from,
       password,
       tokenInfo.address,
-      transaction.gas,
-      transaction.gasPrice,
+      args.transaction.gas,
+      args.transaction.gasPrice,
       Wei.ZERO,
       txData
     )
   );
 }
 
-function signEtherTx (dispatch: any, ownProps: IOwnProps, { transaction, password }: { transaction: CreateEthereumTx, password: string }) {
+function signEtherTx (
+  dispatch: any, ownProps: IOwnProps, request: { transaction: CreateEthereumTx, password: string }) {
   const chain = ownProps.account.blockchain;
   const useLedger = ownProps.account.hardware || false;
-
   const plainTx = {
-    password,
-    from: transaction.from,
-    to: transaction.to,
-    gas: transaction.gas,
-    gasPrice: transaction.gasPrice,
-    value: transaction.amount
+    password: request.password,
+    from: request.transaction.from,
+    to: request.transaction.to,
+    gas: request.transaction.gas,
+    gasPrice: request.transaction.gasPrice,
+    value: request.transaction.amount
   };
 
-  return traceValidate(chain, plainTx, dispatch, blockchains.actions.estimateGas)
+  return traceValidate(chain, plainTx, dispatch, transaction.actions.estimateGas)
     .then(() => dispatch(ledger.actions.setWatch(false)))
     .then(() => dispatch(ledger.actions.setConnected(false)))
     .then(() => ledger.actions.closeConnection())
-    .then(() => (useLedger ? dispatch(screen.actions.showDialog('sign-transaction', transaction)) : null))
+    .then(() => (useLedger ? dispatch(screen.actions.showDialog('sign-transaction', request.transaction)) : null))
     .then(() => {
       return dispatch(
-        addresses.actions.signTransaction(
+        transaction.actions.signTransaction(
           chain,
-          transaction.from!,
-          password,
-          transaction.to!,
-          transaction.gas.toNumber(),
-          transaction.gasPrice,
-          transaction.amount,
+          request.transaction.from!,
+          request.password,
+          request.transaction.to!,
+          request.transaction.gas.toNumber(),
+          request.transaction.gasPrice,
+          request.transaction.amount,
           ''
         )
       );

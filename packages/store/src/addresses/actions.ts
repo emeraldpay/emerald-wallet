@@ -1,14 +1,12 @@
-import { convert, EthAddress } from '@emeraldplatform/core';
-import { Wei } from '@emeraldplatform/eth';
+import { EthAddress } from '@emeraldplatform/core';
 import {
-  Blockchain, blockchainByName, BlockchainCode, Blockchains, blockchains, EthereumTx, IAccount, IApi
+  Blockchain, blockchainByName, BlockchainCode, blockchains, IAccount, IApi
 } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
-import { Dispatch } from 'react';
-import { catchError, dispatchRpcError, gotoScreen } from '../screen/actions';
+import { catchError, dispatchRpcError } from '../screen/actions';
 import * as settings from '../settings';
 import * as history from '../txhistory';
-import { Dispatched, ITransaction } from '../types';
+import { Dispatched } from '../types';
 import * as selectors from './selectors';
 import {
   ActionTypes,
@@ -161,7 +159,9 @@ export function exportKeyFile (blockchain: BlockchainCode, accountId: string): a
   };
 }
 
-export function updateAccount (blockchain: BlockchainCode, address: string, name: string, description: string): Dispatched<UpdateAddressAction> {
+export function updateAccount (
+  blockchain: BlockchainCode, address: string, name: string, description: string
+): Dispatched<UpdateAddressAction> {
   return (dispatch, getState, api) => {
     const found = selectors.find(getState(), address, blockchain);
     if (!found) {
@@ -180,145 +180,6 @@ export function updateAccount (blockchain: BlockchainCode, address: string, name
           }
         });
       });
-  };
-}
-
-function unwrap (value: string[] | string | null): Promise<string> {
-  return new Promise((resolve, reject) => {
-    if (typeof value === 'string') {
-      resolve(value);
-    }
-    if (value && value.length === 1) {
-      resolve(value[0]);
-    } else {
-      reject(new Error(`Invalid list size ${value}`));
-    }
-  });
-}
-
-/**
- * Called after Tx sent
- */
-function onTxSent (dispatch: Dispatch<any>, sourceTx: ITransaction, blockchain: BlockchainCode) {
-  return (txHash: string) => {
-    // dispatch(loadAccountBalance(sourceTx.from));
-    const sentTx = { ...sourceTx, hash: txHash };
-
-    // TODO: dependency on wallet/history module!
-    dispatch(history.actions.trackTx(sentTx, blockchain));
-    dispatch(gotoScreen('transaction', sentTx));
-  };
-}
-
-function getNonce (api: IApi, blockchain: BlockchainCode, address: string): Promise<number> {
-  return api.chain(blockchain).eth.getTransactionCount(address);
-}
-
-function withNonce (tx: ITransaction): (nonce: number) => Promise<ITransaction> {
-  return (nonce) => new Promise((resolve) => resolve({ ...tx, nonce: convert.quantitiesToHex(nonce) }));
-}
-
-function verifySender (expected: string): (a: string, c: BlockchainCode) => Promise<string> {
-  return (raw: string, chain: BlockchainCode) => new Promise((resolve, reject) => {
-    // Find chain id
-    const chainId = Blockchains[chain].params.chainId;
-    const tx = EthereumTx.fromRaw(raw, chainId);
-    if (tx.verifySignature()) {
-      console.debug('Tx signature verified');
-      if (!tx.getSenderAddress().equals(EthAddress.fromHexString(expected))) {
-        console.error(`WRONG SENDER: 0x${tx.getSenderAddress().toString()} != ${expected}`);
-        reject(new Error('Emerald Vault returned signature from wrong Sender'));
-      } else {
-        resolve(raw);
-      }
-    } else {
-      console.error(`Invalid signature: ${raw}`);
-      reject(new Error('Emerald Vault returned invalid signature for the transaction'));
-    }
-  });
-}
-
-function signTx (api: IApi, tx: ITransaction, passphrase: string, blockchain: string): Promise<string | string[]> {
-  console.debug(`Calling emerald api to sign tx from ${tx.from} to ${tx.to} in ${blockchain} blockchain`);
-  if (blockchain === 'morden') {
-    // otherwise RPC server gives 'wrong-sender'
-    // vault has different chain-id settings for etc and eth morden. server uses etc morden.
-    blockchain = 'etc-morden';
-  }
-  const plainTx = {
-    from: tx.from,
-    to: tx.to,
-    gas: tx.gas,
-    gasPrice: tx.gasPrice,
-    value: tx.value,
-    data: tx.data,
-    nonce: tx.nonce
-  };
-  console.debug(`Trying to sign tx: ${plainTx}`);
-  return api.emerald.signTransaction(plainTx, passphrase, blockchain.toLowerCase())
-    .then((result: any) => {
-      console.debug(`Signing result = ${result}`);
-      return result;
-    });
-}
-
-export function sendTransaction (blockchain: BlockchainCode,
-                                 from: string, passphrase: string, to: string, gas: number, gasPrice: Wei, value: Wei, data: string): Dispatched<any> {
-  const originalTx: ITransaction = {
-    from,
-    to,
-    gas: convert.toHex(gas),
-    gasPrice: gasPrice.toHex(),
-    value: value.toHex(),
-    data,
-    nonce: '',
-    blockchain
-  };
-  return (dispatch, getState, api) => {
-    return getNonce(api, blockchain, from)
-      .then(withNonce(originalTx))
-      .then((tx: ITransaction) => {
-        return signTx(api, tx, passphrase, blockchain)
-          .then(unwrap)
-          .then((rawTx) => verifySender(from)(rawTx, blockchain))
-          .then((signed) => api.chain(blockchain).eth.sendRawTransaction(signed))
-          .then(onTxSent(dispatch, tx, blockchain));
-      })
-      .catch(catchError(dispatch));
-  };
-}
-
-export function signTransaction (blockchain: BlockchainCode,
-                                 from: string, passphrase: string, to: string, gas: number, gasPrice: Wei, value: Wei, data: string): Dispatched<any> {
-  const originalTx: ITransaction = {
-    from,
-    to,
-    gas: convert.toHex(gas),
-    gasPrice: gasPrice.toHex(),
-    value: value.toHex(),
-    data,
-    nonce: '',
-    blockchain
-  };
-
-  return (dispatch, getState, api) => {
-    return getNonce(api, blockchain, from)
-      .then(withNonce(originalTx))
-      .then((tx: ITransaction) => {
-        return signTx(api, tx, passphrase, blockchain)
-          .then(unwrap)
-          .then((rawTx) => verifySender(from)(rawTx, blockchain))
-          .then((signed) => ({ tx, signed }));
-      })
-      .catch(catchError(dispatch));
-  };
-}
-
-export function broadcastTx (chain: BlockchainCode, tx: any, signedTx: any): any {
-  return (dispatch: any, getState: any, api: IApi) => {
-    return api.chain(chain).eth.sendRawTransaction(signedTx)
-      .then(onTxSent(dispatch, tx, chain))
-      .catch(catchError(dispatch));
   };
 }
 
@@ -365,29 +226,33 @@ export function importJson (blockchain: BlockchainCode, data: any, name: string,
   };
 }
 
-export function importMnemonic (blockchain: BlockchainCode,
-                                passphrase: string, mnemonic: string, hdPath: string, name: string, description: string): Dispatched<AddAccountAction> {
+export function importMnemonic (
+  blockchain: BlockchainCode, passphrase: string, mnemonic: string, hdPath: string, name: string, description: string
+): Dispatched<AddAccountAction> {
   return (dispatch, getState, api) => {
     if (!blockchains.isValidChain(blockchain)) {
       throw new Error('Invalid chain code: ' + blockchain);
     }
-    return api.emerald.importMnemonic(passphrase, name, description, mnemonic, hdPath, blockchain).then((result: string) => {
-      if ((new EthAddress(result)).isValid()) {
-        dispatch({
-          type: ActionTypes.ADD_ACCOUNT,
-          name, description,
-          accountId: result,
-          blockchain
-        });
-        loadAccountBalance(blockchain, result);
-        return result;
-      }
-      throw new Error(result);
-    });
+    return api.emerald.importMnemonic(passphrase, name, description, mnemonic, hdPath, blockchain)
+      .then((result: string) => {
+        if ((new EthAddress(result)).isValid()) {
+          dispatch({
+            type: ActionTypes.ADD_ACCOUNT,
+            name, description,
+            accountId: result,
+            blockchain
+          });
+          loadAccountBalance(blockchain, result);
+          return result;
+        }
+        throw new Error(result);
+      });
   };
 }
 
-export function importWallet (blockchain: BlockchainCode, wallet: Blob, name: string, description: string): Dispatched<AddAccountAction> {
+export function importWallet (
+  blockchain: BlockchainCode, wallet: Blob, name: string, description: string
+): Dispatched<AddAccountAction> {
   return (dispatch, getState) => {
     return readWalletFile(wallet).then((data) => {
       return dispatch(importJson(blockchain, data, name, description));

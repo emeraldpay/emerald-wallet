@@ -1,10 +1,10 @@
 import { fromBaseUnits } from '@emeraldplatform/core';
+import { convert } from '@emeraldplatform/core';
 import { Units as EthUnits, Wei } from '@emeraldplatform/eth';
-import { convert } from '@emeraldplatform/core'
 import { Account, ButtonGroup, Page } from '@emeraldplatform/ui';
 import { Blockchains, EthereumTx } from '@emeraldwallet/core';
 import { decodeData, registry } from '@emeraldwallet/erc20';
-import { addresses, screen } from '@emeraldwallet/store';
+import { screen, transaction } from '@emeraldwallet/store';
 import { Button, FormRow } from '@emeraldwallet/ui';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
@@ -76,7 +76,7 @@ export class BroadcastTxView extends React.Component<IBroadcastTxViewProps> {
           <React.Fragment>
             <FormRow
               leftColumn={<div className={classes.fieldName}>To</div>}
-              rightColumn={<Account address={erc20Tx.to} />}
+              rightColumn={<Account identity={true} address={erc20Tx.to} />}
             />
             <FormRow
               leftColumn={<div className={classes.fieldName}>Amount</div>}
@@ -128,7 +128,7 @@ export default connect(
 
   (dispatch: any, ownProps: any) => ({
     onSendTx: (tx: any, signed: any) => {
-      dispatch(addresses.actions.broadcastTx(tx.blockchain, tx, signed));
+      dispatch(transaction.actions.broadcastTx(tx.blockchain, tx, signed));
     },
     onCancel: () => {
       dispatch(screen.actions.gotoScreen('home'));

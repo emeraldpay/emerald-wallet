@@ -22,15 +22,3 @@ export function blockAction (payload: {hash: string, height: any, blockchain: an
     type: ActionTypes.BLOCK
   };
 }
-
-export function estimateGas (chain: any, tx: {gas: any; to: string}) {
-  const {
-    to, gas
-  } = tx;
-  return (dispatch: any, getState: any, api: IApi) => {
-    return api.chain(chain).eth.estimateGas({
-      gas: gas.toNumber(),
-      to
-    });
-  };
-}
