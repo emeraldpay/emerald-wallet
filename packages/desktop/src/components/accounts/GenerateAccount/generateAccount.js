@@ -9,7 +9,7 @@ import { screen, addresses } from '@emeraldwallet/store';
 import { saveJson } from '../../../lib/saveAs';
 import PasswordDialog from './PasswordDialog';
 import DownloadDialog from './DownloadDialog';
-import ShowPrivateDialog from './ShowPrivateDialog';
+import { ShowPrivateKey } from '@emeraldwallet/react-app';
 
 const PAGES = {
   PASSWORD: 1,
@@ -131,7 +131,7 @@ class GenerateAccount extends React.Component<ILandingProps, State> {
       case PAGES.DOWNLOAD:
         return (<DownloadDialog accountId={ accountId } loading={this.state.loading} t={ t } onDownload={ this.download }/>);
       case PAGES.SHOW_PRIVATE:
-        return (<ShowPrivateDialog t={ t } privateKey={ privateKey } onNext={ this.editAccountProps }/>);
+        return (<ShowPrivateKey t={ t } privateKey={ privateKey } onNext={ this.editAccountProps }/>);
       case PAGES.ACCOUNT_PROPS:
         return (
           <NewAccountProps

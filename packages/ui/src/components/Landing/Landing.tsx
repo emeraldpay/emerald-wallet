@@ -23,6 +23,12 @@ export const styles = (theme?: any) => ({
     marginLeft: '80px',
     color: theme.palette.primary.main
   },
+  welcomeContainer: {
+    display: 'flex',
+    alignItems: 'center',
+    marginLeft: '80px',
+    marginTop: '60px'
+  },
   aboutClassic: {
     color: theme.palette.secondary.main,
     fontWeight: 200
@@ -53,9 +59,7 @@ export const Landing = ({
         <div style={{ flexGrow: 1 }}>
           <Grid container={true} style={{ padding: 0, margin: 0 }}>
             <Grid item={true} className={classes.mainGridItem} xs={12}>
-              <div style={{
-                display: 'flex', alignItems: 'center', marginLeft: '80px', marginTop: '60px'
-              }}>
+              <div className={classes.welcomeContainer}>
                 <div className={classes.welcome}>WELCOME TO EMERALD WALLET</div>
               </div>
               <br />

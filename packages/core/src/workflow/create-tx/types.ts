@@ -1,7 +1,7 @@
+import { Wei } from '@emeraldplatform/eth';
+import BigNumber from 'bignumber.js';
 import { IUnits } from '../../Units';
-import {Wei} from "@emeraldplatform/eth";
-import BigNumber from "bignumber.js";
-import {TransferType} from "./CreateErc20Tx";
+import { TransferType } from './CreateErc20Tx';
 
 export enum TxTarget {
   MANUAL,

@@ -2,7 +2,7 @@ import { Units as EthUnits, Wei } from '@emeraldplatform/eth';
 import BigNumber from 'bignumber.js';
 import { Units } from '../../Units';
 import { CreateERC20Tx, TransferType } from './CreateErc20Tx';
-import {ITxDetailsPlain, TxTarget, ValidationResult} from './types';
+import { ITxDetailsPlain, TxTarget, ValidationResult } from './types';
 
 describe('CreateErc20Tx', () => {
   it('creates tx', () => {

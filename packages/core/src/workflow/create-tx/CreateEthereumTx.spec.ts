@@ -1,7 +1,7 @@
 import { Units, Wei } from '@emeraldplatform/eth';
 import BigNumber from 'bignumber.js';
 import { CreateEthereumTx } from './CreateEthereumTx';
-import {ITxDetailsPlain, TxTarget, ValidationResult} from './types';
+import { ITxDetailsPlain, TxTarget, ValidationResult } from './types';
 
 describe('CreateEthereumTx', () => {
 

@@ -12,6 +12,9 @@ export { default as HideAccountDialog } from './accounts/HideAccountDialog';
 export { default as PaperWallet } from './export/PaperWallet';
 export { default as ExportPaperWallet } from './export/ExportPaperWallet';
 
+// create-account
+export { default as ShowPrivateKey } from './create-account/ShowPrivateKey';
+
 // import
 export { default as ImportJson } from './import/ImportJson';
 export { default as ImportMnemonic } from './import/ImportMnemonic';

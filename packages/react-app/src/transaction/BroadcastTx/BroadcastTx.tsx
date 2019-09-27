@@ -1,5 +1,4 @@
-import { fromBaseUnits } from '@emeraldplatform/core';
-import { convert } from '@emeraldplatform/core';
+import { convert, fromBaseUnits } from '@emeraldplatform/core';
 import { Units as EthUnits, Wei } from '@emeraldplatform/eth';
 import { Account, ButtonGroup, Page } from '@emeraldplatform/ui';
 import { Blockchains, EthereumTx } from '@emeraldwallet/core';
