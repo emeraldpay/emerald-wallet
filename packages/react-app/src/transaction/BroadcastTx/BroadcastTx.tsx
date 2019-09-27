@@ -9,6 +9,7 @@ import { Button, FormRow } from '@emeraldwallet/ui';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import ChainTitle from '../../common/ChainTitle';
 
 interface IBroadcastTxViewProps {
   tx: any;
@@ -54,19 +55,16 @@ export class BroadcastTxView extends React.Component<IBroadcastTxViewProps> {
     const wei = new Wei(convert.toNumber(decoded.getValue()));
     const etherValue = wei.toString(EthUnits.ETHER, 18);
     return (
-      <Page title='Publish Transaction'>
-        <FormRow
-          rightColumn={<span>{tx.blockchain}</span>}
-        />
+      <Page title={<ChainTitle chain={tx.blockchain} text={'Publish Transaction'} />}>
         <FormRow
           leftColumn={<div className={classes.fieldName}>From</div>}
-          rightColumn={<Account address={decoded.getSenderAddress().toString()} />}
+          rightColumn={<Account identity={true} address={decoded.getSenderAddress().toString()} />}
         />
         {(erc20Tx === null) && (
           <React.Fragment>
             <FormRow
               leftColumn={<div className={classes.fieldName}>To</div>}
-              rightColumn={<Account address={decoded.getRecipientAddress().toString()} />}
+              rightColumn={<Account identity={true} address={decoded.getRecipientAddress().toString()} />}
             />
             <FormRow
               leftColumn={<div className={classes.fieldName}>Amount</div>}

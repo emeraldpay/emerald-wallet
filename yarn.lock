@@ -1357,10 +1357,10 @@
     "@material-ui/core" "^4.3.3"
     react "^16.8.6"
 
-"@emeraldplatform/ui@0.5.8":
-  version "0.5.8"
-  resolved "https://registry.yarnpkg.com/@emeraldplatform/ui/-/ui-0.5.8.tgz#a7c1d795ea2bfeb59ec26dd395967368803fc8e6"
-  integrity sha512-SYgPlFB6Q6MjzNeGHwT5sP5v1UZ8BKVTrT6KZ4ZedY1SxWUNN/Ou/o6xTr55wbw2z+ZKYMTd8+jrFoImoJ1wEA==
+"@emeraldplatform/ui@0.5.10":
+  version "0.5.10"
+  resolved "https://registry.yarnpkg.com/@emeraldplatform/ui/-/ui-0.5.10.tgz#41346ea636307ca1acf6eb7bb198154589270d80"
+  integrity sha512-piFl0U8vmdTflvl8i549ylc03bTaRWMq1PrErw14Ck9AUKvcrvKvfLgn3B5mVLE2p+DplTsGUMD8p/wLWRY9GA==
   dependencies:
     "@emeraldplatform/ui-icons" "^0.5.2"
     "@material-ui/core" "^4.3.3"
@@ -14760,6 +14760,16 @@ react-docgen@^4.1.0:
     node-dir "^0.1.10"
     recast "^0.17.3"
 
+react-dom@16.8.6, react-dom@^16.8.6:
+  version "16.8.6"
+  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.8.6.tgz#71d6303f631e8b0097f56165ef608f051ff6e10f"
+  integrity sha512-1nL7PIq9LTL3fthPqwkvr2zY7phIPjYrT0jp4HjyEQrEROnw4dG41VVwi/wfoCneoleqrNX7iAD+pXebJZwrwA==
+  dependencies:
+    loose-envify "^1.1.0"
+    object-assign "^4.1.1"
+    prop-types "^15.6.2"
+    scheduler "^0.13.6"
+
 react-dom@^16.8.3:
   version "16.9.0"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.9.0.tgz#5e65527a5e26f22ae3701131bcccaee9fb0d3962"
@@ -14769,16 +14779,6 @@ react-dom@^16.8.3:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
     scheduler "^0.15.0"
-
-react-dom@^16.8.6:
-  version "16.8.6"
-  resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.8.6.tgz#71d6303f631e8b0097f56165ef608f051ff6e10f"
-  integrity sha512-1nL7PIq9LTL3fthPqwkvr2zY7phIPjYrT0jp4HjyEQrEROnw4dG41VVwi/wfoCneoleqrNX7iAD+pXebJZwrwA==
-  dependencies:
-    loose-envify "^1.1.0"
-    object-assign "^4.1.1"
-    prop-types "^15.6.2"
-    scheduler "^0.13.6"
 
 react-draggable@^3.3.2:
   version "3.3.2"
@@ -15037,7 +15037,7 @@ react-transition-group@^4.0.0:
     loose-envify "^1.4.0"
     prop-types "^15.6.2"
 
-react@16.8, react@16.8.6, react@^16.8.6:
+react@16.8.6, react@^16.8.6:
   version "16.8.6"
   resolved "https://registry.yarnpkg.com/react/-/react-16.8.6.tgz#ad6c3a9614fd3a4e9ef51117f54d888da01f2bbe"
   integrity sha512-pC0uMkhLaHm11ZSJULfOBqV4tIZkx87ZLvbbQYunNixAAvjnC+snJCg0XQXn9VIsttVsbZP/H/ewzgsd5fxKXw==

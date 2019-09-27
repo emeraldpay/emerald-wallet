@@ -15,7 +15,7 @@
   "dependencies": {
     "@emeraldplatform/core": "0.5.8",
     "@emeraldplatform/eth": "0.5.1",
-    "@emeraldplatform/ui": "0.5.8",
+    "@emeraldplatform/ui": "0.5.10",
     "@emeraldplatform/ui-icons": "^0.5.2",
     "@emeraldwallet/core": "^2.0.3",
     "@emeraldwallet/erc20": "^2.0.3",
@@ -26,7 +26,8 @@
     "i18next": "^17.0.13",
     "i18next-browser-languagedetector": "^3.0.3",
     "qrcode.react": "^0.9.3",
-    "react": "16.8",
+    "react": "16.8.6",
+    "react-dom": "16.8.6",
     "react-dropzone": "6",
     "react-i18next": "^10.12.2",
     "react-redux": "^7.1.0",

@@ -16,6 +16,7 @@ import {
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import ChainTitle from '../../common/ChainTitle';
 import CreateTx from '../CreateTx';
 import SignTx from '../SignTx';
 import { traceValidate, txFeeFiat } from './util';
@@ -103,7 +104,7 @@ class CreateTransaction extends React.Component<ICreateTxProps, ICreateTxState> 
   public static txFromProps (props: ICreateTxProps) {
     const tx = new workflow.CreateEthereumTx();
     tx.from = props.selectedFromAccount;
-    tx.setTotalBalance(props.getBalanceForAddress(tx.from!, props.token))
+    tx.setTotalBalance(props.getBalanceForAddress(tx.from!, props.token));
     tx.gasPrice = props.gasPrice;
     tx.amount = props.amount;
     tx.gas = new BigNumber(props.gasLimit || DEFAULT_GAS_LIMIT);
@@ -167,7 +168,6 @@ class CreateTransaction extends React.Component<ICreateTxProps, ICreateTxState> 
     }
     const balance = this.props.getBalanceForAddress(tx.from!, tokenSymbol);
     tx.setTotalBalance(balance);
-
 
     this.transaction = tx;
   }
@@ -290,8 +290,12 @@ class CreateTransaction extends React.Component<ICreateTxProps, ICreateTxState> 
   }
 
   public render () {
+    const { chain } = this.props;
     return (
-      <Page title='Create Transaction' leftIcon={<Back onClick={this.props.onCancel}/>}>
+      <Page
+        title={<ChainTitle chain={chain} text={'Create Transaction'} />}
+        leftIcon={<Back onClick={this.props.onCancel}/>}
+      >
         {this.getPage()}
       </Page>
     );
