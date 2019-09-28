@@ -1,3 +1,4 @@
+import { fromBaseUnits } from '@emeraldplatform/core';
 import { IUnits } from '@emeraldwallet/core';
 import { MenuItem, TextField } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
@@ -34,7 +35,7 @@ export class TokenField extends React.Component<IProps> {
   }
 
   public render () {
-    const { classes, selectedToken } = this.props;
+    const { classes, selectedToken, balance } = this.props;
     const tokenSymbols = this.props.tokenSymbols || [];
     return (
       <React.Fragment>
@@ -47,9 +48,17 @@ export class TokenField extends React.Component<IProps> {
           {tokenSymbols.map((symbol) => (<MenuItem key={symbol} value={symbol}>{symbol}</MenuItem>))}
         </TextField>
 
-        <div className={classes.balance}>
-          {this.props.balance ? this.props.balance.toString() : '?'} {this.props.selectedToken} / {this.props.fiatBalance} {this.props.fiatCurrency}
+        <div className={classes.balance} data-testid='balance'>
+          {this.renderBalance(balance)} {this.props.selectedToken} / {this.props.fiatBalance} {this.props.fiatCurrency}
         </div>
+      </React.Fragment>
+    );
+  }
+
+  private renderBalance (balance?: IUnits) {
+    return (
+      <React.Fragment>
+        {balance ? fromBaseUnits(balance.amount, balance.decimals).toString(10) : '?'}
       </React.Fragment>
     );
   }

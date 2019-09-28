@@ -276,6 +276,7 @@ describe('CreateEthereumTx', () => {
     expect(dump.to).toBe('0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd');
     expect(dump.target).toBe(1);
     expect(dump.amount).toBe('999580000000500002');
+    expect(dump.amountDecimals).toBe(18);
     expect(dump.gasPrice).toBe('10007000000');
     expect(dump.gas).toBe(42011);
   });

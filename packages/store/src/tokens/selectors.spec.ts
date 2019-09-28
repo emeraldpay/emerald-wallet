@@ -20,12 +20,14 @@ describe('selectors', () => {
       [BlockchainCode.ETC]: {
         '0x1': {
           ['0xTOKEN']: {
+            decimals: 8
           }
         }
       }
     };
     const balance1 = selectBalance(appState, '0xTOKEN', '0x1', BlockchainCode.ETC);
     expect(balance1).toBeDefined();
+    expect(balance1.decimals).toEqual(8);
     const balance2 = selectBalance(appState, '0xTOKEN', '0x2', BlockchainCode.ETC);
     expect(balance2).toBeNull();
   });

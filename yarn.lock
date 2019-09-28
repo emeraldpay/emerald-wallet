@@ -1357,29 +1357,18 @@
     "@material-ui/core" "^4.3.3"
     react "^16.8.6"
 
-"@emeraldplatform/ui@0.5.10":
-  version "0.5.10"
-  resolved "https://registry.yarnpkg.com/@emeraldplatform/ui/-/ui-0.5.10.tgz#41346ea636307ca1acf6eb7bb198154589270d80"
-  integrity sha512-piFl0U8vmdTflvl8i549ylc03bTaRWMq1PrErw14Ck9AUKvcrvKvfLgn3B5mVLE2p+DplTsGUMD8p/wLWRY9GA==
+"@emeraldplatform/ui@0.5.11":
+  version "0.5.11"
+  resolved "https://registry.yarnpkg.com/@emeraldplatform/ui/-/ui-0.5.11.tgz#c305e8870a4b3b05eecd3e73246612579d5a9edd"
+  integrity sha512-X01Msx0evDxR68CswaEOzde7ATJHwOKfabkbu1IumDTT81pnZDVBeXc5AxJ2/bqgPN2UvWqEECaSxnJQ1i9rsA==
   dependencies:
     "@emeraldplatform/ui-icons" "^0.5.2"
     "@material-ui/core" "^4.3.3"
     classnames "^2.2.6"
     copy-to-clipboard "^3.0.8"
     qs "^6.5.2"
-    react "^16.8.6"
-
-"@emeraldplatform/ui@^0.5.2":
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/@emeraldplatform/ui/-/ui-0.5.2.tgz#11caffed88f34a4350d859fa15b0556d3a0e2902"
-  integrity sha512-7rCGpwAKM1cGsu84Vpop0NODLwO4L2gMqpW474Tzei8tHl717kdXUDMDCOJ1J+drP4YIn2aoZz492OCrtzb91A==
-  dependencies:
-    "@emeraldplatform/ui-icons" "^0.5.2"
-    "@material-ui/core" "^4.3.3"
-    classnames "^2.2.6"
-    copy-to-clipboard "^3.0.8"
-    qs "^6.5.2"
-    react "^16.8.6"
+    react "16.8.6"
+    react-dom "16.8.6"
 
 "@emeraldplatform/util@0.5.1":
   version "0.5.1"

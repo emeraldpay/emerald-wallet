@@ -77,7 +77,7 @@ class CreateTransaction extends React.Component<IProps> {
 
         <FormFieldWrapper>
           <AmountField
-            tokenDecimals={18}
+            tokenDecimals={this.props.tx.getTotalBalance().decimals}
             amount={this.props.tx.getAmount()}
             onChangeAmount={this.props.onChangeAmount}
             onMaxClicked={this.props.onMaxClicked}

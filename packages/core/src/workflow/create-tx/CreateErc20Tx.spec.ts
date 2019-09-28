@@ -236,7 +236,7 @@ describe('CreateErc20Tx', () => {
 
     expect(tx.from).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
     expect(tx.totalEtherBalance != null ? tx.totalEtherBalance.value : null).toEqual(new Wei('1000000000057', EthUnits.WEI).value);
-    expect(tx.totalTokenBalance != null ? tx.totalTokenBalance : null).toEqual(new Units('2000000000015', 8));
+    expect(tx.totalTokenBalance).toEqual(new Units('2000000000015', 8));
     expect(tx.erc20).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
     expect(tx.to).toEqual('0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd');
     expect(tx.target).toEqual(TxTarget.SEND_ALL);

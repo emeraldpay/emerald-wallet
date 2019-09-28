@@ -162,14 +162,15 @@ class CreateTransaction extends React.Component<ICreateTxProps, ICreateTxState> 
         tx.gas = BigNumber.max(tx.gas, new BigNumber(DEFAULT_ERC20_GAS_LIMIT));
         (tx as CreateERC20Tx).totalEtherBalance =
           new Wei(getBalanceForAddress(tx.from!, currentChain.params.coinTicker).amount, EthUnits.WEI);
+        tx.setAmount(new Units(0, tokenInfo.decimals));
       }
     } else {
       // Gas for ordinary transaction
       tx.gas = BigNumber.max(tx.gas, new BigNumber(DEFAULT_GAS_LIMIT));
+      tx.setAmount(new Units(0, 18));
     }
     const balance = this.props.getBalanceForAddress(tx.from!, tokenSymbol);
     tx.setTotalBalance(balance);
-
     this.transaction = tx;
   }
 
@@ -299,7 +300,7 @@ function signTokenTx (dispatch: any, ownProps: IOwnProps, args: any) {
   } = args;
   const chain = ownProps.account.blockchain;
   const tokenInfo = registry.bySymbol(chain, token);
-  const tokenUnits = toBaseUnits(convert.toBigNumber(args.transaction.amount), tokenInfo.decimals || 18);
+  const tokenUnits = toBaseUnits(convert.toBigNumber(args.transaction.amount), tokenInfo.decimals);
 
   const txData = tokens.actions.createTokenTxData(
     args.transaction.to,
