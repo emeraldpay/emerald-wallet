@@ -229,7 +229,8 @@ describe('CreateErc20Tx', () => {
       amount: '999580000000500002',
       gasPrice: '10007000000',
       gas: 42011,
-      transferType: 0
+      transferType: 0,
+      tokenSymbol: 'BTC'
     };
 
     const tx = CreateERC20Tx.fromPlain(dump);
@@ -258,7 +259,8 @@ describe('CreateErc20Tx', () => {
       amount: '999580000000500002',
       gasPrice: '10007000000',
       gas: 42011,
-      transferType: 1
+      transferType: 1,
+      tokenSymbol: 'BTC'
     };
 
     const tx = CreateERC20Tx.fromPlain(dump);

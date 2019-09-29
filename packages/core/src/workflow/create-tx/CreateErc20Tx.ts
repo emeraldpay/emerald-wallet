@@ -22,6 +22,7 @@ export interface IERC20TxDetails {
   erc20: string;
   target: TxTarget;
   amount: IUnits;
+  tokenSymbol: string;
   totalTokenBalance?: IUnits;
   totalEtherBalance?: Wei;
   gasPrice: Wei;
@@ -31,6 +32,7 @@ export interface IERC20TxDetails {
 
 const TxDefaults: IERC20TxDetails = {
   erc20: '',
+  tokenSymbol: '',
   target: TxTarget.MANUAL,
   amount: Units.ZERO,
   gasPrice: Wei.ZERO,
@@ -50,7 +52,8 @@ function toPlainDetails (tx: IERC20TxDetails): ITxDetailsPlain {
     totalEtherBalance: tx.totalEtherBalance == null ? undefined : tx.totalEtherBalance.toString(EthUnits.WEI, 0, false),
     gasPrice: tx.gasPrice.toString(EthUnits.WEI, 0, false),
     gas: tx.gas.toNumber(),
-    transferType: tx.transferType.valueOf()
+    transferType: tx.transferType.valueOf(),
+    tokenSymbol: tx.tokenSymbol
   };
 }
 
@@ -66,7 +69,8 @@ function fromPlainDetails (plain: ITxDetailsPlain): IERC20TxDetails {
     totalEtherBalance: plain.totalEtherBalance == null ? undefined : new Wei(plain.totalEtherBalance, EthUnits.WEI),
     gasPrice: new Wei(plain.gasPrice, EthUnits.WEI),
     gas: new BigNumber(plain.gas),
-    transferType: transferFromNumber(plain.transferType)
+    transferType: transferFromNumber(plain.transferType),
+    tokenSymbol: plain.tokenSymbol
   };
 }
 
@@ -80,6 +84,7 @@ export class CreateERC20Tx implements IERC20TxDetails, ITx {
   public erc20: string;
   public target: TxTarget;
   public amount: IUnits;
+  public tokenSymbol: string;
   public totalTokenBalance?: IUnits;
   public totalEtherBalance?: Wei;
   public gasPrice: Wei;
@@ -95,6 +100,7 @@ export class CreateERC20Tx implements IERC20TxDetails, ITx {
     this.erc20 = source.erc20;
     this.target = source.target;
     this.amount = source.amount;
+    this.tokenSymbol = source.tokenSymbol;
     this.totalTokenBalance = source.totalTokenBalance;
     this.totalEtherBalance = source.totalEtherBalance;
     this.gasPrice = source.gasPrice;
@@ -114,8 +120,12 @@ export class CreateERC20Tx implements IERC20TxDetails, ITx {
     return this.amount;
   }
 
-  public setAmount (a: IUnits) {
+  public setAmount (a: IUnits, tokenSymbol?: string) {
+    if (!tokenSymbol) {
+      throw Error('tokenSymbol for ERC20 must be provided');
+    }
     this.amount = a;
+    this.tokenSymbol = tokenSymbol;
   }
 
   public dump (): ITxDetailsPlain {
@@ -187,5 +197,9 @@ export class CreateERC20Tx implements IERC20TxDetails, ITx {
 
   public setTotalBalance (total: IUnits): void {
     this.totalTokenBalance = total;
+  }
+
+  public getTokenSymbol (): string {
+    return this.tokenSymbol;
   }
 }

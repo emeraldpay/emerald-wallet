@@ -22,5 +22,7 @@ describe('BroadcastTxView', () => {
     const valueDiv = await wrapper.findByTestId('token-amount');
     expect(valueDiv).toBeDefined();
     expect(valueDiv).toHaveTextContent('0.0001 KOVAN');
+    const nonceDiv = await wrapper.findByTestId('nonce');
+    expect(nonceDiv).toHaveTextContent('67');
   });
 });

@@ -74,6 +74,7 @@ class AmountField extends React.Component<IProps, IState> {
         this.props.onChangeAmount(new Units(v.toString(10), this.props.tokenDecimals));
       }
     } catch (e) {
+      console.error(e);
       this.setState({ errorText: 'Invalid value' });
     }
   }

@@ -27,7 +27,8 @@ export interface ITx {
   getTotalBalance: () => IUnits;
   setTotalBalance: (total: IUnits) => void;
   getAmount: () => IUnits;
-  setAmount: (amount: IUnits) => void;
+  setAmount: (amount: IUnits, tokenSymbol?: string) => void;
+  getTokenSymbol: () => string;
 }
 
 export interface ITxDetailsPlain {
@@ -37,6 +38,7 @@ export interface ITxDetailsPlain {
   target: number;
   amount: string;
   amountDecimals: number;
+  tokenSymbol: string;
   totalTokenBalance?: string;
   totalEtherBalance?: string;
   gasPrice: string;

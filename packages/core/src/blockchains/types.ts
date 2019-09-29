@@ -7,4 +7,5 @@ export interface ITransaction {
   getValue (): any;
   getHash (): string;
   getData (): any;
+  getNonce (): any;
 }

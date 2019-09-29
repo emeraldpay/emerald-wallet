@@ -27,6 +27,7 @@ describe('EthereumTx', () => {
     console.log(JSON.stringify(tx));
     expect(tx.getValue()).toEqual('0x');
     expect(tx.getData()).toEqual('a9059cbb00000000000000000000000027346de44a32bd9943c57a961854a1d28a9c220d0000000000000000000000000000000000000000000000000de0b6b3a7640000');
+    expect(tx.getNonce()).toEqual(1);
   });
 
 });

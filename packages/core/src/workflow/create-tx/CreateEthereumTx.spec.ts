@@ -283,6 +283,7 @@ describe('CreateEthereumTx', () => {
 
   it('reads from dumps', () => {
     const dump: ITxDetailsPlain = {
+      tokenSymbol: 'Ether',
       from: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
       totalTokenBalance: '1000000000057',
       amountDecimals: 18,
@@ -313,7 +314,8 @@ describe('CreateEthereumTx', () => {
       target: 0,
       amount: '999580000000500002',
       gasPrice: '10007000000',
-      gas: 42011
+      gas: 42011,
+      tokenSymbol: 'Ether'
     };
 
     const tx = CreateEthereumTx.fromPlain(dump);

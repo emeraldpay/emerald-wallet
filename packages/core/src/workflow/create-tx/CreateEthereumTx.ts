@@ -31,7 +31,8 @@ function toPlainDetails (tx: ITxDetails): ITxDetailsPlain {
     to: tx.to,
     totalTokenBalance: tx.totalBalance == null ? undefined : tx.totalBalance.toString(EthUnits.WEI, 0, false),
     amountDecimals: 18,
-    totalEtherBalance: tx.totalBalance == null ? undefined : tx.totalBalance.toString(EthUnits.WEI, 0, false)
+    totalEtherBalance: tx.totalBalance == null ? undefined : tx.totalBalance.toString(EthUnits.WEI, 0, false),
+    tokenSymbol: EthUnits.ETHER.name
   };
 }
 
@@ -166,6 +167,10 @@ export class CreateEthereumTx implements ITxDetails, ITx {
 
   public setTotalBalance (total: IUnits): void {
     this.totalBalance = new Wei(total.amount, EthUnits.WEI);
+  }
+
+  public getTokenSymbol (): string {
+    return EthUnits.ETHER.name;
   }
 
 }

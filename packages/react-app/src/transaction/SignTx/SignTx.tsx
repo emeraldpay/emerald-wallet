@@ -149,12 +149,12 @@ class SignTx extends React.Component<IProps, IState> {
       <div>
         <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '50px' }}>
           <HorizontalAddressWithIdentity address={tx.from!} hide={hideAccounts}/>
-          <div style={{
-            display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'space-between'
-          }}>
+          <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
               {/* <div>{USDValue} USD</div> */}
-              <div style={{ fontSize: '28px' }} title={tx.amount.toString(Units.WEI, 0, true)}>{display.amount()} {display.amountUnit()}</div>
+              <div style={{ fontSize: '28px' }} title={tx.amount.toString(Units.WEI, 0, true)}>
+                {display.amount()} {display.amountUnit()}
+              </div>
             </div>
             <div style={{ display: hideAccounts ? 'none' : 'flex' }}>
               <ArrowRight/>

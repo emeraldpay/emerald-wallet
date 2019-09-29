@@ -1,3 +1,4 @@
+import { fromBaseUnits } from '@emeraldplatform/core';
 import { Unit, Units } from '@emeraldplatform/eth';
 import { CreateERC20Tx } from '..';
 import { IDisplayTx } from './IDisplayTx';
@@ -21,17 +22,11 @@ export class DisplayErc20Tx implements IDisplayTx {
   }
 
   public amount (): string {
-    return this.tx.amount.amount;
-    // const unit = this.getMainUnit();
-    // if (!this.tx.amount) {
-    //   return '-';
-    // }
-    // return this.tx.amount.toString(unit, 6, false, false);
+    return fromBaseUnits(this.tx.amount.amount, this.tx.amount.decimals).toString(10);
   }
 
   public amountUnit (): string {
-    const unit = this.getMainUnit();
-    return unit.name;
+    return this.tx.tokenSymbol;
   }
 
   public fee (): string {

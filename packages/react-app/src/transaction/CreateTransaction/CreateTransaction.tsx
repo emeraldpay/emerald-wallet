@@ -162,7 +162,7 @@ class CreateTransaction extends React.Component<ICreateTxProps, ICreateTxState> 
         tx.gas = BigNumber.max(tx.gas, new BigNumber(DEFAULT_ERC20_GAS_LIMIT));
         (tx as CreateERC20Tx).totalEtherBalance =
           new Wei(getBalanceForAddress(tx.from!, currentChain.params.coinTicker).amount, EthUnits.WEI);
-        tx.setAmount(new Units(0, tokenInfo.decimals));
+        tx.setAmount(new Units(0, tokenInfo.decimals), tokenInfo.symbol);
       }
     } else {
       // Gas for ordinary transaction
@@ -190,7 +190,7 @@ class CreateTransaction extends React.Component<ICreateTxProps, ICreateTxState> 
       return;
     }
     const tx = this.transaction;
-    tx.setAmount(amount);
+    tx.setAmount(amount, tx.getTokenSymbol());
     tx.target = TxTarget.MANUAL;
     this.transaction = tx;
   }
