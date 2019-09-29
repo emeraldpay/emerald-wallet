@@ -1,3 +1,8 @@
+import { Wei } from '@emeraldplatform/eth';
+import BigNumber from 'bignumber.js';
+import { IUnits } from '../../Units';
+import { TransferType } from './CreateErc20Tx';
+
 export enum TxTarget {
   MANUAL,
   SEND_ALL
@@ -16,4 +21,27 @@ export enum ValidationResult {
   NO_TO,
   INSUFFICIENT_FUNDS,
   INSUFFICIENT_TOKEN_FUNDS
+}
+
+export interface ITx {
+  getTotalBalance: () => IUnits;
+  setTotalBalance: (total: IUnits) => void;
+  getAmount: () => IUnits;
+  setAmount: (amount: IUnits, tokenSymbol?: string) => void;
+  getTokenSymbol: () => string;
+}
+
+export interface ITxDetailsPlain {
+  from?: string;
+  to?: string;
+  erc20?: string;
+  target: number;
+  amount: string;
+  amountDecimals: number;
+  tokenSymbol: string;
+  totalTokenBalance?: string;
+  totalEtherBalance?: string;
+  gasPrice: string;
+  gas: number;
+  transferType?: number;
 }

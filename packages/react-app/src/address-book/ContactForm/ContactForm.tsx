@@ -29,7 +29,7 @@ export const styles = {
   } as CSSProperties
 };
 
-export interface Props {
+export interface IContactFormProps {
   classes: any;
   initialValues?: {
     name?: string;
@@ -42,14 +42,14 @@ export interface Props {
   blockchains?: any;
 }
 
-interface State {
+interface IContactFormState {
   name?: string;
   address?: string;
   blockchain?: BlockchainCode;
 }
 
-export class ContactForm extends React.Component<Props, State> {
-  constructor (props: Props) {
+export class ContactForm extends React.Component<IContactFormProps, IContactFormState> {
+  constructor (props: IContactFormProps) {
     super(props);
     this.state = {
       ...this.props.initialValues,
@@ -90,11 +90,12 @@ export class ContactForm extends React.Component<Props, State> {
 
   public render () {
     const {
-      blockAddress, title, classes, blockchains
+      blockAddress, title, classes
     } = this.props;
     const {
       blockchain, name, address
     } = this.state;
+    const chains = this.props.blockchains || [];
     return (
       <Page title={title || ''}>
         <div className={classes.formRow}>
@@ -107,7 +108,7 @@ export class ContactForm extends React.Component<Props, State> {
             <ChainSelector
               onChange={this.handleChainChange}
               value={blockchain}
-              chains={blockchains}
+              chains={chains}
             />
           </div>
         </div>

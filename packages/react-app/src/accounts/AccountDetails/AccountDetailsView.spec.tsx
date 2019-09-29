@@ -1,6 +1,5 @@
 import { shallow } from 'enzyme';
 import * as React from 'react';
-
 import AccountShow from './AccountDetailsView';
 
 describe('AccountDetailsView', () => {

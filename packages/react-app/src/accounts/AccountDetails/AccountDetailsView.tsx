@@ -10,6 +10,7 @@ import * as QRCode from 'qrcode.react';
 import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import Balance from '../../common/Balance';
+import ChainTitle from '../../common/ChainTitle';
 import AccountActions from '../AccountActions';
 
 export const styles = {
@@ -37,11 +38,11 @@ export interface IProps {
 
 type AccountShowProps = IProps & WithTranslation;
 
-export interface State {
+export interface IState {
   edit: boolean;
 }
 
-export class AccountShow extends React.Component<AccountShowProps, State> {
+export class AccountShow extends React.Component<AccountShowProps, IState> {
   constructor (props: AccountShowProps) {
     super(props);
     this.state = {
@@ -99,10 +100,10 @@ export class AccountShow extends React.Component<AccountShowProps, State> {
     };
 
     const { coinTicker } = blockchainByName(acc.blockchain).params;
-
+    const renderTitle = () => (<ChainTitle chain={acc.blockchain} text={'Account'} />);
     return (
       <div>
-        <Page title='Account' leftIcon={<Back onClick={goBack}/>}>
+        <Page title={renderTitle()} leftIcon={<Back onClick={goBack}/>}>
           <div style={{ display: 'flex', alignItems: 'center', paddingBottom: '20px' }}>
             <div style={{ flexGrow: 2 }}>
               <FormRow
@@ -111,13 +112,15 @@ export class AccountShow extends React.Component<AccountShowProps, State> {
                 </div>}
                 rightColumn={
                   <React.Fragment>
-                    {!this.state.edit && <AddressAvatar
-                      editable={true}
-                      address={acc.id}
-                      name={acc.name}
-                      onEditClick={this.handleEdit}
-                      addressProps={{ hideCopy: false }}
-                    />}
+                    {!this.state.edit && (
+                      <AddressAvatar
+                        editable={true}
+                        address={acc.id}
+                        name={acc.name}
+                        onEditClick={this.handleEdit}
+                        addressProps={{ hideCopy: false }}
+                      />
+                      )}
                     {this.state.edit && <InlineEdit
                       placeholder='Account name'
                       initialValue={acc.name}

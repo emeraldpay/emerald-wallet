@@ -1,6 +1,4 @@
-import MenuItem from '@material-ui/core/MenuItem';
-import Paper from '@material-ui/core/Paper';
-import TextField from '@material-ui/core/TextField';
+import { MenuItem, Paper, TextField } from '@material-ui/core';
 import { CSSProperties, withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import * as Autosuggest from 'react-autosuggest';
@@ -30,20 +28,20 @@ export const styles = (theme) => ({
 });
 
 const predefinedHdPaths = [
-  'm/44\'/60\'/160720\'/0\'',
-  'm/44\'/61\'/1\'/0',
-  'm/44\'/61\'/0\'/0',
-  'm/44\'/60\'/0\'/0',
-  'm/44\'/60\'/0\''
+  { value: 'm/44\'/60\'/160720\'/0\'', label: '1' },
+  { value: 'm/44\'/61\'/1\'/0', label: '2' },
+  { value: 'm/44\'/61\'/0\'/0', label: '3' },
+  { value: 'm/44\'/60\'/0\'/0', label: '4' },
+  { value: 'm/44\'/60\'/0\'', label: '5' }
 ];
 
-interface Props {
+interface IProps {
   onChange?: any;
   value?: string;
   classes?: any;
 }
 
-interface State {
+interface IState {
   value?: any;
   suggestions?: any;
 }
@@ -73,26 +71,25 @@ function renderSuggestion (suggestion, { query, isHighlighted }) {
   return (
     <MenuItem selected={isHighlighted} component='div'>
       <div>
-        {suggestion}
+        {suggestion.value} {suggestion.label}
       </div>
     </MenuItem>
   );
 }
 
-export class HdPath extends React.Component<Props, State> {
+export class HdPath extends React.Component<IProps, IState> {
   public state = {
     suggestion: [],
     value: this.props.value
   };
 
   public handleChange = (event, { newValue }) => {
-    if (this.props.onChange && this.state.value != newValue) {
+    if (this.props.onChange && this.state.value !== newValue) {
       this.props.onChange(newValue);
     }
     this.setState({
       value: newValue
     });
-
   }
 
   public handleSuggestionsFetchRequested = ({ value }) => {
@@ -118,7 +115,7 @@ export class HdPath extends React.Component<Props, State> {
           suggestions={predefinedHdPaths}
           onSuggestionsFetchRequested={this.handleSuggestionsFetchRequested}
           onSuggestionsClearRequested={this.handleSuggestionsClearRequested}
-          getSuggestionValue={(suggestion) => (suggestion)}
+          getSuggestionValue={(suggestion) => (suggestion.value)}
           renderSuggestion={renderSuggestion}
           inputProps={{
             classes,

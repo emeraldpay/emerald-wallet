@@ -1,13 +1,13 @@
 import { convert } from '@emeraldplatform/core';
 import { blockchainById } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
-import { Transaction } from '../types';
+import { ITransaction } from '../types';
 const { toBigNumber } = convert;
 
 /**
  * Store transaction as JSON in localStorage
  */
-export function storeTransactions (key: string, txs: Transaction[]): void {
+export function storeTransactions (key: string, txs: ITransaction[]): void {
   if (localStorage) {
     localStorage.setItem(key, JSON.stringify(txs));
   }
@@ -16,7 +16,7 @@ export function storeTransactions (key: string, txs: Transaction[]): void {
 /**
  * Restore transaction from JSON stored in localStorage
  */
-export function loadTransactions (key: string, chainId: number): Transaction[] {
+export function loadTransactions (key: string, chainId: number): ITransaction[] {
   if (localStorage) {
     // check old history
     // Will be removed after stable release
@@ -44,7 +44,7 @@ export function loadTransactions (key: string, chainId: number): Transaction[] {
 /**
  * Converts parsed JSON object to typed Transaction object
  */
-function restoreTx (tx: any): Transaction {
+function restoreTx (tx: any): ITransaction {
   return {
     value: (tx.value && typeof tx.value === 'string') ? toBigNumber(tx.value) : new BigNumber(0),
     hash: tx.hash,

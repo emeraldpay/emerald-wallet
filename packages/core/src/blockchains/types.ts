@@ -1,4 +1,11 @@
-export interface Transaction {
+import { Address } from '@emeraldplatform/core';
+
+export interface ITransaction {
   verifySignature (): boolean;
-  getSenderAddress (): string;
+  getSenderAddress (): Address;
+  getRecipientAddress (): Address;
+  getValue (): any;
+  getHash (): string;
+  getData (): any;
+  getNonce (): any;
 }

@@ -37,7 +37,7 @@ function onLoading (state: any, action: SetLoadingAction): any {
   return state.set('loading', action.payload);
 }
 
-type AddressList =  List<Map<string, any>>;
+type AddressList = List<Map<string, any>>;
 
 function onSetList (state: any, action: SetListAction) {
   const existingAddresses: AddressList = state.get('addresses');
@@ -79,7 +79,7 @@ function onSetList (state: any, action: SetListAction) {
 function updateAccount (state: any, id: string, blockchain: BlockchainCode, f: any) {
   return state.update('addresses', (accounts: any) => {
     const pos = accounts.findKey((acc: any) =>
-      acc.get('id') === id && acc.get('blockchain').toLowerCase() == blockchain.toLowerCase()
+      acc.get('id') === id && acc.get('blockchain').toLowerCase() === blockchain.toLowerCase()
     );
     if (pos >= 0) {
       return accounts.update(pos, f);
@@ -91,7 +91,7 @@ function updateAccount (state: any, id: string, blockchain: BlockchainCode, f: a
 function onSetBalance (state: any, action: SetBalanceAction) {
   const { accountId, value } = action.payload;
   const blockchain = blockchainByName(action.payload.blockchain).params.code;
-  return updateAccount(state, accountId,  blockchain,(acc: any) => {
+  return updateAccount(state, accountId,  blockchain, (acc: any) => {
     // Update balance only if it's changed
     const newBalance = new Wei(value);
     const currentBalance = acc.get('balance');
@@ -152,7 +152,8 @@ function onPendingBalance (state: any, action: PendingBalanceAction) {
         bal = acc.get('balance').plus(new Wei(action.value));
         return acc.set('balancePending', bal);
       });
-    } if (action.from) {
+    }
+    if (action.from) {
       return updateAccount(state, action.from, blockchain,(acc: any) => {
         bal = acc.get('balance').sub(new Wei(action.value));
         return acc.set('balancePending', bal);

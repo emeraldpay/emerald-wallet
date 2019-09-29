@@ -5,7 +5,7 @@ import * as React from 'react';
 import { styles, TxDetails } from './TxDetails';
 import TxInputData from './TxInputData';
 
-const reduceClasses = (prev: any, curr: any) => ({...prev,  [curr]: curr});
+const reduceClasses = (prev: any, curr: any) => ({ ...prev, [curr]: curr });
 const classes = Object.keys(styles).reduce(reduceClasses, {});
 
 describe('TxDetails', () => {

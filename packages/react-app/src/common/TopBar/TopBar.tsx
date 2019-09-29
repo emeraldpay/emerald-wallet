@@ -4,7 +4,6 @@ import { Button } from '@emeraldwallet/ui';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Action, Dispatch } from 'redux';
 
 export const styles = {
   container: {
@@ -14,7 +13,7 @@ export const styles = {
   }
 };
 
-interface Props {
+interface ITopBarProps {
   onAccounts?: any;
   onNewContact?: any;
   classes: any;
@@ -23,7 +22,7 @@ interface Props {
 /**
  * First dumb implementation of TopBar
  */
-export class TopBar extends React.Component<Props> {
+export class TopBar extends React.Component<ITopBarProps> {
   public render () {
     const {
       onAccounts, onNewContact, classes
@@ -32,12 +31,14 @@ export class TopBar extends React.Component<Props> {
       <div className={classes.container}>
         <div>
           <Button
+            data-testid='accounts-btn'
             label='ACCOUNTS'
             onClick={onAccounts}
           />
         </div>
         <div>
           <Button
+            data-testid='new-contact-btn'
             label='NEW CONTACT'
             icon={<AddIcon />}
             onClick={onNewContact}
@@ -50,7 +51,7 @@ export class TopBar extends React.Component<Props> {
 
 const StyledTopBar = withStyles(styles)(TopBar);
 
-const mapDispatchToProps = (dispatch: Dispatch<Action>) => ({
+const mapDispatchToProps = (dispatch: any) => ({
   onAccounts: () => dispatch(screen.actions.gotoScreen('home')),
   onNewContact: () => dispatch(screen.actions.gotoScreen('add-address'))
 });

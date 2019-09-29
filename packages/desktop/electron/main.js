@@ -6,7 +6,7 @@ const {
   EmeraldApiAccessDev,
   EmeraldApiAccessProd,
 } = require('@emeraldwallet/services');
-const { createServices, getMainWindow } = require('@emeraldwallet/electron-app');
+const { createServices, getMainWindow, protocol } = require('@emeraldwallet/electron-app');
 const { app, ipcMain, session } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path'); // eslint-disable-line
 
@@ -15,7 +15,7 @@ const { Services } = require('./services');
 const { LedgerApi } = require('./ledger');
 const ipc = require('./ipc');
 const log = require('./logger');
-const { startProtocolHandler } = require('./protocol');
+const { startProtocolHandler } = protocol;
 const assertSingletonWindow = require('./singletonWindow');
 const { Prices } = require('./prices');
 const {

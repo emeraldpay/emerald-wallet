@@ -2,6 +2,7 @@ import { convert } from '@emeraldplatform/core';
 import { Wei } from '@emeraldplatform/eth';
 import { Account, ButtonGroup, Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
+import { IAccount } from '@emeraldwallet/core';
 import { CSSProperties, withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import Button from '../../common/Button';
@@ -41,13 +42,13 @@ export const styles = {
   }
 };
 
-export interface Props {
+export interface ITxDetailsProps {
   fiatAmount?: string;
   fiatCurrency?: string;
   goBack?: (a?: any) => void;
   openAccount?: (a?: any) => void;
-  fromAccount?: any;
-  toAccount?: any;
+  fromAccount?: IAccount;
+  toAccount?: IAccount;
   rates?: Map<string, number>;
   transaction: any;
   tokenSymbol: string;
@@ -57,7 +58,7 @@ export interface Props {
   cancel?: any;
 }
 
-export class TxDetails extends React.Component<Props> {
+export class TxDetails extends React.Component<ITxDetailsProps> {
 
   public handleBack = () => {
     if (this.props.goBack) {
@@ -114,9 +115,11 @@ export class TxDetails extends React.Component<Props> {
                 <div className={classes.value}>
                   {transaction.value ? `${new Wei(transaction.value).toEther()} ${tokenSymbol}` : '--'}
                 </div>
-                {fiatAmount && <div className={classes.value}>
-                  {fiatAmount} {fiatCurrency}
-                </div> }
+                {fiatAmount && (
+                  <div className={classes.value}>
+                    {fiatAmount} {fiatCurrency}
+                  </div>
+                )}
               </div>
               <div>
                 <TxStatus status={txStatus} />
@@ -164,13 +167,14 @@ export class TxDetails extends React.Component<Props> {
             <div className={classes.fieldName}>To</div>
           </div>
           <div style={{ ...styles.right, alignItems: 'center' }}>
-            {transaction.to
-            && <Account
-              address={transaction.to}
-              identity={true}
-              identityProps={{ size: 30 }}
-              onClick={this.handleToClick}
-            />}
+            {transaction.to && (
+              <Account
+                address={transaction.to}
+                identity={true}
+                identityProps={{ size: 30 }}
+                onClick={this.handleToClick}
+              />
+            )}
           </div>
         </div>
 
@@ -211,18 +215,19 @@ export class TxDetails extends React.Component<Props> {
           <div style={styles.left}/>
           <div style={styles.right}>
             <ButtonGroup>
-              <Button
-                onClick={() => this.props.cancel()}
-                label='DASHBOARD' />
-              <Button
-                primary={true}
-                onClick={this.handleRepeatClick}
-                label='REPEAT TRANSACTION' />
+              <Button onClick={this.handleCancelClick} label='DASHBOARD' />
+              <Button primary={true} onClick={this.handleRepeatClick} label='REPEAT TRANSACTION' />
             </ButtonGroup>
           </div>
         </div>
       </Page>
     );
+  }
+
+  private handleCancelClick = () => {
+    if (this.props.cancel) {
+      this.props.cancel();
+    }
   }
 }
 

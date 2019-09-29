@@ -2,15 +2,15 @@ import { blockchainByName, BlockchainCode, IApi } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 import { Dispatch } from 'react';
 import * as blockchains from '../blockchains';
-import { Dispatched, Transaction } from '../types';
+import { Dispatched, ITransaction } from '../types';
 import { loadTransactions, storeTransactions } from './historyStorage';
 import { allTrackedTxs } from './selectors';
-import { ActionTypes, HistoryAction, UpdateTxsAction } from './types';
+import { ActionTypes, HistoryAction, IUpdateTxsAction } from './types';
 
 const txStoreKey = (chainId: number) => `chain-${chainId}-trackedTransactions`;
 
 export function persistTransactions (state: any, chainId: number) {
-  const txs = allTrackedTxs(state).toJS().filter((t: Transaction) => (t.chainId === chainId));
+  const txs = allTrackedTxs(state).toJS().filter((t: ITransaction) => (t.chainId === chainId));
   storeTransactions(
     txStoreKey(chainId),
     txs
@@ -27,7 +27,7 @@ function loadPersistedTransactions (state: any, chainId: number) {
   return txs;
 }
 
-function updateAndTrack (dispatch: Dispatch<any>, getState: Function, api: IApi, txs: Transaction[], blockchain: BlockchainCode) {
+function updateAndTrack (dispatch: Dispatch<any>, getState: Function, api: IApi, txs: ITransaction[], blockchain: BlockchainCode) {
   const chainId = blockchainByName(blockchain).params.chainId;
   const pendingTxs = txs.filter((tx) => !tx.blockNumber).map((t) => ({ ...t, chainId, blockchain }));
   if (pendingTxs.length !== 0) {
@@ -41,10 +41,10 @@ function updateAndTrack (dispatch: Dispatch<any>, getState: Function, api: IApi,
   });
 }
 
-export function trackTx (tx: Transaction, blockchain: BlockchainCode) {
+export function trackTx (tx: ITransaction, blockchain: BlockchainCode) {
   return (dispatch: Dispatch<any>, getState: Function, api: IApi) => updateAndTrack(dispatch, getState, api, [tx], blockchain);
 }
-export function trackTxs (txs: Transaction[], blockchain: BlockchainCode) {
+export function trackTxs (txs: ITransaction[], blockchain: BlockchainCode) {
   return (dispatch: Dispatch<any>, getState: Function, api: IApi) => updateAndTrack(dispatch, getState, api, txs, blockchain);
 }
 
@@ -95,7 +95,7 @@ export function refreshTrackedTransactions (): Dispatched<HistoryAction> {
   };
 }
 
-export function updateTxs (transactions: any): UpdateTxsAction {
+export function updateTxs (transactions: any): IUpdateTxsAction {
   return {
     type: ActionTypes.UPDATE_TXS,
     payload: transactions

@@ -50,7 +50,8 @@ const SettingsButton = ({ classes, onClick }: {classes: any, onClick: any}) => (
       text: classes.text
     }}
     icon={<SettingsIcon/>}
-  />);
+  />
+  );
 
 const StyledSettingsButton = withStyles(blockDisplayStyles)(SettingsButton);
 

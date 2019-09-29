@@ -1,15 +1,15 @@
 import { convert } from '@emeraldplatform/core';
 import { fromJS, Map } from 'immutable';
-import { Transaction } from '../types';
+import { ITransaction } from '../types';
 import {
   ActionTypes,
   HistoryAction,
-  LoadStoredTxsAction,
-  PendingTxAction,
-  TrackedTxNotFoundAction,
-  TrackTxAction,
-  TrackTxsAction,
-  UpdateTxsAction
+  ILoadStoredTxsAction,
+  IPendingTxAction,
+  ITrackedTxNotFoundAction,
+  ITrackTxAction,
+  ITrackTxsAction,
+  IUpdateTxsAction
 } from './types';
 
 const { toNumber, toBigNumber } = convert;
@@ -34,7 +34,7 @@ function isTracked (state: any, tx: any) {
   return state.get('trackedTransactions').some((x: any) => tx.get('hash') === x.get('hash'));
 }
 
-function createTx (data: Transaction) {
+function createTx (data: ITransaction) {
   const values: {[key: string]: any} = {
     hash: data.hash,
     to: data.to
@@ -72,7 +72,7 @@ function createTx (data: Transaction) {
   return tx;
 }
 
-function onTrackTxs (state: any, action: TrackTxsAction) {
+function onTrackTxs (state: any, action: ITrackTxsAction) {
   if (action.type === ActionTypes.TRACK_TXS) {
     const transactions = action.txs.map(createTx);
     return state.update('trackedTransactions', (trackedTransactions: any) => {
@@ -88,7 +88,7 @@ function onTrackTxs (state: any, action: TrackTxsAction) {
   return state;
 }
 
-function onTrackTx (state: any, action: TrackTxAction): any {
+function onTrackTx (state: any, action: ITrackTxAction): any {
   if (action.type === ActionTypes.TRACK_TX) {
     const data = createTx(action.tx);
     if (isTracked(state, data)) {
@@ -99,7 +99,7 @@ function onTrackTx (state: any, action: TrackTxAction): any {
   return state;
 }
 
-function onPendingTx (state: any, action: PendingTxAction): any {
+function onPendingTx (state: any, action: IPendingTxAction): any {
   if (action.type === ActionTypes.PENDING_TX) {
     let txes = state.get('trackedTransactions');
     for (const tx of action.txList) {
@@ -116,7 +116,7 @@ function onPendingTx (state: any, action: PendingTxAction): any {
   return state;
 }
 
-function onLoadStoredTransactions (state: any, action: LoadStoredTxsAction) {
+function onLoadStoredTransactions (state: any, action: ILoadStoredTxsAction) {
   if (action.type === ActionTypes.LOAD_STORED_TXS) {
     let txs = fromJS([]);
     for (const tx of action.transactions) {
@@ -130,7 +130,7 @@ function onLoadStoredTransactions (state: any, action: LoadStoredTxsAction) {
 /**
  * When full node can't find our tx
  */
-function onTrackedTxNotFound (state: any, action: TrackedTxNotFoundAction) {
+function onTrackedTxNotFound (state: any, action: ITrackedTxNotFoundAction) {
   if (action.type === ActionTypes.TRACKED_TX_NOTFOUND) {
     return state.update('trackedTransactions', (txes: any) => {
       const pos = txes.findKey((tx: any) => tx.get('hash') === action.hash);
@@ -144,7 +144,7 @@ function onTrackedTxNotFound (state: any, action: TrackedTxNotFoundAction) {
   return state;
 }
 
-function onUpdateTxs (state: any, action: UpdateTxsAction) {
+function onUpdateTxs (state: any, action: IUpdateTxsAction) {
   if (action.type === ActionTypes.UPDATE_TXS) {
     return state.update('trackedTransactions', (txs: any) => {
       action.payload.forEach((t) => {

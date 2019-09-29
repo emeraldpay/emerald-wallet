@@ -1,4 +1,4 @@
-import Avatar from '@material-ui/core/Avatar';
+import { Avatar } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/styles';
 import * as React from 'react';
 import CoinIcon from './CoinIcon';
@@ -19,11 +19,11 @@ const useStyles = makeStyles(
   })
 );
 
-interface Props {
+interface ICoinAvatarProps {
   chain: string;
 }
 
-const CoinAvatar = (props: Props) => {
+const CoinAvatar = (props: ICoinAvatarProps) => {
   const {
     chain
   } = props;
@@ -34,9 +34,11 @@ const CoinAvatar = (props: Props) => {
     className = avatarClasses[chain.toLowerCase()];
   }
 
-  return (<Avatar className={className}>
-    <CoinIcon chain={chain}/>
-  </Avatar>);
+  return (
+    <Avatar className={className}>
+      <CoinIcon chain={chain}/>
+    </Avatar>
+  );
 };
 
 export default CoinAvatar;

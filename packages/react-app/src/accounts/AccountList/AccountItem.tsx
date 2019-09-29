@@ -1,9 +1,7 @@
 import { Account as AddressAvatar, ButtonGroup } from '@emeraldplatform/ui';
 import { blockchainByName, IAccount } from '@emeraldwallet/core';
 import { Button, CoinAvatar } from '@emeraldwallet/ui';
-import Card from '@material-ui/core/Card';
-import CardContent from '@material-ui/core/CardContent';
-import Grid from '@material-ui/core/Grid';
+import { Card, CardContent, Grid } from '@material-ui/core';
 import withTheme from '@material-ui/core/styles/withTheme';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
@@ -55,19 +53,19 @@ export class Account extends React.Component<IAccountProps> {
   public handleDepositClick = () => this.props.showReceiveDialog(this.props.account);
 
   public render () {
-      const {
+    const {
         account, theme, classes, showFiat
       } = this.props;
-      const fiatStyle = {
-        fontSize: '16px',
-        lineHeight: '19px',
-        color: theme.palette.text.secondary
-      };
+    const fiatStyle = {
+      fontSize: '16px',
+      lineHeight: '19px',
+      color: theme.palette.text.secondary
+    };
 
-      const { coinTicker } = blockchainByName(account.blockchain).params;
+    const { coinTicker } = blockchainByName(account.blockchain).params;
+    const balance = account.balance;
 
-      const balance = account.balance;
-      return (
+    return (
         <Card className={classes.card}>
           <CardContent>
             <Grid container={true}>
@@ -85,13 +83,15 @@ export class Account extends React.Component<IAccountProps> {
               <Grid container={true} item={true} xs={2}>
                 <div className={classes.identityIconContainer}>
                   <div style={{ marginLeft: '10px' }}>
-                    {balance && <AccountBalance
-                      fiatStyle={fiatStyle}
-                      balance={balance}
-                      decimals={18}
-                      symbol={coinTicker}
-                      showFiat={showFiat}
-                    />}
+                    {balance && (
+                      <AccountBalance
+                        fiatStyle={fiatStyle}
+                        balance={balance}
+                        decimals={6}
+                        symbol={coinTicker}
+                        showFiat={showFiat}
+                      />
+                      )}
                     {!balance && 'loading...'}
                   </div>
                 </div>
@@ -115,7 +115,7 @@ export class Account extends React.Component<IAccountProps> {
             </Grid>
           </CardContent>
         </Card>);
-    }
+  }
 }
 
 export default withTheme(withStyles(styles)(Account));

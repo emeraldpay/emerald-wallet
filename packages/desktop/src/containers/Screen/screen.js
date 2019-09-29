@@ -4,14 +4,13 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { Wei } from '@emeraldplatform/eth';
 import {
   ContactList as AddressBook, AddContact, PaperWallet, ExportPaperWallet, ImportJson, TxDetails,
-  ImportMnemonic, CreateTransaction,
+  ImportMnemonic, CreateTransaction, BroadcastTx, ImportPrivateKey,
 } from '@emeraldwallet/react-app';
 
 import createLogger from '../../utils/logger';
 import AccountShow from '../../components/accounts/AccountShow';
 import MnemonicWizard from '../../components/accounts/MnemonicWizard';
 import LedgerImport from '../../components/ledger/ImportAccount';
-import ImportPrivateKey from '../../components/accounts/add/ImportPrivateKey';
 import Welcome from '../../components/welcome/welcome';
 import Home from '../Home';
 import Settings from '../Settings';
@@ -47,11 +46,13 @@ const Screen = (props) => {
     return <TxDetails hash={ props.screenItem.hash } accountId={ props.screenItem.accountId }/>;
   } if (props.screen === 'create-tx') {
     return (<CreateTransaction account={ props.screenItem } />);
+  } if (props.screen === 'broadcast-tx') {
+    return <BroadcastTx tx={props.screenItem.tx} signed={props.screenItem.signed} />;
   }
   if (props.screen === 'repeat-tx') {
     const {transaction, toAccount, fromAccount} = props.screenItem;
     const amount = new Wei(transaction.value);
-    const to = toAccount.get('id');
+    const to = (toAccount && toAccount.id) || transaction.to;
     const gasLimit = transaction.gas;
     const { data, typedData, mode } = transaction;
     return (

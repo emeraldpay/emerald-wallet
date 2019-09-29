@@ -1,5 +1,5 @@
 // common
-export { default as Button} from './components/common/Button';
+export { default as Button } from './components/common/Button';
 export { default as InlineEdit } from './components/common/InlineEdit';
 export { default as Logo } from './components/common/Logo';
 export { default as Pager } from './components/common/Pager';
@@ -24,8 +24,6 @@ export { default as HdPath } from './components/common/HdPath';
 export { default as NotificationBar } from './components/common/NotificationBar';
 export { default as PasswordInput } from './components/common/PasswordInput';
 export { default as TxDetails } from './components/tx/TxDetails';
-export { default as CreateTx } from './components/tx/send/CreateTx';
-export { default as SignTx } from './components/tx/send/SignTx';
 export { default as ChainSelector } from './components/common/ChainSelector';
 export { CoinIcon, CoinAvatar } from './components/common/CoinIcon';
 export { default as FormRow } from './components/common/FormRow';
@@ -38,5 +36,5 @@ export { default as ConnectionStatus } from './components/layout/ConnectionStatu
 
 export { default as NewAccountProps } from './components/accounts/GenerateAccount/AccountPropsDialog';
 
-export { default as LedgerImportAccount} from './components/ledger/ImportAccount';
+export { default as LedgerImportAccount } from './components/ledger/ImportAccount';
 export { default as WaitLedgerDialog } from './components/ledger/WaitDialog';

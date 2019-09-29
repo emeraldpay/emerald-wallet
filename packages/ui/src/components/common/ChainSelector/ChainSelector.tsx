@@ -1,48 +1,44 @@
 import { Blockchain, BlockchainCode } from '@emeraldwallet/core';
-import FormControl from '@material-ui/core/FormControl';
-import Input from '@material-ui/core/Input';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
+import { FormControl, Input, InputLabel, MenuItem, Select } from '@material-ui/core';
 import { CSSProperties, withStyles } from '@material-ui/styles';
 import * as React from 'react';
 
-export const styles = (theme: any) => ({
+export const styles = (theme?: any) => ({
   container: {
     position: 'relative'
   } as CSSProperties,
   selectChain: {
-    marginTop: theme.spacing(2)
+    marginTop: (theme && theme.spacing) && theme.spacing(2)
   } as CSSProperties,
   formControl: {
-    margin: theme.spacing(1),
+    margin: (theme && theme.spacing) && theme.spacing(1),
     minWidth: 120,
     border: 0
   } as CSSProperties
 });
 
-interface Props {
+interface IProps {
   chains: Blockchain[];
   onChange?: any;
   value?: BlockchainCode;
   classes?: any;
 }
 
-interface State {
+interface IState {
   value?: string;
 }
 
-export class ChainSelector extends React.Component<Props, State> {
+export class ChainSelector extends React.Component<IProps, IState> {
   public state = {
     value: this.props.value
   };
 
-  constructor (props: Readonly<Props>) {
+  constructor (props: Readonly<IProps>) {
     super(props);
     this.state.value = props.value || (props.chains.length > 0 ? props.chains[0].params.code : BlockchainCode.ETH);
   }
 
-  public handleChange (event: React.ChangeEvent<{ name?: string; value: string }>) {
+  public handleChange = (event: React.ChangeEvent<{ name?: string; value: string }>): void => {
     this.setState({
       value: event.target.value
     });
@@ -61,7 +57,7 @@ export class ChainSelector extends React.Component<Props, State> {
           <Select
             value={value}
             input={<Input name='chain' id='chain-helper' />}
-            onChange={this.handleChange.bind(this)}
+            onChange={this.handleChange}
             displayEmpty={true}
             name='chain'
             className={classes.selectChain}

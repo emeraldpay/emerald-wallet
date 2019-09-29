@@ -1,7 +1,7 @@
 import { Units, Wei } from '@emeraldplatform/eth';
 import BigNumber from 'bignumber.js';
-import { CreateEthereumTx, TxDetailsPlain } from './CreateEthereumTx';
-import { TxTarget, ValidationResult } from './types';
+import { CreateEthereumTx } from './CreateEthereumTx';
+import { ITxDetailsPlain, TxTarget, ValidationResult } from './types';
 
 describe('CreateEthereumTx', () => {
 
@@ -272,18 +272,21 @@ describe('CreateEthereumTx', () => {
     const dump = tx.dump();
 
     expect(dump.from).toBe('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
-    expect(dump.totalBalance).toBe('1000000000057');
+    expect(dump.totalTokenBalance).toBe('1000000000057');
     expect(dump.to).toBe('0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd');
     expect(dump.target).toBe(1);
     expect(dump.amount).toBe('999580000000500002');
+    expect(dump.amountDecimals).toBe(18);
     expect(dump.gasPrice).toBe('10007000000');
     expect(dump.gas).toBe(42011);
   });
 
   it('reads from dumps', () => {
-    const dump: TxDetailsPlain = {
+    const dump: ITxDetailsPlain = {
+      tokenSymbol: 'Ether',
       from: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
-      totalBalance: '1000000000057',
+      totalTokenBalance: '1000000000057',
+      amountDecimals: 18,
       to: '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd',
       target: 1,
       amount: '999580000000500002',
@@ -303,14 +306,16 @@ describe('CreateEthereumTx', () => {
   });
 
   it('reads from dumps, manual tx', () => {
-    const dump: TxDetailsPlain = {
+    const dump: ITxDetailsPlain = {
       from: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD',
-      totalBalance: '1000000000057',
+      totalTokenBalance: '1000000000057',
+      amountDecimals: 18,
       to: '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd',
       target: 0,
       amount: '999580000000500002',
       gasPrice: '10007000000',
-      gas: 42011
+      gas: 42011,
+      tokenSymbol: 'Ether'
     };
 
     const tx = CreateEthereumTx.fromPlain(dump);

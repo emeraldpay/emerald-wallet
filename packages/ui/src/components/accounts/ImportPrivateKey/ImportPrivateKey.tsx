@@ -51,7 +51,7 @@ function getLoadingIcon (submitting) {
   return null;
 }
 
-interface Props {
+export interface IProps {
   blockchains: Blockchain[];
   onBack?: any;
   error?: any;
@@ -60,7 +60,7 @@ interface Props {
   classes: any;
 }
 
-interface State {
+interface IState {
   password?: string;
   confirmPassword?: string;
   privateKey?: string;
@@ -68,8 +68,8 @@ interface State {
   blockchain: BlockchainCode;
 }
 
-export class ImportPrivateKey extends React.Component<Props, State> {
-  constructor (props: Props) {
+export class ImportPrivateKey extends React.Component<IProps, IState> {
+  constructor (props: IProps) {
     super(props);
     this.state = {
       blockchain: props.blockchains.length > 0 ? props.blockchains[0].params.code : BlockchainCode.ETH

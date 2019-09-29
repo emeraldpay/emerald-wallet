@@ -3,10 +3,8 @@ import { Contract } from '@emeraldplatform/contracts';
 import { abi as TokenAbi } from '@emeraldwallet/erc20';
 import { parseString } from '../../../lib/convert';
 // import { detect as detectTraceCall } from '../../../lib/traceCall';
-import launcher from '../../launcher';
 import ActionTypes from './actionTypes';
 import createLogger from '../../../utils/logger';
-import deployedTokens from '../../../lib/deployedTokens';
 import { screen } from '../..';
 
 const { dispatchRpcError } = screen.actions;
@@ -163,28 +161,6 @@ export function loadTokenList(chain) {
         tokens,
       });
       tokens.map((token) => dispatch(loadTokenDetails(chain, token.address)));
-    });
-  };
-}
-
-/**
- * Add default tokens for particular chain to vault and state
- * @param chain
- * @param chainId
- */
-export function addDefault(chain: string, chainId) {
-  return (dispatch, getState, api) => {
-    const tokens = deployedTokens[+chainId] || [];
-    tokens.forEach((t) => {
-      api.emerald.importContract(t.address, t.symbol, '', chain).then(() => {
-        // TODO: maybe replace with one action
-        dispatch({
-          type: ActionTypes.ADD_TOKEN,
-          address: t.address,
-          name: t.symbol,
-        });
-        dispatch(loadTokenDetails(chain, t.address));
-      });
     });
   };
 }

@@ -39,8 +39,8 @@ export default connect(
       amountRenderer: txValueRenderer(showFiat),
       lang: i18n.language,
       tx,
-      toAccount: (toAccount && toAccount.toJS()) || {},
-      fromAccount: (fromAccount && fromAccount.toJS()) || {},
+      toAccount: toAccount || {},
+      fromAccount: fromAccount || {},
       token: (token && token.toJS()) || null,
       netParams: {
         requiredConfirmations: settings.selectors.numConfirms(state),

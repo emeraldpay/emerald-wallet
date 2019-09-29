@@ -7,6 +7,7 @@ import * as screen from './screen';
 import * as settings from './settings';
 import * as tokens from './tokens';
 import * as txhistory from './txhistory';
+import * as transaction from './transaction';
 
 export {
   addressBook,
@@ -17,5 +18,6 @@ export {
   ledger,
   connection,
   settings,
-  tokens
+  tokens,
+  transaction
 };

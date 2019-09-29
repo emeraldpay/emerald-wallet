@@ -9,14 +9,14 @@ import * as React from 'react';
 import Button from '../../../common/Button';
 import { CoinAvatar } from '../../../common/CoinIcon';
 
-export interface Props {
+export interface IProps {
   total: any;
   fiatCurrency?: string;
   byChain: any;
   classes?: any;
 }
 
-interface State {
+interface IState {
   anchorEl: any;
 }
 
@@ -41,7 +41,7 @@ const CoinSymbol = ({ coinTicker }) => {
   return null;
 };
 
-class TotalButton extends React.Component<Props, State> {
+class TotalButton extends React.Component<IProps, IState> {
   constructor (props) {
     super(props);
     this.state = {

@@ -115,7 +115,7 @@ export enum Status {
 }
 export type StatusListener = (state: Status) => void;
 
-interface ConnectionState {
+interface IConnectionState {
   authenticated: boolean;
   blockchainConnected: boolean;
   pricesConnected: boolean;
@@ -138,7 +138,7 @@ export class EmeraldApiAccess {
   private listener?: StatusListener;
   private currentState?: Status = undefined;
 
-  private connectionState: ConnectionState;
+  private connectionState: IConnectionState;
 
   constructor (addr: string, cert: string, id: string) {
     this.address = addr;
@@ -162,19 +162,19 @@ export class EmeraldApiAccess {
     this.monitoringClient = new MonitoringClient(addr, this.credentials.getChannelCredentials());
 
     this.credentials.setListener((status: AuthenticationStatus) => {
-      this.connectionState.authenticated = status == AuthenticationStatus.AUTHENTICATED;
+      this.connectionState.authenticated = status === AuthenticationStatus.AUTHENTICATED;
       this.verifyConnection();
     });
     this.blockchainClient.setConnectionListener((status) => {
-      this.connectionState.blockchainConnected = status == ConnectionStatus.CONNECTED;
+      this.connectionState.blockchainConnected = status === ConnectionStatus.CONNECTED;
       this.verifyConnection();
     });
     this.pricesClient.setConnectionListener((status) => {
-      this.connectionState.pricesConnected = status == ConnectionStatus.CONNECTED;
+      this.connectionState.pricesConnected = status === ConnectionStatus.CONNECTED;
       this.verifyConnection();
     });
     this.monitoringClient.setConnectionListener((status) => {
-      this.connectionState.diagConnected = status == ConnectionStatus.CONNECTED;
+      this.connectionState.diagConnected = status === ConnectionStatus.CONNECTED;
       this.verifyConnection();
     });
     this.periodicCheck();
@@ -241,7 +241,7 @@ export class EmeraldApiAccess {
   }
 
   protected setStatus (state: Status) {
-    if (typeof this.currentState === 'undefined' || this.currentState != state) {
+    if (typeof this.currentState === 'undefined' || this.currentState !== state) {
       this.currentState = state;
       if (this.listener) {
         this.listener(state);

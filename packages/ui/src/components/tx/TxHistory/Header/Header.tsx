@@ -35,7 +35,7 @@ const styles2 = {
   }
 };
 
-interface  Props {
+interface IProps {
   onTxFilterChange?: any;
   onSearchChange?: any;
   classes?: any;
@@ -44,7 +44,7 @@ interface  Props {
 
 const Header = ({
   onTxFilterChange, onSearchChange, classes, txFilterValue
-}: Props) => {
+}: IProps) => {
   return (
     <div className={classes.headerContainer}>
       <div className={classes.headerMain}>

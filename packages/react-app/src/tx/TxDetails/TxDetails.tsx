@@ -1,6 +1,6 @@
 import { Wei } from '@emeraldplatform/eth';
 import { Blockchains, Currency } from '@emeraldwallet/core';
-import { screen, settings, txhistory } from '@emeraldwallet/store';
+import { addresses, screen, settings, txhistory } from '@emeraldwallet/store';
 import { TxDetails } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -16,15 +16,13 @@ export interface ITxDetailsProps {
 export default connect(
   (state: any, ownProps: ITxDetailsProps) => {
     const tx = txhistory.selectors.selectByHash(state, ownProps.hash);
-    const accounts = state.addresses.get('addresses');
-    const fromAccount = tx.get('from')
-      ? accounts.find((acct: any) => acct.get('id') === tx.get('from')) : null;
-    const toAccount = tx.get('to')
-      ? accounts.find((acct: any) => acct.get('id') === tx.get('to')) : null;
+    const chain = tx.get('blockchain');
+    const fromAccount = tx.get('from') ? addresses.selectors.find(state, tx.get('from'), chain) : undefined;
+    const toAccount = tx.get('to') ? addresses.selectors.find(state, tx.get('to'), chain) : undefined;
     const account = fromAccount || toAccount;
     const showRepeat = !!fromAccount;
     const currentCurrency = settings.selectors.fiatCurrency(state);
-    const fiatRate = settings.selectors.fiatRate(tx.get('blockchain'), state);
+    const fiatRate = settings.selectors.fiatRate(chain, state);
     const coins = new Wei(tx.get('value')).toEther();
     const fiatAmount = Currency.format(Number(Currency.convert(coins, fiatRate)), currentCurrency);
     const plainTx = tx.toJS();

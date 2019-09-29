@@ -2,7 +2,7 @@ import { shallow } from 'enzyme';
 import * as React from 'react';
 import { HdPath, styles } from './HdPath';
 
-const reduceClasses = (prev, curr) => ({...prev,  [curr]: curr});
+const reduceClasses = (prev, curr) => ({ ...prev,  [curr]: curr });
 const classes = Object.keys(styles).reduce(reduceClasses, {});
 
 describe('HdPath', () => {

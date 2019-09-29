@@ -1,7 +1,5 @@
-import { BlockchainCode } from '@emeraldwallet/core';
-import BigNumber from 'bignumber.js';
 import { List, Map } from 'immutable';
-import { Transaction } from '../types';
+import { ITransaction } from '../types';
 
 export enum ActionTypes {
   TRACK_TX = 'WALLET/HISTORY/TRACK_TX',
@@ -12,43 +10,43 @@ export enum ActionTypes {
   PENDING_TX = 'WALLET/HISTORY/PENDING_TX'
 }
 
-export interface TrackTxAction {
+export interface ITrackTxAction {
   type: ActionTypes.TRACK_TX;
-  tx: Transaction;
+  tx: ITransaction;
 }
 
-export interface TrackTxsAction {
+export interface ITrackTxsAction {
   type: ActionTypes.TRACK_TXS;
-  txs: Transaction[];
+  txs: ITransaction[];
 }
 
-export interface LoadStoredTxsAction {
+export interface ILoadStoredTxsAction {
   type: ActionTypes.LOAD_STORED_TXS;
-  transactions: Transaction[];
+  transactions: ITransaction[];
 }
 
-export interface PendingTxAction {
+export interface IPendingTxAction {
   type: ActionTypes.PENDING_TX;
-  txList: Transaction[];
+  txList: ITransaction[];
 }
 
-export interface TrackedTxNotFoundAction {
+export interface ITrackedTxNotFoundAction {
   type: ActionTypes.TRACKED_TX_NOTFOUND;
   hash: string;
 }
 
-export interface UpdateTxsAction {
+export interface IUpdateTxsAction {
   type: ActionTypes.UPDATE_TXS;
-  payload: Transaction[];
+  payload: ITransaction[];
 }
 
 export type HistoryAction =
-  TrackTxAction
-  | TrackTxsAction
-  | LoadStoredTxsAction
-  | PendingTxAction
-  | TrackedTxNotFoundAction
-  | UpdateTxsAction
+  ITrackTxAction
+  | ITrackTxsAction
+  | ILoadStoredTxsAction
+  | IPendingTxAction
+  | ITrackedTxNotFoundAction
+  | IUpdateTxsAction
   ;
 
 export type TransactionMap = Map<string, any>;

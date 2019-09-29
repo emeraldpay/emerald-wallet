@@ -35,8 +35,8 @@ function isAlreadyAdded (addr: LedgerAddress, accounts: any) {
 class AddrList extends React.Component<Props> {
   public handleAddrSelection = (value) => {
     if (this.props.setSelectedAddr) {
-        this.props.setSelectedAddr(value);
-      }
+      this.props.setSelectedAddr(value);
+    }
   }
 
   public render () {
@@ -64,7 +64,7 @@ class AddrList extends React.Component<Props> {
             />)}
           </TableBody>
         </Table>
-      );
+    );
   }
 }
 

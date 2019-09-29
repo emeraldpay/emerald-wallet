@@ -1,7 +1,7 @@
 import Button from '@material-ui/core/Button';
 import * as React from 'react';
 
-interface Props {
+interface IBtnProps {
   style?: any;
   primary?: any;
   onClick?: any;
@@ -15,7 +15,7 @@ interface Props {
   classes?: any;
 }
 
-const Btn = (props: Props) => {
+const Btn = (props: IBtnProps) => {
   const {
     primary, onClick, label, icon, href, variant, disabled, ...restProps
   } = props;
