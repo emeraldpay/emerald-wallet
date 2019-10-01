@@ -9,8 +9,8 @@
   "scripts": {
     "build": "rimraf lib/ && tsc",
     "build:dist": "rimraf lib/ && tsc",
-    "test": "jest",
-    "test:coverage": "jest --coverage && codecov"
+    "test": "jest --passWithNoTests",
+    "test:coverage": "jest --passWithNoTests --coverage && codecov"
   },
   "dependencies": {
     "@ledgerhq/hw-app-eth": "4.70.0",
