@@ -3,7 +3,7 @@
  */
 import { BlockchainCode } from './blockchains';
 
-export default interface BlockchainParams {
+export default interface IBlockchainParams {
   decimals: number;
   coinTicker: string;
   chainId: number;

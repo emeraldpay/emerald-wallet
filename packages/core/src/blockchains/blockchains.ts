@@ -30,7 +30,7 @@ export function blockchainCodeByName (name: string): string {
     throw new Error('Empty chain name passed');
   }
   const cleanName = name.toLowerCase();
-  return allCodes.find((code) => code == cleanName) || BlockchainCode.Unknown;
+  return allCodes.find((code) => code === cleanName) || BlockchainCode.Unknown;
 }
 
 export function blockchainByName (name: string): Blockchain {
@@ -45,5 +45,5 @@ export function blockchainById (id?: number): Blockchain | undefined {
   if (typeof id === 'undefined') {
     return undefined;
   }
-  return allChains.find((chain) => chain.params.chainId == id);
+  return allChains.find((chain) => chain.params.chainId === id);
 }

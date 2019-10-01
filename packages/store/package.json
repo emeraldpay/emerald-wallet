@@ -49,6 +49,7 @@
     "@emeraldplatform/eth-account": "0.5.7",
     "@emeraldwallet/core": "^2.0.3",
     "@emeraldwallet/erc20": "^2.0.3",
+    "@emeraldwallet/ledger": "^2.0.3",
     "immutable": "3.8.2",
     "lodash": "^4.17.14",
     "redux-saga": "^1.0.2",

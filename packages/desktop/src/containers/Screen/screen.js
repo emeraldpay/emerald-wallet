@@ -4,13 +4,12 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { Wei } from '@emeraldplatform/eth';
 import {
   ContactList as AddressBook, AddContact, PaperWallet, ExportPaperWallet, ImportJson, TxDetails,
-  ImportMnemonic, CreateTransaction, BroadcastTx, ImportPrivateKey,
+  ImportMnemonic, CreateTransaction, BroadcastTx, ImportPrivateKey, ImportLedgerAccount,
 } from '@emeraldwallet/react-app';
 
 import createLogger from '../../utils/logger';
 import AccountShow from '../../components/accounts/AccountShow';
 import MnemonicWizard from '../../components/accounts/MnemonicWizard';
-import LedgerImport from '../../components/ledger/ImportAccount';
 import Welcome from '../../components/welcome/welcome';
 import Home from '../Home';
 import Settings from '../Settings';
@@ -37,9 +36,9 @@ const Screen = (props) => {
     return <AddContact />;
   }
   if (props.screen === 'landing-add-from-ledger') {
-    return <LedgerImport onBackScreen={props.screenItem} />;
+    return <ImportLedgerAccount onBackScreen={props.screenItem} />;
   } if (props.screen === 'add-from-ledger') {
-    return <LedgerImport />;
+    return <ImportLedgerAccount />;
   } if (props.screen === 'account') {
     return <AccountShow account={ props.screenItem }/>;
   } if (props.screen === 'transaction') {

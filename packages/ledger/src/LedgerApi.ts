@@ -1,16 +1,20 @@
 const AppEth = require('@ledgerhq/hw-app-eth').default;
 const Transport = require('@ledgerhq/hw-transport-node-hid').default;
-const log = require('electron-log');
 
-class LedgerApi {
-  constructor() {
+export class LedgerApi {
+  private appEth: any;
+  private transport: any;
+  private reqQueue: any[];
+  private jobsQueueTimer: any;
+
+  constructor () {
     this.appEth = null;
     this.transport = null;
     this.reqQueue = [];
     this.jobsQueueTimer = null;
   }
 
-  runQueuedJobs() {
+  public runQueuedJobs (): Promise<void> {
     if (this.reqQueue.length === 0) {
       this.jobsQueueTimer = setTimeout(() => this.runQueuedJobs(), 100);
       return Promise.resolve();
@@ -24,12 +28,12 @@ class LedgerApi {
       .then(() => {
         this.jobsQueueTimer = setTimeout(() => this.runQueuedJobs(), 100);
       })
-      .catch((e) => {
+      .catch((e: any) => {
         this.jobsQueueTimer = setTimeout(() => this.runQueuedJobs(), 100);
       });
   }
 
-  startQueue() {
+  public startQueue () {
     const isProcessingQueuedJobs = this.jobsQueueTimer !== null;
     const isAppEthCreated = this.appEth !== null;
 
@@ -38,10 +42,12 @@ class LedgerApi {
     }
   }
 
-  connect() {
-    if (this.appEth !== null) { return new Promise((resolve) => resolve(this)); }
+  public connect (): Promise<LedgerApi> {
+    if (this.appEth !== null) {
+      return new Promise((resolve) => resolve(this));
+    }
 
-    return Transport.create().then((transport) => {
+    return Transport.create().then((transport: any) => {
       this.transport = transport;
       this.appEth = new AppEth(transport);
       this.startQueue();
@@ -49,20 +55,22 @@ class LedgerApi {
     });
   }
 
-  isConnected() {
+  public isConnected (): boolean {
     return this.appEth !== null;
   }
 
-  disconnect() {
+  public disconnect () {
     return new Promise((resolve, reject) => {
       this.reqQueue = [];
 
-      if (this.appEth === null) { resolve(); }
+      if (this.appEth === null) {
+        resolve();
+      }
       this.reqQueue.push(() => {
         this.appEth = null;
 
         return this.transport.close()
-          .then((result) => {
+          .then((result: any) => {
             this.transport = null;
             resolve();
           })
@@ -71,7 +79,7 @@ class LedgerApi {
     });
   }
 
-  getStatus() {
+  public getStatus () {
     return new Promise((resolve, reject) => {
       this.reqQueue.push(
         () => this.appEth.getAppConfiguration().then(resolve).catch(reject)
@@ -79,7 +87,7 @@ class LedgerApi {
     });
   }
 
-  getAddress(hdpath) {
+  public getAddress (hdpath: string) {
     return new Promise((resolve, reject) => {
       this.reqQueue.push(
         () => this.appEth.getAddress(hdpath).then(resolve).catch(reject)
@@ -87,7 +95,3 @@ class LedgerApi {
     });
   }
 }
-
-module.exports = {
-  LedgerApi,
-};

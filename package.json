@@ -11,7 +11,7 @@
     "test:coverage": "lerna run test:coverage --stream"
   },
   "devDependencies": {
-    "lerna": "^3.13.0",
+    "lerna": "3.16.4",
     "tslint": "^5.20.0",
     "tslint-config-standard": "^8.0.1",
     "tslint-react": "^4.1.0"

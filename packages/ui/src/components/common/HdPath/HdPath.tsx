@@ -1,9 +1,21 @@
+import { Blockchains, blockchains } from '@emeraldwallet/core';
 import { MenuItem, Paper, TextField } from '@material-ui/core';
 import { CSSProperties, withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import * as Autosuggest from 'react-autosuggest';
 
-export const styles = (theme) => ({
+interface IDPath {
+  value: string;
+  label: string;
+}
+
+const dPaths: IDPath[] = Object.keys(blockchains.Blockchains)
+  .map<IDPath>((chainCode: string) => ({
+    value: Blockchains[chainCode].params.hdPath,
+    label: Blockchains[chainCode].getTitle()
+  }));
+
+export const styles = (theme?: any) => ({
   container: {
     position: 'relative'
   } as CSSProperties,
@@ -24,16 +36,13 @@ export const styles = (theme) => ({
   },
   suggestion: {
     display: 'block'
+  },
+  suggestionLabel: {
+    color: theme.pallete && theme.pallete.text.secondary
   }
 });
 
-const predefinedHdPaths = [
-  { value: 'm/44\'/60\'/160720\'/0\'', label: '1' },
-  { value: 'm/44\'/61\'/1\'/0', label: '2' },
-  { value: 'm/44\'/61\'/0\'/0', label: '3' },
-  { value: 'm/44\'/60\'/0\'/0', label: '4' },
-  { value: 'm/44\'/60\'/0\'', label: '5' }
-];
+const predefinedHdPaths = dPaths;
 
 interface IProps {
   onChange?: any;
@@ -105,12 +114,16 @@ export class HdPath extends React.Component<IProps, IState> {
     });
   }
 
+  public shouldRenderSuggestions (value: string): boolean {
+    return true;
+  }
+
   public render () {
     const { value, classes } = this.props;
     return (
       <div className={classes.container}>
         <Autosuggest
-          shouldRenderSuggestions={(val) => (true)}
+          shouldRenderSuggestions={this.shouldRenderSuggestions}
           renderInputComponent={renderInputComponent}
           suggestions={predefinedHdPaths}
           onSuggestionsFetchRequested={this.handleSuggestionsFetchRequested}

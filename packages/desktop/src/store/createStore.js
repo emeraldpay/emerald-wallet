@@ -14,7 +14,7 @@ import launcherReducers from './launcher/launcherReducers';
 import walletReducers from './wallet/walletReducers';
 
 const reducers = {
-  addressBook: addressBook.reducer,
+  [addressBook.moduleName]: addressBook.reducer,
   [tokens.moduleName]: tokens.reducer,
   launcher: launcherReducers,
   ledger: ledger.reducer,
