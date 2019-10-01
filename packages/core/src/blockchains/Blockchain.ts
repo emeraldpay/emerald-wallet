@@ -1,7 +1,7 @@
-import BlockchainParams from './BlockchainParams';
+import IBlockchainParams from './IBlockchainParams';
 
 export interface Blockchain {
-  params: BlockchainParams;
+  params: IBlockchainParams;
 
   isValidAddress (address: string): boolean;
   getTitle (): string;

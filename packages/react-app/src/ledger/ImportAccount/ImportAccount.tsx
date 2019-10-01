@@ -1,16 +1,15 @@
-// @flow
-import React from 'react';
-import { connect } from 'react-redux';
-import { WaitLedgerDialog, LedgerImportAccount } from '@emeraldwallet/ui';
-import { fromJS } from 'immutable';
+import { BlockchainCode } from '@emeraldwallet/core';
 import {
-  ledger, addresses, screen, settings,
+  addresses, ledger, screen, settings
 } from '@emeraldwallet/store';
+import { LedgerImportAccount, WaitLedgerDialog } from '@emeraldwallet/ui';
+import * as React from 'react';
+import { connect } from 'react-redux';
 
-const Container = (props) => {
+const Container = (props: any) => {
   const { connected, ...passProps } = props;
   if (!connected) {
-    return (<WaitLedgerDialog onClose={ props.onCancel } />);
+    return (<WaitLedgerDialog onClose={props.onCancel} />);
   }
   return (
     <LedgerImportAccount {...passProps} />
@@ -27,37 +26,37 @@ export default connect(
     selected: ledger.selectors.hasSelected(state),
     selectedAddress: ledger.selectors.getSelected(state),
     addresses: ledger.selectors.getAddresses(state),
-    accounts: state.addresses.get('addresses'),
+    accounts: addresses.selectors.all(state),
     blockchains: settings.selectors.currentChains(state),
-    api: global.api,
+    // TODO: Fix this dependency
+    api: (global as any).api
   }),
-  (dispatch, ownProps) => ({
-    setPagerOffset: (offset) => {
-      dispatch(ledger.actions.getAddresses(offset, pageSize));
+  (dispatch, ownProps: any) => ({
+    setPagerOffset: (offset: number) => {
+      dispatch(ledger.actions.getAddresses(offset, pageSize) as any);
     },
-    setSelectedAddr: (addr) => {
+    setSelectedAddr: (addr: string) => {
       dispatch(ledger.actions.selectAddr(addr));
     },
     changeBaseHD: (hdpath: string) => {
       dispatch(ledger.actions.setBaseHD(hdpath));
-      dispatch(ledger.actions.getAddresses());
+      dispatch(ledger.actions.getAddresses() as any);
     },
-    onInit: () => dispatch(ledger.actions.getAddresses()),
+    onInit: () => dispatch(ledger.actions.getAddresses() as any),
     onBack: () => {
       if (ownProps.onBackScreen) {
         return dispatch(screen.actions.gotoScreen(ownProps.onBackScreen));
       }
       dispatch(screen.actions.gotoScreen('home'));
     },
-    onAddSelected: (blockchain) => {
-      let acc = null;
-      dispatch(ledger.actions.importSelected(blockchain))
-        .then((address) => {
-          acc = fromJS({ id: address, blockchain });
+    onAddSelected: (blockchain: BlockchainCode) => {
+      dispatch(ledger.actions.importSelected(blockchain) as any)
+        .then((address: string) => {
+          const acc = { id: address, blockchain };
           return dispatch(addresses.actions.loadAccountsList(() => {
             // go to account details only when accounts updated
             dispatch(screen.actions.gotoScreen('account', acc));
-          }));
+          }) as any);
         });
     },
     onCancel: () => {
@@ -65,6 +64,6 @@ export default connect(
         return dispatch(screen.actions.gotoScreen(ownProps.onBackScreen));
       }
       dispatch(screen.actions.gotoScreen('home'));
-    },
+    }
   })
 )(Container);

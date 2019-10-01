@@ -1,16 +1,12 @@
 import { IApi } from '@emeraldwallet/core';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import { Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import AddrListItem from './AddrListItem';
 import { styles } from './styles';
 import { LedgerAddress, Selectable } from './types';
 
-interface Props {
+interface IAddrListProps {
   addresses?: Array<LedgerAddress & Selectable>;
   setSelectedAddr?: any;
   classes?: any;
@@ -31,8 +27,8 @@ function isAlreadyAdded (addr: LedgerAddress, accounts: any) {
 
 /**
  * AddrList allows select only one address
- * */
-class AddrList extends React.Component<Props> {
+ */
+class AddrList extends React.Component<IAddrListProps> {
   public handleAddrSelection = (value) => {
     if (this.props.setSelectedAddr) {
       this.props.setSelectedAddr(value);
@@ -54,14 +50,16 @@ class AddrList extends React.Component<Props> {
             </TableRow>
           </TableHead>
           <TableBody>
-            { addresses.map((addr) => <AddrListItem
-              onSelected={this.handleAddrSelection}
-              key={addr.hdpath}
-              alreadyAdded={isAlreadyAdded(addr, accounts)}
-              addr={addr}
-              blockchain={blockchain}
-              api={api}
-            />)}
+            { addresses.map((addr) => (
+              <AddrListItem
+                onSelected={this.handleAddrSelection}
+                key={addr.hdpath}
+                alreadyAdded={isAlreadyAdded(addr, accounts)}
+                addr={addr}
+                blockchain={blockchain}
+                api={api}
+              />
+              ))}
           </TableBody>
         </Table>
     );

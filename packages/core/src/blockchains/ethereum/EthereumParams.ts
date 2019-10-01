@@ -1,7 +1,7 @@
-import BlockchainParams from '../BlockchainParams';
+import IBlockchainParams from '../IBlockchainParams';
 import { BlockchainCode } from '../blockchains';
 
-class EthereumParams implements BlockchainParams {
+class EthereumParams implements IBlockchainParams {
   public decimals: number = 18;
   public coinTicker: string;
   public chainId: number;

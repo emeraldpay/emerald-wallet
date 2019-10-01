@@ -12,7 +12,7 @@ const path = require('path'); // eslint-disable-line
 
 const Settings = require('./settings');
 const { Services } = require('./services');
-const { LedgerApi } = require('./ledger');
+const { LedgerApi } = require('@emeraldwallet/ledger');
 const ipc = require('./ipc');
 const log = require('./logger');
 const { startProtocolHandler } = protocol;

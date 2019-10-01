@@ -1,4 +1,5 @@
 import { BlockchainCode } from '@emeraldwallet/core';
+import { LedgerApi } from '@emeraldwallet/ledger';
 import { remote } from 'electron';
 import uuid = require('uuid');
 import { Dispatched, GetState } from '../types';
@@ -22,12 +23,14 @@ export function setWatch (value: boolean): Watch {
 
 function connection (): Promise<any> {
   console.debug('getting a ledger connection');
-  return remote.getGlobal('ledger').connect();
+  const api: LedgerApi = remote.getGlobal('ledger');
+  return api.connect();
 }
 
 export function closeConnection (): Promise<any> {
   console.debug('closing connection to ledger');
-  return remote.getGlobal('ledger').disconnect();
+  const api: LedgerApi = remote.getGlobal('ledger');
+  return api.disconnect();
 }
 
 export function setConnected (value: boolean): Dispatched<Connected | Dispatched<any>> {
@@ -41,7 +44,8 @@ export function setConnected (value: boolean): Dispatched<Connected | Dispatched
   };
 }
 
-export function getAddresses (offset: number = 0, count: number = 5): Dispatched<SetHDOffset | AddressSelected | SetListHDPath | Dispatched<any>> {
+export function getAddresses (offset: number = 0, count: number = 5)
+  : Dispatched<SetHDOffset | AddressSelected | SetListHDPath | Dispatched<any>> {
   return (dispatch, getState) => {
     // let offset = getState().ledger.getIn(['hd', 'offset']);
     const hdbase = getState().ledger.getIn(['hd', 'base']);
@@ -118,8 +122,8 @@ export function watchConnection (): Dispatched<Connected> {
 
 function onceConnectionState (getState: GetState, value: boolean): Promise<any> {
   return new Promise((resolve) => {
-    const check = function () {
-      if (getState().ledger.get('connected') == value) {
+    const check = () => {
+      if (getState().ledger.get('connected') === value) {
         resolve(true);
       } else {
         setTimeout(check, 1000);

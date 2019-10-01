@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { ImportMnemonic, NewMnemonic } from '@emeraldwallet/ui';
+import { NewMnemonic } from '@emeraldwallet/ui';
+import { ImportMnemonic } from '@emeraldwallet/react-app';
 import { screen, addresses, settings } from '@emeraldwallet/store';
 import ConfirmMnemonic from '../add/ConfirmMnemonic';
 
