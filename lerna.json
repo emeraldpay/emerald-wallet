@@ -8,7 +8,7 @@
   "command": {
     "bootstrap": {
       "npmClientArgs": [
-        "--ignore-engines"
+        "--ignore-engines", "--verbose"
       ]
     },
     "version": {
