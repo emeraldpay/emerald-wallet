@@ -4,8 +4,8 @@ const status = require('./status');
 const getPrivateKey = require('./privateKey');
 
 module.exports = (params) => {
-  settings(params.settings, params.services);
+  settings(params.settings);
   terms(params.settings);
-  status(params.services);
+  status();
   getPrivateKey();
 };

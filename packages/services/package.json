@@ -15,7 +15,7 @@
     "@emeraldplatform/eth-rpc": "0.5.1",
     "@emeraldplatform/grpc": "0.10.0",
     "@emeraldplatform/rpc": "0.5.1",
-    "@emeraldplatform/vault": "0.5.1",
+    "@emeraldwallet/vault": "^2.0.3",
     "@emeraldwallet/core": "^2.0.3",
     "@emeraldwallet/store": "^2.0.3",
     "google-protobuf": "3.7.1",

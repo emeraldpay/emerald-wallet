@@ -29,7 +29,7 @@ import createLogger from '../utils/logger';
 import {createStore} from './createStore';
 
 import {
-  onceServicesStart,
+  onceBlockchainConnected,
   onceAccountsLoaded,
   onceBalancesSet,
   onceModeSet,
@@ -199,7 +199,7 @@ function getInitialScreen() {
 }
 
 Promise
-  .all([onceServicesStart(store)])
+  .all([onceBlockchainConnected(store)])
   .then(startSync);
 checkStatus();
 screenHandlers();

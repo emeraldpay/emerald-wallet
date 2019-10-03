@@ -22,3 +22,5 @@ export { IServerConnect } from './IServerConnect';
 export { IApi } from './IApi';
 
 export { IAccount } from './IAccount';
+
+export { IVault, TxSignRequest, Contact, Account } from './IVault';

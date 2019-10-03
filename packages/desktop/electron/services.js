@@ -1,4 +1,3 @@
-const { LocalConnector } = require('@emeraldwallet/vault');
 const path = require('path'); // eslint-disable-line
 const log = require('./logger');
 const UserNotify = require('./userNotify').UserNotify; // eslint-disable-line
@@ -39,7 +38,6 @@ class Services {
     this.setup = Object.assign({}, DEFAULT_SETUP);
     this.connectorStatus = STATUS.NOT_STARTED;
     this.notify = new UserNotify(webContents);
-    this.emerald = serverConnect.connectEmerald();
     this.serverConnect = serverConnect;
     this.dataDir = dataDir;
 
@@ -71,52 +69,6 @@ class Services {
     return new Promise((resolve, reject) => {
       this.connectorStatus = STATUS.NOT_STARTED;
       this.notifyConnectorStatus();
-
-      this.connector = new LocalConnector(getBinDir(), this.dataDir ? path.resolve(path.join(this.dataDir, '/vault')) : null, log);
-
-      const onVaultReady = () => {
-        this.emerald.currentVersion().then((version) => {
-          this.setup.connector.version = version;
-
-          this.connectorStatus = STATUS.READY;
-          this.notifyConnectorStatus();
-          resolve(this.connector);
-        });
-      };
-
-      return this.connector.launch().then((emerald) => {
-        this.connectorStatus = STATUS.STARTING;
-
-        emerald.on('exit', (code) => {
-          if (!this.startedExternally) {
-            this.connectorStatus = STATUS.NOT_STARTED;
-            log.error(`Emerald Connector process exited with code: ${code}`);
-            this.connector.proc = null;
-          }
-        });
-
-        emerald.on('uncaughtException', (e) => {
-          log.error((e && e.stack) ? e.stack : e);
-        });
-
-        const logTargetDir = getLogDir();
-        log.debug('Emerald log target dir:', logTargetDir);
-
-        emerald.stderr.on('data', (data) => {
-          log.debug(`[emerald] ${data}`); // always log emerald data
-
-          if (data.includes('KeyFile storage error')) {
-            // connect to the one that already exists
-            log.info('Got the error we wanted');
-            this.startedExternally = true;
-            return onVaultReady();
-          }
-
-          if (/Connector started on/.test(data)) {
-            return onVaultReady();
-          }
-        });
-      });
     });
   }
 
@@ -139,7 +91,7 @@ class Services {
   notifyConnectorStatus() {
     const connectorStatus = Services.statusName(this.connectorStatus);
     this.notify.status(SERVICES.CONNECTOR, {
-      url: this.setup.connector.url,
+      url: 'none',
       status: connectorStatus,
       version: this.setup.connector.version,
     });

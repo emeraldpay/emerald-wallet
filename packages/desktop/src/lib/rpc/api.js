@@ -5,9 +5,6 @@ const log = createLogger('api');
 class NullConnect {
   connectEthChain(name) {
   }
-
-  connectEmerald() {
-  }
 }
 
 

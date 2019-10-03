@@ -26,8 +26,10 @@ export default connect(
     const tx = (ownProps.tx && ownProps.tx.toJS()) || {};
     const blockchain = tx.blockchain ? blockchainByName(tx.blockchain) : blockchainById(tx.chainId);
 
-    const toAccount = addresses.selectors.find(state, tx.to, blockchain.params.code) || Map({});
-    const fromAccount = addresses.selectors.find(state, tx.from, blockchain.params.code) || Map({});
+    const toAccount = addresses.selectors.find(state, tx.to, blockchain.params.code) || {};
+    const fromAccount = addresses.selectors.find(state, tx.from, blockchain.params.code) || {};
+
+    // console.log("accounts", toAccount, fromAccount);
 
     // TODO: fix it !
     const token = null; //state.tokens.get('tokens').find((t) => t.get('address') === tx.to);
@@ -39,8 +41,8 @@ export default connect(
       amountRenderer: txValueRenderer(showFiat),
       lang: i18n.language,
       tx,
-      toAccount: toAccount || {},
-      fromAccount: fromAccount || {},
+      toAccount: toAccount,
+      fromAccount: fromAccount,
       token: (token && token.toJS()) || null,
       netParams: {
         requiredConfirmations: settings.selectors.numConfirms(state),
