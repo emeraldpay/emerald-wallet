@@ -38,13 +38,14 @@ before_install:
   - echo Installing Rust
   - curl https://sh.rustup.rs -sSf > /tmp/rustup.sh
   - sh /tmp/rustup.sh -y
+  # Warm up Yarn
+  - npm install -g node-gyp license-checker
+  - npm install -g codecov yarn lerna
+  - lerna bootstrap
 
 before_script:
   - tsc -V
   - ./gitversion
-  - npm install -g node-gyp license-checker
-  - npm install -g codecov yarn lerna
-  - travis_wait 30 lerna bootstrap
 
 script:
   - ./gitversion > packages/desktop/gitversion.json
