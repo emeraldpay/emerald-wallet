@@ -41,7 +41,7 @@ before_install:
   # Warm up Yarn
   - npm install -g node-gyp license-checker
   - npm install -g codecov yarn lerna
-  - lerna bootstrap
+  - travis_wait 30 lerna bootstrap
 
 before_script:
   - tsc -V
