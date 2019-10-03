@@ -21,6 +21,7 @@ jobs:
       - run:
           name: Lerna bootstrap
           command: lerna bootstrap
+          no_output_timeout: 60m
 
       - run:
           name: Tests and linting

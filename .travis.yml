@@ -39,9 +39,10 @@ before_install:
   - curl https://sh.rustup.rs -sSf > /tmp/rustup.sh
   - sh /tmp/rustup.sh -y
   # Warm up Yarn
+  - echo Installing dependencies
   - npm install -g node-gyp license-checker
   - npm install -g codecov yarn lerna
-  - travis_wait 30 lerna bootstrap
+  - travis_wait 60 lerna bootstrap
 
 before_script:
   - tsc -V
