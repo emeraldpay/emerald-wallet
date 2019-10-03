@@ -43,7 +43,7 @@ before_script:
   - ./gitversion
   - npm install -g node-gyp license-checker
   - npm install -g codecov yarn lerna
-  - lerna bootstrap
+  - travis_wait 30 lerna bootstrap
 
 script:
   - ./gitversion > packages/desktop/gitversion.json
