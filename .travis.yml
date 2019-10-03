@@ -10,6 +10,7 @@ env:
     - RUST_BACKTRACE=1
 
 cache:
+  yarn: true
   directories:
     - "node_modules"
     - "packages/core/node_modules"
