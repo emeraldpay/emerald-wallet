@@ -9,8 +9,7 @@
     "lint:ts": "tslint 'packages/**/*.ts{,x}' -c tslint.json",
     "build:dist": "lerna run build:dist --stream",
     "test:coverage": "lerna run test:coverage --stream",
-    "build:neon": "electron-build-env neon build @emeraldpay/emerald-vault-node --release",
-    "postinstall": "npm run build:neon"
+    "build:neon": "electron-build-env neon build @emeraldpay/emerald-vault-node --release"
   },
   "devDependencies": {
     "lerna": "3.16.4",
