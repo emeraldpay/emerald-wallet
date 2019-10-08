@@ -1,6 +1,6 @@
 import { EthRpc } from '@emeraldplatform/eth-rpc';
 import { BlockchainCode } from './blockchains';
-import {IVault} from "./IVault";
+import { IVault } from './vault';
 
 /**
  * Backend API - Emerald vault and Ethereum-like RPC

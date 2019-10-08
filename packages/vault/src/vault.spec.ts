@@ -13,9 +13,9 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import InMemoryProvider from './MemoryProvider';
-import {Vault} from './vault';
 import { EthAddress } from '@emeraldplatform/core';
+import InMemoryProvider from './MemoryProvider';
+import { Vault } from './vault';
 
 describe('Vault with InMemoryProvider', () => {
   const newProvider = () => new InMemoryProvider();
@@ -40,7 +40,7 @@ describe('Vault with InMemoryProvider', () => {
     const vault = new Vault(newProvider());
     const chain = 'mainnet';
     return vault.newAccount('passPhrase', 'name1', 'desc', chain)
-      .then(address => vault.listAccounts(chain).then((list) => {
+      .then((address) => vault.listAccounts(chain).then((list) => {
         expect(list).toHaveLength(1);
         expect(list[0].address).toEqual(address);
         expect(list[0].name).toEqual('name1');
@@ -49,12 +49,11 @@ describe('Vault with InMemoryProvider', () => {
       }));
   });
 
-
   it('should export key file', () => {
     const vault = new Vault(newProvider());
     const chain = 'mainnet';
     return vault.newAccount('passPhrase', 'name1', 'desc', chain)
-      .then(address => vault.exportAccount(address, chain)
+      .then((address) => vault.exportAccount(address, chain)
         .then((keyFile) => {
           expect(keyFile.version).toEqual(3);
           expect(keyFile.address).toEqual(address.substring(2));

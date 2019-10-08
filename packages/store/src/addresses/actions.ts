@@ -1,6 +1,6 @@
 import { EthAddress } from '@emeraldplatform/core';
 import {
-  Blockchain, blockchainByName, BlockchainCode, blockchains, IAccount, IApi, TxSignRequest, Account
+  Blockchain, blockchainByName, BlockchainCode, blockchains, IAccount, IApi, vault
 } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 import { catchError, dispatchRpcError } from '../screen/actions';
@@ -66,13 +66,13 @@ export function loadAccountsList (onLoaded?: Function): Dispatched<SetListAction
     chains.forEach((blockchain: Blockchain) => {
       const blockchainCode = blockchain.params.code;
       api.emerald.listAccounts(blockchainCode.toLowerCase())
-        .then((res: Account[]) => res.map((a) => ({ ...a, blockchain: blockchainCode })))
-        .then((result: Account[]) => {
+        .then((res: vault.Account[]) => res.map((a) => ({ ...a, blockchain: blockchainCode })))
+        .then((result: vault.Account[]) => {
           const existing = selectors.all(getState())
             .filter((account: any) => account.get('blockchain') === blockchainCode)
             .map((account: any) => account.get('id')).toJS();
 
-          const fetched = result.map((account: Account) => account.address);
+          const fetched = result.map((account: vault.Account) => account.address);
           const notChanged = existing.length === fetched.length && fetched.every((x) => existing.includes(x));
           const changed = !notChanged;
           const firstLoad = existing.length === 0;
@@ -126,7 +126,9 @@ export function loadAccountTxCount (accountId: string): Dispatched<SetTxCountAct
   };
 }
 
-export function createAccount (blockchain: BlockchainCode, passphrase: string, name: string = '', description: string = ''): Dispatched<AddAccountAction> {
+export function createAccount (
+  blockchain: BlockchainCode, passphrase: string, name: string = '', description: string = ''
+): Dispatched<AddAccountAction> {
   return (dispatch, getState, api) => {
     return api.emerald.newAccount(passphrase, name, description, blockchain.toLowerCase())
       .then((result: string) => {
@@ -204,7 +206,9 @@ function readWalletFile (walletFile: Blob) {
   });
 }
 
-export function importJson (blockchain: BlockchainCode, data: any, name: string, description: string): Dispatched<AddAccountAction> {
+export function importJson (
+  blockchain: BlockchainCode, data: any, name: string, description: string
+): Dispatched<AddAccountAction> {
   return (dispatch, getState, api) => {
     data.name = name;
     data.description = description;

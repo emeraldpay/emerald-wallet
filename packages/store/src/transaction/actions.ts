@@ -1,6 +1,6 @@
 import { convert, EthAddress } from '@emeraldplatform/core';
 import { Wei } from '@emeraldplatform/eth';
-import { BlockchainCode, Blockchains, EthereumTx, IApi, TxSignRequest} from '@emeraldwallet/core';
+import { BlockchainCode, Blockchains, EthereumTx, IApi, vault } from '@emeraldwallet/core';
 import { Dispatch } from 'react';
 import { catchError, gotoScreen } from '../screen/actions';
 import * as history from '../txhistory';
@@ -68,14 +68,14 @@ function signTx (api: IApi, tx: ITransaction, passphrase: string, blockchain: st
     // vault has different chain-id settings for etc and eth morden. server uses etc morden.
     blockchain = 'etc-morden';
   }
-  const plainTx: TxSignRequest = {
+  const plainTx: vault.TxSignRequest = {
     from: tx.from,
     to: tx.to,
-    gas: typeof tx.gas == "string" ? parseInt(tx.gas) : tx.gas,
-    gasPrice: typeof tx.gasPrice == "string" ? tx.gasPrice : new Wei(tx.gasPrice).toHex(),
-    value: typeof tx.value == "string" ? tx.value : new Wei(tx.value).toHex(),
+    gas: typeof tx.gas === 'string' ? parseInt(tx.gas) : tx.gas,
+    gasPrice: typeof tx.gasPrice === 'string' ? tx.gasPrice : new Wei(tx.gasPrice).toHex(),
+    value: typeof tx.value === 'string' ? tx.value : new Wei(tx.value).toHex(),
     data: tx.data,
-    nonce: typeof tx.nonce == "string" ? parseInt(tx.nonce): tx.nonce
+    nonce: typeof tx.nonce === 'string' ? parseInt(tx.nonce) : tx.nonce
   };
   console.debug(`Trying to sign tx: ${plainTx}`);
   return api.emerald.signTransaction(plainTx, passphrase, blockchain.toLowerCase())
