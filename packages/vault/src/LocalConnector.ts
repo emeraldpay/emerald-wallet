@@ -1,7 +1,7 @@
-import {DefaultLogger, ILogger} from '@emeraldwallet/core';
-import {EmeraldVaultNative} from "@emeraldpay/emerald-vault-node";
-import {IVaultProvider} from "./types";
-import {NativeVaultProvider} from "./NativeProvider";
+import { EmeraldVaultNative } from '@emeraldpay/emerald-vault-node';
+import { DefaultLogger, ILogger } from '@emeraldwallet/core';
+import { NativeVaultProvider } from './NativeProvider';
+import { IVaultProvider } from './types';
 
 export class LocalConnector {
   public dataDir: string;
@@ -20,16 +20,16 @@ export class LocalConnector {
   /**
    * @deprecated
    */
-  public start() {
+  public start () {
   }
 
   /**
    * @deprecated
    */
-  public shutdown() {
+  public shutdown () {
   }
 
-  getProvider(): IVaultProvider {
+  public getProvider (): IVaultProvider {
     return new NativeVaultProvider(this.vault);
   }
 

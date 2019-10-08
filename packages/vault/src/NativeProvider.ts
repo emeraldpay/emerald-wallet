@@ -1,88 +1,88 @@
-import {IVaultProvider} from "./types";
-import {EmeraldVaultNative, ImportMnemonic, UnsignedTx} from "@emeraldpay/emerald-vault-node";
-import {blockchainByName, Account, Contact, TxSignRequest} from "@emeraldwallet/core";
+import { EmeraldVaultNative, ImportMnemonic, UnsignedTx } from '@emeraldpay/emerald-vault-node';
+import { blockchainByName, vault } from '@emeraldwallet/core';
+import { IVaultProvider } from './types';
 
 export class NativeVaultProvider implements IVaultProvider {
   private vault: EmeraldVaultNative;
 
-  constructor(vault: EmeraldVaultNative) {
-    this.vault = vault;
+  constructor (native: EmeraldVaultNative) {
+    this.vault = native;
   }
 
-  currentVersion(): Promise<string> {
+  public currentVersion (): Promise<string> {
     return Promise.resolve(this.vault.vaultVersion());
   }
 
-  removeAccount(address: string, chain: string): Promise<any> {
+  public removeAccount (address: string, chain: string): Promise<any> {
     return Promise.resolve(this.vault.removeAccount(chain, address));
   }
 
-  exportAccount(address: string, chain: string): Promise<any> {
-    let account = this.vault.exportAccount(chain, address);
+  public exportAccount (address: string, chain: string): Promise<any> {
+    const account = this.vault.exportAccount(chain, address);
     return Promise.resolve(account);
   }
 
-  generateMnemonic(): Promise<string> {
-    let mnemonic = this.vault.generateMnemonic(15);
+  public generateMnemonic (): Promise<string> {
+    const mnemonic = this.vault.generateMnemonic(15);
     return Promise.resolve(mnemonic);
   }
 
-  importAccount(data: any, chain: string): Promise<any> {
-    let id = this.vault.importAccount(chain, data);
+  public importAccount (data: any, chain: string): Promise<any> {
+    const id = this.vault.importAccount(chain, data);
     return Promise.resolve(id);
   }
 
-  importMnemonic(passphrase: string, name: string, description: string, mnemonic: string, path: string, chain: string): Promise<string> {
-    let id = this.vault.importMnemonic(chain, { name, description, mnemonic, hdPath: path, password: passphrase});
+  public importMnemonic (passphrase: string, name: string, description: string, mnemonic: string, path: string, chain: string): Promise<string> {
+    const id = this.vault.importMnemonic(chain, { name, description, mnemonic, hdPath: path, password: passphrase });
     return Promise.resolve(id);
   }
 
-  listAccounts(chain: string, showHidden?: boolean): Promise<Array<Account>> {
-    let accounts = this.vault.listAccounts(chain);
+  public listAccounts (chain: string, showHidden?: boolean): Promise<vault.Account[]> {
+    const accounts = this.vault.listAccounts(chain);
     return Promise.resolve(accounts);
   }
 
-  newAccount(passphrase: string, name: string, description: string, chain: string): Promise<string> {
-    let kf: ImportMnemonic = {
+  public newAccount (passphrase: string, name: string, description: string, chain: string): Promise<string> {
+    const kf: ImportMnemonic = {
       mnemonic: this.vault.generateMnemonic(15),
       password: passphrase,
-      hdPath: blockchainByName(chain).params.hdPath + "/0"
+      hdPath: blockchainByName(chain).params.hdPath + '/0'
     };
-    let id = this.vault.importMnemonic(chain, kf);
+    const id = this.vault.importMnemonic(chain, kf);
     return Promise.resolve(id);
   }
 
-  signTransaction(tx: TxSignRequest, passphrase: string, chain: string): Promise<string> {
-    let unsigned: UnsignedTx = {
+  public signTransaction (tx: vault.TxSignRequest, passphrase: string, chain: string): Promise<string> {
+    const unsigned: UnsignedTx = {
       from: tx.from,
       to: tx.to,
-      gas: "0x"+tx.gas.toString(16),
+      gas: '0x' + tx.gas.toString(16),
       gasPrice: tx.gasPrice,
       value: tx.value,
       data: tx.data,
-      nonce: "0x"+tx.nonce.toString(16)
+      nonce: '0x' + tx.nonce.toString(16)
     };
-    let signed = this.vault.signTx(chain, unsigned, passphrase);
+    const signed = this.vault.signTx(chain, unsigned, passphrase);
     return Promise.resolve(signed);
   }
 
-  updateAccount(address: string, name: string, description: string, chain: string): Promise<any> {
-    let updated = this.vault.updateAccount(chain, address, {name, description});
+  public updateAccount (address: string, name: string, description: string, chain: string): Promise<any> {
+    const updated = this.vault.updateAccount(chain, address, { name, description });
     return Promise.resolve(updated);
   }
 
-  listAddresses(chain: string): Promise<Contact[]> {
-    let book: Contact[] = this.vault.listAddressBook(chain);
+  public listAddresses (chain: string): Promise<vault.Contact[]> {
+    const book = this.vault.listAddressBook(chain);
     return Promise.resolve(book);
   }
 
-  importAddress(contact: Contact, chain: string): Promise<boolean> {
-    let success = this.vault.addToAddressBook(chain, contact);
+  public importAddress (contact: vault.Contact, chain: string): Promise<boolean> {
+    const success = this.vault.addToAddressBook(chain, contact);
     return Promise.resolve(success);
   }
 
-  deleteAddress(address: string, chain: string): Promise<any> {
-    let success = this.vault.removeFromAddressBook(chain, address);
+  public deleteAddress (address: string, chain: string): Promise<any> {
+    const success = this.vault.removeFromAddressBook(chain, address);
     return Promise.resolve(success);
   }
 }

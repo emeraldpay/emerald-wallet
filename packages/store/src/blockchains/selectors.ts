@@ -22,6 +22,6 @@ export function getHeight (state: any, chain: string): number {
   return data.height;
 }
 
-export function hasAny(state: any): boolean {
-  return all(state).size > 0
+export function hasAny (state: any): boolean {
+  return all(state).size > 0;
 }

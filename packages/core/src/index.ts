@@ -23,4 +23,5 @@ export { IApi } from './IApi';
 
 export { IAccount } from './IAccount';
 
-export { IVault, TxSignRequest, Contact, Account } from './IVault';
+import * as vault from './vault';
+export { vault };

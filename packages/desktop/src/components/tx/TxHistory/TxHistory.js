@@ -4,8 +4,7 @@ import {withStyles} from '@material-ui/styles';
 import {connect} from 'react-redux';
 import Header from '@emeraldwallet/ui/lib/components/tx/TxHistory/Header';
 import {txhistory, addresses} from '@emeraldwallet/store';
-import {List} from 'immutable';
-import TxList from './List';
+import { TxList } from '@emeraldwallet/react-app';
 
 const styles2 = (theme) => ({
   container: {
