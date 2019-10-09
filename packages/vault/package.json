@@ -9,8 +9,6 @@
   "scripts": {
     "build": "rimraf lib/ && tsc",
     "build:dist": "rimraf lib/ && tsc",
-    "test": "jest",
-    "test:coverage": "jest --coverage && codecov"
   },
   "devDependencies": {
     "@types/jest": "^24.0.9",
