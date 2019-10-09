@@ -5,5 +5,6 @@ describe('LocalConnector', () => {
     const conn = new LocalConnector('/tmp');
     expect(conn).toBeDefined();
     expect(conn.log).toBeDefined();
+    expect(conn.getProvider()).toBeDefined();
   });
 });
