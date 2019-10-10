@@ -79,5 +79,5 @@ deploy:
   - provider: script
     script: ./gcloud-deploy.sh
     skip_cleanup: true
-#    on:
-#      tags: true
+    on:
+      tags: true

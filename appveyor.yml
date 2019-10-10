@@ -46,6 +46,8 @@ deploy_script:
   - openssl version
   - openssl aes-256-cbc -d -in gcloud-appveyor.json.enc -k %GCP_PASSWD% -out gcloud-appveyor.json -md sha256
   - ps: >-
-      echo "Deploy to http://builds.etcdevteam.com/emerald-wallet/$env:VERSION_BASE/"
-      janus.exe deploy -to="builds.etcdevteam.com/emerald-wallet/$env:VERSION_BASE/" -files="./packages/desktop/dist/*.exe" -key="./gcloud-appveyor.json"
+      If (($env:APPVEYOR_REPO_BRANCH -eq 'master') -or ($env:APPVEYOR_REPO_TAG -eq 'true')) {
+          echo "Deploy to http://builds.etcdevteam.com/emerald-wallet/$env:VERSION_BASE/"
+          janus.exe deploy -to="builds.etcdevteam.com/emerald-wallet/$env:VERSION_BASE/" -files="./packages/desktop/dist/*.exe" -key="./gcloud-appveyor.json"
+      }
   - rm gcloud-appveyor.json
