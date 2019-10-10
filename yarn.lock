@@ -1427,10 +1427,10 @@
   resolved "https://registry.yarnpkg.com/@elastic/webpack-directory-name-as-main/-/webpack-directory-name-as-main-2.0.2.tgz#c50eb4b8b7e1db181533eb4a568bcab4eaa88c73"
   integrity sha1-xQ60uLfh2xgVM+tKVovKtOqojHM=
 
-"@emeraldpay/emerald-vault-node@0.2.2-0.26.1":
-  version "0.2.2-0.26.1"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-node/-/emerald-vault-node-0.2.2-0.26.1.tgz#4ecccfecf5a8e6df848e12e4f21689497f379a77"
-  integrity sha512-NsHKh7W//xJCMXgkflPRHyIeOKjr1XV8sAsIwmqi6VRfp2xzDPRVMyeUjs4aS57YwXjSlxhY7DrFV9BXAMu4FQ==
+"@emeraldpay/emerald-vault-node@0.2.3-0.26.2":
+  version "0.2.3-0.26.2"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-node/-/emerald-vault-node-0.2.3-0.26.2.tgz#2ad297fc6ea9cb400fad641fcc8b84d77fac5db6"
+  integrity sha512-Xed8AZwMi0eYbpOFq13cfB0i9WHE/oSNPalwnQ+RB770ycDiEHi/ASWHTH+Sr16XHCixMqQeI0itpAlSX/KRYg==
 
 "@emeraldplatform/contracts@0.5.1", "@emeraldplatform/contracts@^0.5.1":
   version "0.5.1"
