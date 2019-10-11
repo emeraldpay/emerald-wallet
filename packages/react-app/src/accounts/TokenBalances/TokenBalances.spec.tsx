@@ -1,12 +1,8 @@
-import { shallow } from 'enzyme';
+import { render } from '@testing-library/react';
 import * as React from 'react';
+import TokenBalances from './TokenBalances';
 
-import { styles, TokenBalances } from './TokenBalances';
-
-const reduceClasses = (prev: any, curr: any) => ({ ...prev, [curr]: curr });
-const classes = Object.keys(styles).reduce(reduceClasses, {});
-
-describe('TokenBalances', () => {
+describe('TokenBalance', () => {
   it('should renders without crash', () => {
     const balances = [{
       tokenId: '0xE',
@@ -15,7 +11,7 @@ describe('TokenBalances', () => {
       decimals: 8,
       symbol: 'DAI'
     }];
-    const wrapper = shallow(<TokenBalances classes={classes} balances={balances}/>);
-    expect(wrapper).toBeDefined();
+    const component = render(<TokenBalances balances={balances}/>);
+    expect(component).toBeDefined();
   });
 });

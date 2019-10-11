@@ -1,6 +1,6 @@
+import { CircularProgress } from '@material-ui/core';
 import { CSSProperties, withStyles } from '@material-ui/styles';
 import * as React from 'react';
-import { CircularProgress } from '@material-ui/core';
 
 export const styles = {
   success: {

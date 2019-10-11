@@ -1,6 +1,5 @@
 import React from 'react';
-import { AccountList } from '@emeraldwallet/react-app';
-import TransactionsHistory from '../../tx/TxHistory';
+import { AccountList, TxHistory } from '@emeraldwallet/react-app';
 import Header from './header';
 
 const Dashboard = () => {
@@ -8,7 +7,7 @@ const Dashboard = () => {
     <React.Fragment>
       <Header/>
       <AccountList/>
-      <TransactionsHistory/>
+      <TxHistory/>
     </React.Fragment>
   );
 };
