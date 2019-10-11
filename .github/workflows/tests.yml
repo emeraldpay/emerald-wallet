@@ -17,19 +17,10 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
-    - name: prepare
-      run: |
-        sudo npm install -g codecov yarn lerna node-gyp
-      env:
-        CI: true
-    - name: install
+    - name: Install dependencies
       run: |
         yarn install
-      env:
-        CI: true
-    - name: test
+    - name: Test
       run: |
         yarn build
         yarn test
-      env:
-        CI: true
