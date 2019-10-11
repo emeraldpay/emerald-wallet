@@ -1,11 +1,11 @@
 import { EthRpc } from '@emeraldplatform/eth-rpc';
-import { Vault } from '@emeraldplatform/vault';
 import { BlockchainCode } from './blockchains';
+import { IVault } from './vault';
 
 /**
  * Backend API - Emerald vault and Ethereum-like RPC
  */
 export interface IApi {
-  emerald: Vault;
+  emerald: IVault;
   chain (name: BlockchainCode | string): EthRpc;
 }

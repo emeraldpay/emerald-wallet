@@ -20,6 +20,17 @@ install:
   - ps: $env:Path += ";$env:USERPROFILE\.windows-build-tools\python27"
   - set PATH=%APPDATA%\npm;%PATH%
   - npm config set python %USERPROFILE%\.windows-build-tools\python27\python.exe
+  # Install Rust
+  - appveyor DownloadFile https://win.rustup.rs/ -FileName rustup-init.exe
+  - rustup-init -y --default-toolchain stable
+  - cmd: set PATH=%PATH%;%USERPROFILE%\.cargo\bin
+  - rustup update
+  - rustc -vV
+  - cargo -vV
+  - rustup component add rust-src
+  - cmd: set RUST_BACKTRACE=1
+  - cmd: set RUSTFLAGS=-C target-feature=+crt-static
+  # Download dependencies
   - lerna bootstrap
 
 build: off

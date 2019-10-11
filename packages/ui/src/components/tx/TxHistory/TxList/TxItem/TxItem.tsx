@@ -49,7 +49,7 @@ interface NetworkParams {
   requiredConfirmations: number;
 }
 
-interface Props {
+export interface ITxItemProps {
   netParams: NetworkParams;
   amountRenderer?: (balance: any, ticker: string) => any;
   tx: any;
@@ -80,7 +80,7 @@ const defaultAmountRenderer = ((balance: Units, ticker: any) => {
   return (<React.Fragment>{coins} {ticker}</React.Fragment>);
 });
 
-export const TxItem = (props: Props) => {
+export const TxItem = (props: ITxItemProps) => {
   const renderAmount = props.amountRenderer || defaultAmountRenderer;
   const {
     tx, openTx, openAccount, toAccount, fromAccount, netParams, token, coinTicker

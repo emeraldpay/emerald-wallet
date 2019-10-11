@@ -56,7 +56,9 @@ export const openLink = (linkUrl: string) => ({
   linkUrl
 });
 
-export function showNotification (message: any, notificationType: any, duration: any, actionText: any, actionToDispatchOnActionClick: any) {
+export function showNotification (
+  message: any, notificationType: any, duration: any, actionText: any, actionToDispatchOnActionClick: any
+) {
   return {
     type: ActionTypes.NOTIFICATION_SHOW,
     message,

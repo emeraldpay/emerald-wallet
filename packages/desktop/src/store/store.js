@@ -15,8 +15,6 @@ import {Api, getConnector} from '../lib/rpc/api';
 import {intervalRates} from './config';
 import tokens from './vault/tokens';
 
-import {default as WalletSettings} from './wallet/settings';
-
 import {
   readConfig,
   listenElectron,
@@ -29,7 +27,7 @@ import createLogger from '../utils/logger';
 import {createStore} from './createStore';
 
 import {
-  onceServicesStart,
+  onceBlockchainConnected,
   onceAccountsLoaded,
   onceBalancesSet,
   onceModeSet,
@@ -142,7 +140,7 @@ export function electronToStore() {
 export const start = () => {
   try {
     store.dispatch(readConfig());
-    store.dispatch(WalletSettings.actions.loadSettings());
+    store.dispatch(settings.actions.loadSettings());
   } catch (e) {
     log.error(e);
   }
@@ -199,7 +197,7 @@ function getInitialScreen() {
 }
 
 Promise
-  .all([onceServicesStart(store)])
+  .all([onceBlockchainConnected(store)])
   .then(startSync);
 checkStatus();
 screenHandlers();

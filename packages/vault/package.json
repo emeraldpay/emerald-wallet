@@ -8,9 +8,7 @@
   "license": "Apache-2.0",
   "scripts": {
     "build": "rimraf lib/ && tsc",
-    "build:dist": "rimraf lib/ && tsc",
-    "test": "jest",
-    "test:coverage": "jest --coverage && codecov"
+    "build:dist": "rimraf lib/ && tsc"
   },
   "devDependencies": {
     "@types/jest": "^24.0.9",
@@ -18,10 +16,12 @@
     "jest": "^24.1.0",
     "rimraf": "^2.6.3",
     "ts-jest": "^24.0.0",
-    "typescript": "3.4.2"
+    "typescript": "3.4.2",
+    "@jest-runner/electron": "2.0.2"
   },
   "jest": {
     "preset": "ts-jest",
+    "runner": "@jest-runner/electron/main",
     "testEnvironment": "node",
     "testPathIgnorePatterns": [
       "<rootDir>/lib/",
@@ -36,6 +36,7 @@
     ]
   },
   "dependencies": {
-    "@emeraldwallet/core": "^2.0.3"
+    "@emeraldwallet/core": "^2.0.3",
+    "@emeraldpay/emerald-vault-node": "0.2.3-0.26.2"
   }
 }

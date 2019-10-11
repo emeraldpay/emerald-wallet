@@ -30,7 +30,7 @@ const mapStateToProps = (state: any, ownProps: OwnProps): PropsFromState => {
     showPrint: !ownProps.account.hardware || false,
     showExport: !ownProps.account.hardware || false,
     hiddenAccount: ownProps.account.hidden || false,
-    canHide: !hasBalance(ownProps.account)
+    canHide: false && !hasBalance(ownProps.account)
   };
 };
 
@@ -42,16 +42,18 @@ export default connect<PropsFromState, DispatchFromProps, OwnProps>(
       dispatch(screen.actions.gotoScreen('export-paper-wallet', { address, blockchain: chain }));
     },
     onHide: (chain: string) => () => {
-      const address = ownProps.account.id;
-      dispatch(screen.actions.showDialog('hide-account', { id: address, blockchain: chain }));
+      // TODO not implemented
+      // const address = ownProps.account.id;
+      // dispatch(screen.actions.showDialog('hide-account', { id: address, blockchain: chain }));
     },
     onUnhide: (chain: BlockchainCode) => () => {
-      const address = ownProps.account.id;
-      dispatch(addresses.actions.unhideAccount(chain, address));
-      // refresh account data
-      dispatch(txhistory.actions.refreshTrackedTransactions());
-      dispatch(addresses.actions.loadAccountsList());
-      // dispatch(accounts.actions.loadPendingTransactions()); // TODO: do we need it ?
+      // TODO not implemented
+      // const address = ownProps.account.id;
+      // dispatch(addresses.actions.unhideAccount(chain, address));
+      // // refresh account data
+      // dispatch(txhistory.actions.refreshTrackedTransactions());
+      // dispatch(addresses.actions.loadAccountsList());
+      // // dispatch(accounts.actions.loadPendingTransactions()); // TODO: do we need it ?
 
       dispatch(screen.actions.gotoScreen('home'));
     },

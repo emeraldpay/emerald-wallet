@@ -114,7 +114,8 @@ export class Account extends React.Component<IAccountProps> {
               </Grid>
             </Grid>
           </CardContent>
-        </Card>);
+        </Card>
+    );
   }
 }
 

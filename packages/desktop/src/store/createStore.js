@@ -6,12 +6,16 @@ import {
 } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import {
-  addresses, blockchains, screen, ledger, connection, addressBook, txhistory, tokens,
+  addresses, blockchains, screen, ledger, connection, addressBook, txhistory, tokens, wallet, settings
 } from '@emeraldwallet/store';
 import reduxLogger from '../utils/redux-logger';
 import reduxMiddleware from './middleware';
 import launcherReducers from './launcher/launcherReducers';
-import walletReducers from './wallet/walletReducers';
+
+const walletReducers = combineReducers({
+  history: txhistory.reducer,
+  settings: settings.reducer,
+});
 
 const reducers = {
   [addressBook.moduleName]: addressBook.reducer,
@@ -54,5 +58,7 @@ export const createStore = (_api) => {
   sagaMiddleware.run(addressBook.sagas.root, _api);
   sagaMiddleware.run(txhistory.sagas.root, _api);
   sagaMiddleware.run(tokens.sagas.root, _api);
+  sagaMiddleware.run(wallet.sagas.root, _api);
+  sagaMiddleware.run(settings.sagas.root);
   return store;
 };

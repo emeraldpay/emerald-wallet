@@ -12,8 +12,8 @@ export enum BlockchainCode {
 }
 
 export const Blockchains: {[key: string]: Blockchain} = {
-  [BlockchainCode.ETH]: new Ethereum(new EthereumParams(BlockchainCode.ETH, CoinTicker.ETH, 1,"m/44'/60'/0'/0'"), 'Ethereum'),
-  [BlockchainCode.ETC]: new Ethereum(new EthereumParams(BlockchainCode.ETC, CoinTicker.ETC, 61, "m/44'/61'/0'/0'"), 'Ethereum Classic'),
+  [BlockchainCode.ETH]: new Ethereum(new EthereumParams(BlockchainCode.ETH, CoinTicker.ETH, 1,"m/44'/60'/0'/0"), 'Ethereum'),
+  [BlockchainCode.ETC]: new Ethereum(new EthereumParams(BlockchainCode.ETC, CoinTicker.ETC, 61, "m/44'/61'/0'/0"), 'Ethereum Classic'),
   [BlockchainCode.Morden]: new Ethereum(new EthereumParams(BlockchainCode.Morden, CoinTicker.MORDEN, 62, "m/44'/60'/160720'/0'"), 'Ethereum Morden Testnet'),
   [BlockchainCode.Kovan]: new Ethereum(new EthereumParams(BlockchainCode.Kovan, CoinTicker.KOVAN, 42, "m/44'/60'/160720'/0'"), 'Ethereum Kovan Testnet')
 };

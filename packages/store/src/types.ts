@@ -1,5 +1,4 @@
-import { IApi } from '@emeraldwallet/core';
-import { BlockchainCode } from '@emeraldwallet/core';
+import { BlockchainCode, IApi } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
 import { Dispatch } from 'react';
 

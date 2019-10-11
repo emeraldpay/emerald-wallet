@@ -37,6 +37,7 @@ export { default as Landing } from './onboarding/Landing';
 
 // tx
 export { default as TxDetails } from './tx/TxDetails';
+export { default as TxHistory } from './transactions/TxHistory';
 
 export { default as CreateTransaction } from './transaction/CreateTransaction';
 export { default as WaitForSignDialog } from './transaction/WaitForSignDialog';

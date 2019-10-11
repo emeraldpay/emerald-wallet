@@ -22,3 +22,6 @@ export { IServerConnect } from './IServerConnect';
 export { IApi } from './IApi';
 
 export { IAccount } from './IAccount';
+
+import * as vault from './vault';
+export { vault };

@@ -9,7 +9,8 @@ describe('Balance', () => {
         symbol=''
         balance='1'
         decimals={2}
-      />);
+      />
+      );
     expect(component).toBeDefined();
   });
 
@@ -19,7 +20,8 @@ describe('Balance', () => {
         symbol=''
         balance='1'
         decimals={2}
-      />);
+      />
+      );
     expect(component.props().showFiat).toBeDefined();
     expect(component.props().showFiat).toBeFalsy();
   });

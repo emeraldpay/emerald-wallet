@@ -1,12 +1,11 @@
 import React from 'react';
 import Immutable from 'immutable';
 import { connect } from 'react-redux';
-import { AccountDetailsView, TokenBalances } from '@emeraldwallet/react-app';
+import { AccountDetailsView, TokenBalances, TxHistory } from '@emeraldwallet/react-app';
 import { blockchainByName } from '@emeraldwallet/core';
 import { screen, addresses, txhistory, tokens } from '@emeraldwallet/store';
 
 import createLogger from '../../../utils/logger';
-import TransactionsList from '../../tx/TxHistory';
 
 export const styles2 = {
   transContainer: {
@@ -48,7 +47,7 @@ export default connect(
       tokens: (<TokenBalances balances={tokensBalances} loadTokens={ownProps.loadTokens}/>),
       account,
       transactions,
-      txList: (<TransactionsList transactions={transactions} accountId={account.id}/>),
+      txList: (<TxHistory transactions={transactions} accountId={account.id}/>),
     };
   },
   (dispatch, ownProps) => ({

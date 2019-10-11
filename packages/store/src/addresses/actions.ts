@@ -1,6 +1,6 @@
 import { EthAddress } from '@emeraldplatform/core';
 import {
-  Blockchain, blockchainByName, BlockchainCode, blockchains, IAccount, IApi
+  Blockchain, blockchainByName, BlockchainCode, blockchains, IAccount, IApi, vault
 } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 import { catchError, dispatchRpcError } from '../screen/actions';
@@ -32,7 +32,7 @@ function fetchHdPaths (): Dispatched<SetHDPathAction> {
       .forEach((a: any) => {
         const address = a.get('id');
         promises.push(api.emerald.exportAccount(address, a.get('blockchain').toLowerCase())
-          .then((result) => {
+          .then((result: any) => {
             return dispatch({
               type: ActionTypes.SET_HD_PATH,
               accountId: address,
@@ -59,21 +59,20 @@ export function loadAccountsList (onLoaded?: Function): Dispatched<SetListAction
 
   return (dispatch, getState, api) => {
     const chains: any = settings.selectors.currentChains(getState());
-    const showHidden = settings.selectors.showHiddenAccounts(getState());
     let toLoad = chains.length;
 
     dispatch(setLoadingAction(true));
 
     chains.forEach((blockchain: Blockchain) => {
       const blockchainCode = blockchain.params.code;
-      api.emerald.listAccounts(blockchainCode.toLowerCase(), showHidden)
-        .then((res) => res.map((a) => ({ ...a, blockchain: blockchainCode })))
-        .then((result) => {
+      api.emerald.listAccounts(blockchainCode.toLowerCase())
+        .then((res: vault.Account[]) => res.map((a) => ({ ...a, blockchain: blockchainCode })))
+        .then((result: vault.Account[]) => {
           const existing = selectors.all(getState())
             .filter((account: any) => account.get('blockchain') === blockchainCode)
             .map((account: any) => account.get('id')).toJS();
 
-          const fetched = result.map((account) => account.address);
+          const fetched = result.map((account: vault.Account) => account.address);
           const notChanged = existing.length === fetched.length && fetched.every((x) => existing.includes(x));
           const changed = !notChanged;
           const firstLoad = existing.length === 0;
@@ -127,10 +126,12 @@ export function loadAccountTxCount (accountId: string): Dispatched<SetTxCountAct
   };
 }
 
-export function createAccount (blockchain: BlockchainCode, passphrase: string, name: string = '', description: string = ''): Dispatched<AddAccountAction> {
+export function createAccount (
+  blockchain: BlockchainCode, passphrase: string, name: string = '', description: string = ''
+): Dispatched<AddAccountAction> {
   return (dispatch, getState, api) => {
     return api.emerald.newAccount(passphrase, name, description, blockchain.toLowerCase())
-      .then((result) => {
+      .then((result: string) => {
         dispatch({
           type: ActionTypes.ADD_ACCOUNT,
           accountId: result,
@@ -146,7 +147,7 @@ export function createAccount (blockchain: BlockchainCode, passphrase: string, n
 
 export function exportPrivateKey (blockchain: BlockchainCode, passphrase: string, accountId: string): any {
   return (dispatch: any, getState: any, api: IApi) => {
-    return api.emerald.exportAccount(accountId, blockchain.toLowerCase()).then((result) => {
+    return api.emerald.exportAccount(accountId, blockchain.toLowerCase()).then((result: any) => {
       const wallet = EthAccount.fromV3(result, passphrase);
       return wallet.getPrivateKeyString();
     });
@@ -205,11 +206,13 @@ function readWalletFile (walletFile: Blob) {
   });
 }
 
-export function importJson (blockchain: BlockchainCode, data: any, name: string, description: string): Dispatched<AddAccountAction> {
+export function importJson (
+  blockchain: BlockchainCode, data: any, name: string, description: string
+): Dispatched<AddAccountAction> {
   return (dispatch, getState, api) => {
     data.name = name;
     data.description = description;
-    return api.emerald.importAccount(data, blockchain.toLowerCase()).then((result) => {
+    return api.emerald.importAccount(data, blockchain.toLowerCase()).then((result: string) => {
       if ((new EthAddress(result)).isValid()) {
         dispatch({
           name,
@@ -274,7 +277,7 @@ export function loadPendingTransactions (): Dispatched<PendingBalanceAction> {
     ['ETH', 'ETC'].forEach((chainName) => {
       const blockchainCode = blockchainByName(chainName).params.code;
       api.chain(blockchainCode).eth.getBlockByNumber('pending', true)
-        .then((result) => {
+        .then((result: any) => {
           const addresses = selectors.all(getState()).map((acc: any) => acc.get('id'));
 
           const txes = result.transactions.filter(
@@ -307,22 +310,6 @@ export function loadPendingTransactions (): Dispatched<PendingBalanceAction> {
           }
         }).catch(dispatchRpcError(dispatch));
     });
-  };
-}
-
-export function hideAccount (account: IAccount): Dispatched<any> {
-  return (dispatch, getState, api) => {
-    api.emerald.hideAccount(account.id, account.blockchain)
-      .catch(catchError(dispatch));
-  };
-}
-
-export function unhideAccount (blockchain: BlockchainCode, address: string): Dispatched<any> {
-  return (dispatch, getState, api) => {
-    return api.emerald.unhideAccount(address, blockchain.toLowerCase())
-      .then((result) => {
-        return result;
-      }).catch(catchError(dispatch));
   };
 }
 

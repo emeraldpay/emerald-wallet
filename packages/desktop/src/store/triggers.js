@@ -1,3 +1,4 @@
+import { blockchains } from '@emeraldwallet/store';
 import { TERMS_VERSION } from './config';
 import { addresses } from '.';
 
@@ -21,7 +22,7 @@ const handleTrigger = (check, resolve, store) => {
 export function onceServicesStart(store) {
   const check = () => {
     const { terms, connector } = store.getState().launcher.toJS();
-    return terms === TERMS_VERSION && connector.status === 'ready';
+    return terms === TERMS_VERSION;
   };
 
   return new Promise((resolve, reject) => handleTrigger(check, resolve, store));
@@ -55,19 +56,9 @@ export function onceAccountsLoaded(store) {
   return new Promise((resolve, reject) => handleTrigger(check, resolve, store));
 }
 
-export function onceAnyServiceDead(store) {
+export function onceBlockchainConnected(store) {
   const check = () => {
-    const { connector } = store.getState().launcher.toJS();
-    return connector.status !== 'ready';
-  };
-
-  return new Promise((resolve, reject) => handleTrigger(check, resolve, store));
-}
-
-export function onceServicesRestart(store) {
-  const check = () => {
-    const { connector } = store.getState().launcher.toJS();
-    return connector.status !== 'ready';
+    return blockchains.selectors.hasAny(store.getState());
   };
 
   return new Promise((resolve, reject) => handleTrigger(check, resolve, store));

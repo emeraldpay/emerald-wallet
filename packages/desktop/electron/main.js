@@ -7,6 +7,7 @@ const {
   EmeraldApiAccessProd,
 } = require('@emeraldwallet/services');
 const { createServices, getMainWindow, protocol } = require('@emeraldwallet/electron-app');
+const { LocalConnector } = require('@emeraldwallet/vault');
 const { app, ipcMain, session } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path'); // eslint-disable-line
 
@@ -78,7 +79,10 @@ app.on('ready', () => {
     apiAccess = new EmeraldApiAccessDev(settings.getId());
   }
   log.info('Connect to', apiAccess.address);
-  const serverConnect = new ServerConnect(app.getVersion(), app.getLocale(), log, apiAccess.blockchainClient);
+
+  log.info('... Setup Vault');
+  const vault = new LocalConnector(dataDir ? path.resolve(path.join(dataDir, '/vault')) : null, log);
+  const serverConnect = new ServerConnect(app.getVersion(), app.getLocale(), log, apiAccess.blockchainClient, vault.getProvider());
   global.serverConnect = serverConnect;
   serverConnect.init(process.versions);
 
@@ -94,22 +98,17 @@ app.on('ready', () => {
     sendMode(browserWindow.webContents, apiMode);
   });
 
-  const services = new Services(browserWindow.webContents, serverConnect, apiAccess, dataDir);
-
   log.info('... setup services 2');
   const services2 = createServices(ipcMain, browserWindow.webContents, apiAccess, apiMode.chains);
 
   app.on('quit', () => {
-    services.shutdown().catch(console.error);
     services2.stop();
   });
 
   log.info('... start services');
-  services.start()
-    .then(() => services2.start())
-    .then(() => ipc({ settings, services }))
-    .then(() => log.info('... services started'))
-    .catch((err) => log.error('Invalid settings', err));
+  services2.start();
+  ipc({ settings });
+  log.info('... services started');
 
   log.info('... subscribe for prices');
   const prices = new Prices(ipcMain, browserWindow.webContents, apiAccess, apiMode.chains, apiMode.currencies[0]);

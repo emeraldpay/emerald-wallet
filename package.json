@@ -8,13 +8,18 @@
     "lint": "lerna run lint --stream",
     "lint:ts": "tslint 'packages/**/*.ts{,x}' -c tslint.json",
     "build:dist": "lerna run build:dist --stream",
-    "test:coverage": "lerna run test:coverage --stream"
+    "test:coverage": "lerna run test:coverage --stream --concurrency 1",
+    "build:neon": "electron-build-env neon build @emeraldpay/emerald-vault-node --release",
+    "electron:install-vault-native": "cd node_modules/@emeraldpay/emerald-vault-node && node-pre-gyp install --fallback-to-build=false --update-binary --runtime=electron --target=4.1.0",
+    "postinstall": "npm run electron:install-vault-native"
   },
   "devDependencies": {
     "lerna": "3.16.4",
     "tslint": "^5.20.0",
     "tslint-config-standard": "^8.0.1",
-    "tslint-react": "^4.1.0"
+    "tslint-react": "^4.1.0",
+    "electron-build-env": "0.2.0",
+    "neon-cli": "0.3.1"
   },
   "workspaces": [
     "packages/*"

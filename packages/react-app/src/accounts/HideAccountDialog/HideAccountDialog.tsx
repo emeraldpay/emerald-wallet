@@ -70,7 +70,8 @@ export default connect(
   }),
   (dispatch, ownProps) => ({
     handleConfirmHide: () => {
-      dispatch(addresses.actions.hideAccount(ownProps.account) as any);
+      // TODO not implemented
+      // dispatch(addresses.actions.hideAccount(ownProps.account) as any);
 
       // refresh account data
       // TODO: do we need it ???

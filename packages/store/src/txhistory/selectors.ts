@@ -47,7 +47,9 @@ const getFieldForFilter = (txFilter: string) => {
   return 'unknown';
 };
 
-export function filterTransactions (filterValue: string, accountId: string | null, transactionsToFilter: TransactionsList, accounts: List<Map<string, any>>): TransactionsList {
+export function filterTransactions (
+  filterValue: string, accountId: string | null, transactionsToFilter: TransactionsList, accounts: List<Map<string, any>>
+): TransactionsList {
   if (filterValue === 'ALL') {
     return transactionsToFilter;
   }
