@@ -1,12 +1,18 @@
 import { ipcRenderer } from 'electron';
 import * as screen from '../screen';
-import { ActionTypes } from './types';
+import { ActionTypes, ILoadSettingsAction } from './types';
 
 export interface ISettings {
   language: string;
   localeCurrency: string;
   showHiddenAccounts: boolean;
   numConfirmations: string;
+}
+
+export function loadSettings (): ILoadSettingsAction {
+  return {
+    type: ActionTypes.LOAD_SETTINGS
+  };
 }
 
 export function update (settings: ISettings) {

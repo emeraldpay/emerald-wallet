@@ -3,10 +3,15 @@ export enum ActionTypes {
   EXCHANGE_RATES = 'ACCOUNT/EXCHANGE_RATES',
   SET_SHOW_HIDDEN_ACCOUNTS = 'SETTINGS/SET_SHOW_HIDDEN_ACCOUNTS',
   NUM_CONFIRMATIONS = 'SETTINGS/NUM_CONFIRMATIONS',
-  MODE = 'SETTINGS/MODE'
+  MODE = 'SETTINGS/MODE',
+  LOAD_SETTINGS = 'SETTINGS/LOAD'
 }
 
 export type ISettingsState = any;
+
+export interface ILoadSettingsAction {
+  type: ActionTypes.LOAD_SETTINGS;
+}
 
 export interface SetModeAction {
   type: ActionTypes.MODE;
@@ -28,7 +33,7 @@ export interface SetShowHiddenAccsAction {
   show: any;
 }
 
-export interface SetExchRatesAction {
+export interface ISetExchRatesAction {
   type: ActionTypes.EXCHANGE_RATES;
   rates: any;
 }
@@ -38,4 +43,5 @@ export type SettingsAction =
   SetNumConfirmAction |
   SetLocaleCurrencyAction |
   SetShowHiddenAccsAction |
-  SetExchRatesAction;
+  ISetExchRatesAction |
+  ILoadSettingsAction;

@@ -15,8 +15,6 @@ import {Api, getConnector} from '../lib/rpc/api';
 import {intervalRates} from './config';
 import tokens from './vault/tokens';
 
-import {default as WalletSettings} from './wallet/settings';
-
 import {
   readConfig,
   listenElectron,
@@ -142,7 +140,7 @@ export function electronToStore() {
 export const start = () => {
   try {
     store.dispatch(readConfig());
-    store.dispatch(WalletSettings.actions.loadSettings());
+    store.dispatch(settings.actions.loadSettings());
   } catch (e) {
     log.error(e);
   }

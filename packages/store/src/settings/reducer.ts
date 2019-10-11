@@ -1,7 +1,7 @@
 import { fromJS } from 'immutable';
 import {
   ActionTypes,
-  ISettingsState, SetExchRatesAction,
+  ISetExchRatesAction, ISettingsState,
   SetLocaleCurrencyAction,
   SetModeAction,
   SetNumConfirmAction,
@@ -35,7 +35,7 @@ function onSetLocaleCurrency (state: ISettingsState, action: SetLocaleCurrencyAc
     .set('localeRate', rate);
 }
 
-function onExchangeRates (state: ISettingsState, action: SetExchRatesAction) {
+function onExchangeRates (state: ISettingsState, action: ISetExchRatesAction) {
   return state
     .set('rates', fromJS(action.rates))
     .set('localeRate', action.rates ? action.rates.ETC : null);
