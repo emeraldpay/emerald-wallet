@@ -17,14 +17,19 @@ jobs:
       uses: actions/setup-node@v1
       with:
         node-version: ${{ matrix.node-version }}
+    - name: prepare
+      run: |
+        npm install -g codecov yarn lerna node-gyp
+      env:
+        CI: true
     - name: install
       run: |
-        npm install
+        yarn install
       env:
         CI: true
     - name: test
       run: |
-        npm run build --if-present
-        npm test
+        yarn build
+        yarn test
       env:
         CI: true
