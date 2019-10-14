@@ -14,6 +14,7 @@ export { default as ExportPaperWallet } from './export/ExportPaperWallet';
 
 // create-account
 export { default as ShowPrivateKey } from './create-account/ShowPrivateKey';
+export { default as GenerateAccount } from './create-account/GenerateAccount';
 
 // import
 export { default as ImportJson } from './import/ImportJson';
