@@ -1,7 +1,7 @@
+import { Units, Wei } from '@emeraldplatform/eth';
 import { Input } from '@emeraldplatform/ui';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
-import { Units, Wei } from '@emeraldplatform/eth';
 import FormLabel from '../FormLabel';
 
 function getStyles (theme?: any) {

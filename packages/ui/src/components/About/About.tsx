@@ -22,7 +22,7 @@ export const styles = (theme?: any) => ({
   }
 });
 
-interface Props {
+interface IProps {
   appVersion?: string;
   vaultVersion?: string;
   gitVersion?: any;
@@ -33,7 +33,7 @@ interface Props {
   classes?: any;
 }
 
-export class About extends React.Component<Props> {
+export class About extends React.Component<IProps> {
   public render () {
     const {
       classes, onButtonClick, onHelpClick, onLicenseClick

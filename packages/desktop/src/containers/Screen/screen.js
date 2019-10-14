@@ -4,16 +4,14 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { Wei } from '@emeraldplatform/eth';
 import {
   ContactList as AddressBook, AddContact, PaperWallet, ExportPaperWallet, ImportJson, TxDetails,
-  ImportMnemonic, CreateTransaction, BroadcastTx, ImportPrivateKey, ImportLedgerAccount,
+  ImportMnemonic, CreateTransaction, BroadcastTx, ImportPrivateKey, ImportLedgerAccount, GenerateAccount,
 } from '@emeraldwallet/react-app';
-
 import createLogger from '../../utils/logger';
 import AccountShow from '../../components/accounts/AccountShow';
 import MnemonicWizard from '../../components/accounts/MnemonicWizard';
 import Welcome from '../../components/welcome/welcome';
 import Home from '../Home';
 import Settings from '../Settings';
-import GenerateAccount from '../../components/accounts/GenerateAccount';
 import { screen } from '../../store';
 
 const log = createLogger('screen');

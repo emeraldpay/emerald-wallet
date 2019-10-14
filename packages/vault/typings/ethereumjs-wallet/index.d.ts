@@ -30,6 +30,7 @@ declare module 'ethereumjs-wallet' {
 
 declare module 'ethereumjs-wallet/hdkey' {
 
+  // tslint:disable-next-line:max-classes-per-file
   class Wallet {
     public static fromPrivateKey (key: Buffer): Wallet;
     public static fromV3 (json: string, password: string): Wallet;
@@ -37,6 +38,7 @@ declare module 'ethereumjs-wallet/hdkey' {
     public getAddressString (): string;
   }
 
+  // tslint:disable-next-line:max-classes-per-file
   class EthereumHDKey {
     public privateExtendedKey (): string;
     public publicExtendedKey (): string;

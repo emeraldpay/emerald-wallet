@@ -51,7 +51,7 @@ const ShowPrivateDialog = (props: IShowPrivateKeyProps) => {
     onBack, onNext, privateKey, t, classes
   } = props;
   return (
-    <Page title={t('generate.title')} leftIcon={<Back onClick={onBack} />}>
+    <Page title={t('accounts.generate.title')} leftIcon={<Back onClick={onBack} />}>
       <div>
         <FormRow
           rightColumn={(

@@ -20,7 +20,7 @@ interface ImportJsonProps {
   onBackScreen?: any;
 }
 
-interface ImportJsonState {
+interface IImportJsonState {
   fileError: any;
   file: any;
   blockchain: any;
@@ -28,7 +28,7 @@ interface ImportJsonState {
 
 type Props = ImportJsonProps & WithTranslation;
 
-class ImportJson extends React.Component<Props, ImportJsonState> {
+class ImportJson extends React.Component<Props, IImportJsonState> {
   constructor (props: Props) {
     super(props);
     this.state = {

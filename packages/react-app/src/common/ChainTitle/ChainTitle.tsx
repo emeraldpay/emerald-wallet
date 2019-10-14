@@ -13,7 +13,7 @@ function ChainTitle (props: IChainTitle) {
   const title = text || '';
   return (
     <div style={{ display: 'flex', alignItems: 'center' }}>
-      <div style={{ paddingRight: '10px'}} ><CoinAvatar chain={chain}/></div>
+      <div style={{ paddingRight: '10px' }} ><CoinAvatar chain={chain}/></div>
       <PageTitle>{title}</PageTitle>
     </div>
   );
