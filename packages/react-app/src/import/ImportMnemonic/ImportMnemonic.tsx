@@ -10,9 +10,9 @@ export interface IInputMnemonicProps {
 
 export default connect(
   (state, ownProps: IInputMnemonicProps) => ({
+    mnemonic: ownProps.mnemonic,
     initialValues: {
-      mnemonic: ownProps.mnemonic,
-      hdpath: "m/44'/60'/0'/0'"
+      hdpath: "m/44'/60'/0'/0/0"
     },
     blockchains: settings.selectors.currentChains(state)
   }),

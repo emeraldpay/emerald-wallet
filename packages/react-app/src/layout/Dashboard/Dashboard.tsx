@@ -1,6 +1,7 @@
-import React from 'react';
-import { AccountList, TxHistory } from '@emeraldwallet/react-app';
-import Header from './header';
+import * as React from 'react';
+import AccountList from '../../accounts/AccountList';
+import TxHistory from '../../transactions/TxHistory';
+import Header from './Header';
 
 const Dashboard = () => {
   return (

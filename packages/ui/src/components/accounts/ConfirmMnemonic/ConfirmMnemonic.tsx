@@ -3,8 +3,9 @@ import { Back } from '@emeraldplatform/ui-icons';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import Button from '../../common/Button';
+import FormRow from '../../common/FormRow';
 
-export const styles2 = {
+export const styles = {
   confirmLabel: {
     height: '24px',
     width: '190px',
@@ -20,35 +21,23 @@ export const styles2 = {
     fontWeight: 500,
     lineHeight: '24px'
   },
-  formRow: {
-    display: 'flex',
-    marginBottom: '19px',
-    alignItems: 'center'
-  },
-  left: {
-    flexBasis: '20%',
-    marginLeft: '14.75px',
-    marginRight: '14.75px'
-  },
-  right: {
-    flexGrow: 2,
-    display: 'flex',
-    alignItems: 'center',
-    marginLeft: '14.75px',
-    marginRight: '14.75px',
-    maxWidth: '580px'
-  }
+  fieldName: {
+    color: '#747474',
+    fontSize: '16px',
+    textAlign: 'right'
+  } as any
 };
 
-interface Props {
+interface IConfirmProps {
   classes: any;
   onBack?: any;
   onSubmit?: any;
   error?: any;
   mnemonic: string;
+  dpath: string;
 }
 
-export class ConfirmMnemonic extends React.Component<Props> {
+export class ConfirmMnemonic extends React.Component<IConfirmProps> {
   public handleSubmit = () => {
     const { onSubmit, mnemonic } = this.props;
     if (onSubmit) {
@@ -58,13 +47,12 @@ export class ConfirmMnemonic extends React.Component<Props> {
 
   public render () {
     const {
-      onBack, error, classes, mnemonic
+      onBack, error, classes, mnemonic, dpath
     } = this.props;
     return (
       <Page title='Confirm Mnemonic' leftIcon={<Back onClick={onBack} />}>
-        <div className={classes.formRow}>
-          <div className={classes.left}/>
-          <div className={classes.right}>
+        <FormRow
+          rightColumn={(
             <div style={{ width: '100%' }}>
               <div className={classes.mnemonicLabel}>Confirm your mnemonic phrase</div>
               <div>
@@ -76,33 +64,40 @@ export class ConfirmMnemonic extends React.Component<Props> {
                 />
               </div>
             </div>
-          </div>
-        </div>
+          )}
+        />
 
-        <div className={classes.formRow}>
-          <div className={classes.left}/>
-          <div className={classes.right}>
+        <FormRow
+          leftColumn={(
+            <div className={classes.fieldName}>Derivation Path</div>
+          )}
+          rightColumn={(
+            <div>{dpath}</div>
+          )}
+        />
+
+        <FormRow
+          rightColumn={(
             <Button
               primary={true}
               label='Import'
               onClick={this.handleSubmit}
             />
-          </div>
-        </div>
+          )}
+        />
 
         {error && (
-          <div className={classes.formRow}>
-            <div className={classes.left}/>
-            <div className={classes.right}>
+          <FormRow
+            rightColumn={(
               <Warning>
                 <WarningText>{error}</WarningText>
               </Warning>
-            </div>
-          </div>
+            )}
+          />
         )}
       </Page>
     );
   }
 }
 
-export default withStyles(styles2)(ConfirmMnemonic);
+export default withStyles(styles)(ConfirmMnemonic);

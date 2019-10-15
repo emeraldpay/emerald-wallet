@@ -12,7 +12,6 @@ const { app, ipcMain, session } = require('electron'); // eslint-disable-line im
 const path = require('path'); // eslint-disable-line
 
 const Settings = require('./settings');
-const { Services } = require('./services');
 const { LedgerApi } = require('@emeraldwallet/ledger');
 const ipc = require('./ipc');
 const log = require('./logger');
@@ -82,7 +81,8 @@ app.on('ready', () => {
 
   log.info('... Setup Vault');
   const vault = new LocalConnector(dataDir ? path.resolve(path.join(dataDir, '/vault')) : null, log);
-  const serverConnect = new ServerConnect(app.getVersion(), app.getLocale(), log, apiAccess.blockchainClient, vault.getProvider());
+  const serverConnect = new ServerConnect(
+    app.getVersion(), app.getLocale(), log, apiAccess.blockchainClient, vault.getProvider());
   global.serverConnect = serverConnect;
   serverConnect.init(process.versions);
 
