@@ -32,6 +32,7 @@ export { default as i18n } from './i18n';
 export { default as ConnectionStatus } from './layout/ConnectionStatus';
 export { default as NotificationBar } from './layout/NotificationBar';
 export { default as Header } from './layout/Header';
+export { default as Dashboard } from './layout/Dashboard';
 
 // onboarding
 export { default as Landing } from './onboarding/Landing';

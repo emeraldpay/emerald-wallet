@@ -3,9 +3,7 @@ import { connect } from 'react-redux';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { addresses } from '@emeraldwallet/store';
-import { Landing } from '@emeraldwallet/react-app';
-
-import Dashboard from '../../components/layout/Dashboard';
+import { Landing, Dashboard } from '@emeraldwallet/react-app';
 
 const styles = {
   statusMessage: {
@@ -18,7 +16,7 @@ const Home = (props) => {
   const {connecting, statusMessage, addrs} = props;
   if (connecting) {
     return (
-      <Grid container direction="column" alignItems="center" justify="center">
+      <Grid container alignItems="center" justify="center">
         <Grid item>
           <CircularProgress size={50}/>
         </Grid>
@@ -28,11 +26,9 @@ const Home = (props) => {
       </Grid>
     );
   }
-
   if (addrs.size === 0) {
     return (<Landing />);
   }
-
   return (<Dashboard />);
 };
 

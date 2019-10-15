@@ -1,5 +1,4 @@
 import React from 'react';
-import Immutable from 'immutable';
 import { connect } from 'react-redux';
 import { ConfirmMnemonic } from '@emeraldwallet/ui';
 import { screen, addresses } from '@emeraldwallet/store';
@@ -7,6 +6,7 @@ import { screen, addresses } from '@emeraldwallet/store';
 export default connect(
   (state, ownProps) => ({
     mnemonic: ownProps.mnemonic,
+    dpath: ownProps.formData.hdpath,
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data) => {
@@ -16,7 +16,7 @@ export default connect(
             throw new Error(result.error.toString());
           } else {
             // show page with account details
-            dispatch(screen.actions.gotoScreen('account', Immutable.fromJS({id: result, blockchain: ownProps.formData.blockchain})));
+            dispatch(screen.actions.gotoScreen('account', {id: result, blockchain: ownProps.formData.blockchain}));
           }
         }).catch((error) => {
           console.error(error);

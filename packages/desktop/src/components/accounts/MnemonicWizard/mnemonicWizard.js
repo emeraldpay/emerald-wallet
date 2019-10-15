@@ -1,7 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { NewMnemonic } from '@emeraldwallet/ui';
-import { ImportMnemonic } from '@emeraldwallet/react-app';
+import { NewMnemonic, ImportMnemonic } from '@emeraldwallet/ui';
 import { screen, addresses, settings } from '@emeraldwallet/store';
 import ConfirmMnemonic from '../add/ConfirmMnemonic';
 
@@ -67,6 +66,11 @@ class MnemonicWizard extends React.Component {
       case PAGES.IMPORT:
         return (
           <ImportMnemonic
+            initialValues = {
+              {
+                hdpath: "m/44'/60'/0'/0/0"
+              }
+            }
             mnemonic={ mnemonic }
             onSubmit={ this.gotoConfirm }
             onBack={ this.gotoGenerate }

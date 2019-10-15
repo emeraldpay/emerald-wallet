@@ -1,32 +1,44 @@
-import React from 'react';
-import withStyles from 'react-jss';
-import {connect} from 'react-redux';
-import {withTranslation} from 'react-i18next';
-import {DashboardMenu as Menu} from '@emeraldwallet/ui';
-import {screen} from '@emeraldwallet/store';
+import { screen } from '@emeraldwallet/store';
+import { DashboardMenu as Menu } from '@emeraldwallet/ui';
+import { withStyles } from '@material-ui/styles';
+import * as React from 'react';
+import { WithTranslation, withTranslation } from 'react-i18next';
+import { connect } from 'react-redux';
 
-const {gotoScreen, showDialog} = screen.actions;
-const styles2 = {
+const { gotoScreen, showDialog } = screen.actions;
+const styles = {
   header: {
     display: 'flex',
     justifyContent: 'space-between',
     alignItems: 'baseline',
     marginTop: '8px',
-    height: '50px',
+    height: '50px'
   },
   title: {
     fontSize: '14px',
-    fontWeight: '500',
-  },
+    fontWeight: 500
+  }
 };
 
-export class Header extends React.Component {
-  render() {
-    const {
-      generate, importJson, importLedger, importPrivateKey, importMnemonic, addToken, createMnemonic, showAddressBook,
-    } = this.props;
-    const {t, classes} = this.props;
-    return (
+export interface IHeaderProps {
+  generate: any;
+  importJson: any;
+  importLedger: any;
+  importPrivateKey: any;
+  importMnemonic: any;
+  addToken?: any;
+  createMnemonic: any;
+  showAddressBook: any;
+  classes: any;
+  t: any;
+}
+
+export function Header (props: IHeaderProps & WithTranslation) {
+  const {
+      generate, importJson, importLedger, importPrivateKey, importMnemonic, addToken, createMnemonic, showAddressBook
+    } = props;
+  const { t, classes } = props;
+  return (
       <div className={classes.header}>
         <div>
           <span className={classes.title}>{t('accounts.list.title')}</span>
@@ -42,11 +54,11 @@ export class Header extends React.Component {
           addToken={addToken}
           t={t}
         />
-      </div>);
-  }
+      </div>
+  );
 }
 
-const StyledHeader = withStyles(styles2)(Header);
+const StyledHeader = withStyles(styles)(Header);
 
 export default withTranslation()(
   connect(
@@ -75,7 +87,7 @@ export default withTranslation()(
       },
       addToken: () => {
         dispatch(showDialog('tokens'));
-      },
+      }
     })
   )(StyledHeader)
 );

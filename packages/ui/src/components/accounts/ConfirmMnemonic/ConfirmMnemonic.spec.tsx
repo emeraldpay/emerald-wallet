@@ -1,13 +1,10 @@
-import { shallow } from 'enzyme';
+import { render } from '@testing-library/react';
 import * as React from 'react';
-import { ConfirmMnemonic, styles2 } from './ConfirmMnemonic';
-
-const reduceClasses = (prev, curr) => ({ ...prev,  [curr]: curr });
-const classes = Object.keys(styles2).reduce(reduceClasses, {});
+import ConfirmMnemonic from './ConfirmMnemonic';
 
 describe('ConfirmMnemonic', () => {
   it('renders without crash', () => {
-    const component = shallow(<ConfirmMnemonic mnemonic='mnemonic phrase' classes={classes} />);
+    const component = render(<ConfirmMnemonic mnemonic='mnemonic phrase' dpath={"m/44'/60'"} />);
     expect(component).toBeDefined();
   });
 });
