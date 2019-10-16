@@ -94,15 +94,27 @@ export class TxDetails extends React.Component<ITxDetailsProps> {
     } = this.props;
 
     const blockNumber = transaction.blockNumber;
-    const txStatus = blockNumber ? 'success' : 'queue';
+    const txStatus = blockNumber ? 'success' : (transaction.discarded ? 'discarded' : 'queue');
+    const date = transaction.timestamp ?
+      transaction.timestamp :
+      (transaction.since ? transaction.since : undefined);
+
     return (
       <Page title='Transaction Details' leftIcon={<Back onClick={this.handleBack} />}>
         <div className={classes.formRow}>
           <div style={styles.left}>
             <div className={classes.fieldName}>Date</div>
           </div>
+          <div style={styles.right} title={date ? date.toUTCString() : 'pending'}>
+            {date ? date.toString() : 'pending'}
+          </div>
+        </div>
+        <div className={classes.formRow}>
+          <div style={styles.left}>
+            <div className={classes.fieldName}>Status</div>
+          </div>
           <div style={styles.right}>
-            {transaction.timestamp ? new Date(transaction.timestamp * 1000).toUTCString() : 'pending'}
+            <TxStatus status={txStatus} />
           </div>
         </div>
         <div className={classes.formRow}>
@@ -111,19 +123,14 @@ export class TxDetails extends React.Component<ITxDetailsProps> {
           </div>
           <div style={styles.right}>
             <div style={{ display: 'flex' }}>
-              <div>
+              <div className={classes.value}>
+                {transaction.value ? `${new Wei(transaction.value).toEther()} ${tokenSymbol}` : '--'}
+              </div>
+              {fiatAmount && (
                 <div className={classes.value}>
-                  {transaction.value ? `${new Wei(transaction.value).toEther()} ${tokenSymbol}` : '--'}
+                  {fiatAmount} {fiatCurrency}
                 </div>
-                {fiatAmount && (
-                  <div className={classes.value}>
-                    {fiatAmount} {fiatCurrency}
-                  </div>
-                )}
-              </div>
-              <div>
-                <TxStatus status={txStatus} />
-              </div>
+              )}
             </div>
           </div>
         </div>

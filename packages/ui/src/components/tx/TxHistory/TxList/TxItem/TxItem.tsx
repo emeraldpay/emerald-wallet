@@ -1,7 +1,7 @@
 import { convert, fromBaseUnits, InputDataDecoder } from '@emeraldplatform/core';
 import { Account as AddressAvatar } from '@emeraldplatform/ui';
 import { ArrowDown } from '@emeraldplatform/ui-icons';
-import { Units } from '@emeraldwallet/core';
+import { Units, utils } from '@emeraldwallet/core';
 import { abi as TokenAbi } from '@emeraldwallet/erc20';
 import { TableCell, TableRow } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
@@ -64,7 +64,10 @@ export interface ITxItemProps {
 }
 
 const timeStampFormatter = (lang: any) => (timestamp: any) => {
-  const timestampEvent = new Date(timestamp * 1000);
+  const timestampEvent = utils.parseDate(timestamp);
+  if (typeof timestampEvent === "undefined" || timestampEvent == null) {
+    return "?"
+  }
   const options = {
     year: 'numeric',
     month: 'numeric',
@@ -131,6 +134,8 @@ export const TxItem = (props: ITxItemProps) => {
           currentBlockHeight={netParams.currentBlockHeight}
           txBlockNumber={tx.blockNumber}
           txTimestamp={tx.timestamp}
+          txSince={tx.since}
+          txDiscarded={tx.discarded}
           requiredConfirmations={netParams.requiredConfirmations}
           timeStampFormatter={timeStampFormatter(props.lang)}
           onClick={openTx}
