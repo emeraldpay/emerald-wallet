@@ -6,6 +6,9 @@ const styles = (theme: any) => ({
   inQueue: {
     color: theme.palette && theme.palette.text.secondary
   },
+  discarded: {
+    color: theme.palette && theme.palette.error.main
+  },
   inBlockchain: {
     color: theme.palette && theme.palette.primary.main
   },
@@ -22,6 +25,8 @@ interface Props {
   currentBlockHeight: number;
   txBlockNumber: number | null;
   txTimestamp: any;
+  txSince: Date;
+  txDiscarded: boolean;
   requiredConfirmations: number;
   timeStampFormatter?: (ts: any) => string;
   classes: any;
@@ -31,14 +36,28 @@ interface Props {
 const Status = (props: Props) => {
   const { classes, onClick } = props;
   const tsFormatter = props.timeStampFormatter || defaultTimestampFormatter;
-  const { currentBlockHeight, txBlockNumber, requiredConfirmations } = props;
+  const { currentBlockHeight, txBlockNumber, requiredConfirmations, txDiscarded } = props;
+
+  // Status = Discarded
+  if (txDiscarded) {
+    return (
+      <div>
+        <div className={classes.discarded} onClick={onClick}>Discarded</div>
+        <div className={classes.timestamp} onClick={onClick}>{tsFormatter(props.txSince)}</div>
+      </div>
+    );
+  }
 
   // Status = In Queue
   if (!txBlockNumber) {
     return (
-      <span className={classes.inQueue} onClick={onClick}>
-        <CircularProgress color='secondary' size={15} thickness={1.5}/> In Queue
-      </span>);
+      <div>
+        <div className={classes.inQueue} onClick={onClick}>
+          <CircularProgress color='secondary' size={15} thickness={1.5}/> In Queue
+        </div>
+        <div className={classes.timestamp} onClick={onClick}>{tsFormatter(props.txSince)}</div>
+      </div>
+    );
   }
 
   // Status = In Blockchain
@@ -49,7 +68,12 @@ const Status = (props: Props) => {
     return (
       <div>
         <div className={classes.inBlockchain} onClick={onClick}>Success</div>
-        <div style={{ fontSize: '9px', textAlign: 'center' }} onClick={onClick}>{numConfirmed} / {requiredConfirmations}</div>
+        <div
+          style={{ fontSize: '9px', textAlign: 'center' }}
+          onClick={onClick}
+        >
+          {numConfirmed} / {requiredConfirmations}
+        </div>
       </div>
     );
   } else if (confirmationBlockNumber <= currentBlockHeight) {

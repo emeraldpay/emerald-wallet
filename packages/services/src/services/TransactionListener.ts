@@ -30,7 +30,8 @@ export class TransactionListener {
           blockchain,
           hash: event.txid,
           blockNumber: event.blockNumber,
-          timestamp: event.timestamp
+          timestamp: event.timestamp,
+          broadcasted: event.broadcasted
         }]);
         webContents.send('store', action);
       });

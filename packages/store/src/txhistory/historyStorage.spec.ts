@@ -16,7 +16,9 @@ describe('historyStorage', () => {
       from: '0x0',
       to: '0x0',
       nonce: 1,
-      blockchain: BlockchainCode.Morden
+      blockchain: BlockchainCode.Morden,
+      since: new Date(),
+      discarded: false
     }];
 
     storeTransactions('key1', trans);
@@ -25,6 +27,6 @@ describe('historyStorage', () => {
     expect(loaded).toHaveLength(1);
     expect(loaded[0].hash).toEqual('0x1234');
     expect((loaded[0].value as BigNumber).comparedTo(new BigNumber(1))).toEqual(0);
-    expect(loaded[0].timestamp).toEqual(now.toISOString());
+    expect(loaded[0].timestamp).toEqual(now);
   });
 });
