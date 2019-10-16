@@ -1,4 +1,5 @@
 import { convert } from '@emeraldplatform/core';
+import { utils } from '@emeraldwallet/core';
 import { fromJS, Map } from 'immutable';
 import { ITransaction } from '../types';
 import {
@@ -34,6 +35,46 @@ function isTracked (state: any, tx: any) {
   return state.get('trackedTransactions').some((x: any) => tx.get('hash') === x.get('hash'));
 }
 
+/**
+ * Returns earliest known date from the specified transactions
+ *
+ * @param a
+ * @param b
+ */
+function mergeSince (a: any, b: any): Date {
+  const dates: number[] = [new Date().getTime()];
+  ['since', 'timestamp'].forEach((field) => {
+    [a, b].forEach((tx) => {
+      const value = tx.get(field);
+      const date = utils.parseDate(value);
+      if (typeof date !== 'undefined') {
+        dates.push(date.getTime());
+      }
+    });
+  });
+  return new Date(Math.min(...dates));
+}
+
+/**
+ * Updates `discarded` status for the provided transaction
+ *
+ * @param tx
+ * @return same tx with recalculated `discarded` field
+ */
+function updateStatus (tx: any): any {
+  if (typeof tx.get('blockNumber') === 'number') {
+    return tx.set('discarded', false);
+  } else if (tx.get('broadcasted')) {
+    return tx.set('discarded', false);
+  } else if (typeof tx.get('since') !== 'undefined') {
+    const since = tx.get('since');
+    const hourAgo = new Date().getTime() - 60 * 60 * 1000;
+    return tx.set('discarded', since.getTime() < hourAgo);
+  } else {
+    return tx.set('discarded', false);
+  }
+}
+
 function createTx (data: ITransaction) {
   const values: {[key: string]: any} = {
     hash: data.hash,
@@ -47,7 +88,8 @@ function createTx (data: ITransaction) {
   tx = tx.set('gasPrice', data.gasPrice ? toBigNumber(data.gasPrice) : data.gasPrice);
   tx = tx.set('gas', data.gas ? toBigNumber(data.gas).toNumber() : data.gas);
   tx = tx.set('nonce', data.nonce ? toBigNumber(data.nonce).toNumber() : data.nonce);
-  tx = tx.set('timestamp', data.timestamp);
+  tx = tx.set('timestamp', utils.parseDate(data.timestamp));
+  tx = tx.set('since', utils.parseDate(data.since));
   tx = tx.set('chainId', data.chainId);
   tx = tx.set('blockchain', data.blockchain);
   if (data.nonce) {
@@ -65,8 +107,12 @@ function createTx (data: ITransaction) {
   if (typeof data.blockNumber !== 'undefined' && data.blockNumber !== null) {
     tx = tx.merge({
       blockHash: data.blockHash,
-      blockNumber: toNumber(data.blockNumber)
+      blockNumber: toNumber(data.blockNumber),
+      discarded: false
     });
+  } else if (typeof data.broadcasted !== 'undefined' && data.broadcasted) {
+    tx = tx.set('broadcasted', true)
+          .set('discarded', false);
   }
 
   return tx;
@@ -105,11 +151,7 @@ function onPendingTx (state: any, action: IPendingTxAction): any {
     for (const tx of action.txList) {
       // In case of dupe pending txs.
       const pos = txes.findKey((Tx: any) => Tx.get('hash') === tx.hash);
-      if (pos >= 0) {
-        txes = txes.set(pos, createTx(tx));
-      } else {
-        txes = txes.push(createTx(tx));
-      }
+      txes = pos >= 0 ? txes.set(pos, createTx(tx)) : txes.push(createTx(tx));
     }
     return state.set('trackedTransactions', fromJS(txes));
   }
@@ -120,7 +162,7 @@ function onLoadStoredTransactions (state: any, action: ILoadStoredTxsAction) {
   if (action.type === ActionTypes.LOAD_STORED_TXS) {
     let txs = fromJS([]);
     for (const tx of action.transactions) {
-      txs = txs.push(createTx(tx));
+      txs = txs.push(createTx(tx).update(updateStatus));
     }
     return state.set('trackedTransactions', fromJS(txs));
   }
@@ -147,10 +189,16 @@ function onTrackedTxNotFound (state: any, action: ITrackedTxNotFoundAction) {
 function onUpdateTxs (state: any, action: IUpdateTxsAction) {
   if (action.type === ActionTypes.UPDATE_TXS) {
     return state.update('trackedTransactions', (txs: any) => {
-      action.payload.forEach((t) => {
-        const pos = txs.findKey((tx: any) => tx.get('hash') === t.hash);
+      action.payload.forEach((received) => {
+        const pos = txs.findKey((tx: any) => tx.get('hash') === received.hash);
         if (pos >= 0) {
-          txs = txs.update(pos, (tx: any) => tx.mergeWith((o: any, n: any) => n || o, createTx(t)));
+          const orig = txs.get(pos);
+          const created = createTx(received);
+          txs = txs.update(pos, (tx: any) =>
+            tx.mergeWith((oldValue: any, newValue: any) => newValue || oldValue, created)
+              .set('since', mergeSince(tx, created))
+              .update(updateStatus)
+          );
         }
       });
       return txs;

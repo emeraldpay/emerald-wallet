@@ -1,5 +1,5 @@
 import { convert } from '@emeraldplatform/core';
-import { blockchainById } from '@emeraldwallet/core';
+import { blockchainById, utils } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
 import { ITransaction } from '../types';
 const { toBigNumber } = convert;
@@ -57,8 +57,10 @@ function restoreTx (tx: any): ITransaction {
     data: tx.data,
     blockHash: tx.blockHash,
     blockNumber: tx.blockNumber,
-    timestamp: tx.timestamp,
+    timestamp: utils.parseDate(tx.timestamp, undefined),
     blockchain: tx.blockchain || (blockchainById(tx.chainId) ? blockchainById(tx.chainId)!.params.code : null),
-    chainId: tx.chainId
+    chainId: tx.chainId,
+    since: utils.parseDate(tx.since, new Date()),
+    discarded: tx.discarded || false
   };
 }

@@ -28,4 +28,7 @@ export interface ITransaction {
   timestamp?: Date;
   blockHash?: string;
   blockNumber?: string | number;
+  since?: string | Date;
+  discarded?: boolean;
+  broadcasted?: boolean;
 }
