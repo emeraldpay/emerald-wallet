@@ -9,7 +9,7 @@ import {
   ClientReadable,
   MultiAddress,
   SingleAddress
-} from '@emeraldplatform/grpc';
+} from '@emeraldpay/grpc-client';
 import extractChain from './extractChain';
 
 interface AccountStatusEvent {

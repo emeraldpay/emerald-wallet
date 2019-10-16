@@ -5,7 +5,7 @@ import {
   ChainSpec,
   NativeCallItem,
   NativeCallReplyItem, NativeCallRequest
-} from '@emeraldplatform/grpc';
+} from '@emeraldpay/grpc-client';
 import { JsonRpcRequest, Transport } from '@emeraldplatform/rpc';
 import { ServiceError } from 'grpc';
 import { TextDecoder, TextEncoder } from 'text-encoding';
@@ -33,7 +33,7 @@ class GrpcTransport implements Transport {
     req.forEach((json) => {
       const item = new NativeCallItem();
       item.setId(json.id);
-      item.setTarget(json.method);
+      item.setMethod(json.method);
       item.setPayload(encoder.encode(JSON.stringify(json.params)));
       request.addItems(item);
     });

@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@emeraldplatform/eth-rpc": "0.5.1",
-    "@emeraldplatform/grpc": "0.10.0",
+    "@emeraldpay/grpc-client": "0.11.1-0.2",
     "@emeraldplatform/rpc": "0.5.1",
     "@emeraldwallet/vault": "^2.0.3",
     "@emeraldwallet/core": "^2.0.3",

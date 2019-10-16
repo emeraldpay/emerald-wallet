@@ -3,7 +3,7 @@ import {
   ClientReadable,
   TxStatus,
   TxStatusRequest
-} from '@emeraldplatform/grpc';
+} from '@emeraldpay/grpc-client';
 import extractChain from '../extractChain';
 
 interface TxStatusEvent {

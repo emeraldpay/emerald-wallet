@@ -1439,6 +1439,18 @@
   resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-node/-/emerald-vault-node-0.2.3-0.26.2.tgz#2ad297fc6ea9cb400fad641fcc8b84d77fac5db6"
   integrity sha512-Xed8AZwMi0eYbpOFq13cfB0i9WHE/oSNPalwnQ+RB770ycDiEHi/ASWHTH+Sr16XHCixMqQeI0itpAlSX/KRYg==
 
+"@emeraldpay/grpc-client@0.11.1-0.2":
+  version "0.11.1-0.2"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/grpc-client/-/grpc-client-0.11.1-0.2.tgz#d5b3433c48718e20562e7ebf716090ede7ca5fce"
+  integrity sha512-H8Ref5WQ6w6IYcXG6FHmvdtwkPwqEHZemF0OC6xO+V/jLbEfH0wPVNS/RYgh+q6FQPZTe9wNN6M5um5AoY4+/g==
+  dependencies:
+    "@types/google-protobuf" "3.2.7"
+    google-protobuf "3.7.1"
+    grpc "1.20.3"
+    hash.js "1.1.7"
+    protobufjs "6.8.8"
+    text-encoding "0.7.0"
+
 "@emeraldplatform/contracts@0.5.1", "@emeraldplatform/contracts@^0.5.1":
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/@emeraldplatform/contracts/-/contracts-0.5.1.tgz#f1cde5eb18bed81908a146ab4da3fb1a2987d5a6"
@@ -1524,18 +1536,6 @@
   dependencies:
     bignumber.js "8.0.2"
     qs "6.7.0"
-
-"@emeraldplatform/grpc@0.10.0":
-  version "0.10.0"
-  resolved "https://registry.yarnpkg.com/@emeraldplatform/grpc/-/grpc-0.10.0.tgz#84d90c380270440a89db15c7c77893436626a5aa"
-  integrity sha512-WRXpZ2wE7b1yobzCFFbTdlL+/GwzgNtWaEuSut4+qt00XVrtkSpHgKyxyPDlmzmmy5A4gtgwo6Atl7Urvq1TlQ==
-  dependencies:
-    "@types/google-protobuf" "3.2.7"
-    google-protobuf "3.7.1"
-    grpc "1.20.3"
-    hash.js "1.1.7"
-    protobufjs "6.8.8"
-    text-encoding "0.7.0"
 
 "@emeraldplatform/rpc@0.5.1", "@emeraldplatform/rpc@^0.5.1":
   version "0.5.1"

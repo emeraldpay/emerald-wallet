@@ -1,7 +1,7 @@
 import {
   EthRpc, VerifyBlockHash, VerifyGenesis, VerifyMinPeers, VerifyNotSyncing
 } from '@emeraldplatform/eth-rpc';
-import { BlockchainClient } from '@emeraldplatform/grpc';
+import { BlockchainClient } from '@emeraldpay/grpc-client';
 import {
   DefaultJsonRpc, HttpTransport, RevalidatingJsonRpc, RotatingJsonRpc, VerifyingJsonRpc
 } from '@emeraldplatform/rpc';
