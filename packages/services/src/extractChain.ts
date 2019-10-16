@@ -1,4 +1,4 @@
-import { chainByCode, ChainSpec } from '@emeraldplatform/grpc';
+import { chainByCode, ChainSpec } from '@emeraldpay/grpc-client';
 
 export default function extractChain (chain: string): ChainSpec {
   if (chain.toLowerCase() === 'mainnet') {
