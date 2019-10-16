@@ -51,11 +51,12 @@ export class TxListener {
             confirmations: data.getConfirmations()
           };
           if (block) {
-            event = Object.extend(event, {
+            const blockInfo = {
               blockHash: block.getBlockId(),
               blockNumber: block.getHeight(),
               timestamp: block.getTimestamp()
-            });
+            };
+            event = { ...event, ...blockInfo };
           }
           handler(event);
         }
