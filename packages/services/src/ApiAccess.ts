@@ -6,7 +6,7 @@ import {
   emeraldCredentials,
   MarketClient,
   MonitoringClient
-} from '@emeraldplatform/grpc';
+} from '@emeraldpay/grpc-client';
 import { app } from 'electron';
 import * as os from 'os';
 import { AddressListener } from './AddressListener';

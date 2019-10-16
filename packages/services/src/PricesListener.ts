@@ -2,7 +2,7 @@ import {
   ClientReadable, GetRatesRequest, GetRatesResponse, MarketClient,
   Pair,
   Rate
-} from '@emeraldplatform/grpc';
+} from '@emeraldpay/grpc-client';
 
 export type PriceHandler = (prices: {[key: string]: string}) => void;
 
