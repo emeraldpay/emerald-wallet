@@ -1,19 +1,19 @@
-import React from 'react';
-import { connect } from 'react-redux';
+import { addresses, screen, settings } from '@emeraldwallet/store';
+import * as React from 'react';
 import { withTranslation } from 'react-i18next';
-import { i18n } from '@emeraldwallet/react-app';
-import { Settings } from '@emeraldwallet/ui';
-import { screen, addresses, settings } from '@emeraldwallet/store';
+import { connect } from 'react-redux';
+import i18n from '../../i18n';
+import Settings from '../SettingsForm';
 
 const TranslatedSettings = withTranslation('translation')(Settings);
 
 export default connect(
-  (state, ownProps) => {
+  (state: any, ownProps: any) => {
     return {
       showHiddenAccounts: state.wallet.settings.get('showHiddenAccounts', false),
       currency: state.wallet.settings.get('localeCurrency', '').toLowerCase(),
       language: i18n.language,
-      numConfirmations: state.wallet.settings.get('numConfirmations'),
+      numConfirmations: state.wallet.settings.get('numConfirmations')
     };
   },
   (dispatch, ownProps) => ({
@@ -21,16 +21,17 @@ export default connect(
       dispatch(screen.actions.goBack());
     },
 
-    onSubmit: (data) => {
+    onSubmit: (data: any) => {
       const newSettings = {
         language: data.language,
         localeCurrency: data.currency,
         showHiddenAccounts: data.showHiddenAccounts,
-        numConfirmations: data.numConfirmations,
+        numConfirmations: data.numConfirmations
       };
       i18n.changeLanguage(data.language);
-      dispatch(settings.actions.update(newSettings));
-      dispatch(addresses.actions.loadAccountsList());
-    },
+      // TODO: re-write using saga
+      dispatch(settings.actions.update(newSettings) as any);
+      dispatch(addresses.actions.loadAccountsList() as any);
+    }
   })
 )(TranslatedSettings);

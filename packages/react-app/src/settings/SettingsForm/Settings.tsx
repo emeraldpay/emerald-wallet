@@ -1,11 +1,10 @@
 import { Checkbox, Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
+import { Button } from '@emeraldwallet/ui';
 import { MenuItem, TextField } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
-import { TextAlignProperty } from 'csstype';
 import * as React from 'react';
-import Button from '../common/Button';
-import { TranslateFn } from '../types';
+import { WithTranslation } from 'react-i18next';
 
 const styles = {
   formRow: {
@@ -15,8 +14,8 @@ const styles = {
   },
   fieldName: {
     fontSize: '16px',
-    textAlign: 'right' as TextAlignProperty
-  },
+    textAlign: 'right'
+  } as any,
   left: {
     flexBasis: '20%',
     marginLeft: '14.75px',
@@ -32,8 +31,7 @@ const styles = {
   }
 };
 
-interface IProps {
-  t: TranslateFn;
+export interface IProps {
   onSubmit?: any;
   goBack?: any;
   classes?: any;
@@ -50,8 +48,10 @@ interface IState {
   numConfirmations: number;
 }
 
-export class Settings extends React.Component<IProps, IState> {
-  constructor (props: IProps) {
+type Props = IProps & WithTranslation;
+
+export class Settings extends React.Component<Props, IState> {
+  constructor (props: Props) {
     super(props);
     this.state = {
       showHiddenAccounts: this.props.showHiddenAccounts,
