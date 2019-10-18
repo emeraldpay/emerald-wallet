@@ -2,8 +2,7 @@ import { Account as AddressAvatar, ButtonGroup } from '@emeraldplatform/ui';
 import { blockchainByName, IAccount } from '@emeraldwallet/core';
 import { Button, CoinAvatar } from '@emeraldwallet/ui';
 import { Card, CardContent, Grid } from '@material-ui/core';
-import withTheme from '@material-ui/core/styles/withTheme';
-import { withStyles } from '@material-ui/styles';
+import { withStyles, withTheme } from '@material-ui/styles';
 import * as React from 'react';
 
 import AccountBalance from '../../common/Balance';
@@ -44,7 +43,7 @@ interface IAccountProps {
   theme: any;
 }
 
-export class Account extends React.Component<IAccountProps> {
+export class Account extends React.PureComponent<IAccountProps> {
 
   public onSendClick = () => this.props.createTx(this.props.account);
 

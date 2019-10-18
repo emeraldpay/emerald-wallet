@@ -10,7 +10,6 @@ describe('AccountActionsMenu', () => {
         canHide={true}
         showPrint={true}
         showExport={true}
-        chain='etc'
       />
       );
     expect(wrapper).toBeDefined();
