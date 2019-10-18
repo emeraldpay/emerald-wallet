@@ -38,7 +38,7 @@ export { default as Dashboard } from './layout/Dashboard';
 export { default as Landing } from './onboarding/Landing';
 
 // tx
-export { default as TxDetails } from './tx/TxDetails';
+export { default as TxDetails } from './transactions/TxDetails';
 export { default as TxHistory } from './transactions/TxHistory';
 
 export { default as CreateTransaction } from './transaction/CreateTransaction';
@@ -48,3 +48,6 @@ export { default as SignTx } from './transaction/SignTx';
 
 // ledger
 export { default as ImportLedgerAccount } from './ledger/ImportAccount';
+
+// settings
+export { default as Settings } from './settings/Settings';
