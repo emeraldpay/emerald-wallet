@@ -44,7 +44,7 @@ build_script:
 version: '{build}'
 
 test_script:
-  - yarn test
+  - yarn run test:windows
 
 artifacts:
   - path: './packages/desktop/dist/*.exe'

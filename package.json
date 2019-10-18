@@ -5,6 +5,7 @@
     "clean:node_modules": "rimraf node_modules packages/*/node_modules",
     "build": "lerna run build --stream",
     "test": "lerna run test --stream",
+    "test:windown": "lerna run test:windows --stream",
     "lint": "lerna run lint --stream",
     "lint:ts": "tslint 'packages/**/*.ts{,x}' -c tslint.json",
     "build:dist": "lerna run build:dist --stream",

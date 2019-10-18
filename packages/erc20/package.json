@@ -10,6 +10,7 @@
     "build": "rimraf lib/ && tsc",
     "build:dist": "rimraf lib/ && tsc",
     "test": "jest",
+    "test:windows": "jest",
     "test:coverage": "jest --coverage && codecov"
   },
   "dependencies": {

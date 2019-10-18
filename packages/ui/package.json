@@ -10,6 +10,7 @@
     "build:dist": "rimraf lib/ && tsc && yarn copyfiles -u 1 src/**/*.png lib/",
     "build": "rimraf lib/ && tsc && yarn copyfiles -u 1 src/**/*.png lib/",
     "test": "jest --no-cache --env=jsdom",
+    "test:windows": "jest --no-chache --env=jsdom",
     "test:coverage": "jest --env=jsdom --coverage && codecov",
     "storybook": "start-storybook -p 9001 -c .storybook"
   },
