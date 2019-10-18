@@ -30,18 +30,26 @@ install:
   - rustup component add rust-src
   - cmd: set RUST_BACKTRACE=1
   - cmd: set RUSTFLAGS=-C target-feature=+crt-static
+
+before_build:
   # Download dependencies
   - lerna bootstrap
+  - npm run build:neon
 
-build: off
-version: '{build}'
-test_script:
+build_script:
   # CSC...=false env var disables app signing for osx, can't hurt to have it here too.
   # But probably useless, since the dist script build for _current_ operating system.
   - yarn build:dist
-#artifacts:
-#  - path: './dist/*.exe'
-#    name: emerald-wallet
+
+version: '{build}'
+
+test_script:
+  - yarn test
+
+artifacts:
+  - path: './packages/desktop/dist/*.exe'
+    name: emerald-wallet
+
 deploy_script:
   - openssl version
   - openssl aes-256-cbc -d -in gcloud-appveyor.json.enc -k %GCP_PASSWD% -out gcloud-appveyor.json -md sha256
