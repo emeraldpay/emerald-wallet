@@ -7,12 +7,12 @@ image:https://codecov.io/gh/ETCDEVTeam/emerald-wallet/branch/master/graph/badge.
 image:https://img.shields.io/github/license/ETCDEVTeam/emerald-wallet.svg?maxAge=2592000["License", link="https://github.com/ETCDEVTeam/emerald-wallet/blob/master/LICENSE"]
 
 
-Emerald is a free open source multiplatform desktop cryptocurrency wallet, supports Ethereum, Ethereum Classic and ERC-20 tokens.
+**Emerald is a free open source non-custodial multiplatform desktop cryptocurrency wallet, it supports Ethereum, Ethereum Classic and ERC-20 tokens.**
 
 Features:
 
 - *Full Node* - automatically connects to a full node running on a local machine
-- *Light Node* - when a full node is not feasible, it uses a secure endpoint provided by our servers. All private keys are stored on local machine.
+- *Light Node* - when a full node is not feasible, it uses a secure endpoint provided by our servers. _All private keys are stored on local machine_.
 - *Hardware Wallets* - supports hardware wallets such as Ledger Nano to keep private keys in a most safe way. It's recommended to use Ledger Nano S
 - *ERC-20 Tokens* - supports major ERC-20 tokens out of box, and a user can enable support for any ERC-20 compatible token in the Wallet by providing an address
 - *Secure Key Storage* = stores all private keys either in a local secure vault. Private keys are encrypted and are not transferred to another node even when Light mode is used
@@ -22,37 +22,56 @@ Features:
 Official website: https://emeraldwallet.io
 
 == Development instructions
+
+=== Code Design
+
+The project is based on
+
+- Electron + NodeJS
+- Typescript
+- React + Redux
+- Rust for some of the modules
+
 The recommended way to assert that you are using the correct version of node is to use https://github.com/nodenv/nodenv[nodenv],
 which will shim the `node` and `npm` commands and assert that the `local` version is set to what is
 specified in https://github.com/ETCDEVTeam/emerald-wallet/blob/master/.node-version[.node-version].
 
 Once nodenv is installed:
 
-```shell
+----
 $ nodenv install
-```
+----
 
 The required version of `node` >= `v8`.
 
 === Dependencies
 
 ==== Libs
+
 You need `libudev`, `libusb-1.0-0`, `libusb-1.0-0-dev` installed on Linux
 
-Ubuntu:
-
-```
+.On Ubuntu:
+----
 sudo apt-get install libudev-dev libusb-1.0-0 libusb-1.0-0-dev
-```
+----
 
 ====  NPM packages
 
-This will install dependencies.
 
+.Install development tools
+----
+npm install -g node-gyp lerna yarn
+----
 
-```shell
-$ lerna bootstrap
-```
+.For windows run also:
+----
+npm install -g npm windows-build-tools@4.0.0
+----
+
+.Install dependencies:
+----
+lerna bootstrap
+----
 
 
 ==== Emerald Console
@@ -67,17 +86,37 @@ project directory.
 
 === Run for development
 
-_Terminal 1_
-```shell
-= This will begin a live-watching compiler for ./src/ and ./electron/ folders
-$ yarn build:all:dev
-```
+.Build sources
+----
+$ leran run build
+----
 
-_Terminal 2_
-```shell
-= This will begin the simulated electron app pulling from those compiled sources.
-$ yarn start:electron
-```
+.Start Electron application
+----
+$ lerna run start:electron
+----
+
+=== Troubleshouting
+
+==== Emerald Vault module error
+
+Electron may show error, like:
+
+> _[emerald-vault-native] was compiled against a different Node.js version using
+NODE_MODULE_VERSION 64. This version of Node.js requires NODE_MODULE_VERSION 69. Please try re-compiling or re-installing
+the module (for instance, using npm rebuild or npm install)_
+
+At this case you'll need to recompile Emerald Vault for your platform and version of Electron. You will need to have Rust
+compiler and LLVM installed, please follow instructions on:
+
+ - https://rustup.rs/
+ - http://releases.llvm.org/download.html
+
+After installing Rust and LLVM run following to recompile the module:
+----
+export RUSTFLAGS=-C target-feature=+crt-static
+npm run build:neon
+----
 
 === Logs
 
@@ -86,21 +125,14 @@ Electron and Emerald logs persisted in:
  * OSX: `~/Library/Logs/EmeraldWallet/log.log`
  * Linux: `~/.config/EmeraldWallet/log.log`
 
-=== Building alternatively
-
-You can also use a variety of alternate build options, eg.
-
-```
-$ yarn build:all:nowatch
-```
-
 === Building distributions in development
+
 You can run a distribution build in your development environment. Assuming
 you've already compiled `./src/` and `./electron/`, you'll be able to run:
 
-```
-$ npm run dist
-```
+----
+yarn build:dist
+----
 
 This command will build for _your current system_. Note that there are configurations for
 several systems (OSX, Linux, Windows) specified in the `"build"` field of `package.json`, but the `dist` command will by default only build for the system it's on.
@@ -121,14 +153,14 @@ Clear out any persisted settings or userdata from previous trials
 
 == Run tests
 
-```
+----
 yarn test:watch
-```
+----
 
 or for single run:
-```
+----
 yarn test
-```
+----
 
 == Contact
 
