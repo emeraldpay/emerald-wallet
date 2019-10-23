@@ -28,7 +28,7 @@ export const styles = {
   } as any
 };
 
-interface IConfirmProps {
+export interface IConfirmProps {
   classes: any;
   onBack?: any;
   onSubmit?: any;
