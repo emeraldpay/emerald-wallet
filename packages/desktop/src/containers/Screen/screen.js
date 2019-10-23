@@ -5,11 +5,9 @@ import { Wei } from '@emeraldplatform/eth';
 import {
   ContactList as AddressBook, AddContact, PaperWallet, ExportPaperWallet, ImportJson, TxDetails,
   ImportMnemonic, CreateTransaction, BroadcastTx, ImportPrivateKey, ImportLedgerAccount, GenerateAccount,
-  Settings,
+  Settings, MnemonicWizard, AccountDetails,
 } from '@emeraldwallet/react-app';
 import createLogger from '../../utils/logger';
-import AccountShow from '../../components/accounts/AccountShow';
-import MnemonicWizard from '../../components/accounts/MnemonicWizard';
 import Welcome from '../../components/welcome/welcome';
 import Home from '../Home';
 import { screen } from '../../store';
@@ -38,7 +36,7 @@ const Screen = (props) => {
   } if (props.screen === 'add-from-ledger') {
     return <ImportLedgerAccount />;
   } if (props.screen === 'account') {
-    return <AccountShow account={ props.screenItem }/>;
+    return <AccountDetails account={ props.screenItem }/>;
   } if (props.screen === 'transaction') {
     return <TxDetails hash={ props.screenItem.hash } accountId={ props.screenItem.accountId }/>;
   } if (props.screen === 'create-tx') {

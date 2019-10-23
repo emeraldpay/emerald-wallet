@@ -31,7 +31,7 @@ export interface IProps {
   editAccount?: any;
   createTx?: any;
   showReceiveDialog?: any;
-  txList?: React.Component;
+  txList?: React.ReactElement;
   tokens?: React.ReactElement;
   loadTokens?: any;
 }

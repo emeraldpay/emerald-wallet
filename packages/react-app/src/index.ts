@@ -4,7 +4,7 @@ export { default as AddContact } from './address-book/AddContact';
 
 // accounts
 export { default as AccountList } from './accounts/AccountList';
-export { default as AccountDetailsView } from './accounts/AccountDetails/AccountDetailsView';
+export { default as AccountDetails } from './accounts/AccountDetails';
 export { default as TokenBalances } from './accounts/TokenBalances';
 export { default as HideAccountDialog } from './accounts/HideAccountDialog';
 
@@ -15,6 +15,7 @@ export { default as ExportPaperWallet } from './export/ExportPaperWallet';
 // create-account
 export { default as ShowPrivateKey } from './create-account/ShowPrivateKey';
 export { default as GenerateAccount } from './create-account/GenerateAccount';
+export { default as MnemonicWizard } from './create-account/MnemonicWizard';
 
 // import
 export { default as ImportJson } from './import/ImportJson';
