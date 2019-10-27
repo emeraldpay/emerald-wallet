@@ -13,19 +13,16 @@ export default connect(
     onSubmit: (data: any) => {
       return new Promise((resolve, reject) => {
         const privateKey = utils.addHexPrefix(data.privateKey.trim());
-        ipcRenderer.send('get-private-key-to-keyfile', { privateKey, password: data.password });
-        ipcRenderer.once('recieve-private-key-to-keyfile', (event: any, keyFile: any) => {
-          // import key file
-          return dispatch(addresses.actions.importWallet(data.blockchain, new Blob([keyFile]), '', '') as any)
-            .then((result: any) => {
-              if (result.error) {
-                dispatch(screen.actions.showError(new Error(result.error.toString())));
-              } else {
-                // show page with account details
-                resolve(dispatch(screen.actions.gotoScreen('account', { id: result, blockchain: data.blockchain })));
-              }
-            });
-        });
+        // import pk
+        return dispatch(addresses.actions.importPk(data.blockchain, privateKey, data.password, '', '') as any)
+          .then((result: any) => {
+            if (result.error) {
+              dispatch(screen.actions.showError(new Error(result.error.toString())));
+            } else {
+              // show page with account details
+              resolve(dispatch(screen.actions.gotoScreen('account', { id: result, blockchain: data.blockchain })));
+            }
+          });
       });
     },
     onBack: () => {

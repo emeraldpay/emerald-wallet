@@ -72,7 +72,6 @@
     "@emeraldplatform/contracts": "0.5.1",
     "@emeraldplatform/core": "0.5.8",
     "@emeraldplatform/eth": "0.5.1",
-    "@emeraldplatform/eth-account": "0.5.7",
     "@emeraldplatform/eth-node": "0.5.1",
     "@emeraldplatform/eth-rpc": "0.5.1",
     "@emeraldplatform/rpc": "0.5.1",
