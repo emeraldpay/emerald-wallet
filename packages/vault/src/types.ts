@@ -15,4 +15,6 @@ export interface IVaultProvider {
   currentVersion (): Promise<string>;
   importMnemonic (passphrase: string, name: string, description: string,
                   mnemonic: string, path: string, chain: string): Promise<string>;
+  importPk (pk: string, passphrase: string, chain: string): Promise<string>;
+  exportPk (address: string, passphrase: string, chain: string): Promise<string>;
 }

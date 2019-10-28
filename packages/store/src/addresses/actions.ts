@@ -1,6 +1,5 @@
-import { EthAddress } from '@emeraldplatform/core';
 import {
-  Blockchain, blockchainByName, BlockchainCode, blockchains, IAccount, IApi, vault
+  Blockchain, blockchainByName, BlockchainCode, blockchains, IAccount, IApi, vault, isValidEthAddress
 } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 import { catchError, dispatchRpcError } from '../screen/actions';
@@ -18,8 +17,6 @@ import {
   SetTxCountAction,
   UpdateAddressAction
 } from './types';
-
-const EthAccount = require('@emeraldplatform/eth-account').EthAccount;
 
 /**
  * Retrieves HD paths for hardware accounts
@@ -147,10 +144,7 @@ export function createAccount (
 
 export function exportPrivateKey (blockchain: BlockchainCode, passphrase: string, accountId: string): any {
   return (dispatch: any, getState: any, api: IApi) => {
-    return api.emerald.exportAccount(accountId, blockchain.toLowerCase()).then((result: any) => {
-      const wallet = EthAccount.fromV3(result, passphrase);
-      return wallet.getPrivateKeyString();
-    });
+    return api.emerald.exportPk(accountId, passphrase, blockchain.toLowerCase());
   };
 }
 
@@ -213,18 +207,18 @@ export function importJson (
     data.name = name;
     data.description = description;
     return api.emerald.importAccount(data, blockchain.toLowerCase()).then((result: string) => {
-      if ((new EthAddress(result)).isValid()) {
-        dispatch({
-          name,
-          description,
-          type: ActionTypes.ADD_ACCOUNT,
-          accountId: result,
-          blockchain: blockchain.toLowerCase()
-        });
-        loadAccountBalance(blockchain, result);
-        return result;
+      if (!isValidEthAddress(result)) {
+        throw new Error(`Invalid address: ${result}`);
       }
-      throw new Error(result);
+      dispatch({
+        name,
+        description,
+        type: ActionTypes.ADD_ACCOUNT,
+        accountId: result,
+        blockchain: blockchain.toLowerCase()
+      });
+      loadAccountBalance(blockchain, result);
+      return result;
     });
   };
 }
@@ -238,17 +232,17 @@ export function importMnemonic (
     }
     return api.emerald.importMnemonic(passphrase, name, description, mnemonic, hdPath, blockchain)
       .then((result: string) => {
-        if ((new EthAddress(result)).isValid()) {
-          dispatch({
-            type: ActionTypes.ADD_ACCOUNT,
-            name, description,
-            accountId: result,
-            blockchain
-          });
-          loadAccountBalance(blockchain, result);
-          return result;
+        if (!isValidEthAddress(result)) {
+          throw new Error(`Invalid address: ${result}`);
         }
-        throw new Error(result);
+        dispatch({
+          type: ActionTypes.ADD_ACCOUNT,
+          name, description,
+          accountId: result,
+          blockchain
+        });
+        loadAccountBalance(blockchain, result);
+        return result;
       });
   };
 }
@@ -259,6 +253,29 @@ export function importWallet (
   return (dispatch, getState) => {
     return readWalletFile(wallet).then((data) => {
       return dispatch(importJson(blockchain, data, name, description));
+    });
+  };
+}
+
+export function importPk (
+  blockchain: BlockchainCode, pk: string, password: string, name: string, description: string
+): Dispatched<AddAccountAction> {
+  return (dispatch, getState, api) => {
+    return api.emerald.importPk(pk, password, blockchain.toLowerCase()).then((address: string) => {
+      if (!isValidEthAddress(address)) {
+        throw new Error(`Invalid address: ${address}`);
+      }
+      api.emerald.updateAccount(address, name, description, blockchain.toLowerCase()).then((ok: boolean) => {
+        dispatch({
+          name,
+          description,
+          type: ActionTypes.ADD_ACCOUNT,
+          accountId: address,
+          blockchain: blockchain.toLowerCase()
+        });
+        loadAccountBalance(blockchain, address);
+        return address;
+      });
     });
   };
 }

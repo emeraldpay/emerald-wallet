@@ -20,4 +20,7 @@ export interface IVault {
   importMnemonic (passphrase: string, name: string, description: string,
                   mnemonic: string, path: string, chain: string): Promise<string>;
 
+  importPk (pk: string, password: string, chain: string): Promise<string>;
+  exportPk (address: string, password: string, chain: string): Promise<string>;
+
 }

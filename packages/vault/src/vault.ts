@@ -113,4 +113,12 @@ export class Vault implements vault.IVault {
       return Promise.reject(error);
     }
   }
+
+  public importPk (pk: string, password: string, chain: string): Promise<string> {
+    return this.provider.importPk(pk, password, chain);
+  }
+
+  public exportPk (address: string, password: string, chain: string): Promise<string> {
+    return this.provider.exportPk(address, password, chain);
+  }
 }

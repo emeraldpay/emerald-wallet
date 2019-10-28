@@ -37,6 +37,6 @@
   },
   "dependencies": {
     "@emeraldwallet/core": "^2.0.3",
-    "@emeraldpay/emerald-vault-node": "0.2.3-0.26.2"
+    "@emeraldpay/emerald-vault-node": "0.3.0-0.26.2"
   }
 }

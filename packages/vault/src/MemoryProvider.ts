@@ -15,7 +15,6 @@ limitations under the License.
 */
 import { vault } from '@emeraldwallet/core';
 import { pseudoRandomBytes, randomBytes } from 'crypto';
-import * as Wallet from 'ethereumjs-wallet';
 import { IVaultProvider } from './types';
 
 export default class InMemoryProvider implements IVaultProvider {
@@ -99,13 +98,12 @@ export default class InMemoryProvider implements IVaultProvider {
   }
 
   public newAccount (passphrase: string, name: string, description: string, chain: string): Promise<string> {
-    const newAccount = Wallet.fromPrivateKey(randomBytes(32));
-    const address = newAccount.getAddressString();
+    const address = `0x${randomBytes(20).toString('hex')}`;
     const accountData = {
       address,
       name,
       description,
-      V3: JSON.parse(newAccount.toV3String(passphrase)),
+      V3: {},
       hidden: false,
       hardware: false
     };
@@ -123,6 +121,14 @@ export default class InMemoryProvider implements IVaultProvider {
   public importMnemonic (
     passphrase: string, name: string, description: string, mnemonic: string, path: string, chain: string
   ): Promise<string> {
+    return Promise.reject(new Error('NOT IMPLEMENTED'));
+  }
+
+  public importPk (pk: string, passphrase: string, chain: string): Promise<string> {
+    return Promise.reject(new Error('NOT IMPLEMENTED'));
+  }
+
+  public exportPk (address: string, passphrase: string, chain: string): Promise<string> {
     return Promise.reject(new Error('NOT IMPLEMENTED'));
   }
 

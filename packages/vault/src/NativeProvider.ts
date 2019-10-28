@@ -85,4 +85,19 @@ export class NativeVaultProvider implements IVaultProvider {
     const success = this.vault.removeFromAddressBook(chain, address);
     return Promise.resolve(success);
   }
+
+  public importPk (pk: string, passphrase: string, chain: string): Promise<string> {
+    const data = {
+      pk,
+      password: passphrase
+    };
+    const address = this.vault.importPk(chain, data);
+    return Promise.resolve(address);
+  }
+
+  public exportPk (address: string, passphrase: string, chain: string): Promise<string> {
+    const pk = this.vault.exportPk(chain, address, passphrase);
+    return Promise.resolve(pk);
+  }
+
 }
