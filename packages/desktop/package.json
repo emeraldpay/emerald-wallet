@@ -33,7 +33,6 @@
     "test:coverage": "ELECTRON_RUN_AS_NODE=true ./node_modules/.bin/electron ./node_modules/.bin/jest --coverage && codecov",
     "lint": "eslint ./src/ ./electron/",
     "lint-fix": "npm run lint -- --fix",
-    "postinstall": "electron-rebuild && yarn rebuild:modules",
     "rebuild:modules": "electron-builder install-app-deps",
     "dist": "yarn build:all:nowatch && electron-builder --publish never",
     "dist:nobuild": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never",
@@ -65,7 +64,9 @@
       "electron-rebuild",
       "electron-rebuild/**",
       "electron-builder",
-      "electron-builder/**"
+      "electron-builder/**",
+      "@emeraldplatform/eth-account",
+      "**/@emeraldplatform/eth-account/**"
     ]
   },
   "dependencies": {
@@ -141,7 +142,7 @@
     "cross-env": "^5.1.1",
     "css-loader": "0.28.0",
     "electron": "7.0.0",
-    "electron-builder": "21.2.0",
+    "electron-builder": "22.1.0",
     "electron-rebuild": "1.8.6",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.12.1",
@@ -170,7 +171,6 @@
     "shebang-loader": "0.0.1",
     "style-loader": "0.16.1",
     "url-loader": "^1.1.2",
-    "usb": "1.6.0",
     "webpack": "4.30.0"
   },
   "build": {
