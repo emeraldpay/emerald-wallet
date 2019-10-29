@@ -13,13 +13,13 @@
   },
   "dependencies": {
     "@emeraldplatform/eth-rpc": "0.5.1",
-    "@emeraldpay/grpc-client": "0.11.1-0.2",
+    "@emeraldpay/grpc-client": "0.11.2-0.2",
     "@emeraldplatform/rpc": "0.5.1",
     "@emeraldwallet/vault": "^2.0.3",
     "@emeraldwallet/core": "^2.0.3",
     "@emeraldwallet/store": "^2.0.3",
     "google-protobuf": "3.7.1",
-    "grpc": "1.20.3",
+    "grpc": "1.24.1",
     "text-encoding": "0.7.0"
   },
   "devDependencies": {

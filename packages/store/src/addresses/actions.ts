@@ -1,5 +1,5 @@
 import {
-  Blockchain, blockchainByName, BlockchainCode, blockchains, IAccount, IApi, vault, isValidEthAddress
+  Blockchain, blockchainByName, BlockchainCode, blockchains, IAccount, IApi, isValidEthAddress, vault
 } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 import { catchError, dispatchRpcError } from '../screen/actions';
