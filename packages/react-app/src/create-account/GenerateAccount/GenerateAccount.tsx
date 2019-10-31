@@ -1,7 +1,6 @@
 import { BlockchainCode } from '@emeraldwallet/core';
 import { addresses, screen } from '@emeraldwallet/store';
 import { NewAccountProps } from '@emeraldwallet/ui';
-import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -71,18 +70,23 @@ class GenerateAccount extends React.Component<Props, IState> {
 
     // Get encrypted key file from emerald vault
     this.props.dispatch(addresses.actions.exportKeyFile(blockchain, accountId)).then((result: any) => {
+      //const privateKey = addresses.actions.extractPrivateKey(result, passphrase!);
+
       ipcRenderer.send('get-private-key', { keyfile: result, passphrase });
       ipcRenderer.once('recieve-private-key', (event: any, privateKey: string) => {
-        saveJson(result, `${blockchain}-${accountId}.json`);
 
-        this.setState({
-          loading: false,
-          page: PAGES.SHOW_PRIVATE,
-          privateKey,
-          accountId,
-          blockchain
-        });
+      saveJson(result, `${blockchain}-${accountId}.json`);
+
+      this.setState({
+        loading: false,
+        page: PAGES.SHOW_PRIVATE,
+        privateKey,
+        accountId,
+        blockchain
       });
+
+      });
+
     });
   }
 
@@ -98,7 +102,8 @@ class GenerateAccount extends React.Component<Props, IState> {
 
   public updateAccountProps = (name: string) => {
     const { dispatch } = this.props;
-    dispatch(addresses.actions.updateAccount(this.state.blockchain, this.state.accountId, name, ''))
+    const { blockchain, accountId } = this.state;
+    dispatch(addresses.actions.updateAccount(blockchain, accountId, name, ''))
       .then(() => dispatch(screen.actions.gotoScreen('home')));
   }
 

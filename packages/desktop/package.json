@@ -65,7 +65,9 @@
       "electron-rebuild",
       "electron-rebuild/**",
       "electron-builder",
-      "electron-builder/**"
+      "electron-builder/**",
+      "@emeraldplatform/eth-account",
+      "**/@emeraldplatform/eth-account/**"
     ]
   },
   "dependencies": {
@@ -97,7 +99,6 @@
     "electron-store": "^1.1.0",
     "es6-promise": "4.1.1",
     "google-protobuf": "3.7.1",
-    "grpc": "1.20.3",
     "immutable": "3.8.2",
     "isomorphic-fetch": "^2.2.1",
     "lib": "^2.2.5",
@@ -141,9 +142,9 @@
     "copy-webpack-plugin": "^4.5.3",
     "cross-env": "^5.1.1",
     "css-loader": "0.28.0",
-    "electron": "4.1.0",
-    "electron-builder": "20.38.5",
-    "electron-rebuild": "^1.8.4",
+    "electron": "7.0.0",
+    "electron-builder": "22.1.0",
+    "electron-rebuild": "1.8.6",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.12.1",
     "eslint": "^6.4.0",
@@ -164,17 +165,19 @@
     "jest-fetch-mock": "1.0.6",
     "mini-css-extract-plugin": "^0.5.0",
     "minimist": "^1.2.0",
-    "node-abi": "^2.5.1",
+    "node-abi": "2.12.0",
     "react-test-renderer": "^15.6.1",
     "recursive-readdir-sync": "^1.0.6",
     "rimraf": "^2.6.3",
     "shebang-loader": "0.0.1",
     "style-loader": "0.16.1",
     "url-loader": "^1.1.2",
-    "usb": "1.6.0",
     "webpack": "4.30.0"
   },
   "build": {
+    "directories": {
+      "buildResources": "resources"
+    },
     "appId": "io.emeraldwallet.desktop",
     "artifactName": "${productName}-${os}-${arch}-${env.APP_VERSION_GIT_TAG}.${ext}",
     "compression": "normal",
@@ -194,7 +197,7 @@
       ]
     },
     "win": {
-      "icon": "build/icon.ico"
+      "icon": "resources/icon.ico"
     },
     "nsis": {
       "oneClick": false
