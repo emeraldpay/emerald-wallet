@@ -21,18 +21,6 @@ export function setWatch (value: boolean): Watch {
   };
 }
 
-function connection (): Promise<any> {
-  console.debug('getting a ledger connection');
-  const api: LedgerApi = remote.getGlobal('ledger');
-  return api.connect();
-}
-
-export function closeConnection (): Promise<any> {
-  console.debug('closing connection to ledger');
-  const api: LedgerApi = remote.getGlobal('ledger');
-  return api.disconnect();
-}
-
 export function setConnected (value: boolean): Dispatched<Connected | Dispatched<any>> {
   return (dispatch, getState) => {
     if (getState().ledger.get('connected') !== value) {
@@ -84,23 +72,13 @@ export function selectAddr (addr?: string): AddressSelected {
 
 export function checkConnected (): Dispatched<Connected> {
   return (dispatch, getState) => {
-    return connection().then((ledgerApi) => {
-      return ledgerApi.getStatus()
-        .then(() => ledgerApi.getAddress("m/44'/60'/160720'/0'"))
-        .then(() => dispatch(setConnected(true)))
-        .catch((err: Error) => {
-          console.debug('Cannot get ledger status. Ensure the ledger has the etc app open');
-          console.debug(err);
-          dispatch(setConnected(false));
-          onceConnectionState(getState, false)
-            .then(() => ledgerApi.disconnect());
-        });
-    })
-      .catch((e) => {
-        console.debug('error connecting. Device is locked or not plugged in.');
-        console.debug(e);
-        return dispatch(setConnected(false));
-      });
+    const ledgerApi: LedgerApi = remote.getGlobal('ledger');
+    if (ledgerApi.isConnected()) {
+      dispatch(setConnected(true));
+    } else {
+      console.debug('error connecting. Device is locked or not plugged in.');
+      return dispatch(setConnected(false));
+    }
   };
 }
 
@@ -153,13 +131,13 @@ function onceConnectionState (getState: GetState, value: boolean): Promise<any> 
 
 export function getAddress (hdpath: string): Dispatched<Address> {
   return (dispatch) => {
-    return connection()
-      .then((ledgerApi) => ledgerApi.getAddress(hdpath))
+    const ledgerApi: LedgerApi = remote.getGlobal('ledger');
+    ledgerApi.getAddress(hdpath)
       .then((addr) => {
         dispatch({
           type: ActionTypes.ADDR,
           hdpath,
-          addr: addr.address
+          addr
         });
         // TODO: consider batch request for all addresses
         // return dispatch(loadInfo(chain, hdpath, addr.address));

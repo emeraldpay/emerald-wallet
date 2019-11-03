@@ -14,8 +14,7 @@
     "test:coverage": "jest --passWithNoTests --coverage && codecov"
   },
   "dependencies": {
-    "@ledgerhq/hw-app-eth": "4.70.0",
-    "@ledgerhq/hw-transport-node-hid": "4.70.0"
+    "@emeraldpay/emerald-vault-node": "0.4.0-0.26.3"
   },
   "devDependencies": {
     "@types/jest": "^24.0.9",
