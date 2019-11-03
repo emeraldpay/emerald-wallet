@@ -15,8 +15,8 @@
   },
   "peerDependencies": {},
   "dependencies": {
-    "@emeraldplatform/core": "0.5.1",
-    "@emeraldplatform/eth": "0.5.1",
+    "@emeraldplatform/core": "^0.5.11",
+    "@emeraldplatform/eth": "^0.5.10",
     "@emeraldplatform/ui": "0.5.12",
     "@emeraldplatform/ui-icons": "^0.5.2",
     "@emeraldwallet/core": "^2.0.3",
