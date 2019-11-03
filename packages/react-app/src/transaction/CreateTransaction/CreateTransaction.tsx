@@ -337,7 +337,6 @@ function signEtherTx (
   return traceValidate(chain, plainTx, dispatch, transaction.actions.estimateGas)
     .then(() => dispatch(ledger.actions.setWatch(false)))
     .then(() => dispatch(ledger.actions.setConnected(false)))
-    .then(() => ledger.actions.closeConnection())
     .then(() => (useLedger ? dispatch(screen.actions.showDialog('sign-transaction', request.transaction)) : null))
     .then(() => {
       return dispatch(

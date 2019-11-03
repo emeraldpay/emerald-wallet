@@ -15,8 +15,8 @@
   },
   "peerDependencies": {},
   "dependencies": {
-    "@emeraldplatform/core": "0.5.1",
-    "@emeraldplatform/eth": "0.5.1",
+    "@emeraldplatform/core": "^0.5.11",
+    "@emeraldplatform/eth": "^0.5.10",
     "@emeraldplatform/ui": "0.5.12",
     "@emeraldplatform/ui-icons": "^0.5.2",
     "@emeraldwallet/core": "^2.0.3",
@@ -27,7 +27,7 @@
     "@material-ui/styles": "^4.2.0",
     "bignumber.js": "8.0.2",
     "qrcode.react": "^0.9.3",
-    "react": "16.8.6",
+    "react": "^16.11.0",
     "react-autosuggest": "^9.4.3"
   },
   "devDependencies": {
