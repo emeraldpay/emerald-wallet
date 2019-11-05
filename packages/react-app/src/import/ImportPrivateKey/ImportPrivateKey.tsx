@@ -1,7 +1,6 @@
 import { utils } from '@emeraldwallet/core';
 import { addresses, screen, settings } from '@emeraldwallet/store';
 import { ImportPrivateKey } from '@emeraldwallet/ui';
-import { ipcRenderer } from 'electron';
 import * as React from 'react';
 import { connect } from 'react-redux';
 

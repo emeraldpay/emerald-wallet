@@ -1,6 +1,5 @@
 import { screen } from '@emeraldwallet/store';
 import { Landing } from '@emeraldwallet/ui';
-import { shell } from 'electron';
 import { connect } from 'react-redux';
 
 export default connect(
@@ -8,7 +7,7 @@ export default connect(
   (dispatch, ownProps) => ({
     onAboutClick () {
       const url = 'https://emeraldwallet.io/coins';
-      shell.openExternal(url);
+      dispatch(screen.actions.openLink(url));
     },
     onGenerate () {
       dispatch(screen.actions.gotoScreen('landing-generate'));
