@@ -1,7 +1,7 @@
 import { IApi } from '@emeraldwallet/core';
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
-import ImportAccount from '../../src/components/ledger/ImportAccount';
+import ImportAccount from '../../src/ledger/ImportAccount/ImportAccount';
 
 storiesOf('LedgerImportAccount', module)
   .add('default', () => (

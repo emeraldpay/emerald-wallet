@@ -1,4 +1,4 @@
-import { IApi } from '@emeraldwallet/core';
+import {BlockchainCode, IApi} from '@emeraldwallet/core';
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
@@ -11,7 +11,7 @@ interface IAddrListProps {
   setSelectedAddr?: any;
   classes?: any;
   accounts?: any;
-  blockchain?: string;
+  blockchain: BlockchainCode;
   api: IApi;
 }
 
@@ -19,7 +19,7 @@ function isAlreadyAdded (addr: LedgerAddress, accounts: any) {
   let alreadyAdded = false;
   try {
     const addrId = (addr.address || '---R').toLowerCase();
-    alreadyAdded = accounts.some((a) => a.get('id', '---L').toLowerCase() === addrId);
+    alreadyAdded = accounts.some((a: any) => a.get('id', '---L').toLowerCase() === addrId);
   } catch (e) {
   }
   return alreadyAdded;
@@ -29,7 +29,7 @@ function isAlreadyAdded (addr: LedgerAddress, accounts: any) {
  * AddrList allows select only one address
  */
 class AddrList extends React.Component<IAddrListProps> {
-  public handleAddrSelection = (value) => {
+  public handleAddrSelection = (value: any) => {
     if (this.props.setSelectedAddr) {
       this.props.setSelectedAddr(value);
     }
