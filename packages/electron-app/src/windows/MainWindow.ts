@@ -1,7 +1,7 @@
 import { BrowserWindow, Menu, shell } from 'electron';
+import darwinMenu from '../menus/darwin';
+import winLinuxMenu from '../menus/win-linux';
 import { createAboutPage } from './AboutWindow';
-import darwinMenu from './menus/darwin';
-import winLinuxMenu from './menus/win-linux';
 
 const url = require('url');
 const devtron = require('devtron');
@@ -19,7 +19,7 @@ export function getMainWindow (options: any) {
   return mainWindow;
 }
 
-const createWindow = function (options: any): BrowserWindow {
+const createWindow = (options: any): BrowserWindow => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1200,

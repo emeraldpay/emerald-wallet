@@ -16,7 +16,12 @@ export const styles = {
   label: {
     margin: '10px',
     color: '#747474'
-  }
+  },
+  dropZoneInner: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
+  }  as CSSProperties
 };
 
 interface IFileDropFieldProps {
@@ -50,7 +55,7 @@ class FileDropField extends React.Component<IFileDropFieldProps, IFileDropFieldS
     const { file } = this.state;
     return (
         <Dropzone name={name} className={classes.container} multiple={false} onDrop={this.onDrop}>
-          <div>
+          <div className={classes.dropZoneInner}>
             {file && (<div className={classes.label}>{file.name}</div>)}
             {!file && (<div className={classes.label}>Drag & drop Account Key File here to upload</div>)}
 

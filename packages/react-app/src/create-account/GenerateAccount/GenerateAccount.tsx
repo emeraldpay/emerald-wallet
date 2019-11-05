@@ -69,17 +69,20 @@ class GenerateAccount extends React.Component<Props, IState> {
     });
 
     // Get encrypted key file from emerald vault
-    this.props.dispatch(addresses.actions.exportKeyFile(blockchain, accountId)).then((result: any) => {
-      addresses.actions.exportPrivateKey(blockchain, passphrase || '', accountId).then((privateKey: string) => {
-        saveJson(result, `${blockchain}-${accountId}.json`);
+    this.props.dispatch(addresses.actions.exportKeyFile(blockchain, accountId)).then((jsonKeyFile: any) => {
 
-      this.setState({
-        loading: false,
-        page: PAGES.SHOW_PRIVATE,
-        privateKey,
-        accountId,
-        blockchain
-      });
+      this.props.dispatch(addresses.actions.exportPrivateKey(blockchain, passphrase || '', accountId)).then((privateKey: string) => {
+        // Send file to user
+        saveJson(jsonKeyFile, `${blockchain}-${accountId}.json`);
+
+        // Show private key
+        this.setState({
+          loading: false,
+          page: PAGES.SHOW_PRIVATE,
+          privateKey,
+          accountId,
+          blockchain
+        });
 
       });
 
