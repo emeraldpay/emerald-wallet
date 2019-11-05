@@ -15,9 +15,9 @@
   "devDependencies": {
     "@types/jest": "^24.0.9",
     "@types/lodash": "^4.14.136",
-    "@types/node": "^11.10.4",
+    "@types/node": "^12.12.0",
     "@types/uuid": "^3.4.4",
-    "electron": "7.0.0",
+    "electron": "^7.0.1",
     "jest": "^24.1.0",
     "rimraf": "^2.6.3",
     "ts-jest": "^24.0.0",
@@ -52,7 +52,7 @@
     "bignumber.js": "8.0.2",
     "immutable": "3.8.2",
     "lodash": "^4.17.14",
-    "react": "16.8.6",
+    "react": "^16.11.0",
     "redux-saga": "^1.0.2",
     "redux-thunk": "^2.3.0",
     "uuid": "^3.3.2"
