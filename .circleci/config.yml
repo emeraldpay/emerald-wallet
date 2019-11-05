@@ -15,8 +15,6 @@ jobs:
               curl -sL https://raw.githubusercontent.com/ETCDEVTeam/janus/master/get.sh | bash
               npm install -g lerna
               brew install gitversion
-              curl https://sh.rustup.rs -sSf | sh -s -- -y --default-toolchain stable
-              export RUSTFLAGS="-C target-feature=+crt-static"
 
       - run:
           name: Lerna bootstrap
