@@ -26,7 +26,10 @@ const createWindow = function (options: any): BrowserWindow {
     height: 650,
     minWidth: 1200,
     minHeight: 650,
-    icon: options.appIconPath
+    icon: options.appIconPath,
+    webPreferences: {
+      nodeIntegration: true
+    }
   });
 
   // and load the index.html of the app.
