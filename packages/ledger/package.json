@@ -1,7 +1,7 @@
 {
   "name": "@emeraldwallet/ledger",
   "private": true,
-  "version": "2.0.3",
+  "version": "2.1.0",
   "description": "Ledger",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -26,7 +26,10 @@
     "typescript": "3.4.2"
   },
   "workspaces": {
-    "nohoist": ["**/node-abi", "**/node_abi/**"]
+    "nohoist": [
+      "**/node-abi",
+      "**/node_abi/**"
+    ]
   },
   "jest": {
     "preset": "ts-jest",
