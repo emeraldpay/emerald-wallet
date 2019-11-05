@@ -20,16 +20,6 @@ install:
   - ps: $env:Path += ";$env:USERPROFILE\.windows-build-tools\python27"
   - set PATH=%APPDATA%\npm;%PATH%
   - npm config set python %USERPROFILE%\.windows-build-tools\python27\python.exe
-  # Install Rust
-  - appveyor DownloadFile https://win.rustup.rs/ -FileName rustup-init.exe
-  - rustup-init -y --default-toolchain stable
-  - cmd: set PATH=%PATH%;%USERPROFILE%\.cargo\bin
-  - rustup update
-  - rustc -vV
-  - cargo -vV
-  - rustup component add rust-src
-  - cmd: set RUST_BACKTRACE=1
-  - cmd: set RUSTFLAGS=-C target-feature=+crt-static
   # Download dependencies
   - lerna bootstrap
 
@@ -39,9 +29,9 @@ test_script:
   # CSC...=false env var disables app signing for osx, can't hurt to have it here too.
   # But probably useless, since the dist script build for _current_ operating system.
   - yarn build:dist
-#artifacts:
-#  - path: './dist/*.exe'
-#    name: emerald-wallet
+artifacts:
+  - path: './dist/*.exe'
+    name: emerald-wallet
 deploy_script:
   - openssl version
   - openssl aes-256-cbc -d -in gcloud-appveyor.json.enc -k %GCP_PASSWD% -out gcloud-appveyor.json -md sha256

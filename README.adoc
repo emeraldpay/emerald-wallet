@@ -73,17 +73,6 @@ npm install -g npm windows-build-tools@4.0.0
 lerna bootstrap
 ----
 
-
-==== Emerald Console
-
-If you haven't got `emerald` already installed on your system, you can execute `./dependencies.sh`
-to automatically `rustup` and use `cargo` to install `emerald-cli` and move it to the
-project's base dir. Note: this command is idempotent __for rust and cargo__ (it won't
-try to install cargo if you've already got it), but it will
-use cargo's `-f` flag to force install `emerald-cli` and copy that version to the
-project directory.
-
-
 === Run for development
 
 .Build sources
