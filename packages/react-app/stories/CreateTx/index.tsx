@@ -1,5 +1,5 @@
 import { Wei } from '@emeraldplatform/eth';
-import { workflow } from '@emeraldwallet/core';
+import { Units, workflow } from '@emeraldwallet/core';
 import { storiesOf } from '@storybook/react';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
@@ -20,11 +20,12 @@ const txDetails = {
 storiesOf('CreateTx', module)
   .add('default', () => (
     <CreateTx
+      tokenSymbols={['ETC']}
       token={'ETC'}
       tx={new workflow.CreateEthereumTx(txDetails)}
       txFeeToken='ETH'
     />
     ))
-  .add('AmountField', () => (<AmountField amount={new Wei('10000000')} />))
+  .add('AmountField', () => (<AmountField amount={new Units('10000000', 18)} tokenDecimals={18}/>))
   .add('FromField', () => (<FromField accounts={['0x1', '02']}/>))
   .add('ToField', () => (<ToField />));

@@ -35,5 +35,4 @@ export { default as ConnectionStatus } from './components/layout/ConnectionStatu
 
 export { default as NewAccountProps } from './components/accounts/GenerateAccount/AccountPropsDialog';
 
-export { default as LedgerImportAccount } from './components/ledger/ImportAccount';
 export { default as WaitLedgerDialog } from './components/ledger/WaitDialog';

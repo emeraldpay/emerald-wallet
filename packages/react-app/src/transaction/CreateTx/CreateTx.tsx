@@ -21,6 +21,8 @@ const { ValidationResult } = workflow;
 export interface IProps {
   tx: workflow.CreateEthereumTx | workflow.CreateERC20Tx;
   token: string;
+
+  /** Available tokens / currencies for transfer */
   tokenSymbols: string[];
   addressBookAddresses?: string[];
   currency?: string;

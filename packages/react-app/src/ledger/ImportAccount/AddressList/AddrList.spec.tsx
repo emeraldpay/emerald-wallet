@@ -1,23 +1,22 @@
-import { IApi } from '@emeraldwallet/core';
-import { BlockchainCode } from '@emeraldwallet/core';
+import { BlockchainCode, IApi } from '@emeraldwallet/core';
 import { mount, shallow } from 'enzyme';
 import * as React from 'react';
 import AddrList from './AddrList';
 
 const api: IApi = {
-  emerald: undefined,
+  emerald: {} as any,
   chain (name: BlockchainCode | string): any {
   }
 };
 
 describe('AddrList', () => {
   it('renders without crashing', () => {
-    const component = shallow(<AddrList api={api} />);
+    const component = shallow(<AddrList blockchain={BlockchainCode.ETH} api={api} />);
     expect(component).toBeDefined();
   });
 
   it('mounts without crash', () => {
-    const component = mount(<AddrList api={api} />);
+    const component = mount(<AddrList blockchain={BlockchainCode.ETH} api={api} />);
     expect(component).toBeDefined();
   });
 });

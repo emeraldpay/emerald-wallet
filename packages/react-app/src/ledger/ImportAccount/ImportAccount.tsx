@@ -1,69 +1,126 @@
-import { BlockchainCode } from '@emeraldwallet/core';
+import { ButtonGroup, Page } from '@emeraldplatform/ui';
+import { AddCircle as AddIcon, Back } from '@emeraldplatform/ui-icons';
+import { Blockchain, BlockchainCode, IApi } from '@emeraldwallet/core';
 import {
-  addresses, ledger, screen, settings
-} from '@emeraldwallet/store';
-import { LedgerImportAccount, WaitLedgerDialog } from '@emeraldwallet/ui';
+  Button, ChainSelector, FormRow, HdPath, Pager
+} from '@emeraldwallet/ui';
 import * as React from 'react';
-import { connect } from 'react-redux';
 
-const Container = (props: any) => {
-  const { connected, ...passProps } = props;
-  if (!connected) {
-    return (<WaitLedgerDialog onClose={props.onCancel} />);
+import AddrList from './AddressList';
+import { LedgerAddress } from './AddressList/types';
+
+const styles = {
+  row: {
+    marginLeft: '14.75px',
+    marginRight: '14.75px'
   }
-  return (
-    <LedgerImportAccount {...passProps} />
-  );
 };
 
-const pageSize = 5;
+interface IImportAccProps {
+  accounts?: any;
+  addresses?: any;
+  selected: boolean;
+  selectedAddress?: any;
+  hdbase: string;
+  pagerOffset?: number;
+  blockchains: Blockchain[];
+  api: IApi;
+  onInit? (): void;
+  onBack? (): void;
+  onCancel? (): void;
+  onAddSelected? (blockchain: string): void;
+  changeBaseHD? (): void;
+  setSelectedAddr? (address: string): void;
+  setPagerOffset? (offset: number): void;
+}
 
-export default connect(
-  (state, ownProps) => ({
-    pagerOffset: ledger.selectors.getOffset(state),
-    hdbase: ledger.selectors.getHdBase(state),
-    connected: ledger.selectors.isConnected(state),
-    selected: ledger.selectors.hasSelected(state),
-    selectedAddress: ledger.selectors.getSelected(state),
-    addresses: ledger.selectors.getAddresses(state),
-    accounts: addresses.selectors.all(state),
-    blockchains: settings.selectors.currentChains(state),
-    // TODO: Fix this dependency
-    api: (global as any).api
-  }),
-  (dispatch, ownProps: any) => ({
-    setPagerOffset: (offset: number) => {
-      dispatch(ledger.actions.getAddresses(offset, pageSize) as any);
-    },
-    setSelectedAddr: (addr: string) => {
-      dispatch(ledger.actions.selectAddr(addr));
-    },
-    changeBaseHD: (hdpath: string) => {
-      dispatch(ledger.actions.setBaseHD(hdpath));
-      dispatch(ledger.actions.getAddresses() as any);
-    },
-    onInit: () => dispatch(ledger.actions.getAddresses() as any),
-    onBack: () => {
-      if (ownProps.onBackScreen) {
-        return dispatch(screen.actions.gotoScreen(ownProps.onBackScreen));
-      }
-      dispatch(screen.actions.gotoScreen('home'));
-    },
-    onAddSelected: (blockchain: BlockchainCode) => {
-      dispatch(ledger.actions.importSelected(blockchain) as any)
-        .then((address: string) => {
-          const acc = { id: address, blockchain };
-          return dispatch(addresses.actions.loadAccountsList(() => {
-            // go to account details only when accounts updated
-            dispatch(screen.actions.gotoScreen('account', acc));
-          }) as any);
-        });
-    },
-    onCancel: () => {
-      if (ownProps.onBackScreen) {
-        return dispatch(screen.actions.gotoScreen(ownProps.onBackScreen));
-      }
-      dispatch(screen.actions.gotoScreen('home'));
+interface IState {
+  blockchain: BlockchainCode;
+}
+
+class ImportAccount extends React.Component<IImportAccProps, IState> {
+
+  constructor (props: Readonly<IImportAccProps>) {
+    super(props);
+    const blockchain = props.blockchains.length > 0 ? props.blockchains[0].params.code : BlockchainCode.ETH;
+    this.state = { blockchain };
+  }
+
+  public componentDidMount () {
+    if (this.props.onInit) {
+      this.props.onInit();
     }
-  })
-)(Container);
+  }
+
+  public chainSelected (blockchain: BlockchainCode) {
+    this.setState({
+      blockchain
+    });
+  }
+
+  public handleAddSelected = () => {
+    if (this.props.onAddSelected) {
+      this.props.onAddSelected(this.state.blockchain);
+    }
+  }
+
+  public render () {
+    const {
+      hdbase, changeBaseHD, selected, selectedAddress, setSelectedAddr, accounts, addresses
+    } = this.props;
+    const { onCancel, onBack, blockchains, api } = this.props;
+    const { blockchain } = this.state;
+
+    // mark each address whether it selected or not
+    const newAddresses = addresses.map((a: LedgerAddress) => ({ ...a, selected: a.address === selectedAddress }));
+
+    return (
+      <Page title='Import Ledger hardware account' leftIcon={<Back onClick={onBack}/>}>
+        <FormRow
+          rightColumn={(
+            <ChainSelector chains={blockchains} value={blockchain} onChange={this.chainSelected.bind(this)}/>
+          )}
+        />
+        <FormRow
+          leftColumn={
+            <div style={{ fontSize: '16px', textAlign: 'right' }}>HD derivation path</div>
+          }
+          rightColumn={
+            <React.Fragment>
+              <HdPath value={hdbase} onChange={changeBaseHD}/>
+              <div style={{ marginLeft: '5px' }}>
+                <Pager offset={this.props.pagerOffset} setOffset={this.props.setPagerOffset}/>
+              </div>
+            </React.Fragment>
+          }
+        />
+        <div style={styles.row}>
+          <AddrList
+            blockchain={blockchain}
+            setSelectedAddr={setSelectedAddr}
+            accounts={accounts}
+            addresses={newAddresses}
+            api={api}
+          />
+        </div>
+        <div style={styles.row}>
+          <ButtonGroup>
+            <Button
+              label='Add Selected'
+              disabled={!selected}
+              primary={true}
+              onClick={this.handleAddSelected}
+              icon={<AddIcon/>}
+            />
+            <Button
+              label='Cancel'
+              onClick={onCancel}
+            />
+          </ButtonGroup>
+        </div>
+      </Page>
+    );
+  }
+}
+
+export default ImportAccount;

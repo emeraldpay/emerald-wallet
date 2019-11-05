@@ -1,13 +1,11 @@
 import { Wei } from '@emeraldplatform/eth';
 import { Address as AccountAddress } from '@emeraldplatform/ui';
-import { blockchainByName, IApi } from '@emeraldwallet/core';
-import Radio from '@material-ui/core/Radio';
-import TableCell from '@material-ui/core/TableCell';
-import TableRow from '@material-ui/core/TableRow';
+import { blockchainByName, BlockchainCode, IApi } from '@emeraldwallet/core';
+import { Balance } from '@emeraldwallet/ui';
+import { Radio, TableCell, TableRow } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
-import Balance from '../../../accounts/Balance/Balance';
 import { styles as tableStyles } from './styles';
 import { LedgerAddress, Selectable } from './types';
 
@@ -24,22 +22,22 @@ const style = {
   }
 };
 
-interface Props {
-  addr?: LedgerAddress & Selectable;
+interface IProps {
+  addr: LedgerAddress & Selectable;
   classes?: any;
   onSelected?: any;
-  alreadyAdded?: any;
-  blockchain?: string;
+  alreadyAdded?: boolean;
+  blockchain: BlockchainCode;
   api: IApi;
 }
 
-interface State {
+interface IState {
   balance: Wei;
 }
 
-class Addr extends React.Component<Props, State> {
+class Addr extends React.Component<IProps, IState> {
 
-  constructor (props: Readonly<Props>) {
+  constructor (props: Readonly<IProps>) {
     super(props);
     this.state = { balance: Wei.ZERO };
   }
@@ -54,7 +52,7 @@ class Addr extends React.Component<Props, State> {
     this.loadBalance();
   }
 
-  public componentDidUpdate (prevProps: Readonly<Props>, prevState: Readonly<State>, snapshot?: any): void {
+  public componentDidUpdate (prevProps: Readonly<IProps>, prevState: Readonly<IState>, snapshot?: any): void {
     this.loadBalance();
   }
 
@@ -95,7 +93,14 @@ class Addr extends React.Component<Props, State> {
 
     let balanceRender = null;
     if (balance) {
-      balanceRender = <Balance symbol={blockchainByName(blockchain).params.coinTicker} balance={balance} showFiat={false} decimals={3} />;
+      balanceRender = (
+        <Balance
+          symbol={blockchainByName(blockchain).params.coinTicker}
+          balance={balance}
+          showFiat={false}
+          decimals={3}
+        />
+      );
     }
 
     return (
@@ -103,13 +108,14 @@ class Addr extends React.Component<Props, State> {
         <TableCell className={classes.wideStyle}>
           <div style={style.addrContainer}>
             <div>
-              {addr.address
-              && <Radio
-                checked={addr.selected}
-                disabled={!selectable}
-                value={addr.address}
-                onChange={this.handleSelected}
-              />}
+              {addr.address && (
+                <Radio
+                  checked={addr.selected}
+                  disabled={!selectable}
+                  value={addr.address}
+                  onChange={this.handleSelected}
+                />
+                )}
             </div>
             <div>
               {addr.address && <AccountAddress id={addr.address} showCheck={false}/>}
