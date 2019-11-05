@@ -77,7 +77,7 @@ lerna bootstrap
 
 .Build sources
 ----
-$ leran run build
+$ lerna run build
 ----
 
 .Start Electron application
@@ -85,7 +85,7 @@ $ leran run build
 $ lerna run start:electron
 ----
 
-=== Troubleshouting
+=== Troubleshooting
 
 ==== Emerald Vault module error
 

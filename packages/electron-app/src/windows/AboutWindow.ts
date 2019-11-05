@@ -10,7 +10,10 @@ export const createAboutPage = (options: any) => {
     resizable: false,
     minimizable: false,
     maximizable: false,
-    show: false
+    show: false,
+    webPreferences: {
+      nodeIntegration: true
+    }
   });
   browserWindow.setMenu(null);
   browserWindow.setMenuBarVisibility(false);
