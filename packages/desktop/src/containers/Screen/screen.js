@@ -10,7 +10,7 @@ import {
 import createLogger from '../../utils/logger';
 import Welcome from '../../components/welcome/welcome';
 import Home from '../Home';
-import { screen } from '../../store';
+import { screen } from '@emeraldwallet/store';
 
 const log = createLogger('screen');
 

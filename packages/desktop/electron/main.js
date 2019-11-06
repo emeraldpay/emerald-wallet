@@ -6,7 +6,7 @@ const {
   EmeraldApiAccessDev,
   EmeraldApiAccessProd,
 } = require('@emeraldwallet/services');
-const { createServices, getMainWindow, protocol } = require('@emeraldwallet/electron-app');
+const { createServices, getMainWindow, protocol, assertSingletonWindow } = require('@emeraldwallet/electron-app');
 const { LocalConnector } = require('@emeraldwallet/vault');
 const { app, ipcMain, session } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path'); // eslint-disable-line
@@ -16,7 +16,6 @@ const { LedgerApi } = require('@emeraldwallet/ledger');
 const ipc = require('./ipc');
 const log = require('./logger');
 const { startProtocolHandler } = protocol;
-const assertSingletonWindow = require('./singletonWindow');
 const { Prices } = require('./prices');
 const {
   DevMode, LocalMode, ProdMode, sendMode,
@@ -99,14 +98,14 @@ app.on('ready', () => {
   });
 
   log.info('... setup services 2');
-  const services2 = createServices(ipcMain, browserWindow.webContents, apiAccess, apiMode.chains);
+  const services = createServices(ipcMain, browserWindow.webContents, apiAccess, apiMode.chains);
 
   app.on('quit', () => {
-    services2.stop();
+    services.stop();
   });
 
   log.info('... start services');
-  services2.start();
+  services.start();
   ipc({ settings });
   log.info('... services started');
 

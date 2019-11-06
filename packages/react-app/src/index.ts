@@ -35,6 +35,9 @@ export { default as NotificationBar } from './layout/NotificationBar';
 export { default as Header } from './layout/Header';
 export { default as Dashboard } from './layout/Dashboard';
 
+// screen
+export { default as Dialog } from './screen/Dialog';
+
 // onboarding
 export { default as Landing } from './onboarding/Landing';
 
