@@ -1,9 +1,9 @@
+import { screen } from '@emeraldwallet/store';
 import { ReceiveDialog } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import HideAccountDialog from '../../accounts/HideAccountDialog';
 import WaitForSignDialog from '../../transaction/WaitForSignDialog';
-import { screen } from '@emeraldwallet/store';
 
 export enum EmeraldDialogs {
   SIGN_TX = 'sign-transaction',

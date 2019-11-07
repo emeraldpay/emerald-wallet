@@ -85,14 +85,14 @@ class ImportAccount extends React.Component<IImportAccProps, IState> {
           leftColumn={
             <div style={{ fontSize: '16px', textAlign: 'right' }}>HD derivation path</div>
           }
-          rightColumn={
+          rightColumn={(
             <React.Fragment>
               <HdPath value={hdbase} onChange={changeBaseHD}/>
               <div style={{ marginLeft: '5px' }}>
                 <Pager offset={this.props.pagerOffset} setOffset={this.props.setPagerOffset}/>
               </div>
             </React.Fragment>
-          }
+          )}
         />
         <div style={styles.row}>
           <AddrList

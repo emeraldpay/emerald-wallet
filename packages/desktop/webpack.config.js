@@ -60,7 +60,7 @@ const config = {
           fallback: 'style-loader',
           use: ['css-loader?modules'],
         }),
-        include: [/flexboxgrid/, /typeface-rubik/, /typeface-roboto-mono/],
+        include: [/typeface-rubik/, /typeface-roboto-mono/],
       },
       {
         test: /\.(jpg|png|gif)$/,

@@ -77,12 +77,13 @@ const style = {
   }
 };
 
-interface Props {
+interface IProps {
+  onClickBuyLedger?: any;
   onClose?: any;
   classes?: any;
 }
 
-export const WaitConnectionDialog = ({ onClose, classes }: Props) => {
+export const WaitConnectionDialog = ({ onClose, classes, onClickBuyLedger }: IProps) => {
   return (
     <Dialog open={true}>
       <div className={classes.header}>
@@ -96,7 +97,7 @@ export const WaitConnectionDialog = ({ onClose, classes }: Props) => {
       </div>
       <div className={classes.content}>
         <div className={classes.buyLedger}>
-          Ledger Nano S. <a className={classes.links} href='#'>Where to buy?</a>
+          Ledger Nano S. <a className={classes.links} href='#' onClick={onClickBuyLedger}>Where to buy?</a>
         </div>
         <div className={classes.title}>
           Waiting for Ledger Connection...

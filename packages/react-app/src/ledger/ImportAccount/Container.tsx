@@ -2,15 +2,15 @@ import { BlockchainCode } from '@emeraldwallet/core';
 import {
   addresses, ledger, screen, settings
 } from '@emeraldwallet/store';
-import { WaitLedgerDialog } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import WaitDialog from '../WaitDialog';
 import LedgerImportAccount from './ImportAccount';
 
 const Container = (props: any) => {
   const { connected, ...passProps } = props;
   if (!connected) {
-    return (<WaitLedgerDialog onClose={props.onCancel} />);
+    return (<WaitDialog onClose={props.onCancel} onClickBuyLedger={props.onClickBuyLedger} />);
   }
   return (
     <LedgerImportAccount {...passProps} />
@@ -59,6 +59,9 @@ export default connect(
             dispatch(screen.actions.gotoScreen('account', acc));
           }) as any);
         });
+    },
+    onClickBuyLedger: () => {
+      dispatch(screen.actions.openLink('https://emeraldwallet.io/ledger-hardware-wallet'));
     },
     onCancel: () => {
       if (ownProps.onBackScreen) {
