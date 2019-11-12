@@ -1,5 +1,5 @@
 import { CircularProgress } from '@material-ui/core';
-import { CheckCircleIcon, ErrorIcon } from '@material-ui/icons';
+import { CheckCircle, Error } from '@material-ui/icons';
 import { CSSProperties, withStyles } from '@material-ui/styles';
 import * as React from 'react';
 
@@ -44,14 +44,14 @@ export const TxStatus = (props: IProps) => {
   if (status === 'success') {
     return (
       <div className={classes.success}>
-        <CheckCircleIcon />&nbsp; Success
+        <CheckCircle />&nbsp; Success
       </div>
     );
   }
   if (status === 'discarded') {
     return (
       <div className={classes.discarded}>
-        <ErrorIcon />&nbsp; Discarded
+        <Error />&nbsp; Discarded
       </div>
     );
   }
