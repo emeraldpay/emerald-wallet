@@ -11,7 +11,8 @@ import TxStatus from './TxStatus';
 
 export const styles = {
   value: {
-    marginBottom: '5px'
+    marginBottom: '5px',
+    marginRight: '5px'
   },
   txData: {
     overflowX: 'auto',
@@ -58,49 +59,50 @@ export interface ITxDetailsProps {
   cancel?: any;
 }
 
-export class TxDetails extends React.Component<ITxDetailsProps> {
+export function TxDetails (props: ITxDetailsProps) {
 
-  public handleBack = () => {
-    if (this.props.goBack) {
-      this.props.goBack(this.props.account);
+  const {
+    transaction, classes, tokenSymbol, fiatCurrency, fiatAmount, goBack, fromAccount, toAccount
+  } = props;
+
+  function handleBack () {
+    if (goBack) {
+      goBack(props.account);
     }
   }
 
-  public handleFromClick = () => {
-    if (this.props.openAccount) {
-      this.props.openAccount(this.props.fromAccount);
+  function handleFromClick () {
+    if (props.openAccount) {
+      props.openAccount(props.fromAccount);
     }
   }
 
-  public handleToClick = () => {
-    if (this.props.openAccount) {
-      this.props.openAccount(this.props.toAccount);
+  function handleToClick () {
+    if (props.openAccount) {
+      props.openAccount(props.toAccount);
+    }
+  };
+
+  function handleRepeatClick () {
+    if (props.repeatTx) {
+      props.repeatTx(transaction, toAccount, fromAccount);
     }
   }
 
-  public handleRepeatClick = () => {
-    if (this.props.repeatTx) {
-      const { transaction, toAccount, fromAccount } = this.props;
-      this.props.repeatTx(transaction, toAccount, fromAccount);
+  function handleCancelClick () {
+    if (props.cancel) {
+      props.cancel();
     }
   }
 
-  public render () {
-    const {
-      transaction, classes, tokenSymbol
-    } = this.props;
-    const {
-      fiatCurrency, fiatAmount
-    } = this.props;
-
-    const blockNumber = transaction.blockNumber;
-    const txStatus = blockNumber ? 'success' : (transaction.discarded ? 'discarded' : 'queue');
-    const date = transaction.timestamp ?
+  const blockNumber = transaction.blockNumber;
+  const txStatus = blockNumber ? 'success' : (transaction.discarded ? 'discarded' : 'queue');
+  const date = transaction.timestamp ?
       transaction.timestamp :
       (transaction.since ? transaction.since : undefined);
 
-    return (
-      <Page title='Transaction Details' leftIcon={<Back onClick={this.handleBack} />}>
+  return (
+      <Page title='Transaction Details' leftIcon={<Back onClick={handleBack} />}>
         <div className={classes.formRow}>
           <div style={styles.left}>
             <div className={classes.fieldName}>Date</div>
@@ -164,7 +166,7 @@ export class TxDetails extends React.Component<ITxDetailsProps> {
               address={transaction.from}
               identity={true}
               identityProps={{ size: 30 }}
-              onClick={this.handleFromClick}
+              onClick={handleFromClick}
             />
           </div>
         </div>
@@ -179,7 +181,7 @@ export class TxDetails extends React.Component<ITxDetailsProps> {
                 address={transaction.to}
                 identity={true}
                 identityProps={{ size: 30 }}
-                onClick={this.handleToClick}
+                onClick={handleToClick}
               />
             )}
           </div>
@@ -222,20 +224,14 @@ export class TxDetails extends React.Component<ITxDetailsProps> {
           <div style={styles.left}/>
           <div style={styles.right}>
             <ButtonGroup>
-              <Button onClick={this.handleCancelClick} label='DASHBOARD' />
-              <Button primary={true} onClick={this.handleRepeatClick} label='REPEAT TRANSACTION' />
+              <Button onClick={handleCancelClick} label='DASHBOARD' />
+              <Button primary={true} onClick={handleRepeatClick} label='REPEAT TRANSACTION' />
             </ButtonGroup>
           </div>
         </div>
       </Page>
-    );
-  }
+  );
 
-  private handleCancelClick = () => {
-    if (this.props.cancel) {
-      this.props.cancel();
-    }
-  }
 }
 
 export default withStyles(styles)(TxDetails);
