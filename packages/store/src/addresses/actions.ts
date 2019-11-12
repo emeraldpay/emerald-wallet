@@ -265,7 +265,7 @@ export function importPk (
       if (!isValidEthAddress(address)) {
         throw new Error(`Invalid address: ${address}`);
       }
-      api.emerald.updateAccount(address, name, description, blockchain.toLowerCase()).then((ok: boolean) => {
+      return api.emerald.updateAccount(address, name, description, blockchain.toLowerCase()).then((ok: boolean) => {
         dispatch({
           name,
           description,
