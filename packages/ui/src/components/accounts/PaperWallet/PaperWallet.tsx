@@ -1,11 +1,11 @@
 import { Close, CurrencyEtc, Print } from '@emeraldplatform/ui-icons';
-import { IconButton } from '@material-ui/core';
-import { CSSProperties, withStyles } from '@material-ui/styles';
+import { createStyles, IconButton } from '@material-ui/core';
+import { withStyles } from '@material-ui/styles';
 import * as QRCode from 'qrcode.react';
 import * as React from 'react';
 import { EmeraldLine } from './EmeraldLogo';
 
-export const styles = {
+export const styles = createStyles({
   container: {
     height: '230px',
     width: '545px',
@@ -26,19 +26,19 @@ export const styles = {
     fontSize: '12px',
     fontWeight: 500,
     textAlign: 'right'
-  } as CSSProperties,
+  },
   privateValue: {
     lineHeight: '24px',
     textAlign: 'right',
     fontSize: '12px'
-  } as CSSProperties,
+  },
   title: {
     backgroundColor: '#000000',
     color: '#FFFFFF',
     letterSpacing: '2px',
     fontWeight: 'bold',
     textAlign: 'center'
-  } as CSSProperties,
+  },
   main: {
     paddingLeft: '16px',
     paddingRight: '16px'
@@ -63,7 +63,7 @@ export const styles = {
     display: 'flex',
     justifyContent: 'flex-end',
     flexDirection: 'column'
-  } as CSSProperties,
+  },
   notesCaption: {
     opacity: 0.5,
     color: '#191919',
@@ -76,7 +76,7 @@ export const styles = {
   logoIcon: {
     paddingTop: '5px'
   }
-};
+});
 
 export interface IProps {
   address: string;
