@@ -36,7 +36,7 @@ const Welcome = (props) => {
     return (
       <Grid container justify='center' alignItems='center'>
         <Grid item xs={10}>
-          <InitialSetup/>
+          <InitialSetup currentTermsVersion={TERMS_VERSION}/>
         </Grid>
       </Grid>
     );
@@ -69,7 +69,6 @@ const Welcome = (props) => {
 Welcome.propTypes = {
   message: PropTypes.string,
   level: PropTypes.number,
-  ready: PropTypes.bool.isRequired,
   needSetup: PropTypes.bool.isRequired,
 };
 
@@ -80,7 +79,6 @@ export default connect(
     return ({
       message: state.launcher.getIn(['message', 'text']),
       level: state.launcher.getIn(['message', 'level']),
-      ready: state.launcher.getIn(['connector', 'status']) === 'ready',
       needSetup: state.launcher.get('configured') && (state.launcher.get('terms') !== TERMS_VERSION),
     });
   },

@@ -1,6 +1,5 @@
 import { CircularProgress } from '@material-ui/core';
-import ErrorIcon from '@material-ui/icons/Error';
-import CheckCircleIcon from '@material-ui/icons/CheckCircle';
+import { CheckCircle, Error } from '@material-ui/icons';
 import { CSSProperties, withStyles } from '@material-ui/styles';
 import * as React from 'react';
 
@@ -13,7 +12,7 @@ export const styles = {
     fontWeight: 500,
     lineHeight: '16px',
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   queue: {
     height: '30px',
@@ -22,7 +21,7 @@ export const styles = {
     fontSize: '14px',
     lineHeight: '22px',
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'center'
   } as CSSProperties,
   discarded: {
     height: '30px',
@@ -31,7 +30,7 @@ export const styles = {
     fontSize: '14px',
     lineHeight: '22px',
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'center'
   } as CSSProperties
 };
 
@@ -45,14 +44,14 @@ export const TxStatus = (props: IProps) => {
   if (status === 'success') {
     return (
       <div className={classes.success}>
-        <CheckCircleIcon />&nbsp; Success
+        <CheckCircle />&nbsp; Success
       </div>
     );
   }
   if (status === 'discarded') {
     return (
       <div className={classes.discarded}>
-        <ErrorIcon />&nbsp; Discarded
+        <Error />&nbsp; Discarded
       </div>
     );
   }

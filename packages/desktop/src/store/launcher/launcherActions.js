@@ -89,12 +89,3 @@ export function connecting(value) {
     value,
   };
 }
-
-// TODO: remove
-// export function setChain(chain, chainId) {
-//   return {
-//     type: 'LAUNCHER/CHAIN',
-//     chain,
-//     chainId,
-//   };
-// }

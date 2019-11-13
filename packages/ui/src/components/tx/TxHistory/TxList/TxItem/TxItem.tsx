@@ -44,13 +44,13 @@ export const styles2 = {
   }
 };
 
-interface NetworkParams {
+interface INetworkParams {
   currentBlockHeight: number;
   requiredConfirmations: number;
 }
 
 export interface ITxItemProps {
-  netParams: NetworkParams;
+  netParams: INetworkParams;
   amountRenderer?: (balance: any, ticker: string) => any;
   tx: any;
   openAccount: any;
@@ -65,8 +65,8 @@ export interface ITxItemProps {
 
 const timeStampFormatter = (lang: any) => (timestamp: any) => {
   const timestampEvent = utils.parseDate(timestamp);
-  if (typeof timestampEvent === "undefined" || timestampEvent == null) {
-    return "?"
+  if (typeof timestampEvent === 'undefined' || timestampEvent == null) {
+    return '?';
   }
   const options = {
     year: 'numeric',
@@ -122,12 +122,13 @@ export const TxItem = (props: ITxItemProps) => {
           name={fromAccount.name}
           onClick={() => openAccount(tx.from)}
         />
-        {tx.to
-        && <AddressAvatar
-          address={tx.to}
-          name={toAccount.name}
-          onClick={() => openAccount(tx.to)}
-        />}
+        {tx.to && (
+          <AddressAvatar
+            address={tx.to}
+            name={toAccount.name}
+            onClick={() => openAccount(tx.to)}
+          />
+          )}
       </TableCell>
       <TableCell className={classes.columnStatus} >
         <TxStatus

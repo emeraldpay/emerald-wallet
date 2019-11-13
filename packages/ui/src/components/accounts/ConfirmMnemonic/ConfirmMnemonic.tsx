@@ -37,19 +37,18 @@ export interface IConfirmProps {
   dpath: string;
 }
 
-export class ConfirmMnemonic extends React.Component<IConfirmProps> {
-  public handleSubmit = () => {
-    const { onSubmit, mnemonic } = this.props;
+export function ConfirmMnemonic (props: IConfirmProps) {
+  const {
+    onBack, error, classes, mnemonic, dpath, onSubmit
+  } = props;
+
+  function handleSubmit () {
     if (onSubmit) {
       onSubmit(mnemonic);
     }
   }
 
-  public render () {
-    const {
-      onBack, error, classes, mnemonic, dpath
-    } = this.props;
-    return (
+  return (
       <Page title='Confirm Mnemonic' leftIcon={<Back onClick={onBack} />}>
         <FormRow
           rightColumn={(
@@ -81,7 +80,7 @@ export class ConfirmMnemonic extends React.Component<IConfirmProps> {
             <Button
               primary={true}
               label='Import'
-              onClick={this.handleSubmit}
+              onClick={handleSubmit}
             />
           )}
         />
@@ -96,8 +95,7 @@ export class ConfirmMnemonic extends React.Component<IConfirmProps> {
           />
         )}
       </Page>
-    );
-  }
+  );
 }
 
 export default withStyles(styles)(ConfirmMnemonic);

@@ -12,12 +12,12 @@ import {
 } from '@emeraldpay/grpc-client';
 import extractChain from './extractChain';
 
-interface AccountStatusEvent {
+interface IAccountStatusEvent {
   address: string;
   balance: string;
 }
 
-type HeadListener = (status: AccountStatusEvent) => void;
+type HeadListener = (status: IAccountStatusEvent) => void;
 
 export class AddressListener {
   public client: BlockchainClient;

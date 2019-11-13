@@ -3,13 +3,11 @@ import { Provider } from 'react-redux';
 import { I18nextProvider } from 'react-i18next';
 import { Theme } from '@emeraldplatform/ui';
 import {
-  ErrorDialog, NotificationBar, ConnectionStatus, Header, i18n,
+  ErrorDialog, NotificationBar, ConnectionStatus, Header, i18n, Dialog
 } from '@emeraldwallet/react-app';
 import { ThemeProvider } from '@material-ui/styles';
 
 import Screen from '../Screen';
-import Dialog from '../Dialog';
-
 import { store } from '../../store/store';
 
 const maxWidth = '1150px';

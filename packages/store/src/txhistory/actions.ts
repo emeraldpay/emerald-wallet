@@ -5,7 +5,7 @@ import * as blockchains from '../blockchains';
 import { Dispatched, GetState, ITransaction } from '../types';
 import { loadTransactions, storeTransactions } from './historyStorage';
 import { allTrackedTxs } from './selectors';
-import { ActionTypes, HistoryAction, IUpdateTxsAction } from './types';
+import {ActionTypes, HistoryAction, ILoadStoredTxsAction, IUpdateTxsAction} from './types';
 
 const txStoreKey = (chainId: number) => `chain-${chainId}-trackedTransactions`;
 
@@ -63,10 +63,14 @@ export function init (chains: BlockchainCode[]): Dispatched<HistoryAction> {
       storedTxs.push(...loadPersistedTransactions(getState(), chainId));
     }
 
-    dispatch({
-      type: ActionTypes.LOAD_STORED_TXS,
-      transactions: storedTxs
-    });
+    dispatch(loadStoredTxsAction(storedTxs));
+  };
+}
+
+function loadStoredTxsAction (txs: any): ILoadStoredTxsAction {
+  return {
+    type: ActionTypes.LOAD_STORED_TXS,
+    transactions: txs
   };
 }
 

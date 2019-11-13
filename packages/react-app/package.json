@@ -7,8 +7,8 @@
   "author": "ETCDEV GmbH",
   "license": "Apache-2.0",
   "scripts": {
-    "build": "rimraf lib/ && tsc",
-    "build:dist": "rimraf lib/ && tsc",
+    "build:dist": "rimraf lib/ && tsc && yarn copyfiles -u 1 src/**/*.png lib/",
+    "build": "rimraf lib/ && tsc && yarn copyfiles -u 1 src/**/*.png lib/",
     "test": "jest --passWithNoTests",
     "test:coverage": "jest --passWithNoTests --coverage && codecov",
     "storybook": "start-storybook -p 9001 -c .storybook"
@@ -47,6 +47,7 @@
     "@types/react-redux": "^7.1.1",
     "@types/uuid": "^3.4.4",
     "awesome-typescript-loader": "^5.2.1",
+    "copyfiles": "2.1.0",
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
     "jest": "^24.1.0",

@@ -5,12 +5,11 @@ import { Wei } from '@emeraldplatform/eth';
 import {
   ContactList as AddressBook, AddContact, PaperWallet, ExportPaperWallet, ImportJson, TxDetails,
   ImportMnemonic, CreateTransaction, BroadcastTx, ImportPrivateKey, ImportLedgerAccount, GenerateAccount,
-  Settings, MnemonicWizard, AccountDetails,
+  Settings, MnemonicWizard, AccountDetails, Home
 } from '@emeraldwallet/react-app';
 import createLogger from '../../utils/logger';
 import Welcome from '../../components/welcome/welcome';
-import Home from '../Home';
-import { screen } from '../../store';
+import { screen } from '@emeraldwallet/store';
 
 const log = createLogger('screen');
 

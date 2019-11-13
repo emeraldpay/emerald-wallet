@@ -1,3 +1,4 @@
+import { action } from '@storybook/addon-actions';
 import { storiesOf } from '@storybook/react';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
@@ -14,4 +15,15 @@ const tx = {
 };
 
 storiesOf('TxDetails', module)
-  .add('default', () => (<TxDetails tokenSymbol='ETH' fiatAmount='100.1' transaction={tx}/>));
+  .add('default', () => (
+    <TxDetails
+      tokenSymbol='ETH'
+      fiatAmount='100.1'
+      fiatCurrency='RUB'
+      transaction={tx}
+      goBack={action('goBack')}
+      openAccount={action('openAccount')}
+      repeatTx={action('repeatTx')}
+      cancel={action('cancel')}
+    />
+    ));
