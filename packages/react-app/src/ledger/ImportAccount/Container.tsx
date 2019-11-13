@@ -34,16 +34,16 @@ export default connect(
   }),
   (dispatch, ownProps: any) => ({
     setPagerOffset: (offset: number) => {
-      dispatch(ledger.actions.getAddresses(offset, pageSize) as any);
+      dispatch(ledger.actions.getAddressesAction(offset, pageSize));
     },
     setSelectedAddr: (addr: string) => {
-      dispatch(ledger.actions.selectAddr(addr));
+      dispatch(ledger.actions.selectAddressAction(addr));
     },
     changeBaseHD: (hdpath: string) => {
       dispatch(ledger.actions.setBaseHD(hdpath));
-      dispatch(ledger.actions.getAddresses() as any);
+      dispatch(ledger.actions.getAddressesAction());
     },
-    onInit: () => dispatch(ledger.actions.getAddresses() as any),
+    onInit: () => dispatch(ledger.actions.getAddressesAction()),
     onBack: () => {
       if (ownProps.onBackScreen) {
         return dispatch(screen.actions.gotoScreen(ownProps.onBackScreen));

@@ -5,11 +5,9 @@ import uuid = require('uuid');
 import { Dispatched, GetState } from '../types';
 import {
   ActionTypes,
-  Address,
-  AddressBalance,
   AddressSelected,
-  AddressTxCount,
   Connected,
+  IUpdateAddressAction,
   SetBaseHD,
   SetHDOffset, SetListHDPath, Watch
 } from './types';
@@ -21,41 +19,40 @@ export function setWatch (value: boolean): Watch {
   };
 }
 
+export function setConnectedAction (value: boolean): Connected {
+  return {
+    type: ActionTypes.CONNECTED,
+    value
+  };
+}
+
 export function setConnected (value: boolean): Dispatched<Connected | Dispatched<any>> {
   return (dispatch, getState) => {
     if (getState().ledger.get('connected') !== value) {
-      dispatch({ type: ActionTypes.CONNECTED, value });
+      dispatch(setConnectedAction(value));
       if (value) {
-        dispatch(getAddresses());
+        dispatch(getAddressesAction() as any);
       }
     }
   };
 }
 
-export function getAddresses (offset: number = 0, count: number = 5)
-  : Dispatched<SetHDOffset | AddressSelected | SetListHDPath | Dispatched<any>> {
-  return (dispatch, getState) => {
-    // let offset = getState().ledger.getIn(['hd', 'offset']);
-    const hdbase = getState().ledger.getIn(['hd', 'base']);
-
-    dispatch({
-      type: ActionTypes.SET_HDOFFSET,
-      value: offset
-    });
-
-    dispatch(selectAddr(undefined));
-
-    console.info('Load addresses', hdbase, count);
-
-    for (let i = 0; i < count; i++) {
-      const hdpath = [hdbase, i + offset].join('/');
-      dispatch(start(i, hdpath));
-      dispatch(getAddress(hdpath));
-    }
+export function setHdOffsetAction (offset: number): SetHDOffset {
+  return {
+    type: ActionTypes.SET_HDOFFSET,
+    value: offset
   };
 }
 
-function start (index: number, hdpath: string): SetListHDPath {
+export function getAddressesAction (offset: number = 0, count: number = 5) {
+  return {
+    type: ActionTypes.GET_ADDRESSES,
+    offset,
+    count
+  };
+}
+
+export function start (index: number, hdpath: string): SetListHDPath {
   return {
     type: ActionTypes.SET_LIST_HDPATH,
     index,
@@ -63,7 +60,7 @@ function start (index: number, hdpath: string): SetListHDPath {
   };
 }
 
-export function selectAddr (addr?: string): AddressSelected {
+export function selectAddressAction (addr?: string): AddressSelected {
   return {
     type: ActionTypes.ADDR_SELECTED,
     value: addr
@@ -129,16 +126,21 @@ function onceConnectionState (getState: GetState, value: boolean): Promise<any> 
 //   };
 // }
 
-export function getAddress (hdpath: string): Dispatched<Address> {
+export function updateAddressAction (dpath: string, address: string): IUpdateAddressAction {
+  return {
+    type: ActionTypes.ADDR,
+    hdpath: dpath,
+    addr: address
+  };
+}
+
+export function getAddress (hdpath: string): Dispatched<IUpdateAddressAction> {
   return (dispatch) => {
     const ledgerApi: LedgerApi = remote.getGlobal('ledger');
     ledgerApi.getAddress(hdpath)
       .then((addr) => {
-        dispatch({
-          type: ActionTypes.ADDR,
-          hdpath,
-          addr
-        });
+        dispatch(updateAddressAction(hdpath, addr));
+
         // TODO: consider batch request for all addresses
         // return dispatch(loadInfo(chain, hdpath, addr.address));
       })
@@ -183,7 +185,7 @@ export function importSelected (blockchain: BlockchainCode): Dispatched<AddressS
 
     return api.emerald.importAccount(data, blockchain).then(() => {
       // clean selected address
-      dispatch(selectAddr(undefined));
+      dispatch(selectAddressAction(undefined));
       return address;
     });
   };

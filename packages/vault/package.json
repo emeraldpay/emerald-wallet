@@ -11,6 +11,7 @@
     "build:dist": "rimraf lib/ && tsc"
   },
   "devDependencies": {
+    "@emeraldplatform/core": "^0.5.11",
     "@jest-runner/electron": "2.0.2",
     "@types/jest": "^24.0.9",
     "@types/node": "^12.12.0",
