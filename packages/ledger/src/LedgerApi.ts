@@ -24,4 +24,14 @@ export class LedgerApi {
       }
     });
   }
+
+  public getAddresses (dpaths: string[]): Promise<any> {
+    if (!this.isConnected()) {
+      return Promise.reject(new Error('Not connected to Ledger'));
+    }
+    return new Promise((resolve, reject) => {
+      const result = this.conn.listAddresses('ethereum', dpaths);
+      resolve(result);
+    });
+  }
 }

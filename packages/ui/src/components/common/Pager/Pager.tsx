@@ -1,23 +1,24 @@
 import { ArrowLeft as ArrowLeftIcon, ArrowRight as ArrowRightIcon } from '@emeraldplatform/ui-icons';
-import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import { CSSProperties } from '@material-ui/styles';
+import { createStyles, Grid, IconButton, withStyles } from '@material-ui/core';
 import * as React from 'react';
 
-interface Props {
+interface IProps {
   pageSize?: number;
   offset?: any;
   setOffset?: any;
+  classes?: any;
 }
 
-const offsetStyle = {
-  textAlign: 'center',
-  fontSize: '16px',
-  fontWeight: 900,
-  marginTop: '8px'
-} as CSSProperties;
+const styles = createStyles({
+  offset: {
+    textAlign: 'center',
+    fontSize: '16px',
+    fontWeight: 900,
+    marginTop: '8px'
+  }
+});
 
-const Pager = ({ offset, setOffset, ...other }: Props) => {
+const Pager = ({ classes, offset, setOffset, ...other }: IProps) => {
   const pageSize = other.pageSize || 5;
   return (
     <Grid container={true} alignItems='center'>
@@ -26,7 +27,7 @@ const Pager = ({ offset, setOffset, ...other }: Props) => {
           <ArrowLeftIcon />
         </IconButton>
       </Grid>
-      <Grid item={true} xs={2} style={offsetStyle}>
+      <Grid item={true} xs={2} className={classes.offset}>
         {offset}
       </Grid>
       <Grid item={true} xs={5}>
@@ -38,4 +39,4 @@ const Pager = ({ offset, setOffset, ...other }: Props) => {
   );
 };
 
-export default Pager;
+export default withStyles(styles)(Pager);

@@ -10,10 +10,11 @@ export enum ActionTypes {
   ADDR_SELECTED = 'LEDGER/ADDR_SELECTED',
   SET_HDOFFSET = 'LEDGER/SET_HDOFFSET',
   SET_BASEHD = 'LEDGER/SET_BASEHD',
-  LOAD_ADDR_INFO = 'LEDGER/LOAD_ADDR_INFO'
+  LOAD_ADDR_INFO = 'LEDGER/LOAD_ADDR_INFO',
+  GET_ADDRESSES = 'LEDGER/GET_ADDRESSES'
 }
 
-export interface Address {
+export interface IUpdateAddressAction {
   type: ActionTypes.ADDR;
   addr: string;
   hdpath: string;
@@ -67,8 +68,14 @@ export interface LoadAddrInfoAction {
   payload: any;
 }
 
+export interface IGetAddressesAction {
+  type: ActionTypes.GET_ADDRESSES;
+  offset: number;
+  count: number;
+}
+
 export type LedgerAction =
-  | Address
+  | IUpdateAddressAction
   | AddressBalance
   | AddressTxCount
   | Connected
