@@ -34,12 +34,10 @@ export { default as ConnectionStatus } from './layout/ConnectionStatus';
 export { default as NotificationBar } from './layout/NotificationBar';
 export { default as Header } from './layout/Header';
 export { default as Dashboard } from './layout/Dashboard';
+export { default as Home } from './layout/Home';
 
 // screen
 export { default as Dialog } from './screen/Dialog';
-
-// onboarding
-export { default as Landing } from './onboarding/Landing';
 
 // tx
 export { default as TxDetails } from './transactions/TxDetails';

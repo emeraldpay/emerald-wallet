@@ -1,7 +1,4 @@
 import Immutable from 'immutable';
-// import { api } from '../../lib/rpc/api';
-
-const STATUS_NOT_READY = 'not ready';
 
 const initial = Immutable.fromJS({
   settingsUpdated: false,
@@ -9,12 +6,6 @@ const initial = Immutable.fromJS({
   launcherType: 'web',
   terms: 'none',
   configured: false,
-
-  connector: {
-    url: '',
-    status: STATUS_NOT_READY,
-  },
-
   message: {
     text: 'Starting...',
     level: 2,
@@ -30,7 +21,6 @@ function onConfig(state, action) {
     if (action.config.terms) {
       state = state.set('terms', action.config.terms);
     }
-
     return state;
   }
   return state;
