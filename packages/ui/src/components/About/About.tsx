@@ -24,7 +24,6 @@ export const styles = (theme?: any) => ({
 
 interface IProps {
   appVersion?: string;
-  vaultVersion?: string;
   gitVersion?: any;
   osVersion?: any;
   onButtonClick?: any;
@@ -38,7 +37,7 @@ export class About extends React.Component<IProps> {
     const {
       classes, onButtonClick, onHelpClick, onLicenseClick
     } = this.props;
-    const { appVersion, vaultVersion } = this.props;
+    const { appVersion } = this.props;
     const gitVersion = this.props.gitVersion || {};
     const osVersion = this.props.osVersion || {};
 
@@ -51,7 +50,6 @@ export class About extends React.Component<IProps> {
         <div style={{ marginBottom: '20px' }}>{appVersion}</div>
         <div className={classes.componentsVer}>
           Full Version: {gitVersion.FullSemVer}<br/>
-          Vault Version: {vaultVersion}<br/>
           Build: {gitVersion.BuildMetaDataPadded} {gitVersion.ShortSha} {gitVersion.CommitDate}<br/>
           OS: {osVersion.arch} {osVersion.platform} {osVersion.release}<br/>
         </div>
