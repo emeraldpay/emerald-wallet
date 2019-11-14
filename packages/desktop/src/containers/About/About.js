@@ -15,7 +15,6 @@ class AboutContainer extends React.Component {
   componentDidMount() {
     ipcRenderer.once('get-version-result', (event, result) => {
       this.setState({
-        connector: result.connector,
         os: result.os,
       });
     });
@@ -38,12 +37,11 @@ class AboutContainer extends React.Component {
   };
 
   render() {
-    const {connector, os} = this.state;
+    const {os} = this.state;
     return (
       <ThemeProvider theme={theme}>
         <About
           appVersion={version}
-          vaultVersion={connector}
           gitVersion={gitversion}
           osVersion={os}
           onButtonClick={this.onButtonClick}

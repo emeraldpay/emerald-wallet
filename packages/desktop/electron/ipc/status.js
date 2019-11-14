@@ -10,7 +10,6 @@ module.exports = () => {
       arch: os.arch(),
     };
     event.sender.send('get-version-result', {
-      connector: 'UNKNOWN', // TODO
       os: osDetails,
     });
   });
