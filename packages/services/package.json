@@ -1,6 +1,6 @@
 {
   "name": "@emeraldwallet/services",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "author": "ETCDEV GmbH",
@@ -16,8 +16,8 @@
     "@emeraldplatform/eth-rpc": "0.5.1",
     "@emeraldplatform/rpc": "0.5.1",
     "@emeraldwallet/core": "^2.1.0",
-    "@emeraldwallet/store": "^2.1.0",
-    "@emeraldwallet/vault": "^2.1.0",
+    "@emeraldwallet/store": "^2.1.1",
+    "@emeraldwallet/vault": "^2.1.1",
     "google-protobuf": "3.7.1",
     "grpc": "^1.24.2",
     "text-encoding": "0.7.0"
