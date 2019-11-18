@@ -5,6 +5,7 @@ import {Logo} from '@emeraldwallet/ui';
 import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {withStyles} from '@material-ui/styles';
+import { launcher } from '@emeraldwallet/store';
 import InitialSetup from './initialSetup';
 import { TERMS_VERSION } from '../../store/config';
 
@@ -76,9 +77,9 @@ const StyledWelcome = withStyles(getStyles)(Welcome);
 
 export default connect(
   (state, ownProps) => {
+    const msg = launcher.selectors.getMessage(state);
     return ({
-      message: state.launcher.getIn(['message', 'text']),
-      level: state.launcher.getIn(['message', 'level']),
+      ...msg,
       needSetup: state.launcher.get('configured') && (state.launcher.get('terms') !== TERMS_VERSION),
     });
   },

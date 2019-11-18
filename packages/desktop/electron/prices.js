@@ -1,3 +1,4 @@
+const { settings } = require('@emeraldwallet/store');
 const log = require('./logger');
 
 class Prices {
@@ -29,7 +30,7 @@ class Prices {
     log.info(`Request for prices, to ${this.to}`);
     const self = this;
     this.listener.request(this.froms, this.to, (result) => {
-      self.webContents.send('prices/rate', result);
+      self.webContents.send('store', settings.actions.setRatesAction(result));
     });
     setTimeout(this.fetch.bind(this), 60000);
   }

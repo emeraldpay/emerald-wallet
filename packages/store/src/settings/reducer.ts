@@ -36,9 +36,10 @@ function onSetLocaleCurrency (state: ISettingsState, action: SetLocaleCurrencyAc
 }
 
 function onExchangeRates (state: ISettingsState, action: ISetExchRatesAction) {
+  const { rates } = action.payload;
   return state
-    .set('rates', fromJS(action.rates))
-    .set('localeRate', action.rates ? action.rates.ETC : null);
+    .set('rates', fromJS(rates))
+    .set('localeRate', rates ? rates.ETC : null);
 
 }
 

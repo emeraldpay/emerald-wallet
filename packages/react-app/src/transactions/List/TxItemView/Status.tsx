@@ -21,7 +21,7 @@ const styles = (theme: any) => ({
   }
 });
 
-interface Props {
+interface IStatusProps {
   currentBlockHeight: number;
   txBlockNumber: number | null;
   txTimestamp: any;
@@ -33,7 +33,7 @@ interface Props {
   onClick?: any;
 }
 
-const Status = (props: Props) => {
+export const Status = (props: IStatusProps) => {
   const { classes, onClick } = props;
   const tsFormatter = props.timeStampFormatter || defaultTimestampFormatter;
   const { currentBlockHeight, txBlockNumber, requiredConfirmations, txDiscarded } = props;
@@ -92,5 +92,4 @@ function defaultTimestampFormatter (timestamp: any): string {
   return timestamp;
 }
 
-const StyledStatus = withStyles(styles)(Status);
-export default StyledStatus;
+export default withStyles(styles)(Status);

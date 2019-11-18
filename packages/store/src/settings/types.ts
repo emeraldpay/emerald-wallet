@@ -35,7 +35,9 @@ export interface SetShowHiddenAccsAction {
 
 export interface ISetExchRatesAction {
   type: ActionTypes.EXCHANGE_RATES;
-  rates: any;
+  payload: {
+    rates: any;
+  };
 }
 
 export type SettingsAction =

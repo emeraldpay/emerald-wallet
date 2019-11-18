@@ -6,7 +6,7 @@ import { Dispatched, GetState } from '../types';
 import {
   ActionTypes,
   AddressSelected,
-  Connected,
+  Connected, IGetAddressesAction,
   IUpdateAddressAction,
   SetBaseHD,
   SetHDOffset, SetListHDPath, Watch
@@ -44,11 +44,13 @@ export function setHdOffsetAction (offset: number): SetHDOffset {
   };
 }
 
-export function getAddressesAction (offset: number = 0, count: number = 5) {
+export function getAddressesAction (offset: number = 0, count: number = 5): IGetAddressesAction {
   return {
     type: ActionTypes.GET_ADDRESSES,
-    offset,
-    count
+    payload: {
+      offset,
+      count
+    }
   };
 }
 

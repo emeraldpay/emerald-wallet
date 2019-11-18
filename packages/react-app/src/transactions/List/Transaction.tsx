@@ -1,10 +1,10 @@
 import { blockchainById, blockchainByName } from '@emeraldwallet/core';
-import { addresses, blockchains, screen, settings, txhistory, wallet } from '@emeraldwallet/store';
-import TxView from '@emeraldwallet/ui/lib/components/tx/TxHistory/TxList/TxItem';
+import { addresses, blockchains, screen, settings, wallet } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import Balance from '../../common/Balance';
 import i18n from '../../i18n';
+import TxView from './TxItemView';
 
 function txValueRenderer (showFiat: boolean) {
   return function renderer (balance: any, ticker: string) {

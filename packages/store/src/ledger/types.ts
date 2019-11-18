@@ -70,8 +70,10 @@ export interface LoadAddrInfoAction {
 
 export interface IGetAddressesAction {
   type: ActionTypes.GET_ADDRESSES;
-  offset: number;
-  count: number;
+  payload: {
+    offset: number;
+    count: number;
+  };
 }
 
 export type LedgerAction =

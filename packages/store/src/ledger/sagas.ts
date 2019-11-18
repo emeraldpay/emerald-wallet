@@ -11,7 +11,7 @@ function* fetchAddrInfo (api: IApi, action: LoadAddrInfoAction) {
 }
 
 function* getAddressesSaga (api: IApi, action: IGetAddressesAction) {
-  const { offset, count } = action;
+  const { offset, count } = action.payload;
   yield put(setHdOffsetAction(offset));
   yield put(selectAddressAction(undefined));
 
@@ -34,17 +34,9 @@ function* getAddressesSaga (api: IApi, action: IGetAddressesAction) {
   }
 }
 
-function* watchLoadInfo (api: IApi) {
-  yield takeEvery(ActionTypes.LOAD_ADDR_INFO, fetchAddrInfo, api);
-}
-
-function* watchGetAddresses (api: IApi) {
-  yield takeLatest(ActionTypes.GET_ADDRESSES, getAddressesSaga, api);
-}
-
 export function* root (api: IApi) {
   yield all([
-    watchLoadInfo(api),
-    watchGetAddresses(api)
+    takeEvery(ActionTypes.LOAD_ADDR_INFO, fetchAddrInfo, api),
+    takeLatest(ActionTypes.GET_ADDRESSES, getAddressesSaga, api)
   ]);
 }
