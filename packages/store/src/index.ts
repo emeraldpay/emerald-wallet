@@ -1,5 +1,5 @@
 import * as addressBook from './address-book';
-import * as addresses from './addresses';
+import * as addresses from './accounts';
 import * as blockchains from './blockchains';
 import * as connection from './conn';
 import * as launcher from './launcher';

@@ -56,7 +56,7 @@ export default connect(
           const acc = { id: address, blockchain };
           return dispatch(addresses.actions.loadAccountsList(() => {
             // go to account details only when accounts updated
-            dispatch(screen.actions.gotoScreen('account', acc));
+            dispatch(screen.actions.gotoScreen(screen.Pages.ACCOUNT, acc));
           }) as any);
         });
     },

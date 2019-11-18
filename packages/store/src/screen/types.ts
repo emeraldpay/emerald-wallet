@@ -9,6 +9,10 @@ export enum ActionTypes {
   NOTIFICATION_CLOSE = 'SCREEN/NOTIFICATION_CLOSE'
 }
 
+export enum Pages {
+  ACCOUNT = 'account'
+}
+
 export interface IScreenState {
   screen: any | null;
   item: any | null;
