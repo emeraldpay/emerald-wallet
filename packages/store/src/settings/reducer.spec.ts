@@ -1,3 +1,4 @@
+import { setRatesAction } from './actions';
 import settingsReducers from './reducer';
 import { ActionTypes } from './types';
 
@@ -10,13 +11,12 @@ describe('settingsReducers', () => {
     });
 
     // do
-    state = settingsReducers(state, {
-      type: ActionTypes.EXCHANGE_RATES,
-      rates: {
+    state = settingsReducers(state, setRatesAction(
+      {
         ETC: 5,
         ETH: 10
       }
-    });
+    ));
 
     // assert
     expect(state.get('localeRate')).toEqual(5);
