@@ -33,55 +33,25 @@ export function agreeOnTerms(v) {
   };
 }
 
-export function saveSettings(extraSettings) {
-  extraSettings = extraSettings || {};
-  return (dispatch, getState) => {
-    const geth = getState().launcher.get('geth').toJS();
-    const chain = getState().launcher.get('chain').toJS();
-
-    const settings = { geth, chain, ...extraSettings };
-
-    log.info('Save settings', settings);
-
-    ipcRenderer.send('settings', settings);
-
-    dispatch({
-      type: 'LAUNCHER/SETTINGS',
-      updated: false,
-    });
-  };
-}
-
-// TODO: depricated
-export function listenElectron() {
-  return (dispatch, getState) => {
-    log.debug('Running launcher listener');
-
-    ipcRenderer.on('launcher', (event, type, message) => {
-      log.debug('launcher listener: ', 'type', type, 'message', message);
-
-      dispatch({
-        type: `LAUNCHER/${type}`,
-        ...message,
-      });
-
-      if (type === 'CHAIN') {
-        if (getState().launcher.getIn(['chain', 'id']) !== message.chainId) {
-          // Launcher sent chain different from what user has chosen
-          // Alert !
-          dispatch(screen.actions.showError(
-            new Error(`Launcher connected to invalid chain: [${message.chain}, ${message.chainId}]`)
-          ));
-        } else {
-          dispatch({
-            type: 'NETWORK/SWITCH_CHAIN',
-            ...message,
-          });
-        }
-      }
-    });
-  };
-}
+// TODO: Depricated
+// export function saveSettings(extraSettings) {
+//   extraSettings = extraSettings || {};
+//   return (dispatch, getState) => {
+//     const geth = getState().launcher.get('geth').toJS();
+//     const chain = getState().launcher.get('chain').toJS();
+//
+//     const settings = { geth, chain, ...extraSettings };
+//
+//     log.info('Save settings', settings);
+//
+//     ipcRenderer.send('settings', settings);
+//
+//     dispatch({
+//       type: 'LAUNCHER/SETTINGS',
+//       updated: false,
+//     });
+//   };
+// }
 
 export function connecting(value) {
   return {

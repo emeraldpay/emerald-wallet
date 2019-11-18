@@ -1,13 +1,14 @@
 import {
-  Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
+  createStyles,
+  Table, TableBody, TableCell, TableHead, TableRow
+} from '@material-ui/core';
 import { withStyles, withTheme } from '@material-ui/styles';
-import { Styles } from '@material-ui/styles/withStyles';
 import cx from 'classnames';
 import { List } from 'immutable';
 import * as React from 'react';
 import Transaction from './Transaction';
 
-const styles = {
+const styles = createStyles({
   columnName: {
     textTransform: 'uppercase',
     fontSize: '11px !important',
@@ -33,7 +34,7 @@ const styles = {
     paddingRight: '0px !important',
     width: '24px'
   }
-} as Styles<any, any>;
+});
 
 interface IProps {
   transactions: List<any>;

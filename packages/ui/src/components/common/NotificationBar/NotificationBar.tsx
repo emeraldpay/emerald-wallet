@@ -1,11 +1,9 @@
+import { Snackbar, SnackbarContent, withStyles } from '@material-ui/core';
 import orange from '@material-ui/core/colors/orange';
-import Snackbar from '@material-ui/core/Snackbar';
-import SnackbarContent from '@material-ui/core/SnackbarContent';
-import { withStyles } from '@material-ui/core/styles';
 import classNames from 'classnames';
 import * as React from 'react';
 
-export interface Props {
+export interface IBarProps {
   onActionClick?: any;
   onRequestClose?: any;
   notificationActionToDispatchOnActionClick?: any;
@@ -17,7 +15,7 @@ export interface Props {
   open?: boolean;
 }
 
-interface State {
+interface IBarState {
   open: boolean;
 }
 
@@ -32,14 +30,14 @@ const styles = (theme) => ({
   }
 });
 
-export class NotificationBar extends React.Component<Props, State> {
+export class NotificationBar extends React.Component<IBarProps, IBarState> {
   constructor (props) {
     super(props);
     this.state = { open: props.open || false };
     this.onActionClick = this.onActionClick.bind(this);
   }
 
-  public UNSAFE_componentWillReceiveProps (nextProps) { // eslint-disable-line
+  public UNSAFE_componentWillReceiveProps (nextProps) {
     if (nextProps.notificationMessage) {
       this.setState({ open: true });
     } else {
@@ -53,21 +51,8 @@ export class NotificationBar extends React.Component<Props, State> {
 
   public render () {
     const { classes } = this.props;
-    // const colors = {
-    //   success: muiTheme.palette.primary1Color,
-    //   error: muiTheme.palette.accent1Color,
-    //   info: muiTheme.palette.textColor,
-    //   warning: orange[300],
-    // };
     return (
       <Snackbar
-        // bodyStyle={{
-        //   backgroundColor: muiTheme.palette.alternateTextColor,
-        //   boxShadow: `${muiTheme.palette.shadowColor} 0px 0px 50px 0px`,
-        // }}
-        // contentStyle={{
-        //   color: colors[this.props.notificationType],
-        // }}
         style={{
           bottom: 'auto',
           top: '-55px',

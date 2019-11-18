@@ -1,11 +1,12 @@
 import { Input, Page, Warning, WarningHeader, WarningText } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import { Blockchain, BlockchainCode } from '@emeraldwallet/core';
-import CircularProgress from '@material-ui/core/CircularProgress';
+import { CircularProgress } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import Button from '../../common/Button';
 import ChainSelector from '../../common/ChainSelector/ChainSelector';
+import FormRow from '../../common/FormRow';
 import PasswordInput from '../../common/PasswordInput';
 
 export const styles = {
@@ -85,7 +86,7 @@ export class ImportPrivateKey extends React.Component<IProps, IState> {
 
   public handleConfirmPwdChange = (event: any) => {
     const confirmPassword = event.target.value;
-    if (this.state.password != confirmPassword) {
+    if (this.state.password !== confirmPassword) {
       this.setState({ confirmError: 'Password must match' });
     } else {
       this.setState({ confirmError: null });
@@ -114,11 +115,20 @@ export class ImportPrivateKey extends React.Component<IProps, IState> {
     const { blockchain, privateKey, confirmPassword, password } = this.state;
 
     const invalid = ((password || '').length < PasswordInput.DEFAULT_MIN_LENGTH) ||
-      ((privateKey || '').length == 0) ||
+      ((privateKey || '').length === 0) ||
       (password !== confirmPassword);
 
     return (
       <Page title='Import Private Key' leftIcon={<Back onClick={onBack}/>}>
+        <FormRow
+          rightColumn={(
+            <ChainSelector
+              onChange={this.handleChainChange}
+              value={blockchain}
+              chains={blockchains}
+            />
+          )}
+        />
         <div className={classes.formRow}>
           <div className={classes.left}/>
           <div className={classes.right}>
@@ -184,7 +194,7 @@ export class ImportPrivateKey extends React.Component<IProps, IState> {
               disabled={submitting || invalid}
               icon={getLoadingIcon(submitting)}
             />
-            <ChainSelector onChange={this.handleChainChange} value={blockchain} chains={blockchains}/>
+
           </div>
         </div>
 

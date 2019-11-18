@@ -17,7 +17,6 @@ import tokens from './vault/tokens';
 
 import {
   readConfig,
-  listenElectron,
   connecting
 } from './launcher/launcherActions';
 // import { showError } from './wallet/screen/screenActions';
@@ -42,7 +41,7 @@ global.api = api;
 function refreshAll() {
   const promises = [
     // store.dispatch(accounts.actions.loadPendingTransactions()), // TODO: Fix it
-    store.dispatch(addresses.actions.loadAccountsList()),
+    // store.dispatch(addresses.actions.loadAccountsList()),
   ];
 
   // Main loop that will refresh UI as needed
@@ -53,8 +52,6 @@ function refreshAll() {
 
 export function startSync() {
   log.info('Start synchronization');
-  store.dispatch(settings.actions.listenPrices());
-
   const promises = [];
 
   promises.push(
@@ -127,6 +124,9 @@ function newWalletVersionCheck() {
   });
 }
 
+/**
+ * Listen to IPC channel 'store' and dispatch action to redux store
+ */
 export function electronToStore() {
   return (dispatch) => {
     log.debug('Running launcher listener for Redux');
@@ -144,7 +144,6 @@ export const start = () => {
   } catch (e) {
     log.error(e);
   }
-  store.dispatch(listenElectron());
   store.dispatch(electronToStore());
   getInitialScreen();
   newWalletVersionCheck();

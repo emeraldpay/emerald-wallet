@@ -106,7 +106,10 @@ app.on('ready', () => {
 
   log.info('... start services');
   services.start();
+
+  // Run IPC listeners
   ipc({ settings });
+
   log.info('... services started');
 
   log.info('... subscribe for prices');

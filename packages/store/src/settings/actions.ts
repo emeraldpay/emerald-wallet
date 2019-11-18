@@ -1,6 +1,6 @@
 import { ipcRenderer } from 'electron';
 import * as screen from '../screen';
-import { ActionTypes, ILoadSettingsAction } from './types';
+import { ActionTypes, ILoadSettingsAction, ISetExchRatesAction } from './types';
 
 export interface ISettings {
   language: string;
@@ -37,13 +37,11 @@ export function update (settings: ISettings) {
   };
 }
 
-export function listenPrices () {
-  return (dispatch: any, getState: any) => {
-    ipcRenderer.on('prices/rate', (event: any, rates: any) => {
-      dispatch({
-        type: ActionTypes.EXCHANGE_RATES,
-        rates
-      });
-    });
+export function setRatesAction (rates: any): ISetExchRatesAction {
+  return {
+    type: ActionTypes.EXCHANGE_RATES,
+    payload: {
+      rates
+    }
   };
 }
