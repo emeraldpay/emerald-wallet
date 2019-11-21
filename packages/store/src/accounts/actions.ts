@@ -1,8 +1,14 @@
 import {
-  Blockchain, blockchainByName, BlockchainCode, blockchains, IAccount, IApi, isValidEthAddress, vault
+  Blockchain,
+  blockchainByName,
+  BlockchainCode,
+  blockchains,
+  IApi,
+  isValidEthAddress,
+  vault
 } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
-import { catchError, dispatchRpcError } from '../screen/actions';
+import { dispatchRpcError } from '../screen/actions';
 import * as settings from '../settings';
 import * as history from '../txhistory';
 import { Dispatched } from '../types';
@@ -10,6 +16,7 @@ import * as selectors from './selectors';
 import {
   ActionTypes,
   AddAccountAction,
+  IFetchHdPathsAction,
   PendingBalanceAction,
   SetHDPathAction,
   SetListAction,
@@ -18,37 +25,19 @@ import {
   UpdateAddressAction
 } from './types';
 
-/**
- * Retrieves HD paths for hardware accounts
- */
-function fetchHdPaths (): Dispatched<SetHDPathAction> {
-  return (dispatch, getState, api) => {
-    const promises: Array<Promise<any>> = [];
-    selectors.all(getState())
-      .filter((a: any) => a.get('hardware', true))
-      .forEach((a: any) => {
-        const address = a.get('id');
-        promises.push(api.emerald.exportAccount(address, a.get('blockchain').toLowerCase())
-          .then((result: any) => {
-            return dispatch({
-              type: ActionTypes.SET_HD_PATH,
-              accountId: address,
-              hdpath: result.crypto.hd_path,
-              blockchain: a.get('blockchain')
-            });
-          })
-          .catch((err: any) => console.warn('Unable to get HDPath from Vault'))
-        );
-      });
-
-    return Promise.all(promises);
-  };
-}
-
 export function setLoadingAction (loading: boolean): SetLoadingAction {
   return {
     type: ActionTypes.LOADING,
     payload: loading
+  };
+}
+
+/**
+ * Retrieves HD paths for hardware accounts
+ */
+export function fetchHdPathsAction (): IFetchHdPathsAction {
+  return {
+    type: ActionTypes.FETCH_HD_PATHS
   };
 }
 
@@ -75,7 +64,8 @@ export function loadAccountsList (onLoaded?: Function): Dispatched<SetListAction
           const firstLoad = existing.length === 0;
           if (changed || firstLoad) {
             dispatch(setListAction(result));
-            dispatch(fetchHdPaths());
+            dispatch(fetchHdPathsAction() as any);
+
             const addedAddresses = result
               .filter((x) => existing.indexOf(x.address) < 0)
               .map((acc) => acc.address);

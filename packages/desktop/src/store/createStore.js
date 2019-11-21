@@ -23,7 +23,7 @@ const reducers = {
   launcher: launcherReducers,
   ledger: ledger.reducer,
   wallet: walletReducers,
-  addresses: addresses.reducer,
+  [addresses.moduleName]: addresses.reducer,
   blockchains: blockchains.reducer,
   screen: screen.reducer,
   conn: connection.reducer,
@@ -60,5 +60,6 @@ export const createStore = (_api) => {
   sagaMiddleware.run(tokens.sagas.root, _api);
   sagaMiddleware.run(wallet.sagas.root, _api);
   sagaMiddleware.run(settings.sagas.root);
+  sagaMiddleware.run(addresses.sagas.root, _api);
   return store;
 };

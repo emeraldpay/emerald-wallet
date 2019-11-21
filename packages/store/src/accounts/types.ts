@@ -42,9 +42,14 @@ export enum ActionTypes {
   ADD_ACCOUNT = 'ACCOUNT/ADD_ACCOUNT',
   SET_LIST = 'ACCOUNT/SET_LIST',
   SET_HD_PATH = 'ACCOUNT/SET_HD_PATH',
+  FETCH_HD_PATHS = 'ACCOUNT/FETCH_HD_PATHS',
   UPDATE_ACCOUNT = 'ACCOUNT/UPDATE_ACCOUNT',
   PENDING_BALANCE = 'ACCOUNT/PENDING_BALANCE',
   SET_TXCOUNT = 'ACCOUNT/SET_TXCOUNT'
+}
+
+export interface IFetchHdPathsAction {
+  type: ActionTypes.FETCH_HD_PATHS;
 }
 
 export interface UpdateAddressAction {
@@ -107,4 +112,5 @@ export type AddressesAction =
   | SetHDPathAction
   | SetTxCountAction
   | PendingBalanceAction
+  | IFetchHdPathsAction
   ;

@@ -110,7 +110,7 @@ export class AccountShow extends React.Component<AccountShowProps, IState> {
                 leftColumn={<div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <IdentityIcon id={acc.id}/>
                 </div>}
-                rightColumn={
+                rightColumn={(
                   <React.Fragment>
                     {!this.state.edit && (
                       <AddressAvatar
@@ -121,15 +121,17 @@ export class AccountShow extends React.Component<AccountShowProps, IState> {
                         addressProps={{ hideCopy: false }}
                       />
                       )}
-                    {this.state.edit && <InlineEdit
-                      placeholder='Account name'
-                      initialValue={acc.name}
-                      id={acc.id}
-                      onSave={this.handleSave}
-                      onCancel={this.cancelEdit}
-                    />}
+                    {this.state.edit && (
+                      <InlineEdit
+                        placeholder='Account name'
+                        initialValue={acc.name}
+                        id={acc.id}
+                        onSave={this.handleSave}
+                        onCancel={this.cancelEdit}
+                      />
+                      )}
                   </React.Fragment>
-                }
+                )}
               />
               <FormRow
                 rightColumn={
