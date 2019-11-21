@@ -1,4 +1,4 @@
-import { addHexPrefix, separateThousands, parseDate } from './utils';
+import { addHexPrefix, parseDate, separateThousands } from './utils';
 
 describe('addHexPrefix', () => {
   it('should work', () => {
