@@ -1,7 +1,7 @@
 import { BlockchainCode } from '@emeraldwallet/core';
 
 type TokensCollection = {
-  [code in BlockchainCode]: any[];
+  [code in BlockchainCode]: ITokenInfo[];
 };
 
 export interface ITokenInfo {

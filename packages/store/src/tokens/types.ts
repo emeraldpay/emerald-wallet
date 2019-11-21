@@ -28,16 +28,16 @@ export enum ActionTypes {
   // LOADING: 'TOKEN/LOADING',
 }
 
-export interface SetTokenBalanceAction {
+export interface ISetTokenBalanceAction {
   type: ActionTypes.SET_TOKEN_BALANCE;
   payload: any;
 }
 
-export interface RequestTokenBalanceAction {
+export interface IRequestTokenBalanceAction {
   type: ActionTypes.REQUEST_TOKEN_BALANCE;
   payload: any;
 }
 
 export type TokensAction =
-  SetTokenBalanceAction |
-  RequestTokenBalanceAction | any;
+  ISetTokenBalanceAction |
+  IRequestTokenBalanceAction | any;

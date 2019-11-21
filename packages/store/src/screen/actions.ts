@@ -1,7 +1,7 @@
 import { Dispatched } from '../types';
-import { ActionTypes, DialogAction, OpenAction } from './types';
+import { ActionTypes, DialogAction, OpenAction, Pages } from './types';
 
-export function gotoScreen (screen: any, item: any = null): OpenAction {
+export function gotoScreen (screen: string | Pages, item: any = null): OpenAction {
   return {
     type: ActionTypes.OPEN,
     screen,

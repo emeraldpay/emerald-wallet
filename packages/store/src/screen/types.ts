@@ -10,7 +10,8 @@ export enum ActionTypes {
 }
 
 export enum Pages {
-  ACCOUNT = 'account'
+  ACCOUNT = 'account',
+  HOME = 'home'
 }
 
 export interface IScreenState {
@@ -23,7 +24,7 @@ export interface IScreenState {
 
 export interface OpenAction {
   type: ActionTypes.OPEN;
-  screen: string;
+  screen: string | Pages;
   item: any;
 }
 

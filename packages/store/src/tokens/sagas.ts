@@ -3,9 +3,9 @@ import { IApi } from '@emeraldwallet/core';
 import { all, call, put, takeEvery } from 'redux-saga/effects';
 import { setTokenBalance } from './actions';
 import { tokenContract } from './erc20';
-import { ActionTypes, ITokenBalance, RequestTokenBalanceAction } from './types';
+import { ActionTypes, IRequestTokenBalanceAction, ITokenBalance } from './types';
 
-function* fetchBalanceInfo (api: IApi, action: RequestTokenBalanceAction) {
+function* fetchBalanceInfo (api: IApi, action: IRequestTokenBalanceAction) {
   const { token, address, chain } = action.payload;
   // Call Erc20 contract to request balance for address
   const data = tokenContract.functionToData('balanceOf', { _owner: address });

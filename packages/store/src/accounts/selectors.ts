@@ -10,6 +10,13 @@ export function all (state: any): AddressList {
     .toList();
 }
 
+export function allAsArray (state: any): AddressMap[] {
+  return state[moduleName]
+    .get('addresses')
+    .filter((address: any) => typeof address !== 'undefined')
+    .toArray();
+}
+
 export function allByBlockchain (state: any, blockchain: BlockchainCode): AddressList {
   return all(state)
     .filter((address) => address!.get('blockchain').toLowerCase() === blockchain.toLowerCase())

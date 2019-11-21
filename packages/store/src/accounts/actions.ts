@@ -7,22 +7,23 @@ import {
   isValidEthAddress,
   vault
 } from '@emeraldwallet/core';
-import { ipcRenderer } from 'electron';
-import { dispatchRpcError } from '../screen/actions';
+import {ipcRenderer} from 'electron';
+import {dispatchRpcError} from '../screen/actions';
 import * as settings from '../settings';
 import * as history from '../txhistory';
-import { Dispatched } from '../types';
+import {Dispatched} from '../types';
 import * as selectors from './selectors';
 import {
   ActionTypes,
   AddAccountAction,
+  IFetchErc20BalancesAction,
   IFetchHdPathsAction,
+  IUpdateAddressAction,
   PendingBalanceAction,
   SetHDPathAction,
   SetListAction,
   SetLoadingAction,
-  SetTxCountAction,
-  UpdateAddressAction
+  SetTxCountAction
 } from './types';
 
 export function setLoadingAction (loading: boolean): SetLoadingAction {
@@ -38,6 +39,12 @@ export function setLoadingAction (loading: boolean): SetLoadingAction {
 export function fetchHdPathsAction (): IFetchHdPathsAction {
   return {
     type: ActionTypes.FETCH_HD_PATHS
+  };
+}
+
+export function fetchErc20BalancesAction (): IFetchErc20BalancesAction {
+  return {
+    type: ActionTypes.FETCH_ERC20_BALANCES
   };
 }
 
@@ -65,6 +72,7 @@ export function loadAccountsList (onLoaded?: Function): Dispatched<SetListAction
           if (changed || firstLoad) {
             dispatch(setListAction(result));
             dispatch(fetchHdPathsAction() as any);
+            dispatch(fetchErc20BalancesAction() as any);
 
             const addedAddresses = result
               .filter((x) => existing.indexOf(x.address) < 0)
@@ -146,7 +154,7 @@ export function exportKeyFile (blockchain: BlockchainCode, accountId: string): a
 
 export function updateAccount (
   blockchain: BlockchainCode, address: string, name: string, description: string
-): Dispatched<UpdateAddressAction> {
+): Dispatched<IUpdateAddressAction> {
   return (dispatch, getState, api) => {
     const found = selectors.find(getState(), address, blockchain);
     if (!found) {

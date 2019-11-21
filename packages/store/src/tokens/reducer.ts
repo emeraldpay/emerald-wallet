@@ -1,9 +1,9 @@
 import { BlockchainCode } from '@emeraldwallet/core';
-import { ActionTypes, ITokensState, SetTokenBalanceAction, TokensAction } from './types';
+import { ActionTypes, ITokensState, ISetTokenBalanceAction, TokensAction } from './types';
 
 export const INITIAL_STATE: ITokensState = {};
 
-function onSetTokenBalance (state: ITokensState, action: SetTokenBalanceAction): ITokensState {
+function onSetTokenBalance (state: ITokensState, action: ISetTokenBalanceAction): ITokensState {
 
   const { chain, address, balance } = action.payload;
   const chainState = state[chain as BlockchainCode] || {};

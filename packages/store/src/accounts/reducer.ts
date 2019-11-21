@@ -12,7 +12,7 @@ import {
   SetListAction,
   SetLoadingAction,
   SetTxCountAction,
-  UpdateAddressAction
+  IUpdateAddressAction
 } from './types';
 
 export const INITIAL_STATE = fromJS({
@@ -104,7 +104,7 @@ function onSetBalance (state: any, action: SetBalanceAction) {
   });
 }
 
-function onUpdateAccount (state: any, action: UpdateAddressAction) {
+function onUpdateAccount (state: any, action: IUpdateAddressAction) {
   const { address, name, description } = action.payload;
   const blockchain = blockchainByName(action.payload.blockchain).params.code;
   return updateAccount(state, address, blockchain,(acc: any) => acc

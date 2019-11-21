@@ -40,10 +40,7 @@ export default connect(
       dispatch(screen.actions.showDialog('receive', address));
     },
     goBack: () => {
-      dispatch(screen.actions.gotoScreen('home'));
-    },
-    loadTokens: (chain: any, token: any, address: string) => {
-      dispatch(tokens.actions.requestTokenBalance(chain, token, address));
+      dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
     },
     editAccount: (data: any) => {
       return new Promise((resolve, reject) => {

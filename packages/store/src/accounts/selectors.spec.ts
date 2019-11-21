@@ -1,7 +1,24 @@
 import { Wei } from '@emeraldplatform/eth';
 import { BlockchainCode } from '@emeraldwallet/core';
 import { fromJS } from 'immutable';
-import { balanceByChain } from './selectors';
+import { allAsArray, balanceByChain } from './selectors';
+
+describe('allAsArray', () => {
+  const state = {
+    addresses: fromJS({
+      addresses: [{
+        id: '0x1',
+        balance: new Wei(1234),
+        blockchain: 'etc'
+      }]
+    })
+  };
+  it('should returns array', () => {
+    const result = allAsArray(state);
+    expect(result.length).toEqual(1);
+    expect(result[0].get('id')).toEqual('0x1');
+  });
+});
 
 describe('selectTotalBalance', () => {
   it('returns zero if no accounts', () => {
