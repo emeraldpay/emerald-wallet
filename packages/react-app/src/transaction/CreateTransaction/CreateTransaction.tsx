@@ -371,7 +371,7 @@ export default connect(
     const blockchain = blockchainByName(chain);
     const txFeeSymbol = blockchain.params.coinTicker;
     const allTokens = registry.tokens[chain as BlockchainCode]
-      .concat([{ address: '', symbol: txFeeSymbol, name: txFeeSymbol }])
+      .concat([{ address: '', symbol: txFeeSymbol, decimals: blockchain.params.decimals }])
       .reverse();
     const gasPrice = blockchains.selectors.gasPrice(state, chain);
     const fiatRate = state.wallet.settings.get('localeRate');
