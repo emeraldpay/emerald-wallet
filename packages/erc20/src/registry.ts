@@ -36,6 +36,11 @@ export const registry = {
         address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
         decimals: 18,
         symbol: 'DAI'
+      },
+      {
+        address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
+        decimals: 6,
+        symbol: 'USDT'
       }
     ],
     [BlockchainCode.Morden]: [],
