@@ -10,10 +10,10 @@ const TranslatedSettings = withTranslation('translation')(Settings);
 export default connect(
   (state: any, ownProps: any) => {
     return {
-      showHiddenAccounts: state.wallet.settings.get('showHiddenAccounts', false),
-      currency: state.wallet.settings.get('localeCurrency', '').toLowerCase(),
+      showHiddenAccounts: settings.selectors.showHiddenAccounts(state),
+      currency: (settings.selectors.fiatCurrency(state) || '').toLowerCase(),
       language: i18n.language,
-      numConfirmations: state.wallet.settings.get('numConfirmations')
+      numConfirmations: settings.selectors.numConfirms(state)
     };
   },
   (dispatch, ownProps) => ({
@@ -29,8 +29,8 @@ export default connect(
         numConfirmations: data.numConfirmations
       };
       i18n.changeLanguage(data.language);
-      // TODO: re-write using saga
-      dispatch(settings.actions.update(newSettings) as any);
+      dispatch(settings.actions.updateSettings(newSettings) as any);
+      // TODO: get rid of this
       dispatch(addresses.actions.loadAccountsList() as any);
     }
   })

@@ -1,9 +1,10 @@
 import { fromJS } from 'immutable';
 import {
   ActionTypes,
-  ISetExchRatesAction, ISettingsState,
+  ISetExchRatesAction,
+  ISetModeAction,
+  ISettingsState,
   SetLocaleCurrencyAction,
-  SetModeAction,
   SetNumConfirmAction,
   SetShowHiddenAccsAction,
   SettingsAction
@@ -23,7 +24,6 @@ const initial = fromJS({
 
 function onSetLocaleCurrency (state: ISettingsState, action: SetLocaleCurrencyAction) {
   const currency = action.currency.toUpperCase();
-  const rate = state.get('rates', {}).get(currency);
 
   // persist settings
   if (localStorage) {
@@ -32,7 +32,7 @@ function onSetLocaleCurrency (state: ISettingsState, action: SetLocaleCurrencyAc
 
   return state
     .set('localeCurrency', currency)
-    .set('localeRate', rate);
+    .set('rates', fromJS({}));
 }
 
 function onExchangeRates (state: ISettingsState, action: ISetExchRatesAction) {
@@ -59,7 +59,7 @@ function onSetConfirmations (state: ISettingsState, action: SetNumConfirmAction)
   return state.set('numConfirmations', action.numConfirmations);
 }
 
-function onSetMode (state: ISettingsState, action: SetModeAction) {
+function onSetMode (state: ISettingsState, action: ISetModeAction) {
   return state.set('mode', fromJS(action.payload));
 }
 

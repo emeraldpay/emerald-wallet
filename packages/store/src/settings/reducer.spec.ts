@@ -1,8 +1,37 @@
 import { setRatesAction } from './actions';
 import settingsReducers from './reducer';
+import { fiatCurrency, fiatRate } from './selectors';
 import { ActionTypes } from './types';
 
+const asGlobal = (settingsState: any): any => ({ wallet: { settings: settingsState } });
+
 describe('settingsReducers', () => {
+  it('should reset fiat rates after locale currency change', () => {
+    // prepare
+    let state = settingsReducers(undefined, {
+      type: ActionTypes.SET_LOCALE_CURRENCY,
+      currency: 'EUR'
+    });
+    state = settingsReducers(state, setRatesAction(
+      {
+        ETC: 5,
+        ETH: 10
+      }
+    ));
+    expect(fiatRate('ETC', asGlobal(state))).toEqual(5);
+    expect(fiatRate('ETH', asGlobal(state))).toEqual(10);
+
+    // do
+    state = settingsReducers(state, {
+      type: ActionTypes.SET_LOCALE_CURRENCY,
+      currency: 'RUR'
+    });
+
+    // assert
+    expect(fiatRate('ETC', asGlobal(state))).toBeNull();
+    expect(fiatRate('ETH', asGlobal(state))).toBeNull();
+  });
+
   it('EXCHANGE_RATES should update locale currency rate', () => {
     // prepare
     let state = settingsReducers(undefined, {
@@ -19,7 +48,8 @@ describe('settingsReducers', () => {
     ));
 
     // assert
-    expect(state.get('localeRate')).toEqual(5);
+    expect(fiatRate('ETC', asGlobal(state))).toEqual(5);
+    expect(fiatRate('ETH', asGlobal(state))).toEqual(10);
   });
 
   it('should store locale currency in uppercase', () => {
@@ -31,7 +61,7 @@ describe('settingsReducers', () => {
     });
 
     // assert
-    expect(state.get('localeCurrency')).toEqual('EUR');
+    expect(fiatCurrency(asGlobal(state))).toEqual('EUR');
   });
 
   it('SET_SHOW_HIDDEN_ACCOUNTS should update state', () => {

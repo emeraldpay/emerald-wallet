@@ -24,7 +24,7 @@ export default connect(
     const currentCurrency = settings.selectors.fiatCurrency(state);
     const fiatRate = settings.selectors.fiatRate(chain, state);
     const coins = new Wei(tx.get('value')).toEther();
-    const fiatAmount = Currency.format(Number(Currency.convert(coins, fiatRate)), currentCurrency);
+    const fiatAmount = (fiatRate == null) ? '' : Currency.format(Number(Currency.convert(coins, fiatRate)), currentCurrency);
     const plainTx = tx.toJS();
     const blockchain = Blockchains[plainTx.blockchain];
     return {
@@ -42,18 +42,18 @@ export default connect(
   },
   (dispatch, ownProps) => ({
     cancel: () => {
-      dispatch(gotoScreen('home'));
+      dispatch(gotoScreen(screen.Pages.HOME));
     },
     goBack: (account: any) => {
       if (account) {
-        dispatch(gotoScreen('account', account));
+        dispatch(gotoScreen(screen.Pages.ACCOUNT, account));
       } else {
-        dispatch(gotoScreen('home'));
+        dispatch(gotoScreen(screen.Pages.HOME));
       }
     },
     openAccount: (account: any) => {
       if (account) {
-        dispatch(gotoScreen('account', account));
+        dispatch(gotoScreen(screen.Pages.ACCOUNT, account));
       }
     },
     repeatTx: (transaction: any, toAccount: any, fromAccount: any) => {

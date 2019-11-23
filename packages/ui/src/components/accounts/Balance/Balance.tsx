@@ -29,7 +29,7 @@ export interface IProps {
    * Decimals (8 for Bitcoin, 18 for Ethereum)
    */
   decimals: number;
-  fiatRate?: number;
+  fiatRate?: number | null;
   fiatCurrency?: string;
   showFiat?: boolean;
   coinsStyle?: any;

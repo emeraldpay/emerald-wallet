@@ -17,7 +17,7 @@ function getStyles (theme?: any) {
   };
 }
 
-interface Props {
+interface IProps {
   onChangeGasLimit?: Function;
   txFee: Wei;
   txFeeToken: string;
@@ -27,8 +27,8 @@ interface Props {
   classes?: any;
 }
 
-export class GasLimitField extends React.Component<Props> {
-  constructor (props: Props) {
+export class GasLimitField extends React.Component<IProps> {
+  constructor (props: IProps) {
     super(props);
     this.onChangeGasLimit = this.onChangeGasLimit.bind(this);
   }

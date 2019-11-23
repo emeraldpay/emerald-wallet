@@ -2,10 +2,13 @@ import { convert } from '@emeraldplatform/core';
 import { Wei } from '@emeraldplatform/eth';
 import { BlockchainCode, Currency } from '@emeraldwallet/core';
 
-export function txFeeFiat (gasPrice: any, gasLimit: number, rate: number): string {
+export function txFeeFiat (gasPrice: string | number, gasLimit: number, rate: number | null): string {
+  if (rate == null) {
+    return '--';
+  }
   const wei = new Wei(gasPrice).mul(convert.toBigNumber(gasLimit));
   const ether = wei.toEther(18);
-  return Currency.convert(ether.toString(), rate);
+  return Currency.convert(ether, rate);
 }
 
 export const traceValidate = (chain: BlockchainCode, tx: any, dispatch: any, estimateGas: any): Promise<number> => {
