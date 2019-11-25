@@ -21,7 +21,7 @@ const handleTrigger = (check, resolve, store) => {
 
 export function onceServicesStart(store) {
   const check = () => {
-    const { terms, connector } = store.getState().launcher.toJS();
+    const { terms } = store.getState().launcher.toJS();
     return terms === TERMS_VERSION;
   };
 

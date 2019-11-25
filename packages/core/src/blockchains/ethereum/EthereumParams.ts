@@ -1,5 +1,5 @@
-import IBlockchainParams from '../IBlockchainParams';
 import { BlockchainCode } from '../blockchains';
+import IBlockchainParams from '../IBlockchainParams';
 
 class EthereumParams implements IBlockchainParams {
   public decimals: number = 18;

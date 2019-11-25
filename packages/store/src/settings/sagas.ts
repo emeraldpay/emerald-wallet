@@ -1,6 +1,7 @@
 import { ipcRenderer } from 'electron';
-import { put, takeEvery } from 'redux-saga/effects';
-import { ActionTypes, ILoadSettingsAction } from './types';
+import { put, takeEvery, takeLatest } from 'redux-saga/effects';
+import * as screen from '../screen';
+import { ActionTypes, ILoadSettingsAction, IUpdateSettingsAction } from './types';
 
 function* loadSettings (action: ILoadSettingsAction) {
   if (localStorage) {
@@ -28,6 +29,30 @@ function* loadSettings (action: ILoadSettingsAction) {
   }
 }
 
+function* updateSettings (action: IUpdateSettingsAction) {
+  const settings = action.payload;
+
+  yield put({
+    currency: settings.localeCurrency,
+    type: ActionTypes.SET_LOCALE_CURRENCY
+  });
+
+  yield put({
+    show: settings.showHiddenAccounts,
+    type: ActionTypes.SET_SHOW_HIDDEN_ACCOUNTS
+  });
+
+  yield put({
+    numConfirmations: parseInt(settings.numConfirmations, 10),
+    type: ActionTypes.NUM_CONFIRMATIONS
+  });
+
+  yield put(screen.actions.showNotification('Settings has been saved', 'success', 3000, null, null));
+
+  ipcRenderer.send('prices/setCurrency', settings.localeCurrency);
+}
+
 export function* root () {
   yield takeEvery(ActionTypes.LOAD_SETTINGS, loadSettings);
+  yield takeLatest(ActionTypes.UPDATE, updateSettings);
 }

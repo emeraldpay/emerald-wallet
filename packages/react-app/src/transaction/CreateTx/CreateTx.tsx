@@ -90,7 +90,7 @@ class CreateTransaction extends React.Component<IProps> {
           <GasLimitField
             onChangeGasLimit={this.props.onChangeGasLimit}
             gasLimit={this.props.tx.gas.toString()}
-            txFee={this.props.tx.gasPrice}
+            txFee={this.props.tx.getFees()}
             txFeeToken={this.props.txFeeToken}
             txFeeFiat={this.props.txFeeFiat}
             fiatCurrency={this.props.currency}

@@ -4,7 +4,8 @@ export enum ActionTypes {
   SET_SHOW_HIDDEN_ACCOUNTS = 'SETTINGS/SET_SHOW_HIDDEN_ACCOUNTS',
   NUM_CONFIRMATIONS = 'SETTINGS/NUM_CONFIRMATIONS',
   MODE = 'SETTINGS/MODE',
-  LOAD_SETTINGS = 'SETTINGS/LOAD'
+  LOAD_SETTINGS = 'SETTINGS/LOAD',
+  UPDATE = 'SETTINGS/UPDATE'
 }
 
 export type ISettingsState = any;
@@ -13,7 +14,12 @@ export interface ILoadSettingsAction {
   type: ActionTypes.LOAD_SETTINGS;
 }
 
-export interface SetModeAction {
+export interface IUpdateSettingsAction {
+  type: ActionTypes.UPDATE;
+  payload: any;
+}
+
+export interface ISetModeAction {
   type: ActionTypes.MODE;
   payload: any;
 }
@@ -41,9 +47,10 @@ export interface ISetExchRatesAction {
 }
 
 export type SettingsAction =
-  SetModeAction |
+  ISetModeAction |
   SetNumConfirmAction |
   SetLocaleCurrencyAction |
   SetShowHiddenAccsAction |
   ISetExchRatesAction |
-  ILoadSettingsAction;
+  ILoadSettingsAction |
+  IUpdateSettingsAction;

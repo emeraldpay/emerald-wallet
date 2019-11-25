@@ -1,7 +1,7 @@
 import { BlockchainCode } from '@emeraldwallet/core';
 
 type TokensCollection = {
-  [code in BlockchainCode]: any[];
+  [code in BlockchainCode]: ITokenInfo[];
 };
 
 export interface ITokenInfo {
@@ -10,8 +10,15 @@ export interface ITokenInfo {
   symbol: string;
 }
 
+/**
+ * Empty wrapper as a workaround typescript type losing
+ */
+function createTokenInfos (info: TokensCollection): TokensCollection {
+  return info;
+}
+
 export const registry = {
-  tokens: {
+  tokens: createTokenInfos({
     [BlockchainCode.ETC]: [
       {
         address: '0x085fb4f24031eaedbc2b611aa528f22343eb52db',
@@ -23,7 +30,17 @@ export const registry = {
       {
         address: '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359',
         decimals: 18,
+        symbol: 'SAI'
+      },
+      {
+        address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
+        decimals: 18,
         symbol: 'DAI'
+      },
+      {
+        address: '0xdac17f958d2ee523a2206206994597c13d831ec7',
+        decimals: 6,
+        symbol: 'USDT'
       }
     ],
     [BlockchainCode.Morden]: [],
@@ -35,7 +52,7 @@ export const registry = {
       }
     ],
     [BlockchainCode.Unknown]: []
-  } as TokensCollection,
+  }),
   all: () => {
     return registry.tokens;
   },

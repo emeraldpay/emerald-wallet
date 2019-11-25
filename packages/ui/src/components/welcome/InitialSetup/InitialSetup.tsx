@@ -1,18 +1,15 @@
-import Grid from '@material-ui/core/Grid';
-import Step from '@material-ui/core/Step';
-import StepLabel from '@material-ui/core/StepLabel';
-import Stepper from '@material-ui/core/Stepper';
+import { Grid, Step, StepLabel, Stepper } from '@material-ui/core';
 import * as React from 'react';
 
 import Terms from '../Terms';
 
-interface Props {
+interface IProps {
   terms?: any;
   onTermsAgreed?: any;
   currentTermsVersion?: any;
 }
 
-class InitialSetup extends React.Component<Props> {
+class InitialSetup extends React.Component<IProps> {
 
   public render () {
     const {

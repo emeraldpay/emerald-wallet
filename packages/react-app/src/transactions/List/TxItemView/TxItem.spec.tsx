@@ -19,8 +19,8 @@ describe('TxItem', () => {
     const comp = render(
       <ThemeProvider theme={Theme}>
         <TxItem
-          openAccount={() => {}}
-          openTx={() => {}}
+          openAccount={jest.fn()}
+          openTx={jest.fn()}
           netParams={
           {
             currentBlockHeight: 100,
@@ -34,6 +34,7 @@ describe('TxItem', () => {
       </ThemeProvider>
     );
     expect(comp).toBeDefined();
+    expect(comp.getByText('0.0000000000001')).toBeDefined();
   });
 
 });

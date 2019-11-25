@@ -103,7 +103,8 @@ export const Terms = ({ onAgree }: IProps) => {
           label='I Agree'
           primary={true}
           icon={<CheckIcon />}
-          onClick={onAgree} />
+          onClick={onAgree}
+        />
       </Grid>
     </Grid>
   );

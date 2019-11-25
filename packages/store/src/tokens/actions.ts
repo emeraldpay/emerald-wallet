@@ -1,7 +1,7 @@
 import { tokenContract } from './erc20';
-import { ActionTypes, ITokenBalance, RequestTokenBalanceAction, SetTokenBalanceAction } from './types';
+import { ActionTypes, ITokenBalance, IRequestTokenBalanceAction, ISetTokenBalanceAction } from './types';
 
-export function setTokenBalance (chain: any, tokenBalance: ITokenBalance, address: any): SetTokenBalanceAction {
+export function setTokenBalance (chain: any, tokenBalance: ITokenBalance, address: any): ISetTokenBalanceAction {
   return {
     type: ActionTypes.SET_TOKEN_BALANCE,
     payload: {
@@ -12,7 +12,7 @@ export function setTokenBalance (chain: any, tokenBalance: ITokenBalance, addres
   };
 }
 
-export function requestTokenBalance (chain: any, token: any, address: string): RequestTokenBalanceAction {
+export function requestTokenBalance (chain: any, token: any, address: string): IRequestTokenBalanceAction {
   return {
     type: ActionTypes.REQUEST_TOKEN_BALANCE,
     payload: {

@@ -53,3 +53,6 @@ export { default as ImportLedgerAccount } from './ledger/ImportAccount';
 
 // settings
 export { default as Settings } from './settings/Settings';
+
+// onboarding
+export { default as InitialSetup } from './onboarding/InitialSetup';

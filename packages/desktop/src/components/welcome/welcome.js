@@ -6,8 +6,7 @@ import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import {withStyles} from '@material-ui/styles';
 import { launcher } from '@emeraldwallet/store';
-import InitialSetup from './initialSetup';
-import { TERMS_VERSION } from '../../store/config';
+import { InitialSetup } from '@emeraldwallet/react-app';
 
 const getStyles = (theme) => ({
   brandPart1: {
@@ -20,7 +19,7 @@ const getStyles = (theme) => ({
 
 const Welcome = (props) => {
   const {
-    message, level, needSetup, classes,
+    message, level, needSetup, classes, currentTermsVersion
   } = props;
   let messageBlock = null;
   if (message) {
@@ -37,7 +36,7 @@ const Welcome = (props) => {
     return (
       <Grid container justify='center' alignItems='center'>
         <Grid item xs={10}>
-          <InitialSetup currentTermsVersion={TERMS_VERSION}/>
+          <InitialSetup currentTermsVersion={currentTermsVersion}/>
         </Grid>
       </Grid>
     );
@@ -80,8 +79,8 @@ export default connect(
     const msg = launcher.selectors.getMessage(state);
     return ({
       ...msg,
-      needSetup: state.launcher.get('configured') && (state.launcher.get('terms') !== TERMS_VERSION),
+      needSetup: state.launcher.get('configured') && (state.launcher.get('terms') !== ownProps.currentTermsVersion),
     });
   },
-  (dispatch, ownProps) => ({})
+  null
 )(StyledWelcome);

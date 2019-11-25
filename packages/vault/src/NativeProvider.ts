@@ -32,7 +32,9 @@ export class NativeVaultProvider implements IVaultProvider {
     return Promise.resolve(id);
   }
 
-  public importMnemonic (passphrase: string, name: string, description: string, mnemonic: string, path: string, chain: string): Promise<string> {
+  public importMnemonic (
+    passphrase: string, name: string, description: string, mnemonic: string, path: string, chain: string
+  ): Promise<string> {
     const id = this.vault.importMnemonic(chain, { name, description, mnemonic, hdPath: path, password: passphrase });
     return Promise.resolve(id);
   }

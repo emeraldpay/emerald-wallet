@@ -1,6 +1,3 @@
-import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
-// import { waitForServicesRestart } from 'store/store';
-import { screen } from '..';
 import createLogger from '../../utils/logger';
 
 const log = createLogger('launcherActions');
@@ -25,13 +22,14 @@ export function readConfig() {
   };
 }
 
-export function agreeOnTerms(v) {
-  ipcRenderer.send('terms', v);
-  return {
-    type: 'LAUNCHER/TERMS',
-    version: v,
-  };
-}
+// TODO: Depricated
+// export function agreeOnTerms(v) {
+//   ipcRenderer.send('terms', v);
+//   return {
+//     type: 'LAUNCHER/TERMS',
+//     version: v,
+//   };
+// }
 
 // TODO: Depricated
 // export function saveSettings(extraSettings) {

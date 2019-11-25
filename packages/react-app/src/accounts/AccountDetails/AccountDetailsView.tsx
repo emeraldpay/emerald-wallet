@@ -2,8 +2,7 @@ import {
   Account as AddressAvatar, ButtonGroup, IdentityIcon, Page
 } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import { blockchainByName, BlockchainCode, IAccount } from '@emeraldwallet/core';
-import { registry } from '@emeraldwallet/erc20';
+import { blockchainByName, IAccount } from '@emeraldwallet/core';
 import { Button, FormRow, InlineEdit } from '@emeraldwallet/ui';
 import { withStyles } from '@material-ui/styles';
 import * as QRCode from 'qrcode.react';
@@ -33,7 +32,6 @@ export interface IProps {
   showReceiveDialog?: any;
   txList?: React.ReactElement;
   tokens?: React.ReactElement;
-  loadTokens?: any;
 }
 
 type AccountShowProps = IProps & WithTranslation;
@@ -48,20 +46,6 @@ export class AccountShow extends React.Component<AccountShowProps, IState> {
     this.state = {
       edit: false
     };
-  }
-
-  public componentDidMount (): void {
-    if (this.props.loadTokens) {
-      const { blockchain, id } = this.props.account;
-
-      // Look up all known tokens for current blockchain
-      const _tokens = registry.all()[blockchain as BlockchainCode];
-
-      // Request balance for each token for current address
-      _tokens.forEach((t: any) => {
-        this.props.loadTokens(blockchain, t, id);
-      });
-    }
   }
 
   public handleEdit = () => {
@@ -110,7 +94,7 @@ export class AccountShow extends React.Component<AccountShowProps, IState> {
                 leftColumn={<div style={{ display: 'flex', justifyContent: 'flex-end' }}>
                   <IdentityIcon id={acc.id}/>
                 </div>}
-                rightColumn={
+                rightColumn={(
                   <React.Fragment>
                     {!this.state.edit && (
                       <AddressAvatar
@@ -121,26 +105,29 @@ export class AccountShow extends React.Component<AccountShowProps, IState> {
                         addressProps={{ hideCopy: false }}
                       />
                       )}
-                    {this.state.edit && <InlineEdit
-                      placeholder='Account name'
-                      initialValue={acc.name}
-                      id={acc.id}
-                      onSave={this.handleSave}
-                      onCancel={this.cancelEdit}
-                    />}
+                    {this.state.edit && (
+                      <InlineEdit
+                        placeholder='Account name'
+                        initialValue={acc.name}
+                        id={acc.id}
+                        onSave={this.handleSave}
+                        onCancel={this.cancelEdit}
+                      />
+                      )}
                   </React.Fragment>
-                }
+                )}
               />
               <FormRow
                 rightColumn={
-                  acc.balance && <Balance
-                    showFiat={showFiat}
-                    coinsStyle={{ fontSize: '20px', lineHeight: '24px' }}
-                    balance={acc.balance}
-                    decimals={18}
-                    symbol={coinTicker}
-                  />
-                }
+                  acc.balance && (
+                    <Balance
+                      showFiat={showFiat}
+                      coinsStyle={{ fontSize: '20px', lineHeight: '24px' }}
+                      balance={acc.balance}
+                      decimals={18}
+                      symbol={coinTicker}
+                    />
+                  )}
               />
               <FormRow
                 rightColumn={this.props.tokens}
@@ -151,7 +138,7 @@ export class AccountShow extends React.Component<AccountShowProps, IState> {
                 rightColumn={<div>{acc.hdpath}</div>}
               /> }
               <FormRow
-                rightColumn={
+                rightColumn={(
                   <div>
                     <ButtonGroup>
                       <Button
@@ -167,7 +154,7 @@ export class AccountShow extends React.Component<AccountShowProps, IState> {
                       <AccountActions account={account}/>
                     </ButtonGroup>
                   </div>
-                }
+                )}
               />
             </div>
 

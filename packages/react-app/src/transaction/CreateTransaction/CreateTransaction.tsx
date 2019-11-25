@@ -371,10 +371,10 @@ export default connect(
     const blockchain = blockchainByName(chain);
     const txFeeSymbol = blockchain.params.coinTicker;
     const allTokens = registry.tokens[chain as BlockchainCode]
-      .concat([{ address: '', symbol: txFeeSymbol, name: txFeeSymbol }])
+      .concat([{ address: '', symbol: txFeeSymbol, decimals: blockchain.params.decimals }])
       .reverse();
     const gasPrice = blockchains.selectors.gasPrice(state, chain);
-    const fiatRate = state.wallet.settings.get('localeRate');
+    const fiatRate = settings.selectors.fiatRate(chain, state);
 
     return {
       chain,
@@ -394,15 +394,18 @@ export default connect(
         const etherBalance = addresses.selectors.find(state, address, chain)!.balance;
         return new Units(etherBalance.toString(EthUnits.WEI), 18);
       },
-      getFiatForAddress: (address: string, token: any) => {
+      getFiatForAddress: (address: string, token: any): string => {
         if (token !== txFeeSymbol) {
           return '??';
         }
         const selectedAccount = addresses.selectors.find(state, address, chain);
         const newBalance = selectedAccount!.balance;
-        return newBalance.getFiat(fiatRate).toString();
+        return newBalance.getFiat(fiatRate);
       },
-      getTxFeeFiatForGasLimit: (gasLimit: number) => txFeeFiat(gasPrice, gasLimit, fiatRate),
+      getTxFeeFiatForGasLimit: (gasLimit: number) => {
+        const price = blockchains.selectors.gasPrice(state, chain);
+        return txFeeFiat(price.value.toString(), gasLimit, fiatRate);
+      },
       currency: settings.selectors.fiatCurrency(state),
       gasPrice,
       tokenSymbols: allTokens.map((i: any) => i.symbol),
@@ -415,7 +418,7 @@ export default connect(
   },
 
   (dispatch, ownProps: IOwnProps) => ({
-    onCancel: () => dispatch(screen.actions.gotoScreen('home', ownProps.account)),
+    onCancel: () => dispatch(screen.actions.gotoScreen(screen.Pages.HOME, ownProps.account)),
     onEmptyAddressBookClick: () => dispatch(screen.actions.gotoScreen('add-address')),
     signAndSend: (args: any) => {
       sign(dispatch, ownProps, args)

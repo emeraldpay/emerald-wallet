@@ -42,12 +42,22 @@ export enum ActionTypes {
   ADD_ACCOUNT = 'ACCOUNT/ADD_ACCOUNT',
   SET_LIST = 'ACCOUNT/SET_LIST',
   SET_HD_PATH = 'ACCOUNT/SET_HD_PATH',
+  FETCH_HD_PATHS = 'ACCOUNT/FETCH_HD_PATHS',
   UPDATE_ACCOUNT = 'ACCOUNT/UPDATE_ACCOUNT',
   PENDING_BALANCE = 'ACCOUNT/PENDING_BALANCE',
-  SET_TXCOUNT = 'ACCOUNT/SET_TXCOUNT'
+  SET_TXCOUNT = 'ACCOUNT/SET_TXCOUNT',
+  FETCH_ERC20_BALANCES = 'ACCOUNT/FETCH_ERC20_BALANCES'
 }
 
-export interface UpdateAddressAction {
+export interface IFetchErc20BalancesAction {
+  type: ActionTypes.FETCH_ERC20_BALANCES;
+}
+
+export interface IFetchHdPathsAction {
+  type: ActionTypes.FETCH_HD_PATHS;
+}
+
+export interface IUpdateAddressAction {
   type: ActionTypes.UPDATE_ACCOUNT;
   payload: any;
 }
@@ -102,9 +112,10 @@ export type AddressesAction =
   | SetListAction
   | SetLoadingAction
   | SetBalanceAction
-  | UpdateAddressAction
+  | IUpdateAddressAction
   | AddAccountAction
   | SetHDPathAction
   | SetTxCountAction
   | PendingBalanceAction
+  | IFetchHdPathsAction
   ;

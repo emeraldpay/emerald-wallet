@@ -10,7 +10,7 @@ import {
 import createLogger from '../../utils/logger';
 import Welcome from '../../components/welcome/welcome';
 import { screen } from '@emeraldwallet/store';
-
+import { TERMS_VERSION } from '../../store/config';
 const log = createLogger('screen');
 
 const Screen = (props) => {
@@ -85,7 +85,7 @@ const Screen = (props) => {
     return <MnemonicWizard />;
   }
   if (props.screen === 'welcome') {
-    return <Welcome />;
+    return <Welcome currentTermsVersion={TERMS_VERSION} />;
   }
   if (props.screen === 'settings') {
     return <Settings />;
