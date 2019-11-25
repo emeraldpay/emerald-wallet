@@ -1,17 +1,16 @@
-import { convert, fromBaseUnits, InputDataDecoder } from '@emeraldplatform/core';
+import { convert, InputDataDecoder } from '@emeraldplatform/core';
 import { Account as AddressAvatar } from '@emeraldplatform/ui';
 import { ArrowDown } from '@emeraldplatform/ui-icons';
-import { Units, utils } from '@emeraldwallet/core';
+import { IUnits, Units, utils } from '@emeraldwallet/core';
 import { abi as TokenAbi } from '@emeraldwallet/erc20';
 import { TableCell, TableRow } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
-import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import TxStatus from './Status';
 
 const decoder = new InputDataDecoder(TokenAbi);
 
-export const styles2 = {
+const styles = {
   columnArrow: {
     paddingLeft: '0px !important',
     paddingRight: '0px !important',
@@ -78,9 +77,8 @@ const timeStampFormatter = (lang: any) => (timestamp: any) => {
   return timestampEvent.toLocaleDateString(lang, options);
 };
 
-const defaultAmountRenderer = ((balance: Units, ticker: any) => {
-  const coins = fromBaseUnits(new BigNumber(balance.amount), balance.decimals).toString();
-  return (<React.Fragment>{coins} {ticker}</React.Fragment>);
+const defaultAmountRenderer = ((balance: IUnits, ticker: any) => {
+  return (<React.Fragment>{balance.toString()} {ticker}</React.Fragment>);
 });
 
 export const TxItem = (props: ITxItemProps) => {
@@ -146,6 +144,6 @@ export const TxItem = (props: ITxItemProps) => {
   );
 };
 
-const StyledTxView = withStyles(styles2)(TxItem);
+const StyledTxView = withStyles(styles)(TxItem);
 
 export default StyledTxView;

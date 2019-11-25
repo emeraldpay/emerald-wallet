@@ -29,7 +29,7 @@ import {
   onceBlockchainConnected,
   onceAccountsLoaded,
   onceBalancesSet,
-  onceModeSet,
+  onceModeSet, onceServicesStart,
 } from './triggers';
 
 const log = createLogger('store');
@@ -189,10 +189,12 @@ function getInitialScreen() {
   // First things first, always go to welcome screen. This shows a nice spinner
   store.dispatch(screen.actions.gotoScreen('welcome'));
 
-  return onceAccountsLoaded(store).then(() => {
-    // We display home screen which will decide show landing or accounts list
-    store.dispatch(screen.actions.gotoScreen('home'));
-  });
+  return onceServicesStart(store)
+    .then(() => onceAccountsLoaded(store)
+      .then(() => {
+      // We display home screen which will decide show landing or accounts list
+      store.dispatch(screen.actions.gotoScreen('home'));
+  }));
 }
 
 Promise
