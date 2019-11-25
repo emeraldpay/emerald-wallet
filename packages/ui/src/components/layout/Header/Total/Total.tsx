@@ -1,9 +1,5 @@
 import { CurrencyEtc, CurrencyEth } from '@emeraldplatform/ui-icons';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemAvatar from '@material-ui/core/ListItemAvatar';
-import ListItemText from '@material-ui/core/ListItemText';
-import Menu from '@material-ui/core/Menu';
-import MenuList from '@material-ui/core/MenuList';
+import { ListItem, ListItemAvatar, ListItemText, Menu, MenuList } from '@material-ui/core';
 import { CSSProperties, withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import Button from '../../../common/Button';
@@ -97,12 +93,14 @@ class TotalButton extends React.Component<IProps, IState> {
             {byChain.map((c) => {
               const ether = `${c.total.toEther(3)} ${c.blockchain.toUpperCase()}`;
               const fiat = `${c.fiatAmount.toFixed(2)} ${fiatCurrency}`;
-              return (<ListItem key={c.blockchain}>
-                <ListItemAvatar>
-                  <CoinAvatar chain={c.blockchain}/>
-                </ListItemAvatar>
-                <ListItemText primary={ether} secondary={fiat} />
-              </ListItem>);
+              return (
+                <ListItem key={c.blockchain}>
+                  <ListItemAvatar>
+                    <CoinAvatar chain={c.blockchain}/>
+                  </ListItemAvatar>
+                  <ListItemText primary={ether} secondary={fiat} />
+                </ListItem>
+              );
             })}
           </MenuList>
         </Menu>
