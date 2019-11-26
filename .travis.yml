@@ -47,7 +47,7 @@ script:
   - echo "Building app version $APP_VERSION_GIT_TAG"
   - if [[ $(license-checker --production --exclude '(GPL-2.0 OR MIT)' | grep GPL) ]]; then license-checker --production | grep -C 1 GPL && false; fi
   - yarn build
-  - yarn test
+  - yarn test:coverage
   # - yarn lint:ts
   - travis_wait 30 yarn build:dist
 after_success:
