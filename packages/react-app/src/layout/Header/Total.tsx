@@ -7,7 +7,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 
 export default connect(
-  (state, ownProps) => {
+  (state, ownProps: any) => {
     // Sum of balances of all known accounts.
     const fiatCurrency = settings.selectors.fiatCurrency(state);
     const byChain: any[] = [];

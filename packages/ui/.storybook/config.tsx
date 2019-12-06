@@ -1,5 +1,5 @@
 import { Theme } from '@emeraldplatform/ui';
-import { ThemeProvider } from '@material-ui/styles';
+import { ThemeProvider } from '@material-ui/core/styles';
 import { addDecorator, configure } from '@storybook/react';
 import * as React from 'react';
 

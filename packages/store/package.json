@@ -20,8 +20,7 @@
     "electron": "^7.0.1",
     "jest": "^24.1.0",
     "rimraf": "^2.6.3",
-    "ts-jest": "^24.0.0",
-    "typescript": "3.4.2"
+    "ts-jest": "^24.0.0"
   },
   "jest": {
     "preset": "ts-jest",
@@ -48,11 +47,13 @@
     "@emeraldplatform/eth": "0.5.1",
     "@emeraldwallet/core": "^2.1.2",
     "@emeraldwallet/erc20": "^2.1.2",
+    "@emeraldwallet/history-store": "^2.1.2",
     "@emeraldwallet/ledger": "^2.1.1",
     "bignumber.js": "8.0.2",
     "immutable": "3.8.2",
     "lodash": "^4.17.14",
     "react": "^16.11.0",
+    "redux": "^4.0.4",
     "redux-saga": "^1.0.2",
     "redux-thunk": "^2.3.0",
     "uuid": "^3.3.2"

@@ -39,10 +39,11 @@ export { default as Home } from './layout/Home';
 // screen
 export { default as Dialog } from './screen/Dialog';
 
-// tx
+// tx history
 export { default as TxDetails } from './transactions/TxDetails';
 export { default as TxHistory } from './transactions/TxHistory';
 
+// transaction
 export { default as CreateTransaction } from './transaction/CreateTransaction';
 export { default as WaitForSignDialog } from './transaction/WaitForSignDialog';
 export { default as BroadcastTx } from './transaction/BroadcastTx';
@@ -56,3 +57,4 @@ export { default as Settings } from './settings/Settings';
 
 // onboarding
 export { default as InitialSetup } from './onboarding/InitialSetup';
+export { default as Welcome } from './onboarding/Welcome';

@@ -1,6 +1,7 @@
 {
-  "name": "@emeraldwallet/services",
+  "name": "@emeraldwallet/history-store",
   "version": "2.1.2",
+  "description": "Transactions storage management",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "author": "ETCDEV GmbH",
@@ -8,37 +9,30 @@
   "scripts": {
     "build": "rimraf lib/ && tsc",
     "build:dist": "rimraf lib/ && tsc",
-    "test": "jest --passWithNoTests",
-    "test:coverage": "jest --coverage --passWithNoTests&& codecov"
+    "test": "jest",
+    "test:coverage": "jest --coverage && codecov"
   },
   "dependencies": {
-    "@emeraldpay/grpc-client": "0.11.3-0.2",
-    "@emeraldplatform/eth-rpc": "0.5.1",
-    "@emeraldplatform/rpc": "0.5.1",
+    "@emeraldplatform/core": "0.5.8",
     "@emeraldwallet/core": "^2.1.2",
-    "@emeraldwallet/store": "^2.1.2",
-    "@emeraldwallet/vault": "^2.1.2",
-    "google-protobuf": "3.7.1",
-    "grpc": "^1.24.2",
-    "text-encoding": "0.7.0"
+    "bignumber.js": "8.0.2"
   },
   "devDependencies": {
     "@types/jest": "^24.0.9",
     "@types/node": "^12.12.0",
-    "@types/text-encoding": "0.0.35",
     "jest": "^24.1.0",
     "rimraf": "^2.6.3",
     "ts-jest": "^24.0.0"
   },
   "jest": {
     "preset": "ts-jest",
-    "testEnvironment": "node",
     "testPathIgnorePatterns": [
       "<rootDir>/lib/",
       "<rootDir>/node_modules/"
     ],
     "setupFiles": [
-      "<rootDir>/jest.setup.ts"
+      "<rootDir>/jest.setup.ts",
+      "<rootDir>/__mocks__/localStorageMock.js"
     ],
     "coverageDirectory": "./coverage/",
     "collectCoverageFrom": [
