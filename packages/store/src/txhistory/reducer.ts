@@ -1,5 +1,5 @@
 import { convert } from '@emeraldplatform/core';
-import { utils, IStoredTransaction } from '@emeraldwallet/core';
+import { IStoredTransaction, utils } from '@emeraldwallet/core';
 import { fromJS, Map } from 'immutable';
 import {
   ActionTypes,

@@ -1,5 +1,5 @@
 import { convert } from '@emeraldplatform/core';
-import { blockchainById, utils, IStoredTransaction } from '@emeraldwallet/core';
+import { blockchainById, IStoredTransaction, utils } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
 const { toBigNumber } = convert;
 
