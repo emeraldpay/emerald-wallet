@@ -1,9 +1,10 @@
-import { blockchainByName, BlockchainCode, IApi, utils, IStoredTransaction } from '@emeraldwallet/core';
+import { blockchainByName, BlockchainCode, IApi, IStoredTransaction, utils } from '@emeraldwallet/core';
+import { loadTransactions, storeTransactions } from '@emeraldwallet/history-store';
 import { ipcRenderer } from 'electron';
 import { Dispatch } from 'react';
 import * as blockchains from '../blockchains';
+import * as settings from '../settings';
 import { Dispatched, GetState } from '../types';
-import { loadTransactions, storeTransactions } from '@emeraldwallet/history-store';
 import { allTrackedTxs } from './selectors';
 import { ActionTypes, HistoryAction, ILoadStoredTxsAction, IUpdateTxsAction } from './types';
 
@@ -11,15 +12,12 @@ const txStoreKey = (chainId: number) => `chain-${chainId}-trackedTransactions`;
 
 export function persistTransactions (state: any, chainId: number) {
   const txs = allTrackedTxs(state).toJS().filter((t: IStoredTransaction) => (t.chainId === chainId));
-  storeTransactions(
-    txStoreKey(chainId),
-    txs
-  );
+  storeTransactions(txStoreKey(chainId), txs);
 }
 
 function loadPersistedTransactions (state: any, chainId: number) {
   const loaded = loadTransactions(txStoreKey(chainId), chainId);
-  const txs = loaded.map((tx) => ({
+  const txs = loaded.map((tx: IStoredTransaction) => ({
     ...tx,
     chainId
   }));
@@ -28,11 +26,13 @@ function loadPersistedTransactions (state: any, chainId: number) {
 
 function updateAndTrack (dispatch: Dispatch<any>,
                          getState: GetState,
-                         api: IApi,
                          txs: IStoredTransaction[],
                          blockchain: BlockchainCode) {
   const chainId = blockchainByName(blockchain).params.chainId;
-  const pendingTxs = txs.filter((tx) => !tx.blockNumber).map((t) => ({ ...t, chainId, blockchain }));
+  const pendingTxs = txs
+    .filter((tx) => !tx.blockNumber)
+    .map((t) => ({ ...t, chainId, blockchain }));
+
   if (pendingTxs.length !== 0) {
     dispatch({ type: ActionTypes.TRACK_TXS, txs: pendingTxs });
   }
@@ -44,13 +44,15 @@ function updateAndTrack (dispatch: Dispatch<any>,
   });
 }
 
-export function trackTx (tx: IStoredTransaction, blockchain: BlockchainCode) {
-  return (dispatch: Dispatch<any>, getState: GetState, api: IApi) =>
-    updateAndTrack(dispatch, getState, api, [tx], blockchain);
-}
+// @depricated
+// export function trackTx (tx: IStoredTransaction, blockchain: BlockchainCode) {
+//   return (dispatch: Dispatch<any>, getState: GetState, api: IApi) =>
+//     updateAndTrack(dispatch, getState, api, [tx], blockchain);
+// }
+
 export function trackTxs (txs: IStoredTransaction[], blockchain: BlockchainCode) {
   return (dispatch: Dispatch<any>, getState: GetState, api: IApi) =>
-    updateAndTrack(dispatch, getState, api, txs, blockchain);
+    updateAndTrack(dispatch, getState, txs, blockchain);
 }
 
 export function init (chains: BlockchainCode[]): Dispatched<HistoryAction> {
@@ -85,7 +87,7 @@ const txUnconfirmed = (state: any, tx: any) => {
     return since.getTime() > dayAgo;
   }
   const numConfirmsForTx = txBlockNumber - currentBlock;
-  const requiredConfirms = state.wallet.settings.get('numConfirmations');
+  const requiredConfirms = settings.selectors.numConfirms(state);
   return requiredConfirms < numConfirmsForTx;
 };
 

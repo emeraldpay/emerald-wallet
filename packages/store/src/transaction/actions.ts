@@ -27,7 +27,7 @@ function onTxSent (dispatch: Dispatch<any>, txHash: string, sourceTx: any, block
   const sentTx = { ...sourceTx, hash: txHash };
 
     // TODO: dependency on wallet/history module!
-  dispatch(history.actions.trackTx(sentTx, blockchain));
+  dispatch(history.actions.trackTxs([sentTx], blockchain));
   dispatch(gotoScreen('transaction', sentTx));
 }
 

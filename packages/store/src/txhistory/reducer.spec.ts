@@ -1,8 +1,8 @@
 import { convert } from '@emeraldplatform/core';
-import BigNumber from 'bignumber.js';
-import { fromJS, List } from 'immutable';
 import { BlockchainCode, IStoredTransaction } from '@emeraldwallet/core';
 import { loadTransactions, storeTransactions } from '@emeraldwallet/history-store';
+import BigNumber from 'bignumber.js';
+import { fromJS, List } from 'immutable';
 import { reducer as historyReducers } from './reducer';
 import { ActionTypes, IUpdateTxsAction } from './types';
 

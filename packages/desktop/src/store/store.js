@@ -71,9 +71,7 @@ export function startSync() {
           // const {chainId} = chain.params;
           const chainCode = chain.params.code;
           const loadChain = [];
-          // request tokens
-          // loadChain.push(store.dispatch(tokens.actions.loadTokenList(chainCode)));
-          // loadChain.push(store.dispatch(tokens.actions.addDefault(chainCode, chainId)));
+
           // address book
           loadChain.push(store.dispatch(addressBook.actions.loadAddressBook(chainCode)));
           // request gas price for each chain
@@ -102,10 +100,6 @@ export function startSync() {
   return Promise.all(promises)
     .then(() => log.info('Initial synchronization finished'))
     .catch((e) => log.error('Failed to start synchronization', e));
-}
-
-export function stopSync() {
-  // TODO
 }
 
 function newWalletVersionCheck() {

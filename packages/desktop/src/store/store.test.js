@@ -21,7 +21,7 @@ describe('store', () => {
 
   it('should dispatch tx history actions', () => {
     const store = createStore(null);
-    store.dispatch(txhistory.actions.trackTx({hash: '0x12', to: null}, 'etc'));
+    store.dispatch(txhistory.actions.trackTxs([{hash: '0x12', to: null}], 'etc'));
     store.dispatch(ledger.actions.setWatch(true));
   });
 });
