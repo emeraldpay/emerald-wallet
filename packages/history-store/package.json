@@ -10,7 +10,7 @@
     "build": "rimraf lib/ && tsc",
     "build:dist": "rimraf lib/ && tsc",
     "test": "jest",
-    "test:coverage": "jest"
+    "test:coverage": "jest --coverage && codecov"
   },
   "dependencies": {
     "@emeraldplatform/core": "0.5.8",
