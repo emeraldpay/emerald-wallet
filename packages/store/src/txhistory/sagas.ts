@@ -7,8 +7,7 @@ function* processUpdateTxs (action: IUpdateTxsAction) {
   // Persist tx history
   const state = yield select();
   action.payload.forEach((tx) => {
-    const chainId = Blockchains[tx.blockchain].params.chainId;
-    persistTransactions(state, chainId);
+    persistTransactions(state, tx.blockchain);
   });
 }
 

@@ -25,7 +25,6 @@ export class TransactionListener implements IService {
       const subscriber = this.apiAccess.newTxListener();
       this.subscriber.push(subscriber);
       subscriber.subscribe(blockchain, hash, (event: any) => {
-        // console.log("update for tx", hash);
         const action = txhistory.actions.updateTxs([{
           blockchain,
           hash: event.txid,

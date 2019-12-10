@@ -1,5 +1,5 @@
-import { List, Map } from 'immutable';
 import { IStoredTransaction } from '@emeraldwallet/core';
+import { List, Map } from 'immutable';
 
 export enum ActionTypes {
   TRACK_TX = 'WALLET/HISTORY/TRACK_TX',

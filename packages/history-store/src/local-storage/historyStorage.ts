@@ -5,6 +5,7 @@ const { toBigNumber } = convert;
 
 /**
  * Store transaction as JSON in localStorage
+ * @deprecated remove after 3.x release
  */
 export function storeTransactions (key: string, txs: IStoredTransaction[]): void {
   if (localStorage) {
@@ -13,7 +14,17 @@ export function storeTransactions (key: string, txs: IStoredTransaction[]): void
 }
 
 /**
+ * @deprecated remove after 3.x release
+ */
+export function removeTransactions (key: string): void {
+  if (localStorage) {
+    localStorage.removeItem(key);
+  }
+}
+
+/**
  * Restore transaction from JSON stored in localStorage
+ * @deprecated remove after 3.x release
  */
 export function loadTransactions (key: string, chainId: number): IStoredTransaction[] {
   if (localStorage) {

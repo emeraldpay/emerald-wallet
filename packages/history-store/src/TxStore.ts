@@ -23,7 +23,7 @@ export default class TxStore {
   }
 
   public load (): IStoredTransaction[] {
-    return this.store.get('transactions').map(this.restoreTx);
+    return this.store.get('transactions', []).map(this.restoreTx);
   }
 
   public getFilePath () {

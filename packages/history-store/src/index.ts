@@ -1,7 +1,7 @@
 import { BlockchainCode, IStoredTransaction } from '@emeraldwallet/core';
 import TxStore from './TxStore';
 
-export { loadTransactions, storeTransactions } from './local-storage/historyStorage';
+export { loadTransactions, storeTransactions, removeTransactions } from './local-storage/historyStorage';
 
 const DEFAULT_WALLET_ID = 'wallet0';
 
