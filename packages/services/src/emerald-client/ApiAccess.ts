@@ -7,12 +7,12 @@ import {
   MarketClient,
   MonitoringClient
 } from '@emeraldpay/grpc-client';
-import { app } from 'electron';
 import * as os from 'os';
-import { AddressListener } from './AddressListener';
-import { ChainListener } from './ChainListener';
-import { PriceListener } from './PricesListener';
-import { TxListener } from './services/TxListener';
+import { AddressListener } from '../AddressListener';
+import { ChainListener } from '../ChainListener';
+import { PriceListener } from '../PricesListener';
+import { TxListener } from '../services/TxListener';
+import { IEmeraldClient } from './IEmeraldClient';
 
 const certLocal = '-----BEGIN CERTIFICATE-----\n' +
   'MIIFmDCCA4CgAwIBAgIBATANBgkqhkiG9w0BAQsFADBsMQswCQYDVQQGEwJDSDEM\n' +
@@ -127,7 +127,14 @@ const PERIOD_OK = 10000;
 const PERIOD_ISSUES = PERIOD_OK * 3;
 const PERIOD_PING = PERIOD_OK - 1500;
 
-export class EmeraldApiAccess {
+export interface IAppParams {
+  electronVer: any;
+  chromeVer: any;
+  locale: any;
+  version: any;
+};
+
+export class EmeraldApiAccess implements IEmeraldClient {
 
   public readonly blockchainClient: BlockchainClient;
   public readonly pricesClient: MarketClient;
@@ -137,16 +144,15 @@ export class EmeraldApiAccess {
 
   private listener?: StatusListener;
   private currentState?: Status = undefined;
-
   private connectionState: IConnectionState;
 
-  constructor (addr: string, cert: string, id: string) {
+  constructor (addr: string, cert: string, id: string, appParams: IAppParams) {
     this.address = addr;
-    const platform = [os.platform(), os.release(), os.arch(), app.getLocale()].join('; ');
+    const platform = [os.platform(), os.release(), os.arch(), appParams.locale].join('; ');
     const agent = [
-      `Electron/${process.versions.electron} (${platform})`,
-      `EmeraldWallet/${app.getVersion()} (+https://emeraldwallet.io)`,
-      `Chrome/${process.versions.chrome}`
+      `Electron/${appParams.electronVer} (${platform})`,
+      `EmeraldWallet/${appParams.version} (+https://emeraldwallet.io)`,
+      `Chrome/${appParams.chromeVer}`
     ];
     this.connectionState = {
       authenticated: false,
@@ -251,19 +257,19 @@ export class EmeraldApiAccess {
 }
 
 export class EmeraldApiAccessDev extends EmeraldApiAccess {
-  constructor (id: string) {
-    super('35.241.3.151:443', certDev, id);
+  constructor (id: string, appParams: any) {
+    super('35.241.3.151:443', certDev, id, appParams);
   }
 }
 
 export class EmeraldApiAccessLocal extends EmeraldApiAccess {
-  constructor (id: string) {
-    super('127.0.0.1:8090', certLocal, id);
+  constructor (id: string, appParams: any) {
+    super('127.0.0.1:8090', certLocal, id, appParams);
   }
 }
 
 export class EmeraldApiAccessProd extends EmeraldApiAccess {
-  constructor (id: string) {
-    super('34.98.113.36:443', certProd, id);
+  constructor (id: string, appParams: any) {
+    super('34.98.113.36:443', certProd, id, appParams);
   }
 }

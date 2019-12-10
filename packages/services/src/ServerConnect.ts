@@ -1,14 +1,14 @@
+import { BlockchainClient } from '@emeraldpay/grpc-client';
 import {
   EthRpc, VerifyBlockHash, VerifyGenesis, VerifyMinPeers, VerifyNotSyncing
 } from '@emeraldplatform/eth-rpc';
-import { BlockchainClient } from '@emeraldpay/grpc-client';
 import {
   DefaultJsonRpc, HttpTransport, RevalidatingJsonRpc, RotatingJsonRpc, VerifyingJsonRpc
 } from '@emeraldplatform/rpc';
 import { IServerConnect } from '@emeraldwallet/core';
 import { IVaultProvider, Vault } from '@emeraldwallet/vault';
-import GrpcTransport from './GrpcTransport';
-import HttpTransportAdapter from './HttpTransport';
+import GrpcTransport from './transports/GrpcTransport';
+import HttpTransportAdapter from './transports/HttpTransport';
 
 const os = require('os');
 

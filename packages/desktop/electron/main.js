@@ -66,15 +66,20 @@ startProtocolHandler();
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   log.info('Starting Emerald', app.getVersion());
-
+  const appParams = {
+    locale: app.getLocale(),
+    version: app.getVersion(),
+    electronVer: process.versions.electron,
+    chromeVer: process.versions.chrome,
+  };
   log.info('... setup API access');
   let apiAccess;
   if (apiMode.id === ProdMode.id) {
-    apiAccess = new EmeraldApiAccessProd(settings.getId());
+    apiAccess = new EmeraldApiAccessProd(settings.getId(), appParams);
   } else if (apiMode.id === LocalMode.id) {
-    apiAccess = new EmeraldApiAccessLocal(settings.getId());
+    apiAccess = new EmeraldApiAccessLocal(settings.getId(), appParams);
   } else {
-    apiAccess = new EmeraldApiAccessDev(settings.getId());
+    apiAccess = new EmeraldApiAccessDev(settings.getId(), appParams);
   }
   log.info('Connect to', apiAccess.address);
 
@@ -116,13 +121,6 @@ app.on('ready', () => {
   const prices = new Prices(ipcMain, browserWindow.webContents, apiAccess, apiMode.chains, apiMode.currencies[0]);
   prices.start();
 
-  apiAccess.statusListener((status) => {
-    const action = {
-      type: 'CONN/SET_STATUS',
-      status,
-    };
-    browserWindow.webContents.send('store', action);
-  });
 });
 
 

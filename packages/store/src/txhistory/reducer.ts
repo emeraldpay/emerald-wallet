@@ -15,8 +15,7 @@ import {
 const { toNumber, toBigNumber } = convert;
 
 const initial = fromJS({
-  trackedTransactions: [],
-  chainId: null
+  trackedTransactions: []
 });
 
 const initialTx = Map({
