@@ -1,6 +1,6 @@
 import { shallow } from 'enzyme';
 import * as React from 'react';
-import AccountShow from './AccountDetailsView';
+import AccountShow from './WalletDetailsView';
 
 describe('AccountDetailsView', () => {
   it('Shows HD path for hardware account', () => {

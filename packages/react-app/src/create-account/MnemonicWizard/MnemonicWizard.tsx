@@ -1,4 +1,4 @@
-import { addresses, screen, settings } from '@emeraldwallet/store';
+import {addresses, screen, settings, State} from '@emeraldwallet/store';
 import { ImportMnemonic, NewMnemonic } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -115,7 +115,7 @@ class MnemonicWizard extends React.Component<IProps, IState> {
   }
 }
 
-export default connect(
+export default connect<any, any, any, State>(
   (state, ownProps) => ({
     blockchains: settings.selectors.currentChains(state)
   }),

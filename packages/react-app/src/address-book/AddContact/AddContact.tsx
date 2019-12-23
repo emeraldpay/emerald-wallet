@@ -1,9 +1,9 @@
-import { addressBook, screen, settings } from '@emeraldwallet/store';
+import {addressBook, screen, settings, State} from '@emeraldwallet/store';
 import { connect } from 'react-redux';
 import ContactForm from '../ContactForm';
 
 const { gotoScreen } = screen.actions;
-const AddContact = connect(
+const AddContact = connect<any, any, any, State>(
   (state, ownProps) => ({
     blockAddress: false,
     title: 'Add Contact',

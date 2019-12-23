@@ -27,7 +27,7 @@ export function getConnector() {
 export class Api {
   constructor(connector) {
     this.connector = connector;
-    this.emerald = connector.connectEmerald();
+    this.vault = connector.getVault();
     this.chains = new Map();
   }
 

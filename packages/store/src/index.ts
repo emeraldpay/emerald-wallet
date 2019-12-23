@@ -25,3 +25,7 @@ export {
   transaction,
   wallet
 };
+
+export {
+  State
+} from './types';

@@ -3,13 +3,14 @@ import { addresses, screen, settings } from '@emeraldwallet/store';
 import { ImportMnemonic } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import {State} from "@emeraldwallet/store/src";
 
 export interface IInputMnemonicProps {
   mnemonic: string;
 }
 
-export default connect(
-  (state, ownProps: IInputMnemonicProps) => ({
+export default connect<any, any, IInputMnemonicProps, State>(
+  (state, ownProps) => ({
     mnemonic: ownProps.mnemonic,
     initialValues: {
       hdpath: "m/44'/60'/0'/0/0"

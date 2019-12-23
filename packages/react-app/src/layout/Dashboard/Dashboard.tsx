@@ -1,5 +1,5 @@
 import * as React from 'react';
-import AccountList from '../../accounts/AccountList';
+import WalletList from '../../wallets/WalletList';
 import TxHistory from '../../transactions/TxHistory';
 import Header from './Header';
 
@@ -7,7 +7,7 @@ const Dashboard = () => {
   return (
     <React.Fragment>
       <Header/>
-      <AccountList/>
+      <WalletList/>
       <TxHistory/>
     </React.Fragment>
   );

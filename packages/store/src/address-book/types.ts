@@ -13,21 +13,31 @@ export enum ActionTypes {
   SET_BOOK = 'ADDRESSBOOK/SET_BOOK'
 }
 
+export type Contact = {
+  name?: string,
+  description?: string,
+  address: string,
+  blockchain: BlockchainCode
+}
+
+//FIXME incompatible with Bitcoin
+export type Contacts = {[key: string]: Contact};
+
 export interface IAddressBookState {
   loading: boolean;
   contacts: {
-    [chain in BlockchainCode]?: any
+    [chain in BlockchainCode]?: Contacts;
   };
 }
 
 export interface AddContactAction {
   type: ActionTypes.ADD_CONTACT;
-  payload: any;
+  payload: Contact;
 }
 
 export interface ContactAddedAction {
   type: ActionTypes.NEW_ADDRESS_ADDED;
-  payload: any;
+  payload: Contact;
 }
 
 export interface SetLoadingAction {
@@ -38,7 +48,7 @@ export interface SetLoadingAction {
 export interface DeleteContactAction {
   type: ActionTypes.DELETE_ADDRESS;
   payload: {
-    blockchain: any;
+    blockchain: BlockchainCode;
     address: string;
   };
 }
@@ -46,21 +56,21 @@ export interface DeleteContactAction {
 export interface ContactDeletedAction {
   type: ActionTypes.ADDRESS_DELETED;
   payload: {
-    blockchain: any;
+    blockchain: BlockchainCode;
     address: string;
   };
 }
 
 export interface LoadContactsAction {
   type: ActionTypes.LOAD;
-  payload: any;
+  payload: BlockchainCode;
 }
 
 export interface SetAddressBookAction {
   type: ActionTypes.SET_BOOK;
   payload: {
-    blockchain: any;
-    contacts: any;
+    blockchain: BlockchainCode;
+    contacts: Contact[];
   };
 }
 

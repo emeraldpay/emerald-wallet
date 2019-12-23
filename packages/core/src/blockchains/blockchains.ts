@@ -41,9 +41,41 @@ export function blockchainByName (name: string): Blockchain {
   return Blockchains[code];
 }
 
-export function blockchainById (id?: number): Blockchain | undefined {
+export function ethereumByChainId (id?: number): Blockchain | undefined {
   if (typeof id === 'undefined') {
     return undefined;
   }
   return allChains.find((chain) => chain.params.chainId === id);
+}
+
+export function blockchainById(id: number): Blockchain | undefined {
+  if (id == 100) {
+    return Blockchains[BlockchainCode.ETH]
+  }
+  if (id == 101) {
+    return Blockchains[BlockchainCode.ETC]
+  }
+  if (id == 10001) {
+    return Blockchains[BlockchainCode.Morden]
+  }
+  if (id == 10002) {
+    return Blockchains[BlockchainCode.Kovan]
+  }
+  return undefined
+}
+
+export function blockchainCodeToId(code: BlockchainCode): number {
+  if (code == BlockchainCode.ETH) {
+    return 100;
+  }
+  if (code == BlockchainCode.ETC) {
+    return 101;
+  }
+  if (code == BlockchainCode.Morden) {
+    return 10001;
+  }
+  if (code == BlockchainCode.Kovan) {
+    return 10002;
+  }
+  throw Error("Unsupported blockchain: " + code);
 }

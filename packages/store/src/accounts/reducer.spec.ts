@@ -50,7 +50,7 @@ describe('addresses reducer', () => {
     let state: any = reducer(undefined, { type: ActionTypes.LOADING, payload: true });
     expect(state.get('addresses').size).toEqual(0);
     state = reducer(state, {
-      type: ActionTypes.ADD_ACCOUNT,
+      type: ActionTypes.ADD_WALLET,
       accountId: 'id1',
       name: 'name1',
       description: 'desc1',
@@ -63,7 +63,7 @@ describe('addresses reducer', () => {
 
     // add again
     state = reducer(state, {
-      type: ActionTypes.ADD_ACCOUNT,
+      type: ActionTypes.ADD_WALLET,
       accountId: 'id1',
       name: 'name1',
       description: 'desc1',
@@ -76,7 +76,7 @@ describe('addresses reducer', () => {
     let state: any = reducer(undefined, { type: ActionTypes.LOADING, payload: true });
     expect(state.get('addresses').size).toEqual(0);
     state = reducer(state, {
-      type: ActionTypes.ADD_ACCOUNT,
+      type: ActionTypes.ADD_WALLET,
       accountId: 'id1',
       name: 'name1',
       description: 'desc1',
@@ -89,7 +89,7 @@ describe('addresses reducer', () => {
 
     // add again
     state = reducer(state, {
-      type: ActionTypes.ADD_ACCOUNT,
+      type: ActionTypes.ADD_WALLET,
       accountId: 'id1',
       name: 'name1',
       description: 'desc1',
@@ -101,7 +101,7 @@ describe('addresses reducer', () => {
   it('ADD_ACCOUNT should set hd path', () => {
     // prepare
     let state: any = reducer(undefined, {
-      type: ActionTypes.ADD_ACCOUNT,
+      type: ActionTypes.ADD_WALLET,
       accountId: 'id1',
       name: 'name1',
       description: 'desc1',

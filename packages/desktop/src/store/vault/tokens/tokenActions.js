@@ -147,6 +147,7 @@ export function loadTokenList(chain) {
     dispatch({
       type: ActionTypes.LOADING,
     });
+    //TODO remove
     api.emerald.listContracts(chain).then((result) => {
       // TODO: After features support
       // const tokens = result ? result.filter((contract) => {

@@ -2,6 +2,9 @@
 import BigNumber from 'bignumber.js';
 
 export const enum CurrencyCode {
+  USDT = 'USDT',
+  DAI = 'DAI',
+
   RUB = 'RUB',
   USD = 'USD',
   EUR = 'EUR',

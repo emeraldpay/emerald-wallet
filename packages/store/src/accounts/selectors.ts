@@ -1,56 +1,54 @@
 import { Wei } from '@emeraldplatform/eth';
-import { BlockchainCode, IAccount } from '@emeraldwallet/core';
-import { List, Map } from 'immutable';
-import { Address, AddressList, AddressMap, moduleName } from './types';
+import {blockchainById, BlockchainCode, blockchainCodeToId} from '@emeraldwallet/core';
+import {WalletsList, moduleName, IAddressesState} from './types';
+import * as vault from '@emeraldpay/emerald-vault-core';
+import {WalletsOp, WalletOp} from '@emeraldpay/emerald-vault-core';
 
-export function all (state: any): AddressList {
-  return state[moduleName]
-    .get('addresses')
-    .filter((address: any) => typeof address !== 'undefined')
-    .toList();
+let sum = (a: Wei | undefined, b: Wei | undefined) => (a || Wei.ZERO).plus(b || Wei.ZERO);
+
+export function all (state: any): WalletsOp {
+  return WalletsOp.of(allAsArray(state))
 }
 
-export function allAsArray (state: any): AddressMap[] {
-  return state[moduleName]
-    .get('addresses')
-    .filter((address: any) => typeof address !== 'undefined')
-    .toArray();
+export function allAsArray (state: any): vault.Wallet[] {
+  return (state[moduleName].wallets || [])
+    .filter((value: any) => typeof value !== 'undefined');
 }
 
-export function allByBlockchain (state: any, blockchain: BlockchainCode): AddressList {
+export function allByBlockchain (state: any, blockchain: BlockchainCode): vault.WalletOp[] {
   return all(state)
-    .filter((address) => address!.get('blockchain').toLowerCase() === blockchain.toLowerCase())
-    .toList();
+    .walletsWithBlockchain(blockchainCodeToId(blockchain))
 }
 
-export const isLoading = (state: any): boolean => state[moduleName].get('loading');
+export const isLoading = (state: any): boolean => state[moduleName].loading;
 
-export function find (state: any, address: string, blockchain: BlockchainCode): IAccount | undefined {
+export function findWalletByAddress(state: any, address: string, blockchain: BlockchainCode): WalletOp | undefined {
   if (!address) {
     return undefined;
   }
-  const result = allByBlockchain(state, blockchain).find((a: any) =>
-    a.get('id').toLowerCase() === address.toLowerCase()
-  );
 
-  if (result) {
-    return result.toJS() as IAccount;
-  }
-  return undefined;
+  return all(state).findWalletByAddress(address, blockchainCodeToId(blockchain));
 }
 
-export function findAllChains (state: any, address: string): AddressList {
-  if (!address) {
-    return List.of();
+export function find(state: any, id: vault.Uuid): vault.WalletOp | undefined {
+  try {
+    return all(state).getWallet(id)
+  } catch (e) {
+    return undefined;
   }
-  return all(state).filter((a: any) =>
-    a.get('id') === address.toLowerCase().toLowerCase()
-  ).toList();
+}
+
+export function getBalance(state: IAddressesState, account: vault.EthereumAccount, defaultValue?: Wei): Wei | undefined {
+  return (state.details || [])
+    .filter((b) => b.accountId == account.id)
+    .filter((b) => typeof b.balance === 'string' && b.balance !== '')
+    .map((b) => new Wei(b.balance!))
+    .reduce(sum, Wei.ZERO) || defaultValue
 }
 
 export function balanceByChain (state: any, blockchain: BlockchainCode): Wei {
-  return allByBlockchain(state, blockchain)
-    .map((a: any) => (a.get('balance') ? a.get('balance') : Wei.ZERO))
-    .reduce((r: Wei | undefined, val: Wei | undefined) => r!.plus(val!), Wei.ZERO)
-      || Wei.ZERO;
+  return all(state)
+    .accountsByBlockchain(blockchainCodeToId(blockchain))
+    .map((account) => getBalance(state, account, Wei.ZERO)!)
+    .reduce(sum, Wei.ZERO)
 }

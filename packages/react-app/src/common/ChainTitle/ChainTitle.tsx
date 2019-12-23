@@ -8,6 +8,11 @@ export interface IChainTitle {
   chain: BlockchainCode;
 }
 
+/**
+ * @deprecated
+ * @param props
+ * @constructor
+ */
 function ChainTitle (props: IChainTitle) {
   const { chain, text } = props;
   const title = text || '';

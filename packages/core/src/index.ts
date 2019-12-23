@@ -1,4 +1,4 @@
-export { BlockchainCode, Blockchains, Blockchain, blockchainByName, blockchainById } from './blockchains';
+export { BlockchainCode, Blockchains, Blockchain, blockchainByName, ethereumByChainId, blockchainCodeToId, blockchainById } from './blockchains';
 
 import * as blockchains from './blockchains';
 export { blockchains };
@@ -20,8 +20,6 @@ export { default as DefaultLogger } from './DefaultLogger';
 
 export { IServerConnect } from './IServerConnect';
 export { IApi } from './IApi';
-
-export { IAccount } from './IAccount';
 
 import * as vault from './vault';
 export { vault };

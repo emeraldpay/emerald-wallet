@@ -1,27 +1,34 @@
-import { blockchainByName } from '@emeraldwallet/core';
+import {blockchainById, blockchainByName} from '@emeraldwallet/core';
 import { addresses, screen, tokens, txhistory } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import TxHistory from '../../transactions/TxHistory';
 import TokenBalances from '../TokenBalances';
-import AccountDetailsView from './AccountDetailsView';
+import WalletDetailsView from './WalletDetailsView';
+import { WalletOp, Wallet } from '@emeraldpay/emerald-vault-core';
 
 export default connect(
   (state: any, ownProps: any) => {
-    const accountPassed = ownProps.account;
+    const accountPassed: Wallet = ownProps.wallet;
     // reload account from store, because it can be passed with id only if it was just imported
-    const account = addresses.selectors.find(state, accountPassed.id, accountPassed.blockchain)!;
-    const transactions = txhistory.selectors.searchTransactions(
-        account.id,
+    const wallet = addresses.selectors.find(state, accountPassed.id)!;
+    // const transactions = [];
+    const transactions = [] || txhistory.selectors.searchTransactions(
+        "", //account.id,
         txhistory.selectors.allTrackedTxs(state));
-    const tokensBalances = tokens.selectors.selectBalances(state, account.id, account.blockchain);
+    let tokensBalances = null;
+    if (wallet.getEthereumAccounts().length > 0) {
+      const firstAccount = wallet.getEthereumAccounts()[0];
+      const blockchainCode = blockchainById(firstAccount.blockchain)!.params.code;
+      tokensBalances = tokens.selectors.selectBalances(state, firstAccount.address, blockchainCode);
+    }
 
     return {
       showFiat: true,
       tokens: (<TokenBalances balances={tokensBalances} />),
-      account,
+      wallet,
       transactions,
-      txList: (<TxHistory transactions={transactions} accountId={account.id}/>)
+      txList: (<span>NOT IMPLEMENTED</span>) //(<TxHistory transactions={transactions} accountId={wallet.id}/>)
     };
   },
   (dispatch, ownProps) => ({
@@ -42,13 +49,13 @@ export default connect(
     goBack: () => {
       dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
     },
-    editAccount: (data: any) => {
+    editAccount: (data: Wallet) => {
       return new Promise((resolve, reject) => {
-        dispatch(addresses.actions.updateAccount(data.blockchain, data.id, data.value, data.description) as any)
+        dispatch(addresses.actions.updateWallet(data.id, data.name || "", data.description || "") as any)
           .then((response: any) => {
             resolve(response);
           });
       });
     }
   })
-)(AccountDetailsView);
+)(WalletDetailsView);

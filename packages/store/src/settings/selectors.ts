@@ -1,14 +1,21 @@
 import { Blockchains } from '@emeraldwallet/core';
+import {State} from "../types";
 
-export const fiatCurrency = (state: any) => state.wallet.settings.get('localeCurrency');
+export const fiatCurrency = (state: State) => state.wallet.settings.localeCurrency;
 
-export const fiatRate = (chain: string, state: any): number | null =>
-  (state.wallet.settings.getIn(['rates', chain.toUpperCase()]) || null);
+export const fiatRate = (chain: string, state: State): number | undefined => {
+  let rates = state.wallet.settings.rates;
+  if (!rates) {
+    return undefined;
+  }
+  let strRate = rates[chain.toUpperCase()];
+  if (strRate) {
+    return parseFloat(strRate)
+  }
+  return undefined;
+};
 
-export const currentChains = (state: any) => state.wallet.settings.getIn(['mode', 'chains'])
-  .toJS()
+export const currentChains = (state: State) => state.wallet.settings.mode.chains
   .map((chain: any) => Blockchains[chain.toLowerCase()]);
 
-export const showHiddenAccounts = (state: any): boolean => state.wallet.settings.get('showHiddenAccounts', false);
-
-export const numConfirms = (state: any) => state.wallet.settings.get('numConfirmations');
+export const numConfirms = (state: State) => state.wallet.settings.numConfirmations;

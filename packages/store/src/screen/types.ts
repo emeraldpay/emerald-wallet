@@ -10,6 +10,7 @@ export enum ActionTypes {
 }
 
 export enum Pages {
+  WALLET = 'wallet',
   ACCOUNT = 'account',
   HOME = 'home'
 }

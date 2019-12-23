@@ -1,6 +1,7 @@
 const LocalMode = {
   id: 'local',
   chains: ['ETH', 'ETC'],
+  assets: ['ETH', 'ETC', 'DAI', 'USDT'],
   currencies: ['USD', 'EUR', 'USDT', 'BTC'],
 };
 
@@ -8,12 +9,14 @@ const LocalMode = {
 const DevMode = {
   id: 'development',
   chains: ['KOVAN', 'MORDEN', 'ETH', 'ETC'],
+  assets: ['ETH', 'ETC', 'DAI', 'USDT'],
   currencies: ['USD', 'MONOPOLY'],
 };
 
 const ProdMode = {
   id: 'production',
   chains: ['ETH', 'ETC'],
+  assets: ['ETH', 'ETC', 'DAI', 'USDT'],
   currencies: ['USD', 'EUR', 'USDT', 'BTC'],
 };
 

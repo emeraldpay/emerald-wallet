@@ -6,9 +6,9 @@ import {
   DefaultJsonRpc, HttpTransport, RevalidatingJsonRpc, RotatingJsonRpc, VerifyingJsonRpc
 } from '@emeraldplatform/rpc';
 import { IServerConnect } from '@emeraldwallet/core';
-import { IVaultProvider, Vault } from '@emeraldwallet/vault';
 import GrpcTransport from './GrpcTransport';
 import HttpTransportAdapter from './HttpTransport';
+import {IEmeraldVault} from '@emeraldpay/emerald-vault-core';
 
 const os = require('os');
 
@@ -51,16 +51,16 @@ class ServerConnect implements IServerConnect {
   public revalidate?: RevalidatingJsonRpc;
   public log: any;
   public blockchainClient: BlockchainClient;
-  public vaultProvider: IVaultProvider;
+  public vaultProvider: IEmeraldVault;
 
   constructor (
-    appVersion: string, locale: any, log: any, blockchainClient: BlockchainClient, vaultProvider: IVaultProvider
+    appVersion: string, locale: any, log: any, blockchainClient: BlockchainClient, vault: IEmeraldVault
   ) {
     this.log = log;
     this.appVersion = appVersion;
     this.locale = locale;
     this.blockchainClient = blockchainClient;
-    this.vaultProvider = vaultProvider;
+    this.vaultProvider = vault;
     this.headers = {
       'User-Agent': `EmeraldWallet/${appVersion}`
     };
@@ -110,8 +110,8 @@ class ServerConnect implements IServerConnect {
     });
   }
 
-  public connectEmerald (): Vault {
-    return new Vault(this.vaultProvider);
+  public getVault(): IEmeraldVault {
+    return this.vaultProvider;
   }
 
   public getUserAgent () {

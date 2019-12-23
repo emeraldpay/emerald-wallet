@@ -7,13 +7,9 @@ import * as React from 'react';
 const defaultStyles = {
   coins: {
     color: '#191919',
-    fontSize: '16px',
-    lineHeight: '24px'
   },
   fiat: {
     color: '#191919',
-    fontSize: '14px',
-    lineHeight: '16px'
   }
 };
 
@@ -23,7 +19,7 @@ export interface IProps {
   /**
    * Base units (wei, satoshi, etc)
    */
-  balance: Wei | string;
+  balance: Wei | BigNumber | string;
 
   /**
    * Decimals (8 for Bitcoin, 18 for Ethereum)
@@ -34,6 +30,7 @@ export interface IProps {
   showFiat?: boolean;
   coinsStyle?: any;
   fiatStyle?: any;
+  displayDecimals?: number
 }
 
 export class Balance extends React.Component<IProps> {
@@ -45,22 +42,28 @@ export class Balance extends React.Component<IProps> {
 
   public render () {
     const {
-      balance, showFiat, fiatCurrency, fiatRate, symbol, decimals
+      balance, showFiat, fiatCurrency, fiatRate, symbol, decimals, displayDecimals
     } = this.props;
 
     let fiatAmount = null;
     let coinsStr = null;
+    let coins;
     if (typeof balance === 'string') {
-      const coins = fromBaseUnits(new BigNumber(balance), decimals);
+      coins = fromBaseUnits(new BigNumber(balance), decimals);
       if (showFiat && fiatRate && fiatCurrency) {
         fiatAmount = Currency.format(
           Number(Currency.convert(coins.toString(), fiatRate)),
           fiatCurrency as CurrencyCode);
       }
-      coinsStr = coins.toString();
     } else if (typeof balance === 'object') {
-      coinsStr = balance.toEther(decimals, true);
+      if (BigNumber.isBigNumber(balance)) {
+        coins = balance.dividedBy(new BigNumber(10).pow(decimals));
+      } else {
+        //Wei
+        coins = balance.toWei().dividedBy(new BigNumber(10).pow(18));
+      }
     }
+    coinsStr = coins.toFormat(displayDecimals || decimals);
     const { fiatStyle, coinsStyle } = this.props;
 
     return (

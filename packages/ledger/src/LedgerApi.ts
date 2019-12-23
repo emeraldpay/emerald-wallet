@@ -1,22 +1,34 @@
-import { Seed } from '@emeraldpay/emerald-vault-node';
+import { EmeraldVaultNative } from '@emeraldpay/emerald-vault-native';
+import { SeedDescription } from '@emeraldpay/emerald-vault-core';
 
 export class LedgerApi {
-  private conn: Seed;
+  private conn: EmeraldVaultNative;
 
   constructor () {
-    this.conn = new Seed();
+    this.conn = new EmeraldVaultNative();
+  }
+
+  private getLedgerSeed(): SeedDescription | undefined {
+    return this.conn.listSeeds()
+      .find((seed) => seed.type === "ledger")
   }
 
   public isConnected (): boolean {
-    return this.conn.isAvailable();
+    return this.conn.listSeeds()
+      .filter((seed) => seed.type === "ledger")
+      .some((seed) => seed.available);
   }
 
   public getAddress (hdpath: string): Promise<string> {
     if (!this.isConnected()) {
       return Promise.reject(new Error('Not connected to Ledger'));
     }
+    let seed = this.getLedgerSeed();
+    if (typeof seed === 'undefined') {
+      return Promise.reject(new Error("No ledger available"));
+    }
     return new Promise((resolve, reject) => {
-      const result = this.conn.listAddresses('ethereum', [hdpath]);
+      const result = this.conn.listSeedAddresses(seed!.id!, 'ethereum', [hdpath]);
       if (typeof result[hdpath] === 'string') {
         resolve(result[hdpath]);
       } else {
@@ -29,8 +41,12 @@ export class LedgerApi {
     if (!this.isConnected()) {
       return Promise.reject(new Error('Not connected to Ledger'));
     }
+    let seed = this.getLedgerSeed();
+    if (typeof seed === 'undefined') {
+      return Promise.reject(new Error("No ledger available"));
+    }
     return new Promise((resolve, reject) => {
-      const result = this.conn.listAddresses('ethereum', dpaths);
+      const result = this.conn.listSeedAddresses(seed!.id!, 'ethereum', dpaths);
       resolve(result);
     });
   }

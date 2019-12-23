@@ -3,10 +3,9 @@ export { default as ContactList } from './address-book/ContactList';
 export { default as AddContact } from './address-book/AddContact';
 
 // accounts
-export { default as AccountList } from './accounts/AccountList';
-export { default as AccountDetails } from './accounts/AccountDetails';
-export { default as TokenBalances } from './accounts/TokenBalances';
-export { default as HideAccountDialog } from './accounts/HideAccountDialog';
+export { default as WalletList } from './wallets/WalletList';
+export { default as WalletDetails } from './wallets/WalletDetails';
+export { default as TokenBalances } from './wallets/TokenBalances';
 
 // export
 export { default as PaperWallet } from './export/PaperWallet';

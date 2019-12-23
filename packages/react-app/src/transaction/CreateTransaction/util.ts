@@ -2,8 +2,8 @@ import { convert } from '@emeraldplatform/core';
 import { Wei } from '@emeraldplatform/eth';
 import { BlockchainCode, Currency } from '@emeraldwallet/core';
 
-export function txFeeFiat (gasPrice: string | number, gasLimit: number, rate: number | null): string {
-  if (rate == null) {
+export function txFeeFiat (gasPrice: string | number, gasLimit: number, rate: number | undefined): string {
+  if (typeof rate == 'undefined') {
     return '--';
   }
   const wei = new Wei(gasPrice).mul(convert.toBigNumber(gasLimit));

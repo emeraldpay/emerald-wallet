@@ -57,16 +57,20 @@ export function startSync() {
   promises.push(
     onceModeSet(store)
       .then(() => {
-        return store.dispatch(addresses.actions.loadAccountsList());
-      })
-      .then(() => {
-        const loadAllChain = [];
         const supported = settings.selectors.currentChains(store.getState());
         const codes = supported.map((chain) => chain.params.code);
         log.info('Configured to use chains', codes);
 
         api.connectChains(codes);
+      })
+      .then(() => {
+        return store.dispatch(addresses.actions.loadAccountsList());
+      })
+      .then(() => {
+        const supported = settings.selectors.currentChains(store.getState());
+        const codes = supported.map((chain) => chain.params.code);
 
+        const loadAllChain = [];
         supported.forEach((chain) => {
           // const {chainId} = chain.params;
           const chainCode = chain.params.code;

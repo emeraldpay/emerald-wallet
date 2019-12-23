@@ -2,18 +2,19 @@ import {
   Page, Warning, WarningHeader, WarningText
 } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import { BlockchainCode, IAccount } from '@emeraldwallet/core';
-import { addresses, screen, settings } from '@emeraldwallet/store';
+import { BlockchainCode } from '@emeraldwallet/core';
+import {addresses, screen, settings, State} from '@emeraldwallet/store';
 import { Button, ChainSelector, FormRow } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 import FileDropField from './FileDropField';
+import { EthereumAccount, Uuid } from '@emeraldpay/emerald-vault-core';
 
 interface ImportJsonProps {
   importFile: any;
-  showAccount: (account: IAccount) => void;
+  openWallet: (walletId: Uuid) => void;
   accounts: any;
   onDashboard: any;
   blockchains: any[];
@@ -39,23 +40,23 @@ class ImportJson extends React.Component<Props, IImportJsonState> {
   }
 
   public submitFile = () => {
-    const { importFile, showAccount } = this.props;
+    const { importFile, openWallet } = this.props;
     importFile(this.state.blockchain, this.state.file)
-        .then((result: any) => showAccount({ id: result, blockchain: this.state.blockchain.toLowerCase() }))
+        .then((result: Uuid) => openWallet(result))
         .catch((err: any) => this.setState({ fileError: err.message }));
-  }
+  };
 
   public onFileChange = (file: any) => {
     this.setState({
       file
     });
-  }
+  };
 
   public onChainChange = (blockchain: any) => {
     this.setState({
       blockchain
     });
-  }
+  };
 
   public render () {
     const { t, onDashboard, blockchains } = this.props;
@@ -93,7 +94,7 @@ class ImportJson extends React.Component<Props, IImportJsonState> {
   }
 }
 
-export default connect(
+export default connect<any, any, ImportJsonProps, State>(
   (state, ownProps) => ({
     blockchains: settings.selectors.currentChains(state)
   }),
@@ -105,8 +106,8 @@ export default connect(
           .catch(reject);
       });
     },
-    showAccount: (account: IAccount) => {
-      dispatch(screen.actions.gotoScreen('account', account));
+    openWallet: (walletId: Uuid) => {
+      dispatch(screen.actions.gotoScreen('wallet', walletId));
     },
     onDashboard: () => {
       if (ownProps.onBackScreen) {

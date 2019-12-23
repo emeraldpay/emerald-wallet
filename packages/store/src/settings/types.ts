@@ -1,3 +1,5 @@
+import {BlockchainCode, CurrencyCode} from "@emeraldwallet/core";
+
 export enum ActionTypes {
   SET_LOCALE_CURRENCY = 'ACCOUNT/SET_LOCALE_CURRENCY',
   EXCHANGE_RATES = 'ACCOUNT/EXCHANGE_RATES',
@@ -8,7 +10,19 @@ export enum ActionTypes {
   UPDATE = 'SETTINGS/UPDATE'
 }
 
-export type ISettingsState = any;
+export type Rates =  {[key: string]: string};
+
+export type ISettingsState = {
+  localeCurrency: CurrencyCode,
+  localeRate?: string,
+  mode: {
+    chains: BlockchainCode[],
+    currencies: CurrencyCode[],
+    id: string
+  },
+  numConfirmations: number,
+  rates: Rates,
+};
 
 export interface ILoadSettingsAction {
   type: ActionTypes.LOAD_SETTINGS;
@@ -26,23 +40,18 @@ export interface ISetModeAction {
 
 export interface SetNumConfirmAction {
   type: ActionTypes.NUM_CONFIRMATIONS;
-  numConfirmations: any;
+  numConfirmations: number;
 }
 
 export interface SetLocaleCurrencyAction {
   type: ActionTypes.SET_LOCALE_CURRENCY;
-  currency: any;
-}
-
-export interface SetShowHiddenAccsAction {
-  type: ActionTypes.SET_SHOW_HIDDEN_ACCOUNTS;
-  show: any;
+  currency: string;
 }
 
 export interface ISetExchRatesAction {
   type: ActionTypes.EXCHANGE_RATES;
   payload: {
-    rates: any;
+    rates: Rates;
   };
 }
 
@@ -50,7 +59,6 @@ export type SettingsAction =
   ISetModeAction |
   SetNumConfirmAction |
   SetLocaleCurrencyAction |
-  SetShowHiddenAccsAction |
   ISetExchRatesAction |
   ILoadSettingsAction |
   IUpdateSettingsAction;

@@ -1,5 +1,5 @@
 import { BlockchainCode } from '@emeraldwallet/core';
-import { ActionTypes, AddressBookAction, IAddressBookState } from './types';
+import {ActionTypes, AddressBookAction, Contacts, IAddressBookState, Contact} from './types';
 
 export const INITIAL_STATE: IAddressBookState = {
   loading: false,
@@ -30,7 +30,7 @@ function onSetAddressBook (state: IAddressBookState, action: any): IAddressBookS
   };
 }
 
-function onNewContactAdded (state: IAddressBookState, contact: any): IAddressBookState {
+function onNewContactAdded (state: IAddressBookState, contact: Contact): IAddressBookState {
   const chain = contact.blockchain as BlockchainCode;
   const contacts = {
     ...state.contacts[chain],
@@ -48,9 +48,18 @@ function onNewContactAdded (state: IAddressBookState, contact: any): IAddressBoo
   };
 }
 
-function onContactDeleted (state: IAddressBookState, contact: any): IAddressBookState {
-  delete state.contacts[contact.blockchain as BlockchainCode][contact.address];
-  return { ...state };
+function onContactDeleted (state: IAddressBookState, contact: Contact): IAddressBookState {
+  let contacts: Contacts | undefined = state.contacts[contact.blockchain as BlockchainCode];
+  if (typeof contacts !== 'undefined') {
+    let copy: Contacts = {};
+    Object.keys(contacts)
+      .filter((address) => address !== contact.address)
+      .forEach((address) => {
+        copy[address] = contacts![address]
+      });
+    return Object.assign({}, state, {contacts: copy});
+  }
+  return state;
 }
 
 export function reducer (

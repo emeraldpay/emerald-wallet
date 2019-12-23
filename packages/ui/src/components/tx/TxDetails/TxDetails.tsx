@@ -2,12 +2,12 @@ import { convert } from '@emeraldplatform/core';
 import { Wei } from '@emeraldplatform/eth';
 import { Account, ButtonGroup, Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import { IAccount } from '@emeraldwallet/core';
 import { CSSProperties, withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import Button from '../../common/Button';
 import TxInputData from './TxInputData';
 import TxStatus from './TxStatus';
+import {AccountId} from '@emeraldpay/emerald-vault-core'
 
 export const styles = {
   value: {
@@ -48,8 +48,8 @@ export interface ITxDetailsProps {
   fiatCurrency?: string;
   goBack?: (a?: any) => void;
   openAccount?: (a?: any) => void;
-  fromAccount?: IAccount;
-  toAccount?: IAccount;
+  fromAccount?: AccountId;
+  toAccount?: AccountId;
   rates?: Map<string, number>;
   transaction: any;
   tokenSymbol: string;
