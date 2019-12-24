@@ -1,6 +1,6 @@
 import { fromBaseUnits } from '@emeraldplatform/core';
 import { Wei } from '@emeraldplatform/eth';
-import { Currency, CurrencyCode } from '@emeraldwallet/core';
+import {Currency, CurrencyCode, Units} from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
 
@@ -19,12 +19,12 @@ export interface IProps {
   /**
    * Base units (wei, satoshi, etc)
    */
-  balance: Wei | BigNumber | string;
+  balance: Wei | BigNumber | Units | string;
 
   /**
-   * Decimals (8 for Bitcoin, 18 for Ethereum)
+   * Decimals (8 for Bitcoin, 18 for Ethereum), required only if balance is string or BigNumber
    */
-  decimals: number;
+  decimals?: number;
   fiatRate?: number | null;
   fiatCurrency?: string;
   showFiat?: boolean;
@@ -56,12 +56,20 @@ export class Balance extends React.Component<IProps> {
           fiatCurrency as CurrencyCode);
       }
     } else if (typeof balance === 'object') {
+      let value: BigNumber;
+      let valueDecimals: number;
       if (BigNumber.isBigNumber(balance)) {
-        coins = balance.dividedBy(new BigNumber(10).pow(decimals));
+        value = balance;
+        valueDecimals = decimals;
+      } else if (Units.isUnits(balance)) {
+        value = balance.toBigNumber();
+        valueDecimals = balance.decimals;
       } else {
         //Wei
-        coins = balance.toWei().dividedBy(new BigNumber(10).pow(18));
+        value = balance.toWei();
+        valueDecimals = 18;
       }
+      coins = value.dividedBy(new BigNumber(10).pow(valueDecimals));
     }
     coinsStr = coins.toFormat(displayDecimals || decimals);
     const { fiatStyle, coinsStyle } = this.props;

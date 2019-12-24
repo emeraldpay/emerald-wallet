@@ -1,9 +1,24 @@
-import { Blockchain, BlockchainCode } from '@emeraldwallet/core';
+import {AnyCoinCode, AnyTokenCode, Blockchain, BlockchainCode, CurrencyCode, Units} from '@emeraldwallet/core';
 import * as vault from '@emeraldpay/emerald-vault-core';
 import {Wei} from "@emeraldplatform/eth";
 import { AccountId } from '@emeraldpay/emerald-vault-core';
+import BigNumber from "bignumber.js";
 
 export const moduleName = 'addresses';
+
+export type BalanceValue = {
+  balance: Wei | Units,
+  token: CurrencyCode | AnyCoinCode,
+}
+
+/**
+ * Balance in original "face" value, and converted to a common currency
+ */
+export type BalanceValueConverted = {
+  source: BalanceValue,
+  converted: BalanceValue,
+  rate: number
+}
 
 export type AccountDetails = {
   accountId: AccountId,

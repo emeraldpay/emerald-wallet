@@ -2,6 +2,7 @@ import { Wei } from '@emeraldplatform/eth';
 import { BlockchainCode } from '@emeraldwallet/core';
 import { fromJS } from 'immutable';
 import { allAsArray, balanceByChain } from './selectors';
+import {IAddressesState} from "./types";
 
 describe('allAsArray', () => {
   const state = {

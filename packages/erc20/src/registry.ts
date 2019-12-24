@@ -1,4 +1,4 @@
-import { BlockchainCode } from '@emeraldwallet/core';
+import {AnyTokenCode, BlockchainCode, CoinTickerCode} from '@emeraldwallet/core';
 
 type TokensCollection = {
   [code in BlockchainCode]: ITokenInfo[];
@@ -7,7 +7,7 @@ type TokensCollection = {
 export interface ITokenInfo {
   address: string;
   decimals: number;
-  symbol: string;
+  symbol: AnyTokenCode | CoinTickerCode; // Coins are accepted because of selection in CreateTransaction, FIXME
 }
 
 /**

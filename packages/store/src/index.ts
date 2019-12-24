@@ -29,3 +29,7 @@ export {
 export {
   State
 } from './types';
+
+export {
+  BalanceValue, BalanceValueConverted
+} from './accounts/types'

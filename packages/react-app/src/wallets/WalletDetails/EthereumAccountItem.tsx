@@ -64,7 +64,7 @@ export default connect<RenderProps, DispatchProps, OwnProps, State>(
   (state, ownProps) => {
     let {account} = ownProps;
     let blockchainCode = blockchainById(account.blockchain)!.params.code;
-    let balance = addresses.selectors.getBalance(state.addresses, account, Wei.ZERO) || Wei.ZERO;
+    let balance = addresses.selectors.getBalance(state, account, Wei.ZERO) || Wei.ZERO;
     return {
       account,
       balance,

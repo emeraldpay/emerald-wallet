@@ -7,7 +7,7 @@ import {
   SetNumConfirmAction,
   SettingsAction
 } from './types';
-import {BlockchainCode, CurrencyCode} from "@emeraldwallet/core";
+import {BlockchainCode, CurrencyCode, StableCoinCode} from "@emeraldwallet/core";
 
 const initial: ISettingsState = {
   rates: {},
@@ -17,7 +17,7 @@ const initial: ISettingsState = {
   mode: {
     id: 'default',
     chains: [BlockchainCode.ETH, BlockchainCode.ETC],
-    currencies: [CurrencyCode.USD, CurrencyCode.EUR, CurrencyCode.USDT]
+    currencies: [CurrencyCode.USD, CurrencyCode.EUR, "USDT"]
   }
 };
 
