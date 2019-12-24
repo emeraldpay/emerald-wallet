@@ -11,7 +11,7 @@ function* loadAddresses (api: IApi, action: LoadContactsAction) {
   const contacts: Contact[] = items.map((item) => {
     return {
       address: item.address,
-      blockchain: blockchainById(item.blockchains[0])!.params.code,
+      blockchain: blockchainById(item.blockchain)!.params.code,
       name: item.name
     }
   });
@@ -20,7 +20,7 @@ function* loadAddresses (api: IApi, action: LoadContactsAction) {
 
 function* addContact (api: IApi, action: AddContactAction) {
   const { address, name, description, blockchain } = action.payload;
-  const add = { address, name, description, blockchains: [blockchainCodeToId(blockchain)] };
+  const add = { address, name, description, blockchain: blockchainCodeToId(blockchain) };
   const result = yield call(api.vault.addToAddressBook, add);
   yield put(newContactAddedAction(blockchain, address, name || "", description || ""));
   yield put(gotoScreen('address-book'));
