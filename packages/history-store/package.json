@@ -1,0 +1,46 @@
+{
+  "name": "@emeraldwallet/history-store",
+  "version": "2.1.2",
+  "description": "Transactions storage management",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "author": "ETCDEV GmbH",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "rimraf lib/ && tsc",
+    "build:dist": "rimraf lib/ && tsc",
+    "test": "jest",
+    "test:coverage": "jest --coverage && codecov"
+  },
+  "dependencies": {
+    "@emeraldplatform/core": "0.5.8",
+    "@emeraldwallet/core": "^2.1.2",
+    "bignumber.js": "8.0.2",
+    "electron-store": "5.1.0"
+  },
+  "devDependencies": {
+    "@jest-runner/electron": "^2.0.3",
+    "@types/jest": "^24.0.9",
+    "@types/node": "^12.12.0",
+    "electron": "7.0.1",
+    "jest": "^24.1.0",
+    "rimraf": "^2.6.3",
+    "ts-jest": "^24.0.0"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "runner": "@jest-runner/electron/main",
+    "testPathIgnorePatterns": [
+      "<rootDir>/lib/",
+      "<rootDir>/node_modules/"
+    ],
+    "setupFiles": [
+      "<rootDir>/jest.setup.ts",
+      "<rootDir>/__mocks__/localStorageMock.js"
+    ],
+    "coverageDirectory": "./coverage/",
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ]
+  }
+}

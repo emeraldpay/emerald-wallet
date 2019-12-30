@@ -2,20 +2,19 @@ import { Warning } from '@emeraldplatform/ui-icons';
 import { amber } from '@material-ui/core/colors';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
-import { withStyles } from '@material-ui/core/styles';
-import { FloatProperty } from 'csstype';
+import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 
-export interface Props {
+export interface IProps {
   classes?: any;
   status: string;
 }
 
-interface State {
+interface IState {
   open: boolean;
 }
 
-const styles = (theme) => ({
+const styles = (theme) => createStyles({
   none: {
   },
   issues: {
@@ -26,7 +25,7 @@ const styles = (theme) => ({
   },
 
   icon: {
-    float: 'left' as FloatProperty,
+    float: 'left',
     marginRight: '10px'
   },
   message: {
@@ -34,13 +33,13 @@ const styles = (theme) => ({
   }
 });
 
-class ConnectionStatus extends React.Component<Props, State> {
+class ConnectionStatus extends React.Component<IProps, IState> {
   constructor (props) {
     super(props);
     this.state = { open: props.open || false };
   }
 
-  public UNSAFE_componentWillReceiveProps (nextProps: Props) { // eslint-disable-line
+  public UNSAFE_componentWillReceiveProps (nextProps: IProps) {
     if (nextProps.status) {
       if (nextProps.status === 'CONNECTED' || typeof nextProps.status === 'undefined') {
         this.setState({ open: false });

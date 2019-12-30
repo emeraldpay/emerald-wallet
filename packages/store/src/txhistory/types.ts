@@ -1,5 +1,5 @@
+import { IStoredTransaction } from '@emeraldwallet/core';
 import { List, Map } from 'immutable';
-import { ITransaction } from '../types';
 
 export enum ActionTypes {
   TRACK_TX = 'WALLET/HISTORY/TRACK_TX',
@@ -12,22 +12,22 @@ export enum ActionTypes {
 
 export interface ITrackTxAction {
   type: ActionTypes.TRACK_TX;
-  tx: ITransaction;
+  tx: IStoredTransaction;
 }
 
 export interface ITrackTxsAction {
   type: ActionTypes.TRACK_TXS;
-  txs: ITransaction[];
+  txs: IStoredTransaction[];
 }
 
 export interface ILoadStoredTxsAction {
   type: ActionTypes.LOAD_STORED_TXS;
-  transactions: ITransaction[];
+  transactions: IStoredTransaction[];
 }
 
 export interface IPendingTxAction {
   type: ActionTypes.PENDING_TX;
-  txList: ITransaction[];
+  txList: IStoredTransaction[];
 }
 
 export interface ITrackedTxNotFoundAction {
@@ -37,7 +37,7 @@ export interface ITrackedTxNotFoundAction {
 
 export interface IUpdateTxsAction {
   type: ActionTypes.UPDATE_TXS;
-  payload: ITransaction[];
+  payload: IStoredTransaction[];
 }
 
 export type HistoryAction =

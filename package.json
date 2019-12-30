@@ -14,12 +14,13 @@
     "postinstall": "npm run electron:install-vault-native"
   },
   "devDependencies": {
+    "electron-build-env": "0.2.0",
     "lerna": "3.16.4",
+    "neon-cli": "0.3.1",
     "tslint": "^5.20.0",
     "tslint-config-standard": "^8.0.1",
     "tslint-react": "^4.1.0",
-    "electron-build-env": "0.2.0",
-    "neon-cli": "0.3.1"
+    "typescript": "3.6.3"
   },
   "workspaces": [
     "packages/*"

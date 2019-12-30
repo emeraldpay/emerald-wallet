@@ -1,6 +1,6 @@
 import { Blockchains, blockchains } from '@emeraldwallet/core';
 import { MenuItem, Paper, TextField } from '@material-ui/core';
-import { CSSProperties, withStyles } from '@material-ui/styles';
+import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import * as Autosuggest from 'react-autosuggest';
 
@@ -15,10 +15,10 @@ const dPaths: IDPath[] = Object.keys(blockchains.Blockchains)
     label: Blockchains[chainCode].getTitle()
   }));
 
-export const styles = (theme?: any) => ({
+export const styles = (theme?: any) => createStyles({
   container: {
     position: 'relative'
-  } as CSSProperties,
+  },
   suggestionsContainer: {
     border: 'none'
   },
@@ -28,7 +28,7 @@ export const styles = (theme?: any) => ({
     left: 0,
     right: 0,
     border: `1px solid ${theme.palette && theme.palette.divider}`
-  } as CSSProperties,
+  },
   suggestionsList: {
     margin: 0,
     padding: 0,
@@ -66,9 +66,6 @@ function renderInputComponent (inputProps) {
           ref(node);
           inputRef(node);
         },
-        classes: {
-          input: classes.input
-        },
         endAdornment
       }}
       {...other}
@@ -76,13 +73,32 @@ function renderInputComponent (inputProps) {
   );
 }
 
-function renderSuggestion (suggestion, { query, isHighlighted }) {
+const suggestionStyles = (theme?: any) => createStyles({
+  labelText: {
+    color: theme.pallete && theme.pallete.secondary
+  }
+});
+
+function SuggestionItem (props: any) {
+  const { value, label, classes, isHighlighted } = props;
   return (
     <MenuItem selected={isHighlighted} component='div'>
       <div>
-        {suggestion.value} {suggestion.label}
+        {value} <span className={classes.labelText}>{label}</span>
       </div>
     </MenuItem>
+  );
+}
+
+const StyledSuggestionItem = withStyles(suggestionStyles)(SuggestionItem);
+
+function renderSuggestion (suggestion, { query, isHighlighted }) {
+  return (
+    <StyledSuggestionItem
+      value={suggestion.value}
+      label={suggestion.label}
+      isHighlighted={isHighlighted}
+    />
   );
 }
 
@@ -114,24 +130,27 @@ export class HdPath extends React.Component<IProps, IState> {
     });
   }
 
-  public shouldRenderSuggestions (value: string): boolean {
-    return true;
-  }
-
   public render () {
+    function shouldRenderSuggestions (suggestion: string): boolean {
+      return true;
+    }
+
+    function getSuggestion (suggestion: any) {
+      return suggestion.value;
+    }
+
     const { value, classes } = this.props;
     return (
       <div className={classes.container}>
         <Autosuggest
-          shouldRenderSuggestions={this.shouldRenderSuggestions}
+          shouldRenderSuggestions={shouldRenderSuggestions}
           renderInputComponent={renderInputComponent}
           suggestions={predefinedHdPaths}
           onSuggestionsFetchRequested={this.handleSuggestionsFetchRequested}
           onSuggestionsClearRequested={this.handleSuggestionsClearRequested}
-          getSuggestionValue={(suggestion) => (suggestion.value)}
+          getSuggestionValue={getSuggestion}
           renderSuggestion={renderSuggestion}
           inputProps={{
-            classes,
             placeholder: "m/44'/60'/160720'/0'",
             value: this.state.value,
             onChange: this.handleChange

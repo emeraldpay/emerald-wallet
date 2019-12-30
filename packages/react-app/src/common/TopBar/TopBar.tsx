@@ -52,7 +52,7 @@ export class TopBar extends React.Component<ITopBarProps> {
 const StyledTopBar = withStyles(styles)(TopBar);
 
 const mapDispatchToProps = (dispatch: any) => ({
-  onAccounts: () => dispatch(screen.actions.gotoScreen('home')),
+  onAccounts: () => dispatch(screen.actions.gotoScreen(screen.Pages.HOME)),
   onNewContact: () => dispatch(screen.actions.gotoScreen('add-address'))
 });
 

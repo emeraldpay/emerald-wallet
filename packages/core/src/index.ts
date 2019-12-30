@@ -27,3 +27,4 @@ import * as vault from './vault';
 export { vault };
 
 export { EthereumAddress, isValidEthAddress } from './Address';
+export { IStoredTransaction } from './history/IStoredTransaction';
