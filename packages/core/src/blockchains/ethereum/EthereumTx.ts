@@ -7,7 +7,7 @@ class EthereumTx implements ITransaction {
 
   public static fromRaw (hex: string, chainId: any): ITransaction {
     if (chainId === 62 || chainId === 61) {
-      // Because ethereumjs-tx doesn't support MORDEN and ETC
+      // Because ethereumjs-tx doesn't support ETC
       const custom = Common.forCustomChain(1, {
         chainId
       }, 'byzantium');

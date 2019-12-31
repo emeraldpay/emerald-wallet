@@ -17,9 +17,4 @@ describe('chainUtils', () => {
     expect(extractChain('MAINNET').fullname).toEqual('Ethereum Classic');
   });
 
-  it('works for morden', () => {
-    expect(extractChain('morden').code).toEqual('MORDEN');
-    expect(extractChain('MORDEN').code).toEqual('MORDEN');
-  });
-
 });

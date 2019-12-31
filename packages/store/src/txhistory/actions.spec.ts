@@ -15,7 +15,7 @@ describe('historyActions/refreshTrackedTransactions', () => {
         numConfirmations: 10
       }),
       history: fromJS({
-        chainId: 'morden',
+        chainId: 'kovan',
         trackedTransactions: [{ numConfirmations: 0, hash: '0x123', blockchain: 'ETH' }]
       })
     }

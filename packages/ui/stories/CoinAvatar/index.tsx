@@ -8,7 +8,6 @@ storiesOf('CoinAvatar', module)
     <React.Fragment>
       <CoinAvatar chain={BlockchainCode.ETC} />
       <CoinAvatar chain={BlockchainCode.ETH} />
-      <CoinAvatar chain={BlockchainCode.Morden} />
       <CoinAvatar chain={BlockchainCode.Kovan} />
     </React.Fragment>
   ));

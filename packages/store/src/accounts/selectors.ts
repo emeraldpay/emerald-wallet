@@ -79,7 +79,7 @@ export function getWalletBalances(state: State, _wallet: Wallet | WalletOp, incl
   let wallet = WalletOp.asOp(_wallet);
   let assets: BalanceValue[] = [];
   let ethereumAccounts = wallet.getEthereumAccounts();
-  [BlockchainCode.ETH, BlockchainCode.ETC, BlockchainCode.Kovan, BlockchainCode.Morden]
+  [BlockchainCode.ETH, BlockchainCode.ETC, BlockchainCode.Kovan]
     .forEach((code) => {
       let blockchainAccounts = ethereumAccounts
         .filter((account) => account.blockchain == blockchainCodeToId(code));

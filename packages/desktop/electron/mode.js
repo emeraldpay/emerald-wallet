@@ -8,7 +8,7 @@ const LocalMode = {
 // TODO have only testnets here
 const DevMode = {
   id: 'development',
-  chains: ['KOVAN', 'MORDEN', 'ETH', 'ETC'],
+  chains: ['KOVAN', 'ETH', 'ETC'],
   assets: ['ETH', 'ETC', 'DAI', 'USDT'],
   currencies: ['USD', 'MONOPOLY'],
 };

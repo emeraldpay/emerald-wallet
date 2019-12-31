@@ -43,7 +43,6 @@ export const registry = {
         symbol: 'USDT'
       }
     ],
-    [BlockchainCode.Morden]: [],
     [BlockchainCode.Kovan]: [
       {
         address: '0xaFF4481D10270F50f203E0763e2597776068CBc5',

@@ -6,7 +6,6 @@ import EthereumParams from './ethereum/EthereumParams';
 export enum BlockchainCode {
   ETC = 'etc',
   ETH = 'eth',
-  Morden = 'morden',
   Kovan = 'kovan',
   Unknown = 'unknown'
 }
@@ -14,11 +13,10 @@ export enum BlockchainCode {
 export const Blockchains: {[key: string]: Blockchain} = {
   [BlockchainCode.ETH]: new Ethereum(new EthereumParams(BlockchainCode.ETH, CoinTicker.ETH, 1,"m/44'/60'/0'/0"), 'Ethereum'),
   [BlockchainCode.ETC]: new Ethereum(new EthereumParams(BlockchainCode.ETC, CoinTicker.ETC, 61, "m/44'/61'/0'/0"), 'Ethereum Classic'),
-  [BlockchainCode.Morden]: new Ethereum(new EthereumParams(BlockchainCode.Morden, CoinTicker.MORDEN, 62, "m/44'/60'/160720'/0'"), 'Ethereum Morden Testnet'),
   [BlockchainCode.Kovan]: new Ethereum(new EthereumParams(BlockchainCode.Kovan, CoinTicker.KOVAN, 42, "m/44'/60'/160720'/0'"), 'Ethereum Kovan Testnet')
 };
 
-const allCodes = [BlockchainCode.ETC, BlockchainCode.ETH, BlockchainCode.Morden, BlockchainCode.Kovan];
+const allCodes = [BlockchainCode.ETC, BlockchainCode.ETH, BlockchainCode.Kovan];
 const allChains = allCodes.map((code) => Blockchains[code]);
 
 export function isValidChain (code: any): boolean {
@@ -55,9 +53,6 @@ export function blockchainById(id: number): Blockchain | undefined {
   if (id == 101) {
     return Blockchains[BlockchainCode.ETC]
   }
-  if (id == 10001) {
-    return Blockchains[BlockchainCode.Morden]
-  }
   if (id == 10002) {
     return Blockchains[BlockchainCode.Kovan]
   }
@@ -70,9 +65,6 @@ export function blockchainCodeToId(code: BlockchainCode): number {
   }
   if (code == BlockchainCode.ETC) {
     return 101;
-  }
-  if (code == BlockchainCode.Morden) {
-    return 10001;
   }
   if (code == BlockchainCode.Kovan) {
     return 10002;
