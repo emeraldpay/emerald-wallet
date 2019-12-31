@@ -32,7 +32,7 @@ export interface AddressTxCount {
   value: number;
 }
 
-export interface Connected {
+export interface IConnectedAction {
   type: ActionTypes.CONNECTED;
   value: boolean;
 }
@@ -80,7 +80,7 @@ export type LedgerAction =
   | IUpdateAddressAction
   | AddressBalance
   | AddressTxCount
-  | Connected
+  | IConnectedAction
   | SetHDOffset
   | AddressSelected
   | SetListHDPath

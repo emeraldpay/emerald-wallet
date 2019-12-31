@@ -1,14 +1,12 @@
 import { convert } from '@emeraldplatform/core';
+import { BlockchainCode, IStoredTransaction } from '@emeraldwallet/core';
+import { loadTransactions, storeTransactions } from '@emeraldwallet/history-store';
 import BigNumber from 'bignumber.js';
 import { fromJS, List } from 'immutable';
-
-import { BlockchainCode } from '@emeraldwallet/core';
-import { ITransaction } from '../types';
-import { loadTransactions, storeTransactions } from './historyStorage';
 import { reducer as historyReducers } from './reducer';
-import { ActionTypes, ITrackTxAction, IUpdateTxsAction } from './types';
+import { ActionTypes, IUpdateTxsAction } from './types';
 
-const { toNumber, toBigNumber } = convert;
+const { toBigNumber } = convert;
 
 describe('historyReducer', () => {
   it('should store and load txs correctly', () => {
@@ -93,7 +91,7 @@ describe('historyReducer', () => {
   });
 
   it('should update TXS data with tx.input', () => {
-    const tx: ITransaction = {
+    const tx: IStoredTransaction = {
       blockHash: '0xc87e5117923e756e5d262ef230374b73ebe47f232b0f029fa65cf6614d959100',
       blockNumber: '0x17',
       from: '0x0178537bb1d7bb412101cdb7389c28fd4cf5ac0a',
@@ -166,15 +164,16 @@ describe('historyReducer', () => {
     const action: IUpdateTxsAction = {
       type: ActionTypes.UPDATE_TXS,
       payload: [
-        {hash: tx.hash,
-         timestamp: now,
-         value: toBigNumber('0x12'),
-         gas: '0x0',
-         gasPrice: '0x0',
-         from: '0x0',
-         to: '0x0',
-         nonce: 0,
-         blockchain: BlockchainCode.Morden
+        {
+          hash: tx.hash,
+          timestamp: now,
+          value: toBigNumber('0x12'),
+          gas: '0x0',
+          gasPrice: '0x0',
+          from: '0x0',
+          to: '0x0',
+          nonce: 0,
+          blockchain: BlockchainCode.Morden
         }]
     };
 
@@ -187,7 +186,7 @@ describe('historyReducer', () => {
   it('should handle UPDATE_TXS', () => {
     // prepare
 
-    const txs: ITransaction[] = [{
+    const txs: IStoredTransaction[] = [{
       blockHash: '0xc87e5117923e756e5d262ef230374b73ebe47f232b0f029fa65cf6614d959100',
       blockNumber: '0x17',
       from: '0x0178537bb1d7bb412101cdb7389c28fd4cf5ac0a',

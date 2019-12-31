@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@emeraldpay/emerald-vault-core": "0.5.0-0.27.0",
-    "@emeraldpay/emerald-vault-node": "0.5.0-0.27.0"
+    "@emeraldpay/emerald-vault-native": "0.5.0-0.27.0"
   },
   "devDependencies": {
     "@types/jest": "^24.0.9",
@@ -23,8 +23,7 @@
     "jest": "^24.1.0",
     "node-abi": "2.12.0",
     "rimraf": "^2.6.3",
-    "ts-jest": "^24.0.0",
-    "typescript": "3.4.2"
+    "ts-jest": "^24.0.0"
   },
   "workspaces": {
     "nohoist": [

@@ -1,7 +1,8 @@
 import { txhistory } from '@emeraldwallet/store';
+import { IService } from './Services';
 import { TxListener } from './TxListener';
 
-export class TransactionListener {
+export class TransactionListener implements IService {
   public id: string;
   private apiAccess: any;
   private webContents: any;
@@ -20,12 +21,10 @@ export class TransactionListener {
   }
 
   public start () {
-    const { webContents } = this;
     this.ipcMain.on('subscribe-tx', (_: any, blockchain: string, hash: string) => {
       const subscriber = this.apiAccess.newTxListener();
       this.subscriber.push(subscriber);
       subscriber.subscribe(blockchain, hash, (event: any) => {
-        // console.log("update for tx", hash);
         const action = txhistory.actions.updateTxs([{
           blockchain,
           hash: event.txid,
@@ -33,7 +32,7 @@ export class TransactionListener {
           timestamp: event.timestamp,
           broadcasted: event.broadcasted
         }]);
-        webContents.send('store', action);
+        this.webContents.send('store', action);
       });
     });
   }

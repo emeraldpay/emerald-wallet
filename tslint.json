@@ -4,6 +4,7 @@
     "exclude": ["**/node_modules/**", "**/lib/**"]
   },
   "rules": {
+    "no-submodule-imports": false,
     "semicolon": true,
     "no-implicit-dependencies": [true, "dev"],
     "jsx-no-multiline-js": false,

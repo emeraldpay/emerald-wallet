@@ -5,10 +5,9 @@ import { Wei } from '@emeraldplatform/eth';
 import {
   ContactList as AddressBook, AddContact, PaperWallet, ExportPaperWallet, ImportJson, TxDetails,
   ImportMnemonic, CreateTransaction, BroadcastTx, ImportPrivateKey, ImportLedgerAccount, GenerateAccount,
-  Settings, MnemonicWizard, WalletDetails, Home
+  Settings, MnemonicWizard, WalletDetails, Home, Welcome
 } from '@emeraldwallet/react-app';
 import createLogger from '../../utils/logger';
-import Welcome from '../../components/welcome/welcome';
 import { screen } from '@emeraldwallet/store';
 import { TERMS_VERSION } from '../../store/config';
 const log = createLogger('screen');
@@ -21,7 +20,7 @@ const Screen = (props) => {
       <CircularProgress size={50} secondary="true" /> Initializing...
     </div>);
   }
-  if (props.screen === 'home') {
+  if (props.screen === screen.Pages.HOME) {
     return (<Home />);
   }
   if (props.screen === 'address-book') {

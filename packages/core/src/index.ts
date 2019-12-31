@@ -27,3 +27,5 @@ export { vault };
 export { EthereumAddress, isValidEthAddress } from './Address';
 
 export { StableCoinCode, SupportedTokenCode, AnyTokenCode, AnyCoinCode } from './Asset';
+
+export { IStoredTransaction } from './history/IStoredTransaction';

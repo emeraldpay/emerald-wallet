@@ -1,7 +1,6 @@
 import { convert } from '@emeraldplatform/core';
-import { utils } from '@emeraldwallet/core';
+import { IStoredTransaction, utils } from '@emeraldwallet/core';
 import { fromJS, Map } from 'immutable';
-import { ITransaction } from '../types';
 import {
   ActionTypes,
   HistoryAction,
@@ -16,8 +15,7 @@ import {
 const { toNumber, toBigNumber } = convert;
 
 const initial = fromJS({
-  trackedTransactions: [],
-  chainId: null
+  trackedTransactions: []
 });
 
 const initialTx = Map({
@@ -75,7 +73,7 @@ function updateStatus (tx: any): any {
   }
 }
 
-function createTx (data: ITransaction) {
+function createTx (data: IStoredTransaction) {
   const values: {[key: string]: any} = {
     hash: data.hash,
     to: data.to

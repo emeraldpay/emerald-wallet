@@ -1,15 +1,17 @@
 import {BlockchainCode, blockchainCodeToId} from '@emeraldwallet/core';
 import { LedgerApi } from '@emeraldwallet/ledger';
 import { remote } from 'electron';
-import { Dispatched, GetState } from '../types';
+import { AppThunk, Dispatched, GetState } from '../types';
+
 import {
   ActionTypes,
   AddressSelected,
-  Connected, IGetAddressesAction,
+  IConnectedAction, IGetAddressesAction,
   IUpdateAddressAction,
   SetBaseHD,
   SetHDOffset, SetListHDPath, Watch
 } from './types';
+import {ActionCreator} from "redux";
 
 export function setWatch (value: boolean): Watch {
   return {
@@ -18,14 +20,14 @@ export function setWatch (value: boolean): Watch {
   };
 }
 
-export function setConnectedAction (value: boolean): Connected {
+export function setConnectedAction (value: boolean): IConnectedAction {
   return {
     type: ActionTypes.CONNECTED,
     value
   };
 }
 
-export function setConnected (value: boolean): Dispatched<Connected | Dispatched<any>> {
+export function setConnected (value: boolean): AppThunk<any> {
   return (dispatch, getState) => {
     if (getState().ledger.get('connected') !== value) {
       dispatch(setConnectedAction(value));
@@ -68,11 +70,11 @@ export function selectAddressAction (addr?: string): AddressSelected {
   };
 }
 
-export function checkConnected (): Dispatched<Connected> {
+export function checkConnected (): AppThunk<IConnectedAction> {
   return (dispatch, getState) => {
     const ledgerApi: LedgerApi = remote.getGlobal('ledger');
     if (ledgerApi.isConnected()) {
-      dispatch(setConnected(true));
+      return dispatch(setConnected(true));
     } else {
       console.debug('error connecting. Device is locked or not plugged in.');
       return dispatch(setConnected(false));
@@ -80,7 +82,7 @@ export function checkConnected (): Dispatched<Connected> {
   };
 }
 
-export function watchConnection (): Dispatched<Connected> {
+export function watchConnection (): AppThunk {
   return (dispatch, getState) => {
     const connectionStart = () => {
       const state = getState();

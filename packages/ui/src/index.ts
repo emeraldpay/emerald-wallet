@@ -5,7 +5,7 @@ export { default as Logo } from './components/common/Logo';
 export { default as Pager } from './components/common/Pager';
 export { default as Advice } from './components/common/Advice';
 
-export { default as InitialSetup } from './components/welcome/InitialSetup';
+export { default as InitialSetup } from './components/welcome/InitialSetupView';
 
 export { default as About } from './components/About';
 export { default as ImportMnemonic } from './components/accounts/ImportMnemonic';
