@@ -40,20 +40,20 @@ const AccountSummary = ((props: RenderProps & DispatchProps) => {
           fiatStyle={false}
           balance={balance}
           decimals={6}
-          symbol={blockchainCode}
+          symbol={blockchainCode.toUpperCase()}
           showFiat={false}
         />
       </Grid>
       <Grid item={true} xs={3}>
-        <Button
-          label='Deposit'
-          // onClick={this.handleDepositClick}
-        />
-        <Button
-          label='Send'
-          disabled={balance.isZero()}
-          onClick={onSendClick}
-        />
+        {/*<Button*/}
+        {/*  label='Deposit'*/}
+        {/*  // onClick={this.handleDepositClick}*/}
+        {/*/>*/}
+        {/*<Button*/}
+        {/*  label='Send'*/}
+        {/*  disabled={balance.isZero()}*/}
+        {/*  onClick={onSendClick}*/}
+        {/*/>*/}
       </Grid>
     </Grid>
   );
