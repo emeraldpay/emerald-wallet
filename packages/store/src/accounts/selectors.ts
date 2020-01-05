@@ -109,7 +109,7 @@ export function getWalletBalances(state: State, _wallet: Wallet | WalletOp, incl
       }
     });
 
-  return assets
+  return aggregateByAsset(assets)
 }
 
 /**

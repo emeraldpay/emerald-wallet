@@ -9,6 +9,7 @@ import {ITokensState} from "./tokens/types";
 import {ITransactionState} from "./transaction/types";
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
+import {IAddAccountState} from "./add-account/types";
 
 export type State = {
   addresses: IAddressesState,
@@ -24,6 +25,7 @@ export type State = {
   }
   tokens: ITokensState,
   transactions: ITransactionState,
+  addAccount?: IAddAccountState
 }
 export type GetState = () => State;
 export type Dispatched<T> = (dispatch: Dispatch<T | Dispatched<T>>, getState: GetState, api: IApi) => void;

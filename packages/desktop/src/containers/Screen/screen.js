@@ -3,9 +3,9 @@ import { connect } from 'react-redux';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { Wei } from '@emeraldplatform/eth';
 import {
-  ContactList as AddressBook, AddContact, PaperWallet, ExportPaperWallet, ImportJson, TxDetails,
+  ContactList as AddressBook, AddContact, PaperWallet, ExportPaperWallet, TxDetails,
   ImportMnemonic, CreateTransaction, BroadcastTx, ImportPrivateKey, ImportLedgerAccount, GenerateAccount,
-  Settings, MnemonicWizard, WalletDetails, Home, Welcome
+  Settings, MnemonicWizard, WalletDetails, Home, Welcome, CreateAccountWizard
 } from '@emeraldwallet/react-app';
 import createLogger from '../../utils/logger';
 import { screen } from '@emeraldwallet/store';
@@ -94,6 +94,9 @@ const Screen = (props) => {
   }
   if (props.screen === 'export-paper-wallet') {
     return <ExportPaperWallet accountId={ props.screenItem.address } blockchain={ props.screenItem.blockchain } />;
+  }
+  if (props.screen === 'add-account') {
+    return <CreateAccountWizard />;
   }
 
   return (

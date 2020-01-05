@@ -13,7 +13,7 @@ import * as history from '../txhistory';
 import {Dispatched} from '../types';
 import * as selectors from './selectors';
 import {
-  ActionTypes,
+  ActionTypes, AddressesAction,
   AddWalletAction,
   IFetchErc20BalancesAction,
   IFetchHdPathsAction,
@@ -97,6 +97,23 @@ export function loadAccountTxCount (walletId: string): Dispatched<SetTxCountActi
   };
 }
 
+function addAccount(api: IApi, dispatch: Dispatch<any>,
+                    walletId: vault.Uuid, add: vault.AddAccount) {
+  if (!walletId) {
+    throw Error("Wallet is not set");
+  }
+  let accountId = api.vault.addAccount(walletId, add);
+  let wallet = api.vault.getWallet(walletId)!;
+  dispatch({
+    type: ActionTypes.ADD_WALLET,
+    wallet: wallet
+  });
+  let account = wallet.accounts[0] as vault.EthereumAccount;
+  dispatch(loadAccountsList()); //reload only current wallet
+  // loadAccountBalance(blockchainById(add.blockchain)!!.params.code, account.address);
+  return walletId;
+}
+
 function createWalletWithAccount(api: IApi, dispatch: Dispatch<any>,
                                  blockchain: BlockchainCode, name: string = '', add: vault.AddAccount): vault.Uuid {
   let walletId = api.vault.addWallet(name);
@@ -107,7 +124,8 @@ function createWalletWithAccount(api: IApi, dispatch: Dispatch<any>,
     wallet: wallet
   });
   let account = wallet.accounts[0] as vault.EthereumAccount;
-  loadAccountBalance(blockchain, account.address);
+  dispatch(loadAccountsList()); //reload only current wallet
+  // loadAccountBalance(blockchain, account.address);
   return walletId;
 }
 
@@ -175,11 +193,13 @@ function readWalletFile (walletFile: Blob) {
 }
 
 export function importJson (
-  blockchain: BlockchainCode, data: any, name: string, description: string
+  wallet: vault.Uuid,
+  blockchain: BlockchainCode,
+  data: any
 ): Dispatched<AddWalletAction> {
   return (dispatch, getState, api) => {
-    createWalletWithAccount(api, dispatch,
-      blockchain, name, {
+    addAccount(api, dispatch,
+      wallet, {
       blockchain: blockchainCodeToId(blockchain),
       type: "ethereum-json",
       key: JSON.stringify(data)
@@ -212,12 +232,14 @@ export function importMnemonic (
   };
 }
 
-export function importWallet (
-  blockchain: BlockchainCode, wallet: Blob, name: string, description: string
-): Dispatched<AddWalletAction> {
+export function importWalletFile (
+  wallet: vault.Uuid,
+  blockchain: BlockchainCode,
+  file: Blob
+): Dispatched<AddressesAction> {
   return (dispatch, getState) => {
-    return readWalletFile(wallet).then((data) => {
-      return dispatch(importJson(blockchain, data, name, description));
+    return readWalletFile(file).then((data) => {
+      return dispatch(importJson(wallet, blockchain, data));
     });
   };
 }

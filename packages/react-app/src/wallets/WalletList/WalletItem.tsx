@@ -10,6 +10,7 @@ import {WalletOp, Wallet} from '@emeraldpay/emerald-vault-core';
 import AccountBalance from '../../common/Balance';
 import WalletActions from '../WalletActions';
 import {AccountSummary} from '../AccountSummary';
+import WalletMenu from "./WalletMenu";
 
 const styles = (theme: any) => ({
   tokensDivider: {
@@ -91,12 +92,12 @@ export class Account extends React.PureComponent<IAccountProps> {
                   title: classes.headerTitle,
                   subheader: classes.headerSubtitle
                 }}
-                onClick={this.onAddressClick}
                 action={
-                  <IconButton aria-label="details"
-                              onClick={this.onAddressClick}> {/* TODO show menu with wallet actions? */}
-                    <MoreVertIcon />
-                  </IconButton>
+                  <WalletMenu wallet={wallet}/>
+                  // <IconButton aria-label="details"
+                  //             onClick={this.onAddressClick}> {/* TODO show menu with wallet actions? */}
+                  //   <MoreVertIcon />
+                  // </IconButton>
                 }>
               </CardHeader>
               <CardContent>

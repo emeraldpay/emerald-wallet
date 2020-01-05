@@ -6,7 +6,7 @@ import {
 } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import {
-  addresses, blockchains, screen, ledger, connection, addressBook, txhistory, tokens, wallet, settings
+  addresses, blockchains, screen, ledger, connection, addressBook, txhistory, tokens, wallet, settings, addAccount
 } from '@emeraldwallet/store';
 import reduxLogger from '../utils/redux-logger';
 import reduxMiddleware from './middleware';
@@ -27,6 +27,7 @@ const reducers = {
   blockchains: blockchains.reducer,
   screen: screen.reducer,
   conn: connection.reducer,
+  addAccount: addAccount.reducer
 };
 
 /**
