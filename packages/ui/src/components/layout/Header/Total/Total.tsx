@@ -4,11 +4,19 @@ import { CSSProperties, withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import Button from '../../../common/Button';
 import { CoinAvatar } from '../../../common/CoinIcon';
+import {AnyCoinCode, CurrencyCode, StableCoinCode, Units} from "@emeraldwallet/core";
+import {Wei} from "@emeraldplatform/eth";
+import BigNumber from "bignumber.js";
 
 export interface IProps {
-  total: any;
-  fiatCurrency?: string;
-  byChain: any;
+  total: Units;
+  fiatCurrency?: CurrencyCode | StableCoinCode;
+  byChain: {
+    token: AnyCoinCode,
+    total: Wei | Units,
+    fiatRate: number,
+    fiatAmount: Units
+  }[];
   classes?: any;
 }
 
@@ -37,6 +45,12 @@ const CoinSymbol = ({ coinTicker }) => {
   return null;
 };
 
+const format = {
+  decimalSeparator: '.',
+  groupSeparator: ',',
+  groupSize: 3
+};
+
 class TotalButton extends React.Component<IProps, IState> {
   constructor (props) {
     super(props);
@@ -49,20 +63,20 @@ class TotalButton extends React.Component<IProps, IState> {
     this.setState({
       anchorEl: event.currentTarget
     });
-  }
+  };
 
   public handleClose = () => {
     this.setState({
       anchorEl: null
     });
-  }
+  };
 
   public render () {
     const {
       total, byChain, fiatCurrency, classes
     } = this.props;
     const { anchorEl } = this.state;
-    const totalFormatted = `${total.toFixed(2)} ${fiatCurrency}`;
+    const totalFormatted = `${total.toBigNumber().toFormat(2, format)} ${fiatCurrency}`;
     return (
       <div>
         <Button
@@ -91,14 +105,22 @@ class TotalButton extends React.Component<IProps, IState> {
         >
           <MenuList>
             {byChain.map((c) => {
-              const ether = `${c.total.toEther(3)} ${c.blockchain.toUpperCase()}`;
-              const fiat = `${c.fiatAmount.toFixed(2)} ${fiatCurrency}`;
+              let coins = '';
+              if (Units.isUnits(c.total)) {
+                coins = c.total.toBigNumber()
+                  .dividedBy(new BigNumber(10).pow(c.total.decimals))
+                  .toFormat(3, format);
+              } else {
+                coins = c.total.toEther(3);
+              }
+              coins += ` ${c.token.toUpperCase()}`;
+              const fiat = `${c.fiatAmount.toBigNumber().toFormat(2, format)} ${fiatCurrency}`;
               return (
-                <ListItem key={c.blockchain}>
+                <ListItem key={c.token}>
                   <ListItemAvatar>
-                    <CoinAvatar chain={c.blockchain}/>
+                    <CoinAvatar chain={c.token}/>
                   </ListItemAvatar>
-                  <ListItemText primary={ether} secondary={fiat} />
+                  <ListItemText primary={coins} secondary={fiat} />
                 </ListItem>
               );
             })}

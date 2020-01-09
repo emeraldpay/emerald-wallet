@@ -1,7 +1,6 @@
-import { BlockchainCode } from '@emeraldwallet/core';
+import {BlockchainCode, blockchainCodeToId} from '@emeraldwallet/core';
 import { LedgerApi } from '@emeraldwallet/ledger';
 import { remote } from 'electron';
-import uuid = require('uuid');
 import { AppThunk, Dispatched, GetState } from '../types';
 
 import {
@@ -159,20 +158,6 @@ export function setBaseHD (hdpath: string): SetBaseHD {
   };
 }
 
-function createAccountData (address: string, hdpath: string): any {
-  return {
-    version: 3,
-    id: uuid(),
-    name: `Ledger ${hdpath}`,
-    address: address.substring(2),
-    crypto: {
-      cipher: 'hardware',
-      hardware: 'ledger-nano-s:v1',
-      hd_path: hdpath
-    }
-  };
-}
-
 export function importSelected (blockchain: BlockchainCode): Dispatched<AddressSelected> {
   return (dispatch, getState, api) => {
     const { ledger } = getState();
@@ -183,14 +168,23 @@ export function importSelected (blockchain: BlockchainCode): Dispatched<AddressS
     const address = account.get('address').toLowerCase();
     const hdpath = account.get('hdpath');
 
-    const data = createAccountData(address, hdpath);
+    console.info('Import Ledger address', address, hdpath);
 
-    console.info('Import Ledger address', data);
+    const seed = api.vault.getConnectedHWSeed(true);
+    if (typeof seed === 'undefined') {
+      console.error("Seed is unavailable");
+      return;
+    }
 
-    return api.emerald.importAccount(data, blockchain).then(() => {
-      // clean selected address
-      dispatch(selectAddressAction(undefined));
-      return address;
+    let walletId = api.vault.addWallet(`Ledger ${hdpath}`);
+    let accountId = api.vault.addAccount(walletId, {
+      blockchain: blockchainCodeToId(blockchain),
+      type: "hd-path",
+      key: {
+        seedId: seed.id!,
+        hdPath: hdpath
+      }
     });
+    dispatch(selectAddressAction(undefined));
   };
 }

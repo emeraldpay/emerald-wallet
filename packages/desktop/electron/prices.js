@@ -10,7 +10,7 @@ class Prices {
     this.apiAccess = apiAccess;
     this.ipcMain.on('prices/setCurrency', (event, to) => {
       to = to.toUpperCase();
-      log.info('set prices', to);
+      log.info('set prices target', to);
       if (this.to !== to) {
         this.to = to;
         this.stop();
@@ -27,15 +27,19 @@ class Prices {
   }
 
   fetch() {
-    log.info(`Request for prices, to ${this.to}`);
+    log.info(`Request for prices, ${this.froms} to ${this.to}`);
     const self = this;
     this.listener.request(this.froms, this.to, (result) => {
       self.webContents.send('store', settings.actions.setRatesAction(result));
     });
-    setTimeout(this.fetch.bind(this), 60000);
+    this.handler = setTimeout(this.fetch.bind(this), 60000);
   }
 
   stop() {
+    if (this.handler) {
+      clearTimeout(this.handler);
+      this.handler = undefined;
+    }
     if (this.listener) {
       log.info('Closing prices listener');
       this.listener.stop();

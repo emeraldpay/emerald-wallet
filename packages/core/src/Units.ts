@@ -22,8 +22,13 @@ export class Units implements IUnits {
   public amount: string;
   public decimals: number;
 
-  constructor (amount: string | number, decimals: number) {
-    const bAmount = new BigNumber(amount);
+  constructor (amount: string | number | BigNumber, decimals: number) {
+    let bAmount;
+    if (BigNumber.isBigNumber(amount)) {
+      bAmount = amount
+    } else {
+      bAmount = new BigNumber(amount);
+    }
     if (bAmount.isNaN()) {
       throw new Error('Invalid value of amount: ' + amount);
     }
@@ -40,7 +45,7 @@ export class Units implements IUnits {
   }
 
   public isGreaterThan (another: IUnits): boolean {
-    if (!this.isSameKind(another)) {
+    if (!this.isSameSize(another)) {
       throw new Error('Can not compare units with different decimals');
     }
     const v = new BigNumber(this.amount);
@@ -54,10 +59,18 @@ export class Units implements IUnits {
     return new Units(v.minus(a).toString(10), this.decimals);
   }
 
-  private isSameKind (another: IUnits): boolean {
+  private isSameSize (another: IUnits): boolean {
     return this.decimals === another.decimals;
   }
 
+  static isUnits(value: any): value is Units {
+    return typeof value === 'object'
+      && Object.keys(value).every((k) => k === 'amount' || k === 'decimals')
+  }
+
+  public toBigNumber(): BigNumber {
+    return new BigNumber(this.amount)
+  }
 }
 
 export default Units;

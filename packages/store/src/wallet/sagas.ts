@@ -6,12 +6,12 @@ import { ActionTypes, IOpenAccDetailsAction } from './types';
 
 function* openAccountDetails (api: IApi, action: IOpenAccDetailsAction) {
   const { address, chain } = action.payload;
-  const acc: any = yield select(addresses.selectors.find, address, chain);
-  if (!acc) {
+  const wallet: any = yield select(addresses.selectors.findWalletByAddress, address, chain);
+  if (!wallet) {
     yield put(screen.actions.showNotification(
       `Account ${address} not found in the vault`, 'warning', 3000, '', () => {}));
   } else {
-    yield put(screen.actions.gotoScreen(screen.Pages.ACCOUNT, acc));
+    yield put(screen.actions.gotoScreen(screen.Pages.WALLET, wallet));
   }
 }
 

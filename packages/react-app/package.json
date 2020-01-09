@@ -9,12 +9,14 @@
   "scripts": {
     "build:dist": "rimraf lib/ && tsc && yarn copyfiles -u 1 src/**/*.png lib/",
     "build": "rimraf lib/ && tsc && yarn copyfiles -u 1 src/**/*.png lib/",
+    "tsc": "tsc",
     "test": "jest --passWithNoTests",
     "test:coverage": "jest --passWithNoTests --coverage && codecov",
     "storybook": "start-storybook -p 9001 -c .storybook"
   },
   "dependencies": {
     "@babel/core": "^7.6.4",
+    "@emeraldpay/emerald-vault-core": "0.5.0-0.27.0.rc1",
     "@emeraldplatform/core": "0.5.8",
     "@emeraldplatform/eth": "0.5.1",
     "@emeraldplatform/ui": "0.5.12",

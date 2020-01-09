@@ -26,7 +26,7 @@ describe('TxStore', () => {
       from: '0x0',
       to: '0x0',
       nonce: 1,
-      blockchain: BlockchainCode.Morden,
+      blockchain: BlockchainCode.Kovan,
       since: new Date(),
       discarded: false
     }];

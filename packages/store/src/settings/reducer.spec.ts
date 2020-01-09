@@ -28,8 +28,8 @@ describe('settingsReducers', () => {
     });
 
     // assert
-    expect(fiatRate('ETC', asGlobal(state))).toBeNull();
-    expect(fiatRate('ETH', asGlobal(state))).toBeNull();
+    expect(fiatRate('ETC', asGlobal(state))).toBeUndefined();
+    expect(fiatRate('ETH', asGlobal(state))).toBeUndefined();
   });
 
   it('EXCHANGE_RATES should update locale currency rate', () => {
@@ -64,15 +64,4 @@ describe('settingsReducers', () => {
     expect(fiatCurrency(asGlobal(state))).toEqual('EUR');
   });
 
-  it('SET_SHOW_HIDDEN_ACCOUNTS should update state', () => {
-    // prepare
-    // do
-    const state = settingsReducers(undefined, {
-      type: ActionTypes.SET_SHOW_HIDDEN_ACCOUNTS,
-      show: true
-    });
-
-    // assert
-    expect(state.get('showHiddenAccounts')).toEqual(true);
-  });
 });

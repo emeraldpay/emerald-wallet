@@ -1,25 +1,34 @@
-import { IApi } from '@emeraldwallet/core';
+import {IApi, blockchainCodeToId, blockchainById} from '@emeraldwallet/core';
 import { all, call, put, takeEvery } from 'redux-saga/effects';
 import { gotoScreen } from '../screen/actions';
 import { contactDeletedAction, newContactAddedAction, setAddressBook } from './actions';
-import { ActionTypes, AddContactAction, DeleteContactAction, LoadContactsAction } from './types';
+import {ActionTypes, AddContactAction, Contact, DeleteContactAction, LoadContactsAction} from './types';
+import { AddressBookItem } from '@emeraldpay/emerald-vault-core';
 
 function* loadAddresses (api: IApi, action: LoadContactsAction) {
   const chain = action.payload;
-  const contacts = yield call(api.emerald.listAddresses, chain);
+  const items: AddressBookItem[] = yield call(api.vault.listAddressBook, blockchainCodeToId(chain));
+  const contacts: Contact[] = items.map((item) => {
+    return {
+      address: item.address,
+      blockchain: blockchainById(item.blockchain)!.params.code,
+      name: item.name
+    }
+  });
   yield put(setAddressBook(chain, contacts));
 }
 
 function* addContact (api: IApi, action: AddContactAction) {
   const { address, name, description, blockchain } = action.payload;
-  const result = yield call(api.emerald.importAddress, { address, name, description }, blockchain);
-  yield put(newContactAddedAction(blockchain, address, name, description));
+  const add = { address, name, description, blockchain: blockchainCodeToId(blockchain) };
+  const result = yield call(api.vault.addToAddressBook, add);
+  yield put(newContactAddedAction(blockchain, address, name || "", description || ""));
   yield put(gotoScreen('address-book'));
 }
 
 function* deleteContact (api: IApi, action: DeleteContactAction) {
   const { blockchain, address } = action.payload;
-  const result = yield call(api.emerald.deleteAddress, address, blockchain);
+  const result = yield call(api.vault.removeFromAddressBook, blockchainCodeToId(blockchain), address);
   yield put(contactDeletedAction(blockchain, address));
   yield put(gotoScreen('address-book'));
 }

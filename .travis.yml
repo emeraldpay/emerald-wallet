@@ -1,11 +1,17 @@
 language: node_js
 node_js: 12
+mono:
+  - latest
+
 os:
   - linux
+  - osx
+
 env:
   global:
-    - secure: "EuQQSD9GKeAUtFhNGe/m23IYXKVTr8CPl9f7O/PsVDkDMsO6E15o16hn9rn/kIeMEE9+UsCGapFJYlTg+jvZncr8kNTWkKTxsaYS9ejc9br4ePzJmg4LXrelIsunkUGTRBG7wd5I7g+Tx24k02EItftYhzhw3GV3sDvw7VISts3CaCFrGMwOlI4vuhFxJ7N9XRg3HFPY4O9847R/nfhbN9eMqI1kg9xA2INoYaeqxxjWjCX/YlRNpUjkpauv3Owc9Z+B5DYSAlywTModqiUdkiAGmFptydo8gkCqll+iuFfZAV7KT338gVVP3XLNVP1Bq7ZrcqPimhepStX1smEo7vtPzUSb4Wiy03hXlkhDEhLzOf629bGrwpMDy49oAYN0+7o2JBmtV91VEOOs2+ziDTprdv3l4VyX9em+/tf3KxZqTNuiq2Rbl2607zQ3MVYzvHqedoAJiimzUAqMEC4JZmAhlS4dnLFpG2aZv0vuNS9hzVcmSrwcUUwQXWDuRVJkI2mpvL/avbSSH2+kww+I2Uz6VPIOnWoMlY+PJ1i7nMGLpbRY9D4QY1JGJh897hSTHw3F21/4h7kSrkPG0rIdCTCiJ3sXBfUdeSdBi0E+ca9vUWZBbsfH0NdRcw4n0cYiG0NaV1zNA6EIRi8L1GHLtPtYbu/Gm2HM63d7agIQvR0="
+    - secure: "oo2NK1h2Ir+NbYMraVzHOjIHtJyP2DThCLAR9sCcD+sWRI6HWhmlncDDaRG2Pj2HyYUCOMayYKXkVjNIxtvOT27IOdqg3iXVrSGqSJllIRS8J1dv2dJhlfNqgJUtp+Z+kK1dpQB2CrXOPCw2NJCb+bkvmCB+2loYrV1j+HBvMJhS7gbcEBvLU7khXAFAVkpCX6SbF/7hRjERvWEUXZ7a99G2ElY+7VBeUf5b53hJSuoOFQ29S3JN2PEsOc0MCJt6lSmKErFru3ahgsiP0i5mUDdsAqclGfON0MyksQzYxtjs5Y5Lt3JhQf+7UI0WnN9Y/WKHV+iqdJQ3exbeNi+vwWaSRht3zqxJySZV9riK1lbh49F7ebd5ZldbnIbq2AqI8siLPtFV8ryiqIIkfY/qsCV5DsBu9JWgl3f16NuTpqzPZFF2hCDJ4+m+LM72QOTWH6lfkQTVO2zSH4eGaHd/smzqbZbLf04jSmry+vz9tl5wXevTtXhzFnvK8vwdeISUapDuadMoMsLc87ICdeL0fSMpKgFwz9sBs+a9FGvrSSEM7Kuqd6Tldv2rKZuHFo2J578mwORscMgYXrQgs4YnVzsOTyNIxvaMGAZ4VSysqoq8EZl6iJL4ZWf8aRhYLc8Ab6EwMUsi41Egqpp0xbfUW8oDNsUJDpumeCXHhOwofek="
     - CSC_IDENTITY_AUTO_DISCOVERY=false
+    - YARN_GPG=no # otherwise Yarn starts a GPG daemon which prevents builds from finishing on Windows
 
 cache:
   yarn: true
@@ -22,13 +28,16 @@ git:
   depth: false
 
 before_install:
+  # GitVersion
   - echo Installing GitVersion...
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install mono; fi
   - wget https://github.com/GitTools/GitVersion/releases/download/v4.0.0/GitVersion-bin-net40-v4.0.0.zip
-  - unzip GitVersion-bin-net40-v4.0.0.zip -d GitVersion
+  - unzip GitVersion-bin-net40-v4.0.0.zip -d GitVersionBin
   - echo "#!/bin/bash" > gitversion
-  - echo 'mono GitVersion/GitVersion.exe "$@"' >> gitversion
+  - echo 'mono GitVersionBin/GitVersion.exe "$@"' >> gitversion
   - chmod 755 gitversion
   - ./gitversion /version
+  # Janus
   - echo Janus...
   - curl -sL https://raw.githubusercontent.com/ETCDEVTeam/janus/master/get.sh | bash
   - export PATH=$PATH:$PWD/janusbin
@@ -36,10 +45,12 @@ before_install:
   - echo Installing dependencies
   - npm install -g node-gyp license-checker
   - npm install -g codecov yarn lerna
+  - npm install -g typescript
 
 install:
   - export DISPLAY=':99.0'
   - Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+  - yarn install
 
 before_script:
   - tsc -V
@@ -57,9 +68,9 @@ script:
 after_success:
   # Show dist directory contents after a successful build.
   - ls -l ./packages/desktop/dist/
-before_deploy:
-  # Set up GCP
+  # Set up GCP deployment
   - openssl aes-256-cbc -k "$GCP_PASSWD" -in gcloud-travis.json.enc -out .gcloud.json -d
+
 addons:
   apt:
     sources:

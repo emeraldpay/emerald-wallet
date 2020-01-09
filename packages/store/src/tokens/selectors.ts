@@ -1,5 +1,6 @@
 import { BlockchainCode } from '@emeraldwallet/core';
 import { ITokenBalance, ITokensState, moduleName } from './types';
+import {State} from "../types";
 
 export function selectBalances (state: any, address: string, chain: BlockchainCode): any | null {
   const balances = state[moduleName] as ITokensState;
@@ -12,7 +13,7 @@ export function selectBalances (state: any, address: string, chain: BlockchainCo
   return null;
 }
 
-export function selectBalance(state: any, tokenId: string, address: string, chain: BlockchainCode): any | null {
+export function selectBalance(state: State, tokenId: string, address: string, chain: BlockchainCode): ITokenBalance | null {
   const balances = state[moduleName] as ITokensState;
   if (balances[chain]) {
     const b = balances[chain];

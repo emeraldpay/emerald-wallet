@@ -1,45 +1,44 @@
-import { BlockchainCode } from '@emeraldwallet/core';
-import { List, Map } from 'immutable';
+import {AnyCoinCode, AnyTokenCode, Blockchain, BlockchainCode, CurrencyCode, Units} from '@emeraldwallet/core';
+import * as vault from '@emeraldpay/emerald-vault-core';
+import {Wei} from "@emeraldplatform/eth";
+import { AccountId } from '@emeraldpay/emerald-vault-core';
+import BigNumber from "bignumber.js";
 
 export const moduleName = 'addresses';
 
-/**
- * Account contains of many addresses, each Address
- * belongs to particular blockchain.
- */
-export class Address {
-  public value: string; // Address value itself
-  public hardware: boolean;
-  public balance: any;
-  public balancePending: any;
-  public txcount: number;
-  public name: string | null = null;
-  public description: string | null;
-  public hidden: boolean;
-  public blockchain: string;
+export type BalanceValue = {
+  balance: Wei | Units,
+  token: CurrencyCode | AnyCoinCode,
+}
 
-  constructor (value: string, blockchain: string) {
-    this.value = value;
-    this.hidden = false;
-    this.hardware = false;
-    this.txcount = 0;
-    this.description = null;
-    this.blockchain = blockchain;
-  }
+/**
+ * Balance in original "face" value, and converted to a common currency
+ */
+export type BalanceValueConverted = {
+  source: BalanceValue,
+  converted: BalanceValue,
+  rate: number
+}
+
+export type AccountDetails = {
+  accountId: AccountId,
+  balance?: string,
+  balancePending?: any,
+  txcount?: number
 }
 
 export interface IAddressesState {
-  addresses: Address[];
+  wallets: vault.Wallet[];
   loading: boolean;
+  details: AccountDetails[];
 }
 
-export type AddressMap = Map<string, any>;
-export type AddressList = List<AddressMap>;
+export type WalletsList = vault.Wallet[];
 
 export enum ActionTypes {
   SET_BALANCE = 'ACCOUNT/SET_BALANCE',
   LOADING = 'ACCOUNT/LOADING',
-  ADD_ACCOUNT = 'ACCOUNT/ADD_ACCOUNT',
+  ADD_WALLET = 'ACCOUNT/ADD_ACCOUNT',
   SET_LIST = 'ACCOUNT/SET_LIST',
   SET_HD_PATH = 'ACCOUNT/SET_HD_PATH',
   FETCH_HD_PATHS = 'ACCOUNT/FETCH_HD_PATHS',
@@ -59,17 +58,25 @@ export interface IFetchHdPathsAction {
 
 export interface IUpdateAddressAction {
   type: ActionTypes.UPDATE_ACCOUNT;
-  payload: any;
+  payload: {
+    walletId: vault.Uuid,
+    name: string;
+    description: string;
+  };
 }
 
 export interface SetListAction {
   type: ActionTypes.SET_LIST;
-  payload: any;
+  payload: vault.Wallet[];
 }
 
 export interface SetBalanceAction {
   type: ActionTypes.SET_BALANCE;
-  payload: any;
+  payload: {
+    blockchain: BlockchainCode,
+    address: string,
+    value: string
+  }
 }
 
 export interface SetLoadingAction {
@@ -77,28 +84,20 @@ export interface SetLoadingAction {
   payload: boolean;
 }
 
-export interface AddAccountAction {
-  type: ActionTypes.ADD_ACCOUNT;
-  name: string;
-  description: string;
-  accountId: string;
-  blockchain: string;
-}
-
-export interface SetHDPathAction {
-  type: ActionTypes.SET_HD_PATH;
-  accountId: string;
-  hdpath: string;
-  blockchain: BlockchainCode;
+export interface AddWalletAction {
+  type: ActionTypes.ADD_WALLET;
+  wallet: vault.Wallet,
 }
 
 export interface SetTxCountAction {
   type: ActionTypes.SET_TXCOUNT;
-  accountId: string;
+  accountId: vault.AccountId;
   value: number;
-  blockchain: BlockchainCode;
 }
 
+/**
+ * @deprecated
+ */
 export interface PendingBalanceAction {
   type: ActionTypes.PENDING_BALANCE;
   value: string;
@@ -113,8 +112,8 @@ export type AddressesAction =
   | SetLoadingAction
   | SetBalanceAction
   | IUpdateAddressAction
-  | AddAccountAction
-  | SetHDPathAction
+  | AddWalletAction
+  // | SetHDPathAction
   | SetTxCountAction
   | PendingBalanceAction
   | IFetchHdPathsAction

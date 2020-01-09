@@ -1,129 +1,76 @@
 import { BlockchainCode } from '@emeraldwallet/core';
-import { fromJS } from 'immutable';
 import { INITIAL_STATE, reducer } from './reducer';
-import { ActionTypes } from './types';
+import {ActionTypes, IAddressesState} from './types';
 
 describe('addresses reducer', () => {
   it('handles Actions.LOADING', () => {
 
     const state = reducer(undefined, { type: ActionTypes.LOADING, payload: true });
-    expect(state).toEqual(fromJS({
-      ...(INITIAL_STATE.toJS()),
+    expect(state).toEqual({
+      ...INITIAL_STATE,
       loading: true
-    }));
+    });
   });
 
   it('SET_LIST should store addresses correctly', () => {
     // do
-    let state: any = reducer(undefined, {
+    let state: IAddressesState = reducer(undefined, {
       type: ActionTypes.SET_LIST,
       payload: [{
-        address: 'address',
-        name: 'name1',
-        description: 'desc1',
-        hidden: true,
-        hardware: false,
-        blockchain: 'etc'
+        id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee',
+        accounts: [],
       }]
     });
     // assert
-    expect(state.get('addresses').last().get('hardware')).toEqual(false);
-    expect(state.get('addresses').last().get('hidden')).toEqual(true);
-    expect(state.get('addresses').last().get('blockchain')).toEqual('etc');
+    expect(state.wallets.length).toEqual(1);
+    expect(state.wallets[0].id).toEqual('f692dcb6-74ea-4583-8ad3-fd13bb6c38ee');
 
     state = reducer(state, {
       type: ActionTypes.SET_LIST,
       payload: [{
-        address: 'address2',
-        name: 'name2',
-        description: 'desc2',
-        hidden: false,
-        hardware: false,
-        blockchain: 'eth'
+        id: 'c35d05ba-d6bb-40b1-9553-383f414a97e5',
+        accounts: [],
       }]
     });
-
-    expect(state.get('addresses').size).toEqual(2);
+    expect(state.wallets.length).toEqual(1);
+    expect(state.wallets[0].id).toEqual('c35d05ba-d6bb-40b1-9553-383f414a97e5');
   });
 
   it('ADD_ACCOUNT should add only non existent account', () => {
-    let state: any = reducer(undefined, { type: ActionTypes.LOADING, payload: true });
-    expect(state.get('addresses').size).toEqual(0);
+    let state: IAddressesState = reducer(undefined, { type: ActionTypes.LOADING, payload: true });
+    expect(state.wallets.length).toEqual(0);
     state = reducer(state, {
-      type: ActionTypes.ADD_ACCOUNT,
-      accountId: 'id1',
-      name: 'name1',
-      description: 'desc1',
-      blockchain: 'etc'
+      type: ActionTypes.ADD_WALLET,
+      wallet: {
+        id: 'c35d05ba-d6bb-40b1-9553-383f414a97e5',
+        accounts: [],
+      }
     });
-    expect(state.get('addresses').size).toEqual(1);
-    expect(state.get('addresses').last().get('id')).toEqual('id1');
-    expect(state.get('addresses').last().get('name')).toEqual('name1');
-    expect(state.get('addresses').last().get('blockchain')).toEqual('etc');
+    expect(state.wallets.length).toEqual(1);
+    expect(state.wallets[0].id).toEqual('c35d05ba-d6bb-40b1-9553-383f414a97e5');
 
     // add again
     state = reducer(state, {
-      type: ActionTypes.ADD_ACCOUNT,
-      accountId: 'id1',
-      name: 'name1',
-      description: 'desc1',
-      blockchain: 'etc'
+      type: ActionTypes.ADD_WALLET,
+      wallet: {
+        id: 'c35d05ba-d6bb-40b1-9553-383f414a97e5',
+        accounts: [],
+      }
     });
-    expect(state.get('addresses').size).toEqual(1);
-  });
+    expect(state.wallets.length).toEqual(1);
+    expect(state.wallets[0].id).toEqual('c35d05ba-d6bb-40b1-9553-383f414a97e5');
 
-  it('ADD_ACCOUNT should add same account for another chain', () => {
-    let state: any = reducer(undefined, { type: ActionTypes.LOADING, payload: true });
-    expect(state.get('addresses').size).toEqual(0);
+    // add different wallet
     state = reducer(state, {
-      type: ActionTypes.ADD_ACCOUNT,
-      accountId: 'id1',
-      name: 'name1',
-      description: 'desc1',
-      blockchain: 'etc'
+      type: ActionTypes.ADD_WALLET,
+      wallet: {
+        id: '2d9fde4e-ce00-4b58-af68-15c211604529',
+        accounts: [],
+      }
     });
-    expect(state.get('addresses').size).toEqual(1);
-    expect(state.get('addresses').last().get('id')).toEqual('id1');
-    expect(state.get('addresses').last().get('name')).toEqual('name1');
-    expect(state.get('addresses').last().get('blockchain')).toEqual('etc');
-
-    // add again
-    state = reducer(state, {
-      type: ActionTypes.ADD_ACCOUNT,
-      accountId: 'id1',
-      name: 'name1',
-      description: 'desc1',
-      blockchain: 'eth'
-    });
-    expect(state.get('addresses').size).toEqual(2);
-  });
-
-  it('ADD_ACCOUNT should set hd path', () => {
-    // prepare
-    let state: any = reducer(undefined, {
-      type: ActionTypes.ADD_ACCOUNT,
-      accountId: 'id1',
-      name: 'name1',
-      description: 'desc1',
-      blockchain: 'eth'
-    });
-    expect(state.get('addresses').size).toEqual(1);
-    expect(state.get('addresses').last().get('id')).toEqual('id1');
-    expect(state.get('addresses').last().get('name')).toEqual('name1');
-
-    // do
-    state = reducer(state, {
-      type: ActionTypes.SET_HD_PATH,
-      accountId: 'id1',
-      hdpath: 'hdpath1',
-      blockchain: BlockchainCode.ETH
-    });
-
-    // assert
-    expect(state.get('addresses').size).toEqual(1);
-    expect(state.get('addresses').last().get('id')).toEqual('id1');
-    expect(state.get('addresses').last().get('name')).toEqual('name1');
-    expect(state.get('addresses').last().get('hdpath')).toEqual('hdpath1');
+    expect(state.wallets.length).toEqual(2);
+    expect(state.wallets[0].id).toEqual('c35d05ba-d6bb-40b1-9553-383f414a97e5');
+    expect(state.wallets[1].id).toEqual('2d9fde4e-ce00-4b58-af68-15c211604529');
   });
 
 });

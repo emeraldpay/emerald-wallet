@@ -30,8 +30,8 @@ export function onceServicesStart(store) {
 
 export function onceModeSet(store) {
   const check = () => {
-    const mode = store.getState().wallet.settings.get('mode');
-    const { id, chains } = mode.toJS();
+    const mode = store.getState().wallet.settings.mode;
+    const { id, chains } = mode;
     return id !== 'default' && chains.length > 0;
   };
 

@@ -1,19 +1,15 @@
 import { fromBaseUnits } from '@emeraldplatform/core';
 import { Wei } from '@emeraldplatform/eth';
-import { Currency, CurrencyCode } from '@emeraldwallet/core';
+import {Currency, CurrencyCode, Units} from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
 
 const defaultStyles = {
   coins: {
     color: '#191919',
-    fontSize: '16px',
-    lineHeight: '24px'
   },
   fiat: {
     color: '#191919',
-    fontSize: '14px',
-    lineHeight: '16px'
   }
 };
 
@@ -23,17 +19,18 @@ export interface IProps {
   /**
    * Base units (wei, satoshi, etc)
    */
-  balance: Wei | string;
+  balance: Wei | BigNumber | Units | string;
 
   /**
-   * Decimals (8 for Bitcoin, 18 for Ethereum)
+   * Decimals (8 for Bitcoin, 18 for Ethereum), required only if balance is string or BigNumber
    */
-  decimals: number;
+  decimals?: number;
   fiatRate?: number | null;
   fiatCurrency?: string;
   showFiat?: boolean;
   coinsStyle?: any;
   fiatStyle?: any;
+  displayDecimals?: number
 }
 
 export class Balance extends React.Component<IProps> {
@@ -45,22 +42,36 @@ export class Balance extends React.Component<IProps> {
 
   public render () {
     const {
-      balance, showFiat, fiatCurrency, fiatRate, symbol, decimals
+      balance, showFiat, fiatCurrency, fiatRate, symbol, decimals, displayDecimals
     } = this.props;
 
     let fiatAmount = null;
     let coinsStr = null;
+    let coins;
     if (typeof balance === 'string') {
-      const coins = fromBaseUnits(new BigNumber(balance), decimals);
+      coins = fromBaseUnits(new BigNumber(balance), decimals);
       if (showFiat && fiatRate && fiatCurrency) {
         fiatAmount = Currency.format(
           Number(Currency.convert(coins.toString(), fiatRate)),
           fiatCurrency as CurrencyCode);
       }
-      coinsStr = coins.toString();
     } else if (typeof balance === 'object') {
-      coinsStr = balance.toEther(decimals, true);
+      let value: BigNumber;
+      let valueDecimals: number;
+      if (BigNumber.isBigNumber(balance)) {
+        value = balance;
+        valueDecimals = decimals;
+      } else if (Units.isUnits(balance)) {
+        value = balance.toBigNumber();
+        valueDecimals = balance.decimals;
+      } else {
+        //Wei
+        value = balance.toWei();
+        valueDecimals = 18;
+      }
+      coins = value.dividedBy(new BigNumber(10).pow(valueDecimals));
     }
+    coinsStr = coins.toFormat(displayDecimals || decimals);
     const { fiatStyle, coinsStyle } = this.props;
 
     return (

@@ -12,6 +12,7 @@
     "test:coverage": "jest --coverage --passWithNoTests&& codecov"
   },
   "dependencies": {
+    "@emeraldpay/emerald-vault-core": "0.5.0-0.27.0.rc1",
     "@emeraldpay/grpc-client": "0.11.3-0.2",
     "@emeraldplatform/eth-rpc": "0.5.1",
     "@emeraldplatform/rpc": "0.5.1",

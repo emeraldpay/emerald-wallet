@@ -10,7 +10,6 @@ const TranslatedSettings = withTranslation('translation')(Settings);
 export default connect(
   (state: any, ownProps: any) => {
     return {
-      showHiddenAccounts: settings.selectors.showHiddenAccounts(state),
       currency: (settings.selectors.fiatCurrency(state) || '').toLowerCase(),
       language: i18n.language,
       numConfirmations: settings.selectors.numConfirms(state)
@@ -25,7 +24,6 @@ export default connect(
       const newSettings = {
         language: data.language,
         localeCurrency: data.currency,
-        showHiddenAccounts: data.showHiddenAccounts,
         numConfirmations: data.numConfirmations
       };
       i18n.changeLanguage(data.language);

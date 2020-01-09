@@ -2,13 +2,11 @@ import { screen } from '@emeraldwallet/store';
 import { ReceiveDialog } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import HideAccountDialog from '../../accounts/HideAccountDialog';
 import WaitForSignDialog from '../../transaction/WaitForSignDialog';
 
 export enum EmeraldDialogs {
   SIGN_TX = 'sign-transaction',
-  DEPOSIT = 'receive',
-  HIDE_ACCOUNT = 'hide-account'
+  DEPOSIT = 'receive'
 }
 
 interface IProps {
@@ -26,9 +24,6 @@ const Dialog = ({ dialog, dialogItem, handleClose }: IProps) => {
   }
   if (dialog === EmeraldDialogs.DEPOSIT) {
     return <ReceiveDialog address={dialogItem} onClose={handleClose}/>;
-  }
-  if (dialog === EmeraldDialogs.HIDE_ACCOUNT) {
-    return <HideAccountDialog account={dialogItem} onClose={handleClose} />;
   }
   throw new Error(`Unsupported dialog: ${dialog}`);
 };

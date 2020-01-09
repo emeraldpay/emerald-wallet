@@ -1,4 +1,3 @@
-import { fromJS } from 'immutable';
 import {
   ActionTypes,
   ISetExchRatesAction,
@@ -6,21 +5,21 @@ import {
   ISettingsState,
   SetLocaleCurrencyAction,
   SetNumConfirmAction,
-  SetShowHiddenAccsAction,
   SettingsAction
 } from './types';
+import {BlockchainCode, CurrencyCode, StableCoinCode} from "@emeraldwallet/core";
 
-const initial = fromJS({
+const initial: ISettingsState = {
   rates: {},
-  localeCurrency: 'USD',
-  localeRate: null,
-  showHiddenAccounts: false,
+  localeCurrency: CurrencyCode.USD,
+  localeRate: undefined,
+  numConfirmations: 12,
   mode: {
     id: 'default',
-    chains: ['ETH', 'ETC'],
-    currencies: ['USD', 'EUR', 'BTC', 'USDT']
+    chains: [BlockchainCode.ETH, BlockchainCode.ETC],
+    currencies: [CurrencyCode.USD, CurrencyCode.EUR, "USDT"]
   }
-});
+};
 
 function onSetLocaleCurrency (state: ISettingsState, action: SetLocaleCurrencyAction) {
   const currency = action.currency.toUpperCase();
@@ -30,40 +29,28 @@ function onSetLocaleCurrency (state: ISettingsState, action: SetLocaleCurrencyAc
     localStorage.setItem('localeCurrency', currency);
   }
 
-  return state
-    .set('localeCurrency', currency)
-    .set('rates', fromJS({}));
+  return Object.assign({}, state, {localeCurrency: currency, rates: {}})
 }
 
 function onExchangeRates (state: ISettingsState, action: ISetExchRatesAction) {
   const { rates } = action.payload;
-  return state
-    .set('rates', fromJS(rates))
-    .set('localeRate', rates ? rates.ETC : null);
+  return Object.assign({}, state, {rates: rates, localRate: rates ? rates.ETH : undefined});
 
-}
-
-function onSetShowHiddenAccounts (state: ISettingsState, action: SetShowHiddenAccsAction) {
-  // persist settings
-  if (localStorage) {
-    localStorage.setItem('showHiddenAccounts', action.show);
-  }
-  return state.set('showHiddenAccounts', action.show);
 }
 
 function onSetConfirmations (state: ISettingsState, action: SetNumConfirmAction) {
   // persist settings
   if (localStorage) {
-    localStorage.setItem('numConfirmations', action.numConfirmations);
+    localStorage.setItem('numConfirmations', action.numConfirmations.toString());
   }
-  return state.set('numConfirmations', action.numConfirmations);
+  return Object.assign({}, state, {numConfirmations: action.numConfirmations});
 }
 
 function onSetMode (state: ISettingsState, action: ISetModeAction) {
-  return state.set('mode', fromJS(action.payload));
+  return Object.assign({}, state, {mode: action.payload});
 }
 
-export default function reducer (state: ISettingsState, action: SettingsAction) {
+export default function reducer (state: ISettingsState | undefined, action: SettingsAction) {
   state = state || initial;
   switch (action.type) {
     case ActionTypes.MODE:
@@ -72,8 +59,6 @@ export default function reducer (state: ISettingsState, action: SettingsAction) 
       return onSetConfirmations(state, action);
     case ActionTypes.SET_LOCALE_CURRENCY:
       return onSetLocaleCurrency(state, action);
-    case ActionTypes.SET_SHOW_HIDDEN_ACCOUNTS:
-      return onSetShowHiddenAccounts(state, action);
     case ActionTypes.EXCHANGE_RATES:
       return onExchangeRates(state, action);
   }

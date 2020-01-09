@@ -15,37 +15,34 @@ import { TxListener } from '../services/TxListener';
 import { IEmeraldClient } from './IEmeraldClient';
 
 const certLocal = '-----BEGIN CERTIFICATE-----\n' +
-  'MIIFmDCCA4CgAwIBAgIBATANBgkqhkiG9w0BAQsFADBsMQswCQYDVQQGEwJDSDEM\n' +
-  'MAoGA1UEBxMDWnVnMRcwFQYDVQQKEw5FbWVyYWxkUGF5IERldjEaMBgGA1UECxMR\n' +
-  'RW1lcmFsZFBheSBEZXYgQ0ExGjAYBgNVBAMTEWNhLmVtZXJhbGRwYXkuZGV2MB4X\n' +
-  'DTE5MDYwMjAyNDAzNFoXDTIwMTIwMjAyNDAzNFowbDELMAkGA1UEBhMCQ0gxDDAK\n' +
-  'BgNVBAcTA1p1ZzEXMBUGA1UEChMORW1lcmFsZFBheSBEZXYxGjAYBgNVBAsTEUVt\n' +
-  'ZXJhbGRQYXkgRGV2IENBMRowGAYDVQQDExFjYS5lbWVyYWxkcGF5LmRldjCCAiIw\n' +
-  'DQYJKoZIhvcNAQEBBQADggIPADCCAgoCggIBAOh9hPlHxpjUt55a5sQieNrcGVhd\n' +
-  'ITPvEsDV7rGiar+41sct30d3S5R+whIHQSXAtQu282NDym6RmCE367eTubzYxaOp\n' +
-  'BE+iKxYOEFggnXd+JRL7Skhd/xWUyuVUqUXR87fKuxrzVwQpDELugEQ9RVR3+WWr\n' +
-  'cQbinbqDte/WyDE1ebw68umAcOZOCQ7D/SzbiVY3mzLn7xgUr0Wdxu2d5lf89B1S\n' +
-  '6cXmTCorVtwVNoMcLv5BRgyd4QEgvUINkXqRjdB/C9qU+IgQK9H5He8O5HrBlNkw\n' +
-  'v0tLXEhrVk5SFoKLkoeJopy1bNFNUotqKG9XCKI2+l+5L8Ioibxkthm2topAcM2/\n' +
-  '/wTKyh6QCrz2rerLckn3xgI4gaTDABZwxXFv+S9wVLv7wnb1yIyFZ+pBMKfvosaZ\n' +
-  'UVKY5tMsUiK5AJVlzsiFKaLi1Rwm+fObD/8/zNfjxA5X/MVeLYnj38ykRSXWA4wN\n' +
-  'qoGRHlcg7BCw0KJcdV51NVQwcxh9ff1ZPUjjKlmxua/cOotfBOwqV+HLrn51V70F\n' +
-  'IjPKwBmMSNt6Qm5ltbu/OdzJOPGyaro8mHMz33Vt2mNveoK9fRzrNixKfwaxHuHk\n' +
-  '4RPWZeUd24uZ+2InO84aATSWchIsMIeGlwsf1VghLvqo7xl5UHt4wSgldlX4XYgQ\n' +
-  'rH8aWsqXtdhCdGvDAgMBAAGjRTBDMA4GA1UdDwEB/wQEAwIBBjASBgNVHRMBAf8E\n' +
-  'CDAGAQH/AgEAMB0GA1UdDgQWBBSctyWodQE+97ZiTBJf/bEh8LwujzANBgkqhkiG\n' +
-  '9w0BAQsFAAOCAgEAv1fHiGVAPIXZ/nGuCNCTcWtaMgI4anz773ma/6F4DbmBxp4R\n' +
-  'rHO5YywPaoONWI2DgwUcLgd0GXQf/1YPWEPPvUOFcVSYKIijf5Nv85okWX8PdWv4\n' +
-  'ICEVWt9oD6nUJ/VLNFhc34oCMWSYroPag8m45SGGy+o6EI5+c/9WwVzcJqiSfQst\n' +
-  'qJ9ZvC1a/8mabJ6d6NsEhHJYC1Wua1XY47VYNUzmXFG+fVhIHpYLK2bQRnm2jTRo\n' +
-  'pN6oK2hqIR0Z8/JzyJEMl+bhWChL41GPuqP5iMeM1gux6WBSR3LFzhVJ9trGyvKk\n' +
-  '8NOJoF6yxvs9kdSU6ZpogDumJTjwQQCqzkBY3ipQwMmrLFl26yVhTXAz7WWKjvbe\n' +
-  'IUh5l/egiWa98UVMAWWJ6TBqSb2r537d633mcfL4xPn16LXBejIdyBUNrIHAKr6h\n' +
-  'RzR0ZlfJN+QOxpzd+Jz5aXxQ+VBgpsjZKafiHNgEiICHj9vIR5Z0neND1IZG1qbL\n' +
-  'oOk0aiq7BErxKEV7FvmQMHB251xAFkVXIrhv7ObtWqk4n5pS6/NocclwcFqhkjpu\n' +
-  '2tq1OLVhNNyRpwjLygMQUt42Ok4j/L+A1uEzNOp17/Yv6gsB6m0eUuBaLN6lKrvF\n' +
-  'VKI3QbdAxjkzJ3Zzas9a87SJWrbBgWCeHq0xNECt0RZOX1OfriOofLrmUbI=\n' +
-  '-----END CERTIFICATE-----\n';
+  'MIIE4zCCAsugAwIBAgIQHgCBkxi2xOHMNb4vvXKSxTANBgkqhkiG9w0BAQsFADBs\n' +
+  'MQswCQYDVQQGEwJDSDEMMAoGA1UEBxMDWnVnMRcwFQYDVQQKEw5FbWVyYWxkUGF5\n' +
+  'IERldjEaMBgGA1UECxMRRW1lcmFsZFBheSBEZXYgQ0ExGjAYBgNVBAMTEWNhLmVt\n' +
+  'ZXJhbGRwYXkuZGV2MB4XDTE5MDYwMjAyNDAzOFoXDTIwMTIwMjAyNDAzM1owaTEL\n' +
+  'MAkGA1UEBhMCQ0gxDDAKBgNVBAcTA1p1ZzEXMBUGA1UEChMORW1lcmFsZFBheSBE\n' +
+  'ZXYxHzAdBgNVBAsTFkVtZXJhbGRQYXkgR1JQQyBTZXJ2ZXIxEjAQBgNVBAMTCTEy\n' +
+  'Ny4wLjAuMTCCASIwDQYJKoZIhvcNAQEBBQADggEPADCCAQoCggEBALzVy2UFafC2\n' +
+  'RpCnO95nrWSxT4gcids5RquyNdRY+O4HHzjaHAD4d/j9G1kZ0J0Ly+145xBuTxRK\n' +
+  'FZ5GUo/Lp1FEW56CSHcB25hineTjaOPB/60SLy//1oN5/ow+wr+X6bjlMoELJIfl\n' +
+  'votey8Bos0lal6M2mDxw9smP42KzpkuZCdHH222AxIOs6BQpFnMuhsTAXF/avpkp\n' +
+  '+8clIof1e2CRaUQ4QQNQwcoi1VFTkWNwLh+wZRjNObFJt2Ng1rCIEycHluLcF3TQ\n' +
+  'cOKXOmgklbjNqaFEg7ckyarg0/lauLtH9iVqx2MozZ8l1orHwXaoY7QZKo7exhEG\n' +
+  'yOXtphT3RUkCAwEAAaOBgzCBgDAOBgNVHQ8BAf8EBAMCA7gwHQYDVR0lBBYwFAYI\n' +
+  'KwYBBQUHAwEGCCsGAQUFBwMCMB0GA1UdDgQWBBRuR40Vyq/HnRY9Gj1tv/XHIpwY\n' +
+  'ejAfBgNVHSMEGDAWgBSctyWodQE+97ZiTBJf/bEh8LwujzAPBgNVHREECDAGhwR/\n' +
+  'AAABMA0GCSqGSIb3DQEBCwUAA4ICAQATzvKN+Nzv8mjw/qxcls8L0jNtjXXCTJyx\n' +
+  '3t21APVNPZXSBbZsWOrzTDT6u2RDnaY2qR61DjCl2LElWPQRAtioh9zV2y+r/O1T\n' +
+  'L7LGXqtB5S5e8SoEHU4cAHt9jzkUnCCR4HqxxuYUSreb76xF6NkdKbTIaaJxfmPJ\n' +
+  'mO3SB2ayHVfbUkmDY3jh+0xgPRsizJq2Yi8HyJfgWe6nO3nDrrhPgBsHRGFHkZUY\n' +
+  '1XSWzrTJcZ10kPFnN8Xq7fbT+qb2ACfcNluD7lv3g/jvpz+LpCn3oHNx+As6XZo0\n' +
+  'bbamXAwE79qxt7OgkabXOPfAm00c5AOJBF6JlYXhzM/m834EHGZvBf/YoD2ocfj6\n' +
+  '5MBq6UcxqormY8Go/wLff0nMpu7uzRnr1p3vbPcfjwPq3rHprh7gOw6mxfno3vXy\n' +
+  'zcwxZcAetq1hPgLIF6jh+UbY+6+HwAiTjxOVlTZ6U6oLOmZlqIhN/EyOepl0Y5ZM\n' +
+  'jYDvSBbFC2mK3dcKqbMWdxR5Ptw/o6/0wQPDtcPSqgAGJc47cBrATex5xsH01eDU\n' +
+  '4OCYnpbGN3pHd0sWKfXVPPiTl70qejo9K9VssSt3eXVKBofr5VMcMK50/OhLF+En\n' +
+  'ao3qUaQtlNFMIW5IuxRNYNijrS4d+xXqqsOSQ4yhXZFGHv5OrCZZJk17xJgBjPBS\n' +
+  'jtj77R4smA==\n' +
+  '-----END CERTIFICATE-----';
 
 const certDev = '-----BEGIN CERTIFICATE-----\n' +
   'MIIFgjCCA2qgAwIBAgIBATANBgkqhkiG9w0BAQsFADBhMRswGQYDVQQKExJFbWVy\n' +
@@ -211,7 +208,7 @@ export class EmeraldApiAccess implements IEmeraldClient {
   }
 
   protected periodicCheck () {
-    this.verifyOffline();
+    this.verifyOffline({});
     setTimeout(this.periodicCheck.bind(this), 1000);
   }
 
@@ -222,22 +219,22 @@ export class EmeraldApiAccess implements IEmeraldClient {
       && status.pricesConnected
       && status.diagConnected;
     if (!connected) {
-      this.verifyOffline();
+      this.verifyOffline({auth: status.authenticated, blockchain: status.blockchainConnected, market: status.pricesConnected, diag: status.diagConnected});
     } else {
       this.connectionState.connectedAt = new Date();
       this.setStatus(Status.CONNECTED);
     }
   }
 
-  protected verifyOffline () {
+  protected verifyOffline (basis: {[key: string]: boolean}) {
     const now = new Date();
     const offlinePeriod = now.getTime() - this.connectionState.connectedAt.getTime();
     if (offlinePeriod < PERIOD_OK) {
       this.setStatus(Status.CONNECTED);
     } else if (offlinePeriod < PERIOD_ISSUES) {
-      this.setStatus(Status.CONNECTION_ISSUES);
+      this.setStatus(Status.CONNECTION_ISSUES, basis);
     } else {
-      this.setStatus(Status.DISCONNECTED);
+      this.setStatus(Status.DISCONNECTED, basis);
     }
   }
 
@@ -246,8 +243,11 @@ export class EmeraldApiAccess implements IEmeraldClient {
     setTimeout(this.ping.bind(this), PERIOD_PING);
   }
 
-  protected setStatus (state: Status) {
+  protected setStatus (state: Status, basis?: {[key: string]: boolean}) {
     if (typeof this.currentState === 'undefined' || this.currentState !== state) {
+      if (state === Status.DISCONNECTED || state == Status.CONNECTION_ISSUES) {
+        console.warn("Disconnected", basis);
+      }
       this.currentState = state;
       if (this.listener) {
         this.listener(state);

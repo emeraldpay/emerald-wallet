@@ -2,7 +2,7 @@ import { shallow } from 'enzyme';
 import * as React from 'react';
 import { styles2, WaitConnectionDialog } from './WaitDialog';
 
-const reduceClasses = (prev, curr) => ({ ...prev, [curr]: curr });
+const reduceClasses = (prev: any, curr: any) => ({ ...prev, [curr]: curr });
 const classes = Object.keys(styles2).reduce(reduceClasses, {});
 
 describe('WaitDialog', () => {

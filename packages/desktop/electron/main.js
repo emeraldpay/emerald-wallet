@@ -118,7 +118,7 @@ app.on('ready', () => {
   log.info('... services started');
 
   log.info('... subscribe for prices');
-  const prices = new Prices(ipcMain, browserWindow.webContents, apiAccess, apiMode.chains, apiMode.currencies[0]);
+  const prices = new Prices(ipcMain, browserWindow.webContents, apiAccess, apiMode.assets, apiMode.currencies[0]);
   prices.start();
 
 });

@@ -1,19 +1,22 @@
 const LocalMode = {
   id: 'local',
   chains: ['ETH', 'ETC'],
+  assets: ['ETH', 'ETC', 'DAI', 'USDT'],
   currencies: ['USD', 'EUR', 'USDT', 'BTC'],
 };
 
 // TODO have only testnets here
 const DevMode = {
   id: 'development',
-  chains: ['KOVAN', 'MORDEN', 'ETH', 'ETC'],
+  chains: ['KOVAN', 'ETH', 'ETC'],
+  assets: ['ETH', 'ETC', 'DAI', 'USDT'],
   currencies: ['USD', 'MONOPOLY'],
 };
 
 const ProdMode = {
   id: 'production',
   chains: ['ETH', 'ETC'],
+  assets: ['ETH', 'ETC', 'DAI', 'USDT'],
   currencies: ['USD', 'EUR', 'USDT', 'BTC'],
 };
 

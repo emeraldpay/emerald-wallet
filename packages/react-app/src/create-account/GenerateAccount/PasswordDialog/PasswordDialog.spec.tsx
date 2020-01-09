@@ -12,7 +12,7 @@ function createStore () {
     getState () {
       return {
         wallet: {
-          settings: fromJS({ mode: { chains: ['ETH'] } })
+          settings: { mode: { chains: ['ETH'] } }
         }
       };
     }

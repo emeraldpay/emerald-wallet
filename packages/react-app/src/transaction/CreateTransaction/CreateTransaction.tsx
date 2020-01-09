@@ -2,7 +2,15 @@ import { convert, toBaseUnits } from '@emeraldplatform/core';
 import { Units as EthUnits, Wei } from '@emeraldplatform/eth';
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import { blockchainByName, BlockchainCode, Blockchains, IAccount, IUnits, Units, workflow } from '@emeraldwallet/core';
+import {
+  blockchainById,
+  blockchainByName,
+  BlockchainCode,
+  Blockchains,
+  IUnits,
+  Units,
+  workflow
+} from '@emeraldwallet/core';
 import { registry } from '@emeraldwallet/erc20';
 import {
   addressBook,
@@ -21,6 +29,7 @@ import ChainTitle from '../../common/ChainTitle';
 import CreateTx from '../CreateTx';
 import SignTx from '../SignTx';
 import { traceValidate, txFeeFiat } from './util';
+import { EthereumAccount, WalletOp } from '@emeraldpay/emerald-vault-core';
 
 type CreateEthereumTx = workflow.CreateEthereumTx;
 type CreateERC20Tx = workflow.CreateERC20Tx;
@@ -77,7 +86,7 @@ interface ICreateTxState {
 }
 
 interface IOwnProps {
-  account: IAccount;
+  account: EthereumAccount;
   gasLimit: any;
   amount: any;
   data: any;
@@ -298,7 +307,7 @@ function signTokenTx (dispatch: any, ownProps: IOwnProps, args: any) {
   const {
     password, token
   } = args;
-  const chain = ownProps.account.blockchain;
+  const chain = blockchainById(ownProps.account.blockchain)!.params.code;
   const tokenInfo = registry.bySymbol(chain, token);
   const tokenUnits = toBaseUnits(convert.toBigNumber(args.transaction.amount), tokenInfo.decimals);
 
@@ -323,8 +332,9 @@ function signTokenTx (dispatch: any, ownProps: IOwnProps, args: any) {
 
 function signEtherTx (
   dispatch: any, ownProps: IOwnProps, request: { transaction: CreateEthereumTx, password: string }) {
-  const chain = ownProps.account.blockchain;
-  const useLedger = ownProps.account.hardware || false;
+  const blockchainId = ownProps.account.blockchain;
+  const blockchainCode = blockchainById(blockchainId)!.params.code;
+  const useLedger = false; //TODO
   const plainTx = {
     password: request.password,
     from: request.transaction.from,
@@ -334,14 +344,14 @@ function signEtherTx (
     value: request.transaction.amount
   };
 
-  return traceValidate(chain, plainTx, dispatch, transaction.actions.estimateGas)
+  return traceValidate(blockchainCode, plainTx, dispatch, transaction.actions.estimateGas)
     .then(() => dispatch(ledger.actions.setWatch(false)))
     .then(() => dispatch(ledger.actions.setConnected(false)))
     .then(() => (useLedger ? dispatch(screen.actions.showDialog('sign-transaction', request.transaction)) : null))
     .then(() => {
       return dispatch(
         transaction.actions.signTransaction(
-          chain,
+          blockchainCode,
           request.transaction.from!,
           request.password,
           request.transaction.to!,
@@ -355,8 +365,9 @@ function signEtherTx (
 }
 
 function sign (dispatch: any, ownProps: IOwnProps, args: any) {
-  const chain = ownProps.account.blockchain;
-  const { coinTicker } = Blockchains[chain].params;
+  const blockchainId = ownProps.account.blockchain;
+  const blockchain = blockchainById(blockchainId)!;
+  const { coinTicker } = blockchain.params;
   const token = args.token.toUpperCase();
   if (token !== coinTicker) {
     return signTokenTx(dispatch, ownProps, args);
@@ -367,17 +378,17 @@ function sign (dispatch: any, ownProps: IOwnProps, args: any) {
 export default connect(
   (state: any, ownProps: IOwnProps) => {
     const { account } = ownProps;
-    const chain = account.blockchain;
-    const blockchain = blockchainByName(chain);
+    const blockchainiD = account.blockchain;
+    const blockchain = blockchainById(blockchainiD)!;
     const txFeeSymbol = blockchain.params.coinTicker;
-    const allTokens = registry.tokens[chain as BlockchainCode]
+    const allTokens = registry.tokens[blockchain.params.code]
       .concat([{ address: '', symbol: txFeeSymbol, decimals: blockchain.params.decimals }])
       .reverse();
-    const gasPrice = blockchains.selectors.gasPrice(state, chain);
-    const fiatRate = settings.selectors.fiatRate(chain, state);
+    const gasPrice = blockchains.selectors.gasPrice(state, blockchain.params.code);
+    const fiatRate = settings.selectors.fiatRate(blockchain.params.code, state);
 
     return {
-      chain,
+      chain: blockchain.params.code,
       amount: ownProps.amount || Wei.ZERO,
       gasLimit: ownProps.gasLimit || DEFAULT_GAS_LIMIT,
       typedData: ownProps.typedData,
@@ -387,31 +398,35 @@ export default connect(
       selectedFromAccount: account.id,
       getBalanceForAddress: (address: string, token: any): IUnits => {
         if (blockchain.params.coinTicker !== token) {
-          const tokenInfo = registry.bySymbol(chain, token);
-          const tokenBalance = tokens.selectors.selectBalance(state, tokenInfo.address, address, chain);
-          return new Units(tokenBalance.unitsValue, tokenBalance.decimals);
+          const tokenInfo = registry.bySymbol(blockchain.params.code, token);
+          const tokenBalance = tokens.selectors.selectBalance(state, tokenInfo.address, address, blockchain.params.code)
+            || {unitsValue: '0'};
+          return new Units(tokenBalance.unitsValue, tokenInfo.decimals);
         }
-        const etherBalance = addresses.selectors.find(state, address, chain)!.balance;
+        const etherBalance = addresses.selectors.getBalance(state, account, Wei.ZERO)!;
         return new Units(etherBalance.toString(EthUnits.WEI), 18);
       },
       getFiatForAddress: (address: string, token: any): string => {
         if (token !== txFeeSymbol) {
           return '??';
         }
-        const selectedAccount = addresses.selectors.find(state, address, chain);
-        const newBalance = selectedAccount!.balance;
+        const selectedAccount = addresses.selectors.all(state).findAccount(account.id)!;
+        const newBalance = addresses.selectors.getBalance(state, selectedAccount, Wei.ZERO)!;
         return newBalance.getFiat(fiatRate);
       },
       getTxFeeFiatForGasLimit: (gasLimit: number) => {
-        const price = blockchains.selectors.gasPrice(state, chain);
+        const price = blockchains.selectors.gasPrice(state, blockchain.params.code);
         return txFeeFiat(price.value.toString(), gasLimit, fiatRate);
       },
       currency: settings.selectors.fiatCurrency(state),
       gasPrice,
       tokenSymbols: allTokens.map((i: any) => i.symbol),
       addressBookAddresses: addressBook.selectors.all(state).map((i: any) => i.address),
-      ownAddresses: addresses.selectors.allByBlockchain(state, blockchain.params.code).toJS().map((i: any) => i.id),
-      useLedger: account.hardware || false,
+      ownAddresses: addresses.selectors.allByBlockchain(state, blockchain.params.code)
+        .map((i: WalletOp) => i.getEthereumAccounts())
+        .reduce((list: EthereumAccount[], a: EthereumAccount[]) => list.concat(a), [])
+        .map((account: EthereumAccount) => account.address),
+      useLedger: false, //TODO
       ledgerConnected: state.ledger.get('connected'),
       allTokens
     };

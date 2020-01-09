@@ -32,8 +32,9 @@ export class BalanceListener implements IService {
           type: 'ACCOUNT/SET_BALANCE',
           payload: {
             blockchain,
-            accountId: event.address,
-            value: event.balance
+            address: event.address,
+            value: event.balance,
+            asset: 'ether' //TODO
           }
         };
         this.webContents.send('store', action);

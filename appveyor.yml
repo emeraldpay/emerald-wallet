@@ -1,7 +1,7 @@
 os: Visual Studio 2015
 environment:
-  GCP_PASSWD:
-    secure: /kPjA5Ff2c6ZDhU7y6TiUWiR4Jr4uXyLKWan35EXXTI=
+  GCLOUD_KEY:
+    secure: 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
 install:
   - set PATH=C:\msys64\mingw64\bin;C:\msys64\usr\bin\;%PATH%
   # Install janus.
@@ -30,14 +30,13 @@ test_script:
   # But probably useless, since the dist script build for _current_ operating system.
   - yarn build:dist
 artifacts:
-  - path: './dist/*.exe'
+  - path: './packages/desktop/dist/*.exe'
     name: emerald-wallet
 deploy_script:
-  - openssl version
-  - openssl aes-256-cbc -d -in gcloud-appveyor.json.enc -k %GCP_PASSWD% -out gcloud-appveyor.json -md sha256
+  - echo %GCLOUD_KEY% > gcloud.json
   - ps: >-
       If (($env:APPVEYOR_REPO_BRANCH -eq 'master') -or ($env:APPVEYOR_REPO_TAG -eq 'true')) {
           echo "Deploy to http://builds.etcdevteam.com/emerald-wallet/$env:VERSION_BASE/"
-          janus.exe deploy -to="builds.etcdevteam.com/emerald-wallet/$env:VERSION_BASE/" -files="./packages/desktop/dist/*.exe" -key="./gcloud-appveyor.json"
+          janus.exe deploy -to="builds.etcdevteam.com/emerald-wallet/$env:VERSION_BASE/" -files="./packages/desktop/dist/*.exe" -key="./gcloud.json"
       }
-  - rm gcloud-appveyor.json
+  - rm gcloud.json

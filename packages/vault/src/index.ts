@@ -1,3 +1,3 @@
 export { LocalConnector } from './LocalConnector';
 export { IVaultProvider } from './types';
-export { Vault } from './vault';
+// export { Vault } from './vault';

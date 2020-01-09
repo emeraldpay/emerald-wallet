@@ -42,6 +42,7 @@
     ]
   },
   "dependencies": {
+    "@emeraldpay/emerald-vault-core": "0.5.0-0.27.0.rc1",
     "@emeraldplatform/contracts": "^0.5.1",
     "@emeraldplatform/core": "0.5.8",
     "@emeraldplatform/eth": "0.5.1",
