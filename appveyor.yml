@@ -30,7 +30,7 @@ test_script:
   # But probably useless, since the dist script build for _current_ operating system.
   - yarn build:dist
 artifacts:
-  - path: './dist/*.exe'
+  - path: './packages/desktop/dist/*.exe'
     name: emerald-wallet
 deploy_script:
   - openssl version
