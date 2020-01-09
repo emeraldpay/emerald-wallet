@@ -2,9 +2,11 @@ import { BlockchainCode, IApi } from '@emeraldwallet/core';
 import { mount, shallow } from 'enzyme';
 import * as React from 'react';
 import AddrList from './AddrList';
+import { IEmeraldVault } from '@emeraldpay/emerald-vault-core';
 
 const api: IApi = {
-  emerald: {} as any,
+  // @ts-ignore
+  emerald: {} as IEmeraldVault,
   chain (name: BlockchainCode | string): any {
   }
 };

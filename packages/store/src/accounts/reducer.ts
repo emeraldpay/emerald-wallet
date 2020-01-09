@@ -29,7 +29,6 @@ function findExistingAccount(wallets: vault.Wallet[], accountId: vault.AccountId
 }
 
 function onSetList (state: IAddressesState, action: SetListAction): IAddressesState {
-  const existingAddresses = state.wallets;
   const wallets: vault.Wallet[] = action.payload;
 
   return Object.assign({}, state, {wallets});
@@ -100,11 +99,15 @@ function onUpdateWallet (state: any, action: IUpdateAddressAction) {
 
 function onAddAccount (state: IAddressesState, action: AddWalletAction): IAddressesState {
   const { wallet } = action;
+  if (state.wallets.some((w) => w.id === action.wallet.id)) {
+    // already exists
+    return state
+  }
   const addition: vault.Wallet = {
     id: wallet.id,
     name: wallet.name,
     description: "",
-    accounts: [] //TODO should probably have accounts
+    accounts: wallet.accounts
   };
   const wallets = state.wallets.concat([addition]);
   return Object.assign({}, state, {wallets})

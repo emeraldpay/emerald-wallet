@@ -17,23 +17,23 @@ describe('address book reducer', () => {
 
   it('should delete contact on ADDRESSBOOK/DELETE_ADDRESS', () => {
     let state = reducer(undefined, newContactAddedAction(BlockchainCode.ETC, '0x123', 'name1', 'desc1'));
-    expect(state.contacts[BlockchainCode.ETC]['0x123'].name).toEqual('name1');
-    expect(state.contacts[BlockchainCode.ETC]['0x123'].blockchain).toEqual(BlockchainCode.ETC);
+    expect(state.contacts[BlockchainCode.ETC]!!['0x123'].name).toEqual('name1');
+    expect(state.contacts[BlockchainCode.ETC]!!['0x123'].blockchain).toEqual(BlockchainCode.ETC);
 
     state = reducer(state, newContactAddedAction(BlockchainCode.ETC, '0x999', 'name2', 'desc2'));
-    expect(state.contacts[BlockchainCode.ETC]['0x999'].name).toEqual('name2');
+    expect(state.contacts[BlockchainCode.ETC]!!['0x999'].name).toEqual('name2');
 
     state = reducer(state, newContactAddedAction(BlockchainCode.ETH, '0x999', 'name2', 'desc2'));
-    expect(state.contacts[BlockchainCode.ETH]['0x999'].name).toEqual('name2');
+    expect(state.contacts[BlockchainCode.ETH]!!['0x999'].name).toEqual('name2');
 
     state = reducer(state, contactDeletedAction(BlockchainCode.ETC, '0x999'));
-    expect(state.contacts[BlockchainCode.ETC]['0x999']).toBeUndefined();
+    expect(state.contacts[BlockchainCode.ETC]).toBeUndefined();
   });
 
   it('should set contacts on ADDRESSBOOK/SET_BOOK', () => {
     const contacts = [
-      { address: '0x1' },
-      { address: '0x2' }
+      { address: '0x1', blockchain: BlockchainCode.Kovan },
+      { address: '0x2', blockchain: BlockchainCode.Kovan }
     ];
     const chain = BlockchainCode.Kovan;
     const state = reducer(undefined, setAddressBook(chain, contacts));
@@ -41,7 +41,7 @@ describe('address book reducer', () => {
     expect(state).toEqual({
       loading: false,
       contacts: {
-        [BlockchainCode.Morden]: {
+        [BlockchainCode.Kovan]: {
           '0x1': {
             address: '0x1',
             blockchain: BlockchainCode.Kovan

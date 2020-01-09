@@ -50,7 +50,7 @@ function onSetMode (state: ISettingsState, action: ISetModeAction) {
   return Object.assign({}, state, {mode: action.payload});
 }
 
-export default function reducer (state: ISettingsState, action: SettingsAction) {
+export default function reducer (state: ISettingsState | undefined, action: SettingsAction) {
   state = state || initial;
   switch (action.type) {
     case ActionTypes.MODE:

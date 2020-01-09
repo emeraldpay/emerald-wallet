@@ -25,9 +25,11 @@ describe('selectors', () => {
         }
       }
     };
+    // @ts-ignore
     const balance1 = selectBalance(appState, '0xTOKEN', '0x1', BlockchainCode.ETC);
     expect(balance1).toBeDefined();
-    expect(balance1.decimals).toEqual(8);
+    expect(balance1!!.decimals).toEqual(8);
+    // @ts-ignore
     const balance2 = selectBalance(appState, '0xTOKEN', '0x2', BlockchainCode.ETC);
     expect(balance2).toBeNull();
   });
