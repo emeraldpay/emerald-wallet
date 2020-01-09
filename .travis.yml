@@ -38,7 +38,7 @@ before_install:
   - echo Installing dependencies
   - npm install -g node-gyp license-checker
   - npm install -g codecov yarn lerna
-  - nom install -g typescript
+  - npm install -g typescript
 
 install:
   - export DISPLAY=':99.0'
