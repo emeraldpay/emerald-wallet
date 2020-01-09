@@ -28,13 +28,16 @@ git:
   depth: false
 
 before_install:
+  # GitVersion
   - echo Installing GitVersion...
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install mono; fi
   - wget https://github.com/GitTools/GitVersion/releases/download/v4.0.0/GitVersion-bin-net40-v4.0.0.zip
   - unzip GitVersion-bin-net40-v4.0.0.zip -d GitVersionBin
   - echo "#!/bin/bash" > gitversion
   - echo 'mono GitVersionBin/GitVersion.exe "$@"' >> gitversion
   - chmod 755 gitversion
   - ./gitversion /version
+  # Janus
   - echo Janus...
   - curl -sL https://raw.githubusercontent.com/ETCDEVTeam/janus/master/get.sh | bash
   - export PATH=$PATH:$PWD/janusbin
@@ -78,7 +81,7 @@ addons:
     - libudev-dev
     - libusb-1.0-0
     - libusb-1.0-0-dev
-#    - mono-complete
+    - mono-complete
     - libcurl3
     - xvfb
 deploy:
