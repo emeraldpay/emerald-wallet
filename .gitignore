@@ -17,3 +17,5 @@ package-lock.json
 .emerald-dev-local
 lerna-debug.log
 yarn-error.log
+age.txt
+gcloud.json

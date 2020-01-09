@@ -1,12 +1,17 @@
 os: Visual Studio 2015
 environment:
-  GCP_PASSWD:
-    secure: /kPjA5Ff2c6ZDhU7y6TiUWiR4Jr4uXyLKWan35EXXTI=
+  AGE_KEY:
+    # public key: age1enkrmannzall06hegqdxevslyfxfqtz87zndnfxf6gnwnenaae5ssty6e3
+    secure: Fu4lGhR0X/eRI9oQMHfgQuHsOHXPhWjrIs25BWfqhXV6HPd6oI6fUj3KWQG0DfTiFNUEs+4FHNgFe4C5/8rFlaXr1fESi2YbWJsiBCWpNxg=
 install:
   - set PATH=C:\msys64\mingw64\bin;C:\msys64\usr\bin\;%PATH%
   # Install janus.
   - curl -sL https://raw.githubusercontent.com/ETCDEVTeam/janus/master/get-windows.sh | bash
   - set PATH=./janusbin;%PATH%
+  # Install AGE
+  - curl -sL https://github.com/FiloSottile/age/releases/download/v1.0.0-beta2/age-v1.0.0-beta2-windows-amd64.zip --output age.zip
+  - 7z e age.zip
+  - set PATH=./age;%PATH%
   # Set up version from git tags.
   - gitversion.exe > packages/desktop/gitversion.json
   - ps: $env:VERSION_BASE = "v$(gitversion.exe /showvariable Major).$(gitversion.exe /showvariable Minor).x"
@@ -33,11 +38,12 @@ artifacts:
   - path: './packages/desktop/dist/*.exe'
     name: emerald-wallet
 deploy_script:
-  - openssl version
-  - openssl aes-256-cbc -d -in gcloud-appveyor.json.enc -k %GCP_PASSWD% -out gcloud-appveyor.json -md sha256
+  - echo %AGE_KEY% > age.txt
+  - age -d -i age.txt ./gcloud.age > gcloud.json
   - ps: >-
       If (($env:APPVEYOR_REPO_BRANCH -eq 'master') -or ($env:APPVEYOR_REPO_TAG -eq 'true')) {
           echo "Deploy to http://builds.etcdevteam.com/emerald-wallet/$env:VERSION_BASE/"
-          janus.exe deploy -to="builds.etcdevteam.com/emerald-wallet/$env:VERSION_BASE/" -files="./packages/desktop/dist/*.exe" -key="./gcloud-appveyor.json"
+          janus.exe deploy -to="builds.etcdevteam.com/emerald-wallet/$env:VERSION_BASE/" -files="./packages/desktop/dist/*.exe" -key="./gcloud.json"
       }
-  - rm gcloud-appveyor.json
+  - rm gcloud.json
+  - rm age.txt
