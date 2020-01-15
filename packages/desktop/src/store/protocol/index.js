@@ -3,10 +3,8 @@ import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extrane
 import { fromJS } from 'immutable';
 import { Contract } from '@emeraldplatform/contracts';
 import { screen } from 'store';
-import createLogger from '../../utils/logger';
 import { onceServicesStart, onceAccountsLoaded, onceBalancesSet } from '../triggers';
 
-const log = createLogger('launcherActions');
 
 const protocolLinkHandler = (request, state, dispatch) => {
   const paymentParams = qs.parse(request.url.split('?')[1]);

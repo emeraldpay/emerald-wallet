@@ -1,7 +1,7 @@
 import { Input, Page, Warning, WarningHeader, WarningText } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import { Blockchain, BlockchainCode } from '@emeraldwallet/core';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import Button from '../../common/Button';
 import ChainSelector from '../../common/ChainSelector';

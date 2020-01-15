@@ -1,6 +1,6 @@
-import createLogger from '../../utils/logger';
+import { Logger } from '@emeraldwallet/core';
 
-const log = createLogger('api');
+const log = Logger.forCategory('api');
 
 class NullConnect {
   connectEthChain(name) {
@@ -11,13 +11,13 @@ class NullConnect {
 export function getConnector() {
   // TODO workaround for testing, should be properly mocked
   if (typeof global.require !== 'function') {
-    console.warn('Electron Remote is not available');
+    log.warn('Electron Remote is not available');
     return new NullConnect();
   }
   const { remote } = global.require('electron');
   // TODO workaround for testing, should be properly mocked
   if (typeof remote !== 'object' || typeof remote.getGlobal !== 'function') {
-    console.warn('Electron Remote is not available');
+    log.warn('Electron Remote is not available');
     return new NullConnect();
   }
   return remote.getGlobal('serverConnect');

@@ -13,8 +13,6 @@ import {startProtocolListener} from './protocol';
 
 import {Api, getConnector} from '../lib/rpc/api';
 import {intervalRates} from './config';
-import tokens from './vault/tokens';
-
 import {
   readConfig,
   connecting
@@ -22,7 +20,6 @@ import {
 // import { showError } from './wallet/screen/screenActions';
 
 import getWalletVersion from '../utils/get-wallet-version';
-import createLogger from '../utils/logger';
 import {createStore} from './createStore';
 
 import {
@@ -31,8 +28,11 @@ import {
   onceBalancesSet,
   onceModeSet, onceServicesStart,
 } from './triggers';
+import { Logger } from '@emeraldwallet/core';
+import ElectronLogger from '../utils/logger2';
+Logger.setInstance(new ElectronLogger());
 
-const log = createLogger('store');
+const log = Logger.forCategory('store');
 
 const api = new Api(getConnector());
 export const store = createStore(api);

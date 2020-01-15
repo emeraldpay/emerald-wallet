@@ -1,6 +1,6 @@
-import createLogger from '../../utils/logger';
+import { Logger } from '@emeraldwallet/core';
 
-const log = createLogger('launcherActions');
+const log = Logger.forCategory('launcherActions');
 
 export function readConfig() {
   if (typeof window.process !== 'undefined') {

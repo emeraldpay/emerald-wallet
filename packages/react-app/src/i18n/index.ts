@@ -14,13 +14,13 @@ i18n
     react: {
       wait: false
     }
+  }, () => {
+    i18n.addResourceBundle('en-US', 'translation', en_US);
+    i18n.addResourceBundle('zh-CN', 'translation', zh_CN);
+    i18n.addResourceBundle('pt-BR', 'translation', pt_BR);
+    i18n.addResourceBundle('ko-KR', 'translation', ko_KR);
   })
   .then(() => console.debug('i18n initialized successfully'))
   .catch((error: any) => console.debug('i18n initialization failed', error));
-
-i18n.addResourceBundle('en-US', 'translation', en_US);
-i18n.addResourceBundle('zh-CN', 'translation', zh_CN);
-i18n.addResourceBundle('pt-BR', 'translation', pt_BR);
-i18n.addResourceBundle('ko-KR', 'translation', ko_KR);
 
 export default i18n;

@@ -15,15 +15,21 @@ const getStyles = (theme: any) => ({
   }
 });
 
-interface IWelcomeProps {
-  message: any;
+export interface IOwnProps {
   currentTermsVersion: any;
+  classes?: any;
+}
+
+interface IStateProps {
+  message: any;
   level: any;
   needSetup: any;
   classes?: any;
 }
 
-const Welcome = (props: IWelcomeProps) => {
+type Props = IOwnProps & IStateProps;
+
+const Welcome = (props: Props) => {
   const {
     message, level, needSetup, classes, currentTermsVersion
   } = props;
@@ -74,13 +80,11 @@ const Welcome = (props: IWelcomeProps) => {
 
 const StyledWelcome = withStyles(getStyles)(Welcome);
 
-export default connect(
-  (state: any, ownProps: IWelcomeProps) => {
+export default connect<IStateProps, any, IOwnProps>(
+  (state: any, ownProps: IOwnProps): IStateProps => {
     const msg = launcher.selectors.getMessage(state);
     return ({
       ...msg,
       needSetup: state.launcher.get('configured') && (state.launcher.get('terms') !== ownProps.currentTermsVersion)
     });
-  },
-  null
-)(StyledWelcome);
+  })(StyledWelcome);

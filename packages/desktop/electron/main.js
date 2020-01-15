@@ -62,16 +62,17 @@ const options = {
 assertSingletonWindow();
 startProtocolHandler();
 
+const appParams = {
+  locale: app.getLocale(),
+  version: app.getVersion(),
+  electronVer: process.versions.electron,
+  chromeVer: process.versions.chrome,
+};
+
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   log.info('Starting Emerald', app.getVersion());
-  const appParams = {
-    locale: app.getLocale(),
-    version: app.getVersion(),
-    electronVer: process.versions.electron,
-    chromeVer: process.versions.chrome,
-  };
   log.info('... setup API access');
   let apiAccess;
   if (apiMode.id === ProdMode.id) {
@@ -102,7 +103,7 @@ app.on('ready', () => {
     sendMode(browserWindow.webContents, apiMode);
   });
 
-  log.info('... setup services 2');
+  log.info('... setup services');
   const services = createServices(ipcMain, browserWindow.webContents, apiAccess, apiMode.chains);
 
   app.on('quit', () => {

@@ -37,6 +37,7 @@ export { default as Home } from './layout/Home';
 
 // screen
 export { default as Dialog } from './screen/Dialog';
+export { default as Screen } from './screen/Screen';
 
 // tx history
 export { default as TxDetails } from './transactions/TxDetails';

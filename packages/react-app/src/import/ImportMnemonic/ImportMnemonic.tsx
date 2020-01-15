@@ -1,16 +1,33 @@
-import { BlockchainCode } from '@emeraldwallet/core';
+import { Blockchain, BlockchainCode, Logger } from '@emeraldwallet/core';
 import { addresses, screen, settings } from '@emeraldwallet/store';
+import { State } from '@emeraldwallet/store/src';
 import { ImportMnemonic } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import {State} from "@emeraldwallet/store/src";
 
-export interface IInputMnemonicProps {
-  mnemonic: string;
+const logger = Logger.forCategory('ImportMnemonic');
+
+export interface IOwnProps {
+  mnemonic?: string;
 }
 
-export default connect<any, any, IInputMnemonicProps, State>(
-  (state, ownProps) => ({
+interface IStateProps {
+  blockchains: Blockchain[];
+  error?: any;
+  invalid?: any;
+  mnemonic?: string;
+  initialValues: {
+    hdpath: string
+  };
+}
+
+interface IDispatchProps {
+  onSubmit?: any;
+  onBack?: any;
+}
+
+export default connect<IStateProps, IDispatchProps, IOwnProps, State>(
+  (state, ownProps): IStateProps => ({
     mnemonic: ownProps.mnemonic,
     initialValues: {
       hdpath: "m/44'/60'/0'/0/0"
@@ -28,13 +45,13 @@ export default connect<any, any, IInputMnemonicProps, State>(
             dispatch(screen.actions.gotoScreen('account', { id: result, blockchain: data.blockchain }));
           }
         }).catch((error: any) => {
-          console.error(error);
+          logger.error('Error import mnemonic', error);
           throw new Error(error.toString());
         });
     },
 
     onBack: () => {
-      dispatch(screen.actions.gotoScreen('home'));
+      dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
     }
   })
 )(ImportMnemonic);

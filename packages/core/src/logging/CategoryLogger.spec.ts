@@ -3,7 +3,8 @@ import DefaultLogger from './DefaultLogger';
 
 describe('CategoryLogger', () => {
   it('should work', () => {
-    const logger = new CategoryLogger(new DefaultLogger(), 'section');
+    const provider = () => new DefaultLogger();
+    const logger = new CategoryLogger(provider, 'section');
     logger.info('Some info', { name: 'some obj' });
   });
 });

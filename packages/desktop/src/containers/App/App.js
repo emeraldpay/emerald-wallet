@@ -3,12 +3,12 @@ import { Provider } from 'react-redux';
 import { I18nextProvider } from 'react-i18next';
 import { Theme } from '@emeraldplatform/ui';
 import {
-  ErrorDialog, NotificationBar, ConnectionStatus, Header, i18n, Dialog
+  ErrorDialog, NotificationBar, ConnectionStatus, Header, i18n, Dialog, Screen
 } from '@emeraldwallet/react-app';
 import { ThemeProvider } from '@material-ui/styles';
 
-import Screen from '../Screen';
 import { store } from '../../store/store';
+import { TERMS_VERSION } from '../../store/config';
 
 const maxWidth = '1150px';
 
@@ -19,7 +19,7 @@ const App = () => (
         <div style={{height: '100%', backgroundColor: Theme.palette.background.default}} className="application">
           {store.getState().screen.get('screen') !== 'paper-wallet' && <Header/>}
           <div style={{margin: '20px auto', maxWidth}}>
-            <Screen />
+            <Screen termsVersion={TERMS_VERSION}/>
           </div>
           <ErrorDialog/>
           <NotificationBar/>

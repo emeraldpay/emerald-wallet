@@ -6,12 +6,12 @@ export default class Logger implements ILogger {
   public static instance: ILogger = new DefaultLogger();
 
   public static forCategory (category: string): ILogger {
-    return new CategoryLogger(Logger.instance, category);
+    return new CategoryLogger(() => Logger.instance, category);
   }
 
   public static setInstance (logger: ILogger) {
     if (!logger) {
-      throw new Error('Invalid argument: logger can not be empty')
+      throw new Error('Invalid argument: logger can not be empty');
     }
     Logger.instance = logger;
   }

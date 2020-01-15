@@ -7,18 +7,14 @@ import { I18nextProvider } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { i18n } from '@emeraldwallet/react-app';
 import { start as startStore } from './store/store';
-import { Logger } from '@emeraldwallet/core';
 import About from './containers/About';
 import App from './containers/App';
-import ElectronLogger from './utils/logger2';
+import { Logger } from '@emeraldwallet/core';
 
-// Initialize logging subsystem
-Logger.setInstance(new ElectronLogger());
-
-const logger = Logger.forCategory('index');
+const log = Logger.forCategory('index');
 
 function start() {
-  logger.info('Starting Emerald Wallet...');
+  log.info('Starting Emerald Wallet...');
 
   // set document background to theme canvas color
   const canvasColor = Theme.palette.background.default;
