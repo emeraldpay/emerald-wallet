@@ -15,9 +15,6 @@ export { default as Units, IUnits } from './Units';
 import * as utils from './utils';
 export { utils };
 
-export { default as ILogger } from './ILogger';
-export { default as DefaultLogger } from './DefaultLogger';
-
 export { IServerConnect } from './IServerConnect';
 export { IApi } from './IApi';
 
@@ -29,3 +26,8 @@ export { EthereumAddress, isValidEthAddress } from './Address';
 export { StableCoinCode, SupportedTokenCode, AnyTokenCode, AnyCoinCode } from './Asset';
 
 export { IStoredTransaction } from './history/IStoredTransaction';
+
+// logging
+export { default as Logger } from './logging/Logger';
+export { default as ILogger } from './logging/ILogger';
+export { default as DefaultLogger } from './logging/DefaultLogger';

@@ -1,21 +1,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import {Theme} from '@emeraldplatform/ui';
+import { Theme } from '@emeraldplatform/ui';
 import 'typeface-rubik/index.css';
 import 'typeface-roboto-mono/index.css';
-import {I18nextProvider} from 'react-i18next';
+import { I18nextProvider } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { i18n } from '@emeraldwallet/react-app';
-import {start as startStore} from './store/store';
-
-import createLogger from './utils/logger';
+import { start as startStore } from './store/store';
+import { Logger } from '@emeraldwallet/core';
 import About from './containers/About';
 import App from './containers/App';
+import ElectronLogger from './utils/logger2';
 
-const log = createLogger('index');
+// Initialize logging subsystem
+Logger.setInstance(new ElectronLogger());
+
+const logger = Logger.forCategory('index');
 
 function start() {
-  log.info('Starting Emerald Wallet...');
+  logger.info('Starting Emerald Wallet...');
 
   // set document background to theme canvas color
   const canvasColor = Theme.palette.background.default;

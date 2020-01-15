@@ -7,13 +7,14 @@ import {
   ImportMnemonic, CreateTransaction, BroadcastTx, ImportPrivateKey, ImportLedgerAccount, GenerateAccount,
   Settings, MnemonicWizard, WalletDetails, Home, Welcome, CreateAccountWizard
 } from '@emeraldwallet/react-app';
-import createLogger from '../../utils/logger';
 import { screen } from '@emeraldwallet/store';
 import { TERMS_VERSION } from '../../store/config';
-const log = createLogger('screen');
+import { Logger } from '@emeraldwallet/core';
+
+const log = Logger.forCategory('screen');
 
 const Screen = (props) => {
-  log.debug('Show screen: ', props.screen);
+  log.info('Show screen: ', props.screen);
 
   if (props.screen === null) {
     return (<div>

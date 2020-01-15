@@ -4,3 +4,5 @@ export { assertSingletonWindow } from './windows/singletonWindow';
 
 import * as protocol from './protocol';
 export { protocol };
+
+export { default as ElectronLogger } from './logging/ElectronLogger';

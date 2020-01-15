@@ -1,8 +1,6 @@
+import i18n from 'i18next';
 import { initReactI18next } from 'react-i18next';
 import { en_US, ko_KR, pt_BR, zh_CN } from './locales';
-
-// Couldn't import this fucking module, require it
-const i18n = require('i18next').default;
 const LanguageDetector = require('i18next-browser-languagedetector');
 
 i18n
@@ -12,10 +10,13 @@ i18n
     fallbackLng: 'en-US',
     debug: true,
     ns: ['translation', 'settings'],
-    defaultNS: 'translation'
+    defaultNS: 'translation',
+    react: {
+      wait: false
+    }
   })
   .then(() => console.debug('i18n initialized successfully'))
-  .catch((error: any)  => console.debug('i18n initialization failed', error));
+  .catch((error: any) => console.debug('i18n initialization failed', error));
 
 i18n.addResourceBundle('en-US', 'translation', en_US);
 i18n.addResourceBundle('zh-CN', 'translation', zh_CN);
