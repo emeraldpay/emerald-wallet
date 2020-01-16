@@ -1,33 +1,33 @@
-import {AnyCoinCode, AnyTokenCode, Blockchain, BlockchainCode, CurrencyCode, Units} from '@emeraldwallet/core';
 import * as vault from '@emeraldpay/emerald-vault-core';
-import {Wei} from "@emeraldplatform/eth";
 import { AccountId } from '@emeraldpay/emerald-vault-core';
-import BigNumber from "bignumber.js";
+import { Wei } from '@emeraldplatform/eth';
+import { AnyCoinCode, AnyTokenCode, Blockchain, BlockchainCode, CurrencyCode, Units } from '@emeraldwallet/core';
+import BigNumber from 'bignumber.js';
 
 export const moduleName = 'addresses';
 
-export type BalanceValue = {
-  balance: Wei | Units,
-  token: CurrencyCode | AnyCoinCode,
+export interface BalanceValue {
+  balance: Wei | Units;
+  token: CurrencyCode | AnyCoinCode;
 }
 
 /**
  * Balance in original "face" value, and converted to a common currency
  */
-export type BalanceValueConverted = {
-  source: BalanceValue,
-  converted: BalanceValue,
-  rate: number
+export interface BalanceValueConverted {
+  source: BalanceValue;
+  converted: BalanceValue;
+  rate: number;
 }
 
-export type AccountDetails = {
-  accountId: AccountId,
-  balance?: string,
-  balancePending?: any,
-  txcount?: number
+export interface AccountDetails {
+  accountId: AccountId;
+  balance?: string;
+  balancePending?: any;
+  txcount?: number;
 }
 
-export interface IAddressesState {
+export interface IAccountsState {
   wallets: vault.Wallet[];
   loading: boolean;
   details: AccountDetails[];
@@ -36,6 +36,7 @@ export interface IAddressesState {
 export type WalletsList = vault.Wallet[];
 
 export enum ActionTypes {
+  LOAD_WALLETS = 'ACCOUNT/LOAD_WALLETS',
   SET_BALANCE = 'ACCOUNT/SET_BALANCE',
   LOADING = 'ACCOUNT/LOADING',
   ADD_WALLET = 'ACCOUNT/ADD_ACCOUNT',
@@ -46,6 +47,10 @@ export enum ActionTypes {
   PENDING_BALANCE = 'ACCOUNT/PENDING_BALANCE',
   SET_TXCOUNT = 'ACCOUNT/SET_TXCOUNT',
   FETCH_ERC20_BALANCES = 'ACCOUNT/FETCH_ERC20_BALANCES'
+}
+
+export interface ILoadWalletsAction {
+  type: ActionTypes.LOAD_WALLETS;
 }
 
 export interface IFetchErc20BalancesAction {
@@ -65,7 +70,7 @@ export interface IUpdateAddressAction {
   };
 }
 
-export interface SetListAction {
+export interface IWalletsLoaded {
   type: ActionTypes.SET_LIST;
   payload: vault.Wallet[];
 }
@@ -76,17 +81,17 @@ export interface SetBalanceAction {
     blockchain: BlockchainCode,
     address: string,
     value: string
-  }
+  };
 }
 
-export interface SetLoadingAction {
+export interface ISetLoadingAction {
   type: ActionTypes.LOADING;
   payload: boolean;
 }
 
-export interface AddWalletAction {
+export interface IAddWalletAction {
   type: ActionTypes.ADD_WALLET;
-  wallet: vault.Wallet,
+  wallet: vault.Wallet;
 }
 
 export interface SetTxCountAction {
@@ -108,13 +113,14 @@ export interface PendingBalanceAction {
   blockchain: BlockchainCode;
 }
 export type AddressesAction =
-  | SetListAction
-  | SetLoadingAction
+  | IWalletsLoaded
+  | ISetLoadingAction
   | SetBalanceAction
   | IUpdateAddressAction
-  | AddWalletAction
+  | IAddWalletAction
   // | SetHDPathAction
   | SetTxCountAction
   | PendingBalanceAction
   | IFetchHdPathsAction
+  | ILoadWalletsAction
   ;

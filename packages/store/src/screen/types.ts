@@ -12,7 +12,8 @@ export enum ActionTypes {
 export enum Pages {
   WALLET = 'wallet',
   ACCOUNT = 'account',
-  HOME = 'home'
+  HOME = 'home',
+  ADDRESS_BOOK = 'address-book'
 }
 
 export interface IScreenState {

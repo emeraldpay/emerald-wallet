@@ -1,7 +1,7 @@
 import { EthAddress } from '@emeraldplatform/core';
+import { AnyCoinCode, AnyTokenCode } from '../../Asset';
 import { Blockchain } from '../Blockchain';
 import IBlockchainParams from '../IBlockchainParams';
-import {AnyCoinCode, AnyTokenCode} from "../../Asset";
 
 export default class Ethereum implements Blockchain {
   public params: IBlockchainParams;
@@ -22,7 +22,7 @@ export default class Ethereum implements Blockchain {
     return this.title;
   }
 
-  getAssets(): AnyCoinCode[] {
+  public getAssets (): AnyCoinCode[] {
     const result = [this.params.coinTicker];
     result.push(...this.tokens);
     return result;

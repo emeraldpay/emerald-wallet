@@ -1,7 +1,7 @@
 import { Wei } from '@emeraldplatform/eth';
 import { BlockchainCode } from '@emeraldwallet/core';
 import { allAsArray, balanceByChain } from './selectors';
-import {IAddressesState} from "./types";
+import {IAccountsState} from "./types";
 import {State} from "../types";
 
 describe('allAsArray', () => {

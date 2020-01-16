@@ -58,20 +58,20 @@ export function ethereumByChainId (id?: number): Blockchain | undefined {
   return allChains.find((chain) => chain.params.chainId === id);
 }
 
-export function blockchainById(id: number): Blockchain | undefined {
+export function blockchainById (id: number): Blockchain | undefined {
   if (id == 100) {
-    return Blockchains[BlockchainCode.ETH]
+    return Blockchains[BlockchainCode.ETH];
   }
   if (id == 101) {
-    return Blockchains[BlockchainCode.ETC]
+    return Blockchains[BlockchainCode.ETC];
   }
   if (id == 10002) {
-    return Blockchains[BlockchainCode.Kovan]
+    return Blockchains[BlockchainCode.Kovan];
   }
-  return undefined
+  return undefined;
 }
 
-export function blockchainCodeToId(code: BlockchainCode): number {
+export function blockchainCodeToId (code: BlockchainCode): number {
   if (code == BlockchainCode.ETH) {
     return 100;
   }
@@ -81,5 +81,5 @@ export function blockchainCodeToId(code: BlockchainCode): number {
   if (code == BlockchainCode.Kovan) {
     return 10002;
   }
-  throw Error("Unsupported blockchain: " + code);
+  throw Error('Unsupported blockchain: ' + code);
 }

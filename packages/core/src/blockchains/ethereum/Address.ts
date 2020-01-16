@@ -1,5 +1,14 @@
 
 export class EthereumAddress {
+
+  public static isValid (address: string): boolean {
+    try {
+      const x = new EthereumAddress(address);
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
   private readonly address: string;
 
   constructor (address: string) {
@@ -21,15 +30,5 @@ export class EthereumAddress {
 
   public getAddress (): string {
     return this.address;
-  }
-
-}
-
-export function isValidEthAddress (address: string): boolean {
-  try {
-    const x = new EthereumAddress(address);
-    return true;
-  } catch (e) {
-    return false;
   }
 }

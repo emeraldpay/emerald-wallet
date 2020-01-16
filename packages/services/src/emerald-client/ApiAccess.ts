@@ -7,12 +7,12 @@ import {
   MarketClient,
   MonitoringClient
 } from '@emeraldpay/grpc-client';
+import { IEmeraldClient } from '@emeraldwallet/core';
 import * as os from 'os';
 import { AddressListener } from '../AddressListener';
 import { ChainListener } from '../ChainListener';
 import { PriceListener } from '../PricesListener';
 import { TxListener } from '../services/TxListener';
-import { IEmeraldClient } from './IEmeraldClient';
 
 const certLocal = '-----BEGIN CERTIFICATE-----\n' +
   'MIIE4zCCAsugAwIBAgIQHgCBkxi2xOHMNb4vvXKSxTANBgkqhkiG9w0BAQsFADBs\n' +
@@ -129,7 +129,7 @@ export interface IAppParams {
   chromeVer: any;
   locale: any;
   version: any;
-};
+}
 
 export class EmeraldApiAccess implements IEmeraldClient {
 
@@ -219,7 +219,7 @@ export class EmeraldApiAccess implements IEmeraldClient {
       && status.pricesConnected
       && status.diagConnected;
     if (!connected) {
-      this.verifyOffline({auth: status.authenticated, blockchain: status.blockchainConnected, market: status.pricesConnected, diag: status.diagConnected});
+      this.verifyOffline({ auth: status.authenticated, blockchain: status.blockchainConnected, market: status.pricesConnected, diag: status.diagConnected });
     } else {
       this.connectionState.connectedAt = new Date();
       this.setStatus(Status.CONNECTED);
@@ -245,8 +245,8 @@ export class EmeraldApiAccess implements IEmeraldClient {
 
   protected setStatus (state: Status, basis?: {[key: string]: boolean}) {
     if (typeof this.currentState === 'undefined' || this.currentState !== state) {
-      if (state === Status.DISCONNECTED || state == Status.CONNECTION_ISSUES) {
-        console.warn("Disconnected", basis);
+      if (state === Status.DISCONNECTED || state === Status.CONNECTION_ISSUES) {
+        console.warn('Disconnected', basis);
       }
       this.currentState = state;
       if (this.listener) {

@@ -13,24 +13,87 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-// import { vault } from '@emeraldwallet/core';
-import * as assert from 'assert';
-// import { IVaultProvider } from './types';
+import {
+  AddAccount,
+  IEmeraldVault,
+  SeedDefinition,
+  SeedDescription,
+  UnsignedTx,
+  Wallet
+} from '@emeraldpay/emerald-vault-core';
+import { AddressBookItem, BlockchainCode, IVault } from '@emeraldwallet/core';
+import { blockchainCodeToId, blockchainIdToCode } from './utils';
 
-function notNull (value: any, param: string) {
-  return assert(value, `${param} must not be null`);
-}
+export class Vault implements IVault {
+  public provider: IEmeraldVault;
 
-function notEmpty (value: any, param: string) {
-  return assert(value && (value.length > 0), `${param} must not be empty`);
-}
+  constructor (provider: IEmeraldVault) {
+    this.provider = provider;
+  }
 
-// export class Vault implements vault.IVault {
-//   public provider: IVaultProvider;
-//
-//   constructor (provider: IVaultProvider) {
-//     this.provider = provider;
-//   }
+  public getWallet (id: string): Wallet | undefined {
+    return this.provider.getWallet(id);
+  }
+
+  public listWallets (): Wallet[] {
+    return this.provider.listWallets();
+  }
+
+  public addToAddressBook (item: AddressBookItem): boolean {
+    return this.provider.addToAddressBook({
+      address: item.address,
+      blockchain: blockchainCodeToId(item.blockchain),
+      description: item.description,
+      name: item.name
+    });
+  }
+
+  public addWallet (label: string | undefined): string {
+    return this.provider.addWallet(label);
+  }
+
+  public listAddressBook (blockchain: BlockchainCode): AddressBookItem[] {
+    const items = this.provider.listAddressBook(blockchainCodeToId(blockchain));
+    return items.map(
+      (item) => {
+        return new AddressBookItem(
+          blockchainIdToCode(item.blockchain),
+          item.address, item.name, item.description);
+      });
+  }
+
+  public removeFromAddressBook (blockchain: BlockchainCode, address: string): boolean {
+    return this.provider.removeFromAddressBook(blockchainCodeToId(blockchain), address);
+  }
+
+  public addAccount (walletId: string, account: AddAccount): string {
+    return this.provider.addAccount(walletId, account);
+  }
+
+  public exportJsonPrivateKey (accountFullId: string, password?: string): string {
+    return this.provider.exportJsonPk(accountFullId, password);
+  }
+
+  public generateMnemonic (size: number): string {
+    return this.provider.generateMnemonic(size);
+  }
+
+  public setWalletLabel (walletId: string, label: string): boolean {
+    return false;
+  }
+
+  public importSeed (seed: SeedDefinition): string {
+    return this.provider.importSeed(seed);
+  }
+
+  public getConnectedHWSeed (create: boolean): SeedDescription | undefined {
+    return this.provider.getConnectedHWSeed(create);
+  }
+
+  public signTx (accountFullId: string, tx: UnsignedTx, password?: string): string {
+    return this.provider.signTx(accountFullId, tx, password);
+  }
+
 //
 //     /**
 //      * Returns the client current version
@@ -121,4 +184,4 @@ function notEmpty (value: any, param: string) {
 //   public exportPk (address: string, password: string, chain: string): Promise<string> {
 //     return this.provider.exportPk(address, password, chain);
 //   }
-// }
+}

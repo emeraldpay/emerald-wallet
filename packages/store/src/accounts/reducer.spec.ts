@@ -1,6 +1,6 @@
 import { BlockchainCode } from '@emeraldwallet/core';
 import { INITIAL_STATE, reducer } from './reducer';
-import {ActionTypes, IAddressesState} from './types';
+import {ActionTypes, IAccountsState} from './types';
 
 describe('addresses reducer', () => {
   it('handles Actions.LOADING', () => {
@@ -14,7 +14,7 @@ describe('addresses reducer', () => {
 
   it('SET_LIST should store addresses correctly', () => {
     // do
-    let state: IAddressesState = reducer(undefined, {
+    let state: IAccountsState = reducer(undefined, {
       type: ActionTypes.SET_LIST,
       payload: [{
         id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee',
@@ -37,7 +37,7 @@ describe('addresses reducer', () => {
   });
 
   it('ADD_ACCOUNT should add only non existent account', () => {
-    let state: IAddressesState = reducer(undefined, { type: ActionTypes.LOADING, payload: true });
+    let state: IAccountsState = reducer(undefined, { type: ActionTypes.LOADING, payload: true });
     expect(state.wallets.length).toEqual(0);
     state = reducer(state, {
       type: ActionTypes.ADD_WALLET,

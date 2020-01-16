@@ -9,18 +9,18 @@ i18n
   .init({
     fallbackLng: 'en-US',
     debug: true,
-    ns: ['translation', 'settings'],
+    ns: ['translation'],
     defaultNS: 'translation',
+    resources: {
+      ['en-US']: { translation: en_US },
+      ['pt-BR']: { translation: pt_BR },
+      ['ko-KR']: { translation: ko_KR },
+      ['zh-CN']: { translation: zh_CN }
+    },
     react: {
-      wait: false
+      // wait: false,
+      useSuspense: false
     }
-  }, () => {
-    i18n.addResourceBundle('en-US', 'translation', en_US);
-    i18n.addResourceBundle('zh-CN', 'translation', zh_CN);
-    i18n.addResourceBundle('pt-BR', 'translation', pt_BR);
-    i18n.addResourceBundle('ko-KR', 'translation', ko_KR);
-  })
-  .then(() => console.debug('i18n initialized successfully'))
-  .catch((error: any) => console.debug('i18n initialization failed', error));
+  });
 
 export default i18n;

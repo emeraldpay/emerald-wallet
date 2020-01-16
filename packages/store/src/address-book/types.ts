@@ -1,4 +1,4 @@
-import { BlockchainCode } from '@emeraldwallet/core';
+import { AddressBookItem, BlockchainCode } from '@emeraldwallet/core';
 
 export const moduleName = 'addressBook';
 
@@ -13,15 +13,8 @@ export enum ActionTypes {
   SET_BOOK = 'ADDRESSBOOK/SET_BOOK'
 }
 
-export type Contact = {
-  name?: string,
-  description?: string,
-  address: string,
-  blockchain: BlockchainCode
-}
-
-//FIXME incompatible with Bitcoin
-export type Contacts = {[key: string]: Contact};
+// FIXME incompatible with Bitcoin
+export interface Contacts {[key: string]: AddressBookItem}
 
 export interface IAddressBookState {
   loading: boolean;
@@ -32,12 +25,12 @@ export interface IAddressBookState {
 
 export interface AddContactAction {
   type: ActionTypes.ADD_CONTACT;
-  payload: Contact;
+  payload: AddressBookItem;
 }
 
 export interface ContactAddedAction {
   type: ActionTypes.NEW_ADDRESS_ADDED;
-  payload: Contact;
+  payload: AddressBookItem;
 }
 
 export interface SetLoadingAction {
@@ -61,7 +54,7 @@ export interface ContactDeletedAction {
   };
 }
 
-export interface LoadContactsAction {
+export interface ILoadContactsAction {
   type: ActionTypes.LOAD;
   payload: BlockchainCode;
 }
@@ -70,7 +63,7 @@ export interface SetAddressBookAction {
   type: ActionTypes.SET_BOOK;
   payload: {
     blockchain: BlockchainCode;
-    contacts: Contact[];
+    contacts: AddressBookItem[];
   };
 }
 
@@ -80,5 +73,5 @@ export type AddressBookAction =
   | SetLoadingAction
   | DeleteContactAction
   | ContactDeletedAction
-  | LoadContactsAction
+  | ILoadContactsAction
   | SetAddressBookAction;

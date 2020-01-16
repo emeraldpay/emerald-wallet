@@ -1,6 +1,6 @@
 import { IApi } from '@emeraldwallet/core';
 import { Dispatch } from 'react';
-import {IAddressesState} from "./accounts/types";
+import {IAccountsState} from "./accounts/types";
 import {IAddressBookState} from "./address-book/types";
 import {IBlockchainsState} from "./blockchains/types";
 import {IScreenState} from "./screen/types";
@@ -12,7 +12,7 @@ import { ThunkAction } from 'redux-thunk';
 import {IAddAccountState} from "./add-account/types";
 
 export type State = {
-  addresses: IAddressesState,
+  addresses: IAccountsState,
   "address-book": IAddressBookState,
   blockchains: IBlockchainsState,
   conn: any,

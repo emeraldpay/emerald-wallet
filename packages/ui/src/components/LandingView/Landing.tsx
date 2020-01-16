@@ -1,11 +1,11 @@
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
-import { CSSProperties, withStyles } from '@material-ui/styles';
+import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 
 import Button from '../common/Button';
 
-export const styles = (theme?: any) => ({
+export const styles = (theme?: any) => createStyles({
   addAccount: {
     fontWeight: 500,
     padding: '20px',
@@ -17,7 +17,7 @@ export const styles = (theme?: any) => ({
     alignItems: 'start',
     flexDirection: 'column',
     justifyContent: 'center'
-  } as CSSProperties,
+  },
   welcome: {
     fontWeight: 500,
     marginLeft: '80px',
@@ -52,7 +52,6 @@ export interface ILandingProps {
 export const Landing = ({
   onGenerate, onImportJson, onImportPrivateKey, onLedger, classes, onAboutClick, onImportMnemonic
 }: ILandingProps) => {
-
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'stretch' }}>

@@ -54,10 +54,11 @@ export default connect<any, any, any, State>(
       dispatch(ledger.actions.importSelected(blockchain) as any)
         .then((address: string) => {
           const acc = { id: address, blockchain };
-          return dispatch(addresses.actions.loadAccountsList(() => {
-            // go to account details only when accounts updated
-            dispatch(screen.actions.gotoScreen(screen.Pages.ACCOUNT, acc));
-          }) as any);
+          // FIXME: Don;t reload all accounts after import
+          // return dispatch(addresses.actions.loadAccountsList(() => {
+          //   // go to account details only when accounts updated
+          //   dispatch(screen.actions.gotoScreen(screen.Pages.ACCOUNT, acc));
+          // }) as any);
         });
     },
     onClickBuyLedger: () => {

@@ -1,76 +1,76 @@
-import { Wei } from '@emeraldplatform/eth';
-import {blockchainByName, BlockchainCode, blockchainById, blockchainCodeToId} from '@emeraldwallet/core';
-import {
-  ActionTypes,
-  AddWalletAction,
-  AddressesAction,
-  IAddressesState,
-  SetBalanceAction,
-  SetListAction,
-  SetLoadingAction,
-  SetTxCountAction,
-  IUpdateAddressAction, AccountDetails
-} from './types';
 import * as vault from '@emeraldpay/emerald-vault-core';
 import { WalletsOp } from '@emeraldpay/emerald-vault-core';
+import { Wei } from '@emeraldplatform/eth';
+import { blockchainById, blockchainByName, BlockchainCode, blockchainCodeToId } from '@emeraldwallet/core';
+import {
+  AccountDetails,
+  ActionTypes,
+  AddressesAction,
+  IAccountsState,
+  IAddWalletAction,
+  ISetLoadingAction,
+  IUpdateAddressAction,
+  SetBalanceAction,
+  IWalletsLoaded, SetTxCountAction
+} from './types';
 
-export const INITIAL_STATE: IAddressesState = {
+export const INITIAL_STATE: IAccountsState = {
   wallets: [],
   loading: true,
   details: []
 };
 
-function onLoading (state: any, action: SetLoadingAction): IAddressesState {
-  return Object.assign({}, state, {loading: action.payload})
+function onLoading (state: IAccountsState, action: ISetLoadingAction): IAccountsState {
+  return { ...state, loading: action.payload };
 }
 
-function findExistingAccount(wallets: vault.Wallet[], accountId: vault.AccountId): vault.WalletAccount | undefined {
+function findExistingAccount (wallets: vault.Wallet[], accountId: vault.AccountId): vault.WalletAccount | undefined {
   return vault.WalletsOp.of(wallets).findAccount(accountId);
 }
 
-function onSetList (state: IAddressesState, action: SetListAction): IAddressesState {
+function onLoaded (state: IAccountsState, action: IWalletsLoaded): IAccountsState {
   const wallets: vault.Wallet[] = action.payload;
 
-  return Object.assign({}, state, {wallets});
+  return { ...state, wallets };
 }
 
 type Updater<T> = (source: T) => T;
 
-function updateWallet(state: IAddressesState, walletId: vault.Uuid, f: Updater<vault.Wallet>): IAddressesState {
-  let wallets = state.wallets.map((wallet) => {
+function updateWallet (state: IAccountsState, walletId: vault.Uuid, f: Updater<vault.Wallet>): IAccountsState {
+  const wallets = state.wallets.map((wallet) => {
     if (wallet.id === walletId) {
-      return f(Object.assign({}, wallet));
+      return f({ ...wallet });
     } else {
       return wallet;
     }
   });
-  return Object.assign({}, state, {wallets});
+  return { ...state, wallets };
 }
 
-function updateAccountDetails (state: IAddressesState, accountId: vault.AccountId, f: Updater<AccountDetails>): IAddressesState {
-  let account = WalletsOp.of(state.wallets)
+function updateAccountDetails (state: IAccountsState, accountId: vault.AccountId, f: Updater<AccountDetails>): IAccountsState {
+  const account = WalletsOp.of(state.wallets)
     .findAccount(accountId);
   if (typeof account === 'undefined') {
-    console.warn("Unknown account", accountId);
+    console.warn('Unknown account', accountId);
     return state;
   }
-  let blockchain = blockchainById(account.blockchain)!.params.code;
-  let filter = (details: AccountDetails) => details.accountId == accountId;
+  const blockchain = blockchainById(account.blockchain)!.params.code;
+  const filter = (details: AccountDetails) => details.accountId === accountId;
   let current = state.details.find(filter);
-  if (typeof current == "undefined") {
+  if (typeof current == 'undefined') {
     current = {
       accountId
     };
   }
   current = f(current) || current;
 
-  let details = state.details.filter((d) => !filter(d));
+  const details = state.details.filter((d) => !filter(d));
   details.push(current);
 
-  return Object.assign({}, state, {details});
+  return { ...state, details };
 }
 
-function onSetBalance (state: IAddressesState, action: SetBalanceAction): IAddressesState {
+function onSetBalance (state: IAccountsState, action: SetBalanceAction): IAccountsState {
   const { address, blockchain, value } = action.payload;
   const blockchainId = blockchainCodeToId(blockchain);
 
@@ -82,8 +82,8 @@ function onSetBalance (state: IAddressesState, action: SetBalanceAction): IAddre
       updatedState = updateAccountDetails(updatedState, account.id, (account) => {
         account.balance = value;
         account.balancePending = null;
-        return account
-      })
+        return account;
+      });
     });
   return updatedState;
 }
@@ -93,30 +93,30 @@ function onUpdateWallet (state: any, action: IUpdateAddressAction) {
   return updateWallet(state, walletId, (wallet) => {
     wallet.name = name;
     wallet.description = description;
-    return wallet
+    return wallet;
   });
 }
 
-function onAddAccount (state: IAddressesState, action: AddWalletAction): IAddressesState {
+function onAddAccount (state: IAccountsState, action: IAddWalletAction): IAccountsState {
   const { wallet } = action;
   if (state.wallets.some((w) => w.id === action.wallet.id)) {
     // already exists
-    return state
+    return state;
   }
   const addition: vault.Wallet = {
     id: wallet.id,
     name: wallet.name,
-    description: "",
+    description: '',
     accounts: wallet.accounts
   };
   const wallets = state.wallets.concat([addition]);
-  return Object.assign({}, state, {wallets})
+  return { ...state, wallets };
 }
 
 function onSetTxCount (state: any, action: SetTxCountAction) {
   return updateAccountDetails(state, action.accountId, (acc) => {
     acc.txcount = action.value;
-    return acc
+    return acc;
   });
 }
 //
@@ -141,9 +141,9 @@ function onSetTxCount (state: any, action: SetTxCountAction) {
 // }
 
 export function reducer (
-  state: IAddressesState = INITIAL_STATE,
+  state: IAccountsState = INITIAL_STATE,
   action: AddressesAction
-): IAddressesState {
+): IAccountsState {
   switch (action.type) {
     case ActionTypes.UPDATE_ACCOUNT:
       return onUpdateWallet(state, action);
@@ -152,7 +152,7 @@ export function reducer (
     case ActionTypes.LOADING:
       return onLoading(state, action);
     case ActionTypes.SET_LIST:
-      return onSetList(state, action);
+      return onLoaded(state, action);
     case ActionTypes.ADD_WALLET:
       return onAddAccount(state, action);
     case ActionTypes.SET_TXCOUNT:

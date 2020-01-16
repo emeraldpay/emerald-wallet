@@ -16,7 +16,7 @@ export { default as NewMnemonic } from './components/accounts/NewMnemonic';
 export { default as ReceiveDialog } from './components/accounts/ReceiveDialog';
 export { default as AccountActionsMenu } from './components/accounts/AccountActionsMenu';
 export { default as Balance } from './components/accounts/Balance';
-export { default as Landing } from './components/Landing';
+export { default as Landing } from './components/LandingView';
 export { default as PaperWallet } from './components/accounts/PaperWallet';
 export { default as ErrorDialog } from './components/common/ErrorDialog';
 export { default as HdPath } from './components/common/HdPath';

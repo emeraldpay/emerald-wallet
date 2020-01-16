@@ -1,4 +1,13 @@
-export { BlockchainCode, Blockchains, Blockchain, blockchainByName, ethereumByChainId, blockchainCodeToId, blockchainById, CoinTickerCode } from './blockchains';
+export {
+  BlockchainCode,
+  Blockchains,
+  Blockchain,
+  blockchainByName,
+  ethereumByChainId,
+  blockchainCodeToId,
+  blockchainById,
+  CoinTickerCode
+} from './blockchains';
 
 import * as blockchains from './blockchains';
 export { blockchains };
@@ -18,14 +27,23 @@ export { utils };
 export { IServerConnect } from './IServerConnect';
 export { IApi } from './IApi';
 
+export { EthereumAddress } from './blockchains/ethereum/Address';
+export { StableCoinCode, SupportedTokenCode, AnyTokenCode, AnyCoinCode } from './Asset';
+export { IStoredTransaction } from './history/IStoredTransaction';
+
+export { default as WalletService } from './WalletService';
+
+// address book core
+export { default as AddressBookItem } from './address-book/AddressBookItem';
+export { default as AddressBookService } from './address-book/AddressBookService';
+
+// emerald client
+export { IEmeraldClient } from './emerald-client/IEmeraldClient';
+
+// vault
 import * as vault from './vault';
 export { vault };
-
-export { EthereumAddress, isValidEthAddress } from './Address';
-
-export { StableCoinCode, SupportedTokenCode, AnyTokenCode, AnyCoinCode } from './Asset';
-
-export { IStoredTransaction } from './history/IStoredTransaction';
+export { default as IVault } from './vault/IVault';
 
 // logging
 export { default as Logger } from './logging/Logger';
