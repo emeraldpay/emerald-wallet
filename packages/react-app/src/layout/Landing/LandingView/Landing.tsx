@@ -1,9 +1,8 @@
+import { Button } from '@emeraldwallet/ui';
 import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
-
-import Button from '../common/Button';
 
 export const styles = (theme?: any) => createStyles({
   addAccount: {

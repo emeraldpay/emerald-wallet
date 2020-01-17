@@ -1,4 +1,4 @@
-import { BlockchainCode } from '@emeraldwallet/core';
+import {AddressBookItem, BlockchainCode} from '@emeraldwallet/core';
 import {
   contactDeletedAction,
   newContactAddedAction,
@@ -16,14 +16,14 @@ describe('address book reducer', () => {
   });
 
   it('should delete contact on ADDRESSBOOK/DELETE_ADDRESS', () => {
-    let state = reducer(undefined, newContactAddedAction(BlockchainCode.ETC, '0x123', 'name1', 'desc1'));
+    let state = reducer(undefined, newContactAddedAction(new AddressBookItem(BlockchainCode.ETC, '0x123', 'name1', 'desc1')));
     expect(state.contacts[BlockchainCode.ETC]!!['0x123'].name).toEqual('name1');
     expect(state.contacts[BlockchainCode.ETC]!!['0x123'].blockchain).toEqual(BlockchainCode.ETC);
 
-    state = reducer(state, newContactAddedAction(BlockchainCode.ETC, '0x999', 'name2', 'desc2'));
+    state = reducer(state, newContactAddedAction(new AddressBookItem(BlockchainCode.ETC, '0x999', 'name2', 'desc2')));
     expect(state.contacts[BlockchainCode.ETC]!!['0x999'].name).toEqual('name2');
 
-    state = reducer(state, newContactAddedAction(BlockchainCode.ETH, '0x999', 'name2', 'desc2'));
+    state = reducer(state, newContactAddedAction(new AddressBookItem(BlockchainCode.ETH, '0x999', 'name2', 'desc2')));
     expect(state.contacts[BlockchainCode.ETH]!!['0x999'].name).toEqual('name2');
 
     state = reducer(state, contactDeletedAction(BlockchainCode.ETC, '0x999'));

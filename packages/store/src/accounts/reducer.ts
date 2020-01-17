@@ -1,16 +1,16 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
 import { WalletsOp } from '@emeraldpay/emerald-vault-core';
-import { Wei } from '@emeraldplatform/eth';
 import { blockchainById, blockchainByName, BlockchainCode, blockchainCodeToId } from '@emeraldwallet/core';
+import produce from 'immer';
 import {
   AccountDetails,
   ActionTypes,
   AddressesAction,
   IAccountsState,
   IAddWalletAction,
+  ISetBalanceAction,
   ISetLoadingAction,
   IUpdateAddressAction,
-  SetBalanceAction,
   IWalletsLoaded, SetTxCountAction
 } from './types';
 
@@ -47,30 +47,34 @@ function updateWallet (state: IAccountsState, walletId: vault.Uuid, f: Updater<v
   return { ...state, wallets };
 }
 
-function updateAccountDetails (state: IAccountsState, accountId: vault.AccountId, f: Updater<AccountDetails>): IAccountsState {
-  const account = WalletsOp.of(state.wallets)
-    .findAccount(accountId);
+function updateAccountDetails (
+  state: IAccountsState, accountId: vault.AccountId, f: Updater<AccountDetails>
+): IAccountsState {
+  const account = WalletsOp.of(state.wallets).findAccount(accountId);
+
   if (typeof account === 'undefined') {
     console.warn('Unknown account', accountId);
     return state;
   }
-  const blockchain = blockchainById(account.blockchain)!.params.code;
-  const filter = (details: AccountDetails) => details.accountId === accountId;
-  let current = state.details.find(filter);
-  if (typeof current == 'undefined') {
-    current = {
-      accountId
-    };
-  }
-  current = f(current) || current;
 
-  const details = state.details.filter((d) => !filter(d));
-  details.push(current);
-
-  return { ...state, details };
+  return produce(state, (draft) => {
+    let found = false;
+    for (let i = 0; i < state.details.length; i++) {
+      const current = draft.details[i];
+      if (current.accountId === accountId) {
+        found = true;
+        draft.details[i] = f(current);
+        break;
+      }
+    }
+    if (!found) {
+      const newAccountDetails = f({ accountId });
+      draft.details.push(newAccountDetails);
+    }
+  });
 }
 
-function onSetBalance (state: IAccountsState, action: SetBalanceAction): IAccountsState {
+function onSetBalance (state: IAccountsState, action: ISetBalanceAction): IAccountsState {
   const { address, blockchain, value } = action.payload;
   const blockchainId = blockchainCodeToId(blockchain);
 

@@ -1,24 +1,26 @@
-import * as React from "react";
-import {Button, IconButton, ListItemIcon, Menu, MenuItem, Typography} from "@material-ui/core";
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import AssignmentIcon from '@material-ui/icons/Assignment';
-import AddCircleOutlineIcon from '@material-ui/icons/AddCircleOutline';
-import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
-import ArrowDownwardIcon from '@material-ui/icons/ArrowDownward';
-import {connect} from "react-redux";
-import {addresses, screen, State, addAccount} from "@emeraldwallet/store";
-import { WalletOp } from "@emeraldpay/emerald-vault-core";
+import { Wallet } from '@emeraldpay/emerald-vault-core';
+import { addAccount, addresses, screen, State } from '@emeraldwallet/store';
+import { Button, IconButton, ListItemIcon, Menu, MenuItem, Typography } from '@material-ui/core';
+import {
+  AddCircleOutline as AddCircleOutlineIcon,
+  ArrowDownward as ArrowDownwardIcon,
+  ArrowUpward as ArrowUpwardIcon,
+  Assignment as AssignmentIcon,
+  MoreVert as MoreVertIcon
+} from '@material-ui/icons';
+import * as React from 'react';
+import { connect } from 'react-redux';
 
-type OwnProps = {
-  wallet: WalletOp
+interface IOwnProps {
+  wallet: Wallet;
 }
 
-type RenderProps = {
+interface RenderProps {
 }
 
-type DispatchProps = {
-  showDetails: () => void,
-  addAccount: () => void
+interface DispatchProps {
+  showDetails: () => void;
+  addAccount: () => void;
 }
 
 const WalletMenu = ((props: RenderProps & DispatchProps) => {
@@ -35,57 +37,56 @@ const WalletMenu = ((props: RenderProps & DispatchProps) => {
 
   return (
     <div>
-      <IconButton aria-label="details"
-                   onClick={handleClick}>
+      <IconButton aria-label='details' onClick={handleClick}>
          <MoreVertIcon />
       </IconButton>
       <Menu
-        id="simple-menu"
+        id='simple-menu'
         anchorEl={anchorEl}
-        keepMounted
+        keepMounted={true}
         open={Boolean(anchorEl)}
         onClose={handleClose}
       >
         <MenuItem onClick={showDetails}>
           <ListItemIcon>
-            <AssignmentIcon fontSize="small" />
+            <AssignmentIcon fontSize='small' />
           </ListItemIcon>
-          <Typography variant="inherit">Wallet Details</Typography>
+          <Typography variant='inherit'>Wallet Details</Typography>
         </MenuItem>
         <MenuItem onClick={addAccount}>
           <ListItemIcon>
-            <AddCircleOutlineIcon fontSize="small" />
+            <AddCircleOutlineIcon fontSize='small' />
           </ListItemIcon>
-          <Typography variant="inherit">Add Coin</Typography>
+          <Typography variant='inherit'>Add Coin</Typography>
         </MenuItem>
         <MenuItem>
           <ListItemIcon>
-            <ArrowDownwardIcon fontSize="small" />
+            <ArrowDownwardIcon fontSize='small' />
           </ListItemIcon>
-          <Typography variant="inherit">Deposit Into Wallet</Typography>
+          <Typography variant='inherit'>Deposit Into Wallet</Typography>
         </MenuItem>
         <MenuItem>
           <ListItemIcon>
-            <ArrowUpwardIcon fontSize="small" />
+            <ArrowUpwardIcon fontSize='small' />
           </ListItemIcon>
-          <Typography variant="inherit">Send From Wallet</Typography>
+          <Typography variant='inherit'>Send From Wallet</Typography>
         </MenuItem>
       </Menu>
     </div>
   );
 });
 
-export default connect<RenderProps, DispatchProps, OwnProps, State>(
+export default connect<RenderProps, DispatchProps, IOwnProps, State>(
   null,
   (dispatch, ownProps) => {
     return {
       showDetails: () => {
-        dispatch(screen.actions.gotoScreen('wallet', ownProps.wallet.value));
+        dispatch(screen.actions.gotoScreen('wallet', ownProps.wallet));
       },
       addAccount: () => {
         dispatch(addAccount.actions.start(ownProps.wallet));
         dispatch(screen.actions.gotoScreen('add-account'));
-      },
-    }
+      }
+    };
   }
 )((WalletMenu));

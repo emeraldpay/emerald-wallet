@@ -20,7 +20,7 @@
     "tslint": "^5.20.0",
     "tslint-config-standard": "^8.0.1",
     "tslint-react": "^4.1.0",
-    "typescript": "3.6.3"
+    "typescript": "3.7.5"
   },
   "workspaces": [
     "packages/*"

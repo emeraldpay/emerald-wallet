@@ -16,7 +16,7 @@ import {PageTitle} from "@emeraldplatform/ui/lib/components/Page";
 import {Grid, IconButton, Typography} from "@material-ui/core";
 import EditIcon from "@material-ui/icons/Edit";
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import {AccountSummary} from "../AccountSummary";
+import WalletSummary from "../WalletSummary";
 import EthereumAccountItem from "./EthereumAccountItem";
 
 export const styles = {

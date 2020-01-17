@@ -1,16 +1,14 @@
+import { Wallet, WalletOp } from '@emeraldpay/emerald-vault-core';
 import { ButtonGroup, IdentityIcon } from '@emeraldplatform/ui';
-import { blockchainByName } from '@emeraldwallet/core';
 import { Button, CoinAvatar } from '@emeraldwallet/ui';
-import {Card, CardContent, CardHeader, Grid, IconButton} from '@material-ui/core';
+import { Card, CardContent, CardHeader, Grid, IconButton } from '@material-ui/core';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { withStyles, withTheme } from '@material-ui/styles';
 import * as React from 'react';
-import {WalletOp, Wallet} from '@emeraldpay/emerald-vault-core';
-
 import AccountBalance from '../../common/Balance';
+import WalletSummary from '../WalletSummary';
 import WalletActions from '../WalletActions';
-import {AccountSummary} from '../AccountSummary';
-import WalletMenu from "./WalletMenu";
+import WalletMenu from './WalletMenu';
 
 const styles = (theme: any) => ({
   tokensDivider: {
@@ -52,7 +50,7 @@ const styles = (theme: any) => ({
 });
 
 interface IAccountProps {
-  wallet: WalletOp;
+  wallet: Wallet;
   openWallet: (wallet: Wallet) => void;
   createTx: (wallet: Wallet) => void;
   showReceiveDialog: (wallet: Wallet) => void;
@@ -63,11 +61,11 @@ interface IAccountProps {
 
 export class Account extends React.PureComponent<IAccountProps> {
 
-  public onSendClick = () => this.props.createTx(this.props.wallet.value);
+  public onSendClick = () => this.props.createTx(this.props.wallet);
 
-  public onAddressClick = () => this.props.openWallet(this.props.wallet.value);
+  public onAddressClick = () => this.props.openWallet(this.props.wallet);
 
-  public handleDepositClick = () => this.props.showReceiveDialog(this.props.wallet.value);
+  public handleDepositClick = () => this.props.showReceiveDialog(this.props.wallet);
 
   public render () {
     const {
@@ -87,7 +85,7 @@ export class Account extends React.PureComponent<IAccountProps> {
             {/*</Grid>*/}
             <Grid item={true} xs={12}>
               <CardHeader
-                title={wallet.value.name}
+                title={wallet.name}
                 classes={{
                   title: classes.headerTitle,
                   subheader: classes.headerSubtitle
@@ -98,17 +96,16 @@ export class Account extends React.PureComponent<IAccountProps> {
                   //             onClick={this.onAddressClick}> {/* TODO show menu with wallet actions? */}
                   //   <MoreVertIcon />
                   // </IconButton>
-                }>
-              </CardHeader>
+                }
+              />
               <CardContent>
                 <Grid container={true}>
                   <Grid container={true} item={true} xs={12}>
-                    <AccountSummary wallet={wallet}/>
+                    <WalletSummary wallet={wallet}/>
                   </Grid>
                 </Grid>
-                <Grid container={true} classes={{root: classes.gridActions}}>
-                  <Grid item={true} xs={2}>
-                  </Grid>
+                <Grid container={true} classes={{ root: classes.gridActions }}>
+                  <Grid item={true} xs={2}/>
                   <Grid item={true} xs={10}>
                     <div className={classes.actionsContainer}>
                       <ButtonGroup>

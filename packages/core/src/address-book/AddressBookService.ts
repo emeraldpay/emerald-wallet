@@ -2,7 +2,13 @@ import { BlockchainCode } from '../blockchains';
 import { IVault } from '../vault';
 import AddressBookItem from './AddressBookItem';
 
-export default class AddressBookService {
+export interface IAddressBookService {
+  getItems: (blockchain: BlockchainCode) => AddressBookItem[];
+  addNew: (item: AddressBookItem) => boolean;
+  remove: (blockchain: BlockchainCode, address: string) => boolean;
+}
+
+export class AddressBookService implements IAddressBookService {
   private vault: IVault;
   constructor (vault: IVault) {
     this.vault = vault;

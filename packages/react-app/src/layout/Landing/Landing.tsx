@@ -1,6 +1,6 @@
 import { screen } from '@emeraldwallet/store';
-import { Landing } from '@emeraldwallet/ui';
 import { connect } from 'react-redux';
+import Landing from './LandingView';
 
 export default connect(
   null,
@@ -19,10 +19,10 @@ export default connect(
       dispatch(screen.actions.gotoScreen('landing-import-private-key'));
     },
     onImportMnemonic () {
-      dispatch(screen.actions.gotoScreen('import-mnemonic', 'home'));
+      dispatch(screen.actions.gotoScreen('import-mnemonic', screen.Pages.HOME));
     },
     onLedger () {
-      dispatch(screen.actions.gotoScreen('landing-add-from-ledger', 'home'));
+      dispatch(screen.actions.gotoScreen('landing-add-from-ledger', screen.Pages.HOME));
     }
   })
 )(Landing);

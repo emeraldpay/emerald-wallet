@@ -6,7 +6,7 @@ import BigNumber from 'bignumber.js';
 
 export const moduleName = 'addresses';
 
-export interface BalanceValue {
+export interface IBalanceValue {
   balance: Wei | Units;
   token: CurrencyCode | AnyCoinCode;
 }
@@ -15,8 +15,8 @@ export interface BalanceValue {
  * Balance in original "face" value, and converted to a common currency
  */
 export interface BalanceValueConverted {
-  source: BalanceValue;
-  converted: BalanceValue;
+  source: IBalanceValue;
+  converted: IBalanceValue;
   rate: number;
 }
 
@@ -75,7 +75,7 @@ export interface IWalletsLoaded {
   payload: vault.Wallet[];
 }
 
-export interface SetBalanceAction {
+export interface ISetBalanceAction {
   type: ActionTypes.SET_BALANCE;
   payload: {
     blockchain: BlockchainCode,
@@ -115,7 +115,7 @@ export interface PendingBalanceAction {
 export type AddressesAction =
   | IWalletsLoaded
   | ISetLoadingAction
-  | SetBalanceAction
+  | ISetBalanceAction
   | IUpdateAddressAction
   | IAddWalletAction
   // | SetHDPathAction

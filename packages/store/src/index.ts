@@ -33,5 +33,5 @@ export {
 } from './types';
 
 export {
-  BalanceValue, BalanceValueConverted
+  IBalanceValue, BalanceValueConverted
 } from './accounts/types'

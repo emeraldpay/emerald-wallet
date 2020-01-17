@@ -1,12 +1,10 @@
-import { Blockchains } from '@emeraldwallet/core';
+import { Wallet, WalletOp, WalletsOp } from '@emeraldpay/emerald-vault-core';
 import { addresses, screen } from '@emeraldwallet/store';
+import { Grid } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import WalletItem from './WalletItem';
-import { Wallet, WalletsOp, WalletOp } from '@emeraldpay/emerald-vault-core';
-import {Grid} from "@material-ui/core";
-
 
 const styles = (theme: any) => ({
   container: {
@@ -23,7 +21,7 @@ const styles = (theme: any) => ({
   }
 });
 
-interface IAccountListProps {
+interface IWalletsListProps {
   showFiat: boolean;
   accounts: WalletsOp;
   classes: any;
@@ -32,7 +30,7 @@ interface IAccountListProps {
   showReceiveDialog: (wallet: Wallet) => void;
 }
 
-const WalletList = ((props: IAccountListProps) => {
+const WalletList = ((props: IWalletsListProps) => {
   const {
     accounts, showFiat, classes
   } = props;
@@ -44,15 +42,17 @@ const WalletList = ((props: IAccountListProps) => {
       <Grid container={true} spacing={2}>
         {accounts.getWallets().map((wallet: WalletOp) => {
           const className = classes.listItem;
-          return (<Grid item={true} xs={6} key={wallet.value.id}>
-            <WalletItem
-              showFiat={showFiat}
-              wallet={wallet}
-              openWallet={openWallet}
-              createTx={createTx}
-              showReceiveDialog={showReceiveDialog}
-            />
-          </Grid>);
+          return (
+            <Grid item={true} xs={6} key={wallet.value.id}>
+              <WalletItem
+                showFiat={showFiat}
+                wallet={wallet.value}
+                openWallet={openWallet}
+                createTx={createTx}
+                showReceiveDialog={showReceiveDialog}
+              />
+          </Grid>
+          );
         })}
       </Grid>
     </div>

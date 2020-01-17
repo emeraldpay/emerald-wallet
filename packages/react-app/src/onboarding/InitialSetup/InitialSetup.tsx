@@ -10,7 +10,7 @@ export default connect(
   (dispatch, ownProps) => ({
     onTermsAgreed: () => {
       dispatch(launcher.actions.agreeOnTerms(ownProps.currentTermsVersion));
-      dispatch(screen.actions.goHome() as any);
+      dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
     }
   })
 )(InitialSetup);

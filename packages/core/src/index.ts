@@ -35,7 +35,7 @@ export { default as WalletService } from './WalletService';
 
 // address book core
 export { default as AddressBookItem } from './address-book/AddressBookItem';
-export { default as AddressBookService } from './address-book/AddressBookService';
+export { AddressBookService, IAddressBookService } from './address-book/AddressBookService';
 
 // emerald client
 export { IEmeraldClient } from './emerald-client/IEmeraldClient';

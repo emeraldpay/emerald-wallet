@@ -81,9 +81,3 @@ export function closeNotification () {
     type: ActionTypes.NOTIFICATION_CLOSE
   };
 }
-
-export function goHome (): Dispatched<OpenAction> {
-  return (dispatch, getState) => {
-    return dispatch(gotoScreen('home'));
-  };
-}

@@ -16,7 +16,7 @@ import {State} from "@emeraldwallet/store";
 import * as React from "react";
 import { WalletOp } from "@emeraldpay/emerald-vault-core";
 import {BlockchainCode} from "@emeraldwallet/core";
-import {AccountSummary} from "../wallets/AccountSummary";
+import WalletSummary from "../wallets/WalletSummary";
 
 type OwnProps = {
   wallet: WalletOp
@@ -40,7 +40,7 @@ const SelectWallet = ((props: RenderProps & DispatchProps) => {
           </Typography>
         </Grid>
         <Grid item={true} xs={12}>
-          <AccountSummary wallet={wallet}/>
+          <WalletSummary wallet={wallet.value}/>
         </Grid>
       </Grid>
   )
