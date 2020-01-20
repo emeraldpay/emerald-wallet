@@ -1,3 +1,4 @@
+import { EthereumAccount, WalletOp } from '@emeraldpay/emerald-vault-core';
 import { convert, toBaseUnits } from '@emeraldplatform/core';
 import { Units as EthUnits, Wei } from '@emeraldplatform/eth';
 import { Page } from '@emeraldplatform/ui';
@@ -29,7 +30,6 @@ import ChainTitle from '../../common/ChainTitle';
 import CreateTx from '../CreateTx';
 import SignTx from '../SignTx';
 import { traceValidate, txFeeFiat } from './util';
-import { EthereumAccount, WalletOp } from '@emeraldpay/emerald-vault-core';
 
 type CreateEthereumTx = workflow.CreateEthereumTx;
 type CreateERC20Tx = workflow.CreateERC20Tx;
@@ -334,7 +334,7 @@ function signEtherTx (
   dispatch: any, ownProps: IOwnProps, request: { transaction: CreateEthereumTx, password: string }) {
   const blockchainId = ownProps.account.blockchain;
   const blockchainCode = blockchainById(blockchainId)!.params.code;
-  const useLedger = false; //TODO
+  const useLedger = false; // TODO
   const plainTx = {
     password: request.password,
     from: request.transaction.from,
@@ -400,7 +400,7 @@ export default connect(
         if (blockchain.params.coinTicker !== token) {
           const tokenInfo = registry.bySymbol(blockchain.params.code, token);
           const tokenBalance = tokens.selectors.selectBalance(state, tokenInfo.address, address, blockchain.params.code)
-            || {unitsValue: '0'};
+            || { unitsValue: '0' };
           return new Units(tokenBalance.unitsValue, tokenInfo.decimals);
         }
         const etherBalance = addresses.selectors.getBalance(state, account, Wei.ZERO)!;
@@ -426,7 +426,7 @@ export default connect(
         .map((i: WalletOp) => i.getEthereumAccounts())
         .reduce((list: EthereumAccount[], a: EthereumAccount[]) => list.concat(a), [])
         .map((account: EthereumAccount) => account.address),
-      useLedger: false, //TODO
+      useLedger: false, // TODO
       ledgerConnected: state.ledger.get('connected'),
       allTokens
     };

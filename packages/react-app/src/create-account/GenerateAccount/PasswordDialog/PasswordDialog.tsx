@@ -3,7 +3,7 @@ import {
 } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import { BlockchainCode } from '@emeraldwallet/core';
-import {settings, State} from '@emeraldwallet/store';
+import { settings, State } from '@emeraldwallet/store';
 import {
   Advice, Button, ChainSelector, FormRow, PasswordInput
 } from '@emeraldwallet/ui';

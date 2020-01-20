@@ -1,11 +1,11 @@
-import {blockchainById, blockchainByName} from '@emeraldwallet/core';
+import { Wallet, WalletOp } from '@emeraldpay/emerald-vault-core';
+import { blockchainById, blockchainByName } from '@emeraldwallet/core';
 import { addresses, screen, tokens, txhistory } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import TxHistory from '../../transactions/TxHistory';
 import TokenBalances from '../TokenBalances';
 import WalletDetailsView from './WalletDetailsView';
-import { WalletOp, Wallet } from '@emeraldpay/emerald-vault-core';
 
 export default connect(
   (state: any, ownProps: any) => {
@@ -14,7 +14,7 @@ export default connect(
     const wallet = addresses.selectors.find(state, accountPassed.id)!;
     // const transactions = [];
     const transactions = [] || txhistory.selectors.searchTransactions(
-        "", //account.id,
+        '', // account.id,
         txhistory.selectors.allTrackedTxs(state));
     let tokensBalances = null;
     if (wallet.getEthereumAccounts().length > 0) {
@@ -28,7 +28,7 @@ export default connect(
       tokens: (<TokenBalances balances={tokensBalances} />),
       wallet,
       transactions,
-      txList: (<span>NOT IMPLEMENTED</span>) //(<TxHistory transactions={transactions} accountId={wallet.id}/>)
+      txList: (<span>NOT IMPLEMENTED</span>) // (<TxHistory transactions={transactions} accountId={wallet.id}/>)
     };
   },
   (dispatch, ownProps) => ({
@@ -51,7 +51,7 @@ export default connect(
     },
     editAccount: (data: Wallet) => {
       return new Promise((resolve, reject) => {
-        dispatch(addresses.actions.updateWallet(data.id, data.name || "", data.description || "") as any)
+        dispatch(addresses.actions.updateWallet(data.id, data.name || '', data.description || '') as any)
           .then((response: any) => {
             resolve(response);
           });

@@ -48,7 +48,7 @@ class FileDropField extends React.Component<IFileDropFieldProps, IFileDropFieldS
       file: filesToUpload[0]
     });
     onChange(filesToUpload[0]);
-  };
+  }
 
   public render () {
     const { name, classes } = this.props;

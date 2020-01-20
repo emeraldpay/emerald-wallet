@@ -1,4 +1,4 @@
-import {settings, State} from '@emeraldwallet/store';
+import { settings, State } from '@emeraldwallet/store';
 import { Balance } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';

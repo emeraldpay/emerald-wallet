@@ -1,15 +1,15 @@
+import { AccountId } from '@emeraldpay/emerald-vault-core';
 import { convert } from '@emeraldplatform/core';
 import { Wei } from '@emeraldplatform/eth';
 import { Account, ButtonGroup, Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import { CSSProperties, withStyles } from '@material-ui/styles';
+import { Button, FormRow } from '@emeraldwallet/ui';
+import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
-import Button from '../../common/Button';
 import TxInputData from './TxInputData';
 import TxStatus from './TxStatus';
-import {AccountId} from '@emeraldpay/emerald-vault-core'
 
-export const styles = {
+export const styles = createStyles({
   value: {
     marginBottom: '5px',
     marginRight: '5px'
@@ -17,12 +17,12 @@ export const styles = {
   txData: {
     overflowX: 'auto',
     overflowWrap: 'break-word'
-  } as CSSProperties,
+  },
   fieldName: {
     color: '#747474',
     fontSize: '16px',
     textAlign: 'right'
-  } as CSSProperties,
+  },
   formRow: {
     display: 'flex',
     marginBottom: '19px',
@@ -41,7 +41,7 @@ export const styles = {
     marginRight: '14.75px',
     maxWidth: '580px'
   }
-};
+});
 
 export interface ITxDetailsProps {
   fiatAmount?: string;
@@ -81,7 +81,7 @@ export function TxDetails (props: ITxDetailsProps) {
     if (props.openAccount) {
       props.openAccount(props.toAccount);
     }
-  };
+  }
 
   function handleRepeatClick () {
     if (props.repeatTx) {
@@ -103,27 +103,23 @@ export function TxDetails (props: ITxDetailsProps) {
 
   return (
       <Page title='Transaction Details' leftIcon={<Back onClick={handleBack} />}>
-        <div className={classes.formRow}>
-          <div style={styles.left}>
-            <div className={classes.fieldName}>Date</div>
-          </div>
-          <div style={styles.right} title={date ? date.toUTCString() : 'pending'}>
+        <FormRow
+          leftColumn={<div className={classes.fieldName}>Date</div>}
+          rightColumn={(
+            <div title={date ? date.toUTCString() : 'pending'}>
             {date ? date.toString() : 'pending'}
-          </div>
-        </div>
-        <div className={classes.formRow}>
-          <div style={styles.left}>
-            <div className={classes.fieldName}>Status</div>
-          </div>
-          <div style={styles.right}>
-            <TxStatus status={txStatus} />
-          </div>
-        </div>
-        <div className={classes.formRow}>
-          <div style={styles.left}>
-            <div className={classes.fieldName}>Value</div>
-          </div>
-          <div style={styles.right}>
+            </div>
+          )}
+        />
+
+        <FormRow
+          leftColumn={<div className={classes.fieldName}>Status</div>}
+          rightColumn={<TxStatus status={txStatus} />}
+        />
+
+        <FormRow
+          leftColumn={<div className={classes.fieldName}>Value</div>}
+          rightColumn={(
             <div style={{ display: 'flex' }}>
               <div className={classes.value}>
                 {transaction.value ? `${new Wei(transaction.value).toEther()} ${tokenSymbol}` : '--'}
@@ -134,104 +130,82 @@ export function TxDetails (props: ITxDetailsProps) {
                 </div>
               )}
             </div>
-          </div>
-        </div>
+          )}
+        />
+
         <br />
         <br />
 
-        <div className={classes.formRow}>
-          <div style={styles.left}>
-            <div className={classes.fieldName}>Hash</div>
-          </div>
-          <div style={styles.right}>
-            {transaction.hash}
-          </div>
-        </div>
+        <FormRow
+          leftColumn={<div className={classes.fieldName}>Hash</div>}
+          rightColumn={transaction.hash}
+        />
 
-        <div className={classes.formRow}>
-          <div style={styles.left}>
-            <div className={classes.fieldName}>Nonce</div>
-          </div>
-          <div style={styles.right}>
-            {transaction.nonce}
-          </div>
-        </div>
+        <FormRow
+          leftColumn={<div className={classes.fieldName}>Nonce</div>}
+          rightColumn={transaction.nonce}
+        />
 
-        <div className={classes.formRow}>
-          <div style={styles.left}>
-            <div className={classes.fieldName}>From</div>
-          </div>
-          <div style={{ ...styles.right, alignItems: 'center' }}>
+        <FormRow
+          leftColumn={<div className={classes.fieldName}>From</div>}
+          rightColumn={(
             <Account
               address={transaction.from}
               identity={true}
               identityProps={{ size: 30 }}
               onClick={handleFromClick}
             />
-          </div>
-        </div>
+          )}
+        />
 
-        <div className={classes.formRow}>
-          <div style={styles.left}>
-            <div className={classes.fieldName}>To</div>
-          </div>
-          <div style={{ ...styles.right, alignItems: 'center' }}>
-            {transaction.to && (
+        <FormRow
+          leftColumn={<div className={classes.fieldName}>To</div>}
+          rightColumn={
+            transaction.to && (
               <Account
                 address={transaction.to}
                 identity={true}
                 identityProps={{ size: 30 }}
                 onClick={handleToClick}
               />
-            )}
-          </div>
-        </div>
+            )
+          }
+        />
 
         <br />
         <br />
 
-        <div className={classes.formRow}>
-          <div style={styles.left}>
-            <div className={classes.fieldName}>Block</div>
-          </div>
-          <div style={styles.right}>
-            {blockNumber ? convert.toNumber(blockNumber) : 'pending'}
-          </div>
-        </div>
+        <FormRow
+          leftColumn={<div className={classes.fieldName}>Block</div>}
+          rightColumn={<React.Fragment>{blockNumber ? convert.toNumber(blockNumber) : 'pending'}</React.Fragment>}
+        />
 
-        <div className={classes.formRow}>
-          <div style={styles.left}>
-            <div className={classes.fieldName}>Input Data</div>
-          </div>
-          <div style={styles.right}>
+        <FormRow
+          leftColumn={<div className={classes.fieldName}>Input Data</div>}
+          rightColumn={(
             <div className={classes.txData}>
               <TxInputData data={transaction.data} />
             </div>
-          </div>
-        </div>
+          )}
+        />
 
-        <div className={classes.formRow}>
-          <div style={styles.left}>
-            <div className={classes.fieldName}>GAS</div>
-          </div>
-          <div style={styles.right}>
-            {transaction.gas}
-          </div>
-        </div>
+        <FormRow
+          leftColumn={<div className={classes.fieldName}>GAS</div>}
+          rightColumn={transaction.gas}
+        />
+
         <br />
 
-        <div className={classes.formRow}>
-          <div style={styles.left}/>
-          <div style={styles.right}>
+        <FormRow
+          rightColumn={(
             <ButtonGroup>
               <Button onClick={handleCancelClick} label='DASHBOARD' />
               <Button primary={true} onClick={handleRepeatClick} label='REPEAT TRANSACTION' />
             </ButtonGroup>
-          </div>
-        </div>
+          )}
+        />
       </Page>
   );
-
 }
 
 export default withStyles(styles)(TxDetails);

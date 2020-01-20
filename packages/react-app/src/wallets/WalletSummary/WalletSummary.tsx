@@ -1,6 +1,6 @@
 import { Wallet } from '@emeraldpay/emerald-vault-core';
 import { Wei } from '@emeraldplatform/eth';
-import { addresses, BalanceValue, settings, State, tokens } from '@emeraldwallet/store';
+import { addresses, IBalanceValue, settings, State, tokens } from '@emeraldwallet/store';
 import { Balance } from '@emeraldwallet/ui';
 import { Grid, StyledComponentProps } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/core/styles';
@@ -27,8 +27,8 @@ interface IOwnProps {
 }
 
 interface RenderProps {
-  assets: BalanceValue[];
-  total?: BalanceValue;
+  assets: IBalanceValue[];
+  total?: IBalanceValue;
 }
 
 interface DispatchProps {
@@ -82,13 +82,13 @@ const WalletSummary = ((props: RenderProps & DispatchProps & StyledComponentProp
   );
 });
 
-const AccountSummaryStyled = withStyles(styles)(WalletSummary);
+const SummaryStyled = withStyles(styles)(WalletSummary);
 
 export default connect<RenderProps, {}, IOwnProps, State>(
   (state, ownProps) => {
     const wallet = ownProps.wallet;
-    const assets: BalanceValue[] = addresses.selectors.getWalletBalances(state, wallet, false);
-    const total: BalanceValue | undefined = addresses.selectors.fiatTotalBalance(state, assets);
+    const assets: IBalanceValue[] = addresses.selectors.getWalletBalances(state, wallet, false);
+    const total: IBalanceValue | undefined = addresses.selectors.fiatTotalBalance(state, assets);
 
     return {
       assets,
@@ -97,4 +97,4 @@ export default connect<RenderProps, {}, IOwnProps, State>(
   },
   (dispatch, ownProps) => ({
   })
-)(AccountSummaryStyled);
+)(SummaryStyled);

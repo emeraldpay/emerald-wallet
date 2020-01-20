@@ -21,7 +21,6 @@ export { default as ErrorDialog } from './components/common/ErrorDialog';
 export { default as HdPath } from './components/common/HdPath';
 export { default as NotificationBar } from './components/common/NotificationBar';
 export { default as PasswordInput } from './components/common/PasswordInput';
-export { default as TxDetails } from './components/tx/TxDetails';
 export { default as ChainSelector } from './components/common/ChainSelector';
 export { CoinIcon, CoinAvatar } from './components/common/CoinIcon';
 export { default as FormRow } from './components/common/FormRow';

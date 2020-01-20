@@ -2,7 +2,7 @@ import { action } from '@storybook/addon-actions';
 import { storiesOf } from '@storybook/react';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
-import TxDetails from '../../src/components/tx/TxDetails';
+import TxDetails from '../../src/transactions/TxDetails';
 
 const tx = {
   hash: '0x95c1767c33c37ef93de48897c1001679d947bd7f082fdf4e772c534ae180b9c8',

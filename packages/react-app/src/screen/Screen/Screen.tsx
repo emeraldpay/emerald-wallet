@@ -46,9 +46,9 @@ const Screen = (props: IScreenProps) => {
   if (props.screen === 'wallet') {
     return <WalletDetails wallet={props.screenItem}/>;
   }
-  // if (props.screen === 'transaction') {
-  //   return <TxDetails hash={props.screenItem.hash} accountId={props.screenItem.accountId}/>;
-  // }
+  if (props.screen === screen.Pages.TX_DETAILS) {
+    return <TxDetails hash={props.screenItem.hash} />;
+  }
   // if (props.screen === 'create-tx') {
   //   return (<CreateTransaction account={props.screenItem} />);
   // }

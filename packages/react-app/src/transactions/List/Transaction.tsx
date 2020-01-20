@@ -1,5 +1,5 @@
-import {blockchainById, blockchainByName, blockchainCodeToId} from '@emeraldwallet/core';
-import {addresses, blockchains, screen, settings, State, wallet} from '@emeraldwallet/store';
+import { blockchainById, blockchainByName, blockchainCodeToId } from '@emeraldwallet/core';
+import { addresses, blockchains, screen, settings, State, wallet } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import Balance from '../../common/Balance';
@@ -28,10 +28,9 @@ export default connect<any, any, any, State>(
     const blockchainId = blockchainCodeToId(blockchain!.params.code);
 
     const wallets = addresses.selectors.all(state);
-    wallets.findWalletByAddress(tx.to, blockchainId);
 
-    const toAccount = wallets.findWalletByAddress(tx.to, blockchainId);
-    const fromAccount = wallets.findWalletByAddress(tx.from, blockchainId);
+    const toAccount = wallets.findWalletByAddress(tx.to, blockchainId) || {};
+    const fromAccount = wallets.findWalletByAddress(tx.from, blockchainId) || {};
 
     // console.log("accounts", toAccount, fromAccount);
 

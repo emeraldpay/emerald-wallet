@@ -2,12 +2,13 @@ import { Wallet, WalletOp } from '@emeraldpay/emerald-vault-core';
 import { ButtonGroup, IdentityIcon } from '@emeraldplatform/ui';
 import { Button, CoinAvatar } from '@emeraldwallet/ui';
 import { Card, CardContent, CardHeader, Grid, IconButton } from '@material-ui/core';
+import { AccountBalanceWalletOutlined as WalletIcon } from '@material-ui/icons';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { withStyles, withTheme } from '@material-ui/styles';
 import * as React from 'react';
 import AccountBalance from '../../common/Balance';
-import WalletSummary from '../WalletSummary';
 import WalletActions from '../WalletActions';
+import WalletSummary from '../WalletSummary';
 import WalletMenu from './WalletMenu';
 
 const styles = (theme: any) => ({
@@ -49,7 +50,7 @@ const styles = (theme: any) => ({
   }
 });
 
-interface IAccountProps {
+interface IWalletItemProps {
   wallet: Wallet;
   openWallet: (wallet: Wallet) => void;
   createTx: (wallet: Wallet) => void;
@@ -59,7 +60,7 @@ interface IAccountProps {
   theme: any;
 }
 
-export class Account extends React.PureComponent<IAccountProps> {
+export class Account extends React.PureComponent<IWalletItemProps> {
 
   public onSendClick = () => this.props.createTx(this.props.wallet);
 
@@ -85,6 +86,7 @@ export class Account extends React.PureComponent<IAccountProps> {
             {/*</Grid>*/}
             <Grid item={true} xs={12}>
               <CardHeader
+                avatar={<WalletIcon color='secondary'/>}
                 title={wallet.name}
                 classes={{
                   title: classes.headerTitle,

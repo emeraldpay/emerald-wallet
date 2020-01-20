@@ -1,9 +1,14 @@
+import { WalletOp } from '@emeraldpay/emerald-vault-core';
 import {
   Account as AddressAvatar, ButtonGroup, IdentityIcon, Page
 } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
+import { PageTitle } from '@emeraldplatform/ui/lib/components/Page';
 import { blockchainByName } from '@emeraldwallet/core';
 import { Button, FormRow, InlineEdit } from '@emeraldwallet/ui';
+import { Grid, IconButton, Typography } from '@material-ui/core';
+import EditIcon from '@material-ui/icons/Edit';
+import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { withStyles } from '@material-ui/styles';
 import * as QRCode from 'qrcode.react';
 import * as React from 'react';
@@ -11,13 +16,8 @@ import { WithTranslation, withTranslation } from 'react-i18next';
 import Balance from '../../common/Balance';
 import ChainTitle from '../../common/ChainTitle';
 import AccountActions from '../WalletActions';
-import { WalletOp } from '@emeraldpay/emerald-vault-core';
-import {PageTitle} from "@emeraldplatform/ui/lib/components/Page";
-import {Grid, IconButton, Typography} from "@material-ui/core";
-import EditIcon from "@material-ui/icons/Edit";
-import MoreVertIcon from '@material-ui/icons/MoreVert';
-import WalletSummary from "../WalletSummary";
-import EthereumAccountItem from "./EthereumAccountItem";
+import WalletSummary from '../WalletSummary';
+import EthereumAccountItem from './EthereumAccountItem';
 
 export const styles = {
   transContainer: {
@@ -57,20 +57,20 @@ export class WalletShow extends React.Component<AccountShowProps, IState> {
 
   public handleEdit = () => {
     this.setState({ edit: true });
-  };
+  }
 
   public handleSave = (data: any) => {
-    console.warn("UNIMPLEMENTED")
+    console.warn('UNIMPLEMENTED');
     // const updated = { blockchain: this.props.account.blockchain, ...data };
     // this.props.editAccount(updated)
     //   .then((result: any) => {
     //     this.setState({ edit: false });
     //   });
-  };
+  }
 
   public cancelEdit = () => {
     this.setState({ edit: false });
-  };
+  }
 
   public render () {
     const {
@@ -93,8 +93,7 @@ export class WalletShow extends React.Component<AccountShowProps, IState> {
 
     // const { coinTicker } = blockchainByName(acc.blockchain).params;
     // const renderTitle = () => (<ChainTitle chain={acc.blockchain} text={'Account'} />);
-    const renderTitle = () => (<PageTitle>{wallet.value.name || ""}</PageTitle>);
-
+    const renderTitle = () => (<PageTitle>{wallet.value.name || ''}</PageTitle>);
 
     // <IconButton aria-label="details">
     // </IconButton>

@@ -34,6 +34,10 @@ export function findWalletByAddress (state: any, address: string, blockchain: Bl
   return all(state).findWalletByAddress(address, blockchainCodeToId(blockchain));
 }
 
+export function findAccountByAddress (state: any, address: string, chain: BlockchainCode): any {
+  return null;
+}
+
 export function find (state: any, id: vault.Uuid): vault.WalletOp | undefined {
   try {
     return all(state).getWallet(id);

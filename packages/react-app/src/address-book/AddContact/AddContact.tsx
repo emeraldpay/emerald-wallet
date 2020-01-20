@@ -1,4 +1,4 @@
-import {addressBook, screen, settings, State} from '@emeraldwallet/store';
+import { addressBook, screen, settings, State } from '@emeraldwallet/store';
 import { connect } from 'react-redux';
 import ContactForm from '../ContactForm';
 

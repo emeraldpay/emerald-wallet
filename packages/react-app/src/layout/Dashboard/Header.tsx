@@ -1,12 +1,12 @@
 import { screen } from '@emeraldwallet/store';
 import { DashboardMenu as Menu } from '@emeraldwallet/ui';
-import { withStyles } from '@material-ui/styles';
+import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 
 const { gotoScreen, showDialog } = screen.actions;
-const styles = {
+const styles = createStyles({
   header: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -16,9 +16,10 @@ const styles = {
   },
   title: {
     fontSize: '14px',
-    fontWeight: 500
+    fontWeight: 500,
+    textTransform: 'uppercase'
   }
-};
+});
 
 export interface IHeaderProps {
   generate: any;

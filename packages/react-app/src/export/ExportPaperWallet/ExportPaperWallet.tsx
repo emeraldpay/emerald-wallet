@@ -1,9 +1,9 @@
+import { EthereumAccount } from '@emeraldpay/emerald-vault-core';
+import { blockchainById } from '@emeraldwallet/core';
 import { addresses, screen } from '@emeraldwallet/store';
 import { ExportPaperWallet } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { EthereumAccount } from '@emeraldpay/emerald-vault-core';
-import {blockchainById} from "@emeraldwallet/core";
 
 export default connect(
   (state, ownProps) => ({

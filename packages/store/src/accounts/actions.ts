@@ -58,7 +58,6 @@ export function loadAccountsList (): Dispatched<IWalletsLoaded | ISetLoadingActi
     dispatch(setLoadingAction(true));
 
     const wallets = api.vault.listWallets();
-    log.info(JSON.stringify(wallets));
 
     dispatch(setListAction(wallets));
     dispatch(fetchErc20BalancesAction() as any);

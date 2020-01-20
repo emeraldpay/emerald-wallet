@@ -1,43 +1,43 @@
+import { WalletOp } from '@emeraldpay/emerald-vault-core';
+import { blockchainByName, BlockchainCode } from '@emeraldwallet/core';
+import { addAccount, settings, State } from '@emeraldwallet/store';
+import { CoinAvatar, CoinIcon } from '@emeraldwallet/ui';
 import {
+  Divider,
   FormControl,
   FormControlLabel,
   FormLabel,
   Grid,
-  Radio,
-  RadioGroup,
-  Typography,
   List,
-  Divider, ListItem, ListItemAvatar, ListItemText
-} from "@material-ui/core";
-import {connect} from "react-redux";
-import {addAccount, settings, State} from "@emeraldwallet/store";
-import * as React from "react";
-import { WalletOp } from "@emeraldpay/emerald-vault-core";
-import {blockchainByName, BlockchainCode} from "@emeraldwallet/core";
-import ListItemIcon from "@material-ui/core/ListItemIcon";
-import {CoinAvatar, CoinIcon} from "@emeraldwallet/ui";
+  ListItem,
+  ListItemAvatar,
+  ListItemText, Radio, RadioGroup, Typography
+} from '@material-ui/core';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import * as React from 'react';
+import { connect } from 'react-redux';
 
-type BlockchainRef = {
-  code: BlockchainCode,
-  name: string,
-  assets: string[]
+interface BlockchainRef {
+  code: BlockchainCode;
+  name: string;
+  assets: string[];
 }
 
-type OwnProps = {
+interface OwnProps {
 }
 
-type RenderProps = {
-  supportedBlockchain: BlockchainRef[],
-  blockchain?: BlockchainCode
+interface RenderProps {
+  supportedBlockchain: BlockchainRef[];
+  blockchain?: BlockchainCode;
 }
 
-type DispatchProps = {
+interface DispatchProps {
   selectBlockchain: (code?: BlockchainCode) => void;
 }
 
 const SelectBlockchain = ((props: RenderProps & DispatchProps) => {
-  const {supportedBlockchain, blockchain} = props;
-  const {selectBlockchain} = props;
+  const { supportedBlockchain, blockchain } = props;
+  const { selectBlockchain } = props;
 
   return (
     <Grid container={true}>
@@ -45,9 +45,9 @@ const SelectBlockchain = ((props: RenderProps & DispatchProps) => {
         <List>
           {supportedBlockchain.map((b, i) =>
               <div key={b.code}>
-                {i > 0 ? <Divider variant="inset" component="li" /> : null}
+                {i > 0 ? <Divider variant='inset' component='li' /> : null}
                 <ListItem
-                  alignItems="flex-start"
+                  alignItems='flex-start'
                   button={true}
                   selected={b.code === blockchain}
                   onClick={() => selectBlockchain(b.code)}
@@ -59,7 +59,7 @@ const SelectBlockchain = ((props: RenderProps & DispatchProps) => {
                   </ListItemAvatar>
                   <ListItemText
                     primary={b.name}
-                    secondary={b.assets.join(", ")}
+                    secondary={b.assets.join(', ')}
                   />
                 </ListItem>
               </div>
@@ -67,7 +67,7 @@ const SelectBlockchain = ((props: RenderProps & DispatchProps) => {
         </List>
       </Grid>
     </Grid>
-  )
+  );
 });
 
 export default connect<RenderProps, DispatchProps, OwnProps, State>(
@@ -77,12 +77,12 @@ export default connect<RenderProps, DispatchProps, OwnProps, State>(
         code: c.params.code,
         name: c.getTitle(),
         assets: c.getAssets()
-      }
+      };
     });
     return {
       supportedBlockchain,
       blockchain: state.addAccount!!.blockchain
-    }
+    };
   },
   (dispatch, ownProps) => {
     return {
@@ -90,6 +90,6 @@ export default connect<RenderProps, DispatchProps, OwnProps, State>(
         dispatch(addAccount.actions.setBlockchain(code));
         dispatch(addAccount.actions.nextPage());
       }
-    }
+    };
   }
 )((SelectBlockchain));

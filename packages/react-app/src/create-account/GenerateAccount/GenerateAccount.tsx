@@ -1,4 +1,5 @@
-import {BlockchainCode, blockchainCodeToId} from '@emeraldwallet/core';
+import { AccountId, Uuid } from '@emeraldpay/emerald-vault-core';
+import { BlockchainCode, blockchainCodeToId } from '@emeraldwallet/core';
 import { addresses, screen } from '@emeraldwallet/store';
 import { NewAccountProps } from '@emeraldwallet/ui';
 import * as React from 'react';
@@ -8,7 +9,6 @@ import { saveJson } from '../../util/save-as';
 import ShowPrivateKey from '../ShowPrivateKey';
 import DownloadDialog from './DownloadDialog';
 import PasswordDialog from './PasswordDialog';
-import { AccountId, Uuid } from '@emeraldpay/emerald-vault-core';
 
 const PAGES = {
   PASSWORD: 1,
@@ -57,13 +57,13 @@ class GenerateAccount extends React.Component<Props, IState> {
         this.setState({
           loading: false,
           walletId,
-          accountId: walletId + "/0", //TODO receive real id
+          accountId: walletId + '/0', // TODO receive real id
           passphrase,
           blockchain,
           page: PAGES.DOWNLOAD
         });
       });
-  };
+  }
 
   public download = () => {
     const { blockchain, passphrase, accountId, walletId } = this.state;
@@ -91,7 +91,7 @@ class GenerateAccount extends React.Component<Props, IState> {
       });
 
     });
-  };
+  }
 
   public editAccountProps = () => {
     this.setState({

@@ -39,11 +39,9 @@ const WalletList = ((props: IWalletsListProps) => {
   } = props;
   return (
     <div className={classes.container}>
-      <Grid container={true} spacing={2}>
         {accounts.getWallets().map((wallet: WalletOp) => {
-          const className = classes.listItem;
           return (
-            <Grid item={true} xs={6} key={wallet.value.id}>
+            <div className={classes.listItem} key={wallet.value.id}>
               <WalletItem
                 showFiat={showFiat}
                 wallet={wallet.value}
@@ -51,10 +49,9 @@ const WalletList = ((props: IWalletsListProps) => {
                 createTx={createTx}
                 showReceiveDialog={showReceiveDialog}
               />
-          </Grid>
+          </div>
           );
         })}
-      </Grid>
     </div>
   );
 });

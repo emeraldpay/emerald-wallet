@@ -1,4 +1,4 @@
-import {AddressBookItem, BlockchainCode} from '@emeraldwallet/core';
+import { AddressBookItem, BlockchainCode } from '@emeraldwallet/core';
 import {
   contactDeletedAction,
   newContactAddedAction,

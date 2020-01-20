@@ -1,3 +1,6 @@
+import { WalletOp } from '@emeraldpay/emerald-vault-core';
+import { BlockchainCode } from '@emeraldwallet/core';
+import { State } from '@emeraldwallet/store';
 import {
   Button,
   Card,
@@ -9,28 +12,25 @@ import {
   StepLabel,
   Stepper,
   Typography
-} from "@material-ui/core";
-import NavigateNextIcon from "@material-ui/icons/NavigateNext";
-import {connect} from "react-redux";
-import {State} from "@emeraldwallet/store";
-import * as React from "react";
-import { WalletOp } from "@emeraldpay/emerald-vault-core";
-import {BlockchainCode} from "@emeraldwallet/core";
-import WalletSummary from "../wallets/WalletSummary";
+} from '@material-ui/core';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import * as React from 'react';
+import { connect } from 'react-redux';
+import WalletSummary from '../wallets/WalletSummary';
 
-type OwnProps = {
-  wallet: WalletOp
+interface OwnProps {
+  wallet: WalletOp;
 }
 
-type RenderProps = {
-  wallet: WalletOp,
+interface RenderProps {
+  wallet: WalletOp;
 }
 
-type DispatchProps = {
+interface DispatchProps {
 }
 
 const SelectWallet = ((props: RenderProps & DispatchProps) => {
-  const {wallet} = props;
+  const { wallet } = props;
 
   return (
       <Grid container={true}>
@@ -43,17 +43,17 @@ const SelectWallet = ((props: RenderProps & DispatchProps) => {
           <WalletSummary wallet={wallet.value}/>
         </Grid>
       </Grid>
-  )
+  );
 });
 
 export default connect<RenderProps, DispatchProps, OwnProps, State>(
   (state, ownProps) => {
     return {
       wallet: ownProps.wallet
-    }
+    };
   },
   (dispatch, ownProps) => {
     return {
-    }
+    };
   }
 )((SelectWallet));

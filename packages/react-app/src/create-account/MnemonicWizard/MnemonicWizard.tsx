@@ -1,4 +1,4 @@
-import {addresses, screen, settings, State} from '@emeraldwallet/store';
+import { addresses, screen, settings, State } from '@emeraldwallet/store';
 import { ImportMnemonic, NewMnemonic } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
