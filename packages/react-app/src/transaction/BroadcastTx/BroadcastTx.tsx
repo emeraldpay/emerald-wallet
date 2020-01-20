@@ -87,9 +87,6 @@ export class BroadcastTxView extends React.Component<IBroadcastTxViewProps> {
           leftColumn={<div className={classes.fieldName}>Nonce</div>}
           rightColumn={<div data-testid='nonce'>{decoded.getNonce()}</div>}
         />
-        {/*<FormRow*/}
-        {/*  rightColumn={<textarea readOnly={true} value={JSON.stringify(this.props.tx)}/>}*/}
-        {/*/>*/}
         <FormRow
           leftColumn={<div className={classes.fieldName}>Raw Tx</div>}
           rightColumn={<textarea rows={8} style={{ width: '100%' }} readOnly={true} value={this.props.signed} />}

@@ -30,4 +30,9 @@ describe('EthereumTx', () => {
     expect(tx.getNonce()).toEqual(1);
   });
 
+  it('should handle 0x nonce', () => {
+    const tx = EthereumTx.fromRaw('0xf881808504e3b2920083061a80944abe410ae11835263203d4ca8ee222a38725396b8806f05b59d3b200009414ab686eb9aafea98c6b39e2b6a487d726b9486226a0425ab7faea6fac638f1677cd1e50041db9c6983638f9576021e8acc1c3256e44a0235f29b02719c4f2271c8def0cee62ffc47a2c2e1fffb1ce073532351e48d3b9', 1);
+    expect(tx.getNonce()).toEqual(0);
+  });
+
 });

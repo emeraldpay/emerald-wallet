@@ -34,7 +34,10 @@ const AccountSummary = ((props: RenderProps & IDispatchProps) => {
   }
 
   return (
-    <Grid container={true}>
+    <Grid container={true} alignItems={'center'}>
+      <Grid container={true} item={true} xs={1}>
+        <CoinAvatar chain={blockchainCode} />
+      </Grid>
       <Grid item={true} xs={5}>
         <AddressField
           identity={false}

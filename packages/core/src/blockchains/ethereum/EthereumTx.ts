@@ -45,7 +45,10 @@ class EthereumTx implements ITransaction {
     return this.internalTx.data.toString('hex');
   }
 
-  public getNonce (): any {
+  public getNonce (): number {
+    if (this.internalTx.nonce.length === 0) {
+      return 0;
+    }
     return parseInt(this.internalTx.nonce.toString('hex'), 16);
   }
 }
