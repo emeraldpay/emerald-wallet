@@ -1,4 +1,5 @@
 import { Account } from '@emeraldplatform/ui';
+import { render } from '@testing-library/react';
 import BigNumber from 'bignumber.js';
 import { mount, shallow } from 'enzyme';
 import * as React from 'react';
@@ -8,7 +9,7 @@ import TxInputData from './TxInputData';
 const reduceClasses = (prev: any, curr: any) => ({ ...prev, [curr]: curr });
 const classes = Object.keys(styles).reduce(reduceClasses, {});
 
-describe('TxDetails', () => {
+describe('TxDetailsView', () => {
   it('should render nested components correctly', () => {
     const tx = {
       hash: '0x95c1767c33c37ef93de48897c1001679d947bd7f082fdf4e772c534ae180b9c8',
@@ -23,23 +24,25 @@ describe('TxDetails', () => {
     expect(component).toBeDefined();
   });
 
-  it('should show tx input data', () => {
+  it('should show tx input data', async () => {
     const tx = {
       hash: '0x01',
-      data: '0xDADA'
+      data: '0xDADA',
+      from: '0x1234'
     };
-    const component = shallow(<TxDetails tokenSymbol='ETC' classes={classes} transaction={tx} />);
-    const inputComps = component.find(TxInputData);
-    expect(inputComps).toHaveLength(1);
-    expect(inputComps.first().props().data).toEqual(tx.data);
+    const component = render(<TxDetails tokenSymbol='ETC' classes={classes} transaction={tx} />);
+    const inputComps = await component.findByText(tx.data);
+    expect(inputComps).toBeDefined();
   });
 
-  it('should not show To Account if to tx does not have to attribute', () => {
+  it('should not show To Account if tx does not have to attribute', async () => {
     const tx = {
       hash: '0x01',
-      data: '0xDADA'
+      data: '0xDADA',
+      from: '0x1234'
     };
-    const component = shallow(<TxDetails tokenSymbol='ETC' classes={classes} transaction={tx} />);
-    expect(component.find(Account)).toHaveLength(1);
+    const component = render(<TxDetails tokenSymbol='ETC' classes={classes} transaction={tx} />);
+    const toAcc = await component.queryByTestId('to-account');
+    expect(toAcc).toBeNull();
   });
 });

@@ -30,7 +30,7 @@ export interface IProps {
   txFeeToken: string;
   fiatBalance?: string;
   ownAddresses?: string[];
-  onSubmit?: Function;
+  onSubmit?: () => void;
   onCancel?: any;
   onChangeTo?: any;
   onChangeAmount?: (amount: IUnits) => void;

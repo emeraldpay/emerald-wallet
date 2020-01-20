@@ -23,7 +23,6 @@ interface IDispatchFromProps {
 export default connect<ITxDetailsProps, IDispatchFromProps, IOwnProps>(
   (state: any, ownProps: IOwnProps): ITxDetailsProps => {
     const tx = txhistory.selectors.selectByHash(state, ownProps.hash);
-
     const chain = tx.get('blockchain');
     const fromAccount = tx.get('from') ? addresses.selectors.findAccountByAddress(state, tx.get('from'), chain) : undefined;
     const toAccount = tx.get('to') ? addresses.selectors.findAccountByAddress(state, tx.get('to'), chain) : undefined;

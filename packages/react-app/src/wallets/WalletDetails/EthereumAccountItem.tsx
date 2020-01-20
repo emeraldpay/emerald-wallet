@@ -1,7 +1,7 @@
 import { EthereumAccount } from '@emeraldpay/emerald-vault-core';
 import { Wei } from '@emeraldplatform/eth';
 import { Account as AddressField, ButtonGroup } from '@emeraldplatform/ui';
-import { blockchainById, BlockchainCode, blockchainCodeToId } from '@emeraldwallet/core';
+import { blockchainById, BlockchainCode } from '@emeraldwallet/core';
 import { addresses, screen, State } from '@emeraldwallet/store';
 import { Balance, Button, CoinAvatar } from '@emeraldwallet/ui';
 import { Grid } from '@material-ui/core';
@@ -9,7 +9,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import AccountBalance from '../../common/Balance';
 
-interface OwnProps {
+interface IOwnProps {
   account: EthereumAccount;
 }
 
@@ -19,20 +19,27 @@ interface RenderProps {
   blockchainCode: BlockchainCode;
 }
 
-interface DispatchProps {
+interface IDispatchProps {
   onSendClick: (account: EthereumAccount) => void;
 }
 
-const AccountSummary = ((props: RenderProps & DispatchProps) => {
+const AccountSummary = ((props: RenderProps & IDispatchProps) => {
   const { account, balance, blockchainCode } = props;
   const { onSendClick } = props;
+
+  function handleSendClick () {
+    if (onSendClick) {
+      onSendClick(account);
+    }
+  }
 
   return (
     <Grid container={true}>
       <Grid item={true} xs={5}>
         <AddressField
           identity={false}
-          address={account.address}/>
+          address={account.address}
+        />
       </Grid>
       <Grid item={true} xs={3}>
         <AccountBalance
@@ -48,17 +55,17 @@ const AccountSummary = ((props: RenderProps & DispatchProps) => {
         {/*  label='Deposit'*/}
         {/*  // onClick={this.handleDepositClick}*/}
         {/*/>*/}
-        {/*<Button*/}
-        {/*  label='Send'*/}
-        {/*  disabled={balance.isZero()}*/}
-        {/*  onClick={onSendClick}*/}
-        {/*/>*/}
+        <Button
+          label='Send'
+          disabled={balance.isZero()}
+          onClick={handleSendClick}
+        />
       </Grid>
     </Grid>
   );
 });
 
-export default connect<RenderProps, DispatchProps, OwnProps, State>(
+export default connect<RenderProps, IDispatchProps, IOwnProps, State>(
   (state, ownProps) => {
     const { account } = ownProps;
     const blockchainCode = blockchainById(account.blockchain)!.params.code;
@@ -72,7 +79,7 @@ export default connect<RenderProps, DispatchProps, OwnProps, State>(
   (dispatch, ownProps) => {
     return {
       onSendClick: (account: EthereumAccount) => {
-        dispatch(screen.actions.gotoScreen('create-tx', account));
+        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, account));
       }
     };
   }

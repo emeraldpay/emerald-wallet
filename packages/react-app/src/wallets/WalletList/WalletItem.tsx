@@ -64,19 +64,23 @@ export class Account extends React.PureComponent<IWalletItemProps> {
 
   public onSendClick = () => this.props.createTx(this.props.wallet);
 
-  public onAddressClick = () => this.props.openWallet(this.props.wallet);
-
   public handleDepositClick = () => this.props.showReceiveDialog(this.props.wallet);
 
   public render () {
     const {
-        wallet, theme, classes, showFiat
+        wallet, theme, classes, showFiat, openWallet
       } = this.props;
     const fiatStyle = {
       fontSize: '16px',
       lineHeight: '19px',
       color: theme.palette.text.secondary
     };
+
+    function handleDetailsClick () {
+      if (openWallet) {
+        openWallet(wallet);
+      }
+    }
 
     return (
         <Card className={classes.card}>
@@ -113,17 +117,19 @@ export class Account extends React.PureComponent<IWalletItemProps> {
                       <ButtonGroup>
                         {/*<WalletActions wallet={account} />*/}
                         <Button
+                          disabled={true}
                           label='Deposit'
                           // onClick={this.handleDepositClick}
                         />
                         <Button
+                          disabled={true}
                           label='Send'
                           // disabled={!account.balance}
                           // onClick={this.onSendClick}
                         />
                         <Button
                           label='Details'
-                          onClick={this.onAddressClick}
+                          onClick={handleDetailsClick}
                         />
                       </ButtonGroup>
                     </div>

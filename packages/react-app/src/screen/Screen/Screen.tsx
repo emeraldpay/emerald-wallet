@@ -49,9 +49,9 @@ const Screen = (props: IScreenProps) => {
   if (props.screen === screen.Pages.TX_DETAILS) {
     return <TxDetails hash={props.screenItem.hash} />;
   }
-  // if (props.screen === 'create-tx') {
-  //   return (<CreateTransaction account={props.screenItem} />);
-  // }
+  if (props.screen === screen.Pages.CREATE_TX) {
+    return (<CreateTransaction account={props.screenItem} />);
+  }
   if (props.screen === 'broadcast-tx') {
     return <BroadcastTx tx={props.screenItem.tx} signed={props.screenItem.signed} />;
   }

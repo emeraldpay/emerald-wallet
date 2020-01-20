@@ -1,4 +1,4 @@
-import { Wallet, WalletOp } from '@emeraldpay/emerald-vault-core';
+import { Wallet } from '@emeraldpay/emerald-vault-core';
 import { blockchainById, blockchainByName } from '@emeraldwallet/core';
 import { addresses, screen, tokens, txhistory } from '@emeraldwallet/store';
 import * as React from 'react';
@@ -34,7 +34,7 @@ export default connect(
   (dispatch, ownProps) => ({
     createTx: () => {
       const { account } = ownProps;
-      dispatch(screen.actions.gotoScreen('create-tx', account));
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, { account }));
     },
     showReceiveDialog: () => {
       const { account } = ownProps;

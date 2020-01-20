@@ -163,6 +163,7 @@ export function TxDetails (props: ITxDetailsProps) {
           rightColumn={
             transaction.to && (
               <Account
+                data-testid={'to-account'}
                 address={transaction.to}
                 identity={true}
                 identityProps={{ size: 30 }}
