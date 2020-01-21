@@ -1,6 +1,6 @@
 import { Blockchain, BlockchainCode, Logger } from '@emeraldwallet/core';
 import { addresses, screen, settings } from '@emeraldwallet/store';
-import { State } from '@emeraldwallet/store/src';
+import { IState } from '@emeraldwallet/store/src';
 import { ImportMnemonic } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -26,7 +26,7 @@ interface IDispatchProps {
   onBack?: any;
 }
 
-export default connect<IStateProps, IDispatchProps, IOwnProps, State>(
+export default connect<IStateProps, IDispatchProps, IOwnProps, IState>(
   (state, ownProps): IStateProps => ({
     mnemonic: ownProps.mnemonic,
     initialValues: {

@@ -1,8 +1,9 @@
-import {BlockchainCode, blockchainCodeToId} from '@emeraldwallet/core';
+import { BlockchainCode, blockchainCodeToId } from '@emeraldwallet/core';
 import { LedgerApi } from '@emeraldwallet/ledger';
 import { remote } from 'electron';
 import { AppThunk, Dispatched, GetState } from '../types';
 
+import { ActionCreator } from 'redux';
 import {
   ActionTypes,
   AddressSelected,
@@ -11,7 +12,6 @@ import {
   SetBaseHD,
   SetHDOffset, SetListHDPath, Watch
 } from './types';
-import {ActionCreator} from "redux";
 
 export function setWatch (value: boolean): Watch {
   return {
@@ -172,14 +172,14 @@ export function importSelected (blockchain: BlockchainCode): Dispatched<AddressS
 
     const seed = api.vault.getConnectedHWSeed(true);
     if (typeof seed === 'undefined') {
-      console.error("Seed is unavailable");
+      console.error('Seed is unavailable');
       return;
     }
 
-    let walletId = api.vault.addWallet(`Ledger ${hdpath}`);
-    let accountId = api.vault.addAccount(walletId, {
+    const walletId = api.vault.addWallet(`Ledger ${hdpath}`);
+    const accountId = api.vault.addAccount(walletId, {
       blockchain: blockchainCodeToId(blockchain),
-      type: "hd-path",
+      type: 'hd-path',
       key: {
         seedId: seed.id!,
         hdPath: hdpath

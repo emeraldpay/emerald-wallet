@@ -1,10 +1,9 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
 import { AccountId } from '@emeraldpay/emerald-vault-core';
 import { Wei } from '@emeraldplatform/eth';
-import { AnyCoinCode, AnyTokenCode, Blockchain, BlockchainCode, CurrencyCode, Units } from '@emeraldwallet/core';
-import BigNumber from 'bignumber.js';
+import { AnyCoinCode, AnyTokenCode, BlockchainCode, CurrencyCode, Units } from '@emeraldwallet/core';
 
-export const moduleName = 'addresses';
+export const moduleName = 'accounts';
 
 export interface IBalanceValue {
   balance: Wei | Units;

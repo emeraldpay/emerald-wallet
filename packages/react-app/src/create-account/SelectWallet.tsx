@@ -1,6 +1,5 @@
 import { WalletOp } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode } from '@emeraldwallet/core';
-import { State } from '@emeraldwallet/store';
+import { IState } from '@emeraldwallet/store';
 import {
   Button,
   Card,
@@ -46,7 +45,7 @@ const SelectWallet = ((props: RenderProps & DispatchProps) => {
   );
 });
 
-export default connect<RenderProps, DispatchProps, OwnProps, State>(
+export default connect<RenderProps, DispatchProps, OwnProps, IState>(
   (state, ownProps) => {
     return {
       wallet: ownProps.wallet

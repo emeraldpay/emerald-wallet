@@ -2,7 +2,7 @@ import { EthereumAccount } from '@emeraldpay/emerald-vault-core';
 import { Wei } from '@emeraldplatform/eth';
 import { Account as AddressField, ButtonGroup } from '@emeraldplatform/ui';
 import { blockchainById, BlockchainCode } from '@emeraldwallet/core';
-import { addresses, screen, State } from '@emeraldwallet/store';
+import { addresses, screen, IState } from '@emeraldwallet/store';
 import { Balance, Button, CoinAvatar } from '@emeraldwallet/ui';
 import { Grid } from '@material-ui/core';
 import * as React from 'react';
@@ -68,7 +68,7 @@ const AccountSummary = ((props: RenderProps & IDispatchProps) => {
   );
 });
 
-export default connect<RenderProps, IDispatchProps, IOwnProps, State>(
+export default connect<RenderProps, IDispatchProps, IOwnProps, IState>(
   (state, ownProps) => {
     const { account } = ownProps;
     const blockchainCode = blockchainById(account.blockchain)!.params.code;

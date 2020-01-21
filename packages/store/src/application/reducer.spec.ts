@@ -1,4 +1,4 @@
-import launcherReducers from './launcherReducers';
+import { reducer as launcherReducers } from './reducer';
 
 describe('launcherReducers', () => {
   it('on LAUNCHER/CONFIG should update state from config', () => {
@@ -6,7 +6,7 @@ describe('launcherReducers', () => {
     expect(state.get('terms')).toEqual('none');
     state = launcherReducers(state, {
       type: 'LAUNCHER/CONFIG',
-      config: {
+      payload: {
         terms: 'v1',
       },
     });

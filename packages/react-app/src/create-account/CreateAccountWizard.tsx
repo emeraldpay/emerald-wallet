@@ -1,6 +1,6 @@
-import { Wallet, WalletOp } from '@emeraldpay/emerald-vault-core';
+import { WalletOp } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode } from '@emeraldwallet/core';
-import { addAccount, addresses, screen, State } from '@emeraldwallet/store';
+import { addAccount, addresses, IState, screen } from '@emeraldwallet/store';
 import { Button, Card, CardActions, CardContent, CardHeader, Grid, Step, StepLabel, Stepper } from '@material-ui/core';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import * as React from 'react';
@@ -75,7 +75,7 @@ const CreateAccountWizard = ((props: RenderProps & DispatchProps) => {
   );
 });
 
-export default connect<RenderProps, DispatchProps, OwnProps, State>(
+export default connect<RenderProps, DispatchProps, OwnProps, IState>(
   (state, ownProps) => {
     const wizardState = addAccount.selectors.getState(state);
     const walletId = wizardState.walletId;

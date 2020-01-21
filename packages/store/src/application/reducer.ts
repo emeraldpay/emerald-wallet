@@ -1,6 +1,6 @@
-import Immutable from 'immutable';
+import { fromJS } from 'immutable';
 
-const initial = Immutable.fromJS({
+const initial = fromJS({
   settingsUpdated: false,
   connecting: true,
   launcherType: 'web',
@@ -8,63 +8,62 @@ const initial = Immutable.fromJS({
   configured: false,
   message: {
     text: 'Starting...',
-    level: 2,
-  },
+    level: 2
+  }
 });
 
-function onConfig(state, action) {
+function onConfig (state: any, action: any) {
+  const config = action.payload;
   if (action.type === 'LAUNCHER/CONFIG') {
-    state = state
-      .set('configured', true)
-      .set('launcherType', action.launcherType);
+    state = state.set('configured', true);
 
-    if (action.config.terms) {
-      state = state.set('terms', action.config.terms);
+    if (config.terms) {
+      state = state.set('terms', config.terms);
     }
     return state;
   }
   return state;
 }
 
-function onMessage(state, action) {
+function onMessage (state: any, action: any) {
   if (action.type === 'LAUNCHER/MESSAGE') {
-    return state.set('message', Immutable.fromJS({
+    return state.set('message', fromJS({
       text: action.msg,
-      level: action.level,
+      level: action.level
     }));
   }
   return state;
 }
 
-function onServiceStatus(state, action) {
+function onServiceStatus (state: any, action: any) {
   if (action.type === 'LAUNCHER/SERVICE_STATUS') {
-    return state.update(action.service, (service) => service.merge(Immutable.fromJS(action.mode)));
+    return state.update(action.service, (service: any) => service.merge(fromJS(action.mode)));
   }
   return state;
 }
 
-function onSettingUpdate(state, action) {
+function onSettingUpdate (state: any, action: any) {
   if (action.type === 'LAUNCHER/SETTINGS') {
     return state.set('settingsUpdated', action.updated);
   }
   return state;
 }
 
-function onTerms(state, action) {
+function onTerms (state: any, action: any) {
   if (action.type === 'LAUNCHER/TERMS') {
     return state.set('terms', action.version);
   }
   return state;
 }
 
-function onConnecting(state, action) {
+function onConnecting (state: any, action: any) {
   if (action.type === 'LAUNCHER/CONNECTING') {
-    return state.set('connecting', action.value);
+    return state.set('connecting', action.payload);
   }
   return state;
 }
 
-export default function launcherReducers(state, action) {
+export function reducer (state: any, action: any) {
   state = state || initial;
   state = onConfig(state, action);
   state = onMessage(state, action);

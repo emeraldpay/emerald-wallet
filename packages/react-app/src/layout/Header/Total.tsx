@@ -1,12 +1,10 @@
-import { Wei } from '@emeraldplatform/eth';
-import { BlockchainCode, Units } from '@emeraldwallet/core';
-import { addresses, settings, State } from '@emeraldwallet/store';
+import { Units } from '@emeraldwallet/core';
+import { addresses, IState } from '@emeraldwallet/store';
 import { Total } from '@emeraldwallet/ui';
-import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-export default connect<any, any, any, State>(
+export default connect<any, any, any, IState>(
   (state, ownProps) => {
     // Sum of balances of all known accounts.
     const byChain: any[] = [];

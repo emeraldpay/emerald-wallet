@@ -7,16 +7,13 @@ import {
   addresses,
   addressBook,
   settings,
+  application
 } from '@emeraldwallet/store';
 import {ipcRenderer} from 'electron';
 import {startProtocolListener} from './protocol';
 
 import {Api, getConnector} from '../lib/rpc/api';
 import {intervalRates} from './config';
-import {
-  readConfig,
-  connecting
-} from './launcher/launcherActions';
 // import { showError } from './wallet/screen/screenActions';
 
 import getWalletVersion from '../utils/get-wallet-version';
@@ -28,8 +25,9 @@ import {
   onceBalancesSet,
   onceModeSet, onceServicesStart,
 } from './triggers';
-import { Logger } from '@emeraldwallet/core';
+import {Logger} from '@emeraldwallet/core';
 import ElectronLogger from '../utils/logger2';
+
 Logger.setInstance(new ElectronLogger());
 
 const log = Logger.forCategory('store');
@@ -95,7 +93,7 @@ export function startSync() {
 
   promises.push(
     refreshAll()
-      .then(() => store.dispatch(connecting(false)))
+      .then(() => store.dispatch(application.actions.connecting(false)))
       .catch((err) => {
         log.error('Failed to do initial sync', err);
         store.dispatch(screen.actions.showError(err));
@@ -137,7 +135,7 @@ export function electronToStore() {
 
 export const start = () => {
   try {
-    store.dispatch(readConfig());
+    store.dispatch(application.actions.readConfig());
     store.dispatch(settings.actions.loadSettings());
   } catch (e) {
     log.error(e);
@@ -190,9 +188,10 @@ function getInitialScreen() {
   return onceServicesStart(store)
     .then(() => onceAccountsLoaded(store)
       .then(() => {
-      // We display home screen which will decide show landing or accounts list
-      store.dispatch(screen.actions.gotoScreen('home'));
-  }));
+        log.info('Opening Home screen');
+        // We display home screen which will decide show landing or accounts list
+        store.dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
+      }));
 }
 
 Promise

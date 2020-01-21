@@ -1,10 +1,10 @@
 import { utils } from '@emeraldwallet/core';
-import { addresses, screen, settings, State } from '@emeraldwallet/store';
+import { addresses, IState, screen, settings } from '@emeraldwallet/store';
 import { ImportPrivateKey } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-export default connect<any, any, any, State>(
+export default connect<any, any, any, IState>(
   (state, ownProps) => ({
     blockchains: settings.selectors.currentChains(state)
   }),

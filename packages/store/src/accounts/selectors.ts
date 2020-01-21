@@ -5,7 +5,7 @@ import { BlockchainCode, blockchainCodeToId, Blockchains, blockchains, Units } f
 import { registry } from '@emeraldwallet/erc20';
 import BigNumber from 'bignumber.js';
 import { settings, tokens } from '../index';
-import { State } from '../types';
+import { IState } from '../types';
 import { IBalanceValue, BalanceValueConverted, moduleName } from './types';
 
 const sum = (a: Wei | undefined, b: Wei | undefined) => (a || Wei.ZERO).plus(b || Wei.ZERO);
@@ -14,7 +14,7 @@ export function all (state: any): WalletsOp {
   return WalletsOp.of(allAsArray(state));
 }
 
-export function allAsArray (state: State): vault.Wallet[] {
+export function allAsArray (state: IState): vault.Wallet[] {
   return (state[moduleName].wallets || [])
     .filter((value: any) => typeof value !== 'undefined');
 }
@@ -46,7 +46,7 @@ export function find (state: any, id: vault.Uuid): vault.WalletOp | undefined {
   }
 }
 
-export function getBalance (state: State, account: vault.EthereumAccount, defaultValue?: Wei): Wei | undefined {
+export function getBalance (state: IState, account: vault.EthereumAccount, defaultValue?: Wei): Wei | undefined {
   return (state[moduleName].details || [])
     .filter((b) => b.accountId === account.id)
     .filter((b) => typeof b.balance === 'string' && b.balance !== '')
@@ -54,17 +54,17 @@ export function getBalance (state: State, account: vault.EthereumAccount, defaul
     .reduce(sum, Wei.ZERO) || defaultValue;
 }
 
-export function balanceByChain (state: State, blockchain: BlockchainCode): Wei {
+export function balanceByChain (state: IState, blockchain: BlockchainCode): Wei {
   return all(state)
     .accountsByBlockchain(blockchainCodeToId(blockchain))
     .map((account) => getBalance(state, account, Wei.ZERO)!)
     .reduce(sum, Wei.ZERO);
 }
 
-export function allBalances (state: State): IBalanceValue[] {
+export function allBalances (state: IState): IBalanceValue[] {
   const assets: IBalanceValue[] = [];
 
-  state.addresses.wallets.forEach((wallet) =>
+  state[moduleName].wallets.forEach((wallet) =>
     getWalletBalances(state, wallet, false)
       .forEach((asset) => assets.push(asset))
   );
@@ -79,7 +79,7 @@ export function allBalances (state: State): IBalanceValue[] {
  * @param _wallet
  * @param includeEmpty include zero balances
  */
-export function getWalletBalances (state: State, _wallet: Wallet | WalletOp, includeEmpty: boolean): IBalanceValue[] {
+export function getWalletBalances (state: IState, _wallet: Wallet | WalletOp, includeEmpty: boolean): IBalanceValue[] {
   const wallet = WalletOp.asOp(_wallet);
   const assets: IBalanceValue[] = [];
   const ethereumAccounts = wallet.getEthereumAccounts();
@@ -125,7 +125,7 @@ export function getWalletBalances (state: State, _wallet: Wallet | WalletOp, inc
  * @param state
  * @param assets
  */
-export function fiatTotalBalance (state: State, assets: IBalanceValue[]): IBalanceValue | undefined {
+export function fiatTotalBalance (state: IState, assets: IBalanceValue[]): IBalanceValue | undefined {
   let allFound = true;
   const converted = assets
     .map((asset) => {
@@ -209,7 +209,7 @@ export function aggregateByAsset (assets: IBalanceValue[]): IBalanceValue[] {
  * @param state
  * @param assets
  */
-export function withFiatConversion (state: State, assets: IBalanceValue[]): BalanceValueConverted[] {
+export function withFiatConversion (state: IState, assets: IBalanceValue[]): BalanceValueConverted[] {
   return assets
     .map((asset) => {
       return {

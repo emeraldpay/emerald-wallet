@@ -1,5 +1,5 @@
 import {IAddAccountState} from "./types";
-import {State} from "../types";
+import {IState} from "../types";
 import {INITIAL_STATE} from "./reducer";
 
 export function isFulfilled(state: IAddAccountState, step: number): boolean {
@@ -15,6 +15,6 @@ export function isFulfilled(state: IAddAccountState, step: number): boolean {
   return false;
 }
 
-export function getState(state: State): IAddAccountState {
+export function getState(state: IState): IAddAccountState {
   return state.addAccount || INITIAL_STATE;
 }

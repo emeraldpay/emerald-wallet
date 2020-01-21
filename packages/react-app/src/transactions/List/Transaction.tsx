@@ -1,5 +1,5 @@
 import { blockchainById, blockchainByName, blockchainCodeToId } from '@emeraldwallet/core';
-import { addresses, blockchains, screen, settings, State, wallet } from '@emeraldwallet/store';
+import { addresses, blockchains, IState, screen, settings, wallet } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import Balance from '../../common/Balance';
@@ -21,7 +21,7 @@ function txValueRenderer (showFiat: boolean) {
   };
 }
 
-export default connect<any, any, any, State>(
+export default connect<any, any, any, IState>(
   (state, ownProps: any) => {
     const tx = (ownProps.tx && ownProps.tx.toJS()) || {};
     const blockchain = tx.blockchain ? blockchainByName(tx.blockchain) : blockchainById(tx.chainId);

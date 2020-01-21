@@ -1,6 +1,6 @@
 import { BlockchainCode } from '@emeraldwallet/core';
 import {
-  addresses, ledger, screen, settings, State
+  addresses, IState, ledger, screen, settings
 } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -19,7 +19,7 @@ const Container = (props: any) => {
 
 const pageSize = 5;
 
-export default connect<any, any, any, State>(
+export default connect<any, any, any, IState>(
   (state, ownProps) => ({
     pagerOffset: ledger.selectors.getOffset(state),
     hdbase: ledger.selectors.getHdBase(state),

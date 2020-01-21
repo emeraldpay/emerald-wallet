@@ -2,7 +2,7 @@ import { IApi } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 import { fromJS } from 'immutable';
 import { refreshTrackedTransactions } from './actions';
-import {State} from "../types";
+import {IState} from "../types";
 
 describe('historyActions/refreshTrackedTransactions', () => {
   const getState = () => ({
@@ -20,7 +20,7 @@ describe('historyActions/refreshTrackedTransactions', () => {
         trackedTransactions: [{ numConfirmations: 0, hash: '0x123', blockchain: 'ETH' }]
       })
     }
-  } as State);
+  } as IState);
 
   it('should subscribe through electron', () => {
     const dispatch = jest.fn();

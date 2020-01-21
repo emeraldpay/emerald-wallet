@@ -3,7 +3,7 @@ import * as addAccount from './add-account';
 import * as addressBook from './address-book';
 import * as blockchains from './blockchains';
 import * as connection from './conn';
-import * as launcher from './launcher';
+import * as application from './application';
 import * as ledger from './ledger';
 import * as screen from './screen';
 import * as settings from './settings';
@@ -13,7 +13,7 @@ import * as txhistory from './txhistory';
 import * as wallet from './wallet';
 
 export {
-  launcher,
+  application,
   addressBook,
   addresses,
   blockchains,
@@ -29,7 +29,7 @@ export {
 };
 
 export {
-  State
+  IState
 } from './types';
 
 export {

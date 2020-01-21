@@ -1,6 +1,5 @@
-import { WalletOp } from '@emeraldpay/emerald-vault-core';
-import { blockchainByName, BlockchainCode } from '@emeraldwallet/core';
-import { addAccount, settings, State } from '@emeraldwallet/store';
+import { BlockchainCode } from '@emeraldwallet/core';
+import { addAccount, IState, settings } from '@emeraldwallet/store';
 import { CoinAvatar, CoinIcon } from '@emeraldwallet/ui';
 import {
   Divider,
@@ -70,7 +69,7 @@ const SelectBlockchain = ((props: RenderProps & DispatchProps) => {
   );
 });
 
-export default connect<RenderProps, DispatchProps, OwnProps, State>(
+export default connect<RenderProps, DispatchProps, OwnProps, IState>(
   (state, ownProps) => {
     const supportedBlockchain = settings.selectors.currentChains(state).map((c) => {
       return {

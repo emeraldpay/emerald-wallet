@@ -1,4 +1,4 @@
-import { addresses, connection, launcher } from '@emeraldwallet/store';
+import { addresses, application } from '@emeraldwallet/store';
 import { CircularProgress, Grid } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -41,8 +41,8 @@ export const Home = (props: IHomeProps) => {
 export default connect(
   (state, ownProps) => ({
     accountsNum: addresses.selectors.all(state).size,
-    connecting: launcher.selectors.isConnecting(state),
-    statusMessage: launcher.selectors.getMessage(state).text
+    connecting: application.selectors.isConnecting(state),
+    statusMessage: application.selectors.getMessage(state).text
   }),
   (dispatch, ownProps) => ({})
 )(Home);

@@ -1,6 +1,6 @@
 import { Wallet } from '@emeraldpay/emerald-vault-core';
-import { addAccount, addresses, screen, State } from '@emeraldwallet/store';
-import { Button, IconButton, ListItemIcon, Menu, MenuItem, Typography } from '@material-ui/core';
+import { addAccount, IState, screen } from '@emeraldwallet/store';
+import { IconButton, ListItemIcon, Menu, MenuItem, Typography } from '@material-ui/core';
 import {
   AddCircleOutline as AddCircleOutlineIcon,
   ArrowDownward as ArrowDownwardIcon,
@@ -76,7 +76,7 @@ const WalletMenu = ((props: RenderProps & DispatchProps) => {
   );
 });
 
-export default connect<RenderProps, DispatchProps, IOwnProps, State>(
+export default connect<RenderProps, DispatchProps, IOwnProps, IState>(
   null,
   (dispatch, ownProps) => {
     return {

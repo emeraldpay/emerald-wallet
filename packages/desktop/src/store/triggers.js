@@ -1,6 +1,5 @@
-import { blockchains } from '@emeraldwallet/store';
+import { blockchains, addresses, application } from '@emeraldwallet/store';
 import { TERMS_VERSION } from './config';
-import { addresses } from '.';
 
 const handleTrigger = (check, resolve, store) => {
   // check once with current state.
@@ -21,7 +20,7 @@ const handleTrigger = (check, resolve, store) => {
 
 export function onceServicesStart(store) {
   const check = () => {
-    const { terms } = store.getState().launcher.toJS();
+    const terms = application.selectors.terms(store.getState());
     return terms === TERMS_VERSION;
   };
 

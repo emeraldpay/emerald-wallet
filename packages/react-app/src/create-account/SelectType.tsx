@@ -4,7 +4,7 @@ import {
   Keypair as KeypairIcon,
   Ledger as LedgerIcon
 } from '@emeraldplatform/ui-icons';
-import { addAccount, settings, State } from '@emeraldwallet/store';
+import { addAccount, IState } from '@emeraldwallet/store';
 import { AddType } from '@emeraldwallet/store/lib/add-account';
 import {
   Avatar, Divider,
@@ -114,7 +114,7 @@ const SelectType = ((props: RenderProps & DispatchProps) => {
   );
 });
 
-export default connect<RenderProps, DispatchProps, OwnProps, State>(
+export default connect<RenderProps, DispatchProps, OwnProps, IState>(
   (state, ownProps) => {
     return {
       supportedTypes: ETHEREUM_TYPES,

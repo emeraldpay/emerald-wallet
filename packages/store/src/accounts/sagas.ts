@@ -17,9 +17,9 @@ function* fetchErc20Balances (api: IApi, action: IFetchErc20BalancesAction): Sag
     const _tokens = registry.all()[chain as BlockchainCode];
 
     // Request balance for each token for current address
-    // for (const t of _tokens) {
-    //   yield put(requestTokenBalance(chain, t, address));
-    // }
+    for (const t of _tokens) {
+      yield put(requestTokenBalance(chain, t, address));
+    }
   }
 }
 
