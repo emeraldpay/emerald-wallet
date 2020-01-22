@@ -2,7 +2,7 @@ import ILogger from './ILogger';
 
 export default class DefaultLogger implements ILogger {
   public debug (...params: any[]) {
-    console.debug(params[0], ...params);
+    console.debug(params[0], params.slice(1));
   }
 
   public error (...params: any[]) {

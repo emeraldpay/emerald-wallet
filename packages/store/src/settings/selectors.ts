@@ -1,16 +1,16 @@
 import { Blockchains } from '@emeraldwallet/core';
-import {IState} from "../types";
+import { IState } from '../types';
 
 export const fiatCurrency = (state: IState) => state.wallet.settings.localeCurrency;
 
 export const fiatRate = (chain: string, state: IState): number | undefined => {
-  let rates = state.wallet.settings.rates;
+  const rates = state.wallet.settings.rates;
   if (!rates) {
     return undefined;
   }
-  let strRate = rates[chain.toUpperCase()];
+  const strRate = rates[chain.toUpperCase()];
   if (strRate) {
-    return parseFloat(strRate)
+    return parseFloat(strRate);
   }
   return undefined;
 };

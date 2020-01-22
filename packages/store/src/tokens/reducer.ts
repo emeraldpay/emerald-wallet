@@ -1,25 +1,41 @@
 import { BlockchainCode } from '@emeraldwallet/core';
-import { ActionTypes, ITokensState, ISetTokenBalanceAction, TokensAction } from './types';
+import produce from 'immer';
+import { ActionTypes, ISetTokenBalanceAction, ITokensState, TokensAction } from './types';
 
 export const INITIAL_STATE: ITokensState = {};
 
+// function onSetTokenBalance (state: ITokensState, action: ISetTokenBalanceAction): ITokensState {
+//
+//   const { chain, address, balance } = action.payload;
+//   const chainState = state[chain as BlockchainCode] || {};
+//   const addressState = chainState[address] || {};
+//
+//   const newState = {
+//     ...state,
+//     [chain]: {
+//       ...chainState,
+//       [address]: {
+//         ...addressState,
+//         [balance.tokenId]: { ...balance }
+//       }
+//     }
+//   };
+//   return newState;
+// }
+
 function onSetTokenBalance (state: ITokensState, action: ISetTokenBalanceAction): ITokensState {
-
   const { chain, address, balance } = action.payload;
-  const chainState = state[chain as BlockchainCode] || {};
-  const addressState = chainState[address] || {};
 
-  const newState = {
-    ...state,
-    [chain]: {
-      ...chainState,
-      [address]: {
-        ...addressState,
-        [balance.tokenId]: { ...balance }
-      }
+  return produce(state, (draft) => {
+    const chainCode = chain as BlockchainCode;
+    if (!draft[chainCode]) {
+      draft[chainCode] = {};
     }
-  };
-  return newState;
+    if (!draft[chainCode]![address]) {
+      draft[chainCode]![address] = {};
+    }
+    draft[chainCode]![address][balance.tokenId] = { ...balance };
+  });
 }
 
 export function reducer (

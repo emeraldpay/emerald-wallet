@@ -1,11 +1,9 @@
 import { Wei } from '@emeraldplatform/eth';
 import { Units } from '@emeraldwallet/core';
-import BigNumber from 'bignumber.js';
-import { mount, shallow } from 'enzyme';
-import { fromJS } from 'immutable';
+import { addresses } from '@emeraldwallet/store';
+import { mount } from 'enzyme';
 import * as React from 'react';
 import { Provider } from 'react-redux';
-import { AnyAction, Store } from 'redux';
 import Total from './Total';
 
 function createStore () {
@@ -33,7 +31,7 @@ function createStore () {
           }
         },
         tokens: {},
-        addresses: {
+        [addresses.moduleName]: {
           wallets: [
             {
               id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee',

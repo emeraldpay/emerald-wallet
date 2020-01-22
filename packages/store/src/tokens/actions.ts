@@ -1,7 +1,7 @@
 import { tokenContract } from './erc20';
-import { ActionTypes, ITokenBalance, IRequestTokenBalanceAction, ISetTokenBalanceAction } from './types';
+import { ActionTypes, IRequestTokenBalanceAction, ISetTokenBalanceAction, ITokenBalance } from './types';
 
-export function setTokenBalance (chain: any, tokenBalance: ITokenBalance, address: any): ISetTokenBalanceAction {
+export function setTokenBalance (chain: any, tokenBalance: ITokenBalance, address: string): ISetTokenBalanceAction {
   return {
     type: ActionTypes.SET_TOKEN_BALANCE,
     payload: {
