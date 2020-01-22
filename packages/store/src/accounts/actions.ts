@@ -1,29 +1,27 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
-import { WalletsOp } from '@emeraldpay/emerald-vault-core';
 import {
-  WalletService,
-  Blockchain,
-  blockchainById, blockchainByName,
+  blockchainById,
+  blockchainByName,
   BlockchainCode,
   blockchainCodeToId,
   blockchains,
   IApi,
-  Logger
+  Logger,
+  WalletService
 } from '@emeraldwallet/core';
-import { ipcRenderer } from 'electron';
-import { Dispatch } from 'react';
-import { dispatchRpcError } from '../screen/actions';
-import * as settings from '../settings';
+import {ipcRenderer} from 'electron';
+import {Dispatch} from 'react';
+import {dispatchRpcError} from '../screen/actions';
 import * as history from '../txhistory';
-import { Dispatched } from '../types';
+import {Dispatched} from '../types';
 import * as selectors from './selectors';
 import {
   ActionTypes,
   AddressesAction,
   IAddWalletAction,
   IFetchErc20BalancesAction,
-  IFetchHdPathsAction,
   ILoadWalletsAction,
+  ISetBalanceAction,
   ISetLoadingAction,
   IUpdateAddressAction,
   IWalletsLoaded,
@@ -32,6 +30,13 @@ import {
 } from './types';
 
 const log = Logger.forCategory('store.accounts');
+
+export function setBalanceAction (balance: any): ISetBalanceAction {
+  return {
+    type: ActionTypes.SET_BALANCE,
+    payload: balance
+  };
+}
 
 export function setLoadingAction (loading: boolean): ISetLoadingAction {
   return {
@@ -52,39 +57,40 @@ export function loadWalletsAction (): ILoadWalletsAction {
   };
 }
 
-export function loadAccountsList (): Dispatched<IWalletsLoaded | ISetLoadingAction> {
+// TODO: remove it
+// export function loadAccountsList (): Dispatched<IWalletsLoaded | ISetLoadingAction> {
+//
+//   return (dispatch, getState, api) => {
+//     dispatch(setLoadingAction(true));
+//
+//     const wallets = api.vault.listWallets();
+//
+//     dispatch(setListAction(wallets));
+//     dispatch(fetchErc20BalancesAction() as any);
+//
+//     dispatch(setLoadingAction(false));
+//
+//     const subscribe: {[key: string]: string[]} = {};
+//     WalletsOp.of(wallets)
+//       .getAccounts()
+//       .forEach((account) => {
+//         const code = blockchainById(account.blockchain)!.params.code;
+//         let current = subscribe[code];
+//         if (typeof current === 'undefined') {
+//           current = [];
+//         }
+//         current.push(account.address);
+//         subscribe[code] = current;
+//       });
+//
+//     Object.keys(subscribe).forEach((blockchainCode) => {
+//       const addedAddresses = subscribe[blockchainCode];
+//       ipcRenderer.send('subscribe-balance', blockchainCode, addedAddresses);
+//     });
+//   };
+// }
 
-  return (dispatch, getState, api) => {
-    dispatch(setLoadingAction(true));
-
-    const wallets = api.vault.listWallets();
-
-    dispatch(setListAction(wallets));
-    dispatch(fetchErc20BalancesAction() as any);
-
-    dispatch(setLoadingAction(false));
-
-    const subscribe: {[key: string]: string[]} = {};
-    WalletsOp.of(wallets)
-      .getAccounts()
-      .forEach((account) => {
-        const code = blockchainById(account.blockchain)!.params.code;
-        let current = subscribe[code];
-        if (typeof current === 'undefined') {
-          current = [];
-        }
-        current.push(account.address);
-        subscribe[code] = current;
-      });
-
-    Object.keys(subscribe).forEach((blockchainCode) => {
-      const addedAddresses = subscribe[blockchainCode];
-      ipcRenderer.send('subscribe-balance', blockchainCode, addedAddresses);
-    });
-  };
-}
-
-function setListAction (wallets: vault.Wallet[]): IWalletsLoaded {
+export function setListAction (wallets: vault.Wallet[]): IWalletsLoaded {
   return {
     type: ActionTypes.SET_LIST,
     payload: wallets
@@ -123,7 +129,7 @@ function addAccount (api: IApi, dispatch: Dispatch<any>,
     wallet
   });
   const account = wallet.accounts[0] as vault.EthereumAccount;
-  dispatch(loadAccountsList()); // reload only current wallet
+  dispatch(loadWalletsAction()); // reload only current wallet
   // loadAccountBalance(blockchainById(add.blockchain)!!.params.code, account.address);
   return walletId;
 }
@@ -139,7 +145,7 @@ function createWalletWithAccount (
     wallet
   });
   const account = wallet.accounts[0] as vault.EthereumAccount;
-  dispatch(loadAccountsList()); // reload only current wallet
+  dispatch(loadWalletsAction()); // reload only current wallet
   // loadAccountBalance(blockchain, account.address);
   return walletId;
 }
@@ -185,7 +191,7 @@ export function updateWallet (
   };
 }
 
-function readWalletFile (walletFile: Blob) {
+function readWalletFile (walletFile: Blob): Promise<any> {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsText(walletFile);

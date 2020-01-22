@@ -1,7 +1,8 @@
 import { WalletOp } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode } from '@emeraldwallet/core';
 import { addAccount, addresses, IState, screen } from '@emeraldwallet/store';
-import { Button, Card, CardActions, CardContent, CardHeader, Grid, Step, StepLabel, Stepper } from '@material-ui/core';
+import { Button } from '@emeraldwallet/ui';
+import { Card, CardActions, CardContent, CardHeader, Grid, Step, StepLabel, Stepper } from '@material-ui/core';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -20,11 +21,12 @@ interface RenderProps {
   blockchain?: BlockchainCode;
 }
 
-interface DispatchProps {
+interface IDispatchProps {
   nextPage: () => void;
+  onCancel: () => void;
 }
 
-const CreateAccountWizard = ((props: RenderProps & DispatchProps) => {
+const CreateAccountWizard = ((props: RenderProps & IDispatchProps) => {
   const { nextPage } = props;
   const { page, type } = props;
 
@@ -58,6 +60,12 @@ const CreateAccountWizard = ((props: RenderProps & DispatchProps) => {
     }
   }
 
+  function handleOnCancelClick () {
+    if (props.onCancel) {
+      props.onCancel();
+    }
+  }
+
   return (
     <Card>
       <CardHeader title={steps}/>
@@ -65,17 +73,14 @@ const CreateAccountWizard = ((props: RenderProps & DispatchProps) => {
         {content}
       </CardContent>
       <CardActions>
-        <Button>Cancel</Button>
-        <Button variant='contained'
-                color='primary'
-                onClick={nextPage}
-                endIcon={<NavigateNextIcon/>}>Next</Button>
+        <Button label={'Cancel'} onClick={handleOnCancelClick}/>
+        <Button primary={true} onClick={nextPage} label={'Next'} icon={<NavigateNextIcon/>} />
       </CardActions>
     </Card>
   );
 });
 
-export default connect<RenderProps, DispatchProps, OwnProps, IState>(
+export default connect<RenderProps, IDispatchProps, OwnProps, IState>(
   (state, ownProps) => {
     const wizardState = addAccount.selectors.getState(state);
     const walletId = wizardState.walletId;
@@ -97,6 +102,9 @@ export default connect<RenderProps, DispatchProps, OwnProps, IState>(
     return {
       nextPage: () => {
         dispatch(addAccount.actions.nextPage());
+      },
+      onCancel: () => {
+        dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
       }
     };
   }

@@ -1,6 +1,6 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
 import { WalletsOp } from '@emeraldpay/emerald-vault-core';
-import { blockchainById, blockchainByName, BlockchainCode, blockchainCodeToId } from '@emeraldwallet/core';
+import { blockchainCodeToId } from '@emeraldwallet/core';
 import produce from 'immer';
 import {
   AccountDetails,
@@ -30,7 +30,6 @@ function findExistingAccount (wallets: vault.Wallet[], accountId: vault.AccountI
 
 function onLoaded (state: IAccountsState, action: IWalletsLoaded): IAccountsState {
   const wallets: vault.Wallet[] = action.payload;
-
   return { ...state, wallets };
 }
 

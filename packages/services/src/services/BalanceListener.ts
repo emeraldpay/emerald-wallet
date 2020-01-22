@@ -1,3 +1,4 @@
+import { addresses as accounts } from '@emeraldwallet/store';
 import { AddressListener } from '../AddressListener';
 import { IService } from './Services';
 
@@ -28,15 +29,12 @@ export class BalanceListener implements IService {
       const subscriber = this.apiAccess.newAddressListener();
       this.subscribers.push(subscriber);
       subscriber.subscribe(blockchain, addresses, (event: any) => {
-        const action = {
-          type: 'ACCOUNT/SET_BALANCE',
-          payload: {
-            blockchain,
-            address: event.address,
-            value: event.balance,
-            asset: 'ether' //TODO
-          }
-        };
+        const action = accounts.actions.setBalanceAction({
+          blockchain,
+          address: event.address,
+          value: event.balance,
+          asset: 'ether' // TODO
+        });
         this.webContents.send('store', action);
       });
     });

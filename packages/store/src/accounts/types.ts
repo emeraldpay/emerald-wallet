@@ -122,4 +122,5 @@ export type AddressesAction =
   | PendingBalanceAction
   | IFetchHdPathsAction
   | ILoadWalletsAction
+  | ISetBalanceAction
   ;

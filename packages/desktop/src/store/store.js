@@ -62,7 +62,7 @@ export function startSync() {
         api.connectChains(codes);
       })
       .then(() => {
-        return store.dispatch(addresses.actions.loadAccountsList());
+        return store.dispatch(addresses.actions.loadWalletsAction());
       })
       .then(() => {
         const supported = settings.selectors.currentChains(store.getState());

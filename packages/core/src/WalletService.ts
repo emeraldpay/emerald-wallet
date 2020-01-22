@@ -14,4 +14,8 @@ export default class WalletService {
       value: words
     });
   }
+
+  public getAllWallets = () => {
+    return this.vault.listWallets();
+  }
 }

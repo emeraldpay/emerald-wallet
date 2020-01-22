@@ -28,7 +28,7 @@ export default connect<any, any, any, IState>(
       if (ownProps.onBackScreen) {
         dispatch(screen.actions.gotoScreen(ownProps.onBackScreen));
       } else {
-        dispatch(screen.actions.gotoScreen('home'));
+        dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
       }
     }
   })

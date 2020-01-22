@@ -1,5 +1,5 @@
 import { AccountId, Uuid } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, blockchainCodeToId } from '@emeraldwallet/core';
+import { BlockchainCode } from '@emeraldwallet/core';
 import { addresses, screen } from '@emeraldwallet/store';
 import { NewAccountProps } from '@emeraldwallet/ui';
 import * as React from 'react';
