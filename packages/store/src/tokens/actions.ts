@@ -1,5 +1,12 @@
+import { BlockchainCode } from '@emeraldwallet/core';
 import { tokenContract } from './erc20';
-import { ActionTypes, IRequestTokenBalanceAction, ISetTokenBalanceAction, ITokenBalance } from './types';
+import {
+  ActionTypes,
+  IRequestTokenBalanceAction,
+  IRequestTokensBalancesAction,
+  ISetTokenBalanceAction,
+  ITokenBalance
+} from './types';
 
 export function setTokenBalance (chain: any, tokenBalance: ITokenBalance, address: string): ISetTokenBalanceAction {
   return {
@@ -18,6 +25,19 @@ export function requestTokenBalance (chain: any, token: any, address: string): I
     payload: {
       chain,
       token,
+      address
+    }
+  };
+}
+
+export function requestTokensBalances (
+  chain: BlockchainCode, tokens: any[], address: string
+): IRequestTokensBalancesAction {
+  return {
+    type: ActionTypes.REQUEST_TOKENS_BALANCES,
+    payload: {
+      chain,
+      tokens,
       address
     }
   };

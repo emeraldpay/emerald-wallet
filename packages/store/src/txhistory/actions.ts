@@ -59,12 +59,6 @@ function updateAndTrack (
   });
 }
 
-// @depricated
-// export function trackTx (tx: IStoredTransaction, blockchain: BlockchainCode) {
-//   return (dispatch: Dispatch<any>, getState: GetState, api: IApi) =>
-//     updateAndTrack(dispatch, getState, api, [tx], blockchain);
-// }
-
 export function trackTxs (txs: IStoredTransaction[], blockchain: BlockchainCode) {
   return (dispatch: Dispatch<any>, getState: GetState, api: IApi) =>
     updateAndTrack(dispatch, getState, txs, blockchain);

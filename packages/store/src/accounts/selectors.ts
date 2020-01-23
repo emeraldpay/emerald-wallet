@@ -1,17 +1,26 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
-import { Wallet, WalletOp, WalletsOp } from '@emeraldpay/emerald-vault-core';
+import { Wallet, WalletAccount, WalletOp, WalletsOp } from '@emeraldpay/emerald-vault-core';
 import { Wei } from '@emeraldplatform/eth';
-import { BlockchainCode, blockchainCodeToId, Blockchains, blockchains, Units } from '@emeraldwallet/core';
+import { BlockchainCode, blockchainCodeToId, Blockchains, Units } from '@emeraldwallet/core';
 import { registry } from '@emeraldwallet/erc20';
 import BigNumber from 'bignumber.js';
 import { settings, tokens } from '../index';
 import { IState } from '../types';
-import { IBalanceValue, BalanceValueConverted, moduleName } from './types';
+import { BalanceValueConverted, IBalanceValue, moduleName } from './types';
 
 const sum = (a: Wei | undefined, b: Wei | undefined) => (a || Wei.ZERO).plus(b || Wei.ZERO);
 
 export function all (state: any): WalletsOp {
   return WalletsOp.of(allAsArray(state));
+}
+
+/**
+ * Returns all accounts from all wallets as flat array
+ * @param state
+ */
+export function allAccounts (state: IState): any[] {
+  const wallets = state[moduleName].wallets || [];
+  return wallets.reduce((a: WalletAccount[], w) => a.concat(w.accounts), []);
 }
 
 export function allAsArray (state: IState): vault.Wallet[] {

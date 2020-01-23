@@ -206,12 +206,9 @@ function onUpdateTxs (state: any, action: IUpdateTxsAction) {
 }
 
 export function reducer (
-  state: any,
+  state: any = initial,
   action: HistoryAction | null
 ): any {
-  if (!state) {
-    state = initial;
-  }
   if (!action) {
     return state;
   }

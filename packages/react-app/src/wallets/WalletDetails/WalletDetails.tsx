@@ -17,6 +17,7 @@ export default connect(
         '', // account.id,
         txhistory.selectors.allTrackedTxs(state));
     let tokensBalances = null;
+
     if (wallet.getEthereumAccounts().length > 0) {
       const firstAccount = wallet.getEthereumAccounts()[0];
       const blockchainCode = blockchainById(firstAccount.blockchain)!.params.code;

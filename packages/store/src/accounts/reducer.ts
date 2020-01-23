@@ -10,7 +10,7 @@ import {
   IAddWalletAction,
   ISetBalanceAction,
   ISetLoadingAction,
-  IUpdateAddressAction,
+  IUpdateWalletAction,
   IWalletsLoaded, SetTxCountAction
 } from './types';
 
@@ -21,7 +21,10 @@ export const INITIAL_STATE: IAccountsState = {
 };
 
 function onLoading (state: IAccountsState, action: ISetLoadingAction): IAccountsState {
-  return { ...state, loading: action.payload };
+  return {
+    ...state,
+    loading: action.payload
+  };
 }
 
 function findExistingAccount (wallets: vault.Wallet[], accountId: vault.AccountId): vault.WalletAccount | undefined {
@@ -91,7 +94,7 @@ function onSetBalance (state: IAccountsState, action: ISetBalanceAction): IAccou
   return updatedState;
 }
 
-function onUpdateWallet (state: any, action: IUpdateAddressAction) {
+function onWalletUpdated (state: any, action: IUpdateWalletAction) {
   const { walletId, name, description } = action.payload;
   return updateWallet(state, walletId, (wallet) => {
     wallet.name = name;
@@ -148,8 +151,8 @@ export function reducer (
   action: AddressesAction
 ): IAccountsState {
   switch (action.type) {
-    case ActionTypes.UPDATE_ACCOUNT:
-      return onUpdateWallet(state, action);
+    case ActionTypes.WALLET_UPDATED:
+      return onWalletUpdated(state, action);
     case ActionTypes.SET_BALANCE:
       return onSetBalance(state, action);
     case ActionTypes.LOADING:

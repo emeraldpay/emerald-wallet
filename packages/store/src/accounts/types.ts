@@ -42,7 +42,7 @@ export enum ActionTypes {
   SET_LIST = 'ACCOUNT/SET_LIST',
   SET_HD_PATH = 'ACCOUNT/SET_HD_PATH',
   FETCH_HD_PATHS = 'ACCOUNT/FETCH_HD_PATHS',
-  UPDATE_ACCOUNT = 'ACCOUNT/UPDATE_ACCOUNT',
+  WALLET_UPDATED = 'ACCOUNT/WALLET_UPDATED',
   PENDING_BALANCE = 'ACCOUNT/PENDING_BALANCE',
   SET_TXCOUNT = 'ACCOUNT/SET_TXCOUNT',
   FETCH_ERC20_BALANCES = 'ACCOUNT/FETCH_ERC20_BALANCES'
@@ -60,8 +60,8 @@ export interface IFetchHdPathsAction {
   type: ActionTypes.FETCH_HD_PATHS;
 }
 
-export interface IUpdateAddressAction {
-  type: ActionTypes.UPDATE_ACCOUNT;
+export interface IUpdateWalletAction {
+  type: ActionTypes.WALLET_UPDATED;
   payload: {
     walletId: vault.Uuid,
     name: string;
@@ -115,7 +115,7 @@ export type AddressesAction =
   | IWalletsLoaded
   | ISetLoadingAction
   | ISetBalanceAction
-  | IUpdateAddressAction
+  | IUpdateWalletAction
   | IAddWalletAction
   // | SetHDPathAction
   | SetTxCountAction

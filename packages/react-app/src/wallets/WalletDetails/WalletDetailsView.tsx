@@ -1,4 +1,4 @@
-import { WalletOp } from '@emeraldpay/emerald-vault-core';
+import {EthereumAccount, WalletOp} from '@emeraldpay/emerald-vault-core';
 import {
   Account as AddressAvatar, ButtonGroup, IdentityIcon, Page
 } from '@emeraldplatform/ui';
@@ -102,13 +102,12 @@ export class WalletShow extends React.Component<AccountShowProps, IState> {
       <div>
         <Page title={renderTitle()}
               leftIcon={<Back onClick={goBack}/>}
-              rightIcon={
-                <MoreVertIcon />
-              }>
+              rightIcon={<MoreVertIcon />}
+        >
           <Grid container={true}>
             <Grid item={true} xs={12}>
-              {wallet.getEthereumAccounts().map(
-                (account) => (<EthereumAccountItem account={account} key={account.id}/>)
+              {wallet.value.accounts.map(
+                (account) => (<EthereumAccountItem account={account as EthereumAccount} key={account.id}/>)
               )}
             </Grid>
           </Grid>

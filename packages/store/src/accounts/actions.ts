@@ -9,11 +9,11 @@ import {
   Logger,
   WalletService
 } from '@emeraldwallet/core';
-import {ipcRenderer} from 'electron';
-import {Dispatch} from 'react';
-import {dispatchRpcError} from '../screen/actions';
+import { ipcRenderer } from 'electron';
+import { Dispatch } from 'react';
+import { dispatchRpcError } from '../screen/actions';
 import * as history from '../txhistory';
-import {Dispatched} from '../types';
+import { Dispatched } from '../types';
 import * as selectors from './selectors';
 import {
   ActionTypes,
@@ -23,7 +23,7 @@ import {
   ILoadWalletsAction,
   ISetBalanceAction,
   ISetLoadingAction,
-  IUpdateAddressAction,
+  IUpdateWalletAction,
   IWalletsLoaded,
   PendingBalanceAction,
   SetTxCountAction
@@ -117,8 +117,9 @@ export function loadAccountTxCount (walletId: string): Dispatched<SetTxCountActi
   };
 }
 
-function addAccount (api: IApi, dispatch: Dispatch<any>,
-                     walletId: vault.Uuid, add: vault.AddAccount) {
+function addAccount (
+  api: IApi, dispatch: Dispatch<any>, walletId: vault.Uuid, add: vault.AddAccount
+) {
   if (!walletId) {
     throw Error('Wallet is not set');
   }
@@ -176,11 +177,11 @@ export function exportKeyFile (accountId: vault.AccountId): any {
 
 export function updateWallet (
   walletId: vault.Uuid, name: string, description: string
-): Dispatched<IUpdateAddressAction> {
+): Dispatched<IUpdateWalletAction> {
   return (dispatch, getState, api) => {
     if (api.vault.setWalletLabel(walletId, name)) {
       dispatch({
-        type: ActionTypes.UPDATE_ACCOUNT,
+        type: ActionTypes.WALLET_UPDATED,
         payload: {
           walletId,
           name,
