@@ -1,4 +1,4 @@
-import {addresses, application, IState} from '@emeraldwallet/store';
+import { addresses, application, IState } from '@emeraldwallet/store';
 import { CircularProgress, Grid } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';

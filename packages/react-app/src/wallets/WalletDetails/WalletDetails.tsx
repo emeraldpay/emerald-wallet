@@ -1,10 +1,9 @@
 import { Wallet } from '@emeraldpay/emerald-vault-core';
 import { blockchainById, blockchainByName } from '@emeraldwallet/core';
-import { addresses, screen, tokens, txhistory } from '@emeraldwallet/store';
+import { addresses, screen, txhistory } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import TxHistory from '../../transactions/TxHistory';
-import TokenBalances from '../TokenBalances';
 import WalletDetailsView from './WalletDetailsView';
 
 export default connect(
@@ -16,17 +15,9 @@ export default connect(
     const transactions = txhistory.selectors.searchTransactions(
         '', // account.id,
         txhistory.selectors.allTrackedTxs(state));
-    let tokensBalances = null;
-
-    if (wallet.getEthereumAccounts().length > 0) {
-      const firstAccount = wallet.getEthereumAccounts()[0];
-      const blockchainCode = blockchainById(firstAccount.blockchain)!.params.code;
-      tokensBalances = tokens.selectors.selectBalances(state, firstAccount.address, blockchainCode);
-    }
 
     return {
       showFiat: true,
-      tokens: (<TokenBalances balances={tokensBalances} />),
       wallet,
       transactions,
       txList: (<TxHistory transactions={transactions} accountId={wallet.value.id}/>)

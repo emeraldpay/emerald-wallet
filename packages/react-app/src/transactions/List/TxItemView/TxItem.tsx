@@ -1,7 +1,7 @@
 import { convert, InputDataDecoder } from '@emeraldplatform/core';
 import { Account as AddressAvatar } from '@emeraldplatform/ui';
 import { ArrowDown } from '@emeraldplatform/ui-icons';
-import {BlockchainCode, IUnits, Units, utils} from '@emeraldwallet/core';
+import { BlockchainCode, IUnits, Units, utils } from '@emeraldwallet/core';
 import { abi as TokenAbi } from '@emeraldwallet/erc20';
 import { TableCell, TableRow } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';

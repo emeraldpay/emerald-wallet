@@ -1,4 +1,4 @@
-import {addresses, IState, txhistory} from '@emeraldwallet/store';
+import { addresses, IState, txhistory } from '@emeraldwallet/store';
 import Header from '@emeraldwallet/ui/lib/components/tx/TxHistory/Header';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';

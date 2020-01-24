@@ -2,7 +2,7 @@ import {
   Page, Warning, WarningHeader, WarningText
 } from '@emeraldplatform/ui';
 import { BlockchainCode } from '@emeraldwallet/core';
-import { addresses, screen, settings, IState } from '@emeraldwallet/store';
+import { addresses, IState, screen, settings } from '@emeraldwallet/store';
 import { Button, ChainSelector, FormRow } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';

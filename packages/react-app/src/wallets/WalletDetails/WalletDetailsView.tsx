@@ -1,4 +1,4 @@
-import {EthereumAccount, WalletOp} from '@emeraldpay/emerald-vault-core';
+import { EthereumAccount, WalletOp } from '@emeraldpay/emerald-vault-core';
 import {
   Account as AddressAvatar, ButtonGroup, IdentityIcon, Page
 } from '@emeraldplatform/ui';
@@ -38,7 +38,6 @@ export interface IProps {
   createTx?: any;
   showReceiveDialog?: any;
   txList?: React.ReactElement;
-  tokens?: React.ReactElement;
 }
 
 type AccountShowProps = IProps & WithTranslation;

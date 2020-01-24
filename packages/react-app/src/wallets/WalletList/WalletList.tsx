@@ -1,5 +1,5 @@
 import { Wallet, WalletOp, WalletsOp } from '@emeraldpay/emerald-vault-core';
-import {addresses, IState, screen} from '@emeraldwallet/store';
+import { addresses, IState, screen } from '@emeraldwallet/store';
 import { Grid } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';

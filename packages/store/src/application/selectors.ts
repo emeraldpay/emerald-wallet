@@ -1,17 +1,17 @@
 import { moduleName } from './types';
 
 export function getMessage (state: any): any {
-  return state[moduleName].get('message').toJSON();
+  return state[moduleName].message;
 }
 
 export function isConnecting (state: any): boolean {
-  return state[moduleName].get('connecting');
+  return state[moduleName].connecting;
 }
 
 export function terms (state: any): string {
-  return state[moduleName].get('terms');
+  return state[moduleName].terms;
 }
 
 export function isConfigured (state: any): boolean {
-  return state[moduleName].get('configured');
+  return state[moduleName].configured;
 }

@@ -33,6 +33,9 @@ export function reducer (
   state: IBlockchainsState = INITIAL_STATE,
   action: BlockchainsAction
 ): IBlockchainsState {
+  if (!state) {
+    state = INITIAL_STATE;
+  }
   switch (action.type) {
     case ActionTypes.BLOCK:
       return onBlock(state, action.payload);

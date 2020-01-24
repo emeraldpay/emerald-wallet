@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import Balance from '../../common/Balance';
 import i18n from '../../i18n';
 import TxView from './TxItemView';
-import {ITxItemProps} from "./TxItemView/TxItem";
+import { ITxItemProps } from './TxItemView/TxItem';
 
 function txValueRenderer (showFiat: boolean) {
   return function renderer (balance: any, ticker: string) {
