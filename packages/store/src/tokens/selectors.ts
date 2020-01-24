@@ -13,7 +13,9 @@ export function selectBalances (state: IState, address: string, chain: Blockchai
   return null;
 }
 
-export function selectBalance (state: IState, tokenId: string, address: string, chain: BlockchainCode): ITokenBalance | null {
+export function selectBalance (
+  state: IState, tokenId: string, address: string, chain: BlockchainCode
+): ITokenBalance | null {
   const balances = state[moduleName] as ITokensState;
   if (balances[chain]) {
     const b = balances[chain];

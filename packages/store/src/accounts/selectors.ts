@@ -1,5 +1,5 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
-import { Wallet, WalletAccount, WalletOp, WalletsOp } from '@emeraldpay/emerald-vault-core';
+import {EthereumAccount, Wallet, WalletAccount, WalletOp, WalletsOp} from '@emeraldpay/emerald-vault-core';
 import { Wei } from '@emeraldplatform/eth';
 import { BlockchainCode, blockchainCodeToId, Blockchains, Units } from '@emeraldwallet/core';
 import { registry } from '@emeraldwallet/erc20';
@@ -7,12 +7,18 @@ import BigNumber from 'bignumber.js';
 import { settings, tokens } from '../index';
 import { IState } from '../types';
 import { BalanceValueConverted, IBalanceValue, moduleName } from './types';
+import { createSelector } from 'reselect';
 
 const sum = (a: Wei | undefined, b: Wei | undefined) => (a || Wei.ZERO).plus(b || Wei.ZERO);
 
-export function all (state: any): WalletsOp {
-  return WalletsOp.of(allAsArray(state));
-}
+export const allWallets = (state: IState) => state[moduleName].wallets;
+
+export const all = createSelector<IState, vault.Wallet[], WalletsOp>(
+  [allWallets],
+  (wallets) => {
+    return WalletsOp.of(wallets);
+  }
+);
 
 /**
  * Returns all accounts from all wallets as flat array
@@ -91,7 +97,7 @@ export function allBalances (state: IState): IBalanceValue[] {
 export function getWalletBalances (state: IState, _wallet: Wallet | WalletOp, includeEmpty: boolean): IBalanceValue[] {
   const wallet = WalletOp.asOp(_wallet);
   const assets: IBalanceValue[] = [];
-  const ethereumAccounts = wallet.getEthereumAccounts();
+  const ethereumAccounts = wallet.value.accounts as EthereumAccount[];
   [BlockchainCode.ETH, BlockchainCode.ETC, BlockchainCode.Kovan]
     .forEach((code) => {
       const blockchainAccounts = ethereumAccounts

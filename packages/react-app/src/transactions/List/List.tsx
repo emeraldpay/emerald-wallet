@@ -69,7 +69,7 @@ const TransactionsList = (props: IProps) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {transactions.map((tx) => <Transaction key={tx.get('hash')} tx={tx} accountId={accountId} />)}
+          {transactions.map((tx) => <Transaction hash={tx.get('hash')} key={tx.get('hash')} walletId={accountId} />)}
         </TableBody>
       </Table>
     </div>

@@ -1,4 +1,5 @@
 import { Blockchains } from '@emeraldwallet/core';
+import { createSelector } from 'reselect';
 import { IState } from '../types';
 
 export const fiatCurrency = (state: IState) => state.wallet.settings.localeCurrency;
@@ -15,7 +16,11 @@ export const fiatRate = (chain: string, state: IState): number | undefined => {
   return undefined;
 };
 
-export const currentChains = (state: IState) => state.wallet.settings.mode.chains
-  .map((chain: any) => Blockchains[chain.toLowerCase()]);
+export const modeChains = (state: IState) => state.wallet.settings.mode.chains;
+
+export const currentChains = createSelector(
+  [modeChains],
+  (chains) => chains.map((chain: any) => Blockchains[chain.toLowerCase()])
+);
 
 export const numConfirms = (state: IState) => state.wallet.settings.numConfirmations;

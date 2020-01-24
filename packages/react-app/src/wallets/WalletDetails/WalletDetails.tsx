@@ -29,7 +29,7 @@ export default connect(
       tokens: (<TokenBalances balances={tokensBalances} />),
       wallet,
       transactions,
-      txList: (<span>NOT IMPLEMENTED</span>) // (<TxHistory transactions={transactions} accountId={wallet.id}/>)
+      txList: (<TxHistory transactions={transactions} accountId={wallet.value.id}/>)
     };
   },
   (dispatch, ownProps) => ({

@@ -1,5 +1,6 @@
 import { Units, Wei } from '@emeraldplatform/eth';
 import { List, Map } from 'immutable';
+import { createSelector } from 'reselect';
 import { TransactionMap, TransactionsList } from './types';
 
 export function allTrackedTxs (state: any): List<Map<string, any>> {

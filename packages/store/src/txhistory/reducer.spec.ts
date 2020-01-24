@@ -3,7 +3,7 @@ import { BlockchainCode, IStoredTransaction } from '@emeraldwallet/core';
 import { loadTransactions, storeTransactions } from '@emeraldwallet/history-store';
 import BigNumber from 'bignumber.js';
 import { fromJS, List } from 'immutable';
-import { reducer as historyReducers } from './reducer';
+import {INITIAL_STATE, reducer as historyReducers} from './reducer';
 import { ActionTypes, IUpdateTxsAction } from './types';
 
 const { toBigNumber } = convert;
@@ -11,7 +11,7 @@ const { toBigNumber } = convert;
 describe('historyReducer', () => {
   it('should store and load txs correctly', () => {
     // prepare
-    let state = historyReducers(null, null);
+    let state = INITIAL_STATE;
     expect(state.get('trackedTransactions')).toEqual(List());
     state = historyReducers(state, {
       type: ActionTypes.TRACK_TX,
@@ -44,7 +44,7 @@ describe('historyReducer', () => {
   });
 
   it('should add pending TX or update existent', () => {
-    let state = historyReducers(null, null);
+    let state = INITIAL_STATE;
     expect(state.get('trackedTransactions')).toEqual(List());
     state = historyReducers(state, {
       type: ActionTypes.TRACK_TX,
@@ -107,7 +107,7 @@ describe('historyReducer', () => {
     };
 
     // prepare state
-    let state = historyReducers(null, {
+    let state = historyReducers(INITIAL_STATE, {
       type: ActionTypes.TRACK_TX,
       tx: {
         hash: tx.hash,
@@ -151,9 +151,7 @@ describe('historyReducer', () => {
     };
 
     // prepare state
-    let state = historyReducers(fromJS({
-      trackedTransactions: List.of()
-    }), {
+    let state = historyReducers(INITIAL_STATE, {
       type: ActionTypes.TRACK_TX,
       tx
     });
@@ -215,7 +213,7 @@ describe('historyReducer', () => {
         input: 'fckef'
       }];
 
-    let state = historyReducers(null, {
+    let state = historyReducers(INITIAL_STATE, {
       type: ActionTypes.TRACK_TX,
       tx: txs[0]
     });

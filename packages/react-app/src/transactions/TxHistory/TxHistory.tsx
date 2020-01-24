@@ -1,4 +1,4 @@
-import { addresses, txhistory } from '@emeraldwallet/store';
+import {addresses, IState, txhistory} from '@emeraldwallet/store';
 import Header from '@emeraldwallet/ui/lib/components/tx/TxHistory/Header';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
@@ -20,12 +20,12 @@ interface IProps {
   classes: any;
 }
 
-interface IState {
+interface IHistoryState {
   txFilter: string;
   displayedTransactions: any;
 }
 
-class TransactionsHistory extends React.Component<IProps, IState> {
+class TransactionsHistory extends React.Component<IProps, IHistoryState> {
   constructor (props: IProps) {
     super(props);
     this.state = {
@@ -79,7 +79,7 @@ class TransactionsHistory extends React.Component<IProps, IState> {
 const StyledTransactionsHistory = withStyles(styles)(TransactionsHistory);
 
 export default connect(
-  (state, ownProps: any) => {
+  (state: IState, ownProps: any) => {
     const txs = ownProps.transactions || txhistory.selectors.allTrackedTxs(state);
     return {
       transactions: txs.sortBy((tx: any) => tx.get('timestamp')).reverse(),

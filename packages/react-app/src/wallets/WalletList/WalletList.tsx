@@ -1,5 +1,5 @@
 import { Wallet, WalletOp, WalletsOp } from '@emeraldpay/emerald-vault-core';
-import { addresses, screen } from '@emeraldwallet/store';
+import {addresses, IState, screen} from '@emeraldwallet/store';
 import { Grid } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
@@ -59,7 +59,7 @@ const WalletList = ((props: IWalletsListProps) => {
 const StyledAccountList = withStyles(styles)(WalletList);
 
 export default connect(
-  (state, ownProps) => {
+  (state: IState, ownProps) => {
     return {
       accounts: addresses.selectors.all(state),
       showFiat: true

@@ -1,7 +1,7 @@
 import { convert, InputDataDecoder } from '@emeraldplatform/core';
 import { Account as AddressAvatar } from '@emeraldplatform/ui';
 import { ArrowDown } from '@emeraldplatform/ui-icons';
-import { IUnits, Units, utils } from '@emeraldwallet/core';
+import {BlockchainCode, IUnits, Units, utils} from '@emeraldwallet/core';
 import { abi as TokenAbi } from '@emeraldwallet/erc20';
 import { TableCell, TableRow } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
@@ -52,7 +52,7 @@ export interface ITxItemProps {
   netParams: INetworkParams;
   amountRenderer?: (balance: any, ticker: string) => any;
   tx: any;
-  openAccount: any;
+  openAccount: (blockchain: BlockchainCode, address: string) => void;
   toAccount: any;
   fromAccount: any;
   openTx: any;
@@ -106,6 +106,14 @@ export const TxItem = (props: ITxItemProps) => {
     }
   }
 
+  function openFromAccount () {
+    openAccount(tx.blockchain, tx.from);
+  }
+
+  function openToAccount () {
+    openAccount(tx.blockchain, tx.to);
+  }
+
   return (
     <TableRow>
       <TableCell className={classes.columnValue}>
@@ -118,13 +126,13 @@ export const TxItem = (props: ITxItemProps) => {
         <AddressAvatar
           address={tx.from}
           name={fromAccount.name}
-          onClick={() => openAccount(tx.from)}
+          onClick={openFromAccount}
         />
         {tx.to && (
           <AddressAvatar
             address={tx.to}
             name={toAccount.name}
-            onClick={() => openAccount(tx.to)}
+            onClick={openToAccount}
           />
           )}
       </TableCell>

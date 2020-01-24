@@ -3,6 +3,7 @@ import { Dispatch } from 'react';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import * as accounts from './accounts';
+import * as addressBook from './address-book';
 import { IAccountsState } from './accounts/types';
 import { IAddAccountState } from './add-account/types';
 import { IAddressBookState } from './address-book/types';
@@ -14,7 +15,7 @@ import { ITransactionState } from './transaction/types';
 
 export interface IState {
   [accounts.moduleName]: IAccountsState;
-  'address-book': IAddressBookState;
+  [addressBook.moduleName]: IAddressBookState;
   blockchains: IBlockchainsState;
   conn: any;
   launcher: any;

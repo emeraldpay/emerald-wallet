@@ -1,10 +1,11 @@
-import { blockchainById, blockchainByName, blockchainCodeToId } from '@emeraldwallet/core';
-import { addresses, blockchains, IState, screen, settings, wallet } from '@emeraldwallet/store';
+import { blockchainById, blockchainByName, BlockchainCode, blockchainCodeToId } from '@emeraldwallet/core';
+import { addresses, blockchains, IState, screen, settings, txhistory, wallet } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import Balance from '../../common/Balance';
 import i18n from '../../i18n';
 import TxView from './TxItemView';
+import {ITxItemProps} from "./TxItemView/TxItem";
 
 function txValueRenderer (showFiat: boolean) {
   return function renderer (balance: any, ticker: string) {
@@ -21,9 +22,20 @@ function txValueRenderer (showFiat: boolean) {
   };
 }
 
-export default connect<any, any, any, IState>(
-  (state, ownProps: any) => {
-    const tx = (ownProps.tx && ownProps.tx.toJS()) || {};
+export interface IOwnProps {
+  hash: string;
+  walletId?: string;
+}
+
+export interface IDispatchProps {
+  openAccount: any;
+  openTx: any;
+}
+
+export default connect<ITxItemProps, IDispatchProps, IOwnProps, IState>(
+  (state, ownProps: IOwnProps): any => {
+    // TODO: .toJS() call impact on performance
+    const tx = txhistory.selectors.selectByHash(state, ownProps.hash).toJS();
     const blockchain = tx.blockchain ? blockchainByName(tx.blockchain) : blockchainById(tx.chainId);
     const blockchainId = blockchainCodeToId(blockchain!.params.code);
 
@@ -54,17 +66,16 @@ export default connect<any, any, any, IState>(
     };
   },
 
-  (dispatch, ownProps: any) => ({
+  (dispatch, ownProps: IOwnProps): IDispatchProps => ({
     openTx: () => {
-      const { tx } = ownProps;
+      const { hash } = ownProps;
       dispatch(screen.actions.gotoScreen('transaction', {
-        hash: tx.get('hash'),
-        accountId: ownProps.accountId
+        hash,
+        accountId: ownProps.walletId
       }));
     },
-    openAccount: (address: string) => {
-      const { tx } = ownProps;
-      dispatch(wallet.actions.openAccountDetails(tx.get('blockchain'), address));
+    openAccount: (blockchain: BlockchainCode, address: string) => {
+      dispatch(wallet.actions.openAccountDetails(blockchain, address));
     }
   })
 )(TxView);
