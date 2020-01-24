@@ -80,23 +80,14 @@ const Header = (props: IHeaderProps) => {
 
 const StyledHeader = withStyles(styles)(Header);
 
-const mapStateToProps = (state: any, ownProps: any) => {
-  const chains: any[] = [];
-  const curr = blockchains.selectors.all(state);
-  curr.forEach((v: { height: any; }, code: any) => {
-    chains.push({
-      id: code,
-      title: code,
-      height: v.height
-    });
-  });
+const mapStateToProps = (state: any) => {
   return {
-    chains,
+    chains: blockchains.selectors.getCurrentInfo(state),
     showFiat: true
   };
 };
 
-const mapDispatchToProps = (dispatch: any, ownProps: any) => ({
+const mapDispatchToProps = (dispatch: any) => ({
   openSettings: () => {
     dispatch(screen.actions.gotoScreen('settings'));
   }

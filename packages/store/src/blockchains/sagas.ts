@@ -2,12 +2,12 @@ import { Wei } from '@emeraldplatform/eth';
 import { IApi } from '@emeraldwallet/core';
 import { call, put, takeEvery } from 'redux-saga/effects';
 import { setGasPriceAction } from './actions';
-import { ActionTypes, FetchGasPriceAction } from './types';
+import { ActionTypes, IFetchGasPriceAction } from './types';
 
 /**
  * Fetches gas price by RPC call
  */
-function* fetchGasPrice (api: IApi, action: FetchGasPriceAction) {
+function* fetchGasPrice (api: IApi, action: IFetchGasPriceAction) {
   const result = yield call(api.chain(action.payload)!.eth.gasPrice);
   yield put(setGasPriceAction(action.payload, new Wei(result)));
 }

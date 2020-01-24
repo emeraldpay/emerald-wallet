@@ -1,12 +1,12 @@
+import { UnsignedTx, WalletsOp } from '@emeraldpay/emerald-vault-core';
 import { convert, EthAddress } from '@emeraldplatform/core';
+import { quantitiesToHex } from '@emeraldplatform/core/lib/convert';
 import { Wei } from '@emeraldplatform/eth';
-import {BlockchainCode, blockchainCodeToId, Blockchains, IStoredTransaction, EthereumTx, IApi, vault} from '@emeraldwallet/core';
+import { BlockchainCode, blockchainCodeToId, Blockchains, EthereumTx, IApi, IStoredTransaction, vault } from '@emeraldwallet/core';
 import { Dispatch } from 'react';
 import { catchError, gotoScreen } from '../screen/actions';
 import * as history from '../txhistory';
 import { Dispatched } from '../types';
-import {UnsignedTx, WalletsOp} from '@emeraldpay/emerald-vault-core';
-import {quantitiesToHex} from "@emeraldplatform/core/lib/convert";
 
 function unwrap (value: string[] | string | null): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -73,16 +73,16 @@ function signTx (api: IApi, tx: IStoredTransaction, passphrase: string, blockcha
     nonce: typeof tx.nonce === 'string' ? parseInt(tx.nonce) : tx.nonce
   };
   console.debug(`Trying to sign tx: ${plainTx}`);
-  let wallets = WalletsOp.of(api.vault.listWallets());
-  let wallet = wallets.findWalletByAddress(tx.from, blockchainCodeToId(blockchain));
+  const wallets = WalletsOp.of(api.vault.listWallets());
+  const wallet = wallets.findWalletByAddress(tx.from, blockchainCodeToId(blockchain));
   if (typeof wallet === 'undefined') {
-    return Promise.reject(new Error("Unknown Wallet"))
+    return Promise.reject(new Error('Unknown Wallet'));
   }
-  let account = wallet.findAccountByAddress(tx.from, blockchainCodeToId(blockchain));
+  const account = wallet.findAccountByAddress(tx.from, blockchainCodeToId(blockchain));
   if (typeof account === 'undefined') {
-    return Promise.reject(new Error("Unknown Account"))
+    return Promise.reject(new Error('Unknown Account'));
   }
-  let unsignedTx: UnsignedTx = {
+  const unsignedTx: UnsignedTx = {
     from: plainTx.from,
     to: plainTx.to,
     gas: quantitiesToHex(plainTx.gas),
@@ -91,7 +91,7 @@ function signTx (api: IApi, tx: IStoredTransaction, passphrase: string, blockcha
     data: plainTx.data,
     nonce: quantitiesToHex(plainTx.nonce)
   };
-  let rawTx = api.vault.signTx(account.id, unsignedTx, passphrase);
+  const rawTx = api.vault.signTx(account.id, unsignedTx, passphrase);
   return Promise.resolve(rawTx);
 }
 

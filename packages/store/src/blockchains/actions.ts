@@ -1,22 +1,22 @@
 import { Wei } from '@emeraldplatform/eth';
 import { IApi } from '@emeraldwallet/core';
-import { ActionTypes, BlockAction, FetchGasPriceAction, GasPriceAction } from './types';
+import { ActionTypes, IBlockAction, IFetchGasPriceAction, IGasPriceAction } from './types';
 
-export function setGasPriceAction (blockchainCode: string, gasPrice: Wei): GasPriceAction {
+export function setGasPriceAction (blockchainCode: string, gasPrice: Wei): IGasPriceAction {
   return {
     payload: { blockchain: blockchainCode, gasPrice },
     type: ActionTypes.GAS_PRICE
   };
 }
 
-export function fetchGasPriceAction (blockchainCode: string): FetchGasPriceAction {
+export function fetchGasPriceAction (blockchainCode: string): IFetchGasPriceAction {
   return {
     payload: blockchainCode,
     type: ActionTypes.FETCH_GAS_PRICE
   };
 }
 
-export function blockAction (payload: {hash: string, height: any, blockchain: any}): BlockAction {
+export function blockAction (payload: {hash: string, height: any, blockchain: any}): IBlockAction {
   return {
     payload,
     type: ActionTypes.BLOCK

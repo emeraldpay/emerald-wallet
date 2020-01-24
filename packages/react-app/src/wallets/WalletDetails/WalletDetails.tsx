@@ -13,7 +13,7 @@ export default connect(
     // reload account from store, because it can be passed with id only if it was just imported
     const wallet = addresses.selectors.find(state, accountPassed.id)!;
     // const transactions = [];
-    const transactions = [] || txhistory.selectors.searchTransactions(
+    const transactions = txhistory.selectors.searchTransactions(
         '', // account.id,
         txhistory.selectors.allTrackedTxs(state));
     let tokensBalances = null;
