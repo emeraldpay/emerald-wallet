@@ -7,7 +7,7 @@ import {
   ActionTypes,
   AddressesAction,
   IAccountsState,
-  IAddWalletAction,
+  IWalletCreatedAction,
   ISetBalanceAction,
   ISetLoadingAction,
   IUpdateWalletAction,
@@ -81,15 +81,18 @@ function onSetBalance (state: IAccountsState, action: ISetBalanceAction): IAccou
   const blockchainId = blockchainCodeToId(blockchain);
 
   let updatedState = state;
+
   WalletsOp.of(state.wallets)
     .getAccounts()
     .filter((account) => account.address === address && account.blockchain === blockchainId)
     .forEach((account) => {
+
       updatedState = updateAccountDetails(updatedState, account.id, (account) => {
         account.balance = value;
         account.balancePending = null;
         return account;
       });
+
     });
   return updatedState;
 }
@@ -103,7 +106,7 @@ function onWalletUpdated (state: any, action: IUpdateWalletAction) {
   });
 }
 
-function onAddAccount (state: IAccountsState, action: IAddWalletAction): IAccountsState {
+function onWalletCreated (state: IAccountsState, action: IWalletCreatedAction): IAccountsState {
   const { wallet } = action;
   if (state.wallets.some((w) => w.id === action.wallet.id)) {
     // already exists
@@ -159,8 +162,8 @@ export function reducer (
       return onLoading(state, action);
     case ActionTypes.SET_LIST:
       return onLoaded(state, action);
-    case ActionTypes.ADD_WALLET:
-      return onAddAccount(state, action);
+    case ActionTypes.CREATE_WALLET_SUCCESS:
+      return onWalletCreated(state, action);
     case ActionTypes.SET_TXCOUNT:
       return onSetTxCount(state, action);
     // case ActionTypes.PENDING_BALANCE:

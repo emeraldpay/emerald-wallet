@@ -40,7 +40,7 @@ describe('addresses reducer', () => {
     let state: IAccountsState = reducer(undefined, { type: ActionTypes.LOADING, payload: true });
     expect(state.wallets.length).toEqual(0);
     state = reducer(state, {
-      type: ActionTypes.ADD_WALLET,
+      type: ActionTypes.CREATE_WALLET_SUCCESS,
       wallet: {
         id: 'c35d05ba-d6bb-40b1-9553-383f414a97e5',
         accounts: [],
@@ -51,7 +51,7 @@ describe('addresses reducer', () => {
 
     // add again
     state = reducer(state, {
-      type: ActionTypes.ADD_WALLET,
+      type: ActionTypes.CREATE_WALLET_SUCCESS,
       wallet: {
         id: 'c35d05ba-d6bb-40b1-9553-383f414a97e5',
         accounts: [],
@@ -62,7 +62,7 @@ describe('addresses reducer', () => {
 
     // add different wallet
     state = reducer(state, {
-      type: ActionTypes.ADD_WALLET,
+      type: ActionTypes.CREATE_WALLET_SUCCESS,
       wallet: {
         id: '2d9fde4e-ce00-4b58-af68-15c211604529',
         accounts: [],

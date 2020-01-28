@@ -103,7 +103,7 @@ export class WalletShow extends React.Component<AccountShowProps, IState> {
               leftIcon={<Back onClick={goBack}/>}
               rightIcon={<MoreVertIcon />}
         >
-          <Grid container={true}>
+          <Grid container={true} direction={'column'}>
             <Grid item={true} xs={12}>
               {wallet.value.accounts.map(
                 (account) => (<EthereumAccountItem account={account as EthereumAccount} key={account.id}/>)

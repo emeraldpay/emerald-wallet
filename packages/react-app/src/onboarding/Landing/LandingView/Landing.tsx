@@ -40,7 +40,7 @@ export const styles = (theme?: any) => createStyles({
 
 export interface ILandingProps {
   classes?: any;
-  onGenerate?: any;
+  onCreateWallet?: any;
   onAboutClick?: any;
   onImportJson?: any;
   onImportPrivateKey?: any;
@@ -49,7 +49,7 @@ export interface ILandingProps {
 }
 
 export const Landing = ({
-  onGenerate, onImportJson, onImportPrivateKey, onLedger, classes, onAboutClick, onImportMnemonic
+  onCreateWallet, onImportJson, onImportPrivateKey, onLedger, classes, onAboutClick, onImportMnemonic
 }: ILandingProps) => {
   return (
     <div>
@@ -66,7 +66,7 @@ export const Landing = ({
                 <Button onClick={onAboutClick} label='More about supported tokens' />
                 <br />
                 <br />
-                <Button primary={true} onClick={onGenerate} label='Generate New Account' />
+                <Button primary={true} onClick={onCreateWallet} label='Create new wallet' />
                 <br />
                 <br />
               </div>

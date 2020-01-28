@@ -1,6 +1,8 @@
 import { screen } from '@emeraldwallet/store';
 import { DashboardMenu as Menu } from '@emeraldwallet/ui';
+import { IconButton } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/core/styles';
+import { Add } from '@emeraldplatform/ui-icons';
 import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -32,17 +34,26 @@ export interface IHeaderProps {
   showAddressBook: any;
   classes: any;
   t: any;
+  onCreateWallet?: any;
 }
 
 export function Header (props: IHeaderProps & WithTranslation) {
   const {
-      generate, importJson, importLedger, importPrivateKey, importMnemonic, addToken, createMnemonic, showAddressBook
+      generate, importJson, importLedger, importPrivateKey, importMnemonic, addToken, createMnemonic,
+      showAddressBook, onCreateWallet
     } = props;
   const { t, classes } = props;
+
+  function handlePlusWalletClick () {
+    if (onCreateWallet) {
+      onCreateWallet();
+    }
+  }
   return (
       <div className={classes.header}>
         <div>
           <span className={classes.title}>{t('accounts.list.title')}</span>
+          <IconButton onClick={handlePlusWalletClick}><Add /></IconButton>
         </div>
         <Menu
           generate={generate}
@@ -65,6 +76,9 @@ export default withTranslation()(
   connect(
     (state, ownProps) => ({}),
     (dispatch, ownProps) => ({
+      onCreateWallet: () => {
+        dispatch(gotoScreen(screen.Pages.CREATE_WALLET));
+      },
       generate: () => {
         dispatch(gotoScreen('generate'));
       },

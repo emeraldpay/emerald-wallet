@@ -18,4 +18,10 @@ export default class WalletService {
   public getAllWallets = () => {
     return this.vault.listWallets();
   }
+
+  public createNewWallet = (name: string) => {
+    const walletId = this.vault.addWallet(name);
+    const wallet = this.vault.getWallet(walletId);
+    return wallet;
+  }
 }

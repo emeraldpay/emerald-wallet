@@ -9,21 +9,22 @@ import {
   Logger,
   WalletService
 } from '@emeraldwallet/core';
-import { ipcRenderer } from 'electron';
-import { Dispatch } from 'react';
-import { dispatchRpcError } from '../screen/actions';
+import {ipcRenderer} from 'electron';
+import {Dispatch} from 'react';
+import {dispatchRpcError} from '../screen/actions';
 import * as history from '../txhistory';
-import { Dispatched } from '../types';
+import {Dispatched} from '../types';
 import * as selectors from './selectors';
 import {
   ActionTypes,
   AddressesAction,
-  IAddWalletAction,
+  ICreateWalletAction,
   IFetchErc20BalancesAction,
   ILoadWalletsAction,
   ISetBalanceAction,
   ISetLoadingAction,
   IUpdateWalletAction,
+  IWalletCreatedAction,
   IWalletsLoaded,
   PendingBalanceAction,
   SetTxCountAction
@@ -125,14 +126,20 @@ function addAccount (
   }
   const accountId = api.vault.addAccount(walletId, add);
   const wallet = api.vault.getWallet(walletId)!;
-  dispatch({
-    type: ActionTypes.ADD_WALLET,
-    wallet
-  });
+
+  dispatch(walletCreatedAction(wallet));
+
   const account = wallet.accounts[0] as vault.EthereumAccount;
   dispatch(loadWalletsAction()); // reload only current wallet
   // loadAccountBalance(blockchainById(add.blockchain)!!.params.code, account.address);
   return walletId;
+}
+
+export function createNewWalletAction (walletName: string): ICreateWalletAction {
+  return {
+    type: ActionTypes.CREATE_WALLET,
+    payload: walletName
+  };
 }
 
 function createWalletWithAccount (
@@ -141,19 +148,25 @@ function createWalletWithAccount (
   const walletId = api.vault.addWallet(name);
   const accountId = api.vault.addAccount(walletId, add);
   const wallet = api.vault.getWallet(walletId)!;
-  dispatch({
-    type: ActionTypes.ADD_WALLET,
-    wallet
-  });
+
+  dispatch(walletCreatedAction(wallet));
+
   const account = wallet.accounts[0] as vault.EthereumAccount;
   dispatch(loadWalletsAction()); // reload only current wallet
   // loadAccountBalance(blockchain, account.address);
   return walletId;
 }
 
+export function walletCreatedAction (wallet: any): IWalletCreatedAction {
+  return {
+    type: ActionTypes.CREATE_WALLET_SUCCESS,
+    wallet
+  };
+}
+
 export function createAccount (
   blockchain: BlockchainCode, passphrase: string, name: string = '', description: string = ''
-): Dispatched<IAddWalletAction> {
+): Dispatched<IWalletCreatedAction> {
   return (dispatch, getState, api) => {
     createWalletWithAccount(api, dispatch,
        blockchain, name, {
@@ -215,13 +228,13 @@ function readWalletFile (walletFile: Blob): Promise<any> {
 }
 
 export function importJson (
-  wallet: vault.Uuid,
+  walletId: vault.Uuid,
   blockchain: BlockchainCode,
   data: any
-): Dispatched<IAddWalletAction> {
+): Dispatched<IWalletCreatedAction> {
   return (dispatch, getState, api) => {
     addAccount(api, dispatch,
-      wallet, {
+      walletId, {
         blockchain: blockchainCodeToId(blockchain),
         type: 'ethereum-json',
         key: JSON.stringify(data)
@@ -231,7 +244,7 @@ export function importJson (
 
 export function importMnemonic (
   blockchain: BlockchainCode, passphrase: string, mnemonic: string, hdPath: string, name: string, description: string
-): Dispatched<IAddWalletAction> {
+): Dispatched<IWalletCreatedAction> {
   return (dispatch, getState, api) => {
     if (!blockchains.isValidChain(blockchain)) {
       throw new Error('Invalid chain code: ' + blockchain);
@@ -266,7 +279,7 @@ export function importWalletFile (
 
 export function importPk (
   blockchain: BlockchainCode, pk: string, password: string, name: string, description: string
-): Dispatched<IAddWalletAction> {
+): Dispatched<IWalletCreatedAction> {
   return (dispatch, getState, api) => {
     createWalletWithAccount(api, dispatch,
       blockchain, name, {

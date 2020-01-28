@@ -4,9 +4,10 @@ import { call, put, select, takeLatest } from '@redux-saga/core/effects';
 import { ipcRenderer } from 'electron';
 import { SagaIterator } from 'redux-saga';
 import { requestTokensBalances } from '../tokens/actions';
-import { fetchErc20BalancesAction, setListAction, setLoadingAction } from './actions';
+import {fetchErc20BalancesAction, setListAction, setLoadingAction, walletCreatedAction} from './actions';
 import { allAccounts } from './selectors';
 import { ActionTypes, IFetchErc20BalancesAction } from './types';
+import * as screen from '../screen';
 
 function* fetchErc20Balances (api: IApi, action: IFetchErc20BalancesAction): SagaIterator {
   const accounts = yield select(allAccounts);
@@ -54,7 +55,16 @@ function* loadAllWallets (api: IApi): SagaIterator {
   });
 }
 
+function* createWallet (api: IApi, action: any): SagaIterator {
+  const name = action.payload;
+  const service = new WalletService(api.vault);
+  const wallet = yield call(service.createNewWallet, name);
+  yield put(walletCreatedAction(wallet));
+  yield put(screen.actions.gotoScreen(screen.Pages.WALLET, wallet));
+}
+
 export function* root (api: IApi) {
   yield takeLatest(ActionTypes.FETCH_ERC20_BALANCES, fetchErc20Balances, api);
   yield takeLatest(ActionTypes.LOAD_WALLETS, loadAllWallets, api);
+  yield takeLatest(ActionTypes.CREATE_WALLET, createWallet, api);
 }

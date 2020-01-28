@@ -34,7 +34,7 @@ const ETHEREUM_TYPES: TypeDef[] = [
     description: 'Generate a new Private Key'
   },
   {
-    code: AddType.IMPORT_PK,
+    code: AddType.IMPORT_PRIVATE_KEY,
     title: 'Import Private Key',
     description: 'Import an existing raw unencrypted Private Key'
   },
@@ -67,7 +67,7 @@ function icon (type: AddType): JSX.Element {
   if (type === addAccount.AddType.GENERATE_PK) {
     return <KeypairIcon />;
   }
-  if (type === addAccount.AddType.IMPORT_PK) {
+  if (type === addAccount.AddType.IMPORT_PRIVATE_KEY) {
     return <KeyIcon />;
   }
   if (type === addAccount.AddType.IMPORT_JSON) {

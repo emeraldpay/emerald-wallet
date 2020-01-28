@@ -1,13 +1,13 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
-import {EthereumAccount, Wallet, WalletAccount, WalletOp, WalletsOp} from '@emeraldpay/emerald-vault-core';
+import { EthereumAccount, Wallet, WalletAccount, WalletOp, WalletsOp } from '@emeraldpay/emerald-vault-core';
 import { Wei } from '@emeraldplatform/eth';
 import { BlockchainCode, blockchainCodeToId, Blockchains, Units } from '@emeraldwallet/core';
 import { registry } from '@emeraldwallet/erc20';
 import BigNumber from 'bignumber.js';
+import { createSelector } from 'reselect';
 import { settings, tokens } from '../index';
 import { IState } from '../types';
 import { BalanceValueConverted, IBalanceValue, moduleName } from './types';
-import { createSelector } from 'reselect';
 
 const sum = (a: Wei | undefined, b: Wei | undefined) => (a || Wei.ZERO).plus(b || Wei.ZERO);
 
@@ -24,10 +24,12 @@ export const all = createSelector<IState, vault.Wallet[], WalletsOp>(
  * Returns all accounts from all wallets as flat array
  * @param state
  */
-export function allAccounts (state: IState): any[] {
-  const wallets = state[moduleName].wallets || [];
-  return wallets.reduce((a: WalletAccount[], w) => a.concat(w.accounts), []);
-}
+export const allAccounts = createSelector(
+  [allWallets],
+  (wallets) => {
+    return wallets.reduce((a: WalletAccount[], w) => a.concat(w.accounts), []);
+  }
+);
 
 export function allAsArray (state: IState): vault.Wallet[] {
   return (state[moduleName].wallets || [])

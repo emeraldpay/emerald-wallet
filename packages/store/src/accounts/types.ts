@@ -38,14 +38,15 @@ export enum ActionTypes {
   LOAD_WALLETS = 'ACCOUNT/LOAD_WALLETS',
   SET_BALANCE = 'ACCOUNT/SET_BALANCE',
   LOADING = 'ACCOUNT/LOADING',
-  ADD_WALLET = 'ACCOUNT/ADD_ACCOUNT',
+  CREATE_WALLET_SUCCESS = 'ACCOUNT/ADD_ACCOUNT',
   SET_LIST = 'ACCOUNT/SET_LIST',
   SET_HD_PATH = 'ACCOUNT/SET_HD_PATH',
   FETCH_HD_PATHS = 'ACCOUNT/FETCH_HD_PATHS',
   WALLET_UPDATED = 'ACCOUNT/WALLET_UPDATED',
   PENDING_BALANCE = 'ACCOUNT/PENDING_BALANCE',
   SET_TXCOUNT = 'ACCOUNT/SET_TXCOUNT',
-  FETCH_ERC20_BALANCES = 'ACCOUNT/FETCH_ERC20_BALANCES'
+  FETCH_ERC20_BALANCES = 'ACCOUNT/FETCH_ERC20_BALANCES',
+  CREATE_WALLET = 'ACCOUNTS/CREATE_WALLET',
 }
 
 export interface ILoadWalletsAction {
@@ -88,9 +89,14 @@ export interface ISetLoadingAction {
   payload: boolean;
 }
 
-export interface IAddWalletAction {
-  type: ActionTypes.ADD_WALLET;
+export interface IWalletCreatedAction {
+  type: ActionTypes.CREATE_WALLET_SUCCESS;
   wallet: vault.Wallet;
+}
+
+export interface ICreateWalletAction {
+  type: ActionTypes.CREATE_WALLET;
+  payload: string;
 }
 
 export interface SetTxCountAction {
@@ -116,11 +122,12 @@ export type AddressesAction =
   | ISetLoadingAction
   | ISetBalanceAction
   | IUpdateWalletAction
-  | IAddWalletAction
+  | IWalletCreatedAction
   // | SetHDPathAction
   | SetTxCountAction
   | PendingBalanceAction
   | IFetchHdPathsAction
   | ILoadWalletsAction
   | ISetBalanceAction
+  | ICreateWalletAction
   ;

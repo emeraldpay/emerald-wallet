@@ -9,6 +9,7 @@ import {
   ExportPaperWallet, GenerateAccount, Home, ImportLedgerAccount, ImportMnemonic, ImportPrivateKey,
   MnemonicWizard, PaperWallet, Settings, TxDetails, WalletDetails, Welcome
 } from '../../index';
+import CreateWallet from '../../create-wallet/CreateWallet';
 
 const log = Logger.forCategory('screen');
 
@@ -54,6 +55,9 @@ const Screen = (props: IScreenProps) => {
   }
   if (props.screen === 'broadcast-tx') {
     return <BroadcastTx tx={props.screenItem.tx} signed={props.screenItem.signed} />;
+  }
+  if (props.screen === screen.Pages.CREATE_WALLET) {
+    return <CreateWallet />;
   }
   // if (props.screen === 'repeat-tx') {
   //   const { transaction, toAccount, fromAccount } = props.screenItem;

@@ -2,8 +2,8 @@ import { addresses, application, IState } from '@emeraldwallet/store';
 import { CircularProgress, Grid } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import Landing from '../../onboarding/Landing';
 import Dashboard from '../Dashboard';
-import Landing from '../Landing';
 
 const styles = {
   statusMessage: {

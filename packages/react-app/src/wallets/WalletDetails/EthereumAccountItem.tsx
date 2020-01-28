@@ -1,7 +1,7 @@
 import { EthereumAccount } from '@emeraldpay/emerald-vault-core';
 import { Wei } from '@emeraldplatform/eth';
 import { Account as AddressField, ButtonGroup } from '@emeraldplatform/ui';
-import { blockchainById, BlockchainCode } from '@emeraldwallet/core';
+import { blockchainById } from '@emeraldwallet/core';
 import { addresses, IState, screen, tokens } from '@emeraldwallet/store';
 import { Balance, Button, CoinAvatar } from '@emeraldwallet/ui';
 import { Grid } from '@material-ui/core';
@@ -16,17 +16,17 @@ interface IOwnProps {
 
 interface IRenderProps {
   account: EthereumAccount;
-  tokensBalances: any;
+  tokensBalances: any[];
   balance: Wei;
-  blockchainCode: BlockchainCode;
 }
 
 interface IDispatchProps {
-  onSendClick: (account: EthereumAccount) => void;
+  onSendClick?: (account: EthereumAccount) => void;
 }
 
-const EthereumAccountItem = ((props: IRenderProps & IDispatchProps) => {
-  const { account, balance, blockchainCode, tokensBalances } = props;
+export const EthereumAccountItem = ((props: IRenderProps & IDispatchProps) => {
+  const { account, balance, tokensBalances } = props;
+  const blockchainCode = blockchainById(account.blockchain)!.params.code;
   const { onSendClick } = props;
 
   function handleSendClick () {
@@ -38,38 +38,40 @@ const EthereumAccountItem = ((props: IRenderProps & IDispatchProps) => {
   return (
     <React.Fragment>
 
-      <Grid container={true} alignItems={'center'}>
-        <Grid item={true} xs={1}>
-          <CoinAvatar chain={blockchainCode} />
+      <Grid container={true} direction={'column'} alignItems={'stretch'}>
+        <Grid container={true} alignItems={'center'}>
+          <Grid item={true} xs={1}>
+            <CoinAvatar chain={blockchainCode} />
+          </Grid>
+          <Grid item={true} xs={5}>
+            <AddressField
+              identity={false}
+              address={account.address}
+            />
+          </Grid>
+          <Grid item={true} xs={3}>
+            <AccountBalance
+              fiatStyle={false}
+              balance={balance}
+              decimals={6}
+              symbol={blockchainCode.toUpperCase()}
+              showFiat={false}
+            />
+          </Grid>
+          <Grid item={true} xs={3}>
+            {/*<Button*/}
+            {/*  label='Deposit'*/}
+            {/*  // onClick={this.handleDepositClick}*/}
+            {/*/>*/}
+            <Button
+              label='Send'
+              disabled={balance.isZero()}
+              onClick={handleSendClick}
+            />
+          </Grid>
         </Grid>
-        <Grid item={true} xs={5}>
-          <AddressField
-            identity={false}
-            address={account.address}
-          />
-        </Grid>
-        <Grid item={true} xs={3}>
-          <AccountBalance
-            fiatStyle={false}
-            balance={balance}
-            decimals={6}
-            symbol={blockchainCode.toUpperCase()}
-            showFiat={false}
-          />
-        </Grid>
-        <Grid item={true} xs={3}>
-          {/*<Button*/}
-          {/*  label='Deposit'*/}
-          {/*  // onClick={this.handleDepositClick}*/}
-          {/*/>*/}
-          <Button
-            label='Send'
-            disabled={balance.isZero()}
-            onClick={handleSendClick}
-          />
-        </Grid>
+        <Grid item={true}><TokenBalances balances={tokensBalances} /></Grid>
       </Grid>
-      <TokenBalances balances={tokensBalances} />
 
     </React.Fragment>
   );

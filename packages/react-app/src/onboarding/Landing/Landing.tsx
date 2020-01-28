@@ -9,8 +9,8 @@ export default connect(
       const url = 'https://emeraldwallet.io/coins';
       dispatch(screen.actions.openLink(url));
     },
-    onGenerate () {
-      dispatch(screen.actions.gotoScreen('landing-generate'));
+    onCreateWallet () {
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_WALLET));
     },
     onImportJson () {
       dispatch(screen.actions.gotoScreen('landing-importjson'));
