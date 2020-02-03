@@ -1,4 +1,4 @@
-import {BlockchainCode, CurrencyCode, StableCoinCode} from "@emeraldwallet/core";
+import { BlockchainCode, CurrencyCode, StableCoinCode } from '@emeraldwallet/core';
 
 export enum ActionTypes {
   SET_LOCALE_CURRENCY = 'ACCOUNT/SET_LOCALE_CURRENCY',
@@ -9,19 +9,19 @@ export enum ActionTypes {
   UPDATE = 'SETTINGS/UPDATE'
 }
 
-export type Rates =  {[key: string]: string};
+export interface Rates {[key: string]: string}
 
-export type ISettingsState = {
+export interface ISettingsState {
   localeCurrency: CurrencyCode,
   localeRate?: string,
   mode: {
     chains: BlockchainCode[],
-    currencies: (CurrencyCode | StableCoinCode)[],
+    currencies: Array<CurrencyCode | StableCoinCode>,
     id: string
   },
   numConfirmations: number,
   rates: Rates,
-};
+}
 
 export interface ILoadSettingsAction {
   type: ActionTypes.LOAD_SETTINGS;

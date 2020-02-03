@@ -1,3 +1,4 @@
+import { BlockchainCode, CurrencyCode, StableCoinCode } from '@emeraldwallet/core';
 import {
   ActionTypes,
   ISetExchRatesAction,
@@ -7,7 +8,6 @@ import {
   SetNumConfirmAction,
   SettingsAction
 } from './types';
-import {BlockchainCode, CurrencyCode, StableCoinCode} from "@emeraldwallet/core";
 
 const initial: ISettingsState = {
   rates: {},
@@ -17,7 +17,7 @@ const initial: ISettingsState = {
   mode: {
     id: 'default',
     chains: [BlockchainCode.ETH, BlockchainCode.ETC],
-    currencies: [CurrencyCode.USD, CurrencyCode.EUR, "USDT"]
+    currencies: [CurrencyCode.USD, CurrencyCode.EUR, 'USDT']
   }
 };
 
@@ -29,12 +29,12 @@ function onSetLocaleCurrency (state: ISettingsState, action: SetLocaleCurrencyAc
     localStorage.setItem('localeCurrency', currency);
   }
 
-  return Object.assign({}, state, {localeCurrency: currency, rates: {}})
+  return { ...state, localeCurrency: currency, rates: {} };
 }
 
 function onExchangeRates (state: ISettingsState, action: ISetExchRatesAction) {
   const { rates } = action.payload;
-  return Object.assign({}, state, {rates: rates, localRate: rates ? rates.ETH : undefined});
+  return { ...state, rates, localRate: rates ? rates.ETH : undefined };
 
 }
 
@@ -43,11 +43,11 @@ function onSetConfirmations (state: ISettingsState, action: SetNumConfirmAction)
   if (localStorage) {
     localStorage.setItem('numConfirmations', action.numConfirmations.toString());
   }
-  return Object.assign({}, state, {numConfirmations: action.numConfirmations});
+  return { ...state, numConfirmations: action.numConfirmations };
 }
 
 function onSetMode (state: ISettingsState, action: ISetModeAction) {
-  return Object.assign({}, state, {mode: action.payload});
+  return { ...state, mode: action.payload };
 }
 
 export default function reducer (state: ISettingsState | undefined, action: SettingsAction) {

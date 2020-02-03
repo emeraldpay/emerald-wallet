@@ -8,7 +8,7 @@ const Dashboard = () => {
     <React.Fragment>
       <Header/>
       <WalletList/>
-      <TxHistory/>
+      {/*<TxHistory/>*/}
     </React.Fragment>
   );
 };

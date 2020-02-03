@@ -48,6 +48,7 @@ const reducers = {
  * @param _api
  */
 export const createStore = (_api) => {
+
   const sagaMiddleware = createSagaMiddleware();
   const storeMiddleware = [
     sagaMiddleware,

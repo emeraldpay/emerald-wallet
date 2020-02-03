@@ -3,11 +3,11 @@ import { registry } from '@emeraldwallet/erc20';
 import { call, put, select, takeLatest } from '@redux-saga/core/effects';
 import { ipcRenderer } from 'electron';
 import { SagaIterator } from 'redux-saga';
+import * as screen from '../screen';
 import { requestTokensBalances } from '../tokens/actions';
-import {fetchErc20BalancesAction, setListAction, setLoadingAction, walletCreatedAction} from './actions';
+import { fetchErc20BalancesAction, setListAction, setLoadingAction, walletCreatedAction } from './actions';
 import { allAccounts } from './selectors';
 import { ActionTypes, IFetchErc20BalancesAction } from './types';
-import * as screen from '../screen';
 
 function* fetchErc20Balances (api: IApi, action: IFetchErc20BalancesAction): SagaIterator {
   const accounts = yield select(allAccounts);

@@ -1,15 +1,14 @@
-import { Wei } from '@emeraldplatform/eth';
 import { Logger } from '@emeraldwallet/core';
 import { screen } from '@emeraldwallet/store';
 import { CircularProgress } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import CreateWallet from '../../create-wallet/CreateWallet';
 import {
   AddContact, BroadcastTx, ContactList as AddressBook, CreateAccountWizard, CreateTransaction,
   ExportPaperWallet, GenerateAccount, Home, ImportLedgerAccount, ImportMnemonic, ImportPrivateKey,
   MnemonicWizard, PaperWallet, Settings, TxDetails, WalletDetails, Welcome
 } from '../../index';
-import CreateWallet from '../../create-wallet/CreateWallet';
 
 const log = Logger.forCategory('screen');
 

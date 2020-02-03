@@ -18,7 +18,7 @@ interface ICreateWalletState {
 export const CreateWallet = (props: ICreateWalletProps) => {
 
   const [name, setName] = useState('');
-  const [errorText, setErrorText] = useState(null);
+  const [errorText, setErrorText] = useState<string | null>(null);
 
   function handleCancelClick () {
     if (props.onCancel) {
@@ -35,6 +35,11 @@ export const CreateWallet = (props: ICreateWalletProps) => {
   function handleNameChange (event: any) {
     const nameValue = event.target.value || '';
     setName(nameValue);
+    if (nameValue.length === 0) {
+      setErrorText('Required');
+    } else {
+      setErrorText(null);
+    }
   }
 
   return (
@@ -52,7 +57,7 @@ export const CreateWallet = (props: ICreateWalletProps) => {
       />
       <ButtonGroup>
         <Button label={'Cancel'} onClick={handleCancelClick}/>
-        <Button label={'Create'} primary={true} onClick={handleCreateClick}/>
+        <Button label={'Create'} primary={true} disabled={errorText !== null} onClick={handleCreateClick}/>
       </ButtonGroup>
     </Page>
   );
