@@ -1,5 +1,5 @@
-import { Wallet, WalletOp } from '@emeraldpay/emerald-vault-core';
 import { ButtonGroup, IdentityIcon } from '@emeraldplatform/ui';
+import { Wallet } from '@emeraldwallet/core';
 import { Button, CoinAvatar } from '@emeraldwallet/ui';
 import { Card, CardContent, CardHeader, Grid, IconButton } from '@material-ui/core';
 import { AccountBalanceWalletOutlined as WalletIcon } from '@material-ui/icons';
@@ -60,7 +60,7 @@ interface IWalletItemProps {
   theme: any;
 }
 
-export class Account extends React.PureComponent<IWalletItemProps> {
+export class WalletItem extends React.PureComponent<IWalletItemProps> {
 
   public onSendClick = () => this.props.createTx(this.props.wallet);
 
@@ -143,4 +143,4 @@ export class Account extends React.PureComponent<IWalletItemProps> {
   }
 }
 
-export default withTheme(withStyles(styles)(Account));
+export default withTheme(withStyles(styles)(WalletItem));

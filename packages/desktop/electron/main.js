@@ -85,10 +85,14 @@ app.on('ready', () => {
   log.info('Connect to', apiAccess.address);
 
   log.info('... Setup Vault');
-  const vault = new LocalConnector(dataDir ? path.resolve(path.join(dataDir, '/vault')) : null, log);
+  const vault = new LocalConnector(dataDir ? path.resolve(path.join(dataDir, '/vault')) : null);
+  global.vault = vault.getProvider();
+
+  log.info('... Setup ServerConnect');
   const serverConnect = new ServerConnect(
     app.getVersion(), app.getLocale(), log, apiAccess.blockchainClient, vault.getProvider());
   global.serverConnect = serverConnect;
+
   serverConnect.init(process.versions);
 
   session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {

@@ -1,4 +1,4 @@
-import { Wallet, WalletOp, WalletsOp } from '@emeraldpay/emerald-vault-core';
+import { Wallet } from '@emeraldwallet/core';
 import { addresses, IState, screen } from '@emeraldwallet/store';
 import { Grid } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
@@ -23,7 +23,7 @@ const styles = (theme: any) => ({
 
 interface IWalletsListProps {
   showFiat: boolean;
-  accounts: WalletsOp;
+  wallets: Wallet[];
   classes: any;
   openWallet: (wallet: Wallet) => void;
   createTx: (wallet: Wallet) => void;
@@ -32,19 +32,19 @@ interface IWalletsListProps {
 
 const WalletList = ((props: IWalletsListProps) => {
   const {
-    accounts, showFiat, classes
+    wallets, showFiat, classes
   } = props;
   const {
     openWallet, createTx, showReceiveDialog
   } = props;
   return (
     <div className={classes.container}>
-        {accounts.getWallets().map((wallet: WalletOp) => {
+        {wallets.map((wallet: Wallet) => {
           return (
-            <div className={classes.listItem} key={wallet.value.id}>
+            <div className={classes.listItem} key={wallet.id}>
               <WalletItem
                 showFiat={showFiat}
-                wallet={wallet.value}
+                wallet={wallet}
                 openWallet={openWallet}
                 createTx={createTx}
                 showReceiveDialog={showReceiveDialog}
@@ -61,7 +61,7 @@ const StyledAccountList = withStyles(styles)(WalletList);
 export default connect(
   (state: IState, ownProps) => {
     return {
-      accounts: addresses.selectors.all(state),
+      wallets: addresses.selectors.allWallets(state),
       showFiat: true
     };
   },

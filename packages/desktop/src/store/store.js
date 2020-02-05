@@ -12,7 +12,7 @@ import {
 import {ipcRenderer} from 'electron';
 import {startProtocolListener} from './protocol';
 
-import {Api, getConnector} from '../lib/rpc/api';
+import {Api, getConnector, getRemoteVault} from '../lib/rpc/api';
 import {intervalRates} from './config';
 // import { showError } from './wallet/screen/screenActions';
 
@@ -32,7 +32,7 @@ Logger.setInstance(new ElectronLogger());
 
 const log = Logger.forCategory('store');
 
-const api = new Api(getConnector());
+const api = new Api(getConnector(), getRemoteVault());
 export const store = createStore(api);
 global.api = api;
 

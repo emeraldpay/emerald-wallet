@@ -1,6 +1,5 @@
-import { Wallet, WalletOp } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode } from '@emeraldwallet/core';
-import { ActionTypes, AddType, NextPageAction, SetBlockchainAction, SetTypeAction, SetWalletAction } from './types';
+import { BlockchainCode, Wallet } from '@emeraldwallet/core';
+import { ActionTypes, AddType, NextPageAction, SetBlockchainAction, SetTypeAction, ISetWalletAction } from './types';
 
 export function nextPage (): NextPageAction {
   return {
@@ -8,10 +7,10 @@ export function nextPage (): NextPageAction {
   };
 }
 
-export function start (wallet: Wallet): SetWalletAction {
+export function start (wallet: Wallet): ISetWalletAction {
   return {
     type: ActionTypes.SET_WALLET,
-    value: WalletOp.asOp(wallet).value.id
+    value: wallet.id
   };
 }
 

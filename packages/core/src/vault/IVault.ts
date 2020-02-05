@@ -1,14 +1,12 @@
 import {
   AccountId,
   AddAccount,
-  EthereumAccount,
-  IEmeraldVault, SeedDefinition, SeedDescription, UnsignedTx,
-  Uuid,
-  Wallet,
-  WalletAccount
+  SeedDefinition, SeedDescription, UnsignedTx,
+  Uuid
 } from '@emeraldpay/emerald-vault-core';
 import AddressBookItem from '../address-book/AddressBookItem';
 import { BlockchainCode } from '../blockchains';
+import Wallet from '../entities/Wallet';
 import { Account, Contact, TxSignRequest } from './types';
 
 export default interface IVault {

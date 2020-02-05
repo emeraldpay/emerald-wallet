@@ -1,7 +1,7 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
 import { AccountId } from '@emeraldpay/emerald-vault-core';
 import { Wei } from '@emeraldplatform/eth';
-import { AnyCoinCode, AnyTokenCode, BlockchainCode, CurrencyCode, Units } from '@emeraldwallet/core';
+import { AnyCoinCode, AnyTokenCode, BlockchainCode, CurrencyCode, Units, Wallet } from '@emeraldwallet/core';
 
 export const moduleName = 'accounts';
 
@@ -27,12 +27,10 @@ export interface AccountDetails {
 }
 
 export interface IAccountsState {
-  wallets: vault.Wallet[];
+  wallets: Wallet[];
   loading: boolean;
   details: AccountDetails[];
 }
-
-export type WalletsList = vault.Wallet[];
 
 export enum ActionTypes {
   LOAD_WALLETS = 'ACCOUNT/LOAD_WALLETS',
@@ -72,7 +70,7 @@ export interface IUpdateWalletAction {
 
 export interface IWalletsLoaded {
   type: ActionTypes.SET_LIST;
-  payload: vault.Wallet[];
+  payload: Wallet[];
 }
 
 export interface ISetBalanceAction {
@@ -91,7 +89,7 @@ export interface ISetLoadingAction {
 
 export interface IWalletCreatedAction {
   type: ActionTypes.CREATE_WALLET_SUCCESS;
-  wallet: vault.Wallet;
+  wallet: Wallet;
 }
 
 export interface ICreateWalletAction {

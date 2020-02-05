@@ -1,3 +1,4 @@
+import { CurrencyCode } from '@emeraldwallet/core';
 import { setRatesAction } from './actions';
 import settingsReducers from './reducer';
 import { fiatCurrency, fiatRate } from './selectors';
@@ -10,7 +11,7 @@ describe('settingsReducers', () => {
     // prepare
     let state = settingsReducers(undefined, {
       type: ActionTypes.SET_LOCALE_CURRENCY,
-      currency: 'EUR'
+      currency: CurrencyCode.EUR
     });
     state = settingsReducers(state, setRatesAction(
       {
@@ -24,7 +25,7 @@ describe('settingsReducers', () => {
     // do
     state = settingsReducers(state, {
       type: ActionTypes.SET_LOCALE_CURRENCY,
-      currency: 'RUR'
+      currency: CurrencyCode.RUB
     });
 
     // assert

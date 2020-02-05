@@ -18,13 +18,14 @@ import {
   IEmeraldVault,
   SeedDefinition,
   SeedDescription,
-  UnsignedTx,
-  Wallet
+  UnsignedTx
 } from '@emeraldpay/emerald-vault-core';
-import { AddressBookItem, BlockchainCode, IVault } from '@emeraldwallet/core';
+import * as vault from '@emeraldpay/emerald-vault-core';
+import { Account, AddressBookItem, BlockchainCode, IVault, Wallet } from '@emeraldwallet/core';
 import { blockchainCodeToId, blockchainIdToCode } from './utils';
 
 export class Vault implements IVault {
+
   public provider: IEmeraldVault;
 
   constructor (provider: IEmeraldVault) {
@@ -32,11 +33,17 @@ export class Vault implements IVault {
   }
 
   public getWallet (id: string): Wallet | undefined {
-    return this.provider.getWallet(id);
+    const result = this.provider.getWallet(id);
+    if (!result) {
+      return undefined;
+    }
+    return this.mapToCore(result);
   }
 
   public listWallets (): Wallet[] {
-    return this.provider.listWallets();
+    const result = this.provider.listWallets();
+    // Map vault entities to out core entities
+    return result.map((w) => this.mapToCore(w));
   }
 
   public addToAddressBook (item: AddressBookItem): boolean {
@@ -94,6 +101,18 @@ export class Vault implements IVault {
     return this.provider.signTx(accountFullId, tx, password);
   }
 
+  private mapToCore (w: vault.Wallet): Wallet {
+    const newWallet = new Wallet(w.id);
+    newWallet.name = w.name;
+    newWallet.accounts = w.accounts.map((a: any) => {
+      return {
+        blockchain: blockchainIdToCode(a.blockchain),
+        id: a.id,
+        address: a.address
+      };
+    });
+    return newWallet;
+  }
 //
 //     /**
 //      * Returns the client current version

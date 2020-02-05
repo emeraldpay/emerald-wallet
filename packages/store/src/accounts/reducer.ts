@@ -1,16 +1,15 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
-import { WalletsOp } from '@emeraldpay/emerald-vault-core';
-import { blockchainCodeToId } from '@emeraldwallet/core';
+import {blockchainCodeToId, Wallet} from '@emeraldwallet/core';
 import produce from 'immer';
 import {
   AccountDetails,
   ActionTypes,
   AddressesAction,
   IAccountsState,
-  IWalletCreatedAction,
   ISetBalanceAction,
   ISetLoadingAction,
   IUpdateWalletAction,
+  IWalletCreatedAction,
   IWalletsLoaded, SetTxCountAction
 } from './types';
 
@@ -27,18 +26,14 @@ function onLoading (state: IAccountsState, action: ISetLoadingAction): IAccounts
   };
 }
 
-function findExistingAccount (wallets: vault.Wallet[], accountId: vault.AccountId): vault.WalletAccount | undefined {
-  return vault.WalletsOp.of(wallets).findAccount(accountId);
-}
-
 function onLoaded (state: IAccountsState, action: IWalletsLoaded): IAccountsState {
-  const wallets: vault.Wallet[] = action.payload;
+  const wallets = action.payload;
   return { ...state, wallets };
 }
 
 type Updater<T> = (source: T) => T;
 
-function updateWallet (state: IAccountsState, walletId: vault.Uuid, f: Updater<vault.Wallet>): IAccountsState {
+function updateWallet (state: IAccountsState, walletId: vault.Uuid, f: Updater<Wallet>): IAccountsState {
   const wallets = state.wallets.map((wallet) => {
     if (wallet.id === walletId) {
       return f({ ...wallet });
@@ -52,12 +47,6 @@ function updateWallet (state: IAccountsState, walletId: vault.Uuid, f: Updater<v
 function updateAccountDetails (
   state: IAccountsState, accountId: vault.AccountId, f: Updater<AccountDetails>
 ): IAccountsState {
-  const account = WalletsOp.of(state.wallets).findAccount(accountId);
-
-  if (typeof account === 'undefined') {
-    console.warn('Unknown account', accountId);
-    return state;
-  }
 
   return produce(state, (draft) => {
     let found = false;
@@ -78,22 +67,21 @@ function updateAccountDetails (
 
 function onSetBalance (state: IAccountsState, action: ISetBalanceAction): IAccountsState {
   const { address, blockchain, value } = action.payload;
-  const blockchainId = blockchainCodeToId(blockchain);
 
   let updatedState = state;
-
-  WalletsOp.of(state.wallets)
-    .getAccounts()
-    .filter((account) => account.address === address && account.blockchain === blockchainId)
-    .forEach((account) => {
-
-      updatedState = updateAccountDetails(updatedState, account.id, (account) => {
-        account.balance = value;
-        account.balancePending = null;
-        return account;
+  // Find account id by address and blockchain and update balance
+  state.wallets.forEach((w) => {
+    w.accounts
+      .filter((a) => a.address === address && a.blockchain === blockchain)
+      .forEach((foundAcc) => {
+        updatedState = updateAccountDetails(updatedState, foundAcc.id, (account) => {
+          account.balance = value;
+          account.balancePending = null;
+          return account;
+        });
       });
+  });
 
-    });
   return updatedState;
 }
 
@@ -112,7 +100,7 @@ function onWalletCreated (state: IAccountsState, action: IWalletCreatedAction): 
     // already exists
     return state;
   }
-  const addition: vault.Wallet = {
+  const addition: Wallet = {
     id: wallet.id,
     name: wallet.name,
     description: '',

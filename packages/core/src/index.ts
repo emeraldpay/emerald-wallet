@@ -49,3 +49,7 @@ export { default as IVault } from './vault/IVault';
 export { default as Logger } from './logging/Logger';
 export { default as ILogger } from './logging/ILogger';
 export { default as DefaultLogger } from './logging/DefaultLogger';
+
+// core entities
+export { default as Account } from './entities/Account';
+export { default as Wallet } from './entities/Wallet';

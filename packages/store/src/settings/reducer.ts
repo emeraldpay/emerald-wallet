@@ -29,16 +29,16 @@ function onSetLocaleCurrency (state: ISettingsState, action: SetLocaleCurrencyAc
     localStorage.setItem('localeCurrency', currency);
   }
 
-  return { ...state, localeCurrency: currency, rates: {} };
+  return { ...state, localeCurrency: currency as CurrencyCode, rates: {} };
 }
 
-function onExchangeRates (state: ISettingsState, action: ISetExchRatesAction) {
+function onExchangeRates (state: ISettingsState, action: ISetExchRatesAction): ISettingsState {
   const { rates } = action.payload;
-  return { ...state, rates, localRate: rates ? rates.ETH : undefined };
+  return { ...state, rates, localeRate: rates ? rates.ETH : undefined };
 
 }
 
-function onSetConfirmations (state: ISettingsState, action: SetNumConfirmAction) {
+function onSetConfirmations (state: ISettingsState, action: SetNumConfirmAction): ISettingsState {
   // persist settings
   if (localStorage) {
     localStorage.setItem('numConfirmations', action.numConfirmations.toString());
@@ -46,11 +46,11 @@ function onSetConfirmations (state: ISettingsState, action: SetNumConfirmAction)
   return { ...state, numConfirmations: action.numConfirmations };
 }
 
-function onSetMode (state: ISettingsState, action: ISetModeAction) {
+function onSetMode (state: ISettingsState, action: ISetModeAction): ISettingsState {
   return { ...state, mode: action.payload };
 }
 
-export default function reducer (state: ISettingsState | undefined, action: SettingsAction) {
+export default function reducer (state: ISettingsState | undefined, action: SettingsAction): ISettingsState {
   state = state || initial;
   switch (action.type) {
     case ActionTypes.MODE:

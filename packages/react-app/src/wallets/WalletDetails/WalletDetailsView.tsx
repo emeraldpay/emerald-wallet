@@ -1,10 +1,9 @@
-import { EthereumAccount, WalletOp } from '@emeraldpay/emerald-vault-core';
 import {
   Account as AddressAvatar, ButtonGroup, IdentityIcon, Page
 } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import { PageTitle } from '@emeraldplatform/ui/lib/components/Page';
-import { blockchainByName } from '@emeraldwallet/core';
+import { Account, Wallet } from '@emeraldwallet/core';
 import { Button, FormRow, InlineEdit } from '@emeraldwallet/ui';
 import { Grid, IconButton, Typography } from '@material-ui/core';
 import EditIcon from '@material-ui/icons/Edit';
@@ -32,7 +31,7 @@ export const styles = {
 export interface IProps {
   classes: any;
   showFiat: boolean;
-  wallet: WalletOp;
+  wallet: Wallet;
   goBack?: any;
   editAccount?: any;
   createTx?: any;
@@ -92,7 +91,7 @@ export class WalletShow extends React.Component<AccountShowProps, IState> {
 
     // const { coinTicker } = blockchainByName(acc.blockchain).params;
     // const renderTitle = () => (<ChainTitle chain={acc.blockchain} text={'Account'} />);
-    const renderTitle = () => (<PageTitle>{wallet.value.name || ''}</PageTitle>);
+    const renderTitle = () => (<PageTitle>{wallet.name || ''}</PageTitle>);
 
     // <IconButton aria-label="details">
     // </IconButton>
@@ -105,8 +104,8 @@ export class WalletShow extends React.Component<AccountShowProps, IState> {
         >
           <Grid container={true} direction={'column'}>
             <Grid item={true} xs={12}>
-              {wallet.value.accounts.map(
-                (account) => (<EthereumAccountItem account={account as EthereumAccount} key={account.id}/>)
+              {wallet.accounts.map(
+                (account: Account) => (<EthereumAccountItem account={account} key={account.id}/>)
               )}
             </Grid>
           </Grid>

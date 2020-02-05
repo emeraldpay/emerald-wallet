@@ -1,5 +1,4 @@
-import { Wallet } from '@emeraldpay/emerald-vault-core';
-import { blockchainById, blockchainByName } from '@emeraldwallet/core';
+import { blockchainByName, Wallet } from '@emeraldwallet/core';
 import { addresses, screen, txhistory } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -20,7 +19,7 @@ export default connect(
       showFiat: true,
       wallet,
       transactions,
-      txList: (<TxHistory transactions={transactions} accountId={wallet.value.id}/>)
+      txList: (<TxHistory transactions={transactions} accountId={wallet.id}/>)
     };
   },
   (dispatch, ownProps) => ({

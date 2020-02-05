@@ -1,11 +1,9 @@
-import { EthereumAccount, WalletOp } from '@emeraldpay/emerald-vault-core';
 import { convert, toBaseUnits } from '@emeraldplatform/core';
 import { Units as EthUnits, Wei } from '@emeraldplatform/eth';
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import {
-  blockchainById,
-  blockchainByName,
+  Account,
   BlockchainCode,
   Blockchains,
   IUnits,
@@ -85,7 +83,7 @@ interface ICreateTxState {
 }
 
 interface IOwnProps {
-  account: EthereumAccount;
+  account: Account;
   gasLimit?: any;
   amount?: any;
   data?: any;
@@ -306,7 +304,8 @@ function signTokenTx (dispatch: any, ownProps: IOwnProps, args: any) {
   const {
     password, token
   } = args;
-  const chain = blockchainById(ownProps.account.blockchain)!.params.code;
+  const accountId = ownProps.account.id;
+  const chain = ownProps.account.blockchain;
   const tokenInfo = registry.bySymbol(chain, token);
   const tokenUnits = toBaseUnits(convert.toBigNumber(args.transaction.amount), tokenInfo.decimals);
 
@@ -317,6 +316,7 @@ function signTokenTx (dispatch: any, ownProps: IOwnProps, args: any) {
   );
   return dispatch(
     transaction.actions.signTransaction(
+      accountId,
       chain,
       args.transaction.from,
       password,
@@ -332,8 +332,8 @@ function signTokenTx (dispatch: any, ownProps: IOwnProps, args: any) {
 function signEtherTx (
   dispatch: any, ownProps: IOwnProps, request: { transaction: CreateEthereumTx, password: string }
   ) {
-  const blockchainId = ownProps.account.blockchain;
-  const blockchainCode = blockchainById(blockchainId)!.params.code;
+  const accountId = ownProps.account.id;
+  const blockchainCode = ownProps.account.blockchain;
   const useLedger = false; // TODO
   const plainTx = {
     password: request.password,
@@ -351,6 +351,7 @@ function signEtherTx (
     .then(() => {
       return dispatch(
         transaction.actions.signTransaction(
+          accountId,
           blockchainCode,
           request.transaction.from!,
           request.password,
@@ -365,8 +366,7 @@ function signEtherTx (
 }
 
 function sign (dispatch: any, ownProps: IOwnProps, args: any) {
-  const blockchainId = ownProps.account.blockchain;
-  const blockchain = blockchainById(blockchainId)!;
+  const blockchain = Blockchains[ownProps.account.blockchain];
   const { coinTicker } = blockchain.params;
   const token = args.token.toUpperCase();
   if (token !== coinTicker) {
@@ -412,8 +412,7 @@ interface IStateProps {
 export default connect<IStateProps, IDispatchFromProps, IOwnProps>(
   (state: any, ownProps: IOwnProps): IStateProps => {
     const { account } = ownProps;
-    const blockchainiD = account.blockchain;
-    const blockchain = blockchainById(blockchainiD)!;
+    const blockchain = Blockchains[account.blockchain];
     const txFeeSymbol = blockchain.params.coinTicker;
     const allTokens = registry.tokens[blockchain.params.code]
       .concat([{ address: '', symbol: txFeeSymbol, decimals: blockchain.params.decimals }])
@@ -437,15 +436,14 @@ export default connect<IStateProps, IDispatchFromProps, IOwnProps>(
             || { unitsValue: '0' };
           return new Units(tokenBalance.unitsValue, tokenInfo.decimals);
         }
-        const etherBalance = addresses.selectors.getBalance(state, account, Wei.ZERO)!;
+        const etherBalance = addresses.selectors.getBalance(state, account.id, Wei.ZERO)!;
         return new Units(etherBalance.toString(EthUnits.WEI), 18);
       },
       getFiatForAddress: (address: string, token: any): string => {
         if (token !== txFeeSymbol) {
           return '??';
         }
-        const selectedAccount = addresses.selectors.all(state).findAccount(account.id)!;
-        const newBalance = addresses.selectors.getBalance(state, selectedAccount, Wei.ZERO)!;
+        const newBalance = addresses.selectors.getBalance(state, account.id, Wei.ZERO)!;
         return newBalance.getFiat(fiatRate);
       },
       getTxFeeFiatForGasLimit: (gasLimit: number) => {
@@ -456,10 +454,8 @@ export default connect<IStateProps, IDispatchFromProps, IOwnProps>(
       gasPrice,
       tokenSymbols: allTokens.map((i: any) => i.symbol),
       addressBookAddresses: addressBook.selectors.all(state).map((i: any) => i.address),
-      ownAddresses: addresses.selectors.allByBlockchain(state, blockchain.params.code)
-        .map((i: WalletOp) => i.getEthereumAccounts())
-        .reduce((list: EthereumAccount[], a: EthereumAccount[]) => list.concat(a), [])
-        .map((account: EthereumAccount) => account.address),
+      ownAddresses: addresses.selectors.allAccountsByBlockchain(state, blockchain.params.code)
+        .map((a: Account) => a.address!),
       useLedger: false, // TODO
       allTokens
     };

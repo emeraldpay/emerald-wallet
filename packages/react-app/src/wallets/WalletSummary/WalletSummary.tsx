@@ -1,5 +1,5 @@
-import { Wallet } from '@emeraldpay/emerald-vault-core';
 import { Wei } from '@emeraldplatform/eth';
+import { Wallet } from '@emeraldwallet/core';
 import { addresses, IBalanceValue, IState, settings, tokens } from '@emeraldwallet/store';
 import { Balance } from '@emeraldwallet/ui';
 import { Grid, StyledComponentProps } from '@material-ui/core';

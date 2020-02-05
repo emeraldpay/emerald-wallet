@@ -1,3 +1,5 @@
+import Account from './entities/Account';
+import Wallet from './entities/Wallet';
 import { IVault } from './vault';
 
 export default class WalletService {
@@ -15,13 +17,13 @@ export default class WalletService {
     });
   }
 
-  public getAllWallets = () => {
+  public getAllWallets = (): Wallet[] => {
     return this.vault.listWallets();
   }
 
-  public createNewWallet = (name: string) => {
+  public createNewWallet = (name: string): Wallet => {
     const walletId = this.vault.addWallet(name);
     const wallet = this.vault.getWallet(walletId);
-    return wallet;
+    return wallet!;
   }
 }

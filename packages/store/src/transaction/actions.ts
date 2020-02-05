@@ -61,7 +61,7 @@ function verifySender (expected: string): (a: string, c: BlockchainCode) => Prom
   });
 }
 
-function signTx (api: IApi, tx: IStoredTransaction, passphrase: string, blockchain: BlockchainCode): Promise<string | string[]> {
+function signTx (api: IApi, accountId: string, tx: IStoredTransaction, passphrase: string, blockchain: BlockchainCode): Promise<string | string[]> {
   console.debug(`Calling emerald api to sign tx from ${tx.from} to ${tx.to} in ${blockchain} blockchain`);
   const plainTx: vault.TxSignRequest = {
     from: tx.from,
@@ -73,15 +73,7 @@ function signTx (api: IApi, tx: IStoredTransaction, passphrase: string, blockcha
     nonce: typeof tx.nonce === 'string' ? parseInt(tx.nonce) : tx.nonce
   };
   console.debug(`Trying to sign tx: ${plainTx}`);
-  const wallets = WalletsOp.of(api.vault.listWallets());
-  const wallet = wallets.findWalletByAddress(tx.from, blockchainCodeToId(blockchain));
-  if (typeof wallet === 'undefined') {
-    return Promise.reject(new Error('Unknown Wallet'));
-  }
-  const account = wallet.findAccountByAddress(tx.from, blockchainCodeToId(blockchain));
-  if (typeof account === 'undefined') {
-    return Promise.reject(new Error('Unknown Account'));
-  }
+
   const unsignedTx: UnsignedTx = {
     from: plainTx.from,
     to: plainTx.to,
@@ -91,14 +83,16 @@ function signTx (api: IApi, tx: IStoredTransaction, passphrase: string, blockcha
     data: plainTx.data,
     nonce: quantitiesToHex(plainTx.nonce)
   };
-  const rawTx = api.vault.signTx(account.id, unsignedTx, passphrase);
+  const rawTx = api.vault.signTx(accountId, unsignedTx, passphrase);
   return Promise.resolve(rawTx);
 }
 
 export function signTransaction (
+  accountId: string,
   blockchain: BlockchainCode, from: string, passphrase: string, to: string, gas: number, gasPrice: Wei,
   value: Wei, data: string
 ): Dispatched<any> {
+
   const originalTx: IStoredTransaction = {
     from,
     to,
@@ -114,7 +108,7 @@ export function signTransaction (
     return getNonce(api, blockchain, from)
       .then(withNonce(originalTx))
       .then((tx: IStoredTransaction) => {
-        return signTx(api, tx, passphrase, blockchain)
+        return signTx(api, accountId, tx, passphrase, blockchain)
           .then(unwrap)
           .then((rawTx) => verifySender(from)(rawTx, blockchain))
           .then((signed) => ({ tx, signed }));

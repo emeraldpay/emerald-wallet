@@ -9,11 +9,12 @@ import {
   Logger,
   WalletService
 } from '@emeraldwallet/core';
-import {ipcRenderer} from 'electron';
-import {Dispatch} from 'react';
-import {dispatchRpcError} from '../screen/actions';
+import { Wallet } from '@emeraldwallet/core';
+import { ipcRenderer } from 'electron';
+import { Dispatch } from 'react';
+import { dispatchRpcError } from '../screen/actions';
 import * as history from '../txhistory';
-import {Dispatched} from '../types';
+import { Dispatched } from '../types';
 import * as selectors from './selectors';
 import {
   ActionTypes,
@@ -58,40 +59,7 @@ export function loadWalletsAction (): ILoadWalletsAction {
   };
 }
 
-// TODO: remove it
-// export function loadAccountsList (): Dispatched<IWalletsLoaded | ISetLoadingAction> {
-//
-//   return (dispatch, getState, api) => {
-//     dispatch(setLoadingAction(true));
-//
-//     const wallets = api.vault.listWallets();
-//
-//     dispatch(setListAction(wallets));
-//     dispatch(fetchErc20BalancesAction() as any);
-//
-//     dispatch(setLoadingAction(false));
-//
-//     const subscribe: {[key: string]: string[]} = {};
-//     WalletsOp.of(wallets)
-//       .getAccounts()
-//       .forEach((account) => {
-//         const code = blockchainById(account.blockchain)!.params.code;
-//         let current = subscribe[code];
-//         if (typeof current === 'undefined') {
-//           current = [];
-//         }
-//         current.push(account.address);
-//         subscribe[code] = current;
-//       });
-//
-//     Object.keys(subscribe).forEach((blockchainCode) => {
-//       const addedAddresses = subscribe[blockchainCode];
-//       ipcRenderer.send('subscribe-balance', blockchainCode, addedAddresses);
-//     });
-//   };
-// }
-
-export function setListAction (wallets: vault.Wallet[]): IWalletsLoaded {
+export function setWalletsAction (wallets: Wallet[]): IWalletsLoaded {
   return {
     type: ActionTypes.SET_LIST,
     payload: wallets
@@ -102,21 +70,21 @@ export function loadAccountBalance (blockchain: BlockchainCode, address: string)
   ipcRenderer.send('subscribe-balance', blockchain, [address]);
 }
 
-export function loadAccountTxCount (walletId: string): Dispatched<SetTxCountAction> {
-  return (dispatch, getState, api) => {
-    selectors.all(getState()).getAccounts().forEach((acc) => {
-      const blockchainCode = blockchainById(acc.blockchain)!.params.code;
-      api.chain(blockchainCode).eth.getTransactionCount(acc.address)
-        .then((result: number) => {
-          dispatch({
-            type: ActionTypes.SET_TXCOUNT,
-            accountId: acc.id,
-            value: result
-          });
-        }).catch(dispatchRpcError(dispatch));
-    });
-  };
-}
+// export function loadAccountTxCount (walletId: string): Dispatched<SetTxCountAction> {
+//   return (dispatch, getState, api) => {
+//     selectors.all(getState()).getAccounts().forEach((acc) => {
+//       const blockchainCode = blockchainById(acc.blockchain)!.params.code;
+//       api.chain(blockchainCode).eth.getTransactionCount(acc.address)
+//         .then((result: number) => {
+//           dispatch({
+//             type: ActionTypes.SET_TXCOUNT,
+//             accountId: acc.id,
+//             value: result
+//           });
+//         }).catch(dispatchRpcError(dispatch));
+//     });
+//   };
+// }
 
 function addAccount (
   api: IApi, dispatch: Dispatch<any>, walletId: vault.Uuid, add: vault.AddAccount
@@ -129,7 +97,6 @@ function addAccount (
 
   dispatch(walletCreatedAction(wallet));
 
-  const account = wallet.accounts[0] as vault.EthereumAccount;
   dispatch(loadWalletsAction()); // reload only current wallet
   // loadAccountBalance(blockchainById(add.blockchain)!!.params.code, account.address);
   return walletId;
@@ -151,7 +118,6 @@ function createWalletWithAccount (
 
   dispatch(walletCreatedAction(wallet));
 
-  const account = wallet.accounts[0] as vault.EthereumAccount;
   dispatch(loadWalletsAction()); // reload only current wallet
   // loadAccountBalance(blockchain, account.address);
   return walletId;
@@ -306,8 +272,7 @@ export function loadPendingTransactions (): Dispatched<PendingBalanceAction> {
       const blockchainCode = blockchainByName(chainName).params.code;
       api.chain(blockchainCode).eth.getBlockByNumber('pending', true)
         .then((result: any) => {
-          const addresses = selectors.all(getState())
-            .accountsByBlockchain(blockchainCodeToId(blockchainCode))
+          const addresses = selectors.allAccountsByBlockchain(getState(), blockchainCode)
             .map((account) => account.address);
 
           const txes = result.transactions.filter(

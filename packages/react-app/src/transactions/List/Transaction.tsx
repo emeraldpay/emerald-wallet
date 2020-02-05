@@ -37,12 +37,9 @@ export default connect<ITxItemProps, IDispatchProps, IOwnProps, IState>(
     // TODO: .toJS() call impact on performance
     const tx = txhistory.selectors.selectByHash(state, ownProps.hash).toJS();
     const blockchain = tx.blockchain ? blockchainByName(tx.blockchain) : blockchainById(tx.chainId);
-    const blockchainId = blockchainCodeToId(blockchain!.params.code);
 
-    const wallets = addresses.selectors.all(state);
-
-    const toAccount = wallets.findWalletByAddress(tx.to, blockchainId) || {};
-    const fromAccount = wallets.findWalletByAddress(tx.from, blockchainId) || {};
+    const toAccount = addresses.selectors.findAccountByAddress(state, tx.to, blockchain!.params.code) || {};
+    const fromAccount = addresses.selectors.findAccountByAddress(state, tx.from, blockchain!.params.code) || {};
 
     // console.log("accounts", toAccount, fromAccount);
 

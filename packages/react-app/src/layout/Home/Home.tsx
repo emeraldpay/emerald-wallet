@@ -40,7 +40,7 @@ export const Home = (props: IHomeProps) => {
 
 export default connect(
   (state: IState, ownProps) => ({
-    accountsNum: addresses.selectors.all(state).size,
+    accountsNum: addresses.selectors.allWallets(state).length,
     connecting: application.selectors.isConnecting(state),
     statusMessage: application.selectors.getMessage(state).text
   }),

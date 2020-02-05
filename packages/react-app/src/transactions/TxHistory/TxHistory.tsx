@@ -83,7 +83,7 @@ export default connect(
     const txs = ownProps.transactions || txhistory.selectors.allTrackedTxs(state);
     return {
       transactions: txs.sortBy((tx: any) => tx.get('timestamp')).reverse(),
-      accounts: addresses.selectors.all(state),
+      accounts: addresses.selectors.allWallets(state),
       accountId: ownProps.accountId
     };
   },

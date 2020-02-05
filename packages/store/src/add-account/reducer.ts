@@ -6,7 +6,7 @@ import {
   NextPageAction,
   SetBlockchainAction,
   SetTypeAction,
-  SetWalletAction
+  ISetWalletAction
 } from './types';
 
 const TOTAL_STEPS = 4; // select wallet -> select chain -> select type -> action
@@ -22,7 +22,7 @@ function onNextPage (state: IAddAccountState, action: NextPageAction): IAddAccou
   return state;
 }
 
-function onSetWallet (state: IAddAccountState, action: SetWalletAction): IAddAccountState {
+function onSetWallet (state: IAddAccountState, action: ISetWalletAction): IAddAccountState {
   return { ...state, walletId: action.value };
 }
 

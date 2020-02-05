@@ -5,7 +5,7 @@ import { ipcRenderer } from 'electron';
 import { SagaIterator } from 'redux-saga';
 import * as screen from '../screen';
 import { requestTokensBalances } from '../tokens/actions';
-import { fetchErc20BalancesAction, setListAction, setLoadingAction, walletCreatedAction } from './actions';
+import { fetchErc20BalancesAction, setWalletsAction, setLoadingAction, walletCreatedAction } from './actions';
 import { allAccounts } from './selectors';
 import { ActionTypes, IFetchErc20BalancesAction } from './types';
 
@@ -14,7 +14,7 @@ function* fetchErc20Balances (api: IApi, action: IFetchErc20BalancesAction): Sag
   for (const account of accounts) {
     // TODO: account might not be Ethereum address
     const address = account.address;
-    const chain = blockchainById(account.blockchain)!.params.code;
+    const chain = account.blockchain;
 
     // Look up all known tokens for current blockchain
     const _tokens = registry.all()[chain as BlockchainCode] || [];
@@ -28,9 +28,9 @@ function* loadAllWallets (api: IApi): SagaIterator {
   yield put(setLoadingAction(true));
 
   const service = new WalletService(api.vault);
-  const wallets = yield call(service.getAllWallets);
+  const wallets: any = yield call(service.getAllWallets);
 
-  yield put(setListAction(wallets));
+  yield put(setWalletsAction(wallets));
   yield put(fetchErc20BalancesAction());
   yield put(setLoadingAction(false));
 
@@ -40,7 +40,7 @@ function* loadAllWallets (api: IApi): SagaIterator {
   const accounts = yield select(allAccounts);
   // TODO: account might not be Ethereum address
   accounts.forEach((account: any) => {
-    const code = blockchainById(account.blockchain)!.params.code;
+    const code = account.blockchain;
     let current = subscribe[code];
     if (typeof current === 'undefined') {
       current = [];

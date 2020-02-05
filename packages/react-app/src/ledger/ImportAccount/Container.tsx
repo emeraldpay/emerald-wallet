@@ -27,7 +27,7 @@ export default connect<any, any, any, IState>(
     selected: ledger.selectors.hasSelected(state),
     selectedAddress: ledger.selectors.getSelected(state),
     addresses: ledger.selectors.getAddresses(state),
-    accounts: addresses.selectors.all(state),
+    accounts: addresses.selectors.allWallets(state),
     blockchains: settings.selectors.currentChains(state),
     // TODO: Fix this dependency
     api: (global as any).api

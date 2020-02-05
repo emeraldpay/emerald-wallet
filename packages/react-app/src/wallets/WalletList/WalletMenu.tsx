@@ -1,4 +1,4 @@
-import { Wallet } from '@emeraldpay/emerald-vault-core';
+import { Wallet } from '@emeraldwallet/core';
 import { addAccount, IState, screen } from '@emeraldwallet/store';
 import { IconButton, ListItemIcon, Menu, MenuItem, Typography } from '@material-ui/core';
 import {
@@ -18,12 +18,12 @@ interface IOwnProps {
 interface RenderProps {
 }
 
-interface DispatchProps {
+interface IDispatchProps {
   showDetails: () => void;
   addAccount: () => void;
 }
 
-const WalletMenu = ((props: RenderProps & DispatchProps) => {
+const WalletMenu = ((props: RenderProps & IDispatchProps) => {
 
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
@@ -76,12 +76,12 @@ const WalletMenu = ((props: RenderProps & DispatchProps) => {
   );
 });
 
-export default connect<RenderProps, DispatchProps, IOwnProps, IState>(
+export default connect<RenderProps, IDispatchProps, IOwnProps, IState>(
   null,
   (dispatch, ownProps) => {
     return {
       showDetails: () => {
-        dispatch(screen.actions.gotoScreen('wallet', ownProps.wallet));
+        dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.wallet));
       },
       addAccount: () => {
         dispatch(addAccount.actions.start(ownProps.wallet));

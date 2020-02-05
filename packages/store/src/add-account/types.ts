@@ -26,7 +26,7 @@ export interface NextPageAction {
   type: ActionTypes.NEXT_PAGE;
 }
 
-export interface SetWalletAction {
+export interface ISetWalletAction {
   type: ActionTypes.SET_WALLET;
   value: Uuid;
 }
@@ -43,7 +43,7 @@ export interface SetTypeAction {
 
 export type AddAccountAction =
     NextPageAction
-  | SetWalletAction
+  | ISetWalletAction
   | SetBlockchainAction
   | SetTypeAction
   ;

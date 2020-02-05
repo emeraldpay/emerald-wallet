@@ -1,7 +1,6 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
-import { EthereumAccount, Wallet, WalletAccount, WalletOp, WalletsOp } from '@emeraldpay/emerald-vault-core';
 import { Wei } from '@emeraldplatform/eth';
-import { BlockchainCode, blockchainCodeToId, Blockchains, Units } from '@emeraldwallet/core';
+import { Account, BlockchainCode, blockchainCodeToId, Blockchains, Units, Wallet } from '@emeraldwallet/core';
 import { registry } from '@emeraldwallet/erc20';
 import BigNumber from 'bignumber.js';
 import { createSelector } from 'reselect';
@@ -11,14 +10,14 @@ import { BalanceValueConverted, IBalanceValue, moduleName } from './types';
 
 const sum = (a: Wei | undefined, b: Wei | undefined) => (a || Wei.ZERO).plus(b || Wei.ZERO);
 
-export const allWallets = (state: IState) => state[moduleName].wallets;
+export const allWallets = (state: IState): Wallet[] => state[moduleName].wallets;
 
-export const all = createSelector<IState, vault.Wallet[], WalletsOp>(
-  [allWallets],
-  (wallets) => {
-    return WalletsOp.of(wallets);
-  }
-);
+// export const all = createSelector<IState, Wallet[], WalletsOp>(
+//   [allWallets],
+//   (wallets) => {
+//     return WalletsOp.of(wallets);
+//   }
+// );
 
 /**
  * Returns all accounts from all wallets as flat array
@@ -27,54 +26,61 @@ export const all = createSelector<IState, vault.Wallet[], WalletsOp>(
 export const allAccounts = createSelector(
   [allWallets],
   (wallets) => {
-    return wallets.reduce((a: WalletAccount[], w) => a.concat(w.accounts), []);
+    return wallets.reduce((a: Account[], w) => a.concat(w.accounts), []);
   }
 );
 
-export function allAsArray (state: IState): vault.Wallet[] {
+export const findAccount = (state: IState, accountId: string) => {
+  return allAccounts(state).find((a) => a.id === accountId);
+};
+
+export const allAccountsByBlockchain = (state: IState, code: BlockchainCode) => {
+  const accounts: Account[] = allAccounts(state);
+  return accounts.filter((a: Account) => a.blockchain === code);
+};
+
+export function allAsArray (state: IState): Wallet[] {
   return (state[moduleName].wallets || [])
     .filter((value: any) => typeof value !== 'undefined');
 }
 
-export function allByBlockchain (state: any, blockchain: BlockchainCode): vault.WalletOp[] {
-  return all(state)
-    .walletsWithBlockchain(blockchainCodeToId(blockchain));
-}
+// @depricated
+// export function allByBlockchain (state: any, blockchain: BlockchainCode): vault.WalletOp[] {
+//   return all(state)
+//     .walletsWithBlockchain(blockchainCodeToId(blockchain));
+// }
 
 export const isLoading = (state: any): boolean => state[moduleName].loading;
 
-export function findWalletByAddress (state: any, address: string, blockchain: BlockchainCode): WalletOp | undefined {
+export function findWalletByAddress (state: any, address: string, blockchain: BlockchainCode): Wallet | undefined {
   if (!address) {
     return undefined;
   }
 
-  return all(state).findWalletByAddress(address, blockchainCodeToId(blockchain));
+  return allWallets(state).find(
+    (wallet: Wallet) =>
+      wallet.accounts.some((a: Account) => a.address === address && a.blockchain === blockchain));
 }
 
 export function findAccountByAddress (state: any, address: string, chain: BlockchainCode): any {
   return null;
 }
 
-export function find (state: any, id: vault.Uuid): vault.WalletOp | undefined {
-  try {
-    return all(state).getWallet(id);
-  } catch (e) {
-    return undefined;
-  }
+export function find (state: any, id: vault.Uuid): Wallet | undefined {
+  return allWallets(state).find((w) => w.id === id);
 }
 
-export function getBalance (state: IState, account: vault.EthereumAccount, defaultValue?: Wei): Wei | undefined {
+export function getBalance (state: IState, accountId: string, defaultValue?: Wei): Wei | undefined {
   return (state[moduleName].details || [])
-    .filter((b) => b.accountId === account.id)
+    .filter((b) => b.accountId === accountId)
     .filter((b) => typeof b.balance === 'string' && b.balance !== '')
     .map((b) => new Wei(b.balance!))
     .reduce(sum, Wei.ZERO) || defaultValue;
 }
 
 export function balanceByChain (state: IState, blockchain: BlockchainCode): Wei {
-  return all(state)
-    .accountsByBlockchain(blockchainCodeToId(blockchain))
-    .map((account) => getBalance(state, account, Wei.ZERO)!)
+  return allAccountsByBlockchain(state, blockchain)
+    .map((account: Account) => getBalance(state, account.id, Wei.ZERO)!)
     .reduce(sum, Wei.ZERO);
 }
 
@@ -93,20 +99,19 @@ export function allBalances (state: IState): IBalanceValue[] {
  * Returns summary of all current assets for the specified wallet
  *
  * @param state
- * @param _wallet
+ * @param wallet
  * @param includeEmpty include zero balances
  */
-export function getWalletBalances (state: IState, _wallet: Wallet | WalletOp, includeEmpty: boolean): IBalanceValue[] {
-  const wallet = WalletOp.asOp(_wallet);
+export function getWalletBalances (state: IState, wallet: Wallet, includeEmpty: boolean): IBalanceValue[] {
   const assets: IBalanceValue[] = [];
-  const ethereumAccounts = wallet.value.accounts as EthereumAccount[];
+  const ethereumAccounts = wallet.accounts;
   [BlockchainCode.ETH, BlockchainCode.ETC, BlockchainCode.Kovan]
     .forEach((code) => {
       const blockchainAccounts = ethereumAccounts
-        .filter((account) => account.blockchain === blockchainCodeToId(code));
+        .filter((account: Account) => account.blockchain === code);
 
       const balance = blockchainAccounts
-        .map((account) => getBalance(state, account, Wei.ZERO)!)
+        .map((account) => getBalance(state, account.id, Wei.ZERO)!)
         .reduce((a, b) => a.plus(b), Wei.ZERO);
 
       // show only assets that have at least one address in the wallet
@@ -117,19 +122,21 @@ export function getWalletBalances (state: IState, _wallet: Wallet | WalletOp, in
         });
       }
       const supportedTokens = registry.all()[code];
-      if (typeof supportedTokens !== 'undefined') {
-        supportedTokens.forEach((token) => {
-          blockchainAccounts.forEach((account) => {
-            const balance = tokens.selectors.selectBalance(state, token.address, account.address, code);
-            if (balance && (includeEmpty || balance.unitsValue !== '0')) {
-              assets.push({
-                token: token.symbol,
-                balance: new Units(balance.unitsValue, balance.decimals)
-              });
-            }
-          });
-        });
+      if (typeof supportedTokens === 'undefined') {
+        return;
       }
+
+      supportedTokens.forEach((token) => {
+        blockchainAccounts.forEach((account: Account) => {
+          const balance = tokens.selectors.selectBalance(state, token.address, account.address!, code);
+          if (balance && (includeEmpty || balance.unitsValue !== '0')) {
+            assets.push({
+              token: token.symbol,
+              balance: new Units(balance.unitsValue, balance.decimals)
+            });
+          }
+        });
+      });
     });
 
   return aggregateByAsset(assets);
@@ -167,11 +174,11 @@ export function fiatTotalBalance (state: IState, assets: IBalanceValue[]): IBala
   if (converted.length === 0) {
     return undefined;
   }
-  if (!allFound) {
-    return undefined;
-  }
+  // if (!allFound) {
+  //   return undefined;
+  // }
 
-  const total = converted.reduce((a, b) => a.plus(b));
+  const total = converted.reduce((a: BigNumber, b: BigNumber) => a.plus(b));
 
   return {
     balance: new Units(total, 0),

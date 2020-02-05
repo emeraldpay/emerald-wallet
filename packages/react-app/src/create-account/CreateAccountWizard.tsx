@@ -1,5 +1,4 @@
-import { WalletOp } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode } from '@emeraldwallet/core';
+import { BlockchainCode, Wallet } from '@emeraldwallet/core';
 import { addAccount, addresses, IState, screen } from '@emeraldwallet/store';
 import { Button } from '@emeraldwallet/ui';
 import { Card, CardActions, CardContent, CardHeader, Grid, Step, StepLabel, Stepper } from '@material-ui/core';
@@ -14,8 +13,8 @@ import SelectWallet from './SelectWallet';
 interface OwnProps {
 }
 
-interface RenderProps {
-  wallet: WalletOp;
+interface IRenderProps {
+  wallet: Wallet;
   page: number;
   type?: addAccount.AddType;
   blockchain?: BlockchainCode;
@@ -26,7 +25,7 @@ interface IDispatchProps {
   onCancel: () => void;
 }
 
-const CreateAccountWizard = ((props: RenderProps & IDispatchProps) => {
+const CreateAccountWizard = ((props: IRenderProps & IDispatchProps) => {
   const { nextPage } = props;
   const { page, type } = props;
 
@@ -56,7 +55,7 @@ const CreateAccountWizard = ((props: RenderProps & IDispatchProps) => {
     content = <SelectType />;
   } else if (page == 3) {
     if (type === addAccount.AddType.IMPORT_JSON) {
-      content = <ImportJson blockchain={props.blockchain!!} wallet={props.wallet.value} />;
+      content = <ImportJson blockchain={props.blockchain!!} wallet={props.wallet} />;
     }
   }
 
@@ -80,7 +79,7 @@ const CreateAccountWizard = ((props: RenderProps & IDispatchProps) => {
   );
 });
 
-export default connect<RenderProps, IDispatchProps, OwnProps, IState>(
+export default connect<IRenderProps, IDispatchProps, OwnProps, IState>(
   (state, ownProps) => {
     const wizardState = addAccount.selectors.getState(state);
     const walletId = wizardState.walletId;

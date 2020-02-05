@@ -166,14 +166,12 @@ describe('CreateErc20Tx', () => {
     expect(tx.getTotal()).toEqual(new Units(100, 8));
   });
 
-  it('rebalance to manual doenst change amount', () => {
+  it('rebalance to manual does not change amount', () => {
     const tx = new CreateERC20Tx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Units(100, 8), new Wei(1, EthUnits.ETHER));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.amount = new Units(20, 8);
     tx.target = TxTarget.MANUAL;
-
-    console.log(tx.debug());
 
     expect(tx.getTotal()).toEqual(new Units(20, 8));
     expect(tx.rebalance()).toBeTruthy();
@@ -236,7 +234,8 @@ describe('CreateErc20Tx', () => {
     const tx = CreateERC20Tx.fromPlain(dump);
 
     expect(tx.from).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
-    expect(tx.totalEtherBalance != null ? tx.totalEtherBalance.value : null).toEqual(new Wei('1000000000057', EthUnits.WEI).value);
+    expect(tx.totalEtherBalance != null ? tx.totalEtherBalance.value : null)
+      .toEqual(new Wei('1000000000057', EthUnits.WEI).value);
     expect(tx.totalTokenBalance).toEqual(new Units('2000000000015', 8));
     expect(tx.erc20).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
     expect(tx.to).toEqual('0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd');
@@ -266,7 +265,8 @@ describe('CreateErc20Tx', () => {
     const tx = CreateERC20Tx.fromPlain(dump);
 
     expect(tx.from).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
-    expect(tx.totalEtherBalance != null ? tx.totalEtherBalance.value : null).toEqual(new Wei('1000000000057', EthUnits.WEI).value);
+    expect(tx.totalEtherBalance != null ? tx.totalEtherBalance.value : null)
+      .toEqual(new Wei('1000000000057', EthUnits.WEI).value);
     expect(tx.totalTokenBalance != null ? tx.totalTokenBalance : null).toEqual(new Units('2000000000015', 8));
     expect(tx.erc20).toEqual('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD');
     expect(tx.to).toEqual('0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd');

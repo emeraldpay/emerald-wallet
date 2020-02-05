@@ -1,8 +1,8 @@
-import { Wei } from '@emeraldplatform/eth';
-import { BlockchainCode } from '@emeraldwallet/core';
-import { IState } from '../types';
-import { allAsArray, balanceByChain } from './selectors';
-import { IAccountsState, moduleName } from './types';
+import {Wei} from '@emeraldplatform/eth';
+import {BlockchainCode} from '@emeraldwallet/core';
+import {IState} from '../types';
+import {allAsArray, balanceByChain} from './selectors';
+import {moduleName} from './types';
 
 describe('allAsArray', () => {
   const state = {
@@ -40,7 +40,7 @@ describe('selectTotalBalance', () => {
         wallets: [{
           id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee',
           accounts: [
-            { id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0', blockchain: 101, address: '' }
+            { id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0', blockchain: BlockchainCode.Kovan, address: '' }
           ]
         }],
         details: [
@@ -49,7 +49,7 @@ describe('selectTotalBalance', () => {
       }
     } as IState;
 
-    const total = balanceByChain(state, BlockchainCode.ETC);
+    const total = balanceByChain(state, BlockchainCode.Kovan);
     expect(total.equals(new Wei(1234))).toBeTruthy();
   });
 
@@ -59,9 +59,9 @@ describe('selectTotalBalance', () => {
         wallets: [{
           id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee',
           accounts: [
-            { id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0', blockchain: 100, address: '' },
-            { id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-1', blockchain: 100, address: '' },
-            { id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-2', blockchain: 101, address: '' }
+            { id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0', blockchain: BlockchainCode.ETH, address: '' },
+            { id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-1', blockchain: BlockchainCode.ETH, address: '' },
+            { id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-2', blockchain: BlockchainCode.ETC, address: '' }
           ]
         }],
         details: [
@@ -83,16 +83,16 @@ describe('selectTotalBalance', () => {
           {
             id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee',
             accounts: [
-              { id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0', blockchain: 100, address: '' },
-              { id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-1', blockchain: 100, address: '' },
-              { id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-2', blockchain: 101, address: '' }
+              { id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0', blockchain: BlockchainCode.ETH, address: '' },
+              { id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-1', blockchain: BlockchainCode.ETH, address: '' },
+              { id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-2', blockchain: BlockchainCode.ETC, address: '' }
             ]
           },
           {
             id: 'c0659f31-1932-4006-bc4c-dbbab27fc25c',
             accounts: [
-              { id: 'c0659f31-1932-4006-bc4c-dbbab27fc25c-0', blockchain: 100, address: '' },
-              { id: 'c0659f31-1932-4006-bc4c-dbbab27fc25c-1', blockchain: 101, address: '' }
+              { id: 'c0659f31-1932-4006-bc4c-dbbab27fc25c-0', blockchain: BlockchainCode.ETH, address: '' },
+              { id: 'c0659f31-1932-4006-bc4c-dbbab27fc25c-1', blockchain: BlockchainCode.ETC, address: '' }
             ]
           }
         ],

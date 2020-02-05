@@ -1,17 +1,15 @@
 import {
   Page, Warning, WarningHeader, WarningText
 } from '@emeraldplatform/ui';
-import { BlockchainCode } from '@emeraldwallet/core';
+import { BlockchainCode, Wallet } from '@emeraldwallet/core';
 import { addresses, IState, screen, settings } from '@emeraldwallet/store';
 import { Button, ChainSelector, FormRow } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
-import { Wallet } from '@emeraldpay/emerald-vault-core';
 import FileDropField from './FileDropField';
 
-interface ImportJsonProps {
+interface IImportJsonProps {
   wallet: Wallet;
   blockchain: BlockchainCode;
 }
@@ -24,12 +22,12 @@ interface IImportJsonState {
   file?: any;
 }
 
-interface DispatchProps {
+interface IDispatchProps {
   importFile: (file: any) => Promise<void>;
   openWallet: () => void;
 }
 
-const ImportJson = ((props: ImportJsonProps & DispatchProps & WithTranslation) => {
+const ImportJson = ((props: IImportJsonProps & IDispatchProps & WithTranslation) => {
   const { t } = props;
 
   const [state, setState] = React.useState<IImportJsonState>({});
@@ -75,7 +73,7 @@ const ImportJson = ((props: ImportJsonProps & DispatchProps & WithTranslation) =
   );
 });
 
-export default connect<RenderProps, DispatchProps, ImportJsonProps, IState>(
+export default connect<RenderProps, IDispatchProps, IImportJsonProps, IState>(
   (state, ownProps) => {
     return {
     };
@@ -90,7 +88,7 @@ export default connect<RenderProps, DispatchProps, ImportJsonProps, IState>(
         });
       },
       openWallet: () => {
-        dispatch(screen.actions.gotoScreen('wallet', ownProps.wallet));
+        dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.wallet));
       }
     };
   }

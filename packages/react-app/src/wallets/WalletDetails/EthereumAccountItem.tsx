@@ -1,7 +1,6 @@
-import { EthereumAccount } from '@emeraldpay/emerald-vault-core';
 import { Wei } from '@emeraldplatform/eth';
 import { Account as AddressField, ButtonGroup } from '@emeraldplatform/ui';
-import { blockchainById } from '@emeraldwallet/core';
+import { Account } from '@emeraldwallet/core';
 import { addresses, IState, screen, tokens } from '@emeraldwallet/store';
 import { Balance, Button, CoinAvatar } from '@emeraldwallet/ui';
 import { Grid } from '@material-ui/core';
@@ -11,22 +10,22 @@ import AccountBalance from '../../common/Balance';
 import TokenBalances from '../TokenBalances';
 
 interface IOwnProps {
-  account: EthereumAccount;
+  account: Account;
 }
 
 interface IRenderProps {
-  account: EthereumAccount;
+  account: Account;
   tokensBalances: any[];
   balance: Wei;
 }
 
 interface IDispatchProps {
-  onSendClick?: (account: EthereumAccount) => void;
+  onSendClick?: (account: Account) => void;
 }
 
 export const EthereumAccountItem = ((props: IRenderProps & IDispatchProps) => {
   const { account, balance, tokensBalances } = props;
-  const blockchainCode = blockchainById(account.blockchain)!.params.code;
+  const blockchainCode = account.blockchain;
   const { onSendClick } = props;
 
   function handleSendClick () {
@@ -46,7 +45,7 @@ export const EthereumAccountItem = ((props: IRenderProps & IDispatchProps) => {
           <Grid item={true} xs={5}>
             <AddressField
               identity={false}
-              address={account.address}
+              address={account.address!}
             />
           </Grid>
           <Grid item={true} xs={3}>
@@ -80,9 +79,9 @@ export const EthereumAccountItem = ((props: IRenderProps & IDispatchProps) => {
 export default connect<IRenderProps, IDispatchProps, IOwnProps, IState>(
   (state: IState, ownProps: IOwnProps) => {
     const { account } = ownProps;
-    const blockchainCode = blockchainById(account.blockchain)!.params.code;
-    const balance = addresses.selectors.getBalance(state, account, Wei.ZERO) || Wei.ZERO;
-    const tokensBalances = tokens.selectors.selectBalances(state, account.address, blockchainCode);
+    const blockchainCode = account.blockchain;
+    const balance = addresses.selectors.getBalance(state, account.id, Wei.ZERO) || Wei.ZERO;
+    const tokensBalances = tokens.selectors.selectBalances(state, account.address!, blockchainCode);
     return {
       account,
       balance,
@@ -92,7 +91,7 @@ export default connect<IRenderProps, IDispatchProps, IOwnProps, IState>(
   },
   (dispatch, ownProps) => {
     return {
-      onSendClick: (account: EthereumAccount) => {
+      onSendClick: (account: Account) => {
         dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, account));
       }
     };
