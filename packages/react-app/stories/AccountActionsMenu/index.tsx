@@ -1,7 +1,7 @@
 import { action } from '@storybook/addon-actions';
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
-import AccountActionsMenu from '../../src/components/accounts/AccountActionsMenu';
+import AccountActionsMenu from '../../src/wallets/WalletActions/AccountActionsMenu';
 
 storiesOf('AccountActionsMenu', module)
   .add('default', () => (

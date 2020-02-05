@@ -14,7 +14,6 @@ export { default as ImportPrivateKey } from './components/accounts/ImportPrivate
 export { default as ExportPaperWallet } from './components/accounts/ExportPaperWallet';
 export { default as NewMnemonic } from './components/accounts/NewMnemonic';
 export { default as ReceiveDialog } from './components/accounts/ReceiveDialog';
-export { default as AccountActionsMenu } from './components/accounts/AccountActionsMenu';
 export { default as Balance } from './components/accounts/Balance';
 export { default as PaperWallet } from './components/accounts/PaperWallet';
 export { default as ErrorDialog } from './components/common/ErrorDialog';

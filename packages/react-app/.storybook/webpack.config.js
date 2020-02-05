@@ -7,5 +7,9 @@ module.exports = ({ config, mode }) => {
   });
 
   config.resolve.extensions.push(".ts", ".tsx");
+  config.node = {
+    fs: 'empty',
+    worker_threads: 'empty'
+  };
   return config;
 };

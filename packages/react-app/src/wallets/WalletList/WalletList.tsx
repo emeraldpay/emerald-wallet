@@ -39,19 +39,23 @@ const WalletList = ((props: IWalletsListProps) => {
   } = props;
   return (
     <div className={classes.container}>
+      <Grid container={true} spacing={2}>
         {wallets.map((wallet: Wallet) => {
           return (
-            <div className={classes.listItem} key={wallet.id}>
-              <WalletItem
-                showFiat={showFiat}
-                wallet={wallet}
-                openWallet={openWallet}
-                createTx={createTx}
-                showReceiveDialog={showReceiveDialog}
-              />
-          </div>
+            <Grid item={true} xs={6} key={wallet.id}>
+              <div className={classes.listItem}>
+                <WalletItem
+                  showFiat={showFiat}
+                  wallet={wallet}
+                  openWallet={openWallet}
+                  createTx={createTx}
+                  showReceiveDialog={showReceiveDialog}
+                />
+              </div>
+            </Grid>
           );
         })}
+      </Grid>
     </div>
   );
 });
@@ -67,18 +71,18 @@ export default connect(
   },
   (dispatch, ownProps) => ({
     createTx: (account: Wallet) => {
-      dispatch(screen.actions.gotoScreen('create-tx', account));
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, account));
     },
     openWallet: (account: Wallet) => {
-      dispatch(screen.actions.gotoScreen('wallet', account));
+      dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, account));
     },
     showReceiveDialog: (account: Wallet) => {
       // TODO vault v3
-    //   const address = {
-    //     coinTicker: Blockchains[account.blockchain].params.coinTicker,
-    //     value: account.id
-    //   };
-    //   dispatch(screen.actions.showDialog('receive', address));
+      //   const address = {
+      //     coinTicker: Blockchains[account.blockchain].params.coinTicker,
+      //     value: account.id
+      //   };
+      //   dispatch(screen.actions.showDialog('receive', address));
     }
   })
 )((StyledAccountList));

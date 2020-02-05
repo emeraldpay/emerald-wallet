@@ -1,10 +1,10 @@
 import { WalletOp } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode } from '@emeraldwallet/core';
 import { addresses, screen } from '@emeraldwallet/store';
-import { AccountActionsMenu } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { saveJson } from '../../util/save-as';
+import AccountActionsMenu from './AccountActionsMenu';
 
 interface IPropsFromState {
 }
