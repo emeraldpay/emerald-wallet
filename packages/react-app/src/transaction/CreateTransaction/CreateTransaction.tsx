@@ -12,8 +12,8 @@ import {
 } from '@emeraldwallet/core';
 import { registry } from '@emeraldwallet/erc20';
 import {
+  accounts,
   addressBook,
-  addresses,
   blockchains,
   ledger,
   screen,
@@ -436,14 +436,14 @@ export default connect<IStateProps, IDispatchFromProps, IOwnProps>(
             || { unitsValue: '0' };
           return new Units(tokenBalance.unitsValue, tokenInfo.decimals);
         }
-        const etherBalance = addresses.selectors.getBalance(state, account.id, Wei.ZERO)!;
+        const etherBalance = accounts.selectors.getBalance(state, account.id, Wei.ZERO)!;
         return new Units(etherBalance.toString(EthUnits.WEI), 18);
       },
       getFiatForAddress: (address: string, token: any): string => {
         if (token !== txFeeSymbol) {
           return '??';
         }
-        const newBalance = addresses.selectors.getBalance(state, account.id, Wei.ZERO)!;
+        const newBalance = accounts.selectors.getBalance(state, account.id, Wei.ZERO)!;
         return newBalance.getFiat(fiatRate);
       },
       getTxFeeFiatForGasLimit: (gasLimit: number) => {
@@ -454,7 +454,7 @@ export default connect<IStateProps, IDispatchFromProps, IOwnProps>(
       gasPrice,
       tokenSymbols: allTokens.map((i: any) => i.symbol),
       addressBookAddresses: addressBook.selectors.all(state).map((i: any) => i.address),
-      ownAddresses: addresses.selectors.allAccountsByBlockchain(state, blockchain.params.code)
+      ownAddresses: accounts.selectors.allAccountsByBlockchain(state, blockchain.params.code)
         .map((a: Account) => a.address!),
       useLedger: false, // TODO
       allTokens

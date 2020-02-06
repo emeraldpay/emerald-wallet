@@ -1,4 +1,4 @@
-import { screen } from '..';
+import { screen } from '@emeraldwallet/store';
 
 export default (store) => {
   return (next) => {

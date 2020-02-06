@@ -1,6 +1,6 @@
 import { ButtonGroup, Input, Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import { addresses, screen } from '@emeraldwallet/store';
+import { accounts, screen } from '@emeraldwallet/store';
 import { Button } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { useState } from 'react';
@@ -75,7 +75,7 @@ function mapDispatchToProps (dispatch: any) {
       dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
     },
     onCreate: (walletName: string) => {
-      dispatch(addresses.actions.createNewWalletAction(walletName));
+      dispatch(accounts.actions.createNewWalletAction(walletName));
     }
   };
 }

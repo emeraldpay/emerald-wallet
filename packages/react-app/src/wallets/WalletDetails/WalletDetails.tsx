@@ -1,5 +1,5 @@
 import { blockchainByName, Wallet } from '@emeraldwallet/core';
-import { addresses, screen, txhistory } from '@emeraldwallet/store';
+import { accounts, screen, txhistory } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import TxHistory from '../../transactions/TxHistory';
@@ -9,7 +9,7 @@ export default connect(
   (state: any, ownProps: any) => {
     const accountPassed: Wallet = ownProps.wallet;
     // reload account from store, because it can be passed with id only if it was just imported
-    const wallet = addresses.selectors.find(state, accountPassed.id)!;
+    const wallet = accounts.selectors.find(state, accountPassed.id)!;
     // const transactions = [];
     const transactions = txhistory.selectors.searchTransactions(
         '', // account.id,
@@ -42,7 +42,7 @@ export default connect(
     },
     editAccount: (data: Wallet) => {
       return new Promise((resolve, reject) => {
-        dispatch(addresses.actions.updateWallet(data.id, data.name || '', data.description || '') as any)
+        dispatch(accounts.actions.updateWallet(data.id, data.name || '', data.description || '') as any)
           .then((response: any) => {
             resolve(response);
           });

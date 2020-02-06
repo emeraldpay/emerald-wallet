@@ -1,4 +1,4 @@
-import { addresses as accounts } from '@emeraldwallet/store';
+import { accounts } from '@emeraldwallet/store';
 import { AddressListener } from '../AddressListener';
 import { IService } from './Services';
 

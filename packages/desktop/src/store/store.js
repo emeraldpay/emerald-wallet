@@ -4,7 +4,7 @@ import {
   screen,
   ledger,
   txhistory,
-  addresses,
+  accounts,
   addressBook,
   settings,
   application
@@ -22,7 +22,6 @@ import {createStore} from './createStore';
 import {
   onceBlockchainConnected,
   onceAccountsLoaded,
-  onceBalancesSet,
   onceModeSet, onceServicesStart,
 } from './triggers';
 import {Logger} from '@emeraldwallet/core';
@@ -62,7 +61,7 @@ export function startSync() {
         api.connectChains(codes);
       })
       .then(() => {
-        return store.dispatch(addresses.actions.loadWalletsAction());
+        return store.dispatch(accounts.actions.loadWalletsAction());
       })
       .then(() => {
         const supported = settings.selectors.currentChains(store.getState());

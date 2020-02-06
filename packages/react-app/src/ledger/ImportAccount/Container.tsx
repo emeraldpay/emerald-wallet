@@ -1,6 +1,6 @@
 import { BlockchainCode } from '@emeraldwallet/core';
 import {
-  addresses, IState, ledger, screen, settings
+  accounts, IState, ledger, screen, settings
 } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -27,7 +27,7 @@ export default connect<any, any, any, IState>(
     selected: ledger.selectors.hasSelected(state),
     selectedAddress: ledger.selectors.getSelected(state),
     addresses: ledger.selectors.getAddresses(state),
-    accounts: addresses.selectors.allWallets(state),
+    accounts: accounts.selectors.allWallets(state),
     blockchains: settings.selectors.currentChains(state),
     // TODO: Fix this dependency
     api: (global as any).api
@@ -48,7 +48,7 @@ export default connect<any, any, any, IState>(
       if (ownProps.onBackScreen) {
         return dispatch(screen.actions.gotoScreen(ownProps.onBackScreen));
       }
-      dispatch(screen.actions.gotoScreen('home'));
+      dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
     },
     onAddSelected: (blockchain: BlockchainCode) => {
       dispatch(ledger.actions.importSelected(blockchain) as any)
@@ -68,7 +68,7 @@ export default connect<any, any, any, IState>(
       if (ownProps.onBackScreen) {
         return dispatch(screen.actions.gotoScreen(ownProps.onBackScreen));
       }
-      dispatch(screen.actions.gotoScreen('home'));
+      dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
     }
   })
 )(Container);

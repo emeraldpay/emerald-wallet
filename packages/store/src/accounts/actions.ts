@@ -144,7 +144,7 @@ export function createAccount (
 
 export function exportPrivateKey (passphrase: string, accountId: vault.AccountId): any {
   return (dispatch: any, getState: any, api: IApi) => {
-    return api.vault.exportJsonPrivateKey(accountId, passphrase);
+    return api.vault.exportRawPrivateKey(accountId, passphrase);
   };
 }
 

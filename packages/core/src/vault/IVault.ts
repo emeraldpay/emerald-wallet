@@ -14,10 +14,11 @@ export default interface IVault {
   addWallet (label?: string): Uuid;
   getWallet (id: Uuid): Wallet | undefined;
   setWalletLabel (walletId: Uuid, label: string): boolean;
-
   addAccount (walletId: Uuid, account: AddAccount): AccountId;
 
-  exportJsonPrivateKey (accountFullId: AccountId, password?: string): string;
+  // export account data
+  exportJsonPrivateKey (accountFullId: AccountId, password?: string): Promise<string>;
+  exportRawPrivateKey (accountFullId: AccountId, password: string): Promise<string>;
 
   generateMnemonic (size: number): string;
 

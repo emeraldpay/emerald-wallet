@@ -6,7 +6,7 @@ import {
 } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import {
-  addresses,
+  accounts,
   blockchains,
   screen,
   ledger,
@@ -33,7 +33,7 @@ const reducers = {
   [application.moduleName]: application.reducer,
   ledger: ledger.reducer,
   wallet: walletReducers,
-  [addresses.moduleName]: addresses.reducer,
+  [accounts.moduleName]: accounts.reducer,
   blockchains: blockchains.reducer,
   screen: screen.reducer,
   conn: connection.reducer,
@@ -72,6 +72,6 @@ export const createStore = (_api) => {
   sagaMiddleware.run(tokens.sagas.root, _api);
   sagaMiddleware.run(wallet.sagas.root, _api);
   sagaMiddleware.run(settings.sagas.root);
-  sagaMiddleware.run(addresses.sagas.root, _api);
+  sagaMiddleware.run(accounts.sagas.root, _api);
   return store;
 };

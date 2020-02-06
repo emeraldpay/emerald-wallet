@@ -1,4 +1,4 @@
-import { blockchains, addresses, application } from '@emeraldwallet/store';
+import { blockchains, accounts, application } from '@emeraldwallet/store';
 import { TERMS_VERSION } from './config';
 
 const handleTrigger = (check, resolve, store) => {
@@ -39,7 +39,7 @@ export function onceModeSet(store) {
 
 export function onceBalancesSet(store) {
   const check = () => {
-    const allAccounts = addresses.selectors.all(store.getState());
+    const allAccounts = accounts.selectors.all(store.getState());
     const eachHasBalance = allAccounts.reduce((memo, account) => memo && account.get('balance') !== null, true);
     return allAccounts.size > 0 && eachHasBalance;
   };
@@ -49,7 +49,7 @@ export function onceBalancesSet(store) {
 
 export function onceAccountsLoaded(store) {
   const check = () => {
-    return addresses.selectors.isLoading(store.getState()) === false;
+    return accounts.selectors.isLoading(store.getState()) === false;
   };
 
   return new Promise((resolve, reject) => handleTrigger(check, resolve, store));

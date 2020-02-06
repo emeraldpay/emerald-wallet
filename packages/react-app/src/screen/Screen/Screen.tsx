@@ -43,7 +43,7 @@ const Screen = (props: IScreenProps) => {
   if (props.screen === 'add-from-ledger') {
     return <ImportLedgerAccount />;
   }
-  if (props.screen === 'wallet') {
+  if (props.screen === screen.Pages.WALLET) {
     return <WalletDetails wallet={props.screenItem}/>;
   }
   if (props.screen === screen.Pages.TX_DETAILS) {
@@ -108,9 +108,9 @@ const Screen = (props: IScreenProps) => {
   if (props.screen === 'paper-wallet') {
     return <PaperWallet address={props.screenItem.address} privKey={props.screenItem.privKey} />;
   }
-  // if (props.screen === 'export-paper-wallet') {
-  //   return <ExportPaperWallet accountId={props.screenItem.address} blockchain={props.screenItem.blockchain} />;
-  // }
+  if (props.screen === 'export-paper-wallet') {
+    return <ExportPaperWallet account={props.screenItem} />;
+  }
   if (props.screen === 'add-account') {
     return <CreateAccountWizard />;
   }

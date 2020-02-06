@@ -2,7 +2,7 @@ import * as qs from 'qs';
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import { fromJS } from 'immutable';
 import { Contract } from '@emeraldplatform/contracts';
-import { screen } from 'store';
+import { screen } from '@emeraldwallet/store';
 import { onceServicesStart, onceAccountsLoaded, onceBalancesSet } from '../triggers';
 
 

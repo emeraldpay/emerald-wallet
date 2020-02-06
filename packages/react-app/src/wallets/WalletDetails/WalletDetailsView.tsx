@@ -6,6 +6,7 @@ import { PageTitle } from '@emeraldplatform/ui/lib/components/Page';
 import { Account, Wallet } from '@emeraldwallet/core';
 import { Button, FormRow, InlineEdit } from '@emeraldwallet/ui';
 import { Grid, IconButton, Typography } from '@material-ui/core';
+import { AccountBalanceWalletOutlined as WalletIcon } from '@material-ui/icons';
 import EditIcon from '@material-ui/icons/Edit';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { withStyles } from '@material-ui/styles';
@@ -14,7 +15,6 @@ import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import Balance from '../../common/Balance';
 import ChainTitle from '../../common/ChainTitle';
-import AccountActions from '../WalletActions';
 import WalletSummary from '../WalletSummary';
 import EthereumAccountItem from './EthereumAccountItem';
 
@@ -91,7 +91,13 @@ export class WalletShow extends React.Component<AccountShowProps, IState> {
 
     // const { coinTicker } = blockchainByName(acc.blockchain).params;
     // const renderTitle = () => (<ChainTitle chain={acc.blockchain} text={'Account'} />);
-    const renderTitle = () => (<PageTitle>{wallet.name || ''}</PageTitle>);
+    const renderTitle = () => (
+      <PageTitle>
+        <React.Fragment>
+          <WalletIcon /> {wallet.name || ''}
+        </React.Fragment>
+      </PageTitle>
+    );
 
     // <IconButton aria-label="details">
     // </IconButton>
@@ -105,7 +111,7 @@ export class WalletShow extends React.Component<AccountShowProps, IState> {
           <Grid container={true} direction={'column'}>
             <Grid item={true} xs={12}>
               {wallet.accounts.map(
-                (account: Account) => (<EthereumAccountItem account={account} key={account.id}/>)
+                (account: Account) => (<EthereumAccountItem walletId={wallet.id} account={account} key={account.id}/>)
               )}
             </Grid>
           </Grid>

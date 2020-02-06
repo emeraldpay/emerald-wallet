@@ -1,5 +1,5 @@
 import { utils } from '@emeraldwallet/core';
-import { addresses, IState, screen, settings } from '@emeraldwallet/store';
+import { accounts, IState, screen, settings } from '@emeraldwallet/store';
 import { ImportPrivateKey } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -13,7 +13,7 @@ export default connect<any, any, any, IState>(
       return new Promise((resolve, reject) => {
         const privateKey = utils.addHexPrefix(data.privateKey.trim());
         // import pk
-        return dispatch(addresses.actions.importPk(data.blockchain, privateKey, data.password, '', '') as any)
+        return dispatch(accounts.actions.importPk(data.blockchain, privateKey, data.password, '', '') as any)
           .then((result: any) => {
             if (result.error) {
               dispatch(screen.actions.showError(new Error(result.error.toString())));

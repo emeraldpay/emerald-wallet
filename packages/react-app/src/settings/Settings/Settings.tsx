@@ -1,4 +1,4 @@
-import { addresses, screen, settings } from '@emeraldwallet/store';
+import { screen, settings } from '@emeraldwallet/store';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';

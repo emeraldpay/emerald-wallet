@@ -1,4 +1,4 @@
-import { addresses, IState, screen, settings } from '@emeraldwallet/store';
+import { accounts, IState, screen, settings } from '@emeraldwallet/store';
 import { ImportMnemonic, NewMnemonic } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -121,10 +121,10 @@ export default connect<any, any, any, IState>(
   }),
   (dispatch, ownProps) => ({
     generateMnemonic: () => {
-      return dispatch(addresses.actions.generateMnemonic() as any);
+      return dispatch(accounts.actions.generateMnemonic() as any);
     },
     gotoDashboard: () => {
-      dispatch(screen.actions.gotoScreen('home'));
+      dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
     }
 
   })

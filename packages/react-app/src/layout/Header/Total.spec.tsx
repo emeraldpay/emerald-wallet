@@ -1,6 +1,6 @@
 import { Wei } from '@emeraldplatform/eth';
 import { BlockchainCode, Units } from '@emeraldwallet/core';
-import { addresses } from '@emeraldwallet/store';
+import { accounts } from '@emeraldwallet/store';
 import { mount } from 'enzyme';
 import * as React from 'react';
 import { Provider } from 'react-redux';
@@ -31,7 +31,7 @@ function createStore () {
           }
         },
         tokens: {},
-        [addresses.moduleName]: {
+        [accounts.moduleName]: {
           wallets: [
             {
               id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee',

@@ -1,19 +1,22 @@
 import { Wei } from '@emeraldplatform/eth';
 import { Account as AddressField, ButtonGroup } from '@emeraldplatform/ui';
 import { Account } from '@emeraldwallet/core';
-import { addresses, IState, screen, tokens } from '@emeraldwallet/store';
+import { accounts, IState, screen, tokens } from '@emeraldwallet/store';
 import { Balance, Button, CoinAvatar } from '@emeraldwallet/ui';
 import { Grid } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import AccountBalance from '../../common/Balance';
+import AccountActions from '../AccountActions';
 import TokenBalances from '../TokenBalances';
 
 interface IOwnProps {
   account: Account;
+  walletId: string;
 }
 
 interface IRenderProps {
+  walletId: string;
   account: Account;
   tokensBalances: any[];
   balance: Wei;
@@ -57,7 +60,8 @@ export const EthereumAccountItem = ((props: IRenderProps & IDispatchProps) => {
               showFiat={false}
             />
           </Grid>
-          <Grid item={true} xs={3}>
+          <Grid item={true} xs={3} container={true} alignItems={'center'} >
+            <AccountActions account={account} />
             {/*<Button*/}
             {/*  label='Deposit'*/}
             {/*  // onClick={this.handleDepositClick}*/}
@@ -80,9 +84,10 @@ export default connect<IRenderProps, IDispatchProps, IOwnProps, IState>(
   (state: IState, ownProps: IOwnProps) => {
     const { account } = ownProps;
     const blockchainCode = account.blockchain;
-    const balance = addresses.selectors.getBalance(state, account.id, Wei.ZERO) || Wei.ZERO;
+    const balance = accounts.selectors.getBalance(state, account.id, Wei.ZERO) || Wei.ZERO;
     const tokensBalances = tokens.selectors.selectBalances(state, account.address!, blockchainCode);
     return {
+      walletId: ownProps.walletId,
       account,
       balance,
       blockchainCode,

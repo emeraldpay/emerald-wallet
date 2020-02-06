@@ -7,7 +7,6 @@ import MoreVertIcon from '@material-ui/icons/MoreVert';
 import { withStyles, withTheme } from '@material-ui/styles';
 import * as React from 'react';
 import AccountBalance from '../../common/Balance';
-import WalletActions from '../WalletActions';
 import WalletSummary from '../WalletSummary';
 import WalletMenu from './WalletMenu';
 

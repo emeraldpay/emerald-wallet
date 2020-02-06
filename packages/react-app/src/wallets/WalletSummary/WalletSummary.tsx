@@ -1,6 +1,6 @@
 import { Wei } from '@emeraldplatform/eth';
 import { Wallet } from '@emeraldwallet/core';
-import { addresses, IBalanceValue, IState, settings, tokens } from '@emeraldwallet/store';
+import { accounts, IBalanceValue, IState, settings, tokens } from '@emeraldwallet/store';
 import { Balance } from '@emeraldwallet/ui';
 import { Grid, StyledComponentProps } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/core/styles';
@@ -87,8 +87,8 @@ const SummaryStyled = withStyles(styles)(WalletSummary);
 export default connect<RenderProps, {}, IOwnProps, IState>(
   (state: IState, ownProps) => {
     const wallet = ownProps.wallet;
-    const assets: IBalanceValue[] = addresses.selectors.getWalletBalances(state, wallet, false);
-    const total: IBalanceValue | undefined = addresses.selectors.fiatTotalBalance(state, assets);
+    const assets: IBalanceValue[] = accounts.selectors.getWalletBalances(state, wallet, false);
+    const total: IBalanceValue | undefined = accounts.selectors.fiatTotalBalance(state, assets);
 
     return {
       assets,

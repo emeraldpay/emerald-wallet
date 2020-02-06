@@ -1,5 +1,5 @@
 import { Blockchain, BlockchainCode, Logger } from '@emeraldwallet/core';
-import { addresses, IState, screen, settings } from '@emeraldwallet/store';
+import { accounts, IState, screen, settings } from '@emeraldwallet/store';
 import { ImportMnemonic } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -35,7 +35,7 @@ export default connect<IStateProps, IDispatchProps, IOwnProps, IState>(
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data: {blockchain: BlockchainCode, password: string, mnemonic: string, hdpath: string}) => {
-      return dispatch(addresses.actions.importMnemonic(data.blockchain, data.password, data.mnemonic, data.hdpath, '', '') as any)
+      return dispatch(accounts.actions.importMnemonic(data.blockchain, data.password, data.mnemonic, data.hdpath, '', '') as any)
         .then((result: any) => {
           if (result.error) {
             throw new Error(result.error.toString());

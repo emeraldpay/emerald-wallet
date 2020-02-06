@@ -1,5 +1,5 @@
 import { BlockchainCode, Wallet } from '@emeraldwallet/core';
-import { addAccount, addresses, IState, screen } from '@emeraldwallet/store';
+import { addAccount, accounts, IState, screen } from '@emeraldwallet/store';
 import { Button } from '@emeraldwallet/ui';
 import { Card, CardActions, CardContent, CardHeader, Grid, Step, StepLabel, Stepper } from '@material-ui/core';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
@@ -10,7 +10,7 @@ import SelectBlockchain from './SelectBlockchain';
 import SelectType from './SelectType';
 import SelectWallet from './SelectWallet';
 
-interface OwnProps {
+interface IOwnProps {
 }
 
 interface IRenderProps {
@@ -79,14 +79,14 @@ const CreateAccountWizard = ((props: IRenderProps & IDispatchProps) => {
   );
 });
 
-export default connect<IRenderProps, IDispatchProps, OwnProps, IState>(
+export default connect<IRenderProps, IDispatchProps, IOwnProps, IState>(
   (state, ownProps) => {
     const wizardState = addAccount.selectors.getState(state);
     const walletId = wizardState.walletId;
     if (!walletId) {
       throw Error('WalletId is not set');
     }
-    const wallet = addresses.selectors.find(state, walletId);
+    const wallet = accounts.selectors.find(state, walletId);
     if (!wallet) {
       throw Error('Wallet is not set');
     }

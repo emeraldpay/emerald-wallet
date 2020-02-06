@@ -1,4 +1,4 @@
-import * as addresses from './accounts';
+import * as accounts from './accounts';
 import * as addAccount from './add-account';
 import * as addressBook from './address-book';
 import * as application from './application';
@@ -15,7 +15,7 @@ import * as wallet from './wallet';
 export {
   application,
   addressBook,
-  addresses,
+  accounts,
   blockchains,
   screen,
   txhistory,

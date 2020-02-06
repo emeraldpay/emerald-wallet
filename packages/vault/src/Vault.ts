@@ -77,8 +77,12 @@ export class Vault implements IVault {
     return this.provider.addAccount(walletId, account);
   }
 
-  public exportJsonPrivateKey (accountFullId: string, password?: string): string {
-    return this.provider.exportJsonPk(accountFullId, password);
+  public exportJsonPrivateKey (accountFullId: string, password?: string): Promise<string> {
+    return Promise.resolve(this.provider.exportJsonPk(accountFullId, password));
+  }
+
+  public exportRawPrivateKey (accountFullId: string, password: string): Promise<string> {
+    return Promise.resolve(this.provider.exportRawPk(accountFullId, password));
   }
 
   public generateMnemonic (size: number): string {

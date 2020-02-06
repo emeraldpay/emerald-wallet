@@ -2,7 +2,7 @@ import {
   Page, Warning, WarningHeader, WarningText
 } from '@emeraldplatform/ui';
 import { BlockchainCode, Wallet } from '@emeraldwallet/core';
-import { addresses, IState, screen, settings } from '@emeraldwallet/store';
+import { accounts, IState, screen, settings } from '@emeraldwallet/store';
 import { Button, ChainSelector, FormRow } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
@@ -82,7 +82,7 @@ export default connect<RenderProps, IDispatchProps, IImportJsonProps, IState>(
     return {
       importFile: (file: any) => {
         return new Promise((resolve, reject) => {
-          dispatch(addresses.actions.importWalletFile(ownProps.wallet.id, ownProps.blockchain, file) as any)
+          dispatch(accounts.actions.importWalletFile(ownProps.wallet.id, ownProps.blockchain, file) as any)
             .then(resolve)
             .catch(reject);
         });
