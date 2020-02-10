@@ -97,10 +97,6 @@ class ServerConnect implements IServerConnect {
     });
   }
 
-  public getVault (): IVault {
-    return this.vaultProvider;
-  }
-
   public getUserAgent () {
     return this.headers['User-Agent'];
   }

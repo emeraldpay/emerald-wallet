@@ -49,6 +49,7 @@
     "@emeraldwallet/services": "^2.1.2",
     "devtron": "^1.4.0",
     "electron-log": "4.0.3",
+    "electron-store": "5.1.0",
     "uuid": "^3.3.2"
   }
 }

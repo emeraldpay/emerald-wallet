@@ -93,9 +93,14 @@ export class WalletShow extends React.Component<AccountShowProps, IState> {
     // const renderTitle = () => (<ChainTitle chain={acc.blockchain} text={'Account'} />);
     const renderTitle = () => (
       <PageTitle>
-        <React.Fragment>
-          <WalletIcon /> {wallet.name || ''}
-        </React.Fragment>
+        <Grid container={true} alignItems={'center'}>
+          <Grid item={true} container={true}>
+            <WalletIcon />
+          </Grid>
+          <Grid item={true}>
+            {wallet.name || ''}
+          </Grid>
+        </Grid>
       </PageTitle>
     );
 
@@ -104,9 +109,10 @@ export class WalletShow extends React.Component<AccountShowProps, IState> {
 
     return (
       <div>
-        <Page title={renderTitle()}
-              leftIcon={<Back onClick={goBack}/>}
-              rightIcon={<MoreVertIcon />}
+        <Page
+          title={renderTitle()}
+          leftIcon={<Back onClick={goBack}/>}
+          rightIcon={<MoreVertIcon />}
         >
           <Grid container={true} direction={'column'}>
             <Grid item={true} xs={12}>

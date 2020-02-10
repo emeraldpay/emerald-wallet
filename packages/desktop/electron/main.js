@@ -6,12 +6,13 @@ const {
   EmeraldApiAccessDev,
   EmeraldApiAccessProd,
 } = require('@emeraldwallet/services');
-const { createServices, getMainWindow, protocol, assertSingletonWindow, Application } = require('@emeraldwallet/electron-app');
+const {
+  getMainWindow, protocol, assertSingletonWindow, Application, Settings
+} = require('@emeraldwallet/electron-app');
 const { LocalConnector } = require('@emeraldwallet/vault');
 const { app, ipcMain, session } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path'); // eslint-disable-line
 
-const Settings = require('./settings');
 const { LedgerApi } = require('@emeraldwallet/ledger');
 const ipc = require('./ipc');
 const log = require('./logger');
@@ -74,8 +75,6 @@ const application = new Application();
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
 
-  application.run();
-
   log.info('Starting Emerald', app.getVersion());
   log.info('... setup API access');
   let apiAccess;
@@ -99,11 +98,11 @@ app.on('ready', () => {
 
   serverConnect.init(process.versions);
 
-  session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
-    details.requestHeaders['User-Agent'] = serverConnect.getUserAgent();
-    callback({ cancel: false, requestHeaders: details.requestHeaders });
-  });
-
+  // TODO: depricated
+  // session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
+  //   details.requestHeaders['User-Agent'] = serverConnect.getUserAgent();
+  //   callback({ cancel: false, requestHeaders: details.requestHeaders });
+  // });
 
   log.info('... create window');
   const browserWindow = getMainWindow(options);
@@ -111,20 +110,14 @@ app.on('ready', () => {
     sendMode(browserWindow.webContents, apiMode);
   });
 
-  log.info('... setup services');
-  const services = createServices(ipcMain, browserWindow.webContents, apiAccess, apiMode);
-
-  app.on('quit', () => {
-    services.stop();
-  });
-
-  log.info('... start services');
-  services.start();
+  application.run(browserWindow.webContents, apiAccess, apiMode);
 
   // Run IPC listeners
   ipc({ settings });
 
-  log.info('... services started');
+  app.on('quit', () => {
+    application.stop();
+  });
 });
 
 

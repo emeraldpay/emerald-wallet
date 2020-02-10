@@ -8,3 +8,4 @@ export { protocol };
 export { default as ElectronLogger } from './logging/ElectronLogger';
 
 export { default as Application } from './application/Application';
+export { default as Settings } from './application/Settings';

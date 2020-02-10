@@ -92,7 +92,6 @@
     "bignumber.js": "8.0.2",
     "classnames": "^2.2.5",
     "color-hash": "^1.0.3",
-    "electron-store": "^1.1.0",
     "es6-promise": "4.1.1",
     "google-protobuf": "3.7.1",
     "immutable": "3.8.2",
