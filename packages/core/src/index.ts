@@ -53,3 +53,6 @@ export { default as DefaultLogger } from './logging/DefaultLogger';
 // core entities
 export { default as Account } from './entities/Account';
 export { default as Wallet } from './entities/Wallet';
+
+// backend
+export { default as IBackendApi } from './backend/IBackendApi';

@@ -17,18 +17,18 @@ log.transports.console.level = isDev ? 'debug' : 'info';
 
 export default class ElectronLogger implements ILogger {
   public debug (...params: any[]) {
-    log.debug(params);
+    log.debug(...params);
   }
 
   public error (...params: any[]) {
-    log.error(params);
+    log.error(...params);
   }
 
   public info (...params: any[]) {
-    log.info(params);
+    log.info(...params);
   }
 
   public warn (...params: any[]) {
-    log.warn(params);
+    log.warn(...params);
   }
 }

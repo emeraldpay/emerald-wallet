@@ -11,11 +11,8 @@ import {
 } from '@emeraldwallet/store';
 import {ipcRenderer} from 'electron';
 import {startProtocolListener} from './protocol';
-
 import {Api, getConnector, getRemoteVault} from '../lib/rpc/api';
 import {intervalRates} from './config';
-// import { showError } from './wallet/screen/screenActions';
-
 import getWalletVersion from '../utils/get-wallet-version';
 import {createStore} from './createStore';
 

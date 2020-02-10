@@ -30,7 +30,7 @@ export class ChainListener {
 
   public subscribe (chainCode: string, handler: HeadListener) {
     const chain = extractChain(chainCode);
-    if (chain.code == CHAINS.UNSPECIFIED.code) {
+    if (chain.code === CHAINS.UNSPECIFIED.code) {
       console.warn('Unknown chain: ', chainCode, 'Ignoring.');
       return;
     }

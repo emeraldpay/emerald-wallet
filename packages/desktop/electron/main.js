@@ -6,7 +6,7 @@ const {
   EmeraldApiAccessDev,
   EmeraldApiAccessProd,
 } = require('@emeraldwallet/services');
-const { createServices, getMainWindow, protocol, assertSingletonWindow } = require('@emeraldwallet/electron-app');
+const { createServices, getMainWindow, protocol, assertSingletonWindow, Application } = require('@emeraldwallet/electron-app');
 const { LocalConnector } = require('@emeraldwallet/vault');
 const { app, ipcMain, session } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path'); // eslint-disable-line
@@ -16,7 +16,6 @@ const { LedgerApi } = require('@emeraldwallet/ledger');
 const ipc = require('./ipc');
 const log = require('./logger');
 const { startProtocolHandler } = protocol;
-const { Prices } = require('./prices');
 const {
   DevMode, LocalMode, ProdMode, sendMode,
 } = require('./mode');
@@ -69,9 +68,14 @@ const appParams = {
   chromeVer: process.versions.chrome,
 };
 
+const application = new Application();
+
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
+
+  application.run();
+
   log.info('Starting Emerald', app.getVersion());
   log.info('... setup API access');
   let apiAccess;
@@ -90,7 +94,7 @@ app.on('ready', () => {
 
   log.info('... Setup ServerConnect');
   const serverConnect = new ServerConnect(
-    app.getVersion(), app.getLocale(), log, apiAccess.blockchainClient, vault.getProvider());
+    appParams.version, appParams.locale, log, apiAccess.blockchainClient, vault.getProvider());
   global.serverConnect = serverConnect;
 
   serverConnect.init(process.versions);
@@ -108,7 +112,7 @@ app.on('ready', () => {
   });
 
   log.info('... setup services');
-  const services = createServices(ipcMain, browserWindow.webContents, apiAccess, apiMode.chains);
+  const services = createServices(ipcMain, browserWindow.webContents, apiAccess, apiMode);
 
   app.on('quit', () => {
     services.stop();
@@ -121,11 +125,6 @@ app.on('ready', () => {
   ipc({ settings });
 
   log.info('... services started');
-
-  log.info('... subscribe for prices');
-  const prices = new Prices(ipcMain, browserWindow.webContents, apiAccess, apiMode.assets, apiMode.currencies[0]);
-  prices.start();
-
 });
 
 

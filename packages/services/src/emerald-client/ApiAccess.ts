@@ -11,7 +11,7 @@ import { IEmeraldClient } from '@emeraldwallet/core';
 import * as os from 'os';
 import { AddressListener } from '../AddressListener';
 import { ChainListener } from '../ChainListener';
-import { PriceListener } from '../PricesListener';
+import { PriceListener } from '../services/prices/PricesListener';
 import { TxListener } from '../services/TxListener';
 
 const certLocal = '-----BEGIN CERTIFICATE-----\n' +

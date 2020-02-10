@@ -131,7 +131,7 @@ export default connect(
       dispatch(transaction.actions.broadcastTx(tx.blockchain, tx, signed));
     },
     onCancel: () => {
-      dispatch(screen.actions.gotoScreen('home'));
+      dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
     }
   })
 )(StyledView);

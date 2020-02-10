@@ -4,7 +4,8 @@ export { AddressListener } from './AddressListener';
 export {
   EmeraldApiAccess, EmeraldApiAccessDev, EmeraldApiAccessLocal, EmeraldApiAccessProd
 } from './emerald-client/ApiAccess';
-export { PriceListener } from './PricesListener';
+export { PriceListener } from './services/prices/PricesListener';
+export { default as PricesService } from './services/prices/PricesService';
 
 // services
 export { ConnStatus } from './services/ConnStatus';

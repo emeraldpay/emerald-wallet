@@ -1,4 +1,3 @@
-import { IEmeraldVault } from '@emeraldpay/emerald-vault-core';
 import { BlockchainClient } from '@emeraldpay/grpc-client';
 import {
   EthRpc, VerifyBlockHash, VerifyGenesis, VerifyMinPeers, VerifyNotSyncing
