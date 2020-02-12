@@ -182,7 +182,7 @@ export function fiatTotalBalance (state: IState, assets: IBalanceValue[]): IBala
 
   return {
     balance: new Units(total, 0),
-    token: state.wallet.settings.localeCurrency
+    token: state.settings.localeCurrency
   };
 }
 

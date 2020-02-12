@@ -56,3 +56,4 @@ export { default as Wallet } from './entities/Wallet';
 
 // backend
 export { default as IBackendApi } from './backend/IBackendApi';
+export { Commands } from './backend/Commands';

@@ -1,4 +1,4 @@
-import { AddressBookItem, AddressBookService, IAddressBookService, IApi } from '@emeraldwallet/core';
+import { AddressBookItem, AddressBookService, IAddressBookService, IApi, IBackendApi } from '@emeraldwallet/core';
 import { all, call, put, takeEvery } from 'redux-saga/effects';
 import * as screen from '../screen';
 import { contactDeletedAction, newContactAddedAction, setAddressBook } from './actions';
@@ -31,7 +31,7 @@ function* deleteContact (service: IAddressBookService, action: DeleteContactActi
   yield put(screen.actions.gotoScreen(screen.Pages.ADDRESS_BOOK));
 }
 
-export function* root (api: IApi) {
+export function* root (api: IApi, backend: IBackendApi) {
   const service = new AddressBookService(api.vault);
   yield takeEvery(ActionTypes.LOAD, loadAddresses, service);
   yield takeEvery(ActionTypes.ADD_CONTACT, addContact, service);

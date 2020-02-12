@@ -38,16 +38,13 @@ class ServerConnect implements IServerConnect {
   public revalidate?: RevalidatingJsonRpc;
   public log: any;
   public blockchainClient: BlockchainClient;
-  public vaultProvider: IVault;
 
   constructor (
-    appVersion: string, locale: any, log: any, blockchainClient: BlockchainClient, vault: IVault
-  ) {
+    appVersion: string, locale: any, log: any, blockchainClient: BlockchainClient) {
     this.log = log;
     this.appVersion = appVersion;
     this.locale = locale;
     this.blockchainClient = blockchainClient;
-    this.vaultProvider = vault;
     this.headers = {
       'User-Agent': `EmeraldWallet/${appVersion}`
     };

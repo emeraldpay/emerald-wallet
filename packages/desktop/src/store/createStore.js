@@ -1,44 +1,22 @@
 import thunkMiddleware from 'redux-thunk';
 import {
   createStore as createReduxStore,
-  applyMiddleware,
-  combineReducers
+  applyMiddleware
 } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import {
   accounts,
   blockchains,
-  screen,
   ledger,
-  connection,
   addressBook,
   txhistory,
   tokens,
   wallet,
   settings,
-  addAccount,
-  application
+  rootReducer
 } from '@emeraldwallet/store';
 import reduxLogger from '../utils/redux-logger';
 import reduxMiddleware from './middleware';
-
-const walletReducers = combineReducers({
-  history: txhistory.reducer,
-  settings: settings.reducer,
-});
-
-const reducers = {
-  [addressBook.moduleName]: addressBook.reducer,
-  [tokens.moduleName]: tokens.reducer,
-  [application.moduleName]: application.reducer,
-  ledger: ledger.reducer,
-  wallet: walletReducers,
-  [accounts.moduleName]: accounts.reducer,
-  blockchains: blockchains.reducer,
-  screen: screen.reducer,
-  conn: connection.reducer,
-  addAccount: addAccount.reducer
-};
 
 /**
  * Creates Redux store with API as dependency injection.
@@ -48,7 +26,6 @@ const reducers = {
  * @param _api
  */
 export const createStore = (_api) => {
-
   const sagaMiddleware = createSagaMiddleware();
   const storeMiddleware = [
     sagaMiddleware,
@@ -61,7 +38,7 @@ export const createStore = (_api) => {
   }
 
   const store = createReduxStore(
-    combineReducers(reducers),
+    rootReducer,
     applyMiddleware(...storeMiddleware)
   );
 

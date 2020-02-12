@@ -1,4 +1,4 @@
-import { blockchains, accounts, application } from '@emeraldwallet/store';
+import { blockchains, accounts, application, settings } from '@emeraldwallet/store';
 import { TERMS_VERSION } from './config';
 
 const handleTrigger = (check, resolve, store) => {
@@ -29,7 +29,7 @@ export function onceServicesStart(store) {
 
 export function onceModeSet(store) {
   const check = () => {
-    const mode = store.getState().wallet.settings.mode;
+    const mode = settings.selectors.mode(store.getState());
     const { id, chains } = mode;
     return id !== 'default' && chains.length > 0;
   };

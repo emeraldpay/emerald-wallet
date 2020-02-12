@@ -4,7 +4,7 @@ import settingsReducers from './reducer';
 import { fiatCurrency, fiatRate } from './selectors';
 import { ActionTypes } from './types';
 
-const asGlobal = (settingsState: any): any => ({ wallet: { settings: settingsState } });
+const asGlobal = (settingsState: any): any => ({ settings: settingsState });
 
 describe('settingsReducers', () => {
   it('should reset fiat rates after locale currency change', () => {

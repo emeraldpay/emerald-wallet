@@ -1,13 +1,14 @@
 import { Units, Wei } from '@emeraldplatform/eth';
 import { List, Map } from 'immutable';
 import { createSelector } from 'reselect';
+import { IState } from '../types';
 import { TransactionMap, TransactionsList } from './types';
 
-export function allTrackedTxs (state: any): List<Map<string, any>> {
-  return state.wallet.history.get('trackedTransactions');
+export function allTrackedTxs (state: IState): List<Map<string, any>> {
+  return state.history.get('trackedTransactions');
 }
 
-export function selectByHash (state: any, hash: string): Map<string, any> {
+export function selectByHash (state: IState, hash: string): Map<string, any> {
   return allTrackedTxs(state)
     .find((tx: any) => tx.get('hash') === hash);
 }

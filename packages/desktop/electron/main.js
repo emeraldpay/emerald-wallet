@@ -43,9 +43,11 @@ if (isDev) {
 const settings = new Settings();
 
 global.ledger = new LedgerApi();
-global.launcherConfig = {
-  get: () => settings.toJS(),
-};
+
+// TODO: remove it
+// global.launcherConfig = {
+//   get: () => settings.toJS(),
+// };
 
 log.info('userData: ', app.getPath('userData'));
 log.info('Settings: ', settings.toJS());
@@ -69,7 +71,7 @@ const appParams = {
   chromeVer: process.versions.chrome,
 };
 
-const application = new Application();
+const application = new Application(settings);
 
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
@@ -92,8 +94,7 @@ app.on('ready', () => {
   global.vault = vault.getProvider();
 
   log.info('... Setup ServerConnect');
-  const serverConnect = new ServerConnect(
-    appParams.version, appParams.locale, log, apiAccess.blockchainClient, vault.getProvider());
+  const serverConnect = new ServerConnect(appParams.version, appParams.locale, log, apiAccess.blockchainClient);
   global.serverConnect = serverConnect;
 
   serverConnect.init(process.versions);

@@ -3,30 +3,29 @@ import { Dispatch } from 'react';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import * as accounts from './accounts';
-import * as addressBook from './address-book';
 import { IAccountsState } from './accounts/types';
 import { IAddAccountState } from './add-account/types';
+import * as addressBook from './address-book';
 import { IAddressBookState } from './address-book/types';
 import { IBlockchainsState } from './blockchains/types';
 import { IScreenState } from './screen/types';
 import { ISettingsState } from './settings/types';
 import { ITokensState } from './tokens/types';
 import { ITransactionState } from './transaction/types';
+import * as application from './application';
 
 export interface IState {
+  [application.moduleName]: any;
   [accounts.moduleName]: IAccountsState;
   [addressBook.moduleName]: IAddressBookState;
   blockchains: IBlockchainsState;
   conn: any;
-  launcher: any;
   ledger: any;
   screen: IScreenState;
-  wallet: {
-    settings: ISettingsState,
-    history: any
-  };
+  settings: ISettingsState;
+  history: any;
   tokens: ITokensState;
-  transactions: ITransactionState;
+  transaction: ITransactionState;
   addAccount?: IAddAccountState;
 }
 export type GetState = () => IState;

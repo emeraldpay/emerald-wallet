@@ -35,3 +35,5 @@ export {
 export {
   IBalanceValue, BalanceValueConverted
 } from './accounts/types';
+
+export { default as rootReducer } from './root-reducer';

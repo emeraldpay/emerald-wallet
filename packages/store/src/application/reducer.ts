@@ -68,7 +68,7 @@ function onConnecting (state: any, action: any) {
   return state;
 }
 
-export function reducer (state: any, action: any) {
+export function reducer (state: any, action: any): any {
   state = state || INITIAL_STATE;
   state = onConfig(state, action);
   state = onMessage(state, action);

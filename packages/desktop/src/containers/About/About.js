@@ -13,12 +13,11 @@ class AboutContainer extends React.Component {
   }
 
   componentDidMount() {
-    ipcRenderer.once('get-version-result', (event, result) => {
-      this.setState({
-        os: result.os,
-      });
-    });
-    ipcRenderer.send('get-version');
+    ipcRenderer.invoke('get-version').then((result) => {
+        this.setState({
+          os: result.os,
+        });
+    })
   }
 
   helpClick = () => {

@@ -18,7 +18,7 @@ export function persistTransactions (state: any, chainCode: BlockchainCode) {
   storeTransactions2(chainCode, txs);
 }
 
-function loadPersistedTransactions (state: any, chainCode: BlockchainCode) {
+function loadPersistedTransactions (chainCode: BlockchainCode) {
   // load from old local storage
   const chainId: number = blockchainByName(chainCode).params.chainId;
   const loaded = loadTransactions(txStoreKey(chainId), chainId);
@@ -70,7 +70,7 @@ export function init (chains: BlockchainCode[]): Dispatched<HistoryAction> {
 
     for (const chainCode of chains) {
       // load history for chain
-      const txs = loadPersistedTransactions(getState(), chainCode);
+      const txs = loadPersistedTransactions(chainCode);
       storedTxs.push(...txs);
     }
 
