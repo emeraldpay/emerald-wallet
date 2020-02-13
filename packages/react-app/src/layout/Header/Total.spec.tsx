@@ -21,14 +21,12 @@ function createStore () {
         network: {
           chain: {}
         },
-        wallet: {
-          settings: {
-            localeCurrency: 'USD',
-            rates: {
+        settings: {
+          localeCurrency: 'USD',
+          rates: {
               ETH: '234.56',
               ETC: '7.89'
             }
-          }
         },
         tokens: {},
         [accounts.moduleName]: {

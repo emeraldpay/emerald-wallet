@@ -11,9 +11,7 @@ function createStore () {
     subscribe () {},
     getState () {
       return {
-        wallet: {
-          settings: { mode: { chains: ['ETH'] } }
-        }
+        settings: { mode: { chains: ['ETH'] } }
       };
     }
   };
