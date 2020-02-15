@@ -45,18 +45,23 @@ function verifySender (expected: string): (a: string, c: BlockchainCode) => Prom
   return (raw: string, chain: BlockchainCode) => new Promise((resolve, reject) => {
     // Find chain id
     const chainId = Blockchains[chain].params.chainId;
-    const tx = EthereumTx.fromRaw(raw, chainId);
-    if (tx.verifySignature()) {
-      console.debug('Tx signature verified');
-      if (!tx.getSenderAddress().equals(EthAddress.fromHexString(expected))) {
-        console.error(`WRONG SENDER: 0x${tx.getSenderAddress().toString()} != ${expected}`);
-        reject(new Error('Emerald Vault returned signature from wrong Sender'));
+    try {
+      const tx = EthereumTx.fromRaw(raw, chainId);
+      if (tx.verifySignature()) {
+        console.debug('Tx signature verified');
+        if (!tx.getSenderAddress().equals(EthAddress.fromHexString(expected))) {
+          console.error(`WRONG SENDER: 0x${tx.getSenderAddress().toString()} != ${expected}`);
+          reject(new Error('Emerald Vault returned signature from wrong Sender'));
+        } else {
+          resolve(raw);
+        }
       } else {
-        resolve(raw);
+        console.error(`Invalid signature: ${raw}`);
+        reject(new Error('Emerald Vault returned invalid signature for the transaction'));
       }
-    } else {
-      console.error(`Invalid signature: ${raw}`);
-      reject(new Error('Emerald Vault returned invalid signature for the transaction'));
+    } catch (e) {
+      console.error("Failed to verify signature", raw, chainId, e);
+      reject(new Error('Emerald Vault returned invalid signature for the transaction. ' + e.toString()))
     }
   });
 }
@@ -87,7 +92,7 @@ function signTx (api: IApi, tx: ITransaction, passphrase: string, blockchain: st
 
 export function signTransaction (
   blockchain: BlockchainCode, from: string, passphrase: string, to: string, gas: number, gasPrice: Wei,
-  value: Wei, data: string
+  value: Wei, data: string, handler: (tx: ITransaction, raw: string) => void
 ): Dispatched<any> {
   const originalTx: ITransaction = {
     from,
@@ -107,7 +112,10 @@ export function signTransaction (
         return signTx(api, tx, passphrase, blockchain)
           .then(unwrap)
           .then((rawTx) => verifySender(from)(rawTx, blockchain))
-          .then((signed) => ({ tx, signed }));
+          .then((signed) => {
+            handler(tx, signed);
+            return {tx, signed}
+          });
       })
       .catch(catchError(dispatch));
   };

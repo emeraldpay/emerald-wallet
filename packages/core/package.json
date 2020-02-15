@@ -17,8 +17,8 @@
     "@emeraldplatform/eth": "^0.5.1",
     "@emeraldplatform/eth-rpc": "^0.5.3",
     "bignumber.js": "8.0.2",
-    "ethereumjs-common": "^1.3.2",
-    "ethereumjs-tx": "2.1.1"
+    "ethereumjs-common": "^1.5.0",
+    "ethereumjs-tx": "^2.1.2"
   },
   "devDependencies": {
     "@types/bn.js": "^4.11.5",

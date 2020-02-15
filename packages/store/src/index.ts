@@ -10,6 +10,7 @@ import * as tokens from './tokens';
 import * as transaction from './transaction';
 import * as txhistory from './txhistory';
 import * as wallet from './wallet';
+import * as types from './types';
 
 export {
   launcher,
@@ -23,5 +24,6 @@ export {
   settings,
   tokens,
   transaction,
-  wallet
+  wallet,
+  types
 };

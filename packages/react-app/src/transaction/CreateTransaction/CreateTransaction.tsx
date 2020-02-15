@@ -12,7 +12,8 @@ import {
   screen,
   settings,
   tokens,
-  transaction
+  transaction,
+  types
 } from '@emeraldwallet/store';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
@@ -34,6 +35,11 @@ enum PAGES {
 
 const DEFAULT_GAS_LIMIT = '21000';
 const DEFAULT_ERC20_GAS_LIMIT = '40000';
+
+type SignedTransaction = {
+  tx: types.ITransaction,
+  signed: string
+}
 
 interface ICreateTxProps {
   chain: BlockchainCode;
@@ -294,7 +300,7 @@ class CreateTransaction extends React.Component<ICreateTxProps, ICreateTxState> 
   }
 }
 
-function signTokenTx (dispatch: any, ownProps: IOwnProps, args: any) {
+function signTokenTx (dispatch: any, ownProps: IOwnProps, args: any): Promise<SignedTransaction> {
   const {
     password, token
   } = args;
@@ -307,22 +313,24 @@ function signTokenTx (dispatch: any, ownProps: IOwnProps, args: any) {
     tokenUnits,
     true
   );
-  return dispatch(
-    transaction.actions.signTransaction(
-      chain,
-      args.transaction.from,
-      password,
-      tokenInfo.address,
-      args.transaction.gas,
-      args.transaction.gasPrice,
-      Wei.ZERO,
-      txData
+  return new Promise((resolve, reject) => {
+    dispatch(
+      transaction.actions.signTransaction(
+        chain,
+        args.transaction.from,
+        password,
+        tokenInfo.address,
+        args.transaction.gas,
+        args.transaction.gasPrice,
+        Wei.ZERO,
+        txData,
+        (tx: types.ITransaction, raw: string) => resolve({signed: raw, tx})
+      )
     )
-  );
+  });
 }
 
-function signEtherTx (
-  dispatch: any, ownProps: IOwnProps, request: { transaction: CreateEthereumTx, password: string }) {
+function signEtherTx(dispatch: any, ownProps: IOwnProps, request: { transaction: CreateEthereumTx, password: string }): Promise<SignedTransaction> {
   const chain = ownProps.account.blockchain;
   const useLedger = ownProps.account.hardware || false;
   const plainTx = {
@@ -334,27 +342,31 @@ function signEtherTx (
     value: request.transaction.amount
   };
 
-  return traceValidate(chain, plainTx, dispatch, transaction.actions.estimateGas)
-    .then(() => dispatch(ledger.actions.setWatch(false)))
-    .then(() => dispatch(ledger.actions.setConnected(false)))
-    .then(() => (useLedger ? dispatch(screen.actions.showDialog('sign-transaction', request.transaction)) : null))
-    .then(() => {
-      return dispatch(
-        transaction.actions.signTransaction(
-          chain,
-          request.transaction.from!,
-          request.password,
-          request.transaction.to!,
-          request.transaction.gas.toNumber(),
-          request.transaction.gasPrice,
-          request.transaction.amount,
-          ''
-        )
-      );
-    });
+  return new Promise((resolve, reject) => {
+    traceValidate(chain, plainTx, dispatch, transaction.actions.estimateGas)
+      .then(() => dispatch(ledger.actions.setWatch(false)))
+      .then(() => dispatch(ledger.actions.setConnected(false)))
+      .then(() => (useLedger ? dispatch(screen.actions.showDialog('sign-transaction', request.transaction)) : null))
+      .then(() => {
+        dispatch(
+          transaction.actions.signTransaction(
+            chain,
+            request.transaction.from!,
+            request.password,
+            request.transaction.to!,
+            request.transaction.gas.toNumber(),
+            request.transaction.gasPrice,
+            request.transaction.amount,
+            '',
+            (tx: types.ITransaction, raw: string) => resolve({signed: raw, tx})
+          )
+        );
+      })
+      .catch((e) => reject(e));
+  });
 }
 
-function sign (dispatch: any, ownProps: IOwnProps, args: any) {
+function sign (dispatch: any, ownProps: IOwnProps, args: any): Promise<SignedTransaction> {
   const chain = ownProps.account.blockchain;
   const { coinTicker } = Blockchains[chain].params;
   const token = args.token.toUpperCase();
@@ -422,8 +434,8 @@ export default connect(
     onEmptyAddressBookClick: () => dispatch(screen.actions.gotoScreen('add-address')),
     signAndSend: (args: any) => {
       sign(dispatch, ownProps, args)
-        .then((result: any) => {
-          dispatch(screen.actions.gotoScreen('broadcast-tx', result));
+        .then((signed) => {
+          dispatch(screen.actions.gotoScreen('broadcast-tx', signed));
         });
     }
   })

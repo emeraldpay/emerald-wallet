@@ -3,7 +3,7 @@ import { Units as EthUnits, Wei } from '@emeraldplatform/eth';
 import { Account, ButtonGroup, Page } from '@emeraldplatform/ui';
 import { Blockchains, EthereumTx } from '@emeraldwallet/core';
 import { decodeData, registry } from '@emeraldwallet/erc20';
-import { screen, transaction } from '@emeraldwallet/store';
+import { screen, transaction, types } from '@emeraldwallet/store';
 import { Button, FormRow } from '@emeraldwallet/ui';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
@@ -11,8 +11,8 @@ import { connect } from 'react-redux';
 import ChainTitle from '../../common/ChainTitle';
 
 interface IBroadcastTxViewProps {
-  tx: any;
-  signed: any;
+  tx: types.ITransaction;
+  signed: string;
   onSendTx?: any;
   onCancel?: any;
   classes: any;
@@ -85,7 +85,7 @@ export class BroadcastTxView extends React.Component<IBroadcastTxViewProps> {
         )}
         <FormRow
           leftColumn={<div className={classes.fieldName}>Nonce</div>}
-          rightColumn={<div data-testid='nonce'>{decoded.getNonce()}</div>}
+          rightColumn={<div data-testid='nonce'>{decoded.getNonce() || 0}</div>}
         />
         {/*<FormRow*/}
         {/*  rightColumn={<textarea readOnly={true} value={JSON.stringify(this.props.tx)}/>}*/}
@@ -130,7 +130,7 @@ export default connect(
   },
 
   (dispatch: any, ownProps: any) => ({
-    onSendTx: (tx: any, signed: any) => {
+    onSendTx: (tx: types.ITransaction, signed: string) => {
       dispatch(transaction.actions.broadcastTx(tx.blockchain, tx, signed));
     },
     onCancel: () => {
