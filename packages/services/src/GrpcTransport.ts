@@ -43,8 +43,18 @@ class GrpcTransport implements Transport {
         const result: any[] = [];
         response.on('data', (data: NativeCallReplyItem) => {
           const bytes: Uint8Array = data.getPayload_asU8();
-          const json = JSON.parse(decoder.decode(bytes));
-          result.push(json);
+          try {
+            const text = decoder.decode(bytes);
+            try {
+              const json = JSON.parse(text);
+              result.push(json);
+            } catch (e) {
+              console.warn('Received invalid JSON', e);
+              console.debug('Source JSON', text);
+            }
+          } catch (e) {
+            console.warn('Received invalid API response')
+          }
         });
         response.on('end', () => {
           resolve(result);
