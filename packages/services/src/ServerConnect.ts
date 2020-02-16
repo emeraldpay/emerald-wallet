@@ -32,11 +32,6 @@ const CHAIN_VERIFY: {[key: string]: any} = {
     new VerifyGenesis('0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3'),
     new VerifyBlockHash(1920000, '0x4985f5ca3d2afbec36529aa96f74de3cc10a2a4a6c44f2157a57d2c6059a11bb ')
   ],
-  morden: [
-    new VerifyMinPeers(1),
-    new VerifyNotSyncing(),
-    new VerifyGenesis('0x0cd786a2425d16f152c658316c423e6ce1181e15c3295826d7c9904cba9ce303')
-  ],
   kovan: [
     new VerifyMinPeers(1),
     new VerifyNotSyncing(),

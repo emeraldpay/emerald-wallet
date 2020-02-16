@@ -35,20 +35,20 @@ describe('address book reducer', () => {
       { address: '0x1' },
       { address: '0x2' }
     ];
-    const chain = BlockchainCode.Morden;
+    const chain = BlockchainCode.Kovan;
     const state = reducer(undefined, setAddressBook(chain, contacts));
 
     expect(state).toEqual({
       loading: false,
       contacts: {
-        [BlockchainCode.Morden]: {
+        [BlockchainCode.Kovan]: {
           '0x1': {
             address: '0x1',
-            blockchain: BlockchainCode.Morden
+            blockchain: BlockchainCode.Kovan
           },
           '0x2': {
             address: '0x2',
-            blockchain: BlockchainCode.Morden
+            blockchain: BlockchainCode.Kovan
           }
         }
       }

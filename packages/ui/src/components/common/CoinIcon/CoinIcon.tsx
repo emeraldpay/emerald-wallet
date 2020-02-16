@@ -21,9 +21,6 @@ const CoinIcon = (props: ICoinIconProps) => {
   if (props.chain.toUpperCase() === 'USDT') {
     return (<CurrencyUsdt />);
   }
-  if (props.chain.toUpperCase() === 'MORDEN') {
-    return (<React.Fragment>M</React.Fragment>);
-  }
   if (props.chain.toUpperCase() === 'KOVAN') {
     return (<React.Fragment>K</React.Fragment>);
   }

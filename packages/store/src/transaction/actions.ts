@@ -68,11 +68,6 @@ function verifySender (expected: string): (a: string, c: BlockchainCode) => Prom
 
 function signTx (api: IApi, tx: ITransaction, passphrase: string, blockchain: string): Promise<string | string[]> {
   console.debug(`Calling emerald api to sign tx from ${tx.from} to ${tx.to} in ${blockchain} blockchain`);
-  if (blockchain === 'morden') {
-    // otherwise RPC server gives 'wrong-sender'
-    // vault has different chain-id settings for etc and eth morden. server uses etc morden.
-    blockchain = 'etc-morden';
-  }
   const plainTx: vault.TxSignRequest = {
     from: tx.from,
     to: tx.to,
