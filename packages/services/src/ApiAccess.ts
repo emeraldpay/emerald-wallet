@@ -145,7 +145,7 @@ export class EmeraldApiAccess {
     const platform = [os.platform(), os.release(), os.arch(), app.getLocale()].join('; ');
     const agent = [
       `Electron/${process.versions.electron} (${platform})`,
-      `EmeraldWallet/${app.getVersion()} (+https://emeraldwallet.io)`,
+      `EmeraldWallet/${app.getVersion()} (+https://emeraldpay.io)`,
       `Chrome/${process.versions.chrome}`
     ];
     this.connectionState = {

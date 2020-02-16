@@ -9,6 +9,6 @@ export default () => {
     .then((release) => ({
       isLatest: semver.lte(release.version, currentVersion),
       tag: `v${release.version}`,
-      downloadLink: 'https://emeraldwallet.io/download',
+      downloadLink: 'https://emeraldpay.io/download',
     }));
 };

@@ -6,7 +6,7 @@ export default connect(
   null,
   (dispatch, ownProps) => ({
     onAboutClick () {
-      const url = 'https://emeraldwallet.io/coins';
+      const url = 'https://emeraldpay.io/wallet';
       dispatch(screen.actions.openLink(url));
     },
     onGenerate () {

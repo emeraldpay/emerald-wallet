@@ -61,7 +61,7 @@ export default connect(
         });
     },
     onClickBuyLedger: () => {
-      dispatch(screen.actions.openLink('https://emeraldwallet.io/ledger-hardware-wallet'));
+      dispatch(screen.actions.openLink('https://emeraldpay.io/ledger-hardware-wallet'));
     },
     onCancel: () => {
       if (ownProps.onBackScreen) {
