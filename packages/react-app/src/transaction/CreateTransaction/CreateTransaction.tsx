@@ -22,6 +22,7 @@ import ChainTitle from '../../common/ChainTitle';
 import CreateTx from '../CreateTx';
 import SignTx from '../SignTx';
 import { traceValidate, txFeeFiat } from './util';
+import {Dispatch} from "react";
 
 type CreateEthereumTx = workflow.CreateEthereumTx;
 type CreateERC20Tx = workflow.CreateERC20Tx;
@@ -330,7 +331,7 @@ function signTokenTx (dispatch: any, ownProps: IOwnProps, args: any): Promise<Si
   });
 }
 
-function signEtherTx(dispatch: any, ownProps: IOwnProps, request: { transaction: CreateEthereumTx, password: string }): Promise<SignedTransaction> {
+function signEtherTx(dispatch: Dispatch<any>, ownProps: IOwnProps, request: { transaction: CreateEthereumTx, password: string }): Promise<SignedTransaction> {
   const chain = ownProps.account.blockchain;
   const useLedger = ownProps.account.hardware || false;
   const plainTx = {
@@ -346,7 +347,15 @@ function signEtherTx(dispatch: any, ownProps: IOwnProps, request: { transaction:
     traceValidate(chain, plainTx, dispatch, transaction.actions.estimateGas)
       .then(() => dispatch(ledger.actions.setWatch(false)))
       .then(() => dispatch(ledger.actions.setConnected(false)))
-      .then(() => (useLedger ? dispatch(screen.actions.showDialog('sign-transaction', request.transaction)) : null))
+      .then(() => {
+        if (useLedger) {
+          dispatch(screen.actions.showDialog('sign-transaction', request.transaction));
+          dispatch(ledger.actions.setWatch(true));
+          return dispatch(ledger.actions.watchConnection());
+        } else {
+          return null;
+        }
+      })
       .then(() => {
         dispatch(
           transaction.actions.signTransaction(

@@ -990,10 +990,10 @@
     global-agent "^2.0.2"
     global-tunnel-ng "^2.7.1"
 
-"@emeraldpay/emerald-vault-node@0.4.0-0.26.3":
-  version "0.4.0-0.26.3"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-node/-/emerald-vault-node-0.4.0-0.26.3.tgz#57f612be41bd5c244b7e08d304b4d98e7c1d8da3"
-  integrity sha512-L4mBOrJEzd0SX8dU8YAV8VfyGwOKn9pRrDcNn0pFIahfAP6fgfYnV9rMzjeBjtyR8oh1k5byN9lUKAnLp6Z99A==
+"@emeraldpay/emerald-vault-node@^0.4.2-0.26.5":
+  version "0.4.2-0.26.5"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-node/-/emerald-vault-node-0.4.2-0.26.5.tgz#2b63b0128a881f519f24a32f11f247dcb6036657"
+  integrity sha512-hokcI99ld2RKLD7GFSvrRQHxI2Rh9S8waNR5LrQkhBKMUFnbelCVNSnrsUgSoBBfk8XBuFm3o5pLh8YT8Nhp2g==
 
 "@emeraldpay/grpc-client@0.11.3-0.2":
   version "0.11.3-0.2"
@@ -7783,17 +7783,17 @@ ethereumjs-abi@0.6.7:
     bn.js "^4.11.8"
     ethereumjs-util "^6.0.0"
 
-ethereumjs-common@^1.3.1, ethereumjs-common@^1.3.2:
-  version "1.3.2"
-  resolved "https://registry.yarnpkg.com/ethereumjs-common/-/ethereumjs-common-1.3.2.tgz#5a20831e52199a31ff4b68ef361e34c05c976ed0"
-  integrity sha512-GkltYRIqBLzaZLmF/K3E+g9lZ4O4FL+TtpisAlD3N+UVlR+mrtoG+TvxavqVa6PwOY4nKIEMe5pl6MrTio3Lww==
+ethereumjs-common@^1.5.0:
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/ethereumjs-common/-/ethereumjs-common-1.5.0.tgz#d3e82fc7c47c0cef95047f431a99485abc9bb1cd"
+  integrity sha512-SZOjgK1356hIY7MRj3/ma5qtfr/4B5BL+G4rP/XSMYr2z1H5el4RX5GReYCKmQmYI/nSBmRnwrZ17IfHuG0viQ==
 
-ethereumjs-tx@2.1.1:
-  version "2.1.1"
-  resolved "https://registry.yarnpkg.com/ethereumjs-tx/-/ethereumjs-tx-2.1.1.tgz#7d204e2b319156c9bc6cec67e9529424a26e8ccc"
-  integrity sha512-QtVriNqowCFA19X9BCRPMgdVNJ0/gMBS91TQb1DfrhsbR748g4STwxZptFAwfqehMyrF8rDwB23w87PQwru0wA==
+ethereumjs-tx@^2.1.2:
+  version "2.1.2"
+  resolved "https://registry.yarnpkg.com/ethereumjs-tx/-/ethereumjs-tx-2.1.2.tgz#5dfe7688bf177b45c9a23f86cf9104d47ea35fed"
+  integrity sha512-zZEK1onCeiORb0wyCXUvg94Ve5It/K6GD1K+26KfFKodiBiS6d9lfCXlUKGBBdQ+bv7Day+JK0tj1K+BeNFRAw==
   dependencies:
-    ethereumjs-common "^1.3.1"
+    ethereumjs-common "^1.5.0"
     ethereumjs-util "^6.0.0"
 
 ethereumjs-util@^6.0.0:

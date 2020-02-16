@@ -5,7 +5,7 @@ export const initialState = fromJS({
   connected: false,
   watch: false,
   hd: {
-    base: "m/44'/60'/160720'/0'",
+    base: "m/44'/60'/160720'/0",
     offset: 0
   },
   addresses: [],

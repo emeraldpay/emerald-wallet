@@ -8,7 +8,7 @@ export class LedgerApi {
   }
 
   public isConnected (): boolean {
-    return this.conn.isAvailable();
+    return this.conn.isAvailable({id: 'ledger'});
   }
 
   public getAddress (hdpath: string): Promise<string> {
@@ -16,7 +16,7 @@ export class LedgerApi {
       return Promise.reject(new Error('Not connected to Ledger'));
     }
     return new Promise((resolve, reject) => {
-      const result = this.conn.listAddresses('ethereum', [hdpath]);
+      const result = this.conn.listAddresses({id: 'ledger'}, 'ethereum', [hdpath]);
       if (typeof result[hdpath] === 'string') {
         resolve(result[hdpath]);
       } else {
@@ -30,7 +30,7 @@ export class LedgerApi {
       return Promise.reject(new Error('Not connected to Ledger'));
     }
     return new Promise((resolve, reject) => {
-      const result = this.conn.listAddresses('ethereum', dpaths);
+      const result = this.conn.listAddresses({id: 'ledger'}, 'ethereum', dpaths);
       resolve(result);
     });
   }

@@ -11,6 +11,7 @@ import {
   SetBaseHD,
   SetHDOffset, SetListHDPath, Watch
 } from './types';
+import {Dispatch} from "react";
 
 export function setWatch (value: boolean): Watch {
   return {
@@ -69,11 +70,12 @@ export function selectAddressAction (addr?: string): AddressSelected {
   };
 }
 
-export function checkConnected (): Dispatched<Connected> {
+export function checkConnected (): Dispatched<Connected | Watch> {
   return (dispatch, getState) => {
     const ledgerApi: LedgerApi = remote.getGlobal('ledger');
     if (ledgerApi.isConnected()) {
       dispatch(setConnected(true));
+      dispatch(setWatch(false));
     } else {
       console.debug('error connecting. Device is locked or not plugged in.');
       return dispatch(setConnected(false));
@@ -81,33 +83,41 @@ export function checkConnected (): Dispatched<Connected> {
   };
 }
 
-export function watchConnection (): Dispatched<Connected> {
+export function watchConnection (): Dispatched<Connected | Watch> {
   return (dispatch, getState) => {
-    const connectionStart = () => {
-      const state = getState();
-      const watchEnabled = state.ledger.get('watch', false);
-      if (watchEnabled) {
-        dispatch(checkConnected());
-        if (!getState().ledger.get('connected')) {
-          setTimeout(connectionStart, 1000);
+    return new Promise((resolve) => {
+      const connectionStart = () => {
+        const state = getState();
+        const watchEnabled = state.ledger.get('watch', false);
+        if (watchEnabled) {
+          dispatch(checkConnected());
+          if (!getState().ledger.get('connected')) {
+            setTimeout(connectionStart, 500);
+          } else {
+            resolve(true)
+          }
+        } else {
+          resolve(false)
         }
-      }
-    };
-    connectionStart();
+      };
+      connectionStart();
+    })
   };
 }
 
-function onceConnectionState (getState: GetState, value: boolean): Promise<any> {
-  return new Promise((resolve) => {
-    const check = () => {
-      if (getState().ledger.get('connected') === value) {
-        resolve(true);
-      } else {
-        setTimeout(check, 1000);
-      }
-    };
-    check();
-  });
+export function onceConnectionState (value: boolean): Dispatched<void> {
+  return (dispatch: Dispatch<any>, getState: GetState) => {
+    return new Promise((resolve) => {
+      const check = () => {
+        if (getState().ledger.get('connected') === value) {
+          resolve(true);
+        } else {
+          setTimeout(check, 500);
+        }
+      };
+      check();
+    });
+  }
 }
 
 // function loadInfo(chain: BlockchainCode, hdpath: string, addr: string): Dispatched<AddressBalance | AddressTxCount> {
