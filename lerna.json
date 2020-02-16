@@ -15,7 +15,8 @@
       "message": "solution: publish %s",
       "allowBranch": [
         "master",
-        "release/*"
+        "release/*",
+        "v2.1.x"
       ]
     }
   }
