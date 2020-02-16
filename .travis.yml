@@ -27,9 +27,9 @@ before_install:
   - echo Installing GitVersion...
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install mono; fi
   - wget https://github.com/GitTools/GitVersion/releases/download/v4.0.0/GitVersion-bin-net40-v4.0.0.zip
-  - unzip GitVersion-bin-net40-v4.0.0.zip -d GitVersion
+  - unzip GitVersion-bin-net40-v4.0.0.zip -d GitVersionBin
   - echo "#!/bin/bash" > gitversion
-  - echo 'mono GitVersion/GitVersion.exe "$@"' >> gitversion
+  - echo 'mono GitVersionBin/GitVersion.exe "$@"' >> gitversion
   - chmod 755 gitversion
   - ./gitversion /version
   - echo Janus...
