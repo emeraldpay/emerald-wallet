@@ -1,6 +1,6 @@
 {
   "name": "@emeraldwallet/electron-app",
-  "version": "2.1.4",
+  "version": "2.1.5",
   "description": "Emerald Wallet Electron Shell",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -47,7 +47,7 @@
   "dependencies": {
     "@emeraldplatform/eth": "0.5.1",
     "@emeraldwallet/core": "^2.1.4",
-    "@emeraldwallet/services": "^2.1.4",
+    "@emeraldwallet/services": "^2.1.5",
     "devtron": "^1.4.0",
     "electron-log": "^3.0.7",
     "uuid": "^3.3.2"
