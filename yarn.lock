@@ -990,10 +990,10 @@
     global-agent "^2.0.2"
     global-tunnel-ng "^2.7.1"
 
-"@emeraldpay/emerald-vault-node@^0.4.2-0.26.5":
-  version "0.4.2-0.26.5"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-node/-/emerald-vault-node-0.4.2-0.26.5.tgz#2b63b0128a881f519f24a32f11f247dcb6036657"
-  integrity sha512-hokcI99ld2RKLD7GFSvrRQHxI2Rh9S8waNR5LrQkhBKMUFnbelCVNSnrsUgSoBBfk8XBuFm3o5pLh8YT8Nhp2g==
+"@emeraldpay/emerald-vault-node@^0.4.2-0.26.6":
+  version "0.4.2-0.26.6"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-node/-/emerald-vault-node-0.4.2-0.26.6.tgz#e8589407c2cfc18270500502e44a242923af3cdc"
+  integrity sha512-rzST8nYLfSVgm74tV/zzgMCF2Jt8kywJv8S6O4219yGhaOumatc7XJS42yYsjjxzs213vVFS9H20c+W3FUqSaw==
 
 "@emeraldpay/grpc-client@0.11.3-0.2":
   version "0.11.3-0.2"
