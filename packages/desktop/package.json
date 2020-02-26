@@ -89,7 +89,6 @@
     "@material-ui/styles": "^4.2.0",
     "babel-polyfill": "^6.26.0",
     "bignumber.js": "8.0.2",
-    "classnames": "^2.2.5",
     "color-hash": "^1.0.3",
     "es6-promise": "4.1.1",
     "google-protobuf": "3.7.1",

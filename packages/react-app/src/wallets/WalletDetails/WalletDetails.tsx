@@ -7,19 +7,16 @@ import WalletDetailsView from './WalletDetailsView';
 
 export default connect(
   (state: any, ownProps: any) => {
-    const accountPassed: Wallet = ownProps.wallet;
+    const walletPassed: Wallet = ownProps.wallet;
     // reload account from store, because it can be passed with id only if it was just imported
-    const wallet = accounts.selectors.find(state, accountPassed.id)!;
-    // const transactions = [];
-    const transactions = txhistory.selectors.searchTransactions(
-        '', // account.id,
-        txhistory.selectors.allTrackedTxs(state));
+    const wallet = accounts.selectors.find(state, walletPassed.id)!;
+    const transactions = txhistory.selectors.getTransactions(state, wallet.accounts);
 
     return {
       showFiat: true,
       wallet,
       transactions,
-      txList: (<TxHistory transactions={transactions} accountId={wallet.id}/>)
+      txList: (<TxHistory transactions={transactions} walletAccounts={wallet.accounts} />)
     };
   },
   (dispatch, ownProps) => ({

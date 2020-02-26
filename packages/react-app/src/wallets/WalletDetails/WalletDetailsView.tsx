@@ -93,14 +93,14 @@ export class WalletShow extends React.Component<AccountShowProps, IState> {
     // const renderTitle = () => (<ChainTitle chain={acc.blockchain} text={'Account'} />);
     const renderTitle = () => (
       <PageTitle>
-        <Grid container={true} alignItems={'center'}>
-          <Grid item={true} container={true}>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
+          <div style={{ display: 'flex', paddingRight: '5px' }}>
             <WalletIcon />
-          </Grid>
-          <Grid item={true}>
+          </div>
+          <div>
             {wallet.name || ''}
-          </Grid>
-        </Grid>
+          </div>
+        </div>
       </PageTitle>
     );
 

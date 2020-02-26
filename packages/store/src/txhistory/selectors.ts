@@ -13,6 +13,15 @@ export function selectByHash (state: IState, hash: string): Map<string, any> {
     .find((tx: any) => tx.get('hash') === hash);
 }
 
+/**
+ * Returns transactions which contain accounts from wallet
+ * @param state
+ * @param walletAccounts
+ */
+export function getTransactions (state: IState, walletAccounts: any[]): TransactionsList {
+  return allTrackedTxs(state);
+}
+
 export function searchTransactions (searchValue: string, transactionsToSearch: TransactionsList): TransactionsList {
   if (transactionsToSearch.size === 0) {
     return transactionsToSearch;
@@ -30,7 +39,8 @@ export function searchTransactions (searchValue: string, transactionsToSearch: T
         if (!txValue) {
           return false;
         }
-        return txValue.toString(Units.WEI).includes(searchValue) || txValue.toString(Units.ETHER, 18).includes(searchValue);
+        return txValue.toString(Units.WEI).includes(searchValue)
+          || txValue.toString(Units.ETHER, 18).includes(searchValue);
       }
       // search for field
       return tx.get(field) && tx.get(field).includes(searchValue);
@@ -50,13 +60,13 @@ const getFieldForFilter = (txFilter: string) => {
 };
 
 export function filterTransactions (
-  filterValue: string, accountId: string | null, transactionsToFilter: TransactionsList, accounts: List<Map<string, any>>
+  filterValue: string, accountId: string | null, transactionsToFilter: TransactionsList, accounts: any[]
 ): TransactionsList {
   if (filterValue === 'ALL') {
     return transactionsToFilter;
   }
   const fieldToFilter = getFieldForFilter(filterValue);
-  const filterAddresses: string[] = accountId ? [accountId] : accounts.map((acc: any) => acc.get('id')).toJS();
+  const filterAddresses: string[] = accounts.map((acc: any) => acc.address);
   return transactionsToFilter.filter((tx: TransactionMap | undefined) => {
     if (typeof tx === 'undefined') {
       return false;

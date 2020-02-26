@@ -77,8 +77,8 @@ const timeStampFormatter = (lang: any) => (timestamp: any) => {
   return timestampEvent.toLocaleDateString(lang, options);
 };
 
-const defaultAmountRenderer = ((balance: IUnits, ticker: any) => {
-  return (<React.Fragment>{balance.toString()} {ticker}</React.Fragment>);
+const defaultAmountRenderer = ((amount: IUnits, ticker: any) => {
+  return (<React.Fragment>{amount.toString()} {ticker}</React.Fragment>);
 });
 
 export const TxItem = (props: ITxItemProps) => {

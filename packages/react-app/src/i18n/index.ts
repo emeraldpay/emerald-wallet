@@ -1,7 +1,7 @@
 import i18n from 'i18next';
+import LanguageDetector from 'i18next-browser-languagedetector';
 import { initReactI18next } from 'react-i18next';
 import { en_US, ko_KR, pt_BR, zh_CN } from './locales';
-const LanguageDetector = require('i18next-browser-languagedetector');
 
 i18n
   .use(LanguageDetector)

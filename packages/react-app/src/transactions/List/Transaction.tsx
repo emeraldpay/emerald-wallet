@@ -24,7 +24,6 @@ function txValueRenderer (showFiat: boolean) {
 
 export interface IOwnProps {
   hash: string;
-  walletId?: string;
 }
 
 export interface IDispatchProps {
@@ -50,7 +49,7 @@ export default connect<ITxItemProps, IDispatchProps, IOwnProps, IState>(
 
     return {
       coinTicker: blockchain!.params.coinTicker,
-      amountRenderer: txValueRenderer(showFiat),
+      // amountRenderer: txValueRenderer(showFiat),
       lang: i18n.language,
       tx,
       toAccount,
@@ -66,10 +65,7 @@ export default connect<ITxItemProps, IDispatchProps, IOwnProps, IState>(
   (dispatch, ownProps: IOwnProps): IDispatchProps => ({
     openTx: () => {
       const { hash } = ownProps;
-      dispatch(screen.actions.gotoScreen('transaction', {
-        hash,
-        accountId: ownProps.walletId
-      }));
+      dispatch(screen.actions.gotoScreen(screen.Pages.TX_DETAILS, { hash }));
     },
     openAccount: (blockchain: BlockchainCode, address: string) => {
       dispatch(wallet.actions.openAccountDetails(blockchain, address));

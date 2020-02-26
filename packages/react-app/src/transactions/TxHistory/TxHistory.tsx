@@ -14,7 +14,6 @@ const styles = (theme?: any) => ({
 });
 
 interface IProps {
-  accountId: string;
   transactions: any;
   accounts: any;
   classes: any;
@@ -34,15 +33,15 @@ class TransactionsHistory extends React.Component<IProps, IHistoryState> {
     };
   }
 
-  public UNSAFE_componentWillReceiveProps (nextProps: IProps) {
-    if (nextProps.transactions) {
-      this.setState({
-        ...this.state,
-        displayedTransactions: txhistory.selectors.filterTransactions(
-          this.state.txFilter, this.props.accountId, nextProps.transactions, this.props.accounts)
-      });
-    }
-  }
+  // public UNSAFE_componentWillReceiveProps (nextProps: IProps) {
+  //   if (nextProps.transactions) {
+  //     this.setState({
+  //       ...this.state,
+  //       displayedTransactions: txhistory.selectors.filterTransactions(
+  //         this.state.txFilter, this.props.accountId, nextProps.transactions, this.props.accounts)
+  //     });
+  //   }
+  // }
 
   public onSearchChange = (e: any) => {
     return this.setState({
@@ -51,10 +50,10 @@ class TransactionsHistory extends React.Component<IProps, IHistoryState> {
   }
 
   public onTxFilterChange = (event: any, value: any) => {
-    const { accountId, transactions } = this.props;
+    const { transactions } = this.props;
     this.setState({
       txFilter: value,
-      displayedTransactions: txhistory.selectors.filterTransactions(value, accountId, transactions, this.props.accounts)
+      displayedTransactions: txhistory.selectors.filterTransactions(value, null, transactions, this.props.accounts)
     });
   }
 
@@ -69,7 +68,6 @@ class TransactionsHistory extends React.Component<IProps, IHistoryState> {
         />
         <List
           transactions={this.state.displayedTransactions}
-          accountId={this.props.accountId}
         />
       </div>
     );
@@ -80,11 +78,10 @@ const StyledTransactionsHistory = withStyles(styles)(TransactionsHistory);
 
 export default connect(
   (state: IState, ownProps: any) => {
-    const txs = ownProps.transactions || txhistory.selectors.allTrackedTxs(state);
+    const txs = ownProps.transactions;
     return {
       transactions: txs.sortBy((tx: any) => tx.get('timestamp')).reverse(),
-      accounts: accounts.selectors.allWallets(state),
-      accountId: ownProps.accountId
+      accounts: ownProps.walletAccounts
     };
   },
   (dispatch, ownProps) => ({})
