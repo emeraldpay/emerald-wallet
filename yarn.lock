@@ -1031,15 +1031,6 @@
     bignumber.js "8.0.2"
     ethereumjs-abi "0.6.7"
 
-"@emeraldplatform/eth-node@0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@emeraldplatform/eth-node/-/eth-node-0.5.1.tgz#2890e9404fad9f605f94bca64b48ef6f87f4af10"
-  integrity sha512-RfsismRX0MlGh4nNxQtwgon9+Z4ZPyQA9ppD+VMWDMOKmzmf/FacY8L/6miRew4Nk99HivzPcshqvcZ9rs30bQ==
-  dependencies:
-    "@emeraldplatform/core" "^0.5.1"
-    "@emeraldplatform/eth-rpc" "^0.5.1"
-    "@emeraldplatform/rpc" "^0.5.1"
-
 "@emeraldplatform/eth-rpc@0.5.1":
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/@emeraldplatform/eth-rpc/-/eth-rpc-0.5.1.tgz#f8d5534c36ddef40ed85e4eac988b0762c290a32"
@@ -1049,7 +1040,7 @@
     "@emeraldplatform/rpc" "^0.5.1"
     bignumber.js "8.0.2"
 
-"@emeraldplatform/eth-rpc@^0.5.1", "@emeraldplatform/eth-rpc@^0.5.3":
+"@emeraldplatform/eth-rpc@^0.5.3":
   version "0.5.11"
   resolved "https://registry.yarnpkg.com/@emeraldplatform/eth-rpc/-/eth-rpc-0.5.11.tgz#f5e45b62b1a5e86748ad79dad5b5cc6522e15bdc"
   integrity sha512-58Kc+5eKJXlyC/1plnbNCKQIta7u9o4zreutvEAHOykt3+IGMzkYLVajIFqHps+vLPJT1fqw6nB5od2rx//wGA==
@@ -13667,14 +13658,6 @@ react-i18next@11.3.3:
   version "11.3.3"
   resolved "https://registry.yarnpkg.com/react-i18next/-/react-i18next-11.3.3.tgz#a84dcc32e3ad013012964d836790d8c6afac8e88"
   integrity sha512-sGnPwJ0Kf8qTRLTnTRk030KiU6WYEZ49rP9ILPvCnsmgEKyucQfTxab+klSYnCSKYija+CWL+yo+c9va9BmJeg==
-  dependencies:
-    "@babel/runtime" "^7.3.1"
-    html-parse-stringify2 "2.0.1"
-
-react-i18next@^10.12.2:
-  version "10.13.2"
-  resolved "https://registry.yarnpkg.com/react-i18next/-/react-i18next-10.13.2.tgz#2943705fa751d366fc95b3755520ebe6eeed2408"
-  integrity sha512-DGoauWUdPEv/+PLa03nN+wlW31XrGmQJz+zIyOA+tRTIwlRaNgeM62nGP1WG3g7fJrphMZUwPcAQqNv6XBYM4w==
   dependencies:
     "@babel/runtime" "^7.3.1"
     html-parse-stringify2 "2.0.1"
