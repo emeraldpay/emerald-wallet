@@ -58,3 +58,5 @@ export { default as Settings } from './settings/Settings';
 // onboarding
 export { default as InitialSetup } from './onboarding/InitialSetup';
 export { default as Welcome } from './onboarding/Welcome';
+
+export { default as App } from './App';

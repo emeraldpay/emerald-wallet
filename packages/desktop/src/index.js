@@ -5,11 +5,11 @@ import 'typeface-rubik/index.css';
 import 'typeface-roboto-mono/index.css';
 import { I18nextProvider } from 'react-i18next';
 import BigNumber from 'bignumber.js';
-import { i18n } from '@emeraldwallet/react-app';
-import { start as startStore } from './store/store';
+import { i18n, App } from '@emeraldwallet/react-app';
+import { start as startStore, store } from './store/store';
 import About from './containers/About';
-import App from './containers/App';
 import { Logger } from '@emeraldwallet/core';
+import { TERMS_VERSION } from './store/config';
 
 const log = Logger.forCategory('index');
 
@@ -20,7 +20,10 @@ function start() {
   const canvasColor = Theme.palette.background.default;
   document.body.style.backgroundColor = canvasColor;
 
-  ReactDOM.render(<App/>, document.getElementById('app'));
+  ReactDOM.render(
+    <App store={store} terms={TERMS_VERSION} />,
+    document.getElementById('app')
+  );
 
   startStore();
 }
