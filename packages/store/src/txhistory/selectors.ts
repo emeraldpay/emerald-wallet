@@ -13,13 +13,18 @@ export function selectByHash (state: IState, hash: string): Map<string, any> {
     .find((tx: any) => tx.get('hash') === hash);
 }
 
+const equalAddresses = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
 /**
  * Returns transactions which contain accounts from wallet
  * @param state
  * @param walletAccounts
  */
 export function getTransactions (state: IState, walletAccounts: any[]): TransactionsList {
-  return allTrackedTxs(state);
+  return allTrackedTxs(state)
+    .filter((tx: any) =>
+      walletAccounts.some((a) =>
+        equalAddresses(a.address, tx.get('from')) || equalAddresses(a.address, tx.get('to'))))
+    .toList();
 }
 
 export function searchTransactions (searchValue: string, transactionsToSearch: TransactionsList): TransactionsList {
