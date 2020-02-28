@@ -1,15 +1,22 @@
 {
   "compilerOptions": {
+    "allowSyntheticDefaultImports": true,
     "outDir": "./lib",
     "declaration": true,
-    "strict": true,
+    "strict": false,
     "jsx": "react",
-    "rootDirs": ["src", "stories"]
+    "rootDirs": ["src", "stories"],
+    "typeRoots": [
+      "node_modules/@types",
+      "../../node_modules/@types"
+    ],
+    "forceConsistentCasingInFileNames": true
   },
   "include": [
     "src/**/*.ts"
   ],
   "exclude": [
+    "../../node_modules",
     "node_modules",
     "**/*.spec.ts"
   ]

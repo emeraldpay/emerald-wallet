@@ -1,1 +1,1 @@
-export {default as TxDetails} from './TxDetails';
+export { default as TxDetails } from './TxDetails';

@@ -1,37 +1,16 @@
+import {fromJS, Map} from 'immutable';
 import BigNumber from 'bignumber.js';
 import reducer from './tokenReducers';
 import ActionTypes from './actionTypes';
 
 describe('tokenReducer', () => {
-  it('ADD_TOKEN should not add same token twice', () => {
-    // prepare
-    let state = reducer(null, {});
-
-    state = reducer(state, {
-      type: ActionTypes.ADD_TOKEN,
-      address: '0x1',
-      name: 'n1',
-    });
-
-    // do
-    state = reducer(state, {
-      type: ActionTypes.ADD_TOKEN,
-      address: '0x1',
-      name: 'n1',
-    });
-
-    // assert
-    expect(state.get('tokens').size).toEqual(1);
-  });
-
   it('should update balances of provided tokens on SET_TOKENS_BALANCES', () => {
     // prepare
-    let state = reducer(null, {});
-    state = reducer(state, {
-      type: ActionTypes.ADD_TOKEN,
-      address: '0x1123',
-      name: 'Token1',
-      symbol: 'TKN',
+    let state = fromJS({
+      tokens: [
+        {address: '0x1123', name: 'Token1', symbol: 'TKN'},
+      ],
+      balances: Map(),
     });
 
     // do

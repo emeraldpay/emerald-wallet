@@ -2,10 +2,9 @@ import * as qs from 'qs';
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import { fromJS } from 'immutable';
 import { Contract } from '@emeraldplatform/contracts';
-
-import screen from '../wallet/screen';
+import { screen } from 'store';
 import createLogger from '../../utils/logger';
-import { onceServicesStart, onceAccountsLoaded, onceHasAccountsWithBalances } from '../triggers';
+import { onceServicesStart, onceAccountsLoaded, onceBalancesSet } from '../triggers';
 
 const log = createLogger('launcherActions');
 
@@ -57,7 +56,7 @@ export function startProtocolListener(store) {
   ipcRenderer.on('protocol', (event, request) => {
     onceServicesStart(store)
       .then(() => onceAccountsLoaded(store))
-      .then(() => onceHasAccountsWithBalances(store))
+      .then(() => onceBalancesSet(store))
       .then(() => protocolLinkHandler(request, store.getState(), store.dispatch));
   });
 }

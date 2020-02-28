@@ -1,12 +1,11 @@
+import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
-import ToggleButton from '@material-ui/lab/ToggleButton';
-import { withStyles } from '@material-ui/core/styles';
-import ToggleButtonGroup from '@material-ui/lab/ToggleButtonGroup';
 
 const styles = {
-  selected: {
-    boxShadow: 'none',
-  },
+  root: {
+    boxShadow: 'none'
+  }
 };
 
 interface Props {
@@ -16,12 +15,12 @@ interface Props {
 }
 
 class Filter extends React.Component<Props> {
-  render() {
+  public render () {
     const { value, onChange, classes } = this.props;
     return (
       <ToggleButtonGroup
-        classes={{ selected: classes.selected }}
-        exclusive
+        classes={{ root: classes.root }}
+        exclusive={true}
         value={value || 'ALL'}
         onChange={onChange}
       >

@@ -1,22 +1,32 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import getMuiTheme from 'material-ui/styles/getMuiTheme';
-import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import { I18nextProvider } from 'react-i18next';
-import theme from 'emerald-js-ui/src/theme.json';
-import i18n from '../../i18n/i18n';
+import { Theme } from '@emeraldplatform/ui';
+import {
+  ErrorDialog, NotificationBar, ConnectionStatus, Header, i18n, Dialog
+} from '@emeraldwallet/react-app';
+import { ThemeProvider } from '@material-ui/styles';
 
+import Screen from '../Screen';
 import { store } from '../../store/store';
-import Main from '../../components/layout/Main/main';
 
-const muiTheme = getMuiTheme(theme);
+const maxWidth = '1150px';
 
 const App = () => (
   <I18nextProvider i18n={ i18n }>
     <Provider store={ store }>
-      <MuiThemeProvider muiTheme={ muiTheme }>
-        <Main />
-      </MuiThemeProvider>
+      <ThemeProvider theme={ Theme }>
+        <div style={{height: '100%', backgroundColor: Theme.palette.background.default}} className="application">
+          {store.getState().screen.get('screen') !== 'paper-wallet' && <Header/>}
+          <div style={{margin: '20px auto', maxWidth}}>
+            <Screen />
+          </div>
+          <ErrorDialog/>
+          <NotificationBar/>
+          <Dialog/>
+          <ConnectionStatus/>
+        </div>
+      </ThemeProvider>
     </Provider>
   </I18nextProvider>
 );

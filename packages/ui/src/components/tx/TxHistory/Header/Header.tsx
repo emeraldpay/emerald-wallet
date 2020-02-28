@@ -1,41 +1,41 @@
-import * as React from 'react';
-import withStyles, {CSSProperties} from '@material-ui/core/styles/withStyles';
 import { Search as SearchIcon } from '@emeraldplatform/ui-icons';
-import TextField from '@material-ui/core/TextField';
-import InputAdornment from '@material-ui/core/InputAdornment';
 import IconButton from '@material-ui/core/IconButton';
+import InputAdornment from '@material-ui/core/InputAdornment';
+import TextField from '@material-ui/core/TextField';
+import { CSSProperties, withStyles } from '@material-ui/styles';
+import * as React from 'react';
 import Filter from './Filter';
 
 const styles2 = {
   headerContainer: {
     display: 'flex',
     justifyContent: 'space-between',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   headerTitle: {
     color: '#191919',
     fontSize: '14px',
     fontWeight: 500,
     lineHeight: '24px',
-    textTransform: 'uppercase',
+    textTransform: 'uppercase'
   } as CSSProperties,
   filter: {
     marginLeft: '40px',
-    maxWidth: '186px',
+    maxWidth: '186px'
   },
   headerMain: {
     display: 'flex',
-    alignItems: 'center',
+    alignItems: 'center'
   },
   search: {
-    maxHeight: '40px',
+    maxHeight: '40px'
   },
   searchTextField: {
-    fontSize: '14px',
-  },
+    fontSize: '14px'
+  }
 };
 
-interface  Props {
+interface IProps {
   onTxFilterChange?: any;
   onSearchChange?: any;
   classes?: any;
@@ -43,8 +43,8 @@ interface  Props {
 }
 
 const Header = ({
-  onTxFilterChange, onSearchChange, classes, txFilterValue,
-}: Props) => {
+  onTxFilterChange, onSearchChange, classes, txFilterValue
+}: IProps) => {
   return (
     <div className={classes.headerContainer}>
       <div className={classes.headerMain}>
@@ -57,14 +57,14 @@ const Header = ({
         {/* TODO: use emeraldplatform/ui/Input */}
         <TextField
           onChange={onSearchChange}
-          placeholder="Search for amount or hash"
+          placeholder='Search for amount or hash'
           InputProps={{
             className: classes.searchTextField,
             endAdornment: (
-              <InputAdornment position="end">
-                <IconButton disabled><SearchIcon /></IconButton>
+              <InputAdornment position='end'>
+                <IconButton disabled={true}><SearchIcon /></IconButton>
               </InputAdornment>
-            ),
+            )
           }}
         />
       </div>

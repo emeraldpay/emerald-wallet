@@ -1,7 +1,7 @@
-import * as React from 'react';
 import Button from '@material-ui/core/Button';
+import * as React from 'react';
 
-interface Props {
+interface IBtnProps {
   style?: any;
   primary?: any;
   onClick?: any;
@@ -12,9 +12,10 @@ interface Props {
   target?: any;
   rel?: any;
   disabled?: boolean;
+  classes?: any;
 }
 
-const Btn = (props: Props) => {
+const Btn = (props: IBtnProps) => {
   const {
     primary, onClick, label, icon, href, variant, disabled, ...restProps
   } = props;
@@ -24,15 +25,16 @@ const Btn = (props: Props) => {
     // lineHeight: '18px',
     height: '40px',
     fontFamily: 'inherit',
-    ...props.style,
+    ...props.style
   };
   return (
     <Button
+      // size='medium'
       disabled={disabled}
       color={primary ? 'primary' : 'secondary'}
-      href={href}
+      // href={href}
       variant={variant || 'contained'}
-      style={style}
+      // style={style}
       onClick={onClick}
       {...restProps}
     >

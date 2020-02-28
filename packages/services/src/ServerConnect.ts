@@ -1,81 +1,76 @@
-import { JsonRpcProvider, Vault} from '@emeraldplatform/vault';
+import { BlockchainClient } from '@emeraldpay/grpc-client';
 import {
-  DefaultJsonRpc, HttpTransport, RevalidatingJsonRpc, VerifyingJsonRpc, RotatingJsonRpc,
-} from '@emeraldplatform/rpc';
-import {
-  EthRpc, VerifyMinPeers, VerifyNotSyncing, VerifyGenesis, VerifyBlockHash,
+  EthRpc, VerifyBlockHash, VerifyGenesis, VerifyMinPeers, VerifyNotSyncing
 } from '@emeraldplatform/eth-rpc';
-import HttpTransportAdapter from './HttpTransport';
+import {
+  DefaultJsonRpc, HttpTransport, RevalidatingJsonRpc, RotatingJsonRpc, VerifyingJsonRpc
+} from '@emeraldplatform/rpc';
+import { IServerConnect } from '@emeraldwallet/core';
+import {IEmeraldVault} from '@emeraldpay/emerald-vault-core';
+import GrpcTransport from './transports/GrpcTransport';
+import HttpTransportAdapter from './transports/HttpTransport';
 
 const os = require('os');
 
-const CHAIN_VERIFY: {[key:string]: any} = {
+const CHAIN_VERIFY: {[key: string]: any} = {
+  etc: [
+    new VerifyMinPeers(3),
+    new VerifyNotSyncing(),
+    new VerifyGenesis('0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3'),
+    new VerifyBlockHash(1920000, '0x94365e3a8c0b35089c1d1195081fe7489b528a84b22199c916180db8b28ade7f')
+  ],
+  // DEPRECATED
   mainnet: [
     new VerifyMinPeers(3),
     new VerifyNotSyncing(),
     new VerifyGenesis('0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3'),
-    new VerifyBlockHash(1920000, '0x94365e3a8c0b35089c1d1195081fe7489b528a84b22199c916180db8b28ade7f'),
+    new VerifyBlockHash(1920000, '0x94365e3a8c0b35089c1d1195081fe7489b528a84b22199c916180db8b28ade7f')
   ],
   eth: [
     new VerifyMinPeers(3),
     new VerifyNotSyncing(),
     new VerifyGenesis('0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3'),
-    new VerifyBlockHash(1920000, '0x4985f5ca3d2afbec36529aa96f74de3cc10a2a4a6c44f2157a57d2c6059a11bb '),
+    new VerifyBlockHash(1920000, '0x4985f5ca3d2afbec36529aa96f74de3cc10a2a4a6c44f2157a57d2c6059a11bb ')
   ],
-  morden: [
+  kovan: [
     new VerifyMinPeers(1),
     new VerifyNotSyncing(),
-    new VerifyGenesis('0x0cd786a2425d16f152c658316c423e6ce1181e15c3295826d7c9904cba9ce303'),
-  ],
+    new VerifyGenesis('0xa3c565fc15c7478862d50ccd6561e3c06b24cc509bf388941c25ea985ce32cb9')
+  ]
 };
 
-class ServerConnect {
-  chainUrls: any;
-  headers: any;
-  appVersion: any;
-  locale: any;
-  revalidate?: RevalidatingJsonRpc;
-  log: any;
+class ServerConnect implements IServerConnect {
+  public headers: any;
+  public appVersion: any;
+  public locale: any;
+  public revalidate?: RevalidatingJsonRpc;
+  public log: any;
+  public blockchainClient: BlockchainClient;
+  public vaultProvider: IEmeraldVault;
 
-  constructor(chainUrls: any, appVersion: string, locale: any, log: any) {
+  constructor (
+    appVersion: string, locale: any, log: any, blockchainClient: BlockchainClient, vault: IEmeraldVault
+  ) {
     this.log = log;
-    this.chainUrls = chainUrls;
     this.appVersion = appVersion;
     this.locale = locale;
+    this.blockchainClient = blockchainClient;
+    this.vaultProvider = vault;
     this.headers = {
-      'User-Agent': `EmeraldWallet/${appVersion}`,
+      'User-Agent': `EmeraldWallet/${appVersion}`
     };
   }
 
-  init(versions: any) {
+  public init (versions: any) {
     const details = [os.platform(), os.release(), os.arch(), this.locale].join('; ');
     this.headers['User-Agent'] = `Electron/${versions.electron} (${details}) EmeraldWallet/${this.appVersion} (+https://emeraldwallet.io) Chrome/${versions.chrome} node-fetch/1.0`;
   }
 
-  createHttpTransport(url: string) {
+  public createHttpTransport (url: string) {
     return new HttpTransportAdapter(new HttpTransport(url, this.headers));
   }
 
-  // DEPRECATED
-  connectEth(url: string) {
-    if (!url) {
-      this.log.error('Empty JSON RPC URL is provided');
-      return null;
-    }
-    const chain = Object.entries(this.chainUrls).find((entry: any) => entry[1].url === url);
-    if (!chain) {
-      this.log.error('Unsupported JSON RPC URL is provided');
-      return null;
-    }
-    return this.connectEthChain(chain[0]);
-  }
-
-  connectEthChain(name: string) {
-    const chain = this.chainUrls[name];
-    if (!chain) {
-      this.log.error('Unknown chain', name);
-      return null;
-    }
+  public connectEthChain (name: string): null | EthRpc {
     const verifiers = CHAIN_VERIFY[name];
     if (typeof verifiers === 'undefined') {
       this.log.error('No verifiers for chain', name);
@@ -97,26 +92,24 @@ class ServerConnect {
     localRevalidate.start();
 
     return new EthRpc(
-      new RotatingJsonRpc(localRevalidate, new DefaultJsonRpc(this.createHttpTransport(chain.url)))
+      new RotatingJsonRpc(localRevalidate, new DefaultJsonRpc(new GrpcTransport(name, this.blockchainClient)))
     );
   }
 
-  disconnect(): Promise<any> {
+  public disconnect (): Promise<any> {
     return new Promise((resolve, reject) => {
-        if (this.revalidate) {
-          this.revalidate.stop();
-        }
-        resolve();
-    })
+      if (this.revalidate) {
+        this.revalidate.stop();
+      }
+      resolve();
+    });
   }
 
-  connectEmerald() {
-    return new Vault(
-      new JsonRpcProvider(new DefaultJsonRpc(new HttpTransport('http://127.0.0.1:1920')))
-    );
+  public getVault(): IEmeraldVault {
+    return this.vaultProvider;
   }
 
-  getUserAgent() {
+  public getUserAgent () {
     return this.headers['User-Agent'];
   }
 }

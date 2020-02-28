@@ -1,26 +1,43 @@
 require('babel-polyfill'); // eslint-disable-line import/no-unresolved
 require('regenerator-runtime/runtime');
-const { ServerConnect } = require('@emeraldwallet/services');
-const os = require('os');
+const {
+  ServerConnect,
+  EmeraldApiAccessLocal,
+  EmeraldApiAccessDev,
+  EmeraldApiAccessProd,
+} = require('@emeraldwallet/services');
+const { createServices, getMainWindow, protocol, assertSingletonWindow } = require('@emeraldwallet/electron-app');
+const { LocalConnector } = require('@emeraldwallet/vault');
 const { app, ipcMain, session } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
-const path = require('path');
+const path = require('path'); // eslint-disable-line
 
 const Settings = require('./settings');
-const mainWindow = require('./mainWindow');
-const { Services } = require('./services');
-const { LedgerApi } = require('./ledger');
+const { LedgerApi } = require('@emeraldwallet/ledger');
 const ipc = require('./ipc');
 const log = require('./logger');
-const { startProtocolHandler } = require('./protocol');
-const assertSingletonWindow = require('./singletonWindow');
-const { URL_FOR_CHAIN } = require('./utils');
+const { startProtocolHandler } = protocol;
+const { Prices } = require('./prices');
+const {
+  DevMode, LocalMode, ProdMode, sendMode,
+} = require('./mode');
+const { onceReady } = require('./ready');
 
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
 
+let apiMode;
+let dataDir = null;
+
 if (isDev) {
   log.warn('START IN DEVELOPMENT MODE');
-  app.setPath('userData', path.resolve('./.emerald-dev/userData'));
+  const appArgs = process.argv.slice(2);
+  const notLocal = appArgs.every((value) => value !== '--localMode');
+  dataDir = notLocal ? './.emerald-dev' : './.emerald-dev-local';
+  app.setPath('userData', path.resolve(path.join(dataDir, '/userData')));
+  apiMode = notLocal ? DevMode : LocalMode;
+} else {
+  log.warn('START IN PRODUCTION MODE');
+  apiMode = ProdMode;
 }
 
 const settings = new Settings();
@@ -29,12 +46,18 @@ global.ledger = new LedgerApi();
 global.launcherConfig = {
   get: () => settings.toJS(),
 };
-const serverConnect = new ServerConnect(URL_FOR_CHAIN, app.getVersion(), app.getLocale(), log);
-global.serverConnect = serverConnect;
 
 log.info('userData: ', app.getPath('userData'));
-log.info(`Chain: ${JSON.stringify(settings.getChain())}`);
 log.info('Settings: ', settings.toJS());
+log.info('Api Mode: ', apiMode.id);
+
+const options = {
+  aboutWndPath: path.join(__dirname, '../app/about.html'),
+  mainWndPath: path.join(__dirname, '../app/index.html'),
+  appIconPath: path.join(__dirname, '../app/icons/512x512.png'),
+  openDevTools: isDev,
+  logFile: log.transports.file.file,
+};
 
 assertSingletonWindow();
 startProtocolHandler();
@@ -43,7 +66,28 @@ startProtocolHandler();
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   log.info('Starting Emerald', app.getVersion());
+  const appParams = {
+    locale: app.getLocale(),
+    version: app.getVersion(),
+    electronVer: process.versions.electron,
+    chromeVer: process.versions.chrome,
+  };
+  log.info('... setup API access');
+  let apiAccess;
+  if (apiMode.id === ProdMode.id) {
+    apiAccess = new EmeraldApiAccessProd(settings.getId(), appParams);
+  } else if (apiMode.id === LocalMode.id) {
+    apiAccess = new EmeraldApiAccessLocal(settings.getId(), appParams);
+  } else {
+    apiAccess = new EmeraldApiAccessDev(settings.getId(), appParams);
+  }
+  log.info('Connect to', apiAccess.address);
 
+  log.info('... Setup Vault');
+  const vault = new LocalConnector(dataDir ? path.resolve(path.join(dataDir, '/vault')) : null, log);
+  const serverConnect = new ServerConnect(
+    app.getVersion(), app.getLocale(), log, apiAccess.blockchainClient, vault.getProvider());
+  global.serverConnect = serverConnect;
   serverConnect.init(process.versions);
 
   session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
@@ -52,15 +96,31 @@ app.on('ready', () => {
   });
 
 
-  const browserWindow = mainWindow.createWindow(isDev);
-  const services = new Services(browserWindow.webContents, serverConnect);
-  ipc({ settings, services });
-  app.on('quit', () => services.shutdown());
+  log.info('... create window');
+  const browserWindow = getMainWindow(options);
+  onceReady(() => {
+    sendMode(browserWindow.webContents, apiMode);
+  });
 
-  services.useSettings(settings.toJS())
-    .then(() => services.start())
-    .then(() => ipc({ settings, services }))
-    .catch((err) => log.error('Invalid settings', err));
+  log.info('... setup services 2');
+  const services = createServices(ipcMain, browserWindow.webContents, apiAccess, apiMode.chains);
+
+  app.on('quit', () => {
+    services.stop();
+  });
+
+  log.info('... start services');
+  services.start();
+
+  // Run IPC listeners
+  ipc({ settings });
+
+  log.info('... services started');
+
+  log.info('... subscribe for prices');
+  const prices = new Prices(ipcMain, browserWindow.webContents, apiAccess, apiMode.assets, apiMode.currencies[0]);
+  prices.start();
+
 });
 
 
@@ -76,7 +136,5 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  if (mainWindow.mainWindow === null) {
-    mainWindow.createWindow(isDev);
-  }
+  getMainWindow(options);
 });

@@ -1,109 +1,102 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import CircularProgress from 'material-ui/CircularProgress';
-import { Wei } from '@emeraldplatform/emerald-js';
-
+import CircularProgress from '@material-ui/core/CircularProgress';
+import { Wei } from '@emeraldplatform/eth';
+import {
+  ContactList as AddressBook, AddContact, PaperWallet, ExportPaperWallet, TxDetails,
+  ImportMnemonic, CreateTransaction, BroadcastTx, ImportPrivateKey, ImportLedgerAccount, GenerateAccount,
+  Settings, MnemonicWizard, WalletDetails, Home, Welcome, CreateAccountWizard
+} from '@emeraldwallet/react-app';
 import createLogger from '../../utils/logger';
-import AddressBook from '../../components/addressbook/ContactList';
-import AccountShow from '../../components/accounts/AccountShow';
-import AddressShow from '../../components/addressbook/AddressShow';
-import AddContact from '../../components/addressbook/AddContact';
-import TransactionShow from '../../components/tx/TxDetails';
-import MnemonicWizard from '../../components/accounts/MnemonicWizard';
-import AddToken from '../../components/tokens/AddToken/add';
-import LedgerImport from '../../components/ledger/ImportAccount';
-import ImportJson from '../../components/accounts/add/ImportJson';
-import ImportPrivateKey from '../../components/accounts/add/ImportPrivateKey';
-import ImportMnemonic from '../ImportMnemonic';
-import Welcome from '../../components/welcome/welcome';
-import Landing from '../Landing';
-import Dashboard from '../../components/layout/Dashboard';
-import Settings from '../Settings';
-import PaperWallet from '../PaperWallet';
-import ExportPaperWallet from '../../components/accounts/ExportPaperWallet';
-import GenerateAccount from '../../components/accounts/GenerateAccount';
-import WalletScreen from '../../store/wallet/screen';
-import MultiCreateTransaction from '../MultiCreateTransaction';
-
+import { screen } from '@emeraldwallet/store';
+import { TERMS_VERSION } from '../../store/config';
 const log = createLogger('screen');
 
-const Screen = ({ screen, screenItem }) => {
-  log.debug('Show screen: ', screen);
+const Screen = (props) => {
+  log.debug('Show screen: ', props.screen);
 
-  if (screen === null) {
+  if (props.screen === null) {
     return (<div>
       <CircularProgress size={50} secondary="true" /> Initializing...
     </div>);
-  } if (screen === 'home') {
-    return (<Dashboard />);
-  } if (screen === 'address-book') {
+  }
+  if (props.screen === screen.Pages.HOME) {
+    return (<Home />);
+  }
+  if (props.screen === 'address-book') {
     return <AddressBook />;
-  } if (screen === 'address') {
-    return <AddressShow address={ screenItem }/>;
-  } if (screen === 'add-address') {
+  }
+  if (props.screen === 'add-address') {
     return <AddContact />;
-  } if (screen === 'landing-add-from-ledger') {
-    return <LedgerImport onBackScreen={screenItem} />;
-  } if (screen === 'add-from-ledger') {
-    return <LedgerImport />;
-  } if (screen === 'account') {
-    return <AccountShow account={ screenItem }/>;
-  } if (screen === 'transaction') {
-    return <TransactionShow hash={ screenItem.hash } accountId={ screenItem.accountId }/>;
-  } if (screen === 'create-tx') {
-    return <MultiCreateTransaction account={ screenItem } />;
   }
-  if (screen === 'repeat-tx') {
-    const {transaction, toAccount, fromAccount} = screenItem;
-    const amount = new Wei(transaction.get('amount')).getEther();
-    const to = toAccount.get('id');
-    const gasLimit = transaction.get('gas');
-    const data = transaction.get('data');
-    const typedData = transaction.get('typedData');
-    const mode = transaction.get('mode');
-    return <MultiCreateTransaction account={ fromAccount } to={to} amount={amount} gasLimit={gasLimit} data={data} typedData={typedData} mode={mode}/>;
+  if (props.screen === 'landing-add-from-ledger') {
+    return <ImportLedgerAccount onBackScreen={props.screenItem} />;
+  } if (props.screen === 'add-from-ledger') {
+    return <ImportLedgerAccount />;
+  } if (props.screen === 'wallet') {
+    return <WalletDetails wallet={ props.screenItem }/>;
+  } if (props.screen === 'transaction') {
+    return <TxDetails hash={ props.screenItem.hash } accountId={ props.screenItem.accountId }/>;
+  } if (props.screen === 'create-tx') {
+    return (<CreateTransaction account={ props.screenItem } />);
+  } if (props.screen === 'broadcast-tx') {
+    return <BroadcastTx tx={props.screenItem.tx} signed={props.screenItem.signed} />;
   }
-  if (screen === 'landing-generate') {
-    return <GenerateAccount onBackScreen="landing" backLabel="Back"/>;
+  if (props.screen === 'repeat-tx') {
+    const {transaction, toAccount, fromAccount} = props.screenItem;
+    const amount = new Wei(transaction.value);
+    const to = (toAccount && toAccount.id) || transaction.to;
+    const gasLimit = transaction.gas;
+    const { data, typedData, mode } = transaction;
+    return (
+      <CreateTransaction
+        account={ fromAccount }
+        to={to}
+        amount={amount}
+        gasLimit={gasLimit}
+        data={data}
+        typedData={typedData}
+        mode={mode}
+      />);
   }
-  if (screen === 'generate') {
+  if (props.screen === 'landing-generate') {
+    return <GenerateAccount backLabel="Back"/>;
+  }
+  if (props.screen === 'generate') {
     return <GenerateAccount />;
   }
-  if (screen === 'importjson') {
+  if (props.screen === 'importjson') {
     return <ImportJson />;
   }
-  if (screen === 'landing-importjson') {
-    return <ImportJson onBackScreen="landing" backLabel="Back"/>;
+  if (props.screen === 'landing-importjson') {
+    return <ImportJson backLabel="Back"/>;
   }
-  if (screen === 'import-private-key') {
+  if (props.screen === 'import-private-key') {
     return <ImportPrivateKey />;
   }
-  if (screen === 'landing-import-private-key') {
-    return <ImportPrivateKey onBackScreen="landing" />;
+  if (props.screen === 'landing-import-private-key') {
+    return <ImportPrivateKey />;
   }
-  if (screen === 'import-mnemonic') {
+  if (props.screen === 'import-mnemonic') {
     return <ImportMnemonic />;
   }
-  if (screen === 'new-mnemonic') {
+  if (props.screen === 'new-mnemonic') {
     return <MnemonicWizard />;
   }
-  if (screen === 'add-token') {
-    return <AddToken />;
+  if (props.screen === 'welcome') {
+    return <Welcome currentTermsVersion={TERMS_VERSION} />;
   }
-  if (screen === 'landing') {
-    return <Landing />;
-  }
-  if (screen === 'welcome') {
-    return <Welcome />;
-  }
-  if (screen === 'settings') {
+  if (props.screen === 'settings') {
     return <Settings />;
   }
-  if (screen === 'paper-wallet') {
-    return <PaperWallet address={ screenItem.address } privKey={ screenItem.privKey } />;
+  if (props.screen === 'paper-wallet') {
+    return <PaperWallet address={ props.screenItem.address } privKey={ props.screenItem.privKey } />;
   }
-  if (screen === 'export-paper-wallet') {
-    return <ExportPaperWallet accountId={ screenItem } />;
+  if (props.screen === 'export-paper-wallet') {
+    return <ExportPaperWallet accountId={ props.screenItem.address } blockchain={ props.screenItem.blockchain } />;
+  }
+  if (props.screen === 'add-account') {
+    return <CreateAccountWizard />;
   }
 
   return (
@@ -114,6 +107,6 @@ const Screen = ({ screen, screenItem }) => {
 };
 
 export default connect(
-  (state, ownProps) => WalletScreen.selectors.getCurrentScreen(state),
+  (state, ownProps) => screen.selectors.getCurrentScreen(state),
   (dispatch, ownProps) => ({})
 )(Screen);

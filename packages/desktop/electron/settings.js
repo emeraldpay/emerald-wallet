@@ -1,9 +1,10 @@
 const Store = require('electron-store');
-const { URL_FOR_CHAIN } = require('./utils');
+const uuid = require('uuid/v4');
 
 const DEFAULTS = {
   version: 1,
   terms: 'none',
+  id: uuid(),
 };
 
 class Settings {
@@ -14,6 +15,7 @@ class Settings {
     });
     // not used anymore
     this.settings.delete('geth');
+    this.settings.delete('chain');
   }
 
   /**
@@ -24,18 +26,13 @@ class Settings {
     return this.settings.store;
   }
 
-  getChain() {
-    return this.settings.get('chain');
-  }
-
-  setChain(chain) {
-    this.settings.set('chain', chain);
-    return this;
-  }
-
   setTerms(v) {
     this.settings.set('terms', v);
     return this;
+  }
+
+  getId() {
+    return this.settings.get('id');
   }
 }
 

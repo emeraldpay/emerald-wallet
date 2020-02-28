@@ -1,5 +1,5 @@
-import * as React from 'react';
 import { shallow } from 'enzyme';
+import * as React from 'react';
 import TxInputData from './TxInputData';
 
 describe('TxInputData', () => {

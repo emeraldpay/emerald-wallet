@@ -1,0 +1,16 @@
+import { Blockchains } from '@emeraldwallet/core';
+import { put, select, takeEvery } from 'redux-saga/effects';
+import { persistTransactions } from './actions';
+import { ActionTypes, IUpdateTxsAction } from './types';
+
+function* processUpdateTxs (action: IUpdateTxsAction) {
+  // Persist tx history
+  const state = yield select();
+  action.payload.forEach((tx) => {
+    persistTransactions(state, tx.blockchain);
+  });
+}
+
+export function* root () {
+  yield takeEvery(ActionTypes.UPDATE_TXS, processUpdateTxs);
+}

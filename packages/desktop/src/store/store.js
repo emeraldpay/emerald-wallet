@@ -1,47 +1,47 @@
 /* eslint-disable import/no-extraneous-dependencies */
-import { ipcRenderer } from 'electron';
-import { startProtocolListener } from './protocol';
+import {
+  blockchains,
+  screen,
+  ledger,
+  txhistory,
+  addresses,
+  addressBook,
+  settings,
+} from '@emeraldwallet/store';
+import {ipcRenderer} from 'electron';
+import {startProtocolListener} from './protocol';
 
-import { api } from '../lib/rpc/api';
-import { intervalRates } from './config';
-import history from './wallet/history';
-import accounts from './vault/accounts';
-import network from './network';
-import screen from './wallet/screen';
-import settings from './wallet/settings';
+import {Api, getConnector} from '../lib/rpc/api';
+import {intervalRates} from './config';
 import tokens from './vault/tokens';
-import ledger from './ledger';
-import Addressbook from './vault/addressbook';
 
 import {
   readConfig,
-  listenElectron,
-  connecting,
-  loadClientVersion
+  connecting
 } from './launcher/launcherActions';
-import { showError } from './wallet/screen/screenActions';
+// import { showError } from './wallet/screen/screenActions';
 
 import getWalletVersion from '../utils/get-wallet-version';
 import createLogger from '../utils/logger';
-import { createStore } from './createStore';
+import {createStore} from './createStore';
 
 import {
-  onceServicesStart,
+  onceBlockchainConnected,
   onceAccountsLoaded,
-  onceHasAccountsWithBalances,
-  onceChainSet
+  onceBalancesSet,
+  onceModeSet, onceServicesStart,
 } from './triggers';
 
 const log = createLogger('store');
 
+const api = new Api(getConnector());
 export const store = createStore(api);
+global.api = api;
 
 function refreshAll() {
   const promises = [
-    store.dispatch(accounts.actions.loadPendingTransactions()),
-    store.dispatch(network.actions.loadHeight(false)),
-    store.dispatch(accounts.actions.loadAccountsList()),
-    store.dispatch(history.actions.refreshTrackedTransactions()),
+    // store.dispatch(accounts.actions.loadPendingTransactions()), // TODO: Fix it
+    // store.dispatch(addresses.actions.loadAccountsList()),
   ];
 
   // Main loop that will refresh UI as needed
@@ -50,66 +50,60 @@ function refreshAll() {
   return Promise.all(promises);
 }
 
-function refreshLong() {
-  store.dispatch(settings.actions.getExchangeRates());
-  store.dispatch(network.actions.loadSyncing());
-  setTimeout(refreshLong, intervalRates.continueRefreshLongRate);
-}
-
 export function startSync() {
-  const state = store.getState();
+  log.info('Start synchronization');
+  const promises = [];
 
-  const chain = state.launcher.getIn(['chain', 'name']);
-  const chainId = state.launcher.getIn(['chain', 'id']);
+  promises.push(
+    onceModeSet(store)
+      .then(() => {
+        const supported = settings.selectors.currentChains(store.getState());
+        const codes = supported.map((chain) => chain.params.code);
+        log.info('Configured to use chains', codes);
 
+        api.connectChains(codes);
+      })
+      .then(() => {
+        return store.dispatch(addresses.actions.loadAccountsList());
+      })
+      .then(() => {
+        const supported = settings.selectors.currentChains(store.getState());
+        const codes = supported.map((chain) => chain.params.code);
 
-  const promises = [
-    store.dispatch(network.actions.getGasPrice()),
-    store.dispatch(loadClientVersion()),
-    store.dispatch(Addressbook.actions.loadAddressBook()),
-    store.dispatch(history.actions.init(chainId)),
-    store.dispatch(tokens.actions.loadTokenList()),
-    store.dispatch(tokens.actions.addDefault(chainId)),
-  ];
+        const loadAllChain = [];
+        supported.forEach((chain) => {
+          // const {chainId} = chain.params;
+          const chainCode = chain.params.code;
+          const loadChain = [];
 
-  if (chain === 'mainnet') {
-    promises.push(
-      store.dispatch(ledger.actions.setBaseHD("m/44'/60'/160720'/0'"))
-    );
-  } else if (chain === 'morden') {
-    // FIXME ledger throws "Invalid status 6804" for 44'/62'/0'/0
-    promises.push(store.dispatch(ledger.actions.setBaseHD("m/44'/61'/1'/0")));
-  }
+          // address book
+          loadChain.push(store.dispatch(addressBook.actions.loadAddressBook(chainCode)));
+          // request gas price for each chain
+          loadChain.push(store.dispatch(blockchains.actions.fetchGasPriceAction(chainCode)));
+          loadAllChain.push(
+            Promise.all(loadChain)
+              .catch((e) => log.error(`Failed to load chain ${chainCode}`, e))
+          );
+        });
 
-  if (state.launcher.getIn(['geth', 'type']) !== 'remote') {
-    // check for syncing
-    setTimeout(
-      () => store.dispatch(network.actions.loadSyncing()),
-      intervalRates.second
-    ); // prod: intervalRates.second
-    // double check for syncing
-    setTimeout(
-      () => store.dispatch(network.actions.loadSyncing()),
-      2 * intervalRates.minute
-    ); // prod: 30 * this.second
-  }
+        store.dispatch(txhistory.actions.init(codes));
+        store.dispatch(txhistory.actions.refreshTrackedTransactions());
 
-  setTimeout(refreshLong, 3 * intervalRates.second);
+        return Promise.all(loadAllChain).catch((e) => log.error('Failed to load chains', e));
+      })
+  );
 
   promises.push(
     refreshAll()
       .then(() => store.dispatch(connecting(false)))
       .catch((err) => {
         log.error('Failed to do initial sync', err);
-        store.dispatch(showError(err));
+        store.dispatch(screen.actions.showError(err));
       })
   );
-
-  return Promise.all(promises);
-}
-
-export function stopSync() {
-  // TODO
+  return Promise.all(promises)
+    .then(() => log.info('Initial synchronization finished'))
+    .catch((e) => log.error('Failed to start synchronization', e));
 }
 
 function newWalletVersionCheck() {
@@ -128,6 +122,19 @@ function newWalletVersionCheck() {
   });
 }
 
+/**
+ * Listen to IPC channel 'store' and dispatch action to redux store
+ */
+export function electronToStore() {
+  return (dispatch) => {
+    log.debug('Running launcher listener for Redux');
+    ipcRenderer.on('store', (event, action) => {
+      log.debug(`Got from IPC event: ${event} action: ${JSON.stringify(action)}`);
+      dispatch(action);
+    });
+  };
+}
+
 export const start = () => {
   try {
     store.dispatch(readConfig());
@@ -135,7 +142,7 @@ export const start = () => {
   } catch (e) {
     log.error(e);
   }
-  store.dispatch(listenElectron());
+  store.dispatch(electronToStore());
   getInitialScreen();
   newWalletVersionCheck();
 };
@@ -156,8 +163,8 @@ export function screenHandlers() {
   let prevScreen = null;
   store.subscribe(() => {
     const state = store.getState();
-    const curScreen = state.wallet.screen.get('screen');
-    const justOpened = prevScreen !== curScreen;
+    const curScreen = screen.selectors.getCurrentScreen(state).screen;
+    const justOpened = prevScreen !== curScreen && typeof curScreen === 'string';
     prevScreen = curScreen;
     if (justOpened) {
       if (
@@ -180,25 +187,17 @@ function getInitialScreen() {
   // First things first, always go to welcome screen. This shows a nice spinner
   store.dispatch(screen.actions.gotoScreen('welcome'));
 
-  if (store.getState().launcher.get('firstRun') === true) {
-    return; // stay on the welcome screen.
-  }
-
-  return onceAccountsLoaded(store).then(() => {
-    const accountSize = store.getState().accounts.get('accounts').size;
-
-    if (accountSize === 0) {
-      return store.dispatch(screen.actions.gotoScreen('landing'));
-    }
-
-    return onceHasAccountsWithBalances(store).then(() => {
-      return store.dispatch(screen.actions.gotoScreen('home'));
-    });
-  });
+  return onceServicesStart(store)
+    .then(() => onceAccountsLoaded(store)
+      .then(() => {
+      // We display home screen which will decide show landing or accounts list
+      store.dispatch(screen.actions.gotoScreen('home'));
+  }));
 }
 
 Promise
-  .all([onceServicesStart(store), onceChainSet(store)])
+  .all([onceBlockchainConnected(store)])
   .then(startSync);
 checkStatus();
 screenHandlers();
+ipcRenderer.send('emerald-ready');

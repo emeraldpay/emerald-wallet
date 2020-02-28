@@ -1,10 +1,11 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import theme from 'emerald-js-ui/src/theme.json';
+import {Theme} from '@emeraldplatform/ui';
 import 'typeface-rubik/index.css';
+import 'typeface-roboto-mono/index.css';
 import {I18nextProvider} from 'react-i18next';
 import BigNumber from 'bignumber.js';
-import i18n from './i18n/i18n';
+import { i18n } from '@emeraldwallet/react-app';
 import {start as startStore} from './store/store';
 
 import createLogger from './utils/logger';
@@ -13,12 +14,11 @@ import App from './containers/App';
 
 const log = createLogger('index');
 
-
 function start() {
   log.info('Starting Emerald Wallet...');
 
   // set document background to theme canvas color
-  const {canvasColor} = theme.palette;
+  const canvasColor = Theme.palette.background.default;
   document.body.style.backgroundColor = canvasColor;
 
   ReactDOM.render(<App/>, document.getElementById('app'));
@@ -28,7 +28,7 @@ function start() {
 
 const showAbout = () => {
   // set document background to theme canvas color
-  const canvasColor = theme.palette.alternateTextColor;
+  const canvasColor = Theme.palette.background.default;
   document.body.style.backgroundColor = canvasColor;
   const AboutWindow = () => (
     <I18nextProvider i18n={i18n}>

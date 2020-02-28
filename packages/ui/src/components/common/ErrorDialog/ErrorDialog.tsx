@@ -1,10 +1,8 @@
+import { Dialog, DialogActions, DialogContent } from '@material-ui/core';
 import * as React from 'react';
-import Dialog from '@material-ui/core/Dialog';
-import DialogActions from '@material-ui/core/DialogActions';
-import DialogContent from '@material-ui/core/DialogContent';
 import Button from '../Button';
 
-interface Props {
+export interface IErrorDialogProps {
   open?: boolean;
   error?: any;
   message?: any;
@@ -13,11 +11,18 @@ interface Props {
 }
 
 const ErrorDialog = ({
-  open, error, message, handleClose, handleSubmit,
-}: Props) => {
+  open, error, message, handleClose, handleSubmit
+}: IErrorDialogProps) => {
+
+  function onSubmit () {
+    if (handleSubmit) {
+      handleSubmit(error);
+    }
+  }
+
   return (
     <Dialog
-      open={open ? open: false}
+      open={open ? open : false}
       onClose={handleClose}
     >
       <DialogContent>
@@ -30,14 +35,14 @@ const ErrorDialog = ({
       </DialogContent>
       <DialogActions>
         <Button
-          key="submitButton"
-          label="Submit A Bug Ticket"
+          // key="submitButton"
+          label='Submit A Bug Ticket'
           primary={false}
-          onClick={() => handleSubmit(error)}
+          onClick={onSubmit}
         />
         <Button
-          key="closeButton"
-          label="Close"
+          // key="closeButton"
+          label='Close'
           primary={true}
           onClick={handleClose}
         />

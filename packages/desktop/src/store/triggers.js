@@ -1,4 +1,6 @@
+import { blockchains } from '@emeraldwallet/store';
 import { TERMS_VERSION } from './config';
+import { addresses } from '.';
 
 const handleTrigger = (check, resolve, store) => {
   // check once with current state.
@@ -19,26 +21,26 @@ const handleTrigger = (check, resolve, store) => {
 
 export function onceServicesStart(store) {
   const check = () => {
-    const { terms, geth, connector } = store.getState().launcher.toJS();
-    return terms === TERMS_VERSION && geth.status === 'ready' && connector.status === 'ready';
+    const { terms } = store.getState().launcher.toJS();
+    return terms === TERMS_VERSION;
   };
 
   return new Promise((resolve, reject) => handleTrigger(check, resolve, store));
 }
 
-export function onceChainSet(store) {
+export function onceModeSet(store) {
   const check = () => {
-    const chain = store.getState().launcher.get('chain').toJS();
-    return typeof chain === 'object' && typeof chain.name === 'string' && chain.name;
+    const mode = store.getState().wallet.settings.mode;
+    const { id, chains } = mode;
+    return id !== 'default' && chains.length > 0;
   };
 
   return new Promise((resolve, reject) => handleTrigger(check, resolve, store));
 }
 
-export function onceHasAccountsWithBalances(store) {
+export function onceBalancesSet(store) {
   const check = () => {
-    const { accounts } = store.getState();
-    const allAccounts = accounts.get('accounts');
+    const allAccounts = addresses.selectors.all(store.getState());
     const eachHasBalance = allAccounts.reduce((memo, account) => memo && account.get('balance') !== null, true);
     return allAccounts.size > 0 && eachHasBalance;
   };
@@ -48,26 +50,15 @@ export function onceHasAccountsWithBalances(store) {
 
 export function onceAccountsLoaded(store) {
   const check = () => {
-    const { accounts } = store.getState();
-    return accounts.get('loading') === false;
+    return addresses.selectors.isLoading(store.getState()) === false;
   };
 
   return new Promise((resolve, reject) => handleTrigger(check, resolve, store));
 }
 
-export function onceAnyServiceDead(store) {
+export function onceBlockchainConnected(store) {
   const check = () => {
-    const { terms, geth, connector } = store.getState().launcher.toJS();
-    return geth.status !== 'ready' || connector.status !== 'ready';
-  };
-
-  return new Promise((resolve, reject) => handleTrigger(check, resolve, store));
-}
-
-export function onceServicesRestart(store) {
-  const check = () => {
-    const { terms, geth, connector } = store.getState().launcher.toJS();
-    return geth.status !== 'ready' || connector.status !== 'ready';
+    return blockchains.selectors.hasAny(store.getState());
   };
 
   return new Promise((resolve, reject) => handleTrigger(check, resolve, store));

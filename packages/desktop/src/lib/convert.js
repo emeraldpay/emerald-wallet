@@ -127,7 +127,3 @@ export function transformToFullName(func) {
   const typeName = func.get('inputs').map((i) => i.get('type')).join();
   return `${func.get('name')}(${typeName})`;
 }
-
-export function separateThousands(number, separator) {
-  return parseInt(number, 10).toLocaleString('en').split(',').join(separator);
-}

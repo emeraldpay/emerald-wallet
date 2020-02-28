@@ -4,27 +4,32 @@ import {
   applyMiddleware,
   combineReducers
 } from 'redux';
-import {reducer as formReducer} from 'redux-form';
-import accounts from './vault/accounts';
-import Addressbook from './vault/addressbook';
-import tokens from './vault/tokens';
-import network from './network';
-import ledger from './ledger';
+import createSagaMiddleware from 'redux-saga';
+import {
+  addresses, blockchains, screen, ledger, connection, addressBook, txhistory, tokens, wallet, settings, addAccount
+} from '@emeraldwallet/store';
 import reduxLogger from '../utils/redux-logger';
 import reduxMiddleware from './middleware';
 import launcherReducers from './launcher/launcherReducers';
-import walletReducers from './wallet/walletReducers';
+
+const walletReducers = combineReducers({
+  history: txhistory.reducer,
+  settings: settings.reducer,
+});
 
 const reducers = {
-  accounts: accounts.reducer,
-  addressBook: Addressbook.reducer,
-  tokens: tokens.reducer,
-  network: network.reducer,
+  [addressBook.moduleName]: addressBook.reducer,
+  [tokens.moduleName]: tokens.reducer,
   launcher: launcherReducers,
   ledger: ledger.reducer,
-  form: formReducer,
   wallet: walletReducers,
+  [addresses.moduleName]: addresses.reducer,
+  blockchains: blockchains.reducer,
+  screen: screen.reducer,
+  conn: connection.reducer,
+  addAccount: addAccount.reducer
 };
+
 /**
  * Creates Redux store with API as dependency injection.
  *
@@ -33,7 +38,9 @@ const reducers = {
  * @param _api
  */
 export const createStore = (_api) => {
+  const sagaMiddleware = createSagaMiddleware();
   const storeMiddleware = [
+    sagaMiddleware,
     reduxMiddleware.promiseCatchAll,
     thunkMiddleware.withExtraArgument(_api),
   ];
@@ -42,8 +49,18 @@ export const createStore = (_api) => {
     storeMiddleware.push(reduxLogger);
   }
 
-  return createReduxStore(
+  const store = createReduxStore(
     combineReducers(reducers),
     applyMiddleware(...storeMiddleware)
   );
+
+  sagaMiddleware.run(blockchains.sagas.root, _api);
+  sagaMiddleware.run(ledger.sagas.root, _api);
+  sagaMiddleware.run(addressBook.sagas.root, _api);
+  sagaMiddleware.run(txhistory.sagas.root, _api);
+  sagaMiddleware.run(tokens.sagas.root, _api);
+  sagaMiddleware.run(wallet.sagas.root, _api);
+  sagaMiddleware.run(settings.sagas.root);
+  sagaMiddleware.run(addresses.sagas.root, _api);
+  return store;
 };

@@ -1,7 +1,10 @@
-import {BlockchainParams} from "./types";
+import IBlockchainParams from './IBlockchainParams';
+import {AnyCoinCode} from "../Asset";
 
 export interface Blockchain {
-  params: BlockchainParams;
+  params: IBlockchainParams;
 
-  isValidAddress(address: string): boolean;
+  isValidAddress (address: string): boolean;
+  getTitle (): string;
+  getAssets(): AnyCoinCode[]
 }

@@ -1,0 +1,13 @@
+import { txFeeFiat } from './util';
+
+describe('txFeeFiat', () => {
+  it('should calculate tx fee in fiat', () => {
+    const feeFiat = txFeeFiat(2000000000, 21000, 134.44);
+    expect(typeof feeFiat).toEqual('string');
+    expect(feeFiat).toEqual('0.01');
+
+    const feeFiatFromStr = txFeeFiat('2000000000', 21000, 134.44);
+    expect(typeof feeFiatFromStr).toEqual('string');
+    expect(feeFiatFromStr).toEqual('0.01');
+  });
+});

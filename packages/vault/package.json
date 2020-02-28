@@ -1,0 +1,44 @@
+{
+  "name": "@emeraldwallet/vault",
+  "version": "2.1.2",
+  "description": "Emerald vault interop",
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "author": "ETCDEV GmbH",
+  "license": "Apache-2.0",
+  "scripts": {
+    "build": "rimraf lib/ && tsc",
+    "build:dist": "rimraf lib/ && tsc",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "@emeraldplatform/core": "^0.5.11",
+    "@jest-runner/electron": "2.0.2",
+    "@types/jest": "^24.0.9",
+    "@types/node": "^12.12.0",
+    "jest": "^24.1.0",
+    "rimraf": "^2.6.3",
+    "ts-jest": "^24.0.0"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "runner": "@jest-runner/electron/main",
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      "<rootDir>/lib/",
+      "<rootDir>/node_modules/"
+    ],
+    "setupFiles": [
+      "<rootDir>/jest.setup.ts"
+    ],
+    "coverageDirectory": "./coverage/",
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ]
+  },
+  "dependencies": {
+    "@emeraldpay/emerald-vault-core": "^0.5.1-0.27.0.rc1",
+    "@emeraldpay/emerald-vault-native": "^0.5.1-0.27.0.rc1",
+    "@emeraldwallet/core": "^2.1.2"
+  }
+}

@@ -1,12 +1,11 @@
-export interface Transaction {
-  verifySignature(): boolean;
-  getSenderAddress(): string;
-}
+import { Address } from '@emeraldplatform/core';
 
-/**
- * Parameters of particular blockchain
- */
-export interface BlockchainParams {
-  decimals: number;
-  coinTicker: string;
+export interface ITransaction {
+  verifySignature (): boolean;
+  getSenderAddress (): Address;
+  getRecipientAddress (): Address;
+  getValue (): any;
+  getHash (): string;
+  getData (): any;
+  getNonce (): any;
 }
