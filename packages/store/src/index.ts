@@ -37,3 +37,4 @@ export {
 } from './accounts/types';
 
 export { default as rootReducer } from './root-reducer';
+export { default as BackendApi } from './BackendApi';

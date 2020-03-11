@@ -7,7 +7,7 @@ export default connect(
   (state: any, ownProps: any) => ({
     terms: application.selectors.terms(state)
   }),
-  (dispatch, ownProps) => ({
+  (dispatch: any, ownProps) => ({
     onTermsAgreed: () => {
       dispatch(application.actions.agreeOnTerms(ownProps.currentTermsVersion));
       dispatch(screen.actions.gotoScreen(screen.Pages.HOME));

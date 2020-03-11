@@ -25,7 +25,7 @@ import reduxMiddleware from './middleware';
  *
  * @param _api
  */
-export const createStore = (_api) => {
+export const createStore = (_api, backendApi) => {
   const sagaMiddleware = createSagaMiddleware();
   const storeMiddleware = [
     sagaMiddleware,
@@ -44,7 +44,7 @@ export const createStore = (_api) => {
 
   sagaMiddleware.run(blockchains.sagas.root, _api);
   sagaMiddleware.run(ledger.sagas.root, _api);
-  sagaMiddleware.run(addressBook.sagas.root, _api);
+  sagaMiddleware.run(addressBook.sagas.root, _api, backendApi);
   sagaMiddleware.run(txhistory.sagas.root, _api);
   sagaMiddleware.run(tokens.sagas.root, _api);
   sagaMiddleware.run(wallet.sagas.root, _api);

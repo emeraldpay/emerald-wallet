@@ -1,15 +1,16 @@
 import { Commands, Logger } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
-import { ThunkAction } from 'redux-thunk';
 import { ActionTypes, IConfigAction, ISetConnectingAction } from './types';
 
 const log = Logger.forCategory('store.application');
 
-export function agreeOnTerms (v: any) {
-  ipcRenderer.send('terms', v);
-  return {
-    type: 'LAUNCHER/TERMS',
-    version: v
+export function agreeOnTerms (v: any): any {
+  return async (dispatch: any) => {
+    await ipcRenderer.invoke(Commands.SET_TERMS, v);
+    return {
+      type: 'LAUNCHER/TERMS',
+      version: v
+    };
   };
 }
 

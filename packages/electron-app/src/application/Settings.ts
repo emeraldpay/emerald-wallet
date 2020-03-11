@@ -1,16 +1,27 @@
-const Store = require('electron-store');
+import * as ElectronStore from 'electron-store';
+
 const uuid = require('uuid/v4');
 
-const DEFAULTS = {
+interface IStoreType {
+  version: number;
+  terms: string;
+  id: any;
+  // @deprecated
+  geth?: any;
+  // @deprecated
+  chain?: any;
+}
+
+const DEFAULTS: IStoreType = {
   version: 1,
   terms: 'none',
   id: uuid()
 };
 
 export default class Settings {
-  private settings: any;
+  private settings: ElectronStore<IStoreType>;
   constructor () {
-    this.settings = new Store({
+    this.settings = new ElectronStore({
       name: 'settings',
       defaults: DEFAULTS
     });

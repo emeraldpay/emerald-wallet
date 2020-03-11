@@ -31,7 +31,7 @@ export const Blockchains: {[key: string]: Blockchain} = {
 const allCodes = [BlockchainCode.ETC, BlockchainCode.ETH, BlockchainCode.Kovan];
 const allChains = allCodes.map((code) => Blockchains[code]);
 
-export function isValidChain (code: any): boolean {
+export function isValidChain (code: BlockchainCode): boolean {
   return Blockchains[code] ? true : false;
 }
 

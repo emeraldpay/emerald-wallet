@@ -1,4 +1,4 @@
-import { Address, convert, EthAddress } from '@emeraldplatform/core';
+import { Address, EthAddress } from '@emeraldplatform/core';
 import Common from 'ethereumjs-common';
 import { Transaction as EthTx } from 'ethereumjs-tx';
 import { ITransaction } from '../types';

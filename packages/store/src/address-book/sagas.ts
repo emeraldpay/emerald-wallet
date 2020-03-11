@@ -4,19 +4,17 @@ import * as screen from '../screen';
 import { contactDeletedAction, newContactAddedAction, setAddressBook } from './actions';
 import { ActionTypes, AddContactAction, DeleteContactAction, ILoadContactsAction } from './types';
 
-function* loadAddresses (service: IAddressBookService, action: ILoadContactsAction) {
+function* loadAddresses (backendApi: IBackendApi, action: ILoadContactsAction) {
   const chain = action.payload;
-
-  const items: AddressBookItem[] = yield call(service.getItems, chain);
-
+  const items: AddressBookItem[] = yield call(backendApi.getAddressBookItems, chain);
   yield put(setAddressBook(chain, items));
 }
 
-function* addContact (service: IAddressBookService, action: AddContactAction) {
+function* addContact (backend: IBackendApi, action: AddContactAction) {
   const { address, name, description, blockchain } = action.payload;
   const newContact = new AddressBookItem(blockchain, address, description, name);
 
-  const result = yield call(service.addNew, newContact);
+  const result = yield call(backend.addAddressBookItem, newContact);
 
   yield put(newContactAddedAction(newContact));
   yield put(screen.actions.gotoScreen(screen.Pages.ADDRESS_BOOK));
@@ -33,7 +31,7 @@ function* deleteContact (service: IAddressBookService, action: DeleteContactActi
 
 export function* root (api: IApi, backend: IBackendApi) {
   const service = new AddressBookService(api.vault);
-  yield takeEvery(ActionTypes.LOAD, loadAddresses, service);
-  yield takeEvery(ActionTypes.ADD_CONTACT, addContact, service);
+  yield takeEvery(ActionTypes.LOAD, loadAddresses, backend);
+  yield takeEvery(ActionTypes.ADD_CONTACT, addContact, backend);
   yield takeEvery(ActionTypes.DELETE_ADDRESS, deleteContact, service);
 }

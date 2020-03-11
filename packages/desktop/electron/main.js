@@ -26,6 +26,7 @@ const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
 
 let apiMode;
+
 let dataDir = null;
 
 if (isDev) {
@@ -76,7 +77,6 @@ const application = new Application(settings);
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
-
   log.info('Starting Emerald', app.getVersion());
   log.info('... setup API access');
   let apiAccess;
@@ -99,19 +99,13 @@ app.on('ready', () => {
 
   serverConnect.init(process.versions);
 
-  // TODO: depricated
-  // session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
-  //   details.requestHeaders['User-Agent'] = serverConnect.getUserAgent();
-  //   callback({ cancel: false, requestHeaders: details.requestHeaders });
-  // });
-
   log.info('... create window');
   const browserWindow = getMainWindow(options);
   onceReady(() => {
     sendMode(browserWindow.webContents, apiMode);
   });
 
-  application.run(browserWindow.webContents, apiAccess, apiMode);
+  application.run(browserWindow.webContents, apiAccess, apiMode, vault.getProvider());
 
   // Run IPC listeners
   ipc({ settings });

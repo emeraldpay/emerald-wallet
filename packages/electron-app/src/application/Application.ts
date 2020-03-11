@@ -1,4 +1,4 @@
-import { Logger } from '@emeraldwallet/core';
+import { IVault, Logger } from '@emeraldwallet/core';
 import { Services } from '@emeraldwallet/services';
 import { ipcMain } from 'electron';
 import { createServices } from '../createServices';
@@ -11,14 +11,18 @@ Logger.setInstance(new ElectronLogger());
 export default class Application {
   public log = Logger.forCategory('application');
   public settings: Settings;
+  public vault: IVault | null;
+
   private services: Services | null;
 
   constructor (settings: Settings) {
     this.services = null;
+    this.vault = null;
     this.settings = settings;
   }
 
-  public run (webContents: any, apiAccess: any, apiMode: any) {
+  public run (webContents: any, apiAccess: any, apiMode: any, vault: IVault) {
+    this.vault = vault;
     this.log.info('Running services');
     this.services = createServices(ipcMain, webContents, apiAccess, apiMode);
     this.services.start();

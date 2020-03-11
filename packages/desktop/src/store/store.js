@@ -1,5 +1,6 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import {
+  BackendApi,
   blockchains,
   screen,
   ledger,
@@ -19,7 +20,8 @@ import {createStore} from './createStore';
 import {
   onceBlockchainConnected,
   onceAccountsLoaded,
-  onceModeSet, onceServicesStart,
+  onceModeSet,
+  onceServicesStart,
 } from './triggers';
 import {Logger} from '@emeraldwallet/core';
 import ElectronLogger from '../utils/logger2';
@@ -29,7 +31,9 @@ Logger.setInstance(new ElectronLogger());
 const log = Logger.forCategory('store');
 
 const api = new Api(getConnector(), getRemoteVault());
-export const store = createStore(api);
+const backendApi = new BackendApi();
+
+export const store = createStore(api, backendApi);
 global.api = api;
 
 function refreshAll() {

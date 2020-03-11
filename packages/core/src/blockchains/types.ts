@@ -6,6 +6,6 @@ export interface ITransaction {
   getRecipientAddress (): Address;
   getValue (): any;
   getHash (): string;
-  getData (): any;
+  getData (): string;
   getNonce (): number;
 }

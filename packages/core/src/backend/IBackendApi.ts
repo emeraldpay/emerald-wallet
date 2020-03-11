@@ -7,7 +7,7 @@ export default interface IBackendApi {
 
   // Address Book
   getAddressBookItems: (blockchain: BlockchainCode) => Promise<AddressBookItem[]>;
-  addAddressBookItem: (item: AddressBookItem) => boolean;
+  addAddressBookItem: (item: AddressBookItem) => Promise<boolean>;
   removeAddressBookItem: (blockchain: BlockchainCode, address: string) => boolean;
 
   // Transactions History

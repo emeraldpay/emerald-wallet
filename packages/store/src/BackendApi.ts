@@ -1,0 +1,24 @@
+import { AddressBookItem, BlockchainCode, Commands, IBackendApi, Wallet } from '@emeraldwallet/core';
+import { ipcRenderer } from 'electron';
+
+/**
+ * This backend api implementation calls electron IPC for business logic
+ */
+export default class BackendApi implements IBackendApi {
+
+  public getAllWallets = (): Promise<Wallet[]> => {
+    return Promise.resolve([]);
+  }
+
+  public removeAddressBookItem = (blockchain: BlockchainCode, address: string): boolean => {
+    return false;
+  }
+
+  public addAddressBookItem = (item: AddressBookItem): Promise<boolean> => {
+    return ipcRenderer.invoke(Commands.ADD_ADDR_BOOK_ITEM, item);
+  }
+
+  public getAddressBookItems = (blockchain: BlockchainCode): Promise<AddressBookItem[]> => {
+    return ipcRenderer.invoke(Commands.GET_ADDR_BOOK_ITEMS, blockchain);
+  }
+}

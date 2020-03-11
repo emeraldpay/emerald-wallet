@@ -1,3 +1,4 @@
+import { IState } from '../types';
 import { moduleName } from './types';
 
 export function getMessage (state: any): any {
@@ -8,7 +9,7 @@ export function isConnecting (state: any): boolean {
   return state[moduleName].connecting;
 }
 
-export function terms (state: any): string {
+export function terms (state: IState): string {
   return state[moduleName].terms;
 }
 
