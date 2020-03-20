@@ -14,7 +14,7 @@ export enum ActionTypes {
 }
 
 // FIXME incompatible with Bitcoin
-export interface Contacts {[key: string]: AddressBookItem}
+export interface Contacts {[key: string]: AddressBookItem;}
 
 export interface IAddressBookState {
   loading: boolean;
@@ -59,7 +59,7 @@ export interface ILoadContactsAction {
   payload: BlockchainCode;
 }
 
-export interface SetAddressBookAction {
+export interface ISetAddressBookAction {
   type: ActionTypes.SET_BOOK;
   payload: {
     blockchain: BlockchainCode;
@@ -74,4 +74,4 @@ export type AddressBookAction =
   | DeleteContactAction
   | ContactDeletedAction
   | ILoadContactsAction
-  | SetAddressBookAction;
+  | ISetAddressBookAction;

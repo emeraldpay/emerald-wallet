@@ -36,4 +36,10 @@ export function setIpcHandlers (app: Application) {
     const result = service.addNew(item);
     return Promise.resolve(result);
   });
+
+  ipcMain.handle(Commands.DELETE_ADDR_BOOK_ITEM, (event: any, blockchain: any, address: any) => {
+    const service = new AddressBookService(app.vault!);
+    const result = service.remove(blockchain, address);
+    return Promise.resolve(result);
+  });
 }

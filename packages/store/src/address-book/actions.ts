@@ -5,7 +5,7 @@ import {
   ContactAddedAction, ContactDeletedAction,
   DeleteContactAction,
   ILoadContactsAction,
-  SetAddressBookAction,
+  ISetAddressBookAction,
   SetLoadingAction
 } from './types';
 
@@ -63,7 +63,7 @@ export function loadAddressBook (chain: any): ILoadContactsAction {
   };
 }
 
-export function setAddressBook (chain: BlockchainCode, addressBook: AddressBookItem[]): SetAddressBookAction {
+export function setAddressBook (chain: BlockchainCode, addressBook: AddressBookItem[]): ISetAddressBookAction {
   return {
     type: ActionTypes.SET_BOOK,
     payload: {

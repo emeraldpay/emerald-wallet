@@ -10,8 +10,8 @@ export default class BackendApi implements IBackendApi {
     return Promise.resolve([]);
   }
 
-  public removeAddressBookItem = (blockchain: BlockchainCode, address: string): boolean => {
-    return false;
+  public removeAddressBookItem = (blockchain: BlockchainCode, address: string): Promise<boolean> => {
+    return ipcRenderer.invoke(Commands.DELETE_ADDR_BOOK_ITEM, blockchain, address);
   }
 
   public addAddressBookItem = (item: AddressBookItem): Promise<boolean> => {

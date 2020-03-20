@@ -1,4 +1,4 @@
-import { AddressBookItem, AddressBookService, IAddressBookService, IApi, IBackendApi } from '@emeraldwallet/core';
+import { AddressBookItem, IBackendApi } from '@emeraldwallet/core';
 import { all, call, put, takeEvery } from 'redux-saga/effects';
 import * as screen from '../screen';
 import { contactDeletedAction, newContactAddedAction, setAddressBook } from './actions';
@@ -20,18 +20,17 @@ function* addContact (backend: IBackendApi, action: AddContactAction) {
   yield put(screen.actions.gotoScreen(screen.Pages.ADDRESS_BOOK));
 }
 
-function* deleteContact (service: IAddressBookService, action: DeleteContactAction) {
+function* deleteContact (backend: IBackendApi, action: DeleteContactAction) {
   const { blockchain, address } = action.payload;
 
-  const result = yield call(service.remove, blockchain, address);
-
+  const result = yield call(backend.removeAddressBookItem, blockchain, address);
+  // TODO: check result
   yield put(contactDeletedAction(blockchain, address));
   yield put(screen.actions.gotoScreen(screen.Pages.ADDRESS_BOOK));
 }
 
-export function* root (api: IApi, backend: IBackendApi) {
-  const service = new AddressBookService(api.vault);
+export function* root (backend: IBackendApi) {
   yield takeEvery(ActionTypes.LOAD, loadAddresses, backend);
   yield takeEvery(ActionTypes.ADD_CONTACT, addContact, backend);
-  yield takeEvery(ActionTypes.DELETE_ADDRESS, deleteContact, service);
+  yield takeEvery(ActionTypes.DELETE_ADDRESS, deleteContact, backend);
 }
