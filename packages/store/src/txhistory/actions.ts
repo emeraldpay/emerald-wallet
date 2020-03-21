@@ -1,6 +1,6 @@
-import { blockchainByName, BlockchainCode, IApi, IStoredTransaction, utils } from '@emeraldwallet/core';
+import { blockchainByName, BlockchainCode, Commands, IApi, IStoredTransaction, utils } from '@emeraldwallet/core';
 import {
-  loadTransactions, loadTransactions2, removeTransactions, storeTransactions2
+  loadTransactions, removeTransactions
 } from '@emeraldwallet/history-store';
 import { ipcRenderer } from 'electron';
 import { Dispatch } from 'react';
@@ -12,13 +12,14 @@ import { ActionTypes, HistoryAction, ILoadStoredTxsAction, IUpdateTxsAction } fr
 
 const txStoreKey = (chainId: number) => `chain-${chainId}-trackedTransactions`;
 
-export function persistTransactions (state: any, chainCode: BlockchainCode) {
+export async function persistTransactions (state: any, chainCode: BlockchainCode) {
   const txs = allTrackedTxs(state).toJS().filter((t: IStoredTransaction) => (t.blockchain === chainCode));
   // always store to new TxStore
-  storeTransactions2(chainCode, txs);
+  // storeTransactions2(chainCode, txs);
+  await ipcRenderer.invoke(Commands.PERSIST_TX_HISTORY, chainCode, txs);
 }
 
-function loadPersistedTransactions (chainCode: BlockchainCode) {
+async function loadPersistedTransactions (chainCode: BlockchainCode) {
   // load from old local storage
   const chainId: number = blockchainByName(chainCode).params.chainId;
   const loaded = loadTransactions(txStoreKey(chainId), chainId);
@@ -30,12 +31,14 @@ function loadPersistedTransactions (chainCode: BlockchainCode) {
   // new TxStore migration
   if (txs.length > 0) {
     // store txs from local storage to new store
-    storeTransactions2(chainCode, txs);
+    // storeTransactions2(chainCode, txs);
+    await ipcRenderer.invoke(Commands.PERSIST_TX_HISTORY, chainCode, txs);
     // remove from local storage
     removeTransactions(txStoreKey(chainId));
   }
   // load from new store
-  txs = loadTransactions2(chainCode);
+  // txs = loadTransactions2(chainCode);
+  txs = await ipcRenderer.invoke(Commands.LOAD_TX_HISTORY, chainCode);
   return txs;
 }
 
@@ -65,12 +68,12 @@ export function trackTxs (txs: IStoredTransaction[], blockchain: BlockchainCode)
 }
 
 export function init (chains: BlockchainCode[]): Dispatched<HistoryAction> {
-  return (dispatch, getState) => {
+  return async (dispatch: any, getState) => {
     const storedTxs = [];
 
     for (const chainCode of chains) {
       // load history for chain
-      const txs = loadPersistedTransactions(chainCode);
+      const txs = await loadPersistedTransactions(chainCode);
       storedTxs.push(...txs);
     }
 
@@ -85,7 +88,7 @@ function loadStoredTxsAction (txs: any): ILoadStoredTxsAction {
   };
 }
 
-const txUnconfirmed = (state: any, tx: any) => {
+const txUnconfirmed = (state: any, tx: any): boolean => {
   const chainCode = tx.get('blockchain').toLowerCase();
   const currentBlock = blockchains.selectors.getHeight(state, chainCode);
   const txBlockNumber = tx.get('blockNumber');

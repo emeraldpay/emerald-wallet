@@ -7,6 +7,7 @@ import { EthereumAccountItem } from '../../src/wallets/WalletDetails/EthereumAcc
 storiesOf('EthereumAccountItem', module)
   .add('default', () => (
     <EthereumAccountItem
+      walletId={'wallet-id'}
       balance={Wei.ZERO}
       account={{ address: '0x12345678901234567890', id: '', blockchain: BlockchainCode.ETH }}
       tokensBalances={[]}

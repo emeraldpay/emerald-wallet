@@ -1,4 +1,5 @@
 import { AddressBookService, Commands } from '@emeraldwallet/core';
+import { loadTransactions2, storeTransactions2 } from '@emeraldwallet/history-store';
 import { ipcMain } from 'electron';
 import * as os from 'os';
 import Application from './Application';
@@ -40,6 +41,16 @@ export function setIpcHandlers (app: Application) {
   ipcMain.handle(Commands.DELETE_ADDR_BOOK_ITEM, (event: any, blockchain: any, address: any) => {
     const service = new AddressBookService(app.vault!);
     const result = service.remove(blockchain, address);
+    return Promise.resolve(result);
+  });
+
+  // Transaction history API
+  ipcMain.handle(Commands.PERSIST_TX_HISTORY, (event: any, blockchain: any, txs: any) => {
+    storeTransactions2(blockchain, txs);
+  });
+
+  ipcMain.handle(Commands.LOAD_TX_HISTORY, (event: any, blockchain: any) => {
+    const result = loadTransactions2(blockchain);
     return Promise.resolve(result);
   });
 }

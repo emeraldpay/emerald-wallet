@@ -1,3 +1,4 @@
+import { IState } from '../types';
 import { INITIAL_STATE } from './reducer';
 import * as selectors from './selectors';
 import { moduleName } from './types';
@@ -5,7 +6,7 @@ import { moduleName } from './types';
 describe('selectors', () => {
   const appState = {
     [moduleName]: INITIAL_STATE
-  };
+  } as IState;
 
   it('should work', () => {
     expect(selectors.terms(appState)).toEqual(INITIAL_STATE.terms);

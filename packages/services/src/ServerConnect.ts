@@ -8,8 +8,7 @@ import {
 import { IServerConnect, IVault } from '@emeraldwallet/core';
 import GrpcTransport from './transports/GrpcTransport';
 import HttpTransportAdapter from './transports/HttpTransport';
-
-const os = require('os');
+import * as os from 'os';
 
 const CHAIN_VERIFY: {[key: string]: any} = {
   etc: [
