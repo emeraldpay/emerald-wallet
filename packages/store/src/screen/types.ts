@@ -16,7 +16,8 @@ export enum Pages {
   ADDRESS_BOOK = 'address-book',
   TX_DETAILS = 'transaction',
   CREATE_TX = 'create-tx',
-  CREATE_WALLET = 'create-wallet'
+  CREATE_WALLET = 'create-wallet',
+  ADD_ACCOUNT = 'add-account'
 }
 
 export interface IScreenState {

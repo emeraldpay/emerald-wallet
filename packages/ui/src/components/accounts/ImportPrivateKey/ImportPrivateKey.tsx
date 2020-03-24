@@ -1,8 +1,8 @@
 import { Input, Page, Warning, WarningHeader, WarningText } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import { Blockchain, BlockchainCode } from '@emeraldwallet/core';
+import { BlockchainCode, IBlockchain } from '@emeraldwallet/core';
 import { CircularProgress } from '@material-ui/core';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import Button from '../../common/Button';
 import ChainSelector from '../../common/ChainSelector/ChainSelector';
@@ -53,7 +53,7 @@ function getLoadingIcon (submitting) {
 }
 
 export interface IProps {
-  blockchains: Blockchain[];
+  blockchains: IBlockchain[];
   onBack?: any;
   error?: any;
   onSubmit?: any;
@@ -194,7 +194,6 @@ export class ImportPrivateKey extends React.Component<IProps, IState> {
               disabled={submitting || invalid}
               icon={getLoadingIcon(submitting)}
             />
-
           </div>
         </div>
 

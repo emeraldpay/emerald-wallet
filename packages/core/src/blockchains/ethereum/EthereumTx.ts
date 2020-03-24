@@ -1,7 +1,7 @@
 import { Address, EthAddress } from '@emeraldplatform/core';
 import Common from 'ethereumjs-common';
 import { Transaction as EthTx } from 'ethereumjs-tx';
-import { ITransaction } from '../types';
+import { ITransaction } from '../ITransaction';
 
 class EthereumTx implements ITransaction {
 

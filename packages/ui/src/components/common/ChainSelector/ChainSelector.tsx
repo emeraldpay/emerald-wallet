@@ -1,24 +1,24 @@
-import { Blockchain, BlockchainCode } from '@emeraldwallet/core';
+import { BlockchainCode, IBlockchain } from '@emeraldwallet/core';
 import { FormControl, Input, InputLabel, MenuItem, Select } from '@material-ui/core';
-import { CSSProperties, withStyles } from '@material-ui/styles';
+import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 
-export const styles = (theme?: any) => ({
+export const styles = (theme?: any) => createStyles({
   container: {
     position: 'relative'
-  } as CSSProperties,
+  },
   selectChain: {
     marginTop: (theme && theme.spacing) && theme.spacing(2)
-  } as CSSProperties,
+  },
   formControl: {
     margin: (theme && theme.spacing) && theme.spacing(1),
     minWidth: 120,
     border: 0
-  } as CSSProperties
+  }
 });
 
 interface IProps {
-  chains: Blockchain[];
+  chains: IBlockchain[];
   onChange?: any;
   value?: BlockchainCode;
   classes?: any;
@@ -62,7 +62,7 @@ export class ChainSelector extends React.Component<IProps, IState> {
             name='chain'
             className={classes.selectChain}
           >
-            {chains.map((chain: Blockchain) =>
+            {chains.map((chain: IBlockchain) =>
               <MenuItem value={chain.params.code} key={chain.params.coinTicker}>{chain.getTitle()}</MenuItem>
             )}
           </Select>

@@ -1,4 +1,4 @@
-import { Blockchain } from './Blockchain';
+import { IBlockchain } from './IBlockchain';
 import { CoinTicker } from './CoinTicker';
 import Ethereum from './ethereum/Ethereum';
 import EthereumParams from './ethereum/EthereumParams';
@@ -10,7 +10,7 @@ export enum BlockchainCode {
   Unknown = 'unknown'
 }
 
-export const Blockchains: {[key: string]: Blockchain} = {
+export const Blockchains: {[key: string]: IBlockchain} = {
   [BlockchainCode.ETH]: new Ethereum(
     new EthereumParams(BlockchainCode.ETH, CoinTicker.ETH, 1,"m/44'/60'/0'/0"),
     'Ethereum',
@@ -43,7 +43,7 @@ export function blockchainCodeByName (name: string): string {
   return allCodes.find((code) => code === cleanName) || BlockchainCode.Unknown;
 }
 
-export function blockchainByName (name: string): Blockchain {
+export function blockchainByName (name: string): IBlockchain {
   const code = blockchainCodeByName(name);
   if (!Blockchains[code]) {
     throw new Error(`Unsupported chain: ${code}`);
@@ -51,14 +51,14 @@ export function blockchainByName (name: string): Blockchain {
   return Blockchains[code];
 }
 
-export function ethereumByChainId (id?: number): Blockchain | undefined {
+export function ethereumByChainId (id?: number): IBlockchain | undefined {
   if (typeof id === 'undefined') {
     return undefined;
   }
   return allChains.find((chain) => chain.params.chainId === id);
 }
 
-export function blockchainById (id: number): Blockchain | undefined {
+export function blockchainById (id: number): IBlockchain | undefined {
   if (id == 100) {
     return Blockchains[BlockchainCode.ETH];
   }

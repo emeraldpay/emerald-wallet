@@ -1,9 +1,9 @@
 import { EthAddress } from '@emeraldplatform/core';
 import { AnyCoinCode, AnyTokenCode } from '../../Asset';
-import { Blockchain } from '../Blockchain';
+import { IBlockchain } from '../IBlockchain';
 import IBlockchainParams from '../IBlockchainParams';
 
-export default class Ethereum implements Blockchain {
+export default class Ethereum implements IBlockchain {
   public params: IBlockchainParams;
   public title: string;
   public readonly tokens: AnyTokenCode[];

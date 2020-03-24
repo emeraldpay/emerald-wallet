@@ -3,9 +3,9 @@ import {
   ActionTypes,
   AddAccountAction,
   IAddAccountState,
-  NextPageAction,
-  SetBlockchainAction,
-  SetTypeAction,
+  INextPageAction,
+  ISetBlockchainAction,
+  ISetTypeAction,
   ISetWalletAction
 } from './types';
 
@@ -15,7 +15,7 @@ export const INITIAL_STATE: IAddAccountState = {
   step: 0
 };
 
-function onNextPage (state: IAddAccountState, action: NextPageAction): IAddAccountState {
+function onNextPage (state: IAddAccountState, action: INextPageAction): IAddAccountState {
   if (state.step < TOTAL_STEPS && isFulfilled(state, state.step)) {
     return { ...state, step: state.step + 1 };
   }
@@ -23,14 +23,14 @@ function onNextPage (state: IAddAccountState, action: NextPageAction): IAddAccou
 }
 
 function onSetWallet (state: IAddAccountState, action: ISetWalletAction): IAddAccountState {
-  return { ...state, walletId: action.value };
+  return { ...INITIAL_STATE, walletId: action.value };
 }
 
-function onSetBlockchain (state: IAddAccountState, action: SetBlockchainAction): IAddAccountState {
+function onSetBlockchain (state: IAddAccountState, action: ISetBlockchainAction): IAddAccountState {
   return { ...state, blockchain: action.value };
 }
 
-function onSetType (state: IAddAccountState, action: SetTypeAction): IAddAccountState {
+function onSetType (state: IAddAccountState, action: ISetTypeAction): IAddAccountState {
   return { ...state, type: action.value };
 }
 
@@ -41,7 +41,7 @@ export function reducer (
   switch (action.type) {
     case ActionTypes.NEXT_PAGE:
       return onNextPage(state, action);
-    case ActionTypes.SET_WALLET:
+    case ActionTypes.START:
       return onSetWallet(state, action);
     case ActionTypes.SELECT_BLOCKCHAIN:
       return onSetBlockchain(state, action);

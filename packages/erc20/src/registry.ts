@@ -1,4 +1,6 @@
-import {AnyTokenCode, BlockchainCode, CoinTickerCode} from '@emeraldwallet/core';
+import {
+  AnyTokenCode, BlockchainCode, CoinTickerCode
+} from '@emeraldwallet/core';
 
 type TokensCollection = {
   [code in BlockchainCode]: ITokenInfo[];

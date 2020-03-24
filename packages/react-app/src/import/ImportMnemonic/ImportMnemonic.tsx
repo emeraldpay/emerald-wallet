@@ -1,4 +1,4 @@
-import { Blockchain, BlockchainCode, Logger } from '@emeraldwallet/core';
+import { BlockchainCode, IBlockchain, Logger } from '@emeraldwallet/core';
 import { accounts, IState, screen, settings } from '@emeraldwallet/store';
 import { ImportMnemonic } from '@emeraldwallet/ui';
 import * as React from 'react';
@@ -11,7 +11,7 @@ export interface IOwnProps {
 }
 
 interface IStateProps {
-  blockchains: Blockchain[];
+  blockchains: IBlockchain[];
   error?: any;
   invalid?: any;
   mnemonic?: string;

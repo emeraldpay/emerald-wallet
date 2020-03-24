@@ -1,7 +1,7 @@
 import { AnyCoinCode } from '../Asset';
 import IBlockchainParams from './IBlockchainParams';
 
-export interface Blockchain {
+export interface IBlockchain {
   params: IBlockchainParams;
 
   isValidAddress (address: string): boolean;

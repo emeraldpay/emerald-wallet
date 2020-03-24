@@ -17,33 +17,33 @@ export interface IAddAccountState {
 
 export enum ActionTypes {
   NEXT_PAGE = 'ADD_ACCOUNT_WIZARD/NEXT',
-  SET_WALLET = 'ADD_ACCOUNT_WIZARD/SET_WALLET',
+  START = 'ADD_ACCOUNT_WIZARD/START',
   SELECT_BLOCKCHAIN = 'ADD_ACCOUNT_WIZARD/SELECT_BLOCKCHAIN',
   SELECT_TYPE = 'ADD_ACCOUNT_WIZARD/SELECT_TYPE'
 }
 
-export interface NextPageAction {
+export interface INextPageAction {
   type: ActionTypes.NEXT_PAGE;
 }
 
 export interface ISetWalletAction {
-  type: ActionTypes.SET_WALLET;
+  type: ActionTypes.START;
   value: Uuid;
 }
 
-export interface SetBlockchainAction {
+export interface ISetBlockchainAction {
   type: ActionTypes.SELECT_BLOCKCHAIN;
   value?: BlockchainCode;
 }
 
-export interface SetTypeAction {
+export interface ISetTypeAction {
   type: ActionTypes.SELECT_TYPE;
   value?: AddType;
 }
 
 export type AddAccountAction =
-    NextPageAction
+    INextPageAction
   | ISetWalletAction
-  | SetBlockchainAction
-  | SetTypeAction
+  | ISetBlockchainAction
+  | ISetTypeAction
   ;

@@ -1,10 +1,8 @@
-import { BlockchainCode } from '@emeraldwallet/core';
 import { INITIAL_STATE, reducer } from './reducer';
-import {ActionTypes, IAccountsState} from './types';
+import { ActionTypes, IAccountsState } from './types';
 
-describe('addresses reducer', () => {
+describe('accounts reducer', () => {
   it('handles Actions.LOADING', () => {
-
     const state = reducer(undefined, { type: ActionTypes.LOADING, payload: true });
     expect(state).toEqual({
       ...INITIAL_STATE,
@@ -18,7 +16,7 @@ describe('addresses reducer', () => {
       type: ActionTypes.SET_LIST,
       payload: [{
         id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee',
-        accounts: [],
+        accounts: []
       }]
     });
     // assert
@@ -29,7 +27,7 @@ describe('addresses reducer', () => {
       type: ActionTypes.SET_LIST,
       payload: [{
         id: 'c35d05ba-d6bb-40b1-9553-383f414a97e5',
-        accounts: [],
+        accounts: []
       }]
     });
     expect(state.wallets.length).toEqual(1);
@@ -43,7 +41,7 @@ describe('addresses reducer', () => {
       type: ActionTypes.CREATE_WALLET_SUCCESS,
       wallet: {
         id: 'c35d05ba-d6bb-40b1-9553-383f414a97e5',
-        accounts: [],
+        accounts: []
       }
     });
     expect(state.wallets.length).toEqual(1);
@@ -54,7 +52,7 @@ describe('addresses reducer', () => {
       type: ActionTypes.CREATE_WALLET_SUCCESS,
       wallet: {
         id: 'c35d05ba-d6bb-40b1-9553-383f414a97e5',
-        accounts: [],
+        accounts: []
       }
     });
     expect(state.wallets.length).toEqual(1);
@@ -65,7 +63,7 @@ describe('addresses reducer', () => {
       type: ActionTypes.CREATE_WALLET_SUCCESS,
       wallet: {
         id: '2d9fde4e-ce00-4b58-af68-15c211604529',
-        accounts: [],
+        accounts: []
       }
     });
     expect(state.wallets.length).toEqual(2);

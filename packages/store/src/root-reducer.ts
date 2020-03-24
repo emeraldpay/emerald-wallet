@@ -10,8 +10,8 @@ import {
   screen,
   settings,
   tokens,
-  txhistory,
-  transaction
+  transaction,
+  txhistory
 } from './';
 
 const root = combineReducers<IState>({

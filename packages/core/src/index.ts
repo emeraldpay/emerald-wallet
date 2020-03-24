@@ -1,7 +1,7 @@
 export {
   BlockchainCode,
   Blockchains,
-  Blockchain,
+  IBlockchain,
   blockchainByName,
   ethereumByChainId,
   blockchainCodeToId,

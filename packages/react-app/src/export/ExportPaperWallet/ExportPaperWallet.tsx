@@ -1,4 +1,4 @@
-import { Account, blockchainByName} from '@emeraldwallet/core';
+import { Account, blockchainByName } from '@emeraldwallet/core';
 import { accounts, screen } from '@emeraldwallet/store';
 import { ExportPaperWallet } from '@emeraldwallet/ui';
 import * as React from 'react';
@@ -26,7 +26,12 @@ export default connect<IRendererProps, IDispatchProps, IOwnProps, {}>(
       const blockchainName = blockchainByName(account.blockchain)!.getTitle();
       dispatch(accounts.actions.exportPrivateKey(password, account.id))
         .then((privKey: string) => {
-          return dispatch(screen.actions.gotoScreen('paper-wallet', { address: account.address, privKey, blockchain: blockchainName }));
+          const paperWalletData = {
+            address: account.address,
+            privKey,
+            blockchain: blockchainName
+          };
+          return dispatch(screen.actions.gotoScreen('paper-wallet', paperWalletData));
         })
         .catch((err: any) => dispatch(screen.actions.showError(err)));
     },

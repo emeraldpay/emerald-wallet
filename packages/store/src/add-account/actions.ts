@@ -1,27 +1,27 @@
-import { BlockchainCode, Wallet } from '@emeraldwallet/core';
-import { ActionTypes, AddType, NextPageAction, SetBlockchainAction, SetTypeAction, ISetWalletAction } from './types';
+import { BlockchainCode } from '@emeraldwallet/core';
+import { ActionTypes, AddType, INextPageAction, ISetBlockchainAction, ISetTypeAction, ISetWalletAction } from './types';
 
-export function nextPage (): NextPageAction {
+export function nextPage (): INextPageAction {
   return {
     type: ActionTypes.NEXT_PAGE
   };
 }
 
-export function start (wallet: Wallet): ISetWalletAction {
+export function start (walletId: string): ISetWalletAction {
   return {
-    type: ActionTypes.SET_WALLET,
-    value: wallet.id
+    type: ActionTypes.START,
+    value: walletId
   };
 }
 
-export function setBlockchain (code?: BlockchainCode): SetBlockchainAction {
+export function setBlockchain (code?: BlockchainCode): ISetBlockchainAction {
   return {
     type: ActionTypes.SELECT_BLOCKCHAIN,
     value: code
   };
 }
 
-export function setType (type?: AddType): SetTypeAction {
+export function setType (type?: AddType): ISetTypeAction {
   return {
     type: ActionTypes.SELECT_TYPE,
     value: type

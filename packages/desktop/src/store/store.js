@@ -123,7 +123,7 @@ function newWalletVersionCheck() {
 /**
  * Listen to IPC channel 'store' and dispatch action to redux store
  */
-export function electronToStore() {
+function listenElectron() {
   return (dispatch) => {
     log.debug('Running launcher listener for Redux');
     ipcRenderer.on('store', (event, action) => {
@@ -137,25 +137,26 @@ export const start = () => {
   try {
     store.dispatch(application.actions.readConfig());
     store.dispatch(settings.actions.loadSettings());
+    store.dispatch(listenElectron());
   } catch (e) {
     log.error(e);
   }
-  store.dispatch(electronToStore());
   getInitialScreen();
   newWalletVersionCheck();
 };
 
-function checkStatus() {
-  function checkServiceStatus() {
-    // hack to make some stuff work in storybook: @shanejonas
-    if (!ipcRenderer) {
-      return;
-    }
-    ipcRenderer.send('get-status');
-  }
-
-  setTimeout(checkServiceStatus, 2000);
-}
+// @deprecated
+// function checkStatus() {
+//   function checkServiceStatus() {
+//     // hack to make some stuff work in storybook: @shanejonas
+//     if (!ipcRenderer) {
+//       return;
+//     }
+//     ipcRenderer.send('get-status');
+//   }
+//
+//   setTimeout(checkServiceStatus, 2000);
+// }
 
 export function screenHandlers() {
   let prevScreen = null;
@@ -197,6 +198,10 @@ function getInitialScreen() {
 Promise
   .all([onceBlockchainConnected(store)])
   .then(startSync);
-checkStatus();
+
+// @deprecated
+// checkStatus();
+
 screenHandlers();
+
 ipcRenderer.send('emerald-ready');
