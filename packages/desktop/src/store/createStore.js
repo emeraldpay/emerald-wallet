@@ -46,7 +46,7 @@ export const createStore = (_api, backendApi) => {
   sagaMiddleware.run(ledger.sagas.root, _api);
   sagaMiddleware.run(addressBook.sagas.root, backendApi);
   sagaMiddleware.run(txhistory.sagas.root, _api);
-  sagaMiddleware.run(tokens.sagas.root, _api);
+  sagaMiddleware.run(tokens.sagas.root, backendApi);
   sagaMiddleware.run(wallet.sagas.root, _api);
   sagaMiddleware.run(settings.sagas.root);
   sagaMiddleware.run(accounts.sagas.root, _api);

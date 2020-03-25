@@ -3,6 +3,7 @@ import { loadTransactions2, storeTransactions2 } from '@emeraldwallet/history-st
 import { ipcMain } from 'electron';
 import * as os from 'os';
 import Application from './Application';
+import { tokenContract } from './erc20';
 
 export function setIpcHandlers (app: Application) {
 
@@ -50,7 +51,14 @@ export function setIpcHandlers (app: Application) {
   });
 
   ipcMain.handle(Commands.LOAD_TX_HISTORY, (event: any, blockchain: any) => {
-    const result = loadTransactions2(blockchain);
-    return Promise.resolve(result);
+    return loadTransactions2(blockchain);
+  });
+
+  // ERC20
+  ipcMain.handle(Commands.ERC20_GET_BALANCE, async (event: any, blockchain: any, tokenId: string, address: string) => {
+
+    // Call Erc20 contract to request balance for address
+    const data = tokenContract.functionToData('balanceOf', { _owner: address });
+    return app.rpc.chain(blockchain).eth.call({ to: tokenId, data });
   });
 }

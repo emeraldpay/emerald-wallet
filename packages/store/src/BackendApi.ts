@@ -21,4 +21,8 @@ export default class BackendApi implements IBackendApi {
   public getAddressBookItems = (blockchain: BlockchainCode): Promise<AddressBookItem[]> => {
     return ipcRenderer.invoke(Commands.GET_ADDR_BOOK_ITEMS, blockchain);
   }
+
+  public getErc20Balance = (blockchain: BlockchainCode, tokenId: string, address: string): Promise<string> => {
+    return ipcRenderer.invoke(Commands.ERC20_GET_BALANCE, blockchain, tokenId, address);
+  }
 }

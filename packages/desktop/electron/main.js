@@ -99,13 +99,18 @@ app.on('ready', () => {
 
   serverConnect.init(process.versions);
 
-  log.info('... create window');
+  log.info('... Creating RPC connections to blockchains');
+  const rpcConns = serverConnect.connectTo(apiMode.chains);
+
+  log.info('... Create main window');
   const browserWindow = getMainWindow(options);
+
+  log.info('... Run Application');
+  application.run(browserWindow.webContents, apiAccess, apiMode, vault.getProvider(), rpcConns);
+
   onceReady(() => {
     sendMode(browserWindow.webContents, apiMode);
   });
-
-  application.run(browserWindow.webContents, apiAccess, apiMode, vault.getProvider());
 
   // Run IPC listeners
   ipc({ settings });

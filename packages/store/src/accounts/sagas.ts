@@ -5,7 +5,7 @@ import { ipcRenderer } from 'electron';
 import { SagaIterator } from 'redux-saga';
 import * as screen from '../screen';
 import { requestTokensBalances } from '../tokens/actions';
-import { fetchErc20BalancesAction, setWalletsAction, setLoadingAction, walletCreatedAction } from './actions';
+import { fetchErc20BalancesAction, setLoadingAction, setWalletsAction, walletCreatedAction } from './actions';
 import { allAccounts } from './selectors';
 import { ActionTypes, IFetchErc20BalancesAction } from './types';
 

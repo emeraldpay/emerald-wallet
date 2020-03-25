@@ -44,8 +44,10 @@
     ]
   },
   "dependencies": {
+    "@emeraldplatform/contracts": "0.5.1",
     "@emeraldplatform/eth": "0.5.1",
     "@emeraldwallet/core": "^2.1.2",
+    "@emeraldwallet/erc20": "^2.1.2",
     "@emeraldwallet/history-store": "^2.1.2",
     "@emeraldwallet/services": "^2.1.2",
     "devtron": "^1.4.0",

@@ -10,5 +10,7 @@ export enum Commands {
 
   // Transaction history
   PERSIST_TX_HISTORY = 'persist-tx-history',
-  LOAD_TX_HISTORY = 'load-tx-history'
+  LOAD_TX_HISTORY = 'load-tx-history',
+
+  ERC20_GET_BALANCE = 'get-erc20-balance'
 }

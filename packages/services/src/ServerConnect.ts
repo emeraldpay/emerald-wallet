@@ -6,9 +6,10 @@ import {
   DefaultJsonRpc, HttpTransport, RevalidatingJsonRpc, RotatingJsonRpc, VerifyingJsonRpc
 } from '@emeraldplatform/rpc';
 import { IServerConnect, IVault } from '@emeraldwallet/core';
+import * as os from 'os';
+import ChainRpcConnections from './ChainRpcConnections';
 import GrpcTransport from './transports/GrpcTransport';
 import HttpTransportAdapter from './transports/HttpTransport';
-import * as os from 'os';
 
 const CHAIN_VERIFY: {[key: string]: any} = {
   etc: [
@@ -56,6 +57,16 @@ class ServerConnect implements IServerConnect {
 
   public createHttpTransport (url: string) {
     return new HttpTransportAdapter(new HttpTransport(url, this.headers));
+  }
+
+  public connectTo (chains: any): ChainRpcConnections {
+    const conns = new ChainRpcConnections();
+    chains.forEach((c: any) => {
+      const chainCode = c.toLowerCase();
+      conns.add(chainCode, this.connectEthChain(chainCode));
+      this.log.info(`Creating connection to ${chainCode}`);
+    });
+    return conns;
   }
 
   public connectEthChain (name: string): null | EthRpc {

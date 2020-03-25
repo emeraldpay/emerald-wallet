@@ -1,4 +1,5 @@
 export { default as ServerConnect } from './ServerConnect';
+export { default as ChainRpcConnections } from './ChainRpcConnections';
 export { ChainListener } from './ChainListener';
 export { AddressListener } from './AddressListener';
 export {

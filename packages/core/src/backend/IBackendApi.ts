@@ -11,4 +11,7 @@ export default interface IBackendApi {
   removeAddressBookItem: (blockchain: BlockchainCode, address: string) => Promise<boolean>;
 
   // Transactions History
+
+  // ERC20
+  getErc20Balance: (blockchain: BlockchainCode, tokenId: string, address: string) => Promise<string>;
 }
