@@ -13,9 +13,9 @@ import {
   tokens,
   wallet,
   settings,
-  rootReducer
+  rootReducer,
+  reduxLogger
 } from '@emeraldwallet/store';
-import reduxLogger from '../utils/redux-logger';
 import reduxMiddleware from './middleware';
 
 /**
@@ -42,11 +42,12 @@ export const createStore = (_api, backendApi) => {
     applyMiddleware(...storeMiddleware)
   );
 
-  sagaMiddleware.run(blockchains.sagas.root, _api);
-  sagaMiddleware.run(ledger.sagas.root, _api);
+  sagaMiddleware.run(blockchains.sagas.root, backendApi);
   sagaMiddleware.run(addressBook.sagas.root, backendApi);
-  sagaMiddleware.run(txhistory.sagas.root, _api);
   sagaMiddleware.run(tokens.sagas.root, backendApi);
+
+  sagaMiddleware.run(ledger.sagas.root, _api);
+  sagaMiddleware.run(txhistory.sagas.root, _api);
   sagaMiddleware.run(wallet.sagas.root, _api);
   sagaMiddleware.run(settings.sagas.root);
   sagaMiddleware.run(accounts.sagas.root, _api);

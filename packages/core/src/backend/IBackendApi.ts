@@ -12,6 +12,7 @@ export default interface IBackendApi {
 
   // Transactions History
 
-  // ERC20
+  // ETH chains
   getErc20Balance: (blockchain: BlockchainCode, tokenId: string, address: string) => Promise<string>;
+  getGasPrice: (blockchain: BlockchainCode) => Promise<number>;
 }

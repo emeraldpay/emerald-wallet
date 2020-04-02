@@ -38,3 +38,4 @@ export {
 
 export { default as rootReducer } from './root-reducer';
 export { default as BackendApi } from './BackendApi';
+export { default as reduxLogger } from './redux-logger';

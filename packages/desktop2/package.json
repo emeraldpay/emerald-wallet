@@ -1,0 +1,90 @@
+{
+  "name": "@emeraldwallet/desktop2",
+  "productName": "EmeraldWallet",
+  "contributors": [
+    "Igor Artamonov <splix@etcdevteam.com>",
+    "Yuriy Gagarin <gagarin55@protonmail.com>"
+  ],
+  "version": "2.1.2",
+  "description": "Emerald - Cryptocurrency Wallet",
+  "keywords": [
+    "ethereum",
+    "ethereum classic",
+    "wallet",
+    "cryptocurrency",
+    "blockchain"
+  ],
+  "author": "gagarin55 <gagarin55@protonmail.com>",
+  "homepage": "https://emeraldpay.io",
+  "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "public"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/emeraldpay/emerald-wallet.git"
+  },
+  "scripts": {
+    "start": "yarn build && electron ./app/index.js",
+    "build": "rimraf app/ && webpack --config webpack.config.js",
+    "dist": "rimraf dist/ && electron-builder --publish never"
+  },
+  "bugs": {
+    "url": "https://github.com/gagarin55/emerald-wallet/issues"
+  },
+  "main": "app/index.js",
+  "devDependencies": {
+    "cross-env": "7.0.2",
+    "electron": "7.0.1",
+    "electron-builder": "22.1.0",
+    "html-webpack-plugin": "^4.0.4",
+    "rimraf": "2.6.3",
+    "ts-loader": "^6.2.2",
+    "webpack": "4.41.2",
+    "webpack-cli": "^3.3.11"
+  },
+  "dependencies": {
+    "react": "16.11.0",
+    "react-dom": "16.11.0"
+  },
+  "build": {
+    "directories": {
+      "buildResources": "resources"
+    },
+    "appId": "io.emeraldwallet.desktop",
+    "compression": "normal",
+    "asar": true,
+    "extraResources": [],
+    "mac": {
+      "category": "public.app-category.developer-tools"
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "tar.gz"
+      ]
+    },
+    "win": {
+      "icon": "resources/icon.ico"
+    },
+    "nsis": {
+      "oneClick": false
+    },
+    "dmg": {
+      "iconSize": 128,
+      "contents": [
+        {
+          "x": 180,
+          "y": 190
+        },
+        {
+          "x": 380,
+          "y": 190,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    }
+  }
+}

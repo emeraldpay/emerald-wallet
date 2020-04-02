@@ -1,4 +1,4 @@
-import { AddressBookService, Commands } from '@emeraldwallet/core';
+import { AddressBookService, BlockchainCode, Commands } from '@emeraldwallet/core';
 import { loadTransactions2, storeTransactions2 } from '@emeraldwallet/history-store';
 import { ipcMain } from 'electron';
 import * as os from 'os';
@@ -60,5 +60,10 @@ export function setIpcHandlers (app: Application) {
     // Call Erc20 contract to request balance for address
     const data = tokenContract.functionToData('balanceOf', { _owner: address });
     return app.rpc.chain(blockchain).eth.call({ to: tokenId, data });
+  });
+
+  ipcMain.handle(Commands.GET_GAS_PRICE, async (event: any, blockchain: BlockchainCode) => {
+    const gasPrice = await app.rpc.chain(blockchain).eth.gasPrice();
+    return gasPrice.toNumber();
   });
 }

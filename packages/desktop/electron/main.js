@@ -14,7 +14,6 @@ const { app, ipcMain, session } = require('electron'); // eslint-disable-line im
 const path = require('path'); // eslint-disable-line
 
 const { LedgerApi } = require('@emeraldwallet/ledger');
-const ipc = require('./ipc');
 const log = require('./logger');
 const { startProtocolHandler } = protocol;
 const {
@@ -112,8 +111,6 @@ app.on('ready', () => {
     sendMode(browserWindow.webContents, apiMode);
   });
 
-  // Run IPC listeners
-  ipc({ settings });
 
   app.on('quit', () => {
     application.stop();
