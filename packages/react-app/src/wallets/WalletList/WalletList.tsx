@@ -70,11 +70,11 @@ export default connect(
     };
   },
   (dispatch, ownProps) => ({
-    createTx: (account: Wallet) => {
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, account));
+    createTx: (wallet: Wallet) => {
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, wallet));
     },
-    openWallet: (account: Wallet) => {
-      dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, account));
+    openWallet: (wallet: Wallet) => {
+      dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, wallet.id));
     },
     showReceiveDialog: (account: Wallet) => {
       // TODO vault v3

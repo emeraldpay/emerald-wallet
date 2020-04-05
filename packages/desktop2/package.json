@@ -32,7 +32,7 @@
   "bugs": {
     "url": "https://github.com/gagarin55/emerald-wallet/issues"
   },
-  "main": "app/index.js",
+  "main": "index.js",
   "devDependencies": {
     "cross-env": "7.0.2",
     "electron": "7.0.1",
@@ -51,6 +51,16 @@
     "directories": {
       "buildResources": "resources"
     },
+    "files": [
+      {
+        "from": "app",
+        "to": ".",
+        "filter": [
+          "**/*"
+        ]
+      },
+      "package.json"
+    ],
     "appId": "io.emeraldwallet.desktop",
     "compression": "normal",
     "asar": true,

@@ -1,11 +1,11 @@
+import { Add } from '@emeraldplatform/ui-icons';
 import { screen } from '@emeraldwallet/store';
-import { DashboardMenu as Menu } from '@emeraldwallet/ui';
 import { IconButton } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/core/styles';
-import { Add } from '@emeraldplatform/ui-icons';
 import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
+import Menu from './DashboardMenu';
 
 const { gotoScreen, showDialog } = screen.actions;
 const styles = createStyles({
@@ -25,9 +25,7 @@ const styles = createStyles({
 
 export interface IHeaderProps {
   generate: any;
-  importJson: any;
   importLedger: any;
-  importPrivateKey: any;
   importMnemonic: any;
   addToken?: any;
   createMnemonic: any;
@@ -37,9 +35,9 @@ export interface IHeaderProps {
   onCreateWallet?: any;
 }
 
-export function Header (props: IHeaderProps & WithTranslation) {
+export function DashboardHeader (props: IHeaderProps & WithTranslation) {
   const {
-      generate, importJson, importLedger, importPrivateKey, importMnemonic, addToken, createMnemonic,
+      generate, importLedger, importMnemonic, addToken, createMnemonic,
       showAddressBook, onCreateWallet
     } = props;
   const { t, classes } = props;
@@ -57,9 +55,7 @@ export function Header (props: IHeaderProps & WithTranslation) {
         </div>
         <Menu
           generate={generate}
-          importJson={importJson}
           importLedger={importLedger}
-          importPrivateKey={importPrivateKey}
           importMnemonic={importMnemonic}
           createMnemonic={createMnemonic}
           addressBook={showAddressBook}
@@ -70,7 +66,7 @@ export function Header (props: IHeaderProps & WithTranslation) {
   );
 }
 
-const StyledHeader = withStyles(styles)(Header);
+const StyledHeader = withStyles(styles)(DashboardHeader);
 
 export default withTranslation()(
   connect(
@@ -84,12 +80,6 @@ export default withTranslation()(
       },
       createMnemonic: () => {
         dispatch(gotoScreen('new-mnemonic'));
-      },
-      importJson: () => {
-        dispatch(gotoScreen('importjson'));
-      },
-      importPrivateKey: () => {
-        dispatch(gotoScreen('import-private-key'));
       },
       importLedger: () => {
         dispatch(gotoScreen('add-from-ledger'));

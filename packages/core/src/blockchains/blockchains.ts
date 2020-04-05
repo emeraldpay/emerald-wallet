@@ -59,26 +59,26 @@ export function ethereumByChainId (id?: number): IBlockchain | undefined {
 }
 
 export function blockchainById (id: number): IBlockchain | undefined {
-  if (id == 100) {
+  if (id === 100) {
     return Blockchains[BlockchainCode.ETH];
   }
-  if (id == 101) {
+  if (id === 101) {
     return Blockchains[BlockchainCode.ETC];
   }
-  if (id == 10002) {
+  if (id === 10002) {
     return Blockchains[BlockchainCode.Kovan];
   }
   return undefined;
 }
 
 export function blockchainCodeToId (code: BlockchainCode): number {
-  if (code == BlockchainCode.ETH) {
+  if (code === BlockchainCode.ETH) {
     return 100;
   }
-  if (code == BlockchainCode.ETC) {
+  if (code === BlockchainCode.ETC) {
     return 101;
   }
-  if (code == BlockchainCode.Kovan) {
+  if (code === BlockchainCode.Kovan) {
     return 10002;
   }
   throw Error('Unsupported blockchain: ' + code);

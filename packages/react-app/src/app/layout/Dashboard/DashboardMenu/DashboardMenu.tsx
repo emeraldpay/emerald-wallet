@@ -7,6 +7,7 @@ import {
   Ledger as LedgerIcon,
   Token1 as TokenIcon
 } from '@emeraldplatform/ui-icons';
+import { Button } from '@emeraldwallet/ui';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -14,7 +15,6 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Popover from '@material-ui/core/Popover';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
-import Button from '../../common/Button';
 
 const styles = (theme?: any) => ({
   buttonText: {
@@ -22,12 +22,10 @@ const styles = (theme?: any) => ({
   }
 });
 
-interface Props {
+interface IMenuProps {
   addToken?: any;
   generate?: any;
-  importJson?: any;
   importLedger?: any;
-  importPrivateKey?: any;
   importMnemonic?: any;
   createMnemonic?: any;
   addressBook?: any;
@@ -36,20 +34,20 @@ interface Props {
   classes?: any;
 }
 
-interface State {
+interface IMenuState {
   open: boolean;
   anchorEl?: any;
 }
 
-class DashboardMenu extends React.Component<Props, State> {
-  constructor (props) {
+class DashboardMenu extends React.Component<IMenuProps, IMenuState> {
+  constructor (props: IMenuProps) {
     super(props);
     this.state = {
       open: false
     };
   }
 
-  public openMenu = (event) => {
+  public openMenu = (event: any) => {
     // This prevents ghost click.
     event.preventDefault();
 
@@ -76,7 +74,7 @@ class DashboardMenu extends React.Component<Props, State> {
 
   public render () {
     const {
-      generate, importJson, importLedger, importPrivateKey, importMnemonic, createMnemonic, addressBook
+      generate, importLedger, importMnemonic, createMnemonic, addressBook
     } = this.props;
     const {
       style, classes
@@ -118,18 +116,18 @@ class DashboardMenu extends React.Component<Props, State> {
               </ListItemIcon>
               <ListItemText primary={t('accounts.add.mnemonic.title')} secondary={t('accounts.add.mnemonic.subtitle')} />
             </ListItem>
-            <ListItem button={true} onClick={importJson}>
-              <ListItemIcon>
-                <DownloadIcon />
-              </ListItemIcon>
-              <ListItemText primary={t('accounts.add.import.title')} secondary={t('accounts.add.import.subtitle')} />
-            </ListItem>
-            <ListItem button={true} onClick={importPrivateKey}>
-              <ListItemIcon>
-                <KeyIcon />
-              </ListItemIcon>
-              <ListItemText primary={t('accounts.add.importPrivateKey.title')} secondary={t('accounts.add.importPrivateKey.subtitle')} />
-            </ListItem>
+            {/*<ListItem button={true} onClick={importJson}>*/}
+            {/*  <ListItemIcon>*/}
+            {/*    <DownloadIcon />*/}
+            {/*  </ListItemIcon>*/}
+            {/*  <ListItemText primary={t('accounts.add.import.title')} secondary={t('accounts.add.import.subtitle')} />*/}
+            {/*</ListItem>*/}
+            {/*<ListItem button={true} onClick={importPrivateKey}>*/}
+            {/*  <ListItemIcon>*/}
+            {/*    <KeyIcon />*/}
+            {/*  </ListItemIcon>*/}
+            {/*  <ListItemText primary={t('accounts.add.importPrivateKey.title')} secondary={t('accounts.add.importPrivateKey.subtitle')} />*/}
+            {/*</ListItem>*/}
             <ListItem button={true} onClick={importMnemonic}>
               <ListItemIcon>
                 <DownloadIcon />

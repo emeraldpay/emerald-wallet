@@ -28,24 +28,24 @@ export interface IScreenState {
   dialogItem: any | null;
 }
 
-export interface OpenAction {
+export interface IOpenAction {
   type: ActionTypes.OPEN;
   screen: string | Pages;
   item: any;
 }
 
-export interface ErrorAction {
+export interface IErrorAction {
   type: ActionTypes.ERROR;
   error: any;
 }
 
-export interface DialogAction {
+export interface IDialogAction {
   type: ActionTypes.DIALOG;
   value: any;
   item: any;
 }
 
-export interface ShowNotificationAction {
+export interface IShowNotificationAction {
   type: ActionTypes.NOTIFICATION_SHOW;
   message: any;
   actionToDispatchOnActionClick: any;
@@ -54,29 +54,29 @@ export interface ShowNotificationAction {
   actionText: any;
 }
 
-export interface CloseNotificationAction {
+export interface ICloseNotificationAction {
   type: ActionTypes.NOTIFICATION_CLOSE;
 }
 
-export interface GoBackAction {
+export interface IGoBackAction {
   type: ActionTypes.GO_BACK;
 }
 
-export interface OpenLinkAction {
+export interface IOpenLinkAction {
   type: ActionTypes.OPEN_LINK;
   linkUrl: any;
 }
 
-export interface GoHomeAction {
+export interface IGoHomeAction {
   type: ActionTypes.GO_HOME;
 }
 
 export type ScreenAction =
-  | OpenAction
-  | ErrorAction
-  | DialogAction
-  | GoBackAction
-  | OpenLinkAction
-  | ShowNotificationAction
-  | CloseNotificationAction
-  | GoHomeAction;
+  | IOpenAction
+  | IErrorAction
+  | IDialogAction
+  | IGoBackAction
+  | IOpenLinkAction
+  | IShowNotificationAction
+  | ICloseNotificationAction
+  | IGoHomeAction;

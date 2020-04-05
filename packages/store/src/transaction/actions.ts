@@ -104,7 +104,7 @@ export function signTransaction (
     blockchain
   };
 
-  return (dispatch, getState, api) => {
+  return (dispatch: any, getState, api) => {
     return getNonce(api, blockchain, from)
       .then(withNonce(originalTx))
       .then((tx: IStoredTransaction) => {

@@ -1,6 +1,5 @@
 import { fromJS } from 'immutable';
-import { ledger, screen } from '@emeraldwallet/store';
-import { createStore } from './createStore';
+import { ledger, screen, createStore } from '@emeraldwallet/store';
 
 const apiMock = {
   vault: {}

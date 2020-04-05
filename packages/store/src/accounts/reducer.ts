@@ -26,9 +26,12 @@ function onLoading (state: IAccountsState, action: ISetLoadingAction): IAccounts
   };
 }
 
-function onLoaded (state: IAccountsState, action: IWalletsLoaded): IAccountsState {
+function onWalletsLoaded (state: IAccountsState, action: IWalletsLoaded): IAccountsState {
   const wallets = action.payload;
-  return { ...state, wallets };
+  return {
+    ...state,
+    wallets
+  };
 }
 
 type Updater<T> = (source: T) => T;
@@ -149,7 +152,7 @@ export function reducer (
     case ActionTypes.LOADING:
       return onLoading(state, action);
     case ActionTypes.SET_LIST:
-      return onLoaded(state, action);
+      return onWalletsLoaded(state, action);
     case ActionTypes.CREATE_WALLET_SUCCESS:
       return onWalletCreated(state, action);
     case ActionTypes.SET_TXCOUNT:

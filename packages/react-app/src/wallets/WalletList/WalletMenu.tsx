@@ -81,7 +81,7 @@ export default connect<IRenderProps, IDispatchProps, IOwnProps, IState>(
   (dispatch, ownProps) => {
     return {
       showDetails: () => {
-        dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.wallet));
+        dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.wallet.id));
       },
       onAddAccount: () => {
         dispatch(addAccount.actions.start(ownProps.wallet.id));

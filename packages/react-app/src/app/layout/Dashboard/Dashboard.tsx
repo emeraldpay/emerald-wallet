@@ -1,7 +1,7 @@
 import * as React from 'react';
-import TxHistory from '../../transactions/TxHistory';
-import WalletList from '../../wallets/WalletList';
-import Header from './Header';
+import WalletList from '../../../wallets/WalletList';
+// import TxHistory from '../../transactions/TxHistory';
+import Header from './DashboardHeader';
 
 const Dashboard = () => {
   return (

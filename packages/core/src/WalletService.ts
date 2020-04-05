@@ -21,6 +21,10 @@ export default class WalletService {
     return this.vault.listWallets();
   }
 
+  public getWallet = (walletId: any): Wallet | undefined => {
+    return this.vault.getWallet(walletId);
+  }
+
   public createNewWallet = (name: string): Wallet => {
     const walletId = this.vault.addWallet(name);
     const wallet = this.vault.getWallet(walletId);

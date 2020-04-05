@@ -3,12 +3,12 @@ import { screen } from '@emeraldwallet/store';
 import { CircularProgress } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import CreateWallet from '../../create-wallet/CreateWallet';
+import CreateWallet from '../../../create-wallet/CreateWallet';
 import {
   AddContact, BroadcastTx, ContactList as AddressBook, CreateAccountWizard, CreateTransaction,
-  ExportPaperWallet, GenerateAccount, Home, ImportLedgerAccount, ImportMnemonic, ImportPrivateKey,
+  ExportPaperWallet, GenerateAccount, Home, ImportLedgerAccount, ImportMnemonic,
   MnemonicWizard, PaperWallet, Settings, TxDetails, WalletDetails, Welcome
-} from '../../index';
+} from '../../../index';
 
 const log = Logger.forCategory('screen');
 
@@ -31,7 +31,7 @@ const Screen = (props: IScreenProps) => {
   if (props.screen === screen.Pages.HOME) {
     return (<Home />);
   }
-  if (props.screen === 'address-book') {
+  if (props.screen === screen.Pages.ADDRESS_BOOK) {
     return <AddressBook />;
   }
   if (props.screen === 'add-address') {
@@ -44,7 +44,7 @@ const Screen = (props: IScreenProps) => {
     return <ImportLedgerAccount />;
   }
   if (props.screen === screen.Pages.WALLET) {
-    return <WalletDetails wallet={props.screenItem}/>;
+    return <WalletDetails walletId={props.screenItem}/>;
   }
   if (props.screen === screen.Pages.TX_DETAILS) {
     return <TxDetails hash={props.screenItem.hash} />;
@@ -87,12 +87,7 @@ const Screen = (props: IScreenProps) => {
   // if (props.screen === 'landing-importjson') {
   //   return <ImportJson backLabel='Back'/>;
   // }
-  if (props.screen === 'import-private-key') {
-    return <ImportPrivateKey />;
-  }
-  if (props.screen === 'landing-import-private-key') {
-    return <ImportPrivateKey />;
-  }
+
   if (props.screen === 'import-mnemonic') {
     return <ImportMnemonic />;
   }

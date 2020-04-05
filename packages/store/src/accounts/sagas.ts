@@ -1,6 +1,7 @@
-import { blockchainById, BlockchainCode, IApi, WalletService } from '@emeraldwallet/core';
+import { EthereumAccount, WalletAccount } from '@emeraldpay/emerald-vault-core';
+import { blockchainById, BlockchainCode, IApi, IBackendApi, WalletService } from '@emeraldwallet/core';
 import { registry } from '@emeraldwallet/erc20';
-import { call, put, select, takeLatest } from '@redux-saga/core/effects';
+import { all, call, put, select, takeEvery, takeLatest } from '@redux-saga/core/effects';
 import { ipcRenderer } from 'electron';
 import { SagaIterator } from 'redux-saga';
 import * as screen from '../screen';
@@ -60,11 +61,33 @@ function* createWallet (api: IApi, action: any): SagaIterator {
   const service = new WalletService(api.vault);
   const wallet = yield call(service.createNewWallet, name);
   yield put(walletCreatedAction(wallet));
-  yield put(screen.actions.gotoScreen(screen.Pages.WALLET, wallet));
+  yield put(screen.actions.gotoScreen(screen.Pages.WALLET, wallet.id));
 }
 
-export function* root (api: IApi) {
-  yield takeLatest(ActionTypes.FETCH_ERC20_BALANCES, fetchErc20Balances, api);
-  yield takeLatest(ActionTypes.LOAD_WALLETS, loadAllWallets, api);
-  yield takeLatest(ActionTypes.CREATE_WALLET, createWallet, api);
+function* afterAccountImported (api: IApi, backendApi: IBackendApi, action: any): SagaIterator {
+  const { walletId, accountId } = action.payload;
+
+  const service = new WalletService(api.vault);
+
+  const wallet = yield call(service.getWallet, walletId);
+  const account: WalletAccount = wallet.accounts.find((a: WalletAccount) => a.id === accountId);
+
+  // subscribe for balance
+  const chainCode = blockchainById(account.blockchain)!.params.code;
+  const ethAcc = account as EthereumAccount;
+  ipcRenderer.send('subscribe-balance', chainCode, [ethAcc.address]);
+
+  // fetch erc20 tokens
+  const _tokens = registry.all()[chainCode] || [];
+  yield put(requestTokensBalances(chainCode, _tokens, ethAcc.address));
+}
+
+export function* root (api: IApi, backendApi: IBackendApi) {
+  yield all([
+    takeLatest(ActionTypes.FETCH_ERC20_BALANCES, fetchErc20Balances, api),
+    takeLatest(ActionTypes.LOAD_WALLETS, loadAllWallets, api),
+    takeLatest(ActionTypes.CREATE_WALLET, createWallet, api),
+    takeEvery(ActionTypes.ACCOUNT_IMPORTED, afterAccountImported, api, backendApi)
+  ]);
+
 }

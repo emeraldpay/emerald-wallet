@@ -1,36 +1,31 @@
+import { IApi, IBackendApi } from '@emeraldwallet/core';
+import { applyMiddleware, createStore as createReduxStore } from 'redux';
+import createSagaMiddleware from 'redux-saga';
 import thunkMiddleware from 'redux-thunk';
 import {
-  createStore as createReduxStore,
-  applyMiddleware
-} from 'redux';
-import createSagaMiddleware from 'redux-saga';
-import {
   accounts,
+  addressBook,
   blockchains,
   ledger,
-  addressBook,
-  txhistory,
-  tokens,
-  wallet,
-  settings,
+  reduxLogger,
   rootReducer,
-  reduxLogger
-} from '@emeraldwallet/store';
-import reduxMiddleware from './middleware';
+  settings,
+  tokens,
+  txhistory,
+  wallet
+} from './';
 
 /**
  * Creates Redux store with API as dependency injection.
  *
  * Injecting api allows to write unit tests.
  *
- * @param _api
  */
-export const createStore = (_api, backendApi) => {
+export const createStore = (_api: IApi, backendApi: IBackendApi) => {
   const sagaMiddleware = createSagaMiddleware();
   const storeMiddleware = [
     sagaMiddleware,
-    reduxMiddleware.promiseCatchAll,
-    thunkMiddleware.withExtraArgument(_api),
+    thunkMiddleware.withExtraArgument(_api)
   ];
 
   if (process.env.NODE_ENV !== 'test') {
@@ -47,9 +42,9 @@ export const createStore = (_api, backendApi) => {
   sagaMiddleware.run(tokens.sagas.root, backendApi);
 
   sagaMiddleware.run(ledger.sagas.root, _api);
-  sagaMiddleware.run(txhistory.sagas.root, _api);
+  sagaMiddleware.run(txhistory.sagas.root);
   sagaMiddleware.run(wallet.sagas.root, _api);
   sagaMiddleware.run(settings.sagas.root);
-  sagaMiddleware.run(accounts.sagas.root, _api);
+  sagaMiddleware.run(accounts.sagas.root, _api, backendApi);
   return store;
 };

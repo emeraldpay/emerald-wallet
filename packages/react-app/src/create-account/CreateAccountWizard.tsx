@@ -1,11 +1,12 @@
 import { BlockchainCode, Wallet } from '@emeraldwallet/core';
-import { addAccount, accounts, IState, screen } from '@emeraldwallet/store';
+import { accounts, addAccount, IState, screen } from '@emeraldwallet/store';
 import { Button } from '@emeraldwallet/ui';
 import { Card, CardActions, CardContent, CardHeader, Grid, Step, StepLabel, Stepper } from '@material-ui/core';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import ImportJson from './ImportJson';
+import ImportPrivateKey from './ImportPrivateKey';
 import SelectBlockchain from './SelectBlockchain';
 import SelectType from './SelectType';
 import SelectWallet from './SelectWallet';
@@ -46,16 +47,21 @@ const CreateAccountWizard = ((props: IRenderProps & IDispatchProps) => {
     </Stepper>
   );
 
+  let displayNextButton = true;
   let content = null;
-  if (page == 0) {
+  if (page === 0) {
     content = <SelectWallet wallet={props.wallet}/>;
-  } else if (page == 1) {
+  } else if (page === 1) {
     content = <SelectBlockchain />;
-  } else if (page == 2) {
+  } else if (page === 2) {
     content = <SelectType />;
-  } else if (page == 3) {
+  } else if (page === 3) {
     if (type === addAccount.AddType.IMPORT_JSON) {
       content = <ImportJson blockchain={props.blockchain!!} wallet={props.wallet} />;
+      displayNextButton = false;
+    } else if (type === addAccount.AddType.IMPORT_PRIVATE_KEY) {
+      content = <ImportPrivateKey blockchain={props.blockchain!!} wallet={props.wallet} />;
+      displayNextButton = false;
     }
   }
 
@@ -73,7 +79,14 @@ const CreateAccountWizard = ((props: IRenderProps & IDispatchProps) => {
       </CardContent>
       <CardActions>
         <Button label={'Cancel'} onClick={handleOnCancelClick}/>
-        <Button primary={true} onClick={nextPage} label={'Next'} icon={<NavigateNextIcon/>} />
+        {displayNextButton && (
+          <Button
+            primary={true}
+            onClick={nextPage}
+            label={'Next'}
+            icon={<NavigateNextIcon/>}
+          />
+          )}
       </CardActions>
     </Card>
   );

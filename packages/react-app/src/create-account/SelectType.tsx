@@ -7,27 +7,30 @@ import {
 import { addAccount, IState } from '@emeraldwallet/store';
 import { AddType } from '@emeraldwallet/store/lib/add-account';
 import {
-  Avatar, Divider,
+  Avatar,
+  Divider,
   FormControlLabel,
   Grid,
   List,
   ListItem,
-  ListItemAvatar, ListItemText,
+  ListItemAvatar,
+  ListItemText,
   Radio,
-  RadioGroup, SvgIcon,
+  RadioGroup,
+  SvgIcon,
   Typography
 } from '@material-ui/core';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-interface TypeDef {
+interface ITypeDef {
   code: addAccount.AddType;
   title: string;
   description: string;
 }
 
-const ETHEREUM_TYPES: TypeDef[] = [
+const ETHEREUM_TYPES: ITypeDef[] = [
   {
     code: AddType.GENERATE_PK,
     title: 'Generate Private Key',
@@ -51,15 +54,12 @@ const ETHEREUM_TYPES: TypeDef[] = [
   // },
 ];
 
-interface OwnProps {
-}
-
-interface RenderProps {
-  supportedTypes: TypeDef[];
+interface IRenderProps {
+  supportedTypes: ITypeDef[];
   type?: addAccount.AddType;
 }
 
-interface DispatchProps {
+interface IDispatchProps {
   selectType: (type?: addAccount.AddType) => void;
 }
 
@@ -79,7 +79,7 @@ function icon (type: AddType): JSX.Element {
   return <KeypairIcon />;
 }
 
-const SelectType = ((props: RenderProps & DispatchProps) => {
+const SelectType = ((props: IRenderProps & IDispatchProps) => {
   const { supportedTypes, type } = props;
   const { selectType } = props;
 
@@ -88,7 +88,8 @@ const SelectType = ((props: RenderProps & DispatchProps) => {
       <Grid item={true} xs={12}>
         <List>
           {supportedTypes.map((b,i) =>
-            <div key={b.code}>
+            (
+              <div key={b.code}>
               {i > 0 ? <Divider variant='inset' component='li' /> : null}
               <ListItem
                 alignItems='flex-start'
@@ -107,6 +108,7 @@ const SelectType = ((props: RenderProps & DispatchProps) => {
                 />
               </ListItem>
             </div>
+            )
           )}
         </List>
       </Grid>
@@ -114,7 +116,7 @@ const SelectType = ((props: RenderProps & DispatchProps) => {
   );
 });
 
-export default connect<RenderProps, DispatchProps, OwnProps, IState>(
+export default connect<IRenderProps, IDispatchProps, {}, IState>(
   (state, ownProps) => {
     return {
       supportedTypes: ETHEREUM_TYPES,

@@ -8,14 +8,14 @@ import {
   accounts,
   addressBook,
   settings,
-  application
+  application,
+  createStore
 } from '@emeraldwallet/store';
 import {ipcRenderer} from 'electron';
 import {startProtocolListener} from './protocol';
 import {Api, getConnector, getRemoteVault} from '../lib/rpc/api';
 import {intervalRates} from './config';
 import getWalletVersion from '../utils/get-wallet-version';
-import {createStore} from './createStore';
 
 import {
   onceBlockchainConnected,

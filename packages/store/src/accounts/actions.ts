@@ -86,22 +86,6 @@ export function loadAccountBalance (blockchain: BlockchainCode, address: string)
 //   };
 // }
 
-function addAccount (
-  api: IApi, dispatch: Dispatch<any>, walletId: vault.Uuid, add: vault.AddAccount
-) {
-  if (!walletId) {
-    throw Error('Wallet is not set');
-  }
-  const accountId = api.vault.addAccount(walletId, add);
-  const wallet = api.vault.getWallet(walletId)!;
-
-  dispatch(walletCreatedAction(wallet));
-
-  dispatch(loadWalletsAction()); // reload only current wallet
-  // loadAccountBalance(blockchainById(add.blockchain)!!.params.code, account.address);
-  return walletId;
-}
-
 export function createNewWalletAction (walletName: string): ICreateWalletAction {
   return {
     type: ActionTypes.CREATE_WALLET,
@@ -127,6 +111,16 @@ export function walletCreatedAction (wallet: any): IWalletCreatedAction {
   return {
     type: ActionTypes.CREATE_WALLET_SUCCESS,
     wallet
+  };
+}
+
+export function accountImportedAction (walletId: string, accountId: string) {
+  return {
+    type: ActionTypes.ACCOUNT_IMPORTED,
+    payload: {
+      walletId,
+      accountId
+    }
   };
 }
 
@@ -193,18 +187,47 @@ function readWalletFile (walletFile: Blob): Promise<any> {
   });
 }
 
+function addAccount (
+  api: IApi, dispatch: Dispatch<any>, walletId: vault.Uuid, add: vault.AddAccount
+) {
+  if (!walletId) {
+    throw Error('Wallet is not set');
+  }
+  const accountId = api.vault.addAccount(walletId, add);
+  const wallet = api.vault.getWallet(walletId)!;
+
+  dispatch(accountImportedAction(walletId, accountId));
+
+  return walletId;
+}
+
 export function importJson (
   walletId: vault.Uuid,
   blockchain: BlockchainCode,
   data: any
 ): Dispatched<IWalletCreatedAction> {
-  return (dispatch, getState, api) => {
-    addAccount(api, dispatch,
-      walletId, {
-        blockchain: blockchainCodeToId(blockchain),
-        type: 'ethereum-json',
-        key: JSON.stringify(data)
-      });
+  return (dispatch: any, getState, api: IApi) => {
+    addAccount(api, dispatch, walletId, {
+      blockchain: blockchainCodeToId(blockchain),
+      type: 'ethereum-json',
+      key: JSON.stringify(data)
+    });
+  };
+}
+
+export function importPk (
+  walletId: vault.Uuid,
+  blockchain: BlockchainCode,
+  pk: string,
+  password: string
+): Dispatched<IWalletCreatedAction> {
+  return (dispatch: any, getState, api: IApi) => {
+    addAccount(api, dispatch, walletId, {
+      blockchain: blockchainCodeToId(blockchain),
+      type: 'raw-pk-hex',
+      key: pk,
+      password
+    });
   };
 }
 
@@ -240,20 +263,6 @@ export function importWalletFile (
     return readWalletFile(file).then((data) => {
       return dispatch(importJson(wallet, blockchain, data));
     });
-  };
-}
-
-export function importPk (
-  blockchain: BlockchainCode, pk: string, password: string, name: string, description: string
-): Dispatched<IWalletCreatedAction> {
-  return (dispatch, getState, api) => {
-    createWalletWithAccount(api, dispatch,
-      blockchain, name, {
-        blockchain: blockchainCodeToId(blockchain),
-        type: 'raw-pk-hex',
-        key: pk,
-        password
-      });
   };
 }
 
