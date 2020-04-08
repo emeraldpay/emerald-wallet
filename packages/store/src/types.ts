@@ -9,6 +9,7 @@ import * as addressBook from './address-book';
 import { IAddressBookState } from './address-book/types';
 import * as application from './application';
 import { IBlockchainsState } from './blockchains/types';
+import * as conn from './conn/types';
 import { IScreenState } from './screen/types';
 import { ISettingsState } from './settings/types';
 import { ITokensState } from './tokens/types';
@@ -19,7 +20,7 @@ export interface IState {
   [accounts.moduleName]: IAccountsState;
   [addressBook.moduleName]: IAddressBookState;
   blockchains: IBlockchainsState;
-  conn: any;
+  [conn.moduleName]: any;
   ledger: any;
   screen: IScreenState;
   settings: ISettingsState;

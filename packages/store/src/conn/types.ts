@@ -1,5 +1,9 @@
 export const moduleName = 'conn';
 
+export interface IConnState {
+  status: string;
+}
+
 export enum ActionTypes {
   SET_STATUS = 'CONN/SET_STATUS'
 }

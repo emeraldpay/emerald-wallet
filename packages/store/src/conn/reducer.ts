@@ -1,13 +1,21 @@
-import { fromJS } from 'immutable';
-import { ActionTypes, ConnAction, ConnectionStatus, ISetStatusAction } from './types';
+import {
+  ActionTypes,
+  ConnAction,
+  ConnectionStatus,
+  IConnState,
+  ISetStatusAction
+} from './types';
 
-export const initialState = fromJS({
+export const initialState: IConnState = {
   status: ConnectionStatus.CONNECTED
-});
+};
 
 function onSetStatus (state: any, action: ISetStatusAction) {
   if (action.type === ActionTypes.SET_STATUS) {
-    return state.set('status', action.payload.status);
+    return {
+      ...state,
+      status: action.payload.status
+    };
   }
   return state;
 }

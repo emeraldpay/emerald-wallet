@@ -1,4 +1,4 @@
-import {BlockchainCode} from "@emeraldwallet/core";
+import { BlockchainCode } from '@emeraldwallet/core';
 
 export enum ActionTypes {
   OPEN_ACCOUNT_DETAILS = 'WALLET/OPEN_ACCOUNT_DETAILS'

@@ -1,5 +1,6 @@
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = [
   {
@@ -23,11 +24,13 @@ module.exports = [
     entry: './src/renderer/index.tsx',
     target: 'electron-renderer',
     devtool: 'source-map',
-    module: { rules: [{
+    module: {
+      rules: [{
         test: /\.ts(x?)$/,
         include: /src/,
-        use: [{ loader: 'ts-loader' }]
-      }] },
+        use: [{loader: 'ts-loader'}]
+      }]
+    },
     output: {
       path: __dirname + '/app',
       filename: 'renderer.js'
@@ -35,7 +38,13 @@ module.exports = [
     plugins: [
       new HtmlWebpackPlugin({
         template: './src/renderer/index.html'
-      })
-    ]
+      }),
+      new CopyWebpackPlugin([
+        {from: path.join(__dirname, 'resources/icons/512x512.png'), to: './icons/'}
+      ], {copyUnmodified: true}),
+    ],
+    resolve: {
+      extensions: ['.js', '.tsx', '.ts']
+    }
   }
 ];

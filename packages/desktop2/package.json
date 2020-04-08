@@ -25,7 +25,7 @@
     "url": "https://github.com/emeraldpay/emerald-wallet.git"
   },
   "scripts": {
-    "start": "yarn build && electron ./app/index.js",
+    "start": "yarn build && electron ./app",
     "build": "rimraf app/ && webpack --config webpack.config.js",
     "dist": "rimraf dist/ && electron-builder --publish never"
   },
@@ -34,6 +34,7 @@
   },
   "main": "index.js",
   "devDependencies": {
+    "copy-webpack-plugin": "^5.1.1",
     "cross-env": "7.0.2",
     "electron": "7.0.1",
     "electron-builder": "22.1.0",
@@ -44,6 +45,7 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
+    "@emeraldwallet/electron-app": "^2.1.2",
     "react": "16.11.0",
     "react-dom": "16.11.0"
   },

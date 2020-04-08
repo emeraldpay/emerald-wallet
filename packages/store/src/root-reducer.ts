@@ -24,7 +24,7 @@ const root = combineReducers<IState>({
   [accounts.moduleName]: accounts.reducer,
   blockchains: blockchains.reducer,
   screen: screen.reducer,
-  conn: connection.reducer,
+  [connection.moduleName]: connection.reducer,
   addAccount: addAccount.reducer,
   [transaction.moduleName]: transaction.reducer
 });

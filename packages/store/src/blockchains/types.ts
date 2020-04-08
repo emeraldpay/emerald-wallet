@@ -1,5 +1,4 @@
 import { Wei } from '@emeraldplatform/eth';
-import {BlockchainCode} from "@emeraldwallet/core";
 
 export const moduleName = 'blockchains';
 
