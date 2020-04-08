@@ -3,7 +3,7 @@ import { ChainRpcConnections, Services } from '@emeraldwallet/services';
 import { ipcMain } from 'electron';
 import { createServices } from '../createServices';
 import ElectronLogger from '../logging/ElectronLogger';
-import { setIpcHandlers } from './ipc';
+import { setIpcHandlers } from './ipc-handlers/ipc';
 import Settings from './Settings';
 
 Logger.setInstance(new ElectronLogger());

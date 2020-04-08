@@ -29,4 +29,27 @@ export default class BackendApi implements IBackendApi {
   public getGasPrice = (blockchain: BlockchainCode): Promise<number> => {
     return ipcRenderer.invoke(Commands.GET_GAS_PRICE, blockchain);
   }
+
+  public importEthereumJson = (
+    blockchain: BlockchainCode, walletId: string, json: any
+  ): Promise<any> => {
+    return ipcRenderer.invoke(Commands.ACCOUNT_IMPORT_ETHEREUM_JSON,
+      blockchain, walletId, json);
+  }
+
+  public importRawPrivateKey = (
+    blockchain: BlockchainCode, walletId: string, privateKey: string, password: string
+  ): Promise<any> => {
+    return ipcRenderer.invoke(Commands.ACCOUNT_IMPORT_PRIVATE_KEY,
+      blockchain, walletId, privateKey, password);
+  }
+
+  public persistTransactions = (blockchain: BlockchainCode, txs: any[]): Promise<void> => {
+    const request = txs.map((tx) => ({
+      ...tx,
+      gasPrice: (typeof tx.gasPrice === 'string') ? tx.gasPrice : tx.gasPrice.toString(),
+      value: (typeof tx.value === 'string') ? tx.value : tx.value.toString()
+    }));
+    return ipcRenderer.invoke(Commands.PERSIST_TX_HISTORY, blockchain, request);
+  }
 }

@@ -1,16 +1,16 @@
-import { Blockchains } from '@emeraldwallet/core';
-import { put, select, takeEvery } from 'redux-saga/effects';
+import { IBackendApi } from '@emeraldwallet/core';
+import { select, takeEvery } from 'redux-saga/effects';
 import { persistTransactions } from './actions';
 import { ActionTypes, IUpdateTxsAction } from './types';
 
-function* processUpdateTxs (action: IUpdateTxsAction) {
+function* processUpdateTxs (backendApi: IBackendApi, action: IUpdateTxsAction) {
   // Persist tx history
   const state = yield select();
   action.payload.forEach((tx) => {
-    persistTransactions(state, tx.blockchain);
+    persistTransactions(state, backendApi, tx.blockchain);
   });
 }
 
-export function* root () {
-  yield takeEvery(ActionTypes.UPDATE_TXS, processUpdateTxs);
+export function* root (backendApi: IBackendApi) {
+  yield takeEvery(ActionTypes.UPDATE_TXS, processUpdateTxs, backendApi);
 }

@@ -25,7 +25,7 @@ export const createStore = (_api: IApi, backendApi: IBackendApi) => {
   const sagaMiddleware = createSagaMiddleware();
   const storeMiddleware = [
     sagaMiddleware,
-    thunkMiddleware.withExtraArgument(_api)
+    thunkMiddleware.withExtraArgument({ api: _api, backendApi })
   ];
 
   if (process.env.NODE_ENV !== 'test') {
@@ -40,9 +40,8 @@ export const createStore = (_api: IApi, backendApi: IBackendApi) => {
   sagaMiddleware.run(blockchains.sagas.root, backendApi);
   sagaMiddleware.run(addressBook.sagas.root, backendApi);
   sagaMiddleware.run(tokens.sagas.root, backendApi);
-
   sagaMiddleware.run(ledger.sagas.root, _api);
-  sagaMiddleware.run(txhistory.sagas.root);
+  sagaMiddleware.run(txhistory.sagas.root, backendApi);
   sagaMiddleware.run(wallet.sagas.root, _api);
   sagaMiddleware.run(settings.sagas.root);
   sagaMiddleware.run(accounts.sagas.root, _api, backendApi);

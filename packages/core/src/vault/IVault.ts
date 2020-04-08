@@ -9,6 +9,8 @@ import { BlockchainCode } from '../blockchains';
 import Wallet from '../entities/Wallet';
 import { Account, Contact, TxSignRequest } from './types';
 
+
+
 export default interface IVault {
   listWallets (): Wallet[];
   addWallet (label?: string): Uuid;

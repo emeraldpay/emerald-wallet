@@ -13,5 +13,8 @@ export enum Commands {
   LOAD_TX_HISTORY = 'load-tx-history',
 
   ERC20_GET_BALANCE = 'get-erc20-balance',
-  GET_GAS_PRICE = 'get-gas-price'
+  GET_GAS_PRICE = 'get-gas-price',
+
+  ACCOUNT_IMPORT_ETHEREUM_JSON = 'import-json',
+  ACCOUNT_IMPORT_PRIVATE_KEY = 'import-private-key'
 }

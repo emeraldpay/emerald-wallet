@@ -1,4 +1,4 @@
-import { IApi } from '@emeraldwallet/core';
+import { IApi, IBackendApi } from '@emeraldwallet/core';
 import { Dispatch } from 'react';
 import { Action } from 'redux';
 import { ThunkAction } from 'redux-thunk';
@@ -7,12 +7,12 @@ import { IAccountsState } from './accounts/types';
 import { IAddAccountState } from './add-account/types';
 import * as addressBook from './address-book';
 import { IAddressBookState } from './address-book/types';
+import * as application from './application';
 import { IBlockchainsState } from './blockchains/types';
 import { IScreenState } from './screen/types';
 import { ISettingsState } from './settings/types';
 import { ITokensState } from './tokens/types';
 import { ITransactionState } from './transaction/types';
-import * as application from './application';
 
 export interface IState {
   [application.moduleName]: any;
@@ -29,6 +29,9 @@ export interface IState {
   addAccount?: IAddAccountState;
 }
 export type GetState = () => IState;
-export type Dispatched<T> = (dispatch: Dispatch<T | Dispatched<T>>, getState: GetState, api: IApi) => void;
+export interface IExtraArgument {
+  api: IApi; backendApi: IBackendApi;
+}
+export type Dispatched<T> = (dispatch: Dispatch<T | Dispatched<T>>, getState: GetState, extra: IExtraArgument) => void;
 
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, IState, null, Action<string>>;

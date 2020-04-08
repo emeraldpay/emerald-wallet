@@ -1,5 +1,4 @@
-import { EthereumAccount, WalletAccount } from '@emeraldpay/emerald-vault-core';
-import { blockchainById, BlockchainCode, IApi, IBackendApi, WalletService } from '@emeraldwallet/core';
+import { Account, BlockchainCode, IApi, IBackendApi, Wallet, WalletService } from '@emeraldwallet/core';
 import { registry } from '@emeraldwallet/erc20';
 import { all, call, put, select, takeEvery, takeLatest } from '@redux-saga/core/effects';
 import { ipcRenderer } from 'electron';
@@ -69,17 +68,16 @@ function* afterAccountImported (api: IApi, backendApi: IBackendApi, action: any)
 
   const service = new WalletService(api.vault);
 
-  const wallet = yield call(service.getWallet, walletId);
-  const account: WalletAccount = wallet.accounts.find((a: WalletAccount) => a.id === accountId);
+  const wallet: Wallet = yield call(service.getWallet, walletId);
+  const account: Account = wallet.accounts.find((a: Account) => a.id === accountId)!;
 
   // subscribe for balance
-  const chainCode = blockchainById(account.blockchain)!.params.code;
-  const ethAcc = account as EthereumAccount;
-  ipcRenderer.send('subscribe-balance', chainCode, [ethAcc.address]);
+  const chainCode = account.blockchain;
+  ipcRenderer.send('subscribe-balance', chainCode, [account.address]);
 
   // fetch erc20 tokens
   const _tokens = registry.all()[chainCode] || [];
-  yield put(requestTokensBalances(chainCode, _tokens, ethAcc.address));
+  yield put(requestTokensBalances(chainCode, _tokens, account.address!));
 }
 
 export function* root (api: IApi, backendApi: IBackendApi) {

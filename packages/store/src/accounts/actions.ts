@@ -5,11 +5,11 @@ import {
   BlockchainCode,
   blockchainCodeToId,
   blockchains,
-  IApi,
+  IApi, IBackendApi,
   Logger,
+  Wallet,
   WalletService
 } from '@emeraldwallet/core';
-import { Wallet } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 import { Dispatch } from 'react';
 import { dispatchRpcError } from '../screen/actions';
@@ -127,8 +127,8 @@ export function accountImportedAction (walletId: string, accountId: string) {
 export function createAccount (
   blockchain: BlockchainCode, passphrase: string, name: string = '', description: string = ''
 ): Dispatched<IWalletCreatedAction> {
-  return (dispatch, getState, api) => {
-    createWalletWithAccount(api, dispatch,
+  return (dispatch: any, getState, extra) => {
+    createWalletWithAccount(extra.api, dispatch,
        blockchain, name, {
          blockchain: blockchainCodeToId(blockchain),
          type: 'generate-random'
@@ -151,8 +151,8 @@ export function exportKeyFile (accountId: vault.AccountId): any {
 export function updateWallet (
   walletId: vault.Uuid, name: string, description: string
 ): Dispatched<IUpdateWalletAction> {
-  return (dispatch, getState, api) => {
-    if (api.vault.setWalletLabel(walletId, name)) {
+  return (dispatch: any, getState, extra) => {
+    if (extra.api.vault.setWalletLabel(walletId, name)) {
       dispatch({
         type: ActionTypes.WALLET_UPDATED,
         payload: {
@@ -187,31 +187,29 @@ function readWalletFile (walletFile: Blob): Promise<any> {
   });
 }
 
-function addAccount (
-  api: IApi, dispatch: Dispatch<any>, walletId: vault.Uuid, add: vault.AddAccount
-) {
-  if (!walletId) {
-    throw Error('Wallet is not set');
-  }
-  const accountId = api.vault.addAccount(walletId, add);
-  const wallet = api.vault.getWallet(walletId)!;
-
-  dispatch(accountImportedAction(walletId, accountId));
-
-  return walletId;
-}
+// function addAccount (
+//   api: IApi, dispatch: Dispatch<any>, walletId: vault.Uuid, add: vault.AddAccount
+// ) {
+//   if (!walletId) {
+//     throw Error('Wallet is not set');
+//   }
+//   const accountId = api.vault.addAccount(walletId, add);
+//
+//   dispatch(accountImportedAction(walletId, accountId));
+//
+//   return walletId;
+// }
 
 export function importJson (
   walletId: vault.Uuid,
   blockchain: BlockchainCode,
   data: any
 ): Dispatched<IWalletCreatedAction> {
-  return (dispatch: any, getState, api: IApi) => {
-    addAccount(api, dispatch, walletId, {
-      blockchain: blockchainCodeToId(blockchain),
-      type: 'ethereum-json',
-      key: JSON.stringify(data)
-    });
+  return async (dispatch: any, getState, { backendApi }: { backendApi: IBackendApi }) => {
+    const accountId = await backendApi.importEthereumJson(
+      blockchain, walletId, JSON.stringify(data));
+
+    dispatch(accountImportedAction(walletId, accountId));
   };
 }
 
@@ -221,27 +219,25 @@ export function importPk (
   pk: string,
   password: string
 ): Dispatched<IWalletCreatedAction> {
-  return (dispatch: any, getState, api: IApi) => {
-    addAccount(api, dispatch, walletId, {
-      blockchain: blockchainCodeToId(blockchain),
-      type: 'raw-pk-hex',
-      key: pk,
-      password
-    });
+  return async (dispatch: any, getState, { backendApi }: { backendApi: IBackendApi }) => {
+    const accountId = await backendApi.importRawPrivateKey(
+      blockchain, walletId, pk, password);
+
+    dispatch(accountImportedAction(walletId, accountId));
   };
 }
 
 export function importMnemonic (
   blockchain: BlockchainCode, passphrase: string, mnemonic: string, hdPath: string, name: string, description: string
 ): Dispatched<IWalletCreatedAction> {
-  return (dispatch, getState, api) => {
+  return (dispatch: any, getState, extra) => {
     if (!blockchains.isValidChain(blockchain)) {
       throw new Error('Invalid chain code: ' + blockchain);
     }
-    const walletService = new WalletService(api.vault);
+    const walletService = new WalletService(extra.api.vault);
     const seedId = walletService.importMnemonic(mnemonic, passphrase);
 
-    createWalletWithAccount(api, dispatch,
+    createWalletWithAccount(extra.api, dispatch,
       blockchain, name, {
         blockchain: blockchainCodeToId(blockchain),
         type: 'hd-path',
@@ -259,10 +255,9 @@ export function importWalletFile (
   blockchain: BlockchainCode,
   file: Blob
 ): Dispatched<AddressesAction> {
-  return (dispatch, getState) => {
-    return readWalletFile(file).then((data) => {
-      return dispatch(importJson(wallet, blockchain, data));
-    });
+  return async (dispatch: any, getState) => {
+    const data = await readWalletFile(file);
+    return dispatch(importJson(wallet, blockchain, data));
   };
 }
 
@@ -275,11 +270,11 @@ function clearBlock (tx: any) {
 
 // TODO move to backend side
 export function loadPendingTransactions (): Dispatched<PendingBalanceAction> {
-  return (dispatch, getState, api) => {
+  return (dispatch: any, getState, extra) => {
     // TODO read from wallet settings
     ['ETH', 'ETC'].forEach((chainName) => {
       const blockchainCode = blockchainByName(chainName).params.code;
-      api.chain(blockchainCode).eth.getBlockByNumber('pending', true)
+      extra.api.chain(blockchainCode).eth.getBlockByNumber('pending', true)
         .then((result: any) => {
           const addresses = selectors.allAccountsByBlockchain(getState(), blockchainCode)
             .map((account) => account.address);
@@ -318,7 +313,7 @@ export function loadPendingTransactions (): Dispatched<PendingBalanceAction> {
 }
 
 export function generateMnemonic (): Dispatched<any> {
-  return (dispatch, getState, api) => {
-    return api.vault.generateMnemonic(24);
+  return (dispatch: any, getState, extra) => {
+    return extra.api.vault.generateMnemonic(24);
   };
 }
