@@ -1,4 +1,3 @@
-import { IApi } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 import { fromJS } from 'immutable';
 import rootReducer from '../root-reducer';
@@ -27,8 +26,8 @@ describe('historyActions/refreshTrackedTransactions', () => {
   it('should subscribe through electron', () => {
     const dispatch = jest.fn();
     const hash = '0x123';
-
-    refreshTrackedTransactions()(dispatch, getState, {} as IApi);
+    const extra: any = {};
+    refreshTrackedTransactions()(dispatch, getState, extra);
 
     expect(ipcRenderer.send).toHaveBeenCalledWith('subscribe-tx', 'ETH', '0x123');
   });

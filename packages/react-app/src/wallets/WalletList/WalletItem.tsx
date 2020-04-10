@@ -1,49 +1,59 @@
 import { ButtonGroup, IdentityIcon } from '@emeraldplatform/ui';
 import { Wallet } from '@emeraldwallet/core';
 import { Button, CoinAvatar } from '@emeraldwallet/ui';
-import { Card, CardContent, CardHeader, Grid, IconButton } from '@material-ui/core';
+import { Card, CardActions, CardContent, CardHeader, Grid } from '@material-ui/core';
+import { createStyles, withStyles, withTheme } from '@material-ui/core/styles';
 import { AccountBalanceWalletOutlined as WalletIcon } from '@material-ui/icons';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { withStyles, withTheme } from '@material-ui/styles';
 import * as React from 'react';
 import AccountBalance from '../../common/Balance';
 import WalletSummary from '../WalletSummary';
 import WalletMenu from './WalletMenu';
 
 const styles = (theme: any) => ({
-  tokensDivider: {
-    backgroundColor: '#F5F5F5',
-    height: '2px',
+  // tokensDivider: {
+  //   backgroundColor: '#F5F5F5',
+  //   height: '2px',
+  //   width: '100%',
+  //   border: 'none'
+  // },
+  gridCard: {
+    border: 'none',
+    backgroundColor: 'transparent'
+  },
+  gridCardInner: {
+    backgroundColor: theme.emeraldColors.white.main,
+    margin: '10px',
     width: '100%',
-    border: 'none'
+    border: `1px solid ${theme.palette.divider}`
   },
-  identityIconContainer: {
-    display: 'flex',
-    alignItems: 'center'
-  },
+  // identityIconContainer: {
+  //   display: 'flex',
+  //   alignItems: 'center'
+  // },
   actionsContainer: {
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'flex-end'
   },
-  card: {
-    borderRadius: '1px',
-    boxShadow: 'none'
-  },
-  coinCard: {
-    alignItems: 'center'
-  },
-  identityGrid: {
-    marginTop: '40px',
-    paddingLeft: '60px'
-  },
-  headerTitle: {
-    fontSize: '1em'
-  },
-  headerSubtitle: {
-    fontSize: '0.8em',
-    opacity: '25%'
-  },
+  // card: {
+  //   borderRadius: '1px',
+  //   boxShadow: 'none'
+  // },
+  // coinCard: {
+  //   alignItems: 'center'
+  // },
+  // identityGrid: {
+  //   marginTop: '40px',
+  //   paddingLeft: '60px'
+  // },
+  // headerTitle: {
+  //   fontSize: '1em'
+  // },
+  // headerSubtitle: {
+  //   fontSize: '0.8em',
+  //   opacity: '25%'
+  // },
   gridActions: {
     paddingTop: '40px'
   }
@@ -58,6 +68,17 @@ interface IWalletItemProps {
   classes: any;
   theme: any;
 }
+
+// We use CustomCard to expand card content vertically
+// and make margin with border
+//
+const cardStyles = createStyles({
+  root: {
+    display: 'flex'
+  }
+});
+const CustomCard = (props: any) => (<Card variant='outlined' {...props} />);
+const StyledCustomCard = withStyles(cardStyles)(CustomCard);
 
 export class WalletItem extends React.PureComponent<IWalletItemProps> {
 
@@ -82,62 +103,74 @@ export class WalletItem extends React.PureComponent<IWalletItemProps> {
     }
 
     return (
-        <Card className={classes.card}>
-          <Grid container={true}>
-            {/*<Grid item={true} xs={2} classes={{root: classes.identityGrid}}>*/}
-            {/*  <IdentityIcon id={wallet.value.id} size={64} />*/}
-            {/*</Grid>*/}
-            <Grid item={true} xs={12}>
-              <CardHeader
-                avatar={<WalletIcon color='secondary'/>}
-                title={wallet.name}
-                classes={{
-                  title: classes.headerTitle,
-                  subheader: classes.headerSubtitle
-                }}
-                action={
-                  <WalletMenu wallet={wallet}/>
-                  // <IconButton aria-label="details"
-                  //             onClick={this.onAddressClick}> {/* TODO show menu with wallet actions? */}
-                  //   <MoreVertIcon />
-                  // </IconButton>
-                }
-              />
-              <CardContent>
-                <Grid container={true}>
-                  <Grid container={true} item={true} xs={12}>
-                    <WalletSummary wallet={wallet}/>
-                  </Grid>
-                </Grid>
-                <Grid container={true} classes={{ root: classes.gridActions }}>
-                  <Grid item={true} xs={2}/>
-                  <Grid item={true} xs={10}>
-                    <div className={classes.actionsContainer}>
-                      <ButtonGroup>
-                        {/*<WalletActions wallet={account} />*/}
-                        <Button
-                          disabled={true}
-                          label='Deposit'
-                          // onClick={this.handleDepositClick}
-                        />
-                        <Button
-                          disabled={true}
-                          label='Send'
-                          // disabled={!account.balance}
-                          // onClick={this.onSendClick}
-                        />
-                        <Button
-                          label='Details'
-                          onClick={handleDetailsClick}
-                        />
-                      </ButtonGroup>
-                    </div>
-                  </Grid>
-                </Grid>
-              </CardContent>
+      <Grid item={true} xs={6} component={StyledCustomCard} classes={{ root: classes.gridCard }}>
+        <div className={classes.gridCardInner}>
+          <CardHeader
+            avatar={<WalletIcon color='secondary'/>}
+            title={wallet.name}
+            classes={{
+              title: classes.headerTitle,
+              subheader: classes.headerSubtitle
+            }}
+            action={
+              <WalletMenu wallet={wallet}/>
+              // <IconButton aria-label="details"
+              //             onClick={this.onAddressClick}> {/* TODO show menu with wallet actions? */}
+              //   <MoreVertIcon />
+              // </IconButton>
+            }
+          />
+          <CardContent>
+            <Grid container={true}>
+              <Grid container={true} item={true} xs={12}>
+                <WalletSummary wallet={wallet}/>
+              </Grid>
             </Grid>
-          </Grid>
-        </Card>
+            <Grid container={true} classes={{ root: classes.gridActions }}>
+              <Grid item={true} xs={2}/>
+              <Grid item={true} xs={10}>
+                <div className={classes.actionsContainer}>
+                  <ButtonGroup>
+                    {/*<WalletActions wallet={account} />*/}
+                    <Button
+                      disabled={true}
+                      label='Deposit'
+                      // onClick={this.handleDepositClick}
+                    />
+                    <Button
+                      disabled={true}
+                      label='Send'
+                      // disabled={!account.balance}
+                      // onClick={this.onSendClick}
+                    />
+                    <Button
+                      label='Details'
+                      onClick={handleDetailsClick}
+                    />
+                  </ButtonGroup>
+                </div>
+              </Grid>
+            </Grid>
+          </CardContent>
+          {/*<CardActions>*/}
+          {/*  <Button*/}
+          {/*    disabled={true}*/}
+          {/*    label='Deposit'*/}
+          {/*    // onClick={this.handleDepositClick}*/}
+          {/*  />*/}
+          {/*  <Button*/}
+          {/*    disabled={true}*/}
+          {/*    label='Send'*/}
+          {/*    // disabled={!account.balance}*/}
+          {/*    // onClick={this.onSendClick}*/}
+          {/*  />*/}
+          {/*  <Button*/}
+          {/*    label='Details'*/}
+          {/*    onClick={handleDetailsClick}*/}
+          {/*  />*/}
+          {/*</CardActions>*/}
+        </div>
+      </Grid>
     );
   }
 }

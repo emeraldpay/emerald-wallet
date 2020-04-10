@@ -13,7 +13,7 @@ import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Popover from '@material-ui/core/Popover';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 
 const styles = (theme?: any) => ({
@@ -86,7 +86,7 @@ class DashboardMenu extends React.Component<IMenuProps, IMenuState> {
           variant='text'
           primary={true}
           onClick={this.openMenu}
-          classes={{ text: classes.buttonText }}
+          classes={{ label: classes.buttonText }}
           style={{ hoverColor: 'transparent' }}
           label={t('accounts.list.popupMenuLabel')}
           icon={<AddIcon/>}

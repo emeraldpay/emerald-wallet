@@ -16,8 +16,8 @@ const styles = (theme: any) => ({
     marginBottom: '10px'
   },
   listItem: {
-    border: `1px solid ${theme.palette.divider}`,
-    marginBottom: '10px'
+    // border: `1px solid ${theme.palette.divider}`,
+    // marginBottom: '10px'
   }
 });
 
@@ -39,20 +39,19 @@ const WalletList = ((props: IWalletsListProps) => {
   } = props;
   return (
     <div className={classes.container}>
-      <Grid container={true} spacing={2}>
+      <Grid container={true}>
         {wallets.map((wallet: Wallet) => {
           return (
-            <Grid item={true} xs={6} key={wallet.id}>
-              <div className={classes.listItem}>
-                <WalletItem
-                  showFiat={showFiat}
-                  wallet={wallet}
-                  openWallet={openWallet}
-                  createTx={createTx}
-                  showReceiveDialog={showReceiveDialog}
-                />
-              </div>
-            </Grid>
+            // <Grid item={true} xs={6} key={wallet.id}>
+              <WalletItem
+                key={wallet.id}
+                showFiat={showFiat}
+                wallet={wallet}
+                openWallet={openWallet}
+                createTx={createTx}
+                showReceiveDialog={showReceiveDialog}
+              />
+            // </Grid>
           );
         })}
       </Grid>

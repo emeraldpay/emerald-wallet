@@ -3,12 +3,19 @@ import { Account as AddressField, ButtonGroup } from '@emeraldplatform/ui';
 import { Account } from '@emeraldwallet/core';
 import { accounts, IState, screen, tokens } from '@emeraldwallet/store';
 import { Balance, Button, CoinAvatar } from '@emeraldwallet/ui';
-import { Grid } from '@material-ui/core';
+import { Grid, withStyles } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import AccountBalance from '../../common/Balance';
 import AccountActions from '../AccountActions';
 import TokenBalances from '../TokenBalances';
+
+const styles = (theme: any) => ({
+  container: {
+    border: `0px solid ${theme.palette.divider}`,
+    marginBottom: '10px'
+  }
+});
 
 interface IOwnProps {
   account: Account;
@@ -20,6 +27,7 @@ interface IRenderProps {
   account: Account;
   tokensBalances: any[];
   balance: Wei;
+  classes: any;
 }
 
 interface IDispatchProps {
@@ -27,7 +35,7 @@ interface IDispatchProps {
 }
 
 export const EthereumAccountItem = ((props: IRenderProps & IDispatchProps) => {
-  const { account, balance, tokensBalances } = props;
+  const { account, balance, tokensBalances, classes } = props;
   const blockchainCode = account.blockchain;
   const { onSendClick } = props;
 
@@ -38,7 +46,7 @@ export const EthereumAccountItem = ((props: IRenderProps & IDispatchProps) => {
   }
 
   return (
-    <React.Fragment>
+    <div className={classes.container}>
 
       <Grid container={true} direction={'column'} alignItems={'stretch'}>
         <Grid container={true} alignItems={'center'}>
@@ -61,27 +69,37 @@ export const EthereumAccountItem = ((props: IRenderProps & IDispatchProps) => {
             />
           </Grid>
           <Grid item={true} xs={3} container={true} alignItems={'center'} >
-            <AccountActions account={account} />
-            {/*<Button*/}
-            {/*  label='Deposit'*/}
-            {/*  // onClick={this.handleDepositClick}*/}
-            {/*/>*/}
-            <Button
-              label='Send'
-              disabled={balance.isZero()}
-              onClick={handleSendClick}
-            />
+            <ButtonGroup>
+              <Button
+                label='Deposit'
+                // onClick={this.handleDepositClick}
+              />
+              <Button
+                label='Send'
+                disabled={balance.isZero()}
+                onClick={handleSendClick}
+              />
+              <AccountActions account={account} />
+            </ButtonGroup>
           </Grid>
         </Grid>
-        <Grid item={true}><TokenBalances balances={tokensBalances} /></Grid>
+        <Grid container={true}>
+          <Grid item={true} xs={1}>
+          </Grid>
+          <Grid item={true} xs={5}>
+            <TokenBalances balances={tokensBalances} />
+          </Grid>
+        </Grid>
       </Grid>
 
-    </React.Fragment>
+    </div>
   );
 });
 
+const styled = withStyles(styles)(EthereumAccountItem);
+
 export default connect<IRenderProps, IDispatchProps, IOwnProps, IState>(
-  (state: IState, ownProps: IOwnProps) => {
+  (state: IState, ownProps: IOwnProps): any => {
     const { account } = ownProps;
     const blockchainCode = account.blockchain;
     const balance = accounts.selectors.getBalance(state, account.id, Wei.ZERO) || Wei.ZERO;
@@ -94,11 +112,11 @@ export default connect<IRenderProps, IDispatchProps, IOwnProps, IState>(
       tokensBalances
     };
   },
-  (dispatch, ownProps) => {
+  (dispatch: any) => {
     return {
       onSendClick: (account: Account) => {
         dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, account));
       }
     };
   }
-)((EthereumAccountItem));
+)((styled));

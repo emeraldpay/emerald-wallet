@@ -6,10 +6,10 @@ import { PageTitle } from '@emeraldplatform/ui/lib/components/Page';
 import { Account, Wallet } from '@emeraldwallet/core';
 import { Button, FormRow, InlineEdit } from '@emeraldwallet/ui';
 import { Grid, IconButton, Typography } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 import { AccountBalanceWalletOutlined as WalletIcon } from '@material-ui/icons';
 import EditIcon from '@material-ui/icons/Edit';
 import MoreVertIcon from '@material-ui/icons/MoreVert';
-import { withStyles } from '@material-ui/styles';
 import * as QRCode from 'qrcode.react';
 import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
@@ -121,6 +121,7 @@ export class WalletShow extends React.Component<AccountShowProps, IState> {
               )}
             </Grid>
           </Grid>
+
         </Page>
 
         <div className={classes.transContainer}>

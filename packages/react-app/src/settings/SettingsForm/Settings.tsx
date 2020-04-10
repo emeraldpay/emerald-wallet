@@ -2,7 +2,7 @@ import { Checkbox, Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import { Button } from '@emeraldwallet/ui';
 import { MenuItem, TextField } from '@material-ui/core';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { WithTranslation } from 'react-i18next';
 

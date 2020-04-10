@@ -118,7 +118,7 @@ const txUnconfirmed = (state: any, tx: any): boolean => {
  * Refresh only tx with totalRetries <= 10
  */
 export function refreshTrackedTransactions (): Dispatched<HistoryAction> {
-  return (dispatch, getState) => {
+  return (dispatch: any, getState) => {
     const state = getState();
     allTrackedTxs(state)
       .filter((tx: any) => tx.get('totalRetries', 0) <= 10)

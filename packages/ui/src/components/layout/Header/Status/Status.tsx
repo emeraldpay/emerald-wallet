@@ -1,27 +1,28 @@
-import { CSSProperties } from '@material-ui/styles';
+import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import NetworkSelector from './NetworkSelector';
 
-const styles = {
+const styles = createStyles({
   block: {
     marginLeft: '10px',
     display: 'flex',
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center'
-  } as CSSProperties
-};
+  }
+});
 
-interface Props {
+interface IStatusProps {
   blockchains: any[];
+  classes?: any;
 }
 
-const Status = (props: Props) => {
+const Status = (props: IStatusProps) => {
   return (
-    <div style={styles.block}>
+    <div className={props.classes.block}>
       <NetworkSelector blockchains={props.blockchains} />
     </div>
   );
 };
 
-export default Status;
+export default withStyles(styles)(Status);

@@ -1,4 +1,4 @@
-import { Add } from '@emeraldplatform/ui-icons';
+import { AddCircle as Add } from '@emeraldplatform/ui-icons';
 import { screen } from '@emeraldwallet/store';
 import { IconButton } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/core/styles';

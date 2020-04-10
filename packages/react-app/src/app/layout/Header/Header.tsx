@@ -2,7 +2,7 @@ import { Settings as SettingsIcon } from '@emeraldplatform/ui-icons';
 import { blockchains, screen } from '@emeraldwallet/store';
 import { Button, Status } from '@emeraldwallet/ui';
 import { AppBar, Toolbar } from '@material-ui/core';
-import { CSSProperties, withStyles } from '@material-ui/styles';
+import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
@@ -33,13 +33,13 @@ export interface IHeaderProps {
   chains: any;
 }
 
-const blockDisplayStyles = {
-  text: {
+const blockDisplayStyles = createStyles({
+  label: {
     fontWeight: 'normal',
     fontSize: '16px',
     textTransform: 'none'
-  } as CSSProperties
-};
+  }
+});
 
 const SettingsButton = ({ classes, onClick }: {classes: any, onClick: any}) => (
   <Button
@@ -47,7 +47,7 @@ const SettingsButton = ({ classes, onClick }: {classes: any, onClick: any}) => (
     onClick={onClick}
     label='Settings'
     classes={{
-      text: classes.text
+      label: classes.text
     }}
     icon={<SettingsIcon/>}
   />

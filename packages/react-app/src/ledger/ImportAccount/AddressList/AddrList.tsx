@@ -1,6 +1,6 @@
 import { BlockchainCode, IApi } from '@emeraldwallet/core';
 import { Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import AddrListItem from './AddrListItem';
 import { styles } from './styles';

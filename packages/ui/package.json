@@ -14,14 +14,13 @@
     "storybook": "start-storybook -p 9001 -c .storybook"
   },
   "dependencies": {
-    "@emeraldpay/emerald-vault-core": "^0.5.1-0.27.0.rc1",
     "@emeraldplatform/core": "^0.5.11",
     "@emeraldplatform/eth": "^0.5.10",
     "@emeraldplatform/ui": "0.5.12",
     "@emeraldplatform/ui-icons": "^0.5.2",
     "@emeraldwallet/core": "^2.1.2",
     "@emeraldwallet/erc20": "^2.1.2",
-    "@material-ui/core": "^4.2.0",
+    "@material-ui/core": "4.9.9",
     "@material-ui/icons": "^4.2.0",
     "@material-ui/lab": "^4.0.0-alpha.19",
     "bignumber.js": "8.0.2",
