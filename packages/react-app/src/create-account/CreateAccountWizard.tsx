@@ -1,7 +1,7 @@
 import { BlockchainCode, Wallet } from '@emeraldwallet/core';
 import { accounts, addAccount, IState, screen } from '@emeraldwallet/store';
 import { Button } from '@emeraldwallet/ui';
-import { Card, CardActions, CardContent, CardHeader, Grid, Step, StepLabel, Stepper } from '@material-ui/core';
+import { Card, CardActions, CardContent, CardHeader, Step, StepLabel, Stepper } from '@material-ui/core';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -18,7 +18,7 @@ interface IRenderProps {
   wallet: Wallet;
   page: number;
   type?: addAccount.AddType;
-  blockchain?: BlockchainCode;
+  blockchain: BlockchainCode;
 }
 
 interface IDispatchProps {
@@ -57,10 +57,10 @@ const CreateAccountWizard = ((props: IRenderProps & IDispatchProps) => {
     content = <SelectType />;
   } else if (page === 3) {
     if (type === addAccount.AddType.IMPORT_JSON) {
-      content = <ImportJson blockchain={props.blockchain!!} wallet={props.wallet} />;
+      content = <ImportJson blockchain={props.blockchain} wallet={props.wallet} />;
       displayNextButton = false;
     } else if (type === addAccount.AddType.IMPORT_PRIVATE_KEY) {
-      content = <ImportPrivateKey blockchain={props.blockchain!!} wallet={props.wallet} />;
+      content = <ImportPrivateKey blockchain={props.blockchain} wallet={props.wallet} />;
       displayNextButton = false;
     }
   }
@@ -93,7 +93,7 @@ const CreateAccountWizard = ((props: IRenderProps & IDispatchProps) => {
 });
 
 export default connect<IRenderProps, IDispatchProps, IOwnProps, IState>(
-  (state, ownProps) => {
+  (state: IState, ownProps: IOwnProps): IRenderProps => {
     const wizardState = addAccount.selectors.getState(state);
     const walletId = wizardState.walletId;
     if (!walletId) {
@@ -107,10 +107,10 @@ export default connect<IRenderProps, IDispatchProps, IOwnProps, IState>(
       wallet,
       page: wizardState.step,
       type: wizardState.type,
-      blockchain: wizardState.blockchain
+      blockchain: wizardState.blockchain!
     };
   },
-  (dispatch, ownProps) => {
+  (dispatch: any, ownProps: IOwnProps) => {
     return {
       nextPage: () => {
         dispatch(addAccount.actions.nextPage());

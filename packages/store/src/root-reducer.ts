@@ -5,7 +5,8 @@ import {
   addressBook,
   application,
   blockchains,
-  connection, IState,
+  connection,
+  IState,
   ledger,
   screen,
   settings,
@@ -23,7 +24,7 @@ const root = combineReducers<IState>({
   ledger: ledger.reducer,
   [accounts.moduleName]: accounts.reducer,
   blockchains: blockchains.reducer,
-  screen: screen.reducer,
+  [screen.moduleName]: screen.reducer,
   [connection.moduleName]: connection.reducer,
   addAccount: addAccount.reducer,
   [transaction.moduleName]: transaction.reducer

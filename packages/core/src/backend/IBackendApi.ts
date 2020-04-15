@@ -4,6 +4,8 @@ import Wallet from '../entities/Wallet';
 
 export default interface IBackendApi {
   getAllWallets: () => Promise<Wallet[]>;
+  createWallet: (name: string) => Promise<Wallet>;
+  getWallet: (walletId: string) => Promise<Wallet>;
 
   // Address Book
   getAddressBookItems: (blockchain: BlockchainCode) => Promise<AddressBookItem[]>;

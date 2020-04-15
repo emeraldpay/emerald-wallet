@@ -1,5 +1,13 @@
-import { AddressBookService, BlockchainCode, blockchainCodeToId, Commands, vault } from '@emeraldwallet/core';
+import {
+  AddressBookService,
+  BlockchainCode,
+  blockchainCodeToId,
+  Commands,
+  vault, Wallet,
+  WalletService
+} from '@emeraldwallet/core';
 import { loadTransactions2, storeTransactions2 } from '@emeraldwallet/history-store';
+import { call } from '@redux-saga/core/effects';
 import { ipcMain } from 'electron';
 import * as os from 'os';
 import Application from '../Application';
@@ -87,4 +95,20 @@ export function setIpcHandlers (app: Application) {
       };
       return app.vault?.addAccount(walletId, addAccount);
     });
+
+  // Wallets
+  ipcMain.handle(Commands.VAULT_CREATE_WALLET, (event: any, name: string) => {
+    const service = new WalletService(app.vault!);
+    return service.createNewWallet(name);
+  });
+
+  ipcMain.handle(Commands.VAULT_GET_WALLET, (event: any, walletId: string) => {
+    const service = new WalletService(app.vault!);
+    return service.getWallet(walletId);
+  });
+
+  ipcMain.handle(Commands.VAULT_GET_WALLETS, (event: any) => {
+    const service = new WalletService(app.vault!);
+    return service.getAllWallets();
+  });
 }

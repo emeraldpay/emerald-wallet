@@ -2,12 +2,17 @@ import { getMainWindow } from '@emeraldwallet/electron-app';
 import { app, BrowserWindow } from 'electron';
 import * as path from 'path';
 
+const options = {
+  appIconPath: path.join(app.getAppPath(), 'icons/512x512.png'),
+  mainWndPath: path.join(app.getAppPath(), 'index.html')
+};
+
 function createWindow () {
   // Create the browser window.
   const win = new BrowserWindow({
     width: 800,
     height: 600,
-    icon: path.join(app.getAppPath(), 'icons/512x512.png'),
+    icon: options.appIconPath,
     webPreferences: {
       nodeIntegration: true
     }
@@ -19,10 +24,7 @@ function createWindow () {
 
 app.on('ready', () => {
 
-  createWindow();
-
-  // const browserWindow: BrowserWindow = getMainWindow({
-  //   appIconPath,
-  //   mainWndPath
-  // });
+  // createWindow();
+  //
+  const browserWindow: BrowserWindow = getMainWindow(options);
 });

@@ -16,5 +16,10 @@ export enum Commands {
   GET_GAS_PRICE = 'get-gas-price',
 
   ACCOUNT_IMPORT_ETHEREUM_JSON = 'import-json',
-  ACCOUNT_IMPORT_PRIVATE_KEY = 'import-private-key'
+  ACCOUNT_IMPORT_PRIVATE_KEY = 'import-private-key',
+
+  // Wallets
+  VAULT_GET_WALLETS = 'get-vault-wallets',
+  VAULT_CREATE_WALLET = 'create-wallet',
+  VAULT_GET_WALLET = 'get-vault-wallet'
 }

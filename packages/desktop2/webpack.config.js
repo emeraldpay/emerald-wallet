@@ -3,22 +3,33 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = [
-  {
-    mode: 'development',
-    entry: path.join(__dirname, 'src/main/electron.ts'),
-    target: 'electron-main',
-    module: {
-      rules: [{
-        test: /\.(ts|tsx)$/,
-        exclude: /node_modules/,
-        loader: 'ts-loader',
-      }]
-    },
-    output: {
-      path: __dirname + '/app',
-      filename: 'index.js'
-    }
-  },
+  // {
+  //   mode: 'development',
+  //   entry: path.join(__dirname, 'src/main/electron.ts'),
+  //   target: 'electron-main',
+  //   module: {
+  //     rules: [{
+  //       test: /\.(ts|tsx)$/,
+  //       exclude: /node_modules/,
+  //       loader: 'ts-loader',
+  //     }]
+  //   },
+  //   // node: {
+  //   //   __dirname: false,
+  //   //   __filename: false
+  //   // },
+  //   resolve: {
+  //     extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
+  //     modules: [
+  //       path.join(__dirname, 'node_modules'),
+  //       path.join(__dirname, '../../node_modules'),
+  //     ]
+  //   },
+  //   output: {
+  //     path: __dirname + '/app',
+  //     filename: 'index.js'
+  //   }
+  // },
   {
     mode: 'development',
     entry: './src/renderer/index.tsx',

@@ -1,3 +1,5 @@
+export const moduleName = 'screen';
+
 export enum ActionTypes {
   OPEN = 'SCREEN/OPEN',
   ERROR = 'SCREEN/ERROR',

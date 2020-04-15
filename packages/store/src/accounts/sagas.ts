@@ -1,4 +1,4 @@
-import { Account, BlockchainCode, IApi, IBackendApi, Wallet, WalletService } from '@emeraldwallet/core';
+import { Account, BlockchainCode, IBackendApi, Wallet } from '@emeraldwallet/core';
 import { registry } from '@emeraldwallet/erc20';
 import { all, call, put, select, takeEvery, takeLatest } from '@redux-saga/core/effects';
 import { ipcRenderer } from 'electron';
@@ -9,7 +9,7 @@ import { fetchErc20BalancesAction, setLoadingAction, setWalletsAction, walletCre
 import { allAccounts } from './selectors';
 import { ActionTypes, IFetchErc20BalancesAction } from './types';
 
-function* fetchErc20Balances (api: IApi, action: IFetchErc20BalancesAction): SagaIterator {
+function* fetchErc20Balances (action: IFetchErc20BalancesAction): SagaIterator {
   const accounts = yield select(allAccounts);
   for (const account of accounts) {
     // TODO: account might not be Ethereum address
@@ -24,11 +24,10 @@ function* fetchErc20Balances (api: IApi, action: IFetchErc20BalancesAction): Sag
   }
 }
 
-function* loadAllWallets (api: IApi): SagaIterator {
+function* loadAllWallets (backendApi: IBackendApi): SagaIterator {
   yield put(setLoadingAction(true));
 
-  const service = new WalletService(api.vault);
-  const wallets: any = yield call(service.getAllWallets);
+  const wallets: any = yield call(backendApi.getAllWallets);
 
   yield put(setWalletsAction(wallets));
   yield put(fetchErc20BalancesAction());
@@ -55,20 +54,17 @@ function* loadAllWallets (api: IApi): SagaIterator {
   });
 }
 
-function* createWallet (api: IApi, action: any): SagaIterator {
+function* createWallet (backendApi: IBackendApi, action: any): SagaIterator {
   const name = action.payload;
-  const service = new WalletService(api.vault);
-  const wallet = yield call(service.createNewWallet, name);
+  const wallet = yield call(backendApi.createWallet, name);
   yield put(walletCreatedAction(wallet));
   yield put(screen.actions.gotoScreen(screen.Pages.WALLET, wallet.id));
 }
 
-function* afterAccountImported (api: IApi, backendApi: IBackendApi, action: any): SagaIterator {
+function* afterAccountImported (backendApi: IBackendApi, action: any): SagaIterator {
   const { walletId, accountId } = action.payload;
 
-  const service = new WalletService(api.vault);
-
-  const wallet: Wallet = yield call(service.getWallet, walletId);
+  const wallet: Wallet = yield call(backendApi.getWallet, walletId);
   const account: Account = wallet.accounts.find((a: Account) => a.id === accountId)!;
 
   // subscribe for balance
@@ -80,12 +76,12 @@ function* afterAccountImported (api: IApi, backendApi: IBackendApi, action: any)
   yield put(requestTokensBalances(chainCode, _tokens, account.address!));
 }
 
-export function* root (api: IApi, backendApi: IBackendApi) {
+export function* root (backendApi: IBackendApi) {
   yield all([
-    takeLatest(ActionTypes.FETCH_ERC20_BALANCES, fetchErc20Balances, api),
-    takeLatest(ActionTypes.LOAD_WALLETS, loadAllWallets, api),
-    takeLatest(ActionTypes.CREATE_WALLET, createWallet, api),
-    takeEvery(ActionTypes.ACCOUNT_IMPORTED, afterAccountImported, api, backendApi)
+    takeLatest(ActionTypes.FETCH_ERC20_BALANCES, fetchErc20Balances),
+    takeLatest(ActionTypes.LOAD_WALLETS, loadAllWallets, backendApi),
+    takeLatest(ActionTypes.CREATE_WALLET, createWallet, backendApi),
+    takeEvery(ActionTypes.ACCOUNT_IMPORTED, afterAccountImported, backendApi)
   ]);
 
 }

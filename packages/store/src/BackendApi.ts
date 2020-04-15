@@ -1,4 +1,10 @@
-import { AddressBookItem, BlockchainCode, Commands, IBackendApi, Wallet } from '@emeraldwallet/core';
+import {
+  AddressBookItem,
+  BlockchainCode,
+  Commands,
+  IBackendApi,
+  Wallet
+} from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 
 /**
@@ -7,7 +13,7 @@ import { ipcRenderer } from 'electron';
 export default class BackendApi implements IBackendApi {
 
   public getAllWallets = (): Promise<Wallet[]> => {
-    return Promise.resolve([]);
+    return ipcRenderer.invoke(Commands.VAULT_GET_WALLETS);
   }
 
   public removeAddressBookItem = (blockchain: BlockchainCode, address: string): Promise<boolean> => {
@@ -51,5 +57,13 @@ export default class BackendApi implements IBackendApi {
       value: (typeof tx.value === 'string') ? tx.value : tx.value.toString()
     }));
     return ipcRenderer.invoke(Commands.PERSIST_TX_HISTORY, blockchain, request);
+  }
+
+  public createWallet = (name: string): Promise<Wallet> => {
+    return ipcRenderer.invoke(Commands.VAULT_CREATE_WALLET, name);
+  }
+
+  public getWallet = (walletId: string): Promise<Wallet> => {
+    return ipcRenderer.invoke(Commands.VAULT_GET_WALLET, walletId);
   }
 }

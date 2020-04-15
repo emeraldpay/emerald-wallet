@@ -1,6 +1,6 @@
 import { Wei } from '@emeraldplatform/eth';
 import { Account as AddressField, ButtonGroup } from '@emeraldplatform/ui';
-import { Account } from '@emeraldwallet/core';
+import { Account, Blockchains } from '@emeraldwallet/core';
 import { accounts, IState, screen, tokens } from '@emeraldwallet/store';
 import { Balance, Button, CoinAvatar } from '@emeraldwallet/ui';
 import { Grid, withStyles } from '@material-ui/core';
@@ -32,16 +32,23 @@ interface IRenderProps {
 
 interface IDispatchProps {
   onSendClick?: (account: Account) => void;
+  onDepositClick?: (account: Account) => void;
 }
 
 export const EthereumAccountItem = ((props: IRenderProps & IDispatchProps) => {
   const { account, balance, tokensBalances, classes } = props;
   const blockchainCode = account.blockchain;
-  const { onSendClick } = props;
+  const { onSendClick, onDepositClick } = props;
 
   function handleSendClick () {
     if (onSendClick) {
       onSendClick(account);
+    }
+  }
+
+  function handleDepositClick () {
+    if (onDepositClick) {
+      onDepositClick(account);
     }
   }
 
@@ -72,7 +79,7 @@ export const EthereumAccountItem = ((props: IRenderProps & IDispatchProps) => {
             <ButtonGroup>
               <Button
                 label='Deposit'
-                // onClick={this.handleDepositClick}
+                onClick={handleDepositClick}
               />
               <Button
                 label='Send'
@@ -84,8 +91,7 @@ export const EthereumAccountItem = ((props: IRenderProps & IDispatchProps) => {
           </Grid>
         </Grid>
         <Grid container={true}>
-          <Grid item={true} xs={1}>
-          </Grid>
+          <Grid item={true} xs={1}/>
           <Grid item={true} xs={5}>
             <TokenBalances balances={tokensBalances} />
           </Grid>
@@ -116,6 +122,13 @@ export default connect<IRenderProps, IDispatchProps, IOwnProps, IState>(
     return {
       onSendClick: (account: Account) => {
         dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, account));
+      },
+      onDepositClick: (account: Account) => {
+        const address = {
+          coinTicker: Blockchains[account.blockchain].params.coinTicker,
+          value: account.address
+        };
+        dispatch(screen.actions.showDialog('receive', address));
       }
     };
   }
