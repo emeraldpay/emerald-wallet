@@ -21,5 +21,6 @@ export enum Commands {
   // Wallets
   VAULT_GET_WALLETS = 'get-vault-wallets',
   VAULT_CREATE_WALLET = 'create-wallet',
-  VAULT_GET_WALLET = 'get-vault-wallet'
+  VAULT_GET_WALLET = 'get-vault-wallet',
+  VAULT_UPDATE_WALLET = 'vault-update-wallet'
 }

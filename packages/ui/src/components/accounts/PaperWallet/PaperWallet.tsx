@@ -1,6 +1,6 @@
-import { Close, CurrencyEtc, Print } from '@emeraldplatform/ui-icons';
+import { Close, Print } from '@emeraldplatform/ui-icons';
 import { createStyles, IconButton } from '@material-ui/core';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 import * as QRCode from 'qrcode.react';
 import * as React from 'react';
 import { EmeraldLine } from './EmeraldLogo';

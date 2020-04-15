@@ -40,13 +40,8 @@ export default connect(
     goBack: () => {
       dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
     },
-    editAccount: (data: Wallet) => {
-      return new Promise((resolve, reject) => {
-        dispatch(accounts.actions.updateWallet(data.id, data.name || '', data.description || '') as any)
-          .then((response: any) => {
-            resolve(response);
-          });
-      });
+    updateWallet: (data: Wallet) => {
+      dispatch(accounts.actions.updateWallet(data.id, data.name || '') as any);
     }
   })
 )(WalletDetailsView);

@@ -149,16 +149,16 @@ export function exportKeyFile (accountId: vault.AccountId): any {
 }
 
 export function updateWallet (
-  walletId: vault.Uuid, name: string, description: string
+  walletId: vault.Uuid, name: string
 ): Dispatched<IUpdateWalletAction> {
-  return (dispatch: any, getState, extra) => {
-    if (extra.api.vault.setWalletLabel(walletId, name)) {
+  return async (dispatch: any, getState, extra) => {
+    const result = await extra.backendApi.updateWallet(walletId, name);
+    if (result) {
       dispatch({
         type: ActionTypes.WALLET_UPDATED,
         payload: {
           walletId,
-          name,
-          description
+          name
         }
       });
     }

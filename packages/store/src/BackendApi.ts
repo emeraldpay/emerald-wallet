@@ -11,6 +11,9 @@ import { ipcRenderer } from 'electron';
  * This backend api implementation calls electron IPC for business logic
  */
 export default class BackendApi implements IBackendApi {
+  public updateWallet = (walletId: string, name: string): Promise<boolean> => {
+    return ipcRenderer.invoke(Commands.VAULT_UPDATE_WALLET, walletId, name);
+  }
 
   public getAllWallets = (): Promise<Wallet[]> => {
     return ipcRenderer.invoke(Commands.VAULT_GET_WALLETS);

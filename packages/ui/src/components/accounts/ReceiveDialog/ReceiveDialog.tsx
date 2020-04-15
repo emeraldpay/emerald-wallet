@@ -93,7 +93,8 @@ const ReceiveDialog = ({ address, onClose, classes }: IReceiveDlgProps) => {
           </div>
         </div>
       </DialogContent>
-    </Dialog>);
+    </Dialog>
+  );
 };
 
 export default withStyles(styles)(ReceiveDialog);

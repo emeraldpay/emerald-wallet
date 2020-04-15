@@ -111,4 +111,8 @@ export function setIpcHandlers (app: Application) {
     const service = new WalletService(app.vault!);
     return service.getAllWallets();
   });
+
+  ipcMain.handle(Commands.VAULT_UPDATE_WALLET, (event: any, walletId: string, name: string) => {
+    return app.vault?.setWalletLabel(walletId, name);
+  });
 }

@@ -6,6 +6,7 @@ export default interface IBackendApi {
   getAllWallets: () => Promise<Wallet[]>;
   createWallet: (name: string) => Promise<Wallet>;
   getWallet: (walletId: string) => Promise<Wallet>;
+  updateWallet: (walletId: string, name: string) => Promise<boolean>;
 
   // Address Book
   getAddressBookItems: (blockchain: BlockchainCode) => Promise<AddressBookItem[]>;

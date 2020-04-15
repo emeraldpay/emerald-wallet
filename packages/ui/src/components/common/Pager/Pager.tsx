@@ -20,10 +20,23 @@ const styles = createStyles({
 
 const Pager = ({ classes, offset, setOffset, ...other }: IProps) => {
   const pageSize = other.pageSize || 5;
+
+  function handleRightClick () {
+    if (setOffset) {
+      setOffset(offset + pageSize);
+    }
+  }
+
+  function handleLeftClick () {
+    if (setOffset) {
+      setOffset(offset - pageSize);
+    }
+  }
+
   return (
     <Grid container={true} alignItems='center'>
       <Grid item={true} xs={5} style={{ textAlign: 'right' }}>
-        <IconButton disabled={offset - pageSize < 0} onClick={() => setOffset(offset - pageSize)}>
+        <IconButton disabled={offset - pageSize < 0} onClick={handleLeftClick}>
           <ArrowLeftIcon />
         </IconButton>
       </Grid>
@@ -31,7 +44,7 @@ const Pager = ({ classes, offset, setOffset, ...other }: IProps) => {
         {offset}
       </Grid>
       <Grid item={true} xs={5}>
-        <IconButton onClick={() => setOffset(offset + pageSize)}>
+        <IconButton onClick={handleRightClick}>
           <ArrowRightIcon />
         </IconButton>
       </Grid>

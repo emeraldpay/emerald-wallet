@@ -90,7 +90,7 @@ export class Vault implements IVault {
   }
 
   public setWalletLabel (walletId: string, label: string): boolean {
-    return false;
+    return this.provider.setWalletLabel(walletId, label);
   }
 
   public importSeed (seed: SeedDefinition): string {

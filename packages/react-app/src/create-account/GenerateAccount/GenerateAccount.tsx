@@ -100,21 +100,21 @@ class GenerateAccount extends React.Component<Props, IState> {
   }
 
   public skipAccountProps = () => {
-    this.props.dispatch(screen.actions.gotoScreen('home'));
+    this.props.dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
   }
 
   public updateAccountProps = (name: string) => {
     const { dispatch } = this.props;
     const { walletId } = this.state;
-    dispatch(accounts.actions.updateWallet(walletId, name, ''))
-      .then(() => dispatch(screen.actions.gotoScreen('home')));
+    dispatch(accounts.actions.updateWallet(walletId, name))
+      .then(() => dispatch(screen.actions.gotoScreen(screen.Pages.HOME)));
   }
 
   public goToDashboard = () => {
     if (this.props.onBackScreen) {
       this.props.dispatch(screen.actions.gotoScreen(this.props.onBackScreen));
     } else {
-      this.props.dispatch(screen.actions.gotoScreen('home'));
+      this.props.dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
     }
   }
 
