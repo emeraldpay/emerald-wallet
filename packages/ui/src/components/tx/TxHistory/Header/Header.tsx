@@ -1,12 +1,12 @@
 import { Search as SearchIcon } from '@emeraldplatform/ui-icons';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import { createStyles, withStyles } from '@material-ui/core/styles';
 import TextField from '@material-ui/core/TextField';
-import { CSSProperties, withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import Filter from './Filter';
 
-const styles2 = {
+const styles2 = createStyles({
   headerContainer: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -18,7 +18,7 @@ const styles2 = {
     fontWeight: 500,
     lineHeight: '24px',
     textTransform: 'uppercase'
-  } as CSSProperties,
+  },
   filter: {
     marginLeft: '40px',
     maxWidth: '186px'
@@ -33,7 +33,7 @@ const styles2 = {
   searchTextField: {
     fontSize: '14px'
   }
-};
+});
 
 interface IProps {
   onTxFilterChange?: any;

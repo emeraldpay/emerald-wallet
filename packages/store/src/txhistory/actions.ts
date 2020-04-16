@@ -10,7 +10,7 @@ import {
   loadTransactions, removeTransactions
 } from '@emeraldwallet/history-store';
 import { ipcRenderer } from 'electron';
-import { Dispatch } from 'react';
+import { Dispatch } from 'redux';
 import * as blockchains from '../blockchains';
 import * as settings from '../settings';
 import { Dispatched, GetState, IExtraArgument } from '../types';

@@ -11,7 +11,7 @@ import {
   WalletService
 } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
-import { Dispatch } from 'react';
+import { Dispatch } from 'redux';
 import { dispatchRpcError } from '../screen/actions';
 import * as history from '../txhistory';
 import { Dispatched } from '../types';

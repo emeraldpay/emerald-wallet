@@ -1,6 +1,5 @@
 import { Check2 as CheckIcon } from '@emeraldplatform/ui-icons';
 import { Grid } from '@material-ui/core';
-import { CSSProperties } from '@material-ui/styles';
 import * as React from 'react';
 import Button from '../../common/Button';
 
@@ -9,11 +8,11 @@ interface IProps {
 }
 
 export const Terms = ({ onAgree }: IProps) => {
-  const style = {
+  const style: React.CSSProperties = {
     width: '100%',
     height: '250px',
     overflowY: 'scroll'
-  } as CSSProperties;
+  };
 
   return (
     <Grid container={true} direction='column' justify='center' alignItems='center'>

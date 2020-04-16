@@ -1,4 +1,4 @@
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 
 export const styles = {
@@ -22,22 +22,20 @@ export const styles = {
   }
 };
 
-export interface FormRowProps {
+export interface IFormRowProps {
   leftColumn?: React.ReactElement;
   rightColumn?: React.ReactElement;
   classes: any;
 }
 
-export class FormRow extends React.Component<FormRowProps> {
-  public render () {
-    const { classes, leftColumn, rightColumn } = this.props;
-    return (
-      <div className={classes.formRow}>
-        <div className={classes.left}>{leftColumn}</div>
-        <div className={classes.right}>{rightColumn}</div>
-      </div>
-    );
-  }
+export function FormRow (props: IFormRowProps) {
+  const { classes, leftColumn, rightColumn } = props;
+  return (
+    <div className={classes.formRow}>
+      <div className={classes.left}>{leftColumn}</div>
+      <div className={classes.right}>{rightColumn}</div>
+    </div>
+  );
 }
 
 export default withStyles(styles)(FormRow);

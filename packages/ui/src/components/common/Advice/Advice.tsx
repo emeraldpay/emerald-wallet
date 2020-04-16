@@ -1,8 +1,8 @@
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import AdviceIcon from './AdviceIcon';
 
-const styles2 = {
+const styles = {
   title: {
     fontSize: '16px',
     fontWeight: 500,
@@ -20,13 +20,13 @@ const styles2 = {
   }
 };
 
-interface Props {
+interface IAdviceProps {
   title?: any;
   text?: any;
   classes?: any;
 }
 
-const Advice = (props: Props) => {
+const Advice = (props: IAdviceProps) => {
   const { title, text, classes } = props;
   return (
     <div className={classes.container} >
@@ -41,4 +41,4 @@ const Advice = (props: Props) => {
   );
 };
 
-export default withStyles(styles2)(Advice);
+export default withStyles(styles)(Advice);

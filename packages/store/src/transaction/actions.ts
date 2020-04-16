@@ -3,7 +3,7 @@ import { convert, EthAddress } from '@emeraldplatform/core';
 import { quantitiesToHex } from '@emeraldplatform/core/lib/convert';
 import { Wei } from '@emeraldplatform/eth';
 import { BlockchainCode, Blockchains, EthereumTx, IApi, IStoredTransaction, Logger, vault } from '@emeraldwallet/core';
-import { Dispatch } from 'react';
+import { Dispatch } from 'redux';
 import { catchError, gotoScreen, showError } from '../screen/actions';
 import * as history from '../txhistory';
 import { Dispatched } from '../types';

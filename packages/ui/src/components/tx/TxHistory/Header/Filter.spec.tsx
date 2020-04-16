@@ -1,10 +1,10 @@
 import { render } from '@testing-library/react';
 import * as React from 'react';
-import Header from './Header';
+import Filter from './Filter';
 
-describe('Header', () => {
+describe('Filter', () => {
   it('should renders', () => {
-    const component = render(<Header />);
+    const component = render(<Filter value='1'/>);
     expect(component).toBeDefined();
   });
 });

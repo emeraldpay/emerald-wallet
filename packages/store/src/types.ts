@@ -1,6 +1,5 @@
 import { IApi, IBackendApi } from '@emeraldwallet/core';
-import { Dispatch } from 'react';
-import { Action } from 'redux';
+import { Action, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
 import * as accounts from './accounts';
 import { IAccountsState } from './accounts/types';
@@ -31,8 +30,9 @@ export interface IState {
 }
 export type GetState = () => IState;
 export interface IExtraArgument {
-  api: IApi; backendApi: IBackendApi;
+  api: IApi;
+  backendApi: IBackendApi;
 }
-export type Dispatched<T> = (dispatch: Dispatch<T | Dispatched<T>>, getState: GetState, extra: IExtraArgument) => void;
+export type Dispatched<T> = (dispatch: Dispatch, getState: GetState, extra: IExtraArgument) => void;
 
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, IState, null, Action<string>>;
