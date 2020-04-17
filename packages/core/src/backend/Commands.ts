@@ -17,6 +17,8 @@ export enum Commands {
 
   ACCOUNT_IMPORT_ETHEREUM_JSON = 'import-json',
   ACCOUNT_IMPORT_PRIVATE_KEY = 'import-private-key',
+  ACCOUNT_EXPORT_RAW_PRIVATE = 'export-raw-private',
+  ACCOUNT_EXPORT_JSON_FILE = 'export-json-file',
 
   // Wallets
   VAULT_GET_WALLETS = 'get-vault-wallets',

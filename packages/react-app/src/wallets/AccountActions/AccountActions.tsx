@@ -23,7 +23,7 @@ interface IDispatchProps {
 const mapStateToProps = (state: any, ownProps: IOwnProps): IPropsFromState => {
   return {
     hiddenAccount: false,
-    showExport: false,
+    showExport: true,
     showPrint: true,
     canHide: false
   };
@@ -42,7 +42,7 @@ export default connect<IPropsFromState, IDispatchProps, IOwnProps, {}>(
       const chain = ownProps.account.blockchain;
       dispatch(accounts.actions.exportKeyFile(accountId))
         .then((result: any) => {
-          saveJson(result, `${chain}-${accountId}.json`);
+          saveJson(result, `${chain}-${ownProps.account.address}.json`);
         });
     }
   })

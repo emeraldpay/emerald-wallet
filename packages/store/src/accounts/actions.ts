@@ -14,7 +14,7 @@ import { ipcRenderer } from 'electron';
 import { Dispatch } from 'redux';
 import { dispatchRpcError } from '../screen/actions';
 import * as history from '../txhistory';
-import { Dispatched } from '../types';
+import {Dispatched, IExtraArgument} from '../types';
 import * as selectors from './selectors';
 import {
   ActionTypes,
@@ -137,14 +137,14 @@ export function createAccount (
 }
 
 export function exportPrivateKey (passphrase: string, accountId: vault.AccountId): any {
-  return (dispatch: any, getState: any, api: IApi) => {
-    return api.vault.exportRawPrivateKey(accountId, passphrase);
+  return (dispatch: any, getState: any, extra: IExtraArgument) => {
+    return extra.backendApi.exportRawPrivateKey(accountId, passphrase);
   };
 }
 
 export function exportKeyFile (accountId: vault.AccountId): any {
-  return (dispatch: any, getState: any, api: IApi) => {
-    return api.vault.exportJsonPrivateKey(accountId, undefined);
+  return (dispatch: any, getState: any, extra: IExtraArgument) => {
+    return extra.backendApi.exportJsonKeyFile(accountId);
   };
 }
 

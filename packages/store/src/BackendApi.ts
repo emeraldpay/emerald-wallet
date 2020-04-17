@@ -69,4 +69,12 @@ export default class BackendApi implements IBackendApi {
   public getWallet = (walletId: string): Promise<Wallet> => {
     return ipcRenderer.invoke(Commands.VAULT_GET_WALLET, walletId);
   }
+
+  public exportJsonKeyFile = (accountId: string): Promise<string> => {
+    return ipcRenderer.invoke(Commands.ACCOUNT_EXPORT_JSON_FILE, accountId);
+  }
+
+  public exportRawPrivateKey = (accountId: string, password: string): Promise<string> => {
+    return ipcRenderer.invoke(Commands.ACCOUNT_EXPORT_RAW_PRIVATE, accountId, password);
+  }
 }

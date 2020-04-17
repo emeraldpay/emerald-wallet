@@ -7,7 +7,6 @@ import {
   WalletService
 } from '@emeraldwallet/core';
 import { loadTransactions2, storeTransactions2 } from '@emeraldwallet/history-store';
-import { call } from '@redux-saga/core/effects';
 import { ipcMain } from 'electron';
 import * as os from 'os';
 import Application from '../Application';
@@ -96,6 +95,14 @@ export function setIpcHandlers (app: Application) {
       return app.vault?.addAccount(walletId, addAccount);
     });
 
+  ipcMain.handle(Commands.ACCOUNT_EXPORT_RAW_PRIVATE,
+    (event: any, accountId: string, password: string) => {
+      return app.vault?.exportRawPrivateKey(accountId, password);
+    });
+
+  ipcMain.handle(Commands.ACCOUNT_EXPORT_JSON_FILE, (event: any, accountId: string) => {
+    return app.vault?.exportJsonPrivateKey(accountId, undefined);
+  });
   // Wallets
   ipcMain.handle(Commands.VAULT_CREATE_WALLET, (event: any, name: string) => {
     const service = new WalletService(app.vault!);
