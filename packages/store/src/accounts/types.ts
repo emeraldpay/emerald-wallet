@@ -95,10 +95,13 @@ export interface IWalletCreatedAction {
 
 export interface ICreateWalletAction {
   type: ActionTypes.CREATE_WALLET;
-  payload: string;
+  payload: {
+    walletName: string;
+    mnemonic: string;
+  };
 }
 
-export interface SetTxCountAction {
+export interface ISetTxCountAction {
   type: ActionTypes.SET_TXCOUNT;
   accountId: vault.AccountId;
   value: number;
@@ -123,7 +126,7 @@ export type AddressesAction =
   | IUpdateWalletAction
   | IWalletCreatedAction
   // | SetHDPathAction
-  | SetTxCountAction
+  | ISetTxCountAction
   | PendingBalanceAction
   | IFetchHdPathsAction
   | ILoadWalletsAction

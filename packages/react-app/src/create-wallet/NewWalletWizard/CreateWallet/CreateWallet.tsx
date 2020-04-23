@@ -1,24 +1,17 @@
 import { ButtonGroup, Input, Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import { accounts, screen } from '@emeraldwallet/store';
 import { Button } from '@emeraldwallet/ui';
 import * as React from 'react';
-import { useState } from 'react';
-import { connect } from 'react-redux';
 
 export interface ICreateWalletProps {
   onCancel?: any;
   onCreate?: any;
 }
 
-interface ICreateWalletState {
-  name: string;
-}
-
 export const CreateWallet = (props: ICreateWalletProps) => {
 
-  const [name, setName] = useState('');
-  const [errorText, setErrorText] = useState<string | null>(null);
+  const [name, setName] = React.useState<string>('');
+  const [errorText, setErrorText] = React.useState<string | null>(null);
 
   function handleCancelClick () {
     if (props.onCancel) {
@@ -44,7 +37,7 @@ export const CreateWallet = (props: ICreateWalletProps) => {
 
   return (
     <Page
-      title={'New Wallet'}
+      title={'New Wallet - Set name'}
       leftIcon={<Back onClick={handleCancelClick}/>}
     >
       <div>Wallets allow you to organize your funds into categories, like spending or savings.</div>
@@ -57,27 +50,15 @@ export const CreateWallet = (props: ICreateWalletProps) => {
       />
       <ButtonGroup>
         <Button label={'Cancel'} onClick={handleCancelClick}/>
-        <Button label={'Create'} primary={true} disabled={errorText !== null} onClick={handleCreateClick}/>
+        <Button
+          label={'Continue'}
+          primary={true}
+          disabled={errorText !== null}
+          onClick={handleCreateClick}
+        />
       </ButtonGroup>
     </Page>
   );
 };
 
-function mapStateToProps () {
-  return {
-
-  };
-}
-
-function mapDispatchToProps (dispatch: any) {
-  return {
-    onCancel: () => {
-      dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
-    },
-    onCreate: (walletName: string) => {
-      dispatch(accounts.actions.createNewWalletAction(walletName));
-    }
-  };
-}
-
-export default connect(mapStateToProps, mapDispatchToProps)(CreateWallet);
+export default CreateWallet;

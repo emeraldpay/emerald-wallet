@@ -174,7 +174,7 @@ export function importSelected (blockchain: BlockchainCode): Dispatched<AddressS
       return;
     }
 
-    const walletId = extra.api.vault.addWallet(`Ledger ${hdpath}`);
+    const walletId = extra.api.vault.addWallet(seed.id!, `Ledger ${hdpath}`);
     const accountId = extra.api.vault.addAccount(walletId, {
       blockchain: blockchainCodeToId(blockchain),
       type: 'hd-path',

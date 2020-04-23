@@ -1,5 +1,5 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
-import {blockchainCodeToId, Wallet} from '@emeraldwallet/core';
+import { blockchainCodeToId, Wallet } from '@emeraldwallet/core';
 import produce from 'immer';
 import {
   AccountDetails,
@@ -8,9 +8,10 @@ import {
   IAccountsState,
   ISetBalanceAction,
   ISetLoadingAction,
+  ISetTxCountAction,
   IUpdateWalletAction,
   IWalletCreatedAction,
-  IWalletsLoaded, SetTxCountAction
+  IWalletsLoaded
 } from './types';
 
 export const INITIAL_STATE: IAccountsState = {
@@ -113,7 +114,7 @@ function onWalletCreated (state: IAccountsState, action: IWalletCreatedAction): 
   return { ...state, wallets };
 }
 
-function onSetTxCount (state: any, action: SetTxCountAction) {
+function onSetTxCount (state: any, action: ISetTxCountAction) {
   return updateAccountDetails(state, action.accountId, (acc) => {
     acc.txcount = action.value;
     return acc;

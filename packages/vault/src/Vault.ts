@@ -55,8 +55,14 @@ export class Vault implements IVault {
     });
   }
 
-  public addWallet (label: string | undefined): string {
-    return this.provider.addWallet(label);
+  public addWallet (seedId: string, label: string | undefined): string {
+    return this.provider.addWallet({
+      name: label,
+      reserved: [{
+        seedId,
+        accountId: 1
+      }]
+    } as any);
   }
 
   public listAddressBook (blockchain: BlockchainCode): AddressBookItem[] {

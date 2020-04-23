@@ -1,7 +1,9 @@
 import {
   AccountId,
   AddAccount,
-  SeedDefinition, SeedDescription, UnsignedTx,
+  SeedDefinition,
+  SeedDescription,
+  UnsignedTx,
   Uuid
 } from '@emeraldpay/emerald-vault-core';
 import AddressBookItem from '../address-book/AddressBookItem';
@@ -9,11 +11,9 @@ import { BlockchainCode } from '../blockchains';
 import Wallet from '../entities/Wallet';
 import { Account, Contact, TxSignRequest } from './types';
 
-
-
 export default interface IVault {
   listWallets (): Wallet[];
-  addWallet (label?: string): Uuid;
+  addWallet (seedId: string, label: string | undefined): Uuid;
   getWallet (id: Uuid): Wallet | undefined;
   setWalletLabel (walletId: Uuid, label: string): boolean;
   addAccount (walletId: Uuid, account: AddAccount): AccountId;

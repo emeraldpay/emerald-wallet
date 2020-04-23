@@ -28,7 +28,7 @@ import {
   IWalletCreatedAction,
   IWalletsLoaded,
   PendingBalanceAction,
-  SetTxCountAction
+  ISetTxCountAction
 } from './types';
 
 const log = Logger.forCategory('store.accounts');
@@ -86,10 +86,13 @@ export function loadAccountBalance (blockchain: BlockchainCode, address: string)
 //   };
 // }
 
-export function createNewWalletAction (walletName: string): ICreateWalletAction {
+export function createNewWalletAction (walletName: string, mnemonic: string): ICreateWalletAction {
   return {
     type: ActionTypes.CREATE_WALLET,
-    payload: walletName
+    payload: {
+      walletName,
+      mnemonic
+    }
   };
 }
 
@@ -314,6 +317,6 @@ export function loadPendingTransactions (): Dispatched<PendingBalanceAction> {
 
 export function generateMnemonic (): Dispatched<any> {
   return (dispatch: any, getState, extra) => {
-    return extra.api.vault.generateMnemonic(24);
+    return Promise.resolve(extra.api.vault.generateMnemonic(24));
   };
 }

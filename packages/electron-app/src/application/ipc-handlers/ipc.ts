@@ -104,9 +104,9 @@ export function setIpcHandlers (app: Application) {
     return app.vault?.exportJsonPrivateKey(accountId, undefined);
   });
   // Wallets
-  ipcMain.handle(Commands.VAULT_CREATE_WALLET, (event: any, name: string) => {
+  ipcMain.handle(Commands.VAULT_CREATE_WALLET, (event: any, name: string, mnemonic: string) => {
     const service = new WalletService(app.vault!);
-    return service.createNewWallet(name);
+    return service.createNewWallet(name, mnemonic);
   });
 
   ipcMain.handle(Commands.VAULT_GET_WALLET, (event: any, walletId: string) => {

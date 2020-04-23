@@ -16,7 +16,7 @@ export class LocalConnector {
     const nativeVault = new EmeraldVaultNative({
       dir: this.dataDir
     });
-    nativeVault.autoMigrate();
+    nativeVault.open();
 
     this.vault = new Vault(nativeVault);
   }

@@ -62,8 +62,8 @@ export default class BackendApi implements IBackendApi {
     return ipcRenderer.invoke(Commands.PERSIST_TX_HISTORY, blockchain, request);
   }
 
-  public createWallet = (name: string): Promise<Wallet> => {
-    return ipcRenderer.invoke(Commands.VAULT_CREATE_WALLET, name);
+  public createWallet = (name: string, mnemonic: string): Promise<Wallet> => {
+    return ipcRenderer.invoke(Commands.VAULT_CREATE_WALLET, name, mnemonic);
   }
 
   public getWallet = (walletId: string): Promise<Wallet> => {
