@@ -1,12 +1,10 @@
-import { Blockchains } from '@emeraldwallet/core';
-import { addresses, screen } from '@emeraldwallet/store';
+import { Wallet } from '@emeraldwallet/core';
+import { accounts, IState, screen } from '@emeraldwallet/store';
+import { Grid } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import WalletItem from './WalletItem';
-import { Wallet, WalletsOp, WalletOp } from '@emeraldpay/emerald-vault-core';
-import {Grid} from "@material-ui/core";
-
 
 const styles = (theme: any) => ({
   container: {
@@ -18,41 +16,43 @@ const styles = (theme: any) => ({
     marginBottom: '10px'
   },
   listItem: {
-    border: `1px solid ${theme.palette.divider}`,
-    marginBottom: '10px'
+    // border: `1px solid ${theme.palette.divider}`,
+    // marginBottom: '10px'
   }
 });
 
-interface IAccountListProps {
+interface IWalletsListProps {
   showFiat: boolean;
-  accounts: WalletsOp;
+  wallets: Wallet[];
   classes: any;
   openWallet: (wallet: Wallet) => void;
   createTx: (wallet: Wallet) => void;
   showReceiveDialog: (wallet: Wallet) => void;
 }
 
-const WalletList = ((props: IAccountListProps) => {
+const WalletList = ((props: IWalletsListProps) => {
   const {
-    accounts, showFiat, classes
+    wallets, showFiat, classes
   } = props;
   const {
     openWallet, createTx, showReceiveDialog
   } = props;
   return (
     <div className={classes.container}>
-      <Grid container={true} spacing={2}>
-        {accounts.getWallets().map((wallet: WalletOp) => {
-          const className = classes.listItem;
-          return (<Grid item={true} xs={6} key={wallet.value.id}>
-            <WalletItem
-              showFiat={showFiat}
-              wallet={wallet}
-              openWallet={openWallet}
-              createTx={createTx}
-              showReceiveDialog={showReceiveDialog}
-            />
-          </Grid>);
+      <Grid container={true}>
+        {wallets.map((wallet: Wallet) => {
+          return (
+            // <Grid item={true} xs={6} key={wallet.id}>
+              <WalletItem
+                key={wallet.id}
+                showFiat={showFiat}
+                wallet={wallet}
+                openWallet={openWallet}
+                createTx={createTx}
+                showReceiveDialog={showReceiveDialog}
+              />
+            // </Grid>
+          );
         })}
       </Grid>
     </div>
@@ -62,26 +62,26 @@ const WalletList = ((props: IAccountListProps) => {
 const StyledAccountList = withStyles(styles)(WalletList);
 
 export default connect(
-  (state, ownProps) => {
+  (state: IState, ownProps) => {
     return {
-      accounts: addresses.selectors.all(state),
+      wallets: accounts.selectors.allWallets(state),
       showFiat: true
     };
   },
   (dispatch, ownProps) => ({
-    createTx: (account: Wallet) => {
-      dispatch(screen.actions.gotoScreen('create-tx', account));
+    createTx: (wallet: Wallet) => {
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, wallet));
     },
-    openWallet: (account: Wallet) => {
-      dispatch(screen.actions.gotoScreen('wallet', account));
+    openWallet: (wallet: Wallet) => {
+      dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, wallet.id));
     },
     showReceiveDialog: (account: Wallet) => {
       // TODO vault v3
-    //   const address = {
-    //     coinTicker: Blockchains[account.blockchain].params.coinTicker,
-    //     value: account.id
-    //   };
-    //   dispatch(screen.actions.showDialog('receive', address));
+      //   const address = {
+      //     coinTicker: Blockchains[account.blockchain].params.coinTicker,
+      //     value: account.id
+      //   };
+      //   dispatch(screen.actions.showDialog('receive', address));
     }
   })
 )((StyledAccountList));

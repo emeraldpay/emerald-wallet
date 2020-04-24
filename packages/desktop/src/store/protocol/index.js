@@ -2,11 +2,9 @@ import * as qs from 'qs';
 import { ipcRenderer } from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
 import { fromJS } from 'immutable';
 import { Contract } from '@emeraldplatform/contracts';
-import { screen } from 'store';
-import createLogger from '../../utils/logger';
+import { screen } from '@emeraldwallet/store';
 import { onceServicesStart, onceAccountsLoaded, onceBalancesSet } from '../triggers';
 
-const log = createLogger('launcherActions');
 
 const protocolLinkHandler = (request, state, dispatch) => {
   const paymentParams = qs.parse(request.url.split('?')[1]);

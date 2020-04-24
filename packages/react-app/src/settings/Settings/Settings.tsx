@@ -1,4 +1,4 @@
-import { addresses, screen, settings } from '@emeraldwallet/store';
+import { screen, settings } from '@emeraldwallet/store';
 import * as React from 'react';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
@@ -27,9 +27,7 @@ export default connect(
         numConfirmations: data.numConfirmations
       };
       i18n.changeLanguage(data.language);
-      dispatch(settings.actions.updateSettings(newSettings) as any);
-      // TODO: get rid of this
-      dispatch(addresses.actions.loadAccountsList() as any);
+      dispatch(settings.actions.updateSettings(newSettings));
     }
   })
 )(TranslatedSettings);

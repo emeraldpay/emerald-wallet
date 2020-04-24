@@ -1,41 +1,39 @@
 /* eslint-disable import/no-extraneous-dependencies */
 import {
+  BackendApi,
   blockchains,
   screen,
   ledger,
   txhistory,
-  addresses,
+  accounts,
   addressBook,
   settings,
+  application,
+  createStore
 } from '@emeraldwallet/store';
 import {ipcRenderer} from 'electron';
 import {startProtocolListener} from './protocol';
-
-import {Api, getConnector} from '../lib/rpc/api';
+import {Api, getConnector, getRemoteVault} from '../lib/rpc/api';
 import {intervalRates} from './config';
-import tokens from './vault/tokens';
-
-import {
-  readConfig,
-  connecting
-} from './launcher/launcherActions';
-// import { showError } from './wallet/screen/screenActions';
-
 import getWalletVersion from '../utils/get-wallet-version';
-import createLogger from '../utils/logger';
-import {createStore} from './createStore';
 
 import {
   onceBlockchainConnected,
   onceAccountsLoaded,
-  onceBalancesSet,
-  onceModeSet, onceServicesStart,
+  onceModeSet,
+  onceServicesStart,
 } from './triggers';
+import {Logger} from '@emeraldwallet/core';
+import ElectronLogger from '../utils/logger2';
 
-const log = createLogger('store');
+Logger.setInstance(new ElectronLogger());
 
-const api = new Api(getConnector());
-export const store = createStore(api);
+const log = Logger.forCategory('store');
+
+const api = new Api(getConnector(), getRemoteVault());
+const backendApi = new BackendApi();
+
+export const store = createStore(api, backendApi);
 global.api = api;
 
 function refreshAll() {
@@ -64,7 +62,7 @@ export function startSync() {
         api.connectChains(codes);
       })
       .then(() => {
-        return store.dispatch(addresses.actions.loadAccountsList());
+        return store.dispatch(accounts.actions.loadWalletsAction());
       })
       .then(() => {
         const supported = settings.selectors.currentChains(store.getState());
@@ -95,7 +93,7 @@ export function startSync() {
 
   promises.push(
     refreshAll()
-      .then(() => store.dispatch(connecting(false)))
+      .then(() => store.dispatch(application.actions.connecting(false)))
       .catch((err) => {
         log.error('Failed to do initial sync', err);
         store.dispatch(screen.actions.showError(err));
@@ -125,7 +123,7 @@ function newWalletVersionCheck() {
 /**
  * Listen to IPC channel 'store' and dispatch action to redux store
  */
-export function electronToStore() {
+function listenElectron() {
   return (dispatch) => {
     log.debug('Running launcher listener for Redux');
     ipcRenderer.on('store', (event, action) => {
@@ -137,27 +135,28 @@ export function electronToStore() {
 
 export const start = () => {
   try {
-    store.dispatch(readConfig());
+    store.dispatch(application.actions.readConfig());
     store.dispatch(settings.actions.loadSettings());
+    store.dispatch(listenElectron());
   } catch (e) {
     log.error(e);
   }
-  store.dispatch(electronToStore());
   getInitialScreen();
   newWalletVersionCheck();
 };
 
-function checkStatus() {
-  function checkServiceStatus() {
-    // hack to make some stuff work in storybook: @shanejonas
-    if (!ipcRenderer) {
-      return;
-    }
-    ipcRenderer.send('get-status');
-  }
-
-  setTimeout(checkServiceStatus, 2000);
-}
+// @deprecated
+// function checkStatus() {
+//   function checkServiceStatus() {
+//     // hack to make some stuff work in storybook: @shanejonas
+//     if (!ipcRenderer) {
+//       return;
+//     }
+//     ipcRenderer.send('get-status');
+//   }
+//
+//   setTimeout(checkServiceStatus, 2000);
+// }
 
 export function screenHandlers() {
   let prevScreen = null;
@@ -190,14 +189,19 @@ function getInitialScreen() {
   return onceServicesStart(store)
     .then(() => onceAccountsLoaded(store)
       .then(() => {
-      // We display home screen which will decide show landing or accounts list
-      store.dispatch(screen.actions.gotoScreen('home'));
-  }));
+        log.info('Opening Home screen');
+        // We display home screen which will decide show landing or accounts list
+        store.dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
+      }));
 }
 
 Promise
   .all([onceBlockchainConnected(store)])
   .then(startSync);
-checkStatus();
+
+// @deprecated
+// checkStatus();
+
 screenHandlers();
+
 ipcRenderer.send('emerald-ready');

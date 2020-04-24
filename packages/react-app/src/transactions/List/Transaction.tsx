@@ -1,10 +1,11 @@
-import {blockchainById, blockchainByName, blockchainCodeToId} from '@emeraldwallet/core';
-import {addresses, blockchains, screen, settings, State, wallet} from '@emeraldwallet/store';
+import { blockchainById, blockchainByName, BlockchainCode } from '@emeraldwallet/core';
+import { accounts, blockchains, IState, screen, settings, txhistory, wallet } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import Balance from '../../common/Balance';
 import i18n from '../../i18n';
 import TxView from './TxItemView';
+import { ITxItemProps } from './TxItemView/TxItem';
 
 function txValueRenderer (showFiat: boolean) {
   return function renderer (balance: any, ticker: string) {
@@ -21,17 +22,23 @@ function txValueRenderer (showFiat: boolean) {
   };
 }
 
-export default connect<any, any, any, State>(
-  (state, ownProps: any) => {
-    const tx = (ownProps.tx && ownProps.tx.toJS()) || {};
+export interface IOwnProps {
+  hash: string;
+}
+
+export interface IDispatchProps {
+  openAccount: any;
+  openTx: any;
+}
+
+export default connect<ITxItemProps, IDispatchProps, IOwnProps, IState>(
+  (state, ownProps: IOwnProps): any => {
+    // TODO: .toJS() call impact on performance
+    const tx = txhistory.selectors.selectByHash(state, ownProps.hash).toJS();
     const blockchain = tx.blockchain ? blockchainByName(tx.blockchain) : blockchainById(tx.chainId);
-    const blockchainId = blockchainCodeToId(blockchain!.params.code);
 
-    const wallets = addresses.selectors.all(state);
-    wallets.findWalletByAddress(tx.to, blockchainId);
-
-    const toAccount = wallets.findWalletByAddress(tx.to, blockchainId);
-    const fromAccount = wallets.findWalletByAddress(tx.from, blockchainId);
+    const toAccount = accounts.selectors.findAccountByAddress(state, tx.to, blockchain!.params.code) || {};
+    const fromAccount = accounts.selectors.findAccountByAddress(state, tx.from, blockchain!.params.code) || {};
 
     // console.log("accounts", toAccount, fromAccount);
 
@@ -42,7 +49,7 @@ export default connect<any, any, any, State>(
 
     return {
       coinTicker: blockchain!.params.coinTicker,
-      amountRenderer: txValueRenderer(showFiat),
+      // amountRenderer: txValueRenderer(showFiat),
       lang: i18n.language,
       tx,
       toAccount,
@@ -55,17 +62,13 @@ export default connect<any, any, any, State>(
     };
   },
 
-  (dispatch, ownProps: any) => ({
+  (dispatch, ownProps: IOwnProps): IDispatchProps => ({
     openTx: () => {
-      const { tx } = ownProps;
-      dispatch(screen.actions.gotoScreen('transaction', {
-        hash: tx.get('hash'),
-        accountId: ownProps.accountId
-      }));
+      const { hash } = ownProps;
+      dispatch(screen.actions.gotoScreen(screen.Pages.TX_DETAILS, { hash }));
     },
-    openAccount: (address: string) => {
-      const { tx } = ownProps;
-      dispatch(wallet.actions.openAccountDetails(tx.get('blockchain'), address));
+    openAccount: (blockchain: BlockchainCode, address: string) => {
+      dispatch(wallet.actions.openAccountDetails(blockchain, address));
     }
   })
 )(TxView);

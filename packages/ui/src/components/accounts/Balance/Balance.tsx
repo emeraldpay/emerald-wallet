@@ -1,15 +1,15 @@
 import { fromBaseUnits } from '@emeraldplatform/core';
 import { Wei } from '@emeraldplatform/eth';
-import {Currency, CurrencyCode, Units} from '@emeraldwallet/core';
+import { Currency, CurrencyCode, Units } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
 
 const defaultStyles = {
   coins: {
-    color: '#191919',
+    color: '#191919'
   },
   fiat: {
-    color: '#191919',
+    color: '#191919'
   }
 };
 
@@ -30,7 +30,7 @@ export interface IProps {
   showFiat?: boolean;
   coinsStyle?: any;
   fiatStyle?: any;
-  displayDecimals?: number
+  displayDecimals?: number;
 }
 
 export class Balance extends React.Component<IProps> {
@@ -65,7 +65,7 @@ export class Balance extends React.Component<IProps> {
         value = balance.toBigNumber();
         valueDecimals = balance.decimals;
       } else {
-        //Wei
+        // Wei
         value = balance.toWei();
         valueDecimals = 18;
       }

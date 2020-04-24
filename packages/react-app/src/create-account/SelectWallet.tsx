@@ -1,3 +1,5 @@
+import { Wallet } from '@emeraldwallet/core';
+import { IState } from '@emeraldwallet/store';
 import {
   Button,
   Card,
@@ -9,51 +11,48 @@ import {
   StepLabel,
   Stepper,
   Typography
-} from "@material-ui/core";
-import NavigateNextIcon from "@material-ui/icons/NavigateNext";
-import {connect} from "react-redux";
-import {State} from "@emeraldwallet/store";
-import * as React from "react";
-import { WalletOp } from "@emeraldpay/emerald-vault-core";
-import {BlockchainCode} from "@emeraldwallet/core";
-import {AccountSummary} from "../wallets/AccountSummary";
+} from '@material-ui/core';
+import NavigateNextIcon from '@material-ui/icons/NavigateNext';
+import * as React from 'react';
+import { connect } from 'react-redux';
+import WalletSummary from '../wallets/WalletSummary';
 
-type OwnProps = {
-  wallet: WalletOp
+interface IOwnProps {
+  wallet: Wallet;
 }
 
-type RenderProps = {
-  wallet: WalletOp,
+interface IRenderProps {
+  wallet: Wallet;
 }
 
-type DispatchProps = {
+interface IDispatchProps {
 }
 
-const SelectWallet = ((props: RenderProps & DispatchProps) => {
-  const {wallet} = props;
+const SelectWallet = ((props: IRenderProps & IDispatchProps) => {
+  const { wallet } = props;
 
   return (
       <Grid container={true}>
         <Grid item={true} xs={12}>
-          <Typography title={wallet.value.name}>
-            Adding a support for a new cryptocurrency to the wallet "{wallet.value.name}"
+          <Typography title={wallet.name}>
+            Adding a support for a new cryptocurrency to the wallet "{wallet.name}"
           </Typography>
         </Grid>
         <Grid item={true} xs={12}>
-          <AccountSummary wallet={wallet}/>
+          <WalletSummary wallet={wallet}/>
         </Grid>
       </Grid>
-  )
+  );
 });
 
-export default connect<RenderProps, DispatchProps, OwnProps, State>(
+export default connect<IRenderProps, IDispatchProps, IOwnProps, IState>(
   (state, ownProps) => {
     return {
       wallet: ownProps.wallet
-    }
+    };
   },
   (dispatch, ownProps) => {
     return {
-    }
+    };
   }
 )((SelectWallet));

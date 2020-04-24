@@ -1,4 +1,5 @@
 import Button from '@material-ui/core/Button';
+import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 
 interface IBtnProps {
@@ -15,32 +16,35 @@ interface IBtnProps {
   classes?: any;
 }
 
+const styles = createStyles({
+  root: {
+    height: 38
+  },
+  label: {
+    fontSize: '15px',
+    fontWeight: 500,
+    fontFamily: 'inherit'
+  }
+});
+
+const StyledButton = withStyles(styles)(Button);
+
 const Btn = (props: IBtnProps) => {
   const {
     primary, onClick, label, icon, href, variant, disabled, ...restProps
   } = props;
-  const style = {
-    fontSize: '15px',
-    fontWeight: '500',
-    // lineHeight: '18px',
-    height: '40px',
-    fontFamily: 'inherit',
-    ...props.style
-  };
   return (
-    <Button
-      // size='medium'
+    <StyledButton
       disabled={disabled}
       color={primary ? 'primary' : 'secondary'}
       // href={href}
       variant={variant || 'contained'}
-      // style={style}
       onClick={onClick}
       {...restProps}
     >
       {icon}
       {label}
-    </Button>
+    </StyledButton>
   );
 };
 

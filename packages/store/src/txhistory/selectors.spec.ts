@@ -59,23 +59,21 @@ describe('history selectors', () => {
   describe('filterTransactions', () => {
     it('returns empty array if no transactions', () => {
       const transactions = fromJS([]);
-      const accounts = fromJS([]);
-      const filterResults = filterTransactions('ALL', null, transactions, accounts);
+      const filterResults = filterTransactions('ALL', null, transactions, []);
       expect(filterResults.size).toEqual(0);
     });
     it('matches ALL to everything', () => {
       const transactions = fromJS(fixture);
-      const accounts = fromJS([]);
-      const filterResults = filterTransactions('ALL', null, transactions, accounts);
+      const filterResults = filterTransactions('ALL', null, transactions, []);
       expect(filterResults.size).toEqual(2);
     });
     it('matches IN to "to" field', () => {
       const transactions = fromJS(fixture);
-      const accounts = fromJS([
+      const accounts = [
         {
-          id: '0x456'
+          address: '0x456'
         }
-      ]);
+      ];
 
       const filterResults = filterTransactions('IN', null, transactions, accounts);
       expect(filterResults.size).toEqual(1);
@@ -83,11 +81,11 @@ describe('history selectors', () => {
     });
     it('matches OUT to "from" field', () => {
       const transactions = fromJS(fixture);
-      const accounts = fromJS([
+      const accounts = [
         {
-          id: '0x01'
+          address: '0x01'
         }
-      ]);
+      ];
       const filterResults = filterTransactions('OUT', null, transactions, accounts);
       expect(filterResults.size).toEqual(1);
     });

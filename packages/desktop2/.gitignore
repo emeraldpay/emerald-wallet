@@ -1,0 +1,16 @@
+janusbin/
+bin/
+node_modules/
+*.iml
+release/
+npm-debug.log
+app/
+dist/
+emerald
+geth
+logs/
+coverage/
+package-lock.json
+yarn-error.log
+.emerald-dev
+emerald.bak

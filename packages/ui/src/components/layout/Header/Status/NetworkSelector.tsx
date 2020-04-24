@@ -4,7 +4,7 @@ import {
 import { blockchainByName, utils } from '@emeraldwallet/core';
 import Grid from '@material-ui/core/Grid';
 import Menu from '@material-ui/core/Menu';
-import { CSSProperties, withStyles, withTheme } from '@material-ui/styles';
+import { createStyles, withStyles, withTheme } from '@material-ui/core/styles';
 import * as React from 'react';
 import Button from '../../../common/Button';
 
@@ -20,7 +20,9 @@ class ExtendedMenuItem extends React.Component<ItemProps> {
       textColor, title, height
     } = this.props;
     return (
-      <Grid container={true} direction='column'
+      <Grid
+        container={true}
+        direction='column'
         style={{
           padding: '5px 80px 5px 40px',
           fontSize: '14px',
@@ -39,25 +41,25 @@ class ExtendedMenuItem extends React.Component<ItemProps> {
   }
 }
 
-const selectorStyles = {
+const selectorStyles = createStyles({
   buttonText: {
     textTransform: 'none',
     fontSize: '16px',
     paddingRight: '10px'
-  } as CSSProperties
-};
+  }
+});
 
-interface Props {
+interface IProps {
   blockchains: any[];
   classes: any;
   theme: any;
 }
 
-interface State {
+interface IState {
   anchorEl: any | null;
 }
 
-class NetworkSelectorRender extends React.Component<Props, State> {
+class NetworkSelectorRender extends React.Component<IProps, IState> {
   constructor (props) {
     super(props);
     this.state = {
@@ -97,7 +99,7 @@ class NetworkSelectorRender extends React.Component<Props, State> {
           onClick={this.handleToggle}
           icon={icon}
           classes={{
-            text: classes.buttonText
+            label: classes.buttonText
           }}
         />
         <Menu

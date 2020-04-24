@@ -1,22 +1,22 @@
+import { Wei } from '@emeraldplatform/eth';
 import { CurrencyEtc, CurrencyEth } from '@emeraldplatform/ui-icons';
+import { AnyCoinCode, CurrencyCode, StableCoinCode, Units } from '@emeraldwallet/core';
 import { ListItem, ListItemAvatar, ListItemText, Menu, MenuList } from '@material-ui/core';
-import { CSSProperties, withStyles } from '@material-ui/styles';
+import { createStyles, withStyles } from '@material-ui/core/styles';
+import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import Button from '../../../common/Button';
 import { CoinAvatar } from '../../../common/CoinIcon';
-import {AnyCoinCode, CurrencyCode, StableCoinCode, Units} from "@emeraldwallet/core";
-import {Wei} from "@emeraldplatform/eth";
-import BigNumber from "bignumber.js";
 
 export interface IProps {
   total: Units;
   fiatCurrency?: CurrencyCode | StableCoinCode;
-  byChain: {
+  byChain: Array<{
     token: AnyCoinCode,
     total: Wei | Units,
     fiatRate: number,
     fiatAmount: Units
-  }[];
+  }>;
   classes?: any;
 }
 
@@ -24,16 +24,16 @@ interface IState {
   anchorEl: any;
 }
 
-const styles = {
-  text: {
+const styles = createStyles({
+  label: {
     textTransform: 'none',
     fontWeight: 'normal',
     fontSize: '16px'
-  } as CSSProperties,
+  },
   root: {
     lineHeight: 'inherit'
   }
-};
+});
 
 const CoinSymbol = ({ coinTicker }) => {
   if (coinTicker === 'ETH') {
@@ -63,13 +63,13 @@ class TotalButton extends React.Component<IProps, IState> {
     this.setState({
       anchorEl: event.currentTarget
     });
-  };
+  }
 
   public handleClose = () => {
     this.setState({
       anchorEl: null
     });
-  };
+  }
 
   public render () {
     const {

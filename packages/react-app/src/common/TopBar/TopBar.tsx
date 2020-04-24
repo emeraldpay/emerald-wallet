@@ -32,7 +32,7 @@ export class TopBar extends React.Component<ITopBarProps> {
         <div>
           <Button
             data-testid='accounts-btn'
-            label='ACCOUNTS'
+            label='WALLETS'
             onClick={onAccounts}
           />
         </div>

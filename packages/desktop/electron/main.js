@@ -6,17 +6,16 @@ const {
   EmeraldApiAccessDev,
   EmeraldApiAccessProd,
 } = require('@emeraldwallet/services');
-const { createServices, getMainWindow, protocol, assertSingletonWindow } = require('@emeraldwallet/electron-app');
+const {
+  getMainWindow, protocol, assertSingletonWindow, Application, Settings
+} = require('@emeraldwallet/electron-app');
 const { LocalConnector } = require('@emeraldwallet/vault');
 const { app, ipcMain, session } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path'); // eslint-disable-line
 
-const Settings = require('./settings');
 const { LedgerApi } = require('@emeraldwallet/ledger');
-const ipc = require('./ipc');
 const log = require('./logger');
 const { startProtocolHandler } = protocol;
-const { Prices } = require('./prices');
 const {
   DevMode, LocalMode, ProdMode, sendMode,
 } = require('./mode');
@@ -26,6 +25,7 @@ const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
 
 let apiMode;
+
 let dataDir = null;
 
 if (isDev) {
@@ -43,9 +43,11 @@ if (isDev) {
 const settings = new Settings();
 
 global.ledger = new LedgerApi();
-global.launcherConfig = {
-  get: () => settings.toJS(),
-};
+
+// TODO: remove it
+// global.launcherConfig = {
+//   get: () => settings.toJS(),
+// };
 
 log.info('userData: ', app.getPath('userData'));
 log.info('Settings: ', settings.toJS());
@@ -62,16 +64,19 @@ const options = {
 assertSingletonWindow();
 startProtocolHandler();
 
+const appParams = {
+  locale: app.getLocale(),
+  version: app.getVersion(),
+  electronVer: process.versions.electron,
+  chromeVer: process.versions.chrome,
+};
+
+const application = new Application(settings);
+
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
 app.on('ready', () => {
   log.info('Starting Emerald', app.getVersion());
-  const appParams = {
-    locale: app.getLocale(),
-    version: app.getVersion(),
-    electronVer: process.versions.electron,
-    chromeVer: process.versions.chrome,
-  };
   log.info('... setup API access');
   let apiAccess;
   if (apiMode.id === ProdMode.id) {
@@ -84,43 +89,32 @@ app.on('ready', () => {
   log.info('Connect to', apiAccess.address);
 
   log.info('... Setup Vault');
-  const vault = new LocalConnector(dataDir ? path.resolve(path.join(dataDir, '/vault')) : null, log);
-  const serverConnect = new ServerConnect(
-    app.getVersion(), app.getLocale(), log, apiAccess.blockchainClient, vault.getProvider());
+  const vault = new LocalConnector(dataDir ? path.resolve(path.join(dataDir, '/vault')) : null);
+  global.vault = vault.getProvider();
+
+  log.info('... Setup ServerConnect');
+  const serverConnect = new ServerConnect(appParams.version, appParams.locale, log, apiAccess.blockchainClient);
   global.serverConnect = serverConnect;
+
   serverConnect.init(process.versions);
 
-  session.defaultSession.webRequest.onBeforeSendHeaders((details, callback) => {
-    details.requestHeaders['User-Agent'] = serverConnect.getUserAgent();
-    callback({ cancel: false, requestHeaders: details.requestHeaders });
-  });
+  log.info('... Creating RPC connections to blockchains');
+  const rpcConns = serverConnect.connectTo(apiMode.chains);
 
-
-  log.info('... create window');
+  log.info('... Create main window');
   const browserWindow = getMainWindow(options);
+
+  log.info('... Run Application');
+  application.run(browserWindow.webContents, apiAccess, apiMode, vault.getProvider(), rpcConns);
+
   onceReady(() => {
     sendMode(browserWindow.webContents, apiMode);
   });
 
-  log.info('... setup services 2');
-  const services = createServices(ipcMain, browserWindow.webContents, apiAccess, apiMode.chains);
 
   app.on('quit', () => {
-    services.stop();
+    application.stop();
   });
-
-  log.info('... start services');
-  services.start();
-
-  // Run IPC listeners
-  ipc({ settings });
-
-  log.info('... services started');
-
-  log.info('... subscribe for prices');
-  const prices = new Prices(ipcMain, browserWindow.webContents, apiAccess, apiMode.assets, apiMode.currencies[0]);
-  prices.start();
-
 });
 
 

@@ -1,10 +1,9 @@
 import { Checkmark as SubmitIcon, Close as CancelIcon } from '@emeraldplatform/ui-icons';
-import TextField from '@material-ui/core/TextField';
-import { withStyles } from '@material-ui/styles';
-import * as React from 'react';
-
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
+import { withStyles } from '@material-ui/core/styles';
+import TextField from '@material-ui/core/TextField';
+import * as React from 'react';
 
 export const styles = {
   textField: {
@@ -12,7 +11,7 @@ export const styles = {
   }
 };
 
-interface Props {
+interface IEditProps {
   id?: any;
   initialValue?: any;
   placeholder?: string;
@@ -21,15 +20,15 @@ interface Props {
   classes?: any;
 }
 
-interface State {
+interface IEditState {
   currentValue?: any;
 }
 
 /**
  * Allows inline editing
  */
-export class InlineEdit extends React.Component<Props, State> {
-  constructor (props: Props) {
+export class InlineEdit extends React.Component<IEditProps, IEditState> {
+  constructor (props: IEditProps) {
     super(props);
     this.state = {
       currentValue: this.props.initialValue

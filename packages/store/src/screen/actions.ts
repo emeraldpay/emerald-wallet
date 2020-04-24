@@ -1,7 +1,7 @@
 import { Dispatched } from '../types';
-import { ActionTypes, DialogAction, OpenAction, Pages } from './types';
+import { ActionTypes, IDialogAction, IOpenAction, Pages } from './types';
 
-export function gotoScreen (screen: string | Pages, item: any = null): OpenAction {
+export function gotoScreen (screen: string | Pages, item: any = null): IOpenAction {
   return {
     type: ActionTypes.OPEN,
     screen,
@@ -23,7 +23,7 @@ export function closeError () {
   };
 }
 
-export function showDialog (name: string, item: any = null): DialogAction {
+export function showDialog (name: string, item: any = null): IDialogAction {
   return {
     type: ActionTypes.DIALOG,
     value: name,
@@ -31,7 +31,7 @@ export function showDialog (name: string, item: any = null): DialogAction {
   };
 }
 
-export function closeDialog (): DialogAction {
+export function closeDialog (): IDialogAction {
   return {
     type: ActionTypes.DIALOG,
     value: null,
@@ -79,11 +79,5 @@ export function dispatchRpcError (dispatch: any) {
 export function closeNotification () {
   return {
     type: ActionTypes.NOTIFICATION_CLOSE
-  };
-}
-
-export function goHome (): Dispatched<OpenAction> {
-  return (dispatch, getState) => {
-    return dispatch(gotoScreen('home'));
   };
 }

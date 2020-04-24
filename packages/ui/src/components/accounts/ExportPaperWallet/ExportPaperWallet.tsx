@@ -1,6 +1,6 @@
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import Button from '../../common/Button';
 import PasswordInput from '../../common/PasswordInput';

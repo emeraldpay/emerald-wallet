@@ -38,14 +38,13 @@ const styles = createStyles({
 
 interface IProps {
   transactions: List<any>;
-  accountId: string;
   theme: any;
   classes: any;
 }
 
 const TransactionsList = (props: IProps) => {
   const {
-    transactions, accountId, theme, classes
+    transactions, theme, classes
   } = props;
   if (!transactions) {
     return (<div>Loading...</div>);
@@ -69,7 +68,7 @@ const TransactionsList = (props: IProps) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {transactions.map((tx) => <Transaction key={tx.get('hash')} tx={tx} accountId={accountId} />)}
+          {transactions.map((tx) => <Transaction hash={tx.get('hash')} key={tx.get('hash')} />)}
         </TableBody>
       </Table>
     </div>

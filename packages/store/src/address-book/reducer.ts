@@ -1,5 +1,5 @@
-import { BlockchainCode } from '@emeraldwallet/core';
-import {ActionTypes, AddressBookAction, Contacts, IAddressBookState, Contact} from './types';
+import { BlockchainCode, AddressBookItem } from '@emeraldwallet/core';
+import { ActionTypes, AddressBookAction, Contacts, IAddressBookState } from './types';
 
 export const INITIAL_STATE: IAddressBookState = {
   loading: false,
@@ -30,7 +30,7 @@ function onSetAddressBook (state: IAddressBookState, action: any): IAddressBookS
   };
 }
 
-function onNewContactAdded (state: IAddressBookState, contact: Contact): IAddressBookState {
+function onNewContactAdded (state: IAddressBookState, contact: AddressBookItem): IAddressBookState {
   const chain = contact.blockchain as BlockchainCode;
   const contacts = {
     ...state.contacts[chain],
@@ -48,16 +48,16 @@ function onNewContactAdded (state: IAddressBookState, contact: Contact): IAddres
   };
 }
 
-function onContactDeleted (state: IAddressBookState, contact: Contact): IAddressBookState {
-  let contacts: Contacts | undefined = state.contacts[contact.blockchain as BlockchainCode];
+function onContactDeleted (state: IAddressBookState, contact: AddressBookItem): IAddressBookState {
+  const contacts: Contacts | undefined = state.contacts[contact.blockchain as BlockchainCode];
   if (typeof contacts !== 'undefined') {
-    let copy: Contacts = {};
+    const copy: Contacts = {};
     Object.keys(contacts)
       .filter((address) => address !== contact.address)
       .forEach((address) => {
-        copy[address] = contacts![address]
+        copy[address] = contacts![address];
       });
-    return Object.assign({}, state, {contacts: copy});
+    return { ...state, contacts: copy };
   }
   return state;
 }

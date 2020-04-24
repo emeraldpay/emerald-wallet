@@ -2,8 +2,7 @@ import { Wei } from '@emeraldplatform/eth';
 import { Address as AccountAddress } from '@emeraldplatform/ui';
 import { blockchainByName, BlockchainCode, IApi } from '@emeraldwallet/core';
 import { Balance } from '@emeraldwallet/ui';
-import { Radio, TableCell, TableRow } from '@material-ui/core';
-import { withStyles } from '@material-ui/styles';
+import { Radio, TableCell, TableRow, withStyles } from '@material-ui/core';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { styles as tableStyles } from './styles';
@@ -118,7 +117,7 @@ class Addr extends React.Component<IProps, IState> {
                 )}
             </div>
             <div>
-              {addr.address && <AccountAddress id={addr.address} showCheck={false}/>}
+              {addr.address && <AccountAddress id={addr.address} />}
             </div>
           </div>
         </TableCell>

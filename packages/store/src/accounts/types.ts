@@ -1,51 +1,55 @@
-import {AnyCoinCode, AnyTokenCode, Blockchain, BlockchainCode, CurrencyCode, Units} from '@emeraldwallet/core';
 import * as vault from '@emeraldpay/emerald-vault-core';
-import {Wei} from "@emeraldplatform/eth";
 import { AccountId } from '@emeraldpay/emerald-vault-core';
-import BigNumber from "bignumber.js";
+import { Wei } from '@emeraldplatform/eth';
+import { AnyCoinCode, AnyTokenCode, BlockchainCode, CurrencyCode, Units, Wallet } from '@emeraldwallet/core';
 
-export const moduleName = 'addresses';
+export const moduleName = 'accounts';
 
-export type BalanceValue = {
-  balance: Wei | Units,
-  token: CurrencyCode | AnyCoinCode,
+export interface IBalanceValue {
+  balance: Wei | Units;
+  token: CurrencyCode | AnyCoinCode;
 }
 
 /**
  * Balance in original "face" value, and converted to a common currency
  */
-export type BalanceValueConverted = {
-  source: BalanceValue,
-  converted: BalanceValue,
-  rate: number
+export interface BalanceValueConverted {
+  source: IBalanceValue;
+  converted: IBalanceValue;
+  rate: number;
 }
 
-export type AccountDetails = {
-  accountId: AccountId,
-  balance?: string,
-  balancePending?: any,
-  txcount?: number
+export interface AccountDetails {
+  accountId: AccountId;
+  balance?: string;
+  balancePending?: any;
+  txcount?: number;
 }
 
-export interface IAddressesState {
-  wallets: vault.Wallet[];
+export interface IAccountsState {
+  wallets: Wallet[];
   loading: boolean;
   details: AccountDetails[];
 }
 
-export type WalletsList = vault.Wallet[];
-
 export enum ActionTypes {
+  LOAD_WALLETS = 'ACCOUNT/LOAD_WALLETS',
   SET_BALANCE = 'ACCOUNT/SET_BALANCE',
   LOADING = 'ACCOUNT/LOADING',
-  ADD_WALLET = 'ACCOUNT/ADD_ACCOUNT',
   SET_LIST = 'ACCOUNT/SET_LIST',
   SET_HD_PATH = 'ACCOUNT/SET_HD_PATH',
   FETCH_HD_PATHS = 'ACCOUNT/FETCH_HD_PATHS',
-  UPDATE_ACCOUNT = 'ACCOUNT/UPDATE_ACCOUNT',
+  WALLET_UPDATED = 'ACCOUNT/WALLET_UPDATED',
   PENDING_BALANCE = 'ACCOUNT/PENDING_BALANCE',
   SET_TXCOUNT = 'ACCOUNT/SET_TXCOUNT',
-  FETCH_ERC20_BALANCES = 'ACCOUNT/FETCH_ERC20_BALANCES'
+  FETCH_ERC20_BALANCES = 'ACCOUNT/FETCH_ERC20_BALANCES',
+  CREATE_WALLET = 'ACCOUNTS/CREATE_WALLET',
+  CREATE_WALLET_SUCCESS = 'ACCOUNT/ADD_ACCOUNT',
+  ACCOUNT_IMPORTED = 'ACCOUNT/IMPORTED'
+}
+
+export interface ILoadWalletsAction {
+  type: ActionTypes.LOAD_WALLETS;
 }
 
 export interface IFetchErc20BalancesAction {
@@ -56,8 +60,8 @@ export interface IFetchHdPathsAction {
   type: ActionTypes.FETCH_HD_PATHS;
 }
 
-export interface IUpdateAddressAction {
-  type: ActionTypes.UPDATE_ACCOUNT;
+export interface IUpdateWalletAction {
+  type: ActionTypes.WALLET_UPDATED;
   payload: {
     walletId: vault.Uuid,
     name: string;
@@ -65,31 +69,40 @@ export interface IUpdateAddressAction {
   };
 }
 
-export interface SetListAction {
+export interface IWalletsLoaded {
   type: ActionTypes.SET_LIST;
-  payload: vault.Wallet[];
+  payload: Wallet[];
 }
 
-export interface SetBalanceAction {
+export interface ISetBalanceAction {
   type: ActionTypes.SET_BALANCE;
   payload: {
     blockchain: BlockchainCode,
     address: string,
     value: string
-  }
+  };
 }
 
-export interface SetLoadingAction {
+export interface ISetLoadingAction {
   type: ActionTypes.LOADING;
   payload: boolean;
 }
 
-export interface AddWalletAction {
-  type: ActionTypes.ADD_WALLET;
-  wallet: vault.Wallet,
+export interface IWalletCreatedAction {
+  type: ActionTypes.CREATE_WALLET_SUCCESS;
+  wallet: Wallet;
 }
 
-export interface SetTxCountAction {
+export interface ICreateWalletAction {
+  type: ActionTypes.CREATE_WALLET;
+  payload: {
+    walletName: string;
+    password: string;
+    mnemonic: string;
+  };
+}
+
+export interface ISetTxCountAction {
   type: ActionTypes.SET_TXCOUNT;
   accountId: vault.AccountId;
   value: number;
@@ -108,13 +121,16 @@ export interface PendingBalanceAction {
   blockchain: BlockchainCode;
 }
 export type AddressesAction =
-  | SetListAction
-  | SetLoadingAction
-  | SetBalanceAction
-  | IUpdateAddressAction
-  | AddWalletAction
+  | IWalletsLoaded
+  | ISetLoadingAction
+  | ISetBalanceAction
+  | IUpdateWalletAction
+  | IWalletCreatedAction
   // | SetHDPathAction
-  | SetTxCountAction
+  | ISetTxCountAction
   | PendingBalanceAction
   | IFetchHdPathsAction
+  | ILoadWalletsAction
+  | ISetBalanceAction
+  | ICreateWalletAction
   ;

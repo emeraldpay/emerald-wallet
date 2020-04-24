@@ -1,8 +1,8 @@
+import { IEmeraldVault } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, IApi } from '@emeraldwallet/core';
 import { mount, shallow } from 'enzyme';
 import * as React from 'react';
 import AddrList from './AddrList';
-import { IEmeraldVault } from '@emeraldpay/emerald-vault-core';
 
 const api: IApi = {
   // @ts-ignore

@@ -1,12 +1,14 @@
+import { UnsignedTx } from '@emeraldpay/emerald-vault-core';
 import { convert, EthAddress } from '@emeraldplatform/core';
+import { quantitiesToHex } from '@emeraldplatform/core/lib/convert';
 import { Wei } from '@emeraldplatform/eth';
-import {BlockchainCode, blockchainCodeToId, Blockchains, IStoredTransaction, EthereumTx, IApi, vault} from '@emeraldwallet/core';
-import { Dispatch } from 'react';
-import { catchError, gotoScreen } from '../screen/actions';
+import { BlockchainCode, Blockchains, EthereumTx, IApi, IStoredTransaction, Logger, vault } from '@emeraldwallet/core';
+import { Dispatch } from 'redux';
+import { catchError, gotoScreen, showError } from '../screen/actions';
 import * as history from '../txhistory';
 import { Dispatched } from '../types';
-import {UnsignedTx, WalletsOp} from '@emeraldpay/emerald-vault-core';
-import {quantitiesToHex} from "@emeraldplatform/core/lib/convert";
+
+const log = Logger.forCategory('store.transaction');
 
 function unwrap (value: string[] | string | null): Promise<string> {
   return new Promise((resolve, reject) => {
@@ -47,22 +49,24 @@ function verifySender (expected: string): (a: string, c: BlockchainCode) => Prom
     const chainId = Blockchains[chain].params.chainId;
     const tx = EthereumTx.fromRaw(raw, chainId);
     if (tx.verifySignature()) {
-      console.debug('Tx signature verified');
+      log.debug('Tx signature verified');
       if (!tx.getSenderAddress().equals(EthAddress.fromHexString(expected))) {
-        console.error(`WRONG SENDER: 0x${tx.getSenderAddress().toString()} != ${expected}`);
+        log.error(`WRONG SENDER: 0x${tx.getSenderAddress().toString()} != ${expected}`);
         reject(new Error('Emerald Vault returned signature from wrong Sender'));
       } else {
         resolve(raw);
       }
     } else {
-      console.error(`Invalid signature: ${raw}`);
+      log.error(`Invalid signature: ${raw}`);
       reject(new Error('Emerald Vault returned invalid signature for the transaction'));
     }
   });
 }
 
-function signTx (api: IApi, tx: IStoredTransaction, passphrase: string, blockchain: BlockchainCode): Promise<string | string[]> {
-  console.debug(`Calling emerald api to sign tx from ${tx.from} to ${tx.to} in ${blockchain} blockchain`);
+function signTx (
+  api: IApi, accountId: string, tx: IStoredTransaction, passphrase: string, blockchain: BlockchainCode
+): Promise<string | string[]> {
+  log.debug(`Calling emerald api to sign tx from ${tx.from} to ${tx.to} in ${blockchain} blockchain`);
   const plainTx: vault.TxSignRequest = {
     from: tx.from,
     to: tx.to,
@@ -72,17 +76,9 @@ function signTx (api: IApi, tx: IStoredTransaction, passphrase: string, blockcha
     data: tx.data,
     nonce: typeof tx.nonce === 'string' ? parseInt(tx.nonce) : tx.nonce
   };
-  console.debug(`Trying to sign tx: ${plainTx}`);
-  let wallets = WalletsOp.of(api.vault.listWallets());
-  let wallet = wallets.findWalletByAddress(tx.from, blockchainCodeToId(blockchain));
-  if (typeof wallet === 'undefined') {
-    return Promise.reject(new Error("Unknown Wallet"))
-  }
-  let account = wallet.findAccountByAddress(tx.from, blockchainCodeToId(blockchain));
-  if (typeof account === 'undefined') {
-    return Promise.reject(new Error("Unknown Account"))
-  }
-  let unsignedTx: UnsignedTx = {
+  log.debug(`Trying to sign tx: ${plainTx}`);
+
+  const unsignedTx: UnsignedTx = {
     from: plainTx.from,
     to: plainTx.to,
     gas: quantitiesToHex(plainTx.gas),
@@ -91,14 +87,16 @@ function signTx (api: IApi, tx: IStoredTransaction, passphrase: string, blockcha
     data: plainTx.data,
     nonce: quantitiesToHex(plainTx.nonce)
   };
-  let rawTx = api.vault.signTx(account.id, unsignedTx, passphrase);
+  const rawTx = api.vault.signTx(accountId, unsignedTx, passphrase);
   return Promise.resolve(rawTx);
 }
 
 export function signTransaction (
+  accountId: string,
   blockchain: BlockchainCode, from: string, passphrase: string, to: string, gas: number, gasPrice: Wei,
   value: Wei, data: string
 ): Dispatched<any> {
+
   const originalTx: IStoredTransaction = {
     from,
     to,
@@ -110,11 +108,11 @@ export function signTransaction (
     blockchain
   };
 
-  return (dispatch, getState, api) => {
-    return getNonce(api, blockchain, from)
+  return (dispatch: any, getState, extra) => {
+    return getNonce(extra.api, blockchain, from)
       .then(withNonce(originalTx))
       .then((tx: IStoredTransaction) => {
-        return signTx(api, tx, passphrase, blockchain)
+        return signTx(extra.api, accountId, tx, passphrase, blockchain)
           .then(unwrap)
           .then((rawTx) => verifySender(from)(rawTx, blockchain))
           .then((signed) => ({ tx, signed }));
@@ -124,10 +122,17 @@ export function signTransaction (
 }
 
 export function broadcastTx (chain: BlockchainCode, tx: any, signedTx: any): any {
-  return (dispatch: any, getState: any, api: IApi) => {
-    return api.chain(chain).eth.sendRawTransaction(signedTx)
-      .then((hash: string) => onTxSent(dispatch, hash, tx, chain))
-      .catch(catchError(dispatch));
+  return async (dispatch: any, getState: any, extra: any) => {
+    try {
+      const hash = await extra.api.chain(chain).eth.sendRawTransaction(signedTx);
+      return onTxSent(dispatch, hash, tx, chain);
+    } catch (e) {
+      dispatch(showError(e));
+    }
+    // @deprecated
+    // return extra.api.chain(chain).eth.sendRawTransaction(signedTx)
+    //   .then((hash: string) => onTxSent(dispatch, hash, tx, chain))
+    //   .catch(catchError(dispatch));
   };
 }
 

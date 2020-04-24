@@ -1,6 +1,6 @@
 import { BlockchainCode } from '@emeraldwallet/core';
 import {
-  addresses, ledger, screen, settings, State
+  accounts, IState, ledger, screen, settings
 } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -19,7 +19,7 @@ const Container = (props: any) => {
 
 const pageSize = 5;
 
-export default connect<any, any, any, State>(
+export default connect<any, any, any, IState>(
   (state, ownProps) => ({
     pagerOffset: ledger.selectors.getOffset(state),
     hdbase: ledger.selectors.getHdBase(state),
@@ -27,7 +27,7 @@ export default connect<any, any, any, State>(
     selected: ledger.selectors.hasSelected(state),
     selectedAddress: ledger.selectors.getSelected(state),
     addresses: ledger.selectors.getAddresses(state),
-    accounts: addresses.selectors.all(state),
+    accounts: accounts.selectors.allWallets(state),
     blockchains: settings.selectors.currentChains(state),
     // TODO: Fix this dependency
     api: (global as any).api
@@ -48,16 +48,17 @@ export default connect<any, any, any, State>(
       if (ownProps.onBackScreen) {
         return dispatch(screen.actions.gotoScreen(ownProps.onBackScreen));
       }
-      dispatch(screen.actions.gotoScreen('home'));
+      dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
     },
     onAddSelected: (blockchain: BlockchainCode) => {
       dispatch(ledger.actions.importSelected(blockchain) as any)
         .then((address: string) => {
           const acc = { id: address, blockchain };
-          return dispatch(addresses.actions.loadAccountsList(() => {
-            // go to account details only when accounts updated
-            dispatch(screen.actions.gotoScreen(screen.Pages.ACCOUNT, acc));
-          }) as any);
+          // FIXME: Don;t reload all accounts after import
+          // return dispatch(addresses.actions.loadAccountsList(() => {
+          //   // go to account details only when accounts updated
+          //   dispatch(screen.actions.gotoScreen(screen.Pages.ACCOUNT, acc));
+          // }) as any);
         });
     },
     onClickBuyLedger: () => {
@@ -67,7 +68,7 @@ export default connect<any, any, any, State>(
       if (ownProps.onBackScreen) {
         return dispatch(screen.actions.gotoScreen(ownProps.onBackScreen));
       }
-      dispatch(screen.actions.gotoScreen('home'));
+      dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
     }
   })
 )(Container);

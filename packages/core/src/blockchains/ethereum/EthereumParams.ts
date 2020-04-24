@@ -1,7 +1,7 @@
+import { AnyCoinCode, AnyTokenCode } from '../../Asset';
 import { BlockchainCode } from '../blockchains';
+import { CoinTicker } from '../CoinTicker';
 import IBlockchainParams from '../IBlockchainParams';
-import {CoinTicker} from "../CoinTicker";
-import {AnyCoinCode, AnyTokenCode} from "../../Asset";
 
 class EthereumParams implements IBlockchainParams {
   public decimals: number = 18;

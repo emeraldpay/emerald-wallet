@@ -18,4 +18,8 @@ describe('Units', () => {
     expect(u.equals(u)).toBeTruthy();
     expect(u.equals(another)).toBeFalsy();
   });
+  it('should convert to string', () => {
+    const u = new Units(12300000000, 18);
+    expect(u.toString()).toEqual('0.0000000123');
+  });
 });

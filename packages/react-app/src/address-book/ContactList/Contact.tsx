@@ -7,16 +7,16 @@ const States = {
   EDIT: 'EDIT'
 };
 
-interface State {
+interface IState {
   currentState: any;
 }
 
-interface Props {
+interface IProps {
   address: string;
 }
 
-class Contact extends React.Component<Props, State> {
-  constructor (props: Props) {
+class Contact extends React.Component<IProps, IState> {
+  constructor (props: IProps) {
     super(props);
     this.state = {
       currentState: States.SHOW

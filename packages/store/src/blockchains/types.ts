@@ -7,20 +7,21 @@ export interface IBlockchain {
   gasPrice: Wei | null;
 }
 
-export type IBlockchainsState = Map<string, IBlockchain>;
-
+export interface IBlockchainsState {
+  [code: string]: IBlockchain;
+}
 export enum ActionTypes {
   BLOCK = 'BLOCKCHAINS/BLOCK',
   GAS_PRICE = 'BLOCKCHAINS/GAS_PRICE',
   FETCH_GAS_PRICE = 'BLOCKCHAINS/GET_GAS_PRICE'
 }
 
-export interface BlockAction {
+export interface IBlockAction {
   type: ActionTypes.BLOCK;
   payload: any;
 }
 
-export interface GasPriceAction {
+export interface IGasPriceAction {
   type: ActionTypes.GAS_PRICE;
   payload: {
     blockchain: string,
@@ -28,9 +29,9 @@ export interface GasPriceAction {
   };
 }
 
-export interface FetchGasPriceAction {
+export interface IFetchGasPriceAction {
   type: ActionTypes.FETCH_GAS_PRICE;
   payload: any;
 }
 
-export type BlockchainsAction = BlockAction | GasPriceAction | FetchGasPriceAction;
+export type BlockchainsAction = IBlockAction | IGasPriceAction | IFetchGasPriceAction;

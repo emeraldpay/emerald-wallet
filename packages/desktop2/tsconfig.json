@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "outDir": "./app",
+    "jsx": "react"
+  },
+  "include": [
+    "src/**/*.ts"
+  ]
+}

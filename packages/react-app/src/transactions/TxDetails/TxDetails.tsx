@@ -1,27 +1,33 @@
+import { Wallet } from '@emeraldpay/emerald-vault-core';
 import { Wei } from '@emeraldplatform/eth';
-import {Blockchains, Currency} from '@emeraldwallet/core';
-import { addresses, screen, settings, txhistory } from '@emeraldwallet/store';
-import { TxDetails } from '@emeraldwallet/ui';
+import { Blockchains, Currency } from '@emeraldwallet/core';
+import { accounts, screen, settings, txhistory } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { Wallet } from '@emeraldpay/emerald-vault-core';
+import TxDetails from './TxDetailsView';
+import { ITxDetailsProps } from './TxDetailsView/TxDetails';
 
 const { gotoScreen } = screen.actions;
 
-export interface ITxDetailsProps {
+export interface IOwnProps {
   hash: string;
-  repeatTx: any;
-  goBack: any;
 }
 
-export default connect(
-  (state: any, ownProps: ITxDetailsProps) => {
+interface IDispatchFromProps {
+  repeatTx: any;
+  goBack: any;
+  cancel: any;
+  openAccount: any;
+}
+
+export default connect<ITxDetailsProps, IDispatchFromProps, IOwnProps>(
+  (state: any, ownProps: IOwnProps): ITxDetailsProps => {
     const tx = txhistory.selectors.selectByHash(state, ownProps.hash);
     const chain = tx.get('blockchain');
-    const fromWallet = tx.get('from') ? addresses.selectors.findWalletByAddress(state, tx.get('from'), chain) : undefined;
-    const toWallet = tx.get('to') ? addresses.selectors.findWalletByAddress(state, tx.get('to'), chain) : undefined;
-    const wallet = fromWallet || toWallet;
-    const showRepeat = !!fromWallet;
+    const fromAccount = tx.get('from') ? accounts.selectors.findAccountByAddress(state, tx.get('from'), chain) : undefined;
+    const toAccount = tx.get('to') ? accounts.selectors.findAccountByAddress(state, tx.get('to'), chain) : undefined;
+    const account = fromAccount || toAccount;
+    const showRepeat = !!fromAccount;
     const currentCurrency = settings.selectors.fiatCurrency(state);
     const fiatRate = settings.selectors.fiatRate(chain, state);
     const coins = new Wei(tx.get('value')).toEther();
@@ -29,19 +35,16 @@ export default connect(
     const plainTx = tx.toJS();
     const blockchain = Blockchains[plainTx.blockchain];
     return {
-      goBack: ownProps.goBack,
-      showRepeat,
-      repeatTx: ownProps.repeatTx,
       transaction: plainTx,
       tokenSymbol: (blockchain && blockchain.params.coinTicker) || '',
-      wallet,
+      account,
       fiatAmount,
       fiatCurrency: currentCurrency,
-      fromWallet: fromWallet,
-      toWallet: toWallet
+      fromAccount,
+      toAccount
     };
   },
-  (dispatch, ownProps) => ({
+  (dispatch: any, ownProps: IOwnProps): IDispatchFromProps => ({
     cancel: () => {
       dispatch(gotoScreen(screen.Pages.HOME));
     },
@@ -52,7 +55,7 @@ export default connect(
         dispatch(gotoScreen(screen.Pages.HOME));
       }
     },
-    openAccount: (wallet: Wallet) => {
+    openAccount: (wallet?: Wallet) => {
       if (wallet) {
         dispatch(gotoScreen(screen.Pages.WALLET, wallet));
       }

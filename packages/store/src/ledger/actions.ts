@@ -1,17 +1,18 @@
-import {BlockchainCode, blockchainCodeToId} from '@emeraldwallet/core';
+import { BlockchainCode, blockchainCodeToId } from '@emeraldwallet/core';
 import { LedgerApi } from '@emeraldwallet/ledger';
 import { remote } from 'electron';
 import { AppThunk, Dispatched, GetState } from '../types';
-
 import {
   ActionTypes,
   AddressSelected,
-  IConnectedAction, IGetAddressesAction,
+  IConnectedAction,
+  IGetAddressesAction,
   IUpdateAddressAction,
   SetBaseHD,
-  SetHDOffset, SetListHDPath, Watch
+  SetHDOffset,
+  SetListHDPath,
+  Watch
 } from './types';
-import {ActionCreator} from "redux";
 
 export function setWatch (value: boolean): Watch {
   return {
@@ -138,7 +139,7 @@ export function updateAddressAction (dpath: string, address: string): IUpdateAdd
 }
 
 export function getAddress (hdpath: string): Dispatched<IUpdateAddressAction> {
-  return (dispatch) => {
+  return (dispatch: any) => {
     const ledgerApi: LedgerApi = remote.getGlobal('ledger');
     ledgerApi.getAddress(hdpath)
       .then((addr) => {
@@ -159,7 +160,7 @@ export function setBaseHD (hdpath: string): SetBaseHD {
 }
 
 export function importSelected (blockchain: BlockchainCode): Dispatched<AddressSelected> {
-  return (dispatch, getState, api) => {
+  return (dispatch: any, getState, extra) => {
     const { ledger } = getState();
     const selected = ledger.get('selectedAddr').toLowerCase();
     const addresses = ledger.get('addresses');
@@ -170,16 +171,16 @@ export function importSelected (blockchain: BlockchainCode): Dispatched<AddressS
 
     console.info('Import Ledger address', address, hdpath);
 
-    const seed = api.vault.getConnectedHWSeed(true);
+    const seed = extra.api.vault.getConnectedHWSeed(true);
     if (typeof seed === 'undefined') {
-      console.error("Seed is unavailable");
+      console.error('Seed is unavailable');
       return;
     }
 
-    let walletId = api.vault.addWallet(`Ledger ${hdpath}`);
-    let accountId = api.vault.addAccount(walletId, {
+    const walletId = extra.api.vault.addWallet(`Ledger ${hdpath}`);
+    const accountId = extra.api.vault.addAccount(walletId, {
       blockchain: blockchainCodeToId(blockchain),
-      type: "hd-path",
+      type: 'hd-path',
       key: {
         seedId: seed.id!,
         hdPath: hdpath

@@ -1,22 +1,17 @@
 import {
   Page, Warning, WarningHeader, WarningText
 } from '@emeraldplatform/ui';
-import { BlockchainCode } from '@emeraldwallet/core';
-import {addresses, screen, settings, State} from '@emeraldwallet/store';
-import { Button, ChainSelector, FormRow } from '@emeraldwallet/ui';
+import { BlockchainCode, Wallet } from '@emeraldwallet/core';
+import { accounts, IState, screen } from '@emeraldwallet/store';
+import { Button, FormRow } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
-
 import FileDropField from './FileDropField';
-import { Wallet } from '@emeraldpay/emerald-vault-core';
 
-type ImportJsonProps = {
-  wallet: Wallet,
-  blockchain: BlockchainCode
-}
-
-type RenderProps = {
+interface IImportJsonProps {
+  wallet: Wallet;
+  blockchain: BlockchainCode;
 }
 
 interface IImportJsonState {
@@ -24,26 +19,29 @@ interface IImportJsonState {
   file?: any;
 }
 
-type DispatchProps = {
+interface IDispatchProps {
   importFile: (file: any) => Promise<void>;
   openWallet: () => void;
 }
 
-const ImportJson = ((props: ImportJsonProps & DispatchProps & WithTranslation) => {
+const ImportJson = ((props: IImportJsonProps & IDispatchProps & WithTranslation) => {
   const { t } = props;
-
   const [state, setState] = React.useState<IImportJsonState>({});
 
-  const { file, fileError } = state;
-  const onFileChange = (file: any) => {
-    setState({file})
+  const onFileChange = (f: any) => {
+    setState({ file: f });
   };
-  const submitFile = () => {
+  const submitFile = async () => {
     const { importFile, openWallet } = props;
-    importFile(state.file)
-      .then(() => openWallet())
-      .catch((err: any) => setState({ fileError: err.message }));
+    try {
+      await importFile(state.file);
+      openWallet();
+    } catch (err) {
+      setState({ fileError: err.message });
+    }
   };
+
+  const { file, fileError } = state;
 
   return (
     <Page title={t('accounts.import.title')}>
@@ -57,11 +55,9 @@ const ImportJson = ((props: ImportJsonProps & DispatchProps & WithTranslation) =
           )}
         />
       )}
-
       <FormRow
         rightColumn={<FileDropField name='wallet' onChange={onFileChange} />}
       />
-
       {file && (
         <FormRow
           rightColumn={(
@@ -75,23 +71,23 @@ const ImportJson = ((props: ImportJsonProps & DispatchProps & WithTranslation) =
   );
 });
 
-export default connect<RenderProps, DispatchProps, ImportJsonProps, State>(
+export default connect<{}, IDispatchProps, IImportJsonProps, IState>(
   (state, ownProps) => {
     return {
-    }
+    };
   },
-  (dispatch, ownProps) => {
+  (dispatch: any, ownProps) => {
     return {
       importFile: (file: any) => {
         return new Promise((resolve, reject) => {
-          dispatch(addresses.actions.importWalletFile(ownProps.wallet.id, ownProps.blockchain, file) as any)
+          dispatch(accounts.actions.importWalletFile(ownProps.wallet.id, ownProps.blockchain, file) as any)
             .then(resolve)
             .catch(reject);
         });
       },
       openWallet: () => {
-        dispatch(screen.actions.gotoScreen('wallet', ownProps.wallet));
+        dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.wallet.id));
       }
-    }
+    };
   }
 )(withTranslation()(ImportJson));

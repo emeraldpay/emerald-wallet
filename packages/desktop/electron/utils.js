@@ -6,10 +6,10 @@ const app = require('electron').app; // eslint-disable-line
 const isDev = process.env.NODE_ENV === 'development';
 const isProd = process.env.NODE_ENV === 'production';
 
-function getBinDir() {
-  // Use project base dir for development.
-  return isDev ? './' : process.resourcesPath;
-}
+// function getBinDir() {
+//   // Use project base dir for development.
+//   return isDev ? './' : process.resourcesPath;
+// }
 
 function getLogDir() {
   const p = isDev ? './logs' : path.join(app.getPath('userData'), 'logs');
@@ -66,6 +66,6 @@ function deleteIfExists(filePath) {
 module.exports = {
   checkExists,
   deleteIfExists,
-  getBinDir,
+  // getBinDir,
   getLogDir,
 };

@@ -1,14 +1,30 @@
 import { Units, Wei } from '@emeraldplatform/eth';
 import { List, Map } from 'immutable';
+import { createSelector } from 'reselect';
+import { IState } from '../types';
 import { TransactionMap, TransactionsList } from './types';
 
-export function allTrackedTxs (state: any): List<Map<string, any>> {
-  return state.wallet.history.get('trackedTransactions');
+export function allTrackedTxs (state: IState): List<Map<string, any>> {
+  return state.history.get('trackedTransactions');
 }
 
-export function selectByHash (state: any, hash: string): Map<string, any> {
+export function selectByHash (state: IState, hash: string): Map<string, any> {
   return allTrackedTxs(state)
     .find((tx: any) => tx.get('hash') === hash);
+}
+
+const equalAddresses = (a: string, b: string) => a.toLowerCase() === b.toLowerCase();
+/**
+ * Returns transactions which contain accounts from wallet
+ * @param state
+ * @param walletAccounts
+ */
+export function getTransactions (state: IState, walletAccounts: any[]): TransactionsList {
+  return allTrackedTxs(state)
+    .filter((tx: any) =>
+      walletAccounts.some((a) =>
+        equalAddresses(a.address, tx.get('from')) || equalAddresses(a.address, tx.get('to'))))
+    .toList();
 }
 
 export function searchTransactions (searchValue: string, transactionsToSearch: TransactionsList): TransactionsList {
@@ -28,7 +44,8 @@ export function searchTransactions (searchValue: string, transactionsToSearch: T
         if (!txValue) {
           return false;
         }
-        return txValue.toString(Units.WEI).includes(searchValue) || txValue.toString(Units.ETHER, 18).includes(searchValue);
+        return txValue.toString(Units.WEI).includes(searchValue)
+          || txValue.toString(Units.ETHER, 18).includes(searchValue);
       }
       // search for field
       return tx.get(field) && tx.get(field).includes(searchValue);
@@ -48,13 +65,13 @@ const getFieldForFilter = (txFilter: string) => {
 };
 
 export function filterTransactions (
-  filterValue: string, accountId: string | null, transactionsToFilter: TransactionsList, accounts: List<Map<string, any>>
+  filterValue: string, accountId: string | null, transactionsToFilter: TransactionsList, accounts: any[]
 ): TransactionsList {
   if (filterValue === 'ALL') {
     return transactionsToFilter;
   }
   const fieldToFilter = getFieldForFilter(filterValue);
-  const filterAddresses: string[] = accountId ? [accountId] : accounts.map((acc: any) => acc.get('id')).toJS();
+  const filterAddresses: string[] = accounts.map((acc: any) => acc.address);
   return transactionsToFilter.filter((tx: TransactionMap | undefined) => {
     if (typeof tx === 'undefined') {
       return false;

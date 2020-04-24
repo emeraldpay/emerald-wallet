@@ -1,6 +1,6 @@
 import { ButtonGroup, Page } from '@emeraldplatform/ui';
 import { AddCircle as AddIcon, Back } from '@emeraldplatform/ui-icons';
-import { Blockchain, BlockchainCode, IApi } from '@emeraldwallet/core';
+import { BlockchainCode, IApi, IBlockchain } from '@emeraldwallet/core';
 import {
   Button, ChainSelector, FormRow, HdPath, Pager
 } from '@emeraldwallet/ui';
@@ -23,7 +23,7 @@ interface IImportAccProps {
   selectedAddress?: any;
   hdbase: string;
   pagerOffset?: number;
-  blockchains: Blockchain[];
+  blockchains: IBlockchain[];
   api: IApi;
   onInit? (): void;
   onBack? (): void;

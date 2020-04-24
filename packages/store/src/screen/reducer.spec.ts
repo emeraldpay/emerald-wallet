@@ -11,7 +11,7 @@ describe('screen reducer', () => {
       message: 'Settings saved',
       notificationType: 'success',
       duration: 3000
-    } as types.ShowNotificationAction);
+    } as types.IShowNotificationAction);
 
     // assert
     expect(state.get('notificationMessage')).toEqual('Settings saved');
@@ -24,7 +24,7 @@ describe('screen reducer', () => {
       message: 'Settings saved - 2',
       notificationType: 'warning',
       duration: 1000
-    } as types.ShowNotificationAction);
+    } as types.IShowNotificationAction);
 
     // assert
     expect(state.get('notificationMessage')).toEqual('Settings saved - 2');
@@ -40,7 +40,7 @@ describe('screen reducer', () => {
       message: 'Settings saved',
       notificationType: 'success',
       duration: 3000
-    } as types.ShowNotificationAction);
+    } as types.IShowNotificationAction);
     expect(state.get('notificationMessage')).toEqual('Settings saved');
     expect(state.get('notificationType')).toEqual('success');
     expect(state.get('notificationDuration')).toEqual(3000);
@@ -48,7 +48,7 @@ describe('screen reducer', () => {
     // do
     state = reducer(state, {
       type: 'SCREEN/NOTIFICATION_CLOSE'
-    } as types.CloseNotificationAction);
+    } as types.ICloseNotificationAction);
 
     // assert
     expect(state.get('notificationMessage')).toEqual(null);

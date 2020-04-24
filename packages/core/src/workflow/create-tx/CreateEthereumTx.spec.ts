@@ -223,7 +223,7 @@ describe('CreateEthereumTx', () => {
     expect(tx.amount.toString(Units.WEI)).toBe('999580000000500000');
   });
 
-  it('rebalance doesn nothing for no-target', () => {
+  it('rebalance does nothing for no-target', () => {
     const tx = new CreateEthereumTx();
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, Units.ETHER));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
@@ -250,7 +250,6 @@ describe('CreateEthereumTx', () => {
     tx.gasPrice = new Wei(10000, Units.MWEI);
     tx.gas = new BigNumber(42000);
 
-    console.log(tx.debug());
     expect(tx.validateTarget()).toBeFalsy();
 
     const rebalanced = tx.rebalance();

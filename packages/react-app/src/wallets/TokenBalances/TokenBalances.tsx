@@ -1,13 +1,12 @@
 import { fromBaseUnits } from '@emeraldplatform/core';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 
 export const styles = {
   symbol: {
-    fontWeight: 500
   },
   table: {
-    fontSize: '14px'
+    fontSize: '16px'
   },
   tableColumn: {},
   tableRow: {

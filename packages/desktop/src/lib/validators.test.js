@@ -70,12 +70,3 @@ describe('Field Validators', () => {
     expect(isJson('"a", 1, "b", 2')).not.toBeUndefined();
   });
 });
-
-describe('Password Match', () => {
-  it('returns an error string if passwords dont match', () => {
-    expect(passwordMatch('foo', {password: 'bar'})).toEqual('Passwords must match');
-  });
-  it('returns undefined if passwords match', () => {
-    expect(passwordMatch('bar', {password: 'bar'})).toBeUndefined();
-  });
-});

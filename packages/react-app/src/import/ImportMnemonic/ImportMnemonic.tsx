@@ -1,16 +1,32 @@
-import { BlockchainCode } from '@emeraldwallet/core';
-import { addresses, screen, settings } from '@emeraldwallet/store';
+import { BlockchainCode, IBlockchain, Logger } from '@emeraldwallet/core';
+import { accounts, IState, screen, settings } from '@emeraldwallet/store';
 import { ImportMnemonic } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import {State} from "@emeraldwallet/store/src";
 
-export interface IInputMnemonicProps {
-  mnemonic: string;
+const logger = Logger.forCategory('ImportMnemonic');
+
+export interface IOwnProps {
+  mnemonic?: string;
 }
 
-export default connect<any, any, IInputMnemonicProps, State>(
-  (state, ownProps) => ({
+interface IStateProps {
+  blockchains: IBlockchain[];
+  error?: any;
+  invalid?: any;
+  mnemonic?: string;
+  initialValues: {
+    hdpath: string
+  };
+}
+
+interface IDispatchProps {
+  onSubmit?: any;
+  onBack?: any;
+}
+
+export default connect<IStateProps, IDispatchProps, IOwnProps, IState>(
+  (state: IState, ownProps): IStateProps => ({
     mnemonic: ownProps.mnemonic,
     initialValues: {
       hdpath: "m/44'/60'/0'/0/0"
@@ -19,7 +35,7 @@ export default connect<any, any, IInputMnemonicProps, State>(
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data: {blockchain: BlockchainCode, password: string, mnemonic: string, hdpath: string}) => {
-      return dispatch(addresses.actions.importMnemonic(data.blockchain, data.password, data.mnemonic, data.hdpath, '', '') as any)
+      return dispatch(accounts.actions.importMnemonic(data.blockchain, data.password, data.mnemonic, data.hdpath, '', '') as any)
         .then((result: any) => {
           if (result.error) {
             throw new Error(result.error.toString());
@@ -28,13 +44,13 @@ export default connect<any, any, IInputMnemonicProps, State>(
             dispatch(screen.actions.gotoScreen('account', { id: result, blockchain: data.blockchain }));
           }
         }).catch((error: any) => {
-          console.error(error);
+          logger.error('Error import mnemonic', error);
           throw new Error(error.toString());
         });
     },
 
     onBack: () => {
-      dispatch(screen.actions.gotoScreen('home'));
+      dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
     }
   })
 )(ImportMnemonic);

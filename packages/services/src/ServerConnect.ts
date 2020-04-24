@@ -5,22 +5,14 @@ import {
 import {
   DefaultJsonRpc, HttpTransport, RevalidatingJsonRpc, RotatingJsonRpc, VerifyingJsonRpc
 } from '@emeraldplatform/rpc';
-import { IServerConnect } from '@emeraldwallet/core';
-import {IEmeraldVault} from '@emeraldpay/emerald-vault-core';
+import { IServerConnect, IVault } from '@emeraldwallet/core';
+import * as os from 'os';
+import ChainRpcConnections from './ChainRpcConnections';
 import GrpcTransport from './transports/GrpcTransport';
 import HttpTransportAdapter from './transports/HttpTransport';
 
-const os = require('os');
-
 const CHAIN_VERIFY: {[key: string]: any} = {
   etc: [
-    new VerifyMinPeers(3),
-    new VerifyNotSyncing(),
-    new VerifyGenesis('0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3'),
-    new VerifyBlockHash(1920000, '0x94365e3a8c0b35089c1d1195081fe7489b528a84b22199c916180db8b28ade7f')
-  ],
-  // DEPRECATED
-  mainnet: [
     new VerifyMinPeers(3),
     new VerifyNotSyncing(),
     new VerifyGenesis('0xd4e56740f876aef8c010b86a40d5f56745a118d0906a34e69aec8c0db1cb8fa3'),
@@ -46,16 +38,13 @@ class ServerConnect implements IServerConnect {
   public revalidate?: RevalidatingJsonRpc;
   public log: any;
   public blockchainClient: BlockchainClient;
-  public vaultProvider: IEmeraldVault;
 
   constructor (
-    appVersion: string, locale: any, log: any, blockchainClient: BlockchainClient, vault: IEmeraldVault
-  ) {
+    appVersion: string, locale: any, log: any, blockchainClient: BlockchainClient) {
     this.log = log;
     this.appVersion = appVersion;
     this.locale = locale;
     this.blockchainClient = blockchainClient;
-    this.vaultProvider = vault;
     this.headers = {
       'User-Agent': `EmeraldWallet/${appVersion}`
     };
@@ -68,6 +57,16 @@ class ServerConnect implements IServerConnect {
 
   public createHttpTransport (url: string) {
     return new HttpTransportAdapter(new HttpTransport(url, this.headers));
+  }
+
+  public connectTo (chains: any): ChainRpcConnections {
+    const conns = new ChainRpcConnections();
+    chains.forEach((c: any) => {
+      const chainCode = c.toLowerCase();
+      conns.add(chainCode, this.connectEthChain(chainCode));
+      this.log.info(`Creating connection to ${chainCode}`);
+    });
+    return conns;
   }
 
   public connectEthChain (name: string): null | EthRpc {
@@ -103,10 +102,6 @@ class ServerConnect implements IServerConnect {
       }
       resolve();
     });
-  }
-
-  public getVault(): IEmeraldVault {
-    return this.vaultProvider;
   }
 
   public getUserAgent () {

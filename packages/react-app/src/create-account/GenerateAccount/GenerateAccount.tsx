@@ -1,5 +1,6 @@
-import {BlockchainCode, blockchainCodeToId} from '@emeraldwallet/core';
-import { addresses, screen } from '@emeraldwallet/store';
+import { AccountId, Uuid } from '@emeraldpay/emerald-vault-core';
+import { BlockchainCode } from '@emeraldwallet/core';
+import { accounts, screen } from '@emeraldwallet/store';
 import { NewAccountProps } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
@@ -8,7 +9,6 @@ import { saveJson } from '../../util/save-as';
 import ShowPrivateKey from '../ShowPrivateKey';
 import DownloadDialog from './DownloadDialog';
 import PasswordDialog from './PasswordDialog';
-import { AccountId, Uuid } from '@emeraldpay/emerald-vault-core';
 
 const PAGES = {
   PASSWORD: 1,
@@ -52,18 +52,18 @@ class GenerateAccount extends React.Component<Props, IState> {
     });
 
     // Create new account
-    this.props.dispatch(addresses.actions.createAccount(blockchain, passphrase))
+    this.props.dispatch(accounts.actions.createAccount(blockchain, passphrase))
       .then((walletId: Uuid) => {
         this.setState({
           loading: false,
           walletId,
-          accountId: walletId + "/0", //TODO receive real id
+          accountId: walletId + '/0', // TODO receive real id
           passphrase,
           blockchain,
           page: PAGES.DOWNLOAD
         });
       });
-  };
+  }
 
   public download = () => {
     const { blockchain, passphrase, accountId, walletId } = this.state;
@@ -73,9 +73,9 @@ class GenerateAccount extends React.Component<Props, IState> {
     });
 
     // Get encrypted key file from emerald vault
-    this.props.dispatch(addresses.actions.exportKeyFile(accountId)).then((jsonKeyFile: any) => {
+    this.props.dispatch(accounts.actions.exportKeyFile(accountId)).then((jsonKeyFile: any) => {
 
-      this.props.dispatch(addresses.actions.exportPrivateKey(passphrase || '', accountId)).then((privateKey: string) => {
+      this.props.dispatch(accounts.actions.exportPrivateKey(passphrase || '', accountId)).then((privateKey: string) => {
         // Send file to user
         saveJson(jsonKeyFile, `${blockchain}-${walletId}.json`);
 
@@ -91,7 +91,7 @@ class GenerateAccount extends React.Component<Props, IState> {
       });
 
     });
-  };
+  }
 
   public editAccountProps = () => {
     this.setState({
@@ -100,21 +100,21 @@ class GenerateAccount extends React.Component<Props, IState> {
   }
 
   public skipAccountProps = () => {
-    this.props.dispatch(screen.actions.gotoScreen('home'));
+    this.props.dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
   }
 
   public updateAccountProps = (name: string) => {
     const { dispatch } = this.props;
     const { walletId } = this.state;
-    dispatch(addresses.actions.updateWallet(walletId, name, ''))
-      .then(() => dispatch(screen.actions.gotoScreen('home')));
+    dispatch(accounts.actions.updateWallet(walletId, name))
+      .then(() => dispatch(screen.actions.gotoScreen(screen.Pages.HOME)));
   }
 
   public goToDashboard = () => {
     if (this.props.onBackScreen) {
       this.props.dispatch(screen.actions.gotoScreen(this.props.onBackScreen));
     } else {
-      this.props.dispatch(screen.actions.gotoScreen('home'));
+      this.props.dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
     }
   }
 

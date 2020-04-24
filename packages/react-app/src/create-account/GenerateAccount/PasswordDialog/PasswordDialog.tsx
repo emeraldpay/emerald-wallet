@@ -3,7 +3,7 @@ import {
 } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import { BlockchainCode } from '@emeraldwallet/core';
-import {settings, State} from '@emeraldwallet/store';
+import { IState, settings } from '@emeraldwallet/store';
 import {
   Advice, Button, ChainSelector, FormRow, PasswordInput
 } from '@emeraldwallet/ui';
@@ -40,7 +40,7 @@ export interface IProps {
   loading?: boolean;
 }
 
-interface IState {
+interface IDialogState {
   passphrase: string;
   passphraseError: any | null;
   confirmError: any | null;
@@ -48,7 +48,7 @@ interface IState {
   blockchain: BlockchainCode;
 }
 
-class PasswordDialog extends React.Component<IProps, IState> {
+class PasswordDialog extends React.Component<IProps, IDialogState> {
   constructor (props: IProps) {
     super(props);
     this.state = {
@@ -198,7 +198,7 @@ class PasswordDialog extends React.Component<IProps, IState> {
 
 const StyledPasswordDialog = withStyles(styles2)(PasswordDialog);
 
-export default connect<any, any, any, State>(
+export default connect<any, any, any, IState>(
   (state, ownProps) => {
     return {
       blockchains: settings.selectors.currentChains(state)

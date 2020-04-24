@@ -1,7 +1,7 @@
-import { Address, convert, EthAddress } from '@emeraldplatform/core';
+import { Address, EthAddress } from '@emeraldplatform/core';
 import Common from 'ethereumjs-common';
 import { Transaction as EthTx } from 'ethereumjs-tx';
-import { ITransaction } from '../types';
+import { ITransaction } from '../ITransaction';
 
 class EthereumTx implements ITransaction {
 
@@ -45,7 +45,10 @@ class EthereumTx implements ITransaction {
     return this.internalTx.data.toString('hex');
   }
 
-  public getNonce (): any {
+  public getNonce (): number {
+    if (this.internalTx.nonce.length === 0) {
+      return 0;
+    }
     return parseInt(this.internalTx.nonce.toString('hex'), 16);
   }
 }

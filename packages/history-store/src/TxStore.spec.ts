@@ -1,5 +1,4 @@
 import { BlockchainCode } from '@emeraldwallet/core';
-import BigNumber from 'bignumber.js';
 import TxStore from './TxStore';
 
 const rimraf = require('rimraf');
@@ -18,7 +17,7 @@ describe('TxStore', () => {
     const trans = [{
       timestamp: now,
       hash: '0x1234',
-      value: new BigNumber(1),
+      value: '1',
       chain: BlockchainCode.Unknown,
       chainId: 100,
       gasPrice: '0x0',
@@ -37,7 +36,7 @@ describe('TxStore', () => {
 
     expect(loaded).toHaveLength(1);
     expect(loaded[0].hash).toEqual('0x1234');
-    expect((loaded[0].value as BigNumber).comparedTo(new BigNumber(1))).toEqual(0);
+    expect(loaded[0].value).toEqual('1');
     expect(loaded[0].timestamp).toEqual(now);
 
     rimraf(store.getFilePath(), jest.fn());

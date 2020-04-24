@@ -1,6 +1,7 @@
-import createLogger from '../../utils/logger';
+import { Logger } from '@emeraldwallet/core';
+import { Vault } from '@emeraldwallet/vault/lib/Vault';
 
-const log = createLogger('api');
+const log = Logger.forCategory('api');
 
 class NullConnect {
   connectEthChain(name) {
@@ -11,23 +12,38 @@ class NullConnect {
 export function getConnector() {
   // TODO workaround for testing, should be properly mocked
   if (typeof global.require !== 'function') {
-    console.warn('Electron Remote is not available');
+    log.warn('Electron Remote is not available');
     return new NullConnect();
   }
   const { remote } = global.require('electron');
   // TODO workaround for testing, should be properly mocked
   if (typeof remote !== 'object' || typeof remote.getGlobal !== 'function') {
-    console.warn('Electron Remote is not available');
+    log.warn('Electron Remote is not available');
     return new NullConnect();
   }
   return remote.getGlobal('serverConnect');
 }
 
+export function getRemoteVault() {
+  // TODO workaround for testing, should be properly mocked
+  if (typeof global.require !== 'function') {
+    throw new Error('Electron Remote is not available');
+  }
+  const { remote } = global.require('electron');
+  // TODO workaround for testing, should be properly mocked
+  if (typeof remote !== 'object' || typeof remote.getGlobal !== 'function') {
+    throw new Error('Electron Remote is not available');
+  }
+
+  const remoteVault = remote.getGlobal('vault');
+  // Wrap remote vault provider into object in renderer process
+  return new Vault(remoteVault.provider);
+}
 
 export class Api {
-  constructor(connector) {
+  constructor(connector, vault) {
     this.connector = connector;
-    this.vault = connector.getVault();
+    this.vault = vault;
     this.chains = new Map();
   }
 

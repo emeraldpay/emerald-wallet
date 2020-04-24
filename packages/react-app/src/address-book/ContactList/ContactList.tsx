@@ -2,7 +2,6 @@ import { addressBook } from '@emeraldwallet/store';
 import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { connect } from 'react-redux';
-
 import TopBar from '../../common/TopBar';
 import Contact from './Contact';
 

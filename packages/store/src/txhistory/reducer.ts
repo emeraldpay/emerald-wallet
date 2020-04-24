@@ -14,7 +14,7 @@ import {
 
 const { toNumber, toBigNumber } = convert;
 
-const initial = fromJS({
+export const INITIAL_STATE = fromJS({
   trackedTransactions: []
 });
 
@@ -206,15 +206,9 @@ function onUpdateTxs (state: any, action: IUpdateTxsAction) {
 }
 
 export function reducer (
-  state: any,
-  action: HistoryAction | null
+  state: any = INITIAL_STATE,
+  action: HistoryAction
 ): any {
-  if (!state) {
-    state = initial;
-  }
-  if (!action) {
-    return state;
-  }
   switch (action.type) {
     case ActionTypes.TRACK_TX:
       return onTrackTx(state, action);

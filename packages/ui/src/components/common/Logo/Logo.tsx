@@ -1,11 +1,11 @@
 import * as React from 'react';
 
-interface Props {
+interface ILogoProps {
   height?: string;
   width?: string;
 }
 
-const Logo = (props: Props) => (
+const Logo = (props: ILogoProps) => (
   <svg xmlns='http://www.w3.org/2000/svg' width={props.width || '64'} height={props.height || '64'} viewBox='0 0 64 64'>
     <path fill='#00c853' d='M32 56L16 32 32 8l16 24-16 24z' />
     <path opacity='.5' d='M38.4 36.8L40 44l8-12-9.6 4.8z' />

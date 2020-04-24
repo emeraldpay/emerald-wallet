@@ -1,5 +1,5 @@
+import { withStyles } from '@material-ui/core/styles';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
-import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
 
 const styles = {
@@ -8,28 +8,26 @@ const styles = {
   }
 };
 
-interface Props {
+interface IFilterProps {
   value: string;
   onChange?: any;
   classes?: any;
 }
 
-class Filter extends React.Component<Props> {
-  public render () {
-    const { value, onChange, classes } = this.props;
-    return (
-      <ToggleButtonGroup
-        classes={{ root: classes.root }}
-        exclusive={true}
-        value={value || 'ALL'}
-        onChange={onChange}
-      >
-        <ToggleButton value={'ALL'}>ALL</ToggleButton>
-        <ToggleButton value={'IN'}>IN</ToggleButton>
-        <ToggleButton value={'OUT'}>OUT</ToggleButton>
-      </ToggleButtonGroup>
-    );
-  }
+function Filter (props: IFilterProps) {
+  const { value, onChange, classes } = props;
+  return (
+    <ToggleButtonGroup
+      classes={{ root: classes.root }}
+      exclusive={true}
+      value={value || 'ALL'}
+      onChange={onChange}
+    >
+      <ToggleButton value={'ALL'}>ALL</ToggleButton>
+      <ToggleButton value={'IN'}>IN</ToggleButton>
+      <ToggleButton value={'OUT'}>OUT</ToggleButton>
+    </ToggleButtonGroup>
+  );
 }
 
 export default withStyles(styles)(Filter);

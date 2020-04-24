@@ -1,8 +1,8 @@
 /**
  * Parameters of particular blockchain
  */
+import { AnyCoinCode } from '../Asset';
 import { BlockchainCode } from './blockchains';
-import {AnyCoinCode} from "../Asset";
 
 export default interface IBlockchainParams {
   decimals: number;

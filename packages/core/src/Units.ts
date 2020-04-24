@@ -19,13 +19,18 @@ export interface IUnits {
  */
 export class Units implements IUnits {
   public static ZERO: IUnits = new Units('0', 0);
+
+  public static isUnits (value: any): value is Units {
+    return typeof value === 'object'
+      && Object.keys(value).every((k) => k === 'amount' || k === 'decimals');
+  }
   public amount: string;
   public decimals: number;
 
   constructor (amount: string | number | BigNumber, decimals: number) {
     let bAmount;
     if (BigNumber.isBigNumber(amount)) {
-      bAmount = amount
+      bAmount = amount;
     } else {
       bAmount = new BigNumber(amount);
     }
@@ -59,17 +64,12 @@ export class Units implements IUnits {
     return new Units(v.minus(a).toString(10), this.decimals);
   }
 
+  public toBigNumber (): BigNumber {
+    return new BigNumber(this.amount);
+  }
+
   private isSameSize (another: IUnits): boolean {
     return this.decimals === another.decimals;
-  }
-
-  static isUnits(value: any): value is Units {
-    return typeof value === 'object'
-      && Object.keys(value).every((k) => k === 'amount' || k === 'decimals')
-  }
-
-  public toBigNumber(): BigNumber {
-    return new BigNumber(this.amount)
   }
 }
 

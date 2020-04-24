@@ -5,7 +5,7 @@ import { Blockchains, EthereumTx } from '@emeraldwallet/core';
 import { decodeData, registry } from '@emeraldwallet/erc20';
 import { screen, transaction } from '@emeraldwallet/store';
 import { Button, FormRow } from '@emeraldwallet/ui';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import ChainTitle from '../../common/ChainTitle';
@@ -33,8 +33,8 @@ export class BroadcastTxView extends React.Component<IBroadcastTxViewProps> {
     const decoded = EthereumTx.fromRaw(signed, currentChain.params.chainId);
     const txData = decoded.getData();
 
-    console.debug('Decoded Tx: ' + JSON.stringify(decoded));
-    console.debug('Tx has data field: ' + txData);
+    // console.debug('Decoded Tx: ' + JSON.stringify(decoded));
+    // console.debug('Tx has data field: ' + txData);
 
     let erc20Tx = null;
     let coinSymbol = currentChain.params.coinTicker;
@@ -87,9 +87,6 @@ export class BroadcastTxView extends React.Component<IBroadcastTxViewProps> {
           leftColumn={<div className={classes.fieldName}>Nonce</div>}
           rightColumn={<div data-testid='nonce'>{decoded.getNonce()}</div>}
         />
-        {/*<FormRow*/}
-        {/*  rightColumn={<textarea readOnly={true} value={JSON.stringify(this.props.tx)}/>}*/}
-        {/*/>*/}
         <FormRow
           leftColumn={<div className={classes.fieldName}>Raw Tx</div>}
           rightColumn={<textarea rows={8} style={{ width: '100%' }} readOnly={true} value={this.props.signed} />}
@@ -134,7 +131,7 @@ export default connect(
       dispatch(transaction.actions.broadcastTx(tx.blockchain, tx, signed));
     },
     onCancel: () => {
-      dispatch(screen.actions.gotoScreen('home'));
+      dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
     }
   })
 )(StyledView);

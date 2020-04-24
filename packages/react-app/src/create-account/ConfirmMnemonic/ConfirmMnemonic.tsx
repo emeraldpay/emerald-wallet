@@ -1,4 +1,4 @@
-import { addresses, screen } from '@emeraldwallet/store';
+import { accounts, screen } from '@emeraldwallet/store';
 import { ConfirmMnemonic } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -10,7 +10,7 @@ export default connect(
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data: any) => {
-      return dispatch(addresses.actions.importMnemonic(
+      return dispatch(accounts.actions.importMnemonic(
         ownProps.formData.blockchain,
         ownProps.formData.password,
         ownProps.formData.mnemonic,

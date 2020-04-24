@@ -3,12 +3,11 @@ import { Close as CloseIcon } from '@emeraldplatform/ui-icons';
 import Dialog from '@material-ui/core/Dialog';
 import DialogContent from '@material-ui/core/DialogContent';
 import IconButton from '@material-ui/core/IconButton';
-import { withStyles } from '@material-ui/styles';
-import { CSSProperties } from '@material-ui/styles';
+import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as QRCode from 'qrcode.react';
 import * as React from 'react';
 
-export const styles = {
+export const styles = createStyles({
   container: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -22,7 +21,7 @@ export const styles = {
     paddingTop: '12px',
     paddingBottom: '12px',
     textTransform: 'uppercase'
-  } as CSSProperties,
+  },
   note: {
     marginTop: '16px',
     color: '#747474',
@@ -42,7 +41,7 @@ export const styles = {
   },
   closeButton: {
     float: 'right'
-  } as CSSProperties,
+  },
   address: {
     color: '#191919',
     fontSize: '14px',
@@ -51,9 +50,9 @@ export const styles = {
   dialogContentRoot: {
     padding: '0 15px 15px 15px'
   }
-};
+});
 
-interface Props {
+interface IReceiveDlgProps {
   address: {
     value: string;
     coinTicker: string;
@@ -62,7 +61,7 @@ interface Props {
   classes?: any;
 }
 
-const ReceiveDialog = ({ address, onClose, classes }: Props) => {
+const ReceiveDialog = ({ address, onClose, classes }: IReceiveDlgProps) => {
   const qrCodeSize = 150;
   return (
     <Dialog open={true} onClose={onClose}>
@@ -94,7 +93,8 @@ const ReceiveDialog = ({ address, onClose, classes }: Props) => {
           </div>
         </div>
       </DialogContent>
-    </Dialog>);
+    </Dialog>
+  );
 };
 
 export default withStyles(styles)(ReceiveDialog);

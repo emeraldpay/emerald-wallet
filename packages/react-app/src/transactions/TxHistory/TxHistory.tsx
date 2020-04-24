@@ -1,4 +1,4 @@
-import { addresses, txhistory } from '@emeraldwallet/store';
+import { accounts, IState, txhistory } from '@emeraldwallet/store';
 import Header from '@emeraldwallet/ui/lib/components/tx/TxHistory/Header';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
@@ -14,18 +14,17 @@ const styles = (theme?: any) => ({
 });
 
 interface IProps {
-  accountId: string;
   transactions: any;
   accounts: any;
   classes: any;
 }
 
-interface IState {
+interface IHistoryState {
   txFilter: string;
   displayedTransactions: any;
 }
 
-class TransactionsHistory extends React.Component<IProps, IState> {
+class TransactionsHistory extends React.Component<IProps, IHistoryState> {
   constructor (props: IProps) {
     super(props);
     this.state = {
@@ -34,15 +33,15 @@ class TransactionsHistory extends React.Component<IProps, IState> {
     };
   }
 
-  public UNSAFE_componentWillReceiveProps (nextProps: IProps) {
-    if (nextProps.transactions) {
-      this.setState({
-        ...this.state,
-        displayedTransactions: txhistory.selectors.filterTransactions(
-          this.state.txFilter, this.props.accountId, nextProps.transactions, this.props.accounts)
-      });
-    }
-  }
+  // public UNSAFE_componentWillReceiveProps (nextProps: IProps) {
+  //   if (nextProps.transactions) {
+  //     this.setState({
+  //       ...this.state,
+  //       displayedTransactions: txhistory.selectors.filterTransactions(
+  //         this.state.txFilter, this.props.accountId, nextProps.transactions, this.props.accounts)
+  //     });
+  //   }
+  // }
 
   public onSearchChange = (e: any) => {
     return this.setState({
@@ -51,10 +50,10 @@ class TransactionsHistory extends React.Component<IProps, IState> {
   }
 
   public onTxFilterChange = (event: any, value: any) => {
-    const { accountId, transactions, accounts } = this.props;
+    const { transactions } = this.props;
     this.setState({
       txFilter: value,
-      displayedTransactions: txhistory.selectors.filterTransactions(value, accountId, transactions, accounts)
+      displayedTransactions: txhistory.selectors.filterTransactions(value, null, transactions, this.props.accounts)
     });
   }
 
@@ -69,7 +68,6 @@ class TransactionsHistory extends React.Component<IProps, IState> {
         />
         <List
           transactions={this.state.displayedTransactions}
-          accountId={this.props.accountId}
         />
       </div>
     );
@@ -79,12 +77,11 @@ class TransactionsHistory extends React.Component<IProps, IState> {
 const StyledTransactionsHistory = withStyles(styles)(TransactionsHistory);
 
 export default connect(
-  (state, ownProps: any) => {
-    const txs = ownProps.transactions || txhistory.selectors.allTrackedTxs(state);
+  (state: IState, ownProps: any) => {
+    const txs = ownProps.transactions;
     return {
       transactions: txs.sortBy((tx: any) => tx.get('timestamp')).reverse(),
-      accounts: addresses.selectors.all(state),
-      accountId: ownProps.accountId
+      accounts: ownProps.walletAccounts
     };
   },
   (dispatch, ownProps) => ({})

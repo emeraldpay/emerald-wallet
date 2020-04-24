@@ -19,7 +19,6 @@ export { default as CreateAccountWizard } from './create-account/CreateAccountWi
 
 // import
 export { default as ImportMnemonic } from './import/ImportMnemonic';
-export { default as ImportPrivateKey } from './import/ImportPrivateKey';
 
 // common
 export { default as Balance } from './common/Balance';
@@ -29,14 +28,11 @@ export { default as ErrorDialog } from './common/ErrorDialog';
 export { default as i18n } from './i18n';
 
 // layout
-export { default as ConnectionStatus } from './layout/ConnectionStatus';
-export { default as NotificationBar } from './layout/NotificationBar';
-export { default as Header } from './layout/Header';
-export { default as Dashboard } from './layout/Dashboard';
-export { default as Home } from './layout/Home';
-
-// screen
-export { default as Dialog } from './screen/Dialog';
+export { default as ConnectionStatus } from './app/layout/ConnectionStatus';
+export { default as NotificationBar } from './app/layout/NotificationBar';
+export { default as Header } from './app/layout/Header';
+export { default as Dashboard } from './app/layout/Dashboard';
+export { default as Home } from './app/layout/Home';
 
 // tx history
 export { default as TxDetails } from './transactions/TxDetails';
@@ -55,5 +51,7 @@ export { default as ImportLedgerAccount } from './ledger/ImportAccount';
 export { default as Settings } from './settings/Settings';
 
 // onboarding
-export { default as InitialSetup } from './onboarding/InitialSetup';
-export { default as Welcome } from './onboarding/Welcome';
+export { default as InitialSetup } from './app/onboarding/InitialSetup';
+export { default as Welcome } from './app/onboarding/Welcome';
+
+export { default as App } from './app/App';

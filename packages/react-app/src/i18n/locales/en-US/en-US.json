@@ -13,7 +13,7 @@
       "value": "{{value}} Ether"
     },
     "list": {
-      "title": "ACCOUNTS",
+      "title": "Wallets",
       "subtitle": "List of addresses you're controlling on blockchain",
       "create": "Create Account",
       "popupMenuLabel": "ACCOUNTS AND TOKENS"

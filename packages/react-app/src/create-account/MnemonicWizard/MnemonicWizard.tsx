@@ -1,4 +1,4 @@
-import {addresses, screen, settings, State} from '@emeraldwallet/store';
+import { accounts, IState, screen, settings } from '@emeraldwallet/store';
 import { ImportMnemonic, NewMnemonic } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -16,13 +16,13 @@ interface IProps {
   gotoDashboard?: any;
 }
 
-interface IState {
+interface IWizardState {
   page: any;
   mnemonic?: any;
   formData?: any;
 }
 
-class MnemonicWizard extends React.Component<IProps, IState> {
+class MnemonicWizard extends React.Component<IProps, IWizardState> {
   constructor (props: IProps) {
     super(props);
     this.state = {
@@ -115,16 +115,16 @@ class MnemonicWizard extends React.Component<IProps, IState> {
   }
 }
 
-export default connect<any, any, any, State>(
+export default connect<any, any, any, IState>(
   (state, ownProps) => ({
     blockchains: settings.selectors.currentChains(state)
   }),
   (dispatch, ownProps) => ({
     generateMnemonic: () => {
-      return dispatch(addresses.actions.generateMnemonic() as any);
+      return dispatch(accounts.actions.generateMnemonic() as any);
     },
     gotoDashboard: () => {
-      dispatch(screen.actions.gotoScreen('home'));
+      dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
     }
 
   })

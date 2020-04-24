@@ -1,9 +1,5 @@
-import { convert } from '@emeraldplatform/core';
 import { blockchainById, BlockchainCode, IStoredTransaction, utils } from '@emeraldwallet/core';
-import BigNumber from 'bignumber.js';
 import * as ElectronStore from 'electron-store';
-
-const { toBigNumber } = convert;
 
 interface IStoreType {
   transactions: IStoredTransaction[];
@@ -35,10 +31,10 @@ export default class TxStore {
    */
   private restoreTx (tx: any): IStoredTransaction {
     return {
-      value: (tx.value && typeof tx.value === 'string') ? toBigNumber(tx.value) : new BigNumber(0),
+      value: tx.value,
       hash: tx.hash,
       input: tx.input,
-      gasPrice: (tx.gasPrice && typeof tx.gasPrice === 'string') ? toBigNumber(tx.gasPrice) : new BigNumber(0),
+      gasPrice: tx.gasPrice,
       gas: tx.gas,
       to: tx.to,
       from: tx.from,

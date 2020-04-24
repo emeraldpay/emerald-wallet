@@ -1,15 +1,18 @@
-import {BlockchainCode} from '@emeraldwallet/core';
-import {selectBalance, selectBalances} from './selectors';
-import {moduleName} from './types';
+import { BlockchainCode } from '@emeraldwallet/core';
+import { IState } from '../types';
+import { selectBalance, selectBalances } from './selectors';
+import { moduleName } from './types';
 
 describe('selectors', () => {
   it('selectBalances works for address without data', () => {
     const appState: {[idx: string]: any} = {};
     appState[moduleName] = {
       [BlockchainCode.ETC]: {
-        '0x2': {}
+        '0x2': {
+        }
       }
     };
+    // @ts-ignore
     const balances = selectBalances(appState, '0x1', BlockchainCode.ETC);
     expect(balances).toBeNull();
   });
