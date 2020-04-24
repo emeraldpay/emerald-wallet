@@ -4,7 +4,7 @@ import ConfirmMnemonic from './ConfirmMnemonic';
 
 describe('ConfirmMnemonic', () => {
   it('renders without crash', () => {
-    const component = render(<ConfirmMnemonic mnemonic='mnemonic phrase' dpath={"m/44'/60'"} />);
+    const component = render(<ConfirmMnemonic mnemonic='mnemonic phrase' />);
     expect(component).toBeDefined();
   });
 });

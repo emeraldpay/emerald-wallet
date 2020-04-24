@@ -1,6 +1,6 @@
+import { Button } from '@emeraldwallet/ui';
 import { shallow } from 'enzyme';
 import * as React from 'react';
-import Button from '../../common/Button';
 import { NewMnemonic, styles } from './NewMnemonic';
 
 const reduceClasses = (prev, curr) => ({ ...prev,  [curr]: curr });

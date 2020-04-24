@@ -25,16 +25,21 @@ export default class WalletService {
     return this.vault.getWallet(walletId);
   }
 
-  public createNewWallet = (name: string, mnemonic: string): Wallet => {
-    // 1. Import Mnemonic seed
-    const seedId = this.vault.importSeed({
-      type: 'mnemonic',
-      value: {
-        value: mnemonic
-      }
-    });
-    // 2. Create wallet with Seed
-    const walletId = this.vault.addWallet(seedId, name);
+  public createNewWallet = (walletName: string, mnemonic?: string): Wallet => {
+    let walletId;
+    if (mnemonic) {
+      // 1. Import Mnemonic seed
+      const seedId = this.vault.importSeed({
+        type: 'mnemonic',
+        value: {
+          value: mnemonic
+        }
+      });
+      // 2. Create wallet with Seed
+      walletId = this.vault.addWalletWithSeed(seedId, walletName);
+    } else {
+      walletId = this.vault.addWallet(walletName);
+    }
     const wallet = this.vault.getWallet(walletId);
     return wallet!;
   }

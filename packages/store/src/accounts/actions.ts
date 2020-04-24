@@ -1,11 +1,11 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
 import {
-  blockchainById,
   blockchainByName,
   BlockchainCode,
   blockchainCodeToId,
   blockchains,
-  IApi, IBackendApi,
+  IApi,
+  IBackendApi,
   Logger,
   Wallet,
   WalletService
@@ -14,7 +14,7 @@ import { ipcRenderer } from 'electron';
 import { Dispatch } from 'redux';
 import { dispatchRpcError } from '../screen/actions';
 import * as history from '../txhistory';
-import {Dispatched, IExtraArgument} from '../types';
+import { Dispatched, IExtraArgument } from '../types';
 import * as selectors from './selectors';
 import {
   ActionTypes,
@@ -24,11 +24,11 @@ import {
   ILoadWalletsAction,
   ISetBalanceAction,
   ISetLoadingAction,
+  ISetTxCountAction,
   IUpdateWalletAction,
   IWalletCreatedAction,
   IWalletsLoaded,
-  PendingBalanceAction,
-  ISetTxCountAction
+  PendingBalanceAction
 } from './types';
 
 const log = Logger.forCategory('store.accounts');

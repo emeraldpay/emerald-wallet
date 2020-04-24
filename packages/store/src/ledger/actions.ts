@@ -5,10 +5,13 @@ import { AppThunk, Dispatched, GetState } from '../types';
 import {
   ActionTypes,
   AddressSelected,
-  IConnectedAction, IGetAddressesAction,
+  IConnectedAction,
+  IGetAddressesAction,
   IUpdateAddressAction,
   SetBaseHD,
-  SetHDOffset, SetListHDPath, Watch
+  SetHDOffset,
+  SetListHDPath,
+  Watch
 } from './types';
 
 export function setWatch (value: boolean): Watch {
@@ -174,7 +177,7 @@ export function importSelected (blockchain: BlockchainCode): Dispatched<AddressS
       return;
     }
 
-    const walletId = extra.api.vault.addWallet(seed.id!, `Ledger ${hdpath}`);
+    const walletId = extra.api.vault.addWallet(`Ledger ${hdpath}`);
     const accountId = extra.api.vault.addAccount(walletId, {
       blockchain: blockchainCodeToId(blockchain),
       type: 'hd-path',

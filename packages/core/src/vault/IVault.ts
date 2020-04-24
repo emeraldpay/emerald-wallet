@@ -13,7 +13,8 @@ import { Account, Contact, TxSignRequest } from './types';
 
 export default interface IVault {
   listWallets (): Wallet[];
-  addWallet (seedId: string, label: string | undefined): Uuid;
+  addWalletWithSeed (seedId: string, label: string | undefined): Uuid;
+  addWallet (label: string | undefined): Uuid;
   getWallet (id: Uuid): Wallet | undefined;
   setWalletLabel (walletId: Uuid, label: string): boolean;
   addAccount (walletId: Uuid, account: AddAccount): AccountId;
