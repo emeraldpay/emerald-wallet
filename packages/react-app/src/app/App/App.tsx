@@ -1,4 +1,4 @@
-import { Theme } from '@emeraldplatform/ui';
+import { Theme } from '@emeraldwallet/ui';
 import { ThemeProvider } from '@material-ui/core/styles';
 import * as React from 'react';
 import { I18nextProvider } from 'react-i18next';

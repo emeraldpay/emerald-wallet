@@ -1,4 +1,4 @@
-import { withTheme } from '@material-ui/styles';
+import { withTheme } from '@material-ui/core/styles';
 import * as React from 'react';
 
 const EmeraldTitle = ({ theme }: {theme: any}) => {

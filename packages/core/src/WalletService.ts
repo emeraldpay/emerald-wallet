@@ -25,15 +25,16 @@ export default class WalletService {
     return this.vault.getWallet(walletId);
   }
 
-  public createNewWallet = (walletName: string, mnemonic?: string): Wallet => {
+  public createNewWallet = (walletName: string, password?: string, mnemonic?: string): Wallet => {
     let walletId;
-    if (mnemonic) {
+    if (mnemonic && password) {
       // 1. Import Mnemonic seed
       const seedId = this.vault.importSeed({
         type: 'mnemonic',
         value: {
           value: mnemonic
-        }
+        },
+        password
       });
       // 2. Create wallet with Seed
       walletId = this.vault.addWalletWithSeed(seedId, walletName);

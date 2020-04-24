@@ -55,8 +55,8 @@ function* loadAllWallets (backendApi: IBackendApi): SagaIterator {
 }
 
 function* createWallet (backendApi: IBackendApi, action: any): SagaIterator {
-  const { walletName, mnemonic } = action.payload;
-  const wallet = yield call(backendApi.createWallet, walletName, mnemonic);
+  const { walletName, password, mnemonic } = action.payload;
+  const wallet = yield call(backendApi.createWallet, walletName, password, mnemonic);
   yield put(walletCreatedAction(wallet));
   yield put(screen.actions.gotoScreen(screen.Pages.WALLET, wallet.id));
 }

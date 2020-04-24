@@ -3,7 +3,8 @@ import {
   BlockchainCode,
   blockchainCodeToId,
   Commands,
-  vault, Wallet,
+  vault,
+  Wallet,
   WalletService
 } from '@emeraldwallet/core';
 import { loadTransactions2, storeTransactions2 } from '@emeraldwallet/history-store';
@@ -104,9 +105,9 @@ export function setIpcHandlers (app: Application) {
     return app.vault?.exportJsonPrivateKey(accountId, undefined);
   });
   // Wallets
-  ipcMain.handle(Commands.VAULT_CREATE_WALLET, (event: any, name: string, mnemonic: string) => {
+  ipcMain.handle(Commands.VAULT_CREATE_WALLET, (event: any, name: string, password: string, mnemonic: string) => {
     const service = new WalletService(app.vault!);
-    return service.createNewWallet(name, mnemonic);
+    return service.createNewWallet(name, password, mnemonic);
   });
 
   ipcMain.handle(Commands.VAULT_GET_WALLET, (event: any, walletId: string) => {

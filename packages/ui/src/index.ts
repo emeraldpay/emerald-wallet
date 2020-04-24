@@ -29,3 +29,4 @@ export { default as Total } from './components/layout/Header/Total';
 export { default as ConnectionStatus } from './components/layout/ConnectionStatus';
 
 export { default as NewAccountProps } from './components/accounts/GenerateAccount/AccountPropsDialog';
+export { default as Theme } from './theme';

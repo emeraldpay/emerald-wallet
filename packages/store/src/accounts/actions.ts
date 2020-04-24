@@ -86,11 +86,12 @@ export function loadAccountBalance (blockchain: BlockchainCode, address: string)
 //   };
 // }
 
-export function createNewWalletAction (walletName: string, mnemonic: string): ICreateWalletAction {
+export function createNewWalletAction (walletName: string, password: string, mnemonic: string): ICreateWalletAction {
   return {
     type: ActionTypes.CREATE_WALLET,
     payload: {
       walletName,
+      password,
       mnemonic
     }
   };

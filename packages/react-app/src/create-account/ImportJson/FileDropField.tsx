@@ -1,9 +1,9 @@
 import { Button } from '@emeraldwallet/ui';
-import { CSSProperties, withStyles } from '@material-ui/styles';
+import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import Dropzone from 'react-dropzone';
 
-export const styles = {
+export const styles = createStyles({
   container: {
     height: '262px',
     width: '100%',
@@ -12,7 +12,7 @@ export const styles = {
     flexDirection: 'column',
     justifyContent: 'center',
     alignItems: 'center'
-  } as CSSProperties,
+  },
   label: {
     margin: '10px',
     color: '#747474'
@@ -21,8 +21,8 @@ export const styles = {
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center'
-  }  as CSSProperties
-};
+  }
+});
 
 interface IFileDropFieldProps {
   onChange: any;

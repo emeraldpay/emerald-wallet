@@ -1,4 +1,4 @@
-import { accounts, IState, screen, settings } from '@emeraldwallet/store';
+import { accounts, IState, screen } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import ConfirmMnemonic from './ConfirmMnemonic';
@@ -15,12 +15,14 @@ const PAGES = {
 interface IProps {
   generateMnemonic: any;
   gotoDashboard?: any;
-  onCreateWallet: (name: string, seed: string) => void;
+  onCreateWallet: (name: string, password: string, seed: string) => void;
 }
 
 function NewWalletWizard (props: IProps) {
   const [page, setPage] = React.useState(PAGES.SET_NAME);
   const [mnemonic, setMnemonic] = React.useState();
+  const [walletName, setWalletName] = React.useState();
+  const [walletPwd, setWalletPwd] = React.useState();
 
   const generate = () => {
     if (props.generateMnemonic) {
@@ -32,11 +34,13 @@ function NewWalletWizard (props: IProps) {
 
   function createWallet () {
     if (props.onCreateWallet) {
-      props.onCreateWallet('', mnemonic);
+      props.onCreateWallet(walletName, walletPwd, mnemonic);
     }
   }
 
-  const gotoGenerate = () => {
+  const gotoGenerate = (name: string, password: string) => {
+    setWalletName(name);
+    setWalletPwd(password);
     setPage(PAGES.GENERATE);
   };
 
@@ -115,9 +119,9 @@ export default connect<any, any, any, IState>(
     gotoDashboard: () => {
       dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
     },
-    onCreateWallet: (walletName: string, mnemonic: string) => {
+    onCreateWallet: (walletName: string, password: string, mnemonic: string) => {
       //
-      dispatch(accounts.actions.createNewWalletAction(walletName, mnemonic));
+      dispatch(accounts.actions.createNewWalletAction(walletName, password, mnemonic));
     }
 
   })
