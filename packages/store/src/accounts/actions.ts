@@ -99,16 +99,16 @@ export function createNewWalletAction (walletName: string, password: string, mne
 
 function createWalletWithAccount (
   api: IApi, dispatch: Dispatch<any>, blockchain: BlockchainCode, name: string = '', add: vault.AddAccount
-): vault.Uuid {
+): { walletId: vault.Uuid, accountId: string } {
   const walletId = api.vault.addWallet(name);
   const accountId = api.vault.addAccount(walletId, add);
   const wallet = api.vault.getWallet(walletId)!;
 
   dispatch(walletCreatedAction(wallet));
 
-  dispatch(loadWalletsAction()); // reload only current wallet
+  // dispatch(loadWalletsAction()); // reload only current wallet
   // loadAccountBalance(blockchain, account.address);
-  return walletId;
+  return { walletId, accountId };
 }
 
 export function walletCreatedAction (wallet: any): IWalletCreatedAction {
@@ -129,14 +129,19 @@ export function accountImportedAction (walletId: string, accountId: string) {
 }
 
 export function createAccount (
-  blockchain: BlockchainCode, passphrase: string, name: string = '', description: string = ''
+  blockchain: BlockchainCode, passphrase: string, name: string = ''
 ): Dispatched<IWalletCreatedAction> {
   return (dispatch: any, getState, extra) => {
-    createWalletWithAccount(extra.api, dispatch,
-       blockchain, name, {
-         blockchain: blockchainCodeToId(blockchain),
-         type: 'generate-random'
-       });
+
+    const addRequest: vault.AddAccount = {
+      blockchain: blockchainCodeToId(blockchain),
+      type: 'generate-random',
+      password: passphrase
+    };
+
+    return Promise.resolve(
+      createWalletWithAccount(extra.api, dispatch, blockchain, name, addRequest)
+    );
   };
 }
 

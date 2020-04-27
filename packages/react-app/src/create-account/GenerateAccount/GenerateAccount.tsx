@@ -1,12 +1,12 @@
 import { AccountId, Uuid } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode } from '@emeraldwallet/core';
 import { accounts, screen } from '@emeraldwallet/store';
-import { NewAccountProps } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import { saveJson } from '../../util/save-as';
 import ShowPrivateKey from '../ShowPrivateKey';
+import NewAccountProps from './AccountPropsDialog';
 import DownloadDialog from './DownloadDialog';
 import PasswordDialog from './PasswordDialog';
 
@@ -53,11 +53,11 @@ class GenerateAccount extends React.Component<Props, IState> {
 
     // Create new account
     this.props.dispatch(accounts.actions.createAccount(blockchain, passphrase))
-      .then((walletId: Uuid) => {
+      .then((result: { walletId: Uuid, accountId: string }) => {
         this.setState({
           loading: false,
-          walletId,
-          accountId: walletId + '/0', // TODO receive real id
+          walletId: result.walletId,
+          accountId: result.accountId,
           passphrase,
           blockchain,
           page: PAGES.DOWNLOAD
@@ -89,7 +89,6 @@ class GenerateAccount extends React.Component<Props, IState> {
         });
 
       });
-
     });
   }
 
@@ -107,7 +106,7 @@ class GenerateAccount extends React.Component<Props, IState> {
     const { dispatch } = this.props;
     const { walletId } = this.state;
     dispatch(accounts.actions.updateWallet(walletId, name))
-      .then(() => dispatch(screen.actions.gotoScreen(screen.Pages.HOME)));
+      .then(() => dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, walletId)));
   }
 
   public goToDashboard = () => {

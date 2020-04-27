@@ -1,5 +1,4 @@
 import { render } from '@testing-library/react';
-import { fromJS } from 'immutable';
 import * as React from 'react';
 import { Provider } from 'react-redux';
 import PasswordDialog from './PasswordDialog';

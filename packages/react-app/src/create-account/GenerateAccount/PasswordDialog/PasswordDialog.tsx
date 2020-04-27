@@ -7,7 +7,7 @@ import { IState, settings } from '@emeraldwallet/store';
 import {
   Advice, Button, ChainSelector, FormRow, PasswordInput
 } from '@emeraldwallet/ui';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import LoadingIcon from '../LoadingIcon';
