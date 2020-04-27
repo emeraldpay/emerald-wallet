@@ -133,7 +133,13 @@ export class WalletShow extends React.Component<WalletDetailsProps, IState> {
           <Grid container={true} direction={'column'}>
             <Grid item={true} xs={12}>
               {wallet.accounts.map(
-                (account: Account) => (<EthereumAccountItem walletId={wallet.id} account={account} key={account.id}/>)
+                (account: Account) => (
+                  <EthereumAccountItem
+                    walletId={wallet.id}
+                    account={account}
+                    key={account.id}
+                  />
+                  )
               )}
             </Grid>
           </Grid>
