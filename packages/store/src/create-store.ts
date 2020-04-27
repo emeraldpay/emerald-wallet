@@ -28,7 +28,7 @@ export const createStore = (_api: IApi, backendApi: IBackendApi) => {
     thunkMiddleware.withExtraArgument({ api: _api, backendApi })
   ];
 
-  if (process.env.NODE_ENV !== 'test') {
+  if (process.env.NODE_ENV === 'development') {
     storeMiddleware.push(reduxLogger);
   }
 
@@ -40,7 +40,7 @@ export const createStore = (_api: IApi, backendApi: IBackendApi) => {
   sagaMiddleware.run(blockchains.sagas.root, backendApi);
   sagaMiddleware.run(addressBook.sagas.root, backendApi);
   sagaMiddleware.run(tokens.sagas.root, backendApi);
-  sagaMiddleware.run(ledger.sagas.root, _api);
+  sagaMiddleware.run(ledger.sagas.root, backendApi);
   sagaMiddleware.run(txhistory.sagas.root, backendApi);
   sagaMiddleware.run(wallet.sagas.root);
   sagaMiddleware.run(settings.sagas.root);

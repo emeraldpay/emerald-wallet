@@ -145,19 +145,6 @@ export const start = () => {
   newWalletVersionCheck();
 };
 
-// @deprecated
-// function checkStatus() {
-//   function checkServiceStatus() {
-//     // hack to make some stuff work in storybook: @shanejonas
-//     if (!ipcRenderer) {
-//       return;
-//     }
-//     ipcRenderer.send('get-status');
-//   }
-//
-//   setTimeout(checkServiceStatus, 2000);
-// }
-
 export function screenHandlers() {
   let prevScreen = null;
   store.subscribe(() => {
@@ -199,8 +186,6 @@ Promise
   .all([onceBlockchainConnected(store)])
   .then(startSync);
 
-// @deprecated
-// checkStatus();
 
 screenHandlers();
 

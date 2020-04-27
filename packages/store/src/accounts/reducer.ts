@@ -1,5 +1,5 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
-import { blockchainCodeToId, Wallet } from '@emeraldwallet/core';
+import { Wallet } from '@emeraldwallet/core';
 import produce from 'immer';
 import {
   AccountDetails,

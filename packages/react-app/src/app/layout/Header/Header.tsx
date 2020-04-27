@@ -45,7 +45,6 @@ const SettingsButton = ({ classes, onClick }: {classes: any, onClick: any}) => (
   <Button
     variant='text'
     onClick={onClick}
-    label='Settings'
     classes={{
       label: classes.text
     }}

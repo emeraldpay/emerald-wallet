@@ -1,8 +1,7 @@
 import { Wallet } from '@emeraldwallet/core';
-import { accounts, screen, txhistory } from '@emeraldwallet/store';
+import { accounts, screen } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import TxHistory from '../../transactions/TxHistory';
 import WalletDetailsView from './WalletDetailsView';
 
 export interface IOwnProps {
@@ -13,13 +12,10 @@ export default connect(
   (state: any, ownProps: IOwnProps) => {
     // reload account from store, because it can be passed with id only if it was just imported
     const wallet = accounts.selectors.find(state, ownProps.walletId)!;
-    const transactions = txhistory.selectors.getTransactions(state, wallet.accounts);
 
     return {
       showFiat: true,
-      wallet,
-      transactions,
-      txList: (<TxHistory transactions={transactions} walletAccounts={wallet.accounts} />)
+      wallet
     };
   },
   (dispatch, ownProps) => ({

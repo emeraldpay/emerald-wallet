@@ -1,4 +1,4 @@
-import { IApi } from '@emeraldwallet/core';
+import { IApi, IBackendApi } from '@emeraldwallet/core';
 import { LedgerApi } from '@emeraldwallet/ledger';
 import { remote } from 'electron';
 import { all, call, put, select, takeEvery, takeLatest } from 'redux-saga/effects';
@@ -6,11 +6,11 @@ import { selectAddressAction, setHdOffsetAction, start, updateAddressAction } fr
 import { getHdBase } from './selectors';
 import { ActionTypes, IGetAddressesAction, LoadAddrInfoAction } from './types';
 
-function* fetchAddrInfo (api: IApi, action: LoadAddrInfoAction) {
+function* fetchAddrInfo (backendApi: IBackendApi, action: LoadAddrInfoAction) {
   yield;
 }
 
-function* getAddressesSaga (api: IApi, action: IGetAddressesAction) {
+function* getAddressesSaga (backendApi: IBackendApi, action: IGetAddressesAction) {
   const { offset, count } = action.payload;
   yield put(setHdOffsetAction(offset));
   yield put(selectAddressAction(undefined));
@@ -34,9 +34,9 @@ function* getAddressesSaga (api: IApi, action: IGetAddressesAction) {
   }
 }
 
-export function* root (api: IApi) {
+export function* root (backendApi: IBackendApi) {
   yield all([
-    takeEvery(ActionTypes.LOAD_ADDR_INFO, fetchAddrInfo, api),
-    takeLatest(ActionTypes.GET_ADDRESSES, getAddressesSaga, api)
+    takeEvery(ActionTypes.LOAD_ADDR_INFO, fetchAddrInfo, backendApi),
+    takeLatest(ActionTypes.GET_ADDRESSES, getAddressesSaga, backendApi)
   ]);
 }
