@@ -14,13 +14,13 @@ export default connect(
         ownProps.formData.blockchain,
         ownProps.formData.password,
         ownProps.formData.mnemonic,
-        ownProps.formData.hdpath, '', '') as any)
+        ownProps.formData.hdpath, '') as any)
         .then((result: any) => {
           if (result.error) {
             throw new Error(result.error.toString());
           } else {
             // show page with account details
-            dispatch(screen.actions.gotoScreen('account', { id: result, blockchain: ownProps.formData.blockchain }));
+            dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, result.walletId));
           }
         }).catch((error: any) => {
           console.error(error);
@@ -32,7 +32,7 @@ export default connect(
       if (ownProps.onBack) {
         ownProps.onBack();
       } else {
-        dispatch(screen.actions.gotoScreen('home'));
+        dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
       }
     }
   })

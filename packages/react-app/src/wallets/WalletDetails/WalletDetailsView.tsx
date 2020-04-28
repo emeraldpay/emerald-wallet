@@ -9,6 +9,7 @@ import { AccountBalanceWalletOutlined as WalletIcon } from '@material-ui/icons';
 
 import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
+import WalletMenu from '../WalletList/WalletMenu';
 import EthereumAccountItem from './EthereumAccountItem';
 
 export const styles = {
@@ -98,7 +99,7 @@ export class WalletShow extends React.Component<WalletDetailsProps, IState> {
       <Page
         title={renderTitle()}
         leftIcon={<Back onClick={goBack}/>}
-        rightIcon={<MoreVertical />}
+        rightIcon={<WalletMenu walletId={wallet.id}/>}
       >
         <Grid container={true} direction={'column'}>
           <Grid item={true} xs={12}>

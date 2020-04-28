@@ -237,7 +237,7 @@ export function importPk (
 }
 
 export function importMnemonic (
-  blockchain: BlockchainCode, passphrase: string, mnemonic: string, hdPath: string, name: string, description: string
+  blockchain: BlockchainCode, passphrase: string, mnemonic: string, hdPath: string, name: string
 ): Dispatched<IWalletCreatedAction> {
   return (dispatch: any, getState, extra) => {
     if (!blockchains.isValidChain(blockchain)) {
@@ -245,17 +245,20 @@ export function importMnemonic (
     }
     const walletService = new WalletService(extra.api.vault);
     const seedId = walletService.importMnemonic(mnemonic, passphrase);
+    const addRequest: vault.AddAccount = {
+      blockchain: blockchainCodeToId(blockchain),
+      type: 'hd-path',
+      key: {
+        seedId,
+        hdPath,
+        password: passphrase
+      }
+    };
 
-    createWalletWithAccount(extra.api, dispatch,
-      blockchain, name, {
-        blockchain: blockchainCodeToId(blockchain),
-        type: 'hd-path',
-        key: {
-          seedId,
-          hdPath,
-          password: passphrase
-        }
-      });
+    return Promise.resolve(
+      createWalletWithAccount(extra.api, dispatch, blockchain, name, addRequest)
+    );
+
   };
 }
 

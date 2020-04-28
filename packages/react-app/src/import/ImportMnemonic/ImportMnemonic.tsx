@@ -35,13 +35,13 @@ export default connect<IStateProps, IDispatchProps, IOwnProps, IState>(
   }),
   (dispatch, ownProps) => ({
     onSubmit: (data: {blockchain: BlockchainCode, password: string, mnemonic: string, hdpath: string}) => {
-      return dispatch(accounts.actions.importMnemonic(data.blockchain, data.password, data.mnemonic, data.hdpath, '', '') as any)
+      return dispatch(accounts.actions.importMnemonic(data.blockchain, data.password, data.mnemonic, data.hdpath, '') as any)
         .then((result: any) => {
           if (result.error) {
             throw new Error(result.error.toString());
           } else {
-            // show page with account details
-            dispatch(screen.actions.gotoScreen('account', { id: result, blockchain: data.blockchain }));
+            // show page with wallet details
+            dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, result.walletId));
           }
         }).catch((error: any) => {
           logger.error('Error import mnemonic', error);

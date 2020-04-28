@@ -1,4 +1,3 @@
-import { Wallet } from '@emeraldwallet/core';
 import { addAccount, IState, screen } from '@emeraldwallet/store';
 import { IconButton, ListItemIcon, Menu, MenuItem, Typography } from '@material-ui/core';
 import {
@@ -12,10 +11,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 
 interface IOwnProps {
-  wallet: Wallet;
-}
-
-interface IRenderProps {
+  walletId: string;
 }
 
 interface IDispatchProps {
@@ -23,17 +19,16 @@ interface IDispatchProps {
   onAddAccount: () => void;
 }
 
-const WalletMenu = ((props: IRenderProps & IDispatchProps) => {
-
+const WalletMenu = ((props: IDispatchProps) => {
+  const { showDetails, onAddAccount } = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
   };
-
-  const { showDetails, onAddAccount } = props;
 
   return (
     <div>
@@ -76,15 +71,15 @@ const WalletMenu = ((props: IRenderProps & IDispatchProps) => {
   );
 });
 
-export default connect<IRenderProps, IDispatchProps, IOwnProps, IState>(
+export default connect<{}, IDispatchProps, IOwnProps, IState>(
   null,
   (dispatch, ownProps) => {
     return {
       showDetails: () => {
-        dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.wallet.id));
+        dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId));
       },
       onAddAccount: () => {
-        dispatch(addAccount.actions.start(ownProps.wallet.id));
+        dispatch(addAccount.actions.start(ownProps.walletId));
         dispatch(screen.actions.gotoScreen(screen.Pages.ADD_ACCOUNT));
       }
     };

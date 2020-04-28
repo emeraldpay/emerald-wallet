@@ -4,7 +4,6 @@ import { Button, CoinAvatar } from '@emeraldwallet/ui';
 import { Card, CardActions, CardContent, CardHeader, Grid } from '@material-ui/core';
 import { createStyles, withStyles, withTheme } from '@material-ui/core/styles';
 import { AccountBalanceWalletOutlined as WalletIcon } from '@material-ui/icons';
-import MoreVertIcon from '@material-ui/icons/MoreVert';
 import * as React from 'react';
 import AccountBalance from '../../common/Balance';
 import WalletSummary from '../WalletSummary';
@@ -113,11 +112,7 @@ export class WalletItem extends React.PureComponent<IWalletItemProps> {
               subheader: classes.headerSubtitle
             }}
             action={
-              <WalletMenu wallet={wallet}/>
-              // <IconButton aria-label="details"
-              //             onClick={this.onAddressClick}> {/* TODO show menu with wallet actions? */}
-              //   <MoreVertIcon />
-              // </IconButton>
+              <WalletMenu walletId={wallet.id}/>
             }
           />
           <CardContent>
