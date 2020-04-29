@@ -6,7 +6,7 @@
     "declaration": true,
     "strict": false,
     "jsx": "react",
-    "rootDirs": ["src", "stories"],
+    "rootDir": "./src",
     "typeRoots": [
       "node_modules/@types",
       "../../node_modules/@types"
@@ -22,5 +22,8 @@
     "node_modules",
     "**/*.spec.ts",
     "**/*.spec.tsx"
+  ],
+  "references": [
+    { "path": "../core" }
   ]
 }

@@ -26,5 +26,16 @@
   "exclude": [
     "node_modules",
     "**/*.spec.ts"
+  ],
+  "references": [
+    {
+      "path": "../core"
+    },
+    {
+      "path": "../ledger"
+    },
+    {
+      "path": "../erc20"
+    }
   ]
 }

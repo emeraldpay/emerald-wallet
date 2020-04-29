@@ -8,7 +8,9 @@
   "author": "ETCDEV GmbH",
   "license": "Apache-2.0",
   "scripts": {
-    "build": "rimraf lib/ && tsc",
+    "clean": "rimraf lib/ && rimraf tsconfig.tsbuildinfo",
+    "compile": "tsc -b",
+    "build": "yarn clean && yarn compile",
     "build:dist": "rimraf lib/ && tsc",
     "test": "jest --passWithNoTests",
     "test:coverage": "jest --passWithNoTests --coverage && codecov"

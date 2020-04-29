@@ -24,6 +24,7 @@
   ],
   "references": [
     { "path": "../core" },
-    { "path": "../store" }
+    { "path": "../store" },
+    { "path": "../ui" }
   ]
 }
