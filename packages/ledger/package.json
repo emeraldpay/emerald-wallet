@@ -11,7 +11,7 @@
     "clean": "rimraf lib/ && rimraf tsconfig.tsbuildinfo",
     "compile": "tsc -b",
     "build": "yarn clean && yarn compile",
-    "build:dist": "rimraf lib/ && tsc",
+    "build:dist": "yarn clean && yarn compile",
     "test": "jest --passWithNoTests",
     "test:coverage": "jest --passWithNoTests --coverage && codecov"
   },
