@@ -18,3 +18,5 @@ lerna-debug.log
 yarn-error.log
 age.txt
 gcloud.json
+tsconfig.tsbuildinfo
+lib/

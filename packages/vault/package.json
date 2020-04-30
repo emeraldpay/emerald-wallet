@@ -7,12 +7,13 @@
   "author": "ETCDEV GmbH",
   "license": "Apache-2.0",
   "scripts": {
-    "build": "rimraf lib/ && tsc",
-    "build:dist": "rimraf lib/ && tsc",
+    "clean": "rimraf lib/ && rimraf tsconfig.tsbuildinfo",
+    "compile": "tsc -b",
+    "build": "yarn clean && yarn compile",
+    "build:dist": "yarn clean && yarn compile",
     "test": "jest"
   },
   "devDependencies": {
-    "@emeraldplatform/core": "^0.5.11",
     "@jest-runner/electron": "2.0.2",
     "@types/jest": "^24.0.9",
     "@types/node": "^12.12.0",

@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
+    "composite": true,
     "allowSyntheticDefaultImports": true,
     "outDir": "./lib",
     "declaration": true,
     "strict": false,
     "jsx": "react",
-    "rootDirs": ["src", "stories"],
+    "rootDir": "./src",
     "typeRoots": [
       "node_modules/@types",
       "../../node_modules/@types"
@@ -13,11 +14,16 @@
     "forceConsistentCasingInFileNames": true
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.tsx"
   ],
   "exclude": [
     "../../node_modules",
     "node_modules",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ],
+  "references": [
+    { "path": "../core" }
   ]
 }

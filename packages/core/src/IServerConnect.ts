@@ -1,5 +1,5 @@
 import { EthRpc } from '@emeraldplatform/eth-rpc';
-import { BlockchainCode } from './blockchains/blockchains';
+import { BlockchainCode } from './blockchains';
 
 export interface IServerConnect {
   // TODO remove

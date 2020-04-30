@@ -7,8 +7,10 @@
   "author": "ETCDEV GmbH",
   "license": "Apache-2.0",
   "scripts": {
-    "build:dist": "rimraf lib/ && tsc && yarn copyfiles -u 1 src/**/*.png lib/",
-    "build": "rimraf lib/ && tsc && yarn copyfiles -u 1 src/**/*.png lib/",
+    "clean": "rimraf lib/ && rimraf tsconfig.tsbuildinfo",
+    "compile": "tsc -b",
+    "build:dist": "yarn clean && yarn compile && yarn copyfiles -u 1 src/**/*.png lib/",
+    "build": "yarn clean && yarn compile && yarn copyfiles -u 1 src/**/*.png lib/",
     "tsc": "tsc",
     "test": "jest --passWithNoTests",
     "test:coverage": "jest --passWithNoTests --coverage && codecov",

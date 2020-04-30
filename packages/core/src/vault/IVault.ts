@@ -24,7 +24,6 @@ export default interface IVault {
   exportRawPrivateKey (accountFullId: AccountId, password: string): Promise<string>;
 
   generateMnemonic (size: number): string;
-
   importSeed (seed: SeedDefinition): Uuid;
 
   // Signing

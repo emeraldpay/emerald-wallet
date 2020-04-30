@@ -1,21 +1,30 @@
 {
   "compilerOptions": {
+    "composite": true,
     "allowSyntheticDefaultImports": true,
     "outDir": "./lib",
+    "rootDir": "./src",
     "target": "es5",
     "jsx": "react",
     "declaration": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "strict": true,
-    "rootDirs": ["src"],
     "resolveJsonModule": true
   },
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/i18n/locales/**/*.json"
   ],
   "exclude": [
     "node_modules",
-    "**/*.spec.ts"
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
+  ],
+  "references": [
+    { "path": "../core" },
+    { "path": "../store" },
+    { "path": "../ui" }
   ]
 }

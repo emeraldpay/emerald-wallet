@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
+    "composite": true,
     "outDir": "./lib",
+    "rootDir": "./src",
     "declaration": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "strict": true,
-    "rootDirs": ["src"],
     "forceConsistentCasingInFileNames": true,
     "lib": [
       "dom",
@@ -25,5 +26,16 @@
   "exclude": [
     "node_modules",
     "**/*.spec.ts"
+  ],
+  "references": [
+    {
+      "path": "../core"
+    },
+    {
+      "path": "../ledger"
+    },
+    {
+      "path": "../erc20"
+    }
   ]
 }

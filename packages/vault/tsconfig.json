@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
+    "composite": true,
     "outDir": "./lib",
+    "rootDir": "./src",
     "declaration": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "strict": true,
-    "rootDirs": ["src"],
     "forceConsistentCasingInFileNames": true,
     "typeRoots": [
       "./typings",
@@ -19,5 +20,8 @@
   "exclude": [
     "node_modules",
     "**/*.spec.ts"
+  ],
+  "references": [
+    { "path": "../core" }
   ]
 }

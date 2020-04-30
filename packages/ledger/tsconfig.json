@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
+    "composite": true,
     "outDir": "./lib",
     "declaration": true,
     "module": "commonjs",
     "moduleResolution": "node",
     "strict": true,
-    "rootDirs": ["src"],
+    "rootDir": "./src",
     "forceConsistentCasingInFileNames": true
   },
   "include": [

@@ -1,3 +1,4 @@
+import { SeedDefinition } from '@emeraldpay/emerald-vault-core';
 import Account from './entities/Account';
 import Wallet from './entities/Wallet';
 import { IVault } from './vault';
@@ -10,11 +11,15 @@ export default class WalletService {
   }
 
   public importMnemonic (words: string, passphrase: string) {
-    return this.vault.importSeed({
+    const seedDef: SeedDefinition = {
       type: 'mnemonic',
       password: passphrase,
-      value: words
-    });
+      value: {
+        value: words
+      }
+    };
+
+    return this.vault.importSeed(seedDef);
   }
 
   public getAllWallets = (): Wallet[] => {
