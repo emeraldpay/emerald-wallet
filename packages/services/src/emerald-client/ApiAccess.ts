@@ -9,8 +9,8 @@ import {
 } from '@emeraldpay/grpc-client';
 import { IEmeraldClient } from '@emeraldwallet/core';
 import * as os from 'os';
-import { AddressListener } from '../AddressListener';
 import { ChainListener } from '../ChainListener';
+import { AddressListener } from '../services/balances/AddressListener';
 import { PriceListener } from '../services/prices/PricesListener';
 import { TxListener } from '../services/TxListener';
 
@@ -219,7 +219,12 @@ export class EmeraldApiAccess implements IEmeraldClient {
       && status.pricesConnected
       && status.diagConnected;
     if (!connected) {
-      this.verifyOffline({ auth: status.authenticated, blockchain: status.blockchainConnected, market: status.pricesConnected, diag: status.diagConnected });
+      this.verifyOffline({
+        auth: status.authenticated,
+        blockchain: status.blockchainConnected,
+        market: status.pricesConnected,
+        diag: status.diagConnected
+      });
     } else {
       this.connectionState.connectedAt = new Date();
       this.setStatus(Status.CONNECTED);

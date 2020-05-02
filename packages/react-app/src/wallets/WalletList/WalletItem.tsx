@@ -102,7 +102,13 @@ export class WalletItem extends React.PureComponent<IWalletItemProps> {
     }
 
     return (
-      <Grid item={true} xs={6} component={StyledCustomCard} classes={{ root: classes.gridCard }}>
+      <Grid
+        item={true}
+        xs={12}
+        sm={6}
+        component={StyledCustomCard}
+        classes={{ root: classes.gridCard }}
+      >
         <div className={classes.gridCardInner}>
           <CardHeader
             avatar={<WalletIcon color='secondary'/>}

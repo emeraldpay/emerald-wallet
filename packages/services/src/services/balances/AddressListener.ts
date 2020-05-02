@@ -4,13 +4,11 @@ import {
   Asset,
   BalanceRequest,
   BlockchainClient,
-  chainByCode,
-  ChainSpec,
   ClientReadable,
   MultiAddress,
   SingleAddress
 } from '@emeraldpay/grpc-client';
-import extractChain from './extractChain';
+import extractChain from '../../extractChain';
 
 interface IAccountStatusEvent {
   address: string;

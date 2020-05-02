@@ -1,7 +1,5 @@
 import {
-  BlockchainClient, chainByCode,
-  ChainHead, CHAINS, ChainSpec,
-  ClientReadable
+  BlockchainClient, ChainHead, CHAINS, ClientReadable
 } from '@emeraldpay/grpc-client';
 
 import extractChain from './extractChain';

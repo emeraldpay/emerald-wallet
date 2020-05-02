@@ -3,6 +3,7 @@ import { screen } from '@emeraldwallet/store';
 import { CircularProgress } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import CreateOrImport from '../../../create-wallet/CreateOrImport';
 import NewWalletWizard from '../../../create-wallet/NewWalletWizard';
 import {
   AddContact, BroadcastTx, ContactList as AddressBook, CreateAccountWizard, CreateTransaction,
@@ -58,6 +59,10 @@ const Screen = (props: IScreenProps) => {
   if (props.screen === screen.Pages.CREATE_WALLET) {
     return <NewWalletWizard />;
   }
+  if (props.screen === screen.Pages.NEW_WALLET) {
+    return (<CreateOrImport />);
+  }
+
   // if (props.screen === 'repeat-tx') {
   //   const { transaction, toAccount, fromAccount } = props.screenItem;
   //   const amount = new Wei(transaction.value);
