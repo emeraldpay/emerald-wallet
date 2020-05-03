@@ -20,7 +20,8 @@ export enum Pages {
   CREATE_TX = 'create-tx',
   CREATE_WALLET = 'create-wallet',
   ADD_ACCOUNT = 'add-account',
-  NEW_WALLET = 'new-wallet'
+  NEW_WALLET = 'new-wallet',
+  IMPORT_WALLET = 'import-wallet'
 }
 
 export interface IScreenState {

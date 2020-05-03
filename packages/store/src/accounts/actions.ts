@@ -97,6 +97,16 @@ export function createNewWalletAction (walletName: string, password: string, mne
   };
 }
 
+export function importWalletAction (mnemonic: string, password: string): ICreateWalletAction {
+  return {
+    type: ActionTypes.CREATE_WALLET,
+    payload: {
+      password,
+      mnemonic
+    }
+  };
+}
+
 function createWalletWithAccount (
   api: IApi, dispatch: Dispatch<any>, blockchain: BlockchainCode, name: string = '', add: vault.AddAccount
 ): { walletId: vault.Uuid, accountId: string } {

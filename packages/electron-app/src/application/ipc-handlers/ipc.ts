@@ -22,7 +22,9 @@ export function setIpcHandlers (app: Application) {
       arch: os.arch()
     };
     return {
-      os: osDetails
+      os: osDetails,
+      version: app.versions?.version,
+      gitVersion: app.versions?.gitVersion
     };
   });
 
@@ -73,6 +75,10 @@ export function setIpcHandlers (app: Application) {
   ipcMain.handle(Commands.GET_GAS_PRICE, async (event: any, blockchain: BlockchainCode) => {
     const gasPrice = await app.rpc.chain(blockchain).eth.gasPrice();
     return gasPrice.toNumber();
+  });
+
+  ipcMain.handle(Commands.BROADCAST_TX, async (event: any, blockchain: BlockchainCode, tx: any) => {
+    return app.rpc.chain(blockchain).eth.sendRawTransaction(tx);
   });
 
   ipcMain.handle(Commands.ACCOUNT_IMPORT_ETHEREUM_JSON,

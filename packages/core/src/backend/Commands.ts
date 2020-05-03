@@ -14,6 +14,7 @@ export enum Commands {
 
   ERC20_GET_BALANCE = 'get-erc20-balance',
   GET_GAS_PRICE = 'get-gas-price',
+  BROADCAST_TX = 'broadcast-tx',
 
   ACCOUNT_IMPORT_ETHEREUM_JSON = 'import-json',
   ACCOUNT_IMPORT_PRIVATE_KEY = 'import-private-key',

@@ -12,10 +12,10 @@ const styles = createStyles({
     minHeight: '300px'
   },
   createBtn: {
-    root: { width: '350px' }
+    width: '350px'
   },
   importBtn: {
-    root: { width: '350px' }
+    width: '350px'
   }
 });
 
@@ -58,14 +58,14 @@ export function CreateOrImport (props: IProps) {
             label={'Create a new wallet'}
             primary={true}
             onClick={handleOnCreate}
-            classes={classes?.createBtn}
+            classes={{ root: classes?.createBtn }}
           />
         </Grid>
         <Grid item={true} sm={6} xs={6}>
           <Button
             label={'Import existing'}
             onClick={handleOnImport}
-            classes={classes?.importBtn}
+            classes={{ root: classes?.importBtn }}
           />
         </Grid>
       </Grid>
@@ -81,7 +81,9 @@ function mapDispatchToProps (dispatch: any) {
     onCreate: () => {
       dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_WALLET));
     },
-    onImport: () => {}
+    onImport: () => {
+      dispatch(screen.actions.gotoScreen(screen.Pages.IMPORT_WALLET));
+    }
   };
 }
 

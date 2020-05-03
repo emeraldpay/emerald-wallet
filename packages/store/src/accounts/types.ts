@@ -96,7 +96,7 @@ export interface IWalletCreatedAction {
 export interface ICreateWalletAction {
   type: ActionTypes.CREATE_WALLET;
   payload: {
-    walletName: string;
+    walletName?: string;
     password: string;
     mnemonic: string;
   };

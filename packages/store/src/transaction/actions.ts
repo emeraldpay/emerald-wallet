@@ -6,7 +6,7 @@ import { BlockchainCode, Blockchains, EthereumTx, IApi, IStoredTransaction, Logg
 import { Dispatch } from 'redux';
 import { catchError, gotoScreen, showError } from '../screen/actions';
 import * as history from '../txhistory';
-import { Dispatched } from '../types';
+import { Dispatched, IExtraArgument } from '../types';
 
 const log = Logger.forCategory('store.transaction');
 
@@ -122,17 +122,13 @@ export function signTransaction (
 }
 
 export function broadcastTx (chain: BlockchainCode, tx: any, signedTx: any): any {
-  return async (dispatch: any, getState: any, extra: any) => {
+  return async (dispatch: any, getState: any, extra: IExtraArgument) => {
     try {
-      const hash = await extra.api.chain(chain).eth.sendRawTransaction(signedTx);
+      const hash = await extra.backendApi.broadcastSignedTx(chain, signedTx);
       return onTxSent(dispatch, hash, tx, chain);
     } catch (e) {
       dispatch(showError(e));
     }
-    // @deprecated
-    // return extra.api.chain(chain).eth.sendRawTransaction(signedTx)
-    //   .then((hash: string) => onTxSent(dispatch, hash, tx, chain))
-    //   .catch(catchError(dispatch));
   };
 }
 

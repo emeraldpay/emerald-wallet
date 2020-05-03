@@ -1,10 +1,7 @@
 import React from 'react';
-import {ipcRenderer, shell} from 'electron'; // eslint-disable-line import/no-extraneous-dependencies
+import {ipcRenderer, shell} from 'electron';
 import { ThemeProvider } from '@material-ui/core/styles';
-import theme from '@emeraldplatform/ui/lib/theme';
-import {About} from '@emeraldwallet/ui';
-import {version} from '../../../package.json';
-import gitversion from '../../../gitversion.json';
+import {About, Theme} from '@emeraldwallet/ui';
 
 class AboutContainer extends React.Component {
   constructor(props) {
@@ -14,8 +11,11 @@ class AboutContainer extends React.Component {
 
   componentDidMount() {
     ipcRenderer.invoke('get-version').then((result) => {
+      console.log(JSON.stringify(result));
         this.setState({
           os: result.os,
+          version: result.version,
+          gitVersion: result.gitVersion,
         });
     })
   }
@@ -36,12 +36,12 @@ class AboutContainer extends React.Component {
   };
 
   render() {
-    const {os} = this.state;
+    const {os, version, gitVersion} = this.state;
     return (
-      <ThemeProvider theme={theme}>
+      <ThemeProvider theme={Theme}>
         <About
           appVersion={version}
-          gitVersion={gitversion}
+          gitVersion={gitVersion}
           osVersion={os}
           onButtonClick={this.onButtonClick}
           onHelpClick={this.onHelpClick}
