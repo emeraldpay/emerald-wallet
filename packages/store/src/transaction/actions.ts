@@ -132,12 +132,12 @@ export function broadcastTx (chain: BlockchainCode, tx: any, signedTx: any): any
   };
 }
 
-export function estimateGas (chain: any, tx: {gas: any; to: string}) {
+export function estimateGas (chain: BlockchainCode, tx: {gas: any; to: string}) {
   const {
     to, gas
   } = tx;
-  return (dispatch: any, getState: any, api: IApi) => {
-    return api.chain(chain).eth.estimateGas({
+  return (dispatch: any, getState: any, extra: IExtraArgument) => {
+    return extra.backendApi.estimateTxCost(chain, {
       gas: gas.toNumber(),
       to
     });

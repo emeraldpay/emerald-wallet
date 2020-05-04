@@ -43,6 +43,10 @@ export default class BackendApi implements IBackendApi {
     return ipcRenderer.invoke(Commands.BROADCAST_TX, blockchain, tx);
   }
 
+  public estimateTxCost = (blockchain: BlockchainCode, tx: any): Promise<number> => {
+    return ipcRenderer.invoke(Commands.ESTIMATE_TX, blockchain, tx);
+  }
+
   public importEthereumJson = (
     blockchain: BlockchainCode, walletId: string, json: any
   ): Promise<any> => {

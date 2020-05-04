@@ -1,4 +1,4 @@
-import { Logger } from '@emeraldwallet/core';
+import { IFrontApp, Logger } from '@emeraldwallet/core';
 import { accounts } from '@emeraldwallet/store';
 import { IService } from '../Services';
 import { AddressListener } from './AddressListener';
@@ -12,7 +12,7 @@ export class BalanceListener implements IService {
   private ipcMain: any;
   private subscribers: AddressListener[];
 
-  constructor (ipcMain: any, webContents: any, apiAccess: any) {
+  constructor (ipcMain: any, webContents: IFrontApp, apiAccess: any) {
     this.ipcMain = ipcMain;
     this.webContents = webContents;
     this.apiAccess = apiAccess;
@@ -39,7 +39,11 @@ export class BalanceListener implements IService {
           value: event.balance,
           asset: 'ether' // TODO
         });
-        this.webContents.send('store', action);
+        try {
+          this.webContents.send('store', action);
+        } catch (e) {
+          log.error(e);
+        }
       });
     });
   }

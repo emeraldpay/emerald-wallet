@@ -81,6 +81,10 @@ export function setIpcHandlers (app: Application) {
     return app.rpc.chain(blockchain).eth.sendRawTransaction(tx);
   });
 
+  ipcMain.handle(Commands.ESTIMATE_TX, (event: any, blockchain: BlockchainCode, tx: any) => {
+    return app.rpc.chain(blockchain).eth.estimateGas(tx);
+  });
+
   ipcMain.handle(Commands.ACCOUNT_IMPORT_ETHEREUM_JSON,
     (event: any, blockchain: BlockchainCode, walletId: string, json: any) => {
       const addAccount: vault.AddAccount = {

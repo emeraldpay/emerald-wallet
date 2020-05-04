@@ -93,7 +93,6 @@ function onWalletUpdated (state: any, action: IUpdateWalletAction) {
   const { walletId, name, description } = action.payload;
   return updateWallet(state, walletId, (wallet) => {
     wallet.name = name;
-    wallet.description = description;
     return wallet;
   });
 }
@@ -107,7 +106,6 @@ function onWalletCreated (state: IAccountsState, action: IWalletCreatedAction): 
   const addition: Wallet = {
     id: wallet.id,
     name: wallet.name,
-    description: '',
     accounts: wallet.accounts
   };
   const wallets = state.wallets.concat([addition]);

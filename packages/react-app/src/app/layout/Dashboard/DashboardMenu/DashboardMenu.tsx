@@ -102,15 +102,15 @@ class DashboardMenu extends React.Component<IMenuProps, IMenuState> {
                 secondary={t('accounts.add.generate.subtitle')}
               />
             </ListItem>
-            <ListItem button={true} onClick={createMnemonic}>
-              <ListItemIcon>
-                <AddIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary={t('accounts.add.mnemonic.title')}
-                secondary={t('accounts.add.mnemonic.subtitle')}
-              />
-            </ListItem>
+            {/*<ListItem button={true} onClick={createMnemonic}>*/}
+            {/*  <ListItemIcon>*/}
+            {/*    <AddIcon />*/}
+            {/*  </ListItemIcon>*/}
+            {/*  <ListItemText*/}
+            {/*    primary={t('accounts.add.mnemonic.title')}*/}
+            {/*    secondary={t('accounts.add.mnemonic.subtitle')}*/}
+            {/*  />*/}
+            {/*</ListItem>*/}
             {/*<ListItem button={true} onClick={importJson}>*/}
             {/*  <ListItemIcon>*/}
             {/*    <DownloadIcon />*/}

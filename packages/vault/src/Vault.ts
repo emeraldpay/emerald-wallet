@@ -21,7 +21,7 @@ import {
   UnsignedTx
 } from '@emeraldpay/emerald-vault-core';
 import * as vault from '@emeraldpay/emerald-vault-core';
-import { Account, AddressBookItem, BlockchainCode, IVault, Wallet } from '@emeraldwallet/core';
+import { AddressBookItem, BlockchainCode, IVault, Wallet } from '@emeraldwallet/core';
 import { blockchainCodeToId, blockchainIdToCode } from './utils';
 
 export class Vault implements IVault {
@@ -125,6 +125,10 @@ export class Vault implements IVault {
         address: a.address
       };
     });
+    if (w.reserved && w.reserved.length > 0) {
+      newWallet.seedId = w.reserved[0].seedId;
+      newWallet.hdAccount = w.reserved[0].accountId;
+    }
     return newWallet;
   }
 //
