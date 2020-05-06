@@ -12,7 +12,7 @@ import * as os from 'os';
 import { ChainListener } from '../ChainListener';
 import { AddressListener } from '../services/balances/AddressListener';
 import { PriceListener } from '../services/prices/PricesListener';
-import { TxListener } from '../services/TxListener';
+import { TxListener } from '../services/transactions/TxListener';
 
 const certLocal = '-----BEGIN CERTIFICATE-----\n' +
   'MIIE4zCCAsugAwIBAgIQHgCBkxi2xOHMNb4vvXKSxTANBgkqhkiG9w0BAQsFADBs\n' +

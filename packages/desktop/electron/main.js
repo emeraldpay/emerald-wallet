@@ -44,11 +44,6 @@ const settings = new Settings();
 
 global.ledger = new LedgerApi();
 
-// TODO: remove it
-// global.launcherConfig = {
-//   get: () => settings.toJS(),
-// };
-
 log.info('userData: ', app.getPath('userData'));
 log.info('Settings: ', settings.toJS());
 log.info('Api Mode: ', apiMode.id);

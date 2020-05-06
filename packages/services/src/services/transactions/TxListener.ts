@@ -4,9 +4,9 @@ import {
   TxStatus,
   TxStatusRequest
 } from '@emeraldpay/grpc-client';
-import extractChain from '../extractChain';
+import extractChain from '../../extractChain';
 
-interface TxStatusEvent {
+interface ITxStatusEvent {
   txid: string;
   broadcasted?: boolean;
   mined?: boolean;
@@ -16,7 +16,7 @@ interface TxStatusEvent {
   confirmations?: number;
 }
 
-type TxStatusHandler = (status: TxStatusEvent) => void;
+type TxStatusHandler = (status: ITxStatusEvent) => void;
 
 export class TxListener {
   public client: BlockchainClient;

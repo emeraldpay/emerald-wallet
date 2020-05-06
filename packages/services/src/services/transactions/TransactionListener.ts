@@ -1,5 +1,5 @@
 import { txhistory } from '@emeraldwallet/store';
-import { IService } from './Services';
+import { IService } from '../Services';
 import { TxListener } from './TxListener';
 
 export class TransactionListener implements IService {

@@ -12,5 +12,4 @@ export { ConnStatus } from './services/ConnStatus';
 export { Services } from './services/Services';
 export { BlockchainStatus } from './services/BlockchainStatus';
 export { BalanceListener } from './services/balances/BalanceListener';
-export { TransactionListener } from './services/TransactionListener';
-export { TxListener } from './services/TxListener';
+export { TransactionListener } from './services/transactions/TransactionListener';
