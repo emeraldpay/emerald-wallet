@@ -178,7 +178,7 @@ function getInitialScreen() {
       .then(() => onceAccountsLoaded(store)
         .then(() => {
           log.info('Opening Home screen');
-          // We display home screen which will decide show landing or accounts list
+          // We display home screen which will decide show landing or wallets list
           store.dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
         })));
 }
