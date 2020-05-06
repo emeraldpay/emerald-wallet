@@ -1,5 +1,5 @@
 import { BlockchainCode } from '@emeraldwallet/core';
-import { ActionTypes, AddType, INextPageAction, ISetBlockchainAction, ISetTypeAction, ISetWalletAction } from './types';
+import { ActionTypes, AddType, INextPageAction, ISetBlockchainAction, ISetTypeAction, IStartImportAction } from './types';
 
 export function nextPage (): INextPageAction {
   return {
@@ -7,10 +7,9 @@ export function nextPage (): INextPageAction {
   };
 }
 
-export function start (walletId: string): ISetWalletAction {
+export function start (): IStartImportAction {
   return {
-    type: ActionTypes.START,
-    value: walletId
+    type: ActionTypes.START
   };
 }
 

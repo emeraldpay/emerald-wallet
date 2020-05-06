@@ -25,8 +25,10 @@
     "url": "https://github.com/emeraldpay/emerald-wallet.git"
   },
   "scripts": {
+    "clean": "rimraf app/",
+    "compile": "tsc -b",
     "start": "yarn build && electron ./app/electron.js",
-    "build": "rimraf app/ && tsc && webpack --config webpack.config.js",
+    "build": "yarn clean && yarn compile && webpack --config webpack.config.js",
     "dist": "rimraf dist/ && electron-builder --publish never"
   },
   "bugs": {

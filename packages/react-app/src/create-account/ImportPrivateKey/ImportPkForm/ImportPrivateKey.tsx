@@ -107,7 +107,6 @@ export class ImportPrivateKey extends React.Component<IProps, IState> {
 
     return (
       <Page title='Import Private Key' >
-
         <div className={classes.formRow}>
           <div className={classes.left}/>
           <div className={classes.right}>

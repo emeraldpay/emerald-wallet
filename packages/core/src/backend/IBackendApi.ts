@@ -20,11 +20,14 @@ export default interface IBackendApi {
   getErc20Balance: (blockchain: BlockchainCode, tokenId: string, address: string) => Promise<string>;
   getGasPrice: (blockchain: BlockchainCode) => Promise<number>;
 
+  broadcastSignedTx: (blockchain: BlockchainCode, tx: any) => Promise<string>;
+  estimateTxCost: (blockchain: BlockchainCode, tx: any) => Promise<number>;
+
   // Accounts
   importEthereumJson: (
-    blockchain: BlockchainCode, walletId: string, json: any) => Promise<any>;
+    blockchain: BlockchainCode, json: any) => Promise<string>;
   importRawPrivateKey: (
-    blockchain: BlockchainCode, walletId: string, privateKey: string, password: string) => Promise<any>;
+    blockchain: BlockchainCode, privateKey: string, password: string) => Promise<string>;
 
   exportRawPrivateKey: (accountId: string, password: string) => Promise<string>;
   exportJsonKeyFile: (accountId: string) => Promise<string>;

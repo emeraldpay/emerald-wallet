@@ -4,17 +4,16 @@ import {
   Asset,
   BalanceRequest,
   BlockchainClient,
-  chainByCode,
-  ChainSpec,
   ClientReadable,
   MultiAddress,
   SingleAddress
 } from '@emeraldpay/grpc-client';
-import extractChain from './extractChain';
+import extractChain from '../../extractChain';
 
 interface IAccountStatusEvent {
   address: string;
   balance: string;
+  asset: any;
 }
 
 type HeadListener = (status: IAccountStatusEvent) => void;
@@ -58,7 +57,8 @@ export class AddressListener {
         if (handler && data && address) {
           handler({
             address: address.getAddress(),
-            balance: data.getBalance()
+            balance: data.getBalance(),
+            asset: data.getAsset()?.getCode()
           });
         }
       });

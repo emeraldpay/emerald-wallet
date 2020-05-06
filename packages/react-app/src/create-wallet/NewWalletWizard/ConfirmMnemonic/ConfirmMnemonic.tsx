@@ -40,40 +40,52 @@ export function ConfirmMnemonic (props: IConfirmProps) {
     onBack, error, classes, mnemonic, onSubmit
   } = props;
 
+  const [inputMnemonic, setInputMnemonic] = React.useState();
+
   function handleSubmit () {
     if (onSubmit) {
       onSubmit(mnemonic);
     }
   }
 
+  function handleMnemonicChange (event: any) {
+    const input = event.target.value;
+    setInputMnemonic(input);
+  }
+
+  const isValid = inputMnemonic === mnemonic;
+
   return (
-      <Page title='New Wallet - Confirm recovery phrase' leftIcon={<Back onClick={onBack} />}>
+      <Page
+        title='New wallet - Verify recovery phrase'
+        leftIcon={<Back onClick={onBack} />}
+      >
         <FormRow
           rightColumn={(
             <div style={{ width: '100%' }}>
-              <div className={classes.mnemonicLabel}>Confirm your mnemonic phrase</div>
+              <div className={classes.mnemonicLabel}>Input your recovery phrase</div>
               <div>
                 <Input
+                  value={inputMnemonic}
                   multiline={true}
                   rowsMax={4}
                   rows={4}
-                  value={mnemonic}
+                  onChange={handleMnemonicChange}
                 />
               </div>
             </div>
           )}
         />
-
         <FormRow
           rightColumn={(
             <Button
+              disabled={!isValid}
               primary={true}
               label='Import'
               onClick={handleSubmit}
             />
           )}
         />
-
         {error && (
           <FormRow
             rightColumn={(

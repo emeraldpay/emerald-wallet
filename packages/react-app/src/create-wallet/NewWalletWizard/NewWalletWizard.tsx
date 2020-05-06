@@ -14,7 +14,7 @@ const PAGES = {
 
 interface IProps {
   generateMnemonic: any;
-  gotoDashboard?: any;
+  goBack?: any;
   onCreateWallet: (name: string, password: string, seed: string) => void;
 }
 
@@ -49,13 +49,13 @@ function NewWalletWizard (props: IProps) {
   };
 
   function getPage () {
-    const { gotoDashboard } = props;
+    const { goBack } = props;
 
     switch (page) {
       case PAGES.SET_NAME:
         return (
           <CreateWallet
-            onCancel={gotoDashboard}
+            onCancel={goBack}
             onCreate={gotoGenerate}
           />
         );
@@ -63,27 +63,11 @@ function NewWalletWizard (props: IProps) {
         return (
           <NewMnemonic
             mnemonic={mnemonic}
-            onBack={gotoDashboard}
+            onBack={goBack}
             onGenerate={generate}
             onContinue={gotoConfirm}
           />
         );
-
-      // case PAGES.IMPORT:
-      //   return (
-      //     <ImportMnemonic
-      //       initialValues={
-      //         {
-      //           hdpath: "m/44'/60'/0'/0/0"
-      //         }
-      //       }
-      //       mnemonic={mnemonic}
-      //       onSubmit={this.gotoConfirm}
-      //       onBack={this.gotoGenerate}
-      //       blockchains={blockchains}
-      //     />
-      //   );
-
       case PAGES.CONFIRM:
         return (
           <ConfirmMnemonic
@@ -116,8 +100,8 @@ export default connect<any, any, any, IState>(
     generateMnemonic: () => {
       return dispatch(accounts.actions.generateMnemonic() as any);
     },
-    gotoDashboard: () => {
-      dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
+    goBack: () => {
+      dispatch(screen.actions.gotoScreen(screen.Pages.NEW_WALLET));
     },
     onCreateWallet: (walletName: string, password: string, mnemonic: string) => {
       //

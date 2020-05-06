@@ -1,3 +1,5 @@
+import { Page } from '@emeraldplatform/ui';
+import { Back } from '@emeraldplatform/ui-icons';
 import { BlockchainCode } from '@emeraldwallet/core';
 import { addAccount, IState, settings } from '@emeraldwallet/store';
 import { CoinAvatar, CoinIcon } from '@emeraldwallet/ui';
@@ -39,10 +41,14 @@ const SelectBlockchain = ((props: RenderProps & DispatchProps) => {
   const { selectBlockchain } = props;
 
   return (
-    <Grid container={true}>
-      <Grid item={true} xs={12} >
-        <List>
-          {supportedBlockchain.map((b, i) =>
+    <Page
+      leftIcon={(<Back />)}
+      title={'Select cryptocurrency'}
+    >
+      <Grid container={true}>
+        <Grid item={true} xs={12} >
+          <List>
+            {supportedBlockchain.map((b, i) =>
               <div key={b.code}>
                 {i > 0 ? <Divider variant='inset' component='li' /> : null}
                 <ListItem
@@ -62,10 +68,12 @@ const SelectBlockchain = ((props: RenderProps & DispatchProps) => {
                   />
                 </ListItem>
               </div>
-          )}
-        </List>
+            )}
+          </List>
+        </Grid>
       </Grid>
-    </Grid>
+    </Page>
+
   );
 });
 

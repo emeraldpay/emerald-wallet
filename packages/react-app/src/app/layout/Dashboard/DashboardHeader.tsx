@@ -14,6 +14,7 @@ const styles = createStyles({
     justifyContent: 'space-between',
     alignItems: 'baseline',
     marginTop: '8px',
+    marginLeft: '10px',
     height: '50px'
   },
   title: {
@@ -37,7 +38,7 @@ export interface IHeaderProps {
 
 export function DashboardHeader (props: IHeaderProps & WithTranslation) {
   const {
-      generate, importLedger, importMnemonic, addToken, createMnemonic,
+      generate, importLedger, importMnemonic, createMnemonic,
       showAddressBook, onCreateWallet
     } = props;
   const { t, classes } = props;
@@ -59,7 +60,6 @@ export function DashboardHeader (props: IHeaderProps & WithTranslation) {
           importMnemonic={importMnemonic}
           createMnemonic={createMnemonic}
           addressBook={showAddressBook}
-          addToken={addToken}
           t={t}
         />
       </div>
@@ -73,7 +73,7 @@ export default withTranslation()(
     (state, ownProps) => ({}),
     (dispatch, ownProps) => ({
       onCreateWallet: () => {
-        dispatch(gotoScreen(screen.Pages.CREATE_WALLET));
+        dispatch(gotoScreen(screen.Pages.NEW_WALLET));
       },
       generate: () => {
         dispatch(gotoScreen('generate'));
@@ -88,10 +88,7 @@ export default withTranslation()(
         dispatch(gotoScreen('import-mnemonic'));
       },
       showAddressBook: () => {
-        dispatch(gotoScreen('address-book'));
-      },
-      addToken: () => {
-        dispatch(showDialog('tokens'));
+        dispatch(gotoScreen(screen.Pages.ADDRESS_BOOK));
       }
     })
   )(StyledHeader)

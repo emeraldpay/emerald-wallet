@@ -5,7 +5,7 @@ import {
   Key as KeyIcon,
   Keypair as KeypairIcon,
   Ledger as LedgerIcon,
-  Token1 as TokenIcon
+  Menu as MenuIcon
 } from '@emeraldplatform/ui-icons';
 import { Button } from '@emeraldwallet/ui';
 import List from '@material-ui/core/List';
@@ -23,7 +23,6 @@ const styles = (theme?: any) => ({
 });
 
 interface IMenuProps {
-  addToken?: any;
   generate?: any;
   importLedger?: any;
   importMnemonic?: any;
@@ -63,15 +62,6 @@ class DashboardMenu extends React.Component<IMenuProps, IMenuState> {
     });
   }
 
-  public handleAddToken = () => {
-    this.setState({
-      open: false
-    });
-    if (this.props.addToken) {
-      this.props.addToken();
-    }
-  }
-
   public render () {
     const {
       generate, importLedger, importMnemonic, createMnemonic, addressBook
@@ -88,8 +78,7 @@ class DashboardMenu extends React.Component<IMenuProps, IMenuState> {
           onClick={this.openMenu}
           classes={{ label: classes.buttonText }}
           style={{ hoverColor: 'transparent' }}
-          label={t('accounts.list.popupMenuLabel')}
-          icon={<AddIcon/>}
+          icon={<MenuIcon />}
         />
         <Popover
           open={this.state.open}
@@ -104,18 +93,24 @@ class DashboardMenu extends React.Component<IMenuProps, IMenuState> {
               </ListItemIcon>
               <ListItemText primary='Ledger Nano S' secondary='Use Ledger hardware key to manage signatures' />
             </ListItem>
-            <ListItem button={true} onClick={generate}>
-              <ListItemIcon>
-                <KeypairIcon />
-              </ListItemIcon>
-              <ListItemText primary={t('accounts.add.generate.title')} secondary={t('accounts.add.generate.subtitle')} />
-            </ListItem>
-            <ListItem button={true} onClick={createMnemonic}>
-              <ListItemIcon>
-                <AddIcon />
-              </ListItemIcon>
-              <ListItemText primary={t('accounts.add.mnemonic.title')} secondary={t('accounts.add.mnemonic.subtitle')} />
-            </ListItem>
+            {/*<ListItem button={true} onClick={generate}>*/}
+            {/*  <ListItemIcon>*/}
+            {/*    <KeypairIcon />*/}
+            {/*  </ListItemIcon>*/}
+            {/*  <ListItemText*/}
+            {/*    primary={t('accounts.add.generate.title')}*/}
+            {/*    secondary={t('accounts.add.generate.subtitle')}*/}
+            {/*  />*/}
+            {/*</ListItem>*/}
+            {/*<ListItem button={true} onClick={createMnemonic}>*/}
+            {/*  <ListItemIcon>*/}
+            {/*    <AddIcon />*/}
+            {/*  </ListItemIcon>*/}
+            {/*  <ListItemText*/}
+            {/*    primary={t('accounts.add.mnemonic.title')}*/}
+            {/*    secondary={t('accounts.add.mnemonic.subtitle')}*/}
+            {/*  />*/}
+            {/*</ListItem>*/}
             {/*<ListItem button={true} onClick={importJson}>*/}
             {/*  <ListItemIcon>*/}
             {/*    <DownloadIcon />*/}

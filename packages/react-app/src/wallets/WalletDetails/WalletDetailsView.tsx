@@ -1,12 +1,11 @@
 import { Page } from '@emeraldplatform/ui';
-import { Back, MoreVertical, Pen3 as EditIcon } from '@emeraldplatform/ui-icons';
+import { Back, Pen3 as EditIcon } from '@emeraldplatform/ui-icons';
 import { PageTitle } from '@emeraldplatform/ui/lib/components/Page';
 import { Account, Wallet } from '@emeraldwallet/core';
-import { Button, FormRow, InlineEdit } from '@emeraldwallet/ui';
+import { InlineEdit } from '@emeraldwallet/ui';
 import { Grid, IconButton, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import { AccountBalanceWalletOutlined as WalletIcon } from '@material-ui/icons';
-
 import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import WalletMenu from '../WalletList/WalletMenu';
@@ -69,6 +68,13 @@ export class WalletShow extends React.Component<WalletDetailsProps, IState> {
 
     const walletName = wallet.name || '';
 
+    function actionsMenu () {
+      if (wallet.seedId) {
+        return (<WalletMenu walletId={wallet.id}/>);
+      }
+      return null;
+    }
+
     const renderTitle = () => (
       <PageTitle>
         <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -99,7 +105,7 @@ export class WalletShow extends React.Component<WalletDetailsProps, IState> {
       <Page
         title={renderTitle()}
         leftIcon={<Back onClick={goBack}/>}
-        rightIcon={<WalletMenu walletId={wallet.id}/>}
+        rightIcon={actionsMenu()}
       >
         <Grid container={true} direction={'column'}>
           <Grid item={true} xs={12}>

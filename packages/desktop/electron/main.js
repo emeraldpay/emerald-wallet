@@ -1,5 +1,6 @@
 require('babel-polyfill'); // eslint-disable-line import/no-unresolved
 require('regenerator-runtime/runtime');
+const gitversion = require('../gitversion.json');
 const {
   ServerConnect,
   EmeraldApiAccessLocal,
@@ -12,7 +13,6 @@ const {
 const { LocalConnector } = require('@emeraldwallet/vault');
 const { app, ipcMain, session } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path'); // eslint-disable-line
-
 const { LedgerApi } = require('@emeraldwallet/ledger');
 const log = require('./logger');
 const { startProtocolHandler } = protocol;
@@ -44,11 +44,6 @@ const settings = new Settings();
 
 global.ledger = new LedgerApi();
 
-// TODO: remove it
-// global.launcherConfig = {
-//   get: () => settings.toJS(),
-// };
-
 log.info('userData: ', app.getPath('userData'));
 log.info('Settings: ', settings.toJS());
 log.info('Api Mode: ', apiMode.id);
@@ -67,11 +62,12 @@ startProtocolHandler();
 const appParams = {
   locale: app.getLocale(),
   version: app.getVersion(),
+  gitVersion: gitversion,
   electronVer: process.versions.electron,
   chromeVer: process.versions.chrome,
 };
 
-const application = new Application(settings);
+const application = new Application(settings, appParams);
 
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.

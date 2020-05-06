@@ -1,10 +1,8 @@
-import { Wei } from '@emeraldplatform/eth';
 import { Wallet } from '@emeraldwallet/core';
 import { accounts, IBalanceValue, IState, settings, tokens } from '@emeraldwallet/store';
 import { Balance } from '@emeraldwallet/ui';
-import { Grid, StyledComponentProps } from '@material-ui/core';
+import { Grid, StyledComponentProps, withTheme } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/core/styles';
-import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
@@ -26,23 +24,26 @@ interface IOwnProps {
   wallet: Wallet;
 }
 
-interface RenderProps {
+interface IRenderProps {
   assets: IBalanceValue[];
   total?: IBalanceValue;
+  theme?: any;
 }
 
-interface DispatchProps {
-}
+// interface BlockchainBalance {
+//   balance: Wei | BigNumber;
+//   token: string;
+//   decimals: number;
+// }
 
-interface BlockchainBalance {
-  balance: Wei | BigNumber;
-  token: string;
-  decimals: number;
-}
+const WalletSummary = ((props: IRenderProps & StyledComponentProps) => {
+  const { assets, total, classes, theme } = props;
 
-const WalletSummary = ((props: RenderProps & DispatchProps & StyledComponentProps) => {
-  const { assets, total } = props;
-  const { classes } = props;
+  const fiatStyle = {
+    fontSize: '16px',
+    lineHeight: '19px',
+    color: theme?.palette.text.secondary
+  };
 
   let totalEl = null;
   if (total) {
@@ -53,7 +54,7 @@ const WalletSummary = ((props: RenderProps & DispatchProps & StyledComponentProp
           Total:
         </Grid>
         <Grid item={true} xs={6} classes={{ root: classes!.gridBalance }}>
-          <Balance balance={total.balance} symbol={''} displayDecimals={2}/>
+          <Balance fiatStyle={fiatStyle} balance={total.balance} symbol={''} displayDecimals={2}/>
         </Grid>
         <Grid item={true} xs={1}>
           {total.token}
@@ -82,9 +83,9 @@ const WalletSummary = ((props: RenderProps & DispatchProps & StyledComponentProp
   );
 });
 
-const SummaryStyled = withStyles(styles)(WalletSummary);
+const SummaryStyled = withTheme(withStyles(styles)(WalletSummary));
 
-export default connect<RenderProps, {}, IOwnProps, IState>(
+export default connect<IRenderProps, {}, IOwnProps, IState>(
   (state: IState, ownProps) => {
     const wallet = ownProps.wallet;
     const assets: IBalanceValue[] = accounts.selectors.getWalletBalances(state, wallet, false);

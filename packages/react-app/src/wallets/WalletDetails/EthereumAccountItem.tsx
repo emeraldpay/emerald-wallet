@@ -37,8 +37,10 @@ interface IDispatchProps {
 
 export const EthereumAccountItem = ((props: IRenderProps & IDispatchProps) => {
   const { account, balance, tokensBalances, classes } = props;
-  const blockchainCode = account.blockchain;
   const { onSendClick, onDepositClick } = props;
+
+  const blockchainCode = account.blockchain;
+  const blockchain = Blockchains[blockchainCode];
 
   function handleSendClick () {
     if (onSendClick) {
@@ -54,7 +56,6 @@ export const EthereumAccountItem = ((props: IRenderProps & IDispatchProps) => {
 
   return (
     <div className={classes.container}>
-
       <Grid container={true} direction={'column'} alignItems={'stretch'}>
         <Grid container={true} alignItems={'center'}>
           <Grid item={true} xs={1}>
@@ -62,6 +63,7 @@ export const EthereumAccountItem = ((props: IRenderProps & IDispatchProps) => {
           </Grid>
           <Grid item={true} xs={5}>
             <AddressField
+              name={blockchain.getTitle()}
               identity={false}
               address={account.address!}
             />
@@ -92,7 +94,8 @@ export const EthereumAccountItem = ((props: IRenderProps & IDispatchProps) => {
         </Grid>
         <Grid container={true}>
           <Grid item={true} xs={1}/>
-          <Grid item={true} xs={5}>
+          <Grid item={true} xs={5}/>
+          <Grid item={true} xs={3}>
             <TokenBalances balances={tokensBalances} />
           </Grid>
         </Grid>

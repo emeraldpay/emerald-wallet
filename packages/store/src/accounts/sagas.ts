@@ -6,8 +6,8 @@ import { SagaIterator } from 'redux-saga';
 import * as screen from '../screen';
 import { requestTokensBalances } from '../tokens/actions';
 import { fetchErc20BalancesAction, setLoadingAction, setWalletsAction, walletCreatedAction } from './actions';
-import { allAccounts } from './selectors';
-import { ActionTypes, IFetchErc20BalancesAction } from './types';
+import {allAccounts, allWallets} from './selectors';
+import {ActionTypes, ICreateWalletAction, IFetchErc20BalancesAction} from './types';
 
 function* fetchErc20Balances (action: IFetchErc20BalancesAction): SagaIterator {
   const accounts = yield select(allAccounts);
@@ -54,18 +54,24 @@ function* loadAllWallets (backendApi: IBackendApi): SagaIterator {
   });
 }
 
-function* createWallet (backendApi: IBackendApi, action: any): SagaIterator {
+function* createWallet (backendApi: IBackendApi, action: ICreateWalletAction): SagaIterator {
   const { walletName, password, mnemonic } = action.payload;
-  const wallet = yield call(backendApi.createWallet, walletName, password, mnemonic);
+  const wallets = yield select(allWallets);
+  const name = walletName ?? `Wallet ${wallets.length}`;
+  const wallet = yield call(backendApi.createWallet, name, password, mnemonic);
   yield put(walletCreatedAction(wallet));
   yield put(screen.actions.gotoScreen(screen.Pages.WALLET, wallet.id));
 }
 
+/**
+ * When we import account it means we create one wallet with one account
+ */
 function* afterAccountImported (backendApi: IBackendApi, action: any): SagaIterator {
-  const { walletId, accountId } = action.payload;
+  const { walletId } = action.payload;
 
   const wallet: Wallet = yield call(backendApi.getWallet, walletId);
-  const account: Account = wallet.accounts.find((a: Account) => a.id === accountId)!;
+
+  const account: Account = wallet.accounts[0];
 
   // subscribe for balance
   const chainCode = account.blockchain;

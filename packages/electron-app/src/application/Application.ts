@@ -13,11 +13,13 @@ export default class Application {
   public settings: Settings;
   public vault: IVault | null;
   public rpc: ChainRpcConnections;
+  public versions: any;
 
   private services: Services | null;
 
-  constructor (settings: Settings) {
+  constructor (settings: Settings, versions?: any) {
     this.services = null;
+    this.versions = versions;
     this.rpc = new ChainRpcConnections();
     this.vault = null;
     this.settings = settings;

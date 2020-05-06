@@ -4,9 +4,10 @@ import { quantitiesToHex } from '@emeraldplatform/core/lib/convert';
 import { Wei } from '@emeraldplatform/eth';
 import { BlockchainCode, Blockchains, EthereumTx, IApi, IStoredTransaction, Logger, vault } from '@emeraldwallet/core';
 import { Dispatch } from 'redux';
+import * as screen from '../screen';
 import { catchError, gotoScreen, showError } from '../screen/actions';
 import * as history from '../txhistory';
-import { Dispatched } from '../types';
+import { Dispatched, IExtraArgument } from '../types';
 
 const log = Logger.forCategory('store.transaction');
 
@@ -32,7 +33,7 @@ function onTxSent (dispatch: Dispatch<any>, txHash: string, sourceTx: any, block
 
     // TODO: dependency on wallet/history module!
   dispatch(history.actions.trackTxs([sentTx], blockchain));
-  dispatch(gotoScreen('transaction', sentTx));
+  dispatch(gotoScreen(screen.Pages.TX_DETAILS, sentTx));
 }
 
 function getNonce (api: IApi, blockchain: BlockchainCode, address: string): Promise<number> {
@@ -122,26 +123,22 @@ export function signTransaction (
 }
 
 export function broadcastTx (chain: BlockchainCode, tx: any, signedTx: any): any {
-  return async (dispatch: any, getState: any, extra: any) => {
+  return async (dispatch: any, getState: any, extra: IExtraArgument) => {
     try {
-      const hash = await extra.api.chain(chain).eth.sendRawTransaction(signedTx);
+      const hash = await extra.backendApi.broadcastSignedTx(chain, signedTx);
       return onTxSent(dispatch, hash, tx, chain);
     } catch (e) {
       dispatch(showError(e));
     }
-    // @deprecated
-    // return extra.api.chain(chain).eth.sendRawTransaction(signedTx)
-    //   .then((hash: string) => onTxSent(dispatch, hash, tx, chain))
-    //   .catch(catchError(dispatch));
   };
 }
 
-export function estimateGas (chain: any, tx: {gas: any; to: string}) {
+export function estimateGas (chain: BlockchainCode, tx: {gas: any; to: string}) {
   const {
     to, gas
   } = tx;
-  return (dispatch: any, getState: any, api: IApi) => {
-    return api.chain(chain).eth.estimateGas({
+  return (dispatch: any, getState: any, extra: IExtraArgument) => {
+    return extra.backendApi.estimateTxCost(chain, {
       gas: gas.toNumber(),
       to
     });

@@ -13,22 +13,15 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import {
-  AddAccount,
-  IEmeraldVault,
-  SeedDefinition,
-  SeedDescription,
-  UnsignedTx
-} from '@emeraldpay/emerald-vault-core';
 import * as vault from '@emeraldpay/emerald-vault-core';
-import { Account, AddressBookItem, BlockchainCode, IVault, Wallet } from '@emeraldwallet/core';
+import { AddressBookItem, BlockchainCode, IVault, Wallet } from '@emeraldwallet/core';
 import { blockchainCodeToId, blockchainIdToCode } from './utils';
 
 export class Vault implements IVault {
 
-  public provider: IEmeraldVault;
+  public provider: vault.IEmeraldVault;
 
-  constructor (provider: IEmeraldVault) {
+  constructor (provider: vault.IEmeraldVault) {
     this.provider = provider;
   }
 
@@ -60,7 +53,7 @@ export class Vault implements IVault {
       name: label,
       reserved: [{
         seedId,
-        accountId: 1
+        accountId: 0
       }]
     } as any);
   }
@@ -83,7 +76,7 @@ export class Vault implements IVault {
     return this.provider.removeFromAddressBook(blockchainCodeToId(blockchain), address);
   }
 
-  public addAccount (walletId: string, account: AddAccount): string {
+  public addAccount (walletId: string, account: vault.AddAccount): string {
     return this.provider.addAccount(walletId, account);
   }
 
@@ -103,15 +96,15 @@ export class Vault implements IVault {
     return this.provider.setWalletLabel(walletId, label);
   }
 
-  public importSeed (seed: SeedDefinition): string {
+  public importSeed (seed: vault.SeedDefinition): string {
     return this.provider.importSeed(seed);
   }
 
-  public getConnectedHWSeed (create: boolean): SeedDescription | undefined {
+  public getConnectedHWSeed (create: boolean): vault.SeedDescription | undefined {
     return this.provider.getConnectedHWSeed(create);
   }
 
-  public signTx (accountFullId: string, tx: UnsignedTx, password?: string): string {
+  public signTx (accountFullId: string, tx: vault.UnsignedTx, password?: string): string {
     return this.provider.signTx(accountFullId, tx, password);
   }
 
@@ -125,6 +118,10 @@ export class Vault implements IVault {
         address: a.address
       };
     });
+    if (w.reserved && w.reserved.length > 0) {
+      newWallet.seedId = w.reserved[0].seedId;
+      newWallet.hdAccount = w.reserved[0].accountId;
+    }
     return newWallet;
   }
 //

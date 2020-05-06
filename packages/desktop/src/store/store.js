@@ -174,12 +174,13 @@ function getInitialScreen() {
   store.dispatch(screen.actions.gotoScreen('welcome'));
 
   return onceServicesStart(store)
-    .then(() => onceAccountsLoaded(store)
-      .then(() => {
-        log.info('Opening Home screen');
-        // We display home screen which will decide show landing or accounts list
-        store.dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
-      }));
+    .then(() => onceModeSet(store)
+      .then(() => onceAccountsLoaded(store)
+        .then(() => {
+          log.info('Opening Home screen');
+          // We display home screen which will decide show landing or wallets list
+          store.dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
+        })));
 }
 
 Promise

@@ -13,12 +13,17 @@ interface IProps {
 }
 
 function TxHistoryView (props: IProps) {
-  return (<TxHistory transactions={props.transactions} walletAccounts={props.accounts} />);
+  return (
+    <TxHistory
+      transactions={props.transactions}
+      walletAccounts={props.accounts}
+    />
+  );
 }
 
 export default connect<IProps, {}, IOwnProps, {}>(
   (state: any, ownProps: IOwnProps): IProps => {
-    const wallet = accounts.selectors.find(state, ownProps.walletId)!;
+    const wallet = accounts.selectors.findWallet(state, ownProps.walletId)!;
     const transactions = txhistory.selectors.getTransactions(state, wallet.accounts);
 
     return {

@@ -4,12 +4,9 @@ import { IAddAccountState } from './types';
 
 export function isFulfilled (state: IAddAccountState, step: number): boolean {
   if (step === 0) {
-    return state.walletId != null;
-  }
-  if (step === 1) {
     return state.blockchain != null;
   }
-  if (step === 2) {
+  if (step === 1) {
     return state.type != null;
   }
   return false;

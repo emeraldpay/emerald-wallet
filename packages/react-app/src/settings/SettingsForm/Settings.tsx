@@ -1,4 +1,4 @@
-import { Checkbox, Page } from '@emeraldplatform/ui';
+import { ButtonGroup, Checkbox, Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import { Button } from '@emeraldwallet/ui';
 import { MenuItem, TextField } from '@material-ui/core';
@@ -173,11 +173,17 @@ export class Settings extends React.Component<Props, IState> {
         <div className={classes.formRow}>
           <div className={classes.left}/>
           <div className={classes.right}>
-            <Button
-              primary={true}
-              label='SAVE'
-              onClick={this.handleSave}
-            />
+            <ButtonGroup>
+              <Button
+                label='Cancel'
+                onClick={goBack}
+              />
+              <Button
+                primary={true}
+                label='SAVE'
+                onClick={this.handleSave}
+              />
+            </ButtonGroup>
           </div>
         </div>
       </Page>

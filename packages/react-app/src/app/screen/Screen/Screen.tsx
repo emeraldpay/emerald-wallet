@@ -3,6 +3,9 @@ import { screen } from '@emeraldwallet/store';
 import { CircularProgress } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import CreateOrImport from '../../../create-wallet/CreateOrImport';
+import ImportWalletWizard from '../../../create-wallet/ImportWalletWizard';
+import ImportMnemonicWallet from '../../../create-wallet/ImportWalletWizard/ImportMnemonicWallet';
 import NewWalletWizard from '../../../create-wallet/NewWalletWizard';
 import {
   AddContact, BroadcastTx, ContactList as AddressBook, CreateAccountWizard, CreateTransaction,
@@ -58,7 +61,17 @@ const Screen = (props: IScreenProps) => {
   if (props.screen === screen.Pages.CREATE_WALLET) {
     return <NewWalletWizard />;
   }
-  // if (props.screen === 'repeat-tx') {
+  if (props.screen === screen.Pages.NEW_WALLET) {
+    return (<CreateOrImport />);
+  }
+  if (props.screen === screen.Pages.IMPORT_WALLET) {
+    return (<ImportWalletWizard />);
+  }
+  if (props.screen === screen.Pages.IMPORT_SEED_WALLET) {
+    return (<ImportMnemonicWallet />);
+  }
+
+    // if (props.screen === 'repeat-tx') {
   //   const { transaction, toAccount, fromAccount } = props.screenItem;
   //   const amount = new Wei(transaction.value);
   //   const to = (toAccount && toAccount.id) || transaction.to;
@@ -78,7 +91,7 @@ const Screen = (props: IScreenProps) => {
   // if (props.screen === 'landing-generate') {
   //   return <GenerateAccount backLabel='Back'/>;
   // }
-  if (props.screen === 'generate') {
+  if (props.screen === screen.Pages.GENERATE_ACCOUNT) {
     return <GenerateAccount />;
   }
   // if (props.screen === 'importjson') {
@@ -106,14 +119,12 @@ const Screen = (props: IScreenProps) => {
   if (props.screen === 'export-paper-wallet') {
     return <ExportPaperWallet account={props.screenItem} />;
   }
-  if (props.screen === 'add-account') {
+  if (props.screen === screen.Pages.ADD_ACCOUNT) {
     return <CreateAccountWizard />;
   }
 
   return (
-    <div>
-            Unknown screen
-    </div>
+    <div>Unknown screen: {props.screen}</div>
   );
 };
 

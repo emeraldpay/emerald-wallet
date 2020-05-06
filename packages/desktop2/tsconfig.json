@@ -1,9 +1,19 @@
 {
   "compilerOptions": {
+    "composite": true,
     "outDir": "./app",
+    "rootDir": "./src",
     "jsx": "react"
   },
   "include": [
     "src/**/*.ts"
+  ],
+  "references": [
+    {
+      "path": "../electron-app"
+    },
+    {
+      "path": "../react-app"
+    }
   ]
 }

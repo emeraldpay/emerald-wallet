@@ -7,7 +7,7 @@ import { AccountBalanceWalletOutlined as WalletIcon } from '@material-ui/icons';
 import * as React from 'react';
 import AccountBalance from '../../common/Balance';
 import WalletSummary from '../WalletSummary';
-import WalletMenu from './WalletMenu';
+// import WalletMenu from './WalletMenu';
 
 const styles = (theme: any) => ({
   // tokensDivider: {
@@ -30,6 +30,9 @@ const styles = (theme: any) => ({
   //   display: 'flex',
   //   alignItems: 'center'
   // },
+  walletIcon: {
+    cursor: 'pointer'
+  },
   actionsContainer: {
     display: 'flex',
     alignItems: 'center',
@@ -46,9 +49,10 @@ const styles = (theme: any) => ({
   //   marginTop: '40px',
   //   paddingLeft: '60px'
   // },
-  // headerTitle: {
-  //   fontSize: '1em'
-  // },
+  headerTitle: {
+    cursor: 'pointer',
+    fontSize: '1em'
+  },
   // headerSubtitle: {
   //   fontSize: '0.8em',
   //   opacity: '25%'
@@ -79,95 +83,103 @@ const cardStyles = createStyles({
 const CustomCard = (props: any) => (<Card variant='outlined' {...props} />);
 const StyledCustomCard = withStyles(cardStyles)(CustomCard);
 
-export class WalletItem extends React.PureComponent<IWalletItemProps> {
+export function WalletItem (props: IWalletItemProps) {
+  const {
+    wallet, theme, classes, showFiat, openWallet
+  } = props;
 
-  public onSendClick = () => this.props.createTx(this.props.wallet);
+  const onSendClick = () => props.createTx(wallet);
+  const handleDepositClick = () => props.showReceiveDialog(wallet);
 
-  public handleDepositClick = () => this.props.showReceiveDialog(this.props.wallet);
+  // function addCurrencyMenu () {
+  //   if (wallet.seedId) {
+  //     return (<WalletMenu walletId={wallet.id}/>);
+  //   }
+  //   return null;
+  // }
 
-  public render () {
-    const {
-        wallet, theme, classes, showFiat, openWallet
-      } = this.props;
-    const fiatStyle = {
-      fontSize: '16px',
-      lineHeight: '19px',
-      color: theme.palette.text.secondary
-    };
+  // const fiatStyle = {
+  //   fontSize: '16px',
+  //   lineHeight: '19px',
+  //   color: theme.palette.text.secondary
+  // };
 
-    function handleDetailsClick () {
-      if (openWallet) {
-        openWallet(wallet);
-      }
+  function handleDetailsClick () {
+    if (openWallet) {
+      openWallet(wallet);
     }
-
-    return (
-      <Grid item={true} xs={6} component={StyledCustomCard} classes={{ root: classes.gridCard }}>
-        <div className={classes.gridCardInner}>
-          <CardHeader
-            avatar={<WalletIcon color='secondary'/>}
-            title={wallet.name}
-            classes={{
-              title: classes.headerTitle,
-              subheader: classes.headerSubtitle
-            }}
-            action={
-              <WalletMenu walletId={wallet.id}/>
-            }
-          />
-          <CardContent>
-            <Grid container={true}>
-              <Grid container={true} item={true} xs={12}>
-                <WalletSummary wallet={wallet}/>
-              </Grid>
-            </Grid>
-            <Grid container={true} classes={{ root: classes.gridActions }}>
-              <Grid item={true} xs={2}/>
-              <Grid item={true} xs={10}>
-                <div className={classes.actionsContainer}>
-                  <ButtonGroup>
-                    {/*<WalletActions wallet={account} />*/}
-                    <Button
-                      disabled={true}
-                      label='Deposit'
-                      // onClick={this.handleDepositClick}
-                    />
-                    <Button
-                      disabled={true}
-                      label='Send'
-                      // disabled={!account.balance}
-                      // onClick={this.onSendClick}
-                    />
-                    <Button
-                      label='Details'
-                      onClick={handleDetailsClick}
-                    />
-                  </ButtonGroup>
-                </div>
-              </Grid>
-            </Grid>
-          </CardContent>
-          {/*<CardActions>*/}
-          {/*  <Button*/}
-          {/*    disabled={true}*/}
-          {/*    label='Deposit'*/}
-          {/*    // onClick={this.handleDepositClick}*/}
-          {/*  />*/}
-          {/*  <Button*/}
-          {/*    disabled={true}*/}
-          {/*    label='Send'*/}
-          {/*    // disabled={!account.balance}*/}
-          {/*    // onClick={this.onSendClick}*/}
-          {/*  />*/}
-          {/*  <Button*/}
-          {/*    label='Details'*/}
-          {/*    onClick={handleDetailsClick}*/}
-          {/*  />*/}
-          {/*</CardActions>*/}
-        </div>
-      </Grid>
-    );
   }
+
+  return (
+    <Grid
+      item={true}
+      xs={12}
+      sm={6}
+      component={StyledCustomCard}
+      classes={{ root: classes.gridCard }}
+    >
+      <div className={classes.gridCardInner}>
+        <CardHeader
+          onClick={handleDetailsClick}
+          avatar={<WalletIcon classes={{ root: classes.walletIcon }} color='secondary'/>}
+          title={wallet.name}
+          classes={{
+            title: classes.headerTitle,
+            subheader: classes.headerSubtitle
+          }}
+        />
+        <CardContent>
+          <Grid container={true}>
+            <Grid container={true} item={true} xs={12}>
+              <WalletSummary wallet={wallet}/>
+            </Grid>
+          </Grid>
+          <Grid container={true} classes={{ root: classes.gridActions }}>
+            <Grid item={true} xs={2}/>
+            <Grid item={true} xs={10}>
+              <div className={classes.actionsContainer}>
+                <ButtonGroup>
+                  {/*<WalletActions wallet={account} />*/}
+                  <Button
+                    disabled={true}
+                    label='Deposit'
+                    // onClick={this.handleDepositClick}
+                  />
+                  <Button
+                    disabled={true}
+                    label='Send'
+                    // disabled={!account.balance}
+                    // onClick={this.onSendClick}
+                  />
+                  <Button
+                    label='Details'
+                    onClick={handleDetailsClick}
+                  />
+                </ButtonGroup>
+              </div>
+            </Grid>
+          </Grid>
+        </CardContent>
+        {/*<CardActions>*/}
+        {/*  <Button*/}
+        {/*    disabled={true}*/}
+        {/*    label='Deposit'*/}
+        {/*    // onClick={this.handleDepositClick}*/}
+        {/*  />*/}
+        {/*  <Button*/}
+        {/*    disabled={true}*/}
+        {/*    label='Send'*/}
+        {/*    // disabled={!account.balance}*/}
+        {/*    // onClick={this.onSendClick}*/}
+        {/*  />*/}
+        {/*  <Button*/}
+        {/*    label='Details'*/}
+        {/*    onClick={handleDetailsClick}*/}
+        {/*  />*/}
+        {/*</CardActions>*/}
+      </div>
+    </Grid>
+  );
 }
 
 export default withTheme(withStyles(styles)(WalletItem));

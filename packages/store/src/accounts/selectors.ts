@@ -1,6 +1,6 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
 import { Wei } from '@emeraldplatform/eth';
-import { Account, BlockchainCode, blockchainCodeToId, Blockchains, Units, Wallet } from '@emeraldwallet/core';
+import { Account, BlockchainCode, Blockchains, Units, Wallet } from '@emeraldwallet/core';
 import { registry } from '@emeraldwallet/erc20';
 import BigNumber from 'bignumber.js';
 import { createSelector } from 'reselect';
@@ -66,7 +66,7 @@ export function findAccountByAddress (state: any, address: string, chain: Blockc
   return null;
 }
 
-export function find (state: any, id: vault.Uuid): Wallet | undefined {
+export function findWallet (state: IState, id: vault.Uuid): Wallet | undefined {
   return allWallets(state).find((w) => w.id === id);
 }
 

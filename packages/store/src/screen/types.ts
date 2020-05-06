@@ -19,7 +19,11 @@ export enum Pages {
   TX_DETAILS = 'transaction',
   CREATE_TX = 'create-tx',
   CREATE_WALLET = 'create-wallet',
-  ADD_ACCOUNT = 'add-account'
+  ADD_ACCOUNT = 'add-account',
+  NEW_WALLET = 'new-wallet',
+  IMPORT_SEED_WALLET = 'import-seed-wallet',
+  IMPORT_WALLET = 'import-wallet',
+  GENERATE_ACCOUNT = 'generate'
 }
 
 export interface IScreenState {
