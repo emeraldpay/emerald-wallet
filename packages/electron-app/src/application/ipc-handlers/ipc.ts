@@ -1,7 +1,7 @@
 import {
   AddressBookService,
   BlockchainCode,
-  blockchainCodeToId,
+  blockchainCodeToId, Blockchains,
   Commands,
   vault,
   Wallet,
@@ -86,24 +86,30 @@ export function setIpcHandlers (app: Application) {
   });
 
   ipcMain.handle(Commands.ACCOUNT_IMPORT_ETHEREUM_JSON,
-    (event: any, blockchain: BlockchainCode, walletId: string, json: any) => {
+    (event: any, blockchain: BlockchainCode, json: any) => {
       const addAccount: vault.AddAccount = {
         blockchain: blockchainCodeToId(blockchain),
         type: 'ethereum-json',
         key: JSON.stringify(json)
       };
-      return app.vault?.addAccount(walletId, addAccount);
+      const walletName = Blockchains[blockchain].getTitle();
+      const walletId = app.vault!.addWallet(walletName);
+      const accountId = app.vault?.addAccount(walletId, addAccount);
+      return walletId;
     });
 
   ipcMain.handle(Commands.ACCOUNT_IMPORT_PRIVATE_KEY,
-    (event: any, blockchain: BlockchainCode, walletId: string, pk: string, password: string) => {
+    (event: any, blockchain: BlockchainCode, pk: string, password: string) => {
       const addAccount: vault.AddAccount = {
         blockchain: blockchainCodeToId(blockchain),
         type: 'raw-pk-hex',
         key: pk,
         password
       };
-      return app.vault?.addAccount(walletId, addAccount);
+      const walletName = Blockchains[blockchain].getTitle();
+      const walletId = app.vault!.addWallet(walletName);
+      const accountId = app.vault?.addAccount(walletId, addAccount);
+      return walletId;
     });
 
   ipcMain.handle(Commands.ACCOUNT_EXPORT_RAW_PRIVATE,

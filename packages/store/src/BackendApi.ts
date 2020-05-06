@@ -48,17 +48,17 @@ export default class BackendApi implements IBackendApi {
   }
 
   public importEthereumJson = (
-    blockchain: BlockchainCode, walletId: string, json: any
-  ): Promise<any> => {
+    blockchain: BlockchainCode, json: any
+  ): Promise<string> => {
     return ipcRenderer.invoke(Commands.ACCOUNT_IMPORT_ETHEREUM_JSON,
-      blockchain, walletId, json);
+      blockchain, json);
   }
 
   public importRawPrivateKey = (
-    blockchain: BlockchainCode, walletId: string, privateKey: string, password: string
-  ): Promise<any> => {
+    blockchain: BlockchainCode, privateKey: string, password: string
+  ): Promise<string> => {
     return ipcRenderer.invoke(Commands.ACCOUNT_IMPORT_PRIVATE_KEY,
-      blockchain, walletId, privateKey, password);
+      blockchain, privateKey, password);
   }
 
   public persistTransactions = (blockchain: BlockchainCode, txs: any[]): Promise<void> => {

@@ -6,7 +6,7 @@ import {
   INextPageAction,
   ISetBlockchainAction,
   ISetTypeAction,
-  ISetWalletAction
+  IStartImportAction
 } from './types';
 
 const TOTAL_STEPS = 4; // select wallet -> select chain -> select type -> action
@@ -22,8 +22,8 @@ function onNextPage (state: IAddAccountState, action: INextPageAction): IAddAcco
   return state;
 }
 
-function onSetWallet (state: IAddAccountState, action: ISetWalletAction): IAddAccountState {
-  return { ...INITIAL_STATE, walletId: action.value };
+function onSetWallet (state: IAddAccountState, action: IStartImportAction): IAddAccountState {
+  return { ...INITIAL_STATE };
 }
 
 function onSetBlockchain (state: IAddAccountState, action: ISetBlockchainAction): IAddAccountState {

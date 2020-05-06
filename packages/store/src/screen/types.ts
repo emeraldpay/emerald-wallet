@@ -21,7 +21,9 @@ export enum Pages {
   CREATE_WALLET = 'create-wallet',
   ADD_ACCOUNT = 'add-account',
   NEW_WALLET = 'new-wallet',
-  IMPORT_WALLET = 'import-wallet'
+  IMPORT_SEED_WALLET = 'import-seed-wallet',
+  IMPORT_WALLET = 'import-wallet',
+  GENERATE_ACCOUNT = 'generate'
 }
 
 export interface IScreenState {

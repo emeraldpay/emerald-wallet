@@ -63,11 +63,15 @@ function* createWallet (backendApi: IBackendApi, action: ICreateWalletAction): S
   yield put(screen.actions.gotoScreen(screen.Pages.WALLET, wallet.id));
 }
 
+/**
+ * When we import account it means we create one wallet with one account
+ */
 function* afterAccountImported (backendApi: IBackendApi, action: any): SagaIterator {
-  const { walletId, accountId } = action.payload;
+  const { walletId } = action.payload;
 
   const wallet: Wallet = yield call(backendApi.getWallet, walletId);
-  const account: Account = wallet.accounts.find((a: Account) => a.id === accountId)!;
+
+  const account: Account = wallet.accounts[0];
 
   // subscribe for balance
   const chainCode = account.blockchain;

@@ -1,10 +1,11 @@
-import { ButtonGroup, Input, Page } from '@emeraldplatform/ui';
+import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
-import { accounts, IState, screen } from '@emeraldwallet/store';
-import { Button, FormRow, PasswordInput } from '@emeraldwallet/ui';
+import { addAccount, IState, screen } from '@emeraldwallet/store';
+import { AddType } from '@emeraldwallet/store/lib/add-account';
 import { withStyles } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import SelectImportType, { ImportTypes } from './SelectImportType';
 
 export const styles = {
   passwordLabel: {
@@ -24,15 +25,16 @@ export const styles = {
 
 export interface IProps {
   onCancel?: any;
-  onImport?: any;
-  classes: any;
 }
 
-export const ImportWalletWizard = (props: IProps) => {
-  const { classes } = props;
-  const [password, setPassword] = React.useState();
-  const [errorText, setErrorText] = React.useState<string | null>('');
-  const [mnemonic, setMnemonic] = React.useState();
+interface IDispatchProps {
+  importSeedWallet: any;
+  importPrivateKey: any;
+  importJson: any;
+  generate: any;
+}
+
+export const ImportWalletWizard = (props: IProps & IDispatchProps) => {
 
   function handleCancelClick () {
     if (props.onCancel) {
@@ -40,82 +42,25 @@ export const ImportWalletWizard = (props: IProps) => {
     }
   }
 
-  function handleImportClick () {
-    if (props.onImport) {
-      props.onImport(mnemonic, password);
+  function handleImportSelect (type: any) {
+    if (type === ImportTypes.ImportSeedWallet) {
+      props.importSeedWallet();
+    } else if (type === ImportTypes.ImportPrivateKey) {
+      props.importPrivateKey();
+    } else if (type === ImportTypes.ImportJSON) {
+      props.importJson();
+    } else if (type === ImportTypes.GeneratePK) {
+      props.generate();
     }
   }
 
-  function handlePasswordChange (newPwd: any) {
-    setPassword(newPwd);
-  }
-
-  function handleMnemonicChange (event: any) {
-    setMnemonic(event.target.value);
-  }
-
-  const isValid = (password?.length > PasswordInput.DEFAULT_MIN_LENGTH) &&
-    (mnemonic?.length > 0);
-
   return (
     <Page
-      title={'Import wallet - Recovery phrase'}
+      title={'Import existing wallet'}
       leftIcon={<Back onClick={handleCancelClick}/>}
     >
-      <FormRow
-        rightColumn={(
-          <div>Wallets allow you to organize your funds into categories, like spending or savings.</div>
-        )}
-      />
-      <FormRow
-        rightColumn={(
-          <div style={{ width: '100%' }}>
-            <div>Mnemonic phrase</div>
-            <div>Typically 24 words phrase separated by space</div>
-            <div>
-              <Input
-                onChange={handleMnemonicChange}
-                value={mnemonic}
-                multiline={true}
-                rowsMax={4}
-                rows={4}
-              />
-            </div>
-          </div>
-        )}
-      />
+    <SelectImportType onSelect={handleImportSelect}/>
 
-      <FormRow
-        rightColumn={(
-          <div style={{ width: '100%' }}>
-            <div className={classes.passwordLabel}>Enter a strong password</div>
-            <div className={classes.passwordSubLabel}>This password will be required to confirm all wallet operations.
-            </div>
-            <div style={{ marginTop: '30px' }}>
-              <PasswordInput
-                password={password}
-                onChange={handlePasswordChange}
-              />
-            </div>
-          </div>
-        )}
-      />
-      <FormRow
-        rightColumn={(
-          <ButtonGroup>
-            <Button
-              label={'Cancel'}
-              onClick={handleCancelClick}
-            />
-            <Button
-              label={'Import'}
-              primary={true}
-              disabled={!isValid}
-              onClick={handleImportClick}
-            />
-          </ButtonGroup>
-        )}
-      />
     </Page>
   );
 };
@@ -128,10 +73,21 @@ export default connect<any, any, any, IState>(
     onCancel: () => {
       dispatch(screen.actions.gotoScreen(screen.Pages.NEW_WALLET));
     },
-    onImport: (mnemonic: string, password: string) => {
-      //
-      dispatch(accounts.actions.importWalletAction(mnemonic, password));
+    generate: () => {
+      dispatch(screen.actions.gotoScreen(screen.Pages.GENERATE_ACCOUNT));
+    },
+    importSeedWallet: () => {
+      dispatch(screen.actions.gotoScreen(screen.Pages.IMPORT_SEED_WALLET));
+    },
+    importPrivateKey: () => {
+      dispatch(addAccount.actions.start());
+      dispatch(addAccount.actions.setType(AddType.IMPORT_PRIVATE_KEY));
+      dispatch(screen.actions.gotoScreen(screen.Pages.ADD_ACCOUNT));
+    },
+    importJson: () => {
+      dispatch(addAccount.actions.start());
+      dispatch(addAccount.actions.setType(AddType.IMPORT_JSON));
+      dispatch(screen.actions.gotoScreen(screen.Pages.ADD_ACCOUNT));
     }
-
   })
 )(Styled);

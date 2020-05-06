@@ -66,7 +66,7 @@ export function findAccountByAddress (state: any, address: string, chain: Blockc
   return null;
 }
 
-export function find (state: any, id: vault.Uuid): Wallet | undefined {
+export function findWallet (state: IState, id: vault.Uuid): Wallet | undefined {
   return allWallets(state).find((w) => w.id === id);
 }
 

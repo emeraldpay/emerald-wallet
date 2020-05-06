@@ -4,6 +4,7 @@ import { quantitiesToHex } from '@emeraldplatform/core/lib/convert';
 import { Wei } from '@emeraldplatform/eth';
 import { BlockchainCode, Blockchains, EthereumTx, IApi, IStoredTransaction, Logger, vault } from '@emeraldwallet/core';
 import { Dispatch } from 'redux';
+import * as screen from '../screen';
 import { catchError, gotoScreen, showError } from '../screen/actions';
 import * as history from '../txhistory';
 import { Dispatched, IExtraArgument } from '../types';
@@ -32,7 +33,7 @@ function onTxSent (dispatch: Dispatch<any>, txHash: string, sourceTx: any, block
 
     // TODO: dependency on wallet/history module!
   dispatch(history.actions.trackTxs([sentTx], blockchain));
-  dispatch(gotoScreen('transaction', sentTx));
+  dispatch(gotoScreen(screen.Pages.TX_DETAILS, sentTx));
 }
 
 function getNonce (api: IApi, blockchain: BlockchainCode, address: string): Promise<number> {

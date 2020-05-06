@@ -25,9 +25,9 @@ export default interface IBackendApi {
 
   // Accounts
   importEthereumJson: (
-    blockchain: BlockchainCode, walletId: string, json: any) => Promise<any>;
+    blockchain: BlockchainCode, json: any) => Promise<string>;
   importRawPrivateKey: (
-    blockchain: BlockchainCode, walletId: string, privateKey: string, password: string) => Promise<any>;
+    blockchain: BlockchainCode, privateKey: string, password: string) => Promise<string>;
 
   exportRawPrivateKey: (accountId: string, password: string) => Promise<string>;
   exportJsonKeyFile: (accountId: string) => Promise<string>;

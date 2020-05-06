@@ -93,15 +93,15 @@ class DashboardMenu extends React.Component<IMenuProps, IMenuState> {
               </ListItemIcon>
               <ListItemText primary='Ledger Nano S' secondary='Use Ledger hardware key to manage signatures' />
             </ListItem>
-            <ListItem button={true} onClick={generate}>
-              <ListItemIcon>
-                <KeypairIcon />
-              </ListItemIcon>
-              <ListItemText
-                primary={t('accounts.add.generate.title')}
-                secondary={t('accounts.add.generate.subtitle')}
-              />
-            </ListItem>
+            {/*<ListItem button={true} onClick={generate}>*/}
+            {/*  <ListItemIcon>*/}
+            {/*    <KeypairIcon />*/}
+            {/*  </ListItemIcon>*/}
+            {/*  <ListItemText*/}
+            {/*    primary={t('accounts.add.generate.title')}*/}
+            {/*    secondary={t('accounts.add.generate.subtitle')}*/}
+            {/*  />*/}
+            {/*</ListItem>*/}
             {/*<ListItem button={true} onClick={createMnemonic}>*/}
             {/*  <ListItemIcon>*/}
             {/*    <AddIcon />*/}

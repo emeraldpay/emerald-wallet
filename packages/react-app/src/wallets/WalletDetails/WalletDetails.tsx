@@ -11,7 +11,7 @@ export interface IOwnProps {
 export default connect(
   (state: any, ownProps: IOwnProps) => {
     // reload account from store, because it can be passed with id only if it was just imported
-    const wallet = accounts.selectors.find(state, ownProps.walletId)!;
+    const wallet = accounts.selectors.findWallet(state, ownProps.walletId)!;
 
     return {
       showFiat: true,

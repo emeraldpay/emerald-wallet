@@ -19,13 +19,14 @@ interface IDispatchProps {
   onAddAccount: () => void;
 }
 
-const WalletMenu = ((props: IDispatchProps) => {
+function WalletMenu (props: IDispatchProps) {
   const { showDetails, onAddAccount } = props;
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
 
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
   };
+
   const handleClose = () => {
     setAnchorEl(null);
   };
@@ -52,7 +53,7 @@ const WalletMenu = ((props: IDispatchProps) => {
           <ListItemIcon>
             <AddCircleOutlineIcon fontSize='small' />
           </ListItemIcon>
-          <Typography variant='inherit'>Add Coin</Typography>
+          <Typography variant='inherit'>Add currency</Typography>
         </MenuItem>
         <MenuItem>
           <ListItemIcon>
@@ -69,7 +70,7 @@ const WalletMenu = ((props: IDispatchProps) => {
       </Menu>
     </div>
   );
-});
+}
 
 export default connect<{}, IDispatchProps, IOwnProps, IState>(
   null,
@@ -79,7 +80,7 @@ export default connect<{}, IDispatchProps, IOwnProps, IState>(
         dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId));
       },
       onAddAccount: () => {
-        dispatch(addAccount.actions.start(ownProps.walletId));
+        dispatch(addAccount.actions.start());
         dispatch(screen.actions.gotoScreen(screen.Pages.ADD_ACCOUNT));
       }
     };

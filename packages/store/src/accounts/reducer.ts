@@ -90,7 +90,7 @@ function onSetBalance (state: IAccountsState, action: ISetBalanceAction): IAccou
 }
 
 function onWalletUpdated (state: any, action: IUpdateWalletAction) {
-  const { walletId, name, description } = action.payload;
+  const { walletId, name } = action.payload;
   return updateWallet(state, walletId, (wallet) => {
     wallet.name = name;
     return wallet;
@@ -104,6 +104,8 @@ function onWalletCreated (state: IAccountsState, action: IWalletCreatedAction): 
     return state;
   }
   const addition: Wallet = {
+    seedId: wallet.seedId,
+    hdAccount: wallet.hdAccount,
     id: wallet.id,
     name: wallet.name,
     accounts: wallet.accounts

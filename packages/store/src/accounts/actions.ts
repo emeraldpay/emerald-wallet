@@ -10,6 +10,7 @@ import {
   Wallet,
   WalletService
 } from '@emeraldwallet/core';
+import { put } from '@redux-saga/core/effects';
 import { ipcRenderer } from 'electron';
 import { Dispatch } from 'redux';
 import { dispatchRpcError } from '../screen/actions';
@@ -97,7 +98,7 @@ export function createNewWalletAction (walletName: string, password: string, mne
   };
 }
 
-export function importWalletAction (mnemonic: string, password: string): ICreateWalletAction {
+export function importSeedWalletAction (mnemonic: string, password: string): ICreateWalletAction {
   return {
     type: ActionTypes.CREATE_WALLET,
     payload: {
@@ -108,9 +109,13 @@ export function importWalletAction (mnemonic: string, password: string): ICreate
 }
 
 function createWalletWithAccount (
-  api: IApi, dispatch: Dispatch<any>, blockchain: BlockchainCode, name: string = '', add: vault.AddAccount
+  api: IApi,
+  dispatch: Dispatch<any>,
+  blockchain: BlockchainCode,
+  walletName: string = '',
+  add: vault.AddAccount
 ): { walletId: vault.Uuid, accountId: string } {
-  const walletId = api.vault.addWallet(name);
+  const walletId = api.vault.addWallet(walletName);
   const accountId = api.vault.addAccount(walletId, add);
   const wallet = api.vault.getWallet(walletId)!;
 
@@ -128,18 +133,19 @@ export function walletCreatedAction (wallet: any): IWalletCreatedAction {
   };
 }
 
-export function accountImportedAction (walletId: string, accountId: string) {
+export function accountImportedAction (walletId: string) {
   return {
     type: ActionTypes.ACCOUNT_IMPORTED,
     payload: {
-      walletId,
-      accountId
+      walletId
     }
   };
 }
 
 export function createAccount (
-  blockchain: BlockchainCode, passphrase: string, name: string = ''
+  blockchain: BlockchainCode,
+  passphrase: string,
+  name: string = ''
 ): Dispatched<IWalletCreatedAction> {
   return (dispatch: any, getState, extra) => {
 
@@ -219,30 +225,37 @@ function readWalletFile (walletFile: Blob): Promise<any> {
 //   return walletId;
 // }
 
-export function importJson (
-  walletId: vault.Uuid,
+function importJson (
   blockchain: BlockchainCode,
   data: any
 ): Dispatched<IWalletCreatedAction> {
   return async (dispatch: any, getState, { backendApi }: { backendApi: IBackendApi }) => {
-    const accountId = await backendApi.importEthereumJson(
-      blockchain, walletId, JSON.stringify(data));
+    const walletId = await backendApi.importEthereumJson(blockchain, JSON.stringify(data));
+    const wallet = await backendApi.getWallet(walletId);
 
-    dispatch(accountImportedAction(walletId, accountId));
+    // update redux store with new wallet
+    dispatch(walletCreatedAction(wallet));
+
+    dispatch(accountImportedAction(walletId));
+    return Promise.resolve(walletId);
   };
 }
 
 export function importPk (
-  walletId: vault.Uuid,
   blockchain: BlockchainCode,
   pk: string,
   password: string
 ): Dispatched<IWalletCreatedAction> {
   return async (dispatch: any, getState, { backendApi }: { backendApi: IBackendApi }) => {
-    const accountId = await backendApi.importRawPrivateKey(
-      blockchain, walletId, pk, password);
+    const walletId = await backendApi.importRawPrivateKey(blockchain, pk, password);
 
-    dispatch(accountImportedAction(walletId, accountId));
+    const wallet = await backendApi.getWallet(walletId);
+
+    // update redux store with new wallet
+    dispatch(walletCreatedAction(wallet));
+
+    dispatch(accountImportedAction(walletId));
+    return Promise.resolve(walletId);
   };
 }
 
@@ -273,13 +286,12 @@ export function importMnemonic (
 }
 
 export function importWalletFile (
-  wallet: vault.Uuid,
   blockchain: BlockchainCode,
   file: Blob
 ): Dispatched<AddressesAction> {
   return async (dispatch: any, getState) => {
     const data = await readWalletFile(file);
-    return dispatch(importJson(wallet, blockchain, data));
+    return dispatch(importJson(blockchain, data));
   };
 }
 
