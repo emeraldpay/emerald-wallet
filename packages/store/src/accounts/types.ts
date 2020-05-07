@@ -1,7 +1,14 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
 import { AccountId } from '@emeraldpay/emerald-vault-core';
 import { Wei } from '@emeraldplatform/eth';
-import { AnyCoinCode, AnyTokenCode, BlockchainCode, CurrencyCode, Units, Wallet } from '@emeraldwallet/core';
+import {
+  Account,
+  AnyCoinCode,
+  BlockchainCode,
+  CurrencyCode,
+  Units,
+  Wallet
+} from '@emeraldwallet/core';
 
 export const moduleName = 'accounts';
 
@@ -45,7 +52,9 @@ export enum ActionTypes {
   FETCH_ERC20_BALANCES = 'ACCOUNT/FETCH_ERC20_BALANCES',
   CREATE_WALLET = 'ACCOUNTS/CREATE_WALLET',
   CREATE_WALLET_SUCCESS = 'ACCOUNT/ADD_ACCOUNT',
-  ACCOUNT_IMPORTED = 'ACCOUNT/IMPORTED'
+  ACCOUNT_IMPORTED = 'ACCOUNT/IMPORTED',
+  CREATE_HD_ACCOUNT = 'ACCOUNT/CREATE_HD_ACCOUNT',
+  HD_ACCOUNT_CREATED = 'ACCOUNT/HD_ACCOUNT_CREATED'
 }
 
 export interface ILoadWalletsAction {
@@ -108,6 +117,14 @@ export interface ISetTxCountAction {
   value: number;
 }
 
+export interface IHdAccountCreated {
+  type: ActionTypes.HD_ACCOUNT_CREATED;
+  payload: {
+    walletId: string,
+    account: Account
+  };
+}
+
 /**
  * @deprecated
  */
@@ -120,7 +137,8 @@ export interface PendingBalanceAction {
   to: string;
   blockchain: BlockchainCode;
 }
-export type AddressesAction =
+
+export type AccountsAction =
   | IWalletsLoaded
   | ISetLoadingAction
   | ISetBalanceAction
@@ -131,6 +149,6 @@ export type AddressesAction =
   | PendingBalanceAction
   | IFetchHdPathsAction
   | ILoadWalletsAction
-  | ISetBalanceAction
   | ICreateWalletAction
+  | IHdAccountCreated
   ;

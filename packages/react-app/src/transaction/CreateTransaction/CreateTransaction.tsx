@@ -467,7 +467,9 @@ export default connect<IStateProps, IDispatchFromProps, IOwnProps>(
     signAndSend: (args: any) => {
       sign(dispatch, ownProps, args)
         .then((result: any) => {
-          dispatch(screen.actions.gotoScreen('broadcast-tx', result));
+          if (result) {
+            dispatch(screen.actions.gotoScreen(screen.Pages.BROADCAST_TX, result));
+          }
         });
     }
   })

@@ -1,5 +1,6 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
 import {
+  Account,
   blockchainByName,
   BlockchainCode,
   blockchainCodeToId,
@@ -10,7 +11,6 @@ import {
   Wallet,
   WalletService
 } from '@emeraldwallet/core';
-import { put } from '@redux-saga/core/effects';
 import { ipcRenderer } from 'electron';
 import { Dispatch } from 'redux';
 import { dispatchRpcError } from '../screen/actions';
@@ -18,18 +18,18 @@ import * as history from '../txhistory';
 import { Dispatched, IExtraArgument } from '../types';
 import * as selectors from './selectors';
 import {
+  AccountsAction,
   ActionTypes,
-  AddressesAction,
   ICreateWalletAction,
   IFetchErc20BalancesAction,
+  IHdAccountCreated,
   ILoadWalletsAction,
   ISetBalanceAction,
   ISetLoadingAction,
   ISetTxCountAction,
   IUpdateWalletAction,
   IWalletCreatedAction,
-  IWalletsLoaded,
-  PendingBalanceAction
+  IWalletsLoaded, PendingBalanceAction
 } from './types';
 
 const log = Logger.forCategory('store.accounts');
@@ -57,6 +57,16 @@ export function fetchErc20BalancesAction (): IFetchErc20BalancesAction {
 export function loadWalletsAction (): ILoadWalletsAction {
   return {
     type: ActionTypes.LOAD_WALLETS
+  };
+}
+
+export function hdAccountCreated (walletId: string, account: Account): IHdAccountCreated {
+  return {
+    type: ActionTypes.HD_ACCOUNT_CREATED,
+    payload: {
+      walletId,
+      account
+    }
   };
 }
 
@@ -138,6 +148,17 @@ export function accountImportedAction (walletId: string) {
     type: ActionTypes.ACCOUNT_IMPORTED,
     payload: {
       walletId
+    }
+  };
+}
+
+export function createHdAccountAction (walletId: string, blockchain: BlockchainCode, walletPwd: string) {
+  return {
+    type: ActionTypes.CREATE_HD_ACCOUNT,
+    payload: {
+      walletId,
+      blockchain,
+      password: walletPwd
     }
   };
 }
@@ -288,7 +309,7 @@ export function importMnemonic (
 export function importWalletFile (
   blockchain: BlockchainCode,
   file: Blob
-): Dispatched<AddressesAction> {
+): Dispatched<AccountsAction> {
   return async (dispatch: any, getState) => {
     const data = await readWalletFile(file);
     return dispatch(importJson(blockchain, data));

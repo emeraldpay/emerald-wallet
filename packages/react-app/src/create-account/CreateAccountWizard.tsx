@@ -1,16 +1,14 @@
-import { Page } from '@emeraldplatform/ui';
-import { Back } from '@emeraldplatform/ui-icons';
 import { BlockchainCode } from '@emeraldwallet/core';
-import { accounts, addAccount, IState, screen } from '@emeraldwallet/store';
+import { addAccount, IState, screen } from '@emeraldwallet/store';
 import { Button } from '@emeraldwallet/ui';
 import { Card, CardActions, CardContent, CardHeader } from '@material-ui/core';
 import NavigateNextIcon from '@material-ui/icons/NavigateNext';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import GenerateAccount from './GenerateAccount';
 import ImportJson from './ImportJson';
 import ImportPrivateKey from './ImportPrivateKey';
 import SelectBlockchain from './SelectBlockchain';
-import GenerateAccount from "./GenerateAccount";
 
 interface IRenderProps {
   page: number;

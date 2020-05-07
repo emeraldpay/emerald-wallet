@@ -80,8 +80,7 @@ export default connect<{}, IDispatchProps, IOwnProps, IState>(
         dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId));
       },
       onAddAccount: () => {
-        dispatch(addAccount.actions.start());
-        dispatch(screen.actions.gotoScreen(screen.Pages.ADD_ACCOUNT));
+        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_HD_ACCOUNT, ownProps.walletId));
       }
     };
   }

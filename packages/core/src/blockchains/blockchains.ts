@@ -22,7 +22,7 @@ export const Blockchains: {[key: string]: IBlockchain} = {
     ['BEC']
   ),
   [BlockchainCode.Kovan]: new Ethereum(
-    new EthereumParams(BlockchainCode.Kovan, CoinTicker.KOVAN, 42, "m/44'/60'/160720'/0'"),
+    new EthereumParams(BlockchainCode.Kovan, CoinTicker.KOVAN, 42, "m/44'/60'/160720'/0"),
     'Ethereum Kovan Testnet',
     ['WEENUS']
   )

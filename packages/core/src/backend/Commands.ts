@@ -26,5 +26,6 @@ export enum Commands {
   VAULT_GET_WALLETS = 'get-vault-wallets',
   VAULT_CREATE_WALLET = 'create-wallet',
   VAULT_GET_WALLET = 'get-vault-wallet',
-  VAULT_UPDATE_WALLET = 'vault-update-wallet'
+  VAULT_UPDATE_WALLET = 'vault-update-wallet',
+  VAULT_CREATE_HD_ACCOUNT = 'create-hd-account'
 }
