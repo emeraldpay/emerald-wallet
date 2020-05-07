@@ -4,14 +4,14 @@ import produce from 'immer';
 import {
   AccountDetails,
   ActionTypes,
-  AddressesAction,
+  AccountsAction,
   IAccountsState,
   ISetBalanceAction,
   ISetLoadingAction,
   ISetTxCountAction,
   IUpdateWalletAction,
   IWalletCreatedAction,
-  IWalletsLoaded
+  IWalletsLoaded, IHdAccountCreated
 } from './types';
 
 export const INITIAL_STATE: IAccountsState = {
@@ -120,6 +120,15 @@ function onSetTxCount (state: any, action: ISetTxCountAction) {
     return acc;
   });
 }
+
+function onHdAccountCreated (state: IAccountsState, action: IHdAccountCreated) {
+  const { walletId, account } = action.payload;
+  return updateWallet(state, walletId, (wallet) => {
+    wallet.accounts.push(account);
+    return wallet;
+  });
+}
+
 //
 // function onPendingBalance (state: any, action: PendingBalanceAction) {
 //   if (action.type === ActionTypes.PENDING_BALANCE) {
@@ -143,7 +152,7 @@ function onSetTxCount (state: any, action: ISetTxCountAction) {
 
 export function reducer (
   state: IAccountsState = INITIAL_STATE,
-  action: AddressesAction
+  action: AccountsAction
 ): IAccountsState {
   switch (action.type) {
     case ActionTypes.WALLET_UPDATED:
@@ -158,6 +167,8 @@ export function reducer (
       return onWalletCreated(state, action);
     case ActionTypes.SET_TXCOUNT:
       return onSetTxCount(state, action);
+    case ActionTypes.HD_ACCOUNT_CREATED:
+      return onHdAccountCreated(state, action);
     // case ActionTypes.PENDING_BALANCE:
     //   return onPendingBalance(state, action);
     default:

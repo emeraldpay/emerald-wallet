@@ -1,10 +1,11 @@
 import {
   AddressBookService,
   BlockchainCode,
-  blockchainCodeToId, Blockchains,
+  blockchainCodeToId,
+  Blockchains,
   Commands,
+  Logger,
   vault,
-  Wallet,
   WalletService
 } from '@emeraldwallet/core';
 import { loadTransactions2, storeTransactions2 } from '@emeraldwallet/history-store';
@@ -13,6 +14,7 @@ import * as os from 'os';
 import Application from '../Application';
 import { tokenContract } from '../erc20';
 
+const log = Logger.forCategory('IPC Handlers');
 export function setIpcHandlers (app: Application) {
 
   ipcMain.handle(Commands.GET_VERSION, async (event, args) => {
@@ -110,6 +112,25 @@ export function setIpcHandlers (app: Application) {
       const walletId = app.vault!.addWallet(walletName);
       const accountId = app.vault?.addAccount(walletId, addAccount);
       return walletId;
+    });
+
+  ipcMain.handle(Commands.VAULT_CREATE_HD_ACCOUNT,
+    (event: any, walletId: string, blockchain: BlockchainCode, hdPath: string, password) => {
+      const wallet = app.vault?.getWallet(walletId);
+      if (!wallet || !wallet.seedId) {
+        throw Error('Invalid wallet provided');
+      }
+      const addAccount: vault.AddAccount = {
+        blockchain: blockchainCodeToId(blockchain),
+        type: 'hd-path',
+        key: {
+          seedId: wallet.seedId,
+          hdPath,
+          password
+        },
+        password
+      };
+      return app.vault?.addAccount(walletId, addAccount);
     });
 
   ipcMain.handle(Commands.ACCOUNT_EXPORT_RAW_PRIVATE,

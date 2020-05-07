@@ -11,6 +11,12 @@ import { ipcRenderer } from 'electron';
  * This backend api implementation calls electron IPC for business logic
  */
 export default class BackendApi implements IBackendApi {
+  public createHdAccount = (
+    walletId: string, blockchain: BlockchainCode, hdPath: string, password: string
+  ): Promise<string> => {
+    return ipcRenderer.invoke(Commands.VAULT_CREATE_HD_ACCOUNT, walletId, blockchain, hdPath, password);
+  }
+
   public updateWallet = (walletId: string, name: string): Promise<boolean> => {
     return ipcRenderer.invoke(Commands.VAULT_UPDATE_WALLET, walletId, name);
   }

@@ -3,6 +3,7 @@ import { screen } from '@emeraldwallet/store';
 import { CircularProgress } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import CreateHdAccount from '../../../create-account/CreateHdAccount';
 import CreateOrImport from '../../../create-wallet/CreateOrImport';
 import ImportWalletWizard from '../../../create-wallet/ImportWalletWizard';
 import ImportMnemonicWallet from '../../../create-wallet/ImportWalletWizard/ImportMnemonicWallet';
@@ -122,7 +123,9 @@ const Screen = (props: IScreenProps) => {
   if (props.screen === screen.Pages.ADD_ACCOUNT) {
     return <CreateAccountWizard />;
   }
-
+  if (props.screen === screen.Pages.CREATE_HD_ACCOUNT) {
+    return <CreateHdAccount walletId={props.screenItem}/>;
+  }
   return (
     <div>Unknown screen: {props.screen}</div>
   );

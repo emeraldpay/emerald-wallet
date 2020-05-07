@@ -14,15 +14,17 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import * as vault from '@emeraldpay/emerald-vault-core';
-import { AddressBookItem, BlockchainCode, IVault, Wallet } from '@emeraldwallet/core';
+import { AddressBookItem, BlockchainCode, ILogger, IVault, Logger, Wallet } from '@emeraldwallet/core';
 import { blockchainCodeToId, blockchainIdToCode } from './utils';
 
 export class Vault implements IVault {
 
   public provider: vault.IEmeraldVault;
+  private log: ILogger;
 
   constructor (provider: vault.IEmeraldVault) {
     this.provider = provider;
+    this.log = Logger.forCategory('vault');
   }
 
   public getWallet (id: string): Wallet | undefined {
@@ -77,7 +79,12 @@ export class Vault implements IVault {
   }
 
   public addAccount (walletId: string, account: vault.AddAccount): string {
-    return this.provider.addAccount(walletId, account);
+    try {
+      return this.provider.addAccount(walletId, account);
+    } catch (error) {
+      this.log.error(`Vault error ${error.name} : ${error.message}`);
+      throw error;
+    }
   }
 
   public exportJsonPrivateKey (accountFullId: string, password?: string): Promise<string> {
@@ -115,7 +122,9 @@ export class Vault implements IVault {
       return {
         blockchain: blockchainIdToCode(a.blockchain),
         id: a.id,
-        address: a.address
+        address: a.address,
+        seedId: (a.key as vault.SeedPKRef)?.seedId,
+        hdPath: (a.key as vault.SeedPKRef)?.hdPath
       };
     });
     if (w.reserved && w.reserved.length > 0) {
@@ -124,94 +133,4 @@ export class Vault implements IVault {
     }
     return newWallet;
   }
-//
-//     /**
-//      * Returns the client current version
-//      */
-//   public currentVersion (): Promise<string> {
-//     return this.provider.currentVersion();
-//   }
-//
-//     /**
-//      * Returns the list of all not hidden (by default) accounts from the keystore.
-//      * @param chain - chain name
-//      * @param showHidden - also show hidden accounts
-//      * @returns {*}
-//      */
-//   public listAccounts (chain: string, showHidden: boolean = false): Promise<vault.Account[]> {
-//     notNull(chain, 'chain');
-//     return this.provider.listAccounts(chain, showHidden);
-//   }
-//
-//   public signTransaction (tx: vault.TxSignRequest, passphrase: string, chain: string): Promise<string> {
-//     notNull(chain, 'chain');
-//     return this.provider.signTransaction(tx, passphrase, chain);
-//   }
-//
-//   public importAccount (data: any, chain: string) {
-//     notNull(chain, 'chain');
-//     return this.provider.importAccount(data, chain);
-//   }
-//
-//   public removeAccount (address: string, chain: string) {
-//     notNull(chain, 'chain');
-//     return this.provider.removeAccount(address, chain);
-//   }
-//
-//   public exportAccount (address: string, chain: string) {
-//     notNull(chain, 'chain');
-//     return this.provider.exportAccount(address, chain);
-//   }
-//
-//   public updateAccount (address: string, name: string, description: string = '', chain: string) {
-//     notNull(chain, 'chain');
-//     return this.provider.updateAccount(address, name, description, chain);
-//   }
-//
-//   public newAccount (passphrase: string, name: string, description: string, chain: string) {
-//     notNull(chain, 'chain');
-//     return this.provider.newAccount(passphrase, name, description, chain);
-//   }
-//
-//   public listAddresses (chain: string): Promise<vault.Contact[]> {
-//     notNull(chain, 'chain');
-//     return this.provider.listAddresses(chain);
-//   }
-//
-//   public importAddress (addressItem: vault.Contact, chain: string): Promise<boolean> {
-//     notNull(chain, 'chain');
-//     return this.provider.importAddress(addressItem, chain);
-//   }
-//
-//   public deleteAddress (address: string, chain: string): Promise<any> {
-//     return this.provider.deleteAddress(address, chain);
-//   }
-//
-//   public generateMnemonic (): Promise<string> {
-//     return this.provider.generateMnemonic();
-//   }
-//
-//     /**
-//      * Creates new account in the vault and returns address of it
-//      */
-//   public importMnemonic (
-//       passphrase: string, name: string, description: string,
-//       mnemonic: string, path: string, chain: string
-//     ): Promise<string> {
-//     try {
-//       notNull(chain, 'chain');
-//       notEmpty(passphrase, 'passphrase');
-//       return this.provider.importMnemonic(passphrase, name, description, mnemonic, path, chain);
-//     } catch (error) {
-//       return Promise.reject(error);
-//     }
-//   }
-//
-//   public importPk (pk: string, password: string, chain: string): Promise<string> {
-//     return this.provider.importPk(pk, password, chain);
-//   }
-//
-//   public exportPk (address: string, password: string, chain: string): Promise<string> {
-//     return this.provider.exportPk(address, password, chain);
-//   }
 }

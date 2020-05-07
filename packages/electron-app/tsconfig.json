@@ -19,6 +19,7 @@
     { "path": "../core" },
     { "path": "../services" },
     { "path": "../erc20" },
-    { "path": "../history-store" }
+    { "path": "../history-store" },
+    { "path": "../vault" }
   ]
 }

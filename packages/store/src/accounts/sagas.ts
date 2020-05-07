@@ -1,13 +1,19 @@
-import { Account, BlockchainCode, IBackendApi, Wallet } from '@emeraldwallet/core';
+import { Account, BlockchainCode, Blockchains, IBackendApi, Wallet } from '@emeraldwallet/core';
 import { registry } from '@emeraldwallet/erc20';
 import { all, call, put, select, takeEvery, takeLatest } from '@redux-saga/core/effects';
 import { ipcRenderer } from 'electron';
 import { SagaIterator } from 'redux-saga';
 import * as screen from '../screen';
 import { requestTokensBalances } from '../tokens/actions';
-import { fetchErc20BalancesAction, setLoadingAction, setWalletsAction, walletCreatedAction } from './actions';
-import {allAccounts, allWallets} from './selectors';
-import {ActionTypes, ICreateWalletAction, IFetchErc20BalancesAction} from './types';
+import {
+  fetchErc20BalancesAction,
+  hdAccountCreated,
+  setLoadingAction,
+  setWalletsAction,
+  walletCreatedAction
+} from './actions';
+import { allAccounts, allWallets, findWallet } from './selectors';
+import { ActionTypes, ICreateWalletAction, IFetchErc20BalancesAction } from './types';
 
 function* fetchErc20Balances (action: IFetchErc20BalancesAction): SagaIterator {
   const accounts = yield select(allAccounts);
@@ -82,12 +88,45 @@ function* afterAccountImported (backendApi: IBackendApi, action: any): SagaItera
   yield put(requestTokensBalances(chainCode, _tokens, account.address!));
 }
 
+function* createHdAccount (backendApi: IBackendApi, action: any): SagaIterator {
+  const { walletId, blockchain, password } = action.payload;
+  const chain = Blockchains[blockchain];
+  if (!chain) {
+    return;
+  }
+  let wallet: Wallet = yield select(findWallet, walletId);
+  if (!wallet.seedId) {
+    return;
+  }
+  try {
+    // calculate next account index
+    const accounts = wallet.accounts.filter((a) => a.blockchain === blockchain);
+    const index = accounts.length;
+    const accountPath = `${chain.params.hdPath}/${index}`;
+    const accountId: string = yield call(backendApi.createHdAccount, walletId, blockchain, accountPath, password);
+
+    wallet = yield call(backendApi.getWallet, walletId);
+    const account = wallet.accounts.find((a) => a.id === accountId)!;
+
+    // subscribe for balance
+    ipcRenderer.send('subscribe-balance', blockchain, [account.address]);
+
+    // fetch erc20 tokens
+    const _tokens = registry.all()[blockchain as BlockchainCode] || [];
+    yield put(requestTokensBalances(blockchain, _tokens, account.address!));
+    yield put(hdAccountCreated(wallet.id, account));
+    yield put(screen.actions.gotoScreen(screen.Pages.WALLET, wallet.id));
+  } catch (error) {
+    yield put(screen.actions.showError(error));
+  }
+}
+
 export function* root (backendApi: IBackendApi) {
   yield all([
     takeLatest(ActionTypes.FETCH_ERC20_BALANCES, fetchErc20Balances),
     takeLatest(ActionTypes.LOAD_WALLETS, loadAllWallets, backendApi),
-    takeLatest(ActionTypes.CREATE_WALLET, createWallet, backendApi),
-    takeEvery(ActionTypes.ACCOUNT_IMPORTED, afterAccountImported, backendApi)
+    takeEvery(ActionTypes.CREATE_WALLET, createWallet, backendApi),
+    takeEvery(ActionTypes.ACCOUNT_IMPORTED, afterAccountImported, backendApi),
+    takeEvery(ActionTypes.CREATE_HD_ACCOUNT, createHdAccount, backendApi)
   ]);
-
 }
