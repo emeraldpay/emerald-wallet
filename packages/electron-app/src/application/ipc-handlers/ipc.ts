@@ -87,6 +87,10 @@ export function setIpcHandlers (app: Application) {
     return app.rpc.chain(blockchain).eth.estimateGas(tx);
   });
 
+  ipcMain.handle(Commands.SIGN_TX, (event: any, accountId: string, unsignedTx: any, password: string) => {
+    return app.vault!.signTx(accountId, unsignedTx, password);
+  });
+
   ipcMain.handle(Commands.ACCOUNT_IMPORT_ETHEREUM_JSON,
     (event: any, blockchain: BlockchainCode, json: any) => {
       const addAccount: vault.AddAccount = {
@@ -160,4 +164,5 @@ export function setIpcHandlers (app: Application) {
   ipcMain.handle(Commands.VAULT_UPDATE_WALLET, (event: any, walletId: string, name: string) => {
     return app.vault?.setWalletLabel(walletId, name);
   });
+
 }

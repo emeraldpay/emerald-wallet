@@ -187,7 +187,6 @@ class SignTx extends React.Component<IProps, IState> {
               </div>
             </div>
           )}
-
           <div className={classes.formRow}>
             <div className={classes.left}/>
             <div className={classes.right} style={{ paddingTop: '10px' }}>

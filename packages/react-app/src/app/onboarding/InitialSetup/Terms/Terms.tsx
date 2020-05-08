@@ -1,7 +1,7 @@
 import { Check2 as CheckIcon } from '@emeraldplatform/ui-icons';
 import { Grid } from '@material-ui/core';
 import * as React from 'react';
-import Button from '../../common/Button';
+import { Button } from '@emeraldwallet/ui';
 
 interface IProps {
   onAgree?: any;

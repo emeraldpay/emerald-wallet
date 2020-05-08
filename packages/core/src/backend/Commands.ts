@@ -16,6 +16,7 @@ export enum Commands {
   GET_GAS_PRICE = 'get-gas-price',
   BROADCAST_TX = 'broadcast-tx',
   ESTIMATE_TX = 'estimate-tx',
+  SIGN_TX = 'sign-tx',
 
   ACCOUNT_IMPORT_ETHEREUM_JSON = 'import-json',
   ACCOUNT_IMPORT_PRIVATE_KEY = 'import-private-key',
@@ -27,5 +28,6 @@ export enum Commands {
   VAULT_CREATE_WALLET = 'create-wallet',
   VAULT_GET_WALLET = 'get-vault-wallet',
   VAULT_UPDATE_WALLET = 'vault-update-wallet',
-  VAULT_CREATE_HD_ACCOUNT = 'create-hd-account'
+  VAULT_CREATE_HD_ACCOUNT = 'create-hd-account',
+
 }

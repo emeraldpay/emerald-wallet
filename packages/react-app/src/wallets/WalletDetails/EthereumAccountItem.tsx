@@ -9,6 +9,7 @@ import { connect } from 'react-redux';
 import AccountBalance from '../../common/Balance';
 import AccountActions from '../AccountActions';
 import TokenBalances from '../TokenBalances';
+import {EmeraldDialogs} from "../../app/screen/Dialog/Dialog";
 
 const styles = (theme: any) => ({
   container: {
@@ -131,7 +132,7 @@ export default connect<IRenderProps, IDispatchProps, IOwnProps, IState>(
           coinTicker: Blockchains[account.blockchain].params.coinTicker,
           value: account.address
         };
-        dispatch(screen.actions.showDialog('receive', address));
+        dispatch(screen.actions.showDialog(EmeraldDialogs.DEPOSIT, address));
       }
     };
   }

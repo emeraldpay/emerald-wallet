@@ -5,6 +5,7 @@ import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
+import { EmeraldDialogs } from '../../screen/Dialog/Dialog';
 import Menu from './DashboardMenu';
 
 const { gotoScreen, showDialog } = screen.actions;
@@ -28,6 +29,7 @@ export interface IHeaderProps {
   generate: any;
   importLedger: any;
   importMnemonic: any;
+  showAboutDialog: any;
   addToken?: any;
   createMnemonic: any;
   showAddressBook: any;
@@ -39,7 +41,7 @@ export interface IHeaderProps {
 export function DashboardHeader (props: IHeaderProps & WithTranslation) {
   const {
       generate, importLedger, importMnemonic, createMnemonic,
-      showAddressBook, onCreateWallet
+      showAddressBook, onCreateWallet, showAboutDialog
     } = props;
   const { t, classes } = props;
 
@@ -60,6 +62,7 @@ export function DashboardHeader (props: IHeaderProps & WithTranslation) {
           importMnemonic={importMnemonic}
           createMnemonic={createMnemonic}
           addressBook={showAddressBook}
+          onAbout={showAboutDialog}
           t={t}
         />
       </div>
@@ -89,6 +92,9 @@ export default withTranslation()(
       },
       showAddressBook: () => {
         dispatch(gotoScreen(screen.Pages.ADDRESS_BOOK));
+      },
+      showAboutDialog: () => {
+        dispatch(screen.actions.showDialog(EmeraldDialogs.ABOUT));
       }
     })
   )(StyledHeader)

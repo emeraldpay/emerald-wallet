@@ -1,7 +1,8 @@
 import { Map } from 'immutable';
+import { IState } from '../types';
 import { initialState } from './reducer';
 
-function ledger (state: any): Map<string, any> {
+function ledger (state: IState): Map<string, any> {
   return state.ledger || initialState;
 }
 

@@ -18,7 +18,9 @@ export default function (window: any, menuHandlers: any): any {
         {
           label: '&Reload',
           accelerator: 'Ctrl+R',
-          click: () => { window.webContents.reload(); }
+          click: () => {
+            window.webContents.reload();
+          }
         },
         {
           label: 'Toggle &Full Screen',
@@ -37,17 +39,17 @@ export default function (window: any, menuHandlers: any): any {
           }
         }
       ]
-    },
-    {
-      label: '&Help',
-      submenu: [
-        {
-          label: '&About',
-          click () {
-            menuHandlers.onAbout();
-          }
-        }
-      ]
     }
+    // {
+    //   label: '&Help',
+    //   submenu: [
+    //     {
+    //       label: '&About',
+    //       click () {
+    //         menuHandlers.onAbout();
+    //       }
+    //     }
+    //   ]
+    // }
   ];
 }

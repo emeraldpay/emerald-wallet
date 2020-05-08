@@ -1,7 +1,7 @@
 import { application, screen } from '@emeraldwallet/store';
-import { InitialSetup } from '@emeraldwallet/ui';
 import React from 'react';
 import { connect } from 'react-redux';
+import InitialSetup from './InitialSetupView';
 
 export default connect(
   (state: any, ownProps: any) => ({

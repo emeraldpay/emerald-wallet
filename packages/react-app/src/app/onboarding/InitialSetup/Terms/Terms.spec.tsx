@@ -1,10 +1,10 @@
-import { shallow } from 'enzyme';
+import { render } from '@testing-library/react';
 import * as React from 'react';
 import Terms from './Terms';
 
 describe('Terms', () => {
   it('renders without crashing', () => {
-    const component = shallow(<Terms />);
+    const component = render(<Terms />);
     expect(component).toBeDefined();
   });
 });

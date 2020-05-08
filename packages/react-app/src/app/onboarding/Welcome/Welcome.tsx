@@ -1,7 +1,7 @@
 import { application } from '@emeraldwallet/store';
 import { Logo } from '@emeraldwallet/ui';
 import { CircularProgress, Grid } from '@material-ui/core';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import InitialSetup from '../InitialSetup';

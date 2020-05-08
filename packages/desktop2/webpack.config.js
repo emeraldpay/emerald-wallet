@@ -3,6 +3,13 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 module.exports = [
+  // ********************************************************************************
+  //
+  // We don't apply webpack for electron main process because there is a problem
+  // with grpc ;(
+  //
+  // ********************************************************************************
+
   // {
   //   mode: 'development',
   //   entry: path.join(__dirname, 'src/main/electron.ts'),
