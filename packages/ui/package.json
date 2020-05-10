@@ -35,8 +35,8 @@
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",
-    "@storybook/addon-actions": "5.2.3",
-    "@storybook/react": "5.2.3",
+    "@storybook/addon-actions": "^5.3.18",
+    "@storybook/react": "^5.3.18",
     "@testing-library/react": "9.1.4",
     "@types/enzyme": "^3.9.0",
     "@types/enzyme-adapter-react-16": "^1.0.5",
@@ -54,7 +54,8 @@
     "jest-canvas-mock": "^2.0.0-beta.1",
     "jest-transform-stub": "^2.0.0",
     "rimraf": "^2.6.3",
-    "ts-jest": "25.3.0"
+    "ts-jest": "25.3.0",
+    "ts-loader": "^7.0.3"
   },
   "jest": {
     "preset": "ts-jest",

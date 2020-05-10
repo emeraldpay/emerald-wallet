@@ -6,7 +6,7 @@ import TextField from '@material-ui/core/TextField';
 import * as React from 'react';
 import Filter from './Filter';
 
-const styles2 = createStyles({
+const styles = createStyles({
   headerContainer: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -72,4 +72,4 @@ const Header = ({
   );
 };
 
-export default (withStyles(styles2)(Header));
+export default (withStyles(styles)(Header));

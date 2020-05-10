@@ -1,9 +1,9 @@
-import { accounts, IState, txhistory } from '@emeraldwallet/store';
-import Header from '@emeraldwallet/ui/lib/components/tx/TxHistory/Header';
-import { withStyles } from '@material-ui/styles';
+import { IState, txhistory } from '@emeraldwallet/store';
+import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import List from '../List';
+import Header from './Header';
 
 const styles = (theme?: any) => ({
   container: {
@@ -32,16 +32,6 @@ class TransactionsHistory extends React.Component<IProps, IHistoryState> {
       displayedTransactions: this.props.transactions
     };
   }
-
-  // public UNSAFE_componentWillReceiveProps (nextProps: IProps) {
-  //   if (nextProps.transactions) {
-  //     this.setState({
-  //       ...this.state,
-  //       displayedTransactions: txhistory.selectors.filterTransactions(
-  //         this.state.txFilter, this.props.accountId, nextProps.transactions, this.props.accounts)
-  //     });
-  //   }
-  // }
 
   public onSearchChange = (e: any) => {
     return this.setState({

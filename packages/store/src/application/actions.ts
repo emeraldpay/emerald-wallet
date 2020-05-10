@@ -35,12 +35,6 @@ export function getVersions (): any {
   };
 }
 
-export function openExternal (url: string) {
-  return (dispatch: any) => {
-    return shell.openExternal(url);
-  };
-}
-
 export function readConfig (): any {
   return async (dispatch: any) => {
     const config = await ipcRenderer.invoke(Commands.GET_APP_SETTINGS);

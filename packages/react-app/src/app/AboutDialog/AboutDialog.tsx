@@ -1,4 +1,4 @@
-import { application } from '@emeraldwallet/store';
+import { application, screen } from '@emeraldwallet/store';
 import { Button } from '@emeraldwallet/ui';
 import {
   createStyles, Dialog, DialogActions, DialogContent, withStyles
@@ -80,7 +80,7 @@ const AboutDialog = (props: IRenderProps & IDispatchProps) => {
 function mapDispatchToProps (dispatch: any) {
   return {
     getVersions: () => dispatch(application.actions.getVersions()),
-    openUrl: (url: string) => dispatch(application.actions.openExternal(url))
+    openUrl: (url: string) => dispatch(screen.actions.openLink(url))
   };
 }
 
