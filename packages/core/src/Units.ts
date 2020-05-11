@@ -9,6 +9,7 @@ export interface IUnits {
   minus: (another: IUnits) => IUnits;
   isGreaterThan: (another: IUnits) => boolean;
   toString: () => string;
+  amountAsString: (format?: any) => string;
 }
 
 /**
@@ -68,9 +69,19 @@ export class Units implements IUnits {
     return new BigNumber(this.amount);
   }
 
+  public amountAsString (format?: any): string {
+    const fmt = format ? format : {
+      decimalSeparator: '.',
+      groupSeparator: ',',
+      groupSize: 3
+    };
+    return new BigNumber(this.amount).toFormat(2, fmt);
+  }
+
   private isSameSize (another: IUnits): boolean {
     return this.decimals === another.decimals;
   }
+
 }
 
 export default Units;

@@ -26,5 +26,5 @@ app.on('ready', () => {
 
   // createWindow();
   //
-  const browserWindow: BrowserWindow = getMainWindow(options);
+  const browserWindow: BrowserWindow = getMainWindow(null, options);
 });

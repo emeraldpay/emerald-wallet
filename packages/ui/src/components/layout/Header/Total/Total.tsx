@@ -1,7 +1,7 @@
 import { Wei } from '@emeraldplatform/eth';
 import { CurrencyEtc, CurrencyEth } from '@emeraldplatform/ui-icons';
-import { AnyCoinCode, CurrencyCode, StableCoinCode, Units } from '@emeraldwallet/core';
-import { ListItem, ListItemAvatar, ListItemText, Menu, MenuList } from '@material-ui/core';
+import { AnyCoinCode, CurrencyCode, IUnits, StableCoinCode, Units } from '@emeraldwallet/core';
+import { List, ListItem, ListItemAvatar, ListItemText, Menu } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/core/styles';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
@@ -9,13 +9,13 @@ import Button from '../../../common/Button';
 import { CoinAvatar } from '../../../common/CoinIcon';
 
 export interface IProps {
-  total: Units;
+  total: IUnits;
   fiatCurrency?: CurrencyCode | StableCoinCode;
   byChain: Array<{
     token: AnyCoinCode,
-    total: Wei | Units,
+    total: Wei | IUnits,
     fiatRate: number,
-    fiatAmount: Units
+    fiatAmount: IUnits
   }>;
   classes?: any;
 }
@@ -59,24 +59,25 @@ class TotalButton extends React.Component<IProps, IState> {
     };
   }
 
-  public handleToggle = (event) => {
-    this.setState({
-      anchorEl: event.currentTarget
-    });
-  }
-
-  public handleClose = () => {
-    this.setState({
-      anchorEl: null
-    });
-  }
-
   public render () {
     const {
       total, byChain, fiatCurrency, classes
     } = this.props;
+
+    const handleClose = () => {
+      this.setState({
+        anchorEl: null
+      });
+    };
+
+    const handleToggle = (event) => {
+      this.setState({
+        anchorEl: event.currentTarget
+      });
+    };
+
     const { anchorEl } = this.state;
-    const totalFormatted = `${total.toBigNumber().toFormat(2, format)} ${fiatCurrency}`;
+    const totalFormatted = `${total.amountAsString(format)} ${fiatCurrency}`;
     return (
       <div>
         <Button
@@ -84,7 +85,7 @@ class TotalButton extends React.Component<IProps, IState> {
           disabled={false}
           label={totalFormatted}
           classes={classes}
-          onClick={this.handleToggle}
+          onClick={handleToggle}
           icon={<CoinSymbol coinTicker={fiatCurrency} />}
         />
         <Menu
@@ -101,9 +102,9 @@ class TotalButton extends React.Component<IProps, IState> {
           id='totals'
           open={Boolean(anchorEl)}
           anchorEl={anchorEl}
-          onClose={this.handleClose}
+          onClose={handleClose}
         >
-          <MenuList>
+          <List>
             {byChain.map((c) => {
               let coins = '';
               if (Units.isUnits(c.total)) {
@@ -111,10 +112,10 @@ class TotalButton extends React.Component<IProps, IState> {
                   .dividedBy(new BigNumber(10).pow(c.total.decimals))
                   .toFormat(3, format);
               } else {
-                coins = c.total.toEther(3);
+                coins = (c.total as Wei).toEther(3);
               }
               coins += ` ${c.token.toUpperCase()}`;
-              const fiat = `${c.fiatAmount.toBigNumber().toFormat(2, format)} ${fiatCurrency}`;
+              const fiat = `${c.fiatAmount.amountAsString(format)} ${fiatCurrency}`;
               return (
                 <ListItem key={c.token}>
                   <ListItemAvatar>
@@ -124,7 +125,7 @@ class TotalButton extends React.Component<IProps, IState> {
                 </ListItem>
               );
             })}
-          </MenuList>
+          </List>
         </Menu>
       </div>
     );

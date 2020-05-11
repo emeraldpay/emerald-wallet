@@ -29,7 +29,7 @@ class ExtendedMenuItem extends React.Component<ItemProps> {
           borderLeft: '',
           marginLeft: '0px',
           lineHeight: '20px'
-        }}>
+        }} >
         <Grid item={true} style={{ color: textColor }}>{blockchainByName(title).getTitle()}</Grid>
         <Grid item={true}>
           <Grid container={true} style={{ color: textColor }}>
