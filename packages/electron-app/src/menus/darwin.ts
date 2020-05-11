@@ -2,15 +2,15 @@ export default function (window: any, menuHandlers: any): any {
   return [{
     label: 'Emerald',
     submenu: [
-      {
-        label: 'About',
-        click () {
-          menuHandlers.onAbout();
-        }
-      },
-      {
-        type: 'separator'
-      },
+      // {
+      //   label: 'About',
+      //   click () {
+      //     menuHandlers.onAbout();
+      //   }
+      // },
+      // {
+      //   type: 'separator'
+      // },
       {
         role: 'services',
         submenu: []
@@ -112,5 +112,6 @@ export default function (window: any, menuHandlers: any): any {
         }
       }
     ]
-  }];
+  }
+  ];
 }

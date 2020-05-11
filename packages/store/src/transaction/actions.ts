@@ -2,7 +2,16 @@ import { UnsignedTx } from '@emeraldpay/emerald-vault-core';
 import { convert, EthAddress } from '@emeraldplatform/core';
 import { quantitiesToHex } from '@emeraldplatform/core/lib/convert';
 import { Wei } from '@emeraldplatform/eth';
-import { BlockchainCode, Blockchains, EthereumTx, IApi, IStoredTransaction, Logger, vault } from '@emeraldwallet/core';
+import {
+  BlockchainCode,
+  Blockchains,
+  EthereumTx,
+  IApi,
+  IBackendApi,
+  IStoredTransaction,
+  Logger,
+  vault
+} from '@emeraldwallet/core';
 import { Dispatch } from 'redux';
 import * as screen from '../screen';
 import { catchError, gotoScreen, showError } from '../screen/actions';
@@ -65,7 +74,7 @@ function verifySender (expected: string): (a: string, c: BlockchainCode) => Prom
 }
 
 function signTx (
-  api: IApi, accountId: string, tx: IStoredTransaction, passphrase: string, blockchain: BlockchainCode
+  backendApi: IBackendApi, accountId: string, tx: IStoredTransaction, passphrase: string, blockchain: BlockchainCode
 ): Promise<string | string[]> {
   log.debug(`Calling emerald api to sign tx from ${tx.from} to ${tx.to} in ${blockchain} blockchain`);
   const plainTx: vault.TxSignRequest = {
@@ -88,8 +97,7 @@ function signTx (
     data: plainTx.data,
     nonce: quantitiesToHex(plainTx.nonce)
   };
-  const rawTx = api.vault.signTx(accountId, unsignedTx, passphrase);
-  return Promise.resolve(rawTx);
+  return backendApi.signTx(accountId, passphrase, unsignedTx);
 }
 
 export function signTransaction (
@@ -113,7 +121,7 @@ export function signTransaction (
     return getNonce(extra.api, blockchain, from)
       .then(withNonce(originalTx))
       .then((tx: IStoredTransaction) => {
-        return signTx(extra.api, accountId, tx, passphrase, blockchain)
+        return signTx(extra.backendApi, accountId, tx, passphrase, blockchain)
           .then(unwrap)
           .then((rawTx) => verifySender(from)(rawTx, blockchain))
           .then((signed) => ({ tx, signed }));

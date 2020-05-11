@@ -1,6 +1,6 @@
+import { Logo } from '@emeraldwallet/ui';
 import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
-import Logo from '../common/Logo';
 
 const year = new Date().getFullYear();
 

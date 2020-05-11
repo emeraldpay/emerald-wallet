@@ -1,9 +1,21 @@
-import { addHexPrefix, parseDate, separateThousands } from './utils';
+import { addHexPrefix, isHex, parseDate, separateThousands } from './utils';
 
 describe('addHexPrefix', () => {
   it('should work', () => {
     expect(addHexPrefix('01')).toEqual('0x01');
     expect(addHexPrefix('0x01')).toEqual('0x01');
+  });
+});
+
+describe('isHex', () => {
+  it('valid hex string', () => {
+    expect(isHex('0x51fe')).toBeTruthy();
+    expect(isHex('')).toBeTruthy();
+    expect(isHex('aaaCCeeee')).toBeTruthy();
+  });
+  it('invalid hex', () => {
+    expect(isHex('0xgghh51fe')).not.toBeTruthy();
+    expect(isHex('aaa0xeeee')).not.toBeTruthy();
   });
 });
 

@@ -44,10 +44,6 @@ export default function SelectBlockchain (props: IProps) {
   }
 
   return (
-    <Page
-      leftIcon={(<Back onClick={handleGoBack}/>)}
-      title={'Select cryptocurrency'}
-    >
       <Grid container={true}>
         <Grid item={true} xs={12} >
           <List>
@@ -75,6 +71,5 @@ export default function SelectBlockchain (props: IProps) {
           </List>
         </Grid>
       </Grid>
-    </Page>
   );
 }

@@ -98,7 +98,7 @@ app.on('ready', () => {
   const rpcConns = serverConnect.connectTo(apiMode.chains);
 
   log.info('... Create main window');
-  const browserWindow = getMainWindow(options);
+  const browserWindow = getMainWindow(application, options);
 
   log.info('... Run Application');
   application.run(browserWindow.webContents, apiAccess, apiMode, vault.getProvider(), rpcConns);
@@ -126,5 +126,5 @@ app.on('window-all-closed', () => {
 app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
-  getMainWindow(options);
+  getMainWindow(application, options);
 });

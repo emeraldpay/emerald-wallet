@@ -28,6 +28,7 @@
     "@emeraldwallet/ui": "^2.1.2",
     "@material-ui/core": "4.9.10",
     "@material-ui/icons": "4.9.1",
+    "@material-ui/lab": "4.0.0-alpha.49",
     "classnames": "2.2.5",
     "i18next": "19.3.2",
     "i18next-browser-languagedetector": "4.0.2",

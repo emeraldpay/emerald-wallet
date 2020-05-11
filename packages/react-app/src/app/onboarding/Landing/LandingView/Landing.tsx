@@ -72,11 +72,11 @@ export const Landing = ({
               </div>
               <Divider />
               <div style={{ marginLeft: '145px', marginBottom: '70px' }}>
-                <div className={classes.addAccount}>Add Account</div>
+                <div className={classes.addAccount}>Import existing</div>
                 <div className={classes.addAccountButtons}>
+                  <Button variant='text' primary={true} onClick={onImportMnemonic} label='Multi-currency wallet' />
                   <Button variant='text' primary={true} onClick={onImportJson} label='From Keystore File (UTC/JSON)' />
                   <Button variant='text' primary={true} onClick={onImportPrivateKey} label='From Private key' />
-                  <Button variant='text' primary={true} onClick={onImportMnemonic} label='From Mnemonic phrase' />
                   <Button variant='text' primary={true} onClick={onLedger} label='Ledger Nano S' />
                 </div>
               </div>

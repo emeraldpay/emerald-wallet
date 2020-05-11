@@ -33,4 +33,6 @@ export default interface IBackendApi {
   exportRawPrivateKey: (accountId: string, password: string) => Promise<string>;
   exportJsonKeyFile: (accountId: string) => Promise<string>;
 
+
+  signTx: (accountId: string, password: string, unsignedTx: any) => Promise<any>;
 }

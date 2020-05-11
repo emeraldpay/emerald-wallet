@@ -1,5 +1,6 @@
 import { Commands, Logger } from '@emeraldwallet/core';
-import { ipcRenderer } from 'electron';
+import { ipcRenderer, shell } from 'electron';
+import { IExtraArgument } from '../types';
 import { ActionTypes, IConfigAction, ISetConnectingAction } from './types';
 
 const log = Logger.forCategory('store.application');
@@ -25,6 +26,12 @@ function setConfigAction (config: any): IConfigAction {
   return {
     type: ActionTypes.CONFIG,
     payload: config
+  };
+}
+
+export function getVersions (): any {
+  return (dispatch: any, getState: any, extra: IExtraArgument) => {
+    return ipcRenderer.invoke('get-version');
   };
 }
 

@@ -1,4 +1,5 @@
 import { BrowserWindow, Menu, shell } from 'electron';
+import Application from '../application/Application';
 import darwinMenu from '../menus/darwin';
 import winLinuxMenu from '../menus/win-linux';
 import { createAboutPage } from './AboutWindow';
@@ -11,15 +12,15 @@ const devtron = require('devtron');
 let mainWindow: BrowserWindow | null;
 let menu;
 
-export function getMainWindow (options: any) {
+export function getMainWindow (app: Application, options: any) {
   if (mainWindow) {
     return mainWindow;
   }
-  createWindow(options);
+  createWindow(app, options);
   return mainWindow;
 }
 
-const createWindow = (options: any): BrowserWindow => {
+const createWindow = (app: Application, options: any): BrowserWindow => {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 1200,
@@ -54,7 +55,8 @@ const createWindow = (options: any): BrowserWindow => {
 
   const menuHandlers = {
     onAbout: () => {
-      createAboutPage(options);
+      app.showAbout();
+      // createAboutPage(options);
     },
     onOpenLog: () => {
       shell.openItem(options.logFile);

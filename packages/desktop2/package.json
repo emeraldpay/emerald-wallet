@@ -48,6 +48,7 @@
   },
   "dependencies": {
     "@emeraldwallet/electron-app": "^2.1.2",
+    "@emeraldwallet/react-app": "^2.1.2",
     "grpc": "^1.24.2",
     "react": "16.11.0",
     "react-dom": "16.11.0"

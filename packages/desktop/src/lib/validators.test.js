@@ -1,5 +1,5 @@
 import {
-  number, address, required, positive, hex, isJson, passwordMatch
+  number, address, required, positive, isJson, passwordMatch
 } from './validators';
 
 describe('Field Validators', () => {
@@ -45,16 +45,6 @@ describe('Field Validators', () => {
   it('invalid address', () => {
     expect(address('0x6ebeb2af2e734fbba2b58c5b922628af442527')).not.toBeUndefined();
     expect(address('0E7C045110B8dbF29765047380898919C5CB56F4')).not.toBeUndefined();
-  });
-
-  it('valid hex', () => {
-    expect(hex('0x51fe')).toBeUndefined();
-    expect(hex('')).toBeUndefined();
-    expect(hex('aaaCCeeee')).toBeUndefined();
-  });
-  it('invalid hex', () => {
-    expect(hex('0xgghh51fe')).not.toBeUndefined();
-    expect(hex('aaa0xeeee')).not.toBeUndefined();
   });
 
   it('valid json', () => {

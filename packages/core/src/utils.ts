@@ -10,6 +10,12 @@ export function separateThousands (value: string, separator: string) {
   return parseInt(value, 10).toLocaleString('en').split(',').join(separator);
 }
 
+export function isHex (value: string): boolean {
+  if ((value === '') || (value === undefined)) return true;
+  const val = value.substring(0, 2) === '0x' ? value.substring(2) : value;
+  return /^[0-9A-Fa-f]+$/.test(val);
+}
+
 /**
  * Parse a date which can be represented as string (ISO format), number (ms or seconds) or Date itself
  *

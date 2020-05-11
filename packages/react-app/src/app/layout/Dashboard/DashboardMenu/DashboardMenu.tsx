@@ -5,7 +5,8 @@ import {
   Key as KeyIcon,
   Keypair as KeypairIcon,
   Ledger as LedgerIcon,
-  Menu as MenuIcon
+  Menu as MenuIcon,
+  EmoteHappy as AboutIcon,
 } from '@emeraldplatform/ui-icons';
 import { Button } from '@emeraldwallet/ui';
 import List from '@material-ui/core/List';
@@ -28,6 +29,7 @@ interface IMenuProps {
   importMnemonic?: any;
   createMnemonic?: any;
   addressBook?: any;
+  onAbout?: any;
   t?: any;
   style?: any;
   classes?: any;
@@ -64,7 +66,7 @@ class DashboardMenu extends React.Component<IMenuProps, IMenuState> {
 
   public render () {
     const {
-      generate, importLedger, importMnemonic, createMnemonic, addressBook
+      importLedger, importMnemonic, onAbout, addressBook
     } = this.props;
     const {
       style, classes
@@ -134,6 +136,12 @@ class DashboardMenu extends React.Component<IMenuProps, IMenuState> {
                 <BookIcon />
               </ListItemIcon>
               <ListItemText primary='Address Book' secondary='View and edit contacts' />
+            </ListItem>
+            <ListItem button={true} onClick={onAbout}>
+              <ListItemIcon>
+                <AboutIcon />
+              </ListItemIcon>
+              <ListItemText primary='About' secondary='View info about application' />
             </ListItem>
           </List>
         </Popover>

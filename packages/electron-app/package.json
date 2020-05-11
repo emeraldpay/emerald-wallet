@@ -18,7 +18,7 @@
     "@types/jest": "^24.0.9",
     "@types/node": "^12.12.0",
     "@types/uuid": "^3.4.4",
-    "electron": "^7.0.1",
+    "electron": "7.0.1",
     "jest": "^24.1.0",
     "rimraf": "^2.6.3",
     "ts-jest": "^24.0.0"
@@ -52,6 +52,7 @@
     "@emeraldwallet/erc20": "^2.1.2",
     "@emeraldwallet/history-store": "^2.1.2",
     "@emeraldwallet/services": "^2.1.2",
+    "@emeraldwallet/store": "^2.1.2",
     "devtron": "^1.4.0",
     "electron-log": "4.0.3",
     "electron-store": "5.1.0",
