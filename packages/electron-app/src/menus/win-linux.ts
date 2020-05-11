@@ -39,17 +39,17 @@ export default function (window: any, menuHandlers: any): any {
           }
         }
       ]
+    },
+    {
+      label: '&Help',
+      submenu: [
+        {
+          label: '&About',
+          click () {
+            menuHandlers.onAbout();
+          }
+        }
+      ]
     }
-    // {
-    //   label: '&Help',
-    //   submenu: [
-    //     {
-    //       label: '&About',
-    //       click () {
-    //         menuHandlers.onAbout();
-    //       }
-    //     }
-    //   ]
-    // }
   ];
 }

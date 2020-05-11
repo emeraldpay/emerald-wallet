@@ -1,7 +1,6 @@
 import { Wallet } from '@emeraldwallet/core';
 import { accounts, IState, screen } from '@emeraldwallet/store';
-import { Grid } from '@material-ui/core';
-import { withStyles } from '@material-ui/styles';
+import { Grid, withStyles } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import WalletItem from './WalletItem';
@@ -42,7 +41,6 @@ const WalletList = ((props: IWalletsListProps) => {
       <Grid container={true}>
         {wallets.map((wallet: Wallet) => {
           return (
-            // <Grid item={true} xs={6} key={wallet.id}>
               <WalletItem
                 key={wallet.id}
                 showFiat={showFiat}
@@ -51,7 +49,6 @@ const WalletList = ((props: IWalletsListProps) => {
                 createTx={createTx}
                 showReceiveDialog={showReceiveDialog}
               />
-            // </Grid>
           );
         })}
       </Grid>

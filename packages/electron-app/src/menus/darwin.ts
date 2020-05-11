@@ -101,17 +101,17 @@ export default function (window: any, menuHandlers: any): any {
         role: 'togglefullscreen'
       }
     ]
+  },
+  {
+    label: 'Help',
+    submenu: [
+      {
+        label: 'About',
+        click () {
+          menuHandlers.onAbout();
+        }
+      }
+    ]
   }
-  // {
-  //   label: 'Help',
-  //   submenu: [
-  //     {
-  //       label: 'About',
-  //       click () {
-  //         menuHandlers.onAbout();
-  //       }
-  //     }
-  //   ]
-  // }
   ];
 }
