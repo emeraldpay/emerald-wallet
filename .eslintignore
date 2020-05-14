@@ -1,0 +1,8 @@
+.eslintrc.js
+
+# Always ignore node_modules.
+**/node_modules/
+
+packages/*/lib
+packages/*/coverage
+packages/desktop/app

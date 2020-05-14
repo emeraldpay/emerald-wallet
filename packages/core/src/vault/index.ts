@@ -3,6 +3,8 @@ export { Account, Contact, TxSignRequest } from './types';
 export {
   AccountId,
   AddAccount,
-  SeedDefinition, SeedDescription, UnsignedTx,
+  SeedDefinition,
+  SeedDescription,
+  UnsignedTx,
   Uuid
 } from '@emeraldpay/emerald-vault-core';

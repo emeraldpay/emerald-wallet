@@ -9,15 +9,15 @@ export enum ActionTypes {
   UPDATE = 'SETTINGS/UPDATE'
 }
 
-export interface Rates {[key: string]: string;}
+export interface Rates {[key: string]: string}
 
 export interface ISettingsState {
   localeCurrency: CurrencyCode;
   localeRate?: string;
   mode: {
-    chains: BlockchainCode[],
-    currencies: Array<CurrencyCode | StableCoinCode>,
-    id: string
+    chains: BlockchainCode[];
+    currencies: Array<CurrencyCode | StableCoinCode>;
+    id: string;
   };
   numConfirmations: number;
   rates: Rates;
