@@ -1,11 +1,11 @@
-import { AnyCoinCode, CurrencyCode, StableCoinCode, Units } from '@emeraldwallet/core';
+import { Units } from '@emeraldwallet/core';
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
-import Total from '../../src/components/layout/Header/Total';
+import TotalButton from '../../src/app/layout/Header/TotalButton';
 
-storiesOf('Total', module)
+storiesOf('TotalButton', module)
   .add('default', () => (
-    <Total
+    <TotalButton
       total={Units.ZERO}
       byChain={[
         {

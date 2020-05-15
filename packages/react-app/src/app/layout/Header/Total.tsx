@@ -1,7 +1,6 @@
 import { Units } from '@emeraldwallet/core';
 import { accounts, BalanceValueConverted, IState } from '@emeraldwallet/store';
-import { Total } from '@emeraldwallet/ui';
-import * as React from 'react';
+import TotalButton from './TotalButton';
 import { connect } from 'react-redux';
 
 export default connect<any, any, any, IState>(
@@ -35,4 +34,4 @@ export default connect<any, any, any, IState>(
     };
   },
   null
-)(Total);
+)(TotalButton);

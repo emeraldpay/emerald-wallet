@@ -3,9 +3,12 @@ node_js: 12
 mono:
   - latest
 
-os:
-  - linux
-  - osx
+jobs:
+  include:
+    - os: linux
+      dist: bionic
+    - os: osx
+      osx_image: xcode10
 
 env:
   global:
@@ -31,10 +34,17 @@ before_install:
   # GitVersion
   - echo Installing GitVersion...
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install mono; fi
-  - wget https://github.com/GitTools/GitVersion/releases/download/v4.0.0/GitVersion-bin-net40-v4.0.0.zip
-  - unzip GitVersion-bin-net40-v4.0.0.zip -d GitVersionBin
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt install curl; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then export GITVERSION_NAME="gitversion-ubuntu.18.04-x64-5.3.3.tar.gz"; fi
+  - if [ "$TRAVIS_OS_NAME" = "osx" ]; then export GITVERSION_NAME="gitversion-osx-x64-5.3.3.tar.gz"; fi
+
+  # wget https://github.com/GitTools/GitVersion/releases/download/v4.0.0/GitVersion-bin-net40-v4.0.0.zip
+  - wget https://github.com/GitTools/GitVersion/releases/download/5.3.3/$GITVERSION_NAME
+  # unzip GitVersion-bin-net40-v4.0.0.zip -d GitVersionBin
+  - mkdir GitVersionBin
+  - tar -zxvf $GITVERSION_NAME -C GitVersionBin
   - echo "#!/bin/bash" > gitversion
-  - echo 'mono GitVersionBin/GitVersion.exe "$@"' >> gitversion
+  - echo 'GitVersionBin/gitversion "$@"' >> gitversion
   - chmod 755 gitversion
   - ./gitversion /version
   # Janus

@@ -11,7 +11,7 @@
     "build": "yarn clean && yarn compile",
     "build:dist": "yarn clean && yarn compile",
     "test": "jest --passWithNoTests",
-    "test:coverage": "jest --coverage --passWithNoTests&& codecov"
+    "test:coverage": "jest --coverage --passWithNoTests && codecov"
   },
   "dependencies": {
     "@emeraldpay/grpc-client": "0.11.3-0.2",

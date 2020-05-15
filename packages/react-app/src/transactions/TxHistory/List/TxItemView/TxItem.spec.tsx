@@ -21,12 +21,8 @@ describe('TxItem', () => {
         <TxItem
           openAccount={jest.fn()}
           openTx={jest.fn()}
-          netParams={
-          {
-            currentBlockHeight: 100,
-            requiredConfirmations: 12
-          }
-          }
+          currentBlockHeight={100}
+          requiredConfirmations={12}
           tx={tx}
           fromAccount={from}
           toAccount={to}

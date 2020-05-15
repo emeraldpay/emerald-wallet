@@ -1,5 +1,5 @@
 import { CircularProgress } from '@material-ui/core';
-import { withStyles } from '@material-ui/styles';
+import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 
 const styles = (theme: any) => ({
@@ -20,6 +20,12 @@ const styles = (theme: any) => ({
     fontSize: '12px'
   }
 });
+
+
+function defaultTimestampFormatter (timestamp: any): string {
+  return timestamp;
+}
+
 
 interface IStatusProps {
   currentBlockHeight: number;
@@ -87,9 +93,5 @@ export const Status = (props: IStatusProps) => {
 
   return null;
 };
-
-function defaultTimestampFormatter (timestamp: any): string {
-  return timestamp;
-}
 
 export default withStyles(styles)(Status);

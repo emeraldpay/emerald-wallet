@@ -22,7 +22,6 @@ export { default as FormRow } from './components/common/FormRow';
 
 // Layout
 export { default as Status } from './components/layout/Header/Status';
-export { default as Total } from './components/layout/Header/Total';
 export { default as ConnectionStatus } from './components/layout/ConnectionStatus';
 
 export { default as Theme } from './theme';
