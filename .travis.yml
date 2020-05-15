@@ -44,7 +44,7 @@ before_install:
   - mkdir GitVersionBin
   - tar -zxvf $GITVERSION_NAME -C GitVersionBin
   - echo "#!/bin/bash" > gitversion
-  - echo 'mono GitVersionBin/gitversion.exe "$@"' >> gitversion
+  - echo 'GitVersionBin/gitversion "$@"' >> gitversion
   - chmod 755 gitversion
   - ./gitversion /version
   # Janus
