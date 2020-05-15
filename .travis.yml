@@ -9,7 +9,6 @@ jobs:
       dist: bionic
 
 os:
-  - linux
   - osx
 
 env:
