@@ -3,6 +3,11 @@ node_js: 12
 mono:
   - latest
 
+jobs:
+  include:
+    - os: linux
+      dist: bionic
+
 os:
   - linux
   - osx

@@ -43,13 +43,9 @@ const styles = {
   }
 };
 
-interface INetworkParams {
+export interface ITxItemProps {
   currentBlockHeight: number;
   requiredConfirmations: number;
-}
-
-export interface ITxItemProps {
-  netParams: INetworkParams;
   amountRenderer?: (balance: any, ticker: string) => any;
   tx: any;
   openAccount: (blockchain: BlockchainCode, address: string) => void;
@@ -84,7 +80,7 @@ const defaultAmountRenderer = ((amount: IUnits, ticker: any) => {
 export const TxItem = (props: ITxItemProps) => {
   const renderAmount = props.amountRenderer || defaultAmountRenderer;
   const {
-    tx, openTx, openAccount, toAccount, fromAccount, netParams, token, coinTicker
+    tx, openTx, openAccount, toAccount, fromAccount, currentBlockHeight, requiredConfirmations, token, coinTicker
   } = props;
   const { classes } = props;
 
@@ -138,12 +134,12 @@ export const TxItem = (props: ITxItemProps) => {
       </TableCell>
       <TableCell className={classes.columnStatus} >
         <TxStatus
-          currentBlockHeight={netParams.currentBlockHeight}
+          currentBlockHeight={currentBlockHeight}
           txBlockNumber={tx.blockNumber}
           txTimestamp={tx.timestamp}
           txSince={tx.since}
           txDiscarded={tx.discarded}
-          requiredConfirmations={netParams.requiredConfirmations}
+          requiredConfirmations={requiredConfirmations}
           timeStampFormatter={timeStampFormatter(props.lang)}
           onClick={openTx}
         />

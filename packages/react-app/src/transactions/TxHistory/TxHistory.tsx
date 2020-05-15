@@ -2,7 +2,7 @@ import { IState, txhistory } from '@emeraldwallet/store';
 import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import List from '../List';
+import List from './List';
 import Header from './Header';
 
 const styles = (theme?: any) => ({
