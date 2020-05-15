@@ -34,6 +34,7 @@ before_install:
   # GitVersion
   - echo Installing GitVersion...
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install mono; fi
+  - if [ "$TRAVIS_OS_NAME" = "linux" ]; then sudo apt install curl; fi
   - wget https://github.com/GitTools/GitVersion/releases/download/v4.0.0/GitVersion-bin-net40-v4.0.0.zip
   - unzip GitVersion-bin-net40-v4.0.0.zip -d GitVersionBin
   - echo "#!/bin/bash" > gitversion
