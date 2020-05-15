@@ -7,9 +7,8 @@ jobs:
   include:
     - os: linux
       dist: bionic
-
-os:
-  - osx
+    - os: osx
+      osx_image: xcode10
 
 env:
   global:
