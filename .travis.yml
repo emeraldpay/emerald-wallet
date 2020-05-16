@@ -31,7 +31,6 @@ git:
   depth: false
 
 before_install:
-  - openssl aes-256-cbc -d -in gcloud-travis.json.enc -k $GCP_PASSWD -out .gcloud.json -md sha256
   # GitVersion
   - echo Installing GitVersion...
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install mono; fi
@@ -80,7 +79,9 @@ after_success:
   # Show dist directory contents after a successful build.
   - ls -l ./packages/desktop/dist/
   # Set up GCP deployment
-  - openssl aes-256-cbc -k "$GCP_PASSWD" -in gcloud-travis.json.enc -out .gcloud.json -d
+  # to encrypt:
+  # openssl aes-256-cbc -e -in gcloud-plain.json -k $GCP_PASSWD -out gcloud-travis.json.enc -md sha256
+  - openssl aes-256-cbc -d -in gcloud-travis.json.enc -k $GCP_PASSWD -out .gcloud.json -md sha256
 
 addons:
   apt:
