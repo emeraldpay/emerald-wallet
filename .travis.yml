@@ -67,6 +67,7 @@ before_script:
   - ./gitversion
 
 script:
+  - openssl aes-256-cbc -k "$GCP_PASSWD" -in gcloud-travis.json.enc -out .gcloud.json -d
   - ./gitversion > packages/desktop/gitversion.json
   - export APP_VERSION_GIT_TAG="$(./gitversion /showvariable FullSemVer)-$(./gitversion /showvariable ShortSha)"
   - echo "Building app version $APP_VERSION_GIT_TAG"
