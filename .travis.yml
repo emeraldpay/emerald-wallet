@@ -12,7 +12,7 @@ jobs:
 
 env:
   global:
-    - secure: "B8TgHeoMvTv59qIbpEfc0xF83FRZ+PakNJLfwQQkgTcL9XN18/pXf1r8AU0dO1bnsmiN0LB9TTvQEjifa1dbZ1FtyaM8q5y3yENIFYPyydoOd4qrn80udLfFP5J4RrBK9vRAgn7y6Z+e1mTRTedcQMggRW5wXeSOmkQ2IILq4sHF5U4pjyLr1P8UV5mLVscZERATiSWDpcnD57eY/423NsyKpxFSbvj2HovUJtc/IOurzTNi3LYaXj5b6MktQlwsa2pWSwANXeJC31VzPOYp5eskpasPagDka4p2WR7z3FW8RnQCjVp45tQys/9hTd2ftyK6OVk+rC4Wq2kOxTNVAjN9qWD+MaQQDABGRefv5mNGyordn/tc8qt8fM643EWdtGC1/s22xZx0Rc7o/R7rHahAJE44rkRQ+9jlhh7rApArtgyUP78qmE1iROB3WSsHLkN2aorb74DTlKMAm2JEDbiNW+oKPds98YoABpbIyGA144pAyOjstqeYpHTRorWKGTfKa1+RkkfgBYk2yx3fnrIk7F/2wKN8kQ9QlGGx1bsJMVfgSmEp4ToP8zhQWXkkwCzkwdzv7xwFf83XbsBONxAqFl67aODcRoIM7FjRYF7PQbB/FUyz5ZachAJP+IDBBNjZzUO87MRZuVeDsD3Iv1dVPNNs3CAyc9S9lDvnEWo="
+    - secure: "hufOrXezWqmB7S0wWiXJiaNszssObfSavvc3tOMLEey1yLZbDqo6Teck/5juYa6OQBVFKFeXgs6H0W/HfDb8NOHrCzIndhhpT5hSSyazif/YRsHUWyhYmg4P8KYm/YEh/dkNXvxp8P/485bNOU4ocIrWtgAF90c0/07g0SDq2zZmwdgb5Ye7DF99fBMk1u0doDYTpHqFNEtj+bvEh6AQXfwsrr1c+tqrAeetkiCrAYQlP9aDZ0MR3GoAvdNQiCrr5/PuJxsudcaTgjL5WlSw0sT8cl1b29euqoSM7LYieAi4rgGK4pSQrp7Psr+d3gwZ+w5fcJudWg8M2nNMlKdtfXU7iLzqBVQ1Wae+39835hxtx4ick2EOixhSOdEmrx34XCVBL5yk4pNYs1vrK+NnhlQ6gf8KS/cGnSbnkcz+W77i5Q1DNs4RSDw5IDYssekEfz9kHpKJL0sAGY6IlIKmm/FCrR/ByGMVd5ho2obeF716q5DOKbEDtDVsb4S5LbAga/CyLXvL4eAIjVrghLI97wFPZlCuWnrveeX2+VQkYQoLomD2oG9Iahu0o65XkSikbPXc+3VKuCnxJ2epLN14XdwcgP4THn3UmzKZ7Sepac9Xj224945zCeXpk5TRBydD2LW63WjhvINJvp5G5aLXxRuv5z2EhOtq9NVImQSzpOw="
     - CSC_IDENTITY_AUTO_DISCOVERY=false
     - YARN_GPG=no # otherwise Yarn starts a GPG daemon which prevents builds from finishing on Windows
 
@@ -31,6 +31,7 @@ git:
   depth: false
 
 before_install:
+  - openssl aes-256-cbc -d -in gcloud-travis.json.enc -k $GCP_PASSWD -out .gcloud.json
   # GitVersion
   - echo Installing GitVersion...
   - if [ "$TRAVIS_OS_NAME" = "osx" ]; then brew install mono; fi
@@ -67,7 +68,6 @@ before_script:
   - ./gitversion
 
 script:
-  - openssl aes-256-cbc -k "$GCP_PASSWD" -in gcloud-travis.json.enc -out .gcloud.json -d
   - ./gitversion > packages/desktop/gitversion.json
   - export APP_VERSION_GIT_TAG="$(./gitversion /showvariable FullSemVer)-$(./gitversion /showvariable ShortSha)"
   - echo "Building app version $APP_VERSION_GIT_TAG"
