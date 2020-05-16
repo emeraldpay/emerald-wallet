@@ -12,7 +12,7 @@ jobs:
 
 env:
   global:
-    - secure: "oo2NK1h2Ir+NbYMraVzHOjIHtJyP2DThCLAR9sCcD+sWRI6HWhmlncDDaRG2Pj2HyYUCOMayYKXkVjNIxtvOT27IOdqg3iXVrSGqSJllIRS8J1dv2dJhlfNqgJUtp+Z+kK1dpQB2CrXOPCw2NJCb+bkvmCB+2loYrV1j+HBvMJhS7gbcEBvLU7khXAFAVkpCX6SbF/7hRjERvWEUXZ7a99G2ElY+7VBeUf5b53hJSuoOFQ29S3JN2PEsOc0MCJt6lSmKErFru3ahgsiP0i5mUDdsAqclGfON0MyksQzYxtjs5Y5Lt3JhQf+7UI0WnN9Y/WKHV+iqdJQ3exbeNi+vwWaSRht3zqxJySZV9riK1lbh49F7ebd5ZldbnIbq2AqI8siLPtFV8ryiqIIkfY/qsCV5DsBu9JWgl3f16NuTpqzPZFF2hCDJ4+m+LM72QOTWH6lfkQTVO2zSH4eGaHd/smzqbZbLf04jSmry+vz9tl5wXevTtXhzFnvK8vwdeISUapDuadMoMsLc87ICdeL0fSMpKgFwz9sBs+a9FGvrSSEM7Kuqd6Tldv2rKZuHFo2J578mwORscMgYXrQgs4YnVzsOTyNIxvaMGAZ4VSysqoq8EZl6iJL4ZWf8aRhYLc8Ab6EwMUsi41Egqpp0xbfUW8oDNsUJDpumeCXHhOwofek="
+    - secure: "hufOrXezWqmB7S0wWiXJiaNszssObfSavvc3tOMLEey1yLZbDqo6Teck/5juYa6OQBVFKFeXgs6H0W/HfDb8NOHrCzIndhhpT5hSSyazif/YRsHUWyhYmg4P8KYm/YEh/dkNXvxp8P/485bNOU4ocIrWtgAF90c0/07g0SDq2zZmwdgb5Ye7DF99fBMk1u0doDYTpHqFNEtj+bvEh6AQXfwsrr1c+tqrAeetkiCrAYQlP9aDZ0MR3GoAvdNQiCrr5/PuJxsudcaTgjL5WlSw0sT8cl1b29euqoSM7LYieAi4rgGK4pSQrp7Psr+d3gwZ+w5fcJudWg8M2nNMlKdtfXU7iLzqBVQ1Wae+39835hxtx4ick2EOixhSOdEmrx34XCVBL5yk4pNYs1vrK+NnhlQ6gf8KS/cGnSbnkcz+W77i5Q1DNs4RSDw5IDYssekEfz9kHpKJL0sAGY6IlIKmm/FCrR/ByGMVd5ho2obeF716q5DOKbEDtDVsb4S5LbAga/CyLXvL4eAIjVrghLI97wFPZlCuWnrveeX2+VQkYQoLomD2oG9Iahu0o65XkSikbPXc+3VKuCnxJ2epLN14XdwcgP4THn3UmzKZ7Sepac9Xj224945zCeXpk5TRBydD2LW63WjhvINJvp5G5aLXxRuv5z2EhOtq9NVImQSzpOw="
     - CSC_IDENTITY_AUTO_DISCOVERY=false
     - YARN_GPG=no # otherwise Yarn starts a GPG daemon which prevents builds from finishing on Windows
 
@@ -79,7 +79,9 @@ after_success:
   # Show dist directory contents after a successful build.
   - ls -l ./packages/desktop/dist/
   # Set up GCP deployment
-  - openssl aes-256-cbc -k "$GCP_PASSWD" -in gcloud-travis.json.enc -out .gcloud.json -d
+  # to encrypt:
+  # openssl aes-256-cbc -e -in gcloud-plain.json -k $GCP_PASSWD -out gcloud-travis.json.enc -md sha256
+  - openssl aes-256-cbc -d -in gcloud-travis.json.enc -k $GCP_PASSWD -out .gcloud.json -md sha256
 
 addons:
   apt:

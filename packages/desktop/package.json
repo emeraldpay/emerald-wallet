@@ -29,7 +29,7 @@
     "start:electron:prod": "cross-env NODE_ENV=production ./node_modules/.bin/electron .",
     "test:watch": "jest --watchAll",
     "test": "cross-env ELECTRON_RUN_AS_NODE=true ./node_modules/.bin/electron ./node_modules/.bin/jest --no-cache",
-    "test:coverage": "ELECTRON_RUN_AS_NODE=true ./node_modules/.bin/electron ./node_modules/.bin/jest --coverage && codecov",
+    "test:coverage": "cross-env ELECTRON_RUN_AS_NODE=true ./node_modules/.bin/electron ./node_modules/.bin/jest --coverage && codecov",
     "lint": "eslint ./src/ ./electron/",
     "lint-fix": "npm run lint -- --fix",
     "postinstall": "electron-rebuild && yarn rebuild:modules",
