@@ -56,10 +56,7 @@ const config = {
       },
       {
         test: /\.css$/,
-        use: ExtractTextPlugin.extract({
-          fallback: 'style-loader',
-          use: ['css-loader?modules'],
-        }),
+        use: ['style-loader', 'css-loader'],
         include: [/typeface-rubik/, /typeface-roboto-mono/],
       },
       {
