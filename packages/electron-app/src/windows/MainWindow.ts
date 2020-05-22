@@ -12,17 +12,10 @@ const devtron = require('devtron');
 let mainWindow: BrowserWindow | null;
 let menu;
 
-export function getMainWindow (app: Application, options: any) {
-  if (mainWindow) {
-    return mainWindow;
-  }
-  createWindow(app, options);
-  return mainWindow;
-}
-
 const createWindow = (app: Application, options: any): BrowserWindow => {
   // Create the browser window.
-  mainWindow = new BrowserWindow({
+  const win = new BrowserWindow({
+    show: false,
     width: 1200,
     height: 650,
     minWidth: 1200,
@@ -34,7 +27,7 @@ const createWindow = (app: Application, options: any): BrowserWindow => {
   });
 
   // and load the index.html of the app.
-  mainWindow.loadURL(url.format({
+  win.loadURL(url.format({
     pathname: options.mainWndPath,
     protocol: 'file:',
     slashes: true
@@ -42,16 +35,9 @@ const createWindow = (app: Application, options: any): BrowserWindow => {
 
   // Open the DevTools.
   if (options.openDevTools) {
-    mainWindow.webContents.openDevTools();
+    win.webContents.openDevTools();
     devtron.install();
   }
-
-  mainWindow.on('closed', () => {
-    // Dereference the window object, usually you would store windows
-    // in an array if your app supports multi windows, this is the time
-    // when you should delete the corresponding element.
-    mainWindow = null;
-  });
 
   const menuHandlers = {
     onAbout: () => {
@@ -65,12 +51,28 @@ const createWindow = (app: Application, options: any): BrowserWindow => {
 
   // Menu
   if (process.platform === 'darwin') {
-    menu = Menu.buildFromTemplate(darwinMenu(mainWindow, menuHandlers));
+    menu = Menu.buildFromTemplate(darwinMenu(win, menuHandlers));
   } else {
-    menu = Menu.buildFromTemplate(winLinuxMenu(mainWindow, menuHandlers));
+    menu = Menu.buildFromTemplate(winLinuxMenu(win, menuHandlers));
   }
   Menu.setApplicationMenu(menu);
-  mainWindow.setMenu(menu);
-
-  return mainWindow;
+  win.setMenu(menu);
+  return win;
 };
+
+export function getMainWindow (app: Application, options: any): BrowserWindow {
+  if (mainWindow) {
+    return mainWindow;
+  }
+  mainWindow = createWindow(app, options);
+  mainWindow.on('closed', () => {
+    // Dereference the window object, usually you would store windows
+    // in an array if your app supports multi windows, this is the time
+    // when you should delete the corresponding element.
+    mainWindow = null;
+  });
+  mainWindow.once('ready-to-show', () => {
+    mainWindow?.show();
+  })
+  return mainWindow;
+}
