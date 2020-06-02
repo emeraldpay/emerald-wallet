@@ -34,10 +34,14 @@ jobs:
         run: sudo apt-get install libusb-1.0-0-dev libcurl3 xvfb
         if: runner.os == 'Linux'
 
+      - name: Setup Display
+        run: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+        if: runner.os == 'Linux'
+
       - name: Install Global JS componebts
         run: npm install -g node-gyp codecov yarn lerna typescript
 
-      - name: Instal; JS dependencies
+      - name: Install JS dependencies
         run: yarn install
 
       - name: Build
@@ -45,3 +49,5 @@ jobs:
 
       - name: Test
         run: yarn test:coverage
+        env:
+          DISPLAY: ':99.0'
