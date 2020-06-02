@@ -15,7 +15,7 @@
     "test:coverage": "jest --coverage && codecov"
   },
   "dependencies": {
-    "@emeraldpay/emerald-vault-core": "^0.5.1-rc4",
+    "@emeraldpay/emerald-vault-core": "^0.5.1-rc6",
     "@emeraldplatform/core": "0.5.8",
     "@emeraldplatform/eth": "^0.5.1",
     "@emeraldplatform/eth-rpc": "^0.5.3",

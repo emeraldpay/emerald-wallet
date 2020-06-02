@@ -49,7 +49,7 @@ function updateWallet (state: IAccountsState, walletId: vault.Uuid, f: Updater<W
 }
 
 function updateAccountDetails (
-  state: IAccountsState, accountId: vault.AccountId, f: Updater<AccountDetails>
+  state: IAccountsState, accountId: vault.EntryId, f: Updater<AccountDetails>
 ): IAccountsState {
 
   return produce(state, (draft) => {

@@ -78,9 +78,9 @@ export class Vault implements IVault {
     return this.provider.removeFromAddressBook(blockchainCodeToId(blockchain), address);
   }
 
-  public addAccount (walletId: string, account: vault.AddAccount): string {
+  public addEntry(walletId: string, account: vault.AddEntry): string {
     try {
-      return this.provider.addAccount(walletId, account);
+      return this.provider.addEntry(walletId, account);
     } catch (error) {
       this.log.error(`Vault error ${error.name} : ${error.message}`);
       throw error;
@@ -118,7 +118,7 @@ export class Vault implements IVault {
   private mapToCore (w: vault.Wallet): Wallet {
     const newWallet = new Wallet(w.id);
     newWallet.name = w.name;
-    newWallet.accounts = w.accounts.map((a: any) => {
+    newWallet.accounts = w.entries.map((a: any) => {
       return {
         blockchain: blockchainIdToCode(a.blockchain),
         id: a.id,

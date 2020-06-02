@@ -1,6 +1,6 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
-import { AccountId } from '@emeraldpay/emerald-vault-core';
-import { Wei } from '@emeraldplatform/eth';
+import {EntryId} from '@emeraldpay/emerald-vault-core';
+import {Wei} from '@emeraldplatform/eth';
 import {
   Account,
   AnyCoinCode,
@@ -27,7 +27,7 @@ export interface BalanceValueConverted {
 }
 
 export interface AccountDetails {
-  accountId: AccountId;
+  accountId: EntryId;
   balance?: string;
   balancePending?: any;
   txcount?: number;
@@ -113,7 +113,7 @@ export interface ICreateWalletAction {
 
 export interface ISetTxCountAction {
   type: ActionTypes.SET_TXCOUNT;
-  accountId: vault.AccountId;
+  accountId: vault.EntryId;
   value: number;
 }
 
