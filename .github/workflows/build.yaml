@@ -67,7 +67,7 @@ jobs:
       - name: Install Global JS componebts
         run: npm install -g node-gyp codecov yarn lerna typescript
 
-      - name: Instal; JS dependencies
+      - name: Install JS dependencies
         run: yarn install
 
       - name: Build
