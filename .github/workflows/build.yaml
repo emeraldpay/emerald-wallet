@@ -33,13 +33,13 @@ jobs:
 
       - name: Setup App Version
         run: |
-          echo "{" > packages/desktop/gitversion.json
-          echo "\"BuildMetaDataPadded\":\"0001\"," >> packages/desktop/gitversion.json
-          echo "\"SemVer\":\"${{ steps.gitversion.outputs.semVer }}\"," >> packages/desktop/gitversion.json
-          echo "\"FullSemVer\":\"${{ steps.gitversion.outputs.fullSemVer }}\"," >> packages/desktop/gitversion.json
-          echo "\"ShortSha\":\"${{ steps.gitversion.outputs.shortSha }}\"," >> packages/desktop/gitversion.json
-          echo "\"CommitDate\":\"${{ steps.gitversion.outputs.commitDate }}\"" >> packages/desktop/gitversion.json
-          echo "}" >> packages/desktop/gitversion.json
+          echo '{' > packages/desktop/gitversion.json
+          echo '"BuildMetaDataPadded":"0001",' >> packages/desktop/gitversion.json
+          echo '"SemVer":"${{ steps.gitversion.outputs.semVer }}",' >> packages/desktop/gitversion.json
+          echo '"FullSemVer":"${{ steps.gitversion.outputs.fullSemVer }}",' >> packages/desktop/gitversion.json
+          echo '"ShortSha":"${{ steps.gitversion.outputs.shortSha }}",' >> packages/desktop/gitversion.json
+          echo '"CommitDate":"${{ steps.gitversion.outputs.commitDate }}"' >> packages/desktop/gitversion.json
+          echo '}' >> packages/desktop/gitversion.json
 
       - name: Show App Version
         run: cat packages/desktop/gitversion.json
