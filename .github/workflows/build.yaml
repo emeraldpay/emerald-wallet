@@ -29,7 +29,7 @@ jobs:
 
       - name: Show Version
         run: |
-          echo "Major: ${{ steps.gitversion.outputs.fullSemVer }}-${{ steps.gitversion.outputs.shortSha }}"
+          echo "${{ steps.gitversion.outputs.fullSemVer }}-${{ steps.gitversion.outputs.shortSha }}"
 
       - name: Setup App Version
         run: |
@@ -72,6 +72,8 @@ jobs:
 
       - name: Build
         run: yarn build:dist
+        env:
+          APP_VERSION_GIT_TAG: "${{ steps.gitversion.outputs.fullSemVer }}-${{ steps.gitversion.outputs.shortSha }}"
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v1
