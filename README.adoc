@@ -1,10 +1,9 @@
 = Emerald Wallet for Desktop
 
-image:https://img.shields.io/circleci/project/github/ETCDEVTeam/emerald-wallet/master.svg?label=CircleCI[CircleCI branch]
-image:https://img.shields.io/travis/emeraldpay/emerald-wallet.svg?label=Travis[Travis (.org)]
-image:https://img.shields.io/appveyor/ci/ETCDEVTeam/emerald-wallet/master?label=AppVeyor[AppVeyor branch]
-image:https://codecov.io/gh/ETCDEVTeam/emerald-wallet/branch/master/graph/badge.svg[Codecov, link=https://codecov.io/gh/ETCDEVTeam/emerald-wallet]
-image:https://img.shields.io/github/license/ETCDEVTeam/emerald-wallet.svg?maxAge=2592000["License", link="https://github.com/ETCDEVTeam/emerald-wallet/blob/master/LICENSE"]
+image:https://travis-ci.org/emeraldpay/emerald-wallet.svg?branch=master[Travis (.org)]
+image:https://ci.appveyor.com/api/projects/status/n8xl5j0e8plam5nu?svg=true[AppVeyor Build]
+image:https://codecov.io/gh/emeraldpay/emerald-wallet/branch/master/graph/badge.svg[Codecov,link=https://codecov.io/gh/emeraldpay/emerald-wallet]
+image:https://img.shields.io/github/license/emeraldpay/emerald-wallet.svg?maxAge=2592000["License",link="https://github.com/emeraldpay/emerald-wallet/blob/master/LICENSE"]
 
 
 **Emerald is a free open source non-custodial multiplatform desktop cryptocurrency wallet, it supports Ethereum, Ethereum Classic and ERC-20 tokens.**
@@ -12,14 +11,17 @@ image:https://img.shields.io/github/license/ETCDEVTeam/emerald-wallet.svg?maxAge
 Features:
 
 - *Full Node* - automatically connects to a full node running on a local machine
-- *Light Node* - when a full node is not feasible, it uses a secure endpoint provided by our servers. _All private keys are stored on local machine_.
-- *Hardware Wallets* - supports hardware wallets such as Ledger Nano to keep private keys in a most safe way. It's recommended to use Ledger Nano S
+- *Light Node* - when a full node is not feasible, it uses a secure endpoint provided by our servers.
+_All private keys are stored on local machine_.
+- *Hardware Wallets* - supports hardware wallets such as Ledger Nano to keep private keys in a most safe way.
+It's recommended to use Ledger Nano S
 - *ERC-20 Tokens* - supports major ERC-20 tokens out of box, and a user can enable support for any ERC-20 compatible token in the Wallet by providing an address
-- *Secure Key Storage* = stores all private keys either in a local secure vault. Private keys are encrypted and are not transferred to another node even when Light mode is used
+- *Secure Key Storage* = stores all private keys either in a local secure vault.
+Private keys are encrypted and are not transferred to another node even when Light mode is used
 - *Multiplatform* - compatible with major OSes, and builds for Windows, Macos and Linux are provided to download
 
 
-Official website: https://emeraldwallet.io
+Official website: https://emerald.cash
 
 == Development instructions
 
@@ -32,9 +34,7 @@ The project is based on
 - React + Redux
 - Rust for some modules
 
-The recommended way to assert that you are using the correct version of node is to use https://github.com/nodenv/nodenv[nodenv],
-which will shim the `node` and `npm` commands and assert that the `local` version is set to what is
-specified in https://github.com/ETCDEVTeam/emerald-wallet/blob/master/.node-version[.node-version].
+The recommended way to assert that you are using the correct version of node is to use https://github.com/nodenv/nodenv[nodenv], which will shim the `node` and `npm` commands and assert that the `local` version is set to what is specified in https://github.com/emeraldpay/emerald-wallet/blob/master/.node-version[.node-version].
 
 Once nodenv is installed:
 
@@ -155,33 +155,29 @@ yarn test
 
 === Submit Bug
 
-https://github.com/ETCDEVTeam/emerald-wallet/issues/new
+https://github.com/emeraldpay/emerald-wallet/issues/new
 
 === Contact Support
 
-https://emeraldwallet.io/support
+https://emerald.cash/support
 
 === Chat
 
-Chat with us via Gitter: https://gitter.im/etcdev-public/Lobby
+Chat with us via Gitter: https://gitter.im/emeraldpay/community
 
 === Submit Security Issue
 
-Email to security@etcdevteam.com
-
+Email to security@emerald.cash
 
 == License
 
-Copyright 2019 ETCDEV GmbH
+Copyright 2020 EmeraldPay, Inc
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
+Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
 
 http://www.apache.org/licenses/LICENSE-2.0
 
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
