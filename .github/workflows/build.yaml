@@ -23,8 +23,9 @@ jobs:
         with:
           versionSpec: '5.3.x'
 
+        # step id used as reference for output values
       - name: Use GitVersion
-        id: gitversion # step id used as reference for output values
+        id: gitversion
         uses: gittools/actions/gitversion/execute@v0.9.3
 
       - name: Show Version
@@ -79,7 +80,6 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: dist
-          #          "packages/desktop/dist/*.dmg"
           path: |
             packages/desktop/dist/*.zip
             packages/desktop/dist/*.dmg

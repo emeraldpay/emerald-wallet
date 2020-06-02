@@ -34,6 +34,7 @@ jobs:
         run: sudo apt-get install libusb-1.0-0-dev libcurl3 xvfb
         if: runner.os == 'Linux'
 
+        # Needed for Electron tests
       - name: Setup Display
         run: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
         if: runner.os == 'Linux'
