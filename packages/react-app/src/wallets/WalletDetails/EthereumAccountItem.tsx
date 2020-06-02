@@ -60,14 +60,16 @@ export const EthereumAccountItem = ((props: IRenderProps & IDispatchProps) => {
       <Grid container={true} direction={'column'} alignItems={'stretch'}>
         <Grid container={true} alignItems={'center'}>
           <Grid item={true} xs={1}>
-            <CoinAvatar chain={blockchainCode} />
+            <CoinAvatar chain={blockchainCode}/>
           </Grid>
           <Grid item={true} xs={5}>
+            {account.address &&
             <AddressField
               name={blockchain.getTitle()}
               identity={false}
               address={account.address!}
             />
+            }
           </Grid>
           <Grid item={true} xs={3}>
             <AccountBalance

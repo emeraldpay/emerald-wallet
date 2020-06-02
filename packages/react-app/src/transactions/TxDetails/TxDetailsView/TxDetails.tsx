@@ -1,5 +1,5 @@
-import { AccountId } from '@emeraldpay/emerald-vault-core';
-import { convert } from '@emeraldplatform/core';
+import {EntryId} from '@emeraldpay/emerald-vault-core';
+import {convert} from '@emeraldplatform/core';
 import { Wei } from '@emeraldplatform/eth';
 import { Account, ButtonGroup, Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
@@ -48,8 +48,8 @@ export interface ITxDetailsProps {
   fiatCurrency?: string;
   goBack?: (a?: any) => void;
   openAccount?: (a?: any) => void;
-  fromAccount?: AccountId;
-  toAccount?: AccountId;
+  fromAccount?: EntryId;
+  toAccount?: EntryId;
   rates?: Map<string, number>;
   transaction: any;
   tokenSymbol: string;

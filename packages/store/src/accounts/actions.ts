@@ -123,10 +123,10 @@ function createWalletWithAccount (
   dispatch: Dispatch<any>,
   blockchain: BlockchainCode,
   walletName: string = '',
-  add: vault.AddAccount
+  add: vault.AddEntry
 ): { walletId: vault.Uuid, accountId: string } {
   const walletId = api.vault.addWallet(walletName);
-  const accountId = api.vault.addAccount(walletId, add);
+  const accountId = api.vault.addEntry(walletId, add);
   const wallet = api.vault.getWallet(walletId)!;
 
   dispatch(walletCreatedAction(wallet));
@@ -170,7 +170,7 @@ export function createAccount (
 ): Dispatched<IWalletCreatedAction> {
   return (dispatch: any, getState, extra) => {
 
-    const addRequest: vault.AddAccount = {
+    const addRequest: vault.AddEntry = {
       blockchain: blockchainCodeToId(blockchain),
       type: 'generate-random',
       password: passphrase
@@ -182,13 +182,13 @@ export function createAccount (
   };
 }
 
-export function exportPrivateKey (passphrase: string, accountId: vault.AccountId): any {
+export function exportPrivateKey(passphrase: string, accountId: vault.EntryId): any {
   return (dispatch: any, getState: any, extra: IExtraArgument) => {
     return extra.backendApi.exportRawPrivateKey(accountId, passphrase);
   };
 }
 
-export function exportKeyFile (accountId: vault.AccountId): any {
+export function exportKeyFile(accountId: vault.EntryId): any {
   return (dispatch: any, getState: any, extra: IExtraArgument) => {
     return extra.backendApi.exportJsonKeyFile(accountId);
   };
@@ -289,7 +289,7 @@ export function importMnemonic (
     }
     const walletService = new WalletService(extra.api.vault);
     const seedId = walletService.importMnemonic(mnemonic, passphrase);
-    const addRequest: vault.AddAccount = {
+    const addRequest: vault.AddEntry = {
       blockchain: blockchainCodeToId(blockchain),
       type: 'hd-path',
       key: {

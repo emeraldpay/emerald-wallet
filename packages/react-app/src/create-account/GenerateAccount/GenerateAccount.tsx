@@ -1,5 +1,5 @@
-import { AccountId, Uuid } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode } from '@emeraldwallet/core';
+import {EntryId, Uuid} from '@emeraldpay/emerald-vault-core';
+import {BlockchainCode} from '@emeraldwallet/core';
 import { accounts, screen } from '@emeraldwallet/store';
 import * as React from 'react';
 import { WithTranslation, withTranslation } from 'react-i18next';
@@ -25,7 +25,7 @@ interface IGenAccProps {
 interface IState {
   loading: boolean;
   page: number;
-  accountId: AccountId;
+  accountId: EntryId;
   walletId: Uuid;
   passphrase?: string;
   privateKey?: string;

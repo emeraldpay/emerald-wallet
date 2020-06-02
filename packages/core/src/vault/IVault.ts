@@ -1,6 +1,6 @@
 import {
-  AccountId,
-  AddAccount,
+  EntryId,
+  AddEntry,
   SeedDefinition,
   SeedDescription,
   UnsignedTx,
@@ -12,27 +12,36 @@ import Wallet from '../entities/Wallet';
 import { Account, Contact, TxSignRequest } from './types';
 
 export default interface IVault {
-  listWallets (): Wallet[];
-  addWalletWithSeed (seedId: string, label: string | undefined): Uuid;
-  addWallet (label: string | undefined): Uuid;
-  getWallet (id: Uuid): Wallet | undefined;
-  setWalletLabel (walletId: Uuid, label: string): boolean;
-  addAccount (walletId: Uuid, account: AddAccount): AccountId;
+  listWallets(): Wallet[];
+
+  addWalletWithSeed(seedId: string, label: string | undefined): Uuid;
+
+  addWallet(label: string | undefined): Uuid;
+
+  getWallet(id: Uuid): Wallet | undefined;
+
+  setWalletLabel(walletId: Uuid, label: string): boolean;
+
+  addEntry(walletId: Uuid, account: AddEntry): EntryId;
 
   // export account data
-  exportJsonPrivateKey (accountFullId: AccountId, password?: string): Promise<string>;
-  exportRawPrivateKey (accountFullId: AccountId, password: string): Promise<string>;
+  exportJsonPrivateKey(accountFullId: EntryId, password?: string): Promise<string>;
 
-  generateMnemonic (size: number): string;
-  importSeed (seed: SeedDefinition): Uuid;
+  exportRawPrivateKey(accountFullId: EntryId, password: string): Promise<string>;
+
+  generateMnemonic(size: number): string;
+
+  importSeed(seed: SeedDefinition): Uuid;
 
   // Signing
-  signTx (accountFullId: AccountId, tx: UnsignedTx, password?: string): string;
+  signTx(accountFullId: EntryId, tx: UnsignedTx, password?: string): string;
 
-  getConnectedHWSeed (create: boolean): SeedDescription | undefined;
+  getConnectedHWSeed(create: boolean): SeedDescription | undefined;
 
   // Address Book API
-  listAddressBook (blockchain: BlockchainCode): AddressBookItem[];
-  addToAddressBook (item: AddressBookItem): boolean;
-  removeFromAddressBook (blockchain: BlockchainCode, address: string): boolean;
+  listAddressBook(blockchain: BlockchainCode): AddressBookItem[];
+
+  addToAddressBook(item: AddressBookItem): boolean;
+
+  removeFromAddressBook(blockchain: BlockchainCode, address: string): boolean;
 }

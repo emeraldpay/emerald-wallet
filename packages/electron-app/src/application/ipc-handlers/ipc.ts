@@ -93,20 +93,20 @@ export function setIpcHandlers (app: Application) {
 
   ipcMain.handle(Commands.ACCOUNT_IMPORT_ETHEREUM_JSON,
     (event: any, blockchain: BlockchainCode, json: any) => {
-      const addAccount: vault.AddAccount = {
+      const addAccount: vault.AddEntry = {
         blockchain: blockchainCodeToId(blockchain),
         type: 'ethereum-json',
         key: JSON.stringify(json)
       };
       const walletName = Blockchains[blockchain].getTitle();
       const walletId = app.vault!.addWallet(walletName);
-      const accountId = app.vault?.addAccount(walletId, addAccount);
+      const accountId = app.vault?.addEntry(walletId, addAccount);
       return walletId;
     });
 
   ipcMain.handle(Commands.ACCOUNT_IMPORT_PRIVATE_KEY,
     (event: any, blockchain: BlockchainCode, pk: string, password: string) => {
-      const addAccount: vault.AddAccount = {
+      const addAccount: vault.AddEntry = {
         blockchain: blockchainCodeToId(blockchain),
         type: 'raw-pk-hex',
         key: pk,
@@ -114,7 +114,7 @@ export function setIpcHandlers (app: Application) {
       };
       const walletName = Blockchains[blockchain].getTitle();
       const walletId = app.vault!.addWallet(walletName);
-      const accountId = app.vault?.addAccount(walletId, addAccount);
+      const accountId = app.vault?.addEntry(walletId, addAccount);
       return walletId;
     });
 
@@ -124,7 +124,7 @@ export function setIpcHandlers (app: Application) {
       if (!wallet || !wallet.seedId) {
         throw Error('Invalid wallet provided');
       }
-      const addAccount: vault.AddAccount = {
+      const addAccount: vault.AddEntry = {
         blockchain: blockchainCodeToId(blockchain),
         type: 'hd-path',
         key: {
@@ -134,7 +134,7 @@ export function setIpcHandlers (app: Application) {
         },
         password
       };
-      return app.vault?.addAccount(walletId, addAccount);
+      return app.vault?.addEntry(walletId, addAccount);
     });
 
   ipcMain.handle(Commands.ACCOUNT_EXPORT_RAW_PRIVATE,

@@ -17,7 +17,7 @@
     "storybook": "start-storybook -p 9001 -c .storybook"
   },
   "dependencies": {
-    "@emeraldpay/emerald-vault-core": "^0.5.1-rc4",
+    "@emeraldpay/emerald-vault-core": "^0.5.1-rc6",
     "@emeraldplatform/core": "0.5.8",
     "@emeraldplatform/eth": "0.5.1",
     "@emeraldplatform/ui": "0.6.0",
