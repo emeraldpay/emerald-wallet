@@ -14,7 +14,7 @@ jobs:
         with:
           node-version: "12.x"
 
-      - name: Instal license checker
+      - name: Install license checker
         run: npm install -g js-green-licenses
 
       - name: Check licenses
