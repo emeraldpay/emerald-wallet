@@ -1,0 +1,68 @@
+name: Builds
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: Build ${{ matrix.os }}
+    strategy:
+      matrix:
+        # windows-2016 - because windows-latest comes with MSVC++ 14.25 (Visual Studio 2019 Version 16.5), which is
+        # incompatible with librocksdb-sys v5.18.3
+        os: ["windows-2016", "macos-latest", "ubuntu-latest"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Install GitVersion
+        uses: gittools/actions/gitversion/setup@v0.9.2
+
+      - name: Use GitVersion
+        id: gitversion # step id used as reference for output values
+        uses: gittools/actions/gitversion/execute@v0.9.2
+
+      - name: Show Version
+        run: |
+          - echo "Major: ${{ steps.gitversion.outputs.fullSemVer }}-${{ steps.gitversion.outputs.shortSha }}"
+
+      - name: Setup App Version
+        run: |
+          - echo "{" > packages/desktop/gitversion.json
+          - echo "\"BuildMetaDataPadded\":\"0001\"," > packages/desktop/gitversion.json
+          - echo "\"SemVer\":\"${{ steps.gitversion.outputs.semVer }}\"," > packages/desktop/gitversion.json
+          - echo "\"FullSemVer\":\"${{ steps.gitversion.outputs.fullSemVer }}\"," > packages/desktop/gitversion.json
+          - echo "\"ShortSha\":\"${{ steps.gitversion.outputs.shortSha }}\"," > packages/desktop/gitversion.json
+          - echo "\"CommitDate\":\"${{ steps.gitversion.outputs.commitDate }}\"" > packages/desktop/gitversion.json
+          - echo "}" > packages/desktop/gitversion.json
+
+      - name: Show App Version
+        run: cat packages/desktop/gitversion.json
+
+      - name: Install Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Install LLVM
+        run: choco install -y llvm
+        if: runner.os == 'Windows'
+
+      - name: Install system libs
+        run: sudo apt-get install libusb-1.0-0-dev libcurl3 xvfb
+        if: runner.os == 'Linux'
+
+      - name: Install Global JS componebts
+        run: npm install -g node-gyp codecov yarn lerna typescript
+
+      - name: Instal; JS dependencies
+        run: yarn install
+
+      - name: Build
+        run: yarn build
