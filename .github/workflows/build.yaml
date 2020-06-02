@@ -79,4 +79,4 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: dist
-          path: packages/desktop/dist/
+          path: packages/desktop/dist/*.(zip|dmg|exe|deb|tar.gz|AppImage)
