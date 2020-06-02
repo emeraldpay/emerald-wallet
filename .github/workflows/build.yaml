@@ -76,7 +76,7 @@ jobs:
           APP_VERSION_GIT_TAG: "${{ steps.gitversion.outputs.fullSemVer }}-${{ steps.gitversion.outputs.shortSha }}"
 
       - name: Archive production artifacts
-        uses: actions/upload-artifact@v1
+        uses: actions/upload-artifact@v2
         with:
           name: dist
           path: "packages/desktop/dist/*.dmg"
