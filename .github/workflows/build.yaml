@@ -14,8 +14,14 @@ jobs:
       - name: Checkout the code
         uses: actions/checkout@v2
 
+        # needed for GitVersion
+      - name: Fetch all history
+        run: git fetch --prune --unshallow
+
       - name: Install GitVersion
         uses: gittools/actions/gitversion/setup@v0.9.2
+        with:
+          versionSpec: '5.3.x'
 
       - name: Use GitVersion
         id: gitversion # step id used as reference for output values
