@@ -79,10 +79,11 @@ jobs:
         uses: actions/upload-artifact@v2
         with:
           name: dist
-          path: "packages/desktop/dist/*.dmg"
-#            packages/desktop/dist/*.zip
-#            packages/desktop/dist/*.dmg
-#            packages/desktop/dist/*.exe
-#            packages/desktop/dist/*.deb
-#            packages/desktop/dist/*.tar.gz
-#            packages/desktop/dist/*.AppImage
+          #          "packages/desktop/dist/*.dmg"
+          path: |
+            packages/desktop/dist/*.zip
+            packages/desktop/dist/*.dmg
+            packages/desktop/dist/*.exe
+            packages/desktop/dist/*.deb
+            packages/desktop/dist/*.tar.gz
+            packages/desktop/dist/*.AppImage
