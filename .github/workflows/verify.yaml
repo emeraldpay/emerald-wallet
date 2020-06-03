@@ -1,0 +1,21 @@
+name: Verify
+on: [push, pull_request]
+
+jobs:
+  verify-license:
+    name: Verify Licenses
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Install Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
+
+      - name: Install license checker
+        run: npm install -g js-green-licenses
+
+      - name: Check licenses
+        run: jsgl --local .

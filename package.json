@@ -1,6 +1,7 @@
 {
   "name": "emerald-wallet",
   "private": true,
+  "license": "Apache-2.0",
   "scripts": {
     "clean:node_modules": "rimraf node_modules packages/*/node_modules",
     "build": "lerna run build --stream",

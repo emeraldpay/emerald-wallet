@@ -1,0 +1,14 @@
+{
+  "packageWhitelist": [
+    //MIT
+    "coinstring",
+    //MIT
+    "bs58",
+    //MIT
+    "buffers",
+    //CC
+    "bzip-deflate",
+    //MIT
+    "keybase-ecurve"
+  ]
+}

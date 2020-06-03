@@ -1,0 +1,57 @@
+name: Unit Tests
+on: [push, pull_request]
+
+jobs:
+  test:
+    name: On ${{ matrix.os }}
+    strategy:
+      matrix:
+        # windows-2016 - because windows-latest comes with MSVC++ 14.25 (Visual Studio 2019 Version 16.5), which is
+        # incompatible with librocksdb-sys v5.18.3
+        os: ["windows-2016", "macos-latest", "ubuntu-latest"]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout the code
+        uses: actions/checkout@v2
+
+      - name: Setup caches for Yarn
+        uses: c-hive/gha-yarn-cache@v1
+
+      - name: Install Node.js
+        uses: actions/setup-node@v1
+        with:
+          node-version: "12.x"
+
+      - name: Install Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          profile: minimal
+          toolchain: stable
+          override: true
+
+      - name: Install LLVM
+        run: choco install -y llvm
+        if: runner.os == 'Windows'
+
+      - name: Install system libs
+        run: sudo apt-get install libusb-1.0-0-dev libcurl3 xvfb
+        if: runner.os == 'Linux'
+
+        # Needed for Electron tests
+      - name: Setup Display
+        run: Xvfb :99 -screen 0 1024x768x24 > /dev/null 2>&1 &
+        if: runner.os == 'Linux'
+
+      - name: Install Global JS componebts
+        run: npm install -g node-gyp codecov yarn lerna typescript
+
+      - name: Install JS dependencies
+        run: yarn install
+
+      - name: Build
+        run: yarn build
+
+      - name: Test
+        run: yarn test:coverage
+        env:
+          DISPLAY: ':99.0'
