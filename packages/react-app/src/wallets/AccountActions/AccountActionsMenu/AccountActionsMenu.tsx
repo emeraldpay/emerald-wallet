@@ -96,11 +96,11 @@ export class AccountActionsMenu extends React.Component<IProps, IState> {
         >
           <MoreHorizontalIcon/>
         </IconButton>
-        <Popper open={open} anchorEl={this.anchorEl} keepMounted={true} transition={true}>
-          {({ TransitionProps, placement }) => (
+        <Popper open={open} anchorEl={this.anchorEl} keepMounted={false} transition={true}>
+          {({TransitionProps, placement}) => (
             <Grow
               {...TransitionProps}
-              style={{ transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom' }}
+              style={{transformOrigin: placement === 'bottom' ? 'center top' : 'center bottom'}}
             >
               <Paper>
                 <ClickAwayListener onClickAway={this.handleClose}>
