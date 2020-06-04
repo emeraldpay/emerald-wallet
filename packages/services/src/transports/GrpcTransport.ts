@@ -43,8 +43,31 @@ class GrpcTransport implements Transport {
         const result: any[] = [];
         response.on('data', (data: NativeCallReplyItem) => {
           const bytes: Uint8Array = data.getPayload_asU8();
-          const json = JSON.parse(decoder.decode(bytes));
-          result.push(json);
+          var json = null;
+          if (bytes.byteLength > 0) {
+            json = JSON.parse(decoder.decode(bytes));
+          }
+          // dshackle doesn't return whole JSON now, only result
+          // but for compatibility check if connected to an old dshackle
+          if (json && json.jsonrpc == "2.0") {
+            //TODO old way, remove this whole branch after August 2020
+            result.push(json);
+          } else {
+            let error = null;
+            if (!data.getSucceed()) {
+              error = {
+                code: -32000,
+                message: data.getErrormessage()
+              };
+            }
+            const full = {
+              jsonrpc: "2.0",
+              id: data.getId(),
+              result: json,
+              error
+            }
+            result.push(full);
+          }
         });
         response.on('end', () => {
           resolve(result);
