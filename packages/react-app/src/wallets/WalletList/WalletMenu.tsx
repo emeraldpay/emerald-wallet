@@ -51,9 +51,9 @@ function WalletMenu (props: IDispatchProps) {
         </MenuItem>
         <MenuItem onClick={onAddAccount}>
           <ListItemIcon>
-            <AddCircleOutlineIcon fontSize='small' />
+            <AddCircleOutlineIcon fontSize='small'/>
           </ListItemIcon>
-          <Typography variant='inherit'>Add currency</Typography>
+          <Typography variant='inherit'>Setup Supported Coins</Typography>
         </MenuItem>
         <MenuItem>
           <ListItemIcon>
