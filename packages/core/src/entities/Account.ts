@@ -6,6 +6,7 @@ export default class Account {
   public address?: string;
   public hdPath?: string;
   public seedId?: string;
+  public isHardware: boolean = false;
 
   constructor (id: string, blockchain: BlockchainCode) {
     this.id = id;

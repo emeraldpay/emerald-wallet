@@ -124,9 +124,16 @@ export class Vault implements IVault {
         id: a.id,
         address: a.address,
         seedId: (a.key as vault.SeedPKRef)?.seedId,
-        hdPath: (a.key as vault.SeedPKRef)?.hdPath
+        hdPath: (a.key as vault.SeedPKRef)?.hdPath,
+        isHardware: false
       };
     });
+    const seeds = this.provider.listSeeds();
+    newWallet.accounts
+      .filter((acc) => typeof acc.seedId == 'string')
+      .forEach((acc) => {
+        acc["isHardware"] = seeds.find((seed) => seed.id == acc.seedId)?.type == "ledger";
+      })
     if (w.reserved && w.reserved.length > 0) {
       newWallet.seedId = w.reserved[0].seedId;
       newWallet.hdAccount = w.reserved[0].accountId;

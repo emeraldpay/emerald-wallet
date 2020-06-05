@@ -5,6 +5,7 @@ export const styles = {
   formRow: {
     display: 'flex',
     marginBottom: '19px',
+    paddingTop: '10px',
     alignItems: 'center'
   },
   left: {
