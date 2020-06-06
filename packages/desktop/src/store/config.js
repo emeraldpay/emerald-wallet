@@ -13,4 +13,4 @@ export const intervalRates = {
   continueRefreshLongRate: 60 * second, // 5 o'clock somewhere.
 };
 
-export const TERMS_VERSION = '2019-02-12';
+export const TERMS_VERSION = '2020-06-06';

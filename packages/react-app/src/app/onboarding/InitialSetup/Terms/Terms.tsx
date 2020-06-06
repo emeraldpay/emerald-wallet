@@ -20,11 +20,11 @@ export const Terms = ({ onAgree }: IProps) => {
         <div style={style}>
           <p>
             End-User License Agreement for Emerald Wallet<br/>
-            Last updated: 12 February 2019
+            Last updated: 6 June 2020
           </p>
           <p>
             This End-User License Agreement (&quot;EULA&quot; or &quot;AGREEMENT&quot;) is a legal agreement between
-            you (either an individual or a single entity) and ETCDEV GmbH (&quot;COMPANY&quot;), including all
+            you (either an individual or a single entity) and EmeraldPay, Inc (&quot;COMPANY&quot;), including all
             contributors to source code of this Software identified above, which includes computer software and
             may include associated media, printed materials, and “online” or electronic documentation (“SOFTWARE”).
           </p>
@@ -71,7 +71,7 @@ export const Terms = ({ onAgree }: IProps) => {
           </p>
           <p>
             THE SOFTWARE IS PROVIDED ON AN &quot;AS IS&quot; BASIS, AND NO WARRANTY, EITHER EXPRESS OR IMPLIED,
-            IS GIVEN. YOUR USE OF THE SOFTWARE IS AT YOUR SOLE RISK. AUTHORS do not warrant that (i)
+            IS GIVEN. YOUR USE OF THE SOFTWARE IS AT YOUR SOLE RISK. COMPANY do not warrant that (i)
             the SOFTWARE will meet your specific requirements; (ii) the SOFTWARE is fully compatible
             with any particular platform; (iii) your use of the SOFTWARE will be uninterrupted, timely,
             secure, or error-free; (iv) the results that may be obtained from the use of the SOFTWARE
@@ -80,11 +80,11 @@ export const Terms = ({ onAgree }: IProps) => {
             expectations; or (vi) any errors in the SOFTWARE will be corrected.
           </p>
           <p>
-            YOU EXPRESSLY UNDERSTAND AND AGREE THAT AUTHORS SHALL NOT BE LIABLE FOR ANY DIRECT,
+            YOU EXPRESSLY UNDERSTAND AND AGREE THAT THE COMPANY SHALL NOT BE LIABLE FOR ANY DIRECT,
             INDIRECT, INCIDENTAL, SPECIAL, CONSEQUENTIAL OR EXEMPLARY DAMAGES, INCLUDING BUT NOT
             LIMITED TO, DAMAGES FOR LOSS OF PROFITS, GOODWILL, USE, DATA OR OTHER INTANGIBLE LOSSES
-            (EVEN IF AUTHORS OR ETHEREUM CLASSIC MEMBERS HAS BEEN ADVISED OF THE POSSIBILITY OF
-            SUCH DAMAGES) RELATED TO THE SOFTWARE, including, for example: (i) the use or the inability
+            (EVEN IF THE COMPANY HAS BEEN ADVISED OF THE POSSIBILITY OF SUCH DAMAGES) RELATED TO THE SOFTWARE,
+            including, for example: (i) the use or the inability
             to use the SOFTWARE; (ii) the cost of procurement of substitute goods and services
             resulting from any goods,
             data, information or services purchased or obtained or messages received or transactions
