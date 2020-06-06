@@ -7,7 +7,7 @@ export default connect(
   null,
   (dispatch, ownProps) => ({
     onAboutClick () {
-      const url = 'https://emeraldwallet.io/coins';
+      const url = 'https://go.emrld.io/supported-coins';
       dispatch(screen.actions.openLink(url));
     },
     onCreateWallet () {

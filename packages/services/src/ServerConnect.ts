@@ -52,7 +52,7 @@ class ServerConnect implements IServerConnect {
 
   public init (versions: any) {
     const details = [os.platform(), os.release(), os.arch(), this.locale].join('; ');
-    this.headers['User-Agent'] = `Electron/${versions.electron} (${details}) EmeraldWallet/${this.appVersion} (+https://emeraldwallet.io) Chrome/${versions.chrome} node-fetch/1.0`;
+    this.headers['User-Agent'] = `Electron/${versions.electron} (${details}) EmeraldWallet/${this.appVersion} (+https://emerald.cash) Chrome/${versions.chrome} node-fetch/1.0`;
   }
 
   public createHttpTransport (url: string) {

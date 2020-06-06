@@ -21,17 +21,17 @@ class AboutContainer extends React.Component {
   }
 
   helpClick = () => {
-    const url = 'https://emeraldwallet.io/support';
+    const url = 'https://go.emrld.io/support';
     shell.openExternal(url);
   };
 
   licenseClick = () => {
-    const url = 'https://github.com/ETCDEVTeam/emerald-wallet/blob/master/LICENSE';
+    const url = 'https://github.com/emeraldpay/emerald-wallet/blob/master/LICENSE';
     shell.openExternal(url);
   };
 
   onButtonClick = () => {
-    const url = 'https://emeraldwallet.io';
+    const url = 'https://emerald.cash';
     shell.openExternal(url);
   };
 

@@ -148,7 +148,7 @@ export class EmeraldApiAccess implements IEmeraldClient {
     const platform = [os.platform(), os.release(), os.arch(), appParams.locale].join('; ');
     const agent = [
       `Electron/${appParams.electronVer} (${platform})`,
-      `EmeraldWallet/${appParams.version} (+https://emeraldwallet.io)`,
+      `EmeraldWallet/${appParams.version} (+https://emerald.cash)`,
       `Chrome/${appParams.chromeVer}`
     ];
     this.connectionState = {

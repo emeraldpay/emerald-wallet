@@ -2,7 +2,7 @@
   "name": "@emeraldwallet/desktop2",
   "productName": "EmeraldWallet",
   "contributors": [
-    "Igor Artamonov <splix@etcdevteam.com>",
+    "Igor Artamonov <splix@emerald.cash>",
     "Yuriy Gagarin <gagarin55@protonmail.com>"
   ],
   "version": "2.1.2",
@@ -15,7 +15,7 @@
     "blockchain"
   ],
   "author": "gagarin55 <gagarin55@protonmail.com>",
-  "homepage": "https://emeraldpay.io",
+  "homepage": "https://emerald.cash",
   "license": "Apache-2.0",
   "publishConfig": {
     "access": "public"
@@ -32,7 +32,7 @@
     "dist": "rimraf dist/ && electron-builder --publish never"
   },
   "bugs": {
-    "url": "https://github.com/gagarin55/emerald-wallet/issues"
+    "url": "https://github.com/emeraldpay/emerald-wallet/issues"
   },
   "main": "electron.js",
   "devDependencies": {

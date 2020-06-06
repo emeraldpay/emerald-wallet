@@ -62,7 +62,7 @@ export default connect<any, any, any, IState>(
         });
     },
     onClickBuyLedger: () => {
-      dispatch(screen.actions.openLink('https://emeraldwallet.io/ledger-hardware-wallet'));
+      dispatch(screen.actions.openLink('https://go.emrld.io/buy-ledger'));
     },
     onCancel: () => {
       if (ownProps.onBackScreen) {

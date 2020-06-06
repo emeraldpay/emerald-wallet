@@ -4,10 +4,10 @@
   "private": true,
   "author": {
     "name": "Igor Artamonov",
-    "email": "splix@etcdevteam.com"
+    "email": "splix@emerald.cash"
   },
   "contributors": [
-    "Igor Artamonov <splix@etcdevteam.com>",
+    "Igor Artamonov <splix@emerald.cash>",
     "Elaine Ou <elaine@ethereumclassic.org>",
     "Yuriy Gagarin <gagarin55@protonmail.com>",
     "Isaac Ardis",
@@ -40,24 +40,22 @@
     "build:dist": "yarn dist"
   },
   "keywords": [
-    "react",
     "blockchain",
     "ethereum",
     "ethereum classic",
-    "etc",
     "dapp",
     "wallet",
     "cryptocurrency"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/ETCDEVTeam/emerald-wallet.git"
+    "url": "https://github.com/emeraldpay/emerald-wallet.git"
   },
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/ETCDEVTeam/emerald-wallet/issues"
+    "url": "https://github.com/emeraldpay/emerald-wallet/issues"
   },
-  "homepage": "https://github.com/ETCDEVTeam/emerald-wallet",
+  "homepage": "https://github.com/emeraldpay/emerald-wallet",
   "workspaces": {
     "nohoist": [
       "electron-rebuild",
@@ -150,20 +148,24 @@
     "directories": {
       "buildResources": "resources"
     },
-    "appId": "io.emeraldwallet.desktop",
+    "appId": "cash.emerald.desktop-wallet",
     "artifactName": "${productName}-${os}-${arch}-${env.APP_VERSION_GIT_TAG}.${ext}",
     "compression": "normal",
     "asar": true,
     "extraResources": [],
+    "files": [
+      "!**/\\.emerald-dev*/**"
+    ],
     "mac": {
-      "category": "public.app-category.developer-tools"
+      "category": "public.app-category.finance"
     },
     "linux": {
       "target": [
         "AppImage",
         "deb",
         "tar.gz"
-      ]
+      ],
+      "category": "Office"
     },
     "win": {
       "icon": "resources/icon.ico"
