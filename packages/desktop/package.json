@@ -40,11 +40,9 @@
     "build:dist": "yarn dist"
   },
   "keywords": [
-    "react",
     "blockchain",
     "ethereum",
     "ethereum classic",
-    "etc",
     "dapp",
     "wallet",
     "cryptocurrency"
@@ -150,20 +148,24 @@
     "directories": {
       "buildResources": "resources"
     },
-    "appId": "io.emeraldwallet.desktop",
+    "appId": "cash.emerald.desktop-wallet",
     "artifactName": "${productName}-${os}-${arch}-${env.APP_VERSION_GIT_TAG}.${ext}",
     "compression": "normal",
     "asar": true,
     "extraResources": [],
+    "files": [
+      "!**/\\.emerald-dev*/**"
+    ],
     "mac": {
-      "category": "public.app-category.developer-tools"
+      "category": "public.app-category.finance"
     },
     "linux": {
       "target": [
         "AppImage",
         "deb",
         "tar.gz"
-      ]
+      ],
+      "category": "Office"
     },
     "win": {
       "icon": "resources/icon.ico"
