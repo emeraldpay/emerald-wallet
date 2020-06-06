@@ -1,5 +1,14 @@
 name: Verify
-on: [push, pull_request]
+
+on:
+  # if pushed directly to the master
+  push:
+    branches:
+      - master
+  # on a pull request
+  pull_request:
+    branches:
+      - master
 
 jobs:
   verify-license:
