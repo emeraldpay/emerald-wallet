@@ -43,17 +43,17 @@ const AboutDialog = (props: IRenderProps & IDispatchProps) => {
   }, []);
 
   const helpClick = () => {
-    const url = 'https://emeraldpay.io/support';
+    const url = 'https://go.emrld.io/support';
     openUrl(url);
   };
 
   const licenseClick = () => {
-    const url = 'https://github.com/ETCDEVTeam/emerald-wallet/blob/master/LICENSE';
+    const url = 'https://github.com/emeraldpay/emerald-wallet/blob/master/LICENSE';
     openUrl(url);
   };
 
   const onButtonClick = () => {
-    const url = 'https://emeraldpay.io';
+    const url = 'https://emerald.cash';
     openUrl(url);
   };
 

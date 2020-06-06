@@ -54,12 +54,12 @@ export class About extends React.Component<IProps> {
           OS: {osVersion.arch} {osVersion.platform} {osVersion.release}<br/>
         </div>
         <div style={{ fontSize: '14px', marginTop: '80px' }}>
-          <div style={{ paddingBottom: '5px' }}>
-            Website <a onClick={onButtonClick} href='#' className={classes.links}>https://emeraldwallet.io</a>
+          <div style={{paddingBottom: '5px'}}>
+            Website <a onClick={onButtonClick} href='#' className={classes.links}>https://emerald.cash</a>
           </div>
-          <div style={{ paddingBottom: '5px' }}>Copyright &copy; 2017-{year} ETCDEV GmbH</div>
+          <div style={{paddingBottom: '5px'}}>Copyright &copy; {year} EmeraldPay, Inc</div>
           <div> Licensed under <a onClick={onLicenseClick} className={classes.links} href='#'>Apache License 2.0</a>
-            <span style={{ float: 'right', textAlign: 'right' }}>
+            <span style={{float: 'right', textAlign: 'right'}}>
               <a onClick={onHelpClick} href='#' className={classes.links}>Help & Support</a>
             </span>
           </div>

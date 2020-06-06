@@ -41,7 +41,7 @@ describe('isLatest', () => {
   });
 
   it('returns a download link', (done) => {
-    const stubDownloadLink = 'https://emeraldwallet.io/download';
+    const stubDownloadLink = 'https://go.emrld.io/download';
     fetch.mockResponse(JSON.stringify({releases: {'emerald-wallet': {version: '1.2.3'}}}));
     getWalletVersion().then(({downloadLink}) => {
       expect(downloadLink).toBe(stubDownloadLink);

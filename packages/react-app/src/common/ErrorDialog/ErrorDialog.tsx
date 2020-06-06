@@ -25,7 +25,7 @@ export default connect(
     handleSubmit: (error: Error) => {
       const title = encodeURIComponent(error.message);
       const body = encodeURIComponent(`\`\`\` \n${error.stack}\n \`\`\``);
-      const buttonLink = `https://emeraldwallet.io/support?title=${title}&body=${body}`;
+      const buttonLink = `https://go.emrld.io/support?title=${title}&body=${body}`;
       dispatch(screen.actions.openLink(buttonLink));
     }
   })

@@ -4,10 +4,10 @@
   "private": true,
   "author": {
     "name": "Igor Artamonov",
-    "email": "splix@etcdevteam.com"
+    "email": "splix@emerald.cash"
   },
   "contributors": [
-    "Igor Artamonov <splix@etcdevteam.com>",
+    "Igor Artamonov <splix@emerald.cash>",
     "Elaine Ou <elaine@ethereumclassic.org>",
     "Yuriy Gagarin <gagarin55@protonmail.com>",
     "Isaac Ardis",
@@ -51,13 +51,13 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/ETCDEVTeam/emerald-wallet.git"
+    "url": "https://github.com/emeraldpay/emerald-wallet.git"
   },
   "license": "Apache-2.0",
   "bugs": {
-    "url": "https://github.com/ETCDEVTeam/emerald-wallet/issues"
+    "url": "https://github.com/emeraldpay/emerald-wallet/issues"
   },
-  "homepage": "https://github.com/ETCDEVTeam/emerald-wallet",
+  "homepage": "https://github.com/emeraldpay/emerald-wallet",
   "workspaces": {
     "nohoist": [
       "electron-rebuild",
