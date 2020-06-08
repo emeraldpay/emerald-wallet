@@ -65,6 +65,7 @@ export function getMainWindow (app: Application, options: any): BrowserWindow {
     return mainWindow;
   }
   mainWindow = createWindow(app, options);
+  app.setWebContents(mainWindow.webContents);
   mainWindow.on('closed', () => {
     // Dereference the window object, usually you would store windows
     // in an array if your app supports multi windows, this is the time

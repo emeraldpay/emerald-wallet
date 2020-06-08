@@ -104,7 +104,14 @@ app.on('ready', () => {
   application.run(browserWindow.webContents, apiAccess, apiMode, vault.getProvider(), rpcConns);
 
   onceReady(() => {
-    sendMode(browserWindow.webContents, apiMode);
+    let webContents = getMainWindow(application, options).webContents;
+    if (webContents != null) {
+      try {
+        sendMode(webContents, apiMode);
+      } catch (e) {
+        log.warn("Cannot send to the UI", e)
+      }
+    }
   });
 
 

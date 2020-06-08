@@ -1,7 +1,13 @@
+import {WebContents} from "electron";
+
 export interface IService {
   readonly id: string;
-  start (): void;
-  stop (): void;
+
+  start(): void;
+
+  stop(): void;
+
+  setWebContents(webContents: WebContents): void;
 }
 
 export class Services {
@@ -21,9 +27,16 @@ export class Services {
     });
   }
 
-  public stop () {
+  public stop() {
     this.services.forEach((svc) => {
       svc.stop();
     });
   }
+
+  setWebContents(webContents: Electron.WebContents): void {
+    this.services.forEach((service) =>
+      service.setWebContents(webContents)
+    )
+  }
+
 }

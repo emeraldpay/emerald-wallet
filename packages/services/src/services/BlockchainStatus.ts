@@ -1,15 +1,16 @@
 import { blockchains } from '@emeraldwallet/store';
 import { ChainListener } from '../ChainListener';
-import { IService } from './Services';
+import {IService} from './Services';
+import {WebContents} from 'electron';
 
 export class BlockchainStatus implements IService {
   public id: string;
   private apiAccess: any;
-  private webContents: any;
+  private webContents?: WebContents;
   private readonly chain: string;
   private listener: ChainListener | null = null;
 
-  constructor (chain: string, webContents: any, apiAccess: any) {
+  constructor(chain: string, webContents: WebContents, apiAccess: any) {
     if (chain === 'mainnet') {
       chain = 'etc';
     }
@@ -22,21 +23,28 @@ export class BlockchainStatus implements IService {
   public start () {
     this.stop();
     this.listener = this.apiAccess.newChainListener();
-    const { webContents } = this;
     this.listener!.subscribe(this.chain,(head) => {
       const action = blockchains.actions.blockAction({
         blockchain: this.chain,
         height: head.height,
         hash: head.hash
       });
-      webContents.send('store', action);
+      try {
+        this.webContents?.send('store', action);
+      } catch (e) {
+        console.warn("Cannot send to the UI", e)
+      }
     });
   }
 
-  public stop () {
+  public stop() {
     if (this.listener) {
       this.listener.stop();
     }
     this.listener = null;
+  }
+
+  setWebContents(webContents: WebContents): void {
+    this.webContents = webContents;
   }
 }

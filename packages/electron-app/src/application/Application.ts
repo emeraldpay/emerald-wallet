@@ -1,8 +1,8 @@
 import { IVault, Logger } from '@emeraldwallet/core';
 import { ChainRpcConnections, Services } from '@emeraldwallet/services';
-import { screen } from '@emeraldwallet/store';
-import { ipcMain } from 'electron';
-import { createServices } from '../createServices';
+import {screen} from '@emeraldwallet/store';
+import {ipcMain, WebContents} from 'electron';
+import {createServices} from '../createServices';
 import ElectronLogger from '../logging/ElectronLogger';
 import { setIpcHandlers } from './ipc-handlers/ipc';
 import Settings from './Settings';
@@ -27,7 +27,7 @@ export default class Application {
     this.settings = settings;
   }
 
-  public run (webContents: any, apiAccess: any, apiMode: any, vault: IVault, rpc: ChainRpcConnections) {
+  public run(webContents: WebContents, apiAccess: any, apiMode: any, vault: IVault, rpc: ChainRpcConnections) {
     this.webContents = webContents;
     this.rpc = rpc;
     this.vault = vault;
@@ -46,7 +46,7 @@ export default class Application {
     }
   }
 
-  public showAbout () {
+  public showAbout() {
     if (this.webContents) {
       try {
         this.webContents.send('store', screen.actions.showDialog('about'));
@@ -55,4 +55,10 @@ export default class Application {
       }
     }
   }
+
+  setWebContents(webContents: WebContents): void {
+    this.webContents = webContents;
+    this.services?.setWebContents(webContents);
+  }
+
 }

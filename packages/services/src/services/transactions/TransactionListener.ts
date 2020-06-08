@@ -1,15 +1,16 @@
 import { txhistory } from '@emeraldwallet/store';
 import { IService } from '../Services';
-import { TxListener } from './TxListener';
+import {TxListener} from './TxListener';
+import {WebContents} from 'electron';
 
 export class TransactionListener implements IService {
   public id: string;
   private apiAccess: any;
-  private webContents: any;
+  private webContents?: WebContents;
   private ipcMain: any;
   private subscriber: TxListener[] = [];
 
-  constructor (ipcMain: any, webContents: any, apiAccess: any) {
+  constructor(ipcMain: any, webContents: WebContents, apiAccess: any) {
     this.webContents = webContents;
     this.apiAccess = apiAccess;
     this.ipcMain = ipcMain;
@@ -32,8 +33,17 @@ export class TransactionListener implements IService {
           timestamp: event.timestamp,
           broadcasted: event.broadcasted
         }]);
-        this.webContents.send('store', action);
+        try {
+          this.webContents?.send('store', action);
+        } catch (e) {
+          console.warn("Cannot send to the UI", e)
+        }
       });
     });
   }
+
+  setWebContents(webContents: WebContents): void {
+    this.webContents = webContents;
+  }
+
 }
