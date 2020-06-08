@@ -1,6 +1,7 @@
 import { Logger } from '@emeraldwallet/core';
 import { settings } from '@emeraldwallet/store';
-import { IService } from '../Services';
+import {IService} from '../Services';
+import {WebContents} from 'electron';
 
 const log = Logger.forCategory('PriceService');
 
@@ -8,13 +9,13 @@ class PricesService implements IService {
   public id: string;
   private ipcMain: any;
   private apiAccess: any;
-  private webContents: any;
+  private webContents?: WebContents;
   private froms: any;
   private to: any;
   private listener: any | null;
   private handler: NodeJS.Timeout | null;
 
-  constructor (ipcMain: any, webContents: any, apiAccess: any, from: any, currency: any) {
+  constructor(ipcMain: any, webContents: WebContents, apiAccess: any, from: any, currency: any) {
     this.id = 'PricesService';
     this.ipcMain = ipcMain;
     this.webContents = webContents;
@@ -43,9 +44,12 @@ class PricesService implements IService {
 
   public fetch () {
     log.info(`Request for prices, ${this.froms} to ${this.to}`);
-    const self = this;
     this.listener.request(this.froms, this.to, (result: any) => {
-      self.webContents.send('store', settings.actions.setRatesAction(result));
+      try {
+        this.webContents?.send('store', settings.actions.setRatesAction(result));
+      } catch (e) {
+        log.warn("Cannot send to the UI", e)
+      }
     });
     this.handler = setTimeout(this.fetch.bind(this), 60000);
   }
@@ -61,6 +65,11 @@ class PricesService implements IService {
       this.listener = null;
     }
   }
+
+  setWebContents(webContents: WebContents): void {
+    this.webContents = webContents;
+  }
+
 }
 
 export default PricesService;
