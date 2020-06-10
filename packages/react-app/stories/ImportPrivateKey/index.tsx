@@ -11,5 +11,5 @@ const chains: IBlockchain[] = [
 
 storiesOf('ImportPrivateKey', module)
   .add('default', () => (
-    <ImportPrivateKey blockchains={chains} onSubmit={action('onSubmit')}/>
+    <ImportPrivateKey onSubmit={action('onSubmit')}/>
     ));
