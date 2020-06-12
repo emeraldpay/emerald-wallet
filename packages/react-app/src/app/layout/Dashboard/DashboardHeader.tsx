@@ -76,7 +76,7 @@ export default withTranslation()(
     (state, ownProps) => ({}),
     (dispatch, ownProps) => ({
       onCreateWallet: () => {
-        dispatch(gotoScreen(screen.Pages.NEW_WALLET));
+        dispatch(gotoScreen(screen.Pages.CREATE_WALLET));
       },
       generate: () => {
         dispatch(gotoScreen('generate'));

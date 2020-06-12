@@ -45,7 +45,7 @@ export function goBack () {
   };
 }
 
-export function catchError (dispatch: any) {
+export function catchError(dispatch: any): (err: any) => void {
   return (err: any) => {
     dispatch(showError(err));
   };

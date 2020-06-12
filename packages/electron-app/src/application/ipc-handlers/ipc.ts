@@ -165,4 +165,7 @@ export function setIpcHandlers (app: Application) {
     return app.vault?.setWalletLabel(walletId, name);
   });
 
+  ipcMain.handle(Commands.VAULT_GET_SEEDS, (event: any) => {
+    return app.vault?.listSeeds()
+  });
 }

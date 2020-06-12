@@ -75,8 +75,12 @@ export class Vault implements IVault {
       });
   }
 
-  public removeFromAddressBook (blockchain: BlockchainCode, address: string): boolean {
+  public removeFromAddressBook(blockchain: BlockchainCode, address: string): boolean {
     return this.provider.removeFromAddressBook(blockchainCodeToId(blockchain), address);
+  }
+
+  listSeeds(): vault.SeedDescription[] {
+    return this.provider.listSeeds()
   }
 
   public addEntry(walletId: string, account: vault.AddEntry): string {

@@ -1,12 +1,14 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
-import { Wei } from '@emeraldplatform/eth';
-import { Account, BlockchainCode, Blockchains, Units, Wallet } from '@emeraldwallet/core';
-import { registry } from '@emeraldwallet/erc20';
+import {Wei} from '@emeraldplatform/eth';
+import {Account, BlockchainCode, Blockchains, Units, Wallet} from '@emeraldwallet/core';
+import {registry} from '@emeraldwallet/erc20';
 import BigNumber from 'bignumber.js';
-import { createSelector } from 'reselect';
-import { settings, tokens } from '../index';
-import { IState } from '../types';
-import { BalanceValueConverted, IBalanceValue, moduleName } from './types';
+import {createSelector} from 'reselect';
+import {settings, tokens} from '../index';
+import {IState} from '../types';
+import {BalanceValueConverted, IBalanceValue, moduleName} from './types';
+import * as accounts from "./index";
+import {SeedDescription} from "@emeraldpay/emerald-vault-core";
 
 const sum = (a: Wei | undefined, b: Wei | undefined) => (a || Wei.ZERO).plus(b || Wei.ZERO);
 
@@ -243,4 +245,8 @@ export function withFiatConversion (state: IState, assets: IBalanceValue[]): Bal
       } as BalanceValueConverted;
     })
     .filter((value) => typeof value.converted !== 'undefined' && typeof value.rate !== 'undefined');
+}
+
+export function getSeeds(state: IState): SeedDescription[] {
+  return state[accounts.moduleName].seeds || []
 }

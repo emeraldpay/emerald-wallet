@@ -4,7 +4,6 @@ import { CircularProgress } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import CreateHdAccount from '../../../create-account/CreateHdAccount';
-import CreateOrImport from '../../../create-wallet/CreateOrImport';
 import ImportWalletWizard from '../../../create-wallet/ImportWalletWizard';
 import ImportMnemonicWallet from '../../../create-wallet/ImportWalletWizard/ImportMnemonicWallet';
 import NewWalletWizard from '../../../create-wallet/NewWalletWizard';
@@ -13,6 +12,7 @@ import {
   ExportPaperWallet, GenerateAccount, Home, ImportLedgerAccount, ImportMnemonic,
   MnemonicWizard, PaperWallet, Settings, TxDetails, WalletDetails, Welcome
 } from '../../../index';
+import CreateWalletScreen from "../../../create-wallet/CreateWalletScreen";
 
 const log = Logger.forCategory('screen');
 
@@ -60,10 +60,7 @@ const Screen = (props: IScreenProps) => {
     return <BroadcastTx tx={props.screenItem.tx} signed={props.screenItem.signed} />;
   }
   if (props.screen === screen.Pages.CREATE_WALLET) {
-    return <NewWalletWizard />;
-  }
-  if (props.screen === screen.Pages.NEW_WALLET) {
-    return (<CreateOrImport />);
+    return <CreateWalletScreen/>;
   }
   if (props.screen === screen.Pages.IMPORT_WALLET) {
     return (<ImportWalletWizard />);

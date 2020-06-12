@@ -101,7 +101,7 @@ export default connect<any, any, any, IState>(
       return dispatch(accounts.actions.generateMnemonic() as any);
     },
     goBack: () => {
-      dispatch(screen.actions.gotoScreen(screen.Pages.NEW_WALLET));
+      // dispatch(screen.actions.gotoScreen(screen.Pages.NEW_WALLET));
     },
     onCreateWallet: (walletName: string, password: string, mnemonic: string) => {
       //

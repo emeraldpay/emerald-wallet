@@ -11,13 +11,14 @@ import {
   ISetTxCountAction,
   IUpdateWalletAction,
   IWalletCreatedAction,
-  IWalletsLoaded, IHdAccountCreated
+  IWalletsLoaded, IHdAccountCreated, ISetSeedsAction
 } from './types';
 
 export const INITIAL_STATE: IAccountsState = {
   wallets: [],
   loading: true,
-  details: []
+  details: [],
+  seeds: []
 };
 
 function onLoading (state: IAccountsState, action: ISetLoadingAction): IAccountsState {
@@ -121,12 +122,19 @@ function onSetTxCount (state: any, action: ISetTxCountAction) {
   });
 }
 
-function onHdAccountCreated (state: IAccountsState, action: IHdAccountCreated) {
-  const { walletId, account } = action.payload;
+function onHdAccountCreated(state: IAccountsState, action: IHdAccountCreated) {
+  const {walletId, account} = action.payload;
   return updateWallet(state, walletId, (wallet) => {
     wallet.accounts.push(account);
     return wallet;
   });
+}
+
+function onSedSeeds(state: IAccountsState, action: ISetSeedsAction) {
+  return {
+    ...state,
+    seeds: action.payload
+  }
 }
 
 //
@@ -169,6 +177,8 @@ export function reducer (
       return onSetTxCount(state, action);
     case ActionTypes.HD_ACCOUNT_CREATED:
       return onHdAccountCreated(state, action);
+    case ActionTypes.SET_SEEDS:
+      return onSedSeeds(state, action);
     // case ActionTypes.PENDING_BALANCE:
     //   return onPendingBalance(state, action);
     default:

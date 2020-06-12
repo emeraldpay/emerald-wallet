@@ -33,6 +33,8 @@ export default interface IVault {
 
   importSeed(seed: SeedDefinition): Uuid;
 
+  listSeeds(): SeedDescription[];
+
   // Signing
   signTx(accountFullId: EntryId, tx: UnsignedTx, password?: string): string;
 

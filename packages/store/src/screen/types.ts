@@ -21,7 +21,6 @@ export enum Pages {
   CREATE_WALLET = 'create-wallet',
   ADD_ACCOUNT = 'add-account',
   CREATE_HD_ACCOUNT = 'create-hd-account',
-  NEW_WALLET = 'new-wallet',
   IMPORT_SEED_WALLET = 'import-seed-wallet',
   IMPORT_WALLET = 'import-wallet',
   GENERATE_ACCOUNT = 'generate',

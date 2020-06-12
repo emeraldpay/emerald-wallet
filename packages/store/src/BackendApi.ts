@@ -5,7 +5,8 @@ import {
   IBackendApi,
   Wallet
 } from '@emeraldwallet/core';
-import { ipcRenderer } from 'electron';
+import {ipcRenderer} from 'electron';
+import {SeedDescription} from "@emeraldpay/emerald-vault-core";
 
 /**
  * This backend api implementation calls electron IPC for business logic
@@ -94,5 +95,9 @@ export default class BackendApi implements IBackendApi {
 
   public exportRawPrivateKey = (accountId: string, password: string): Promise<string> => {
     return ipcRenderer.invoke(Commands.ACCOUNT_EXPORT_RAW_PRIVATE, accountId, password);
+  }
+
+  public listSeeds = (): Promise<SeedDescription[]> => {
+    return ipcRenderer.invoke(Commands.VAULT_GET_SEEDS);
   }
 }

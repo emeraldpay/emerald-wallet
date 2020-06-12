@@ -71,7 +71,7 @@ export default connect<any, any, any, IState>(
   null,
   (dispatch, ownProps) => ({
     onCancel: () => {
-      dispatch(screen.actions.gotoScreen(screen.Pages.NEW_WALLET));
+      // dispatch(screen.actions.gotoScreen(screen.Pages.NEW_WALLET));
     },
     generate: () => {
       dispatch(screen.actions.gotoScreen(screen.Pages.GENERATE_ACCOUNT));

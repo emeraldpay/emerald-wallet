@@ -1,6 +1,7 @@
 import AddressBookItem from '../address-book/AddressBookItem';
 import { BlockchainCode } from '../blockchains';
 import Wallet from '../entities/Wallet';
+import {SeedDescription} from "@emeraldpay/emerald-vault-core";
 
 export default interface IBackendApi {
   getAllWallets: () => Promise<Wallet[]>;
@@ -35,4 +36,7 @@ export default interface IBackendApi {
 
 
   signTx: (accountId: string, password: string, unsignedTx: any) => Promise<any>;
+
+  // Seeds
+  listSeeds: () => Promise<SeedDescription[]>;
 }
