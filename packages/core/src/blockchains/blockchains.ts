@@ -2,6 +2,7 @@ import { IBlockchain } from './IBlockchain';
 import { CoinTicker } from './CoinTicker';
 import Ethereum from './ethereum/Ethereum';
 import EthereumParams from './ethereum/EthereumParams';
+import {HDPath} from "./hdpath";
 
 export enum BlockchainCode {
   ETC = 'etc',
@@ -12,17 +13,20 @@ export enum BlockchainCode {
 
 export const Blockchains: {[key: string]: IBlockchain} = {
   [BlockchainCode.ETH]: new Ethereum(
-    new EthereumParams(BlockchainCode.ETH, CoinTicker.ETH, 1,"m/44'/60'/0'/0"),
+    new EthereumParams(BlockchainCode.ETH, CoinTicker.ETH, 1,
+      HDPath.default().forCoin(BlockchainCode.ETH)),
     'Ethereum',
     ['DAI', 'USDT']
   ),
   [BlockchainCode.ETC]: new Ethereum(
-    new EthereumParams(BlockchainCode.ETC, CoinTicker.ETC, 61, "m/44'/61'/0'/0"),
+    new EthereumParams(BlockchainCode.ETC, CoinTicker.ETC, 61,
+      HDPath.default().forCoin(BlockchainCode.ETC)),
     'Ethereum Classic',
     ['BEC']
   ),
   [BlockchainCode.Kovan]: new Ethereum(
-    new EthereumParams(BlockchainCode.Kovan, CoinTicker.KOVAN, 42, "m/44'/60'/160720'/0"),
+    new EthereumParams(BlockchainCode.Kovan, CoinTicker.KOVAN, 42,
+      HDPath.default().forCoin(BlockchainCode.ETH).forAccount(160720)),
     'Ethereum Kovan Testnet',
     ['WEENUS']
   )

@@ -12,7 +12,8 @@ import * as conn from './conn/types';
 import { IScreenState } from './screen/types';
 import { ISettingsState } from './settings/types';
 import { ITokensState } from './tokens/types';
-import { ITransactionState } from './transaction/types';
+import {ITransactionState} from './transaction/types';
+import {IHDPreviewState} from "./hdpath-preview/types";
 
 export interface IState {
   [application.moduleName]: any;
@@ -27,6 +28,7 @@ export interface IState {
   tokens: ITokensState;
   transaction: ITransactionState;
   addAccount?: IAddAccountState;
+  hdpathPreview?: IHDPreviewState;
 }
 export type GetState = () => IState;
 export interface IExtraArgument {

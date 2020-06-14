@@ -1,14 +1,16 @@
 import {connect} from "react-redux";
-import {accounts, IState, screen} from "@emeraldwallet/store";
+import {accounts, IState, screen, settings} from "@emeraldwallet/store";
 import * as React from "react";
 import {Dispatch} from "react";
-import {Result} from "./types";
+import {isSeedSelected, Result} from "./types";
 import CreateWalletWizard from "./CreateWalletWizard";
 import * as vault from "@emeraldpay/emerald-vault-core";
 import {Pages} from "@emeraldwallet/store/lib/screen";
+import {blockchainCodeToId, Blockchains, IBlockchain} from "@emeraldwallet/core";
 
 type Props = {
-  seeds: vault.SeedDescription[]
+  seeds: vault.SeedDescription[],
+  blockchains: IBlockchain[]
 }
 type Actions = {
   onCreate: (value: Result) => Promise<string>,
@@ -29,7 +31,8 @@ type OwnProps = {}
 export default connect(
   (state: IState, ownProps: OwnProps): Props => {
     return {
-      seeds: accounts.selectors.getSeeds(state)
+      seeds: accounts.selectors.getSeeds(state),
+      blockchains: settings.selectors.currentChains(state)
     }
   },
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
@@ -47,7 +50,23 @@ export default connect(
           const opts = {
             label: value.options.label
           };
-          dispatch(accounts.actions.createWallet(opts, handler))
+          const entries: vault.AddEntry[] = [];
+          const type = value.type;
+          if (isSeedSelected(type) && typeof value.seedAccount == 'number') {
+            const account: number = value.seedAccount;
+            value.blockchains.forEach((blockchain) => {
+              entries.push({
+                type: "hd-path",
+                blockchain: blockchainCodeToId(blockchain),
+                key: {
+                  hdPath: Blockchains[blockchain].params.hdPath.forAccount(account).toString(),
+                  seedId: type.id,
+                  password: value.seedPassword!
+                }
+              })
+            })
+          }
+          dispatch(accounts.actions.createWallet(opts, entries, handler))
         })
       },
       onCancel: () => {

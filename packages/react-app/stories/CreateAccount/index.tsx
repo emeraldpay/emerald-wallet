@@ -1,20 +1,10 @@
 import {storiesOf} from '@storybook/react';
 import * as React from 'react';
-import CreateWalletWizard from "../../src/create-wallet/CreateWalletWizard";
 import {providerForStore} from "../storeProvider";
-import {SeedDefinition, SeedDescription} from "@emeraldpay/emerald-vault-core";
-import {BlockchainCode, Blockchains, IBlockchain} from "@emeraldwallet/core";
+import HDPathCounter from "../../src/create-account/HDPathCounter";
+import SelectHDPath from "../../src/create-account/SelectHDPath";
 import {BackendMock} from "../backendMock";
-
-const handlers = {
-  onCreate: (value) => {
-    console.info("Created", value);
-    return Promise.resolve("6aacf568-ec33-435f-b234-3668534a7f13")
-  },
-  onError: (err) => console.error,
-  onCancel: () => {
-  }
-}
+import {BlockchainCode} from "@emeraldwallet/core";
 
 const backend = new BackendMock();
 backend.vault.addSeedAddress("e23378da-d4b2-4843-ae4d-f42888a11b58",
@@ -40,29 +30,35 @@ backend.blockchains["etc"].setBalance(
   "0x75a32a48a215675f822fca1f9d99dadf7c6ec104", "ETC", "30400000000000000000"
 );
 
-const blockchains: IBlockchain[] = [
-  Blockchains[BlockchainCode.ETC],
-  Blockchains[BlockchainCode.ETH]
-]
-
-storiesOf('CreateWallet', module)
+storiesOf('CreateAccount', module)
   .addDecorator(providerForStore(backend))
-  .add('empty', () => (
-    <CreateWalletWizard
-      seeds={[]}
-      blockchains={blockchains}
-      {...handlers}
+  .add('select account', () => (
+    <SelectHDPath
+      seed={{type: "seed-ref", seedId: "e23378da-d4b2-4843-ae4d-f42888a11b58"}}
+      blockchains={[BlockchainCode.ETH, BlockchainCode.ETC]}
+      onChange={(n) => console.log("Account selected", n)}
     />
   ))
-  .add("single seed", () => {
-    const seed: SeedDescription = {
-      id: "e23378da-d4b2-4843-ae4d-f42888a11b58",
-      available: true,
-      type: "raw"
-    };
-    return <CreateWalletWizard
-      seeds={[seed]}
-      blockchains={blockchains}
-      {...handlers}
+  .add('select account, only ETH', () => (
+    <SelectHDPath
+      seed={{type: "seed-ref", seedId: "e23378da-d4b2-4843-ae4d-f42888a11b58"}}
+      blockchains={[BlockchainCode.ETH]}
+      onChange={(n) => console.log("Account selected", n)}
     />
-  });
+  ))
+  .add('just HDPath counter', () => (
+    <HDPathCounter
+      base={"m/44'/60'/0'/0/0"}
+      onChange={(value) => {
+      }}
+    />
+  ))
+  .add('just HDPath counter with disabled 0,3,4', () => (
+    <HDPathCounter
+      base={"m/44'/60'/0'/0/0"}
+      disabled={[0, 3, 4]}
+      onChange={(value) => {
+      }}
+    />
+  ))
+;

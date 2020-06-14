@@ -31,7 +31,7 @@ import {
   IWalletCreatedAction,
   IWalletsLoaded, PendingBalanceAction
 } from './types';
-import {SeedDescription} from "@emeraldpay/emerald-vault-core";
+import {AddEntry, SeedDescription} from "@emeraldpay/emerald-vault-core";
 
 const log = Logger.forCategory('store.accounts');
 
@@ -189,11 +189,13 @@ export type CreateWalletOptions = {
 }
 
 export function createWallet(options: CreateWalletOptions,
+                             entries: AddEntry[],
                              handler: (walletId?: string, err?: any) => void): Dispatched<IWalletCreatedAction> {
   return (dispatch, getState, extra) => {
     const vault = extra.api.vault;
     try {
       const walletId = vault.addWallet(options.label);
+      entries.forEach((entry) => vault.addEntry(walletId, entry));
       const wallet = vault.getWallet(walletId)!;
       dispatch(walletCreatedAction(wallet));
       handler(walletId);

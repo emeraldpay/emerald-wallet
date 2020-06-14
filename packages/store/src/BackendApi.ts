@@ -1,9 +1,11 @@
+
 import {
   AddressBookItem,
   BlockchainCode,
   Commands,
   IBackendApi,
-  Wallet
+  Wallet,
+  AnyCoinCode
 } from '@emeraldwallet/core';
 import {ipcRenderer} from 'electron';
 import {SeedDescription} from "@emeraldpay/emerald-vault-core";
@@ -12,6 +14,14 @@ import {SeedDescription} from "@emeraldpay/emerald-vault-core";
  * This backend api implementation calls electron IPC for business logic
  */
 export default class BackendApi implements IBackendApi {
+  getBalance(blockchain: BlockchainCode, address: string, tokens: AnyCoinCode[]): Promise<Record<AnyCoinCode, string>> {
+    return ipcRenderer.invoke(Commands.GET_BALANCE, blockchain, address, tokens);
+  }
+
+  listSeedAddresses(seedId: string, password: string, blockchain: BlockchainCode, hdpath: string[]): Promise<Record<string, string>> {
+    return ipcRenderer.invoke(Commands.VAULT_SEED_ADDRESSES, seedId, password, blockchain, hdpath);
+  }
+
   public signTx = (accountId: string, password: string, unsignedTx: any): Promise<any> => {
     return ipcRenderer.invoke(Commands.SIGN_TX, accountId, unsignedTx, password);
   }

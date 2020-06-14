@@ -10,7 +10,8 @@ export {
 } from './blockchains';
 
 import * as blockchains from './blockchains';
-export { blockchains };
+export {blockchains};
+export {HDPath, isCoinTickerCode} from './blockchains';
 
 import * as workflow from './workflow';
 export { workflow };
@@ -27,9 +28,17 @@ export { utils };
 export { IServerConnect } from './IServerConnect';
 export { IApi } from './IApi';
 
-export { EthereumAddress } from './blockchains/ethereum/Address';
-export { StableCoinCode, SupportedTokenCode, AnyTokenCode, AnyCoinCode } from './Asset';
-export { IStoredTransaction } from './history/IStoredTransaction';
+export {EthereumAddress} from './blockchains/ethereum/Address';
+export {
+  StableCoinCode,
+  SupportedTokenCode,
+  AnyTokenCode,
+  AnyCoinCode,
+  isStableCoinCode,
+  isAnyTokenCode,
+  isSupportedTokenCode
+} from './Asset';
+export {IStoredTransaction} from './history/IStoredTransaction';
 
 export { default as WalletService } from './WalletService';
 

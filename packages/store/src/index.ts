@@ -11,6 +11,7 @@ import * as tokens from './tokens';
 import * as transaction from './transaction';
 import * as txhistory from './txhistory';
 import * as wallet from './wallet';
+import * as hdpathPreview from './hdpath-preview';
 
 export {
   application,
@@ -25,7 +26,8 @@ export {
   tokens,
   transaction,
   wallet,
-  addAccount
+  addAccount,
+  hdpathPreview
 };
 
 export {

@@ -1,7 +1,8 @@
 import AddressBookItem from '../address-book/AddressBookItem';
-import { BlockchainCode } from '../blockchains';
+import {BlockchainCode} from '../blockchains';
 import Wallet from '../entities/Wallet';
-import {SeedDescription} from "@emeraldpay/emerald-vault-core";
+import {SeedDescription, Uuid} from "@emeraldpay/emerald-vault-core";
+import {AnyCoinCode} from "../Asset";
 
 export default interface IBackendApi {
   getAllWallets: () => Promise<Wallet[]>;
@@ -9,6 +10,8 @@ export default interface IBackendApi {
   getWallet: (walletId: string) => Promise<Wallet>;
   updateWallet: (walletId: string, name: string) => Promise<boolean>;
   createHdAccount: (walletId: string, blockchain: BlockchainCode, hdPath: string, password: string) => Promise<string>;
+
+  getBalance: (blockchain: BlockchainCode, address: string, tokens: AnyCoinCode[]) => Promise<Record<string, string>>;
 
   // Address Book
   getAddressBookItems: (blockchain: BlockchainCode) => Promise<AddressBookItem[]>;
@@ -19,6 +22,10 @@ export default interface IBackendApi {
   persistTransactions: (blockchain: BlockchainCode, txs: any[]) => Promise<void>;
 
   // ETH chains
+
+  /**
+   * @deprecated use getBalance
+   */
   getErc20Balance: (blockchain: BlockchainCode, tokenId: string, address: string) => Promise<string>;
   getGasPrice: (blockchain: BlockchainCode) => Promise<number>;
 
@@ -39,4 +46,6 @@ export default interface IBackendApi {
 
   // Seeds
   listSeeds: () => Promise<SeedDescription[]>;
+
+  listSeedAddresses(seedId: Uuid, password: string, blockchain: BlockchainCode, hdpath: string[]): Promise<Record<string, string>>;
 }

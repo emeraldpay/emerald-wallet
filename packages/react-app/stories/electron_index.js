@@ -13,8 +13,8 @@ app.commandLine.appendSwitch('remote-debugging-port', '5858')
 app.on('ready', function () {
 
   mainWindow = new BrowserWindow({
-    width: 1100,
-    height: 800,
+    width: 1410,
+    height: 830,
     allowRunningInsecureContent: true,
     webPreferences: {
       nodeIntegration: true,

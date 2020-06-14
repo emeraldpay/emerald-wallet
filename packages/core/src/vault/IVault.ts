@@ -4,7 +4,7 @@ import {
   SeedDefinition,
   SeedDescription,
   UnsignedTx,
-  Uuid
+  Uuid, BlockchainType
 } from '@emeraldpay/emerald-vault-core';
 import AddressBookItem from '../address-book/AddressBookItem';
 import { BlockchainCode } from '../blockchains';
@@ -46,4 +46,6 @@ export default interface IVault {
   addToAddressBook(item: AddressBookItem): boolean;
 
   removeFromAddressBook(blockchain: BlockchainCode, address: string): boolean;
+
+  listSeedAddresses(seed: Uuid, password: string | undefined, blockchain: BlockchainType, hdpath: string[]): { [key: string]: string };
 }

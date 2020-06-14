@@ -27,6 +27,7 @@ const Component = (({seeds, onSelect}: Props & Actions & OwnProps) => {
           <FileCopyIcon/>
         </ListItemIcon>
         <ListItemText primary={"Seed"}
+                      onClick={() => onSelect({id: seed.id!})}
                       secondary={"Seed " + seed.id}/>
       </ListItem>
     )
@@ -36,6 +37,7 @@ const Component = (({seeds, onSelect}: Props & Actions & OwnProps) => {
         <FileCopyIcon/>
       </ListItemIcon>
       <ListItemText primary={"Use current seed"}
+                    onClick={() => onSelect({id: seeds[0].id!})}
                     secondary={"Seed " + seeds[0].id}/>
     </ListItem>
   }
