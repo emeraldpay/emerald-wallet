@@ -1,5 +1,5 @@
 import {
-  ActionTypes,
+  ActionTypes, IClean,
   IDisplayAccount,
   ILoadAddresses,
   ILoadBalances,
@@ -55,5 +55,11 @@ export function displayAccount(account: number): IDisplayAccount {
   return {
     type: ActionTypes.DISPLAY_ACCOUNT,
     account
+  }
+}
+
+export function clean(): IClean {
+  return {
+    type: ActionTypes.CLEAN
   }
 }
