@@ -2,7 +2,7 @@ import {connect} from "react-redux";
 import {accounts, hdpathPreview, IState, screen, settings} from "@emeraldwallet/store";
 import * as React from "react";
 import {Dispatch} from "react";
-import {isSeedSelected, Result} from "./types";
+import {isSeedSelected, Result} from "./flow/types";
 import CreateWalletWizard from "./CreateWalletWizard";
 import * as vault from "@emeraldpay/emerald-vault-core";
 import {Pages} from "@emeraldwallet/store/lib/screen";

@@ -5,7 +5,7 @@ import {Dispatch} from 'react';
 import {connect} from 'react-redux';
 import * as vault from "@emeraldpay/emerald-vault-core";
 import SelectKeySource from "./SelectKeySource";
-import {defaultResult, isSeedSelected, Result, SeedResult, SeedSelected, TWalletOptions} from "./types";
+import {defaultResult, isSeedSelected, Result, SeedResult, SeedSelected, TWalletOptions} from "./flow/types";
 import WalletOptions from "./WalletOptions";
 import Finish from "./Finish";
 import SelectCoins from "../create-account/SelectCoins";
@@ -13,19 +13,11 @@ import {BlockchainCode, IBlockchain} from "@emeraldwallet/core";
 import SelectHDPath from "../create-account/SelectHDPath";
 import {SourceSeed} from "@emeraldwallet/store/lib/hdpath-preview/types";
 import UnlockSeed from "../create-account/UnlockSeed";
+import {CreateWalletFlow, STEP_CODE} from "./flow/createWalletFlow";
 
 type Props = {}
 type Actions = {
   onOpen: (walletId: string) => void,
-}
-
-enum Steps {
-  KEY_SOURCE,
-  OPTIONS,
-  SELECT_COINS,
-  UNLOCK_SEED,
-  SELECT_ACCOUNT,
-  FINISH
 }
 
 /**
@@ -33,142 +25,71 @@ enum Steps {
  * empty without any account initially.
  */
 export const CreateWizard = ((props: Props & Actions & OwnProps) => {
-  const [result, setResult] = React.useState(defaultResult());
-  const [step, setStep] = React.useState(Steps.KEY_SOURCE);
-  const [keySource, setKeySource] = React.useState('empty' as SeedResult);
-  const [walletId, setWalletId] = React.useState('');
-  const [password, setPassword] = React.useState('');
-
-  const steps = [];
-  steps.push(
-    <Step key="keys-source">
-      <StepLabel>Choose Key Source</StepLabel>
-    </Step>
-  )
-  steps.push(
-    <Step key="options">
-      <StepLabel>Wallet Options</StepLabel>
-    </Step>
-  )
-  steps.push(
-    <Step key="select-coins" disabled={keySource == 'empty'}>
-      <StepLabel>Select Blockchains</StepLabel>
-    </Step>
-  );
-  steps.push(
-    <Step key="unlock-seed" disabled={keySource == 'empty'}>
-      <StepLabel>Unlock Seed</StepLabel>
-    </Step>
-  );
-  steps.push(
-    <Step key="select-account" disabled={keySource == 'empty'}>
-      <StepLabel>Select HD Account</StepLabel>
-    </Step>
-  );
-  steps.push(
-    <Step key="finish">
-      <StepLabel>Wallet Created</StepLabel>
-    </Step>
-  );
-
-  let activeStepIndex = 0;
-  let activeStepPage = null;
-
-  if (step == Steps.KEY_SOURCE) {
-    const onSelect = (value: SeedResult) => {
-      setStep(Steps.OPTIONS);
-      setKeySource(value);
-      setResult({...result, type: value});
-    }
-    activeStepIndex = 0;
-    activeStepPage = <SelectKeySource seeds={props.seeds} onSelect={onSelect}/>
-  } else if (step == Steps.OPTIONS) {
-    const onChange = (value: TWalletOptions) => {
-      setResult({...result, options: value});
-    }
-    activeStepIndex = 1;
-    activeStepPage = <WalletOptions onChange={onChange}/>
-  } else if (step == Steps.SELECT_COINS) {
-    activeStepIndex = 2;
-    const onChange = (value: BlockchainCode[]) => {
-      setResult({...result, blockchains: value})
-    }
-    activeStepPage = <SelectCoins blockchains={props.blockchains} enabled={[]} onChange={onChange}/>;
-  } else if (step == Steps.UNLOCK_SEED) {
-    const onUnlock = (value: string) => {
-      setPassword(value);
-      setStep(Steps.SELECT_ACCOUNT);
-      setResult({...result, seedPassword: value})
-    }
-    activeStepIndex = 3;
-    activeStepPage = <UnlockSeed onUnlock={onUnlock}/>
-  } else if (step == Steps.SELECT_ACCOUNT) {
-    const seed: SourceSeed = {
-      type: "seed-ref",
-      seedId: (keySource as SeedSelected).id,
-      password: password
-    }
-    const onChange = (account: number) => {
-      setResult({...result, seedAccount: account});
-    }
-    activeStepIndex = 4;
-    activeStepPage = <SelectHDPath blockchains={result.blockchains}
-                                   seed={seed}
-                                   onChange={onChange}/>
-  } else if (step == Steps.FINISH) {
-    activeStepIndex = 5;
-    activeStepPage = <Finish id={walletId} onOpen={() => props.onOpen(walletId)}/>
-  }
-
-  const stepper = <Stepper activeStep={activeStepIndex}>
-    {steps}
-  </Stepper>
-
-  function create() {
+  function create(result: Result) {
     props.onCreate(result)
       .then((id) => {
         setWalletId(id);
-        setStep(Steps.FINISH)
       })
       .catch(props.onError);
   }
 
-  function nextStep() {
-    if (step == Steps.OPTIONS) {
-      if (keySource == "empty") {
-        create();
-      } else if (isSeedSelected(keySource)) {
-        setStep(Steps.SELECT_COINS);
-      }
-    } else if (step == Steps.SELECT_COINS) {
-      setStep(Steps.UNLOCK_SEED)
-    } else if (step == Steps.SELECT_ACCOUNT) {
-      create();
+  // const [result, setResult] = React.useState(defaultResult());
+  const [step, setStep] = React.useState(new CreateWalletFlow(create));
+  // const [keySource, setKeySource] = React.useState('empty' as SeedResult);
+  const [walletId, setWalletId] = React.useState('');
+  // const [password, setPassword] = React.useState('');
+
+  const page = step.getCurrentStep();
+  const applyWithState = function <T>(fn: (value: T) => CreateWalletFlow): (value: T) => void {
+    return (x) => {
+      const next = fn.call(step, x);
+      setStep(next);
     }
   }
+  let activeStepIndex = page.index;
+  let activeStepPage = null;
 
-  let nextEnabled = true;
-  nextEnabled = nextEnabled && step != Steps.FINISH;
-  nextEnabled = nextEnabled && step != Steps.KEY_SOURCE;
-  nextEnabled = nextEnabled && step != Steps.UNLOCK_SEED;
-  if (step == Steps.SELECT_COINS) {
-    nextEnabled = nextEnabled && result.blockchains.length > 0;
+  if (page.code == STEP_CODE.KEY_SOURCE) {
+    activeStepPage = <SelectKeySource seeds={props.seeds} onSelect={applyWithState(step.applySource)}/>
+  } else if (page.code == STEP_CODE.OPTIONS) {
+    activeStepPage = <WalletOptions onChange={applyWithState(step.applyOptions)}/>
+  } else if (page.code == STEP_CODE.SELECT_BLOCKCHAIN) {
+    activeStepPage =
+      <SelectCoins blockchains={props.blockchains} enabled={[]} onChange={applyWithState(step.applyBlockchains)}/>;
+  } else if (page.code == STEP_CODE.UNLOCK_SEED) {
+    activeStepPage = <UnlockSeed onUnlock={applyWithState(step.applySeedPassword)}/>
+  } else if (page.code == STEP_CODE.SELECT_HD_ACCOUNT) {
+    const seed: SourceSeed = {
+      type: "seed-ref",
+      seedId: (step.getResult().type as SeedSelected).id,
+      password: step.getResult().seedPassword
+    }
+    activeStepPage = <SelectHDPath blockchains={step.getResult().blockchains}
+                                   seed={seed}
+                                   onChange={applyWithState(step.applyHDAccount)}/>
+  } else if (page.code == STEP_CODE.CREATED) {
+    activeStepPage = <Finish id={walletId} onOpen={() => props.onOpen(walletId)}/>
   }
-  if (step == Steps.SELECT_ACCOUNT) {
-    nextEnabled = nextEnabled && typeof result.seedAccount == 'number';
-  }
+
+  const stepper = <Stepper activeStep={activeStepIndex}>
+    {step.getSteps().map((it) => (
+      <Step key={it.code}>
+        <StepLabel>{it.title}</StepLabel>
+      </Step>
+    ))}
+  </Stepper>
 
   return (
     <Card>
       <CardHeader action={stepper}/>
       <CardContent>{activeStepPage}</CardContent>
       <CardActions>
-        <Button disabled={step == Steps.FINISH}
+        <Button disabled={page.code == STEP_CODE.CREATED}
                 onClick={props.onCancel}>
           Cancel
         </Button>
-        <Button disabled={!nextEnabled}
-                onClick={nextStep}
+        <Button disabled={!step.canGoNext()}
+                onClick={() => setStep(step.applyNext())}
                 color={"primary"}
                 variant="contained">
           Next

@@ -8,7 +8,7 @@ import AddBoxIcon from '@material-ui/icons/AddBox';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import PublishIcon from '@material-ui/icons/Publish';
 import ExposureZeroIcon from '@material-ui/icons/ExposureZero';
-import {SeedResult} from "./types";
+import {SeedResult} from "./flow/types";
 
 type Props = {}
 type Actions = {}

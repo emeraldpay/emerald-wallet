@@ -3,7 +3,7 @@ import {IState} from "@emeraldwallet/store";
 import {Dispatch} from "react";
 import * as React from 'react';
 import {TextField} from "@material-ui/core";
-import {TWalletOptions} from "./types";
+import {TWalletOptions} from "./flow/types";
 
 type Props = {}
 type Actions = {}
