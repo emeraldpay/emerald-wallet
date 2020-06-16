@@ -54,8 +54,7 @@ export const ImportMnemonicWallet = (props: IProps) => {
     setMnemonic(event.target.value);
   }
 
-  const isValid = (password?.length > PasswordInput.DEFAULT_MIN_LENGTH) &&
-    (mnemonic?.length > 0);
+  const isValid = (password?.length > 0) && (mnemonic?.length > 0);
 
   return (
     <Page

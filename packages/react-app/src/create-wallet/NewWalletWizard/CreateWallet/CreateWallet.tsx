@@ -58,7 +58,7 @@ export const CreateWallet = (props: ICreateWalletProps) => {
     setPassword(newPwd);
   }
 
-  const isValid = name?.length > 0 && password?.length > PasswordInput.DEFAULT_MIN_LENGTH;
+  const isValid = name?.length > 0 && password?.length > 0;
 
   return (
     <Page

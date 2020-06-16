@@ -7,6 +7,7 @@ import Button from '../../common/Button';
 import ChainSelector from '../../common/ChainSelector';
 import FormRow from '../../common/FormRow';
 import HdPath from '../../common/HdPath';
+import {Typography} from '@material-ui/core';
 
 export const styles = {
   mnemonicLabel: {
@@ -114,12 +115,12 @@ export class ImportMnemonic extends React.Component<IProps, IState> {
         <div>
           <FormRow
             rightColumn={(
-              <div style={{ width: '100%' }}>
-                <div className={classes.passwordLabel}>Enter a strong password</div>
-                <div className={classes.passwordSubLabel}>This password will be required to confirm all account
+              <div style={{width: '100%'}}>
+                <Typography className={classes.passwordLabel}>Enter a strong password</Typography>
+                <Typography className={classes.passwordSubLabel}>This password will be required to confirm all account
                   operations.
-                </div>
-                <div style={{ marginTop: '30px' }}>
+                </Typography>
+                <div style={{marginTop: '30px'}}>
                   <Input
                     placeholder='At least 8 characters'
                     type='password'
@@ -156,7 +157,7 @@ export class ImportMnemonic extends React.Component<IProps, IState> {
           <FormRow
             rightColumn={(
               <div style={{ width: '100%' }}>
-                <div className={classes.mnemonicLabel}>HD derivation path</div>
+                <Typography className={classes.mnemonicLabel}>HD derivation path</Typography>
                 <div>
                   <HdPath value={hdpath} onChange={this.handleHdPathChange}/>
                 </div>
@@ -167,7 +168,7 @@ export class ImportMnemonic extends React.Component<IProps, IState> {
           <FormRow
             rightColumn={(
               <div style={{ width: '100%' }}>
-                <div className={classes.mnemonicLabel}>Enter a mnemonic phrase</div>
+                <Typography className={classes.mnemonicLabel}>Enter a mnemonic phrase</Typography>
                 <div>
                   <Input
                     value={mnemonic}

@@ -1,14 +1,14 @@
 import {connect} from "react-redux";
-import {accounts, IState, screen} from "@emeraldwallet/store";
+import {IState} from "@emeraldwallet/store";
+import * as React from "react";
 import {Dispatch} from "react";
-import * as React from 'react';
 import * as vault from "@emeraldpay/emerald-vault-core";
-import {List, ListItem, ListItemText, ListItemIcon} from "@material-ui/core";
+import {List, ListItem, ListItemIcon, ListItemText} from "@material-ui/core";
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import PublishIcon from '@material-ui/icons/Publish';
 import ExposureZeroIcon from '@material-ui/icons/ExposureZero';
-import {SeedResult} from "./flow/types";
+import {SeedResult, SeedType} from "./flow/types";
 
 type Props = {}
 type Actions = {}
@@ -27,7 +27,7 @@ const Component = (({seeds, onSelect}: Props & Actions & OwnProps) => {
           <FileCopyIcon/>
         </ListItemIcon>
         <ListItemText primary={"Seed"}
-                      onClick={() => onSelect({id: seed.id!})}
+                      onClick={() => onSelect({type: SeedType.SELECTED, id: seed.id!})}
                       secondary={"Seed " + seed.id}/>
       </ListItem>
     )
@@ -37,7 +37,7 @@ const Component = (({seeds, onSelect}: Props & Actions & OwnProps) => {
         <FileCopyIcon/>
       </ListItemIcon>
       <ListItemText primary={"Use current seed"}
-                    onClick={() => onSelect({id: seeds[0].id!})}
+                    onClick={() => onSelect({type: SeedType.SELECTED, id: seeds[0].id!})}
                     secondary={"Seed " + seeds[0].id}/>
     </ListItem>
   }
@@ -47,6 +47,7 @@ const Component = (({seeds, onSelect}: Props & Actions & OwnProps) => {
       <AddBoxIcon/>
     </ListItemIcon>
     <ListItemText primary={"Create new seed"}
+                  onClick={() => onSelect({type: SeedType.GENERATE})}
                   secondary={"Generate a new mnemonic phrase for a new wallet (24 words)"}/>
   </ListItem>
 

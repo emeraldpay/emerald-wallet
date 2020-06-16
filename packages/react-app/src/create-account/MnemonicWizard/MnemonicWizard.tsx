@@ -66,14 +66,14 @@ class MnemonicWizard extends React.Component<IProps, IWizardState> {
     } = this.state;
     switch (page) {
       case PAGES.GENERATE:
-        return (
-          <NewMnemonic
-            mnemonic={mnemonic}
-            onBack={gotoDashboard}
-            onGenerate={this.generate}
-            onContinue={this.gotoImport}
-          />
-        );
+      // return (
+      //   <NewMnemonic
+      //     mnemonic={mnemonic}
+      //     onBack={gotoDashboard}
+      //     onGenerate={this.generate}
+      //     onContinue={this.gotoImport}
+      //   />
+      // );
 
       case PAGES.IMPORT:
         return (

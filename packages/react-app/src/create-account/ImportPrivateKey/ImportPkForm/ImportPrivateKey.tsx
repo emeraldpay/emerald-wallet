@@ -99,18 +99,19 @@ export class ImportPrivateKey extends React.Component<IProps, IState> {
     const {
       submitting, classes, error
     } = this.props;
-    const { privateKey, confirmPassword, password } = this.state;
+    const {privateKey, confirmPassword, password} = this.state;
 
-    const invalid = ((password || '').length < PasswordInput.DEFAULT_MIN_LENGTH) ||
+    // PasswordInput set either empty or validated password
+    const invalid = ((password || '').length == 0) ||
       ((privateKey || '').length === 0) ||
       (password !== confirmPassword);
 
     return (
-      <Page title='Import Private Key' >
+      <Page title='Import Private Key'>
         <div className={classes.formRow}>
           <div className={classes.left}/>
           <div className={classes.right}>
-            <div style={{ width: '100%' }}>
+            <div style={{width: '100%'}}>
               <div className={classes.passwordLabel}>Enter a strong password</div>
               <div className={classes.passwordSubLabel}>This password will be required to confirm all account
                                     operations.

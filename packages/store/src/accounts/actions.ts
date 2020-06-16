@@ -31,7 +31,7 @@ import {
   IWalletCreatedAction,
   IWalletsLoaded, PendingBalanceAction
 } from './types';
-import {AddEntry, SeedDescription} from "@emeraldpay/emerald-vault-core";
+import {AddEntry, SeedDefinition, SeedDescription, Uuid} from "@emeraldpay/emerald-vault-core";
 
 const log = Logger.forCategory('store.accounts');
 
@@ -390,9 +390,13 @@ export function loadPendingTransactions (): Dispatched<PendingBalanceAction> {
   };
 }
 
-export function generateMnemonic(): Dispatched<any> {
+export function generateMnemonic(handler?: (value: string) => void): Dispatched<any> {
   return (dispatch: any, getState, extra) => {
-    return Promise.resolve(extra.api.vault.generateMnemonic(24));
+    const value = extra.api.vault.generateMnemonic(24);
+    if (handler) {
+      handler(value);
+    }
+    return Promise.resolve(value);
   };
 }
 
@@ -407,4 +411,11 @@ export function setSeedsAction(seeds: SeedDescription[]): ISetSeedsAction {
     type: ActionTypes.SET_SEEDS,
     payload: seeds
   };
+}
+
+export function createSeed(seed: SeedDefinition, handler: (id: Uuid) => void): Dispatched<any> {
+  return (dispatch, getState, extra) => {
+    const id = extra.api.vault.importSeed(seed);
+    handler(id);
+  }
 }

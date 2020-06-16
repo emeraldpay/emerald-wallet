@@ -14,6 +14,9 @@ import SelectHDPath from "../create-account/SelectHDPath";
 import {SourceSeed} from "@emeraldwallet/store/lib/hdpath-preview/types";
 import UnlockSeed from "../create-account/UnlockSeed";
 import {CreateWalletFlow, STEP_CODE} from "./flow/createWalletFlow";
+import {NewMnemonic} from "@emeraldwallet/ui";
+import SaveMnemonic from "./SaveMnemonic";
+import {SeedDefinition, Uuid} from "@emeraldpay/emerald-vault-core";
 
 type Props = {}
 type Actions = {
@@ -33,11 +36,8 @@ export const CreateWizard = ((props: Props & Actions & OwnProps) => {
       .catch(props.onError);
   }
 
-  // const [result, setResult] = React.useState(defaultResult());
   const [step, setStep] = React.useState(new CreateWalletFlow(create));
-  // const [keySource, setKeySource] = React.useState('empty' as SeedResult);
   const [walletId, setWalletId] = React.useState('');
-  // const [password, setPassword] = React.useState('');
 
   const page = step.getCurrentStep();
   const applyWithState = function <T>(fn: (value: T) => CreateWalletFlow): (value: T) => void {
@@ -58,11 +58,34 @@ export const CreateWizard = ((props: Props & Actions & OwnProps) => {
       <SelectCoins blockchains={props.blockchains} enabled={[]} onChange={applyWithState(step.applyBlockchains)}/>;
   } else if (page.code == STEP_CODE.UNLOCK_SEED) {
     activeStepPage = <UnlockSeed onUnlock={applyWithState(step.applySeedPassword)}/>
+  } else if (page.code == STEP_CODE.GENERATE_MNEMONIC) {
+    activeStepPage = <NewMnemonic onGenerate={props.mnemonicGenerator}
+                                  onContinue={(mnemonic) => setStep(step.applyMnemonic(mnemonic, undefined))}/>
+  } else if (page.code == STEP_CODE.LOCK_SEED) {
+    const onLock = (password: string) => {
+      if (!props.onSaveSeed) {
+        console.warn("No method to save seed");
+        return;
+      }
+      const save: SeedDefinition = {
+        type: "mnemonic",
+        value: {
+          value: step.getMnemonic().mnemonic,
+          password: step.getMnemonic().password
+        },
+        password
+      }
+      props.onSaveSeed(save).then((id) =>
+        setStep(step.applyMnemonicSaved(id, password))
+      );
+    }
+    activeStepPage = <SaveMnemonic mnemonic={step.getMnemonic().mnemonic!}
+                                   onPassword={onLock}/>
   } else if (page.code == STEP_CODE.SELECT_HD_ACCOUNT) {
     const seed: SourceSeed = {
       type: "seed-ref",
-      seedId: (step.getResult().type as SeedSelected).id,
-      password: step.getResult().seedPassword
+      seedId: step.getResult().unlock!.id,
+      password: step.getResult().unlock!.password
     }
     activeStepPage = <SelectHDPath blockchains={step.getResult().blockchains}
                                    seed={seed}
@@ -104,7 +127,9 @@ type OwnProps = {
   onCreate: (value: Result) => Promise<string>,
   onError: (err: any) => void,
   onCancel: () => void,
-  blockchains: IBlockchain[]
+  blockchains: IBlockchain[],
+  mnemonicGenerator?: () => Promise<string>,
+  onSaveSeed?: (seed: SeedDefinition) => Promise<Uuid>
 }
 
 export default connect(

@@ -1,13 +1,35 @@
 import {BlockchainCode} from "@emeraldwallet/core";
+import {Uuid} from "@emeraldpay/emerald-vault-core";
+
+export enum SeedType {
+  SELECTED,
+  GENERATE
+}
 
 export interface SeedSelected {
+  type: SeedType.SELECTED,
   id: string
 }
 
-export type SeedResult = SeedSelected | 'create-seed' | 'import-seed' | 'import-key' | 'empty';
+export interface SeedGenerated {
+  type: SeedType.GENERATE,
+  mnemonic?: string,
+  password?: string
+}
+
+export interface SeedUnlock {
+  id: Uuid,
+  password: string
+}
+
+export type SeedResult = SeedSelected | SeedGenerated | 'empty';
 
 export function isSeedSelected(obj: SeedResult): obj is SeedSelected {
-  return typeof obj == 'object'
+  return typeof obj == 'object' && obj.type == SeedType.SELECTED
+}
+
+export function isSeedGenerate(obj: SeedResult): obj is SeedGenerated {
+  return typeof obj == 'object' && obj.type == SeedType.GENERATE
 }
 
 export interface TWalletOptions {
@@ -19,7 +41,7 @@ export interface Result {
   options: TWalletOptions;
   blockchains: BlockchainCode[];
   seedAccount?: number;
-  seedPassword?: string;
+  unlock?: SeedUnlock
 }
 
 export function defaultResult(): Result {

@@ -2,11 +2,12 @@ import {connect} from "react-redux";
 import {accounts, hdpathPreview, IState, screen, settings} from "@emeraldwallet/store";
 import * as React from "react";
 import {Dispatch} from "react";
-import {isSeedSelected, Result} from "./flow/types";
+import {isSeedGenerate, isSeedSelected, Result} from "./flow/types";
 import CreateWalletWizard from "./CreateWalletWizard";
 import * as vault from "@emeraldpay/emerald-vault-core";
 import {Pages} from "@emeraldwallet/store/lib/screen";
 import {blockchainCodeToId, Blockchains, IBlockchain} from "@emeraldwallet/core";
+import {SeedDefinition} from "@emeraldpay/emerald-vault-core";
 
 type Props = {
   seeds: vault.SeedDescription[],
@@ -15,7 +16,9 @@ type Props = {
 type Actions = {
   onCreate: (value: Result) => Promise<string>,
   onError: (err: any) => void,
-  onCancel: () => void
+  onCancel: () => void,
+  mnemonicGenerator?: () => Promise<string>,
+  onSaveSeed: (seed: SeedDefinition) => Promise<string>
 }
 
 /**
@@ -52,23 +55,38 @@ export default connect(
           };
           const entries: vault.AddEntry[] = [];
           const type = value.type;
-          if (isSeedSelected(type) && typeof value.seedAccount == 'number') {
-            const account: number = value.seedAccount;
-            value.blockchains.forEach((blockchain) => {
-              entries.push({
-                type: "hd-path",
-                blockchain: blockchainCodeToId(blockchain),
-                key: {
-                  hdPath: Blockchains[blockchain].params.hdPath.forAccount(account).toString(),
-                  seedId: type.id,
-                  password: value.seedPassword!
-                }
+          if (isSeedSelected(type) || isSeedGenerate(type)) {
+            const unlock = value.unlock;
+            if (typeof unlock == "object" && unlock.id && unlock.password && typeof value.seedAccount == 'number') {
+              const account: number = value.seedAccount;
+              value.blockchains.forEach((blockchain) => {
+                entries.push({
+                  type: "hd-path",
+                  blockchain: blockchainCodeToId(blockchain),
+                  key: {
+                    hdPath: Blockchains[blockchain].params.hdPath.forAccount(account).toString(),
+                    seedId: unlock.id,
+                    password: unlock.password
+                  }
+                })
               })
-            })
+            } else {
+              console.warn("Account number is not set")
+            }
           }
           dispatch(accounts.actions.createWallet(opts, entries, handler));
           dispatch(hdpathPreview.actions.clean());
         })
+      },
+      mnemonicGenerator: () => {
+        return new Promise((resolve) =>
+          dispatch(accounts.actions.generateMnemonic(resolve))
+        );
+      },
+      onSaveSeed: (seed: SeedDefinition) => {
+        return new Promise<string>((resolve) =>
+          dispatch(accounts.actions.createSeed(seed, resolve))
+        );
       },
       onCancel: () => {
         dispatch(screen.actions.gotoScreen(Pages.HOME));

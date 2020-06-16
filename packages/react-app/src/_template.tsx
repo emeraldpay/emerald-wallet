@@ -22,12 +22,15 @@ const Component = (({}: Props & Actions & OwnProps) => {
 })
 
 // State Properties
-type Props = {}
+interface Props {
+}
 // Actions
-type Actions = {}
+interface Actions {
+}
 
 // Component properties
-type OwnProps = {}
+interface OwnProps {
+}
 
 export default connect(
   (state: IState, ownProps: OwnProps): Props => {

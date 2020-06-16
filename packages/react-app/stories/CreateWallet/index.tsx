@@ -1,4 +1,5 @@
 import {storiesOf} from '@storybook/react';
+import {action} from '@storybook/addon-actions';
 import * as React from 'react';
 import CreateWalletWizard from "../../src/create-wallet/CreateWalletWizard";
 import {providerForStore} from "../storeProvider";
@@ -8,11 +9,17 @@ import {BackendMock} from "../backendMock";
 
 const handlers = {
   onCreate: (value) => {
-    console.info("Created", value);
-    return Promise.resolve("6aacf568-ec33-435f-b234-3668534a7f13")
+    action("Wallet Create")(value);
+    return Promise.resolve("6aacf568-ec33-435f-b234-3668534a7f13");
   },
-  onError: (err) => console.error,
-  onCancel: () => {
+  onError: action("Error"),
+  onCancel: action("Cancel"),
+  mnemonicGenerator: () => {
+    return Promise.resolve("accuse spin gym afraid reunion poverty mango north silk lottery tank bulk hawk sting movie secret copper goose below use pig vintage resource plate");
+  },
+  onSaveSeed: (seed: SeedDefinition) => {
+    action("Seed Create")(seed);
+    return Promise.resolve("6aacf568-ec33-435f-b234-3668534a7f13");
   }
 }
 
@@ -25,6 +32,12 @@ backend.vault.addSeedAddress("e23378da-d4b2-4843-ae4d-f42888a11b58",
   "m/44'/60'/1'/0/0", "0x49dbb473f4fbdc20a4367763351df63553c86824");
 backend.vault.addSeedAddress("e23378da-d4b2-4843-ae4d-f42888a11b58",
   "m/44'/61'/1'/0/0", "0x2b59a19f1f4de027d039ac3f24e9b73ddf03386f");
+
+backend.vault.addSeedAddress("6aacf568-ec33-435f-b234-3668534a7f13",
+  "m/44'/60'/0'/0/0", "0xad73f7a93306096a626c40f56653c4cf138d349e");
+backend.vault.addSeedAddress("6aacf568-ec33-435f-b234-3668534a7f13",
+  "m/44'/61'/0'/0/0", "0xf822fca1f9d99dadf7c6ec10475a32a48a215675");
+
 
 backend.useBlockchains(["eth", "etc"]);
 backend.blockchains["eth"].setBalance(

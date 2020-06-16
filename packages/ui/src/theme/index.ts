@@ -45,6 +45,13 @@ const theme = {
     }
   },
   spacing: createSpacing(spacing),
+  root: {
+    fontFamily: [
+      '"Rubik"',
+      '"Roboto"',
+      'sans-serif'
+    ].join(',')
+  },
   typography: {
     fontSize: 16,
     fontWeightLight: 300,
