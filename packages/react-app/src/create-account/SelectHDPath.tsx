@@ -132,7 +132,8 @@ export default connect(
   (state: IState, ownProps: OwnProps): Props => {
     return {
       disabledAccounts: accounts.selectors.allWallets(state)
-        .filter((w) => typeof w.hdAccount == 'number')
+        .filter((w) => typeof w.hdAccount == 'number' && typeof w.seedId != 'undefined')
+        .filter((w) => w.seedId == ownProps.seed.seedId)
         .map((w) => w.hdAccount!),
       table: hdpathPreview.selectors.getCurrentDisplay(state, ownProps.seed)
         .filter((item) => ownProps.blockchains.indexOf(item.blockchain) >= 0)
