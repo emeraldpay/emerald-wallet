@@ -38,7 +38,7 @@ const defaults = {
  *
  */
 const Component = ((props: OwnProps) => {
-  props = {...props, ...defaults};
+  props = {...defaults, ...props};
   const styles = useStyles();
 
   const [mnemonic, setMnemonic] = React.useState("");

@@ -15,6 +15,7 @@ interface OwnProps {
   minLength?: number;
   onChange?: (password: string) => void;
   error?: string;
+  disabled?: boolean;
 }
 
 const defaults: Partial<OwnProps> = {
@@ -26,10 +27,11 @@ const defaults: Partial<OwnProps> = {
  *
  */
 const PasswordInput = ((props: OwnProps) => {
-  props = {...props, ...defaults};
+  props = {...defaults, ...props};
   const styles = useStyles();
 
-  const {error, minLength, password} = props;
+  const {error, password} = props;
+  const minLength = props.minLength | defaults.minLength
   const [showPassword, setShowPassword] = React.useState(false);
   const [current, setCurrent] = React.useState(password);
 
@@ -59,6 +61,7 @@ const PasswordInput = ((props: OwnProps) => {
 
   return (
     <Input
+      disabled={props.disabled}
       value={current}
       errorText={errorText}
       rightIcon={EyeIconButton}

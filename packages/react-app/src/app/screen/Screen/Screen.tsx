@@ -9,8 +9,8 @@ import ImportMnemonicWallet from '../../../create-wallet/ImportWalletWizard/Impo
 import NewWalletWizard from '../../../create-wallet/NewWalletWizard';
 import {
   AddContact, BroadcastTx, ContactList as AddressBook, CreateAccountWizard, CreateTransaction,
-  ExportPaperWallet, GenerateAccount, Home, ImportLedgerAccount, ImportMnemonic,
-  MnemonicWizard, PaperWallet, Settings, TxDetails, WalletDetails, Welcome
+  ExportPaperWallet, GenerateAccount, Home, ImportLedgerAccount,
+  PaperWallet, Settings, TxDetails, WalletDetails, Welcome
 } from '../../../index';
 import CreateWalletScreen from "../../../create-wallet/CreateWalletScreen";
 
@@ -92,19 +92,7 @@ const Screen = (props: IScreenProps) => {
   if (props.screen === screen.Pages.GENERATE_ACCOUNT) {
     return <GenerateAccount />;
   }
-  // if (props.screen === 'importjson') {
-  //   return <ImportJson />;
-  // }
-  // if (props.screen === 'landing-importjson') {
-  //   return <ImportJson backLabel='Back'/>;
-  // }
 
-  if (props.screen === 'import-mnemonic') {
-    return <ImportMnemonic />;
-  }
-  if (props.screen === 'new-mnemonic') {
-    return <MnemonicWizard />;
-  }
   if (props.screen === 'welcome') {
     return <Welcome currentTermsVersion={props.termsVersion} />;
   }

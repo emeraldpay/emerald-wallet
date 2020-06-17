@@ -3,7 +3,8 @@ import {Uuid} from "@emeraldpay/emerald-vault-core";
 
 export enum SeedType {
   SELECTED,
-  GENERATE
+  GENERATE,
+  IMPORT
 }
 
 export interface SeedSelected {
@@ -11,8 +12,8 @@ export interface SeedSelected {
   id: string
 }
 
-export interface SeedGenerated {
-  type: SeedType.GENERATE,
+export interface SeedCreate {
+  type: SeedType.GENERATE | SeedType.IMPORT,
   mnemonic?: string,
   password?: string
 }
@@ -22,14 +23,14 @@ export interface SeedUnlock {
   password: string
 }
 
-export type SeedResult = SeedSelected | SeedGenerated | 'empty';
+export type SeedResult = SeedSelected | SeedCreate | 'empty';
 
 export function isSeedSelected(obj: SeedResult): obj is SeedSelected {
   return typeof obj == 'object' && obj.type == SeedType.SELECTED
 }
 
-export function isSeedGenerate(obj: SeedResult): obj is SeedGenerated {
-  return typeof obj == 'object' && obj.type == SeedType.GENERATE
+export function isSeedCreate(obj: SeedResult): obj is SeedCreate {
+  return typeof obj == 'object' && (obj.type == SeedType.GENERATE || obj.type == SeedType.IMPORT)
 }
 
 export interface TWalletOptions {

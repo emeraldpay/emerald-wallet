@@ -92,7 +92,7 @@ describe("Generate Mnemonic", () => {
       ...defaultResult(),
       type: {type: SeedType.GENERATE}
     }
-    const start = CreateWalletFlow.create(initial, STEP_CODE.GENERATE_MNEMONIC, noCreate);
+    const start = CreateWalletFlow.create(initial, STEP_CODE.MNEMONIC_GENERATE, noCreate);
     expect(start.canGoNext()).toBeFalsy();
     let act = start
       .applyMnemonic("test test test", undefined);
@@ -100,6 +100,25 @@ describe("Generate Mnemonic", () => {
       type: SeedType.GENERATE,
       mnemonic: "test test test",
       password: undefined
+    });
+    expect(act.getCurrentStep().code).toBe(STEP_CODE.LOCK_SEED);
+  });
+});
+
+describe("Import Mnemonic", () => {
+  it("goes to lock", () => {
+    const initial: Result = {
+      ...defaultResult(),
+      type: {type: SeedType.IMPORT}
+    }
+    const start = CreateWalletFlow.create(initial, STEP_CODE.MNEMONIC_IMPORT, noCreate);
+    expect(start.canGoNext()).toBeFalsy();
+    let act = start
+      .applyMnemonic("test test test", "test");
+    expect(act.getMnemonic()).toEqual({
+      type: SeedType.IMPORT,
+      mnemonic: "test test test",
+      password: "test"
     });
     expect(act.getCurrentStep().code).toBe(STEP_CODE.LOCK_SEED);
   });

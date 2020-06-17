@@ -2,7 +2,7 @@ import {connect} from "react-redux";
 import {accounts, hdpathPreview, IState, screen, settings} from "@emeraldwallet/store";
 import * as React from "react";
 import {Dispatch} from "react";
-import {isSeedGenerate, isSeedSelected, Result} from "./flow/types";
+import {isSeedCreate, isSeedSelected, Result} from "./flow/types";
 import CreateWalletWizard from "./CreateWalletWizard";
 import * as vault from "@emeraldpay/emerald-vault-core";
 import {Pages} from "@emeraldwallet/store/lib/screen";
@@ -55,7 +55,7 @@ export default connect(
           };
           const entries: vault.AddEntry[] = [];
           const type = value.type;
-          if (isSeedSelected(type) || isSeedGenerate(type)) {
+          if (isSeedSelected(type) || isSeedCreate(type)) {
             const unlock = value.unlock;
             if (typeof unlock == "object" && unlock.id && unlock.password && typeof value.seedAccount == 'number') {
               const account: number = value.seedAccount;

@@ -24,7 +24,7 @@ const defaults: Partial<OwnProps> = {
  *
  */
 const Component = ((props: OwnProps) => {
-  props = {...props, ...defaults};
+  props = {...defaults, ...props};
   const styles = useStyles();
   const {classes} = props;
 

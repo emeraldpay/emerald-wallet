@@ -1,214 +1,82 @@
-import { Input, Page, Warning, WarningHeader, WarningText } from '@emeraldplatform/ui';
-import { Back } from '@emeraldplatform/ui-icons';
-import { BlockchainCode, IBlockchain } from '@emeraldwallet/core';
-import { withStyles } from '@material-ui/core/styles';
+import {Button, Grid, TextField, Typography} from '@material-ui/core';
+import {makeStyles} from '@material-ui/core/styles';
 import * as React from 'react';
-import Button from '../../common/Button';
-import ChainSelector from '../../common/ChainSelector';
-import FormRow from '../../common/FormRow';
-import HdPath from '../../common/HdPath';
-import {Typography} from '@material-ui/core';
+import {Box, createStyles} from "@material-ui/core";
+import {ConfirmedPasswordInput} from "../../../index";
 
-export const styles = {
-  mnemonicLabel: {
-    color: '#191919',
-    fontSize: '16px',
-    fontWeight: 500,
-    height: '24px',
-    lineHeight: '24px'
-  },
-  passwordLabel: {
-    color: '#191919',
-    fontSize: '16px',
-    fontWeight: 500,
-    height: '24px',
-    lineHeight: '24px'
-  },
-  passwordSubLabel: {
-    color: '#191919',
-    fontSize: '14px',
-    height: '22px',
-    lineHeight: '22px'
-  }
-};
+const useStyles = makeStyles(
+  createStyles({
+    saveButton: {
+      width: "200px",
+      margin: "5px"
+    },
+  })
+);
 
-export interface IProps {
-  blockchains: IBlockchain[];
-  onSubmit?: any;
-  onBack?: any;
-  classes: any;
-  error?: any;
-  invalid?: any;
-  mnemonic?: string;
-  initialValues: {
-    hdpath: string
-  };
+// Component properties
+interface OwnProps {
+  classes?: any;
+  onSubmit: (mnemonic: string, password: string | undefined) => void;
 }
 
-interface IState {
-  password: string;
-  confirmedPassword: string;
-  hdpath: string;
-  mnemonic: string;
-  blockchain: BlockchainCode;
+const defaults: Partial<OwnProps> = {
+  classes: {}
 }
 
-export class ImportMnemonic extends React.Component<IProps, IState> {
-  constructor (props: IProps) {
-    super(props);
-    this.state = {
-      blockchain: props.blockchains.length > 0 ? props.blockchains[0].params.code : BlockchainCode.ETH,
-      confirmedPassword: '',
-      hdpath: this.props.initialValues.hdpath,
-      mnemonic: props.mnemonic || '',
-      password: ''
-    };
-  }
-
-  public handlePasswordChange = (event: any) => {
-    this.setState({
-      password: event.target.value
-    });
-  }
-
-  public handleConfirmedPasswordChange = (event: any) => {
-    this.setState({
-      confirmedPassword: event.target.value
-    });
-  }
-
-  public handleSubmit = () => {
-    if (this.props.onSubmit) {
-      const { blockchain, mnemonic, password, hdpath } = this.state;
-      this.props.onSubmit({ blockchain, mnemonic, password, hdpath });
-    }
-  }
-
-  public handleHdPathChange = (hdpath) => {
-    this.setState({
-      hdpath
-    });
-  }
-
-  public handleMnemonicChange = (event: any) => {
-    this.setState({
-      mnemonic: event.target.value
-    });
-  }
-
-  public handleChainChange = (value: BlockchainCode) => {
-    this.setState({
-      blockchain: value
-    });
-  }
-
-  public render () {
-    const {
-      onBack, invalid, error, classes, blockchains
-    } = this.props;
-    const {
-      blockchain, password, confirmedPassword, hdpath, mnemonic
-    } = this.state;
-    const confirmPwdErrorText = (confirmedPassword.length > 0 && password !== confirmedPassword) ? 'Password does not match' : null;
-    return (
-      <Page title='Import Mnemonic' leftIcon={<Back onClick={onBack}/>}>
-        <div>
-          <FormRow
-            rightColumn={(
-              <div style={{width: '100%'}}>
-                <Typography className={classes.passwordLabel}>Enter a strong password</Typography>
-                <Typography className={classes.passwordSubLabel}>This password will be required to confirm all account
-                  operations.
-                </Typography>
-                <div style={{marginTop: '30px'}}>
-                  <Input
-                    placeholder='At least 8 characters'
-                    type='password'
-                    value={password}
-                    onChange={this.handlePasswordChange}
-                  />
-                </div>
-              </div>
-            )}
-          />
-
-          <FormRow
-            rightColumn={(
-              <Warning fullWidth={true}>
-                <WarningHeader>Don&#39;t forget it.</WarningHeader>
-                <WarningText>If you forget this password, you will lose access to the account and its
-                  funds.</WarningText>
-              </Warning>
-            )}
-          />
-
-          <FormRow
-            rightColumn={(
-              <Input
-                placeholder='Confirm Password'
-                type='password'
-                onChange={this.handleConfirmedPasswordChange}
-                value={confirmedPassword}
-                errorText={confirmPwdErrorText}
-              />
-            )}
-          />
-
-          <FormRow
-            rightColumn={(
-              <div style={{ width: '100%' }}>
-                <Typography className={classes.mnemonicLabel}>HD derivation path</Typography>
-                <div>
-                  <HdPath value={hdpath} onChange={this.handleHdPathChange}/>
-                </div>
-              </div>
-            )}
-          />
-
-          <FormRow
-            rightColumn={(
-              <div style={{ width: '100%' }}>
-                <Typography className={classes.mnemonicLabel}>Enter a mnemonic phrase</Typography>
-                <div>
-                  <Input
-                    value={mnemonic}
-                    onChange={this.handleMnemonicChange}
-                    multiline={true}
-                    rowsMax={4}
-                    rows={4}
-                  />
-                </div>
-              </div>
-            )}
-          />
-
-          <FormRow
-            rightColumn={(
-              <React.Fragment>
-                <Button
-                  primary={true}
-                  label='Continue'
-                  disabled={invalid}
-                  onClick={this.handleSubmit}
-                />
-                <ChainSelector onChange={this.handleChainChange} value={blockchain} chains={blockchains}/>
-              </React.Fragment>
-            )}
-          />
-
-          {error && (
-            <FormRow
-              rightColumn={(
-                <Warning>
-                  <WarningText>{error}</WarningText>
-                </Warning>
-              )}
-            />
-          )}
-        </div>
-      </Page>
-    );
-  }
+function isValidMnemonic(text: string): boolean {
+  //TODO verify against BIP-39 list
+  return text && text.length > 0 && text.split(" ").length >= 15;
 }
 
-export default withStyles(styles)(ImportMnemonic);
+
+/**
+ *
+ */
+const Component = ((props: OwnProps) => {
+  props = {...props, ...defaults};
+  const styles = useStyles();
+  const {classes} = props;
+
+  const [mnemonic, setMnemonic] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [done, setDone] = React.useState(false);
+
+  return <Grid container={true}>
+    <Grid item={true} xs={12}>
+      <Typography className={classes.mnemonicLabel}>Enter a mnemonic phrase</Typography>
+    </Grid>
+    <Grid item={true} xs={12}>
+      <Grid container={true}>
+        <Grid item={true} xs={8}>
+          <TextField
+            fullWidth={true}
+            multiline={true}
+            rowsMax={4}
+            rows={4}
+            value={mnemonic}
+            disabled={done}
+            onChange={(e) => setMnemonic(e.target.value)}/>
+          <ConfirmedPasswordInput helperText={
+            "(optional) Additional password to protect the secret mnemonic phrase. " +
+            "Please save the password, if you lose it you'll be unable to recover your wallet."}
+                                  disabled={done}
+                                  buttonLabel={"Set password"}
+                                  onChange={setPassword}/>
+        </Grid>
+        <Grid item={true} xs={4}>
+          <Button variant={"contained"}
+                  disabled={done || !isValidMnemonic(mnemonic)}
+                  className={styles.saveButton}
+                  color={"primary"}
+                  onClick={() => {
+                    props.onSubmit(mnemonic, password.length > 0 ? password : undefined);
+                    setDone(true);
+                  }}>Save</Button>
+        </Grid>
+      </Grid>
+    </Grid>
+
+  </Grid>
+})
+
+export default Component;

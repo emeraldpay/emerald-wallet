@@ -56,6 +56,7 @@ const Component = (({seeds, onSelect}: Props & Actions & OwnProps) => {
       <PublishIcon/>
     </ListItemIcon>
     <ListItemText primary={"Import existing seed"}
+                  onClick={() => onSelect({type: SeedType.IMPORT})}
                   secondary={"Import another mnemonic phrase (21 or 24 words) or use new Hardware Wallet (Ledger Nano)"}/>
   </ListItem>
 
