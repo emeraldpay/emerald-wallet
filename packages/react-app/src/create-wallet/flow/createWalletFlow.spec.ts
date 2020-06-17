@@ -1,6 +1,6 @@
 import {CreateWalletFlow, STEP_CODE} from "./createWalletFlow";
 import {BlockchainCode} from "@emeraldwallet/core";
-import {defaultResult, Result, SeedType} from "./types";
+import {defaultResult, KeySourceType, PkImportJson, Result} from "./types";
 
 const noCreate = () => {
 };
@@ -25,7 +25,7 @@ describe("Select Source Type", () => {
   it("when seed selected", () => {
     const start = new CreateWalletFlow(noCreate);
     const act = start
-      .applySource({type: SeedType.SELECTED, id: "test"});
+      .applySource({type: KeySourceType.SEED_SELECTED, id: "test"});
 
     expect(act.getCurrentStep().code).toBe(STEP_CODE.OPTIONS);
     expect(act.getCurrentStep().index).toBe(1);
@@ -45,7 +45,7 @@ describe("Select Options", () => {
   it("empty label", () => {
     const initial: Result = {
       ...defaultResult(),
-      type: {type: SeedType.SELECTED, id: "test"}
+      type: {type: KeySourceType.SEED_SELECTED, id: "test"}
     }
     const start = CreateWalletFlow.create(initial, STEP_CODE.OPTIONS, noCreate);
     const act = start
@@ -59,7 +59,7 @@ describe("Select Options", () => {
 
   it("some label", () => {
     const start = new CreateWalletFlow(noCreate)
-      .applySource({type: SeedType.SELECTED, id: "test"});
+      .applySource({type: KeySourceType.SEED_SELECTED, id: "test"});
     const act = start
       .applyOptions({label: "some label"})
       .applyNext();
@@ -84,20 +84,34 @@ describe("Select Options", () => {
     expect(result!.type).toBe("empty");
     expect(act.getCurrentStep().code).toBe(STEP_CODE.CREATED)
   });
+
+  it("goes to import key", () => {
+    const initial: Result = {
+      ...defaultResult(),
+      type: {
+        type: KeySourceType.PK_ANY
+      }
+    }
+    const start = CreateWalletFlow.create(initial, STEP_CODE.OPTIONS, noCreate);
+    const act = start
+      .applyOptions({label: "test"})
+      .applyNext();
+    expect(act.getCurrentStep().code).toBe(STEP_CODE.PK_IMPORT)
+  });
 });
 
 describe("Generate Mnemonic", () => {
   it("goes to lock", () => {
     const initial: Result = {
       ...defaultResult(),
-      type: {type: SeedType.GENERATE}
+      type: {type: KeySourceType.SEED_GENERATE}
     }
     const start = CreateWalletFlow.create(initial, STEP_CODE.MNEMONIC_GENERATE, noCreate);
     expect(start.canGoNext()).toBeFalsy();
     let act = start
       .applyMnemonic("test test test", undefined);
     expect(act.getMnemonic()).toEqual({
-      type: SeedType.GENERATE,
+      type: KeySourceType.SEED_GENERATE,
       mnemonic: "test test test",
       password: undefined
     });
@@ -105,18 +119,76 @@ describe("Generate Mnemonic", () => {
   });
 });
 
+describe("Import PK", () => {
+  it("json is set", () => {
+    const initial: Result = {
+      ...defaultResult(),
+      type: {
+        type: KeySourceType.PK_ANY
+      }
+    }
+    const start = CreateWalletFlow.create(initial, STEP_CODE.PK_IMPORT, noCreate);
+    const act = start.applyImportPk("{}");
+    expect(act.canGoNext()).toBeTruthy();
+    expect(act.getResult().type).toEqual({type: KeySourceType.PK_WEB3_JSON, json: "{}"});
+  });
+
+  it("json is unset", () => {
+    const initial: Result = {
+      ...defaultResult(),
+      type: {
+        type: KeySourceType.PK_ANY
+      }
+    }
+    const start = CreateWalletFlow.create(initial, STEP_CODE.PK_IMPORT, noCreate);
+    const act = start
+      .applyImportPk("{}")
+      .applyImportPk(undefined);
+    expect(act.canGoNext()).toBeFalsy();
+    expect(act.getResult().type).toEqual({type: KeySourceType.PK_ANY});
+  });
+
+  it("raw is set", () => {
+    const initial: Result = {
+      ...defaultResult(),
+      type: {
+        type: KeySourceType.PK_ANY
+      }
+    }
+    const start = CreateWalletFlow.create(initial, STEP_CODE.PK_IMPORT, noCreate);
+    const act = start.applyImportPk({raw: "0x00", password: "test"});
+    expect(act.canGoNext()).toBeTruthy();
+    expect(act.getResult().type).toEqual({type: KeySourceType.PK_RAW, pk: "0x00", password: "test"});
+  });
+
+  it("raw is unset", () => {
+    const initial: Result = {
+      ...defaultResult(),
+      type: {
+        type: KeySourceType.PK_ANY
+      }
+    }
+    const start = CreateWalletFlow.create(initial, STEP_CODE.PK_IMPORT, noCreate);
+    const act = start
+      .applyImportPk({raw: "0x00", password: "test"})
+      .applyImportPk(undefined);
+    expect(act.canGoNext()).toBeFalsy();
+    expect(act.getResult().type).toEqual({type: KeySourceType.PK_ANY});
+  });
+});
+
 describe("Import Mnemonic", () => {
   it("goes to lock", () => {
     const initial: Result = {
       ...defaultResult(),
-      type: {type: SeedType.IMPORT}
+      type: {type: KeySourceType.SEED_IMPORT}
     }
     const start = CreateWalletFlow.create(initial, STEP_CODE.MNEMONIC_IMPORT, noCreate);
     expect(start.canGoNext()).toBeFalsy();
     let act = start
       .applyMnemonic("test test test", "test");
     expect(act.getMnemonic()).toEqual({
-      type: SeedType.IMPORT,
+      type: KeySourceType.SEED_IMPORT,
       mnemonic: "test test test",
       password: "test"
     });
@@ -128,7 +200,7 @@ describe("Lock seed", () => {
   it("goes to blockchains", () => {
     const initial: Result = {
       ...defaultResult(),
-      type: {type: SeedType.GENERATE, mnemonic: "test test test"},
+      type: {type: KeySourceType.SEED_GENERATE, mnemonic: "test test test"},
     }
     const start = CreateWalletFlow.create(initial, STEP_CODE.LOCK_SEED, noCreate);
     expect(start.canGoNext()).toBeFalsy();
@@ -145,7 +217,7 @@ describe("Select Blockchain", () => {
   it("goes to unlock", () => {
     const initial: Result = {
       ...defaultResult(),
-      type: {type: SeedType.SELECTED, id: "test"}
+      type: {type: KeySourceType.SEED_SELECTED, id: "test"}
     }
     const start = CreateWalletFlow.create(initial, STEP_CODE.SELECT_BLOCKCHAIN, noCreate);
     expect(start.canGoNext()).toBeFalsy();
@@ -159,7 +231,7 @@ describe("Select Blockchain", () => {
   it("goes to account if knows password", () => {
     const initial: Result = {
       ...defaultResult(),
-      type: {type: SeedType.GENERATE},
+      type: {type: KeySourceType.SEED_GENERATE},
       unlock: {id: "test-uuid", password: "testpwd"}
     }
     const start = CreateWalletFlow.create(initial, STEP_CODE.SELECT_BLOCKCHAIN, noCreate);
@@ -170,6 +242,23 @@ describe("Select Blockchain", () => {
     act = act.applyNext();
     expect(act.getCurrentStep().code).toBe(STEP_CODE.SELECT_HD_ACCOUNT);
   });
+
+  it("create if import pk", () => {
+    const initial: Result = {
+      ...defaultResult(),
+      type: {type: KeySourceType.PK_WEB3_JSON, json: "{}"},
+    }
+    let result: Result | undefined = undefined;
+    const start = CreateWalletFlow.create(initial, STEP_CODE.SELECT_BLOCKCHAIN, (it) => result = it);
+    expect(start.canGoNext()).toBeFalsy();
+    let act = start
+      .applyBlockchains([BlockchainCode.ETH]);
+    expect(act.canGoNext()).toBeTruthy();
+    act = act.applyNext();
+    expect(act.getCurrentStep().code).toBe(STEP_CODE.CREATED);
+    expect(result).toBeDefined();
+  })
+
 });
 
 
@@ -177,7 +266,7 @@ describe("Unlock Seed", () => {
   it("unlocked with password", () => {
     const initial: Result = {
       ...defaultResult(),
-      type: {type: SeedType.SELECTED, id: "test"}
+      type: {type: KeySourceType.SEED_SELECTED, id: "test"}
     }
     const start = CreateWalletFlow.create(initial, STEP_CODE.UNLOCK_SEED, noCreate);
     expect(start.canGoNext()).toBeFalsy();
@@ -192,7 +281,7 @@ describe("Account", () => {
   it("creates after selection", () => {
     const initial: Result = {
       ...defaultResult(),
-      type: {type: SeedType.SELECTED, id: "test"},
+      type: {type: KeySourceType.SEED_SELECTED, id: "test"},
       unlock: {password: "test", id: "test"},
       blockchains: [BlockchainCode.ETH]
     }

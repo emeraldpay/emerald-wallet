@@ -5,7 +5,7 @@ import {Dispatch} from 'react';
 import {connect} from 'react-redux';
 import * as vault from "@emeraldpay/emerald-vault-core";
 import SelectKeySource from "./SelectKeySource";
-import {defaultResult, isSeedSelected, Result, SeedResult, SeedSelected, TWalletOptions} from "./flow/types";
+import {defaultResult, isSeedSelected, Result, KeysSource, SeedSelected, TWalletOptions, isPk} from "./flow/types";
 import WalletOptions from "./WalletOptions";
 import Finish from "./Finish";
 import SelectCoins from "../create-account/SelectCoins";
@@ -14,7 +14,7 @@ import SelectHDPath from "../create-account/SelectHDPath";
 import {SourceSeed} from "@emeraldwallet/store/lib/hdpath-preview/types";
 import UnlockSeed from "../create-account/UnlockSeed";
 import {CreateWalletFlow, STEP_CODE} from "./flow/createWalletFlow";
-import {ImportMnemonic, NewMnemonic} from "@emeraldwallet/ui";
+import {ImportMnemonic, ImportPk, NewMnemonic} from "@emeraldwallet/ui";
 import SaveMnemonic from "./SaveMnemonic";
 import {SeedDefinition, Uuid} from "@emeraldpay/emerald-vault-core";
 
@@ -55,15 +55,23 @@ export const CreateWizard = ((props: Props & Actions & OwnProps) => {
     activeStepPage = <WalletOptions onChange={applyWithState(step.applyOptions)}/>
   } else if (page.code == STEP_CODE.SELECT_BLOCKCHAIN) {
     activeStepPage =
-      <SelectCoins blockchains={props.blockchains} enabled={[]} onChange={applyWithState(step.applyBlockchains)}/>;
+      <SelectCoins blockchains={props.blockchains}
+                   multiple={!isPk(step.getResult().type)}
+                   enabled={[]}
+                   onChange={applyWithState(step.applyBlockchains)}/>;
   } else if (page.code == STEP_CODE.UNLOCK_SEED) {
     activeStepPage = <UnlockSeed onUnlock={applyWithState(step.applySeedPassword)}/>
   } else if (page.code == STEP_CODE.MNEMONIC_GENERATE) {
     activeStepPage = <NewMnemonic onGenerate={props.mnemonicGenerator}
-                                  onContinue={(mnemonic, password) => setStep(step.applyMnemonic(mnemonic, password))}/>
+                                  onContinue={(mnemonic, password) =>
+                                    setStep(step.applyMnemonic(mnemonic, password))
+                                  }/>
   } else if (page.code == STEP_CODE.MNEMONIC_IMPORT) {
-    activeStepPage =
-      <ImportMnemonic onSubmit={(mnemonic, password) => setStep(step.applyMnemonic(mnemonic, password))}/>
+    activeStepPage = <ImportMnemonic onSubmit={(mnemonic, password) =>
+      setStep(step.applyMnemonic(mnemonic, password))
+    }/>
+  } else if (page.code == STEP_CODE.PK_IMPORT) {
+    activeStepPage = <ImportPk onChange={applyWithState(step.applyImportPk)}/>
   } else if (page.code == STEP_CODE.LOCK_SEED) {
     const onLock = (password: string) => {
       if (!props.onSaveSeed) {

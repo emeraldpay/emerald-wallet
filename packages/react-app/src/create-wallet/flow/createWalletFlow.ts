@@ -1,11 +1,12 @@
 import {
   defaultResult,
+  isPk, isPkJson, isPkRaw,
   isSeedCreate,
   isSeedSelected,
+  KeySourceType,
+  KeysSource,
   Result,
   SeedCreate,
-  SeedResult,
-  SeedType,
   StepDescription,
   StepDetails,
   TWalletOptions
@@ -23,6 +24,7 @@ export enum STEP_CODE {
   CREATED = "created",
   MNEMONIC_GENERATE = "mnemonicGenerate",
   MNEMONIC_IMPORT = "mnemonicImport",
+  PK_IMPORT = "pkImport"
 }
 
 const STEPS: { [key in STEP_CODE]: StepDescription } = {
@@ -61,6 +63,10 @@ const STEPS: { [key in STEP_CODE]: StepDescription } = {
   "lockSeed": {
     code: STEP_CODE.LOCK_SEED,
     title: "Save Secret Phrase"
+  },
+  "pkImport": {
+    code: STEP_CODE.PK_IMPORT,
+    title: "Import Private Key"
   }
 }
 
@@ -89,14 +95,16 @@ export class CreateWalletFlow {
     result.push(STEPS[STEP_CODE.KEY_SOURCE]);
     result.push(STEPS[STEP_CODE.OPTIONS]);
     if (isSeedCreate(this.result.type)) {
-      if (this.result.type.type == SeedType.GENERATE) {
+      if (this.result.type.type == KeySourceType.SEED_GENERATE) {
         result.push(STEPS[STEP_CODE.MNEMONIC_GENERATE]);
-      } else if (this.result.type.type == SeedType.IMPORT) {
+      } else if (this.result.type.type == KeySourceType.SEED_IMPORT) {
         result.push(STEPS[STEP_CODE.MNEMONIC_IMPORT]);
       }
       result.push(STEPS[STEP_CODE.LOCK_SEED]);
+    } else if (isPk(this.result.type)) {
+      result.push(STEPS[STEP_CODE.PK_IMPORT]);
     }
-    if (isSeedBased) {
+    if (isSeedBased || isPk(this.result.type)) {
       result.push(STEPS[STEP_CODE.SELECT_BLOCKCHAIN]);
     }
     if (isSeedSelected(this.result.type)) {
@@ -131,6 +139,9 @@ export class CreateWalletFlow {
     if (this.step == STEP_CODE.SELECT_HD_ACCOUNT) {
       return typeof this.result.seedAccount == 'number';
     }
+    if (this.step == STEP_CODE.PK_IMPORT) {
+      return isPkJson(this.result.type) || isPkRaw(this.result.type);
+    }
     return true;
   }
 
@@ -164,28 +175,35 @@ export class CreateWalletFlow {
       } else if (isSeedSelected(this.result.type)) {
         copy.step = STEP_CODE.SELECT_BLOCKCHAIN;
       } else if (isSeedCreate(this.result.type)) {
-        if (this.result.type.type == SeedType.GENERATE) {
+        if (this.result.type.type == KeySourceType.SEED_GENERATE) {
           copy.step = STEP_CODE.MNEMONIC_GENERATE;
-        } else if (this.result.type.type == SeedType.IMPORT) {
+        } else if (this.result.type.type == KeySourceType.SEED_IMPORT) {
           copy.step = STEP_CODE.MNEMONIC_IMPORT;
         } else {
           throw new Error("Invalid seed type: " + this.result.type.type)
         }
+      } else if (isPk(this.result.type)) {
+        copy.step = STEP_CODE.PK_IMPORT;
       }
     } else if (this.step == STEP_CODE.SELECT_BLOCKCHAIN) {
       if (isSeedSelected(this.result.type)) {
         copy.step = STEP_CODE.UNLOCK_SEED;
       } else if (isSeedCreate(this.result.type)) {
         copy.step = STEP_CODE.SELECT_HD_ACCOUNT;
+      } else if (isPk(this.result.type)) {
+        this.onCreate(this.result);
+        copy.step = STEP_CODE.CREATED;
       }
     } else if (this.step == STEP_CODE.SELECT_HD_ACCOUNT) {
       this.onCreate(this.result);
       copy.step = STEP_CODE.CREATED;
+    } else if (this.step == STEP_CODE.PK_IMPORT) {
+      copy.step = STEP_CODE.SELECT_BLOCKCHAIN;
     }
     return copy;
   }
 
-  applySource(value: SeedResult): CreateWalletFlow {
+  applySource(value: KeysSource): CreateWalletFlow {
     const copy = this.copy();
     copy.result = {...this.result, type: value};
     copy.step = STEP_CODE.OPTIONS;
@@ -249,6 +267,31 @@ export class CreateWalletFlow {
     }
     copy.result = {...this.result, unlock: {id, password}};
     copy.step = STEP_CODE.SELECT_BLOCKCHAIN;
+    return copy;
+  }
+
+  applyImportPk(value: { raw: string, password: string } | string | undefined): CreateWalletFlow {
+    const copy = this.copy();
+    if (!isPk(copy.result.type)) {
+      throw new Error("Not a PK import");
+    }
+    if (typeof value == "undefined") {
+      // then remove already imported
+      copy.result.type = {
+        type: KeySourceType.PK_ANY
+      }
+    } else if (typeof value == 'string') {
+      copy.result.type = {
+        type: KeySourceType.PK_WEB3_JSON,
+        json: value
+      }
+    } else if (typeof value == 'object') {
+      copy.result.type = {
+        type: KeySourceType.PK_RAW,
+        pk: value.raw,
+        password: value.password
+      }
+    }
     return copy;
   }
 }

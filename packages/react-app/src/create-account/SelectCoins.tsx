@@ -41,7 +41,7 @@ const useStyles = makeStyles(
 /**
  *
  */
-const Component = (({blockchains, enabled, onChange}: Props & Actions & OwnProps) => {
+const Component = (({blockchains, enabled, onChange, multiple}: Props & Actions & OwnProps) => {
 
   const styles = useStyles();
   const selectCoinsStep: JSX.Element[] = [];
@@ -54,11 +54,15 @@ const Component = (({blockchains, enabled, onChange}: Props & Actions & OwnProps
 
   function toggleBlockchain(code: BlockchainCode) {
     let copy = [] as BlockchainCode[];
-    copy = copy.concat(justEnabled);
-    if (isJustEnabled(code)) {
-      copy = justEnabled.filter((it) => it != code);
-    } else {
+    if (!multiple) {
       copy.push(code);
+    } else {
+      copy = copy.concat(justEnabled);
+      if (isJustEnabled(code)) {
+        copy = justEnabled.filter((it) => it != code);
+      } else {
+        copy.push(code);
+      }
     }
     setJustEnabled(copy);
     onChange(copy);
@@ -125,11 +129,14 @@ type OwnProps = {
   blockchains: IBlockchain[],
   enabled: BlockchainCode[],
   onChange: (value: BlockchainCode[]) => void;
+  multiple?: boolean;
 }
 
 export default connect(
   (state: IState, ownProps: OwnProps): Props => {
-    return {}
+    return {
+      multiple: typeof ownProps.multiple == "undefined" || ownProps.multiple
+    }
   },
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
     return {}

@@ -2,7 +2,7 @@ import {connect} from "react-redux";
 import {accounts, hdpathPreview, IState, screen, settings} from "@emeraldwallet/store";
 import * as React from "react";
 import {Dispatch} from "react";
-import {isSeedCreate, isSeedSelected, Result} from "./flow/types";
+import {isPk, isPkJson, isPkRaw, isSeedCreate, isSeedSelected, Result} from "./flow/types";
 import CreateWalletWizard from "./CreateWalletWizard";
 import * as vault from "@emeraldpay/emerald-vault-core";
 import {Pages} from "@emeraldwallet/store/lib/screen";
@@ -72,6 +72,21 @@ export default connect(
               })
             } else {
               console.warn("Account number is not set")
+            }
+          } else if (isPk(type)) {
+            if (isPkJson(type)) {
+              entries.push({
+                type: "ethereum-json",
+                key: type.json,
+                blockchain: blockchainCodeToId(value.blockchains[0])
+              })
+            } else if (isPkRaw(type)) {
+              entries.push({
+                type: "raw-pk-hex",
+                key: type.pk,
+                password: type.password,
+                blockchain: blockchainCodeToId(value.blockchains[0])
+              })
             }
           }
           dispatch(accounts.actions.createWallet(opts, entries, handler));
