@@ -22,45 +22,46 @@ const Component = (({seeds, onSelect}: Props & Actions & OwnProps) => {
 
   if (seeds.length > 1) {
     seedsList = seeds.map((seed) =>
-      <ListItem key={"seed-" + seed.id}>
+      <ListItem key={"seed-" + seed.id}
+                onClick={() => onSelect({type: KeySourceType.SEED_SELECTED, id: seed.id!})}>
         <ListItemIcon>
           <FileCopyIcon/>
         </ListItemIcon>
         <ListItemText primary={"Seed"}
-                      onClick={() => onSelect({type: KeySourceType.SEED_SELECTED, id: seed.id!})}
                       secondary={"Seed " + seed.id}/>
       </ListItem>
     )
   } else if (seeds.length == 1) {
-    seedsList = <ListItem key={"seed-" + seeds[0].id}>
+    seedsList = <ListItem key={"seed-" + seeds[0].id}
+                          onClick={() => onSelect({type: KeySourceType.SEED_SELECTED, id: seeds[0].id!})}>
       <ListItemIcon>
         <FileCopyIcon/>
       </ListItemIcon>
       <ListItemText primary={"Use current seed"}
-                    onClick={() => onSelect({type: KeySourceType.SEED_SELECTED, id: seeds[0].id!})}
                     secondary={"Seed " + seeds[0].id}/>
     </ListItem>
   }
 
-  const createSeed = <ListItem key={"create-seed"}>
+  const createSeed = <ListItem key={"create-seed"}
+                               onClick={() => onSelect({type: KeySourceType.SEED_GENERATE})}>
     <ListItemIcon>
       <AddBoxIcon/>
     </ListItemIcon>
     <ListItemText primary={"Create new seed"}
-                  onClick={() => onSelect({type: KeySourceType.SEED_GENERATE})}
                   secondary={"Generate a new mnemonic phrase for a new wallet (24 words)"}/>
   </ListItem>
 
-  const importSeed = <ListItem key={"import-seed"}>
+  const importSeed = <ListItem key={"import-seed"}
+                               onClick={() => onSelect({type: KeySourceType.SEED_IMPORT})}>
     <ListItemIcon>
       <PublishIcon/>
     </ListItemIcon>
     <ListItemText primary={"Import existing seed"}
-                  onClick={() => onSelect({type: KeySourceType.SEED_IMPORT})}
                   secondary={"Import another mnemonic phrase (21 or 24 words) or use new Hardware Wallet (Ledger Nano)"}/>
   </ListItem>
 
-  const useKey = <ListItem key={"useKey"} onClick={() => onSelect({type: KeySourceType.PK_ANY})}>
+  const useKey = <ListItem key={"useKey"}
+                           onClick={() => onSelect({type: KeySourceType.PK_ANY})}>
     <ListItemIcon>
       <PublishIcon/>
     </ListItemIcon>
@@ -68,7 +69,8 @@ const Component = (({seeds, onSelect}: Props & Actions & OwnProps) => {
                   secondary={"Create a new wallet dedicated to a single Private Key, by importing a raw key or Ethereum JSON file"}/>
   </ListItem>
 
-  const nothing = <ListItem key={"nothing"} onClick={() => onSelect('empty')}>
+  const nothing = <ListItem key={"nothing"}
+                            onClick={() => onSelect('empty')}>
     <ListItemIcon>
       <ExposureZeroIcon/>
     </ListItemIcon>

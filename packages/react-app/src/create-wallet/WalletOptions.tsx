@@ -2,8 +2,17 @@ import {connect} from "react-redux";
 import {IState} from "@emeraldwallet/store";
 import {Dispatch} from "react";
 import * as React from 'react';
-import {TextField} from "@material-ui/core";
+import {createStyles, TextField} from "@material-ui/core";
 import {TWalletOptions} from "./flow/types";
+import {makeStyles} from "@material-ui/core/styles";
+
+const useStyles = makeStyles(
+  createStyles({
+    field: {
+      width: "400px"
+    },
+  })
+);
 
 type Props = {}
 type Actions = {}
@@ -13,10 +22,11 @@ type Actions = {}
  */
 const Component = (({onChange}: Props & Actions & OwnProps) => {
   const [current, setCurrent] = React.useState({label: ""} as TWalletOptions)
+  const styles = useStyles();
 
   return <form noValidate autoComplete="off">
     <TextField id="label"
-               fullWidth={true}
+               className={styles.field}
                label="Label"
                helperText="(optional) Wallet Label"
                value={current.label}

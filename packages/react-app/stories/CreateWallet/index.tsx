@@ -6,6 +6,7 @@ import {providerForStore} from "../storeProvider";
 import {SeedDefinition, SeedDescription} from "@emeraldpay/emerald-vault-core";
 import {BlockchainCode, Blockchains, IBlockchain} from "@emeraldwallet/core";
 import {BackendMock} from "../backendMock";
+import withTheme from "../themeProvider";
 
 const handlers = {
   onCreate: (value) => {
@@ -60,6 +61,7 @@ const blockchains: IBlockchain[] = [
 
 storiesOf('CreateWallet', module)
   .addDecorator(providerForStore(backend))
+  .addDecorator(withTheme)
   .add('empty', () => (
     <CreateWalletWizard
       seeds={[]}

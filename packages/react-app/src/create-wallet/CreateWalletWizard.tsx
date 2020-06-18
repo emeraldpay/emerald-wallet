@@ -102,10 +102,10 @@ export const CreateWizard = ((props: Props & Actions & OwnProps) => {
                                    seed={seed}
                                    onChange={applyWithState(step.applyHDAccount)}/>
   } else if (page.code == STEP_CODE.CREATED) {
-    activeStepPage = <Finish id={walletId} onOpen={() => props.onOpen(walletId)}/>
+    activeStepPage = <Finish id={walletId}/>
   }
 
-  const stepper = <Stepper activeStep={activeStepIndex}>
+  const stepper = <Stepper activeStep={activeStepIndex} alternativeLabel={true}>
     {step.getSteps().map((it) => (
       <Step key={it.code}>
         <StepLabel>{it.title}</StepLabel>
@@ -113,22 +113,31 @@ export const CreateWizard = ((props: Props & Actions & OwnProps) => {
     ))}
   </Stepper>
 
+  let controls;
+
+  if (walletId) {
+    controls = <Button variant={"contained"}
+                       color={"primary"} onClick={() => props.onOpen(walletId)}>Open Wallet</Button>;
+  } else {
+    controls = <>
+      <Button disabled={page.code == STEP_CODE.CREATED}
+              onClick={props.onCancel}>
+        Cancel
+      </Button>
+      <Button disabled={!step.canGoNext()}
+              onClick={() => setStep(step.applyNext())}
+              color={"primary"}
+              variant="contained">
+        Next
+      </Button>
+    </>
+  }
+
   return (
     <Card>
       <CardHeader action={stepper}/>
       <CardContent>{activeStepPage}</CardContent>
-      <CardActions>
-        <Button disabled={page.code == STEP_CODE.CREATED}
-                onClick={props.onCancel}>
-          Cancel
-        </Button>
-        <Button disabled={!step.canGoNext()}
-                onClick={() => setStep(step.applyNext())}
-                color={"primary"}
-                variant="contained">
-          Next
-        </Button>
-      </CardActions>
+      <CardActions>{controls}</CardActions>
     </Card>
   );
 });

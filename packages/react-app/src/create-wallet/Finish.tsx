@@ -2,7 +2,8 @@ import {connect} from "react-redux";
 import {IState} from "@emeraldwallet/store";
 import {Dispatch} from "react";
 import * as React from 'react';
-import {Box, Button, TextField, Typography} from "@material-ui/core";
+import {Button, Typography, Grid} from "@material-ui/core";
+import AssignmentTurnedInIcon from '@material-ui/icons/AssignmentTurnedIn';
 
 type Props = {}
 type Actions = {}
@@ -10,16 +11,24 @@ type Actions = {}
 /**
  * Final screen for a wallet creation. Provides info and a button to go to the newly created wallet.
  */
-const Component = (({id, onOpen}: Props & Actions & OwnProps) => {
-  return <Box>
-    <Typography variant={"h4"}>Wallet created</Typography>
-    <Button variant={"contained"} color={"primary"} onClick={() => onOpen()}>Open Wallet</Button>
-  </Box>
+const Component = (({id}: Props & Actions & OwnProps) => {
+  return <Grid container={true}>
+    <Grid item={true} xs={10}>
+      <Typography variant={"h4"}>
+        <AssignmentTurnedInIcon/> Wallet created
+      </Typography>
+      <Typography variant={"subtitle2"}>
+        Wallet ID: {id}
+      </Typography>
+      <Typography variant={"body1"}>
+        The wallet is successfully created. Now you can use it to receive and send cryptocurrency.
+      </Typography>
+    </Grid>
+  </Grid>
 })
 
 type OwnProps = {
-  id: string,
-  onOpen: () => void
+  id: string
 }
 
 export default connect(

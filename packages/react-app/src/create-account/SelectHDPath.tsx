@@ -11,7 +11,8 @@ import {
   TableRow,
   Table,
   TableHead,
-  TableBody
+  TableBody,
+  Grid, Tooltip
 } from "@material-ui/core";
 import {accounts, hdpathPreview, IState} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
@@ -73,42 +74,50 @@ const Component = (({disabledAccounts, table, setAccount}: Props & Actions & Own
     return item.balance;
   }
 
-  return <Card>
-    <CardHeader action={
+  let prev: IAddressState | undefined = undefined;
+
+  return <Grid container={true}>
+    <Grid item={true} xs={12}>
       <HDPathCounter base={BASE_HD_PATH.toString()}
                      start={start}
                      disabled={disabledAccounts}
                      onChange={(path: HDPath) => setAccount(path.account)}/>
-    }/>
-    <CardContent>
-      <Table>
+    </Grid>
+    <Grid item={true} xs={12}>
+      <Table size={"small"}>
         <TableHead>
           <TableRow>
             <TableCell>Blockchain</TableCell>
             <TableCell>HD Path</TableCell>
             <TableCell>Address</TableCell>
-            <TableCell>Balance</TableCell>
+            <TableCell align={"right"}>Balance</TableCell>
             <TableCell>Coin</TableCell>
             <TableCell>In use</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
-          {table.map((item) => (
-            <TableRow key={item.blockchain + "-" + item.address + "-" + item.asset}>
-              <TableCell>{Blockchains[item.blockchain].getTitle()}</TableCell>
-              <TableCell>{item.hdpath}</TableCell>
-              <TableCell>{item.address}</TableCell>
+          {table.map((item) => {
+            const el = <TableRow key={item.blockchain + "-" + item.address + "-" + item.asset}>
+              <TableCell>{!prev || prev.blockchain != item.blockchain ?
+                Blockchains[item.blockchain].getTitle() : ""}</TableCell>
+              {/*<TableCell>{Blockchains[item.blockchain].getTitle()}</TableCell>*/}
+              <TableCell>{!prev || prev.hdpath != item.hdpath ? item.hdpath : ""}</TableCell>
+              <TableCell>{!prev || prev.address != item.address ? item.address : ""}</TableCell>
               <TableCell align={"right"}>{renderBalance(item)}</TableCell>
               <TableCell>{item.asset}</TableCell>
               <TableCell>
-                {isActive(item) ? <BeenhereIcon/> : <ClearIcon className={styles.inactiveCheck}/>}
+                <Tooltip title={isActive(item) ? "You had used this address before" : "New inactive address"}>
+                  {isActive(item) ? <BeenhereIcon/> : <ClearIcon className={styles.inactiveCheck}/>}
+                </Tooltip>
               </TableCell>
             </TableRow>
-          ))}
+            prev = item;
+            return el;
+          })}
         </TableBody>
       </Table>
-    </CardContent>
-  </Card>
+    </Grid>
+  </Grid>
 })
 
 // State Properties

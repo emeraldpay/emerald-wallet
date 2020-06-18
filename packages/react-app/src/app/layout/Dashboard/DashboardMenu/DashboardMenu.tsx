@@ -87,12 +87,6 @@ class DashboardMenu extends React.Component<IMenuProps, IMenuState> {
           onClose={this.handleRequestClose}
         >
           <List>
-            <ListItem button={true} onClick={importLedger}>
-              <ListItemIcon>
-                <LedgerIcon />
-              </ListItemIcon>
-              <ListItemText primary='Ledger Nano S' secondary='Use Ledger hardware key to manage signatures' />
-            </ListItem>
             <ListItem button={true} onClick={addressBook}>
               <ListItemIcon>
                 <BookIcon />

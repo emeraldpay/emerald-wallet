@@ -1,7 +1,7 @@
 import {connect} from "react-redux";
 import {Dispatch} from "react";
 import * as React from 'react';
-import {Box, createStyles, IconButton} from "@material-ui/core";
+import {Box, createStyles, IconButton, Typography} from "@material-ui/core";
 import {IState} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
 import {HDPath} from "@emeraldwallet/core";
@@ -12,13 +12,14 @@ const useStyles = makeStyles(
   createStyles({
     root: {
       fontSize: "1.2em",
+      paddingLeft: "16px"
     },
     currentPath: {
       marginRight: "10px"
     },
     account: {
-      paddingLeft: "5px",
-      paddingRight: "5px",
+      paddingLeft: "8px",
+      paddingRight: "8px",
       cursor: "grab"
     },
     accountCurrent: {
@@ -26,7 +27,7 @@ const useStyles = makeStyles(
       fontSize: "1.2em"
     },
     accountDisabled: {
-      color: "#aaa",
+      color: "#f6eff0",
       cursor: "not-allowed"
     }
   })
@@ -97,27 +98,29 @@ const Component = (({start, hdpath, max, disabled, onChange}: Props & Actions & 
 
 
   return <Box className={styles.root}>
-    <Box component={"span"} className={styles.currentPath}>{hdpath.forAccount(account).toString()}</Box>
+    <Box component={"span"} className={styles.currentPath}>
+      <Typography variant={"caption"}>{hdpath.forAccount(account).toString()}</Typography>
+    </Box>
     <Box component={'span'}>
       <IconButton aria-label="dec" onClick={dec} disabled={account == 0}>
         <RemoveIcon/>
       </IconButton>
       {accounts.map((acc) => (
-        <Box component={'span'}
-             key={acc.account}
-             onClick={() => {
-               if (!acc.disabled) {
-                 update(acc.account)
-               }
-             }}
-             title={acc.disabled ? "Used by another wallet" : ""}
-             className={
-               styles.account +
-               " " + (acc.current ? styles.accountCurrent : "") +
-               " " + (acc.disabled ? styles.accountDisabled : "")
-             }>
+        <Typography variant={"caption"}
+                    key={acc.account}
+                    onClick={() => {
+                      if (!acc.disabled) {
+                        update(acc.account)
+                      }
+                    }}
+                    title={acc.disabled ? "Used by another wallet" : ""}
+                    className={
+                      styles.account +
+                      " " + (acc.current ? styles.accountCurrent : "") +
+                      " " + (acc.disabled ? styles.accountDisabled : "")
+                    }>
           {acc.account}
-        </Box>
+        </Typography>
       ))}
       <IconButton aria-label="inc" onClick={inc} disabled={account == MAX}>
         <AddIcon/>
