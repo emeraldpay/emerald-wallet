@@ -1,4 +1,4 @@
-import {IAddressState, IHDPreviewState, isEqualSeed, isNonPartial, SeedRef} from "./types";
+import {IAddressState, IHDPreviewState, isEqualSeed, isNonPartial} from "./types";
 
 
 function replace<T>(arr: T[], pos: number, value: T): T[] {

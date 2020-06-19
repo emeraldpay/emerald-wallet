@@ -34,14 +34,14 @@ storiesOf('CreateAccount', module)
   .addDecorator(providerForStore(backend))
   .add('select account', () => (
     <SelectHDPath
-      seed={{type: "seed-ref", seedId: "e23378da-d4b2-4843-ae4d-f42888a11b58"}}
+      seed={{type: "id", value: "e23378da-d4b2-4843-ae4d-f42888a11b58"}}
       blockchains={[BlockchainCode.ETH, BlockchainCode.ETC]}
       onChange={(n) => console.log("Account selected", n)}
     />
   ))
   .add('select account, only ETH', () => (
     <SelectHDPath
-      seed={{type: "seed-ref", seedId: "e23378da-d4b2-4843-ae4d-f42888a11b58"}}
+      seed={{type: "id", value: "e23378da-d4b2-4843-ae4d-f42888a11b58"}}
       blockchains={[BlockchainCode.ETH]}
       onChange={(n) => console.log("Account selected", n)}
     />

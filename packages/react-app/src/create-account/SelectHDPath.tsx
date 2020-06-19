@@ -18,10 +18,11 @@ import {accounts, hdpathPreview, IState} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
 import {BlockchainCode, AnyCoinCode, HDPath, Blockchains, Units} from "@emeraldwallet/core";
 import HDPathCounter from "./HDPathCounter";
-import {IAddressState, SourceSeed} from "@emeraldwallet/store/lib/hdpath-preview/types";
+import {IAddressState} from "@emeraldwallet/store/lib/hdpath-preview/types";
 import {Wei} from "@emeraldplatform/eth";
 import BeenhereIcon from '@material-ui/icons/Beenhere';
 import ClearIcon from '@material-ui/icons/Clear';
+import {SeedReference} from "@emeraldpay/emerald-vault-core";
 
 const useStyles = makeStyles(
   createStyles({
@@ -132,7 +133,7 @@ type Actions = {
 
 // Component properties
 type OwnProps = {
-  seed: SourceSeed,
+  seed: SeedReference,
   blockchains: BlockchainCode[],
   onChange: (account: number) => void,
 }
@@ -140,10 +141,12 @@ type OwnProps = {
 export default connect(
   (state: IState, ownProps: OwnProps): Props => {
     return {
-      disabledAccounts: accounts.selectors.allWallets(state)
-        .filter((w) => typeof w.hdAccount == 'number' && typeof w.seedId != 'undefined')
-        .filter((w) => w.seedId == ownProps.seed.seedId)
-        .map((w) => w.hdAccount!),
+      disabledAccounts: ownProps.seed.type == "id" ?
+        accounts.selectors.allWallets(state)
+          .filter((w) => typeof w.hdAccount == 'number' && typeof w.seedId != 'undefined')
+          .filter((w) => w.seedId == ownProps.seed.value)
+          .map((w) => w.hdAccount!)
+        : [],
       table: hdpathPreview.selectors.getCurrentDisplay(state, ownProps.seed)
         .filter((item) => ownProps.blockchains.indexOf(item.blockchain) >= 0)
     }

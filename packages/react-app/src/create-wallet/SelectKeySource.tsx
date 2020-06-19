@@ -9,6 +9,7 @@ import FileCopyIcon from '@material-ui/icons/FileCopy';
 import PublishIcon from '@material-ui/icons/Publish';
 import ExposureZeroIcon from '@material-ui/icons/ExposureZero';
 import {KeySourceType, KeysSource} from "./flow/types";
+import {Ledger} from '@emeraldplatform/ui-icons';
 
 type Props = {}
 type Actions = {}
@@ -60,6 +61,15 @@ const Component = (({seeds, onSelect}: Props & Actions & OwnProps) => {
                   secondary={"Import another mnemonic phrase (21 or 24 words) or use new Hardware Wallet (Ledger Nano)"}/>
   </ListItem>
 
+  const importLedger = <ListItem key={"import-ledger"}
+                                 onClick={() => onSelect("start-ledger")}>
+    <ListItemIcon>
+      <Ledger/>
+    </ListItemIcon>
+    <ListItemText primary={"Create from Ledger Nano"}
+                  secondary={"Create wallet backed by Ledger Nano model S or X"}/>
+  </ListItem>
+
   const useKey = <ListItem key={"useKey"}
                            onClick={() => onSelect({type: KeySourceType.PK_ANY})}>
     <ListItemIcon>
@@ -80,6 +90,7 @@ const Component = (({seeds, onSelect}: Props & Actions & OwnProps) => {
 
   return <List>
     {seedsList}
+    {importLedger}
     {createSeed}
     {importSeed}
     {useKey}

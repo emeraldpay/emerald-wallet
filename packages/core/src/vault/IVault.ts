@@ -4,12 +4,11 @@ import {
   SeedDefinition,
   SeedDescription,
   UnsignedTx,
-  Uuid, BlockchainType
+  Uuid, BlockchainType, SeedReference
 } from '@emeraldpay/emerald-vault-core';
 import AddressBookItem from '../address-book/AddressBookItem';
 import { BlockchainCode } from '../blockchains';
 import Wallet from '../entities/Wallet';
-import { Account, Contact, TxSignRequest } from './types';
 
 export default interface IVault {
   listWallets(): Wallet[];
@@ -35,6 +34,8 @@ export default interface IVault {
 
   listSeeds(): SeedDescription[];
 
+  isSeedAvailable(seed: Uuid | SeedReference | SeedDefinition): boolean;
+
   // Signing
   signTx(accountFullId: EntryId, tx: UnsignedTx, password?: string): string;
 
@@ -47,5 +48,5 @@ export default interface IVault {
 
   removeFromAddressBook(blockchain: BlockchainCode, address: string): boolean;
 
-  listSeedAddresses(seed: Uuid, password: string | undefined, blockchain: BlockchainType, hdpath: string[]): { [key: string]: string };
+  listSeedAddresses(seed: Uuid | SeedReference | SeedDefinition, blockchain: BlockchainType, hdpath: string[]): { [key: string]: string };
 }

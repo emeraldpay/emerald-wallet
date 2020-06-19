@@ -31,7 +31,7 @@ import {
   IWalletCreatedAction,
   IWalletsLoaded, PendingBalanceAction
 } from './types';
-import {AddEntry, SeedDefinition, SeedDescription, Uuid} from "@emeraldpay/emerald-vault-core";
+import {AddEntry, SeedDefinition, SeedDescription, SeedEntry, Uuid} from "@emeraldpay/emerald-vault-core";
 
 const log = Logger.forCategory('store.accounts');
 
@@ -195,6 +195,11 @@ export function createWallet(options: CreateWalletOptions,
     const vault = extra.api.vault;
     try {
       const walletId = vault.addWallet(options.label);
+      const forLedger = entries.filter((e) => e.type == "hd-path" && typeof e.key == "object" && e.key.seedId == "CREATE/LEDGER");
+      if (forLedger.length > 0) {
+        const ledgerId = vault.importSeed({type: "ledger", value: {}});
+        forLedger.forEach((e) => (e.key as SeedEntry).seedId = ledgerId);
+      }
       entries.forEach((entry) => vault.addEntry(walletId, entry));
       const wallet = vault.getWallet(walletId)!;
       dispatch(walletCreatedAction(wallet));

@@ -1,10 +1,11 @@
 import {mergeAddress} from "./reducerUtil";
 import {INITIAL_STATE} from "./reducer";
-import {IAddressState, IHDPreviewState, SeedRef} from "./types";
+import {IAddressState, IHDPreviewState} from "./types";
 import {BlockchainCode} from "@emeraldwallet/core";
+import {SeedReference} from "@emeraldpay/emerald-vault-core";
 
 describe('updateForAccount', () => {
-  const seed: SeedRef = {type: "seed-ref", seedId: '4701306d-d0f5-4883-81a6-4ba3a12d9349'};
+  const seed: SeedReference = {type: "id", value: '4701306d-d0f5-4883-81a6-4ba3a12d9349'};
   const update: IAddressState = {
     seed,
     asset: "ETH",

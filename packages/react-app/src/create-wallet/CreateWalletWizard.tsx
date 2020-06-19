@@ -11,12 +11,12 @@ import Finish from "./Finish";
 import SelectCoins from "../create-account/SelectCoins";
 import {BlockchainCode, IBlockchain} from "@emeraldwallet/core";
 import SelectHDPath from "../create-account/SelectHDPath";
-import {SourceSeed} from "@emeraldwallet/store/lib/hdpath-preview/types";
 import UnlockSeed from "../create-account/UnlockSeed";
 import {CreateWalletFlow, STEP_CODE} from "./flow/createWalletFlow";
 import {ImportMnemonic, ImportPk, NewMnemonic} from "@emeraldwallet/ui";
 import SaveMnemonic from "./SaveMnemonic";
 import {SeedDefinition, Uuid} from "@emeraldpay/emerald-vault-core";
+import LedgerWait from "../ledger/LedgerWait";
 
 type Props = {}
 type Actions = {
@@ -71,7 +71,9 @@ export const CreateWizard = ((props: Props & Actions & OwnProps) => {
       setStep(step.applyMnemonic(mnemonic, password))
     }/>
   } else if (page.code == STEP_CODE.PK_IMPORT) {
-    activeStepPage = <ImportPk onChange={applyWithState(step.applyImportPk)}/>
+    activeStepPage = <ImportPk onChange={applyWithState(step.applyImportPk)}/>;
+  } else if (page.code == STEP_CODE.LEDGER_OPEN) {
+    activeStepPage = <LedgerWait fullSize={true} onConnected={applyWithState(step.applyLedgerConnected)}/>;
   } else if (page.code == STEP_CODE.LOCK_SEED) {
     const onLock = (password: string) => {
       if (!props.onSaveSeed) {
@@ -93,13 +95,8 @@ export const CreateWizard = ((props: Props & Actions & OwnProps) => {
     activeStepPage = <SaveMnemonic mnemonic={step.getMnemonic().mnemonic!}
                                    onPassword={onLock}/>
   } else if (page.code == STEP_CODE.SELECT_HD_ACCOUNT) {
-    const seed: SourceSeed = {
-      type: "seed-ref",
-      seedId: step.getResult().unlock!.id,
-      password: step.getResult().unlock!.password
-    }
     activeStepPage = <SelectHDPath blockchains={step.getResult().blockchains}
-                                   seed={seed}
+                                   seed={step.getResult().seed!}
                                    onChange={applyWithState(step.applyHDAccount)}/>
   } else if (page.code == STEP_CODE.CREATED) {
     activeStepPage = <Finish id={walletId}/>

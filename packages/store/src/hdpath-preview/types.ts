@@ -1,10 +1,10 @@
 import {AnyCoinCode, BlockchainCode} from "@emeraldwallet/core";
-import {Uuid} from "@emeraldpay/emerald-vault-core";
+import {MnemonicSeed, SeedReference, Uuid} from "@emeraldpay/emerald-vault-core";
 
 export interface IAddressState {
   blockchain: BlockchainCode;
   asset: AnyCoinCode;
-  seed: SourceSeed;
+  seed: SeedReference;
   hdpath: string;
   address?: string;
   balance?: string;
@@ -19,14 +19,6 @@ export interface IHDPreviewState {
   display: IDisplay;
 }
 
-export interface SeedRef {
-  type: 'seed-ref';
-  seedId: Uuid;
-  //TODO make some secure storage on Electron side
-  password?: string;
-}
-
-export type SourceSeed = SeedRef;
 
 /// -----------
 
@@ -37,8 +29,33 @@ export function isNonPartial(value: Partial<IAddressState> | IAddressState): val
     && typeof value.hdpath != 'undefined'
 }
 
-export function isEqualSeed(a: SourceSeed, b: SourceSeed): boolean {
-  return a.type == b.type && a.seedId == b.seedId;
+export function isEqualSeed(a: SeedReference, b: SeedReference): boolean {
+  if (a.type != b.type) {
+    return false;
+  }
+  if (a.type == "ledger") {
+    return true;
+  }
+  if (a.type == "id") {
+    return typeof a.value == "string" && typeof b.value == "string" && a.value == b.value;
+  }
+  if (a.type == "mnemonic") {
+    if (typeof a.value != "object" || typeof b.value != "object") {
+      // cannot contain value
+      return false;
+    }
+    if ((a.value as MnemonicSeed).value != (b.value as MnemonicSeed).value) {
+      return false;
+    }
+    if (typeof a.password != typeof b.password) {
+      return false;
+    }
+    if (typeof a.password == "undefined" && typeof b.password == "undefined") {
+      return true
+    }
+    return a.password == b.password;
+  }
+  return false;
 }
 
 /// -----------
@@ -54,7 +71,7 @@ export enum ActionTypes {
 
 export interface ILoadAddresses {
   type: ActionTypes.LOAD_ADDRESSES;
-  seed: SourceSeed;
+  seed: SeedReference;
   hdpath: string;
   blockchains: BlockchainCode[];
 }
@@ -68,7 +85,7 @@ export interface ILoadBalances {
 
 export interface ISetAddress {
   type: ActionTypes.SET_ADDRESS;
-  seed: SourceSeed;
+  seed: SeedReference;
   blockchain: BlockchainCode;
   // hdpath -> address mapping
   addresses: Record<string, string>;

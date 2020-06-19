@@ -206,8 +206,8 @@ describe("Lock seed", () => {
     expect(start.canGoNext()).toBeFalsy();
     let act = start
       .applyMnemonicSaved("test-uuid", "testpwd");
-    expect(act.getResult().unlock).toEqual({
-      id: "test-uuid", password: "testpwd"
+    expect(act.getResult().seed).toEqual({
+      type: "id", value: "test-uuid", password: "testpwd"
     });
     expect(act.getCurrentStep().code).toBe(STEP_CODE.SELECT_BLOCKCHAIN);
   });
@@ -232,7 +232,7 @@ describe("Select Blockchain", () => {
     const initial: Result = {
       ...defaultResult(),
       type: {type: KeySourceType.SEED_GENERATE},
-      unlock: {id: "test-uuid", password: "testpwd"}
+      seed: {type: "id", value: "test-uuid", password: "testpwd"}
     }
     const start = CreateWalletFlow.create(initial, STEP_CODE.SELECT_BLOCKCHAIN, noCreate);
     expect(start.canGoNext()).toBeFalsy();
@@ -273,7 +273,7 @@ describe("Unlock Seed", () => {
     const act = start
       .applySeedPassword("testpwd");
     expect(act.getCurrentStep().code).toBe(STEP_CODE.SELECT_HD_ACCOUNT);
-    expect(act.getResult().unlock).toEqual({id: "test", password: "testpwd"})
+    expect(act.getResult().seed).toEqual({type: "id", value: "test", password: "testpwd"})
   });
 });
 
@@ -282,7 +282,7 @@ describe("Account", () => {
     const initial: Result = {
       ...defaultResult(),
       type: {type: KeySourceType.SEED_SELECTED, id: "test"},
-      unlock: {password: "test", id: "test"},
+      seed: {type: "id", password: "test", value: "test"},
       blockchains: [BlockchainCode.ETH]
     }
     let result: Result | undefined = undefined;

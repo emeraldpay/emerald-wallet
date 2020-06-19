@@ -17,7 +17,7 @@ limitations under the License.
 import * as vault from '@emeraldpay/emerald-vault-core';
 import { AddressBookItem, BlockchainCode, ILogger, IVault, Logger, Wallet } from '@emeraldwallet/core';
 import {blockchainCodeToId, blockchainIdToCode} from './utils';
-import {BlockchainType, SeedReference, Uuid} from "@emeraldpay/emerald-vault-core";
+import {BlockchainType, SeedDefinition, SeedReference, Uuid} from "@emeraldpay/emerald-vault-core";
 
 export class Vault implements IVault {
 
@@ -109,7 +109,7 @@ export class Vault implements IVault {
     return this.provider.setWalletLabel(walletId, label);
   }
 
-  public importSeed (seed: vault.SeedDefinition): string {
+  public importSeed(seed: vault.SeedDefinition): string {
     return this.provider.importSeed(seed);
   }
 
@@ -117,17 +117,16 @@ export class Vault implements IVault {
     return this.provider.getConnectedHWSeed(create);
   }
 
+  public isSeedAvailable(seed: Uuid | vault.SeedReference | vault.SeedDefinition): boolean {
+    return this.provider.isSeedAvailable(seed);
+  }
+
   public signTx(accountFullId: string, tx: vault.UnsignedTx, password?: string): string {
     return this.provider.signTx(accountFullId, tx, password);
   }
 
-  public listSeedAddresses(id: Uuid, password: string | undefined, blockchain: BlockchainType, hdpath: string[]): { [key: string]: string } {
-    const ref: SeedReference = {
-      type: "id",
-      value: id,
-      password
-    }
-    return this.provider.listSeedAddresses(ref, blockchain, hdpath)
+  public listSeedAddresses(id: Uuid | SeedReference | SeedDefinition, blockchain: BlockchainType, hdpath: string[]): { [key: string]: string } {
+    return this.provider.listSeedAddresses(id, blockchain, hdpath)
   }
 
   private mapToCore(w: vault.Wallet): Wallet {

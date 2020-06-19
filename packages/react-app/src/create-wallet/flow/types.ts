@@ -1,5 +1,5 @@
 import {BlockchainCode} from "@emeraldwallet/core";
-import {Uuid} from "@emeraldpay/emerald-vault-core";
+import {SeedReference, Uuid} from "@emeraldpay/emerald-vault-core";
 
 export enum KeySourceType {
   SEED_SELECTED,
@@ -7,7 +7,8 @@ export enum KeySourceType {
   SEED_IMPORT,
   PK_ANY,
   PK_WEB3_JSON,
-  PK_RAW
+  PK_RAW,
+  LEDGER
 }
 
 export interface SeedSelected {
@@ -36,12 +37,21 @@ export interface PkImportJson {
   json: string;
 }
 
-export interface SeedUnlock {
-  id: Uuid,
-  password: string
+export interface LedgerSeed {
+  type: KeySourceType.LEDGER;
+  // undefined if not yet created, i.e. first use
+  id?: Uuid;
 }
 
-export type KeysSource = SeedSelected | SeedCreate | PkImportJson | PkImportRaw | PkImportAny | 'empty';
+export type KeysSource =
+  SeedSelected
+  | SeedCreate
+  | PkImportJson
+  | PkImportRaw
+  | PkImportAny
+  | 'empty'
+  | 'start-ledger'
+  | LedgerSeed;
 
 export function isSeedSelected(obj: KeysSource): obj is SeedSelected {
   return typeof obj == 'object' && obj.type == KeySourceType.SEED_SELECTED
@@ -55,6 +65,10 @@ export function isPk(obj: KeysSource): obj is (PkImportRaw | PkImportJson) {
   return typeof obj == 'object' && (
     obj.type == KeySourceType.PK_WEB3_JSON || obj.type == KeySourceType.PK_RAW || obj.type == KeySourceType.PK_ANY
   );
+}
+
+export function isLedger(obj: KeysSource): obj is LedgerSeed {
+  return typeof obj == "object" && obj.type == KeySourceType.LEDGER;
 }
 
 export function isPkJson(obj: KeysSource): obj is PkImportJson {
@@ -74,7 +88,7 @@ export interface Result {
   options: TWalletOptions;
   blockchains: BlockchainCode[];
   seedAccount?: number;
-  unlock?: SeedUnlock
+  seed?: SeedReference
 }
 
 export function defaultResult(): Result {

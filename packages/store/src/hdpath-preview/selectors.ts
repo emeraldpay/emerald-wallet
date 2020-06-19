@@ -1,8 +1,9 @@
-import {IAddressState, isEqualSeed, SourceSeed} from "./types";
+import {IAddressState, isEqualSeed} from "./types";
 import {IState} from "../types";
 import {HDPath} from "@emeraldwallet/core";
+import {SeedReference} from "@emeraldpay/emerald-vault-core";
 
-export function getByAccount(state: IState, seed: SourceSeed, account: number): IAddressState[] {
+export function getByAccount(state: IState, seed: SeedReference, account: number): IAddressState[] {
   if (!state.hdpathPreview) {
     return [];
   }
@@ -14,7 +15,7 @@ export function getByAccount(state: IState, seed: SourceSeed, account: number): 
   )
 }
 
-export function getCurrentDisplay(state: IState, seed: SourceSeed): IAddressState[] {
+export function getCurrentDisplay(state: IState, seed: SeedReference): IAddressState[] {
   if (!state.hdpathPreview) {
     return [];
   }

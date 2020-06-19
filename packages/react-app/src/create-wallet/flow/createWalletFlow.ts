@@ -1,6 +1,8 @@
 import {
-  defaultResult,
-  isPk, isPkJson, isPkRaw,
+  defaultResult, isLedger,
+  isPk,
+  isPkJson,
+  isPkRaw,
   isSeedCreate,
   isSeedSelected,
   KeySourceType,
@@ -12,7 +14,7 @@ import {
   TWalletOptions
 } from "./types";
 import {BlockchainCode} from "@emeraldwallet/core";
-import {Uuid} from "@emeraldpay/emerald-vault-core";
+import {SeedDescription, Uuid} from "@emeraldpay/emerald-vault-core";
 
 export enum STEP_CODE {
   KEY_SOURCE = "keySource",
@@ -24,7 +26,8 @@ export enum STEP_CODE {
   CREATED = "created",
   MNEMONIC_GENERATE = "mnemonicGenerate",
   MNEMONIC_IMPORT = "mnemonicImport",
-  PK_IMPORT = "pkImport"
+  PK_IMPORT = "pkImport",
+  LEDGER_OPEN = "ledgerOpen"
 }
 
 const STEPS: { [key in STEP_CODE]: StepDescription } = {
@@ -67,6 +70,10 @@ const STEPS: { [key in STEP_CODE]: StepDescription } = {
   "pkImport": {
     code: STEP_CODE.PK_IMPORT,
     title: "Import Private Key"
+  },
+  "ledgerOpen": {
+    code: STEP_CODE.LEDGER_OPEN,
+    title: "Connect to Ledger"
   }
 }
 
@@ -89,11 +96,15 @@ export class CreateWalletFlow {
   }
 
   getSteps(): StepDescription[] {
-    const isSeedBased = isSeedCreate(this.result.type) || isSeedSelected(this.result.type);
+    const useSeedBased = isSeedCreate(this.result.type) || isSeedSelected(this.result.type);
+    const useLedger = this.result.type == "start-ledger" || isLedger(this.result.type);
+    const needHdAccount = useSeedBased || useLedger;
+    const needBlockchain = this.result.type != "empty";
 
     const result: StepDescription[] = [];
     result.push(STEPS[STEP_CODE.KEY_SOURCE]);
     result.push(STEPS[STEP_CODE.OPTIONS]);
+
     if (isSeedCreate(this.result.type)) {
       if (this.result.type.type == KeySourceType.SEED_GENERATE) {
         result.push(STEPS[STEP_CODE.MNEMONIC_GENERATE]);
@@ -103,14 +114,17 @@ export class CreateWalletFlow {
       result.push(STEPS[STEP_CODE.LOCK_SEED]);
     } else if (isPk(this.result.type)) {
       result.push(STEPS[STEP_CODE.PK_IMPORT]);
+    } else if (useLedger) {
+      result.push(STEPS[STEP_CODE.LEDGER_OPEN]);
     }
-    if (isSeedBased || isPk(this.result.type)) {
+
+    if (needBlockchain) {
       result.push(STEPS[STEP_CODE.SELECT_BLOCKCHAIN]);
     }
     if (isSeedSelected(this.result.type)) {
       result.push(STEPS[STEP_CODE.UNLOCK_SEED]);
     }
-    if (isSeedBased) {
+    if (needHdAccount) {
       result.push(STEPS[STEP_CODE.SELECT_HD_ACCOUNT]);
     }
     result.push(STEPS[STEP_CODE.CREATED]);
@@ -130,7 +144,8 @@ export class CreateWalletFlow {
       this.step == STEP_CODE.UNLOCK_SEED ||
       this.step == STEP_CODE.MNEMONIC_GENERATE ||
       this.step == STEP_CODE.MNEMONIC_IMPORT ||
-      this.step == STEP_CODE.LOCK_SEED) {
+      this.step == STEP_CODE.LOCK_SEED ||
+      this.step == STEP_CODE.LEDGER_OPEN) {
       return false
     }
     if (this.step == STEP_CODE.SELECT_BLOCKCHAIN) {
@@ -184,6 +199,8 @@ export class CreateWalletFlow {
         }
       } else if (isPk(this.result.type)) {
         copy.step = STEP_CODE.PK_IMPORT;
+      } else if (this.result.type == "start-ledger") {
+        copy.step = STEP_CODE.LEDGER_OPEN;
       }
     } else if (this.step == STEP_CODE.SELECT_BLOCKCHAIN) {
       if (isSeedSelected(this.result.type)) {
@@ -193,6 +210,8 @@ export class CreateWalletFlow {
       } else if (isPk(this.result.type)) {
         this.onCreate(this.result);
         copy.step = STEP_CODE.CREATED;
+      } else if (isLedger(this.result.type)) {
+        copy.step = STEP_CODE.SELECT_HD_ACCOUNT;
       }
     } else if (this.step == STEP_CODE.SELECT_HD_ACCOUNT) {
       this.onCreate(this.result);
@@ -227,7 +246,7 @@ export class CreateWalletFlow {
     if (!isSeedSelected(copy.result.type)) {
       throw new Error("Not a seed reference");
     }
-    copy.result = {...this.result, unlock: {password: value, id: copy.result.type.id}};
+    copy.result = {...this.result, seed: {type: "id", password: value, value: copy.result.type.id}};
     copy.step = STEP_CODE.SELECT_HD_ACCOUNT;
     return copy;
   }
@@ -265,7 +284,7 @@ export class CreateWalletFlow {
     if (!isSeedCreate(copy.result.type)) {
       throw new Error("Not a generated seed");
     }
-    copy.result = {...this.result, unlock: {id, password}};
+    copy.result = {...this.result, seed: {type: "id", value: id, password}};
     copy.step = STEP_CODE.SELECT_BLOCKCHAIN;
     return copy;
   }
@@ -294,4 +313,22 @@ export class CreateWalletFlow {
     }
     return copy;
   }
+
+  applyLedgerConnected(seed: SeedDescription): CreateWalletFlow {
+    if (seed.type != "ledger") {
+      return this;
+    }
+    const copy = this.copy();
+    copy.step = STEP_CODE.SELECT_BLOCKCHAIN;
+    copy.result.type = {
+      type: KeySourceType.LEDGER,
+      id: seed.id
+    }
+    copy.result.seed = {
+      type: "ledger",
+      value: {}
+    }
+    return copy;
+  }
+
 }

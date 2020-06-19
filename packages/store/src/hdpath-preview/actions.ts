@@ -4,12 +4,12 @@ import {
   ILoadAddresses,
   ILoadBalances,
   ISetAddress,
-  ISetBalance,
-  SourceSeed
+  ISetBalance
 } from "./types";
 import {AnyCoinCode, BlockchainCode} from "@emeraldwallet/core";
+import {SeedReference} from "@emeraldpay/emerald-vault-core";
 
-export function loadAddresses(seed: SourceSeed, hdpath: string, blockchains: BlockchainCode[]): ILoadAddresses {
+export function loadAddresses(seed: SeedReference, hdpath: string, blockchains: BlockchainCode[]): ILoadAddresses {
   return {
     type: ActionTypes.LOAD_ADDRESSES,
     seed,
@@ -27,7 +27,7 @@ export function loadBalances(blockchain: BlockchainCode, address: string, assets
   }
 }
 
-export function setAddresses(seed: SourceSeed,
+export function setAddresses(seed: SeedReference,
                              blockchain: BlockchainCode,
                              addresses: { [key: string]: string }): ISetAddress {
   return {

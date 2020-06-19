@@ -2,12 +2,12 @@ import {connect} from "react-redux";
 import {accounts, hdpathPreview, IState, screen, settings} from "@emeraldwallet/store";
 import * as React from "react";
 import {Dispatch} from "react";
-import {isPk, isPkJson, isPkRaw, isSeedCreate, isSeedSelected, Result} from "./flow/types";
+import {isLedger, isPk, isPkJson, isPkRaw, isSeedCreate, isSeedSelected, Result} from "./flow/types";
 import CreateWalletWizard from "./CreateWalletWizard";
 import * as vault from "@emeraldpay/emerald-vault-core";
 import {Pages} from "@emeraldwallet/store/lib/screen";
-import {blockchainCodeToId, Blockchains, IBlockchain} from "@emeraldwallet/core";
-import {SeedDefinition} from "@emeraldpay/emerald-vault-core";
+import {BlockchainCode, blockchainCodeToId, Blockchains, IBlockchain} from "@emeraldwallet/core";
+import {AddEntry, SeedDefinition, Uuid} from "@emeraldpay/emerald-vault-core";
 
 type Props = {
   seeds: vault.SeedDescription[],
@@ -30,6 +30,22 @@ const Component = ((props: Props & Actions & OwnProps) => {
 })
 
 type OwnProps = {}
+
+function entriesForBlockchains(seedId: Uuid, password: string | undefined, account: number, blockchains: BlockchainCode[]): AddEntry[] {
+  const entries: vault.AddEntry[] = [];
+  blockchains.forEach((blockchain) => {
+    entries.push({
+      type: "hd-path",
+      blockchain: blockchainCodeToId(blockchain),
+      key: {
+        hdPath: Blockchains[blockchain].params.hdPath.forAccount(account).toString(),
+        seedId,
+        password
+      }
+    })
+  });
+  return entries;
+}
 
 export default connect(
   (state: IState, ownProps: OwnProps): Props => {
@@ -56,20 +72,11 @@ export default connect(
           const entries: vault.AddEntry[] = [];
           const type = value.type;
           if (isSeedSelected(type) || isSeedCreate(type)) {
-            const unlock = value.unlock;
-            if (typeof unlock == "object" && unlock.id && unlock.password && typeof value.seedAccount == 'number') {
+            const seed = value.seed;
+            if (typeof seed == "object" && seed.type == "id" && seed.password && typeof value.seedAccount == 'number') {
               const account: number = value.seedAccount;
-              value.blockchains.forEach((blockchain) => {
-                entries.push({
-                  type: "hd-path",
-                  blockchain: blockchainCodeToId(blockchain),
-                  key: {
-                    hdPath: Blockchains[blockchain].params.hdPath.forAccount(account).toString(),
-                    seedId: unlock.id,
-                    password: unlock.password
-                  }
-                })
-              })
+              entriesForBlockchains(seed.value as string, seed.password, account, value.blockchains)
+                .forEach((e) => entries.push(e));
             } else {
               console.warn("Account number is not set")
             }
@@ -87,6 +94,14 @@ export default connect(
                 password: type.password,
                 blockchain: blockchainCodeToId(value.blockchains[0])
               })
+            }
+          } else if (isLedger(type)) {
+            if (typeof value.seedAccount == 'number') {
+              const account: number = value.seedAccount;
+              entriesForBlockchains("CREATE/LEDGER", undefined, account, value.blockchains)
+                .forEach((e) => entries.push(e));
+            } else {
+              console.warn("Account number is not set")
             }
           }
           dispatch(accounts.actions.createWallet(opts, entries, handler));
