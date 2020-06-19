@@ -6,7 +6,7 @@ describe("IAddressState", () => {
     expect(isNonPartial({
       blockchain: BlockchainCode.ETH,
       asset: "ETH",
-      seed: {type: "seed-ref", seedId: "test"},
+      seed: {type: "id", value: "test"},
       hdpath: "m/44'"
     })).toBeTruthy()
   });
@@ -14,26 +14,26 @@ describe("IAddressState", () => {
   it("do not math partial as full when fields are missing", () => {
     expect(isNonPartial({
       asset: "ETH",
-      seed: {type: "seed-ref", seedId: "test"},
+      seed: {type: "id", value: "test"},
       hdpath: "m/44'"
     })).toBeFalsy();
 
     expect(isNonPartial({
       blockchain: BlockchainCode.ETH,
-      seed: {type: "seed-ref", seedId: "test"},
-      hdpath: "m/44'"
-    })).toBeFalsy();
-
-    expect(isNonPartial({
-      blockchain: BlockchainCode.ETH,
-      asset: "ETH",
+      seed: {type: "id", value: "test"},
       hdpath: "m/44'"
     })).toBeFalsy();
 
     expect(isNonPartial({
       blockchain: BlockchainCode.ETH,
       asset: "ETH",
-      seed: {type: "seed-ref", seedId: "test"}
+      hdpath: "m/44'"
+    })).toBeFalsy();
+
+    expect(isNonPartial({
+      blockchain: BlockchainCode.ETH,
+      asset: "ETH",
+      seed: {type: "id", value: "test"},
     })).toBeFalsy();
 
   });
