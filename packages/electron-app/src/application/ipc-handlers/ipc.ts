@@ -224,7 +224,7 @@ export function setIpcHandlers(app: Application) {
 
   ipcMain.handle(Commands.VAULT_SEED_ADDRESSES, (event, seedId: Uuid, password: string, blockchain: BlockchainCode, hdpaths: string[]) => {
     try {
-      return app.vault?.listSeedAddresses(seedId, password, "ethereum", hdpaths);
+      return app.vault?.listSeedAddresses({type: "id", value: seedId, password}, "ethereum", hdpaths);
     } catch (e) {
       log.error("Unable to get seed addresses", e.message, hdpaths, password);
     }
