@@ -26,7 +26,7 @@ function* loadBalances(backendApi: IBackendApi, action: ILoadBalances): SagaIter
 
 export function* root(vault: IVault, backendApi: IBackendApi) {
   yield all([
-    takeLatest(ActionTypes.LOAD_ADDRESSES, loadAddresses, vault),
-    takeLatest(ActionTypes.LOAD_BALANCES, loadBalances, backendApi)
+    takeEvery(ActionTypes.LOAD_ADDRESSES, loadAddresses, vault),
+    takeEvery(ActionTypes.LOAD_BALANCES, loadBalances, backendApi)
   ]);
 }
