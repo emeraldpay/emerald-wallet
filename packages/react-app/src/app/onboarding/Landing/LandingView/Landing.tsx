@@ -1,5 +1,4 @@
 import { Button } from '@emeraldwallet/ui';
-import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
@@ -42,15 +41,11 @@ export interface ILandingProps {
   classes?: any;
   onCreateWallet?: any;
   onAboutClick?: any;
-  onImportJson?: any;
-  onImportPrivateKey?: any;
-  onImportMnemonic?: any;
-  onLedger?: any;
 }
 
 export const Landing = ({
-  onCreateWallet, onImportJson, onImportPrivateKey, onLedger, classes, onAboutClick, onImportMnemonic
-}: ILandingProps) => {
+                          onCreateWallet, classes, onAboutClick
+                        }: ILandingProps) => {
   return (
     <div>
       <div style={{ display: 'flex', alignItems: 'stretch' }}>
@@ -65,20 +60,10 @@ export const Landing = ({
                 <br />
                 <Button onClick={onAboutClick} label='More about supported tokens' />
                 <br />
+                <br/>
+                <Button primary={true} onClick={onCreateWallet} label='Create first wallet'/>
+                <br/>
                 <br />
-                <Button primary={true} onClick={onCreateWallet} label='Create new wallet' />
-                <br />
-                <br />
-              </div>
-              <Divider />
-              <div style={{ marginLeft: '145px', marginBottom: '70px' }}>
-                <div className={classes.addAccount}>Import existing</div>
-                <div className={classes.addAccountButtons}>
-                  <Button variant='text' primary={true} onClick={onImportMnemonic} label='Multi-currency wallet' />
-                  <Button variant='text' primary={true} onClick={onImportJson} label='From Keystore File (UTC/JSON)' />
-                  <Button variant='text' primary={true} onClick={onImportPrivateKey} label='From Private key' />
-                  <Button variant='text' primary={true} onClick={onLedger} label='Ledger Nano S' />
-                </div>
               </div>
             </Grid>
           </Grid>

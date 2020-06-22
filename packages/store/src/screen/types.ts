@@ -19,11 +19,8 @@ export enum Pages {
   TX_DETAILS = 'transaction',
   CREATE_TX = 'create-tx',
   CREATE_WALLET = 'create-wallet',
-  ADD_ACCOUNT = 'add-account',
+  //@deprecated, rename to setup coins
   CREATE_HD_ACCOUNT = 'create-hd-account',
-  IMPORT_SEED_WALLET = 'import-seed-wallet',
-  IMPORT_WALLET = 'import-wallet',
-  GENERATE_ACCOUNT = 'generate',
   BROADCAST_TX = 'broadcast-tx'
 }
 
