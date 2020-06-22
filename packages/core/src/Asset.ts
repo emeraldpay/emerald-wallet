@@ -15,7 +15,7 @@ export function isSupportedTokenCode(value: string): value is SupportedTokenCode
 export type AnyTokenCode = StableCoinCode | SupportedTokenCode;
 
 export function isAnyTokenCode(value: string): value is AnyTokenCode {
-  return isStableCoinCode(value) || isStableCoinCode(value);
+  return isStableCoinCode(value) || isSupportedTokenCode(value);
 }
 
 export type AnyCoinCode = AnyTokenCode | CoinTickerCode;
