@@ -181,11 +181,9 @@ export function setIpcHandlers(app: Application) {
         blockchain: blockchainCodeToId(blockchain),
         type: 'hd-path',
         key: {
-          seedId: wallet.seedId,
+          seed: {type: "id", value: wallet.seedId, password},
           hdPath,
-          password
         },
-        password
       };
       return app.vault?.addEntry(walletId, addAccount);
     });

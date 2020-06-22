@@ -37,23 +37,10 @@ export function isEqualSeed(a: SeedReference, b: SeedReference): boolean {
     return true;
   }
   if (a.type == "id") {
+    if (b.type != "id") { // TypeScript loses type by this point
+      return false;
+    }
     return typeof a.value == "string" && typeof b.value == "string" && a.value == b.value;
-  }
-  if (a.type == "mnemonic") {
-    if (typeof a.value != "object" || typeof b.value != "object") {
-      // cannot contain value
-      return false;
-    }
-    if ((a.value as MnemonicSeed).value != (b.value as MnemonicSeed).value) {
-      return false;
-    }
-    if (typeof a.password != typeof b.password) {
-      return false;
-    }
-    if (typeof a.password == "undefined" && typeof b.password == "undefined") {
-      return true
-    }
-    return a.password == b.password;
   }
   return false;
 }

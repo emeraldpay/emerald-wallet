@@ -83,8 +83,8 @@ export const CreateWizard = ((props: Props & Actions & OwnProps) => {
       const save: SeedDefinition = {
         type: "mnemonic",
         value: {
-          value: step.getMnemonic().mnemonic,
-          password: step.getMnemonic().password
+          value: step.getMnemonic().mnemonic!,
+          password: step.getMnemonic().password,
         },
         password
       }

@@ -326,7 +326,6 @@ export class CreateWalletFlow {
     }
     copy.result.seed = {
       type: "ledger",
-      value: {}
     }
     return copy;
   }

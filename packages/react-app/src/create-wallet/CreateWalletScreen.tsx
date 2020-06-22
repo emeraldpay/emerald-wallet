@@ -7,7 +7,14 @@ import CreateWalletWizard from "./CreateWalletWizard";
 import * as vault from "@emeraldpay/emerald-vault-core";
 import {Pages} from "@emeraldwallet/store/lib/screen";
 import {BlockchainCode, blockchainCodeToId, Blockchains, IBlockchain} from "@emeraldwallet/core";
-import {AddEntry, SeedDefinition, Uuid} from "@emeraldpay/emerald-vault-core";
+import {
+  AddEntry,
+  IdSeedReference, LedgerSeedReference,
+  SeedDefinition,
+  SeedEntry,
+  SeedReference,
+  Uuid
+} from "@emeraldpay/emerald-vault-core";
 
 type Props = {
   seeds: vault.SeedDescription[],
@@ -31,17 +38,17 @@ const Component = ((props: Props & Actions & OwnProps) => {
 
 type OwnProps = {}
 
-function entriesForBlockchains(seedId: Uuid, password: string | undefined, account: number, blockchains: BlockchainCode[]): AddEntry[] {
+function entriesForBlockchains(seedRef: SeedReference, account: number, blockchains: BlockchainCode[]): AddEntry[] {
   const entries: vault.AddEntry[] = [];
   blockchains.forEach((blockchain) => {
+    const key: SeedEntry = {
+      hdPath: Blockchains[blockchain].params.hdPath.forAccount(account).toString(),
+      seed: seedRef
+    };
     entries.push({
       type: "hd-path",
       blockchain: blockchainCodeToId(blockchain),
-      key: {
-        hdPath: Blockchains[blockchain].params.hdPath.forAccount(account).toString(),
-        seedId,
-        password
-      }
+      key
     })
   });
   return entries;
@@ -75,7 +82,7 @@ export default connect(
             const seed = value.seed;
             if (typeof seed == "object" && seed.type == "id" && seed.password && typeof value.seedAccount == 'number') {
               const account: number = value.seedAccount;
-              entriesForBlockchains(seed.value as string, seed.password, account, value.blockchains)
+              entriesForBlockchains(value.seed!, account, value.blockchains)
                 .forEach((e) => entries.push(e));
             } else {
               console.warn("Account number is not set")
@@ -98,7 +105,10 @@ export default connect(
           } else if (isLedger(type)) {
             if (typeof value.seedAccount == 'number') {
               const account: number = value.seedAccount;
-              entriesForBlockchains("CREATE/LEDGER", undefined, account, value.blockchains)
+              const seedRef: LedgerSeedReference = {
+                type: "ledger"
+              }
+              entriesForBlockchains(seedRef, account, value.blockchains)
                 .forEach((e) => entries.push(e));
             } else {
               console.warn("Account number is not set")

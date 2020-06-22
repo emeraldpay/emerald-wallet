@@ -126,14 +126,14 @@ export function waitConnection(handler: ConnectionHandler): Dispatched<any> {
       if (typeof seed == "undefined") {
         //when ledger was never used before, but may be connected
         const q: SeedReference = {
-          type: "ledger",
-          value: {}
+          type: "ledger"
         }
         const connected = extra.api.vault.isSeedAvailable(q);
         if (connected) {
           seed = {
             type: "ledger",
-            available: true
+            available: true,
+            createdAt: new Date()
           }
         }
       }
@@ -229,7 +229,7 @@ export function importSelected (blockchain: BlockchainCode): Dispatched<AddressS
       blockchain: blockchainCodeToId(blockchain),
       type: 'hd-path',
       key: {
-        seedId: seed.id!,
+        seed: {type: "id", value: seed.id!},
         hdPath: hdpath
       }
     });

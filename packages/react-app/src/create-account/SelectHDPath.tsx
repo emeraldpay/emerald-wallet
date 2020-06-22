@@ -144,7 +144,7 @@ export default connect(
       disabledAccounts: ownProps.seed.type == "id" ?
         accounts.selectors.allWallets(state)
           .filter((w) => typeof w.hdAccount == 'number' && typeof w.seedId != 'undefined')
-          .filter((w) => w.seedId == ownProps.seed.value)
+          .filter((w) => ownProps.seed.type == "id" && w.seedId == ownProps.seed.value)
           .map((w) => w.hdAccount!)
         : [],
       table: hdpathPreview.selectors.getCurrentDisplay(state, ownProps.seed)
