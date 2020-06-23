@@ -22,7 +22,7 @@ export const Blockchains: {[key: string]: IBlockchain} = {
     new EthereumParams(BlockchainCode.ETC, CoinTicker.ETC, 61,
       HDPath.default().forCoin(BlockchainCode.ETC)),
     'Ethereum Classic',
-    ['BEC']
+    []
   ),
   [BlockchainCode.Kovan]: new Ethereum(
     new EthereumParams(BlockchainCode.Kovan, CoinTicker.KOVAN, 42,
