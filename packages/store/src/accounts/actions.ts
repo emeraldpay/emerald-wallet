@@ -19,7 +19,7 @@ import { Dispatched, IExtraArgument } from '../types';
 import * as selectors from './selectors';
 import {
   AccountsAction,
-  ActionTypes,
+  ActionTypes, ICreateHdEntry,
   ICreateWalletAction,
   IFetchErc20BalancesAction,
   IHdAccountCreated, ILoadSeedsAction,
@@ -153,14 +153,14 @@ export function accountImportedAction (walletId: string) {
   };
 }
 
-export function createHdAccountAction (walletId: string, blockchain: BlockchainCode, walletPwd: string) {
+export function createHdAccountAction(walletId: string,
+                                      blockchain: BlockchainCode,
+                                      seedPassword: string): ICreateHdEntry {
   return {
     type: ActionTypes.CREATE_HD_ACCOUNT,
-    payload: {
-      walletId,
-      blockchain,
-      password: walletPwd
-    }
+    walletId,
+    blockchain,
+    seedPassword
   };
 }
 

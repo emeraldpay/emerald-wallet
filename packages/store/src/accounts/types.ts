@@ -1,5 +1,5 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
-import {EntryId, SeedDescription} from '@emeraldpay/emerald-vault-core';
+import {EntryId, SeedDescription, Uuid} from '@emeraldpay/emerald-vault-core';
 import {Wei} from '@emeraldplatform/eth';
 import {
   Account,
@@ -150,15 +150,23 @@ export interface PendingBalanceAction {
   blockchain: BlockchainCode;
 }
 
+export interface ICreateHdEntry {
+  type: ActionTypes.CREATE_HD_ACCOUNT;
+  blockchain: BlockchainCode;
+  walletId: Uuid;
+  seedId?: Uuid;
+  seedPassword: string;
+}
+
 export type AccountsAction =
-  | IWalletsLoaded
-  | ISetLoadingAction
-  | ISetBalanceAction
-  | IUpdateWalletAction
-  | IWalletCreatedAction
-  // | SetHDPathAction
-  | ISetTxCountAction
-  | PendingBalanceAction
+    | IWalletsLoaded
+    | ISetLoadingAction
+    | ISetBalanceAction
+    | IUpdateWalletAction
+    | IWalletCreatedAction
+    // | SetHDPathAction
+    | ISetTxCountAction
+    | PendingBalanceAction
   | IFetchHdPathsAction
   | ILoadWalletsAction
   | ICreateWalletAction
