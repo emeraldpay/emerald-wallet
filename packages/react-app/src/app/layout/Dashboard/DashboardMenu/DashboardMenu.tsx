@@ -26,8 +26,6 @@ const styles = (theme?: any) => ({
 interface IMenuProps {
   generate?: any;
   importLedger?: any;
-  importMnemonic?: any;
-  createMnemonic?: any;
   addressBook?: any;
   onAbout?: any;
   t?: any;
@@ -66,7 +64,7 @@ class DashboardMenu extends React.Component<IMenuProps, IMenuState> {
 
   public render () {
     const {
-      importLedger, importMnemonic, onAbout, addressBook
+      importLedger, onAbout, addressBook
     } = this.props;
     const {
       style, classes
@@ -89,48 +87,6 @@ class DashboardMenu extends React.Component<IMenuProps, IMenuState> {
           onClose={this.handleRequestClose}
         >
           <List>
-            <ListItem button={true} onClick={importLedger}>
-              <ListItemIcon>
-                <LedgerIcon />
-              </ListItemIcon>
-              <ListItemText primary='Ledger Nano S' secondary='Use Ledger hardware key to manage signatures' />
-            </ListItem>
-            {/*<ListItem button={true} onClick={generate}>*/}
-            {/*  <ListItemIcon>*/}
-            {/*    <KeypairIcon />*/}
-            {/*  </ListItemIcon>*/}
-            {/*  <ListItemText*/}
-            {/*    primary={t('accounts.add.generate.title')}*/}
-            {/*    secondary={t('accounts.add.generate.subtitle')}*/}
-            {/*  />*/}
-            {/*</ListItem>*/}
-            {/*<ListItem button={true} onClick={createMnemonic}>*/}
-            {/*  <ListItemIcon>*/}
-            {/*    <AddIcon />*/}
-            {/*  </ListItemIcon>*/}
-            {/*  <ListItemText*/}
-            {/*    primary={t('accounts.add.mnemonic.title')}*/}
-            {/*    secondary={t('accounts.add.mnemonic.subtitle')}*/}
-            {/*  />*/}
-            {/*</ListItem>*/}
-            {/*<ListItem button={true} onClick={importJson}>*/}
-            {/*  <ListItemIcon>*/}
-            {/*    <DownloadIcon />*/}
-            {/*  </ListItemIcon>*/}
-            {/*  <ListItemText primary={t('accounts.add.import.title')} secondary={t('accounts.add.import.subtitle')} />*/}
-            {/*</ListItem>*/}
-            {/*<ListItem button={true} onClick={importPrivateKey}>*/}
-            {/*  <ListItemIcon>*/}
-            {/*    <KeyIcon />*/}
-            {/*  </ListItemIcon>*/}
-            {/*  <ListItemText primary={t('accounts.add.importPrivateKey.title')} secondary={t('accounts.add.importPrivateKey.subtitle')} />*/}
-            {/*</ListItem>*/}
-            <ListItem button={true} onClick={importMnemonic}>
-              <ListItemIcon>
-                <DownloadIcon />
-              </ListItemIcon>
-              <ListItemText primary={t('accounts.add.importMnemonic.title')} secondary={t('accounts.add.importMnemonic.subtitle')} />
-            </ListItem>
             <ListItem button={true} onClick={addressBook}>
               <ListItemIcon>
                 <BookIcon />

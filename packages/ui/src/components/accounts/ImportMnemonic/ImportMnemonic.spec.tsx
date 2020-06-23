@@ -1,13 +1,11 @@
 import { shallow } from 'enzyme';
 import * as React from 'react';
-import { ImportMnemonic, styles } from './ImportMnemonic';
-
-const reduceClasses = (prev, curr) => ({ ...prev,  [curr]: curr });
-const classes = Object.keys(styles).reduce(reduceClasses, {});
+import ImportMnemonic from './ImportMnemonic';
 
 describe('ImportMnemonic', () => {
   it('renders without crash', () => {
-    const component = shallow(<ImportMnemonic classes={classes} blockchains={[]} initialValues={{ hdpath: "m/44'/60'/0'/0" }}/>);
+    const component = shallow(<ImportMnemonic onSubmit={(mnemonic, password) => {
+    }}/>);
     expect(component).toBeDefined();
   });
 });

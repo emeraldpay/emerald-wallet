@@ -14,11 +14,6 @@ export { default as ExportPaperWallet } from './export/ExportPaperWallet';
 // create-account
 export { default as ShowPrivateKey } from './create-account/ShowPrivateKey';
 export { default as GenerateAccount } from './create-account/GenerateAccount';
-export { default as MnemonicWizard } from './create-account/MnemonicWizard';
-export { default as CreateAccountWizard } from './create-account/CreateAccountWizard';
-
-// import
-export { default as ImportMnemonic } from './import/ImportMnemonic';
 
 // common
 export { default as Balance } from './common/Balance';

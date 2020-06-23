@@ -28,10 +28,11 @@
     "@material-ui/styles": "4.9.10",
     "bignumber.js": "8.0.2",
     "classnames": "2.2.6",
-    "qrcode.react": "^0.9.3",
+    "qrcode.react": "^1.0.0",
     "react": "^16.8.0",
     "react-autosuggest": "^9.4.3",
-    "react-dom": "^16.8.0"
+    "react-dom": "^16.8.0",
+    "react-dropzone": "^11.0.1"
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",
@@ -42,7 +43,7 @@
     "@types/enzyme-adapter-react-16": "^1.0.5",
     "@types/jest": "^24.0.11",
     "@types/node": "^12.12.0",
-    "@types/qrcode.react": "^0.8.2",
+    "@types/qrcode.react": "^1.0.0",
     "@types/react-autosuggest": "^9.3.7",
     "@types/webpack-env": "^1.14.0",
     "awesome-typescript-loader": "^5.2.1",

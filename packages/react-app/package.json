@@ -14,10 +14,10 @@
     "tsc": "tsc",
     "test": "jest --passWithNoTests",
     "test:coverage": "jest --passWithNoTests --coverage && codecov",
-    "storybook": "start-storybook -p 9001 -c .storybook"
+    "storybook": "start-storybook -p 9001 -c .storybook --ci"
   },
   "dependencies": {
-    "@emeraldpay/emerald-vault-core": "^0.5.1-rc6",
+    "@emeraldpay/emerald-vault-core": "^0.5.1-rc7",
     "@emeraldplatform/core": "0.5.8",
     "@emeraldplatform/eth": "0.5.1",
     "@emeraldplatform/ui": "0.6.0",
@@ -32,10 +32,10 @@
     "classnames": "2.2.5",
     "i18next": "19.3.2",
     "i18next-browser-languagedetector": "4.0.2",
-    "qrcode.react": "^0.9.3",
+    "qrcode.react": "^1.0.0",
     "react": "^16.8.0",
     "react-dom": "^16.8.0",
-    "react-dropzone": "6",
+    "react-dropzone": "^6",
     "react-i18next": "11.3.3",
     "react-redux": "^7.1.0",
     "redux-thunk": "^2.3.0"
@@ -51,6 +51,7 @@
     "@types/node": "^12.12.0",
     "@types/react-redux": "^7.1.1",
     "@types/uuid": "^3.4.4",
+    "@types/qrcode.react": "^1.0.0",
     "awesome-typescript-loader": "^5.2.1",
     "copyfiles": "2.1.0",
     "enzyme": "^3.10.0",
@@ -59,7 +60,8 @@
     "jest-canvas-mock": "^2.1.1",
     "jest-transform-stub": "^2.0.0",
     "rimraf": "^2.6.3",
-    "ts-jest": "^24.0.0"
+    "ts-jest": "^24.0.0",
+    "electron-devtools-installer": "^3.0.0"
   },
   "jest": {
     "transform": {

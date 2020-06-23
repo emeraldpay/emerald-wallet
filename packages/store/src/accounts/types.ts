@@ -1,5 +1,5 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
-import {EntryId} from '@emeraldpay/emerald-vault-core';
+import {EntryId, SeedDescription} from '@emeraldpay/emerald-vault-core';
 import {Wei} from '@emeraldplatform/eth';
 import {
   Account,
@@ -37,6 +37,7 @@ export interface IAccountsState {
   wallets: Wallet[];
   loading: boolean;
   details: AccountDetails[];
+  seeds: SeedDescription[];
 }
 
 export enum ActionTypes {
@@ -54,7 +55,9 @@ export enum ActionTypes {
   CREATE_WALLET_SUCCESS = 'ACCOUNT/ADD_ACCOUNT',
   ACCOUNT_IMPORTED = 'ACCOUNT/IMPORTED',
   CREATE_HD_ACCOUNT = 'ACCOUNT/CREATE_HD_ACCOUNT',
-  HD_ACCOUNT_CREATED = 'ACCOUNT/HD_ACCOUNT_CREATED'
+  HD_ACCOUNT_CREATED = 'ACCOUNT/HD_ACCOUNT_CREATED',
+  LOAD_SEEDS = 'ACCOUNT/LOAD_SEEDS',
+  SET_SEEDS = 'ACCOUNT/SET_SEEDS'
 }
 
 export interface ILoadWalletsAction {
@@ -125,6 +128,15 @@ export interface IHdAccountCreated {
   };
 }
 
+export interface ILoadSeedsAction {
+  type: ActionTypes.LOAD_SEEDS;
+}
+
+export interface ISetSeedsAction {
+  type: ActionTypes.SET_SEEDS,
+  payload: SeedDescription[]
+}
+
 /**
  * @deprecated
  */
@@ -151,4 +163,6 @@ export type AccountsAction =
   | ILoadWalletsAction
   | ICreateWalletAction
   | IHdAccountCreated
+  | ILoadSeedsAction
+  | ISetSeedsAction
   ;

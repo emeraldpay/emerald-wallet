@@ -3,8 +3,8 @@ import {
 } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import { Button, FormRow } from '@emeraldwallet/ui';
-import { CSSProperties, withStyles } from '@material-ui/styles';
-import * as QRCode from 'qrcode.react';
+import {CSSProperties, withStyles} from '@material-ui/styles';
+const QRCode = require('qrcode.react');
 import * as React from 'react';
 
 const styles = {

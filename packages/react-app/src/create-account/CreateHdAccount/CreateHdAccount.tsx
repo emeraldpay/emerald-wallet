@@ -15,6 +15,7 @@ import {
 import {makeStyles} from "@material-ui/core/styles";
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import SelectCoins from "../SelectCoins";
 
 type EnableStateType = { [key: string]: boolean };
 
@@ -90,62 +91,15 @@ function CreateHdAccount(props: IProps & IOwnProps & IDispatchProps) {
     }
   }
 
-  function toggleBlockchain(code: BlockchainCode) {
-    let update: EnableStateType = {};
-    const current = enabled[code] || false;
-    update[code] = !current;
-    setEnabled(Object.assign({}, enabled, update));
-  }
 
-  const selectCoinsStep: JSX.Element[] = [];
+  const selectCoinsStep = <SelectCoins blockchains={props.blockchains}
+                                       enabled={props.enabledBlockchains}
+                                       onChange={(value) => {
+                                         const state = {} as EnableStateType
+                                         value.forEach((it) => state[it] = true)
+                                         setEnabled(state)
+                                       }}/>;
 
-  props.blockchains.map((blockchain, i) => {
-    const blockchainWasEnabled = enabledBlockchains.indexOf(blockchain.params.code) >= 0;
-    const blockchainNowEnabled = blockchainWasEnabled || enabled[blockchain.params.code];
-
-    const tokens: JSX.Element[] = [];
-
-    blockchain.getAssets().forEach((asset) => {
-      const tokenLabel = <FormControlLabel
-        key={asset}
-        control={
-          blockchainNowEnabled ? <CheckBoxIcon color={"disabled"}/> : <CheckBoxOutlineBlankIcon color={"disabled"}/>
-        }
-        label={asset}
-      />;
-      tokens.push(tokenLabel);
-    });
-
-    const blockchainCard = <Card key={blockchain.params.code}>
-      <CardMedia className={styles.media}>
-        <Box className={styles.iconBox}>
-          <CoinAvatar chain={blockchain.params.code} size="large"/>
-        </Box>
-      </CardMedia>
-      <CardContent className={styles.content}>
-        <Typography variant={"h5"}>{blockchain.getTitle()}</Typography>
-        <Box>
-          <Box className={styles.contentCoinsBox}>
-            <Typography variant={"body2"}>Supported coins:</Typography>
-            {tokens}
-          </Box>
-          <Box className={styles.contentControlBox}>
-            <Button
-              onClick={() => toggleBlockchain(blockchain.params.code)}
-              disabled={blockchainWasEnabled} // deny to remove existing chains for now
-              variant="text"
-              color="primary"
-              startIcon={blockchainNowEnabled ? <CheckBoxIcon/> : <CheckBoxOutlineBlankIcon/>}
-            >
-              {blockchainNowEnabled ? "Disable" : "Enable"}
-            </Button>
-          </Box>
-        </Box>
-      </CardContent>
-    </Card>
-
-    selectCoinsStep.push(blockchainCard)
-  });
 
   let confirmStep;
 

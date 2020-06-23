@@ -38,8 +38,8 @@
     ]
   },
   "dependencies": {
-    "@emeraldpay/emerald-vault-core": "^0.5.1-rc6",
-    "@emeraldpay/emerald-vault-native": "^0.5.1-rc6",
+    "@emeraldpay/emerald-vault-core": "^0.5.1-rc7",
+    "@emeraldpay/emerald-vault-native": "^0.5.1-rc7",
     "@emeraldwallet/core": "^2.1.2"
   }
 }

@@ -12,7 +12,8 @@ import {
   settings,
   tokens,
   transaction,
-  txhistory
+  txhistory,
+  hdpathPreview
 } from './';
 
 const root = combineReducers<IState>({
@@ -27,7 +28,8 @@ const root = combineReducers<IState>({
   [screen.moduleName]: screen.reducer,
   [connection.moduleName]: connection.reducer,
   addAccount: addAccount.reducer,
-  [transaction.moduleName]: transaction.reducer
+  [transaction.moduleName]: transaction.reducer,
+  hdpathPreview: hdpathPreview.reducer
 });
 
 export default root;

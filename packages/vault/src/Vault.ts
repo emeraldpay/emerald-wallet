@@ -16,7 +16,8 @@ limitations under the License.
 */
 import * as vault from '@emeraldpay/emerald-vault-core';
 import { AddressBookItem, BlockchainCode, ILogger, IVault, Logger, Wallet } from '@emeraldwallet/core';
-import { blockchainCodeToId, blockchainIdToCode } from './utils';
+import {blockchainCodeToId, blockchainIdToCode} from './utils';
+import {BlockchainType, SeedDefinition, SeedReference, Uuid} from "@emeraldpay/emerald-vault-core";
 
 export class Vault implements IVault {
 
@@ -75,8 +76,12 @@ export class Vault implements IVault {
       });
   }
 
-  public removeFromAddressBook (blockchain: BlockchainCode, address: string): boolean {
+  public removeFromAddressBook(blockchain: BlockchainCode, address: string): boolean {
     return this.provider.removeFromAddressBook(blockchainCodeToId(blockchain), address);
+  }
+
+  listSeeds(): vault.SeedDescription[] {
+    return this.provider.listSeeds()
   }
 
   public addEntry(walletId: string, account: vault.AddEntry): string {
@@ -104,19 +109,27 @@ export class Vault implements IVault {
     return this.provider.setWalletLabel(walletId, label);
   }
 
-  public importSeed (seed: vault.SeedDefinition): string {
+  public importSeed(seed: vault.SeedDefinition): string {
     return this.provider.importSeed(seed);
   }
 
-  public getConnectedHWSeed (create: boolean): vault.SeedDescription | undefined {
+  public getConnectedHWSeed(create: boolean): vault.SeedDescription | undefined {
     return this.provider.getConnectedHWSeed(create);
   }
 
-  public signTx (accountFullId: string, tx: vault.UnsignedTx, password?: string): string {
+  public isSeedAvailable(seed: Uuid | vault.SeedReference | vault.SeedDefinition): boolean {
+    return this.provider.isSeedAvailable(seed);
+  }
+
+  public signTx(accountFullId: string, tx: vault.UnsignedTx, password?: string): string {
     return this.provider.signTx(accountFullId, tx, password);
   }
 
-  private mapToCore (w: vault.Wallet): Wallet {
+  public listSeedAddresses(id: Uuid | SeedReference | SeedDefinition, blockchain: BlockchainType, hdpath: string[]): { [key: string]: string } {
+    return this.provider.listSeedAddresses(id, blockchain, hdpath)
+  }
+
+  private mapToCore(w: vault.Wallet): Wallet {
     const newWallet = new Wallet(w.id);
     newWallet.name = w.name;
     newWallet.accounts = w.entries.map((a: any) => {

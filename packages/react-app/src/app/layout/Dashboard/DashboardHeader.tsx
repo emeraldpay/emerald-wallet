@@ -28,10 +28,8 @@ const styles = createStyles({
 export interface IHeaderProps {
   generate: any;
   importLedger: any;
-  importMnemonic: any;
   showAboutDialog: any;
   addToken?: any;
-  createMnemonic: any;
   showAddressBook: any;
   classes: any;
   t: any;
@@ -40,9 +38,9 @@ export interface IHeaderProps {
 
 export function DashboardHeader (props: IHeaderProps & WithTranslation) {
   const {
-      generate, importLedger, importMnemonic, createMnemonic,
-      showAddressBook, onCreateWallet, showAboutDialog
-    } = props;
+    generate, importLedger,
+    showAddressBook, onCreateWallet, showAboutDialog
+  } = props;
   const { t, classes } = props;
 
   function handlePlusWalletClick () {
@@ -59,8 +57,6 @@ export function DashboardHeader (props: IHeaderProps & WithTranslation) {
         <Menu
           generate={generate}
           importLedger={importLedger}
-          importMnemonic={importMnemonic}
-          createMnemonic={createMnemonic}
           addressBook={showAddressBook}
           onAbout={showAboutDialog}
           t={t}
@@ -76,19 +72,13 @@ export default withTranslation()(
     (state, ownProps) => ({}),
     (dispatch, ownProps) => ({
       onCreateWallet: () => {
-        dispatch(gotoScreen(screen.Pages.NEW_WALLET));
+        dispatch(gotoScreen(screen.Pages.CREATE_WALLET));
       },
       generate: () => {
         dispatch(gotoScreen('generate'));
       },
-      createMnemonic: () => {
-        dispatch(gotoScreen('new-mnemonic'));
-      },
       importLedger: () => {
         dispatch(gotoScreen('add-from-ledger'));
-      },
-      importMnemonic: () => {
-        dispatch(gotoScreen('import-mnemonic'));
       },
       showAddressBook: () => {
         dispatch(gotoScreen(screen.Pages.ADDRESS_BOOK));

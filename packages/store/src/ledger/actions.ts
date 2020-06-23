@@ -13,6 +13,7 @@ import {
   SetListHDPath,
   Watch
 } from './types';
+import {SeedDescription, SeedReference} from "@emeraldpay/emerald-vault-core";
 
 export function setWatch (value: boolean): Watch {
   return {
@@ -112,6 +113,52 @@ function onceConnectionState (getState: GetState, value: boolean): Promise<any> 
   });
 }
 
+type ConnectionHandler = (value: SeedDescription) => void;
+const connectionHandlers: ConnectionHandler[] = [];
+
+export function waitConnection(handler: ConnectionHandler): Dispatched<any> {
+  connectionHandlers.push(handler);
+  return (dispatch, getState, extra) => {
+    function refresh() {
+      let seed: SeedDescription | undefined;
+      const seeds = extra.api.vault.listSeeds();
+      seed = seeds.find((seed) => seed.type == "ledger");
+      if (typeof seed == "undefined") {
+        //when ledger was never used before, but may be connected
+        const q: SeedReference = {
+          type: "ledger"
+        }
+        const connected = extra.api.vault.isSeedAvailable(q);
+        if (connected) {
+          seed = {
+            type: "ledger",
+            available: true,
+            createdAt: new Date()
+          }
+        }
+      }
+      console.log("Check ledger", seed);
+      if (typeof seed == 'object' && seed.available) {
+        let h = connectionHandlers.pop();
+        while (h) {
+          try {
+            h(seed);
+          } catch (e) {
+            console.warn("Failed to notify connection handler", e)
+          }
+          h = connectionHandlers.pop();
+        }
+      } else {
+        if (connectionHandlers.length > 0) {
+          setTimeout(refresh, 500);
+        }
+      }
+    }
+
+    refresh();
+  }
+}
+
 // function loadInfo(chain: BlockchainCode, hdpath: string, addr: string): Dispatched<AddressBalance | AddressTxCount> {
 //   return (dispatch, getState, api) => {
 //     const ethApi = api.chain(chain).eth;
@@ -182,7 +229,7 @@ export function importSelected (blockchain: BlockchainCode): Dispatched<AddressS
       blockchain: blockchainCodeToId(blockchain),
       type: 'hd-path',
       key: {
-        seedId: seed.id!,
+        seed: {type: "id", value: seed.id!},
         hdPath: hdpath
       }
     });

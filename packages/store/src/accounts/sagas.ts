@@ -9,11 +9,13 @@ import {
   fetchErc20BalancesAction,
   hdAccountCreated,
   setLoadingAction,
+  setSeedsAction,
   setWalletsAction,
-  walletCreatedAction
+  walletCreatedAction,
 } from './actions';
 import { allAccounts, allWallets, findWallet } from './selectors';
-import { ActionTypes, ICreateWalletAction, IFetchErc20BalancesAction } from './types';
+import {ActionTypes, ICreateWalletAction, IFetchErc20BalancesAction} from './types';
+import {SeedDescription} from "@emeraldpay/emerald-vault-core";
 
 function* fetchErc20Balances (action: IFetchErc20BalancesAction): SagaIterator {
   const accounts = yield select(allAccounts);
@@ -60,8 +62,17 @@ function* loadAllWallets (backendApi: IBackendApi): SagaIterator {
   });
 }
 
-function* createWallet (backendApi: IBackendApi, action: ICreateWalletAction): SagaIterator {
-  const { walletName, password, mnemonic } = action.payload;
+function* loadSeeds(backendApi: IBackendApi): SagaIterator {
+  yield put(setLoadingAction(true));
+
+  const seeds: SeedDescription[] = yield call(backendApi.listSeeds);
+  yield put(setSeedsAction(seeds));
+
+  yield put(setLoadingAction(false));
+}
+
+function* createWallet(backendApi: IBackendApi, action: ICreateWalletAction): SagaIterator {
+  const {walletName, password, mnemonic} = action.payload;
   const wallets = yield select(allWallets);
   const name = walletName ?? `Wallet ${wallets.length}`;
   const wallet = yield call(backendApi.createWallet, name, password, mnemonic);
@@ -123,6 +134,7 @@ function* createHdAccount (backendApi: IBackendApi, action: any): SagaIterator {
 
 export function* root (backendApi: IBackendApi) {
   yield all([
+    takeLatest(ActionTypes.LOAD_SEEDS, loadSeeds, backendApi),
     takeLatest(ActionTypes.FETCH_ERC20_BALANCES, fetchErc20Balances),
     takeLatest(ActionTypes.LOAD_WALLETS, loadAllWallets, backendApi),
     takeEvery(ActionTypes.CREATE_WALLET, createWallet, backendApi),

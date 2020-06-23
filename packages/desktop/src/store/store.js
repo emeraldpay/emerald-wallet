@@ -62,6 +62,9 @@ export function startSync() {
         api.connectChains(codes);
       })
       .then(() => {
+        return store.dispatch(accounts.actions.loadSeedsAction());
+      })
+      .then(() => {
         return store.dispatch(accounts.actions.loadWalletsAction());
       })
       .then(() => {

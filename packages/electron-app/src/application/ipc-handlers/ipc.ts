@@ -1,21 +1,30 @@
 import {
-  AddressBookService,
+  AddressBookService, AnyCoinCode,
   BlockchainCode,
   blockchainCodeToId,
   Blockchains,
-  Commands,
+  Commands, isAnyTokenCode, isCoinTickerCode,
   Logger,
   vault,
   WalletService
 } from '@emeraldwallet/core';
-import { loadTransactions2, storeTransactions2 } from '@emeraldwallet/history-store';
-import { ipcMain } from 'electron';
+import {loadTransactions2, storeTransactions2} from '@emeraldwallet/history-store';
+import {ipcMain} from 'electron';
 import * as os from 'os';
 import Application from '../Application';
-import { tokenContract } from '../erc20';
+import {tokenContract} from '../erc20';
+import {Uuid} from "@emeraldpay/emerald-vault-core";
+import {registry} from "@emeraldwallet/erc20";
+import BigNumber from 'bignumber.js';
+
+interface BalanceResult {
+  asset: AnyCoinCode;
+  balance: string;
+}
 
 const log = Logger.forCategory('IPC Handlers');
-export function setIpcHandlers (app: Application) {
+
+export function setIpcHandlers(app: Application) {
 
   ipcMain.handle(Commands.GET_VERSION, async (event, args) => {
     const osDetails = {
@@ -67,11 +76,55 @@ export function setIpcHandlers (app: Application) {
   });
 
   // ERC20
+  // FIXME DEPRECATE
   ipcMain.handle(Commands.ERC20_GET_BALANCE,
     (event: any, blockchain: BlockchainCode, tokenId: string, address: string) => {
       // Call Erc20 contract to request balance for address
-      const data = tokenContract.functionToData('balanceOf', { _owner: address });
-      return app.rpc.chain(blockchain).eth.call({ to: tokenId, data });
+      const data = tokenContract.functionToData('balanceOf', {_owner: address});
+      return app.rpc.chain(blockchain).eth.call({to: tokenId, data});
+    });
+
+  ipcMain.handle(Commands.GET_BALANCE,
+    (event: any, blockchain: BlockchainCode, address: string, tokens: AnyCoinCode[]) => {
+      //TODO use dshackle service
+      const api = app.rpc.chain(blockchain).eth;
+      const calls: Promise<BalanceResult>[] = []
+      tokens.forEach((token) => {
+        if (isCoinTickerCode(token)) {
+          calls.push(
+            api.getBalance(address)
+              .then((b) => b.toString(10))
+              .then((value) => {
+                return {asset: token, balance: value}
+              })
+          );
+        } else if (isAnyTokenCode(token)) {
+          try {
+            const contract = registry.bySymbol(blockchain, token);
+            // Call Erc20 contract to request balance for address
+            const data = tokenContract.functionToData('balanceOf', {_owner: address});
+            calls.push(
+              api.call({to: contract.address, data})
+                .then((hex: string) => new BigNumber(hex.substring(2), 16).toString(10))
+                .then((value) => {
+                  return {asset: token, balance: value}
+                })
+            );
+          } catch (e) {
+            log.error("failed to get balance", token, e);
+          }
+        } else {
+          log.warn("Unsupported asset", token);
+        }
+      });
+
+      return Promise.all(calls).then((all: BalanceResult[]) => {
+        const result: { [key: string]: string } = {};
+        all.forEach((balance) => {
+          result[balance.asset] = balance.balance;
+        })
+        return result;
+      });
     });
 
   ipcMain.handle(Commands.GET_GAS_PRICE, async (event: any, blockchain: BlockchainCode) => {
@@ -128,11 +181,9 @@ export function setIpcHandlers (app: Application) {
         blockchain: blockchainCodeToId(blockchain),
         type: 'hd-path',
         key: {
-          seedId: wallet.seedId,
+          seed: {type: "id", value: wallet.seedId, password},
           hdPath,
-          password
         },
-        password
       };
       return app.vault?.addEntry(walletId, addAccount);
     });
@@ -165,4 +216,16 @@ export function setIpcHandlers (app: Application) {
     return app.vault?.setWalletLabel(walletId, name);
   });
 
+  ipcMain.handle(Commands.VAULT_GET_SEEDS, (event: any) => {
+    return app.vault?.listSeeds()
+  });
+
+  ipcMain.handle(Commands.VAULT_SEED_ADDRESSES, (event, seedId: Uuid, password: string, blockchain: BlockchainCode, hdpaths: string[]) => {
+    try {
+      return app.vault?.listSeedAddresses({type: "id", value: seedId, password}, "ethereum", hdpaths);
+    } catch (e) {
+      log.error("Unable to get seed addresses", e.message, hdpaths, password);
+    }
+    return {};
+  });
 }

@@ -3,16 +3,13 @@ import { screen } from '@emeraldwallet/store';
 import { CircularProgress } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import CreateHdAccount from '../../../create-account/CreateHdAccount';
-import CreateOrImport from '../../../create-wallet/CreateOrImport';
-import ImportWalletWizard from '../../../create-wallet/ImportWalletWizard';
-import ImportMnemonicWallet from '../../../create-wallet/ImportWalletWizard/ImportMnemonicWallet';
-import NewWalletWizard from '../../../create-wallet/NewWalletWizard';
 import {
-  AddContact, BroadcastTx, ContactList as AddressBook, CreateAccountWizard, CreateTransaction,
-  ExportPaperWallet, GenerateAccount, Home, ImportLedgerAccount, ImportMnemonic,
-  MnemonicWizard, PaperWallet, Settings, TxDetails, WalletDetails, Welcome
+  AddContact, BroadcastTx, ContactList as AddressBook, CreateTransaction,
+  ExportPaperWallet, Home, ImportLedgerAccount,
+  PaperWallet, Settings, TxDetails, WalletDetails, Welcome
 } from '../../../index';
+import CreateHdAccount from '../../../create-account/CreateHdAccount';
+import CreateWalletScreen from "../../../create-wallet/CreateWalletScreen";
 
 const log = Logger.forCategory('screen');
 
@@ -60,16 +57,7 @@ const Screen = (props: IScreenProps) => {
     return <BroadcastTx tx={props.screenItem.tx} signed={props.screenItem.signed} />;
   }
   if (props.screen === screen.Pages.CREATE_WALLET) {
-    return <NewWalletWizard />;
-  }
-  if (props.screen === screen.Pages.NEW_WALLET) {
-    return (<CreateOrImport />);
-  }
-  if (props.screen === screen.Pages.IMPORT_WALLET) {
-    return (<ImportWalletWizard />);
-  }
-  if (props.screen === screen.Pages.IMPORT_SEED_WALLET) {
-    return (<ImportMnemonicWallet />);
+    return <CreateWalletScreen/>;
   }
 
     // if (props.screen === 'repeat-tx') {
@@ -92,22 +80,7 @@ const Screen = (props: IScreenProps) => {
   // if (props.screen === 'landing-generate') {
   //   return <GenerateAccount backLabel='Back'/>;
   // }
-  if (props.screen === screen.Pages.GENERATE_ACCOUNT) {
-    return <GenerateAccount />;
-  }
-  // if (props.screen === 'importjson') {
-  //   return <ImportJson />;
-  // }
-  // if (props.screen === 'landing-importjson') {
-  //   return <ImportJson backLabel='Back'/>;
-  // }
 
-  if (props.screen === 'import-mnemonic') {
-    return <ImportMnemonic />;
-  }
-  if (props.screen === 'new-mnemonic') {
-    return <MnemonicWizard />;
-  }
   if (props.screen === 'welcome') {
     return <Welcome currentTermsVersion={props.termsVersion} />;
   }
@@ -119,9 +92,6 @@ const Screen = (props: IScreenProps) => {
   }
   if (props.screen === 'export-paper-wallet') {
     return <ExportPaperWallet account={props.screenItem} />;
-  }
-  if (props.screen === screen.Pages.ADD_ACCOUNT) {
-    return <CreateAccountWizard />;
   }
   if (props.screen === screen.Pages.CREATE_HD_ACCOUNT) {
     return <CreateHdAccount walletId={props.screenItem}/>;

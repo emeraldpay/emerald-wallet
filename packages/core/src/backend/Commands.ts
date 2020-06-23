@@ -17,6 +17,7 @@ export enum Commands {
   BROADCAST_TX = 'broadcast-tx',
   ESTIMATE_TX = 'estimate-tx',
   SIGN_TX = 'sign-tx',
+  GET_BALANCE = 'get-balance',
 
   ACCOUNT_IMPORT_ETHEREUM_JSON = 'import-json',
   ACCOUNT_IMPORT_PRIVATE_KEY = 'import-private-key',
@@ -29,5 +30,7 @@ export enum Commands {
   VAULT_GET_WALLET = 'get-vault-wallet',
   VAULT_UPDATE_WALLET = 'vault-update-wallet',
   VAULT_CREATE_HD_ACCOUNT = 'create-hd-account',
+  VAULT_GET_SEEDS = 'get-vault-seeds',
+  VAULT_SEED_ADDRESSES = 'vault-get-seed-addresses',
 
 }

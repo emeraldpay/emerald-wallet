@@ -22,15 +22,16 @@ import {
   ActionTypes,
   ICreateWalletAction,
   IFetchErc20BalancesAction,
-  IHdAccountCreated,
+  IHdAccountCreated, ILoadSeedsAction,
   ILoadWalletsAction,
   ISetBalanceAction,
-  ISetLoadingAction,
+  ISetLoadingAction, ISetSeedsAction,
   ISetTxCountAction,
   IUpdateWalletAction,
   IWalletCreatedAction,
   IWalletsLoaded, PendingBalanceAction
 } from './types';
+import {AddEntry, SeedDefinition, SeedDescription, SeedEntry, Uuid} from "@emeraldpay/emerald-vault-core";
 
 const log = Logger.forCategory('store.accounts');
 
@@ -182,6 +183,28 @@ export function createAccount (
   };
 }
 
+export type CreateWalletOptions = {
+  label?: string,
+  entry?: vault.AddEntry
+}
+
+export function createWallet(options: CreateWalletOptions,
+                             entries: AddEntry[],
+                             handler: (walletId?: string, err?: any) => void): Dispatched<IWalletCreatedAction> {
+  return (dispatch, getState, extra) => {
+    const vault = extra.api.vault;
+    try {
+      const walletId = vault.addWallet(options.label);
+      entries.forEach((entry) => vault.addEntry(walletId, entry));
+      const wallet = vault.getWallet(walletId)!;
+      dispatch(walletCreatedAction(wallet));
+      handler(walletId);
+    } catch (e) {
+      handler(undefined, e)
+    }
+  }
+}
+
 export function exportPrivateKey(passphrase: string, accountId: vault.EntryId): any {
   return (dispatch: any, getState: any, extra: IExtraArgument) => {
     return extra.backendApi.exportRawPrivateKey(accountId, passphrase);
@@ -280,6 +303,10 @@ export function importPk (
   };
 }
 
+/**
+ *
+ * @deprecated should have separate password
+ */
 export function importMnemonic (
   blockchain: BlockchainCode, passphrase: string, mnemonic: string, hdPath: string, name: string
 ): Dispatched<IWalletCreatedAction> {
@@ -293,9 +320,8 @@ export function importMnemonic (
       blockchain: blockchainCodeToId(blockchain),
       type: 'hd-path',
       key: {
-        seedId,
+        seed: {type: "id", value: seedId, password: passphrase},
         hdPath,
-        password: passphrase
       }
     };
 
@@ -367,8 +393,32 @@ export function loadPendingTransactions (): Dispatched<PendingBalanceAction> {
   };
 }
 
-export function generateMnemonic (): Dispatched<any> {
+export function generateMnemonic(handler?: (value: string) => void): Dispatched<any> {
   return (dispatch: any, getState, extra) => {
-    return Promise.resolve(extra.api.vault.generateMnemonic(24));
+    const value = extra.api.vault.generateMnemonic(24);
+    if (handler) {
+      handler(value);
+    }
+    return Promise.resolve(value);
   };
+}
+
+export function loadSeedsAction(): ILoadSeedsAction {
+  return {
+    type: ActionTypes.LOAD_SEEDS
+  };
+}
+
+export function setSeedsAction(seeds: SeedDescription[]): ISetSeedsAction {
+  return {
+    type: ActionTypes.SET_SEEDS,
+    payload: seeds
+  };
+}
+
+export function createSeed(seed: SeedDefinition, handler: (id: Uuid) => void): Dispatched<any> {
+  return (dispatch, getState, extra) => {
+    const id = extra.api.vault.importSeed(seed);
+    handler(id);
+  }
 }

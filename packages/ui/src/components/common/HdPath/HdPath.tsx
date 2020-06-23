@@ -11,7 +11,7 @@ interface IDPath {
 
 const dPaths: IDPath[] = Object.keys(blockchains.Blockchains)
   .map<IDPath>((chainCode: string) => ({
-    value: Blockchains[chainCode].params.hdPath,
+    value: Blockchains[chainCode].params.hdPath.toString(),
     label: Blockchains[chainCode].getTitle()
   }));
 

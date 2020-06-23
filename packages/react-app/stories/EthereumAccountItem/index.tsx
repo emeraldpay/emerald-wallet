@@ -9,7 +9,7 @@ storiesOf('EthereumAccountItem', module)
     <EthereumAccountItem
       walletId={'wallet-id'}
       balance={Wei.ZERO}
-      account={{ address: '0x12345678901234567890', id: '', blockchain: BlockchainCode.ETH }}
+      account={{address: '0x12345678901234567890', id: '', blockchain: BlockchainCode.ETH, isHardware: false}}
       tokensBalances={[]}
-    />
+      classes={''}/>
   ));

@@ -16,8 +16,8 @@
     "test:coverage": "jest --passWithNoTests --coverage && codecov"
   },
   "dependencies": {
-    "@emeraldpay/emerald-vault-core": "^0.5.1-rc6",
-    "@emeraldpay/emerald-vault-native": "^0.5.1-rc6"
+    "@emeraldpay/emerald-vault-core": "^0.5.1-rc7",
+    "@emeraldpay/emerald-vault-native": "^0.5.1-rc7"
   },
   "devDependencies": {
     "@types/jest": "^24.0.9",

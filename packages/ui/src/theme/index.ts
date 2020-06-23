@@ -45,6 +45,13 @@ const theme = {
     }
   },
   spacing: createSpacing(spacing),
+  root: {
+    fontFamily: [
+      '"Rubik"',
+      '"Roboto"',
+      'sans-serif'
+    ].join(',')
+  },
   typography: {
     fontSize: 16,
     fontWeightLight: 300,
@@ -71,7 +78,7 @@ const theme = {
     MuiFormHelperText: {
       root: {
         position: 'absolute',
-        bottom: -(spacing * 2)
+        bottom: -(spacing * 3)
       } as CSSProperties
     },
     MuiButton: {
@@ -152,6 +159,24 @@ const theme = {
       },
       paragraph: {
         marginBottom: spacing * 2
+      }
+    },
+    MuiCardHeader: {
+      action: {
+        width: "100%",
+        marginRight: "0"
+      }
+    },
+    MuiCardActions: {
+      root: {
+        float: 'right' as 'right',
+        paddingRight: "16px",
+        paddingBottom: "16px"
+      }
+    },
+    MuiStepLabel: {
+      label: {
+        fontSize: "0.8em"
       }
     }
   },
