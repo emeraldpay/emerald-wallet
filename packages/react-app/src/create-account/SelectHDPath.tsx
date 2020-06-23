@@ -77,6 +77,10 @@ const Component = (({disabledAccounts, table, setAccount}: Props & Actions & Own
 
   let prev: IAddressState | undefined = undefined;
 
+  function isChanged(item: IAddressState): boolean {
+    return typeof prev == "undefined" || prev.blockchain != item.blockchain || prev.hdpath != item.hdpath || prev.address != item.address
+  }
+
   return <Grid container={true}>
     <Grid item={true} xs={12}>
       <HDPathCounter base={BASE_HD_PATH.toString()}
@@ -99,11 +103,9 @@ const Component = (({disabledAccounts, table, setAccount}: Props & Actions & Own
         <TableBody>
           {table.map((item) => {
             const el = <TableRow key={item.blockchain + "-" + item.address + "-" + item.asset}>
-              <TableCell>{!prev || prev.blockchain != item.blockchain ?
-                Blockchains[item.blockchain].getTitle() : ""}</TableCell>
-              {/*<TableCell>{Blockchains[item.blockchain].getTitle()}</TableCell>*/}
-              <TableCell>{!prev || prev.hdpath != item.hdpath ? item.hdpath : ""}</TableCell>
-              <TableCell>{!prev || prev.address != item.address ? item.address : ""}</TableCell>
+              <TableCell>{isChanged(item) ? Blockchains[item.blockchain].getTitle() : ""}</TableCell>
+              <TableCell>{isChanged(item) ? item.hdpath : ""}</TableCell>
+              <TableCell>{isChanged(item) ? item.address : ""}</TableCell>
               <TableCell align={"right"}>{renderBalance(item)}</TableCell>
               <TableCell>{item.asset}</TableCell>
               <TableCell>
