@@ -10,7 +10,7 @@ import {
   Card,
   CardMedia,
   CardContent,
-  createStyles, Box, Typography, Button, Stepper, Step, StepLabel
+  createStyles, Box, Typography, Button, Stepper, Step, StepLabel, CardHeader, CardActions
 } from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import CheckBoxIcon from '@material-ui/icons/CheckBox';
@@ -128,49 +128,46 @@ function CreateHdAccount(props: IProps & IOwnProps & IDispatchProps) {
   const nextButtonEnabled = (activeStep == 0 && changed)
     || (activeStep == 1 && canSave);
 
-  return (
-    <Page
-      leftIcon={(<Back onClick={onCancel}/>)}
-      title={'Configure enabled cryptocurrencies for the wallet'}
-    >
-      <Stepper activeStep={activeStep}>
-        <Step key={"select-blockchain"}>
-          <StepLabel>Select Blockchain</StepLabel>
-        </Step>
-        <Step key={"save-changes"}>
-          <StepLabel>Save Changes</StepLabel>
-        </Step>
-      </Stepper>
+  const stepper = <Stepper activeStep={activeStep}>
+    <Step key={"select-blockchain"}>
+      <StepLabel>Select Blockchain</StepLabel>
+    </Step>
+    <Step key={"save-changes"}>
+      <StepLabel>Save Changes</StepLabel>
+    </Step>
+  </Stepper>;
+
+  const controls = <Box>
+    <Button
+      disabled={activeStep == 0}
+      variant="text"
+      color={"secondary"}
+      onClick={() => setActiveStep(activeStep - 1)}
+    >Back</Button>
+
+    <Button
+      disabled={!nextButtonEnabled || activeStep == 1}
+      variant="contained"
+      color={"primary"}
+      onClick={() => setActiveStep(activeStep + 1)}
+    >Next</Button>
+
+    <Button
+      disabled={!nextButtonEnabled || activeStep < 1}
+      variant="contained"
+      color={"primary"}
+      onClick={() => create()}
+    >Save changes</Button>
+  </Box>;
+
+  return <Card>
+    <CardHeader action={stepper}/>
+    <CardContent>
       {activeStep == 0 ? selectCoinsStep : confirmStep}
-      <FormRow
-        classes={{formRow: styles.buttonsRow}}
-        rightColumn={(
-          <Box>
-            <Button
-              disabled={activeStep == 0}
-              variant="text"
-              color={"secondary"}
-              onClick={() => setActiveStep(activeStep - 1)}
-            >Back</Button>
+    </CardContent>
+    <CardActions>{controls}</CardActions>
+  </Card>
 
-            <Button
-              disabled={!nextButtonEnabled || activeStep == 1}
-              variant="contained"
-              color={"primary"}
-              onClick={() => setActiveStep(activeStep + 1)}
-            >Next</Button>
-
-            <Button
-              disabled={!nextButtonEnabled || activeStep < 1}
-              variant="contained"
-              color={"primary"}
-              onClick={() => create()}
-            >Save changes</Button>
-          </Box>
-        )}
-      />
-    </Page>
-  );
 }
 
 function mapStateToProps(state: IState, ownProps: IOwnProps): IProps {
