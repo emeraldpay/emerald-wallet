@@ -124,9 +124,11 @@ export default connect(
         );
       },
       onSaveSeed: (seed: SeedDefinition) => {
-        return new Promise<string>((resolve) =>
-          dispatch(accounts.actions.createSeed(seed, resolve))
-        );
+        return new Promise<string>((resolve) => {
+          const id = dispatch(accounts.actions.createSeed(seed, resolve));
+          dispatch(accounts.actions.loadSeedsAction());
+          return id;
+        });
       },
       onCancel: () => {
         dispatch(screen.actions.gotoScreen(Pages.HOME));
