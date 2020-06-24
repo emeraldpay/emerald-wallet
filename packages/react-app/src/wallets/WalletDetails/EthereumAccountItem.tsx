@@ -7,7 +7,6 @@ import { Grid, withStyles } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import AccountBalance from '../../common/Balance';
-import AccountActions from '../AccountActions';
 import TokenBalances from '../TokenBalances';
 import {EmeraldDialogs} from "../../app/screen/Dialog/Dialog";
 
@@ -91,7 +90,6 @@ export const EthereumAccountItem = ((props: IRenderProps & IDispatchProps) => {
                 disabled={balance.isZero()}
                 onClick={handleSendClick}
               />
-              <AccountActions account={account} />
             </ButtonGroup>
           </Grid>
         </Grid>
