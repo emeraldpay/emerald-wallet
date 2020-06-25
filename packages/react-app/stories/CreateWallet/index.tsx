@@ -71,6 +71,7 @@ storiesOf('CreateWallet', module)
   ))
   .add("single seed", () => {
     const seed: SeedDescription = {
+      createdAt: new Date(),
       id: "e23378da-d4b2-4843-ae4d-f42888a11b58",
       available: true,
       type: "raw"

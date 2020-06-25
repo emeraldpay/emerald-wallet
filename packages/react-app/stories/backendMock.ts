@@ -1,7 +1,15 @@
-import {AddressBookItem, AnyCoinCode, BlockchainCode, IBackendApi, Wallet} from "@emeraldwallet/core";
-import {SeedDescription, Uuid} from "@emeraldpay/emerald-vault-core";
+import {AddressBookItem, AnyCoinCode, BlockchainCode, IApi, IBackendApi, IVault, Wallet} from "@emeraldwallet/core";
+import {
+  AddEntry,
+  BlockchainType,
+  EntryId,
+  SeedDefinition,
+  SeedDescription,
+  SeedReference, UnsignedTx,
+  Uuid
+} from "@emeraldpay/emerald-vault-core";
 
-export class VaultMock {
+export class MemoryVault {
   seeds: Uuid[] = [];
   // seed id -> hdpath -> address
   seedAddresses: Record<Uuid, Record<string, string>> = {};
@@ -27,9 +35,105 @@ export class BlockchainMock {
   }
 }
 
+export class VaultMock implements IVault {
+
+  readonly vault: MemoryVault;
+
+  constructor(vault: MemoryVault) {
+    this.vault = vault;
+  }
+
+  addEntry(walletId: Uuid, account: AddEntry): EntryId {
+    return undefined;
+  }
+
+  addToAddressBook(item: AddressBookItem): boolean {
+    return false;
+  }
+
+  addWallet(label: string | undefined): Uuid {
+    return undefined;
+  }
+
+  addWalletWithSeed(seedId: string, label: string | undefined): Uuid {
+    return undefined;
+  }
+
+  exportJsonPrivateKey(accountFullId: EntryId, password?: string): Promise<string> {
+    return Promise.resolve("");
+  }
+
+  exportRawPrivateKey(accountFullId: EntryId, password: string): Promise<string> {
+    return Promise.resolve("");
+  }
+
+  generateMnemonic(size: number): string {
+    return "";
+  }
+
+  getConnectedHWSeed(create: boolean): SeedDescription | undefined {
+    return undefined;
+  }
+
+  getWallet(id: Uuid): Wallet | undefined {
+    return undefined;
+  }
+
+  importSeed(seed: SeedDefinition): Uuid {
+    return undefined;
+  }
+
+  isSeedAvailable(seed: Uuid | SeedReference | SeedDefinition): boolean {
+    return false;
+  }
+
+  listAddressBook(blockchain: BlockchainCode): AddressBookItem[] {
+    return [];
+  }
+
+  listSeedAddresses(seedId: Uuid | SeedReference | SeedDefinition, blockchain: BlockchainType, hdpath: string[]): { [p: string]: string } {
+    return {};
+  }
+
+  listSeeds(): SeedDescription[] {
+    return [];
+  }
+
+  listWallets(): Wallet[] {
+    return [];
+  }
+
+  removeFromAddressBook(blockchain: BlockchainCode, address: string): boolean {
+    return false;
+  }
+
+  setWalletLabel(walletId: Uuid, label: string): boolean {
+    return false;
+  }
+
+  signTx(accountFullId: EntryId, tx: UnsignedTx, password?: string): string {
+    return "";
+  }
+
+}
+
+export class ApiMock implements IApi {
+
+  readonly vault: IVault;
+
+  constructor(vault: IVault) {
+    this.vault = vault;
+  }
+
+  chain(name: BlockchainCode | string): any {
+    return undefined;
+  }
+
+}
+
 export class BackendMock implements IBackendApi {
 
-  readonly vault: VaultMock = new VaultMock();
+  readonly vault: MemoryVault = new MemoryVault();
   readonly blockchains: Record<string, BlockchainMock> = {};
 
   addAddressBookItem(item: AddressBookItem): Promise<boolean> {
