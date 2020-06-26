@@ -4,7 +4,9 @@ import {providerForStore} from "../storeProvider";
 import HDPathCounter from "../../src/create-account/HDPathCounter";
 import SelectHDPath from "../../src/create-account/SelectHDPath";
 import {BackendMock} from "../backendMock";
-import {BlockchainCode} from "@emeraldwallet/core";
+import {BlockchainCode, Blockchains} from "@emeraldwallet/core";
+import SelectCoins from "../../src/create-account/SelectCoins";
+import {action} from "@storybook/addon-actions";
 
 const backend = new BackendMock();
 backend.vault.addSeedAddress("e23378da-d4b2-4843-ae4d-f42888a11b58",
@@ -60,5 +62,23 @@ storiesOf('CreateAccount', module)
       onChange={(value) => {
       }}
     />
+  ))
+  .add('select blockchain when empty', () => (
+    <SelectCoins multiple={true}
+                 blockchains={[Blockchains[BlockchainCode.ETH], Blockchains[BlockchainCode.ETC]]}
+                 enabled={[]}
+                 onChange={action("selected")}/>
+  ))
+  .add('select blockchain when one is set', () => (
+    <SelectCoins multiple={true}
+                 blockchains={[Blockchains[BlockchainCode.ETH], Blockchains[BlockchainCode.ETC], Blockchains[BlockchainCode.Kovan]]}
+                 enabled={[BlockchainCode.ETH]}
+                 onChange={action("selected")}/>
+  ))
+  .add('select single blockchain', () => (
+    <SelectCoins multiple={false}
+                 blockchains={[Blockchains[BlockchainCode.ETH], Blockchains[BlockchainCode.ETC]]}
+                 enabled={[]}
+                 onChange={action("selected")}/>
   ))
 ;

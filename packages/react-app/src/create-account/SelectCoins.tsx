@@ -1,40 +1,30 @@
 import {connect} from "react-redux";
 import {Dispatch} from "react";
 import * as React from 'react';
-import {Box, Button, Card, CardContent, CardMedia, createStyles, FormControlLabel, Typography} from "@material-ui/core";
+import {
+  createStyles,
+  FormControlLabel, Grid,
+  Switch,
+  Typography
+} from "@material-ui/core";
 import {IState} from "@emeraldwallet/store";
 import {CoinAvatar} from "@emeraldwallet/ui";
-import CheckBoxIcon from "@material-ui/icons/CheckBox";
-import CheckBoxOutlineBlankIcon from "@material-ui/icons/CheckBoxOutlineBlank";
 import {makeStyles} from "@material-ui/core/styles";
-import {BlockchainCode, IBlockchain} from "@emeraldwallet/core";
+import {BlockchainCode, IBlockchain, AssetDetails} from "@emeraldwallet/core";
 
 const useStyles = makeStyles(
   createStyles({
-    media: {
-      width: "200px",
-      float: "left"
-    },
     iconBox: {
-      paddingLeft: "65px",
-      paddingTop: "30px"
+      paddingTop: "8px",
+      paddingLeft: "32px",
     },
-    content: {
-      width: "800px",
-      float: "left"
+    row: {
+      marginTop: "16px"
     },
-    contentCoinsBox: {
-      width: "80%",
-      float: "left"
+    descriptionEnabled: {},
+    descriptionDisabled: {
+      opacity: "0.5"
     },
-    contentControlBox: {
-      width: "20%",
-      float: "left"
-    },
-    buttonsRow: {
-      // otherwise it's in the center
-      display: 'block'
-    }
   })
 );
 
@@ -72,51 +62,41 @@ const Component = (({blockchains, enabled, onChange, multiple}: Props & Actions 
     const blockchainWasEnabled = enabled.indexOf(blockchain.params.code) >= 0;
     const blockchainNowEnabled = blockchainWasEnabled || isJustEnabled(blockchain.params.code);
 
-    const tokens: JSX.Element[] = [];
+    const tokens = blockchain.getAssets().map((asset) => {
+      const detail = AssetDetails[asset];
+      return `${detail.title} (${asset})`;
+    }).join(", ");
 
-    blockchain.getAssets().forEach((asset) => {
-      const tokenLabel = <FormControlLabel
-        key={asset}
-        control={
-          blockchainNowEnabled ? <CheckBoxIcon color={"disabled"}/> : <CheckBoxOutlineBlankIcon color={"disabled"}/>
-        }
-        label={asset}
-      />;
-      tokens.push(tokenLabel);
-    });
+    const blockchainCard = <Grid item={true} xs={12} key={blockchain.params.code} className={styles.row}>
+      <Grid container={true}>
+        <Grid item={true} xs={1} className={styles.iconBox}><CoinAvatar chain={blockchain.params.code} size="default"/></Grid>
+        <Grid item={true} xs={8}
+              className={blockchainNowEnabled ? styles.descriptionEnabled : styles.descriptionDisabled}>
+          <Typography variant={"subtitle1"}>{blockchain.getTitle()}</Typography>
+          <Typography variant={"body2"}>Cryptocurrencies: {tokens}</Typography>
+        </Grid>
+        <Grid item={true} xs={2}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={blockchainNowEnabled}
+                onChange={() => toggleBlockchain(blockchain.params.code)}
+                disabled={blockchainWasEnabled} // deny to remove existing chains for now
+                name="checkedB"
+                color="primary"
+              />
+            }
+            label={blockchainNowEnabled ? "Enabled" : "Disabled"}
+          />
+        </Grid>
 
-    const blockchainCard = <Card key={blockchain.params.code}>
-      <CardMedia className={styles.media}>
-        <Box className={styles.iconBox}>
-          <CoinAvatar chain={blockchain.params.code} size="large"/>
-        </Box>
-      </CardMedia>
-      <CardContent className={styles.content}>
-        <Typography variant={"h5"}>{blockchain.getTitle()}</Typography>
-        <Box>
-          <Box className={styles.contentCoinsBox}>
-            <Typography variant={"body2"}>Supported coins:</Typography>
-            {tokens}
-          </Box>
-          <Box className={styles.contentControlBox}>
-            <Button
-              onClick={() => toggleBlockchain(blockchain.params.code)}
-              disabled={blockchainWasEnabled} // deny to remove existing chains for now
-              variant="text"
-              color="primary"
-              startIcon={blockchainNowEnabled ? <CheckBoxIcon/> : <CheckBoxOutlineBlankIcon/>}
-            >
-              {blockchainNowEnabled ? "Disable" : "Enable"}
-            </Button>
-          </Box>
-        </Box>
-      </CardContent>
-    </Card>
+      </Grid>
+    </Grid>
 
     selectCoinsStep.push(blockchainCard)
   });
 
-  return <Box>{selectCoinsStep}</Box>
+  return <Grid container={true}>{selectCoinsStep}</Grid>
 })
 
 // State Properties

@@ -36,7 +36,8 @@ export {
   AnyCoinCode,
   isStableCoinCode,
   isAnyTokenCode,
-  isSupportedTokenCode
+  isSupportedTokenCode,
+  AssetDetail, AssetDetails
 } from './Asset';
 export {IStoredTransaction} from './history/IStoredTransaction';
 
