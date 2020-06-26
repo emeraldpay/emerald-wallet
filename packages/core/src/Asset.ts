@@ -19,3 +19,34 @@ export function isAnyTokenCode(value: string): value is AnyTokenCode {
 }
 
 export type AnyCoinCode = AnyTokenCode | CoinTickerCode;
+
+export interface AssetDetail {
+  title: string;
+}
+
+export const AssetDetails: Record<AnyCoinCode, AssetDetail> = {
+  "ETH": {
+    title: "Ether"
+  },
+  "ETC": {
+    title: "Classic Ether"
+  },
+  "DAI": {
+    title: "Dai"
+  },
+  "USDT": {
+    title: "Tether"
+  },
+  "SAI": {
+    title: "Sai"
+  },
+  "WEENUS": {
+    title: "Weenus"
+  },
+  "BTC": {
+    title: "Bitcoin"
+  },
+  "KOVAN": {
+    title: "Test Kovan Ether"
+  }
+}
