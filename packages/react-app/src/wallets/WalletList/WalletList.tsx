@@ -21,20 +21,17 @@ const styles = (theme: any) => ({
 });
 
 interface IWalletsListProps {
-  showFiat: boolean;
   wallets: Wallet[];
   classes: any;
   openWallet: (wallet: Wallet) => void;
-  createTx: (wallet: Wallet) => void;
-  showReceiveDialog: (wallet: Wallet) => void;
 }
 
 const WalletList = ((props: IWalletsListProps) => {
   const {
-    wallets, showFiat, classes
+    wallets, classes
   } = props;
   const {
-    openWallet, createTx, showReceiveDialog
+    openWallet,
   } = props;
   return (
     <div className={classes.container}>
@@ -43,11 +40,8 @@ const WalletList = ((props: IWalletsListProps) => {
           return (
               <WalletItem
                 key={wallet.id}
-                showFiat={showFiat}
                 wallet={wallet}
                 openWallet={openWallet}
-                createTx={createTx}
-                showReceiveDialog={showReceiveDialog}
               />
           );
         })}
@@ -62,23 +56,11 @@ export default connect(
   (state: IState, ownProps) => {
     return {
       wallets: accounts.selectors.allWallets(state),
-      showFiat: true
     };
   },
   (dispatch, ownProps) => ({
-    createTx: (wallet: Wallet) => {
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, wallet));
-    },
     openWallet: (wallet: Wallet) => {
       dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, wallet.id));
     },
-    showReceiveDialog: (account: Wallet) => {
-      // TODO vault v3
-      //   const address = {
-      //     coinTicker: Blockchains[account.blockchain].params.coinTicker,
-      //     value: account.id
-      //   };
-      //   dispatch(screen.actions.showDialog('receive', address));
-    }
   })
 )((StyledAccountList));

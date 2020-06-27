@@ -2,7 +2,7 @@ import {
   ActionTypes,
   ILoadSettingsAction,
   ISetExchRatesAction,
-  IUpdateSettingsAction
+  IUpdateSettingsAction, Rates
 } from './types';
 
 export interface ISettings {
@@ -24,7 +24,7 @@ export function updateSettings (settings: ISettings): IUpdateSettingsAction {
   };
 }
 
-export function setRatesAction (rates: any): ISetExchRatesAction {
+export function setRatesAction(rates: Rates): ISetExchRatesAction {
   return {
     type: ActionTypes.EXCHANGE_RATES,
     payload: {

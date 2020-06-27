@@ -1,9 +1,9 @@
 import { Wei } from '@emeraldplatform/eth';
 import { Account as AddressField, ButtonGroup } from '@emeraldplatform/ui';
 import { Account, Blockchains } from '@emeraldwallet/core';
-import { accounts, IState, screen, tokens } from '@emeraldwallet/store';
-import { Balance, Button, CoinAvatar } from '@emeraldwallet/ui';
-import { Grid, withStyles } from '@material-ui/core';
+import {accounts, IState, screen, tokens} from '@emeraldwallet/store';
+import {Button, CoinAvatar} from '@emeraldwallet/ui';
+import {Grid, withStyles} from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import AccountBalance from '../../common/Balance';

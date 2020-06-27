@@ -1,19 +1,25 @@
-import { fromBaseUnits } from '@emeraldplatform/core';
-import { Wei } from '@emeraldplatform/eth';
-import { Currency, CurrencyCode, Units } from '@emeraldwallet/core';
+import {fromBaseUnits} from '@emeraldplatform/core';
+import {Wei} from '@emeraldplatform/eth';
+import {Currency, CurrencyCode, Units} from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
+import {createStyles, Typography} from "@material-ui/core";
+import {ClassNameMap} from '@material-ui/styles';
+import {makeStyles} from "@material-ui/core/styles";
 
-const defaultStyles = {
-  coins: {
-    color: '#191919'
-  },
-  fiat: {
-    color: '#191919'
-  }
-};
+const useStyles = makeStyles(
+  createStyles({
+    coins: {
+      color: '#191919'
+    },
+    fiat: {
+      color: '#191919'
+    }
+  })
+);
 
-export interface IProps {
+// Component properties
+export interface OwnProps {
   symbol: string;
 
   /**
@@ -28,62 +34,62 @@ export interface IProps {
   fiatRate?: number | null;
   fiatCurrency?: string;
   showFiat?: boolean;
-  coinsStyle?: any;
-  fiatStyle?: any;
   displayDecimals?: number;
+  classes?: Partial<ClassNameMap<ClassKey>>
 }
 
-export class Balance extends React.Component<IProps> {
-  public static defaultProps = {
-    coinsStyle: defaultStyles.coins,
-    fiatStyle: defaultStyles.fiat,
-    showFiat: false
-  };
+type ClassKey = 'coins' | 'fiat';
 
-  public render () {
-    const {
-      balance, showFiat, fiatCurrency, fiatRate, symbol, decimals, displayDecimals
-    } = this.props;
+const defaults: Partial<OwnProps> = {
+  classes: {},
+  showFiat: false
+}
 
-    let fiatAmount = null;
-    let coinsStr = null;
-    let coins;
-    if (typeof balance === 'string') {
-      coins = fromBaseUnits(new BigNumber(balance), decimals);
-      if (showFiat && fiatRate && fiatCurrency) {
-        fiatAmount = Currency.format(
-          Number(Currency.convert(coins.toString(), fiatRate)),
-          fiatCurrency as CurrencyCode);
-      }
-    } else if (typeof balance === 'object') {
-      let value: BigNumber;
-      let valueDecimals: number;
-      if (BigNumber.isBigNumber(balance)) {
-        value = balance;
-        valueDecimals = decimals;
-      } else if (Units.isUnits(balance)) {
-        value = balance.toBigNumber();
-        valueDecimals = balance.decimals;
-      } else {
-        // Wei
-        value = balance.toWei();
-        valueDecimals = 18;
-      }
-      coins = value.dividedBy(new BigNumber(10).pow(valueDecimals));
+/**
+ *
+ */
+const Component = ((props: OwnProps) => {
+  props = {...defaults, ...props};
+  const {
+    balance, showFiat, fiatCurrency, fiatRate, symbol, decimals, displayDecimals, classes
+  } = props;
+  const styles = useStyles();
+
+  let fiatAmount = null;
+  let coinsStr = null;
+  let coins;
+  if (typeof balance === 'string') {
+    coins = fromBaseUnits(new BigNumber(balance), decimals);
+    if (showFiat && fiatRate && fiatCurrency) {
+      fiatAmount = Currency.format(
+        Number(Currency.convert(coins.toString(), fiatRate)),
+        fiatCurrency as CurrencyCode);
     }
-    coinsStr = coins.toFormat(displayDecimals || decimals);
-    const { fiatStyle, coinsStyle } = this.props;
-
-    return (
-      <div>
-        <span id='balance' style={coinsStyle}>
-          {balance ? coinsStr : '-'} {symbol}
-        </span>
-        {fiatAmount && <br/>}
-        {fiatAmount && <span id='fiat' style={fiatStyle}>{fiatAmount} {fiatCurrency}</span>}
-      </div>
-    );
+  } else if (typeof balance === 'object') {
+    let value: BigNumber;
+    let valueDecimals: number;
+    if (BigNumber.isBigNumber(balance)) {
+      value = balance;
+      valueDecimals = decimals;
+    } else if (Units.isUnits(balance)) {
+      value = balance.toBigNumber();
+      valueDecimals = balance.decimals;
+    } else {
+      // Wei
+      value = balance.toWei();
+      valueDecimals = 18;
+    }
+    coins = value.dividedBy(new BigNumber(10).pow(valueDecimals));
   }
-}
+  coinsStr = coins.toFormat(displayDecimals || decimals);
 
-export default Balance;
+  return (
+    <div>
+      <Typography className={styles.coins + " " + classes?.coins}>{balance ? coinsStr : '-'} {symbol}</Typography>
+      {fiatAmount && <br/>}
+      {fiatAmount && <Typography className={styles.fiat + " " + classes?.fiat}>{fiatAmount} {fiatCurrency}</Typography>}
+    </div>
+  );
+})
+
+export default Component;
