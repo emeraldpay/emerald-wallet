@@ -3,25 +3,10 @@ import { accounts, blockchains, IState, screen, settings, txhistory, wallet } fr
 import { registry } from '@emeraldwallet/erc20';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import Balance from '../../../common/Balance';
 import i18n from '../../../i18n';
 import TxView from './TxItemView';
 import { ITxItemProps } from './TxItemView/TxItem';
 
-function txValueRenderer (showFiat: boolean) {
-  return function renderer (balance: any, ticker: string) {
-    return (
-      <Balance
-      // fiatStyle={fiatStyle}
-        symbol={ticker}
-        showFiat={showFiat}
-        balance={balance.amount}
-        decimals={balance.decimals}
-        withAvatar={false}
-      />
-    );
-  };
-}
 
 export interface IOwnProps {
   hash: string;

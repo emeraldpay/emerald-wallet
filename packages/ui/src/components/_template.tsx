@@ -1,11 +1,12 @@
 import {makeStyles} from '@material-ui/core/styles';
 import * as React from 'react';
 import {Box, createStyles} from "@material-ui/core";
+import {ClassNameMap} from "@material-ui/styles";
 
 
 const useStyles = makeStyles(
   createStyles({
-    // formRow: {
+    // root: {
     //   ...css
     // },
   })
@@ -13,12 +14,12 @@ const useStyles = makeStyles(
 
 // Component properties
 interface OwnProps {
-  classes?: any;
+  classes?: Partial<ClassNameMap<ClassKey>>;
 }
 
-const defaults: Partial<OwnProps> = {
-  classes: {}
-}
+const defaults: Partial<OwnProps> = {}
+
+type ClassKey = 'root';
 
 /**
  *

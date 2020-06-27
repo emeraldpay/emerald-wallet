@@ -70,8 +70,8 @@ function updateAccountDetails (
   });
 }
 
-function onSetBalance (state: IAccountsState, action: ISetBalanceAction): IAccountsState {
-  const { address, blockchain, value } = action.payload;
+function onSetBalance(state: IAccountsState, action: ISetBalanceAction): IAccountsState {
+  const {address, blockchain, value} = action.payload;
 
   let updatedState = state;
   // Find account id by address and blockchain and update balance

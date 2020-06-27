@@ -163,7 +163,7 @@ const theme = {
     },
     MuiCardHeader: {
       action: {
-        width: "100%",
+        width: "100%", //TODO why???
         marginRight: "0"
       }
     },

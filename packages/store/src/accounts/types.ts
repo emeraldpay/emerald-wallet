@@ -40,6 +40,12 @@ export interface IAccountsState {
   seeds: SeedDescription[];
 }
 
+export interface IBalanceUpdate {
+  blockchain: BlockchainCode;
+  address: string;
+  value: string;
+}
+
 export enum ActionTypes {
   LOAD_WALLETS = 'ACCOUNT/LOAD_WALLETS',
   SET_BALANCE = 'ACCOUNT/SET_BALANCE',
@@ -88,11 +94,7 @@ export interface IWalletsLoaded {
 
 export interface ISetBalanceAction {
   type: ActionTypes.SET_BALANCE;
-  payload: {
-    blockchain: BlockchainCode,
-    address: string,
-    value: string
-  };
+  payload: IBalanceUpdate
 }
 
 export interface ISetLoadingAction {

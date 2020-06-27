@@ -1,5 +1,5 @@
-import { IFrontApp, Logger } from '@emeraldwallet/core';
-import { accounts } from '@emeraldwallet/store';
+import {BlockchainCode, IFrontApp, Logger} from '@emeraldwallet/core';
+import {accounts} from '@emeraldwallet/store';
 import { IService } from '../Services';
 import {AddressListener} from './AddressListener';
 import {WebContents} from 'electron';
@@ -35,10 +35,10 @@ export class BalanceListener implements IService {
       subscriber.subscribe(blockchain, addresses, (event: any) => {
         log.debug(JSON.stringify(event));
         const action = accounts.actions.setBalanceAction({
-          blockchain,
+          blockchain: blockchain as BlockchainCode,
           address: event.address,
           value: event.balance,
-          asset: 'ether' // TODO
+          // asset: 'ether' TODO
         });
         try {
           this.webContents?.send('store', action);

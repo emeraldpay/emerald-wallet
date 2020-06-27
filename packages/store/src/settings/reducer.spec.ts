@@ -15,8 +15,8 @@ describe('settingsReducers', () => {
     });
     state = settingsReducers(state, setRatesAction(
       {
-        ETC: 5,
-        ETH: 10
+        ETC: "5",
+        ETH: "10"
       }
     ));
     expect(fiatRate('ETC', asGlobal(state))).toEqual(5);
@@ -43,8 +43,8 @@ describe('settingsReducers', () => {
     // do
     state = settingsReducers(state, setRatesAction(
       {
-        ETC: 5,
-        ETH: 10
+        ETC: "5",
+        ETH: "10"
       }
     ));
 

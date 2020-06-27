@@ -19,7 +19,7 @@ import { Dispatched, IExtraArgument } from '../types';
 import * as selectors from './selectors';
 import {
   AccountsAction,
-  ActionTypes, ICreateHdEntry,
+  ActionTypes, IBalanceUpdate, ICreateHdEntry,
   ICreateWalletAction,
   IFetchErc20BalancesAction,
   IHdAccountCreated, ILoadSeedsAction,
@@ -35,7 +35,7 @@ import {AddEntry, SeedDefinition, SeedDescription, SeedEntry, Uuid} from "@emera
 
 const log = Logger.forCategory('store.accounts');
 
-export function setBalanceAction (balance: any): ISetBalanceAction {
+export function setBalanceAction(balance: IBalanceUpdate): ISetBalanceAction {
   return {
     type: ActionTypes.SET_BALANCE,
     payload: balance

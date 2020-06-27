@@ -15,8 +15,9 @@ const defaultBackend = new BackendMock();
 const defaultStore = createStore(createApi(defaultBackend), defaultBackend);
 
 
-export function providerForStore(backend: BackendMock) {
+export function providerForStore(backend: BackendMock, init = []) {
   const store = createStore(createApi(backend), backend);
+  init?.forEach((action) => store.dispatch(action));
   return (story: StoryFn, c: StoryContext) =>
     (<Provider store={store}>
       {story()}
