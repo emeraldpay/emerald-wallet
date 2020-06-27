@@ -1,27 +1,21 @@
 = Emerald Wallet for Desktop
 
-image:https://travis-ci.org/emeraldpay/emerald-wallet.svg?branch=master[Travis (.org)]
-image:https://ci.appveyor.com/api/projects/status/n8xl5j0e8plam5nu?svg=true[AppVeyor Build]
+image:https://github.com/emeraldpay/emerald-wallet/workflows/Unit%20Tests/badge.svg["Unit Tests"]
 image:https://codecov.io/gh/emeraldpay/emerald-wallet/branch/master/graph/badge.svg[Codecov,link=https://codecov.io/gh/emeraldpay/emerald-wallet]
 image:https://img.shields.io/github/license/emeraldpay/emerald-wallet.svg?maxAge=2592000["License",link="https://github.com/emeraldpay/emerald-wallet/blob/master/LICENSE"]
 
 
-**Emerald is a free open source non-custodial multiplatform desktop cryptocurrency wallet, it supports Ethereum, Ethereum Classic and ERC-20 tokens.**
+Emerald is a non-custodial desktop cryptocurrency wallet.
+Official website: https://emerald.cash
 
 Features:
 
-- *Full Node* - automatically connects to a full node running on a local machine
-- *Light Node* - when a full node is not feasible, it uses a secure endpoint provided by our servers.
-_All private keys are stored on local machine_.
-- *Hardware Wallets* - supports hardware wallets such as Ledger Nano to keep private keys in a most safe way.
-It's recommended to use Ledger Nano S
-- *ERC-20 Tokens* - supports major ERC-20 tokens out of box, and a user can enable support for any ERC-20 compatible token in the Wallet by providing an address
-- *Secure Key Storage* = stores all private keys either in a local secure vault.
-Private keys are encrypted and are not transferred to another node even when Light mode is used
-- *Multiplatform* - compatible with major OSes, and builds for Windows, Macos and Linux are provided to download
-
-
-Official website: https://emerald.cash
+- *Windows, macOS and Linux*
+- *Ethereum, Ethereum Classic, Tether and Dai*
+- Imports Private Key from JSON or Raw Hex
+- Supports Mnemonic Phrase (*BIP-39*) and HD Accounts (*BIP-32*)
+- Supports *Hardware Wallets*, Ledger Nano S and Nano X
+- Doesn't require a local full node
 
 == Development instructions
 
@@ -42,7 +36,7 @@ Once nodenv is installed:
 $ nodenv install
 ----
 
-The required version of `node` >= `v8`.
+The required version of `node` >= `v12`.
 
 === Dependencies
 
