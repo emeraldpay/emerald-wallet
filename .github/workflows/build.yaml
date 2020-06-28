@@ -31,20 +31,7 @@ jobs:
         with:
           python-version: 3.7
 
-      - name: Set Python version
-        id: python-version
-        run: python -c 'import sys; print(\".\".join(map(str, sys.version_info[:3])))'
-        if: runner.os == 'Windows'
-
-        #      - name: Set up Python libs
-        #        run: pip install gsutil
-
-        # see https://github.com/GoogleCloudPlatform/github-actions/issues/100
-        #      - name: Set Python for GCP
-        #        run: python -c 'import sys; print(\"::set-env CLOUDSDK_PYTHON=C:\hostedtoolcache\windows\Python\" + \".\".join(map(str, sys.version_info[:3])) + \"\\x64\python\")'
-      #        run: echo "::set-env CLOUDSDK_PYTHON=C:/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/opt/bin/python.exe"
-      #        if: runner.os == 'Windows'
-
+      # on windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
       - name: Setup GCP (windows)
         uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         env:
@@ -65,14 +52,10 @@ jobs:
 
       - name: test GCP
         run: |
-          gsutil cp package.json gs://builds.etcdevteam.com/
+          gsutil cp -n package.json gs://builds.etcdevteam.com/
         if: runner.os == 'Windows'
         env:
           CLOUDSDK_PYTHON: ${{env.pythonLocation}}\python.exe
-        #          CLOUDSDK_PYTHON: "C:/hostedtoolcache/windows/Python/${{ steps.python-version.outputs.result }}/x64/python.exe"
-        #        env:
-        #          CLOUDSDK_PYTHON: "C:/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/opt/bin/python.exe"
-        #          CLOUDSDK_PYTHON: "C:\hostedtoolcache\windows\Python\x64\python.exe"
 
         # needed for GitVersion
       - name: Fetch all history
@@ -136,16 +119,17 @@ jobs:
         env:
           APP_VERSION_GIT_TAG: "${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.commitDate }}-${{ steps.gitversion.outputs.shortSha }}"
 
+      # on windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
       - name: Upload to GCP (windows)
         run: |
-          gsutil cp packages/desktop/dist/EmeraldWallet-*.exe gs://builds.etcdevteam.com/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/
+          gsutil cp -n packages/desktop/dist/EmeraldWallet-*.exe gs://builds.etcdevteam.com/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/
         if: runner.os == 'Windows'
         env:
-          CLOUDSDK_PYTHON: "C:/hostedtoolcache/windows/Python/${{ steps.python-version.outputs.result }}/x64/python.exe"
+          CLOUDSDK_PYTHON: ${{env.pythonLocation}}\python.exe
 
       - name: Upload to GCP (non windows)
         run: |
-          gsutil cp packages/desktop/dist/EmeraldWallet-*.* gs://builds.etcdevteam.com/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/
+          gsutil cp -n packages/desktop/dist/EmeraldWallet-*.* gs://builds.etcdevteam.com/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/
         if: runner.os != 'Windows'
 
       - name: Archive production artifacts
@@ -164,6 +148,3 @@ jobs:
         uses: c-hive/gha-remove-artifacts@v1
         with:
           age: '1 month'
-          # Optional inputs
-          # skip-tags: true
-          # skip-recent: 5
