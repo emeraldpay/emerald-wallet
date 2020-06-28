@@ -31,6 +31,10 @@ jobs:
         with:
           python-version: 3.7
 
+      - name: Set Python version
+        id: python-version
+        run: python -c 'import sys; print(\".\".join(map(str, sys.version_info[:3])))'
+
         #      - name: Set up Python libs
         #        run: pip install gsutil
 
@@ -40,17 +44,17 @@ jobs:
       #        run: echo "::set-env CLOUDSDK_PYTHON=C:/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/opt/bin/python.exe"
       #        if: runner.os == 'Windows'
 
-      - name: Setup GCP
+      - name: Setup GCP (windows)
         uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         env:
-          CLOUDSDK_PYTHON: "C:/hostedtoolcache/windows/Python/3.7.7/x64/python.exe"
+          CLOUDSDK_PYTHON: "C:/hostedtoolcache/windows/Python/${{ steps.python-version.output.result }}/x64/python.exe"
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
         if: runner.os == 'Windows'
 
-      - name: Setup GCP 2
+      - name: Setup GCP (non windows)
         uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
@@ -63,7 +67,7 @@ jobs:
           gsutil cp package.json gs://builds.etcdevteam.com/
         if: runner.os == 'Windows'
         env:
-          CLOUDSDK_PYTHON: "C:/hostedtoolcache/windows/Python/3.7.7/x64/python.exe"
+          CLOUDSDK_PYTHON: "C:/hostedtoolcache/windows/Python/${{ steps.python-version.output.result }}/x64/python.exe"
         #        env:
         #          CLOUDSDK_PYTHON: "C:/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/opt/bin/python.exe"
         #          CLOUDSDK_PYTHON: "C:\hostedtoolcache\windows\Python\x64\python.exe"
@@ -130,9 +134,17 @@ jobs:
         env:
           APP_VERSION_GIT_TAG: "${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.commitDate }}-${{ steps.gitversion.outputs.shortSha }}"
 
-      - name: Upload to GCP
+      - name: Upload to GCP (windows)
+        run: |
+          gsutil cp packages/desktop/dist/EmeraldWallet-*.exe gs://builds.etcdevteam.com/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/
+        if: runner.os == 'Windows'
+        env:
+          CLOUDSDK_PYTHON: "C:/hostedtoolcache/windows/Python/${{ steps.python-version.output.result }}/x64/python.exe"
+
+      - name: Upload to GCP (non windows)
         run: |
           gsutil cp packages/desktop/dist/EmeraldWallet-*.* gs://builds.etcdevteam.com/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/
+        if: runner.os != 'Windows'
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
