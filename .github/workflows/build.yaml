@@ -39,6 +39,11 @@ jobs:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
 
+      - name: test GCP
+        run: |
+          gsutil cp package.json gs://builds.etcdevteam.com/
+        if: runner.os == 'Windows'
+
         # needed for GitVersion
       - name: Fetch all history
         run: git fetch --prune --unshallow
