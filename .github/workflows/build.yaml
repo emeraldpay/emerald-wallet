@@ -29,7 +29,7 @@ jobs:
       # see https://github.com/GoogleCloudPlatform/github-actions/issues/100
       - name: Set Python for GCP
         id: python-version
-        run: python -c 'import sys; print(\"::set-env CLOUDSDK_PYTHON=C:\hostedtoolcache\windows\Python\" + \".\".join(map(str, sys.version_info[:3])) + \"\x64\python\")'
+        run: python -c 'import sys; print(\"::set-env CLOUDSDK_PYTHON=C:\hostedtoolcache\windows\Python\" + \".\".join(map(str, sys.version_info[:3])) + \"\\x64\python\")'
         if: runner.os == 'Windows'
 
       - name: Setup GCP
