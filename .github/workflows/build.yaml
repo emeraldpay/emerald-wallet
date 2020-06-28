@@ -26,10 +26,13 @@ jobs:
       - name: Setup caches for Yarn
         uses: c-hive/gha-yarn-cache@v1
 
-      - name: Set up Python ${{ matrix.python-version }}
+      - name: Set up Python
         uses: actions/setup-python@v2
         with:
           python-version: 3.7
+
+      - name: Set up Python libs
+        run: pip install bootstrapping
 
         # see https://github.com/GoogleCloudPlatform/github-actions/issues/100
         #      - name: Set Python for GCP
@@ -48,8 +51,9 @@ jobs:
         run: |
           gsutil cp package.json gs://builds.etcdevteam.com/
         if: runner.os == 'Windows'
-        #        env:
-        #          CLOUDSDK_PYTHON: "C:/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/opt/bin/python.exe"
+        env:
+          CLOUDSDK_PYTHON: "C:/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/opt/bin/python.exe"
+        #          CLOUDSDK_PYTHON: "C:\hostedtoolcache\windows\Python\x64\python.exe"
 
         # needed for GitVersion
       - name: Fetch all history
