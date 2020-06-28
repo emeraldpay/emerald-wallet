@@ -48,7 +48,7 @@ jobs:
       - name: Setup GCP (windows)
         uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         env:
-          CLOUDSDK_PYTHON: "C:/hostedtoolcache/windows/Python/3.7.7/x64/python.exe"
+          CLOUDSDK_PYTHON: ${{env.pythonLocation}}\python.exe
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
@@ -68,7 +68,8 @@ jobs:
           gsutil cp package.json gs://builds.etcdevteam.com/
         if: runner.os == 'Windows'
         env:
-          CLOUDSDK_PYTHON: "C:/hostedtoolcache/windows/Python/${{ steps.python-version.outputs.result }}/x64/python.exe"
+          CLOUDSDK_PYTHON: ${{env.pythonLocation}}\python.exe
+        #          CLOUDSDK_PYTHON: "C:/hostedtoolcache/windows/Python/${{ steps.python-version.outputs.result }}/x64/python.exe"
         #        env:
         #          CLOUDSDK_PYTHON: "C:/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/opt/bin/python.exe"
         #          CLOUDSDK_PYTHON: "C:\hostedtoolcache\windows\Python\x64\python.exe"
