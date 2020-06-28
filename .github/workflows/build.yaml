@@ -36,7 +36,7 @@ jobs:
         # see https://github.com/GoogleCloudPlatform/github-actions/issues/100
       - name: Set Python for GCP
         id: python-version
-        run: python -c 'print(\"::set-env CLOUDSDK_PYTHON=\" + \".\".join(map(str, sys.version_info[:3])))'
+        run: python -c 'import sys; print(\"::set-env CLOUDSDK_PYTHON=\" + \".\".join(map(str, sys.version_info[:3])))'
         if: runner.os == 'Windows'
 
         # needed for GitVersion
