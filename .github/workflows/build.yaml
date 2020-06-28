@@ -26,6 +26,30 @@ jobs:
       - name: Setup caches for Yarn
         uses: c-hive/gha-yarn-cache@v1
 
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+
+      # on windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
+      - name: Setup GCP (windows)
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        env:
+          CLOUDSDK_PYTHON: ${{env.pythonLocation}}\python.exe
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+        if: runner.os == 'Windows'
+
+      - name: Setup GCP (non windows)
+        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+          service_account_key: ${{ secrets.GCP_SA_KEY }}
+          export_default_credentials: true
+        if: runner.os != 'Windows'
+
         # needed for GitVersion
       - name: Fetch all history
         run: git fetch --prune --unshallow
@@ -86,7 +110,20 @@ jobs:
       - name: Build
         run: yarn build:dist
         env:
-          APP_VERSION_GIT_TAG: "${{ steps.gitversion.outputs.fullSemVer }}-${{ steps.gitversion.outputs.shortSha }}"
+          APP_VERSION_GIT_TAG: "${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.commitDate }}-${{ steps.gitversion.outputs.shortSha }}"
+
+      # on windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
+      - name: Upload to GCP (windows)
+        run: |
+          gsutil cp -n packages/desktop/dist/EmeraldWallet-*.exe gs://builds.etcdevteam.com/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/
+        if: runner.os == 'Windows'
+        env:
+          CLOUDSDK_PYTHON: ${{env.pythonLocation}}\python.exe
+
+      - name: Upload to GCP (non windows)
+        run: |
+          gsutil cp -n packages/desktop/dist/EmeraldWallet-*.* gs://builds.etcdevteam.com/emerald-wallet/v${{ steps.gitversion.outputs.major }}.${{ steps.gitversion.outputs.minor }}.x/
+        if: runner.os != 'Windows'
 
       - name: Archive production artifacts
         uses: actions/upload-artifact@v2
@@ -99,3 +136,8 @@ jobs:
             packages/desktop/dist/*.deb
             packages/desktop/dist/*.tar.gz
             packages/desktop/dist/*.AppImage
+
+      - name: Remove old artifacts
+        uses: c-hive/gha-remove-artifacts@v1
+        with:
+          age: '1 month'
