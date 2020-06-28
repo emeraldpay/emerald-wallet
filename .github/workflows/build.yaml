@@ -34,6 +34,7 @@ jobs:
       - name: Set Python version
         id: python-version
         run: python -c 'import sys; print(\".\".join(map(str, sys.version_info[:3])))'
+        if: runner.os == 'Windows'
 
         #      - name: Set up Python libs
         #        run: pip install gsutil
