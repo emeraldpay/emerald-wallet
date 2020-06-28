@@ -62,6 +62,8 @@ jobs:
         run: |
           gsutil cp package.json gs://builds.etcdevteam.com/
         if: runner.os == 'Windows'
+        env:
+          CLOUDSDK_PYTHON: "C:/hostedtoolcache/windows/Python/3.7.7/x64/python.exe"
         #        env:
         #          CLOUDSDK_PYTHON: "C:/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/opt/bin/python.exe"
         #          CLOUDSDK_PYTHON: "C:\hostedtoolcache\windows\Python\x64\python.exe"
