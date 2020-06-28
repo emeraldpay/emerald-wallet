@@ -43,6 +43,8 @@ jobs:
         run: |
           gsutil cp package.json gs://builds.etcdevteam.com/
         if: runner.os == 'Windows'
+        env:
+          CLOUDSDK_PYTHON: "C:/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/opt/bin/python.exe"
 
         # needed for GitVersion
       - name: Fetch all history
