@@ -50,13 +50,6 @@ jobs:
           export_default_credentials: true
         if: runner.os != 'Windows'
 
-      - name: test GCP
-        run: |
-          gsutil cp -n package.json gs://builds.etcdevteam.com/
-        if: runner.os == 'Windows'
-        env:
-          CLOUDSDK_PYTHON: ${{env.pythonLocation}}\python.exe
-
         # needed for GitVersion
       - name: Fetch all history
         run: git fetch --prune --unshallow
