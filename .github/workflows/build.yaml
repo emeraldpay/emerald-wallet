@@ -41,18 +41,19 @@ jobs:
       #        if: runner.os == 'Windows'
 
       - name: Setup GCP
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
-        with:
-          project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_key: ${{ secrets.GCP_SA_KEY }}
-          export_default_credentials: true
+        run: pip install gsutil
+      #        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+      #        with:
+      #          project_id: ${{ secrets.GCP_PROJECT_ID }}
+      #          service_account_key: ${{ secrets.GCP_SA_KEY }}
+      #          export_default_credentials: true
 
       - name: test GCP
         run: |
           gsutil cp package.json gs://builds.etcdevteam.com/
         if: runner.os == 'Windows'
-        env:
-          CLOUDSDK_PYTHON: "C:/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/opt/bin/python.exe"
+        #        env:
+        #          CLOUDSDK_PYTHON: "C:/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/opt/bin/python.exe"
         #          CLOUDSDK_PYTHON: "C:\hostedtoolcache\windows\Python\x64\python.exe"
 
         # needed for GitVersion
