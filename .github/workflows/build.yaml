@@ -33,6 +33,12 @@ jobs:
           service_account_key: ${{ secrets.GCP_SA_KEY }}
           export_default_credentials: true
 
+        # see https://github.com/GoogleCloudPlatform/github-actions/issues/100
+      - name: Set Python for GCP
+        id: python-version
+        run: python -c 'print("::set-env CLOUDSDK_PYTHON=" + ".".join(map(str, sys.version_info[:3])))'
+        if: runner.os == 'Windows'
+
         # needed for GitVersion
       - name: Fetch all history
         run: git fetch --prune --unshallow
@@ -93,7 +99,7 @@ jobs:
       - name: Build
         run: yarn build:dist
         env:
-          APP_VERSION_GIT_TAG: "${{ steps.gitversion.outputs.commitDate }}-${{ steps.gitversion.outputs.shortSha }}"
+          APP_VERSION_GIT_TAG: "${{ steps.gitversion.outputs.majorMinorPatch }}-${{ steps.gitversion.outputs.commitDate }}-${{ steps.gitversion.outputs.shortSha }}"
 
       - name: Upload to GCP
         run: |
@@ -110,3 +116,11 @@ jobs:
             packages/desktop/dist/*.deb
             packages/desktop/dist/*.tar.gz
             packages/desktop/dist/*.AppImage
+
+      - name: Remove old artifacts
+        uses: c-hive/gha-remove-artifacts@v1
+        with:
+          age: '1 month'
+          # Optional inputs
+          # skip-tags: true
+          # skip-recent: 5
