@@ -43,7 +43,7 @@ jobs:
       - name: Setup GCP
         uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
         env:
-          CLOUDSDK_PYTHON: "C:/hostedtoolcache/windows/Python/x64/python.exe"
+          CLOUDSDK_PYTHON: "C:/hostedtoolcache/windows/Python/3.7.7/x64/python.exe"
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
