@@ -26,11 +26,16 @@ jobs:
       - name: Setup caches for Yarn
         uses: c-hive/gha-yarn-cache@v1
 
-      # see https://github.com/GoogleCloudPlatform/github-actions/issues/100
-      - name: Set Python for GCP
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: 3.7
+
+        # see https://github.com/GoogleCloudPlatform/github-actions/issues/100
+        #      - name: Set Python for GCP
         #        run: python -c 'import sys; print(\"::set-env CLOUDSDK_PYTHON=C:\hostedtoolcache\windows\Python\" + \".\".join(map(str, sys.version_info[:3])) + \"\\x64\python\")'
-        run: echo "::set-env CLOUDSDK_PYTHON=C:/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/opt/bin/python.exe"
-        if: runner.os == 'Windows'
+      #        run: echo "::set-env CLOUDSDK_PYTHON=C:/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/opt/bin/python.exe"
+      #        if: runner.os == 'Windows'
 
       - name: Setup GCP
         uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
@@ -43,8 +48,8 @@ jobs:
         run: |
           gsutil cp package.json gs://builds.etcdevteam.com/
         if: runner.os == 'Windows'
-        env:
-          CLOUDSDK_PYTHON: "C:/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/opt/bin/python.exe"
+        #        env:
+        #          CLOUDSDK_PYTHON: "C:/ProgramData/Chocolatey/lib/mingw/tools/install/mingw64/opt/bin/python.exe"
 
         # needed for GitVersion
       - name: Fetch all history
