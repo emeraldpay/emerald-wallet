@@ -1,6 +1,6 @@
 {
   "name": "@emeraldwallet/vault",
-  "version": "2.1.2",
+  "version": "2.2.0",
   "description": "Emerald vault interop",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -38,8 +38,8 @@
     ]
   },
   "dependencies": {
-    "@emeraldpay/emerald-vault-core": "^0.5.1-rc7",
-    "@emeraldpay/emerald-vault-native": "^0.5.1-rc7",
-    "@emeraldwallet/core": "^2.1.2"
+    "@emeraldpay/emerald-vault-core": "^0.5.1",
+    "@emeraldpay/emerald-vault-native": "^0.5.1",
+    "@emeraldwallet/core": "^2.2.0"
   }
 }
