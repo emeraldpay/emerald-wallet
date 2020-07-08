@@ -5,7 +5,7 @@
     "Igor Artamonov <splix@emerald.cash>",
     "Yuriy Gagarin <gagarin55@protonmail.com>"
   ],
-  "version": "2.2.0",
+  "version": "2.3.0-alpha",
   "description": "Emerald - Cryptocurrency Wallet",
   "keywords": [
     "ethereum",
@@ -47,8 +47,8 @@
     "webpack-cli": "^3.3.11"
   },
   "dependencies": {
-    "@emeraldwallet/electron-app": "^2.2.0",
-    "@emeraldwallet/react-app": "^2.2.0",
+    "@emeraldwallet/electron-app": "^2.3.0-alpha",
+    "@emeraldwallet/react-app": "^2.3.0-alpha",
     "grpc": "^1.24.2",
     "react": "16.11.0",
     "react-dom": "16.11.0"
