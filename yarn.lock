@@ -1163,6 +1163,21 @@
     protobufjs "6.8.8"
     text-encoding "0.7.0"
 
+"@emeraldpay/hashicon-react@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/hashicon-react/-/hashicon-react-0.4.0.tgz#a05a1c9af23721a81450978fad816908fa3246b7"
+  integrity sha512-n+84V9R4g84B62NneYg5mz9Vf1xEBURZoyC4G1K9Rs9C7949D3SxgLhuXYyFKkNO5F5qzms5Qr3LGE5QNEdqJg==
+  dependencies:
+    "@emeraldpay/hashicon" "^0.4.0"
+    react "^16.8.0"
+
+"@emeraldpay/hashicon@^0.4.0":
+  version "0.4.0"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/hashicon/-/hashicon-0.4.0.tgz#0dcd4db6d589b4eb30495b9995ff66fc9e57f833"
+  integrity sha512-2EB6Z8gS/DK36+SslIuoHE8wdU6pBqljMTjIYxLC8hBN8n2yhhE+xdmifPjqfqOvF/7Wb5HmoNaPX6RGuBrasg==
+  dependencies:
+    js-sha3 "^0.8.0"
+
 "@emeraldplatform/contracts@0.5.1", "@emeraldplatform/contracts@^0.5.1":
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/@emeraldplatform/contracts/-/contracts-0.5.1.tgz#f1cde5eb18bed81908a146ab4da3fb1a2987d5a6"
@@ -12202,6 +12217,11 @@ js-queue@2.0.0:
   dependencies:
     easy-stack "^1.0.0"
 
+js-sha3@^0.8.0:
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/js-sha3/-/js-sha3-0.8.0.tgz#b9b7a5da73afad7dedd0f8c463954cbde6818840"
+  integrity sha512-gF1cRrHhIzNfToc802P800N8PpXS+evLLXfsVpowqmAFR9uwbi89WvXg2QspOmXL8QL86J4T1EpFu+yUkwJY3Q==
+
 "js-tokens@^3.0.0 || ^4.0.0", js-tokens@^4.0.0:
   version "4.0.0"
   resolved "https://registry.yarnpkg.com/js-tokens/-/js-tokens-4.0.0.tgz#19203fb59991df98e3a287050d4647cdeaf32499"
@@ -15619,7 +15639,7 @@ react-dom@16.11.0:
     prop-types "^15.6.2"
     scheduler "^0.17.0"
 
-react-dom@^16.8.0, react-dom@^16.8.3, react-dom@^16.9.0:
+react-dom@^16.13.1, react-dom@^16.8.3, react-dom@^16.9.0:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react-dom/-/react-dom-16.13.1.tgz#c1bd37331a0486c078ee54c4740720993b2e0e7f"
   integrity sha512-81PIMmVLnCNLO/fFOQxdQkvEq/+Hfpv24XNJfpyZhTRfO0QcmQIF/PgCa1zCOj2w1hrn12MFLyaJ/G0+Mxtfag==
@@ -15896,7 +15916,7 @@ react@16.11.0:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
 
-react@^16.8.0, react@^16.8.3, react@^16.9.0:
+react@^16.13.1, react@^16.8.0, react@^16.8.3, react@^16.9.0:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react/-/react-16.13.1.tgz#2e818822f1a9743122c063d6410d85c1e3afe48e"
   integrity sha512-YMZQQq32xHLX0bz5Mnibv1/LHb3Sqzngu7xstSM+vrkE5Kzr9xE0yMByK5kMoTK30YVJE61WfbxIFFvfeDKT1w==
