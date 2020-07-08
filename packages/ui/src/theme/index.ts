@@ -137,6 +137,9 @@ const theme = {
     MuiPaper: {
       root: {
         border: `1px solid ${colors.conch.main}`
+      },
+      elevation3: {
+        boxShadow: "0px 0px 50px rgba(0, 0, 0, 0.1)",
       }
     },
     MuiMenuItem: {

@@ -14,7 +14,8 @@ const useStyles = makeStyles(
     },
     fiat: {
       color: '#191919'
-    }
+    },
+    root: {}
   })
 );
 
@@ -38,7 +39,7 @@ export interface OwnProps {
   classes?: Partial<ClassNameMap<ClassKey>>
 }
 
-type ClassKey = 'coins' | 'fiat';
+type ClassKey = 'coins' | 'fiat' | 'root';
 
 const defaults: Partial<OwnProps> = {
   classes: {},
@@ -84,7 +85,7 @@ const Component = ((props: OwnProps) => {
   coinsStr = coins.toFormat(displayDecimals || decimals);
 
   return (
-    <div>
+    <div className={styles.root}>
       <Typography className={styles.coins + " " + classes?.coins}>{balance ? coinsStr : '-'} {symbol}</Typography>
       {fiatAmount && <br/>}
       {fiatAmount && <Typography className={styles.fiat + " " + classes?.fiat}>{fiatAmount} {fiatCurrency}</Typography>}
