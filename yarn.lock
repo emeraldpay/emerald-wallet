@@ -18347,15 +18347,15 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typeface-roboto-mono@0.0.54:
-  version "0.0.54"
-  resolved "https://registry.yarnpkg.com/typeface-roboto-mono/-/typeface-roboto-mono-0.0.54.tgz#78e706e0a4158b2b670ed3cdf2269e7a54e671cd"
-  integrity sha512-UjE3Y4Bk7DRA3m9aCN4pp8OOGFEYbJH2wK1Qj3Xv2TjEqEJo+oEmQcXwnt1/DKSYAWdKxSL3D/4ida7OoBFkwQ==
+typeface-inter@^3.12.0:
+  version "3.12.0"
+  resolved "https://registry.yarnpkg.com/typeface-inter/-/typeface-inter-3.12.0.tgz#3cd7cdae730daa73cc01e88fdbe27601dc7c4fd7"
+  integrity sha512-3vKBTKCl6S0OJhMKwmyAOodsfTD3Gxsrj5ReavpQmdZ385ecUr3swfNxiBZ4u594mNfojlqL/zUebavV3A1yCA==
 
-typeface-rubik@0.0.43:
-  version "0.0.43"
-  resolved "https://registry.yarnpkg.com/typeface-rubik/-/typeface-rubik-0.0.43.tgz#5d675b6739217b5a764a4a746271a9efb1a4ec90"
-  integrity sha512-Wy5iVgaPD8b3/9Ge4L98VappyDkAC+GTq23b2NuYjmcufZemo5ip0hSGWskZq4gqLBKY5P7Phn7DzC8U9ileRA==
+typeface-roboto-mono@^0.0.75:
+  version "0.0.75"
+  resolved "https://registry.yarnpkg.com/typeface-roboto-mono/-/typeface-roboto-mono-0.0.75.tgz#00c4543662066a837c014c251ee5140fb66a5ad8"
+  integrity sha512-dYfyXd6HrKyMC/PuBAAtay0tZKsBrzxIW/fBY325vLxFfi/IDKSuyTkWxkU4lyZV6KPHetFnJ661PNXzz2FS/w==
 
 typescript-compare@^0.0.2:
   version "0.0.2"

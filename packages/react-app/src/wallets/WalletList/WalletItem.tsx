@@ -112,7 +112,10 @@ const Component = (({wallet, openWallet, assets, total}: Props & Actions & OwnPr
               </Grid>
               <Grid item={true} xs={12}>
                 {assets.map((asset) => (
-                    <Balance balance={asset.balance} symbol={asset.token} displayDecimals={2}
+                    <Balance key={asset.token}
+                             balance={asset.balance}
+                             symbol={asset.token}
+                             displayDecimals={2}
                              classes={{coins: styles.balance, root: styles.balanceRoot}}/>
                   )
                 )}

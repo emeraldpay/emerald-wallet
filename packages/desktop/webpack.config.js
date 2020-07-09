@@ -57,7 +57,7 @@ const config = {
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader'],
-        include: [/typeface-rubik/, /typeface-roboto-mono/],
+        include: [/typeface-inter/, /typeface-roboto-mono/],
       },
       {
         test: /\.(jpg|png|gif)$/,

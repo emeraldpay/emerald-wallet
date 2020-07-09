@@ -1,7 +1,7 @@
 import { Settings as SettingsIcon } from '@emeraldplatform/ui-icons';
-import { blockchains, screen } from '@emeraldwallet/store';
-import { Button, Status } from '@emeraldwallet/ui';
-import { AppBar, Toolbar } from '@material-ui/core';
+import {blockchains, screen} from '@emeraldwallet/store';
+import {Button} from '@emeraldwallet/ui';
+import {AppBar, Toolbar} from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -67,7 +67,6 @@ const Header = (props: IHeaderProps) => {
             <EmeraldTitle />
             <div className={props.classes.appBarRight}>
               <Total />
-              <Status blockchains={props.chains} />
               <StyledSettingsButton onClick={openSettings}/>
             </div>
           </Toolbar>
