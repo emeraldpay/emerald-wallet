@@ -82,7 +82,7 @@ export const EthereumAccountItem = ((props: IRenderProps & IDispatchProps) => {
           <Grid item={true} xs={3} container={true} alignItems={'center'} >
             <ButtonGroup>
               <Button
-                label='Deposit'
+                label='Receive'
                 onClick={handleDepositClick}
               />
               <Button
