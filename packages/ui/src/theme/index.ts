@@ -191,9 +191,6 @@ const theme = {
     MuiInput: {
       disableUnderline: true
     },
-    MuiFormHelperText: {
-      error: true
-    },
     MuiPaper: {
       square: true,
       elevation: 0
