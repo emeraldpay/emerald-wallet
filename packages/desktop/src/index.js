@@ -1,8 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { Theme } from '@emeraldplatform/ui';
-import 'typeface-rubik/index.css';
-import 'typeface-roboto-mono/index.css';
 import { I18nextProvider } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { i18n, App } from '@emeraldwallet/react-app';

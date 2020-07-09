@@ -26,6 +26,8 @@
     "@material-ui/icons": "4.9.1",
     "@material-ui/lab": "4.0.0-alpha.49",
     "@material-ui/styles": "4.9.10",
+    "typeface-inter": "^3.12.0",
+    "typeface-roboto-mono": "^0.0.75",
     "bignumber.js": "8.0.2",
     "classnames": "2.2.6",
     "qrcode.react": "^1.0.0",

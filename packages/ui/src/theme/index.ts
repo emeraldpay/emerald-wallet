@@ -14,10 +14,13 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import { createMuiTheme } from '@material-ui/core/styles';
+import {createMuiTheme} from '@material-ui/core/styles';
 import createSpacing from '@material-ui/core/styles/createSpacing';
-import { CSSProperties } from '@material-ui/core/styles/withStyles';
-import { TypographyProps } from '@material-ui/core/Typography';
+import {CSSProperties} from '@material-ui/core/styles/withStyles';
+import {TypographyProps} from '@material-ui/core/Typography';
+import "typeface-inter";
+// used by address component in @emeraldplatform
+import "typeface-roboto-mono";
 
 import colors from './colors';
 
@@ -47,8 +50,7 @@ const theme = {
   spacing: createSpacing(spacing),
   root: {
     fontFamily: [
-      '"Rubik"',
-      '"Roboto"',
+      'Inter',
       'sans-serif'
     ].join(',')
   },
@@ -58,8 +60,7 @@ const theme = {
     fontWeightRegular: 400,
     fontWeightMedium: 400,
     fontFamily: [
-      '"Rubik"',
-      '"Roboto"',
+      'Inter',
       'sans-serif'
     ].join(',')
   },

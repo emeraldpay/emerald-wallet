@@ -98,8 +98,6 @@
     "scheduler": "^0.17.0",
     "semver": "5.6.0",
     "store": "^2.0.4",
-    "typeface-roboto-mono": "0.0.54",
-    "typeface-rubik": "0.0.43",
     "uuid": "3.1.0"
   },
   "devDependencies": {
