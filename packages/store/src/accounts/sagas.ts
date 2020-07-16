@@ -23,8 +23,32 @@ import {
   walletCreatedAction,
 } from './actions';
 import {allAccounts, allWallets, findWallet} from './selectors';
-import {ActionTypes, ICreateHdEntry, ICreateWalletAction, IFetchErc20BalancesAction} from './types';
+import {ActionTypes, ICreateHdEntry, ICreateWalletAction, IFetchErc20BalancesAction, ISubWalletBalance} from './types';
 import {AddEntry, SeedDescription} from "@emeraldpay/emerald-vault-core";
+
+// Subscribe to balance update from Emerald Services
+function* subscribeAccountBalance(accounts: Account[]): SagaIterator {
+  const subscribe: { [key: string]: string[] } = {};
+  // TODO: account might not be Ethereum address
+  accounts.forEach((account: any) => {
+    const code = account.blockchain;
+    let current = subscribe[code];
+    if (typeof current === 'undefined') {
+      current = [];
+    }
+    current.push(account.address);
+    subscribe[code] = current;
+  });
+
+  Object.keys(subscribe).forEach((blockchainCode) => {
+    const addedAddresses = subscribe[blockchainCode];
+    if (addedAddresses.length > 0) {
+      console.log("SUBSCRIBE TO BALANCE", addedAddresses, blockchainCode);
+
+      ipcRenderer.send('subscribe-balance', blockchainCode, addedAddresses);
+    }
+  });
+}
 
 function* fetchErc20Balances(action: IFetchErc20BalancesAction): SagaIterator {
   const accounts = yield select(allAccounts);
@@ -50,25 +74,8 @@ function* loadAllWallets (backendApi: IBackendApi): SagaIterator {
   yield put(fetchErc20BalancesAction());
   yield put(setLoadingAction(false));
 
-  // Subscribe to balance update from Emerald Services
-
-  const subscribe: {[key: string]: string[]} = {};
   const accounts = yield select(allAccounts);
-  // TODO: account might not be Ethereum address
-  accounts.forEach((account: any) => {
-    const code = account.blockchain;
-    let current = subscribe[code];
-    if (typeof current === 'undefined') {
-      current = [];
-    }
-    current.push(account.address);
-    subscribe[code] = current;
-  });
-
-  Object.keys(subscribe).forEach((blockchainCode) => {
-    const addedAddresses = subscribe[blockchainCode];
-    ipcRenderer.send('subscribe-balance', blockchainCode, addedAddresses);
-  });
+  yield call(subscribeAccountBalance, accounts);
 }
 
 function* loadSeeds(backendApi: IBackendApi): SagaIterator {
@@ -150,6 +157,14 @@ function* createHdAccount(vault: IVault, backendApi: IBackendApi, action: ICreat
   }
 }
 
+function* loadWalletBalance(vault: IVault, backendApi: IBackendApi, action: ISubWalletBalance): SagaIterator {
+  const wallet = vault.getWallet(action.walletId);
+  if (typeof wallet != "object") {
+    return;
+  }
+  yield call(subscribeAccountBalance, wallet.accounts);
+}
+
 export function* root(vault: IVault, backendApi: IBackendApi) {
   yield all([
     takeLatest(ActionTypes.LOAD_SEEDS, loadSeeds, backendApi),
@@ -157,6 +172,7 @@ export function* root(vault: IVault, backendApi: IBackendApi) {
     takeLatest(ActionTypes.LOAD_WALLETS, loadAllWallets, backendApi),
     takeEvery(ActionTypes.CREATE_WALLET, createWallet, backendApi),
     takeEvery(ActionTypes.ACCOUNT_IMPORTED, afterAccountImported, backendApi),
-    takeEvery(ActionTypes.CREATE_HD_ACCOUNT, createHdAccount, vault, backendApi)
+    takeEvery(ActionTypes.CREATE_HD_ACCOUNT, createHdAccount, vault, backendApi),
+    takeEvery(ActionTypes.SUBSCRIBE_WALLET_BALANCE, loadWalletBalance, vault, backendApi)
   ]);
 }

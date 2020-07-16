@@ -26,7 +26,7 @@ import {
   ILoadWalletsAction,
   ISetBalanceAction,
   ISetLoadingAction, ISetSeedsAction,
-  ISetTxCountAction,
+  ISetTxCountAction, ISubWalletBalance,
   IUpdateWalletAction,
   IWalletCreatedAction,
   IWalletsLoaded, PendingBalanceAction
@@ -421,4 +421,11 @@ export function createSeed(seed: SeedDefinition, handler: (id: Uuid) => void): D
     const id = extra.api.vault.importSeed(seed);
     handler(id);
   }
+}
+
+export function subscribeWalletBalance(walletId: Uuid): ISubWalletBalance {
+  return {
+    type: ActionTypes.SUBSCRIBE_WALLET_BALANCE,
+    walletId
+  };
 }
