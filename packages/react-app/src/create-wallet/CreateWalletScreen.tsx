@@ -67,9 +67,10 @@ export default connect(
       onCreate: (value: Result) => {
         return new Promise((resolve, reject) => {
           const handler = (walletId?: string, err?: any) => {
-            if (err) {
+            if (err || typeof walletId == 'undefined') {
               reject(err)
             } else {
+              dispatch(accounts.actions.subscribeWalletBalance(walletId));
               resolve(walletId);
             }
           };

@@ -63,7 +63,8 @@ export enum ActionTypes {
   CREATE_HD_ACCOUNT = 'ACCOUNT/CREATE_HD_ACCOUNT',
   HD_ACCOUNT_CREATED = 'ACCOUNT/HD_ACCOUNT_CREATED',
   LOAD_SEEDS = 'ACCOUNT/LOAD_SEEDS',
-  SET_SEEDS = 'ACCOUNT/SET_SEEDS'
+  SET_SEEDS = 'ACCOUNT/SET_SEEDS',
+  SUBSCRIBE_WALLET_BALANCE = 'ACCOUNT/SUB_WALLET_BALANCE'
 }
 
 export interface ILoadWalletsAction {
@@ -160,19 +161,25 @@ export interface ICreateHdEntry {
   seedPassword: string;
 }
 
+export interface ISubWalletBalance {
+  type: ActionTypes.SUBSCRIBE_WALLET_BALANCE;
+  walletId: Uuid;
+}
+
 export type AccountsAction =
-    | IWalletsLoaded
-    | ISetLoadingAction
-    | ISetBalanceAction
-    | IUpdateWalletAction
-    | IWalletCreatedAction
-    // | SetHDPathAction
-    | ISetTxCountAction
-    | PendingBalanceAction
+  | IWalletsLoaded
+  | ISetLoadingAction
+  | ISetBalanceAction
+  | IUpdateWalletAction
+  | IWalletCreatedAction
+  // | SetHDPathAction
+  | ISetTxCountAction
+  | PendingBalanceAction
   | IFetchHdPathsAction
   | ILoadWalletsAction
   | ICreateWalletAction
   | IHdAccountCreated
   | ILoadSeedsAction
   | ISetSeedsAction
+  | ISubWalletBalance
   ;
