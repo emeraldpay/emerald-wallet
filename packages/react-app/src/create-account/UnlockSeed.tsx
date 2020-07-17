@@ -1,45 +1,82 @@
 import {connect} from "react-redux";
 import {Dispatch} from "react";
 import * as React from 'react';
-import {Box, createStyles, TextField} from "@material-ui/core";
-import {IState} from "@emeraldwallet/store";
+import {Box, createStyles, Grid, TextField, Typography} from "@material-ui/core";
+import {accounts, IState} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
 import {Button, PasswordInput} from "@emeraldwallet/ui";
+import {Uuid} from "@emeraldpay/emerald-vault-core";
+import {Alert} from "@material-ui/lab";
 
 const useStyles = makeStyles(
   createStyles({
-    // styleName: {
-    //  ... css
-    // },
+    buttonBox: {
+      paddingTop: "20px",
+      paddingLeft: "8px",
+    },
   })
 );
 
 /**
  *
  */
-const Component = (({onUnlock}: Props & Actions & OwnProps) => {
+const Component = (({seedId, onUnlock, verifyPassword}: Props & Actions & OwnProps) => {
   const styles = useStyles();
   const [password, setPassword] = React.useState();
-  return <form noValidate autoComplete="off">
-    <PasswordInput
-      password={password}
-      onChange={setPassword}
-    />
-    <Button
-      label={'Unlock'}
-      primary={true}
-      onClick={() => onUnlock(password)}
-    />
-  </form>
+  const [verifying, setVerifying] = React.useState(false);
+  const [invalid, setInvalid] = React.useState(false);
+
+  const onVerify = () => {
+    setVerifying(true);
+    verifyPassword(password)
+      .then((valid: boolean) => {
+        console.log("valid", password, valid);
+        if (valid) {
+          onUnlock(password);
+        }
+        setInvalid(!valid);
+        setVerifying(false);
+      })
+  }
+
+  return <Grid container={true}>
+    <Grid item={true} xs={12}>
+      <Typography variant={"h4"}>Password to unlock seed</Typography>
+      <Typography>Please provide password to unlock seed {seedId}</Typography>
+    </Grid>
+    <Grid item={true} xs={6}>
+      <PasswordInput
+        showPlaceholder={false}
+        minLength={1}
+        disabled={verifying}
+        password={password}
+        onChange={setPassword}
+      />
+    </Grid>
+    <Grid item={true} xs={6} className={styles.buttonBox}>
+      <Button
+        disabled={verifying}
+        label={'Unlock'}
+        primary={true}
+        onClick={() => onVerify()}
+      />
+    </Grid>
+    {invalid && <Grid item={true} xs={6}>
+      <Alert severity="error">Invalid password</Alert>
+    </Grid>}
+  </Grid>
 })
 
 // State Properties
 type Props = {}
 // Actions
-type Actions = {}
+type Actions = {
+  verifyPassword: (password: string) => Promise<boolean>
+}
 
 // Component properties
 type OwnProps = {
+  seedId: Uuid,
   onUnlock: (password: string) => void;
 }
 
@@ -48,6 +85,12 @@ export default connect(
     return {}
   },
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
-    return {}
+    return {
+      verifyPassword: (password) => {
+        return new Promise((resolve) => {
+          dispatch(accounts.actions.unlockSeed(ownProps.seedId, password, resolve));
+        })
+      }
+    }
   }
 )((Component));

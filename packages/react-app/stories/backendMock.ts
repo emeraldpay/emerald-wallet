@@ -2,7 +2,7 @@ import {AddressBookItem, AnyCoinCode, BlockchainCode, IApi, IBackendApi, IVault,
 import {
   AddEntry,
   BlockchainType,
-  EntryId,
+  EntryId, IdSeedReference, isReference,
   SeedDefinition,
   SeedDescription,
   SeedReference, UnsignedTx,
@@ -11,8 +11,13 @@ import {
 
 export class MemoryVault {
   seeds: Uuid[] = [];
+  passwords: Record<Uuid, string> = {};
   // seed id -> hdpath -> address
   seedAddresses: Record<Uuid, Record<string, string>> = {};
+
+  setSeedPassword(seedId: Uuid, password: string) {
+    this.passwords[seedId] = password;
+  }
 
   addSeedAddress(seedId: Uuid, hdpath: string, address: string) {
     if (this.seeds.indexOf(seedId) < 0) {
@@ -91,7 +96,33 @@ export class VaultMock implements IVault {
     return [];
   }
 
-  listSeedAddresses(seedId: Uuid | SeedReference | SeedDefinition, blockchain: BlockchainType, hdpath: string[]): { [p: string]: string } {
+  listSeedAddresses(seedId: Uuid | SeedReference | SeedDefinition, blockchain: BlockchainType, hdpaths: string[]): { [key: string]: string } {
+    console.log("list addresses");
+    if (typeof seedId == "object") {
+      if (seedId.type == "id") {
+        const seed: IdSeedReference = seedId;
+        if (typeof this.vault.passwords[seed.value] == 'string') {
+          const expectedPassword = this.vault.passwords[seed.value];
+          console.log("Password", seed.value, expectedPassword, seed.password);
+          if (expectedPassword !== seed.password) {
+            throw Error("Invalid password");
+          }
+        }
+
+        const seedData = this.vault.seedAddresses[seedId.value];
+        if (!seedData) {
+          return {};
+        }
+        const result = {}
+        hdpaths.forEach((hdpath) => {
+          if (seedData[hdpath]) {
+            result[hdpath] = seedData[hdpath]
+          }
+        })
+        return result
+      }
+    }
+    console.log("Unsupported seed", seedId)
     return {};
   }
 
@@ -234,6 +265,13 @@ export class BackendMock implements IBackendApi {
   }
 
   listSeedAddresses(seedId: Uuid, password: string, blockchain: BlockchainCode, hdpaths: string[]): Promise<Record<string, string>> {
+    if (typeof this.vault.passwords[seedId] == 'string') {
+      const expectedPassword = this.vault.passwords[seedId];
+      console.log("Password", seedId, expectedPassword, password);
+      if (expectedPassword != password) {
+        return Promise.reject("Invalid password");
+      }
+    }
     const seed = this.vault.seedAddresses[seedId];
     if (!seed) {
       return Promise.resolve({});

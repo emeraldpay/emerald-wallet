@@ -6,7 +6,7 @@ import {
   blockchainCodeToId,
   blockchains,
   IApi,
-  IBackendApi,
+  IBackendApi, IVault,
   Logger,
   Wallet,
   WalletService
@@ -31,7 +31,14 @@ import {
   IWalletCreatedAction,
   IWalletsLoaded, PendingBalanceAction
 } from './types';
-import {AddEntry, SeedDefinition, SeedDescription, SeedEntry, Uuid} from "@emeraldpay/emerald-vault-core";
+import {
+  AddEntry, IdSeedReference,
+  SeedDefinition,
+  SeedDescription,
+  SeedEntry,
+  SeedReference,
+  Uuid
+} from "@emeraldpay/emerald-vault-core";
 
 const log = Logger.forCategory('store.accounts');
 
@@ -428,4 +435,24 @@ export function subscribeWalletBalance(walletId: Uuid): ISubWalletBalance {
     type: ActionTypes.SUBSCRIBE_WALLET_BALANCE,
     walletId
   };
+}
+
+export function unlockSeed(seedId: Uuid, password: string, handler: (valid: boolean) => void): Dispatched<any> {
+  return (dispatch, getState, extra) => {
+    const vault = extra.api.vault;
+    const seed: IdSeedReference = {
+      type: "id",
+      value: seedId,
+      password,
+    }
+    // just a random hd path
+    // TODO always generate new random?
+    const hdpath = "m/1044'/15167'/8173'/68/164";
+    try {
+      const addresses: { [key: string]: string } = vault.listSeedAddresses(seed, "ethereum", [hdpath]);
+      handler(typeof addresses[hdpath] == "string" && addresses[hdpath].length > 0);
+    } catch (e) {
+      handler(false)
+    }
+  }
 }
