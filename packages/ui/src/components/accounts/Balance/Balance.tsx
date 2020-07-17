@@ -1,6 +1,6 @@
 import {fromBaseUnits} from '@emeraldplatform/core';
 import {Wei} from '@emeraldplatform/eth';
-import {Currency, CurrencyCode, Units} from '@emeraldwallet/core';
+import {Currency, CurrencyCode, Units, WithDefaults} from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import {createStyles, Typography} from "@material-ui/core";
@@ -50,7 +50,7 @@ const defaults: Partial<OwnProps> = {
  *
  */
 const Component = ((props: OwnProps) => {
-  props = {...defaults, ...props};
+  props = WithDefaults(props, defaults);
   const {
     balance, showFiat, fiatCurrency, fiatRate, symbol, decimals, displayDecimals, classes
   } = props;

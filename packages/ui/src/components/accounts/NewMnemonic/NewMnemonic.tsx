@@ -3,6 +3,7 @@ import * as React from 'react';
 import {Box, createStyles, Paper, TextField, Typography, Button, Grid} from "@material-ui/core";
 import {Alert, AlertTitle} from "@material-ui/lab";
 import {ConfirmedPasswordInput} from "../../../index";
+import {WithDefaults} from "@emeraldwallet/core";
 
 
 const useStyles = makeStyles(
@@ -60,7 +61,7 @@ const defaults = {
  *
  */
 const Component = ((props: OwnProps) => {
-  props = {...defaults, ...props};
+  props = WithDefaults(props, defaults);
   const styles = useStyles();
 
   const [mnemonic, setMnemonic] = React.useState("");

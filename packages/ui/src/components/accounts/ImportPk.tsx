@@ -5,6 +5,7 @@ import {ConfirmedPasswordInput} from "../../index";
 import Dropzone from 'react-dropzone';
 import {Alert} from "@material-ui/lab";
 import {useEffect} from "react";
+import {WithDefaults} from "@emeraldwallet/core";
 
 
 const useStyles = makeStyles(
@@ -43,7 +44,7 @@ function isWeb3(json: any): boolean {
  *
  */
 const Component = ((props: OwnProps) => {
-  props = {...defaults, ...props};
+  props = WithDefaults(props, defaults);
   const styles = useStyles();
   const {classes} = props;
 

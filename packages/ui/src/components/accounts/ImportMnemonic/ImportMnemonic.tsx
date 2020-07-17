@@ -3,6 +3,7 @@ import {makeStyles} from '@material-ui/core/styles';
 import * as React from 'react';
 import {Box, createStyles} from "@material-ui/core";
 import {ConfirmedPasswordInput} from "../../../index";
+import {WithDefaults} from "@emeraldwallet/core";
 
 const useStyles = makeStyles(
   createStyles({
@@ -33,7 +34,7 @@ function isValidMnemonic(text: string): boolean {
  *
  */
 const Component = ((props: OwnProps) => {
-  props = {...props, ...defaults};
+  props = WithDefaults(props, defaults);
   const styles = useStyles();
   const {classes} = props;
 
