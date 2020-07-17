@@ -4,6 +4,7 @@ import IconButton from '@material-ui/core/IconButton';
 import * as React from 'react';
 import {createStyles, Paper, TextField} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
+import {WithDefaults} from "@emeraldwallet/core";
 
 const useStyles = makeStyles(
   createStyles({})
@@ -16,22 +17,23 @@ interface OwnProps {
   onChange?: (password: string) => void;
   error?: string;
   disabled?: boolean;
+  showPlaceholder?: boolean;
 }
 
 const defaults: Partial<OwnProps> = {
   password: "",
-  minLength: 8
+  minLength: 8,
+  showPlaceholder: true,
 }
 
 /**
  *
  */
 const PasswordInput = ((props: OwnProps) => {
-  props = {...defaults, ...props};
   const styles = useStyles();
-
+  props = WithDefaults(props, defaults);
+  const {minLength, showPlaceholder} = props;
   const {error, password} = props;
-  const minLength = props.minLength | defaults.minLength
   const [showPassword, setShowPassword] = React.useState(false);
   const [current, setCurrent] = React.useState(password);
 
@@ -46,7 +48,7 @@ const PasswordInput = ((props: OwnProps) => {
   );
 
   const tooShort = password && (password.length < minLength);
-  const placeHolderStr = `At least ${minLength} characters`;
+  const placeHolderStr = showPlaceholder ? `At least ${minLength} characters` : '';
   const errorText = (tooShort && `Password must be minimum ${minLength} characters.`) || error;
 
   const onChange = (e) => {
