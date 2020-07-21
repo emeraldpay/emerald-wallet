@@ -60,7 +60,7 @@ export const CreateWizard = ((props: Props & Actions & OwnProps) => {
                    enabled={[]}
                    onChange={applyWithState(step.applyBlockchains)}/>;
   } else if (page.code == STEP_CODE.UNLOCK_SEED) {
-    activeStepPage = <UnlockSeed onUnlock={applyWithState(step.applySeedPassword)}/>
+    activeStepPage = <UnlockSeed seedId={step.getSeedId()} onUnlock={applyWithState(step.applySeedPassword)}/>
   } else if (page.code == STEP_CODE.MNEMONIC_GENERATE) {
     activeStepPage = <NewMnemonic onGenerate={props.mnemonicGenerator}
                                   onContinue={(mnemonic, password) =>

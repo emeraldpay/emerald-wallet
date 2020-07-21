@@ -171,6 +171,13 @@ export class CreateWalletFlow {
     return this.result;
   }
 
+  getSeedId(): Uuid {
+    if (isSeedSelected(this.result.type)) {
+      return this.result.type.id;
+    }
+    throw new Error("Not a seed")
+  }
+
   private copy(): CreateWalletFlow {
     const copy = new CreateWalletFlow(this.onCreate);
     copy.result = this.result;

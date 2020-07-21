@@ -20,6 +20,8 @@
     //CC
     "bzip-deflate",
     //MIT
-    "keybase-ecurve"
+    "keybase-ecurve",
+    //CC-0, used by ethereum-cryptography
+    "blakejs"
   ]
 }

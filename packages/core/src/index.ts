@@ -22,8 +22,11 @@ export { Currency, CurrencyCode } from './Currency';
 
 export { default as Units, IUnits } from './Units';
 
+// utils
 import * as utils from './utils';
-export { utils };
+
+export {utils};
+export {default as WithDefaults} from './withDefaults';
 
 export { IServerConnect } from './IServerConnect';
 export { IApi } from './IApi';

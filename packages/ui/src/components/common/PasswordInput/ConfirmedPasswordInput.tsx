@@ -2,6 +2,7 @@ import {makeStyles, withStyles} from '@material-ui/core/styles';
 import * as React from 'react';
 import {Box, Button, createStyles, FormControl, Grid, Paper, TextField, Typography} from "@material-ui/core";
 import PasswordInput from "./PasswordInput";
+import {WithDefaults} from "@emeraldwallet/core";
 
 
 const useStyles = makeStyles(
@@ -29,7 +30,7 @@ const defaults: Partial<OwnProps> = {
  *
  */
 const Component = ((props: OwnProps) => {
-  props = {...defaults, ...props};
+  props = WithDefaults(props, defaults);
   const styles = useStyles();
   const disabled = props.disabled || false;
 

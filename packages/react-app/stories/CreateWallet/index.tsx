@@ -7,6 +7,7 @@ import {SeedDefinition, SeedDescription} from "@emeraldpay/emerald-vault-core";
 import {BlockchainCode, Blockchains, IBlockchain} from "@emeraldwallet/core";
 import {BackendMock} from "../backendMock";
 import withTheme from "../themeProvider";
+import UnlockSeed from "../../src/create-account/UnlockSeed";
 
 const handlers = {
   onCreate: (value) => {
@@ -39,6 +40,9 @@ backend.vault.addSeedAddress("6aacf568-ec33-435f-b234-3668534a7f13",
 backend.vault.addSeedAddress("6aacf568-ec33-435f-b234-3668534a7f13",
   "m/44'/61'/0'/0/0", "0xf822fca1f9d99dadf7c6ec10475a32a48a215675");
 
+backend.vault.setSeedPassword("6aacf568-ec33-435f-b234-3668534a7f13", "testtesttest");
+backend.vault.addSeedAddress("6aacf568-ec33-435f-b234-3668534a7f13",
+  "m/1044'/15167'/8173'/68/164", "0x0000000000000000000000000000000000000000");
 
 backend.useBlockchains(["eth", "etc"]);
 backend.blockchains["eth"].setBalance(
@@ -82,3 +86,10 @@ storiesOf('CreateWallet', module)
       {...handlers}
     />
   });
+
+storiesOf('CreateWallet', module)
+  .addDecorator(providerForStore(backend))
+  .addDecorator(withTheme)
+  .add("unlock seed", () => {
+    return <UnlockSeed seedId="6aacf568-ec33-435f-b234-3668534a7f13" onUnlock={action("unlock")}/>
+  })
