@@ -6,6 +6,8 @@ import WalletDetails from "../../src/wallets/WalletDetails/WalletDetails";
 import {BackendMock} from "../backendMock";
 import {accounts, settings, tokens} from "@emeraldwallet/store";
 import {providerForStore} from "../storeProvider";
+import Addresses from "../../src/wallets/WalletDetails/Addresses";
+import DetailsPage from "../../src/wallets/WalletDetails";
 
 const backend = new BackendMock();
 
@@ -93,4 +95,18 @@ storiesOf('WalletDetails', module)
   .addDecorator(withTheme)
   .add('with few balances', () => (
     <WalletDetails walletId={'1022fd13-3431-4f3b-bce8-109fdab15873'}/>
+  ));
+
+storiesOf('WalletDetails', module)
+  .addDecorator(providerForStore(backend, [...setup, ...createWallet, ...setBalances]))
+  .addDecorator(withTheme)
+  .add('addresses list', () => (
+    <Addresses walletId={'1022fd13-3431-4f3b-bce8-109fdab15873'}/>
+  ));
+
+storiesOf('WalletDetails', module)
+  .addDecorator(providerForStore(backend, [...setup, ...createWallet, ...setBalances]))
+  .addDecorator(withTheme)
+  .add('whole page', () => (
+    <DetailsPage walletId={'1022fd13-3431-4f3b-bce8-109fdab15873'}/>
   ));
