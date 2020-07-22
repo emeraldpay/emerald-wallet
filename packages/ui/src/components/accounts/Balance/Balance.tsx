@@ -12,10 +12,14 @@ const useStyles = makeStyles(
     coins: {
       color: '#191919'
     },
+    coinBalance: {},
+    coinSymbol: {
+      paddingLeft: "5px",
+    },
     fiat: {
       color: '#191919'
     },
-    root: {}
+    root: {},
   })
 );
 
@@ -39,7 +43,7 @@ export interface OwnProps {
   classes?: Partial<ClassNameMap<ClassKey>>
 }
 
-type ClassKey = 'coins' | 'fiat' | 'root';
+type ClassKey = 'coins' | 'coinBalance' | 'coinSymbol' | 'fiat' | 'root' ;
 
 const defaults: Partial<OwnProps> = {
   classes: {},
@@ -85,8 +89,11 @@ const Component = ((props: OwnProps) => {
   coinsStr = coins.toFormat(displayDecimals || decimals);
 
   return (
-    <div className={styles.root}>
-      <Typography className={styles.coins + " " + classes?.coins}>{balance ? coinsStr : '-'} {symbol}</Typography>
+    <div className={styles.root + " " + classes?.root}>
+      <Typography className={styles.coins + " " + classes?.coins}>
+        <span className={styles.coinBalance + " " + classes?.coinBalance}>{balance ? coinsStr : '-'}</span>
+        <span className={styles.coinSymbol + " " + classes?.coinSymbol}>{symbol}</span>
+      </Typography>
       {fiatAmount && <br/>}
       {fiatAmount && <Typography className={styles.fiat + " " + classes?.fiat}>{fiatAmount} {fiatCurrency}</Typography>}
     </div>
