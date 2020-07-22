@@ -1,139 +1,114 @@
-import { Wei } from '@emeraldplatform/eth';
-import { Account as AddressField, ButtonGroup } from '@emeraldplatform/ui';
-import { Account, Blockchains } from '@emeraldwallet/core';
+import {Wei} from '@emeraldplatform/eth';
+import {Account, BlockchainCode, Blockchains, Units} from '@emeraldwallet/core';
 import {accounts, IState, screen, tokens} from '@emeraldwallet/store';
 import {Button, CoinAvatar} from '@emeraldwallet/ui';
-import {Grid, withStyles} from '@material-ui/core';
+import {Box, createStyles, Grid, Theme, Typography, withStyles} from '@material-ui/core';
 import * as React from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import AccountBalance from '../../common/Balance';
-import TokenBalances from '../TokenBalances';
-import {EmeraldDialogs} from "../../app/screen/Dialog/Dialog";
+import {ITokenBalance} from "@emeraldwallet/store/lib/tokens/types";
+import {makeStyles} from "@material-ui/core/styles";
+import {Dispatch} from "react";
 
-const styles = (theme: any) => ({
-  container: {
-    border: `0px solid ${theme.palette.divider}`,
-    marginBottom: '10px'
-  }
-});
+const useStyles = makeStyles<Theme>((theme) =>
+  createStyles({
+    container: {
+      border: `0px solid ${theme.palette.divider}`,
+      marginBottom: '10px'
+    },
+    balanceValue: {
+      textAlign: "right",
+    },
+    balanceSymbol: {
+      width: "40px",
+      display: "inline-block",
+      textAlign: "left",
+      paddingLeft: "16px",
+      opacity: "50%"
+    }
+  })
+);
 
-interface IOwnProps {
-  account: Account;
-  walletId: string;
-}
-
-interface IRenderProps {
-  walletId: string;
-  account: Account;
-  tokensBalances: any[];
-  balance: Wei;
-  classes: any;
-}
-
-interface IDispatchProps {
-  onSendClick?: (account: Account) => void;
-  onDepositClick?: (account: Account) => void;
-}
-
-export const EthereumAccountItem = ((props: IRenderProps & IDispatchProps) => {
-  const { account, balance, tokensBalances, classes } = props;
-  const { onSendClick, onDepositClick } = props;
-
-  const blockchainCode = account.blockchain;
+/**
+ *
+ */
+const Component = (({tokensBalances, balance, account, blockchainCode}: Props & Actions & OwnProps) => {
+  const styles = useStyles();
   const blockchain = Blockchains[blockchainCode];
 
-  function handleSendClick () {
-    if (onSendClick) {
-      onSendClick(account);
-    }
-  }
+  const accountClasses = {
+    root: styles.balanceValue,
+    coinSymbol: styles.balanceSymbol,
+  };
 
-  function handleDepositClick () {
-    if (onDepositClick) {
-      onDepositClick(account);
-    }
-  }
-
-  return (
-    <div className={classes.container}>
-      <Grid container={true} direction={'column'} alignItems={'stretch'}>
-        <Grid container={true} alignItems={'center'}>
-          <Grid item={true} xs={1}>
-            <CoinAvatar chain={blockchainCode}/>
-          </Grid>
-          <Grid item={true} xs={5}>
-            {account.address &&
-            <AddressField
-              name={blockchain.getTitle()}
-              identity={false}
-              address={account.address!}
-            />
-            }
-          </Grid>
-          <Grid item={true} xs={3}>
+  return <div className={styles.container}>
+    <Grid container={true}>
+      <Grid container={true}>
+        <Grid item={true} xs={1}>
+          <CoinAvatar chain={blockchainCode}/>
+        </Grid>
+        <Grid item={true} xs={6}>
+          <Typography title={"Address: " + account.address}>{blockchain.getTitle()}</Typography>
+        </Grid>
+        <Grid item={true} xs={4}>
+          <AccountBalance
+            key={"main"}
+            classes={accountClasses}
+            fiatStyle={false}
+            balance={balance}
+            decimals={4}
+            symbol={blockchainCode.toUpperCase()}
+            showFiat={false}
+          />
+          {tokensBalances.map((token) =>
             <AccountBalance
+              key={"token-" + token.symbol}
+              classes={accountClasses}
               fiatStyle={false}
-              balance={balance}
-              decimals={6}
-              symbol={blockchainCode.toUpperCase()}
+              balance={new Units(token.unitsValue, token.decimals)}
+              decimals={4}
+              symbol={token.symbol}
               showFiat={false}
             />
-          </Grid>
-          <Grid item={true} xs={3} container={true} alignItems={'center'} >
-            <ButtonGroup>
-              <Button
-                label='Receive'
-                onClick={handleDepositClick}
-              />
-              <Button
-                label='Send'
-                disabled={balance.isZero()}
-                onClick={handleSendClick}
-              />
-            </ButtonGroup>
-          </Grid>
-        </Grid>
-        <Grid container={true}>
-          <Grid item={true} xs={1}/>
-          <Grid item={true} xs={5}/>
-          <Grid item={true} xs={3}>
-            <TokenBalances balances={tokensBalances} />
-          </Grid>
+          )}
         </Grid>
       </Grid>
+    </Grid>
 
-    </div>
-  );
-});
+  </div>
+})
 
-const styled = withStyles(styles)(EthereumAccountItem);
+// State Properties
+interface Props {
+  tokensBalances: ITokenBalance[];
+  balance: Wei;
+  blockchainCode: BlockchainCode
+}
 
-export default connect<IRenderProps, IDispatchProps, IOwnProps, IState>(
-  (state: IState, ownProps: IOwnProps): any => {
-    const { account } = ownProps;
+// Actions
+interface Actions {
+}
+
+// Component properties
+interface OwnProps {
+  account: Account;
+  walletId: string;
+}
+
+export default connect(
+  (state: IState, ownProps: OwnProps): Props => {
+    const {account} = ownProps;
     const blockchainCode = account.blockchain;
     const balance = accounts.selectors.getBalance(state, account.id, Wei.ZERO) || Wei.ZERO;
-    const tokensBalances = tokens.selectors.selectBalances(state, account.address!, blockchainCode);
+    const tokensBalances = tokens.selectors.selectBalances(state, account.address!, blockchainCode) || [];
+
     return {
-      walletId: ownProps.walletId,
-      account,
+      tokensBalances,
       balance,
-      blockchainCode,
-      tokensBalances
-    };
+      blockchainCode
+    }
   },
-  (dispatch: any) => {
-    return {
-      onSendClick: (account: Account) => {
-        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, account));
-      },
-      onDepositClick: (account: Account) => {
-        const address = {
-          coinTicker: Blockchains[account.blockchain].params.coinTicker,
-          value: account.address
-        };
-        dispatch(screen.actions.showDialog(EmeraldDialogs.DEPOSIT, address));
-      }
-    };
+  (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
+    return {}
   }
-)((styled));
+)((Component));

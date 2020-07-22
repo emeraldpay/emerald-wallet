@@ -1,11 +1,11 @@
 import {connect} from "react-redux";
 import {Dispatch} from "react";
 import * as React from 'react';
-import {Box, createStyles} from "@material-ui/core";
+import {Box, createStyles, Theme} from "@material-ui/core";
 import {IState} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
 
-const useStyles = makeStyles(
+const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
     // styleName: {
     //  ... css
