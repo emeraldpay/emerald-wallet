@@ -68,10 +68,6 @@ const theme = {
     MuiFormControl: {
       root: {
         boxSizing: 'border-box',
-        borderRadius: '1px',
-        borderStyle: 'solid',
-        borderWidth: '1px',
-        borderColor: colors.conch.main,
         paddingLeft: spacing,
         paddingRight: spacing
       } as CSSProperties

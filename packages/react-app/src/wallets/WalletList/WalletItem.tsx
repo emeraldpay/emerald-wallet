@@ -11,7 +11,7 @@ import {createStyles, makeStyles} from '@material-ui/core/styles';
 import * as React from 'react';
 import {Balance} from "@emeraldwallet/ui";
 import {connect} from "react-redux";
-import {accounts, IBalanceValue, IState} from "@emeraldwallet/store";
+import {accounts, IBalanceValue, IState, screen} from "@emeraldwallet/store";
 import {Dispatch} from "react";
 import {Hashicon} from "@emeraldpay/hashicon-react";
 
@@ -78,7 +78,7 @@ const useStyles = makeStyles<Theme>((theme) =>
 /**
  *
  */
-const Component = (({wallet, openWallet, assets, total}: Props & Actions & OwnProps) => {
+const Component = (({wallet, openWallet, assets, total, onReceive}: Props & Actions & OwnProps) => {
   const styles = useStyles();
   const [current, setCurrent] = React.useState(false)
 
@@ -129,8 +129,7 @@ const Component = (({wallet, openWallet, assets, total}: Props & Actions & OwnPr
                     className={styles.actionButton}
                     color={"secondary"}>Send</Button>
             <Button variant={"contained"}
-                    onClick={() => {
-                    }}
+                    onClick={onReceive}
                     className={styles.actionButton}
                     color={"secondary"}>Receive</Button>
           </Grid>
@@ -150,6 +149,7 @@ interface Props {
 
 // Actions
 interface Actions {
+  onReceive: () => void;
 }
 
 // Component properties
@@ -168,6 +168,10 @@ export default connect(
     }
   },
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
-    return {}
+    return {
+      onReceive: () => {
+        dispatch(screen.actions.gotoScreen(screen.Pages.RECEIVE, ownProps.wallet.id))
+      }
+    }
   }
 )((Component));

@@ -10,6 +10,7 @@ import {
 } from '../../../index';
 import CreateHdAccount from '../../../create-account/CreateHdAccount';
 import CreateWalletScreen from "../../../create-wallet/CreateWalletScreen";
+import ReceiveScreen from "../../../receive/ReceiveScreen";
 
 const log = Logger.forCategory('screen');
 
@@ -51,16 +52,19 @@ const Screen = (props: IScreenProps) => {
     return <TxDetails hash={props.screenItem.hash} />;
   }
   if (props.screen === screen.Pages.CREATE_TX) {
-    return (<CreateTransaction account={props.screenItem} />);
+    return (<CreateTransaction account={props.screenItem}/>);
   }
   if (props.screen === 'broadcast-tx') {
-    return <BroadcastTx tx={props.screenItem.tx} signed={props.screenItem.signed} />;
+    return <BroadcastTx tx={props.screenItem.tx} signed={props.screenItem.signed}/>;
   }
   if (props.screen === screen.Pages.CREATE_WALLET) {
     return <CreateWalletScreen/>;
   }
+  if (props.screen === screen.Pages.RECEIVE) {
+    return <ReceiveScreen walletId={props.screenItem}/>;
+  }
 
-    // if (props.screen === 'repeat-tx') {
+  // if (props.screen === 'repeat-tx') {
   //   const { transaction, toAccount, fromAccount } = props.screenItem;
   //   const amount = new Wei(transaction.value);
   //   const to = (toAccount && toAccount.id) || transaction.to;

@@ -21,7 +21,8 @@ export enum Pages {
   CREATE_WALLET = 'create-wallet',
   //@deprecated, rename to setup coins
   CREATE_HD_ACCOUNT = 'create-hd-account',
-  BROADCAST_TX = 'broadcast-tx'
+  BROADCAST_TX = 'broadcast-tx',
+  RECEIVE = 'receive',
 }
 
 export interface IScreenState {
