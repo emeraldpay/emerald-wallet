@@ -2,11 +2,11 @@ import {makeStyles} from '@material-ui/core/styles';
 import * as React from 'react';
 import {Box, Card, CardContent, CardMedia, createStyles, Grid, Theme, Typography} from "@material-ui/core";
 import {ClassNameMap} from "@material-ui/styles";
-import {WithDefaults, Wallet} from "@emeraldwallet/core";
+import {WithDefaults, Wallet, Units, CurrencyCode, AnyCoinCode} from "@emeraldwallet/core";
 import {Hashicon} from "@emeraldpay/hashicon-react";
-import {IBalanceValue} from "@emeraldwallet/store";
 import {Balance} from "../../index";
 import classNames from "classnames";
+import {Wei} from "@emeraldplatform/eth";
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
@@ -40,7 +40,10 @@ const useStyles = makeStyles<Theme>((theme) =>
 // Component properties
 interface OwnProps {
   wallet: Wallet;
-  assets: IBalanceValue[];
+  assets: {
+    balance: Wei | Units;
+    token: CurrencyCode | AnyCoinCode;
+  }[];
   classes?: Partial<ClassNameMap<ClassKey>>;
 }
 
