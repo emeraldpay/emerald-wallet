@@ -47,7 +47,7 @@ const useStyles = makeStyles<Theme>((theme) =>
 /**
  *
  */
-const Component = (({wallet, goBack, updateWallet}: Props & Actions & OwnProps) => {
+const Component = (({wallet, goBack, updateWallet, onReceive}: Props & Actions & OwnProps) => {
   const styles = useStyles();
   const walletName = wallet.name || '';
 
@@ -126,8 +126,7 @@ const Component = (({wallet, goBack, updateWallet}: Props & Actions & OwnProps) 
                 className={styles.actionButton}
                 color={"secondary"}>Send</Button>
         <Button variant={"contained"}
-                onClick={() => {
-                }}
+                onClick={onReceive}
                 className={styles.actionButton}
                 color={"secondary"}>Receive</Button>
       </Grid>
@@ -144,6 +143,7 @@ interface Props {
 interface Actions {
   goBack: () => void;
   updateWallet: (data: Partial<Wallet>) => void;
+  onReceive: () => void;
 }
 
 // Component properties
@@ -164,6 +164,9 @@ export default connect(
       },
       updateWallet: (data: Partial<Wallet>) => {
         dispatch(accounts.actions.updateWallet(data.id!, data.name || '') as any);
+      },
+      onReceive: () => {
+        dispatch(screen.actions.gotoScreen(screen.Pages.RECEIVE, ownProps.walletId))
       }
     }
   }

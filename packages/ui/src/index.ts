@@ -12,8 +12,9 @@ export { default as ExportPaperWallet } from './components/accounts/ExportPaperW
 export { default as NewMnemonic } from './components/accounts/NewMnemonic';
 export { default as ReceiveDialog } from './components/accounts/ReceiveDialog';
 export { default as Balance } from './components/accounts/Balance';
-export { default as PaperWallet } from './components/accounts/PaperWallet';
-export { default as ErrorDialog } from './components/common/ErrorDialog';
+export {default as PaperWallet} from './components/accounts/PaperWallet';
+export {default as WalletReference} from './components/accounts/WalletReference';
+export {default as ErrorDialog} from './components/common/ErrorDialog';
 export { default as HdPath } from './components/common/HdPath';
 export { default as NotificationBar } from './components/common/NotificationBar';
 export {default as PasswordInput} from './components/common/PasswordInput';
