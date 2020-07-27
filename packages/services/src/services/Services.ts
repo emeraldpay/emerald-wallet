@@ -1,4 +1,7 @@
 import {WebContents} from "electron";
+import {Logger} from "@emeraldwallet/core";
+
+const log = Logger.forCategory('Services');
 
 export interface IService {
   readonly id: string;
@@ -8,6 +11,8 @@ export interface IService {
   stop(): void;
 
   setWebContents(webContents: WebContents): void;
+
+  reconnect(): void;
 }
 
 export class Services {
@@ -33,10 +38,16 @@ export class Services {
     });
   }
 
-  setWebContents(webContents: Electron.WebContents): void {
+  public setWebContents(webContents: Electron.WebContents): void {
     this.services.forEach((service) =>
       service.setWebContents(webContents)
     )
   }
 
+  public reconnect(): void {
+    log.warn("Reconnect to services");
+    this.services.forEach((svc) => {
+      svc.reconnect();
+    });
+  }
 }

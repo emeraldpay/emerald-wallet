@@ -1,13 +1,14 @@
 import { connection } from '@emeraldwallet/store';
 import {IService} from './Services';
 import {WebContents} from 'electron';
+import {EmeraldApiAccess} from "..";
 
 export class ConnStatus implements IService {
   public id: string;
   private webContents?: WebContents;
-  private apiAccess: any;
+  private apiAccess: EmeraldApiAccess;
 
-  constructor(ipcMain: any, webContents: WebContents, apiAccess: any) {
+  constructor(ipcMain: any, webContents: WebContents, apiAccess: EmeraldApiAccess) {
     this.webContents = webContents;
     this.apiAccess = apiAccess;
     this.id = 'ConnectionStatusService';
@@ -29,6 +30,9 @@ export class ConnStatus implements IService {
 
   setWebContents(webContents: WebContents): void {
     this.webContents = webContents;
+  }
+
+  reconnect(): void {
   }
 
 }

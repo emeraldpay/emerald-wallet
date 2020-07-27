@@ -1,16 +1,20 @@
-import { txhistory } from '@emeraldwallet/store';
-import { IService } from '../Services';
+import {txhistory} from '@emeraldwallet/store';
+import {IService} from '../Services';
 import {TxListener} from './TxListener';
 import {WebContents} from 'electron';
+import {Logger} from "@emeraldwallet/core";
+import {EmeraldApiAccess} from "../..";
 
-export class TransactionListener implements IService {
+const log = Logger.forCategory('TxService');
+
+export class TxService implements IService {
   public id: string;
-  private apiAccess: any;
+  private apiAccess: EmeraldApiAccess;
   private webContents?: WebContents;
   private ipcMain: any;
   private subscriber: TxListener[] = [];
 
-  constructor(ipcMain: any, webContents: WebContents, apiAccess: any) {
+  constructor(ipcMain: any, webContents: WebContents, apiAccess: EmeraldApiAccess) {
     this.webContents = webContents;
     this.apiAccess = apiAccess;
     this.ipcMain = ipcMain;
@@ -19,6 +23,7 @@ export class TransactionListener implements IService {
 
   public stop () {
     this.subscriber.forEach((x) => x.stop());
+    this.subscriber = [];
   }
 
   public start () {
@@ -36,7 +41,7 @@ export class TransactionListener implements IService {
         try {
           this.webContents?.send('store', action);
         } catch (e) {
-          console.warn("Cannot send to the UI", e)
+          log.warn("Cannot send to the UI", e)
         }
       });
     });
@@ -44,6 +49,11 @@ export class TransactionListener implements IService {
 
   setWebContents(webContents: WebContents): void {
     this.webContents = webContents;
+  }
+
+  reconnect(): void {
+    this.stop();
+    this.start();
   }
 
 }

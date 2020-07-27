@@ -9,7 +9,7 @@ export { default as PricesService } from './services/prices/PricesService';
 
 // services
 export { ConnStatus } from './services/ConnStatus';
-export { Services } from './services/Services';
-export { BlockchainStatus } from './services/BlockchainStatus';
-export { BalanceListener } from './services/balances/BalanceListener';
-export { TransactionListener } from './services/transactions/TransactionListener';
+export {Services} from './services/Services';
+export {BlockchainStatusService} from './services/BlockchainStatusService';
+export {BalanceListener} from './services/balances/BalanceListener';
+export {TxService} from './services/transactions/TxService';

@@ -1,5 +1,5 @@
-import { IVault, Logger } from '@emeraldwallet/core';
-import { ChainRpcConnections, Services } from '@emeraldwallet/services';
+import {IVault, Logger} from '@emeraldwallet/core';
+import {ChainRpcConnections, EmeraldApiAccess, Services} from '@emeraldwallet/services';
 import {screen} from '@emeraldwallet/store';
 import {ipcMain, WebContents} from 'electron';
 import {createServices} from '../createServices';
@@ -27,7 +27,7 @@ export default class Application {
     this.settings = settings;
   }
 
-  public run(webContents: WebContents, apiAccess: any, apiMode: any, vault: IVault, rpc: ChainRpcConnections) {
+  public run(webContents: WebContents, apiAccess: EmeraldApiAccess, apiMode: any, vault: IVault, rpc: ChainRpcConnections) {
     this.webContents = webContents;
     this.rpc = rpc;
     this.vault = vault;
@@ -60,5 +60,10 @@ export default class Application {
     this.webContents = webContents;
     this.services?.setWebContents(webContents);
   }
+
+  reconnect(): void {
+    this.services?.reconnect();
+  }
+
 
 }

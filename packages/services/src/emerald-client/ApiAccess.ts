@@ -7,7 +7,7 @@ import {
   MarketClient,
   MonitoringClient
 } from '@emeraldpay/grpc-client';
-import { IEmeraldClient } from '@emeraldwallet/core';
+import {IEmeraldClient, Logger} from '@emeraldwallet/core';
 import * as os from 'os';
 import { ChainListener } from '../ChainListener';
 import { AddressListener } from '../services/balances/AddressListener';
@@ -120,7 +120,7 @@ interface IConnectionState {
   connectedAt: Date;
 }
 
-const PERIOD_OK = 10000;
+const PERIOD_OK = 20000;
 const PERIOD_ISSUES = PERIOD_OK * 3;
 const PERIOD_PING = PERIOD_OK - 1500;
 
@@ -130,6 +130,8 @@ export interface IAppParams {
   locale: any;
   version: any;
 }
+
+const log = Logger.forCategory('ApiAccess');
 
 export class EmeraldApiAccess implements IEmeraldClient {
 
@@ -208,8 +210,8 @@ export class EmeraldApiAccess implements IEmeraldClient {
   }
 
   protected periodicCheck () {
-    this.verifyOffline({});
-    setTimeout(this.periodicCheck.bind(this), 1000);
+    this.verifyOffline();
+    setTimeout(this.periodicCheck.bind(this), 3000);
   }
 
   protected verifyConnection () {
@@ -219,27 +221,22 @@ export class EmeraldApiAccess implements IEmeraldClient {
       && status.pricesConnected
       && status.diagConnected;
     if (!connected) {
-      this.verifyOffline({
-        auth: status.authenticated,
-        blockchain: status.blockchainConnected,
-        market: status.pricesConnected,
-        diag: status.diagConnected
-      });
+      this.verifyOffline();
     } else {
       this.connectionState.connectedAt = new Date();
       this.setStatus(Status.CONNECTED);
     }
   }
 
-  protected verifyOffline (basis: {[key: string]: boolean}) {
+  protected verifyOffline() {
     const now = new Date();
     const offlinePeriod = now.getTime() - this.connectionState.connectedAt.getTime();
     if (offlinePeriod < PERIOD_OK) {
       this.setStatus(Status.CONNECTED);
     } else if (offlinePeriod < PERIOD_ISSUES) {
-      this.setStatus(Status.CONNECTION_ISSUES, basis);
+      this.setStatus(Status.CONNECTION_ISSUES);
     } else {
-      this.setStatus(Status.DISCONNECTED, basis);
+      this.setStatus(Status.DISCONNECTED);
     }
   }
 
@@ -248,10 +245,14 @@ export class EmeraldApiAccess implements IEmeraldClient {
     setTimeout(this.ping.bind(this), PERIOD_PING);
   }
 
-  protected setStatus (state: Status, basis?: {[key: string]: boolean}) {
+  protected setStatus(state: Status) {
     if (typeof this.currentState === 'undefined' || this.currentState !== state) {
-      if (state === Status.DISCONNECTED || state === Status.CONNECTION_ISSUES) {
-        console.warn('Disconnected', basis);
+      if (state === Status.DISCONNECTED) {
+        log.error('Disconnected', this.connectionState);
+      } else if (state === Status.CONNECTION_ISSUES) {
+        log.warn('Connection issues', this.connectionState);
+      } else if (state === Status.CONNECTED) {
+        log.info("Connected")
       }
       this.currentState = state;
       if (this.listener) {
