@@ -1163,20 +1163,22 @@
     protobufjs "6.8.8"
     text-encoding "0.7.0"
 
-"@emeraldpay/hashicon-react@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/hashicon-react/-/hashicon-react-0.4.0.tgz#a05a1c9af23721a81450978fad816908fa3246b7"
-  integrity sha512-n+84V9R4g84B62NneYg5mz9Vf1xEBURZoyC4G1K9Rs9C7949D3SxgLhuXYyFKkNO5F5qzms5Qr3LGE5QNEdqJg==
+"@emeraldpay/hashicon-react@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/hashicon-react/-/hashicon-react-0.5.1.tgz#975c57fdad22b8f043ad24004a620eb1012ba728"
+  integrity sha512-WoLPBpdwseNexAQHDmr0f9nxc8HfNpQxNI2bw/04yYpoeQg61r52iwk3EHV/QCg5hnAcF6wKdyCnybyU8UBtHQ==
   dependencies:
-    "@emeraldpay/hashicon" "^0.4.0"
+    "@emeraldpay/hashicon" "^0.5.1"
     react "^16.8.0"
 
-"@emeraldpay/hashicon@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/hashicon/-/hashicon-0.4.0.tgz#0dcd4db6d589b4eb30495b9995ff66fc9e57f833"
-  integrity sha512-2EB6Z8gS/DK36+SslIuoHE8wdU6pBqljMTjIYxLC8hBN8n2yhhE+xdmifPjqfqOvF/7Wb5HmoNaPX6RGuBrasg==
+"@emeraldpay/hashicon@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/hashicon/-/hashicon-0.5.1.tgz#f2fd30dace08d3fed9db66732f803b0e6f60ce05"
+  integrity sha512-pMvnz6CkCqzoB2srA3B/gCKIi6h24O1Chfj919OqyCC08Kc0zCCok6iQoJ2cP5T+P2utGeR/El7jE4Q2JgmP+A==
   dependencies:
+    "@stablelib/blake2s" "^1.0.0"
     js-sha3 "^0.8.0"
+    text-encoding "^0.7.0"
 
 "@emeraldplatform/contracts@0.5.1", "@emeraldplatform/contracts@^0.5.1":
   version "0.5.1"
@@ -2875,6 +2877,37 @@
   integrity sha512-+DUO6pnp3udV/v2VfUWgaY5BIE1IfT7lLfeDzPVeMT1XKkaAp9LgSI9x5RtrFQoZ9Oi0PgXQQHPaoKu7dCjVxw==
   dependencies:
     type-detect "4.0.8"
+
+"@stablelib/binary@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@stablelib/binary/-/binary-1.0.0.tgz#fa216f8b2d2f7153878e2bc45e91dddee72c4749"
+  integrity sha512-W01QhOw1tWL51Du1c5JZphJs7toRbfra1C2DBlhT0mRHZWGWB1hpFbqiZUFY7QNIMUpmmHLrlZs3YsSCB/giUg==
+  dependencies:
+    "@stablelib/int" "^1.0.0"
+
+"@stablelib/blake2s@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@stablelib/blake2s/-/blake2s-1.0.0.tgz#255d3beeddb19a61fb7d9f6c86a906f87c39c8b5"
+  integrity sha512-gdcUv8U3hBWCKnJwQt1iQBl8EqPN1aY8NSkgiNv3FcoPday9hnNn1dJwOC+adHd5k15dvJeAoMrw/jg6p6Ziiw==
+  dependencies:
+    "@stablelib/binary" "^1.0.0"
+    "@stablelib/hash" "^1.0.0"
+    "@stablelib/wipe" "^1.0.0"
+
+"@stablelib/hash@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@stablelib/hash/-/hash-1.0.0.tgz#28626ddc64cb84db9370f279c5a78cdc96f493ee"
+  integrity sha512-wBvSIIx4Y8799BRD4TBhezS1P9+irGAKdsNgbZMeU5ndMbw7BtZALdCm0FcJIRFxJ2giPLPS9YCgrwWAhzSRLQ==
+
+"@stablelib/int@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@stablelib/int/-/int-1.0.0.tgz#2432569169cc5640fe5e65b7f79f722ed9cacc59"
+  integrity sha512-MRigEQCO7xM93nZqW4CbIBjhANGw3jJxGVSUZH3PQ6HWL1IGrFWVDBzIclWxl4l5aRRpqoM+76ellQNdUJPnsA==
+
+"@stablelib/wipe@^1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@stablelib/wipe/-/wipe-1.0.0.tgz#8ed028a10bb7527357b2655c360383b5f07c16ac"
+  integrity sha512-0Fd4MQCbEh8OFSO+gG7wBXok7yRC3w+xe/wWM8KNye7EGoHr4BTFZNWV/1xAn2r8/gyFKxPXT8uxXRzDzGq6rg==
 
 "@storybook/addon-actions@5.2.3":
   version "5.2.3"
@@ -18003,7 +18036,7 @@ test-value@^2.1.0:
     array-back "^1.0.3"
     typical "^2.6.0"
 
-text-encoding@0.7.0:
+text-encoding@0.7.0, text-encoding@^0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/text-encoding/-/text-encoding-0.7.0.tgz#f895e836e45990624086601798ea98e8f36ee643"
   integrity sha512-oJQ3f1hrOnbRLOcwKz0Liq2IcrvDeZRHXhd9RgLrsT+DjWY/nty1Hi7v3dtkaEYbPYe0mUoOfzRrMwfXXwgPUA==

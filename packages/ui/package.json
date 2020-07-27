@@ -20,7 +20,7 @@
     "@emeraldplatform/eth": "^0.5.10",
     "@emeraldplatform/ui": "0.6.0",
     "@emeraldplatform/ui-icons": "0.6.0",
-    "@emeraldpay/hashicon-react": "^0.4.0",
+    "@emeraldpay/hashicon-react": "^0.5.1",
     "@emeraldwallet/core": "^2.3.0-alpha",
     "@emeraldwallet/erc20": "^2.3.0-alpha",
     "@material-ui/core": "4.9.10",
