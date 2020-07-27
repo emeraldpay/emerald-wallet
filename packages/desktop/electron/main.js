@@ -134,4 +134,9 @@ app.on('activate', () => {
   // On macOS it's common to re-create a window in the app when the
   // dock icon is clicked and there are no other windows open.
   getMainWindow(application, options);
+  // make sure it's still connected to remote (may lose after some time, 15+ minutes)
+  application.reconnect();
 });
+
+app.addListener("", () => {
+})

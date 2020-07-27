@@ -2,20 +2,21 @@ import { Logger } from '@emeraldwallet/core';
 import { settings } from '@emeraldwallet/store';
 import {IService} from '../Services';
 import {WebContents} from 'electron';
+import {EmeraldApiAccess} from "../..";
 
 const log = Logger.forCategory('PriceService');
 
 class PricesService implements IService {
   public id: string;
   private ipcMain: any;
-  private apiAccess: any;
+  private apiAccess: EmeraldApiAccess;
   private webContents?: WebContents;
   private froms: any;
   private to: any;
   private listener: any | null;
   private handler: NodeJS.Timeout | null;
 
-  constructor(ipcMain: any, webContents: WebContents, apiAccess: any, from: any, currency: any) {
+  constructor(ipcMain: any, webContents: WebContents, apiAccess: EmeraldApiAccess, from: any, currency: any) {
     this.id = 'PricesService';
     this.ipcMain = ipcMain;
     this.webContents = webContents;
@@ -68,6 +69,10 @@ class PricesService implements IService {
 
   setWebContents(webContents: WebContents): void {
     this.webContents = webContents;
+  }
+
+  reconnect(): void {
+    //timer based, so doesn't matter
   }
 
 }

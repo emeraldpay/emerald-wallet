@@ -5,6 +5,7 @@ import {
   TxStatusRequest
 } from '@emeraldpay/grpc-client';
 import extractChain from '../../extractChain';
+import {Logger} from "@emeraldwallet/core";
 
 interface ITxStatusEvent {
   txid: string;
@@ -18,15 +19,17 @@ interface ITxStatusEvent {
 
 type TxStatusHandler = (status: ITxStatusEvent) => void;
 
+const log = Logger.forCategory('TxListener');
+
 export class TxListener {
   public client: BlockchainClient;
   public response?: ClientReadable<TxStatus>;
 
-  constructor (client: BlockchainClient) {
+  constructor(client: BlockchainClient) {
     this.client = client;
   }
 
-  public stop () {
+  public stop() {
     if (this.response) {
       this.response.cancel();
     }
