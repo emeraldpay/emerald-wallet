@@ -1163,20 +1163,22 @@
     protobufjs "6.8.8"
     text-encoding "0.7.0"
 
-"@emeraldpay/hashicon-react@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/hashicon-react/-/hashicon-react-0.5.0.tgz#41e00c3d5bf1264ddba88ec9bb438df7f9acf0dc"
-  integrity sha512-5dpsWT6nu3GXhvGUxWpfnjoika8JLeLa31m7iq5T3QAeeF1oULGCKCel4dhfNPG51ZUjogMLVWondz/a3fCoRA==
+"@emeraldpay/hashicon-react@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/hashicon-react/-/hashicon-react-0.5.1.tgz#975c57fdad22b8f043ad24004a620eb1012ba728"
+  integrity sha512-WoLPBpdwseNexAQHDmr0f9nxc8HfNpQxNI2bw/04yYpoeQg61r52iwk3EHV/QCg5hnAcF6wKdyCnybyU8UBtHQ==
   dependencies:
-    "@emeraldpay/hashicon" "^0.5.0"
+    "@emeraldpay/hashicon" "^0.5.1"
     react "^16.8.0"
 
-"@emeraldpay/hashicon@^0.5.0":
-  version "0.5.0"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/hashicon/-/hashicon-0.5.0.tgz#651c695a91cca0cfca01eab3f31804ecddf4a590"
-  integrity sha512-kJEdJ81hz66hHHsRI38QppDzNSJFFVKzTx+jcE7b/8TBfSrKylOhylG/cw61BswimyKllR+MZpOa8Rldblv9AQ==
+"@emeraldpay/hashicon@^0.5.1":
+  version "0.5.1"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/hashicon/-/hashicon-0.5.1.tgz#f2fd30dace08d3fed9db66732f803b0e6f60ce05"
+  integrity sha512-pMvnz6CkCqzoB2srA3B/gCKIi6h24O1Chfj919OqyCC08Kc0zCCok6iQoJ2cP5T+P2utGeR/El7jE4Q2JgmP+A==
   dependencies:
     "@stablelib/blake2s" "^1.0.0"
+    js-sha3 "^0.8.0"
+    text-encoding "^0.7.0"
 
 "@emeraldplatform/contracts@0.5.1", "@emeraldplatform/contracts@^0.5.1":
   version "0.5.1"
@@ -18034,7 +18036,7 @@ test-value@^2.1.0:
     array-back "^1.0.3"
     typical "^2.6.0"
 
-text-encoding@0.7.0:
+text-encoding@0.7.0, text-encoding@^0.7.0:
   version "0.7.0"
   resolved "https://registry.yarnpkg.com/text-encoding/-/text-encoding-0.7.0.tgz#f895e836e45990624086601798ea98e8f36ee643"
   integrity sha512-oJQ3f1hrOnbRLOcwKz0Liq2IcrvDeZRHXhd9RgLrsT+DjWY/nty1Hi7v3dtkaEYbPYe0mUoOfzRrMwfXXwgPUA==
