@@ -20,7 +20,7 @@
     "@emeraldplatform/eth": "^0.5.10",
     "@emeraldplatform/ui": "0.6.0",
     "@emeraldplatform/ui-icons": "0.6.0",
-    "@emeraldpay/hashicon-react": "^0.4.0",
+    "@emeraldpay/hashicon-react": "^0.5.0",
     "@emeraldwallet/core": "^2.3.0-alpha",
     "@emeraldwallet/erc20": "^2.3.0-alpha",
     "@material-ui/core": "4.9.10",
@@ -38,6 +38,7 @@
     "react-dropzone": "^11.0.1"
   },
   "devDependencies": {
+    "js-sha3": "^0.8.0",
     "@babel/core": "^7.6.4",
     "@storybook/addon-actions": "^5.3.18",
     "@storybook/react": "^5.3.18",

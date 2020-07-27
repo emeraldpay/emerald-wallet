@@ -18,7 +18,7 @@
   },
   "dependencies": {
     "@emeraldpay/emerald-vault-core": "^0.5.1",
-    "@emeraldpay/hashicon-react": "^0.4.0",
+    "@emeraldpay/hashicon-react": "^0.5.0",
     "@emeraldplatform/core": "0.5.8",
     "@emeraldplatform/eth": "0.5.1",
     "@emeraldplatform/ui": "0.6.0",
@@ -44,6 +44,7 @@
     "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
+    "js-sha3": "^0.8.0",
     "@babel/core": "^7.6.4",
     "@storybook/addon-actions": "5.2.3",
     "@storybook/react": "5.2.3",
