@@ -11,6 +11,7 @@ import {
 import CreateHdAccount from '../../../create-account/CreateHdAccount';
 import CreateWalletScreen from "../../../create-wallet/CreateWalletScreen";
 import ReceiveScreen from "../../../receive/ReceiveScreen";
+import SelectAccount from "../../../transaction/CreateTransaction/SelectAccount";
 
 const log = Logger.forCategory('screen');
 
@@ -43,15 +44,18 @@ const Screen = (props: IScreenProps) => {
     return <ImportLedgerAccount onBackScreen={props.screenItem} />;
   }
   if (props.screen === 'add-from-ledger') {
-    return <ImportLedgerAccount />;
+    return <ImportLedgerAccount/>;
   }
   if (props.screen === screen.Pages.WALLET) {
     return <WalletDetails walletId={props.screenItem}/>;
   }
   if (props.screen === screen.Pages.TX_DETAILS) {
-    return <TxDetails hash={props.screenItem.hash} />;
+    return <TxDetails hash={props.screenItem.hash}/>;
   }
   if (props.screen === screen.Pages.CREATE_TX) {
+    return (<SelectAccount walletId={props.screenItem}/>);
+  }
+  if (props.screen === screen.Pages.CREATE_TX_ACCOUNT) {
     return (<CreateTransaction account={props.screenItem}/>);
   }
   if (props.screen === 'broadcast-tx') {

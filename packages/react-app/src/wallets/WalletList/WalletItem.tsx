@@ -78,7 +78,7 @@ const useStyles = makeStyles<Theme>((theme) =>
 /**
  *
  */
-const Component = (({wallet, openWallet, assets, total, onReceive}: Props & Actions & OwnProps) => {
+const Component = (({wallet, openWallet, assets, total, onReceive, onSend}: Props & Actions & OwnProps) => {
   const styles = useStyles();
   const [current, setCurrent] = React.useState(false)
 
@@ -124,8 +124,7 @@ const Component = (({wallet, openWallet, assets, total, onReceive}: Props & Acti
           </Grid>
           <Grid item={true} xs={3} className={styles.actions}>
             <Button variant={"contained"}
-                    onClick={() => {
-                    }}
+                    onClick={onSend}
                     className={styles.actionButton}
                     color={"secondary"}>Send</Button>
             <Button variant={"contained"}
@@ -150,6 +149,7 @@ interface Props {
 // Actions
 interface Actions {
   onReceive: () => void;
+  onSend: () => void;
 }
 
 // Component properties
@@ -171,6 +171,9 @@ export default connect(
     return {
       onReceive: () => {
         dispatch(screen.actions.gotoScreen(screen.Pages.RECEIVE, ownProps.wallet.id))
+      },
+      onSend: () => {
+        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, ownProps.wallet.id))
       }
     }
   }
