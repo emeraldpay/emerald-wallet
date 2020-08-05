@@ -141,7 +141,7 @@ export class EmeraldApiAccess implements IEmeraldClient {
   private readonly credentials: CredentialsContext;
   private monitoringClient: MonitoringClient;
 
-  private listener?: StatusListener;
+  private listeners: StatusListener[] = [];
   private currentState?: Status = undefined;
   private connectionState: IConnectionState;
 
@@ -198,23 +198,33 @@ export class EmeraldApiAccess implements IEmeraldClient {
     return new TxListener(this.blockchainClient);
   }
 
-  public newPricesListener (): PriceListener {
+  public newPricesListener(): PriceListener {
     return new PriceListener(this.pricesClient);
   }
 
-  public statusListener (listener: StatusListener) {
-    this.listener = listener;
+  public statusListener(listener: StatusListener) {
+    this.listeners.push(listener);
     if (typeof this.currentState !== 'undefined') {
       listener(this.currentState);
     }
   }
 
-  protected periodicCheck () {
+  public notifyListener(status: Status) {
+    this.listeners.forEach((listener) => {
+      try {
+        listener(status);
+      } catch (e) {
+        log.error("Failed to notify listener", e)
+      }
+    })
+  }
+
+  protected periodicCheck() {
     this.verifyOffline();
     setTimeout(this.periodicCheck.bind(this), 3000);
   }
 
-  protected verifyConnection () {
+  protected verifyConnection() {
     const status = this.connectionState;
     const connected = status.authenticated
       && status.blockchainConnected
@@ -255,9 +265,7 @@ export class EmeraldApiAccess implements IEmeraldClient {
         log.info("Connected")
       }
       this.currentState = state;
-      if (this.listener) {
-        this.listener(state);
-      }
+      this.notifyListener(state);
     }
   }
 }
