@@ -1138,17 +1138,17 @@
     global-agent "^2.0.2"
     global-tunnel-ng "^2.7.1"
 
-"@emeraldpay/emerald-vault-core@0.5.1", "@emeraldpay/emerald-vault-core@^0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-core/-/emerald-vault-core-0.5.1.tgz#011e3ac17024c65ff8ca0b62f3c09faa39c06327"
-  integrity sha512-vjKJX2FftYD98zCwl3Gg5/v6PNIUE3MxlkaJcBX3YzDNgLbe9VKAyqi5DQD1En03RWPSYDTDzR6iOf7cwl1ctg==
+"@emeraldpay/emerald-vault-core@0.5.2", "@emeraldpay/emerald-vault-core@^0.5.2":
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-core/-/emerald-vault-core-0.5.2.tgz#f63fa411f68457d71c4e5d490a485c8eb848c56e"
+  integrity sha512-6Gl4SmFMrPkqETSt+GpTHbwBKfD1Ol8C6Ln5rhsrjeV15rWIDP95lBWBNTNRN0habA3hTwb1EuLXRG9ITeLhlQ==
 
-"@emeraldpay/emerald-vault-native@^0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-native/-/emerald-vault-native-0.5.1.tgz#21ab10ae487f1ae54ff6f34f927245557f1a7000"
-  integrity sha512-o9C4ZxcgGKOA+ZqhqBarTGcmY4y0+EWG+uYSF7zGlTjJntT0N0Qn6flXji/2NtEfw2ElGc3U6hcDZIbMRZ6I6g==
+"@emeraldpay/emerald-vault-native@^0.5.2":
+  version "0.5.2"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-native/-/emerald-vault-native-0.5.2.tgz#807a61ca59a8988e3e4d8f13fd1c428e61f83a7c"
+  integrity sha512-W/eLunS/7dDs9uPOmaaxxjl7pM5l923dw5Gxz8VN8xBRz0bQyrLDcW2JFzRiY/ySBRda/+8cFt31+OvXFZnmPQ==
   dependencies:
-    "@emeraldpay/emerald-vault-core" "0.5.1"
+    "@emeraldpay/emerald-vault-core" "0.5.2"
 
 "@emeraldpay/grpc-client@0.11.3-0.2":
   version "0.11.3-0.2"
