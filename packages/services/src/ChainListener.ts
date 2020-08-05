@@ -3,6 +3,7 @@ import {
 } from '@emeraldpay/grpc-client';
 
 import extractChain from './extractChain';
+import {Logger} from "@emeraldwallet/core";
 
 interface ChainStatus {
   height: number;
@@ -11,15 +12,17 @@ interface ChainStatus {
 
 type HeadListener = (status: ChainStatus) => void;
 
+const log = Logger.forCategory('ChainListener');
+
 export class ChainListener {
   public client: BlockchainClient;
   public response?: ClientReadable<ChainHead>;
 
-  constructor (client: BlockchainClient) {
+  constructor(client: BlockchainClient) {
     this.client = client;
   }
 
-  public stop () {
+  public stop() {
     if (this.response) {
       this.response.cancel();
     }
@@ -37,8 +40,14 @@ export class ChainListener {
       response.on('data', (data: ChainHead) => {
         // console.log(`New blockchain height. Chain: ${data.getChain()}, height: ${data.getHeight()}`);
         if (handler) {
-          handler({ height: data.getHeight(), hash: data.getBlockId() });
+          handler({height: data.getHeight(), hash: data.getBlockId()});
         }
+      });
+      response.on('error', (err) => {
+        log.error("Connection error", err);
+      });
+      response.on('end', () => {
+        log.warn("Connection closed");
       });
       this.response = response;
     });

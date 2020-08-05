@@ -43,8 +43,6 @@ function* subscribeAccountBalance(accounts: Account[]): SagaIterator {
   Object.keys(subscribe).forEach((blockchainCode) => {
     const addedAddresses = subscribe[blockchainCode];
     if (addedAddresses.length > 0) {
-      console.log("SUBSCRIBE TO BALANCE", addedAddresses, blockchainCode);
-
       ipcRenderer.send('subscribe-balance', blockchainCode, addedAddresses);
     }
   });
