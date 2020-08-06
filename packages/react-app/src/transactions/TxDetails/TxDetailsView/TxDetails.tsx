@@ -48,6 +48,7 @@ export interface ITxDetailsProps {
   fiatCurrency?: string;
   goBack?: (a?: any) => void;
   openAccount?: (a?: any) => void;
+  openReceipt?: () => void;
   fromAccount?: EntryId;
   toAccount?: EntryId;
   rates?: Map<string, number>;
@@ -55,7 +56,6 @@ export interface ITxDetailsProps {
   tokenSymbol: string;
   account?: any;
   classes?: any;
-  repeatTx?: any;
   cancel?: any;
 }
 
@@ -77,19 +77,19 @@ export function TxDetails (props: ITxDetailsProps) {
     }
   }
 
-  function handleToClick () {
+  function handleToClick() {
     if (props.openAccount) {
       props.openAccount(props.toAccount);
     }
   }
 
-  function handleRepeatClick () {
-    if (props.repeatTx) {
-      props.repeatTx(transaction, toAccount, fromAccount);
+  function handleReceiptClick() {
+    if (props.openReceipt) {
+      props.openReceipt();
     }
   }
 
-  function handleCancelClick () {
+  function handleCancelClick() {
     if (props.cancel) {
       props.cancel();
     }
@@ -200,8 +200,8 @@ export function TxDetails (props: ITxDetailsProps) {
         <FormRow
           rightColumn={(
             <ButtonGroup>
-              <Button onClick={handleCancelClick} label='DASHBOARD' />
-              <Button primary={true} onClick={handleRepeatClick} label='REPEAT TRANSACTION' />
+              <Button onClick={handleCancelClick} label='DASHBOARD'/>
+              <Button onClick={handleReceiptClick} primary={true} label='OPEN RECEIPT'/>
             </ButtonGroup>
           )}
         />

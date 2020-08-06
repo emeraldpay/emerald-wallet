@@ -78,6 +78,14 @@ const theme = {
         bottom: -(spacing * 3)
       } as CSSProperties
     },
+    MuiTextField: {
+      root: {
+        borderRadius: '1px',
+        borderStyle: 'solid',
+        borderWidth: '1px',
+        borderColor: colors.conch.main,
+      } as CSSProperties
+    },
     MuiButton: {
       root: {
         color: colors.emerald.main,

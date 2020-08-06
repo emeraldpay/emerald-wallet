@@ -43,7 +43,7 @@ export class About extends React.Component<IProps> {
 
     return (
       <div style={{ padding: '30px', position: 'relative' }}>
-        <div style={{position: 'absolute', top: '0px', right: '-35px', opacity: '0.75'}}>
+        <div style={{position: 'absolute', top: '-22px', right: '-35px', opacity: '0.75'}}>
           <Logo height='350px' width='350px'/>
         </div>
         <h2 className={classes.appName}>Emerald Wallet</h2>

@@ -13,10 +13,10 @@ export interface IOwnProps {
 }
 
 interface IDispatchFromProps {
-  repeatTx: any;
   goBack: any;
   cancel: any;
   openAccount: any;
+  openReceipt: () => void;
 }
 
 export default connect<ITxDetailsProps, IDispatchFromProps, IOwnProps>(
@@ -26,7 +26,6 @@ export default connect<ITxDetailsProps, IDispatchFromProps, IOwnProps>(
     const fromAccount = tx.get('from') ? accounts.selectors.findAccountByAddress(state, tx.get('from'), chain) : undefined;
     const toAccount = tx.get('to') ? accounts.selectors.findAccountByAddress(state, tx.get('to'), chain) : undefined;
     const account = fromAccount || toAccount;
-    const showRepeat = !!fromAccount;
     const currentCurrency = settings.selectors.fiatCurrency(state);
     const fiatRate = settings.selectors.fiatRate(chain, state);
     const coins = new Wei(tx.get('value')).toEther();
@@ -49,18 +48,18 @@ export default connect<ITxDetailsProps, IDispatchFromProps, IOwnProps>(
     },
     goBack: (wallet: Wallet) => {
       if (wallet) {
-        dispatch(gotoScreen(screen.Pages.WALLET, wallet));
+        dispatch(gotoScreen(screen.Pages.WALLET, wallet.id));
       } else {
         dispatch(gotoScreen(screen.Pages.HOME));
       }
     },
     openAccount: (wallet?: Wallet) => {
       if (wallet) {
-        dispatch(gotoScreen(screen.Pages.WALLET, wallet));
+        dispatch(gotoScreen(screen.Pages.WALLET, wallet.id));
       }
     },
-    repeatTx: (transaction: any, toWallet: Wallet, fromWallet: Wallet) => {
-      dispatch(gotoScreen('repeat-tx', { transaction, toWallet, fromWallet }));
-    }
+    openReceipt: () => {
+      dispatch(screen.actions.openTxReceipt(ownProps.hash));
+    },
   })
 )(TxDetails);

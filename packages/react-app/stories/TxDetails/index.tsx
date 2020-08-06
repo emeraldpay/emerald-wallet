@@ -25,5 +25,6 @@ storiesOf('TxDetails', module)
       openAccount={action('openAccount')}
       repeatTx={action('repeatTx')}
       cancel={action('cancel')}
+      openReceipt={action('openReceipt')}
     />
     ));

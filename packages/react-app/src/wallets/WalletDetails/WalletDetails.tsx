@@ -13,6 +13,7 @@ import {AccountBalanceWalletOutlined as WalletIcon} from "@material-ui/icons";
 import {InlineEdit} from "@emeraldwallet/ui";
 import WalletMenu from "../WalletList/WalletMenu";
 import {Hashicon} from "@emeraldpay/hashicon-react";
+import {Alert} from '@material-ui/lab';
 
 export interface IOwnProps {
   walletId: string;
@@ -48,6 +49,13 @@ const useStyles = makeStyles<Theme>((theme) =>
  *
  */
 const Component = (({wallet, goBack, updateWallet, onReceive, onSend}: Props & Actions & OwnProps) => {
+  if (typeof wallet == "undefined") {
+    console.error("Wallet is not found");
+    return <Alert>
+      <Typography>Wallet is not found</Typography>
+    </Alert>
+  }
+
   const styles = useStyles();
   const walletName = wallet.name || '';
 
@@ -153,6 +161,10 @@ interface OwnProps {
 
 export default connect(
   (state: IState, ownProps: OwnProps): Props => {
+    console.debug("Open wallet", ownProps.walletId);
+    if (typeof ownProps.walletId != "string") {
+      console.error("Invalid walletId", ownProps.walletId);
+    }
     return {
       wallet: accounts.selectors.findWallet(state, ownProps.walletId)!
     }
