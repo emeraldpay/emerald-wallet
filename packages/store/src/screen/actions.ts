@@ -56,7 +56,17 @@ export const openLink = (linkUrl: string) => ({
   linkUrl
 });
 
-export function showNotification (
+const hashRE = new RegExp('^(0x)?[a-z0-9A-Z]+$');
+
+export function openTxReceipt(hash: string) {
+  if (!hashRE.test(hash) || typeof hash != "string") {
+    console.warn("Invalid hash provided", hash);
+    return openLink('https://receipt.emerald.cash/');
+  }
+  return openLink(`https://receipt.emerald.cash/tx/${hash}`);
+}
+
+export function showNotification(
   message: any, notificationType: any, duration: any, actionText: any, actionToDispatchOnActionClick: any
 ) {
   return {

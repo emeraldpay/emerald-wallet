@@ -17,6 +17,7 @@ interface IDispatchFromProps {
   goBack: any;
   cancel: any;
   openAccount: any;
+  openReceipt: () => void;
 }
 
 export default connect<ITxDetailsProps, IDispatchFromProps, IOwnProps>(
@@ -60,7 +61,10 @@ export default connect<ITxDetailsProps, IDispatchFromProps, IOwnProps>(
       }
     },
     repeatTx: (transaction: any, toWallet: Wallet, fromWallet: Wallet) => {
-      dispatch(gotoScreen('repeat-tx', { transaction, toWallet, fromWallet }));
-    }
+      dispatch(gotoScreen('repeat-tx', {transaction, toWallet, fromWallet}));
+    },
+    openReceipt: () => {
+      dispatch(screen.actions.openTxReceipt(ownProps.hash));
+    },
   })
 )(TxDetails);
