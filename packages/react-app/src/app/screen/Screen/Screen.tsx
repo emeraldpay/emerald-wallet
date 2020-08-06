@@ -67,28 +67,6 @@ const Screen = (props: IScreenProps) => {
   if (props.screen === screen.Pages.RECEIVE) {
     return <ReceiveScreen walletId={props.screenItem}/>;
   }
-
-  // if (props.screen === 'repeat-tx') {
-  //   const { transaction, toAccount, fromAccount } = props.screenItem;
-  //   const amount = new Wei(transaction.value);
-  //   const to = (toAccount && toAccount.id) || transaction.to;
-  //   const gasLimit = transaction.gas;
-  //   const { data, typedData, mode } = transaction;
-  //   return (
-  //     <CreateTransaction
-  //       account={fromAccount}
-  //       to={to}
-  //       amount={amount}
-  //       gasLimit={gasLimit}
-  //       data={data}
-  //       typedData={typedData}
-  //       mode={mode}
-  //     />);
-  // }
-  // if (props.screen === 'landing-generate') {
-  //   return <GenerateAccount backLabel='Back'/>;
-  // }
-
   if (props.screen === 'welcome') {
     return <Welcome currentTermsVersion={props.termsVersion} />;
   }

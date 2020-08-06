@@ -56,7 +56,6 @@ export interface ITxDetailsProps {
   tokenSymbol: string;
   account?: any;
   classes?: any;
-  repeatTx?: any;
   cancel?: any;
 }
 
@@ -87,12 +86,6 @@ export function TxDetails (props: ITxDetailsProps) {
   function handleReceiptClick() {
     if (props.openReceipt) {
       props.openReceipt();
-    }
-  }
-
-  function handleRepeatClick() {
-    if (props.repeatTx) {
-      props.repeatTx(transaction, toAccount, fromAccount);
     }
   }
 
@@ -208,7 +201,6 @@ export function TxDetails (props: ITxDetailsProps) {
           rightColumn={(
             <ButtonGroup>
               <Button onClick={handleCancelClick} label='DASHBOARD'/>
-              <Button onClick={handleRepeatClick} label='REPEAT TRANSACTION'/>
               <Button onClick={handleReceiptClick} primary={true} label='OPEN RECEIPT'/>
             </ButtonGroup>
           )}
