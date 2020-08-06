@@ -49,14 +49,14 @@ export default connect<ITxDetailsProps, IDispatchFromProps, IOwnProps>(
     },
     goBack: (wallet: Wallet) => {
       if (wallet) {
-        dispatch(gotoScreen(screen.Pages.WALLET, wallet));
+        dispatch(gotoScreen(screen.Pages.WALLET, wallet.id));
       } else {
         dispatch(gotoScreen(screen.Pages.HOME));
       }
     },
     openAccount: (wallet?: Wallet) => {
       if (wallet) {
-        dispatch(gotoScreen(screen.Pages.WALLET, wallet));
+        dispatch(gotoScreen(screen.Pages.WALLET, wallet.id));
       }
     },
     repeatTx: (transaction: any, toWallet: Wallet, fromWallet: Wallet) => {

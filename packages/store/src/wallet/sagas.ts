@@ -10,7 +10,7 @@ function* openAccountDetails (action: IOpenAccDetailsAction) {
     yield put(screen.actions.showNotification(
       `Account ${address} not found in the vault`, 'warning', 3000, '', () => {}));
   } else {
-    yield put(screen.actions.gotoScreen(screen.Pages.WALLET, wallet));
+    yield put(screen.actions.gotoScreen(screen.Pages.WALLET, wallet.id));
   }
 }
 
