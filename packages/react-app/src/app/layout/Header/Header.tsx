@@ -4,7 +4,8 @@ import {Button} from '@emeraldwallet/ui';
 import {AppBar, Toolbar} from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
+import HeaderMenu from './HeaderMenu';
 
 import EmeraldTitle from './Title';
 import Total from './Total';
@@ -66,8 +67,8 @@ const Header = (props: IHeaderProps) => {
           <Toolbar>
             <EmeraldTitle />
             <div className={props.classes.appBarRight}>
-              <Total />
-              <StyledSettingsButton onClick={openSettings}/>
+              <Total/>
+              <HeaderMenu/>
             </div>
           </Toolbar>
         </AppBar>
