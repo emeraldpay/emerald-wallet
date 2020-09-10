@@ -27,12 +27,6 @@
     "rimraf": "^2.6.3",
     "ts-jest": "^24.0.0"
   },
-  "workspaces": {
-    "nohoist": [
-      "**/node-abi",
-      "**/node_abi/**"
-    ]
-  },
   "jest": {
     "preset": "ts-jest",
     "testEnvironment": "node",

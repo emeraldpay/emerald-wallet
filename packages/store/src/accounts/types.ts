@@ -1,13 +1,10 @@
-import * as vault from '@emeraldpay/emerald-vault-core';
-import {EntryId, SeedDescription, Uuid} from '@emeraldpay/emerald-vault-core';
+import {EntryId, SeedDescription, Uuid, Wallet, AddressBookItem, WalletEntry} from '@emeraldpay/emerald-vault-core';
 import {Wei} from '@emeraldplatform/eth';
 import {
-  Account,
   AnyCoinCode,
   BlockchainCode,
   CurrencyCode,
   Units,
-  Wallet
 } from '@emeraldwallet/core';
 
 export const moduleName = 'accounts';
@@ -83,7 +80,7 @@ export interface IFetchHdPathsAction {
 export interface IUpdateWalletAction {
   type: ActionTypes.WALLET_UPDATED;
   payload: {
-    walletId: vault.Uuid,
+    walletId: Uuid,
     name: string;
     description: string;
   };
@@ -120,7 +117,7 @@ export interface ICreateWalletAction {
 
 export interface ISetTxCountAction {
   type: ActionTypes.SET_TXCOUNT;
-  accountId: vault.EntryId;
+  accountId: EntryId;
   value: number;
 }
 
@@ -128,7 +125,7 @@ export interface IHdAccountCreated {
   type: ActionTypes.HD_ACCOUNT_CREATED;
   payload: {
     walletId: string,
-    account: Account
+    account: WalletEntry
   };
 }
 

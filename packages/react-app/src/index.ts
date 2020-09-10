@@ -7,10 +7,6 @@ export { default as WalletList } from './wallets/WalletList';
 export { default as WalletDetails } from './wallets/WalletDetails';
 export { default as TokenBalances } from './wallets/TokenBalances';
 
-// export
-export { default as PaperWallet } from './export/PaperWallet';
-export { default as ExportPaperWallet } from './export/ExportPaperWallet';
-
 // create-account
 export { default as ShowPrivateKey } from './create-account/ShowPrivateKey';
 

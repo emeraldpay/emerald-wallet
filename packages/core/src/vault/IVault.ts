@@ -4,11 +4,13 @@ import {
   SeedDefinition,
   SeedDescription,
   UnsignedTx,
-  Uuid, BlockchainType, SeedReference
+  Uuid,
+  BlockchainType,
+  SeedReference,
+  Wallet,
+  AddressBookItem
 } from '@emeraldpay/emerald-vault-core';
-import AddressBookItem from '../address-book/AddressBookItem';
 import { BlockchainCode } from '../blockchains';
-import Wallet from '../entities/Wallet';
 
 export default interface IVault {
   listWallets(): Wallet[];

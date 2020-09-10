@@ -4,16 +4,15 @@ import {
   blockchainCodeToId,
   Blockchains,
   Commands, isAnyTokenCode, isCoinTickerCode,
-  Logger,
-  vault,
-  WalletService
+  Logger, vault,
+  WalletService,
 } from '@emeraldwallet/core';
 import {loadTransactions2, storeTransactions2} from '@emeraldwallet/history-store';
 import {ipcMain} from 'electron';
 import * as os from 'os';
 import Application from '../Application';
 import {tokenContract} from '../erc20';
-import {Uuid} from "@emeraldpay/emerald-vault-core";
+import {Uuid, Wallet, AddEntry} from "@emeraldpay/emerald-vault-core";
 import {registry} from "@emeraldwallet/erc20";
 import BigNumber from 'bignumber.js';
 
@@ -172,16 +171,20 @@ export function setIpcHandlers(app: Application) {
     });
 
   ipcMain.handle(Commands.VAULT_CREATE_HD_ACCOUNT,
-    (event: any, walletId: string, blockchain: BlockchainCode, hdPath: string, password) => {
+    (event: any, walletId: Uuid, blockchain: BlockchainCode, hdPath: string, password: string) => {
       const wallet = app.vault?.getWallet(walletId);
-      if (!wallet || !wallet.seedId) {
-        throw Error('Invalid wallet provided');
+      if (!wallet) {
+        throw Error("Unknown wallet");
       }
-      const addAccount: vault.AddEntry = {
+      if (typeof wallet.reserved == 'undefined' || wallet.reserved.length == 0) {
+        throw Error("Wallet doesnt have associated seed");
+      }
+      const seedId = wallet.reserved[0].seedId;
+      const addAccount: AddEntry = {
         blockchain: blockchainCodeToId(blockchain),
         type: 'hd-path',
         key: {
-          seed: {type: "id", value: wallet.seedId, password},
+          seed: {type: "id", value: seedId, password},
           hdPath,
         },
       };

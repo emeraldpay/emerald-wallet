@@ -4,6 +4,8 @@ import {IState} from '../types';
 import {allAsArray, balanceByChain} from './selectors';
 import {moduleName} from './types';
 
+const NO_ADDRESS = {type: "single", value: ""};
+
 describe('allAsArray', () => {
   const state = {
     [moduleName]: {
@@ -39,8 +41,8 @@ describe('selectTotalBalance', () => {
       [moduleName]: {
         wallets: [{
           id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee',
-          accounts: [
-            { id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0', blockchain: BlockchainCode.Kovan, address: '' }
+          entries: [
+            {id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0', blockchain: 10002, address: NO_ADDRESS}
           ]
         }],
         details: [
@@ -58,10 +60,10 @@ describe('selectTotalBalance', () => {
       [moduleName]: {
         wallets: [{
           id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee',
-          accounts: [
-            { id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0', blockchain: BlockchainCode.ETH, address: '' },
-            { id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-1', blockchain: BlockchainCode.ETH, address: '' },
-            { id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-2', blockchain: BlockchainCode.ETC, address: '' }
+          entries: [
+            {id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0', blockchain: 100, address: NO_ADDRESS},
+            {id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-1', blockchain: 100, address: NO_ADDRESS},
+            {id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-2', blockchain: 101, address: NO_ADDRESS}
           ]
         }],
         details: [
@@ -82,17 +84,17 @@ describe('selectTotalBalance', () => {
         wallets: [
           {
             id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee',
-            accounts: [
-              { id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0', blockchain: BlockchainCode.ETH, address: '' },
-              { id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-1', blockchain: BlockchainCode.ETH, address: '' },
-              { id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-2', blockchain: BlockchainCode.ETC, address: '' }
+            entries: [
+              {id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0', blockchain: 100, address: NO_ADDRESS},
+              {id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-1', blockchain: 100, address: NO_ADDRESS},
+              {id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-2', blockchain: 101, address: NO_ADDRESS}
             ]
           },
           {
             id: 'c0659f31-1932-4006-bc4c-dbbab27fc25c',
-            accounts: [
-              { id: 'c0659f31-1932-4006-bc4c-dbbab27fc25c-0', blockchain: BlockchainCode.ETH, address: '' },
-              { id: 'c0659f31-1932-4006-bc4c-dbbab27fc25c-1', blockchain: BlockchainCode.ETC, address: '' }
+            entries: [
+              {id: 'c0659f31-1932-4006-bc4c-dbbab27fc25c-0', blockchain: 100, address: NO_ADDRESS},
+              {id: 'c0659f31-1932-4006-bc4c-dbbab27fc25c-1', blockchain: 101, address: NO_ADDRESS}
             ]
           }
         ],

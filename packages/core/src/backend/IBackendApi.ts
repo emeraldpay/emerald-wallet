@@ -1,7 +1,5 @@
-import AddressBookItem from '../address-book/AddressBookItem';
 import {BlockchainCode} from '../blockchains';
-import Wallet from '../entities/Wallet';
-import {SeedDescription, Uuid} from "@emeraldpay/emerald-vault-core";
+import {SeedDescription, Uuid, Wallet, AddressBookItem} from "@emeraldpay/emerald-vault-core";
 import {AnyCoinCode} from "../Asset";
 
 export default interface IBackendApi {

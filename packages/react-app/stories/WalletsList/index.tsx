@@ -6,53 +6,9 @@ import WalletList from "../../src/wallets/WalletList";
 import {BackendMock} from "../backendMock";
 import {accounts, settings, tokens} from "@emeraldwallet/store";
 import {BlockchainCode} from "@emeraldwallet/core";
+import {createWallets, setup} from '../wallets';
 
 const backend = new BackendMock();
-
-const wallet1 = {
-  id: "8ff89b7d-8a73-4ee0-ad5b-8ac1f04a49ef",
-  name: "Current Spending (create from 0x9d8e3fed246384e726b5962577503b916fb246d7)",
-  hdAccount: 1,
-  seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4",
-  accounts: [
-    {
-      isHardware: false,
-      seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4",
-      address: "0x9d8e3fed246384e726b5962577503b916fb246d7",
-      blockchain: BlockchainCode.ETH,
-      id: "8ff89b7d-8a73-4ee0-ad5b-8ac1f04a49ef-1"
-    }
-  ]
-};
-const wallet2 = {
-  id: "1022fd13-3431-4f3b-bce8-109fdab15873",
-  name: "Savings",
-  hdAccount: 2,
-  seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4",
-  accounts: [
-    {
-      isHardware: false,
-      seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4",
-      address: "0x577503b916fb246d79d8e3fed246384e726b5962",
-      blockchain: BlockchainCode.ETH,
-      id: "1022fd13-3431-4f3b-bce8-109fdab15873-1"
-    },
-    {
-      isHardware: false,
-      seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4",
-      address: "0x577503b916fb246d79d8e3fed246384e726b5962",
-      blockchain: BlockchainCode.ETC,
-      id: "1022fd13-3431-4f3b-bce8-109fdab15873-2"
-    },
-  ]
-};
-
-const createWallets = [
-  accounts.actions.setWalletsAction([
-    wallet1,
-    wallet2,
-  ])
-];
 
 const setBalances = [
   accounts.actions.setBalanceAction({
@@ -89,10 +45,6 @@ const setBalances = [
     unitsValue: '500000000000'
   }, "0x9d8e3fed246384e726b5962577503b916fb246d7"),
 ];
-
-const setup = [
-  settings.actions.setRatesAction({"ETH": "205.1761", "ETC": "5.234"})
-]
 
 storiesOf('Wallets List', module)
   .addDecorator(providerForStore(backend, [...setup, ...createWallets]))

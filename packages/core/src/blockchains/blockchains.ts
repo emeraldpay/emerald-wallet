@@ -87,3 +87,16 @@ export function blockchainCodeToId (code: BlockchainCode): number {
   }
   throw Error('Unsupported blockchain: ' + code);
 }
+
+export function blockchainIdToCode(id: number): BlockchainCode {
+  if (id === 100) {
+    return BlockchainCode.ETH;
+  }
+  if (id === 101) {
+    return BlockchainCode.ETC;
+  }
+  if (id === 10002) {
+    return BlockchainCode.Kovan;
+  }
+  throw Error('Unsupported blockchain id: ' + id);
+}

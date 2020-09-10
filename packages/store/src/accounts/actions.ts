@@ -1,6 +1,4 @@
-import * as vault from '@emeraldpay/emerald-vault-core';
 import {
-  Account,
   blockchainByName,
   BlockchainCode,
   blockchainCodeToId,
@@ -8,7 +6,6 @@ import {
   IApi,
   IBackendApi, IVault,
   Logger,
-  Wallet,
   WalletService
 } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
@@ -37,7 +34,10 @@ import {
   SeedDescription,
   SeedEntry,
   SeedReference,
-  Uuid
+  Uuid,
+  WalletEntry,
+  Wallet,
+  EntryId
 } from "@emeraldpay/emerald-vault-core";
 
 const log = Logger.forCategory('store.accounts');
@@ -68,7 +68,7 @@ export function loadWalletsAction (): ILoadWalletsAction {
   };
 }
 
-export function hdAccountCreated (walletId: string, account: Account): IHdAccountCreated {
+export function hdAccountCreated(walletId: string, account: WalletEntry): IHdAccountCreated {
   return {
     type: ActionTypes.HD_ACCOUNT_CREATED,
     payload: {
@@ -126,13 +126,13 @@ export function importSeedWalletAction (mnemonic: string, password: string): ICr
   };
 }
 
-function createWalletWithAccount (
+function createWalletWithAccount(
   api: IApi,
   dispatch: Dispatch<any>,
   blockchain: BlockchainCode,
   walletName: string = '',
-  add: vault.AddEntry
-): { walletId: vault.Uuid, accountId: string } {
+  add: AddEntry
+): { walletId: Uuid, accountId: string } {
   const walletId = api.vault.addWallet(walletName);
   const accountId = api.vault.addEntry(walletId, add);
   const wallet = api.vault.getWallet(walletId)!;
@@ -141,7 +141,7 @@ function createWalletWithAccount (
 
   // dispatch(loadWalletsAction()); // reload only current wallet
   // loadAccountBalance(blockchain, account.address);
-  return { walletId, accountId };
+  return {walletId, accountId};
 }
 
 export function walletCreatedAction (wallet: any): IWalletCreatedAction {
@@ -178,7 +178,7 @@ export function createAccount (
 ): Dispatched<IWalletCreatedAction> {
   return (dispatch: any, getState, extra) => {
 
-    const addRequest: vault.AddEntry = {
+    const addRequest: AddEntry = {
       blockchain: blockchainCodeToId(blockchain),
       type: 'generate-random',
       password: passphrase
@@ -192,7 +192,7 @@ export function createAccount (
 
 export type CreateWalletOptions = {
   label?: string,
-  entry?: vault.AddEntry
+  entry?: AddEntry
 }
 
 export function createWallet(options: CreateWalletOptions,
@@ -212,20 +212,20 @@ export function createWallet(options: CreateWalletOptions,
   }
 }
 
-export function exportPrivateKey(passphrase: string, accountId: vault.EntryId): any {
+export function exportPrivateKey(passphrase: string, accountId: EntryId): any {
   return (dispatch: any, getState: any, extra: IExtraArgument) => {
     return extra.backendApi.exportRawPrivateKey(accountId, passphrase);
   };
 }
 
-export function exportKeyFile(accountId: vault.EntryId): any {
+export function exportKeyFile(accountId: EntryId): any {
   return (dispatch: any, getState: any, extra: IExtraArgument) => {
     return extra.backendApi.exportJsonKeyFile(accountId);
   };
 }
 
-export function updateWallet (
-  walletId: vault.Uuid, name: string
+export function updateWallet(
+  walletId: Uuid, name: string
 ): Dispatched<IUpdateWalletAction> {
   return async (dispatch: any, getState, extra) => {
     const result = await extra.backendApi.updateWallet(walletId, name);
@@ -323,7 +323,7 @@ export function importMnemonic (
     }
     const walletService = new WalletService(extra.api.vault);
     const seedId = walletService.importMnemonic(mnemonic, passphrase);
-    const addRequest: vault.AddEntry = {
+    const addRequest: AddEntry = {
       blockchain: blockchainCodeToId(blockchain),
       type: 'hd-path',
       key: {

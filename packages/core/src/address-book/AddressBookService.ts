@@ -1,6 +1,6 @@
-import { BlockchainCode } from '../blockchains';
-import { IVault } from '../vault';
-import AddressBookItem from './AddressBookItem';
+import {BlockchainCode} from '../blockchains';
+import {IVault} from '../vault';
+import {AddressBookItem} from "@emeraldpay/emerald-vault-core";
 
 export interface IAddressBookService {
   getItems: (blockchain: BlockchainCode) => AddressBookItem[];
@@ -10,7 +10,8 @@ export interface IAddressBookService {
 
 export class AddressBookService implements IAddressBookService {
   private vault: IVault;
-  constructor (vault: IVault) {
+
+  constructor(vault: IVault) {
     this.vault = vault;
   }
 

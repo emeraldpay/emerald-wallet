@@ -1,4 +1,3 @@
-import {Blockchains, Units, Wallet} from '@emeraldwallet/core';
 import {
   Button,
   Card,
@@ -14,6 +13,7 @@ import {connect} from "react-redux";
 import {accounts, IBalanceValue, IState, screen} from "@emeraldwallet/store";
 import {Dispatch} from "react";
 import {Hashicon} from "@emeraldpay/hashicon-react";
+import {Wallet} from '@emeraldpay/emerald-vault-core';
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({

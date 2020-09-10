@@ -1,6 +1,5 @@
-import * as vault from '@emeraldpay/emerald-vault-core';
 import {Wei} from '@emeraldplatform/eth';
-import {Account, BlockchainCode, Blockchains, Units, Wallet} from '@emeraldwallet/core';
+import {BlockchainCode, blockchainCodeToId, Blockchains, Units, blockchainIdToCode} from '@emeraldwallet/core';
 import {registry} from '@emeraldwallet/erc20';
 import BigNumber from 'bignumber.js';
 import {createSelector} from 'reselect';
@@ -8,7 +7,8 @@ import {settings, tokens} from '../index';
 import {IState} from '../types';
 import {BalanceValueConverted, IBalanceValue, moduleName} from './types';
 import * as accounts from "./index";
-import {SeedDescription} from "@emeraldpay/emerald-vault-core";
+import {SeedDescription, WalletEntry, Wallet, WalletOp, EthereumEntry, Uuid} from "@emeraldpay/emerald-vault-core";
+import {isEthereumEntry} from "@emeraldpay/emerald-vault-core/lib/types";
 
 const sum = (a: Wei | undefined, b: Wei | undefined) => (a || Wei.ZERO).plus(b || Wei.ZERO);
 
@@ -28,7 +28,7 @@ export const allWallets = (state: IState): Wallet[] => state[moduleName].wallets
 export const allAccounts = createSelector(
   [allWallets],
   (wallets) => {
-    return wallets.reduce((a: Account[], w) => a.concat(w.accounts), []);
+    return wallets.reduce((a: WalletEntry[], w) => a.concat(w.entries), []);
   }
 );
 
@@ -37,8 +37,8 @@ export const findAccount = (state: IState, accountId: string) => {
 };
 
 export const allAccountsByBlockchain = (state: IState, code: BlockchainCode) => {
-  const accounts: Account[] = allAccounts(state);
-  return accounts.filter((a: Account) => a.blockchain === code);
+  const accounts: WalletEntry[] = allAccounts(state);
+  return accounts.filter((a: WalletEntry) => blockchainIdToCode(a.blockchain) === code);
 };
 
 export function allAsArray (state: IState): Wallet[] {
@@ -60,15 +60,15 @@ export function findWalletByAddress (state: any, address: string, blockchain: Bl
   }
 
   return allWallets(state).find(
-    (wallet: Wallet) =>
-      wallet.accounts.some((a: Account) => a.address === address && a.blockchain === blockchain));
+    (wallet: Wallet) => WalletOp.of(wallet).findEntryByAddress(address, blockchainCodeToId(blockchain))
+  );
 }
 
 export function findAccountByAddress (state: any, address: string, chain: BlockchainCode): any {
   return null;
 }
 
-export function findWallet (state: IState, id: vault.Uuid): Wallet | undefined {
+export function findWallet(state: IState, id: Uuid): Wallet | undefined {
   return allWallets(state).find((w) => w.id === id);
 }
 
@@ -82,7 +82,7 @@ export function getBalance (state: IState, accountId: string, defaultValue?: Wei
 
 export function balanceByChain (state: IState, blockchain: BlockchainCode): Wei {
   return allAccountsByBlockchain(state, blockchain)
-    .map((account: Account) => getBalance(state, account.id, Wei.ZERO)!)
+    .map((account: WalletEntry) => getBalance(state, account.id, Wei.ZERO)!)
     .reduce(sum, Wei.ZERO);
 }
 
@@ -106,11 +106,11 @@ export function allBalances (state: IState): IBalanceValue[] {
  */
 export function getWalletBalances (state: IState, wallet: Wallet, includeEmpty: boolean): IBalanceValue[] {
   const assets: IBalanceValue[] = [];
-  const ethereumAccounts = wallet.accounts;
+  const ethereumAccounts = wallet.entries.filter((e) => isEthereumEntry(e)) as EthereumEntry[];
   [BlockchainCode.ETH, BlockchainCode.ETC, BlockchainCode.Kovan]
     .forEach((code) => {
       const blockchainAccounts = ethereumAccounts
-        .filter((account: Account) => account.blockchain === code);
+        .filter((account: EthereumEntry) => account.blockchain === blockchainCodeToId(code));
 
       const balance = blockchainAccounts
         .map((account) => getBalance(state, account.id, Wei.ZERO)!)
@@ -129,8 +129,8 @@ export function getWalletBalances (state: IState, wallet: Wallet, includeEmpty: 
       }
 
       supportedTokens.forEach((token) => {
-        blockchainAccounts.forEach((account: Account) => {
-          const balance = tokens.selectors.selectBalance(state, token.address, account.address!, code);
+        blockchainAccounts.forEach((account: WalletEntry) => {
+          const balance = tokens.selectors.selectBalance(state, token.address, account.address!.value, code);
           if (balance && (includeEmpty || balance.unitsValue !== '0')) {
             assets.push({
               token: token.symbol,
@@ -249,4 +249,8 @@ export function withFiatConversion (state: IState, assets: IBalanceValue[]): Bal
 
 export function getSeeds(state: IState): SeedDescription[] {
   return state[accounts.moduleName].seeds || []
+}
+
+export function getSeed(state: IState, id: Uuid): SeedDescription | undefined {
+  return getSeeds(state).find((seed) => seed.id === id)
 }

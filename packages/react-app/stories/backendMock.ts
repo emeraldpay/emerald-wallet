@@ -1,4 +1,4 @@
-import {AddressBookItem, AnyCoinCode, BlockchainCode, IApi, IBackendApi, IVault, Wallet} from "@emeraldwallet/core";
+import {AnyCoinCode, BlockchainCode, IApi, IBackendApi, IVault} from "@emeraldwallet/core";
 import {
   AddEntry,
   BlockchainType,
@@ -6,7 +6,9 @@ import {
   SeedDefinition,
   SeedDescription,
   SeedReference, UnsignedTx,
-  Uuid
+  Uuid,
+  AddressBookItem,
+  Wallet
 } from "@emeraldpay/emerald-vault-core";
 
 export class MemoryVault {

@@ -15,16 +15,22 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 import * as vault from '@emeraldpay/emerald-vault-core';
-import { AddressBookItem, BlockchainCode, ILogger, IVault, Logger, Wallet } from '@emeraldwallet/core';
-import {blockchainCodeToId, blockchainIdToCode} from './utils';
-import {BlockchainType, SeedDefinition, SeedReference, Uuid} from "@emeraldpay/emerald-vault-core";
+import {
+  AddressBookItem,
+  BlockchainType,
+  SeedDefinition,
+  SeedReference,
+  Uuid,
+  Wallet
+} from '@emeraldpay/emerald-vault-core';
+import {BlockchainCode, ILogger, IVault, Logger, blockchainCodeToId} from '@emeraldwallet/core';
 
 export class Vault implements IVault {
 
   public provider: vault.IEmeraldVault;
   private log: ILogger;
 
-  constructor (provider: vault.IEmeraldVault) {
+  constructor(provider: vault.IEmeraldVault) {
     this.provider = provider;
     this.log = Logger.forCategory('vault');
   }
@@ -34,22 +40,15 @@ export class Vault implements IVault {
     if (!result) {
       return undefined;
     }
-    return this.mapToCore(result);
+    return result;
   }
 
   public listWallets (): Wallet[] {
-    const result = this.provider.listWallets();
-    // Map vault entities to out core entities
-    return result.map((w) => this.mapToCore(w));
+    return this.provider.listWallets();
   }
 
   public addToAddressBook (item: AddressBookItem): boolean {
-    return this.provider.addToAddressBook({
-      address: item.address,
-      blockchain: blockchainCodeToId(item.blockchain),
-      description: item.description,
-      name: item.name
-    });
+    return this.provider.addToAddressBook(item);
   }
 
   public addWalletWithSeed (seedId: string, label: string | undefined): string {
@@ -67,13 +66,7 @@ export class Vault implements IVault {
   }
 
   public listAddressBook (blockchain: BlockchainCode): AddressBookItem[] {
-    const items = this.provider.listAddressBook(blockchainCodeToId(blockchain));
-    return items.map(
-      (item) => {
-        return new AddressBookItem(
-          blockchainIdToCode(item.blockchain),
-          item.address, item.name, item.description);
-      });
+    return this.provider.listAddressBook(blockchainCodeToId(blockchain));
   }
 
   public removeFromAddressBook(blockchain: BlockchainCode, address: string): boolean {
@@ -129,29 +122,4 @@ export class Vault implements IVault {
     return this.provider.listSeedAddresses(id, blockchain, hdpath)
   }
 
-  private mapToCore(w: vault.Wallet): Wallet {
-    const newWallet = new Wallet(w.id);
-    newWallet.name = w.name;
-    newWallet.accounts = w.entries.map((a: any) => {
-      return {
-        blockchain: blockchainIdToCode(a.blockchain),
-        id: a.id,
-        address: a.address,
-        seedId: (a.key as vault.SeedPKRef)?.seedId,
-        hdPath: (a.key as vault.SeedPKRef)?.hdPath,
-        isHardware: false
-      };
-    });
-    const seeds = this.provider.listSeeds();
-    newWallet.accounts
-      .filter((acc) => typeof acc.seedId == 'string')
-      .forEach((acc) => {
-        acc["isHardware"] = seeds.find((seed) => seed.id == acc.seedId)?.type == "ledger";
-      })
-    if (w.reserved && w.reserved.length > 0) {
-      newWallet.seedId = w.reserved[0].seedId;
-      newWallet.hdAccount = w.reserved[0].accountId;
-    }
-    return newWallet;
-  }
 }

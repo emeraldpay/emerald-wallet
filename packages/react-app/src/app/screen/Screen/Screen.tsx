@@ -4,14 +4,15 @@ import { CircularProgress } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import {
-  AddContact, BroadcastTx, ContactList as AddressBook, CreateTransaction,
-  ExportPaperWallet, Home, ImportLedgerAccount,
-  PaperWallet, Settings, TxDetails, WalletDetails, Welcome
+  AddContact, BroadcastTx, ContactList as AddressBook,
+  Home, ImportLedgerAccount,
+  Settings, TxDetails, WalletDetails, Welcome
 } from '../../../index';
 import CreateHdAccount from '../../../create-account/CreateHdAccount';
 import CreateWalletScreen from "../../../create-wallet/CreateWalletScreen";
 import ReceiveScreen from "../../../receive/ReceiveScreen";
 import SelectAccount from "../../../transaction/CreateTransaction/SelectAccount";
+import CreateTransaction from "../../../transaction/CreateTransaction";
 
 const log = Logger.forCategory('screen');
 
@@ -56,7 +57,7 @@ const Screen = (props: IScreenProps) => {
     return (<SelectAccount walletId={props.screenItem}/>);
   }
   if (props.screen === screen.Pages.CREATE_TX_ACCOUNT) {
-    return (<CreateTransaction account={props.screenItem}/>);
+    return (<CreateTransaction sourceEntry={props.screenItem}/>);
   }
   if (props.screen === 'broadcast-tx') {
     return <BroadcastTx tx={props.screenItem.tx} signed={props.screenItem.signed}/>;
@@ -72,12 +73,6 @@ const Screen = (props: IScreenProps) => {
   }
   if (props.screen === 'settings') {
     return <Settings />;
-  }
-  if (props.screen === 'paper-wallet') {
-    return <PaperWallet address={props.screenItem.address} privKey={props.screenItem.privKey} />;
-  }
-  if (props.screen === 'export-paper-wallet') {
-    return <ExportPaperWallet account={props.screenItem} />;
   }
   if (props.screen === screen.Pages.CREATE_HD_ACCOUNT) {
     return <CreateHdAccount walletId={props.screenItem}/>;

@@ -1,6 +1,7 @@
 import * as React from 'react';
 import EditContact from '../EditContact';
 import ShowContact from '../ShowContact';
+import {AddressBookItem} from '@emeraldpay/emerald-vault-core';
 
 const States = {
   SHOW: 'SHOW',
@@ -12,7 +13,7 @@ interface IState {
 }
 
 interface IProps {
-  address: string;
+  address: AddressBookItem;
 }
 
 class Contact extends React.Component<IProps, IState> {

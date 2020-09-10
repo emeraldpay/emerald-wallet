@@ -15,8 +15,8 @@ import {accounts, IBalanceValue, IState, screen} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
 import {Page} from "@emeraldplatform/ui";
 import {Back} from "@emeraldplatform/ui-icons";
-import {Uuid} from "@emeraldpay/emerald-vault-core";
-import {AnyCoinCode, AnyTokenCode, BlockchainCode, Blockchains, Wallet} from "@emeraldwallet/core";
+import {Uuid, Wallet} from "@emeraldpay/emerald-vault-core";
+import {AnyCoinCode, AnyTokenCode, BlockchainCode, Blockchains, blockchainIdToCode} from "@emeraldwallet/core";
 import {WalletReference} from "@emeraldwallet/ui";
 import {Address} from '@emeraldplatform/ui';
 import {useQRCode} from 'react-qrcode';
@@ -202,20 +202,21 @@ export default connect(
     const wallet = accounts.selectors.findWallet(state, ownProps.walletId)!;
     const assets: IBalanceValue[] = accounts.selectors.getWalletBalances(state, wallet, false);
     const accepted: Accept[] = [];
-    wallet.accounts.forEach((acc) => {
+    wallet.entries.forEach((acc) => {
       if (typeof acc.address == "undefined") {
         return
       }
+      const blockchain = blockchainIdToCode(acc.blockchain);
       accepted.push({
-        blockchain: acc.blockchain,
-        token: Blockchains[acc.blockchain].params.coinTicker,
-        addresses: [acc.address!]
+        blockchain,
+        token: Blockchains[blockchain].params.coinTicker,
+        addresses: [acc.address!.value]
       })
-      Blockchains[acc.blockchain].getAssets().forEach((token) => {
+      Blockchains[blockchain].getAssets().forEach((token) => {
         accepted.push({
-          blockchain: acc.blockchain,
+          blockchain,
           token,
-          addresses: [acc.address!]
+          addresses: [acc.address!.value]
         })
       })
     })

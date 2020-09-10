@@ -1,13 +1,18 @@
 import * as _ from 'lodash';
-import { moduleName } from './types';
+import {Contacts, moduleName} from './types';
+import {IState} from "../types";
+import {BlockchainCode} from "@emeraldwallet/core";
+import {AddressBookItem} from "@emeraldpay/emerald-vault-core/lib/types";
 
-export function all (state: any): any[] {
+export function all(state: IState): AddressBookItem[] {
   const book = state[moduleName];
-  const result: any[] = [];
-  _.keys(book.contacts).forEach((k) => {
-    _.keys(book.contacts[k]).forEach((c) => {
-      result.push(book.contacts[k][c]);
-    });
-  });
+  const result: AddressBookItem[] = [];
+  Object.keys(book.contacts)
+    .map((code) => code as BlockchainCode)
+    .forEach((code) => {
+      let contacts = book.contacts[code] as Contacts;
+      let items: AddressBookItem[] = Object.values(contacts);
+      result.push(...items)
+    })
   return result;
 }

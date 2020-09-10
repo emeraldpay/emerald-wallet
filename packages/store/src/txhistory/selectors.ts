@@ -1,14 +1,15 @@
-import { Units, Wei } from '@emeraldplatform/eth';
-import { List, Map } from 'immutable';
-import { createSelector } from 'reselect';
-import { IState } from '../types';
-import { TransactionMap, TransactionsList } from './types';
+import {Units, Wei} from '@emeraldplatform/eth';
+import {List, Map} from 'immutable';
+import {createSelector} from 'reselect';
+import {IState} from '../types';
+import {TransactionMap, TransactionsList} from './types';
+import {WalletEntry, WalletOp, AddressRefOp} from "@emeraldpay/emerald-vault-core";
 
-export function allTrackedTxs (state: IState): List<Map<string, any>> {
+export function allTrackedTxs(state: IState): List<Map<string, any>> {
   return state.history.get('trackedTransactions');
 }
 
-export function selectByHash (state: IState, hash: string): Map<string, any> {
+export function selectByHash(state: IState, hash: string): Map<string, any> {
   return allTrackedTxs(state)
     .find((tx: any) => tx.get('hash') === hash);
 }
@@ -22,11 +23,14 @@ function equalAddresses(a: string | undefined, b: string | undefined): boolean {
  * @param state
  * @param walletAccounts
  */
-export function getTransactions(state: IState, walletAccounts: any[]): TransactionsList {
+export function getTransactions(state: IState, walletAccounts: WalletEntry[]): TransactionsList {
   return allTrackedTxs(state)
     .filter((tx: any) =>
-      walletAccounts.some((a) =>
-        equalAddresses(a.address, tx.get('from')) || equalAddresses(a.address, tx.get('to'))))
+      walletAccounts
+        .filter((a) => a.address)
+        .map((a) => AddressRefOp.of(a.address!))
+        .some((a) => a.isSame(tx.get('from')) || a.isSame(tx.get('to')))
+    )
     .toList();
 }
 

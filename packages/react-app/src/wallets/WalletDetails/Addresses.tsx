@@ -5,7 +5,7 @@ import {Box, createStyles, Theme, Grid, TableHead, TableRow, TableCell, TableBod
 import {accounts, IState, tokens} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
 import {Unit, Wei} from "@emeraldplatform/eth";
-import {BlockchainCode, Blockchains, Units, Wallet} from "@emeraldwallet/core";
+import {BlockchainCode, blockchainIdToCode, Blockchains, Units} from "@emeraldwallet/core";
 import {Balance} from "@emeraldwallet/ui";
 import {Address} from '@emeraldplatform/ui';
 import {Uuid} from "@emeraldpay/emerald-vault-core";
@@ -85,15 +85,15 @@ export default connect(
   (state: IState, ownProps: OwnProps): Props => {
     const wallet = accounts.selectors.findWallet(state, ownProps.walletId)!
     const addresses: AddressInfo[] = [];
-    wallet.accounts.forEach((account) => {
+    wallet.entries.forEach((account) => {
       const address: AddressInfo = {
-        address: account.address || "unknown",
-        blockchain: account.blockchain,
+        address: account.address?.value || "unknown",
+        blockchain: blockchainIdToCode(account.blockchain),
         balances: []
       };
       const balance = accounts.selectors.getBalance(state, account.id, Wei.ZERO) || Wei.ZERO;
       address.balances.push({balance, token: address.blockchain.toUpperCase()});
-      (tokens.selectors.selectBalances(state, account.address!, account.blockchain) || [])
+      (tokens.selectors.selectBalances(state, account.address!.value, blockchainIdToCode(account.blockchain)) || [])
         .map((token) => {
           return {balance: new Units(token.unitsValue, token.decimals), token: token.symbol}
         })

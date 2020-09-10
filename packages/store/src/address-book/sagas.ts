@@ -1,18 +1,22 @@
-import { AddressBookItem, IBackendApi } from '@emeraldwallet/core';
-import { all, call, put, takeEvery } from 'redux-saga/effects';
+import {IBackendApi} from '@emeraldwallet/core';
+import {all, call, put, takeEvery} from 'redux-saga/effects';
 import * as screen from '../screen';
-import { contactDeletedAction, newContactAddedAction, setAddressBook } from './actions';
-import { ActionTypes, AddContactAction, DeleteContactAction, ILoadContactsAction } from './types';
+import {contactDeletedAction, newContactAddedAction, setAddressBook} from './actions';
+import {ActionTypes, AddContactAction, DeleteContactAction, ILoadContactsAction} from './types';
+import {AddressBookItem} from '@emeraldpay/emerald-vault-core';
 
-function* loadAddresses (backendApi: IBackendApi, action: ILoadContactsAction) {
+function* loadAddresses(backendApi: IBackendApi, action: ILoadContactsAction) {
   const chain = action.payload;
   const items: AddressBookItem[] = yield call(backendApi.getAddressBookItems, chain);
   yield put(setAddressBook(chain, items));
 }
 
-function* addContact (backend: IBackendApi, action: AddContactAction) {
-  const { address, name, description, blockchain } = action.payload;
-  const newContact = new AddressBookItem(blockchain, address, description, name);
+function* addContact(backend: IBackendApi, action: AddContactAction) {
+  const {address, name, description, blockchain} = action.payload;
+  const newContact: AddressBookItem = {
+    createdAt: new Date(),
+    blockchain, address, description, name
+  };
 
   const result = yield call(backend.addAddressBookItem, newContact);
 

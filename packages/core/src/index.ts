@@ -5,6 +5,7 @@ export {
   blockchainByName,
   ethereumByChainId,
   blockchainCodeToId,
+  blockchainIdToCode,
   blockchainById,
   CoinTickerCode
 } from './blockchains';
@@ -47,7 +48,6 @@ export {IStoredTransaction} from './history/IStoredTransaction';
 export { default as WalletService } from './WalletService';
 
 // address book core
-export { default as AddressBookItem } from './address-book/AddressBookItem';
 export { AddressBookService, IAddressBookService } from './address-book/AddressBookService';
 
 // emerald client
@@ -62,10 +62,6 @@ export { default as IVault } from './vault/IVault';
 export { default as Logger } from './logging/Logger';
 export { default as ILogger } from './logging/ILogger';
 export { default as DefaultLogger } from './logging/DefaultLogger';
-
-// core entities
-export { default as Account } from './entities/Account';
-export { default as Wallet } from './entities/Wallet';
 
 // backend
 export { default as IBackendApi } from './backend/IBackendApi';

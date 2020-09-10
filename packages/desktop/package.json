@@ -56,14 +56,6 @@
     "url": "https://github.com/emeraldpay/emerald-wallet/issues"
   },
   "homepage": "https://github.com/emeraldpay/emerald-wallet",
-  "workspaces": {
-    "nohoist": [
-      "electron-rebuild",
-      "electron-rebuild/**",
-      "electron-builder",
-      "electron-builder/**"
-    ]
-  },
   "dependencies": {
     "@emeraldplatform/contracts": "0.5.1",
     "@emeraldplatform/core": "0.5.8",

@@ -1,4 +1,3 @@
-import {Account, Wallet} from '@emeraldwallet/core';
 import {accounts, IState, screen} from '@emeraldwallet/store';
 import * as React from 'react';
 import {connect} from 'react-redux';
@@ -14,6 +13,8 @@ import {InlineEdit} from "@emeraldwallet/ui";
 import WalletMenu from "../WalletList/WalletMenu";
 import {Hashicon} from "@emeraldpay/hashicon-react";
 import {Alert} from '@material-ui/lab';
+import {Wallet} from '@emeraldpay/emerald-vault-core';
+import {EthereumEntry, isEthereumEntry, WalletEntry} from "@emeraldpay/emerald-vault-core/lib/types";
 
 export interface IOwnProps {
   walletId: string;
@@ -71,7 +72,8 @@ const Component = (({wallet, goBack, updateWallet, onReceive, onSend}: Props & A
   }
 
   function actionsMenu() {
-    if (wallet.seedId) {
+    let hasHDAccount = wallet.reserved && wallet.reserved.length > 0;
+    if (hasHDAccount) {
       return (<WalletMenu walletId={wallet.id}/>);
     }
     return null;
@@ -117,15 +119,17 @@ const Component = (({wallet, goBack, updateWallet, onReceive, onSend}: Props & A
         <Hashicon value={"WALLET/" + wallet.id} size={100}/>
       </Grid>
       <Grid item={true} xs={7}>
-        {wallet.accounts.map(
-          (account: Account) => (
-            <EthereumAccountItem
-              walletId={wallet.id}
-              account={account}
-              key={account.id}
-            />
-          )
-        )}
+        {wallet.entries
+          //TODO not for bitcoin
+          .filter((acc) => isEthereumEntry(acc))
+          .map((account: WalletEntry) => (
+              <EthereumAccountItem
+                walletId={wallet.id}
+                account={account as EthereumEntry}
+                key={account.id}
+              />
+            )
+          )}
       </Grid>
       <Grid item={true} xs={3} className={styles.actions}>
         <Button variant={"contained"}

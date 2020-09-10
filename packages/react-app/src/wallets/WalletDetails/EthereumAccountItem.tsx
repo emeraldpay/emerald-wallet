@@ -1,5 +1,5 @@
 import {Wei} from '@emeraldplatform/eth';
-import {Account, BlockchainCode, Blockchains, Units} from '@emeraldwallet/core';
+import {BlockchainCode, blockchainIdToCode, Blockchains, Units} from '@emeraldwallet/core';
 import {accounts, IState, screen, tokens} from '@emeraldwallet/store';
 import {Button, CoinAvatar} from '@emeraldwallet/ui';
 import {Box, createStyles, Grid, Theme, Typography, withStyles} from '@material-ui/core';
@@ -9,6 +9,7 @@ import AccountBalance from '../../common/Balance';
 import {ITokenBalance} from "@emeraldwallet/store/lib/tokens/types";
 import {makeStyles} from "@material-ui/core/styles";
 import {Dispatch} from "react";
+import {EthereumEntry} from "@emeraldpay/emerald-vault-core/lib/types";
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
@@ -91,16 +92,16 @@ interface Actions {
 
 // Component properties
 interface OwnProps {
-  account: Account;
+  account: EthereumEntry;
   walletId: string;
 }
 
 export default connect(
   (state: IState, ownProps: OwnProps): Props => {
     const {account} = ownProps;
-    const blockchainCode = account.blockchain;
+    const blockchainCode = blockchainIdToCode(account.blockchain);
     const balance = accounts.selectors.getBalance(state, account.id, Wei.ZERO) || Wei.ZERO;
-    const tokensBalances = tokens.selectors.selectBalances(state, account.address!, blockchainCode) || [];
+    const tokensBalances = tokens.selectors.selectBalances(state, account.address!.value, blockchainCode) || [];
 
     return {
       tokensBalances,

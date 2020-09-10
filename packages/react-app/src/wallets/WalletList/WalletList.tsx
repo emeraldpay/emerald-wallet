@@ -1,9 +1,9 @@
-import { Wallet } from '@emeraldwallet/core';
 import { accounts, IState, screen } from '@emeraldwallet/store';
 import { Grid, withStyles } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import WalletItem from './WalletItem';
+import {Wallet} from '@emeraldpay/emerald-vault-core';
 
 const styles = (theme: any) => ({
   container: {

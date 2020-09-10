@@ -145,9 +145,9 @@ export default connect(
     return {
       disabledAccounts: ownProps.seed.type == "id" ?
         accounts.selectors.allWallets(state)
-          .filter((w) => typeof w.hdAccount == 'number' && typeof w.seedId != 'undefined')
-          .filter((w) => ownProps.seed.type == "id" && w.seedId == ownProps.seed.value)
-          .map((w) => w.hdAccount!)
+          .filter((w) => typeof w.reserved !== 'undefined')
+          .map((w) => w.reserved!.map((r) => r.accountId))
+          .reduce((result, c) => result.concat(c))
         : [],
       table: hdpathPreview.selectors.getCurrentDisplay(state, ownProps.seed)
         .filter((item) => ownProps.blockchains.indexOf(item.blockchain) >= 0)

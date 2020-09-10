@@ -1,5 +1,3 @@
-import * as vault from '@emeraldpay/emerald-vault-core';
-import { Wallet } from '@emeraldwallet/core';
 import produce from 'immer';
 import {
   AccountDetails,
@@ -13,6 +11,8 @@ import {
   IWalletCreatedAction,
   IWalletsLoaded, IHdAccountCreated, ISetSeedsAction
 } from './types';
+import {Wallet, Uuid, EntryId, AddressRefOp} from '@emeraldpay/emerald-vault-core';
+import {blockchainCodeToId} from "@emeraldwallet/core";
 
 export const INITIAL_STATE: IAccountsState = {
   wallets: [],
@@ -21,7 +21,7 @@ export const INITIAL_STATE: IAccountsState = {
   seeds: []
 };
 
-function onLoading (state: IAccountsState, action: ISetLoadingAction): IAccountsState {
+function onLoading(state: IAccountsState, action: ISetLoadingAction): IAccountsState {
   return {
     ...state,
     loading: action.payload
@@ -38,19 +38,19 @@ function onWalletsLoaded (state: IAccountsState, action: IWalletsLoaded): IAccou
 
 type Updater<T> = (source: T) => T;
 
-function updateWallet (state: IAccountsState, walletId: vault.Uuid, f: Updater<Wallet>): IAccountsState {
+function updateWallet(state: IAccountsState, walletId: Uuid, f: Updater<Wallet>): IAccountsState {
   const wallets = state.wallets.map((wallet) => {
     if (wallet.id === walletId) {
-      return f({ ...wallet });
+      return f({...wallet});
     } else {
       return wallet;
     }
   });
-  return { ...state, wallets };
+  return {...state, wallets};
 }
 
-function updateAccountDetails (
-  state: IAccountsState, accountId: vault.EntryId, f: Updater<AccountDetails>
+function updateAccountDetails(
+  state: IAccountsState, accountId: EntryId, f: Updater<AccountDetails>
 ): IAccountsState {
 
   return produce(state, (draft) => {
@@ -72,12 +72,12 @@ function updateAccountDetails (
 
 function onSetBalance(state: IAccountsState, action: ISetBalanceAction): IAccountsState {
   const {address, blockchain, value} = action.payload;
-
+  let blockchainId = blockchainCodeToId(blockchain);
   let updatedState = state;
   // Find account id by address and blockchain and update balance
   state.wallets.forEach((w) => {
-    w.accounts
-      .filter((a) => a.address === address && a.blockchain === blockchain)
+    w.entries
+      .filter((a) => a.address && AddressRefOp.of(a.address).isSame(address) && a.blockchain === blockchainId)
       .forEach((foundAcc) => {
         updatedState = updateAccountDetails(updatedState, foundAcc.id, (account) => {
           account.balance = value;
@@ -104,14 +104,7 @@ function onWalletCreated (state: IAccountsState, action: IWalletCreatedAction): 
     // already exists
     return state;
   }
-  const addition: Wallet = {
-    seedId: wallet.seedId,
-    hdAccount: wallet.hdAccount,
-    id: wallet.id,
-    name: wallet.name,
-    accounts: wallet.accounts
-  };
-  const wallets = state.wallets.concat([addition]);
+  const wallets = state.wallets.concat([wallet]);
   return { ...state, wallets };
 }
 
@@ -125,7 +118,7 @@ function onSetTxCount (state: any, action: ISetTxCountAction) {
 function onHdAccountCreated(state: IAccountsState, action: IHdAccountCreated) {
   const {walletId, account} = action.payload;
   return updateWallet(state, walletId, (wallet) => {
-    wallet.accounts.push(account);
+    wallet.entries.push(account);
     return wallet;
   });
 }

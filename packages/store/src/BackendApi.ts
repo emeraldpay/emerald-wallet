@@ -1,14 +1,12 @@
 
 import {
-  AddressBookItem,
   BlockchainCode,
   Commands,
   IBackendApi,
-  Wallet,
   AnyCoinCode
 } from '@emeraldwallet/core';
 import {ipcRenderer} from 'electron';
-import {SeedDescription} from "@emeraldpay/emerald-vault-core";
+import {SeedDescription, Wallet, AddressBookItem} from "@emeraldpay/emerald-vault-core";
 
 /**
  * This backend api implementation calls electron IPC for business logic
