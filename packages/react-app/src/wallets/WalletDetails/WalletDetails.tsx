@@ -14,7 +14,8 @@ import WalletMenu from "../WalletList/WalletMenu";
 import {Hashicon} from "@emeraldpay/hashicon-react";
 import {Alert} from '@material-ui/lab';
 import {Wallet} from '@emeraldpay/emerald-vault-core';
-import {EthereumEntry, isEthereumEntry, WalletEntry} from "@emeraldpay/emerald-vault-core/lib/types";
+import {isBitcoinEntry, isEthereumEntry, WalletEntry} from "@emeraldpay/emerald-vault-core";
+import BitcoinAccountItem from "./BitcoinAccountItem";
 
 export interface IOwnProps {
   walletId: string;
@@ -109,6 +110,27 @@ const Component = (({wallet, goBack, updateWallet, onReceive, onSend}: Props & A
     </PageTitle>
   );
 
+  const renderEntry = (entry: WalletEntry) => {
+    if (isBitcoinEntry(entry)) {
+      return <BitcoinAccountItem
+        walletId={wallet.id}
+        account={entry}
+        key={entry.id}
+      />
+    }
+
+    if (isEthereumEntry(entry)) {
+      return <EthereumAccountItem
+        walletId={wallet.id}
+        account={entry}
+        key={entry.id}
+      />
+    }
+
+    console.warn("Unsupported entry type: ", wallet.id);
+    return <Box/>
+  }
+
   return <Page
     title={renderTitle()}
     leftIcon={<Back onClick={goBack}/>}
@@ -119,17 +141,7 @@ const Component = (({wallet, goBack, updateWallet, onReceive, onSend}: Props & A
         <Hashicon value={"WALLET/" + wallet.id} size={100}/>
       </Grid>
       <Grid item={true} xs={7}>
-        {wallet.entries
-          //TODO not for bitcoin
-          .filter((acc) => isEthereumEntry(acc))
-          .map((account: WalletEntry) => (
-              <EthereumAccountItem
-                walletId={wallet.id}
-                account={account as EthereumEntry}
-                key={account.id}
-              />
-            )
-          )}
+        {wallet.entries.map(renderEntry)}
       </Grid>
       <Grid item={true} xs={3} className={styles.actions}>
         <Button variant={"contained"}

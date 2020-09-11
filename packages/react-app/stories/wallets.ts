@@ -45,6 +45,34 @@ const wallet2: Wallet = {
   createdAt: new Date()
 };
 
+const wallet3: Wallet = {
+  id: "f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4",
+  name: "Another Wallet",
+  reserved: [
+    {seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4", accountId: 3}
+  ],
+  entries: [
+    {
+      key: {type: "seed-hd", seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4", hdPath: "m/44'"},
+      address: {type: "single", value: "0x9d8e3fed246384e726b5962577503b916fb246d7"},
+      blockchain: 100,
+      id: "f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-1",
+      createdAt: new Date()
+    },
+    {
+      key: {type: "seed-hd", seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4", hdPath: "m/84'"},
+      address: {
+        type: "xpub",
+        value: "xpub6BgCEvexAQAXet52WJAnKWRA3wsM4XUZVL5TcYBX5M35tLrLvwewsvQbGDSmuAbFGWpSD6kQpiU5mfwFZqTwdqqtbXwZFp9bdEhfv4eNsLH"
+      },
+      blockchain: 1,
+      id: "f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-3",
+      createdAt: new Date()
+    },
+  ],
+  createdAt: new Date()
+};
+
 export const setBalances = [
   accounts.actions.setBalanceAction({
     address: "0x9d8e3fed246384e726b5962577503b916fb246d7",
@@ -72,9 +100,15 @@ export const setBalances = [
 
 export const createWallets = [
   accounts.actions.setWalletsAction([
-    wallet1, wallet2
+    wallet1, wallet2, wallet3
   ])
 ];
 export const setup = [
-  settings.actions.setRatesAction({"ETH": "205.1761", "ETC": "5.234", "DAI": "1.001", "USDT": "0.9985"})
+  settings.actions.setRatesAction({
+    "ETH": "205.1761",
+    "ETC": "5.234",
+    "DAI": "1.001",
+    "USDT": "0.9985",
+    "BTC": "11407.35"
+  })
 ]

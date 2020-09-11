@@ -47,7 +47,9 @@ export const registry = {
         symbol: 'WEENUS'
       }
     ],
-    [BlockchainCode.Unknown]: []
+    [BlockchainCode.Unknown]: [],
+    [BlockchainCode.BTC]: [],
+    [BlockchainCode.TestBTC]: [],
   }),
   all: () => {
     return registry.tokens;

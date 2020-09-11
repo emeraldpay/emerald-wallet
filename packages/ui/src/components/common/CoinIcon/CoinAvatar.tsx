@@ -6,7 +6,9 @@ import classNames from "classnames";
 
 const colors = {
   eth: '#627eea',
-  etc: '#00c957'
+  etc: '#00c957',
+  btc: '#ff9900',
+  testbtc: '#9a7e55'
 };
 
 const useStyles = makeStyles((theme: Theme) =>
@@ -16,6 +18,12 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     etc: {
       backgroundColor: colors.etc
+    },
+    btc: {
+      backgroundColor: colors.btc
+    },
+    testbtc: {
+      backgroundColor: colors.testbtc
     },
     defaultSize: {},
     smallSize: {

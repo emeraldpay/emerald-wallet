@@ -1,49 +1,66 @@
 import {CurrencyBtc, CurrencyEtc, CurrencyEth, CurrencyUsd, CurrencyUsdt} from '@emeraldplatform/ui-icons';
 import * as React from 'react';
-import {createStyles, makeStyles} from "@material-ui/core/styles";
-import {Theme} from "@material-ui/core";
+import {createStyles, Theme, Typography} from "@material-ui/core";
+import {makeStyles} from "@material-ui/core/styles";
 
 interface ICoinIconProps {
   chain: string;
   size?: "small" | "large" | "default" | undefined;
 }
 
-const styles = {
-  defaultSize: {
-    fill: "none"
-  },
-  smallSize: {
-    fill: "none",
-    fontSize: "0.5em",
-  },
-  largeSize: {
-    fill: "none",
-    fontSize: "1.2em",
-  },
-};
+const useStyles = makeStyles<Theme>((theme) =>
+  createStyles({
+    defaultSize: {
+      fill: "none"
+    },
+    smallSize: {
+      fill: "none",
+      fontSize: "0.5em",
+    },
+    largeSize: {
+      fill: "none",
+      fontSize: "1.2em",
+    },
+    testnet: {
+      fontSize: "0.4em",
+      color: "#f0f0f0",
+    },
+    onlyText: {
+      color: "#f0f0f0",
+    }
+  })
+);
 
 const CoinIcon = (props: ICoinIconProps) => {
-  // const styles = useStyles();
+  const styles = useStyles();
   const fontSize = props.size || "default";
-  const style = styles[fontSize + "Size"];
+  const currentClassName = styles[fontSize + "Size"];
+  const code = props.chain.toUpperCase();
 
-  if (props.chain.toUpperCase() === 'BTC') {
-    return (<CurrencyBtc style={style}/>);
+  if (code === 'BTC') {
+    return (<CurrencyBtc className={currentClassName}/>);
   }
-  if (props.chain.toUpperCase() === 'ETH') {
-    return (<CurrencyEth style={style}/>);
+  if (code === 'ETH') {
+    return (<CurrencyEth className={currentClassName}/>);
   }
-  if (props.chain.toUpperCase() === 'ETC') {
-    return (<CurrencyEtc style={style}/>);
+  if (code === 'ETC') {
+    return (<CurrencyEtc className={currentClassName}/>);
   }
-  if (props.chain.toUpperCase() === 'USD') {
-    return (<CurrencyUsd style={style}/>);
+  if (code === 'USD') {
+    return (<CurrencyUsd className={currentClassName}/>);
   }
-  if (props.chain.toUpperCase() === 'USDT') {
-    return (<CurrencyUsdt style={style}/>);
+  if (code === 'USDT') {
+    return (<CurrencyUsdt className={currentClassName}/>);
   }
-  if (props.chain.toUpperCase() === 'KOVAN') {
-    return (<React.Fragment>K</React.Fragment>);
+  if (code === 'DAI') {
+    //TODO use icon
+    return (<Typography className={currentClassName + " " + styles.onlyText}>DAI</Typography>);
+  }
+  if (code === 'KOVAN') {
+    return (<Typography className={styles.testnet}>Kovan</Typography>);
+  }
+  if (code === 'TESTBTC') {
+    return (<Typography className={styles.testnet}>Testnet</Typography>);
   }
   return null;
 };

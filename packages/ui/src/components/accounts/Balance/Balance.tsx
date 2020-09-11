@@ -63,7 +63,7 @@ const Component = ((props: OwnProps) => {
   let fiatAmount = null;
   let coinsStr = null;
   let coins;
-  if (typeof balance === 'string') {
+  if (typeof balance === 'string' || typeof balance === 'number') {
     coins = fromBaseUnits(new BigNumber(balance), decimals);
     if (showFiat && fiatRate && fiatCurrency) {
       fiatAmount = Currency.format(
@@ -86,12 +86,13 @@ const Component = ((props: OwnProps) => {
     }
     coins = value.dividedBy(new BigNumber(10).pow(valueDecimals));
   }
-  coinsStr = coins.toFormat(displayDecimals || decimals);
+  const hasBalance = typeof balance != 'undefined' && typeof coins != 'undefined';
+  coinsStr = coins?.toFormat(displayDecimals || decimals);
 
   return (
     <div className={styles.root + " " + classes?.root}>
       <Typography className={styles.coins + " " + classes?.coins}>
-        <span className={styles.coinBalance + " " + classes?.coinBalance}>{balance ? coinsStr : '-'}</span>
+        <span className={styles.coinBalance + " " + classes?.coinBalance}>{hasBalance ? coinsStr : '-'}</span>
         <span className={styles.coinSymbol + " " + classes?.coinSymbol}>{symbol}</span>
       </Typography>
       {fiatAmount && <br/>}
