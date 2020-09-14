@@ -59,7 +59,7 @@ export enum ActionTypes {
 export interface ILoadAddresses {
   type: ActionTypes.LOAD_ADDRESSES;
   seed: SeedReference;
-  hdpath: string;
+  account: number;
   blockchains: BlockchainCode[];
 }
 

@@ -9,11 +9,11 @@ import {
 import {AnyCoinCode, BlockchainCode} from "@emeraldwallet/core";
 import {SeedReference} from "@emeraldpay/emerald-vault-core";
 
-export function loadAddresses(seed: SeedReference, hdpath: string, blockchains: BlockchainCode[]): ILoadAddresses {
+export function loadAddresses(seed: SeedReference, account: number, blockchains: BlockchainCode[]): ILoadAddresses {
   return {
     type: ActionTypes.LOAD_ADDRESSES,
     seed,
-    hdpath,
+    account,
     blockchains
   }
 }

@@ -147,7 +147,7 @@ export default connect(
         accounts.selectors.allWallets(state)
           .filter((w) => typeof w.reserved !== 'undefined')
           .map((w) => w.reserved!.map((r) => r.accountId))
-          .reduce((result, c) => result.concat(c))
+          .reduce((result, c) => result.concat(c), [])
         : [],
       table: hdpathPreview.selectors.getCurrentDisplay(state, ownProps.seed)
         .filter((item) => ownProps.blockchains.indexOf(item.blockchain) >= 0)
@@ -159,7 +159,7 @@ export default connect(
         dispatch(hdpathPreview.actions.displayAccount(account));
         dispatch(hdpathPreview.actions.loadAddresses(
           ownProps.seed,
-          BASE_HD_PATH.forAccount(account).toString(),
+          account,
           ownProps.blockchains
         ));
         ownProps.onChange(account);

@@ -267,6 +267,7 @@ export class BackendMock implements IBackendApi {
   }
 
   listSeedAddresses(seedId: Uuid, password: string, blockchain: BlockchainCode, hdpaths: string[]): Promise<Record<string, string>> {
+    console.log("list seed", seedId, password, blockchain, hdpaths);
     if (typeof this.vault.passwords[seedId] == 'string') {
       const expectedPassword = this.vault.passwords[seedId];
       console.log("Password", seedId, expectedPassword, password);

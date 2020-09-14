@@ -10,7 +10,7 @@ export class Bitcoin implements IBlockchain {
   }
 
   getAssets(): AnyCoinCode[] {
-    return [];
+    return [this.params.coinTicker];
   }
 
   getTitle(): string {
