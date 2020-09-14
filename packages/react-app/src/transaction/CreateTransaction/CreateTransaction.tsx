@@ -401,7 +401,7 @@ export default connect(
       token: blockchain.params.coinTicker,
       txFeeSymbol,
       data: ownProps.data,
-      selectedFromAddress: sourceEntry.address!.value,
+      selectedFromAddress: sourceEntry.address!.value, //TODO not for bitcoin
       getBalanceForAddress: (address: string, token: any): IUnits => {
         if (blockchain.params.coinTicker !== token) {
           const tokenInfo = registry.bySymbol(blockchain.params.code, token);

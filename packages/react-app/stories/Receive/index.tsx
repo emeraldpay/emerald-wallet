@@ -17,4 +17,7 @@ storiesOf('Receive', module)
   .add('wallet 2', () => (
     <ReceiveScreen walletId={'1022fd13-3431-4f3b-bce8-109fdab15873'}/>
   ))
+  .add('wallet 3', () => (
+    <ReceiveScreen walletId={'f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4'}/>
+  ))
 ;

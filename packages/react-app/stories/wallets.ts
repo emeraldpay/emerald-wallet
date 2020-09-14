@@ -60,11 +60,15 @@ const wallet3: Wallet = {
       createdAt: new Date()
     },
     {
-      key: {type: "seed-hd", seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4", hdPath: "m/84'"},
+      // seed: lake cupboard yellow project spoil era educate behind move slide fluid early purpose stone panel
+      key: {type: "seed-hd", seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4", hdPath: "m/84'/0'/3'/0/0"},
       address: {
         type: "xpub",
-        value: "xpub6BgCEvexAQAXet52WJAnKWRA3wsM4XUZVL5TcYBX5M35tLrLvwewsvQbGDSmuAbFGWpSD6kQpiU5mfwFZqTwdqqtbXwZFp9bdEhfv4eNsLH"
+        value: "zpub6trp3XEQXBogyby8NUy5xg5qykZAMnC7e4apsn1kNXhtGs3TKVpKS8P4DXMKuy56yKkLwgAYnWsMd9PzGnTdWAHoiwvRLwfAZ58ajkbVudW"
       },
+      addresses: [
+        {role: "receive", hdPath: "m/84'/0'/3'/0/2", address: "bc1qa2s34p38jyuen859slf28nnvccauk6xuwqzug4"}
+      ],
       blockchain: 1,
       id: "f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-3",
       createdAt: new Date()

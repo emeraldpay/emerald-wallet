@@ -4,14 +4,13 @@ import {Dispatch} from "react";
 import {Box, createStyles, Grid, Theme, Button} from "@material-ui/core";
 import {accounts, IBalanceValue, IState, screen, tokens} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
-import {Uuid, Wallet} from "@emeraldpay/emerald-vault-core";
+import {Uuid, Wallet, WalletEntry, isEthereumEntry} from "@emeraldpay/emerald-vault-core";
 import {Units, blockchainIdToCode} from "@emeraldwallet/core";
 import {Wei} from "@emeraldplatform/eth";
 import {CoinAvatar, WalletReference} from "@emeraldwallet/ui";
 import AccountBalance from '../../common/Balance';
 import {Address, Page} from "@emeraldplatform/ui";
 import {Back} from "@emeraldplatform/ui-icons";
-import {WalletEntry} from "@emeraldpay/emerald-vault-core";
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
@@ -44,7 +43,7 @@ const Component = (({balances, wallet, allAssets, onCancel, onSelected}: Props &
               <CoinAvatar chain={blockchainIdToCode(accountBalance.account.blockchain)}/>
             </Grid>
             <Grid item={true} xs={6}>
-              <Address id={accountBalance.account.address!.value}/>
+              <Address id={accountBalance.account.address?.value || accountBalance.account.id}/>
             </Grid>
             <Grid item={true} xs={4}>
               <AccountBalance
@@ -111,10 +110,14 @@ export default connect(
     const wallet = accounts.selectors.findWallet(state, ownProps.walletId)!;
     const allAssets: IBalanceValue[] = accounts.selectors.getWalletBalances(state, wallet, false);
     const balances: AccountBalance[] = wallet.entries.map((account) => {
+      let tokenBalances: tokens.ITokenBalance[] = []
+      if (isEthereumEntry(account)) {
+        tokenBalances = tokens.selectors.selectBalances(state, account.address!.value, blockchainIdToCode(account.blockchain)) || [];
+      }
       return {
         account,
         balance: accounts.selectors.getBalance(state, account.id, Wei.ZERO) || Wei.ZERO,
-        tokens: tokens.selectors.selectBalances(state, account.address!.value, blockchainIdToCode(account.blockchain)) || []
+        tokens: tokenBalances
       }
     })
     return {

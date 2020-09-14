@@ -23,6 +23,7 @@ import {useQRCode} from 'react-qrcode';
 import {registry} from "@emeraldwallet/erc20";
 import {clipboard} from 'electron';
 import LibraryAddCheckIcon from '@material-ui/icons/LibraryAddCheck';
+import {CurrentAddress, isBitcoinEntry, isEthereumEntry} from "@emeraldpay/emerald-vault-core";
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
@@ -203,21 +204,27 @@ export default connect(
     const assets: IBalanceValue[] = accounts.selectors.getWalletBalances(state, wallet, false);
     const accepted: Accept[] = [];
     wallet.entries.forEach((acc) => {
-      if (typeof acc.address == "undefined") {
+      let address: string | undefined = undefined;
+      if (isEthereumEntry(acc)) {
+        address = acc.address?.value
+      } else if (isBitcoinEntry(acc)) {
+        address = acc.addresses.find((a: CurrentAddress) => a.role = "receive")?.address;
+      }
+      if (typeof address == "undefined") {
         return
       }
       const blockchain = blockchainIdToCode(acc.blockchain);
       accepted.push({
         blockchain,
         token: Blockchains[blockchain].params.coinTicker,
-        addresses: [acc.address!.value]
-      })
+        addresses: [address]
+      });
       Blockchains[blockchain].getAssets().forEach((token) => {
         accepted.push({
           blockchain,
           token,
-          addresses: [acc.address!.value]
-        })
+          addresses: [address!]
+        });
       })
     })
     return {
