@@ -28,4 +28,6 @@ export interface IStoredTransaction {
   since?: string | Date;
   discarded?: boolean;
   broadcasted?: boolean;
+
+  totalRetries?: number | undefined;
 }

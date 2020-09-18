@@ -1138,6 +1138,21 @@
     global-agent "^2.0.2"
     global-tunnel-ng "^2.7.1"
 
+"@emeraldpay/bigamount-crypto@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/bigamount-crypto/-/bigamount-crypto-0.1.0.tgz#f924472962811460477709b3dd93971031cb39eb"
+  integrity sha512-eFl932KlpBREpfOyvKSAhsUw/gyobCpqrIBcfbg8UlyICcWK1DgGjU41zIJZWjFyWLqiUy/lv0jHTZPCmOBTxw==
+  dependencies:
+    "@emeraldpay/bigamount" "0.1.0"
+    bignumber.js "^8.0.2"
+
+"@emeraldpay/bigamount@0.1.0", "@emeraldpay/bigamount@^0.1.0":
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/bigamount/-/bigamount-0.1.0.tgz#896c5fd1d6f62df0e322c9ee7e0fee151362f024"
+  integrity sha512-iFsFhWEERhU7dJC9tOQqrf6/Q3b9Xw3rq5z93z9eY8/gCKdaGU0fAHjJeHDzdMRL18OGMH6iJrHWSaUG6AIkEQ==
+  dependencies:
+    bignumber.js "^8.0.2"
+
 "@emeraldpay/emerald-vault-core@0.5.2", "@emeraldpay/emerald-vault-core@^0.5.2":
   version "0.5.2"
   resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-core/-/emerald-vault-core-0.5.2.tgz#f63fa411f68457d71c4e5d490a485c8eb848c56e"
@@ -6178,6 +6193,11 @@ big.js@^5.2.2:
   integrity sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==
 
 bignumber.js@8.0.2:
+  version "8.0.2"
+  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-8.0.2.tgz#d8c4e1874359573b1ef03011a2d861214aeef137"
+  integrity sha512-EiuvFrnbv0jFixEQ9f58jo7X0qI2lNGIr/MxntmVzQc5JUweDSh8y8hbTCAomFtqwUPIOWcLXP0VEOSZTG7FFw==
+
+bignumber.js@^8.0.2:
   version "8.0.2"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-8.0.2.tgz#d8c4e1874359573b1ef03011a2d861214aeef137"
   integrity sha512-EiuvFrnbv0jFixEQ9f58jo7X0qI2lNGIr/MxntmVzQc5JUweDSh8y8hbTCAomFtqwUPIOWcLXP0VEOSZTG7FFw==

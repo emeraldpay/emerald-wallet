@@ -1,14 +1,14 @@
 import { convert } from '@emeraldplatform/core';
-import { Wei } from '@emeraldplatform/eth';
-import { BlockchainCode, Currency } from '@emeraldwallet/core';
+import {BlockchainCode, Currency} from '@emeraldwallet/core';
+import {Wei, WEIS} from '@emeraldpay/bigamount-crypto';
 
 export function txFeeFiat (gasPrice: string | number, gasLimit: number, rate: number | undefined): string {
   if (typeof rate == 'undefined') {
     return '--';
   }
-  const wei = new Wei(gasPrice).mul(convert.toBigNumber(gasLimit));
-  const ether = wei.toEther(18);
-  return Currency.convert(ether, rate);
+  const wei = new Wei(gasPrice).multiply(convert.toBigNumber(gasLimit));
+  const ether = wei.number.dividedBy(WEIS.top.multiplier);
+  return Currency.convert(ether.toFixed(), rate);
 }
 
 export const traceValidate = (chain: BlockchainCode, tx: any, dispatch: any, estimateGas: any): Promise<number> => {

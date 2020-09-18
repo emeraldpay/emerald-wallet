@@ -1,18 +1,19 @@
-import { Units } from '@emeraldwallet/core';
-import { storiesOf } from '@storybook/react';
+import {storiesOf} from '@storybook/react';
 import * as React from 'react';
 import TotalButton from '../../src/app/layout/Header/TotalButton';
+import {CurrencyAmount} from "@emeraldwallet/core";
+import {Wei} from "@emeraldpay/bigamount-crypto";
 
 storiesOf('TotalButton', module)
   .add('default', () => (
     <TotalButton
-      total={Units.ZERO}
+      total={new CurrencyAmount(0, "USD")}
       byChain={[
         {
           token: 'ETH',
-          total: Units.ZERO,
+          total: Wei.ZERO,
           fiatRate: 200,
-          fiatAmount: Units.ZERO
+          fiatAmount: new CurrencyAmount(0, "USD")
         }
       ]}
     />

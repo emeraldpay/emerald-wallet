@@ -45,6 +45,8 @@
     ]
   },
   "dependencies": {
+    "@emeraldpay/bigamount": "^0.1.0",
+    "@emeraldpay/bigamount-crypto": "^0.1.0",
     "@emeraldpay/emerald-vault-core": "^0.5.2",
     "@emeraldplatform/contracts": "^0.5.1",
     "@emeraldplatform/core": "0.5.8",

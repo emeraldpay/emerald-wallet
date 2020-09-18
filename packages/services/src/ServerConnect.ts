@@ -5,7 +5,7 @@ import {
 import {
   DefaultJsonRpc, HttpTransport, RevalidatingJsonRpc, RotatingJsonRpc, VerifyingJsonRpc
 } from '@emeraldplatform/rpc';
-import { IServerConnect, IVault } from '@emeraldwallet/core';
+import {BlockchainCode, IServerConnect, IVault} from '@emeraldwallet/core';
 import * as os from 'os';
 import ChainRpcConnections from './ChainRpcConnections';
 import GrpcTransport from './transports/GrpcTransport';
@@ -69,7 +69,7 @@ class ServerConnect implements IServerConnect {
     return conns;
   }
 
-  public connectEthChain (name: string): null | EthRpc {
+  public connectEthChain(name: BlockchainCode): null | EthRpc {
     const verifiers = CHAIN_VERIFY[name];
     if (typeof verifiers === 'undefined') {
       this.log.error('No verifiers for chain', name);

@@ -11,3 +11,7 @@ export {
 export {IBlockchain} from './IBlockchain';
 export {CoinTickerCode, isCoinTickerCode} from './CoinTicker';
 export {HDPath} from './hdpath';
+export {
+  DAI_UNITS, TETHER_UNITS,
+  tokenAmount
+} from './tokens';

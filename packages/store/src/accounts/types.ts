@@ -1,17 +1,16 @@
 import {EntryId, SeedDescription, Uuid, Wallet, AddressBookItem, WalletEntry} from '@emeraldpay/emerald-vault-core';
-import {Wei} from '@emeraldplatform/eth';
+import {Wei} from '@emeraldpay/bigamount-crypto';
 import {
   AnyCoinCode,
   BlockchainCode,
   CurrencyCode,
-  Units,
 } from '@emeraldwallet/core';
+import {BigAmount} from "@emeraldpay/bigamount";
 
 export const moduleName = 'accounts';
 
 export interface IBalanceValue {
-  balance: Wei | Units;
-  token: CurrencyCode | AnyCoinCode;
+  balance: BigAmount;
 }
 
 /**

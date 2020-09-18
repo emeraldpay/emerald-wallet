@@ -1,8 +1,8 @@
-import { Wei } from '@emeraldplatform/eth';
 import { IBackendApi } from '@emeraldwallet/core';
 import { all, call, put, takeEvery } from 'redux-saga/effects';
 import { setGasPriceAction } from './actions';
-import { ActionTypes, IFetchGasPriceAction } from './types';
+import {ActionTypes, IFetchGasPriceAction} from './types';
+import {Wei} from '@emeraldpay/bigamount-crypto';
 
 /**
  * Fetches gas price by RPC call

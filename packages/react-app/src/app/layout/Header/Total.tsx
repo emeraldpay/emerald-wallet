@@ -1,7 +1,7 @@
-import { Units } from '@emeraldwallet/core';
 import { accounts, BalanceValueConverted, IState } from '@emeraldwallet/store';
 import TotalButton from './TotalButton';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
+import {CurrencyAmount} from "@emeraldwallet/core";
 
 export default connect<any, any, any, IState>(
   (state, ownProps) => {
@@ -11,16 +11,15 @@ export default connect<any, any, any, IState>(
     const allAssets = accounts.selectors.allBalances(state);
     const totalBalance = accounts.selectors.fiatTotalBalance(state, allAssets);
     const total = typeof totalBalance === 'undefined'
-      ? new Units(0, 2) : totalBalance.balance;
+      ? new CurrencyAmount(0, state.settings.localeCurrency) : totalBalance.balance;
     const fiatCurrency = typeof totalBalance === 'undefined'
-      ? '' : totalBalance.token;
+      ? '' : totalBalance.balance.units.top.code;
 
     const aggregatedAssets = accounts.selectors.aggregateByAsset(allAssets);
     const assetsSummary = accounts.selectors.withFiatConversion(state, aggregatedAssets);
 
     assetsSummary.forEach((value: BalanceValueConverted) => {
       byChain.push({
-        token: value.source.token,
         total: value.source.balance,
         fiatRate: value.rate,
         fiatAmount: value.converted.balance

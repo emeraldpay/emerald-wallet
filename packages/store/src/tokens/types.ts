@@ -1,12 +1,12 @@
-import { BlockchainCode } from '@emeraldwallet/core';
+import {AnyTokenCode, BlockchainCode} from '@emeraldwallet/core';
 
 export const moduleName = 'tokens';
 
 export interface ITokenBalance {
-  symbol: string;
-  tokenId: string;
-  decimals: number;
-  unitsValue: string;
+    symbol: AnyTokenCode;
+    tokenId: string;
+    decimals: number;
+    unitsValue: string;
 }
 
 export type ITokensState = {

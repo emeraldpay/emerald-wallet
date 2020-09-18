@@ -1,9 +1,11 @@
-import { IState, txhistory } from '@emeraldwallet/store';
-import { withStyles } from '@material-ui/core/styles';
+import {IState, txhistory} from '@emeraldwallet/store';
+import {withStyles} from '@material-ui/core/styles';
 import * as React from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import List from './List';
 import Header from './Header';
+import {IStoredTransaction} from "@emeraldwallet/core";
+import {WalletEntry} from "@emeraldpay/emerald-vault-core/lib/types";
 
 const styles = (theme?: any) => ({
   container: {
@@ -14,8 +16,8 @@ const styles = (theme?: any) => ({
 });
 
 interface IProps {
-  transactions: any;
-  accounts: any;
+  transactions: IStoredTransaction[];
+  accounts: WalletEntry[];
   classes: any;
 }
 
@@ -66,11 +68,19 @@ class TransactionsHistory extends React.Component<IProps, IHistoryState> {
 
 const StyledTransactionsHistory = withStyles(styles)(TransactionsHistory);
 
+// Component properties
+interface OwnProps {
+  transactions: IStoredTransaction[],
+  walletAccounts: WalletEntry[]
+}
+
 export default connect(
-  (state: IState, ownProps: any) => {
+  (state: IState, ownProps: OwnProps) => {
     const txs = ownProps.transactions;
     return {
-      transactions: txs.sortBy((tx: any) => tx.get('timestamp')).reverse(),
+      transactions: txs.sort((a, b) =>
+        (a.timestamp?.getTime() || 0) - (b.timestamp?.getTime() || 0)
+      ).reverse(),
       accounts: ownProps.walletAccounts
     };
   },

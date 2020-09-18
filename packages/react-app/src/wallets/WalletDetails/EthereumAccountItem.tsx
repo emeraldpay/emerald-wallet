@@ -1,5 +1,4 @@
-import {Wei} from '@emeraldplatform/eth';
-import {BlockchainCode, blockchainIdToCode, Blockchains, Units} from '@emeraldwallet/core';
+import {BlockchainCode, blockchainIdToCode, Blockchains} from '@emeraldwallet/core';
 import {accounts, IState, screen, tokens} from '@emeraldwallet/store';
 import {Button, CoinAvatar} from '@emeraldwallet/ui';
 import {Box, createStyles, Grid, Theme, Typography, withStyles} from '@material-ui/core';
@@ -9,6 +8,8 @@ import AccountBalance from '../../common/Balance';
 import {makeStyles} from "@material-ui/core/styles";
 import {Dispatch} from "react";
 import {EthereumEntry} from "@emeraldpay/emerald-vault-core";
+import {Wei} from '@emeraldpay/bigamount-crypto';
+import {BigAmount} from "@emeraldpay/bigamount";
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
@@ -54,21 +55,13 @@ const Component = (({tokensBalances, balance, account, blockchainCode}: Props & 
           <AccountBalance
             key={"main"}
             classes={accountClasses}
-            fiatStyle={false}
             balance={balance}
-            decimals={4}
-            symbol={blockchainCode.toUpperCase()}
-            showFiat={false}
           />
           {tokensBalances.map((token) =>
             <AccountBalance
-              key={"token-" + token.symbol}
+              key={"token-" + token.units.top.code}
               classes={accountClasses}
-              fiatStyle={false}
-              balance={new Units(token.unitsValue, token.decimals)}
-              decimals={4}
-              symbol={token.symbol}
-              showFiat={false}
+              balance={token}
             />
           )}
         </Grid>
@@ -80,7 +73,7 @@ const Component = (({tokensBalances, balance, account, blockchainCode}: Props & 
 
 // State Properties
 interface Props {
-  tokensBalances: tokens.ITokenBalance[];
+  tokensBalances: BigAmount[];
   balance: Wei;
   blockchainCode: BlockchainCode
 }

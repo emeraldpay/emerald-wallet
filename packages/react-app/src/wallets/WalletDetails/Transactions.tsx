@@ -3,13 +3,14 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import TxHistory from '../../transactions/TxHistory';
 import {WalletEntry} from "@emeraldpay/emerald-vault-core";
+import {IStoredTransaction} from "@emeraldwallet/core";
 
 export interface IOwnProps {
   walletId: string;
 }
 
 interface IProps {
-  transactions: txhistory.types.TransactionsList;
+  transactions: IStoredTransaction[];
   entries: WalletEntry[];
 }
 

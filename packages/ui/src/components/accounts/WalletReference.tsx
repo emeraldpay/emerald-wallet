@@ -2,12 +2,12 @@ import {makeStyles} from '@material-ui/core/styles';
 import * as React from 'react';
 import {Box, Card, CardContent, CardMedia, createStyles, Grid, Theme, Typography} from "@material-ui/core";
 import {ClassNameMap} from "@material-ui/styles";
-import {WithDefaults, Units, CurrencyCode, AnyCoinCode} from "@emeraldwallet/core";
+import {WithDefaults, CurrencyCode, AnyCoinCode} from "@emeraldwallet/core";
 import {Hashicon} from "@emeraldpay/hashicon-react";
 import {Balance} from "../../index";
 import classNames from "classnames";
-import {Wei} from "@emeraldplatform/eth";
 import {Wallet} from '@emeraldpay/emerald-vault-core';
+import {BigAmount} from "@emeraldpay/bigamount";
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
@@ -42,8 +42,7 @@ const useStyles = makeStyles<Theme>((theme) =>
 interface OwnProps {
   wallet: Wallet;
   assets: {
-    balance: Wei | Units;
-    token: CurrencyCode | AnyCoinCode;
+    balance: BigAmount;
   }[];
   classes?: Partial<ClassNameMap<ClassKey>>;
 }
@@ -71,11 +70,9 @@ const Component = ((props: OwnProps) => {
       <Typography variant={"body2"} className={styles.walletId}>{wallet.id}</Typography>
       <Box className={styles.balanceList}>
         {assets.map((asset) => (
-            <Balance key={asset.token}
-                     balance={asset.balance}
-                     symbol={asset.token}
-                     displayDecimals={2}
-                     classes={{coins: styles.balance, root: styles.balanceRoot}}/>
+          <Balance key={"balance-" + asset.balance.units.top.code}
+                   balance={asset.balance}
+                   classes={{coins: styles.balance, root: styles.balanceRoot}}/>
           )
         )}
       </Box>

@@ -1,4 +1,3 @@
-import { Units } from '@emeraldplatform/eth';
 import { ButtonGroup, IdentityIcon, Input } from '@emeraldplatform/ui';
 import { ArrowRight } from '@emeraldplatform/ui-icons';
 import { workflow } from '@emeraldwallet/core';
@@ -152,7 +151,7 @@ class SignTx extends React.Component<IProps, IState> {
           <div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column', justifyContent: 'space-between' }}>
             <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column' }}>
               {/* <div>{USDValue} USD</div> */}
-              <div style={{ fontSize: '28px' }} title={tx.amount.toString(Units.WEI, 0, true)}>
+              <div style={{fontSize: '28px'}} title={tx.amount.toString()}>
                 {display.amount()} {display.amountUnit()}
               </div>
             </div>

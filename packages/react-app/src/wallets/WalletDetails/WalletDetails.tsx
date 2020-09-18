@@ -50,7 +50,7 @@ const useStyles = makeStyles<Theme>((theme) =>
 /**
  *
  */
-const Component = (({wallet, goBack, updateWallet, onReceive, onSend}: Props & Actions & OwnProps) => {
+const WalletDetails = (({wallet, goBack, updateWallet, onReceive, onSend}: Props & Actions & OwnProps) => {
   if (typeof wallet == "undefined") {
     console.error("Wallet is not found");
     return <Alert>
@@ -201,4 +201,4 @@ export default connect(
       }
     }
   }
-)((Component));
+)((WalletDetails));

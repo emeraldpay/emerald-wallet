@@ -5,12 +5,13 @@ import {Box, createStyles, Grid, Theme, Button} from "@material-ui/core";
 import {accounts, IBalanceValue, IState, screen, tokens} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
 import {Uuid, Wallet, WalletEntry, isEthereumEntry} from "@emeraldpay/emerald-vault-core";
-import {Units, blockchainIdToCode} from "@emeraldwallet/core";
-import {Wei} from "@emeraldplatform/eth";
+import {blockchainIdToCode} from "@emeraldwallet/core";
 import {CoinAvatar, WalletReference} from "@emeraldwallet/ui";
 import AccountBalance from '../../common/Balance';
 import {Address, Page} from "@emeraldplatform/ui";
 import {Back} from "@emeraldplatform/ui-icons";
+import {Wei} from "@emeraldpay/bigamount-crypto";
+import {BigAmount} from "@emeraldpay/bigamount/lib/amount";
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
@@ -48,20 +49,12 @@ const Component = (({balances, wallet, allAssets, onCancel, onSelected}: Props &
             <Grid item={true} xs={4}>
               <AccountBalance
                 key={"main"}
-                fiatStyle={false}
                 balance={accountBalance.balance}
-                decimals={4}
-                symbol={blockchainIdToCode(accountBalance.account.blockchain).toUpperCase()}
-                showFiat={false}
               />
               {accountBalance.tokens.map((token) =>
                 <AccountBalance
-                  key={"token-" + token.symbol}
-                  fiatStyle={false}
-                  balance={new Units(token.unitsValue, token.decimals)}
-                  decimals={4}
-                  symbol={token.symbol}
-                  showFiat={false}
+                  key={"token-" + token.units.top.code}
+                  balance={token}
                 />
               )}
             </Grid>
@@ -98,7 +91,7 @@ interface OwnProps {
 interface AccountBalance {
   account: WalletEntry;
   balance: Wei;
-  tokens: tokens.ITokenBalance[]
+  tokens: BigAmount[]
 }
 
 function acceptAccount(balance: AccountBalance): boolean {
@@ -110,7 +103,7 @@ export default connect(
     const wallet = accounts.selectors.findWallet(state, ownProps.walletId)!;
     const allAssets: IBalanceValue[] = accounts.selectors.getWalletBalances(state, wallet, false);
     const balances: AccountBalance[] = wallet.entries.map((account) => {
-      let tokenBalances: tokens.ITokenBalance[] = []
+      let tokenBalances: BigAmount[] = []
       if (isEthereumEntry(account)) {
         tokenBalances = tokens.selectors.selectBalances(state, account.address!.value, blockchainIdToCode(account.blockchain)) || [];
       }

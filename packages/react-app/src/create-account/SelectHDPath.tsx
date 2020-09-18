@@ -16,7 +16,7 @@ import {
 } from "@material-ui/core";
 import {accounts, hdpathPreview, IState} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
-import {BlockchainCode, AnyCoinCode, HDPath, Blockchains, Units} from "@emeraldwallet/core";
+import {BlockchainCode, AnyCoinCode, HDPath, Blockchains, tokenAmount} from "@emeraldwallet/core";
 import HDPathCounter from "./HDPathCounter";
 import {IAddressState} from "@emeraldwallet/store/lib/hdpath-preview/types";
 import {Wei} from "@emeraldplatform/eth";
@@ -66,10 +66,10 @@ const Component = (({disabledAccounts, table, setAccount}: Props & Actions & Own
       const wei = new Wei(item.balance);
       return wei.toString(wei.getUnit(2), 2, true);
     } else if (item.asset == "USDT") {
-      const unit = new Units(item.balance, 6);
-      return unit.toString() + " Tether";
+      const unit = tokenAmount(item.balance, "usdt");
+      return unit.toString();
     } else if (item.asset == "DAI") {
-      const unit = new Units(item.balance, 18);
+      const unit = tokenAmount(item.balance, "dai");
       return unit.toString() + " Dai";
     }
     return item.balance;

@@ -1,11 +1,10 @@
-import { Wei } from '@emeraldplatform/eth';
-import { CurrencyEtc, CurrencyEth } from '@emeraldplatform/ui-icons';
-import { AnyCoinCode, CurrencyCode, IUnits, StableCoinCode, Units } from '@emeraldwallet/core';
-import { List, ListItem, ListItemAvatar, ListItemText, Menu } from '@material-ui/core';
+import {CurrencyEtc, CurrencyEth} from '@emeraldplatform/ui-icons';
+import {AnyCoinCode, CurrencyCode, StableCoinCode} from '@emeraldwallet/core';
+import {List, ListItem, ListItemAvatar, ListItemText, Menu} from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/core/styles';
-import BigNumber from 'bignumber.js';
 import * as React from 'react';
-import { Button, CoinAvatar } from '@emeraldwallet/ui';
+import {Button, CoinAvatar} from '@emeraldwallet/ui';
+import {BigAmount, FormatterBuilder} from "@emeraldpay/bigamount";
 
 const styles = createStyles({
   label: {
@@ -35,20 +34,26 @@ const format = {
 };
 
 export interface IProps {
-  total: IUnits;
+  total: BigAmount;
   fiatCurrency?: CurrencyCode | StableCoinCode;
   byChain: Array<{
     token: AnyCoinCode;
-    total: Wei | IUnits;
+    total: BigAmount;
     fiatRate: number;
-    fiatAmount: IUnits;
+    fiatAmount: BigAmount;
   }>;
   classes?: any;
 }
 
+const fmt = new FormatterBuilder()
+  .number(3, true, 2, format)
+  .append(" ")
+  .unitCode()
+  .build()
+
 function TotalButton(props: IProps): React.ReactElement {
   const [anchorEl, setAnchorEl] = React.useState(null);
-  const { total, byChain, fiatCurrency, classes } = props;
+  const {total, byChain, fiatCurrency, classes} = props;
 
   const handleClose = (): void => {
     setAnchorEl(null);
@@ -58,7 +63,7 @@ function TotalButton(props: IProps): React.ReactElement {
     setAnchorEl(event.currentTarget);
   };
 
-  const totalFormatted = `${total.amountAsString(format)} ${fiatCurrency}`;
+  const totalFormatted = fmt.format(total);
   return (
     <div>
       <Button
@@ -87,18 +92,10 @@ function TotalButton(props: IProps): React.ReactElement {
       >
         <List>
           {byChain.map((c) => {
-            let coins = '';
-            if (Units.isUnits(c.total)) {
-              coins = c.total.toBigNumber()
-                .dividedBy(new BigNumber(10).pow(c.total.decimals))
-                .toFormat(3, format);
-            } else {
-              coins = (c.total as Wei).toEther(3);
-            }
-            coins += ` ${c.token.toUpperCase()}`;
-            const fiat = `${c.fiatAmount.amountAsString(format)} ${fiatCurrency}`;
+            const coins = fmt.format(c.total);
+            const fiat = fmt.format(c.fiatAmount);
             return (
-              <ListItem key={c.token}>
+              <ListItem key={c.total.units.base.code}>
                 <ListItemAvatar>
                   <CoinAvatar chain={c.token}/>
                 </ListItemAvatar>
@@ -116,7 +113,7 @@ const StyledTotalButton = withStyles(styles)(TotalButton);
 
 function propsAreEqual (prev: IProps, next: IProps): boolean {
   // We re-render only if total amount changed
-  return (prev.total.amount === next.total.amount && prev.total.decimals === next.total.decimals);
+  return prev.total.equals(next.total);
 }
 
 export default React.memo(StyledTotalButton, propsAreEqual);

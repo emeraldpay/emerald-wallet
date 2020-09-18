@@ -1,4 +1,6 @@
 import BigNumber from 'bignumber.js';
+import {Units, Unit} from "@emeraldpay/bigamount";
+import {BigAmount} from "@emeraldpay/bigamount";
 
 export const enum CurrencyCode {
   RUB = 'RUB',
@@ -39,5 +41,13 @@ export class Currency {
       ? new BigNumber(0)
       : new BigNumber(rate.toString());
     return v.multipliedBy(r).toFixed(decimals);
+  }
+}
+
+export class CurrencyAmount extends BigAmount {
+  constructor(value: BigNumber | string | number, currency: string) {
+    super(value.toString(), new Units([
+      new Unit(2, currency, currency)
+    ]));
   }
 }

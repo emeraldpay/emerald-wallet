@@ -1,11 +1,12 @@
-import { IUnits } from '../../Units';
+import {BigAmount} from "@emeraldpay/bigamount";
+import {AnyCoinCode, AnyTokenCode} from "../../Asset";
 
 export enum TxTarget {
   MANUAL,
   SEND_ALL
 }
 
-export function targetFromNumber (i: number): TxTarget {
+export function targetFromNumber(i: number): TxTarget {
   if (i === TxTarget.SEND_ALL.valueOf()) {
     return TxTarget.SEND_ALL;
   }
@@ -20,11 +21,11 @@ export enum ValidationResult {
   INSUFFICIENT_TOKEN_FUNDS
 }
 
-export interface ITx {
-  getTotalBalance: () => IUnits;
-  setTotalBalance: (total: IUnits) => void;
-  getAmount: () => IUnits;
-  setAmount: (amount: IUnits, tokenSymbol?: string) => void;
+export interface ITx<T extends BigAmount> {
+  getTotalBalance: () => T;
+  setTotalBalance: (total: T) => void;
+  getAmount: () => T;
+  setAmount: (amount: T, tokenSymbol?: AnyTokenCode) => void;
   getTokenSymbol: () => string;
 }
 
@@ -35,7 +36,7 @@ export interface ITxDetailsPlain {
   target: number;
   amount: string;
   amountDecimals: number;
-  tokenSymbol: string;
+  tokenSymbol: AnyCoinCode;
   totalTokenBalance?: string;
   totalEtherBalance?: string;
   gasPrice: string;

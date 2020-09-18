@@ -1,5 +1,5 @@
-import { Wei } from '@emeraldplatform/eth';
-import { ActionTypes, IBlockAction, IFetchGasPriceAction, IGasPriceAction } from './types';
+import {ActionTypes, IBlockAction, IFetchGasPriceAction, IGasPriceAction} from './types';
+import {Wei} from '@emeraldpay/bigamount-crypto';
 
 export function setGasPriceAction (blockchainCode: string, gasPrice: Wei): IGasPriceAction {
   return {

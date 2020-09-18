@@ -1,8 +1,7 @@
-import { Units as EthUnits, Wei } from '@emeraldplatform/eth';
-import BigNumber from 'bignumber.js';
-import { DisplayEtherTx, IDisplayTx } from '..';
-import { IUnits, Units } from '../../Units';
-import { ITx, ITxDetailsPlain, targetFromNumber, TxTarget, ValidationResult } from './types';
+import {BigNumber} from 'bignumber.js';
+import {DisplayEtherTx, IDisplayTx} from '..';
+import {ITx, ITxDetailsPlain, targetFromNumber, TxTarget, ValidationResult} from './types';
+import {Wei} from "@emeraldpay/bigamount-crypto";
 
 export interface ITxDetails {
   from?: string;
@@ -23,36 +22,37 @@ const TxDefaults: ITxDetails = {
 
 function toPlainDetails (tx: ITxDetails): ITxDetailsPlain {
   return {
-    amount: tx.amount.toString(EthUnits.WEI, 0, false),
+    amount: tx.amount.encode(),
     from: tx.from,
     gas: tx.gas.toNumber(),
-    gasPrice: tx.gasPrice.toString(EthUnits.WEI, 0, false),
+    gasPrice: tx.gasPrice.encode(),
     target: tx.target.valueOf(),
     to: tx.to,
-    totalTokenBalance: tx.totalBalance == null ? undefined : tx.totalBalance.toString(EthUnits.WEI, 0, false),
+    totalTokenBalance: tx.totalBalance?.encode(),
     amountDecimals: 18,
-    totalEtherBalance: tx.totalBalance == null ? undefined : tx.totalBalance.toString(EthUnits.WEI, 0, false),
-    tokenSymbol: EthUnits.ETHER.name
+    totalEtherBalance: tx.totalBalance?.encode(),
+    tokenSymbol: "ETH"
   };
 }
 
 function fromPlainDetails (plain: ITxDetailsPlain): ITxDetails {
   return {
-    amount: new Wei(plain.amount, EthUnits.WEI),
+    amount: Wei.decode(plain.amount),
     from: plain.from,
     gas: new BigNumber(plain.gas),
-    gasPrice: new Wei(plain.gasPrice, EthUnits.WEI),
+    gasPrice: Wei.decode(plain.gasPrice),
     target: targetFromNumber(plain.target),
     to: plain.to,
-    totalBalance: plain.totalTokenBalance == null ? undefined : new Wei(plain.totalTokenBalance, EthUnits.WEI)
+    totalBalance: plain.totalTokenBalance == null ? undefined : Wei.decode(plain.totalTokenBalance)
   };
 }
 
-export class CreateEthereumTx implements ITxDetails, ITx {
+export class CreateEthereumTx implements ITxDetails, ITx<Wei> {
 
-  public static fromPlain (details: ITxDetailsPlain): CreateEthereumTx {
+  public static fromPlain(details: ITxDetailsPlain): CreateEthereumTx {
     return new CreateEthereumTx(fromPlainDetails(details));
   }
+
   public from?: string;
   public to?: string;
   public target: TxTarget;
@@ -82,28 +82,26 @@ export class CreateEthereumTx implements ITxDetails, ITx {
     return new DisplayEtherTx(this);
   }
 
-  public setFrom (from: string | null, balance: Wei) {
+  public setFrom(from: string | null, balance: Wei) {
     if (from !== null) {
       this.from = from;
     }
     this.totalBalance = balance;
   }
 
-  public getTotalBalance (): IUnits {
-    return this.totalBalance ?
-      new Units(this.totalBalance.value.toString(10), 18) :
-      new Units(0, 18);
+  public getTotalBalance(): Wei {
+    return this.totalBalance || Wei.ZERO;
   }
 
-  public getAmount (): IUnits {
-    return new Units(this.amount.toWei().toString(10), 18);
+  public getAmount(): Wei {
+    return this.amount;
   }
 
-  public setAmount (a: IUnits) {
-    this.amount = new Wei(a.amount, EthUnits.WEI);
+  public setAmount(a: Wei) {
+    this.amount = a;
   }
 
-  public validate (): ValidationResult {
+  public validate(): ValidationResult {
     if (this.from == null || this.totalBalance == null) {
       return ValidationResult.NO_FROM;
     }
@@ -138,7 +136,7 @@ export class CreateEthereumTx implements ITxDetails, ITx {
   }
 
   public getFees (): Wei {
-    return new Wei(this.gas.multipliedBy(this.gasPrice.value));
+    return this.gasPrice.multiply(this.gas)
   }
 
   public rebalance (): boolean {
@@ -156,21 +154,21 @@ export class CreateEthereumTx implements ITxDetails, ITx {
     return true;
   }
 
-  public debug (): string {
+  public debug(): string {
     const change = this.getChange();
-    return `Send ${this.from} -> ${this.to} of ${this.amount.toEther()} using ${this.gas} at ${this.gasPrice.toString(EthUnits.MWEI, undefined, true)}.\n` +
-           `Total to send: ${this.getTotal()} (${this.getFees()} are fees),` +
-              `account has ${this.totalBalance} (${this.totalBalance == null ? null : this.totalBalance.toString(EthUnits.WEI)} Wei), ` +
-              `will have ${change} (${change == null ? null : change.toString(EthUnits.WEI)} Wei)`;
+    return `Send ${this.from} -> ${this.to} of ${this.amount.toString()} using ${this.gas} at ${this.gasPrice.toString()}.\n` +
+      `Total to send: ${this.getTotal()} (${this.getFees()} are fees),` +
+      `account has ${this.totalBalance} (${this.totalBalance == null ? null : this.totalBalance.toString()} Wei), ` +
+      `will have ${change} (${change == null ? null : change.toString()} Wei)`;
 
   }
 
-  public setTotalBalance (total: IUnits): void {
-    this.totalBalance = new Wei(total.amount, EthUnits.WEI);
+  public setTotalBalance(total: Wei): void {
+    this.totalBalance = total;
   }
 
-  public getTokenSymbol (): string {
-    return EthUnits.ETHER.name;
+  public getTokenSymbol(): string {
+    return "ETH";
   }
 
 }

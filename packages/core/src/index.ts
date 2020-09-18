@@ -13,15 +13,14 @@ export {
 import * as blockchains from './blockchains';
 export {blockchains};
 export {HDPath, isCoinTickerCode} from './blockchains';
+export {tokenAmount} from './blockchains';
 
 import * as workflow from './workflow';
 export { workflow };
 
 export { EthereumTx, Ethereum as EthereumBlockchain } from './blockchains/ethereum';
 
-export { Currency, CurrencyCode } from './Currency';
-
-export { default as Units, IUnits } from './Units';
+export {Currency, CurrencyCode, CurrencyAmount} from './Currency';
 
 // utils
 import * as utils from './utils';

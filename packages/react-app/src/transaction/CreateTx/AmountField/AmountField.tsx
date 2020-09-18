@@ -1,33 +1,36 @@
-import { toBaseUnits } from '@emeraldplatform/core';
-import { Input } from '@emeraldplatform/ui';
-import { IUnits, Units } from '@emeraldwallet/core';
-import { Button } from '@emeraldwallet/ui';
+import {Input} from '@emeraldplatform/ui';
+import {Button} from '@emeraldwallet/ui';
 import * as React from 'react';
 import FormLabel from '../FormLabel';
+import {BigAmount} from "@emeraldpay/bigamount";
+import {FormatterBuilder} from "@emeraldpay/bigamount/lib/formatter";
 
 interface IProps {
-  onChangeAmount?: (amount: IUnits) => void;
-  amount?: IUnits;
-  tokenDecimals: number;
-  // balance: Wei,
+  onChangeAmount?: (amount: BigAmount) => void;
+  amount: BigAmount;
   onMaxClicked?: any;
 }
 
 interface IState {
   errorText: string | null;
   amountStr: string;
-  original: IUnits;
+  original: BigAmount;
 }
+
+const AMOUNT_FMT = new FormatterBuilder()
+  .useTopUnit()
+  .number()
+  .build();
 
 class AmountField extends React.Component<IProps, IState> {
 
-  public static getDerivedStateFromProps (props: IProps, state: IState) {
-    const amount = props.amount || new Units(0, props.tokenDecimals);
+  public static getDerivedStateFromProps(props: IProps, state: IState) {
+    const amount = props.amount;
     if (!state.original.equals(amount)) {
       return {
         errorText: null,
         original: amount,
-        amountStr: amount.toString()
+        amountStr: AMOUNT_FMT.format(amount)
       };
     }
     return null;
@@ -48,8 +51,8 @@ class AmountField extends React.Component<IProps, IState> {
     super(props);
     this.state = {
       errorText: null,
-      amountStr: props.amount ? props.amount.toString() : '0',
-      original: props.amount || new Units(0, props.tokenDecimals)
+      amountStr: AMOUNT_FMT.format(props.amount),
+      original: props.amount
     };
   }
 
@@ -64,18 +67,21 @@ class AmountField extends React.Component<IProps, IState> {
     try {
       const parsed = parseFloat(amount);
       if (parsed < 0) {
-        this.setState({ errorText: 'value must be positive number' });
+        this.setState({errorText: 'value must be positive number'});
         return;
       }
-      const v = toBaseUnits(parsed.toString(10), this.props.tokenDecimals);
-      this.setState({ errorText: null });
+      const units = this.state.original.units;
+      const changedTo = new BigAmount(1, units)
+        .multiply(units.top.multiplier) // relative to main unit. i.e. "20" should men "20 ether", not "20 wei"
+        .multiply(parsed)
+      this.setState({errorText: null});
 
       if (this.props.onChangeAmount) {
-        this.props.onChangeAmount(new Units(v.toString(10), this.props.tokenDecimals));
+        this.props.onChangeAmount(changedTo);
       }
     } catch (e) {
-      console.error(e);
-      this.setState({ errorText: 'Invalid value' });
+      console.error("failed to parse amount", e);
+      this.setState({errorText: 'Invalid value'});
     }
   }
 

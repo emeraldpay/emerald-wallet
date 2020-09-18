@@ -40,7 +40,7 @@ describe('historyReducer', () => {
 
     expect(state.get('trackedTransactions').size).toBe(1);
     const tx = state.get('trackedTransactions').first().toJS();
-    expect(tx.value).toEqual(new BigNumber(1));
+    expect(tx.value).toBe("1");
   });
 
   it('should add pending TX or update existent', () => {
@@ -131,7 +131,7 @@ describe('historyReducer', () => {
     // This is inconsistency in ethereum api
     expect(trackedTxs.data).toEqual(tx.input);
     expect(trackedTxs.hash).toEqual(tx.hash);
-    expect(trackedTxs.value.comparedTo(tx.value)).toEqual(0);
+    expect(new BigNumber(trackedTxs.value).comparedTo(tx.value)).toEqual(0);
   });
 
   it('should update TXS timestamp', () => {
@@ -178,7 +178,7 @@ describe('historyReducer', () => {
     state = historyReducers(state, action);
     const trackedTxs = state.get('trackedTransactions').last().toJS();
     expect(trackedTxs.timestamp).toEqual(now);
-    expect(trackedTxs.value.comparedTo(tx.value)).toEqual(0);
+    expect(new BigNumber(trackedTxs.value).comparedTo(tx.value)).toEqual(0);
   });
 
   it('should handle UPDATE_TXS', () => {

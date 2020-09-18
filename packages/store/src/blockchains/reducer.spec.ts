@@ -1,9 +1,9 @@
-import { Units, Wei } from '@emeraldplatform/eth';
 import { BlockchainCode } from '@emeraldwallet/core';
 import * as actions from './actions';
 import { reducer } from './reducer';
 import * as selectors from './selectors';
-import { ActionTypes, moduleName } from './types';
+import {ActionTypes, moduleName} from './types';
+import {Wei} from '@emeraldpay/bigamount-crypto';
 
 describe('blockchains reducer', () => {
   it('handles Actions.BLOCK', () => {
@@ -15,7 +15,7 @@ describe('blockchains reducer', () => {
 
   it('handles Actions.GAS_PRICE', () => {
     const state = reducer(undefined, { type: ActionTypes.GAS_PRICE, payload: { blockchain: 'etc', gasPrice: new Wei(850000) } });
-    expect(state[BlockchainCode.ETC]).toEqual({ gasPrice: new Wei(850000), height: null });
-    expect(selectors.gasPrice({ [moduleName]: state }, 'etc').toString(Units.WEI)).toEqual('850000');
+    expect(state[BlockchainCode.ETC]).toEqual({gasPrice: new Wei(850000), height: null});
+    expect(selectors.gasPrice({[moduleName]: state}, 'etc').number.toFixed()).toEqual('850000');
   });
 });

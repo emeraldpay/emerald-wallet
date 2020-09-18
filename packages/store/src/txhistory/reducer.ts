@@ -74,7 +74,7 @@ function updateStatus (tx: any): any {
 }
 
 function createTx (data: IStoredTransaction) {
-  const values: {[key: string]: any} = {
+  const values: { [key: string]: any } = {
     hash: data.hash,
     to: data.to
   };
@@ -82,8 +82,8 @@ function createTx (data: IStoredTransaction) {
   if (data.from !== '0x0000000000000000000000000000000000000000') {
     tx = tx.set('from', data.from);
   }
-  tx = tx.set('value', data.value ? toBigNumber(data.value) : data.value);
-  tx = tx.set('gasPrice', data.gasPrice ? toBigNumber(data.gasPrice) : data.gasPrice);
+  tx = tx.set('value', data.value ? data.value.toString() : data.value);
+  tx = tx.set('gasPrice', data.gasPrice ? data.gasPrice.toString() : data.gasPrice);
   tx = tx.set('gas', data.gas ? toBigNumber(data.gas).toNumber() : data.gas);
   tx = tx.set('nonce', data.nonce ? toBigNumber(data.nonce).toNumber() : data.nonce);
   tx = tx.set('timestamp', utils.parseDate(data.timestamp));

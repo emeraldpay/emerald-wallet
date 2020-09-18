@@ -1,10 +1,11 @@
 import { BlockchainCode } from '@emeraldwallet/core';
 import { setTokenBalance } from './actions';
-import { reducer } from './reducer';
+import {reducer} from './reducer';
+import {ITokenBalance} from "./types";
 
 describe('tokens reducer', () => {
   it('should update token balance for address', () => {
-    const balance = {
+    const balance: ITokenBalance = {
       decimals: 8,
       symbol: 'DAI',
       tokenId: '0x66666',

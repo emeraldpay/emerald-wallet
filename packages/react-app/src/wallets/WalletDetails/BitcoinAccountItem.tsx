@@ -1,4 +1,4 @@
-import {BlockchainCode, blockchainIdToCode, Blockchains, Units} from '@emeraldwallet/core';
+import {BlockchainCode, blockchainIdToCode, Blockchains} from '@emeraldwallet/core';
 import {IState} from '@emeraldwallet/store';
 import {CoinAvatar} from '@emeraldwallet/ui';
 import {createStyles, Grid, Theme, Typography, withStyles} from '@material-ui/core';
@@ -8,6 +8,7 @@ import AccountBalance from '../../common/Balance';
 import {makeStyles} from "@material-ui/core/styles";
 import {Dispatch} from "react";
 import {BitcoinEntry} from "@emeraldpay/emerald-vault-core";
+import {Satoshi} from "@emeraldpay/bigamount-crypto";
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
@@ -53,11 +54,7 @@ const Component = (({balance, account, blockchainCode}: Props & Actions & OwnPro
           <AccountBalance
             key={"main"}
             classes={accountClasses}
-            fiatStyle={false}
             balance={balance}
-            decimals={8}
-            symbol={blockchainCode.toUpperCase()}
-            showFiat={false}
           />
         </Grid>
       </Grid>
@@ -68,7 +65,7 @@ const Component = (({balance, account, blockchainCode}: Props & Actions & OwnPro
 
 // State Properties
 interface Props {
-  balance: number;
+  balance: Satoshi;
   blockchainCode: BlockchainCode
 }
 
@@ -86,7 +83,7 @@ export default connect(
   (state: IState, ownProps: OwnProps): Props => {
     const {account} = ownProps;
     const blockchainCode = blockchainIdToCode(account.blockchain);
-    const balance = 0;
+    const balance = Satoshi.ZERO;
 
     return {
       balance,

@@ -16,12 +16,12 @@ const setBalances = [
   accounts.actions.setBalanceAction({
     address: "0x9d8e3fed246384e726b5962577503b916fb246d7",
     blockchain: BlockchainCode.ETH,
-    value: "918522410056000000000000"
+    value: "918522410056000000000000/WEI"
   }),
   accounts.actions.setBalanceAction({
     address: "0x577503b916fb246d79d8e3fed246384e726b5962",
     blockchain: BlockchainCode.ETC,
-    value: "498123400000000000000000"
+    value: "498123400000000000000000/WEI"
   }),
   tokens.actions.setTokenBalance(BlockchainCode.ETH, {
     decimals: 18,

@@ -1,10 +1,10 @@
 import {storiesOf} from '@storybook/react';
 import * as React from 'react';
 import {WalletReference} from "../../src";
-import {Units} from '@emeraldwallet/core';
 import {IBalanceValue} from "@emeraldwallet/store";
-import {Units as WeiUnits, Wei} from "@emeraldplatform/eth";
 import {Wallet} from '@emeraldpay/emerald-vault-core';
+import {Wei} from "@emeraldpay/bigamount-crypto";
+import {tokenAmount} from "@emeraldwallet/core";
 
 const wallet1: Wallet = {
   entries: [],
@@ -23,17 +23,14 @@ const wallet2: Wallet = {
 
 const balance1: IBalanceValue = {
   balance: Wei.ZERO,
-  token: "ETH"
 }
 
 const balance2: IBalanceValue = {
-  balance: new Wei(10.25, WeiUnits.ETHER),
-  token: "ETH"
+  balance: new Wei(10.25),
 }
 
 const balance3: IBalanceValue = {
-  balance: new Units(1045, 18),
-  token: "DAI"
+  balance: tokenAmount(1045, "dai"),
 }
 
 storiesOf('Wallet', module)
