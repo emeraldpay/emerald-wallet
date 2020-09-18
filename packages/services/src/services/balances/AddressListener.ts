@@ -1,14 +1,10 @@
 import {
-  AddressBalance,
-  AnyAddress,
-  Asset,
-  BalanceRequest,
   BlockchainClient,
-  ClientReadable,
-  MultiAddress,
-  SingleAddress
-} from '@emeraldpay/grpc-client';
-import extractChain from '../../extractChain';
+} from '@emeraldpay/api-client-node';
+import {
+  BalanceRequest, AddressBalance, Publisher
+} from '@emeraldpay/api-client-core';
+import {BlockchainCode, blockchainCodeToId} from "@emeraldwallet/core";
 
 interface IAccountStatusEvent {
   address: string;
@@ -20,7 +16,7 @@ type HeadListener = (status: IAccountStatusEvent) => void;
 
 export class AddressListener {
   public client: BlockchainClient;
-  public response?: ClientReadable<AddressBalance>;
+  public response?: Publisher<AddressBalance>;
 
   constructor (client: BlockchainClient) {
     this.client = client;
@@ -33,41 +29,31 @@ export class AddressListener {
     this.response = undefined;
   }
 
-  public subscribe (chainCode: string, addresses: string[], handler: HeadListener) {
-    const chain = extractChain(chainCode);
-    const pbMultiAddr = new MultiAddress();
-    addresses.forEach((it) => {
-      const pbAddr = new SingleAddress();
-      pbAddr.setAddress(it);
-      pbMultiAddr.addAddresses(pbAddr);
-    });
-    const pbAnyAddr = new AnyAddress();
-    pbAnyAddr.setAddressMulti(pbMultiAddr);
+  public subscribe(chainCode: BlockchainCode, addresses: string[], handler: HeadListener) {
 
-    const asset = new Asset();
-    asset.setChain(chain.id);
-    asset.setCode('Ether');
-    const request = new BalanceRequest();
-    request.setAsset(asset);
-    request.setAddress(pbAnyAddr);
+    const request: BalanceRequest = {
+      address: addresses,
+      asset: {
+        blockchain: blockchainCodeToId(chainCode),
+        code: "ETHER"
+      }
+    };
 
-    this.client.subscribeBalance(request, (response: ClientReadable<AddressBalance>) => {
-      response.on('data', (data: AddressBalance) => {
-        const address = data.getAddress();
+
+    this.response = this.client.subscribeBalance(request)
+      .onData((data) => {
+        const address = data.address;
         if (handler && data && address) {
           handler({
-            address: address.getAddress(),
-            balance: data.getBalance(),
-            asset: data.getAsset()?.getCode()
+            address,
+            balance: data.balance,
+            asset: data.asset.code
           });
         }
-      });
-      response.on('end', () => {
-      });
-      response.on('error', (err) => {
+      })
+      .onError((err) => {
         console.warn('response error addr', err);
       });
-      this.response = response;
-    });
   }
+
 }

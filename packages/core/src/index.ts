@@ -12,7 +12,7 @@ export {
 
 import * as blockchains from './blockchains';
 export {blockchains};
-export {HDPath, isCoinTickerCode} from './blockchains';
+export {HDPath, isCoinTickerCode, isEthereum, isBitcoin} from './blockchains';
 export {tokenAmount} from './blockchains';
 
 import * as workflow from './workflow';

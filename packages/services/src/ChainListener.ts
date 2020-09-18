@@ -1,9 +1,9 @@
 import {
-  BlockchainClient, ChainHead, CHAINS, ClientReadable
-} from '@emeraldpay/grpc-client';
+  BlockchainClient
+} from '@emeraldpay/api-client-node';
 
-import extractChain from './extractChain';
-import {Logger} from "@emeraldwallet/core";
+import {BlockchainCode, blockchainCodeToId, Logger} from "@emeraldwallet/core";
+import {Publisher, ChainHead} from '@emeraldpay/api-client-core';
 
 interface ChainStatus {
   height: number;
@@ -16,7 +16,7 @@ const log = Logger.forCategory('ChainListener');
 
 export class ChainListener {
   public client: BlockchainClient;
-  public response?: ClientReadable<ChainHead>;
+  public response?: Publisher<ChainHead>;
 
   constructor(client: BlockchainClient) {
     this.client = client;
@@ -29,27 +29,19 @@ export class ChainListener {
     this.response = undefined;
   }
 
-  public subscribe (chainCode: string, handler: HeadListener) {
-    const chain = extractChain(chainCode);
-    if (chain.code === CHAINS.UNSPECIFIED.code) {
-      console.warn('Unknown chain: ', chainCode, 'Ignoring.');
-      return;
-    }
-    const request = chain.toProtobuf();
-    this.client.subscribeHead(request, (response: ClientReadable<ChainHead>) => {
-      response.on('data', (data: ChainHead) => {
+  public subscribe(chainCode: BlockchainCode, handler: HeadListener) {
+    this.response = this.client.subscribeHead(blockchainCodeToId(chainCode))
+      .onData((data) => {
         // console.log(`New blockchain height. Chain: ${data.getChain()}, height: ${data.getHeight()}`);
         if (handler) {
-          handler({height: data.getHeight(), hash: data.getBlockId()});
+          handler({height: data.height, hash: data.blockId});
         }
-      });
-      response.on('error', (err) => {
+      })
+      .onError((err) => {
         log.error("Connection error", err);
+      })
+      .finally(() => {
+        log.warn("Subscription to blocks on " + chainCode + " is closed");
       });
-      response.on('end', () => {
-        log.warn("Connection closed");
-      });
-      this.response = response;
-    });
   }
 }

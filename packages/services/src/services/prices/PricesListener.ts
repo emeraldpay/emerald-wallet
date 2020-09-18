@@ -1,41 +1,33 @@
-import {
-  ClientReadable, GetRatesRequest, GetRatesResponse, MarketClient,
-  Pair,
-  Rate
-} from '@emeraldpay/grpc-client';
+import {MarketClient} from '@emeraldpay/api-client-node';
+import {GetRatesRequest, AnyCurrency} from "@emeraldpay/api-client-core";
 
-export type PriceHandler = (prices: {[key: string]: string}) => void;
+export type PriceHandler = (prices: { [key: string]: string }) => void;
 
 export class PriceListener {
   public client: MarketClient;
-  public response?: ClientReadable<GetRatesResponse>;
 
-  constructor (client: MarketClient) {
+  constructor(client: MarketClient) {
     this.client = client;
   }
 
-  public stop () {
-    if (this.response) {
-      this.response.cancel();
-    }
-    this.response = undefined;
+  public stop() {
   }
 
-  public request (froms: string[], to: string, handler: PriceHandler) {
-    const request = new GetRatesRequest();
+  public request(froms: AnyCurrency[], to: AnyCurrency, handler: PriceHandler) {
+    const request: GetRatesRequest = [];
     froms.forEach((from) => {
-      const pair = new Pair();
-      pair.setBase(from);
-      pair.setTarget(to);
-      request.addPairs(pair);
+      request.push({
+        base: from,
+        target: to
+      });
     });
 
     this.client.getRates(request).then((resp) => {
       if (handler) {
-        const result: {[key: string]: string} = {};
-        resp.getRatesList().forEach((item) => {
-          if (item.getTarget() === to && froms.indexOf(item.getBase()) >= 0) {
-            result[item.getBase()] = item.getRate();
+        const result: { [key: string]: string } = {};
+        resp.forEach((item) => {
+          if (item.target === to && froms.indexOf(item.base) >= 0) {
+            result[item.base] = item.rate;
           }
         });
         handler(result);

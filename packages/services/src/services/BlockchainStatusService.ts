@@ -2,7 +2,7 @@ import {blockchains} from '@emeraldwallet/store';
 import {ChainListener} from '../ChainListener';
 import {IService} from './Services';
 import {WebContents} from 'electron';
-import {Logger} from "@emeraldwallet/core";
+import {BlockchainCode, Logger} from "@emeraldwallet/core";
 import {EmeraldApiAccess} from "..";
 
 const log = Logger.forCategory('BlockchainStatusService');
@@ -11,13 +11,10 @@ export class BlockchainStatusService implements IService {
   public id: string;
   private apiAccess: EmeraldApiAccess;
   private webContents?: WebContents;
-  private readonly chain: string;
+  private readonly chain: BlockchainCode;
   private listener: ChainListener | null = null;
 
-  constructor(chain: string, webContents: WebContents, apiAccess: EmeraldApiAccess) {
-    if (chain === 'mainnet') {
-      chain = 'etc';
-    }
+  constructor(chain: BlockchainCode, webContents: WebContents, apiAccess: EmeraldApiAccess) {
     this.chain = chain;
     this.webContents = webContents;
     this.id = `BlockchainStatus-${chain}`;

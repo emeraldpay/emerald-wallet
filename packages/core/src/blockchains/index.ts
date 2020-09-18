@@ -6,7 +6,9 @@ export {
   isValidChain,
   blockchainById,
   blockchainCodeToId,
-  blockchainIdToCode
+  blockchainIdToCode,
+  isBitcoin,
+  isEthereum
 } from './blockchains';
 export {IBlockchain} from './IBlockchain';
 export {CoinTickerCode, isCoinTickerCode} from './CoinTicker';

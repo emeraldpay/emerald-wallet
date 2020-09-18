@@ -14,7 +14,10 @@
     "test:coverage": "jest --coverage --passWithNoTests && codecov"
   },
   "dependencies": {
-    "@emeraldpay/grpc-client": "0.11.3-0.2",
+    "@emeraldpay/api-client-core": "0.2.0",
+    "@emeraldpay/api-client-node": "0.2.0",
+    "@emeraldpay/bigamount": "^0.1.0",
+    "@emeraldpay/bigamount-crypto": "^0.1.0",
     "@emeraldplatform/eth-rpc": "0.5.1",
     "@emeraldplatform/rpc": "0.5.1",
     "@emeraldwallet/core": "^2.4.0-alpha.0",

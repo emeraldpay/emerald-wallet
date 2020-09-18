@@ -120,3 +120,11 @@ export function blockchainIdToCode(id: number): BlockchainCode {
   }
   throw Error('Unsupported blockchain id: ' + id);
 }
+
+export function isEthereum(code: BlockchainCode): boolean {
+  return code == BlockchainCode.ETH || code == BlockchainCode.Kovan || code == BlockchainCode.ETC
+}
+
+export function isBitcoin(code: BlockchainCode): boolean {
+  return code == BlockchainCode.BTC || code == BlockchainCode.TestBTC
+}

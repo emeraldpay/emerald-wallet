@@ -1,4 +1,4 @@
-import { BlockchainClient } from '@emeraldpay/grpc-client';
+import {BlockchainClient} from '@emeraldpay/api-client-node';
 import {
   EthRpc, VerifyBlockHash, VerifyGenesis, VerifyMinPeers, VerifyNotSyncing
 } from '@emeraldplatform/eth-rpc';
