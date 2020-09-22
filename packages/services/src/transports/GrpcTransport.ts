@@ -1,13 +1,12 @@
 import {
   BlockchainClient,
-} from '@emeraldpay/api-client-node';
+} from '@emeraldpay/api-node';
 import {
   NativeCallItem, isNativeCallResponse, isNativeCallError
-} from '@emeraldpay/api-client-core';
+} from '@emeraldpay/api';
 import {JsonRpcRequest, Transport} from '@emeraldplatform/rpc';
-import {TextDecoder, TextEncoder} from 'text-encoding';
 import {BlockchainCode, blockchainCodeToId} from "@emeraldwallet/core";
-import {Blockchain} from '@emeraldpay/api-client-core';
+import {Blockchain} from '@emeraldpay/api';
 
 /**
  * It should be used for request/response trace in dev version
@@ -52,7 +51,10 @@ class GrpcTransport implements Transport {
           };
           results.push(full);
         })
-        .onError((err) => reject(err))
+        .onError((err) => {
+          console.warn("Native Call error", err.message);
+          reject(err)
+        })
         .finally(() => {
           resolve(results);
         });

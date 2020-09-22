@@ -18,7 +18,8 @@
   ],
   "references": [
     { "path": "../core" },
-    { "path": "../store" },
-    { "path": "../vault" }
+    {
+      "path": "../store"
+    }
   ]
 }

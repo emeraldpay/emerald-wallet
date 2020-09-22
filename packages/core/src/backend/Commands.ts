@@ -12,11 +12,13 @@ export enum Commands {
   PERSIST_TX_HISTORY = 'persist-tx-history',
   LOAD_TX_HISTORY = 'load-tx-history',
 
+  // @deprecated
   ERC20_GET_BALANCE = 'get-erc20-balance',
   GET_GAS_PRICE = 'get-gas-price',
   BROADCAST_TX = 'broadcast-tx',
   ESTIMATE_TX = 'estimate-tx',
   SIGN_TX = 'sign-tx',
+  // @deprecated
   GET_BALANCE = 'get-balance',
 
   ACCOUNT_IMPORT_ETHEREUM_JSON = 'import-json',

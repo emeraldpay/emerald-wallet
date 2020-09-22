@@ -1,11 +1,10 @@
 import {
-  BlockchainClient,
+  BlockchainClient, ChainRef,
   TxStatus,
   TxStatusRequest
-} from '@emeraldpay/api-client-node';
-import extractChain from '../../extractChain';
-import {Logger} from "@emeraldwallet/core";
-import {Publisher} from '@emeraldpay/api-client-core';
+} from '@emeraldpay/api-node';
+import {BlockchainCode, blockchainCodeToId, Logger} from "@emeraldwallet/core";
+import {Publisher} from '@emeraldpay/api';
 
 interface ITxStatusEvent {
   txid: string;
@@ -36,10 +35,9 @@ export class TxListener {
     this.response = undefined;
   }
 
-  public subscribe (chainCode: string, hash: string, handler: TxStatusHandler) {
-    const chain = extractChain(chainCode);
+  public subscribe(chainCode: BlockchainCode, hash: string, handler: TxStatusHandler) {
     const request = new TxStatusRequest();
-    request.setChain(chain.id);
+    request.setChain(blockchainCodeToId(chainCode));
     request.setTxId(hash);
     request.setConfirmationLimit(12);
 

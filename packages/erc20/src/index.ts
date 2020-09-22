@@ -1,3 +1,3 @@
-export { default as abi } from './abi';
-export { registry } from './registry';
-export { decodeData } from './decoder';
+export {default as abi} from './abi';
+export {registry, ITokenInfo} from './registry';
+export {decodeData} from './decoder';

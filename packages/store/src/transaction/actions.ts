@@ -8,8 +8,7 @@ import {
   IApi,
   IBackendApi,
   IStoredTransaction,
-  Logger,
-  vault
+  Logger
 } from '@emeraldwallet/core';
 import { Dispatch } from 'redux';
 import * as screen from '../screen';
@@ -17,6 +16,7 @@ import { catchError, gotoScreen, showError } from '../screen/actions';
 import * as history from '../txhistory';
 import {Dispatched, IExtraArgument} from '../types';
 import {Wei} from "@emeraldpay/bigamount-crypto";
+import {IEmeraldVault} from "@emeraldpay/emerald-vault-core/lib/vault";
 
 const log = Logger.forCategory('store.transaction');
 
@@ -73,31 +73,24 @@ function verifySender (expected: string): (a: string, c: BlockchainCode) => Prom
   });
 }
 
-function signTx (
-  backendApi: IBackendApi, accountId: string, tx: IStoredTransaction, passphrase: string, blockchain: BlockchainCode
+function signTx(
+  vault: IEmeraldVault, accountId: string, tx: IStoredTransaction, passphrase: string, blockchain: BlockchainCode
 ): Promise<string | string[]> {
   log.debug(`Calling emerald api to sign tx from ${tx.from} to ${tx.to} in ${blockchain} blockchain`);
-  const plainTx: vault.TxSignRequest = {
+  const unsignedTx: UnsignedTx = {
     from: tx.from,
     to: tx.to,
-    gas: typeof tx.gas === 'string' ? parseInt(tx.gas) : tx.gas,
+    gas: quantitiesToHex(
+      typeof tx.gas === 'string' ? parseInt(tx.gas) : tx.gas
+    ),
     gasPrice: typeof tx.gasPrice === 'string' ? tx.gasPrice : new Wei(tx.gasPrice).toHex(),
     value: typeof tx.value === 'string' ? tx.value : new Wei(tx.value).toHex(),
     data: tx.data,
-    nonce: typeof tx.nonce === 'string' ? parseInt(tx.nonce) : tx.nonce
+    nonce: quantitiesToHex(
+      typeof tx.nonce === 'string' ? parseInt(tx.nonce) : tx.nonce
+    )
   };
-  log.debug(`Trying to sign tx: ${plainTx}`);
-
-  const unsignedTx: UnsignedTx = {
-    from: plainTx.from,
-    to: plainTx.to,
-    gas: quantitiesToHex(plainTx.gas),
-    gasPrice: plainTx.gasPrice,
-    value: plainTx.value,
-    data: plainTx.data,
-    nonce: quantitiesToHex(plainTx.nonce)
-  };
-  return backendApi.signTx(accountId, passphrase, unsignedTx);
+  return vault.signTx(accountId, unsignedTx, passphrase);
 }
 
 export function signTransaction (
@@ -121,10 +114,10 @@ export function signTransaction (
     return getNonce(extra.api, blockchain, from)
       .then(withNonce(originalTx))
       .then((tx: IStoredTransaction) => {
-        return signTx(extra.backendApi, accountId, tx, passphrase, blockchain)
+        return signTx(extra.api.vault, accountId, tx, passphrase, blockchain)
           .then(unwrap)
           .then((rawTx) => verifySender(from)(rawTx, blockchain))
-          .then((signed) => ({ tx, signed }));
+          .then((signed) => ({tx, signed}));
       })
       .catch(catchError(dispatch));
   };

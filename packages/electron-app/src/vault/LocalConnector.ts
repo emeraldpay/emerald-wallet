@@ -1,14 +1,14 @@
-import { EmeraldVaultNative } from '@emeraldpay/emerald-vault-native';
-import { IVault, Logger } from '@emeraldwallet/core';
-import { Vault } from './Vault';
+import {EmeraldVaultNative} from '@emeraldpay/emerald-vault-native';
+import {Logger} from '@emeraldwallet/core';
+import {IEmeraldVault} from "@emeraldpay/emerald-vault-core/lib/vault";
 
 const log = Logger.forCategory('LocalConnector');
 
 export class LocalConnector {
   public dataDir: string;
-  private readonly vault: IVault;
+  private readonly vault: IEmeraldVault;
 
-  constructor (dataDir: string) {
+  constructor(dataDir: string) {
     if (log) {
       log.info('Use Vault data dir: ' + dataDir);
     }
@@ -17,11 +17,10 @@ export class LocalConnector {
       dir: this.dataDir
     });
     nativeVault.open();
-
-    this.vault = new Vault(nativeVault);
+    this.vault = nativeVault;
   }
 
-  public getProvider (): IVault {
+  public getProvider(): IEmeraldVault {
     return this.vault;
   }
 

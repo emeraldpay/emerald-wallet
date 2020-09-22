@@ -44,18 +44,11 @@ export {
 } from './Asset';
 export {IStoredTransaction} from './history/IStoredTransaction';
 
-export { default as WalletService } from './WalletService';
-
 // address book core
 export { AddressBookService, IAddressBookService } from './address-book/AddressBookService';
 
 // emerald client
 export { IEmeraldClient } from './emerald-client/IEmeraldClient';
-
-// vault
-import * as vault from './vault';
-export { vault };
-export { default as IVault } from './vault/IVault';
 
 // logging
 export { default as Logger } from './logging/Logger';

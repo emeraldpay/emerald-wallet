@@ -2,7 +2,7 @@ import {txhistory} from '@emeraldwallet/store';
 import {IService} from '../Services';
 import {TxListener} from './TxListener';
 import {WebContents} from 'electron';
-import {Logger} from "@emeraldwallet/core";
+import {BlockchainCode, Logger} from "@emeraldwallet/core";
 import {EmeraldApiAccess} from "../..";
 
 const log = Logger.forCategory('TxService');
@@ -27,7 +27,7 @@ export class TxService implements IService {
   }
 
   public start () {
-    this.ipcMain.on('subscribe-tx', (_: any, blockchain: string, hash: string) => {
+    this.ipcMain.on('subscribe-tx', (_: any, blockchain: BlockchainCode, hash: string) => {
       const subscriber = this.apiAccess.newTxListener();
       this.subscriber.push(subscriber);
       subscriber.subscribe(blockchain, hash, (event: any) => {

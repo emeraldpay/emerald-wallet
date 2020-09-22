@@ -1,14 +1,24 @@
-import {AnyCoinCode, BlockchainCode, IApi, IBackendApi, IVault} from "@emeraldwallet/core";
+import {AnyCoinCode, BlockchainCode, IApi, IBackendApi} from "@emeraldwallet/core";
 import {
   AddEntry,
   BlockchainType,
-  EntryId, IdSeedReference, isReference,
+  EntryId,
+  IdSeedReference,
+  isReference,
   SeedDefinition,
   SeedDescription,
-  SeedReference, UnsignedTx,
+  SeedReference,
+  UnsignedTx,
   Uuid,
   AddressBookItem,
-  Wallet
+  Wallet,
+  IEmeraldVault,
+  AddressRole,
+  CurrentAddress,
+  WalletState,
+  CreateAddressBookItem,
+  WalletCreateOptions,
+  LedgerSeedReference
 } from "@emeraldpay/emerald-vault-core";
 
 export class MemoryVault {
@@ -42,7 +52,7 @@ export class BlockchainMock {
   }
 }
 
-export class VaultMock implements IVault {
+export class VaultMock implements IEmeraldVault {
 
   readonly vault: MemoryVault;
 
@@ -50,55 +60,7 @@ export class VaultMock implements IVault {
     this.vault = vault;
   }
 
-  addEntry(walletId: Uuid, account: AddEntry): EntryId {
-    return undefined;
-  }
-
-  addToAddressBook(item: AddressBookItem): boolean {
-    return false;
-  }
-
-  addWallet(label: string | undefined): Uuid {
-    return undefined;
-  }
-
-  addWalletWithSeed(seedId: string, label: string | undefined): Uuid {
-    return undefined;
-  }
-
-  exportJsonPrivateKey(accountFullId: EntryId, password?: string): Promise<string> {
-    return Promise.resolve("");
-  }
-
-  exportRawPrivateKey(accountFullId: EntryId, password: string): Promise<string> {
-    return Promise.resolve("");
-  }
-
-  generateMnemonic(size: number): string {
-    return "";
-  }
-
-  getConnectedHWSeed(create: boolean): SeedDescription | undefined {
-    return undefined;
-  }
-
-  getWallet(id: Uuid): Wallet | undefined {
-    return undefined;
-  }
-
-  importSeed(seed: SeedDefinition): Uuid {
-    return undefined;
-  }
-
-  isSeedAvailable(seed: Uuid | SeedReference | SeedDefinition): boolean {
-    return false;
-  }
-
-  listAddressBook(blockchain: BlockchainCode): AddressBookItem[] {
-    return [];
-  }
-
-  listSeedAddresses(seedId: Uuid | SeedReference | SeedDefinition, blockchain: BlockchainType, hdpaths: string[]): { [key: string]: string } {
+  listSeedAddresses(seedId: Uuid | SeedReference | SeedDefinition, blockchain: number, hdpaths: string[]): Promise<{ [key: string]: string }> {
     console.log("list addresses");
     if (typeof seedId == "object") {
       if (seedId.type == "id") {
@@ -113,7 +75,7 @@ export class VaultMock implements IVault {
 
         const seedData = this.vault.seedAddresses[seedId.value];
         if (!seedData) {
-          return {};
+          return Promise.resolve({});
         }
         const result = {}
         hdpaths.forEach((hdpath) => {
@@ -121,40 +83,112 @@ export class VaultMock implements IVault {
             result[hdpath] = seedData[hdpath]
           }
         })
-        return result
+        return Promise.resolve(result);
       }
     }
     console.log("Unsupported seed", seedId)
-    return {};
+    return Promise.resolve({});
   }
 
-  listSeeds(): SeedDescription[] {
-    return [];
+  exportJsonPk(entryId: EntryId, password?: string): Promise<string> {
+    return Promise.resolve("");
   }
 
-  listWallets(): Wallet[] {
-    return [];
+  exportRawPk(entryId: EntryId, password: string): Promise<string> {
+    return Promise.resolve("");
   }
 
-  removeFromAddressBook(blockchain: BlockchainCode, address: string): boolean {
-    return false;
+  getEntryAddresses(id: EntryId, role: AddressRole, start: number, limit: number): Promise<CurrentAddress[]> {
+    return Promise.resolve([]);
   }
 
-  setWalletLabel(walletId: Uuid, label: string): boolean {
-    return false;
+  removeEntry(entryId: EntryId): Promise<boolean> {
+    return Promise.resolve(false);
   }
 
-  signTx(accountFullId: EntryId, tx: UnsignedTx, password?: string): string {
+  removeWallet(walletId: Uuid): Promise<boolean> {
+    return Promise.resolve(false);
+  }
+
+  setEntryLabel(entryFullId: EntryId, label: string | null): Promise<boolean> {
+    return Promise.resolve(false);
+  }
+
+  setEntryReceiveDisabled(entryFullId: EntryId, disabled: boolean): Promise<boolean> {
+    return Promise.resolve(false);
+  }
+
+  setState(state: WalletState): Promise<void> {
+    return Promise.resolve(undefined);
+  }
+
+  vaultVersion(): string {
     return "";
+  }
+
+  addEntry(walletId: Uuid, entry: AddEntry): Promise<EntryId> {
+    return Promise.resolve(undefined);
+  }
+
+  addToAddressBook(item: CreateAddressBookItem): Promise<boolean> {
+    return Promise.resolve(false);
+  }
+
+  addWallet(labelOrOptions?: string | WalletCreateOptions | undefined): Promise<Uuid> {
+    return Promise.resolve(undefined);
+  }
+
+  generateMnemonic(size: number): Promise<string> {
+    return Promise.resolve("");
+  }
+
+  getConnectedHWSeed(create: boolean): Promise<SeedDescription | undefined> {
+    return Promise.resolve(undefined);
+  }
+
+  getWallet(id: Uuid): Promise<Wallet | undefined> {
+    return Promise.resolve(undefined);
+  }
+
+  importSeed(seed: SeedDefinition | LedgerSeedReference): Promise<Uuid> {
+    return Promise.resolve(undefined);
+  }
+
+  isSeedAvailable(seed: Uuid | SeedReference | SeedDefinition): Promise<boolean> {
+    return Promise.resolve(false);
+  }
+
+  listAddressBook(blockchain: number): Promise<AddressBookItem[]> {
+    return Promise.resolve([]);
+  }
+
+  listSeeds(): Promise<SeedDescription[]> {
+    return Promise.resolve([]);
+  }
+
+  listWallets(): Promise<Wallet[]> {
+    return Promise.resolve([]);
+  }
+
+  removeFromAddressBook(blockchain: number, address: string): Promise<boolean> {
+    return Promise.resolve(false);
+  }
+
+  setWalletLabel(walletId: Uuid, label: string): Promise<boolean> {
+    return Promise.resolve(false);
+  }
+
+  signTx(entryId: EntryId, tx: UnsignedTx, password?: string): Promise<string> {
+    return Promise.resolve("");
   }
 
 }
 
 export class ApiMock implements IApi {
 
-  readonly vault: IVault;
+  readonly vault: IEmeraldVault;
 
-  constructor(vault: IVault) {
+  constructor(vault: IEmeraldVault) {
     this.vault = vault;
   }
 
@@ -169,40 +203,12 @@ export class BackendMock implements IBackendApi {
   readonly vault: MemoryVault = new MemoryVault();
   readonly blockchains: Record<string, BlockchainMock> = {};
 
-  addAddressBookItem(item: AddressBookItem): Promise<boolean> {
-    return Promise.resolve(false);
-  }
-
   broadcastSignedTx(blockchain: BlockchainCode, tx: any): Promise<string> {
     return Promise.resolve("");
   }
 
-  createHdAccount(walletId: string, blockchain: BlockchainCode, hdPath: string, password: string): Promise<string> {
-    return Promise.resolve("");
-  }
-
-  createWallet(name: string, password: string, mnemonic: string): Promise<Wallet> {
-    return Promise.resolve(undefined);
-  }
-
   estimateTxCost(blockchain: BlockchainCode, tx: any): Promise<number> {
     return Promise.resolve(0);
-  }
-
-  exportJsonKeyFile(accountId: string): Promise<string> {
-    return Promise.resolve("");
-  }
-
-  exportRawPrivateKey(accountId: string, password: string): Promise<string> {
-    return Promise.resolve("");
-  }
-
-  getAddressBookItems(blockchain: BlockchainCode): Promise<AddressBookItem[]> {
-    return Promise.resolve([]);
-  }
-
-  getAllWallets(): Promise<Wallet[]> {
-    return Promise.resolve([]);
   }
 
   getBalance(blockchain: BlockchainCode, address: string, tokens: AnyCoinCode[]): Promise<Record<string, string>> {
@@ -226,28 +232,8 @@ export class BackendMock implements IBackendApi {
     return Promise.resolve(result);
   }
 
-  getErc20Balance(blockchain: BlockchainCode, tokenId: string, address: string): Promise<string> {
-    return Promise.resolve("");
-  }
-
   getGasPrice(blockchain: BlockchainCode): Promise<number> {
     return Promise.resolve(0);
-  }
-
-  getWallet(walletId: string): Promise<Wallet> {
-    return Promise.resolve(undefined);
-  }
-
-  importEthereumJson(blockchain: BlockchainCode, json: any): Promise<string> {
-    return Promise.resolve("");
-  }
-
-  importRawPrivateKey(blockchain: BlockchainCode, privateKey: string, password: string): Promise<string> {
-    return Promise.resolve("");
-  }
-
-  listSeeds(): Promise<SeedDescription[]> {
-    return Promise.resolve([]);
   }
 
   persistTransactions(blockchain: BlockchainCode, txs: any[]): Promise<void> {
@@ -293,4 +279,5 @@ export class BackendMock implements IBackendApi {
       this.blockchains[code.toLowerCase()] = new BlockchainMock()
     })
   }
+
 }

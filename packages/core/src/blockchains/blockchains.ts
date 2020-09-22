@@ -45,7 +45,7 @@ export const Blockchains: {[key: string]: IBlockchain} = {
     code: BlockchainCode.TestBTC,
     coinTicker: CoinTicker.TESTBTC,
     decimals: 8,
-    hdPath: HDPath.default().forPurpose(84)
+    hdPath: HDPath.default().forPurpose(84).forCoin(1)
   })
 };
 

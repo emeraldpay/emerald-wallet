@@ -5,8 +5,8 @@ import {
   emeraldCredentials,
   MarketClient,
   MonitoringClient
-} from '@emeraldpay/api-client-node';
-import {ConnectionStatus} from '@emeraldpay/api-client-core';
+} from '@emeraldpay/api-node';
+import {ConnectionStatus} from '@emeraldpay/api';
 import {IEmeraldClient, Logger} from '@emeraldwallet/core';
 import * as os from 'os';
 import {ChainListener} from '../ChainListener';
@@ -251,7 +251,10 @@ export class EmeraldApiAccess implements IEmeraldClient {
   }
 
   protected ping () {
-    this.monitoringClient.ping();
+    this.monitoringClient.ping()
+      .then(() => {
+      })
+      .catch((err) => console.warn("Ping error: " + err.message));
     setTimeout(this.ping.bind(this), PERIOD_PING);
   }
 

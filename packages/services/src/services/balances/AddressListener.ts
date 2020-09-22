@@ -1,10 +1,10 @@
 import {
   BlockchainClient,
-} from '@emeraldpay/api-client-node';
+} from '@emeraldpay/api-node';
 import {
   BalanceRequest, AddressBalance, Publisher
-} from '@emeraldpay/api-client-core';
-import {BlockchainCode, blockchainCodeToId} from "@emeraldwallet/core";
+} from '@emeraldpay/api';
+import {BlockchainCode, blockchainCodeToId, isEthereum} from "@emeraldwallet/core";
 
 interface IAccountStatusEvent {
   address: string;
@@ -35,7 +35,7 @@ export class AddressListener {
       address: addresses,
       asset: {
         blockchain: blockchainCodeToId(chainCode),
-        code: "ETHER"
+        code: isEthereum(chainCode) ? "ETHER" : "BTC"
       }
     };
 

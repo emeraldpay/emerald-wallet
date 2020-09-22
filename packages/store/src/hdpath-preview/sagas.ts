@@ -1,18 +1,18 @@
-import {Blockchains, IBackendApi, HDPath, AnyCoinCode, IVault, blockchainCodeToId} from "@emeraldwallet/core";
+import {Blockchains, IBackendApi, HDPath, AnyCoinCode, blockchainCodeToId} from "@emeraldwallet/core";
 import {SagaIterator} from "redux-saga";
 import {all, call, put, takeEvery, takeLatest} from "@redux-saga/core/effects";
 import {ActionTypes, ILoadAddresses, ILoadBalances} from "./types";
 import * as actions from "./actions";
-import {getBlockchainType} from "@emeraldpay/emerald-vault-core";
+import {IEmeraldVault} from "@emeraldpay/emerald-vault-core/lib/vault";
 
-function* loadAddresses(vault: IVault, action: ILoadAddresses): SagaIterator {
+function* loadAddresses(vault: IEmeraldVault, action: ILoadAddresses): SagaIterator {
   const accountId = action.account;
   for (const blockchain of action.blockchains) {
     const blockchainDetails = Blockchains[blockchain.toLowerCase()];
     const hdpath = blockchainDetails.params.hdPath.forAccount(accountId).toString();
     const addresses: { [key: string]: string } = yield call([vault, vault.listSeedAddresses],
       action.seed,
-      getBlockchainType(blockchainCodeToId(blockchain)),
+      blockchainCodeToId(blockchain),
       [hdpath]
     );
     yield put(actions.setAddresses(action.seed, blockchain, addresses))
@@ -29,7 +29,7 @@ function* loadBalances(backendApi: IBackendApi, action: ILoadBalances): SagaIter
   }
 }
 
-export function* root(vault: IVault, backendApi: IBackendApi) {
+export function* root(vault: IEmeraldVault, backendApi: IBackendApi) {
   yield all([
     takeEvery(ActionTypes.LOAD_ADDRESSES, loadAddresses, vault),
     takeEvery(ActionTypes.LOAD_BALANCES, loadBalances, backendApi)

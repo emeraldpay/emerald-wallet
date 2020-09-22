@@ -1138,6 +1138,28 @@
     global-agent "^2.0.2"
     global-tunnel-ng "^2.7.1"
 
+"@emeraldpay/api-node@0.2.0-alpha":
+  version "0.2.0-alpha"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/api-node/-/api-node-0.2.0-alpha.tgz#65574a022df73f27f293bca4814b6942fea2cbd0"
+  integrity sha512-n0y5RY5P0DksfbsDE1v64ETUPv0Wnmflyz8BEMAIqY8PcsYApUiPrDt6IrcuRRk9dRT/Rfxe2sdtdNDT/4R+bg==
+  dependencies:
+    "@emeraldpay/api" "0.2.0-alpha"
+    "@types/google-protobuf" "^3.7.2"
+    google-protobuf "^3.10.0"
+    grpc "^1.24.2"
+    hash.js "^1.1.7"
+    protobufjs "^6.8.8"
+    text-encoding "^0.7.0"
+
+"@emeraldpay/api@0.2.0-alpha":
+  version "0.2.0-alpha"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/api/-/api-0.2.0-alpha.tgz#005cb4fb31b63f8f2d9906ac139fe3dd49e452de"
+  integrity sha512-/EGciy/7mNp54MA3TtqYKghqPOPy4dt4ZfgCQoITppucYCuR/JcGKS70N72GBfBgR8dTsPML45R/kTmHl3klVw==
+  dependencies:
+    google-protobuf "^3.10.0"
+    protobufjs "^6.8.8"
+    text-encoding "^0.7.0"
+
 "@emeraldpay/bigamount-crypto@^0.1.0":
   version "0.1.0"
   resolved "https://registry.yarnpkg.com/@emeraldpay/bigamount-crypto/-/bigamount-crypto-0.1.0.tgz#f924472962811460477709b3dd93971031cb39eb"
@@ -1153,30 +1175,17 @@
   dependencies:
     bignumber.js "^8.0.2"
 
-"@emeraldpay/emerald-vault-core@0.5.2", "@emeraldpay/emerald-vault-core@^0.5.2":
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-core/-/emerald-vault-core-0.5.2.tgz#f63fa411f68457d71c4e5d490a485c8eb848c56e"
-  integrity sha512-6Gl4SmFMrPkqETSt+GpTHbwBKfD1Ol8C6Ln5rhsrjeV15rWIDP95lBWBNTNRN0habA3hTwb1EuLXRG9ITeLhlQ==
+"@emeraldpay/emerald-vault-core@0.6.0-alpha", "@emeraldpay/emerald-vault-core@^0.6.0-alpha":
+  version "0.6.0-alpha"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-core/-/emerald-vault-core-0.6.0-alpha.tgz#4fbf9008f9b184afc89914895151877f44638731"
+  integrity sha512-QfRVraanY/GtlCsCkIqxNp2VwZSq2QXTEdZlDop83QCLrvivt325bWEG/01kLLOYPa18XeqYAwrw/8lDFcgbJA==
 
-"@emeraldpay/emerald-vault-native@^0.5.2":
-  version "0.5.2"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-native/-/emerald-vault-native-0.5.2.tgz#807a61ca59a8988e3e4d8f13fd1c428e61f83a7c"
-  integrity sha512-W/eLunS/7dDs9uPOmaaxxjl7pM5l923dw5Gxz8VN8xBRz0bQyrLDcW2JFzRiY/ySBRda/+8cFt31+OvXFZnmPQ==
+"@emeraldpay/emerald-vault-native@^0.6.0-alpha":
+  version "0.6.0-alpha"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-native/-/emerald-vault-native-0.6.0-alpha.tgz#d93090fad42a3a40a12787aa18fd8f68827721e6"
+  integrity sha512-yy8AeOoAmpLL+kMFAPE76j0UZ4+WI9g4Mz98JSLsIEjVuaddelNsySvNBvIfSa3d1dcpxNgs4r2pUo9PHaJ7rQ==
   dependencies:
-    "@emeraldpay/emerald-vault-core" "0.5.2"
-
-"@emeraldpay/grpc-client@0.11.3-0.2":
-  version "0.11.3-0.2"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/grpc-client/-/grpc-client-0.11.3-0.2.tgz#ab7318b2df16435bfd01e33abb96f896060efec7"
-  integrity sha512-qWOudBT6WXb2wWZY8CDE4hrK1uajgV39euIRZOIJbg/v1MUSSroNI0iOWmlT/nTECuLzd3Nz/qbjYkYVFdY1bw==
-  dependencies:
-    "@types/google-protobuf" "3.7.2"
-    google-protobuf "3.10.0"
-    graceful-fs "4.2.3"
-    grpc "^1.24.2"
-    hash.js "1.1.7"
-    protobufjs "6.8.8"
-    text-encoding "0.7.0"
+    "@emeraldpay/emerald-vault-core" "0.6.0-alpha"
 
 "@emeraldpay/hashicon-react@^0.5.1":
   version "0.5.1"
@@ -1479,20 +1488,6 @@
   dependencies:
     jest-message-util "^24.0.0"
     node-ipc "^9.1.1"
-
-"@jest-runner/electron@2.0.2":
-  version "2.0.2"
-  resolved "https://registry.yarnpkg.com/@jest-runner/electron/-/electron-2.0.2.tgz#75048860a176ad7fdb307f4dde47142a308ab679"
-  integrity sha512-lmF6HY8ZpOi54t7xICzA0oONRuAqVNfwPMJQAT+cjTbqrR0KDSSGcy7QLjD0fkl0aCR59e4weGp/uCrS502iqQ==
-  dependencies:
-    "@jest-runner/core" "^2.0.0"
-    "@jest-runner/rpc" "^2.0.0"
-    jest-haste-map "^24.0.0"
-    jest-mock "^24.0.0"
-    jest-runner "^24.0.0"
-    jest-runtime "^24.0.0"
-    jest-util "^24.0.0"
-    throat "^4.1.0"
 
 "@jest-runner/electron@^2.0.3":
   version "2.0.3"
@@ -3844,10 +3839,10 @@
     "@types/minimatch" "*"
     "@types/node" "*"
 
-"@types/google-protobuf@3.7.2":
-  version "3.7.2"
-  resolved "https://registry.yarnpkg.com/@types/google-protobuf/-/google-protobuf-3.7.2.tgz#cd8a360c193ce4d672575a20a79f49ba036d38d2"
-  integrity sha512-ifFemzjNchFBCtHS6bZNhSZCBu7tbtOe0e8qY0z2J4HtFXmPJjm6fXSaQsTG7yhShBEZtt2oP/bkwu5k+emlkQ==
+"@types/google-protobuf@^3.7.2":
+  version "3.7.3"
+  resolved "https://registry.yarnpkg.com/@types/google-protobuf/-/google-protobuf-3.7.3.tgz#429512e541bbd777f2c867692e6335ee08d1f6d4"
+  integrity sha512-FRwj40euE2bYkG+0X5w2nEA8yAzgJRcEa7RBd0Gsdkb9/tPM2pctVVAvnOUTbcXo2VmIHPo0Ae94Gl9vRHfKzg==
 
 "@types/graceful-fs@^4.1.2":
   version "4.1.3"
@@ -3916,7 +3911,7 @@
   resolved "https://registry.yarnpkg.com/@types/lodash/-/lodash-4.14.150.tgz#649fe44684c3f1fcb6164d943c5a61977e8cf0bd"
   integrity sha512-kMNLM5JBcasgYscD9x/Gvr6lTAv2NVgsKtet/hm93qMyf/D1pt+7jeEZklKJKxMVmXjxbRVQQGfqDSfipYCO6w==
 
-"@types/long@*", "@types/long@^4.0.0":
+"@types/long@*", "@types/long@^4.0.1":
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/@types/long/-/long-4.0.1.tgz#459c65fa1867dafe6a8f322c4c51695663cc55e9"
   integrity sha512-5tXH6Bx/kNGd3MgffdmP4dy2Z+G4eaXw0SE81Tq3BNadtnMR5/ySMzX4SLEzHJzSmPNn4HIdpQsBvXMUykr58w==
@@ -3936,15 +3931,15 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-13.13.5.tgz#96ec3b0afafd64a4ccea9107b75bf8489f0e5765"
   integrity sha512-3ySmiBYJPqgjiHA7oEaIo2Rzz0HrOZ7yrNO5HWyaE5q0lQ3BppDZ3N53Miz8bw2I7gh1/zir2MGVZBvpb1zq9g==
 
-"@types/node@^10.1.0":
-  version "10.17.21"
-  resolved "https://registry.yarnpkg.com/@types/node/-/node-10.17.21.tgz#c00e9603399126925806bed2d9a1e37da506965e"
-  integrity sha512-PQKsydPxYxF1DsAFWmunaxd3sOi3iMt6Zmx/tgaagHYmwJ/9cRH91hQkeJZaUGWbvn0K5HlSVEXkn5U/llWPpQ==
-
 "@types/node@^12.0.12", "@types/node@^12.12.0":
   version "12.12.38"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.12.38.tgz#58841a382f231ad005dbb935c36d44aa1118a26b"
   integrity sha512-75eLjX0pFuTcUXnnWmALMzzkYorjND0ezNEycaKesbUBg9eGZp4GHPuDmkRc4mQQvIpe29zrzATNRA6hkYqwmA==
+
+"@types/node@^13.7.0":
+  version "13.13.21"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-13.13.21.tgz#e48d3c2e266253405cf404c8654d1bcf0d333e5c"
+  integrity sha512-tlFWakSzBITITJSxHV4hg4KvrhR/7h3xbJdSFbYJBVzKubrASbnnIFuSgolUh7qKGo/ZeJPKUfbZ0WS6Jp14DQ==
 
 "@types/normalize-package-data@^2.4.0":
   version "2.4.0"
@@ -6192,12 +6187,7 @@ big.js@^5.2.2:
   resolved "https://registry.yarnpkg.com/big.js/-/big.js-5.2.2.tgz#65f0af382f578bcdc742bd9c281e9cb2d7768328"
   integrity sha512-vyL2OymJxmarO8gxMr0mhChsO9QGwhynfuu4+MHTAW6czfq9humCB7rKpUjDd9YUiDPU4mzpyupFSvOClAwbmQ==
 
-bignumber.js@8.0.2:
-  version "8.0.2"
-  resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-8.0.2.tgz#d8c4e1874359573b1ef03011a2d861214aeef137"
-  integrity sha512-EiuvFrnbv0jFixEQ9f58jo7X0qI2lNGIr/MxntmVzQc5JUweDSh8y8hbTCAomFtqwUPIOWcLXP0VEOSZTG7FFw==
-
-bignumber.js@^8.0.2:
+bignumber.js@8.0.2, bignumber.js@^8.0.2:
   version "8.0.2"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-8.0.2.tgz#d8c4e1874359573b1ef03011a2d861214aeef137"
   integrity sha512-EiuvFrnbv0jFixEQ9f58jo7X0qI2lNGIr/MxntmVzQc5JUweDSh8y8hbTCAomFtqwUPIOWcLXP0VEOSZTG7FFw==
@@ -10203,15 +10193,15 @@ good-listener@^1.2.2:
   dependencies:
     delegate "^3.1.2"
 
-google-protobuf@3.10.0:
-  version "3.10.0"
-  resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.10.0.tgz#f36171128090615049f9b0e42252b1a10a4bc534"
-  integrity sha512-d0cMO8TJ6xtB/WrVHCv5U81L2ulX+aCD58IljyAN6mHwdHHJ2jbcauX5glvivi3s3hx7EYEo7eUA9WftzamMnw==
-
 google-protobuf@3.7.1:
   version "3.7.1"
   resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.7.1.tgz#9ef0fa3bc9ee416ba3fbe32b21ec6b7626f898e2"
   integrity sha512-6fvlUey6cNKtWSEn1bt4CT4wc2EID1fVluHS1dOnqIlxyIu3cBid2BvWE8Rwl6wN+hRTgiAKhfyydAGV/weZYQ==
+
+google-protobuf@^3.10.0:
+  version "3.13.0"
+  resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.13.0.tgz#909c5983d75dd6101ed57c79e0528d000cdc3251"
+  integrity sha512-ZIf3qfLFayVrPvAjeKKxO5FRF1/NwRxt6Dko+fWEMuHwHbZx8/fcaAao9b0wCM6kr8qeg2te8XTpyuvKuD9aKw==
 
 got@^9.6.0:
   version "9.6.0"
@@ -10229,11 +10219,6 @@ got@^9.6.0:
     p-cancelable "^1.0.0"
     to-readable-stream "^1.0.0"
     url-parse-lax "^3.0.0"
-
-graceful-fs@4.2.3:
-  version "4.2.3"
-  resolved "https://registry.yarnpkg.com/graceful-fs/-/graceful-fs-4.2.3.tgz#4a12ff1b60376ef09862c2093edd908328be8423"
-  integrity sha512-a30VEBm4PEdx1dRB7MFK7BejejvCvBronbLjht+sHuGYj8PHs7M/5Z+rt5lw551vZ7yfTCj4Vuyy3mSJytDWRQ==
 
 graceful-fs@^4.1.11, graceful-fs@^4.1.15, graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.1.9, graceful-fs@^4.2.0, graceful-fs@^4.2.2, graceful-fs@^4.2.4:
   version "4.2.4"
@@ -10394,7 +10379,7 @@ hash-base@^3.0.0:
     readable-stream "^3.6.0"
     safe-buffer "^5.2.0"
 
-hash.js@1.1.7, hash.js@^1.0.0, hash.js@^1.0.3:
+hash.js@^1.0.0, hash.js@^1.0.3, hash.js@^1.1.7:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/hash.js/-/hash.js-1.1.7.tgz#0babca538e8d4ee4a0f8988d68866537a003cf42"
   integrity sha512-taOaskGt4z4SOANNseOviYDvjEJinIkRgmp7LbKP2YTTmVxWBl87s/uzK9r+44BclBSp2X7K1hqeNfz9JbBeXA==
@@ -15371,10 +15356,20 @@ proto-list@~1.2.1:
   resolved "https://registry.yarnpkg.com/proto-list/-/proto-list-1.2.4.tgz#212d5bfe1318306a420f6402b8e26ff39647a849"
   integrity sha1-IS1b/hMYMGpCD2QCuOJv85ZHqEk=
 
-protobufjs@6.8.8:
-  version "6.8.8"
-  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-6.8.8.tgz#c8b4f1282fd7a90e6f5b109ed11c84af82908e7c"
-  integrity sha512-AAmHtD5pXgZfi7GMpllpO3q1Xw1OYldr+dMUlAnffGTAhqkg72WdmSY71uKBF/JuyiKs8psYbtKrhi0ASCD8qw==
+protobufjs@^5.0.3:
+  version "5.0.3"
+  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-5.0.3.tgz#e4dfe9fb67c90b2630d15868249bcc4961467a17"
+  integrity sha512-55Kcx1MhPZX0zTbVosMQEO5R6/rikNXd9b6RQK4KSPcrSIIwoXTtebIczUrXlwaSrbz4x8XUVThGPob1n8I4QA==
+  dependencies:
+    ascli "~1"
+    bytebuffer "~5"
+    glob "^7.0.5"
+    yargs "^3.10.0"
+
+protobufjs@^6.8.8:
+  version "6.10.1"
+  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-6.10.1.tgz#e6a484dd8f04b29629e9053344e3970cccf13cd2"
+  integrity sha512-pb8kTchL+1Ceg4lFd5XUpK8PdWacbvV5SK2ULH2ebrYtl4GjJmS24m6CKME67jzV53tbJxHlnNOSqQHbTsR9JQ==
   dependencies:
     "@protobufjs/aspromise" "^1.1.2"
     "@protobufjs/base64" "^1.1.2"
@@ -15386,19 +15381,9 @@ protobufjs@6.8.8:
     "@protobufjs/path" "^1.1.2"
     "@protobufjs/pool" "^1.1.0"
     "@protobufjs/utf8" "^1.1.0"
-    "@types/long" "^4.0.0"
-    "@types/node" "^10.1.0"
+    "@types/long" "^4.0.1"
+    "@types/node" "^13.7.0"
     long "^4.0.0"
-
-protobufjs@^5.0.3:
-  version "5.0.3"
-  resolved "https://registry.yarnpkg.com/protobufjs/-/protobufjs-5.0.3.tgz#e4dfe9fb67c90b2630d15868249bcc4961467a17"
-  integrity sha512-55Kcx1MhPZX0zTbVosMQEO5R6/rikNXd9b6RQK4KSPcrSIIwoXTtebIczUrXlwaSrbz4x8XUVThGPob1n8I4QA==
-  dependencies:
-    ascli "~1"
-    bytebuffer "~5"
-    glob "^7.0.5"
-    yargs "^3.10.0"
 
 protocols@^1.1.0, protocols@^1.4.0:
   version "1.4.7"

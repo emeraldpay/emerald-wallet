@@ -121,40 +121,42 @@ export function waitConnection(handler: ConnectionHandler): Dispatched<any> {
   return (dispatch, getState, extra) => {
     function refresh() {
       let seed: SeedDescription | undefined;
-      const seeds = extra.api.vault.listSeeds();
-      seed = seeds.find((seed) => seed.type == "ledger");
-      if (typeof seed == "undefined") {
-        //when ledger was never used before, but may be connected
-        const q: SeedReference = {
-          type: "ledger"
-        }
-        const connected = extra.api.vault.isSeedAvailable(q);
-        if (connected) {
-          seed = {
-            type: "ledger",
-            available: true,
-            createdAt: new Date()
+      extra.api.vault.listSeeds()
+        .then((seeds) => {
+          seed = seeds.find((seed) => seed.type == "ledger");
+          if (typeof seed == "undefined") {
+            //when ledger was never used before, but may be connected
+            const q: SeedReference = {
+              type: "ledger"
+            }
+            const connected = extra.api.vault.isSeedAvailable(q);
+            if (connected) {
+              seed = {
+                type: "ledger",
+                available: true,
+                createdAt: new Date()
+              }
+            }
           }
-        }
-      }
-      console.log("Check ledger", seed);
-      if (typeof seed == 'object' && seed.available) {
-        let h = connectionHandlers.pop();
-        while (h) {
-          try {
-            h(seed);
-          } catch (e) {
-            console.warn("Failed to notify connection handler", e)
+          console.log("Check ledger", seed);
+          if (typeof seed == 'object' && seed.available) {
+            let h = connectionHandlers.pop();
+            while (h) {
+              try {
+                h(seed);
+              } catch (e) {
+                console.warn("Failed to notify connection handler", e)
+              }
+              h = connectionHandlers.pop();
+            }
+          } else {
+            if (connectionHandlers.length > 0) {
+              setTimeout(refresh, 500);
+            }
           }
-          h = connectionHandlers.pop();
-        }
-      } else {
-        if (connectionHandlers.length > 0) {
-          setTimeout(refresh, 500);
-        }
-      }
+        })
+        .catch((err) => console.warn(err));
     }
-
     refresh();
   }
 }
@@ -208,7 +210,7 @@ export function setBaseHD (hdpath: string): SetBaseHD {
 
 export function importSelected (blockchain: BlockchainCode): Dispatched<AddressSelected> {
   return (dispatch: any, getState, extra) => {
-    const { ledger } = getState();
+    const {ledger} = getState();
     const selected = ledger.get('selectedAddr').toLowerCase();
     const addresses = ledger.get('addresses');
 
@@ -218,21 +220,27 @@ export function importSelected (blockchain: BlockchainCode): Dispatched<AddressS
 
     console.info('Import Ledger address', address, hdpath);
 
-    const seed = extra.api.vault.getConnectedHWSeed(true);
-    if (typeof seed === 'undefined') {
-      console.error('Seed is unavailable');
-      return;
-    }
+    extra.api.vault.getConnectedHWSeed(true)
+      .then((seed) => {
+        if (typeof seed === 'undefined') {
+          console.error('Seed is unavailable');
+          return;
+        }
 
-    const walletId = extra.api.vault.addWallet(`Ledger ${hdpath}`);
-    const accountId = extra.api.vault.addEntry(walletId, {
-      blockchain: blockchainCodeToId(blockchain),
-      type: 'hd-path',
-      key: {
-        seed: {type: "id", value: seed.id!},
-        hdPath: hdpath
-      }
-    });
-    dispatch(selectAddressAction(undefined));
+        extra.api.vault.addWallet(`Ledger ${hdpath}`)
+          .then((walletId) =>
+            extra.api.vault.addEntry(walletId, {
+              blockchain: blockchainCodeToId(blockchain),
+              type: 'hd-path',
+              key: {
+                seed: {type: "id", value: seed.id!},
+                hdPath: hdpath
+              }
+            }).catch((err) => console.error("Failed to add entry", err))
+          )
+          .then((_) => dispatch(selectAddressAction(undefined)))
+          .catch((err) => console.error("Failed to add walelt", err))
+      })
+      .catch((err) => console.error("Failed to get HW Seed", err))
   };
 }

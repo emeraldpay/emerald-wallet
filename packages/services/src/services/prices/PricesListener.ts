@@ -1,5 +1,5 @@
-import {MarketClient} from '@emeraldpay/api-client-node';
-import {GetRatesRequest, AnyCurrency} from "@emeraldpay/api-client-core";
+import {MarketClient} from '@emeraldpay/api-node';
+import {GetRatesRequest, AnyCurrency} from "@emeraldpay/api";
 
 export type PriceHandler = (prices: { [key: string]: string }) => void;
 
@@ -32,6 +32,8 @@ export class PriceListener {
         });
         handler(result);
       }
-    }).catch((_) => {});
+    }).catch((err) => {
+      console.error("Error getting prices", err)
+    });
   }
 }

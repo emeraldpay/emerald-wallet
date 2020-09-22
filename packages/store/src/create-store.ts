@@ -39,13 +39,13 @@ export const createStore = (_api: IApi, backendApi: IBackendApi) => {
   );
 
   sagaMiddleware.run(blockchains.sagas.root, backendApi);
-  sagaMiddleware.run(addressBook.sagas.root, backendApi);
+  sagaMiddleware.run(addressBook.sagas.root, _api.vault);
   sagaMiddleware.run(tokens.sagas.root, backendApi);
   sagaMiddleware.run(ledger.sagas.root, backendApi);
   sagaMiddleware.run(txhistory.sagas.root, backendApi);
   sagaMiddleware.run(wallet.sagas.root);
   sagaMiddleware.run(settings.sagas.root);
-  sagaMiddleware.run(accounts.sagas.root, _api.vault, backendApi);
+  sagaMiddleware.run(accounts.sagas.root, _api.vault);
   sagaMiddleware.run(hdpathPreview.sagas.root, _api.vault, backendApi);
   return store;
 };

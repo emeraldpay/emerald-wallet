@@ -8,9 +8,8 @@ const {
   EmeraldApiAccessProd,
 } = require('@emeraldwallet/services');
 const {
-  getMainWindow, protocol, assertSingletonWindow, Application, Settings
+  getMainWindow, protocol, assertSingletonWindow, Application, Settings, LocalConnector
 } = require('@emeraldwallet/electron-app');
-const { LocalConnector } = require('@emeraldwallet/vault');
 const { app, ipcMain, session } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path'); // eslint-disable-line
 const { LedgerApi } = require('@emeraldwallet/ledger');

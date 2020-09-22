@@ -1,9 +1,9 @@
 import {
   BlockchainClient
-} from '@emeraldpay/api-client-node';
+} from '@emeraldpay/api-node';
 
 import {BlockchainCode, blockchainCodeToId, Logger} from "@emeraldwallet/core";
-import {Publisher, ChainHead} from '@emeraldpay/api-client-core';
+import {Publisher, ChainHead} from '@emeraldpay/api';
 
 interface ChainStatus {
   height: number;
@@ -38,7 +38,7 @@ export class ChainListener {
         }
       })
       .onError((err) => {
-        log.error("Connection error", err);
+        log.error("Chain status error", err);
       })
       .finally(() => {
         log.warn("Subscription to blocks on " + chainCode + " is closed");

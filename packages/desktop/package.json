@@ -67,7 +67,6 @@
     "@emeraldwallet/services": "^2.4.0-alpha.0",
     "@emeraldwallet/store": "^2.4.0-alpha.0",
     "@emeraldwallet/ui": "^2.4.0-alpha.0",
-    "@emeraldwallet/vault": "^2.4.0-alpha.0",
     "babel-polyfill": "^6.26.0",
     "bignumber.js": "8.0.2",
     "es6-promise": "4.1.1",
