@@ -108,7 +108,7 @@ jobs:
       - name: Install JS dependencies
         run: |
           yarn install --network-timeout 1000000
-          yarn workspace @emeraldwallet/desktop run prebuld:grpc
+          yarn workspace @emeraldwallet/desktop run prebuilt:grpc
 
       - name: Build
         run: yarn build:dist
