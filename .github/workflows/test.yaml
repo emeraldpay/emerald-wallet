@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - master
+      - ci/*
   # on a pull request
   pull_request:
     branches:
