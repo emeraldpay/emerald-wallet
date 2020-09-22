@@ -24,7 +24,8 @@
     "typescript": "3.7.5"
   },
   "resolutions": {
-    "@types/node": "12.12.62"
+    "@types/node": "12.12.62",
+    "grpc": "1.24.3"
   },
   "workspaces": [
     "packages/*"
