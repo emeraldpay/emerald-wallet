@@ -11,7 +11,9 @@
     "test:coverage": "lerna run test:coverage --stream --concurrency 1",
     "build:neon": "electron-build-env neon build @emeraldpay/emerald-vault-native --release",
     "electron:install-vault-native": "cd node_modules/@emeraldpay/emerald-vault-native && node-pre-gyp install --fallback-to-build=false --update-binary --runtime=electron --target=7.0.0",
-    "postinstall": "npm run electron:install-vault-native"
+    "postinstall": "yarn prebuilt:vault && yarn prebuilt:grpc",
+    "prebuilt:vault": "npm run electron:install-vault-native",
+    "prebuilt:grpc": "node-pre-gyp install --target=7.3.0 --runtime=electron --directory node_modules/grpc"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.33.0",
@@ -24,7 +26,8 @@
     "typescript": "3.7.5"
   },
   "resolutions": {
-    "@types/node": "12.12.62"
+    "@types/node": "12.12.62",
+    "grpc": "1.24.3"
   },
   "workspaces": [
     "packages/*"

@@ -32,7 +32,7 @@
     "test:coverage": "cross-env ELECTRON_RUN_AS_NODE=true ./node_modules/.bin/electron ../../node_modules/jest/bin/jest.js --coverage && codecov",
     "lint": "eslint ./src/ ./electron/",
     "lint-fix": "npm run lint -- --fix",
-    "postinstall": "electron-rebuild && yarn rebuild:modules",
+    "rebuild:all": "electron-rebuild && yarn rebuild:modules",
     "rebuild:modules": "electron-builder install-app-deps",
     "dist": "yarn build:all:nowatch && electron-builder --publish never",
     "dist:nobuild": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never",
