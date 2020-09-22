@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - master
+      - ci/*
   # on a pull request
   pull_request:
     branches:
@@ -136,8 +137,3 @@ jobs:
             packages/desktop/dist/*.deb
             packages/desktop/dist/*.tar.gz
             packages/desktop/dist/*.AppImage
-
-      - name: Remove old artifacts
-        uses: c-hive/gha-remove-artifacts@v1
-        with:
-          age: '1 month'

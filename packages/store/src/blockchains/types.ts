@@ -1,4 +1,4 @@
-import { Wei } from '@emeraldplatform/eth';
+import {Wei} from "@emeraldpay/bigamount-crypto";
 
 export const moduleName = 'blockchains';
 

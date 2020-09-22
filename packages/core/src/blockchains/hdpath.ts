@@ -44,25 +44,29 @@ export class HDPath {
     return new HDPath(
       parseInt(m[1]),
       parseInt(m[2]),
-      parseInt(m[3]),
-      parseInt(m[4]),
-      parseInt(m[5])
+        parseInt(m[3]),
+        parseInt(m[4]),
+        parseInt(m[5])
     )
   }
 
-  public toString(): string {
-    return `m/${this.purpose}'/${this.coin}'/${this.account}'/${this.change}/${this.index}`
-  }
+    public toString(): string {
+        return `m/${this.purpose}'/${this.coin}'/${this.account}'/${this.change}/${this.index}`
+    }
 
-  public forCoin(coin: number | string): HDPath {
-    if (typeof coin != "number") {
-      if (coin.toLowerCase() == 'eth' || coin.toLowerCase() == 'kovan') {
-        return this.forCoin(60)
-      } else if (coin.toLowerCase() == 'etc') {
-        return this.forCoin(61)
-      } else {
-        throw new Error("Unsupported blockchain: " + coin)
-      }
+    public forPurpose(purpose: number): HDPath {
+        return new HDPath(purpose, this.coin, this.account, this.change, this.index);
+    }
+
+    public forCoin(coin: number | string): HDPath {
+        if (typeof coin != "number") {
+            if (coin.toLowerCase() == 'eth' || coin.toLowerCase() == 'kovan') {
+                return this.forCoin(60)
+            } else if (coin.toLowerCase() == 'etc') {
+                return this.forCoin(61)
+            } else {
+                throw new Error("Unsupported blockchain: " + coin)
+            }
     }
     return new HDPath(this.purpose, coin, this.account, this.change, this.index);
   }

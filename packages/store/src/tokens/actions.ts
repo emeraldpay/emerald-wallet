@@ -5,8 +5,9 @@ import {
   IRequestTokenBalanceAction,
   IRequestTokensBalancesAction,
   ISetTokenBalanceAction,
-  ITokenBalance
+  ITokenBalance,
 } from './types';
+import {ITokenInfo} from "@emeraldwallet/erc20";
 
 export function setTokenBalance (chain: any, tokenBalance: ITokenBalance, address: string): ISetTokenBalanceAction {
   return {
@@ -30,8 +31,8 @@ export function requestTokenBalance (chain: any, token: any, address: string): I
   };
 }
 
-export function requestTokensBalances (
-  chain: BlockchainCode, tokens: any[], address: string
+export function requestTokensBalances(
+  chain: BlockchainCode, tokens: ITokenInfo[], address: string
 ): IRequestTokensBalancesAction {
   return {
     type: ActionTypes.REQUEST_TOKENS_BALANCES,

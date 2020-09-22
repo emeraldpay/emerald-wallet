@@ -1,18 +1,18 @@
 import {
   AuthenticationStatus,
   BlockchainClient,
-  ConnectionStatus,
   CredentialsContext,
   emeraldCredentials,
   MarketClient,
   MonitoringClient
-} from '@emeraldpay/grpc-client';
+} from '@emeraldpay/api-node';
+import {ConnectionStatus} from '@emeraldpay/api';
 import {IEmeraldClient, Logger} from '@emeraldwallet/core';
 import * as os from 'os';
-import { ChainListener } from '../ChainListener';
-import { AddressListener } from '../services/balances/AddressListener';
-import { PriceListener } from '../services/prices/PricesListener';
-import { TxListener } from '../services/transactions/TxListener';
+import {ChainListener} from '../ChainListener';
+import {AddressListener} from '../services/balances/AddressListener';
+import {PriceListener} from '../services/prices/PricesListener';
+import {TxListener} from '../services/transactions/TxListener';
 
 const certLocal = '-----BEGIN CERTIFICATE-----\n' +
   'MIIE4zCCAsugAwIBAgIQHgCBkxi2xOHMNb4vvXKSxTANBgkqhkiG9w0BAQsFADBs\n' +
@@ -251,7 +251,10 @@ export class EmeraldApiAccess implements IEmeraldClient {
   }
 
   protected ping () {
-    this.monitoringClient.ping();
+    this.monitoringClient.ping()
+      .then(() => {
+      })
+      .catch((err) => console.warn("Ping error: " + err.message));
     setTimeout(this.ping.bind(this), PERIOD_PING);
   }
 

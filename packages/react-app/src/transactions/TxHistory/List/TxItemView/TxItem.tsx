@@ -1,12 +1,14 @@
-import { convert, InputDataDecoder } from '@emeraldplatform/core';
-import { Account as AddressAvatar } from '@emeraldplatform/ui';
-import { ArrowDown } from '@emeraldplatform/ui-icons';
-import { BlockchainCode, IUnits, Units, utils } from '@emeraldwallet/core';
-import { abi as TokenAbi } from '@emeraldwallet/erc20';
-import { TableCell, TableRow } from '@material-ui/core';
-import { withStyles } from '@material-ui/styles';
+import {convert, InputDataDecoder} from '@emeraldplatform/core';
+import {Account as AddressAvatar} from '@emeraldplatform/ui';
+import {ArrowDown} from '@emeraldplatform/ui-icons';
+import {BlockchainCode, IStoredTransaction, tokenAmount, utils} from '@emeraldwallet/core';
+import {abi as TokenAbi} from '@emeraldwallet/erc20';
+import {TableCell, TableRow} from '@material-ui/core';
+import {withStyles} from '@material-ui/styles';
 import * as React from 'react';
 import TxStatus from './Status';
+import {BigAmount} from "@emeraldpay/bigamount";
+import {Wei} from '@emeraldpay/bigamount-crypto';
 
 const decoder = new InputDataDecoder(TokenAbi);
 
@@ -47,7 +49,7 @@ export interface ITxItemProps {
   currentBlockHeight: number;
   requiredConfirmations: number;
   amountRenderer?: (balance: any, ticker: string) => any;
-  tx: any;
+  tx: IStoredTransaction;
   openAccount: (blockchain: BlockchainCode, address: string) => void;
   toAccount: any;
   fromAccount: any;
@@ -73,7 +75,7 @@ const timeStampFormatter = (lang: any) => (timestamp: any) => {
   return timestampEvent.toLocaleDateString(lang, options);
 };
 
-const defaultAmountRenderer = ((amount: IUnits, ticker: any) => {
+const defaultAmountRenderer = ((amount: BigAmount, ticker: any) => {
   return (<React.Fragment>{amount.toString()} {ticker}</React.Fragment>);
 });
 
@@ -84,13 +86,11 @@ export const TxItem = (props: ITxItemProps) => {
   } = props;
   const { classes } = props;
 
-  const txValue = tx.value ? new Units(tx.value.toFixed(), 18) : null;
-
   let symbol = coinTicker || '';
-  let balance = txValue;
+  let balance: BigAmount;
 
   if (token) {
-    const decodedTxData = decoder.decodeData(tx.data);
+    const decodedTxData = decoder.decodeData(tx.data || '');
     symbol = token.symbol;
     if (decodedTxData.inputs.length > 0) {
       const decimals = token.decimals;
@@ -98,8 +98,12 @@ export const TxItem = (props: ITxItemProps) => {
       if (decimals) {
         d = convert.toNumber(decimals);
       }
-      balance = new Units(decodedTxData.inputs[1].toString(), d);
+      balance = tokenAmount(decodedTxData.inputs[1].toString(), token.symbol);
+    } else {
+      balance = tokenAmount(0, token.symbol);
     }
+  } else {
+    balance = new Wei(tx.value)
   }
 
   function openFromAccount () {
@@ -107,13 +111,17 @@ export const TxItem = (props: ITxItemProps) => {
   }
 
   function openToAccount () {
-    openAccount(tx.blockchain, tx.to);
+    if (tx.to) {
+      openAccount(tx.blockchain, tx.to);
+    } else {
+      console.warn("To account is not set");
+    }
   }
 
   return (
     <TableRow>
       <TableCell className={classes.columnValue}>
-        {txValue && (<div onClick={openTx}>{renderAmount(balance, symbol)}</div>)}
+        {balance && (<div onClick={openTx}>{renderAmount(balance, symbol)}</div>)}
       </TableCell>
       <TableCell className={classes.columnArrow}>
         <ArrowDown color='secondary'/>
@@ -135,10 +143,13 @@ export const TxItem = (props: ITxItemProps) => {
       <TableCell className={classes.columnStatus} >
         <TxStatus
           currentBlockHeight={currentBlockHeight}
-          txBlockNumber={tx.blockNumber}
+          txBlockNumber={parseInt(tx.blockNumber?.toString() || "0")}
           txTimestamp={tx.timestamp}
-          txSince={tx.since}
-          txDiscarded={tx.discarded}
+          txSince={
+            typeof tx.since == "string" ? new Date(tx.since) :
+              tx.since || new Date(0)
+          }
+          txDiscarded={tx.discarded || false}
           requiredConfirmations={requiredConfirmations}
           timeStampFormatter={timeStampFormatter(props.lang)}
           onClick={openTx}

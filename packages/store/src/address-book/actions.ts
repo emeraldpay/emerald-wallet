@@ -1,4 +1,4 @@
-import { AddressBookItem, BlockchainCode } from '@emeraldwallet/core';
+import {BlockchainCode, blockchainCodeToId} from '@emeraldwallet/core';
 import {
   ActionTypes,
   AddContactAction,
@@ -8,6 +8,7 @@ import {
   ISetAddressBookAction,
   SetLoadingAction
 } from './types';
+import {AddressBookItem} from '@emeraldpay/emerald-vault-core';
 
 export function setLoadingAction (loading: boolean): SetLoadingAction {
   return {
@@ -21,10 +22,11 @@ export function addContactAction (
   return {
     type: ActionTypes.ADD_CONTACT,
     payload: {
-      address,
+      address: {type: "single", value: address},
       name,
       description,
-      blockchain: chain
+      blockchain: blockchainCodeToId(chain),
+      createdAt: new Date()
     }
   };
 }
@@ -56,7 +58,7 @@ export function contactDeletedAction (chain: BlockchainCode, address: string): C
   };
 }
 
-export function loadAddressBook (chain: any): ILoadContactsAction {
+export function loadAddressBook(chain: BlockchainCode): ILoadContactsAction {
   return {
     type: ActionTypes.LOAD,
     payload: chain

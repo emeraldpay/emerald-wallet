@@ -1,4 +1,3 @@
-import {Account, Wallet} from '@emeraldwallet/core';
 import {accounts, IState, screen} from '@emeraldwallet/store';
 import * as React from 'react';
 import {connect} from 'react-redux';
@@ -14,6 +13,9 @@ import {InlineEdit} from "@emeraldwallet/ui";
 import WalletMenu from "../WalletList/WalletMenu";
 import {Hashicon} from "@emeraldpay/hashicon-react";
 import {Alert} from '@material-ui/lab';
+import {Wallet} from '@emeraldpay/emerald-vault-core';
+import {isBitcoinEntry, isEthereumEntry, WalletEntry} from "@emeraldpay/emerald-vault-core";
+import BitcoinAccountItem from "./BitcoinAccountItem";
 
 export interface IOwnProps {
   walletId: string;
@@ -48,7 +50,7 @@ const useStyles = makeStyles<Theme>((theme) =>
 /**
  *
  */
-const Component = (({wallet, goBack, updateWallet, onReceive, onSend}: Props & Actions & OwnProps) => {
+const WalletDetails = (({wallet, goBack, updateWallet, onReceive, onSend}: Props & Actions & OwnProps) => {
   if (typeof wallet == "undefined") {
     console.error("Wallet is not found");
     return <Alert>
@@ -71,7 +73,8 @@ const Component = (({wallet, goBack, updateWallet, onReceive, onSend}: Props & A
   }
 
   function actionsMenu() {
-    if (wallet.seedId) {
+    let hasHDAccount = wallet.reserved && wallet.reserved.length > 0;
+    if (hasHDAccount) {
       return (<WalletMenu walletId={wallet.id}/>);
     }
     return null;
@@ -107,6 +110,27 @@ const Component = (({wallet, goBack, updateWallet, onReceive, onSend}: Props & A
     </PageTitle>
   );
 
+  const renderEntry = (entry: WalletEntry) => {
+    if (isBitcoinEntry(entry)) {
+      return <BitcoinAccountItem
+        walletId={wallet.id}
+        account={entry}
+        key={entry.id}
+      />
+    }
+
+    if (isEthereumEntry(entry)) {
+      return <EthereumAccountItem
+        walletId={wallet.id}
+        account={entry}
+        key={entry.id}
+      />
+    }
+
+    console.warn("Unsupported entry type: ", wallet.id);
+    return <Box/>
+  }
+
   return <Page
     title={renderTitle()}
     leftIcon={<Back onClick={goBack}/>}
@@ -117,15 +141,7 @@ const Component = (({wallet, goBack, updateWallet, onReceive, onSend}: Props & A
         <Hashicon value={"WALLET/" + wallet.id} size={100}/>
       </Grid>
       <Grid item={true} xs={7}>
-        {wallet.accounts.map(
-          (account: Account) => (
-            <EthereumAccountItem
-              walletId={wallet.id}
-              account={account}
-              key={account.id}
-            />
-          )
-        )}
+        {wallet.entries.map(renderEntry)}
       </Grid>
       <Grid item={true} xs={3} className={styles.actions}>
         <Button variant={"contained"}
@@ -185,4 +201,4 @@ export default connect(
       }
     }
   }
-)((Component));
+)((WalletDetails));

@@ -32,7 +32,7 @@
     "test:coverage": "cross-env ELECTRON_RUN_AS_NODE=true ./node_modules/.bin/electron ../../node_modules/jest/bin/jest.js --coverage && codecov",
     "lint": "eslint ./src/ ./electron/",
     "lint-fix": "npm run lint -- --fix",
-    "postinstall": "electron-rebuild && yarn rebuild:modules",
+    "rebuild:all": "electron-rebuild && yarn rebuild:modules",
     "rebuild:modules": "electron-builder install-app-deps",
     "dist": "yarn build:all:nowatch && electron-builder --publish never",
     "dist:nobuild": "CSC_IDENTITY_AUTO_DISCOVERY=false electron-builder --publish never",
@@ -56,14 +56,6 @@
     "url": "https://github.com/emeraldpay/emerald-wallet/issues"
   },
   "homepage": "https://github.com/emeraldpay/emerald-wallet",
-  "workspaces": {
-    "nohoist": [
-      "electron-rebuild",
-      "electron-rebuild/**",
-      "electron-builder",
-      "electron-builder/**"
-    ]
-  },
   "dependencies": {
     "@emeraldplatform/contracts": "0.5.1",
     "@emeraldplatform/core": "0.5.8",
@@ -75,7 +67,6 @@
     "@emeraldwallet/services": "^2.4.0-alpha.0",
     "@emeraldwallet/store": "^2.4.0-alpha.0",
     "@emeraldwallet/ui": "^2.4.0-alpha.0",
-    "@emeraldwallet/vault": "^2.4.0-alpha.0",
     "babel-polyfill": "^6.26.0",
     "bignumber.js": "8.0.2",
     "es6-promise": "4.1.1",
@@ -117,9 +108,9 @@
     "copy-webpack-plugin": "^4.5.3",
     "cross-env": "^5.1.1",
     "css-loader": "0.28.0",
-    "electron": "7.0.1",
-    "electron-builder": "22.1.0",
-    "electron-rebuild": "1.8.6",
+    "electron": "7.3.3",
+    "electron-builder": "22.8.1",
+    "electron-rebuild": "^2.0.3",
     "enzyme": "^3.9.0",
     "enzyme-adapter-react-16": "^1.12.1",
     "extract-text-webpack-plugin": "4.0.0-beta.0",

@@ -13,14 +13,14 @@ import { ipcRenderer } from 'electron';
 import { Dispatch } from 'redux';
 import * as blockchains from '../blockchains';
 import * as settings from '../settings';
-import { Dispatched, GetState, IExtraArgument } from '../types';
-import { allTrackedTxs } from './selectors';
+import {Dispatched, GetState, IExtraArgument, IState} from '../types';
+import {allTrackedTxs} from './selectors';
 import { ActionTypes, HistoryAction, ILoadStoredTxsAction, IUpdateTxsAction } from './types';
 
 const txStoreKey = (chainId: number) => `chain-${chainId}-trackedTransactions`;
 
 export async function persistTransactions (state: any, backendApi: IBackendApi, chainCode: BlockchainCode) {
-  const txs = allTrackedTxs(state).toJS().filter((t: IStoredTransaction) => (t.blockchain === chainCode));
+  const txs = allTrackedTxs(state).filter((t: IStoredTransaction) => (t.blockchain === chainCode));
   // always store to new TxStore
   // storeTransactions2(chainCode, txs);
   await backendApi.persistTransactions(chainCode, txs);
@@ -92,20 +92,20 @@ export function init (chains: BlockchainCode[]): Dispatched<HistoryAction> {
   };
 }
 
-function loadStoredTxsAction (txs: any): ILoadStoredTxsAction {
+function loadStoredTxsAction(txs: IStoredTransaction[]): ILoadStoredTxsAction {
   return {
     type: ActionTypes.LOAD_STORED_TXS,
     transactions: txs
   };
 }
 
-const txUnconfirmed = (state: any, tx: any): boolean => {
-  const chainCode = tx.get('blockchain').toLowerCase();
+const txUnconfirmed = (state: IState, tx: IStoredTransaction): boolean => {
+  const chainCode = tx.blockchain.toLowerCase();
   const currentBlock = blockchains.selectors.getHeight(state, chainCode);
-  const txBlockNumber = tx.get('blockNumber');
+  const txBlockNumber = parseInt(tx.blockNumber?.toString() || "0");
 
   if (!txBlockNumber) {
-    const since = utils.parseDate(tx.get('since'), new Date())!;
+    const since = utils.parseDate(tx.since, new Date())!;
     const dayAgo = new Date().getTime() - 24 * 60 * 60 * 1000;
     return since.getTime() > dayAgo;
   }
@@ -121,9 +121,9 @@ export function refreshTrackedTransactions (): Dispatched<HistoryAction> {
   return (dispatch: any, getState) => {
     const state = getState();
     allTrackedTxs(state)
-      .filter((tx: any) => tx.get('totalRetries', 0) <= 10)
-      .filter((tx: any) => txUnconfirmed(state, tx))
-      .forEach((tx: any) => ipcRenderer.send('subscribe-tx', tx.get('blockchain'), tx.get('hash')));
+      .filter((tx) => (tx.totalRetries || 0) <= 10)
+      .filter((tx) => txUnconfirmed(state, tx))
+      .forEach((tx) => ipcRenderer.send('subscribe-tx', tx.blockchain, tx.hash));
   };
 }
 

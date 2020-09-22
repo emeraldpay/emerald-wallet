@@ -30,7 +30,6 @@ const Component = (({seedId, onUnlock, verifyPassword}: Props & Actions & OwnPro
     setVerifying(true);
     verifyPassword(password)
       .then((valid: boolean) => {
-        console.log("valid", password, valid);
         if (valid) {
           onUnlock(password);
         }

@@ -1,12 +1,13 @@
-import { BlockchainCode } from '@emeraldwallet/core';
+import {AnyTokenCode, BlockchainCode} from '@emeraldwallet/core';
+import {ITokenInfo} from "@emeraldwallet/erc20";
 
 export const moduleName = 'tokens';
 
 export interface ITokenBalance {
-  symbol: string;
-  tokenId: string;
-  decimals: number;
-  unitsValue: string;
+    symbol: AnyTokenCode;
+    tokenId: string;
+    decimals: number;
+    unitsValue: string;
 }
 
 export type ITokensState = {
@@ -36,14 +37,18 @@ export interface ISetTokenBalanceAction {
 
 export interface IRequestTokenBalanceAction {
   type: ActionTypes.REQUEST_TOKEN_BALANCE;
-  payload: any;
+  payload: {
+    chain: BlockchainCode;
+    token: ITokenInfo;
+    address: string;
+  };
 }
 
 export interface IRequestTokensBalancesAction {
   type: ActionTypes.REQUEST_TOKENS_BALANCES;
   payload: {
     chain: BlockchainCode;
-    tokens: any[];
+    tokens: ITokenInfo[];
     address: string;
   };
 }

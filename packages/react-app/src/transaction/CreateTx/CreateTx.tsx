@@ -1,6 +1,6 @@
-import { ButtonGroup } from '@emeraldplatform/ui';
-import { IUnits, workflow } from '@emeraldwallet/core';
-import { Button } from '@emeraldwallet/ui';
+import {ButtonGroup} from '@emeraldplatform/ui';
+import {workflow} from '@emeraldwallet/core';
+import {Button} from '@emeraldwallet/ui';
 import * as React from 'react';
 import AmountField from './AmountField';
 import FormFieldWrapper from './FormFieldWrapper';
@@ -9,6 +9,7 @@ import FromField from './FromField';
 import GasLimitField from './GasLimitField';
 import ToField from './ToField';
 import TokenField from './TokenField';
+import {BigAmount} from "@emeraldpay/bigamount";
 
 function getStyles () {
   return {
@@ -33,7 +34,7 @@ export interface IProps {
   onSubmit?: () => void;
   onCancel?: any;
   onChangeTo?: any;
-  onChangeAmount?: (amount: IUnits) => void;
+  onChangeAmount?: (amount: BigAmount) => void;
   onChangeFrom?: any;
   onChangeGasLimit?: any;
   onChangeToken?: any;
@@ -79,7 +80,6 @@ class CreateTransaction extends React.Component<IProps> {
 
         <FormFieldWrapper>
           <AmountField
-            tokenDecimals={this.props.tx.getTotalBalance().decimals}
             amount={this.props.tx.getAmount()}
             onChangeAmount={this.props.onChangeAmount}
             onMaxClicked={this.props.onMaxClicked}

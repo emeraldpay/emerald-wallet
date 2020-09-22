@@ -1,30 +1,28 @@
-import { Unit, Units } from '@emeraldplatform/eth';
-import { CreateEthereumTx } from '..';
-import { IDisplayTx } from './IDisplayTx';
+import {CreateEthereumTx} from '..';
+import {IDisplayTx} from './IDisplayTx';
+import {Unit, FormatterBuilder} from '@emeraldpay/bigamount';
+
+const fmt = new FormatterBuilder()
+  .useTopUnit()
+  .number(5, true)
+  .build()
 
 export class DisplayEtherTx implements IDisplayTx {
   public tx: CreateEthereumTx;
 
-  constructor (tx: CreateEthereumTx) {
+  constructor(tx: CreateEthereumTx) {
     this.tx = tx;
   }
 
-  public getMainUnit (): Unit {
-    if (this.tx.amount === undefined) {
-      return Units.ETHER;
-    }
-    if (this.tx.amount.toHex() === '0x0') {
-      return Units.ETHER;
-    }
-    return this.tx.amount.getUnit();
+  public getMainUnit(): Unit {
+    return this.tx.amount.units.top
   }
 
   public amount (): string {
-    const unit = this.getMainUnit();
     if (!this.tx.amount) {
       return '-';
     }
-    return this.tx.amount.toString(unit, 6, false, false);
+    return fmt.format(this.tx.amount);
   }
 
   public amountUnit (): string {
@@ -37,8 +35,7 @@ export class DisplayEtherTx implements IDisplayTx {
   }
 
   public feeCost (): string {
-    const unit = this.getMainUnit();
-    return this.tx.getFees().toString(unit, 6, false, false);
+    return fmt.format(this.tx.getFees());
   }
 
   public feeCostUnit (): string {

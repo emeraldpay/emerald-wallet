@@ -4,13 +4,14 @@ import {Dispatch} from "react";
 import {Box, createStyles, Grid, Theme, Button} from "@material-ui/core";
 import {accounts, IBalanceValue, IState, screen, tokens} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
-import {Uuid} from "@emeraldpay/emerald-vault-core";
-import {Wallet, Account, Units} from "@emeraldwallet/core";
-import {Wei} from "@emeraldplatform/eth";
+import {Uuid, Wallet, WalletEntry, isEthereumEntry} from "@emeraldpay/emerald-vault-core";
+import {blockchainIdToCode} from "@emeraldwallet/core";
 import {CoinAvatar, WalletReference} from "@emeraldwallet/ui";
 import AccountBalance from '../../common/Balance';
 import {Address, Page} from "@emeraldplatform/ui";
 import {Back} from "@emeraldplatform/ui-icons";
+import {Wei} from "@emeraldpay/bigamount-crypto";
+import {BigAmount} from "@emeraldpay/bigamount/lib/amount";
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
@@ -40,28 +41,20 @@ const Component = (({balances, wallet, allAssets, onCancel, onSelected}: Props &
         {balances.map((accountBalance) =>
           <Grid container={true} key={"acc-balance-" + accountBalance.account.id} className={styles.accountLine}>
             <Grid item={true} xs={1}>
-              <CoinAvatar chain={accountBalance.account.blockchain}/>
+              <CoinAvatar chain={blockchainIdToCode(accountBalance.account.blockchain)}/>
             </Grid>
             <Grid item={true} xs={6}>
-              <Address id={accountBalance.account.address}/>
+              <Address id={accountBalance.account.address?.value || accountBalance.account.id}/>
             </Grid>
             <Grid item={true} xs={4}>
               <AccountBalance
                 key={"main"}
-                fiatStyle={false}
                 balance={accountBalance.balance}
-                decimals={4}
-                symbol={accountBalance.account.blockchain.toUpperCase()}
-                showFiat={false}
               />
               {accountBalance.tokens.map((token) =>
                 <AccountBalance
-                  key={"token-" + token.symbol}
-                  fiatStyle={false}
-                  balance={new Units(token.unitsValue, token.decimals)}
-                  decimals={4}
-                  symbol={token.symbol}
-                  showFiat={false}
+                  key={"token-" + token.units.top.code}
+                  balance={token}
                 />
               )}
             </Grid>
@@ -86,7 +79,7 @@ interface Props {
 
 // Actions
 interface Actions {
-  onSelected: (account: Account) => void;
+  onSelected: (account: WalletEntry) => void;
   onCancel: () => void;
 }
 
@@ -96,9 +89,9 @@ interface OwnProps {
 }
 
 interface AccountBalance {
-  account: Account;
+  account: WalletEntry;
   balance: Wei;
-  tokens: tokens.ITokenBalance[]
+  tokens: BigAmount[]
 }
 
 function acceptAccount(balance: AccountBalance): boolean {
@@ -109,11 +102,15 @@ export default connect(
   (state: IState, ownProps: OwnProps): Props => {
     const wallet = accounts.selectors.findWallet(state, ownProps.walletId)!;
     const allAssets: IBalanceValue[] = accounts.selectors.getWalletBalances(state, wallet, false);
-    const balances: AccountBalance[] = wallet.accounts.map((account) => {
+    const balances: AccountBalance[] = wallet.entries.map((account) => {
+      let tokenBalances: BigAmount[] = []
+      if (isEthereumEntry(account)) {
+        tokenBalances = tokens.selectors.selectBalances(state, account.address!.value, blockchainIdToCode(account.blockchain)) || [];
+      }
       return {
         account,
         balance: accounts.selectors.getBalance(state, account.id, Wei.ZERO) || Wei.ZERO,
-        tokens: tokens.selectors.selectBalances(state, account.address!, account.blockchain) || []
+        tokens: tokenBalances
       }
     })
     return {
@@ -122,7 +119,7 @@ export default connect(
   },
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
     return {
-      onSelected: (account: Account) => {
+      onSelected: (account: WalletEntry) => {
         dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_ACCOUNT, account));
       },
       onCancel: () => {

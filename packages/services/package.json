@@ -14,14 +14,16 @@
     "test:coverage": "jest --coverage --passWithNoTests && codecov"
   },
   "dependencies": {
-    "@emeraldpay/grpc-client": "0.11.3-0.2",
+    "@emeraldpay/api": "0.2.0-alpha",
+    "@emeraldpay/api-node": "0.2.0-alpha",
+    "@emeraldpay/bigamount": "^0.1.0",
+    "@emeraldpay/bigamount-crypto": "^0.1.0",
     "@emeraldplatform/eth-rpc": "0.5.1",
     "@emeraldplatform/rpc": "0.5.1",
     "@emeraldwallet/core": "^2.4.0-alpha.0",
     "@emeraldwallet/store": "^2.4.0-alpha.0",
-    "@emeraldwallet/vault": "^2.4.0-alpha.0",
     "google-protobuf": "3.7.1",
-    "grpc": "^1.24.2",
+    "grpc": "^1.24.3",
     "text-encoding": "0.7.0"
   },
   "devDependencies": {

@@ -1,6 +1,6 @@
 import {Page} from '@emeraldplatform/ui';
 import {Back} from '@emeraldplatform/ui-icons';
-import {BlockchainCode, IBlockchain} from '@emeraldwallet/core';
+import {BlockchainCode, IBlockchain, blockchainIdToCode} from '@emeraldwallet/core';
 import {accounts, IState, ledger, screen, settings} from '@emeraldwallet/store';
 import {CoinAvatar, FormRow, PasswordInput} from '@emeraldwallet/ui';
 import * as React from 'react';
@@ -13,8 +13,6 @@ import {
   createStyles, Box, Typography, Button, Stepper, Step, StepLabel, CardHeader, CardActions
 } from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
-import CheckBoxIcon from '@material-ui/icons/CheckBox';
-import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import SelectCoins from "../SelectCoins";
 
 type EnableStateType = { [key: string]: boolean };
@@ -170,11 +168,19 @@ function CreateHdAccount(props: IProps & IOwnProps & IDispatchProps) {
 
 }
 
+const ON_NOTHING = {
+  blockchains: [],
+  enabledBlockchains: [],
+  isHardware: false,
+  isHardwareConnected: false
+};
+
 function mapStateToProps(state: IState, ownProps: IOwnProps): IProps {
   const wallet = accounts.selectors.findWallet(state, ownProps.walletId)!;
   const enabledBlockchains: BlockchainCode[] = [];
-  wallet.accounts
+  wallet.entries
     .map((acc) => acc.blockchain)
+    .map((id) => blockchainIdToCode(id))
     .forEach((blockchain) => {
       if (enabledBlockchains.indexOf(blockchain) < 0) {
         enabledBlockchains.push(blockchain)
@@ -183,9 +189,19 @@ function mapStateToProps(state: IState, ownProps: IOwnProps): IProps {
 
   //technically we should show this wizard only to HD accounts, but still it's not a good assumption that we always
   //have a valid seedId and it's always the only one seed
-  const accountWithSeed = wallet.accounts.find((acc) => typeof acc.seedId !== 'undefined')!
-  const seed = accountWithSeed.seedId;
-  const isHardware = accountWithSeed.isHardware;
+  if (typeof wallet.reserved === 'undefined' || wallet.reserved.length == 0) {
+    console.error("Wallet doesn't have any seed associated", wallet);
+    return ON_NOTHING;
+  }
+
+  const seedId = wallet.reserved[0].seedId;
+  const seed = accounts.selectors.getSeed(state, seedId);
+  if (typeof seed === 'undefined') {
+    console.error(`Seed ${seedId} not found`)
+    return ON_NOTHING;
+  }
+
+  const isHardware = seed.type == "ledger";
   const isHardwareConnected = ledger.selectors.isConnected(state);
 
   return {

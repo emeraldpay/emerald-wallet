@@ -19,13 +19,14 @@ export interface IDispatchProps {
 
 export default connect<ITxItemProps, IDispatchProps, IOwnProps, IState>(
   (state, ownProps: IOwnProps): any => {
-    // TODO: .toJS() call impact on performance
-    const tx = txhistory.selectors.selectByHash(state, ownProps.hash).toJS();
-    const blockchain = tx.blockchain ? blockchainByName(tx.blockchain) : blockchainById(tx.chainId);
-    const toAccount = accounts.selectors.findAccountByAddress(state, tx.to, blockchain!.params.code) || {};
+    const tx = txhistory.selectors.selectByHash(state, ownProps.hash);
+    if (!tx) {
+      throw new Error("Unknown tx: " + ownProps.hash);
+    }
+    const blockchain = tx.blockchain ? blockchainByName(tx.blockchain) : blockchainById(tx.chainId || -1);
+    const toAccount = accounts.selectors.findAccountByAddress(state, tx.to || "", blockchain!.params.code) || {};
     const fromAccount = accounts.selectors.findAccountByAddress(state, tx.from, blockchain!.params.code) || {};
-    const token = registry.byAddress(blockchain!.params.code, tx.to);
-    const showFiat = false;
+    const token = registry.byAddress(blockchain!.params.code, tx.to || "");
 
     return {
       coinTicker: blockchain!.params.coinTicker,

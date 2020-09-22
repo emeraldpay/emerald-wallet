@@ -23,7 +23,6 @@ storiesOf('TxDetails', module)
       transaction={tx}
       goBack={action('goBack')}
       openAccount={action('openAccount')}
-      repeatTx={action('repeatTx')}
       cancel={action('cancel')}
       openReceipt={action('openReceipt')}
     />

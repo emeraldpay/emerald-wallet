@@ -16,7 +16,7 @@ import {
 } from "@material-ui/core";
 import {accounts, hdpathPreview, IState} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
-import {BlockchainCode, AnyCoinCode, HDPath, Blockchains, Units} from "@emeraldwallet/core";
+import {BlockchainCode, AnyCoinCode, HDPath, Blockchains, tokenAmount} from "@emeraldwallet/core";
 import HDPathCounter from "./HDPathCounter";
 import {IAddressState} from "@emeraldwallet/store/lib/hdpath-preview/types";
 import {Wei} from "@emeraldplatform/eth";
@@ -66,10 +66,10 @@ const Component = (({disabledAccounts, table, setAccount}: Props & Actions & Own
       const wei = new Wei(item.balance);
       return wei.toString(wei.getUnit(2), 2, true);
     } else if (item.asset == "USDT") {
-      const unit = new Units(item.balance, 6);
-      return unit.toString() + " Tether";
+      const unit = tokenAmount(item.balance, "usdt");
+      return unit.toString();
     } else if (item.asset == "DAI") {
-      const unit = new Units(item.balance, 18);
+      const unit = tokenAmount(item.balance, "dai");
       return unit.toString() + " Dai";
     }
     return item.balance;
@@ -145,9 +145,9 @@ export default connect(
     return {
       disabledAccounts: ownProps.seed.type == "id" ?
         accounts.selectors.allWallets(state)
-          .filter((w) => typeof w.hdAccount == 'number' && typeof w.seedId != 'undefined')
-          .filter((w) => ownProps.seed.type == "id" && w.seedId == ownProps.seed.value)
-          .map((w) => w.hdAccount!)
+          .filter((w) => typeof w.reserved !== 'undefined')
+          .map((w) => w.reserved!.map((r) => r.accountId))
+          .reduce((result, c) => result.concat(c), [])
         : [],
       table: hdpathPreview.selectors.getCurrentDisplay(state, ownProps.seed)
         .filter((item) => ownProps.blockchains.indexOf(item.blockchain) >= 0)
@@ -159,7 +159,7 @@ export default connect(
         dispatch(hdpathPreview.actions.displayAccount(account));
         dispatch(hdpathPreview.actions.loadAddresses(
           ownProps.seed,
-          BASE_HD_PATH.forAccount(account).toString(),
+          account,
           ownProps.blockchains
         ));
         ownProps.onChange(account);

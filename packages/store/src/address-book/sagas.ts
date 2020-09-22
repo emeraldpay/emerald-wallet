@@ -1,36 +1,41 @@
-import { AddressBookItem, IBackendApi } from '@emeraldwallet/core';
-import { all, call, put, takeEvery } from 'redux-saga/effects';
+import {blockchainCodeToId, IBackendApi} from '@emeraldwallet/core';
+import {all, call, put, takeEvery} from 'redux-saga/effects';
 import * as screen from '../screen';
-import { contactDeletedAction, newContactAddedAction, setAddressBook } from './actions';
-import { ActionTypes, AddContactAction, DeleteContactAction, ILoadContactsAction } from './types';
+import {contactDeletedAction, newContactAddedAction, setAddressBook} from './actions';
+import {ActionTypes, AddContactAction, DeleteContactAction, ILoadContactsAction} from './types';
+import {AddressBookItem} from '@emeraldpay/emerald-vault-core';
+import {IEmeraldVault} from "@emeraldpay/emerald-vault-core/lib/vault";
 
-function* loadAddresses (backendApi: IBackendApi, action: ILoadContactsAction) {
+function* loadAddresses(vault: IEmeraldVault, action: ILoadContactsAction) {
   const chain = action.payload;
-  const items: AddressBookItem[] = yield call(backendApi.getAddressBookItems, chain);
+  const items: AddressBookItem[] = yield call(vault.listAddressBook, blockchainCodeToId(chain));
   yield put(setAddressBook(chain, items));
 }
 
-function* addContact (backend: IBackendApi, action: AddContactAction) {
-  const { address, name, description, blockchain } = action.payload;
-  const newContact = new AddressBookItem(blockchain, address, description, name);
+function* addContact(vault: IEmeraldVault, action: AddContactAction) {
+  const {address, name, description, blockchain} = action.payload;
+  const newContact: AddressBookItem = {
+    createdAt: new Date(),
+    blockchain, address, description, name
+  };
 
-  const result = yield call(backend.addAddressBookItem, newContact);
+  const result = yield call(vault.addToAddressBook, newContact);
 
   yield put(newContactAddedAction(newContact));
   yield put(screen.actions.gotoScreen(screen.Pages.ADDRESS_BOOK));
 }
 
-function* deleteContact (backend: IBackendApi, action: DeleteContactAction) {
-  const { blockchain, address } = action.payload;
+function* deleteContact(vault: IEmeraldVault, action: DeleteContactAction) {
+  const {blockchain, address} = action.payload;
 
-  const result = yield call(backend.removeAddressBookItem, blockchain, address);
+  const result = yield call(vault.removeFromAddressBook, blockchainCodeToId(blockchain), address);
   // TODO: check result
   yield put(contactDeletedAction(blockchain, address));
   yield put(screen.actions.gotoScreen(screen.Pages.ADDRESS_BOOK));
 }
 
-export function* root (backend: IBackendApi) {
-  yield takeEvery(ActionTypes.LOAD, loadAddresses, backend);
-  yield takeEvery(ActionTypes.ADD_CONTACT, addContact, backend);
-  yield takeEvery(ActionTypes.DELETE_ADDRESS, deleteContact, backend);
+export function* root(vault: IEmeraldVault) {
+  yield takeEvery(ActionTypes.LOAD, loadAddresses, vault);
+  yield takeEvery(ActionTypes.ADD_CONTACT, addContact, vault);
+  yield takeEvery(ActionTypes.DELETE_ADDRESS, deleteContact, vault);
 }

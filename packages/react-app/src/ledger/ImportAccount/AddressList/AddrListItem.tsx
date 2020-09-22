@@ -1,12 +1,11 @@
-import { Wei } from '@emeraldplatform/eth';
 import { Address as AccountAddress } from '@emeraldplatform/ui';
 import { blockchainByName, BlockchainCode, IApi } from '@emeraldwallet/core';
 import { Balance } from '@emeraldwallet/ui';
 import { Radio, TableCell, TableRow, withStyles } from '@material-ui/core';
-import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { styles as tableStyles } from './styles';
-import { LedgerAddress, Selectable } from './types';
+import {LedgerAddress, Selectable} from './types';
+import {Wei} from '@emeraldpay/bigamount-crypto';
 
 const style = {
   used: {
@@ -62,10 +61,10 @@ class Addr extends React.Component<IProps, IState> {
     }
     const address = this.props.addr.address;
     this.props.api.chain(blockchain).eth.getBalance(address)
-      .then((balance: BigNumber) => {
-        const newBalance = new Wei(balance);
+      .then((balance) => {
+        const newBalance = new Wei(balance.toFixed());
         if (!newBalance.equals(this.state.balance)) {
-          this.setState({ balance: newBalance });
+          this.setState({balance: newBalance});
         }
       })
       .catch((e) => console.error(`Unable to load balance for ${address} on ${blockchain}`, e));
@@ -94,10 +93,7 @@ class Addr extends React.Component<IProps, IState> {
     if (balance) {
       balanceRender = (
         <Balance
-          symbol={blockchainByName(blockchain).params.coinTicker}
           balance={balance}
-          showFiat={false}
-          decimals={3}
         />
       );
     }

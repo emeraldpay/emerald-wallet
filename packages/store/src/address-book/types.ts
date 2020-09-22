@@ -1,4 +1,5 @@
-import { AddressBookItem, BlockchainCode } from '@emeraldwallet/core';
+import {BlockchainCode} from '@emeraldwallet/core';
+import {AddressBookItem} from '@emeraldpay/emerald-vault-core';
 
 export const moduleName = 'addressBook';
 

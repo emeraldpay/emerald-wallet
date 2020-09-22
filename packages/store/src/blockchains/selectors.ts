@@ -1,6 +1,6 @@
-import { Wei } from '@emeraldplatform/eth';
 import { createSelector } from 'reselect';
-import { IBlockchainsState, moduleName } from './types';
+import {IBlockchainsState, moduleName} from './types';
+import {Wei} from '@emeraldpay/bigamount-crypto';
 
 export function all (state: any): IBlockchainsState {
   return state[moduleName];

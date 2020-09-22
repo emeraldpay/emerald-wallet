@@ -1,18 +1,19 @@
-import {IVault, Logger} from '@emeraldwallet/core';
+import {Logger} from '@emeraldwallet/core';
 import {ChainRpcConnections, EmeraldApiAccess, Services} from '@emeraldwallet/services';
 import {screen} from '@emeraldwallet/store';
 import {ipcMain, WebContents} from 'electron';
 import {createServices} from '../createServices';
 import ElectronLogger from '../logging/ElectronLogger';
-import { setIpcHandlers } from './ipc-handlers/ipc';
+import {setIpcHandlers} from './ipc-handlers/ipc';
 import Settings from './Settings';
+import {IEmeraldVault} from "@emeraldpay/emerald-vault-core/lib/vault";
+import {mapVaultWithIpc} from "../vault/vaultIpc";
 
 Logger.setInstance(new ElectronLogger());
 
 export default class Application {
   public log = Logger.forCategory('application');
   public settings: Settings;
-  public vault: IVault | null;
   public rpc: ChainRpcConnections;
   public versions: any;
 
@@ -23,19 +24,18 @@ export default class Application {
     this.services = null;
     this.versions = versions;
     this.rpc = new ChainRpcConnections();
-    this.vault = null;
     this.settings = settings;
   }
 
-  public run(webContents: WebContents, apiAccess: EmeraldApiAccess, apiMode: any, vault: IVault, rpc: ChainRpcConnections) {
+  public run(webContents: WebContents, apiAccess: EmeraldApiAccess, apiMode: any, vault: IEmeraldVault, rpc: ChainRpcConnections) {
     this.webContents = webContents;
     this.rpc = rpc;
-    this.vault = vault;
     this.log.info('Running services');
     this.services = createServices(ipcMain, webContents, apiAccess, apiMode);
     this.services.start();
     this.log.info('Set IPC handlers');
-    setIpcHandlers(this);
+    setIpcHandlers(this, apiAccess);
+    mapVaultWithIpc(vault);
   }
 
   public stop () {

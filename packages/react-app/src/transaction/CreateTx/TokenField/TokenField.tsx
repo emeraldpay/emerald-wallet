@@ -1,9 +1,8 @@
-import { fromBaseUnits } from '@emeraldplatform/core';
-import { IUnits } from '@emeraldwallet/core';
 import { MenuItem, TextField } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import FormLabel from '../FormLabel';
+import {BigAmount} from "@emeraldpay/bigamount";
 
 function getStyles (theme?: any) {
   return {
@@ -21,7 +20,7 @@ interface IProps {
   onChangeToken?: any;
   selectedToken: string;
   tokenSymbols: string[];
-  balance?: IUnits;
+  balance?: BigAmount;
   fiatBalance?: string;
   fiatCurrency?: string;
   classes?: any;
@@ -55,10 +54,10 @@ export class TokenField extends React.Component<IProps> {
     );
   }
 
-  private renderBalance (balance?: IUnits) {
+  private renderBalance(balance?: BigAmount) {
     return (
       <React.Fragment>
-        {balance ? fromBaseUnits(balance.amount, balance.decimals).toString(10) : '?'}
+        {balance ? balance.toString() : '?'}
       </React.Fragment>
     );
   }

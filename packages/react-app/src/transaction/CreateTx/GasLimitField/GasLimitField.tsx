@@ -1,8 +1,8 @@
-import { Units, Wei } from '@emeraldplatform/eth';
 import { Input } from '@emeraldplatform/ui';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import FormLabel from '../FormLabel';
+import {Wei} from '@emeraldpay/bigamount-crypto';
 
 function getStyles (theme?: any) {
   return {
@@ -44,7 +44,7 @@ export class GasLimitField extends React.Component<IProps> {
     return (
       <React.Fragment>
         <FormLabel>Gas Limit</FormLabel>
-        <div style={{ width: '200px' }}>
+        <div style={{width: '200px'}}>
           <Input
             type='number'
             value={this.props.gasLimit}
@@ -53,7 +53,7 @@ export class GasLimitField extends React.Component<IProps> {
           />
         </div>
         <div className={this.props.classes.container}>
-          {txFee.toString(Units.ETHER, 6, true)} {txFeeToken} / {this.props.txFeeFiat} {this.props.fiatCurrency}
+          {txFee.toString()} {txFeeToken} / {this.props.txFeeFiat} {this.props.fiatCurrency}
         </div>
       </React.Fragment>
     );

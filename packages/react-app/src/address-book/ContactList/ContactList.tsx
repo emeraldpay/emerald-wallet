@@ -1,44 +1,44 @@
-import { addressBook } from '@emeraldwallet/store';
-import { createStyles, withStyles } from '@material-ui/core/styles';
+import {addressBook, IState} from '@emeraldwallet/store';
+import {createStyles, makeStyles} from '@material-ui/core/styles';
 import * as React from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import TopBar from '../../common/TopBar';
 import Contact from './Contact';
+import {AddressBookItem} from "@emeraldpay/emerald-vault-core";
+import {Theme} from "@material-ui/core";
 
-const styles = (theme: any) => createStyles({
-  container: {
-    marginBottom: '10px',
-    marginTop: '5px'
-  },
-  listItem: {
-    marginTop: '10px',
-    border: `1px solid ${theme.palette && theme.palette.divider}`
-  },
-  noItems: {
-    backgroundColor: 'white',
-    padding: '10px',
-    marginTop: '10px',
-    textAlign: 'center',
-    border: `1px solid ${theme.palette && theme.palette.divider}`
-  }
-});
+const useStyles = makeStyles<Theme>((theme) =>
+  createStyles({
+    container: {
+      marginBottom: '10px',
+      marginTop: '5px'
+    },
+    listItem: {
+      marginTop: '10px',
+      border: `1px solid ${theme.palette && theme.palette.divider}`
+    },
+    noItems: {
+      backgroundColor: 'white',
+      padding: '10px',
+      marginTop: '10px',
+      textAlign: 'center',
+      border: `1px solid ${theme.palette && theme.palette.divider}`
+    }
+  })
+);
 
-interface IProps {
-  contacts?: any;
-  classes: any;
-}
-
-const ContactList = ({ contacts, classes }: IProps) => {
+const ContactList = ({contacts}: Props) => {
+  const styles = useStyles();
   let list;
   if (contacts.length > 0) {
-    list = contacts.map((contact: any) => (
-      <div key={contact.address} className={classes.listItem}>
-        <Contact address={contact} />
+    list = contacts.map((contact: AddressBookItem) => (
+      <div key={`${contact.blockchain}_${contact.address.value}`} className={styles.listItem}>
+        <Contact address={contact}/>
       </div>
     ));
   } else {
     list = (
-      <div className={classes.noItems}>
+      <div className={styles.noItems}>
         There are no contacts. Add one.
       </div>
     );
@@ -46,22 +46,24 @@ const ContactList = ({ contacts, classes }: IProps) => {
 
   return (
     <div>
-      <TopBar />
-      <div className={classes.container}>
+      <TopBar/>
+      <div className={styles.container}>
         {list}
       </div>
     </div>
   );
 };
 
-const StyledContactList = withStyles(styles)(ContactList);
+// State Properties
+interface Props {
+  contacts: AddressBookItem[]
+}
 
 const AddressBook = connect(
-  (state, ownProps) => ({
+  (state: IState): Props => ({
     contacts: addressBook.selectors.all(state)
   }),
-  (dispatch, ownProps) => ({
-  })
-)((StyledContactList));
+  (dispatch, ownProps) => ({})
+)((ContactList));
 
 export default AddressBook;

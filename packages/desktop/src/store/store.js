@@ -9,11 +9,11 @@ import {
   addressBook,
   settings,
   application,
-  createStore
+  createStore,
+  RemoteVault
 } from '@emeraldwallet/store';
 import {ipcRenderer} from 'electron';
 import {startProtocolListener} from './protocol';
-import {Api, getConnector, getRemoteVault} from '../lib/rpc/api';
 import {intervalRates} from './config';
 import getWalletVersion from '../utils/get-wallet-version';
 
@@ -30,7 +30,7 @@ Logger.setInstance(new ElectronLogger());
 
 const log = Logger.forCategory('store');
 
-const api = new Api(getConnector(), getRemoteVault());
+const api = {vault: RemoteVault};
 const backendApi = new BackendApi();
 
 export const store = createStore(api, backendApi);
@@ -58,8 +58,6 @@ export function startSync() {
         const supported = settings.selectors.currentChains(store.getState());
         const codes = supported.map((chain) => chain.params.code);
         log.info('Configured to use chains', codes);
-
-        api.connectChains(codes);
       })
       .then(() => {
         return store.dispatch(accounts.actions.loadSeedsAction());

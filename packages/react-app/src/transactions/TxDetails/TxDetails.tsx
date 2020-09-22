@@ -22,15 +22,18 @@ interface IDispatchFromProps {
 export default connect<ITxDetailsProps, IDispatchFromProps, IOwnProps>(
   (state: any, ownProps: IOwnProps): ITxDetailsProps => {
     const tx = txhistory.selectors.selectByHash(state, ownProps.hash);
-    const chain = tx.get('blockchain');
-    const fromAccount = tx.get('from') ? accounts.selectors.findAccountByAddress(state, tx.get('from'), chain) : undefined;
-    const toAccount = tx.get('to') ? accounts.selectors.findAccountByAddress(state, tx.get('to'), chain) : undefined;
+    if (!tx) {
+      throw new Error("Unknown tx: " + ownProps.hash);
+    }
+    const chain = tx.blockchain;
+    const fromAccount = tx.from ? accounts.selectors.findAccountByAddress(state, tx.from, chain) : undefined;
+    const toAccount = tx.to ? accounts.selectors.findAccountByAddress(state, tx.to, chain) : undefined;
     const account = fromAccount || toAccount;
     const currentCurrency = settings.selectors.fiatCurrency(state);
     const fiatRate = settings.selectors.fiatRate(chain, state);
-    const coins = new Wei(tx.get('value')).toEther();
+    const coins = new Wei(tx.value).toEther();
     const fiatAmount = (fiatRate == null) ? '' : Currency.format(Number(Currency.convert(coins, fiatRate)), currentCurrency);
-    const plainTx = tx.toJS();
+    const plainTx = tx;
     const blockchain = Blockchains[plainTx.blockchain];
     return {
       transaction: plainTx,

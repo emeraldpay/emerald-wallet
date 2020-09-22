@@ -1,9 +1,9 @@
-import { Wei } from '@emeraldplatform/eth';
 import { workflow } from '@emeraldwallet/core';
 import { storiesOf } from '@storybook/react';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import SignTx from '../../src/transaction/SignTx';
+import {Wei} from '@emeraldpay/bigamount-crypto';
 
 const tx = {
   from: '0x123',

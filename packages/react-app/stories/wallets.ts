@@ -1,54 +1,92 @@
 import {BlockchainCode} from "@emeraldwallet/core";
 import {accounts, settings, tokens} from "@emeraldwallet/store";
+import {Wallet} from "@emeraldpay/emerald-vault-core";
 
-const wallet1 = {
+const wallet1: Wallet = {
   id: "8ff89b7d-8a73-4ee0-ad5b-8ac1f04a49ef",
   name: "Current Spending (create from 0x9d8e3fed246384e726b5962577503b916fb246d7)",
-  hdAccount: 1,
-  seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4",
-  accounts: [
+  reserved: [
+    {seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4", accountId: 1}
+  ],
+  entries: [
     {
-      isHardware: false,
-      seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4",
-      address: "0x9d8e3fed246384e726b5962577503b916fb246d7",
-      blockchain: BlockchainCode.ETH,
-      id: "8ff89b7d-8a73-4ee0-ad5b-8ac1f04a49ef-1"
+      key: {type: "seed-hd", seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4", hdPath: "m/44'"},
+      address: {type: "single", value: "0x9d8e3fed246384e726b5962577503b916fb246d7"},
+      blockchain: 100,
+      id: "8ff89b7d-8a73-4ee0-ad5b-8ac1f04a49ef-1",
+      createdAt: new Date()
     }
-  ]
+  ],
+  createdAt: new Date()
 };
-const wallet2 = {
+
+const wallet2: Wallet = {
   id: "1022fd13-3431-4f3b-bce8-109fdab15873",
   name: "Savings",
-  hdAccount: 2,
-  seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4",
-  accounts: [
+  reserved: [
+    {seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4", accountId: 2}
+  ],
+  entries: [
     {
-      isHardware: false,
-      seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4",
-      address: "0x9d8e3fed246384e726b5962577503b916fb246d7",
-      blockchain: BlockchainCode.ETH,
-      id: "1022fd13-3431-4f3b-bce8-109fdab15873-1"
+      key: {type: "seed-hd", seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4", hdPath: "m/44'"},
+      address: {type: "single", value: "0x9d8e3fed246384e726b5962577503b916fb246d7"},
+      blockchain: 100,
+      id: "1022fd13-3431-4f3b-bce8-109fdab15873-1",
+      createdAt: new Date()
     },
     {
-      isHardware: false,
-      seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4",
-      address: "0x577503b916fb246d79d8e3fed246384e726b5962",
-      blockchain: BlockchainCode.ETC,
-      id: "1022fd13-3431-4f3b-bce8-109fdab15873-2"
+      key: {type: "seed-hd", seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4", hdPath: "m/44'"},
+      address: {type: "single", value: "0x577503b916fb246d79d8e3fed246384e726b5962"},
+      blockchain: 101,
+      id: "1022fd13-3431-4f3b-bce8-109fdab15873-2",
+      createdAt: new Date()
     },
-  ]
+  ],
+  createdAt: new Date()
+};
+
+const wallet3: Wallet = {
+  id: "f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4",
+  name: "Another Wallet",
+  reserved: [
+    {seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4", accountId: 3}
+  ],
+  entries: [
+    {
+      key: {type: "seed-hd", seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4", hdPath: "m/44'"},
+      address: {type: "single", value: "0x9d8e3fed246384e726b5962577503b916fb246d7"},
+      blockchain: 100,
+      id: "f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-1",
+      createdAt: new Date()
+    },
+    {
+      // seed: lake cupboard yellow project spoil era educate behind move slide fluid early purpose stone panel
+      key: {type: "seed-hd", seedId: "b00e3378-40e7-4eca-b287-a5ead2f747d4", hdPath: "m/84'/0'/3'/0/0"},
+      address: {
+        type: "xpub",
+        value: "zpub6trp3XEQXBogyby8NUy5xg5qykZAMnC7e4apsn1kNXhtGs3TKVpKS8P4DXMKuy56yKkLwgAYnWsMd9PzGnTdWAHoiwvRLwfAZ58ajkbVudW"
+      },
+      addresses: [
+        {role: "receive", hdPath: "m/84'/0'/3'/0/2", address: "bc1qa2s34p38jyuen859slf28nnvccauk6xuwqzug4"}
+      ],
+      blockchain: 1,
+      id: "f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-3",
+      createdAt: new Date()
+    },
+  ],
+  createdAt: new Date()
 };
 
 export const setBalances = [
   accounts.actions.setBalanceAction({
     address: "0x9d8e3fed246384e726b5962577503b916fb246d7",
     blockchain: BlockchainCode.ETH,
-    value: "918522410056000000000000"
+    value: "918522410056000000000000/WEI"
   }),
   accounts.actions.setBalanceAction({
     address: "0x577503b916fb246d79d8e3fed246384e726b5962",
     blockchain: BlockchainCode.ETC,
-    value: "498123400000000000000000"
+    value: "498123400000000000000000/WEI"
   }),
   tokens.actions.setTokenBalance(BlockchainCode.ETH, {
     decimals: 18,
@@ -66,9 +104,15 @@ export const setBalances = [
 
 export const createWallets = [
   accounts.actions.setWalletsAction([
-    wallet1, wallet2
+    wallet1, wallet2, wallet3
   ])
 ];
 export const setup = [
-  settings.actions.setRatesAction({"ETH": "205.1761", "ETC": "5.234", "DAI": "1.001", "USDT": "0.9985"})
+  settings.actions.setRatesAction({
+    "ETH": "205.1761",
+    "ETC": "5.234",
+    "DAI": "1.001",
+    "USDT": "0.9985",
+    "BTC": "11407.35"
+  })
 ]

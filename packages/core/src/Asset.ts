@@ -46,6 +46,9 @@ export const AssetDetails: Record<AnyCoinCode, AssetDetail> = {
   "BTC": {
     title: "Bitcoin"
   },
+  "TESTBTC": {
+    title: "Test Bitcoin"
+  },
   "KOVAN": {
     title: "Test Kovan Ether"
   }

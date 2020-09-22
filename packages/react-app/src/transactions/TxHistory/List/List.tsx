@@ -4,9 +4,9 @@ import {
 } from '@material-ui/core';
 import { withStyles, withTheme } from '@material-ui/styles';
 import cx from 'classnames';
-import { List } from 'immutable';
 import * as React from 'react';
 import Transaction from './Transaction';
+import {IStoredTransaction} from "@emeraldwallet/core";
 
 const styles = createStyles({
   columnName: {
@@ -37,7 +37,7 @@ const styles = createStyles({
 });
 
 interface IProps {
-  transactions: List<any>;
+  transactions: IStoredTransaction[];
   theme: any;
   classes: any;
 }
@@ -49,9 +49,9 @@ const TransactionsList = (props: IProps) => {
   if (!transactions) {
     return (<div>Loading...</div>);
   }
-  if (transactions.size === 0) {
+  if (transactions.length === 0) {
     return (
-      <div style={{ paddingTop: '20px', color: theme.palette.text.secondary }}>
+      <div style={{paddingTop: '20px', color: theme.palette.text.secondary}}>
         There are no transactions.
       </div>
     );
@@ -68,7 +68,7 @@ const TransactionsList = (props: IProps) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {transactions.map((tx) => <Transaction hash={tx.get('hash')} key={tx.get('hash')} />)}
+          {transactions.map((tx) => <Transaction hash={tx.hash || "?"} key={tx.hash}/>)}
         </TableBody>
       </Table>
     </div>

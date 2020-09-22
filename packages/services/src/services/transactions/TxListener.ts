@@ -1,11 +1,10 @@
 import {
-  BlockchainClient,
-  ClientReadable,
+  BlockchainClient, ChainRef,
   TxStatus,
   TxStatusRequest
-} from '@emeraldpay/grpc-client';
-import extractChain from '../../extractChain';
-import {Logger} from "@emeraldwallet/core";
+} from '@emeraldpay/api-node';
+import {BlockchainCode, blockchainCodeToId, Logger} from "@emeraldwallet/core";
+import {Publisher} from '@emeraldpay/api';
 
 interface ITxStatusEvent {
   txid: string;
@@ -23,7 +22,7 @@ const log = Logger.forCategory('TxListener');
 
 export class TxListener {
   public client: BlockchainClient;
-  public response?: ClientReadable<TxStatus>;
+  public response?: Publisher<TxStatus>;
 
   constructor(client: BlockchainClient) {
     this.client = client;
@@ -36,45 +35,42 @@ export class TxListener {
     this.response = undefined;
   }
 
-  public subscribe (chainCode: string, hash: string, handler: TxStatusHandler) {
-    const chain = extractChain(chainCode);
+  public subscribe(chainCode: BlockchainCode, hash: string, handler: TxStatusHandler) {
     const request = new TxStatusRequest();
-    request.setChain(chain.id);
+    request.setChain(blockchainCodeToId(chainCode));
     request.setTxId(hash);
     request.setConfirmationLimit(12);
 
-    this.client.subscribeTxStatus(request, (response: ClientReadable<TxStatus>) => {
-      response.on('data', (data: TxStatus) => {
-        const block = data.getBlock();
-        if (handler) {
-          let event = {
-            txid: data.getTxId(),
-            broadcasted: data.getBroadcasted(),
-            mined: data.getMined(),
-            confirmations: data.getConfirmations()
+    let results = this.client.subscribeTxStatus(request);
+    this.response = results.onData((data) => {
+      const block = data.getBlock();
+      if (handler) {
+        let event = {
+          txid: data.getTxId(),
+          broadcasted: data.getBroadcasted(),
+          mined: data.getMined(),
+          confirmations: data.getConfirmations()
+        };
+        if (block) {
+          const blockInfo = {
+            blockHash: block.getBlockId(),
+            blockNumber: block.getHeight(),
+            timestamp: block.getTimestamp()
           };
-          if (block) {
-            const blockInfo = {
-              blockHash: block.getBlockId(),
-              blockNumber: block.getHeight(),
-              timestamp: block.getTimestamp()
-            };
-            event = { ...event, ...blockInfo };
-          }
-          handler(event);
+          event = {...event, ...blockInfo};
         }
-      });
-      response.on('end', () => {
+        handler(event);
+      }
+    })
+      .finally(() => {
         if (handler) {
           handler({
             txid: hash
           });
         }
-      });
-      response.on('error', (err) => {
+      })
+      .onError((err) => {
         console.warn('response error tx', err);
       });
-      this.response = response;
-    });
   }
 }

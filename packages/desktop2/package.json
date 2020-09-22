@@ -38,8 +38,8 @@
   "devDependencies": {
     "copy-webpack-plugin": "^5.1.1",
     "cross-env": "7.0.2",
-    "electron": "7.0.1",
-    "electron-builder": "22.1.0",
+    "electron": "7.3.3",
+    "electron-builder": "22.8.1",
     "html-webpack-plugin": "^4.0.4",
     "rimraf": "2.6.3",
     "ts-loader": "^6.2.2",

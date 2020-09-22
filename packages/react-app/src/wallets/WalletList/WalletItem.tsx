@@ -1,4 +1,3 @@
-import {Blockchains, Units, Wallet} from '@emeraldwallet/core';
 import {
   Button,
   Card,
@@ -14,6 +13,7 @@ import {connect} from "react-redux";
 import {accounts, IBalanceValue, IState, screen} from "@emeraldwallet/store";
 import {Dispatch} from "react";
 import {Hashicon} from "@emeraldpay/hashicon-react";
+import {Wallet} from '@emeraldpay/emerald-vault-core';
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
@@ -78,7 +78,7 @@ const useStyles = makeStyles<Theme>((theme) =>
 /**
  *
  */
-const Component = (({wallet, openWallet, assets, total, onReceive, onSend}: Props & Actions & OwnProps) => {
+const WalletItem = (({wallet, openWallet, assets, total, onReceive, onSend}: Props & Actions & OwnProps) => {
   const styles = useStyles();
   const [current, setCurrent] = React.useState(false)
 
@@ -106,17 +106,13 @@ const Component = (({wallet, openWallet, assets, total, onReceive, onSend}: Prop
               </Grid>
               <Grid item={true} xs={4} className={styles.titleLine}>
                 {total && <Balance classes={{coins: styles.totalBalance}}
-                                   balance={total.balance}
-                                   symbol={total.token}
-                                   displayDecimals={2}/>}
+                                   balance={total.balance}/>}
               </Grid>
               <Grid item={true} xs={12}>
                 {assets.map((asset) => (
-                    <Balance key={asset.token}
-                             balance={asset.balance}
-                             symbol={asset.token}
-                             displayDecimals={2}
-                             classes={{coins: styles.balance, root: styles.balanceRoot}}/>
+                  <Balance key={asset.balance.units.top.code}
+                           balance={asset.balance}
+                           classes={{coins: styles.balance, root: styles.balanceRoot}}/>
                   )
                 )}
               </Grid>
@@ -177,4 +173,4 @@ export default connect(
       }
     }
   }
-)((Component));
+)((WalletItem));
