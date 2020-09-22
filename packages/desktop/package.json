@@ -32,7 +32,7 @@
     "test:coverage": "cross-env ELECTRON_RUN_AS_NODE=true ./node_modules/.bin/electron ../../node_modules/jest/bin/jest.js --coverage && codecov",
     "lint": "eslint ./src/ ./electron/",
     "lint-fix": "npm run lint -- --fix",
-    "postinstall": "yarn prebuld:grpc",
+    "postinstall": "yarn prebuilt:grpc",
     "prebuilt:grpc": "node-pre-gyp install --target=7.3.0 --runtime=electron --directory ../../node_modules/grpc",
     "rebuild:all": "electron-rebuild && yarn rebuild:modules",
     "rebuild:modules": "electron-builder install-app-deps",
