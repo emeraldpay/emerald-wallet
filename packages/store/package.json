@@ -17,10 +17,10 @@
   "devDependencies": {
     "@types/jest": "^24.0.9",
     "@types/lodash": "^4.14.136",
-    "@types/node": "^12.12.0",
+    "@types/node": "12.12.62",
     "@types/redux-logger": "^3.0.7",
     "@types/uuid": "^3.4.4",
-    "electron": "^7.0.1",
+    "electron": "7.3.3",
     "jest": "^24.1.0",
     "rimraf": "^2.6.3",
     "ts-jest": "^24.0.0"
