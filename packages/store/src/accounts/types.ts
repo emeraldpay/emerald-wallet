@@ -23,7 +23,7 @@ export interface BalanceValueConverted {
 }
 
 export interface AccountDetails {
-  accountId: EntryId;
+  entryId: EntryId;
   balance?: string;
   balancePending?: any;
   txcount?: number;

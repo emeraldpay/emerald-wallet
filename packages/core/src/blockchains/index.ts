@@ -8,7 +8,9 @@ export {
   blockchainCodeToId,
   blockchainIdToCode,
   isBitcoin,
-  isEthereum
+  isEthereum,
+  amountFactory,
+  amountDecoder
 } from './blockchains';
 export {IBlockchain} from './IBlockchain';
 export {CoinTickerCode, isCoinTickerCode} from './CoinTicker';

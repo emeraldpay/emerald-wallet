@@ -57,14 +57,14 @@ function updateAccountDetails(
     let found = false;
     for (let i = 0; i < state.details.length; i++) {
       const current = draft.details[i];
-      if (current.accountId === accountId) {
+      if (current.entryId === accountId) {
         found = true;
         draft.details[i] = f(current);
         break;
       }
     }
     if (!found) {
-      const newAccountDetails = f({ accountId });
+      const newAccountDetails = f({entryId: accountId});
       draft.details.push(newAccountDetails);
     }
   });

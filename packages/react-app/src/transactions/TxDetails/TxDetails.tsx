@@ -41,8 +41,8 @@ export default connect<ITxDetailsProps, IDispatchFromProps, IOwnProps>(
       account,
       fiatAmount,
       fiatCurrency: currentCurrency,
-      fromAccount,
-      toAccount
+      fromAccount: fromAccount?.id,
+      toAccount: toAccount?.id
     };
   },
   (dispatch: any, ownProps: IOwnProps): IDispatchFromProps => ({

@@ -7,7 +7,6 @@ import {makeStyles} from "@material-ui/core/styles";
 import {BlockchainCode, blockchainIdToCode, Blockchains} from "@emeraldwallet/core";
 import {Balance, Address} from "@emeraldwallet/ui";
 import {isBitcoinEntry, isEthereumEntry, Uuid} from "@emeraldpay/emerald-vault-core";
-import {Wei} from "@emeraldpay/bigamount-crypto";
 import {BigAmount} from "@emeraldpay/bigamount";
 
 const useStyles = makeStyles<Theme>((theme) =>
@@ -41,9 +40,8 @@ const Component = (({addresses}: Props & Actions & OwnProps) => {
               <TableCell>{Blockchains[address.blockchain].getTitle()}</TableCell>
               <TableCell><Address address={address.address}/></TableCell>
               <TableCell>
-                {address.balances.map((asset) =>
-                  <Balance key={"balance-" + asset.balance.units.top.code}
-                           balance={asset.balance}/>
+                {address.balances.map((balance) =>
+                  <Balance key={"balance-" + balance.units.top.code} balance={balance}/>
                 )}
               </TableCell>
             </TableRow>
@@ -68,14 +66,10 @@ interface OwnProps {
   walletId: Uuid
 }
 
-interface AnyBalance {
-  balance: BigAmount;
-}
-
 interface AddressInfo {
   address: string;
   blockchain: BlockchainCode;
-  balances: AnyBalance[];
+  balances: BigAmount[];
 }
 
 export default connect(
@@ -93,6 +87,9 @@ export default connect(
         if (receive) {
           addressValue = receive.address
         }
+      } else {
+        console.warn("Invalid account type", account);
+        return
       }
 
       const address: AddressInfo = {
@@ -100,13 +97,13 @@ export default connect(
         blockchain: blockchainIdToCode(account.blockchain),
         balances: []
       };
-      const balance = accounts.selectors.getBalance(state, account.id, Wei.ZERO) || Wei.ZERO;
-      address.balances.push({balance});
+
+      const zeroBalance = accounts.selectors.zeroAmountFor<BigAmount>(blockchainIdToCode(account.blockchain));
+      const balance = accounts.selectors.getBalance(state, account.id, zeroBalance) || zeroBalance;
+      address.balances.push(balance);
+
       (tokens.selectors.selectBalances(state, account.address!.value, blockchainIdToCode(account.blockchain)) || [])
-        .map((token) => {
-          return {balance: token} as AnyBalance
-        })
-        .filter((unit) => unit.balance.isPositive())
+        .filter((unit) => unit.isPositive())
         .forEach((unit) => address.balances.push(unit));
 
       addresses.push(address);

@@ -7,7 +7,9 @@ export {
   blockchainCodeToId,
   blockchainIdToCode,
   blockchainById,
-  CoinTickerCode
+  CoinTickerCode,
+  amountFactory,
+  amountDecoder
 } from './blockchains';
 
 import * as blockchains from './blockchains';

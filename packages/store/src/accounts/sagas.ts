@@ -19,7 +19,7 @@ import {
   setWalletsAction,
   walletCreatedAction,
 } from './actions';
-import {allAccounts, allWallets, findWallet} from './selectors';
+import {allEntries, allWallets, findWallet} from './selectors';
 import {ActionTypes, ICreateHdEntry, ICreateWalletAction, IFetchErc20BalancesAction, ISubWalletBalance} from './types';
 import {AddEntry, SeedDescription, Wallet, WalletEntry} from "@emeraldpay/emerald-vault-core";
 import {IEmeraldVault} from "@emeraldpay/emerald-vault-core";
@@ -49,7 +49,7 @@ function* subscribeAccountBalance(accounts: WalletEntry[]): SagaIterator {
 }
 
 function* fetchErc20Balances(action: IFetchErc20BalancesAction): SagaIterator {
-  const accounts = yield select(allAccounts);
+  const accounts = yield select(allEntries);
   for (const account of accounts) {
     // TODO: account might not be Ethereum address
     const address = account.address;
@@ -72,7 +72,7 @@ function* loadAllWallets(vault: IEmeraldVault): SagaIterator {
   yield put(fetchErc20BalancesAction());
   yield put(setLoadingAction(false));
 
-  const accounts = yield select(allAccounts);
+  const accounts = yield select(allEntries);
   yield call(subscribeAccountBalance, accounts);
 }
 

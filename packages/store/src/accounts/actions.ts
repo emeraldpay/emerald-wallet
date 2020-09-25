@@ -387,7 +387,7 @@ export function loadPendingTransactions (): Dispatched<PendingBalanceAction> {
       const blockchainCode = blockchainByName(chainName).params.code;
       extra.api.chain(blockchainCode).eth.getBlockByNumber('pending', true)
         .then((result: any) => {
-          const addresses = selectors.allAccountsByBlockchain(getState(), blockchainCode)
+          const addresses = selectors.allEntriesByBlockchain(getState(), blockchainCode)
             .map((account) => account.address);
 
           const txes = result.transactions.filter(

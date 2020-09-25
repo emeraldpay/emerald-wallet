@@ -2,7 +2,7 @@ import {BlockchainCode} from '@emeraldwallet/core';
 import {IState} from '../types';
 import {allAsArray, balanceByChain} from './selectors';
 import {moduleName} from './types';
-import {Wei} from '@emeraldpay/bigamount-crypto';
+import {Wei, WeiEtc} from '@emeraldpay/bigamount-crypto';
 
 const NO_ADDRESS = {type: "single", value: ""};
 
@@ -42,17 +42,19 @@ describe('selectTotalBalance', () => {
         wallets: [{
           id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee',
           entries: [
-            {id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0', blockchain: 10002, address: NO_ADDRESS}
+            {id: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0', blockchain: 101, address: NO_ADDRESS}
           ]
         }],
         details: [
-          {accountId: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0', balance: new Wei(1234).encode()}
+          {entryId: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0', balance: new WeiEtc(1234, "ETHER").encode()}
         ]
       }
     } as IState;
 
-    const total = balanceByChain(state, BlockchainCode.Kovan);
-    expect(total.equals(new Wei(1234))).toBeTruthy();
+    const total = balanceByChain(state, BlockchainCode.ETC);
+    expect(WeiEtc.is(total)).toBeTruthy();
+    expect((total as WeiEtc).toEther()).toBe(1234);
+    expect(total.equals(new WeiEtc(1234, "ETHER"))).toBeTruthy();
   });
 
   it('returns sum of balances for one wallet', () => {
@@ -67,9 +69,9 @@ describe('selectTotalBalance', () => {
           ]
         }],
         details: [
-          {accountId: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0', balance: new Wei(1234).encode()},
-          {accountId: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-1', balance: new Wei(11).encode()},
-          {accountId: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-2', balance: new Wei(52).encode()}
+          {entryId: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0', balance: new Wei(1234).encode()},
+          {entryId: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-1', balance: new Wei(11).encode()},
+          {entryId: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-2', balance: new Wei(52).encode()}
         ]
       }
     } as IState;
@@ -99,11 +101,11 @@ describe('selectTotalBalance', () => {
           }
         ],
         details: [
-          {accountId: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0', balance: new Wei(1234).encode()},
-          {accountId: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-1', balance: new Wei(11).encode()},
-          {accountId: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-2', balance: new Wei(52).encode()},
-          {accountId: 'c0659f31-1932-4006-bc4c-dbbab27fc25c-0', balance: new Wei(200).encode()},
-          {accountId: 'c0659f31-1932-4006-bc4c-dbbab27fc25c-1', balance: new Wei(302).encode()}
+          {entryId: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-0', balance: new Wei(1234).encode()},
+          {entryId: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-1', balance: new Wei(11).encode()},
+          {entryId: 'f692dcb6-74ea-4583-8ad3-fd13bb6c38ee-2', balance: new Wei(52).encode()},
+          {entryId: 'c0659f31-1932-4006-bc4c-dbbab27fc25c-0', balance: new Wei(200).encode()},
+          {entryId: 'c0659f31-1932-4006-bc4c-dbbab27fc25c-1', balance: new Wei(302).encode()}
         ]
       }
     } as IState;

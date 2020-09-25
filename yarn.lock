@@ -1160,18 +1160,18 @@
     protobufjs "^6.8.8"
     text-encoding "^0.7.0"
 
-"@emeraldpay/bigamount-crypto@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/bigamount-crypto/-/bigamount-crypto-0.1.0.tgz#f924472962811460477709b3dd93971031cb39eb"
-  integrity sha512-eFl932KlpBREpfOyvKSAhsUw/gyobCpqrIBcfbg8UlyICcWK1DgGjU41zIJZWjFyWLqiUy/lv0jHTZPCmOBTxw==
+"@emeraldpay/bigamount-crypto@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/bigamount-crypto/-/bigamount-crypto-0.2.0.tgz#3a03f966879f28ccab1c5eec10d9e930c2777ada"
+  integrity sha512-3rpxJyQws3I6VATdkXvD4MQJpNfzUs2pswthZXbIM4jQUEIg18Td7vWT9/CFI6ajDf1X8Ky+t31OlLZ5OLAquA==
   dependencies:
-    "@emeraldpay/bigamount" "0.1.0"
+    "@emeraldpay/bigamount" "0.2.0"
     bignumber.js "^8.0.2"
 
-"@emeraldpay/bigamount@0.1.0", "@emeraldpay/bigamount@^0.1.0":
-  version "0.1.0"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/bigamount/-/bigamount-0.1.0.tgz#896c5fd1d6f62df0e322c9ee7e0fee151362f024"
-  integrity sha512-iFsFhWEERhU7dJC9tOQqrf6/Q3b9Xw3rq5z93z9eY8/gCKdaGU0fAHjJeHDzdMRL18OGMH6iJrHWSaUG6AIkEQ==
+"@emeraldpay/bigamount@0.2.0", "@emeraldpay/bigamount@^0.2.0":
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/bigamount/-/bigamount-0.2.0.tgz#17e4476f9cf688868b854dcde5ced18edc9d2b98"
+  integrity sha512-XSHBfU8bBbqwotH140n7ga5f048aqt/n3nVD3o8MxujygQjFE/e4j8lXy0zyefe8vMZ+CVpsO4+MsyKL2oMqUA==
   dependencies:
     bignumber.js "^8.0.2"
 
