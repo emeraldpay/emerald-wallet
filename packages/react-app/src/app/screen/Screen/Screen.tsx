@@ -5,7 +5,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import {
   AddContact, BroadcastTx, ContactList as AddressBook,
-  Home, ImportLedgerAccount,
+  Home,
   Settings, TxDetails, WalletDetails, Welcome
 } from '../../../index';
 import CreateHdAccount from '../../../create-account/CreateHdAccount';
@@ -40,12 +40,6 @@ const Screen = (props: IScreenProps) => {
   }
   if (props.screen === 'add-address') {
     return <AddContact />;
-  }
-  if (props.screen === 'landing-add-from-ledger') {
-    return <ImportLedgerAccount onBackScreen={props.screenItem} />;
-  }
-  if (props.screen === 'add-from-ledger') {
-    return <ImportLedgerAccount/>;
   }
   if (props.screen === screen.Pages.WALLET) {
     return <WalletDetails walletId={props.screenItem}/>;
