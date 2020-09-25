@@ -1,9 +1,13 @@
 {
   "compilerOptions": {
     "target": "es5",
+    "esModuleInterop": true,
     "strict": false,
     "jsx": "react",
-    "rootDirs": ["src", "stories"],
+    "rootDirs": [
+      "src",
+      "stories"
+    ],
     "baseUrl": "src",
     "typeRoots": [
       "node_modules/@types",

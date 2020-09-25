@@ -5,11 +5,10 @@ import {Box, createStyles, Theme, Grid, TableHead, TableRow, TableCell, TableBod
 import {accounts, IState, tokens} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
 import {BlockchainCode, blockchainIdToCode, Blockchains} from "@emeraldwallet/core";
-import {Balance} from "@emeraldwallet/ui";
-import {Address} from '@emeraldplatform/ui';
-import {Uuid} from "@emeraldpay/emerald-vault-core";
+import {Balance, Address} from "@emeraldwallet/ui";
+import {isBitcoinEntry, isEthereumEntry, Uuid} from "@emeraldpay/emerald-vault-core";
 import {Wei} from "@emeraldpay/bigamount-crypto";
-import {BigAmount} from "@emeraldpay/bigamount/lib/amount";
+import {BigAmount} from "@emeraldpay/bigamount";
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
@@ -40,7 +39,7 @@ const Component = (({addresses}: Props & Actions & OwnProps) => {
           {addresses.map((address) => (
             <TableRow key={"address-" + address.address}>
               <TableCell>{Blockchains[address.blockchain].getTitle()}</TableCell>
-              <TableCell><Address id={address.address}/></TableCell>
+              <TableCell><Address address={address.address}/></TableCell>
               <TableCell>
                 {address.balances.map((asset) =>
                   <Balance key={"balance-" + asset.balance.units.top.code}
@@ -84,8 +83,20 @@ export default connect(
     const wallet = accounts.selectors.findWallet(state, ownProps.walletId)!
     const addresses: AddressInfo[] = [];
     wallet.entries.forEach((account) => {
+      let addressValue = "unknown";
+      if (isEthereumEntry(account)) {
+        if (account.address) {
+          addressValue = account.address.value
+        }
+      } else if (isBitcoinEntry(account)) {
+        let receive = account.addresses.find((a) => a.role == "receive")
+        if (receive) {
+          addressValue = receive.address
+        }
+      }
+
       const address: AddressInfo = {
-        address: account.address?.value || "unknown",
+        address: addressValue,
         blockchain: blockchainIdToCode(account.blockchain),
         balances: []
       };

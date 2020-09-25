@@ -69,6 +69,13 @@ storiesOf('WalletDetails', module)
 storiesOf('WalletDetails', module)
   .addDecorator(providerForStore(backend, [...setup, ...createWallets, ...setBalances]))
   .addDecorator(withTheme)
+  .add('addresses list with btc', () => (
+    <Addresses walletId={'f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4'}/>
+  ));
+
+storiesOf('WalletDetails', module)
+  .addDecorator(providerForStore(backend, [...setup, ...createWallets, ...setBalances]))
+  .addDecorator(withTheme)
   .add('whole page', () => (
-    <DetailsPage walletId={'1022fd13-3431-4f3b-bce8-109fdab15873'}/>
+    <DetailsPage walletId={'f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4'}/>
   ));
