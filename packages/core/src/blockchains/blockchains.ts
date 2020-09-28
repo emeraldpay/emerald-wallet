@@ -1,9 +1,12 @@
-import { IBlockchain } from './IBlockchain';
-import { CoinTicker } from './CoinTicker';
+import {IBlockchain} from './IBlockchain';
+import {CoinTicker} from './CoinTicker';
 import Ethereum from './ethereum/Ethereum';
 import EthereumParams from './ethereum/EthereumParams';
 import {HDPath} from "./hdpath";
 import {Bitcoin} from "./bitcoin";
+import {BigAmount, CreateAmount, Unit, Units} from "@emeraldpay/bigamount";
+import {WeiEtc, Wei, Satoshi} from "@emeraldpay/bigamount-crypto";
+import {WeiAny} from "@emeraldpay/bigamount-crypto/lib/ethereum";
 
 export enum BlockchainCode {
   ETC = 'etc',
@@ -127,4 +130,48 @@ export function isEthereum(code: BlockchainCode): boolean {
 
 export function isBitcoin(code: BlockchainCode): boolean {
   return code == BlockchainCode.BTC || code == BlockchainCode.TestBTC
+}
+
+export const WEIS_KOVAN = new Units(
+  [
+    new Unit(0, "KovanWei", "KovWei"),
+    new Unit(9, "KovanGwei", "KovGWei"),
+    new Unit(18, "KovanEther", "ETK"),
+  ]
+);
+
+export const SATOSHIS_TEST = new Units(
+  [
+    new Unit(0, "Test Satoshi", "tsat"),
+    new Unit(8, "Test Bitcoin", "TBTC"),
+  ]
+);
+
+export function amountFactory(code: BlockchainCode): CreateAmount<BigAmount> {
+  if (isEthereum(code)) {
+    if (BlockchainCode.ETH == code) {
+      return Wei.factory()
+    }
+    if (BlockchainCode.ETC == code) {
+      return WeiEtc.factory()
+    }
+    if (BlockchainCode.Kovan == code) {
+      return (n) => new WeiAny(n, WEIS_KOVAN)
+    }
+  }
+  if (isBitcoin(code)) {
+    if (BlockchainCode.BTC == code) {
+      return Satoshi.factory()
+    }
+    if (BlockchainCode.TestBTC == code) {
+      return (n) => new BigAmount(n, SATOSHIS_TEST)
+    }
+  }
+  throw new Error("Unsupported blockchain: " + code)
+}
+
+export function amountDecoder<T extends BigAmount>(code: BlockchainCode): (n: string) => T {
+  let factory = amountFactory(code) as CreateAmount<T>;
+  let units = factory(0).units;
+  return (n) => BigAmount.decodeFor(n, units, factory);
 }

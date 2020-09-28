@@ -57,37 +57,27 @@ function updateAccountDetails(
     let found = false;
     for (let i = 0; i < state.details.length; i++) {
       const current = draft.details[i];
-      if (current.accountId === accountId) {
+      if (current.entryId === accountId) {
         found = true;
         draft.details[i] = f(current);
         break;
       }
     }
     if (!found) {
-      const newAccountDetails = f({ accountId });
+      const newAccountDetails = f({entryId: accountId});
       draft.details.push(newAccountDetails);
     }
   });
 }
 
 function onSetBalance(state: IAccountsState, action: ISetBalanceAction): IAccountsState {
-  const {address, blockchain, value} = action.payload;
-  let blockchainId = blockchainCodeToId(blockchain);
-  let updatedState = state;
-  // Find account id by address and blockchain and update balance
-  state.wallets.forEach((w) => {
-    w.entries
-      .filter((a) => a.address && AddressRefOp.of(a.address).isSame(address) && a.blockchain === blockchainId)
-      .forEach((foundAcc) => {
-        updatedState = updateAccountDetails(updatedState, foundAcc.id, (account) => {
-          account.balance = value;
-          account.balancePending = null;
-          return account;
-        });
-      });
-  });
-
-  return updatedState;
+    const {entryId, utxo, value} = action.payload;
+    return updateAccountDetails(state, entryId, (account) => {
+        account.balance = value;
+        account.balancePending = null;
+        account.utxo = (utxo || []).concat(...(account.utxo || []))
+        return account;
+    });
 }
 
 function onWalletUpdated (state: any, action: IUpdateWalletAction) {

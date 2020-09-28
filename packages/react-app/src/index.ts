@@ -34,9 +34,6 @@ export { default as WaitForSignDialog } from './transaction/WaitForSignDialog';
 export { default as BroadcastTx } from './transaction/BroadcastTx';
 export { default as SignTx } from './transaction/SignTx';
 
-// ledger
-export { default as ImportLedgerAccount } from './ledger/ImportAccount';
-
 // settings
 export { default as Settings } from './settings/Settings';
 

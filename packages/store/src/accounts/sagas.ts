@@ -19,37 +19,30 @@ import {
   setWalletsAction,
   walletCreatedAction,
 } from './actions';
-import {allAccounts, allWallets, findWallet} from './selectors';
+import {allEntries, allWallets, findWallet} from './selectors';
 import {ActionTypes, ICreateHdEntry, ICreateWalletAction, IFetchErc20BalancesAction, ISubWalletBalance} from './types';
 import {AddEntry, SeedDescription, Wallet, WalletEntry} from "@emeraldpay/emerald-vault-core";
 import {IEmeraldVault} from "@emeraldpay/emerald-vault-core";
+import {isBitcoinEntry, isEthereumEntry} from "@emeraldpay/emerald-vault-core/lib/types";
 
 // Subscribe to balance update from Emerald Services
 function* subscribeAccountBalance(accounts: WalletEntry[]): SagaIterator {
-  const subscribe: Partial<Record<BlockchainCode, string[]>> = {};
-  // TODO: account might not be Ethereum address
   accounts.forEach((account: WalletEntry) => {
     const code: BlockchainCode = blockchainIdToCode(account.blockchain);
-    let current = subscribe[code];
-    if (typeof current === 'undefined') {
-      current = [];
-    }
-    if (account.address) {
-      current.push(account.address.value);
-    }
-    subscribe[code] = current;
-  });
-
-  Object.keys(subscribe).forEach((blockchainCode) => {
-    const addedAddresses = subscribe[blockchainCode as BlockchainCode];
-    if (addedAddresses && addedAddresses.length > 0) {
-      ipcRenderer.send('subscribe-balance', blockchainCode, addedAddresses);
+    if (isEthereumEntry(account)) {
+      ipcRenderer.send('subscribe-balance', code, account.id, account.address?.value)
+    } else if (isBitcoinEntry(account)) {
+      account.xpub.forEach((xpub) => {
+        ipcRenderer.send('subscribe-balance', code, account.id, xpub.xpub)
+      });
+    } else {
+      console.log("Invalid entry", account)
     }
   });
 }
 
 function* fetchErc20Balances(action: IFetchErc20BalancesAction): SagaIterator {
-  const accounts = yield select(allAccounts);
+  const accounts = yield select(allEntries);
   for (const account of accounts) {
     // TODO: account might not be Ethereum address
     const address = account.address;
@@ -72,7 +65,7 @@ function* loadAllWallets(vault: IEmeraldVault): SagaIterator {
   yield put(fetchErc20BalancesAction());
   yield put(setLoadingAction(false));
 
-  const accounts = yield select(allAccounts);
+  const accounts = yield select(allEntries);
   yield call(subscribeAccountBalance, accounts);
 }
 
@@ -106,7 +99,7 @@ function* afterAccountImported(vault: IEmeraldVault, action: any): SagaIterator 
 
   // subscribe for balance
   const chainCode = blockchainIdToCode(account.blockchain);
-  ipcRenderer.send('subscribe-balance', chainCode, [account.address]);
+  ipcRenderer.send('subscribe-balance', chainCode, account.id, account.address?.value);
 
   // fetch erc20 tokens
   const _tokens = registry.all()[chainCode] || [];
@@ -155,7 +148,7 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
     const account = wallet.entries.find((a) => a.id === accountId)!;
 
     // subscribe for balance
-    ipcRenderer.send('subscribe-balance', blockchain, [account.address!.value]);
+    ipcRenderer.send('subscribe-balance', blockchain, account.id, [account.address!.value]);
 
     // fetch erc20 tokens
     const _tokens = registry.all()[blockchain as BlockchainCode] || [];

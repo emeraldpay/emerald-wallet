@@ -2,14 +2,16 @@ import {
   BlockchainClient,
 } from '@emeraldpay/api-node';
 import {
-  BalanceRequest, AddressBalance, Publisher
+  BalanceRequest, AddressBalance, Publisher, Utxo
 } from '@emeraldpay/api';
-import {BlockchainCode, blockchainCodeToId, isEthereum} from "@emeraldwallet/core";
+import {BlockchainCode, blockchainCodeToId, isBitcoin, isEthereum} from "@emeraldwallet/core";
+import {AssetCode} from "@emeraldpay/api/lib/typesCommon";
 
 interface IAccountStatusEvent {
   address: string;
   balance: string;
-  asset: any;
+  asset: string;
+  utxo?: Utxo[] | undefined
 }
 
 type HeadListener = (status: IAccountStatusEvent) => void;
@@ -22,23 +24,34 @@ export class AddressListener {
     this.client = client;
   }
 
-  public stop () {
+  public stop() {
     if (this.response) {
       this.response.cancel();
     }
     this.response = undefined;
   }
 
-  public subscribe(chainCode: BlockchainCode, addresses: string[], handler: HeadListener) {
-
-    const request: BalanceRequest = {
+  public makeRequest(chainCode: BlockchainCode, addresses: string | string[], token?: AssetCode): BalanceRequest {
+    const isEthereumChain = isEthereum(chainCode);
+    const isBitcoinChain = isBitcoin(chainCode);
+    return {
       address: addresses,
       asset: {
         blockchain: blockchainCodeToId(chainCode),
-        code: isEthereum(chainCode) ? "ETHER" : "BTC"
-      }
-    };
+        code: isEthereumChain ?
+          (token || "ETHER") : "BTC",
+      },
+      includeUtxo: isBitcoinChain
+    }
+  }
 
+  public getBalance(chainCode: BlockchainCode, addresses: string | string[], token?: AssetCode): Promise<AddressBalance[]> {
+    const request: BalanceRequest = this.makeRequest(chainCode, addresses);
+    return this.client.getBalance(request);
+  }
+
+  public subscribe(chainCode: BlockchainCode, addresses: string | string[], token: AssetCode | undefined, handler: HeadListener) {
+    const request: BalanceRequest = this.makeRequest(chainCode, addresses, token);
 
     this.response = this.client.subscribeBalance(request)
       .onData((data) => {
@@ -47,7 +60,8 @@ export class AddressListener {
           handler({
             address,
             balance: data.balance,
-            asset: data.asset.code
+            asset: data.asset.code,
+            utxo: data.utxo
           });
         }
       })

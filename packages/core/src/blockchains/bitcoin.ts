@@ -1,6 +1,7 @@
 import {IBlockchain} from "./IBlockchain";
 import IBlockchainParams from "./IBlockchainParams";
 import {AnyCoinCode} from "../Asset";
+import {BlockchainCode} from "./blockchains";
 
 export class Bitcoin implements IBlockchain {
   params: IBlockchainParams;
@@ -14,7 +15,7 @@ export class Bitcoin implements IBlockchain {
   }
 
   getTitle(): string {
-    return "Bitcoin";
+    return this.params.code == BlockchainCode.BTC ? "Bitcoin" : "Bitcoin Testnet";
   }
 
   isValidAddress(address: string): boolean {

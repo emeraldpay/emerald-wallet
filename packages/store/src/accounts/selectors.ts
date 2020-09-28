@@ -1,66 +1,83 @@
-import {Wei} from '@emeraldpay/bigamount-crypto';
+import {BigAmount, CreateAmount} from '@emeraldpay/bigamount';
 import {
+  amountDecoder,
+  amountFactory,
   BlockchainCode,
   blockchainCodeToId,
   blockchainIdToCode,
-  CurrencyAmount
+  CurrencyAmount,
+  isBitcoin,
+  isEthereum
 } from '@emeraldwallet/core';
 import {registry} from '@emeraldwallet/erc20';
-import {BigNumber} from 'bignumber.js';
 import {createSelector} from 'reselect';
 import {settings, tokens} from '../index';
 import {IState} from '../types';
 import {BalanceValueConverted, IBalanceValue, moduleName} from './types';
 import * as accounts from "./index";
-import {SeedDescription, WalletEntry, Wallet, WalletOp, EthereumEntry, Uuid} from "@emeraldpay/emerald-vault-core";
-import {isEthereumEntry} from "@emeraldpay/emerald-vault-core";
-import {BigAmount} from "@emeraldpay/bigamount/lib/amount";
+import {
+  EntryId,
+  EntryIdOp,
+  EthereumEntry, isBitcoinEntry,
+  isEthereumEntry,
+  SeedDescription,
+  Uuid,
+  Wallet,
+  WalletEntry,
+  WalletOp
+} from "@emeraldpay/emerald-vault-core";
+import {BitcoinEntry} from "@emeraldpay/emerald-vault-core/lib/types";
 
-const sum = (a: Wei | undefined, b: Wei | undefined) => (a || Wei.ZERO).plus(b || Wei.ZERO);
+function sum<T extends BigAmount>(a: T | undefined, b: T | undefined): T {
+  if (typeof a == 'undefined') {
+    return b!;
+  }
+  if (typeof b == 'undefined') {
+    return a;
+  }
+  return b.plus(a);
+}
+
+export function zeroAmountFor<T extends BigAmount>(blockchain: BlockchainCode): T {
+  const amountCreate = amountFactory(blockchain) as CreateAmount<T>;
+  return amountCreate(0)
+}
 
 export const allWallets = (state: IState): Wallet[] => state[moduleName].wallets;
-
-// export const all = createSelector<IState, Wallet[], WalletsOp>(
-//   [allWallets],
-//   (wallets) => {
-//     return WalletsOp.of(wallets);
-//   }
-// );
 
 /**
  * Returns all accounts from all wallets as flat array
  * @param state
  */
-export const allAccounts = createSelector(
+export const allEntries = createSelector(
   [allWallets],
   (wallets) => {
     return wallets.reduce((a: WalletEntry[], w) => a.concat(w.entries), []);
   }
 );
 
-export const findAccount = (state: IState, accountId: string) => {
-  return allAccounts(state).find((a) => a.id === accountId);
-};
-
-export const allAccountsByBlockchain = (state: IState, code: BlockchainCode) => {
-  const accounts: WalletEntry[] = allAccounts(state);
+export const allEntriesByBlockchain = (state: IState, code: BlockchainCode) => {
+  const accounts: WalletEntry[] = allEntries(state);
   return accounts.filter((a: WalletEntry) => blockchainIdToCode(a.blockchain) === code);
 };
 
-export function allAsArray (state: IState): Wallet[] {
+export function findEntry(state: IState, id: EntryId): WalletEntry | undefined {
+  let walletId = EntryIdOp.asOp(id).extractWalletId()
+  let wallet = findWallet(state, walletId);
+  if (wallet) {
+    return wallet.entries.find((e) => e.id == id)
+  }
+  return undefined
+}
+
+export function allAsArray(state: IState): Wallet[] {
   return (state[moduleName].wallets || [])
     .filter((value: any) => typeof value !== 'undefined');
 }
 
-// @depricated
-// export function allByBlockchain (state: any, blockchain: BlockchainCode): vault.WalletOp[] {
-//   return all(state)
-//     .walletsWithBlockchain(blockchainCodeToId(blockchain));
-// }
-
 export const isLoading = (state: any): boolean => state[moduleName].loading;
 
-export function findWalletByAddress (state: any, address: string, blockchain: BlockchainCode): Wallet | undefined {
+export function findWalletByAddress(state: any, address: string, blockchain: BlockchainCode): Wallet | undefined {
   if (!address) {
     return undefined;
   }
@@ -70,28 +87,74 @@ export function findWalletByAddress (state: any, address: string, blockchain: Bl
   );
 }
 
-export function findAccountByAddress (state: any, address: string, chain: BlockchainCode): any {
-  return null;
+export function findAccountByAddress(state: any, address: string, chain: BlockchainCode): WalletEntry | undefined {
+  return allEntries(state).find((e) => {
+    if (blockchainCodeToId(chain) != e.blockchain) {
+      return false
+    }
+    if (isEthereumEntry(e)) {
+      return e.address?.value == address
+    } else if (isBitcoinEntry(e)) {
+      //TODO would not find old address
+      return e.addresses.some((a) => a.address == address)
+    }
+    return false
+  });
 }
 
 export function findWallet(state: IState, id: Uuid): Wallet | undefined {
   return allWallets(state).find((w) => w.id === id);
 }
 
-export function getBalance (state: IState, accountId: string, defaultValue?: Wei): Wei | undefined {
-  return (state[moduleName].details || [])
-    .filter((b) => b.accountId === accountId)
-    .filter((b) => typeof b.balance === 'string' && b.balance !== '')
-    .map((b) => Wei.decode(b.balance!))
-    .reduce(sum, Wei.ZERO) || defaultValue;
+
+export function getBalance<T extends BigAmount>(state: IState, entryId: string, defaultValue?: T): T | undefined {
+  const entry = findEntry(state, entryId);
+  if (!entry) {
+    console.warn("Unknown entry", entryId);
+    return defaultValue;
+  }
+
+  const amountDecode = amountDecoder<T>(blockchainIdToCode(entry.blockchain));
+  const zero = zeroAmountFor<T>(blockchainIdToCode(entry.blockchain));
+
+  const entryDetails = (state[moduleName].details || [])
+    .filter((b) => b.entryId === entryId);
+
+  if (entryDetails.length == 0) {
+    return defaultValue || zero;
+  }
+
+  if (isEthereumEntry(entry)) {
+    return entryDetails
+      .filter((b) => typeof b.balance === 'string' && b.balance !== '')
+      .map((b) => b.balance)
+      .map((b) => b as string)
+      .map(amountDecode)
+      .reduce(sum) || defaultValue;
+  } else if (isBitcoinEntry(entry)) {
+    return entryDetails
+      .filter((b) => typeof b.utxo != "undefined")
+      .map((b) => b.utxo!)
+      .reduce((a, b) => a.concat(...b))
+      .map((u) => u.value)
+      .map(amountDecode)
+      .reduce(sum) || defaultValue
+  } else {
+    console.warn("Invalid entry", entry);
+  }
 }
 
-export function balanceByChain (state: IState, blockchain: BlockchainCode): Wei {
-  return allAccountsByBlockchain(state, blockchain)
-    .map((account: WalletEntry) => getBalance(state, account.id, Wei.ZERO)!)
-    .reduce(sum, Wei.ZERO);
+export function balanceByChain<T extends BigAmount>(state: IState, blockchain: BlockchainCode): T {
+  const zero = zeroAmountFor<T>(blockchain);
+  return allEntriesByBlockchain(state, blockchain)
+    .map((account: WalletEntry) => getBalance(state, account.id, zero)!)
+    .reduce(sum, zero);
 }
 
+/**
+ * Balances of all assets summarized by wallet
+ * @param state
+ */
 export function allBalances (state: IState): IBalanceValue[] {
   const assets: IBalanceValue[] = [];
 
@@ -115,12 +178,14 @@ export function getWalletBalances (state: IState, wallet: Wallet, includeEmpty: 
   const ethereumAccounts = wallet.entries.filter((e) => isEthereumEntry(e)) as EthereumEntry[];
   [BlockchainCode.ETH, BlockchainCode.ETC, BlockchainCode.Kovan]
     .forEach((code) => {
+      const zero = zeroAmountFor<BigAmount>(code);
+
       const blockchainAccounts = ethereumAccounts
         .filter((account: EthereumEntry) => account.blockchain === blockchainCodeToId(code));
 
       const balance = blockchainAccounts
-        .map((account) => getBalance(state, account.id, Wei.ZERO)!)
-        .reduce((a, b) => a.plus(b), Wei.ZERO);
+        .map((account) => getBalance(state, account.id, zero)!)
+        .reduce((a, b) => a.plus(b), zero);
 
       // show only assets that have at least one address in the wallet
       if (typeof balance !== 'undefined' && (includeEmpty || blockchainAccounts.length > 0)) {
@@ -145,6 +210,15 @@ export function getWalletBalances (state: IState, wallet: Wallet, includeEmpty: 
       });
     });
 
+  const bitcoinAccounts = wallet.entries.filter((e) => isBitcoinEntry(e)) as BitcoinEntry[];
+  bitcoinAccounts.forEach((entry) => {
+    const code = blockchainIdToCode(entry.blockchain);
+    const zero = zeroAmountFor<BigAmount>(code);
+    const balance = getBalance(state, entry.id, zero) || zero;
+    assets.push({
+      balance
+    })
+  });
   return aggregateByAsset(assets);
 }
 
@@ -156,7 +230,6 @@ export function getWalletBalances (state: IState, wallet: Wallet, includeEmpty: 
  * @param assets
  */
 export function fiatTotalBalance (state: IState, assets: IBalanceValue[]): IBalanceValue | undefined {
-  let allFound = true;
   const converted = assets
     .map((asset) => {
       const rate = settings.selectors.fiatRate(asset.balance.units.top.code, state) || 0;
@@ -166,14 +239,11 @@ export function fiatTotalBalance (state: IState, assets: IBalanceValue[]): IBala
   if (converted.length === 0) {
     return undefined;
   }
-  // if (!allFound) {
-  //   return undefined;
-  // }
 
   const total = converted.reduce((a, b) => a.plus(b));
 
   return {
-    balance: new CurrencyAmount(total, state.settings.localeCurrency),
+    balance: new CurrencyAmount(total.multipliedBy(100), state.settings.localeCurrency),
   };
 }
 

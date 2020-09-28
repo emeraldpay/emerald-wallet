@@ -84,8 +84,8 @@ export function setWalletsAction (wallets: Wallet[]): IWalletsLoaded {
   };
 }
 
-export function loadAccountBalance (blockchain: BlockchainCode, address: string) {
-  ipcRenderer.send('subscribe-balance', blockchain, [address]);
+export function loadAccountBalance(entryId: EntryId, blockchain: BlockchainCode, address: string) {
+  ipcRenderer.send('subscribe-balance', blockchain, entryId, [address]);
 }
 
 // export function loadAccountTxCount (walletId: string): Dispatched<SetTxCountAction> {
@@ -387,7 +387,7 @@ export function loadPendingTransactions (): Dispatched<PendingBalanceAction> {
       const blockchainCode = blockchainByName(chainName).params.code;
       extra.api.chain(blockchainCode).eth.getBlockByNumber('pending', true)
         .then((result: any) => {
-          const addresses = selectors.allAccountsByBlockchain(getState(), blockchainCode)
+          const addresses = selectors.allEntriesByBlockchain(getState(), blockchainCode)
             .map((account) => account.address);
 
           const txes = result.transactions.filter(

@@ -460,7 +460,7 @@ export default connect(
       gasPrice,
       tokenSymbols: allTokens.map((i: any) => i.symbol),
       addressBookAddresses: addressBook.selectors.all(state).map((i: any) => i.address),
-      ownAddresses: accounts.selectors.allAccountsByBlockchain(state, blockchain.params.code)
+      ownAddresses: accounts.selectors.allEntriesByBlockchain(state, blockchain.params.code)
         .map((a: WalletEntry) => a.address!.value),
       useLedger: false, // TODO
       allTokens

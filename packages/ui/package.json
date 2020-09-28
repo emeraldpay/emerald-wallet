@@ -16,8 +16,8 @@
     "storybook": "start-storybook -p 9001 -c .storybook"
   },
   "dependencies": {
-    "@emeraldpay/bigamount": "^0.1.0",
-    "@emeraldpay/bigamount-crypto": "^0.1.0",
+    "@emeraldpay/bigamount": "^0.2.0",
+    "@emeraldpay/bigamount-crypto": "^0.2.0",
     "@emeraldpay/hashicon-react": "^0.5.1",
     "@emeraldplatform/core": "^0.5.11",
     "@emeraldplatform/eth": "^0.5.10",
