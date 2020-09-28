@@ -26,6 +26,7 @@ import {
   WalletEntry,
   WalletOp
 } from "@emeraldpay/emerald-vault-core";
+import {BitcoinEntry} from "@emeraldpay/emerald-vault-core/lib/types";
 
 function sum<T extends BigAmount>(a: T | undefined, b: T | undefined): T {
   if (typeof a == 'undefined') {
@@ -116,13 +117,31 @@ export function getBalance<T extends BigAmount>(state: IState, entryId: string, 
   const amountDecode = amountDecoder<T>(blockchainIdToCode(entry.blockchain));
   const zero = zeroAmountFor<T>(blockchainIdToCode(entry.blockchain));
 
-  return (state[moduleName].details || [])
-    .filter((b) => b.entryId === entryId)
-    .filter((b) => typeof b.balance === 'string' && b.balance !== '')
-    .map((b) => b.balance)
-    .map((b) => b as string)
-    .map(amountDecode)
-    .reduce(sum, zero) || defaultValue;
+  const entryDetails = (state[moduleName].details || [])
+    .filter((b) => b.entryId === entryId);
+
+  if (entryDetails.length == 0) {
+    return defaultValue || zero;
+  }
+
+  if (isEthereumEntry(entry)) {
+    return entryDetails
+      .filter((b) => typeof b.balance === 'string' && b.balance !== '')
+      .map((b) => b.balance)
+      .map((b) => b as string)
+      .map(amountDecode)
+      .reduce(sum) || defaultValue;
+  } else if (isBitcoinEntry(entry)) {
+    return entryDetails
+      .filter((b) => typeof b.utxo != "undefined")
+      .map((b) => b.utxo!)
+      .reduce((a, b) => a.concat(...b))
+      .map((u) => u.value)
+      .map(amountDecode)
+      .reduce(sum) || defaultValue
+  } else {
+    console.warn("Invalid entry", entry);
+  }
 }
 
 export function balanceByChain<T extends BigAmount>(state: IState, blockchain: BlockchainCode): T {
@@ -132,6 +151,10 @@ export function balanceByChain<T extends BigAmount>(state: IState, blockchain: B
     .reduce(sum, zero);
 }
 
+/**
+ * Balances of all assets summarized by wallet
+ * @param state
+ */
 export function allBalances (state: IState): IBalanceValue[] {
   const assets: IBalanceValue[] = [];
 
@@ -187,6 +210,15 @@ export function getWalletBalances (state: IState, wallet: Wallet, includeEmpty: 
       });
     });
 
+  const bitcoinAccounts = wallet.entries.filter((e) => isBitcoinEntry(e)) as BitcoinEntry[];
+  bitcoinAccounts.forEach((entry) => {
+    const code = blockchainIdToCode(entry.blockchain);
+    const zero = zeroAmountFor<BigAmount>(code);
+    const balance = getBalance(state, entry.id, zero) || zero;
+    assets.push({
+      balance
+    })
+  });
   return aggregateByAsset(assets);
 }
 
@@ -198,7 +230,6 @@ export function getWalletBalances (state: IState, wallet: Wallet, includeEmpty: 
  * @param assets
  */
 export function fiatTotalBalance (state: IState, assets: IBalanceValue[]): IBalanceValue | undefined {
-  let allFound = true;
   const converted = assets
     .map((asset) => {
       const rate = settings.selectors.fiatRate(asset.balance.units.top.code, state) || 0;
@@ -208,14 +239,11 @@ export function fiatTotalBalance (state: IState, assets: IBalanceValue[]): IBala
   if (converted.length === 0) {
     return undefined;
   }
-  // if (!allFound) {
-  //   return undefined;
-  // }
 
   const total = converted.reduce((a, b) => a.plus(b));
 
   return {
-    balance: new CurrencyAmount(total, state.settings.localeCurrency),
+    balance: new CurrencyAmount(total.multipliedBy(100), state.settings.localeCurrency),
   };
 }
 

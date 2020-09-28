@@ -27,6 +27,7 @@ export interface AccountDetails {
   balance?: string;
   balancePending?: any;
   txcount?: number;
+  utxo?: BalanceUtxo[]
 }
 
 export interface IAccountsState {
@@ -37,8 +38,14 @@ export interface IAccountsState {
 }
 
 export interface IBalanceUpdate {
-  blockchain: BlockchainCode;
-  address: string;
+  entryId: EntryId;
+  value: string;
+  utxo?: BalanceUtxo[];
+}
+
+export interface BalanceUtxo {
+  txid: string;
+  vout: number;
   value: string;
 }
 

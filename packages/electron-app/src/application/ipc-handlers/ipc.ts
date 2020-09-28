@@ -1,5 +1,5 @@
 import {
-  AddressBookService, AnyCoinCode,
+  AddressBookService, amountFactory, AnyCoinCode,
   BlockchainCode,
   blockchainCodeToId,
   Blockchains,
@@ -14,7 +14,7 @@ import {tokenContract} from '../erc20';
 import {registry} from "@emeraldwallet/erc20";
 import BigNumber from 'bignumber.js';
 import {EmeraldApiAccess} from "@emeraldwallet/services";
-import {BalanceRequest, AddressBalance} from '@emeraldpay/api';
+import {BalanceRequest, AddressBalance, AssetCode, Blockchain} from '@emeraldpay/api';
 
 interface BalanceResult {
   asset: AnyCoinCode;
@@ -56,21 +56,28 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess) {
   });
 
   ipcMain.handle(Commands.GET_BALANCE, (event: any, blockchain: BlockchainCode, address: string, tokens: AnyCoinCode[]) => {
-    let blockchainId = blockchainCodeToId(blockchain);
-    let calls = tokens.map((token) => {
-      let req: BalanceRequest = {
-        // @ts-ignore
-        asset: {blockchain: blockchainId, code: token},
-        address: address
+    const addressListener = apiAccess.newAddressListener();
+    const amountReader = amountFactory(blockchain);
+    let calls: Promise<AddressBalance[]>[] = [];
+    tokens.forEach((token) => {
+      let asset = token as AssetCode;
+      if (asset.toLowerCase() === "TESTBTC") {
+        // it always BTC for bitcoin networks, TESTBTC is our internal code
+        asset = "BTC"
       }
-      return apiAccess.blockchainClient.getBalance(req);
+      let p = addressListener.getBalance(blockchain, address, asset);
+      calls.push(p)
     });
     return Promise.all(calls)
       .then((all: AddressBalance[][]) => {
         const result: { [key: string]: string } = {};
         ([] as AddressBalance[]).concat(...all)
           .forEach((balance) => {
-            result[balance.asset.code] = balance.balance;
+            let code = balance.asset.code as AnyCoinCode;
+            if (code == "BTC" && balance.asset.blockchain == Blockchain.TESTNET_BITCOIN) {
+              code = "TESTBTC";
+            }
+            result[code] = amountReader(balance.balance).encode();
           })
         return result;
       }).catch((err) => console.warn("Failed to get balances", err));
@@ -81,7 +88,7 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess) {
       const gasPrice = await app.rpc.chain(blockchain).eth.gasPrice();
       return gasPrice.toNumber();
     } else {
-      log.warn("No gas price for " + blockchain);
+      log.debug("No gas price for " + blockchain);
       return 0;
     }
   });

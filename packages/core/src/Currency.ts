@@ -45,9 +45,26 @@ export class Currency {
 }
 
 export class CurrencyAmount extends BigAmount {
-  constructor(value: BigNumber | string | number, currency: string) {
-    super(value.toString(), new Units([
+
+  /**
+   * Create amount for the specified amount. Note that the value is in _cents_. I.e. use 1234 for $12.45
+   *
+   * @param valueCent
+   * @param currency
+   */
+  constructor(valueCent: BigNumber | string | number, currency: string) {
+    super(valueCent.toString(), new Units([
       new Unit(2, currency, currency)
     ]));
+  }
+
+  /**
+   * Create for value specified as a main number, ex. as USD not US cents
+   *
+   * @param value
+   * @param currency
+   */
+  static create(value: number, currency: string): CurrencyAmount {
+    return new CurrencyAmount(value * 100, currency)
   }
 }

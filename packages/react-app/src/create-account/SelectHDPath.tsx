@@ -16,13 +16,14 @@ import {
 } from "@material-ui/core";
 import {accounts, hdpathPreview, IState} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
-import {BlockchainCode, AnyCoinCode, HDPath, Blockchains, tokenAmount} from "@emeraldwallet/core";
+import {BlockchainCode, AnyCoinCode, HDPath, Blockchains, tokenAmount, amountDecoder} from "@emeraldwallet/core";
 import HDPathCounter from "./HDPathCounter";
 import {IAddressState} from "@emeraldwallet/store/lib/hdpath-preview/types";
-import {Wei} from "@emeraldplatform/eth";
 import BeenhereIcon from '@material-ui/icons/Beenhere';
 import ClearIcon from '@material-ui/icons/Clear';
 import {SeedReference} from "@emeraldpay/emerald-vault-core";
+import {Wei} from "@emeraldpay/bigamount-crypto";
+import {BigAmount} from "@emeraldpay/bigamount";
 
 const useStyles = makeStyles(
   createStyles({
@@ -55,24 +56,17 @@ const Component = (({disabledAccounts, table, setAccount}: Props & Actions & Own
   }, 100);
 
   function isActive(item: IAddressState): boolean {
-    return typeof item.balance == 'string' && item.balance.length > 0 && item.balance != "0";
+    const amountReader = amountDecoder(item.blockchain);
+    return typeof item.balance == 'string' && amountReader(item.balance).isPositive();
   }
 
   function renderBalance(item: IAddressState): string {
     if (typeof item.balance != 'string' || item.balance.length == 0) {
       return "";
     }
-    if (item.asset == "ETH" || item.asset == "ETC") {
-      const wei = new Wei(item.balance);
-      return wei.toString(wei.getUnit(2), 2, true);
-    } else if (item.asset == "USDT") {
-      const unit = tokenAmount(item.balance, "usdt");
-      return unit.toString();
-    } else if (item.asset == "DAI") {
-      const unit = tokenAmount(item.balance, "dai");
-      return unit.toString() + " Dai";
-    }
-    return item.balance;
+    const amountReader = amountDecoder<BigAmount>(item.blockchain);
+    const amount = amountReader(item.balance);
+    return amount.toString();
   }
 
   let prev: IAddressState | undefined = undefined;

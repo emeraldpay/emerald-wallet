@@ -9,7 +9,11 @@ export const fiatRate = (token: AnyCoinCode | string, state: IState): number | u
   if (!rates) {
     return undefined;
   }
-  const strRate = rates[token.toUpperCase()];
+  let code = token.toUpperCase();
+  if (code == "TBTC") {
+    code = "TESTBTC";
+  }
+  const strRate = rates[code];
   if (strRate) {
     return parseFloat(strRate);
   }

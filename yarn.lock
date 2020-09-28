@@ -1138,12 +1138,12 @@
     global-agent "^2.0.2"
     global-tunnel-ng "^2.7.1"
 
-"@emeraldpay/api-node@0.2.0-alpha":
-  version "0.2.0-alpha"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/api-node/-/api-node-0.2.0-alpha.tgz#65574a022df73f27f293bca4814b6942fea2cbd0"
-  integrity sha512-n0y5RY5P0DksfbsDE1v64ETUPv0Wnmflyz8BEMAIqY8PcsYApUiPrDt6IrcuRRk9dRT/Rfxe2sdtdNDT/4R+bg==
+"@emeraldpay/api-node@0.2.0-beta":
+  version "0.2.0-beta"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/api-node/-/api-node-0.2.0-beta.tgz#a0ace3fd3a9f89978d473af407f36a2f437013a3"
+  integrity sha512-GKi8sFNb7WjrU4EHb6T2/UhpZTTRXF1q/rs7eSzq4JCu2/y3A1iZiDnF+KSRvADYONgvmRG8BC/EXuu0JUJrKA==
   dependencies:
-    "@emeraldpay/api" "0.2.0-alpha"
+    "@emeraldpay/api" "0.2.0-beta"
     "@types/google-protobuf" "^3.7.2"
     google-protobuf "^3.10.0"
     grpc "^1.24.2"
@@ -1151,10 +1151,10 @@
     protobufjs "^6.8.8"
     text-encoding "^0.7.0"
 
-"@emeraldpay/api@0.2.0-alpha":
-  version "0.2.0-alpha"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/api/-/api-0.2.0-alpha.tgz#005cb4fb31b63f8f2d9906ac139fe3dd49e452de"
-  integrity sha512-/EGciy/7mNp54MA3TtqYKghqPOPy4dt4ZfgCQoITppucYCuR/JcGKS70N72GBfBgR8dTsPML45R/kTmHl3klVw==
+"@emeraldpay/api@0.2.0-beta":
+  version "0.2.0-beta"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/api/-/api-0.2.0-beta.tgz#389b6df4342630db28937e9d80f50d5bce3f3111"
+  integrity sha512-aAc8ufspH30pGDIVV7atTOgZ+GXRPYo/Sd117Fm4Iv9sw7OycZZBIhD1ppyp2FaKnImO/BYYHepNnv/3ujBHww==
   dependencies:
     google-protobuf "^3.10.0"
     protobufjs "^6.8.8"
@@ -1175,17 +1175,17 @@
   dependencies:
     bignumber.js "^8.0.2"
 
-"@emeraldpay/emerald-vault-core@0.6.0-alpha", "@emeraldpay/emerald-vault-core@^0.6.0-alpha":
-  version "0.6.0-alpha"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-core/-/emerald-vault-core-0.6.0-alpha.tgz#4fbf9008f9b184afc89914895151877f44638731"
-  integrity sha512-QfRVraanY/GtlCsCkIqxNp2VwZSq2QXTEdZlDop83QCLrvivt325bWEG/01kLLOYPa18XeqYAwrw/8lDFcgbJA==
+"@emeraldpay/emerald-vault-core@0.6.0-alpha.3", "@emeraldpay/emerald-vault-core@^0.6.0-alpha.3":
+  version "0.6.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-core/-/emerald-vault-core-0.6.0-alpha.3.tgz#8bf59a18c918094143b0b2079bc8c5a495f1ff03"
+  integrity sha512-tgsYJix9UVUFQgYIRNZlART2hwcZMw0ZrXmpKGFgn8ApVxXQUVyHytj1hKzl6FRJNydO5SafUeEbKvfUWUnSWA==
 
-"@emeraldpay/emerald-vault-native@^0.6.0-alpha":
-  version "0.6.0-alpha"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-native/-/emerald-vault-native-0.6.0-alpha.tgz#d93090fad42a3a40a12787aa18fd8f68827721e6"
-  integrity sha512-yy8AeOoAmpLL+kMFAPE76j0UZ4+WI9g4Mz98JSLsIEjVuaddelNsySvNBvIfSa3d1dcpxNgs4r2pUo9PHaJ7rQ==
+"@emeraldpay/emerald-vault-native@^0.6.0-alpha.3":
+  version "0.6.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-native/-/emerald-vault-native-0.6.0-alpha.3.tgz#1cf7651ad88575f09b876cfc60e3f3080f776db0"
+  integrity sha512-4zKQegiwm/ZhNRgZ+zlerViemJmW0ESi/Q7Vz4525UwNOxkNWvaUCfcyNL6Ms4seur5/BedQJkU2se65QoUtlQ==
   dependencies:
-    "@emeraldpay/emerald-vault-core" "0.6.0-alpha"
+    "@emeraldpay/emerald-vault-core" "0.6.0-alpha.3"
 
 "@emeraldpay/hashicon-react@^0.5.1":
   version "0.5.1"

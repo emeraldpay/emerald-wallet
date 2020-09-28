@@ -84,8 +84,8 @@ export function setWalletsAction (wallets: Wallet[]): IWalletsLoaded {
   };
 }
 
-export function loadAccountBalance (blockchain: BlockchainCode, address: string) {
-  ipcRenderer.send('subscribe-balance', blockchain, [address]);
+export function loadAccountBalance(entryId: EntryId, blockchain: BlockchainCode, address: string) {
+  ipcRenderer.send('subscribe-balance', blockchain, entryId, [address]);
 }
 
 // export function loadAccountTxCount (walletId: string): Dispatched<SetTxCountAction> {

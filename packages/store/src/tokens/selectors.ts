@@ -20,7 +20,7 @@ export function selectBalance(
   state: IState, tokenId: string, address: string, chain: BlockchainCode
 ): BigAmount | undefined {
   const balances = state[moduleName] as ITokensState;
-  if (balances[chain]) {
+  if (balances && balances[chain]) {
     const b = balances[chain];
     if (b && b[address]) {
       const token = b[address][tokenId];

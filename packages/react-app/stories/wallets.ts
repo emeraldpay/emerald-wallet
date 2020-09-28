@@ -71,7 +71,8 @@ const wallet3: Wallet = {
       ],
       blockchain: 1,
       id: "f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-3",
-      createdAt: new Date()
+      createdAt: new Date(),
+      xpub: []
     },
   ],
   createdAt: new Date()
@@ -79,13 +80,11 @@ const wallet3: Wallet = {
 
 export const setBalances = [
   accounts.actions.setBalanceAction({
-    address: "0x9d8e3fed246384e726b5962577503b916fb246d7",
-    blockchain: BlockchainCode.ETH,
+    entryId: "1022fd13-3431-4f3b-bce8-109fdab15873-1",
     value: "918522410056000000000000/WEI"
   }),
   accounts.actions.setBalanceAction({
-    address: "0x577503b916fb246d79d8e3fed246384e726b5962",
-    blockchain: BlockchainCode.ETC,
+    entryId: "1022fd13-3431-4f3b-bce8-109fdab15873-2",
     value: "498123400000000000000000/WEI"
   }),
   tokens.actions.setTokenBalance(BlockchainCode.ETH, {
