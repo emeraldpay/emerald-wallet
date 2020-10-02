@@ -4,6 +4,7 @@ import {
   AnyCoinCode,
   BlockchainCode,
   CurrencyCode,
+  BalanceUtxo,
 } from '@emeraldwallet/core';
 import {BigAmount} from "@emeraldpay/bigamount";
 
@@ -41,12 +42,6 @@ export interface IBalanceUpdate {
   entryId: EntryId;
   value: string;
   utxo?: BalanceUtxo[];
-}
-
-export interface BalanceUtxo {
-  txid: string;
-  vout: number;
-  value: string;
 }
 
 export enum ActionTypes {

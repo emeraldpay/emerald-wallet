@@ -18,7 +18,8 @@ export enum Pages {
   ADDRESS_BOOK = 'address-book',
   TX_DETAILS = 'transaction',
   CREATE_TX = 'create-tx',
-  CREATE_TX_ACCOUNT = 'create-tx-account',
+  CREATE_TX_ETHEREUM = 'create-tx-ethereum',
+  CREATE_TX_BITCOIN = 'create-tx-bitcoin',
   CREATE_WALLET = 'create-wallet',
   //@deprecated, rename to setup coins
   CREATE_HD_ACCOUNT = 'create-hd-account',

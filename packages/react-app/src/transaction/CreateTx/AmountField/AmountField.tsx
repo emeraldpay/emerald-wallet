@@ -3,7 +3,7 @@ import {Button} from '@emeraldwallet/ui';
 import * as React from 'react';
 import FormLabel from '../FormLabel';
 import {BigAmount} from "@emeraldpay/bigamount";
-import {FormatterBuilder} from "@emeraldpay/bigamount/lib/formatter";
+import {FormatterBuilder} from "@emeraldpay/bigamount";
 
 interface IProps {
   onChangeAmount?: (amount: BigAmount) => void;

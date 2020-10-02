@@ -29,6 +29,7 @@ export class MemoryVault {
 
   setSeedPassword(seedId: Uuid, password: string) {
     this.passwords[seedId] = password;
+    this.addSeedAddress(seedId, "m/44'/15167'/8173'/68/164", "0x11")
   }
 
   addSeedAddress(seedId: Uuid, hdpath: string, address: string) {
@@ -61,7 +62,7 @@ export class VaultMock implements IEmeraldVault {
   }
 
   listSeedAddresses(seedId: Uuid | SeedReference | SeedDefinition, blockchain: number, hdpaths: string[]): Promise<{ [key: string]: string }> {
-    console.log("list addresses");
+    console.log("list addresses", seedId);
     if (typeof seedId == "object") {
       if (seedId.type == "id") {
         const seed: IdSeedReference = seedId;
@@ -69,6 +70,7 @@ export class VaultMock implements IEmeraldVault {
           const expectedPassword = this.vault.passwords[seed.value];
           console.log("Password", seed.value, expectedPassword, seed.password);
           if (expectedPassword !== seed.password) {
+            console.log(`Password '${seed.password}' != '${expectedPassword}'`);
             throw Error("Invalid password");
           }
         }
@@ -179,6 +181,10 @@ export class VaultMock implements IEmeraldVault {
   }
 
   signTx(entryId: EntryId, tx: UnsignedTx, password?: string): Promise<string> {
+    console.log("Sign", entryId, tx, password);
+    if (entryId == "f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-3") {
+      return Promise.resolve("00112233")
+    }
     return Promise.resolve("");
   }
 
@@ -238,40 +244,6 @@ export class BackendMock implements IBackendApi {
 
   persistTransactions(blockchain: BlockchainCode, txs: any[]): Promise<void> {
     return Promise.resolve(undefined);
-  }
-
-  removeAddressBookItem(blockchain: BlockchainCode, address: string): Promise<boolean> {
-    return Promise.resolve(false);
-  }
-
-  signTx(accountId: string, password: string, unsignedTx: any): Promise<any> {
-    return Promise.resolve(undefined);
-  }
-
-  updateWallet(walletId: string, name: string): Promise<boolean> {
-    return Promise.resolve(false);
-  }
-
-  listSeedAddresses(seedId: Uuid, password: string, blockchain: BlockchainCode, hdpaths: string[]): Promise<Record<string, string>> {
-    console.log("list seed", seedId, password, blockchain, hdpaths);
-    if (typeof this.vault.passwords[seedId] == 'string') {
-      const expectedPassword = this.vault.passwords[seedId];
-      console.log("Password", seedId, expectedPassword, password);
-      if (expectedPassword != password) {
-        return Promise.reject("Invalid password");
-      }
-    }
-    const seed = this.vault.seedAddresses[seedId];
-    if (!seed) {
-      return Promise.resolve({});
-    }
-    const result = {}
-    hdpaths.forEach((hdpath) => {
-      if (seed[hdpath]) {
-        result[hdpath] = seed[hdpath]
-      }
-    })
-    return Promise.resolve(result);
   }
 
   useBlockchains(codes: string[]) {

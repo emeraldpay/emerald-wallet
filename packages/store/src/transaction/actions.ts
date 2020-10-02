@@ -17,6 +17,7 @@ import * as history from '../txhistory';
 import {Dispatched, IExtraArgument} from '../types';
 import {Wei} from "@emeraldpay/bigamount-crypto";
 import {IEmeraldVault} from "@emeraldpay/emerald-vault-core/lib/vault";
+import {EntryId, UnsignedBitcoinTx} from "@emeraldpay/emerald-vault-core/lib/types";
 
 const log = Logger.forCategory('store.transaction');
 
@@ -123,7 +124,23 @@ export function signTransaction (
   };
 }
 
-export function broadcastTx (chain: BlockchainCode, tx: any, signedTx: any): any {
+export function signBitcoinTransaction(
+  entryId: EntryId,
+  tx: UnsignedBitcoinTx,
+  password: string,
+  handler: (raw?: string, err?: string) => void
+): Dispatched<any> {
+  return (dispatch: any, getState, extra) => {
+    extra.api.vault.signTx(entryId, tx, password)
+      .then((raw) => handler(raw))
+      .catch((err) => {
+        handler(undefined, "Internal error. " + err?.message);
+        dispatch(showError(err))
+      })
+  }
+}
+
+export function broadcastTx(chain: BlockchainCode, tx: any, signedTx: any): any {
   return async (dispatch: any, getState: any, extra: IExtraArgument) => {
     try {
       const hash = await extra.backendApi.broadcastSignedTx(chain, signedTx);

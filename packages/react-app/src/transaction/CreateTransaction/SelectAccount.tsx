@@ -4,7 +4,7 @@ import {Dispatch} from "react";
 import {Box, createStyles, Grid, Theme, Button} from "@material-ui/core";
 import {accounts, IBalanceValue, IState, screen, tokens} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
-import {Uuid, Wallet, WalletEntry, isEthereumEntry} from "@emeraldpay/emerald-vault-core";
+import {Uuid, Wallet, WalletEntry, isEthereumEntry, isBitcoinEntry} from "@emeraldpay/emerald-vault-core";
 import {blockchainIdToCode} from "@emeraldwallet/core";
 import {CoinAvatar, WalletReference} from "@emeraldwallet/ui";
 import AccountBalance from '../../common/Balance';
@@ -123,7 +123,11 @@ export default connect(
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
     return {
       onSelected: (account: WalletEntry) => {
-        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_ACCOUNT, account));
+        if (isEthereumEntry(account)) {
+          dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_ETHEREUM, account));
+        } else if (isBitcoinEntry(account)) {
+          dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_BITCOIN, account.id));
+        }
       },
       onCancel: () => {
         dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId))

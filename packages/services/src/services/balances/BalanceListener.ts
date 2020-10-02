@@ -69,7 +69,8 @@ export class BalanceListener implements IService {
           return {
             txid: tx.txid,
             vout: tx.vout,
-            value: amountReader(tx.value).encode()
+            value: amountReader(tx.value).encode(),
+            address: event.address
           }
         })
       });

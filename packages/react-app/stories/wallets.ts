@@ -45,7 +45,7 @@ const wallet2: Wallet = {
   createdAt: new Date()
 };
 
-const wallet3: Wallet = {
+export const wallet3: Wallet = {
   id: "f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4",
   name: "Another Wallet",
   reserved: [
@@ -94,12 +94,14 @@ export const setBalances = [
       {
         txid: "fc883954a9b3a234106f40af04264d56704b9006a9c205ea8ac4c0dc7bab379a",
         vout: 0,
-        value: "125000000/SAT"
+        value: "125000000/SAT",
+        address: "bc1qu2n9ncsl625d4rk2stqcekvpsjk977ke0ey0p3",
       },
       {
         txid: "4d56704b9006a9c205ea8ac4c0dc7bab379afc883954a9b3a234106f40af0426",
         vout: 0,
-        value: "45040621/SAT"
+        value: "45040621/SAT",
+        address: "bc1qthnuqj3pn8a6p45369ucre8c5604ntvsf78kxa",
       }
     ]
   }),
