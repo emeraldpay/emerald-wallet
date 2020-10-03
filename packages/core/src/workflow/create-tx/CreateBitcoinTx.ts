@@ -2,7 +2,6 @@ import {BitcoinEntry} from "@emeraldpay/emerald-vault-core";
 import {amountDecoder, amountFactory, BalanceUtxo, BlockchainCode, blockchainIdToCode} from "../../blockchains";
 import {BigAmount, CreateAmount, Units} from "@emeraldpay/bigamount";
 import {ValidationResult} from "./types";
-import {Satoshi} from "@emeraldpay/bigamount-crypto";
 import BigNumber from "bignumber.js";
 import {UnsignedBitcoinTx} from "@emeraldpay/emerald-vault-core/lib/types";
 
@@ -168,13 +167,13 @@ export class CreateBitcoinTx<A extends BigAmount> {
     let result: Output[] = [];
     if (this.tx.to.address && this.tx.to.amount) {
       result.push({
-        amount: this.tx.to.amount.getNumberByUnit(this.amountUnits.top).toNumber(),
+        amount: this.tx.to.amount.number.toNumber(),
         address: this.tx.to.address
       });
     }
     if (this.change.isPositive()) {
       result.push({
-        amount: this.change.getNumberByUnit(this.amountUnits.top).toNumber(),
+        amount: this.change.number.toNumber(),
         address: this.changeAddress
       });
     }
@@ -218,7 +217,7 @@ export class CreateBitcoinTx<A extends BigAmount> {
       inputs: this.tx.from.map((it) => {
         return {
           txid: it.txid,
-          amount: Satoshi.decode(it.value).number.toNumber(),
+          amount: this.amountDecoder(it.value).number.toNumber(),
           vout: it.vout,
           address: it.address,
         }

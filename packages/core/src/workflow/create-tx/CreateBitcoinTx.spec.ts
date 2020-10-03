@@ -7,7 +7,9 @@ import {BigAmount} from "@emeraldpay/bigamount";
 
 const basicEntry: BitcoinEntry = {
   address: undefined,
-  addresses: [],
+  addresses: [
+    {role: "change", address: "addrchange", hdPath: "m/84'"}
+  ],
   blockchain: 1,
   createdAt: new Date(),
   id: "f76416d7-3510-4d80-85df-52e7222e56df-1",
@@ -258,5 +260,34 @@ describe("CreateBitcoinTx", () => {
     ]);
     expect(create.totalAvailable.toString())
       .toBe(Satoshi.fromBitcoin(0.18).toString());
+  });
+
+  it("creates unsigned", () => {
+    const create = new CreateBitcoinTx(basicEntry, [
+      {txid: "1", vout: 0, value: new Satoshi(112233).encode(), address: "ADDR"},
+    ]);
+    create.metric = defaultMetric;
+    create.requiredAmount = new Satoshi(80000);
+    create.address = "2to";
+
+    const unsigned = create.create();
+
+    expect(unsigned.inputs.length).toBe(1);
+    expect(unsigned.inputs[0]).toEqual({
+      address: "ADDR",
+      amount: 112233,
+      txid: "1",
+      vout: 0,
+    });
+    expect(unsigned.outputs.length).toBe(2);
+    expect(unsigned.outputs[0]).toEqual({
+      address: "2to",
+      amount: 80000,
+    });
+    expect(unsigned.outputs[1]).toEqual({
+      address: "addrchange",
+      amount: 4233,
+    });
+    expect(unsigned.fee).toBe(28000);
   });
 })
