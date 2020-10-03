@@ -86,8 +86,8 @@ describe("CreateBitcoinTx", () => {
             {txid: "3", vout: 0, value: Satoshi.fromBitcoin(0.756).encode(), address: "ADDR"},
         ]);
         create.metric = defaultMetric;
-        create.amountBitcoin = 0.97;
-        create.address = "AAA";
+      create.requiredAmountBitcoin = 0.97;
+      create.address = "AAA";
 
         let ok = create.rebalance();
         expect(ok).toBeTruthy();
@@ -122,8 +122,8 @@ describe("CreateBitcoinTx", () => {
             {txid: "2", vout: 0, value: Satoshi.fromBitcoin(0.61).encode(), address: "ADDR"},
             {txid: "3", vout: 0, value: Satoshi.fromBitcoin(0.756).encode(), address: "ADDR"},
         ]);
-        create.amountBitcoin = 2;
-        create.address = "AAA";
+      create.requiredAmountBitcoin = 2;
+      create.address = "AAA";
         let ok = create.rebalance();
         expect(ok).toBeFalsy();
         expect(create.transaction.from.length).toBe(3);
@@ -144,9 +144,9 @@ describe("CreateBitcoinTx", () => {
             {txid: "3", vout: 0, value: Satoshi.fromBitcoin(0.005).encode(), address: "ADDR"},
             {txid: "4", vout: 0, value: Satoshi.fromBitcoin(0.005).encode(), address: "ADDR"},
         ]);
-        create.metric = defaultMetric;
-        create.amountBitcoin = 0.0198;
-        create.address = "AAA";
+      create.metric = defaultMetric;
+      create.requiredAmountBitcoin = 0.0198;
+      create.address = "AAA";
         let ok = create.rebalance();
         expect(ok).toBeTruthy();
         expect(create.transaction.from.length).toBe(4);
@@ -157,14 +157,106 @@ describe("CreateBitcoinTx", () => {
 
         expect(create.outputs.length).toBe(1);
         expect(create.outputs[0].address).toBe("AAA");
-        expect(create.outputs[0].amount).toBe(0.0198);
+      expect(create.outputs[0].amount).toBe(0.0198);
 
-        expect(create.fees.toString())
-            // ((4 * 120) + (1 * 80)) * 100 == 56000 (or 0.00056)
-            // but it doesn't have enough change, only 0.0002
-            .toBe(Satoshi.fromBitcoin(0.0002).toString());
+      expect(create.fees.toString())
+        // ((4 * 120) + (1 * 80)) * 100 == 56000 (or 0.00056)
+        // but it doesn't have enough change, only 0.0002
+        .toBe(Satoshi.fromBitcoin(0.0002).toString());
 
-        expect(create.validate()).toBe(ValidationResult.OK);
+      expect(create.validate()).toBe(ValidationResult.OK);
     });
 
+  it("simple fee", () => {
+    let create = new CreateBitcoinTx(basicEntry, [
+      {txid: "1", vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: "ADDR"},
+      {txid: "2", vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: "ADDR"},
+    ]);
+    create.metric = defaultMetric;
+    create.requiredAmountBitcoin = 0.08;
+    create.address = "AAA";
+
+    expect(create.fees.toString())
+      // ((2 * 120) + (2 * 80)) * 100 == 40000
+      .toBe(Satoshi.fromBitcoin(0.0004).toString());
+  });
+
+  it("fee when not enough", () => {
+    let create = new CreateBitcoinTx(basicEntry, [
+      {txid: "1", vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: "ADDR"},
+      {txid: "2", vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: "ADDR"},
+    ]);
+    create.metric = defaultMetric;
+    create.requiredAmountBitcoin = 2;
+    create.address = "AAA";
+
+    expect(create.fees.toString()).toBe(Satoshi.ZERO.toString());
+  });
+
+  it("update fee", () => {
+    let create = new CreateBitcoinTx(basicEntry, [
+      {txid: "1", vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: "ADDR"},
+      {txid: "2", vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: "ADDR"},
+    ]);
+    create.metric = defaultMetric;
+    create.requiredAmountBitcoin = 0.08;
+    create.address = "AAA";
+
+    expect(create.fees.toString())
+      // ((2 * 120) + (2 * 80)) * 100 == 40000
+      .toBe(Satoshi.fromBitcoin(0.0004).toString());
+
+    create.feePrice = 150;
+
+    expect(create.fees.toString())
+      // ((2 * 120) + (2 * 80)) * 150 == 60000
+      .toBe(Satoshi.fromBitcoin(0.0006).toString());
+  });
+
+  it("estimate fees", () => {
+    let create = new CreateBitcoinTx(basicEntry, [
+      {txid: "1", vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: "ADDR"},
+      {txid: "2", vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: "ADDR"},
+    ]);
+    create.metric = defaultMetric;
+    create.requiredAmountBitcoin = 0.08;
+    create.address = "AAA";
+
+    expect(create.estimateFees(100).toString())
+      // ((2 * 120) + (2 * 80)) * 100 == 40000
+      .toBe(Satoshi.fromBitcoin(0.0004).toString());
+    expect(create.estimateFees(150).toString())
+      // ((2 * 120) + (2 * 80)) * 100 == 40000
+      .toBe(Satoshi.fromBitcoin(0.0006).toString());
+    expect(create.estimateFees(200).toString())
+      // ((2 * 120) + (2 * 80)) * 100 == 40000
+      .toBe(Satoshi.fromBitcoin(0.0008).toString());
+    expect(create.estimateFees(2000).toString())
+      // ((2 * 120) + (2 * 80)) * 100 == 40000
+      .toBe(Satoshi.fromBitcoin(0.008).toString());
+  });
+
+
+  it("total available", () => {
+    let create = new CreateBitcoinTx(basicEntry, [
+      {txid: "2", vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: "ADDR"},
+    ]);
+    expect(create.totalAvailable.toString())
+      .toBe(Satoshi.fromBitcoin(0.05).toString());
+
+    create = new CreateBitcoinTx(basicEntry, [
+      {txid: "1", vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: "ADDR"},
+      {txid: "2", vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: "ADDR"},
+    ]);
+    expect(create.totalAvailable.toString())
+      .toBe(Satoshi.fromBitcoin(0.1).toString());
+
+    create = new CreateBitcoinTx(basicEntry, [
+      {txid: "1", vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: "ADDR"},
+      {txid: "2", vout: 0, value: Satoshi.fromBitcoin(0.06).encode(), address: "ADDR"},
+      {txid: "3", vout: 0, value: Satoshi.fromBitcoin(0.07).encode(), address: "ADDR"},
+    ]);
+    expect(create.totalAvailable.toString())
+      .toBe(Satoshi.fromBitcoin(0.18).toString());
+  });
 })

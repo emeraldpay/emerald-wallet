@@ -1,9 +1,9 @@
 import {BitcoinEntry} from "@emeraldpay/emerald-vault-core";
 import {amountDecoder, amountFactory, BlockchainCode, blockchainIdToCode} from "../../blockchains";
-import {BigAmount, CreateAmount} from "@emeraldpay/bigamount";
+import {BigAmount, CreateAmount, Units} from "@emeraldpay/bigamount";
 import {ValidationResult} from "./types";
 import {BalanceUtxo} from "../../blockchains";
-import {Satoshi, SATOSHIS} from "@emeraldpay/bigamount-crypto";
+import {Satoshi} from "@emeraldpay/bigamount-crypto";
 import BigNumber from "bignumber.js";
 import {UnsignedBitcoinTx} from "@emeraldpay/emerald-vault-core/lib/types";
 
@@ -53,7 +53,8 @@ export class CreateBitcoinTx<A extends BigAmount> {
     private readonly blockchain: BlockchainCode;
     private readonly amountFactory: CreateAmount<A>;
     public metric: TxMetric = new AverageTxMetric();
-    private readonly changeAddress: string;
+  private readonly changeAddress: string;
+  private readonly amountUnits: Units
 
     constructor(source: BitcoinEntry, utxo: BalanceUtxo[]) {
         this.utxo = utxo;
@@ -65,13 +66,14 @@ export class CreateBitcoinTx<A extends BigAmount> {
 
         this.amountDecoder = amountDecoder(this.blockchain);
         this.amountFactory = amountFactory(this.blockchain) as CreateAmount<A>;
-        this.zero = this.amountFactory(0);
-        this.tx = {
-            weightPrice: this.amountFactory(100),
-            from: [],
-            to: {},
-            size: 0
-        };
+      this.zero = this.amountFactory(0);
+      this.amountUnits = this.zero.units;
+      this.tx = {
+        weightPrice: this.amountFactory(100),
+        from: [],
+        to: {},
+        size: 0
+      };
     }
 
     totalUtxo(current: BalanceUtxo[]): A {
@@ -84,32 +86,40 @@ export class CreateBitcoinTx<A extends BigAmount> {
         return {...this.tx}
     }
 
-    set address(address: string) {
-        this.tx.to.address = address;
-        this.rebalance();
-    }
+  set address(address: string) {
+    this.tx.to.address = address;
+    this.rebalance();
+  }
 
-    set feePrice(price: number) {
-        this.tx.weightPrice = this.amountFactory(price);
-        this.rebalance();
-    }
+  set feePrice(price: number) {
+    this.tx.weightPrice = this.amountFactory(price);
+    this.rebalance();
+  }
 
-    set amountBitcoin(amount: number | string) {
-        this.tx.to.amount = this.amountFactory(
-            new BigNumber(amount).multipliedBy(SATOSHIS.top.multiplier)
-        );
-        this.rebalance();
-    }
+  set requiredAmountBitcoin(amount: number | string) {
+    this.requiredAmount = this.amountFactory(
+      new BigNumber(amount).multipliedBy(this.amountUnits.top.multiplier)
+    );
+  }
 
-    rebalance(): boolean {
-        if (typeof this.tx.to.amount == "undefined" || this.tx.to.amount.isZero()) {
-            this.tx.from = [];
-            return false;
-        }
-        const requiredAmount = this.tx.to.amount;
-        const from: BalanceUtxo[] = [];
-        let totalFrom = this.zero;
-        for (let i = 0; i < this.utxo.length && totalFrom.isLessThan(requiredAmount); i++) {
+  set requiredAmount(value: A) {
+    this.tx.to.amount = value;
+    this.rebalance();
+  }
+
+  get requiredAmount(): A {
+    return this.tx.to.amount || this.zero;
+  }
+
+  rebalance(): boolean {
+    if (typeof this.tx.to.amount == "undefined" || this.tx.to.amount.isZero()) {
+      this.tx.from = [];
+      return false;
+    }
+    const requiredAmount = this.tx.to.amount;
+    const from: BalanceUtxo[] = [];
+    let totalFrom = this.zero;
+    for (let i = 0; i < this.utxo.length && totalFrom.isLessThan(requiredAmount); i++) {
             from.push(this.utxo[i]);
             totalFrom = this.totalUtxo(from);
         }
@@ -159,14 +169,14 @@ export class CreateBitcoinTx<A extends BigAmount> {
         let result: Output[] = [];
         if (this.tx.to.address && this.tx.to.amount) {
             result.push({
-                amount: this.tx.to.amount.getNumberByUnit(SATOSHIS.top).toNumber(),
-                address: this.tx.to.address
+              amount: this.tx.to.amount.getNumberByUnit(this.amountUnits.top).toNumber(),
+              address: this.tx.to.address
             });
         }
         if (this.change.isPositive()) {
             result.push({
-                amount: this.change.getNumberByUnit(SATOSHIS.top).toNumber(),
-                address: this.changeAddress
+              amount: this.change.getNumberByUnit(this.amountUnits.top).toNumber(),
+              address: this.changeAddress
             });
         }
         return result;
@@ -178,17 +188,8 @@ export class CreateBitcoinTx<A extends BigAmount> {
             .reduce((a, b) => a.plus(b), this.zero);
     }
 
-    get requiredAmount(): A {
-        return this.tx.to.amount || this.zero;
-    }
-
-    set requiredAmount(value: A) {
-        this.tx.to.amount = value;
-        this.rebalance();
-    }
-
     get fees(): A {
-        return this.totalToSpend.minus(this.change).minus(this.requiredAmount);
+      return this.totalToSpend.minus(this.change).minus(this.requiredAmount).max(this.zero);
     }
 
     estimateFees(price: number): A {
@@ -217,14 +218,35 @@ export class CreateBitcoinTx<A extends BigAmount> {
         return {
             inputs: this.tx.from.map((it) => {
                 return {
-                    txid: it.txid,
-                    amount: Satoshi.decode(it.value).number.toNumber(),
-                    vout: it.vout,
-                    address: it.address,
+                  txid: it.txid,
+                  amount: Satoshi.decode(it.value).number.toNumber(),
+                  vout: it.vout,
+                  address: it.address,
                 }
             }),
-            outputs: this.outputs,
-            fee: this.fees.number.toNumber()
+          outputs: this.outputs,
+          fee: this.fees.number.toNumber()
         }
     }
+
+  debug(): any {
+    return {
+      available: this.totalAvailable.toString(),
+      send: this.tx.to.amount?.toString(),
+      fess: this.fees.toString(),
+      change: this.change.toString(),
+      from: this.tx.from.map((it) => {
+        return {
+          address: it.address,
+          amount: it.value
+        }
+      }),
+      to: this.outputs.map((it) => {
+        return {
+          address: it.address,
+          amount: it.amount
+        }
+      })
+    }
+  }
 }
