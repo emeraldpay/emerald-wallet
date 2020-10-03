@@ -2,7 +2,7 @@ import {connect} from "react-redux";
 import * as React from "react";
 import {Dispatch} from "react";
 import {Box, createStyles, FormHelperText, Slider, TextField, Theme} from "@material-ui/core";
-import {IState} from "@emeraldwallet/store";
+import {accounts, IState} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
 import FormFieldWrapper from "../CreateTx/FormFieldWrapper";
 import {ButtonGroup} from "@emeraldplatform/ui";
@@ -12,6 +12,8 @@ import FormLabel from "../CreateTx/FormLabel/FormLabel";
 import {Button} from "@emeraldwallet/ui";
 import classNames from "classnames";
 import validate from 'bitcoin-address-validation';
+import {UnsignedBitcoinTx} from "@emeraldpay/emerald-vault-core";
+import {BitcoinEntry} from "@emeraldpay/emerald-vault-core/lib/types";
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
@@ -44,8 +46,17 @@ const Component = (({create, onCreate}: Props & Actions & OwnProps) => {
   const styles = useStyles();
   const [to, setTo] = React.useState("");
   const [toError, setToError] = React.useState();
+  const [feePrice, setFeePriceState] = React.useState(0);
   const [feesStr, setFeesStr] = React.useState(create.fees.toString());
+  const [amount, setAmountState] = React.useState(0);
   const [amountStr, setAmountStr] = React.useState("0");
+
+  // instance recreated on each global state change, update it with the current local state
+  create.address = to;
+  if (feePrice > 0) {
+    create.feePrice = feePrice
+  }
+  create.requiredAmountBitcoin = amount
 
   function updateTo(value: string) {
     setTo(value);
@@ -66,6 +77,7 @@ const Component = (({create, onCreate}: Props & Actions & OwnProps) => {
 
   function setFeePrice(price: number) {
     create.feePrice = price;
+    setFeePriceState(price);
     setFeesStr(create.fees.toString());
   }
 
@@ -73,9 +85,11 @@ const Component = (({create, onCreate}: Props & Actions & OwnProps) => {
     setAmountStr(value);
     try {
       const bitcoins = parseFloat(value.trim());
-      create.amountBitcoin = bitcoins;
+      create.requiredAmountBitcoin = bitcoins;
+      setAmountState(bitcoins);
     } catch (e) {
-      create.amountBitcoin = 0;
+      create.requiredAmountBitcoin = 0;
+      setAmountState(0);
     }
     setFeesStr(create.fees.toString());
   }
@@ -144,7 +158,7 @@ const Component = (({create, onCreate}: Props & Actions & OwnProps) => {
           disabled={!valid}
           primary={true}
           label='Create Transaction'
-          onClick={() => onCreate()}
+          onClick={() => onCreate(create.create())}
         />
       </ButtonGroup>
     </FormFieldWrapper>
@@ -154,6 +168,7 @@ const Component = (({create, onCreate}: Props & Actions & OwnProps) => {
 
 // State Properties
 interface Props {
+  create: CreateBitcoinTx<BigAmount>,
 }
 
 // Actions
@@ -162,13 +177,16 @@ interface Actions {
 
 // Component properties
 interface OwnProps {
-  create: CreateBitcoinTx<BigAmount>,
-  onCreate: () => void;
+  entry: BitcoinEntry,
+  onCreate: (tx: UnsignedBitcoinTx) => void;
 }
 
 export default connect(
   (state: IState, ownProps: OwnProps): Props => {
-    return {}
+    let utxo = accounts.selectors.getUtxo(state, ownProps.entry.id);
+    return {
+      create: new CreateBitcoinTx<BigAmount>(ownProps.entry, utxo),
+    }
   },
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
     return {}

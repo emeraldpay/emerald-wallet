@@ -5,10 +5,8 @@ import {Box, createStyles, Theme, Grid, Typography} from "@material-ui/core";
 import {IState} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
 import {UnsignedBitcoinTx} from "@emeraldpay/emerald-vault-core";
-import {BlockchainCode} from "@emeraldwallet/core";
+import {amountFactory, BlockchainCode} from "@emeraldwallet/core";
 import {CoinAvatar, Address} from "@emeraldwallet/ui";
-import {CreateBitcoinTx} from "@emeraldwallet/core/lib/workflow";
-import {BigAmount} from "@emeraldpay/bigamount";
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({})
@@ -17,17 +15,24 @@ const useStyles = makeStyles<Theme>((theme) =>
 /**
  *
  */
-const Component = (({blockchain, create}: Props & Actions & OwnProps) => {
+const Component = (({blockchain, tx}: Props & Actions & OwnProps) => {
   const styles = useStyles();
+
+  const amountCreate = amountFactory(blockchain);
+  const send = tx.outputs[0].amount;
+  if (tx.outputs.length > 2 || tx.outputs.length == 0) {
+    console.error("Invalid outputs", tx.outputs)
+  }
+
   return <Grid container={true}>
     <Grid item={true} xs={1}>
       <CoinAvatar chain={blockchain} center={true}/>
     </Grid>
     <Grid item={true} xs={11}>
       <Typography variant={"h5"}>
-        Sending {create.requiredAmount.toString()} to:
+        Sending {amountCreate(send).toString()} to:
       </Typography>
-      <Address address={create.outputs[0].address}/>
+      <Address address={tx.outputs[0].address}/>
     </Grid>
   </Grid>
 })
@@ -43,7 +48,7 @@ interface Actions {
 // Component properties
 interface OwnProps {
   blockchain: BlockchainCode,
-  create: CreateBitcoinTx<BigAmount>
+  tx: UnsignedBitcoinTx,
 }
 
 export default connect(

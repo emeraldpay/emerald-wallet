@@ -4,12 +4,10 @@ import * as React from 'react';
 import {Box, createStyles, Grid, Theme} from "@material-ui/core";
 import {IState, transaction} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
-import {CreateBitcoinTx} from "@emeraldwallet/core/lib/workflow";
-import {BigAmount} from "@emeraldpay/bigamount";
 import TxSummary from "./TxSummary";
 import {BlockchainCode} from "@emeraldwallet/core";
 import UnlockSeed from "../../create-account/UnlockSeed";
-import {Uuid} from "@emeraldpay/emerald-vault-core/lib/types";
+import {UnsignedBitcoinTx, Uuid} from "@emeraldpay/emerald-vault-core/lib/types";
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
@@ -22,11 +20,11 @@ const useStyles = makeStyles<Theme>((theme) =>
 /**
  *
  */
-const Component = (({create, blockchain, seedId, onSign, sign}: Props & Actions & OwnProps) => {
+const Component = (({tx, blockchain, seedId, onSign, sign}: Props & Actions & OwnProps) => {
   const styles = useStyles();
   return <Grid container={true}>
     <Grid item={true} xs={12}>
-      <TxSummary create={create} blockchain={blockchain}/>
+      <TxSummary tx={tx} blockchain={blockchain}/>
     </Grid>
     <Grid item={true} xs={1}/>
     <Grid item={true} xs={11} className={styles.unlockRow}>
@@ -52,7 +50,7 @@ interface Actions {
 
 // Component properties
 interface OwnProps {
-  create: CreateBitcoinTx<BigAmount>,
+  tx: UnsignedBitcoinTx,
   entryId: Uuid,
   blockchain: BlockchainCode,
   seedId: Uuid,
@@ -67,8 +65,7 @@ export default connect(
     return {
       sign: (password: string) => {
         return new Promise((resolve, reject) => {
-          const tx = ownProps.create.create();
-          dispatch(transaction.actions.signBitcoinTransaction(ownProps.entryId, tx, password,
+          dispatch(transaction.actions.signBitcoinTransaction(ownProps.entryId, ownProps.tx, password,
             (raw, err) => {
               if (raw) {
                 resolve(raw)
