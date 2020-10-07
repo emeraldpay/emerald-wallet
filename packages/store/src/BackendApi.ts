@@ -3,7 +3,7 @@ import {
   BlockchainCode,
   Commands,
   IBackendApi,
-  AnyCoinCode
+  AnyCoinCode, isBitcoin
 } from '@emeraldwallet/core';
 import {ipcRenderer} from 'electron';
 
@@ -19,7 +19,7 @@ export default class BackendApi implements IBackendApi {
     return ipcRenderer.invoke(Commands.GET_GAS_PRICE, blockchain);
   }
 
-  public broadcastSignedTx = (blockchain: BlockchainCode, tx: any): Promise<string> => {
+  public broadcastSignedTx = (blockchain: BlockchainCode, tx: string): Promise<string> => {
     return ipcRenderer.invoke(Commands.BROADCAST_TX, blockchain, tx);
   }
 
@@ -28,6 +28,10 @@ export default class BackendApi implements IBackendApi {
   }
 
   public persistTransactions = (blockchain: BlockchainCode, txs: any[]): Promise<void> => {
+    if (isBitcoin(blockchain)) {
+      //TODO
+      return Promise.resolve()
+    }
     const request = txs.map((tx) => ({
       ...tx,
       gasPrice: (typeof tx.gasPrice === 'string') ? tx.gasPrice : tx.gasPrice.toString(),

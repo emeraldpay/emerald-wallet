@@ -2,7 +2,7 @@ import {connect} from "react-redux";
 import {Dispatch} from "react";
 import * as React from 'react';
 import {Box, createStyles, Theme} from "@material-ui/core";
-import {accounts, IState} from "@emeraldwallet/store";
+import {accounts, IState, transaction} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
 import SetupTx from "./SetupTx";
 import {EntryId, isBitcoinEntry} from "@emeraldpay/emerald-vault-core";
@@ -33,7 +33,7 @@ const useStyles = makeStyles<Theme>((theme) =>
 /**
  *
  */
-const Component = (({entry, blockchain, seedId, source}: Props & Actions & OwnProps) => {
+const Component = (({entry, blockchain, seedId, source, onBroadcast}: Props & Actions & OwnProps) => {
   const styles = useStyles();
   const [raw, setRaw] = React.useState("");
   const [page, setPage] = React.useState("setup" as Step);
@@ -56,8 +56,7 @@ const Component = (({entry, blockchain, seedId, source}: Props & Actions & OwnPr
                       setPage("result")
                     }}/>
   } else if (page == "result") {
-    content = <Confirm rawtx={raw} onConfirm={() => {
-    }}/>
+    content = <Confirm rawtx={raw} onConfirm={() => onBroadcast(blockchain, tx!, raw)}/>
   } else {
     console.error("Invalid state", page);
     content = <Alert severity="error">Invalid state</Alert>
@@ -80,6 +79,7 @@ interface Props {
 
 // Actions
 interface Actions {
+  onBroadcast: (blockchain: BlockchainCode, orig: UnsignedBitcoinTx, raw: string) => void;
 }
 
 // Component properties
@@ -107,6 +107,10 @@ export default connect(
     }
   },
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
-    return {}
+    return {
+      onBroadcast: (blockchain, orig, raw) => {
+        dispatch(transaction.actions.broadcastTx(blockchain, orig, raw));
+      }
+    }
   }
 )((Component));

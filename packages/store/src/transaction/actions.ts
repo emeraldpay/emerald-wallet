@@ -140,7 +140,7 @@ export function signBitcoinTransaction(
   }
 }
 
-export function broadcastTx(chain: BlockchainCode, tx: any, signedTx: any): any {
+export function broadcastTx(chain: BlockchainCode, tx: IStoredTransaction | UnsignedBitcoinTx, signedTx: string): Dispatched<any> {
   return async (dispatch: any, getState: any, extra: IExtraArgument) => {
     try {
       const hash = await extra.backendApi.broadcastSignedTx(chain, signedTx);

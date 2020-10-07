@@ -7,7 +7,7 @@ export default interface IBackendApi {
   // Transactions History
   persistTransactions: (blockchain: BlockchainCode, txs: any[]) => Promise<void>;
   getGasPrice: (blockchain: BlockchainCode) => Promise<number>;
-  broadcastSignedTx: (blockchain: BlockchainCode, tx: any) => Promise<string>;
+  broadcastSignedTx: (blockchain: BlockchainCode, tx: string) => Promise<string>;
   estimateTxCost: (blockchain: BlockchainCode, tx: any) => Promise<number>;
 
 }
