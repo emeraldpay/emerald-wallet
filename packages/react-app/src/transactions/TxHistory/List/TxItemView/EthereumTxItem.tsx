@@ -1,7 +1,7 @@
 import {convert, InputDataDecoder} from '@emeraldplatform/core';
 import {Account as AddressAvatar} from '@emeraldplatform/ui';
 import {ArrowDown} from '@emeraldplatform/ui-icons';
-import {BlockchainCode, IStoredTransaction, tokenAmount, utils} from '@emeraldwallet/core';
+import {BlockchainCode, tokenAmount, utils, EthereumStoredTransaction} from '@emeraldwallet/core';
 import {abi as TokenAbi} from '@emeraldwallet/erc20';
 import {TableCell, TableRow} from '@material-ui/core';
 import {withStyles} from '@material-ui/styles';
@@ -9,6 +9,7 @@ import * as React from 'react';
 import TxStatus from './Status';
 import {BigAmount} from "@emeraldpay/bigamount";
 import {Wei} from '@emeraldpay/bigamount-crypto';
+import {EntryId} from "@emeraldpay/emerald-vault-core/lib/types";
 
 const decoder = new InputDataDecoder(TokenAbi);
 
@@ -49,11 +50,11 @@ export interface ITxItemProps {
   currentBlockHeight: number;
   requiredConfirmations: number;
   amountRenderer?: (balance: any, ticker: string) => any;
-  tx: IStoredTransaction;
+  tx: EthereumStoredTransaction;
   openAccount: (blockchain: BlockchainCode, address: string) => void;
-  toAccount: any;
-  fromAccount: any;
-  openTx: any;
+  toAccount?: EntryId;
+  fromAccount?: EntryId;
+  openTx: () => void;
   classes: any;
   token?: any;
   lang?: any;
@@ -79,12 +80,12 @@ const defaultAmountRenderer = ((amount: BigAmount, ticker: any) => {
   return (<React.Fragment>{amount.toString()} {ticker}</React.Fragment>);
 });
 
-export const TxItem = (props: ITxItemProps) => {
+export const EthereumTxItem = (props: ITxItemProps) => {
   const renderAmount = props.amountRenderer || defaultAmountRenderer;
   const {
     tx, openTx, openAccount, toAccount, fromAccount, currentBlockHeight, requiredConfirmations, token, coinTicker
   } = props;
-  const { classes } = props;
+  const {classes} = props;
 
   let symbol = coinTicker || '';
   let balance: BigAmount;
@@ -129,13 +130,11 @@ export const TxItem = (props: ITxItemProps) => {
       <TableCell className={classes.columnAddresses}>
         <AddressAvatar
           address={tx.from}
-          name={fromAccount.name}
           onClick={openFromAccount}
         />
         {tx.to && (
           <AddressAvatar
             address={tx.to}
-            name={toAccount.name}
             onClick={openToAccount}
           />
           )}
@@ -159,6 +158,6 @@ export const TxItem = (props: ITxItemProps) => {
   );
 };
 
-const StyledTxView = withStyles(styles)(TxItem);
+const StyledTxView = withStyles(styles)(EthereumTxItem);
 
 export default StyledTxView;

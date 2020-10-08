@@ -57,20 +57,11 @@ export function loadTransactions (key: string, chainId: number): IStoredTransact
 function restoreTx (tx: any): IStoredTransaction {
   return {
     value: (tx.value && typeof tx.value === 'string') ? toBigNumber(tx.value) : new BigNumber(0),
-    hash: tx.hash,
-    input: tx.input,
     gasPrice: (tx.gasPrice && typeof tx.gasPrice === 'string') ? toBigNumber(tx.gasPrice) : new BigNumber(0),
-    gas: tx.gas,
-    to: tx.to,
-    from: tx.from,
-    nonce: tx.nonce,
-    data: tx.data,
-    blockHash: tx.blockHash,
-    blockNumber: tx.blockNumber,
     timestamp: utils.parseDate(tx.timestamp, undefined),
     blockchain: tx.blockchain || (blockchainById(tx.chainId) ? blockchainById(tx.chainId)!.params.code : null),
-    chainId: tx.chainId,
     since: utils.parseDate(tx.since, new Date()),
-    discarded: tx.discarded || false
+    discarded: tx.discarded || false,
+    ...tx
   };
 }

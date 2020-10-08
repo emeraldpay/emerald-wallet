@@ -3,7 +3,7 @@ import {IState} from '../types';
 import {TransactionMap, TransactionsList} from './types';
 import {WalletEntry, WalletOp, AddressRefOp} from "@emeraldpay/emerald-vault-core";
 import {Wei} from '@emeraldpay/bigamount-crypto';
-import {IStoredTransaction} from "@emeraldwallet/core";
+import {isEthereumStoredTransaction, IStoredTransaction} from "@emeraldwallet/core";
 
 export function allTrackedTxs(state: IState): IStoredTransaction[] {
   return state.history.get('trackedTransactions')
@@ -26,11 +26,16 @@ function equalAddresses(a: string | undefined, b: string | undefined): boolean {
  */
 export function getTransactions(state: IState, walletAccounts: WalletEntry[]): IStoredTransaction[] {
   return allTrackedTxs(state)
-    .filter((tx) =>
-      walletAccounts
-        .filter((a) => a.address)
-        .map((a) => AddressRefOp.of(a.address!))
-        .some((a) => a.isSame(tx.from) || (tx.to && a.isSame(tx.to)))
+    .filter((tx) => {
+        if (isEthereumStoredTransaction(tx)) {
+          return walletAccounts
+            .filter((a) => a.address)
+            .map((a) => AddressRefOp.of(a.address!))
+            .some((a) => a.isSame(tx.from) || (tx.to && a.isSame(tx.to)));
+        }
+        //TODO bitcoin
+        return false;
+      }
     );
 }
 
@@ -43,23 +48,27 @@ export function searchTransactions(searchValue: string, transactionsToSearch: IS
     if (!tx) {
       return false;
     }
-    const found = fieldsToCheck.find((field) => {
-      // search for amount
-      if (field === 'value') {
-        const val = tx.value;
-        const txValue = new Wei(val);
-        if (!txValue) {
-          return false;
+    if (isEthereumStoredTransaction(tx)) {
+      const found = fieldsToCheck.find((field) => {
+        // search for amount
+        if (field === 'value') {
+          const val = tx.value;
+          const txValue = new Wei(val);
+          if (!txValue) {
+            return false;
+          }
+          return txValue.number.toFixed().includes(searchValue)
+            || txValue.toEther().toString().includes(searchValue);
         }
-        return txValue.number.toFixed().includes(searchValue)
-          || txValue.toEther().toString().includes(searchValue);
-      }
-      // search for field
-      // @ts-ignore
-      const fieldValue: string | undefined = tx[field];
-      return typeof fieldValue != "undefined" && fieldValue.includes(searchValue);
-    });
-    return typeof found !== 'undefined';
+        // search for field
+        // @ts-ignore
+        const fieldValue: string | undefined = tx[field];
+        return typeof fieldValue != "undefined" && fieldValue.includes(searchValue);
+      });
+      return typeof found !== 'undefined';
+    }
+    //TODO bitcoin
+    return false;
   });
 }
 

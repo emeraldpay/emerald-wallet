@@ -1,6 +1,13 @@
-import { convert } from '@emeraldplatform/core';
-import { IStoredTransaction, utils } from '@emeraldwallet/core';
-import { fromJS, Map } from 'immutable';
+import {convert} from '@emeraldplatform/core';
+import {
+  EthereumStoredTransaction,
+  isBitcoinStoredTransaction,
+  isEthereumStoredTransaction,
+  IStoredTransaction,
+  utils,
+  BitcoinStoredTransaction
+} from '@emeraldwallet/core';
+import {fromJS, Map} from 'immutable';
 import {
   ActionTypes,
   HistoryAction,
@@ -26,7 +33,10 @@ const initialTx = Map({
   data: null,
   gas: null,
   gasPrice: null,
-  nonce: null
+  nonce: null,
+  fee: null,
+  inputs: [],
+  outputs: [],
 });
 
 function isTracked (state: any, tx: any) {
@@ -73,7 +83,45 @@ function updateStatus (tx: any): any {
   }
 }
 
-function createTx (data: IStoredTransaction) {
+function createTx(data: IStoredTransaction): Map<string, any> {
+  if (isEthereumStoredTransaction(data)) {
+    return createEthereumTx(data);
+  }
+  if (isBitcoinStoredTransaction(data)) {
+    return createBitcoinTx(data);
+  }
+  console.error("Unsupported tx");
+  return Map()
+}
+
+function createBitcoinTx(data: BitcoinStoredTransaction): Map<string, any> {
+  const values: { [key: string]: any } = {
+    hash: data.hash
+  };
+  let tx: Map<string, any> = initialTx.merge(values);
+  tx = tx.set("fee", data.fee)
+    .set("inputs", data.inputs)
+    .set("outputs", data.outputs)
+    .set('timestamp', utils.parseDate(data.timestamp))
+    .set('since', utils.parseDate(data.since))
+    .set('blockchain', data.blockchain);
+
+  // If is not pending, fill in finalized attributes.
+  if (typeof data.blockNumber !== 'undefined' && data.blockNumber !== null) {
+    tx = tx.merge({
+      blockHash: data.blockHash,
+      blockNumber: toNumber(data.blockNumber),
+      discarded: false
+    });
+  } else if (typeof data.broadcasted !== 'undefined' && data.broadcasted) {
+    tx = tx.set('broadcasted', true)
+      .set('discarded', false);
+  }
+
+  return tx
+}
+
+function createEthereumTx(data: EthereumStoredTransaction): Map<string, any> {
   const values: { [key: string]: any } = {
     hash: data.hash,
     to: data.to

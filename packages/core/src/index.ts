@@ -45,7 +45,13 @@ export {
   isSupportedTokenCode,
   AssetDetail, AssetDetails
 } from './Asset';
-export {IStoredTransaction} from './history/IStoredTransaction';
+export {
+  IStoredTransaction,
+  BitcoinStoredTransaction,
+  EthereumStoredTransaction,
+  isBitcoinStoredTransaction,
+  isEthereumStoredTransaction
+} from './history/IStoredTransaction';
 
 // address book core
 export { AddressBookService, IAddressBookService } from './address-book/AddressBookService';

@@ -1,4 +1,4 @@
-import {AnyCoinCode, BlockchainCode, IApi, IBackendApi} from "@emeraldwallet/core";
+import {AnyCoinCode, BlockchainCode, IApi, IBackendApi, IStoredTransaction} from "@emeraldwallet/core";
 import {
   AddEntry,
   BlockchainType,
@@ -242,7 +242,7 @@ export class BackendMock implements IBackendApi {
     return Promise.resolve(0);
   }
 
-  persistTransactions(blockchain: BlockchainCode, txs: any[]): Promise<void> {
+  persistTransactions(blockchain: BlockchainCode, txs: IStoredTransaction[]): Promise<void> {
     return Promise.resolve(undefined);
   }
 
