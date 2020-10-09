@@ -9,13 +9,13 @@ import {
   blockchainByName,
   blockchainById,
   isEthereumStoredTransaction,
-  IStoredTransaction, AnyCoinCode, isBitcoinStoredTransaction, isEthereum, EthereumStoredTransaction
+  IStoredTransaction, AnyCoinCode, isBitcoinStoredTransaction
 } from "@emeraldwallet/core";
 import {ITokenInfo, registry} from '@emeraldwallet/erc20';
 import i18n from '../../../i18n';
-import {EntryId, WalletEntry} from "@emeraldpay/emerald-vault-core/lib/types";
-import {EthereumTxItem} from "./TxItemView/EthereumTxItem";
-import Alert from "@material-ui/lab/Alert";
+import {Wallet} from "@emeraldpay/emerald-vault-core";
+import {TxItem} from "./TxItemView/TxItem";
+import {EntryIdOp} from "@emeraldpay/emerald-vault-core";
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
@@ -30,16 +30,15 @@ const useStyles = makeStyles<Theme>((theme) =>
  */
 const Component = ((props: Props & Actions & OwnProps) => {
   const styles = useStyles();
-  if (isEthereum(props.tx.blockchain) && isEthereumStoredTransaction(props.tx)) {
-    return <EthereumTxItem tx={props.tx}
-                           classes={{}}
-                           openAccount={props.openAccount}
-                           currentBlockHeight={props.currentBlockHeight}
-                           openTx={props.openTx}
-                           requiredConfirmations={props.requiredConfirmations}
-    />
-  }
-  return <Alert>Invalid tx on {props.tx.blockchain}</Alert>
+  return <TxItem tx={props.tx}
+                 fromWallet={props.fromAccount}
+                 toWallet={props.toAccount}
+                 classes={{}}
+                 openAccount={props.openAccount}
+                 currentBlockHeight={props.currentBlockHeight}
+                 openTx={props.openTx}
+                 requiredConfirmations={props.requiredConfirmations}
+  />
 })
 
 // State Properties
@@ -47,8 +46,8 @@ interface Props {
   tx: IStoredTransaction;
   coinTicker: AnyCoinCode;
   lang: string;
-  toAccount: WalletEntry | undefined;
-  fromAccount: WalletEntry | undefined;
+  toAccount: Wallet | undefined;
+  fromAccount: Wallet | undefined;
   token: ITokenInfo | null;
   requiredConfirmations: number;
   currentBlockHeight: number;
@@ -72,15 +71,37 @@ export default connect(
       throw new Error("Unknown tx: " + ownProps.hash);
     }
     const blockchain = blockchainByName(tx.blockchain);
-    let toAccount: WalletEntry | undefined = undefined;
-    let fromAccount: WalletEntry | undefined = undefined;
+    let toAccount: Wallet | undefined = undefined;
+    let fromAccount: Wallet | undefined = undefined;
     let token: ITokenInfo | null = null;
     if (isEthereumStoredTransaction(tx)) {
-      toAccount = accounts.selectors.findAccountByAddress(state, tx.to || "", blockchain!.params.code) || undefined;
-      fromAccount = accounts.selectors.findAccountByAddress(state, tx.from, blockchain!.params.code) || undefined;
+      toAccount = accounts.selectors.findWalletByAddress(state, tx.to || "", blockchain!.params.code) || undefined;
+      fromAccount = accounts.selectors.findWalletByAddress(state, tx.from, blockchain!.params.code) || undefined;
       token = registry.byAddress(blockchain!.params.code, tx.to || "");
-    } else if (isBitcoinStoredTransaction(tx)) {
 
+    } else if (isBitcoinStoredTransaction(tx)) {
+      // try to find an input that originated from us
+      tx.inputs
+        .filter((it) => typeof it.entry != "undefined")
+        .map((it) => accounts.selectors.findEntry(state, it.entry!))
+        .filter((it) => typeof it != "undefined")
+        .slice(0, 1)
+        .forEach((from) =>
+          fromAccount = accounts.selectors.findWallet(state, EntryIdOp.asOp(from!.id).extractWalletId())
+        );
+
+      // bitcoin tx usually have a change, which is own account. because of that consider it as "to" only if
+      // it's not originated from us
+      if (typeof fromAccount === "undefined") {
+        tx.outputs
+          .filter((it) => typeof it.entry != "undefined")
+          .map((it) => accounts.selectors.findEntry(state, it.entry!))
+          .filter((it) => typeof it != "undefined")
+          .slice(0, 1)
+          .forEach((to) =>
+            toAccount = accounts.selectors.findWallet(state, EntryIdOp.asOp(to!.id).extractWalletId())
+          );
+      }
     }
 
     return {
