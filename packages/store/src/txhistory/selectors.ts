@@ -1,9 +1,13 @@
-import {List, Map} from 'immutable';
 import {IState} from '../types';
-import {TransactionMap, TransactionsList} from './types';
 import {WalletEntry, WalletOp, AddressRefOp} from "@emeraldpay/emerald-vault-core";
 import {Wei} from '@emeraldpay/bigamount-crypto';
-import {isEthereumStoredTransaction, IStoredTransaction} from "@emeraldwallet/core";
+import {
+  isBitcoinStoredTransaction,
+  isEthereumStoredTransaction,
+  IStoredTransaction,
+  BitcoinStoredTransaction
+} from "@emeraldwallet/core";
+import {BitcoinEntry, EntryId, isBitcoinEntry} from "@emeraldpay/emerald-vault-core";
 
 export function allTrackedTxs(state: IState): IStoredTransaction[] {
   return state.history.get('trackedTransactions')
@@ -25,15 +29,32 @@ function equalAddresses(a: string | undefined, b: string | undefined): boolean {
  * @param walletAccounts
  */
 export function getTransactions(state: IState, walletAccounts: WalletEntry[]): IStoredTransaction[] {
+
+  function addressReferencedByTx(address: string, tx: BitcoinStoredTransaction): boolean {
+    return tx.outputs.some((it) => it.address == address)
+  }
+
+  function entryReferencedByTx(entry: EntryId, tx: BitcoinStoredTransaction): boolean {
+    return tx.inputs.some((it) => it.entry == entry)
+  }
+
+
   return allTrackedTxs(state)
     .filter((tx) => {
-        if (isEthereumStoredTransaction(tx)) {
-          return walletAccounts
-            .filter((a) => a.address)
-            .map((a) => AddressRefOp.of(a.address!))
-            .some((a) => a.isSame(tx.from) || (tx.to && a.isSame(tx.to)));
-        }
-        //TODO bitcoin
+      if (isEthereumStoredTransaction(tx)) {
+        return walletAccounts
+          .filter((a) => a.address)
+          .map((a) => AddressRefOp.of(a.address!))
+          .some((a) => a.isSame(tx.from) || (tx.to && a.isSame(tx.to)));
+      } else if (isBitcoinStoredTransaction(tx)) {
+        return walletAccounts
+          .filter((a) => isBitcoinEntry(a))
+          .some((entry) => {
+            return entryReferencedByTx(entry.id, tx) ||
+              (entry as BitcoinEntry).addresses.some((it) => addressReferencedByTx(it.address, tx))
+          })
+        //TODO old addresses are not available right now
+      }
         return false;
       }
     );
@@ -43,13 +64,13 @@ export function searchTransactions(searchValue: string, transactionsToSearch: IS
   if (transactionsToSearch.length === 0) {
     return transactionsToSearch;
   }
-  const fieldsToCheck = ['to', 'from', 'hash', 'value'];
   return transactionsToSearch.filter((tx: IStoredTransaction | undefined) => {
     if (!tx) {
       return false;
     }
     if (isEthereumStoredTransaction(tx)) {
-      const found = fieldsToCheck.find((field) => {
+      const fieldsToCheck = ['to', 'from', 'hash', 'value'];
+      return fieldsToCheck.some((field) => {
         // search for amount
         if (field === 'value') {
           const val = tx.value;
@@ -60,14 +81,19 @@ export function searchTransactions(searchValue: string, transactionsToSearch: IS
           return txValue.number.toFixed().includes(searchValue)
             || txValue.toEther().toString().includes(searchValue);
         }
-        // search for field
+        // search in other fields
         // @ts-ignore
         const fieldValue: string | undefined = tx[field];
         return typeof fieldValue != "undefined" && fieldValue.includes(searchValue);
       });
-      return typeof found !== 'undefined';
+    } else if (isBitcoinStoredTransaction(tx)) {
+      const foundInput = tx.inputs.some((it) =>
+        it.txid.toLowerCase().includes(searchValue) || it.amount.toString().includes(searchValue));
+      const foundOutput = tx.outputs.some((it) =>
+        it.address.toLowerCase().includes(searchValue) || it.amount.toString().includes(searchValue)
+      )
+      return foundInput || foundOutput;
     }
-    //TODO bitcoin
     return false;
   });
 }

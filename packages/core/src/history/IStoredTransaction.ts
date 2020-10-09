@@ -1,8 +1,11 @@
 import BigNumber from 'bignumber.js';
 import {BlockchainCode, isBitcoin, isEthereum} from '../blockchains/blockchains';
-import {EntryId} from "@emeraldpay/emerald-vault-core/lib/types";
+import {EntryId} from "@emeraldpay/emerald-vault-core";
 
 interface BaseStoredTransaction {
+  //Associated entries. May be two, if transfer is between two wallets/entries
+  entry?: EntryId[],
+
   blockchain: BlockchainCode;
   timestamp?: Date;
 

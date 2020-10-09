@@ -3,7 +3,7 @@ import {
   BlockchainCode,
   blockchainCodeToId,
   Blockchains,
-  Commands, isAnyTokenCode, isBitcoin, isCoinTickerCode, isEthereum,
+  Commands, isAnyTokenCode, isBitcoin, isCoinTickerCode, isEthereum, IStoredTransaction,
   Logger,
 } from '@emeraldwallet/core';
 import {loadTransactions2, storeTransactions2} from '@emeraldwallet/history-store';
@@ -54,7 +54,7 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess) {
   });
 
   // Transaction history API
-  ipcMain.handle(Commands.PERSIST_TX_HISTORY, (event: any, blockchain: BlockchainCode, txs: any) => {
+  ipcMain.handle(Commands.PERSIST_TX_HISTORY, (event: any, blockchain: BlockchainCode, txs: IStoredTransaction[]) => {
     storeTransactions2(blockchain, txs);
   });
 

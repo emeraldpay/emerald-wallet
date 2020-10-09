@@ -29,8 +29,7 @@ export default class BackendApi implements IBackendApi {
 
   public persistTransactions = (blockchain: BlockchainCode, txs: IStoredTransaction[]): Promise<void> => {
     if (isBitcoin(blockchain)) {
-      //TODO bitcoin
-      return Promise.resolve()
+      return ipcRenderer.invoke(Commands.PERSIST_TX_HISTORY, blockchain, txs);
     }
     const request = txs
       .filter((tx) => isEthereumStoredTransaction(tx))
