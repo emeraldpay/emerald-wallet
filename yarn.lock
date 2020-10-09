@@ -1138,12 +1138,12 @@
     global-agent "^2.0.2"
     global-tunnel-ng "^2.7.1"
 
-"@emeraldpay/api-node@0.2.0-beta":
-  version "0.2.0-beta"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/api-node/-/api-node-0.2.0-beta.tgz#a0ace3fd3a9f89978d473af407f36a2f437013a3"
-  integrity sha512-GKi8sFNb7WjrU4EHb6T2/UhpZTTRXF1q/rs7eSzq4JCu2/y3A1iZiDnF+KSRvADYONgvmRG8BC/EXuu0JUJrKA==
+"@emeraldpay/api-node@0.2.0-beta.1":
+  version "0.2.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/api-node/-/api-node-0.2.0-beta.1.tgz#9ee1b14dad9583d968af8abbffbb0a2b08082a3e"
+  integrity sha512-FYUVUezCzsrbFQvRIaZrzuu3oOWgvmYweiQvlSNRSslxDFD4lvwfxPnTj4t2bICPkAxVozf7txhStKCCIFze0Q==
   dependencies:
-    "@emeraldpay/api" "0.2.0-beta"
+    "@emeraldpay/api" "0.2.0-beta.1"
     "@types/google-protobuf" "^3.7.2"
     google-protobuf "^3.10.0"
     grpc "^1.24.2"
@@ -1151,10 +1151,10 @@
     protobufjs "^6.8.8"
     text-encoding "^0.7.0"
 
-"@emeraldpay/api@0.2.0-beta":
-  version "0.2.0-beta"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/api/-/api-0.2.0-beta.tgz#389b6df4342630db28937e9d80f50d5bce3f3111"
-  integrity sha512-aAc8ufspH30pGDIVV7atTOgZ+GXRPYo/Sd117Fm4Iv9sw7OycZZBIhD1ppyp2FaKnImO/BYYHepNnv/3ujBHww==
+"@emeraldpay/api@0.2.0-beta.1":
+  version "0.2.0-beta.1"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/api/-/api-0.2.0-beta.1.tgz#cf7f31aab4147393418afcdd4889b34dfa894518"
+  integrity sha512-IdNzHEKE/gmdZtMuUwwChwNcIzXjCsX3hmwkD6c1z6DAWl3YZ3mCbnygyVn3Gm4F8/SfLggavSuxiWma75Su5A==
   dependencies:
     google-protobuf "^3.10.0"
     protobufjs "^6.8.8"

@@ -1,10 +1,8 @@
 import {
-  BlockchainClient, ChainRef,
-  TxStatus,
-  TxStatusRequest
+  BlockchainClient
 } from '@emeraldpay/api-node';
-import {BlockchainCode, blockchainCodeToId, Logger} from "@emeraldwallet/core";
-import {Publisher} from '@emeraldpay/api';
+import {BlockchainCode, blockchainCodeToId, isBitcoin, Logger} from "@emeraldwallet/core";
+import {Publisher, TxStatusResponse} from '@emeraldpay/api';
 
 interface ITxStatusEvent {
   txid: string;
@@ -22,7 +20,7 @@ const log = Logger.forCategory('TxListener');
 
 export class TxListener {
   public client: BlockchainClient;
-  public response?: Publisher<TxStatus>;
+  public response?: Publisher<TxStatusResponse>;
 
   constructor(client: BlockchainClient) {
     this.client = client;
@@ -36,32 +34,32 @@ export class TxListener {
   }
 
   public subscribe(chainCode: BlockchainCode, hash: string, handler: TxStatusHandler) {
-    const request = new TxStatusRequest();
-    request.setChain(blockchainCodeToId(chainCode));
-    request.setTxId(hash);
-    request.setConfirmationLimit(12);
-
-    let results = this.client.subscribeTxStatus(request);
-    this.response = results.onData((data) => {
-      const block = data.getBlock();
-      if (handler) {
-        let event = {
-          txid: data.getTxId(),
-          broadcasted: data.getBroadcasted(),
-          mined: data.getMined(),
-          confirmations: data.getConfirmations()
-        };
-        if (block) {
-          const blockInfo = {
-            blockHash: block.getBlockId(),
-            blockNumber: block.getHeight(),
-            timestamp: block.getTimestamp()
+    const request = this.client.subscribeTxStatus({
+      blockchain: blockchainCodeToId(chainCode),
+      txid: hash,
+      limit: isBitcoin(chainCode) ? 3 : 12
+    });
+    this.response = request
+      .onData((data) => {
+        if (handler) {
+          let event = {
+            txid: data.txid,
+            broadcasted: data.broadcast,
+            mined: data.mined,
+            confirmations: data.confirmations
           };
-          event = {...event, ...blockInfo};
+          const block = data.block;
+          if (data.mined && block) {
+            const blockInfo = {
+              blockHash: block.hash,
+              blockNumber: block.height,
+              timestamp: block.timestamp
+            };
+            event = {...event, ...blockInfo};
+          }
+          handler(event);
         }
-        handler(event);
-      }
-    })
+      })
       .finally(() => {
         if (handler) {
           handler({
@@ -70,7 +68,7 @@ export class TxListener {
         }
       })
       .onError((err) => {
-        console.warn('response error tx', err);
+        log.warn('response error tx', err);
       });
   }
 }

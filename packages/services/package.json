@@ -14,8 +14,8 @@
     "test:coverage": "jest --coverage --passWithNoTests && codecov"
   },
   "dependencies": {
-    "@emeraldpay/api": "0.2.0-beta",
-    "@emeraldpay/api-node": "0.2.0-beta",
+    "@emeraldpay/api": "0.2.0-beta.1",
+    "@emeraldpay/api-node": "0.2.0-beta.1",
     "@emeraldpay/bigamount": "^0.2.0",
     "@emeraldpay/bigamount-crypto": "^0.2.0",
     "@emeraldplatform/eth-rpc": "0.5.1",
