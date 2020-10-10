@@ -35,8 +35,8 @@ export function mapVaultWithIpc(vault: IEmeraldVault) {
   ipcMain.handle(PREFIX + "removeWallet", (event, walletId: Uuid) => {
     return vault.removeWallet(walletId);
   });
-  ipcMain.handle(PREFIX + "getEntryAddresses", (event, id: EntryId, role: AddressRole, start: number, limit: number) => {
-    return vault.getEntryAddresses(id, role, start, limit);
+  ipcMain.handle(PREFIX + "listEntryAddresses", (event, id: EntryId, role: AddressRole, start: number, limit: number) => {
+    return vault.listEntryAddresses(id, role, start, limit);
   });
   ipcMain.handle(PREFIX + "addEntry", (event, walletId: Uuid, entry: AddEntry) => {
     return vault.addEntry(walletId, entry);

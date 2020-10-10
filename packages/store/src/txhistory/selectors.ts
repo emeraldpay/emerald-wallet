@@ -34,10 +34,9 @@ export function getTransactions(state: IState, walletAccounts: WalletEntry[]): I
     return tx.outputs.some((it) => it.address == address)
   }
 
-  function entryReferencedByTx(entry: EntryId, tx: BitcoinStoredTransaction): boolean {
-    return tx.inputs.some((it) => it.entry == entry)
+  function entryReferencedByTx(entryId: EntryId, tx: BitcoinStoredTransaction): boolean {
+    return tx.inputs.some((it) => it.entryId == entryId)
   }
-
 
   return allTrackedTxs(state)
     .filter((tx) => {
@@ -88,9 +87,13 @@ export function searchTransactions(searchValue: string, transactionsToSearch: IS
       });
     } else if (isBitcoinStoredTransaction(tx)) {
       const foundInput = tx.inputs.some((it) =>
-        it.txid.toLowerCase().includes(searchValue) || it.amount.toString().includes(searchValue));
+        it.txid.toLowerCase().includes(searchValue) ||
+        it.amount.toString().includes(searchValue) ||
+        it.address?.toLowerCase().includes(searchValue)
+      );
       const foundOutput = tx.outputs.some((it) =>
-        it.address.toLowerCase().includes(searchValue) || it.amount.toString().includes(searchValue)
+        it.address.toLowerCase().includes(searchValue) ||
+        it.amount.toString().includes(searchValue)
       )
       return foundInput || foundOutput;
     }

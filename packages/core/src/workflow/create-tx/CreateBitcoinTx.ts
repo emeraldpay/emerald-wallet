@@ -3,22 +3,23 @@ import {amountDecoder, amountFactory, BalanceUtxo, BlockchainCode, blockchainIdT
 import {BigAmount, CreateAmount, Units} from "@emeraldpay/bigamount";
 import {ValidationResult} from "./types";
 import BigNumber from "bignumber.js";
-import {UnsignedBitcoinTx} from "@emeraldpay/emerald-vault-core/lib/types";
+import {UnsignedBitcoinTx} from "@emeraldpay/emerald-vault-core";
 
 export interface BitcoinTxDetails<A extends BigAmount> {
   from: BalanceUtxo[];
   to: {
-    address?: string,
-    amount?: A
+    address?: string;
+    amount?: A;
   };
-  change?: A,
+  change?: A;
   weightPrice: A;
   size: number;
 }
 
 export interface Output {
-  address: string,
-  amount: number,
+  address: string;
+  amount: number;
+  entryId?: string;
 }
 
 export interface TxMetric {
@@ -52,15 +53,21 @@ export class CreateBitcoinTx<A extends BigAmount> {
   private readonly amountFactory: CreateAmount<A>;
   public metric: TxMetric = new AverageTxMetric();
   private readonly changeAddress: string;
-  private readonly amountUnits: Units
+  private readonly amountUnits: Units;
+  private readonly source: BitcoinEntry;
 
   constructor(source: BitcoinEntry, utxo: BalanceUtxo[]) {
+    this.source = source;
     this.utxo = utxo;
     this.blockchain = blockchainIdToCode(source.blockchain);
-    this.changeAddress =
+    const changeAddress =
       source.addresses.find((a) => a.role == "change")?.address ||
-      source.addresses.find((a) => a.role == "receive")?.address ||
-      "NO_CHANGE";
+      source.addresses.find((a) => a.role == "receive")?.address;
+
+    if (!changeAddress) {
+      throw new Error("NO_CHANGE");
+    }
+    this.changeAddress = changeAddress;
 
     this.amountDecoder = amountDecoder(this.blockchain);
     this.amountFactory = amountFactory(this.blockchain) as CreateAmount<A>;
@@ -136,7 +143,7 @@ export class CreateBitcoinTx<A extends BigAmount> {
         from,
         [
           {address: this.tx.to.address || "?", amount: 0},
-          {address: this.changeAddress, amount: 0}
+          {address: this.changeAddress, amount: 0, entryId: this.source.id}
         ]
       );
       const changeFees = this.tx.weightPrice.multiply(weightWithChange);
@@ -174,7 +181,8 @@ export class CreateBitcoinTx<A extends BigAmount> {
     if (this.change.isPositive()) {
       result.push({
         amount: this.change.number.toNumber(),
-        address: this.changeAddress
+        address: this.changeAddress,
+        entryId: this.source.id
       });
     }
     return result;
@@ -220,6 +228,7 @@ export class CreateBitcoinTx<A extends BigAmount> {
           amount: this.amountDecoder(it.value).number.toNumber(),
           vout: it.vout,
           address: it.address,
+          entryId: this.source.id
         }
       }),
       outputs: this.outputs,

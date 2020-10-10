@@ -51,8 +51,8 @@ class VaultAccess implements IEmeraldVault {
     return ipcRenderer.invoke(PREFIX + "getConnectedHWSeed", create);
   }
 
-  getEntryAddresses(id: EntryId, role: AddressRole, start: number, limit: number): Promise<CurrentAddress[]> {
-    return ipcRenderer.invoke(PREFIX + "getEntryAddresses", id, role, start);
+  listEntryAddresses(id: EntryId, role: AddressRole, start: number, limit: number): Promise<CurrentAddress[]> {
+    return ipcRenderer.invoke(PREFIX + "listEntryAddresses", id, role, start);
   }
 
   getWallet(id: Uuid): Promise<Wallet | undefined> {

@@ -82,8 +82,8 @@ export default connect(
     } else if (isBitcoinStoredTransaction(tx)) {
       // try to find an input that originated from us
       tx.inputs
-        .filter((it) => typeof it.entry != "undefined")
-        .map((it) => accounts.selectors.findEntry(state, it.entry!))
+        .filter((it) => typeof it.entryId != "undefined")
+        .map((it) => accounts.selectors.findEntry(state, it.entryId!))
         .filter((it) => typeof it != "undefined")
         .slice(0, 1)
         .forEach((from) =>
@@ -94,8 +94,8 @@ export default connect(
       // it's not originated from us
       if (typeof fromAccount === "undefined") {
         tx.outputs
-          .filter((it) => typeof it.entry != "undefined")
-          .map((it) => accounts.selectors.findEntry(state, it.entry!))
+          .filter((it) => typeof it.entryId != "undefined")
+          .map((it) => accounts.selectors.findEntry(state, it.entryId!))
           .filter((it) => typeof it != "undefined")
           .slice(0, 1)
           .forEach((to) =>

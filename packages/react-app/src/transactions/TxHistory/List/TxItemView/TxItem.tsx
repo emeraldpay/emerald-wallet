@@ -130,18 +130,23 @@ export const TxItem = (props: ITxItemProps) => {
     }
   } else if (isBitcoinStoredTransaction(tx)) {
     const sent = tx.inputs
-      .filter((it) => typeof it.entry !== "undefined")
+      .filter((it) => typeof it.entryId !== "undefined")
       .map((it) => it.amount)
       .reduce((a, b) => a + b, 0);
     const received = tx.outputs
-      .filter((it) => typeof it.entry !== "undefined")
+      .filter((it) => typeof it.entryId !== "undefined")
       .map((it) => it.amount)
       .reduce((a, b) => a + b, 0);
-    balance = amountConverter(Math.abs(received - sent));
+    balance = amountConverter(Math.abs(received - sent) - tx.fee);
     if (fromWallet) {
       from = <Typography>{fromWallet.name}</Typography>;
     } else {
-      from = <Typography>--</Typography>;
+      const fromAddress = tx.inputs.find((it) => typeof it.address !== "undefined")?.address;
+      if (fromAddress) {
+        from = <Address address={fromAddress}/>
+      } else {
+        from = <Typography>--</Typography>;
+      }
     }
     if (toWallet) {
       to = <Typography>{toWallet.name}</Typography>;

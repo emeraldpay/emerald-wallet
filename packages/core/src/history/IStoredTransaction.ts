@@ -4,7 +4,7 @@ import {EntryId} from "@emeraldpay/emerald-vault-core";
 
 interface BaseStoredTransaction {
   //Associated entries. May be two, if transfer is between two wallets/entries
-  entry?: EntryId[],
+  entries?: EntryId[],
 
   blockchain: BlockchainCode;
   timestamp?: Date;
@@ -26,12 +26,15 @@ export interface BitcoinStoredTransaction extends BaseStoredTransaction {
     txid: string,
     vout: number,
     amount: number,
-    entry?: EntryId
+    entryId?: EntryId,
+    address?: string,
+    hdPath?: string,
   }[];
   outputs: {
     address: string,
     amount: number,
-    entry?: EntryId
+    entryId?: EntryId,
+    hdPath?: string,
   }[];
   fee: number;
 }

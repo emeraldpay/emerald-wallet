@@ -52,11 +52,19 @@ function onBitcoinTxSent(dispatch: Dispatch<any>, txHash: string, sourceTx: Unsi
     blockchain,
     since: new Date(),
     hash: txHash,
+    entries: sourceTx.inputs
+      .map((it) => it.entryId)
+      .filter((it) => typeof it != "undefined")
+      .map((it) => it!)
+      .reduce((all, it) => all.indexOf(it) >= 0 ? all : all.concat(it), [] as string[]),
     inputs: sourceTx.inputs.map((it) => {
       return {
         txid: it.txid,
         vout: it.vout,
         amount: it.amount,
+        entryId: it.entryId,
+        address: it.address,
+        hdPath: it.hdPath
       }
     }),
     outputs: sourceTx.outputs,
