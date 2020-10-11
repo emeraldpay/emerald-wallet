@@ -12,8 +12,6 @@ export interface BitcoinTxDetails<A extends BigAmount> {
     amount?: A;
   };
   change?: A;
-  weightPrice: A;
-  size: number;
 }
 
 export interface Output {
@@ -44,6 +42,15 @@ class AverageTxMetric implements TxMetric {
 
 }
 
+// see https://en.bitcoin.it/wiki/Weight_units
+export function convertWUToVB(wu: number): number {
+  return wu / 4;
+}
+
+// https://bitcoinfees.net/, https://www.buybitcoinworldwide.com/fee-calculator/
+// 65 satoshis/vbyte on Oct 15, 2020
+const DEFAULT_VB_FEE = 65;
+
 export class CreateBitcoinTx<A extends BigAmount> {
   private tx: BitcoinTxDetails<A>
   private readonly utxo: BalanceUtxo[];
@@ -52,6 +59,7 @@ export class CreateBitcoinTx<A extends BigAmount> {
   private readonly blockchain: BlockchainCode;
   private readonly amountFactory: CreateAmount<A>;
   public metric: TxMetric = new AverageTxMetric();
+  public vbPrice: A;
   private readonly changeAddress: string;
   private readonly amountUnits: Units;
   private readonly source: BitcoinEntry;
@@ -73,11 +81,10 @@ export class CreateBitcoinTx<A extends BigAmount> {
     this.amountFactory = amountFactory(this.blockchain) as CreateAmount<A>;
     this.zero = this.amountFactory(0);
     this.amountUnits = this.zero.units;
+    this.vbPrice = this.amountFactory(DEFAULT_VB_FEE);
     this.tx = {
-      weightPrice: this.amountFactory(100),
       from: [],
       to: {},
-      size: 0
     };
   }
 
@@ -97,7 +104,7 @@ export class CreateBitcoinTx<A extends BigAmount> {
   }
 
   set feePrice(price: number) {
-    this.tx.weightPrice = this.amountFactory(price);
+    this.vbPrice = this.amountFactory(price);
     this.rebalance();
   }
 
@@ -134,7 +141,7 @@ export class CreateBitcoinTx<A extends BigAmount> {
       from,
       [{address: this.tx.to.address || "?", amount: 0}]
     );
-    const bareFees = this.tx.weightPrice.multiply(weight);
+    const bareFees = this.vbPrice.multiply(convertWUToVB(weight));
 
     let change: A;
     if (requiredAmount.plus(bareFees).isLessOrEqualTo(totalSend)) {
@@ -146,7 +153,7 @@ export class CreateBitcoinTx<A extends BigAmount> {
           {address: this.changeAddress, amount: 0, entryId: this.source.id}
         ]
       );
-      const changeFees = this.tx.weightPrice.multiply(weightWithChange);
+      const changeFees = this.vbPrice.multiply(convertWUToVB(weightWithChange));
       change = totalSend.minus(requiredAmount).minus(changeFees);
       if (change.isNegative()) {
         // when doesn't have enough to pay fees to send change, i.e. too small change

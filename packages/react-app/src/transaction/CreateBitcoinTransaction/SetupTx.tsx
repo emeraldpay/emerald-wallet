@@ -36,13 +36,17 @@ const useStyles = makeStyles<Theme>((theme) =>
     withHelp: {
       minHeight: "80px"
     },
+    feeMarkLabel: {
+      fontSize: "0.7em",
+      opacity: 0.8
+    }
   })
 );
 
 /**
  *
  */
-const Component = (({create, onCreate}: Props & Actions & OwnProps) => {
+const Component = (({create, onCreate, standardFee}: Props & Actions & OwnProps) => {
   const styles = useStyles();
   const [to, setTo] = React.useState("");
   const [toError, setToError] = React.useState();
@@ -128,18 +132,19 @@ const Component = (({create, onCreate}: Props & Actions & OwnProps) => {
       <Box className={styles.inputField}>
         <Slider
           className={styles.feeSlider}
-          defaultValue={200}
+          classes={{markLabel: styles.feeMarkLabel}}
+          defaultValue={standardFee}
           getAriaValueText={totalFee}
           aria-labelledby="discrete-slider"
           valueLabelDisplay="auto"
           step={10}
           marks={[
-            {value: 50, label: "Slow"},
-            {value: 150, label: "Normal"},
-            {value: 250, label: "Urgent"},
+            {value: Math.round(standardFee / 2), label: "Slow"},
+            {value: standardFee, label: "Normal"},
+            {value: standardFee * 2, label: "Urgent"},
           ]}
           min={10}
-          max={350}
+          max={standardFee * 4}
           onChange={(e, value) => setFeePrice(value as number)}
         />
         <FormHelperText className={styles.feeHelp}>{feesStr}</FormHelperText>
@@ -169,6 +174,7 @@ const Component = (({create, onCreate}: Props & Actions & OwnProps) => {
 // State Properties
 interface Props {
   create: CreateBitcoinTx<BigAmount>,
+  standardFee: number,
 }
 
 // Actions
@@ -184,8 +190,12 @@ interface OwnProps {
 export default connect(
   (state: IState, ownProps: OwnProps): Props => {
     let utxo = accounts.selectors.getUtxo(state, ownProps.entry.id);
+    const standardFee = 65;
+    const create = new CreateBitcoinTx<BigAmount>(ownProps.entry, utxo);
+    create.feePrice = 65;
     return {
-      create: new CreateBitcoinTx<BigAmount>(ownProps.entry, utxo),
+      create,
+      standardFee,
     }
   },
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
