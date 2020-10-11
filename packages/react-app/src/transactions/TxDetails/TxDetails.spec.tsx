@@ -4,46 +4,79 @@ import {mount} from 'enzyme';
 import * as React from 'react';
 import {default as TxDetails} from './TxDetails';
 import {BlockchainCode, EthereumStoredTransaction} from "@emeraldwallet/core";
+import Total from "../../app/layout/Header/Total";
+import {Provider} from "react-redux";
+import {Map, List} from "immutable"
 
 const reduceClasses = (prev: any, curr: any) => ({...prev, [curr]: curr});
 
+function createStore() {
+  return {
+    dispatch() {
+    },
+    subscribe() {
+      return () => {
+      };
+    },
+    replaceReducer() {
+    },
+    getState() {
+      return {
+        accounts: {
+          wallets: [
+            {
+              id: "111",
+              entries: [
+                {
+                  blockchain: 101,
+                }
+              ]
+            }
+          ],
+        },
+        history: Map({
+          trackedTransactions: List([
+            {
+              blockchain: BlockchainCode.ETC,
+              hash: '0x95c1767c33c37ef93de48897c1001679d947bd7f082fdf4e772c534ae180b9c8',
+              data: '0xDADA',
+              from: '0x1234',
+              to: '0x9876',
+              gas: 21000,
+              gasPrice: new BigNumber('30000000000'),
+              value: new BigNumber('100999370000000000000')
+            },
+            {
+              blockchain: BlockchainCode.BTC,
+              hash: '01679d947bd7f082fdf4e772c534ae1895c1767c33c37ef93de48897c100b9c8',
+              fee: 21000,
+              inputs: [],
+              outputs: []
+            }
+          ])
+        })
+      }
+    }
+  }
+}
+
 describe('TxDetailsView', () => {
   it('should render nested components correctly', () => {
-    const tx = {
-      hash: '0x95c1767c33c37ef93de48897c1001679d947bd7f082fdf4e772c534ae180b9c8',
-      data: '0xDADA',
-      from: '0x1234',
-      to: '0x9876',
-      gas: 21000,
-      gasPrice: new BigNumber('30000000000'),
-      value: new BigNumber('100999370000000000000')
-    };
-    const component = mount(<TxDetails tokenSymbol='ETC' fiatAmount='100' transaction={tx}/>);
+    const component = mount(<Provider store={createStore() as any}><TxDetails
+      hash={"0x95c1767c33c37ef93de48897c1001679d947bd7f082fdf4e772c534ae180b9c8"}/></Provider>);
     expect(component).toBeDefined();
   });
 
   it('should show tx input data', async () => {
-    const tx: EthereumStoredTransaction = {
-      blockchain: BlockchainCode.ETH,
-      gas: 10, gasPrice: "100",
-      nonce: 0, value: "100",
-      hash: '0x01',
-      data: '0xDADA',
-      from: '0x1234'
-    };
-    const component = render(<TxDetails tokenSymbol='ETC' transaction={tx}/>);
-    const inputComps = await component.findByText(tx.data);
-    expect(inputComps).toBeDefined();
+    const component = mount(<Provider store={createStore() as any}><TxDetails
+      hash={"0x95c1767c33c37ef93de48897c1001679d947bd7f082fdf4e772c534ae180b9c8"}/></Provider>);
+    const inputComps = await component.html().indexOf("0xDADA");
+    expect(inputComps > 0).toBeTruthy();
   });
 
-  it('should not show To Account if tx does not have to attribute', async () => {
-    const tx = {
-      hash: '0x01',
-      data: '0xDADA',
-      from: '0x1234'
-    };
-    const component = render(<TxDetails tokenSymbol='ETC' transaction={tx}/>);
-    const toAcc = await component.queryByTestId('to-account');
-    expect(toAcc).toBeNull();
+  it('should render bitcoin tx', () => {
+    const component = mount(<Provider store={createStore() as any}><TxDetails
+      hash={"01679d947bd7f082fdf4e772c534ae1895c1767c33c37ef93de48897c100b9c8"}/></Provider>);
+    expect(component).toBeDefined();
   });
 });

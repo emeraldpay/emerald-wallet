@@ -56,12 +56,12 @@ export function loadTransactions (key: string, chainId: number): IStoredTransact
  */
 function restoreTx (tx: any): IStoredTransaction {
   return {
+    ...tx,
     value: (tx.value && typeof tx.value === 'string') ? toBigNumber(tx.value) : new BigNumber(0),
     gasPrice: (tx.gasPrice && typeof tx.gasPrice === 'string') ? toBigNumber(tx.gasPrice) : new BigNumber(0),
     timestamp: utils.parseDate(tx.timestamp, undefined),
     blockchain: tx.blockchain || (blockchainById(tx.chainId) ? blockchainById(tx.chainId)!.params.code : null),
     since: utils.parseDate(tx.since, new Date()),
     discarded: tx.discarded || false,
-    ...tx
   };
 }

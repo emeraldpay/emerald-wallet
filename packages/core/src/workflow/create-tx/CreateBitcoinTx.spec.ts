@@ -159,7 +159,7 @@ describe("CreateBitcoinTx", () => {
 
     expect(create.outputs.length).toBe(1);
     expect(create.outputs[0].address).toBe("AAA");
-    expect(create.outputs[0].amount).toBe(0.0198);
+    expect(create.outputs[0].amount).toBe(1980000);
 
     expect(create.fees.toString())
       // ((4 * 120) + (1 * 80)) * 100 == 56000 (or 0.00056)
@@ -278,6 +278,7 @@ describe("CreateBitcoinTx", () => {
       amount: 112233,
       txid: "1",
       vout: 0,
+      entryId: "f76416d7-3510-4d80-85df-52e7222e56df-1",
     });
     expect(unsigned.outputs.length).toBe(2);
     expect(unsigned.outputs[0]).toEqual({
@@ -287,6 +288,7 @@ describe("CreateBitcoinTx", () => {
     expect(unsigned.outputs[1]).toEqual({
       address: "addrchange",
       amount: 4233,
+      entryId: "f76416d7-3510-4d80-85df-52e7222e56df-1",
     });
     expect(unsigned.fee).toBe(28000);
   });

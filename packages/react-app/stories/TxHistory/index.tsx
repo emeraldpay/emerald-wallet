@@ -31,7 +31,7 @@ const txBitcoin: BitcoinStoredTransaction = {
       txid: "55ae4061e60fa500cc72c8272f5e685ed7da5d82c7a6d20fce9b9682a809028b",
       vout: 0,
       amount: 5_123_000,
-      entry: wallet3.entries[1].id
+      entryId: wallet3.entries[1].id
     }
   ],
   outputs: [
@@ -52,13 +52,13 @@ const txBitcoin2: BitcoinStoredTransaction = {
       txid: "c7a6d20fce9b9682a55ae4065d82809028b1e60fa500cc72c8272f5e685ed7da",
       vout: 0,
       amount: 5_123_000,
-      entry: wallet3.entries[1].id
+      entryId: wallet3.entries[1].id
     },
     {
       txid: "55a272f5e685ed7dae4065d82809028b1e60fa5c7a6d20fce9b9682a00cc72c8",
       vout: 1,
       amount: 2_023_012,
-      entry: wallet3.entries[1].id
+      entryId: wallet3.entries[1].id
     }
   ],
   outputs: [
@@ -69,7 +69,7 @@ const txBitcoin2: BitcoinStoredTransaction = {
     {
       address: "bc1xca6tk9zqjfjjtsfmszju9jy6q9sxq4hp2xf5y9",
       amount: 5_123_000 + 2_023_012 - 456,
-      entry: wallet3.entries[1].id
+      entryId: wallet3.entries[1].id
     }
   ],
   fee: 456
@@ -95,7 +95,7 @@ const txBitcoin3: BitcoinStoredTransaction = {
     {
       address: "bc1q9sxk9zqjfjjtsfq4hp2xf5y9xca6tmszju9jy6",
       amount: 3_000_000,
-      entry: wallet3.entries[1].id
+      entryId: wallet3.entries[1].id
     },
     {
       address: "bc1xca6tk9zqjfjjtsfmszju9jy6q9sxq4hp2xf5y9",
@@ -115,18 +115,18 @@ storiesOf('TxHistory', module)
   ]))
   .addDecorator(withTheme)
   .add('ethereum single', () => (
-    <TxHistory transactions={[txEthereum]} walletAccounts={wallet3.entries}/>
+    <TxHistory transactions={[txEthereum]} accounts={wallet3.entries}/>
   ))
   .add('bitcoin one', () => (
-    <TxHistory transactions={[txBitcoin]} walletAccounts={wallet3.entries}/>
+    <TxHistory transactions={[txBitcoin]} accounts={wallet3.entries}/>
   ))
   .add('bitcoin two', () => (
-    <TxHistory transactions={[txBitcoin2]} walletAccounts={wallet3.entries}/>
+    <TxHistory transactions={[txBitcoin2]} accounts={wallet3.entries}/>
   ))
   .add('bitcoin few', () => (
-    <TxHistory transactions={[txBitcoin, txBitcoin2, txBitcoin3]} walletAccounts={wallet3.entries}/>
+    <TxHistory transactions={[txBitcoin, txBitcoin2, txBitcoin3]} accounts={wallet3.entries}/>
   ))
   .add('many', () => (
-    <TxHistory transactions={[txBitcoin, txEthereum, txBitcoin2, txBitcoin3]} walletAccounts={wallet3.entries}/>
+    <TxHistory transactions={[txBitcoin, txEthereum, txBitcoin2, txBitcoin3]} accounts={wallet3.entries}/>
   ))
 ;

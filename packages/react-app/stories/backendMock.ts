@@ -100,7 +100,7 @@ export class VaultMock implements IEmeraldVault {
     return Promise.resolve("");
   }
 
-  getEntryAddresses(id: EntryId, role: AddressRole, start: number, limit: number): Promise<CurrentAddress[]> {
+  listEntryAddresses(id: EntryId, role: AddressRole, start: number, limit: number): Promise<CurrentAddress[]> {
     return Promise.resolve([]);
   }
 

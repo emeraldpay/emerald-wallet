@@ -33,19 +33,19 @@ export default class TxStore {
     const blockchain = tx.blockchain as BlockchainCode;
     if (isBitcoin(blockchain)) {
       return {
+        ...tx,
         timestamp: utils.parseDate(tx.timestamp, undefined),
         since: utils.parseDate(tx.since, new Date()),
         discarded: tx.discarded || false,
         inputs: tx.inputs || [],
         outputs: tx.outputs || [],
-        ...tx
       }
     } else {
       return {
+        ...tx,
         timestamp: utils.parseDate(tx.timestamp, undefined),
         since: utils.parseDate(tx.since, new Date()),
         discarded: tx.discarded || false,
-        ...tx
       };
     }
   }

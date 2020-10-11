@@ -1,4 +1,4 @@
-import { BlockchainCode } from '@emeraldwallet/core';
+import {BlockchainCode, EthereumStoredTransaction, isEthereumStoredTransaction} from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
 import { loadTransactions, storeTransactions } from './historyStorage';
 
@@ -25,8 +25,13 @@ describe('historyStorage', () => {
     const loaded = loadTransactions('key1', 100);
 
     expect(loaded).toHaveLength(1);
-    expect(loaded[0].hash).toEqual('0x1234');
-    expect((loaded[0].value as BigNumber).comparedTo(new BigNumber(1))).toEqual(0);
-    expect(loaded[0].timestamp).toEqual(now);
+
+    expect(isEthereumStoredTransaction(loaded[0])).toBeTruthy();
+    const loadedTx = loaded[0] as EthereumStoredTransaction;
+
+    expect(loadedTx.hash).toEqual('0x1234');
+    expect((loadedTx.value as BigNumber).comparedTo(new BigNumber(1))).toEqual(0);
+    expect(typeof loadedTx.timestamp == "string").toBeFalsy();
+    expect(loadedTx.timestamp).toEqual(now);
   });
 });
