@@ -1,5 +1,7 @@
-import { IStoredTransaction } from '@emeraldwallet/core';
-import { List, Map } from 'immutable';
+import {IStoredTransaction} from '@emeraldwallet/core';
+import {List, Map} from 'immutable';
+import {WalletEntry} from "@emeraldpay/emerald-vault-core/lib/types";
+import {IBalanceUpdate} from "../accounts/types";
 
 export enum ActionTypes {
   TRACK_TX = 'WALLET/HISTORY/TRACK_TX',
@@ -7,7 +9,8 @@ export enum ActionTypes {
   LOAD_STORED_TXS = 'WALLET/HISTORY/LOAD_STORED_TXS',
   TRACKED_TX_NOTFOUND = 'WALLET/HISTORY/TRACKED_TX_NOTFOUND',
   UPDATE_TXS = 'WALLET/HISTORY/UPDATE_TXS',
-  PENDING_TX = 'WALLET/HISTORY/PENDING_TX'
+  PENDING_TX = 'WALLET/HISTORY/PENDING_TX',
+  BALANCE_TX = 'WALLET/HISTORY/BALANCE_TX',
 }
 
 export interface ITrackTxAction {
@@ -40,6 +43,12 @@ export interface IUpdateTxsAction {
   payload: IStoredTransaction[];
 }
 
+export interface IBalanceTxAction {
+  type: ActionTypes.BALANCE_TX;
+  entry: WalletEntry;
+  balance: IBalanceUpdate;
+}
+
 export type HistoryAction =
   ITrackTxAction
   | ITrackTxsAction
@@ -47,6 +56,7 @@ export type HistoryAction =
   | IPendingTxAction
   | ITrackedTxNotFoundAction
   | IUpdateTxsAction
+  | IBalanceTxAction
   ;
 
 export type TransactionMap = Map<string, any>;

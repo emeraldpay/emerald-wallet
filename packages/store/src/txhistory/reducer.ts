@@ -1,16 +1,19 @@
 import {convert} from '@emeraldplatform/core';
 import {
+  amountDecoder,
+  BitcoinStoredTransaction,
+  blockchainIdToCode,
   EthereumStoredTransaction,
   isBitcoinStoredTransaction,
   isEthereumStoredTransaction,
   IStoredTransaction,
-  utils,
-  BitcoinStoredTransaction
+  utils
 } from '@emeraldwallet/core';
-import {fromJS, Map} from 'immutable';
+import {fromJS, Map, List} from 'immutable';
 import {
   ActionTypes,
   HistoryAction,
+  IBalanceTxAction,
   ILoadStoredTxsAction,
   IPendingTxAction,
   ITrackedTxNotFoundAction,
@@ -18,9 +21,13 @@ import {
   ITrackTxsAction,
   IUpdateTxsAction
 } from './types';
+import {type} from "os";
 
-const { toNumber, toBigNumber } = convert;
+const {toNumber, toBigNumber} = convert;
 
+//TODO reimplement without immutableJs
+type StateKeys = "trackedTransactions";
+type State = Map<StateKeys, List<Map<string, any>>>;
 export const INITIAL_STATE = fromJS({
   trackedTransactions: []
 });
@@ -39,7 +46,7 @@ const initialTx = Map({
   outputs: [],
 });
 
-function isTracked (state: any, tx: any) {
+function isTracked(state: any, tx: any): boolean {
   return state.get('trackedTransactions').some((x: any) => tx.get('hash') === x.get('hash'));
 }
 
@@ -253,7 +260,54 @@ function onUpdateTxs (state: any, action: IUpdateTxsAction) {
   return state;
 }
 
-export function reducer (
+function stateWithTx(state: State, tx: IStoredTransaction): State {
+  return state.update('trackedTransactions', (txs) => {
+    const exist = txs.some((current) => current?.get("hash") == tx.hash);
+    if (!exist) {
+      return txs.push(Map(tx) as Map<string, any>);
+    } else {
+      return txs;
+    }
+  })
+}
+
+/**
+ * Update tx history from current balance changes if it includes utxo (i.e. bitcoin tx)
+ *
+ * @param state
+ * @param action
+ */
+function onTxBalance(state: State, action: IBalanceTxAction) {
+  if (action.type === ActionTypes.BALANCE_TX) {
+    const amount = amountDecoder(blockchainIdToCode(action.entry.blockchain));
+    if (typeof action.balance.utxo != "undefined" && action.balance.utxo.length > 0 && action.entry) {
+      return action.balance.utxo
+        .filter((utxo) => !isTracked(state, Map({hash: utxo.txid})))
+        .reduce((state, utxo) => {
+          const tx: BitcoinStoredTransaction = {
+            hash: utxo.txid,
+            blockchain: blockchainIdToCode(action.entry.blockchain),
+            entries: [action.entry.id],
+            fee: 0,
+            inputs: [],
+            outputs: [
+              {
+                address: utxo.address,
+                amount: amount(utxo.value).number.toNumber(),
+                entryId: action.entry.id
+              }
+            ],
+            broadcasted: true,
+            discarded: false
+          };
+          return stateWithTx(state, tx);
+        }, state);
+    }
+  }
+  return state;
+}
+
+export function reducer(
   state: any = INITIAL_STATE,
   action: HistoryAction
 ): any {
@@ -270,6 +324,8 @@ export function reducer (
       return onUpdateTxs(state, action);
     case ActionTypes.PENDING_TX:
       return onPendingTx(state, action);
+    case ActionTypes.BALANCE_TX:
+      return onTxBalance(state, action);
   }
   return state;
 }

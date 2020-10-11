@@ -35,7 +35,7 @@ export function getTransactions(state: IState, walletAccounts: WalletEntry[]): I
   }
 
   function entryReferencedByTx(entryId: EntryId, tx: BitcoinStoredTransaction): boolean {
-    return tx.inputs.some((it) => it.entryId == entryId)
+    return tx.inputs.some((it) => it.entryId == entryId) || (tx.entries || []).indexOf(entryId) >= 0;
   }
 
   return allTrackedTxs(state)
@@ -117,17 +117,35 @@ export function filterTransactions(
   if (filterValue === 'ALL') {
     return transactionsToFilter;
   }
-  const fieldToFilter = getFieldForFilter(filterValue);
+
   // @ts-ignore
   const filterAddresses: string[] = accounts.map((acc) => acc.address?.value)
     .filter((a) => typeof a !== "undefined");
+
   return transactionsToFilter.filter((tx: IStoredTransaction | undefined) => {
     if (typeof tx === 'undefined') {
       return false;
     }
-    // @ts-ignore
-    const txAddress = tx[fieldToFilter].toLowerCase();
-    const found = filterAddresses.find((address) => txAddress === address.toLowerCase());
-    return typeof found !== 'undefined';
+
+    if (isBitcoinStoredTransaction(tx)) {
+      console.log("filter tx", filterValue);
+      if (filterValue == "OUT") {
+        return tx.inputs.some((o) => accounts.some((a) => a.id === o.entryId))
+      }
+      if (filterValue == "IN") {
+        return tx.outputs.some((o) => accounts.some((a) => a.id === o.entryId))
+      }
+    }
+
+    if (isEthereumStoredTransaction(tx)) {
+      const fieldToFilter = getFieldForFilter(filterValue);
+      // @ts-ignore
+      const txAddress = tx[fieldToFilter].toLowerCase();
+      const found = filterAddresses.find((address) => txAddress === address.toLowerCase());
+      return typeof found !== 'undefined';
+    }
+
+    console.warn("invalid tx");
+    return false;
   });
 }
