@@ -1,7 +1,7 @@
 import {connect} from "react-redux";
 import * as React from "react";
 import {Dispatch} from "react";
-import {Box, createStyles, FormHelperText, Slider, TextField, Theme} from "@material-ui/core";
+import {Box, createStyles, FormHelperText, Slider, TextField, Theme, Switch, FormControlLabel} from "@material-ui/core";
 import {accounts, IState} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
 import FormFieldWrapper from "../CreateTx/FormFieldWrapper";
@@ -26,8 +26,24 @@ const useStyles = makeStyles<Theme>((theme) =>
     amountField: {
       width: "300px",
     },
+    feeTypeBox: {
+      width: "200px",
+      float: "left",
+      // make at least as slider height
+      height: "40px",
+    },
+    feeSliderBox: {
+      width: "300px",
+      float: "left"
+    },
+    feeHelpBox: {
+      width: "500px",
+      clear: "left",
+    },
     feeSlider: {
-      width: "300px"
+      width: "300px",
+      marginBottom: "10px",
+      paddingTop: "10px",
     },
     feeHelp: {
       position: "initial",
@@ -50,6 +66,7 @@ const Component = (({create, onCreate, standardFee}: Props & Actions & OwnProps)
   const styles = useStyles();
   const [to, setTo] = React.useState("");
   const [toError, setToError] = React.useState();
+  const [stdFee, setStdFee] = React.useState(true);
   const [feePrice, setFeePriceState] = React.useState(0);
   const [feesStr, setFeesStr] = React.useState(create.fees.toString());
   const [amount, setAmountState] = React.useState(0);
@@ -130,24 +147,48 @@ const Component = (({create, onCreate, standardFee}: Props & Actions & OwnProps)
     <FormFieldWrapper>
       <FormLabel>Fee</FormLabel>
       <Box className={styles.inputField}>
-        <Slider
-          className={styles.feeSlider}
-          classes={{markLabel: styles.feeMarkLabel}}
-          defaultValue={standardFee}
-          getAriaValueText={totalFee}
-          aria-labelledby="discrete-slider"
-          valueLabelDisplay="auto"
-          step={10}
-          marks={[
-            {value: Math.round(standardFee / 2), label: "Slow"},
-            {value: standardFee, label: "Normal"},
-            {value: standardFee * 2, label: "Urgent"},
-          ]}
-          min={10}
-          max={standardFee * 4}
-          onChange={(e, value) => setFeePrice(value as number)}
-        />
-        <FormHelperText className={styles.feeHelp}>{feesStr}</FormHelperText>
+        <Box className={styles.feeTypeBox}>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={stdFee}
+                onChange={(event) => {
+                  const checked = event.target.checked;
+                  if (checked) {
+                    setFeePrice(standardFee);
+                  }
+                  setStdFee(checked);
+                }}
+                name="checkedB"
+                color="primary"
+              />
+            }
+            label={stdFee ? "Standard Fee" : "Custom Fee"}/>
+        </Box>
+        {!stdFee &&
+        <Box className={styles.feeSliderBox}>
+          <Slider
+            className={styles.feeSlider}
+            classes={{markLabel: styles.feeMarkLabel}}
+            defaultValue={standardFee}
+            getAriaValueText={totalFee}
+            aria-labelledby="discrete-slider"
+            valueLabelDisplay="auto"
+            step={10}
+            marks={[
+              {value: Math.round(standardFee / 2), label: "Slow"},
+              {value: standardFee, label: "Normal"},
+              {value: standardFee * 2, label: "Urgent"},
+            ]}
+            min={10}
+            max={standardFee * 4}
+            onChange={(e, value) => setFeePrice(value as number)}
+          />
+        </Box>
+        }
+        <Box className={styles.feeHelpBox}>
+          <FormHelperText className={styles.feeHelp}>{feesStr}</FormHelperText>
+        </Box>
       </Box>
     </FormFieldWrapper>
 

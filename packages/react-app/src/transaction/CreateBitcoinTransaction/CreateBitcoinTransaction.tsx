@@ -56,7 +56,11 @@ const Component = (({entry, blockchain, seedId, source, onBroadcast}: Props & Ac
                       setPage("result")
                     }}/>
   } else if (page == "result") {
-    content = <Confirm rawtx={raw} onConfirm={() => onBroadcast(blockchain, tx!, raw)}/>
+    content = <Confirm rawtx={raw}
+                       onConfirm={() => onBroadcast(blockchain, tx!, raw)}
+                       blockchain={blockchain}
+                       entryId={entry.id}
+    />
   } else {
     console.error("Invalid state", page);
     content = <Alert severity="error">Invalid state</Alert>

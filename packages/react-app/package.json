@@ -44,7 +44,8 @@
     "react-qrcode": "^0.2.5",
     "react-redux": "^7.1.0",
     "redux-thunk": "^2.3.0",
-    "bitcoin-address-validation": "^1.0.2"
+    "bitcoin-address-validation": "^1.0.2",
+    "bitcoinjs-lib": "^5.2.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",

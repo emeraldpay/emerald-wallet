@@ -8,6 +8,8 @@ import RawTxDetails from "./RawTxDetails";
 import RawTx from "./RawTx";
 import {ButtonGroup} from "@emeraldplatform/ui";
 import {Button} from "@emeraldwallet/ui";
+import {EntryId} from "@emeraldpay/emerald-vault-core/lib/types";
+import {BlockchainCode} from "@emeraldwallet/core";
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
@@ -21,14 +23,26 @@ const useStyles = makeStyles<Theme>((theme) =>
 /**
  *
  */
-const Component = (({rawtx, onConfirm}: Props & Actions & OwnProps) => {
+const Component = (({rawtx, entryId, blockchain, onConfirm}: Props & Actions & OwnProps) => {
   const styles = useStyles();
+  const [showRaw, setShowRaw] = React.useState(false);
+
+  let raw = null;
+  if (showRaw) {
+    raw = <Box>
+      <RawTx rawtx={rawtx}/>
+      <Button variant={"text"} onClick={() => setShowRaw(false)} label={"Hide Raw"}/>
+    </Box>
+  } else {
+    raw = <Button variant={"text"} onClick={() => setShowRaw(true)} label={"Show Raw"}/>
+  }
+
   return <Grid container={true}>
     <Grid item={true} xs={12}>
-      <RawTxDetails rawtx={rawtx}/>
+      <RawTxDetails rawtx={rawtx} entryId={entryId} blockchain={blockchain}/>
     </Grid>
     <Grid item={true} xs={12}>
-      <RawTx rawtx={rawtx}/>
+      {raw}
     </Grid>
     <Grid item={true} xs={12} className={styles.buttonsRow}>
       <ButtonGroup>
@@ -50,6 +64,8 @@ interface Actions {
 // Component properties
 interface OwnProps {
   rawtx: string,
+  entryId: EntryId,
+  blockchain: BlockchainCode,
   onConfirm: () => void
 }
 

@@ -104,12 +104,11 @@ const theme = {
       } as CSSProperties
     },
     MuiTextField: {
-      //TODO why border?
       root: {
-        // borderRadius: '1px',
-        // borderStyle: 'solid',
-        // borderWidth: '1px',
-        // borderColor: colors.conch.main,
+        borderRadius: '1px',
+        borderStyle: 'solid',
+        borderWidth: '1px',
+        borderColor: colors.conch.main,
       } as CSSProperties
     },
     MuiButton: {

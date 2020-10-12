@@ -53,6 +53,9 @@ export class BlockchainMock {
   }
 }
 
+export const REAL_BTC_TX = "0200000000010109dc86940a177b31454881110398b265fef9c55a47e1017b9967408eb0afef8f010000001716001425c5c9ae97b8831eaef8184276ff55d72f5f85effeffffff027747c61b0000000017a914a0b4508cca72bf294e3cbddd9606644ae1fe6d3087006a18000000000017a91491acb73977a2bf1298686e61a72f62f4e94258a687024730440220438fb2c075aeeed1d1a0ff49efcae7bc9aa922d97d4395de856d76c39ef5069a02205599f95b7e7eadc742c309100d4db42e33225f8766279502d9f1068e8d517f2a012102e8e1d7659d6fbc0dbf653826937b09475ba6763c347138965bfebdb762a9b107f8ed0900";
+
+
 export class VaultMock implements IEmeraldVault {
 
   readonly vault: MemoryVault;
@@ -71,7 +74,7 @@ export class VaultMock implements IEmeraldVault {
           console.log("Password", seed.value, expectedPassword, seed.password);
           if (expectedPassword !== seed.password) {
             console.log(`Password '${seed.password}' != '${expectedPassword}'`);
-            throw Error("Invalid password");
+            return Promise.reject(new Error("Invalid password"));
           }
         }
 
@@ -183,7 +186,7 @@ export class VaultMock implements IEmeraldVault {
   signTx(entryId: EntryId, tx: UnsignedTx, password?: string): Promise<string> {
     console.log("Sign", entryId, tx, password);
     if (entryId == "f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-3") {
-      return Promise.resolve("00112233")
+      return Promise.resolve(REAL_BTC_TX)
     }
     return Promise.resolve("");
   }
