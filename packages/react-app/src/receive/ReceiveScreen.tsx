@@ -18,13 +18,12 @@ import {Back} from "@emeraldplatform/ui-icons";
 import {Uuid, Wallet} from "@emeraldpay/emerald-vault-core";
 import {AnyCoinCode, AnyTokenCode, BlockchainCode, Blockchains, blockchainIdToCode} from "@emeraldwallet/core";
 import {WalletReference} from "@emeraldwallet/ui";
-import {Address} from '@emeraldplatform/ui';
+import {Address} from '@emeraldwallet/ui';
 import {useQRCode} from 'react-qrcode';
 import {registry} from "@emeraldwallet/erc20";
 import {clipboard} from 'electron';
 import LibraryAddCheckIcon from '@material-ui/icons/LibraryAddCheck';
-import {CurrentAddress, isBitcoinEntry, isEthereumEntry} from "@emeraldpay/emerald-vault-core";
-import {EntryId} from "@emeraldpay/emerald-vault-core/lib/types";
+import {CurrentAddress, isBitcoinEntry, isEthereumEntry, EntryId} from "@emeraldpay/emerald-vault-core";
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
@@ -139,7 +138,7 @@ const Component = (({wallet, assets, accepted, onCancel, onOk}: Props & Actions 
     >
       {availableAddresses.map((address) =>
         <MenuItem key={address} value={address}>
-          <Address id={address} hideCopy={true}/>
+          <Address address={address} disableCopy={true}/>
         </MenuItem>
       )}
     </Select>
