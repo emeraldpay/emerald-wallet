@@ -88,7 +88,6 @@ export function startSync() {
         });
 
         store.dispatch(txhistory.actions.init(codes));
-        store.dispatch(txhistory.actions.refreshTrackedTransactions());
 
         return Promise.all(loadAllChain).catch((e) => log.error('Failed to load chains', e));
       })

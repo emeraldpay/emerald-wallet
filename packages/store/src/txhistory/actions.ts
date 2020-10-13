@@ -89,6 +89,7 @@ export function init (chains: BlockchainCode[]): Dispatched<HistoryAction> {
     }
 
     dispatch(loadStoredTxsAction(storedTxs));
+    dispatch(refreshTrackedTransactions());
   };
 }
 
@@ -106,8 +107,8 @@ const txUnconfirmed = (state: IState, tx: IStoredTransaction): boolean => {
 
   if (!txBlockNumber) {
     const since = utils.parseDate(tx.since, new Date())!;
-    const dayAgo = new Date().getTime() - 24 * 60 * 60 * 1000;
-    return since.getTime() > dayAgo;
+    const tooOld = new Date().getTime() - 7 * 24 * 60 * 60 * 1000;
+    return since.getTime() > tooOld;
   }
   const numConfirmsForTx = txBlockNumber - currentBlock;
   const requiredConfirms = settings.selectors.numConfirms(state);
