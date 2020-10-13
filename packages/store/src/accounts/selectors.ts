@@ -175,6 +175,9 @@ export function allBalances (state: IState): IBalanceValue[] {
  */
 export function getWalletBalances (state: IState, wallet: Wallet, includeEmpty: boolean): IBalanceValue[] {
   const assets: IBalanceValue[] = [];
+  if (typeof wallet == "undefined") {
+    return assets;
+  }
   const ethereumAccounts = wallet.entries.filter((e) => isEthereumEntry(e)) as EthereumEntry[];
   [BlockchainCode.ETH, BlockchainCode.ETC, BlockchainCode.Kovan]
     .forEach((code) => {

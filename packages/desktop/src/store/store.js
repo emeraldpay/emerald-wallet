@@ -10,7 +10,8 @@ import {
   settings,
   application,
   createStore,
-  RemoteVault
+  RemoteVault,
+  RenderWalletState,
 } from '@emeraldwallet/store';
 import {ipcRenderer} from 'electron';
 import {startProtocolListener} from './protocol';
@@ -32,8 +33,9 @@ const log = Logger.forCategory('store');
 
 const api = {vault: RemoteVault};
 const backendApi = new BackendApi();
+const walletState = new RenderWalletState();
 
-export const store = createStore(api, backendApi);
+export const store = createStore(api, backendApi, walletState);
 global.api = api;
 
 function refreshAll() {

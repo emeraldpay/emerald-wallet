@@ -12,3 +12,5 @@ export {default as Application} from './application/Application';
 export {default as Settings} from './application/Settings';
 
 export {LocalConnector} from './vault/LocalConnector';
+
+export {LocalWalletState} from './walletstate/LocalWalletState';

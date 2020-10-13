@@ -114,6 +114,10 @@ export default connect(
     return {
       onBroadcast: (blockchain, orig, raw) => {
         dispatch(transaction.actions.broadcastTx(blockchain, orig, raw));
+        // when a change output was used
+        if (orig.outputs.length > 1) {
+          dispatch(accounts.actions.nextAddress(ownProps.source, "change"));
+        }
       }
     }
   }
