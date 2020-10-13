@@ -4,13 +4,12 @@ import {Dispatch} from "react";
 import {Box, createStyles, Grid, Theme, Button} from "@material-ui/core";
 import {accounts, IBalanceValue, IState, screen, tokens} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
-import {Uuid, Wallet, WalletEntry, isEthereumEntry} from "@emeraldpay/emerald-vault-core";
+import {Uuid, Wallet, WalletEntry, isEthereumEntry, isBitcoinEntry} from "@emeraldpay/emerald-vault-core";
 import {blockchainIdToCode} from "@emeraldwallet/core";
 import {CoinAvatar, WalletReference} from "@emeraldwallet/ui";
 import AccountBalance from '../../common/Balance';
 import {Address, Page} from "@emeraldplatform/ui";
 import {Back} from "@emeraldplatform/ui-icons";
-import {Wei} from "@emeraldpay/bigamount-crypto";
 import {BigAmount} from "@emeraldpay/bigamount/lib/amount";
 
 const useStyles = makeStyles<Theme>((theme) =>
@@ -40,13 +39,15 @@ const Component = (({balances, wallet, allAssets, onCancel, onSelected}: Props &
       <Grid item={true} xs={12} className={styles.accountsList}>
         {balances.map((accountBalance) =>
           <Grid container={true} key={"acc-balance-" + accountBalance.account.id} className={styles.accountLine}>
+            <Grid item={true} xs={2}>
+            </Grid>
             <Grid item={true} xs={1}>
               <CoinAvatar chain={blockchainIdToCode(accountBalance.account.blockchain)}/>
             </Grid>
+            {/*<Grid item={true} xs={6}>*/}
+            {/*  <Address id={accountBalance.account.address?.value || accountBalance.account.id}/>*/}
+            {/*</Grid>*/}
             <Grid item={true} xs={6}>
-              <Address id={accountBalance.account.address?.value || accountBalance.account.id}/>
-            </Grid>
-            <Grid item={true} xs={4}>
               <AccountBalance
                 key={"main"}
                 balance={accountBalance.balance}
@@ -90,12 +91,12 @@ interface OwnProps {
 
 interface AccountBalance {
   account: WalletEntry;
-  balance: Wei;
+  balance: BigAmount;
   tokens: BigAmount[]
 }
 
 function acceptAccount(balance: AccountBalance): boolean {
-  return balance.balance.isGreaterThan(Wei.ZERO)
+  return balance.balance.isPositive();
 }
 
 export default connect(
@@ -103,13 +104,15 @@ export default connect(
     const wallet = accounts.selectors.findWallet(state, ownProps.walletId)!;
     const allAssets: IBalanceValue[] = accounts.selectors.getWalletBalances(state, wallet, false);
     const balances: AccountBalance[] = wallet.entries.map((account) => {
+      const blockchain = blockchainIdToCode(account.blockchain);
+      const zero = accounts.selectors.zeroAmountFor(blockchain);
       let tokenBalances: BigAmount[] = []
       if (isEthereumEntry(account)) {
-        tokenBalances = tokens.selectors.selectBalances(state, account.address!.value, blockchainIdToCode(account.blockchain)) || [];
+        tokenBalances = tokens.selectors.selectBalances(state, account.address!.value, blockchain) || [];
       }
       return {
         account,
-        balance: accounts.selectors.getBalance(state, account.id, Wei.ZERO) || Wei.ZERO,
+        balance: accounts.selectors.getBalance(state, account.id) || zero,
         tokens: tokenBalances
       }
     })
@@ -120,7 +123,11 @@ export default connect(
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
     return {
       onSelected: (account: WalletEntry) => {
-        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_ACCOUNT, account));
+        if (isEthereumEntry(account)) {
+          dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_ETHEREUM, account));
+        } else if (isBitcoinEntry(account)) {
+          dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_BITCOIN, account.id));
+        }
       },
       onCancel: () => {
         dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId))

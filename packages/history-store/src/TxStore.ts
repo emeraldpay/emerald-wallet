@@ -1,4 +1,4 @@
-import { blockchainById, BlockchainCode, IStoredTransaction, utils } from '@emeraldwallet/core';
+import {blockchainById, BlockchainCode, isBitcoin, IStoredTransaction, utils} from '@emeraldwallet/core';
 import * as ElectronStore from 'electron-store';
 
 interface IStoreType {
@@ -30,23 +30,23 @@ export default class TxStore {
    * Converts parsed JSON object to typed Transaction object
    */
   private restoreTx (tx: any): IStoredTransaction {
-    return {
-      value: tx.value,
-      hash: tx.hash,
-      input: tx.input,
-      gasPrice: tx.gasPrice,
-      gas: tx.gas,
-      to: tx.to,
-      from: tx.from,
-      nonce: tx.nonce,
-      data: tx.data,
-      blockHash: tx.blockHash,
-      blockNumber: tx.blockNumber,
-      timestamp: utils.parseDate(tx.timestamp, undefined),
-      blockchain: tx.blockchain || (blockchainById(tx.chainId) ? blockchainById(tx.chainId)!.params.code : null),
-      chainId: tx.chainId,
-      since: utils.parseDate(tx.since, new Date()),
-      discarded: tx.discarded || false
-    };
+    const blockchain = tx.blockchain as BlockchainCode;
+    if (isBitcoin(blockchain)) {
+      return {
+        ...tx,
+        timestamp: utils.parseDate(tx.timestamp, undefined),
+        since: utils.parseDate(tx.since, new Date()),
+        discarded: tx.discarded || false,
+        inputs: tx.inputs || [],
+        outputs: tx.outputs || [],
+      }
+    } else {
+      return {
+        ...tx,
+        timestamp: utils.parseDate(tx.timestamp, undefined),
+        since: utils.parseDate(tx.since, new Date()),
+        discarded: tx.discarded || false,
+      };
+    }
   }
 }

@@ -1,4 +1,4 @@
-import { BlockchainCode } from '@emeraldwallet/core';
+import {BlockchainCode, EthereumStoredTransaction, isEthereumStoredTransaction} from '@emeraldwallet/core';
 import TxStore from './TxStore';
 
 const rimraf = require('rimraf');
@@ -35,9 +35,12 @@ describe('TxStore', () => {
     const loaded = store.load();
 
     expect(loaded).toHaveLength(1);
-    expect(loaded[0].hash).toEqual('0x1234');
-    expect(loaded[0].value).toEqual('1');
-    expect(loaded[0].timestamp).toEqual(now);
+
+    expect(isEthereumStoredTransaction(loaded[0])).toBeTruthy();
+    const item = loaded[0] as EthereumStoredTransaction;
+    expect(item.hash).toEqual('0x1234');
+    expect(item.value).toEqual('1');
+    expect(item.timestamp).toEqual(now);
 
     rimraf(store.getFilePath(), jest.fn());
   });

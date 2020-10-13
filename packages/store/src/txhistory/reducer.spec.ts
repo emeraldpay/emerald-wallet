@@ -1,12 +1,13 @@
-import { convert } from '@emeraldplatform/core';
-import { BlockchainCode, IStoredTransaction } from '@emeraldwallet/core';
-import { loadTransactions, storeTransactions } from '@emeraldwallet/history-store';
+import {convert} from '@emeraldplatform/core';
+import {BlockchainCode, EthereumStoredTransaction, IStoredTransaction} from '@emeraldwallet/core';
+import {loadTransactions, storeTransactions} from '@emeraldwallet/history-store';
 import BigNumber from 'bignumber.js';
-import { fromJS, List } from 'immutable';
+import {List} from 'immutable';
 import {INITIAL_STATE, reducer as historyReducers} from './reducer';
-import { ActionTypes, IUpdateTxsAction } from './types';
+import {ActionTypes, IUpdateTxsAction} from './types';
+import {WalletEntry} from "@emeraldpay/emerald-vault-core/lib/types";
 
-const { toBigNumber } = convert;
+const {toBigNumber} = convert;
 
 describe('historyReducer', () => {
   it('should store and load txs correctly', () => {
@@ -42,6 +43,42 @@ describe('historyReducer', () => {
     const tx = state.get('trackedTransactions').first().toJS();
     expect(tx.value).toBe("1");
   });
+
+  it('should update from balancer', () => {
+    let state = INITIAL_STATE;
+    expect(state.get('trackedTransactions')).toEqual(List());
+    // @ts-ignore
+    let entry: WalletEntry = {
+      id: "9ff7698f-c322-491e-ad71-6253495c44d9-1",
+      blockchain: 1,
+    };
+    state = historyReducers(state, {
+      type: ActionTypes.BALANCE_TX,
+      entry,
+      balance: {
+        entryId: "9ff7698f-c322-491e-ad71-6253495c44d9-1",
+        value: "100005/SAT",
+        utxo: [
+          {
+            txid: "30196e28d9fec5a71a44a4c5ea661cb4e3054ed605f87381530568e96b356e31",
+            vout: 0,
+            value: "100005/SAT",
+            address: "11111"
+          }
+        ]
+      }
+    });
+
+    const act = state.toJS();
+    expect(act.trackedTransactions.length).toBe(1);
+    expect(act.trackedTransactions[0].entries).toEqual(["9ff7698f-c322-491e-ad71-6253495c44d9-1"]);
+    expect(act.trackedTransactions[0].hash).toBe("30196e28d9fec5a71a44a4c5ea661cb4e3054ed605f87381530568e96b356e31");
+    expect(act.trackedTransactions[0].outputs[0]).toEqual({
+      address: "11111",
+      amount: 100005,
+      entryId: "9ff7698f-c322-491e-ad71-6253495c44d9-1"
+    })
+  })
 
   it('should add pending TX or update existent', () => {
     let state = INITIAL_STATE;
@@ -91,7 +128,8 @@ describe('historyReducer', () => {
   });
 
   it('should update TXS data with tx.input', () => {
-    const tx: IStoredTransaction = {
+    const tx: EthereumStoredTransaction = {
+      blockchain: BlockchainCode.Kovan,
       blockHash: '0xc87e5117923e756e5d262ef230374b73ebe47f232b0f029fa65cf6614d959100',
       blockNumber: '0x17',
       from: '0x0178537bb1d7bb412101cdb7389c28fd4cf5ac0a',
@@ -185,6 +223,7 @@ describe('historyReducer', () => {
     // prepare
 
     const txs: IStoredTransaction[] = [{
+      blockchain: BlockchainCode.Kovan,
       blockHash: '0xc87e5117923e756e5d262ef230374b73ebe47f232b0f029fa65cf6614d959100',
       blockNumber: '0x17',
       from: '0x0178537bb1d7bb412101cdb7389c28fd4cf5ac0a',
@@ -199,6 +238,7 @@ describe('historyReducer', () => {
       input: 'fckef'
     },
       {
+        blockchain: BlockchainCode.Kovan,
         blockHash: '0xc87e5117923e756e5d262ef230374b73ebe47f232b0f029fa65cf6614d959100',
         blockNumber: '0x17',
         from: '0x0178537bb1d7bb412101cdb7389c28fd4cf5ac0a',

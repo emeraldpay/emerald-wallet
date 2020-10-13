@@ -9,7 +9,8 @@ export {
   blockchainById,
   CoinTickerCode,
   amountFactory,
-  amountDecoder
+  amountDecoder,
+  BalanceUtxo
 } from './blockchains';
 
 import * as blockchains from './blockchains';
@@ -44,7 +45,13 @@ export {
   isSupportedTokenCode,
   AssetDetail, AssetDetails
 } from './Asset';
-export {IStoredTransaction} from './history/IStoredTransaction';
+export {
+  IStoredTransaction,
+  BitcoinStoredTransaction,
+  EthereumStoredTransaction,
+  isBitcoinStoredTransaction,
+  isEthereumStoredTransaction
+} from './history/IStoredTransaction';
 
 // address book core
 export { AddressBookService, IAddressBookService } from './address-book/AddressBookService';
@@ -54,12 +61,14 @@ export { IEmeraldClient } from './emerald-client/IEmeraldClient';
 
 // logging
 export { default as Logger } from './logging/Logger';
-export { default as ILogger } from './logging/ILogger';
-export { default as DefaultLogger } from './logging/DefaultLogger';
+export {default as ILogger} from './logging/ILogger';
+export {default as DefaultLogger} from './logging/DefaultLogger';
 
 // backend
-export { default as IBackendApi } from './backend/IBackendApi';
-export { Commands } from './backend/Commands';
+export {default as IBackendApi} from './backend/IBackendApi';
+export {Commands} from './backend/Commands';
 
 // frontend
-export { default as IFrontApp } from './frontend/IFrontApp';
+export {default as IFrontApp} from './frontend/IFrontApp';
+
+export {WalletStateStorage} from './walletstate/WalletStateStorage';

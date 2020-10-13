@@ -19,7 +19,7 @@ import {
   ICreateWalletAction,
   IFetchErc20BalancesAction,
   IHdAccountCreated, ILoadSeedsAction,
-  ILoadWalletsAction,
+  ILoadWalletsAction, INextAddress,
   ISetBalanceAction,
   ISetLoadingAction, ISetSeedsAction,
   ISetTxCountAction, ISubWalletBalance,
@@ -38,6 +38,7 @@ import {
   Wallet,
   EntryId
 } from "@emeraldpay/emerald-vault-core";
+import {AddressRole} from "@emeraldpay/emerald-vault-core/lib/types";
 
 const log = Logger.forCategory('store.accounts');
 
@@ -475,5 +476,13 @@ export function unlockSeed(seedId: Uuid, password: string, handler: (valid: bool
         handler(typeof addresses[hdpath] == "string" && addresses[hdpath].length > 0);
       })
       .catch((_) => handler(false))
+  }
+}
+
+export function nextAddress(entryId: EntryId, role: AddressRole): INextAddress {
+  return {
+    type: ActionTypes.NEXT_ADDRESS,
+    entryId,
+    addressRole: role
   }
 }

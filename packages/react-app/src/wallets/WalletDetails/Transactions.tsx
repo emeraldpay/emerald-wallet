@@ -18,7 +18,7 @@ function TxHistoryView (props: IProps) {
   return (
     <TxHistory
       transactions={props.transactions}
-      walletAccounts={props.entries}
+      accounts={props.entries}
     />
   );
 }

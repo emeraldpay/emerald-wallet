@@ -1,4 +1,4 @@
-import {Logger} from '@emeraldwallet/core';
+import {Logger, WalletStateStorage} from '@emeraldwallet/core';
 import {ChainRpcConnections, EmeraldApiAccess, Services} from '@emeraldwallet/services';
 import {screen} from '@emeraldwallet/store';
 import {ipcMain, WebContents} from 'electron';
@@ -6,8 +6,9 @@ import {createServices} from '../createServices';
 import ElectronLogger from '../logging/ElectronLogger';
 import {setIpcHandlers} from './ipc-handlers/ipc';
 import Settings from './Settings';
-import {IEmeraldVault} from "@emeraldpay/emerald-vault-core/lib/vault";
+import {IEmeraldVault} from "@emeraldpay/emerald-vault-core";
 import {mapVaultWithIpc} from "../vault/vaultIpc";
+import {mapWalletStateWithIpc} from "../walletstate/walletStateIpc";
 
 Logger.setInstance(new ElectronLogger());
 
@@ -27,7 +28,7 @@ export default class Application {
     this.settings = settings;
   }
 
-  public run(webContents: WebContents, apiAccess: EmeraldApiAccess, apiMode: any, vault: IEmeraldVault, rpc: ChainRpcConnections) {
+  public run(webContents: WebContents, apiAccess: EmeraldApiAccess, apiMode: any, vault: IEmeraldVault, rpc: ChainRpcConnections, walletStateStorage: WalletStateStorage) {
     this.webContents = webContents;
     this.rpc = rpc;
     this.log.info('Running services');
@@ -36,6 +37,7 @@ export default class Application {
     this.log.info('Set IPC handlers');
     setIpcHandlers(this, apiAccess);
     mapVaultWithIpc(vault);
+    mapWalletStateWithIpc(walletStateStorage);
   }
 
   public stop () {

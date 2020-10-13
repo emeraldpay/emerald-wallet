@@ -1,7 +1,7 @@
 import {BigAmount, CreateAmount} from '@emeraldpay/bigamount';
 import {
   amountDecoder,
-  amountFactory,
+  amountFactory, BalanceUtxo,
   BlockchainCode,
   blockchainCodeToId,
   blockchainIdToCode,
@@ -175,6 +175,9 @@ export function allBalances (state: IState): IBalanceValue[] {
  */
 export function getWalletBalances (state: IState, wallet: Wallet, includeEmpty: boolean): IBalanceValue[] {
   const assets: IBalanceValue[] = [];
+  if (typeof wallet == "undefined") {
+    return assets;
+  }
   const ethereumAccounts = wallet.entries.filter((e) => isEthereumEntry(e)) as EthereumEntry[];
   [BlockchainCode.ETH, BlockchainCode.ETC, BlockchainCode.Kovan]
     .forEach((code) => {
@@ -299,4 +302,12 @@ export function getSeeds(state: IState): SeedDescription[] {
 
 export function getSeed(state: IState, id: Uuid): SeedDescription | undefined {
   return getSeeds(state).find((seed) => seed.id === id)
+}
+
+export function getUtxo(state: IState, entryId: EntryId): BalanceUtxo[] {
+  return state[accounts.moduleName].details
+    .filter((d) => d.entryId == entryId)
+    .reduce((result, x) => {
+      return result.concat(x.utxo || [])
+    }, [] as BalanceUtxo[])
 }

@@ -1,32 +1,108 @@
-import { blockchainById, blockchainByName, BlockchainCode } from '@emeraldwallet/core';
-import { accounts, blockchains, IState, screen, settings, txhistory, wallet } from '@emeraldwallet/store';
-import { registry } from '@emeraldwallet/erc20';
+import {connect} from "react-redux";
+import {Dispatch} from "react";
 import * as React from 'react';
-import { connect } from 'react-redux';
+import {Box, createStyles, Theme} from "@material-ui/core";
+import {IState, wallet, screen, txhistory, accounts, blockchains, settings} from "@emeraldwallet/store";
+import {makeStyles} from "@material-ui/core/styles";
+import {
+  BlockchainCode,
+  blockchainByName,
+  blockchainById,
+  isEthereumStoredTransaction,
+  IStoredTransaction, AnyCoinCode, isBitcoinStoredTransaction
+} from "@emeraldwallet/core";
+import {ITokenInfo, registry} from '@emeraldwallet/erc20';
 import i18n from '../../../i18n';
-import TxView from './TxItemView';
-import { ITxItemProps } from './TxItemView/TxItem';
+import {Wallet} from "@emeraldpay/emerald-vault-core";
+import {TxItem} from "./TxItemView/TxItem";
+import {EntryIdOp} from "@emeraldpay/emerald-vault-core";
 
+const useStyles = makeStyles<Theme>((theme) =>
+  createStyles({
+    // styleName: {
+    //  ... css
+    // },
+  })
+);
 
-export interface IOwnProps {
+/**
+ *
+ */
+const Component = ((props: Props & Actions & OwnProps) => {
+  const styles = useStyles();
+  return <TxItem tx={props.tx}
+                 fromWallet={props.fromAccount}
+                 toWallet={props.toAccount}
+                 classes={{}}
+                 openAccount={props.openAccount}
+                 currentBlockHeight={props.currentBlockHeight}
+                 openTx={props.openTx}
+                 requiredConfirmations={props.requiredConfirmations}
+  />
+})
+
+// State Properties
+interface Props {
+  tx: IStoredTransaction;
+  coinTicker: AnyCoinCode;
+  lang: string;
+  toAccount: Wallet | undefined;
+  fromAccount: Wallet | undefined;
+  token: ITokenInfo | null;
+  requiredConfirmations: number;
+  currentBlockHeight: number;
+}
+
+// Actions
+interface Actions {
+  openAccount: (blockchain: BlockchainCode, address: string) => void;
+  openTx: () => void;
+}
+
+// Component properties
+interface OwnProps {
   hash: string;
 }
 
-export interface IDispatchProps {
-  openAccount: any;
-  openTx: any;
-}
-
-export default connect<ITxItemProps, IDispatchProps, IOwnProps, IState>(
-  (state, ownProps: IOwnProps): any => {
+export default connect(
+  (state: IState, ownProps: OwnProps): Props => {
     const tx = txhistory.selectors.selectByHash(state, ownProps.hash);
     if (!tx) {
       throw new Error("Unknown tx: " + ownProps.hash);
     }
-    const blockchain = tx.blockchain ? blockchainByName(tx.blockchain) : blockchainById(tx.chainId || -1);
-    const toAccount = accounts.selectors.findAccountByAddress(state, tx.to || "", blockchain!.params.code) || {};
-    const fromAccount = accounts.selectors.findAccountByAddress(state, tx.from, blockchain!.params.code) || {};
-    const token = registry.byAddress(blockchain!.params.code, tx.to || "");
+    const blockchain = blockchainByName(tx.blockchain);
+    let toAccount: Wallet | undefined = undefined;
+    let fromAccount: Wallet | undefined = undefined;
+    let token: ITokenInfo | null = null;
+    if (isEthereumStoredTransaction(tx)) {
+      toAccount = accounts.selectors.findWalletByAddress(state, tx.to || "", blockchain!.params.code) || undefined;
+      fromAccount = accounts.selectors.findWalletByAddress(state, tx.from, blockchain!.params.code) || undefined;
+      token = registry.byAddress(blockchain!.params.code, tx.to || "");
+
+    } else if (isBitcoinStoredTransaction(tx)) {
+      // try to find an input that originated from us
+      tx.inputs
+        .filter((it) => typeof it.entryId != "undefined")
+        .map((it) => accounts.selectors.findEntry(state, it.entryId!))
+        .filter((it) => typeof it != "undefined")
+        .slice(0, 1)
+        .forEach((from) =>
+          fromAccount = accounts.selectors.findWallet(state, EntryIdOp.asOp(from!.id).extractWalletId())
+        );
+
+      // bitcoin tx usually have a change, which is own account. because of that consider it as "to" only if
+      // it's not originated from us
+      if (typeof fromAccount === "undefined") {
+        tx.outputs
+          .filter((it) => typeof it.entryId != "undefined")
+          .map((it) => accounts.selectors.findEntry(state, it.entryId!))
+          .filter((it) => typeof it != "undefined")
+          .slice(0, 1)
+          .forEach((to) =>
+            toAccount = accounts.selectors.findWallet(state, EntryIdOp.asOp(to!.id).extractWalletId())
+          );
+      }
+    }
 
     return {
       coinTicker: blockchain!.params.coinTicker,
@@ -39,15 +115,17 @@ export default connect<ITxItemProps, IDispatchProps, IOwnProps, IState>(
       requiredConfirmations: settings.selectors.numConfirms(state),
       currentBlockHeight: blockchains.selectors.getHeight(state, blockchain!.params.coinTicker)
     };
-  },
 
-  (dispatch, ownProps: IOwnProps): IDispatchProps => ({
-    openTx: (): void => {
-      const { hash } = ownProps;
-      dispatch(screen.actions.gotoScreen(screen.Pages.TX_DETAILS, { hash }));
-    },
-    openAccount: (blockchain: BlockchainCode, address: string): void => {
-      dispatch(wallet.actions.openAccountDetails(blockchain, address));
+  },
+  (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
+    return {
+      openTx: (): void => {
+        const {hash} = ownProps;
+        dispatch(screen.actions.gotoScreen(screen.Pages.TX_DETAILS, {hash}));
+      },
+      openAccount: (blockchain: BlockchainCode, address: string): void => {
+        dispatch(wallet.actions.openAccountDetails(blockchain, address));
+      }
     }
-  })
-)(TxView);
+  }
+)((Component));

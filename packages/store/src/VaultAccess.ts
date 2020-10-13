@@ -51,8 +51,8 @@ class VaultAccess implements IEmeraldVault {
     return ipcRenderer.invoke(PREFIX + "getConnectedHWSeed", create);
   }
 
-  getEntryAddresses(id: EntryId, role: AddressRole, start: number, limit: number): Promise<CurrentAddress[]> {
-    return ipcRenderer.invoke(PREFIX + "getEntryAddresses", id, role, start);
+  listEntryAddresses(id: EntryId, role: AddressRole, start: number, limit: number): Promise<CurrentAddress[]> {
+    return ipcRenderer.invoke(PREFIX + "listEntryAddresses", id, role, start);
   }
 
   getWallet(id: Uuid): Promise<Wallet | undefined> {
@@ -104,7 +104,10 @@ class VaultAccess implements IEmeraldVault {
   }
 
   setState(state: WalletState): Promise<void> {
-    return ipcRenderer.invoke(PREFIX + "setState", state);
+    // NOTE: the state is set on the backend from LocalWalletState, this client method is not supposed to be used directly
+    // return ipcRenderer.invoke(PREFIX + "setState", state);
+    console.warn("The wallet state must be set on the backend");
+    return Promise.resolve()
   }
 
   setWalletLabel(walletId: Uuid, label: string): Promise<boolean> {

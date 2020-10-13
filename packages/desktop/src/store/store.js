@@ -10,7 +10,8 @@ import {
   settings,
   application,
   createStore,
-  RemoteVault
+  RemoteVault,
+  RenderWalletState,
 } from '@emeraldwallet/store';
 import {ipcRenderer} from 'electron';
 import {startProtocolListener} from './protocol';
@@ -32,8 +33,9 @@ const log = Logger.forCategory('store');
 
 const api = {vault: RemoteVault};
 const backendApi = new BackendApi();
+const walletState = new RenderWalletState();
 
-export const store = createStore(api, backendApi);
+export const store = createStore(api, backendApi, walletState);
 global.api = api;
 
 function refreshAll() {
@@ -86,7 +88,6 @@ export function startSync() {
         });
 
         store.dispatch(txhistory.actions.init(codes));
-        store.dispatch(txhistory.actions.refreshTrackedTransactions());
 
         return Promise.all(loadAllChain).catch((e) => log.error('Failed to load chains', e));
       })
@@ -130,6 +131,23 @@ function listenElectron() {
     ipcRenderer.on('store', (event, action) => {
       log.debug(`Got from IPC event: ${event} action: ${JSON.stringify(action)}`);
       dispatch(action);
+
+      // for bitcoin check utxo and create missing tx in history
+      // TODO remove once we have an api to get history
+      if (action.type === "ACCOUNT/SET_BALANCE") {
+        if (typeof action.payload === "object" &&
+          typeof action.payload.utxo === "object" &&
+          action.payload.utxo.length > 0 &&
+          typeof action.payload.entryId === "string") {
+          let state = store.getState();
+          let entry = accounts.selectors.findEntry(state, action.payload.entryId);
+          dispatch({
+            type: "WALLET/HISTORY/BALANCE_TX",
+            entry: entry,
+            balance: action.payload
+          })
+        }
+      }
     });
   };
 }

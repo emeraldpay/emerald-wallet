@@ -3,7 +3,7 @@ import {
   blockchainCodeToId,
   Blockchains,
   IBackendApi,
-  blockchainIdToCode,
+  blockchainIdToCode, WalletStateStorage,
 } from '@emeraldwallet/core';
 import {registry} from '@emeraldwallet/erc20';
 import { all, call, put, select, takeEvery, takeLatest } from '@redux-saga/core/effects';
@@ -20,10 +20,18 @@ import {
   walletCreatedAction,
 } from './actions';
 import {allEntries, allWallets, findWallet} from './selectors';
-import {ActionTypes, ICreateHdEntry, ICreateWalletAction, IFetchErc20BalancesAction, ISubWalletBalance} from './types';
+import {
+  ActionTypes,
+  ICreateHdEntry,
+  ICreateWalletAction,
+  IFetchErc20BalancesAction,
+  INextAddress,
+  ISubWalletBalance
+} from './types';
 import {AddEntry, SeedDescription, Wallet, WalletEntry} from "@emeraldpay/emerald-vault-core";
 import {IEmeraldVault} from "@emeraldpay/emerald-vault-core";
 import {isBitcoinEntry, isEthereumEntry} from "@emeraldpay/emerald-vault-core/lib/types";
+import {accounts} from "../index";
 
 // Subscribe to balance update from Emerald Services
 function* subscribeAccountBalance(accounts: WalletEntry[]): SagaIterator {
@@ -168,7 +176,12 @@ function* loadWalletBalance(vault: IEmeraldVault, action: ISubWalletBalance): Sa
   yield call(subscribeAccountBalance, wallet.entries);
 }
 
-export function* root(vault: IEmeraldVault) {
+function* nextAddress(storage: WalletStateStorage, action: INextAddress): SagaIterator {
+  yield call(storage.next, action.entryId, action.addressRole);
+  yield put(accounts.actions.loadWalletsAction());
+}
+
+export function* root(vault: IEmeraldVault, storage: WalletStateStorage) {
   yield all([
     takeLatest(ActionTypes.LOAD_SEEDS, loadSeeds, vault),
     takeLatest(ActionTypes.FETCH_ERC20_BALANCES, fetchErc20Balances),
@@ -176,6 +189,7 @@ export function* root(vault: IEmeraldVault) {
     // takeEvery(ActionTypes.CREATE_WALLET, createWallet, backendApi),
     takeEvery(ActionTypes.ACCOUNT_IMPORTED, afterAccountImported, vault),
     takeEvery(ActionTypes.CREATE_HD_ACCOUNT, createHdAddress, vault),
-    takeEvery(ActionTypes.SUBSCRIBE_WALLET_BALANCE, loadWalletBalance, vault)
+    takeEvery(ActionTypes.SUBSCRIBE_WALLET_BALANCE, loadWalletBalance, vault),
+    takeEvery(ActionTypes.NEXT_ADDRESS, nextAddress, storage),
   ]);
 }

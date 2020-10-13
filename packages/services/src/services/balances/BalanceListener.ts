@@ -1,4 +1,4 @@
-import {amountFactory, BlockchainCode, IFrontApp, Logger} from '@emeraldwallet/core';
+import {amountFactory, BlockchainCode, Logger} from '@emeraldwallet/core';
 import {accounts} from '@emeraldwallet/store';
 import {IService} from '../Services';
 import {AddressListener} from './AddressListener';
@@ -10,7 +10,14 @@ const log = Logger.forCategory('BalanceService');
 interface Subscription {
   entryId: string,
   blockchain: BlockchainCode,
-  address: string | string[]
+  address: string
+}
+
+function isEqual(curr: Subscription, blockchain: BlockchainCode, entryId: string, address: string | string[]) {
+  return curr.entryId == entryId &&
+    curr.blockchain == blockchain &&
+    typeof address == typeof curr.address &&
+    Object.is(curr.address, address)
 }
 
 export class BalanceListener implements IService {
@@ -41,20 +48,28 @@ export class BalanceListener implements IService {
 
   public start() {
     this.ipcMain.on('subscribe-balance', (_: any, blockchain: BlockchainCode, entryId: string, address: string | string[]) => {
-      if (!this.isValidAddress(address)) {
-        console.warn("Request for invalid address", address);
-        return
+      if (typeof address == "string") {
+        this.startInternal(blockchain, entryId, address);
+      } else if (typeof address == "object") {
+        address.forEach((it) => this.startInternal(blockchain, entryId, it))
       }
-      this.subscriptions = this.subscriptions.filter((it) => it.entryId !== entryId);
-      let entry = {
-        entryId,
-        blockchain,
-        address
-      };
-      this.subscriptions.push(entry);
-      this.subscribeBalance(entry);
     });
     this.startSubscription();
+  }
+
+  startInternal(blockchain: BlockchainCode, entryId: string, address: string) {
+    if (!this.isValidAddress(address)) {
+      console.warn("Request for invalid address", address);
+      return
+    }
+    this.subscriptions = this.subscriptions.filter((it) => !isEqual(it, blockchain, entryId, address));
+    let entry = {
+      entryId,
+      blockchain,
+      address
+    };
+    this.subscriptions.push(entry);
+    this.subscribeBalance(entry);
   }
 
   public subscribeBalance(entry: Subscription) {
@@ -69,7 +84,8 @@ export class BalanceListener implements IService {
           return {
             txid: tx.txid,
             vout: tx.vout,
-            value: amountReader(tx.value).encode()
+            value: amountReader(tx.value).encode(),
+            address: event.address
           }
         })
       });
@@ -80,9 +96,10 @@ export class BalanceListener implements IService {
         log.warn("Cannot send to the UI", e)
       }
     });
-
-    this.subscribers[entry.entryId]?.stop();
-    this.subscribers[entry.entryId] = subscriber;
+    // can get multiple subscriptions for the same address, keep only last and cancel previous
+    const id = `${entry.entryId}/${entry.address}`;
+    this.subscribers[id]?.stop();
+    this.subscribers[id] = subscriber;
   }
 
   public startSubscription() {

@@ -12,7 +12,7 @@ import {
   IWalletsLoaded, IHdAccountCreated, ISetSeedsAction
 } from './types';
 import {Wallet, Uuid, EntryId, AddressRefOp} from '@emeraldpay/emerald-vault-core';
-import {blockchainCodeToId} from "@emeraldwallet/core";
+import {BalanceUtxo, blockchainCodeToId} from "@emeraldwallet/core";
 
 export const INITIAL_STATE: IAccountsState = {
   wallets: [],
@@ -71,13 +71,21 @@ function updateAccountDetails(
 }
 
 function onSetBalance(state: IAccountsState, action: ISetBalanceAction): IAccountsState {
-    const {entryId, utxo, value} = action.payload;
-    return updateAccountDetails(state, entryId, (account) => {
-        account.balance = value;
-        account.balancePending = null;
-        account.utxo = (utxo || []).concat(...(account.utxo || []))
-        return account;
-    });
+  const {entryId, utxo, value} = action.payload;
+  return updateAccountDetails(state, entryId, (account) => {
+    let onlyNewUtxo = (utxo || []).filter((newUtxo) =>
+      !(account.utxo || []).some((oldUtxo) =>
+        oldUtxo.txid === newUtxo.txid && oldUtxo.vout === newUtxo.vout
+      )
+    );
+    let copy = {...account};
+    copy.balance = value;
+    copy.balancePending = null;
+    copy.utxo = ([] as BalanceUtxo[])
+      .concat((account.utxo || []))
+      .concat(onlyNewUtxo);
+    return copy;
+  });
 }
 
 function onWalletUpdated (state: any, action: IUpdateWalletAction) {

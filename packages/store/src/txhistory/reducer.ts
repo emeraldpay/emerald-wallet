@@ -1,9 +1,19 @@
-import { convert } from '@emeraldplatform/core';
-import { IStoredTransaction, utils } from '@emeraldwallet/core';
-import { fromJS, Map } from 'immutable';
+import {convert} from '@emeraldplatform/core';
+import {
+  amountDecoder,
+  BitcoinStoredTransaction,
+  blockchainIdToCode,
+  EthereumStoredTransaction,
+  isBitcoinStoredTransaction,
+  isEthereumStoredTransaction,
+  IStoredTransaction,
+  utils
+} from '@emeraldwallet/core';
+import {fromJS, Map, List} from 'immutable';
 import {
   ActionTypes,
   HistoryAction,
+  IBalanceTxAction,
   ILoadStoredTxsAction,
   IPendingTxAction,
   ITrackedTxNotFoundAction,
@@ -11,9 +21,13 @@ import {
   ITrackTxsAction,
   IUpdateTxsAction
 } from './types';
+import {type} from "os";
 
-const { toNumber, toBigNumber } = convert;
+const {toNumber, toBigNumber} = convert;
 
+//TODO reimplement without immutableJs
+type StateKeys = "trackedTransactions";
+type State = Map<StateKeys, List<Map<string, any>>>;
 export const INITIAL_STATE = fromJS({
   trackedTransactions: []
 });
@@ -26,10 +40,13 @@ const initialTx = Map({
   data: null,
   gas: null,
   gasPrice: null,
-  nonce: null
+  nonce: null,
+  fee: null,
+  inputs: [],
+  outputs: [],
 });
 
-function isTracked (state: any, tx: any) {
+function isTracked(state: any, tx: any): boolean {
   return state.get('trackedTransactions').some((x: any) => tx.get('hash') === x.get('hash'));
 }
 
@@ -73,7 +90,45 @@ function updateStatus (tx: any): any {
   }
 }
 
-function createTx (data: IStoredTransaction) {
+function createTx(data: IStoredTransaction): Map<string, any> {
+  if (isEthereumStoredTransaction(data)) {
+    return createEthereumTx(data);
+  }
+  if (isBitcoinStoredTransaction(data)) {
+    return createBitcoinTx(data);
+  }
+  console.error("Unsupported tx");
+  return Map()
+}
+
+function createBitcoinTx(data: BitcoinStoredTransaction): Map<string, any> {
+  const values: { [key: string]: any } = {
+    hash: data.hash
+  };
+  let tx: Map<string, any> = initialTx.merge(values);
+  tx = tx.set("fee", data.fee)
+    .set("inputs", data.inputs)
+    .set("outputs", data.outputs)
+    .set('timestamp', utils.parseDate(data.timestamp))
+    .set('since', utils.parseDate(data.since))
+    .set('blockchain', data.blockchain);
+
+  // If is not pending, fill in finalized attributes.
+  if (typeof data.blockNumber !== 'undefined' && data.blockNumber !== null) {
+    tx = tx.merge({
+      blockHash: data.blockHash,
+      blockNumber: toNumber(data.blockNumber),
+      discarded: false
+    });
+  } else if (typeof data.broadcasted !== 'undefined' && data.broadcasted) {
+    tx = tx.set('broadcasted', true)
+      .set('discarded', false);
+  }
+
+  return tx
+}
+
+function createEthereumTx(data: EthereumStoredTransaction): Map<string, any> {
   const values: { [key: string]: any } = {
     hash: data.hash,
     to: data.to
@@ -205,7 +260,54 @@ function onUpdateTxs (state: any, action: IUpdateTxsAction) {
   return state;
 }
 
-export function reducer (
+function stateWithTx(state: State, tx: IStoredTransaction): State {
+  return state.update('trackedTransactions', (txs) => {
+    const exist = txs.some((current) => current?.get("hash") == tx.hash);
+    if (!exist) {
+      return txs.push(Map(tx) as Map<string, any>);
+    } else {
+      return txs;
+    }
+  })
+}
+
+/**
+ * Update tx history from current balance changes if it includes utxo (i.e. bitcoin tx)
+ *
+ * @param state
+ * @param action
+ */
+function onTxBalance(state: State, action: IBalanceTxAction) {
+  if (action.type === ActionTypes.BALANCE_TX) {
+    const amount = amountDecoder(blockchainIdToCode(action.entry.blockchain));
+    if (typeof action.balance.utxo != "undefined" && action.balance.utxo.length > 0 && action.entry) {
+      return action.balance.utxo
+        .filter((utxo) => !isTracked(state, Map({hash: utxo.txid})))
+        .reduce((state, utxo) => {
+          const tx: BitcoinStoredTransaction = {
+            hash: utxo.txid,
+            blockchain: blockchainIdToCode(action.entry.blockchain),
+            entries: [action.entry.id],
+            fee: 0,
+            inputs: [],
+            outputs: [
+              {
+                address: utxo.address,
+                amount: amount(utxo.value).number.toNumber(),
+                entryId: action.entry.id
+              }
+            ],
+            broadcasted: true,
+            discarded: false
+          };
+          return stateWithTx(state, tx);
+        }, state);
+    }
+  }
+  return state;
+}
+
+export function reducer(
   state: any = INITIAL_STATE,
   action: HistoryAction
 ): any {
@@ -222,6 +324,8 @@ export function reducer (
       return onUpdateTxs(state, action);
     case ActionTypes.PENDING_TX:
       return onPendingTx(state, action);
+    case ActionTypes.BALANCE_TX:
+      return onTxBalance(state, action);
   }
   return state;
 }

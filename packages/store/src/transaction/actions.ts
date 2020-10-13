@@ -2,11 +2,12 @@ import { UnsignedTx } from '@emeraldpay/emerald-vault-core';
 import { convert, EthAddress } from '@emeraldplatform/core';
 import { quantitiesToHex } from '@emeraldplatform/core/lib/convert';
 import {
+  BitcoinStoredTransaction,
   BlockchainCode,
-  Blockchains,
+  Blockchains, EthereumStoredTransaction,
   EthereumTx,
   IApi,
-  IBackendApi,
+  IBackendApi, isBitcoin, isEthereum, isEthereumStoredTransaction,
   IStoredTransaction,
   Logger
 } from '@emeraldwallet/core';
@@ -17,6 +18,7 @@ import * as history from '../txhistory';
 import {Dispatched, IExtraArgument} from '../types';
 import {Wei} from "@emeraldpay/bigamount-crypto";
 import {IEmeraldVault} from "@emeraldpay/emerald-vault-core/lib/vault";
+import {EntryId, isBitcoinTx, UnsignedBitcoinTx} from "@emeraldpay/emerald-vault-core/lib/types";
 
 const log = Logger.forCategory('store.transaction');
 
@@ -36,24 +38,53 @@ function unwrap (value: string[] | string | null): Promise<string> {
 /**
  * Called after Tx sent
  */
-function onTxSent (dispatch: Dispatch<any>, txHash: string, sourceTx: any, blockchain: BlockchainCode) {
-    // dispatch(loadAccountBalance(sourceTx.from));
-  const sentTx = { ...sourceTx, hash: txHash };
+function onEthereumTxSent(dispatch: Dispatch<any>, txHash: string, sourceTx: EthereumStoredTransaction, blockchain: BlockchainCode) {
+  // dispatch(loadAccountBalance(sourceTx.from));
+  const sentTx = {...sourceTx, hash: txHash};
 
-    // TODO: dependency on wallet/history module!
+  // TODO: dependency on wallet/history module!
   dispatch(history.actions.trackTxs([sentTx], blockchain));
   dispatch(gotoScreen(screen.Pages.TX_DETAILS, sentTx));
 }
 
-function getNonce (api: IApi, blockchain: BlockchainCode, address: string): Promise<number> {
+function onBitcoinTxSent(dispatch: Dispatch<any>, txHash: string, sourceTx: UnsignedBitcoinTx, blockchain: BlockchainCode) {
+  const sentTx: BitcoinStoredTransaction = {
+    blockchain,
+    since: new Date(),
+    hash: txHash,
+    entries: sourceTx.inputs
+      .map((it) => it.entryId)
+      .filter((it) => typeof it != "undefined")
+      .map((it) => it!)
+      .reduce((all, it) => all.indexOf(it) >= 0 ? all : all.concat(it), [] as string[]),
+    inputs: sourceTx.inputs.map((it) => {
+      return {
+        txid: it.txid,
+        vout: it.vout,
+        amount: it.amount,
+        entryId: it.entryId,
+        address: it.address,
+        hdPath: it.hdPath
+      }
+    }),
+    outputs: sourceTx.outputs,
+    fee: sourceTx.fee
+  }
+
+  // TODO: dependency on wallet/history module!
+  dispatch(history.actions.trackTxs([sentTx], blockchain));
+  dispatch(gotoScreen(screen.Pages.TX_DETAILS, sentTx));
+}
+
+function getNonce(api: IApi, blockchain: BlockchainCode, address: string): Promise<number> {
   return api.chain(blockchain).eth.getTransactionCount(address);
 }
 
-function withNonce (tx: IStoredTransaction): (nonce: number) => Promise<IStoredTransaction> {
-  return (nonce) => new Promise((resolve) => resolve({ ...tx, nonce: convert.quantitiesToHex(nonce) }));
+function withNonce(tx: EthereumStoredTransaction): (nonce: number) => Promise<EthereumStoredTransaction> {
+  return (nonce) => new Promise((resolve) => resolve({...tx, nonce: convert.quantitiesToHex(nonce)}));
 }
 
-function verifySender (expected: string): (a: string, c: BlockchainCode) => Promise<string> {
+function verifySender(expected: string): (a: string, c: BlockchainCode) => Promise<string> {
   return (raw: string, chain: BlockchainCode) => new Promise((resolve, reject) => {
     // Find chain id
     const chainId = Blockchains[chain].params.chainId;
@@ -74,7 +105,7 @@ function verifySender (expected: string): (a: string, c: BlockchainCode) => Prom
 }
 
 function signTx(
-  vault: IEmeraldVault, accountId: string, tx: IStoredTransaction, passphrase: string, blockchain: BlockchainCode
+  vault: IEmeraldVault, accountId: string, tx: EthereumStoredTransaction, passphrase: string, blockchain: BlockchainCode
 ): Promise<string | string[]> {
   log.debug(`Calling emerald api to sign tx from ${tx.from} to ${tx.to} in ${blockchain} blockchain`);
   const unsignedTx: UnsignedTx = {
@@ -99,7 +130,7 @@ export function signTransaction (
   value: Wei, data: string
 ): Dispatched<any> {
 
-  const originalTx: IStoredTransaction = {
+  const originalTx: EthereumStoredTransaction = {
     from,
     to,
     gas: convert.toHex(gas),
@@ -113,7 +144,7 @@ export function signTransaction (
   return (dispatch: any, getState, extra) => {
     return getNonce(extra.api, blockchain, from)
       .then(withNonce(originalTx))
-      .then((tx: IStoredTransaction) => {
+      .then((tx) => {
         return signTx(extra.api.vault, accountId, tx, passphrase, blockchain)
           .then(unwrap)
           .then((rawTx) => verifySender(from)(rawTx, blockchain))
@@ -123,11 +154,31 @@ export function signTransaction (
   };
 }
 
-export function broadcastTx (chain: BlockchainCode, tx: any, signedTx: any): any {
+export function signBitcoinTransaction(
+  entryId: EntryId,
+  tx: UnsignedBitcoinTx,
+  password: string,
+  handler: (raw?: string, err?: string) => void
+): Dispatched<any> {
+  return (dispatch: any, getState, extra) => {
+    extra.api.vault.signTx(entryId, tx, password)
+      .then((raw) => handler(raw))
+      .catch((err) => {
+        handler(undefined, "Internal error. " + err?.message);
+        dispatch(showError(err))
+      })
+  }
+}
+
+export function broadcastTx(chain: BlockchainCode, tx: EthereumStoredTransaction | UnsignedBitcoinTx, signedTx: string): Dispatched<any> {
   return async (dispatch: any, getState: any, extra: IExtraArgument) => {
     try {
       const hash = await extra.backendApi.broadcastSignedTx(chain, signedTx);
-      return onTxSent(dispatch, hash, tx, chain);
+      if (isBitcoin(chain)) {
+        return onBitcoinTxSent(dispatch, hash, tx as BitcoinStoredTransaction, chain);
+      } else if (isEthereum(chain)) {
+        return onEthereumTxSent(dispatch, hash, tx as EthereumStoredTransaction, chain);
+      }
     } catch (e) {
       dispatch(showError(e));
     }

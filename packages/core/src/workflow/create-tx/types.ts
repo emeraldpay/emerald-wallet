@@ -16,6 +16,7 @@ export function targetFromNumber(i: number): TxTarget {
 export enum ValidationResult {
   OK,
   NO_FROM,
+  NO_AMOUNT,
   NO_TO,
   INSUFFICIENT_FUNDS,
   INSUFFICIENT_TOKEN_FUNDS

@@ -23,8 +23,25 @@ import "typeface-inter";
 import "typeface-roboto-mono";
 
 import colors from './colors';
+import * as React from "react";
 
 const spacing = 10;
+
+declare module '@material-ui/core/styles/createMuiTheme' {
+  interface Theme {
+    monotype: {
+      fontFamily: React.CSSProperties['fontFamily'];
+      fontWeight: React.CSSProperties['fontWeight'];
+    }
+  }
+
+  interface ThemeOptions {
+    monotype?: {
+      fontFamily?: React.CSSProperties['fontFamily'];
+      fontWeight?: React.CSSProperties['fontWeight'];
+    }
+  }
+}
 
 const theme = {
   emeraldColors: colors,
@@ -64,6 +81,14 @@ const theme = {
       'sans-serif'
     ].join(',')
   },
+  monotype: {
+    fontFamily: [
+      '"Roboto Mono"',
+      'monospace'
+    ].join(','),
+    fontWeight: 500
+  },
+  mixins: {},
   overrides: {
     MuiFormControl: {
       root: {

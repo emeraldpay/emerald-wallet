@@ -13,6 +13,7 @@ import CreateWalletScreen from "../../../create-wallet/CreateWalletScreen";
 import ReceiveScreen from "../../../receive/ReceiveScreen";
 import SelectAccount from "../../../transaction/CreateTransaction/SelectAccount";
 import CreateTransaction from "../../../transaction/CreateTransaction";
+import CreateBitcoinTransaction from "../../../transaction/CreateBitcoinTransaction/CreateBitcoinTransaction";
 
 const log = Logger.forCategory('screen');
 
@@ -50,8 +51,11 @@ const Screen = (props: IScreenProps) => {
   if (props.screen === screen.Pages.CREATE_TX) {
     return (<SelectAccount walletId={props.screenItem}/>);
   }
-  if (props.screen === screen.Pages.CREATE_TX_ACCOUNT) {
+  if (props.screen === screen.Pages.CREATE_TX_ETHEREUM) {
     return (<CreateTransaction sourceEntry={props.screenItem}/>);
+  }
+  if (props.screen === screen.Pages.CREATE_TX_BITCOIN) {
+    return (<CreateBitcoinTransaction source={props.screenItem}/>);
   }
   if (props.screen === 'broadcast-tx') {
     return <BroadcastTx tx={props.screenItem.tx} signed={props.screenItem.signed}/>;

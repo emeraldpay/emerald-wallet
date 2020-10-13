@@ -3,7 +3,7 @@ import {
   BlockchainCode,
   Commands,
   IBackendApi,
-  AnyCoinCode
+  AnyCoinCode, isBitcoin, IStoredTransaction, isEthereumStoredTransaction, EthereumStoredTransaction
 } from '@emeraldwallet/core';
 import {ipcRenderer} from 'electron';
 
@@ -19,7 +19,7 @@ export default class BackendApi implements IBackendApi {
     return ipcRenderer.invoke(Commands.GET_GAS_PRICE, blockchain);
   }
 
-  public broadcastSignedTx = (blockchain: BlockchainCode, tx: any): Promise<string> => {
+  public broadcastSignedTx = (blockchain: BlockchainCode, tx: string): Promise<string> => {
     return ipcRenderer.invoke(Commands.BROADCAST_TX, blockchain, tx);
   }
 
@@ -27,12 +27,18 @@ export default class BackendApi implements IBackendApi {
     return ipcRenderer.invoke(Commands.ESTIMATE_TX, blockchain, tx);
   }
 
-  public persistTransactions = (blockchain: BlockchainCode, txs: any[]): Promise<void> => {
-    const request = txs.map((tx) => ({
-      ...tx,
-      gasPrice: (typeof tx.gasPrice === 'string') ? tx.gasPrice : tx.gasPrice.toString(),
-      value: (typeof tx.value === 'string') ? tx.value : tx.value.toString()
-    }));
+  public persistTransactions = (blockchain: BlockchainCode, txs: IStoredTransaction[]): Promise<void> => {
+    if (isBitcoin(blockchain)) {
+      return ipcRenderer.invoke(Commands.PERSIST_TX_HISTORY, blockchain, txs);
+    }
+    const request = txs
+      .filter((tx) => isEthereumStoredTransaction(tx))
+      .map((tx) => tx as EthereumStoredTransaction)
+      .map((tx) => ({
+        ...tx,
+        gasPrice: (typeof tx.gasPrice === 'string') ? tx.gasPrice : tx.gasPrice.toString(),
+        value: (typeof tx.value === 'string') ? tx.value : tx.value.toString()
+      }));
     return ipcRenderer.invoke(Commands.PERSIST_TX_HISTORY, blockchain, request);
   }
 

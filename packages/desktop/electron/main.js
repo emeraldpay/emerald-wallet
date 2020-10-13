@@ -8,7 +8,7 @@ const {
   EmeraldApiAccessProd,
 } = require('@emeraldwallet/services');
 const {
-  getMainWindow, protocol, assertSingletonWindow, Application, Settings, LocalConnector
+  getMainWindow, protocol, assertSingletonWindow, Application, Settings, LocalConnector, LocalWalletState
 } = require('@emeraldwallet/electron-app');
 const { app, ipcMain, session } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path'); // eslint-disable-line
@@ -100,7 +100,8 @@ app.on('ready', () => {
   const browserWindow = getMainWindow(application, options);
 
   log.info('... Run Application');
-  application.run(browserWindow.webContents, apiAccess, apiMode, vault.getProvider(), rpcConns);
+  const walletState = new LocalWalletState(vault.getProvider());
+  application.run(browserWindow.webContents, apiAccess, apiMode, vault.getProvider(), rpcConns, walletState);
 
   onceReady(() => {
     let webContents = getMainWindow(application, options).webContents;

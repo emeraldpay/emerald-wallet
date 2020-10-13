@@ -18,12 +18,12 @@ import {Back} from "@emeraldplatform/ui-icons";
 import {Uuid, Wallet} from "@emeraldpay/emerald-vault-core";
 import {AnyCoinCode, AnyTokenCode, BlockchainCode, Blockchains, blockchainIdToCode} from "@emeraldwallet/core";
 import {WalletReference} from "@emeraldwallet/ui";
-import {Address} from '@emeraldplatform/ui';
+import {Address} from '@emeraldwallet/ui';
 import {useQRCode} from 'react-qrcode';
 import {registry} from "@emeraldwallet/erc20";
 import {clipboard} from 'electron';
 import LibraryAddCheckIcon from '@material-ui/icons/LibraryAddCheck';
-import {CurrentAddress, isBitcoinEntry, isEthereumEntry} from "@emeraldpay/emerald-vault-core";
+import {CurrentAddress, isBitcoinEntry, isEthereumEntry, EntryId} from "@emeraldpay/emerald-vault-core";
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
@@ -54,7 +54,7 @@ function anyAddress(accepted: Accept[], blockchain: BlockchainCode, token: AnyCo
 /**
  *
  */
-const Component = (({wallet, assets, accepted, onCancel}: Props & Actions & OwnProps) => {
+const Component = (({wallet, assets, accepted, onCancel, onOk}: Props & Actions & OwnProps) => {
   const styles = useStyles();
 
   const availableBlockchains = accepted.map((accept) => accept.blockchain).filter(distinct);
@@ -82,6 +82,10 @@ const Component = (({wallet, assets, accepted, onCancel}: Props & Actions & OwnP
   function selectToken(token: AnyCoinCode) {
     setCurrCoin(token);
     setCurrAddress(anyAddress(accepted, currBlockchain, token));
+  }
+
+  function findEntry(): EntryId {
+    return accepted.find((a) => a.blockchain == currBlockchain && a.addresses.indexOf(currAddress) >= 0)!.entryId
   }
 
   const formBlockchain = <FormControl fullWidth={true}>
@@ -134,7 +138,7 @@ const Component = (({wallet, assets, accepted, onCancel}: Props & Actions & OwnP
     >
       {availableAddresses.map((address) =>
         <MenuItem key={address} value={address}>
-          <Address id={address} hideCopy={true}/>
+          <Address address={address} disableCopy={true}/>
         </MenuItem>
       )}
     </Select>
@@ -172,6 +176,10 @@ const Component = (({wallet, assets, accepted, onCancel}: Props & Actions & OwnP
         {qr}
       </Grid>
     </Grid>
+    <Grid item={true} xs={8}>
+      <Button onClick={() => onCancel()}>Cancel</Button>
+      <Button onClick={() => onOk(findEntry())} color={"primary"} variant={"contained"}>Save</Button>
+    </Grid>
   </Page>
 })
 
@@ -185,6 +193,7 @@ interface Props {
 // Actions
 interface Actions {
   onCancel: () => void;
+  onOk: (entryId: EntryId) => void;
 }
 
 // Component properties
@@ -196,6 +205,7 @@ interface Accept {
   blockchain: BlockchainCode;
   token: AnyCoinCode;
   addresses: string[];
+  entryId: EntryId;
 }
 
 export default connect(
@@ -217,13 +227,15 @@ export default connect(
       accepted.push({
         blockchain,
         token: Blockchains[blockchain].params.coinTicker,
-        addresses: [address]
+        addresses: [address],
+        entryId: acc.id,
       });
       Blockchains[blockchain].getAssets().forEach((token) => {
         accepted.push({
           blockchain,
           token,
-          addresses: [address!]
+          addresses: [address!],
+          entryId: acc.id,
         });
       })
     })
@@ -235,7 +247,11 @@ export default connect(
   },
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
     return {
-      onCancel: () => dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId))
+      onCancel: () => dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId)),
+      onOk: (entryId: EntryId) => {
+        dispatch(accounts.actions.nextAddress(entryId, "receive"));
+        dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId));
+      }
     }
   }
 )((Component));

@@ -40,7 +40,7 @@ const Component = (({seedId, onUnlock, verifyPassword}: Props & Actions & OwnPro
 
   return <Grid container={true}>
     <Grid item={true} xs={12}>
-      <Typography variant={"h4"}>Password to unlock seed</Typography>
+      <Typography variant={"h5"}>Password to unlock seed</Typography>
       <Typography>Please provide password to unlock seed {seedId}</Typography>
     </Grid>
     <Grid item={true} xs={6}>

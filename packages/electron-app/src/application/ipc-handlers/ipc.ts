@@ -3,7 +3,7 @@ import {
   BlockchainCode,
   blockchainCodeToId,
   Blockchains,
-  Commands, isAnyTokenCode, isCoinTickerCode, isEthereum,
+  Commands, isAnyTokenCode, isBitcoin, isCoinTickerCode, isEthereum, IStoredTransaction,
   Logger,
 } from '@emeraldwallet/core';
 import {loadTransactions2, storeTransactions2} from '@emeraldwallet/history-store';
@@ -14,7 +14,14 @@ import {tokenContract} from '../erc20';
 import {registry} from "@emeraldwallet/erc20";
 import BigNumber from 'bignumber.js';
 import {EmeraldApiAccess} from "@emeraldwallet/services";
-import {BalanceRequest, AddressBalance, AssetCode, Blockchain} from '@emeraldpay/api';
+import {
+  BalanceRequest,
+  AddressBalance,
+  AssetCode,
+  Blockchain,
+  isNativeCallResponse,
+  isNativeCallError
+} from '@emeraldpay/api';
 
 interface BalanceResult {
   asset: AnyCoinCode;
@@ -47,7 +54,7 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess) {
   });
 
   // Transaction history API
-  ipcMain.handle(Commands.PERSIST_TX_HISTORY, (event: any, blockchain: BlockchainCode, txs: any) => {
+  ipcMain.handle(Commands.PERSIST_TX_HISTORY, (event: any, blockchain: BlockchainCode, txs: IStoredTransaction[]) => {
     storeTransactions2(blockchain, txs);
   });
 
@@ -93,14 +100,40 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess) {
     }
   });
 
-  ipcMain.handle(Commands.BROADCAST_TX, async (event: any, blockchain: BlockchainCode, tx: any) => {
-    return app.rpc.chain(blockchain).eth.sendRawTransaction(tx);
+  ipcMain.handle(Commands.BROADCAST_TX, async (event: any, blockchain: BlockchainCode, tx: string) => {
+    if (isEthereum(blockchain)) {
+      return app.rpc.chain(blockchain).eth.sendRawTransaction(tx);
+    } else if (isBitcoin(blockchain)) {
+      return new Promise((resolve, reject) => {
+        apiAccess.blockchainClient.nativeCall(
+          blockchainCodeToId(blockchain),
+          [
+            {
+              id: 0,
+              method: "sendrawtransaction",
+              payload: [tx]
+            }
+          ]
+        ).onData((resp) => {
+          if (isNativeCallResponse(resp)) {
+            const hash = resp.payload as string;
+            log.info("Broadcast transaction: " + hash);
+            resolve(hash);
+          } else if (isNativeCallError(resp)) {
+            reject(resp.message);
+          } else {
+            reject("Invalid response from API");
+          }
+        }).onError((err) => reject(err.message));
+      })
+    } else {
+      log.error("Invalid blockchain: " + blockchain)
+    }
   });
 
   ipcMain.handle(Commands.ESTIMATE_TX, (event: any, blockchain: BlockchainCode, tx: any) => {
     return app.rpc.chain(blockchain).eth.estimateGas(tx);
   });
-
 
 
 }

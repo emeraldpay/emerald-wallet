@@ -4,8 +4,10 @@ import {
   AnyCoinCode,
   BlockchainCode,
   CurrencyCode,
+  BalanceUtxo,
 } from '@emeraldwallet/core';
 import {BigAmount} from "@emeraldpay/bigamount";
+import {AddressRole} from "@emeraldpay/emerald-vault-core/lib/types";
 
 export const moduleName = 'accounts';
 
@@ -43,12 +45,6 @@ export interface IBalanceUpdate {
   utxo?: BalanceUtxo[];
 }
 
-export interface BalanceUtxo {
-  txid: string;
-  vout: number;
-  value: string;
-}
-
 export enum ActionTypes {
   LOAD_WALLETS = 'ACCOUNT/LOAD_WALLETS',
   SET_BALANCE = 'ACCOUNT/SET_BALANCE',
@@ -69,6 +65,7 @@ export enum ActionTypes {
   SET_SEEDS = 'ACCOUNT/SET_SEEDS',
   SUBSCRIBE_WALLET_BALANCE = 'ACCOUNT/SUB_WALLET_BALANCE',
   TRY_UNLOCK_SEED = 'ACCOUNT/TRY_UNLOCK_SEED',
+  NEXT_ADDRESS = 'ACCOUNT/NEXT_ADDRESS'
 }
 
 export interface ILoadWalletsAction {
@@ -170,6 +167,12 @@ export interface ISubWalletBalance {
   walletId: Uuid;
 }
 
+export interface INextAddress {
+  type: ActionTypes.NEXT_ADDRESS,
+  entryId: EntryId,
+  addressRole: AddressRole,
+}
+
 export type AccountsAction =
   | IWalletsLoaded
   | ISetLoadingAction
@@ -186,4 +189,5 @@ export type AccountsAction =
   | ILoadSeedsAction
   | ISetSeedsAction
   | ISubWalletBalance
+  | INextAddress
   ;

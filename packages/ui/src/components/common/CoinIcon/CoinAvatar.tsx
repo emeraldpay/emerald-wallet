@@ -3,6 +3,8 @@ import {createStyles, makeStyles} from '@material-ui/core/styles';
 import * as React from 'react';
 import CoinIcon from './CoinIcon';
 import classNames from "classnames";
+import {ClassNameMap} from "@material-ui/styles";
+import {WithDefaults} from "@emeraldwallet/core";
 
 const colors = {
   eth: '#627eea',
@@ -35,19 +37,30 @@ const useStyles = makeStyles((theme: Theme) =>
       height: theme.spacing(8),
       fontSize: "3em"
     },
+    center: {
+      margin: "0 auto"
+    }
   })
 );
 
-interface ICoinAvatarProps {
+interface OwnProps {
   chain: string;
-  size?: "default" | "small" | "large"
+  size?: "default" | "small" | "large";
+  center?: boolean;
+  classes?: Partial<ClassNameMap<ClassKey>>;
 }
 
-const CoinAvatar = (props: ICoinAvatarProps) => {
+type ClassKey = 'root' ;
+
+const defaults: Partial<OwnProps> = {
+  size: "default"
+}
+
+const CoinAvatar = (props: OwnProps) => {
+  props = WithDefaults(props, defaults);
   const {
-    chain
+    chain, classes, size
   } = props;
-  const size = props.size || "default";
 
   const avatarClasses = useStyles(props);
   let coinClass = null;
@@ -56,8 +69,13 @@ const CoinAvatar = (props: ICoinAvatarProps) => {
   }
   const sizeClass = avatarClasses[size + "Size"];
 
+  let center = undefined;
+  if (props.center) {
+    center = avatarClasses["center"];
+  }
+
   return (
-    <Avatar className={classNames(sizeClass, coinClass)}>
+    <Avatar className={classNames(sizeClass, coinClass, center, classes?.root)}>
       <CoinIcon chain={chain} size={size}/>
     </Avatar>
   );
