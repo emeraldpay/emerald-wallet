@@ -19,7 +19,7 @@
   "dependencies": {
     "@emeraldpay/bigamount": "^0.2.0",
     "@emeraldpay/bigamount-crypto": "^0.2.0",
-    "@emeraldpay/emerald-vault-core": "^0.6.0-alpha.3",
+    "@emeraldpay/emerald-vault-core": "^0.6.0-rc",
     "@emeraldpay/hashicon-react": "^0.5.1",
     "@emeraldplatform/core": "0.5.8",
     "@emeraldplatform/eth": "0.5.1",
