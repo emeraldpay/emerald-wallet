@@ -7,7 +7,4 @@ import {IEmeraldVault} from '@emeraldpay/emerald-vault-core';
  */
 export interface IApi {
   vault: IEmeraldVault;
-
-  // @deprecated
-  chain(name: BlockchainCode | string): EthRpc;
 }

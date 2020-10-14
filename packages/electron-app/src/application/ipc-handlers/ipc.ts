@@ -135,5 +135,7 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess) {
     return app.rpc.chain(blockchain).eth.estimateGas(tx);
   });
 
-
+  ipcMain.handle(Commands.GET_NONCE, (event: any, blockchain: BlockchainCode, address: string) => {
+    return app.rpc.chain(blockchain).eth.getTransactionCount(address)
+  });
 }

@@ -76,10 +76,6 @@ function onBitcoinTxSent(dispatch: Dispatch<any>, txHash: string, sourceTx: Unsi
   dispatch(gotoScreen(screen.Pages.TX_DETAILS, sentTx));
 }
 
-function getNonce(api: IApi, blockchain: BlockchainCode, address: string): Promise<number> {
-  return api.chain(blockchain).eth.getTransactionCount(address);
-}
-
 function withNonce(tx: EthereumStoredTransaction): (nonce: number) => Promise<EthereumStoredTransaction> {
   return (nonce) => new Promise((resolve) => resolve({...tx, nonce: convert.quantitiesToHex(nonce)}));
 }
@@ -142,7 +138,7 @@ export function signTransaction (
   };
 
   return (dispatch: any, getState, extra) => {
-    return getNonce(extra.api, blockchain, from)
+    return extra.backendApi.getNonce(blockchain, from)
       .then(withNonce(originalTx))
       .then((tx) => {
         return signTx(extra.api.vault, accountId, tx, passphrase, blockchain)
