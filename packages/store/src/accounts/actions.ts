@@ -373,57 +373,6 @@ export function importWalletFile(
   };
 }
 
-function clearBlock (tx: any) {
-  return {
-    ...tx,
-    blockNumber: null
-  };
-}
-
-// TODO move to backend side
-export function loadPendingTransactions (): Dispatched<PendingBalanceAction> {
-  return (dispatch: any, getState, extra) => {
-    // TODO read from wallet settings
-    ['ETH', 'ETC'].forEach((chainName) => {
-      const blockchainCode = blockchainByName(chainName).params.code;
-      extra.api.chain(blockchainCode).eth.getBlockByNumber('pending', true)
-        .then((result: any) => {
-          const addresses = selectors.allEntriesByBlockchain(getState(), blockchainCode)
-            .map((account) => account.address);
-
-          const txes = result.transactions.filter(
-            (t: any) => addresses.includes(t.to) || addresses.includes(t.from)
-          ).map((tx: any) => clearBlock(tx));
-          if (txes.length === 0) {
-            return;
-          }
-
-          dispatch(history.actions.trackTxs(txes, blockchainCode as BlockchainCode));
-
-          for (const tx of txes) {
-            const disp: PendingBalanceAction = {
-              type: ActionTypes.PENDING_BALANCE,
-              value: tx.value,
-              gas: tx.gas,
-              gasPrice: tx.gasPrice,
-              from: '',
-              to: '',
-              blockchain: blockchainCode
-            };
-            if (addresses.includes(tx.from)) {
-              disp.from = tx.from;
-              dispatch(disp);
-            }
-            if (addresses.includes(tx.to)) {
-              disp.to = tx.to;
-              dispatch(disp);
-            }
-          }
-        }).catch(dispatchRpcError(dispatch));
-    });
-  };
-}
-
 export function generateMnemonic(handler?: (value: string) => void): Dispatched<any> {
   return (dispatch: any, getState, extra) => {
     extra.api.vault.generateMnemonic(24)

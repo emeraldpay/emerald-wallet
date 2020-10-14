@@ -10,5 +10,6 @@ export default interface IBackendApi {
   getGasPrice: (blockchain: BlockchainCode) => Promise<number>;
   broadcastSignedTx: (blockchain: BlockchainCode, tx: string) => Promise<string>;
   estimateTxCost: (blockchain: BlockchainCode, tx: any) => Promise<number>;
+  getNonce: (blockchain: BlockchainCode, address: string) => Promise<number>;
 
 }

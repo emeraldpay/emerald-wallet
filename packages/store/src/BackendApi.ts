@@ -42,4 +42,8 @@ export default class BackendApi implements IBackendApi {
     return ipcRenderer.invoke(Commands.PERSIST_TX_HISTORY, blockchain, request);
   }
 
+  public getNonce = (blockchain: BlockchainCode, address: string): Promise<number> => {
+    return ipcRenderer.invoke(Commands.GET_NONCE, blockchain, address);
+  }
+
 }

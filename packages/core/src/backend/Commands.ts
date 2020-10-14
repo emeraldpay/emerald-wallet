@@ -17,6 +17,7 @@ export enum Commands {
   GET_GAS_PRICE = 'get-gas-price',
   BROADCAST_TX = 'broadcast-tx',
   ESTIMATE_TX = 'estimate-tx',
+  GET_NONCE = 'get-nonce',
   SIGN_TX = 'sign-tx',
   // @deprecated
   GET_BALANCE = 'get-balance',
