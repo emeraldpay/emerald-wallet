@@ -6,7 +6,7 @@ import {WithDefaults} from "@emeraldwallet/core";
 import classNames from "classnames";
 import {ToggledIconButton} from '@emeraldplatform/ui';
 import {Check1 as CheckCircle, Copytoclipboard as CloneIcon} from '@emeraldplatform/ui-icons';
-import copy from 'copy-to-clipboard';
+import * as clipboard from "clipboard-polyfill/text";
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
@@ -53,7 +53,8 @@ const Component = ((props: OwnProps) => {
   const {classes} = props;
 
   function handleOnCopyClick() {
-    copy(props.address);
+    clipboard.writeText(props.address)
+      .catch((err) => console.error("Failed to copy address to clipboard", err));
     if (props.onCopy) {
       props.onCopy(props.address);
     }
