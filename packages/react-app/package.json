@@ -1,6 +1,6 @@
 {
   "name": "@emeraldwallet/react-app",
-  "version": "2.4.0-alpha.0",
+  "version": "2.4.0",
   "description": "Emerald Wallet React Application",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -25,13 +25,15 @@
     "@emeraldplatform/eth": "0.5.1",
     "@emeraldplatform/ui": "0.6.0",
     "@emeraldplatform/ui-icons": "0.6.0",
-    "@emeraldwallet/core": "^2.4.0-alpha.0",
-    "@emeraldwallet/erc20": "^2.4.0-alpha.0",
-    "@emeraldwallet/store": "^2.4.0-alpha.0",
-    "@emeraldwallet/ui": "^2.4.0-alpha.0",
+    "@emeraldwallet/core": "^2.4.0",
+    "@emeraldwallet/erc20": "^2.4.0",
+    "@emeraldwallet/store": "^2.4.0",
+    "@emeraldwallet/ui": "^2.4.0",
     "@material-ui/core": "4.9.10",
     "@material-ui/icons": "4.9.1",
     "@material-ui/lab": "4.0.0-alpha.49",
+    "bitcoin-address-validation": "^1.0.2",
+    "bitcoinjs-lib": "^5.2.0",
     "classnames": "2.2.5",
     "i18next": "19.3.2",
     "i18next-browser-languagedetector": "4.0.2",
@@ -43,9 +45,7 @@
     "react-i18next": "11.3.3",
     "react-qrcode": "^0.2.5",
     "react-redux": "^7.1.0",
-    "redux-thunk": "^2.3.0",
-    "bitcoin-address-validation": "^1.0.2",
-    "bitcoinjs-lib": "^5.2.0"
+    "redux-thunk": "^2.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",
