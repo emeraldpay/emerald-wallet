@@ -161,24 +161,6 @@ export function waitConnection(handler: ConnectionHandler): Dispatched<any> {
   }
 }
 
-// function loadInfo(chain: BlockchainCode, hdpath: string, addr: string): Dispatched<AddressBalance | AddressTxCount> {
-//   return (dispatch, getState, api) => {
-//     const ethApi = api.chain(chain).eth;
-//     return ethApi.getBalance(addr)
-//       .then((balance: BigNumber) => {
-//         dispatch({ type: ActionTypes.ADDR_BALANCE, hdpath, value: new Wei(balance)});
-//         return ethApi.getTransactionCount(addr)
-//           .then((count) => dispatch({
-//             type: ActionTypes.ADDR_TXCOUNT,
-//             hdpath,
-//             value: count
-//           }))
-//           .catch(screenActions.dispatchRpcError(dispatch));
-//       })
-//       .catch(screenActions.dispatchRpcError(dispatch));
-//   };
-// }
-
 export function updateAddressAction (dpath: string, address: string): IUpdateAddressAction {
   return {
     type: ActionTypes.ADDR,
@@ -205,42 +187,5 @@ export function setBaseHD (hdpath: string): SetBaseHD {
   return {
     type: ActionTypes.SET_BASEHD,
     value: hdpath
-  };
-}
-
-export function importSelected (blockchain: BlockchainCode): Dispatched<AddressSelected> {
-  return (dispatch: any, getState, extra) => {
-    const {ledger} = getState();
-    const selected = ledger.get('selectedAddr').toLowerCase();
-    const addresses = ledger.get('addresses');
-
-    const account = addresses.find((a: any) => a.get('address').toLowerCase() === selected);
-    const address = account.get('address').toLowerCase();
-    const hdpath = account.get('hdpath');
-
-    console.info('Import Ledger address', address, hdpath);
-
-    extra.api.vault.getConnectedHWSeed(true)
-      .then((seed) => {
-        if (typeof seed === 'undefined') {
-          console.error('Seed is unavailable');
-          return;
-        }
-
-        extra.api.vault.addWallet(`Ledger ${hdpath}`)
-          .then((walletId) =>
-            extra.api.vault.addEntry(walletId, {
-              blockchain: blockchainCodeToId(blockchain),
-              type: 'hd-path',
-              key: {
-                seed: {type: "id", value: seed.id!},
-                hdPath: hdpath
-              }
-            }).catch((err) => console.error("Failed to add entry", err))
-          )
-          .then((_) => dispatch(selectAddressAction(undefined)))
-          .catch((err) => console.error("Failed to add walelt", err))
-      })
-      .catch((err) => console.error("Failed to get HW Seed", err))
   };
 }

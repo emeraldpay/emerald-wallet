@@ -18,6 +18,7 @@ import {
 } from "@emeraldpay/emerald-vault-core";
 
 import {ipcRenderer} from 'electron';
+import {HWKeyDetails} from "@emeraldpay/emerald-vault-core/lib/types";
 
 
 const PREFIX = "vault/";
@@ -47,8 +48,8 @@ class VaultAccess implements IEmeraldVault {
     return ipcRenderer.invoke(PREFIX + "generateMnemonic", size);
   }
 
-  getConnectedHWSeed(create: boolean): Promise<SeedDescription | undefined> {
-    return ipcRenderer.invoke(PREFIX + "getConnectedHWSeed", create);
+  getConnectedHWDetails(): Promise<HWKeyDetails[]> {
+    return ipcRenderer.invoke(PREFIX + "getConnectedHWDetails");
   }
 
   listEntryAddresses(id: EntryId, role: AddressRole, start: number, limit: number): Promise<CurrentAddress[]> {

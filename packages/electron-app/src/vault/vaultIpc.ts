@@ -74,8 +74,8 @@ export function mapVaultWithIpc(vault: IEmeraldVault) {
   ipcMain.handle(PREFIX + "listSeeds", (event) => {
     return vault.listSeeds();
   });
-  ipcMain.handle(PREFIX + "getConnectedHWSeed", (event, create: boolean) => {
-    return vault.getConnectedHWSeed(create);
+  ipcMain.handle(PREFIX + "getConnectedHWDetails", (event) => {
+    return vault.getConnectedHWDetails();
   });
   ipcMain.handle(PREFIX + "importSeed", (event, seed: SeedDefinition | LedgerSeedReference) => {
     return vault.importSeed(seed);
