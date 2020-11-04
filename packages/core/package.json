@@ -1,6 +1,6 @@
 {
   "name": "@emeraldwallet/core",
-  "version": "2.4.0",
+  "version": "2.5.0-dev",
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
