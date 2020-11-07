@@ -20,16 +20,16 @@ backend.vault.addSeedAddress("e23378da-d4b2-4843-ae4d-f42888a11b58",
 
 backend.useBlockchains(["eth", "etc"]);
 backend.blockchains["eth"].setBalance(
-  "0xc4cf138d349ead73f7a93306096a626c40f56653", "ETH", "150078009050000000"
+  "0xc4cf138d349ead73f7a93306096a626c40f56653", "ETH", "150078009050000000/WEI"
 );
 backend.blockchains["eth"].setBalance(
-  "0xc4cf138d349ead73f7a93306096a626c40f56653", "DAI", "250018500000000000000"
+  "0xc4cf138d349ead73f7a93306096a626c40f56653", "DAI", "250018500000000000000/DAI"
 );
 backend.blockchains["eth"].setBalance(
-  "0xc4cf138d349ead73f7a93306096a626c40f56653", "USDT", "41010000000"
+  "0xc4cf138d349ead73f7a93306096a626c40f56653", "USDT", "41010000000/USDT"
 );
 backend.blockchains["etc"].setBalance(
-  "0x75a32a48a215675f822fca1f9d99dadf7c6ec104", "ETC", "30400000000000000000"
+  "0x75a32a48a215675f822fca1f9d99dadf7c6ec104", "ETC", "30400000000000000000/WEI"
 );
 
 storiesOf('CreateAccount', module)

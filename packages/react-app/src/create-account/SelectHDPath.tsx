@@ -49,16 +49,13 @@ const Component = (({disabledAccounts, table, setAccount, onStart}: Props & Acti
     start++;
   }
 
-  //somehow need to initialize load on init
-  setTimeout(() => {
+  React.useEffect(() => {
     if (!initialized) {
       onStart();
-    }
-    if (table.length == 0 && !initialized) {
       setAccount(start);
       setInitialized(true);
     }
-  }, 100);
+  }, []);
 
   function isActive(item: IAddressState): boolean {
     const amountReader = amountDecoder(item.blockchain);
@@ -175,6 +172,7 @@ export default connect(
     return {
       onStart: () => {
         dispatch(hdpathPreview.actions.init(ownProps.blockchains, ownProps.seed));
+        dispatch(hdpathPreview.actions.displayAccount(0));
         dispatch(hwkey.actions.setWatch(true));
       },
       setAccount: (account: number) => {
