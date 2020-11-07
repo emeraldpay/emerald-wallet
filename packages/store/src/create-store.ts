@@ -6,7 +6,7 @@ import {
   accounts,
   addressBook,
   blockchains,
-  ledger,
+  hwkey,
   reduxLogger,
   rootReducer,
   settings,
@@ -16,6 +16,8 @@ import {
   hdpathPreview
 } from './';
 
+import {Triggers} from "./triggers";
+
 /**
  * Creates Redux store with API as dependency injection.
  *
@@ -23,10 +25,12 @@ import {
  *
  */
 export const createStore = (_api: IApi, backendApi: IBackendApi, walletState: WalletStateStorage) => {
+  const triggers = new Triggers();
+
   const sagaMiddleware = createSagaMiddleware();
   const storeMiddleware = [
     sagaMiddleware,
-    thunkMiddleware.withExtraArgument({api: _api, backendApi})
+    thunkMiddleware.withExtraArgument({api: _api, backendApi, triggers})
   ];
 
   if (process.env.NODE_ENV === 'development') {
@@ -41,11 +45,16 @@ export const createStore = (_api: IApi, backendApi: IBackendApi, walletState: Wa
   sagaMiddleware.run(blockchains.sagas.root, backendApi);
   sagaMiddleware.run(addressBook.sagas.root, _api.vault);
   sagaMiddleware.run(tokens.sagas.root, backendApi);
-  sagaMiddleware.run(ledger.sagas.root, backendApi);
+  sagaMiddleware.run(hwkey.sagas.root, _api.vault);
   sagaMiddleware.run(txhistory.sagas.root, backendApi);
   sagaMiddleware.run(wallet.sagas.root);
   sagaMiddleware.run(settings.sagas.root);
   sagaMiddleware.run(accounts.sagas.root, _api.vault, walletState);
   sagaMiddleware.run(hdpathPreview.sagas.root, _api.vault, backendApi);
+
+  triggers.setStore(store);
+  hwkey.triggers.run(triggers);
+  hdpathPreview.triggers.run(triggers);
+
   return store;
 };

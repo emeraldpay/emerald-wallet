@@ -71,6 +71,10 @@ export function isLedger(obj: KeysSource): obj is LedgerSeed {
   return typeof obj == "object" && obj.type == KeySourceType.LEDGER;
 }
 
+export function isLedgerStart(obj: KeysSource): boolean {
+  return typeof obj == "string" && obj == "start-ledger";
+}
+
 export function isPkJson(obj: KeysSource): obj is PkImportJson {
   return isPk(obj) && obj.type == KeySourceType.PK_WEB3_JSON;
 }
@@ -88,7 +92,7 @@ export interface Result {
   options: TWalletOptions;
   blockchains: BlockchainCode[];
   seedAccount?: number;
-  seed?: SeedReference
+  seed?: SeedReference;
 }
 
 export function defaultResult(): Result {

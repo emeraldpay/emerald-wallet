@@ -18,7 +18,8 @@ import {
   WalletState,
   CreateAddressBookItem,
   WalletCreateOptions,
-  LedgerSeedReference
+  LedgerSeedReference,
+  LedgerDetails
 } from "@emeraldpay/emerald-vault-core";
 
 export class MemoryVault {
@@ -191,6 +192,10 @@ export class VaultMock implements IEmeraldVault {
     return Promise.resolve("");
   }
 
+  getConnectedHWDetails(): Promise<LedgerDetails[]> {
+    return Promise.resolve([]);
+  }
+
 }
 
 export class ApiMock implements IApi {
@@ -247,6 +252,10 @@ export class BackendMock implements IBackendApi {
 
   persistTransactions(blockchain: BlockchainCode, txs: IStoredTransaction[]): Promise<void> {
     return Promise.resolve(undefined);
+  }
+
+  getNonce(blockchain: BlockchainCode, address: string): Promise<number> {
+    return Promise.resolve(0)
   }
 
   useBlockchains(codes: string[]) {

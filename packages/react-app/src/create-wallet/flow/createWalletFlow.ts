@@ -1,5 +1,7 @@
 import {
-  defaultResult, isLedger,
+  defaultResult,
+  isLedger,
+  isLedgerStart,
   isPk,
   isPkJson,
   isPkRaw,
@@ -7,6 +9,7 @@ import {
   isSeedSelected,
   KeySourceType,
   KeysSource,
+  LedgerSeed,
   Result,
   SeedCreate,
   StepDescription,
@@ -27,7 +30,6 @@ export enum STEP_CODE {
   MNEMONIC_GENERATE = "mnemonicGenerate",
   MNEMONIC_IMPORT = "mnemonicImport",
   PK_IMPORT = "pkImport",
-  LEDGER_OPEN = "ledgerOpen"
 }
 
 const STEPS: { [key in STEP_CODE]: StepDescription } = {
@@ -71,10 +73,6 @@ const STEPS: { [key in STEP_CODE]: StepDescription } = {
     code: STEP_CODE.PK_IMPORT,
     title: "Import Private Key"
   },
-  "ledgerOpen": {
-    code: STEP_CODE.LEDGER_OPEN,
-    title: "Connect to Ledger"
-  }
 }
 
 type OnCreate = (result: Result) => void;
@@ -97,7 +95,7 @@ export class CreateWalletFlow {
 
   getSteps(): StepDescription[] {
     const useSeedBased = isSeedCreate(this.result.type) || isSeedSelected(this.result.type);
-    const useLedger = this.result.type == "start-ledger" || isLedger(this.result.type);
+    const useLedger = isLedgerStart(this.result.type) || isLedger(this.result.type);
     const needHdAccount = useSeedBased || useLedger;
     const needBlockchain = this.result.type != "empty";
 
@@ -114,8 +112,6 @@ export class CreateWalletFlow {
       result.push(STEPS[STEP_CODE.LOCK_SEED]);
     } else if (isPk(this.result.type)) {
       result.push(STEPS[STEP_CODE.PK_IMPORT]);
-    } else if (useLedger) {
-      result.push(STEPS[STEP_CODE.LEDGER_OPEN]);
     }
 
     if (needBlockchain) {
@@ -144,8 +140,7 @@ export class CreateWalletFlow {
       this.step == STEP_CODE.UNLOCK_SEED ||
       this.step == STEP_CODE.MNEMONIC_GENERATE ||
       this.step == STEP_CODE.MNEMONIC_IMPORT ||
-      this.step == STEP_CODE.LOCK_SEED ||
-      this.step == STEP_CODE.LEDGER_OPEN) {
+      this.step == STEP_CODE.LOCK_SEED) {
       return false
     }
     if (this.step == STEP_CODE.SELECT_BLOCKCHAIN) {
@@ -206,8 +201,8 @@ export class CreateWalletFlow {
         }
       } else if (isPk(this.result.type)) {
         copy.step = STEP_CODE.PK_IMPORT;
-      } else if (this.result.type == "start-ledger") {
-        copy.step = STEP_CODE.LEDGER_OPEN;
+      } else if (isLedger(this.result.type)) {
+        copy.step = STEP_CODE.SELECT_BLOCKCHAIN;
       }
     } else if (this.step == STEP_CODE.SELECT_BLOCKCHAIN) {
       if (isSeedSelected(this.result.type)) {
@@ -231,7 +226,17 @@ export class CreateWalletFlow {
 
   applySource(value: KeysSource): CreateWalletFlow {
     const copy = this.copy();
-    copy.result = {...this.result, type: value};
+    let type: KeysSource = value;
+    if (isLedgerStart(type)) {
+      type = {
+        type: KeySourceType.LEDGER,
+        id: undefined
+      };
+      copy.result.seed = {
+        type: "ledger"
+      }
+    }
+    copy.result = {...copy.result, type};
     copy.step = STEP_CODE.OPTIONS;
     return copy;
   }

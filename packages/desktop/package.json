@@ -62,7 +62,6 @@
     "@emeraldplatform/ui": "0.6.0",
     "@emeraldwallet/core": "^2.5.0-dev",
     "@emeraldwallet/electron-app": "^2.5.0-dev",
-    "@emeraldwallet/ledger": "^2.5.0-dev",
     "@emeraldwallet/react-app": "^2.5.0-dev",
     "@emeraldwallet/services": "^2.5.0-dev",
     "@emeraldwallet/store": "^2.5.0-dev",

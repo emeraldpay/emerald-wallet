@@ -2,7 +2,7 @@ import {connect} from "react-redux";
 import {Dispatch} from "react";
 import * as React from 'react';
 import {CircularProgress, createStyles, Grid, Typography} from "@material-ui/core";
-import {IState, ledger} from "@emeraldwallet/store";
+import {IState, hwkey} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
 import {Ledger} from "@emeraldplatform/ui-icons";
 import {SeedDescription} from "@emeraldpay/emerald-vault-core";
@@ -72,7 +72,13 @@ export default connect(
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
     return {
       start: () => {
-        dispatch(ledger.actions.waitConnection(ownProps.onConnected))
+        dispatch(hwkey.triggers.onConnect(() => {
+          ownProps.onConnected({
+            type: "ledger",
+            createdAt: new Date(),
+            available: true
+          })
+        }))
       }
     }
   }

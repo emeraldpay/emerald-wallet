@@ -311,3 +311,7 @@ export function getUtxo(state: IState, entryId: EntryId): BalanceUtxo[] {
       return result.concat(x.utxo || [])
     }, [] as BalanceUtxo[])
 }
+
+export function findLedgerSeed(state: IState): SeedDescription | undefined {
+  return getSeeds(state).find((s) => s.type == "ledger")
+}

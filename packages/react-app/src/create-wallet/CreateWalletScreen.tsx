@@ -38,7 +38,10 @@ const Component = ((props: Props & Actions & OwnProps) => {
 
 type OwnProps = {}
 
-function entriesForBlockchains(seedRef: SeedReference, account: number, blockchains: BlockchainCode[]): AddEntry[] {
+function entriesForBlockchains(seedRef: SeedReference,
+                               account: number,
+                               blockchains: BlockchainCode[]
+): AddEntry[] {
   const entries: vault.AddEntry[] = [];
   blockchains.forEach((blockchain) => {
     const key: SeedEntry = {

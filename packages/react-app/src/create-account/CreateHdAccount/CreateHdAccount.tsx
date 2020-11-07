@@ -1,7 +1,7 @@
 import {Page} from '@emeraldplatform/ui';
 import {Back} from '@emeraldplatform/ui-icons';
 import {BlockchainCode, IBlockchain, blockchainIdToCode} from '@emeraldwallet/core';
-import {accounts, IState, ledger, screen, settings} from '@emeraldwallet/store';
+import {accounts, IState, screen, settings} from '@emeraldwallet/store';
 import {CoinAvatar, FormRow, PasswordInput} from '@emeraldwallet/ui';
 import * as React from 'react';
 import {connect} from 'react-redux';
@@ -202,7 +202,7 @@ function mapStateToProps(state: IState, ownProps: IOwnProps): IProps {
   }
 
   const isHardware = seed.type == "ledger";
-  const isHardwareConnected = ledger.selectors.isConnected(state);
+  const isHardwareConnected = seed.available;
 
   return {
     blockchains: settings.selectors.currentChains(state),

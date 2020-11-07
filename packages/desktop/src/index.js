@@ -6,9 +6,10 @@ import BigNumber from 'bignumber.js';
 import { i18n, App } from '@emeraldwallet/react-app';
 import { start as startStore, store } from './store/store';
 import About from './containers/About';
-import { Logger } from '@emeraldwallet/core';
-import { TERMS_VERSION } from './store/config';
+import {Logger} from '@emeraldwallet/core';
+import {config} from "@emeraldwallet/store";
 
+const TERMS_VERSION = config.TERMS_VERSION;
 const log = Logger.forCategory('index');
 
 function start() {

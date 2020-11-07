@@ -14,16 +14,18 @@ import {
   TableBody,
   Grid, Tooltip
 } from "@material-ui/core";
-import {accounts, hdpathPreview, IState} from "@emeraldwallet/store";
+import {accounts, hdpathPreview, IState, triggers, hwkey} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
 import {BlockchainCode, AnyCoinCode, HDPath, Blockchains, tokenAmount, amountDecoder} from "@emeraldwallet/core";
 import HDPathCounter from "./HDPathCounter";
 import {IAddressState} from "@emeraldwallet/store/lib/hdpath-preview/types";
 import BeenhereIcon from '@material-ui/icons/Beenhere';
 import ClearIcon from '@material-ui/icons/Clear';
-import {SeedReference} from "@emeraldpay/emerald-vault-core";
+import {SeedReference, isLedger} from "@emeraldpay/emerald-vault-core";
 import {Wei} from "@emeraldpay/bigamount-crypto";
 import {BigAmount} from "@emeraldpay/bigamount";
+import {isIdSeedReference} from "@emeraldpay/emerald-vault-core/lib/types";
+
 
 const useStyles = makeStyles(
   createStyles({
@@ -38,7 +40,7 @@ const BASE_HD_PATH: HDPath = HDPath.parse("m/44'/0'/0'/0/0");
 /**
  *
  */
-const Component = (({disabledAccounts, table, setAccount}: Props & Actions & OwnProps) => {
+const Component = (({disabledAccounts, table, setAccount, onStart}: Props & Actions & OwnProps) => {
   const styles = useStyles();
   const [initialized, setInitialized] = React.useState();
 
@@ -49,6 +51,9 @@ const Component = (({disabledAccounts, table, setAccount}: Props & Actions & Own
 
   //somehow need to initialize load on init
   setTimeout(() => {
+    if (!initialized) {
+      onStart();
+    }
     if (table.length == 0 && !initialized) {
       setAccount(start);
       setInitialized(true);
@@ -120,11 +125,13 @@ const Component = (({disabledAccounts, table, setAccount}: Props & Actions & Own
 // State Properties
 type Props = {
   disabledAccounts: number[],
-  table: IAddressState[]
+  table: IAddressState[],
+  isHWKey: boolean;
 }
 // Actions
 type Actions = {
   setAccount: (account: number) => void,
+  onStart: () => void;
 }
 
 // Component properties
@@ -136,19 +143,40 @@ type OwnProps = {
 
 export default connect(
   (state: IState, ownProps: OwnProps): Props => {
+    let seed: SeedReference = ownProps.seed;
+    let isHWSeed = false;
+    // if ledger seed, check if it's already used
+    if (isLedger(seed)) {
+      isHWSeed = true;
+      let ledgerSeed = accounts.selectors.findLedgerSeed(state);
+      if (ledgerSeed?.id) {
+        seed = {
+          type: "id",
+          value: ledgerSeed.id
+        }
+      }
+    } else if (isIdSeedReference(seed)) {
+      const details = accounts.selectors.getSeed(state, seed.value);
+      isHWSeed = details?.type == "ledger";
+    }
+
     return {
-      disabledAccounts: ownProps.seed.type == "id" ?
+      disabledAccounts: seed.type == "id" ?
         accounts.selectors.allWallets(state)
           .filter((w) => typeof w.reserved !== 'undefined')
           .map((w) => w.reserved!.map((r) => r.accountId))
           .reduce((result, c) => result.concat(c), [])
         : [],
-      table: hdpathPreview.selectors.getCurrentDisplay(state, ownProps.seed)
-        .filter((item) => ownProps.blockchains.indexOf(item.blockchain) >= 0)
+      table: hdpathPreview.selectors.getCurrentDisplay(state, seed),
+      isHWKey: isHWSeed
     }
   },
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
     return {
+      onStart: () => {
+        dispatch(hdpathPreview.actions.init(ownProps.blockchains, ownProps.seed));
+        dispatch(hwkey.actions.setWatch(true));
+      },
       setAccount: (account: number) => {
         dispatch(hdpathPreview.actions.displayAccount(account));
         dispatch(hdpathPreview.actions.loadAddresses(

@@ -1,11 +1,11 @@
 import {
-  ActionTypes,
+  ActionTypes, Entry,
   IAddressState, IClean, IDisplayAccount,
   IHDPreviewAction,
-  IHDPreviewState,
+  IHDPreviewState, IInit,
   ISetAddress, ISetBalance,
 } from "./types";
-import {Blockchains, Logger} from "@emeraldwallet/core";
+import {Blockchains, isBitcoin, Logger} from "@emeraldwallet/core";
 import {mergeAddress} from "./reducerUtil";
 
 const log = Logger.forCategory('store.hdpathPreview');
@@ -13,8 +13,11 @@ const log = Logger.forCategory('store.hdpathPreview');
 export const INITIAL_STATE: IHDPreviewState = {
   accounts: [],
   display: {
-    account: 0
-  }
+    account: 0,
+    entries: [],
+    blockchains: [],
+  },
+  active: false,
 };
 
 function onSetAddresses(state: IHDPreviewState, action: ISetAddress): IHDPreviewState {
@@ -56,8 +59,33 @@ function onClean(state: IHDPreviewState, action: IClean): IHDPreviewState {
   return INITIAL_STATE;
 }
 
+function onInit(state: IHDPreviewState, action: IInit): IHDPreviewState {
+  return {
+    ...state,
+    display: {
+      ...state.display,
+      blockchains: action.blockchains,
+      seed: action.seed,
+    },
+    active: true,
+  }
+}
+
 function onDisplayAccount(state: IHDPreviewState, action: IDisplayAccount): IHDPreviewState {
-  return {...state, display: {account: action.account}};
+  const entries: Entry[] = state.display.blockchains.map((blockchain) => {
+    const blockchainDetails = Blockchains[blockchain.toLowerCase()];
+    let hdpath = blockchainDetails.params.hdPath.forAccount(action.account);
+    if (isBitcoin(blockchain)) {
+      hdpath = hdpath.asAccount();
+    }
+    return {
+      blockchain,
+      address: undefined,
+      hdpath: hdpath.toString(),
+    }
+  });
+  const account = action.account;
+  return {...state, display: {...state.display, account, entries}, active: true};
 }
 
 export function reducer(
@@ -71,6 +99,8 @@ export function reducer(
       return onSetBalance(state, action);
     case ActionTypes.CLEAN:
       return onClean(state, action);
+    case ActionTypes.INIT:
+      return onInit(state, action);
     case ActionTypes.DISPLAY_ACCOUNT:
       return onDisplayAccount(state, action);
     default:

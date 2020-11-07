@@ -12,7 +12,7 @@ import {
   accounts,
   addressBook,
   blockchains,
-  ledger,
+  hwkey,
   screen,
   settings,
   tokens,
@@ -337,8 +337,7 @@ function signEtherTx (
   };
 
   return traceValidate(blockchainCode, plainTx, dispatch, transaction.actions.estimateGas)
-    .then(() => dispatch(ledger.actions.setWatch(false)))
-    .then(() => dispatch(ledger.actions.setConnected(false)))
+    .then(() => dispatch(hwkey.actions.setWatch(false)))
     .then(() => (useLedger ? dispatch(screen.actions.showDialog('sign-transaction', request.transaction)) : null))
     .then(() => {
       return dispatch(

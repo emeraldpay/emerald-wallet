@@ -16,7 +16,6 @@ import {CreateWalletFlow, STEP_CODE} from "./flow/createWalletFlow";
 import {ImportMnemonic, ImportPk, NewMnemonic} from "@emeraldwallet/ui";
 import SaveMnemonic from "./SaveMnemonic";
 import {SeedDefinition, Uuid} from "@emeraldpay/emerald-vault-core";
-import LedgerWait from "../ledger/LedgerWait";
 
 type Props = {}
 type Actions = {
@@ -72,8 +71,6 @@ export const CreateWizard = ((props: Props & Actions & OwnProps) => {
     }/>
   } else if (page.code == STEP_CODE.PK_IMPORT) {
     activeStepPage = <ImportPk onChange={applyWithState(step.applyImportPk)}/>;
-  } else if (page.code == STEP_CODE.LEDGER_OPEN) {
-    activeStepPage = <LedgerWait fullSize={true} onConnected={applyWithState(step.applyLedgerConnected)}/>;
   } else if (page.code == STEP_CODE.LOCK_SEED) {
     const onLock = (password: string) => {
       if (!props.onSaveSeed) {
@@ -95,8 +92,13 @@ export const CreateWizard = ((props: Props & Actions & OwnProps) => {
     activeStepPage = <SaveMnemonic mnemonic={step.getMnemonic().mnemonic!}
                                    onPassword={onLock}/>
   } else if (page.code == STEP_CODE.SELECT_HD_ACCOUNT) {
+    const seed = step.getResult().seed;
+    if (typeof seed == "undefined") {
+      console.log("Step State", step.getResult());
+      throw new Error("Invalid state: seed is undefined")
+    }
     activeStepPage = <SelectHDPath blockchains={step.getResult().blockchains}
-                                   seed={step.getResult().seed!}
+                                   seed={seed}
                                    onChange={applyWithState(step.applyHDAccount)}/>
   } else if (page.code == STEP_CODE.CREATED) {
     activeStepPage = <Finish id={walletId}/>

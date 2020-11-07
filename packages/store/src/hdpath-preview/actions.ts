@@ -1,13 +1,16 @@
 import {
-  ActionTypes, IClean,
+  ActionTypes,
+  IClean,
   IDisplayAccount,
+  IInit,
   ILoadAddresses,
   ILoadBalances,
   ISetAddress,
-  ISetBalance
+  ISetBalance,
 } from "./types";
 import {AnyCoinCode, BlockchainCode} from "@emeraldwallet/core";
-import {SeedReference} from "@emeraldpay/emerald-vault-core";
+import {LedgerApp, SeedReference} from "@emeraldpay/emerald-vault-core";
+import {Dispatched} from "../types";
 
 export function loadAddresses(seed: SeedReference, account: number, blockchains: BlockchainCode[]): ILoadAddresses {
   return {
@@ -61,5 +64,13 @@ export function displayAccount(account: number): IDisplayAccount {
 export function clean(): IClean {
   return {
     type: ActionTypes.CLEAN
+  }
+}
+
+export function init(blockchains: BlockchainCode[], seed: SeedReference): IInit {
+  return {
+    type: ActionTypes.INIT,
+    blockchains,
+    seed
   }
 }

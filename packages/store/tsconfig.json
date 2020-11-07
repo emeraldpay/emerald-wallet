@@ -32,9 +32,6 @@
       "path": "../core"
     },
     {
-      "path": "../ledger"
-    },
-    {
       "path": "../erc20"
     }
   ]

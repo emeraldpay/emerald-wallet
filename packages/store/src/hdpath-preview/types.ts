@@ -7,16 +7,29 @@ export interface IAddressState {
   seed: SeedReference;
   hdpath: string;
   address?: string;
+  xpub?: string;
   balance?: string;
 }
 
+// only to reference, actual data is in IAddressState
+export interface Entry {
+  blockchain: BlockchainCode;
+  hdpath: string;
+}
+
 export interface IDisplay {
-  account: number
+  account: number;
+  entries: Entry[];
+  seed?: SeedReference;
+  blockchains: BlockchainCode[];
 }
 
 export interface IHDPreviewState {
+  // addresses details, keeps them separate from current display for caching.
+  // also used for creation to get known xpub
   accounts: IAddressState[];
   display: IDisplay;
+  active: boolean;
 }
 
 
@@ -53,7 +66,8 @@ export enum ActionTypes {
   SET_ADDRESS = 'HDPREVIEW/SET_ADDRESS',
   SET_BALANCE = 'HDPREVIEW/SET_BALANCE',
   CLEAN = 'HDPREVIEW/CLEAN',
-  DISPLAY_ACCOUNT = 'HDPREVIEW/DISPLAY_ACCOUNT'
+  DISPLAY_ACCOUNT = 'HDPREVIEW/DISPLAY_ACCOUNT',
+  INIT = 'HDPREVIEW/INIT',
 }
 
 export interface ILoadAddresses {
@@ -95,6 +109,12 @@ export interface IDisplayAccount {
   account: number
 }
 
+export interface IInit {
+  type: ActionTypes.INIT;
+  seed: SeedReference;
+  blockchains: BlockchainCode[];
+}
+
 export type IHDPreviewAction =
   ILoadAddresses
   | ILoadBalances
@@ -102,4 +122,5 @@ export type IHDPreviewAction =
   | ISetBalance
   | IClean
   | IDisplayAccount
+  | IInit
   ;
