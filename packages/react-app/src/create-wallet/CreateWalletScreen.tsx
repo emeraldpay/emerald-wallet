@@ -1,5 +1,5 @@
 import {connect} from "react-redux";
-import {accounts, hdpathPreview, IState, screen, settings} from "@emeraldwallet/store";
+import {accounts, hdpathPreview, hwkey, IState, screen, settings} from "@emeraldwallet/store";
 import * as React from "react";
 import {Dispatch} from "react";
 import {isLedger, isPk, isPkJson, isPkRaw, isSeedCreate, isSeedSelected, Result} from "./flow/types";
@@ -119,6 +119,7 @@ export default connect(
             }
           }
           dispatch(accounts.actions.createWallet(opts, entries, handler));
+          dispatch(hwkey.actions.setWatch(false));
           dispatch(hdpathPreview.actions.clean());
         })
       },
@@ -136,6 +137,7 @@ export default connect(
       },
       onCancel: () => {
         dispatch(screen.actions.gotoScreen(Pages.HOME));
+        dispatch(hwkey.actions.setWatch(false));
         dispatch(hdpathPreview.actions.clean());
       }
     }

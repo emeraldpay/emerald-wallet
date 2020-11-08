@@ -211,6 +211,11 @@ const theme = {
       label: {
         fontSize: "0.8em"
       }
+    },
+    MuiSkeleton: {
+      root: {
+        backgroundColor: colors.ash.main
+      }
     }
   },
   props: {

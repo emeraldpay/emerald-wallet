@@ -1,12 +1,14 @@
 import {storiesOf} from '@storybook/react';
 import * as React from 'react';
 import {providerForStore} from "../storeProvider";
+import withTheme from '../themeProvider';
 import HDPathCounter from "../../src/create-account/HDPathCounter";
 import SelectHDPath from "../../src/create-account/SelectHDPath";
 import {BackendMock} from "../backendMock";
 import {BlockchainCode, Blockchains} from "@emeraldwallet/core";
 import SelectCoins from "../../src/create-account/SelectCoins";
 import {action} from "@storybook/addon-actions";
+import {ledgerSeedId} from "../wallets";
 
 const backend = new BackendMock();
 backend.vault.addSeedAddress("e23378da-d4b2-4843-ae4d-f42888a11b58",
@@ -33,6 +35,7 @@ backend.blockchains["etc"].setBalance(
 );
 
 storiesOf('CreateAccount', module)
+  .addDecorator(withTheme)
   .addDecorator(providerForStore(backend))
   .add('select account', () => (
     <SelectHDPath
@@ -45,6 +48,13 @@ storiesOf('CreateAccount', module)
     <SelectHDPath
       seed={{type: "id", value: "e23378da-d4b2-4843-ae4d-f42888a11b58"}}
       blockchains={[BlockchainCode.ETH]}
+      onChange={(n) => console.log("Account selected", n)}
+    />
+  ))
+  .add('select with slow read of xpub', () => (
+    <SelectHDPath
+      seed={{type: "id", value: ledgerSeedId}}
+      blockchains={[BlockchainCode.ETH, BlockchainCode.BTC]}
       onChange={(n) => console.log("Account selected", n)}
     />
   ))

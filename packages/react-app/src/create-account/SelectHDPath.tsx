@@ -1,5 +1,5 @@
 import {connect} from "react-redux";
-import {Dispatch} from "react";
+import {Dispatch, ReactElement} from "react";
 import * as React from 'react';
 import {
   Box,
@@ -12,7 +12,7 @@ import {
   Table,
   TableHead,
   TableBody,
-  Grid, Tooltip
+  Grid, Tooltip, Typography
 } from "@material-ui/core";
 import {accounts, hdpathPreview, IState, triggers, hwkey} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
@@ -25,12 +25,17 @@ import {SeedReference, isLedger} from "@emeraldpay/emerald-vault-core";
 import {Wei} from "@emeraldpay/bigamount-crypto";
 import {BigAmount} from "@emeraldpay/bigamount";
 import {isIdSeedReference} from "@emeraldpay/emerald-vault-core/lib/types";
+import {Skeleton} from "@material-ui/lab";
+import {Address} from "@emeraldwallet/ui";
 
 
 const useStyles = makeStyles(
   createStyles({
     inactiveCheck: {
       color: '#d0d0d0'
+    },
+    balanceSkeleton: {
+      float: "right"
     }
   })
 );
@@ -62,19 +67,26 @@ const Component = (({disabledAccounts, table, setAccount, onStart}: Props & Acti
     return typeof item.balance == 'string' && amountReader(item.balance).isPositive();
   }
 
-  function renderBalance(item: IAddressState): string {
+  function renderBalance(item: IAddressState): ReactElement {
     if (typeof item.balance != 'string' || item.balance.length == 0) {
-      return "";
+      return <Skeleton variant={"text"} width={80} height={16} className={styles.balanceSkeleton}/>;
     }
     const amountReader = amountDecoder<BigAmount>(item.blockchain);
     const amount = amountReader(item.balance);
-    return amount.toString();
+    return <Typography>{amount.toString()}</Typography>;
   }
 
   let prev: IAddressState | undefined = undefined;
 
   function isChanged(item: IAddressState): boolean {
     return typeof prev == "undefined" || prev.blockchain != item.blockchain || prev.hdpath != item.hdpath || prev.address != item.address
+  }
+
+  function address(value: string | undefined | null): ReactElement {
+    if (typeof value == "string" && value.length > 0) {
+      return <Address address={value} disableCopy={true}/>;
+    }
+    return <Skeleton variant={"text"} width={400} height={16}/>
   }
 
   return <Grid container={true}>
@@ -101,7 +113,7 @@ const Component = (({disabledAccounts, table, setAccount, onStart}: Props & Acti
             const el = <TableRow key={item.blockchain + "-" + item.address + "-" + item.asset}>
               <TableCell>{isChanged(item) ? Blockchains[item.blockchain].getTitle() : ""}</TableCell>
               <TableCell>{isChanged(item) ? item.hdpath : ""}</TableCell>
-              <TableCell>{isChanged(item) ? item.address : ""}</TableCell>
+              <TableCell>{isChanged(item) ? address(item.address) : ""}</TableCell>
               <TableCell align={"right"}>{renderBalance(item)}</TableCell>
               <TableCell>{item.asset}</TableCell>
               <TableCell>

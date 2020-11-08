@@ -193,7 +193,13 @@ export class VaultMock implements IEmeraldVault {
   }
 
   getConnectedHWDetails(): Promise<LedgerDetails[]> {
-    return Promise.resolve([]);
+    return Promise.resolve([
+      {
+        type: "ledger",
+        connected: true,
+        app: "bitcoin"
+      }
+    ]);
   }
 
 }
