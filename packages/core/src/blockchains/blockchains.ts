@@ -7,6 +7,7 @@ import {Bitcoin} from "./bitcoin";
 import {BigAmount, CreateAmount, Unit, Units} from "@emeraldpay/bigamount";
 import {WeiEtc, Wei, Satoshi} from "@emeraldpay/bigamount-crypto";
 import {WeiAny} from "@emeraldpay/bigamount-crypto/lib/ethereum";
+import {LedgerApp} from '@emeraldpay/emerald-vault-core';
 
 export enum BlockchainCode {
   ETC = 'etc',
@@ -174,4 +175,11 @@ export function amountDecoder<T extends BigAmount>(code: BlockchainCode): (n: st
   let factory = amountFactory(code) as CreateAmount<T>;
   let units = factory(0).units;
   return (n) => BigAmount.decodeFor(n, units, factory);
+}
+
+export const ledgerByBlockchain: Record<LedgerApp, BlockchainCode> = {
+  "bitcoin": BlockchainCode.BTC,
+  "bitcoin-testnet": BlockchainCode.TestBTC,
+  "ethereum": BlockchainCode.ETH,
+  "ethereum-classic": BlockchainCode.ETC
 }

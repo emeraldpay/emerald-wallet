@@ -121,6 +121,14 @@ export const setBalances = [
   }, "0x9d8e3fed246384e726b5962577503b916fb246d7"),
 ];
 
+export const createSeeds = [
+  accounts.actions.setSeedsAction([{
+    id: ledgerSeedId,
+    type: "ledger",
+    createdAt: new Date(),
+    available: true,
+  }])
+];
 export const createWallets = [
   accounts.actions.setWalletsAction([
     wallet1, wallet2, wallet3

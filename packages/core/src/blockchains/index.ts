@@ -10,7 +10,8 @@ export {
   isBitcoin,
   isEthereum,
   amountFactory,
-  amountDecoder
+  amountDecoder,
+  ledgerByBlockchain
 } from './blockchains';
 export {IBlockchain} from './IBlockchain';
 export {CoinTickerCode, isCoinTickerCode} from './CoinTicker';

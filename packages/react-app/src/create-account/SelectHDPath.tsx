@@ -36,6 +36,10 @@ const useStyles = makeStyles(
     },
     balanceSkeleton: {
       float: "right"
+    },
+    addressSkeleton: {
+      paddingTop: "4px",
+      paddingLeft: "4px"
     }
   })
 );
@@ -45,22 +49,28 @@ const BASE_HD_PATH: HDPath = HDPath.parse("m/44'/0'/0'/0/0");
 /**
  *
  */
-const Component = (({disabledAccounts, table, setAccount, onStart}: Props & Actions & OwnProps) => {
+const Component = (({disabledAccounts, table, setAccount, onStart, onReady, isHWKey, isPreloaded}: Props & Actions & OwnProps) => {
   const styles = useStyles();
   const [initialized, setInitialized] = React.useState();
 
-  let start = 0;
-  while (disabledAccounts.indexOf(start) >= 0) {
-    start++;
+  let accountId = 0;
+  while (disabledAccounts.indexOf(accountId) >= 0) {
+    accountId++;
   }
+
+  const ready = !isHWKey || isPreloaded;
 
   React.useEffect(() => {
     if (!initialized) {
       onStart();
-      setAccount(start);
+      setAccount(accountId, ready);
       setInitialized(true);
     }
   }, []);
+
+  React.useEffect(() => {
+    onReady(accountId, ready);
+  }, [isHWKey, isPreloaded]);
 
   function isActive(item: IAddressState): boolean {
     const amountReader = amountDecoder(item.blockchain);
@@ -69,7 +79,7 @@ const Component = (({disabledAccounts, table, setAccount, onStart}: Props & Acti
 
   function renderBalance(item: IAddressState): ReactElement {
     if (typeof item.balance != 'string' || item.balance.length == 0) {
-      return <Skeleton variant={"text"} width={80} height={16} className={styles.balanceSkeleton}/>;
+      return <Skeleton variant={"text"} width={80} height={12} className={styles.balanceSkeleton}/>;
     }
     const amountReader = amountDecoder<BigAmount>(item.blockchain);
     const amount = amountReader(item.balance);
@@ -82,19 +92,24 @@ const Component = (({disabledAccounts, table, setAccount, onStart}: Props & Acti
     return typeof prev == "undefined" || prev.blockchain != item.blockchain || prev.hdpath != item.hdpath || prev.address != item.address
   }
 
-  function address(value: string | undefined | null): ReactElement {
+  function address(value: string | undefined | null, blockchain: BlockchainCode): ReactElement {
     if (typeof value == "string" && value.length > 0) {
       return <Address address={value} disableCopy={true}/>;
     }
-    return <Skeleton variant={"text"} width={400} height={16}/>
+    if (isHWKey) {
+      const appTitle = Blockchains[blockchain].getTitle();
+      return <Skeleton variant={"text"} width={400} height={20} className={styles.addressSkeleton}>Open {appTitle} App
+        on Ledger</Skeleton>
+    }
+    return <Skeleton variant={"text"} width={400} height={12}/>
   }
 
   return <Grid container={true}>
     <Grid item={true} xs={12}>
       <HDPathCounter base={BASE_HD_PATH.toString()}
-                     start={start}
+                     start={accountId}
                      disabled={disabledAccounts}
-                     onChange={(path: HDPath) => setAccount(path.account)}/>
+                     onChange={(path: HDPath) => setAccount(path.account, ready)}/>
     </Grid>
     <Grid item={true} xs={12}>
       <Table size={"small"}>
@@ -113,7 +128,7 @@ const Component = (({disabledAccounts, table, setAccount, onStart}: Props & Acti
             const el = <TableRow key={item.blockchain + "-" + item.address + "-" + item.asset}>
               <TableCell>{isChanged(item) ? Blockchains[item.blockchain].getTitle() : ""}</TableCell>
               <TableCell>{isChanged(item) ? item.hdpath : ""}</TableCell>
-              <TableCell>{isChanged(item) ? address(item.address) : ""}</TableCell>
+              <TableCell>{isChanged(item) ? address(item.address, item.blockchain) : ""}</TableCell>
               <TableCell align={"right"}>{renderBalance(item)}</TableCell>
               <TableCell>{item.asset}</TableCell>
               <TableCell>
@@ -136,10 +151,12 @@ type Props = {
   disabledAccounts: number[],
   table: IAddressState[],
   isHWKey: boolean;
+  isPreloaded: boolean;
 }
 // Actions
 type Actions = {
-  setAccount: (account: number) => void,
+  setAccount: (account: number, ready: boolean) => void,
+  onReady: (account: number, ready: boolean) => void,
   onStart: () => void;
 }
 
@@ -147,13 +164,14 @@ type Actions = {
 type OwnProps = {
   seed: SeedReference,
   blockchains: BlockchainCode[],
-  onChange: (account: number) => void,
+  onChange: (account: number | undefined) => void,
 }
 
 export default connect(
   (state: IState, ownProps: OwnProps): Props => {
     let seed: SeedReference = ownProps.seed;
     let isHWSeed = false;
+
     // if ledger seed, check if it's already used
     if (isLedger(seed)) {
       isHWSeed = true;
@@ -177,7 +195,8 @@ export default connect(
           .reduce((result, c) => result.concat(c), [])
         : [],
       table: hdpathPreview.selectors.getCurrentDisplay(state, seed),
-      isHWKey: isHWSeed
+      isHWKey: isHWSeed,
+      isPreloaded: hdpathPreview.selectors.isPreloaded(state),
     }
   },
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
@@ -187,14 +206,17 @@ export default connect(
         dispatch(hdpathPreview.actions.displayAccount(0));
         dispatch(hwkey.actions.setWatch(true));
       },
-      setAccount: (account: number) => {
+      setAccount: (account: number, ready: boolean) => {
         dispatch(hdpathPreview.actions.displayAccount(account));
         dispatch(hdpathPreview.actions.loadAddresses(
           ownProps.seed,
           account,
           ownProps.blockchains
         ));
-        ownProps.onChange(account);
+        ownProps.onChange(ready ? account : undefined);
+      },
+      onReady: (account: number, ready: boolean) => {
+        ownProps.onChange(ready ? account : undefined);
       }
     }
   }

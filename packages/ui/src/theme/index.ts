@@ -214,7 +214,11 @@ const theme = {
     },
     MuiSkeleton: {
       root: {
-        backgroundColor: colors.ash.main
+        backgroundColor: colors.ash.main,
+      },
+      text: {
+        transform: "none",
+        fontSize: "0.8em",
       }
     }
   },

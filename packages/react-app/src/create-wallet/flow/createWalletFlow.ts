@@ -263,7 +263,7 @@ export class CreateWalletFlow {
     return copy;
   }
 
-  applyHDAccount(value: number): CreateWalletFlow {
+  applyHDAccount(value: number | undefined): CreateWalletFlow {
     const copy = this.copy();
     copy.result = {...this.result, seedAccount: value};
     return copy;
