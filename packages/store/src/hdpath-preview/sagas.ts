@@ -7,26 +7,31 @@ import {IEmeraldVault} from "@emeraldpay/emerald-vault-core";
 
 function* loadAddresses(vault: IEmeraldVault, action: ILoadAddresses): SagaIterator {
   const accountId = action.account;
-  for (const blockchain of action.blockchains) {
-    const getAccountXpub = isBitcoin(blockchain);
-    const blockchainDetails = Blockchains[blockchain.toLowerCase()];
-    const baseHdPath = blockchainDetails.params.hdPath.forAccount(accountId);
-    const hdPaths = [
-      baseHdPath.toString()
-    ];
-    if (getAccountXpub) {
-      hdPaths.push(baseHdPath.asAccount().toString());
-    }
-    const addresses: { [key: string]: string } = yield call(
+  const blockchain = action.blockchain;
+  const getAccountXpub = isBitcoin(blockchain);
+  const blockchainDetails = Blockchains[blockchain.toLowerCase()];
+  const baseHdPath = blockchainDetails.params.hdPath.forAccount(accountId);
+  const hdPaths = [
+    baseHdPath.toString()
+  ];
+  if (getAccountXpub) {
+    hdPaths.push(baseHdPath.asAccount().toString());
+  }
+  let addresses: { [p: string]: string } = {};
+  try {
+    addresses = yield call(
       [vault, vault.listSeedAddresses],
       action.seed,
       blockchainCodeToId(blockchain),
       hdPaths
     );
-    yield put(actions.setAddresses(action.seed, blockchain, addresses))
-    for (const address of Object.values(addresses)) {
-      yield put(actions.loadBalances(blockchain, address, blockchainDetails.getAssets()))
-    }
+  } catch (e) {
+    console.warn("Failed to get addresses", e)
+  }
+  console.log("got addresses", addresses);
+  yield put(actions.setAddresses(action.seed, blockchain, addresses))
+  for (const address of Object.values(addresses)) {
+    yield put(actions.loadBalances(blockchain, address, blockchainDetails.getAssets()))
   }
 }
 

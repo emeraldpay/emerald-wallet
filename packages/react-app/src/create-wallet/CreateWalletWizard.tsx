@@ -16,6 +16,7 @@ import {CreateWalletFlow, STEP_CODE} from "./flow/createWalletFlow";
 import {ImportMnemonic, ImportPk, NewMnemonic} from "@emeraldwallet/ui";
 import SaveMnemonic from "./SaveMnemonic";
 import {SeedDefinition, Uuid} from "@emeraldpay/emerald-vault-core";
+import LedgerWait from '../ledger/LedgerWait';
 
 type Props = {}
 type Actions = {
@@ -71,6 +72,8 @@ export const CreateWizard = ((props: Props & Actions & OwnProps) => {
     }/>
   } else if (page.code == STEP_CODE.PK_IMPORT) {
     activeStepPage = <ImportPk onChange={applyWithState(step.applyImportPk)}/>;
+  } else if (page.code == STEP_CODE.LEDGER_OPEN) {
+    activeStepPage = <LedgerWait fullSize={true} onConnected={applyWithState(step.applyLedgerConnected)}/>;
   } else if (page.code == STEP_CODE.LOCK_SEED) {
     const onLock = (password: string) => {
       if (!props.onSaveSeed) {

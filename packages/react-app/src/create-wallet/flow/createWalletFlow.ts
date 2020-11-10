@@ -30,6 +30,7 @@ export enum STEP_CODE {
   MNEMONIC_GENERATE = "mnemonicGenerate",
   MNEMONIC_IMPORT = "mnemonicImport",
   PK_IMPORT = "pkImport",
+  LEDGER_OPEN = "ledgerOpen"
 }
 
 const STEPS: { [key in STEP_CODE]: StepDescription } = {
@@ -73,6 +74,10 @@ const STEPS: { [key in STEP_CODE]: StepDescription } = {
     code: STEP_CODE.PK_IMPORT,
     title: "Import Private Key"
   },
+  "ledgerOpen": {
+    code: STEP_CODE.LEDGER_OPEN,
+    title: "Connect to Ledger"
+  }
 }
 
 type OnCreate = (result: Result) => void;
@@ -112,6 +117,8 @@ export class CreateWalletFlow {
       result.push(STEPS[STEP_CODE.LOCK_SEED]);
     } else if (isPk(this.result.type)) {
       result.push(STEPS[STEP_CODE.PK_IMPORT]);
+    } else if (useLedger) {
+      result.push(STEPS[STEP_CODE.LEDGER_OPEN]);
     }
 
     if (needBlockchain) {
@@ -140,7 +147,8 @@ export class CreateWalletFlow {
       this.step == STEP_CODE.UNLOCK_SEED ||
       this.step == STEP_CODE.MNEMONIC_GENERATE ||
       this.step == STEP_CODE.MNEMONIC_IMPORT ||
-      this.step == STEP_CODE.LOCK_SEED) {
+      this.step == STEP_CODE.LOCK_SEED ||
+      this.step == STEP_CODE.LEDGER_OPEN) {
       return false
     }
     if (this.step == STEP_CODE.SELECT_BLOCKCHAIN) {
@@ -202,7 +210,7 @@ export class CreateWalletFlow {
       } else if (isPk(this.result.type)) {
         copy.step = STEP_CODE.PK_IMPORT;
       } else if (isLedger(this.result.type)) {
-        copy.step = STEP_CODE.SELECT_BLOCKCHAIN;
+        copy.step = STEP_CODE.LEDGER_OPEN;
       }
     } else if (this.step == STEP_CODE.SELECT_BLOCKCHAIN) {
       if (isSeedSelected(this.result.type)) {

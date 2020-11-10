@@ -170,11 +170,10 @@ type OwnProps = {
 export default connect(
   (state: IState, ownProps: OwnProps): Props => {
     let seed: SeedReference = ownProps.seed;
-    let isHWSeed = false;
+    let isHWSeed = accounts.selectors.isHardwareSeed(state, seed);
 
-    // if ledger seed, check if it's already used
-    if (isLedger(seed)) {
-      isHWSeed = true;
+    // if ledger seed, check if it's already used and get id
+    if (isHWSeed && isLedger(seed)) {
       let ledgerSeed = accounts.selectors.findLedgerSeed(state);
       if (ledgerSeed?.id) {
         seed = {
@@ -182,9 +181,6 @@ export default connect(
           value: ledgerSeed.id
         }
       }
-    } else if (isIdSeedReference(seed)) {
-      const details = accounts.selectors.getSeed(state, seed.value);
-      isHWSeed = details?.type == "ledger";
     }
 
     return {
@@ -208,11 +204,6 @@ export default connect(
       },
       setAccount: (account: number, ready: boolean) => {
         dispatch(hdpathPreview.actions.displayAccount(account));
-        dispatch(hdpathPreview.actions.loadAddresses(
-          ownProps.seed,
-          account,
-          ownProps.blockchains
-        ));
         ownProps.onChange(ready ? account : undefined);
       },
       onReady: (account: number, ready: boolean) => {

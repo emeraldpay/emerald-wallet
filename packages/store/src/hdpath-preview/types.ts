@@ -74,7 +74,7 @@ export interface ILoadAddresses {
   type: ActionTypes.LOAD_ADDRESSES;
   seed: SeedReference;
   account: number;
-  blockchains: BlockchainCode[];
+  blockchain: BlockchainCode;
 }
 
 export interface ILoadBalances {

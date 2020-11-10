@@ -11,13 +11,16 @@ import {
 import {AnyCoinCode, BlockchainCode} from "@emeraldwallet/core";
 import {LedgerApp, SeedReference} from "@emeraldpay/emerald-vault-core";
 import {Dispatched} from "../types";
+import {selectors} from "./index";
+import {accounts} from "../index";
+import {isBlockchainOpen} from "../hwkey/selectors";
 
-export function loadAddresses(seed: SeedReference, account: number, blockchains: BlockchainCode[]): ILoadAddresses {
+export function loadAddresses(seed: SeedReference, account: number, blockchain: BlockchainCode): ILoadAddresses {
   return {
     type: ActionTypes.LOAD_ADDRESSES,
     seed,
     account,
-    blockchains
+    blockchain
   }
 }
 
@@ -54,10 +57,22 @@ export function setBalance(blockchain: BlockchainCode,
   };
 }
 
-export function displayAccount(account: number): IDisplayAccount {
-  return {
-    type: ActionTypes.DISPLAY_ACCOUNT,
-    account
+export function displayAccount(account: number): Dispatched<IDisplayAccount> {
+  return (dispatch, getState, extra) => {
+    dispatch({
+      type: ActionTypes.DISPLAY_ACCOUNT,
+      account
+    });
+    const state = getState();
+    const seed = state.hdpathPreview?.display?.seed;
+    if (seed) {
+      const isHardware = accounts.selectors.isHardwareSeed(state, seed)
+      state.hdpathPreview?.display.blockchains.forEach((blockchain) => {
+        if (!isHardware || isBlockchainOpen(state, blockchain)) {
+          dispatch(loadAddresses(seed, account, blockchain))
+        }
+      })
+    }
   }
 }
 

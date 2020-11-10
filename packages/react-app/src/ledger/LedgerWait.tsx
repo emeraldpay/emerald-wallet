@@ -72,13 +72,14 @@ export default connect(
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
     return {
       start: () => {
-        dispatch(hwkey.triggers.onConnect(() => {
+        dispatch(hwkey.actions.setWatch(true));
+        hwkey.triggers.onConnect(() => {
           ownProps.onConnected({
             type: "ledger",
             createdAt: new Date(),
             available: true
-          })
-        }))
+          });
+        });
       }
     }
   }
