@@ -46,6 +46,12 @@ export const CreateWizard = ((props: Props & Actions & OwnProps) => {
       setStep(next);
     }
   }
+  const applyWithState2 = function <T, T2>(fn: (value: T, value2: T2) => CreateWalletFlow): (value: T, value2: T2) => void {
+    return (x, y) => {
+      const next = fn.call(step, x, y);
+      setStep(next);
+    }
+  }
   let activeStepIndex = page.index;
   let activeStepPage = null;
 
@@ -102,7 +108,7 @@ export const CreateWizard = ((props: Props & Actions & OwnProps) => {
     }
     activeStepPage = <SelectHDPath blockchains={step.getResult().blockchains}
                                    seed={seed}
-                                   onChange={applyWithState(step.applyHDAccount)}/>
+                                   onChange={applyWithState2(step.applyHDAccount)}/>
   } else if (page.code == STEP_CODE.CREATED) {
     activeStepPage = <Finish id={walletId}/>
   }

@@ -93,13 +93,15 @@ export interface Result {
   blockchains: BlockchainCode[];
   seedAccount?: number;
   seed?: SeedReference;
+  addresses?: Partial<Record<BlockchainCode, string>>;
 }
 
 export function defaultResult(): Result {
   return {
     type: 'empty',
     options: {},
-    blockchains: []
+    blockchains: [],
+    addresses: {},
   }
 }
 

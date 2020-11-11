@@ -271,9 +271,9 @@ export class CreateWalletFlow {
     return copy;
   }
 
-  applyHDAccount(value: number | undefined): CreateWalletFlow {
+  applyHDAccount(value: number | undefined, addresses: Partial<Record<BlockchainCode, string>>): CreateWalletFlow {
     const copy = this.copy();
-    copy.result = {...this.result, seedAccount: value};
+    copy.result = {...this.result, seedAccount: value, addresses};
     return copy;
   }
 

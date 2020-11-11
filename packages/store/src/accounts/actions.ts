@@ -206,21 +206,13 @@ export type CreateWalletOptions = {
 export function createWallet(options: CreateWalletOptions,
                              entries: AddEntry[],
                              handler: (walletId?: string, err?: any) => void): Dispatched<IWalletCreatedAction> {
+  console.log("create wallet", entries);
   return async (dispatch, getState, extra) => {
     const vault = extra.api.vault;
-    const state = getState();
     try {
       const walletId = await vault.addWallet(options.label);
       for (let i = 0; i < entries.length; i++) {
         const entry = entries[i];
-        // for Ledger try to find an existing xpub left after preview.
-        // otherwise is can be create only if Ledger is currently open.
-        if (entry.type == "hd-path" && HDPath.parse(entry.key.hdPath).isAccount()) {
-          const seed = entry.key;
-          if (!seed.address) {
-            seed.address = hdpathSelectors.getLedgerXpub(state, HDPath.parse(seed.hdPath).toString());
-          }
-        }
         await vault.addEntry(walletId, entry);
       }
       const wallet = await vault.getWallet(walletId);

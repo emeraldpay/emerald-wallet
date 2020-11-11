@@ -22,9 +22,7 @@ import {IAddressState} from "@emeraldwallet/store/lib/hdpath-preview/types";
 import BeenhereIcon from '@material-ui/icons/Beenhere';
 import ClearIcon from '@material-ui/icons/Clear';
 import {SeedReference, isLedger} from "@emeraldpay/emerald-vault-core";
-import {Wei} from "@emeraldpay/bigamount-crypto";
 import {BigAmount} from "@emeraldpay/bigamount";
-import {isIdSeedReference} from "@emeraldpay/emerald-vault-core/lib/types";
 import {Skeleton} from "@material-ui/lab";
 import {Address} from "@emeraldwallet/ui";
 
@@ -49,27 +47,30 @@ const BASE_HD_PATH: HDPath = HDPath.parse("m/44'/0'/0'/0/0");
 /**
  *
  */
-const Component = (({disabledAccounts, table, setAccount, onStart, onReady, isHWKey, isPreloaded}: Props & Actions & OwnProps) => {
+const Component = (({disabledAccounts, table, onAccountUpdate, onStart, onReady, isHWKey, isPreloaded, initAccountId}: Props & Actions & OwnProps) => {
   const styles = useStyles();
   const [initialized, setInitialized] = React.useState();
 
-  let accountId = 0;
-  while (disabledAccounts.indexOf(accountId) >= 0) {
-    accountId++;
-  }
+  const [accountId, setAccountId] = React.useState(initAccountId);
 
   const ready = !isHWKey || isPreloaded;
+  const addresses: Partial<Record<BlockchainCode, string>> = {};
+  table.forEach((e) => {
+    if (e.xpub || e.address) {
+      addresses[e.blockchain] = e.xpub || e.address
+    }
+  });
 
   React.useEffect(() => {
     if (!initialized) {
       onStart();
-      setAccount(accountId, ready);
+      onAccountUpdate(accountId, ready, addresses);
       setInitialized(true);
     }
   }, []);
 
   React.useEffect(() => {
-    onReady(accountId, ready);
+    onReady(accountId, ready, addresses);
   }, [isHWKey, isPreloaded]);
 
   function isActive(item: IAddressState): boolean {
@@ -109,7 +110,10 @@ const Component = (({disabledAccounts, table, setAccount, onStart, onReady, isHW
       <HDPathCounter base={BASE_HD_PATH.toString()}
                      start={accountId}
                      disabled={disabledAccounts}
-                     onChange={(path: HDPath) => setAccount(path.account, ready)}/>
+                     onChange={(path: HDPath) => {
+                       setAccountId(path.account);
+                       onAccountUpdate(path.account, ready, addresses);
+                     }}/>
     </Grid>
     <Grid item={true} xs={12}>
       <Table size={"small"}>
@@ -152,11 +156,12 @@ type Props = {
   table: IAddressState[],
   isHWKey: boolean;
   isPreloaded: boolean;
+  initAccountId: number;
 }
 // Actions
 type Actions = {
-  setAccount: (account: number, ready: boolean) => void,
-  onReady: (account: number, ready: boolean) => void,
+  onAccountUpdate: (account: number, ready: boolean, addresses: Partial<Record<BlockchainCode, string>>) => void,
+  onReady: (account: number, ready: boolean, addresses: Partial<Record<BlockchainCode, string>>) => void,
   onStart: () => void;
 }
 
@@ -164,7 +169,7 @@ type Actions = {
 type OwnProps = {
   seed: SeedReference,
   blockchains: BlockchainCode[],
-  onChange: (account: number | undefined) => void,
+  onChange: (account: number | undefined, addresses: Partial<Record<BlockchainCode, string>>) => void,
 }
 
 export default connect(
@@ -183,16 +188,24 @@ export default connect(
       }
     }
 
+    const disabledAccounts = seed.type == "id" ?
+      accounts.selectors.allWallets(state)
+        .filter((w) => typeof w.reserved !== 'undefined')
+        .map((w) => w.reserved!.map((r) => r.accountId))
+        .reduce((result, c) => result.concat(c), [])
+      : [];
+
+    let accountId = 0;
+    while (disabledAccounts.indexOf(accountId) >= 0) {
+      accountId++;
+    }
+
     return {
-      disabledAccounts: seed.type == "id" ?
-        accounts.selectors.allWallets(state)
-          .filter((w) => typeof w.reserved !== 'undefined')
-          .map((w) => w.reserved!.map((r) => r.accountId))
-          .reduce((result, c) => result.concat(c), [])
-        : [],
+      disabledAccounts,
       table: hdpathPreview.selectors.getCurrentDisplay(state, seed),
       isHWKey: isHWSeed,
       isPreloaded: hdpathPreview.selectors.isPreloaded(state),
+      initAccountId: accountId
     }
   },
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
@@ -202,12 +215,12 @@ export default connect(
         dispatch(hdpathPreview.actions.displayAccount(0));
         dispatch(hwkey.actions.setWatch(true));
       },
-      setAccount: (account: number, ready: boolean) => {
+      onAccountUpdate: (account: number, ready: boolean, addresses: Partial<Record<BlockchainCode, string>>) => {
         dispatch(hdpathPreview.actions.displayAccount(account));
-        ownProps.onChange(ready ? account : undefined);
+        ownProps.onChange(ready ? account : undefined, addresses);
       },
-      onReady: (account: number, ready: boolean) => {
-        ownProps.onChange(ready ? account : undefined);
+      onReady: (account: number, ready: boolean, addresses: Partial<Record<BlockchainCode, string>>) => {
+        ownProps.onChange(ready ? account : undefined, addresses);
       }
     }
   }
