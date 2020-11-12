@@ -2,6 +2,8 @@ import {BlockchainCode} from "@emeraldwallet/core";
 import {accounts, settings, tokens} from "@emeraldwallet/store";
 import {Wallet} from "@emeraldpay/emerald-vault-core";
 
+export const ledgerSeedId = "7befa8b6-670d-467a-8ddd-a9615087ba14";
+
 const wallet1: Wallet = {
   id: "8ff89b7d-8a73-4ee0-ad5b-8ac1f04a49ef",
   name: "Current Spending (create from 0x9d8e3fed246384e726b5962577503b916fb246d7)",
@@ -119,6 +121,14 @@ export const setBalances = [
   }, "0x9d8e3fed246384e726b5962577503b916fb246d7"),
 ];
 
+export const createSeeds = [
+  accounts.actions.setSeedsAction([{
+    id: ledgerSeedId,
+    type: "ledger",
+    createdAt: new Date(),
+    available: true,
+  }])
+];
 export const createWallets = [
   accounts.actions.setWalletsAction([
     wallet1, wallet2, wallet3

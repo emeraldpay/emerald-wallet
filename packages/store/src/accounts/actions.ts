@@ -2,7 +2,7 @@ import {
   blockchainByName,
   BlockchainCode,
   blockchainCodeToId,
-  blockchains,
+  blockchains, HDPath,
   IApi,
   IBackendApi,
   Logger,
@@ -38,7 +38,8 @@ import {
   Wallet,
   EntryId
 } from "@emeraldpay/emerald-vault-core";
-import {AddressRole} from "@emeraldpay/emerald-vault-core/lib/types";
+import {AddressRole} from "@emeraldpay/emerald-vault-core";
+import * as hdpathSelectors from "../hdpath-preview/selectors";
 
 const log = Logger.forCategory('store.accounts');
 
@@ -205,12 +206,13 @@ export type CreateWalletOptions = {
 export function createWallet(options: CreateWalletOptions,
                              entries: AddEntry[],
                              handler: (walletId?: string, err?: any) => void): Dispatched<IWalletCreatedAction> {
+  console.log("create wallet", entries);
   return async (dispatch, getState, extra) => {
     const vault = extra.api.vault;
     try {
       const walletId = await vault.addWallet(options.label);
       for (let i = 0; i < entries.length; i++) {
-        let entry = entries[i];
+        const entry = entries[i];
         await vault.addEntry(walletId, entry);
       }
       const wallet = await vault.getWallet(walletId);

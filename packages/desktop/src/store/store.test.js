@@ -1,5 +1,5 @@
-import { fromJS } from 'immutable';
-import { ledger, screen, createStore } from '@emeraldwallet/store';
+import {fromJS} from 'immutable';
+import {screen, createStore, hwkey} from '@emeraldwallet/store';
 
 const apiMock = {
   vault: {}
@@ -13,7 +13,7 @@ describe('store', () => {
 
   it('should dispatch ledger actions', () => {
     const store = createStore(apiMock);
-    store.dispatch(ledger.actions.setWatch(true));
+    store.dispatch(hwkey.actions.setWatch(true));
   });
 
   it('should dispatch screen actions', () => {

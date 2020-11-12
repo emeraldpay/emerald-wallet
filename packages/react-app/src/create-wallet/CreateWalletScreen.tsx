@@ -1,5 +1,5 @@
 import {connect} from "react-redux";
-import {accounts, hdpathPreview, IState, screen, settings} from "@emeraldwallet/store";
+import {accounts, hdpathPreview, hwkey, IState, screen, settings} from "@emeraldwallet/store";
 import * as React from "react";
 import {Dispatch} from "react";
 import {isLedger, isPk, isPkJson, isPkRaw, isSeedCreate, isSeedSelected, Result} from "./flow/types";
@@ -38,12 +38,17 @@ const Component = ((props: Props & Actions & OwnProps) => {
 
 type OwnProps = {}
 
-function entriesForBlockchains(seedRef: SeedReference, account: number, blockchains: BlockchainCode[]): AddEntry[] {
+function entriesForBlockchains(seedRef: SeedReference,
+                               account: number,
+                               blockchains: BlockchainCode[],
+                               addresses: Partial<Record<BlockchainCode, string>>
+): AddEntry[] {
   const entries: vault.AddEntry[] = [];
   blockchains.forEach((blockchain) => {
     const key: SeedEntry = {
       hdPath: Blockchains[blockchain].params.hdPath.forAccount(account).toString(),
-      seed: seedRef
+      seed: seedRef,
+      address: addresses[blockchain]
     };
     entries.push({
       type: "hd-path",
@@ -83,7 +88,7 @@ export default connect(
             const seed = value.seed;
             if (typeof seed == "object" && seed.type == "id" && seed.password && typeof value.seedAccount == 'number') {
               const account: number = value.seedAccount;
-              entriesForBlockchains(value.seed!, account, value.blockchains)
+              entriesForBlockchains(value.seed!, account, value.blockchains, value.addresses || {})
                 .forEach((e) => entries.push(e));
             } else {
               console.warn("Account number is not set")
@@ -109,13 +114,14 @@ export default connect(
               const seedRef: LedgerSeedReference = {
                 type: "ledger"
               }
-              entriesForBlockchains(seedRef, account, value.blockchains)
+              entriesForBlockchains(seedRef, account, value.blockchains, value.addresses || {})
                 .forEach((e) => entries.push(e));
             } else {
               console.warn("Account number is not set")
             }
           }
           dispatch(accounts.actions.createWallet(opts, entries, handler));
+          dispatch(hwkey.actions.setWatch(false));
           dispatch(hdpathPreview.actions.clean());
         })
       },
@@ -133,6 +139,7 @@ export default connect(
       },
       onCancel: () => {
         dispatch(screen.actions.gotoScreen(Pages.HOME));
+        dispatch(hwkey.actions.setWatch(false));
         dispatch(hdpathPreview.actions.clean());
       }
     }

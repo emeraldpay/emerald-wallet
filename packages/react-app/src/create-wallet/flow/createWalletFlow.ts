@@ -1,5 +1,7 @@
 import {
-  defaultResult, isLedger,
+  defaultResult,
+  isLedger,
+  isLedgerStart,
   isPk,
   isPkJson,
   isPkRaw,
@@ -7,6 +9,7 @@ import {
   isSeedSelected,
   KeySourceType,
   KeysSource,
+  LedgerSeed,
   Result,
   SeedCreate,
   StepDescription,
@@ -97,7 +100,7 @@ export class CreateWalletFlow {
 
   getSteps(): StepDescription[] {
     const useSeedBased = isSeedCreate(this.result.type) || isSeedSelected(this.result.type);
-    const useLedger = this.result.type == "start-ledger" || isLedger(this.result.type);
+    const useLedger = isLedgerStart(this.result.type) || isLedger(this.result.type);
     const needHdAccount = useSeedBased || useLedger;
     const needBlockchain = this.result.type != "empty";
 
@@ -206,7 +209,7 @@ export class CreateWalletFlow {
         }
       } else if (isPk(this.result.type)) {
         copy.step = STEP_CODE.PK_IMPORT;
-      } else if (this.result.type == "start-ledger") {
+      } else if (isLedger(this.result.type)) {
         copy.step = STEP_CODE.LEDGER_OPEN;
       }
     } else if (this.step == STEP_CODE.SELECT_BLOCKCHAIN) {
@@ -231,7 +234,17 @@ export class CreateWalletFlow {
 
   applySource(value: KeysSource): CreateWalletFlow {
     const copy = this.copy();
-    copy.result = {...this.result, type: value};
+    let type: KeysSource = value;
+    if (isLedgerStart(type)) {
+      type = {
+        type: KeySourceType.LEDGER,
+        id: undefined
+      };
+      copy.result.seed = {
+        type: "ledger"
+      }
+    }
+    copy.result = {...copy.result, type};
     copy.step = STEP_CODE.OPTIONS;
     return copy;
   }
@@ -258,9 +271,9 @@ export class CreateWalletFlow {
     return copy;
   }
 
-  applyHDAccount(value: number): CreateWalletFlow {
+  applyHDAccount(value: number | undefined, addresses: Partial<Record<BlockchainCode, string>>): CreateWalletFlow {
     const copy = this.copy();
-    copy.result = {...this.result, seedAccount: value};
+    copy.result = {...this.result, seedAccount: value, addresses};
     return copy;
   }
 

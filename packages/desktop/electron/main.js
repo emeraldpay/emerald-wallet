@@ -12,7 +12,6 @@ const {
 } = require('@emeraldwallet/electron-app');
 const { app, ipcMain, session } = require('electron'); // eslint-disable-line import/no-extraneous-dependencies
 const path = require('path'); // eslint-disable-line
-const { LedgerApi } = require('@emeraldwallet/ledger');
 const log = require('./logger');
 const { startProtocolHandler } = protocol;
 const {
@@ -40,8 +39,6 @@ if (isDev) {
 }
 
 const settings = new Settings();
-
-global.ledger = new LedgerApi();
 
 log.info('userData: ', app.getPath('userData'));
 log.info('Settings: ', settings.toJS());

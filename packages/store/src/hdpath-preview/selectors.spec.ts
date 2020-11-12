@@ -6,7 +6,7 @@ import {IHDPreviewState} from "./types";
 describe('getByAccount', () => {
 
   const hdpathPreview: IHDPreviewState = {
-    display: {account: 0},
+    display: {account: 0, entries: [], blockchains: [BlockchainCode.ETH, BlockchainCode.ETC]},
     accounts: [
       {
         blockchain: BlockchainCode.ETH,
@@ -42,8 +42,8 @@ describe('getByAccount', () => {
         address: "0x5a8107eb87d2db27b5d3e49bccf3b542c21e551c",
         balance: "200"
       }
-
-    ]
+    ],
+    active: true
   };
 
   // @ts-ignore

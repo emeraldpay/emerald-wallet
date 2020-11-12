@@ -3,7 +3,6 @@ import {
   BackendApi,
   blockchains,
   screen,
-  ledger,
   txhistory,
   accounts,
   addressBook,
@@ -12,18 +11,11 @@ import {
   createStore,
   RemoteVault,
   RenderWalletState,
+  triggers,
+  config
 } from '@emeraldwallet/store';
 import {ipcRenderer} from 'electron';
-import {startProtocolListener} from './protocol';
-import {intervalRates} from './config';
 import getWalletVersion from '../utils/get-wallet-version';
-
-import {
-  onceBlockchainConnected,
-  onceAccountsLoaded,
-  onceModeSet,
-  onceServicesStart,
-} from './triggers';
 import {Logger} from '@emeraldwallet/core';
 import ElectronLogger from '../utils/logger2';
 
@@ -45,7 +37,7 @@ function refreshAll() {
   ];
 
   // Main loop that will refresh UI as needed
-  setTimeout(refreshAll, intervalRates.continueRefreshAllTxRate);
+  setTimeout(refreshAll, config.intervalRates.continueRefreshAllTxRate);
 
   return Promise.all(promises);
 }
@@ -55,7 +47,7 @@ export function startSync() {
   const promises = [];
 
   promises.push(
-    onceModeSet(store)
+    triggers.onceModeSet(store)
       .then(() => {
         const supported = settings.selectors.currentChains(store.getState());
         const codes = supported.map((chain) => chain.params.code);
@@ -164,37 +156,13 @@ export const start = () => {
   newWalletVersionCheck();
 };
 
-export function screenHandlers() {
-  let prevScreen = null;
-  store.subscribe(() => {
-    const state = store.getState();
-    const curScreen = screen.selectors.getCurrentScreen(state).screen;
-    const justOpened = prevScreen !== curScreen && typeof curScreen === 'string';
-    prevScreen = curScreen;
-    if (justOpened) {
-      if (
-        curScreen === 'create-tx'
-        || curScreen === 'add-from-ledger'
-        || curScreen === 'landing-add-from-ledger'
-      ) {
-        store.dispatch(ledger.actions.setWatch(true));
-        store.dispatch(ledger.actions.watchConnection());
-      } else {
-        store.dispatch(ledger.actions.setWatch(false));
-      }
-    }
-  });
-}
-
-startProtocolListener(store);
-
 function getInitialScreen() {
   // First things first, always go to welcome screen. This shows a nice spinner
   store.dispatch(screen.actions.gotoScreen('welcome'));
 
-  return onceServicesStart(store)
-    .then(() => onceModeSet(store)
-      .then(() => onceAccountsLoaded(store)
+  return triggers.onceServicesStart(store)
+    .then(() => triggers.onceModeSet(store)
+      .then(() => triggers.onceAccountsLoaded(store)
         .then(() => {
           log.info('Opening Home screen');
           // We display home screen which will decide show landing or wallets list
@@ -203,10 +171,7 @@ function getInitialScreen() {
 }
 
 Promise
-  .all([onceBlockchainConnected(store)])
+  .all([triggers.onceBlockchainConnected(store)])
   .then(startSync);
-
-
-screenHandlers();
 
 ipcRenderer.send('emerald-ready');

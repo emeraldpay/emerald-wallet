@@ -26,7 +26,13 @@ import {
   WalletEntry,
   WalletOp
 } from "@emeraldpay/emerald-vault-core";
-import {BitcoinEntry} from "@emeraldpay/emerald-vault-core/lib/types";
+import {
+  BitcoinEntry,
+  isIdSeedReference,
+  isLedger,
+  isSeedReference,
+  SeedReference
+} from "@emeraldpay/emerald-vault-core/lib/types";
 
 function sum<T extends BigAmount>(a: T | undefined, b: T | undefined): T {
   if (typeof a == 'undefined') {
@@ -310,4 +316,18 @@ export function getUtxo(state: IState, entryId: EntryId): BalanceUtxo[] {
     .reduce((result, x) => {
       return result.concat(x.utxo || [])
     }, [] as BalanceUtxo[])
+}
+
+export function findLedgerSeed(state: IState): SeedDescription | undefined {
+  return getSeeds(state).find((s) => s.type == "ledger")
+}
+
+export function isHardwareSeed(state: IState, seed: SeedReference): boolean {
+  if (isLedger(seed)) {
+    return true;
+  }
+  if (isIdSeedReference(seed)) {
+    return getSeed(state, seed.value)?.type === "ledger";
+  }
+  return false
 }
