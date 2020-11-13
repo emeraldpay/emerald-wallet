@@ -5,7 +5,6 @@ import {
   ISetModeAction,
   ISettingsState,
   SetLocaleCurrencyAction,
-  SetNumConfirmAction,
   SettingsAction
 } from './types';
 
@@ -13,7 +12,6 @@ const initial: ISettingsState = {
   rates: {},
   localeCurrency: CurrencyCode.USD,
   localeRate: undefined,
-  numConfirmations: 12,
   mode: {
     id: 'default',
     chains: [BlockchainCode.ETH, BlockchainCode.ETC],
@@ -38,14 +36,6 @@ function onExchangeRates (state: ISettingsState, action: ISetExchRatesAction): I
 
 }
 
-function onSetConfirmations (state: ISettingsState, action: SetNumConfirmAction): ISettingsState {
-  // persist settings
-  if (localStorage) {
-    localStorage.setItem('numConfirmations', action.numConfirmations.toString());
-  }
-  return { ...state, numConfirmations: action.numConfirmations };
-}
-
 function onSetMode (state: ISettingsState, action: ISetModeAction): ISettingsState {
   return { ...state, mode: action.payload };
 }
@@ -55,8 +45,6 @@ export default function reducer (state: ISettingsState | undefined, action: Sett
   switch (action.type) {
     case ActionTypes.MODE:
       return onSetMode(state, action);
-    case ActionTypes.NUM_CONFIRMATIONS:
-      return onSetConfirmations(state, action);
     case ActionTypes.SET_LOCALE_CURRENCY:
       return onSetLocaleCurrency(state, action);
     case ActionTypes.EXCHANGE_RATES:

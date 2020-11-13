@@ -1,6 +1,6 @@
 import {
   blockchainByName,
-  BlockchainCode,
+  BlockchainCode, Blockchains,
   Commands,
   IBackendApi,
   IStoredTransaction,
@@ -102,6 +102,7 @@ function loadStoredTxsAction(txs: IStoredTransaction[]): ILoadStoredTxsAction {
 
 const txUnconfirmed = (state: IState, tx: IStoredTransaction): boolean => {
   const chainCode = tx.blockchain.toLowerCase();
+  const blockchain = Blockchains[tx.blockchain];
   const currentBlock = blockchains.selectors.getHeight(state, chainCode);
   const txBlockNumber = parseInt(tx.blockNumber?.toString() || "0");
 
@@ -111,7 +112,7 @@ const txUnconfirmed = (state: IState, tx: IStoredTransaction): boolean => {
     return since.getTime() > tooOld;
   }
   const numConfirmsForTx = txBlockNumber - currentBlock;
-  const requiredConfirms = settings.selectors.numConfirms(state);
+  const requiredConfirms = blockchain.params.confirmations;
   return requiredConfirms < numConfirmsForTx;
 };
 

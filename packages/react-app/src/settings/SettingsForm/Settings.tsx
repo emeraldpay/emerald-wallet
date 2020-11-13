@@ -35,8 +35,6 @@ export interface IProps {
   onSubmit?: any;
   goBack?: any;
   classes?: any;
-  numConfirmations: number;
-  showHiddenAccounts: boolean;
   currency: string;
   language: string;
 }
@@ -44,8 +42,6 @@ export interface IProps {
 interface IState {
   currency: string;
   language: string;
-  showHiddenAccounts: boolean;
-  numConfirmations: number;
 }
 
 type Props = IProps & WithTranslation;
@@ -54,17 +50,9 @@ export class Settings extends React.Component<Props, IState> {
   constructor (props: Props) {
     super(props);
     this.state = {
-      showHiddenAccounts: this.props.showHiddenAccounts,
       currency: this.props.currency.toLowerCase(),
       language: this.props.language,
-      numConfirmations: this.props.numConfirmations
     };
-  }
-
-  public handleShowHiddenChange = (event: any, isChecked: boolean) => {
-    this.setState({
-      showHiddenAccounts: isChecked
-    });
   }
 
   public handleCurrencyChange = (event: any) => {
@@ -79,12 +67,6 @@ export class Settings extends React.Component<Props, IState> {
     });
   }
 
-  public handleConfirmsChange = (event: any) => {
-    this.setState({
-      numConfirmations: event.target.value
-    });
-  }
-
   public handleSave = () => {
     if (this.props.onSubmit) {
       this.props.onSubmit(this.state);
@@ -94,7 +76,7 @@ export class Settings extends React.Component<Props, IState> {
   public render () {
     const { goBack, t, classes } = this.props;
     const {
-      showHiddenAccounts, currency, language, numConfirmations
+      currency, language
     } = this.state;
     return (
       <Page title='Settings' leftIcon={<Back onClick={goBack}/>}>
@@ -136,38 +118,6 @@ export class Settings extends React.Component<Props, IState> {
               <MenuItem key='pt-BR' value='pt-BR'>Portugese</MenuItem>
               <MenuItem key='ko-KR' value='ko-KR'>Korean</MenuItem>
             </TextField>
-          </div>
-        </div>
-        <div className={classes.formRow}>
-          <div className={classes.left}>
-            <div className={classes.fieldName}>
-              {t('settings.showHiddenAccounts')}
-            </div>
-          </div>
-          <div className={classes.right}>
-            <Checkbox
-              checked={showHiddenAccounts}
-              label='Show accounts you have hidden'
-              onCheck={this.handleShowHiddenChange}
-            />
-          </div>
-        </div>
-        <div className={classes.formRow}>
-          <div className={classes.left}>
-            <div className={classes.fieldName}>
-              {t('settings.confirmations')}
-            </div>
-          </div>
-          <div className={classes.right}>
-            <TextField
-              fullWidth={true}
-              value={numConfirmations}
-              margin='normal'
-              type='number'
-              required={true}
-              onChange={this.handleConfirmsChange}
-              // helperText="Number of confirmations for a transaction to be considered successful"
-            />
           </div>
         </div>
         <div className={classes.formRow}>

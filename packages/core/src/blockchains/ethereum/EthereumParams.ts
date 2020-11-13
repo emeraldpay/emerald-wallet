@@ -10,12 +10,14 @@ class EthereumParams implements IBlockchainParams {
   public chainId: number;
   public hdPath: HDPath;
   public code: BlockchainCode;
+  public confirmations: number;
 
-  constructor(code: BlockchainCode, coinTicker: AnyCoinCode, chainId: number, hdPath: HDPath) {
+  constructor(code: BlockchainCode, coinTicker: AnyCoinCode, chainId: number, hdPath: HDPath, confirmations: number) {
     this.code = code;
     this.coinTicker = coinTicker;
     this.chainId = chainId;
     this.hdPath = hdPath;
+    this.confirmations = confirmations;
   }
 }
 

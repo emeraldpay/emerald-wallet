@@ -20,20 +20,29 @@ export enum BlockchainCode {
 
 export const Blockchains: {[key: string]: IBlockchain} = {
   [BlockchainCode.ETH]: new Ethereum(
-    new EthereumParams(BlockchainCode.ETH, CoinTicker.ETH, 1,
-      HDPath.default().forCoin(BlockchainCode.ETH)),
+    new EthereumParams(
+      BlockchainCode.ETH, CoinTicker.ETH, 1,
+      HDPath.default().forCoin(BlockchainCode.ETH),
+      12
+    ),
     'Ethereum',
-    ['DAI', 'USDT']
+    ['DAI', 'USDT'],
   ),
   [BlockchainCode.ETC]: new Ethereum(
-    new EthereumParams(BlockchainCode.ETC, CoinTicker.ETC, 61,
-      HDPath.default().forCoin(BlockchainCode.ETC)),
+    new EthereumParams(
+      BlockchainCode.ETC, CoinTicker.ETC, 61,
+      HDPath.default().forCoin(BlockchainCode.ETC),
+      250
+    ),
     'Ethereum Classic',
     []
   ),
   [BlockchainCode.Kovan]: new Ethereum(
-    new EthereumParams(BlockchainCode.Kovan, CoinTicker.KOVAN, 42,
-      HDPath.default().forCoin(BlockchainCode.ETH).forAccount(160720)),
+    new EthereumParams(
+      BlockchainCode.Kovan, CoinTicker.KOVAN, 42,
+      HDPath.default().forCoin(BlockchainCode.ETH).forAccount(160720),
+      100
+    ),
     'Ethereum Kovan Testnet',
     ['WEENUS']
   ),
@@ -42,14 +51,16 @@ export const Blockchains: {[key: string]: IBlockchain} = {
     code: BlockchainCode.BTC,
     coinTicker: CoinTicker.BTC,
     decimals: 8,
-    hdPath: HDPath.default().forPurpose(84)
+    hdPath: HDPath.default().forPurpose(84),
+    confirmations: 3
   }),
   [BlockchainCode.TestBTC]: new Bitcoin({
     chainId: 0,
     code: BlockchainCode.TestBTC,
     coinTicker: CoinTicker.TESTBTC,
     decimals: 8,
-    hdPath: HDPath.default().forPurpose(84).forCoin(1)
+    hdPath: HDPath.default().forPurpose(84).forCoin(1),
+    confirmations: 10
   })
 };
 

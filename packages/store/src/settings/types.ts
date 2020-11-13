@@ -3,7 +3,6 @@ import { BlockchainCode, CurrencyCode, StableCoinCode } from '@emeraldwallet/cor
 export enum ActionTypes {
   SET_LOCALE_CURRENCY = 'ACCOUNT/SET_LOCALE_CURRENCY',
   EXCHANGE_RATES = 'ACCOUNT/EXCHANGE_RATES',
-  NUM_CONFIRMATIONS = 'SETTINGS/NUM_CONFIRMATIONS',
   MODE = 'SETTINGS/MODE',
   LOAD_SETTINGS = 'SETTINGS/LOAD',
   UPDATE = 'SETTINGS/UPDATE'
@@ -19,7 +18,6 @@ export interface ISettingsState {
     currencies: Array<CurrencyCode | StableCoinCode>;
     id: string;
   };
-  numConfirmations: number;
   rates: Rates;
 }
 
@@ -37,11 +35,6 @@ export interface ISetModeAction {
   payload: any;
 }
 
-export interface SetNumConfirmAction {
-  type: ActionTypes.NUM_CONFIRMATIONS;
-  numConfirmations: number;
-}
-
 export interface SetLocaleCurrencyAction {
   type: ActionTypes.SET_LOCALE_CURRENCY;
   currency: string;
@@ -56,7 +49,6 @@ export interface ISetExchRatesAction {
 
 export type SettingsAction =
   ISetModeAction |
-  SetNumConfirmAction |
   SetLocaleCurrencyAction |
   ISetExchRatesAction |
   ILoadSettingsAction |

@@ -11,4 +11,5 @@ export default interface IBlockchainParams {
   chainId: number;
   hdPath: HDPath;
   code: BlockchainCode;
+  confirmations: number;
 }

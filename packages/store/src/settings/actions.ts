@@ -8,7 +8,6 @@ import {
 export interface ISettings {
   language: string;
   localeCurrency: string;
-  numConfirmations: string;
 }
 
 export function loadSettings (): ILoadSettingsAction {
