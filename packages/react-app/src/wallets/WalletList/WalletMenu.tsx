@@ -55,18 +55,6 @@ function WalletMenu (props: IDispatchProps) {
           </ListItemIcon>
           <Typography variant='inherit'>Setup Supported Coins</Typography>
         </MenuItem>
-        <MenuItem>
-          <ListItemIcon>
-            <ArrowDownwardIcon fontSize='small' />
-          </ListItemIcon>
-          <Typography variant='inherit'>Deposit Into Wallet</Typography>
-        </MenuItem>
-        <MenuItem>
-          <ListItemIcon>
-            <ArrowUpwardIcon fontSize='small' />
-          </ListItemIcon>
-          <Typography variant='inherit'>Send From Wallet</Typography>
-        </MenuItem>
       </Menu>
     </div>
   );
