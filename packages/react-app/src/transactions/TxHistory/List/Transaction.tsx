@@ -112,7 +112,7 @@ export default connect(
       toAccount,
       fromAccount,
       token,
-      requiredConfirmations: settings.selectors.numConfirms(state),
+      requiredConfirmations: blockchain.params.confirmations,
       currentBlockHeight: blockchains.selectors.getHeight(state, blockchain!.params.coinTicker)
     };
 

@@ -28,5 +28,3 @@ export const currentChains = createSelector(
   [modeChains],
   (chains) => chains.map((chain) => Blockchains[chain.toLowerCase()])
 );
-
-export const numConfirms = (state: IState): number => state.settings.numConfirmations;

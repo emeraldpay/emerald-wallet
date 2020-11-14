@@ -12,7 +12,6 @@ export default connect(
     return {
       currency: (settings.selectors.fiatCurrency(state) || '').toLowerCase(),
       language: i18n.language,
-      numConfirmations: settings.selectors.numConfirms(state)
     };
   },
   (dispatch, ownProps) => ({
@@ -23,8 +22,7 @@ export default connect(
     onSubmit: (data: any) => {
       const newSettings = {
         language: data.language,
-        localeCurrency: data.currency,
-        numConfirmations: data.numConfirmations
+        localeCurrency: data.currency
       };
       i18n.changeLanguage(data.language);
       dispatch(settings.actions.updateSettings(newSettings));

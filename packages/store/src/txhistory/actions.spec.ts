@@ -15,10 +15,9 @@ describe('historyActions/refreshTrackedTransactions', () => {
       }
     },
     settings: fromJS({
-      numConfirmations: 10
     }),
     history: fromJS({
-      trackedTransactions: [{ numConfirmations: 0, hash: '0x123', blockchain: 'ETH' }]
+      trackedTransactions: [{hash: '0x123', blockchain: 'ETH'}]
     })
   };
   const getState = (): IState => (state);
