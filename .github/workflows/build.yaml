@@ -1,11 +1,12 @@
 name: Builds
 
 on:
-  # if pushed directly to the master
+  # if pushed directly to the branch
   push:
     branches:
       - master
       - ci/*
+      - release/*
   # on a pull request
   pull_request:
     branches:
