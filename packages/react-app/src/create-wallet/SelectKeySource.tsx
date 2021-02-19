@@ -58,7 +58,7 @@ const Component = (({seeds, onSelect}: Props & Actions & OwnProps) => {
       <PublishIcon/>
     </ListItemIcon>
     <ListItemText primary={"Import existing seed"}
-                  secondary={"Import another mnemonic phrase (21 or 24 words) or use new Hardware Wallet (Ledger Nano)"}/>
+                  secondary={"Import another mnemonic phrase or use new Hardware Wallet (Ledger Nano)"}/>
   </ListItem>
 
   const importLedger = <ListItem key={"import-ledger"}

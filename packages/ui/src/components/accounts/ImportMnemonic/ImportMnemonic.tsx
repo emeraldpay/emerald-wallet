@@ -1,7 +1,6 @@
-import {Button, Grid, TextField, Typography} from '@material-ui/core';
+import {Button, createStyles, Grid, TextField, Typography} from '@material-ui/core';
 import {makeStyles} from '@material-ui/core/styles';
 import * as React from 'react';
-import {Box, createStyles} from "@material-ui/core";
 import {ConfirmedPasswordInput} from "../../../index";
 import {WithDefaults} from "@emeraldwallet/core";
 
@@ -18,17 +17,13 @@ const useStyles = makeStyles(
 interface OwnProps {
   classes?: any;
   onSubmit: (mnemonic: string, password: string | undefined) => void;
+  isValidMnemonic?: (mnemonic: string) => boolean;
 }
 
 const defaults: Partial<OwnProps> = {
-  classes: {}
+  classes: {},
+  isValidMnemonic: (mnemonic: string) => false
 }
-
-function isValidMnemonic(text: string): boolean {
-  //TODO verify against BIP-39 list
-  return text && text.length > 0 && text.split(" ").length >= 15;
-}
-
 
 /**
  *
@@ -41,6 +36,8 @@ const Component = ((props: OwnProps) => {
   const [mnemonic, setMnemonic] = React.useState("");
   const [password, setPassword] = React.useState("");
   const [done, setDone] = React.useState(false);
+
+  const isValidMnemonic = props.isValidMnemonic(mnemonic);
 
   return <Grid container={true}>
     <Grid item={true} xs={12}>
@@ -57,22 +54,29 @@ const Component = ((props: OwnProps) => {
             value={mnemonic}
             disabled={done}
             onChange={(e) => setMnemonic(e.target.value)}/>
-          <ConfirmedPasswordInput helperText={
-            "(optional) Additional password to protect the secret mnemonic phrase. " +
-            "Please save the password, if you lose it you'll be unable to recover your wallet."}
-                                  disabled={done}
-                                  buttonLabel={"Set password"}
-                                  onChange={setPassword}/>
+          <ConfirmedPasswordInput
+            helperText={
+              "(optional) Additional password to protect the secret mnemonic phrase. " +
+              "Please save the password, if you lose it you'll be unable to recover your wallet."
+            }
+            disabled={done}
+            buttonLabel={"Set password"}
+            onChange={setPassword}
+          />
         </Grid>
         <Grid item={true} xs={4}>
-          <Button variant={"contained"}
-                  disabled={done || !isValidMnemonic(mnemonic)}
-                  className={styles.saveButton}
-                  color={"primary"}
-                  onClick={() => {
-                    props.onSubmit(mnemonic, password.length > 0 ? password : undefined);
-                    setDone(true);
-                  }}>Save</Button>
+          <Button
+            variant={"contained"}
+            disabled={done || !isValidMnemonic}
+            className={styles.saveButton}
+            color={"primary"}
+            onClick={() => {
+              props.onSubmit(mnemonic, password.length > 0 ? password : undefined);
+              setDone(true);
+            }}
+          >
+            Save
+          </Button>
         </Grid>
       </Grid>
     </Grid>

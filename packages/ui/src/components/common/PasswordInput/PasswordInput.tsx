@@ -2,7 +2,7 @@ import {Input} from '@emeraldplatform/ui';
 import {ViewVisible as EyeIcon} from '@emeraldplatform/ui-icons';
 import IconButton from '@material-ui/core/IconButton';
 import * as React from 'react';
-import {createStyles, Paper, TextField} from "@material-ui/core";
+import {createStyles} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import {WithDefaults} from "@emeraldwallet/core";
 
@@ -42,7 +42,7 @@ const PasswordInput = ((props: OwnProps) => {
   };
 
   const EyeIconButton = (
-    <IconButton style={iconStyle} onClick={() => setShowPassword(!showPassword)}>
+    <IconButton tabIndex={-1} style={iconStyle} onClick={() => setShowPassword(!showPassword)}>
       <EyeIcon/>
     </IconButton>
   );
