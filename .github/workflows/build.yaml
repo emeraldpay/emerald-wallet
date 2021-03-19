@@ -99,10 +99,10 @@ jobs:
         if: runner.os == 'Windows'
 
       - name: Install system libs
-        run: sudo apt-get install libusb-1.0-0-dev libcurl3 xvfb
+        run: sudo apt-get install libusb-1.0-0-dev libcurl4 xvfb
         if: runner.os == 'Linux'
 
-      - name: Install Global JS componebts
+      - name: Install Global JS components
         run: npm install -g node-gyp codecov yarn lerna typescript
 
       - name: Install JS dependencies

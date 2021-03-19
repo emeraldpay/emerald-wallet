@@ -44,7 +44,7 @@ jobs:
         if: runner.os == 'Windows'
 
       - name: Install system libs
-        run: sudo apt-get install libusb-1.0-0-dev libcurl3 xvfb
+        run: sudo apt-get install libusb-1.0-0-dev libcurl4 xvfb
         if: runner.os == 'Linux'
 
         # Needed for Electron tests
