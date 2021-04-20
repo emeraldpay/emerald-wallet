@@ -80,8 +80,10 @@ class CreateTransaction extends React.Component<IProps> {
 
         <FormFieldWrapper>
           <AmountField
-            amount={this.props.tx.getAmount()}
-            onChangeAmount={this.props.onChangeAmount}
+            initialAmount={this.props.tx.getAmount()}
+            units={this.props.tx.getAmount().units}
+            onChangeAmount={this.props.onChangeAmount || (() => {
+            })}
             onMaxClicked={this.props.onMaxClicked}
           />
         </FormFieldWrapper>

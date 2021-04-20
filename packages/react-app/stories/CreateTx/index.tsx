@@ -15,7 +15,7 @@ import {BackendMock, REAL_BTC_TX} from '../backendMock';
 import Sign from "../../src/transaction/CreateBitcoinTransaction/Sign";
 import {CreateBitcoinTx} from "@emeraldwallet/core/lib/workflow";
 import {BitcoinEntry} from "@emeraldpay/emerald-vault-core/lib/types";
-import {Satoshi} from "@emeraldpay/bigamount-crypto";
+import {Satoshi, WEIS} from "@emeraldpay/bigamount-crypto";
 import {action} from "@storybook/addon-actions";
 import RawTx from "../../src/transaction/CreateBitcoinTransaction/RawTx";
 import Confirm from "../../src/transaction/CreateBitcoinTransaction/Confirm";
@@ -27,22 +27,27 @@ backend.vault.setSeedPassword("b00e3378-40e7-4eca-b287-a5ead2f747d4", "test");
 const txDetails = {
   token: 'ETC',
   gasLimit: '200',
-  amount: new Wei('10000000'),
+  amount: new Wei('1.23', "ETHER"),
   gas: new BigNumber('100'),
-  gasPrice: new Wei('10000'),
+  gasPrice: new Wei('20', "GWEI"),
   target: workflow.TxTarget.MANUAL
 };
 
 storiesOf('CreateTx Ethereum', module)
+  .addDecorator(providerForStore(backend, [...setup]))
+  .addDecorator(withTheme)
   .add('Create ETC', () => (
     <CreateTx
       tokenSymbols={['ETC']}
       token={'ETC'}
       tx={new workflow.CreateEthereumTx(txDetails)}
       txFeeToken='ETH'
+      onChangeAmount={action("onChangeAmount")}
     />
   ))
-  .add('AmountField', () => (<AmountField amount={new Wei('10000000')}/>))
+  .add('AmountField', () => (<AmountField units={WEIS} onChangeAmount={action("onChangeAmount")}/>))
+  .add('AmountField (101.202)', () => (
+    <AmountField units={WEIS} initialAmount={new Wei("101.202", "ETHER")} onChangeAmount={action("onChangeAmount")}/>))
   .add('FromField', () => (<FromField accounts={['0x1', '02']}/>))
   .add('ToField', () => (<ToField/>));
 
