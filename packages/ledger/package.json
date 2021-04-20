@@ -1,7 +1,7 @@
 {
   "name": "@emeraldwallet/ledger",
   "private": true,
-  "version": "2.4.1",
+  "version": "2.4.2",
   "description": "Ledger",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
