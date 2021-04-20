@@ -270,4 +270,8 @@ export class BackendMock implements IBackendApi {
     })
   }
 
+  getNonce(blockchain: BlockchainCode, address: string): Promise<number> {
+    return Promise.resolve(1000)
+  }
+
 }

@@ -5,6 +5,10 @@ export const DAI_UNITS = new Units([
   new Unit(18, "DAI", "DAI")
 ]);
 
+export const WEENUS_UNITS = new Units([
+  new Unit(18, "Weenus", "WEENUS")
+]);
+
 export const TETHER_UNITS = new Units([
   new Unit(6, "Tether", "USDT")
 ]);
@@ -16,6 +20,9 @@ export function tokenUnits(unit: string): Units {
   }
   if (unit === "dai") {
     return DAI_UNITS;
+  }
+  if (unit === "weenus") {
+    return WEENUS_UNITS;
   }
   throw new Error("Unsupported token: " + unit)
 }

@@ -1,9 +1,11 @@
-import { workflow } from '@emeraldwallet/core';
+import {workflow} from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
-import { mount, shallow } from 'enzyme';
+import {mount, shallow} from 'enzyme';
 import * as React from 'react';
 import CreateTx from './CreateTx';
 import {Wei} from '@emeraldpay/bigamount-crypto';
+import {Provider} from "react-redux";
+import {createTestStore} from "../../_tests";
 
 describe('CreateTx', () => {
   it('it renders without crash', () => {
@@ -14,22 +16,26 @@ describe('CreateTx', () => {
     tx.gasPrice = new Wei(0.0001, "ETHER");
 
     const wrapper = shallow(
-      <CreateTx
-        token='ETH'
-        tx={tx}
-        txFeeToken='ETH'
-        tokenSymbols={[]}
-      />
+      <Provider store={createTestStore()}>
+        <CreateTx
+          token='ETH'
+          tx={tx}
+          txFeeToken='ETH'
+          tokenSymbols={[]}
+        />
+      </Provider>
       );
     expect(wrapper).toBeDefined();
 
     const mounted = mount(
-      <CreateTx
-        token='ETH'
-        tx={tx}
-        txFeeToken='ETH'
-        tokenSymbols={[]}
-      />
+      <Provider store={createTestStore()}>
+        <CreateTx
+          token='ETH'
+          tx={tx}
+          txFeeToken='ETH'
+          tokenSymbols={[]}
+        />
+      </Provider>
       );
     expect(mounted).toBeDefined();
   });
