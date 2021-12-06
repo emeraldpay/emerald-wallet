@@ -14,6 +14,7 @@ flow-typed/
 package-lock.json
 .emerald-dev
 .emerald-dev-local
+.emerald-dev-*
 lerna-debug.log
 yarn-error.log
 age.txt
