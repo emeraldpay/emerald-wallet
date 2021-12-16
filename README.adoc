@@ -23,24 +23,14 @@ Features:
 
 The project is based on
 
-- Electron + NodeJS
+- Electron + NodeJS (the required version of NodeJS >= `v12`.)
 - Typescript
 - React + Redux
 - Rust for some modules
 
-The recommended way to assert that you are using the correct version of node is to use https://github.com/nodenv/nodenv[nodenv], which will shim the `node` and `npm` commands and assert that the `local` version is set to what is specified in https://github.com/emeraldpay/emerald-wallet/blob/master/.node-version[.node-version].
+=== Setup Environments
 
-Once nodenv is installed:
-
-----
-$ nodenv install
-----
-
-The required version of `node` >= `v12`.
-
-=== Dependencies
-
-==== Libs
+==== Install System Libs
 
 You need `libudev`, `libusb-1.0-0`, `libusb-1.0-0-dev` installed on Linux
 
@@ -49,8 +39,7 @@ You need `libudev`, `libusb-1.0-0`, `libusb-1.0-0-dev` installed on Linux
 sudo apt-get install libudev-dev libusb-1.0-0 libusb-1.0-0-dev
 ----
 
-====  NPM packages
-
+==== Install NPM packages
 
 .Install development tools
 ----
@@ -64,36 +53,62 @@ npm install -g npm windows-build-tools@4.0.0
 
 .Install dependencies:
 ----
-lerna bootstrap
+yarn install
 ----
 
 === Run for development
 
 .Build sources
 ----
-$ lerna run build
+lerna run build
 ----
 
-.Start Electron application
+Optionally you can build desktop app with automatic rebuild on change.
+Please note that it rebuilds only main Desktop module, and you have responsibility to rebuild other modules manually when changed.
+
+.Continuous rebuild of Desktop (optional):
 ----
-$ lerna run start:electron
+npm --prefix packages/desktop  run build:all:dev
+----
+
+.Start Electron application:
+----
+lerna run start:electron
+----
+
+.or
+----
+npm --prefix packages/desktop run start:electron
 ----
 
 === Troubleshooting
+
+==== Cleanup
+
+If you're facing some weird problem it makes sense to make a full cleanup and then rebuild everything from scratch.
+
+.To erase NPM modules (may be needed when you build under different NodeJS version):
+----
+yarn run clean:node_modules
+----
+
+.Erase compiled Javascript (it's also done automatically on `build`):
+----
+yarn workspaces run clean
+----
 
 ==== Emerald Vault module error
 
 Electron may show error, like:
 
-> _[emerald-vault-native] was compiled against a different Node.js version using
-NODE_MODULE_VERSION 64. This version of Node.js requires NODE_MODULE_VERSION 69. Please try re-compiling or re-installing
-the module (for instance, using npm rebuild or npm install)_
+> _[emerald-vault-native] was compiled against a different Node.js version using NODE_MODULE_VERSION 64. This version of Node.js requires NODE_MODULE_VERSION 69. Please try re-compiling or re-installing the module (for instance, using npm rebuild or npm install)_
 
-At this case you'll need to recompile Emerald Vault for your platform and version of Electron. You will need to have Rust
+At this case you'll need to recompile Emerald Vault for your platform and version of Electron.
+You will need to have Rust
 compiler and LLVM installed, please follow instructions on:
 
- - https://rustup.rs/
- - http://releases.llvm.org/download.html
+- https://rustup.rs/
+- http://releases.llvm.org/download.html
 
 After installing Rust and LLVM run following to recompile the module:
 ----
@@ -110,29 +125,30 @@ Electron and Emerald logs persisted in:
 
 === Building distributions in development
 
-You can run a distribution build in your development environment. Assuming
+You can run a distribution build in your development environment.Assuming
 you've already compiled `./src/` and `./electron/`, you'll be able to run:
 
 ----
 yarn build:dist
 ----
 
-This command will build for _your current system_. Note that there are configurations for
-several systems (OSX, Linux, Windows) specified in the `"build"` field of `package.json`, but the `dist` command will by default only build for the system it's on.
+This command will build for _your current system_.
+Note that there are configurations for several systems (OSX, Linux, Windows) specified in the `"build"` field of `package.json`, but the `dist` command will by default only build for the system it's on.
 
-Note: If you're developing on OSX and have a developer signing identity on your machine, you can
-optionally disable that with `CSC_IDENTITY_AUTO_DISCOVERY=false`.
+NOTE: If you're developing on OSX and have a developer signing identity on your machine, you can optionally disable that with `CSC_IDENTITY_AUTO_DISCOVERY=false`.
 
-OSX is also able to build for Linux. Add `-ml` to that raw command to build for
-both OSX and Linux at the same time.
+OSX is also able to build for Linux.
+Add `-ml` to that raw command to build for both OSX and Linux at the same time.
 
 === Troubleshooting
+
 Some preliminary things to try in case you run into issues:
 
 Clear out any persisted settings or userdata from previous trials
- * OSX: `~/Library/Application Support/EmeraldWallet`
- * Linux: `~/.config/EmeraldWallet`
- * Windows: `%APPDATA%\EmeraldWallet`
+
+- OSX: `~/Library/Application Support/EmeraldWallet`
+- Linux: `~/.config/EmeraldWallet`
+- Windows: `%APPDATA%\EmeraldWallet`
 
 == Run tests
 
@@ -165,13 +181,11 @@ Email to security@emerald.cash
 
 == License
 
-Copyright 2020 EmeraldPay, Inc
+Copyright 2021 EmeraldPay, Inc
 
 Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
 
-http://www.apache.org/licenses/LICENSE-2.0
+You may obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0
 
 Unless required by applicable law or agreed to in writing, software distributed under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
+See the License for the specific language governing permissions and limitations under the License.

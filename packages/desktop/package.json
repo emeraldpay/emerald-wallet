@@ -20,6 +20,7 @@
     "src/lib"
   ],
   "scripts": {
+    "clean": "rimraf app/ && rimraf tsconfig.tsbuildinfo",
     "build": "rimraf app/ && node ./scripts/build.js --no-watch",
     "build:all": "rimraf app/ && node ./scripts/build.js",
     "build:all:dev": "rimraf app/ && node ./scripts/build.js --dev",
