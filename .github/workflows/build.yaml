@@ -34,7 +34,7 @@ jobs:
 
       # on windows GCP Actions needs path to Python, see https://github.com/GoogleCloudPlatform/github-actions/issues/100
       - name: Setup GCP (windows)
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        uses: google-github-actions/setup-gcloud@v0
         env:
           CLOUDSDK_PYTHON: ${{env.pythonLocation}}\python.exe
         with:
@@ -44,7 +44,7 @@ jobs:
         if: runner.os == 'Windows'
 
       - name: Setup GCP (non windows)
-        uses: GoogleCloudPlatform/github-actions/setup-gcloud@master
+        uses: google-github-actions/setup-gcloud@v0
         with:
           project_id: ${{ secrets.GCP_PROJECT_ID }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
