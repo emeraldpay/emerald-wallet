@@ -20,6 +20,7 @@ export {default as ConfirmedPasswordInput} from './components/common/PasswordInp
 export {default as TxRef} from './components/common/TxRef';
 export {default as ChainSelector} from './components/common/ChainSelector';
 export { CoinIcon, CoinAvatar } from './components/common/CoinIcon';
+export { default as HashIcon } from './components/common/HashIcon'
 export { default as FormRow } from './components/common/FormRow';
 
 // Layout
