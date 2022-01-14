@@ -38,6 +38,7 @@ class TestMetric implements TxMetric {
     return create.vbPrice.multiply(convertWUToVB(this.weight(inputs, outputs)))
       .number
       .dividedBy(SATOSHIS.top.multiplier)
+      .dividedBy(1024)
       .toNumber()
   }
 }
@@ -91,7 +92,7 @@ describe("CreateBitcoinTx", () => {
     create.metric = defaultMetric;
     create.requiredAmountBitcoin = 0.97;
     create.address = "AAA";
-    create.feePrice = 100;
+    create.feePrice = 100 * 1024;
 
     let ok = create.rebalance();
     expect(ok).toBeTruthy();
@@ -150,6 +151,7 @@ describe("CreateBitcoinTx", () => {
     ]);
     create.metric = defaultMetric;
     create.requiredAmountBitcoin = 0.02 - 0.00008;
+    create.feePrice = 65 * 1024;
     create.address = "AAA";
     let ok = create.rebalance();
     expect(ok).toBeTruthy();
@@ -179,7 +181,7 @@ describe("CreateBitcoinTx", () => {
     create.metric = defaultMetric;
     create.requiredAmountBitcoin = 0.08;
     create.address = "AAA";
-    create.feePrice = 100;
+    create.feePrice = 100 * 1024;
 
     expect(create.fees.toString())
       // ((2 * 120) + (2 * 80)) * 100 / 4== 10000
@@ -206,13 +208,13 @@ describe("CreateBitcoinTx", () => {
     create.metric = defaultMetric;
     create.requiredAmountBitcoin = 0.08;
     create.address = "AAA";
-    create.feePrice = 100
+    create.feePrice = 100 * 1024
 
     expect(create.fees.toString())
       // ((2 * 120) + (2 * 80)) * 100 / 4
       .toBe(Satoshi.fromBitcoin(0.0001).toString());
 
-    create.feePrice = 150;
+    create.feePrice = 150 * 1024;
 
     expect(create.fees.toString())
       // ((2 * 120) + (2 * 80)) * 150 / 4
@@ -228,17 +230,14 @@ describe("CreateBitcoinTx", () => {
     create.requiredAmountBitcoin = 0.08;
     create.address = "AAA";
 
-    expect(create.estimateFees(100).toString())
-      // ((2 * 120) + (2 * 80)) * 100 == 40000
+    // ((2 * 120) + (2 * 80)) * 100 * 1024 == 40000
+    expect(create.estimateFees(100 * 1024).toString())
       .toBe(Satoshi.fromBitcoin(0.0004).toString());
-    expect(create.estimateFees(150).toString())
-      // ((2 * 120) + (2 * 80)) * 100 == 40000
+    expect(create.estimateFees(150 * 1024).toString())
       .toBe(Satoshi.fromBitcoin(0.0006).toString());
-    expect(create.estimateFees(200).toString())
-      // ((2 * 120) + (2 * 80)) * 100 == 40000
+    expect(create.estimateFees(200 * 1024).toString())
       .toBe(Satoshi.fromBitcoin(0.0008).toString());
-    expect(create.estimateFees(2000).toString())
-      // ((2 * 120) + (2 * 80)) * 100 == 40000
+    expect(create.estimateFees(2000 * 1024).toString())
       .toBe(Satoshi.fromBitcoin(0.008).toString());
   });
 
@@ -273,7 +272,7 @@ describe("CreateBitcoinTx", () => {
     create.metric = defaultMetric;
     create.requiredAmount = new Satoshi(80000);
     create.address = "2to";
-    create.feePrice = 100;
+    create.feePrice = 100 * 1024;
 
     const unsigned = create.create();
 

@@ -205,17 +205,33 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
   }
 
   public async componentDidMount () {
-    const { avgLast, avgMiddle, avgTop } = await this.props.getFees(this.props.chain);
+    const fees = await this.props.getFees(this.props.chain);
+
+    const { avgMiddle } = fees;
+
+    let { avgLast, avgTail5 } = fees;
 
     const tx = this.transaction;
     tx.gasPrice = new Wei(avgMiddle);
     tx.rebalance();
     this.transaction = tx;
 
+    /**
+     * For small networks with less than 5 txes in a block the Tail5 value may be larger that the Middle value.
+     * Make sure the order is consistent.
+     */
+    if (avgTail5 > avgMiddle) {
+      avgTail5 = avgMiddle;
+    }
+
+    if (avgLast > avgTail5) {
+      avgLast = avgTail5;
+    }
+
     this.setState({
-      maximalGasPrice: avgTop,
+      maximalGasPrice: avgMiddle,
       minimalGasPrice: avgLast,
-      standardGasPrice: avgMiddle,
+      standardGasPrice: avgTail5,
       amount: this.props.amount,
       data: this.props.data,
       token: this.props.token,
@@ -497,16 +513,16 @@ export default connect(
 
   (dispatch: any, ownProps: OwnProps): DispatchFromProps => ({
     getFees: async (blockchain) => {
-      const [avgLast, avgMiddle, avgTop] = await Promise.all([
+      const [avgLast, avgMiddle, avgTail5] = await Promise.all([
         dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgLast')),
         dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgMiddle')),
-        dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgTop')),
+        dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgTail5')),
       ]);
 
       return {
         avgLast,
         avgMiddle,
-        avgTop,
+        avgTail5,
       };
     },
     onCancel: () => dispatch(screen.actions.gotoScreen(screen.Pages.HOME, ownProps.sourceEntry)),
