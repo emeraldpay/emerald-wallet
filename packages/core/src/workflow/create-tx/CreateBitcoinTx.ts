@@ -47,9 +47,8 @@ export function convertWUToVB(wu: number): number {
   return wu / 4;
 }
 
-// https://bitcoinfees.net/, https://www.buybitcoinworldwide.com/fee-calculator/
-// 65 satoshis/vbyte on Oct 15, 2020
-const DEFAULT_VB_FEE = 65;
+// https://bitcoinfees.net/, https://www.buybitcoinworldwide.com/fee-calculator
+const DEFAULT_VB_FEE = 1;
 
 export class CreateBitcoinTx<A extends BigAmount> {
   private tx: BitcoinTxDetails<A>
@@ -141,7 +140,7 @@ export class CreateBitcoinTx<A extends BigAmount> {
       from,
       [{address: this.tx.to.address || "?", amount: 0}]
     );
-    const bareFees = this.vbPrice.multiply(convertWUToVB(weight));
+    const bareFees = this.vbPrice.multiply(convertWUToVB(weight)).divide(1024);
 
     let change: A;
     if (requiredAmount.plus(bareFees).isLessOrEqualTo(totalSend)) {
@@ -153,7 +152,7 @@ export class CreateBitcoinTx<A extends BigAmount> {
           {address: this.changeAddress, amount: 0, entryId: this.source.id}
         ]
       );
-      const changeFees = this.vbPrice.multiply(convertWUToVB(weightWithChange));
+      const changeFees = this.vbPrice.multiply(convertWUToVB(weightWithChange)).divide(1024);
       change = totalSend.minus(requiredAmount).minus(changeFees);
       if (change.isNegative()) {
         // when doesn't have enough to pay fees to send change, i.e. too small change
@@ -207,7 +206,7 @@ export class CreateBitcoinTx<A extends BigAmount> {
 
   estimateFees(price: number): A {
     const size = this.metric.weightOf(this.tx.from || [], this.outputs);
-    return this.amountFactory(price).multiply(size)
+    return this.amountFactory(price).multiply(size).divide(1024);
   }
 
   public validate(): ValidationResult {

@@ -1,24 +1,25 @@
+import { EstimationMode } from '@emeraldpay/api';
+import { Wei } from "@emeraldpay/bigamount-crypto";
 import { UnsignedTx } from '@emeraldpay/emerald-vault-core';
+import { EntryId, UnsignedBitcoinTx } from "@emeraldpay/emerald-vault-core/lib/types";
+import { IEmeraldVault } from "@emeraldpay/emerald-vault-core/lib/vault";
 import { convert, EthAddress } from '@emeraldplatform/core';
 import { quantitiesToHex } from '@emeraldplatform/core/lib/convert';
 import {
   BitcoinStoredTransaction,
   BlockchainCode,
-  Blockchains, EthereumStoredTransaction,
+  Blockchains,
+  EthereumStoredTransaction,
   EthereumTx,
-  IApi,
-  IBackendApi, isBitcoin, isEthereum, isEthereumStoredTransaction,
-  IStoredTransaction,
-  Logger
+  isBitcoin,
+  isEthereum,
+  Logger,
 } from '@emeraldwallet/core';
 import { Dispatch } from 'redux';
 import * as screen from '../screen';
 import { catchError, gotoScreen, showError } from '../screen/actions';
 import * as history from '../txhistory';
-import {Dispatched, IExtraArgument} from '../types';
-import {Wei} from "@emeraldpay/bigamount-crypto";
-import {IEmeraldVault} from "@emeraldpay/emerald-vault-core/lib/vault";
-import {EntryId, isBitcoinTx, UnsignedBitcoinTx} from "@emeraldpay/emerald-vault-core/lib/types";
+import { Dispatched, IExtraArgument } from '../types';
 
 const log = Logger.forCategory('store.transaction');
 
@@ -190,5 +191,15 @@ export function estimateGas (chain: BlockchainCode, tx: {gas: any; to: string}) 
       gas: gas.toNumber(),
       to
     });
+  };
+}
+
+export function estimateFee(
+  blockchain: BlockchainCode,
+  blocks: number,
+  mode: EstimationMode
+) {
+  return (dispatch: any, getState: any, extra: IExtraArgument) => {
+    return extra.backendApi.estimateFee(blockchain, blocks, mode);
   };
 }

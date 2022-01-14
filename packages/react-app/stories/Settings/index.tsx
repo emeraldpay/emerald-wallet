@@ -7,10 +7,10 @@ storiesOf('Settings', module)
     <Settings
       i18n={{} as any}
       tReady={true}
-      t={(str: any): any => (str)}
-      numConfirmations={5}
-      currency='RUB'
-      language='ru'
-      showHiddenAccounts={true}
+      t={(str: any): any => (
+        str
+      )}
+      currency="RUB"
+      language="ru"
     />
-    ));
+  ));

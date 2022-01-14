@@ -1,26 +1,25 @@
-import {AnyCoinCode, BlockchainCode, IApi, IBackendApi, IStoredTransaction} from "@emeraldwallet/core";
+import { EstimationMode } from '@emeraldpay/api';
 import {
   AddEntry,
-  BlockchainType,
+  AddressBookItem,
+  AddressRole,
+  CreateAddressBookItem,
+  CurrentAddress,
   EntryId,
   IdSeedReference,
-  isReference,
+  IEmeraldVault,
+  LedgerDetails,
+  LedgerSeedReference,
   SeedDefinition,
   SeedDescription,
   SeedReference,
   UnsignedTx,
   Uuid,
-  AddressBookItem,
   Wallet,
-  IEmeraldVault,
-  AddressRole,
-  CurrentAddress,
-  WalletState,
-  CreateAddressBookItem,
   WalletCreateOptions,
-  LedgerSeedReference,
-  LedgerDetails
+  WalletState,
 } from "@emeraldpay/emerald-vault-core";
+import { AnyCoinCode, BlockchainCode, IApi, IBackendApi, IStoredTransaction } from "@emeraldwallet/core";
 
 export class MemoryVault {
   seeds: Uuid[] = [];
@@ -270,8 +269,16 @@ export class BackendMock implements IBackendApi {
     })
   }
 
-  getNonce(blockchain: BlockchainCode, address: string): Promise<number> {
-    return Promise.resolve(1000)
-  }
+  estimateFee(blockchain: BlockchainCode, blocks: number, mode: EstimationMode) {
+    switch (mode) {
+      case 'avgLast':
+        return Promise.resolve(1000);
+      case 'avgMiddle':
+        return Promise.resolve(3000);
+      case 'avgTail5':
+        return Promise.resolve(1500);
+    }
 
+    return Promise.resolve(0);
+  }
 }

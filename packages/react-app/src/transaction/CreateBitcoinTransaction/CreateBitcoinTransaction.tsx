@@ -1,24 +1,18 @@
-import {connect} from "react-redux";
-import {Dispatch} from "react";
-import * as React from 'react';
-import {Box, createStyles, Theme} from "@material-ui/core";
-import {accounts, IState, transaction} from "@emeraldwallet/store";
-import {makeStyles} from "@material-ui/core/styles";
-import SetupTx from "./SetupTx";
-import {EntryId, isBitcoinEntry} from "@emeraldpay/emerald-vault-core";
-import {BlockchainCode, blockchainIdToCode} from "@emeraldwallet/core";
-import {Alert} from "@material-ui/lab";
-import Sign from "./Sign";
-import {
-  BitcoinEntry,
-  isSeedPkRef,
-  isSeedReference,
-  UnsignedBitcoinTx,
-  Uuid
-} from "@emeraldpay/emerald-vault-core/lib/types";
+import { EntryId, isBitcoinEntry } from "@emeraldpay/emerald-vault-core";
+import { BitcoinEntry, isSeedPkRef, UnsignedBitcoinTx, Uuid } from "@emeraldpay/emerald-vault-core/lib/types";
+import { Page } from "@emeraldplatform/ui";
+import { Back } from "@emeraldplatform/ui-icons";
+import { BlockchainCode, blockchainIdToCode } from "@emeraldwallet/core";
+import { accounts, IState, transaction } from "@emeraldwallet/store";
+import { createStyles, Theme } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Alert } from "@material-ui/lab";
+import * as React from "react";
+import { Dispatch } from "react";
+import { connect } from "react-redux";
 import Confirm from "./Confirm";
-import {Back} from "@emeraldplatform/ui-icons";
-import {Page} from "@emeraldplatform/ui";
+import SetupTx from "./SetupTx";
+import Sign from "./Sign";
 
 type Step = "setup" | "sign" | "result";
 
@@ -33,7 +27,7 @@ const useStyles = makeStyles<Theme>((theme) =>
 /**
  *
  */
-const Component = (({entry, blockchain, seedId, source, onBroadcast}: Props & Actions & OwnProps) => {
+const Component = (({entry, blockchain, seedId, source, getFees, onBroadcast}: Props & Actions & OwnProps) => {
   const styles = useStyles();
   const [raw, setRaw] = React.useState("");
   const [page, setPage] = React.useState("setup" as Step);
@@ -42,10 +36,16 @@ const Component = (({entry, blockchain, seedId, source, onBroadcast}: Props & Ac
   let content;
 
   if (page == "setup") {
-    content = <SetupTx entry={entry} onCreate={(tx) => {
-      setTx(tx);
-      setPage("sign");
-    }}/>
+    content = (
+      <SetupTx
+        entry={entry}
+        getFees={getFees(blockchain)}
+        onCreate={(tx) => {
+          setTx(tx);
+          setPage("sign");
+        }}
+      />
+    );
   } else if (page == "sign" && typeof tx == "object" && tx != null) {
     content = <Sign blockchain={blockchain}
                     tx={tx}
@@ -84,6 +84,7 @@ interface Props {
 // Actions
 interface Actions {
   onBroadcast: (blockchain: BlockchainCode, orig: UnsignedBitcoinTx, raw: string) => void;
+  getFees: (blockchain: BlockchainCode) => () => Promise<any>;
 }
 
 // Component properties
@@ -112,6 +113,19 @@ export default connect(
   },
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
     return {
+      getFees: (blockchain) => async () => {
+        const [avgLast, avgMiddle, avgTail5] = await Promise.all([
+          dispatch(transaction.actions.estimateFee(blockchain, 6, 'avgLast')),
+          dispatch(transaction.actions.estimateFee(blockchain, 6, 'avgMiddle')),
+          dispatch(transaction.actions.estimateFee(blockchain, 6, 'avgTail5')),
+        ]);
+
+        return {
+          avgLast,
+          avgMiddle,
+          avgTail5,
+        };
+      },
       onBroadcast: (blockchain, orig, raw) => {
         dispatch(transaction.actions.broadcastTx(blockchain, orig, raw));
         // when a change output was used

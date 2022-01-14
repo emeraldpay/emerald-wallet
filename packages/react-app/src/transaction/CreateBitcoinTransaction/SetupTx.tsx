@@ -1,21 +1,21 @@
-import {connect} from "react-redux";
-import * as React from "react";
-import {Dispatch} from "react";
-import {Box, createStyles, FormHelperText, Slider, TextField, Theme, Switch, FormControlLabel} from "@material-ui/core";
-import {accounts, IState} from "@emeraldwallet/store";
-import {makeStyles} from "@material-ui/core/styles";
-import FormFieldWrapper from "../CreateTx/FormFieldWrapper";
-import {ButtonGroup} from "@emeraldplatform/ui";
-import {CreateBitcoinTx, ValidationResult} from "@emeraldwallet/core/lib/workflow";
-import {BigAmount} from "@emeraldpay/bigamount";
-import FormLabel from "../CreateTx/FormLabel/FormLabel";
-import {Button} from "@emeraldwallet/ui";
-import classNames from "classnames";
+import { BigAmount } from "@emeraldpay/bigamount";
+import { UnsignedBitcoinTx } from "@emeraldpay/emerald-vault-core";
+import { BitcoinEntry } from "@emeraldpay/emerald-vault-core/lib/types";
+import { ButtonGroup } from "@emeraldplatform/ui";
+import { CreateBitcoinTx, ValidationResult } from "@emeraldwallet/core/lib/workflow";
+import { accounts, IState } from "@emeraldwallet/store";
+import { Button } from "@emeraldwallet/ui";
+import { Box, createStyles, FormControlLabel, FormHelperText, Slider, Switch, TextField } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
 import validate from 'bitcoin-address-validation';
-import {UnsignedBitcoinTx} from "@emeraldpay/emerald-vault-core";
-import {BitcoinEntry} from "@emeraldpay/emerald-vault-core/lib/types";
+import classNames from "classnames";
+import * as React from "react";
+import { Dispatch } from "react";
+import { connect } from "react-redux";
+import FormFieldWrapper from "../CreateTx/FormFieldWrapper";
+import FormLabel from "../CreateTx/FormLabel/FormLabel";
 
-const useStyles = makeStyles<Theme>((theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     inputField: {
       flexGrow: 5
@@ -62,21 +62,20 @@ const useStyles = makeStyles<Theme>((theme) =>
 /**
  *
  */
-const Component = (({create, onCreate, standardFee}: Props & Actions & OwnProps) => {
+const Component = (({create, onCreate, getFees}: Props & OwnProps) => {
   const styles = useStyles();
   const [to, setTo] = React.useState("");
   const [toError, setToError] = React.useState();
   const [stdFee, setStdFee] = React.useState(true);
-  const [feePrice, setFeePriceState] = React.useState(0);
-  const [feesStr, setFeesStr] = React.useState(create.fees.toString());
   const [amount, setAmountState] = React.useState(0);
   const [amountStr, setAmountStr] = React.useState("0");
+  const [feePrice, setFeePrice] = React.useState(0);
+  const [standardFee, setStandardFee] = React.useState(0);
+  const [minimalFee, setMinimalFee] = React.useState(0);
+  const [maximalFee, setMaximalFee] = React.useState(0);
 
   // instance recreated on each global state change, update it with the current local state
   create.address = to;
-  if (feePrice > 0) {
-    create.feePrice = feePrice
-  }
   create.requiredAmountBitcoin = amount
 
   function updateTo(value: string) {
@@ -96,10 +95,9 @@ const Component = (({create, onCreate, standardFee}: Props & Actions & OwnProps)
     return create.estimateFees(price).toString();
   }
 
-  function setFeePrice(price: number) {
+  function setNewFeePrice(price: number) {
     create.feePrice = price;
-    setFeePriceState(price);
-    setFeesStr(create.fees.toString());
+    setFeePrice(price);
   }
 
   function setAmount(value: string) {
@@ -112,10 +110,25 @@ const Component = (({create, onCreate, standardFee}: Props & Actions & OwnProps)
       create.requiredAmountBitcoin = 0;
       setAmountState(0);
     }
-    setFeesStr(create.fees.toString());
   }
 
-  const valid = create.validate() == ValidationResult.OK;
+  const valid = standardFee > 0 && create.validate() == ValidationResult.OK;
+
+  React.useEffect(() => {
+    (
+      async () => {
+        const { avgLast, avgTail5, avgMiddle } = await getFees();
+
+        create.feePrice = avgTail5;
+
+        setFeePrice(avgTail5);
+
+        setMinimalFee(avgLast);
+        setStandardFee(avgTail5);
+        setMaximalFee(avgMiddle);
+      }
+    )();
+  }, [stdFee]);
 
   return <Box>
 
@@ -165,29 +178,29 @@ const Component = (({create, onCreate, standardFee}: Props & Actions & OwnProps)
             }
             label={stdFee ? "Standard Fee" : "Custom Fee"}/>
         </Box>
-        {!stdFee &&
-        <Box className={styles.feeSliderBox}>
-          <Slider
-            className={styles.feeSlider}
-            classes={{markLabel: styles.feeMarkLabel}}
-            defaultValue={standardFee}
-            getAriaValueText={totalFee}
-            aria-labelledby="discrete-slider"
-            valueLabelDisplay="auto"
-            step={10}
-            marks={[
-              {value: Math.round(standardFee / 2), label: "Slow"},
-              {value: standardFee, label: "Normal"},
-              {value: standardFee * 2, label: "Urgent"},
-            ]}
-            min={10}
-            max={standardFee * 4}
-            onChange={(e, value) => setFeePrice(value as number)}
-          />
-        </Box>
-        }
+        {!stdFee && (
+          <Box className={styles.feeSliderBox}>
+            <Slider
+              className={styles.feeSlider}
+              classes={{ markLabel: styles.feeMarkLabel }}
+              defaultValue={standardFee}
+              getAriaValueText={totalFee}
+              aria-labelledby="discrete-slider"
+              valueLabelDisplay="auto"
+              step={1}
+              marks={[
+                { value: minimalFee, label: "Slow" },
+                { value: maximalFee, label: "Urgent" },
+              ]}
+              min={minimalFee}
+              max={maximalFee}
+              onChange={(e, value) => setNewFeePrice(value as number)}
+              valueLabelFormat={(value) => (value / 1024).toFixed(2)}
+            />
+          </Box>
+        )}
         <Box className={styles.feeHelpBox}>
-          <FormHelperText className={styles.feeHelp}>{feesStr}</FormHelperText>
+          <FormHelperText className={styles.feeHelp}>{totalFee(feePrice)}</FormHelperText>
         </Box>
       </Box>
     </FormFieldWrapper>
@@ -195,11 +208,7 @@ const Component = (({create, onCreate, standardFee}: Props & Actions & OwnProps)
     <FormFieldWrapper style={{paddingBottom: '0px'}}>
       <FormLabel/>
       <ButtonGroup style={{flexGrow: 5}}>
-        <Button
-          label='Cancel'
-          onClick={() => {
-          }}
-        />
+        <Button label="Cancel" />
         <Button
           disabled={!valid}
           primary={true}
@@ -214,32 +223,24 @@ const Component = (({create, onCreate, standardFee}: Props & Actions & OwnProps)
 
 // State Properties
 interface Props {
-  create: CreateBitcoinTx<BigAmount>,
-  standardFee: number,
-}
-
-// Actions
-interface Actions {
+  create: CreateBitcoinTx<BigAmount>;
 }
 
 // Component properties
 interface OwnProps {
-  entry: BitcoinEntry,
+  entry: BitcoinEntry;
+  getFees: () => Promise<any>;
   onCreate: (tx: UnsignedBitcoinTx) => void;
 }
 
 export default connect(
   (state: IState, ownProps: OwnProps): Props => {
-    let utxo = accounts.selectors.getUtxo(state, ownProps.entry.id);
-    const standardFee = 65;
+    const utxo = accounts.selectors.getUtxo(state, ownProps.entry.id);
     const create = new CreateBitcoinTx<BigAmount>(ownProps.entry, utxo);
-    create.feePrice = 65;
-    return {
-      create,
-      standardFee,
-    }
+
+    return { create };
   },
-  (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
+  (dispatch: Dispatch<any>, ownProps: OwnProps) => {
     return {}
   }
 )((Component));

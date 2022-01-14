@@ -17,6 +17,7 @@ export enum Commands {
   GET_GAS_PRICE = 'get-gas-price',
   BROADCAST_TX = 'broadcast-tx',
   ESTIMATE_TX = 'estimate-tx',
+  ESTIMATE_FEE = 'estimate-fee',
   GET_NONCE = 'get-nonce',
   SIGN_TX = 'sign-tx',
   // @deprecated
@@ -35,5 +36,4 @@ export enum Commands {
   VAULT_CREATE_HD_ACCOUNT = 'create-hd-account',
   VAULT_GET_SEEDS = 'get-vault-seeds',
   VAULT_SEED_ADDRESSES = 'vault-get-seed-addresses',
-
 }
