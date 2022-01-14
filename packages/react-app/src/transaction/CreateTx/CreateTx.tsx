@@ -9,9 +9,10 @@ import AmountField from './AmountField';
 import FormFieldWrapper from './FormFieldWrapper';
 import FormLabel from './FormLabel';
 import FromField from './FromField';
-import GasLimitField from './GasLimitField';
 import ToField from './ToField';
 import TokenField from './TokenField';
+
+// import GasLimitField from './GasLimitField';
 
 function getStyles () {
   return {
@@ -172,7 +173,7 @@ class CreateTransaction extends React.Component<Props, State> {
           />
         </FormFieldWrapper>
 
-        <FormFieldWrapper>
+        {/*<FormFieldWrapper>
           <GasLimitField
             onChangeGasLimit={this.props.onChangeGasLimit}
             gasLimit={this.props.tx.gas.toString()}
@@ -181,7 +182,7 @@ class CreateTransaction extends React.Component<Props, State> {
             txFeeFiat={this.props.txFeeFiat}
             fiatCurrency={this.props.currency}
           />
-        </FormFieldWrapper>
+        </FormFieldWrapper>*/}
 
         <FormFieldWrapper>
           <FormLabel>Gas price</FormLabel>
