@@ -1187,14 +1187,6 @@
   dependencies:
     "@emeraldpay/emerald-vault-core" "0.6.0-rc.2"
 
-"@emeraldpay/hashicon-react@^0.5.1":
-  version "0.5.1"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/hashicon-react/-/hashicon-react-0.5.1.tgz#975c57fdad22b8f043ad24004a620eb1012ba728"
-  integrity sha512-WoLPBpdwseNexAQHDmr0f9nxc8HfNpQxNI2bw/04yYpoeQg61r52iwk3EHV/QCg5hnAcF6wKdyCnybyU8UBtHQ==
-  dependencies:
-    "@emeraldpay/hashicon" "^0.5.1"
-    react "^16.8.0"
-
 "@emeraldpay/hashicon@^0.5.1":
   version "0.5.1"
   resolved "https://registry.yarnpkg.com/@emeraldpay/hashicon/-/hashicon-0.5.1.tgz#f2fd30dace08d3fed9db66732f803b0e6f60ce05"
@@ -2895,36 +2887,36 @@
   dependencies:
     type-detect "4.0.8"
 
-"@stablelib/binary@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@stablelib/binary/-/binary-1.0.0.tgz#fa216f8b2d2f7153878e2bc45e91dddee72c4749"
-  integrity sha512-W01QhOw1tWL51Du1c5JZphJs7toRbfra1C2DBlhT0mRHZWGWB1hpFbqiZUFY7QNIMUpmmHLrlZs3YsSCB/giUg==
+"@stablelib/binary@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@stablelib/binary/-/binary-1.0.1.tgz#c5900b94368baf00f811da5bdb1610963dfddf7f"
+  integrity sha512-ClJWvmL6UBM/wjkvv/7m5VP3GMr9t0osr4yVgLZsLCOz4hGN9gIAFEqnJ0TsSMAN+n840nf2cHZnA5/KFqHC7Q==
   dependencies:
-    "@stablelib/int" "^1.0.0"
+    "@stablelib/int" "^1.0.1"
 
 "@stablelib/blake2s@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@stablelib/blake2s/-/blake2s-1.0.0.tgz#255d3beeddb19a61fb7d9f6c86a906f87c39c8b5"
-  integrity sha512-gdcUv8U3hBWCKnJwQt1iQBl8EqPN1aY8NSkgiNv3FcoPday9hnNn1dJwOC+adHd5k15dvJeAoMrw/jg6p6Ziiw==
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@stablelib/blake2s/-/blake2s-1.0.1.tgz#0a3de2e2780172cafc9675784251a87849cf41c0"
+  integrity sha512-Nnp7ULL65b4zEOkf3IdfL74xHhZXMCg7HBjBYO666a0o+DIY6GDEhUCqH6dws8nsSZgZO+V5+s2VyYKKGdFMZw==
   dependencies:
-    "@stablelib/binary" "^1.0.0"
-    "@stablelib/hash" "^1.0.0"
-    "@stablelib/wipe" "^1.0.0"
+    "@stablelib/binary" "^1.0.1"
+    "@stablelib/hash" "^1.0.1"
+    "@stablelib/wipe" "^1.0.1"
 
-"@stablelib/hash@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@stablelib/hash/-/hash-1.0.0.tgz#28626ddc64cb84db9370f279c5a78cdc96f493ee"
-  integrity sha512-wBvSIIx4Y8799BRD4TBhezS1P9+irGAKdsNgbZMeU5ndMbw7BtZALdCm0FcJIRFxJ2giPLPS9YCgrwWAhzSRLQ==
+"@stablelib/hash@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@stablelib/hash/-/hash-1.0.1.tgz#3c944403ff2239fad8ebb9015e33e98444058bc5"
+  integrity sha512-eTPJc/stDkdtOcrNMZ6mcMK1e6yBbqRBaNW55XA1jU8w/7QdnCF0CmMmOD1m7VSkBR44PWrMHU2l6r8YEQHMgg==
 
-"@stablelib/int@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@stablelib/int/-/int-1.0.0.tgz#2432569169cc5640fe5e65b7f79f722ed9cacc59"
-  integrity sha512-MRigEQCO7xM93nZqW4CbIBjhANGw3jJxGVSUZH3PQ6HWL1IGrFWVDBzIclWxl4l5aRRpqoM+76ellQNdUJPnsA==
+"@stablelib/int@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@stablelib/int/-/int-1.0.1.tgz#75928cc25d59d73d75ae361f02128588c15fd008"
+  integrity sha512-byr69X/sDtDiIjIV6m4roLVWnNNlRGzsvxw+agj8CIEazqWGOQp2dTYgQhtyVXV9wpO6WyXRQUzLV/JRNumT2w==
 
-"@stablelib/wipe@^1.0.0":
-  version "1.0.0"
-  resolved "https://registry.yarnpkg.com/@stablelib/wipe/-/wipe-1.0.0.tgz#8ed028a10bb7527357b2655c360383b5f07c16ac"
-  integrity sha512-0Fd4MQCbEh8OFSO+gG7wBXok7yRC3w+xe/wWM8KNye7EGoHr4BTFZNWV/1xAn2r8/gyFKxPXT8uxXRzDzGq6rg==
+"@stablelib/wipe@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@stablelib/wipe/-/wipe-1.0.1.tgz#d21401f1d59ade56a62e139462a97f104ed19a36"
+  integrity sha512-WfqfX/eXGiAd3RJe4VU2snh/ZPwtSjLG4ynQ/vYzvghTh7dHFcI1wl+nrkWG6lGhukOxOsUHfv8dUXr58D0ayg==
 
 "@storybook/addon-actions@5.2.3":
   version "5.2.3"
@@ -16221,7 +16213,7 @@ react@16.11.0:
     object-assign "^4.1.1"
     prop-types "^15.6.2"
 
-react@^16.13.1, react@^16.8.0, react@^16.8.3, react@^16.9.0:
+react@^16.13.1, react@^16.8.3, react@^16.9.0:
   version "16.13.1"
   resolved "https://registry.yarnpkg.com/react/-/react-16.13.1.tgz#2e818822f1a9743122c063d6410d85c1e3afe48e"
   integrity sha512-YMZQQq32xHLX0bz5Mnibv1/LHb3Sqzngu7xstSM+vrkE5Kzr9xE0yMByK5kMoTK30YVJE61WfbxIFFvfeDKT1w==

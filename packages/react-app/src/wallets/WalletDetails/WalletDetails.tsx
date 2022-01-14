@@ -9,9 +9,8 @@ import EthereumAccountItem from "./EthereumAccountItem";
 import {Page} from "@emeraldplatform/ui";
 import {PageTitle} from "@emeraldplatform/ui/lib/components/Page";
 import {AccountBalanceWalletOutlined as WalletIcon} from "@material-ui/icons";
-import {InlineEdit} from "@emeraldwallet/ui";
+import {InlineEdit, HashIcon} from "@emeraldwallet/ui";
 import WalletMenu from "../WalletList/WalletMenu";
-import {Hashicon} from "@emeraldpay/hashicon-react";
 import {Alert} from '@material-ui/lab';
 import {Wallet} from '@emeraldpay/emerald-vault-core';
 import {isBitcoinEntry, isEthereumEntry, WalletEntry} from "@emeraldpay/emerald-vault-core";
@@ -138,7 +137,7 @@ const WalletDetails = (({wallet, goBack, updateWallet, onReceive, onSend}: Props
   >
     <Grid container={true}>
       <Grid item={true} xs={2} className={styles.walletIcon}>
-        <Hashicon value={"WALLET/" + wallet.id} size={100}/>
+        <HashIcon value={"WALLET/" + wallet.id} size={100}/>
       </Grid>
       <Grid item={true} xs={7}>
         {wallet.entries.map(renderEntry)}

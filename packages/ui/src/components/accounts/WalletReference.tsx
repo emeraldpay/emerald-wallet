@@ -3,8 +3,7 @@ import * as React from 'react';
 import {Box, Card, CardContent, CardMedia, createStyles, Grid, Theme, Typography} from "@material-ui/core";
 import {ClassNameMap} from "@material-ui/styles";
 import {WithDefaults, CurrencyCode, AnyCoinCode} from "@emeraldwallet/core";
-import {Hashicon} from "@emeraldpay/hashicon-react";
-import {Balance} from "../../index";
+import {Balance, HashIcon} from "../../index";
 import classNames from "classnames";
 import {Wallet} from '@emeraldpay/emerald-vault-core';
 import {BigAmount} from "@emeraldpay/bigamount";
@@ -63,7 +62,7 @@ const Component = ((props: OwnProps) => {
 
   return <Card className={classNames(styles.root, classes.root)} elevation={0}>
     <CardMedia className={styles.avatar}>
-      <Hashicon value={"WALLET/" + wallet.id} size={80}/>
+      <HashIcon value={"WALLET/" + wallet.id} size={80}/>
     </CardMedia>
     <CardContent className={classNames(styles.content, classes.content)}>
       <Typography>{wallet.name || '--'}</Typography>

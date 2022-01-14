@@ -8,11 +8,10 @@ import {
 } from '@material-ui/core';
 import {createStyles, makeStyles} from '@material-ui/core/styles';
 import * as React from 'react';
-import {Balance} from "@emeraldwallet/ui";
+import {Balance, HashIcon} from "@emeraldwallet/ui";
 import {connect} from "react-redux";
 import {accounts, IBalanceValue, IState, screen} from "@emeraldwallet/store";
 import {Dispatch} from "react";
-import {Hashicon} from "@emeraldpay/hashicon-react";
 import {Wallet} from '@emeraldpay/emerald-vault-core';
 
 const useStyles = makeStyles<Theme>((theme) =>
@@ -97,7 +96,7 @@ const WalletItem = (({wallet, openWallet, assets, total, onReceive, onSend}: Pro
       <CardContent>
         <Grid container={true}>
           <Grid item={true} xs={2} className={styles.walletIcon} onClick={handleDetailsClick}>
-            <Hashicon value={"WALLET/" + wallet.id} size={100}/>
+            <HashIcon value={"WALLET/" + wallet.id} size={100}/>
           </Grid>
           <Grid item={true} xs={7} onClick={handleDetailsClick}>
             <Grid container={true}>
