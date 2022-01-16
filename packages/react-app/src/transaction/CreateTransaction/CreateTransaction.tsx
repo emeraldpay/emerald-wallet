@@ -1,11 +1,18 @@
+import { BigAmount, FormatterBuilder } from "@emeraldpay/bigamount";
+import { Wei } from '@emeraldpay/bigamount-crypto';
+import { WalletEntry } from "@emeraldpay/emerald-vault-core";
 import { convert, toBaseUnits } from '@emeraldplatform/core';
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import {
+  amountFactory,
+  AnyCoinCode,
   BlockchainCode,
+  blockchainIdToCode,
   Blockchains,
+  CurrencyAmount,
+  tokenAmount,
   workflow,
-  blockchainIdToCode, AnyCoinCode, tokenAmount, CurrencyAmount, amountFactory
 } from '@emeraldwallet/core';
 import { registry } from '@emeraldwallet/erc20';
 import {
@@ -13,22 +20,19 @@ import {
   addressBook,
   blockchains,
   hwkey,
+  IState,
   screen,
   settings,
   tokens,
   transaction,
-  IState
 } from '@emeraldwallet/store';
-import {BigNumber} from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import ChainTitle from '../../common/ChainTitle';
 import CreateTx from '../CreateTx';
 import SignTx from '../SignTx';
-import {traceValidate, txFeeFiat} from './util';
-import {WalletEntry} from "@emeraldpay/emerald-vault-core";
-import {Wei} from '@emeraldpay/bigamount-crypto';
-import {BigAmount, Formatter, FormatterBuilder} from "@emeraldpay/bigamount";
+import { traceValidate, txFeeFiat } from './util';
 
 type CreateEthereumTx = workflow.CreateEthereumTx;
 type CreateERC20Tx = workflow.CreateERC20Tx;
@@ -43,7 +47,7 @@ enum PAGES {
 const DEFAULT_GAS_LIMIT = '21000';
 const DEFAULT_ERC20_GAS_LIMIT = '40000';
 
-interface ICreateTxState {
+interface CreateTxState {
   hash?: string;
   transaction: any;
   password?: string;
@@ -52,9 +56,12 @@ interface ICreateTxState {
   data?: any;
   typedData?: any;
   amount?: any;
+  maximalGasPrice: string;
+  minimalGasPrice: string;
+  standardGasPrice: string;
 }
 
-interface IOwnProps {
+interface OwnProps {
   sourceEntry: WalletEntry;
   gasLimit?: any;
   amount?: any;
@@ -63,11 +70,11 @@ interface IOwnProps {
 }
 
 function isToken(tx: CreateERC20Tx | CreateEthereumTx): tx is CreateERC20Tx {
-  let coin = tx.getTokenSymbol().toLowerCase();
+  const coin = tx.getTokenSymbol().toLowerCase();
   return coin == "dai" || coin == "usdt";
 }
 
-class CreateTransaction extends React.Component<IOwnProps & Props & IDispatchFromProps, ICreateTxState> {
+class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromProps, CreateTxState> {
 
   get balance() {
     if (isToken(this.transaction)) {
@@ -89,17 +96,17 @@ class CreateTransaction extends React.Component<IOwnProps & Props & IDispatchFro
     this.setState({ transaction: tx.dump() });
   }
 
-  public static txFromProps(props: IOwnProps & Props & IDispatchFromProps) {
+  public static txFromProps(props: OwnProps & Props & DispatchFromProps) {
     const tx = new workflow.CreateEthereumTx();
     tx.from = props.selectedFromAddress;
     tx.setTotalBalance(props.getBalance());
-    tx.gasPrice = props.gasPrice;
+    tx.gasPrice = new Wei(0);
     tx.amount = props.amount;
     tx.gas = new BigNumber(props.gasLimit || DEFAULT_GAS_LIMIT);
     return tx;
   }
 
-  constructor(props: IOwnProps & Props & IDispatchFromProps) {
+  constructor(props: OwnProps & Props & DispatchFromProps) {
     super(props);
     this.onChangeFrom = this.onChangeFrom.bind(this);
     this.onChangeTo = this.onChangeTo.bind(this);
@@ -111,11 +118,15 @@ class CreateTransaction extends React.Component<IOwnProps & Props & IDispatchFro
     this.onChangePassword = this.onChangePassword.bind(this);
     this.getPage = this.getPage.bind(this);
     this.onMaxClicked = this.onMaxClicked.bind(this);
+    this.onSetGasPrice = this.onSetGasPrice.bind(this);
     const tx = CreateTransaction.txFromProps(props);
     this.state = {
-      transaction: tx.dump(),
+      maximalGasPrice: '0',
+      minimalGasPrice: '0',
+      standardGasPrice: '0',
       page: props.mode ? PAGES.SIGN : PAGES.TX,
-      token: props.token
+      token: props.token,
+      transaction: tx.dump()
     };
   }
 
@@ -193,13 +204,39 @@ class CreateTransaction extends React.Component<IOwnProps & Props & IDispatchFro
     this.transaction = tx;
   }
 
-  public componentDidMount () {
+  public async componentDidMount () {
+    const fees = await this.props.getFees(this.props.chain);
+
+    const { avgMiddle } = fees;
+
+    let { avgLast, avgTail5 } = fees;
+
+    const tx = this.transaction;
+    tx.gasPrice = new Wei(avgMiddle);
+    tx.rebalance();
+    this.transaction = tx;
+
+    /**
+     * For small networks with less than 5 txes in a block the Tail5 value may be larger that the Middle value.
+     * Make sure the order is consistent.
+     */
+    if (avgTail5 > avgMiddle) {
+      avgTail5 = avgMiddle;
+    }
+
+    if (avgLast > avgTail5) {
+      avgLast = avgTail5;
+    }
+
     this.setState({
+      maximalGasPrice: avgMiddle,
+      minimalGasPrice: avgLast,
+      standardGasPrice: avgTail5,
       amount: this.props.amount,
       data: this.props.data,
-      typedData: this.props.typedData,
       token: this.props.token,
-      transaction: CreateTransaction.txFromProps(this.props).dump()
+      transaction: CreateTransaction.txFromProps(this.props).dump(),
+      typedData: this.props.typedData
     });
   }
 
@@ -225,6 +262,13 @@ class CreateTransaction extends React.Component<IOwnProps & Props & IDispatchFro
     this.transaction = tx;
   }
 
+  public onSetGasPrice (price: number) {
+    const tx = this.transaction;
+    tx.gasPrice = new Wei(price, 'GWei');
+    tx.rebalance();
+    this.transaction = tx;
+  }
+
   public getPage () {
     if (!this.state.transaction.from) {
       return null;
@@ -234,6 +278,9 @@ class CreateTransaction extends React.Component<IOwnProps & Props & IDispatchFro
       case PAGES.TX:
         return (
           <CreateTx
+            maximalGasPrice={this.state.maximalGasPrice}
+            minimalGasPrice={this.state.minimalGasPrice}
+            standardGasPrice={this.state.standardGasPrice}
             tx={tx}
             txFeeToken={this.props.txFeeSymbol}
             token={this.state.token}
@@ -252,6 +299,7 @@ class CreateTransaction extends React.Component<IOwnProps & Props & IDispatchFro
             onCancel={this.props.onCancel}
             onEmptyAddressBookClick={this.props.onEmptyAddressBookClick}
             onMaxClicked={this.onMaxClicked}
+            onSetGasPrice={this.onSetGasPrice}
           />
         );
       case PAGES.SIGN:
@@ -292,7 +340,7 @@ class CreateTransaction extends React.Component<IOwnProps & Props & IDispatchFro
   }
 }
 
-function signTokenTx (dispatch: any, ownProps: IOwnProps, args: any) {
+function signTokenTx (dispatch: any, ownProps: OwnProps, args: any) {
   const {
     password, token
   } = args;
@@ -322,7 +370,7 @@ function signTokenTx (dispatch: any, ownProps: IOwnProps, args: any) {
 }
 
 function signEtherTx (
-  dispatch: any, ownProps: IOwnProps, request: { transaction: CreateEthereumTx, password: string }
+  dispatch: any, ownProps: OwnProps, request: { transaction: CreateEthereumTx; password: string }
   ) {
   const entryId = ownProps.sourceEntry.id;
   const blockchainCode = blockchainIdToCode(ownProps.sourceEntry.blockchain);
@@ -356,7 +404,7 @@ function signEtherTx (
     });
 }
 
-function sign (dispatch: any, ownProps: IOwnProps, args: any) {
+function sign (dispatch: any, ownProps: OwnProps, args: any) {
   const blockchain = Blockchains[blockchainIdToCode(ownProps.sourceEntry.blockchain)];
   const {coinTicker} = blockchain.params;
   const token = args.token.toUpperCase();
@@ -366,10 +414,11 @@ function sign (dispatch: any, ownProps: IOwnProps, args: any) {
   return signEtherTx(dispatch, ownProps, args);
 }
 
-interface IDispatchFromProps {
-  signAndSend: (args: {transaction: CreateEthereumTx | CreateERC20Tx, password: any, data: any, token: any}) => void;
+interface DispatchFromProps {
+  getFees: (blockchain: BlockchainCode) => Promise<any>;
   onCancel: () => void;
   onEmptyAddressBookClick: () => void;
+  signAndSend: (args: {transaction: CreateEthereumTx | CreateERC20Tx; password: any; data: any; token: any}) => void;
 }
 
 interface Props {
@@ -388,7 +437,6 @@ interface Props {
   mode?: string;
   typedData: any;
   token: any;
-  gasPrice: any;
   gasLimit: any;
   selectedFromAddress: string;
   getTxFeeFiatForGasLimit: (gas: number) => string;
@@ -407,14 +455,13 @@ const fiatFormatter = new FormatterBuilder()
   .build()
 
 export default connect(
-  (state: IState, ownProps: IOwnProps): Props => {
+  (state: IState, ownProps: OwnProps): Props => {
     const {sourceEntry} = ownProps;
     const blockchain = Blockchains[blockchainIdToCode(sourceEntry.blockchain)];
     const txFeeSymbol = blockchain.params.coinTicker;
     const allTokens = registry.tokens[blockchain.params.code]
       .concat([{address: '', symbol: txFeeSymbol, decimals: blockchain.params.decimals}])
       .reverse();
-    const gasPrice = blockchains.selectors.gasPrice(state, blockchain.params.code);
     const fiatRate = settings.selectors.fiatRate(blockchain.params.code, state);
     const zero = amountFactory(blockchain.params.code)(0);
 
@@ -455,7 +502,6 @@ export default connect(
         return txFeeFiat(price.number.toFixed(), gasLimit, fiatRate);
       },
       currency: settings.selectors.fiatCurrency(state),
-      gasPrice,
       tokenSymbols: allTokens.map((i: any) => i.symbol),
       addressBookAddresses: addressBook.selectors.all(state).map((i: any) => i.address),
       ownAddresses: accounts.selectors.allEntriesByBlockchain(state, blockchain.params.code)
@@ -465,7 +511,20 @@ export default connect(
     };
   },
 
-  (dispatch: any, ownProps: IOwnProps): IDispatchFromProps => ({
+  (dispatch: any, ownProps: OwnProps): DispatchFromProps => ({
+    getFees: async (blockchain) => {
+      const [avgLast, avgMiddle, avgTail5] = await Promise.all([
+        dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgLast')),
+        dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgMiddle')),
+        dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgTail5')),
+      ]);
+
+      return {
+        avgLast,
+        avgMiddle,
+        avgTail5,
+      };
+    },
     onCancel: () => dispatch(screen.actions.gotoScreen(screen.Pages.HOME, ownProps.sourceEntry)),
     onEmptyAddressBookClick: () => dispatch(screen.actions.gotoScreen('add-address')),
     signAndSend: (args: any) => {

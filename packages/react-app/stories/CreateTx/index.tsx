@@ -1,24 +1,23 @@
-import {BlockchainCode, workflow} from '@emeraldwallet/core';
-import {storiesOf} from '@storybook/react';
+import { Satoshi, WEIS } from "@emeraldpay/bigamount-crypto";
+import { Wei } from "@emeraldpay/bigamount-crypto/lib/ethereum";
+import { BitcoinEntry } from "@emeraldpay/emerald-vault-core/lib/types";
+import { BlockchainCode, workflow } from '@emeraldwallet/core';
+import { CreateBitcoinTx } from "@emeraldwallet/core/lib/workflow";
+import { action } from "@storybook/addon-actions";
+import { storiesOf } from '@storybook/react';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
+import Confirm from "../../src/transaction/CreateBitcoinTransaction/Confirm";
+import CreateBitcoinTransaction from "../../src/transaction/CreateBitcoinTransaction/CreateBitcoinTransaction";
+import Sign from "../../src/transaction/CreateBitcoinTransaction/Sign";
 import CreateTx from '../../src/transaction/CreateTx';
 import AmountField from '../../src/transaction/CreateTx/AmountField';
 import FromField from '../../src/transaction/CreateTx/FromField';
 import ToField from '../../src/transaction/CreateTx/ToField';
-import {Wei} from "@emeraldpay/bigamount-crypto/lib/ethereum";
-import CreateBitcoinTransaction from "../../src/transaction/CreateBitcoinTransaction/CreateBitcoinTransaction";
-import {providerForStore} from "../storeProvider";
-import {createWallets, setup, setBalances, wallet3} from "../wallets";
+import { BackendMock, REAL_BTC_TX } from '../backendMock';
+import { providerForStore } from "../storeProvider";
 import withTheme from "../themeProvider";
-import {BackendMock, REAL_BTC_TX} from '../backendMock';
-import Sign from "../../src/transaction/CreateBitcoinTransaction/Sign";
-import {CreateBitcoinTx} from "@emeraldwallet/core/lib/workflow";
-import {BitcoinEntry} from "@emeraldpay/emerald-vault-core/lib/types";
-import {Satoshi, WEIS} from "@emeraldpay/bigamount-crypto";
-import {action} from "@storybook/addon-actions";
-import RawTx from "../../src/transaction/CreateBitcoinTransaction/RawTx";
-import Confirm from "../../src/transaction/CreateBitcoinTransaction/Confirm";
+import { createWallets, setBalances, setup, wallet3 } from "../wallets";
 
 const backend = new BackendMock();
 backend.useBlockchains(["BTC", "ETC"]);
@@ -38,6 +37,9 @@ storiesOf('CreateTx Ethereum', module)
   .addDecorator(withTheme)
   .add('Create ETC', () => (
     <CreateTx
+      maximalGasPrice={'3000000000'}
+      minimalGasPrice={'1000000000'}
+      standardGasPrice={'2000000000'}
       tokenSymbols={['ETC']}
       token={'ETC'}
       tx={new workflow.CreateEthereumTx(txDetails)}
@@ -93,4 +95,3 @@ storiesOf('CreateTx Bitcoin', module)
       entryId={"f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-3"}
       rawtx={REAL_BTC_TX}/>
   ))
-

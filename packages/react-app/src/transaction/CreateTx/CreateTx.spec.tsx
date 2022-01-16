@@ -22,6 +22,9 @@ describe('CreateTx', () => {
           tx={tx}
           txFeeToken='ETH'
           tokenSymbols={[]}
+          maximalGasPrice='100'
+          minimalGasPrice='1'
+          standardGasPrice='50'
         />
       </Provider>
       );
@@ -34,6 +37,9 @@ describe('CreateTx', () => {
           tx={tx}
           txFeeToken='ETH'
           tokenSymbols={[]}
+          maximalGasPrice='100'
+          minimalGasPrice='1'
+          standardGasPrice='50'
         />
       </Provider>
       );

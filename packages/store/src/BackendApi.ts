@@ -1,11 +1,15 @@
-
+import { EstimationMode } from '@emeraldpay/api';
 import {
+  AnyCoinCode,
   BlockchainCode,
   Commands,
+  EthereumStoredTransaction,
   IBackendApi,
-  AnyCoinCode, isBitcoin, IStoredTransaction, isEthereumStoredTransaction, EthereumStoredTransaction
+  isBitcoin,
+  isEthereumStoredTransaction,
+  IStoredTransaction,
 } from '@emeraldwallet/core';
-import {ipcRenderer} from 'electron';
+import { ipcRenderer } from 'electron';
 
 /**
  * This backend api implementation calls electron IPC for business logic
@@ -46,4 +50,11 @@ export default class BackendApi implements IBackendApi {
     return ipcRenderer.invoke(Commands.GET_NONCE, blockchain, address);
   }
 
+  public estimateFee = (
+    blockchain: BlockchainCode,
+    blocks: number,
+    mode: EstimationMode
+  ): Promise<any> => {
+    return ipcRenderer.invoke(Commands.ESTIMATE_FEE, blockchain, blocks, mode);
+  };
 }

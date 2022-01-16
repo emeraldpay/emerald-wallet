@@ -1,27 +1,27 @@
 import {
-  AddressBookService, amountFactory, AnyCoinCode,
-  BlockchainCode,
-  blockchainCodeToId,
-  Blockchains,
-  Commands, isAnyTokenCode, isBitcoin, isCoinTickerCode, isEthereum, IStoredTransaction,
-  Logger,
-} from '@emeraldwallet/core';
-import {loadTransactions2, storeTransactions2} from '@emeraldwallet/history-store';
-import {ipcMain} from 'electron';
-import * as os from 'os';
-import Application from '../Application';
-import {tokenContract} from '../erc20';
-import {registry} from "@emeraldwallet/erc20";
-import BigNumber from 'bignumber.js';
-import {EmeraldApiAccess} from "@emeraldwallet/services";
-import {
-  BalanceRequest,
   AddressBalance,
   AssetCode,
   Blockchain,
+  EstimationMode,
+  isNativeCallError,
   isNativeCallResponse,
-  isNativeCallError
 } from '@emeraldpay/api';
+import {
+  amountFactory,
+  AnyCoinCode,
+  BlockchainCode,
+  blockchainCodeToId,
+  Commands,
+  isBitcoin,
+  isEthereum,
+  IStoredTransaction,
+  Logger,
+} from '@emeraldwallet/core';
+import { loadTransactions2, storeTransactions2 } from '@emeraldwallet/history-store';
+import { EmeraldApiAccess } from "@emeraldwallet/services";
+import { ipcMain } from 'electron';
+import * as os from 'os';
+import Application from '../Application';
 
 interface BalanceResult {
   asset: AnyCoinCode;
@@ -138,4 +138,35 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess) {
   ipcMain.handle(Commands.GET_NONCE, (event: any, blockchain: BlockchainCode, address: string) => {
     return app.rpc.chain(blockchain).eth.getTransactionCount(address)
   });
+
+  ipcMain.handle(
+    Commands.ESTIMATE_FEE,
+    async (
+      event: any,
+      blockchain: BlockchainCode,
+      blocks: number,
+      mode: EstimationMode,
+    ) => {
+      try {
+        const fee = await apiAccess.blockchainClient.estimateFees({
+          blocks,
+          mode,
+          blockchain: blockchainCodeToId(blockchain),
+        });
+
+        switch (fee.type) {
+          case 'bitcoinStd':
+            return fee.satPerKb;
+          case 'ethereumExt':
+            return fee.expect;
+          case 'ethereumStd':
+            return fee.fee;
+        }
+      } catch (exception) {
+        log.error('Cannot estimate fee: ', exception.message);
+      }
+
+      return null;
+    },
+  );
 }

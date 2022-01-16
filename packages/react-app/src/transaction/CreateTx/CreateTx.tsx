@@ -1,6 +1,9 @@
-import {ButtonGroup} from '@emeraldplatform/ui';
-import {workflow} from '@emeraldwallet/core';
-import {Button} from '@emeraldwallet/ui';
+import { BigAmount } from "@emeraldpay/bigamount";
+import { Wei } from '@emeraldpay/bigamount-crypto';
+import { ButtonGroup } from '@emeraldplatform/ui';
+import { workflow } from '@emeraldwallet/core';
+import { Button } from '@emeraldwallet/ui';
+import { Box, createStyles, FormControlLabel, FormHelperText, Slider, Switch, withStyles } from '@material-ui/core';
 import * as React from 'react';
 import AmountField from './AmountField';
 import FormFieldWrapper from './FormFieldWrapper';
@@ -8,7 +11,6 @@ import FormLabel from './FormLabel';
 import FromField from './FromField';
 import ToField from './ToField';
 import TokenField from './TokenField';
-import {BigAmount} from "@emeraldpay/bigamount";
 
 // import GasLimitField from './GasLimitField';
 
@@ -18,9 +20,50 @@ function getStyles () {
   };
 }
 
+const styles = createStyles({
+  inputField: {
+    flexGrow: 5
+  },
+  toField: {
+    width: "500px",
+  },
+  amountField: {
+    width: "300px",
+  },
+  gasPriceTypeBox: {
+    width: "240px",
+    float: "left",
+    height: "40px",
+  },
+  gasPriceSliderBox: {
+    width: "300px",
+    float: "left"
+  },
+  gasPriceHelpBox: {
+    width: "500px",
+    clear: "left",
+  },
+  gasPriceSlider: {
+    width: "300px",
+    marginBottom: "10px",
+    paddingTop: "10px",
+  },
+  gasPriceHelp: {
+    position: "initial",
+    paddingLeft: "10px"
+  },
+  withHelp: {
+    minHeight: "80px"
+  },
+  gasPriceMarkLabel: {
+    fontSize: "0.7em",
+    opacity: 0.8
+  }
+});
+
 const { ValidationResult } = workflow;
 
-export interface IProps {
+export interface Props {
   tx: workflow.CreateEthereumTx | workflow.CreateERC20Tx;
   token: string;
 
@@ -33,22 +76,64 @@ export interface IProps {
   fiatBalance?: string;
   ownAddresses?: string[];
   onSubmit?: () => void;
-  onCancel?: any;
-  onChangeTo?: any;
+  onCancel?: () => void;
+  onChangeTo?: (to: string) => void;
   onChangeAmount?: (amount: BigAmount) => void;
-  onChangeFrom?: any;
-  onChangeGasLimit?: any;
-  onChangeToken?: any;
-  onEmptyAddressBookClick?: any;
-  onMaxClicked?: any;
+  onChangeFrom?: (from: string) => void;
+  onChangeGasLimit?: (value: string) => void;
+  onChangeToken?: (tokenSymbol: any) => void;
+  onEmptyAddressBookClick?: () => void;
+  onMaxClicked?: () => void;
+
+  classes: Record<keyof typeof styles, string>;
+
+  maximalGasPrice: string;
+  minimalGasPrice: string;
+  standardGasPrice: string;
+
+  onSetGasPrice?: (value: number) => void;
 }
 
-class CreateTransaction extends React.Component<IProps> {
+interface State {
+  currentGasPrice: number;
+  useStdGasPrice: boolean;
+}
+
+class CreateTransaction extends React.Component<Props, State> {
+  constructor(props: Props) {
+    super(props);
+
+    this.state = {
+      currentGasPrice: 0,
+      useStdGasPrice: true
+    };
+  }
+
+  public componentDidUpdate(prevProps: Props) {
+    if (prevProps.standardGasPrice !== this.props.standardGasPrice) {
+      const standard = new Wei(this.props.standardGasPrice, 'Wei');
+
+      this.setState({ currentGasPrice: standard.getNumberByUnit(standard.getOptimalUnit()).toNumber() });
+    }
+  }
+
   public getDisabled = () => {
-    return this.props.tx.validate() !== ValidationResult.OK;
+    const gasPrice = new Wei(this.props.standardGasPrice);
+
+    return gasPrice.isZero() || this.props.tx.validate() !== ValidationResult.OK;
   }
 
   public render () {
+    const maximum = new Wei(this.props.maximalGasPrice, 'Wei');
+    const minimum = new Wei(this.props.minimalGasPrice, 'Wei');
+    const standard = new Wei(this.props.standardGasPrice, 'Wei');
+
+    const unit = standard.getOptimalUnit();
+
+    const maximalGasPrice = maximum.getNumberByUnit(unit);
+    const minimalGasPrice = minimum.getNumberByUnit(unit);
+    const standardGasPrice = standard.getNumberByUnit(unit);
+
     return (
       <div style={getStyles()}>
         <FormFieldWrapper>
@@ -83,8 +168,7 @@ class CreateTransaction extends React.Component<IProps> {
           <AmountField
             initialAmount={this.props.tx.getAmount()}
             units={this.props.tx.getAmount().units}
-            onChangeAmount={this.props.onChangeAmount || (() => {
-            })}
+            onChangeAmount={this.props.onChangeAmount || ((): void => { /* Do nothing */ })}
             onMaxClicked={this.props.onMaxClicked}
           />
         </FormFieldWrapper>
@@ -99,6 +183,61 @@ class CreateTransaction extends React.Component<IProps> {
             fiatCurrency={this.props.currency}
           />
         </FormFieldWrapper>*/}
+
+        <FormFieldWrapper>
+          <FormLabel>Gas price</FormLabel>
+          <Box className={this.props.classes.inputField}>
+            <Box className={this.props.classes.gasPriceTypeBox}>
+              <FormControlLabel
+                control={
+                  <Switch
+                    checked={this.state.useStdGasPrice}
+                    onChange={(event) => {
+                      const checked = event.target.checked;
+
+                      if (checked) {
+                        this.props.onSetGasPrice?.(standardGasPrice.toNumber());
+                      }
+
+                      this.setState({ useStdGasPrice: checked });
+                    }}
+                    name="checkedB"
+                    color="primary"
+                  />
+                }
+                label={this.state.useStdGasPrice ? "Standard Gas Price" : "Custom Gas Price"}/>
+            </Box>
+            {!this.state.useStdGasPrice && (
+              <Box className={this.props.classes.gasPriceSliderBox}>
+                <Slider
+                  className={this.props.classes.gasPriceSlider}
+                  classes={{ markLabel: this.props.classes.gasPriceMarkLabel }}
+                  defaultValue={standardGasPrice.toNumber()}
+                  getAriaValueText={() => `${this.state.currentGasPrice.toFixed(2)} ${unit.toString()}`}
+                  aria-labelledby="discrete-slider"
+                  valueLabelDisplay="auto"
+                  step={0.01}
+                  marks={[
+                    { value: minimalGasPrice.toNumber(), label: "Slow" },
+                    { value: maximalGasPrice.toNumber(), label: "Urgent" },
+                  ]}
+                  min={minimalGasPrice.toNumber()}
+                  max={maximalGasPrice.toNumber()}
+                  onChange={(e, value) => {
+                    this.setState({ currentGasPrice: value as number });
+                    this.props.onSetGasPrice?.(value as number);
+                  }}
+                  valueLabelFormat={(value) => value.toFixed(2)}
+                />
+              </Box>
+            )}
+            <Box className={this.props.classes.gasPriceHelpBox}>
+              <FormHelperText className={this.props.classes.gasPriceHelp}>
+                {this.state.currentGasPrice.toFixed(2)} {unit.toString()}
+              </FormHelperText>
+            </Box>
+          </Box>
+        </FormFieldWrapper>
 
         <FormFieldWrapper style={{ paddingBottom: '0px' }}>
           <FormLabel />
@@ -120,4 +259,4 @@ class CreateTransaction extends React.Component<IProps> {
   }
 }
 
-export default CreateTransaction;
+export default withStyles(styles)(CreateTransaction);
