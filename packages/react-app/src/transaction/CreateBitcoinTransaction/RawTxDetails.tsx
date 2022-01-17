@@ -1,7 +1,7 @@
 import {connect} from "react-redux";
+import * as React from "react";
 import {Dispatch} from "react";
-import * as React from 'react';
-import {Box, createStyles, TextField, Theme, Typography} from "@material-ui/core";
+import {Box, createStyles, Theme, Typography} from "@material-ui/core";
 import {accounts, IState} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
 import * as bitcoin from "bitcoinjs-lib";
@@ -97,6 +97,12 @@ export default connect(
     const parsed = bitcoin.Transaction.fromHex(ownProps.rawtx);
     const amountParse = amountDecoder(ownProps.blockchain);
     const amountF = amountFactory(ownProps.blockchain);
+    let network: bitcoin.Network;
+    if (ownProps.blockchain == BlockchainCode.TestBTC) {
+      network = bitcoin.networks.testnet;
+    } else {
+      network = bitcoin.networks.bitcoin;
+    }
 
     const inputs = parsed.ins.map((it) => {
       const txid = it.hash.reverse().toString('hex');
@@ -113,7 +119,7 @@ export default connect(
     });
     const outputs = parsed.outs.map((it) => {
       return {
-        address: bitcoin.address.fromOutputScript(it.script),
+        address: bitcoin.address.fromOutputScript(it.script, network),
         amount: amountF(it.value)
       }
     });
