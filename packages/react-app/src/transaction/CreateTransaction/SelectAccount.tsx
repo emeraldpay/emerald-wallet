@@ -23,6 +23,10 @@ const useStyles = makeStyles<Theme>((theme) =>
   })
 );
 
+function acceptAccount(balance: AccountBalance): boolean {
+  return balance.balance.isPositive();
+}
+
 /**
  *
  */
@@ -92,11 +96,7 @@ interface OwnProps {
 interface AccountBalance {
   account: WalletEntry;
   balance: BigAmount;
-  tokens: BigAmount[]
-}
-
-function acceptAccount(balance: AccountBalance): boolean {
-  return balance.balance.isPositive();
+  tokens: BigAmount[];
 }
 
 export default connect(

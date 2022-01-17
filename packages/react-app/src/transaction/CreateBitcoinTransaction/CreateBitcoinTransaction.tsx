@@ -76,9 +76,9 @@ const Component = (({entry, blockchain, seedId, source, getFees, onBroadcast}: P
 
 // State Properties
 interface Props {
-  entry: BitcoinEntry,
-  blockchain: BlockchainCode,
-  seedId: Uuid,
+  entry: BitcoinEntry;
+  blockchain: BlockchainCode;
+  seedId: Uuid;
 }
 
 // Actions
@@ -94,7 +94,7 @@ interface OwnProps {
 
 export default connect(
   (state: IState, ownProps: OwnProps): Props => {
-    let entry = accounts.selectors.findEntry(state, ownProps.source);
+    const entry = accounts.selectors.findEntry(state, ownProps.source);
     if (!entry) {
       throw new Error("Entry not found: " + ownProps.source);
     }
@@ -104,11 +104,11 @@ export default connect(
     if (!isSeedPkRef(entry, entry.key)) {
       throw new Error("Not a seed entry");
     }
-    let seedId = entry.key.seedId;
+    const seedId = entry.key.seedId;
     return {
       blockchain: blockchainIdToCode(entry.blockchain),
       entry,
-      seedId
+      seedId,
     }
   },
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
