@@ -1,18 +1,20 @@
 import { EntryId, isBitcoinEntry } from "@emeraldpay/emerald-vault-core";
 import { BitcoinEntry, isSeedPkRef, UnsignedBitcoinTx, Uuid } from "@emeraldpay/emerald-vault-core/lib/types";
 import { Page } from "@emeraldplatform/ui";
-import { Back } from "@emeraldplatform/ui-icons";
-import { BlockchainCode, blockchainIdToCode } from "@emeraldwallet/core";
-import { accounts, IState, transaction } from "@emeraldwallet/store";
-import { createStyles, Theme } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import { Alert } from "@material-ui/lab";
+import {Back} from "@emeraldplatform/ui-icons";
+import {BalanceUtxo, BlockchainCode, blockchainIdToCode} from "@emeraldwallet/core";
+import {accounts, IState, transaction} from "@emeraldwallet/store";
+import {createStyles, Theme, Typography} from "@material-ui/core";
+import {makeStyles} from "@material-ui/core/styles";
+import {Alert} from "@material-ui/lab";
 import * as React from "react";
-import { Dispatch } from "react";
-import { connect } from "react-redux";
+import {Dispatch} from "react";
+import {connect} from "react-redux";
 import Confirm from "./Confirm";
 import SetupTx from "./SetupTx";
 import Sign from "./Sign";
+import {CreateBitcoinTx} from "@emeraldwallet/core/lib/workflow";
+import {BigAmount} from "@emeraldpay/bigamount";
 
 type Step = "setup" | "sign" | "result";
 
@@ -27,25 +29,37 @@ const useStyles = makeStyles<Theme>((theme) =>
 /**
  *
  */
-const Component = (({entry, blockchain, seedId, source, getFees, onBroadcast}: Props & Actions & OwnProps) => {
+const Component = (({entry, blockchain, seedId, utxo, source, getFees, onBroadcast}: Props & Actions & OwnProps) => {
   const styles = useStyles();
   const [raw, setRaw] = React.useState("");
   const [page, setPage] = React.useState("setup" as Step);
+  const [txBuilder, setTxBuilder] = React.useState(null as CreateBitcoinTx<BigAmount> | null);
   const [tx, setTx] = React.useState(null as UnsignedBitcoinTx | null);
+
+  React.useEffect(() => {
+    // make sure we setup the Tx Builder only once, otherwise it loses configuration options
+    const txBuilder = new CreateBitcoinTx<BigAmount>(entry, utxo);
+    setTxBuilder(txBuilder)
+  }, [entry.id])
 
   let content;
 
   if (page == "setup") {
-    content = (
-      <SetupTx
-        entry={entry}
-        getFees={getFees(blockchain)}
-        onCreate={(tx) => {
-          setTx(tx);
-          setPage("sign");
-        }}
-      />
-    );
+    if (txBuilder != null) {
+      content = (
+        <SetupTx
+          create={txBuilder}
+          entry={entry}
+          getFees={getFees(blockchain)}
+          onCreate={(tx) => {
+            setTx(tx);
+            setPage("sign");
+          }}
+        />
+      );
+    } else {
+      content = <Typography>Initializing...</Typography>
+    }
   } else if (page == "sign" && typeof tx == "object" && tx != null) {
     content = <Sign blockchain={blockchain}
                     tx={tx}
@@ -79,6 +93,7 @@ interface Props {
   entry: BitcoinEntry;
   blockchain: BlockchainCode;
   seedId: Uuid;
+  utxo: BalanceUtxo[];
 }
 
 // Actions
@@ -105,10 +120,12 @@ export default connect(
       throw new Error("Not a seed entry");
     }
     const seedId = entry.key.seedId;
+    const utxo = accounts.selectors.getUtxo(state, entry.id);
     return {
       blockchain: blockchainIdToCode(entry.blockchain),
       entry,
       seedId,
+      utxo,
     }
   },
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
