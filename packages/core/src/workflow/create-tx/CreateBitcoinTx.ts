@@ -48,7 +48,7 @@ export function convertWUToVB(wu: number): number {
 }
 
 // https://bitcoinfees.net/, https://www.buybitcoinworldwide.com/fee-calculator
-const DEFAULT_VB_FEE = 1;
+const DEFAULT_VKB_FEE = 1024;
 
 export class CreateBitcoinTx<A extends BigAmount> {
   private tx: BitcoinTxDetails<A>
@@ -58,7 +58,7 @@ export class CreateBitcoinTx<A extends BigAmount> {
   private readonly blockchain: BlockchainCode;
   private readonly amountFactory: CreateAmount<A>;
   public metric: TxMetric = new AverageTxMetric();
-  public vbPrice: A;
+  public vkbPrice: A;
   private readonly changeAddress: string;
   private readonly amountUnits: Units;
   private readonly source: BitcoinEntry;
@@ -80,7 +80,7 @@ export class CreateBitcoinTx<A extends BigAmount> {
     this.amountFactory = amountFactory(this.blockchain) as CreateAmount<A>;
     this.zero = this.amountFactory(0);
     this.amountUnits = this.zero.units;
-    this.vbPrice = this.amountFactory(DEFAULT_VB_FEE);
+    this.vkbPrice = this.amountFactory(DEFAULT_VKB_FEE);
     this.tx = {
       from: [],
       to: {},
@@ -103,7 +103,7 @@ export class CreateBitcoinTx<A extends BigAmount> {
   }
 
   set feePrice(price: number) {
-    this.vbPrice = this.amountFactory(price);
+    this.vkbPrice = this.amountFactory(price);
     this.rebalance();
   }
 
@@ -140,7 +140,7 @@ export class CreateBitcoinTx<A extends BigAmount> {
       from,
       [{address: this.tx.to.address || "?", amount: 0}]
     );
-    const bareFees = this.vbPrice.multiply(convertWUToVB(weight)).divide(1024);
+    const bareFees = this.vkbPrice.multiply(convertWUToVB(weight)).divide(1024);
 
     let change: A;
     if (requiredAmount.plus(bareFees).isLessOrEqualTo(totalSend)) {
@@ -152,7 +152,7 @@ export class CreateBitcoinTx<A extends BigAmount> {
           {address: this.changeAddress, amount: 0, entryId: this.source.id}
         ]
       );
-      const changeFees = this.vbPrice.multiply(convertWUToVB(weightWithChange)).divide(1024);
+      const changeFees = this.vkbPrice.multiply(convertWUToVB(weightWithChange)).divide(1024);
       change = totalSend.minus(requiredAmount).minus(changeFees);
       if (change.isNegative()) {
         // when doesn't have enough to pay fees to send change, i.e. too small change

@@ -117,15 +117,13 @@ const Component = (({create, onCreate, getFees}: Props & OwnProps) => {
   React.useEffect(() => {
     (
       async () => {
-        const { avgLast, avgTail5, avgMiddle } = await getFees();
-
-        create.feePrice = avgTail5;
-
-        setFeePrice(avgTail5);
+        const {avgLast, avgTail5, avgMiddle} = await getFees();
 
         setMinimalFee(avgLast);
         setStandardFee(avgTail5);
         setMaximalFee(avgMiddle);
+
+        setNewFeePrice(avgTail5);
       }
     )();
   }, [stdFee]);
@@ -223,11 +221,11 @@ const Component = (({create, onCreate, getFees}: Props & OwnProps) => {
 
 // State Properties
 interface Props {
-  create: CreateBitcoinTx<BigAmount>;
 }
 
 // Component properties
 interface OwnProps {
+  create: CreateBitcoinTx<BigAmount>;
   entry: BitcoinEntry;
   getFees: () => Promise<any>;
   onCreate: (tx: UnsignedBitcoinTx) => void;
@@ -235,10 +233,7 @@ interface OwnProps {
 
 export default connect(
   (state: IState, ownProps: OwnProps): Props => {
-    const utxo = accounts.selectors.getUtxo(state, ownProps.entry.id);
-    const create = new CreateBitcoinTx<BigAmount>(ownProps.entry, utxo);
-
-    return { create };
+    return {};
   },
   (dispatch: Dispatch<any>, ownProps: OwnProps) => {
     return {}

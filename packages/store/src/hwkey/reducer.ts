@@ -16,12 +16,21 @@ function onWatch(state: IHWKeyState, action: IWatchAction): IHWKeyState {
 }
 
 function onSetLedger(state: IHWKeyState, action: ISetLedgerApp): IHWKeyState {
+  let app = action.app;
+
+  // vault lib may return it because of a bug
+  // TODO: remove the workaround after upgrading to vault 0.7.x
+  // @ts-ignore
+  if (app == 'bitcoin-test') {
+    app = "bitcoin-testnet";
+  }
+
   return {
     ...state,
     ledger: {
       ...state.ledger,
       connected: action.connected,
-      app: action.app
+      app
     }
   }
 }

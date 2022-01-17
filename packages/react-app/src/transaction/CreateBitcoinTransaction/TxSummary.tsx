@@ -47,8 +47,8 @@ interface Actions {
 
 // Component properties
 interface OwnProps {
-  blockchain: BlockchainCode,
-  tx: UnsignedBitcoinTx,
+  blockchain: BlockchainCode;
+  tx: UnsignedBitcoinTx;
 }
 
 export default connect(

@@ -35,7 +35,7 @@ class TestMetric implements TxMetric {
   }
 
   fees(inputs: number, outputs: number, create: CreateBitcoinTx<BigAmount>): number {
-    return create.vbPrice.multiply(convertWUToVB(this.weight(inputs, outputs)))
+    return create.vkbPrice.multiply(convertWUToVB(this.weight(inputs, outputs)))
       .number
       .dividedBy(SATOSHIS.top.multiplier)
       .dividedBy(1024)

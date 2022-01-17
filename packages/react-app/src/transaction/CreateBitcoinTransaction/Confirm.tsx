@@ -2,13 +2,13 @@ import {connect} from "react-redux";
 import {Dispatch} from "react";
 import * as React from 'react';
 import {Box, createStyles, Grid, Theme} from "@material-ui/core";
-import {IState} from "@emeraldwallet/store";
+import {IState, screen} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
 import RawTxDetails from "./RawTxDetails";
 import RawTx from "./RawTx";
 import {ButtonGroup} from "@emeraldplatform/ui";
 import {Button} from "@emeraldwallet/ui";
-import {EntryId} from "@emeraldpay/emerald-vault-core/lib/types";
+import {EntryId, EntryIdOp} from "@emeraldpay/emerald-vault-core";
 import {BlockchainCode} from "@emeraldwallet/core";
 
 const useStyles = makeStyles<Theme>((theme) =>
@@ -23,7 +23,7 @@ const useStyles = makeStyles<Theme>((theme) =>
 /**
  *
  */
-const Component = (({rawtx, entryId, blockchain, onConfirm}: Props & Actions & OwnProps) => {
+const Component = (({rawtx, entryId, blockchain, onConfirm, onCancel}: Props & Actions & OwnProps) => {
   const styles = useStyles();
   const [showRaw, setShowRaw] = React.useState(false);
 
@@ -46,8 +46,8 @@ const Component = (({rawtx, entryId, blockchain, onConfirm}: Props & Actions & O
     </Grid>
     <Grid item={true} xs={12} className={styles.buttonsRow}>
       <ButtonGroup>
-        <Button label={'Cancel'}/>
-        <Button label={'Send'} primary={true} onClick={() => onConfirm()}/>
+        <Button label={'Cancel'} onClick={onCancel}/>
+        <Button label={'Send'} primary={true} onClick={onConfirm}/>
       </ButtonGroup>
     </Grid>
   </Grid>
@@ -59,14 +59,15 @@ interface Props {
 
 // Actions
 interface Actions {
+  onCancel: () => void;
 }
 
 // Component properties
 interface OwnProps {
-  rawtx: string,
-  entryId: EntryId,
-  blockchain: BlockchainCode,
-  onConfirm: () => void
+  rawtx: string;
+  entryId: EntryId;
+  blockchain: BlockchainCode;
+  onConfirm: () => void;
 }
 
 export default connect(
@@ -74,6 +75,11 @@ export default connect(
     return {}
   },
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
-    return {}
+    return {
+      onCancel: () => {
+        const walletId = EntryIdOp.asOp(ownProps.entryId).extractWalletId();
+        dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, walletId));
+      }
+    }
   }
 )((Component));

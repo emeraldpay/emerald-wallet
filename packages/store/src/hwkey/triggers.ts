@@ -1,6 +1,7 @@
 import {TriggerState, Triggers, TriggerProcess, TriggerStatus} from "../triggers";
 import {checkLedger} from "./actions";
 import {isWatching} from "./selectors";
+import {IState} from "../types";
 
 const whenWatch: TriggerState = (state) => `${isWatching(state.hwkey)}`;
 
@@ -13,9 +14,9 @@ const executeCheckLedgerRepeat: TriggerProcess = (state, dispatch) => {
   }
 }
 
-let connectHandlers: (() => void)[] = []
+let connectHandlers: ((state: IState) => void)[] = []
 
-export function onConnect(handler: () => void) {
+export function onConnect(handler: (state: IState) => void) {
   connectHandlers.push(handler);
 }
 
@@ -25,7 +26,7 @@ const executeConnectHandlers: TriggerProcess = (state, dispatch) => {
     connectHandlers = [];
     handlers.forEach((h) => {
       try {
-        h();
+        h(state);
       } catch (e) {
         console.warn("Error during handler call", e)
       }
