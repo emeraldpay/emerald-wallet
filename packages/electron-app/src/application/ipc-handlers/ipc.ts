@@ -68,15 +68,17 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess) {
     let calls: Promise<AddressBalance[]>[] = [];
     tokens.forEach((token) => {
       let asset = token as AssetCode;
-      if (asset.toLowerCase() === "TESTBTC") {
+
+      if (asset.toLowerCase() === 'testbtc') {
         // it always BTC for bitcoin networks, TESTBTC is our internal code
-        asset = "BTC"
+        asset = 'BTC';
       }
-      let p = addressListener.getBalance(blockchain, address, asset);
-      calls.push(p)
+
+      calls.push(addressListener.getBalance(blockchain, address, asset));
     });
     return Promise.all(calls)
       .then((all: AddressBalance[][]) => {
+        // FIXME Empty response for token balance
         const result: { [key: string]: string } = {};
         ([] as AddressBalance[]).concat(...all)
           .forEach((balance) => {

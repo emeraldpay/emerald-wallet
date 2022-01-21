@@ -1,11 +1,10 @@
-import {BlockchainCode} from './blockchains';
-import {CoinTicker, CoinTickerCode} from './blockchains/CoinTicker';
+import { CoinTickerCode } from './blockchains';
 
-export type StableCoinCode = 'DAI' | 'USDT' | 'SAI';
+export type StableCoinCode = 'DAI' | 'USDT';
 export type SupportedTokenCode = 'WEENUS';
 
 export function isStableCoinCode(value: string): value is StableCoinCode {
-  return value == 'DAI' || value == 'USDT' || value == 'SAI';
+  return value == 'DAI' || value == 'USDT';
 }
 
 export function isSupportedTokenCode(value: string): value is SupportedTokenCode {
@@ -26,30 +25,27 @@ export interface AssetDetail {
 
 export const AssetDetails: Record<AnyCoinCode, AssetDetail> = {
   "ETH": {
-    title: "Ether"
+    title: "Ether",
   },
   "ETC": {
-    title: "Classic Ether"
+    title: "Classic Ether",
   },
   "DAI": {
-    title: "Dai"
+    title: "Dai",
   },
   "USDT": {
-    title: "Tether"
-  },
-  "SAI": {
-    title: "Sai"
+    title: "Tether",
   },
   "WEENUS": {
-    title: "Weenus"
+    title: "Weenus",
   },
   "BTC": {
-    title: "Bitcoin"
+    title: "Bitcoin",
   },
   "TESTBTC": {
-    title: "Test Bitcoin"
+    title: "Test Bitcoin",
   },
   "KOVAN": {
-    title: "Test Kovan Ether"
-  }
+    title: "Test Kovan Ether",
+  },
 }

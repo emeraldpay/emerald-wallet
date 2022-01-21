@@ -1,16 +1,14 @@
-import {
-  AnyTokenCode, BlockchainCode, CoinTickerCode
-} from '@emeraldwallet/core';
-
-type TokensCollection = {
-  [code in BlockchainCode]: ITokenInfo[];
-};
+import { AnyTokenCode, BlockchainCode, CoinTickerCode } from '@emeraldwallet/core';
 
 export interface ITokenInfo {
   address: string;
   decimals: number;
   symbol: AnyTokenCode | CoinTickerCode; // Coins are accepted because of selection in CreateTransaction, FIXME
 }
+
+type TokensCollection = {
+  [code in BlockchainCode]: ITokenInfo[];
+};
 
 /**
  * Empty wrapper as a workaround typescript type losing
@@ -24,11 +22,6 @@ export const registry = {
     [BlockchainCode.ETC]: [
     ],
     [BlockchainCode.ETH]: [
-      {
-        address: '0x89d24a6b4ccb1b6faa2625fe562bdd9a23260359',
-        decimals: 18,
-        symbol: 'SAI'
-      },
       {
         address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
         decimals: 18,

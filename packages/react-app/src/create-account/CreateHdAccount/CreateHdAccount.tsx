@@ -64,7 +64,7 @@ const useStyles = makeStyles(
 
 function CreateHdAccount(props: IProps & IOwnProps & IDispatchProps) {
   const {onCancel, enabledBlockchains, isHardware} = props;
-  const [password, setPassword] = React.useState();
+  const [password, setPassword] = React.useState('');
   const [enabled, setEnabled] = React.useState({} as EnableStateType);
   const [activeStep, setActiveStep] = React.useState(0);
 

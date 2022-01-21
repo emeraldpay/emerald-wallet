@@ -23,7 +23,7 @@
     "eslint-plugin-react": "^7.20.0",
     "lerna": "3.20.2",
     "neon-cli": "0.3.1",
-    "typescript": "3.7.5"
+    "typescript": "3.8.3"
   },
   "resolutions": {
     "@types/node": "12.12.62",

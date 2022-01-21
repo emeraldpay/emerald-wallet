@@ -28,7 +28,6 @@ function toPlainDetails (tx: ITxDetails): ITxDetailsPlain {
     gasPrice: tx.gasPrice.encode(),
     target: tx.target.valueOf(),
     to: tx.to,
-    totalTokenBalance: tx.totalBalance?.encode(),
     amountDecimals: 18,
     totalEtherBalance: tx.totalBalance?.encode(),
     tokenSymbol: "ETH"
@@ -43,7 +42,9 @@ function fromPlainDetails (plain: ITxDetailsPlain): ITxDetails {
     gasPrice: Wei.decode(plain.gasPrice),
     target: targetFromNumber(plain.target),
     to: plain.to,
-    totalBalance: plain.totalTokenBalance == null ? undefined : Wei.decode(plain.totalTokenBalance)
+    totalBalance: plain.totalEtherBalance == null
+      ? undefined
+      : Wei.decode(plain.totalEtherBalance),
   };
 }
 

@@ -56,11 +56,13 @@ function* fetchErc20Balances(action: IFetchErc20BalancesAction): SagaIterator {
     const address = account.address;
     const chain = account.blockchain;
 
+    const code = blockchainIdToCode(chain);
+
     // Look up all known tokens for current blockchain
-    const _tokens = registry.all()[chain as BlockchainCode] || [];
+    const _tokens = registry.all()[code] || [];
 
     // Request balances for each token for current address
-    yield put(requestTokensBalances(chain, _tokens, address));
+    yield put(requestTokensBalances(code, _tokens, address));
   }
 }
 

@@ -49,7 +49,7 @@ const BASE_HD_PATH: HDPath = HDPath.parse("m/44'/0'/0'/0/0");
  */
 const Component = (({disabledAccounts, table, onAccountUpdate, onStart, onReady, isHWKey, isPreloaded, initAccountId}: Props & Actions & OwnProps) => {
   const styles = useStyles();
-  const [initialized, setInitialized] = React.useState();
+  const [initialized, setInitialized] = React.useState(false);
 
   const [accountId, setAccountId] = React.useState(initAccountId);
 
