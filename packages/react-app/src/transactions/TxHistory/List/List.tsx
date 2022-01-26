@@ -63,7 +63,7 @@ const TransactionsList = (props: IProps) => {
           <TableRow>
             <TableCell className={cx(classes.columnName, classes.amountColumn)}>Amount</TableCell>
             <TableCell className={classes.columnArrow}>&nbsp;</TableCell>
-            <TableCell className={cx(classes.columnAddresses, classes.columnName)}>From -> To</TableCell>
+            <TableCell className={cx(classes.columnAddresses, classes.columnName)}>From {'->'} To</TableCell>
             <TableCell className={cx(classes.columnName, classes.statusColumn)}>Status</TableCell>
           </TableRow>
         </TableHead>

@@ -12,11 +12,11 @@ import {
   RemoteVault,
   RenderWalletState,
   triggers,
-  config
+  config,
 } from '@emeraldwallet/store';
-import {ipcRenderer} from 'electron';
+import { ipcRenderer } from 'electron';
 import getWalletVersion from '../utils/get-wallet-version';
-import {Logger} from '@emeraldwallet/core';
+import { Logger } from '@emeraldwallet/core';
 import ElectronLogger from '../utils/logger2';
 
 Logger.setInstance(new ElectronLogger());
@@ -52,13 +52,10 @@ export function startSync() {
         const supported = settings.selectors.currentChains(store.getState());
         const codes = supported.map((chain) => chain.params.code);
         log.info('Configured to use chains', codes);
-      })
-      .then(() => {
+
         return store.dispatch(accounts.actions.loadSeedsAction());
       })
-      .then(() => {
-        return store.dispatch(accounts.actions.loadWalletsAction());
-      })
+      .then(() => store.dispatch(accounts.actions.loadWalletsAction()))
       .then(() => {
         const supported = settings.selectors.currentChains(store.getState());
         const codes = supported.map((chain) => chain.params.code);

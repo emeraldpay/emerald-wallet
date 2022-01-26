@@ -46,7 +46,7 @@ export class AddressListener {
   }
 
   public getBalance(chainCode: BlockchainCode, addresses: string | string[], token?: AssetCode): Promise<AddressBalance[]> {
-    const request: BalanceRequest = this.makeRequest(chainCode, addresses);
+    const request: BalanceRequest = this.makeRequest(chainCode, addresses, token);
     return this.client.getBalance(request);
   }
 

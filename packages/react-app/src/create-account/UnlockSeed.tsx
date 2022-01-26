@@ -22,7 +22,7 @@ const useStyles = makeStyles(
  */
 const Component = (({seedId, onUnlock, verifyPassword}: Props & Actions & OwnProps) => {
   const styles = useStyles();
-  const [password, setPassword] = React.useState();
+  const [password, setPassword] = React.useState('');
   const [verifying, setVerifying] = React.useState(false);
   const [invalid, setInvalid] = React.useState(false);
 

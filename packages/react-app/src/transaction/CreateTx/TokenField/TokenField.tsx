@@ -48,7 +48,7 @@ export class TokenField extends React.Component<IProps> {
         </TextField>
 
         <div className={classes.balance} data-testid='balance'>
-          {this.renderBalance(balance)} {this.props.selectedToken} / {this.props.fiatBalance} {this.props.fiatCurrency}
+          {this.renderBalance(balance)} / {this.props.fiatBalance} {this.props.fiatCurrency}
         </div>
       </React.Fragment>
     );

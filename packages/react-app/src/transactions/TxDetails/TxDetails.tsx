@@ -1,29 +1,28 @@
-import {connect} from "react-redux";
-import {Dispatch} from "react";
-import * as React from 'react';
-import {Box, createStyles, Theme, Typography} from "@material-ui/core";
-import {IState} from "@emeraldwallet/store";
-import {makeStyles} from "@material-ui/core/styles";
-import {accounts, screen, settings, txhistory} from '@emeraldwallet/store';
-import {Wallet, EntryId, WalletEntry} from "@emeraldpay/emerald-vault-core";
+import { WalletEntry } from "@emeraldpay/emerald-vault-core";
+import { EntryIdOp } from "@emeraldpay/emerald-vault-core/lib/ops";
+import { Uuid } from "@emeraldpay/emerald-vault-core/lib/types";
+import { convert } from "@emeraldplatform/core";
+import { ButtonGroup, Page } from "@emeraldplatform/ui";
+import { Back } from "@emeraldplatform/ui-icons";
 import {
   amountFactory,
   blockchainByName,
   isBitcoinStoredTransaction,
   isEthereumStoredTransaction,
-  IStoredTransaction
+  IStoredTransaction,
 } from "@emeraldwallet/core";
-import EthereumTxDetails from "./TxDetailsView/EthereumTxDetails";
-import {ButtonGroup, Page} from "@emeraldplatform/ui";
-import {Back} from "@emeraldplatform/ui-icons";
-import {Button, FormRow} from "@emeraldwallet/ui";
-import {parseDate} from "@emeraldwallet/core/lib/utils";
-import TxStatus from "./TxDetailsView/TxStatus";
-import {convert} from "@emeraldplatform/core";
-import {ITokenInfo, registry} from "@emeraldwallet/erc20";
-import {Uuid} from "@emeraldpay/emerald-vault-core/lib/types";
-import {EntryIdOp} from "@emeraldpay/emerald-vault-core/lib/ops";
+import { parseDate } from "@emeraldwallet/core/lib/utils";
+import { registry, ITokenInfo } from "@emeraldwallet/erc20";
+import { accounts, IState, screen, txhistory } from "@emeraldwallet/store";
+import { Button, FormRow } from "@emeraldwallet/ui";
+import { createStyles, Theme, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import * as React from "react";
+import { Dispatch } from "react";
+import { connect } from "react-redux";
 import BitcoinTxDetails from "./TxDetailsView/BitcoinTxDetails";
+import EthereumTxDetails from "./TxDetailsView/EthereumTxDetails";
+import TxStatus from "./TxDetailsView/TxStatus";
 
 const {gotoScreen} = screen.actions;
 

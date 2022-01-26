@@ -1,11 +1,11 @@
+import { BigAmount } from "@emeraldpay/bigamount";
+import { Wei } from "@emeraldpay/bigamount-crypto";
 import BigNumber from 'bignumber.js';
-import {DisplayErc20Tx, IDisplayTx} from '..';
-import {ITx, ITxDetailsPlain, targetFromNumber, TxTarget, ValidationResult} from './types';
-import {BigAmount} from "@emeraldpay/bigamount";
-import {Wei} from "@emeraldpay/bigamount-crypto";
-import {tokenAmount} from "../../blockchains";
-import {AnyTokenCode} from "../../Asset";
-import {tokenUnits} from "../../blockchains/tokens";
+import { DisplayErc20Tx, IDisplayTx } from '..';
+import { AnyTokenCode } from "../../Asset";
+import { tokenAmount } from "../../blockchains";
+import { tokenUnits } from "../../blockchains/tokens";
+import { ITx, ITxDetailsPlain, targetFromNumber, TxTarget, ValidationResult } from './types';
 
 export enum TransferType {
   STANDARD,
@@ -64,15 +64,18 @@ function fromPlainDetails(plain: ITxDetailsPlain): IERC20TxDetails {
     amount: BigAmount.decode(plain.amount, tokenUnits(plain.tokenSymbol)),
     erc20: plain.erc20 || '',
     from: plain.from,
+    gas: new BigNumber(plain.gas),
+    gasPrice: Wei.decode(plain.gasPrice),
     target: targetFromNumber(plain.target),
     to: plain.to,
-    totalTokenBalance: plain.totalTokenBalance == null ? undefined
+    tokenSymbol: plain.tokenSymbol as AnyTokenCode,
+    totalEtherBalance: plain.totalEtherBalance == null
+      ? undefined
+      : Wei.decode(plain.totalEtherBalance),
+    totalTokenBalance: plain.totalTokenBalance == null
+      ? undefined
       : BigAmount.decode(plain.totalTokenBalance, tokenUnits(plain.tokenSymbol)),
-    totalEtherBalance: plain.totalEtherBalance == null ? undefined : Wei.decode(plain.totalEtherBalance),
-    gasPrice: Wei.decode(plain.gasPrice),
-    gas: new BigNumber(plain.gas),
     transferType: transferFromNumber(plain.transferType),
-    tokenSymbol: plain.tokenSymbol as AnyTokenCode
   };
 }
 
@@ -94,7 +97,7 @@ export class CreateERC20Tx implements IERC20TxDetails, ITx<BigAmount> {
   public gas: BigNumber;
   public transferType: TransferType;
 
-  private zero: BigAmount
+  private readonly zero: BigAmount;
 
   constructor(source: IERC20TxDetails | AnyTokenCode) {
     if (typeof source === "string") {

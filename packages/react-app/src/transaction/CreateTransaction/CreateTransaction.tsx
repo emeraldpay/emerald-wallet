@@ -1,4 +1,4 @@
-import { BigAmount, FormatterBuilder } from "@emeraldpay/bigamount";
+import { BigAmount, FormatterBuilder, Unit } from "@emeraldpay/bigamount";
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { WalletEntry } from "@emeraldpay/emerald-vault-core";
 import { convert, toBaseUnits } from '@emeraldplatform/core';
@@ -14,6 +14,7 @@ import {
   tokenAmount,
   workflow,
 } from '@emeraldwallet/core';
+import { tokenUnits } from '@emeraldwallet/core/lib/blockchains/tokens';
 import { registry } from '@emeraldwallet/erc20';
 import {
   accounts,
@@ -86,10 +87,28 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
 
   get transaction(): CreateEthereumTx | CreateERC20Tx {
     const currentChain = Blockchains[this.props.chain];
-    if (currentChain.params.coinTicker !== this.state.token) {
-      return workflow.CreateERC20Tx.fromPlain(this.state.transaction);
+
+    const { token, transaction: { tokenSymbol: transactionToken } } = this.state;
+
+    let { amount } = this.state.transaction;
+
+    if (currentChain.params.coinTicker !== token) {
+      if (token !== transactionToken) {
+        const amountValue = Wei.decode(amount).toEther().valueOf();
+
+        amount = new BigAmount(amountValue, tokenUnits(token)).encode();
+      }
+
+      return workflow.CreateERC20Tx.fromPlain({ ...this.state.transaction, amount, tokenSymbol: token });
     }
-    return workflow.CreateEthereumTx.fromPlain(this.state.transaction);
+
+    if (token !== transactionToken) {
+      const amountValue = BigAmount.decode(amount, tokenUnits(transactionToken)).number.toNumber();
+
+      amount = new Wei(amountValue, 'ETHER').encode();
+    }
+
+    return workflow.CreateEthereumTx.fromPlain({ ...this.state.transaction, amount });
   }
 
   set transaction (tx) {
@@ -164,7 +183,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
         // Adjust Gas Limit
         tx.gas = BigNumber.max(tx.gas, new BigNumber(DEFAULT_ERC20_GAS_LIMIT));
         tx.totalEtherBalance = getBalance();
-        tx.setAmount(tokenAmount(9, tokenInfo.symbol));
+        tx.setAmount(tokenAmount(0, tokenInfo.symbol), tokenSymbol);
       }
       const balance = this.props.getTokenBalanceForAddress(tx.from!, tokenSymbol);
       tx.setTotalBalance(balance);
@@ -333,10 +352,23 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
 
   private restoreTx (tokenSymbol: any) {
     const currentChain = Blockchains[this.props.chain];
+
     if (currentChain.params.coinTicker !== tokenSymbol) {
-      return workflow.CreateERC20Tx.fromPlain(this.state.transaction);
+      return workflow.CreateERC20Tx.fromPlain({
+        ...this.state.transaction,
+        tokenSymbol,
+        amount: new BigAmount(0, tokenUnits(tokenSymbol)).encode(),
+        totalEtherBalance: undefined,
+        totalTokenBalance: undefined,
+      });
     }
-    return workflow.CreateEthereumTx.fromPlain(this.state.transaction);
+
+    return workflow.CreateEthereumTx.fromPlain({
+      ...this.state.transaction,
+      amount: Wei.ZERO.encode(),
+      totalEtherBalance: undefined,
+      totalTokenBalance: undefined,
+    });
   }
 }
 
@@ -489,12 +521,14 @@ export default connect(
         if (token !== txFeeSymbol) {
           return '??';
         }
+
         const newBalance = accounts.selectors.getBalance(state, sourceEntry.id, zero)!;
-        const rate = settings.selectors.fiatRate(token, state) || 0;
-        const fiat = new CurrencyAmount(
-          newBalance.getNumberByUnit(newBalance.units.top).multipliedBy(rate),
+        const rate = settings.selectors.fiatRate(token, state) ?? 0;
+        const fiat = CurrencyAmount.create(
+          newBalance.getNumberByUnit(newBalance.units.top).multipliedBy(rate).toNumber(),
           settings.selectors.fiatCurrency(state)
-        )
+        );
+
         return fiatFormatter.format(fiat);
       },
       getTxFeeFiatForGasLimit: (gasLimit: number) => {

@@ -65,7 +65,7 @@ const useStyles = makeStyles(() =>
 const Component = (({create, onCreate, getFees}: Props & OwnProps) => {
   const styles = useStyles();
   const [to, setTo] = React.useState("");
-  const [toError, setToError] = React.useState();
+  const [toError, setToError] = React.useState<string | undefined>('');
   const [stdFee, setStdFee] = React.useState(true);
   const [amount, setAmountState] = React.useState(0);
   const [amountStr, setAmountStr] = React.useState("0");
@@ -136,7 +136,7 @@ const Component = (({create, onCreate, getFees}: Props & OwnProps) => {
         <TextField
           className={styles.toField}
           value={to}
-          error={toError?.length > 0}
+          error={(toError?.length ?? 0) > 0}
           helperText={toError}
           onChange={(e: any) => updateTo(e.target.value)}
         />
