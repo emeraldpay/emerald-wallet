@@ -72,7 +72,8 @@ interface OwnProps {
 
 function isToken(tx: CreateERC20Tx | CreateEthereumTx): tx is CreateERC20Tx {
   const coin = tx.getTokenSymbol().toLowerCase();
-  return coin == "dai" || coin == "usdt";
+
+  return coin === 'dai' || coin === 'usdc' || coin === 'usdt' || coin === 'weth';
 }
 
 class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromProps, CreateTxState> {

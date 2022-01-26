@@ -1,14 +1,14 @@
 import { CoinTickerCode } from './blockchains';
 
-export type StableCoinCode = 'DAI' | 'USDT';
-export type SupportedTokenCode = 'WEENUS';
+export type StableCoinCode = 'DAI' | 'USDC' | 'USDT';
+export type SupportedTokenCode = 'WEENUS' | 'WETH';
 
 export function isStableCoinCode(value: string): value is StableCoinCode {
-  return value == 'DAI' || value == 'USDT';
+  return value === 'DAI' || value === 'USDC' || value === 'USDT';
 }
 
 export function isSupportedTokenCode(value: string): value is SupportedTokenCode {
-  return value == 'WEENUS';
+  return value === 'WEENUS' || value === 'WETH';
 }
 
 export type AnyTokenCode = StableCoinCode | SupportedTokenCode;
@@ -24,28 +24,14 @@ export interface AssetDetail {
 }
 
 export const AssetDetails: Record<AnyCoinCode, AssetDetail> = {
-  "ETH": {
-    title: "Ether",
-  },
-  "ETC": {
-    title: "Classic Ether",
-  },
-  "DAI": {
-    title: "Dai",
-  },
-  "USDT": {
-    title: "Tether",
-  },
-  "WEENUS": {
-    title: "Weenus",
-  },
-  "BTC": {
-    title: "Bitcoin",
-  },
-  "TESTBTC": {
-    title: "Test Bitcoin",
-  },
-  "KOVAN": {
-    title: "Test Kovan Ether",
-  },
+  'BTC': { title: 'Bitcoin' },
+  'DAI': { title: 'Dai' },
+  'ETC': { title: 'Classic Ether' },
+  'ETH': { title: 'Ether' },
+  'KOVAN': { title: 'Test Kovan Ether' },
+  'TESTBTC': { title: 'Test Bitcoin' },
+  'USDC': { title: 'USD Coin' },
+  'USDT': { title: 'Tether' },
+  'WETH': { title: 'Wrapped Ether' },
+  'WEENUS': { title: 'Weenus' },
 }

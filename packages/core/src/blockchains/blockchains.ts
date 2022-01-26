@@ -26,7 +26,7 @@ export const Blockchains: {[key: string]: IBlockchain} = {
       12
     ),
     'Ethereum',
-    ['DAI', 'USDT'],
+    ['DAI', 'USDC', 'USDT', 'WETH'],
   ),
   [BlockchainCode.ETC]: new Ethereum(
     new EthereumParams(
