@@ -64,9 +64,8 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess) {
 
   ipcMain.handle(Commands.GET_BALANCE, (event: any, blockchain: BlockchainCode, address: string, tokens: AnyCoinCode[]) => {
     const addressListener = apiAccess.newAddressListener();
-    const amountReader = amountFactory(blockchain);
-    let calls: Promise<AddressBalance[]>[] = [];
-    tokens.forEach((token) => {
+
+    const calls: Promise<AddressBalance[]>[] = tokens.map((token) => {
       let asset = token as AssetCode;
 
       if (asset.toLowerCase() === 'testbtc') {
@@ -74,22 +73,25 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess) {
         asset = 'BTC';
       }
 
-      calls.push(addressListener.getBalance(blockchain, address, asset));
+      return addressListener.getBalance(blockchain, address, asset);
     });
+
     return Promise.all(calls)
-      .then((all: AddressBalance[][]) => {
-        // FIXME Empty response for token balance
-        const result: { [key: string]: string } = {};
-        ([] as AddressBalance[]).concat(...all)
-          .forEach((balance) => {
-            let code = balance.asset.code as AnyCoinCode;
-            if (code == "BTC" && balance.asset.blockchain == Blockchain.TESTNET_BITCOIN) {
-              code = "TESTBTC";
-            }
-            result[code] = amountReader(balance.balance).encode();
-          })
-        return result;
-      }).catch((err) => console.warn("Failed to get balances", err));
+      .then((balances: AddressBalance[][]) =>
+        balances.flat().reduce((carry, balance) => {
+          let code = balance.asset.code as AnyCoinCode;
+
+          if (
+            code == 'BTC' &&
+            balance.asset.blockchain == Blockchain.TESTNET_BITCOIN
+          ) {
+            code = 'TESTBTC';
+          }
+
+          return { ...carry, [code]: balance.balance };
+        }, {})
+      )
+      .catch(err => console.warn('Failed to get balances', err));
   });
 
   ipcMain.handle(Commands.GET_GAS_PRICE, async (event: any, blockchain: BlockchainCode) => {

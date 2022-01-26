@@ -1,37 +1,28 @@
+import { AddEntry, IEmeraldVault, SeedDescription, Wallet, WalletEntry } from "@emeraldpay/emerald-vault-core";
+import { isBitcoinEntry, isEthereumEntry } from "@emeraldpay/emerald-vault-core/lib/types";
 import {
   BlockchainCode,
   blockchainCodeToId,
+  blockchainIdToCode,
   Blockchains,
-  IBackendApi,
-  blockchainIdToCode, WalletStateStorage,
+  WalletStateStorage,
 } from '@emeraldwallet/core';
-import {registry} from '@emeraldwallet/erc20';
+import { registry } from '@emeraldwallet/erc20';
 import { all, call, put, select, takeEvery, takeLatest } from '@redux-saga/core/effects';
 import { ipcRenderer } from 'electron';
 import { SagaIterator } from 'redux-saga';
+import { accounts } from "../index";
 import * as screen from '../screen';
-import {requestTokensBalances} from '../tokens/actions';
+import { requestTokensBalances } from '../tokens/actions';
 import {
   fetchErc20BalancesAction,
   hdAccountCreated,
   setLoadingAction,
   setSeedsAction,
   setWalletsAction,
-  walletCreatedAction,
 } from './actions';
-import {allEntries, allWallets, findWallet} from './selectors';
-import {
-  ActionTypes,
-  ICreateHdEntry,
-  ICreateWalletAction,
-  IFetchErc20BalancesAction,
-  INextAddress,
-  ISubWalletBalance
-} from './types';
-import {AddEntry, SeedDescription, Wallet, WalletEntry} from "@emeraldpay/emerald-vault-core";
-import {IEmeraldVault} from "@emeraldpay/emerald-vault-core";
-import {isBitcoinEntry, isEthereumEntry} from "@emeraldpay/emerald-vault-core/lib/types";
-import {accounts} from "../index";
+import { allEntries, findWallet } from './selectors';
+import { ActionTypes, ICreateHdEntry, IFetchErc20BalancesAction, INextAddress, ISubWalletBalance } from './types';
 
 // Subscribe to balance update from Emerald Services
 function* subscribeAccountBalance(accounts: WalletEntry[]): SagaIterator {
@@ -51,18 +42,19 @@ function* subscribeAccountBalance(accounts: WalletEntry[]): SagaIterator {
 
 function* fetchErc20Balances(action: IFetchErc20BalancesAction): SagaIterator {
   const accounts = yield select(allEntries);
-  for (const account of accounts) {
-    // TODO: account might not be Ethereum address
-    const address = account.address;
-    const chain = account.blockchain;
 
-    const code = blockchainIdToCode(chain);
+  const etherAccounts = accounts.filter((account: any) => isEthereumEntry(account));
+
+  for (const account of etherAccounts) {
+    const { address: { value: address }, blockchain } = account;
+
+    const chain = blockchainIdToCode(blockchain);
 
     // Look up all known tokens for current blockchain
-    const _tokens = registry.all()[code] || [];
+    const tokens = registry.all()[chain] ?? [];
 
     // Request balances for each token for current address
-    yield put(requestTokensBalances(code, _tokens, address));
+    yield put(requestTokensBalances(chain, tokens, address));
   }
 }
 

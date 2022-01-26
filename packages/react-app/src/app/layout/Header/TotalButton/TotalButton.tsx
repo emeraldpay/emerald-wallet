@@ -1,10 +1,10 @@
-import {CurrencyEtc, CurrencyEth} from '@emeraldplatform/ui-icons';
-import {AnyCoinCode, CurrencyCode, StableCoinCode} from '@emeraldwallet/core';
-import {List, ListItem, ListItemAvatar, ListItemText, Menu} from '@material-ui/core';
+import { BigAmount, FormatterBuilder } from "@emeraldpay/bigamount";
+import { CurrencyEtc, CurrencyEth } from '@emeraldplatform/ui-icons';
+import { AnyCoinCode, CurrencyAmount, CurrencyCode, StableCoinCode } from '@emeraldwallet/core';
+import { Button, CoinAvatar } from '@emeraldwallet/ui';
+import { List, ListItem, ListItemAvatar, ListItemText, Menu } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
-import {Button, CoinAvatar} from '@emeraldwallet/ui';
-import {BigAmount, FormatterBuilder} from "@emeraldpay/bigamount";
 
 const styles = createStyles({
   label: {
@@ -45,9 +45,16 @@ export interface IProps {
   classes?: any;
 }
 
-const fmt = new FormatterBuilder()
+const fiatFormatter = new FormatterBuilder()
+  .useTopUnit()
+  .number(2)
+  .append(' ')
+  .unitCode()
+  .build()
+
+const coinFormatter = new FormatterBuilder()
   .number(3, true, 2, format)
-  .append(" ")
+  .append(' ')
   .unitCode()
   .build()
 
@@ -60,10 +67,13 @@ function TotalButton(props: IProps): React.ReactElement {
   };
 
   const handleToggle = (event: any): void => {
-    setAnchorEl(event.currentTarget);
+    if (byChain.length > 0) {
+      setAnchorEl(event.currentTarget);
+    }
   };
 
-  const totalFormatted = fmt.format(total);
+  const totalFormatted = fiatFormatter.format(new CurrencyAmount(total.number, fiatCurrency as string));
+
   return (
     <div>
       <Button
@@ -92,8 +102,9 @@ function TotalButton(props: IProps): React.ReactElement {
       >
         <List>
           {byChain.map((c) => {
-            const coins = fmt.format(c.total);
-            const fiat = fmt.format(c.fiatAmount);
+            const coins = coinFormatter.format(c.total);
+            const fiat = fiatFormatter.format(new CurrencyAmount(c.fiatAmount.number, fiatCurrency as string));
+
             return (
               <ListItem key={c.total.units.base.code}>
                 <ListItemAvatar>

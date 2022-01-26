@@ -521,12 +521,14 @@ export default connect(
         if (token !== txFeeSymbol) {
           return '??';
         }
+
         const newBalance = accounts.selectors.getBalance(state, sourceEntry.id, zero)!;
-        const rate = settings.selectors.fiatRate(token, state) || 0;
-        const fiat = new CurrencyAmount(
-          newBalance.getNumberByUnit(newBalance.units.top).multipliedBy(rate),
+        const rate = settings.selectors.fiatRate(token, state) ?? 0;
+        const fiat = CurrencyAmount.create(
+          newBalance.getNumberByUnit(newBalance.units.top).multipliedBy(rate).toNumber(),
           settings.selectors.fiatCurrency(state)
-        )
+        );
+
         return fiatFormatter.format(fiat);
       },
       getTxFeeFiatForGasLimit: (gasLimit: number) => {

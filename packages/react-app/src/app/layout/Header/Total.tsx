@@ -20,6 +20,7 @@ export default connect<any, any, any, IState>(
 
     assetsSummary.forEach((value: BalanceValueConverted) => {
       byChain.push({
+        token: value.source.balance.units.top.code,
         total: value.source.balance,
         fiatRate: value.rate,
         fiatAmount: value.converted.balance
