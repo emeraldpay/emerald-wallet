@@ -24,7 +24,7 @@
     "@jest-runner/electron": "^2.0.3",
     "@types/jest": "^24.0.9",
     "@types/node": "12.12.62",
-    "electron": "7.3.3",
+    "electron": "15.3.5",
     "jest": "^24.1.0",
     "rimraf": "^2.6.3",
     "ts-jest": "^24.0.0"
