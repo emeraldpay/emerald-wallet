@@ -3,7 +3,7 @@ import { BitcoinEntry, isSeedPkRef, UnsignedBitcoinTx, Uuid } from "@emeraldpay/
 import { Page } from "@emeraldplatform/ui";
 import {Back} from "@emeraldplatform/ui-icons";
 import {BalanceUtxo, BlockchainCode, blockchainIdToCode} from "@emeraldwallet/core";
-import {accounts, IState, transaction} from "@emeraldwallet/store";
+import { accounts, IState, screen, transaction } from "@emeraldwallet/store";
 import {createStyles, Theme, Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import {Alert} from "@material-ui/lab";
@@ -29,7 +29,7 @@ const useStyles = makeStyles<Theme>((theme) =>
 /**
  *
  */
-const Component = (({entry, blockchain, seedId, utxo, source, getFees, onBroadcast}: Props & Actions & OwnProps) => {
+const Component = (({entry, blockchain, seedId, utxo, source, getFees, onBroadcast, onCancel}: Props & Actions & OwnProps) => {
   const styles = useStyles();
   const [raw, setRaw] = React.useState("");
   const [page, setPage] = React.useState("setup" as Step);
@@ -50,6 +50,7 @@ const Component = (({entry, blockchain, seedId, utxo, source, getFees, onBroadca
         <SetupTx
           create={txBuilder}
           entry={entry}
+          source={source}
           getFees={getFees(blockchain)}
           onCreate={(tx) => {
             setTx(tx);
@@ -82,8 +83,7 @@ const Component = (({entry, blockchain, seedId, utxo, source, getFees, onBroadca
 
   return <Page
     title={"Create Bitcoin Transaction"}
-    leftIcon={<Back onClick={() => {
-    }}/>}>
+    leftIcon={<Back onClick={onCancel}/>}>
     {content}
   </Page>
 })
@@ -99,6 +99,7 @@ interface Props {
 // Actions
 interface Actions {
   onBroadcast: (blockchain: BlockchainCode, orig: UnsignedBitcoinTx, raw: string) => void;
+  onCancel?: () => void;
   getFees: (blockchain: BlockchainCode) => () => Promise<any>;
 }
 
@@ -149,7 +150,8 @@ export default connect(
         if (orig.outputs.length > 1) {
           dispatch(accounts.actions.nextAddress(ownProps.source, "change"));
         }
-      }
+      },
+      onCancel: () => dispatch(screen.actions.gotoScreen(screen.Pages.HOME, ownProps.source)),
     }
   }
 )((Component));
