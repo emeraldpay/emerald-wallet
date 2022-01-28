@@ -18,7 +18,7 @@
     "@types/jest": "^24.0.9",
     "@types/node": "^12.12.0",
     "@types/uuid": "^3.4.4",
-    "electron": "7.3.3",
+    "electron": "15.3.5",
     "jest": "^24.1.0",
     "rimraf": "^2.6.3",
     "ts-jest": "^24.0.0"
@@ -46,8 +46,8 @@
     ]
   },
   "dependencies": {
-    "@emeraldpay/emerald-vault-core": "^0.6.0-rc.2",
-    "@emeraldpay/emerald-vault-native": "^0.6.0-rc.2",
+    "@emeraldpay/emerald-vault-core": "^0.7.0-rc.2",
+    "@emeraldpay/emerald-vault-native": "^0.7.0-rc.2",
     "@emeraldplatform/contracts": "0.5.1",
     "@emeraldplatform/eth": "0.5.1",
     "@emeraldwallet/core": "^2.6.0-dev",
@@ -55,7 +55,6 @@
     "@emeraldwallet/history-store": "^2.6.0-dev",
     "@emeraldwallet/services": "^2.6.0-dev",
     "@emeraldwallet/store": "^2.6.0-dev",
-    "devtron": "^1.4.0",
     "electron-log": "4.0.3",
     "electron-store": "5.1.0",
     "uuid": "^3.3.2"
