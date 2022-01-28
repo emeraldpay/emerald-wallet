@@ -2,10 +2,7 @@ import { BrowserWindow, Menu, shell } from 'electron';
 import Application from '../application/Application';
 import darwinMenu from '../menus/darwin';
 import winLinuxMenu from '../menus/win-linux';
-import { createAboutPage } from './AboutWindow';
-
-const url = require('url');
-const devtron = require('devtron');
+import * as url from 'url';
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
@@ -22,7 +19,8 @@ const createWindow = (app: Application, options: any): BrowserWindow => {
     minHeight: 650,
     icon: options.appIconPath,
     webPreferences: {
-      nodeIntegration: true
+      nodeIntegration: true,
+      contextIsolation: false,
     }
   });
 
@@ -36,7 +34,6 @@ const createWindow = (app: Application, options: any): BrowserWindow => {
   // Open the DevTools.
   if (options.openDevTools) {
     win.webContents.openDevTools();
-    devtron.install();
   }
 
   const menuHandlers = {
@@ -45,7 +42,7 @@ const createWindow = (app: Application, options: any): BrowserWindow => {
       // createAboutPage(options);
     },
     onOpenLog: () => {
-      shell.openItem(options.logFile);
+      shell.openPath(options.logFile);
     }
   };
 
