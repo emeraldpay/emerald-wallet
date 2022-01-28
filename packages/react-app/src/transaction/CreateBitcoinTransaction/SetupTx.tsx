@@ -1,9 +1,9 @@
 import { BigAmount } from "@emeraldpay/bigamount";
-import { UnsignedBitcoinTx } from "@emeraldpay/emerald-vault-core";
+import { EntryId, UnsignedBitcoinTx } from "@emeraldpay/emerald-vault-core";
 import { BitcoinEntry } from "@emeraldpay/emerald-vault-core/lib/types";
 import { ButtonGroup } from "@emeraldplatform/ui";
 import { CreateBitcoinTx, ValidationResult } from "@emeraldwallet/core/lib/workflow";
-import { accounts, IState } from "@emeraldwallet/store";
+import { IState, screen } from "@emeraldwallet/store";
 import { Button } from "@emeraldwallet/ui";
 import { Box, createStyles, FormControlLabel, FormHelperText, Slider, Switch, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -62,7 +62,7 @@ const useStyles = makeStyles(() =>
 /**
  *
  */
-const Component = (({create, onCreate, getFees}: Props & OwnProps) => {
+const Component = (({create, onCreate, getFees, onCancel}: Props & OwnProps) => {
   const styles = useStyles();
   const [to, setTo] = React.useState("");
   const [toError, setToError] = React.useState<string | undefined>('');
@@ -206,7 +206,7 @@ const Component = (({create, onCreate, getFees}: Props & OwnProps) => {
     <FormFieldWrapper style={{paddingBottom: '0px'}}>
       <FormLabel/>
       <ButtonGroup style={{flexGrow: 5}}>
-        <Button label="Cancel" />
+        <Button label="Cancel" onClick={onCancel} />
         <Button
           disabled={!valid}
           primary={true}
@@ -221,12 +221,14 @@ const Component = (({create, onCreate, getFees}: Props & OwnProps) => {
 
 // State Properties
 interface Props {
+  onCancel?: () => void;
 }
 
 // Component properties
 interface OwnProps {
   create: CreateBitcoinTx<BigAmount>;
   entry: BitcoinEntry;
+  source: EntryId;
   getFees: () => Promise<any>;
   onCreate: (tx: UnsignedBitcoinTx) => void;
 }
@@ -236,6 +238,8 @@ export default connect(
     return {};
   },
   (dispatch: Dispatch<any>, ownProps: OwnProps) => {
-    return {}
+    return {
+      onCancel: () => dispatch(screen.actions.gotoScreen(screen.Pages.HOME, ownProps.source)),
+    }
   }
 )((Component));
