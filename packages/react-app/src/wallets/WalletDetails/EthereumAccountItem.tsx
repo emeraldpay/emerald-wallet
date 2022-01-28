@@ -33,7 +33,7 @@ const useStyles = makeStyles<Theme>((theme) =>
 /**
  *
  */
-const Component = (({tokensBalances, balance, account, blockchainCode}: Props & Actions & OwnProps) => {
+const Component = (({tokensBalances, balance, blockchainCode}: Props & Actions & OwnProps) => {
   const styles = useStyles();
   const blockchain = Blockchains[blockchainCode];
 
@@ -49,7 +49,7 @@ const Component = (({tokensBalances, balance, account, blockchainCode}: Props & 
           <CoinAvatar chain={blockchainCode}/>
         </Grid>
         <Grid item={true} xs={6}>
-          <Typography title={"Address: " + account.address}>{blockchain.getTitle()}</Typography>
+          <Typography>{blockchain.getTitle()}</Typography>
         </Grid>
         <Grid item={true} xs={4}>
           <AccountBalance

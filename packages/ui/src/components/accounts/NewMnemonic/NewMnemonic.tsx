@@ -1,10 +1,11 @@
-import {makeStyles, withStyles} from '@material-ui/core/styles';
+import { WithDefaults } from "@emeraldwallet/core";
+import { Box, Button, Chip, createStyles, Grid, Typography } from "@material-ui/core";
+import { makeStyles } from '@material-ui/core/styles';
+import { Alert } from "@material-ui/lab";
 import * as React from 'react';
-import {Box, createStyles, Paper, TextField, Typography, Button, Grid} from "@material-ui/core";
-import {Alert, AlertTitle} from "@material-ui/lab";
-import {ConfirmedPasswordInput} from "../../../index";
-import {WithDefaults} from "@emeraldwallet/core";
-
+import { useEffect, useState } from 'react';
+import { ReactSortable } from "react-sortablejs";
+import { ConfirmedPasswordInput } from "../../../index";
 
 const useStyles = makeStyles(
   createStyles({
@@ -13,37 +14,58 @@ const useStyles = makeStyles(
       alignItems: 'center',
     },
     mnemonic: {
-      fontSize: "0.9em",
-      border: "1px solid #f0f0f0",
-      padding: "20px 20px",
-      margin: "10px 0px",
-      backgroundColor: "#f0faff",
+      fontSize: '0.9em',
+      border: '1px solid #f0f0f0',
+      padding: '20px 20px',
+      margin: '10px 0px',
+      backgroundColor: '#f0faff',
     },
     mnemonicEmpty: {
-      textAlign: "center"
+      textAlign: 'center',
     },
     button: {
-      width: "220px",
-      margin: "5px"
+      width: '220px',
+      margin: '5px',
     },
     wordIndex: {
-      display: "inline-block",
-      width: "24px",
-      opacity: "75%",
-      fontSize: "0.8em"
+      display: 'inline-block',
+      width: '24px',
+      opacity: '75%',
+      fontSize: '0.8em',
     },
     writeMessage: {
-      width: "600px",
-      float: "left",
+      width: '600px',
+      float: 'left',
     },
     writeButtons: {
-      width: "200px",
-      float: "left",
+      width: '200px',
+      float: 'left',
     },
     confirmButtons: {
-      padding: "16px"
-    }
-  })
+      padding: '16px',
+    },
+    mnemonicGrid: {
+      boxSizing: 'border-box',
+      display: 'grid',
+      gap: '10px',
+      gridTemplateColumns: 'repeat(6, 1fr)',
+      gridTemplateRows: 'repeat(4, 1fr)',
+      marginBottom: '15px',
+      minHeight: '170px',
+      padding: '5px',
+      width: '100%',
+    },
+    mnemonicGridBorder: {
+      border: '1px solid #f0f0f0',
+    },
+    mnemonicPart: {
+      justifyContent: 'space-between',
+    },
+    mnemonicPartLabel: {
+      flex: '1 0 auto',
+      textAlign: 'center',
+    },
+  }),
 );
 
 // Component properties
@@ -51,6 +73,11 @@ interface OwnProps {
   onGenerate?: () => Promise<string>;
   onContinue?: (value: string, password: string | undefined) => void;
   classes?: any;
+}
+
+interface MnemonicPartType {
+  id: number;
+  name: string;
 }
 
 const defaults = {
@@ -71,7 +98,7 @@ const Component = ((props: OwnProps) => {
   const [password, setPassword] = React.useState("");
   const [done, setDone] = React.useState(false);
 
-  const {classes, onContinue, onGenerate} = props;
+  const { onContinue, onGenerate } = props;
 
   const hasMnemonic = typeof mnemonic == 'string' && mnemonic.length > 0;
   const confirmed = hasMnemonic && confirmation.toLowerCase().replace(/\s+/g, " ").trim() == mnemonic.toLowerCase();
@@ -104,19 +131,68 @@ const Component = ((props: OwnProps) => {
   let content;
   let title: string;
 
+  const [mnemonicRandomParts, setMnemonicRandomParts] = useState<string[]>([]);
+  const [mnemonicSelectedParts, setMnemonicSelectedParts] = useState<MnemonicPartType[]>([]);
+
+  useEffect(() => {
+    let mnemonicParts = [];
+
+    if (confirming) {
+      mnemonicParts = mnemonic
+        .split(' ')
+        .map((part) => ({ sort: Math.random(), part }))
+        .sort((first, second) => first.sort - second.sort)
+        .map(({ part }) => part);
+
+      setMnemonicSelectedParts([]);
+    }
+
+    setMnemonicRandomParts(mnemonicParts);
+  }, [confirming, mnemonic]);
+
+  useEffect(() => {
+    setConfirmation(mnemonicSelectedParts.map((selected) => selected.name).join(' '))
+  }, [mnemonicSelectedParts]);
+
   if (confirming) {
     title = "Confirm generated phrase";
     content = <Grid container={true}>
       <Grid item={true} xs={12}>
-        <TextField
-          placeholder={"Enter the secret phrase, only words without numbers"}
-          disabled={done}
-          fullWidth={true}
-          multiline={true}
-          rowsMax={4}
-          rows={4}
-          onChange={(e) => setConfirmation(e.target.value)}
-        />
+        <ReactSortable
+          className={`${styles.mnemonicGrid} ${styles.mnemonicGridBorder}`}
+          list={mnemonicSelectedParts}
+          setList={setMnemonicSelectedParts}
+        >
+          {mnemonicSelectedParts.map((selected) => (
+            <Chip
+              key={`mnemonic-selected-${selected.name}[${selected.id}]`}
+              classes={{ root: styles.mnemonicPart, label: styles.mnemonicPartLabel }}
+              label={selected.name}
+              onDelete={() => setMnemonicSelectedParts(mnemonicSelectedParts.filter(
+                (item) => item.name !== selected.name),
+              )}
+            />
+          ))}
+        </ReactSortable>
+      </Grid>
+      <Grid item={true} xs={12}>
+        <div className={styles.mnemonicGrid}>
+          {mnemonicRandomParts.map((part, index) => (
+            <Chip
+              key={`mnemonic-random-${part}[${index}]`}
+              classes={{ root: styles.mnemonicPart, label: styles.mnemonicPartLabel }}
+              disabled={mnemonicSelectedParts.find((item) => item.name === part) != null}
+              label={part}
+              onClick={() => setMnemonicSelectedParts([
+                ...mnemonicSelectedParts,
+                {
+                  id: mnemonicSelectedParts.length + 1,
+                  name: part,
+                },
+              ])}
+            />
+          ))}
+        </div>
       </Grid>
       <Grid item={true} xs={9}>
         {passwordField}
