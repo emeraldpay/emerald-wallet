@@ -1,11 +1,11 @@
-import { BlockchainCode, CurrencyCode, StableCoinCode } from '@emeraldwallet/core';
+import { BlockchainCode, CurrencyCode } from '@emeraldwallet/core';
 import {
   ActionTypes,
   ISetExchRatesAction,
   ISetModeAction,
   ISettingsState,
   SetLocaleCurrencyAction,
-  SettingsAction
+  SettingsAction,
 } from './types';
 
 const initial: ISettingsState = {
@@ -15,7 +15,7 @@ const initial: ISettingsState = {
   mode: {
     id: 'default',
     chains: [BlockchainCode.ETH, BlockchainCode.ETC],
-    currencies: [CurrencyCode.USD, CurrencyCode.EUR, 'USDT']
+    currencies: [CurrencyCode.USD, CurrencyCode.EUR, 'USDC', 'USDT']
   }
 };
 
