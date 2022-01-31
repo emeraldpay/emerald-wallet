@@ -58,6 +58,12 @@ const useStyles = makeStyles(
     mnemonicGridBorder: {
       border: '1px solid #f0f0f0',
     },
+    mnemonicDraggableDrag: {
+      opacity: '1 !important',
+    },
+    mnemonicDraggableGhost: {
+      opacity: 0,
+    },
     mnemonicPart: {
       justifyContent: 'space-between',
     },
@@ -78,6 +84,7 @@ interface OwnProps {
 interface MnemonicPartType {
   id: number;
   name: string;
+  chosen?: boolean;
 }
 
 const defaults = {
@@ -160,6 +167,9 @@ const Component = ((props: OwnProps) => {
       <Grid item={true} xs={12}>
         <ReactSortable
           className={`${styles.mnemonicGrid} ${styles.mnemonicGridBorder}`}
+          forceFallback={true}
+          dragClass={styles.mnemonicDraggableDrag}
+          ghostClass={styles.mnemonicDraggableGhost}
           list={mnemonicSelectedParts}
           setList={setMnemonicSelectedParts}
         >
@@ -167,8 +177,9 @@ const Component = ((props: OwnProps) => {
             <Chip
               key={`mnemonic-selected-${selected.name}[${selected.id}]`}
               classes={{ root: styles.mnemonicPart, label: styles.mnemonicPartLabel }}
+              color={selected.chosen ? 'primary' : 'default'}
               label={selected.name}
-              onDelete={() => setMnemonicSelectedParts(mnemonicSelectedParts.filter(
+              onDelete={selected.chosen ? null : () => setMnemonicSelectedParts(mnemonicSelectedParts.filter(
                 (item) => item.name !== selected.name),
               )}
             />
@@ -177,21 +188,24 @@ const Component = ((props: OwnProps) => {
       </Grid>
       <Grid item={true} xs={12}>
         <div className={styles.mnemonicGrid}>
-          {mnemonicRandomParts.map((part, index) => (
-            <Chip
-              key={`mnemonic-random-${part}[${index}]`}
-              classes={{ root: styles.mnemonicPart, label: styles.mnemonicPartLabel }}
-              disabled={mnemonicSelectedParts.find((item) => item.name === part) != null}
-              label={part}
-              onClick={() => setMnemonicSelectedParts([
-                ...mnemonicSelectedParts,
-                {
-                  id: mnemonicSelectedParts.length + 1,
-                  name: part,
-                },
-              ])}
-            />
-          ))}
+          {mnemonicRandomParts.map(
+            (part, index) => mnemonicSelectedParts.find((item) => item.name === part) == null ? (
+              <Chip
+                key={`mnemonic-random-${part}[${index}]`}
+                classes={{ root: styles.mnemonicPart, label: styles.mnemonicPartLabel }}
+                label={part}
+                onClick={() => setMnemonicSelectedParts([
+                  ...mnemonicSelectedParts,
+                  {
+                    id: mnemonicSelectedParts.length + 1,
+                    name: part,
+                  },
+                ])}
+              />
+            ) : (
+              <div key={`mnemonic-random-${part}[${index}]`}>&nbsp;</div>
+            ),
+          )}
         </div>
       </Grid>
       <Grid item={true} xs={9}>
