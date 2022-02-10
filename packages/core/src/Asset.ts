@@ -28,7 +28,6 @@ export const AssetDetails: Record<AnyCoinCode, AssetDetail> = {
   'DAI': { title: 'Dai' },
   'ETC': { title: 'Classic Ether' },
   'ETH': { title: 'Ether' },
-  'KOVAN': { title: 'Test Kovan Ether' },
   'TESTBTC': { title: 'Test Bitcoin' },
   'USDC': { title: 'USD Coin' },
   'USDT': { title: 'Tether' },

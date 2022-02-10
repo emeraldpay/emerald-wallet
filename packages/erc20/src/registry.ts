@@ -48,6 +48,23 @@ export const registry = {
         address: '0xaFF4481D10270F50f203E0763e2597776068CBc5',
         decimals: 18,
         symbol: 'WEENUS'
+      },
+      {
+        address: '0xd0A1E359811322d97991E03f863a0C30C2cF029C',
+        decimals: 18,
+        symbol: 'WETH'
+      }
+    ],
+    [BlockchainCode.Goerli]: [
+      {
+        address: '0xaFF4481D10270F50f203E0763e2597776068CBc5',
+        decimals: 18,
+        symbol: 'WEENUS'
+      },
+      {
+        address: '0x0Bb7509324cE409F7bbC4b701f932eAca9736AB7',
+        decimals: 18,
+        symbol: 'WETH'
       }
     ],
     [BlockchainCode.Unknown]: [],
