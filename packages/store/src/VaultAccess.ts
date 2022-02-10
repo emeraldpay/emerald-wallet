@@ -2,24 +2,22 @@ import {
   AddEntry,
   AddressBookItem,
   AddressRole,
-  BlockchainType,
   CreateAddressBookItem,
   CurrentAddress,
   EntryId,
   IEmeraldVault,
   LedgerSeedReference,
+  OddPasswordItem,
   SeedDefinition,
   SeedDescription,
   SeedReference,
   UnsignedTx,
   Uuid,
   Wallet,
-  WalletState
+  WalletState,
 } from "@emeraldpay/emerald-vault-core";
-
-import {ipcRenderer} from 'electron';
-import {HWKeyDetails} from "@emeraldpay/emerald-vault-core/lib/types";
-
+import { ExportedWeb3Json, HWKeyDetails } from "@emeraldpay/emerald-vault-core/lib/types";
+import { ipcRenderer } from 'electron';
 
 const PREFIX = "vault/";
 
@@ -36,7 +34,7 @@ class VaultAccess implements IEmeraldVault {
     return ipcRenderer.invoke(PREFIX + "addWallet", label);
   }
 
-  exportJsonPk(entryId: EntryId, password?: string): Promise<string> {
+  exportJsonPk(entryId: EntryId, password: string): Promise<ExportedWeb3Json> {
     return ipcRenderer.invoke(PREFIX + "exportJsonPk", entryId, password);
   }
 
@@ -121,6 +119,22 @@ class VaultAccess implements IEmeraldVault {
 
   vaultVersion(): string {
     return "NOTSET";
+  }
+
+  createGlobalKey(password: string): Promise<boolean> {
+    return Promise.resolve(false); // TODO
+  }
+
+  getOddPasswordItems(): Promise<OddPasswordItem[]> {
+    return Promise.resolve([]); // TODO
+  }
+
+  isGlobalKeySet(): Promise<boolean> {
+    return Promise.resolve(false); // TODO
+  }
+
+  tryUpgradeOddItems(odd_password: string, global_password: string): Promise<Uuid[]> {
+    return Promise.resolve([]); // TODO
   }
 }
 

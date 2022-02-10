@@ -130,7 +130,12 @@ describe("Import PK", () => {
     const start = CreateWalletFlow.create(initial, STEP_CODE.PK_IMPORT, noCreate);
     const act = start.applyImportPk("{}");
     expect(act.canGoNext()).toBeTruthy();
-    expect(act.getResult().type).toEqual({type: KeySourceType.PK_WEB3_JSON, json: "{}"});
+    expect(act.getResult().type).toEqual({
+      json: "{}",
+      jsonPassword: "",
+      password: "",
+      type: KeySourceType.PK_WEB3_JSON,
+    }); // TODO
   });
 
   it("json is unset", () => {
@@ -246,8 +251,13 @@ describe("Select Blockchain", () => {
   it("create if import pk", () => {
     const initial: Result = {
       ...defaultResult(),
-      type: {type: KeySourceType.PK_WEB3_JSON, json: "{}"},
-    }
+      type: {
+        json: "{}",
+        jsonPassword: "",
+        password: "",
+        type: KeySourceType.PK_WEB3_JSON,
+      },
+    }; // TODO
     let result: Result | undefined = undefined;
     const start = CreateWalletFlow.create(initial, STEP_CODE.SELECT_BLOCKCHAIN, (it) => result = it);
     expect(start.canGoNext()).toBeFalsy();

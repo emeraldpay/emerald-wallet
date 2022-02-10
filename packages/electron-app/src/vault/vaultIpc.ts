@@ -56,7 +56,7 @@ export function mapVaultWithIpc(vault: IEmeraldVault) {
   ipcMain.handle(PREFIX + "exportRawPk", (event, entryId: EntryId, password: string) => {
     return vault.exportRawPk(entryId, password);
   });
-  ipcMain.handle(PREFIX + "exportJsonPk", (event, entryId: EntryId, password?: string) => {
+  ipcMain.handle(PREFIX + "exportJsonPk", (event, entryId: EntryId, password: string) => {
     return vault.exportJsonPk(entryId, password);
   });
   ipcMain.handle(PREFIX + "generateMnemonic", (event, size: number) => {

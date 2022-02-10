@@ -98,7 +98,9 @@ export default connect(
               entries.push({
                 type: "ethereum-json",
                 key: type.json,
-                blockchain: blockchainCodeToId(value.blockchains[0])
+                blockchain: blockchainCodeToId(value.blockchains[0]),
+                jsonPassword: type.jsonPassword,
+                password: type.password
               })
             } else if (isPkRaw(type)) {
               entries.push({

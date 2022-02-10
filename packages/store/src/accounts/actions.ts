@@ -232,9 +232,9 @@ export function exportPrivateKey(passphrase: string, accountId: EntryId): any {
   };
 }
 
-export function exportKeyFile(accountId: EntryId): any {
+export function exportKeyFile(accountId: EntryId, password: string): any {
   return (dispatch: any, getState: any, extra: IExtraArgument) => {
-    return extra.api.vault.exportJsonPk(accountId);
+    return extra.api.vault.exportJsonPk(accountId, password);
   };
 }
 
@@ -292,12 +292,16 @@ function readWalletFile (walletFile: Blob): Promise<any> {
 
 function importJson (
   blockchain: BlockchainCode,
-  data: any
+  data: any,
+  jsonPassword: string,
+  password: string,
 ): Dispatched<IWalletCreatedAction> {
   return async (dispatch: any, getState, extra) => {
     const vault = extra.api.vault;
     const walletId = await vault.addWallet();
     const entryId = await vault.addEntry(walletId, {
+      jsonPassword,
+      password,
       type: "ethereum-json",
       blockchain: blockchainCodeToId(blockchain),
       key: JSON.stringify(data)
@@ -367,11 +371,13 @@ export function importPk (
 
 export function importWalletFile(
   blockchain: BlockchainCode,
-  file: Blob
+  file: Blob,
+  jsonPassword: string,
+  password: string,
 ): Dispatched<AccountsAction> {
   return async (dispatch: any, getState) => {
     const data = await readWalletFile(file);
-    return dispatch(importJson(blockchain, data));
+    return dispatch(importJson(blockchain, data, jsonPassword, password));
   };
 }
 
