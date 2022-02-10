@@ -309,7 +309,7 @@ export class CreateWalletFlow {
     return copy;
   }
 
-  applyImportPk(value: { raw: string, password: string } | string | undefined): CreateWalletFlow {
+  applyImportPk(value: { raw: string; password: string } | string | undefined): CreateWalletFlow {
     const copy = this.copy();
     if (!isPk(copy.result.type)) {
       throw new Error("Not a PK import");
@@ -322,7 +322,9 @@ export class CreateWalletFlow {
     } else if (typeof value == 'string') {
       copy.result.type = {
         type: KeySourceType.PK_WEB3_JSON,
-        json: value
+        json: value,
+        jsonPassword: '', // TODO
+        password: '', // TODO
       }
     } else if (typeof value == 'object') {
       copy.result.type = {

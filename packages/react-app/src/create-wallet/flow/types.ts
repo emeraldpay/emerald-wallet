@@ -35,6 +35,8 @@ export interface PkImportRaw {
 export interface PkImportJson {
   type: KeySourceType.PK_WEB3_JSON;
   json: string;
+  jsonPassword: string;
+  password: string;
 }
 
 export interface LedgerSeed {
