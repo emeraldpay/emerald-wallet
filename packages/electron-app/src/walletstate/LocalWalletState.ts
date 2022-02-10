@@ -1,6 +1,6 @@
 import {WalletStateStorage} from "@emeraldwallet/core";
 import {WalletState, AddressRole, EntryId, EntryIdOp, AccountIndex} from "@emeraldpay/emerald-vault-core";
-import * as ElectronStore from 'electron-store';
+import ElectronStore from 'electron-store';
 import {IEmeraldVault} from "@emeraldpay/emerald-vault-core/lib/vault";
 
 type State = {

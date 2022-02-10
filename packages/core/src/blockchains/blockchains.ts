@@ -1,18 +1,19 @@
-import {IBlockchain} from './IBlockchain';
-import {CoinTicker} from './CoinTicker';
+import { BigAmount, CreateAmount, Unit, Units } from "@emeraldpay/bigamount";
+import { Satoshi, Wei, WeiEtc } from "@emeraldpay/bigamount-crypto";
+import { WeiAny } from "@emeraldpay/bigamount-crypto/lib/ethereum";
+import { LedgerApp } from '@emeraldpay/emerald-vault-core';
+import { Bitcoin } from "./bitcoin";
+import { CoinTicker } from './CoinTicker';
 import Ethereum from './ethereum/Ethereum';
 import EthereumParams from './ethereum/EthereumParams';
-import {HDPath} from "./hdpath";
-import {Bitcoin} from "./bitcoin";
-import {BigAmount, CreateAmount, Unit, Units} from "@emeraldpay/bigamount";
-import {WeiEtc, Wei, Satoshi} from "@emeraldpay/bigamount-crypto";
-import {WeiAny} from "@emeraldpay/bigamount-crypto/lib/ethereum";
-import {LedgerApp} from '@emeraldpay/emerald-vault-core';
+import { HDPath } from "./hdpath";
+import { IBlockchain } from './IBlockchain';
 
 export enum BlockchainCode {
   ETC = 'etc',
   ETH = 'eth',
   Kovan = 'kovan',
+  Goerli = 'goerli',
   Unknown = 'unknown',
   BTC = 'btc',
   TestBTC = 'testbtc'
@@ -39,12 +40,21 @@ export const Blockchains: {[key: string]: IBlockchain} = {
   ),
   [BlockchainCode.Kovan]: new Ethereum(
     new EthereumParams(
-      BlockchainCode.Kovan, CoinTicker.KOVAN, 42,
+      BlockchainCode.Kovan, CoinTicker.ETH, 42,
       HDPath.default().forCoin(BlockchainCode.ETH).forAccount(160720),
       100
     ),
     'Ethereum Kovan Testnet',
-    ['WEENUS']
+    ['WEENUS', 'WETH']
+  ),
+  [BlockchainCode.Goerli]: new Ethereum(
+    new EthereumParams(
+      BlockchainCode.Goerli, CoinTicker.ETH, 5,
+      HDPath.default().forCoin(BlockchainCode.ETH).forAccount(160720),
+      100
+    ),
+    'Ethereum Goerli Testnet',
+    ['WEENUS', 'WETH']
   ),
   [BlockchainCode.BTC]: new Bitcoin({
     chainId: 0,
@@ -64,7 +74,15 @@ export const Blockchains: {[key: string]: IBlockchain} = {
   })
 };
 
-const allCodes = [BlockchainCode.BTC, BlockchainCode.ETC, BlockchainCode.ETH, BlockchainCode.Kovan, BlockchainCode.TestBTC];
+const allCodes = [
+  BlockchainCode.BTC,
+  BlockchainCode.ETC,
+  BlockchainCode.ETH,
+  BlockchainCode.Kovan,
+  BlockchainCode.Goerli,
+  BlockchainCode.TestBTC,
+];
+
 const allChains = allCodes.map((code) => Blockchains[code]);
 
 export function isValidChain (code: BlockchainCode): boolean {
@@ -114,6 +132,9 @@ export function blockchainCodeToId (code: BlockchainCode): number {
   if (code === BlockchainCode.TestBTC) {
     return 10003;
   }
+  if (code === BlockchainCode.Goerli) {
+    return 10005;
+  }
   throw Error('Unsupported blockchain: ' + code);
 }
 
@@ -133,11 +154,17 @@ export function blockchainIdToCode(id: number): BlockchainCode {
   if (id === 10003) {
     return BlockchainCode.TestBTC;
   }
+  if (id === 10005) {
+    return BlockchainCode.Goerli;
+  }
   throw Error('Unsupported blockchain id: ' + id);
 }
 
 export function isEthereum(code: BlockchainCode): boolean {
-  return code == BlockchainCode.ETH || code == BlockchainCode.Kovan || code == BlockchainCode.ETC
+  return code === BlockchainCode.ETH
+    || code === BlockchainCode.ETC
+    || code === BlockchainCode.Kovan
+    || code === BlockchainCode.Goerli;
 }
 
 export function isBitcoin(code: BlockchainCode): boolean {
@@ -149,6 +176,14 @@ export const WEIS_KOVAN = new Units(
     new Unit(0, "KovanWei", "KovWei"),
     new Unit(9, "KovanGwei", "KovGWei"),
     new Unit(18, "KovanEther", "ETK"),
+  ]
+);
+
+export const WEIS_GOERLI = new Units(
+  [
+    new Unit(0, "GoerliWei", "GoeWei"),
+    new Unit(9, "GoerliGwei", "GoeGWei"),
+    new Unit(18, "GoerliEther", "ETG"),
   ]
 );
 
@@ -169,6 +204,9 @@ export function amountFactory(code: BlockchainCode): CreateAmount<BigAmount> {
     }
     if (BlockchainCode.Kovan == code) {
       return (n) => new WeiAny(n, WEIS_KOVAN)
+    }
+    if (BlockchainCode.Goerli == code) {
+      return (n) => new WeiAny(n, WEIS_GOERLI)
     }
   }
   if (isBitcoin(code)) {

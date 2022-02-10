@@ -57,6 +57,10 @@ const CoinIcon = (props: CoinIconProps) => {
       return (
         <Typography className={currentClassName + " " + styles.onlyText}>DAI</Typography>
       );
+    case 'GOERLI':
+      return (
+        <Typography className={styles.testnet}>Goerli</Typography>
+      );
     case 'KOVAN':
       return (
         <Typography className={styles.testnet}>Kovan</Typography>

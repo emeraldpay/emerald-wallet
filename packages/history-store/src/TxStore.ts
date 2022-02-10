@@ -1,5 +1,5 @@
 import {blockchainById, BlockchainCode, isBitcoin, IStoredTransaction, utils} from '@emeraldwallet/core';
-import * as ElectronStore from 'electron-store';
+import ElectronStore from 'electron-store';
 
 interface IStoreType {
   transactions: IStoredTransaction[];

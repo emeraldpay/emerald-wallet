@@ -185,7 +185,7 @@ export function getWalletBalances (state: IState, wallet: Wallet, includeEmpty: 
     return assets;
   }
   const ethereumAccounts = wallet.entries.filter((e) => isEthereumEntry(e)) as EthereumEntry[];
-  [BlockchainCode.ETH, BlockchainCode.ETC, BlockchainCode.Kovan]
+  [BlockchainCode.ETH, BlockchainCode.ETC, BlockchainCode.Kovan, BlockchainCode.Goerli]
     .forEach((code) => {
       const zero = zeroAmountFor<BigAmount>(code);
 

@@ -1,20 +1,22 @@
 import { Address, EthAddress } from '@emeraldplatform/core';
-import Common from 'ethereumjs-common';
-import { Transaction as EthTx } from 'ethereumjs-tx';
+import Common, { Hardfork } from '@ethereumjs/common';
+import { Transaction as EthTx } from '@ethereumjs/tx';
 import { ITransaction } from '../ITransaction';
 
 class EthereumTx implements ITransaction {
-
   public static fromRaw (hex: string, chainId: any): ITransaction {
     if (chainId === 62 || chainId === 61) {
       // Because ethereumjs-tx doesn't support ETC
-      const custom = Common.forCustomChain(1, {
-        chainId
-      }, 'byzantium');
-      return new EthereumTx(new EthTx(hex, { common: custom }));
+      const common = Common.custom({ chainId }, { baseChain: 1, hardfork: Hardfork.Byzantium });
+
+      return new EthereumTx(EthTx.fromSerializedTx(Buffer.from(hex.slice(2), 'hex'), { common }));
     }
-    return new EthereumTx(new EthTx(hex, { chain: chainId }));
+
+    const common = new Common({ chain: chainId });
+
+    return new EthereumTx(EthTx.fromSerializedTx(Buffer.from(hex.slice(2), 'hex'), { common }));
   }
+
   public internalTx: EthTx;
 
   constructor (tx: any) {
@@ -22,7 +24,7 @@ class EthereumTx implements ITransaction {
   }
 
   public getHash (): string {
-    return '0x' + this.internalTx.hash(true).toString('hex');
+    return '0x' + this.internalTx.hash().toString('hex');
   }
 
   public verifySignature (): boolean {
@@ -30,11 +32,17 @@ class EthereumTx implements ITransaction {
   }
 
   public getSenderAddress (): Address {
-    return EthAddress.fromHexString('0x' + this.internalTx.getSenderAddress().toString('hex'));
+    return EthAddress.fromHexString(this.internalTx.getSenderAddress().toString());
   }
 
   public getRecipientAddress (): Address {
-    return EthAddress.fromHexString('0x' + this.internalTx.to.toString('hex'));
+    const address = this.internalTx.to?.toString();
+
+    if (address == null) {
+      throw new Error('Address must be set');
+    }
+
+    return EthAddress.fromHexString(address);
   }
 
   public getValue (): any {
@@ -46,9 +54,6 @@ class EthereumTx implements ITransaction {
   }
 
   public getNonce (): number {
-    if (this.internalTx.nonce.length === 0) {
-      return 0;
-    }
     return parseInt(this.internalTx.nonce.toString('hex'), 16);
   }
 }

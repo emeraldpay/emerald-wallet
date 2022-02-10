@@ -49,13 +49,13 @@
   },
   "devDependencies": {
     "@babel/core": "^7.6.4",
-    "@storybook/addon-actions": "5.2.3",
-    "@storybook/react": "5.2.3",
+    "@storybook/addon-actions": "^6.4.18",
+    "@storybook/react": "^6.4.18",
     "@testing-library/jest-dom": "^4.1.0",
     "@testing-library/react": "^9.1.4",
     "@types/classnames": "^2.2.9",
-    "@types/jest": "^24.0.9",
-    "@types/node": "^12.12.0",
+    "@types/jest": "^27.4.0",
+    "@types/node": "16.11.22",
     "@types/qrcode": "^1.3.4",
     "@types/qrcode.react": "^1.0.0",
     "@types/react-redux": "^7.1.1",
@@ -66,11 +66,12 @@
     "enzyme": "^3.10.0",
     "enzyme-adapter-react-16": "^1.14.0",
     "identity-obj-proxy": "^3.0.0",
-    "jest": "^24.1.0",
+    "jest": "^27.5.0",
     "jest-canvas-mock": "^2.1.1",
-    "jest-transform-stub": "^2.0.0",
+    "jest-environment-jsdom": "^27.5.1",
     "rimraf": "^2.6.3",
-    "ts-jest": "^24.0.0"
+    "jest-transform-stub": "^2.0.0",
+    "ts-jest": "^27.1.3"
   },
   "jest": {
     "transform": {
@@ -80,7 +81,7 @@
       "typeface-.*$": "identity-obj-proxy"
     },
     "preset": "ts-jest",
-    "testEnvironment": "jsdom",
+    "testEnvironment": "<rootDir>/jest.env.js",
     "testPathIgnorePatterns": [
       "<rootDir>/lib/",
       "<rootDir>/node_modules/"
@@ -90,6 +91,9 @@
     ],
     "globals": {
       "ts-jest": {
+        "tsconfig": {
+          "downlevelIteration": true
+        },
         "diagnostics": {
           "warnOnly": true
         }

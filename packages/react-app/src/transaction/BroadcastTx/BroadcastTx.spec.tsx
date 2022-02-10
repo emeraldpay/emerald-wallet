@@ -21,7 +21,7 @@ describe('BroadcastTxView', () => {
     const wrapper = render(<BroadcastTxView classes={classes} signed={rawTx} tx={{ blockchain: BlockchainCode.Kovan }}/>);
     const valueDiv = await wrapper.findByTestId('token-amount');
     expect(valueDiv).toBeDefined();
-    expect(valueDiv).toHaveTextContent('0.0001 KOVAN');
+    expect(valueDiv).toHaveTextContent('0.0001 ETH');
     const nonceDiv = await wrapper.findByTestId('nonce');
     expect(nonceDiv).toHaveTextContent('67');
   });

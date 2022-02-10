@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "composite": true,
+    "esModuleInterop": true,
     "outDir": "./app",
     "rootDir": "./src",
     "jsx": "react"

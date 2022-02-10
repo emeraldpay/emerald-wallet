@@ -5,7 +5,7 @@ describe('EthereumTx', () => {
   it('should decode from raw hex rlp', () => {
     const tx = EthereumTx.fromRaw('0xf889808609184e72a00082271094000000000000000000000000000000000000000080a47f74657374320000000000000000000000000000000000000000000000000000006000571ca08a8bbf888cfa37bbf0bb965423625641fc956967b81d12e23709cead01446075a01ce999b56a8a88504be365442ea61239198e23d1fce7d00fcfc5cd3b44b7215f', 1);
     expect(tx.getSenderAddress().toString()).toEqual('0xbe862AD9AbFe6f22BCb087716c7D89a26051f74C'.toLowerCase());
-    expect(tx.getValue()).toEqual('0x');
+    expect(tx.getValue()).toEqual('0x0');
     expect(tx.getRecipientAddress().toString()).toEqual('0x0000000000000000000000000000000000000000');
   });
 
@@ -25,7 +25,7 @@ describe('EthereumTx', () => {
   it('should return data field of tx', () => {
     const tx = EthereumTx.fromRaw('0xf8aa01850a3e9ab80083419ce094aff4481d10270f50f203e0763e2597776068cbc580b844a9059cbb00000000000000000000000027346de44a32bd9943c57a961854a1d28a9c220d0000000000000000000000000000000000000000000000000de0b6b3a76400001ca0e07cc0402d3c982a7c73cf24b14d4e2ad429854271c78d940051ea4a9be0ac48a0115964f37f5066962b132e2165b272f51f76f6321f8a43183b7ad6f23398dd56', 42);
     console.log(JSON.stringify(tx));
-    expect(tx.getValue()).toEqual('0x');
+    expect(tx.getValue()).toEqual('0x0');
     expect(tx.getData()).toEqual('a9059cbb00000000000000000000000027346de44a32bd9943c57a961854a1d28a9c220d0000000000000000000000000000000000000000000000000de0b6b3a7640000');
     expect(tx.getNonce()).toEqual(1);
   });
