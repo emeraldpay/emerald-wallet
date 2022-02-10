@@ -1,5 +1,7 @@
 import { BlockchainCode } from '@emeraldwallet/core';
-import { tokenContract } from './erc20';
+import { ITokenInfo } from "@emeraldwallet/erc20";
+import BigNumber from 'bignumber.js';
+import { tokenContract, wrapTokenContract } from './erc20';
 import {
   ActionTypes,
   IRequestTokenBalanceAction,
@@ -7,7 +9,6 @@ import {
   ISetTokenBalanceAction,
   ITokenBalance,
 } from './types';
-import {ITokenInfo} from "@emeraldwallet/erc20";
 
 export function setTokenBalance (chain: any, tokenBalance: ITokenBalance, address: string): ISetTokenBalanceAction {
   return {
@@ -50,4 +51,12 @@ export function createTokenTxData (to: string, amount: any, isTransfer: boolean)
     return tokenContract.functionToData('transfer', { _to: to, _value: value });
   }
   return tokenContract.functionToData('approve', { _spender: to, _amount: value });
+}
+
+export function createWrapTxData(): string {
+  return wrapTokenContract.functionToData('deposit', {});
+}
+
+export function createUnwrapTxData(amount: BigNumber): string {
+  return wrapTokenContract.functionToData('withdraw', { _value: amount.toString(10) });
 }

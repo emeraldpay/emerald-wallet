@@ -19,6 +19,7 @@ export enum Pages {
   TX_DETAILS = 'transaction',
   CREATE_TX = 'create-tx',
   CREATE_TX_ETHEREUM = 'create-tx-ethereum',
+  CREATE_TX_CONVERT = 'create-tx-convert',
   CREATE_TX_BITCOIN = 'create-tx-bitcoin',
   CREATE_WALLET = 'create-wallet',
   //@deprecated, rename to setup coins

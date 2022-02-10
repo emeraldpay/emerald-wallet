@@ -38,7 +38,14 @@ function amountOrDefault(amount: BigAmount | undefined): string {
 /**
  *
  */
-const Component = (({onMaxClicked, onChangeAmount, onClear, units, initialAmount}: Props & Actions & OwnProps) => {
+const Component = (({
+  disabled = false,
+  initialAmount,
+  units,
+  onChangeAmount,
+  onClear,
+  onMaxClicked,
+}: Props & Actions & OwnProps) => {
   const styles = useStyles();
   const [originalAmount, setOriginalAmount] = React.useState(initialAmount);
   const [amount, setAmount] = React.useState(amountOrDefault(initialAmount));
@@ -92,14 +99,16 @@ const Component = (({onMaxClicked, onChangeAmount, onClear, units, initialAmount
     <FormLabel>Amount</FormLabel>
     <div className={styles.input}>
       <Input
+        disabled={disabled}
+        errorText={errorText}
         value={amount}
         onChange={handleChangeAmount}
-        errorText={errorText}
       />
     </div>
     <Button
       className={styles.button}
       color={"primary"}
+      disabled={disabled}
       onClick={onMaxClicked}>MAX</Button>
   </React.Fragment>
 })
@@ -115,10 +124,11 @@ interface Actions {
 
 // Component properties
 interface OwnProps {
-  units: Units;
+  disabled?: boolean;
   initialAmount?: BigAmount | undefined;
   onChangeAmount: (amount: BigAmount) => void;
   onMaxClicked?: () => void;
+  units: Units;
 }
 
 export default connect(

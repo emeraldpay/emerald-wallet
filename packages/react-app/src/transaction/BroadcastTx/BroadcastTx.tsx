@@ -40,14 +40,16 @@ export class BroadcastTxView extends React.Component<IBroadcastTxViewProps> {
     let coinSymbol = currentChain.params.coinTicker;
     if (txData.length > 0) {
       const decodedData = decodeData(txData);
-      erc20Tx = {
-        to: decodedData.inputs[0].toString(16),
-        value: convert.toNumber('0x' + decodedData.inputs[1].toString(16)).toString()
-      };
-      const tokenInfo = registry.byAddress(currentChain.params.code, decoded.getRecipientAddress().toString());
-      if (tokenInfo) {
-        coinSymbol = tokenInfo.symbol;
-        erc20Tx.value = fromBaseUnits(erc20Tx.value, tokenInfo.decimals).toString(10);
+      if (decodedData.inputs.length > 0) {
+        erc20Tx = {
+          to: decodedData.inputs[0].toString(16),
+          value: convert.toNumber('0x' + decodedData.inputs[1].toString(16)).toString()
+        };
+        const tokenInfo = registry.byAddress(currentChain.params.code, decoded.getRecipientAddress().toString());
+        if (tokenInfo) {
+          coinSymbol = tokenInfo.symbol;
+          erc20Tx.value = fromBaseUnits(erc20Tx.value, tokenInfo.decimals).toString(10);
+        }
       }
     }
 

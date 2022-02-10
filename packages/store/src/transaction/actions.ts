@@ -15,6 +15,7 @@ import {
   isEthereum,
   Logger,
 } from '@emeraldwallet/core';
+import BigNumber from 'bignumber.js';
 import { Dispatch } from 'redux';
 import * as screen from '../screen';
 import { catchError, gotoScreen, showError } from '../screen/actions';
@@ -182,15 +183,11 @@ export function broadcastTx(chain: BlockchainCode, tx: EthereumStoredTransaction
   };
 }
 
-export function estimateGas (chain: BlockchainCode, tx: {gas: any; to: string}) {
-  const {
-    to, gas
-  } = tx;
+export function estimateGas(chain: BlockchainCode, tx: { gas: BigNumber; to: string; data?: string }) {
+  const { data, gas, to } = tx;
+
   return (dispatch: any, getState: any, extra: IExtraArgument) => {
-    return extra.backendApi.estimateTxCost(chain, {
-      gas: gas.toNumber(),
-      to
-    });
+    return extra.backendApi.estimateTxCost(chain, { data, to, gas: gas.toNumber() });
   };
 }
 
