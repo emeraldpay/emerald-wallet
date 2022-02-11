@@ -11,6 +11,7 @@ import {
 import CreateHdAccount from '../../../create-account/CreateHdAccount';
 import CreateWalletScreen from "../../../create-wallet/CreateWalletScreen";
 import ReceiveScreen from "../../../receive/ReceiveScreen";
+import CreateConvertTransaction from '../../../transaction/CreateConvertTransaction';
 import SelectAccount from "../../../transaction/CreateTransaction/SelectAccount";
 import CreateTransaction from "../../../transaction/CreateTransaction";
 import CreateBitcoinTransaction from "../../../transaction/CreateBitcoinTransaction/CreateBitcoinTransaction";
@@ -53,6 +54,9 @@ const Screen = (props: IScreenProps) => {
   }
   if (props.screen === screen.Pages.CREATE_TX_ETHEREUM) {
     return (<CreateTransaction sourceEntry={props.screenItem}/>);
+  }
+  if (props.screen === screen.Pages.CREATE_TX_CONVERT) {
+    return (<CreateConvertTransaction entry={props.screenItem}/>);
   }
   if (props.screen === screen.Pages.CREATE_TX_BITCOIN) {
     return (<CreateBitcoinTransaction source={props.screenItem}/>);

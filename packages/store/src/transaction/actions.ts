@@ -1,4 +1,5 @@
 import { EstimationMode } from '@emeraldpay/api';
+import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from "@emeraldpay/bigamount-crypto";
 import { UnsignedTx } from '@emeraldpay/emerald-vault-core';
 import { EntryId, UnsignedBitcoinTx } from "@emeraldpay/emerald-vault-core/lib/types";
@@ -15,6 +16,7 @@ import {
   isEthereum,
   Logger,
 } from '@emeraldwallet/core';
+import BigNumber from 'bignumber.js';
 import { Dispatch } from 'redux';
 import * as screen from '../screen';
 import { catchError, gotoScreen, showError } from '../screen/actions';
@@ -182,14 +184,24 @@ export function broadcastTx(chain: BlockchainCode, tx: EthereumStoredTransaction
   };
 }
 
-export function estimateGas (chain: BlockchainCode, tx: {gas: any; to: string}) {
-  const {
-    to, gas
-  } = tx;
+type Tx = {
+  gas: BigNumber;
+  to: string;
+  data?: string;
+  from?: string;
+  value?: BigAmount;
+};
+
+export function estimateGas(chain: BlockchainCode, tx: Tx) {
+  const { data, from, gas, to, value } = tx;
+
   return (dispatch: any, getState: any, extra: IExtraArgument) => {
     return extra.backendApi.estimateTxCost(chain, {
+      data,
+      from,
+      to,
       gas: gas.toNumber(),
-      to
+      value: `0x${value?.number.toString(16) ?? 0}`,
     });
   };
 }

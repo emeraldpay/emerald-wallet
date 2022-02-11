@@ -57,4 +57,23 @@ const TokenAbi = [
   }
 ];
 
+export const WrapTokenAbi = [
+  ...TokenAbi,
+  {
+    name: 'deposit',
+    inputs: [],
+    outputs: [],
+  },
+  {
+    name: 'withdraw',
+    inputs: [
+      {
+        name: '_value',
+        type: 'uint256',
+      },
+    ],
+    outputs: [],
+  },
+];
+
 export default TokenAbi;

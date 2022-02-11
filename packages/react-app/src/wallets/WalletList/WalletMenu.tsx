@@ -1,11 +1,9 @@
-import { addAccount, IState, screen } from '@emeraldwallet/store';
-import { IconButton, ListItemIcon, Menu, MenuItem, Typography } from '@material-ui/core';
+import { IState, screen } from '@emeraldwallet/store';
+import { ListItemIcon, Menu, MenuItem, Typography } from '@material-ui/core';
 import {
   AddCircleOutline as AddCircleOutlineIcon,
-  ArrowDownward as ArrowDownwardIcon,
-  ArrowUpward as ArrowUpwardIcon,
   Assignment as AssignmentIcon,
-  MoreVert as MoreVertIcon
+  MoreVert as MoreVertIcon,
 } from '@material-ui/icons';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -19,11 +17,11 @@ interface IDispatchProps {
   onAddAccount: () => void;
 }
 
-function WalletMenu (props: IDispatchProps) {
+function WalletMenu(props: IDispatchProps) {
   const { showDetails, onAddAccount } = props;
-  const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = React.useState<null | SVGSVGElement>(null);
 
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     setAnchorEl(event.currentTarget);
   };
 
@@ -32,12 +30,10 @@ function WalletMenu (props: IDispatchProps) {
   };
 
   return (
-    <div>
-      <IconButton aria-label='details' onClick={handleClick}>
-         <MoreVertIcon />
-      </IconButton>
+    <>
+      <MoreVertIcon onClick={handleClick} />
       <Menu
-        id='simple-menu'
+        id="simple-menu"
         anchorEl={anchorEl}
         keepMounted={true}
         open={Boolean(anchorEl)}
@@ -45,18 +41,18 @@ function WalletMenu (props: IDispatchProps) {
       >
         <MenuItem onClick={showDetails}>
           <ListItemIcon>
-            <AssignmentIcon fontSize='small' />
+            <AssignmentIcon fontSize="small" />
           </ListItemIcon>
-          <Typography variant='inherit'>Wallet Details</Typography>
+          <Typography variant="inherit">Wallet Details</Typography>
         </MenuItem>
         <MenuItem onClick={onAddAccount}>
           <ListItemIcon>
-            <AddCircleOutlineIcon fontSize='small'/>
+            <AddCircleOutlineIcon fontSize="small" />
           </ListItemIcon>
-          <Typography variant='inherit'>Setup Supported Coins</Typography>
+          <Typography variant="inherit">Setup Supported Coins</Typography>
         </MenuItem>
       </Menu>
-    </div>
+    </>
   );
 }
 
@@ -69,7 +65,7 @@ export default connect<{}, IDispatchProps, IOwnProps, IState>(
       },
       onAddAccount: () => {
         dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_HD_ACCOUNT, ownProps.walletId));
-      }
+      },
     };
-  }
-)((WalletMenu));
+  },
+)(WalletMenu);

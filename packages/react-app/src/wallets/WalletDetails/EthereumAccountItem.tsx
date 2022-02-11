@@ -1,44 +1,50 @@
-import {BlockchainCode, blockchainIdToCode, Blockchains} from '@emeraldwallet/core';
-import {accounts, IState, screen, tokens} from '@emeraldwallet/store';
-import {Button, CoinAvatar} from '@emeraldwallet/ui';
-import {Box, createStyles, Grid, Theme, Typography, withStyles} from '@material-ui/core';
+import { BigAmount } from "@emeraldpay/bigamount";
+import { Wei } from '@emeraldpay/bigamount-crypto';
+import { EthereumEntry, WalletEntry } from "@emeraldpay/emerald-vault-core";
+import { BlockchainCode, blockchainIdToCode, Blockchains } from '@emeraldwallet/core';
+import { accounts, IState, screen, tokens } from '@emeraldwallet/store';
+import { CoinAvatar } from '@emeraldwallet/ui';
+import { createStyles, Grid, Theme, Typography } from '@material-ui/core';
+import { makeStyles } from "@material-ui/core/styles";
 import * as React from 'react';
-import {connect} from 'react-redux';
+import { Dispatch } from 'react';
+import { connect } from 'react-redux';
 import AccountBalance from '../../common/Balance';
-import {makeStyles} from "@material-ui/core/styles";
-import {Dispatch} from "react";
-import {EthereumEntry} from "@emeraldpay/emerald-vault-core";
-import {Wei} from '@emeraldpay/bigamount-crypto';
-import {BigAmount} from "@emeraldpay/bigamount";
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
     container: {
       border: `0px solid ${theme.palette.divider}`,
-      marginBottom: '10px'
+      marginBottom: '10px',
+    },
+    balance: {
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'end',
     },
     balanceValue: {
-      textAlign: "right",
+      textAlign: 'right',
     },
     balanceSymbol: {
-      width: "40px",
-      display: "inline-block",
-      textAlign: "left",
-      paddingLeft: "16px",
-      opacity: "50%"
-    }
-  })
+      width: '90px',
+      display: 'inline-block',
+      textAlign: 'left',
+      paddingLeft: '16px',
+      opacity: '50%',
+    },
+  }),
 );
 
 /**
  *
  */
-const Component = (({tokensBalances, balance, blockchainCode}: Props & Actions & OwnProps) => {
+const Component = (({tokensBalances, balance, account, blockchainCode, onConvert}: Props & Actions & OwnProps) => {
   const styles = useStyles();
   const blockchain = Blockchains[blockchainCode];
 
   const accountClasses = {
-    root: styles.balanceValue,
+    root: styles.balance,
+    coins: styles.balanceValue,
     coinSymbol: styles.balanceSymbol,
   };
 
@@ -51,7 +57,7 @@ const Component = (({tokensBalances, balance, blockchainCode}: Props & Actions &
         <Grid item={true} xs={6}>
           <Typography>{blockchain.getTitle()}</Typography>
         </Grid>
-        <Grid item={true} xs={4}>
+        <Grid item={true} xs={5}>
           <AccountBalance
             key={"main"}
             classes={accountClasses}
@@ -62,6 +68,7 @@ const Component = (({tokensBalances, balance, blockchainCode}: Props & Actions &
               key={"token-" + token.units.top.code}
               classes={accountClasses}
               balance={token}
+              onConvert={token.units.top.code === 'WETH' ? () => onConvert(account) : undefined}
             />
           )}
         </Grid>
@@ -73,13 +80,14 @@ const Component = (({tokensBalances, balance, blockchainCode}: Props & Actions &
 
 // State Properties
 interface Props {
-  tokensBalances: BigAmount[];
   balance: Wei;
-  blockchainCode: BlockchainCode
+  blockchainCode: BlockchainCode;
+  tokensBalances: BigAmount[];
 }
 
 // Actions
 interface Actions {
+  onConvert: (entry: WalletEntry) => void;
 }
 
 // Component properties
@@ -102,6 +110,10 @@ export default connect(
     }
   },
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
-    return {}
+    return {
+      onConvert: (entry: WalletEntry) => {
+        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_CONVERT, entry))
+      },
+    }
   }
 )((Component));

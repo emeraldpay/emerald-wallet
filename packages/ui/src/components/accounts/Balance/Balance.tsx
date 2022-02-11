@@ -1,9 +1,10 @@
-import {WithDefaults} from '@emeraldwallet/core';
+import { BigAmount, Unit } from "@emeraldpay/bigamount";
+import { WithDefaults } from '@emeraldwallet/core';
+import { createStyles, IconButton, Typography } from "@material-ui/core";
+import { makeStyles } from "@material-ui/core/styles";
+import { Sync } from '@material-ui/icons';
+import { ClassNameMap } from '@material-ui/styles';
 import * as React from 'react';
-import {createStyles, Typography} from "@material-ui/core";
-import {ClassNameMap} from '@material-ui/styles';
-import {makeStyles} from "@material-ui/core/styles";
-import {BigAmount, Unit} from "@emeraldpay/bigamount";
 
 const useStyles = makeStyles(
   createStyles({
@@ -14,14 +15,20 @@ const useStyles = makeStyles(
     coinSymbol: {
       paddingLeft: "5px",
     },
-    root: {},
+    root: {
+      minHeight: '28px',
+    },
+    convert: {
+      marginRight: '5px',
+    }
   })
 );
 
 // Component properties
 export interface OwnProps {
   balance?: BigAmount | undefined;
-  classes?: Partial<ClassNameMap<ClassKey>>
+  classes?: Partial<ClassNameMap<ClassKey>>;
+  onConvert?: () => void;
 }
 
 type ClassKey = 'coins' | 'coinBalance' | 'coinSymbol' | 'root' ;
@@ -49,6 +56,11 @@ const Component = ((props: OwnProps) => {
 
   return (
     <div className={styles.root + " " + classes?.root}>
+      {props.onConvert != null && (
+        <IconButton className={styles.convert} size="small" title="Convert to token" onClick={props.onConvert}>
+          <Sync color="primary" fontSize="small" />
+        </IconButton>
+      )}
       <Typography className={styles.coins + " " + classes?.coins}>
         <span className={styles.coinBalance + " " + classes?.coinBalance}>{coinsStr}</span>
         <span className={styles.coinSymbol + " " + classes?.coinSymbol}>{unit?.code}</span>
