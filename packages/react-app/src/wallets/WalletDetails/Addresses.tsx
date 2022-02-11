@@ -35,8 +35,8 @@ const Component = (({addresses}: Props & Actions & OwnProps) => {
           </TableRow>
         </TableHead>
         <TableBody>
-          {addresses.map((address) => (
-            <TableRow key={"address-" + address.address}>
+          {addresses.map((address, index) => (
+            <TableRow key={`address-${address.address}[${index}]`}>
               <TableCell>{Blockchains[address.blockchain].getTitle()}</TableCell>
               <TableCell><Address address={address.address}/></TableCell>
               <TableCell>

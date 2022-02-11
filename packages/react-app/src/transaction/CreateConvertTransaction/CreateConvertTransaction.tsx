@@ -20,6 +20,7 @@ import { accounts, IState, screen, tokens, transaction } from '@emeraldwallet/st
 import { Button } from '@emeraldwallet/ui';
 import { Box, createStyles, FormControlLabel, FormHelperText, Slider, Switch, withStyles } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
+import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { ChangeEvent, useCallback, useState } from 'react';
 import { connect } from 'react-redux';
@@ -122,6 +123,8 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
   const [stage, setStage] = useState(Stages.SETUP);
   const [password, setPassword] = useState('');
 
+  const oldAmount = React.useRef(convertTx.amount);
+
   const onChangeConvertable = useCallback((event, value) => {
     const converting = value ?? convertable;
 
@@ -141,6 +144,9 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
 
         break;
     }
+
+    tx.target = TxTarget.MANUAL;
+    tx.rebalance();
 
     setConvertable(converting);
     setConvertTx(tx.dump());
@@ -219,20 +225,27 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
   }, []);
 
   React.useEffect(() => {
-    (
-      async (): Promise<void> => {
-        const tx = CreateErc20WrappedTx.fromPlain(convertTx);
+    if (oldAmount.current == null || convertTx.amount?.equals(oldAmount.current) === false) {
+      oldAmount.current = convertTx.amount;
 
-        const gas = await estimateGas(blockchain, tx);
-        console.log(`New gas limit ${gas}`); // TODO
+      const total = Wei.is(convertTx.amount) ? convertTx.totalBalance : convertTx.totalTokenBalance;
 
-        // tx.gas = new BigNumber(gas);
-        // tx.rebalance();
-        //
-        // setConvertTx(tx.dump());
+      if (total?.number != null && convertTx.amount?.number.isLessThanOrEqualTo(total.number) === true) {
+        (
+          async (): Promise<void> => {
+            const tx = CreateErc20WrappedTx.fromPlain(convertTx);
+
+            const gas = await estimateGas(blockchain, tx);
+
+            tx.gas = new BigNumber(gas);
+            tx.rebalance();
+
+            setConvertTx(tx.dump());
+          }
+        )();
       }
-    )();
-  }, [convertable]);
+    }
+  }, [convertable, convertTx.amount]);
 
   const currentTx = CreateErc20WrappedTx.fromPlain(convertTx);
 
@@ -392,7 +405,13 @@ export default connect(
           ? tokens.actions.createWrapTxData()
           : tokens.actions.createUnwrapTxData(tx.amount.number);
 
-        return dispatch(transaction.actions.estimateGas(blockchain, { data, gas: tx.gas, to: token.address }));
+        return dispatch(transaction.actions.estimateGas(blockchain, {
+          data,
+          from: tx.address,
+          gas: new BigNumber(50000),
+          to: token.address,
+          value: Wei.is(tx.amount) ? tx.amount : Wei.ZERO,
+        }));
       },
       async getFees(blockchain) {
         const [avgLast, avgMiddle, avgTail5] = await Promise.all([
