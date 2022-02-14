@@ -364,7 +364,8 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
               onClick={(): Promise<void> => signTransaction(currentTx, password)}
             />
           </ButtonGroup>
-        </FormFieldWrapper></>
+        </FormFieldWrapper>
+      </>
     )}
   </Page>;
 };

@@ -11,11 +11,6 @@ describe('store', () => {
     expect(store).toBeDefined();
   });
 
-  it('should dispatch ledger actions', () => {
-    const store = createStore(apiMock);
-    store.dispatch(hwkey.actions.setWatch(true));
-  });
-
   it('should dispatch screen actions', () => {
     const store = createStore(apiMock);
     store.dispatch(screen.actions.gotoScreen('create-tx', fromJS({id: '0x123', name: null})));
