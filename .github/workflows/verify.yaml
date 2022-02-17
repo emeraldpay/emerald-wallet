@@ -1,11 +1,11 @@
 name: Verify
 
 on:
-  # if pushed directly to the master
   push:
     branches:
       - master
-  # on a pull request
+      - ci/*
+      - release/*
   pull_request:
     branches:
       - master
