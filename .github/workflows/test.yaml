@@ -1,12 +1,11 @@
 name: Unit Tests
 
 on:
-  # if pushed directly to the master
   push:
     branches:
       - master
       - ci/*
-  # on a pull request
+      - release/*
   pull_request:
     branches:
       - master
@@ -16,9 +15,7 @@ jobs:
     name: On ${{ matrix.os }}
     strategy:
       matrix:
-        # windows-2016 - because windows-latest comes with MSVC++ 14.25 (Visual Studio 2019 Version 16.5), which is
-        # incompatible with librocksdb-sys v5.18.3
-        os: ["windows-2016", "macos-latest", "ubuntu-latest"]
+        os: [ "windows-latest", "macos-latest", "ubuntu-latest" ]
     runs-on: ${{ matrix.os }}
     steps:
       - name: Checkout the code
