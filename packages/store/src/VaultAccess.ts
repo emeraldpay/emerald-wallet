@@ -122,19 +122,19 @@ class VaultAccess implements IEmeraldVault {
   }
 
   createGlobalKey(password: string): Promise<boolean> {
-    return Promise.resolve(false); // TODO
+    return ipcRenderer.invoke(PREFIX + "createGlobalKey", password);
   }
 
   getOddPasswordItems(): Promise<OddPasswordItem[]> {
-    return Promise.resolve([]); // TODO
+    return ipcRenderer.invoke(PREFIX + "getOddPasswordItems");
   }
 
   isGlobalKeySet(): Promise<boolean> {
-    return Promise.resolve(false); // TODO
+    return ipcRenderer.invoke(PREFIX + "isGlobalKeySet");
   }
 
-  tryUpgradeOddItems(odd_password: string, global_password: string): Promise<Uuid[]> {
-    return Promise.resolve([]); // TODO
+  tryUpgradeOddItems(oddPassword: string, globalPassword: string): Promise<Uuid[]> {
+    return ipcRenderer.invoke(PREFIX + "tryUpgradeOddItems", oddPassword, globalPassword);
   }
 }
 

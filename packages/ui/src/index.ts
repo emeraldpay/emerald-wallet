@@ -6,7 +6,7 @@ export { default as Pager } from './components/common/Pager';
 export { default as Advice } from './components/common/Advice';
 
 export {default as ImportMnemonic} from './components/accounts/ImportMnemonic';
-export {default as ImportPk} from './components/accounts/ImportPk';
+export {default as ImportPk, ImportPkType} from './components/accounts/ImportPk';
 export {default as ConfirmMnemonic} from './components/accounts/ConfirmMnemonic';
 export { default as ExportPaperWallet } from './components/accounts/ExportPaperWallet';
 export {default as NewMnemonic} from './components/accounts/NewMnemonic';

@@ -86,4 +86,16 @@ export function mapVaultWithIpc(vault: IEmeraldVault) {
   ipcMain.handle(PREFIX + "listSeedAddresses", (event, seed: Uuid | SeedReference | SeedDefinition, blockchain: number, hdpath: string[]) => {
     return vault.listSeedAddresses(seed, blockchain, hdpath);
   });
+  ipcMain.handle(PREFIX + "createGlobalKey", (event, password) => {
+    return vault.createGlobalKey(password);
+  });
+  ipcMain.handle(PREFIX + "getOddPasswordItems", () => {
+    return vault.getOddPasswordItems();
+  });
+  ipcMain.handle(PREFIX + "isGlobalKeySet", () => {
+    return vault.isGlobalKeySet();
+  });
+  ipcMain.handle(PREFIX + "tryUpgradeOddItems", (event, oddPassword, globalPassword) => {
+    return vault.tryUpgradeOddItems(oddPassword, globalPassword);
+  });
 }
