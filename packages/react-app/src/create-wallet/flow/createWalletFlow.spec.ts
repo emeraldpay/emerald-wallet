@@ -1,6 +1,6 @@
 import {CreateWalletFlow, STEP_CODE} from "./createWalletFlow";
 import {BlockchainCode} from "@emeraldwallet/core";
-import {defaultResult, KeySourceType, PkImportJson, Result} from "./types";
+import {defaultResult, KeySourceType, Result} from "./types";
 
 const noCreate = () => {
 };
@@ -128,29 +128,14 @@ describe("Import PK", () => {
       }
     }
     const start = CreateWalletFlow.create(initial, STEP_CODE.PK_IMPORT, noCreate);
-    const act = start.applyImportPk("{}");
+    const act = start.applyImportPk({ json: "{}", jsonPassword: "test", password: "test" });
     expect(act.canGoNext()).toBeTruthy();
     expect(act.getResult().type).toEqual({
       json: "{}",
-      jsonPassword: "",
-      password: "",
+      jsonPassword: "test",
+      password: "test",
       type: KeySourceType.PK_WEB3_JSON,
-    }); // TODO
-  });
-
-  it("json is unset", () => {
-    const initial: Result = {
-      ...defaultResult(),
-      type: {
-        type: KeySourceType.PK_ANY
-      }
-    }
-    const start = CreateWalletFlow.create(initial, STEP_CODE.PK_IMPORT, noCreate);
-    const act = start
-      .applyImportPk("{}")
-      .applyImportPk(undefined);
-    expect(act.canGoNext()).toBeFalsy();
-    expect(act.getResult().type).toEqual({type: KeySourceType.PK_ANY});
+    });
   });
 
   it("raw is set", () => {
@@ -164,21 +149,6 @@ describe("Import PK", () => {
     const act = start.applyImportPk({raw: "0x00", password: "test"});
     expect(act.canGoNext()).toBeTruthy();
     expect(act.getResult().type).toEqual({type: KeySourceType.PK_RAW, pk: "0x00", password: "test"});
-  });
-
-  it("raw is unset", () => {
-    const initial: Result = {
-      ...defaultResult(),
-      type: {
-        type: KeySourceType.PK_ANY
-      }
-    }
-    const start = CreateWalletFlow.create(initial, STEP_CODE.PK_IMPORT, noCreate);
-    const act = start
-      .applyImportPk({raw: "0x00", password: "test"})
-      .applyImportPk(undefined);
-    expect(act.canGoNext()).toBeFalsy();
-    expect(act.getResult().type).toEqual({type: KeySourceType.PK_ANY});
   });
 });
 
@@ -253,7 +223,6 @@ describe("Select Blockchain", () => {
       ...defaultResult(),
       type: {
         json: "{}",
-        jsonPassword: "",
         password: "",
         type: KeySourceType.PK_WEB3_JSON,
       },

@@ -1,25 +1,24 @@
-import * as bip39 from 'bip39';
-import {IState, screen} from '@emeraldwallet/store';
-import {Button, Card, CardActions, CardContent, CardHeader, Step, StepLabel, Stepper} from '@material-ui/core';
-import * as React from 'react';
-import {Dispatch} from 'react';
-import {connect} from 'react-redux';
 import * as vault from "@emeraldpay/emerald-vault-core";
-import {SeedDefinition, Uuid} from "@emeraldpay/emerald-vault-core";
-import SelectKeySource from "./SelectKeySource";
-import {isPk, Result} from "./flow/types";
-import WalletOptions from "./WalletOptions";
-import Finish from "./Finish";
+import { SeedDefinition, Uuid } from "@emeraldpay/emerald-vault-core";
+import { IBlockchain } from "@emeraldwallet/core";
+import { screen } from '@emeraldwallet/store';
+import { ImportMnemonic, ImportPk, NewMnemonic } from "@emeraldwallet/ui";
+import { Button, Card, CardActions, CardContent, CardHeader, Step, StepLabel, Stepper } from '@material-ui/core';
+import * as bip39 from 'bip39';
+import * as React from 'react';
+import { Dispatch } from 'react';
+import { connect } from 'react-redux';
 import SelectCoins from "../create-account/SelectCoins";
-import {IBlockchain} from "@emeraldwallet/core";
 import SelectHDPath from "../create-account/SelectHDPath";
 import UnlockSeed from "../create-account/UnlockSeed";
-import {CreateWalletFlow, STEP_CODE} from "./flow/createWalletFlow";
-import {ImportMnemonic, ImportPk, NewMnemonic} from "@emeraldwallet/ui";
-import SaveMnemonic from "./SaveMnemonic";
 import LedgerWait from '../ledger/LedgerWait';
+import Finish from "./Finish";
+import { CreateWalletFlow, STEP_CODE } from "./flow/createWalletFlow";
+import { isPk, isPkRaw, Result } from "./flow/types";
+import SaveMnemonic from "./SaveMnemonic";
+import SelectKeySource from "./SelectKeySource";
+import WalletOptions from "./WalletOptions";
 
-type Props = {}
 type Actions = {
   onOpen: (walletId: string) => void;
 }
@@ -32,10 +31,10 @@ function isValidMnemonic(text: string): boolean {
  * Multistep wizard to create a new Wallet. The wallet can be created from an existing or new seed, private key, or just
  * empty without any account initially.
  */
-export const CreateWizard = ((props: Props & Actions & OwnProps) => {
+export const CreateWizard: React.FC<Actions & OwnProps> = ((props) => {
   const [walletId, setWalletId] = React.useState('');
 
-  function create(result: Result) {
+  function create(result: Result): void {
     props.onCreate(result)
       .then((id) => {
         setWalletId(id);
@@ -85,11 +84,13 @@ export const CreateWizard = ((props: Props & Actions & OwnProps) => {
         isValidMnemonic={isValidMnemonic}
       />)
   } else if (page.code == STEP_CODE.PK_IMPORT) {
-    activeStepPage = <ImportPk onChange={applyWithState(step.applyImportPk)}/>;
+    const result = step.getResult();
+
+    activeStepPage = <ImportPk raw={isPkRaw(result.type)} onChange={applyWithState(step.applyImportPk)}/>;
   } else if (page.code == STEP_CODE.LEDGER_OPEN) {
     activeStepPage = <LedgerWait fullSize={true} onConnected={applyWithState(step.applyLedgerConnected)}/>;
   } else if (page.code == STEP_CODE.LOCK_SEED) {
-    const onLock = (password: string) => {
+    const onLock = (password: string): void => {
       if (!props.onSaveSeed) {
         console.warn("No method to save seed");
         return;
@@ -172,14 +173,12 @@ type OwnProps = {
 }
 
 export default connect(
-  (state: IState, ownProps: OwnProps): Props => {
-    return {}
-  },
-  (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
+  null,
+  (dispatch: Dispatch<any>): Actions => {
     return {
       onOpen: (walletId: string) => {
         dispatch(screen.actions.gotoScreen("wallet", walletId))
-      }
+      },
     }
-  }
-)((CreateWizard));
+  },
+)(CreateWizard);

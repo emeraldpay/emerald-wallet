@@ -1,3 +1,6 @@
+import { SeedDescription, Uuid } from "@emeraldpay/emerald-vault-core";
+import { BlockchainCode } from "@emeraldwallet/core";
+import { ImportPkType } from '@emeraldwallet/ui';
 import {
   defaultResult,
   isLedger,
@@ -9,15 +12,12 @@ import {
   isSeedSelected,
   KeySourceType,
   KeysSource,
-  LedgerSeed,
   Result,
   SeedCreate,
   StepDescription,
   StepDetails,
-  TWalletOptions
+  TWalletOptions,
 } from "./types";
-import {BlockchainCode} from "@emeraldwallet/core";
-import {SeedDescription, Uuid} from "@emeraldpay/emerald-vault-core";
 
 export enum STEP_CODE {
   KEY_SOURCE = "keySource",
@@ -142,24 +142,41 @@ export class CreateWalletFlow {
   }
 
   canGoNext(): boolean {
-    if (this.step == STEP_CODE.CREATED ||
+    if (
+      this.step == STEP_CODE.CREATED ||
       this.step == STEP_CODE.KEY_SOURCE ||
       this.step == STEP_CODE.UNLOCK_SEED ||
       this.step == STEP_CODE.MNEMONIC_GENERATE ||
       this.step == STEP_CODE.MNEMONIC_IMPORT ||
       this.step == STEP_CODE.LOCK_SEED ||
-      this.step == STEP_CODE.LEDGER_OPEN) {
+      this.step == STEP_CODE.LEDGER_OPEN
+    ) {
       return false
     }
+
     if (this.step == STEP_CODE.SELECT_BLOCKCHAIN) {
       return this.result.blockchains.length > 0;
     }
+
     if (this.step == STEP_CODE.SELECT_HD_ACCOUNT) {
       return typeof this.result.seedAccount == 'number';
     }
+
     if (this.step == STEP_CODE.PK_IMPORT) {
-      return isPkJson(this.result.type) || isPkRaw(this.result.type);
+      const { type } = this.result;
+
+      return (
+        isPkJson(type)
+        && type.json.length > 0
+        && type.jsonPassword.length > 0
+        && type.password.length > 0
+      ) || (
+        isPkRaw(type)
+        && type.pk.length > 0
+        && type.password.length > 0
+      );
     }
+
     return true;
   }
 
@@ -309,30 +326,28 @@ export class CreateWalletFlow {
     return copy;
   }
 
-  applyImportPk(value: { raw: string; password: string } | string | undefined): CreateWalletFlow {
+  applyImportPk(value: ImportPkType): CreateWalletFlow {
     const copy = this.copy();
+
     if (!isPk(copy.result.type)) {
       throw new Error("Not a PK import");
     }
-    if (typeof value == "undefined") {
-      // then remove already imported
-      copy.result.type = {
-        type: KeySourceType.PK_ANY
-      }
-    } else if (typeof value == 'string') {
-      copy.result.type = {
-        type: KeySourceType.PK_WEB3_JSON,
-        json: value,
-        jsonPassword: '', // TODO
-        password: '', // TODO
-      }
-    } else if (typeof value == 'object') {
+
+    if (value.raw != null) {
       copy.result.type = {
         type: KeySourceType.PK_RAW,
         pk: value.raw,
-        password: value.password
-      }
+        password: value.password,
+      };
+    } else if (value.json != null && value.jsonPassword != null) {
+      copy.result.type = {
+        type: KeySourceType.PK_WEB3_JSON,
+        json: value.json,
+        jsonPassword: value.jsonPassword,
+        password: value.password,
+      };
     }
+
     return copy;
   }
 
