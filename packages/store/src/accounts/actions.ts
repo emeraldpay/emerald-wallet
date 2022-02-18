@@ -1,45 +1,39 @@
 import {
-  blockchainByName,
-  BlockchainCode,
-  blockchainCodeToId,
-  blockchains, HDPath,
-  IApi,
-  IBackendApi,
-  Logger,
-} from '@emeraldwallet/core';
+  AddEntry,
+  AddressRole,
+  EntryId,
+  IdSeedReference,
+  OddPasswordItem,
+  SeedDefinition,
+  SeedDescription,
+  Uuid,
+  Wallet,
+  WalletEntry,
+} from "@emeraldpay/emerald-vault-core";
+import { BlockchainCode, blockchainCodeToId, IApi, Logger } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 import { Dispatch } from 'redux';
 import { dispatchRpcError } from '../screen/actions';
-import * as history from '../txhistory';
 import { Dispatched, IExtraArgument } from '../types';
-import * as selectors from './selectors';
 import {
   AccountsAction,
-  ActionTypes, IBalanceUpdate, ICreateHdEntry,
+  ActionTypes,
+  IBalanceUpdate,
+  ICreateHdEntry,
   ICreateWalletAction,
   IFetchErc20BalancesAction,
-  IHdAccountCreated, ILoadSeedsAction,
-  ILoadWalletsAction, INextAddress,
+  IHdAccountCreated,
+  ILoadSeedsAction,
+  ILoadWalletsAction,
+  INextAddress,
   ISetBalanceAction,
-  ISetLoadingAction, ISetSeedsAction,
-  ISetTxCountAction, ISubWalletBalance,
+  ISetLoadingAction,
+  ISetSeedsAction,
+  ISubWalletBalance,
   IUpdateWalletAction,
   IWalletCreatedAction,
-  IWalletsLoaded, PendingBalanceAction
+  IWalletsLoaded,
 } from './types';
-import {
-  AddEntry, IdSeedReference,
-  SeedDefinition,
-  SeedDescription,
-  SeedEntry,
-  SeedReference,
-  Uuid,
-  WalletEntry,
-  Wallet,
-  EntryId
-} from "@emeraldpay/emerald-vault-core";
-import {AddressRole} from "@emeraldpay/emerald-vault-core";
-import * as hdpathSelectors from "../hdpath-preview/selectors";
 
 const log = Logger.forCategory('store.accounts');
 
@@ -442,4 +436,20 @@ export function nextAddress(entryId: EntryId, role: AddressRole): INextAddress {
     entryId,
     addressRole: role
   }
+}
+
+export function isGlobalKeySet(): Dispatched<boolean> {
+  return (dispatch, getState, extra) => extra.api.vault.isGlobalKeySet();
+}
+
+export function getOddPasswordItems(): Dispatched<OddPasswordItem[]> {
+  return (dispatch, getState, extra) => extra.api.vault.getOddPasswordItems();
+}
+
+export function createGlobalKey(password: string): Dispatched<boolean> {
+  return (dispatch, getState, extra) => extra.api.vault.createGlobalKey(password);
+}
+
+export function tryUpgradeOddItems(oddPassword: string, globalPassword: string): Dispatched<Uuid[]> {
+  return (dispatch, getState, extra) => extra.api.vault.tryUpgradeOddItems(oddPassword, globalPassword);
 }

@@ -26,6 +26,8 @@ export enum Pages {
   CREATE_HD_ACCOUNT = 'create-hd-account',
   BROADCAST_TX = 'broadcast-tx',
   RECEIVE = 'receive',
+  GLOBAL_KEY = 'global-key',
+  PASSWORD_MIGRATION = 'password-migration',
 }
 
 export interface IScreenState {

@@ -10,6 +10,7 @@ module.exports = {
     {
       files: ['*.js'],
       rules: {
+        '@typescript-eslint/explicit-function-return-type': 'off',
         '@typescript-eslint/no-var-requires': 'off',
       },
     },
@@ -19,4 +20,8 @@ module.exports = {
     '@typescript-eslint',
   ],
   root: true,
+  rules: {
+    '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],
+    'react/prop-types': 'off',
+  },
 };
