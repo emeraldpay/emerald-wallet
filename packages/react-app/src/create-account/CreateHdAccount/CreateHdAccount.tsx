@@ -1,18 +1,22 @@
-import {Page} from '@emeraldplatform/ui';
-import {Back} from '@emeraldplatform/ui-icons';
-import {BlockchainCode, IBlockchain, blockchainIdToCode} from '@emeraldwallet/core';
-import {accounts, IState, screen, settings} from '@emeraldwallet/store';
-import {CoinAvatar, FormRow, PasswordInput} from '@emeraldwallet/ui';
-import * as React from 'react';
-import {connect} from 'react-redux';
+import { BlockchainCode, blockchainIdToCode, IBlockchain } from '@emeraldwallet/core';
+import { accounts, IState, screen, settings } from '@emeraldwallet/store';
+import { FormRow, PasswordInput } from '@emeraldwallet/ui';
 import {
-  FormControlLabel,
+  Box,
+  Button,
   Card,
-  CardMedia,
+  CardActions,
   CardContent,
-  createStyles, Box, Typography, Button, Stepper, Step, StepLabel, CardHeader, CardActions
+  CardHeader,
+  createStyles,
+  Step,
+  StepLabel,
+  Stepper,
+  Typography,
 } from "@material-ui/core";
-import {makeStyles} from "@material-ui/core/styles";
+import { makeStyles } from "@material-ui/core/styles";
+import * as React from 'react';
+import { connect } from 'react-redux';
 import SelectCoins from "../SelectCoins";
 
 type EnableStateType = { [key: string]: boolean };
@@ -137,10 +141,9 @@ function CreateHdAccount(props: IProps & IOwnProps & IDispatchProps) {
 
   const controls = <Box>
     <Button
-      disabled={activeStep == 0}
       variant="text"
       color={"secondary"}
-      onClick={() => setActiveStep(activeStep - 1)}
+      onClick={() => activeStep === 0 ? onCancel() : setActiveStep(activeStep - 1)}
     >Back</Button>
 
     <Button

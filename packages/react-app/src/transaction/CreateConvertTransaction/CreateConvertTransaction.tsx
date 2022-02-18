@@ -1,5 +1,3 @@
-/* eslint-disable react/prop-types */
-
 import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { WalletEntry } from '@emeraldpay/emerald-vault-core';

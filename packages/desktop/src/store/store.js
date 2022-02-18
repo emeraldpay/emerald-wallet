@@ -1,4 +1,3 @@
-/* eslint-disable import/no-extraneous-dependencies */
 import {
   BackendApi,
   blockchains,
@@ -23,7 +22,7 @@ Logger.setInstance(new ElectronLogger());
 
 const log = Logger.forCategory('store');
 
-const api = {vault: RemoteVault};
+const api = { vault: RemoteVault };
 const backendApi = new BackendApi();
 const walletState = new RenderWalletState();
 
@@ -72,14 +71,14 @@ export function startSync() {
           loadChain.push(store.dispatch(blockchains.actions.fetchGasPriceAction(chainCode)));
           loadAllChain.push(
             Promise.all(loadChain)
-              .catch((e) => log.error(`Failed to load chain ${chainCode}`, e))
+              .catch((e) => log.error(`Failed to load chain ${chainCode}`, e)),
           );
         });
 
         store.dispatch(txhistory.actions.init(codes));
 
         return Promise.all(loadAllChain).catch((e) => log.error('Failed to load chains', e));
-      })
+      }),
   );
 
   promises.push(
@@ -88,7 +87,7 @@ export function startSync() {
       .catch((err) => {
         log.error('Failed to do initial sync', err);
         store.dispatch(screen.actions.showError(err));
-      })
+      }),
   );
   return Promise.all(promises)
     .then(() => log.info('Initial synchronization finished'))
@@ -128,17 +127,45 @@ function listenElectron() {
           typeof action.payload.utxo === "object" &&
           action.payload.utxo.length > 0 &&
           typeof action.payload.entryId === "string") {
-          let state = store.getState();
-          let entry = accounts.selectors.findEntry(state, action.payload.entryId);
+          const state = store.getState();
+          const entry = accounts.selectors.findEntry(state, action.payload.entryId);
           dispatch({
             type: "WALLET/HISTORY/BALANCE_TX",
             entry: entry,
-            balance: action.payload
+            balance: action.payload,
           })
         }
       }
     });
   };
+}
+
+function getInitialScreen() {
+  store.dispatch(screen.actions.gotoScreen('welcome'));
+
+  triggers.onceServicesStart(store).then(
+    () => triggers.onceModeSet(store).then(
+      () => RemoteVault.isGlobalKeySet().then(
+        (hasGlobalKey) => {
+          if (hasGlobalKey) {
+            triggers.onceAccountsLoaded(store).then(
+              () => RemoteVault.getOddPasswordItems().then(
+                (oddPasswordItems) => {
+                  if (oddPasswordItems.length > 0) {
+                    store.dispatch(screen.actions.gotoScreen(screen.Pages.PASSWORD_MIGRATION));
+                  } else {
+                    store.dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
+                  }
+                },
+              ),
+            );
+          } else {
+            store.dispatch(screen.actions.gotoScreen(screen.Pages.GLOBAL_KEY));
+          }
+        },
+      ),
+    ),
+  );
 }
 
 export const start = () => {
@@ -149,26 +176,11 @@ export const start = () => {
   } catch (e) {
     log.error(e);
   }
+
   getInitialScreen();
   newWalletVersionCheck();
 };
 
-function getInitialScreen() {
-  // First things first, always go to welcome screen. This shows a nice spinner
-  store.dispatch(screen.actions.gotoScreen('welcome'));
-
-  return triggers.onceServicesStart(store)
-    .then(() => triggers.onceModeSet(store)
-      .then(() => triggers.onceAccountsLoaded(store)
-        .then(() => {
-          log.info('Opening Home screen');
-          // We display home screen which will decide show landing or wallets list
-          store.dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
-        })));
-}
-
-Promise
-  .all([triggers.onceBlockchainConnected(store)])
-  .then(startSync);
+triggers.onceBlockchainConnected(store).then(startSync);
 
 ipcRenderer.send('emerald-ready');

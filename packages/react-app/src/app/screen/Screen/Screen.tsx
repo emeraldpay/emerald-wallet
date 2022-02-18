@@ -3,18 +3,25 @@ import { screen } from '@emeraldwallet/store';
 import { CircularProgress } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import {
-  AddContact, BroadcastTx, ContactList as AddressBook,
-  Home,
-  Settings, TxDetails, WalletDetails, Welcome
-} from '../../../index';
 import CreateHdAccount from '../../../create-account/CreateHdAccount';
 import CreateWalletScreen from "../../../create-wallet/CreateWalletScreen";
+import {
+  AddContact,
+  BroadcastTx,
+  ContactList as AddressBook,
+  Home,
+  Settings,
+  TxDetails,
+  WalletDetails,
+  Welcome,
+} from '../../../index';
 import ReceiveScreen from "../../../receive/ReceiveScreen";
-import CreateConvertTransaction from '../../../transaction/CreateConvertTransaction';
-import SelectAccount from "../../../transaction/CreateTransaction/SelectAccount";
-import CreateTransaction from "../../../transaction/CreateTransaction";
 import CreateBitcoinTransaction from "../../../transaction/CreateBitcoinTransaction/CreateBitcoinTransaction";
+import CreateConvertTransaction from '../../../transaction/CreateConvertTransaction';
+import CreateTransaction from "../../../transaction/CreateTransaction";
+import SelectAccount from "../../../transaction/CreateTransaction/SelectAccount";
+import GlobalKey from '../../vault/GlobalKey';
+import PasswordMigration from '../../vault/PasswordMigration';
 
 const log = Logger.forCategory('screen');
 
@@ -36,6 +43,12 @@ const Screen = (props: IScreenProps) => {
   }
   if (props.screen === screen.Pages.HOME) {
     return (<Home />);
+  }
+  if (props.screen === screen.Pages.GLOBAL_KEY) {
+    return (<GlobalKey />);
+  }
+  if (props.screen === screen.Pages.PASSWORD_MIGRATION) {
+    return (<PasswordMigration />);
   }
   if (props.screen === screen.Pages.ADDRESS_BOOK) {
     return <AddressBook />;
