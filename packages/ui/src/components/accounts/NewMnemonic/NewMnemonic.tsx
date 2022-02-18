@@ -179,7 +179,7 @@ const Component = ((props: OwnProps) => {
               classes={{ root: styles.mnemonicPart, label: styles.mnemonicPartLabel }}
               color={selected.chosen ? 'primary' : 'default'}
               label={selected.name}
-              onDelete={selected.chosen ? null : () => setMnemonicSelectedParts(mnemonicSelectedParts.filter(
+              onDelete={() => setMnemonicSelectedParts(mnemonicSelectedParts.filter(
                 (item) => item.name !== selected.name),
               )}
             />
