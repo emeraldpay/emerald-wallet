@@ -8,26 +8,26 @@ import {
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-interface IOwnProps {
-  walletId: string;
-}
-
-interface IDispatchProps {
+interface DispatchProps {
   showDetails: () => void;
   onAddAccount: () => void;
 }
 
-function WalletMenu(props: IDispatchProps) {
-  const { showDetails, onAddAccount } = props;
+interface OwnProps {
+  hasHDAccount: boolean;
+  walletId: string;
+}
+
+const WalletMenu: React.FC<DispatchProps & OwnProps> = ({ hasHDAccount, showDetails, onAddAccount }) => {
   const [anchorEl, setAnchorEl] = React.useState<null | SVGSVGElement>(null);
 
-  const handleClick = (event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
+  const handleClick = React.useCallback((event: React.MouseEvent<SVGSVGElement, MouseEvent>) => {
     setAnchorEl(event.currentTarget);
-  };
+  }, []);
 
-  const handleClose = () => {
+  const handleClose = React.useCallback(() => {
     setAnchorEl(null);
-  };
+  }, []);
 
   return (
     <>
@@ -45,7 +45,7 @@ function WalletMenu(props: IDispatchProps) {
           </ListItemIcon>
           <Typography variant="inherit">Wallet Details</Typography>
         </MenuItem>
-        <MenuItem onClick={onAddAccount}>
+        <MenuItem disabled={!hasHDAccount} onClick={onAddAccount}>
           <ListItemIcon>
             <AddCircleOutlineIcon fontSize="small" />
           </ListItemIcon>
@@ -54,18 +54,18 @@ function WalletMenu(props: IDispatchProps) {
       </Menu>
     </>
   );
-}
+};
 
-export default connect<{}, IDispatchProps, IOwnProps, IState>(
+export default connect<{}, DispatchProps, OwnProps, IState>(
   null,
-  (dispatch, ownProps) => {
-    return {
-      showDetails: () => {
-        dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId));
-      },
+  (dispatch, ownProps) => (
+    {
       onAddAccount: () => {
         dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_HD_ACCOUNT, ownProps.walletId));
       },
-    };
-  },
+      showDetails: () => {
+        dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId));
+      },
+    }
+  ),
 )(WalletMenu);

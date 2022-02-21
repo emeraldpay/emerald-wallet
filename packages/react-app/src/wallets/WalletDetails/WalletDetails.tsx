@@ -71,14 +71,6 @@ const WalletDetails = (({wallet, goBack, updateWallet, onReceive, onSend}: Props
     setEdit(false)
   }
 
-  function actionsMenu() {
-    let hasHDAccount = wallet.reserved && wallet.reserved.length > 0;
-    if (hasHDAccount) {
-      return (<WalletMenu walletId={wallet.id}/>);
-    }
-    return null;
-  }
-
   const renderTitle = () => (
     <PageTitle>
       <div style={{display: 'flex', alignItems: 'center'}}>
@@ -133,7 +125,7 @@ const WalletDetails = (({wallet, goBack, updateWallet, onReceive, onSend}: Props
   return <Page
     title={renderTitle()}
     leftIcon={<Back onClick={goBack}/>}
-    rightIcon={actionsMenu()}
+    rightIcon={<WalletMenu hasHDAccount={(wallet.reserved?.length ?? 0) > 0} walletId={wallet.id}/>}
   >
     <Grid container={true}>
       <Grid item={true} xs={2} className={styles.walletIcon}>
