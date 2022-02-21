@@ -1,55 +1,52 @@
-import { CircularProgress } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import { CircularProgress, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 
-const styles = (theme: any) => ({
-  inQueue: {
-    color: theme.palette && theme.palette.text.secondary
-  },
-  discarded: {
-    color: theme.palette && theme.palette.error.main
-  },
-  inBlockchain: {
-    color: theme.palette && theme.palette.primary.main
-  },
-  confirmed: {
-    color: theme.palette && theme.palette.primary.main
-  },
-  timestamp: {
-    color: theme.palette && theme.palette.text.secondary,
-    fontSize: '12px'
-  }
-});
+const useStyles = makeStyles(
+  (theme) => createStyles({
+    inQueue: {
+      color: theme.palette && theme.palette.text.secondary,
+    },
+    discarded: {
+      color: theme.palette && theme.palette.error.main,
+    },
+    inBlockchain: {
+      color: theme.palette && theme.palette.primary.main,
+    },
+    confirmed: {
+      color: theme.palette && theme.palette.primary.main,
+    },
+    timestamp: {
+      color: theme.palette && theme.palette.text.secondary,
+      fontSize: '12px',
+    },
+  }),
+);
 
-
-function defaultTimestampFormatter (timestamp: any): string {
-  return timestamp;
-}
-
-
-interface IStatusProps {
-  currentBlockHeight: number;
+interface StatusProps {
   txBlockNumber: number | null;
   txTimestamp: any;
   txSince: Date;
   txDiscarded: boolean;
-  requiredConfirmations: number;
-  timeStampFormatter?: (ts: any) => string;
-  classes: any;
-  onClick?: any;
+  timeStampFormatter?: (timestamp: any) => string;
+  onClick?: () => void;
 }
 
-export const Status = (props: IStatusProps) => {
-  const { classes, onClick } = props;
-  const tsFormatter = props.timeStampFormatter || defaultTimestampFormatter;
-  const { currentBlockHeight, txBlockNumber, requiredConfirmations, txDiscarded } = props;
+export const Status: React.FC<StatusProps> = ({
+  txBlockNumber,
+  txDiscarded,
+  txSince,
+  txTimestamp,
+  onClick,
+  timeStampFormatter = (timestamp) => timestamp,
+}) => {
+  const classes = useStyles();
 
   // Status = Discarded
   if (txDiscarded) {
     return (
       <div>
         <div className={classes.discarded} onClick={onClick}>Discarded</div>
-        <div className={classes.timestamp} onClick={onClick}>{tsFormatter(props.txSince)}</div>
+        <div className={classes.timestamp} onClick={onClick}>{timeStampFormatter(txSince)}</div>
       </div>
     );
   }
@@ -59,39 +56,20 @@ export const Status = (props: IStatusProps) => {
     return (
       <div>
         <div className={classes.inQueue} onClick={onClick}>
-          <CircularProgress color='secondary' size={15} thickness={1.5}/> In Queue
+          <CircularProgress color="secondary" size={15} thickness={1.5} /> In Queue
         </div>
-        <div className={classes.timestamp} onClick={onClick}>{tsFormatter(props.txSince)}</div>
+        <div className={classes.timestamp} onClick={onClick}>{timeStampFormatter(txSince)}</div>
       </div>
     );
   }
 
   // Status = In Blockchain
-  const numConfirmed = Math.max(currentBlockHeight - txBlockNumber, 0);
-  const confirmationBlockNumber = txBlockNumber + requiredConfirmations;
-
-  if (confirmationBlockNumber > currentBlockHeight) {
-    return (
-      <div>
-        <div className={classes.inBlockchain} onClick={onClick}>Success</div>
-        <div
-          style={{ fontSize: '9px', textAlign: 'center' }}
-          onClick={onClick}
-        >
-          {numConfirmed} / {requiredConfirmations}
-        </div>
-      </div>
-    );
-  } else if (confirmationBlockNumber <= currentBlockHeight) {
-    return (
-      <div>
-        <span className={classes.confirmed} onClick={onClick}>Success</span> <br />
-        <span className={classes.timestamp} onClick={onClick}>{tsFormatter(props.txTimestamp)}</span>
-      </div>
-    );
-  }
-
-  return null;
+  return (
+    <div>
+      <span className={classes.confirmed} onClick={onClick}>Success</span> <br />
+      <span className={classes.timestamp} onClick={onClick}>{timeStampFormatter(txTimestamp)}</span>
+    </div>
+  );
 };
 
-export default withStyles(styles)(Status);
+export default Status;
