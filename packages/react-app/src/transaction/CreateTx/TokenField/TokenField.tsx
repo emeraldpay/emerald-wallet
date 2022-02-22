@@ -1,41 +1,54 @@
-import { MenuItem, TextField } from '@material-ui/core';
+import { BigAmount, FormatterBuilder, Predicates } from "@emeraldpay/bigamount";
+import { createStyles, MenuItem, TextField } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
+import { ReactElement } from 'react';
 import FormLabel from '../FormLabel';
-import {BigAmount} from "@emeraldpay/bigamount";
 
-function getStyles (theme?: any) {
-  return {
+interface Props {
+  balance?: BigAmount;
+  classes?: any;
+  fiatBalance?: string;
+  fiatCurrency?: string;
+  selectedToken: string;
+  tokenSymbols: string[];
+  onChangeToken?: any;
+}
+
+const balanceFormatter = new FormatterBuilder()
+  .when(Predicates.ZERO, (whenTrue: FormatterBuilder, whenFalse: FormatterBuilder): void => {
+    whenTrue.useTopUnit();
+    whenFalse.useOptimalUnit();
+  })
+  .number(3, true)
+  .append(' ')
+  .unitCode()
+  .build();
+
+const styles = (theme?: any): Record<string, any> => createStyles(
+  {
     balance: {
       color: theme.palette && theme.palette.text.secondary,
       wordSpacing: '3px',
       letterSpacing: '1px',
       fontWeight: 200,
-      paddingLeft: '20px'
-    }
-  };
-}
+      paddingLeft: '20px',
+    },
+  },
+)
 
-interface IProps {
-  onChangeToken?: any;
-  selectedToken: string;
-  tokenSymbols: string[];
-  balance?: BigAmount;
-  fiatBalance?: string;
-  fiatCurrency?: string;
-  classes?: any;
-}
-
-export class TokenField extends React.Component<IProps> {
-  public onChangeToken = (event: any) => {
+export class TokenField extends React.Component<Props> {
+  public onChangeToken = (event: any): void => {
     if (this.props.onChangeToken) {
       this.props.onChangeToken(event.target.value);
     }
   }
 
-  public render () {
+  public render(): ReactElement {
     const { classes, selectedToken, balance } = this.props;
-    const tokenSymbols = this.props.tokenSymbols || [];
+
+    const tokenSymbols = this.props.tokenSymbols ?? [];
+
     return (
       <React.Fragment>
         <FormLabel>Token</FormLabel>
@@ -44,23 +57,17 @@ export class TokenField extends React.Component<IProps> {
           value={selectedToken}
           onChange={this.onChangeToken}
         >
-          {tokenSymbols.map((symbol) => (<MenuItem key={symbol} value={symbol}>{symbol}</MenuItem>))}
+          {tokenSymbols.map((symbol) => (
+            <MenuItem key={symbol} value={symbol}>{symbol}</MenuItem>
+          ))}
         </TextField>
-
-        <div className={classes.balance} data-testid='balance'>
-          {this.renderBalance(balance)} / {this.props.fiatBalance} {this.props.fiatCurrency}
+        <div className={classes.balance} data-testid="balance">
+          {balance == null ? '?' : balanceFormatter.format(balance)}
+          {` / ${this.props.fiatBalance} ${this.props.fiatCurrency}`}
         </div>
-      </React.Fragment>
-    );
-  }
-
-  private renderBalance(balance?: BigAmount) {
-    return (
-      <React.Fragment>
-        {balance ? balance.toString() : '?'}
       </React.Fragment>
     );
   }
 }
 
-export default withStyles(getStyles)(TokenField);
+export default withStyles(styles)(TokenField);
