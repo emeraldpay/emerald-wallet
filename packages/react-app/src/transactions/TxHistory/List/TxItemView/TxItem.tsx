@@ -90,7 +90,7 @@ const defaultAmountRenderer = ((amount: BigAmount, ticker: any) => {
 export const TxItem = (props: ITxItemProps) => {
   const renderAmount = props.amountRenderer || defaultAmountRenderer;
   const {
-    tx, openTx, openAccount, currentBlockHeight, fromWallet, toWallet, requiredConfirmations, token, coinTicker
+    tx, openTx, openAccount, fromWallet, toWallet, token, coinTicker
   } = props;
   const {classes} = props;
 
@@ -183,7 +183,6 @@ export const TxItem = (props: ITxItemProps) => {
       </TableCell>
       <TableCell className={classes.columnStatus}>
         <TxStatus
-          currentBlockHeight={currentBlockHeight}
           txBlockNumber={parseInt(tx.blockNumber?.toString() || "0")}
           txTimestamp={tx.timestamp}
           txSince={
@@ -191,7 +190,6 @@ export const TxItem = (props: ITxItemProps) => {
               tx.since || new Date(0)
           }
           txDiscarded={tx.discarded || false}
-          requiredConfirmations={requiredConfirmations}
           timeStampFormatter={timeStampFormatter(props.lang)}
           onClick={openTx}
         />
