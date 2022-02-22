@@ -193,6 +193,6 @@ export class EmeraldApiAccessLocal extends EmeraldApiAccess {
 
 export class EmeraldApiAccessProd extends EmeraldApiAccess {
   constructor (id: string, appParams: any) {
-    super('34.98.113.36:443', id, appParams);
+    super('api.emrld.io:443', id, appParams);
   }
 }
