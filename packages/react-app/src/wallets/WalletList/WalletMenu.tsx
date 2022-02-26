@@ -64,7 +64,7 @@ export default connect<{}, DispatchProps, OwnProps, IState>(
         dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_HD_ACCOUNT, ownProps.walletId));
       },
       showDetails: () => {
-        dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId));
+        dispatch(screen.actions.gotoScreen(screen.Pages.WALLET_INFO, ownProps.walletId));
       },
     }
   ),
