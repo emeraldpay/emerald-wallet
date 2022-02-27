@@ -42,6 +42,7 @@ const styles = createStyles({
 });
 
 interface DispatchProps {
+  checkGlobalKey(password: string): Promise<boolean>;
   getLegacyItems(): Promise<OddPasswordItem[]>;
   goHome(): Promise<void>;
   upgradeLegacyItems(globalPassword: string, password: string): Promise<Uuid[]>;
@@ -55,6 +56,7 @@ type PasswordType = OddPasswordItem & { upgraded?: boolean };
 
 const PasswordMigration: React.FC<DispatchProps & StylesProps> = ({
   classes,
+  checkGlobalKey,
   getLegacyItems,
   goHome,
   upgradeLegacyItems,
@@ -67,24 +69,42 @@ const PasswordMigration: React.FC<DispatchProps & StylesProps> = ({
   const [globalPassword, setGlobalPassword] = React.useState('');
   const [password, setPassword] = React.useState('');
 
+  const [globalPasswordError, setGlobalPasswordError] = React.useState<string>();
+  const [passwordError, setPasswordError] = React.useState<string>();
+
   const applyPassword = React.useCallback(async () => {
-    if (globalPassword.length > 0 && password.length > 0) {
-      setUpgrading(true);
+    setGlobalPasswordError(undefined);
+    setPasswordError(undefined);
 
-      const upgraded = await upgradeLegacyItems(globalPassword, password);
+    const correctGlobalPassword = await checkGlobalKey(globalPassword);
 
-      setUpgrading(false);
-      setLegacyItems(
-        legacyItems.map(
-          (item) => (
-            {
-              ...item,
-              upgraded: item.upgraded === true ? item.upgraded : upgraded.includes(item.id),
-            }
-          ),
-        ),
-      );
+    if (!correctGlobalPassword) {
+      setGlobalPasswordError('Incorrect password');
+
+      return;
     }
+
+    if (password.length === 0) {
+      setPasswordError('Incorrect password');
+
+      return;
+    }
+
+    setUpgrading(true);
+
+    const upgraded = await upgradeLegacyItems(globalPassword, password);
+
+    setUpgrading(false);
+    setLegacyItems(
+      legacyItems.map(
+        (item) => (
+          {
+            ...item,
+            upgraded: item.upgraded === true ? item.upgraded : upgraded.includes(item.id),
+          }
+        ),
+      ),
+    );
   }, [legacyItems, globalPassword, password]);
 
   React.useEffect(() => {
@@ -163,6 +183,7 @@ const PasswordMigration: React.FC<DispatchProps & StylesProps> = ({
         <FormLabel classes={{ root: classes.label }}>Global password:</FormLabel>
         <PasswordInput
           disabled={initializing}
+          error={globalPasswordError}
           onChange={(value) => setGlobalPassword(value)}
         />
       </FormFieldWrapper>
@@ -170,6 +191,7 @@ const PasswordMigration: React.FC<DispatchProps & StylesProps> = ({
         <FormLabel classes={{ root: classes.label }}>Old password (for any of the items above):</FormLabel>
         <PasswordInput
           disabled={initializing}
+          error={passwordError}
           onChange={(value) => setPassword(value)}
         />
       </FormFieldWrapper>
@@ -189,11 +211,14 @@ const PasswordMigration: React.FC<DispatchProps & StylesProps> = ({
   );
 };
 
-export default connect(
+export default connect<{}, DispatchProps>(
   null,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dispatch: any): DispatchProps => (
+  (dispatch: any) => (
     {
+      checkGlobalKey(password) {
+        return dispatch(accounts.actions.verifyGlobalKey(password));
+      },
       getLegacyItems() {
         return dispatch(accounts.actions.getOddPasswordItems());
       },

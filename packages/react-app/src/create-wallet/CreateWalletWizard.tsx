@@ -107,8 +107,7 @@ export const CreateWizard: React.FC<Actions & OwnProps> = ((props) => {
         setStep(step.applyMnemonicSaved(id, password))
       );
     }
-    activeStepPage = <SaveMnemonic mnemonic={step.getMnemonic().mnemonic!}
-                                   onPassword={onLock}/>
+    activeStepPage = <SaveMnemonic onPassword={onLock}/>
   } else if (page.code == STEP_CODE.SELECT_HD_ACCOUNT) {
     const seed = step.getResult().seed;
     if (typeof seed == "undefined") {

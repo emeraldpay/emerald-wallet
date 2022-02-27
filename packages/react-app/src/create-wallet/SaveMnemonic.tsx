@@ -1,61 +1,66 @@
-import {connect} from "react-redux";
-import {Dispatch} from "react";
+import { accounts } from '@emeraldwallet/store';
+import { Button, PasswordInput } from '@emeraldwallet/ui';
+import { Grid, Typography } from '@material-ui/core';
+import { Alert } from '@material-ui/lab';
 import * as React from 'react';
-import {Box, createStyles, Paper, Grid, Typography} from "@material-ui/core";
-import {IState} from "@emeraldwallet/store";
-import {makeStyles} from "@material-ui/core/styles";
-import {Uuid} from "@emeraldpay/emerald-vault-core";
-import {Alert} from "@material-ui/lab";
-import {ConfirmedPasswordInput} from "@emeraldwallet/ui";
+import { connect } from 'react-redux';
 
-const useStyles = makeStyles(
-  createStyles({
-    // styleName: {
-    //  ... css
-    // },
-  })
-);
-
-/**
- *
- */
-const Component = (({onPassword}: Props & Actions & OwnProps) => {
-  const styles = useStyles();
-
-  return <Grid container={true}>
-    <Grid xs={12}>
-      <Typography variant={"h4"}>Save Secret Phrase</Typography>
-      <Alert severity="info">
-        You're about to save an encrypted copy of the secret phrase ("Mnemonic Phrase") generated on the previous step.
-        Please make sure you enter a strong and secure password.
-      </Alert>
-    </Grid>
-    <Grid xs={12}>
-      <ConfirmedPasswordInput onChange={onPassword} buttonLabel={"Save"}/>
-    </Grid>
-  </Grid>
-})
-
-// State Properties
-interface Props {
-}
-
-// Actions
-interface Actions {
-}
-
-// Component properties
 interface OwnProps {
-  mnemonic: string,
-  mnemonicPassword?: string,
   onPassword: (encryptionPassword: string) => void;
 }
 
-export default connect(
-  (state: IState, ownProps: OwnProps): Props => {
-    return {}
-  },
-  (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
-    return {}
-  }
-)((Component));
+interface DispatchProps {
+  checkGlobalKey(password: string): Promise<boolean>;
+}
+
+const SaveMnemonic: React.FC<DispatchProps & OwnProps> = ({ checkGlobalKey, onPassword }) => {
+  const [password, setPassword] = React.useState('');
+
+  const [passwordError, setPasswordError] = React.useState<string>();
+
+  const onVerifyPassword = React.useCallback(async () => {
+    setPasswordError(undefined);
+
+    const correctPassword = await checkGlobalKey(password);
+
+    if (correctPassword) {
+      onPassword(password)
+    } else {
+      setPasswordError('Incorrect password');
+    }
+  }, [password])
+
+  return (
+    <Grid container>
+      <Grid item xs={12}>
+        <Typography variant={'h4'}>Save Secret Phrase</Typography>
+        <Alert severity="info">
+          You&apos;re about to save an encrypted copy of the secret phrase (&quot;Mnemonic Phrase&quot;) generated on
+          the previous step. Please make sure you enter a strong and secure password.
+        </Alert>
+      </Grid>
+      <Grid item xs={12}>
+        <Grid container alignItems="center" spacing={1}>
+          <Grid item xs={10}>
+            <PasswordInput error={passwordError} onChange={setPassword} />
+          </Grid>
+          <Grid item xs={2}>
+            <Button label="Save" primary={true} onClick={onVerifyPassword} />
+          </Grid>
+        </Grid>
+      </Grid>
+    </Grid>
+  );
+};
+
+export default connect<{}, DispatchProps>(
+  null,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (dispatch: any) => (
+    {
+      checkGlobalKey(password) {
+        return dispatch(accounts.actions.verifyGlobalKey(password));
+      },
+    }
+  ),
+)(SaveMnemonic);

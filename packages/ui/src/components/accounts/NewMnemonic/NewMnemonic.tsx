@@ -6,6 +6,7 @@ import * as React from 'react';
 import { useEffect, useState } from 'react';
 import { ReactSortable } from "react-sortablejs";
 import { ConfirmedPasswordInput } from "../../../index";
+import {} from 'uuid'
 
 const useStyles = makeStyles(
   createStyles({
@@ -81,9 +82,12 @@ interface OwnProps {
   classes?: any;
 }
 
-interface MnemonicPartType {
+interface MnemonicRandomPartType {
   id: number;
   name: string;
+}
+
+interface MnemonicSelectedPartType extends MnemonicRandomPartType{
   chosen?: boolean;
 }
 
@@ -94,7 +98,7 @@ const defaults = {
 /**
  *
  */
-const Component = ((props: OwnProps) => {
+const Component: React.FC<OwnProps> = ((props) => {
   props = WithDefaults(props, defaults);
   const styles = useStyles();
 
@@ -138,18 +142,18 @@ const Component = ((props: OwnProps) => {
   let content;
   let title: string;
 
-  const [mnemonicRandomParts, setMnemonicRandomParts] = useState<string[]>([]);
-  const [mnemonicSelectedParts, setMnemonicSelectedParts] = useState<MnemonicPartType[]>([]);
+  const [mnemonicRandomParts, setMnemonicRandomParts] = useState<MnemonicRandomPartType[]>([]);
+  const [mnemonicSelectedParts, setMnemonicSelectedParts] = useState<MnemonicSelectedPartType[]>([]);
 
   useEffect(() => {
-    let mnemonicParts = [];
+    let mnemonicParts: MnemonicRandomPartType[] = [];
 
     if (confirming) {
       mnemonicParts = mnemonic
         .split(' ')
         .map((part) => ({ sort: Math.random(), part }))
         .sort((first, second) => first.sort - second.sort)
-        .map(({ part }) => part);
+        .map(({ part }, index) => ({ id: index, name: part }));
 
       setMnemonicSelectedParts([]);
     }
@@ -189,21 +193,15 @@ const Component = ((props: OwnProps) => {
       <Grid item={true} xs={12}>
         <div className={styles.mnemonicGrid}>
           {mnemonicRandomParts.map(
-            (part, index) => mnemonicSelectedParts.find((item) => item.name === part) == null ? (
+            (part) => mnemonicSelectedParts.find((item) => part.id === item.id) == null ? (
               <Chip
-                key={`mnemonic-random-${part}[${index}]`}
+                key={`mnemonic-random[${part.id}]`}
                 classes={{ root: styles.mnemonicPart, label: styles.mnemonicPartLabel }}
-                label={part}
-                onClick={() => setMnemonicSelectedParts([
-                  ...mnemonicSelectedParts,
-                  {
-                    id: mnemonicSelectedParts.length + 1,
-                    name: part,
-                  },
-                ])}
+                label={part.name}
+                onClick={() => setMnemonicSelectedParts([...mnemonicSelectedParts, part])}
               />
             ) : (
-              <div key={`mnemonic-random-${part}[${index}]`}>&nbsp;</div>
+              <div key={`mnemonic-random[${part.id}]`}>&nbsp;</div>
             ),
           )}
         </div>
@@ -238,10 +236,9 @@ const Component = ((props: OwnProps) => {
       const message = <Box>
         <Alert severity="error">
           <Box className={styles.writeMessage}>
-            Please write the phrase ("Mnemonic Phrase") and keep it in a safe place.
-            Never tell it to anyone.
-            Don't enter it anywhere online. It's the key to spend your funds.
-            If you lose this phrase, you will not be able to recover your account.
+            Please write the phrase (&quot;Mnemonic Phrase&quot;) and keep it in a safe place. Never tell it to anyone.
+            Don&apos;t enter it anywhere online. It&apos;s the key to spend your funds. If you lose this phrase, you
+            will not be able to recover your account.
           </Box>
           <Box className={styles.writeButtons}>
             <Button color={"primary"}
@@ -268,8 +265,10 @@ const Component = ((props: OwnProps) => {
       </Grid>
     } else {
       content = <Box className={styles.mnemonic + " " + styles.mnemonicEmpty}>
-        <Typography>Click "Generate Phrase" to create a new secret phrase that will be a key to spend your
-          cryptocurrencies.</Typography>
+        <Typography>
+          Click &quot;Generate Phrase&quot; to create a new secret phrase that will be a key to spend your
+          cryptocurrencies.
+        </Typography>
         <Button color={"primary"}
                 className={styles.button}
                 variant={"text"}
