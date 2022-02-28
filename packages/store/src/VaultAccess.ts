@@ -136,6 +136,14 @@ class VaultAccess implements IEmeraldVault {
   tryUpgradeOddItems(oddPassword: string, globalPassword: string): Promise<Uuid[]> {
     return ipcRenderer.invoke(PREFIX + "tryUpgradeOddItems", oddPassword, globalPassword);
   }
+
+  verifyGlobalKey(password: string): Promise<boolean> {
+    return ipcRenderer.invoke(PREFIX + "verifyGlobalKey", password);
+  }
+
+  changeGlobalKey(oldPassword: string, newPassword: string): Promise<boolean> {
+    return ipcRenderer.invoke(PREFIX + "changeGlobalKey", oldPassword, newPassword);
+  }
 }
 
 export const RemoteVault = new VaultAccess()
