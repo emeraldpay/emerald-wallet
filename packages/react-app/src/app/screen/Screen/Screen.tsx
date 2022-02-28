@@ -20,6 +20,7 @@ import CreateBitcoinTransaction from "../../../transaction/CreateBitcoinTransact
 import CreateConvertTransaction from '../../../transaction/CreateConvertTransaction';
 import CreateTransaction from "../../../transaction/CreateTransaction";
 import SelectAccount from "../../../transaction/CreateTransaction/SelectAccount";
+import WalletInfo from '../../../wallets/WalletInfo';
 import GlobalKey from '../../vault/GlobalKey';
 import PasswordMigration from '../../vault/PasswordMigration';
 
@@ -58,6 +59,9 @@ const Screen = (props: IScreenProps) => {
   }
   if (props.screen === screen.Pages.WALLET) {
     return <WalletDetails walletId={props.screenItem}/>;
+  }
+  if (props.screen === screen.Pages.WALLET_INFO) {
+    return <WalletInfo walletId={props.screenItem} />;
   }
   if (props.screen === screen.Pages.TX_DETAILS) {
     return <TxDetails hash={props.screenItem.hash}/>;
