@@ -146,7 +146,7 @@ const PasswordMigration: React.FC<DispatchProps & StylesProps> = ({
               <TableCell>{password.id}</TableCell>
               <TableCell>
                 {
-                  upgrading
+                  upgrading && !password.upgraded
                     ? (
                       <div className={classes.status}>
                         <CircularProgress color="primary" className={classes.loader} size="1em" />
