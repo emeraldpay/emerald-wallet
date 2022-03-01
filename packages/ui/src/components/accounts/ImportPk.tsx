@@ -166,7 +166,7 @@ const Component: React.FC<OwnProps> = (props) => {
             <PasswordInput error={pkPasswordError} onChange={setPassword} />
           </Grid>
           <Grid item={true} xs={2}>
-            <Button variant="contained" onClick={setPkGlobalPassword}>Apply</Button>
+            <Button variant="contained" onClick={setPkGlobalPassword}>Save</Button>
           </Grid>
         </Grid>
       </Grid>
@@ -214,7 +214,7 @@ const Component: React.FC<OwnProps> = (props) => {
             <PasswordInput onChange={setJsonFilePassword} />
           </Grid>
           <Grid item={true} xs={2}>
-            <Button variant="contained" onClick={setJsonGlobalPassword}>Apply</Button>
+            <Button variant="contained" onClick={setJsonGlobalPassword}>Save</Button>
           </Grid>
         </Grid>
       </Grid>
