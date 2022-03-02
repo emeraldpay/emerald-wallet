@@ -1,7 +1,7 @@
 import { ButtonGroup, IdentityIcon, Input } from '@emeraldplatform/ui';
 import { ArrowRight } from '@emeraldplatform/ui-icons';
 import { workflow } from '@emeraldwallet/core';
-import { Button } from '@emeraldwallet/ui';
+import { Button, PasswordInput } from '@emeraldwallet/ui';
 import { Divider, List, ListItem, ListItemText } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
@@ -41,6 +41,7 @@ interface IProps {
   typedData?: any;
   mode?: any;
   classes?: any;
+  passwordError?: string;
 }
 
 interface IState {
@@ -59,7 +60,7 @@ const HorizontalAddressWithIdentity = (props: { hide: boolean; address: string; 
   );
 };
 
-const TypedData = (props: { typedData: any; }) => {
+const TypedData = (props: { typedData: any }) => {
   const { typedData } = props;
   if (!typedData) {
     return null;
@@ -126,10 +127,11 @@ class SignTx extends React.Component<IProps, IState> {
     this.state = { password: '' };
   }
 
-  public handlePasswordChange = (event: any) => {
-    this.setState({ password: event.target.value });
+  public handlePasswordChange = (password: string) => {
+    this.setState({ password });
+
     if (this.props.onChangePassword) {
-      this.props.onChangePassword(event.target.value);
+      this.props.onChangePassword(password);
     }
   }
 
@@ -176,13 +178,7 @@ class SignTx extends React.Component<IProps, IState> {
                 <div className={classes.fieldName}>Password</div>
               </div>
               <div className={classes.right}>
-                <Input
-                  value={this.state.password}
-                  type='password'
-                  onChange={this.handlePasswordChange}
-                  // style={{ minWidth: '600px' }}
-                  placeholder='Enter your Password'
-                />
+                <PasswordInput error={this.props.passwordError} onChange={this.handlePasswordChange} />
               </div>
             </div>
           )}
@@ -191,7 +187,12 @@ class SignTx extends React.Component<IProps, IState> {
             <div className={classes.right} style={{ paddingTop: '10px' }}>
               <ButtonGroup>
                 <Button label='Cancel' onClick={onCancel}/>
-                <Button primary={true} label='Sign Transaction' onClick={onSubmit}/>
+                <Button
+                  disabled={this.state.password.length === 0}
+                  primary={true}
+                  label='Sign Transaction'
+                  onClick={onSubmit}
+                />
               </ButtonGroup>
             </div>
           </div>
