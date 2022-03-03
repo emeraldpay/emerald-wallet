@@ -1,7 +1,7 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { WalletEntry } from '@emeraldpay/emerald-vault-core';
-import { ButtonGroup, Input, Page } from '@emeraldplatform/ui';
+import { ButtonGroup, Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
 import {
   amountFactory,
@@ -15,12 +15,12 @@ import { tokenUnits } from '@emeraldwallet/core/lib/blockchains/tokens';
 import { CreateErc20WrappedTx, TxTarget } from '@emeraldwallet/core/lib/workflow';
 import { registry } from '@emeraldwallet/erc20';
 import { accounts, IState, screen, tokens, transaction } from '@emeraldwallet/store';
-import { Button } from '@emeraldwallet/ui';
+import { Button, PasswordInput } from '@emeraldwallet/ui';
 import { Box, createStyles, FormControlLabel, FormHelperText, Slider, Switch, withStyles } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
-import { ChangeEvent, useCallback, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
 import AmountField from '../CreateTx/AmountField/AmountField';
 import FormFieldWrapper from '../CreateTx/FormFieldWrapper';
@@ -73,6 +73,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
+  checkGlobalKey(password: string): Promise<boolean>;
   estimateGas(blockchain: BlockchainCode, tx: CreateErc20WrappedTx): Promise<number>;
   getFees(blockchain: BlockchainCode): Promise<Record<string, number>>;
   goBack(): void;
@@ -88,6 +89,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
   blockchain,
   classes,
   entry: { address },
+  checkGlobalKey,
   estimateGas,
   getBalance,
   getFees,
@@ -120,6 +122,8 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
 
   const [stage, setStage] = useState(Stages.SETUP);
   const [password, setPassword] = useState('');
+
+  const [passwordError, setPasswordError] = useState<string>();
 
   const oldAmount = React.useRef(convertTx.amount);
 
@@ -176,6 +180,20 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
 
     setConvertTx(tx.dump());
   }, [gasPriceUnit, convertTx]);
+
+  const onSignTransaction = useCallback(async () => {
+    setPasswordError(undefined);
+
+    const correctPassword = await checkGlobalKey(password);
+
+    if (correctPassword) {
+      const tx = CreateErc20WrappedTx.fromPlain(convertTx);
+
+      await signTransaction(tx, password);
+    } else {
+      setPasswordError('Incorrect password');
+    }
+  }, [convertTx, password]);
 
   React.useEffect(() => {
     (
@@ -345,21 +363,17 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
         </FormFieldWrapper>
         <FormFieldWrapper>
           <FormLabel>Password</FormLabel>
-          <Input
-            placeholder="Enter your Password"
-            type="password"
-            value={password}
-            onChange={(event: ChangeEvent<HTMLInputElement>): void => setPassword(event.target.value)}
-          />
+          <PasswordInput error={passwordError} onChange={setPassword} />
         </FormFieldWrapper>
         <FormFieldWrapper>
           <FormLabel />
-          <ButtonGroup>
+          <ButtonGroup style={{ width: '100%' }}>
             <Button label="Cancel" onClick={goBack} />
             <Button
               label="Sign Transaction"
+              disabled={password.length === 0}
               primary={true}
-              onClick={(): Promise<void> => signTransaction(currentTx, password)}
+              onClick={onSignTransaction}
             />
           </ButtonGroup>
         </FormFieldWrapper>
@@ -368,8 +382,8 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
   </Page>;
 };
 
-export default connect(
-  (state: IState, ownProps: OwnProps) => {
+export default connect<StateProps, DispatchProps, OwnProps, IState>(
+  (state, ownProps) => {
     const { entry } = ownProps;
 
     const blockchain = blockchainIdToCode(entry.blockchain);
@@ -392,11 +406,14 @@ export default connect(
 
         return tokenBalance ?? zero;
       },
-    } as StateProps;
+    };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dispatch: any, ownProps: OwnProps) => (
+  (dispatch: any, ownProps) => (
     {
+      checkGlobalKey(password) {
+        return dispatch(accounts.actions.verifyGlobalKey(password));
+      },
       async estimateGas(blockchain, tx) {
         const token = registry.bySymbol(blockchain, 'WETH');
 
@@ -462,5 +479,5 @@ export default connect(
         }
       },
     }
-  ) as DispatchProps,
+  ),
 )(withStyles(styles)(CreateConvertTransaction));
