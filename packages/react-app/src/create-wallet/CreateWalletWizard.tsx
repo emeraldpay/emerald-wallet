@@ -1,12 +1,11 @@
 import * as vault from "@emeraldpay/emerald-vault-core";
 import { SeedDefinition, Uuid } from "@emeraldpay/emerald-vault-core";
 import { IBlockchain } from "@emeraldwallet/core";
-import { screen } from '@emeraldwallet/store';
+import { accounts, screen } from '@emeraldwallet/store';
 import { ImportMnemonic, ImportPk, NewMnemonic } from "@emeraldwallet/ui";
 import { Button, Card, CardActions, CardContent, CardHeader, Step, StepLabel, Stepper } from '@material-ui/core';
 import * as bip39 from 'bip39';
 import * as React from 'react';
-import { Dispatch } from 'react';
 import { connect } from 'react-redux';
 import SelectCoins from "../create-account/SelectCoins";
 import SelectHDPath from "../create-account/SelectHDPath";
@@ -20,7 +19,8 @@ import SelectKeySource from "./SelectKeySource";
 import WalletOptions from "./WalletOptions";
 
 type Actions = {
-  onOpen: (walletId: string) => void;
+  checkGlobalKey(password: string): Promise<boolean>;
+  onOpen(walletId: string): void;
 }
 
 function isValidMnemonic(text: string): boolean {
@@ -86,7 +86,11 @@ export const CreateWizard: React.FC<Actions & OwnProps> = ((props) => {
   } else if (page.code == STEP_CODE.PK_IMPORT) {
     const result = step.getResult();
 
-    activeStepPage = <ImportPk raw={isPkRaw(result.type)} onChange={applyWithState(step.applyImportPk)}/>;
+    activeStepPage = <ImportPk
+      raw={isPkRaw(result.type)}
+      checkGlobalKey={props.checkGlobalKey}
+      onChange={applyWithState(step.applyImportPk)}
+    />;
   } else if (page.code == STEP_CODE.LEDGER_OPEN) {
     activeStepPage = <LedgerWait fullSize={true} onConnected={applyWithState(step.applyLedgerConnected)}/>;
   } else if (page.code == STEP_CODE.LOCK_SEED) {
@@ -173,8 +177,11 @@ type OwnProps = {
 
 export default connect(
   null,
-  (dispatch: Dispatch<any>): Actions => {
+  (dispatch: any): Actions => {
     return {
+      checkGlobalKey(password) {
+        return dispatch(accounts.actions.verifyGlobalKey(password));
+      },
       onOpen: (walletId: string) => {
         dispatch(screen.actions.gotoScreen("wallet", walletId))
       },
