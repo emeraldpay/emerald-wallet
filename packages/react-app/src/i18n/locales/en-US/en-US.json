@@ -74,6 +74,14 @@
   "settings": {
     "lang": "Language",
     "currency": "Equivalent currency",
+    "globalKeyOld": "Old password",
+    "globalKeyNew": "New password",
+    "globalKeyConfirm": "Confirm new password",
+    "globalKeyErrors": {
+      "errorOccurred": "Global key change failed",
+      "passwordMismatch": "Password not match or equal to old"
+    },
+    "globalKeyChanged": "Global Key changed successfully",
     "showHiddenAccounts": "Hidden Accounts",
     "confirmations": "Confirmations"
   }
