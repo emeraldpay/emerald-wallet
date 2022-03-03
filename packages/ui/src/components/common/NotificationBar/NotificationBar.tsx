@@ -46,7 +46,11 @@ export class NotificationBar extends React.Component<IBarProps, IBarState> {
   }
 
   public onActionClick () {
-    this.props.onActionClick(this.props.notificationActionToDispatchOnActionClick);
+    const { notificationActionToDispatchOnActionClick: action } = this.props;
+
+    if (action != null) {
+      this.props.onActionClick(action);
+    }
   }
 
   public render () {

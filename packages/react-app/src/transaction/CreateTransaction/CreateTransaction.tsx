@@ -60,6 +60,7 @@ interface CreateTxState {
   maximalGasPrice: string;
   minimalGasPrice: string;
   standardGasPrice: string;
+  passwordError?: string;
 }
 
 interface OwnProps {
@@ -266,13 +267,21 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     });
   }
 
-  public onSubmitSignTxForm = () => {
-    this.props.signAndSend({
-      transaction: this.transaction,
-      password: this.state.password,
-      data: this.state.data,
-      token: this.state.token
-    });
+  public onSubmitSignTxForm = async () => {
+    this.setState({ passwordError: undefined });
+
+    const correctPassword = await this.props.checkGlobalKey(this.state.password ?? '');
+
+    if (correctPassword) {
+      this.props.signAndSend({
+        transaction: this.transaction,
+        password: this.state.password,
+        data: this.state.data,
+        token: this.state.token
+      });
+    } else {
+      this.setState({ passwordError: 'Incorrect password' });
+    }
   }
 
   public onMaxClicked () {
@@ -325,6 +334,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       case PAGES.SIGN:
         return (
           <SignTx
+            passwordError={this.state.passwordError}
             fiatRate={this.props.fiatRate}
             tx={tx}
             onChangePassword={this.onChangePassword}
@@ -452,6 +462,7 @@ interface DispatchFromProps {
   onCancel: () => void;
   onEmptyAddressBookClick: () => void;
   signAndSend: (args: {transaction: CreateEthereumTx | CreateERC20Tx; password: any; data: any; token: any}) => void;
+  checkGlobalKey: (password: string) => Promise<boolean>;
 }
 
 interface Props {
@@ -569,6 +580,9 @@ export default connect(
             dispatch(screen.actions.gotoScreen(screen.Pages.BROADCAST_TX, result));
           }
         });
-    }
+    },
+    checkGlobalKey(password) {
+      return dispatch(accounts.actions.verifyGlobalKey(password));
+    },
   })
 )(CreateTransaction);
