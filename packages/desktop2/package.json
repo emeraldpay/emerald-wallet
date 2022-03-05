@@ -1,20 +1,22 @@
 {
   "name": "@emeraldwallet/desktop2",
   "productName": "EmeraldWallet",
-  "contributors": [
-    "Igor Artamonov <splix@emerald.cash>",
-    "Yuriy Gagarin <gagarin55@protonmail.com>"
-  ],
   "version": "2.6.0-dev",
   "description": "Emerald - Cryptocurrency Wallet",
   "keywords": [
+    "blockchain",
+    "cryptocurrency",
     "ethereum",
     "ethereum classic",
-    "wallet",
-    "cryptocurrency",
-    "blockchain"
+    "wallet"
   ],
-  "author": "gagarin55 <gagarin55@protonmail.com>",
+  "contributors": [
+    "Igor Artamonov <splix@emerald.cash>"
+  ],
+  "author": {
+    "name": "Igor Artamonov",
+    "email": "splix@emerald.cash"
+  },
   "homepage": "https://emerald.cash",
   "license": "Apache-2.0",
   "publishConfig": {
@@ -24,36 +26,34 @@
     "type": "git",
     "url": "https://github.com/emeraldpay/emerald-wallet.git"
   },
-  "scripts": {
-    "clean": "rimraf app/",
-    "compile": "tsc -b",
-    "start": "yarn build && electron ./app/electron.js",
-    "build": "yarn clean && yarn compile && webpack --config webpack.config.js",
-    "dist": "rimraf dist/ && electron-builder --publish never"
-  },
   "bugs": {
     "url": "https://github.com/emeraldpay/emerald-wallet/issues"
   },
-  "main": "electron.js",
-  "devDependencies": {
-    "copy-webpack-plugin": "^5.1.1",
-    "cross-env": "7.0.2",
-    "electron": "15.3.5",
-    "electron-builder": "22.8.1",
-    "html-webpack-plugin": "^4.0.4",
-    "rimraf": "2.6.3",
-    "ts-loader": "^6.2.2",
-    "webpack": "4.41.2",
-    "webpack-cli": "^3.3.11"
+  "main": "./app/main.js",
+  "scripts": {
+    "clean": "rimraf ./app/",
+    "compile": "tsc -b",
+    "build": "yarn clean && yarn compile && webpack",
+    "start": "electron ./app/main.js",
+    "dist": "rimraf ./dist/ && electron-builder --publish never"
   },
   "dependencies": {
-    "@emeraldwallet/electron-app": "^2.6.0-dev",
-    "@emeraldwallet/react-app": "^2.6.0-dev",
-    "@grpc/grpc-js": "^1.5.1",
-    "react": "16.11.0",
-    "react-dom": "16.11.0"
+    "react": "16.13.1",
+    "react-dom": "16.13.1"
+  },
+  "devDependencies": {
+    "copy-webpack-plugin": "^10.2.4",
+    "cross-env": "^7.0.3",
+    "electron": "15.3.5",
+    "electron-builder": "^22.14.13",
+    "html-webpack-plugin": "^5.5.0",
+    "rimraf": "^3.0.2",
+    "ts-loader": "^9.2.7",
+    "webpack": "^5.70.0",
+    "webpack-cli": "^4.9.2"
   },
   "build": {
+    "appId": "io.emeraldwallet.desktop",
     "directories": {
       "buildResources": "resources"
     },
@@ -61,32 +61,12 @@
       {
         "from": "app",
         "to": ".",
-        "filter": [
-          "**/*"
-        ]
+        "filter": ["**/*"]
       },
       "package.json"
     ],
-    "appId": "io.emeraldwallet.desktop",
-    "compression": "normal",
     "asar": true,
-    "extraResources": [],
-    "mac": {
-      "category": "public.app-category.developer-tools"
-    },
-    "linux": {
-      "target": [
-        "AppImage",
-        "deb",
-        "tar.gz"
-      ]
-    },
-    "win": {
-      "icon": "resources/icon.ico"
-    },
-    "nsis": {
-      "oneClick": false
-    },
+    "compression": "normal",
     "dmg": {
       "iconSize": 128,
       "contents": [
@@ -101,6 +81,22 @@
           "path": "/Applications"
         }
       ]
+    },
+    "linux": {
+      "target": [
+        "AppImage",
+        "deb",
+        "tar.gz"
+      ]
+    },
+    "mac": {
+      "category": "public.app-category.developer-tools"
+    },
+    "nsis": {
+      "oneClick": false
+    },
+    "win": {
+      "icon": "resources/icon.ico"
     }
   }
 }

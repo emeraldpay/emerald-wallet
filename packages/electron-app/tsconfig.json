@@ -17,11 +17,17 @@
     "**/*.spec.ts"
   ],
   "references": [
-    { "path": "../core" },
-    { "path": "../services" },
-    { "path": "../erc20" },
+    {
+      "path": "../core"
+    },
+    {
+      "path": "../erc20"
+    },
     {
       "path": "../history-store"
+    },
+    {
+      "path": "../services"
     }
   ]
 }

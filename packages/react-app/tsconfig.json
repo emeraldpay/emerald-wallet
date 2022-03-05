@@ -23,8 +23,14 @@
     "**/*.spec.tsx"
   ],
   "references": [
-    { "path": "../core" },
-    { "path": "../store" },
-    { "path": "../ui" }
+    {
+      "path": "../core"
+    },
+    {
+      "path": "../store"
+    },
+    {
+      "path": "../ui"
+    }
   ]
 }

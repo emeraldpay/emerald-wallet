@@ -2,67 +2,41 @@ const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-module.exports = [
-  // ********************************************************************************
-  //
-  // We don't apply webpack for electron main process because there is a problem
-  // with grpc ;(
-  //
-  // ********************************************************************************
+const isDevelopMode = process.env.NODE_ENV === 'development';
 
-  // {
-  //   mode: 'development',
-  //   entry: path.join(__dirname, 'src/main/electron.ts'),
-  //   target: 'electron-main',
-  //   module: {
-  //     rules: [{
-  //       test: /\.(ts|tsx)$/,
-  //       exclude: /node_modules/,
-  //       loader: 'ts-loader',
-  //     }]
-  //   },
-  //   // node: {
-  //   //   __dirname: false,
-  //   //   __filename: false
-  //   // },
-  //   resolve: {
-  //     extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
-  //     modules: [
-  //       path.join(__dirname, 'node_modules'),
-  //       path.join(__dirname, '../../node_modules'),
-  //     ]
-  //   },
-  //   output: {
-  //     path: __dirname + '/app',
-  //     filename: 'index.js'
-  //   }
-  // },
-  {
-    mode: 'development',
-    entry: './src/renderer/index.tsx',
-    target: 'electron-renderer',
-    devtool: 'source-map',
-    module: {
-      rules: [{
-        test: /\.ts(x?)$/,
-        include: /src/,
-        use: [{loader: 'ts-loader'}]
-      }]
-    },
-    output: {
-      path: __dirname + '/app',
-      filename: 'renderer.js'
-    },
-    plugins: [
-      new HtmlWebpackPlugin({
-        template: './src/renderer/index.html'
-      }),
-      new CopyWebpackPlugin([
-        {from: path.join(__dirname, 'resources/icons/512x512.png'), to: './icons/'}
-      ], {copyUnmodified: true}),
+module.exports = {
+  mode: isDevelopMode ? 'development' : 'production',
+  entry: path.resolve(__dirname, 'src/renderer/index.tsx'),
+  target: 'electron-renderer',
+  devtool: isDevelopMode ? 'source-map' : false,
+  module: {
+    rules: [
+      {
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        loader: 'ts-loader',
+      },
     ],
-    resolve: {
-      extensions: ['.js', '.tsx', '.ts']
-    }
-  }
-];
+  },
+  resolve: {
+    extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
+    modules: [path.resolve(__dirname, 'node_modules'), path.resolve(__dirname, '../../node_modules')],
+  },
+  plugins: [
+    new CopyWebpackPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, 'resources/icon.png'),
+          to: './resources/',
+        },
+      ],
+    }),
+    new HtmlWebpackPlugin({
+      template: './src/renderer/index.html',
+    }),
+  ],
+  output: {
+    path: path.resolve(__dirname, 'app'),
+    filename: 'renderer.js',
+  },
+};

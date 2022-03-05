@@ -2,12 +2,22 @@
   "compilerOptions": {
     "composite": true,
     "esModuleInterop": true,
+    "jsx": "react",
+    "module": "commonjs",
+    "moduleResolution": "node",
     "outDir": "./app",
+    "resolveJsonModule": true,
     "rootDir": "./src",
-    "jsx": "react"
+    "target": "ES5"
   },
+  "exclude": [
+    "node_modules",
+    "src/**/*.spec.ts",
+    "src/**/*.spec.tsx"
+  ],
   "include": [
-    "src/**/*.ts"
+    "src/**/*.ts",
+    "src/**/*.tsx"
   ],
   "references": [
     {

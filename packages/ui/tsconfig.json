@@ -24,6 +24,8 @@
     "**/*.spec.tsx"
   ],
   "references": [
-    { "path": "../core" }
+    {
+      "path": "../core"
+    }
   ]
 }
