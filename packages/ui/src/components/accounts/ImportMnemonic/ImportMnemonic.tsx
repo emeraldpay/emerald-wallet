@@ -37,7 +37,8 @@ const Component = ((props: OwnProps) => {
   const [password, setPassword] = React.useState("");
   const [done, setDone] = React.useState(false);
 
-  const isValidMnemonic = props.isValidMnemonic(mnemonic);
+  const filteredMnemonic = mnemonic.trim().replace(/\s{2,}/g, ' ');
+  const isValidMnemonic = props.isValidMnemonic(filteredMnemonic);
 
   return <Grid container={true}>
     <Grid item={true} xs={12}>
@@ -71,7 +72,7 @@ const Component = ((props: OwnProps) => {
             className={styles.saveButton}
             color={"primary"}
             onClick={() => {
-              props.onSubmit(mnemonic, password.length > 0 ? password : undefined);
+              props.onSubmit(filteredMnemonic, password.length > 0 ? password : undefined);
               setDone(true);
             }}
           >
