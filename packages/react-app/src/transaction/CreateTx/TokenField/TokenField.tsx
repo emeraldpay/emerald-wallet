@@ -1,7 +1,7 @@
 import { BigAmount, FormatterBuilder, Predicates } from '@emeraldpay/bigamount';
-import { Satoshi, Wei, WEIS, WEIS_ETC } from '@emeraldpay/bigamount-crypto';
 import { createStyles, MenuItem, TextField } from '@material-ui/core';
-import { withStyles } from '@material-ui/styles';
+import {withStyles} from '@material-ui/styles';
+import {getStandardUnits} from "@emeraldwallet/core";
 import * as React from 'react';
 import { ReactElement } from 'react';
 import FormLabel from '../FormLabel';
@@ -35,11 +35,7 @@ export class TokenField extends React.Component<Props> {
   };
 
   public formatBalance = (balance: BigAmount): string => {
-    const units = Satoshi.is(balance)
-      ? [WEIS_ETC.units[0], WEIS_ETC.units[3], WEIS_ETC.units[5], WEIS_ETC.units[6]]
-      : Wei.is(balance)
-      ? [WEIS.units[0], WEIS.units[3], WEIS.units[5], WEIS.units[6]]
-      : undefined;
+    const units = getStandardUnits(balance);
 
     const balanceFormatter = new FormatterBuilder()
       .when(Predicates.ZERO, (whenTrue, whenFalse): void => {

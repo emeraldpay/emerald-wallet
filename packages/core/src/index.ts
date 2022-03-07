@@ -44,7 +44,8 @@ export {
   isStableCoinCode,
   isAnyTokenCode,
   isSupportedTokenCode,
-  AssetDetail, AssetDetails
+  AssetDetail, AssetDetails,
+  getStandardUnits,
 } from './Asset';
 export {
   IStoredTransaction,

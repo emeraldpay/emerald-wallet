@@ -1,10 +1,10 @@
-import { BigAmount, FormatterBuilder, Predicates, Unit } from '@emeraldpay/bigamount';
-import { Satoshi, Wei, WEIS, WEIS_ETC } from '@emeraldpay/bigamount-crypto';
-import { createStyles, IconButton, Typography } from '@material-ui/core';
+import {BigAmount, FormatterBuilder, Predicates} from '@emeraldpay/bigamount';
+import {createStyles, IconButton, Typography} from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Sync } from '@material-ui/icons';
 import { ClassNameMap } from '@material-ui/styles';
 import * as React from 'react';
+import {getStandardUnits} from "@emeraldwallet/core";
 
 const styles = createStyles({
   coins: {
@@ -34,11 +34,7 @@ const Component: React.FC<OwnProps> = ({ balance, classes = {}, onConvert }) => 
   const styles = useStyles();
 
   const formatBalance = React.useCallback((balance: BigAmount) => {
-    const units = Satoshi.is(balance)
-      ? [WEIS_ETC.units[0], WEIS_ETC.units[3], WEIS_ETC.units[5], WEIS_ETC.units[6]]
-      : Wei.is(balance)
-      ? [WEIS.units[0], WEIS.units[3], WEIS.units[5], WEIS.units[6]]
-      : undefined;
+    const units = getStandardUnits(balance);
 
     const formatSelector = (whenTrue: FormatterBuilder, whenFalse: FormatterBuilder): void => {
       whenTrue.useTopUnit();
