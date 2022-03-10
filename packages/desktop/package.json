@@ -70,7 +70,7 @@
     "babel-polyfill": "^6.26.0",
     "bignumber.js": "8.0.2",
     "es6-promise": "4.1.1",
-    "google-protobuf": "3.7.1",
+    "google-protobuf": "^3.10.0",
     "immutable": "3.8.2",
     "lib": "^2.2.5",
     "node-fetch": "^2.1.2",
