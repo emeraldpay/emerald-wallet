@@ -23,7 +23,7 @@
     "@emeraldwallet/core": "^2.6.0",
     "@emeraldwallet/store": "^2.6.0",
     "@grpc/grpc-js": "^1.5.1",
-    "google-protobuf": "3.7.1",
+    "google-protobuf": "^3.10.0",
     "text-encoding": "0.7.0"
   },
   "devDependencies": {
