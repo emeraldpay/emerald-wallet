@@ -8,6 +8,7 @@
     "module": "CommonJS",
     "moduleResolution": "Node",
     "rootDir": "src/",
+    "sourceMap": true,
     "strict": false,
     "target": "ES6",
     "typeRoots": [

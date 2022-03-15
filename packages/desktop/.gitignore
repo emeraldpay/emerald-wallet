@@ -2,7 +2,6 @@ janusbin/
 bin/
 node_modules/
 *.iml
-.idea/
 release/
 npm-debug.log
 app/
@@ -11,7 +10,6 @@ emerald
 geth
 logs/
 coverage/
-flow-typed/
 package-lock.json
 yarn-error.log
 .emerald-dev

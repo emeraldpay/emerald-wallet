@@ -3,8 +3,8 @@
   "private": true,
   "license": "Apache-2.0",
   "scripts": {
-    "build": "yarn workspace @emeraldwallet/desktop2 run build",
-    "build:dist": "yarn workspace @emeraldwallet/desktop2 run build:dist",
+    "build": "yarn workspace @emeraldwallet/desktop run build",
+    "build:dist": "yarn workspace @emeraldwallet/desktop run build:dist",
     "build:neon": "electron-build-env neon build @emeraldpay/emerald-vault-native --release",
     "clean": "lerna run clean --stream",
     "clean:node_modules": "rimraf node_modules packages/*/node_modules",
