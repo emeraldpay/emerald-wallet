@@ -1,7 +1,7 @@
 {
   "name": "@emeraldwallet/desktop",
   "productName": "EmeraldWallet",
-  "version": "2.6.0-dev",
+  "version": "2.6.0",
   "description": "Emerald - Cryptocurrency Wallet",
   "keywords": [
     "blockchain",
@@ -11,7 +11,11 @@
     "wallet"
   ],
   "contributors": [
-    "Igor Artamonov <splix@emerald.cash>"
+    "Igor Artamonov <splix@emerald.cash>",
+    "Elaine Ou <elaine@ethereumclassic.org>",
+    "Yuriy Gagarin <gagarin55@protonmail.com>",
+    "Isaac Ardis",
+    "Shane Jonas <jonas.shane@gmail.com>"
   ],
   "author": {
     "name": "Igor Artamonov",
