@@ -11,6 +11,7 @@ import {
   blockchainIdToCode,
   Blockchains,
   CurrencyAmount,
+  isAnyTokenCode,
   tokenAmount,
   workflow,
 } from '@emeraldwallet/core';
@@ -72,9 +73,7 @@ interface OwnProps {
 }
 
 function isToken(tx: CreateERC20Tx | CreateEthereumTx): tx is CreateERC20Tx {
-  const coin = tx.getTokenSymbol().toLowerCase();
-
-  return coin === 'dai' || coin === 'usdc' || coin === 'usdt' || coin === 'weth';
+  return isAnyTokenCode(tx.getTokenSymbol().toUpperCase())
 }
 
 class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromProps, CreateTxState> {
@@ -89,24 +88,19 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
 
   get transaction(): CreateEthereumTx | CreateERC20Tx {
     const currentChain = Blockchains[this.props.chain];
-
     const { token, transaction: { tokenSymbol: transactionToken } } = this.state;
-
     let { amount } = this.state.transaction;
 
     if (currentChain.params.coinTicker !== token) {
       if (token !== transactionToken) {
         const amountValue = Wei.decode(amount).toEther().valueOf();
-
         amount = new BigAmount(amountValue, tokenUnits(token)).encode();
       }
-
       return workflow.CreateERC20Tx.fromPlain({ ...this.state.transaction, amount, tokenSymbol: token });
     }
 
-    if (token !== transactionToken) {
+    if (token !== transactionToken && transactionToken != "ETH") {
       const amountValue = BigAmount.decode(amount, tokenUnits(transactionToken)).number.toNumber();
-
       amount = new Wei(amountValue, 'ETHER').encode();
     }
 
@@ -517,14 +511,11 @@ export default connect(
       token: blockchain.params.coinTicker,
       txFeeSymbol,
       data: ownProps.data,
-      selectedFromAddress: sourceEntry.address!.value, //TODO not for bitcoin
+      selectedFromAddress: sourceEntry.address!.value,
       getTokenBalanceForAddress: (address: string, token: AnyCoinCode): BigAmount => {
         const tokenInfo = registry.bySymbol(blockchain.params.code, token);
-        const tokenBalance = tokens.selectors.selectBalance(state, tokenInfo.address, address, blockchain.params.code)
-          || tokenAmount(0, token);
-        return tokenBalance;
-        // if (blockchain.params.coinTicker !== token) {
-        // }
+        return tokens.selectors
+          .selectBalance(state, tokenInfo.address, address, blockchain.params.code) || tokenAmount(0, token);
       },
       getBalance: (): Wei => {
         return new Wei(accounts.selectors.getBalance(state, sourceEntry.id, zero)!.number);
@@ -548,8 +539,8 @@ export default connect(
         return txFeeFiat(price.number.toFixed(), gasLimit, fiatRate);
       },
       currency: settings.selectors.fiatCurrency(state),
-      tokenSymbols: allTokens.map((i: any) => i.symbol),
-      addressBookAddresses: addressBook.selectors.all(state).map((i: any) => i.address),
+      tokenSymbols: allTokens.map((i) => i.symbol),
+      addressBookAddresses: addressBook.selectors.all(state).map((i) => i.address.value),
       ownAddresses: accounts.selectors.allEntriesByBlockchain(state, blockchain.params.code)
         .map((a: WalletEntry) => a.address!.value),
       useLedger: false, // TODO
