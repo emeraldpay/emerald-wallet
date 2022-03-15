@@ -1,21 +1,21 @@
 {
   "compilerOptions": {
     "composite": true,
-    "outDir": "./lib",
-    "rootDir": "./src",
-    "declaration": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "strict": true,
     "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true
+    "forceConsistentCasingInFileNames": true,
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "lib/",
+    "rootDir": "src/",
+    "strict": true,
+    "target": "ES6"
   },
-  "include": [
-    "src/**/*.ts"
-  ],
   "exclude": [
     "node_modules",
     "**/*.spec.ts"
+  ],
+  "include": [
+    "src/**/*.ts"
   ],
   "references": [
     {

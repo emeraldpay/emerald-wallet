@@ -1,26 +1,25 @@
 {
   "compilerOptions": {
-    "composite": true,
     "allowSyntheticDefaultImports": true,
-    "outDir": "./lib",
-    "rootDir": "./src",
-    "target": "es5",
+    "composite": true,
     "jsx": "react",
-    "declaration": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "lib/",
+    "resolveJsonModule": true,
+    "rootDir": "src/",
     "strict": true,
-    "resolveJsonModule": true
+    "target": "ES6"
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/i18n/locales/**/*.json"
-  ],
   "exclude": [
     "node_modules",
     "**/*.spec.ts",
     "**/*.spec.tsx"
+  ],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "src/i18n/locales/**/*.json"
   ],
   "references": [
     {

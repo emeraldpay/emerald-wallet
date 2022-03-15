@@ -1,23 +1,18 @@
 {
+  "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "composite": true,
-    "esModuleInterop": true,
-    "jsx": "react",
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "outDir": "./app",
-    "resolveJsonModule": true,
-    "rootDir": "./src",
-    "target": "ES5"
+    "outDir": "app/",
+    "rootDir": "."
   },
   "exclude": [
     "node_modules",
-    "src/**/*.spec.ts",
-    "src/**/*.spec.tsx"
+    "**/*.spec.ts",
+    "**/*.spec.tsx"
   ],
   "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx"
+    "src/main/**/*.ts",
+    "src/main/**/*.tsx"
   ],
   "references": [
     {
