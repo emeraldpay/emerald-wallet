@@ -1,6 +1,6 @@
 {
   "name": "@emeraldwallet/erc20",
-  "version": "2.6.1",
+  "version": "2.6.2",
   "description": "ERC20 Tokens",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@emeraldplatform/core": "0.5.8",
-    "@emeraldwallet/core": "^2.6.1"
+    "@emeraldwallet/core": "^2.6.2"
   },
   "devDependencies": {
     "@types/jest": "^27.4.0",
