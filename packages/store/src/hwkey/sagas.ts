@@ -6,9 +6,20 @@ import {setLedger} from "./actions";
 import {ActionTypes} from './types';
 
 function* checkLedger(vault: IEmeraldVault): SagaIterator {
-  const details: LedgerDetails[] = yield call([vault, vault.getConnectedHWDetails]);
-  for (const conn of details) {
-    yield put(setLedger(conn.connected, conn.app))
+  // first, make sure that a Ledger is connected, otherwise .getConnectedHWDetails gives an error
+  const connected = yield call([vault, vault.isSeedAvailable], {type: "ledger"})
+  if (connected) {
+    try {
+      const details: LedgerDetails[] = yield call([vault, vault.getConnectedHWDetails]);
+      for (const conn of details) {
+        yield put(setLedger(conn.connected, conn.app))
+      }
+    } catch (e) {
+      console.warn("Ledger is not connected", e)
+      yield put(setLedger(false, null))
+    }
+  } else {
+    yield put(setLedger(false, null))
   }
 }
 

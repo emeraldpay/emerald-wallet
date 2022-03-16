@@ -1,6 +1,6 @@
 {
   "name": "@emeraldwallet/services",
-  "version": "2.6.0",
+  "version": "2.7.0-dev",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "author": "ETCDEV GmbH",
@@ -19,10 +19,10 @@
     "@emeraldpay/bigamount-crypto": "^0.4.0",
     "@emeraldplatform/eth-rpc": "0.5.1",
     "@emeraldplatform/rpc": "0.5.1",
-    "@emeraldwallet/core": "^2.6.0",
-    "@emeraldwallet/store": "^2.6.0",
+    "@emeraldwallet/core": "^2.7.0-dev",
+    "@emeraldwallet/store": "^2.7.0-dev",
     "@grpc/grpc-js": "^1.5.1",
-    "google-protobuf": "3.7.1",
+    "google-protobuf": "^3.10.0",
     "text-encoding": "0.7.0"
   },
   "devDependencies": {

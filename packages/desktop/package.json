@@ -1,7 +1,7 @@
 {
   "name": "@emeraldwallet/desktop",
   "productName": "EmeraldWallet",
-  "version": "2.6.0",
+  "version": "2.7.0-dev",
   "description": "Emerald - Cryptocurrency Wallet",
   "keywords": [
     "blockchain",
@@ -43,7 +43,7 @@
     "start": "electron ."
   },
   "dependencies": {
-    "@emeraldwallet/electron-app": "^2.6.0",
+    "@emeraldwallet/electron-app": "^2.7.0-dev",
     "core-js": "^3.21.1",
     "node-fetch": "^3.2.3",
     "react": "16.13.1",
