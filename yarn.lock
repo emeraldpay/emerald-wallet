@@ -2043,17 +2043,17 @@
   dependencies:
     bignumber.js "^8.0.2"
 
-"@emeraldpay/emerald-vault-core@0.8.0", "@emeraldpay/emerald-vault-core@^0.8.0":
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-core/-/emerald-vault-core-0.8.0.tgz#dcd1f8dba97327a2a7521121fbe6912060db319d"
-  integrity sha512-FwDWWNtIhvLWINW6S0/mmsDIkJzIvj/gLLm+08EzHhCxYZloq+gkyYEBPMIg4gvcDp2NO4KoAfNcTaw2wXPb9Q==
+"@emeraldpay/emerald-vault-core@0.8.3", "@emeraldpay/emerald-vault-core@^0.8.3":
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-core/-/emerald-vault-core-0.8.3.tgz#ddf4324e085e8dcf132cea10d75a38c247c0d736"
+  integrity sha512-YcFa5h25/dldr7vjpzZHfPdRsIRgmUXdqQhzP/M3a3UY2qpdYYDb/Pu+lI8iSAi41MKGFLSRfUQAuorj/XE6oA==
 
-"@emeraldpay/emerald-vault-native@^0.8.0":
-  version "0.8.0"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-native/-/emerald-vault-native-0.8.0.tgz#712701ed405ba98347ab1e08b7d7d042511d0403"
-  integrity sha512-yC5fEKSRlNQZ92arHci6kqEVJQxh6hwc1+AV1T+mjCyo+4Jkeeqf0COIic4pk4IDSULWEHwJAU2+7mE6ruTPIw==
+"@emeraldpay/emerald-vault-native@^0.8.3":
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-native/-/emerald-vault-native-0.8.3.tgz#05cdd137c40cab00b46fb512fff0e9033030f05f"
+  integrity sha512-+wdL0vzQmg6KAS6QblhqiQVtDW155j+ta84mnl8mZlFrttt0f67bUih6IZ87vXhJp6FiWOEctrnLRFusfA04xA==
   dependencies:
-    "@emeraldpay/emerald-vault-core" "0.8.0"
+    "@emeraldpay/emerald-vault-core" "0.8.3"
 
 "@emeraldpay/hashicon@^0.5.1":
   version "0.5.1"
@@ -11178,11 +11178,6 @@ globby@^9.2.0:
     ignore "^4.0.3"
     pify "^4.0.1"
     slash "^2.0.0"
-
-google-protobuf@3.7.1:
-  version "3.7.1"
-  resolved "https://registry.yarnpkg.com/google-protobuf/-/google-protobuf-3.7.1.tgz#9ef0fa3bc9ee416ba3fbe32b21ec6b7626f898e2"
-  integrity sha512-6fvlUey6cNKtWSEn1bt4CT4wc2EID1fVluHS1dOnqIlxyIu3cBid2BvWE8Rwl6wN+hRTgiAKhfyydAGV/weZYQ==
 
 google-protobuf@^3.10.0:
   version "3.13.0"

@@ -114,7 +114,6 @@ function* afterAccountImported(vault: IEmeraldVault, action: any): SagaIterator 
  * Create new single-address type of account, with PK from the current seed associated with the wallet
  *
  * @param vault
- * @param backendApi
  * @param action
  */
 function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIterator {
@@ -125,11 +124,11 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
   }
   let wallet: Wallet = yield select(findWallet, walletId);
 
-  let existing = (wallet.reserved || []).find((curr) => {
+  const existingHDAccount = (wallet.reserved || []).find((curr) => {
     return !(action.seedId && action.seedId != curr.seedId);
   });
 
-  if (!existing) {
+  if (!existingHDAccount) {
     //wallet doesn't have addresses with the seed
     console.warn("Wallet " + wallet.id + " doesn't have hd account")
     return;
@@ -140,8 +139,8 @@ function* createHdAddress(vault: IEmeraldVault, action: ICreateHdEntry): SagaIte
       type: "hd-path",
       blockchain: blockchainCodeToId(blockchain),
       key: {
-        seed: {type: "id", value: existing.seedId, password: seedPassword},
-        hdPath: chain.params.hdPath.forAccount(existing.accountId).toString()
+        seed: {type: "id", value: existingHDAccount.seedId, password: seedPassword},
+        hdPath: chain.params.hdPath.forAccount(existingHDAccount.accountId).toString()
       }
     }
     const accountId = yield call(vault.addEntry, walletId, entry);
