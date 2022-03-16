@@ -15,7 +15,7 @@ import {
 } from '@emeraldwallet/store';
 import { ipcRenderer } from 'electron';
 import * as ElectronLogger from 'electron-log';
-import checkUpdate from './check-update';
+import checkUpdate from '../../main/utils/check-update';
 
 Logger.setInstance(ElectronLogger);
 

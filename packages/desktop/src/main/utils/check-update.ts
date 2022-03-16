@@ -1,6 +1,6 @@
 import fetch from 'node-fetch';
 import semver from 'semver';
-import { version as currentVersion } from '../../../package.json';
+import { SemVer as currentVersion } from '../../../gitversion.json';
 
 type Release = {
   releases: {
@@ -29,7 +29,7 @@ export default async function (): Promise<Update> {
 
   return {
     downloadLink: 'https://go.emrld.io/download',
-    isLatest: semver.lte(release.version, currentVersion),
+    isLatest: semver.prerelease(currentVersion).includes('development') || semver.lte(release.version, currentVersion),
     tag: `v${release.version}`,
   };
 }

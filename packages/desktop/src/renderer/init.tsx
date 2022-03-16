@@ -7,8 +7,8 @@ import * as ElectronLogger from 'electron-log';
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
 import { I18nextProvider } from 'react-i18next';
-import { startStore, store } from '../main/helpers/store';
-import { AboutComponent } from './components';
+import { AboutComponent } from './components/About';
+import { startStore, store } from './store/store';
 
 Logger.setInstance(ElectronLogger);
 

@@ -10,7 +10,6 @@
     "target": "ES6"
   },
   "files": [
-    "gitversion.json",
-    "package.json"
+    "gitversion.json"
   ]
 }

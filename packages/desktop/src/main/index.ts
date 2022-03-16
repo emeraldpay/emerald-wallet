@@ -12,7 +12,7 @@ import { app, ipcMain } from 'electron';
 import * as logger from 'electron-log';
 import path, { resolve as resolvePath } from 'path';
 import gitVersion from '../../gitversion.json';
-import { DevelopmentMode, ProductionMode, sendMode } from './helpers/api-modes';
+import { DevelopmentMode, ProductionMode, sendMode } from './utils/api-modes';
 
 const { startProtocolHandler } = protocol;
 
@@ -91,31 +91,41 @@ app.on('ready', () => {
 
   logger.info('Create main window');
 
-  const browserWindow = getMainWindow(application, options);
+  const { webContents } = getMainWindow(application, options);
 
   logger.info('Run application');
 
   const walletState = new LocalWalletState(vault.getProvider());
 
-  application.run(browserWindow.webContents, apiAccess, apiMode, vault.getProvider(), rpcConnections, walletState);
+  application.run(webContents, apiAccess, apiMode, vault.getProvider(), rpcConnections, walletState);
+
+  let initialized = false;
 
   ipcMain.on('emerald-ready', () => {
     logger.info('Emerald app launched');
 
-    const webContents = getMainWindow(application, options).webContents;
+    const { webContents } = getMainWindow(application, options);
 
     if (webContents != null) {
       try {
         sendMode(webContents, apiMode);
+
+        if (initialized) {
+          application.reconnect();
+        }
       } catch (exception) {
         logger.warn('Cannot send to the UI', exception);
       }
     }
-  });
 
-  app.on('quit', () => {
-    application.stop();
+    initialized = true;
   });
+});
+
+app.on('activate', () => {
+  getMainWindow(application, options);
+
+  application.reconnect();
 });
 
 app.on('window-all-closed', () => {
@@ -124,8 +134,6 @@ app.on('window-all-closed', () => {
   }
 });
 
-app.on('activate', () => {
-  getMainWindow(application, options);
-
-  application.reconnect();
+app.on('quit', () => {
+  application.stop();
 });

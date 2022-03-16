@@ -37,12 +37,13 @@
   "scripts": {
     "build": "yarn clean && yarn compile && webpack",
     "build:dist": "yarn build && electron-builder --publish never",
+    "build:watch": "yarn clean && tsc-watch -b --onSuccess webpack",
     "clean": "rimraf app/ dist/ tsconfig.tsbuildinfo",
     "compile": "tsc -b && yarn copyfiles resources/**/* app/",
     "start": "electron ."
   },
   "dependencies": {
-    "@emeraldwallet/electron-app": "2.6.0-dev",
+    "@emeraldwallet/electron-app": "^2.6.0",
     "core-js": "^3.21.1",
     "node-fetch": "^3.2.3",
     "react": "16.13.1",
@@ -57,6 +58,7 @@
     "@kayahr/jest-electron-runner": "^4.4.1",
     "@types/jest": "^27.4.1",
     "@types/node": "16.11.22",
+    "@types/semver": "^7.3.9",
     "babel-loader": "^8.2.3",
     "copy-webpack-plugin": "^10.2.4",
     "copyfiles": "^2.4.1",
@@ -70,11 +72,13 @@
     "style-loader": "^3.3.1",
     "ts-jest": "^27.1.3",
     "ts-loader": "^9.2.7",
+    "tsc-watch": "^4.6.2",
     "webpack": "^5.70.0",
     "webpack-cli": "^4.9.2"
   },
   "build": {
-    "appId": "io.emeraldwallet.desktop",
+    "appId": "cash.emerald.desktop-wallet",
+    "artifactName": "${productName}-${os}-${arch}-${env.APP_VERSION_GIT_TAG}.${ext}",
     "directories": {
       "buildResources": "resources"
     },
@@ -113,14 +117,23 @@
         "AppImage",
         "deb",
         "tar.gz"
-      ]
+      ],
+      "category": "Office"
     },
     "mac": {
-      "category": "public.app-category.developer-tools"
+      "category": "public.app-category.finance"
     },
     "nsis": {
       "oneClick": false
     },
+    "protocols": [
+      {
+        "name": "ethereum",
+        "schemes": [
+          "ethereum"
+        ]
+      }
+    ],
     "win": {
       "icon": "resources/icon.ico"
     }

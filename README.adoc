@@ -60,7 +60,7 @@ yarn install
 
 .Build sources
 ----
-lerna run build
+yarn run build
 ----
 
 Optionally you can build desktop app with automatic rebuild on change.
@@ -68,17 +68,22 @@ Please note that it rebuilds only main Desktop module, and you have responsibili
 
 .Continuous rebuild of Desktop (optional):
 ----
-npm --prefix packages/desktop  run build:all:dev
-----
-
-.Start Electron application:
-----
-lerna run start:electron
+lerna run build:watch
 ----
 
 .or
 ----
-npm --prefix packages/desktop run start:electron
+yarn workspace @emeraldwallet/desktop run build:watch
+----
+
+.Start Electron application:
+----
+lerna run start
+----
+
+.or
+----
+yarn workspace @emeraldwallet/desktop start
 ----
 
 === Troubleshooting
@@ -94,7 +99,7 @@ yarn run clean:node_modules
 
 .Erase compiled Javascript (it's also done automatically on `build`):
 ----
-yarn workspaces run clean
+yarn clean
 ----
 
 ==== Emerald Vault module error
@@ -152,11 +157,6 @@ Clear out any persisted settings or userdata from previous trials
 
 == Run tests
 
-----
-yarn test:watch
-----
-
-or for single run:
 ----
 yarn test
 ----
