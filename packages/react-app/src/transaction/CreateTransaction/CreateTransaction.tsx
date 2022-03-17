@@ -1,6 +1,6 @@
-import { BigAmount, FormatterBuilder, Unit } from "@emeraldpay/bigamount";
+import { BigAmount, FormatterBuilder, Unit } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { WalletEntry } from "@emeraldpay/emerald-vault-core";
+import { WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { convert, toBaseUnits } from '@emeraldplatform/core';
 import { Page } from '@emeraldplatform/ui';
 import { Back } from '@emeraldplatform/ui-icons';
@@ -39,11 +39,11 @@ import { traceValidate, txFeeFiat } from './util';
 type CreateEthereumTx = workflow.CreateEthereumTx;
 type CreateERC20Tx = workflow.CreateERC20Tx;
 
-const {TxTarget} = workflow;
+const { TxTarget } = workflow;
 
 enum PAGES {
   TX = 1,
-  SIGN = 2
+  SIGN = 2,
 }
 
 const DEFAULT_GAS_LIMIT = '21000';
@@ -73,11 +73,10 @@ interface OwnProps {
 }
 
 function isToken(tx: CreateERC20Tx | CreateEthereumTx): tx is CreateERC20Tx {
-  return isAnyTokenCode(tx.getTokenSymbol().toUpperCase())
+  return isAnyTokenCode(tx.getTokenSymbol().toUpperCase());
 }
 
 class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromProps, CreateTxState> {
-
   get balance() {
     if (isToken(this.transaction)) {
       return this.props.getTokenBalanceForAddress(this.transaction.from!, this.state.token);
@@ -88,7 +87,10 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
 
   get transaction(): CreateEthereumTx | CreateERC20Tx {
     const currentChain = Blockchains[this.props.chain];
-    const { token, transaction: { tokenSymbol: transactionToken } } = this.state;
+    const {
+      token,
+      transaction: { tokenSymbol: transactionToken },
+    } = this.state;
     let { amount } = this.state.transaction;
 
     if (currentChain.params.coinTicker !== token) {
@@ -99,7 +101,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       return workflow.CreateERC20Tx.fromPlain({ ...this.state.transaction, amount, tokenSymbol: token });
     }
 
-    if (token !== transactionToken && transactionToken != "ETH") {
+    if (token !== transactionToken && transactionToken != 'ETH') {
       const amountValue = BigAmount.decode(amount, tokenUnits(transactionToken)).number.toNumber();
       amount = new Wei(amountValue, 'ETHER').encode();
     }
@@ -107,7 +109,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     return workflow.CreateEthereumTx.fromPlain({ ...this.state.transaction, amount });
   }
 
-  set transaction (tx) {
+  set transaction(tx) {
     this.setState({ transaction: tx.dump() });
   }
 
@@ -141,7 +143,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       standardGasPrice: '0',
       page: props.mode ? PAGES.SIGN : PAGES.TX,
       token: props.token,
-      transaction: tx.dump()
+      transaction: tx.dump(),
     };
   }
 
@@ -158,16 +160,16 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       tx.setTotalBalance(balance);
     }
     this.transaction = tx;
-  }
+  };
 
   public onChangeTo = (to: string) => {
     const tx = this.transaction;
     tx.to = to;
     this.transaction = tx;
-  }
+  };
 
   public onChangeToken = (tokenSymbol: any) => {
-    const {getBalance} = this.props;
+    const { getBalance } = this.props;
     this.setState({ token: tokenSymbol });
 
     const currentChain = Blockchains[this.props.chain];
@@ -191,35 +193,35 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       tx.setTotalBalance(balance);
     }
     this.transaction = tx;
-  }
+  };
 
   public onChangePassword = (password: string) => {
-    this.setState({password});
-  }
+    this.setState({ password });
+  };
 
   public onChangeGasLimit = (value: string) => {
     const tx = this.transaction;
     tx.gas = new BigNumber(value || DEFAULT_GAS_LIMIT);
     this.transaction = tx;
-  }
+  };
 
   public onChangeAmount = (amount: BigAmount) => {
     if (!BigAmount.is(amount)) {
-      console.warn("Not a BigAmount", amount);
+      console.warn('Not a BigAmount', amount);
     }
     const tx = this.transaction;
     if (isToken(tx)) {
       tx.setAmount(amount, tx.tokenSymbol);
     } else if (Wei.is(amount)) {
-      tx.setAmount(amount)
+      tx.setAmount(amount);
     } else {
-      console.log("Invalid amount type", amount.toString())
+      console.log('Invalid amount type', amount.toString());
     }
     tx.target = TxTarget.MANUAL;
     this.transaction = tx;
-  }
+  };
 
-  public async componentDidMount () {
+  public async componentDidMount() {
     const fees = await this.props.getFees(this.props.chain);
 
     const { avgMiddle } = fees;
@@ -251,15 +253,15 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       data: this.props.data,
       token: this.props.token,
       transaction: CreateTransaction.txFromProps(this.props).dump(),
-      typedData: this.props.typedData
+      typedData: this.props.typedData,
     });
   }
 
   public onSubmitCreateTransaction = () => {
     this.setState({
-      page: PAGES.SIGN
+      page: PAGES.SIGN,
     });
-  }
+  };
 
   public onSubmitSignTxForm = async () => {
     this.setState({ passwordError: undefined });
@@ -271,28 +273,28 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
         transaction: this.transaction,
         password: this.state.password,
         data: this.state.data,
-        token: this.state.token
+        token: this.state.token,
       });
     } else {
       this.setState({ passwordError: 'Incorrect password' });
     }
-  }
+  };
 
-  public onMaxClicked () {
+  public onMaxClicked() {
     const tx = this.transaction;
     tx.target = TxTarget.SEND_ALL;
     tx.rebalance();
     this.transaction = tx;
   }
 
-  public onSetGasPrice (price: number) {
+  public onSetGasPrice(price: number) {
     const tx = this.transaction;
     tx.gasPrice = new Wei(price, 'GWei');
     tx.rebalance();
     this.transaction = tx;
   }
 
-  public getPage () {
+  public getPage() {
     if (!this.state.transaction.from) {
       return null;
     }
@@ -339,23 +341,24 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
             onCancel={this.props.onCancel}
           />
         );
-      default: return null;
+      default:
+        return null;
     }
   }
 
-  public render () {
+  public render() {
     const { chain } = this.props;
     return (
       <Page
         title={<ChainTitle chain={chain} text={'Create Transaction'} />}
-        leftIcon={<Back onClick={this.props.onCancel}/>}
+        leftIcon={<Back onClick={this.props.onCancel} />}
       >
         {this.getPage()}
       </Page>
     );
   }
 
-  private restoreTx (tokenSymbol: any) {
+  private restoreTx(tokenSymbol: any) {
     const currentChain = Blockchains[this.props.chain];
 
     if (currentChain.params.coinTicker !== tokenSymbol) {
@@ -377,20 +380,14 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
   }
 }
 
-function signTokenTx (dispatch: any, ownProps: OwnProps, args: any) {
-  const {
-    password, token
-  } = args;
+function signTokenTx(dispatch: any, ownProps: OwnProps, args: any) {
+  const { password, token } = args;
   const accountId = ownProps.sourceEntry.id;
   const chain = blockchainIdToCode(ownProps.sourceEntry.blockchain);
   const tokenInfo = registry.bySymbol(chain, token);
   const tokenUnits = toBaseUnits(convert.toBigNumber(args.transaction.amount), tokenInfo.decimals);
 
-  const txData = tokens.actions.createTokenTxData(
-    args.transaction.to,
-    tokenUnits,
-    true
-  );
+  const txData = tokens.actions.createTokenTxData(args.transaction.to, tokenUnits, true);
   return dispatch(
     transaction.actions.signTransaction(
       accountId,
@@ -401,14 +398,12 @@ function signTokenTx (dispatch: any, ownProps: OwnProps, args: any) {
       args.transaction.gas,
       args.transaction.gasPrice,
       Wei.ZERO,
-      txData
-    )
+      txData,
+    ),
   );
 }
 
-function signEtherTx (
-  dispatch: any, ownProps: OwnProps, request: { transaction: CreateEthereumTx; password: string }
-  ) {
+function signEtherTx(dispatch: any, ownProps: OwnProps, request: { transaction: CreateEthereumTx; password: string }) {
   const entryId = ownProps.sourceEntry.id;
   const blockchainCode = blockchainIdToCode(ownProps.sourceEntry.blockchain);
   const useLedger = false; // TODO
@@ -418,7 +413,7 @@ function signEtherTx (
     to: request.transaction.to,
     gas: request.transaction.gas,
     gasPrice: request.transaction.gasPrice,
-    value: request.transaction.amount
+    value: request.transaction.amount,
   };
 
   return traceValidate(blockchainCode, plainTx, dispatch, transaction.actions.estimateGas)
@@ -435,15 +430,15 @@ function signEtherTx (
           request.transaction.gas.toNumber(),
           request.transaction.gasPrice,
           request.transaction.amount,
-          ''
-        )
+          '',
+        ),
       );
     });
 }
 
-function sign (dispatch: any, ownProps: OwnProps, args: any) {
+function sign(dispatch: any, ownProps: OwnProps, args: any) {
   const blockchain = Blockchains[blockchainIdToCode(ownProps.sourceEntry.blockchain)];
-  const {coinTicker} = blockchain.params;
+  const { coinTicker } = blockchain.params;
   const token = args.token.toUpperCase();
   if (token !== coinTicker) {
     return signTokenTx(dispatch, ownProps, args);
@@ -455,7 +450,7 @@ interface DispatchFromProps {
   getFees: (blockchain: BlockchainCode) => Promise<any>;
   onCancel: () => void;
   onEmptyAddressBookClick: () => void;
-  signAndSend: (args: {transaction: CreateEthereumTx | CreateERC20Tx; password: any; data: any; token: any}) => void;
+  signAndSend: (args: { transaction: CreateEthereumTx | CreateERC20Tx; password: any; data: any; token: any }) => void;
   checkGlobalKey: (password: string) => Promise<boolean>;
 }
 
@@ -487,18 +482,15 @@ interface Props {
   fiatRate?: any;
 }
 
-const fiatFormatter = new FormatterBuilder()
-  .useTopUnit()
-  .number(2)
-  .build()
+const fiatFormatter = new FormatterBuilder().useTopUnit().number(2).build();
 
 export default connect(
   (state: IState, ownProps: OwnProps): Props => {
-    const {sourceEntry} = ownProps;
+    const { sourceEntry } = ownProps;
     const blockchain = Blockchains[blockchainIdToCode(sourceEntry.blockchain)];
     const txFeeSymbol = blockchain.params.coinTicker;
     const allTokens = registry.tokens[blockchain.params.code]
-      .concat([{address: '', symbol: txFeeSymbol, decimals: blockchain.params.decimals}])
+      .concat([{ address: '', symbol: txFeeSymbol, decimals: blockchain.params.decimals }])
       .reverse();
     const fiatRate = settings.selectors.fiatRate(blockchain.params.code, state);
     const zero = amountFactory(blockchain.params.code)(0);
@@ -514,8 +506,10 @@ export default connect(
       selectedFromAddress: sourceEntry.address!.value,
       getTokenBalanceForAddress: (address: string, token: AnyCoinCode): BigAmount => {
         const tokenInfo = registry.bySymbol(blockchain.params.code, token);
-        return tokens.selectors
-          .selectBalance(state, tokenInfo.address, address, blockchain.params.code) || tokenAmount(0, token);
+        return (
+          tokens.selectors.selectBalance(state, tokenInfo.address, address, blockchain.params.code) ||
+          tokenAmount(0, token)
+        );
       },
       getBalance: (): Wei => {
         return new Wei(accounts.selectors.getBalance(state, sourceEntry.id, zero)!.number);
@@ -529,7 +523,7 @@ export default connect(
         const rate = settings.selectors.fiatRate(token, state) ?? 0;
         const fiat = CurrencyAmount.create(
           newBalance.getNumberByUnit(newBalance.units.top).multipliedBy(rate).toNumber(),
-          settings.selectors.fiatCurrency(state)
+          settings.selectors.fiatCurrency(state),
         );
 
         return fiatFormatter.format(fiat);
@@ -541,20 +535,33 @@ export default connect(
       currency: settings.selectors.fiatCurrency(state),
       tokenSymbols: allTokens.map((i) => i.symbol),
       addressBookAddresses: addressBook.selectors.all(state).map((i) => i.address.value),
-      ownAddresses: accounts.selectors.allEntriesByBlockchain(state, blockchain.params.code)
+      ownAddresses: accounts.selectors
+        .allEntriesByBlockchain(state, blockchain.params.code)
         .map((a: WalletEntry) => a.address!.value),
       useLedger: false, // TODO
-      allTokens
+      allTokens,
     };
   },
 
   (dispatch: any, ownProps: OwnProps): DispatchFromProps => ({
     getFees: async (blockchain) => {
-      const [avgLast, avgMiddle, avgTail5] = await Promise.all([
-        dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgLast')),
-        dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgMiddle')),
-        dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgTail5')),
-      ]);
+      let avgLast: number;
+      let avgMiddle: number;
+
+      let avgTail5 = await dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgTail5'));
+
+      if (avgTail5 === 0) {
+        [avgLast, avgMiddle, avgTail5] = await Promise.all([
+          dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgLast')),
+          dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgMiddle')),
+          dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgTail5')),
+        ]);
+      } else {
+        [avgLast, avgMiddle] = await Promise.all([
+          dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgLast')),
+          dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgMiddle')),
+        ]);
+      }
 
       return {
         avgLast,
@@ -565,15 +572,14 @@ export default connect(
     onCancel: () => dispatch(screen.actions.gotoScreen(screen.Pages.HOME, ownProps.sourceEntry)),
     onEmptyAddressBookClick: () => dispatch(screen.actions.gotoScreen('add-address')),
     signAndSend: (args: any) => {
-      sign(dispatch, ownProps, args)
-        .then((result: any) => {
-          if (result) {
-            dispatch(screen.actions.gotoScreen(screen.Pages.BROADCAST_TX, result));
-          }
-        });
+      sign(dispatch, ownProps, args).then((result: any) => {
+        if (result) {
+          dispatch(screen.actions.gotoScreen(screen.Pages.BROADCAST_TX, result));
+        }
+      });
     },
     checkGlobalKey(password) {
       return dispatch(accounts.actions.verifyGlobalKey(password));
     },
-  })
+  }),
 )(CreateTransaction);
