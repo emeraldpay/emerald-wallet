@@ -38,31 +38,31 @@ if (isDevelopMode) {
   logger.debug('Start in production mode');
 }
 
-const settings = new Settings();
-
-logger.info('Api Mode:', apiMode.id);
-logger.info('Settings:', settings.toJS());
-logger.info('User data:', app.getPath('userData'));
-
-const parameters = {
-  locale: app.getLocale(),
-  version: app.getVersion(),
-  gitVersion,
-  electronVer: process.versions.electron,
-  chromeVer: process.versions.chrome,
-};
-
-const options = {
-  aboutWndPath: resolvePath(__dirname, '../renderer/about.html'),
-  appIconPath: resolvePath(__dirname, '../../resources/icon.png'),
-  mainWndPath: resolvePath(__dirname, '../renderer/index.html'),
-  logFile: logger.transports.file.getFile().path,
-  openDevTools: isDevelopMode,
-};
-
-const application = new Application(settings, parameters);
-
 app.on('ready', () => {
+  const settings = new Settings();
+
+  logger.info('Api Mode:', apiMode.id);
+  logger.info('Settings:', settings.toJS());
+  logger.info('User data:', app.getPath('userData'));
+
+  const parameters = {
+    locale: app.getLocale(),
+    version: app.getVersion(),
+    gitVersion,
+    electronVer: process.versions.electron,
+    chromeVer: process.versions.chrome,
+  };
+
+  const options = {
+    aboutWndPath: resolvePath(__dirname, '../renderer/about.html'),
+    appIconPath: resolvePath(__dirname, '../../resources/icon.png'),
+    mainWndPath: resolvePath(__dirname, '../renderer/index.html'),
+    logFile: logger.transports.file.getFile().path,
+    openDevTools: isDevelopMode,
+  };
+
+  const application = new Application(settings, parameters);
+
   logger.info('Starting Emerald', app.getVersion());
   logger.info('Setup API access');
 
@@ -120,20 +120,20 @@ app.on('ready', () => {
 
     initialized = true;
   });
-});
 
-app.on('activate', () => {
-  getMainWindow(application, options);
+  app.on('activate', () => {
+    getMainWindow(application, options);
 
-  application.reconnect();
-});
+    application.reconnect();
+  });
 
-app.on('window-all-closed', () => {
-  if (process.platform !== 'darwin') {
-    app.quit();
-  }
-});
+  app.on('window-all-closed', () => {
+    if (process.platform !== 'darwin') {
+      app.quit();
+    }
+  });
 
-app.on('quit', () => {
-  application.stop();
+  app.on('quit', () => {
+    application.stop();
+  });
 });
