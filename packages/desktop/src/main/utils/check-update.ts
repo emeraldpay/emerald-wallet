@@ -29,7 +29,7 @@ export default async function (): Promise<Update> {
 
   return {
     downloadLink: 'https://go.emrld.io/download',
-    isLatest: semver.prerelease(currentVersion).includes('development') || semver.lte(release.version, currentVersion),
+    isLatest: semver.prerelease(currentVersion).includes('dev') || semver.lte(release.version, currentVersion),
     tag: `v${release.version}`,
   };
 }
