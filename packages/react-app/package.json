@@ -7,17 +7,15 @@
   "author": "ETCDEV GmbH",
   "license": "Apache-2.0",
   "scripts": {
-    "clean": "rimraf lib/ && rimraf tsconfig.tsbuildinfo",
-    "compile": "tsc -b",
-    "build:dist": "yarn clean && yarn compile && yarn copyfiles -u 1 src/**/*.png lib/",
     "build": "yarn clean && yarn compile && yarn copyfiles -u 1 src/**/*.png lib/",
-    "tsc": "tsc",
+    "clean": "rimraf lib/ tsconfig.tsbuildinfo",
+    "compile": "tsc -b",
+    "storybook": "start-storybook -p 9001 -c .storybook --ci",
     "test": "jest --passWithNoTests",
-    "test:coverage": "jest --passWithNoTests --coverage && codecov",
-    "storybook": "start-storybook -p 9001 -c .storybook --ci"
+    "test:coverage": "jest --passWithNoTests --coverage && codecov"
   },
   "dependencies": {
-    "@emeraldpay/bigamount": "^0.4.0 ",
+    "@emeraldpay/bigamount": "^0.4.0",
     "@emeraldpay/bigamount-crypto": "^0.4.0",
     "@emeraldpay/emerald-vault-core": "^0.8.3",
     "@emeraldplatform/core": "0.5.8",

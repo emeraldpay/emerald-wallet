@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <title>Emerald Wallet</title>
+    <style>
+      body {
+        -webkit-print-color-adjust: exact;
+        font-family: Inter, serif;
+        margin-left: 0;
+        margin-right: 0;
+        margin-top: 0;
+      }
+
+      @media print {
+        body, .application {
+          background-color: #fff !important;
+        }
+
+        .no-print, .no-print * {
+          display: none !important;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="app"></div>
+    <script type="application/javascript">
+      require('./index');
+
+      window.EMERALD.start();
+    </script>
+  </body>
+</html>

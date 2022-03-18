@@ -3,16 +3,16 @@
   "private": true,
   "license": "Apache-2.0",
   "scripts": {
-    "clean:node_modules": "rimraf node_modules packages/*/node_modules",
-    "build": "lerna run build --stream",
-    "test": "lerna run test --stream",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "build:dist": "lerna run build:dist --stream",
-    "test:coverage": "lerna run test:coverage --stream --concurrency 1",
+    "build": "yarn workspace @emeraldwallet/desktop run build",
+    "build:dist": "yarn workspace @emeraldwallet/desktop run build:dist",
     "build:neon": "electron-build-env neon build @emeraldpay/emerald-vault-native --release",
-    "electron:install-vault-native": "cd node_modules/@emeraldpay/emerald-vault-native && node-pre-gyp install --fallback-to-build=false --update-binary --runtime=electron --target=15.0.0",
+    "clean": "lerna run clean --stream",
+    "clean:node_modules": "rimraf node_modules packages/*/node_modules",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
     "postinstall": "yarn prebuilt:vault",
-    "prebuilt:vault": "npm run electron:install-vault-native"
+    "prebuilt:vault": "cd node_modules/@emeraldpay/emerald-vault-native && node-pre-gyp install --fallback-to-build=false --update-binary --runtime=electron --target=15.0.0",
+    "test": "lerna run test --stream",
+    "test:coverage": "lerna run test:coverage --stream --concurrency 1"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^2.33.0",

@@ -1,94 +1,69 @@
 const path = require('path');
+const CopyPlugin = require('copy-webpack-plugin');
 
-const srcDir = path.join(__dirname, 'src');
+const isDevelopMode = process.env.NODE_ENV === 'development';
 
-const ExtractTextPlugin = require('extract-text-webpack-plugin');
-const CopyWebpackPlugin = require('copy-webpack-plugin');
-const devMode = process.argv.indexOf('--dev') >= 0;
-
-const config = {
-  mode: devMode ? 'development' : 'production',
-  devtool: devMode ? 'source-map': false,
-  target: 'electron-renderer', // 'web',
-  entry: {
-    index: [path.join(srcDir, 'index.js')],
-  },
-  plugins: [
-    new ExtractTextPlugin({filename: '[name].css'}),
-    new CopyWebpackPlugin([
-      { from: path.join(srcDir, 'index.html'), to: './' },
-      { from: path.join(srcDir, 'about.html'), to: './' },
-      { from: path.join(__dirname, 'resources/icons/512x512.png'), to: './icons/'}
-    ], {copyUnmodified: true}),
-  ],
-  output: {
-    path: path.join(__dirname, 'app'),
-    filename: '[name].js',
-  },
-  resolve: {
-    // browser must be the first to load some npm packages correctly
-    mainFields: ['browser', 'module', 'main'],
-    modules: [
-      path.resolve(srcDir),
-      path.join(__dirname, 'electron'),
-      path.join(__dirname, 'node_modules'),
-      path.join(__dirname, '../../node_modules'),
-    ],
-    alias: {
-      'babel-polyfill': path.join(__dirname, 'babel-polyfill/dist/polyfill.js'),
-    },
-  },
+module.exports = {
+  mode: isDevelopMode ? 'development' : 'production',
+  entry: path.resolve(__dirname, 'src/renderer/index.ts'),
+  target: 'electron-renderer',
+  devtool: isDevelopMode ? 'source-map' : false,
   module: {
     rules: [
       {
-        test: /\.(js|jsx|es6)$/,
-        exclude: /(node_modules)/,
-        include: [
-          path.resolve(__dirname, 'src')
-        ],
-        use: {
-          loader: 'babel-loader',
-          options: {
-            presets: ['@babel/preset-env', '@babel/preset-react', '@babel/preset-flow'],
-            plugins: ['@babel/plugin-proposal-class-properties']
-          },
-        },
+        test: /\.js$/,
+        enforce: 'pre',
+        use: ['source-map-loader'],
       },
       {
         test: /\.css$/,
         use: ['style-loader', 'css-loader'],
-        include: [/typeface-inter/, /typeface-roboto-mono/],
       },
       {
-        test: /\.(jpg|png|gif)$/,
-        use: {
-          loader: 'file-loader',
-          options: {name: 'images/[name].[ext]'},
+        test: /\.jsx?$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+        options: {
+          presets: ['@babel/preset-env', '@babel/preset-react'],
         },
       },
       {
-        test: /\.woff(2)?(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        use: {
-          loader: 'url-loader',
-          options: {
-            limit: 10000,
-            mimetype: 'application/font-woff',
-            name: 'fonts/[name].[ext]',
-          },
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        loader: 'ts-loader',
+        options: {
+          configFile: path.resolve(__dirname, 'tsconfig.base.json'),
         },
       },
       {
-        test: /\.(ttf|eot|svg)(\?v=[0-9]\.[0-9]\.[0-9])?$/,
-        use: {
-          loader: 'file-loader',
-          options: {
-            name: 'fonts/[name].[ext]',
-          },
+        test: /\.woff2?(\?v=\d+\.\d+\.\d+)?$/,
+        type: 'asset/resource',
+        generator: {
+          filename: 'fonts/[name][ext]',
         },
       },
     ],
   },
+  resolve: {
+    extensions: ['.js', '.jsx', '.json', '.ts', '.tsx'],
+    mainFields: ['browser', 'module', 'main'],
+    modules: [path.resolve(__dirname, 'node_modules'), path.resolve(__dirname, '../../node_modules')],
+  },
+  plugins: [
+    new CopyPlugin({
+      patterns: [
+        {
+          from: path.resolve(__dirname, 'src/renderer/about.html'),
+        },
+        {
+          from: path.resolve(__dirname, 'src/renderer/index.html'),
+        },
+      ],
+    }),
+  ],
+  output: {
+    filename: 'index.js',
+    path: path.resolve(__dirname, 'app/src/renderer'),
+    publicPath: '',
+  },
 };
-
-
-module.exports = config;
