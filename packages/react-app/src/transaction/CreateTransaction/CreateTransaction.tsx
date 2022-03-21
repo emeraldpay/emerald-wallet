@@ -552,9 +552,9 @@ export default connect(
 
       if (avgTail5 === 0) {
         [avgLast, avgMiddle, avgTail5] = await Promise.all([
-          dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgLast')),
-          dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgMiddle')),
-          dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgTail5')),
+          dispatch(transaction.actions.estimateFee(blockchain, 256, 'avgLast')),
+          dispatch(transaction.actions.estimateFee(blockchain, 256, 'avgMiddle')),
+          dispatch(transaction.actions.estimateFee(blockchain, 256, 'avgTail5')),
         ]);
       } else {
         [avgLast, avgMiddle] = await Promise.all([
