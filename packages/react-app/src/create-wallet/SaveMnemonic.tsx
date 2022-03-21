@@ -24,11 +24,11 @@ const SaveMnemonic: React.FC<DispatchProps & OwnProps> = ({ checkGlobalKey, onPa
     const correctPassword = await checkGlobalKey(password);
 
     if (correctPassword) {
-      onPassword(password)
+      onPassword(password);
     } else {
       setPasswordError('Incorrect password');
     }
-  }, [password])
+  }, [password]);
 
   return (
     <Grid container>
@@ -36,7 +36,7 @@ const SaveMnemonic: React.FC<DispatchProps & OwnProps> = ({ checkGlobalKey, onPa
         <Typography variant={'h4'}>Save Secret Phrase</Typography>
         <Alert severity="info">
           You&apos;re about to save an encrypted copy of the secret phrase (&quot;Mnemonic Phrase&quot;) generated on
-          the previous step. Please make sure you enter a strong and secure password.
+          the previous step. Please enter the Emerald Wallet password to save the Seed Phrase!
         </Alert>
       </Grid>
       <Grid item xs={12}>
@@ -56,11 +56,9 @@ const SaveMnemonic: React.FC<DispatchProps & OwnProps> = ({ checkGlobalKey, onPa
 export default connect<{}, DispatchProps>(
   null,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dispatch: any) => (
-    {
-      checkGlobalKey(password) {
-        return dispatch(accounts.actions.verifyGlobalKey(password));
-      },
-    }
-  ),
+  (dispatch: any) => ({
+    checkGlobalKey(password) {
+      return dispatch(accounts.actions.verifyGlobalKey(password));
+    },
+  }),
 )(SaveMnemonic);
