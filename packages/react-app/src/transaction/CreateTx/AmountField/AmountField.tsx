@@ -55,55 +55,74 @@ const Component: React.FC<Actions & OwnProps> = ({
   onMaxClicked,
 }) => {
   const styles = useStyles();
-  const [originalAmount, setOriginalAmount] = React.useState(initialAmount);
+
+  const [allowFormat, setAllowFormat] = React.useState(false);
   const [amount, setAmount] = React.useState(amountOrDefault(initialAmount));
   const [errorText, setErrorText] = React.useState('');
 
-  React.useEffect(() => {
-    if (
-      typeof originalAmount == 'undefined' ||
-      (typeof initialAmount != 'undefined' && initialAmount.isPositive() && !originalAmount.equals(initialAmount))
-    ) {
-      // amount enforced from external source, ex. "MAX" button clicked and the amount was recalculated
-      setOriginalAmount(initialAmount);
-      setAmount(amountOrDefault(initialAmount));
-    }
-  });
+  const handleChangeAmount = React.useCallback(
+    (event: React.ChangeEvent<HTMLInputElement>): void => {
+      let { value } = event.target;
 
-  const handleChangeAmount = (event: any): void => {
-    let amountStr = event.target.value || '';
-    setAmount(amountStr);
-    amountStr = amountStr.trim();
-    if (amountStr === '') {
-      setErrorText('Required');
-      onClear();
-      return;
-    }
-    const valid = amountStr.match(/^\d*(\.\d+)?$/);
-    if (!valid) {
-      setErrorText('Invalid number');
-      onClear();
-      return;
-    }
-    try {
-      const parsed = parseFloat(amountStr);
-      if (parsed < 0) {
-        setErrorText('Value must be positive number');
+      value = value.trim();
+
+      setAmount(value);
+
+      if (value === '') {
+        setErrorText('Required');
         onClear();
+
         return;
       }
-      const changedTo = new BigAmount(1, units)
-        .multiply(units.top.multiplier) // relative to main unit. i.e. "20" should be "20 ether", not "20 wei"
-        .multiply(parsed);
-      setErrorText('');
 
-      onChangeAmount(changedTo);
-    } catch (e) {
-      console.error('failed to parse amount', e);
-      setErrorText('Invalid value');
-      onClear();
+      const valid = value.match(/^\d*(\.\d+)?$/);
+
+      if (!valid) {
+        setErrorText('Invalid number');
+        onClear();
+
+        return;
+      }
+
+      try {
+        const parsed = parseFloat(value);
+
+        if (parsed < 0) {
+          setErrorText('Value must be positive number');
+          onClear();
+
+          return;
+        }
+
+        const changedTo = new BigAmount(1, units)
+          .multiply(units.top.multiplier) // relative to main unit. i.e. "20" should be "20 ether", not "20 wei"
+          .multiply(parsed);
+
+        setErrorText('');
+
+        onChangeAmount(changedTo);
+      } catch (e) {
+        console.error('failed to parse amount', e);
+
+        setErrorText('Invalid value');
+        onClear();
+      }
+    },
+    [units],
+  );
+
+  const handleMaxClick = React.useCallback(() => {
+    onMaxClicked?.();
+
+    setAllowFormat(true);
+  }, [onMaxClicked]);
+
+  React.useEffect(() => {
+    if (allowFormat) {
+      setAmount(amountOrDefault(initialAmount));
+      setAllowFormat(false);
     }
-  };
+  }, [allowFormat, initialAmount]);
 
   return (
     <React.Fragment>
@@ -111,13 +130,14 @@ const Component: React.FC<Actions & OwnProps> = ({
       <div className={styles.input}>
         <Input disabled={disabled} errorText={errorText} value={amount} onChange={handleChangeAmount} />
       </div>
-      <Button className={styles.button} color={'primary'} disabled={disabled} onClick={onMaxClicked}>
+      <Button className={styles.button} color={'primary'} disabled={disabled} onClick={handleMaxClick}>
         MAX
       </Button>
     </React.Fragment>
   );
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export default connect(null, (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
   return {
     onClear: () => {
