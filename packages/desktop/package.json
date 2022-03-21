@@ -40,7 +40,9 @@
     "build:watch": "yarn clean && tsc-watch -b --onSuccess webpack",
     "clean": "rimraf app/ dist/ tsconfig.tsbuildinfo",
     "compile": "tsc -b && yarn copyfiles resources/**/* app/",
-    "start": "electron ."
+    "start:dev": "cross-env NODE_ENV=development electron .",
+    "start:prod": "cross-env NODE_ENV=production electron .",
+    "start": "yarn start:prod"
   },
   "dependencies": {
     "@emeraldwallet/electron-app": "^2.7.0-dev",
