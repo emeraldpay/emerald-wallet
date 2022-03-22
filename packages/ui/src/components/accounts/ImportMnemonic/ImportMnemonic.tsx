@@ -24,7 +24,7 @@ const Component: React.FC<OwnProps> = ({ isValidMnemonic, onSubmit }) => {
   const [password, setPassword] = React.useState('');
   const [done, setDone] = React.useState(false);
 
-  const filteredMnemonic = mnemonic.trim().replace(/\n*\s+/g, ' ');
+  const filteredMnemonic = mnemonic.trim().replace(/\s+/g, ' ');
   const isMnemonicValid = isValidMnemonic(filteredMnemonic);
 
   return (
