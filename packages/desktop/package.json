@@ -42,7 +42,9 @@
     "build:watch:success": "(webpack && notify -t \"Emerald Wallet\" -m \"Build successfully\" -i \"resources/icon.png\") || yarn build:watch:fail",
     "clean": "rimraf app/ dist/ tsconfig.tsbuildinfo",
     "compile": "tsc -b && yarn copyfiles resources/**/* app/",
-    "start": "electron ."
+    "start:dev": "cross-env NODE_ENV=development electron .",
+    "start:prod": "cross-env NODE_ENV=production electron .",
+    "start": "yarn start:prod"
   },
   "dependencies": {
     "@emeraldwallet/electron-app": "^2.7.0-dev",
