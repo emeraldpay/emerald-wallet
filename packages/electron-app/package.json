@@ -4,7 +4,7 @@
   "description": "Emerald Wallet Electron Shell",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "author": "ETCDEV GmbH",
+  "author": "Emerald Team",
   "license": "Apache-2.0",
   "scripts": {
     "build": "yarn clean && yarn compile",
@@ -47,8 +47,6 @@
   "dependencies": {
     "@emeraldpay/emerald-vault-core": "^0.8.3",
     "@emeraldpay/emerald-vault-native": "^0.8.3",
-    "@emeraldplatform/contracts": "0.5.1",
-    "@emeraldplatform/eth": "0.5.1",
     "@emeraldwallet/core": "^2.7.0-dev",
     "@emeraldwallet/erc20": "^2.7.0-dev",
     "@emeraldwallet/history-store": "^2.7.0-dev",

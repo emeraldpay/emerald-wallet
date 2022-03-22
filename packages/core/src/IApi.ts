@@ -1,5 +1,3 @@
-import { EthRpc } from '@emeraldplatform/eth-rpc';
-import {BlockchainCode} from './blockchains';
 import {IEmeraldVault} from '@emeraldpay/emerald-vault-core';
 
 /**

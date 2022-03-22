@@ -1,4 +1,4 @@
-import { Settings as SettingsIcon } from '@emeraldplatform/ui-icons';
+import {Settings as SettingsIcon} from '@emeraldwallet/ui';
 import {blockchains, screen} from '@emeraldwallet/store';
 import {Button} from '@emeraldwallet/ui';
 import {AppBar, Toolbar} from '@material-ui/core';

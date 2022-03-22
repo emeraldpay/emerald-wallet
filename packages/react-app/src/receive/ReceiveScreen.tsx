@@ -13,8 +13,8 @@ import {
 } from "@material-ui/core";
 import {accounts, IBalanceValue, IState, screen} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
-import {Page} from "@emeraldplatform/ui";
-import {Back} from "@emeraldplatform/ui-icons";
+import {Page} from "@emeraldwallet/ui";
+import {Back} from "@emeraldwallet/ui";
 import {Uuid, Wallet} from "@emeraldpay/emerald-vault-core";
 import {AnyCoinCode, AnyTokenCode, BlockchainCode, Blockchains, blockchainIdToCode} from "@emeraldwallet/core";
 import {WalletReference} from "@emeraldwallet/ui";

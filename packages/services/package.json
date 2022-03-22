@@ -3,7 +3,7 @@
   "version": "2.7.0-dev",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "author": "ETCDEV GmbH",
+  "author": "Emerald Team",
   "license": "Apache-2.0",
   "scripts": {
     "build": "yarn clean && yarn compile",
@@ -17,8 +17,6 @@
     "@emeraldpay/api-node": "0.3.0-alpha.2",
     "@emeraldpay/bigamount": "^0.4.0",
     "@emeraldpay/bigamount-crypto": "^0.4.0",
-    "@emeraldplatform/eth-rpc": "0.5.1",
-    "@emeraldplatform/rpc": "0.5.1",
     "@emeraldwallet/core": "^2.7.0-dev",
     "@emeraldwallet/store": "^2.7.0-dev",
     "@grpc/grpc-js": "^1.5.1",

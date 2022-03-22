@@ -94,16 +94,6 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess) {
       .catch(err => console.warn('Failed to get balances', err));
   });
 
-  ipcMain.handle(Commands.GET_GAS_PRICE, async (event: any, blockchain: BlockchainCode) => {
-    if (isEthereum(blockchain)) {
-      const gasPrice = await app.rpc.chain(blockchain).eth.gasPrice();
-      return gasPrice.toNumber();
-    } else {
-      log.debug("No gas price for " + blockchain);
-      return 0;
-    }
-  });
-
   ipcMain.handle(Commands.BROADCAST_TX, async (event: any, blockchain: BlockchainCode, tx: string) => {
     if (isEthereum(blockchain)) {
       return app.rpc.chain(blockchain).eth.sendRawTransaction(tx);

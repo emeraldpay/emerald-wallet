@@ -1,8 +1,8 @@
-import { BigAmount } from '@emeraldpay/bigamount';
-import { Wei } from '@emeraldpay/bigamount-crypto';
-import { WalletEntry } from '@emeraldpay/emerald-vault-core';
-import { ButtonGroup, Page } from '@emeraldplatform/ui';
-import { Back } from '@emeraldplatform/ui-icons';
+import {BigAmount} from '@emeraldpay/bigamount';
+import {Wei} from '@emeraldpay/bigamount-crypto';
+import {WalletEntry} from '@emeraldpay/emerald-vault-core';
+import {ButtonGroup, Page} from '@emeraldwallet/ui';
+import {Back} from '@emeraldwallet/ui';
 import {
   amountFactory,
   AnyCoinCode,
@@ -11,8 +11,8 @@ import {
   tokenAmount,
   workflow,
 } from '@emeraldwallet/core';
-import { tokenUnits } from '@emeraldwallet/core/lib/blockchains/tokens';
-import { CreateErc20WrappedTx, TxTarget } from '@emeraldwallet/core/lib/workflow';
+import {tokenUnits} from '@emeraldwallet/core/lib/blockchains/tokens';
+import {CreateErc20WrappedTx, TxTarget} from '@emeraldwallet/core/lib/workflow';
 import { registry } from '@emeraldwallet/erc20';
 import { accounts, IState, screen, tokens, transaction } from '@emeraldwallet/store';
 import { Button, PasswordInput } from '@emeraldwallet/ui';

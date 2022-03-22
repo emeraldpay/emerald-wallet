@@ -1,5 +1,3 @@
-import { Page } from '@emeraldplatform/ui';
-import { Back } from '@emeraldplatform/ui-icons';
 import { BlockchainCode } from '@emeraldwallet/core';
 import { CoinAvatar } from '@emeraldwallet/ui';
 import {

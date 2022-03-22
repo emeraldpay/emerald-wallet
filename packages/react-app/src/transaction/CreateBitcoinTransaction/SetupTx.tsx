@@ -1,8 +1,8 @@
 import { BigAmount } from "@emeraldpay/bigamount";
 import { EntryId, UnsignedBitcoinTx } from "@emeraldpay/emerald-vault-core";
-import { BitcoinEntry } from "@emeraldpay/emerald-vault-core/lib/types";
-import { ButtonGroup } from "@emeraldplatform/ui";
-import { CreateBitcoinTx, ValidationResult } from "@emeraldwallet/core/lib/workflow";
+import {BitcoinEntry} from "@emeraldpay/emerald-vault-core/lib/types";
+import {ButtonGroup} from "@emeraldwallet/ui";
+import {CreateBitcoinTx, ValidationResult} from "@emeraldwallet/core/lib/workflow";
 import { IState, screen } from "@emeraldwallet/store";
 import { Button } from "@emeraldwallet/ui";
 import { Box, createStyles, FormControlLabel, FormHelperText, Slider, Switch, TextField } from "@material-ui/core";

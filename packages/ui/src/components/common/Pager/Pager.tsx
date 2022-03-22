@@ -1,5 +1,5 @@
-import { ArrowLeft as ArrowLeftIcon, ArrowRight as ArrowRightIcon } from '@emeraldplatform/ui-icons';
-import { createStyles, Grid, IconButton, withStyles } from '@material-ui/core';
+import {ArrowLeft as ArrowLeftIcon, ArrowRight as ArrowRightIcon} from '../../../icons';
+import {createStyles, Grid, IconButton, withStyles} from '@material-ui/core';
 import * as React from 'react';
 
 interface IProps {

@@ -1,5 +1,5 @@
-import { PageTitle } from '@emeraldplatform/ui/lib/components/Page';
-import { BlockchainCode } from '@emeraldwallet/core';
+import {PageTitle} from '@emeraldwallet/ui';
+import {BlockchainCode} from '@emeraldwallet/core';
 import { CoinAvatar } from '@emeraldwallet/ui';
 import * as React from 'react';
 

@@ -1,6 +1,6 @@
-import { OddPasswordItem, Uuid } from '@emeraldpay/emerald-vault-core';
-import { ButtonGroup, Page } from '@emeraldplatform/ui';
-import { accounts, screen } from '@emeraldwallet/store';
+import {OddPasswordItem, Uuid} from '@emeraldpay/emerald-vault-core';
+import {ButtonGroup, Page} from '@emeraldwallet/ui';
+import {accounts, screen} from '@emeraldwallet/store';
 import { Button, PasswordInput } from '@emeraldwallet/ui';
 import {
   CircularProgress,

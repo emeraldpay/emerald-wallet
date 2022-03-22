@@ -1,4 +1,4 @@
-import { Search as SearchIcon } from '@emeraldplatform/ui-icons';
+import {Search as SearchIcon} from '@emeraldwallet/ui';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { createStyles, withStyles } from '@material-ui/core/styles';

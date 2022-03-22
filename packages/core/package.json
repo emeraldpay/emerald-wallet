@@ -4,7 +4,7 @@
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "author": "ETCDEV GmbH",
+  "author": "Emerald Team",
   "license": "Apache-2.0",
   "scripts": {
     "build": "yarn clean && yarn compile",
@@ -17,11 +17,10 @@
     "@emeraldpay/bigamount": "^0.4.0",
     "@emeraldpay/bigamount-crypto": "^0.4.0",
     "@emeraldpay/emerald-vault-core": "^0.8.3",
-    "@emeraldplatform/core": "0.5.8",
-    "@emeraldplatform/eth": "^0.5.1",
-    "@emeraldplatform/eth-rpc": "^0.5.3",
     "@ethereumjs/common": "^2.6.2",
     "@ethereumjs/tx": "^3.5.0",
+    "ethereumjs-util": "^7.1.4",
+    "rlp": "^3.0.0",
     "bignumber.js": "8.0.2"
   },
   "devDependencies": {

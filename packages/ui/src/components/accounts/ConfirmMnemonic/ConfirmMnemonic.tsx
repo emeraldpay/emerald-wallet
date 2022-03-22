@@ -1,9 +1,11 @@
-import { Input, Page, Warning, WarningText } from '@emeraldplatform/ui';
-import { Back } from '@emeraldplatform/ui-icons';
-import { withStyles } from '@material-ui/core/styles';
+import {Back} from '../../../icons';
+import {withStyles} from '@material-ui/core/styles';
 import * as React from 'react';
 import Button from '../../common/Button';
 import FormRow from '../../common/FormRow';
+import {Page} from '../../common/Page';
+import {Input} from '../../common/Input';
+import {Warning, WarningText} from '../../common/Warning';
 
 export const styles = {
   confirmLabel: {

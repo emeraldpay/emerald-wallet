@@ -1,10 +1,10 @@
-import { BlockchainClient } from '@emeraldpay/api-node';
-import { EthRpc } from '@emeraldplatform/eth-rpc';
-import { DefaultJsonRpc } from '@emeraldplatform/rpc';
-import { BlockchainCode, ILogger, IServerConnect } from '@emeraldwallet/core';
+import {BlockchainClient} from '@emeraldpay/api-node';
+import {BlockchainCode, ILogger, IServerConnect} from '@emeraldwallet/core';
 import * as os from 'os';
 import ChainRpcConnections from './ChainRpcConnections';
 import GrpcTransport from './transports/GrpcTransport';
+import EthRpc from "./ethrpc";
+import {DefaultJsonRpc} from "./jsonrpc";
 
 class ServerConnect implements IServerConnect {
   public headers: Record<string, string>;

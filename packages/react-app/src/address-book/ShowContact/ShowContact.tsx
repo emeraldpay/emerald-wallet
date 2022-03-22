@@ -1,5 +1,5 @@
-import {Account} from '@emeraldplatform/ui';
-import {Pen1 as EditIcon, Trash as DeleteIcon} from '@emeraldplatform/ui-icons';
+import {Account} from '@emeraldwallet/ui';
+import {Trash as DeleteIcon} from '@emeraldwallet/ui';
 import {addressBook, IState} from '@emeraldwallet/store';
 import {CoinAvatar} from '@emeraldwallet/ui';
 import IconButton from '@material-ui/core/IconButton';

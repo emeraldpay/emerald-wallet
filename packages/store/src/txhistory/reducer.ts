@@ -1,4 +1,3 @@
-import {convert} from '@emeraldplatform/core';
 import {
   amountDecoder,
   BitcoinStoredTransaction,
@@ -7,7 +6,9 @@ import {
   isBitcoinStoredTransaction,
   isEthereumStoredTransaction,
   IStoredTransaction,
-  utils
+  utils,
+  toNumber,
+  toBigNumber
 } from '@emeraldwallet/core';
 import {fromJS, Map, List} from 'immutable';
 import {
@@ -21,9 +22,6 @@ import {
   ITrackTxsAction,
   IUpdateTxsAction
 } from './types';
-import {type} from "os";
-
-const {toNumber, toBigNumber} = convert;
 
 //TODO reimplement without immutableJs
 type StateKeys = "trackedTransactions";

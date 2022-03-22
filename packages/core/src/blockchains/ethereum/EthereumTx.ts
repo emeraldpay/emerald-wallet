@@ -1,7 +1,7 @@
-import { Address, EthAddress } from '@emeraldplatform/core';
 import Common, { Hardfork } from '@ethereumjs/common';
 import { Transaction as EthTx } from '@ethereumjs/tx';
-import { ITransaction } from '../ITransaction';
+import {ITransaction} from '../ITransaction';
+import {EthereumAddress} from "./Address";
 
 class EthereumTx implements ITransaction {
   public static fromRaw (hex: string, chainId: any): ITransaction {
@@ -23,33 +23,33 @@ class EthereumTx implements ITransaction {
     this.internalTx = tx;
   }
 
-  public getHash (): string {
+  public getHash(): string {
     return '0x' + this.internalTx.hash().toString('hex');
   }
 
-  public verifySignature (): boolean {
+  public verifySignature(): boolean {
     return this.internalTx.verifySignature();
   }
 
-  public getSenderAddress (): Address {
-    return EthAddress.fromHexString(this.internalTx.getSenderAddress().toString());
+  public getSenderAddress(): EthereumAddress {
+    return new EthereumAddress(this.internalTx.getSenderAddress().toString());
   }
 
-  public getRecipientAddress (): Address {
+  public getRecipientAddress(): EthereumAddress {
     const address = this.internalTx.to?.toString();
 
     if (address == null) {
       throw new Error('Address must be set');
     }
 
-    return EthAddress.fromHexString(address);
+    return new EthereumAddress(address);
   }
 
-  public getValue (): any {
+  public getValue(): string {
     return '0x' + this.internalTx.value.toString('hex');
   }
 
-  public getData (): any {
+  public getData(): string {
     return this.internalTx.data.toString('hex');
   }
 

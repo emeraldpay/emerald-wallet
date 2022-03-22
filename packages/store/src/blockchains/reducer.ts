@@ -7,7 +7,6 @@ function onBlock (state: IBlockchainsState, payload: any): IBlockchainsState {
   return produce(state, (draft) => {
     if (!draft[payload.blockchain]) {
       draft[payload.blockchain] = {
-        gasPrice: null,
         height: payload.height
       };
     } else {
@@ -16,18 +15,6 @@ function onBlock (state: IBlockchainsState, payload: any): IBlockchainsState {
   });
 }
 
-function onGasPrice (state: IBlockchainsState, payload: any): IBlockchainsState {
-  return produce(state, (draft) => {
-    if (!draft[payload.blockchain]) {
-      draft[payload.blockchain] = {
-        height: null,
-        gasPrice: payload.gasPrice
-      };
-    } else {
-      draft[payload.blockchain].gasPrice = payload.gasPrice;
-    }
-  });
-}
 
 export function reducer (
   state: IBlockchainsState = INITIAL_STATE,
@@ -39,8 +26,6 @@ export function reducer (
   switch (action.type) {
     case ActionTypes.BLOCK:
       return onBlock(state, action.payload);
-    case ActionTypes.GAS_PRICE:
-      return onGasPrice(state, action.payload);
     default:
       return state;
   }

@@ -1,5 +1,5 @@
-import { Input } from '@emeraldplatform/ui';
-import { withStyles } from '@material-ui/styles';
+import {Input} from '@emeraldwallet/ui';
+import {withStyles} from '@material-ui/styles';
 import * as React from 'react';
 import FormLabel from '../FormLabel';
 import {Wei} from '@emeraldpay/bigamount-crypto';

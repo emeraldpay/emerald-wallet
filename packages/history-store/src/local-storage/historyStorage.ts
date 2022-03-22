@@ -1,7 +1,6 @@
-import { convert } from '@emeraldplatform/core';
-import { blockchainById, IStoredTransaction, utils } from '@emeraldwallet/core';
+import {toBigNumber} from '@emeraldwallet/core';
+import {blockchainById, IStoredTransaction, utils} from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
-const { toBigNumber } = convert;
 
 /**
  * Store transaction as JSON in localStorage

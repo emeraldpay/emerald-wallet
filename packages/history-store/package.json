@@ -4,7 +4,7 @@
   "description": "Transactions storage management",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "author": "ETCDEV GmbH",
+  "author": "Emerald Team",
   "license": "Apache-2.0",
   "scripts": {
     "build": "yarn clean && yarn compile",
@@ -14,7 +14,6 @@
     "test:coverage": "jest --coverage && codecov"
   },
   "dependencies": {
-    "@emeraldplatform/core": "0.5.8",
     "@emeraldwallet/core": "^2.7.0-dev",
     "bignumber.js": "8.0.2",
     "electron-store": "5.1.0"

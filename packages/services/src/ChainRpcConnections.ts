@@ -1,5 +1,5 @@
-import { EthRpc } from '@emeraldplatform/eth-rpc';
-import { BlockchainCode } from '@emeraldwallet/core';
+import {BlockchainCode} from '@emeraldwallet/core';
+import EthRpc from "./ethrpc";
 
 export default class ChainRpcConnections {
   private connections: Map<any, any> = new Map();

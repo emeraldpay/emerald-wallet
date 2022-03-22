@@ -1,5 +1,5 @@
-import { Theme } from '@emeraldplatform/ui';
-import { Logger } from '@emeraldwallet/core';
+import {Theme} from '@emeraldwallet/ui';
+import {Logger} from '@emeraldwallet/core';
 import { App, i18n } from '@emeraldwallet/react-app';
 import { config } from '@emeraldwallet/store';
 import BigNumber from 'bignumber.js';

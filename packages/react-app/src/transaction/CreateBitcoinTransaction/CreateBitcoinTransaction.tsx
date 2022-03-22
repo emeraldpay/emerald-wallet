@@ -1,9 +1,9 @@
-import { EntryId, isBitcoinEntry } from "@emeraldpay/emerald-vault-core";
-import { BitcoinEntry, isSeedPkRef, UnsignedBitcoinTx, Uuid } from "@emeraldpay/emerald-vault-core/lib/types";
-import { Page } from "@emeraldplatform/ui";
-import {Back} from "@emeraldplatform/ui-icons";
+import {EntryId, isBitcoinEntry} from "@emeraldpay/emerald-vault-core";
+import {BitcoinEntry, isSeedPkRef, UnsignedBitcoinTx, Uuid} from "@emeraldpay/emerald-vault-core/lib/types";
+import {Page} from "@emeraldwallet/ui";
+import {Back} from "@emeraldwallet/ui";
 import {BalanceUtxo, BlockchainCode, blockchainIdToCode} from "@emeraldwallet/core";
-import { accounts, IState, screen, transaction } from "@emeraldwallet/store";
+import {accounts, IState, screen, transaction} from "@emeraldwallet/store";
 import {createStyles, Theme, Typography} from "@material-ui/core";
 import {makeStyles} from "@material-ui/core/styles";
 import {Alert} from "@material-ui/lab";

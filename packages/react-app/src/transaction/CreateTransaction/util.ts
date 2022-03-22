@@ -1,12 +1,11 @@
-import { convert } from '@emeraldplatform/core';
-import {BlockchainCode, Currency} from '@emeraldwallet/core';
+import {BlockchainCode, Currency, toBigNumber} from '@emeraldwallet/core';
 import {Wei, WEIS} from '@emeraldpay/bigamount-crypto';
 
 export function txFeeFiat (gasPrice: string | number, gasLimit: number, rate: number | undefined): string {
   if (typeof rate == 'undefined') {
     return '--';
   }
-  const wei = new Wei(gasPrice).multiply(convert.toBigNumber(gasLimit));
+  const wei = new Wei(gasPrice).multiply(toBigNumber(gasLimit));
   const ether = wei.number.dividedBy(WEIS.top.multiplier);
   return Currency.convert(ether.toFixed(), rate);
 }

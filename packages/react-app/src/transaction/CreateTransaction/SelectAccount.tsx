@@ -8,8 +8,8 @@ import {Uuid, Wallet, WalletEntry, isEthereumEntry, isBitcoinEntry} from "@emera
 import {blockchainIdToCode} from "@emeraldwallet/core";
 import {CoinAvatar, WalletReference} from "@emeraldwallet/ui";
 import AccountBalance from '../../common/Balance';
-import {Address, Page} from "@emeraldplatform/ui";
-import {Back} from "@emeraldplatform/ui-icons";
+import {Page} from "@emeraldwallet/ui";
+import {Back} from "@emeraldwallet/ui";
 import {BigAmount} from "@emeraldpay/bigamount/lib/amount";
 
 const useStyles = makeStyles<Theme>((theme) =>

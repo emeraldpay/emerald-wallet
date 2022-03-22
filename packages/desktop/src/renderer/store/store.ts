@@ -118,7 +118,6 @@ function startSync(): void {
         const loadChain = [];
 
         loadChain.push(store.dispatch(addressBook.actions.loadAddressBook(chain.params.code)));
-        loadChain.push(store.dispatch(blockchains.actions.fetchGasPriceAction(chain.params.code)));
 
         loadAllChain.push(
           Promise.all(loadChain).catch((exception) =>

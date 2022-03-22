@@ -13,8 +13,6 @@ export enum Commands {
   LOAD_TX_HISTORY = 'load-tx-history',
 
   // @deprecated
-  ERC20_GET_BALANCE = 'get-erc20-balance',
-  GET_GAS_PRICE = 'get-gas-price',
   BROADCAST_TX = 'broadcast-tx',
   ESTIMATE_TX = 'estimate-tx',
   ESTIMATE_FEE = 'estimate-fee',
