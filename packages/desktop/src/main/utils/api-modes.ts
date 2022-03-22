@@ -7,7 +7,7 @@ export interface ApiMode {
 
 export const DevelopmentMode: ApiMode = {
   id: 'development',
-  chains: ['ETH', 'ETC', 'BTC', 'GOERLI', 'TESTBTC'],
+  chains: ['ETH', 'ETC', 'BTC', 'GOERLI', 'KOVAN', 'TESTBTC'],
   assets: ['ETH', 'ETC', 'BTC', 'DAI', 'USDC', 'USDT', 'WETH', 'TESTBTC'],
   currencies: ['USD'],
 };
