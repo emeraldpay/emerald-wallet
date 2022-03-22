@@ -36,13 +36,15 @@
   "main": "app/src/main/index.js",
   "scripts": {
     "build": "yarn clean && yarn compile && webpack",
+    "build:dev": "cross-env NODE_ENV=development yarn build",
     "build:dist": "yarn build && electron-builder --publish never",
-    "build:watch": "yarn clean && tsc-watch -b --onSuccess webpack",
+    "build:watch": "cross-env NODE_ENV=development yarn clean && tsc-watch -b --onSuccess \"yarn build:watch:success\" --onFailure \"yarn build:watch:fail\"",
+    "build:watch:fail": "notify -t \"Emerald Wallet\" -m \"Build failed\" -i \"resources/icon.png\"",
+    "build:watch:success": "(webpack && notify -t \"Emerald Wallet\" -m \"Build successfully\" -i \"resources/icon.png\") || yarn build:watch:fail",
     "clean": "rimraf app/ dist/ tsconfig.tsbuildinfo",
     "compile": "tsc -b && yarn copyfiles resources/**/* app/",
-    "start:dev": "cross-env NODE_ENV=development electron .",
-    "start:prod": "cross-env NODE_ENV=production electron .",
-    "start": "yarn start:prod"
+    "start": "electron .",
+    "start:dev": "cross-env NODE_ENV=development yarn start"
   },
   "dependencies": {
     "@emeraldwallet/electron-app": "^2.7.0-dev",
@@ -69,6 +71,7 @@
     "electron": "15.3.5",
     "electron-builder": "^22.14.13",
     "jest": "^27.5.1",
+    "node-notifier-cli": "^2.0.0",
     "rimraf": "^3.0.2",
     "source-map-loader": "^3.0.1",
     "style-loader": "^3.3.1",
