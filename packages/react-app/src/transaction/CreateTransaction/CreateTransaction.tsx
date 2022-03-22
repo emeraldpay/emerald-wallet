@@ -309,7 +309,6 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
             tx={tx}
             txFeeToken={this.props.txFeeSymbol}
             token={this.state.token}
-            txFeeFiat={this.props.getTxFeeFiatForGasLimit(tx.gas.toNumber())}
             fiatBalance={this.props.getFiatForAddress(tx.from!, this.state.token)}
             currency={this.props.currency}
             tokenSymbols={this.props.tokenSymbols}
@@ -472,7 +471,6 @@ interface Props {
   token: any;
   gasLimit: any;
   selectedFromAddress: string;
-  getTxFeeFiatForGasLimit: (gas: number) => string;
   getFiatForAddress: (address: string, token: AnyCoinCode) => string;
   getBalance: () => Wei;
   getTokenBalanceForAddress: (address: string, token: AnyCoinCode) => BigAmount;
@@ -527,10 +525,6 @@ export default connect(
         );
 
         return fiatFormatter.format(fiat);
-      },
-      getTxFeeFiatForGasLimit: (gasLimit: number) => {
-        const price = blockchains.selectors.gasPrice(state, blockchain.params.code);
-        return txFeeFiat(price.number.toFixed(), gasLimit, fiatRate);
       },
       currency: settings.selectors.fiatCurrency(state),
       tokenSymbols: allTokens.map((i) => i.symbol),

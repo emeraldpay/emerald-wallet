@@ -71,7 +71,6 @@ export interface Props {
   tokenSymbols: string[];
   addressBookAddresses?: string[];
   currency?: string;
-  txFeeFiat?: string;
   txFeeToken: string;
   fiatBalance?: string;
   ownAddresses?: string[];

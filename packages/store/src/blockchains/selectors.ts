@@ -1,6 +1,5 @@
 import { createSelector } from 'reselect';
 import {IBlockchainsState, moduleName} from './types';
-import {Wei} from '@emeraldpay/bigamount-crypto';
 
 export function all (state: any): IBlockchainsState {
   return state[moduleName];
@@ -16,10 +15,6 @@ export const getCurrentInfo = createSelector(
     }));
   }
 );
-
-export function gasPrice (state: any, chain: string): Wei {
-  return state[moduleName][chain.toLowerCase()].gasPrice;
-}
 
 export function getHeight (state: any, chain: string): number {
   const data = state[moduleName][chain.toLowerCase()];
