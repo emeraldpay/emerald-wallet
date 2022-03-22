@@ -1,8 +1,8 @@
-import { Page } from '@emeraldplatform/ui';
-import { Back } from '@emeraldplatform/ui-icons';
-import { BlockchainCode } from '@emeraldwallet/core';
-import { addAccount, IState, settings } from '@emeraldwallet/store';
-import { CoinAvatar, CoinIcon } from '@emeraldwallet/ui';
+import {Page} from '@emeraldwallet/ui';
+import {Back} from '@emeraldwallet/ui';
+import {BlockchainCode} from '@emeraldwallet/core';
+import {addAccount, IState, settings} from '@emeraldwallet/store';
+import {CoinAvatar} from '@emeraldwallet/ui';
 import {
   Divider,
   FormControl,

@@ -1,6 +1,6 @@
-import { OddPasswordItem } from '@emeraldpay/emerald-vault-core';
-import { ButtonGroup, Page } from '@emeraldplatform/ui';
-import { accounts, IState, screen } from '@emeraldwallet/store';
+import {OddPasswordItem} from '@emeraldpay/emerald-vault-core';
+import {ButtonGroup, Page} from '@emeraldwallet/ui';
+import {accounts, IState, screen} from '@emeraldwallet/store';
 import { Button, PasswordInput } from '@emeraldwallet/ui';
 import { OwnProps } from '@emeraldwallet/ui/lib/components/accounts/Balance/Balance';
 import { createStyles, Typography, withStyles } from '@material-ui/core';

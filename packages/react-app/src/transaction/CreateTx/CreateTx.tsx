@@ -1,7 +1,7 @@
 import { BigAmount } from "@emeraldpay/bigamount";
-import { Wei } from '@emeraldpay/bigamount-crypto';
-import { ButtonGroup } from '@emeraldplatform/ui';
-import { workflow } from '@emeraldwallet/core';
+import {Wei} from '@emeraldpay/bigamount-crypto';
+import {ButtonGroup} from '@emeraldwallet/ui';
+import {workflow} from '@emeraldwallet/core';
 import { Button } from '@emeraldwallet/ui';
 import { Box, createStyles, FormControlLabel, FormHelperText, Slider, Switch, withStyles } from '@material-ui/core';
 import * as React from 'react';

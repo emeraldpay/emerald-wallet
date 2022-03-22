@@ -1,14 +1,13 @@
-import { convert, fromBaseUnits } from '@emeraldplatform/core';
-import { Units as EthUnits, Wei } from '@emeraldplatform/eth';
-import { Account, ButtonGroup, Page } from '@emeraldplatform/ui';
-import { Blockchains, EthereumTx } from '@emeraldwallet/core';
-import { decodeData, registry } from '@emeraldwallet/erc20';
-import { screen, transaction } from '@emeraldwallet/store';
-import { Button, FormRow } from '@emeraldwallet/ui';
-import { withStyles } from '@material-ui/core/styles';
+import {Account, ButtonGroup, Page} from '@emeraldwallet/ui';
+import {Blockchains, EthereumTx, toNumber, fromBaseUnits} from '@emeraldwallet/core';
+import {decodeData, registry} from '@emeraldwallet/erc20';
+import {screen, transaction} from '@emeraldwallet/store';
+import {Button, FormRow} from '@emeraldwallet/ui';
+import {withStyles} from '@material-ui/core/styles';
 import * as React from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import ChainTitle from '../../common/ChainTitle';
+import {Wei, WEIS} from '@emeraldpay/bigamount-crypto';
 
 interface IBroadcastTxViewProps {
   tx: any;
@@ -43,7 +42,7 @@ export class BroadcastTxView extends React.Component<IBroadcastTxViewProps> {
       if (decodedData.inputs.length > 0) {
         erc20Tx = {
           to: decodedData.inputs[0].toString(16),
-          value: convert.toNumber('0x' + decodedData.inputs[1].toString(16)).toString()
+          value: toNumber('0x' + decodedData.inputs[1].toString(16)).toString()
         };
         const tokenInfo = registry.byAddress(currentChain.params.code, decoded.getRecipientAddress().toString());
         if (tokenInfo) {
@@ -53,13 +52,13 @@ export class BroadcastTxView extends React.Component<IBroadcastTxViewProps> {
       }
     }
 
-    const wei = new Wei(convert.toNumber(decoded.getValue()));
-    const etherValue = wei.toString(EthUnits.ETHER, 18);
+    const wei = new Wei(toNumber(decoded.getValue()));
+    const etherValue = wei.toEther();
     return (
-      <Page title={<ChainTitle chain={tx.blockchain} text={'Publish Transaction'} />}>
+      <Page title={<ChainTitle chain={tx.blockchain} text={'Publish Transaction'}/>}>
         <FormRow
           leftColumn={<div className={classes.fieldName}>From</div>}
-          rightColumn={<Account identity={true} address={decoded.getSenderAddress().toString()} />}
+          rightColumn={<Account identity={true} address={decoded.getSenderAddress().toString()}/>}
         />
         {(erc20Tx === null) && (
           <React.Fragment>

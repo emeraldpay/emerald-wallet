@@ -1,5 +1,5 @@
-import { convert } from '@emeraldplatform/core';
 import EthereumTx from './EthereumTx';
+import {toNumber} from "../../convert";
 
 describe('EthereumTx', () => {
   it('should decode from raw hex rlp', () => {
@@ -14,7 +14,7 @@ describe('EthereumTx', () => {
     expect(tx.getRecipientAddress().toString()).toEqual('0x532c801e9cc47dd8b165e04d60dc4809d184ea91');
     expect(tx.getSenderAddress().toString()).toEqual('0xf39caf1020a0ca6f50c223ffef9e4437569d4801');
     expect(tx.getHash()).toEqual('0x8dfde3b5831f378da8f9fb4f708dd9543da8ffff6297976b99011e2e77389482');
-    expect(convert.toNumber(tx.getValue())).toEqual(218960000000000);
+    expect(toNumber(tx.getValue())).toEqual(218960000000000);
   });
 
   it('should verify signature', () => {

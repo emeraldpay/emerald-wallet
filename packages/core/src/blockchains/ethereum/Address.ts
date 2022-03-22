@@ -24,11 +24,15 @@ export class EthereumAddress {
     this.address = address.toLowerCase();
   }
 
-  public toString (): string {
+  public equals(another: EthereumAddress): boolean {
+    return (this.address.toLowerCase() === another.toString().toLowerCase());
+  };
+
+  public toString(): string {
     return this.address;
   }
 
-  public getAddress (): string {
+  public getAddress(): string {
     return this.address;
   }
 }

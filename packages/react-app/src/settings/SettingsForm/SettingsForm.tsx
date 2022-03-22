@@ -1,11 +1,11 @@
-import { Page } from '@emeraldplatform/ui';
-import { Back } from '@emeraldplatform/ui-icons';
-import { Button, PasswordInput, Theme } from '@emeraldwallet/ui';
-import { createStyles, MenuItem, Tab, Tabs, TextField } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import {Page} from '@emeraldwallet/ui';
+import {Back} from '@emeraldwallet/ui';
+import {Button, PasswordInput, Theme} from '@emeraldwallet/ui';
+import {createStyles, MenuItem, Tab, Tabs, TextField} from '@material-ui/core';
+import {withStyles} from '@material-ui/core/styles';
 import * as React from 'react';
-import { WithTranslation } from 'react-i18next';
-import { DispatchProps, StateProps } from '../Settings/Settings';
+import {WithTranslation} from 'react-i18next';
+import {DispatchProps, StateProps} from '../Settings/Settings';
 
 const styles = createStyles({
   tabsContainer: {

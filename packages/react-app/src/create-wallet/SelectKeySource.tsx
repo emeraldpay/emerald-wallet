@@ -1,6 +1,6 @@
 import * as vault from "@emeraldpay/emerald-vault-core";
-import { Ledger } from '@emeraldplatform/ui-icons';
-import { List, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import {Ledger} from '@emeraldwallet/ui';
+import {List, ListItem, ListItemIcon, ListItemText} from "@material-ui/core";
 import AddBoxIcon from '@material-ui/icons/AddBox';
 import ExposureZeroIcon from '@material-ui/icons/ExposureZero';
 import FileCopyIcon from '@material-ui/icons/FileCopy';

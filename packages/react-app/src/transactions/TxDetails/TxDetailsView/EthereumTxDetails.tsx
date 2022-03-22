@@ -5,7 +5,7 @@ import {Box, createStyles, Theme, Typography} from "@material-ui/core";
 import {IState} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
 import {FormRow} from "@emeraldwallet/ui";
-import {Account, Page} from "@emeraldplatform/ui";
+import {Account} from "@emeraldwallet/ui";
 import {EthereumStoredTransaction} from "@emeraldwallet/core";
 import {ClassNameMap} from "@material-ui/core/styles/withStyles";
 import {EntryId, Uuid} from "@emeraldpay/emerald-vault-core/lib/types";

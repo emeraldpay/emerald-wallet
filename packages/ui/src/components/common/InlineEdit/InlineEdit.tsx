@@ -1,4 +1,4 @@
-import { Checkmark as SubmitIcon, Close as CancelIcon } from '@emeraldplatform/ui-icons';
+import {Checkmark as SubmitIcon, Close as CancelIcon} from '../../../icons';
 import IconButton from '@material-ui/core/IconButton';
 import InputAdornment from '@material-ui/core/InputAdornment';
 import { withStyles } from '@material-ui/core/styles';

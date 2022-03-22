@@ -1,5 +1,5 @@
-import { ButtonGroup, Input, Page } from '@emeraldplatform/ui';
-import { BlockchainCode } from '@emeraldwallet/core';
+import {ButtonGroup, Input, Page} from '@emeraldwallet/ui';
+import {BlockchainCode} from '@emeraldwallet/core';
 import { Button, ChainSelector } from '@emeraldwallet/ui';
 import { CSSProperties, withStyles } from '@material-ui/styles';
 import * as React from 'react';

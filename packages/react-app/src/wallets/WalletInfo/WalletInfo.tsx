@@ -1,16 +1,16 @@
-import { SeedDescription, Wallet } from '@emeraldpay/emerald-vault-core';
-import { isSeedPkRef } from '@emeraldpay/emerald-vault-core/lib/types';
-import { Page } from '@emeraldplatform/ui';
-import { Back } from '@emeraldplatform/ui-icons';
-import { blockchainIdToCode, Blockchains } from '@emeraldwallet/core';
-import { parseDate } from '@emeraldwallet/core/lib/utils';
-import { accounts, IState, screen } from '@emeraldwallet/store';
-import { Button } from '@emeraldwallet/ui';
-import { createStyles, Divider, Table, TableBody, TableCell, TableRow, withStyles } from '@material-ui/core';
-import { Check as CheckIcon, Close as CrossIcon } from '@material-ui/icons';
-import { clipboard } from 'electron';
+import {SeedDescription, Wallet} from '@emeraldpay/emerald-vault-core';
+import {isSeedPkRef} from '@emeraldpay/emerald-vault-core/lib/types';
+import {Page} from '@emeraldwallet/ui';
+import {Back} from '@emeraldwallet/ui';
+import {blockchainIdToCode, Blockchains} from '@emeraldwallet/core';
+import {parseDate} from '@emeraldwallet/core/lib/utils';
+import {accounts, IState, screen} from '@emeraldwallet/store';
+import {Button} from '@emeraldwallet/ui';
+import {createStyles, Divider, Table, TableBody, TableCell, TableRow, withStyles} from '@material-ui/core';
+import {Check as CheckIcon, Close as CrossIcon} from '@material-ui/icons';
+import {clipboard} from 'electron';
 import * as React from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import i18n from '../../i18n';
 
 const styles = createStyles({

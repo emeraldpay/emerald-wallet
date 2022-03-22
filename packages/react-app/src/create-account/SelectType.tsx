@@ -3,8 +3,8 @@ import {
   Key as KeyIcon,
   Keypair as KeypairIcon,
   Ledger as LedgerIcon
-} from '@emeraldplatform/ui-icons';
-import { addAccount, IState } from '@emeraldwallet/store';
+} from '@emeraldwallet/ui';
+import {addAccount, IState} from '@emeraldwallet/store';
 import { AddType } from '@emeraldwallet/store/lib/add-account';
 import {
   Avatar,

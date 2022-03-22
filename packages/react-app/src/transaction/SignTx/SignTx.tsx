@@ -1,9 +1,9 @@
-import { ButtonGroup, IdentityIcon, Input } from '@emeraldplatform/ui';
-import { ArrowRight } from '@emeraldplatform/ui-icons';
-import { workflow } from '@emeraldwallet/core';
-import { Button, PasswordInput } from '@emeraldwallet/ui';
-import { Divider, List, ListItem, ListItemText } from '@material-ui/core';
-import { withStyles } from '@material-ui/styles';
+import {ButtonGroup, IdentityIcon} from '@emeraldwallet/ui';
+import {ArrowRight} from '@emeraldwallet/ui';
+import {workflow} from '@emeraldwallet/core';
+import {Button, PasswordInput} from '@emeraldwallet/ui';
+import {Divider, List, ListItem, ListItemText} from '@material-ui/core';
+import {withStyles} from '@material-ui/styles';
 import * as React from 'react';
 
 const styles = (theme?: any) => ({

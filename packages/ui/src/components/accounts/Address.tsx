@@ -4,9 +4,9 @@ import {Box, createStyles, Theme, Typography} from "@material-ui/core";
 import {ClassNameMap} from "@material-ui/styles";
 import {WithDefaults} from "@emeraldwallet/core";
 import classNames from "classnames";
-import {ToggledIconButton} from '@emeraldplatform/ui';
-import {Check1 as CheckCircle, Copytoclipboard as CloneIcon} from '@emeraldplatform/ui-icons';
+import {Check1 as CheckCircle, Copytoclipboard as CloneIcon} from '../../icons';
 import * as clipboard from "clipboard-polyfill/text";
+import ToggledIconButton from "../common/ToggledIconButton";
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({

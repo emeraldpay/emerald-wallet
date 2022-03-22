@@ -6,7 +6,7 @@ import {IState, screen} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
 import RawTxDetails from "./RawTxDetails";
 import RawTx from "./RawTx";
-import {ButtonGroup} from "@emeraldplatform/ui";
+import {ButtonGroup} from "@emeraldwallet/ui";
 import {Button} from "@emeraldwallet/ui";
 import {EntryId, EntryIdOp} from "@emeraldpay/emerald-vault-core";
 import {BlockchainCode} from "@emeraldwallet/core";

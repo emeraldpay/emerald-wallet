@@ -1,6 +1,6 @@
-import { BigAmount, FormatterBuilder } from "@emeraldpay/bigamount";
-import { CurrencyEtc, CurrencyEth } from '@emeraldplatform/ui-icons';
-import { AnyCoinCode, CurrencyAmount, CurrencyCode, StableCoinCode } from '@emeraldwallet/core';
+import {BigAmount, FormatterBuilder} from "@emeraldpay/bigamount";
+import {CurrencyEtc, CurrencyEth} from '@emeraldwallet/ui';
+import {AnyCoinCode, CurrencyAmount, CurrencyCode, StableCoinCode} from '@emeraldwallet/core';
 import { Button, CoinAvatar } from '@emeraldwallet/ui';
 import { List, ListItem, ListItemAvatar, ListItemText, Menu } from '@material-ui/core';
 import { createStyles, withStyles } from '@material-ui/core/styles';

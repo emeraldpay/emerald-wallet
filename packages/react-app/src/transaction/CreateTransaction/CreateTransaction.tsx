@@ -1,9 +1,8 @@
-import { BigAmount, FormatterBuilder, Unit } from '@emeraldpay/bigamount';
-import { Wei } from '@emeraldpay/bigamount-crypto';
-import { WalletEntry } from '@emeraldpay/emerald-vault-core';
-import { convert, toBaseUnits } from '@emeraldplatform/core';
-import { Page } from '@emeraldplatform/ui';
-import { Back } from '@emeraldplatform/ui-icons';
+import {BigAmount, FormatterBuilder, Unit} from '@emeraldpay/bigamount';
+import {Wei} from '@emeraldpay/bigamount-crypto';
+import {WalletEntry} from '@emeraldpay/emerald-vault-core';
+import {Page} from '@emeraldwallet/ui';
+import {Back} from '@emeraldwallet/ui';
 import {
   amountFactory,
   AnyCoinCode,
@@ -14,6 +13,7 @@ import {
   isAnyTokenCode,
   tokenAmount,
   workflow,
+  toBigNumber, toBaseUnits,
 } from '@emeraldwallet/core';
 import { tokenUnits } from '@emeraldwallet/core/lib/blockchains/tokens';
 import { registry } from '@emeraldwallet/erc20';
@@ -384,7 +384,7 @@ function signTokenTx(dispatch: any, ownProps: OwnProps, args: any) {
   const accountId = ownProps.sourceEntry.id;
   const chain = blockchainIdToCode(ownProps.sourceEntry.blockchain);
   const tokenInfo = registry.bySymbol(chain, token);
-  const tokenUnits = toBaseUnits(convert.toBigNumber(args.transaction.amount), tokenInfo.decimals);
+  const tokenUnits = toBaseUnits(toBigNumber(args.transaction.amount), tokenInfo.decimals);
 
   const txData = tokens.actions.createTokenTxData(args.transaction.to, tokenUnits, true);
   return dispatch(

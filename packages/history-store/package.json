@@ -14,7 +14,6 @@
     "test:coverage": "jest --coverage && codecov"
   },
   "dependencies": {
-    "@emeraldplatform/core": "0.5.8",
     "@emeraldwallet/core": "^2.7.0-dev",
     "bignumber.js": "8.0.2",
     "electron-store": "5.1.0"

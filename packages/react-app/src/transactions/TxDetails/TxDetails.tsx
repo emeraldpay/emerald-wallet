@@ -1,18 +1,18 @@
-import { WalletEntry } from "@emeraldpay/emerald-vault-core";
-import { EntryIdOp } from "@emeraldpay/emerald-vault-core/lib/ops";
-import { Uuid } from "@emeraldpay/emerald-vault-core/lib/types";
-import { convert } from "@emeraldplatform/core";
-import { ButtonGroup, Page } from "@emeraldplatform/ui";
-import { Back } from "@emeraldplatform/ui-icons";
+import {WalletEntry} from "@emeraldpay/emerald-vault-core";
+import {EntryIdOp} from "@emeraldpay/emerald-vault-core/lib/ops";
+import {Uuid} from "@emeraldpay/emerald-vault-core/lib/types";
+import {ButtonGroup, Page} from "@emeraldwallet/ui";
+import {Back} from "@emeraldwallet/ui";
 import {
   amountFactory,
   blockchainByName,
   isBitcoinStoredTransaction,
   isEthereumStoredTransaction,
   IStoredTransaction,
+  toNumber,
 } from "@emeraldwallet/core";
-import { parseDate } from "@emeraldwallet/core/lib/utils";
-import { registry, ITokenInfo } from "@emeraldwallet/erc20";
+import {parseDate} from "@emeraldwallet/core/lib/utils";
+import {registry, ITokenInfo} from "@emeraldwallet/erc20";
 import { accounts, IState, screen, txhistory } from "@emeraldwallet/store";
 import { Button, FormRow } from "@emeraldwallet/ui";
 import { createStyles, Theme, Typography } from "@material-ui/core";
@@ -154,7 +154,7 @@ const Component = ((props: Props & Actions & OwnProps) => {
       />
       <FormRow
         leftColumn={<div className={styles.fieldName}>Block</div>}
-        rightColumn={<React.Fragment>{blockNumber ? convert.toNumber(blockNumber) : 'pending'}</React.Fragment>}
+        rightColumn={<React.Fragment>{blockNumber ? toNumber(blockNumber) : 'pending'}</React.Fragment>}
       />
 
       {chainDetails}

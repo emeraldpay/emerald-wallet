@@ -1,6 +1,5 @@
-import { Input, Page, Warning, WarningHeader, WarningText } from '@emeraldplatform/ui';
-import { Back } from '@emeraldplatform/ui-icons';
-import { Button, FormRow, PasswordInput } from '@emeraldwallet/ui';
+import {Input, Page, Warning, WarningHeader, WarningText} from '@emeraldwallet/ui';
+import {Button, FormRow, PasswordInput} from '@emeraldwallet/ui';
 import { CircularProgress } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';

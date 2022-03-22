@@ -1,13 +1,10 @@
-import {convert} from '@emeraldplatform/core';
-import {BlockchainCode, EthereumStoredTransaction, IStoredTransaction} from '@emeraldwallet/core';
+import {BlockchainCode, EthereumStoredTransaction, IStoredTransaction, toBigNumber} from '@emeraldwallet/core';
 import {loadTransactions, storeTransactions} from '@emeraldwallet/history-store';
 import BigNumber from 'bignumber.js';
 import {List} from 'immutable';
 import {INITIAL_STATE, reducer as historyReducers} from './reducer';
 import {ActionTypes, IUpdateTxsAction} from './types';
 import {WalletEntry} from "@emeraldpay/emerald-vault-core/lib/types";
-
-const {toBigNumber} = convert;
 
 describe('historyReducer', () => {
   it('should store and load txs correctly', () => {

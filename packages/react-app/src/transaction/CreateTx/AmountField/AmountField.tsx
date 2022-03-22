@@ -1,5 +1,5 @@
 import { BigAmount, FormatterBuilder, Units } from '@emeraldpay/bigamount';
-import { Input } from '@emeraldplatform/ui';
+import {Input} from '@emeraldwallet/ui';
 import { Button, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';

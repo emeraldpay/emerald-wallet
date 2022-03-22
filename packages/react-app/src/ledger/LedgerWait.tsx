@@ -4,7 +4,7 @@ import * as React from 'react';
 import {CircularProgress, createStyles, Grid, Typography} from "@material-ui/core";
 import {IState, hwkey} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
-import {Ledger} from "@emeraldplatform/ui-icons";
+import {Ledger} from "@emeraldwallet/ui";
 import {SeedDescription} from "@emeraldpay/emerald-vault-core";
 
 const useStyles = makeStyles(

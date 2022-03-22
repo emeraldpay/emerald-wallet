@@ -4,10 +4,6 @@ import * as React from 'react';
 import {Box, createStyles, Theme, TextField} from "@material-ui/core";
 import {IState} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
-import FormLabel from "../CreateTx/FormLabel/FormLabel";
-import {ButtonGroup} from "@emeraldplatform/ui";
-import {Button} from "@emeraldwallet/ui";
-import FormFieldWrapper from "../CreateTx/FormFieldWrapper";
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({

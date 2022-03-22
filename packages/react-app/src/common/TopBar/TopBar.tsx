@@ -1,5 +1,5 @@
-import { Add as AddIcon } from '@emeraldplatform/ui-icons';
-import { screen } from '@emeraldwallet/store';
+import {Add as AddIcon} from '@emeraldwallet/ui';
+import {screen} from '@emeraldwallet/store';
 import { Button } from '@emeraldwallet/ui';
 import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';

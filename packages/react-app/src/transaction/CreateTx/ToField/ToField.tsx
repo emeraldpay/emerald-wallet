@@ -1,4 +1,4 @@
-import { IdentityIcon, Input } from '@emeraldplatform/ui';
+import {IdentityIcon, Input} from '@emeraldwallet/ui';
 import * as React from 'react';
 
 import FormLabel from '../FormLabel';
