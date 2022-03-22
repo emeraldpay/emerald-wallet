@@ -4,7 +4,7 @@
   "description": "Transactions storage management",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "author": "ETCDEV GmbH",
+  "author": "Emerald Team",
   "license": "Apache-2.0",
   "scripts": {
     "build": "yarn clean && yarn compile",
