@@ -5,14 +5,14 @@ import {Box, createStyles, Theme} from "@material-ui/core";
 import {IState, screen} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
 import {Button} from "@emeraldwallet/ui";
-import {Book as BookIcon, EmoteHappy as AboutIcon, Menu as MenuIcon} from "@emeraldplatform/ui-icons";
+import {Book as BookIcon, EmoteHappy as AboutIcon, Menu as MenuIcon} from "@emeraldwallet/ui";
 import Popover from "@material-ui/core/Popover";
 import List from "@material-ui/core/List";
 import ListItem from "@material-ui/core/ListItem";
 import ListItemIcon from "@material-ui/core/ListItemIcon";
 import ListItemText from "@material-ui/core/ListItemText";
-import {Settings as SettingsIcon} from '@emeraldplatform/ui-icons';
-import {AddCircle as AddCircleIcon} from '@emeraldplatform/ui-icons';
+import {Settings as SettingsIcon} from '@emeraldwallet/ui';
+import {AddCircle as AddCircleIcon} from '@emeraldwallet/ui';
 import {EmeraldDialogs} from "../../screen/Dialog/Dialog";
 
 const useStyles = makeStyles<Theme>((theme) =>

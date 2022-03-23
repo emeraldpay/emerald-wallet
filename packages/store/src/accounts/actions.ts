@@ -453,3 +453,11 @@ export function createGlobalKey(password: string): Dispatched<boolean> {
 export function tryUpgradeOddItems(oddPassword: string, globalPassword: string): Dispatched<Uuid[]> {
   return (dispatch, getState, extra) => extra.api.vault.tryUpgradeOddItems(oddPassword, globalPassword);
 }
+
+export function verifyGlobalKey(password: string): Dispatched<boolean> {
+  return (dispatch, getState, extra) => extra.api.vault.verifyGlobalKey(password);
+}
+
+export function changeGlobalKey(oldPassword: string, newPassword: string): Dispatched<boolean> {
+  return (dispatch, getState, extra) => extra.api.vault.changeGlobalKey(oldPassword, newPassword);
+}

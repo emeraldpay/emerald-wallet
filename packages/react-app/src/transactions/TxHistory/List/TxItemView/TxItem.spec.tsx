@@ -1,4 +1,4 @@
-import {Theme} from '@emeraldplatform/ui';
+import {Theme} from '@emeraldwallet/ui';
 import {ThemeProvider} from '@material-ui/styles';
 import {render} from '@testing-library/react';
 import BigNumber from 'bignumber.js';

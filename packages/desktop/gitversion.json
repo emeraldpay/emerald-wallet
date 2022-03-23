@@ -5,8 +5,8 @@
   "AN EXAMPLE BELOW": ">>>>",
 
   "BuildMetaDataPadded":"0001",
-  "SemVer":"0.0.0-development",
-  "FullSemVer":"0.0.0-development",
+  "SemVer":"0.0.0-dev",
+  "FullSemVer":"0.0.0-dev",
   "ShortSha":"cafe42",
   "CommitDate":"2019-04-12"
 }

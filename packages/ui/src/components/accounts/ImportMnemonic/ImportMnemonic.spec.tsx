@@ -4,8 +4,7 @@ import ImportMnemonic from './ImportMnemonic';
 
 describe('ImportMnemonic', () => {
   it('renders without crash', () => {
-    const component = shallow(<ImportMnemonic onSubmit={(mnemonic, password) => {
-    }}/>);
+    const component = shallow(<ImportMnemonic onSubmit={() => void 0} isValidMnemonic={() => true} />);
     expect(component).toBeDefined();
   });
 });

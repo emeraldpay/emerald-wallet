@@ -1,4 +1,4 @@
-import { IdentityIcon, Input } from '@emeraldplatform/ui';
+import {IdentityIcon, Input} from '@emeraldwallet/ui';
 import * as React from 'react';
 
 import FormLabel from '../FormLabel';
@@ -32,7 +32,7 @@ class ToField extends React.Component<Props, State> {
   }
 
   public componentDidUpdate (prevProps: any) {
-    if (prevProps.to !== this.props.to) {
+    if (this.props.to != null && this.props.to !== prevProps.to) {
       this.onChangeTo(this.props.to);
     }
   }

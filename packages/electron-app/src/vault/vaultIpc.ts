@@ -98,4 +98,10 @@ export function mapVaultWithIpc(vault: IEmeraldVault) {
   ipcMain.handle(PREFIX + "tryUpgradeOddItems", (event, oddPassword, globalPassword) => {
     return vault.tryUpgradeOddItems(oddPassword, globalPassword);
   });
+  ipcMain.handle(PREFIX + "verifyGlobalKey", (event, password) => {
+    return vault.verifyGlobalKey(password);
+  });
+  ipcMain.handle(PREFIX + "changeGlobalKey", (event, oldPassword, newPassword) => {
+    return vault.changeGlobalKey(oldPassword, newPassword);
+  });
 }

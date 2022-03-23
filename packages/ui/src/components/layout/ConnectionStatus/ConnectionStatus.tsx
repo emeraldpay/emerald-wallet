@@ -1,5 +1,5 @@
-import { Warning } from '@emeraldplatform/ui-icons';
-import { amber } from '@material-ui/core/colors';
+import {Warning} from '../../../icons';
+import {amber} from '@material-ui/core/colors';
 import Snackbar from '@material-ui/core/Snackbar';
 import SnackbarContent from '@material-ui/core/SnackbarContent';
 import { createStyles, withStyles } from '@material-ui/core/styles';

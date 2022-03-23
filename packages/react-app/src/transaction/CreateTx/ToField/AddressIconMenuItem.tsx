@@ -1,4 +1,4 @@
-import { Account } from '@emeraldplatform/ui';
+import {Account} from '@emeraldwallet/ui';
 import MenuItem from '@material-ui/core/MenuItem';
 import * as React from 'react';
 

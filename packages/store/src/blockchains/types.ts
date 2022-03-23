@@ -1,10 +1,7 @@
-import {Wei} from "@emeraldpay/bigamount-crypto";
-
 export const moduleName = 'blockchains';
 
 export interface IBlockchain {
   height: number | null;
-  gasPrice: Wei | null;
 }
 
 export interface IBlockchainsState {
@@ -12,8 +9,6 @@ export interface IBlockchainsState {
 }
 export enum ActionTypes {
   BLOCK = 'BLOCKCHAINS/BLOCK',
-  GAS_PRICE = 'BLOCKCHAINS/GAS_PRICE',
-  FETCH_GAS_PRICE = 'BLOCKCHAINS/GET_GAS_PRICE'
 }
 
 export interface IBlockAction {
@@ -21,17 +16,4 @@ export interface IBlockAction {
   payload: any;
 }
 
-export interface IGasPriceAction {
-  type: ActionTypes.GAS_PRICE;
-  payload: {
-    blockchain: string,
-    gasPrice: Wei
-  };
-}
-
-export interface IFetchGasPriceAction {
-  type: ActionTypes.FETCH_GAS_PRICE;
-  payload: any;
-}
-
-export type BlockchainsAction = IBlockAction | IGasPriceAction | IFetchGasPriceAction;
+export type BlockchainsAction = IBlockAction;

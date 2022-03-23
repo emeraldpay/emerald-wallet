@@ -44,7 +44,8 @@ export {
   isStableCoinCode,
   isAnyTokenCode,
   isSupportedTokenCode,
-  AssetDetail, AssetDetails
+  AssetDetail, AssetDetails,
+  getStandardUnits,
 } from './Asset';
 export {
   IStoredTransaction,
@@ -73,3 +74,7 @@ export {Commands} from './backend/Commands';
 export {default as IFrontApp} from './frontend/IFrontApp';
 
 export {WalletStateStorage} from './walletstate/WalletStateStorage';
+
+export {toBigNumber, toNumber, toHex, quantitiesToHex, fromBaseUnits, toBaseUnits} from "./convert";
+
+export {Contract} from './Contract';

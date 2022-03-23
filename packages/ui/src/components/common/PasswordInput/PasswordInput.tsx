@@ -1,5 +1,5 @@
-import {Input} from '@emeraldplatform/ui';
-import {ViewVisible as EyeIcon} from '@emeraldplatform/ui-icons';
+import {Input} from '../Input';
+import {ViewVisible as EyeIcon} from '../../../icons';
 import IconButton from '@material-ui/core/IconButton';
 import * as React from 'react';
 import {createStyles} from "@material-ui/core";

@@ -1,6 +1,5 @@
-import { convert } from '@emeraldplatform/core';
-import { AnyTokenCode, IBackendApi } from '@emeraldwallet/core';
-import { all, call, put, takeEvery } from 'redux-saga/effects';
+import {AnyTokenCode, IBackendApi, toBigNumber} from '@emeraldwallet/core';
+import {all, call, put, takeEvery} from 'redux-saga/effects';
 import { setTokenBalance } from './actions';
 import { ActionTypes, IRequestTokenBalanceAction, IRequestTokensBalancesAction, ITokenBalance } from './types';
 
@@ -11,7 +10,7 @@ function* fetchBalanceInfo (backendApi: IBackendApi, action: IRequestTokenBalanc
     decimals: token.decimals,
     symbol: token.symbol as AnyTokenCode,
     tokenId: token.address,
-    unitsValue: convert.toBigNumber(result).toString()
+    unitsValue: toBigNumber(result).toString()
   };
   yield put(setTokenBalance(chain, b, address));
 }
@@ -26,7 +25,7 @@ function * fetchTokensBalances (backendApi: IBackendApi, action: IRequestTokensB
       decimals: token.decimals,
       symbol: token.symbol as AnyTokenCode,
       tokenId: token.address,
-      unitsValue: convert.toBigNumber(balances[token.symbol]).toString()
+      unitsValue: toBigNumber(balances[token.symbol]).toString()
     };
 
     yield put(setTokenBalance(chain, balance, address));

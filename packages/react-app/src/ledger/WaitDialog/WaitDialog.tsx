@@ -1,5 +1,5 @@
-import { Close as CloseIcon } from '@emeraldplatform/ui-icons';
-import { Dialog, IconButton } from '@material-ui/core';
+import {Close as CloseIcon} from '@emeraldwallet/ui';
+import {Dialog, IconButton} from '@material-ui/core';
 import { CSSProperties, withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import * as BackgroundImage from './ledger.png';

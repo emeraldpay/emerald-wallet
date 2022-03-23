@@ -10,7 +10,6 @@ describe('historyActions/refreshTrackedTransactions', () => {
     ...state,
     blockchains: {
       eth: {
-        gasPrice: null,
         height: 100
       }
     },

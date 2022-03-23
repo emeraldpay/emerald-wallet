@@ -1,29 +1,33 @@
 {
   "compilerOptions": {
-    "composite": true,
     "allowSyntheticDefaultImports": true,
-    "outDir": "./lib",
-    "declaration": true,
-    "strict": false,
+    "composite": true,
+    "forceConsistentCasingInFileNames": true,
     "jsx": "react",
-    "rootDir": "./src",
+    "outDir": "lib/",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "rootDir": "src/",
+    "sourceMap": true,
+    "strict": false,
+    "target": "ES6",
     "typeRoots": [
-      "node_modules/@types",
-      "../../node_modules/@types"
-    ],
-    "forceConsistentCasingInFileNames": true
+      "../../node_modules/@types",
+      "node_modules/@types"
+    ]
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx"
-  ],
   "exclude": [
-    "../../node_modules",
     "node_modules",
     "**/*.spec.ts",
     "**/*.spec.tsx"
   ],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx"
+  ],
   "references": [
-    { "path": "../core" }
+    {
+      "path": "../core"
+    }
   ]
 }

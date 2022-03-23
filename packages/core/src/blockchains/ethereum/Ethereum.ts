@@ -1,7 +1,7 @@
-import { EthAddress } from '@emeraldplatform/core';
 import { AnyCoinCode, AnyTokenCode } from '../../Asset';
 import { IBlockchain } from '../IBlockchain';
 import IBlockchainParams from '../IBlockchainParams';
+import {EthereumAddress} from "./Address";
 
 export default class Ethereum implements IBlockchain {
   public params: IBlockchainParams;
@@ -15,7 +15,7 @@ export default class Ethereum implements IBlockchain {
   }
 
   public isValidAddress (address: string): boolean {
-    return EthAddress.fromHexString(address).isValid();
+    return EthereumAddress.isValid(address);
   }
 
   public getTitle (): string {

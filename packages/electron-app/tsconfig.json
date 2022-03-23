@@ -1,27 +1,34 @@
 {
   "compilerOptions": {
     "composite": true,
-    "outDir": "./lib",
-    "declaration": true,
-    "module": "commonjs",
     "esModuleInterop": true,
-    "moduleResolution": "node",
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "lib/",
+    "rootDir": "src/",
+    "sourceMap": true,
     "strict": true,
-    "rootDir": "./src"
+    "target": "ES6"
   },
-  "include": [
-    "src/**/*.ts"
-  ],
   "exclude": [
     "node_modules",
     "**/*.spec.ts"
   ],
+  "include": [
+    "src/**/*.ts"
+  ],
   "references": [
-    { "path": "../core" },
-    { "path": "../services" },
-    { "path": "../erc20" },
+    {
+      "path": "../core"
+    },
+    {
+      "path": "../erc20"
+    },
     {
       "path": "../history-store"
+    },
+    {
+      "path": "../services"
     }
   ]
 }

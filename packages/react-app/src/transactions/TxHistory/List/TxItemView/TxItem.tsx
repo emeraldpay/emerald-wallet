@@ -1,15 +1,14 @@
-import {convert, InputDataDecoder} from '@emeraldplatform/core';
-import {Account as AddressAvatar} from '@emeraldplatform/ui';
-import {ArrowDown} from '@emeraldplatform/ui-icons';
+import {Account as AddressAvatar} from '@emeraldwallet/ui';
+import {ArrowDown} from '@emeraldwallet/ui';
 import {
   BlockchainCode,
   tokenAmount,
   utils,
   EthereumStoredTransaction,
   IStoredTransaction,
-  amountFactory, isEthereumStoredTransaction, isBitcoinStoredTransaction
+  amountFactory, isEthereumStoredTransaction, isBitcoinStoredTransaction, toNumber
 } from '@emeraldwallet/core';
-import {abi as TokenAbi} from '@emeraldwallet/erc20';
+import {abi as TokenAbi, InputDataDecoder} from '@emeraldwallet/erc20';
 import {TableCell, TableRow, Typography} from '@material-ui/core';
 import {withStyles} from '@material-ui/styles';
 import * as React from 'react';
@@ -119,7 +118,7 @@ export const TxItem = (props: ITxItemProps) => {
         const decimals = token.decimals;
         let d = 18;
         if (decimals) {
-          d = convert.toNumber(decimals);
+          d = toNumber(decimals);
         }
         balance = tokenAmount(decodedTxData.inputs[1].toString(), token.symbol);
       } else {

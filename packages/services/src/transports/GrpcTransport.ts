@@ -4,9 +4,9 @@ import {
 import {
   NativeCallItem, isNativeCallResponse, isNativeCallError
 } from '@emeraldpay/api';
-import {JsonRpcRequest, Transport} from '@emeraldplatform/rpc';
 import {BlockchainCode, blockchainCodeToId} from "@emeraldwallet/core";
 import {Blockchain} from '@emeraldpay/api';
+import {JsonRpcRequest, Transport} from '../jsonrpc';
 
 /**
  * It should be used for request/response trace in dev version

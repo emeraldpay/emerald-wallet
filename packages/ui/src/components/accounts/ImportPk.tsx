@@ -24,7 +24,8 @@ export type ImportPkType = { password: string; json?: string; jsonPassword?: str
 interface OwnProps {
   classes?: any;
   raw: boolean;
-  onChange: (value: ImportPkType) => void;
+  checkGlobalKey(password: string): Promise<boolean>;
+  onChange(value: ImportPkType): void;
 }
 
 function isWeb3(json: any): boolean {
@@ -42,19 +43,28 @@ const Component: React.FC<OwnProps> = (props) => {
   const [password, setPassword] = React.useState('');
   const [rawPk, setRawPk] = React.useState('');
 
+  const [pkPasswordError, setPkPasswordError] = React.useState<string>();
+  const [jsonPasswordError, setJsonPasswordError] = React.useState<string>();
+
   function setPk(value: string): void {
     setRawPk(value);
 
-    if (value.length > 0) {
+    if (value.length > 0 && password.length > 0) {
       props.onChange({ password, raw: value });
     }
   }
 
-  function setPkGlobalPassword(value: string): void {
-    setPassword(value);
+  async function setPkGlobalPassword(): Promise<void> {
+    const correctGlobalPassword = await props.checkGlobalKey(password);
 
-    if (value.length > 0) {
-      props.onChange({ raw: rawPk, password: value });
+    if (correctGlobalPassword) {
+      props.onChange({ password, raw: rawPk });
+
+      setPkPasswordError(undefined);
+    } else {
+      props.onChange({ password: '', raw: rawPk });
+
+      setPkPasswordError('Incorrect password');
     }
   }
 
@@ -63,7 +73,7 @@ const Component: React.FC<OwnProps> = (props) => {
       setJson(json);
       setJsonAddress(web3.address);
 
-      if (json.length > 0) {
+      if (json.length > 0 && password.length > 0) {
         props.onChange({ json, jsonPassword, password });
       }
     }
@@ -109,18 +119,24 @@ const Component: React.FC<OwnProps> = (props) => {
     }
   }
 
-  function setJsonGlobalPassword(value: string): void {
-    setPassword(value);
+  async function setJsonGlobalPassword(): Promise<void> {
+    const correctGlobalPassword = await props.checkGlobalKey(password);
 
-    if (value.length > 0) {
-      props.onChange({ json, jsonPassword, password: value });
+    if (correctGlobalPassword) {
+      props.onChange({ json, jsonPassword, password });
+
+      setJsonPasswordError(undefined);
+    } else {
+      props.onChange({ json, jsonPassword, password: '' });
+
+      setJsonPasswordError('Incorrect password');
     }
   }
 
   function setJsonFilePassword(value: string): void {
     setJsonPassword(value);
 
-    if (value.length > 0) {
+    if (value.length > 0 && password.length > 0) {
       props.onChange({ json, password, jsonPassword: value });
     }
   }
@@ -132,7 +148,7 @@ const Component: React.FC<OwnProps> = (props) => {
         <Typography variant="subtitle1">
           Submit an Ethereum Private Key formatted as Hex (66 character string starting with 0x)
         </Typography>
-        <Grid container={true}>
+        <Grid container={true} alignItems="center" spacing={1}>
           <Grid item={true} xs={3}>
             <Typography variant="caption">Private Key</Typography>
           </Grid>
@@ -146,8 +162,11 @@ const Component: React.FC<OwnProps> = (props) => {
           <Grid item={true} xs={3}>
             <Typography variant="caption">Global password</Typography>
           </Grid>
-          <Grid item={true} xs={9}>
-            <PasswordInput onChange={setPkGlobalPassword} />
+          <Grid item={true} xs={7}>
+            <PasswordInput error={pkPasswordError} onChange={setPassword} />
+          </Grid>
+          <Grid item={true} xs={2}>
+            <Button variant="contained" onClick={setPkGlobalPassword}>Save</Button>
           </Grid>
         </Grid>
       </Grid>
@@ -181,18 +200,21 @@ const Component: React.FC<OwnProps> = (props) => {
             )}
           </Dropzone>
         )}
-        <Grid container={true}>
+        <Grid container={true} alignItems="center" spacing={1}>
           <Grid item={true} xs={3}>
             <Typography variant="caption">Global password</Typography>
           </Grid>
           <Grid item={true} xs={9}>
-            <PasswordInput onChange={setJsonGlobalPassword} />
+            <PasswordInput error={jsonPasswordError} onChange={setPassword} />
           </Grid>
           <Grid item={true} xs={3}>
             <Typography variant="caption">Private Key Password</Typography>
           </Grid>
-          <Grid item={true} xs={9}>
+          <Grid item={true} xs={7}>
             <PasswordInput onChange={setJsonFilePassword} />
+          </Grid>
+          <Grid item={true} xs={2}>
+            <Button variant="contained" onClick={setJsonGlobalPassword}>Save</Button>
           </Grid>
         </Grid>
       </Grid>

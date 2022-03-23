@@ -1,4 +1,4 @@
-import { AccountSelect } from '@emeraldplatform/ui';
+import {AccountSelect} from '@emeraldwallet/ui';
 import * as React from 'react';
 import FormLabel from '../FormLabel';
 

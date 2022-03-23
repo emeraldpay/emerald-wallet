@@ -12,22 +12,23 @@ export enum ActionTypes {
 }
 
 export enum Pages {
-  WALLET = 'wallet',
   ACCOUNT = 'account',
-  HOME = 'home',
   ADDRESS_BOOK = 'address-book',
-  TX_DETAILS = 'transaction',
-  CREATE_TX = 'create-tx',
-  CREATE_TX_ETHEREUM = 'create-tx-ethereum',
-  CREATE_TX_CONVERT = 'create-tx-convert',
-  CREATE_TX_BITCOIN = 'create-tx-bitcoin',
-  CREATE_WALLET = 'create-wallet',
+  BROADCAST_TX = 'broadcast-tx',
   //@deprecated, rename to setup coins
   CREATE_HD_ACCOUNT = 'create-hd-account',
-  BROADCAST_TX = 'broadcast-tx',
-  RECEIVE = 'receive',
+  CREATE_TX = 'create-tx',
+  CREATE_TX_BITCOIN = 'create-tx-bitcoin',
+  CREATE_TX_CONVERT = 'create-tx-convert',
+  CREATE_TX_ETHEREUM = 'create-tx-ethereum',
+  CREATE_WALLET = 'create-wallet',
   GLOBAL_KEY = 'global-key',
+  HOME = 'home',
   PASSWORD_MIGRATION = 'password-migration',
+  RECEIVE = 'receive',
+  TX_DETAILS = 'transaction',
+  WALLET = 'wallet',
+  WALLET_INFO = 'wallet-info',
 }
 
 export interface IScreenState {

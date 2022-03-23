@@ -1,7 +1,8 @@
-import { OddPasswordItem } from '@emeraldpay/emerald-vault-core';
-import { ButtonGroup, Page } from '@emeraldplatform/ui';
-import { accounts, screen } from '@emeraldwallet/store';
+import {OddPasswordItem} from '@emeraldpay/emerald-vault-core';
+import {ButtonGroup, Page} from '@emeraldwallet/ui';
+import {accounts, IState, screen} from '@emeraldwallet/store';
 import { Button, PasswordInput } from '@emeraldwallet/ui';
+import { OwnProps } from '@emeraldwallet/ui/lib/components/accounts/Balance/Balance';
 import { createStyles, Typography, withStyles } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
@@ -19,6 +20,10 @@ const styles = createStyles({
   },
 });
 
+interface StateProps {
+  hasWallets: boolean;
+}
+
 interface DispatchProps {
   getLegacyItems(): Promise<OddPasswordItem[]>;
   goHome(): Promise<void>;
@@ -30,8 +35,37 @@ interface StylesProps {
   classes: Record<keyof typeof styles, string>;
 }
 
-const GlobalKey: React.FC<DispatchProps & StylesProps> = ({
+interface ButtonsProps {
+  confirmPassword: string;
+  hasWallets: boolean;
+  password: string;
+  applyPassword(): void;
+  goHome(): Promise<void>;
+}
+
+const Buttons: React.FC<ButtonsProps> = ({ confirmPassword, hasWallets, password, applyPassword, goHome }) => {
+  const applyButton = <Button
+    label="Create"
+    disabled={password.length === 0 || password !== confirmPassword}
+    primary={true}
+    onClick={applyPassword}
+  />;
+
+  if (hasWallets) {
+    return (
+      <ButtonGroup>
+        <Button label="Skip" onClick={goHome} />
+        {applyButton}
+      </ButtonGroup>
+    );
+  }
+
+  return applyButton;
+}
+
+const GlobalKey: React.FC<DispatchProps & StateProps & StylesProps> = ({
   classes,
+  hasWallets,
   getLegacyItems,
   goHome,
   goPasswordMigration,
@@ -75,10 +109,13 @@ const GlobalKey: React.FC<DispatchProps & StylesProps> = ({
       </FormFieldWrapper>
       <FormFieldWrapper>
         <FormLabel classes={{ root: classes.label }} />
-        <ButtonGroup>
-          <Button label="Skip" onClick={goHome} />
-          <Button label="Create" primary={true} onClick={applyPassword} />
-        </ButtonGroup>
+        <Buttons
+          confirmPassword={confirmPassword}
+          hasWallets={hasWallets}
+          password={password}
+          applyPassword={applyPassword}
+          goHome={goHome}
+        />
       </FormFieldWrapper>
       <Typography>
         NOTE: The password is the only way to access your coins. If you lose it, the only way to restore is to
@@ -88,10 +125,14 @@ const GlobalKey: React.FC<DispatchProps & StylesProps> = ({
   );
 };
 
-export default connect(
-  null,
+export default connect<StateProps, DispatchProps, OwnProps, IState>(
+  (state) => (
+    {
+      hasWallets: state.accounts.wallets.length > 0,
+    }
+  ),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dispatch: any): DispatchProps => (
+  (dispatch: any) => (
     {
       getLegacyItems() {
         return dispatch(accounts.actions.getOddPasswordItems());

@@ -1,12 +1,6 @@
 {
   "compilerOptions": {
     "composite": true,
-    "outDir": "./lib",
-    "rootDir": "./src",
-    "declaration": true,
-    "module": "commonjs",
-    "moduleResolution": "node",
-    "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
     "lib": [
@@ -15,18 +9,25 @@
       "scripthost",
       "es2015.promise"
     ],
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "lib/",
+    "rootDir": "src/",
+    "sourceMap": true,
+    "strict": true,
+    "target": "ES6",
     "typeRoots": [
       "./typings",
       "node_modules/@types",
       "../../node_modules/@types"
     ]
   },
-  "include": [
-    "src/**/*.ts"
-  ],
   "exclude": [
     "node_modules",
     "**/*.spec.ts"
+  ],
+  "include": [
+    "src/**/*.ts"
   ],
   "references": [
     {
@@ -34,6 +35,9 @@
     },
     {
       "path": "../erc20"
+    },
+    {
+      "path": "../history-store"
     }
   ]
 }

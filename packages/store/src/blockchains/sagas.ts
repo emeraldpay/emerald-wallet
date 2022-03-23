@@ -1,19 +1,6 @@
-import { IBackendApi } from '@emeraldwallet/core';
-import { all, call, put, takeEvery } from 'redux-saga/effects';
-import { setGasPriceAction } from './actions';
-import {ActionTypes, IFetchGasPriceAction} from './types';
-import {Wei} from '@emeraldpay/bigamount-crypto';
-
-/**
- * Fetches gas price by RPC call
- */
-function* fetchGasPrice (api: IBackendApi, action: IFetchGasPriceAction) {
-  const result = yield call(api.getGasPrice, action.payload);
-  yield put(setGasPriceAction(action.payload, new Wei(result)));
-}
+import {IBackendApi} from '@emeraldwallet/core';
+import {all} from 'redux-saga/effects';
 
 export function* root (api: IBackendApi) {
-  yield all([
-    takeEvery(ActionTypes.FETCH_GAS_PRICE, fetchGasPrice, api)
-  ]);
+  yield all([]);
 }

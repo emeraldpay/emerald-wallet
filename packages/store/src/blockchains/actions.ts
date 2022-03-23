@@ -1,22 +1,4 @@
-import {ActionTypes, IBlockAction, IFetchGasPriceAction, IGasPriceAction} from './types';
-import {Wei} from '@emeraldpay/bigamount-crypto';
-
-export function setGasPriceAction (blockchainCode: string, gasPrice: Wei): IGasPriceAction {
-  return {
-    payload: {
-      blockchain: blockchainCode,
-      gasPrice
-    },
-    type: ActionTypes.GAS_PRICE
-  };
-}
-
-export function fetchGasPriceAction (blockchainCode: string): IFetchGasPriceAction {
-  return {
-    payload: blockchainCode,
-    type: ActionTypes.FETCH_GAS_PRICE
-  };
-}
+import {ActionTypes, IBlockAction} from './types';
 
 export function blockAction (payload: {hash: string, height: any, blockchain: any}): IBlockAction {
   return {

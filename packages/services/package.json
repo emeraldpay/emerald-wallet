@@ -1,29 +1,26 @@
 {
   "name": "@emeraldwallet/services",
-  "version": "2.6.0-dev",
+  "version": "2.7.0-dev",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
-  "author": "ETCDEV GmbH",
+  "author": "Emerald Team",
   "license": "Apache-2.0",
   "scripts": {
-    "clean": "rimraf lib/ && rimraf tsconfig.tsbuildinfo",
-    "compile": "tsc -b",
     "build": "yarn clean && yarn compile",
-    "build:dist": "yarn clean && yarn compile",
+    "clean": "rimraf lib/ tsconfig.tsbuildinfo",
+    "compile": "tsc -b",
     "test": "jest --passWithNoTests",
     "test:coverage": "jest --coverage --passWithNoTests && codecov"
   },
   "dependencies": {
     "@emeraldpay/api": "0.3.0-alpha.2",
     "@emeraldpay/api-node": "0.3.0-alpha.2",
-    "@emeraldpay/bigamount": "^0.3.0",
-    "@emeraldpay/bigamount-crypto": "^0.3.0",
-    "@emeraldplatform/eth-rpc": "0.5.1",
-    "@emeraldplatform/rpc": "0.5.1",
-    "@emeraldwallet/core": "^2.6.0-dev",
-    "@emeraldwallet/store": "^2.6.0-dev",
+    "@emeraldpay/bigamount": "^0.4.0",
+    "@emeraldpay/bigamount-crypto": "^0.4.0",
+    "@emeraldwallet/core": "^2.7.0-dev",
+    "@emeraldwallet/store": "^2.7.0-dev",
     "@grpc/grpc-js": "^1.5.1",
-    "google-protobuf": "3.7.1",
+    "google-protobuf": "^3.10.0",
     "text-encoding": "0.7.0"
   },
   "devDependencies": {

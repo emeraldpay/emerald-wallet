@@ -1,5 +1,5 @@
-import { CurrencyBtc, CurrencyEtc, CurrencyEth, CurrencyUsd, CurrencyUsdt } from '@emeraldplatform/ui-icons';
-import { createStyles, Theme, Typography } from "@material-ui/core";
+import {CurrencyBtc, CurrencyEtc, CurrencyEth, CurrencyUsd, CurrencyUsdt} from '../../../icons';
+import {createStyles, Theme, Typography} from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
 import * as React from 'react';
 

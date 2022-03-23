@@ -1,6 +1,6 @@
-import { fromBaseUnits } from '@emeraldplatform/core';
 import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
+import {fromBaseUnits} from "@emeraldwallet/core";
 
 export const styles = {
   symbol: {

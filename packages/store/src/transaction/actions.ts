@@ -3,9 +3,8 @@ import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from "@emeraldpay/bigamount-crypto";
 import { UnsignedTx } from '@emeraldpay/emerald-vault-core';
 import { EntryId, UnsignedBitcoinTx } from "@emeraldpay/emerald-vault-core/lib/types";
-import { IEmeraldVault } from "@emeraldpay/emerald-vault-core/lib/vault";
-import { convert, EthAddress } from '@emeraldplatform/core';
-import { quantitiesToHex } from '@emeraldplatform/core/lib/convert';
+import {IEmeraldVault} from "@emeraldpay/emerald-vault-core/lib/vault";
+import {quantitiesToHex, toHex, EthereumAddress} from '@emeraldwallet/core';
 import {
   BitcoinStoredTransaction,
   BlockchainCode,
@@ -80,7 +79,7 @@ function onBitcoinTxSent(dispatch: Dispatch<any>, txHash: string, sourceTx: Unsi
 }
 
 function withNonce(tx: EthereumStoredTransaction): (nonce: number) => Promise<EthereumStoredTransaction> {
-  return (nonce) => new Promise((resolve) => resolve({...tx, nonce: convert.quantitiesToHex(nonce)}));
+  return (nonce) => new Promise((resolve) => resolve({...tx, nonce: quantitiesToHex(nonce)}));
 }
 
 function verifySender(expected: string): (a: string, c: BlockchainCode) => Promise<string> {
@@ -90,7 +89,7 @@ function verifySender(expected: string): (a: string, c: BlockchainCode) => Promi
     const tx = EthereumTx.fromRaw(raw, chainId);
     if (tx.verifySignature()) {
       log.debug('Tx signature verified');
-      if (!tx.getSenderAddress().equals(EthAddress.fromHexString(expected))) {
+      if (!tx.getSenderAddress().equals(new EthereumAddress(expected))) {
         log.error(`WRONG SENDER: 0x${tx.getSenderAddress().toString()} != ${expected}`);
         reject(new Error('Emerald Vault returned signature from wrong Sender'));
       } else {
@@ -132,7 +131,7 @@ export function signTransaction (
   const originalTx: EthereumStoredTransaction = {
     from,
     to,
-    gas: convert.toHex(gas),
+    gas: toHex(gas),
     gasPrice: gasPrice.toHex(),
     value: value.toHex(),
     data,

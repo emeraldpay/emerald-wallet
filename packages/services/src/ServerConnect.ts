@@ -1,56 +1,55 @@
 import {BlockchainClient} from '@emeraldpay/api-node';
-import {EthRpc} from '@emeraldplatform/eth-rpc';
-import {DefaultJsonRpc} from '@emeraldplatform/rpc';
-import {BlockchainCode, IServerConnect} from '@emeraldwallet/core';
+import {BlockchainCode, ILogger, IServerConnect} from '@emeraldwallet/core';
 import * as os from 'os';
 import ChainRpcConnections from './ChainRpcConnections';
 import GrpcTransport from './transports/GrpcTransport';
-
+import EthRpc from "./ethrpc";
+import {DefaultJsonRpc} from "./jsonrpc";
 
 class ServerConnect implements IServerConnect {
-  public headers: any;
-  public appVersion: any;
-  public locale: any;
-  public log: any;
+  public headers: Record<string, string>;
+  public appVersion: string;
+  public locale: string;
+  public log: ILogger;
   public blockchainClient: BlockchainClient;
 
-  constructor (
-    appVersion: string, locale: any, log: any, blockchainClient: BlockchainClient) {
-    this.log = log;
+  constructor(appVersion: string, locale: string, log: ILogger, blockchainClient: BlockchainClient) {
     this.appVersion = appVersion;
-    this.locale = locale;
     this.blockchainClient = blockchainClient;
-    this.headers = {
-      'User-Agent': `EmeraldWallet/${appVersion}`
-    };
+    this.headers = { 'User-Agent': `EmeraldWallet/${appVersion}` };
+    this.locale = locale;
+    this.log = log;
   }
 
-  public init (versions: any) {
+  public init(versions: NodeJS.ProcessVersions): void {
     const details = [os.platform(), os.release(), os.arch(), this.locale].join('; ');
-    this.headers['User-Agent'] = `Electron/${versions.electron} (${details}) EmeraldWallet/${this.appVersion} (+https://emerald.cash) Chrome/${versions.chrome} node-fetch/1.0`;
-  }
 
-  public connectTo (chains: any): ChainRpcConnections {
-    const conns = new ChainRpcConnections();
-    chains.forEach((c: any) => {
-      const chainCode = c.toLowerCase();
-      conns.add(chainCode, this.connectEthChain(chainCode));
-      this.log.info(`Creating connection to ${chainCode}`);
-    });
-    return conns;
+    this.headers['User-Agent'] = [
+      `Electron/${versions.electron} (${details})`,
+      `EmeraldWallet/${this.appVersion} (+https://emerald.cash)`,
+      `Chrome/${versions.chrome}`,
+    ].join(' ');
   }
 
   public connectEthChain(name: BlockchainCode): null | EthRpc {
-    return new EthRpc(
-      new DefaultJsonRpc(new GrpcTransport(name, this.blockchainClient))
-    );
+    return new EthRpc(new DefaultJsonRpc(new GrpcTransport(name, this.blockchainClient)));
   }
 
-  public disconnect (): Promise<any> {
-    return Promise.resolve()
+  public connectTo(chains: string[]): ChainRpcConnections {
+    const conns = new ChainRpcConnections();
+
+    chains.forEach((chain) => {
+      const chainCode = chain.toLowerCase();
+
+      conns.add(chainCode, this.connectEthChain(chainCode as BlockchainCode));
+
+      this.log.info(`Creating connection to ${chainCode}`);
+    });
+
+    return conns;
   }
 
-  public getUserAgent () {
+  public getUserAgent(): string {
     return this.headers['User-Agent'];
   }
 }

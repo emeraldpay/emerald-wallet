@@ -1,5 +1,5 @@
-import { Book } from '@emeraldplatform/ui-icons';
-import { IconButton, Menu, MenuItem } from '@material-ui/core';
+import {Book} from '@emeraldwallet/ui';
+import {IconButton, Menu, MenuItem} from '@material-ui/core';
 import * as React from 'react';
 import AddressIconMenuItem from './AddressIconMenuItem';
 
