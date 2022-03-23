@@ -1,6 +1,6 @@
 import { Snackbar, SnackbarContent, withStyles } from '@material-ui/core';
 import orange from '@material-ui/core/colors/orange';
-import classNames from 'classnames';
+import * as classNames from 'classnames';
 import * as React from 'react';
 
 export interface IBarProps {
@@ -21,23 +21,23 @@ interface IBarState {
 
 const styles = (theme) => ({
   success: { color: theme.palette.primary.main },
-  error: { color: '#F41A2D' },
+  error: { color: '#f41a2d' },
   info: { color: theme.palette.text.primary },
   warning: { color: orange[300] },
   common: {
     backgroundColor: theme.palette.background.default,
-    boxShadow: `${theme.palette.secondary.main} 0px 0px 50px 0px`
-  }
+    boxShadow: `${theme.palette.secondary.main} 0px 0px 50px 0px`,
+  },
 });
 
 export class NotificationBar extends React.Component<IBarProps, IBarState> {
-  constructor (props) {
+  constructor(props) {
     super(props);
     this.state = { open: props.open || false };
     this.onActionClick = this.onActionClick.bind(this);
   }
 
-  public UNSAFE_componentWillReceiveProps (nextProps) {
+  public UNSAFE_componentWillReceiveProps(nextProps) {
     if (nextProps.notificationMessage) {
       this.setState({ open: true });
     } else {
@@ -45,7 +45,7 @@ export class NotificationBar extends React.Component<IBarProps, IBarState> {
     }
   }
 
-  public onActionClick () {
+  public onActionClick() {
     const { notificationActionToDispatchOnActionClick: action } = this.props;
 
     if (action != null) {
@@ -53,7 +53,7 @@ export class NotificationBar extends React.Component<IBarProps, IBarState> {
     }
   }
 
-  public render () {
+  public render() {
     const { classes } = this.props;
     return (
       <Snackbar
@@ -62,7 +62,7 @@ export class NotificationBar extends React.Component<IBarProps, IBarState> {
           top: '-55px',
           left: 'auto',
           right: 0,
-          transform: this.state.open ? 'translate3d(0, 85px, 0)' : 'translate3d(0, 0, 0)'
+          transform: this.state.open ? 'translate3d(0, 85px, 0)' : 'translate3d(0, 0, 0)',
         }}
         open={this.state.open}
         autoHideDuration={this.props.notificationDuration || 3000}
