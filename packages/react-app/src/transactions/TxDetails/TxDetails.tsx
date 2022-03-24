@@ -1,8 +1,6 @@
-import {WalletEntry} from "@emeraldpay/emerald-vault-core";
-import {EntryIdOp} from "@emeraldpay/emerald-vault-core/lib/ops";
-import {Uuid} from "@emeraldpay/emerald-vault-core/lib/types";
-import {ButtonGroup, Page} from "@emeraldwallet/ui";
-import {Back} from "@emeraldwallet/ui";
+import { WalletEntry } from '@emeraldpay/emerald-vault-core';
+import { EntryIdOp } from '@emeraldpay/emerald-vault-core/lib/ops';
+import { Uuid } from '@emeraldpay/emerald-vault-core/lib/types';
 import {
   amountFactory,
   blockchainByName,
@@ -10,21 +8,21 @@ import {
   isEthereumStoredTransaction,
   IStoredTransaction,
   toNumber,
-} from "@emeraldwallet/core";
-import {parseDate} from "@emeraldwallet/core/lib/utils";
-import {registry, ITokenInfo} from "@emeraldwallet/erc20";
-import { accounts, IState, screen, txhistory } from "@emeraldwallet/store";
-import { Button, FormRow } from "@emeraldwallet/ui";
-import { createStyles, Theme, Typography } from "@material-ui/core";
-import { makeStyles } from "@material-ui/core/styles";
-import * as React from "react";
-import { Dispatch } from "react";
-import { connect } from "react-redux";
-import BitcoinTxDetails from "./TxDetailsView/BitcoinTxDetails";
-import EthereumTxDetails from "./TxDetailsView/EthereumTxDetails";
-import TxStatus from "./TxDetailsView/TxStatus";
+} from '@emeraldwallet/core';
+import { parseDate } from '@emeraldwallet/core/lib/utils';
+import { ITokenInfo, registry } from '@emeraldwallet/erc20';
+import { accounts, IState, screen, txhistory } from '@emeraldwallet/store';
+import { Back, Button, ButtonGroup, FormRow, Page } from '@emeraldwallet/ui';
+import { createStyles, Theme, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import * as React from 'react';
+import { Dispatch } from 'react';
+import { connect } from 'react-redux';
+import BitcoinTxDetails from './TxDetailsView/BitcoinTxDetails';
+import EthereumTxDetails from './TxDetailsView/EthereumTxDetails';
+import TxStatus from './TxDetailsView/TxStatus';
 
-const {gotoScreen} = screen.actions;
+const { gotoScreen } = screen.actions;
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
@@ -89,11 +87,19 @@ const Component = ((props: Props & Actions & OwnProps) => {
     }
   }
 
-  const blockNumber = transaction.blockNumber;
-  const txStatus = blockNumber ? 'success' : (transaction.discarded ? 'discarded' : 'queue');
-  const date = transaction.timestamp ?
-    transaction.timestamp :
-    (transaction.since ? transaction.since : undefined);
+  const { blockNumber, totalRetries, since } = transaction;
+  const txSince = typeof since === 'string' ? new Date(since) : since ?? new Date(0);
+  const notExecuted = totalRetries === 10 || txSince.getTime() < new Date().getTime() - 7 * 24 * 60 * 60 * 1000;
+
+  const txStatus = blockNumber
+    ? 'success'
+    : transaction.discarded
+    ? 'discarded'
+    : notExecuted
+    ? 'not-executed'
+    : 'queue';
+
+  const date = transaction.timestamp ? transaction.timestamp : since ? since : undefined;
 
   let chainDetails: React.ReactElement | undefined = undefined;
   let value: React.ReactElement | undefined = undefined;

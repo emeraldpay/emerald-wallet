@@ -6,7 +6,7 @@ import * as React from 'react';
 export const styles = {
   success: {
     height: '30px',
-    width: '117px',
+    width: '125px',
     color: '#47B04B',
     fontSize: '14px',
     fontWeight: 500,
@@ -16,7 +16,7 @@ export const styles = {
   },
   queue: {
     height: '30px',
-    width: '117px',
+    width: '125px',
     color: '#747474',
     fontSize: '14px',
     lineHeight: '22px',
@@ -25,7 +25,7 @@ export const styles = {
   } as CSSProperties,
   discarded: {
     height: '30px',
-    width: '117px',
+    width: '125px',
     color: '#a01c1a',
     fontSize: '14px',
     lineHeight: '22px',
@@ -52,6 +52,13 @@ export const TxStatus = (props: IProps) => {
     return (
       <div className={classes.discarded}>
         <Error />&nbsp; Discarded
+      </div>
+    );
+  }
+  if (status === 'not-executed') {
+    return (
+      <div className={classes.discarded}>
+        <Error />&nbsp; Not executed
       </div>
     );
   }
