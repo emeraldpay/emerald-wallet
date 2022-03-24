@@ -1,6 +1,6 @@
 import { Snackbar, SnackbarContent, withStyles } from '@material-ui/core';
 import orange from '@material-ui/core/colors/orange';
-import * as classNames from 'classnames';
+import classNames from 'classnames';
 import * as React from 'react';
 
 export interface IBarProps {
