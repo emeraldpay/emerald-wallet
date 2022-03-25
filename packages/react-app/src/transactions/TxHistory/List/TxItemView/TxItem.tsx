@@ -189,6 +189,7 @@ export const TxItem = (props: ITxItemProps) => {
               tx.since || new Date(0)
           }
           txDiscarded={tx.discarded || false}
+          txTotalRetries={tx.totalRetries ?? 0}
           timeStampFormatter={timeStampFormatter(props.lang)}
           onClick={openTx}
         />
