@@ -36,15 +36,15 @@
   "main": "app/src/main/index.js",
   "scripts": {
     "build": "yarn clean && yarn compile && webpack",
-    "build:dev": "cross-env NODE_ENV=development yarn build",
+    "build:dev": "NODE_ENV=development yarn build",
     "build:dist": "yarn build && electron-builder --publish never",
-    "build:watch": "cross-env NODE_ENV=development yarn clean && tsc-watch -b --onSuccess \"yarn build:watch:success\" --onFailure \"yarn build:watch:fail\"",
+    "build:watch": "NODE_ENV=development yarn clean && tsc-watch -b --onSuccess \"yarn build:watch:success\" --onFailure \"yarn build:watch:fail\"",
     "build:watch:fail": "notify -t \"Emerald Wallet\" -m \"Build failed\" -i \"resources/icon.png\"",
-    "build:watch:success": "(webpack && notify -t \"Emerald Wallet\" -m \"Build successfully\" -i \"resources/icon.png\") || yarn build:watch:fail",
+    "build:watch:success": "(NODE_ENV=development webpack && notify -t \"Emerald Wallet\" -m \"Build successfully\" -i \"resources/icon.png\") || yarn build:watch:fail",
     "clean": "rimraf app/ dist/ tsconfig.tsbuildinfo",
     "compile": "tsc -b && yarn copyfiles resources/**/* app/",
     "start": "electron .",
-    "start:dev": "cross-env NODE_ENV=development yarn start"
+    "start:dev": "NODE_ENV=development yarn start"
   },
   "dependencies": {
     "@emeraldwallet/electron-app": "^2.7.0-dev",
@@ -67,7 +67,6 @@
     "babel-loader": "^8.2.3",
     "copy-webpack-plugin": "^10.2.4",
     "copyfiles": "^2.4.1",
-    "cross-env": "^7.0.3",
     "css-loader": "^6.7.1",
     "electron": "15.3.5",
     "electron-builder": "^22.14.13",
@@ -81,6 +80,9 @@
     "tsc-watch": "^4.6.2",
     "webpack": "^5.70.0",
     "webpack-cli": "^4.9.2"
+  },
+  "optionalDependencies": {
+    "win-node-env": "^0.6.1"
   },
   "build": {
     "appId": "cash.emerald.desktop-wallet",
