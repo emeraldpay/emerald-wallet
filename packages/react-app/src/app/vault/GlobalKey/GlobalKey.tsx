@@ -1,6 +1,7 @@
-import {OddPasswordItem} from '@emeraldpay/emerald-vault-core';
-import {ButtonGroup, Page} from '@emeraldwallet/ui';
-import {accounts, IState, screen} from '@emeraldwallet/store';
+import { OddPasswordItem } from '@emeraldpay/emerald-vault-core';
+import { Pages } from '@emeraldwallet/store/lib/screen';
+import { ButtonGroup, Page } from '@emeraldwallet/ui';
+import { accounts, IState, screen } from '@emeraldwallet/store';
 import { Button, PasswordInput } from '@emeraldwallet/ui';
 import { OwnProps } from '@emeraldwallet/ui/lib/components/accounts/Balance/Balance';
 import { createStyles, Typography, withStyles } from '@material-ui/core';
@@ -25,9 +26,10 @@ interface StateProps {
 }
 
 interface DispatchProps {
+  createWallet(): void;
   getLegacyItems(): Promise<OddPasswordItem[]>;
   goHome(): Promise<void>;
-  goPasswordMigration(): Promise<void>;
+  goPasswordMigration(): void;
   setGlobalKey(password: string): Promise<boolean>;
 }
 
@@ -44,12 +46,14 @@ interface ButtonsProps {
 }
 
 const Buttons: React.FC<ButtonsProps> = ({ confirmPassword, hasWallets, password, applyPassword, goHome }) => {
-  const applyButton = <Button
-    label="Create"
-    disabled={password.length === 0 || password !== confirmPassword}
-    primary={true}
-    onClick={applyPassword}
-  />;
+  const applyButton = (
+    <Button
+      label="Create"
+      disabled={password.length === 0 || password !== confirmPassword}
+      primary={true}
+      onClick={applyPassword}
+    />
+  );
 
   if (hasWallets) {
     return (
@@ -61,11 +65,12 @@ const Buttons: React.FC<ButtonsProps> = ({ confirmPassword, hasWallets, password
   }
 
   return applyButton;
-}
+};
 
 const GlobalKey: React.FC<DispatchProps & StateProps & StylesProps> = ({
   classes,
   hasWallets,
+  createWallet,
   getLegacyItems,
   goHome,
   goPasswordMigration,
@@ -81,11 +86,7 @@ const GlobalKey: React.FC<DispatchProps & StateProps & StylesProps> = ({
       if (complete) {
         const items = await getLegacyItems();
 
-        return (
-          items.length > 0
-            ? goPasswordMigration
-            : goHome
-        )();
+        return (items.length > 0 ? goPasswordMigration : hasWallets ? goHome : createWallet)();
       }
     }
   }, [password, confirmPassword]);
@@ -118,34 +119,33 @@ const GlobalKey: React.FC<DispatchProps & StateProps & StylesProps> = ({
         />
       </FormFieldWrapper>
       <Typography>
-        NOTE: The password is the only way to access your coins. If you lose it, the only way to restore is to
-        recover the Wallet from Secret Phrase backup. Please make sure you have it backed up.
+        NOTE: The password is the only way to access your coins. If you lose it, the only way to restore is to recover
+        the Wallet from Secret Phrase backup. Please make sure you have it backed up.
       </Typography>
     </Page>
   );
 };
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
-  (state) => (
-    {
-      hasWallets: state.accounts.wallets.length > 0,
-    }
-  ),
+  (state) => ({
+    hasWallets: state.accounts.wallets.length > 0,
+  }),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dispatch: any) => (
-    {
-      getLegacyItems() {
-        return dispatch(accounts.actions.getOddPasswordItems());
-      },
-      goHome() {
-        return dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
-      },
-      goPasswordMigration() {
-        return dispatch(screen.actions.gotoScreen(screen.Pages.PASSWORD_MIGRATION));
-      },
-      setGlobalKey(password) {
-        return dispatch(accounts.actions.createGlobalKey(password));
-      },
-    }
-  ),
+  (dispatch: any) => ({
+    createWallet() {
+      dispatch(screen.actions.gotoScreen(Pages.CREATE_WALLET));
+    },
+    getLegacyItems() {
+      return dispatch(accounts.actions.getOddPasswordItems());
+    },
+    goHome() {
+      return dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
+    },
+    goPasswordMigration() {
+      dispatch(screen.actions.gotoScreen(screen.Pages.PASSWORD_MIGRATION));
+    },
+    setGlobalKey(password) {
+      return dispatch(accounts.actions.createGlobalKey(password));
+    },
+  }),
 )(withStyles(styles)(GlobalKey));

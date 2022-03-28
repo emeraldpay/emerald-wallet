@@ -4,7 +4,6 @@ import {
   addressBook,
   application,
   BackendApi,
-  blockchains,
   createStore,
   RemoteVault,
   RenderWalletState,
@@ -66,7 +65,13 @@ function getInitialScreen(): void {
               if (oddPasswordItems.length > 0) {
                 store.dispatch(screen.actions.gotoScreen(screen.Pages.PASSWORD_MIGRATION));
               } else {
-                store.dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
+                const state = store.getState();
+
+                store.dispatch(
+                  screen.actions.gotoScreen(
+                    accounts.selectors.allWallets(state).length === 0 ? screen.Pages.CREATE_WALLET : screen.Pages.HOME,
+                  ),
+                );
               }
             }),
           );
