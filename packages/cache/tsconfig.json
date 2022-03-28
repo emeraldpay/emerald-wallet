@@ -1,0 +1,26 @@
+{
+  "compilerOptions": {
+    "composite": true,
+    "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "module": "CommonJS",
+    "moduleResolution": "Node",
+    "outDir": "lib/",
+    "rootDir": "src/",
+    "sourceMap": true,
+    "strict": true,
+    "target": "ES6",
+    "typeRoots": [
+      "../../node_modules/@types",
+      "node_modules/@types",
+      "./typings"
+    ]
+  },
+  "exclude": [
+    "node_modules",
+    "**/*.spec.ts"
+  ],
+  "include": [
+    "src/**/*.ts"
+  ]
+}
