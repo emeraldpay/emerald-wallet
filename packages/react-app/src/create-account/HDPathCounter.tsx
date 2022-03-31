@@ -1,163 +1,175 @@
-import {connect} from "react-redux";
-import {Dispatch} from "react";
-import * as React from 'react';
-import {Box, createStyles, IconButton, Typography} from "@material-ui/core";
-import {IState} from "@emeraldwallet/store";
-import {makeStyles} from "@material-ui/core/styles";
-import {HDPath} from "@emeraldwallet/core";
-import RemoveIcon from '@material-ui/icons/Remove';
+import { HDPath } from '@emeraldwallet/core';
+import { IState } from '@emeraldwallet/store';
+import { Box, createStyles, IconButton, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import AddIcon from '@material-ui/icons/Add';
+import RemoveIcon from '@material-ui/icons/Remove';
+import * as React from 'react';
+import { connect } from 'react-redux';
 
 const useStyles = makeStyles(
   createStyles({
     root: {
-      fontSize: "1.2em",
-      paddingLeft: "16px"
+      fontSize: '1.2em',
+      paddingLeft: 16,
     },
     currentPath: {
-      marginRight: "10px"
+      marginRight: 10,
     },
     account: {
-      paddingLeft: "8px",
-      paddingRight: "8px",
-      cursor: "grab"
+      cursor: 'grab',
+      paddingLeft: 8,
+      paddingRight: 8,
     },
     accountCurrent: {
-      fontWeight: "bold",
-      fontSize: "1.2em"
+      fontSize: '1.2em',
+      fontWeight: 'bold',
     },
     accountDisabled: {
-      color: "#f6eff0",
-      cursor: "not-allowed"
-    }
-  })
+      color: '#f6eff0',
+      cursor: 'not-allowed',
+    },
+  }),
 );
+
+type AccountItem = {
+  account: number;
+  current: boolean;
+  disabled: boolean;
+};
+
+type OwnProps = {
+  base: string;
+  disabled?: number[];
+  max?: number;
+  onChange: (value: HDPath) => void;
+  start?: number;
+};
+
+type StateProps = {
+  disabled: number[];
+  hdpath: HDPath;
+  max: number;
+  start: number;
+};
 
 const MAX = Math.pow(2, 31) - 1;
 
-/**
- *
- */
-const Component = (({start, hdpath, max, disabled, onChange}: Props & Actions & OwnProps) => {
+const Component: React.FC<OwnProps & StateProps> = ({ disabled, hdpath, max, start, onChange }) => {
   const styles = useStyles();
-  const [account, setAccount] = React.useState(start)
+
+  const [account, setAccount] = React.useState(start);
+
+  const isDisabled = React.useCallback((account: number) => disabled.indexOf(account) >= 0, [disabled]);
+
+  const updateAccount = React.useCallback(
+    (account: number) => {
+      setAccount(account);
+
+      onChange(hdpath.forAccount(account));
+    },
+    [hdpath],
+  );
+
+  const onDecreaseAccount = React.useCallback(() => {
+    if (account <= 0) {
+      return;
+    }
+
+    let newAccount = account - 1;
+
+    while (newAccount >= 0 && isDisabled(newAccount)) {
+      newAccount--;
+    }
+
+    if (newAccount >= 0) {
+      updateAccount(newAccount);
+    }
+  }, [account]);
+
+  const onIncreaseAccount = React.useCallback(() => {
+    if (account >= MAX) {
+      return;
+    }
+
+    let newAccount = account + 1;
+
+    while (newAccount < MAX && isDisabled(newAccount)) {
+      newAccount++;
+    }
+
+    if (newAccount <= MAX) {
+      updateAccount(newAccount);
+    }
+  }, [account]);
+
+  const onAccountClick = React.useCallback(
+    (account: AccountItem) => () => {
+      if (!account.disabled) {
+        updateAccount(account.account);
+      }
+    },
+    [],
+  );
+
   let from = account - 3;
   let to = account + 3;
+
   if (from < 0) {
     to += from * -1;
     from = 0;
   }
+
   if (to > max) {
-    from -= (to - max);
+    from -= to - max;
     to = max;
   }
 
-  function isDisabled(account: number) {
-    return disabled.indexOf(account) >= 0;
-  }
+  const accounts: Array<AccountItem> = [];
 
-  const accounts = [];
   for (let i = from; i < to; i++) {
     accounts.push({
       account: i,
+      current: i === account,
       disabled: isDisabled(i),
-      current: i == account
     });
   }
 
-  function update(account: number) {
-    setAccount(account);
-    onChange(hdpath.forAccount(account));
-  }
-
-  function dec() {
-    if (account <= 0) {
-      return;
-    }
-    let x = account - 1;
-    while (x >= 0 && isDisabled(x)) {
-      x--;
-    }
-    if (x >= 0) {
-      update(x)
-    }
-  }
-
-  function inc() {
-    if (account >= MAX) {
-      return;
-    }
-    let x = account + 1;
-    while (x < MAX && isDisabled(x)) {
-      x++;
-    }
-    if (x <= MAX) {
-      update(x)
-    }
-  }
-
-
-  return <Box className={styles.root}>
-    <Box component={"span"} className={styles.currentPath}>
-      <Typography variant={"caption"}>{hdpath.forAccount(account).toString()}</Typography>
+  return (
+    <Box className={styles.root}>
+      <Box component="span" className={styles.currentPath}>
+        <Typography variant="caption">{hdpath.forAccount(account).toString()}</Typography>
+      </Box>
+      <Box component="span">
+        <IconButton aria-label="dec" onClick={onDecreaseAccount} disabled={account === 0}>
+          <RemoveIcon />
+        </IconButton>
+        {accounts.map((item) => (
+          <Typography
+            variant="caption"
+            key={item.account}
+            onClick={onAccountClick(item)}
+            title={item.disabled ? 'Used by another wallet' : ''}
+            className={`${styles.account} ${item.current ? styles.accountCurrent : ''} ${
+              item.disabled ? styles.accountDisabled : ''
+            }`}
+          >
+            {item.account}
+          </Typography>
+        ))}
+        <IconButton aria-label="inc" onClick={onIncreaseAccount} disabled={account === MAX}>
+          <AddIcon />
+        </IconButton>
+      </Box>
     </Box>
-    <Box component={'span'}>
-      <IconButton aria-label="dec" onClick={dec} disabled={account == 0}>
-        <RemoveIcon/>
-      </IconButton>
-      {accounts.map((acc) => (
-        <Typography variant={"caption"}
-                    key={acc.account}
-                    onClick={() => {
-                      if (!acc.disabled) {
-                        update(acc.account)
-                      }
-                    }}
-                    title={acc.disabled ? "Used by another wallet" : ""}
-                    className={
-                      styles.account +
-                      " " + (acc.current ? styles.accountCurrent : "") +
-                      " " + (acc.disabled ? styles.accountDisabled : "")
-                    }>
-          {acc.account}
-        </Typography>
-      ))}
-      <IconButton aria-label="inc" onClick={inc} disabled={account == MAX}>
-        <AddIcon/>
-      </IconButton>
-    </Box>
-  </Box>
-})
-
-// State Properties
-type Props = {
-  start: number,
-  max: number,
-  disabled: number[],
-  hdpath: HDPath
-}
-// Actions
-type Actions = {}
-
-// Component properties
-type OwnProps = {
-  base: string,
-  start?: number,
-  max?: number,
-  disabled?: number[],
-  onChange: (value: HDPath) => void;
-}
+  );
+};
 
 export default connect(
-  (state: IState, ownProps: OwnProps): Props => {
-    return {
-      start: ownProps.start || 0,
-      max: ownProps.max || MAX,
-      disabled: ownProps.disabled || [],
-      hdpath: HDPath.parse(ownProps.base)
-    }
-  },
-  (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
-    return {}
-  }
-)((Component));
+  (state: IState, ownProps: OwnProps): StateProps => ({
+    disabled: ownProps.disabled ?? [],
+    hdpath: HDPath.parse(ownProps.base),
+    max: ownProps.max ?? MAX,
+    start: ownProps.start ?? 0,
+  }),
+)(Component);
