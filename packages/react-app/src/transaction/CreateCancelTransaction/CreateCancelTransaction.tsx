@@ -2,7 +2,6 @@ import { Wei } from '@emeraldpay/bigamount-crypto';
 import { EthereumStoredTransaction } from '@emeraldwallet/core/src/history/IStoredTransaction';
 import { accounts, IState, screen, transaction } from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
-import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
@@ -99,7 +98,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           tx.from,
           21000,
           new Wei(gasPrice.plus(gasPrice.multipliedBy(0.1))),
-          new Wei(tx.value),
+          Wei.ZERO,
           '',
           tx.nonce,
         ),

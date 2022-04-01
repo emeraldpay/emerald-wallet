@@ -1,5 +1,5 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { BlockchainCode } from '@emeraldwallet/core';
+import { BlockchainCode, toNumber } from '@emeraldwallet/core';
 import { EthereumStoredTransaction } from '@emeraldwallet/core/src/history/IStoredTransaction';
 import { accounts, IState, screen, transaction } from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
@@ -188,7 +188,7 @@ export default connect<{}, DispatchProps, OwnProps, IState>(
           tx.from,
           password,
           tx.to,
-          21000,
+          parseInt(tx.gas.toString(), 10),
           new Wei(tx.gasPrice),
           new Wei(tx.value),
           tx.data ?? '',
