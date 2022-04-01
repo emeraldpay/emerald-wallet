@@ -12,7 +12,9 @@ import { startStore, store } from './store/store';
 
 Logger.setInstance(ElectronLogger);
 
-const logger = Logger.forCategory('store');
+const logger = Logger.forCategory('init');
+
+window.addEventListener('unhandledrejection ', (error) => logger.error('Uncaught promise rejection:', error));
 
 declare global {
   interface Window {

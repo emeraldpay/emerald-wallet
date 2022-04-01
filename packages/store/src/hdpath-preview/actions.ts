@@ -1,5 +1,11 @@
+import { SeedReference } from '@emeraldpay/emerald-vault-core';
+import { AnyCoinCode, BlockchainCode } from '@emeraldwallet/core';
+import { isBlockchainOpen } from '../hwkey/selectors';
+import { accounts } from '../index';
+import { Dispatched } from '../types';
 import {
   ActionTypes,
+  HDPathIndexes,
   IClean,
   IDisplayAccount,
   IInit,
@@ -7,85 +13,94 @@ import {
   ILoadBalances,
   ISetAddress,
   ISetBalance,
-} from "./types";
-import {AnyCoinCode, BlockchainCode} from "@emeraldwallet/core";
-import {LedgerApp, SeedReference} from "@emeraldpay/emerald-vault-core";
-import {Dispatched} from "../types";
-import {selectors} from "./index";
-import {accounts} from "../index";
-import {isBlockchainOpen} from "../hwkey/selectors";
+} from './types';
 
-export function loadAddresses(seed: SeedReference, account: number, blockchain: BlockchainCode): ILoadAddresses {
+export function loadAddresses(
+  seed: SeedReference,
+  account: number,
+  blockchain: BlockchainCode,
+  index?: number,
+): ILoadAddresses {
   return {
-    type: ActionTypes.LOAD_ADDRESSES,
-    seed,
     account,
-    blockchain
-  }
+    blockchain,
+    index,
+    seed,
+    type: ActionTypes.LOAD_ADDRESSES,
+  };
 }
 
 export function loadBalances(blockchain: BlockchainCode, address: string, assets: AnyCoinCode[]): ILoadBalances {
   return {
-    type: ActionTypes.LOAD_BALANCES,
-    blockchain,
     address,
-    assets
-  }
-}
-
-export function setAddresses(seed: SeedReference,
-                             blockchain: BlockchainCode,
-                             addresses: { [key: string]: string }): ISetAddress {
-  return {
-    type: ActionTypes.SET_ADDRESS,
-    seed,
+    assets,
     blockchain,
-    addresses
+    type: ActionTypes.LOAD_BALANCES,
   };
 }
 
-export function setBalance(blockchain: BlockchainCode,
-                           address: string,
-                           asset: AnyCoinCode,
-                           balance: string): ISetBalance {
+export function setAddresses(
+  seed: SeedReference,
+  blockchain: BlockchainCode,
+  addresses: { [key: string]: string },
+): ISetAddress {
   return {
-    type: ActionTypes.SET_BALANCE,
+    addresses,
     blockchain,
+    seed,
+    type: ActionTypes.SET_ADDRESS,
+  };
+}
+
+export function setBalance(
+  blockchain: BlockchainCode,
+  address: string,
+  asset: AnyCoinCode,
+  balance: string,
+): ISetBalance {
+  return {
     address,
     asset,
-    balance
+    balance,
+    blockchain,
+    type: ActionTypes.SET_BALANCE,
   };
 }
 
-export function displayAccount(account: number): Dispatched<IDisplayAccount> {
-  return (dispatch, getState, extra) => {
+export function displayAccount(account: number, indexes?: HDPathIndexes): Dispatched<IDisplayAccount> {
+  return (dispatch, getState) => {
     dispatch({
+      account,
+      indexes,
       type: ActionTypes.DISPLAY_ACCOUNT,
-      account
     });
+
     const state = getState();
-    const seed = state.hdpathPreview?.display?.seed;
-    if (seed) {
-      const isHardware = accounts.selectors.isHardwareSeed(state, seed)
+
+    const { seed } = state.hdpathPreview?.display ?? {};
+
+    if (seed != null) {
+      const isHardware = accounts.selectors.isHardwareSeed(state, seed);
+
       state.hdpathPreview?.display.blockchains.forEach((blockchain) => {
         if (!isHardware || isBlockchainOpen(state, blockchain)) {
-          dispatch(loadAddresses(seed, account, blockchain))
+          dispatch(loadAddresses(seed, account, blockchain, indexes?.[blockchain] ?? 0));
         }
-      })
+      });
     }
-  }
+  };
 }
 
 export function clean(): IClean {
   return {
-    type: ActionTypes.CLEAN
-  }
+    type: ActionTypes.CLEAN,
+  };
 }
 
 export function init(blockchains: BlockchainCode[], seed: SeedReference): IInit {
   return {
-    type: ActionTypes.INIT,
     blockchains,
-    seed
-  }
+    seed,
+    type: ActionTypes.INIT,
+  };
 }

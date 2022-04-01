@@ -14,6 +14,7 @@ const useStyles = makeStyles<Theme>((theme) =>
       height: '28px',
       display: 'flex',
       alignItems: 'center',
+      minWidth: 380,
       width: '100%'
     },
     address: {
