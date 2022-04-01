@@ -1,7 +1,7 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
 import { SeedDefinition, Uuid } from '@emeraldpay/emerald-vault-core';
 import { IBlockchain } from '@emeraldwallet/core';
-import { accounts, screen } from '@emeraldwallet/store';
+import { accounts, IState, screen } from '@emeraldwallet/store';
 import { ImportMnemonic, ImportPk, NewMnemonic } from '@emeraldwallet/ui';
 import { Button, Card, CardActions, CardContent, CardHeader, Step, StepLabel, Stepper } from '@material-ui/core';
 import * as bip39 from 'bip39';
@@ -33,6 +33,10 @@ type OwnProps = {
   onSaveSeed?: (seed: SeedDefinition) => Promise<Uuid>;
 };
 
+type StateProps = {
+  hasWallets: boolean;
+};
+
 function isValidMnemonic(text: string): boolean {
   return bip39.validateMnemonic(text);
 }
@@ -41,7 +45,7 @@ function isValidMnemonic(text: string): boolean {
  * Multistep wizard to create a new Wallet. The wallet can be created from an existing or new seed, private key, or just
  * empty without any account initially.
  */
-export const CreateWizard: React.FC<Actions & OwnProps> = (props) => {
+export const CreateWizard: React.FC<Actions & OwnProps & StateProps> = (props) => {
   const [walletId, setWalletId] = React.useState('');
 
   function create(result: Result): void {
@@ -160,9 +164,11 @@ export const CreateWizard: React.FC<Actions & OwnProps> = (props) => {
   } else {
     controls = (
       <>
-        <Button disabled={page.code == STEP_CODE.CREATED} onClick={props.onCancel}>
-          Cancel
-        </Button>
+        {props.hasWallets && (
+          <Button disabled={page.code == STEP_CODE.CREATED} onClick={props.onCancel}>
+            Cancel
+          </Button>
+        )}
         <Button
           disabled={!step.canGoNext()}
           onClick={() => setStep(step.applyNext())}
@@ -185,7 +191,9 @@ export const CreateWizard: React.FC<Actions & OwnProps> = (props) => {
 };
 
 export default connect(
-  null,
+  (state: IState): StateProps => ({
+    hasWallets: state.accounts.wallets.length > 0,
+  }),
   (dispatch: any): Actions => ({
     checkGlobalKey(password) {
       return dispatch(accounts.actions.verifyGlobalKey(password));
