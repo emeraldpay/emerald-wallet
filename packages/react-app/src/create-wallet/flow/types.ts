@@ -1,5 +1,6 @@
-import {BlockchainCode} from "@emeraldwallet/core";
-import {SeedReference, Uuid} from "@emeraldpay/emerald-vault-core";
+import { SeedReference, Uuid } from "@emeraldpay/emerald-vault-core";
+import { BlockchainCode } from "@emeraldwallet/core";
+import { HDPathIndexes } from '@emeraldwallet/store/lib/hdpath-preview/types';
 
 export enum KeySourceType {
   SEED_SELECTED,
@@ -12,18 +13,18 @@ export enum KeySourceType {
 }
 
 export interface SeedSelected {
-  type: KeySourceType.SEED_SELECTED,
-  id: string
+  type: KeySourceType.SEED_SELECTED;
+  id: string;
 }
 
 export interface SeedCreate {
-  type: KeySourceType.SEED_GENERATE | KeySourceType.SEED_IMPORT,
-  mnemonic?: string,
-  password?: string
+  type: KeySourceType.SEED_GENERATE | KeySourceType.SEED_IMPORT;
+  mnemonic?: string;
+  password?: string;
 }
 
 export interface PkImportAny {
-  type: KeySourceType.PK_ANY
+  type: KeySourceType.PK_ANY;
 }
 
 export interface PkImportRaw {
@@ -86,7 +87,7 @@ export function isPkRaw(obj: KeysSource): obj is PkImportRaw {
 }
 
 export interface TWalletOptions {
-  label?: string
+  label?: string;
 }
 
 export interface Result {
@@ -96,6 +97,7 @@ export interface Result {
   seedAccount?: number;
   seed?: SeedReference;
   addresses?: Partial<Record<BlockchainCode, string>>;
+  indexes?: HDPathIndexes;
 }
 
 export function defaultResult(): Result {

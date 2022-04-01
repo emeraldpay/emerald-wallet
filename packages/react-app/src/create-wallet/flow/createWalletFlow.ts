@@ -1,5 +1,6 @@
 import { SeedDescription, Uuid } from "@emeraldpay/emerald-vault-core";
 import { BlockchainCode } from "@emeraldwallet/core";
+import { HDPathIndexes } from '@emeraldwallet/store/lib/hdpath-preview/types';
 import { ImportPkType } from '@emeraldwallet/ui';
 import {
   defaultResult,
@@ -288,9 +289,13 @@ export class CreateWalletFlow {
     return copy;
   }
 
-  applyHDAccount(value: number | undefined, addresses: Partial<Record<BlockchainCode, string>>): CreateWalletFlow {
+  applyHDAccount(
+    value: number | undefined,
+    addresses: Partial<Record<BlockchainCode, string>>,
+    indexes: HDPathIndexes,
+  ): CreateWalletFlow {
     const copy = this.copy();
-    copy.result = {...this.result, seedAccount: value, addresses};
+    copy.result = { ...this.result, seedAccount: value, addresses, indexes };
     return copy;
   }
 

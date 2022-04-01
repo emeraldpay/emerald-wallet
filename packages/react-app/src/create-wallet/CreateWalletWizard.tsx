@@ -24,12 +24,12 @@ type Actions = {
 };
 
 type OwnProps = {
+  blockchains: IBlockchain[];
   seeds: vault.SeedDescription[];
+  mnemonicGenerator?: () => Promise<string>;
+  onCancel: () => void;
   onCreate: (value: Result) => Promise<string>;
   onError: (err: any) => void;
-  onCancel: () => void;
-  blockchains: IBlockchain[];
-  mnemonicGenerator?: () => Promise<string>;
   onSaveSeed?: (seed: SeedDefinition) => Promise<Uuid>;
 };
 
@@ -60,20 +60,11 @@ export const CreateWizard: React.FC<Actions & OwnProps & StateProps> = (props) =
   const [step, setStep] = React.useState(new CreateWalletFlow(create));
 
   const page = step.getCurrentStep();
-  const applyWithState = function <T>(fn: (value: T) => CreateWalletFlow): (value: T) => void {
-    return (x) => {
-      const next = fn.call(step, x);
-      setStep(next);
-    };
+
+  const applyWithState = function <T extends unknown[]>(fn: (...args: T) => CreateWalletFlow): (...args: T) => void {
+    return (...args) => setStep(fn.call(step, ...args));
   };
-  const applyWithState2 = function <T, T2>(
-    fn: (value: T, value2: T2) => CreateWalletFlow,
-  ): (value: T, value2: T2) => void {
-    return (x, y) => {
-      const next = fn.call(step, x, y);
-      setStep(next);
-    };
-  };
+
   const activeStepIndex = page.index;
   let activeStepPage = null;
 
@@ -145,7 +136,7 @@ export const CreateWizard: React.FC<Actions & OwnProps & StateProps> = (props) =
       <SelectHDPath
         blockchains={step.getResult().blockchains}
         seed={seed}
-        onChange={applyWithState2(step.applyHDAccount)}
+        onChange={applyWithState(step.applyHDAccount)}
       />
     );
   } else if (page.code == STEP_CODE.CREATED) {
@@ -203,14 +194,12 @@ export default connect(
   (state: IState): StateProps => ({
     hasWallets: state.accounts.wallets.length > 0,
   }),
-  (dispatch: any): Actions => {
-    return {
-      checkGlobalKey(password) {
-        return dispatch(accounts.actions.verifyGlobalKey(password));
-      },
-      onOpen: (walletId: string) => {
-        dispatch(screen.actions.gotoScreen('wallet', walletId));
-      },
-    };
-  },
+  (dispatch: any): Actions => ({
+    checkGlobalKey(password) {
+      return dispatch(accounts.actions.verifyGlobalKey(password));
+    },
+    onOpen: (walletId: string) => {
+      dispatch(screen.actions.gotoScreen('wallet', walletId));
+    },
+  }),
 )(CreateWizard);

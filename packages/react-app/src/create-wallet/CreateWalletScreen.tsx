@@ -8,6 +8,7 @@ import {
 } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, blockchainCodeToId, Blockchains, IBlockchain } from '@emeraldwallet/core';
 import { accounts, hdpathPreview, hwkey, IState, screen, settings } from '@emeraldwallet/store';
+import { HDPathIndexes } from '@emeraldwallet/store/lib/hdpath-preview/types';
 import { Pages } from '@emeraldwallet/store/lib/screen';
 import * as React from 'react';
 import { Dispatch } from 'react';
@@ -15,39 +16,40 @@ import { connect } from 'react-redux';
 import CreateWalletWizard from './CreateWalletWizard';
 import { isLedger, isPk, isPkJson, isPkRaw, isSeedCreate, isSeedSelected, Result } from './flow/types';
 
+type Props = {
+  seeds: vault.SeedDescription[];
+  blockchains: IBlockchain[];
+}
 type Actions = {
   onCreate: (value: Result) => Promise<string>;
   onError: (err: any) => void;
   onCancel: () => void;
   mnemonicGenerator?: () => Promise<string>;
   onSaveSeed: (seed: SeedDefinition) => Promise<string>;
-};
-
-type Props = {
-  seeds: vault.SeedDescription[];
-  blockchains: IBlockchain[];
-};
+}
 
 /**
  * App Screen for the Create Wallet Wizard
  * @see CreateWalletWizard
  */
-const Component: React.FC<Actions & OwnProps & Props> = (props) => {
+const Component: React.FC<Props & Actions> = (props) => {
   return <CreateWalletWizard {...props} />;
 };
-
-type OwnProps = {};
 
 function entriesForBlockchains(
   seedRef: SeedReference,
   account: number,
   blockchains: BlockchainCode[],
   addresses: Partial<Record<BlockchainCode, string>>,
+  indexes: HDPathIndexes,
 ): AddEntry[] {
   const entries: vault.AddEntry[] = [];
   blockchains.forEach((blockchain) => {
     const key: SeedEntry = {
-      hdPath: Blockchains[blockchain].params.hdPath.forAccount(account).toString(),
+      hdPath: Blockchains[blockchain].params.hdPath
+        .forAccount(account)
+        .forIndex(indexes?.[blockchain] ?? 0)
+        .toString(),
       seed: seedRef,
       address: addresses[blockchain],
     };
@@ -89,9 +91,8 @@ export default connect(
             const seed = value.seed;
             if (typeof seed == 'object' && seed.type == 'id' && seed.password && typeof value.seedAccount == 'number') {
               const account: number = value.seedAccount;
-              entriesForBlockchains(value.seed!, account, value.blockchains, value.addresses || {}).forEach((e) =>
-                entries.push(e),
-              );
+              entriesForBlockchains(value.seed!, account, value.blockchains, value.addresses ?? {}, value.indexes ?? {})
+                .forEach((e) => entries.push(e));
             } else {
               console.warn('Account number is not set');
             }
@@ -116,11 +117,10 @@ export default connect(
             if (typeof value.seedAccount == 'number') {
               const account: number = value.seedAccount;
               const seedRef: LedgerSeedReference = {
-                type: 'ledger',
-              };
-              entriesForBlockchains(seedRef, account, value.blockchains, value.addresses || {}).forEach((e) =>
-                entries.push(e),
-              );
+                type: "ledger"
+              }
+              entriesForBlockchains(seedRef, account, value.blockchains, value.addresses ?? {}, value.indexes ?? {})
+                .forEach((e) => entries.push(e));
             } else {
               console.warn('Account number is not set');
             }
