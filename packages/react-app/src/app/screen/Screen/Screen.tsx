@@ -17,7 +17,9 @@ import {
 } from '../../../index';
 import ReceiveScreen from '../../../receive/ReceiveScreen';
 import CreateBitcoinTransaction from '../../../transaction/CreateBitcoinTransaction/CreateBitcoinTransaction';
+import CreateCancelTransaction from '../../../transaction/CreateCancelTransaction';
 import CreateConvertTransaction from '../../../transaction/CreateConvertTransaction';
+import CreateSpeedUpTransaction from '../../../transaction/CreateSpeedUpTransaction';
 import CreateTransaction from '../../../transaction/CreateTransaction';
 import SelectAccount from '../../../transaction/CreateTransaction/SelectAccount';
 import WalletInfo from '../../../wallets/WalletInfo';
@@ -61,6 +63,10 @@ const Screen: React.FC<Props> = (props) => {
       return <CreateConvertTransaction entry={props.screenItem} />;
     case screen.Pages.CREATE_TX_BITCOIN:
       return <CreateBitcoinTransaction source={props.screenItem} />;
+    case screen.Pages.CREATE_TX_CANCEL:
+      return <CreateCancelTransaction transaction={props.screenItem} />;
+    case screen.Pages.CREATE_TX_SPEED_UP:
+      return <CreateSpeedUpTransaction transaction={props.screenItem} />;
     case screen.Pages.CREATE_TX_ETHEREUM:
       return <CreateTransaction sourceEntry={props.screenItem} />;
     case screen.Pages.CREATE_WALLET:
