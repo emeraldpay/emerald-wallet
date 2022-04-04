@@ -8,7 +8,7 @@ export enum ActionTypes {
   GO_HOME = 'SCREEN/GO_HOME',
   OPEN_LINK = 'SCREEN/OPEN_LINK',
   NOTIFICATION_SHOW = 'SCREEN/NOTIFICATION_SHOW',
-  NOTIFICATION_CLOSE = 'SCREEN/NOTIFICATION_CLOSE'
+  NOTIFICATION_CLOSE = 'SCREEN/NOTIFICATION_CLOSE',
 }
 
 export enum Pages {
@@ -21,6 +21,8 @@ export enum Pages {
   CREATE_TX_BITCOIN = 'create-tx-bitcoin',
   CREATE_TX_CONVERT = 'create-tx-convert',
   CREATE_TX_ETHEREUM = 'create-tx-ethereum',
+  CREATE_TX_CANCEL = 'create-tx-cancel',
+  CREATE_TX_SPEED_UP = 'create-tx-speed-up',
   CREATE_WALLET = 'create-wallet',
   GLOBAL_KEY = 'global-key',
   HOME = 'home',

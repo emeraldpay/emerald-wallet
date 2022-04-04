@@ -1,60 +1,83 @@
-import {connect} from "react-redux";
-import {Dispatch} from "react";
+import { accounts, IState, screen } from '@emeraldwallet/store';
+import { Pages } from '@emeraldwallet/store/lib/screen';
+import { createStyles, Theme } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
-import {Box, createStyles, Theme} from "@material-ui/core";
-import {IState, screen} from "@emeraldwallet/store";
-import {makeStyles} from "@material-ui/core/styles";
+import { connect } from 'react-redux';
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
     root: {
-      fontSize: "16px",
+      cursor: 'pointer',
       flexGrow: 1,
-      cursor: "pointer",
+      fontSize: '16px',
     },
     brandPart: {
       color: theme.palette.primary.main,
-      marginRight: "4px",
+      marginRight: '4px',
     },
     productPart: {
       color: theme.palette.secondary.main,
     },
-  })
+  }),
 );
 
-/**
- *
- */
-const Component = (({onClick}: Props & Actions & OwnProps) => {
-  const styles = useStyles();
-  return <div className={styles.root} onClick={() => onClick()}>
-    <span className={styles.brandPart}>Emerald</span>
-    <span className={styles.productPart}>Wallet</span>
-  </div>
-})
-
-// State Properties
-interface Props {
-}
-
-// Actions
 interface Actions {
-  onClick: () => void;
+  checkGlobalKeyIsSet(): Promise<boolean>;
+  createWallet(): void;
+  goHome(): void;
+  goSetGlobalKey(): void;
 }
 
-// Component properties
-interface OwnProps {
+interface StateProps {
+  hasWallets: boolean;
 }
+
+const Component: React.FC<Actions & StateProps> = ({
+  hasWallets,
+  checkGlobalKeyIsSet,
+  createWallet,
+  goHome,
+  goSetGlobalKey,
+}) => {
+  const styles = useStyles();
+
+  const [hasGlobalKey, setHasGlobalKey] = React.useState(true);
+
+  React.useEffect(() => {
+    (async () => {
+      const globalKeyIsSet = await checkGlobalKeyIsSet();
+
+      setHasGlobalKey(globalKeyIsSet);
+    })();
+  }, []);
+
+  return (
+    <div className={styles.root} onClick={hasGlobalKey ? (hasWallets ? goHome : createWallet) : goSetGlobalKey}>
+      <span className={styles.brandPart}>Emerald</span>
+      <span className={styles.productPart}>Wallet</span>
+    </div>
+  );
+};
 
 export default connect(
-  (state: IState, ownProps: OwnProps): Props => {
-    return {}
-  },
-  (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
+  (state: IState): StateProps => ({
+    hasWallets: state.accounts.wallets.length > 0,
+  }),
+  (dispatch: any): Actions => {
     return {
-      onClick: () => {
-        dispatch(screen.actions.gotoScreen("home"));
-      }
-    }
-  }
-)((Component));
+      checkGlobalKeyIsSet() {
+        return dispatch(accounts.actions.isGlobalKeySet());
+      },
+      createWallet() {
+        dispatch(screen.actions.gotoScreen(Pages.CREATE_WALLET));
+      },
+      goHome() {
+        dispatch(screen.actions.gotoScreen(Pages.HOME));
+      },
+      goSetGlobalKey() {
+        dispatch(screen.actions.gotoScreen(Pages.GLOBAL_KEY));
+      },
+    };
+  },
+)(Component);

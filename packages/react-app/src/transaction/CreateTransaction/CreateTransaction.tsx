@@ -1,8 +1,8 @@
-import {BigAmount, FormatterBuilder, Unit} from '@emeraldpay/bigamount';
-import {Wei} from '@emeraldpay/bigamount-crypto';
-import {WalletEntry} from '@emeraldpay/emerald-vault-core';
-import {Page} from '@emeraldwallet/ui';
-import {Back} from '@emeraldwallet/ui';
+import { BigAmount, FormatterBuilder, Unit } from '@emeraldpay/bigamount';
+import { Wei } from '@emeraldpay/bigamount-crypto';
+import { WalletEntry } from '@emeraldpay/emerald-vault-core';
+import { Page } from '@emeraldwallet/ui';
+import { Back } from '@emeraldwallet/ui';
 import {
   amountFactory,
   AnyCoinCode,
@@ -13,7 +13,8 @@ import {
   isAnyTokenCode,
   tokenAmount,
   workflow,
-  toBigNumber, toBaseUnits,
+  toBigNumber,
+  toBaseUnits,
 } from '@emeraldwallet/core';
 import { tokenUnits } from '@emeraldwallet/core/lib/blockchains/tokens';
 import { registry } from '@emeraldwallet/erc20';
@@ -252,7 +253,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       amount: this.props.amount,
       data: this.props.data,
       token: this.props.token,
-      transaction: CreateTransaction.txFromProps(this.props).dump(),
+      transaction: tx.dump(),
       typedData: this.props.typedData,
     });
   }

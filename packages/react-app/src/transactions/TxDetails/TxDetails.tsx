@@ -10,10 +10,9 @@ import {
   toNumber,
 } from '@emeraldwallet/core';
 import { parseDate } from '@emeraldwallet/core/lib/utils';
-import { ITokenInfo, registry } from '@emeraldwallet/erc20';
 import { accounts, IState, screen, txhistory } from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, FormRow, Page } from '@emeraldwallet/ui';
-import { createStyles, Theme, Typography } from '@material-ui/core';
+import { createStyles, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { Dispatch } from 'react';
@@ -24,30 +23,30 @@ import TxStatus from './TxDetailsView/TxStatus';
 
 const { gotoScreen } = screen.actions;
 
-const useStyles = makeStyles<Theme>((theme) =>
+const useStyles = makeStyles(
   createStyles({
     value: {
       marginBottom: '5px',
-      marginRight: '5px'
+      marginRight: '5px',
     },
     txData: {
       overflowX: 'auto',
-      overflowWrap: 'break-word'
+      overflowWrap: 'break-word',
     },
     fieldName: {
       color: '#747474',
       fontSize: '16px',
-      textAlign: 'right'
+      textAlign: 'right',
     },
     formRow: {
       display: 'flex',
       marginBottom: '19px',
-      alignItems: 'center'
+      alignItems: 'center',
     },
     left: {
       flexBasis: '20%',
       marginLeft: '14.75px',
-      marginRight: '14.75px'
+      marginRight: '14.75px',
     },
     right: {
       flexGrow: 2,
@@ -55,35 +54,57 @@ const useStyles = makeStyles<Theme>((theme) =>
       alignItems: 'center',
       marginLeft: '14.75px',
       marginRight: '14.75px',
-      maxWidth: '580px'
-    }
-  })
+      maxWidth: '580px',
+    },
+  }),
 );
 
 /**
  *
  */
-const Component = ((props: Props & Actions & OwnProps) => {
+const Component: React.FC<Props & Actions & OwnProps> = ({
+  account,
+  fiatAmount,
+  fiatCurrency,
+  fromWallet,
+  toWallet,
+  transaction,
+  goBack,
+  goCancelTx,
+  goSpeedUpTx,
+  goToDashboard,
+  openAccount,
+  openReceipt,
+}) => {
   const styles = useStyles();
-  const {
-    transaction, fiatCurrency, fiatAmount, goBack, fromWallet, toWallet
-  } = props;
 
-  function handleBack() {
+  function handleBack(): void {
     if (goBack) {
-      goBack(props.account);
+      goBack(account);
     }
   }
 
-  function handleReceiptClick() {
-    if (props.openReceipt) {
-      props.openReceipt();
+  function handleDashboardClick(): void {
+    if (goToDashboard) {
+      goToDashboard();
     }
   }
 
-  function handleCancelClick() {
-    if (props.cancel) {
-      props.cancel();
+  function handleCancelClick(): void {
+    if (goCancelTx) {
+      goCancelTx(transaction);
+    }
+  }
+
+  function handleSpeedUpClick(): void {
+    if (goSpeedUpTx) {
+      goSpeedUpTx(transaction);
+    }
+  }
+
+  function handleReceiptClick(): void {
+    if (openReceipt) {
+      openReceipt();
     }
   }
 
@@ -104,78 +125,85 @@ const Component = ((props: Props & Actions & OwnProps) => {
   let chainDetails: React.ReactElement | undefined = undefined;
   let value: React.ReactElement | undefined = undefined;
   if (isEthereumStoredTransaction(transaction)) {
-    chainDetails = <EthereumTxDetails
-      transaction={transaction}
-      classes={{fieldName: styles.fieldName, txData: styles.txData}}
-      fromWallet={fromWallet}
-      toWallet={toWallet}
-      openAccount={(acc) => props.openAccount?.call(props.openAccount, acc)}
-    />
+    chainDetails = (
+      <EthereumTxDetails
+        transaction={transaction}
+        classes={{ fieldName: styles.fieldName, txData: styles.txData }}
+        fromWallet={fromWallet}
+        toWallet={toWallet}
+        openAccount={(acc) => openAccount?.call(openAccount, acc)}
+      />
+    );
 
-    value = <FormRow
-      leftColumn={<div className={styles.fieldName}>Value</div>}
-      rightColumn={<div style={{display: 'flex'}}>
-        <div className={styles.value}>
-          {transaction.value ? amountFactory(transaction.blockchain)(transaction.value).toString() : '--'}
-        </div>
-        {fiatAmount && (
-          <div className={styles.value}>
-            {fiatAmount} {fiatCurrency}
+    value = (
+      <FormRow
+        leftColumn={<div className={styles.fieldName}>Value</div>}
+        rightColumn={
+          <div style={{ display: 'flex' }}>
+            <div className={styles.value}>
+              {transaction.value ? amountFactory(transaction.blockchain)(transaction.value).toString() : '--'}
+            </div>
+            {fiatAmount && (
+              <div className={styles.value}>
+                {fiatAmount} {fiatCurrency}
+              </div>
+            )}
           </div>
-        )}
-      </div>}
-    />
-
+        }
+      />
+    );
   } else if (isBitcoinStoredTransaction(transaction)) {
-    value = <BitcoinTxDetails transaction={transaction}
-                              classes={{fieldName: styles.fieldName, txData: styles.txData}}/>;
+    value = (
+      <BitcoinTxDetails transaction={transaction} classes={{ fieldName: styles.fieldName, txData: styles.txData }} />
+    );
   }
 
   return (
-    <Page title='Transaction Details' leftIcon={<Back onClick={handleBack}/>}>
+    <Page title="Transaction Details" leftIcon={<Back onClick={handleBack} />}>
       <FormRow
         leftColumn={<div className={styles.fieldName}>Date</div>}
-        rightColumn={(
-          <div title={date ? parseDate(date)?.toUTCString() : 'pending'}>
-            {date ? date.toString() : 'pending'}
-          </div>
-        )}
+        rightColumn={
+          <div title={date ? parseDate(date)?.toUTCString() : 'pending'}>{date ? date.toString() : 'pending'}</div>
+        }
       />
-
       <FormRow
         leftColumn={<div className={styles.fieldName}>Status</div>}
-        rightColumn={<TxStatus status={txStatus}/>}
+        rightColumn={<TxStatus status={txStatus} />}
       />
-
       {value}
-
-      <br/>
-      <br/>
-
+      <br />
+      <br />
       <FormRow
         leftColumn={<div className={styles.fieldName}>Hash</div>}
-        rightColumn={
-          <Typography>{transaction.hash}</Typography>
-        }
+        rightColumn={<Typography>{transaction.hash}</Typography>}
       />
       <FormRow
         leftColumn={<div className={styles.fieldName}>Block</div>}
         rightColumn={<React.Fragment>{blockNumber ? toNumber(blockNumber) : 'pending'}</React.Fragment>}
       />
-
       {chainDetails}
-
+      {isEthereumStoredTransaction(transaction) && txStatus === 'queue' && (
+        <FormRow
+          leftColumn={<div className={styles.fieldName}>Modify</div>}
+          rightColumn={
+            <ButtonGroup>
+              <Button onClick={handleSpeedUpClick} label="SPEED UP" />
+              <Button onClick={handleCancelClick} label="CANCEL TRANSACTION" />
+            </ButtonGroup>
+          }
+        />
+      )}
       <FormRow
-        rightColumn={(
+        rightColumn={
           <ButtonGroup>
-            <Button onClick={handleCancelClick} label='DASHBOARD'/>
-            <Button onClick={handleReceiptClick} primary={true} label='OPEN RECEIPT'/>
+            <Button onClick={handleDashboardClick} label="DASHBOARD" />
+            <Button onClick={handleReceiptClick} primary={true} label="OPEN RECEIPT" />
           </ButtonGroup>
-        )}
+        }
       />
     </Page>
   );
-})
+};
 
 // State Properties
 interface Props {
@@ -190,10 +218,12 @@ interface Props {
 
 // Actions
 interface Actions {
-  cancel: () => void;
-  goBack: (walletId: Uuid) => void;
-  openAccount: (walletId?: Uuid) => void;
-  openReceipt: () => void;
+  goBack(walletId: Uuid): void;
+  goCancelTx(tx: IStoredTransaction): void;
+  goToDashboard(): void;
+  goSpeedUpTx(tx: IStoredTransaction): void;
+  openAccount(walletId?: Uuid): void;
+  openReceipt(): void;
 }
 
 // Component properties
@@ -204,46 +234,53 @@ interface OwnProps {
 export default connect(
   (state: IState, ownProps: OwnProps): Props => {
     const tx = txhistory.selectors.selectByHash(state, ownProps.hash);
+
     if (!tx) {
-      throw new Error("Unknown tx: " + ownProps.hash);
+      throw new Error('Unknown tx: ' + ownProps.hash);
     }
+
     const blockchain = blockchainByName(tx.blockchain);
+
     let toAccount: WalletEntry | undefined = undefined;
     let fromAccount: WalletEntry | undefined = undefined;
-    let token: ITokenInfo | null = null;
-    if (isEthereumStoredTransaction(tx)) {
-      toAccount = accounts.selectors.findAccountByAddress(state, tx.to || "", blockchain!.params.code) || undefined;
-      fromAccount = accounts.selectors.findAccountByAddress(state, tx.from, blockchain!.params.code) || undefined;
-      token = registry.byAddress(blockchain!.params.code, tx.to || "");
-    } else if (isBitcoinStoredTransaction(tx)) {
 
+    if (isEthereumStoredTransaction(tx)) {
+      toAccount = accounts.selectors.findAccountByAddress(state, tx.to || '', blockchain.params.code) || undefined;
+      fromAccount = accounts.selectors.findAccountByAddress(state, tx.from, blockchain.params.code) || undefined;
     }
+
     return {
       fromWallet: fromAccount ? EntryIdOp.of(fromAccount.id).extractWalletId() : undefined,
       toWallet: toAccount ? EntryIdOp.of(toAccount.id).extractWalletId() : undefined,
       transaction: tx,
-    }
+    };
   },
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
     return {
-      cancel: () => {
-        dispatch(gotoScreen(screen.Pages.HOME));
+      goCancelTx(tx: IStoredTransaction) {
+        dispatch(gotoScreen(screen.Pages.CREATE_TX_CANCEL, tx));
       },
-      goBack: (wallet: Uuid) => {
+      goBack(wallet: Uuid) {
         if (wallet) {
           dispatch(gotoScreen(screen.Pages.WALLET, wallet));
         } else {
           dispatch(gotoScreen(screen.Pages.HOME));
         }
       },
-      openAccount: (wallet?: Uuid) => {
+      goSpeedUpTx(tx: IStoredTransaction) {
+        dispatch(gotoScreen(screen.Pages.CREATE_TX_SPEED_UP, tx));
+      },
+      goToDashboard() {
+        dispatch(gotoScreen(screen.Pages.HOME));
+      },
+      openAccount(wallet?: Uuid) {
         if (wallet) {
           dispatch(gotoScreen(screen.Pages.WALLET, wallet));
         }
       },
-      openReceipt: () => {
+      openReceipt() {
         dispatch(screen.actions.openTxReceipt(ownProps.hash));
       },
-    }
-  }
-)((Component));
+    };
+  },
+)(Component);
