@@ -125,7 +125,7 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
         [entryHdPath],
       );
 
-      if (addresses[entryHdPath].length > 0) {
+      if ((addresses[entryHdPath]?.length ?? 0) > 0) {
         setStage(Stage.LIST);
       } else {
         setPasswordError('Incorrect password');
@@ -222,11 +222,11 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
     <Page title="Additional Addresses" leftIcon={<Back onClick={goBack} />}>
       {stage === Stage.UNLOCK &&
         (isHWSeed ? (
-          <LedgerWait onConnected={() => setStage(Stage.LIST)} />
+          <LedgerWait fullSize onConnected={() => setStage(Stage.LIST)} />
         ) : (
           <>
             <Typography>
-              Enter password to unlock seed {isSeedPkRef(entry, entry.key) ? entry.key.seedId : ''}
+              Enter password to unlock seed {entry == null || !isSeedPkRef(entry, entry.key) ? '' : entry.key.seedId}
             </Typography>
             <Grid container alignItems="center" spacing={1}>
               <Grid item xs={10}>
@@ -311,7 +311,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
 
     const [entry] = entries;
 
-    const seed = isSeedPkRef(entry, entry.key) ? accounts.selectors.getSeed(state, entry.key.seedId) : null;
+    const seed =
+      entry == null || !isSeedPkRef(entry, entry.key) ? null : accounts.selectors.getSeed(state, entry.key.seedId);
 
     return { blockchains, entries, isHWSeed: seed?.type === 'ledger' };
   },
