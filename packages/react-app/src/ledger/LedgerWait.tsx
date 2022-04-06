@@ -1,86 +1,69 @@
-import {connect} from "react-redux";
-import {Dispatch} from "react";
+import { SeedDescription } from '@emeraldpay/emerald-vault-core';
+import { hwkey } from '@emeraldwallet/store';
+import { Ledger } from '@emeraldwallet/ui';
+import { CircularProgress, createStyles, Grid, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
-import {CircularProgress, createStyles, Grid, Typography} from "@material-ui/core";
-import {IState, hwkey} from "@emeraldwallet/store";
-import {makeStyles} from "@material-ui/core/styles";
-import {Ledger} from "@emeraldwallet/ui";
-import {SeedDescription} from "@emeraldpay/emerald-vault-core";
+import { connect } from 'react-redux';
 
 const useStyles = makeStyles(
   createStyles({
-    icon: {
-      fontSize: "4em"
+    fullSize: {
+      marginBottom: 120,
+      marginTop: 120,
     },
     progress: {
-      paddingTop: "10px",
-      textAlign: "center"
+      paddingTop: 10,
+      textAlign: 'center',
     },
-    containerFullSize: {
-      marginTop: "120px",
-      marginBottom: "120px",
-    }
-  })
+    icon: {
+      fontSize: '4em',
+    },
+  }),
 );
 
-/**
- *
- */
-const Component = ((props: Props & Actions & OwnProps) => {
-  const styles = useStyles();
-  const fullSize: boolean = props.fullSize || false;
-
-  React.useEffect(() => {
-    props.start()
-  }, []);
-
-  return <Grid container={true} className={fullSize ? styles.containerFullSize : ""}>
-    {fullSize && <Grid item={true} xs={2}/>}
-    <Grid item={true} xs={1} className={styles.progress}>
-      <CircularProgress/>
-    </Grid>
-    <Grid item={true} xs={6}>
-      <Typography variant={"h5"}>
-        <Ledger/> Waiting for Ledger Nano
-      </Typography>
-      <Typography>
-        Please connect and unlock your Ledger Nano X or Nano S.
-      </Typography>
-    </Grid>
-  </Grid>
-})
-
-// State Properties
-interface Props {
+interface DispatchProps {
+  awaitConnection: () => void;
 }
 
-// Actions
-interface Actions {
-  start: () => void;
-}
-
-// Component properties
 interface OwnProps {
   fullSize?: boolean;
   onConnected: (seed: SeedDescription) => void;
 }
 
-export default connect(
-  (state: IState, ownProps: OwnProps): Props => {
-    return {}
+const Component: React.FC<DispatchProps & OwnProps> = ({ fullSize = false, awaitConnection }) => {
+  const styles = useStyles();
+
+  React.useEffect(() => {
+    awaitConnection();
+  }, []);
+
+  return (
+    <Grid container className={fullSize ? styles.fullSize : ''}>
+      {fullSize && <Grid item xs={2} />}
+      <Grid item className={styles.progress} xs={1}>
+        <CircularProgress />
+      </Grid>
+      <Grid item xs={6}>
+        <Typography variant={'h5'}>
+          <Ledger /> Waiting for Ledger Nano
+        </Typography>
+        <Typography>Please connect and unlock your Ledger Nano X or Nano S.</Typography>
+      </Grid>
+    </Grid>
+  );
+};
+
+export default connect<{}, DispatchProps, OwnProps>(null, (dispatch, ownProps) => ({
+  awaitConnection() {
+    dispatch(hwkey.actions.setWatch(true));
+
+    hwkey.triggers.onConnect(() => {
+      ownProps.onConnected({
+        available: true,
+        createdAt: new Date(),
+        type: 'ledger',
+      });
+    });
   },
-  (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
-    return {
-      start: () => {
-        dispatch(hwkey.actions.setWatch(true));
-        hwkey.triggers.onConnect(() => {
-          ownProps.onConnected({
-            type: "ledger",
-            createdAt: new Date(),
-            available: true
-          });
-        });
-      }
-    }
-  }
-)((Component));
+}))(Component);
