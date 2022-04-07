@@ -3,6 +3,7 @@ import { screen } from '@emeraldwallet/store';
 import { CircularProgress } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import AddHDAddress from '../../../create-account/AddHDAddress';
 import CreateHdAccount from '../../../create-account/CreateHdAccount';
 import CreateWalletScreen from '../../../create-wallet/CreateWalletScreen';
 import {
@@ -53,6 +54,8 @@ const Screen: React.FC<Props> = (props) => {
       return <Settings />;
     case 'welcome':
       return <Welcome currentTermsVersion={props.termsVersion} />;
+    case screen.Pages.ADD_HD_ADDRESS:
+      return <AddHDAddress walletId={props.screenItem} />;
     case screen.Pages.ADDRESS_BOOK:
       return <AddressBook />;
     case screen.Pages.CREATE_HD_ACCOUNT:

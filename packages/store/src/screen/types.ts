@@ -13,6 +13,7 @@ export enum ActionTypes {
 
 export enum Pages {
   ACCOUNT = 'account',
+  ADD_HD_ADDRESS = 'add-hd-address',
   ADDRESS_BOOK = 'address-book',
   BROADCAST_TX = 'broadcast-tx',
   //@deprecated, rename to setup coins
