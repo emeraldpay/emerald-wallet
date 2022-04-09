@@ -20,6 +20,8 @@ hex = "0.4.3"
 uuid = "^0.8"
 chrono = { version = "0.4", features = ["serde"] }
 protobuf = { version = "2.27", features = ["with-bytes"] }
+neon-frame = "0.1"
+neon-frame-macro = "0.1"
 
 [dependencies.neon]
 version = "0.10.0"

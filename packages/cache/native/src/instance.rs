@@ -3,7 +3,6 @@ use std::sync::{Arc, RwLock};
 use emerald_wallet_state::storage::sled_access::SledStorage;
 use crate::errors::StateManagerError;
 use neon::prelude::*;
-use crate::access::StatusResult;
 
 enum StorageRef {
   UNINITIALIZED,
@@ -66,19 +65,19 @@ impl Instance {
 // NAPI functions
 // ------
 
-pub fn open(mut cx: FunctionContext) -> JsResult<JsString> {
+#[neon_frame_fn]
+pub fn open(cx: &mut FunctionContext) -> Result<bool, StateManagerError> {
   let path = cx
     .argument::<JsString>(0)
-    .expect("Path is not provided")
-    .value(&mut cx);
+    .map_err(|_| StateManagerError::MissingArgument(0, "path".to_string()))?
+    .value(cx);
 
-  let result = Instance::init(PathBuf::from(path));
-  let status = StatusResult::from(result).as_json();
-  Ok(cx.string(status))
+  Instance::init(PathBuf::from(path))
+    .map(|_| true)
 }
 
-pub fn close(mut cx: FunctionContext) -> JsResult<JsString> {
-  let result = Instance::close();
-  let status = StatusResult::from(result).as_json();
-  Ok(cx.string(status))
+#[neon_frame_fn]
+pub fn close(_cx: &mut FunctionContext) ->  Result<bool, StateManagerError> {
+  Instance::close()
+    .map(|_| true)
 }

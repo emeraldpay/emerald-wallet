@@ -2,7 +2,6 @@ use std::str::FromStr;
 use neon::prelude::*;
 use emerald_wallet_state::access::transactions::{Filter, PageQuery, PageResult, Transactions, WalletRef};
 use emerald_wallet_state::proto::transactions::{BlockchainId, Change, Change_ChangeType, State, Status, Transaction};
-use crate::access::StatusResult;
 use crate::errors::StateManagerError;
 use crate::instance::Instance;
 use chrono::{DateTime, TimeZone, Utc};
@@ -46,25 +45,30 @@ struct TransactionJson {
 }
 
 #[derive(Serialize, Clone)]
-struct PageResultJson {
+pub struct PageResultJson {
   transactions: Vec<TransactionJson>,
   cursor: Option<usize>,
 }
 
-fn read_wallet_ref(v: String) -> Option<WalletRef> {
+fn read_wallet_ref(v: String) -> Result<WalletRef, StateManagerError> {
   let re = Regex::new(r"^([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})(-([0-9]+))?$").unwrap();
   if re.is_match(v.as_str()) {
     let caps = re.captures(v.as_str()).unwrap();
-    let wallet_id = Uuid::from_str(caps.get(1).unwrap().as_str()).expect("Invalid uuid");
-    let entry_id = caps.get(3).map(|i| u32::from_str(i.as_str()).expect("Invalid entry id"));
+    let wallet_id = Uuid::from_str(caps.get(1).unwrap().as_str())
+      .map_err(|_| StateManagerError::InvalidValue("uuid".to_string()))?;
+    let entry_id = caps.get(3)
+      .map(|i| u32::from_str(i.as_str()))
+      // the following check would never produce false because we already checked it with Regex. so it's just in case we have an invalid regex
+      .filter(|v| v.is_ok())
+      .map(|v| v.unwrap());
+
     let r = match entry_id {
       None => WalletRef::WholeWallet(wallet_id),
       Some(i) => WalletRef::SelectedEntry(wallet_id, i)
     };
-    Some(r)
+    Ok(r)
   } else {
-    println!("Invalid wallet ref: {}", v);
-    None
+    Err(StateManagerError::InvalidValue("walletRef".to_string()))
   }
 }
 
@@ -74,7 +78,7 @@ impl TryFrom<FilterJson> for Filter {
   fn try_from(value: FilterJson) -> Result<Self, Self::Error> {
     let wallet: Option<WalletRef> = match value.wallet {
       None => None,
-      Some(v) => read_wallet_ref(v),
+      Some(v) => Some(read_wallet_ref(v)?),
     };
     Ok(Filter {
       after: value.after,
@@ -133,7 +137,7 @@ impl TryFrom<ChangeJson> for Change {
 
   fn try_from(value: ChangeJson) -> Result<Self, Self::Error> {
     let mut change = Change::new();
-    if let Some(wallet_ref) = read_wallet_ref(value.wallet) {
+    if let Ok(wallet_ref) = read_wallet_ref(value.wallet) {
       match wallet_ref {
         WalletRef::WholeWallet(_) => {
           return Err(StateManagerError::InvalidJson("wallet".to_string()))
@@ -192,101 +196,96 @@ impl TryFrom<PageResult> for PageResultJson {
 // NAPI functions
 // ------
 
-pub fn query(mut cx: FunctionContext) -> JsResult<JsUndefined> {
-  let filter: Handle<JsValue> = cx.argument(0)?;
-  let filter = if filter.is_a::<JsString, _>(&mut cx) {
-    let json = filter.downcast_or_throw::<JsString, _>(&mut cx)?.value(&mut cx);
-    Filter::try_from(serde_json::from_str::<FilterJson>(json.as_str()).expect("Invalid Filter JSON"))
-      .expect("Invalid filter structure")
+fn query_internal(filter: Filter) -> Result<PageResultJson, StateManagerError> {
+  let storage = Instance::get_storage()?;
+  storage.get_transactions()
+    .query(filter, PageQuery::default())
+    .map_err(|e| StateManagerError::from(e))
+    .and_then(|r| PageResultJson::try_from(r))
+}
+
+#[neon_frame_fn(channel=1)]
+pub fn query<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
+  where
+    H: FnOnce(Result<PageResultJson, StateManagerError>) + Send + 'static {
+
+  let filter: Handle<JsValue> = cx.argument(0)
+    .map_err(|_| StateManagerError::MissingArgument(0, "filter".to_string()))?;
+  let filter = if filter.is_a::<JsString, _>(cx) {
+    let json = filter.downcast_or_throw::<JsString, _>(cx)
+      .map_err(|_| StateManagerError::InvalidArgument(0, "filter".to_string()))?
+      .value(cx);
+    Filter::try_from(
+      serde_json::from_str::<FilterJson>(json.as_str())
+        .map_err(|_| StateManagerError::InvalidArgument(0, "filter".to_string()))?
+    ).map_err(|_| StateManagerError::InvalidArgument(0, "filter".to_string()))?
   } else {
     Filter::default()
   };
 
-  let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
-  let channel = cx.channel();
   std::thread::spawn(move || {
-    let storage = Instance::get_storage()
-      .expect("Storage is not ready");
-    let result = storage.get_transactions()
-      .query(filter, PageQuery::default())
-      .map_err(|e| StateManagerError::from(e))
-      .and_then(|r| PageResultJson::try_from(r));
-
-    let status = StatusResult::from(result).as_json();
-
-    channel.send(move |mut cx| {
-      let callback = callback.into_inner(&mut cx);
-      let this = cx.undefined();
-      let args: Vec<Handle<JsValue>> = vec![cx.string(status).upcast()];
-      callback.call(&mut cx, this, args)?;
-      Ok(())
-    });
+    let result = query_internal(filter);
+    handler(result);
   });
 
-  Ok(cx.undefined())
+  Ok(())
 }
 
-pub fn submit(mut cx: FunctionContext) -> JsResult<JsUndefined> {
+fn submit_internal(tx: Transaction) -> Result<bool, StateManagerError> {
+  let storage = Instance::get_storage()?;
+  storage.get_transactions()
+    .submit(vec![tx], Utc::now())
+    .map_err(StateManagerError::from)
+    .map(|_| true)
+}
+
+#[neon_frame_fn(channel=1)]
+pub fn submit<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
+  where
+    H: FnOnce(Result<bool, StateManagerError>) + Send + 'static {
   let tx = cx
     .argument::<JsString>(0)
-    .expect("TX is not provided")
-    .value(&mut cx);
+    .map_err(|_| StateManagerError::MissingArgument(0, "tx".to_string()))?
+    .value(cx);
   let tx = serde_json::from_str::<TransactionJson>(tx.as_str())
-    .expect("Invalid TX Json");
+    .map_err(|_| StateManagerError::InvalidArgument(0, "tx".to_string()))?;
   let tx = Transaction::try_from(tx)
-    .expect("Invalid TX Structure");
+    .map_err(|_| StateManagerError::InvalidArgument(0, "tx".to_string()))?;
 
-  let callback = cx.argument::<JsFunction>(1)?.root(&mut cx);
-  let channel = cx.channel();
   std::thread::spawn(move || {
-    let storage = Instance::get_storage()
-      .expect("Storage is not ready");
-    let result = storage.get_transactions()
-      .submit(vec![tx], Utc::now());
-
-    let status = StatusResult::from(result).as_json();
-
-    channel.send(move |mut cx| {
-      let callback = callback.into_inner(&mut cx);
-      let this = cx.undefined();
-      let args: Vec<Handle<JsValue>> = vec![cx.string(status).upcast()];
-      callback.call(&mut cx, this, args)?;
-      Ok(())
-    });
+    let result = submit_internal(tx);
+    handler(result);
   });
 
-  Ok(cx.undefined())
+  Ok(())
 }
 
-pub fn remove(mut cx: FunctionContext) -> JsResult<JsUndefined> {
+fn remove_internal(blockchain: u32, tx_id: String) -> Result<bool, StateManagerError> {
+  let storage = Instance::get_storage()?;
+  storage.get_transactions()
+    .forget(blockchain, tx_id)
+    .map_err(StateManagerError::from)
+    .map(|_| true)
+}
+
+#[neon_frame_fn(channel=2)]
+pub fn remove<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
+  where
+    H: FnOnce(Result<bool, StateManagerError>) + Send + 'static {
+
   let blockchain = cx
     .argument::<JsNumber>(0)
-    .expect("Blockchain is not provided")
-    .value(&mut cx) as u32;
+    .map_err(|_| StateManagerError::MissingArgument(0, "blockchain".to_string()))?
+    .value(cx) as u32;
   let tx_id = cx
     .argument::<JsString>(1)
-    .expect("Tx ID is not provided")
-    .value(&mut cx);
+    .map_err(|_| StateManagerError::MissingArgument(1, "txId".to_string()))?
+    .value(cx);
 
-  let callback = cx.argument::<JsFunction>(2)?.root(&mut cx);
-  let channel = cx.channel();
   std::thread::spawn(move || {
-    let storage = Instance::get_storage()
-      .expect("Storage is not ready");
-    let result = storage.get_transactions()
-      .forget(blockchain, tx_id)
-      .map(|_| true);
-
-    let status = StatusResult::from(result).as_json();
-
-    channel.send(move |mut cx| {
-      let callback = callback.into_inner(&mut cx);
-      let this = cx.undefined();
-      let args: Vec<Handle<JsValue>> = vec![cx.string(status).upcast()];
-      callback.call(&mut cx, this, args)?;
-      Ok(())
-    });
+    let result = remove_internal(blockchain, tx_id);
+    handler(result);
   });
 
-  Ok(cx.undefined())
+  Ok(())
 }

@@ -44,6 +44,8 @@ dependencies = [
  "hex",
  "lazy_static",
  "neon",
+ "neon-frame",
+ "neon-frame-macro",
  "protobuf",
  "regex",
  "serde",
@@ -248,6 +250,28 @@ name = "neon-build"
 version = "0.10.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "cd4ec682b1a7837c84d9866c342ac6ffe2ce9712e844e4015f31d01bdeb73608"
+
+[[package]]
+name = "neon-frame"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "db48f85aa989d621e8fbeafd886dbf6770b86d6c9457bc34db673010c7163174"
+dependencies = [
+ "serde",
+ "serde_derive",
+ "serde_json",
+]
+
+[[package]]
+name = "neon-frame-macro"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "36ce190fea45dc470a812a5c1b0b945e07e6d40fe74ec53927f90971535040d2"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
 
 [[package]]
 name = "neon-macros"

@@ -2,8 +2,9 @@
 extern crate serde_derive;
 #[macro_use]
 extern crate lazy_static;
+#[macro_use]
+extern crate neon_frame_macro;
 
-mod access;
 mod transaction_history;
 mod instance;
 mod errors;
