@@ -1,52 +1,43 @@
+import { WalletState } from '@emeraldpay/emerald-vault-core';
+import { IApi, WalletStateStorage } from '@emeraldwallet/core';
+import { createStore } from '@emeraldwallet/store';
+import { DecoratorFunction } from '@storybook/addons/dist/ts3.9/types';
 import * as React from 'react';
-import {Provider} from 'react-redux';
-import {createStore} from '@emeraldwallet/store';
-import {ApiMock, BackendMock, VaultMock} from "./backendMock";
-import {StoryContext, StoryFn} from "@storybook/addons/dist/types";
-import {IApi, WalletStateStorage} from "@emeraldwallet/core";
-import {WalletState} from '@emeraldpay/emerald-vault-core';
-import {AddressRole, EntryId} from "@emeraldpay/emerald-vault-core/lib/types";
+import { ReactElement } from 'react';
+import { Provider } from 'react-redux';
+import { ApiMock, BackendMock, VaultMock } from './backendMock';
 
 function createApi(backend: BackendMock): IApi {
-  return new ApiMock(
-    new VaultMock(backend.vault)
-  )
+  return new ApiMock(new VaultMock(backend.vault));
 }
 
 class WalletStateMock implements WalletStateStorage {
   load(): Promise<WalletState> {
-    return Promise.resolve({accountIndexes: []});
+    return Promise.resolve({ accountIndexes: [] });
   }
 
-  next(entryId: EntryId, type: AddressRole): Promise<WalletState> {
-    return Promise.resolve({accountIndexes: []});
+  next(): Promise<WalletState> {
+    return Promise.resolve({ accountIndexes: [] });
   }
 
-  update(entryId: EntryId, receive: number | undefined, change: number | undefined): Promise<WalletState | undefined> {
+  update(): Promise<WalletState | undefined> {
     return Promise.resolve(undefined);
   }
-
 }
 
 const defaultBackend = new BackendMock();
 const defaultWalletState = new WalletStateMock();
 const defaultStore = createStore(createApi(defaultBackend), defaultBackend, defaultWalletState);
 
-
-export function providerForStore(backend: BackendMock, init = []) {
+export function providerForStore(backend: BackendMock, init = []): DecoratorFunction<ReactElement> {
   const store = createStore(createApi(backend), backend, defaultWalletState);
+
   init?.forEach((action) => store.dispatch(action));
-  return (story: StoryFn, c: StoryContext) =>
-    (<Provider store={store}>
-      {story()}
-    </Provider>)
-    ;
+
+  // eslint-disable-next-line react/display-name
+  return (story) => <Provider store={store}>{story()}</Provider>;
 }
 
-const withProvider = (story) => (
-  <Provider store={defaultStore}>
-    {story()}
-  </Provider>
-);
+const withProvider: DecoratorFunction<ReactElement> = (story) => <Provider store={defaultStore}>{story()}</Provider>;
 
 export default withProvider;
