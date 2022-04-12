@@ -8,6 +8,9 @@ extern crate neon_frame_macro;
 mod transaction_history;
 mod instance;
 mod errors;
+mod addressbook;
+mod pagination;
+mod commons;
 
 use neon::prelude::*;
 
@@ -19,6 +22,10 @@ fn main(mut cx: ModuleContext) -> NeonResult<()> {
   cx.export_function("txhistory_query", transaction_history::query)?;
   cx.export_function("txhistory_submit", transaction_history::submit)?;
   cx.export_function("txhistory_remove", transaction_history::remove)?;
+
+  cx.export_function("addressbook_query", addressbook::query)?;
+  cx.export_function("addressbook_add", addressbook::add)?;
+  cx.export_function("addressbook_remove", addressbook::remove)?;
 
   Ok(())
 }

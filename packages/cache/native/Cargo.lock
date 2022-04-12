@@ -110,7 +110,7 @@ dependencies = [
 [[package]]
 name = "emerald-wallet-state"
 version = "0.1.0"
-source = "git+https://github.com/emeraldpay/emerald-wallet-state?branch=master#ef1e3d7623a178ea323c0011701564b5a3a616be"
+source = "git+https://github.com/emeraldpay/emerald-wallet-state?branch=master#045dc31f4ebcf913a86e6924e71e0feb90d5e6ab"
 dependencies = [
  "chrono",
  "enum-display-derive",
@@ -154,6 +154,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c31b6d751ae2c7f11320402d34e41349dd1016f8d5d45e48c4312bc8625af50c"
 dependencies = [
  "byteorder",
+]
+
+[[package]]
+name = "getrandom"
+version = "0.2.6"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9be70c98951c83b8d2f8f60d7065fa6d5146873094452a1008da8c2f1e4205ad"
+dependencies = [
+ "cfg-if",
+ "libc",
+ "wasi",
 ]
 
 [[package]]
@@ -513,6 +524,9 @@ name = "uuid"
 version = "0.8.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "bc5cf98d8186244414c848017f0e2676b3fcb46807f6668a97dfe67359a3c4b7"
+dependencies = [
+ "getrandom",
+]
 
 [[package]]
 name = "wasi"

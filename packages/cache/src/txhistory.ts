@@ -1,4 +1,4 @@
-import {createDateReviver, EmeraldStateManager, neonToPromise} from "./api";
+import {createDateReviver, EmeraldStateManager, neonToPromise, PageResult} from "./api";
 import {Uuid, EntryId} from "@emeraldpay/emerald-vault-core";
 import {AnyCoinCode} from "@emeraldwallet/core";
 
@@ -99,12 +99,6 @@ export interface Filter {
   before?: Date,
 }
 
-export interface PageResult {
-  /// Found transactions
-  transactions: Transaction[],
-  cursor?: number,
-}
-
 /**
  * Manage Transaction History
  */
@@ -154,7 +148,7 @@ export class TxHistory {
    * Find transactions under the specified criteria
    * @param filter
    */
-  query(filter?: Filter): Promise<PageResult> {
+  query(filter?: Filter): Promise<PageResult<Transaction>> {
     return new Promise((resolve, reject) => {
       try {
         this.manager.addon.txhistory_query(

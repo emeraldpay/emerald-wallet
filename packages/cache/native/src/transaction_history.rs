@@ -1,6 +1,7 @@
 use std::str::FromStr;
 use neon::prelude::*;
-use emerald_wallet_state::access::transactions::{Filter, PageQuery, PageResult, Transactions, WalletRef};
+use emerald_wallet_state::access::transactions::{Filter, Transactions, WalletRef};
+use emerald_wallet_state::access::pagination::{PageQuery, PageResult};
 use emerald_wallet_state::proto::transactions::{BlockchainId, Change, Change_ChangeType, State, Status, Transaction};
 use crate::errors::StateManagerError;
 use crate::instance::Instance;
@@ -8,6 +9,8 @@ use chrono::{DateTime, TimeZone, Utc};
 use protobuf::ProtobufEnum;
 use regex::Regex;
 use uuid::Uuid;
+use crate::commons::{if_not_empty, if_time};
+use crate::pagination::PageResultJson;
 
 #[derive(Deserialize)]
 struct FilterJson {
@@ -30,7 +33,7 @@ struct ChangeJson {
 }
 
 #[derive(Serialize, Deserialize, Clone)]
-struct TransactionJson {
+pub struct TransactionJson {
   blockchain: u32,
   #[serde(rename = "txId")]
   tx_id: String,
@@ -42,12 +45,6 @@ struct TransactionJson {
   state: usize,
   status: usize,
   changes: Vec<ChangeJson>,
-}
-
-#[derive(Serialize, Clone)]
-pub struct PageResultJson {
-  transactions: Vec<TransactionJson>,
-  cursor: Option<usize>,
 }
 
 fn read_wallet_ref(v: String) -> Result<WalletRef, StateManagerError> {
@@ -97,9 +94,7 @@ impl TryFrom<Transaction> for TransactionJson {
       blockchain: value.blockchain.value() as u32,
       tx_id: value.tx_id,
       since_timestamp: Utc.timestamp_millis(value.since_timestamp as i64),
-      confirm_timestamp: if value.confirm_timestamp > 0 {
-        Some(Utc.timestamp_millis(value.confirm_timestamp as i64))
-      } else { None },
+      confirm_timestamp: if_time(value.confirm_timestamp),
       state: value.state.value() as usize,
       status: value.status.value() as usize,
       changes: value.changes.iter().map(|x| ChangeJson::from(x)).collect(),
@@ -156,14 +151,6 @@ impl TryFrom<ChangeJson> for Change {
   }
 }
 
-fn if_not_empty(s: String) -> Option<String> {
-  if s.len() > 0 {
-    Some(s)
-  } else {
-    None
-  }
-}
-
 impl From<&Change> for ChangeJson {
   fn from(value: &Change) -> Self {
     ChangeJson {
@@ -177,16 +164,16 @@ impl From<&Change> for ChangeJson {
   }
 }
 
-impl TryFrom<PageResult> for PageResultJson {
+impl TryFrom<PageResult<Transaction>> for PageResultJson<TransactionJson> {
   type Error = StateManagerError;
 
-  fn try_from(value: PageResult) -> Result<Self, Self::Error> {
+  fn try_from(value: PageResult<Transaction>) -> Result<Self, Self::Error> {
     let mut transactions = Vec::new();
-    for tx in value.transactions {
+    for tx in value.values {
       transactions.push(TransactionJson::try_from(tx)?)
     }
     Ok(PageResultJson {
-      transactions,
+      items: transactions,
       cursor: None,
     })
   }
@@ -196,7 +183,7 @@ impl TryFrom<PageResult> for PageResultJson {
 // NAPI functions
 // ------
 
-fn query_internal(filter: Filter) -> Result<PageResultJson, StateManagerError> {
+fn query_internal(filter: Filter) -> Result<PageResultJson<TransactionJson>, StateManagerError> {
   let storage = Instance::get_storage()?;
   storage.get_transactions()
     .query(filter, PageQuery::default())
@@ -207,7 +194,7 @@ fn query_internal(filter: Filter) -> Result<PageResultJson, StateManagerError> {
 #[neon_frame_fn(channel=1)]
 pub fn query<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
   where
-    H: FnOnce(Result<PageResultJson, StateManagerError>) + Send + 'static {
+    H: FnOnce(Result<PageResultJson<TransactionJson>, StateManagerError>) + Send + 'static {
 
   let filter: Handle<JsValue> = cx.argument(0)
     .map_err(|_| StateManagerError::MissingArgument(0, "filter".to_string()))?;

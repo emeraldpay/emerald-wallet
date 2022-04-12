@@ -1,15 +1,28 @@
-import {TxHistory} from "./txhistory";
+import {Transaction, TxHistory} from "./txhistory";
+import {Addressbook} from "./addressbook";
 
 const addon = require('../index.node');
 
-export type Status<T> = {
-  succeeded: boolean,
+export type StatusOk<T> = {
+  succeeded: true,
   result: T | undefined,
+}
+
+export type StatusFail = {
+  succeeded: false,
   error: {
     code: number,
     message: string
-  } | undefined
+  }
 }
+
+export type Status<T> = StatusOk<T> | StatusFail;
+
+export interface PageResult<T> {
+  items: T[],
+  cursor?: number,
+}
+
 
 type PromiseCallback<T> = (value?: T) => void;
 // Neon Callback for Status<T>
@@ -49,6 +62,10 @@ export class EmeraldStateManager {
    * Manage Transaction History
    */
   readonly txhistory = new TxHistory(this);
+  /**
+   * Manager Address Book
+   */
+  readonly addressbook = new Addressbook(this);
 
   /**
    * Initialize the cache keeping the stored data at the specified dir.

@@ -15,7 +15,8 @@ pub enum StateManagerError {
 impl From<StateError> for StateManagerError {
   fn from(err: StateError) -> Self {
     match err {
-      StateError::IOError => StateManagerError::IO
+      StateError::IOError => StateManagerError::IO,
+      StateError::InvalidId => StateManagerError::InvalidValue("ID".to_string()),
     }
   }
 }

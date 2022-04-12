@@ -12,7 +12,7 @@ describe("Tx History", () => {
 
   test("empty query", async () => {
     let act = await state.txhistory.query();
-    expect(act).toEqual({transactions: [], cursor: null});
+    expect(act).toEqual({items: [], cursor: null});
   });
 
   test("add a tx and query all", async () => {
@@ -26,9 +26,9 @@ describe("Tx History", () => {
     };
     await state.txhistory.submit(tx);
     let act = await state.txhistory.query();
-    expect(act).toEqual({transactions: [tx], cursor: null});
+    expect(act).toEqual({items: [tx], cursor: null});
     // make sure it's actual date, not a string. a date keeps timezone and millis
-    expect(act.transactions[0].sinceTimestamp.toISOString()).toBe("2021-03-05T15:11:12.000Z");
+    expect(act.items[0].sinceTimestamp.toISOString()).toBe("2021-03-05T15:11:12.000Z");
   });
 
   test("add a tx, remove it and query all", async () => {
@@ -43,7 +43,7 @@ describe("Tx History", () => {
     await state.txhistory.submit(tx);
     await state.txhistory.remove(tx.blockchain, tx.txId);
     let act = await state.txhistory.query();
-    expect(act).toEqual({transactions: [], cursor: null});
+    expect(act).toEqual({items: [], cursor: null});
   });
 
   test("add couple of txes and query only last", async () => {
@@ -70,7 +70,7 @@ describe("Tx History", () => {
       after: new Date("2021-03-01T00:00:00")
     }
     let act = await state.txhistory.query(filter);
-    expect(act).toEqual({transactions: [tx2], cursor: null});
+    expect(act).toEqual({items: [tx2], cursor: null});
   });
 
   test("add couple of txes and query by  wallet", async () => {
@@ -111,30 +111,30 @@ describe("Tx History", () => {
       wallet: "74b0a509-9083-4b12-80bb-e01db1fa2293"
     }
     let act = await state.txhistory.query(filter);
-    expect(act.transactions.length).toBe(1);
-    expect(act.transactions[0].txId).toBe(tx1.txId);
-    expect(act.transactions[0].changes.length).toBe(1);
-    expect(act.transactions[0].changes[0]).toEqual(tx1.changes[0]);
+    expect(act.items.length).toBe(1);
+    expect(act.items[0].txId).toBe(tx1.txId);
+    expect(act.items[0].changes.length).toBe(1);
+    expect(act.items[0].changes[0]).toEqual(tx1.changes[0]);
 
     filter = {
       wallet: "53c1fdb3-a2fd-4233-8e5c-b3ecc24486c4"
     }
     act = await state.txhistory.query(filter);
-    expect(act.transactions.length).toBe(1);
-    expect(act.transactions[0].txId).toBe(tx2.txId);
+    expect(act.items.length).toBe(1);
+    expect(act.items[0].txId).toBe(tx2.txId);
 
     filter = {
       wallet: "53c1fdb3-a2fd-4233-8e5c-b3ecc24486c4-1"
     }
     act = await state.txhistory.query(filter);
-    expect(act.transactions.length).toBe(1);
-    expect(act.transactions[0].txId).toBe(tx2.txId);
+    expect(act.items.length).toBe(1);
+    expect(act.items[0].txId).toBe(tx2.txId);
 
     filter = {
       wallet: "53c1fdb3-a2fd-4233-8e5c-b3ecc24486c4-2"
     }
     act = await state.txhistory.query(filter);
-    expect(act.transactions.length).toBe(0);
+    expect(act.items.length).toBe(0);
   });
 
 })
