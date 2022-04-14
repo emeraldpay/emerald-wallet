@@ -15,12 +15,11 @@
   },
   "dependencies": {
     "@emeraldwallet/core": "^2.7.0-dev",
-    "ethereumjs-abi": "^0.6.7"
+    "@ethersproject/abi": "^5.6.0"
   },
   "devDependencies": {
     "@types/jest": "^27.4.0",
     "@types/node": "16.11.22",
-    "@types/ethereumjs-abi": "^0.6.3",
     "jest": "^27.5.0",
     "rimraf": "^2.6.3",
     "ts-jest": "^27.1.3"
