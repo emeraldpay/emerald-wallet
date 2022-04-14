@@ -1,4 +1,5 @@
-import { BigAmount, FormatterBuilder, Unit } from '@emeraldpay/bigamount';
+import { EstimationMode } from '@emeraldpay/api';
+import { BigAmount, FormatterBuilder } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { Page } from '@emeraldwallet/ui';
@@ -21,7 +22,6 @@ import { registry } from '@emeraldwallet/erc20';
 import {
   accounts,
   addressBook,
-  blockchains,
   hwkey,
   IState,
   screen,
@@ -35,7 +35,7 @@ import { connect } from 'react-redux';
 import ChainTitle from '../../common/ChainTitle';
 import CreateTx from '../CreateTx';
 import SignTx from '../SignTx';
-import { traceValidate, txFeeFiat } from './util';
+import { traceValidate } from './util';
 
 type CreateEthereumTx = workflow.CreateEthereumTx;
 type CreateERC20Tx = workflow.CreateERC20Tx;
@@ -49,6 +49,8 @@ enum PAGES {
 
 const DEFAULT_GAS_LIMIT = '21000';
 const DEFAULT_ERC20_GAS_LIMIT = '40000';
+
+const FEE_KEYS: EstimationMode[] = ['avgLast', 'avgMiddle', 'avgTail5'];
 
 interface CreateTxState {
   hash?: string;
@@ -540,23 +542,47 @@ export default connect(
 
   (dispatch: any, ownProps: OwnProps): DispatchFromProps => ({
     getFees: async (blockchain) => {
-      let avgLast: number;
-      let avgMiddle: number;
+      let results = await Promise.allSettled(
+        FEE_KEYS.map((key) => dispatch(transaction.actions.estimateFee(blockchain, 128, key))),
+      );
 
-      let avgTail5 = await dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgTail5'));
+      results = await Promise.allSettled(
+        results.map((result, index) =>
+          result.status === 'fulfilled'
+            ? Promise.resolve(result.value)
+            : dispatch(transaction.actions.estimateFee(blockchain, 256, FEE_KEYS[index])),
+        ),
+      );
 
-      if (avgTail5 === 0) {
-        [avgLast, avgMiddle, avgTail5] = await Promise.all([
-          dispatch(transaction.actions.estimateFee(blockchain, 256, 'avgLast')),
-          dispatch(transaction.actions.estimateFee(blockchain, 256, 'avgMiddle')),
-          dispatch(transaction.actions.estimateFee(blockchain, 256, 'avgTail5')),
-        ]);
-      } else {
-        [avgLast, avgMiddle] = await Promise.all([
-          dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgLast')),
-          dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgMiddle')),
-        ]);
+      let [avgLastNumber, avgMiddleNumber, avgTail5Number] = results.map(
+        (result) => new BigNumber(result.status === 'fulfilled' ? result.value ?? 0 : 0),
+      );
+
+      if (avgTail5Number.eq(0)) {
+        // TODO Set default value from remote config
+        avgTail5Number = new Wei(30, 'GWei').number;
       }
+
+      if (avgTail5Number.lt(avgLastNumber) || avgTail5Number.gt(avgMiddleNumber)) {
+        [avgLastNumber, avgMiddleNumber, avgTail5Number] = [avgLastNumber, avgMiddleNumber, avgTail5Number].sort(
+          (first, second) => {
+            if (first.eq(second)) {
+              return 0;
+            }
+
+            return first.gt(second) ? 1 : -1;
+          },
+        );
+      }
+
+      const avgTail5 = avgTail5Number.toNumber();
+
+      const avgLast = avgLastNumber.gt(0)
+        ? avgLastNumber.toNumber()
+        : avgTail5Number.minus(avgTail5Number.multipliedBy(0.05)).toNumber();
+      const avgMiddle = avgMiddleNumber.gt(0)
+        ? avgMiddleNumber.toNumber()
+        : avgTail5Number.plus(avgTail5Number.multipliedBy(0.05)).toNumber();
 
       return {
         avgLast,
