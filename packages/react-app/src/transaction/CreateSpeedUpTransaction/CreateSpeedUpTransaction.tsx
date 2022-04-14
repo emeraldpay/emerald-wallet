@@ -1,5 +1,5 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { BlockchainCode, toNumber } from '@emeraldwallet/core';
+import { BlockchainCode } from '@emeraldwallet/core';
 import { EthereumStoredTransaction } from '@emeraldwallet/core/src/history/IStoredTransaction';
 import { accounts, IState, screen, transaction } from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
@@ -139,7 +139,7 @@ const CreateSpeedUpTransaction: React.FC<DispatchProps & OwnProps & StateProps &
       </FormFieldWrapper>
       <FormFieldWrapper>
         <FormLabel>Password</FormLabel>
-        <PasswordInput error={passwordError} onChange={setPassword} />
+        <PasswordInput error={passwordError} minLength={1} onChange={setPassword} />
       </FormFieldWrapper>
       <FormFieldWrapper>
         <FormLabel />

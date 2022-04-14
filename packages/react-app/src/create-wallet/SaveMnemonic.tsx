@@ -42,7 +42,7 @@ const SaveMnemonic: React.FC<DispatchProps & OwnProps> = ({ checkGlobalKey, onPa
       <Grid item xs={12}>
         <Grid container alignItems="center" spacing={1}>
           <Grid item xs={10}>
-            <PasswordInput error={passwordError} onChange={setPassword} />
+            <PasswordInput error={passwordError} minLength={1} onChange={setPassword} />
           </Grid>
           <Grid item xs={2}>
             <Button label="Save" primary={true} onClick={onVerifyPassword} />

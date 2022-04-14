@@ -1,11 +1,9 @@
-import {Page} from '@emeraldwallet/ui';
-import {Back} from '@emeraldwallet/ui';
-import {Button, PasswordInput, Theme} from '@emeraldwallet/ui';
-import {createStyles, MenuItem, Tab, Tabs, TextField} from '@material-ui/core';
-import {withStyles} from '@material-ui/core/styles';
+import { Back, Button, Page, PasswordInput, Theme } from '@emeraldwallet/ui';
+import { createStyles, MenuItem, Tab, Tabs, TextField } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
-import {WithTranslation} from 'react-i18next';
-import {DispatchProps, StateProps} from '../Settings/Settings';
+import { WithTranslation } from 'react-i18next';
+import { DispatchProps, StateProps } from '../Settings/Settings';
 
 const styles = createStyles({
   tabsContainer: {
@@ -197,7 +195,7 @@ export class SettingsForm extends React.Component<Props, State> {
               </div>
               <div className={classes.right}>
                 <div className={classes.fieldInput}>
-                  <PasswordInput onChange={(password) => this.setState({ oldPassword: password })} />
+                  <PasswordInput minLength={1} onChange={(password) => this.setState({ oldPassword: password })} />
                 </div>
               </div>
             </div>
@@ -209,6 +207,7 @@ export class SettingsForm extends React.Component<Props, State> {
                 <div className={classes.fieldInput}>
                   <PasswordInput
                     error={this.state.passwordError}
+                    minLength={1}
                     onChange={(password) => this.setState({ newPassword: password })}
                   />
                 </div>
@@ -220,7 +219,7 @@ export class SettingsForm extends React.Component<Props, State> {
               </div>
               <div className={classes.right}>
                 <div className={classes.fieldInput}>
-                  <PasswordInput onChange={(password) => this.setState({ confirmPassword: password })} />
+                  <PasswordInput minLength={1} onChange={(password) => this.setState({ confirmPassword: password })} />
                 </div>
               </div>
             </div>
