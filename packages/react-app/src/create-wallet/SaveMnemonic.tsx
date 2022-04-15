@@ -33,7 +33,7 @@ const SaveMnemonic: React.FC<DispatchProps & OwnProps> = ({ checkGlobalKey, onPa
   return (
     <Grid container>
       <Grid item xs={12}>
-        <Typography variant={'h4'}>Save Secret Phrase</Typography>
+        <Typography style={{ marginBottom: 10 }} variant="h4">Enter your password</Typography>
         <Alert severity="info">
           You&apos;re about to save an encrypted copy of the secret phrase (&quot;Mnemonic Phrase&quot;) generated on
           the previous step. Please enter the Emerald Wallet password to save the Seed Phrase!
