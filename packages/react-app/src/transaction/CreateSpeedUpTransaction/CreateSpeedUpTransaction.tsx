@@ -1,9 +1,10 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { BlockchainCode, toNumber } from '@emeraldwallet/core';
+import { BlockchainCode } from '@emeraldwallet/core';
 import { EthereumStoredTransaction } from '@emeraldwallet/core/src/history/IStoredTransaction';
 import { accounts, IState, screen, transaction } from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import { Box, createStyles, FormHelperText, Slider, withStyles } from '@material-ui/core';
+import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
@@ -98,7 +99,7 @@ const CreateSpeedUpTransaction: React.FC<DispatchProps & OwnProps & StateProps &
 
       const topGasPrice = new Wei(topFee);
 
-      if (gasPrice <= topGasPrice.getNumberByUnit(txGasPriceUnit).toNumber()) {
+      if (topGasPrice.number.gt(0) && gasPrice <= topGasPrice.getNumberByUnit(txGasPriceUnit).toNumber()) {
         setMaxGasPrice(topGasPrice);
       }
     })();
@@ -170,8 +171,20 @@ export default connect<{}, DispatchProps, OwnProps, IState>(
     checkGlobalKey(password) {
       return dispatch(accounts.actions.verifyGlobalKey(password));
     },
-    getTopFee(blockchain) {
-      return dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgTop'));
+    async getTopFee(blockchain) {
+      let avgTop: null | number = null;
+
+      try {
+        avgTop = await dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgTop'));
+
+        if (avgTop == null || new BigNumber(avgTop).eq(0)) {
+          avgTop = await dispatch(transaction.actions.estimateFee(blockchain, 256, 'avgTop'));
+        }
+      } catch (exception) {
+        // Nothing
+      }
+
+      return avgTop ?? 0;
     },
     goBack() {
       dispatch(screen.actions.goBack());
