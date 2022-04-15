@@ -28,14 +28,13 @@ const log = Logger.forCategory('store.transaction');
 
 function unwrap(value: string[] | string | null): Promise<string> {
   return new Promise((resolve, reject) => {
-    if (typeof value === 'string') {
-      resolve(value);
+    const [data] = Array.isArray(value) ? value : [value];
+
+    if (typeof data === 'string') {
+      return resolve(data);
     }
-    if (value && value.length === 1) {
-      resolve(value[0]);
-    } else {
-      reject(new Error(`Invalid list size ${value}`));
-    }
+
+    reject(new Error(`Invalid value ${value}`));
   });
 }
 

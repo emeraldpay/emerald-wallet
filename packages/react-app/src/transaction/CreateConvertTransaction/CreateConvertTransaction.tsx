@@ -1,3 +1,4 @@
+import { EstimationMode } from '@emeraldpay/api';
 import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { WalletEntry } from '@emeraldpay/emerald-vault-core';
@@ -82,6 +83,8 @@ enum Stages {
   SETUP = 'setup',
   SIGN = 'sign',
 }
+
+const FEE_KEYS: EstimationMode[] = ['avgLast', 'avgMiddle', 'avgTail5'];
 
 const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & DispatchProps> = ({
   blockchain,
@@ -445,11 +448,47 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       );
     },
     async getFees(blockchain) {
-      const [avgLast, avgMiddle, avgTail5] = await Promise.all([
-        dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgLast')),
-        dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgMiddle')),
-        dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgTail5')),
-      ]);
+      let results = await Promise.allSettled(
+        FEE_KEYS.map((key) => dispatch(transaction.actions.estimateFee(blockchain, 128, key))),
+      );
+
+      results = await Promise.allSettled(
+        results.map((result, index) =>
+          result.status === 'fulfilled'
+            ? Promise.resolve(result.value)
+            : dispatch(transaction.actions.estimateFee(blockchain, 256, FEE_KEYS[index])),
+        ),
+      );
+
+      let [avgLastNumber, avgMiddleNumber, avgTail5Number] = results.map(
+        (result) => new BigNumber(result.status === 'fulfilled' ? result.value ?? 0 : 0),
+      );
+
+      if (avgTail5Number.eq(0)) {
+        // TODO Set default value from remote config
+        avgTail5Number = new Wei(30, 'GWei').number;
+      }
+
+      if (avgTail5Number.lt(avgLastNumber) || avgTail5Number.gt(avgMiddleNumber)) {
+        [avgLastNumber, avgMiddleNumber, avgTail5Number] = [avgLastNumber, avgMiddleNumber, avgTail5Number].sort(
+          (first, second) => {
+            if (first.eq(second)) {
+              return 0;
+            }
+
+            return first.gt(second) ? 1 : -1;
+          },
+        );
+      }
+
+      const avgTail5 = avgTail5Number.toNumber();
+
+      const avgLast = avgLastNumber.gt(0)
+        ? avgLastNumber.toNumber()
+        : avgTail5Number.minus(avgTail5Number.multipliedBy(0.05)).toNumber();
+      const avgMiddle = avgMiddleNumber.gt(0)
+        ? avgMiddleNumber.toNumber()
+        : avgTail5Number.plus(avgTail5Number.multipliedBy(0.05)).toNumber();
 
       return {
         avgLast,
