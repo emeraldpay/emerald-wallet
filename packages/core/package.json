@@ -20,7 +20,6 @@
     "@ethereumjs/common": "^2.6.2",
     "@ethereumjs/tx": "^3.5.0",
     "ethereumjs-util": "^7.1.4",
-    "rlp": "^3.0.0",
     "bignumber.js": "8.0.2"
   },
   "devDependencies": {
