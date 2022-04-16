@@ -226,7 +226,7 @@ interface Props {
 
 // Component properties
 interface OwnProps {
-  create: CreateBitcoinTx<BigAmount>;
+  create: CreateBitcoinTx;
   entry: BitcoinEntry;
   source: EntryId;
   getFees: () => Promise<any>;
