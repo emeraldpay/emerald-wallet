@@ -218,7 +218,7 @@ export default connect(
       if (isEthereumEntry(acc)) {
         address = acc.address?.value
       } else if (isBitcoinEntry(acc)) {
-        address = acc.addresses.find((a: CurrentAddress) => a.role = "receive")?.address;
+        address = acc.addresses.find((a: CurrentAddress) => a.role === "receive")?.address;
       }
       if (typeof address == "undefined") {
         return
