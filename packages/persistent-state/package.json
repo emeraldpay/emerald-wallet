@@ -1,5 +1,5 @@
 {
-  "name": "@emeraldwallet/cache",
+  "name": "@emeraldwallet/persistent-state",
   "version": "2.7.0-dev",
   "description": "",
   "main": "lib/index.js",

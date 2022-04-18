@@ -36,25 +36,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "c4872d67bab6358e59559027aa3b9157c53d9358c51423c17554809a8858e0f8"
 
 [[package]]
-name = "cache"
-version = "2.7.0-dev"
-dependencies = [
- "chrono",
- "emerald-wallet-state",
- "hex",
- "lazy_static",
- "neon",
- "neon-frame",
- "neon-frame-macro",
- "protobuf",
- "regex",
- "serde",
- "serde_derive",
- "serde_json",
- "uuid",
-]
-
-[[package]]
 name = "cfg-if"
 version = "1.0.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -349,6 +330,25 @@ dependencies = [
  "redox_syscall",
  "smallvec",
  "winapi",
+]
+
+[[package]]
+name = "persistent-store"
+version = "2.7.0-dev"
+dependencies = [
+ "chrono",
+ "emerald-wallet-state",
+ "hex",
+ "lazy_static",
+ "neon",
+ "neon-frame",
+ "neon-frame-macro",
+ "protobuf",
+ "regex",
+ "serde",
+ "serde_derive",
+ "serde_json",
+ "uuid",
 ]
 
 [[package]]

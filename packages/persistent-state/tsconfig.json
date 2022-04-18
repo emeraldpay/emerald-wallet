@@ -22,5 +22,10 @@
   ],
   "include": [
     "src/**/*.ts"
+  ],
+  "references": [
+    {
+      "path": "../core"
+    }
   ]
 }
