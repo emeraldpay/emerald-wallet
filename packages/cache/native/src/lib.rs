@@ -11,6 +11,7 @@ mod errors;
 mod addressbook;
 mod pagination;
 mod commons;
+mod xpubpos;
 
 use neon::prelude::*;
 
@@ -26,6 +27,9 @@ fn main(mut cx: ModuleContext) -> NeonResult<()> {
   cx.export_function("addressbook_query", addressbook::query)?;
   cx.export_function("addressbook_add", addressbook::add)?;
   cx.export_function("addressbook_remove", addressbook::remove)?;
+
+  cx.export_function("xpubpos_set", xpubpos::set)?;
+  cx.export_function("xpubpos_get", xpubpos::get)?;
 
   Ok(())
 }

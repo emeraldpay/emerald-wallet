@@ -1,5 +1,6 @@
 import {Transaction, TxHistory} from "./txhistory";
 import {Addressbook} from "./addressbook";
+import {XPubPosition} from "./xpubpos";
 
 const addon = require('../index.node');
 
@@ -66,6 +67,11 @@ export class EmeraldStateManager {
    * Manager Address Book
    */
   readonly addressbook = new Addressbook(this);
+
+  /**
+   * Manage XPub position
+   */
+  readonly xpubpos = new XPubPosition(this);
 
   /**
    * Initialize the cache keeping the stored data at the specified dir.
