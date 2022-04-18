@@ -1,6 +1,7 @@
-import {Transaction, TxHistory} from "./txhistory";
-import {Addressbook} from "./addressbook";
-import {XPubPosition} from "./xpubpos";
+import {TxHistoryImpl} from "./txhistory";
+import {AddressbookImpl} from "./addressbook";
+import {XPubPositionImpl} from "./xpubpos";
+import {PersistentState} from '@emeraldwallet/core';
 
 const addon = require('../index.node');
 
@@ -18,12 +19,6 @@ export type StatusFail = {
 }
 
 export type Status<T> = StatusOk<T> | StatusFail;
-
-export interface PageResult<T> {
-  items: T[],
-  cursor?: number,
-}
-
 
 type PromiseCallback<T> = (value?: T) => void;
 // Neon Callback for Status<T>
@@ -51,7 +46,7 @@ export function neonToPromise<T>(resolve: PromiseCallback<T>, reject: PromiseCal
   return (status) => resolveStatus(JSON.parse(status || "{\"succeeded\": false}", reviver), resolve, reject)
 }
 
-export class EmeraldStateManager {
+export class PersistentStateImpl implements PersistentState.PersistentState {
 
   /**
    * Mapping to the Rust module through NAPI
@@ -59,19 +54,11 @@ export class EmeraldStateManager {
    */
   addon = addon;
 
-  /**
-   * Manage Transaction History
-   */
-  readonly txhistory = new TxHistory(this);
-  /**
-   * Manager Address Book
-   */
-  readonly addressbook = new Addressbook(this);
+  readonly txhistory: PersistentState.TxHistory = new TxHistoryImpl(this);
 
-  /**
-   * Manage XPub position
-   */
-  readonly xpubpos = new XPubPosition(this);
+  readonly addressbook: PersistentState.Addressbook = new AddressbookImpl(this);
+
+  readonly xpubpos: PersistentState.XPubPosition = new XPubPositionImpl(this);
 
   /**
    * Initialize the cache keeping the stored data at the specified dir.
@@ -86,6 +73,9 @@ export class EmeraldStateManager {
     this.addon.open(dir || "./state_test")
   }
 
+  /**
+   * Call _before_ existing the application, otherwise some data may be lost.
+   */
   close() {
     this.addon.close();
   }

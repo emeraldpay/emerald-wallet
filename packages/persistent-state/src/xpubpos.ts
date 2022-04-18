@@ -1,12 +1,13 @@
-import {EmeraldStateManager, neonToPromise} from "./api";
+import {PersistentStateImpl, neonToPromise} from "./api";
+import {PersistentState} from "@emeraldwallet/core";
 
 /**
  * Manage XPub Position
  */
-export class XPubPosition {
-  private manager: EmeraldStateManager;
+export class XPubPositionImpl implements PersistentState.XPubPosition {
+  private manager: PersistentStateImpl;
 
-  constructor(manager: EmeraldStateManager) {
+  constructor(manager: PersistentStateImpl) {
     this.manager = manager;
   }
 

@@ -1,43 +1,15 @@
-import {createDateReviver, EmeraldStateManager, neonToPromise, PageResult} from "./api";
+import {createDateReviver, PersistentStateImpl, neonToPromise} from "./api";
+import {PersistentState} from "@emeraldwallet/core";
 
-/**
- * Addressbook Item details
- */
-export interface AddressbookItem {
-  id?: string | undefined;
-  address: {
-    type: "plain" | "xpub";
-    address: string;
-  };
-  blockchain: number;
-  label?: string | undefined;
-  description?: string | undefined;
-  createTimestamp?: Date | undefined;
-  updateTimestamp?: Date | undefined;
-}
+export class AddressbookImpl implements PersistentState.Addressbook {
+  private manager: PersistentStateImpl;
 
-/**
- * Criteria to select address book records when queried
- */
-export interface Filter {
-  /**
-   * Filter by blockchain
-   */
-  blockchain?: string | undefined;
-}
-
-export class Addressbook {
-  private manager: EmeraldStateManager;
-
-  constructor(manager: EmeraldStateManager) {
+  constructor(manager: PersistentStateImpl) {
     this.manager = manager;
   }
 
-  /**
-   * Add or update existing transaction in the storage
-   * @param item
-   */
-  add(item: AddressbookItem): Promise<string> {
+
+  add(item: PersistentState.AddressbookItem): Promise<string> {
     return new Promise((resolve, reject) => {
       try {
         this.manager.addon.addressbook_add(
@@ -63,11 +35,7 @@ export class Addressbook {
     });
   }
 
-  /**
-   * Find transactions under the specified criteria
-   * @param filter
-   */
-  query(filter?: Filter): Promise<PageResult<AddressbookItem>> {
+  query(filter?: PersistentState.AddressbookFilter): Promise<PersistentState.PageResult<PersistentState.AddressbookItem>> {
     return new Promise((resolve, reject) => {
       try {
         this.manager.addon.addressbook_query(

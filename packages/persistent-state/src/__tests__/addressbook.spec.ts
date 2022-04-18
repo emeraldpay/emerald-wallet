@@ -1,14 +1,13 @@
 import {tempPath} from "./_commons";
-import {EmeraldStateManager} from "../api";
+import {PersistentStateImpl} from "../api";
 import {BlockchainCode, blockchainCodeToId} from "@emeraldwallet/core";
-import {State, Status, Transaction} from "../txhistory";
-import {AddressbookItem} from "../addressbook";
+import {AddressbookItem} from "@emeraldwallet/core/lib/persisistentState";
 
 describe("Address Book", () => {
 
-  let state: EmeraldStateManager;
+  let state: PersistentStateImpl;
   beforeEach(() => {
-    state = new EmeraldStateManager(tempPath("addrbook"));
+    state = new PersistentStateImpl(tempPath("addrbook"));
   });
 
   test("empty query", async () => {

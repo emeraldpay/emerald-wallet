@@ -1,11 +1,11 @@
 import {tempPath} from "./_commons";
-import {EmeraldStateManager} from "../api";
+import {PersistentStateImpl} from "../api";
 
 describe("XPub Position", () => {
 
-  let state: EmeraldStateManager;
+  let state: PersistentStateImpl;
   beforeEach(() => {
-    state = new EmeraldStateManager(tempPath("xpubpos"));
+    state = new PersistentStateImpl(tempPath("xpubpos"));
   });
 
   test("default is zero", async () => {

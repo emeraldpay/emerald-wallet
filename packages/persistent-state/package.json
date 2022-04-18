@@ -28,7 +28,8 @@
     "testEnvironment": "node",
     "testPathIgnorePatterns": [
       "<rootDir>/lib/",
-      "<rootDir>/node_modules/"
+      "<rootDir>/node_modules/",
+      "__tests__/_commons"
     ],
     "setupFiles": [
       "<rootDir>/jest.setup.ts"

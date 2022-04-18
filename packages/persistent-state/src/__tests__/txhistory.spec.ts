@@ -1,13 +1,13 @@
 import {tempPath} from "./_commons";
-import {EmeraldStateManager} from "../api";
-import {ChangeType, Filter, State, Status, Transaction} from "../txhistory";
+import {PersistentStateImpl} from "../api";
+import {ChangeType, TxHistoryFilter, State, Status, Transaction} from "@emeraldwallet/core/lib/persisistentState";
 import {BlockchainCode, blockchainCodeToId} from "@emeraldwallet/core";
 
 describe("Tx History", () => {
 
-  let state: EmeraldStateManager;
+  let state: PersistentStateImpl;
   beforeEach(() => {
-    state = new EmeraldStateManager(tempPath("tx-history"));
+    state = new PersistentStateImpl(tempPath("tx-history"));
   });
 
   test("empty query", async () => {
@@ -66,7 +66,7 @@ describe("Tx History", () => {
     await state.txhistory.submit(tx1);
     await state.txhistory.submit(tx2);
 
-    let filter: Filter = {
+    let filter: TxHistoryFilter = {
       after: new Date("2021-03-01T00:00:00")
     }
     let act = await state.txhistory.query(filter);
@@ -107,7 +107,7 @@ describe("Tx History", () => {
     await state.txhistory.submit(tx1);
     await state.txhistory.submit(tx2);
 
-    let filter: Filter = {
+    let filter: TxHistoryFilter = {
       wallet: "74b0a509-9083-4b12-80bb-e01db1fa2293"
     }
     let act = await state.txhistory.query(filter);
