@@ -1,38 +1,32 @@
-import {AccountSelect} from '@emeraldwallet/ui';
+import { BigAmount } from '@emeraldpay/bigamount';
+import { Wei } from '@emeraldpay/bigamount-crypto';
+import { AccountSelect } from '@emeraldwallet/ui';
 import * as React from 'react';
 import FormLabel from '../FormLabel';
 
-interface IProps {
-  onChangeAccount?: any;
+interface OwnProps {
   accounts?: string[];
   selectedAccount?: string;
+  getBalancesByAddress(address: string): string[];
+  onChangeAccount?(account: string): void;
 }
 
-class FromField extends React.Component<IProps> {
-
-  public inputStyles = {
-    flexGrow: 5
-  };
-  constructor (props: IProps) {
+class FromField extends React.Component<OwnProps> {
+  constructor(props: OwnProps) {
     super(props);
-    this.onChangeAccount = this.onChangeAccount.bind(this);
   }
 
-  public onChangeAccount (value: string) {
-    this.props.onChangeAccount(value);
-  }
+  public render(): React.ReactElement {
+    const { accounts = [], selectedAccount = '', getBalancesByAddress, onChangeAccount } = this.props;
 
-  public render () {
-    const accounts = this.props.accounts || [];
-    const selectedAccount = this.props.selectedAccount || '';
     return (
       <React.Fragment>
         <FormLabel>From</FormLabel>
         <AccountSelect
-          onChange={this.onChangeAccount}
-          selectedAccount={selectedAccount}
           accounts={accounts}
-          // containerStyle={this.inputStyles}
+          selectedAccount={selectedAccount}
+          getBalancesByAddress={getBalancesByAddress}
+          onChange={onChangeAccount}
         />
       </React.Fragment>
     );
