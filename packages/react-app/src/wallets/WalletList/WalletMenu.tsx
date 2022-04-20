@@ -1,4 +1,5 @@
-import { IState, screen } from '@emeraldwallet/store';
+import { isEthereumEntry } from '@emeraldpay/emerald-vault-core';
+import { accounts, IState, screen } from '@emeraldwallet/store';
 import { ListItemIcon, Menu, MenuItem, Typography } from '@material-ui/core';
 import {
   AddCircleOutline as AddCircleOutlineIcon,
@@ -16,11 +17,16 @@ interface DispatchProps {
 }
 
 interface OwnProps {
-  hasHDAccount: boolean;
   walletId: string;
 }
 
-const WalletMenu: React.FC<DispatchProps & OwnProps> = ({
+interface StateProps {
+  hasEthereumEntry: boolean;
+  hasHDAccount: boolean;
+}
+
+const WalletMenu: React.FC<DispatchProps & OwnProps & StateProps> = ({
+  hasEthereumEntry,
   hasHDAccount,
   onAddAccount,
   onAddAddress,
@@ -52,7 +58,7 @@ const WalletMenu: React.FC<DispatchProps & OwnProps> = ({
           </ListItemIcon>
           <Typography variant="inherit">Setup Supported Coins</Typography>
         </MenuItem>
-        <MenuItem disabled={!hasHDAccount} onClick={onAddAddress}>
+        <MenuItem disabled={!hasHDAccount || !hasEthereumEntry} onClick={onAddAddress}>
           <ListItemIcon>
             <PlaylistAdd fontSize="small" />
           </ListItemIcon>
@@ -63,14 +69,24 @@ const WalletMenu: React.FC<DispatchProps & OwnProps> = ({
   );
 };
 
-export default connect<{}, DispatchProps, OwnProps, IState>(null, (dispatch, ownProps) => ({
-  onAddAccount: () => {
-    dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_HD_ACCOUNT, ownProps.walletId));
+export default connect<StateProps, DispatchProps, OwnProps, IState>(
+  (state, ownProps) => {
+    const wallet = accounts.selectors.findWallet(state, ownProps.walletId);
+
+    return {
+      hasEthereumEntry: wallet?.entries.find((entry) => isEthereumEntry(entry)) != null,
+      hasHDAccount: (wallet?.reserved?.length ?? 0) > 0,
+    };
   },
-  onAddAddress: () => {
-    dispatch(screen.actions.gotoScreen(screen.Pages.ADD_HD_ADDRESS, ownProps.walletId));
-  },
-  onShowDetails: () => {
-    dispatch(screen.actions.gotoScreen(screen.Pages.WALLET_INFO, ownProps.walletId));
-  },
-}))(WalletMenu);
+  (dispatch, ownProps) => ({
+    onAddAccount: () => {
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_HD_ACCOUNT, ownProps.walletId));
+    },
+    onAddAddress: () => {
+      dispatch(screen.actions.gotoScreen(screen.Pages.ADD_HD_ADDRESS, ownProps.walletId));
+    },
+    onShowDetails: () => {
+      dispatch(screen.actions.gotoScreen(screen.Pages.WALLET_INFO, ownProps.walletId));
+    },
+  }),
+)(WalletMenu);

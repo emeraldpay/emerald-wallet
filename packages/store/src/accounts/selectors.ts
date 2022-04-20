@@ -67,13 +67,24 @@ export const allEntriesByBlockchain = (state: IState, code: BlockchainCode) => {
   return accounts.filter((a: WalletEntry) => blockchainIdToCode(a.blockchain) === code);
 };
 
+export function findWallet(state: IState, id: Uuid): Wallet | undefined {
+  return allWallets(state).find((w) => w.id === id);
+}
+
+export function findWalletByEntryId(state: IState, id: EntryId): Wallet | undefined {
+  const walletId = EntryIdOp.asOp(id).extractWalletId()
+
+  return findWallet(state, walletId);
+}
+
 export function findEntry(state: IState, id: EntryId): WalletEntry | undefined {
-  let walletId = EntryIdOp.asOp(id).extractWalletId()
-  let wallet = findWallet(state, walletId);
-  if (wallet) {
-    return wallet.entries.find((e) => e.id == id)
+  const wallet = findWalletByEntryId(state, id);
+
+  if (wallet == null) {
+    return undefined;
   }
-  return undefined
+
+  return wallet.entries.find((entry) => entry.id === id)
 }
 
 export function allAsArray(state: IState): Wallet[] {
@@ -107,11 +118,6 @@ export function findAccountByAddress(state: any, address: string, chain: Blockch
     return false
   });
 }
-
-export function findWallet(state: IState, id: Uuid): Wallet | undefined {
-  return allWallets(state).find((w) => w.id === id);
-}
-
 
 export function getBalance<T extends BigAmount>(state: IState, entryId: string, defaultValue?: T): T | undefined {
   const entry = findEntry(state, entryId);

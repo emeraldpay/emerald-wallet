@@ -1,11 +1,11 @@
-import { BigAmount } from "@emeraldpay/bigamount";
+import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { EthereumEntry, WalletEntry } from "@emeraldpay/emerald-vault-core";
+import { EthereumEntry, WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, blockchainIdToCode, Blockchains } from '@emeraldwallet/core';
 import { accounts, IState, screen, tokens } from '@emeraldwallet/store';
 import { CoinAvatar } from '@emeraldwallet/ui';
 import { createStyles, Grid, Theme, Typography } from '@material-ui/core';
-import { makeStyles } from "@material-ui/core/styles";
+import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { Dispatch } from 'react';
 import { connect } from 'react-redux';
@@ -35,10 +35,28 @@ const useStyles = makeStyles<Theme>((theme) =>
   }),
 );
 
-/**
- *
- */
-const Component = (({tokensBalances, balance, account, blockchainCode, onConvert}: Props & Actions & OwnProps) => {
+interface OwnProps {
+  entries: EthereumEntry[];
+  walletId: string;
+}
+
+interface StateProps {
+  balance: Wei;
+  blockchainCode: BlockchainCode;
+  tokensBalances: BigAmount[];
+}
+
+interface DispatchProps {
+  onConvert: (entry: WalletEntry) => void;
+}
+
+const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
+  entries,
+  balance,
+  blockchainCode,
+  tokensBalances,
+  onConvert,
+}) => {
   const styles = useStyles();
   const blockchain = Blockchains[blockchainCode];
 
@@ -48,72 +66,77 @@ const Component = (({tokensBalances, balance, account, blockchainCode, onConvert
     coinSymbol: styles.balanceSymbol,
   };
 
-  return <div className={styles.container}>
-    <Grid container={true}>
+  return (
+    <div className={styles.container}>
       <Grid container={true}>
-        <Grid item={true} xs={1}>
-          <CoinAvatar chain={blockchainCode}/>
-        </Grid>
-        <Grid item={true} xs={6}>
-          <Typography>{blockchain.getTitle()}</Typography>
-        </Grid>
-        <Grid item={true} xs={5}>
-          <AccountBalance
-            key={"main"}
-            classes={accountClasses}
-            balance={balance}
-          />
-          {tokensBalances.map((token) =>
-            <AccountBalance
-              key={"token-" + token.units.top.code}
-              classes={accountClasses}
-              balance={token}
-              onConvert={token.units.top.code === 'WETH' ? () => onConvert(account) : undefined}
-            />
-          )}
+        <Grid container={true}>
+          <Grid item={true} xs={1}>
+            <CoinAvatar chain={blockchainCode} />
+          </Grid>
+          <Grid item={true} xs={6}>
+            <Typography>{blockchain.getTitle()}</Typography>
+          </Grid>
+          <Grid item={true} xs={5}>
+            <AccountBalance key="main" classes={accountClasses} balance={balance} />
+            {tokensBalances.map((token) => (
+              <AccountBalance
+                key={'token-' + token.units.top.code}
+                classes={accountClasses}
+                balance={token}
+                onConvert={token.units.top.code === 'WETH' ? () => onConvert(entries[0]) : undefined}
+              />
+            ))}
+          </Grid>
         </Grid>
       </Grid>
-    </Grid>
-
-  </div>
-})
-
-// State Properties
-interface Props {
-  balance: Wei;
-  blockchainCode: BlockchainCode;
-  tokensBalances: BigAmount[];
-}
-
-// Actions
-interface Actions {
-  onConvert: (entry: WalletEntry) => void;
-}
-
-// Component properties
-interface OwnProps {
-  account: EthereumEntry;
-  walletId: string;
-}
+    </div>
+  );
+};
 
 export default connect(
-  (state: IState, ownProps: OwnProps): Props => {
-    const {account} = ownProps;
-    const blockchainCode = blockchainIdToCode(account.blockchain);
-    const balance = accounts.selectors.getBalance(state, account.id, Wei.ZERO) || Wei.ZERO;
-    const tokensBalances = tokens.selectors.selectBalances(state, account.address!.value, blockchainCode) || [];
+  (state: IState, ownProps: OwnProps): StateProps => {
+    const { entries } = ownProps;
+    const [entry] = entries;
+
+    const blockchainCode = blockchainIdToCode(entry.blockchain);
+    const zeroAmount = accounts.selectors.zeroAmountFor<Wei>(blockchainCode);
+
+    const balance = entries.reduce(
+      (carry, item) => carry.plus(accounts.selectors.getBalance(state, item.id, zeroAmount) ?? zeroAmount),
+      zeroAmount,
+    );
+
+    const tokensBalances = entries.reduce<Array<BigAmount>>((carry, item) => {
+      if (item.address == null) {
+        return carry;
+      }
+
+      const balances = tokens.selectors.selectBalances(state, item.address.value, blockchainCode) ?? [];
+
+      if (carry.length === 0) {
+        return balances;
+      }
+
+      return carry.map((balance) => {
+        const tokenBalance = balances.find((balanceItem) => balanceItem.units.equals(balance.units));
+
+        if (tokenBalance == null) {
+          return balance;
+        }
+
+        return balance.plus(tokenBalance);
+      });
+    }, []);
 
     return {
-      tokensBalances,
       balance,
-      blockchainCode
-    }
+      blockchainCode,
+      tokensBalances,
+    };
   },
-  (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
-    return {
-      onConvert: (entry: WalletEntry) => {
-        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_CONVERT, entry))
-      },
-    }
-  }
-)((Component));
+  (dispatch: Dispatch<any>): DispatchProps => ({
+    onConvert: (entry: WalletEntry) => {
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_CONVERT, entry));
+    },
+  }),
+)(Component);

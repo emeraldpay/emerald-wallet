@@ -1,137 +1,173 @@
-import {connect} from "react-redux";
-import * as React from "react";
-import {Dispatch} from "react";
-import {Box, createStyles, Grid, Theme, Button} from "@material-ui/core";
-import {accounts, IBalanceValue, IState, screen, tokens} from "@emeraldwallet/store";
-import {makeStyles} from "@material-ui/core/styles";
-import {Uuid, Wallet, WalletEntry, isEthereumEntry, isBitcoinEntry} from "@emeraldpay/emerald-vault-core";
-import {blockchainIdToCode} from "@emeraldwallet/core";
-import {CoinAvatar, WalletReference} from "@emeraldwallet/ui";
+import { BigAmount } from '@emeraldpay/bigamount/lib/amount';
+import { isBitcoinEntry, isEthereumEntry, Uuid, Wallet, WalletEntry } from '@emeraldpay/emerald-vault-core';
+import { blockchainIdToCode } from '@emeraldwallet/core';
+import { accounts, IBalanceValue, IState, screen, tokens } from '@emeraldwallet/store';
+import { Back, CoinAvatar, Page, WalletReference } from '@emeraldwallet/ui';
+import { Button, createStyles, Grid, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { Alert } from '@material-ui/lab';
+import * as React from 'react';
+import { connect } from 'react-redux';
 import AccountBalance from '../../common/Balance';
-import {Page} from "@emeraldwallet/ui";
-import {Back} from "@emeraldwallet/ui";
-import {BigAmount} from "@emeraldpay/bigamount/lib/amount";
 
-const useStyles = makeStyles<Theme>((theme) =>
+const useStyles = makeStyles(
   createStyles({
     accountsList: {
-      paddingTop: "32px"
+      paddingTop: 32,
     },
     accountLine: {
-      paddingTop: "16px"
-    }
-  })
+      paddingTop: 16,
+    },
+  }),
 );
 
-function acceptAccount(balance: AccountBalance): boolean {
-  return balance.balance.isPositive();
+interface AccountBalance {
+  balance: BigAmount;
+  entry: WalletEntry;
+  tokens: BigAmount[];
 }
 
-/**
- *
- */
-const Component = (({balances, wallet, allAssets, onCancel, onSelected}: Props & Actions & OwnProps) => {
-  const styles = useStyles();
-
-  return <Page
-    title={"Select Account to Create Transaction"}
-    leftIcon={<Back onClick={() => onCancel()}/>}>
-    <Grid container={true}>
-      <Grid item={true} xs={12}>
-        <WalletReference wallet={wallet} assets={allAssets}/>
-      </Grid>
-      <Grid item={true} xs={12} className={styles.accountsList}>
-        {balances.map((accountBalance) =>
-          <Grid container={true} key={"acc-balance-" + accountBalance.account.id} className={styles.accountLine}>
-            <Grid item={true} xs={2}>
-            </Grid>
-            <Grid item={true} xs={1}>
-              <CoinAvatar chain={blockchainIdToCode(accountBalance.account.blockchain)}/>
-            </Grid>
-            {/*<Grid item={true} xs={6}>*/}
-            {/*  <Address id={accountBalance.account.address?.value || accountBalance.account.id}/>*/}
-            {/*</Grid>*/}
-            <Grid item={true} xs={6}>
-              <AccountBalance
-                key={"main"}
-                balance={accountBalance.balance}
-              />
-              {accountBalance.tokens.map((token) =>
-                <AccountBalance
-                  key={"token-" + token.units.top.code}
-                  balance={token}
-                />
-              )}
-            </Grid>
-            <Grid item={true} xs={1}>
-              <Button disabled={!acceptAccount(accountBalance)}
-                      onClick={() => onSelected(accountBalance.account)}>Send</Button>
-            </Grid>
-          </Grid>
-        )}
-      </Grid>
-    </Grid>
-  </Page>
-
-})
-
-// State Properties
-interface Props {
-  wallet: Wallet;
-  balances: AccountBalance[];
-  allAssets: IBalanceValue[];
-}
-
-// Actions
-interface Actions {
-  onSelected: (account: WalletEntry) => void;
-  onCancel: () => void;
-}
-
-// Component properties
 interface OwnProps {
   walletId: Uuid;
 }
 
-interface AccountBalance {
-  account: WalletEntry;
-  balance: BigAmount;
-  tokens: BigAmount[];
+interface StateProps {
+  allAssets: IBalanceValue[];
+  balances: AccountBalance[];
+  wallet?: Wallet;
 }
 
-export default connect(
-  (state: IState, ownProps: OwnProps): Props => {
-    const wallet = accounts.selectors.findWallet(state, ownProps.walletId)!;
-    const allAssets: IBalanceValue[] = accounts.selectors.getWalletBalances(state, wallet, false);
-    const balances: AccountBalance[] = wallet.entries.map((account) => {
-      const blockchain = blockchainIdToCode(account.blockchain);
-      const zero = accounts.selectors.zeroAmountFor(blockchain);
-      let tokenBalances: BigAmount[] = []
-      if (isEthereumEntry(account)) {
-        tokenBalances = tokens.selectors.selectBalances(state, account.address!.value, blockchain) || [];
-      }
-      return {
-        account,
-        balance: accounts.selectors.getBalance(state, account.id) || zero,
-        tokens: tokenBalances
-      }
-    })
-    return {
-      wallet, balances, allAssets
-    }
-  },
-  (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
-    return {
-      onSelected: (account: WalletEntry) => {
-        if (isEthereumEntry(account)) {
-          dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_ETHEREUM, account));
-        } else if (isBitcoinEntry(account)) {
-          dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_BITCOIN, account.id));
-        }
-      },
-      onCancel: () => {
-        dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId))
-      }
-    }
+interface DispatchProps {
+  onCancel(): void;
+  onSelected(account: WalletEntry): void;
+}
+
+function acceptAccount({ balance }: AccountBalance): boolean {
+  return balance.isPositive();
+}
+
+const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
+  allAssets,
+  balances,
+  wallet,
+  onCancel,
+  onSelected,
+}) => {
+  if (wallet == null) {
+    return (
+      <Alert>
+        <Typography>Wallet is not found</Typography>
+      </Alert>
+    );
   }
-)((Component));
+
+  const styles = useStyles();
+
+  return (
+    <Page title={'Select Account to Create Transaction'} leftIcon={<Back onClick={() => onCancel()} />}>
+      <Grid container>
+        <Grid item xs={12}>
+          <WalletReference assets={allAssets} wallet={wallet} />
+        </Grid>
+        <Grid item className={styles.accountsList} xs={12}>
+          {balances.map((item) => (
+            <Grid container key={'acc-balance-' + item.entry.id} className={styles.accountLine}>
+              <Grid item xs={2} />
+              <Grid item xs={1}>
+                <CoinAvatar chain={blockchainIdToCode(item.entry.blockchain)} />
+              </Grid>
+              <Grid item xs={6}>
+                <AccountBalance key={'main'} balance={item.balance} />
+                {item.tokens.map((token) => (
+                  <AccountBalance key={'token-' + token.units.top.code} balance={token} />
+                ))}
+              </Grid>
+              <Grid item xs={1}>
+                <Button disabled={!acceptAccount(item)} onClick={() => onSelected(item.entry)}>
+                  Send
+                </Button>
+              </Grid>
+            </Grid>
+          ))}
+        </Grid>
+      </Grid>
+    </Page>
+  );
+};
+
+export default connect<StateProps, DispatchProps, OwnProps, IState>(
+  (state, ownProps) => {
+    const wallet = accounts.selectors.findWallet(state, ownProps.walletId);
+
+    let allAssets: IBalanceValue[] = [];
+
+    if (wallet != null) {
+      allAssets = accounts.selectors.getWalletBalances(state, wallet, false);
+    }
+
+    const balances: AccountBalance[] = Object.values(
+      wallet?.entries.reduce<Record<number, AccountBalance>>((carry, entry) => {
+        const blockchainCode = blockchainIdToCode(entry.blockchain);
+        const zeroAmount = accounts.selectors.zeroAmountFor(blockchainCode);
+
+        const balance = accounts.selectors.getBalance(state, entry.id, zeroAmount) ?? zeroAmount;
+
+        let tokenBalances: BigAmount[] = [];
+
+        if (isEthereumEntry(entry) && entry.address != null) {
+          tokenBalances = tokens.selectors.selectBalances(state, entry.address.value, blockchainCode) ?? [];
+        }
+
+        const accountBalance = carry[entry.blockchain];
+
+        if (accountBalance == null) {
+          return {
+            ...carry,
+            [entry.blockchain]: {
+              balance,
+              entry,
+              tokens: tokenBalances,
+            },
+          };
+        }
+
+        tokenBalances = accountBalance.tokens.reduce<Array<BigAmount>>((carry, item) => {
+          const tokenBalance = tokenBalances.find((balanceItem) => balanceItem.units.equals(item.units));
+
+          if (tokenBalance == null) {
+            return carry;
+          }
+
+          return [...carry, item.plus(tokenBalance)];
+        }, []);
+
+        return {
+          ...carry,
+          [entry.blockchain]: {
+            entry: accountBalance.entry,
+            balance: accountBalance.balance.plus(balance),
+            tokens: tokenBalances,
+          },
+        };
+      }, {}) ?? {},
+    );
+
+    return {
+      allAssets,
+      balances,
+      wallet,
+    };
+  },
+  (dispatch, ownProps) => ({
+    onSelected: (account: WalletEntry) => {
+      if (isBitcoinEntry(account)) {
+        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_BITCOIN, account.id));
+      } else if (isEthereumEntry(account)) {
+        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_ETHEREUM, account));
+      }
+    },
+    onCancel: () => {
+      dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId));
+    },
+  }),
+)(Component);
