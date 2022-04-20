@@ -78,6 +78,7 @@ export default connect(
             if (err || typeof walletId == 'undefined') {
               reject(err);
             } else {
+              dispatch(accounts.actions.fetchErc20BalancesAction());
               dispatch(accounts.actions.subscribeWalletBalance(walletId));
               resolve(walletId);
             }
