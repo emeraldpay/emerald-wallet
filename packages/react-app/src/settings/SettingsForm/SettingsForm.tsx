@@ -195,7 +195,7 @@ export class SettingsForm extends React.Component<Props, State> {
               </div>
               <div className={classes.right}>
                 <div className={classes.fieldInput}>
-                  <PasswordInput minLength={1} onChange={(password) => this.setState({ oldPassword: password })} />
+                  <PasswordInput onChange={(password) => this.setState({ oldPassword: password })} />
                 </div>
               </div>
             </div>
@@ -207,7 +207,6 @@ export class SettingsForm extends React.Component<Props, State> {
                 <div className={classes.fieldInput}>
                   <PasswordInput
                     error={this.state.passwordError}
-                    minLength={1}
                     onChange={(password) => this.setState({ newPassword: password })}
                   />
                 </div>
@@ -219,7 +218,7 @@ export class SettingsForm extends React.Component<Props, State> {
               </div>
               <div className={classes.right}>
                 <div className={classes.fieldInput}>
-                  <PasswordInput minLength={1} onChange={(password) => this.setState({ confirmPassword: password })} />
+                  <PasswordInput onChange={(password) => this.setState({ confirmPassword: password })} />
                 </div>
               </div>
             </div>

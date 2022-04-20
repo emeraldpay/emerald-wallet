@@ -169,7 +169,6 @@ const PasswordMigration: React.FC<DispatchProps & StylesProps> = ({
         <PasswordInput
           disabled={initializing}
           error={globalPasswordError}
-          minLength={1}
           onChange={(value) => setGlobalPassword(value)}
         />
       </FormFieldWrapper>
@@ -178,7 +177,6 @@ const PasswordMigration: React.FC<DispatchProps & StylesProps> = ({
         <PasswordInput
           disabled={initializing}
           error={passwordError}
-          minLength={1}
           onChange={(value) => setPassword(value)}
         />
       </FormFieldWrapper>

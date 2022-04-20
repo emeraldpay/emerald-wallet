@@ -178,7 +178,7 @@ class SignTx extends React.Component<IProps, IState> {
                 <div className={classes.fieldName}>Password</div>
               </div>
               <div className={classes.right}>
-                <PasswordInput error={this.props.passwordError} minLength={1} onChange={this.handlePasswordChange} />
+                <PasswordInput error={this.props.passwordError} onChange={this.handlePasswordChange} />
               </div>
             </div>
           )}

@@ -105,11 +105,11 @@ const GlobalKey: React.FC<DispatchProps & StateProps & StylesProps> = ({
       </Typography>
       <FormFieldWrapper>
         <FormLabel classes={{ root: classes.label }}>Global password</FormLabel>
-        <PasswordInput minLength={1} onChange={(value) => setPassword(value)} />
+        <PasswordInput onChange={(value) => setPassword(value)} />
       </FormFieldWrapper>
       <FormFieldWrapper>
         <FormLabel classes={{ root: classes.label }}>Confirm password</FormLabel>
-        <PasswordInput minLength={1} onChange={(value) => setConfirmPassword(value)} />
+        <PasswordInput onChange={(value) => setConfirmPassword(value)} />
       </FormFieldWrapper>
       <FormFieldWrapper>
         <FormLabel classes={{ root: classes.label }} />

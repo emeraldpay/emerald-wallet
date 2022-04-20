@@ -140,7 +140,7 @@ const CreateSpeedUpTransaction: React.FC<DispatchProps & OwnProps & StateProps &
       </FormFieldWrapper>
       <FormFieldWrapper>
         <FormLabel>Password</FormLabel>
-        <PasswordInput error={passwordError} minLength={1} onChange={setPassword} />
+        <PasswordInput error={passwordError} onChange={setPassword} />
       </FormFieldWrapper>
       <FormFieldWrapper>
         <FormLabel />

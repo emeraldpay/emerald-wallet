@@ -48,7 +48,7 @@ const CreateCancelTransaction: React.FC<DispatchProps & OwnProps & StateProps> =
     <Page title="Cancel Transaction" leftIcon={<Back onClick={goBack} />}>
       <FormFieldWrapper>
         <FormLabel>Password</FormLabel>
-        <PasswordInput error={passwordError} minLength={1} onChange={setPassword} />
+        <PasswordInput error={passwordError} onChange={setPassword} />
       </FormFieldWrapper>
       <FormFieldWrapper>
         <FormLabel />

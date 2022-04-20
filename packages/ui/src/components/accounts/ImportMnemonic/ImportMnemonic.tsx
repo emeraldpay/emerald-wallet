@@ -45,12 +45,13 @@ const Component: React.FC<OwnProps> = ({ isValidMnemonic, onSubmit }) => {
               onChange={(e) => setMnemonic(e.target.value)}
             />
             <ConfirmedPasswordInput
+              buttonLabel={'Set password'}
+              disabled={done}
               helperText={
                 '(optional) Additional password to protect the secret mnemonic phrase. ' +
                 "Please save the password, if you lose it you'll be unable to recover your wallet."
               }
-              disabled={done}
-              buttonLabel={'Set password'}
+              minLength={1}
               onChange={setPassword}
             />
           </Grid>
