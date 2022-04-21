@@ -529,19 +529,19 @@ export default connect(
         );
       },
       getBalance: (address: string): Wei => {
-        let entry = accounts.selectors.findAccountByAddress(state, address, blockchainCode);
+        const entry = accounts.selectors.findAccountByAddress(state, address, blockchainCode);
 
         if (entry == null || !isEthereumEntry(entry)) {
-          entry = sourceEntry;
+          return new Wei(zero);
         }
 
         return new Wei(accounts.selectors.getBalance(state, entry.id, zero)!.number);
       },
       getBalancesByAddress(address) {
-        let entry = accounts.selectors.findAccountByAddress(state, address, blockchainCode);
+        const entry = accounts.selectors.findAccountByAddress(state, address, blockchainCode);
 
         if (entry == null || !isEthereumEntry(entry)) {
-          entry = sourceEntry;
+          return [];
         }
 
         const balance = accounts.selectors.getBalance(state, entry.id, zero) ?? zero;
@@ -554,10 +554,10 @@ export default connect(
           return '??';
         }
 
-        let entry = accounts.selectors.findAccountByAddress(state, address, blockchainCode);
+        const entry = accounts.selectors.findAccountByAddress(state, address, blockchainCode);
 
         if (entry == null || !isEthereumEntry(entry)) {
-          entry = sourceEntry;
+          return fiatFormatter.format(zero);
         }
 
         const newBalance = accounts.selectors.getBalance(state, entry.id, zero)!;
