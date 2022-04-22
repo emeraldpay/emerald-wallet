@@ -74,7 +74,7 @@ export interface Props {
   onChangeToken?: (tokenSymbol: string) => void;
   onEmptyAddressBookClick?: () => void;
   onMaxClicked?: () => void;
-  getBalancesByAddress: (address: string) => string[];
+  getBalancesByAddress?: (address: string) => string[];
 
   classes: Record<keyof typeof styles, string>;
 

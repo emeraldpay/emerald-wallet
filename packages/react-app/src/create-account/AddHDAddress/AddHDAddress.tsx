@@ -298,12 +298,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     const wallet = accounts.selectors.findWallet(state, ownProps.walletId);
 
     const entries =
-      wallet?.entries.filter((entry) => {
-        // TODO Remove ignores after update vault
-        // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-        // @ts-ignore
-        return isEthereumEntry(entry) && isSeedPkRef(entry, entry.key) && entry.key.type === 'hd-path';
-      }) ?? [];
+      wallet?.entries.filter(
+        (entry) => isEthereumEntry(entry) && isSeedPkRef(entry, entry.key) && entry.key.type === 'hd-path',
+      ) ?? [];
 
     const blockchains = entries
       .reduce<number[]>((carry, entry) => (carry.includes(entry.blockchain) ? carry : [...carry, entry.blockchain]), [])

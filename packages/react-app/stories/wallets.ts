@@ -10,7 +10,7 @@ const wallet1: Wallet = {
   reserved: [{ seedId: 'b00e3378-40e7-4eca-b287-a5ead2f747d4', accountId: 1 }],
   entries: [
     {
-      key: { type: 'seed-hd', seedId: 'b00e3378-40e7-4eca-b287-a5ead2f747d4', hdPath: "m/44'" },
+      key: { type: 'hd-path', seedId: 'b00e3378-40e7-4eca-b287-a5ead2f747d4', hdPath: "m/44'" },
       address: { type: 'single', value: '0x9d8e3fed246384e726b5962577503b916fb246d7' },
       blockchain: 100,
       id: '8ff89b7d-8a73-4ee0-ad5b-8ac1f04a49ef-1',
@@ -26,14 +26,14 @@ const wallet2: Wallet = {
   reserved: [{ seedId: 'b00e3378-40e7-4eca-b287-a5ead2f747d4', accountId: 2 }],
   entries: [
     {
-      key: { type: 'seed-hd', seedId: 'b00e3378-40e7-4eca-b287-a5ead2f747d4', hdPath: "m/44'" },
+      key: { type: 'hd-path', seedId: 'b00e3378-40e7-4eca-b287-a5ead2f747d4', hdPath: "m/44'" },
       address: { type: 'single', value: '0x9d8e3fed246384e726b5962577503b916fb246d7' },
       blockchain: 100,
       id: '1022fd13-3431-4f3b-bce8-109fdab15873-1',
       createdAt: new Date(),
     },
     {
-      key: { type: 'seed-hd', seedId: 'b00e3378-40e7-4eca-b287-a5ead2f747d4', hdPath: "m/44'" },
+      key: { type: 'hd-path', seedId: 'b00e3378-40e7-4eca-b287-a5ead2f747d4', hdPath: "m/44'" },
       address: { type: 'single', value: '0x577503b916fb246d79d8e3fed246384e726b5962' },
       blockchain: 101,
       id: '1022fd13-3431-4f3b-bce8-109fdab15873-2',
@@ -49,7 +49,7 @@ export const wallet3: Wallet = {
   reserved: [{ seedId: 'b00e3378-40e7-4eca-b287-a5ead2f747d4', accountId: 3 }],
   entries: [
     {
-      key: { type: 'seed-hd', seedId: 'b00e3378-40e7-4eca-b287-a5ead2f747d4', hdPath: "m/44'" },
+      key: { type: 'hd-path', seedId: 'b00e3378-40e7-4eca-b287-a5ead2f747d4', hdPath: "m/44'" },
       address: { type: 'single', value: '0x9d8e3fed246384e726b5962577503b916fb246d7' },
       blockchain: 100,
       id: 'f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-1',
@@ -57,7 +57,7 @@ export const wallet3: Wallet = {
     },
     {
       // seed: lake cupboard yellow project spoil era educate behind move slide fluid early purpose stone panel
-      key: { type: 'seed-hd', seedId: 'b00e3378-40e7-4eca-b287-a5ead2f747d4', hdPath: "m/84'/0'/3'/0/0" },
+      key: { type: 'hd-path', seedId: 'b00e3378-40e7-4eca-b287-a5ead2f747d4', hdPath: "m/84'/0'/3'/0/0" },
       address: {
         type: 'xpub',
         value:
@@ -81,9 +81,6 @@ export const wallet4: Wallet = {
   reserved: [{ seedId: 'b00e3378-40e7-4eca-b287-a5ead2f747d4', accountId: 1 }],
   entries: [
     {
-      // TODO Remove ignores after update vault
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
       key: { type: 'hd-path', seedId: 'b00e3378-40e7-4eca-b287-a5ead2f747d4', hdPath: "m/44'" },
       address: { type: 'single', value: '0xF8806A3bF29025e86C6A45E3c2adCf9117c94f05' },
       blockchain: 100,
@@ -100,9 +97,6 @@ export const wallet5: Wallet = {
   reserved: [{ seedId: 'b00e3378-40e7-4eca-b287-a5ead2f747d4', accountId: 1 }],
   entries: [
     {
-      // TODO Remove ignores after update vault
-      // eslint-disable-next-line @typescript-eslint/ban-ts-ignore
-      // @ts-ignore
       key: { type: 'hd-path', seedId: ledgerSeedId, hdPath: "m/44'/60'/0'/0/0" },
       address: { type: 'single', value: '0xCAFEaD4d75D8479242903503425b8c68F4208937' },
       blockchain: 100,
