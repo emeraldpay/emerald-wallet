@@ -116,8 +116,9 @@ function CreateHdAccount(props: IProps & IOwnProps & IDispatchProps) {
         leftColumn={(<span>Seed password</span>)}
         rightColumn={(
           <PasswordInput
-            onChange={handlePasswordChange}
+            minLength={1}
             password={password}
+            onChange={handlePasswordChange}
           />
         )}
       />
