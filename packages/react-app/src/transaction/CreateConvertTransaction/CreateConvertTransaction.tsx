@@ -1,12 +1,13 @@
 import { EstimationMode } from '@emeraldpay/api';
-import { BigAmount } from '@emeraldpay/bigamount';
+import { BigAmount, FormatterBuilder, Predicates } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { WalletEntry } from '@emeraldpay/emerald-vault-core';
+import { isEthereumEntry, WalletEntry } from '@emeraldpay/emerald-vault-core';
 import {
   amountFactory,
   AnyCoinCode,
   BlockchainCode,
   blockchainIdToCode,
+  getStandardUnits,
   tokenAmount,
   workflow,
 } from '@emeraldwallet/core';
@@ -24,6 +25,7 @@ import { connect } from 'react-redux';
 import AmountField from '../CreateTx/AmountField/AmountField';
 import FormFieldWrapper from '../CreateTx/FormFieldWrapper';
 import FormLabel from '../CreateTx/FormLabel/FormLabel';
+import FromField from '../CreateTx/FromField';
 
 const styles = createStyles({
   inputField: {
@@ -66,17 +68,19 @@ interface StylesProps {
 }
 
 interface StateProps {
+  addresses: string[];
   blockchain: BlockchainCode;
-  getBalance(): Wei;
+  getBalance(address?: string): Wei;
+  getBalancesByAddress(address: string): string[];
   getTokenBalanceByAddress(token: AnyCoinCode, address?: string): BigAmount;
 }
 
 interface DispatchProps {
   checkGlobalKey(password: string): Promise<boolean>;
-  estimateGas(blockchain: BlockchainCode, tx: CreateErc20WrappedTx): Promise<number>;
+  estimateGas(blockchain: BlockchainCode, tx: CreateErc20WrappedTx, tokenSymbol: string): Promise<number>;
   getFees(blockchain: BlockchainCode): Promise<Record<string, number>>;
   goBack(): void;
-  signTransaction(tx: CreateErc20WrappedTx, password: string): Promise<void>;
+  signTransaction(tx: CreateErc20WrappedTx, tokenSymbol: string, password: string): Promise<void>;
 }
 
 enum Stages {
@@ -85,14 +89,33 @@ enum Stages {
 }
 
 const FEE_KEYS: EstimationMode[] = ['avgLast', 'avgMiddle', 'avgTail5'];
+const TOKENS_LIST: AnyCoinCode[] = ['WETH'];
+
+const formatBalance = (balance: BigAmount): string => {
+  const units = getStandardUnits(balance);
+
+  const balanceFormatter = new FormatterBuilder()
+    .when(Predicates.ZERO, (whenTrue, whenFalse): void => {
+      whenTrue.useTopUnit();
+      whenFalse.useOptimalUnit(undefined, units, 3);
+    })
+    .number(3, true)
+    .append(' ')
+    .unitCode()
+    .build();
+
+  return balanceFormatter.format(balance);
+};
 
 const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & DispatchProps> = ({
+  addresses,
   blockchain,
   classes,
   entry: { address },
   checkGlobalKey,
   estimateGas,
   getBalance,
+  getBalancesByAddress,
   getFees,
   getTokenBalanceByAddress,
   goBack,
@@ -101,11 +124,13 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
   const [convertable, setConvertable] = useState('eth');
   const [initializing, setInitializing] = useState(true);
 
+  const [tokenSymbol] = TOKENS_LIST;
+
   const [convertTx, setConvertTx] = React.useState(() => {
     const tx = new workflow.CreateErc20WrappedTx({
       address: address?.value,
-      totalBalance: getBalance(),
-      totalTokenBalance: getTokenBalanceByAddress('WETH', address?.value),
+      totalBalance: getBalance(address?.value),
+      totalTokenBalance: getTokenBalanceByAddress(tokenSymbol, address?.value),
     });
 
     return tx.dump();
@@ -158,6 +183,20 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
     [convertTx],
   );
 
+  const onChangeAddress = useCallback(
+    (address: string) => {
+      const tx = CreateErc20WrappedTx.fromPlain(convertTx);
+
+      tx.address = address;
+      tx.totalBalance = getBalance(address);
+      tx.totalTokenBalance = getTokenBalanceByAddress(tokenSymbol, address);
+      tx.rebalance();
+
+      setConvertTx(tx.dump());
+    },
+    [convertTx],
+  );
+
   const onChangeAmount = useCallback(
     (amount: BigAmount) => {
       const tx = CreateErc20WrappedTx.fromPlain(convertTx);
@@ -199,7 +238,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
     if (correctPassword) {
       const tx = CreateErc20WrappedTx.fromPlain(convertTx);
 
-      await signTransaction(tx, password);
+      await signTransaction(tx, tokenSymbol, password);
     } else {
       setPasswordError('Incorrect password');
     }
@@ -258,7 +297,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
         (async (): Promise<void> => {
           const tx = CreateErc20WrappedTx.fromPlain(convertTx);
 
-          const gas = await estimateGas(blockchain, tx);
+          const gas = await estimateGas(blockchain, tx, tokenSymbol);
 
           tx.gas = new BigNumber(gas);
           tx.rebalance();
@@ -289,6 +328,14 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
                 WETH to Ether
               </ToggleButton>
             </ToggleButtonGroup>
+          </FormFieldWrapper>
+          <FormFieldWrapper>
+            <FromField
+              accounts={addresses}
+              selectedAccount={convertTx.address}
+              onChangeAccount={onChangeAddress}
+              getBalancesByAddress={getBalancesByAddress}
+            />
           </FormFieldWrapper>
           <FormFieldWrapper>
             <AmountField
@@ -408,8 +455,46 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
 
     return {
       blockchain,
-      getBalance() {
-        return new Wei(accounts.selectors.getBalance(state, entry.id, zero)?.number ?? 0);
+      addresses:
+        accounts.selectors
+          .findWalletByEntryId(state, entry.id)
+          ?.entries.reduce<Array<string>>(
+            (carry, item) =>
+              item.blockchain === entry.blockchain && item.address != null ? [...carry, item.address.value] : carry,
+            [],
+          ) ?? [],
+      getBalance(address) {
+        const zeroBalance = new Wei(zero);
+
+        if (address == null) {
+          return zeroBalance;
+        }
+
+        const entryByAddress = accounts.selectors.findAccountByAddress(state, address, blockchain);
+
+        if (entryByAddress == null || !isEthereumEntry(entryByAddress)) {
+          return zeroBalance;
+        }
+
+        return new Wei(accounts.selectors.getBalance(state, entryByAddress.id, zero)?.number ?? 0);
+      },
+      getBalancesByAddress(address) {
+        const entryByAddress = accounts.selectors.findAccountByAddress(state, address, blockchain);
+
+        if (entryByAddress == null || !isEthereumEntry(entryByAddress)) {
+          return [];
+        }
+
+        const balance = accounts.selectors.getBalance(state, entryByAddress.id, zero) ?? zero;
+
+        const tokensBalances = TOKENS_LIST.map((token) => {
+          const tokenInfo = registry.bySymbol(blockchain, token);
+          const zeroAmount = new BigAmount(0, tokenUnits(token));
+
+          return tokens.selectors.selectBalance(state, tokenInfo.address, address, blockchain) ?? zeroAmount;
+        });
+
+        return [balance, ...tokensBalances].map(formatBalance);
       },
       getTokenBalanceByAddress(token, address) {
         const zero = tokenAmount(0, token);
@@ -430,8 +515,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     checkGlobalKey(password) {
       return dispatch(accounts.actions.verifyGlobalKey(password));
     },
-    async estimateGas(blockchain, tx) {
-      const token = registry.bySymbol(blockchain, 'WETH');
+    async estimateGas(blockchain, tx, tokenSymbol) {
+      const token = registry.bySymbol(blockchain, tokenSymbol);
 
       const data = Wei.is(tx.amount)
         ? tokens.actions.createWrapTxData()
@@ -499,14 +584,14 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     goBack() {
       dispatch(screen.actions.goBack());
     },
-    async signTransaction(tx, password) {
+    async signTransaction(tx, tokenSymbol, password) {
       if (tx.address == null) {
         return;
       }
 
       const { blockchain, id: accountId } = ownProps.entry;
       const chain = blockchainIdToCode(blockchain);
-      const token = registry.bySymbol(chain, 'WETH');
+      const token = registry.bySymbol(chain, tokenSymbol);
 
       const data = Wei.is(tx.amount)
         ? tokens.actions.createWrapTxData()
