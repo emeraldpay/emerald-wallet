@@ -1,257 +1,266 @@
-import {connect} from "react-redux";
-import * as React from "react";
-import {Dispatch} from "react";
-import {
-  createStyles,
-  Theme,
-  Grid,
-  Select,
-  MenuItem,
-  InputLabel,
-  FormControl,
-  Box, Button,
-} from "@material-ui/core";
-import {accounts, IBalanceValue, IState, screen} from "@emeraldwallet/store";
-import {makeStyles} from "@material-ui/core/styles";
-import {Page} from "@emeraldwallet/ui";
-import {Back} from "@emeraldwallet/ui";
-import {Uuid, Wallet} from "@emeraldpay/emerald-vault-core";
-import {AnyCoinCode, AnyTokenCode, BlockchainCode, Blockchains, blockchainIdToCode} from "@emeraldwallet/core";
-import {WalletReference} from "@emeraldwallet/ui";
-import {Address} from '@emeraldwallet/ui';
-import {useQRCode} from 'react-qrcode';
-import {registry} from "@emeraldwallet/erc20";
-import {clipboard} from 'electron';
+import { CurrentAddress, EntryId, isBitcoinEntry, isEthereumEntry, Uuid, Wallet } from '@emeraldpay/emerald-vault-core';
+import { AnyCoinCode, BlockchainCode, blockchainIdToCode, Blockchains } from '@emeraldwallet/core';
+import { registry } from '@emeraldwallet/erc20';
+import { accounts, IBalanceValue, IState, screen } from '@emeraldwallet/store';
+import { Address, Back, Page, WalletReference } from '@emeraldwallet/ui';
+import { Box, Button, createStyles, FormControl, Grid, InputLabel, MenuItem, Select } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import LibraryAddCheckIcon from '@material-ui/icons/LibraryAddCheck';
-import {CurrentAddress, isBitcoinEntry, isEthereumEntry, EntryId} from "@emeraldpay/emerald-vault-core";
+import { clipboard } from 'electron';
+import * as React from 'react';
+import { useQRCode } from 'react-qrcode';
+import { connect } from 'react-redux';
 
-const useStyles = makeStyles<Theme>((theme) =>
+const useStyles = makeStyles(
   createStyles({
-    form: {
-      marginTop: "40px",
-    },
     copyCell: {
-      paddingTop: "18px",
-      paddingLeft: "8px",
-    }
-  })
+      paddingLeft: 8,
+      paddingTop: 18,
+    },
+    form: {
+      marginTop: 40,
+    },
+  }),
 );
 
-
-const distinct = (value: any, i: number, self: any[]) => {
-  return self.indexOf(value) === i;
+interface Accept {
+  addresses: string[];
+  blockchain: BlockchainCode;
+  entryId: EntryId;
+  token: AnyCoinCode;
 }
 
-function anyToken(accepted: Accept[], blockchain: BlockchainCode): AnyCoinCode {
-  return accepted.filter((it) => it.blockchain == blockchain)[0].token
+interface OwnProps {
+  walletId: Uuid;
 }
 
-function anyAddress(accepted: Accept[], blockchain: BlockchainCode, token: AnyCoinCode): string {
-  return accepted.filter((it) => it.blockchain == blockchain && it.token == token)[0].addresses[0]
+interface StateProps {
+  accepted: Accept[];
+  assets: IBalanceValue[];
+  wallet?: Wallet;
 }
 
+interface DispatchProps {
+  onCancel(): void;
+  onOk(entryId: EntryId): void;
+}
 
-/**
- *
- */
-const Component = (({wallet, assets, accepted, onCancel, onOk}: Props & Actions & OwnProps) => {
+function distinct<T>(value: T, index: number, array: T[]): boolean {
+  return array.indexOf(value) === index;
+}
+
+function anyToken(accepted: Accept[], blockchain: BlockchainCode): AnyCoinCode | undefined {
+  const [accepts] = accepted.filter((item) => item.blockchain === blockchain);
+
+  return accepts?.token;
+}
+
+function anyAddress(accepted: Accept[], blockchain: BlockchainCode, token?: AnyCoinCode): string | undefined {
+  const [accepts] = accepted.filter((item) => item.blockchain === blockchain && item.token === token);
+  const [address] = accepts?.addresses ?? [];
+
+  return address;
+}
+
+const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({ accepted, assets, wallet, onCancel, onOk }) => {
   const styles = useStyles();
 
   const availableBlockchains = accepted.map((accept) => accept.blockchain).filter(distinct);
 
-  const [currBlockchain, setCurrBlockchain] = React.useState(availableBlockchains[0]);
-  const [currCoin, setCurrCoin] = React.useState(anyToken(accepted, currBlockchain));
-  const [currAddress, setCurrAddress] = React.useState(anyAddress(accepted, currBlockchain, currCoin));
+  const [currentBlockchain, setCurrentBlockchain] = React.useState(availableBlockchains[0]);
+  const [currentToken, setCurrentToken] = React.useState(anyToken(accepted, currentBlockchain));
+  const [currentAddress, setCurrentAddress] = React.useState(anyAddress(accepted, currentBlockchain, currentToken));
 
-  let qrValue = currAddress;
-  const erc20 = registry.tokens[currBlockchain].find((token) => token.symbol == currCoin);
-  if (typeof erc20 != "undefined") {
-    //TODO there is no standards for that, check later
-    qrValue = qrValue + "?erc20=" + erc20.symbol;
+  function selectBlockchain(blockchain: BlockchainCode): void {
+    const token = anyToken(accepted, blockchain);
+
+    setCurrentAddress(anyAddress(accepted, blockchain, token));
+    setCurrentBlockchain(blockchain);
+    setCurrentToken(token);
   }
 
-  const qrCodeUrl = useQRCode(qrValue)
-
-  function selectBlockchain(blockchain: BlockchainCode) {
-    setCurrBlockchain(blockchain);
-    const token = anyToken(accepted, blockchain)
-    setCurrCoin(token);
-    setCurrAddress(anyAddress(accepted, blockchain, token));
+  function selectToken(token: AnyCoinCode): void {
+    setCurrentAddress(anyAddress(accepted, currentBlockchain, token));
+    setCurrentToken(token);
   }
 
-  function selectToken(token: AnyCoinCode) {
-    setCurrCoin(token);
-    setCurrAddress(anyAddress(accepted, currBlockchain, token));
+  function findEntry(): EntryId | undefined {
+    if (currentAddress == null) {
+      return undefined;
+    }
+
+    const accepts = accepted.find(
+      (item) => item.blockchain === currentBlockchain && item.addresses.indexOf(currentAddress) >= 0,
+    );
+
+    return accepts?.entryId;
   }
-
-  function findEntry(): EntryId {
-    return accepted.find((a) => a.blockchain == currBlockchain && a.addresses.indexOf(currAddress) >= 0)!.entryId
-  }
-
-  const formBlockchain = <FormControl fullWidth={true}>
-    <InputLabel id="blockchain-select-label">Blockchain</InputLabel>
-    <Select labelId={"blockchain-select-label"}
-            disabled={availableBlockchains.length == 1}
-            value={currBlockchain}
-            onChange={(e) => selectBlockchain(e.target.value as BlockchainCode)}>
-      {availableBlockchains.map((blockchain) =>
-        <MenuItem
-          key={blockchain}
-          value={blockchain}>
-          {Blockchains[blockchain].getTitle()}
-        </MenuItem>
-      )}
-    </Select>
-  </FormControl>;
-
-  const availableCoins = accepted
-    .filter((it) => it.blockchain == currBlockchain)
-    .map((it) => it.token)
-    .filter(distinct);
-
-  const formCoin = <FormControl fullWidth={true}>
-    <InputLabel id="coin-select-label">Coin</InputLabel>
-    <Select labelId={"coin-select-label"}
-            value={currCoin}
-            disabled={availableCoins.length == 1}
-            onChange={(e) => selectToken(e.target.value as AnyCoinCode)}
-    >
-      {availableCoins.map((token) => <MenuItem key={token} value={token}>{token}</MenuItem>)}
-    </Select>
-  </FormControl>;
 
   const availableAddresses = accepted
-    .filter((it) => it.blockchain == currBlockchain && it.token == currCoin)
-    .map((it) => it.addresses)
-    .reduce((buf: string[], address: string[]) => {
-      buf.push(...address);
-      return buf
-    })
+    .filter((item) => item.blockchain === currentBlockchain && item.token === currentToken)
+    .map((item) => item.addresses)
+    .reduce((carry: string[], address: string[]) => ([ ...carry, ...address ]), [])
     .filter(distinct);
 
-  const formAddress = <FormControl fullWidth={true}>
-    <InputLabel id="address-select-label">Address</InputLabel>
-    <Select labelId={"address-select-label"}
-            value={currAddress}
-            disabled={availableAddresses.length == 1}
-            onChange={(e) => setCurrAddress(e.target.value as string)}
-    >
-      {availableAddresses.map((address) =>
-        <MenuItem key={address} value={address}>
-          <Address address={address} disableCopy={true}/>
-        </MenuItem>
-      )}
-    </Select>
-  </FormControl>
+  const availableCoins = accepted
+    .filter((item) => item.blockchain === currentBlockchain)
+    .map((item) => item.token)
+    .filter(distinct);
 
-  const qr = <Box>
-    <img src={qrCodeUrl} alt={""} width={250}/>
-  </Box>
+  const tokenInfo = registry.tokens[currentBlockchain]?.find((token) => token.symbol === currentToken);
 
-  return <Page title='Request Cryptocurrency'
-               leftIcon={<Back onClick={onCancel}/>}>
-    <WalletReference wallet={wallet} assets={assets}/>
+  let qrCodeValue = currentAddress;
 
-    <Grid container={true}>
-      <Grid item={true} xs={8}>
-        <Grid container={true} className={styles.form}>
-          <Grid item={true} xs={6}>
-            {formBlockchain}
-          </Grid>
-          <Grid item={true} xs={3}>
-            {formCoin}
-          </Grid>
-          <Grid item={true} xs={9}>
-            {formAddress}
-          </Grid>
-          <Grid item={true} xs={1} className={styles.copyCell}>
-            <Button onClick={() => clipboard.writeText(currAddress)}>
-              <LibraryAddCheckIcon/>
-              Copy
-            </Button>
+  if (tokenInfo != null) {
+    //TODO there is no standards for that, check later
+    qrCodeValue = `${qrCodeValue}?erc20=${tokenInfo.symbol}`;
+  }
+
+  const currentEntry = findEntry();
+
+  return (
+    <Page title="Request Cryptocurrency" leftIcon={<Back onClick={onCancel} />}>
+      {wallet != null && <WalletReference wallet={wallet} assets={assets} />}
+      <Grid container>
+        <Grid item xs={8}>
+          <Grid container className={styles.form}>
+            <Grid item xs={6}>
+              <FormControl fullWidth>
+                <InputLabel id="blockchain-select-label">Blockchain</InputLabel>
+                <Select
+                  disabled={availableBlockchains.length <= 1}
+                  labelId="blockchain-select-label"
+                  value={currentBlockchain}
+                  onChange={(e) => selectBlockchain(e.target.value as BlockchainCode)}
+                >
+                  {availableBlockchains.map((blockchain) => (
+                    <MenuItem key={blockchain} value={blockchain}>
+                      {Blockchains[blockchain].getTitle()}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={3}>
+              <FormControl fullWidth>
+                <InputLabel id="coin-select-label">Coin</InputLabel>
+                <Select
+                  disabled={availableCoins.length <= 1}
+                  labelId="coin-select-label"
+                  value={currentToken}
+                  onChange={(e) => selectToken(e.target.value as AnyCoinCode)}
+                >
+                  {availableCoins.map((token) => (
+                    <MenuItem key={token} value={token}>
+                      {token}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            <Grid item xs={9}>
+              <FormControl fullWidth={true}>
+                <InputLabel id="address-select-label">Address</InputLabel>
+                <Select
+                  disabled={availableAddresses.length <= 1}
+                  labelId="address-select-label"
+                  value={currentAddress}
+                  onChange={(e) => setCurrentAddress(e.target.value as string)}
+                >
+                  {availableAddresses.map((address) => (
+                    <MenuItem key={address} value={address}>
+                      <Address address={address} disableCopy={true} />
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </Grid>
+            {currentAddress != null && (
+              <Grid item xs={1} className={styles.copyCell}>
+                <Button onClick={() => clipboard.writeText(currentAddress)}>
+                  <LibraryAddCheckIcon />
+                  Copy
+                </Button>
+              </Grid>
+            )}
           </Grid>
         </Grid>
+        {qrCodeValue != null && (
+          <Grid item xs={4}>
+            <Box>
+              <img src={useQRCode(qrCodeValue)} alt="QR Code" width={250} />
+            </Box>
+          </Grid>
+        )}
       </Grid>
-      <Grid item={true} xs={4}>
-        {qr}
+      <Grid item xs={8}>
+        <Button onClick={() => onCancel()}>Cancel</Button>
+        {currentEntry != null && (
+          <Button color="primary" variant="contained" onClick={() => onOk(currentEntry)}>
+            Save
+          </Button>
+        )}
       </Grid>
-    </Grid>
-    <Grid item={true} xs={8}>
-      <Button onClick={() => onCancel()}>Cancel</Button>
-      <Button onClick={() => onOk(findEntry())} color={"primary"} variant={"contained"}>Save</Button>
-    </Grid>
-  </Page>
-})
+    </Page>
+  );
+};
 
-// State Properties
-interface Props {
-  wallet: Wallet;
-  assets: IBalanceValue[];
-  accepted: Accept[];
-}
+export default connect<StateProps, DispatchProps, OwnProps, IState>(
+  (state, ownProps) => {
+    const wallet = accounts.selectors.findWallet(state, ownProps.walletId);
+    const assets: IBalanceValue[] = wallet == null ? [] : accounts.selectors.getWalletBalances(state, wallet, false);
 
-// Actions
-interface Actions {
-  onCancel: () => void;
-  onOk: (entryId: EntryId) => void;
-}
-
-// Component properties
-interface OwnProps {
-  walletId: Uuid
-}
-
-interface Accept {
-  blockchain: BlockchainCode;
-  token: AnyCoinCode;
-  addresses: string[];
-  entryId: EntryId;
-}
-
-export default connect(
-  (state: IState, ownProps: OwnProps): Props => {
-    const wallet = accounts.selectors.findWallet(state, ownProps.walletId)!;
-    const assets: IBalanceValue[] = accounts.selectors.getWalletBalances(state, wallet, false);
     const accepted: Accept[] = [];
-    wallet.entries.forEach((acc) => {
-      let address: string | undefined = undefined;
-      if (isEthereumEntry(acc)) {
-        address = acc.address?.value
-      } else if (isBitcoinEntry(acc)) {
-        address = acc.addresses.find((a: CurrentAddress) => a.role === "receive")?.address;
+
+    wallet?.entries.forEach((entry) => {
+      let address: string | undefined;
+
+      if (isEthereumEntry(entry)) {
+        address = entry.address?.value;
+      } else if (isBitcoinEntry(entry)) {
+        address = entry.addresses.find((a: CurrentAddress) => a.role === 'receive')?.address;
       }
-      if (typeof address == "undefined") {
-        return
+
+      if (address == null) {
+        return;
       }
-      const blockchain = blockchainIdToCode(acc.blockchain);
+
+      const blockchain = blockchainIdToCode(entry.blockchain);
+
       accepted.push({
         blockchain,
-        token: Blockchains[blockchain].params.coinTicker,
         addresses: [address],
-        entryId: acc.id,
+        entryId: entry.id,
+        token: Blockchains[blockchain].params.coinTicker,
       });
+
       Blockchains[blockchain].getAssets().forEach((token) => {
+        if (address == null) {
+          return;
+        }
+
         accepted.push({
           blockchain,
           token,
-          addresses: [address!],
-          entryId: acc.id,
+          addresses: [address],
+          entryId: entry.id,
         });
-      })
-    })
+      });
+    });
+
     return {
-      wallet,
-      assets,
       accepted,
-    }
+      assets,
+      wallet,
+    };
   },
-  (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
+  (dispatch, ownProps) => {
     return {
       onCancel: () => dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId)),
       onOk: (entryId: EntryId) => {
-        dispatch(accounts.actions.nextAddress(entryId, "receive"));
+        dispatch(accounts.actions.nextAddress(entryId, 'receive'));
         dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId));
-      }
-    }
-  }
-)((Component));
+      },
+    };
+  },
+)(Component);
