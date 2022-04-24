@@ -127,10 +127,13 @@ const Component: React.FC<OwnProps> = ((props) => {
       </Alert>
     } else {
       passwordField =
-        <ConfirmedPasswordInput helperText={"(optional) Additional passphrase to protect the secret mnemonic phrase."}
-                                disabled={done}
-                                buttonLabel={"Set password"}
-                                onChange={setPassword}/>
+        <ConfirmedPasswordInput
+          buttonLabel={"Set password"}
+          disabled={done}
+          helperText={"(optional) Additional passphrase to protect the secret mnemonic phrase."}
+          minLength={1}
+          onChange={setPassword}
+        />
     }
   } else {
     passwordField = <Alert severity="info">

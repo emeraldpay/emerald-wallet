@@ -1,7 +1,6 @@
-import {OddPasswordItem, Uuid} from '@emeraldpay/emerald-vault-core';
-import {ButtonGroup, Page} from '@emeraldwallet/ui';
-import {accounts, screen} from '@emeraldwallet/store';
-import { Button, PasswordInput } from '@emeraldwallet/ui';
+import { OddPasswordItem, Uuid } from '@emeraldpay/emerald-vault-core';
+import { accounts, screen } from '@emeraldwallet/store';
+import { Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import {
   CircularProgress,
   createStyles,
@@ -14,7 +13,7 @@ import {
   withStyles,
 } from '@material-ui/core';
 import { green as greenColor, grey as greyColor, orange as orangeColor } from '@material-ui/core/colors';
-import { Done as DoneIcon, RemoveCircle as SkipIcon, Warning as WarningIcon } from '@material-ui/icons'
+import { Done as DoneIcon, RemoveCircle as SkipIcon, Warning as WarningIcon } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
 import { useState } from 'react';
@@ -96,27 +95,21 @@ const PasswordMigration: React.FC<DispatchProps & StylesProps> = ({
 
     setUpgrading(false);
     setLegacyItems(
-      legacyItems.map(
-        (item) => (
-          {
-            ...item,
-            upgraded: item.upgraded === true ? item.upgraded : upgraded.includes(item.id),
-          }
-        ),
-      ),
+      legacyItems.map((item) => ({
+        ...item,
+        upgraded: item.upgraded === true ? item.upgraded : upgraded.includes(item.id),
+      })),
     );
   }, [legacyItems, globalPassword, password]);
 
   React.useEffect(() => {
-    (
-      async () => {
-        const items = await getLegacyItems();
+    (async () => {
+      const items = await getLegacyItems();
 
-        setLegacyItems(items);
+      setLegacyItems(items);
 
-        setInitializing(false);
-      }
-    )();
+      setInitializing(false);
+    })();
   }, []);
 
   const allItemsUpgraded = legacyItems.reduce((carry, item) => carry && item.upgraded === true, true);
@@ -145,35 +138,27 @@ const PasswordMigration: React.FC<DispatchProps & StylesProps> = ({
               <TableCell>{password.type === 'key' ? 'Private Key' : 'Seed'}</TableCell>
               <TableCell>{password.id}</TableCell>
               <TableCell>
-                {
-                  upgrading && !password.upgraded
-                    ? (
-                      <div className={classes.status}>
-                        <CircularProgress color="primary" className={classes.loader} size="1em" />
-                        <span>Migrating...</span>
-                      </div>
-                    )
-                    : password.upgraded == null
-                      ? (
-                        <div className={classes.status}>
-                          <WarningIcon style={{ color: orangeColor['500'] }} />
-                          <span>Migration required</span>
-                        </div>
-                      )
-                      : password.upgraded
-                        ? (
-                          <div className={classes.status}>
-                            <DoneIcon style={{ color: greenColor['500'] }} />
-                            <span>Migration successful</span>
-                          </div>
-                        )
-                        : (
-                          <div className={classes.status}>
-                            <SkipIcon style={{ color: greyColor['500'] }} />
-                            <span>Migration skipped</span>
-                          </div>
-                        )
-                }
+                {upgrading && !password.upgraded ? (
+                  <div className={classes.status}>
+                    <CircularProgress color="primary" className={classes.loader} size="1em" />
+                    <span>Migrating...</span>
+                  </div>
+                ) : password.upgraded == null ? (
+                  <div className={classes.status}>
+                    <WarningIcon style={{ color: orangeColor['500'] }} />
+                    <span>Migration required</span>
+                  </div>
+                ) : password.upgraded ? (
+                  <div className={classes.status}>
+                    <DoneIcon style={{ color: greenColor['500'] }} />
+                    <span>Migration successful</span>
+                  </div>
+                ) : (
+                  <div className={classes.status}>
+                    <SkipIcon style={{ color: greyColor['500'] }} />
+                    <span>Migration skipped</span>
+                  </div>
+                )}
               </TableCell>
             </TableRow>
           ))}
@@ -214,20 +199,18 @@ const PasswordMigration: React.FC<DispatchProps & StylesProps> = ({
 export default connect<{}, DispatchProps>(
   null,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dispatch: any) => (
-    {
-      checkGlobalKey(password) {
-        return dispatch(accounts.actions.verifyGlobalKey(password));
-      },
-      getLegacyItems() {
-        return dispatch(accounts.actions.getOddPasswordItems());
-      },
-      goHome() {
-        return dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
-      },
-      upgradeLegacyItems(globalPassword, password) {
-        return dispatch(accounts.actions.tryUpgradeOddItems(password, globalPassword));
-      },
-    }
-  ),
+  (dispatch: any) => ({
+    checkGlobalKey(password) {
+      return dispatch(accounts.actions.verifyGlobalKey(password));
+    },
+    getLegacyItems() {
+      return dispatch(accounts.actions.getOddPasswordItems());
+    },
+    goHome() {
+      return dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
+    },
+    upgradeLegacyItems(globalPassword, password) {
+      return dispatch(accounts.actions.tryUpgradeOddItems(password, globalPassword));
+    },
+  }),
 )(withStyles(styles)(PasswordMigration));

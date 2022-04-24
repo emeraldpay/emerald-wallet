@@ -1,8 +1,7 @@
 import { OddPasswordItem } from '@emeraldpay/emerald-vault-core';
-import { Pages } from '@emeraldwallet/store/lib/screen';
-import { ButtonGroup, Page } from '@emeraldwallet/ui';
 import { accounts, IState, screen } from '@emeraldwallet/store';
-import { Button, PasswordInput } from '@emeraldwallet/ui';
+import { Pages } from '@emeraldwallet/store/lib/screen';
+import { Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import { OwnProps } from '@emeraldwallet/ui/lib/components/accounts/Balance/Balance';
 import { createStyles, Typography, withStyles } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -93,12 +92,16 @@ const GlobalKey: React.FC<DispatchProps & StateProps & StylesProps> = ({
 
   return (
     <Page title="Setup Global Key">
-      <Alert severity="info" style={{ marginBottom: 15 }}>
-        Starting Emerald Wallet v2.6 uses a different schema to store Privates Keys, which is more secure and easier to
-        use.
-      </Alert>
+      {hasWallets && (
+        <Alert severity="info" style={{ marginBottom: 15 }}>
+          Starting Emerald Wallet v2.6 uses a different schema to store Privates Keys, which is more secure and easier
+          to use.
+        </Alert>
+      )}
       <Typography style={{ marginBottom: 15 }}>
-        To begin using the new format, please create a new key that will encrypt all of your Private Keys.
+        {hasWallets
+          ? 'To begin using the new format, please create a new key that will encrypt all of your Private Keys.'
+          : 'Please create a key that will encrypt all of your Private Keys.'}
       </Typography>
       <FormFieldWrapper>
         <FormLabel classes={{ root: classes.label }}>Global password</FormLabel>

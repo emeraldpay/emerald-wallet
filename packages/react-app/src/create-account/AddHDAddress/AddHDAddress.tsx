@@ -230,7 +230,7 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
             </Typography>
             <Grid container alignItems="center" spacing={1}>
               <Grid item xs={10}>
-                <PasswordInput error={passwordError} onChange={setPassword} />
+                <PasswordInput error={passwordError} minLength={1} onChange={setPassword} />
               </Grid>
               <Grid item xs={2}>
                 <Button label="Unlock" primary={true} onClick={onSeedUnlock} />
