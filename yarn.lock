@@ -1525,17 +1525,15 @@
   dependencies:
     bignumber.js "^8.0.2"
 
-"@emeraldpay/emerald-vault-core@0.8.3", "@emeraldpay/emerald-vault-core@^0.8.3":
-  version "0.8.3"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-core/-/emerald-vault-core-0.8.3.tgz#ddf4324e085e8dcf132cea10d75a38c247c0d736"
-  integrity sha512-YcFa5h25/dldr7vjpzZHfPdRsIRgmUXdqQhzP/M3a3UY2qpdYYDb/Pu+lI8iSAi41MKGFLSRfUQAuorj/XE6oA==
+"@emeraldpay/emerald-vault-core@*", "@emeraldpay/emerald-vault-core@0.9.0-dev", "@emeraldpay/emerald-vault-core@https://artifacts.emerald.cash/builds/vault-node/e2058272/emeraldpay-emerald-vault-core-v0.9.0-dev.tgz":
+  version "0.9.0-dev"
+  resolved "https://artifacts.emerald.cash/builds/vault-node/e2058272/emeraldpay-emerald-vault-core-v0.9.0-dev.tgz#c5b3db1603f10ab8f4dc741c0081ebc3a44b125e"
 
-"@emeraldpay/emerald-vault-native@^0.8.3":
-  version "0.8.3"
-  resolved "https://registry.yarnpkg.com/@emeraldpay/emerald-vault-native/-/emerald-vault-native-0.8.3.tgz#05cdd137c40cab00b46fb512fff0e9033030f05f"
-  integrity sha512-+wdL0vzQmg6KAS6QblhqiQVtDW155j+ta84mnl8mZlFrttt0f67bUih6IZ87vXhJp6FiWOEctrnLRFusfA04xA==
+"@emeraldpay/emerald-vault-native@*", "@emeraldpay/emerald-vault-native@https://artifacts.emerald.cash/builds/vault-node/e2058272/emeraldpay-emerald-vault-native-v0.9.0-dev.tgz":
+  version "0.9.0-dev"
+  resolved "https://artifacts.emerald.cash/builds/vault-node/e2058272/emeraldpay-emerald-vault-native-v0.9.0-dev.tgz#78b7954f392ef98aab49f100db097956517c50ab"
   dependencies:
-    "@emeraldpay/emerald-vault-core" "0.8.3"
+    "@emeraldpay/emerald-vault-core" "0.9.0-dev"
 
 "@emeraldpay/hashicon@^0.5.1":
   version "0.5.1"

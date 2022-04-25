@@ -7,7 +7,7 @@ import FormLabel from '../FormLabel';
 interface OwnProps {
   accounts?: string[];
   selectedAccount?: string;
-  getBalancesByAddress(address: string): string[];
+  getBalancesByAddress?(address: string): string[];
   onChangeAccount?(account: string): void;
 }
 

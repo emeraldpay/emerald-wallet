@@ -125,11 +125,11 @@ function signTx(
   const unsignedTx: UnsignedTx = {
     from: tx.from,
     to: tx.to,
-    gas: quantitiesToHex(typeof tx.gas === 'string' ? parseInt(tx.gas) : tx.gas),
-    gasPrice: typeof tx.gasPrice === 'string' ? tx.gasPrice : new Wei(tx.gasPrice).toHex(),
-    value: typeof tx.value === 'string' ? tx.value : new Wei(tx.value).toHex(),
+    gas: typeof tx.gas === 'string' ? parseInt(tx.gas) : tx.gas,
+    gasPrice: typeof tx.gasPrice === 'string' ? tx.gasPrice : new Wei(tx.gasPrice).number.toString(),
+    value: typeof tx.value === 'string' ? tx.value : new Wei(tx.value).number.toString(),
     data: tx.data,
-    nonce: quantitiesToHex(typeof tx.nonce === 'string' ? parseInt(tx.nonce) : tx.nonce),
+    nonce: typeof tx.nonce === 'string' ? parseInt(tx.nonce) : tx.nonce,
   };
   return vault.signTx(accountId, unsignedTx, passphrase);
 }
