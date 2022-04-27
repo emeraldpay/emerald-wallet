@@ -1,9 +1,8 @@
-import { BigAmount } from "@emeraldpay/bigamount";
 import { EntryId, UnsignedBitcoinTx } from "@emeraldpay/emerald-vault-core";
 import {BitcoinEntry} from "@emeraldpay/emerald-vault-core/lib/types";
 import {ButtonGroup} from "@emeraldwallet/ui";
 import {CreateBitcoinTx, ValidationResult} from "@emeraldwallet/core/lib/workflow";
-import { IState, screen } from "@emeraldwallet/store";
+import { screen } from "@emeraldwallet/store";
 import { Button } from "@emeraldwallet/ui";
 import { Box, createStyles, FormControlLabel, FormHelperText, Slider, Switch, TextField } from "@material-ui/core";
 import { makeStyles } from "@material-ui/core/styles";
@@ -233,13 +232,6 @@ interface OwnProps {
   onCreate: (tx: UnsignedBitcoinTx) => void;
 }
 
-export default connect(
-  (state: IState, ownProps: OwnProps): Props => {
-    return {};
-  },
-  (dispatch: Dispatch<any>, ownProps: OwnProps) => {
-    return {
-      onCancel: () => dispatch(screen.actions.gotoScreen(screen.Pages.HOME, ownProps.source)),
-    }
-  }
-)((Component));
+export default connect(null, (dispatch: Dispatch<any>) => ({
+  onCancel: () => dispatch(screen.actions.gotoWalletsScreen()),
+}))(Component);

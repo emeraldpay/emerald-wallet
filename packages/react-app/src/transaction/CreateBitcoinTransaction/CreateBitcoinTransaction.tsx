@@ -161,7 +161,7 @@ export default connect(
           dispatch(accounts.actions.nextAddress(ownProps.source, 'change'));
         }
       },
-      onCancel: () => dispatch(screen.actions.gotoScreen(screen.Pages.HOME, ownProps.source)),
+      onCancel: () => dispatch(screen.actions.gotoWalletsScreen()),
     };
   },
 )(Component);

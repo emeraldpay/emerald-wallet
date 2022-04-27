@@ -207,7 +207,7 @@ export default connect<{}, DispatchProps>(
       return dispatch(accounts.actions.getOddPasswordItems());
     },
     goHome() {
-      return dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
+      return dispatch(screen.actions.gotoWalletsScreen());
     },
     upgradeLegacyItems(globalPassword, password) {
       return dispatch(accounts.actions.tryUpgradeOddItems(password, globalPassword));
