@@ -1,4 +1,6 @@
-import { Dispatched } from '../types';
+import { Uuid } from '@emeraldpay/emerald-vault-core/lib/types';
+import { accounts, screen } from '../index';
+import { IState } from '../types';
 import { ActionTypes, IDialogAction, IOpenAction, Pages } from './types';
 
 export function gotoScreen (screen: string | Pages, item: any = null): IOpenAction {
@@ -89,5 +91,37 @@ export function dispatchRpcError (dispatch: any) {
 export function closeNotification () {
   return {
     type: ActionTypes.NOTIFICATION_CLOSE
+  };
+}
+
+export function gotoWalletsScreen() {
+  return async (dispatch: any, getState: () => IState) => {
+    const state = getState();
+
+    const wallets = accounts.selectors.allWallets(state);
+
+    const hasGlobalKey = await dispatch(accounts.actions.isGlobalKeySet());
+
+    let nextPage = screen.Pages.HOME;
+    let walletId: Uuid | undefined;
+
+    if (hasGlobalKey) {
+      if (wallets.length === 0) {
+        nextPage = screen.Pages.CREATE_WALLET;
+      } else if (wallets.length === 1) {
+        const [wallet] = wallets;
+
+        nextPage = screen.Pages.WALLET;
+        walletId = wallet.id;
+      }
+    } else {
+      const currentScreen = state.screen.get('screen');
+
+      if (currentScreen !== 'welcome') {
+        nextPage = screen.Pages.GLOBAL_KEY;
+      }
+    }
+
+    dispatch(gotoScreen(nextPage, walletId));
   };
 }

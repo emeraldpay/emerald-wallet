@@ -6,7 +6,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import { AccountBalanceWalletOutlined as WalletIcon } from '@material-ui/icons';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
-import { Dispatch } from 'react';
 import { connect } from 'react-redux';
 import WalletMenu from '../WalletList/WalletMenu';
 import BitcoinAccountItem from './BitcoinAccountItem';
@@ -37,6 +36,7 @@ interface OwnProps {
 }
 
 interface StateProps {
+  hasOtherWallets: boolean;
   wallet?: Wallet;
 }
 
@@ -48,6 +48,7 @@ interface DispatchProps {
 }
 
 const WalletDetails: React.FC<DispatchProps & OwnProps & StateProps> = ({
+  hasOtherWallets,
   wallet,
   goBack,
   updateWallet,
@@ -142,7 +143,7 @@ const WalletDetails: React.FC<DispatchProps & OwnProps & StateProps> = ({
   return (
     <Page
       title={renderTitle()}
-      leftIcon={<Back onClick={goBack} />}
+      leftIcon={hasOtherWallets ? <Back onClick={goBack} /> : null}
       rightIcon={<WalletMenu walletId={wallet.id} />}
     >
       <Grid container={true}>
@@ -167,9 +168,11 @@ const WalletDetails: React.FC<DispatchProps & OwnProps & StateProps> = ({
 
 export default connect(
   (state: IState, ownProps: OwnProps): StateProps => ({
+    hasOtherWallets: state.accounts.wallets.length > 1,
     wallet: accounts.selectors.findWallet(state, ownProps.walletId),
   }),
-  (dispatch: Dispatch<any>, ownProps: OwnProps): DispatchProps => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (dispatch: any, ownProps: OwnProps): DispatchProps => {
     return {
       goBack: () => {
         dispatch(screen.actions.gotoScreen(screen.Pages.HOME));

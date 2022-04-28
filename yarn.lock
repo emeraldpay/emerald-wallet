@@ -1525,11 +1525,11 @@
   dependencies:
     bignumber.js "^8.0.2"
 
-"@emeraldpay/emerald-vault-core@*", "@emeraldpay/emerald-vault-core@0.9.0-dev", "@emeraldpay/emerald-vault-core@https://artifacts.emerald.cash/builds/vault-node/e2058272/emeraldpay-emerald-vault-core-v0.9.0-dev.tgz":
+"@emeraldpay/emerald-vault-core@0.9.0-dev", "@emeraldpay/emerald-vault-core@^0.9.0-dev", "@emeraldpay/emerald-vault-core@https://artifacts.emerald.cash/builds/vault-node/e2058272/emeraldpay-emerald-vault-core-v0.9.0-dev.tgz":
   version "0.9.0-dev"
   resolved "https://artifacts.emerald.cash/builds/vault-node/e2058272/emeraldpay-emerald-vault-core-v0.9.0-dev.tgz#c5b3db1603f10ab8f4dc741c0081ebc3a44b125e"
 
-"@emeraldpay/emerald-vault-native@*", "@emeraldpay/emerald-vault-native@https://artifacts.emerald.cash/builds/vault-node/e2058272/emeraldpay-emerald-vault-native-v0.9.0-dev.tgz":
+"@emeraldpay/emerald-vault-native@^0.9.0-dev", "@emeraldpay/emerald-vault-native@https://artifacts.emerald.cash/builds/vault-node/e2058272/emeraldpay-emerald-vault-native-v0.9.0-dev.tgz":
   version "0.9.0-dev"
   resolved "https://artifacts.emerald.cash/builds/vault-node/e2058272/emeraldpay-emerald-vault-native-v0.9.0-dev.tgz#78b7954f392ef98aab49f100db097956517c50ab"
   dependencies:

@@ -9,7 +9,6 @@ import {
 import { BlockchainCode, blockchainCodeToId, Blockchains, IBlockchain } from '@emeraldwallet/core';
 import { accounts, hdpathPreview, hwkey, IState, screen, settings } from '@emeraldwallet/store';
 import { HDPathIndexes } from '@emeraldwallet/store/lib/hdpath-preview/types';
-import { Pages } from '@emeraldwallet/store/lib/screen';
 import * as React from 'react';
 import { Dispatch } from 'react';
 import { connect } from 'react-redux';
@@ -142,9 +141,9 @@ export default connect(
         });
       },
       onCancel: () => {
-        dispatch(screen.actions.gotoScreen(Pages.HOME));
         dispatch(hwkey.actions.setWatch(false));
         dispatch(hdpathPreview.actions.clean());
+        dispatch(screen.actions.gotoWalletsScreen());
       },
     };
   },

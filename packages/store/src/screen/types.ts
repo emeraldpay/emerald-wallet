@@ -34,13 +34,7 @@ export enum Pages {
   WALLET_INFO = 'wallet-info',
 }
 
-export interface IScreenState {
-  screen: any | null;
-  item: any | null;
-  error: any | null;
-  dialog: any | null;
-  dialogItem: any | null;
-}
+export type IScreenState = Map<'screen' | 'item' | 'error' | 'dialog' | 'dialogItem', string>;
 
 export interface IOpenAction {
   type: ActionTypes.OPEN;

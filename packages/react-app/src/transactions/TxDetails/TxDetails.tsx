@@ -21,7 +21,7 @@ import BitcoinTxDetails from './TxDetailsView/BitcoinTxDetails';
 import EthereumTxDetails from './TxDetailsView/EthereumTxDetails';
 import TxStatus from './TxDetailsView/TxStatus';
 
-const { gotoScreen } = screen.actions;
+const { gotoScreen, gotoWalletsScreen } = screen.actions;
 
 const useStyles = makeStyles(
   createStyles({
@@ -271,7 +271,7 @@ export default connect(
         dispatch(gotoScreen(screen.Pages.CREATE_TX_SPEED_UP, tx));
       },
       goToDashboard() {
-        dispatch(gotoScreen(screen.Pages.HOME));
+        dispatch(gotoWalletsScreen());
       },
       openAccount(wallet?: Uuid) {
         if (wallet) {

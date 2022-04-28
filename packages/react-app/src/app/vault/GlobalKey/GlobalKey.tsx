@@ -142,7 +142,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       return dispatch(accounts.actions.getOddPasswordItems());
     },
     goHome() {
-      return dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
+      return dispatch(screen.actions.gotoWalletsScreen());
     },
     goPasswordMigration() {
       dispatch(screen.actions.gotoScreen(screen.Pages.PASSWORD_MIGRATION));
