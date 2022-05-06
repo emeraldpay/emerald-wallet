@@ -137,4 +137,23 @@ describe("Tx History", () => {
     expect(act.items.length).toBe(0);
   });
 
+  test("empty cursor for a new address", async () => {
+    let act = await state.txhistory.get_cursor("xpub661MyMwAqRbcGczjuMoRm6dXaLDEhW1u34gKenbeYqAix21mdUKJyuyu5F1rzYGVxyL6tmgBUAEPrEz92mBXjByMRiJdba9wpnN37RLLAXa");
+    expect(act).toBeNull();
+  });
+
+  test("updates cursor value", async () => {
+    let xpub = "xpub661MyMwAqRbcGczjuMoRm6dXaLDEhW1u34gKenbeYqAix21mdUKJyuyu5F1rzYGVxyL6tmgBUAEPrEz92mBXjByMRiJdba9wpnN37RLLAXa";
+    let act = await state.txhistory.get_cursor(xpub);
+    expect(act).toBeNull();
+
+    await state.txhistory.set_cursor(xpub, "MDYwNmMzOTctNTBiNy00NjIzLThmOTktYmU5Y2VhMjk3NTc1");
+    let act2 = await state.txhistory.get_cursor(xpub);
+    expect(act2).toBe("MDYwNmMzOTctNTBiNy00NjIzLThmOTktYmU5Y2VhMjk3NTc1");
+
+    await state.txhistory.set_cursor(xpub, "NjgyNmY0YWUtOTE3MC00MDIyLTllMDEtNzBhZjZmMjIxYWUy");
+    let act3 = await state.txhistory.get_cursor(xpub);
+    expect(act3).toBe("NjgyNmY0YWUtOTE3MC00MDIyLTllMDEtNzBhZjZmMjIxYWUy");
+  });
+
 })

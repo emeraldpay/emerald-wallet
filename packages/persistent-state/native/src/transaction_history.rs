@@ -221,7 +221,7 @@ pub fn query<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManager
 fn submit_internal(tx: Transaction) -> Result<bool, StateManagerError> {
   let storage = Instance::get_storage()?;
   storage.get_transactions()
-    .submit(vec![tx], Utc::now())
+    .submit(vec![tx])
     .map_err(StateManagerError::from)
     .map(|_| true)
 }
@@ -271,6 +271,60 @@ pub fn remove<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManage
 
   std::thread::spawn(move || {
     let result = remove_internal(blockchain, tx_id);
+    handler(result);
+  });
+
+  Ok(())
+}
+
+fn get_cursor_internal(address: String) -> Result<Option<String>, StateManagerError> {
+  let storage = Instance::get_storage()?;
+  Ok(storage.get_transactions()
+    .get_cursor(address)
+    .map_err(StateManagerError::from)?
+    .map(|c| c.value))
+}
+
+#[neon_frame_fn(channel=1)]
+pub fn get_cursor<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
+  where
+    H: FnOnce(Result<Option<String>, StateManagerError>) + Send + 'static {
+  let address = cx
+    .argument::<JsString>(0)
+    .map_err(|_| StateManagerError::MissingArgument(0, "target".to_string()))?
+    .value(cx);
+
+  std::thread::spawn(move || {
+    let result = get_cursor_internal(address);
+    handler(result);
+  });
+
+  Ok(())
+}
+
+fn set_cursor_internal(address: String, value: String) -> Result<bool, StateManagerError> {
+  let storage = Instance::get_storage()?;
+  storage.get_transactions()
+    .set_cursor(address, value)
+    .map_err(StateManagerError::from)
+    .map(|_| true)
+}
+
+#[neon_frame_fn(channel=2)]
+pub fn set_cursor<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
+  where
+    H: FnOnce(Result<bool, StateManagerError>) + Send + 'static {
+  let address = cx
+    .argument::<JsString>(0)
+    .map_err(|_| StateManagerError::MissingArgument(0, "target".to_string()))?
+    .value(cx);
+  let value = cx
+    .argument::<JsString>(1)
+    .map_err(|_| StateManagerError::MissingArgument(1, "cursor".to_string()))?
+    .value(cx);
+
+  std::thread::spawn(move || {
+    let result = set_cursor_internal(address, value);
     handler(result);
   });
 

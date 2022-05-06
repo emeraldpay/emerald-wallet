@@ -2,8 +2,8 @@ use emerald_wallet_state::access::xpubpos::XPubPosition;
 use crate::errors::StateManagerError;
 use crate::instance::Instance;
 use neon::object::Object;
-use neon::types::{JsString, JsValue, JsNumber};
-use neon::prelude::{FunctionContext, Handle};
+use neon::types::{JsString, JsNumber};
+use neon::prelude::{FunctionContext};
 
 // ------
 // NAPI functions

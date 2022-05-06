@@ -52,5 +52,30 @@ export class TxHistoryImpl implements PersistentState.TxHistory {
     });
   }
 
+  get_cursor(target: string): Promise<string | null> {
+    return new Promise((resolve, reject) => {
+      try {
+        this.manager.addon.txhistory_get_cursor(
+          target,
+          neonToPromise(resolve, reject)
+        );
+      } catch (e) {
+        reject(e)
+      }
+    });
+  }
+
+  set_cursor(target: string, cursor: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      try {
+        this.manager.addon.txhistory_set_cursor(
+          target, cursor,
+          neonToPromise(resolve, reject)
+        );
+      } catch (e) {
+        reject(e)
+      }
+    });
+  }
 
 }

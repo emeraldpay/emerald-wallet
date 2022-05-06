@@ -138,14 +138,27 @@ export interface TxHistory {
    * @param blockchain
    * @param txid
    */
-  remove(blockchain: number, txid: String): Promise<void>;
+  remove(blockchain: number, txid: string): Promise<void>;
 
   /**
    * Find transactions under the specified criteria
    * @param filter
    */
-  query(filter?: TxHistoryFilter): Promise<PageResult<Transaction>>
+  query(filter?: TxHistoryFilter): Promise<PageResult<Transaction>>;
 
+  /**
+   * Get current API Cursor for the specified address
+   * @param target individual address or xpub
+   */
+  get_cursor(target: string): Promise<string | null>;
+
+  /**
+   * Set current cursor received from remote API
+   *
+   * @param target individual address or xpub
+   * @param cursor cursor value
+   */
+  set_cursor(target: string, cursor: string): Promise<void>;
 }
 
 /**
@@ -201,7 +214,7 @@ export interface XPubPosition {
    * Get current position at the xpub
    * @param xpub
    */
-  get(xpub: String): Promise<number>;
+  get(xpub: string): Promise<number>;
 
   /**
    * Set the current minimum position for the specified xpub. If the storage knows a larger position it stays on
@@ -210,7 +223,7 @@ export interface XPubPosition {
    * @param xpub
    * @param pos
    */
-  set_at_least(xpub: String, pos: number): Promise<void>;
+  set_at_least(xpub: string, pos: number): Promise<void>;
 }
 
 export interface PersistentState {

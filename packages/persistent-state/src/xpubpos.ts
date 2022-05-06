@@ -11,7 +11,7 @@ export class XPubPositionImpl implements PersistentState.XPubPosition {
     this.manager = manager;
   }
 
-  get(xpub: String): Promise<number> {
+  get(xpub: string): Promise<number> {
     return new Promise((resolve, reject) => {
       try {
         this.manager.addon.xpubpos_get(
@@ -24,7 +24,7 @@ export class XPubPositionImpl implements PersistentState.XPubPosition {
     });
   }
 
-  set_at_least(xpub: String, pos: number): Promise<void> {
+  set_at_least(xpub: string, pos: number): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
         this.manager.addon.xpubpos_set(
