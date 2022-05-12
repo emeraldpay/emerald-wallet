@@ -1,23 +1,32 @@
-import { AnyCoinCode, AnyTokenCode } from '../../Asset';
+import { AnyCoinCode } from '../../Asset';
 import { BlockchainCode } from '../blockchains';
-import { CoinTicker } from '../CoinTicker';
+import { HDPath } from '../hdpath';
 import IBlockchainParams from '../IBlockchainParams';
-import {HDPath} from "../hdpath";
 
 class EthereumParams implements IBlockchainParams {
-  public decimals: number = 18;
+  public readonly decimals = 18;
+
+  public code: BlockchainCode;
   public coinTicker: AnyCoinCode;
   public chainId: number;
   public hdPath: HDPath;
-  public code: BlockchainCode;
   public confirmations: number;
+  public eip1559: boolean;
 
-  constructor(code: BlockchainCode, coinTicker: AnyCoinCode, chainId: number, hdPath: HDPath, confirmations: number) {
+  constructor(
+    code: BlockchainCode,
+    coinTicker: AnyCoinCode,
+    chainId: number,
+    hdPath: HDPath,
+    confirmations: number,
+    eip1559 = false,
+  ) {
     this.code = code;
     this.coinTicker = coinTicker;
     this.chainId = chainId;
     this.hdPath = hdPath;
     this.confirmations = confirmations;
+    this.eip1559 = eip1559;
   }
 }
 

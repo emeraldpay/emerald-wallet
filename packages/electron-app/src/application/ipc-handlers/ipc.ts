@@ -7,7 +7,6 @@ import {
   isNativeCallResponse,
 } from '@emeraldpay/api';
 import {
-  amountFactory,
   AnyCoinCode,
   BlockchainCode,
   blockchainCodeToId,
@@ -18,7 +17,7 @@ import {
   Logger,
 } from '@emeraldwallet/core';
 import { loadTransactions2, storeTransactions2 } from '@emeraldwallet/history-store';
-import { EmeraldApiAccess } from "@emeraldwallet/services";
+import { EmeraldApiAccess } from '@emeraldwallet/services';
 import { ipcMain } from 'electron';
 import * as os from 'os';
 import Application from '../Application';
@@ -31,17 +30,16 @@ interface BalanceResult {
 const log = Logger.forCategory('IPC Handlers');
 
 export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess) {
-
   ipcMain.handle(Commands.GET_VERSION, async (event, args) => {
     const osDetails = {
       platform: os.platform(),
       release: os.release(),
-      arch: os.arch()
+      arch: os.arch(),
     };
     return {
       os: osDetails,
       version: app.versions?.version,
-      gitVersion: app.versions?.gitVersion
+      gitVersion: app.versions?.gitVersion,
     };
   });
 
@@ -62,66 +60,66 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess) {
     return loadTransactions2(blockchain);
   });
 
-  ipcMain.handle(Commands.GET_BALANCE, (event: any, blockchain: BlockchainCode, address: string, tokens: AnyCoinCode[]) => {
-    const addressListener = apiAccess.newAddressListener();
+  ipcMain.handle(
+    Commands.GET_BALANCE,
+    (event: any, blockchain: BlockchainCode, address: string, tokens: AnyCoinCode[]) => {
+      const addressListener = apiAccess.newAddressListener();
 
-    const calls: Promise<AddressBalance[]>[] = tokens.map((token) => {
-      let asset = token as AssetCode;
+      const calls: Promise<AddressBalance[]>[] = tokens.map((token) => {
+        let asset = token as AssetCode;
 
-      if (asset.toLowerCase() === 'testbtc') {
-        // it always BTC for bitcoin networks, TESTBTC is our internal code
-        asset = 'BTC';
-      }
+        if (asset.toLowerCase() === 'testbtc') {
+          // it always BTC for bitcoin networks, TESTBTC is our internal code
+          asset = 'BTC';
+        }
 
-      return addressListener.getBalance(blockchain, address, asset);
-    });
+        return addressListener.getBalance(blockchain, address, asset);
+      });
 
-    return Promise.all(calls)
-      .then((balances: AddressBalance[][]) =>
-        balances.flat().reduce((carry, balance) => {
-          let code = balance.asset.code as AnyCoinCode;
+      return Promise.all(calls)
+        .then((balances: AddressBalance[][]) =>
+          balances.flat().reduce((carry, balance) => {
+            let code = balance.asset.code as AnyCoinCode;
 
-          if (
-            code == 'BTC' &&
-            balance.asset.blockchain == Blockchain.TESTNET_BITCOIN
-          ) {
-            code = 'TESTBTC';
-          }
+            if (code == 'BTC' && balance.asset.blockchain == Blockchain.TESTNET_BITCOIN) {
+              code = 'TESTBTC';
+            }
 
-          return { ...carry, [code]: balance.balance };
-        }, {})
-      )
-      .catch(err => console.warn('Failed to get balances', err));
-  });
+            return { ...carry, [code]: balance.balance };
+          }, {}),
+        )
+        .catch((err) => console.warn('Failed to get balances', err));
+    },
+  );
 
   ipcMain.handle(Commands.BROADCAST_TX, async (event: any, blockchain: BlockchainCode, tx: string) => {
     if (isEthereum(blockchain)) {
       return app.rpc.chain(blockchain).eth.sendRawTransaction(tx);
     } else if (isBitcoin(blockchain)) {
       return new Promise((resolve, reject) => {
-        apiAccess.blockchainClient.nativeCall(
-          blockchainCodeToId(blockchain),
-          [
+        apiAccess.blockchainClient
+          .nativeCall(blockchainCodeToId(blockchain), [
             {
               id: 0,
-              method: "sendrawtransaction",
-              payload: [tx]
+              method: 'sendrawtransaction',
+              payload: [tx],
+            },
+          ])
+          .onData((resp) => {
+            if (isNativeCallResponse(resp)) {
+              const hash = resp.payload as string;
+              log.info('Broadcast transaction: ' + hash);
+              resolve(hash);
+            } else if (isNativeCallError(resp)) {
+              reject(resp.message);
+            } else {
+              reject('Invalid response from API');
             }
-          ]
-        ).onData((resp) => {
-          if (isNativeCallResponse(resp)) {
-            const hash = resp.payload as string;
-            log.info("Broadcast transaction: " + hash);
-            resolve(hash);
-          } else if (isNativeCallError(resp)) {
-            reject(resp.message);
-          } else {
-            reject("Invalid response from API");
-          }
-        }).onError((err) => reject(err.message));
-      })
+          })
+          .onError((err) => reject(err.message));
+      });
     } else {
-      log.error("Invalid blockchain: " + blockchain)
+      log.error('Invalid blockchain: ' + blockchain);
     }
   });
 
@@ -130,17 +128,12 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess) {
   });
 
   ipcMain.handle(Commands.GET_NONCE, (event: any, blockchain: BlockchainCode, address: string) => {
-    return app.rpc.chain(blockchain).eth.getTransactionCount(address)
+    return app.rpc.chain(blockchain).eth.getTransactionCount(address);
   });
 
   ipcMain.handle(
     Commands.ESTIMATE_FEE,
-    async (
-      event: any,
-      blockchain: BlockchainCode,
-      blocks: number,
-      mode: EstimationMode,
-    ) => {
+    async (event: any, blockchain: BlockchainCode, blocks: number, mode: EstimationMode) => {
       try {
         const fee = await apiAccess.blockchainClient.estimateFees({
           blocks,
@@ -152,7 +145,11 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess) {
           case 'bitcoinStd':
             return fee.satPerKb;
           case 'ethereumExt':
-            return fee.expect;
+            return {
+              expect: fee.expect,
+              max: fee.max,
+              priority: fee.priority,
+            };
           case 'ethereumStd':
             return fee.fee;
         }

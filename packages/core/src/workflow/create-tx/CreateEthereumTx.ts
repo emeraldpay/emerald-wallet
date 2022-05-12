@@ -1,175 +1,200 @@
-import {BigNumber} from 'bignumber.js';
-import {DisplayEtherTx, IDisplayTx} from '..';
-import {ITx, ITxDetailsPlain, targetFromNumber, TxTarget, ValidationResult} from './types';
-import {Wei} from "@emeraldpay/bigamount-crypto";
+import { Wei } from '@emeraldpay/bigamount-crypto';
+import { BigNumber } from 'bignumber.js';
+import { DisplayEtherTx, IDisplayTx } from '..';
+import { targetFromNumber, Tx, TxDetailsPlain, TxTarget, ValidationResult } from './types';
 
-export interface ITxDetails {
-  from?: string;
-  to?: string;
-  target: TxTarget;
+export interface TxDetails {
   amount: Wei;
-  totalBalance?: Wei;
-  gasPrice: Wei;
+  from?: string;
   gas: BigNumber;
+  gasPrice?: Wei;
+  maxGasPrice?: Wei;
+  priorityGasPrice?: Wei;
+  target: TxTarget;
+  to?: string;
+  totalBalance?: Wei;
 }
 
-const TxDefaults: ITxDetails = {
+const TxDefaults: TxDetails = {
   amount: Wei.ZERO,
   gas: new BigNumber(21000),
-  gasPrice: Wei.ZERO,
-  target: TxTarget.MANUAL
+  target: TxTarget.MANUAL,
 };
 
-function toPlainDetails (tx: ITxDetails): ITxDetailsPlain {
-  return {
-    amount: tx.amount.encode(),
-    from: tx.from,
-    gas: tx.gas.toNumber(),
-    gasPrice: tx.gasPrice.encode(),
-    target: tx.target.valueOf(),
-    to: tx.to,
-    amountDecimals: 18,
-    totalEtherBalance: tx.totalBalance?.encode(),
-    tokenSymbol: "ETH"
-  };
-}
-
-function fromPlainDetails (plain: ITxDetailsPlain): ITxDetails {
+function fromPlainDetails(plain: TxDetailsPlain): TxDetails {
   return {
     amount: Wei.decode(plain.amount),
     from: plain.from,
     gas: new BigNumber(plain.gas),
-    gasPrice: Wei.decode(plain.gasPrice),
+    gasPrice: plain.gasPrice == null ? undefined : Wei.decode(plain.gasPrice),
+    maxGasPrice: plain.maxGasPrice == null ? undefined : Wei.decode(plain.maxGasPrice),
+    priorityGasPrice: plain.priorityGasPrice == null ? undefined : Wei.decode(plain.priorityGasPrice),
     target: targetFromNumber(plain.target),
     to: plain.to,
-    totalBalance: plain.totalEtherBalance == null
-      ? undefined
-      : Wei.decode(plain.totalEtherBalance),
+    totalBalance: plain.totalEtherBalance == null ? undefined : Wei.decode(plain.totalEtherBalance),
   };
 }
 
-export class CreateEthereumTx implements ITxDetails, ITx<Wei> {
+function toPlainDetails(tx: TxDetails): TxDetailsPlain {
+  return {
+    amount: tx.amount.encode(),
+    amountDecimals: 18,
+    from: tx.from,
+    gas: tx.gas.toNumber(),
+    gasPrice: tx.gasPrice?.encode(),
+    maxGasPrice: tx.maxGasPrice?.encode(),
+    priorityGasPrice: tx.priorityGasPrice?.encode(),
+    target: tx.target.valueOf(),
+    to: tx.to,
+    tokenSymbol: 'ETH',
+    totalEtherBalance: tx.totalBalance?.encode(),
+  };
+}
 
-  public static fromPlain(details: ITxDetailsPlain): CreateEthereumTx {
-    return new CreateEthereumTx(fromPlainDetails(details));
-  }
-
-  public from?: string;
-  public to?: string;
-  public target: TxTarget;
+export class CreateEthereumTx implements TxDetails, Tx<Wei> {
   public amount: Wei;
-  public totalBalance?: Wei;
-  public gasPrice: Wei;
+  public from?: string;
   public gas: BigNumber;
+  public gasPrice?: Wei;
+  public maxGasPrice?: Wei;
+  public priorityGasPrice?: Wei;
+  public target: TxTarget;
+  public to?: string;
+  public totalBalance?: Wei;
 
-  constructor (details?: ITxDetails) {
-    if (!details) {
+  constructor(source?: TxDetails) {
+    let details = source;
+
+    if (details == null) {
       details = TxDefaults;
     }
-    this.from = details.from;
-    this.to = details.to;
-    this.target = details.target;
+
     this.amount = details.amount;
-    this.totalBalance = details.totalBalance;
-    this.gasPrice = details.gasPrice;
+    this.from = details.from;
     this.gas = details.gas;
+    this.gasPrice = details.gasPrice;
+    this.maxGasPrice = details.maxGasPrice;
+    this.priorityGasPrice = details.priorityGasPrice;
+    this.target = details.target;
+    this.to = details.to;
+    this.totalBalance = details.totalBalance;
   }
 
-  public dump (): ITxDetailsPlain {
-    return toPlainDetails(this);
-  }
-
-  public display (): IDisplayTx {
-    return new DisplayEtherTx(this);
-  }
-
-  public setFrom(from: string | null, balance: Wei) {
-    if (from !== null) {
-      this.from = from;
-    }
-    this.totalBalance = balance;
-  }
-
-  public getTotalBalance(): Wei {
-    return this.totalBalance || Wei.ZERO;
+  public static fromPlain(details: TxDetailsPlain): CreateEthereumTx {
+    return new CreateEthereumTx(fromPlainDetails(details));
   }
 
   public getAmount(): Wei {
     return this.amount;
   }
 
-  public setAmount(a: Wei) {
-    this.amount = a;
+  public setAmount(amount: Wei): void {
+    this.amount = amount;
   }
 
-  public validate(): ValidationResult {
-    if (this.from == null || this.totalBalance == null) {
-      return ValidationResult.NO_FROM;
-    }
-    if (this.to == null) {
-      return ValidationResult.NO_TO;
-    }
-    if (this.getTotal().isGreaterThan(this.totalBalance)) {
-      return ValidationResult.INSUFFICIENT_FUNDS;
-    }
-    return ValidationResult.OK;
-  }
-
-  public validateTarget (): boolean {
-    if (this.target === TxTarget.SEND_ALL) {
-      if (this.totalBalance == null) {
-        return false;
-      }
-      return this.getTotal().equals(this.totalBalance);
-    }
-    return true;
-  }
-
-  public getTotal (): Wei {
-    return this.amount.plus(this.getFees());
-  }
-
-  public getChange (): (Wei | null) {
+  public getChange(): Wei | null {
     if (this.totalBalance == null) {
       return null;
     }
+
     return this.totalBalance.minus(this.getTotal());
   }
 
-  public getFees (): Wei {
-    return this.gasPrice.multiply(this.gas)
+  public getFees(): Wei {
+    const gasPrice = this.maxGasPrice ?? this.gasPrice ?? Wei.ZERO;
+
+    return gasPrice.multiply(this.gas);
   }
 
-  public rebalance (): boolean {
-    if (this.target === TxTarget.SEND_ALL) {
-      if (this.totalBalance == null) {
-        return false;
-      }
-      const amount = this.totalBalance.minus(this.getFees());
-      if (amount.isPositive() || amount.isZero()) {
-        this.amount = amount;
-        return true;
-      }
-      return false;
-    }
-    return true;
+  public getTokenSymbol(): string {
+    return 'ETH';
   }
 
-  public debug(): string {
-    const change = this.getChange();
-    return `Send ${this.from} -> ${this.to} of ${this.amount.toString()} using ${this.gas} at ${this.gasPrice.toString()}.\n` +
-      `Total to send: ${this.getTotal()} (${this.getFees()} are fees),` +
-      `account has ${this.totalBalance} (${this.totalBalance == null ? null : this.totalBalance.toString()} Wei), ` +
-      `will have ${change} (${change == null ? null : change.toString()} Wei)`;
+  public getTotal(): Wei {
+    return this.amount.plus(this.getFees());
+  }
 
+  public getTotalBalance(): Wei {
+    return this.totalBalance ?? Wei.ZERO;
   }
 
   public setTotalBalance(total: Wei): void {
     this.totalBalance = total;
   }
 
-  public getTokenSymbol(): string {
-    return "ETH";
+  public setFrom(from: string | null, balance: Wei): void {
+    if (from !== null) {
+      this.from = from;
+    }
+
+    this.totalBalance = balance;
   }
 
+  public display(): IDisplayTx {
+    return new DisplayEtherTx(this);
+  }
+
+  public dump(): TxDetailsPlain {
+    return toPlainDetails(this);
+  }
+
+  public validate(): ValidationResult {
+    if (this.from == null || this.totalBalance == null) {
+      return ValidationResult.NO_FROM;
+    }
+
+    if (this.to == null) {
+      return ValidationResult.NO_TO;
+    }
+
+    if (this.getTotal().isGreaterThan(this.totalBalance)) {
+      return ValidationResult.INSUFFICIENT_FUNDS;
+    }
+
+    return ValidationResult.OK;
+  }
+
+  public validateTarget(): boolean {
+    if (this.target === TxTarget.SEND_ALL) {
+      if (this.totalBalance == null) {
+        return false;
+      }
+
+      return this.getTotal().equals(this.totalBalance);
+    }
+
+    return true;
+  }
+
+  public rebalance(): boolean {
+    if (this.target === TxTarget.SEND_ALL) {
+      if (this.totalBalance == null) {
+        return false;
+      }
+
+      const amount = this.totalBalance.minus(this.getFees());
+
+      if (amount.isPositive() || amount.isZero()) {
+        this.amount = amount;
+        return true;
+      }
+
+      return false;
+    }
+
+    return true;
+  }
+
+  public debug(): string {
+    const change = this.getChange();
+    const gasPrice = this.maxGasPrice ?? this.gasPrice ?? Wei.ZERO;
+
+    return (
+      `Send ${this.from} -> ${this.to} of ${this.amount.toString()} ` +
+      `using ${this.gas} at ${gasPrice.toString()}.\n` +
+      `Total to send: ${this.getTotal()} (${this.getFees()} are fees), ` +
+      `account has ${this.totalBalance ?? 0} (${this.totalBalance?.toString() ?? 0} Wei), ` +
+      `will have ${change ?? 0} (${change?.toString() ?? 0} Wei)`
+    );
+  }
 }

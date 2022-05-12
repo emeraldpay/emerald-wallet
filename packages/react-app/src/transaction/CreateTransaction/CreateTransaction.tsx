@@ -1,4 +1,3 @@
-import { EstimationMode } from '@emeraldpay/api';
 import { BigAmount, FormatterBuilder, Predicates } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { isEthereumEntry, WalletEntry } from '@emeraldpay/emerald-vault-core';
@@ -28,20 +27,26 @@ import CreateTx from '../CreateTx';
 import SignTx from '../SignTx';
 import { traceValidate } from './util';
 
-type CreateEthereumTx = workflow.CreateEthereumTx;
-type CreateERC20Tx = workflow.CreateERC20Tx;
+export type GasPriceType = number | string;
+export type GasPrices<T = GasPriceType> = Record<'expect' | 'max' | 'priority', T>;
+export type PriceSort = Record<'expects' | 'highs' | 'priorities', BigNumber[]>;
 
-type AnyTransaction = CreateEthereumTx | CreateERC20Tx;
+const DEFAULT_GAS_LIMIT = '21000' as const;
+const DEFAULT_ERC20_GAS_LIMIT = '40000' as const;
+
+const DEFAULT_FEE: GasPrices = { expect: 0, max: 0, priority: 0 } as const;
+
+const FEE_KEYS = ['avgLast', 'avgTail5', 'avgMiddle'] as const;
 
 enum PAGES {
   TX = 1,
   SIGN = 2,
 }
 
-const DEFAULT_GAS_LIMIT = '21000';
-const DEFAULT_ERC20_GAS_LIMIT = '40000';
+type CreateEthereumTx = workflow.CreateEthereumTx;
+type CreateERC20Tx = workflow.CreateERC20Tx;
 
-const FEE_KEYS: EstimationMode[] = ['avgLast', 'avgMiddle', 'avgTail5'];
+type AnyTransaction = CreateEthereumTx | CreateERC20Tx;
 
 type Request = {
   entryId: string;
@@ -62,23 +67,23 @@ interface CreateTxState {
   amount?: any;
   data?: any;
   hash?: string;
-  maximalGasPrice: string;
-  minimalGasPrice: string;
   page: PAGES;
   password?: string;
   passwordError?: string;
-  standardGasPrice: string;
   token: any;
   transaction: any;
   typedData?: any;
+  highGasPrice: GasPrices;
+  lowGasPrice: GasPrices;
+  stdGasPrice: GasPrices;
 }
 
 interface DispatchFromProps {
   checkGlobalKey: (password: string) => Promise<boolean>;
-  getFees: (blockchain: BlockchainCode) => Promise<any>;
   onCancel: () => void;
   onEmptyAddressBookClick: () => void;
   signAndSend: (request: Request) => void;
+  getFees(blockchain: BlockchainCode): Promise<Record<typeof FEE_KEYS[number], GasPrices>>;
 }
 
 interface Props {
@@ -88,6 +93,7 @@ interface Props {
   chain: BlockchainCode;
   currency: string;
   data: any;
+  eip1559: boolean;
   fiatRate?: any;
   from?: any;
   gasLimit: any;
@@ -109,7 +115,7 @@ interface Props {
   onEmptyAddressBookClick?: () => void;
 }
 
-const formatBalance = (balance: BigAmount): string => {
+function formatBalance(balance: BigAmount): string {
   const units = getStandardUnits(balance);
 
   const balanceFormatter = new FormatterBuilder()
@@ -123,10 +129,18 @@ const formatBalance = (balance: BigAmount): string => {
     .build();
 
   return balanceFormatter.format(balance);
-};
+}
 
 function isToken(tx: AnyTransaction): tx is CreateERC20Tx {
   return isAnyTokenCode(tx.getTokenSymbol().toUpperCase());
+}
+
+function sortBigNumber(first: BigNumber, second: BigNumber): number {
+  if (first.eq(second)) {
+    return 0;
+  }
+
+  return first.gt(second) ? 1 : -1;
 }
 
 const { TxTarget } = workflow;
@@ -144,12 +158,13 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     this.onChangePassword = this.onChangePassword.bind(this);
     this.getPage = this.getPage.bind(this);
     this.onMaxClicked = this.onMaxClicked.bind(this);
-    this.onSetGasPrice = this.onSetGasPrice.bind(this);
+    this.onSetMaxGasPrice = this.onSetMaxGasPrice.bind(this);
+    this.onSetPriorityGasPrice = this.onSetPriorityGasPrice.bind(this);
     const tx = CreateTransaction.txFromProps(props);
     this.state = {
-      maximalGasPrice: '0',
-      minimalGasPrice: '0',
-      standardGasPrice: '0',
+      highGasPrice: DEFAULT_FEE,
+      lowGasPrice: DEFAULT_FEE,
+      stdGasPrice: DEFAULT_FEE,
       page: props.mode ? PAGES.SIGN : PAGES.TX,
       token: props.token,
       transaction: tx.dump(),
@@ -196,7 +211,8 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     const tx = new workflow.CreateEthereumTx();
     tx.from = props.selectedFromAddress;
     tx.setTotalBalance(props.getBalance(props.selectedFromAddress));
-    tx.gasPrice = new Wei(0);
+    tx.maxGasPrice = new Wei(0);
+    tx.priorityGasPrice = new Wei(0);
     tx.amount = props.amount;
     tx.gas = new BigNumber(props.gasLimit || DEFAULT_GAS_LIMIT);
     return tx;
@@ -286,31 +302,41 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
   public async componentDidMount() {
     const fees = await this.props.getFees(this.props.chain);
 
-    const { avgMiddle } = fees;
-
-    let { avgLast, avgTail5 } = fees;
-
-    const tx = this.transaction;
-    tx.gasPrice = new Wei(avgMiddle);
-    tx.rebalance();
-    this.transaction = tx;
+    const { avgLast, avgMiddle, avgTail5 } = fees;
+    const feeProp = this.props.eip1559 ? 'max' : 'expect';
 
     /**
      * For small networks with less than 5 txes in a block the Tail5 value may be larger that the Middle value.
      * Make sure the order is consistent.
      */
-    if (avgTail5 > avgMiddle) {
-      avgTail5 = avgMiddle;
+    if (avgTail5[feeProp] > avgMiddle[feeProp]) {
+      avgTail5[feeProp] = avgMiddle[feeProp];
     }
 
-    if (avgLast > avgTail5) {
-      avgLast = avgTail5;
+    if (avgLast[feeProp] > avgTail5[feeProp]) {
+      avgLast[feeProp] = avgTail5[feeProp];
     }
+
+    const tx = this.transaction;
+
+    if (this.props.eip1559) {
+      tx.gasPrice = undefined;
+      tx.maxGasPrice = new Wei(avgMiddle.max);
+      tx.priorityGasPrice = new Wei(avgMiddle.priority);
+    } else {
+      tx.gasPrice = new Wei(avgMiddle.expect);
+      tx.maxGasPrice = undefined;
+      tx.priorityGasPrice = undefined;
+    }
+
+    tx.rebalance();
+
+    this.transaction = tx;
 
     this.setState({
-      maximalGasPrice: avgMiddle,
-      minimalGasPrice: avgLast,
-      standardGasPrice: avgTail5,
+      highGasPrice: avgMiddle,
+      lowGasPrice: avgLast,
+      stdGasPrice: avgTail5,
       amount: this.props.amount,
       data: this.props.data,
       token: this.props.token,
@@ -359,9 +385,27 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     this.transaction = tx;
   }
 
-  public onSetGasPrice(price: number) {
+  public onSetMaxGasPrice(price: number) {
     const tx = this.transaction;
-    tx.gasPrice = new Wei(price, 'GWei');
+
+    const gasPrice = new Wei(price, 'GWei');
+
+    if (this.props.eip1559) {
+      tx.gasPrice = undefined;
+      tx.maxGasPrice = gasPrice;
+    } else {
+      tx.gasPrice = gasPrice;
+      tx.maxGasPrice = undefined;
+    }
+
+    tx.rebalance();
+
+    this.transaction = tx;
+  }
+
+  public onSetPriorityGasPrice(price: number) {
+    const tx = this.transaction;
+    tx.priorityGasPrice = new Wei(price, 'GWei');
     tx.rebalance();
     this.transaction = tx;
   }
@@ -375,9 +419,10 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       case PAGES.TX:
         return (
           <CreateTx
-            maximalGasPrice={this.state.maximalGasPrice}
-            minimalGasPrice={this.state.minimalGasPrice}
-            standardGasPrice={this.state.standardGasPrice}
+            eip1559={this.props.eip1559}
+            highGasPrice={this.state.highGasPrice}
+            lowGasPrice={this.state.lowGasPrice}
+            stdGasPrice={this.state.stdGasPrice}
             tx={tx}
             txFeeToken={this.props.txFeeSymbol}
             token={this.state.token}
@@ -395,7 +440,8 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
             onCancel={this.props.onCancel}
             onEmptyAddressBookClick={this.props.onEmptyAddressBookClick}
             onMaxClicked={this.onMaxClicked}
-            onSetGasPrice={this.onSetGasPrice}
+            onSetMaxGasPrice={this.onSetMaxGasPrice}
+            onSetPriorityGasPrice={this.onSetPriorityGasPrice}
             getBalancesByAddress={this.props.getBalancesByAddress}
           />
         );
@@ -472,9 +518,11 @@ function signTokenTx(dispatch: any, ownProps: OwnProps, { entryId, password, tok
       password,
       tokenInfo.address,
       tx.gas.toNumber(),
-      tx.gasPrice,
       Wei.ZERO,
       txData,
+      tx.gasPrice,
+      tx.maxGasPrice,
+      tx.priorityGasPrice,
     ),
   );
 }
@@ -485,8 +533,6 @@ function signEtherTx(dispatch: any, ownProps: OwnProps, { entryId, password, tra
   const plainTx = {
     from: tx.from,
     gas: tx.gas,
-    gasPrice: tx.gasPrice,
-    password: password,
     to: tx.to,
     value: tx.amount,
   };
@@ -507,9 +553,11 @@ function signEtherTx(dispatch: any, ownProps: OwnProps, { entryId, password, tra
           password,
           tx.to,
           tx.gas.toNumber(),
-          tx.gasPrice,
           tx.amount,
           '',
+          tx.gasPrice,
+          tx.maxGasPrice,
+          tx.priorityGasPrice,
         ),
       );
     });
@@ -553,6 +601,7 @@ export default connect(
       chain: blockchain.params.code,
       currency: settings.selectors.fiatCurrency(state),
       data: ownProps.data,
+      eip1559: blockchain.params.eip1559 ?? false,
       gasLimit: ownProps.gasLimit || DEFAULT_GAS_LIMIT,
       ownAddresses:
         accounts.selectors
@@ -636,40 +685,100 @@ export default connect(
         ),
       );
 
-      let [avgLastNumber, avgMiddleNumber, avgTail5Number] = results.map(
-        (result) => new BigNumber(result.status === 'fulfilled' ? result.value ?? 0 : 0),
+      let [avgLastNumber, avgTail5Number, avgMiddleNumber] = results.map((result) => {
+        const value = result.status === 'fulfilled' ? result.value ?? DEFAULT_FEE : DEFAULT_FEE;
+
+        let expect: GasPriceType;
+        let max: GasPriceType;
+        let priority: GasPriceType;
+
+        if (typeof value === 'string') {
+          ({ expect, max, priority } = { ...DEFAULT_FEE, expect: value });
+        } else {
+          ({ expect, max, priority } = value);
+        }
+
+        return {
+          expect: new BigNumber(expect),
+          max: new BigNumber(max),
+          priority: new BigNumber(priority),
+        };
+      });
+
+      let { expects, highs, priorities } = [avgLastNumber, avgTail5Number, avgMiddleNumber].reduce<PriceSort>(
+        (carry, item) => ({
+          expects: [...carry.expects, item.expect],
+          highs: [...carry.highs, item.max],
+          priorities: [...carry.priorities, item.priority],
+        }),
+        {
+          expects: [],
+          highs: [],
+          priorities: [],
+        },
       );
 
-      if (avgTail5Number.eq(0)) {
-        // TODO Set default value from remote config
-        avgTail5Number = new Wei(30, 'GWei').number;
-      }
+      expects = expects.sort(sortBigNumber);
+      highs = highs.sort(sortBigNumber);
+      priorities = priorities.sort(sortBigNumber);
 
-      if (avgTail5Number.lt(avgLastNumber) || avgTail5Number.gt(avgMiddleNumber)) {
-        [avgLastNumber, avgMiddleNumber, avgTail5Number] = [avgLastNumber, avgMiddleNumber, avgTail5Number].sort(
-          (first, second) => {
-            if (first.eq(second)) {
-              return 0;
-            }
-
-            return first.gt(second) ? 1 : -1;
+      [avgLastNumber, avgTail5Number, avgMiddleNumber] = expects.reduce<Array<GasPrices<BigNumber>>>(
+        (carry, item, index) => [
+          ...carry,
+          {
+            expect: item,
+            max: highs[index],
+            priority: priorities[index],
           },
-        );
+        ],
+        [],
+      );
+
+      if (avgTail5Number.expect.eq(0) && avgTail5Number.max.eq(0)) {
+        // TODO Set default value from remote config
+        avgTail5Number = {
+          expect: new Wei(30, 'GWei').number,
+          max: new Wei(30, 'GWei').number,
+          priority: new Wei(1, 'GWei').number,
+        };
       }
 
-      const avgTail5 = avgTail5Number.toNumber();
+      const avgLastExpect = avgLastNumber.expect.gt(0)
+        ? avgLastNumber.expect.toNumber()
+        : avgTail5Number.expect.minus(avgTail5Number.expect.multipliedBy(0.25)).toNumber();
+      const avgLastMax = avgLastNumber.max.gt(0)
+        ? avgLastNumber.max.toNumber()
+        : avgTail5Number.max.minus(avgTail5Number.max.multipliedBy(0.25)).toNumber();
+      const avgLastPriority = avgLastNumber.priority.gt(0)
+        ? avgLastNumber.priority.toNumber()
+        : avgTail5Number.priority.minus(avgTail5Number.priority.multipliedBy(0.25)).toNumber();
 
-      const avgLast = avgLastNumber.gt(0)
-        ? avgLastNumber.toNumber()
-        : avgTail5Number.minus(avgTail5Number.multipliedBy(0.05)).toNumber();
-      const avgMiddle = avgMiddleNumber.gt(0)
-        ? avgMiddleNumber.toNumber()
-        : avgTail5Number.plus(avgTail5Number.multipliedBy(0.05)).toNumber();
+      const avgMiddleExpect = avgMiddleNumber.expect.gt(0)
+        ? avgMiddleNumber.expect.toNumber()
+        : avgTail5Number.expect.plus(avgTail5Number.expect.multipliedBy(0.25)).toNumber();
+      const avgMiddleMax = avgMiddleNumber.max.gt(0)
+        ? avgMiddleNumber.max.toNumber()
+        : avgTail5Number.max.plus(avgTail5Number.max.multipliedBy(0.25)).toNumber();
+      const avgMiddlePriority = avgMiddleNumber.priority.gt(0)
+        ? avgMiddleNumber.priority.toNumber()
+        : avgTail5Number.priority.plus(avgTail5Number.priority.multipliedBy(0.25)).toNumber();
 
       return {
-        avgLast,
-        avgMiddle,
-        avgTail5,
+        avgLast: {
+          expect: avgLastExpect,
+          max: avgLastMax,
+          priority: avgLastPriority,
+        },
+        avgMiddle: {
+          expect: avgMiddleExpect,
+          max: avgMiddleMax,
+          priority: avgMiddlePriority,
+        },
+        avgTail5: {
+          expect: avgTail5Number.expect.toNumber(),
+          max: avgTail5Number.max.toNumber(),
+          priority: avgTail5Number.priority.toNumber(),
+        },
       };
     },
     onCancel: () => {

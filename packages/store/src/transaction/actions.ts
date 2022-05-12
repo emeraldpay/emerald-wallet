@@ -15,7 +15,6 @@ import {
   isEthereum,
   Logger,
   quantitiesToHex,
-  toHex,
 } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
 import { Dispatch } from 'redux';
@@ -122,15 +121,34 @@ function signTx(
   blockchain: BlockchainCode,
 ): Promise<string | string[]> {
   log.debug(`Calling emerald api to sign tx from ${tx.from} to ${tx.to} in ${blockchain} blockchain`);
+
+  let gasPrices: Record<'gasPrice', string> | Record<'maxGasPrice' | 'priorityGasPrice', string>;
+
+  if (tx.gasPrice == null) {
+    const maxGasPrice = typeof tx.maxGasPrice === 'string' ? tx.maxGasPrice : tx.maxGasPrice?.toString() ?? '0';
+    const priorityGasPrice =
+      typeof tx.priorityGasPrice === 'string' ? tx.priorityGasPrice : tx.priorityGasPrice?.toString() ?? '0';
+
+    gasPrices = {
+      maxGasPrice,
+      priorityGasPrice,
+    };
+  } else {
+    const gasPrice = typeof tx.gasPrice === 'string' ? tx.gasPrice : tx.gasPrice?.toString() ?? '0';
+
+    gasPrices = { gasPrice };
+  }
+
   const unsignedTx: UnsignedTx = {
-    from: tx.from,
-    to: tx.to,
-    gas: typeof tx.gas === 'string' ? parseInt(tx.gas) : tx.gas,
-    gasPrice: typeof tx.gasPrice === 'string' ? tx.gasPrice : new Wei(tx.gasPrice).number.toString(),
-    value: typeof tx.value === 'string' ? tx.value : new Wei(tx.value).number.toString(),
+    ...gasPrices,
     data: tx.data,
+    from: tx.from,
+    gas: typeof tx.gas === 'string' ? parseInt(tx.gas) : tx.gas,
     nonce: typeof tx.nonce === 'string' ? parseInt(tx.nonce) : tx.nonce,
+    to: tx.to,
+    value: typeof tx.value === 'string' ? tx.value : tx.value.toString(),
   };
+
   return vault.signTx(accountId, unsignedTx, passphrase);
 }
 
@@ -141,24 +159,28 @@ export function signTransaction(
   passphrase: string,
   to: string,
   gas: number,
-  gasPrice: Wei,
   value: Wei,
   data: string,
+  gasPrice?: Wei,
+  maxGasPrice?: Wei,
+  priorityGasPrice?: Wei,
   nonce: number | string = '',
 ): Dispatched<any> {
   const originalTx: EthereumStoredTransaction = {
-    from,
-    to,
-    gas: toHex(gas),
-    gasPrice: gasPrice.toHex(),
-    value: value.toHex(),
-    data,
-    nonce,
     blockchain,
+    data,
+    from,
+    gas,
+    nonce,
+    to,
+    gasPrice: gasPrice?.number,
+    maxGasPrice: maxGasPrice?.number,
+    priorityGasPrice: priorityGasPrice?.number,
+    value: value.number,
   };
 
   return (dispatch: any, getState, extra) => {
-    const callSignTx = (tx: EthereumStoredTransaction) => {
+    const callSignTx = (tx: EthereumStoredTransaction): Promise<any> => {
       return signTx(extra.api.vault, accountId, tx, passphrase, blockchain)
         .then(unwrap)
         .then((rawTx) => verifySender(from)(rawTx, blockchain))

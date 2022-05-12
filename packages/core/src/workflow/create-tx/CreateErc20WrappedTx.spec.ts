@@ -10,7 +10,6 @@ describe('CreateErc20WrappedTx', () => {
 
     expect(tx.amount.number.toNumber()).toBe(0);
     expect(tx.gas.toNumber()).toBe(50000);
-    expect(tx.gasPrice.number.toNumber()).toBe(0);
     expect(tx.totalBalance.number.toNumber()).toBe(0);
     expect(tx.totalTokenBalance).toBeUndefined();
   });

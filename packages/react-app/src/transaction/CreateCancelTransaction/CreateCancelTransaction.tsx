@@ -87,7 +87,19 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         return;
       }
 
-      const gasPrice = new Wei(tx.gasPrice).number;
+      const oldGasPrice = new Wei(tx.maxGasPrice ?? tx.gasPrice ?? 0).number;
+      const cancelGasPrice = new Wei(oldGasPrice.plus(oldGasPrice.multipliedBy(0.1)));
+
+      let gasPrice: Wei | undefined;
+      let maxGasPrice: Wei | undefined;
+      let priorityGasPrice: Wei | undefined;
+
+      if (tx.gasPrice == null) {
+        maxGasPrice = cancelGasPrice;
+        priorityGasPrice = new Wei(tx.priorityGasPrice ?? 0);
+      } else {
+        gasPrice = cancelGasPrice;
+      }
 
       const signed = await dispatch(
         transaction.actions.signTransaction(
@@ -97,9 +109,11 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           password,
           tx.from,
           21000,
-          new Wei(gasPrice.plus(gasPrice.multipliedBy(0.1))),
           Wei.ZERO,
           '',
+          gasPrice,
+          maxGasPrice,
+          priorityGasPrice,
           tx.nonce,
         ),
       );
