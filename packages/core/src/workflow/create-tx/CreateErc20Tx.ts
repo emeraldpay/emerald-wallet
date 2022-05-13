@@ -102,7 +102,7 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
 
   private readonly zero: BigAmount;
 
-  constructor(source: ERC20TxDetails | AnyTokenCode) {
+  constructor(source: ERC20TxDetails | AnyTokenCode, eip1559 = false) {
     let details: ERC20TxDetails;
 
     if (typeof source === 'string') {
@@ -123,11 +123,15 @@ export class CreateERC20Tx implements ERC20TxDetails, Tx<BigAmount> {
     this.tokenSymbol = details.tokenSymbol;
     this.totalTokenBalance = details.totalTokenBalance;
     this.totalEtherBalance = details.totalEtherBalance;
-    this.gasPrice = details.gasPrice;
-    this.maxGasPrice = details.maxGasPrice;
-    this.priorityGasPrice = details.priorityGasPrice;
     this.gas = details.gas;
     this.transferType = details.transferType;
+
+    if (eip1559 || details.maxGasPrice != null) {
+      this.maxGasPrice = details.maxGasPrice ?? Wei.ZERO;
+      this.priorityGasPrice = details.priorityGasPrice ?? Wei.ZERO;
+    } else {
+      this.gasPrice = details.gasPrice ?? Wei.ZERO;
+    }
 
     this.zero = tokenAmount(0, this.tokenSymbol);
   }

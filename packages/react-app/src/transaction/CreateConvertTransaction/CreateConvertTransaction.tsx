@@ -147,7 +147,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
       address: address?.value,
       totalBalance: getBalance(address?.value),
       totalTokenBalance: getTokenBalanceByAddress(tokenSymbol, address?.value),
-    });
+    }, eip1559);
 
     return tx.dump();
   });

@@ -26,13 +26,20 @@ export class CreateErc20WrappedTx {
   public totalBalance: Wei;
   public totalTokenBalance?: BigAmount;
 
-  constructor(details: Erc20WrappedDetails) {
+  constructor(details: Erc20WrappedDetails, eip1559 = false) {
     this.address = details.address;
     this.amount = details.amount ?? Wei.ZERO;
     this.target = details.target ?? TxTarget.MANUAL;
     this.gas = details.gas ?? new BigNumber(50000);
     this.totalBalance = details.totalBalance ?? Wei.ZERO;
     this.totalTokenBalance = details.totalTokenBalance;
+
+    if (eip1559 || details.maxGasPrice != null) {
+      this.maxGasPrice = details.maxGasPrice ?? Wei.ZERO;
+      this.priorityGasPrice = details.priorityGasPrice ?? Wei.ZERO;
+    } else {
+      this.gasPrice = details.gasPrice ?? Wei.ZERO;
+    }
   }
 
   public static fromPlain(details: Erc20WrappedDetails): CreateErc20WrappedTx {

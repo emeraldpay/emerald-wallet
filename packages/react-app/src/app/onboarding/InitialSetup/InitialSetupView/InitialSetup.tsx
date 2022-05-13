@@ -9,11 +9,11 @@ export interface OwnProps {
 }
 
 export interface DispatchProps {
-  onTermsAgreed(wallets: Wallet[]): void;
+  onTermsAgreed?(wallets: Wallet[]): void;
 }
 
 export interface StateProps {
-  terms: string;
+  terms?: string;
 }
 
 class InitialSetup extends React.Component<DispatchProps & OwnProps & StateProps> {

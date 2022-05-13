@@ -35,7 +35,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('insufficient funds if send whole balance', () => {
-    const tx = new CreateEthereumTx();
+    const tx = new CreateEthereumTx(null, true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.amount = new Wei(1, 'ETHER');
@@ -71,7 +71,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('change is 0', () => {
-    const tx = new CreateEthereumTx();
+    const tx = new CreateEthereumTx(null, true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.amount = new Wei('999580000000000000', 'WEI');
     tx.maxGasPrice = new Wei(10000, 'MWEI');
@@ -84,7 +84,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('change is positive', () => {
-    const tx = new CreateEthereumTx();
+    const tx = new CreateEthereumTx(null, true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.amount = new Wei('959580000000000000', 'WEI');
     tx.maxGasPrice = new Wei(10000, 'MWEI');
@@ -97,7 +97,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('change is negative', () => {
-    const tx = new CreateEthereumTx();
+    const tx = new CreateEthereumTx(null, true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.amount = new Wei('999580000000000100', 'WEI');
     tx.maxGasPrice = new Wei(10000, 'MWEI');
@@ -110,7 +110,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('change is unknown without balance', () => {
-    const tx = new CreateEthereumTx();
+    const tx = new CreateEthereumTx(null, true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.amount = new Wei('999580000000000100', 'WEI');
     tx.maxGasPrice = new Wei(10000, 'MWEI');
@@ -122,7 +122,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('target fails if total is less than whole balance', () => {
-    const tx = new CreateEthereumTx();
+    const tx = new CreateEthereumTx(null, true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.SEND_ALL;
@@ -136,7 +136,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('no-target succeeds if total is less than whole balance', () => {
-    const tx = new CreateEthereumTx();
+    const tx = new CreateEthereumTx(null, true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.MANUAL;
@@ -150,7 +150,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('target fails if total is more than whole balance', () => {
-    const tx = new CreateEthereumTx();
+    const tx = new CreateEthereumTx(null, true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.SEND_ALL;
@@ -168,7 +168,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('target succeeds if total is equal whole balance', () => {
-    const tx = new CreateEthereumTx();
+    const tx = new CreateEthereumTx(null, true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.SEND_ALL;
@@ -187,7 +187,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('rebalance to match whole balance', () => {
-    const tx = new CreateEthereumTx();
+    const tx = new CreateEthereumTx(null, true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.SEND_ALL;
@@ -210,7 +210,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('rebalance ignored without totalBalance', () => {
-    const tx = new CreateEthereumTx();
+    const tx = new CreateEthereumTx(null, true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.SEND_ALL;
@@ -234,7 +234,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('rebalance does nothing for no-target', () => {
-    const tx = new CreateEthereumTx();
+    const tx = new CreateEthereumTx(null, true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei(1, 'ETHER'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.MANUAL;
@@ -253,7 +253,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('doesnt rebalance small value', () => {
-    const tx = new CreateEthereumTx();
+    const tx = new CreateEthereumTx(null, true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei('1000000000000', 'WEI'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.SEND_ALL;
@@ -272,7 +272,7 @@ describe('CreateEthereumTx', () => {
   });
 
   it('dumps plain', () => {
-    const tx = new CreateEthereumTx();
+    const tx = new CreateEthereumTx(null, true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', new Wei('1000000000057', 'WEI'));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.target = TxTarget.SEND_ALL;

@@ -55,7 +55,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('invalid without enough ether', () => {
-    const tx = new CreateERC20Tx('DAI');
+    const tx = new CreateERC20Tx('DAI', true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', tokenAmount(100, 'dai'), new Wei(1));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.maxGasPrice = new Wei(10000, 'MWEI');
@@ -66,7 +66,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('valid', () => {
-    const tx = new CreateERC20Tx('DAI');
+    const tx = new CreateERC20Tx('DAI', true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', tokenAmount(100, 'dai'), Wei.fromEther(1));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.maxGasPrice = new Wei(10000, 'MWEI');
@@ -77,7 +77,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('zero change', () => {
-    const tx = new CreateERC20Tx('DAI');
+    const tx = new CreateERC20Tx('DAI', true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', tokenAmount(100, 'dai'), Wei.fromEther(1));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.maxGasPrice = new Wei(10000, 'MWEI');
@@ -89,7 +89,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('has change', () => {
-    const tx = new CreateERC20Tx('DAI');
+    const tx = new CreateERC20Tx('DAI', true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', tokenAmount(100, 'dai'), Wei.fromEther(1));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.maxGasPrice = new Wei(10000, 'MWEI');
@@ -101,7 +101,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('change is null if total not set', () => {
-    const tx = new CreateERC20Tx('DAI');
+    const tx = new CreateERC20Tx('DAI', true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', tokenAmount(100, 'dai'), Wei.fromEther(1));
     tx.totalTokenBalance = undefined;
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
@@ -113,7 +113,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('fees', () => {
-    const tx = new CreateERC20Tx('DAI');
+    const tx = new CreateERC20Tx('DAI', true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', tokenAmount(100, 'dai'), Wei.fromEther(1));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.maxGasPrice = new Wei(10000, 'MWEI');
@@ -128,7 +128,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('fees are calculated if total not set', () => {
-    const tx = new CreateERC20Tx('DAI');
+    const tx = new CreateERC20Tx('DAI', true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', tokenAmount(100, 'dai'), Wei.fromEther(1));
     tx.totalEtherBalance = undefined;
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
@@ -144,7 +144,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('fees change', () => {
-    const tx = new CreateERC20Tx('DAI');
+    const tx = new CreateERC20Tx('DAI', true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', tokenAmount(100, 'dai'), Wei.fromEther(1));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.maxGasPrice = new Wei(10000, 'MWEI');
@@ -159,7 +159,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('fees change are null if total not set', () => {
-    const tx = new CreateERC20Tx('DAI');
+    const tx = new CreateERC20Tx('DAI', true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', tokenAmount(100, 'dai'), Wei.fromEther(1));
     tx.totalEtherBalance = undefined;
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
@@ -172,7 +172,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('rebalance to max sets max', () => {
-    const tx = new CreateERC20Tx('DAI');
+    const tx = new CreateERC20Tx('DAI', true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', tokenAmount(100, 'dai'), Wei.fromEther(1));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.amount = tokenAmount(20, 'dai');
@@ -184,7 +184,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('rebalance to manual does not change amount', () => {
-    const tx = new CreateERC20Tx('DAI');
+    const tx = new CreateERC20Tx('DAI', true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', tokenAmount(100, 'dai'), Wei.fromEther(1));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
     tx.amount = tokenAmount(20, 'dai');
@@ -196,7 +196,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('doesnt rebalance if total not set', () => {
-    const tx = new CreateERC20Tx('DAI');
+    const tx = new CreateERC20Tx('DAI', true);
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', tokenAmount(100, 'dai'), Wei.fromEther(1));
     tx.totalTokenBalance = undefined;
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';
@@ -209,7 +209,7 @@ describe('CreateErc20Tx', () => {
   });
 
   it('dumps plain', () => {
-    const tx = new CreateERC20Tx('DAI');
+    const tx = new CreateERC20Tx('DAI', true);
     tx.erc20 = '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD';
     tx.setFrom('0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD', tokenAmount(100, 'dai'), Wei.fromEther(1));
     tx.to = '0x2af2d8be60ca2c0f21497bb57b0037d44b8df3bd';

@@ -5,11 +5,23 @@ import { CreateErc20WrappedTx } from './CreateErc20WrappedTx';
 import { TxTarget } from './types';
 
 describe('CreateErc20WrappedTx', () => {
-  it('creates tx', () => {
+  it('creates legacy tx', () => {
     const tx = new CreateErc20WrappedTx({ address: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD' });
 
     expect(tx.amount.number.toNumber()).toBe(0);
     expect(tx.gas.toNumber()).toBe(50000);
+    expect(tx.gasPrice.number.toNumber()).toBe(0);
+    expect(tx.totalBalance.number.toNumber()).toBe(0);
+    expect(tx.totalTokenBalance).toBeUndefined();
+  });
+
+  it('creates eip1559 tx', () => {
+    const tx = new CreateErc20WrappedTx({ address: '0x2C80BfA8E69fdd12853Fd010A520B29cfa01E2cD' }, true);
+
+    expect(tx.amount.number.toNumber()).toBe(0);
+    expect(tx.gas.toNumber()).toBe(50000);
+    expect(tx.maxGasPrice.number.toNumber()).toBe(0);
+    expect(tx.priorityGasPrice.number.toNumber()).toBe(0);
     expect(tx.totalBalance.number.toNumber()).toBe(0);
     expect(tx.totalTokenBalance).toBeUndefined();
   });

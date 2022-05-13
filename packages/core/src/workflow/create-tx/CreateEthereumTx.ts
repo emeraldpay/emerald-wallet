@@ -62,7 +62,7 @@ export class CreateEthereumTx implements TxDetails, Tx<Wei> {
   public to?: string;
   public totalBalance?: Wei;
 
-  constructor(source?: TxDetails) {
+  constructor(source?: TxDetails | null, eip1559 = false) {
     let details = source;
 
     if (details == null) {
@@ -72,12 +72,16 @@ export class CreateEthereumTx implements TxDetails, Tx<Wei> {
     this.amount = details.amount;
     this.from = details.from;
     this.gas = details.gas;
-    this.gasPrice = details.gasPrice;
-    this.maxGasPrice = details.maxGasPrice;
-    this.priorityGasPrice = details.priorityGasPrice;
     this.target = details.target;
     this.to = details.to;
     this.totalBalance = details.totalBalance;
+
+    if (eip1559 || details.maxGasPrice != null) {
+      this.maxGasPrice = details.maxGasPrice ?? Wei.ZERO;
+      this.priorityGasPrice = details.priorityGasPrice ?? Wei.ZERO;
+    } else {
+      this.gasPrice = details.gasPrice ?? Wei.ZERO;
+    }
   }
 
   public static fromPlain(details: TxDetailsPlain): CreateEthereumTx {

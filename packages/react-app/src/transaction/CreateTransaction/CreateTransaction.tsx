@@ -208,7 +208,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
   }
 
   public static txFromProps(props: OwnProps & Props & DispatchFromProps) {
-    const tx = new workflow.CreateEthereumTx();
+    const tx = new workflow.CreateEthereumTx(null, props.eip1559);
     tx.from = props.selectedFromAddress;
     tx.setTotalBalance(props.getBalance(props.selectedFromAddress));
     tx.maxGasPrice = new Wei(0);
