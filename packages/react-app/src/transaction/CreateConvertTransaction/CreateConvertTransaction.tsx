@@ -296,18 +296,6 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
       const { avgLast, avgMiddle, avgTail5 } = fees;
       const feeProp = eip1559 ? 'max' : 'expect';
 
-      /**
-       * For small networks with less than 5 txes in a block the Tail5 value may be larger that the Middle value.
-       * Make sure the order is consistent.
-       */
-      if (avgTail5[feeProp] > avgMiddle[feeProp]) {
-        avgTail5[feeProp] = avgMiddle[feeProp];
-      }
-
-      if (avgLast[feeProp] > avgTail5[feeProp]) {
-        avgLast[feeProp] = avgTail5[feeProp];
-      }
-
       const newStdMaxGasPrice = new Wei(avgTail5[feeProp]);
       const newStdPriorityGasPrice = new Wei(avgTail5.priority);
 

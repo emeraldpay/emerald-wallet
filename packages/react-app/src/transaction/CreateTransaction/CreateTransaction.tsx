@@ -303,28 +303,14 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
     const fees = await this.props.getFees(this.props.chain);
 
     const { avgLast, avgMiddle, avgTail5 } = fees;
-    const feeProp = this.props.eip1559 ? 'max' : 'expect';
-
-    /**
-     * For small networks with less than 5 txes in a block the Tail5 value may be larger that the Middle value.
-     * Make sure the order is consistent.
-     */
-    if (avgTail5[feeProp] > avgMiddle[feeProp]) {
-      avgTail5[feeProp] = avgMiddle[feeProp];
-    }
-
-    if (avgLast[feeProp] > avgTail5[feeProp]) {
-      avgLast[feeProp] = avgTail5[feeProp];
-    }
-
     const tx = this.transaction;
 
     if (this.props.eip1559) {
       tx.gasPrice = undefined;
-      tx.maxGasPrice = new Wei(avgMiddle.max);
-      tx.priorityGasPrice = new Wei(avgMiddle.priority);
+      tx.maxGasPrice = new Wei(avgTail5.max);
+      tx.priorityGasPrice = new Wei(avgTail5.priority);
     } else {
-      tx.gasPrice = new Wei(avgMiddle.expect);
+      tx.gasPrice = new Wei(avgTail5.expect);
       tx.maxGasPrice = undefined;
       tx.priorityGasPrice = undefined;
     }
