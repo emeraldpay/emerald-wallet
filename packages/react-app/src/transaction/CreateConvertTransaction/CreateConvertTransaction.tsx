@@ -1,4 +1,3 @@
-import { EstimationMode } from '@emeraldpay/api';
 import { BigAmount, FormatterBuilder, Predicates } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { isEthereumEntry, WalletEntry } from '@emeraldpay/emerald-vault-core';
@@ -7,6 +6,7 @@ import {
   AnyCoinCode,
   BlockchainCode,
   blockchainIdToCode,
+  Blockchains,
   getStandardUnits,
   tokenAmount,
   workflow,
@@ -18,14 +18,20 @@ import { accounts, IState, screen, tokens, transaction } from '@emeraldwallet/st
 import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import { Box, createStyles, FormControlLabel, FormHelperText, Slider, Switch, withStyles } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
-import BigNumber from 'bignumber.js';
+import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
+import { GasPrices, GasPriceType, PriceSort } from '../CreateTransaction/CreateTransaction';
 import AmountField from '../CreateTx/AmountField/AmountField';
 import FormFieldWrapper from '../CreateTx/FormFieldWrapper';
 import FormLabel from '../CreateTx/FormLabel/FormLabel';
 import FromField from '../CreateTx/FromField';
+
+const DEFAULT_FEE: GasPrices = { expect: 0, max: 0, priority: 0 } as const;
+
+const FEE_KEYS = ['avgLast', 'avgTail5', 'avgMiddle'] as const;
+const TOKENS_LIST = ['WETH'] as const;
 
 const styles = createStyles({
   inputField: {
@@ -57,7 +63,15 @@ const styles = createStyles({
     fontSize: '0.7em',
     opacity: 0.8,
   },
+  gasPriceValueLabel: {
+    fontSize: '0.7em',
+  },
 });
+
+enum Stages {
+  SETUP = 'setup',
+  SIGN = 'sign',
+}
 
 interface OwnProps {
   entry: WalletEntry;
@@ -70,6 +84,7 @@ interface StylesProps {
 interface StateProps {
   addresses: string[];
   blockchain: BlockchainCode;
+  eip1559: boolean;
   getBalance(address?: string): Wei;
   getBalancesByAddress(address: string): string[];
   getTokenBalanceByAddress(token: AnyCoinCode, address?: string): BigAmount;
@@ -78,20 +93,12 @@ interface StateProps {
 interface DispatchProps {
   checkGlobalKey(password: string): Promise<boolean>;
   estimateGas(blockchain: BlockchainCode, tx: CreateErc20WrappedTx, tokenSymbol: string): Promise<number>;
-  getFees(blockchain: BlockchainCode): Promise<Record<string, number>>;
+  getFees(blockchain: BlockchainCode): Promise<Record<typeof FEE_KEYS[number], GasPrices>>;
   goBack(): void;
   signTransaction(tx: CreateErc20WrappedTx, tokenSymbol: string, password: string): Promise<void>;
 }
 
-enum Stages {
-  SETUP = 'setup',
-  SIGN = 'sign',
-}
-
-const FEE_KEYS: EstimationMode[] = ['avgLast', 'avgMiddle', 'avgTail5'];
-const TOKENS_LIST: AnyCoinCode[] = ['WETH'];
-
-const formatBalance = (balance: BigAmount): string => {
+function formatBalance(balance: BigAmount): string {
   const units = getStandardUnits(balance);
 
   const balanceFormatter = new FormatterBuilder()
@@ -105,12 +112,21 @@ const formatBalance = (balance: BigAmount): string => {
     .build();
 
   return balanceFormatter.format(balance);
-};
+}
+
+function sortBigNumber(first: BigNumber, second: BigNumber): number {
+  if (first.eq(second)) {
+    return 0;
+  }
+
+  return first.gt(second) ? 1 : -1;
+}
 
 const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & DispatchProps> = ({
   addresses,
   blockchain,
   classes,
+  eip1559,
   entry: { address },
   checkGlobalKey,
   estimateGas,
@@ -131,20 +147,28 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
       address: address?.value,
       totalBalance: getBalance(address?.value),
       totalTokenBalance: getTokenBalanceByAddress(tokenSymbol, address?.value),
-    });
+    }, eip1559);
 
     return tx.dump();
   });
 
   const zeroWei = new Wei(0);
 
-  const [stdGasPrice, setStdGasPrice] = React.useState(zeroWei);
-  const [maxGasPrice, setMaxGasPrice] = React.useState(zeroWei);
-  const [minGasPrice, setMinGasPrice] = React.useState(zeroWei);
+  const [stdMaxGasPrice, setStdMaxGasPrice] = React.useState(zeroWei);
+  const [highMaxGasPrice, setHighMaxGasPrice] = React.useState(zeroWei);
+  const [lowMaxGasPrice, setLowMaxGasPrice] = React.useState(zeroWei);
 
-  const [gasPrice, setGasPrice] = React.useState(0);
+  const [stdPriorityGasPrice, setStdPriorityGasPrice] = React.useState(zeroWei);
+  const [highPriorityGasPrice, setHighPriorityGasPrice] = React.useState(zeroWei);
+  const [lowPriorityGasPrice, setLowPriorityGasPrice] = React.useState(zeroWei);
+
   const [gasPriceUnit, setGasPriceUnit] = useState(Wei.ZERO.units.base);
-  const [useStdGasPrice, setUseStdGasPrice] = React.useState(true);
+
+  const [maxGasPrice, setMaxGasPrice] = React.useState(0);
+  const [useStdMaxGasPrice, setUseStdMaxGasPrice] = React.useState(true);
+
+  const [priorityGasPrice, setPriorityGasPrice] = React.useState(0);
+  const [useStdPriorityGasPrice, setUseStdPriorityGasPrice] = React.useState(true);
 
   const [stage, setStage] = useState(Stages.SETUP);
   const [password, setPassword] = useState('');
@@ -218,11 +242,32 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
     setConvertTx(tx.dump());
   }, [convertTx]);
 
-  const onChangeGasPrice = useCallback(
+  const onChangeMaxGasPrice = useCallback(
     (price: number) => {
       const tx = CreateErc20WrappedTx.fromPlain(convertTx);
 
-      tx.gasPrice = new Wei(price, gasPriceUnit);
+      const gasPrice = new Wei(price, gasPriceUnit);
+
+      if (eip1559) {
+        tx.gasPrice = undefined;
+        tx.maxGasPrice = gasPrice;
+      } else {
+        tx.gasPrice = gasPrice;
+        tx.maxGasPrice = undefined;
+      }
+
+      tx.rebalance();
+
+      setConvertTx(tx.dump());
+    },
+    [eip1559, gasPriceUnit, convertTx],
+  );
+
+  const onChangePriorityGasPrice = useCallback(
+    (price: number) => {
+      const tx = CreateErc20WrappedTx.fromPlain(convertTx);
+
+      tx.priorityGasPrice = new Wei(price, gasPriceUnit);
       tx.rebalance();
 
       setConvertTx(tx.dump());
@@ -248,41 +293,44 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
     (async (): Promise<void> => {
       const fees = await getFees(blockchain);
 
-      const { avgMiddle } = fees;
+      const { avgLast, avgMiddle, avgTail5 } = fees;
+      const feeProp = eip1559 ? 'max' : 'expect';
 
-      let { avgLast, avgTail5 } = fees;
+      const newStdMaxGasPrice = new Wei(avgTail5[feeProp]);
+      const newStdPriorityGasPrice = new Wei(avgTail5.priority);
 
-      /**
-       * For small networks with less than 5 txes in a block the Tail5 value may be larger that the Middle value.
-       * Make sure the order is consistent.
-       */
-      if (avgTail5 > avgMiddle) {
-        avgTail5 = avgMiddle;
-      }
+      setStdMaxGasPrice(newStdMaxGasPrice);
+      setHighMaxGasPrice(new Wei(avgMiddle[feeProp]));
+      setLowMaxGasPrice(new Wei(avgLast[feeProp]));
 
-      if (avgLast > avgTail5) {
-        avgLast = avgTail5;
-      }
+      setStdPriorityGasPrice(newStdPriorityGasPrice);
+      setHighPriorityGasPrice(new Wei(avgMiddle.priority));
+      setLowPriorityGasPrice(new Wei(avgLast.priority));
 
-      const gasPrice = new Wei(avgTail5);
+      const gasPriceOptimalUnit = newStdMaxGasPrice.getOptimalUnit();
+      const maxGasPriceNumber = newStdMaxGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
+      const priorityGasPriceNumber = newStdPriorityGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
 
-      setStdGasPrice(gasPrice);
-      setMaxGasPrice(new Wei(avgMiddle));
-      setMinGasPrice(new Wei(avgLast));
-
-      const gasPriceOptimalUnit = gasPrice.getOptimalUnit();
-      const gasPriceNumber = gasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
-
-      setGasPrice(gasPriceNumber);
       setGasPriceUnit(gasPriceOptimalUnit);
+
+      setMaxGasPrice(maxGasPriceNumber);
+      setPriorityGasPrice(priorityGasPriceNumber);
 
       const tx = CreateErc20WrappedTx.fromPlain(convertTx);
 
-      tx.gasPrice = new Wei(gasPriceNumber, gasPriceOptimalUnit);
+      if (eip1559) {
+        tx.gasPrice = undefined;
+        tx.maxGasPrice = new Wei(maxGasPriceNumber, gasPriceOptimalUnit);
+        tx.priorityGasPrice = new Wei(priorityGasPriceNumber, gasPriceOptimalUnit);
+      } else {
+        tx.gasPrice = new Wei(maxGasPriceNumber, gasPriceOptimalUnit);
+        tx.maxGasPrice = undefined;
+        tx.priorityGasPrice = undefined;
+      }
+
       tx.rebalance();
 
       setConvertTx(tx.dump());
-
       setInitializing(false);
     })();
   }, []);
@@ -310,9 +358,13 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
 
   const currentTx = CreateErc20WrappedTx.fromPlain(convertTx);
 
-  const stdGasPriceNumber = stdGasPrice.getNumberByUnit(gasPriceUnit).toNumber();
-  const maxGasPriceNumber = maxGasPrice.getNumberByUnit(gasPriceUnit).toNumber();
-  const minGasPriceNumber = minGasPrice.getNumberByUnit(gasPriceUnit).toNumber();
+  const stdMaxGasPriceNumber = stdMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber();
+  const highMaxGasPriceNumber = highMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber();
+  const lowMaxGasPriceNumber = lowMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber();
+
+  const stdPriorityGasPriceNumber = stdPriorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber();
+  const highPriorityGasPriceNumber = highPriorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber();
+  const lowPriorityGasPriceNumber = lowPriorityGasPrice.getNumberByUnit(gasPriceUnit).toNumber();
 
   return (
     <Page title="Create Convert Transaction" leftIcon={<Back onClick={goBack} />}>
@@ -347,61 +399,125 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
             />
           </FormFieldWrapper>
           <FormFieldWrapper>
-            <FormLabel>Gas price</FormLabel>
+            <FormLabel>{eip1559 ? 'Max gas price' : 'Gas price'}</FormLabel>
             <Box className={classes.inputField}>
               <Box className={classes.gasPriceTypeBox}>
                 <FormControlLabel
                   control={
                     <Switch
-                      checked={useStdGasPrice}
+                      checked={useStdMaxGasPrice}
                       color="primary"
                       disabled={initializing}
                       onChange={(event): void => {
                         const checked = event.target.checked;
 
                         if (checked) {
-                          setGasPrice(stdGasPriceNumber);
-                          onChangeGasPrice(stdGasPriceNumber);
+                          setMaxGasPrice(stdMaxGasPriceNumber);
+                          onChangeMaxGasPrice(stdMaxGasPriceNumber);
                         }
 
-                        setUseStdGasPrice(checked);
+                        setUseStdMaxGasPrice(checked);
                       }}
                     />
                   }
-                  label={useStdGasPrice ? 'Standard Gas Price' : 'Custom Gas Price'}
+                  label={useStdMaxGasPrice ? 'Standard Price' : 'Custom Price'}
                 />
               </Box>
-              {!useStdGasPrice && (
+              {!useStdMaxGasPrice && (
                 <Box className={classes.gasPriceSliderBox}>
                   <Slider
                     aria-labelledby="discrete-slider"
-                    classes={{ markLabel: classes.gasPriceMarkLabel }}
+                    classes={{
+                      markLabel: classes.gasPriceMarkLabel,
+                      valueLabel: classes.gasPriceValueLabel,
+                    }}
                     className={classes.gasPriceSlider}
-                    defaultValue={stdGasPriceNumber}
+                    defaultValue={stdMaxGasPriceNumber}
                     marks={[
-                      { value: minGasPriceNumber, label: 'Slow' },
-                      { value: maxGasPriceNumber, label: 'Urgent' },
+                      { value: lowMaxGasPriceNumber, label: 'Slow' },
+                      { value: highMaxGasPriceNumber, label: 'Urgent' },
                     ]}
-                    max={maxGasPriceNumber}
-                    min={minGasPriceNumber}
+                    max={highMaxGasPriceNumber}
+                    min={lowMaxGasPriceNumber}
                     step={0.01}
                     valueLabelDisplay="auto"
                     valueLabelFormat={(value): string => value.toFixed(2)}
-                    getAriaValueText={(): string => `${gasPrice.toFixed(2)} ${gasPriceUnit.toString()}`}
+                    getAriaValueText={(): string => `${maxGasPrice.toFixed(2)} ${gasPriceUnit.toString()}`}
                     onChange={(event, value): void => {
-                      setGasPrice(value as number);
-                      onChangeGasPrice(value as number);
+                      setMaxGasPrice(value as number);
+                      onChangeMaxGasPrice(value as number);
                     }}
                   />
                 </Box>
               )}
               <Box className={classes.gasPriceHelpBox}>
                 <FormHelperText className={classes.gasPriceHelp}>
-                  {gasPrice.toFixed(2)} {gasPriceUnit.toString()}
+                  {maxGasPrice.toFixed(2)} {gasPriceUnit.toString()}
                 </FormHelperText>
               </Box>
             </Box>
           </FormFieldWrapper>
+          {eip1559 && (
+            <FormFieldWrapper>
+              <FormLabel>Priority gas price</FormLabel>
+              <Box className={classes.inputField}>
+                <Box className={classes.gasPriceTypeBox}>
+                  <FormControlLabel
+                    control={
+                      <Switch
+                        checked={useStdPriorityGasPrice}
+                        color="primary"
+                        disabled={initializing}
+                        onChange={(event): void => {
+                          const checked = event.target.checked;
+
+                          if (checked) {
+                            setPriorityGasPrice(stdPriorityGasPriceNumber);
+                            onChangePriorityGasPrice(stdPriorityGasPriceNumber);
+                          }
+
+                          setUseStdPriorityGasPrice(checked);
+                        }}
+                      />
+                    }
+                    label={useStdPriorityGasPrice ? 'Standard Price' : 'Custom Price'}
+                  />
+                </Box>
+                {!useStdPriorityGasPrice && (
+                  <Box className={classes.gasPriceSliderBox}>
+                    <Slider
+                      aria-labelledby="discrete-slider"
+                      classes={{
+                        markLabel: classes.gasPriceMarkLabel,
+                        valueLabel: classes.gasPriceValueLabel,
+                      }}
+                      className={classes.gasPriceSlider}
+                      defaultValue={stdPriorityGasPriceNumber}
+                      marks={[
+                        { value: lowPriorityGasPriceNumber, label: 'Slow' },
+                        { value: highPriorityGasPriceNumber, label: 'Urgent' },
+                      ]}
+                      max={highPriorityGasPriceNumber}
+                      min={lowPriorityGasPriceNumber}
+                      step={0.01}
+                      valueLabelDisplay="auto"
+                      valueLabelFormat={(value): string => value.toFixed(2)}
+                      getAriaValueText={(): string => `${priorityGasPrice.toFixed(2)} ${gasPriceUnit.toString()}`}
+                      onChange={(event, value): void => {
+                        setPriorityGasPrice(value as number);
+                        onChangePriorityGasPrice(value as number);
+                      }}
+                    />
+                  </Box>
+                )}
+                <Box className={classes.gasPriceHelpBox}>
+                  <FormHelperText className={classes.gasPriceHelp}>
+                    {priorityGasPrice.toFixed(2)} {gasPriceUnit.toString()}
+                  </FormHelperText>
+                </Box>
+              </Box>
+            </FormFieldWrapper>
+          )}
           <FormFieldWrapper>
             <FormLabel />
             <ButtonGroup>
@@ -463,6 +579,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
               item.blockchain === entry.blockchain && item.address != null ? [...carry, item.address.value] : carry,
             [],
           ) ?? [],
+      eip1559: Blockchains[blockchain].params.eip1559 ?? false,
       getBalance(address) {
         const zeroBalance = new Wei(zero);
 
@@ -545,40 +662,100 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         ),
       );
 
-      let [avgLastNumber, avgMiddleNumber, avgTail5Number] = results.map(
-        (result) => new BigNumber(result.status === 'fulfilled' ? result.value ?? 0 : 0),
+      let [avgLastNumber, avgTail5Number, avgMiddleNumber] = results.map((result) => {
+        const value = result.status === 'fulfilled' ? result.value ?? DEFAULT_FEE : DEFAULT_FEE;
+
+        let expect: GasPriceType;
+        let max: GasPriceType;
+        let priority: GasPriceType;
+
+        if (typeof value === 'string') {
+          ({ expect, max, priority } = { ...DEFAULT_FEE, expect: value });
+        } else {
+          ({ expect, max, priority } = value);
+        }
+
+        return {
+          expect: new BigNumber(expect),
+          max: new BigNumber(max),
+          priority: new BigNumber(priority),
+        };
+      });
+
+      let { expects, highs, priorities } = [avgLastNumber, avgTail5Number, avgMiddleNumber].reduce<PriceSort>(
+        (carry, item) => ({
+          expects: [...carry.expects, item.expect],
+          highs: [...carry.highs, item.max],
+          priorities: [...carry.priorities, item.priority],
+        }),
+        {
+          expects: [],
+          highs: [],
+          priorities: [],
+        },
       );
 
-      if (avgTail5Number.eq(0)) {
-        // TODO Set default value from remote config
-        avgTail5Number = new Wei(30, 'GWei').number;
-      }
+      expects = expects.sort(sortBigNumber);
+      highs = highs.sort(sortBigNumber);
+      priorities = priorities.sort(sortBigNumber);
 
-      if (avgTail5Number.lt(avgLastNumber) || avgTail5Number.gt(avgMiddleNumber)) {
-        [avgLastNumber, avgMiddleNumber, avgTail5Number] = [avgLastNumber, avgMiddleNumber, avgTail5Number].sort(
-          (first, second) => {
-            if (first.eq(second)) {
-              return 0;
-            }
-
-            return first.gt(second) ? 1 : -1;
+      [avgLastNumber, avgTail5Number, avgMiddleNumber] = expects.reduce<Array<GasPrices<BigNumber>>>(
+        (carry, item, index) => [
+          ...carry,
+          {
+            expect: item,
+            max: highs[index],
+            priority: priorities[index],
           },
-        );
+        ],
+        [],
+      );
+
+      if (avgTail5Number.expect.eq(0) && avgTail5Number.max.eq(0)) {
+        // TODO Set default value from remote config
+        avgTail5Number = {
+          expect: new Wei(30, 'GWei').number,
+          max: new Wei(30, 'GWei').number,
+          priority: new Wei(1, 'GWei').number,
+        };
       }
 
-      const avgTail5 = avgTail5Number.toNumber();
+      const avgLastExpect = avgLastNumber.expect.gt(0)
+        ? avgLastNumber.expect.toNumber()
+        : avgTail5Number.expect.minus(avgTail5Number.expect.multipliedBy(0.25)).toNumber();
+      const avgLastMax = avgLastNumber.max.gt(0)
+        ? avgLastNumber.max.toNumber()
+        : avgTail5Number.max.minus(avgTail5Number.max.multipliedBy(0.25)).toNumber();
+      const avgLastPriority = avgLastNumber.priority.gt(0)
+        ? avgLastNumber.priority.toNumber()
+        : avgTail5Number.priority.minus(avgTail5Number.priority.multipliedBy(0.25)).toNumber();
 
-      const avgLast = avgLastNumber.gt(0)
-        ? avgLastNumber.toNumber()
-        : avgTail5Number.minus(avgTail5Number.multipliedBy(0.05)).toNumber();
-      const avgMiddle = avgMiddleNumber.gt(0)
-        ? avgMiddleNumber.toNumber()
-        : avgTail5Number.plus(avgTail5Number.multipliedBy(0.05)).toNumber();
+      const avgMiddleExpect = avgMiddleNumber.expect.gt(0)
+        ? avgMiddleNumber.expect.toNumber()
+        : avgTail5Number.expect.plus(avgTail5Number.expect.multipliedBy(0.25)).toNumber();
+      const avgMiddleMax = avgMiddleNumber.max.gt(0)
+        ? avgMiddleNumber.max.toNumber()
+        : avgTail5Number.max.plus(avgTail5Number.max.multipliedBy(0.25)).toNumber();
+      const avgMiddlePriority = avgMiddleNumber.priority.gt(0)
+        ? avgMiddleNumber.priority.toNumber()
+        : avgTail5Number.priority.plus(avgTail5Number.priority.multipliedBy(0.25)).toNumber();
 
       return {
-        avgLast,
-        avgMiddle,
-        avgTail5,
+        avgLast: {
+          expect: avgLastExpect,
+          max: avgLastMax,
+          priority: avgLastPriority,
+        },
+        avgMiddle: {
+          expect: avgMiddleExpect,
+          max: avgMiddleMax,
+          priority: avgMiddlePriority,
+        },
+        avgTail5: {
+          expect: avgTail5Number.expect.toNumber(),
+          max: avgTail5Number.max.toNumber(),
+          priority: avgTail5Number.priority.toNumber(),
+        },
       };
     },
     goBack() {
@@ -605,7 +782,6 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           password,
           token.address,
           tx.gas.toNumber(),
-          tx.gasPrice,
           Wei.is(tx.amount) ? tx.amount : Wei.ZERO,
           data,
         ),

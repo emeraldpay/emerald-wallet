@@ -37,11 +37,14 @@ const styles = createStyles({
     fontSize: '0.7em',
     opacity: 0.8,
   },
+  gasPriceValueLabel: {
+    fontSize: '0.7em',
+  },
 });
 
 interface DispatchProps {
   checkGlobalKey(password: string): Promise<boolean>;
-  getTopFee(blockchain: BlockchainCode): Promise<number>;
+  getTopFee(blockchain: BlockchainCode, eip1559: boolean): Promise<number>;
   goBack(): void;
   signTransaction(tx: EthereumStoredTransaction, password: string, accountId?: string): Promise<void>;
 }
@@ -67,7 +70,7 @@ const CreateSpeedUpTransaction: React.FC<DispatchProps & OwnProps & StateProps &
   goBack,
   signTransaction,
 }) => {
-  const txGasPrice = new Wei(transaction.gasPrice);
+  const txGasPrice = new Wei(transaction.maxGasPrice ?? transaction.gasPrice ?? 0);
   const txGasPriceUnit = txGasPrice.getOptimalUnit();
 
   const minGasPriceNumber = txGasPrice.plus(txGasPrice.multiply(0.1)).getNumberByUnit(txGasPriceUnit).toNumber();
@@ -78,24 +81,38 @@ const CreateSpeedUpTransaction: React.FC<DispatchProps & OwnProps & StateProps &
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState<string>();
 
-  const onSignTransaction = useCallback(
-    async (tx: EthereumStoredTransaction) => {
-      setPasswordError(undefined);
+  const onSignTransaction = useCallback(async () => {
+    setPasswordError(undefined);
 
-      const correctPassword = await checkGlobalKey(password);
+    const correctPassword = await checkGlobalKey(password);
 
-      if (correctPassword) {
-        await signTransaction(tx, password, accountId);
+    if (correctPassword) {
+      const newGasPrice = new Wei(gasPrice, txGasPriceUnit).number;
+
+      let gasPrices: Record<'gasPrice', BigNumber> | Record<'maxGasPrice', BigNumber>;
+
+      if (transaction.gasPrice == null) {
+        gasPrices = { maxGasPrice: newGasPrice };
       } else {
-        setPasswordError('Incorrect password');
+        gasPrices = { gasPrice: newGasPrice };
       }
-    },
-    [accountId, password],
-  );
+
+      await signTransaction(
+        {
+          ...transaction,
+          ...gasPrices,
+        },
+        password,
+        accountId,
+      );
+    } else {
+      setPasswordError('Incorrect password');
+    }
+  }, [accountId, gasPrice, password, transaction]);
 
   React.useEffect(() => {
     (async (): Promise<void> => {
-      const topFee = await getTopFee(transaction.blockchain);
+      const topFee = await getTopFee(transaction.blockchain, transaction.gasPrice == null);
 
       const topGasPrice = new Wei(topFee);
 
@@ -115,7 +132,10 @@ const CreateSpeedUpTransaction: React.FC<DispatchProps & OwnProps & StateProps &
           <Box className={classes.gasPriceSliderBox}>
             <Slider
               aria-labelledby="discrete-slider"
-              classes={{ markLabel: classes.gasPriceMarkLabel }}
+              classes={{
+                markLabel: classes.gasPriceMarkLabel,
+                valueLabel: classes.gasPriceValueLabel,
+              }}
               className={classes.gasPriceSlider}
               defaultValue={minGasPriceNumber}
               marks={[
@@ -150,7 +170,7 @@ const CreateSpeedUpTransaction: React.FC<DispatchProps & OwnProps & StateProps &
             label="Sign Transaction"
             disabled={password.length === 0}
             primary={true}
-            onClick={() => onSignTransaction({ ...transaction, gasPrice: new Wei(gasPrice, txGasPriceUnit).number })}
+            onClick={onSignTransaction}
           />
         </ButtonGroup>
       </FormFieldWrapper>
@@ -171,14 +191,24 @@ export default connect<{}, DispatchProps, OwnProps, IState>(
     checkGlobalKey(password) {
       return dispatch(accounts.actions.verifyGlobalKey(password));
     },
-    async getTopFee(blockchain) {
+    async getTopFee(blockchain, eip1559) {
       let avgTop: null | number = null;
 
       try {
-        avgTop = await dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgTop'));
+        if (eip1559) {
+          let { max: maxGasPrice } = await dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgTop'));
 
-        if (avgTop == null || new BigNumber(avgTop).eq(0)) {
-          avgTop = await dispatch(transaction.actions.estimateFee(blockchain, 256, 'avgTop'));
+          if (maxGasPrice == null || new BigNumber(maxGasPrice).eq(0)) {
+            maxGasPrice = await dispatch(transaction.actions.estimateFee(blockchain, 256, 'avgTop'));
+          }
+
+          avgTop = maxGasPrice;
+        } else {
+          avgTop = await dispatch(transaction.actions.estimateFee(blockchain, 128, 'avgTop'));
+
+          if (avgTop == null || new BigNumber(avgTop).eq(0)) {
+            avgTop = await dispatch(transaction.actions.estimateFee(blockchain, 256, 'avgTop'));
+          }
         }
       } catch (exception) {
         // Nothing
@@ -194,6 +224,17 @@ export default connect<{}, DispatchProps, OwnProps, IState>(
         return;
       }
 
+      let gasPrice: Wei | undefined;
+      let maxGasPrice: Wei | undefined;
+      let priorityGasPrice: Wei | undefined;
+
+      if (tx.gasPrice == null) {
+        maxGasPrice = new Wei(tx.maxGasPrice ?? 0);
+        priorityGasPrice = new Wei(tx.priorityGasPrice ?? 0);
+      } else {
+        gasPrice = new Wei(tx.gasPrice ?? 0);
+      }
+
       const signed = await dispatch(
         transaction.actions.signTransaction(
           accountId,
@@ -202,9 +243,11 @@ export default connect<{}, DispatchProps, OwnProps, IState>(
           password,
           tx.to,
           parseInt(tx.gas.toString(), 10),
-          new Wei(tx.gasPrice),
           new Wei(tx.value),
           tx.data ?? '',
+          gasPrice,
+          maxGasPrice,
+          priorityGasPrice,
           tx.nonce,
         ),
       );

@@ -65,6 +65,7 @@ export const wallet3: Wallet = {
       },
       addresses: [
         { role: 'receive', hdPath: "m/84'/0'/3'/0/2", address: 'bc1qa2s34p38jyuen859slf28nnvccauk6xuwqzug4' },
+        { role: 'change', hdPath: "m/84'/0'/3'/0/3", address: 'bc1qvnvpqr9d6k4cvz9yy842zr73kcmqcshl8gvgn6' },
       ],
       blockchain: 1,
       id: 'f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-3',
