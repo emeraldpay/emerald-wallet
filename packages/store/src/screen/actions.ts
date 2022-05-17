@@ -124,7 +124,7 @@ export function gotoWalletsScreen() {
           walletId = wallet.id;
         }
       } else {
-        nextPage = screen.Pages.GLOBAL_KEY;
+        nextPage = screen.Pages.SETUP_VAULT;
       }
 
       dispatch(gotoScreen(nextPage, walletId));

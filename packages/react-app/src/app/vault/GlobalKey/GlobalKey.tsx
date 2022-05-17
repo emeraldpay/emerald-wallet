@@ -1,7 +1,7 @@
 import { OddPasswordItem } from '@emeraldpay/emerald-vault-core';
 import { accounts, IState, screen } from '@emeraldwallet/store';
 import { Pages } from '@emeraldwallet/store/lib/screen';
-import { Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
+import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import { OwnProps } from '@emeraldwallet/ui/lib/components/accounts/Balance/Balance';
 import { createStyles, Typography, withStyles } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -27,6 +27,7 @@ interface StateProps {
 interface DispatchProps {
   createWallet(): void;
   getLegacyItems(): Promise<OddPasswordItem[]>;
+  goBack(): Promise<void>;
   goHome(): Promise<void>;
   goPasswordMigration(): void;
   setGlobalKey(password: string): Promise<boolean>;
@@ -71,6 +72,7 @@ const GlobalKey: React.FC<DispatchProps & StateProps & StylesProps> = ({
   hasWallets,
   createWallet,
   getLegacyItems,
+  goBack,
   goHome,
   goPasswordMigration,
   setGlobalKey,
@@ -91,7 +93,7 @@ const GlobalKey: React.FC<DispatchProps & StateProps & StylesProps> = ({
   }, [password, confirmPassword]);
 
   return (
-    <Page title="Setup Global Key">
+    <Page title="Setup Global Key" leftIcon={<Back onClick={goBack} />}>
       {hasWallets && (
         <Alert severity="info" style={{ marginBottom: 15 }}>
           Starting Emerald Wallet v2.6 uses a different schema to store Privates Keys, which is more secure and easier
@@ -140,6 +142,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     },
     getLegacyItems() {
       return dispatch(accounts.actions.getOddPasswordItems());
+    },
+    goBack() {
+      return dispatch(screen.actions.goBack());
     },
     goHome() {
       return dispatch(screen.actions.gotoWalletsScreen());

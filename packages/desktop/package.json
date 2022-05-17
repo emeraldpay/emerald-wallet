@@ -47,6 +47,7 @@
     "start:dev": "NODE_ENV=development yarn start"
   },
   "dependencies": {
+    "@electron/remote": "^2.0.8",
     "@emeraldwallet/electron-app": "^2.7.0-dev",
     "@emeraldwallet/ui": "^2.7.0-dev",
     "core-js": "^3.21.1",
