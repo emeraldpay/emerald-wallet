@@ -75,6 +75,8 @@
     "common": "Common",
     "confirmations": "Confirmations",
     "currency": "Equivalent currency",
+    "export": "Export",
+    "exportBackup": "Export to backup file",
     "exportVault": "Export Vault",
     "exportVaultFailed": "Cannot export vault",
     "exportVaultSuccessful": "Vault exported successfully",
@@ -86,7 +88,6 @@
     "globalKeyOld": "Old password",
     "globalKeyPasswordMismatch": "Password not match or equal to old",
     "lang": "Language",
-    "selectFile": "Select file",
     "showHiddenAccounts": "Hidden Accounts"
   }
 }

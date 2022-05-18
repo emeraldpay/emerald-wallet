@@ -1,6 +1,7 @@
 import { Back, Button, Page, PasswordInput, Theme } from '@emeraldwallet/ui';
 import { createStyles, MenuItem, Tab, Tabs, TextField } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
+import { Alert } from '@material-ui/lab';
 import * as React from 'react';
 import { WithTranslation } from 'react-i18next';
 import { DispatchProps, ExportResult, MutableState, StateProps } from '../Settings/Settings';
@@ -35,6 +36,7 @@ const styles = createStyles({
   },
   left: {
     flexBasis: '20%',
+    flexShrink: 0,
     marginLeft: 14.75,
     marginRight: 14.75,
   },
@@ -262,11 +264,21 @@ export class SettingsForm extends React.Component<Props, State> {
               </div>
               <div className={classes.formBody} hidden={this.state.tab !== SettingsTabs.EXPORT_VAULT}>
                 <div className={classes.formRow}>
+                  <div className={classes.right}>
+                    <Alert severity="info">
+                      Export a backup copy of the Emerald Wallet Vault. The file contains all information required to
+                      restore the wallet on a new machine. Please keep it in a safe place. Please note that the Private
+                      Keys are encrypted by your password used in Emerald Wallet, and you&apos;ll need it to restore
+                      from backup.
+                    </Alert>
+                  </div>
+                </div>
+                <div className={classes.formRow}>
                   <div className={classes.left}>
-                    <div className={classes.fieldName}>{t('settings.exportVault')}</div>
+                    <div className={classes.fieldName}>{t('settings.exportBackup')}</div>
                   </div>
                   <div className={classes.right}>
-                    <Button label={t('settings.selectFile')} onClick={this.handleExportSettings} />
+                    <Button label={t('settings.export')} primary={true} onClick={this.handleExportSettings} />
                   </div>
                 </div>
               </div>

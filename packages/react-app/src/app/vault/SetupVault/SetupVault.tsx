@@ -19,7 +19,10 @@ class SetupVault extends React.Component<DispatchProps> {
             <ListItemIcon>
               <SetupIcon />
             </ListItemIcon>
-            <ListItemText primary="New setup" secondary="Setup new Emerald Wallet instance" />
+            <ListItemText
+              primary="New setup"
+              secondary="I want to setup New Wallet and/or Import my addresses from Other Wallets or Hardware Key"
+            />
           </ListItem>
         </List>
         <List onClick={this.props.goToImport}>
@@ -29,7 +32,7 @@ class SetupVault extends React.Component<DispatchProps> {
             </ListItemIcon>
             <ListItemText
               primary="Restore from backup"
-              secondary="Import vault file and restore previously created Emerald Wallet instance"
+              secondary="I want to restore my previous Emerald Wallet from a backup file"
             />
           </ListItem>
         </List>
