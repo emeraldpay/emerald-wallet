@@ -1,5 +1,6 @@
 import { render } from '@testing-library/react';
 import * as React from 'react';
+import { ExportResult } from '../Settings/types';
 import Settings from './SettingsForm';
 
 describe('SettingsForm', () => {
@@ -12,13 +13,14 @@ describe('SettingsForm', () => {
         hasWallets={true}
         i18n={{} as any}
         language="en-US"
-        exportVaultFile={()=> Promise.resolve(true)}
+        exportVaultFile={() => Promise.resolve(ExportResult.COMPLETE)}
         goBack={() => undefined}
-        isGlobalKeySet={()=>Promise.resolve(true)}
+        isGlobalKeySet={() => Promise.resolve(true)}
         onChangeGlobalKey={() => Promise.resolve(true)}
         onSubmit={async () => undefined}
         showNotification={() => undefined}
-      />, {}
+      />,
+      {},
     );
 
     expect(component).toBeDefined();

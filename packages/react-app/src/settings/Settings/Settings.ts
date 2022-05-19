@@ -1,18 +1,10 @@
 import { dialog, getCurrentWindow } from '@electron/remote';
 import { accounts, IState, screen, settings } from '@emeraldwallet/store';
-import { FileFilter } from 'electron';
 import { withTranslation } from 'react-i18next';
 import { connect } from 'react-redux';
 import i18n from '../../i18n';
 import Settings from '../SettingsForm';
-
-export const VAULT_FILE_FILTER: Readonly<FileFilter> = { name: 'Emerald Vault', extensions: ['emrldvault'] };
-
-export enum ExportResult {
-  CANCEL,
-  COMPLETE,
-  FAILED,
-}
+import { ExportResult, VAULT_FILE_FILTER } from './types';
 
 export interface MutableState {
   currency: string;

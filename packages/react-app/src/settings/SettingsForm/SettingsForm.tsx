@@ -4,7 +4,8 @@ import { withStyles } from '@material-ui/core/styles';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
 import { WithTranslation } from 'react-i18next';
-import { DispatchProps, ExportResult, MutableState, StateProps } from '../Settings/Settings';
+import { DispatchProps, MutableState, StateProps } from '../Settings/Settings';
+import { ExportResult } from '../Settings/types';
 
 const styles = createStyles({
   tabsContainer: {

@@ -5,7 +5,7 @@ import { createStyles, Grid, Typography, withStyles } from '@material-ui/core';
 import { basename } from 'path';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { VAULT_FILE_FILTER } from '../../../settings/Settings/Settings';
+import { VAULT_FILE_FILTER } from '../../../settings/Settings/types';
 import FormFieldWrapper from '../../../transaction/CreateTx/FormFieldWrapper';
 import FormLabel from '../../../transaction/CreateTx/FormLabel/FormLabel';
 
