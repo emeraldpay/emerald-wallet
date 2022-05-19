@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import i18n from '../../i18n';
 import Settings from '../SettingsForm';
 
-const VAULT_FILE_FILTER: Readonly<FileFilter> = { name: 'Emerald Vault', extensions: ['emrldvault'] };
+export const VAULT_FILE_FILTER: Readonly<FileFilter> = { name: 'Emerald Vault', extensions: ['emrldvault'] };
 
 export enum ExportResult {
   CANCEL,

@@ -10,11 +10,12 @@ const useStyles = makeStyles(
       margin: '20px 0 20px 0',
     },
     dropBox: {
-      padding: '40px 0 40px 0',
-      border: '1px solid #f0f0f0',
-      textAlign: 'center',
-      margin: '10px 40px',
       backgroundColor: '#f0faff',
+      border: '1px solid #f0f0f0',
+      cursor: 'pointer',
+      margin: '10px 40px',
+      padding: '40px 0 40px 0',
+      textAlign: 'center',
     },
   }),
 );

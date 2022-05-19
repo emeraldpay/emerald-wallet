@@ -1,21 +1,22 @@
+import { dialog, getCurrentWindow } from '@electron/remote';
 import { accounts, screen, settings } from '@emeraldwallet/store';
 import { Back, Button, Page, PasswordInput } from '@emeraldwallet/ui';
 import { createStyles, Grid, Typography, withStyles } from '@material-ui/core';
+import { basename } from 'path';
 import * as React from 'react';
-import Dropzone from 'react-dropzone';
 import { connect } from 'react-redux';
+import { VAULT_FILE_FILTER } from '../../../settings/Settings/Settings';
 import FormFieldWrapper from '../../../transaction/CreateTx/FormFieldWrapper';
 import FormLabel from '../../../transaction/CreateTx/FormLabel/FormLabel';
 
 const styles = createStyles({
   drop: {
-    width: '100%',
-  },
-  dropArea: {
     backgroundColor: '#f0faff',
     border: '1px solid #f0f0f0',
+    cursor: 'pointer',
     padding: '40px 0 40px 0',
     textAlign: 'center',
+    width: '100%',
   },
   label: {
     minWidth: 180,
@@ -26,7 +27,7 @@ const styles = createStyles({
 interface DispatchProps {
   goBack(): Promise<void>;
   goHome(): void;
-  importVaultFile(file: string, password: string): Promise<boolean>;
+  importVaultFile(path: string, password: string): Promise<boolean>;
   reloadWallets(): void;
   showNotification(message: string, type?: 'success' | 'warning'): void;
 }
@@ -36,57 +37,79 @@ interface Props extends DispatchProps {
 }
 
 interface State {
-  fileContent?: string;
   fileName?: string;
+  filePath?: string;
   password: string;
 }
 
 class ImportVault extends React.Component<Props, State> {
+  private readonly dragAndDrop: React.RefObject<HTMLDivElement>;
+
   constructor(props: Props) {
     super(props);
 
     this.state = { password: '' };
+
+    this.dragAndDrop = React.createRef();
   }
 
-  public handleDropFile = (files: File[]): void => {
-    const { showNotification } = this.props;
+  componentDidMount(): void {
+    const { current: dragAndDrop } = this.dragAndDrop;
 
-    const [file] = files;
+    if (dragAndDrop != null) {
+      dragAndDrop.ondragover = () => false;
+      dragAndDrop.ondragleave = () => false;
+      dragAndDrop.ondragend = () => false;
 
-    if (file != null) {
-      const reader = new FileReader();
+      dragAndDrop.ondrop = (event: DragEvent) => {
+        const [file] = event.dataTransfer?.files ?? [];
 
-      reader.onabort = reader.onerror = () => showNotification('An error occurred while opening file', 'warning');
+        if (file == null) {
+          return false;
+        }
 
-      reader.onload = () => {
-        const { result } = reader;
+        const extensionValid = VAULT_FILE_FILTER.extensions.reduce((carry, extension) => {
+          const extRegExp = new RegExp(`\\.${extension}$`, 'gi');
 
-        if (result == null) {
-          showNotification('An error occurred while reading file', 'warning');
-        } else {
+          return carry || extRegExp.test(file.name);
+        }, false);
+
+        if (extensionValid) {
           this.setState({
             fileName: file.name,
-            fileContent: result.toString(),
+            filePath: file.path,
           });
         }
-      };
 
-      reader.readAsText(file);
+        return false;
+      };
     }
+  }
+
+  public handleSelectFile = async (): Promise<void> => {
+    const { filePaths } = await dialog.showOpenDialog(getCurrentWindow(), { filters: [VAULT_FILE_FILTER] });
+
+    const [filePath] = filePaths;
+
+    if (filePath == null) {
+      return;
+    }
+
+    this.setState({ filePath, fileName: basename(filePath) });
   };
 
   public handleImportVault = async (): Promise<void> => {
     const { goHome, importVaultFile, reloadWallets, showNotification } = this.props;
-    const { password, fileContent } = this.state;
+    const { password, filePath } = this.state;
 
-    if (fileContent == null) {
+    if (filePath == null) {
       return;
     }
 
     let imported = false;
 
     try {
-      imported = await importVaultFile(fileContent, password);
+      imported = await importVaultFile(filePath, password);
     } catch (exception) {
       showNotification('An error occurred while importing', 'warning');
 
@@ -105,7 +128,7 @@ class ImportVault extends React.Component<Props, State> {
 
   render(): React.ReactNode {
     const { classes, goBack } = this.props;
-    const { fileContent, fileName, password } = this.state;
+    const { fileName, password } = this.state;
 
     return (
       <Page title="Import Vault" leftIcon={<Back onClick={goBack} />}>
@@ -115,31 +138,20 @@ class ImportVault extends React.Component<Props, State> {
         </FormFieldWrapper>
         <FormFieldWrapper>
           <FormLabel classes={{ root: classes.label }} />
-          <Dropzone
-            accept={{ 'application/emerald-vault': ['.emrldvault'] }}
-            multiple={false}
-            onDrop={this.handleDropFile}
-          >
-            {({ getRootProps, getInputProps }) => (
-              <section className={classes.drop}>
-                <div {...getRootProps()} className={classes.dropArea}>
-                  <input {...getInputProps()} />
-                  <Typography variant="caption">
-                    {fileName == null
-                      ? "Drag'n'drop vault file here, or click to select file"
-                      : `Selected file "${fileName}"`}
-                  </Typography>
-                </div>
-              </section>
-            )}
-          </Dropzone>
+          <div className={classes.drop} ref={this.dragAndDrop} onClick={this.handleSelectFile}>
+            <Typography variant="caption">
+              {fileName == null
+                ? "Drag'n'drop vault file here, or click to select file"
+                : `Selected file "${fileName}"`}
+            </Typography>
+          </div>
         </FormFieldWrapper>
         <FormFieldWrapper>
           <FormLabel classes={{ root: classes.label }} />
           <Grid container justify="flex-end">
             <Grid item>
               <Button
-                disabled={fileContent == null || password?.length === 0}
+                disabled={fileName == null || password?.length === 0}
                 label="Import"
                 primary={true}
                 onClick={this.handleImportVault}
@@ -162,8 +174,8 @@ export default connect<{}, DispatchProps>(
     goHome: () => {
       dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
     },
-    importVaultFile(file, password) {
-      return dispatch(settings.actions.importVaultFile(file, password));
+    importVaultFile(path, password) {
+      return dispatch(settings.actions.importVaultFile(path, password));
     },
     reloadWallets() {
       dispatch(accounts.actions.loadWalletsAction());
