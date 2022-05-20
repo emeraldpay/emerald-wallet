@@ -1,3 +1,4 @@
+import { initialize as initRemote, enable as remoteEnable } from '@electron/remote/main';
 import {
   Application,
   assertSingletonWindow,
@@ -26,6 +27,8 @@ process.on('unhandledRejection ', (error) => logger.error('Uncaught promise reje
 
 assertSingletonWindow();
 startProtocolHandler();
+
+initRemote();
 
 let apiMode = ProductionMode;
 let dataDir: string = null;
@@ -95,6 +98,8 @@ app.on('ready', () => {
   logger.info('Create main window');
 
   const { webContents } = getMainWindow(application, options);
+
+  remoteEnable(webContents);
 
   logger.info('Run application');
 

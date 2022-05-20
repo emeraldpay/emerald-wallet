@@ -25,7 +25,9 @@ import CreateTransaction from '../../../transaction/CreateTransaction';
 import SelectAccount from '../../../transaction/CreateTransaction/SelectAccount';
 import WalletInfo from '../../../wallets/WalletInfo';
 import GlobalKey from '../../vault/GlobalKey';
+import ImportVault from '../../vault/ImportVault';
 import PasswordMigration from '../../vault/PasswordMigration';
+import SetupVault from '../../vault/SetupVault';
 
 const log = Logger.forCategory('screen');
 
@@ -74,8 +76,12 @@ const Screen: React.FC<Props> = (props) => {
       return <CreateTransaction sourceEntry={props.screenItem} />;
     case screen.Pages.CREATE_WALLET:
       return <CreateWalletScreen />;
+    case screen.Pages.SETUP_VAULT:
+      return <SetupVault />;
     case screen.Pages.GLOBAL_KEY:
       return <GlobalKey />;
+    case screen.Pages.IMPORT_VAULT:
+      return <ImportVault />;
     case screen.Pages.HOME:
       return <Home />;
     case screen.Pages.PASSWORD_MIGRATION:
