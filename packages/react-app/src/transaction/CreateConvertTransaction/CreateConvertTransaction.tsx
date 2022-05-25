@@ -14,7 +14,7 @@ import {
 import { tokenUnits } from '@emeraldwallet/core/lib/blockchains/tokens';
 import { CreateErc20WrappedTx, TxTarget } from '@emeraldwallet/core/lib/workflow';
 import { registry } from '@emeraldwallet/erc20';
-import { accounts, IState, screen, tokens, transaction } from '@emeraldwallet/store';
+import { accounts, FEE_KEYS, GasPrices, IState, screen, tokens, transaction } from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import { Box, createStyles, FormControlLabel, FormHelperText, Slider, Switch, withStyles } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
@@ -22,15 +22,11 @@ import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
 import { connect } from 'react-redux';
-import { GasPrices, GasPriceType, PriceSort } from '../CreateTransaction/CreateTransaction';
 import AmountField from '../CreateTx/AmountField/AmountField';
 import FormFieldWrapper from '../CreateTx/FormFieldWrapper';
 import FormLabel from '../CreateTx/FormLabel/FormLabel';
 import FromField from '../CreateTx/FromField';
 
-const DEFAULT_FEE: GasPrices = { expect: 0, max: 0, priority: 0 } as const;
-
-const FEE_KEYS = ['avgLast', 'avgTail5', 'avgMiddle'] as const;
 const TOKENS_LIST = ['WETH'] as const;
 
 const styles = createStyles({
@@ -114,14 +110,6 @@ function formatBalance(balance: BigAmount): string {
   return balanceFormatter.format(balance);
 }
 
-function sortBigNumber(first: BigNumber, second: BigNumber): number {
-  if (first.eq(second)) {
-    return 0;
-  }
-
-  return first.gt(second) ? 1 : -1;
-}
-
 const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & DispatchProps> = ({
   addresses,
   blockchain,
@@ -143,11 +131,14 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
   const [tokenSymbol] = TOKENS_LIST;
 
   const [convertTx, setConvertTx] = React.useState(() => {
-    const tx = new workflow.CreateErc20WrappedTx({
-      address: address?.value,
-      totalBalance: getBalance(address?.value),
-      totalTokenBalance: getTokenBalanceByAddress(tokenSymbol, address?.value),
-    }, eip1559);
+    const tx = new workflow.CreateErc20WrappedTx(
+      {
+        address: address?.value,
+        totalBalance: getBalance(address?.value),
+        totalTokenBalance: getTokenBalanceByAddress(tokenSymbol, address?.value),
+      },
+      eip1559,
+    );
 
     return tx.dump();
   });
@@ -649,114 +640,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         }),
       );
     },
-    async getFees(blockchain) {
-      let results = await Promise.allSettled(
-        FEE_KEYS.map((key) => dispatch(transaction.actions.estimateFee(blockchain, 128, key))),
-      );
-
-      results = await Promise.allSettled(
-        results.map((result, index) =>
-          result.status === 'fulfilled'
-            ? Promise.resolve(result.value)
-            : dispatch(transaction.actions.estimateFee(blockchain, 256, FEE_KEYS[index])),
-        ),
-      );
-
-      let [avgLastNumber, avgTail5Number, avgMiddleNumber] = results.map((result) => {
-        const value = result.status === 'fulfilled' ? result.value ?? DEFAULT_FEE : DEFAULT_FEE;
-
-        let expect: GasPriceType;
-        let max: GasPriceType;
-        let priority: GasPriceType;
-
-        if (typeof value === 'string') {
-          ({ expect, max, priority } = { ...DEFAULT_FEE, expect: value });
-        } else {
-          ({ expect, max, priority } = value);
-        }
-
-        return {
-          expect: new BigNumber(expect),
-          max: new BigNumber(max),
-          priority: new BigNumber(priority),
-        };
-      });
-
-      let { expects, highs, priorities } = [avgLastNumber, avgTail5Number, avgMiddleNumber].reduce<PriceSort>(
-        (carry, item) => ({
-          expects: [...carry.expects, item.expect],
-          highs: [...carry.highs, item.max],
-          priorities: [...carry.priorities, item.priority],
-        }),
-        {
-          expects: [],
-          highs: [],
-          priorities: [],
-        },
-      );
-
-      expects = expects.sort(sortBigNumber);
-      highs = highs.sort(sortBigNumber);
-      priorities = priorities.sort(sortBigNumber);
-
-      [avgLastNumber, avgTail5Number, avgMiddleNumber] = expects.reduce<Array<GasPrices<BigNumber>>>(
-        (carry, item, index) => [
-          ...carry,
-          {
-            expect: item,
-            max: highs[index],
-            priority: priorities[index],
-          },
-        ],
-        [],
-      );
-
-      if (avgTail5Number.expect.eq(0) && avgTail5Number.max.eq(0)) {
-        // TODO Set default value from remote config
-        avgTail5Number = {
-          expect: new Wei(30, 'GWei').number,
-          max: new Wei(30, 'GWei').number,
-          priority: new Wei(1, 'GWei').number,
-        };
-      }
-
-      const avgLastExpect = avgLastNumber.expect.gt(0)
-        ? avgLastNumber.expect.toNumber()
-        : avgTail5Number.expect.minus(avgTail5Number.expect.multipliedBy(0.25)).toNumber();
-      const avgLastMax = avgLastNumber.max.gt(0)
-        ? avgLastNumber.max.toNumber()
-        : avgTail5Number.max.minus(avgTail5Number.max.multipliedBy(0.25)).toNumber();
-      const avgLastPriority = avgLastNumber.priority.gt(0)
-        ? avgLastNumber.priority.toNumber()
-        : avgTail5Number.priority.minus(avgTail5Number.priority.multipliedBy(0.25)).toNumber();
-
-      const avgMiddleExpect = avgMiddleNumber.expect.gt(0)
-        ? avgMiddleNumber.expect.toNumber()
-        : avgTail5Number.expect.plus(avgTail5Number.expect.multipliedBy(0.25)).toNumber();
-      const avgMiddleMax = avgMiddleNumber.max.gt(0)
-        ? avgMiddleNumber.max.toNumber()
-        : avgTail5Number.max.plus(avgTail5Number.max.multipliedBy(0.25)).toNumber();
-      const avgMiddlePriority = avgMiddleNumber.priority.gt(0)
-        ? avgMiddleNumber.priority.toNumber()
-        : avgTail5Number.priority.plus(avgTail5Number.priority.multipliedBy(0.25)).toNumber();
-
-      return {
-        avgLast: {
-          expect: avgLastExpect,
-          max: avgLastMax,
-          priority: avgLastPriority,
-        },
-        avgMiddle: {
-          expect: avgMiddleExpect,
-          max: avgMiddleMax,
-          priority: avgMiddlePriority,
-        },
-        avgTail5: {
-          expect: avgTail5Number.expect.toNumber(),
-          max: avgTail5Number.max.toNumber(),
-          priority: avgTail5Number.priority.toNumber(),
-        },
-      };
+    getFees(blockchain) {
+      return dispatch(transaction.actions.getFee(blockchain));
     },
     goBack() {
       dispatch(screen.actions.goBack());

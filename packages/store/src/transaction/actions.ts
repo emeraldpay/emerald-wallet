@@ -21,7 +21,7 @@ import { Dispatch } from 'redux';
 import * as screen from '../screen';
 import { catchError, gotoScreen, showError } from '../screen/actions';
 import * as history from '../txhistory';
-import { Dispatched, IExtraArgument } from '../types';
+import { DEFAULT_FEE, Dispatched, FEE_KEYS, GasPrices, GasPriceType, IExtraArgument, PriceSort } from '../types';
 
 const log = Logger.forCategory('store.transaction');
 
@@ -260,5 +260,125 @@ export function estimateGas(chain: BlockchainCode, tx: Tx): Dispatched<any> {
 export function estimateFee(blockchain: BlockchainCode, blocks: number, mode: EstimationMode) {
   return (dispatch: any, getState: any, extra: IExtraArgument) => {
     return extra.backendApi.estimateFee(blockchain, blocks, mode);
+  };
+}
+
+function sortBigNumber(first: BigNumber, second: BigNumber): number {
+  if (first.eq(second)) {
+    return 0;
+  }
+
+  return first.gt(second) ? 1 : -1;
+}
+
+export function getFee(blockchain: BlockchainCode): Dispatched<Record<typeof FEE_KEYS[number], GasPrices>> {
+  return async (dispatch: any) => {
+    let results = await Promise.allSettled(
+      FEE_KEYS.map((key) => dispatch(estimateFee(blockchain, 128, key))),
+    );
+
+    results = await Promise.allSettled(
+      results.map((result, index) =>
+        result.status === 'fulfilled'
+          ? Promise.resolve(result.value)
+          : dispatch(estimateFee(blockchain, 256, FEE_KEYS[index])),
+      ),
+    );
+
+    let [avgLastNumber, avgTail5Number, avgMiddleNumber] = results.map((result) => {
+      const value = result.status === 'fulfilled' ? result.value ?? DEFAULT_FEE : DEFAULT_FEE;
+
+      let expect: GasPriceType;
+      let max: GasPriceType;
+      let priority: GasPriceType;
+
+      if (typeof value === 'string') {
+        ({ expect, max, priority } = { ...DEFAULT_FEE, expect: value });
+      } else {
+        ({ expect, max, priority } = value);
+      }
+
+      return {
+        expect: new BigNumber(expect),
+        max: new BigNumber(max),
+        priority: new BigNumber(priority),
+      };
+    });
+
+    let { expects, highs, priorities } = [avgLastNumber, avgTail5Number, avgMiddleNumber].reduce<PriceSort>(
+      (carry, item) => ({
+        expects: [...carry.expects, item.expect],
+        highs: [...carry.highs, item.max],
+        priorities: [...carry.priorities, item.priority],
+      }),
+      {
+        expects: [],
+        highs: [],
+        priorities: [],
+      },
+    );
+
+    expects = expects.sort(sortBigNumber);
+    highs = highs.sort(sortBigNumber);
+    priorities = priorities.sort(sortBigNumber);
+
+    [avgLastNumber, avgTail5Number, avgMiddleNumber] = expects.reduce<Array<GasPrices<BigNumber>>>(
+      (carry, item, index) => [
+        ...carry,
+        {
+          expect: item,
+          max: highs[index],
+          priority: priorities[index],
+        },
+      ],
+      [],
+    );
+
+    if (avgTail5Number.expect.eq(0) && avgTail5Number.max.eq(0)) {
+      // TODO Set default value from remote config
+      avgTail5Number = {
+        expect: new Wei(30, 'GWei').number,
+        max: new Wei(30, 'GWei').number,
+        priority: new Wei(1, 'GWei').number,
+      };
+    }
+
+    const avgLastExpect = avgLastNumber.expect.gt(0)
+      ? avgLastNumber.expect.toNumber()
+      : avgTail5Number.expect.minus(avgTail5Number.expect.multipliedBy(0.25)).toNumber();
+    const avgLastMax = avgLastNumber.max.gt(0)
+      ? avgLastNumber.max.toNumber()
+      : avgTail5Number.max.minus(avgTail5Number.max.multipliedBy(0.25)).toNumber();
+    const avgLastPriority = avgLastNumber.priority.gt(0)
+      ? avgLastNumber.priority.toNumber()
+      : avgTail5Number.priority.minus(avgTail5Number.priority.multipliedBy(0.25)).toNumber();
+
+    const avgMiddleExpect = avgMiddleNumber.expect.gt(0)
+      ? avgMiddleNumber.expect.toNumber()
+      : avgTail5Number.expect.plus(avgTail5Number.expect.multipliedBy(0.25)).toNumber();
+    const avgMiddleMax = avgMiddleNumber.max.gt(0)
+      ? avgMiddleNumber.max.toNumber()
+      : avgTail5Number.max.plus(avgTail5Number.max.multipliedBy(0.25)).toNumber();
+    const avgMiddlePriority = avgMiddleNumber.priority.gt(0)
+      ? avgMiddleNumber.priority.toNumber()
+      : avgTail5Number.priority.plus(avgTail5Number.priority.multipliedBy(0.25)).toNumber();
+
+    return {
+      avgLast: {
+        expect: avgLastExpect,
+        max: avgLastMax,
+        priority: avgLastPriority,
+      },
+      avgMiddle: {
+        expect: avgMiddleExpect,
+        max: avgMiddleMax,
+        priority: avgMiddlePriority,
+      },
+      avgTail5: {
+        expect: avgTail5Number.expect.toNumber(),
+        max: avgTail5Number.max.toNumber(),
+        priority: avgTail5Number.priority.toNumber(),
+      },
+    };
   };
 }

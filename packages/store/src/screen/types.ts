@@ -23,6 +23,7 @@ export enum Pages {
   CREATE_TX_CANCEL = 'create-tx-cancel',
   CREATE_TX_CONVERT = 'create-tx-convert',
   CREATE_TX_ETHEREUM = 'create-tx-ethereum',
+  CREATE_TX_RECOVER = 'create-tx-recovery',
   CREATE_TX_SPEED_UP = 'create-tx-speed-up',
   CREATE_WALLET = 'create-wallet',
   GLOBAL_KEY = 'global-key',

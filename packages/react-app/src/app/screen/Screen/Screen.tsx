@@ -20,6 +20,7 @@ import ReceiveScreen from '../../../receive/ReceiveScreen';
 import CreateBitcoinTransaction from '../../../transaction/CreateBitcoinTransaction/CreateBitcoinTransaction';
 import CreateCancelTransaction from '../../../transaction/CreateCancelTransaction';
 import CreateConvertTransaction from '../../../transaction/CreateConvertTransaction';
+import CreateRecoverTransaction from '../../../transaction/CreateRecoverTransaction';
 import CreateSpeedUpTransaction from '../../../transaction/CreateSpeedUpTransaction';
 import CreateTransaction from '../../../transaction/CreateTransaction';
 import SelectAccount from '../../../transaction/CreateTransaction/SelectAccount';
@@ -70,10 +71,12 @@ const Screen: React.FC<Props> = (props) => {
       return <CreateBitcoinTransaction source={props.screenItem} />;
     case screen.Pages.CREATE_TX_CANCEL:
       return <CreateCancelTransaction transaction={props.screenItem} />;
-    case screen.Pages.CREATE_TX_SPEED_UP:
-      return <CreateSpeedUpTransaction transaction={props.screenItem} />;
     case screen.Pages.CREATE_TX_ETHEREUM:
       return <CreateTransaction sourceEntry={props.screenItem} />;
+    case screen.Pages.CREATE_TX_SPEED_UP:
+      return <CreateSpeedUpTransaction transaction={props.screenItem} />;
+    case screen.Pages.CREATE_TX_RECOVER:
+      return <CreateRecoverTransaction entry={props.screenItem} />;
     case screen.Pages.CREATE_WALLET:
       return <CreateWalletScreen />;
     case screen.Pages.SETUP_VAULT:

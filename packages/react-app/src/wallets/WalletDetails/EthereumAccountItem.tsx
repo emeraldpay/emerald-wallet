@@ -1,11 +1,12 @@
-import { BigAmount } from '@emeraldpay/bigamount';
+import { BigAmount, FormatterBuilder, Predicates } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { EthereumEntry, WalletEntry } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, blockchainIdToCode, Blockchains } from '@emeraldwallet/core';
+import { BlockchainCode, blockchainIdToCode, Blockchains, getStandardUnits } from '@emeraldwallet/core';
 import { accounts, IState, screen, tokens } from '@emeraldwallet/store';
 import { CoinAvatar } from '@emeraldwallet/ui';
-import { createStyles, Grid, Theme, Typography } from '@material-ui/core';
+import { Button, createStyles, Grid, Theme, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
+import { Alert } from '@material-ui/lab';
 import * as React from 'react';
 import { Dispatch } from 'react';
 import { connect } from 'react-redux';
@@ -13,6 +14,13 @@ import AccountBalance from '../../common/Balance';
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
+    alert: {
+      marginBottom: 15,
+    },
+    alertTitle: {
+      fontWeight: 'bold',
+      marginBottom: 10,
+    },
     container: {
       border: `0px solid ${theme.palette.divider}`,
       marginBottom: '10px',
@@ -47,7 +55,24 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  onConvert: (entry: WalletEntry) => void;
+  gotoConvert(entry: WalletEntry): void;
+  gotoRecover(entry: WalletEntry): void;
+}
+
+function formatBalance(balance: BigAmount): string {
+  const units = getStandardUnits(balance);
+
+  const balanceFormatter = new FormatterBuilder()
+    .when(Predicates.ZERO, (whenTrue, whenFalse): void => {
+      whenTrue.useTopUnit();
+      whenFalse.useOptimalUnit(undefined, units, 3);
+    })
+    .number(3, true)
+    .append(' ')
+    .unitCode()
+    .build();
+
+  return balanceFormatter.format(balance);
 }
 
 const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
@@ -55,10 +80,10 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
   balance,
   blockchainCode,
   tokensBalances,
-  onConvert,
+  gotoConvert,
+  gotoRecover,
 }) => {
   const styles = useStyles();
-  const blockchain = Blockchains[blockchainCode];
 
   const accountClasses = {
     root: styles.balance,
@@ -66,7 +91,40 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
     coinSymbol: styles.balanceSymbol,
   };
 
-  return (
+  const [entry] = entries;
+  const blockchain = Blockchains[blockchainCode];
+
+  const receiveDisabledTokens = React.useMemo(
+    () => tokensBalances.filter((item) => item.isPositive()),
+    [tokensBalances],
+  );
+
+  return entry.receiveDisabled ? (
+    <>
+      {(balance.isPositive() || receiveDisabledTokens.length > 0) && (
+        <div className={styles.container}>
+          <Alert
+            action={
+              <Button color="inherit" onClick={() => gotoRecover(entry)}>
+                Recover
+              </Button>
+            }
+            className={styles.alert}
+            severity="warning"
+          >
+            <div className={styles.alertTitle}>Coins on wrong blockchain</div>
+            You have {formatBalance(balance)}
+            {receiveDisabledTokens.reduce(
+              (carry, item, index, array) =>
+                `${carry}${array.length === index + 1 ? ' and ' : ', '}${formatBalance(item)}`,
+              '',
+            )}{' '}
+            on {blockchain.getTitle()} blockchain
+          </Alert>
+        </div>
+      )}
+    </>
+  ) : (
     <div className={styles.container}>
       <Grid container={true}>
         <Grid container={true}>
@@ -83,7 +141,7 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
                 key={'token-' + token.units.top.code}
                 classes={accountClasses}
                 balance={token}
-                onConvert={token.units.top.code === 'WETH' ? () => onConvert(entries[0]) : undefined}
+                onConvert={token.units.top.code === 'WETH' ? () => gotoConvert(entry) : undefined}
               />
             ))}
           </Grid>
@@ -93,8 +151,8 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
   );
 };
 
-export default connect(
-  (state: IState, ownProps: OwnProps): StateProps => {
+export default connect<StateProps, DispatchProps, OwnProps, IState>(
+  (state, ownProps) => {
     const { entries } = ownProps;
     const [entry] = entries;
 
@@ -134,9 +192,13 @@ export default connect(
       tokensBalances,
     };
   },
-  (dispatch: Dispatch<any>): DispatchProps => ({
-    onConvert: (entry: WalletEntry) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (dispatch: Dispatch<any>) => ({
+    gotoConvert(entry) {
       dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_CONVERT, entry));
+    },
+    gotoRecover(entry) {
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_RECOVER, entry));
     },
   }),
 )(Component);

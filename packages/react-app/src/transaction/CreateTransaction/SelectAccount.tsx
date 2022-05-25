@@ -106,50 +106,52 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     }
 
     const balances: AccountBalance[] = Object.values(
-      wallet?.entries.reduce<Record<number, AccountBalance>>((carry, entry) => {
-        const blockchainCode = blockchainIdToCode(entry.blockchain);
-        const zeroAmount = accounts.selectors.zeroAmountFor(blockchainCode);
+      wallet?.entries
+        .filter((entry) => !entry.receiveDisabled)
+        .reduce<Record<number, AccountBalance>>((carry, entry) => {
+          const blockchainCode = blockchainIdToCode(entry.blockchain);
+          const zeroAmount = accounts.selectors.zeroAmountFor(blockchainCode);
 
-        const balance = accounts.selectors.getBalance(state, entry.id, zeroAmount) ?? zeroAmount;
+          const balance = accounts.selectors.getBalance(state, entry.id, zeroAmount) ?? zeroAmount;
 
-        let tokenBalances: BigAmount[] = [];
+          let tokenBalances: BigAmount[] = [];
 
-        if (isEthereumEntry(entry) && entry.address != null) {
-          tokenBalances = tokens.selectors.selectBalances(state, entry.address.value, blockchainCode) ?? [];
-        }
+          if (isEthereumEntry(entry) && entry.address != null) {
+            tokenBalances = tokens.selectors.selectBalances(state, entry.address.value, blockchainCode) ?? [];
+          }
 
-        const accountBalance = carry[entry.blockchain];
+          const accountBalance = carry[entry.blockchain];
 
-        if (accountBalance == null) {
+          if (accountBalance == null) {
+            return {
+              ...carry,
+              [entry.blockchain]: {
+                balance,
+                entry,
+                tokens: tokenBalances,
+              },
+            };
+          }
+
+          tokenBalances = accountBalance.tokens.reduce<Array<BigAmount>>((carry, item) => {
+            const tokenBalance = tokenBalances.find((balanceItem) => balanceItem.units.equals(item.units));
+
+            if (tokenBalance == null) {
+              return carry;
+            }
+
+            return [...carry, item.plus(tokenBalance)];
+          }, []);
+
           return {
             ...carry,
             [entry.blockchain]: {
-              balance,
-              entry,
+              entry: accountBalance.entry,
+              balance: accountBalance.balance.plus(balance),
               tokens: tokenBalances,
             },
           };
-        }
-
-        tokenBalances = accountBalance.tokens.reduce<Array<BigAmount>>((carry, item) => {
-          const tokenBalance = tokenBalances.find((balanceItem) => balanceItem.units.equals(item.units));
-
-          if (tokenBalance == null) {
-            return carry;
-          }
-
-          return [...carry, item.plus(tokenBalance)];
-        }, []);
-
-        return {
-          ...carry,
-          [entry.blockchain]: {
-            entry: accountBalance.entry,
-            balance: accountBalance.balance.plus(balance),
-            tokens: tokenBalances,
-          },
-        };
-      }, {}) ?? {},
+        }, {}) ?? {},
     );
 
     return {

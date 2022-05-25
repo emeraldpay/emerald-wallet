@@ -47,8 +47,8 @@ export function goBack() {
   };
 }
 
-export function catchError(dispatch: any): (err: any) => void {
-  return (err: any) => {
+export function catchError(dispatch: any): (err: Error) => void {
+  return (err: Error) => {
     dispatch(showError(err));
   };
 }
