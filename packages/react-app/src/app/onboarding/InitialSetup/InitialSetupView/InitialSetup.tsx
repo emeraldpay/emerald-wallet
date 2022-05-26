@@ -1,56 +1,46 @@
+import { Wallet } from '@emeraldpay/emerald-vault-core';
 import { Grid, Step, StepLabel, Stepper } from '@material-ui/core';
 import * as React from 'react';
 
 import Terms from '../Terms';
 
-interface IProps {
-  terms?: any;
-  onTermsAgreed?: any;
-  currentTermsVersion?: any;
+export interface OwnProps {
+  currentTermsVersion?: string;
 }
 
-class InitialSetup extends React.Component<IProps> {
+export interface DispatchProps {
+  onTermsAgreed?(wallets: Wallet[]): void;
+}
 
-  public render () {
-    const {
-      terms, onTermsAgreed, currentTermsVersion
-    } = this.props;
+export interface StateProps {
+  terms?: string;
+}
 
-    let step = null;
-    let activeStep = 0;
-
-    if (terms !== currentTermsVersion) {
-      step = <Terms onAgree={onTermsAgreed}/>;
-    } else {
-      activeStep = 1;
-    }
-
-    const steps = [];
-    steps.push(
-      <Step key='terms'>
-        <StepLabel>User Agreement</StepLabel>
-      </Step>
-    );
-    steps.push(
-      <Step key='open-wallet'>
-        <StepLabel>Open Wallet</StepLabel>
-      </Step>
-    );
+class InitialSetup extends React.Component<DispatchProps & OwnProps & StateProps> {
+  public render(): React.ReactElement {
+    const { currentTermsVersion, terms, onTermsAgreed } = this.props;
 
     return (
       <Grid>
-        <Grid container={true}>
-          <Grid item={true} xs={12}>
-            <Stepper activeStep={activeStep}>
-              {steps}
+        <Grid container>
+          <Grid item xs={12}>
+            <Stepper activeStep={terms !== currentTermsVersion ? 0 : 1}>
+              <Step key="terms">
+                <StepLabel>User Agreement</StepLabel>
+              </Step>
+              <Step key="open-wallet">
+                <StepLabel>Open Wallet</StepLabel>
+              </Step>
             </Stepper>
           </Grid>
         </Grid>
-        <Grid container={true}>
-          <Grid item={true} xs={12}>
-            {step}
+        {terms !== currentTermsVersion && (
+          <Grid container>
+            <Grid item xs={12}>
+              <Terms onAgree={onTermsAgreed} />
+            </Grid>
           </Grid>
-        </Grid>
+        )}
       </Grid>
     );
   }

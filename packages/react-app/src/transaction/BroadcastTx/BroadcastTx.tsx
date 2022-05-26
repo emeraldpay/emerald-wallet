@@ -7,7 +7,7 @@ import {withStyles} from '@material-ui/core/styles';
 import * as React from 'react';
 import {connect} from 'react-redux';
 import ChainTitle from '../../common/ChainTitle';
-import {Wei, WEIS} from '@emeraldpay/bigamount-crypto';
+import {Wei} from '@emeraldpay/bigamount-crypto';
 
 interface IBroadcastTxViewProps {
   tx: any;
@@ -132,7 +132,7 @@ export default connect(
       dispatch(transaction.actions.broadcastTx(tx.blockchain, tx, signed));
     },
     onCancel: () => {
-      dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
+      dispatch(screen.actions.gotoWalletsScreen());
     }
   })
 )(StyledView);

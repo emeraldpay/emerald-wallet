@@ -4,7 +4,6 @@ import {
   addressBook,
   application,
   BackendApi,
-  blockchains,
   createStore,
   RemoteVault,
   RenderWalletState,
@@ -59,21 +58,16 @@ function getInitialScreen(): void {
 
   triggers.onceServicesStart(store).then(() =>
     triggers.onceModeSet(store).then(() =>
-      RemoteVault.isGlobalKeySet().then((hasGlobalKey) => {
-        if (hasGlobalKey) {
-          triggers.onceAccountsLoaded(store).then(() =>
-            RemoteVault.getOddPasswordItems().then((oddPasswordItems) => {
-              if (oddPasswordItems.length > 0) {
-                store.dispatch(screen.actions.gotoScreen(screen.Pages.PASSWORD_MIGRATION));
-              } else {
-                store.dispatch(screen.actions.gotoScreen(screen.Pages.HOME));
-              }
-            }),
-          );
-        } else {
-          store.dispatch(screen.actions.gotoScreen(screen.Pages.GLOBAL_KEY));
-        }
-      }),
+      triggers.onceAccountsLoaded(store).then(() =>
+        RemoteVault.getOddPasswordItems().then((oddPasswordItems) => {
+          if (oddPasswordItems.length > 0) {
+            store.dispatch(screen.actions.gotoScreen(screen.Pages.PASSWORD_MIGRATION));
+          } else {
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            store.dispatch(screen.actions.gotoWalletsScreen() as any);
+          }
+        }),
+      ),
     ),
   );
 }

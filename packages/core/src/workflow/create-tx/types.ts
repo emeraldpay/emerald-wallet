@@ -1,46 +1,49 @@
-import {BigAmount} from "@emeraldpay/bigamount";
-import {AnyCoinCode, AnyTokenCode} from "../../Asset";
+import { BigAmount } from '@emeraldpay/bigamount';
+import { AnyCoinCode, AnyTokenCode } from '../../Asset';
+
+export enum ValidationResult {
+  INSUFFICIENT_FUNDS,
+  INSUFFICIENT_TOKEN_FUNDS,
+  NO_AMOUNT,
+  NO_FROM,
+  NO_TO,
+  OK,
+}
 
 export enum TxTarget {
   MANUAL,
-  SEND_ALL
+  SEND_ALL,
 }
 
-export function targetFromNumber(i: number): TxTarget {
-  if (i === TxTarget.SEND_ALL.valueOf()) {
-    return TxTarget.SEND_ALL;
-  }
-  return TxTarget.MANUAL;
-}
-
-export enum ValidationResult {
-  OK,
-  NO_FROM,
-  NO_AMOUNT,
-  NO_TO,
-  INSUFFICIENT_FUNDS,
-  INSUFFICIENT_TOKEN_FUNDS
-}
-
-export interface ITx<T extends BigAmount> {
-  getTotalBalance: () => T;
-  setTotalBalance: (total: T) => void;
+export interface Tx<T extends BigAmount> {
   getAmount: () => T;
-  setAmount: (amount: T, tokenSymbol?: AnyTokenCode) => void;
   getTokenSymbol: () => string;
+  getTotalBalance: () => T;
+  setAmount: (amount: T, tokenSymbol?: AnyTokenCode) => void;
+  setTotalBalance: (total: T) => void;
 }
 
-export interface ITxDetailsPlain {
-  from?: string;
-  to?: string;
-  erc20?: string;
-  target: number;
+export interface TxDetailsPlain {
   amount: string;
   amountDecimals: number;
-  tokenSymbol: AnyCoinCode;
-  totalTokenBalance?: string;
-  totalEtherBalance?: string;
-  gasPrice: string;
+  erc20?: string;
+  from?: string;
   gas: number;
+  gasPrice?: string;
+  maxGasPrice?: string;
+  priorityGasPrice?: string;
+  target: number;
+  to?: string;
+  tokenSymbol: AnyCoinCode;
+  totalEtherBalance?: string;
+  totalTokenBalance?: string;
   transferType?: number;
+}
+
+export function targetFromNumber(value: number): TxTarget {
+  if (value === TxTarget.SEND_ALL.valueOf()) {
+    return TxTarget.SEND_ALL;
+  }
+
+  return TxTarget.MANUAL;
 }

@@ -1,26 +1,36 @@
 import Common, { Hardfork } from '@ethereumjs/common';
-import { Transaction as EthTx } from '@ethereumjs/tx';
-import {ITransaction} from '../ITransaction';
-import {EthereumAddress} from "./Address";
+import { TransactionFactory, TypedTransaction } from '@ethereumjs/tx';
+import { ITransaction } from '../ITransaction';
+import { EthereumAddress } from './Address';
 
 class EthereumTx implements ITransaction {
-  public static fromRaw (hex: string, chainId: any): ITransaction {
-    if (chainId === 62 || chainId === 61) {
-      // Because ethereumjs-tx doesn't support ETC
-      const common = Common.custom({ chainId }, { baseChain: 1, hardfork: Hardfork.Byzantium });
+  static eip1559mark = Buffer.from('02', 'hex');
 
-      return new EthereumTx(EthTx.fromSerializedTx(Buffer.from(hex.slice(2), 'hex'), { common }));
-    }
+  public internalTx: TypedTransaction;
 
-    const common = new Common({ chain: chainId });
-
-    return new EthereumTx(EthTx.fromSerializedTx(Buffer.from(hex.slice(2), 'hex'), { common }));
+  constructor(tx: TypedTransaction) {
+    this.internalTx = tx;
   }
 
-  public internalTx: EthTx;
+  public static fromRaw(hex: string, chainId: any): ITransaction {
+    const data = Buffer.from(hex.slice(2), 'hex');
 
-  constructor (tx: any) {
-    this.internalTx = tx;
+    let hardfork: Hardfork | undefined = undefined;
+
+    if (data.slice(0, 1).equals(EthereumTx.eip1559mark)) {
+      hardfork = Hardfork.London;
+    }
+
+    let common: Common;
+
+    if (chainId === 61 || chainId === 62) {
+      // Because ethereumjs-tx doesn't support ETC
+      common = Common.custom({ chainId }, { baseChain: 1, hardfork: Hardfork.Byzantium });
+    } else {
+      common = new Common({ hardfork, chain: chainId });
+    }
+
+    return new EthereumTx(TransactionFactory.fromSerializedData(data, { common }));
   }
 
   public getHash(): string {
@@ -53,7 +63,7 @@ class EthereumTx implements ITransaction {
     return this.internalTx.data.toString('hex');
   }
 
-  public getNonce (): number {
+  public getNonce(): number {
     return parseInt(this.internalTx.nonce.toString('hex'), 16);
   }
 }

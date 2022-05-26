@@ -3,6 +3,7 @@ import { screen } from '@emeraldwallet/store';
 import { CircularProgress } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import AddHDAddress from '../../../create-account/AddHDAddress';
 import CreateHdAccount from '../../../create-account/CreateHdAccount';
 import CreateWalletScreen from '../../../create-wallet/CreateWalletScreen';
 import {
@@ -17,12 +18,17 @@ import {
 } from '../../../index';
 import ReceiveScreen from '../../../receive/ReceiveScreen';
 import CreateBitcoinTransaction from '../../../transaction/CreateBitcoinTransaction/CreateBitcoinTransaction';
+import CreateCancelTransaction from '../../../transaction/CreateCancelTransaction';
 import CreateConvertTransaction from '../../../transaction/CreateConvertTransaction';
+import CreateRecoverTransaction from '../../../transaction/CreateRecoverTransaction';
+import CreateSpeedUpTransaction from '../../../transaction/CreateSpeedUpTransaction';
 import CreateTransaction from '../../../transaction/CreateTransaction';
 import SelectAccount from '../../../transaction/CreateTransaction/SelectAccount';
 import WalletInfo from '../../../wallets/WalletInfo';
 import GlobalKey from '../../vault/GlobalKey';
+import ImportVault from '../../vault/ImportVault';
 import PasswordMigration from '../../vault/PasswordMigration';
+import SetupVault from '../../vault/SetupVault';
 
 const log = Logger.forCategory('screen');
 
@@ -51,6 +57,8 @@ const Screen: React.FC<Props> = (props) => {
       return <Settings />;
     case 'welcome':
       return <Welcome currentTermsVersion={props.termsVersion} />;
+    case screen.Pages.ADD_HD_ADDRESS:
+      return <AddHDAddress walletId={props.screenItem} />;
     case screen.Pages.ADDRESS_BOOK:
       return <AddressBook />;
     case screen.Pages.CREATE_HD_ACCOUNT:
@@ -61,12 +69,22 @@ const Screen: React.FC<Props> = (props) => {
       return <CreateConvertTransaction entry={props.screenItem} />;
     case screen.Pages.CREATE_TX_BITCOIN:
       return <CreateBitcoinTransaction source={props.screenItem} />;
+    case screen.Pages.CREATE_TX_CANCEL:
+      return <CreateCancelTransaction transaction={props.screenItem} />;
     case screen.Pages.CREATE_TX_ETHEREUM:
       return <CreateTransaction sourceEntry={props.screenItem} />;
+    case screen.Pages.CREATE_TX_SPEED_UP:
+      return <CreateSpeedUpTransaction transaction={props.screenItem} />;
+    case screen.Pages.CREATE_TX_RECOVER:
+      return <CreateRecoverTransaction entry={props.screenItem} />;
     case screen.Pages.CREATE_WALLET:
       return <CreateWalletScreen />;
+    case screen.Pages.SETUP_VAULT:
+      return <SetupVault />;
     case screen.Pages.GLOBAL_KEY:
       return <GlobalKey />;
+    case screen.Pages.IMPORT_VAULT:
+      return <ImportVault />;
     case screen.Pages.HOME:
       return <Home />;
     case screen.Pages.PASSWORD_MIGRATION:

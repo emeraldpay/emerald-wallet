@@ -12,4 +12,5 @@ export default interface IBlockchainParams {
   hdPath: HDPath;
   code: BlockchainCode;
   confirmations: number;
+  eip1559?: boolean;
 }

@@ -8,36 +8,36 @@ export enum ActionTypes {
   GO_HOME = 'SCREEN/GO_HOME',
   OPEN_LINK = 'SCREEN/OPEN_LINK',
   NOTIFICATION_SHOW = 'SCREEN/NOTIFICATION_SHOW',
-  NOTIFICATION_CLOSE = 'SCREEN/NOTIFICATION_CLOSE'
+  NOTIFICATION_CLOSE = 'SCREEN/NOTIFICATION_CLOSE',
 }
 
 export enum Pages {
   ACCOUNT = 'account',
+  ADD_HD_ADDRESS = 'add-hd-address',
   ADDRESS_BOOK = 'address-book',
   BROADCAST_TX = 'broadcast-tx',
   //@deprecated, rename to setup coins
   CREATE_HD_ACCOUNT = 'create-hd-account',
   CREATE_TX = 'create-tx',
   CREATE_TX_BITCOIN = 'create-tx-bitcoin',
+  CREATE_TX_CANCEL = 'create-tx-cancel',
   CREATE_TX_CONVERT = 'create-tx-convert',
   CREATE_TX_ETHEREUM = 'create-tx-ethereum',
+  CREATE_TX_RECOVER = 'create-tx-recovery',
+  CREATE_TX_SPEED_UP = 'create-tx-speed-up',
   CREATE_WALLET = 'create-wallet',
   GLOBAL_KEY = 'global-key',
   HOME = 'home',
+  IMPORT_VAULT = 'import-vault',
   PASSWORD_MIGRATION = 'password-migration',
   RECEIVE = 'receive',
+  SETUP_VAULT = 'setup-vault',
   TX_DETAILS = 'transaction',
   WALLET = 'wallet',
   WALLET_INFO = 'wallet-info',
 }
 
-export interface IScreenState {
-  screen: any | null;
-  item: any | null;
-  error: any | null;
-  dialog: any | null;
-  dialogItem: any | null;
-}
+export type IScreenState = Map<'screen' | 'item' | 'error' | 'dialog' | 'dialogItem', string>;
 
 export interface IOpenAction {
   type: ActionTypes.OPEN;

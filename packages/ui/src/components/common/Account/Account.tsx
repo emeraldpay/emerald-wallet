@@ -13,154 +13,165 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import {Pen3 as EditIcon} from '../../../icons';
-import {withStyles} from '@material-ui/core/styles';
-import {CSSProperties} from '@material-ui/core/styles/withStyles';
+
+import { createStyles } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import cx from 'classnames';
 import * as React from 'react';
-
+import { Pen3 as EditIcon } from '../../../icons';
 import Address from '../Address';
 import IdentityIcon from '../IdentityIcon';
 
-export const getStyles = (theme?: any) => ({
-  root: {
+export const styles = createStyles({
+  accountBalance: {
+    fontSize: 15,
+    marginRight: 10,
+  },
+  accountBalances: {
     display: 'flex',
-    width: '100%',
-    alignItems: 'center'
-  },
-  clickable: {
-    cursor: 'pointer'
-  },
-  nameEditIcon: {
-    width: '13px',
-    height: '13px',
-    cursor: 'pointer'
-  },
-  nameTypography: {
-    lineHeight: '22px',
-    fontSize: '14px'
-  },
-  accountNameContainer: {
-    display: 'flex',
-    alignItems: 'center'
-  },
-  editNameIconContainer: {
-    marginLeft: '5px'
   },
   accountContainer: {
     display: 'flex',
     flexDirection: 'column',
-    justifyContent: 'center'
-  } as CSSProperties,
+    justifyContent: 'center',
+  },
+  accountNameContainer: {
+    alignItems: 'center',
+    display: 'flex',
+  },
+  clickable: {
+    cursor: 'pointer',
+  },
+  editNameIconContainer: {
+    marginLeft: 5,
+  },
   identityIcon: {
-    marginRight: '10px'
+    marginRight: 20,
   },
-  identityIconRegular: {
-    height: '48px',
-    width: '48px'
+  nameEditIcon: {
+    cursor: 'pointer',
+    height: 13,
+    width: 13,
   },
-  identityIconShort: {
-    height: '24px',
-    width: '24px'
-  }
+  nameTypography: {
+    fontSize: 14,
+    lineHeight: 22,
+  },
+  root: {
+    alignItems: 'center',
+    display: 'flex',
+    width: '100%',
+  },
 });
 
-const noop = () => {
-};
+const noop = (): void => undefined;
 
-export interface IAccountProps {
-  addressProps?: any;
+interface OwnProps {
   address: string;
-  name?: string;
+  addressProps?: Record<string, unknown>;
   addressWidth?: string;
-  classes?: any;
-  identity?: boolean;
-  identityProps?: any;
+  classes: Record<keyof typeof styles, string>;
   editable?: boolean;
-  onClick?: any;
-  onEditClick?: any;
+  identity?: boolean;
+  identityProps?: Record<string, unknown>;
+  name?: string;
+  getBalancesByAddress?(address: string): string[];
+  onClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
+  onEditClick?(event: React.MouseEvent<HTMLDivElement, MouseEvent>): void;
 }
 
-export class Account extends React.PureComponent<IAccountProps> {
+export class Account extends React.PureComponent<OwnProps> {
   public static defaultProps = {
-    editable: false,
     addressWidth: 'auto',
+    editable: false,
     name: null,
+    onClick: noop,
     onEditClick: noop,
-    onClick: noop
   };
 
   constructor(props) {
     super(props);
+
     this.getIdentityIcon = this.getIdentityIcon.bind(this);
-    this.getNameField = this.getNameField.bind(this);
     this.getNameEditIcon = this.getNameEditIcon.bind(this);
+    this.getNameField = this.getNameField.bind(this);
   }
 
-  public getIdentityIcon() {
-    const {identity, classes, address} = this.props;
-    if (!identity) {
+  public getIdentityIcon(): React.ReactElement {
+    const { identity, classes, address } = this.props;
+
+    if (identity == null) {
       return null;
     }
 
-    const className = classes?.identityIcon;
-    const id = address.startsWith('0x') ? address : `0x${address}`;
     return (
-      <div className={className}>
-        <IdentityIcon id={id}/>
+      <div className={classes.identityIcon}>
+        <IdentityIcon id={address.startsWith('0x') ? address : `0x${address}`} />
       </div>
     );
   }
 
-  public getNameEditIcon() {
-    const {editable, classes, onEditClick} = this.props;
+  public getNameEditIcon(): React.ReactElement {
+    const { editable, classes, onEditClick } = this.props;
+
     if (editable === false) {
       return null;
     }
 
     return (
-      <div className={classes?.editNameIconContainer} onClick={onEditClick}>
-        <EditIcon className={classes?.nameEditIcon}/>
+      <div className={classes.editNameIconContainer} onClick={onEditClick}>
+        <EditIcon className={classes.nameEditIcon} />
       </div>
     );
   }
 
-  public getNameField() {
-    const {name, classes} = this.props;
+  public getNameField(): React.ReactElement {
+    const { name, classes } = this.props;
+
     if (name === null) {
       return null;
     }
 
     return (
-      <div className={classes?.accountNameContainer}>
-        <Typography className={classes?.nameTypography}>{name}</Typography>
+      <div className={classes.accountNameContainer}>
+        <Typography className={classes.nameTypography}>{name}</Typography>
         {this.getNameEditIcon()}
       </div>
     );
   }
 
-  public render() {
-    const addressProps = {
-      shortened: true,
+  public render(): React.ReactElement {
+    const { address, addressProps, addressWidth, classes, getBalancesByAddress, onClick } = this.props;
+
+    const newAddressProps = {
       hideCopy: true,
-      id: this.props.address,
-      ...this.props.addressProps
+      id: address,
+      shortened: true,
+      ...addressProps,
     };
 
-    const {addressWidth, classes, onClick} = this.props;
-    const isClickable = (typeof onClick === 'function' && onClick !== noop);
-    return (
-      <div onClick={onClick} className={cx(classes?.root, {[classes?.clickable]: isClickable})}>
-        {this.getIdentityIcon()}
+    const isClickable = typeof onClick === 'function' && onClick !== noop;
 
-        <div className={classes?.accountContainer} style={{width: addressWidth}}>
+    return (
+      <div onClick={onClick} className={cx(classes.root, { [classes.clickable]: isClickable })}>
+        {this.getIdentityIcon()}
+        <div className={classes.accountContainer} style={{ width: addressWidth }}>
           {this.getNameField()}
-          <Address {...addressProps} />
+          <Address {...newAddressProps} />
+          {getBalancesByAddress != null && (
+            <div className={classes.accountBalances}>
+              {getBalancesByAddress(address).map((balance, index) => (
+                <Typography key={`balance[${index}]`} className={classes.accountBalance} color="secondary">
+                  {balance}
+                </Typography>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     );
   }
 }
 
-export default withStyles(getStyles)(Account);
+export default withStyles(styles)(Account);
