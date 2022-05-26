@@ -1,8 +1,8 @@
 import { CircularProgress, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 
-const useStyles = makeStyles(
-  (theme) => createStyles({
+const useStyles = makeStyles((theme) =>
+  createStyles({
     inQueue: {
       color: theme.palette && theme.palette.text.secondary,
     },
@@ -19,7 +19,7 @@ const useStyles = makeStyles(
       color: theme.palette && theme.palette.text.secondary,
       fontSize: '12px',
     },
-  }),
+  })
 );
 
 interface StatusProps {
@@ -27,6 +27,7 @@ interface StatusProps {
   txTimestamp: any;
   txSince: Date;
   txDiscarded: boolean;
+  txTotalRetries: number;
   timeStampFormatter?: (timestamp: any) => string;
   onClick?: () => void;
 }
@@ -36,6 +37,7 @@ export const Status: React.FC<StatusProps> = ({
   txDiscarded,
   txSince,
   txTimestamp,
+  txTotalRetries,
   onClick,
   timeStampFormatter = (timestamp) => timestamp,
 }) => {
@@ -44,31 +46,66 @@ export const Status: React.FC<StatusProps> = ({
   // Status = Discarded
   if (txDiscarded) {
     return (
-      <div>
-        <div className={classes.discarded} onClick={onClick}>Discarded</div>
-        <div className={classes.timestamp} onClick={onClick}>{timeStampFormatter(txSince)}</div>
-      </div>
+      <>
+        <div className={classes.discarded} onClick={onClick}>
+          Discarded
+        </div>
+        <div className={classes.timestamp} onClick={onClick}>
+          {timeStampFormatter(txSince)}
+        </div>
+      </>
     );
   }
 
-  // Status = In Queue
+  // Status = In Queue / Not executed
   if (!txBlockNumber) {
+    const notExecuted =
+      txTotalRetries === 10 ||
+      txSince.getTime() < new Date().getTime() - 7 * 24 * 60 * 60 * 1000;
+
+    if (notExecuted) {
+      // Status = Not executed
+      return (
+        <>
+          <div className={classes.discarded} onClick={onClick}>
+            Not executed
+          </div>
+          <div className={classes.timestamp} onClick={onClick}>
+            {timeStampFormatter(txSince)}
+          </div>
+        </>
+      );
+    }
+
+    // Status = In Queue
     return (
-      <div>
+      <>
         <div className={classes.inQueue} onClick={onClick}>
-          <CircularProgress color="secondary" size={15} thickness={1.5} /> In Queue
+          <CircularProgress
+            color="secondary"
+            size={15}
+            thickness={1.5}
+            style={{ marginRight: 5 }}
+          />
+          In Queue
         </div>
-        <div className={classes.timestamp} onClick={onClick}>{timeStampFormatter(txSince)}</div>
-      </div>
+        <div className={classes.timestamp} onClick={onClick}>
+          {timeStampFormatter(txSince)}
+        </div>
+      </>
     );
   }
 
   // Status = In Blockchain
   return (
-    <div>
-      <span className={classes.confirmed} onClick={onClick}>Success</span> <br />
-      <span className={classes.timestamp} onClick={onClick}>{timeStampFormatter(txTimestamp)}</span>
-    </div>
+    <>
+      <div className={classes.confirmed} onClick={onClick}>
+        Success
+      </div>
+      <div className={classes.timestamp} onClick={onClick}>
+        {timeStampFormatter(txTimestamp)}
+      </div>
+    </>
   );
 };
 

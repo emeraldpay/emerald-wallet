@@ -116,8 +116,9 @@ function CreateHdAccount(props: IProps & IOwnProps & IDispatchProps) {
         leftColumn={(<span>Seed password</span>)}
         rightColumn={(
           <PasswordInput
-            onChange={handlePasswordChange}
+            minLength={1}
             password={password}
+            onChange={handlePasswordChange}
           />
         )}
       />
@@ -182,6 +183,7 @@ function mapStateToProps(state: IState, ownProps: IOwnProps): IProps {
   const wallet = accounts.selectors.findWallet(state, ownProps.walletId)!;
   const enabledBlockchains: BlockchainCode[] = [];
   wallet.entries
+    .filter((acc) => !acc.receiveDisabled)
     .map((acc) => acc.blockchain)
     .map((id) => blockchainIdToCode(id))
     .forEach((blockchain) => {

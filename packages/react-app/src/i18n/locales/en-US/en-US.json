@@ -72,17 +72,22 @@
     "cancel": "Cancel"
   },
   "settings": {
-    "lang": "Language",
+    "common": "Common",
+    "confirmations": "Confirmations",
     "currency": "Equivalent currency",
-    "globalKeyOld": "Old password",
-    "globalKeyNew": "New password",
-    "globalKeyConfirm": "Confirm new password",
-    "globalKeyErrors": {
-      "errorOccurred": "Global key change failed",
-      "passwordMismatch": "Password not match or equal to old"
-    },
+    "export": "Export",
+    "exportBackup": "Export to backup file",
+    "exportVault": "Export Vault",
+    "exportVaultFailed": "Cannot export vault",
+    "exportVaultSuccessful": "Vault exported successfully",
+    "globalKey": "Global Key",
     "globalKeyChanged": "Global Key changed successfully",
-    "showHiddenAccounts": "Hidden Accounts",
-    "confirmations": "Confirmations"
+    "globalKeyConfirm": "Confirm new password",
+    "globalKeyErrorOccurred": "Global key change failed",
+    "globalKeyNew": "New password",
+    "globalKeyOld": "Old password",
+    "globalKeyPasswordMismatch": "Password not match or equal to old",
+    "lang": "Language",
+    "showHiddenAccounts": "Hidden Accounts"
   }
 }

@@ -1,3 +1,4 @@
+import { initialize as initRemote, enable as remoteEnable } from '@electron/remote/main';
 import {
   Application,
   assertSingletonWindow,
@@ -16,13 +17,18 @@ import { DevelopmentMode, ProductionMode, sendMode } from './utils/api-modes';
 
 const { startProtocolHandler } = protocol;
 
-assertSingletonWindow();
-startProtocolHandler();
-
 const isDevelopMode = process.env.NODE_ENV === 'development';
 
 logger.transports.file.level = isDevelopMode ? 'silly' : 'debug';
 logger.transports.console.level = isDevelopMode ? 'debug' : 'info';
+
+process.on('uncaughtException', (error) => logger.error('Uncaught exception:', error));
+process.on('unhandledRejection ', (error) => logger.error('Uncaught promise rejection:', error));
+
+assertSingletonWindow();
+startProtocolHandler();
+
+initRemote();
 
 let apiMode = ProductionMode;
 let dataDir: string = null;
@@ -92,6 +98,8 @@ app.on('ready', () => {
   logger.info('Create main window');
 
   const { webContents } = getMainWindow(application, options);
+
+  remoteEnable(webContents);
 
   logger.info('Run application');
 

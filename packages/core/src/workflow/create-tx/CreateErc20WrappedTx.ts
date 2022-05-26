@@ -8,6 +8,8 @@ export interface Erc20WrappedDetails {
   amount?: BigAmount | Wei;
   gas?: BigNumber;
   gasPrice?: Wei;
+  maxGasPrice?: Wei;
+  priorityGasPrice?: Wei;
   target?: TxTarget;
   totalBalance?: Wei;
   totalTokenBalance?: BigAmount;
@@ -18,18 +20,26 @@ export class CreateErc20WrappedTx {
   public amount: BigAmount | Wei;
   public target: TxTarget;
   public gas: BigNumber;
-  public gasPrice: Wei;
+  public gasPrice?: Wei;
+  public maxGasPrice?: Wei;
+  public priorityGasPrice?: Wei;
   public totalBalance: Wei;
   public totalTokenBalance?: BigAmount;
 
-  constructor(details: Erc20WrappedDetails) {
+  constructor(details: Erc20WrappedDetails, eip1559 = false) {
     this.address = details.address;
     this.amount = details.amount ?? Wei.ZERO;
     this.target = details.target ?? TxTarget.MANUAL;
     this.gas = details.gas ?? new BigNumber(50000);
-    this.gasPrice = details.gasPrice ?? Wei.ZERO;
     this.totalBalance = details.totalBalance ?? Wei.ZERO;
     this.totalTokenBalance = details.totalTokenBalance;
+
+    if (eip1559 || details.maxGasPrice != null) {
+      this.maxGasPrice = details.maxGasPrice ?? Wei.ZERO;
+      this.priorityGasPrice = details.priorityGasPrice ?? Wei.ZERO;
+    } else {
+      this.gasPrice = details.gasPrice ?? Wei.ZERO;
+    }
   }
 
   public static fromPlain(details: Erc20WrappedDetails): CreateErc20WrappedTx {
@@ -42,14 +52,18 @@ export class CreateErc20WrappedTx {
       amount: this.amount,
       gas: this.gas,
       gasPrice: this.gasPrice,
+      maxGasPrice: this.maxGasPrice,
+      priorityGasPrice: this.priorityGasPrice,
       target: this.target,
       totalBalance: this.totalBalance,
       totalTokenBalance: this.totalTokenBalance,
-    }
+    };
   }
 
   public getFees(): Wei {
-    return this.gasPrice.multiply(this.gas);
+    const gasPrice = this.maxGasPrice ?? this.gasPrice ?? Wei.ZERO;
+
+    return gasPrice.multiply(this.gas);
   }
 
   public rebalance(): void {

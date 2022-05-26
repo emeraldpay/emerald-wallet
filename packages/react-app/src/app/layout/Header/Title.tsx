@@ -1,60 +1,47 @@
-import {connect} from "react-redux";
-import {Dispatch} from "react";
+import { IState, screen } from '@emeraldwallet/store';
+import { createStyles, Theme } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
-import {Box, createStyles, Theme} from "@material-ui/core";
-import {IState, screen} from "@emeraldwallet/store";
-import {makeStyles} from "@material-ui/core/styles";
+import { connect } from 'react-redux';
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
     root: {
-      fontSize: "16px",
+      cursor: 'pointer',
       flexGrow: 1,
-      cursor: "pointer",
+      fontSize: '16px',
     },
     brandPart: {
       color: theme.palette.primary.main,
-      marginRight: "4px",
+      marginRight: '4px',
     },
     productPart: {
       color: theme.palette.secondary.main,
     },
-  })
+  }),
 );
 
-/**
- *
- */
-const Component = (({onClick}: Props & Actions & OwnProps) => {
+interface DispatchProps {
+  gotoWalletsScreen(): void;
+}
+
+const Component: React.FC<DispatchProps> = ({ gotoWalletsScreen }) => {
   const styles = useStyles();
-  return <div className={styles.root} onClick={() => onClick()}>
-    <span className={styles.brandPart}>Emerald</span>
-    <span className={styles.productPart}>Wallet</span>
-  </div>
-})
 
-// State Properties
-interface Props {
-}
+  return (
+    <div className={styles.root} onClick={gotoWalletsScreen}>
+      <span className={styles.brandPart}>Emerald</span>
+      <span className={styles.productPart}>Wallet</span>
+    </div>
+  );
+};
 
-// Actions
-interface Actions {
-  onClick: () => void;
-}
-
-// Component properties
-interface OwnProps {
-}
-
-export default connect(
-  (state: IState, ownProps: OwnProps): Props => {
-    return {}
-  },
-  (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
-    return {
-      onClick: () => {
-        dispatch(screen.actions.gotoScreen("home"));
-      }
-    }
-  }
-)((Component));
+export default connect<{}, DispatchProps, {}, IState>(
+  null,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (dispatch: any) => ({
+    gotoWalletsScreen() {
+      dispatch(screen.actions.gotoWalletsScreen());
+    },
+  }),
+)(Component);

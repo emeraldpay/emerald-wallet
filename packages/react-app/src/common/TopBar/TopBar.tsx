@@ -52,8 +52,8 @@ export function TopBar (props: ITopBarProps) {
 const StyledTopBar = withStyles(styles)(TopBar);
 
 const mapDispatchToProps = (dispatch: any) => ({
-  onWallets: () => dispatch(screen.actions.gotoScreen(screen.Pages.HOME)),
-  onNewContact: () => dispatch(screen.actions.gotoScreen('add-address'))
+  onNewContact: () => dispatch(screen.actions.gotoScreen('add-address')),
+  onWallets: () => dispatch(screen.actions.gotoWalletsScreen()),
 });
 
 export default connect(null, mapDispatchToProps)(StyledTopBar);

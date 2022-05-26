@@ -1,5 +1,5 @@
-import {AnyCoinCode, BlockchainCode} from "@emeraldwallet/core";
-import {MnemonicSeed, SeedReference, Uuid} from "@emeraldpay/emerald-vault-core";
+import { SeedReference } from '@emeraldpay/emerald-vault-core';
+import { AnyCoinCode, BlockchainCode } from '@emeraldwallet/core';
 
 export interface IAddressState {
   blockchain: BlockchainCode;
@@ -31,7 +31,6 @@ export interface IHDPreviewState {
   display: IDisplay;
   active: boolean;
 }
-
 
 /// -----------
 
@@ -75,6 +74,7 @@ export interface ILoadAddresses {
   seed: SeedReference;
   account: number;
   blockchain: BlockchainCode;
+  index?: number;
 }
 
 export interface ILoadBalances {
@@ -101,12 +101,13 @@ export interface ISetBalance {
 }
 
 export interface IClean {
-  type: ActionTypes.CLEAN
+  type: ActionTypes.CLEAN;
 }
 
 export interface IDisplayAccount {
-  type: ActionTypes.DISPLAY_ACCOUNT,
-  account: number
+  type: ActionTypes.DISPLAY_ACCOUNT;
+  account: number;
+  indexes: HDPathIndexes;
 }
 
 export interface IInit {
@@ -122,5 +123,6 @@ export type IHDPreviewAction =
   | ISetBalance
   | IClean
   | IDisplayAccount
-  | IInit
-  ;
+  | IInit;
+
+export type HDPathIndexes = { [blockchain: string]: number | undefined };

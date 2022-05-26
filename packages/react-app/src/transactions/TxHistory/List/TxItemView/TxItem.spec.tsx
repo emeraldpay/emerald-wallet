@@ -4,7 +4,7 @@ import {render} from '@testing-library/react';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import TxItem from './TxItem';
-import {BlockchainCode, IStoredTransaction} from "@emeraldwallet/core";
+import { BlockchainCode, EthereumAddress, IStoredTransaction } from "@emeraldwallet/core";
 
 const tx: IStoredTransaction = {
   blockchain: BlockchainCode.ETH,
@@ -16,8 +16,6 @@ const tx: IStoredTransaction = {
   to: '0x2',
   value: new BigNumber(100000)
 };
-const from = {};
-const to = {};
 
 describe('TxItem', () => {
   it('should renders without crash', () => {
@@ -31,8 +29,6 @@ describe('TxItem', () => {
             currentBlockHeight={100}
             requiredConfirmations={12}
             tx={tx}
-            fromAccount={from}
-            toAccount={to}
           />
           </tbody>
         </table>
