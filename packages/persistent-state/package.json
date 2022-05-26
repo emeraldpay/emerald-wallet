@@ -10,8 +10,7 @@
     "build:ts": "yarn clean && tsc -b",
     "build:rs": "cargo-cp-artifact -nc index.node -- cargo build --manifest-path native/Cargo.toml --message-format=json-render-diagnostics",
     "build:rs:release": "yarn run build:rs -- --release",
-    "build": "yarn run build:ts",
-    "install": "yarn run build:rs:release",
+    "build": "yarn run build:ts && yarn run build:rs:release",
     "test": "jest --passWithNoTests"
   },
   "dependencines": {
