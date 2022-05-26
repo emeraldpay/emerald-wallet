@@ -1,0 +1,46 @@
+{
+  "name": "@emeraldwallet/persistent-state",
+  "version": "2.7.0-dev",
+  "description": "",
+  "main": "lib/index.js",
+  "author": "Emerald Team",
+  "license": "Apache-2.0",
+  "scripts": {
+    "clean": "rimraf  lib/ tsconfig.tsbuildinfo",
+    "build:ts": "yarn clean && tsc -b",
+    "build:rs": "cargo-cp-artifact -nc index.node -- cargo build --manifest-path native/Cargo.toml --message-format=json-render-diagnostics",
+    "build:rs:release": "yarn run build:rs -- --release",
+    "build": "yarn run build:ts && yarn run build:rs:release",
+    "test": "jest --passWithNoTests"
+  },
+  "dependencines": {
+    "@emeraldwallet/core": "^2.7.0-dev",
+    "@emeraldpay/emerald-vault-core": "^0.8.3"
+  },
+  "devDependencies": {
+    "cargo-cp-artifact": "^0.1",
+    "jest-serial-runner": "1.1.0",
+    "ts-jest": "^27.1.3"
+  },
+  "jest": {
+    "preset": "ts-jest",
+    "testEnvironment": "node",
+    "testPathIgnorePatterns": [
+      "<rootDir>/lib/",
+      "<rootDir>/node_modules/",
+      "__tests__/_commons"
+    ],
+    "setupFiles": [
+      "<rootDir>/jest.setup.ts"
+    ],
+    "coverageDirectory": "./coverage/",
+    "collectCoverageFrom": [
+      "src/**/*.ts"
+    ],
+    "globals": {
+      "ts-jest": {
+        "diagnostics": false
+      }
+    }
+  }
+}

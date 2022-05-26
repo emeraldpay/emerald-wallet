@@ -78,3 +78,5 @@ export {WalletStateStorage} from './walletstate/WalletStateStorage';
 export {toBigNumber, toNumber, toHex, quantitiesToHex, fromBaseUnits, toBaseUnits} from "./convert";
 
 export {Contract} from './Contract';
+
+export * as PersistentState from './persisistentState';

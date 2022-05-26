@@ -1,0 +1,3 @@
+export {
+  PersistentStateImpl,
+} from './api';
