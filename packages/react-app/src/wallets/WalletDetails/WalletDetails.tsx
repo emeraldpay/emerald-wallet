@@ -129,14 +129,21 @@ const WalletDetails: React.FC<DispatchProps & OwnProps & StateProps> = ({
   const entriesByBlockchain = React.useMemo(
     () =>
       Object.values(
-        wallet.entries.reduce<Record<number, WalletEntry[]>>(
-          (carry, entry) => ({
-            ...carry,
-            [entry.blockchain]: [...(carry[entry.blockchain] ?? []), entry],
-          }),
-          {},
-        ),
+        wallet.entries
+          .filter((entry) => !entry.receiveDisabled)
+          .reduce<Record<number, WalletEntry[]>>(
+            (carry, entry) => ({
+              ...carry,
+              [entry.blockchain]: [...(carry[entry.blockchain] ?? []), entry],
+            }),
+            {},
+          ),
       ),
+    [wallet.entries],
+  );
+
+  const receiveDisabledEntries = React.useMemo(
+    () => wallet.entries.filter((entry) => entry.receiveDisabled),
     [wallet.entries],
   );
 
@@ -152,6 +159,7 @@ const WalletDetails: React.FC<DispatchProps & OwnProps & StateProps> = ({
         </Grid>
         <Grid item={true} xs={7}>
           {entriesByBlockchain.map(renderEntry)}
+          {receiveDisabledEntries.map((entry) => renderEntry([entry]))}
         </Grid>
         <Grid item={true} xs={3} className={styles.actions}>
           <Button className={styles.actionButton} color="secondary" variant="contained" onClick={onSend}>

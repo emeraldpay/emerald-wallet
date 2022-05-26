@@ -99,7 +99,7 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({ accepted, 
   const availableAddresses = accepted
     .filter((item) => item.blockchain === currentBlockchain && item.token === currentToken)
     .map((item) => item.addresses)
-    .reduce((carry: string[], address: string[]) => ([ ...carry, ...address ]), [])
+    .reduce((carry: string[], address: string[]) => [...carry, ...address], [])
     .filter(distinct);
 
   const availableCoins = accepted
@@ -212,41 +212,43 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
 
     const accepted: Accept[] = [];
 
-    wallet?.entries.forEach((entry) => {
-      let address: string | undefined;
+    wallet?.entries
+      .filter((entry) => !entry.receiveDisabled)
+      .forEach((entry) => {
+        let address: string | undefined;
 
-      if (isEthereumEntry(entry)) {
-        address = entry.address?.value;
-      } else if (isBitcoinEntry(entry)) {
-        address = entry.addresses.find((a: CurrentAddress) => a.role === 'receive')?.address;
-      }
+        if (isEthereumEntry(entry)) {
+          address = entry.address?.value;
+        } else if (isBitcoinEntry(entry)) {
+          address = entry.addresses.find((a: CurrentAddress) => a.role === 'receive')?.address;
+        }
 
-      if (address == null) {
-        return;
-      }
-
-      const blockchain = blockchainIdToCode(entry.blockchain);
-
-      accepted.push({
-        blockchain,
-        addresses: [address],
-        entryId: entry.id,
-        token: Blockchains[blockchain].params.coinTicker,
-      });
-
-      Blockchains[blockchain].getAssets().forEach((token) => {
         if (address == null) {
           return;
         }
 
+        const blockchain = blockchainIdToCode(entry.blockchain);
+
         accepted.push({
           blockchain,
-          token,
           addresses: [address],
           entryId: entry.id,
+          token: Blockchains[blockchain].params.coinTicker,
+        });
+
+        Blockchains[blockchain].getAssets().forEach((token) => {
+          if (address == null) {
+            return;
+          }
+
+          accepted.push({
+            blockchain,
+            token,
+            addresses: [address],
+            entryId: entry.id,
+          });
         });
       });
-    });
 
     return {
       accepted,

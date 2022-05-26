@@ -200,7 +200,7 @@ export type CreateWalletOptions = {
 export function createWallet(
   options: CreateWalletOptions,
   entries: AddEntry[],
-  handler: (walletId?: string, err?: any) => void,
+  handler: (wallet?: Wallet, err?: any) => void,
 ): Dispatched<IWalletCreatedAction> {
   console.log('create wallet', entries);
   return async (dispatch, getState, extra) => {
@@ -215,7 +215,7 @@ export function createWallet(
       if (wallet) {
         dispatch(walletCreatedAction(wallet));
       }
-      handler(walletId);
+      handler(wallet);
     } catch (e) {
       handler(undefined, e);
     }
@@ -466,4 +466,8 @@ export function listSeedAddresses(
   hdPaths: string[],
 ): Dispatched<{ [hdPath: string]: string }> {
   return (dispatch, getState, extra) => extra.api.vault.listSeedAddresses(seed, blockchain, hdPaths);
+}
+
+export function disableReceiveForEntry(entryId: EntryId, disabled = true): Dispatched<void> {
+  return (dispatch, getState, extra) => extra.api.vault.setEntryReceiveDisabled(entryId, disabled);
 }

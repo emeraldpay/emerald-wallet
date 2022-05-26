@@ -1,10 +1,10 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { workflow } from '@emeraldwallet/core';
+import { GasPrices } from '@emeraldwallet/store';
 import { Button, ButtonGroup } from '@emeraldwallet/ui';
 import { Box, createStyles, FormControlLabel, FormHelperText, Slider, Switch, withStyles } from '@material-ui/core';
 import * as React from 'react';
-import { GasPrices } from '../CreateTransaction/CreateTransaction';
 import AmountField from './AmountField';
 import FormFieldWrapper from './FormFieldWrapper';
 import FormLabel from './FormLabel';
