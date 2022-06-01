@@ -6,6 +6,7 @@ import {
   emeraldCredentials,
   MarketClient,
   MonitoringClient,
+  TransactionClient,
 } from '@emeraldpay/api-node';
 import { IEmeraldClient, Logger } from '@emeraldwallet/core';
 import * as os from 'os';
@@ -30,11 +31,12 @@ interface AppParams {
 }
 
 interface ConnectionState {
+  connectedAt: Date;
   authenticated: boolean;
   blockchainConnected: boolean;
-  pricesConnected: boolean;
   diagConnected: boolean;
-  connectedAt: Date;
+  pricesConnected: boolean;
+  transactionConnected: boolean;
 }
 
 const PERIOD_OK = 20000;
@@ -44,10 +46,11 @@ const PERIOD_PING = PERIOD_OK - 1500;
 const log = Logger.forCategory('ApiAccess');
 
 export class EmeraldApiAccess implements IEmeraldClient {
+  public readonly address: string;
   public readonly blockchainClient: BlockchainClient;
   public readonly pricesClient: MarketClient;
+  public readonly transactionClient: TransactionClient;
 
-  private readonly address: string;
   private readonly credentials: CredentialsContext;
   private readonly connectionState: ConnectionState;
 
@@ -67,17 +70,20 @@ export class EmeraldApiAccess implements IEmeraldClient {
     ];
 
     this.connectionState = {
+      connectedAt: new Date(),
       authenticated: false,
       blockchainConnected: false,
-      pricesConnected: false,
       diagConnected: false,
-      connectedAt: new Date(),
+      pricesConnected: false,
+      transactionConnected: false,
     };
 
     this.credentials = emeraldCredentials(addr, agent, id);
+
     this.blockchainClient = new BlockchainClient(addr, this.credentials.getChannelCredentials());
     this.monitoringClient = new MonitoringClient(addr, this.credentials.getChannelCredentials());
     this.pricesClient = new MarketClient(addr, this.credentials.getChannelCredentials());
+    this.transactionClient = new TransactionClient(addr, this.credentials.getChannelCredentials());
 
     this.credentials.setListener((status: AuthenticationStatus) => {
       this.connectionState.authenticated = status === AuthenticationStatus.AUTHENTICATED;
@@ -96,6 +102,11 @@ export class EmeraldApiAccess implements IEmeraldClient {
 
     this.monitoringClient.setConnectionListener((status) => {
       this.connectionState.diagConnected = status === ConnectionStatus.CONNECTED;
+      this.verifyConnection();
+    });
+
+    this.transactionClient.setConnectionListener((status) => {
+      this.connectionState.transactionConnected = status === ConnectionStatus.CONNECTED;
       this.verifyConnection();
     });
 

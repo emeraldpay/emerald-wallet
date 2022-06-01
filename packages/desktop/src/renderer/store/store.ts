@@ -104,7 +104,6 @@ function startSync(): void {
     .then(() => store.dispatch(accounts.actions.loadWalletsAction()))
     .then(() => {
       const supported = settings.selectors.currentChains(store.getState());
-      const codes = supported.map((chain) => chain.params.code);
 
       const loadAllChain = [];
 
@@ -121,7 +120,7 @@ function startSync(): void {
       });
 
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      store.dispatch(txhistory.actions.init(codes) as any);
+      store.dispatch(txhistory.actions.init() as any);
 
       return Promise.all(loadAllChain).catch((exception) => logger.error('Failed to load chains', exception));
     })

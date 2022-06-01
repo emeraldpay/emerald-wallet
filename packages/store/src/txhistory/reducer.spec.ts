@@ -1,5 +1,4 @@
 import {BlockchainCode, EthereumStoredTransaction, IStoredTransaction, toBigNumber} from '@emeraldwallet/core';
-import {loadTransactions, storeTransactions} from '@emeraldwallet/history-store';
 import BigNumber from 'bignumber.js';
 import {List} from 'immutable';
 import {INITIAL_STATE, reducer as historyReducers} from './reducer';
@@ -8,37 +7,7 @@ import {WalletEntry} from "@emeraldpay/emerald-vault-core/lib/types";
 
 describe('historyReducer', () => {
   it('should store and load txs correctly', () => {
-    // prepare
-    let state = INITIAL_STATE;
-    expect(state.get('trackedTransactions')).toEqual(List());
-    state = historyReducers(state, {
-      type: ActionTypes.TRACK_TX,
-      tx: {
-        hash: 'hash1',
-        value: toBigNumber('0x1'),
-        gas: '0x47e7c4',
-        gasPrice: '0x174876e800',
-        nonce: '0x4',
-        from: '0x0',
-        to: '0x1',
-        blockchain: BlockchainCode.Kovan,
-        chainId: 62
-      }
-    });
-    expect(state.get('trackedTransactions').size).toBe(1);
-
-    storeTransactions('k', state.get('trackedTransactions').toJS());
-    const loaded = loadTransactions('k', 62);
-
-    // load restored txs to state
-    state = historyReducers(state, {
-      type: ActionTypes.LOAD_STORED_TXS,
-      transactions: loaded
-    });
-
-    expect(state.get('trackedTransactions').size).toBe(1);
-    const tx = state.get('trackedTransactions').first().toJS();
-    expect(tx.value).toBe("1");
+    // TODO TxStore
   });
 
   it('should update from balancer', () => {

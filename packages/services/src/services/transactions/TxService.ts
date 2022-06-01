@@ -1,50 +1,58 @@
-import {txhistory} from '@emeraldwallet/store';
-import {IService} from '../Services';
-import {TxListener} from './TxListener';
-import {WebContents} from 'electron';
-import {BlockchainCode, Logger} from "@emeraldwallet/core";
-import {EmeraldApiAccess} from "../..";
+import { BlockchainCode, IStoredTransaction, Logger } from '@emeraldwallet/core';
+import { txhistory } from '@emeraldwallet/store';
+import { IpcMain, WebContents } from 'electron';
+import { EmeraldApiAccess } from '../..';
+import { IService } from '../Services';
+import { TxListener } from './TxListener';
 
 const log = Logger.forCategory('TxService');
 
 export class TxService implements IService {
   public id: string;
-  private apiAccess: EmeraldApiAccess;
-  private webContents?: WebContents;
-  private ipcMain: any;
-  private subscriber: TxListener[] = [];
 
-  constructor(ipcMain: any, webContents: WebContents, apiAccess: EmeraldApiAccess) {
-    this.webContents = webContents;
+  private apiAccess: EmeraldApiAccess;
+  private ipcMain: IpcMain;
+  private subscriber: TxListener[] = [];
+  private webContents?: WebContents;
+
+  constructor(ipcMain: IpcMain, webContents: WebContents, apiAccess: EmeraldApiAccess) {
+    this.id = 'TransactionListener';
+
     this.apiAccess = apiAccess;
     this.ipcMain = ipcMain;
-    this.id = `TransactionListener`;
+    this.webContents = webContents;
   }
 
-  public stop () {
-    this.subscriber.forEach((x) => x.stop());
-    this.subscriber = [];
-  }
-
-  public start () {
-    this.ipcMain.on('subscribe-tx', (_: any, blockchain: BlockchainCode, hash: string) => {
+  public start(): void {
+    this.ipcMain.on('subscribe-tx', (event, blockchain: BlockchainCode, hash: string) => {
       const subscriber = this.apiAccess.newTxListener();
+
       this.subscriber.push(subscriber);
-      subscriber.subscribe(blockchain, hash, (event: any) => {
-        const action = txhistory.actions.updateTxs([{
+
+      subscriber.subscribe(blockchain, hash, (event) => {
+        // TODO TxStore
+        const tx = {
           blockchain,
-          hash: event.txid,
           blockNumber: event.blockNumber,
-          timestamp: event.timestamp,
-          broadcasted: event.broadcasted
-        }]);
+          broadcasted: event.broadcasted,
+          hash: event.txid,
+          timestamp: event.timestamp == null ? new Date() : new Date(event.timestamp),
+        } as IStoredTransaction;
+
+        const action = txhistory.actions.updateTxs([tx]);
+
         try {
           this.webContents?.send('store', action);
         } catch (e) {
-          log.warn("Cannot send to the UI", e)
+          log.warn('Cannot send to the UI', e);
         }
       });
     });
+  }
+
+  public stop(): void {
+    this.subscriber.forEach((subscribe) => subscribe.stop());
+    this.subscriber = [];
   }
 
   setWebContents(webContents: WebContents): void {
@@ -55,5 +63,4 @@ export class TxService implements IService {
     this.stop();
     this.start();
   }
-
 }

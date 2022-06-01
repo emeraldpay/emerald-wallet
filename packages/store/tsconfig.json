@@ -35,9 +35,6 @@
     },
     {
       "path": "../erc20"
-    },
-    {
-      "path": "../history-store"
     }
   ]
 }

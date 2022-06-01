@@ -1,9 +1,4 @@
-export interface ApiMode {
-  id: string;
-  chains: string[];
-  assets: string[];
-  currencies: string[];
-}
+import { ApiMode } from '@emeraldwallet/electron-app';
 
 export const DevelopmentMode: ApiMode = {
   id: 'development',
