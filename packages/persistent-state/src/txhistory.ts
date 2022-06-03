@@ -1,6 +1,5 @@
-import {createDateReviver, PersistentStateImpl, neonToPromise} from "./api";
-import {PersistentState} from "@emeraldwallet/core";
-
+import { PersistentState } from '@emeraldwallet/core';
+import { createDateReviver, neonToPromise, PersistentStateImpl, postProcessAmountField } from './api';
 
 /**
  * Manage Transaction History
@@ -12,29 +11,22 @@ export class TxHistoryImpl implements PersistentState.TxHistory {
     this.manager = manager;
   }
 
-
   submit(tx: PersistentState.Transaction): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        this.manager.addon.txhistory_submit(
-          JSON.stringify(tx),
-          neonToPromise(resolve, reject)
-        );
+        this.manager.addon.txhistory_submit(JSON.stringify(tx), neonToPromise(resolve, reject));
       } catch (e) {
-        reject(e)
+        reject(e);
       }
     });
   }
 
-  remove(blockchain: number, txid: String): Promise<void> {
+  remove(blockchain: number, txid: string): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        this.manager.addon.txhistory_remove(
-          blockchain, txid,
-          neonToPromise(resolve, reject)
-        );
+        this.manager.addon.txhistory_remove(blockchain, txid, neonToPromise(resolve, reject));
       } catch (e) {
-        reject(e)
+        reject(e);
       }
     });
   }
@@ -44,38 +36,36 @@ export class TxHistoryImpl implements PersistentState.TxHistory {
       try {
         this.manager.addon.txhistory_query(
           JSON.stringify(filter),
-          neonToPromise(resolve, reject, createDateReviver(["sinceTimestamp", "confirmTimestamp"]))
+          neonToPromise(
+            resolve,
+            reject,
+            createDateReviver(['sinceTimestamp', 'confirmTimestamp']),
+            postProcessAmountField,
+          ),
         );
       } catch (e) {
-        reject(e)
+        reject(e);
       }
     });
   }
 
-  get_cursor(target: string): Promise<string | null> {
+  getCursor(target: string): Promise<string | null> {
     return new Promise((resolve, reject) => {
       try {
-        this.manager.addon.txhistory_get_cursor(
-          target,
-          neonToPromise(resolve, reject)
-        );
+        this.manager.addon.txhistory_get_cursor(target, neonToPromise(resolve, reject));
       } catch (e) {
-        reject(e)
+        reject(e);
       }
     });
   }
 
-  set_cursor(target: string, cursor: string): Promise<void> {
+  setCursor(target: string, cursor: string): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        this.manager.addon.txhistory_set_cursor(
-          target, cursor,
-          neonToPromise(resolve, reject)
-        );
+        this.manager.addon.txhistory_set_cursor(target, cursor, neonToPromise(resolve, reject));
       } catch (e) {
-        reject(e)
+        reject(e);
       }
     });
   }
-
 }

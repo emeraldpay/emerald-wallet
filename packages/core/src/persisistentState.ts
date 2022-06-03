@@ -1,5 +1,6 @@
-import {EntryId, Uuid} from "@emeraldpay/emerald-vault-core";
-import {AnyCoinCode} from "./Asset";
+import { BigAmount } from '@emeraldpay/bigamount';
+import { EntryId, Uuid } from '@emeraldpay/emerald-vault-core';
+import { AnyCoinCode } from './Asset';
 
 /**
  * =====================================================================================================================
@@ -63,17 +64,24 @@ export enum ChangeType {
   FEE = 2,
 }
 
+export enum Direction {
+  EARN = 0,
+  SPEND = 1
+}
+
 export interface Change {
   wallet?: EntryId;
   address?: string;
   hdPath?: string;
   asset: AnyCoinCode;
+  type: ChangeType;
+  direction: Direction;
   /**
    * Amount in the specified asset, represented in the smallest unit (i.e., a SAT, WEI, etc).
    * Note that the amount may be negative value, when transferred _from_ the wallet.
    */
   amount: string;
-  type: ChangeType;
+  readonly amountValue?: BigAmount;
 }
 
 /**
@@ -114,19 +122,18 @@ export interface TxHistoryFilter {
   /**
    * Require the specified wallet or its entry
    */
-  wallet?: Uuid | EntryId,
+  wallet?: Uuid | EntryId;
   /**
    * require a transaction known or confirmed after the specified moment
    */
-  after?: Date,
+  after?: Date;
   /**
    * require a transaction known or confirmed before the specified moment
    */
-  before?: Date,
+  before?: Date;
 }
 
 export interface TxHistory {
-
   /**
    * Add or update existing transaction in the storage
    * @param tx
@@ -150,7 +157,7 @@ export interface TxHistory {
    * Get current API Cursor for the specified address
    * @param target individual address or xpub
    */
-  get_cursor(target: string): Promise<string | null>;
+  getCursor(target: string): Promise<string | null>;
 
   /**
    * Set current cursor received from remote API
@@ -158,7 +165,7 @@ export interface TxHistory {
    * @param target individual address or xpub
    * @param cursor cursor value
    */
-  set_cursor(target: string, cursor: string): Promise<void>;
+  setCursor(target: string, cursor: string): Promise<void>;
 }
 
 /**
@@ -167,7 +174,7 @@ export interface TxHistory {
 export interface AddressbookItem {
   id?: string | undefined;
   address: {
-    type: "plain" | "xpub";
+    type: 'plain' | 'xpub';
     address: string;
   };
   blockchain: number;
@@ -188,13 +195,11 @@ export interface AddressbookFilter {
 }
 
 export interface Addressbook {
-
   /**
    * Add or update existing transaction in the storage
    * @param item
    */
   add(item: AddressbookItem): Promise<string>;
-
 
   /**
    * Remove an item from the address book
@@ -223,11 +228,10 @@ export interface XPubPosition {
    * @param xpub
    * @param pos
    */
-  set_at_least(xpub: string, pos: number): Promise<void>;
+  setAtLeast(xpub: string, pos: number): Promise<void>;
 }
 
 export interface PersistentState {
-
   /**
    * Manage Transaction History
    */
@@ -243,4 +247,3 @@ export interface PersistentState {
    */
   xpubpos: XPubPosition;
 }
-

@@ -54,7 +54,7 @@ export class TxHistoryService implements IService {
             return carry;
           }, [])
           .forEach(({ entryId, blockchain, identifier }) =>
-            this.persistentState.txhistory.get_cursor(identifier).then((cursor) =>
+            this.persistentState.txhistory.getCursor(identifier).then((cursor) =>
               this.apiAccess.transactionClient
                 .getAddressTx({
                   blockchain,
@@ -87,6 +87,7 @@ export class TxHistoryService implements IService {
                             amount: transfer.amount.toString(),
                             // TODO Switch to data from response when available
                             asset: blockchainIdToCode(blockchain).toUpperCase() as AnyCoinCode,
+                            direction: transfer.direction,
                             type: ChangeType.TRANSFER,
                             wallet: entryId,
                           };
@@ -105,7 +106,7 @@ export class TxHistoryService implements IService {
                       })
                       .then(() => {
                         if (tx.cursor != null) {
-                          this.persistentState.txhistory.set_cursor(identifier, tx.cursor);
+                          this.persistentState.txhistory.setCursor(identifier, tx.cursor);
                         }
                       });
                   }),
