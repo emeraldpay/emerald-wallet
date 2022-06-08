@@ -1,7 +1,7 @@
 {
   "name": "@emeraldwallet/desktop",
   "productName": "EmeraldWallet",
-  "version": "2.7.0-dev",
+  "version": "2.7.0",
   "description": "Emerald - Cryptocurrency Wallet",
   "keywords": [
     "blockchain",
@@ -43,13 +43,13 @@
     "build:watch:success": "(NODE_ENV=development webpack && notify -t \"Emerald Wallet\" -m \"Build successfully\" -i \"resources/icon.png\") || yarn build:watch:fail",
     "clean": "rimraf app/ dist/ tsconfig.tsbuildinfo",
     "compile": "tsc -b && yarn copyfiles resources/**/* app/",
-    "start": "electron .",
+    "start": "electron --trace-warnings .",
     "start:dev": "NODE_ENV=development yarn start"
   },
   "dependencies": {
     "@electron/remote": "^2.0.8",
-    "@emeraldwallet/electron-app": "^2.7.0-dev",
-    "@emeraldwallet/ui": "^2.7.0-dev",
+    "@emeraldwallet/electron-app": "^2.7.0",
+    "@emeraldwallet/ui": "^2.7.0",
     "core-js": "^3.21.1",
     "node-fetch": "^3.2.3",
     "react": "16.13.1",
