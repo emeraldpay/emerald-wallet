@@ -46,7 +46,6 @@ export const createStore = (_api: IApi, backendApi: IBackendApi, walletState: Wa
   sagaMiddleware.run(addressBook.sagas.root, _api.vault);
   sagaMiddleware.run(tokens.sagas.root, backendApi);
   sagaMiddleware.run(hwkey.sagas.root, _api.vault);
-  sagaMiddleware.run(txhistory.sagas.root, backendApi);
   sagaMiddleware.run(wallet.sagas.root);
   sagaMiddleware.run(settings.sagas.root);
   sagaMiddleware.run(accounts.sagas.root, _api.vault, walletState);

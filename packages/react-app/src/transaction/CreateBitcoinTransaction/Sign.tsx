@@ -4,6 +4,7 @@ import * as React from 'react';
 import {Box, createStyles, Grid, Theme, Typography} from "@material-ui/core";
 import {accounts, hwkey, IState, transaction, screen} from "@emeraldwallet/store";
 import {makeStyles} from "@material-ui/core/styles";
+import { EmeraldDialogs } from '../../app/screen/Dialog';
 import TxSummary from "./TxSummary";
 import {BlockchainCode} from "@emeraldwallet/core";
 import UnlockSeed from "../../create-account/UnlockSeed";
@@ -93,7 +94,7 @@ export default connect(
       },
       signHardware: () => {
         dispatch(hwkey.actions.setWatch(true));
-        dispatch(screen.actions.showDialog('sign-transaction', null));
+        dispatch(screen.actions.showDialog(EmeraldDialogs.SIGN_TX));
 
         const connectHandler = (state: IState) => {
           if (hwkey.selectors.isBlockchainOpen(state, ownProps.blockchain)) {

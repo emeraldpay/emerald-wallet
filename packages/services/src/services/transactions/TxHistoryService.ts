@@ -1,6 +1,5 @@
 import { IEmeraldVault, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
-import { AnyCoinCode, blockchainIdToCode } from '@emeraldwallet/core';
-import { BlockRef, ChangeType, State, Status } from '@emeraldwallet/core/lib/persisistentState';
+import { AnyCoinCode, blockchainIdToCode, PersistentState } from '@emeraldwallet/core';
 import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
 import { WebContents } from 'electron';
 import { EmeraldApiAccess } from '../../emerald-client/ApiAccess';
@@ -56,61 +55,59 @@ export class TxHistoryService implements IService {
           .forEach(({ entryId, blockchain, identifier }) =>
             this.persistentState.txhistory.getCursor(identifier).then((cursor) =>
               this.apiAccess.transactionClient
-                .getAddressTx({
+                .subscribeAddressTx({
                   blockchain,
                   address: identifier,
                   cursor: cursor ?? undefined,
                 })
-                .then((transactions) =>
-                  transactions.forEach((tx) => {
-                    let block: BlockRef | null = null;
+                .onData((tx) => {
+                  let block: PersistentState.BlockRef | null = null;
 
-                    if (tx.block != null) {
-                      const { height, timestamp, hash: blockId } = tx.block;
+                  if (tx.block != null) {
+                    const { height, timestamp, hash: blockId } = tx.block;
 
-                      block = {
-                        blockId,
-                        height,
-                        timestamp,
-                      };
-                    }
+                    block = {
+                      blockId,
+                      height,
+                      timestamp,
+                    };
+                  }
 
-                    this.persistentState.txhistory
-                      .submit({
-                        block,
-                        blockchain,
-                        changes: tx.transfers.map((transfer) => {
-                          const [address] = transfer.addresses;
+                  this.persistentState.txhistory
+                    .submit({
+                      block,
+                      blockchain,
+                      changes: tx.transfers.map((transfer) => {
+                        const [address] = transfer.addresses;
 
-                          return {
-                            address,
-                            amount: transfer.amount.toString(),
-                            // TODO Switch to data from response when available
-                            asset: blockchainIdToCode(blockchain).toUpperCase() as AnyCoinCode,
-                            direction: transfer.direction,
-                            type: ChangeType.TRANSFER,
-                            wallet: entryId,
-                          };
-                        }),
-                        sinceTimestamp: tx.block?.timestamp ?? new Date(),
-                        confirmTimestamp:
-                          tx.removed === false && tx.mempool === false ? tx.block?.timestamp ?? new Date() : undefined,
-                        state:
-                          tx.removed === true
-                            ? State.REPLACED
-                            : tx.mempool === true
-                            ? State.SUBMITTED
-                            : State.CONFIRMED,
-                        status: Status.UNKNOWN,
-                        txId: tx.txId,
-                      })
-                      .then(() => {
-                        if (tx.cursor != null) {
-                          this.persistentState.txhistory.setCursor(identifier, tx.cursor);
-                        }
-                      });
-                  }),
-                ),
+                        return {
+                          address,
+                          amount: transfer.amount.toString(),
+                          // TODO Switch to data from response when available
+                          asset: blockchainIdToCode(blockchain).toUpperCase() as AnyCoinCode,
+                          direction: transfer.direction,
+                          type: PersistentState.ChangeType.TRANSFER,
+                          wallet: entryId,
+                        };
+                      }),
+                      sinceTimestamp: tx.block?.timestamp ?? new Date(),
+                      confirmTimestamp:
+                        tx.removed === false && tx.mempool === false ? tx.block?.timestamp ?? new Date() : undefined,
+                      state:
+                        tx.removed === true
+                          ? PersistentState.State.REPLACED
+                          : tx.mempool === true
+                          ? PersistentState.State.SUBMITTED
+                          : PersistentState.State.CONFIRMED,
+                      status: PersistentState.Status.UNKNOWN,
+                      txId: tx.txId,
+                    })
+                    .then(() => {
+                      if (tx.cursor != null) {
+                        this.persistentState.txhistory.setCursor(identifier, tx.cursor);
+                      }
+                    });
+                }),
             ),
           ),
       ),

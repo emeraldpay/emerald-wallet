@@ -11,12 +11,11 @@ import {
   BlockchainCode,
   blockchainCodeToId,
   Commands,
-  isBitcoin, isBitcoinStoredTransaction,
+  isBitcoin,
   isEthereum,
-  IStoredTransaction,
   Logger,
+  PersistentState,
 } from '@emeraldwallet/core';
-import { ChangeType, State, Status } from '@emeraldwallet/core/lib/persisistentState';
 import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
 import { EmeraldApiAccess } from '@emeraldwallet/services';
 import { ipcMain } from 'electron';
@@ -52,13 +51,12 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess, pe
     app.settings.setTerms(v);
   });
 
-  ipcMain.handle(Commands.PERSIST_TX_HISTORY, (event: any, blockchain: BlockchainCode, txs: IStoredTransaction[]) => {
-    // TODO TxStore
-  });
+  ipcMain.handle(Commands.LOAD_TX_HISTORY, async (event: any, entryIds: string[]) => {
+    return entryIds.reduce<Promise<PersistentState.Transaction[]>>(async (carry, entryId) => {
+      const [txs, { items }] = await Promise.all([carry, persistentState.txhistory.query({ wallet: entryId })]);
 
-  ipcMain.handle(Commands.LOAD_TX_HISTORY, (event: any, blockchain: BlockchainCode) => {
-    // TODO TxStore
-    return [];
+      return txs.concat(items);
+    }, Promise.resolve([]));
   });
 
   ipcMain.handle(

@@ -52,7 +52,6 @@
     "bignumber.js": "8.0.2",
     "color-hash": "1.0.3",
     "immer": "^5.3.2",
-    "immutable": "3.8.2",
     "lodash": "^4.17.14",
     "redux": "^4.0.4",
     "redux-logger": "3.0.6",

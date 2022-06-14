@@ -1,55 +1,73 @@
+import { Uuid } from '@emeraldpay/emerald-vault-core';
 import {
+  amountFactory,
   blockchainByName,
   BlockchainCode,
+  blockchainIdToCode,
   Blockchains,
   Commands,
-  IBackendApi,
   IStoredTransaction,
+  PersistentState,
   utils,
 } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 import { Dispatch } from 'redux';
 import * as blockchains from '../blockchains';
 import { Dispatched, GetState, IState } from '../types';
-import { allTrackedTxs } from './selectors';
-import { ActionTypes, HistoryAction, IUpdateTxsAction } from './types';
+import { ActionTypes, HistoryAction, UpdateTxsAction } from './types';
 
-export function init(): Dispatched<HistoryAction> {
-  return async (dispatch) => {
-    const transactions = await ipcRenderer.invoke(Commands.LOAD_TX_HISTORY);
+export function loadTransactions(walletId: Uuid, entryIds: string[]): Dispatched<HistoryAction> {
+  return async (dispatch, getState) => {
+    const state = getState();
+
+    if (walletId === state.history.walletId) {
+      return;
+    }
+
+    let transactions: PersistentState.Transaction[] = await ipcRenderer.invoke(Commands.LOAD_TX_HISTORY, entryIds);
+
+    transactions = transactions.map((tx) => {
+      const factory = amountFactory(blockchainIdToCode(tx.blockchain));
+
+      return {
+        ...tx,
+        changes: tx.changes.map((change) => {
+          const amountValue = factory(change.amount);
+
+          return {
+            ...change,
+            amountValue,
+            // TODO Remove when available in store
+            direction: amountValue.isPositive() ? PersistentState.Direction.EARN : PersistentState.Direction.SPEND,
+          };
+        }),
+      };
+    });
 
     dispatch({
       transactions,
+      walletId,
       type: ActionTypes.LOAD_STORED_TXS,
     });
   };
 }
 
-export async function persistTransactions(
-  state: IState,
-  backendApi: IBackendApi,
-  chainCode: BlockchainCode,
-): Promise<void> {
-  const txs = allTrackedTxs(state).filter((t: IStoredTransaction) => t.blockchain === chainCode);
-
-  await backendApi.persistTransactions(chainCode, txs);
-}
-
-function txUnconfirmed(state: IState, tx: IStoredTransaction): boolean {
-  const chainCode = tx.blockchain.toLowerCase();
+function txUnconfirmed(state: IState, tx: PersistentState.Transaction): boolean {
+  const blockchainCode = blockchainIdToCode(tx.blockchain).toLowerCase();
   const blockchain = Blockchains[tx.blockchain];
-  const currentBlock = blockchains.selectors.getHeight(state, chainCode);
-  const txBlockNumber = parseInt(tx.blockNumber?.toString() ?? '0');
 
-  if (!txBlockNumber) {
-    const since = utils.parseDate(tx.since, new Date())?.getTime() ?? 0;
+  const currentBlock = blockchains.selectors.getHeight(state, blockchainCode);
+  const blockNumber = parseInt(tx.block?.blockId.toString() ?? '0');
+
+  if (blockNumber === 0) {
+    const since = utils.parseDate(tx.sinceTimestamp, new Date())?.getTime() ?? 0;
     const tooOld = new Date().getTime() - 7 * 24 * 60 * 60 * 1000;
 
     return since > tooOld;
   }
 
   const requiredConfirms = blockchain.params.confirmations;
-  const numConfirmsForTx = txBlockNumber - currentBlock;
+  const numConfirmsForTx = blockNumber - currentBlock;
 
   return requiredConfirms < numConfirmsForTx;
 }
@@ -57,11 +75,11 @@ function txUnconfirmed(state: IState, tx: IStoredTransaction): boolean {
 export function refreshTrackedTransactions(): Dispatched<HistoryAction> {
   return (dispatch, getState) => {
     const state = getState();
+    const history = state.history.transactions.values();
 
-    allTrackedTxs(state)
-      .filter((tx) => (tx.totalRetries ?? 0) <= 10)
+    [...history]
       .filter((tx) => txUnconfirmed(state, tx))
-      .forEach((tx) => ipcRenderer.send('subscribe-tx', tx.blockchain, tx.hash));
+      .forEach((tx) => ipcRenderer.send('subscribe-tx', blockchainIdToCode(tx.blockchain), tx.txId));
   };
 }
 
@@ -70,7 +88,6 @@ async function updateAndTrack(
   getState: GetState,
   txs: IStoredTransaction[],
   blockchain: BlockchainCode,
-  backendApi: IBackendApi,
 ): Promise<void> {
   const chainId = blockchainByName(blockchain).params.chainId;
   const pendingTxs = txs.filter((tx) => !tx.blockNumber).map((t) => ({ ...t, chainId, blockchain }));
@@ -79,18 +96,14 @@ async function updateAndTrack(
     dispatch({ type: ActionTypes.TRACK_TXS, txs: pendingTxs });
   }
 
-  await persistTransactions(getState(), backendApi, blockchain);
-
-  txs.forEach((tx) => {
-    ipcRenderer.send('subscribe-tx', blockchain, tx.hash);
-  });
+  txs.forEach((tx) => ipcRenderer.send('subscribe-tx', blockchain, tx.hash));
 }
 
 export function trackTxs(txs: IStoredTransaction[], blockchain: BlockchainCode): Dispatched<void> {
-  return (dispatch, getState, extra) => updateAndTrack(dispatch, getState, txs, blockchain, extra.backendApi);
+  return (dispatch, getState) => updateAndTrack(dispatch, getState, txs, blockchain);
 }
 
-export function updateTxs(transactions: IStoredTransaction[]): IUpdateTxsAction {
+export function updateTxs(transactions: IStoredTransaction[]): UpdateTxsAction {
   return {
     type: ActionTypes.UPDATE_TXS,
     payload: transactions,

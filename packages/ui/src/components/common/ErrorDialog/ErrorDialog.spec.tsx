@@ -4,7 +4,8 @@ import ErrorDialog from './ErrorDialog';
 
 describe('ErrorDialog', () => {
   it('should be created without crash', () => {
-    const component = shallow(<ErrorDialog/>);
+    const component = shallow(<ErrorDialog handleClose={jest.fn} handleSubmit={jest.fn} />);
+
     expect(component).toBeDefined();
   });
 });

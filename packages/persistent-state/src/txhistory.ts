@@ -1,5 +1,5 @@
 import { PersistentState } from '@emeraldwallet/core';
-import { createDateReviver, neonToPromise, PersistentStateImpl, postProcessAmountField } from './api';
+import { createDateReviver, neonToPromise, PersistentStateImpl } from './api';
 
 /**
  * Manage Transaction History
@@ -36,12 +36,7 @@ export class TxHistoryImpl implements PersistentState.TxHistory {
       try {
         this.manager.addon.txhistory_query(
           JSON.stringify(filter),
-          neonToPromise(
-            resolve,
-            reject,
-            createDateReviver(['sinceTimestamp', 'confirmTimestamp']),
-            postProcessAmountField,
-          ),
+          neonToPromise(resolve, reject, createDateReviver(['sinceTimestamp', 'confirmTimestamp'])),
         );
       } catch (e) {
         reject(e);

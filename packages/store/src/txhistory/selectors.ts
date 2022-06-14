@@ -1,151 +1,78 @@
-import {IState} from '../types';
-import {WalletEntry, WalletOp, AddressRefOp} from "@emeraldpay/emerald-vault-core";
-import {Wei} from '@emeraldpay/bigamount-crypto';
-import {
-  isBitcoinStoredTransaction,
-  isEthereumStoredTransaction,
-  IStoredTransaction,
-  BitcoinStoredTransaction
-} from "@emeraldwallet/core";
-import {BitcoinEntry, EntryId, isBitcoinEntry} from "@emeraldpay/emerald-vault-core";
+import { Satoshi, Wei } from '@emeraldpay/bigamount-crypto';
+import { WalletEntry } from '@emeraldpay/emerald-vault-core';
+import { blockchainIdToCode, isBitcoin, isEthereum, PersistentState } from '@emeraldwallet/core';
+import { Direction } from '@emeraldwallet/core/lib/persisistentState';
+import { IState } from '../types';
 
-export function allTrackedTxs(state: IState): IStoredTransaction[] {
-  return state.history.get('trackedTransactions')
-    .toJS();
+export function selectByHash(state: IState, hash: string): PersistentState.Transaction | undefined {
+  return state.history.transactions.get(hash);
 }
 
-export function selectByHash(state: IState, hash: string): IStoredTransaction | undefined {
-  return allTrackedTxs(state)
-    .find((tx) => tx.hash === hash);
+export function getTransactions(state: IState, entries: WalletEntry[]): PersistentState.Transaction[] {
+  const entryIds = entries.map((entry) => entry.id);
+  const history = state.history.transactions.values();
+
+  return [...history].filter((tx) =>
+    tx.changes
+      .map((change) => change.wallet)
+      .filter<string>((wallet): wallet is string => wallet != null)
+      .reduce<boolean>((carry, wallet) => carry || entryIds.includes(wallet), false),
+  );
 }
 
-function equalAddresses(a: string | undefined, b: string | undefined): boolean {
-  return a != undefined && b != undefined && a.toLowerCase() === b.toLowerCase();
-}
-
-/**
- * Returns transactions which contain accounts from wallet
- * @param state
- * @param walletAccounts
- */
-export function getTransactions(state: IState, walletAccounts: WalletEntry[]): IStoredTransaction[] {
-
-  function addressReferencedByTx(address: string, tx: BitcoinStoredTransaction): boolean {
-    return tx.outputs.some((it) => it.address == address)
+export function filterTransactions(
+  entries: WalletEntry[],
+  transactions: PersistentState.Transaction[],
+  filter: string,
+): PersistentState.Transaction[] {
+  if (filter === 'ALL') {
+    return transactions;
   }
 
-  function entryReferencedByTx(entryId: EntryId, tx: BitcoinStoredTransaction): boolean {
-    return tx.inputs.some((it) => it.entryId == entryId) || (tx.entries || []).indexOf(entryId) >= 0;
-  }
-
-  return allTrackedTxs(state)
-    .filter((tx) => {
-      if (isEthereumStoredTransaction(tx)) {
-        return walletAccounts
-          .filter((a) => a.address)
-          .map((a) => AddressRefOp.of(a.address!))
-          .some((a) => a.isSame(tx.from) || (tx.to && a.isSame(tx.to)));
-      } else if (isBitcoinStoredTransaction(tx)) {
-        return walletAccounts
-          .filter((a) => isBitcoinEntry(a))
-          .some((entry) => {
-            return entryReferencedByTx(entry.id, tx) ||
-              (entry as BitcoinEntry).addresses.some((it) => addressReferencedByTx(it.address, tx))
-          })
-        //TODO old addresses are not available right now
-      }
-        return false;
-      }
-    );
-}
-
-export function searchTransactions(searchValue: string, transactionsToSearch: IStoredTransaction[]): IStoredTransaction[] {
-  if (transactionsToSearch.length === 0) {
-    return transactionsToSearch;
-  }
-  return transactionsToSearch.filter((tx: IStoredTransaction | undefined) => {
-    if (!tx) {
-      return false;
+  return transactions.filter((tx) => {
+    if (filter === 'OUT') {
+      return tx.changes
+        .filter((item) => item.direction === Direction.SPEND)
+        .some((item) => entries.some((entry) => entry.id === item.wallet));
     }
-    if (isEthereumStoredTransaction(tx)) {
-      const fieldsToCheck = ['to', 'from', 'hash', 'value'];
-      return fieldsToCheck.some((field) => {
-        // search for amount
-        if (field === 'value') {
-          const val = tx.value;
-          const txValue = new Wei(val);
-          if (!txValue) {
-            return false;
-          }
-          return txValue.number.toFixed().includes(searchValue)
-            || txValue.toEther().toString().includes(searchValue);
-        }
-        // search in other fields
-        // @ts-ignore
-        const fieldValue: string | undefined = tx[field];
-        return typeof fieldValue != "undefined" && fieldValue.includes(searchValue);
-      });
-    } else if (isBitcoinStoredTransaction(tx)) {
-      const foundInput = tx.inputs.some((it) =>
-        it.txid.toLowerCase().includes(searchValue) ||
-        it.amount.toString().includes(searchValue) ||
-        it.address?.toLowerCase().includes(searchValue)
-      );
-      const foundOutput = tx.outputs.some((it) =>
-        it.address.toLowerCase().includes(searchValue) ||
-        it.amount.toString().includes(searchValue)
-      )
-      return foundInput || foundOutput;
+
+    if (filter === 'IN') {
+      return tx.changes
+        .filter((item) => item.direction === Direction.EARN)
+        .some((item) => entries.some((entry) => entry.id === item.wallet));
     }
+
     return false;
   });
 }
 
-const getFieldForFilter = (txFilter: string) => {
-  if (txFilter === 'IN') {
-    return 'to';
-  }
-  if (txFilter === 'OUT') {
-    return 'from';
-  }
-  return 'unknown';
-};
+export function searchTransactions(
+  transactions: PersistentState.Transaction[],
+  search: string,
+): PersistentState.Transaction[] {
+  const searchValue = search.toLowerCase();
 
-export function filterTransactions(
-  filterValue: string, accountId: string | null, transactionsToFilter: IStoredTransaction[], accounts: WalletEntry[]
-): IStoredTransaction[] {
-  if (filterValue === 'ALL') {
-    return transactionsToFilter;
-  }
+  return transactions.filter((tx: PersistentState.Transaction) => {
+    const blockchainCode = blockchainIdToCode(tx.blockchain);
 
-  // @ts-ignore
-  const filterAddresses: string[] = accounts.map((acc) => acc.address?.value)
-    .filter((a) => typeof a !== "undefined");
+    return (
+      tx.txId.toLowerCase().includes(searchValue) ||
+      tx.changes.reduce<boolean>((carry, { address, amountValue: amount }) => {
+        let blockchainAmount: null | number = null;
 
-  return transactionsToFilter.filter((tx: IStoredTransaction | undefined) => {
-    if (typeof tx === 'undefined') {
-      return false;
-    }
+        if (isBitcoin(blockchainCode)) {
+          blockchainAmount = new Satoshi(amount ?? 0).toBitcoin();
+        } else if (isEthereum(blockchainCode)) {
+          blockchainAmount = new Wei(amount ?? 0).toEther();
+        }
 
-    if (isBitcoinStoredTransaction(tx)) {
-      console.log("filter tx", filterValue);
-      if (filterValue == "OUT") {
-        return tx.inputs.some((o) => accounts.some((a) => a.id === o.entryId))
-      }
-      if (filterValue == "IN") {
-        return tx.outputs.some((o) => accounts.some((a) => a.id === o.entryId))
-      }
-    }
-
-    if (isEthereumStoredTransaction(tx)) {
-      const fieldToFilter = getFieldForFilter(filterValue);
-      // @ts-ignore
-      const txAddress = tx[fieldToFilter].toLowerCase();
-      const found = filterAddresses.find((address) => txAddress === address.toLowerCase());
-      return typeof found !== 'undefined';
-    }
-
-    console.warn("invalid tx");
-    return false;
+        return (
+          carry ||
+          address?.toLowerCase().includes(searchValue) ||
+          amount?.number.toString().toLowerCase().includes(searchValue) ||
+          (blockchainAmount?.toString().toLowerCase().includes(searchValue) ?? false)
+        );
+      }, false)
+    );
   });
 }

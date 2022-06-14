@@ -1,5 +1,4 @@
-import { amountFactory, blockchainIdToCode, PersistentState } from '@emeraldwallet/core';
-import { Direction } from '@emeraldwallet/core/lib/persisistentState';
+import { PersistentState } from '@emeraldwallet/core';
 import { AddressbookImpl } from './addressbook';
 import { TxHistoryImpl } from './txhistory';
 import { XPubPositionImpl } from './xpubpos';
@@ -27,18 +26,12 @@ type PromiseCallback<T> = (value?: T) => void;
 type NeonCallback<T> = (status: any) => void;
 
 type JsonReviver = (key: string, value: any) => any;
-type PostProcess<T> = (data?: T) => T | undefined;
 
-function resolveStatus<T>(
-  status: Status<T>,
-  resolve: PromiseCallback<T>,
-  reject: PromiseCallback<Error>,
-  postProcess?: PostProcess<T>,
-): void {
+function resolveStatus<T>(status: Status<T>, resolve: PromiseCallback<T>, reject: PromiseCallback<Error>): void {
   if (!status.succeeded) {
     return reject(new Error(status.error?.message ?? 'State Manager Error'));
   }
-  resolve(postProcess?.(status.result) ?? status.result);
+  resolve(status.result);
 }
 
 export function createDateReviver(names: string[]): JsonReviver {
@@ -50,39 +43,12 @@ export function createDateReviver(names: string[]): JsonReviver {
   };
 }
 
-export const postProcessAmountField: PostProcess<PersistentState.PageResult<PersistentState.Transaction>> = (data) => {
-  if (data == null) {
-    return data;
-  }
-
-  return {
-    ...data,
-    items: data.items.map((item) => {
-      const factory = amountFactory(blockchainIdToCode(item.blockchain));
-
-      return {
-        ...item,
-        changes: item.changes.map((change) => {
-          const amountValue = factory(change.amount);
-
-          return {
-            ...change,
-            amountValue,
-            direction: amountValue.isPositive() ? Direction.EARN : Direction.SPEND,
-          };
-        }),
-      };
-    }),
-  };
-};
-
 export function neonToPromise<T>(
   resolve: PromiseCallback<T>,
   reject: PromiseCallback<Error>,
   reviver?: JsonReviver,
-  postProcess?: PostProcess<T>,
 ): NeonCallback<T> {
-  return (status) => resolveStatus(JSON.parse(status ?? '{"succeeded": false}', reviver), resolve, reject, postProcess);
+  return (status) => resolveStatus(JSON.parse(status ?? '{"succeeded": false}', reviver), resolve, reject);
 }
 
 export class PersistentStateImpl implements PersistentState.PersistentState {

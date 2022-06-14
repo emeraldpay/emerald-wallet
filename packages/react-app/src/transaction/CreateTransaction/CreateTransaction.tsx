@@ -34,6 +34,7 @@ import { Back, Page } from '@emeraldwallet/ui';
 import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { EmeraldDialogs } from '../../app/screen/Dialog';
 import ChainTitle from '../../common/ChainTitle';
 import CreateTx from '../CreateTx';
 import SignTx from '../SignTx';
@@ -529,7 +530,7 @@ function signEtherTx(dispatch: any, ownProps: OwnProps, { entryId, password, tra
 
   return traceValidate(blockchainCode, plainTx, dispatch, transaction.actions.estimateGas)
     .then(() => dispatch(hwkey.actions.setWatch(false)))
-    .then(() => dispatch(screen.actions.showDialog('sign-transaction', tx)))
+    .then(() => dispatch(screen.actions.showDialog(EmeraldDialogs.SIGN_TX)))
     .then(() => {
       if (password == null || tx.to == null || tx.from == null || !Wei.is(tx.amount)) {
         return;

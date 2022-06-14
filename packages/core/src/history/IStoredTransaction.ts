@@ -1,6 +1,6 @@
 import { EntryId } from '@emeraldpay/emerald-vault-core';
 import BigNumber from 'bignumber.js';
-import { BlockchainCode, isBitcoin, isEthereum } from '../blockchains';
+import { BlockchainCode } from '../blockchains';
 
 interface BaseStoredTransaction {
   /** Associated entries. May be two, if transfer is between two wallets/entries */
@@ -65,14 +65,6 @@ export interface EthereumStoredTransaction extends BaseStoredTransaction {
 
   replayProtected?: boolean;
   chainId?: number;
-}
-
-export function isBitcoinStoredTransaction(tx: IStoredTransaction): tx is BitcoinStoredTransaction {
-  return typeof tx === 'object' && isBitcoin(tx.blockchain);
-}
-
-export function isEthereumStoredTransaction(tx: IStoredTransaction): tx is EthereumStoredTransaction {
-  return typeof tx === 'object' && isEthereum(tx.blockchain);
 }
 
 export type IStoredTransaction = EthereumStoredTransaction | BitcoinStoredTransaction;

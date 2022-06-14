@@ -12,26 +12,27 @@ import { IBlockchainsState } from './blockchains/types';
 import * as conn from './conn/types';
 import { IHDPreviewState } from './hdpath-preview/types';
 import { IHWKeyState } from './hwkey/types';
-import { IScreenState } from './screen/types';
+import { ScreenState } from './screen/types';
 import { ISettingsState } from './settings/types';
 import { ITokensState } from './tokens/types';
 import { ITransactionState } from './transaction/types';
 import { Triggers } from './triggers';
+import { HistoryState } from './txhistory/types';
 
 export interface IState {
-  [application.moduleName]: any;
   [accounts.moduleName]: IAccountsState;
   [addressBook.moduleName]: IAddressBookState;
-  blockchains: IBlockchainsState;
+  [application.moduleName]: any;
   [conn.moduleName]: any;
+  addAccount?: IAddAccountState;
+  blockchains: IBlockchainsState;
+  hdpathPreview?: IHDPreviewState;
+  history: HistoryState;
   hwkey: IHWKeyState;
-  screen: IScreenState;
+  screen: ScreenState;
   settings: ISettingsState;
-  history: any;
   tokens: ITokensState;
   transaction: ITransactionState;
-  addAccount?: IAddAccountState;
-  hdpathPreview?: IHDPreviewState;
 }
 
 export type GetState = () => IState;

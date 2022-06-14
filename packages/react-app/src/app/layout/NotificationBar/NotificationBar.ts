@@ -1,17 +1,17 @@
-import { screen } from '@emeraldwallet/store';
+import { IState, screen } from '@emeraldwallet/store';
 import { NotificationBar } from '@emeraldwallet/ui';
 import { connect } from 'react-redux';
 
 export default connect(
-  (state, ownProps) => {
+  (state: IState) => {
     return screen.selectors.getNotification(state);
   },
-  (dispatch, ownProps) => ({
-    onRequestClose: () => {
+  (dispatch) => ({
+    onActionClick(action: any) {
+      dispatch(action);
+    },
+    onRequestClose() {
       dispatch(screen.actions.closeNotification());
     },
-    onActionClick: (action: any) => {
-      dispatch(action);
-    }
-  })
+  }),
 )(NotificationBar);

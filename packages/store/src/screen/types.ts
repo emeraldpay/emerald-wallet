@@ -37,7 +37,20 @@ export enum Pages {
   WALLET_INFO = 'wallet-info',
 }
 
-export type IScreenState = Map<'screen' | 'item' | 'error' | 'dialog' | 'dialogItem', string>;
+export type ScreenState = Partial<
+  Record<
+    | 'dialog'
+    | 'error'
+    | 'notificationActionText'
+    | 'notificationActionToDispatchOnActionClick'
+    | 'notificationDuration'
+    | 'notificationMessage'
+    | 'notificationType'
+    | 'screen'
+    | 'screenItem',
+    any
+  >
+>;
 
 export interface IOpenAction {
   type: ActionTypes.OPEN;
@@ -47,13 +60,12 @@ export interface IOpenAction {
 
 export interface IErrorAction {
   type: ActionTypes.ERROR;
-  error: any;
+  error: Error | null | undefined;
 }
 
 export interface IDialogAction {
   type: ActionTypes.DIALOG;
   value: any;
-  item: any;
 }
 
 export interface IShowNotificationAction {

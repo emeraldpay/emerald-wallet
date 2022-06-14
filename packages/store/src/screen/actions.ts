@@ -11,10 +11,10 @@ export function gotoScreen(screen: string | Pages, item: any = null): IOpenActio
   };
 }
 
-export function showError(msg: Error) {
+export function showError(error: Error) {
   return {
+    error,
     type: ActionTypes.ERROR,
-    error: msg,
   };
 }
 
@@ -25,11 +25,10 @@ export function closeError() {
   };
 }
 
-export function showDialog(name: string, item: any = null): IDialogAction {
+export function showDialog(name: string): IDialogAction {
   return {
     type: ActionTypes.DIALOG,
     value: name,
-    item,
   };
 }
 
@@ -37,7 +36,6 @@ export function closeDialog(): IDialogAction {
   return {
     type: ActionTypes.DIALOG,
     value: null,
-    item: null,
   };
 }
 

@@ -51,8 +51,6 @@ export {
   IStoredTransaction,
   BitcoinStoredTransaction,
   EthereumStoredTransaction,
-  isBitcoinStoredTransaction,
-  isEthereumStoredTransaction
 } from './history/IStoredTransaction';
 
 // address book core

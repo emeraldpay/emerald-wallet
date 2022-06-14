@@ -1,97 +1,82 @@
 import { shell } from 'electron';
-import { fromJS } from 'immutable';
-import { ActionTypes, ScreenAction } from './types';
+import {
+  ActionTypes,
+  IDialogAction,
+  IErrorAction,
+  IOpenAction,
+  IOpenLinkAction,
+  IShowNotificationAction,
+  ScreenAction,
+  ScreenState,
+} from './types';
 
-const INITIAL_STATE = {
-  screen: null,
-  item: null,
-  error: null,
-  dialog: null,
-  dialogItem: null
-};
+const INITIAL_STATE: ScreenState = {};
 
-const initial: any = fromJS(INITIAL_STATE);
+const history: ScreenState[] = [];
 
-const pageHistory: any[] = [];
-const pushCurrentScreenToHistory = (state: any) => {
-  pageHistory.push(
-    state
-      .set('lastScreen', state.get('screen'))
-      .set('lastItem', state.get('item'))
-      .set('lastDialog', null).set('dialogItem', null)
-  );
-};
+function onError(state: ScreenState, action: IErrorAction): ScreenState {
+  return { ...state, error: action.error };
+}
 
-function onOpen (state: any, action: ScreenAction) {
-  if (action.type === ActionTypes.OPEN) {
-    pushCurrentScreenToHistory(state);
-    return state
-      .set('screen', action.screen)
-      .set('item', action.item)
-      .set('dialog', null).set('dialogItem', null);
-  }
+function onDialog(state: ScreenState, action: IDialogAction): ScreenState {
+  return { ...state, dialog: action.value };
+}
+
+function goBack(state: ScreenState): ScreenState {
+  return history.pop() ?? state;
+}
+
+function onNotificationOpen(state: ScreenState, action: IShowNotificationAction): ScreenState {
+  return {
+    ...state,
+    notificationActionText: action.actionText,
+    notificationActionToDispatchOnActionClick: action.actionToDispatchOnActionClick,
+    notificationDuration: action.duration,
+    notificationMessage: action.message,
+    notificationType: action.notificationType,
+  };
+}
+
+function onNotificationClose(state: ScreenState): ScreenState {
+  return { ...state, notificationMessage: null, notificationDuration: null };
+}
+
+function onOpen(state: ScreenState, action: IOpenAction): ScreenState {
+  history.push(state);
+
+  return {
+    ...state,
+    dialog: null,
+    screen: action.screen,
+    screenItem: action.item,
+  };
+}
+
+function onOpenLink(state: ScreenState, action: IOpenLinkAction): ScreenState {
+  (async () => {
+    await shell.openExternal(action.linkUrl);
+  })();
+
   return state;
 }
 
-function onError (state: any, action: ScreenAction): any {
-  if (action.type === ActionTypes.ERROR) {
-    return state.set('error', action.error);
+export function reducer(state = INITIAL_STATE, action: ScreenAction): ScreenState {
+  switch (action.type) {
+    case ActionTypes.ERROR:
+      return onError(state, action);
+    case ActionTypes.DIALOG:
+      return onDialog(state, action);
+    case ActionTypes.GO_BACK:
+      return goBack(state);
+    case ActionTypes.NOTIFICATION_SHOW:
+      return onNotificationOpen(state, action);
+    case ActionTypes.NOTIFICATION_CLOSE:
+      return onNotificationClose(state);
+    case ActionTypes.OPEN:
+      return onOpen(state, action);
+    case ActionTypes.OPEN_LINK:
+      return onOpenLink(state, action);
+    default:
+      return state;
   }
-  return state;
-}
-
-function onDialog (state: any, action: ScreenAction) {
-  if (action.type === ActionTypes.DIALOG) {
-    return state
-      .set('dialog', action.value)
-      .set('dialogItem', action.item);
-  }
-  return state;
-}
-
-function onNotificationOpen (state: any, action: ScreenAction) {
-  if (action.type === ActionTypes.NOTIFICATION_SHOW) {
-    return state
-      .set('notificationMessage', action.message)
-      .set('notificationType', action.notificationType)
-      .set('notificationDuration', action.duration)
-      .set('notificationActionText', action.actionText)
-      .set('notificationActionToDispatchOnActionClick', action.actionToDispatchOnActionClick);
-  }
-  return state;
-}
-
-function onNotificationClose (state: any, action: ScreenAction) {
-  if (action.type === ActionTypes.NOTIFICATION_CLOSE) {
-    return state
-      .set('notificationMessage', null)
-      .set('notificationDuration', null);
-  }
-  return state;
-}
-
-function onOpenLink (state: any, action: ScreenAction) {
-  if (action.type === ActionTypes.OPEN_LINK) {
-    shell.openExternal(action.linkUrl);
-  }
-  return state;
-}
-
-function goBack (state: any, action: ScreenAction) {
-  if (action.type === ActionTypes.GO_BACK) {
-    return pageHistory.pop();
-  }
-  return state;
-}
-
-export function reducer (state: any, action: ScreenAction): any {
-  state = state || initial;
-  state = onOpen(state, action);
-  state = onError(state, action);
-  state = onDialog(state, action);
-  state = onNotificationOpen(state, action);
-  state = onNotificationClose(state, action);
-  state = onOpenLink(state, action);
-  state = goBack(state, action);
-  return state;
 }

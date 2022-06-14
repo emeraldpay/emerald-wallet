@@ -10,7 +10,6 @@ import {
   screen,
   settings,
   triggers,
-  txhistory,
 } from '@emeraldwallet/store';
 import { ipcRenderer } from 'electron';
 import * as ElectronLogger from 'electron-log';
@@ -118,9 +117,6 @@ function startSync(): void {
           ),
         );
       });
-
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      store.dispatch(txhistory.actions.init() as any);
 
       return Promise.all(loadAllChain).catch((exception) => logger.error('Failed to load chains', exception));
     })

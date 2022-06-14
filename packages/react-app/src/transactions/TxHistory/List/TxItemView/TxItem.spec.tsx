@@ -1,41 +1,42 @@
-import {Theme} from '@emeraldwallet/ui';
-import {ThemeProvider} from '@material-ui/styles';
-import {render} from '@testing-library/react';
-import BigNumber from 'bignumber.js';
+import { Wei } from '@emeraldpay/bigamount-crypto';
+import { BlockchainCode, blockchainCodeToId, PersistentState } from '@emeraldwallet/core';
+import { ChangeType, Direction, State, Status } from '@emeraldwallet/core/lib/persisistentState';
+import { Theme } from '@emeraldwallet/ui';
+import { ThemeProvider } from '@material-ui/styles';
+import { render } from '@testing-library/react';
 import * as React from 'react';
 import TxItem from './TxItem';
-import { BlockchainCode, EthereumAddress, IStoredTransaction } from "@emeraldwallet/core";
 
-const tx: IStoredTransaction = {
-  blockchain: BlockchainCode.ETH,
-  gas: 100,
-  gasPrice: new BigNumber(100),
-  nonce: 1,
-  blockNumber: 1,
-  from: '0x1',
-  to: '0x2',
-  value: new BigNumber(100000)
+const tx: PersistentState.Transaction = {
+  blockchain: blockchainCodeToId(BlockchainCode.ETH),
+  changes: [
+    {
+      type: ChangeType.TRANSFER,
+      amount: '-100001',
+      amountValue: new Wei('-100001'),
+      direction: Direction.SPEND,
+      wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
+      asset: 'ETH',
+    },
+  ],
+  sinceTimestamp: new Date('2021-01-05T10:11:12'),
+  state: State.PREPARED,
+  status: Status.UNKNOWN,
+  txId: '0x5ec823816f186928c4ab6baae7cc80a837665d9096e0045d4f5d14cf076eb7b5',
 };
 
 describe('TxItem', () => {
   it('should renders without crash', () => {
-    const comp = render(
+    const component = render(
       <ThemeProvider theme={Theme}>
         <table>
           <tbody>
-          <TxItem
-            openAccount={jest.fn()}
-            openTx={jest.fn()}
-            currentBlockHeight={100}
-            requiredConfirmations={12}
-            tx={tx}
-          />
+            <TxItem tx={tx} openAccount={jest.fn()} openTransaction={jest.fn()} />
           </tbody>
         </table>
-      </ThemeProvider>
+      </ThemeProvider>,
     );
-    expect(comp).toBeDefined();
-    expect(comp.getByText('100 KWei')).toBeDefined();
-  });
 
+    expect(component).toBeDefined();
+  });
 });

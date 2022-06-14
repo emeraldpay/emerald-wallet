@@ -9,7 +9,6 @@ export enum Commands {
   DELETE_ADDR_BOOK_ITEM = 'delete-addr-book-item',
 
   // Transaction history
-  PERSIST_TX_HISTORY = 'persist-tx-history',
   LOAD_TX_HISTORY = 'load-tx-history',
 
   // @deprecated

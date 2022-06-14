@@ -1,36 +1,29 @@
-import { accounts, txhistory } from '@emeraldwallet/store';
+import { WalletEntry } from '@emeraldpay/emerald-vault-core';
+import { PersistentState } from '@emeraldwallet/core';
+import { accounts, IState, txhistory } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import TxHistory from '../../transactions/TxHistory';
-import {WalletEntry} from "@emeraldpay/emerald-vault-core";
-import {IStoredTransaction} from "@emeraldwallet/core";
 
-export interface IOwnProps {
+interface OwnProps {
   walletId: string;
 }
 
-interface IProps {
-  transactions: IStoredTransaction[];
+interface StateProps {
   entries: WalletEntry[];
+  transactions: PersistentState.Transaction[];
 }
 
-function TxHistoryView (props: IProps) {
-  return (
-    <TxHistory
-      transactions={props.transactions}
-      accounts={props.entries}
-    />
-  );
-}
+const Transactions: React.FC<OwnProps & StateProps> = ({ entries, transactions }) => (
+  <TxHistory entries={entries} transactions={transactions} />
+);
 
-export default connect<IProps, {}, IOwnProps, {}>(
-  (state: any, ownProps: IOwnProps): IProps => {
-    const wallet = accounts.selectors.findWallet(state, ownProps.walletId)!;
-    const transactions = txhistory.selectors.getTransactions(state, wallet.entries);
+export default connect<StateProps, {}, OwnProps, IState>((state, ownProps) => {
+  const { entries = [] } = accounts.selectors.findWallet(state, ownProps.walletId) ?? {};
+  const transactions = txhistory.selectors.getTransactions(state, entries);
 
-    return {
-      entries: wallet.entries,
-      transactions
-    };
-  }
-)(TxHistoryView);
+  return {
+    entries,
+    transactions,
+  };
+})(Transactions);

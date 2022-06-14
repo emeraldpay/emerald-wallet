@@ -1,97 +1,84 @@
-import BigNumber from 'bignumber.js';
-import {filterTransactions, searchTransactions} from './selectors';
-import {BlockchainCode, IStoredTransaction} from "@emeraldwallet/core";
-import {WalletEntry} from '@emeraldpay/emerald-vault-core';
+import { Wei } from '@emeraldpay/bigamount-crypto';
+import { WalletEntry } from '@emeraldpay/emerald-vault-core';
+import { BlockchainCode, blockchainCodeToId, PersistentState } from '@emeraldwallet/core';
+import { ChangeType, Direction, State, Status } from '@emeraldwallet/core/lib/persisistentState';
+import { filterTransactions, searchTransactions } from './selectors';
 
-const fixture: IStoredTransaction[] = [
+const blockchain = blockchainCodeToId(BlockchainCode.ETH);
+
+const entries: WalletEntry[] = [
   {
-    to: '0x123',
-    from: '0x999',
-    hash: '0x000',
-    value: new BigNumber(4444),
-    nonce: 1,
-    gas: 1000,
-    gasPrice: "100",
-    blockchain: BlockchainCode.ETH
+    blockchain,
+    address: {
+      type: 'single',
+      value: '0x999',
+    },
+    addresses: [],
+    createdAt: new Date(),
+    id: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
+    key: {
+      type: 'hd-path',
+      hdPath: '',
+      keyId: '',
+      seedId: '',
+    },
+    xpub: [],
   },
+];
+
+const transactions: PersistentState.Transaction[] = [
   {
-    to: '0x456',
-    from: '0x01',
-    hash: '0x02',
-    value: new BigNumber(3333),
-    nonce: 1,
-    gas: 1000,
-    gasPrice: "100",
-    blockchain: BlockchainCode.ETH
-  }
+    blockchain,
+    changes: [
+      {
+        address: '0x999',
+        type: ChangeType.TRANSFER,
+        amount: '-100001',
+        amountValue: new Wei('-100001'),
+        direction: Direction.SPEND,
+        wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
+        asset: 'ETH',
+      },
+    ],
+    sinceTimestamp: new Date('2021-01-05T10:11:12'),
+    state: State.PREPARED,
+    status: Status.UNKNOWN,
+    txId: '0x5ec823816f186928c4ab6baae7cc80a837665d9096e0045d4f5d14cf076eb7b5',
+  },
 ];
 
 describe('history selectors', () => {
   describe('searchTransactions', () => {
-    it('handles txs with to == null or hash == null correctly', () => {
-      const transactions: IStoredTransaction[] = [
-        {
-          to: '0x999',
-          from: '0x999',
-          hash: '0x999',
-          value: new BigNumber(4444),
-          nonce: 1,
-          gas: 1000,
-          gasPrice: "100",
-          blockchain: BlockchainCode.ETH
-        }];
-      const searchResults = searchTransactions('999', transactions);
-      expect(searchResults.length).toEqual(1);
-    });
-    it('returns empty array if no transactions', () => {
-      const searchResults = searchTransactions('foo', []);
-      expect(searchResults.length).toEqual(0);
-    });
-    it('matches "to" field', () => {
-      const searchResults = searchTransactions('123', fixture);
-      expect(searchResults.length).toEqual(1);
-    });
-    it('matches "from" field', () => {
-      const searchResults = searchTransactions('999', fixture);
-      expect(searchResults.length).toEqual(1);
-    });
-    it('matches "hash" field', () => {
-      const searchResults = searchTransactions('0x02', fixture);
-      expect(searchResults.length).toEqual(1);
-    });
-    it('does not find "hash" field that doesnt exist', () => {
-      const searchResults = searchTransactions('0x09er', fixture);
-      expect(searchResults.length).toEqual(0);
-    });
-  });
-  describe('filterTransactions', () => {
-    it('returns empty array if no transactions', () => {
-      const filterResults = filterTransactions('ALL', null, [], []);
-      expect(filterResults.length).toEqual(0);
-    });
-    it('matches ALL to everything', () => {
-      const filterResults = filterTransactions('ALL', null, fixture, []);
-      expect(filterResults.length).toEqual(2);
-    });
-    it('matches IN to "to" field', () => {
-      const accounts: WalletEntry[] = [
-        {
-          address: {type: "single", value: '0x456'}
-        } as WalletEntry
-      ];
+    describe('filterTransactions', () => {
+      it('returns empty array if no transactions', () => {
+        const filterResults = filterTransactions([], [], 'ALL');
 
-      const filterResults = filterTransactions('IN', null, fixture, accounts);
-      expect(filterResults.length).toEqual(1);
-      expect(filterResults[0].hash).toEqual('0x02');
+        expect(filterResults.length).toEqual(0);
+      });
+
+      it('matches ALL to everything', () => {
+        const filterResults = filterTransactions(entries, transactions, 'ALL');
+
+        expect(filterResults.length).toEqual(1);
+      });
     });
-    it('matches OUT to "from" field', () => {
-      const accounts = [
-        {
-          address: {type: "single", value: '0x01'}
-        } as WalletEntry
-      ];
-      const filterResults = filterTransactions('OUT', null, fixture, accounts);
-      expect(filterResults.length).toEqual(1);
+
+    it('returns empty array if no transactions', () => {
+      const searchResults = searchTransactions(transactions, 'foo');
+
+      expect(searchResults.length).toEqual(0);
+    });
+
+    it('matches "hash" field', () => {
+      const searchResults = searchTransactions(transactions, '0x5e');
+
+      expect(searchResults.length).toEqual(1);
+    });
+
+    it('does not find "hash" field that doesnt exist', () => {
+      const searchResults = searchTransactions(transactions, '0x09');
+
+      expect(searchResults.length).toEqual(0);
     });
   });
 });

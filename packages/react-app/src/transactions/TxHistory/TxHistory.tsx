@@ -1,82 +1,67 @@
-import {IState, txhistory} from '@emeraldwallet/store';
-import {makeStyles, withStyles} from '@material-ui/core/styles';
+import { WalletEntry } from '@emeraldpay/emerald-vault-core';
+import { PersistentState } from '@emeraldwallet/core';
+import { txhistory } from '@emeraldwallet/store';
+import { createStyles, Theme } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
-import {connect} from 'react-redux';
-import List from './List';
+import { connect } from 'react-redux';
 import Header from './Header';
-import {IStoredTransaction} from "@emeraldwallet/core";
-import {WalletEntry} from "@emeraldpay/emerald-vault-core";
-import {Box, createStyles, Theme} from "@material-ui/core";
+import List from './List';
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
     container: {
       padding: '30px 30px 20px',
       backgroundColor: 'white',
-      border: `1px solid ${theme.palette.divider}`
-    }
-  })
+      border: `1px solid ${theme.palette.divider}`,
+    },
+  }),
 );
 
-/**
- *
- */
-const Component = (({useTransactions, accounts}: Props & Actions & OwnProps) => {
+interface OwnProps {
+  entries: WalletEntry[];
+  transactions: PersistentState.Transaction[];
+}
+
+interface StateProps {
+  txs: PersistentState.Transaction[];
+}
+
+const TxHistory: React.FC<OwnProps & StateProps> = ({ entries, txs }) => {
   const styles = useStyles();
 
-  const [txFilter, setTxFilter] = React.useState('ALL');
-  const [displayedTransactions, setDisplayedTransactions] = React.useState(
-    ([] as IStoredTransaction[]).concat(useTransactions)
+  const [filter, setFilter] = React.useState('ALL');
+  const [transactions, setTransactions] = React.useState(txs);
+
+  const onTxFilterChange = React.useCallback(
+    (event: any, value: string) => {
+      setFilter(value);
+      setTransactions(txhistory.selectors.filterTransactions(entries, txs, value));
+    },
+    [entries, txs],
   );
 
-  const onTxFilterChange = (event: any, value: any) => {
-    const txes = txhistory.selectors.filterTransactions(value, null, useTransactions, accounts);
-    setTxFilter(value);
-    setDisplayedTransactions(txes);
-  }
+  const onSearchChange = React.useCallback(
+    (event: any) => setTransactions(txhistory.selectors.searchTransactions(txs, event.target.value)),
+    [txs],
+  );
 
-  const onSearchChange = (e: any) => {
-    const txes = txhistory.selectors.searchTransactions(e.target.value, useTransactions);
-    setDisplayedTransactions(txes);
-  }
+  React.useEffect(() => {
+    setTransactions(txs);
+  }, [txs]);
 
   return (
     <div className={styles.container}>
-      <Header
-        onTxFilterChange={onTxFilterChange}
-        txFilterValue={txFilter}
-        onSearchChange={onSearchChange}
-      />
-      <List
-        transactions={displayedTransactions}
-      />
+      <Header onTxFilterChange={onTxFilterChange} txFilterValue={filter} onSearchChange={onSearchChange} />
+      <List transactions={transactions} />
     </div>
   );
-})
+};
 
-// State Properties
-interface Props {
-  useTransactions: IStoredTransaction[],
-}
+export default connect<StateProps, {}, OwnProps>((state, ownProps) => {
+  const sorted = ownProps.transactions.sort(
+    (first, second) => (first.block?.timestamp.getTime() ?? 0) - (second.block?.timestamp.getTime() ?? 0),
+  );
 
-// Actions
-interface Actions {
-}
-
-// Component properties
-interface OwnProps {
-  transactions: IStoredTransaction[],
-  accounts: WalletEntry[]
-}
-
-export default connect(
-  (state: IState, ownProps: OwnProps) => {
-    const sorted = ownProps.transactions.sort((a, b) =>
-      (a.timestamp?.getTime() || 0) - (b.timestamp?.getTime() || 0)
-    );
-    return {
-      useTransactions: sorted.reverse()
-    };
-  },
-  (dispatch, ownProps) => ({})
-)((Component));
+  return { txs: sorted.reverse() };
+})(TxHistory);

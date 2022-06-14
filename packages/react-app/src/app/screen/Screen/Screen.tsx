@@ -1,5 +1,5 @@
 import { Logger } from '@emeraldwallet/core';
-import { screen } from '@emeraldwallet/store';
+import { IState, screen } from '@emeraldwallet/store';
 import { CircularProgress } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -32,13 +32,17 @@ import SetupVault from '../../vault/SetupVault';
 
 const log = Logger.forCategory('screen');
 
-export interface Props {
+interface OwnProps {
   termsVersion: string;
-  screen: any;
-  screenItem: any;
 }
 
-const Screen: React.FC<Props> = (props) => {
+interface StateProps {
+  screen?: string;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  screenItem?: any;
+}
+
+const Screen: React.FC<OwnProps & StateProps> = (props) => {
   log.info('Show screen: ', props.screen);
 
   switch (props.screen) {
@@ -97,9 +101,9 @@ const Screen: React.FC<Props> = (props) => {
       return <WalletDetails walletId={props.screenItem} />;
     case screen.Pages.WALLET_INFO:
       return <WalletInfo walletId={props.screenItem} />;
+    default:
+      return <div>Unknown screen: {props.screen}</div>;
   }
-
-  return <div>Unknown screen: {props.screen}</div>;
 };
 
-export default connect((state) => screen.selectors.getCurrentScreen(state))(Screen);
+export default connect<StateProps, {}, {}, IState>((state) => screen.selectors.getCurrentScreen(state))(Screen);

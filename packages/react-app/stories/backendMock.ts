@@ -241,6 +241,14 @@ export class VaultMock implements IEmeraldVault {
   verifyGlobalKey(password: string): Promise<boolean> {
     return Promise.resolve(password === 'password');
   }
+
+  snapshotCreate(): Promise<boolean> {
+    return Promise.resolve(true);
+  }
+
+  snapshotRestore(sourceFile: string, password: string): Promise<boolean> {
+    return Promise.resolve(password === 'password');
+  }
 }
 
 export class ApiMock implements IApi {
@@ -294,10 +302,6 @@ export class BackendMock implements IBackendApi {
 
   getGasPrice(): Promise<number> {
     return Promise.resolve(0);
-  }
-
-  persistTransactions(): Promise<void> {
-    return Promise.resolve(undefined);
   }
 
   getNonce(): Promise<number> {
