@@ -1,6 +1,6 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core/lib/types';
-import { PersistentState } from '@emeraldwallet/core';
-import { IState, screen, txhistory } from '@emeraldwallet/store';
+import { blockchainById, blockchainIdToCode, isEthereum, PersistentState } from '@emeraldwallet/core';
+import { IState, screen, transaction, txhistory } from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, FormRow, Page } from '@emeraldwallet/ui';
 import { createStyles, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
@@ -22,11 +22,13 @@ interface OwnProps {
 }
 
 interface StateProps {
-  tx: PersistentState.Transaction;
+  transaction: PersistentState.Transaction;
 }
 
 interface DispatchProps {
   goBack(walletId?: Uuid): void;
+  goCancelTx(tx: PersistentState.Transaction): void;
+  goSpeedUpTx(tx: PersistentState.Transaction): void;
   goToDashboard(): void;
   goToReceipt(): void;
 }
@@ -37,17 +39,31 @@ interface StylesProps {
 
 const Component: React.FC<OwnProps & StateProps & DispatchProps & StylesProps> = ({
   classes,
-  tx,
+  transaction,
   goBack,
   goToDashboard,
+  goCancelTx,
   goToReceipt,
 }) => {
+  const blockchain = React.useMemo(() => blockchainById(transaction.blockchain), [transaction.blockchain]);
+
   return (
     <Page title="Transaction Details" leftIcon={<Back onClick={() => goBack()} />}>
       <FormRow
         leftColumn={<div className={classes.fieldName}>Hash</div>}
-        rightColumn={<Typography>{tx.txId}</Typography>}
+        rightColumn={<Typography>{transaction.txId}</Typography>}
       />
+      {blockchain != null && isEthereum(blockchain.params.code) && (
+        <FormRow
+          leftColumn={<div className={classes.fieldName}>Modify</div>}
+          rightColumn={
+            <ButtonGroup>
+              <Button label="SPEED UP" />
+              <Button onClick={() => goCancelTx(transaction)} label="CANCEL TRANSACTION" />
+            </ButtonGroup>
+          }
+        />
+      )}
       <FormRow
         rightColumn={
           <ButtonGroup>
@@ -62,21 +78,31 @@ const Component: React.FC<OwnProps & StateProps & DispatchProps & StylesProps> =
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state, ownProps) => {
-    const tx = txhistory.selectors.selectByHash(state, ownProps.hash);
+    const transaction = txhistory.selectors.selectByHash(state, ownProps.hash);
 
-    if (tx == null) {
+    if (transaction == null) {
       throw new Error('Unknown tx: ' + ownProps.hash);
     }
 
-    return { tx };
+    return { transaction };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any, ownProps) => ({
-    goBack(walletId) {
-      if (walletId) {
-        dispatch(gotoScreen(screen.Pages.WALLET, walletId));
-      } else {
-        dispatch(gotoScreen(screen.Pages.HOME));
+    goBack() {
+      dispatch(screen.actions.goBack());
+    },
+    async goCancelTx(tx) {
+      const ethTx = await dispatch(transaction.actions.getEthTx(blockchainIdToCode(tx.blockchain), tx.txId));
+
+      if (ethTx != null) {
+        dispatch(gotoScreen(screen.Pages.CREATE_TX_CANCEL, ethTx));
+      }
+    },
+    async goSpeedUpTx(tx) {
+      const ethTx = await dispatch(transaction.actions.getEthTx(blockchainIdToCode(tx.blockchain), tx.txId));
+
+      if (ethTx != null) {
+        dispatch(gotoScreen(screen.Pages.CREATE_TX_SPEED_UP, ethTx));
       }
     },
     goToDashboard() {

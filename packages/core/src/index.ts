@@ -64,6 +64,8 @@ export { default as Logger } from './logging/Logger';
 export {default as ILogger} from './logging/ILogger';
 export {default as DefaultLogger} from './logging/DefaultLogger';
 
+export { EthereumRawTransaction, EthereumTransaction } from './transaction/ethereum';
+
 // backend
 export {default as IBackendApi} from './backend/IBackendApi';
 export {Commands} from './backend/Commands';

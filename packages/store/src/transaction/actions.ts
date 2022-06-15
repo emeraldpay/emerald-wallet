@@ -10,11 +10,13 @@ import {
   Blockchains,
   EthereumAddress,
   EthereumStoredTransaction,
+  EthereumTransaction,
   EthereumTx,
   isBitcoin,
   isEthereum,
   Logger,
   quantitiesToHex,
+  toBigNumber,
 } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
 import { Dispatch } from 'redux';
@@ -273,9 +275,7 @@ function sortBigNumber(first: BigNumber, second: BigNumber): number {
 
 export function getFee(blockchain: BlockchainCode): Dispatched<Record<typeof FEE_KEYS[number], GasPrices>> {
   return async (dispatch: any) => {
-    let results = await Promise.allSettled(
-      FEE_KEYS.map((key) => dispatch(estimateFee(blockchain, 128, key))),
-    );
+    let results = await Promise.allSettled(FEE_KEYS.map((key) => dispatch(estimateFee(blockchain, 128, key))));
 
     results = await Promise.allSettled(
       results.map((result, index) =>
@@ -379,6 +379,31 @@ export function getFee(blockchain: BlockchainCode): Dispatched<Record<typeof FEE
         max: avgTail5Number.max.toNumber(),
         priority: avgTail5Number.priority.toNumber(),
       },
+    };
+  };
+}
+
+export function getEthTx(blockchain: BlockchainCode, hash: string): Dispatched<EthereumTransaction | null> {
+  return async (dispatch, getState, extra) => {
+    const rawTx = await extra.backendApi.getEthTx(blockchain, hash);
+
+    if (rawTx == null) {
+      return null;
+    }
+
+    return {
+      blockchain,
+      blockNumber: rawTx.blockNumber == null ? undefined : parseInt(rawTx.blockNumber, 16),
+      from: rawTx.from,
+      gas: parseInt(rawTx.gas, 16),
+      gasPrice: rawTx.gasPrice == null ? undefined : toBigNumber(rawTx.gasPrice),
+      maxGasPrice: rawTx.maxGasPrice == null ? undefined : toBigNumber(rawTx.maxGasPrice),
+      priorityGasPrice: rawTx.priorityGasPrice == null ? undefined : toBigNumber(rawTx.priorityGasPrice),
+      hash: rawTx.hash,
+      input: rawTx.input,
+      nonce: parseInt(rawTx.nonce, 16),
+      to: rawTx.to,
+      value: toBigNumber(rawTx.value),
     };
   };
 }

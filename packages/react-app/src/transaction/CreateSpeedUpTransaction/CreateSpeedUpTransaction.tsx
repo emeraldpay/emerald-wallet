@@ -1,6 +1,5 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { BlockchainCode } from '@emeraldwallet/core';
-import { EthereumStoredTransaction } from '@emeraldwallet/core/src/history/IStoredTransaction';
+import { BlockchainCode, EthereumTransaction } from '@emeraldwallet/core';
 import { accounts, IState, screen, transaction } from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import { Box, createStyles, FormHelperText, Slider, withStyles } from '@material-ui/core';
@@ -46,11 +45,11 @@ interface DispatchProps {
   checkGlobalKey(password: string): Promise<boolean>;
   getTopFee(blockchain: BlockchainCode, eip1559: boolean): Promise<number>;
   goBack(): void;
-  signTransaction(tx: EthereumStoredTransaction, password: string, accountId?: string): Promise<void>;
+  signTransaction(tx: EthereumTransaction, password: string, accountId?: string): Promise<void>;
 }
 
 interface OwnProps {
-  transaction: EthereumStoredTransaction;
+  transaction: EthereumTransaction;
 }
 
 interface StateProps {
@@ -244,7 +243,7 @@ export default connect<{}, DispatchProps, OwnProps, IState>(
           tx.to,
           parseInt(tx.gas.toString(), 10),
           new Wei(tx.value),
-          tx.data ?? '',
+          tx.input,
           gasPrice,
           maxGasPrice,
           priorityGasPrice,
