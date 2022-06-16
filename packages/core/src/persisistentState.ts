@@ -59,23 +59,25 @@ export interface BlockRef {
 }
 
 export enum ChangeType {
-  UNSPECIFIED = 0,
-  TRANSFER = 1,
-  FEE = 2,
+  TRANSFER = "TRANSFER",
+  FEE = "FEE",
 }
 
 export enum Direction {
-  EARN = 0,
-  SPEND = 1
+  EARN = "EARN",
+  SPEND = "SPEND"
 }
 
 export interface Change {
   wallet?: EntryId;
   address?: string;
   hdPath?: string;
+  /**
+   * Type of asset. Provided as contract address from API, but then converted to just a code for further usage
+   */
   asset: AnyCoinCode;
-  type: ChangeType;
-  direction: Direction;
+  type: "TRANSFER" | "FEE";
+  direction: "EARN" | "SPEND";
   /**
    * Amount in the specified asset, represented in the smallest unit (i.e., a SAT, WEI, etc).
    * Note that the amount may be negative value, when transferred _from_ the wallet.

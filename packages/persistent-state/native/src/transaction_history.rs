@@ -19,7 +19,17 @@ struct FilterJson {
   before: Option<DateTime<Utc>>,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
+enum Direction {
+  SPEND, EARN
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+enum ChangeType {
+  TRANSFER, FEE
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
 struct ChangeJson {
   wallet: String,
   #[serde(skip_serializing_if = "Option::is_none")]
@@ -29,10 +39,11 @@ struct ChangeJson {
   asset: String,
   amount: String,
   #[serde(rename = "type")]
-  change_type: usize,
+  change_type: Option<ChangeType>,
+  direction: Direction,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct TransactionJson {
   blockchain: u32,
   #[serde(rename = "txId")]
@@ -145,9 +156,46 @@ impl TryFrom<ChangeJson> for Change {
     }
     change.amount = value.amount;
     change.asset = value.asset;
-    change.change_type = Change_ChangeType::from_i32(value.change_type as i32)
-      .ok_or(StateManagerError::InvalidJson("change_type".to_string()))?;
+    change.change_type = if let Some(change_type) = value.change_type {
+      Change_ChangeType::from_i32(change_type.to_proto())
+        .ok_or(StateManagerError::InvalidJson("change_type".to_string()))?
+    } else {
+      Change_ChangeType::UNSPECIFIED
+    };
+    change.direction = value.direction.to_proto();
     Ok(change)
+  }
+}
+
+impl ChangeType {
+  fn from(value: i32) -> Option<Self> {
+    match value {
+      1 => Some(ChangeType::TRANSFER),
+      2 => Some(ChangeType::FEE),
+      _ => None
+    }
+  }
+
+  fn to_proto(&self) -> i32 {
+    match &self {
+      ChangeType::TRANSFER => 1,
+      ChangeType::FEE => 2,
+    }
+  }
+}
+
+impl Direction {
+  fn from(value: emerald_wallet_state::proto::transactions::Direction) -> Direction {
+    match value {
+      emerald_wallet_state::proto::transactions::Direction::EARN => Direction::EARN,
+      emerald_wallet_state::proto::transactions::Direction::SPEND => Direction::SPEND
+    }
+  }
+  fn to_proto(&self) -> emerald_wallet_state::proto::transactions::Direction {
+    match self {
+      Direction::EARN => emerald_wallet_state::proto::transactions::Direction::EARN,
+      Direction::SPEND => emerald_wallet_state::proto::transactions::Direction::SPEND
+    }
   }
 }
 
@@ -159,7 +207,8 @@ impl From<&Change> for ChangeJson {
       hd_path: if_not_empty(value.hd_path.clone()),
       asset: value.asset.clone(),
       amount: value.amount.clone(),
-      change_type: value.change_type.value() as usize,
+      change_type: ChangeType::from(value.change_type.value()),
+      direction: Direction::from(value.direction)
     }
   }
 }

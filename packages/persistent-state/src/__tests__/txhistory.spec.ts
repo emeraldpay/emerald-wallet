@@ -17,6 +17,11 @@ describe('Tx History', () => {
     state = new PersistentStateImpl(tempPath('tx-history'));
   });
 
+  afterEach(() => {
+    // close current after each test, otherwise it may reuse same instance for the next text
+    state.close();
+  })
+
   test('empty query', async () => {
     const act = await state.txhistory.query();
     expect(act).toEqual({ items: [], cursor: null });
@@ -27,7 +32,7 @@ describe('Tx History', () => {
       blockchain: blockchainCodeToId(BlockchainCode.ETH),
       txId: '0xd91a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc44563',
       state: State.PREPARED,
-      sinceTimestamp: new Date('2021-03-05T10:11:12'),
+      sinceTimestamp: new Date('2021-03-05T10:11:12.000+0300'),
       status: Status.UNKNOWN,
       changes: [],
     };
@@ -78,6 +83,41 @@ describe('Tx History', () => {
     };
     const act = await state.txhistory.query(filter);
     expect(act).toEqual({ items: [tx2], cursor: null });
+  });
+
+  test('saves change direction', async () => {
+    const tx1: Transaction = {
+      blockchain: blockchainCodeToId(BlockchainCode.ETH),
+      txId: '0xaae7cc28c4ab6b4cf076eb7b580a837665d9096e0045d4f5d15ec823816f1869',
+      state: State.CONFIRMED,
+      sinceTimestamp: new Date('2021-01-05T10:11:12'),
+      status: Status.UNKNOWN,
+      changes: [
+        {
+          type: ChangeType.TRANSFER,
+          amount: '100001',
+          direction: Direction.SPEND,
+          wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
+          asset: 'ETH',
+        },
+        {
+          type: ChangeType.TRANSFER,
+          amount: '100001',
+          direction: Direction.EARN,
+          wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
+          asset: 'ETH',
+        },
+      ],
+    };
+
+    await state.txhistory.submit(tx1);
+
+
+    const all = await state.txhistory.query();
+    const act = all.items[0] as Transaction;
+    expect(act.changes.length).toBe(2);
+    expect(act.changes[0].direction).toBe("SPEND");
+    expect(act.changes[1].direction).toBe("EARN");
   });
 
   test('add couple of txes and query by  wallet', async () => {
