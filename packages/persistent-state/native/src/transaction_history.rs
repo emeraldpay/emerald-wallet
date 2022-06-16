@@ -267,18 +267,23 @@ pub fn query<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManager
   Ok(())
 }
 
-fn submit_internal(tx: Transaction) -> Result<bool, StateManagerError> {
-  let storage = Instance::get_storage()?;
-  storage.get_transactions()
+fn submit_internal(tx: Transaction) -> Result<Transaction, StateManagerError> {
+  let storage = Instance::get_storage()?.get_transactions();
+  let tx_id = tx.tx_id.clone();
+  let blockchain = tx.blockchain.value() as u32;
+  let _ = storage
     .submit(vec![tx])
-    .map_err(StateManagerError::from)
-    .map(|_| true)
+    .map_err(StateManagerError::from)?;
+
+  storage
+    .get_tx(blockchain, tx_id.as_str())
+    .map_or(Err(StateManagerError::IO), |v| Ok(v))
 }
 
 #[neon_frame_fn(channel=1)]
 pub fn submit<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
   where
-    H: FnOnce(Result<bool, StateManagerError>) + Send + 'static {
+    H: FnOnce(Result<TransactionJson, StateManagerError>) + Send + 'static {
   let tx = cx
     .argument::<JsString>(0)
     .map_err(|_| StateManagerError::MissingArgument(0, "tx".to_string()))?
@@ -289,7 +294,8 @@ pub fn submit<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManage
     .map_err(|_| StateManagerError::InvalidArgument(0, "tx".to_string()))?;
 
   std::thread::spawn(move || {
-    let result = submit_internal(tx);
+    let result = submit_internal(tx)
+      .and_then(|t| TransactionJson::try_from(t));
     handler(result);
   });
 

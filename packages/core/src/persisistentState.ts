@@ -140,7 +140,7 @@ export interface TxHistory {
    * Add or update existing transaction in the storage
    * @param tx
    */
-  submit(tx: Transaction): Promise<void>;
+  submit(tx: Transaction): Promise<Transaction>;
 
   /**
    * Remove transaction from the storage

@@ -43,6 +43,21 @@ describe('Tx History', () => {
     expect(act.items[0].sinceTimestamp.toISOString()).toBe('2021-03-05T07:11:12.000Z');
   });
 
+  test('submitting a tx returns itself', async () => {
+    const tx: Transaction = {
+      blockchain: blockchainCodeToId(BlockchainCode.ETH),
+      txId: '0xd91a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc44563',
+      state: State.PREPARED,
+      sinceTimestamp: new Date('2021-03-05T10:11:12.000+0300'),
+      status: Status.UNKNOWN,
+      changes: [],
+    };
+    const act = await state.txhistory.submit(tx);
+    expect(act).toEqual(tx);
+    // make sure it's actual date, not a string. a date keeps timezone and millis
+    expect(act.sinceTimestamp.toISOString()).toBe('2021-03-05T07:11:12.000Z');
+  });
+
   test('add a tx, remove it and query all', async () => {
     const tx: Transaction = {
       blockchain: blockchainCodeToId(BlockchainCode.ETH),
