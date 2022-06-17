@@ -96,7 +96,7 @@ const Screen: React.FC<OwnProps & StateProps> = (props) => {
     case screen.Pages.RECEIVE:
       return <ReceiveScreen walletId={props.screenItem} />;
     case screen.Pages.TX_DETAILS:
-      return <TxDetails hash={props.screenItem.hash} />;
+      return <TxDetails tx={props.screenItem} />;
     case screen.Pages.WALLET:
       return <WalletDetails walletId={props.screenItem} />;
     case screen.Pages.WALLET_INFO:

@@ -1,16 +1,9 @@
 import { BlockchainCode, PersistentState } from '@emeraldwallet/core';
-import { createStyles, TableCell, TableRow } from '@material-ui/core';
+import { createStyles } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
 
-const styles = createStyles({
-  columnValue: {
-    paddingBottom: 15,
-    paddingLeft: 0,
-    paddingTop: 15,
-    width: 100,
-  },
-});
+const styles = createStyles({});
 
 interface OwnProps {
   tx: PersistentState.Transaction;
@@ -23,11 +16,7 @@ interface StylesProps {
 }
 
 const TxItem: React.FC<OwnProps & StylesProps> = ({ classes, tx, openAccount, openTransaction }) => (
-  <TableRow>
-    <TableCell className={classes.columnValue} onClick={openTransaction}>
-      {tx.changes?.[0].amountValue?.toString() ?? 0}
-    </TableCell>
-  </TableRow>
+  <div onClick={openTransaction}>{tx.changes?.[0].amountValue?.toString() ?? 0}</div>
 );
 
 export default withStyles(styles)(TxItem);

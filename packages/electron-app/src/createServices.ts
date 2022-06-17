@@ -8,7 +8,6 @@ import {
   EmeraldApiAccess,
   PricesService,
   Services,
-  TxHistoryService,
   TxService,
 } from '@emeraldwallet/services';
 import { IpcMain, WebContents } from 'electron';
@@ -56,8 +55,7 @@ export function createServices(
 
   services.add(new BalanceListener(ipcMain, webContents, apiAccess));
   services.add(new ConnStatus(ipcMain, webContents, apiAccess));
-  services.add(new TxService(ipcMain, webContents, apiAccess));
-  services.add(new TxHistoryService(apiAccess, persistentState,vault, webContents));
+  services.add(new TxService(apiAccess, persistentState,vault, webContents));
 
   for (const chain of apiMode.chains) {
     const blockchain = chain.toLowerCase() as BlockchainCode;

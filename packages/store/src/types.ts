@@ -53,3 +53,5 @@ export type PriceSort = Record<'expects' | 'highs' | 'priorities', BigNumber[]>;
 
 export const DEFAULT_FEE: GasPrices = { expect: 0, max: 0, priority: 0 } as const;
 export const FEE_KEYS = ['avgLast', 'avgTail5', 'avgMiddle'] as const;
+
+export type FeePrices = Record<typeof FEE_KEYS[number], GasPrices>;

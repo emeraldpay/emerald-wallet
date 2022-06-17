@@ -16,4 +16,3 @@ export { Services } from './services/Services';
 export { BlockchainStatusService } from './services/BlockchainStatusService';
 export { BalanceListener } from './services/balances/BalanceListener';
 export { TxService } from './services/transactions/TxService';
-export { TxHistoryService } from './services/transactions/TxHistoryService';

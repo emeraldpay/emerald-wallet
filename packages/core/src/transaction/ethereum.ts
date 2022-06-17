@@ -24,13 +24,13 @@ export interface EthereumTransaction {
   blockchain: BlockchainCode;
   blockNumber?: number;
   from: string;
-  gas: number;
-  gasPrice?: BigNumber;
-  maxGasPrice?: BigNumber;
-  priorityGasPrice?: BigNumber;
-  hash: string;
-  input: string;
-  nonce: number;
+  gas: number | string;
+  gasPrice?: string | BigNumber;
+  maxGasPrice?: string | BigNumber;
+  priorityGasPrice?: string | BigNumber;
+  hash?: string;
+  data: string;
+  nonce: number | string;
   to?: string;
-  value: BigNumber;
+  value: string | BigNumber;
 }

@@ -4,15 +4,10 @@ import { blockchainIdToCode, isBitcoin, isEthereum, PersistentState } from '@eme
 import { Direction } from '@emeraldwallet/core/lib/persisistentState';
 import { IState } from '../types';
 
-export function selectByHash(state: IState, hash: string): PersistentState.Transaction | undefined {
-  return state.history.transactions.get(hash);
-}
-
 export function getTransactions(state: IState, entries: WalletEntry[]): PersistentState.Transaction[] {
   const entryIds = entries.map((entry) => entry.id);
-  const history = state.history.transactions.values();
 
-  return [...history].filter((tx) =>
+  return state.history.transactions.filter((tx) =>
     tx.changes
       .map((change) => change.wallet)
       .filter<string>((wallet): wallet is string => wallet != null)

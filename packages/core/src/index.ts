@@ -47,11 +47,6 @@ export {
   AssetDetail, AssetDetails,
   getStandardUnits,
 } from './Asset';
-export {
-  IStoredTransaction,
-  BitcoinStoredTransaction,
-  EthereumStoredTransaction,
-} from './history/IStoredTransaction';
 
 // address book core
 export { AddressBookService, IAddressBookService } from './address-book/AddressBookService';

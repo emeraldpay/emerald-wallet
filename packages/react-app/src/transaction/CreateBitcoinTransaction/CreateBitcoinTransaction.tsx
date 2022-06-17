@@ -2,12 +2,11 @@ import { EntryId, isBitcoinEntry } from '@emeraldpay/emerald-vault-core';
 import { BitcoinEntry, isSeedPkRef, UnsignedBitcoinTx, Uuid } from '@emeraldpay/emerald-vault-core/lib/types';
 import { BalanceUtxo, BlockchainCode, blockchainIdToCode } from '@emeraldwallet/core';
 import { CreateBitcoinTx } from '@emeraldwallet/core/lib/workflow';
-import { accounts, IState, screen, transaction } from '@emeraldwallet/store';
+import { accounts, FeePrices, IState, screen, transaction } from '@emeraldwallet/store';
 import { Back, Page } from '@emeraldwallet/ui';
 import { Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
-import { Dispatch } from 'react';
 import { connect } from 'react-redux';
 import Confirm from './Confirm';
 import SetupTx from './SetupTx';
@@ -19,25 +18,25 @@ interface OwnProps {
   source: EntryId;
 }
 
-interface Props {
-  entry: BitcoinEntry;
+interface StateProps {
   blockchain: BlockchainCode;
+  entry: BitcoinEntry;
   seedId: Uuid;
   utxo: BalanceUtxo[];
 }
 
-interface Actions {
+interface DispatchProps {
+  getFees: (blockchain: BlockchainCode) => () => Promise<FeePrices>;
   onBroadcast: (blockchain: BlockchainCode, orig: UnsignedBitcoinTx, raw: string) => void;
   onCancel?: () => void;
-  getFees: (blockchain: BlockchainCode) => () => Promise<any>;
 }
 
-const Component: React.FC<Actions & OwnProps & Props> = ({
-  entry,
+const Component: React.FC<OwnProps & StateProps & DispatchProps> = ({
   blockchain,
+  entry,
   seedId,
-  utxo,
   source,
+  utxo,
   getFees,
   onBroadcast,
   onCancel,
@@ -82,9 +81,9 @@ const Component: React.FC<Actions & OwnProps & Props> = ({
     content = (
       <Sign
         blockchain={blockchain}
-        tx={tx}
-        seedId={seedId}
         entryId={source}
+        seedId={seedId}
+        tx={tx}
         onSign={(raw) => {
           setRaw(raw);
           setPage('result');
@@ -92,16 +91,19 @@ const Component: React.FC<Actions & OwnProps & Props> = ({
       />
     );
   } else if (page == 'result') {
-    content = (
-      <Confirm
-        rawtx={raw}
-        onConfirm={() => onBroadcast(blockchain, tx!, raw)}
-        blockchain={blockchain}
-        entryId={entry.id}
-      />
-    );
+    if (tx != null) {
+      content = (
+        <Confirm
+          blockchain={blockchain}
+          entryId={entry.id}
+          rawtx={raw}
+          onConfirm={() => onBroadcast(blockchain, tx, raw)}
+        />
+      );
+    }
   } else {
     console.error('Invalid state', page);
+
     content = <Alert severity="error">Invalid state</Alert>;
   }
 
@@ -112,11 +114,11 @@ const Component: React.FC<Actions & OwnProps & Props> = ({
   );
 };
 
-export default connect(
-  (state: IState, ownProps: OwnProps): Props => {
+export default connect<StateProps, DispatchProps, OwnProps, IState>(
+  (state, ownProps) => {
     const entry = accounts.selectors.findEntry(state, ownProps.source);
 
-    if (!entry) {
+    if (entry == null) {
       throw new Error('Entry not found: ' + ownProps.source);
     }
 
@@ -128,17 +130,17 @@ export default connect(
       throw new Error('Not a seed entry');
     }
 
-    const seedId = entry.key.seedId;
     const utxo = accounts.selectors.getUtxo(state, entry.id);
 
     return {
       entry,
-      seedId,
       utxo,
       blockchain: blockchainIdToCode(entry.blockchain),
+      seedId: entry.key.seedId,
     };
   },
-  (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (dispatch: any, ownProps) => {
     return {
       getFees: (blockchain) => async () => {
         const [avgLast, avgMiddle, avgTail5] = await Promise.all([
@@ -154,7 +156,7 @@ export default connect(
         };
       },
       onBroadcast: (blockchain, orig, raw) => {
-        dispatch(transaction.actions.broadcastTx(blockchain, orig, raw));
+        dispatch(transaction.actions.broadcastTx(blockchain, raw));
 
         // when a change output was used
         if (orig.outputs.length > 1) {

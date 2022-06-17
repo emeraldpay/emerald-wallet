@@ -1,32 +1,38 @@
-import {Account, ButtonGroup, Page} from '@emeraldwallet/ui';
-import {Blockchains, EthereumTx, toNumber, fromBaseUnits} from '@emeraldwallet/core';
-import {decodeData, registry} from '@emeraldwallet/erc20';
-import {screen, transaction} from '@emeraldwallet/store';
-import {Button, FormRow} from '@emeraldwallet/ui';
-import {withStyles} from '@material-ui/core/styles';
+import { Wei } from '@emeraldpay/bigamount-crypto';
+import { Blockchains, EthereumTransaction, EthereumTx, fromBaseUnits, toNumber } from '@emeraldwallet/core';
+import { decodeData, registry } from '@emeraldwallet/erc20';
+import { screen, transaction } from '@emeraldwallet/store';
+import { Account, Button, ButtonGroup, FormRow, Page } from '@emeraldwallet/ui';
+import { createStyles } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import ChainTitle from '../../common/ChainTitle';
-import {Wei} from '@emeraldpay/bigamount-crypto';
 
-interface IBroadcastTxViewProps {
-  tx: any;
-  signed: any;
-  onSendTx?: any;
-  onCancel?: any;
-  classes: any;
-}
-
-export const styles = {
+export const styles = createStyles({
   fieldName: {
     color: '#747474',
     fontSize: '16px',
-    textAlign: 'right'
-  }
-};
+    textAlign: 'right',
+  },
+});
 
-export class BroadcastTxView extends React.Component<IBroadcastTxViewProps> {
-  public render () {
+interface OwnProps {
+  tx: EthereumTransaction;
+  signed: string;
+}
+
+interface DispatchProps {
+  onCancel(): void;
+  onSendTx(tx: EthereumTransaction, signed: string): void;
+}
+
+interface StylesProps {
+  classes: Record<keyof typeof styles, string>;
+}
+
+export class BroadcastTxView extends React.Component<OwnProps & DispatchProps & StylesProps> {
+  public render(): JSX.Element {
     const { tx, signed, classes } = this.props;
     const currentChain = Blockchains[tx.blockchain];
     const decoded = EthereumTx.fromRaw(signed, currentChain.params.chainId);
@@ -42,7 +48,7 @@ export class BroadcastTxView extends React.Component<IBroadcastTxViewProps> {
       if (decodedData.inputs.length > 0) {
         erc20Tx = {
           to: decodedData.inputs[0].toString(16),
-          value: toNumber('0x' + decodedData.inputs[1].toString(16)).toString()
+          value: toNumber('0x' + decodedData.inputs[1].toString(16)).toString(),
         };
         const tokenInfo = registry.byAddress(currentChain.params.code, decoded.getRecipientAddress().toString());
         if (tokenInfo) {
@@ -55,12 +61,12 @@ export class BroadcastTxView extends React.Component<IBroadcastTxViewProps> {
     const wei = new Wei(toNumber(decoded.getValue()));
     const etherValue = wei.toEther();
     return (
-      <Page title={<ChainTitle chain={tx.blockchain} text={'Publish Transaction'}/>}>
+      <Page title={<ChainTitle chain={tx.blockchain} text={'Publish Transaction'} />}>
         <FormRow
           leftColumn={<div className={classes.fieldName}>From</div>}
-          rightColumn={<Account identity={true} address={decoded.getSenderAddress().toString()}/>}
+          rightColumn={<Account identity={true} address={decoded.getSenderAddress().toString()} />}
         />
-        {(erc20Tx === null) && (
+        {erc20Tx === null && (
           <React.Fragment>
             <FormRow
               leftColumn={<div className={classes.fieldName}>To</div>}
@@ -68,11 +74,15 @@ export class BroadcastTxView extends React.Component<IBroadcastTxViewProps> {
             />
             <FormRow
               leftColumn={<div className={classes.fieldName}>Amount</div>}
-              rightColumn={<div data-testid='token-amount'>{etherValue} {coinSymbol}</div>}
+              rightColumn={
+                <div data-testid="token-amount">
+                  {etherValue} {coinSymbol}
+                </div>
+              }
             />
           </React.Fragment>
         )}
-        {(erc20Tx !== null) && (
+        {erc20Tx !== null && (
           <React.Fragment>
             <FormRow
               leftColumn={<div className={classes.fieldName}>To</div>}
@@ -80,59 +90,58 @@ export class BroadcastTxView extends React.Component<IBroadcastTxViewProps> {
             />
             <FormRow
               leftColumn={<div className={classes.fieldName}>Amount</div>}
-              rightColumn={<div data-testid='token-amount'>{erc20Tx.value} {coinSymbol}</div>}
+              rightColumn={
+                <div data-testid="token-amount">
+                  {erc20Tx.value} {coinSymbol}
+                </div>
+              }
             />
           </React.Fragment>
         )}
         <FormRow
           leftColumn={<div className={classes.fieldName}>Nonce</div>}
-          rightColumn={<div data-testid='nonce'>{decoded.getNonce()}</div>}
+          rightColumn={<div data-testid="nonce">{decoded.getNonce()}</div>}
         />
         <FormRow
           leftColumn={<div className={classes.fieldName}>Raw Tx</div>}
           rightColumn={<textarea rows={8} style={{ width: '100%' }} readOnly={true} value={this.props.signed} />}
         />
         <FormRow
-          rightColumn={(
-              <ButtonGroup>
-                <Button label={'Cancel'} onClick={this.handleCancelClick} />
-                <Button label={'Send'} primary={true} onClick={this.handleSendClick} />
-              </ButtonGroup>
-          )}
+          rightColumn={
+            <ButtonGroup>
+              <Button label={'Cancel'} onClick={this.handleCancelClick} />
+              <Button label={'Send'} primary={true} onClick={this.handleSendClick} />
+            </ButtonGroup>
+          }
         />
       </Page>
     );
   }
-  private handleCancelClick = () => {
+
+  private handleCancelClick = (): void => {
     if (this.props.onCancel) {
       this.props.onCancel();
     }
-  }
+  };
 
-  private handleSendClick = () => {
+  private handleSendClick = (): void => {
     if (this.props.onSendTx) {
       const { tx, signed } = this.props;
+
       this.props.onSendTx(tx, signed);
     }
-  }
+  };
 }
 
-// @ts-ignore
-const StyledView = withStyles(styles)(BroadcastTxView);
-
-export default connect(
-  (state: any, ownProps: any) => {
-    return {
-
-    };
-  },
-
-  (dispatch: any, ownProps: any) => ({
-    onSendTx: (tx: any, signed: any) => {
-      dispatch(transaction.actions.broadcastTx(tx.blockchain, tx, signed));
-    },
+export default connect<{}, DispatchProps>(
+  null,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (dispatch: any) => ({
     onCancel: () => {
       dispatch(screen.actions.gotoWalletsScreen());
-    }
-  })
-)(StyledView);
+    },
+    onSendTx: (tx, signed) => {
+      dispatch(transaction.actions.broadcastTx(tx.blockchain, signed));
+    },
+  }),
+)(withStyles(styles)(BroadcastTxView));

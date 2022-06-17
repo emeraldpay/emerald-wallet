@@ -36,7 +36,7 @@ export { triggers };
 
 export { config };
 
-export { IState, GasPrices, GasPriceType, PriceSort, FEE_KEYS, DEFAULT_FEE } from './types';
+export { IState, GasPrices, GasPriceType, PriceSort, FEE_KEYS, DEFAULT_FEE, FeePrices } from './types';
 
 export { IBalanceValue, BalanceValueConverted } from './accounts/types';
 

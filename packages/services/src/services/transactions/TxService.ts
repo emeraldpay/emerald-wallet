@@ -1,66 +1,128 @@
-import { BlockchainCode, IStoredTransaction, Logger } from '@emeraldwallet/core';
-import { txhistory } from '@emeraldwallet/store';
-import { IpcMain, WebContents } from 'electron';
-import { EmeraldApiAccess } from '../..';
+import { IEmeraldVault, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
+import { AnyCoinCode, blockchainIdToCode, PersistentState } from '@emeraldwallet/core';
+import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
+import { WebContents } from 'electron';
+import { EmeraldApiAccess } from '../../emerald-client/ApiAccess';
 import { IService } from '../Services';
-import { TxListener } from './TxListener';
 
-const log = Logger.forCategory('TxService');
+type EntryIdentifier = { entryId: string; blockchain: number; identifier: string };
 
 export class TxService implements IService {
-  public id: string;
+  public readonly id: string;
 
   private apiAccess: EmeraldApiAccess;
-  private ipcMain: IpcMain;
-  private subscriber: TxListener[] = [];
+  private persistentState: PersistentStateImpl;
+  private vault: IEmeraldVault;
   private webContents?: WebContents;
 
-  constructor(ipcMain: IpcMain, webContents: WebContents, apiAccess: EmeraldApiAccess) {
-    this.id = 'TransactionListener';
+  constructor(
+    apiAccess: EmeraldApiAccess,
+    persistentState: PersistentStateImpl,
+    vault: IEmeraldVault,
+    webContents: WebContents,
+  ) {
+    this.id = 'TransactionHistoryListener';
 
     this.apiAccess = apiAccess;
-    this.ipcMain = ipcMain;
+    this.persistentState = persistentState;
+    this.vault = vault;
     this.webContents = webContents;
   }
 
-  public start(): void {
-    this.ipcMain.on('subscribe-tx', (event, blockchain: BlockchainCode, hash: string) => {
-      const subscriber = this.apiAccess.newTxListener();
+  start(): void {
+    this.vault.listWallets().then((wallets) =>
+      wallets.forEach((wallet) =>
+        wallet.entries
+          .reduce<EntryIdentifier[]>((carry, entry) => {
+            const entryData = { entryId: entry.id, blockchain: entry.blockchain };
 
-      this.subscriber.push(subscriber);
+            if (isEthereumEntry(entry)) {
+              const { value: address } = entry.address ?? {};
 
-      subscriber.subscribe(blockchain, hash, (event) => {
-        // TODO TxStore
-        const tx = {
-          blockchain,
-          blockNumber: event.blockNumber,
-          broadcasted: event.broadcasted,
-          hash: event.txid,
-          timestamp: event.timestamp == null ? new Date() : new Date(event.timestamp),
-        } as IStoredTransaction;
+              if (address == null) {
+                return carry;
+              }
 
-        const action = txhistory.actions.updateTxs([tx]);
+              return [...carry, { ...entryData, identifier: address }];
+            }
 
-        try {
-          this.webContents?.send('store', action);
-        } catch (e) {
-          log.warn('Cannot send to the UI', e);
-        }
-      });
-    });
+            if (isBitcoinEntry(entry)) {
+              return [...carry, ...entry.xpub.map(({ xpub }) => ({ ...entryData, identifier: xpub }))];
+            }
+
+            return carry;
+          }, [])
+          .forEach(({ entryId, blockchain, identifier }) =>
+            this.persistentState.txhistory.getCursor(identifier).then((cursor) =>
+              this.apiAccess.transactionClient
+                .subscribeAddressTx({
+                  blockchain,
+                  address: identifier,
+                  cursor: cursor ?? undefined,
+                })
+                .onData((tx) => {
+                  let block: PersistentState.BlockRef | null = null;
+
+                  if (tx.block != null) {
+                    const { height, timestamp, hash: blockId } = tx.block;
+
+                    block = {
+                      blockId,
+                      height,
+                      timestamp,
+                    };
+                  }
+
+                  this.persistentState.txhistory
+                    .submit({
+                      block,
+                      blockchain,
+                      changes: tx.transfers.map((transfer) => {
+                        const [address] = transfer.addresses;
+
+                        return {
+                          address,
+                          amount: transfer.amount.toString(),
+                          // TODO Switch to data from response when available
+                          asset: blockchainIdToCode(blockchain).toUpperCase() as AnyCoinCode,
+                          direction: transfer.direction,
+                          type: PersistentState.ChangeType.TRANSFER,
+                          wallet: entryId,
+                        };
+                      }),
+                      sinceTimestamp: tx.block?.timestamp ?? new Date(),
+                      confirmTimestamp:
+                        tx.removed === false && tx.mempool === false ? tx.block?.timestamp ?? new Date() : undefined,
+                      state:
+                        tx.removed === true
+                          ? PersistentState.State.REPLACED
+                          : tx.mempool === true
+                          ? PersistentState.State.SUBMITTED
+                          : PersistentState.State.CONFIRMED,
+                      status: PersistentState.Status.UNKNOWN,
+                      txId: tx.txId,
+                    })
+                    .then(() => {
+                      if (tx.cursor != null) {
+                        this.persistentState.txhistory.setCursor(identifier, tx.cursor);
+                      }
+                    });
+                }),
+            ),
+          ),
+      ),
+    );
   }
 
-  public stop(): void {
-    this.subscriber.forEach((subscribe) => subscribe.stop());
-    this.subscriber = [];
+  stop(): void {
+    // Nothing
+  }
+
+  reconnect(): void {
+    // Nothing
   }
 
   setWebContents(webContents: WebContents): void {
     this.webContents = webContents;
-  }
-
-  reconnect(): void {
-    this.stop();
-    this.start();
   }
 }

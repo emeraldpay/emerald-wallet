@@ -243,7 +243,7 @@ export default connect<{}, DispatchProps, OwnProps, IState>(
           tx.to,
           parseInt(tx.gas.toString(), 10),
           new Wei(tx.value),
-          tx.input,
+          tx.data,
           gasPrice,
           maxGasPrice,
           priorityGasPrice,

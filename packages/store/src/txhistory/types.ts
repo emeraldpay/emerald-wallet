@@ -1,10 +1,8 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core/lib/types';
-import { IStoredTransaction, PersistentState } from '@emeraldwallet/core';
+import { PersistentState } from '@emeraldwallet/core';
 
 export enum ActionTypes {
   LOAD_STORED_TXS = 'WALLET/HISTORY/LOAD_STORED_TXS',
-  TRACK_TXS = 'WALLET/HISTORY/TRACK_TXS',
-  UPDATE_TXS = 'WALLET/HISTORY/UPDATE_TXS',
 }
 
 export interface LoadStoredTxsAction {
@@ -13,19 +11,9 @@ export interface LoadStoredTxsAction {
   walletId: Uuid;
 }
 
-export interface TrackTxsAction {
-  type: ActionTypes.TRACK_TXS;
-  txs: IStoredTransaction[];
-}
-
-export interface UpdateTxsAction {
-  type: ActionTypes.UPDATE_TXS;
-  payload: IStoredTransaction[];
-}
-
-export type HistoryAction = LoadStoredTxsAction | TrackTxsAction | UpdateTxsAction;
+export type HistoryAction = LoadStoredTxsAction;
 
 export interface HistoryState {
-  transactions: Map<string, PersistentState.Transaction>;
+  transactions: PersistentState.Transaction[];
   walletId?: Uuid;
 }

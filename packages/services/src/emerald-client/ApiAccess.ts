@@ -13,7 +13,6 @@ import * as os from 'os';
 import { ChainListener } from '../ChainListener';
 import { AddressListener } from '../services/balances/AddressListener';
 import { PriceListener } from '../services/prices/PricesListener';
-import { TxListener } from '../services/transactions/TxListener';
 
 enum Status {
   CONNECTED = 'CONNECTED',
@@ -120,10 +119,6 @@ export class EmeraldApiAccess implements IEmeraldClient {
 
   public newChainListener(): ChainListener {
     return new ChainListener(this.blockchainClient);
-  }
-
-  public newTxListener(): TxListener {
-    return new TxListener(this.blockchainClient);
   }
 
   public newPricesListener(): PriceListener {
