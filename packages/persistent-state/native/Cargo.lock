@@ -91,7 +91,7 @@ dependencies = [
 [[package]]
 name = "emerald-wallet-state"
 version = "0.1.0"
-source = "git+https://github.com/emeraldpay/emerald-wallet-state?branch=master#4f8eb136d23f79546302933e7f5c0a1c75c35907"
+source = "git+https://github.com/emeraldpay/emerald-wallet-state?branch=master#ed0845f5590018a1c3bd5a466eb530b6629cf909"
 dependencies = [
  "chrono",
  "enum-display-derive",

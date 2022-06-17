@@ -1,6 +1,7 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { EntryId, Uuid } from '@emeraldpay/emerald-vault-core';
 import { AnyCoinCode } from './Asset';
+import {BlockchainCode} from "./blockchains";
 
 /**
  * =====================================================================================================================
@@ -133,6 +134,43 @@ export interface TxHistoryFilter {
    * require a transaction known or confirmed before the specified moment
    */
   before?: Date;
+}
+
+export interface TxMeta {
+  /**
+   * Timestamp when the meta was assigned by user
+   */
+  timestamp: Date;
+  /**
+   * Blockchain
+   */
+  blockchain: BlockchainCode;
+  /**
+   * Transaction ID aka Hash
+   */
+  txId: string;
+  /**
+   * Used assigned label
+   */
+  label?: string;
+}
+
+
+export interface TxMetaStore {
+  /**
+   * Persist the meta. If an existing meta has an older timestamp get replaced with new, otherwise the it keeps it as is (i.e. always newest meta)
+   * @param meta
+   * @return the most up-to-date meta, which may be just provided or an existing one
+   */
+  set(meta: TxMeta): Promise<TxMeta>;
+
+  /**
+   * Read meta for a transaction
+   *
+   * @param blockchain
+   * @param txid
+   */
+  get(blockchain: BlockchainCode, txid: string): Promise<TxMeta | null>;
 }
 
 export interface TxHistory {
