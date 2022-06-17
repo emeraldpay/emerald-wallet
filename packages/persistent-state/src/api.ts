@@ -2,6 +2,7 @@ import { PersistentState } from '@emeraldwallet/core';
 import { AddressbookImpl } from './addressbook';
 import { TxHistoryImpl } from './txhistory';
 import { XPubPositionImpl } from './xpubpos';
+import {TxMetaStoreImpl} from "./txmeta";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const addon = require('../index.node');
@@ -59,6 +60,8 @@ export class PersistentStateImpl implements PersistentState.PersistentState {
   addon = addon;
 
   readonly txhistory: PersistentState.TxHistory = new TxHistoryImpl(this);
+
+  readonly txmeta: PersistentState.TxMetaStore = new TxMetaStoreImpl(this);
 
   readonly addressbook: PersistentState.Addressbook = new AddressbookImpl(this);
 

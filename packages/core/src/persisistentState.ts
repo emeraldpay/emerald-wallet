@@ -1,6 +1,7 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { EntryId, Uuid } from '@emeraldpay/emerald-vault-core';
 import { AnyCoinCode } from './Asset';
+import {BlockchainCode} from "./blockchains";
 
 /**
  * =====================================================================================================================
@@ -59,23 +60,25 @@ export interface BlockRef {
 }
 
 export enum ChangeType {
-  UNSPECIFIED = 0,
-  TRANSFER = 1,
-  FEE = 2,
+  TRANSFER = "TRANSFER",
+  FEE = "FEE",
 }
 
 export enum Direction {
-  EARN = 0,
-  SPEND = 1
+  EARN = "EARN",
+  SPEND = "SPEND"
 }
 
 export interface Change {
   wallet?: EntryId;
   address?: string;
   hdPath?: string;
+  /**
+   * Type of asset. Provided as contract address from API, but then converted to just a code for further usage
+   */
   asset: AnyCoinCode;
-  type: ChangeType;
-  direction: Direction;
+  type: "TRANSFER" | "FEE";
+  direction: "EARN" | "SPEND";
   /**
    * Amount in the specified asset, represented in the smallest unit (i.e., a SAT, WEI, etc).
    * Note that the amount may be negative value, when transferred _from_ the wallet.
@@ -133,12 +136,49 @@ export interface TxHistoryFilter {
   before?: Date;
 }
 
+export interface TxMeta {
+  /**
+   * Timestamp when the meta was assigned by user
+   */
+  timestamp: Date;
+  /**
+   * Blockchain
+   */
+  blockchain: BlockchainCode;
+  /**
+   * Transaction ID aka Hash
+   */
+  txId: string;
+  /**
+   * Used assigned label
+   */
+  label?: string;
+}
+
+
+export interface TxMetaStore {
+  /**
+   * Persist the meta. If an existing meta has an older timestamp get replaced with new, otherwise the it keeps it as is (i.e. always newest meta)
+   * @param meta
+   * @return the most up-to-date meta, which may be just provided or an existing one
+   */
+  set(meta: TxMeta): Promise<TxMeta>;
+
+  /**
+   * Read meta for a transaction
+   *
+   * @param blockchain
+   * @param txid
+   */
+  get(blockchain: BlockchainCode, txid: string): Promise<TxMeta | null>;
+}
+
 export interface TxHistory {
   /**
    * Add or update existing transaction in the storage
    * @param tx
    */
-  submit(tx: Transaction): Promise<void>;
+  submit(tx: Transaction): Promise<Transaction>;
 
   /**
    * Remove transaction from the storage

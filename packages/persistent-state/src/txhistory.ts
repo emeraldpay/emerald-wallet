@@ -11,10 +11,13 @@ export class TxHistoryImpl implements PersistentState.TxHistory {
     this.manager = manager;
   }
 
-  submit(tx: PersistentState.Transaction): Promise<void> {
+  submit(tx: PersistentState.Transaction): Promise<PersistentState.Transaction> {
     return new Promise((resolve, reject) => {
       try {
-        this.manager.addon.txhistory_submit(JSON.stringify(tx), neonToPromise(resolve, reject));
+        this.manager.addon.txhistory_submit(
+          JSON.stringify(tx),
+          neonToPromise(resolve, reject, createDateReviver(['sinceTimestamp', 'confirmTimestamp']))
+        );
       } catch (e) {
         reject(e);
       }

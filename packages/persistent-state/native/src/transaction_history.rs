@@ -19,7 +19,17 @@ struct FilterJson {
   before: Option<DateTime<Utc>>,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
+enum Direction {
+  SPEND, EARN
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
+enum ChangeType {
+  TRANSFER, FEE
+}
+
+#[derive(Serialize, Deserialize, Clone, Debug)]
 struct ChangeJson {
   wallet: String,
   #[serde(skip_serializing_if = "Option::is_none")]
@@ -29,10 +39,11 @@ struct ChangeJson {
   asset: String,
   amount: String,
   #[serde(rename = "type")]
-  change_type: usize,
+  change_type: Option<ChangeType>,
+  direction: Direction,
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize, Clone, Debug)]
 pub struct TransactionJson {
   blockchain: u32,
   #[serde(rename = "txId")]
@@ -145,9 +156,46 @@ impl TryFrom<ChangeJson> for Change {
     }
     change.amount = value.amount;
     change.asset = value.asset;
-    change.change_type = Change_ChangeType::from_i32(value.change_type as i32)
-      .ok_or(StateManagerError::InvalidJson("change_type".to_string()))?;
+    change.change_type = if let Some(change_type) = value.change_type {
+      Change_ChangeType::from_i32(change_type.to_proto())
+        .ok_or(StateManagerError::InvalidJson("change_type".to_string()))?
+    } else {
+      Change_ChangeType::UNSPECIFIED
+    };
+    change.direction = value.direction.to_proto();
     Ok(change)
+  }
+}
+
+impl ChangeType {
+  fn from(value: i32) -> Option<Self> {
+    match value {
+      1 => Some(ChangeType::TRANSFER),
+      2 => Some(ChangeType::FEE),
+      _ => None
+    }
+  }
+
+  fn to_proto(&self) -> i32 {
+    match &self {
+      ChangeType::TRANSFER => 1,
+      ChangeType::FEE => 2,
+    }
+  }
+}
+
+impl Direction {
+  fn from(value: emerald_wallet_state::proto::transactions::Direction) -> Direction {
+    match value {
+      emerald_wallet_state::proto::transactions::Direction::EARN => Direction::EARN,
+      emerald_wallet_state::proto::transactions::Direction::SPEND => Direction::SPEND
+    }
+  }
+  fn to_proto(&self) -> emerald_wallet_state::proto::transactions::Direction {
+    match self {
+      Direction::EARN => emerald_wallet_state::proto::transactions::Direction::EARN,
+      Direction::SPEND => emerald_wallet_state::proto::transactions::Direction::SPEND
+    }
   }
 }
 
@@ -159,7 +207,8 @@ impl From<&Change> for ChangeJson {
       hd_path: if_not_empty(value.hd_path.clone()),
       asset: value.asset.clone(),
       amount: value.amount.clone(),
-      change_type: value.change_type.value() as usize,
+      change_type: ChangeType::from(value.change_type.value()),
+      direction: Direction::from(value.direction)
     }
   }
 }
@@ -218,18 +267,23 @@ pub fn query<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManager
   Ok(())
 }
 
-fn submit_internal(tx: Transaction) -> Result<bool, StateManagerError> {
-  let storage = Instance::get_storage()?;
-  storage.get_transactions()
+fn submit_internal(tx: Transaction) -> Result<Transaction, StateManagerError> {
+  let storage = Instance::get_storage()?.get_transactions();
+  let tx_id = tx.tx_id.clone();
+  let blockchain = tx.blockchain.value() as u32;
+  let _ = storage
     .submit(vec![tx])
-    .map_err(StateManagerError::from)
-    .map(|_| true)
+    .map_err(StateManagerError::from)?;
+
+  storage
+    .get_tx(blockchain, tx_id.as_str())
+    .map_or(Err(StateManagerError::IO), |v| Ok(v))
 }
 
 #[neon_frame_fn(channel=1)]
 pub fn submit<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
   where
-    H: FnOnce(Result<bool, StateManagerError>) + Send + 'static {
+    H: FnOnce(Result<TransactionJson, StateManagerError>) + Send + 'static {
   let tx = cx
     .argument::<JsString>(0)
     .map_err(|_| StateManagerError::MissingArgument(0, "tx".to_string()))?
@@ -240,7 +294,8 @@ pub fn submit<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManage
     .map_err(|_| StateManagerError::InvalidArgument(0, "tx".to_string()))?;
 
   std::thread::spawn(move || {
-    let result = submit_internal(tx);
+    let result = submit_internal(tx)
+      .and_then(|t| TransactionJson::try_from(t));
     handler(result);
   });
 
