@@ -1,52 +1,82 @@
-import { Satoshi, Wei } from '@emeraldpay/bigamount-crypto';
-import { BlockchainCode, blockchainCodeToId, PersistentState } from '@emeraldwallet/core';
+import { BlockchainCode, blockchainCodeToId } from '@emeraldwallet/core';
 import { ChangeType, Direction, State, Status } from '@emeraldwallet/core/lib/persisistentState';
+import { StoredTransaction } from '@emeraldwallet/store';
 import { mount } from 'enzyme';
 import * as React from 'react';
+import { Provider } from 'react-redux';
+import { Observable, Store } from 'redux';
 import { default as TxDetails } from './TxDetails';
 
-const ethereumTx: PersistentState.Transaction = {
-  blockchain: blockchainCodeToId(BlockchainCode.ETH),
-  txId: '0x95c1767c33c37ef93de48897c1001679d947bd7f082fdf4e772c534ae180b9c8',
-  state: State.PREPARED,
-  sinceTimestamp: new Date('2022-01-01T10:00:00'),
-  status: Status.UNKNOWN,
-  changes: [
-    {
-      type: ChangeType.TRANSFER,
-      amount: '-100000',
-      amountValue: new Wei('-100000'),
-      direction: Direction.SPEND,
-      wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
-      asset: 'ETH',
+function createStore(): Store {
+  return {
+    [Symbol.observable](): Observable<undefined> {
+      return undefined;
     },
-  ],
-};
+    dispatch: undefined,
+    getState() {
+      return undefined;
+    },
+    replaceReducer(): void {
+      // Nothing
+    },
+    subscribe() {
+      return () => undefined;
+    },
+  };
+}
 
-const bitcoinTx: PersistentState.Transaction = {
-  blockchain: blockchainCodeToId(BlockchainCode.BTC),
-  txId: '01679d947bd7f082fdf4e772c534ae1895c1767c33c37ef93de48897c100b9c8',
-  state: State.PREPARED,
-  sinceTimestamp: new Date('2022-01-01T10:00:00'),
-  status: Status.UNKNOWN,
+const ethereumTx = new StoredTransaction({
+  blockchain: blockchainCodeToId(BlockchainCode.ETH),
   changes: [
     {
-      type: ChangeType.TRANSFER,
       amount: '-100000',
-      amountValue: new Satoshi('-100000'),
+      asset: 'ETH',
       direction: Direction.SPEND,
+      type: ChangeType.TRANSFER,
       wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
-      asset: 'BTC',
     },
   ],
-};
+  sinceTimestamp: new Date('2022-01-01T10:00:00'),
+  state: State.PREPARED,
+  status: Status.UNKNOWN,
+  txId: '0x95c1767c33c37ef93de48897c1001679d947bd7f082fdf4e772c534ae180b9c8',
+});
+
+const bitcoinTx = new StoredTransaction({
+  blockchain: blockchainCodeToId(BlockchainCode.BTC),
+  changes: [
+    {
+      amount: '-100000',
+      asset: 'BTC',
+      direction: Direction.SPEND,
+      type: ChangeType.TRANSFER,
+      wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
+    },
+  ],
+  sinceTimestamp: new Date('2022-01-01T10:00:00'),
+  state: State.PREPARED,
+  status: Status.UNKNOWN,
+  txId: '01679d947bd7f082fdf4e772c534ae1895c1767c33c37ef93de48897c100b9c8',
+});
 
 describe('TxDetailsView', () => {
   it('should render ethereum tx', () => {
-    expect(mount(<TxDetails tx={ethereumTx} />)).toBeDefined();
+    expect(
+      mount(
+        <Provider store={createStore()}>
+          <TxDetails tx={ethereumTx} />
+        </Provider>,
+      ),
+    ).toBeDefined();
   });
 
   it('should render bitcoin tx', () => {
-    expect(mount(<TxDetails tx={bitcoinTx} />)).toBeDefined();
+    expect(
+      mount(
+        <Provider store={createStore()}>
+          <TxDetails tx={bitcoinTx} />
+        </Provider>,
+      ),
+    ).toBeDefined();
   });
 });

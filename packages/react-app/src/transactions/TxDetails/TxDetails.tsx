@@ -1,6 +1,6 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core/lib/types';
-import { blockchainById, blockchainIdToCode, isEthereum, PersistentState } from '@emeraldwallet/core';
-import { screen, transaction } from '@emeraldwallet/store';
+import { blockchainById, blockchainIdToCode, isEthereum } from '@emeraldwallet/core';
+import { screen, StoredTransaction, transaction } from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, FormRow, Page } from '@emeraldwallet/ui';
 import { createStyles, Typography } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
@@ -18,15 +18,15 @@ const styles = createStyles({
 });
 
 interface OwnProps {
-  tx?: PersistentState.Transaction;
+  tx?: StoredTransaction;
 }
 
 interface DispatchProps {
   goBack(walletId?: Uuid): void;
-  goToCancelTx(tx: PersistentState.Transaction): void;
+  goToCancelTx(tx: StoredTransaction): void;
   goToDashboard(): void;
-  goToReceipt(tx: PersistentState.Transaction): void;
-  goToSpeedUpTx(tx: PersistentState.Transaction): void;
+  goToReceipt(tx: StoredTransaction): void;
+  goToSpeedUpTx(tx: StoredTransaction): void;
 }
 
 interface StylesProps {

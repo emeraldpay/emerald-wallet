@@ -62,7 +62,7 @@ class ImportVault extends React.Component<Props, State> {
       dragAndDrop.ondragend = () => false;
 
       dragAndDrop.ondrop = (event: DragEvent) => {
-        const [file] = event.dataTransfer?.files ?? [];
+        const file = event.dataTransfer?.files[0];
 
         if (file == null) {
           return false;

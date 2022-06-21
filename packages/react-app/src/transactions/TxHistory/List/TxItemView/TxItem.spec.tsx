@@ -1,19 +1,18 @@
-import { Wei } from '@emeraldpay/bigamount-crypto';
-import { BlockchainCode, blockchainCodeToId, PersistentState } from '@emeraldwallet/core';
+import { BlockchainCode, blockchainCodeToId } from '@emeraldwallet/core';
 import { ChangeType, Direction, State, Status } from '@emeraldwallet/core/lib/persisistentState';
+import { StoredTransaction } from '@emeraldwallet/store';
 import { Theme } from '@emeraldwallet/ui';
 import { ThemeProvider } from '@material-ui/styles';
 import { render } from '@testing-library/react';
 import * as React from 'react';
 import TxItem from './TxItem';
 
-const tx: PersistentState.Transaction = {
+const tx = new StoredTransaction({
   blockchain: blockchainCodeToId(BlockchainCode.ETH),
   changes: [
     {
       type: ChangeType.TRANSFER,
       amount: '-100001',
-      amountValue: new Wei('-100001'),
       direction: Direction.SPEND,
       wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
       asset: 'ETH',
@@ -23,7 +22,7 @@ const tx: PersistentState.Transaction = {
   state: State.PREPARED,
   status: Status.UNKNOWN,
   txId: '0x5ec823816f186928c4ab6baae7cc80a837665d9096e0045d4f5d14cf076eb7b5',
-};
+});
 
 describe('TxItem', () => {
   it('should renders without crash', () => {

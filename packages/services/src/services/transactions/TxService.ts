@@ -1,6 +1,9 @@
+import { BitcoinTransfer, Direction, EthereumTransfer } from '@emeraldpay/api/lib/typesTransaction';
 import { IEmeraldVault, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
-import { AnyCoinCode, blockchainIdToCode, PersistentState } from '@emeraldwallet/core';
+import { BlockchainCode, blockchainIdToCode, isBitcoin, PersistentState } from '@emeraldwallet/core';
+import { registry } from '@emeraldwallet/erc20';
 import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
+import { txhistory } from '@emeraldwallet/store';
 import { WebContents } from 'electron';
 import { EmeraldApiAccess } from '../../emerald-client/ApiAccess';
 import { IService } from '../Services';
@@ -73,23 +76,67 @@ export class TxService implements IService {
                     };
                   }
 
+                  const blockchainCode = blockchainIdToCode(blockchain);
+
+                  let changes: PersistentState.Change[];
+
+                  if (isBitcoin(blockchainCode)) {
+                    changes = (tx.transfers as BitcoinTransfer[]).reduce<PersistentState.Change[]>(
+                      (carry, transfer) => [
+                        ...carry,
+                        {
+                          address: tx.address,
+                          amount: transfer.amount,
+                          asset: 'BTC',
+                          direction: transfer.direction == Direction.EARN ? 'EARN' : 'SPEND',
+                          type: PersistentState.ChangeType.TRANSFER,
+                          wallet: entryId,
+                        },
+                        ...transfer.addressAmounts.map<PersistentState.Change>((item) => ({
+                          address: item.address,
+                          amount: item.amount,
+                          asset: 'BTC',
+                          direction: transfer.direction == Direction.EARN ? 'SPEND' : 'EARN',
+                          type: PersistentState.ChangeType.TRANSFER,
+                        })),
+                      ],
+                      [],
+                    );
+                  } else {
+                    changes = (tx.transfers as EthereumTransfer[]).reduce<PersistentState.Change[]>(
+                      (carry, transfer) => {
+                        const token = registry.byAddress(blockchainCode, transfer.contractAddress);
+                        const asset = token?.symbol ?? (blockchainCode === BlockchainCode.ETC ? 'ETC' : 'ETH');
+
+                        const items: PersistentState.Change[] = [
+                          {
+                            asset,
+                            address: tx.address,
+                            amount: transfer.amount,
+                            direction: transfer.direction == Direction.EARN ? 'EARN' : 'SPEND',
+                            type: PersistentState.ChangeType.TRANSFER,
+                            wallet: entryId,
+                          },
+                          {
+                            asset,
+                            address: transfer.address,
+                            amount: transfer.amount,
+                            direction: transfer.direction == Direction.EARN ? 'SPEND' : 'EARN',
+                            type: PersistentState.ChangeType.TRANSFER,
+                          },
+                        ];
+
+                        return [...carry, ...items];
+                      },
+                      [],
+                    );
+                  }
+
                   this.persistentState.txhistory
                     .submit({
                       block,
                       blockchain,
-                      changes: tx.transfers.map((transfer) => {
-                        const [address] = transfer.addresses;
-
-                        return {
-                          address,
-                          amount: transfer.amount.toString(),
-                          // TODO Switch to data from response when available
-                          asset: blockchainIdToCode(blockchain).toUpperCase() as AnyCoinCode,
-                          direction: transfer.direction,
-                          type: PersistentState.ChangeType.TRANSFER,
-                          wallet: entryId,
-                        };
-                      }),
+                      changes,
                       sinceTimestamp: tx.block?.timestamp ?? new Date(),
                       confirmTimestamp:
                         tx.removed === false && tx.mempool === false ? tx.block?.timestamp ?? new Date() : undefined,
@@ -102,10 +149,12 @@ export class TxService implements IService {
                       status: PersistentState.Status.UNKNOWN,
                       txId: tx.txId,
                     })
-                    .then(() => {
+                    .then((merged) => {
                       if (tx.cursor != null) {
                         this.persistentState.txhistory.setCursor(identifier, tx.cursor);
                       }
+
+                      this.webContents?.send('store', txhistory.actions.updateTransaction(entryId, merged));
                     });
                 }),
             ),

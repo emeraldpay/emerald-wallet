@@ -84,7 +84,6 @@ export interface Change {
    * Note that the amount may be negative value, when transferred _from_ the wallet.
    */
   amount: string;
-  readonly amountValue?: BigAmount;
 }
 
 /**

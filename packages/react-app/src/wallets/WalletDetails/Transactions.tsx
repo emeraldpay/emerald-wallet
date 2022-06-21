@@ -1,6 +1,5 @@
 import { WalletEntry } from '@emeraldpay/emerald-vault-core';
-import { PersistentState } from '@emeraldwallet/core';
-import { accounts, IState, txhistory } from '@emeraldwallet/store';
+import { accounts, IState, StoredTransaction, txhistory } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import TxHistory from '../../transactions/TxHistory';
@@ -11,7 +10,7 @@ interface OwnProps {
 
 interface StateProps {
   entries: WalletEntry[];
-  transactions: PersistentState.Transaction[];
+  transactions: StoredTransaction[];
 }
 
 const Transactions: React.FC<OwnProps & StateProps> = ({ entries, transactions }) => (

@@ -40,6 +40,8 @@ export { IState, GasPrices, GasPriceType, PriceSort, FEE_KEYS, DEFAULT_FEE, FeeP
 
 export { IBalanceValue, BalanceValueConverted } from './accounts/types';
 
+export { StoredTransaction } from './txhistory/types';
+
 export { default as rootReducer } from './root-reducer';
 export { default as BackendApi } from './BackendApi';
 export { default as reduxLogger } from './redux-logger';

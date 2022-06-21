@@ -15,7 +15,7 @@ import {
   Uuid,
   Wallet,
 } from '@emeraldpay/emerald-vault-core';
-import { AnyCoinCode, BlockchainCode, IApi, IBackendApi } from '@emeraldwallet/core';
+import { AnyCoinCode, BlockchainCode, EthereumRawTransaction, IApi, IBackendApi } from '@emeraldwallet/core';
 
 export class MemoryVault {
   passwords: Record<Uuid, string> = {};
@@ -325,5 +325,9 @@ export class BackendMock implements IBackendApi {
     }
 
     return Promise.resolve(0);
+  }
+
+  getEthTx(): Promise<EthereumRawTransaction | null> {
+    return Promise.resolve(null);
   }
 }

@@ -1,16 +1,16 @@
-import { BlockchainCode, PersistentState } from '@emeraldwallet/core';
-import { screen, wallet } from '@emeraldwallet/store';
+import { BlockchainCode } from '@emeraldwallet/core';
+import { screen, StoredTransaction, wallet } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import TxItem from './TxItemView/TxItem';
 
 interface OwnProps {
-  tx?: PersistentState.Transaction;
+  tx?: StoredTransaction;
 }
 
 interface DispatchProps {
   openAccount: (blockchain: BlockchainCode, address: string) => void;
-  openTransaction: (tx: PersistentState.Transaction) => void;
+  openTransaction: (tx: StoredTransaction) => void;
 }
 
 const Transaction: React.FC<OwnProps & DispatchProps> = ({ tx, openAccount, openTransaction }) =>

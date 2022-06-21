@@ -1,4 +1,4 @@
-import { PersistentState } from '@emeraldwallet/core';
+import { StoredTransaction } from '@emeraldwallet/store';
 import { createStyles, Theme } from '@material-ui/core';
 import { useTheme, withStyles } from '@material-ui/styles';
 import * as React from 'react';
@@ -7,7 +7,7 @@ import Transaction from './Transaction';
 const styles = createStyles({});
 
 interface OwnProps {
-  transactions: PersistentState.Transaction[];
+  transactions: StoredTransaction[];
 }
 
 interface StylesProps {

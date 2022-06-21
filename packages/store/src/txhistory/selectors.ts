@@ -1,10 +1,11 @@
 import { Satoshi, Wei } from '@emeraldpay/bigamount-crypto';
 import { WalletEntry } from '@emeraldpay/emerald-vault-core';
-import { blockchainIdToCode, isBitcoin, isEthereum, PersistentState } from '@emeraldwallet/core';
+import { blockchainIdToCode, isBitcoin, isEthereum } from '@emeraldwallet/core';
 import { Direction } from '@emeraldwallet/core/lib/persisistentState';
 import { IState } from '../types';
+import { StoredTransaction } from './types';
 
-export function getTransactions(state: IState, entries: WalletEntry[]): PersistentState.Transaction[] {
+export function getTransactions(state: IState, entries: WalletEntry[]): StoredTransaction[] {
   const entryIds = entries.map((entry) => entry.id);
 
   return state.history.transactions.filter((tx) =>
@@ -17,9 +18,9 @@ export function getTransactions(state: IState, entries: WalletEntry[]): Persiste
 
 export function filterTransactions(
   entries: WalletEntry[],
-  transactions: PersistentState.Transaction[],
+  transactions: StoredTransaction[],
   filter: string,
-): PersistentState.Transaction[] {
+): StoredTransaction[] {
   if (filter === 'ALL') {
     return transactions;
   }
@@ -42,12 +43,12 @@ export function filterTransactions(
 }
 
 export function searchTransactions(
-  transactions: PersistentState.Transaction[],
+  transactions: StoredTransaction[],
   search: string,
-): PersistentState.Transaction[] {
+): StoredTransaction[] {
   const searchValue = search.toLowerCase();
 
-  return transactions.filter((tx: PersistentState.Transaction) => {
+  return transactions.filter((tx: StoredTransaction) => {
     const blockchainCode = blockchainIdToCode(tx.blockchain);
 
     return (

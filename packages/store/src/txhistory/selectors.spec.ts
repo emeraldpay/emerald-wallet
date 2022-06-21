@@ -1,8 +1,8 @@
-import { Wei } from '@emeraldpay/bigamount-crypto';
 import { WalletEntry } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, blockchainCodeToId, PersistentState } from '@emeraldwallet/core';
+import { BlockchainCode, blockchainCodeToId } from '@emeraldwallet/core';
 import { ChangeType, Direction, State, Status } from '@emeraldwallet/core/lib/persisistentState';
 import { filterTransactions, searchTransactions } from './selectors';
+import { StoredTransaction } from './types';
 
 const blockchain = blockchainCodeToId(BlockchainCode.ETH);
 
@@ -26,25 +26,24 @@ const entries: WalletEntry[] = [
   },
 ];
 
-const transactions: PersistentState.Transaction[] = [
-  {
+const transactions = [
+  new StoredTransaction({
     blockchain,
     changes: [
       {
         address: '0x999',
-        type: ChangeType.TRANSFER,
         amount: '-100001',
-        amountValue: new Wei('-100001'),
-        direction: Direction.SPEND,
-        wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
         asset: 'ETH',
+        direction: Direction.SPEND,
+        type: ChangeType.TRANSFER,
+        wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
       },
     ],
     sinceTimestamp: new Date('2021-01-05T10:11:12'),
     state: State.PREPARED,
     status: Status.UNKNOWN,
     txId: '0x5ec823816f186928c4ab6baae7cc80a837665d9096e0045d4f5d14cf076eb7b5',
-  },
+  }),
 ];
 
 describe('history selectors', () => {

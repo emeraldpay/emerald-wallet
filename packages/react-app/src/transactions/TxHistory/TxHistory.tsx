@@ -1,6 +1,5 @@
 import { WalletEntry } from '@emeraldpay/emerald-vault-core';
-import { PersistentState } from '@emeraldwallet/core';
-import { txhistory } from '@emeraldwallet/store';
+import { StoredTransaction, txhistory } from '@emeraldwallet/store';
 import { createStyles, Theme } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
@@ -20,11 +19,11 @@ const useStyles = makeStyles<Theme>((theme) =>
 
 interface OwnProps {
   entries: WalletEntry[];
-  transactions: PersistentState.Transaction[];
+  transactions: StoredTransaction[];
 }
 
 interface StateProps {
-  txs: PersistentState.Transaction[];
+  txs: StoredTransaction[];
 }
 
 const TxHistory: React.FC<OwnProps & StateProps> = ({ entries, txs }) => {

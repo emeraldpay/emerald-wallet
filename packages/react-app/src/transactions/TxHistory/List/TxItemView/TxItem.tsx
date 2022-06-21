@@ -1,4 +1,5 @@
-import { BlockchainCode, PersistentState } from '@emeraldwallet/core';
+import { BlockchainCode } from '@emeraldwallet/core';
+import { StoredTransaction } from '@emeraldwallet/store';
 import { createStyles } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
@@ -6,7 +7,7 @@ import * as React from 'react';
 const styles = createStyles({});
 
 interface OwnProps {
-  tx: PersistentState.Transaction;
+  tx: StoredTransaction;
   openAccount(blockchain: BlockchainCode, address: string): void;
   openTransaction(): void;
 }
@@ -16,7 +17,7 @@ interface StylesProps {
 }
 
 const TxItem: React.FC<OwnProps & StylesProps> = ({ classes, tx, openAccount, openTransaction }) => (
-  <div onClick={openTransaction}>{tx.changes?.[0].amountValue?.toString() ?? 0}</div>
+  <div onClick={openTransaction}>{tx.changes?.[0].amountValue.toString() ?? 0}</div>
 );
 
 export default withStyles(styles)(TxItem);
