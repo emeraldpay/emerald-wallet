@@ -1,6 +1,6 @@
 {
   "name": "@emeraldwallet/history-store",
-  "version": "2.7.0",
+  "version": "2.7.1",
   "description": "Transactions storage management",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -14,7 +14,7 @@
     "test:coverage": "jest --coverage && codecov"
   },
   "dependencies": {
-    "@emeraldwallet/core": "^2.7.0",
+    "@emeraldwallet/core": "^2.7.1",
     "bignumber.js": "8.0.2",
     "electron-store": "5.1.0"
   },
