@@ -3,6 +3,7 @@ module.exports = {
   extends: [
     'eslint:recommended',
     'plugin:react/recommended',
+    'plugin:react-hooks/recommended',
     'plugin:@typescript-eslint/eslint-recommended',
     'plugin:@typescript-eslint/recommended',
   ],
@@ -16,9 +17,7 @@ module.exports = {
     },
   ],
   parser: '@typescript-eslint/parser',
-  plugins: [
-    '@typescript-eslint',
-  ],
+  plugins: ['@typescript-eslint'],
   root: true,
   rules: {
     '@typescript-eslint/explicit-function-return-type': ['error', { allowExpressions: true }],

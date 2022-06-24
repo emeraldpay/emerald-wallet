@@ -5,7 +5,35 @@ import { Theme } from '@emeraldwallet/ui';
 import { ThemeProvider } from '@material-ui/styles';
 import { render } from '@testing-library/react';
 import * as React from 'react';
-import TxItem from './TxItem';
+import { Provider } from 'react-redux';
+import { Observable, Store } from 'redux';
+import Transaction from './Transaction';
+
+function createStore(): Store {
+  return {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [Symbol.observable](): Observable<any> {
+      return undefined;
+    },
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dispatch(): any {
+      return () => undefined;
+    },
+    getState() {
+      return {
+        accounts: {
+          wallets: [],
+        },
+      };
+    },
+    replaceReducer(): void {
+      // Nothing
+    },
+    subscribe() {
+      return () => undefined;
+    },
+  };
+}
 
 const tx = new StoredTransaction({
   blockchain: blockchainCodeToId(BlockchainCode.ETH),
@@ -24,16 +52,15 @@ const tx = new StoredTransaction({
   txId: '0x5ec823816f186928c4ab6baae7cc80a837665d9096e0045d4f5d14cf076eb7b5',
 });
 
-describe('TxItem', () => {
+describe('Transaction', () => {
   it('should renders without crash', () => {
     const component = render(
-      <ThemeProvider theme={Theme}>
-        <table>
-          <tbody>
-            <TxItem tx={tx} openAccount={jest.fn()} openTransaction={jest.fn()} />
-          </tbody>
-        </table>
-      </ThemeProvider>,
+      <Provider store={createStore()}>
+        <ThemeProvider theme={Theme}>
+          <Transaction tx={tx} />
+        </ThemeProvider>
+        ,
+      </Provider>,
     );
 
     expect(component).toBeDefined();

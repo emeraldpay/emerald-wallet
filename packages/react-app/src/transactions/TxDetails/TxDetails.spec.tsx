@@ -9,10 +9,14 @@ import { default as TxDetails } from './TxDetails';
 
 function createStore(): Store {
   return {
-    [Symbol.observable](): Observable<undefined> {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [Symbol.observable](): Observable<any> {
       return undefined;
     },
-    dispatch: undefined,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dispatch(): any {
+      return () => undefined;
+    },
     getState() {
       return undefined;
     },
@@ -21,7 +25,7 @@ function createStore(): Store {
     },
     subscribe() {
       return () => undefined;
-    },
+    }
   };
 }
 

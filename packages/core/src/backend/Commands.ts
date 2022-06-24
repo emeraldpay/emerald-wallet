@@ -11,6 +11,9 @@ export enum Commands {
   // Transaction history
   LOAD_TX_HISTORY = 'load-tx-history',
 
+  GET_TX_META = 'get-tx-meta',
+  SET_TX_META = 'set-tx-meta',
+
   // @deprecated
   BROADCAST_TX = 'broadcast-tx',
   ESTIMATE_TX = 'estimate-tx',

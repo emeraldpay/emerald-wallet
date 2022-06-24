@@ -163,4 +163,10 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess, pe
       return null;
     },
   );
+
+  ipcMain.handle(Commands.GET_TX_META, (event, blockchain: BlockchainCode, txId: string) =>
+    persistentState.txmeta.get(blockchain, txId),
+  );
+
+  ipcMain.handle(Commands.SET_TX_META, (event, meta: PersistentState.TxMeta) => persistentState.txmeta.set(meta));
 }

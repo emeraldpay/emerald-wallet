@@ -55,7 +55,7 @@ export function createServices(
 
   services.add(new BalanceListener(ipcMain, webContents, apiAccess));
   services.add(new ConnStatus(ipcMain, webContents, apiAccess));
-  services.add(new TxService(apiAccess, persistentState,vault, webContents));
+  services.add(new TxService(apiAccess, persistentState, vault, webContents));
 
   for (const chain of apiMode.chains) {
     const blockchain = chain.toLowerCase() as BlockchainCode;

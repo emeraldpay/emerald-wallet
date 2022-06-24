@@ -105,8 +105,11 @@ export class TxService implements IService {
                   } else {
                     changes = (tx.transfers as EthereumTransfer[]).reduce<PersistentState.Change[]>(
                       (carry, transfer) => {
-                        const token = registry.byAddress(blockchainCode, transfer.contractAddress);
-                        const asset = token?.symbol ?? (blockchainCode === BlockchainCode.ETC ? 'ETC' : 'ETH');
+                        const asset =
+                          (transfer.contractAddress == null
+                            ? null
+                            : registry.byAddress(blockchainCode, transfer.contractAddress)?.symbol) ??
+                          (blockchainCode === BlockchainCode.ETC ? 'ETC' : 'ETH');
 
                         const items: PersistentState.Change[] = [
                           {

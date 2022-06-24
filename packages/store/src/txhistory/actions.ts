@@ -1,5 +1,5 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core';
-import { Commands, PersistentState } from '@emeraldwallet/core';
+import { BlockchainCode, Commands, PersistentState } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 import { Dispatched } from '../types';
 import { ActionTypes, HistoryAction, StoredTransaction } from './types';
@@ -35,4 +35,15 @@ export function updateTransaction(walletId: Uuid, tx: PersistentState.Transactio
       type: ActionTypes.UPDATE_STORED_TX,
     });
   };
+}
+
+export function getTransactionMeta(
+  blockchain: BlockchainCode,
+  txId: string,
+): Dispatched<PersistentState.TxMeta | null> {
+  return () => ipcRenderer.invoke(Commands.GET_TX_META, blockchain, txId);
+}
+
+export function setTransactionMeta(meta: PersistentState.TxMeta): Dispatched<PersistentState.TxMeta> {
+  return () => ipcRenderer.invoke(Commands.SET_TX_META, meta);
 }

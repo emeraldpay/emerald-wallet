@@ -9,12 +9,12 @@ export enum ActionTypes {
 
 export class StoredTransactionChange implements PersistentState.Change {
   amount: string;
-  address?: string | undefined;
+  address?: string;
   asset: AnyCoinCode;
   direction: 'EARN' | 'SPEND';
-  hdPath?: string | undefined;
+  hdPath?: string;
   type: 'TRANSFER' | 'FEE';
-  wallet?: string | undefined;
+  wallet?: string;
   private readonly _blockchain: number;
 
   constructor(blockchain: number, change: PersistentState.Change) {
@@ -41,9 +41,9 @@ export class StoredTransactionChange implements PersistentState.Change {
 }
 
 export class StoredTransaction implements Omit<PersistentState.Transaction, 'changes'> {
-  block?: PersistentState.BlockRef | null | undefined;
+  block?: PersistentState.BlockRef | null;
   blockchain: number;
-  confirmTimestamp?: Date | null | undefined;
+  confirmTimestamp?: Date | null;
   sinceTimestamp: Date;
   state: PersistentState.State;
   status: PersistentState.Status;
