@@ -46,7 +46,7 @@
   "dependencies": {
     "@emeraldpay/bigamount": "^0.4.0",
     "@emeraldpay/bigamount-crypto": "^0.4.0",
-    "@emeraldpay/emerald-vault-core": "^0.9.0-dev",
+    "@emeraldpay/emerald-vault-core": "^0.9.0",
     "@emeraldwallet/core": "^2.8.0-dev",
     "@emeraldwallet/erc20": "^2.8.0-dev",
     "@emeraldwallet/history-store": "^2.8.0-dev",
