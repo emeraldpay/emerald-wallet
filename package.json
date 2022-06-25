@@ -28,9 +28,5 @@
   },
   "workspaces": [
     "packages/*"
-  ],
-  "resolutions": {
-    "@emeraldpay/emerald-vault-core": "https://artifacts.emerald.cash/builds/vault-node/ac86d7cf/emeraldpay-emerald-vault-core-v0.9.0-dev.tgz",
-    "@emeraldpay/emerald-vault-native": "https://artifacts.emerald.cash/builds/vault-node/ac86d7cf/emeraldpay-emerald-vault-native-v0.9.0-dev.tgz"
-  }
+  ]
 }
