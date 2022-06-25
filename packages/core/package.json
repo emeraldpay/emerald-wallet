@@ -1,6 +1,6 @@
 {
   "name": "@emeraldwallet/core",
-  "version": "2.7.0-dev",
+  "version": "2.8.0-dev",
   "description": "",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -19,8 +19,8 @@
     "@emeraldpay/emerald-vault-core": "^0.9.0-dev",
     "@ethereumjs/common": "^2.6.2",
     "@ethereumjs/tx": "^3.5.0",
-    "ethereumjs-util": "^7.1.4",
-    "bignumber.js": "8.0.2"
+    "bignumber.js": "8.0.2",
+    "ethereumjs-util": "^7.1.4"
   },
   "devDependencies": {
     "@types/bn.js": "^4.11.5",
