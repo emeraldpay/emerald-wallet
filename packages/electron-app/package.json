@@ -1,6 +1,6 @@
 {
   "name": "@emeraldwallet/electron-app",
-  "version": "2.7.1",
+  "version": "2.7.2",
   "description": "Emerald Wallet Electron Shell",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -47,11 +47,11 @@
   "dependencies": {
     "@emeraldpay/emerald-vault-core": "^0.9.0",
     "@emeraldpay/emerald-vault-native": "^0.9.0",
-    "@emeraldwallet/core": "^2.7.1",
-    "@emeraldwallet/erc20": "^2.7.1",
-    "@emeraldwallet/history-store": "^2.7.1",
-    "@emeraldwallet/services": "^2.7.1",
-    "@emeraldwallet/store": "^2.7.1",
+    "@emeraldwallet/core": "^2.7.2",
+    "@emeraldwallet/erc20": "^2.7.2",
+    "@emeraldwallet/history-store": "^2.7.2",
+    "@emeraldwallet/services": "^2.7.2",
+    "@emeraldwallet/store": "^2.7.2",
     "electron-log": "4.0.3",
     "electron-store": "5.1.0",
     "uuid": "^3.3.2"
