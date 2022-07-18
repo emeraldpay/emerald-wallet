@@ -541,7 +541,7 @@ function signEtherTx(dispatch: any, ownProps: OwnProps, { entryId, password, tra
   if (isHardware) {
     prepared = validated
       .then(() => dispatch(hwkey.actions.setWatch(false)))
-      .then(() => dispatch(screen.actions.showDialog(EmeraldDialogs.SIGN_TX, tx)));
+      .then(() => dispatch(screen.actions.showDialog(EmeraldDialogs.SIGN_TX)));
   } else {
     prepared = validated;
   }

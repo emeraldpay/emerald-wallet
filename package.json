@@ -5,14 +5,13 @@
   "scripts": {
     "build": "yarn workspace @emeraldwallet/desktop run build",
     "build:dist": "yarn workspace @emeraldwallet/desktop run build:dist",
-    "build:neon:vault": "electron-build-env neon build @emeraldpay/emerald-vault-native --release",
-    "build:neon:persistent-state": "yarn workspace @emeraldwallet/persistent-state run build:rs:release",
+    "build:vault": "electron-build-env neon build @emeraldpay/emerald-vault-native --release",
+    "build:persistent-state": "yarn workspace @emeraldwallet/persistent-state run build:rs:release",
     "clean": "lerna run clean --stream",
     "clean:node_modules": "rimraf node_modules packages/*/node_modules",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "postinstall": "yarn build:neon:persistent-state && yarn build:neon:vault",
+    "postinstall": "yarn build:persistent-state && yarn build:vault",
     "prebuilt:vault": "cd node_modules/@emeraldpay/emerald-vault-native && node-pre-gyp install --fallback-to-build=false --update-binary --runtime=electron --target=15.0.0",
-    "prebuilt:persistent-state": "cd packages/persistent-state && node-pre-gyp install --fallback-to-build=false --update-binary --runtime=electron --target=15.0.0",
     "test": "lerna run test --stream",
     "test:coverage": "lerna run test:coverage --stream --concurrency 1"
   },
@@ -35,8 +34,6 @@
   "resolutions": {
     "@emeraldpay/api": "https://artifacts.emerald.cash/builds/emerald-api-js/8bb1bf86/emeraldpay-api-v0.3.0-alpha.2.tgz",
     "@emeraldpay/api-node": "https://artifacts.emerald.cash/builds/emerald-api-js/8bb1bf86/emeraldpay-api-node-v0.3.0-alpha.2.tgz",
-    "@emeraldpay/emerald-vault-core": "https://artifacts.emerald.cash/builds/vault-node/ac86d7cf/emeraldpay-emerald-vault-core-v0.9.0-dev.tgz",
-    "@emeraldpay/emerald-vault-native": "https://artifacts.emerald.cash/builds/vault-node/ac86d7cf/emeraldpay-emerald-vault-native-v0.9.0-dev.tgz",
     "tslib": "2.3.1"
   }
 }

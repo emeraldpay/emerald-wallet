@@ -171,6 +171,7 @@ interface DispatchProps {
   goToCancelTx(tx: StoredTransaction): void;
   goToSpeedUpTx(tx: StoredTransaction): void;
   goToTransaction(tx: StoredTransaction): void;
+  goToWallet(walletId: string): void;
   setTransactionMeta(meta: PersistentState.TxMeta): Promise<PersistentState.TxMeta>;
 }
 
@@ -193,6 +194,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   getWallet,
   getTransactionMeta,
   goToTransaction,
+  goToWallet,
   setTransactionMeta,
 }) => {
   const classes = useStyles();
@@ -349,7 +351,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
                 {change.direction === 'EARN' ? '+' : '-'} {coinFormatter.format(change.amountValue)}
               </div>
               <div className={classes.changeItemAmount}>
-                <div className={classes.changeItemAmountWallet}>
+                <div className={classes.changeItemAmountWallet} onClick={() => goToWallet(change.wallet.id)}>
                   <HashIcon
                     className={classes.changeItemAmountWalletIcon}
                     size={24}
@@ -406,6 +408,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     },
     goToTransaction(tx) {
       dispatch(screen.actions.gotoScreen(screen.Pages.TX_DETAILS, tx));
+    },
+    goToWallet(walletId) {
+      dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, walletId));
     },
     setTransactionMeta(meta) {
       return dispatch(txhistory.actions.setTransactionMeta(meta));
