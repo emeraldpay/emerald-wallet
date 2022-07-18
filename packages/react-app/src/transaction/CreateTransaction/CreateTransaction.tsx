@@ -519,6 +519,12 @@ function signTokenTx(dispatch: any, ownProps: OwnProps, { entryId, password, tok
 }
 
 function signEtherTx(dispatch: any, ownProps: OwnProps, { entryId, password, transaction: tx }: Request) {
+
+  if (tx.to == null || tx.from == null || !Wei.is(tx.amount)) {
+    console.warn("Invalid tx", tx.to, tx.from, tx.amount)
+    return;
+  }
+
   const blockchainCode = blockchainIdToCode(ownProps.sourceEntry.blockchain);
 
   const plainTx = {
@@ -528,30 +534,33 @@ function signEtherTx(dispatch: any, ownProps: OwnProps, { entryId, password, tra
     value: tx.amount,
   };
 
-  return traceValidate(blockchainCode, plainTx, dispatch, transaction.actions.estimateGas)
-    .then(() => dispatch(hwkey.actions.setWatch(false)))
-    .then(() => dispatch(screen.actions.showDialog(EmeraldDialogs.SIGN_TX)))
-    .then(() => {
-      if (password == null || tx.to == null || tx.from == null || !Wei.is(tx.amount)) {
-        return;
-      }
+  const isHardware = password == null;
 
-      return dispatch(
-        transaction.actions.signTransaction(
-          entryId,
-          blockchainCode,
-          tx.from,
-          password,
-          tx.to,
-          tx.gas.toNumber(),
-          tx.amount,
-          '',
-          tx.gasPrice,
-          tx.maxGasPrice,
-          tx.priorityGasPrice,
-        ),
-      );
-    });
+  const validated = traceValidate(blockchainCode, plainTx, dispatch, transaction.actions.estimateGas);
+  let prepared: Promise<any>;
+  if (isHardware) {
+    prepared = validated
+      .then(() => dispatch(hwkey.actions.setWatch(false)))
+      .then(() => dispatch(screen.actions.showDialog(EmeraldDialogs.SIGN_TX, tx)));
+  } else {
+    prepared = validated;
+  }
+
+  return prepared.then(() => dispatch(
+    transaction.actions.signTransaction(
+      entryId,
+      blockchainCode,
+      tx.from!!,
+      password || '',
+      tx.to!!,
+      tx.gas.toNumber(),
+      tx.amount!! as Wei,
+      '',
+      tx.gasPrice,
+      tx.maxGasPrice,
+      tx.priorityGasPrice,
+    ),
+  ));
 }
 
 function sign(dispatch: any, ownProps: OwnProps, request: Request) {

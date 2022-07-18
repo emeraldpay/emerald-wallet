@@ -55,7 +55,7 @@ function verifySender(expected: string): (a: string, c: BlockchainCode) => Promi
       if (tx.verifySignature()) {
         log.debug('Tx signature verified');
         if (!tx.getSenderAddress().equals(new EthereumAddress(expected))) {
-          log.error(`WRONG SENDER: 0x${tx.getSenderAddress().toString()} != ${expected}`);
+          log.error(`WRONG SENDER: ${tx.getSenderAddress().toString()} != ${expected}`);
           reject(new Error('Emerald Vault returned signature from wrong Sender'));
         } else {
           resolve(raw);
@@ -204,7 +204,7 @@ export function estimateGas(chain: BlockchainCode, tx: Tx): Dispatched<any> {
       data,
       from,
       to,
-      gas: gas.toNumber(),
+      gas: `0x${gas.toString(16)}`,
       value: `0x${value?.number.toString(16) ?? 0}`,
     });
   };

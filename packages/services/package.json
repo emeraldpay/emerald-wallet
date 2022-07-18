@@ -1,6 +1,6 @@
 {
   "name": "@emeraldwallet/services",
-  "version": "2.7.0-dev",
+  "version": "2.8.0-dev",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
   "author": "Emerald Team",
@@ -17,8 +17,8 @@
     "@emeraldpay/api-node": "0.3.0-alpha.2",
     "@emeraldpay/bigamount": "^0.4.0",
     "@emeraldpay/bigamount-crypto": "^0.4.0",
-    "@emeraldwallet/core": "^2.7.0-dev",
-    "@emeraldwallet/store": "^2.7.0-dev",
+    "@emeraldwallet/core": "^2.8.0-dev",
+    "@emeraldwallet/store": "^2.8.0-dev",
     "@grpc/grpc-js": "^1.5.1",
     "google-protobuf": "^3.10.0",
     "text-encoding": "0.7.0"

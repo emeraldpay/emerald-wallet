@@ -6,7 +6,7 @@ import ExposureZeroIcon from '@material-ui/icons/ExposureZero';
 import FileCopyIcon from '@material-ui/icons/FileCopy';
 import PublishIcon from '@material-ui/icons/Publish';
 import * as React from "react";
-import { KeySourceType, KeysSource } from "./flow/types";
+import {KeySourceType, KeysSource} from "./flow/types";
 
 type OwnProps = {
   seeds: vault.SeedDescription[];
@@ -21,34 +21,38 @@ const Component: React.FC<OwnProps> = (
 
     let seedsList = null;
 
-    if (seeds.length > 1) {
-      seedsList = seeds.map((seed) =>
-        <ListItem
-          key={"seed-" + seed.id}
-          onClick={() => onSelect({ type: KeySourceType.SEED_SELECTED, id: seed.id! })}
-        >
-          <ListItemIcon>
-            <FileCopyIcon />
-          </ListItemIcon>
-          <ListItemText
-            primary={"Seed"}
-            secondary={"Seed " + seed.id}
-          />
-        </ListItem>,
-      )
-    } else if (seeds.length == 1) {
-      seedsList = <ListItem
-        key={"seed-" + seeds[0].id}
-        onClick={() => onSelect({ type: KeySourceType.SEED_SELECTED, id: seeds[0].id! })}
-      >
-        <ListItemIcon>
-          <FileCopyIcon />
-        </ListItemIcon>
-        <ListItemText
-          primary={"Use current seed"}
-          secondary={"Seed " + seeds[0].id}
-        />
-      </ListItem>
+    if (seeds.length > 0) {
+      seedsList = seeds.map((seed) => {
+        let label = "Seed " + seed.id;
+        if (seed.label != null && seed.label.length > 0) {
+          label = seed.label;
+        } else if (seed.type == "ledger") {
+          label = "Current Ledger Nano";
+        }
+        let keySource: KeysSource = {
+          type: KeySourceType.SEED_SELECTED,
+          id: seed.id!
+        }
+        if (seed.type == "ledger") {
+          // later it has different flow for Ledger backed seeds
+          keySource = {
+            type: KeySourceType.LEDGER,
+            id: seed.id!
+          }
+        }
+        return <ListItem
+            key={"seed-" + seed.id}
+            onClick={() => onSelect(keySource)}
+          >
+            <ListItemIcon>
+              <FileCopyIcon/>
+            </ListItemIcon>
+            <ListItemText
+              primary={"Seed"}
+              secondary={label}
+            />
+          </ListItem>
+      })
     }
 
     const createSeed = <ListItem
