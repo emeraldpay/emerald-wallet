@@ -1,6 +1,6 @@
 import { BitcoinTransfer, Direction, EthereumTransfer } from '@emeraldpay/api/lib/typesTransaction';
 import { IEmeraldVault, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, blockchainIdToCode, isBitcoin, PersistentState } from '@emeraldwallet/core';
+import { BlockchainCode, blockchainIdToCode, isBitcoin, Logger, PersistentState } from '@emeraldwallet/core';
 import { registry } from '@emeraldwallet/erc20';
 import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
 import { txhistory } from '@emeraldwallet/store';
@@ -9,6 +9,8 @@ import { EmeraldApiAccess } from '../../emerald-client/ApiAccess';
 import { IService } from '../Services';
 
 type EntryIdentifier = { entryId: string; blockchain: number; identifier: string };
+
+const log = Logger.forCategory('TxService');
 
 export class TxService implements IService {
   public readonly id: string;
@@ -158,7 +160,8 @@ export class TxService implements IService {
                       }
 
                       this.webContents?.send('store', txhistory.actions.updateTransaction(entryId, merged));
-                    });
+                    })
+                    .catch((error) => log.error('Error while submitting TX state: ', error));
                 }),
             ),
           ),

@@ -59,6 +59,7 @@ const useStyles = makeStyles((theme) =>
     changeItemAmountWallet: {
       alignItems: 'center',
       color: theme.palette.text.secondary,
+      cursor: 'pointer',
       display: 'flex',
       marginRight: 20,
     },
