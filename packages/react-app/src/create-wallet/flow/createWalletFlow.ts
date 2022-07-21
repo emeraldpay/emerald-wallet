@@ -86,7 +86,7 @@ type OnCreate = (result: Result) => void;
 export class CreateWalletFlow {
   private result: Result = defaultResult();
   private step: STEP_CODE = STEP_CODE.KEY_SOURCE;
-  private onCreate: OnCreate;
+  private readonly onCreate: OnCreate;
 
   constructor(onCreate: OnCreate) {
     this.onCreate = onCreate;

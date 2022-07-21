@@ -99,19 +99,24 @@ const Component: React.FC<Actions & OwnProps & StateProps> = ({
   const [initialized, setInitialized] = React.useState(false);
 
   const [indexes, setIndexes] = React.useState<HDPathIndexes>(
-    table.reduce((carry, item) => (
-      { ...carry, [item.blockchain]: HDPath.parse(item.hdpath).index }
-    ), {}),
+    table.reduce((carry, item) => ({ ...carry, [item.blockchain]: HDPath.parse(item.hdpath).index }), {}),
   );
 
-  const addresses: Partial<Record<BlockchainCode, string>> = {};
-  const ready = !isHWKey || isPreloaded;
+  const addresses = React.useMemo(
+    () =>
+      table.reduce<Partial<Record<BlockchainCode, string>>>((carry, item) => {
+        if (item.xpub || item.address) {
+          return {
+            ...carry,
+            [item.blockchain]: item.xpub ?? item.address,
+          };
+        }
 
-  table.forEach((item) => {
-    if (item.xpub || item.address) {
-      addresses[item.blockchain] = item.xpub ?? item.address;
-    }
-  });
+        return carry;
+      }, {}),
+    [table],
+  );
+  const ready = React.useMemo(() => !isHWKey || isPreloaded, [isHWKey, isPreloaded]);
 
   const isActive = React.useCallback((item: IAddressState) => {
     const amountReader = amountDecoder(item.blockchain);
@@ -127,23 +132,26 @@ const Component: React.FC<Actions & OwnProps & StateProps> = ({
     [prev],
   );
 
-  const renderAddress = React.useCallback((value: string | undefined | null, blockchain: BlockchainCode) => {
-    if (value != null && value.length > 0) {
-      return <Address address={value} disableCopy={true} />;
-    }
+  const renderAddress = React.useCallback(
+    (value: string | undefined | null, blockchain: BlockchainCode) => {
+      if (value != null && value.length > 0) {
+        return <Address address={value} disableCopy={true} />;
+      }
 
-    if (isHWKey) {
-      const appTitle = Blockchains[blockchain].getTitle();
+      if (isHWKey) {
+        const appTitle = Blockchains[blockchain].getTitle();
 
-      return (
-        <Skeleton variant="text" width={380} height={20} className={styles.addressSkeleton}>
-          Open {appTitle} App on Ledger
-        </Skeleton>
-      );
-    }
+        return (
+          <Skeleton variant="text" width={380} height={20} className={styles.addressSkeleton}>
+            Open {appTitle} App on Ledger
+          </Skeleton>
+        );
+      }
 
-    return <Skeleton variant="text" width={380} height={12} />;
-  }, []);
+      return <Skeleton variant="text" width={380} height={12} />;
+    },
+    [isHWKey],
+  );
 
   const renderBalance = React.useCallback((item: IAddressState) => {
     if (item.balance == null || item.balance.length == 0) {
@@ -162,7 +170,7 @@ const Component: React.FC<Actions & OwnProps & StateProps> = ({
 
       onAccountUpdate(path.account, ready, addresses, indexes);
     },
-    [addresses, indexes, ready],
+    [addresses, indexes, ready, onAccountUpdate],
   );
 
   const onIndexChange = React.useCallback(
@@ -174,13 +182,14 @@ const Component: React.FC<Actions & OwnProps & StateProps> = ({
 
         onAccountUpdate(accountId, ready, addresses, newIndexes);
       },
-    [accountId, addresses, indexes, ready],
+    [accountId, addresses, indexes, ready, onAccountUpdate],
   );
 
   React.useEffect(() => {
     if (!initialized) {
       onStart();
       onAccountUpdate(accountId, ready, addresses, indexes);
+
       setInitialized(true);
     }
   }, []);
@@ -190,9 +199,7 @@ const Component: React.FC<Actions & OwnProps & StateProps> = ({
   }, [isHWKey, isPreloaded]);
 
   React.useEffect(() => {
-    setIndexes(table.reduce((carry, item) => (
-      { ...carry, [item.blockchain]: HDPath.parse(item.hdpath).index }
-    ), {}));
+    setIndexes(table.reduce((carry, item) => ({ ...carry, [item.blockchain]: HDPath.parse(item.hdpath).index }), {}));
   }, [table]);
 
   return (
@@ -289,9 +296,9 @@ export default connect(
     const disabledAccounts =
       seed.type == 'id'
         ? accounts.selectors
-          .allWallets(state)
-          .map(({ reserved }) => reserved?.map(({ accountId }) => accountId) ?? [])
-          .reduce((result, accountId) => result.concat(accountId), [])
+            .allWallets(state)
+            .map(({ reserved }) => reserved?.map(({ accountId }) => accountId) ?? [])
+            .reduce((result, accountId) => result.concat(accountId), [])
         : [];
 
     let accountId = 0;
