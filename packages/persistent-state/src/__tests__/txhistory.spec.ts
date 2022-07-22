@@ -193,4 +193,45 @@ describe("Tx History", () => {
     expect(act.items[0].changes[0].address).toBe("0xf958f1dc9290422d3624b72fc871a8ebb0387f56");
   });
 
+  test("save change without wallet", async () => {
+    let tx1: Transaction = {
+      block: {
+        blockId: "0x0dd485a89361967c82b06732d11af9d1c85cc1f2dee7b6cb99ceb64a78f01967",
+        height: 4910978,
+        timestamp: new Date("2021-06-04T14:14:23.000Z")
+      },
+      blockchain: 10005,
+      changes: [
+        {
+          asset: "ETH",
+          address: "0xf958f1dc9290422d3624b72fc871a8ebb0387f56",
+          amount: "50000000000000000000",
+          direction: Direction.EARN,
+          type: ChangeType.TRANSFER,
+          wallet: "e4bf870e-6247-4465-a476-ad99716c38ce-0"
+        },
+        {
+          asset: "ETH",
+          address: "0x8ebb0387f56f958f1d3624b72fc871ac9290422d",
+          amount: "50000000000000000000",
+          direction: Direction.EARN,
+          type: ChangeType.TRANSFER
+        }
+      ],
+      sinceTimestamp: new Date("2021-06-04T14:14:23.000Z"),
+      confirmTimestamp: new Date("2021-06-04T14:14:23.000Z"),
+      state: 12,
+      status: 0,
+      txId: "0x0d732d11af9d1c85cc1f2dee7b6cb99ceb64a78fd485a89361967c82b0601967"
+    };
+
+    await state.txhistory.submit(tx1);
+    let filter: TxHistoryFilter = {
+      wallet: "e4bf870e-6247-4465-a476-ad99716c38ce"
+    }
+    let act = await state.txhistory.query(filter);
+    expect(act.items.length).toBe(1);
+    expect(act.items[0].changes[0].address).toBe("0xf958f1dc9290422d3624b72fc871a8ebb0387f56");
+  });
+
 })
