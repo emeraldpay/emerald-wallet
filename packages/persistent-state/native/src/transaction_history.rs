@@ -143,6 +143,9 @@ impl TryFrom<ChangeJson> for Change {
         }
       }
     }
+    if let Some(address) = value.address {
+      change.address = address;
+    }
     change.amount = value.amount;
     change.asset = value.asset;
     change.change_type = Change_ChangeType::from_i32(value.change_type as i32)

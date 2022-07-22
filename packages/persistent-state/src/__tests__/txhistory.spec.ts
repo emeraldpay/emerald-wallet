@@ -156,4 +156,31 @@ describe("Tx History", () => {
     expect(act3).toBe("NjgyNmY0YWUtOTE3MC00MDIyLTllMDEtNzBhZjZmMjIxYWUy");
   });
 
+  test("save change address", async () => {
+    let tx1: Transaction = {
+      blockchain: blockchainCodeToId(BlockchainCode.ETH),
+      txId: "0x5ec823816f186928c4ab6baae7cc80a837665d9096e0045d4f5d14cf076eb7b5",
+      state: State.PREPARED,
+      sinceTimestamp: new Date("2021-01-05T10:11:12"),
+      status: Status.UNKNOWN,
+      changes: [
+        {
+          type: ChangeType.TRANSFER,
+          address: "0xf958f1dc9290422d3624b72fc871a8ebb0387f56",
+          amount: "-100001",
+          wallet: "74b0a509-9083-4b12-80bb-e01db1fa2293-1",
+          asset: "ETH"
+        }
+      ]
+    };
+
+    await state.txhistory.submit(tx1);
+    let filter: TxHistoryFilter = {
+      wallet: "74b0a509-9083-4b12-80bb-e01db1fa2293"
+    }
+    let act = await state.txhistory.query(filter);
+    expect(act.items.length).toBe(1);
+    expect(act.items[0].changes[0].address).toBe("0xf958f1dc9290422d3624b72fc871a8ebb0387f56");
+  });
+
 })
