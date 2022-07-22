@@ -42,7 +42,7 @@ interface StateProps {
 
 interface DispatchProps {
   onCancel(): void;
-  onOk(entryId: EntryId): void;
+  onSave(entryId: EntryId): void;
 }
 
 function distinct<T>(value: T, index: number, array: T[]): boolean {
@@ -62,52 +62,75 @@ function anyAddress(accepted: Accept[], blockchain: BlockchainCode, token?: AnyC
   return address;
 }
 
-const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({ accepted, assets, wallet, onCancel, onOk }) => {
+const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
+  accepted,
+  assets,
+  wallet,
+  onCancel,
+  onSave,
+}) => {
   const styles = useStyles();
 
-  const availableBlockchains = accepted.map((accept) => accept.blockchain).filter(distinct);
+  const availableBlockchains = React.useMemo(
+    () => accepted.map((accept) => accept.blockchain).filter(distinct),
+    [accepted],
+  );
 
   const [currentBlockchain, setCurrentBlockchain] = React.useState(availableBlockchains[0]);
   const [currentToken, setCurrentToken] = React.useState(anyToken(accepted, currentBlockchain));
   const [currentAddress, setCurrentAddress] = React.useState(anyAddress(accepted, currentBlockchain, currentToken));
 
-  function selectBlockchain(blockchain: BlockchainCode): void {
-    const token = anyToken(accepted, blockchain);
+  const availableAddresses = React.useMemo(
+    () =>
+      accepted
+        .filter((item) => item.blockchain === currentBlockchain && item.token === currentToken)
+        .map((item) => item.addresses)
+        .reduce((carry: string[], address: string[]) => [...carry, ...address], [])
+        .filter(distinct),
+    [accepted, currentBlockchain, currentToken],
+  );
 
-    setCurrentAddress(anyAddress(accepted, blockchain, token));
-    setCurrentBlockchain(blockchain);
-    setCurrentToken(token);
-  }
+  const availableCoins = React.useMemo(
+    () =>
+      accepted
+        .filter((item) => item.blockchain === currentBlockchain)
+        .map((item) => item.token)
+        .filter(distinct),
+    [accepted, currentBlockchain],
+  );
 
-  function selectToken(token: AnyCoinCode): void {
-    setCurrentAddress(anyAddress(accepted, currentBlockchain, token));
-    setCurrentToken(token);
-  }
+  const currentEntry = React.useMemo(
+    () =>
+      currentAddress == null
+        ? undefined
+        : accepted.find((item) => item.blockchain === currentBlockchain && item.addresses.indexOf(currentAddress) >= 0)
+            ?.entryId,
+    [accepted, currentAddress, currentBlockchain],
+  );
 
-  function findEntry(): EntryId | undefined {
-    if (currentAddress == null) {
-      return undefined;
-    }
+  const tokenInfo = React.useMemo(
+    () => registry.tokens[currentBlockchain]?.find((token) => token.symbol === currentToken),
+    [currentBlockchain, currentToken],
+  );
 
-    const accepts = accepted.find(
-      (item) => item.blockchain === currentBlockchain && item.addresses.indexOf(currentAddress) >= 0,
-    );
+  const selectBlockchain = React.useCallback(
+    (blockchain: BlockchainCode): void => {
+      const token = anyToken(accepted, blockchain);
 
-    return accepts?.entryId;
-  }
+      setCurrentAddress(anyAddress(accepted, blockchain, token));
+      setCurrentBlockchain(blockchain);
+      setCurrentToken(token);
+    },
+    [accepted],
+  );
 
-  const availableAddresses = accepted
-    .filter((item) => item.blockchain === currentBlockchain && item.token === currentToken)
-    .map((item) => item.addresses)
-    .reduce((carry: string[], address: string[]) => [...carry, ...address], [])
-    .filter(distinct);
-
-  const availableCoins = accepted
-    .filter((item) => item.blockchain === currentBlockchain)
-    .map((item) => item.token)
-    .filter(distinct);
-
-  const tokenInfo = registry.tokens[currentBlockchain]?.find((token) => token.symbol === currentToken);
+  const selectToken = React.useCallback(
+    (token: AnyCoinCode): void => {
+      setCurrentAddress(anyAddress(accepted, currentBlockchain, token));
+      setCurrentToken(token);
+    },
+    [accepted, currentBlockchain],
+  );
 
   let qrCodeValue = currentAddress;
 
@@ -116,7 +139,7 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({ accepted, 
     qrCodeValue = `${qrCodeValue}?erc20=${tokenInfo.symbol}`;
   }
 
-  const currentEntry = findEntry();
+  const qrCode = useQRCode(qrCodeValue ?? '');
 
   return (
     <Page title="Request Cryptocurrency" leftIcon={<Back onClick={onCancel} />}>
@@ -188,7 +211,7 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({ accepted, 
         {qrCodeValue != null && (
           <Grid item xs={4}>
             <Box>
-              <img src={useQRCode(qrCodeValue)} alt="QR Code" width={250} />
+              <img src={qrCode} alt="QR Code" width={250} />
             </Box>
           </Grid>
         )}
@@ -196,7 +219,7 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({ accepted, 
       <Grid item xs={8}>
         <Button onClick={() => onCancel()}>Cancel</Button>
         {currentEntry != null && (
-          <Button color="primary" variant="contained" onClick={() => onOk(currentEntry)}>
+          <Button color="primary" variant="contained" onClick={() => onSave(currentEntry)}>
             Save
           </Button>
         )}
@@ -210,45 +233,51 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     const wallet = accounts.selectors.findWallet(state, ownProps.walletId);
     const assets: IBalanceValue[] = wallet == null ? [] : accounts.selectors.getWalletBalances(state, wallet, false);
 
-    const accepted: Accept[] = [];
+    const accepted =
+      wallet?.entries
+        .filter((entry) => !entry.receiveDisabled)
+        .reduce<Accept[]>((carry, entry) => {
+          let address: string | undefined;
 
-    wallet?.entries
-      .filter((entry) => !entry.receiveDisabled)
-      .forEach((entry) => {
-        let address: string | undefined;
-
-        if (isEthereumEntry(entry)) {
-          address = entry.address?.value;
-        } else if (isBitcoinEntry(entry)) {
-          address = entry.addresses.find((a: CurrentAddress) => a.role === 'receive')?.address;
-        }
-
-        if (address == null) {
-          return;
-        }
-
-        const blockchain = blockchainIdToCode(entry.blockchain);
-
-        accepted.push({
-          blockchain,
-          addresses: [address],
-          entryId: entry.id,
-          token: Blockchains[blockchain].params.coinTicker,
-        });
-
-        Blockchains[blockchain].getAssets().forEach((token) => {
-          if (address == null) {
-            return;
+          if (isEthereumEntry(entry)) {
+            address = entry.address?.value;
+          } else if (isBitcoinEntry(entry)) {
+            address = entry.addresses.find((a: CurrentAddress) => a.role === 'receive')?.address;
           }
 
-          accepted.push({
-            blockchain,
-            token,
-            addresses: [address],
-            entryId: entry.id,
-          });
-        });
-      });
+          if (address == null) {
+            return carry;
+          }
+
+          const blockchain = blockchainIdToCode(entry.blockchain);
+
+          const accepts = Blockchains[blockchain].getAssets().reduce<Accept[]>((carry, token) => {
+            if (address == null) {
+              return carry;
+            }
+
+            return [
+              ...carry,
+              {
+                blockchain,
+                token,
+                addresses: [address],
+                entryId: entry.id,
+              },
+            ];
+          }, []);
+
+          return [
+            ...carry,
+            {
+              blockchain,
+              addresses: [address],
+              entryId: entry.id,
+              token: Blockchains[blockchain].params.coinTicker,
+            },
+            ...accepts,
+          ];
+        }, []) ?? [];
 
     return {
       accepted,
@@ -256,13 +285,11 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       wallet,
     };
   },
-  (dispatch, ownProps) => {
-    return {
-      onCancel: () => dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId)),
-      onOk: (entryId: EntryId) => {
-        dispatch(accounts.actions.nextAddress(entryId, 'receive'));
-        dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId));
-      },
-    };
-  },
-)(Component);
+  (dispatch, ownProps) => ({
+    onCancel: () => dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId)),
+    onSave: (entryId: EntryId) => {
+      dispatch(accounts.actions.nextAddress(entryId, 'receive'));
+      dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId));
+    },
+  }),
+)(ReceiveScreen);
