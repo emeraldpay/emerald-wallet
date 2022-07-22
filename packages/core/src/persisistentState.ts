@@ -63,6 +63,11 @@ export enum ChangeType {
   FEE = 2,
 }
 
+export enum Direction {
+  EARN = 0,
+  SPEND = 1,
+}
+
 export interface Change {
   wallet?: EntryId;
   address?: string;
@@ -70,9 +75,13 @@ export interface Change {
   asset: AnyCoinCode;
   /**
    * Amount in the specified asset, represented in the smallest unit (i.e., a SAT, WEI, etc).
-   * Note that the amount may be negative value, when transferred _from_ the wallet.
+   * Note that the amount is always a positive number
    */
   amount: string;
+  /**
+   * Specified if the amount is EARNED (i.e. a positive sign for amount) or SPENT (i.e., a negative sign)
+   */
+  direction: Direction;
   type: ChangeType;
 }
 
