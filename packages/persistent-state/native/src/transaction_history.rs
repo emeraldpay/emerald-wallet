@@ -2,7 +2,7 @@ use std::str::FromStr;
 use neon::prelude::*;
 use emerald_wallet_state::access::transactions::{Filter, Transactions, WalletRef};
 use emerald_wallet_state::access::pagination::{PageQuery, PageResult};
-use emerald_wallet_state::proto::transactions::{BlockchainId, Change, Change_ChangeType, State, Status, Transaction};
+use emerald_wallet_state::proto::transactions::{BlockchainId, Change, Change_ChangeType, Direction as proto_Direction, State, Status, Transaction};
 use crate::errors::StateManagerError;
 use crate::instance::Instance;
 use chrono::{DateTime, TimeZone, Utc};
@@ -30,6 +30,7 @@ struct ChangeJson {
   amount: String,
   #[serde(rename = "type")]
   change_type: usize,
+  direction: usize,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -146,6 +147,8 @@ impl TryFrom<ChangeJson> for Change {
     if let Some(address) = value.address {
       change.address = address;
     }
+    change.direction = proto_Direction::from_i32(value.direction as i32)
+      .ok_or(StateManagerError::InvalidJson("direction".to_string()))?;
     change.amount = value.amount;
     change.asset = value.asset;
     change.change_type = Change_ChangeType::from_i32(value.change_type as i32)
@@ -159,6 +162,7 @@ impl From<&Change> for ChangeJson {
     ChangeJson {
       wallet: format!("{}-{}", value.wallet_id, value.entry_id),
       address: if_not_empty(value.address.clone()),
+      direction: value.direction as usize,
       hd_path: if_not_empty(value.hd_path.clone()),
       asset: value.asset.clone(),
       amount: value.amount.clone(),

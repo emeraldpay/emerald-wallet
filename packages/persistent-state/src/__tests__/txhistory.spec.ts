@@ -1,6 +1,13 @@
 import {tempPath} from "./_commons";
 import {PersistentStateImpl} from "../api";
-import {ChangeType, TxHistoryFilter, State, Status, Transaction} from "@emeraldwallet/core/lib/persisistentState";
+import {
+  ChangeType,
+  Direction,
+  State,
+  Status,
+  Transaction,
+  TxHistoryFilter
+} from "@emeraldwallet/core/lib/persisistentState";
 import {BlockchainCode, blockchainCodeToId} from "@emeraldwallet/core";
 
 describe("Tx History", () => {
@@ -83,7 +90,8 @@ describe("Tx History", () => {
       changes: [
         {
           type: ChangeType.TRANSFER,
-          amount: "-100001",
+          amount: "100001",
+          direction: Direction.SPEND,
           wallet: "74b0a509-9083-4b12-80bb-e01db1fa2293-1",
           asset: "ETH"
         }
@@ -99,6 +107,7 @@ describe("Tx History", () => {
         {
           type: ChangeType.TRANSFER,
           amount: "100001",
+          direction: Direction.EARN,
           wallet: "53c1fdb3-a2fd-4233-8e5c-b3ecc24486c4-1",
           asset: "ETH"
         }
@@ -167,7 +176,8 @@ describe("Tx History", () => {
         {
           type: ChangeType.TRANSFER,
           address: "0xf958f1dc9290422d3624b72fc871a8ebb0387f56",
-          amount: "-100001",
+          direction: Direction.SPEND,
+          amount: "100001",
           wallet: "74b0a509-9083-4b12-80bb-e01db1fa2293-1",
           asset: "ETH"
         }
