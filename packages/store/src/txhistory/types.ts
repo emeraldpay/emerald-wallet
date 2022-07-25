@@ -11,9 +11,9 @@ export class StoredTransactionChange implements PersistentState.Change {
   amount: string;
   address?: string;
   asset: AnyCoinCode;
-  direction: 'EARN' | 'SPEND';
+  direction: PersistentState.Direction;
   hdPath?: string;
-  type: 'TRANSFER' | 'FEE';
+  type: PersistentState.ChangeType;
   wallet?: string;
   private readonly _blockchain: number;
 

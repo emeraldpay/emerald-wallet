@@ -1,7 +1,13 @@
 import { FormatterBuilder } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { Uuid } from '@emeraldpay/emerald-vault-core/lib/types';
-import { blockchainById, blockchainIdToCode, EthereumTransaction, isEthereum } from '@emeraldwallet/core';
+import {
+  blockchainById,
+  blockchainIdToCode,
+  EthereumTransaction,
+  isEthereum,
+  PersistentState,
+} from '@emeraldwallet/core';
 import { screen, StoredTransaction, transaction } from '@emeraldwallet/store';
 import { Address, Back, Balance, Button, ButtonGroup, FormRow, Page } from '@emeraldwallet/ui';
 import { createStyles, Typography } from '@material-ui/core';
@@ -10,6 +16,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import { TxStatus } from './TxStatus';
 
+const { Direction } = PersistentState;
 const { gotoScreen, gotoWalletsScreen } = screen.actions;
 
 const styles = createStyles({
@@ -99,7 +106,9 @@ const TxDetails: React.FC<OwnProps & DispatchProps & StylesProps> = ({
             return (
               <div key={`${change.address}-${index}`}>
                 <FormRow
-                  leftColumn={<div className={classes.fieldName}>{change.direction === 'EARN' ? 'From' : 'To'}</div>}
+                  leftColumn={
+                    <div className={classes.fieldName}>{change.direction === Direction.EARN ? 'From' : 'To'}</div>
+                  }
                   rightColumn={
                     <>
                       <Address address={change.address ?? 'Unknown address'} disableCopy={change.address == null} />

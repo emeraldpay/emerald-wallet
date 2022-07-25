@@ -23,6 +23,8 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import ProgressPie from './ProgressPie';
 
+const { Direction, Status } = PersistentState;
+
 const Confirmations: Readonly<Record<BlockchainCode, number>> = {
   [BlockchainCode.Unknown]: 1,
   [BlockchainCode.BTC]: 3,
@@ -266,9 +268,9 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
           <CoinAvatar
             className={classNames(
               classes.progressStatus,
-              tx.status === PersistentState.Status.OK
+              tx.status === Status.OK
                 ? classes.progressStatusOk
-                : tx.status === PersistentState.Status.FAILED
+                : tx.status === Status.FAILED
                 ? classes.progressStatusFail
                 : classes.progressStatusUnknown,
             )}
@@ -349,7 +351,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
           .map((change, index) => (
             <div className={index > 0 ? classes.changeItem : undefined} key={`${change.address}-${index}`}>
               <div className={classes.changeItemCoin}>
-                {change.direction === 'EARN' ? '+' : '-'} {coinFormatter.format(change.amountValue)}
+                {change.direction === Direction.EARN ? '+' : '-'} {coinFormatter.format(change.amountValue)}
               </div>
               <div className={classes.changeItemAmount}>
                 <div className={classes.changeItemAmountWallet} onClick={() => goToWallet(change.wallet.id)}>

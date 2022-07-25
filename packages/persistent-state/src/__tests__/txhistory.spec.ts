@@ -18,12 +18,12 @@ describe("Tx History", () => {
   });
 
   test("empty query", async () => {
-    let act = await state.txhistory.query();
+    const act = await state.txhistory.query();
     expect(act).toEqual({items: [], cursor: null});
   });
 
   test("add a tx and query all", async () => {
-    let tx: Transaction = {
+    const tx: Transaction = {
       blockchain: blockchainCodeToId(BlockchainCode.ETH),
       txId: "0xd91a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc44563",
       state: State.PREPARED,
@@ -32,14 +32,14 @@ describe("Tx History", () => {
       changes: []
     };
     await state.txhistory.submit(tx);
-    let act = await state.txhistory.query();
+    const act = await state.txhistory.query();
     expect(act).toEqual({items: [tx], cursor: null});
     // make sure it's actual date, not a string. a date keeps timezone and millis
-    expect(act.items[0].sinceTimestamp.toISOString()).toBe("2021-03-05T15:11:12.000Z");
+    expect(act.items[0].sinceTimestamp.toISOString()).toBe("2021-03-05T07:11:12.000Z");
   });
 
   test("add a tx, remove it and query all", async () => {
-    let tx: Transaction = {
+    const tx: Transaction = {
       blockchain: blockchainCodeToId(BlockchainCode.ETH),
       txId: "0xd91a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc44563",
       state: State.PREPARED,
@@ -49,12 +49,12 @@ describe("Tx History", () => {
     };
     await state.txhistory.submit(tx);
     await state.txhistory.remove(tx.blockchain, tx.txId);
-    let act = await state.txhistory.query();
+    const act = await state.txhistory.query();
     expect(act).toEqual({items: [], cursor: null});
   });
 
   test("add couple of txes and query only last", async () => {
-    let tx1: Transaction = {
+    const tx1: Transaction = {
       blockchain: blockchainCodeToId(BlockchainCode.ETH),
       txId: "0x5ec823816f186928c4ab6baae7cc80a837665d9096e0045d4f5d14cf076eb7b5",
       state: State.PREPARED,
@@ -62,7 +62,7 @@ describe("Tx History", () => {
       status: Status.UNKNOWN,
       changes: []
     };
-    let tx2: Transaction = {
+    const tx2: Transaction = {
       blockchain: blockchainCodeToId(BlockchainCode.ETH),
       txId: "0xd91a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc44563",
       state: State.PREPARED,
@@ -73,15 +73,15 @@ describe("Tx History", () => {
     await state.txhistory.submit(tx1);
     await state.txhistory.submit(tx2);
 
-    let filter: TxHistoryFilter = {
+    const filter: TxHistoryFilter = {
       after: new Date("2021-03-01T00:00:00")
     }
-    let act = await state.txhistory.query(filter);
+    const act = await state.txhistory.query(filter);
     expect(act).toEqual({items: [tx2], cursor: null});
   });
 
-  test("add couple of txes and query by  wallet", async () => {
-    let tx1: Transaction = {
+  test("add couple of txes and query by wallet", async () => {
+    const tx1: Transaction = {
       blockchain: blockchainCodeToId(BlockchainCode.ETH),
       txId: "0x5ec823816f186928c4ab6baae7cc80a837665d9096e0045d4f5d14cf076eb7b5",
       state: State.PREPARED,
@@ -97,7 +97,7 @@ describe("Tx History", () => {
         }
       ]
     };
-    let tx2: Transaction = {
+    const tx2: Transaction = {
       blockchain: blockchainCodeToId(BlockchainCode.ETH),
       txId: "0xd91a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc44563",
       state: State.PREPARED,
@@ -147,26 +147,26 @@ describe("Tx History", () => {
   });
 
   test("empty cursor for a new address", async () => {
-    let act = await state.txhistory.get_cursor("xpub661MyMwAqRbcGczjuMoRm6dXaLDEhW1u34gKenbeYqAix21mdUKJyuyu5F1rzYGVxyL6tmgBUAEPrEz92mBXjByMRiJdba9wpnN37RLLAXa");
+    const act = await state.txhistory.getCursor("xpub661MyMwAqRbcGczjuMoRm6dXaLDEhW1u34gKenbeYqAix21mdUKJyuyu5F1rzYGVxyL6tmgBUAEPrEz92mBXjByMRiJdba9wpnN37RLLAXa");
     expect(act).toBeNull();
   });
 
   test("updates cursor value", async () => {
-    let xpub = "xpub661MyMwAqRbcGczjuMoRm6dXaLDEhW1u34gKenbeYqAix21mdUKJyuyu5F1rzYGVxyL6tmgBUAEPrEz92mBXjByMRiJdba9wpnN37RLLAXa";
-    let act = await state.txhistory.get_cursor(xpub);
+    const xpub = "xpub661MyMwAqRbcGczjuMoRm6dXaLDEhW1u34gKenbeYqAix21mdUKJyuyu5F1rzYGVxyL6tmgBUAEPrEz92mBXjByMRiJdba9wpnN37RLLAXa";
+    const act = await state.txhistory.getCursor(xpub);
     expect(act).toBeNull();
 
-    await state.txhistory.set_cursor(xpub, "MDYwNmMzOTctNTBiNy00NjIzLThmOTktYmU5Y2VhMjk3NTc1");
-    let act2 = await state.txhistory.get_cursor(xpub);
+    await state.txhistory.setCursor(xpub, "MDYwNmMzOTctNTBiNy00NjIzLThmOTktYmU5Y2VhMjk3NTc1");
+    const act2 = await state.txhistory.getCursor(xpub);
     expect(act2).toBe("MDYwNmMzOTctNTBiNy00NjIzLThmOTktYmU5Y2VhMjk3NTc1");
 
-    await state.txhistory.set_cursor(xpub, "NjgyNmY0YWUtOTE3MC00MDIyLTllMDEtNzBhZjZmMjIxYWUy");
-    let act3 = await state.txhistory.get_cursor(xpub);
+    await state.txhistory.setCursor(xpub, "NjgyNmY0YWUtOTE3MC00MDIyLTllMDEtNzBhZjZmMjIxYWUy");
+    const act3 = await state.txhistory.getCursor(xpub);
     expect(act3).toBe("NjgyNmY0YWUtOTE3MC00MDIyLTllMDEtNzBhZjZmMjIxYWUy");
   });
 
   test("save change address", async () => {
-    let tx1: Transaction = {
+    const tx1: Transaction = {
       blockchain: blockchainCodeToId(BlockchainCode.ETH),
       txId: "0x5ec823816f186928c4ab6baae7cc80a837665d9096e0045d4f5d14cf076eb7b5",
       state: State.PREPARED,
@@ -185,16 +185,16 @@ describe("Tx History", () => {
     };
 
     await state.txhistory.submit(tx1);
-    let filter: TxHistoryFilter = {
+    const filter: TxHistoryFilter = {
       wallet: "74b0a509-9083-4b12-80bb-e01db1fa2293"
     }
-    let act = await state.txhistory.query(filter);
+    const act = await state.txhistory.query(filter);
     expect(act.items.length).toBe(1);
     expect(act.items[0].changes[0].address).toBe("0xf958f1dc9290422d3624b72fc871a8ebb0387f56");
   });
 
   test("save change without wallet", async () => {
-    let tx1: Transaction = {
+    const tx1: Transaction = {
       block: {
         blockId: "0x0dd485a89361967c82b06732d11af9d1c85cc1f2dee7b6cb99ceb64a78f01967",
         height: 4910978,
@@ -226,10 +226,10 @@ describe("Tx History", () => {
     };
 
     await state.txhistory.submit(tx1);
-    let filter: TxHistoryFilter = {
+    const filter: TxHistoryFilter = {
       wallet: "e4bf870e-6247-4465-a476-ad99716c38ce"
     }
-    let act = await state.txhistory.query(filter);
+    const act = await state.txhistory.query(filter);
     expect(act.items.length).toBe(1);
     expect(act.items[0].changes[0].address).toBe("0xf958f1dc9290422d3624b72fc871a8ebb0387f56");
   });

@@ -1,5 +1,6 @@
-import {EntryId, Uuid} from "@emeraldpay/emerald-vault-core";
-import {AnyCoinCode} from "./Asset";
+import { EntryId, Uuid } from '@emeraldpay/emerald-vault-core';
+import { AnyCoinCode } from './Asset';
+import { BlockchainCode } from './blockchains';
 
 /**
  * =====================================================================================================================
@@ -123,24 +124,59 @@ export interface TxHistoryFilter {
   /**
    * Require the specified wallet or its entry
    */
-  wallet?: Uuid | EntryId,
+  wallet?: Uuid | EntryId;
   /**
    * require a transaction known or confirmed after the specified moment
    */
-  after?: Date,
+  after?: Date;
   /**
    * require a transaction known or confirmed before the specified moment
    */
-  before?: Date,
+  before?: Date;
+}
+
+export interface TxMeta {
+  /**
+   * Timestamp when the meta was assigned by user
+   */
+  timestamp: Date;
+  /**
+   * Blockchain
+   */
+  blockchain: BlockchainCode;
+  /**
+   * Transaction ID aka Hash
+   */
+  txId: string;
+  /**
+   * Used assigned label
+   */
+  label?: string;
+}
+
+export interface TxMetaStore {
+  /**
+   * Persist the meta. If an existing meta has an older timestamp get replaced with new, otherwise the it keeps it as is (i.e. always newest meta)
+   * @param meta
+   * @return the most up-to-date meta, which may be just provided or an existing one
+   */
+  set(meta: TxMeta): Promise<TxMeta>;
+
+  /**
+   * Read meta for a transaction
+   *
+   * @param blockchain
+   * @param txid
+   */
+  get(blockchain: BlockchainCode, txid: string): Promise<TxMeta | null>;
 }
 
 export interface TxHistory {
-
   /**
    * Add or update existing transaction in the storage
    * @param tx
    */
-  submit(tx: Transaction): Promise<void>;
+  submit(tx: Transaction): Promise<Transaction>;
 
   /**
    * Remove transaction from the storage
@@ -159,7 +195,7 @@ export interface TxHistory {
    * Get current API Cursor for the specified address
    * @param target individual address or xpub
    */
-  get_cursor(target: string): Promise<string | null>;
+  getCursor(target: string): Promise<string | null>;
 
   /**
    * Set current cursor received from remote API
@@ -167,7 +203,7 @@ export interface TxHistory {
    * @param target individual address or xpub
    * @param cursor cursor value
    */
-  set_cursor(target: string, cursor: string): Promise<void>;
+  setCursor(target: string, cursor: string): Promise<void>;
 }
 
 /**
@@ -176,7 +212,7 @@ export interface TxHistory {
 export interface AddressbookItem {
   id?: string | undefined;
   address: {
-    type: "plain" | "xpub";
+    type: 'plain' | 'xpub';
     address: string;
   };
   blockchain: number;
@@ -197,13 +233,11 @@ export interface AddressbookFilter {
 }
 
 export interface Addressbook {
-
   /**
    * Add or update existing transaction in the storage
    * @param item
    */
   add(item: AddressbookItem): Promise<string>;
-
 
   /**
    * Remove an item from the address book
@@ -232,11 +266,10 @@ export interface XPubPosition {
    * @param xpub
    * @param pos
    */
-  set_at_least(xpub: string, pos: number): Promise<void>;
+  setAtLeast(xpub: string, pos: number): Promise<void>;
 }
 
 export interface PersistentState {
-
   /**
    * Manage Transaction History
    */
@@ -252,4 +285,3 @@ export interface PersistentState {
    */
   xpubpos: XPubPosition;
 }
-

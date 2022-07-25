@@ -10,6 +10,8 @@ import {
 import classNames from 'classnames';
 import * as React from 'react';
 
+const { State } = PersistentState;
+
 const useStyles = makeStyles((theme) =>
   createStyles({
     block: {
@@ -39,35 +41,35 @@ export const TxStatus: React.FC<OwnProps> = ({ state }) => {
   const classes = useStyles();
 
   switch (state) {
-    case PersistentState.State.PREPARED:
+    case State.PREPARED:
       return (
         <div className={classNames(classes.block, classes.info)}>
           <QueryBuilderIcon />
           &nbsp;Prepared
         </div>
       );
-    case PersistentState.State.SUBMITTED:
+    case State.SUBMITTED:
       return (
         <div className={classNames(classes.block, classes.info)}>
           <ForwardIcon />
           &nbsp;Submitted
         </div>
       );
-    case PersistentState.State.REPLACED:
+    case State.REPLACED:
       return (
         <div className={classNames(classes.block, classes.warning)}>
           <WarningIcon />
           &nbsp;Replaced
         </div>
       );
-    case PersistentState.State.CONFIRMED:
+    case State.CONFIRMED:
       return (
         <div className={classNames(classes.block, classes.success)}>
           <CheckIcon />
           &nbsp;Confirmed
         </div>
       );
-    case PersistentState.State.DROPPED:
+    case State.DROPPED:
       return (
         <div className={classNames(classes.block, classes.error)}>
           <ErrorIcon />

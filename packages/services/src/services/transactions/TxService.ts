@@ -1,4 +1,4 @@
-import { BitcoinTransfer, Direction, EthereumTransfer } from '@emeraldpay/api/lib/typesTransaction';
+import { BitcoinTransfer, Direction as ApiDirection, EthereumTransfer } from '@emeraldpay/api/lib/typesTransaction';
 import { IEmeraldVault, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, blockchainIdToCode, isBitcoin, Logger, PersistentState } from '@emeraldwallet/core';
 import { registry } from '@emeraldwallet/erc20';
@@ -7,6 +7,8 @@ import { txhistory } from '@emeraldwallet/store';
 import { WebContents } from 'electron';
 import { EmeraldApiAccess } from '../../emerald-client/ApiAccess';
 import { IService } from '../Services';
+
+const { ChangeType, Direction: StateDirection, State, Status } = PersistentState;
 
 type EntryIdentifier = { entryId: string; blockchain: number; identifier: string };
 
@@ -90,16 +92,18 @@ export class TxService implements IService {
                           address: tx.address,
                           amount: transfer.amount,
                           asset: 'BTC',
-                          direction: transfer.direction == Direction.EARN ? 'EARN' : 'SPEND',
-                          type: PersistentState.ChangeType.TRANSFER,
+                          direction:
+                            transfer.direction == ApiDirection.EARN ? StateDirection.EARN : StateDirection.SPEND,
+                          type: ChangeType.TRANSFER,
                           wallet: entryId,
                         },
                         ...transfer.addressAmounts.map<PersistentState.Change>((item) => ({
                           address: item.address,
                           amount: item.amount,
                           asset: 'BTC',
-                          direction: transfer.direction == Direction.EARN ? 'SPEND' : 'EARN',
-                          type: PersistentState.ChangeType.TRANSFER,
+                          direction:
+                            transfer.direction == ApiDirection.EARN ? StateDirection.SPEND : StateDirection.EARN,
+                          type: ChangeType.TRANSFER,
                         })),
                       ],
                       [],
@@ -118,16 +122,18 @@ export class TxService implements IService {
                             asset,
                             address: tx.address,
                             amount: transfer.amount,
-                            direction: transfer.direction == Direction.EARN ? 'EARN' : 'SPEND',
-                            type: PersistentState.ChangeType.TRANSFER,
+                            direction:
+                              transfer.direction == ApiDirection.EARN ? StateDirection.EARN : StateDirection.SPEND,
+                            type: ChangeType.TRANSFER,
                             wallet: entryId,
                           },
                           {
                             asset,
                             address: transfer.address,
                             amount: transfer.amount,
-                            direction: transfer.direction == Direction.EARN ? 'SPEND' : 'EARN',
-                            type: PersistentState.ChangeType.TRANSFER,
+                            direction:
+                              transfer.direction == ApiDirection.EARN ? StateDirection.SPEND : StateDirection.EARN,
+                            type: ChangeType.TRANSFER,
                           },
                         ];
 
@@ -146,12 +152,8 @@ export class TxService implements IService {
                       confirmTimestamp:
                         tx.removed === false && tx.mempool === false ? tx.block?.timestamp ?? new Date() : undefined,
                       state:
-                        tx.removed === true
-                          ? PersistentState.State.REPLACED
-                          : tx.mempool === true
-                          ? PersistentState.State.SUBMITTED
-                          : PersistentState.State.CONFIRMED,
-                      status: PersistentState.Status.UNKNOWN,
+                        tx.removed === true ? State.REPLACED : tx.mempool === true ? State.SUBMITTED : State.CONFIRMED,
+                      status: Status.UNKNOWN,
                       txId: tx.txId,
                     })
                     .then((merged) => {
