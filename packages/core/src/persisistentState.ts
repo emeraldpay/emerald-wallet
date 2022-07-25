@@ -1,7 +1,5 @@
-import { BigAmount } from '@emeraldpay/bigamount';
-import { EntryId, Uuid } from '@emeraldpay/emerald-vault-core';
-import { AnyCoinCode } from './Asset';
-import {BlockchainCode} from "./blockchains";
+import {EntryId, Uuid} from "@emeraldpay/emerald-vault-core";
+import {AnyCoinCode} from "./Asset";
 
 /**
  * =====================================================================================================================
@@ -60,30 +58,31 @@ export interface BlockRef {
 }
 
 export enum ChangeType {
-  TRANSFER = "TRANSFER",
-  FEE = "FEE",
+  UNSPECIFIED = 0,
+  TRANSFER = 1,
+  FEE = 2,
 }
 
 export enum Direction {
-  EARN = "EARN",
-  SPEND = "SPEND"
+  EARN = 0,
+  SPEND = 1,
 }
 
 export interface Change {
   wallet?: EntryId;
   address?: string;
   hdPath?: string;
-  /**
-   * Type of asset. Provided as contract address from API, but then converted to just a code for further usage
-   */
   asset: AnyCoinCode;
-  type: "TRANSFER" | "FEE";
-  direction: "EARN" | "SPEND";
   /**
    * Amount in the specified asset, represented in the smallest unit (i.e., a SAT, WEI, etc).
-   * Note that the amount may be negative value, when transferred _from_ the wallet.
+   * Note that the amount is always a positive number
    */
   amount: string;
+  /**
+   * Specified if the amount is EARNED (i.e. a positive sign for amount) or SPENT (i.e., a negative sign)
+   */
+  direction: Direction;
+  type: ChangeType;
 }
 
 /**
@@ -124,60 +123,24 @@ export interface TxHistoryFilter {
   /**
    * Require the specified wallet or its entry
    */
-  wallet?: Uuid | EntryId;
+  wallet?: Uuid | EntryId,
   /**
    * require a transaction known or confirmed after the specified moment
    */
-  after?: Date;
+  after?: Date,
   /**
    * require a transaction known or confirmed before the specified moment
    */
-  before?: Date;
-}
-
-export interface TxMeta {
-  /**
-   * Timestamp when the meta was assigned by user
-   */
-  timestamp: Date;
-  /**
-   * Blockchain
-   */
-  blockchain: BlockchainCode;
-  /**
-   * Transaction ID aka Hash
-   */
-  txId: string;
-  /**
-   * Used assigned label
-   */
-  label?: string;
-}
-
-
-export interface TxMetaStore {
-  /**
-   * Persist the meta. If an existing meta has an older timestamp get replaced with new, otherwise the it keeps it as is (i.e. always newest meta)
-   * @param meta
-   * @return the most up-to-date meta, which may be just provided or an existing one
-   */
-  set(meta: TxMeta): Promise<TxMeta>;
-
-  /**
-   * Read meta for a transaction
-   *
-   * @param blockchain
-   * @param txid
-   */
-  get(blockchain: BlockchainCode, txid: string): Promise<TxMeta | null>;
+  before?: Date,
 }
 
 export interface TxHistory {
+
   /**
    * Add or update existing transaction in the storage
    * @param tx
    */
-  submit(tx: Transaction): Promise<Transaction>;
+  submit(tx: Transaction): Promise<void>;
 
   /**
    * Remove transaction from the storage
@@ -196,7 +159,7 @@ export interface TxHistory {
    * Get current API Cursor for the specified address
    * @param target individual address or xpub
    */
-  getCursor(target: string): Promise<string | null>;
+  get_cursor(target: string): Promise<string | null>;
 
   /**
    * Set current cursor received from remote API
@@ -204,7 +167,7 @@ export interface TxHistory {
    * @param target individual address or xpub
    * @param cursor cursor value
    */
-  setCursor(target: string, cursor: string): Promise<void>;
+  set_cursor(target: string, cursor: string): Promise<void>;
 }
 
 /**
@@ -213,7 +176,7 @@ export interface TxHistory {
 export interface AddressbookItem {
   id?: string | undefined;
   address: {
-    type: 'plain' | 'xpub';
+    type: "plain" | "xpub";
     address: string;
   };
   blockchain: number;
@@ -234,11 +197,13 @@ export interface AddressbookFilter {
 }
 
 export interface Addressbook {
+
   /**
    * Add or update existing transaction in the storage
    * @param item
    */
   add(item: AddressbookItem): Promise<string>;
+
 
   /**
    * Remove an item from the address book
@@ -267,10 +232,11 @@ export interface XPubPosition {
    * @param xpub
    * @param pos
    */
-  setAtLeast(xpub: string, pos: number): Promise<void>;
+  set_at_least(xpub: string, pos: number): Promise<void>;
 }
 
 export interface PersistentState {
+
   /**
    * Manage Transaction History
    */
@@ -286,3 +252,4 @@ export interface PersistentState {
    */
   xpubpos: XPubPosition;
 }
+

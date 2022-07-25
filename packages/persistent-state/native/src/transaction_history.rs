@@ -2,7 +2,7 @@ use std::str::FromStr;
 use neon::prelude::*;
 use emerald_wallet_state::access::transactions::{Filter, Transactions, WalletRef};
 use emerald_wallet_state::access::pagination::{PageQuery, PageResult};
-use emerald_wallet_state::proto::transactions::{BlockchainId, Change, Change_ChangeType, State, Status, Transaction};
+use emerald_wallet_state::proto::transactions::{BlockchainId, BlockRef, Change, Change_ChangeType, Direction as proto_Direction, State, Status, Transaction};
 use crate::errors::StateManagerError;
 use crate::instance::Instance;
 use chrono::{DateTime, TimeZone, Utc};
@@ -19,19 +19,10 @@ struct FilterJson {
   before: Option<DateTime<Utc>>,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
-enum Direction {
-  SPEND, EARN
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug)]
-enum ChangeType {
-  TRANSFER, FEE
-}
-
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone)]
 struct ChangeJson {
-  wallet: String,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  wallet: Option<String>,
   #[serde(skip_serializing_if = "Option::is_none")]
   address: Option<String>,
   #[serde(skip_serializing_if = "Option::is_none")]
@@ -39,13 +30,15 @@ struct ChangeJson {
   asset: String,
   amount: String,
   #[serde(rename = "type")]
-  change_type: Option<ChangeType>,
-  direction: Direction,
+  change_type: usize,
+  direction: usize,
 }
 
-#[derive(Serialize, Deserialize, Clone, Debug)]
+#[derive(Serialize, Deserialize, Clone)]
 pub struct TransactionJson {
   blockchain: u32,
+  #[serde(skip_serializing_if = "Option::is_none")]
+  block: Option<BlockRefJson>,
   #[serde(rename = "txId")]
   tx_id: String,
   #[serde(rename = "sinceTimestamp")]
@@ -56,6 +49,14 @@ pub struct TransactionJson {
   state: usize,
   status: usize,
   changes: Vec<ChangeJson>,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
+pub struct BlockRefJson {
+  height: u64,
+  #[serde(rename = "blockId")]
+  block_id: String,
+  timestamp: DateTime<Utc>,
 }
 
 fn read_wallet_ref(v: String) -> Result<WalletRef, StateManagerError> {
@@ -103,6 +104,7 @@ impl TryFrom<Transaction> for TransactionJson {
   fn try_from(value: Transaction) -> Result<Self, Self::Error> {
     Ok(TransactionJson {
       blockchain: value.blockchain.value() as u32,
+      block: value.block.into_option().map(BlockRefJson::from),
       tx_id: value.tx_id,
       since_timestamp: Utc.timestamp_millis(value.since_timestamp as i64),
       confirm_timestamp: if_time(value.confirm_timestamp),
@@ -120,6 +122,9 @@ impl TryFrom<TransactionJson> for Transaction {
     let mut proto = Transaction::new();
     proto.blockchain = BlockchainId::from_i32(value.blockchain as i32)
       .ok_or(StateManagerError::InvalidJson("blockchain".to_string()))?;
+    if let Some(block_ref) = value.block {
+      proto.set_block(BlockRef::from(block_ref))
+    }
     proto.tx_id = value.tx_id;
     proto.since_timestamp = value.since_timestamp.timestamp_millis() as u64;
     if value.confirm_timestamp.is_some() {
@@ -138,77 +143,68 @@ impl TryFrom<TransactionJson> for Transaction {
   }
 }
 
+impl From<BlockRef> for BlockRefJson {
+
+  fn from(value: BlockRef) -> Self {
+    BlockRefJson {
+      height: value.height,
+      block_id: value.block_id.clone(),
+      timestamp: Utc.timestamp_millis(value.timestamp as i64),
+    }
+  }
+}
+
+impl From<BlockRefJson> for BlockRef {
+  fn from(value: BlockRefJson) -> Self {
+    let mut proto = BlockRef::new();
+    proto.height = value.height;
+    proto.block_id = value.block_id;
+    proto.timestamp = value.timestamp.timestamp_millis() as u64;
+    proto
+  }
+}
+
 impl TryFrom<ChangeJson> for Change {
   type Error = StateManagerError;
 
   fn try_from(value: ChangeJson) -> Result<Self, Self::Error> {
     let mut change = Change::new();
-    if let Ok(wallet_ref) = read_wallet_ref(value.wallet) {
-      match wallet_ref {
-        WalletRef::WholeWallet(_) => {
-          return Err(StateManagerError::InvalidJson("wallet".to_string()))
-        },
-        WalletRef::SelectedEntry(wallet_id, entry_id) => {
-          change.wallet_id = wallet_id.to_string();
-          change.entry_id = entry_id;
+    if let Some(wallet) = value.wallet {
+      if let Ok(wallet_ref) = read_wallet_ref(wallet) {
+        match wallet_ref {
+          WalletRef::WholeWallet(_) => {
+            return Err(StateManagerError::InvalidJson("wallet".to_string()))
+          },
+          WalletRef::SelectedEntry(wallet_id, entry_id) => {
+            change.wallet_id = wallet_id.to_string();
+            change.entry_id = entry_id;
+          }
         }
       }
     }
+    if let Some(address) = value.address {
+      change.address = address;
+    }
+    change.direction = proto_Direction::from_i32(value.direction as i32)
+      .ok_or(StateManagerError::InvalidJson("direction".to_string()))?;
     change.amount = value.amount;
     change.asset = value.asset;
-    change.change_type = if let Some(change_type) = value.change_type {
-      Change_ChangeType::from_i32(change_type.to_proto())
-        .ok_or(StateManagerError::InvalidJson("change_type".to_string()))?
-    } else {
-      Change_ChangeType::UNSPECIFIED
-    };
-    change.direction = value.direction.to_proto();
+    change.change_type = Change_ChangeType::from_i32(value.change_type as i32)
+      .ok_or(StateManagerError::InvalidJson("change_type".to_string()))?;
     Ok(change)
-  }
-}
-
-impl ChangeType {
-  fn from(value: i32) -> Option<Self> {
-    match value {
-      1 => Some(ChangeType::TRANSFER),
-      2 => Some(ChangeType::FEE),
-      _ => None
-    }
-  }
-
-  fn to_proto(&self) -> i32 {
-    match &self {
-      ChangeType::TRANSFER => 1,
-      ChangeType::FEE => 2,
-    }
-  }
-}
-
-impl Direction {
-  fn from(value: emerald_wallet_state::proto::transactions::Direction) -> Direction {
-    match value {
-      emerald_wallet_state::proto::transactions::Direction::EARN => Direction::EARN,
-      emerald_wallet_state::proto::transactions::Direction::SPEND => Direction::SPEND
-    }
-  }
-  fn to_proto(&self) -> emerald_wallet_state::proto::transactions::Direction {
-    match self {
-      Direction::EARN => emerald_wallet_state::proto::transactions::Direction::EARN,
-      Direction::SPEND => emerald_wallet_state::proto::transactions::Direction::SPEND
-    }
   }
 }
 
 impl From<&Change> for ChangeJson {
   fn from(value: &Change) -> Self {
     ChangeJson {
-      wallet: format!("{}-{}", value.wallet_id, value.entry_id),
+      wallet: Some(format!("{}-{}", value.wallet_id, value.entry_id)),
       address: if_not_empty(value.address.clone()),
+      direction: value.direction as usize,
       hd_path: if_not_empty(value.hd_path.clone()),
       asset: value.asset.clone(),
       amount: value.amount.clone(),
-      change_type: ChangeType::from(value.change_type.value()),
-      direction: Direction::from(value.direction)
+      change_type: value.change_type.value() as usize,
     }
   }
 }
@@ -267,23 +263,18 @@ pub fn query<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManager
   Ok(())
 }
 
-fn submit_internal(tx: Transaction) -> Result<Transaction, StateManagerError> {
-  let storage = Instance::get_storage()?.get_transactions();
-  let tx_id = tx.tx_id.clone();
-  let blockchain = tx.blockchain.value() as u32;
-  let _ = storage
+fn submit_internal(tx: Transaction) -> Result<bool, StateManagerError> {
+  let storage = Instance::get_storage()?;
+  storage.get_transactions()
     .submit(vec![tx])
-    .map_err(StateManagerError::from)?;
-
-  storage
-    .get_tx(blockchain, tx_id.as_str())
-    .map_or(Err(StateManagerError::IO), |v| Ok(v))
+    .map_err(StateManagerError::from)
+    .map(|_| true)
 }
 
 #[neon_frame_fn(channel=1)]
 pub fn submit<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
   where
-    H: FnOnce(Result<TransactionJson, StateManagerError>) + Send + 'static {
+    H: FnOnce(Result<bool, StateManagerError>) + Send + 'static {
   let tx = cx
     .argument::<JsString>(0)
     .map_err(|_| StateManagerError::MissingArgument(0, "tx".to_string()))?
@@ -294,8 +285,7 @@ pub fn submit<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManage
     .map_err(|_| StateManagerError::InvalidArgument(0, "tx".to_string()))?;
 
   std::thread::spawn(move || {
-    let result = submit_internal(tx)
-      .and_then(|t| TransactionJson::try_from(t));
+    let result = submit_internal(tx);
     handler(result);
   });
 
