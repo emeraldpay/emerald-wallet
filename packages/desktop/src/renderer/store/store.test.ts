@@ -1,7 +1,7 @@
-import { IApi, IBackendApi, WalletStateStorage } from '@emeraldwallet/core';
+import { IBackendApi, WalletApi, WalletStateStorage } from '@emeraldwallet/core';
 import { createStore, screen } from '@emeraldwallet/store';
 
-const apiMock = {} as IApi;
+const apiMock = {} as WalletApi;
 const backendApiMock = {} as IBackendApi;
 const walletStateMock = {} as WalletStateStorage;
 

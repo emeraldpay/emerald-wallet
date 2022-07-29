@@ -37,4 +37,8 @@ export enum Commands {
   VAULT_CREATE_HD_ACCOUNT = 'create-hd-account',
   VAULT_GET_SEEDS = 'get-vault-seeds',
   VAULT_SEED_ADDRESSES = 'vault-get-seed-addresses',
+
+  ADDRESS_BOOK_ADD = 'address-book-add',
+  ADDRESS_BOOK_REMOVE = 'address-book-remove',
+  ADDRESS_BOOK_QUERY = 'address-book-query',
 }

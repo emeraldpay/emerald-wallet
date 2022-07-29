@@ -11,7 +11,7 @@ import {
   Wallet,
   WalletEntry,
 } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, blockchainCodeToId, IApi, Logger } from '@emeraldwallet/core';
+import { BlockchainCode, blockchainCodeToId, Logger, WalletApi } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 import { Dispatch } from 'redux';
 import { dispatchRpcError } from '../screen/actions';
@@ -123,7 +123,7 @@ export function importSeedWalletAction(mnemonic: string, password: string): ICre
 }
 
 function createWalletWithAccount(
-  api: IApi,
+  api: WalletApi,
   dispatch: Dispatch<any>,
   blockchain: BlockchainCode,
   walletName: string = '',

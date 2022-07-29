@@ -1,4 +1,4 @@
-import { IApi, IBackendApi } from '@emeraldwallet/core';
+import { IBackendApi, WalletApi } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
 import { Action, Dispatch } from 'redux';
 import { ThunkAction } from 'redux-thunk';
@@ -38,7 +38,7 @@ export interface IState {
 export type GetState = () => IState;
 
 export interface IExtraArgument {
-  api: IApi;
+  api: WalletApi;
   backendApi: IBackendApi;
   triggers: Triggers;
 }

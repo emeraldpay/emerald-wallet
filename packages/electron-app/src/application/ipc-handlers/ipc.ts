@@ -169,4 +169,14 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess, pe
   );
 
   ipcMain.handle(Commands.SET_TX_META, (event, meta: PersistentState.TxMeta) => persistentState.txmeta.set(meta));
+
+  ipcMain.handle(Commands.ADDRESS_BOOK_ADD, (event, item: PersistentState.AddressbookItem) =>
+    persistentState.addressbook.add(item),
+  );
+
+  ipcMain.handle(Commands.ADDRESS_BOOK_REMOVE, (event, id: string) => persistentState.addressbook.remove(id));
+
+  ipcMain.handle(Commands.ADDRESS_BOOK_QUERY, (event, filter: PersistentState.AddressbookFilter) =>
+    persistentState.addressbook.query(filter),
+  );
 }

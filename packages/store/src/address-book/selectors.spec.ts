@@ -10,24 +10,24 @@ describe('all', () => {
       contacts: {
         [BlockchainCode.ETC]: {
           '0x123': {
-            address: {type: 'single', value: '0x123'},
-            name: 'name1',
+            address: {type: 'plain', address: '0x123'},
+            label: 'name1',
             blockchain: 101,
-            createdAt: new Date()
+            createTimestamp: new Date()
           }
         },
         [BlockchainCode.ETH]: {
           '0x222': {
-            address: {type: 'single', value: '0x222'},
-            name: 'name2',
+            address: {type: 'plain', address: '0x222'},
+            label: 'name2',
             blockchain: 100,
-            createdAt: new Date()
+            createTimestamp: new Date()
           },
           '0x333': {
-            address: {type: 'single', value: '0x333'},
-            name: 'name3',
+            address: {type: 'plain', address: '0x333'},
+            label: 'name3',
             blockchain: 100,
-            createdAt: new Date()
+            createTimestamp: new Date()
           }
         }
       }

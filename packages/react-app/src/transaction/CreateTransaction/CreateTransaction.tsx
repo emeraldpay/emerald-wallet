@@ -596,7 +596,7 @@ export default connect(
     return {
       allTokens,
       getEntryByAddress,
-      addressBookAddresses: addressBook.selectors.all(state).map((i) => i.address.value),
+      addressBookAddresses: addressBook.selectors.all(state).map((i) => i.address.address),
       amount: ownProps.amount || Wei.ZERO,
       chain: blockchain.params.code,
       currency: settings.selectors.fiatCurrency(state),

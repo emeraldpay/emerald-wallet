@@ -1,76 +1,89 @@
-import {BlockchainCode, blockchainCodeToId} from '@emeraldwallet/core';
+import { BlockchainCode, blockchainCodeToId, PersistentState } from '@emeraldwallet/core';
 import {
   ActionTypes,
   AddContactAction,
-  ContactAddedAction, ContactDeletedAction,
+  ContactAddedAction,
+  ContactDeletedAction,
   DeleteContactAction,
   ILoadContactsAction,
   ISetAddressBookAction,
-  SetLoadingAction
+  LoadLegacyContactsAction,
+  SetLoadingAction,
 } from './types';
-import {AddressBookItem} from '@emeraldpay/emerald-vault-core';
 
-export function setLoadingAction (loading: boolean): SetLoadingAction {
+export function setLoadingAction(loading: boolean): SetLoadingAction {
   return {
     type: ActionTypes.LOADING,
-    payload: loading
+    payload: loading,
   };
 }
 
-export function addContactAction (
-  chain: BlockchainCode, address: string, name: string, description: string): AddContactAction {
+export function addContactAction(
+  chain: BlockchainCode,
+  address: string,
+  label: string,
+  description: string,
+): AddContactAction {
   return {
     type: ActionTypes.ADD_CONTACT,
     payload: {
-      address: {type: "single", value: address},
-      name,
       description,
+      label,
+      address: { type: 'plain', address },
       blockchain: blockchainCodeToId(chain),
-      createdAt: new Date()
-    }
+      createTimestamp: new Date(),
+    },
   };
 }
 
-export function newContactAddedAction (contact: AddressBookItem): ContactAddedAction {
+export function newContactAddedAction(contact: PersistentState.AddressbookItem): ContactAddedAction {
   return {
     type: ActionTypes.NEW_ADDRESS_ADDED,
-    payload: contact
+    payload: contact,
   };
 }
 
-export function deleteContactAction (chain: BlockchainCode, address: string): DeleteContactAction {
+export function deleteContactAction(blockchain: BlockchainCode, id: string): DeleteContactAction {
   return {
     type: ActionTypes.DELETE_ADDRESS,
-    payload: {
-      address,
-      blockchain: chain
-    }
+    payload: { blockchain, id },
   };
 }
 
-export function contactDeletedAction (chain: BlockchainCode, address: string): ContactDeletedAction {
+export function contactDeletedAction(blockchain: BlockchainCode, id: string): ContactDeletedAction {
   return {
     type: ActionTypes.ADDRESS_DELETED,
-    payload: {
-      address,
-      blockchain: chain
-    }
+    payload: { id, blockchain },
   };
 }
 
 export function loadAddressBook(chain: BlockchainCode): ILoadContactsAction {
   return {
     type: ActionTypes.LOAD,
-    payload: chain
+    payload: chain,
   };
 }
 
-export function setAddressBook (chain: BlockchainCode, addressBook: AddressBookItem[]): ISetAddressBookAction {
+export function setAddressBook(
+  chain: BlockchainCode,
+  addressBook: PersistentState.AddressbookItem[],
+): ISetAddressBookAction {
   return {
     type: ActionTypes.SET_BOOK,
     payload: {
       blockchain: chain,
-      contacts: addressBook
-    }
+      contacts: addressBook,
+    },
+  };
+}
+
+/**
+ * FIXME Remove in future release
+ * @deprecated
+ */
+export function loadLegacyAddressBook(blockchain: BlockchainCode): LoadLegacyContactsAction {
+  return {
+    type: ActionTypes.LOAD_LEGACY,
+    payload: blockchain,
   };
 }

@@ -1,10 +1,11 @@
-import { Logger } from '@emeraldwallet/core';
+import { Logger, WalletApi } from '@emeraldwallet/core';
 import {
   accounts,
   addressBook,
   application,
   BackendApi,
   createStore,
+  RemoteAddressBook,
   RemoteVault,
   RenderWalletState,
   screen,
@@ -19,7 +20,7 @@ Logger.setInstance(ElectronLogger);
 
 const logger = Logger.forCategory('store');
 
-const api = { vault: RemoteVault };
+const api: WalletApi = { addressBook: RemoteAddressBook, vault: RemoteVault };
 
 const backendApi = new BackendApi();
 const walletState = new RenderWalletState();
@@ -104,21 +105,12 @@ function startSync(): void {
     .then(() => {
       const supported = settings.selectors.currentChains(store.getState());
 
-      const loadAllChain = [];
-
-      supported.forEach((chain) => {
-        const loadChain = [];
-
-        loadChain.push(store.dispatch(addressBook.actions.loadAddressBook(chain.params.code)));
-
-        loadAllChain.push(
-          Promise.all(loadChain).catch((exception) =>
-            logger.error(`Failed to load chain ${chain.params.code}`, exception),
-          ),
-        );
+      const loadChains = supported.map(async (blockchain) => {
+        await store.dispatch(addressBook.actions.loadLegacyAddressBook(blockchain.params.code));
+        await store.dispatch(addressBook.actions.loadAddressBook(blockchain.params.code));
       });
 
-      return Promise.all(loadAllChain).catch((exception) => logger.error('Failed to load chains', exception));
+      return Promise.all(loadChains).catch((exception) => logger.error('Failed to load chains', exception));
     })
     .then(() => {
       logger.info('Initial synchronization finished');

@@ -1,47 +1,44 @@
+import { PersistentState } from '@emeraldwallet/core';
 import * as React from 'react';
 import EditContact from '../EditContact';
 import ShowContact from '../ShowContact';
-import {AddressBookItem} from '@emeraldpay/emerald-vault-core';
 
-const States = {
-  SHOW: 'SHOW',
-  EDIT: 'EDIT'
-};
-
-interface IState {
-  currentState: any;
+enum States {
+  SHOW = 'SHOW',
+  EDIT = 'EDIT',
 }
 
-interface IProps {
-  address: AddressBookItem;
+interface OwnProps {
+  contact: PersistentState.AddressbookItem;
 }
 
-class Contact extends React.Component<IProps, IState> {
-  constructor (props: IProps) {
+interface StateProps {
+  currentState: States;
+}
+
+class Contact extends React.Component<OwnProps, StateProps> {
+  constructor(props: OwnProps) {
     super(props);
-    this.state = {
-      currentState: States.SHOW
-    };
+
+    this.state = { currentState: States.SHOW };
   }
 
-  public handleCancelEdit = () => {
-    this.setState({
-      currentState: States.SHOW
-    });
-  }
+  public handleCancelEdit = (): void => {
+    this.setState({ currentState: States.SHOW });
+  };
 
-  public handleEditAddress = () => {
-    this.setState({
-      currentState: States.EDIT
-    });
-  }
+  public handleEditAddress = (): void => {
+    this.setState({ currentState: States.EDIT });
+  };
 
-  public render () {
+  public render(): React.ReactNode {
     const { currentState } = this.state;
-    if (currentState === States.SHOW) {
-      return (<ShowContact onEditAddress={this.handleEditAddress} {...this.props} />);
-    }
-    return (<EditContact onCancel={this.handleCancelEdit} {...this.props} />);
+
+    return currentState === States.SHOW ? (
+      <ShowContact onEditAddress={this.handleEditAddress} {...this.props} />
+    ) : (
+      <EditContact onCancel={this.handleCancelEdit} {...this.props} />
+    );
   }
 }
 

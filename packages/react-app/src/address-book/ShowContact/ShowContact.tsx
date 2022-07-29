@@ -1,74 +1,66 @@
-import {Account} from '@emeraldwallet/ui';
-import {Trash as DeleteIcon} from '@emeraldwallet/ui';
-import {addressBook, IState} from '@emeraldwallet/store';
-import {CoinAvatar} from '@emeraldwallet/ui';
+import { blockchainIdToCode, PersistentState } from '@emeraldwallet/core';
+import { addressBook } from '@emeraldwallet/store';
+import { Account, CoinAvatar, Trash as DeleteIcon } from '@emeraldwallet/ui';
+import { createStyles, withStyles } from '@material-ui/core';
 import IconButton from '@material-ui/core/IconButton';
 import * as React from 'react';
-import {connect} from 'react-redux';
-import {AddressBookItem} from '@emeraldpay/emerald-vault-core';
-import {blockchainIdToCode} from "@emeraldwallet/core";
-import {makeStyles} from "@material-ui/core/styles";
-import {createStyles, Theme} from "@material-ui/core";
+import { connect } from 'react-redux';
 
-const useStyles = makeStyles<Theme>((theme) =>
-  createStyles({
-    container: {
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      backgroundColor: 'white',
-      padding: '10px'
-    }
-  })
-);
+const styles = createStyles({
+  container: {
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'white',
+    padding: '10px',
+  },
+});
 
-const ShowContact = (({address, onDeleteAddress, onEditAddress}: Props & Actions & OwnProps) => {
-  const styles = useStyles();
-  return <div className={styles.container}>
-    <div>
-      <CoinAvatar chain={blockchainIdToCode(address.blockchain)}/>
-    </div>
-    <div>
-      <Account
-        identity={true}
-        address={address.address.value}
-        name={address.name}
-      />
-    </div>
-    <div>
-      <IconButton onClick={onDeleteAddress}>
-        <DeleteIcon/>
-      </IconButton>
-      {/* <IconButton onClick={onEditAddress}> */}
-      {/*  <EditIcon /> */}
-      {/* </IconButton> */}
-    </div>
-  </div>
-})
-
-// State Properties
-interface Props {
-}
-
-// Actions
-interface Actions {
-  onDeleteAddress: () => void;
-}
-
-// Component properties
 interface OwnProps {
-  address: AddressBookItem;
+  contact: PersistentState.AddressbookItem;
   onEditAddress?: () => void;
 }
 
-export default connect(
-  (state: IState, ownProps: OwnProps): Props => {
-    return {}
+interface DispatchProps {
+  onDeleteAddress: () => void;
+}
+
+interface StylesProps {
+  classes: Record<keyof typeof styles, string>;
+}
+
+const ShowContact: React.FC<OwnProps & DispatchProps & StylesProps> = ({
+  classes,
+  contact,
+  onDeleteAddress,
+  onEditAddress,
+}) => {
+  return (
+    <div className={classes.container}>
+      <div>
+        <CoinAvatar chain={blockchainIdToCode(contact.blockchain)} />
+      </div>
+      <div>
+        <Account identity={true} address={contact.address.address} name={contact.label} />
+      </div>
+      <div>
+        <IconButton onClick={onDeleteAddress}>
+          <DeleteIcon />
+        </IconButton>
+        {/* <IconButton onClick={onEditAddress}> */}
+        {/*  <EditIcon /> */}
+        {/* </IconButton> */}
+      </div>
+    </div>
+  );
+};
+
+export default connect<{}, DispatchProps, OwnProps>(null, (dispatch, ownProps) => ({
+  onDeleteAddress: () => {
+    const {
+      contact: { blockchain, id },
+    } = ownProps;
+
+    dispatch(addressBook.actions.deleteContactAction(blockchainIdToCode(blockchain), id as string));
   },
-  (dispatch, ownProps: OwnProps): Actions => ({
-    onDeleteAddress: () => {
-      const {address} = ownProps;
-      dispatch(addressBook.actions.deleteContactAction(blockchainIdToCode(address.blockchain), address.address.value));
-    },
-  })
-)(ShowContact);
+}))(withStyles(styles)(ShowContact));

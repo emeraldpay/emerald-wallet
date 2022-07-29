@@ -1,14 +1,14 @@
 import { WalletState } from '@emeraldpay/emerald-vault-core';
-import { IApi, WalletStateStorage } from '@emeraldwallet/core';
+import { WalletApi, WalletStateStorage } from '@emeraldwallet/core';
 import { createStore } from '@emeraldwallet/store';
 import { DecoratorFunction } from '@storybook/addons/dist/ts3.9/types';
 import * as React from 'react';
 import { ReactElement } from 'react';
 import { Provider } from 'react-redux';
-import { ApiMock, BackendMock, VaultMock } from './backendMock';
+import { AddressBookMock, ApiMock, BackendMock, VaultMock } from './backendMock';
 
-function createApi(backend: BackendMock): IApi {
-  return new ApiMock(new VaultMock(backend.vault));
+function createApi(backend: BackendMock): WalletApi {
+  return new ApiMock(new AddressBookMock(backend.addressBook), new VaultMock(backend.vault));
 }
 
 class WalletStateMock implements WalletStateStorage {

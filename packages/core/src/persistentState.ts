@@ -229,7 +229,7 @@ export interface AddressbookFilter {
   /**
    * Filter by blockchain
    */
-  blockchain?: string | undefined;
+  blockchain?: number | undefined;
 }
 
 export interface Addressbook {

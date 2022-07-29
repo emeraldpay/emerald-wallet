@@ -15,7 +15,48 @@ import {
   Uuid,
   Wallet,
 } from '@emeraldpay/emerald-vault-core';
-import { AnyCoinCode, BlockchainCode, EthereumRawTransaction, IApi, IBackendApi } from '@emeraldwallet/core';
+import {
+  AnyCoinCode,
+  BlockchainCode,
+  blockchainCodeToId,
+  EthereumRawTransaction,
+  IBackendApi,
+  PersistentState,
+  WalletApi,
+} from '@emeraldwallet/core';
+
+export class MemoryAddressBook {
+  storage: Record<string, PersistentState.AddressbookItem> = {};
+
+  async add(item: PersistentState.AddressbookItem): Promise<string> {
+    const id = Math.random().toString(16).substring(7);
+
+    this.storage[item.address.address] = { id, ...item };
+
+    return id;
+  }
+
+  async remove(id: string): Promise<void> {
+    this.storage = Object.values(this.storage)
+      .filter((item) => item.id !== id)
+      .reduce((carry, item) => ({ ...carry, [item.address.address]: item }), {});
+  }
+
+  async query(
+    filter?: PersistentState.AddressbookFilter,
+  ): Promise<PersistentState.PageResult<PersistentState.AddressbookItem>> {
+    let items = Object.values(this.storage);
+
+    if (filter != null) {
+      items = items.filter((item) => item.blockchain === filter.blockchain);
+    }
+
+    return {
+      items,
+      cursor: 0,
+    };
+  }
+}
 
 export class MemoryVault {
   passwords: Record<Uuid, string> = {};
@@ -56,6 +97,28 @@ export const REAL_BTC_TX =
   'fe6d3087006a18000000000017a91491acb73977a2bf1298686e61a72f62f4e94258a687024730440220438fb2c075aeeed1' +
   'd1a0ff49efcae7bc9aa922d97d4395de856d76c39ef5069a02205599f95b7e7eadc742c309100d4db42e33225f8766279502' +
   'd9f1068e8d517f2a012102e8e1d7659d6fbc0dbf653826937b09475ba6763c347138965bfebdb762a9b107f8ed0900';
+
+export class AddressBookMock implements PersistentState.Addressbook {
+  readonly addressBook: MemoryAddressBook;
+
+  constructor(addressBook: MemoryAddressBook) {
+    this.addressBook = addressBook;
+  }
+
+  add(item: PersistentState.AddressbookItem): Promise<string> {
+    return this.addressBook.add(item);
+  }
+
+  async remove(id: string): Promise<void> {
+    await this.addressBook.remove(id);
+  }
+
+  query(
+    filter?: PersistentState.AddressbookFilter,
+  ): Promise<PersistentState.PageResult<PersistentState.AddressbookItem>> {
+    return this.addressBook.query(filter);
+  }
+}
 
 export class VaultMock implements IEmeraldVault {
   readonly vault: MemoryVault;
@@ -251,10 +314,12 @@ export class VaultMock implements IEmeraldVault {
   }
 }
 
-export class ApiMock implements IApi {
+export class ApiMock implements WalletApi {
+  readonly addressBook: PersistentState.Addressbook;
   readonly vault: IEmeraldVault;
 
-  constructor(vault: IEmeraldVault) {
+  constructor(addressBook: PersistentState.Addressbook, vault: IEmeraldVault) {
+    this.addressBook = addressBook;
     this.vault = vault;
   }
 
@@ -264,8 +329,9 @@ export class ApiMock implements IApi {
 }
 
 export class BackendMock implements IBackendApi {
-  readonly vault: MemoryVault = new MemoryVault();
+  readonly addressBook = new MemoryAddressBook();
   readonly blockchains: Record<string, BlockchainMock> = {};
+  readonly vault = new MemoryVault();
 
   broadcastSignedTx(): Promise<string> {
     return Promise.resolve('');

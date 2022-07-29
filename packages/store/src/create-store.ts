@@ -1,22 +1,21 @@
-import {IApi, IBackendApi, WalletStateStorage} from '@emeraldwallet/core';
-import {applyMiddleware, createStore as createReduxStore} from 'redux';
+import { IBackendApi, WalletStateStorage, WalletApi } from '@emeraldwallet/core';
+import { applyMiddleware, createStore as createReduxStore, Store } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import thunkMiddleware from 'redux-thunk';
 import {
   accounts,
   addressBook,
   blockchains,
+  hdpathPreview,
   hwkey,
   reduxLogger,
   rootReducer,
   settings,
   tokens,
-  txhistory,
   wallet,
-  hdpathPreview
 } from './';
 
-import {Triggers} from "./triggers";
+import { Triggers } from './triggers';
 
 /**
  * Creates Redux store with API as dependency injection.
@@ -24,34 +23,29 @@ import {Triggers} from "./triggers";
  * Injecting api allows to write unit tests.
  *
  */
-export const createStore = (_api: IApi, backendApi: IBackendApi, walletState: WalletStateStorage) => {
+export const createStore = (api: WalletApi, backendApi: IBackendApi, walletState: WalletStateStorage): Store => {
   const triggers = new Triggers();
 
   const sagaMiddleware = createSagaMiddleware();
-  const storeMiddleware = [
-    sagaMiddleware,
-    thunkMiddleware.withExtraArgument({api: _api, backendApi, triggers})
-  ];
+  const storeMiddleware = [sagaMiddleware, thunkMiddleware.withExtraArgument({ api, backendApi, triggers })];
 
   if (process.env.NODE_ENV === 'development') {
     storeMiddleware.push(reduxLogger);
   }
 
-  const store = createReduxStore(
-    rootReducer,
-    applyMiddleware(...storeMiddleware)
-  );
+  const store = createReduxStore(rootReducer, applyMiddleware(...storeMiddleware));
 
   sagaMiddleware.run(blockchains.sagas.root, backendApi);
-  sagaMiddleware.run(addressBook.sagas.root, _api.vault);
+  sagaMiddleware.run(addressBook.sagas.root, api.addressBook, api.vault);
   sagaMiddleware.run(tokens.sagas.root, backendApi);
-  sagaMiddleware.run(hwkey.sagas.root, _api.vault);
+  sagaMiddleware.run(hwkey.sagas.root, api.vault);
   sagaMiddleware.run(wallet.sagas.root);
   sagaMiddleware.run(settings.sagas.root);
-  sagaMiddleware.run(accounts.sagas.root, _api.vault, walletState);
-  sagaMiddleware.run(hdpathPreview.sagas.root, _api.vault, backendApi);
+  sagaMiddleware.run(accounts.sagas.root, api.vault, walletState);
+  sagaMiddleware.run(hdpathPreview.sagas.root, api.vault, backendApi);
 
   triggers.setStore(store);
+
   hwkey.triggers.run(triggers);
   hdpathPreview.triggers.run(triggers);
 

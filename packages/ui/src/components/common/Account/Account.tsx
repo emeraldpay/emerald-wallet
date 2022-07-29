@@ -56,7 +56,7 @@ export const styles = createStyles({
   },
   nameTypography: {
     fontSize: 14,
-    lineHeight: 22,
+    lineHeight: 2,
   },
   root: {
     alignItems: 'center',

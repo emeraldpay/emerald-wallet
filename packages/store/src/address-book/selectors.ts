@@ -1,18 +1,18 @@
-import * as _ from 'lodash';
-import {Contacts, moduleName} from './types';
-import {IState} from "../types";
-import {BlockchainCode} from "@emeraldwallet/core";
-import {AddressBookItem} from "@emeraldpay/emerald-vault-core/lib/types";
+import { BlockchainCode, PersistentState } from '@emeraldwallet/core';
+import { IState } from '../types';
+import { moduleName } from './types';
 
-export function all(state: IState): AddressBookItem[] {
-  const book = state[moduleName];
-  const result: AddressBookItem[] = [];
-  Object.keys(book.contacts)
-    .map((code) => code as BlockchainCode)
-    .forEach((code) => {
-      let contacts = book.contacts[code] as Contacts;
-      let items: AddressBookItem[] = Object.values(contacts);
-      result.push(...items)
-    })
-  return result;
+export function all(state: IState): PersistentState.AddressbookItem[] {
+  const { contacts } = state[moduleName];
+  const blockchains = Object.keys(contacts) as BlockchainCode[];
+
+  return blockchains.reduce<PersistentState.AddressbookItem[]>((carry, blockchain) => {
+    const blockchainContacts = contacts[blockchain];
+
+    if (blockchainContacts == null) {
+      return carry;
+    }
+
+    return [...carry, ...Object.values(blockchainContacts)];
+  }, []);
 }

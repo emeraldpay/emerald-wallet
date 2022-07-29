@@ -33,7 +33,7 @@ export {utils};
 export {default as WithDefaults} from './withDefaults';
 
 export { IServerConnect } from './IServerConnect';
-export { IApi } from './IApi';
+export { WalletApi } from './WalletApi';
 
 export {EthereumAddress} from './blockchains/ethereum/Address';
 export {
@@ -47,9 +47,6 @@ export {
   AssetDetail, AssetDetails,
   getStandardUnits,
 } from './Asset';
-
-// address book core
-export { AddressBookService, IAddressBookService } from './address-book/AddressBookService';
 
 // emerald client
 export { IEmeraldClient } from './emerald-client/IEmeraldClient';
@@ -74,4 +71,4 @@ export {toBigNumber, toNumber, toHex, quantitiesToHex, fromBaseUnits, toBaseUnit
 
 export {Contract} from './Contract';
 
-export * as PersistentState from './persisistentState';
+export * as PersistentState from './persistentState';
