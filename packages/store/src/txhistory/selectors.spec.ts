@@ -1,8 +1,10 @@
 import { WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, blockchainCodeToId } from '@emeraldwallet/core';
-import { ChangeType, Direction, State, Status } from '@emeraldwallet/core/lib/persisistentState';
+import { PersistentState } from '@emeraldwallet/core';
 import { filterTransactions, searchTransactions } from './selectors';
 import { StoredTransaction } from './types';
+
+const { ChangeType, Direction, State, Status } = PersistentState;
 
 const blockchain = blockchainCodeToId(BlockchainCode.ETH);
 

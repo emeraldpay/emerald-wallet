@@ -1,9 +1,11 @@
 import { Satoshi, Wei } from '@emeraldpay/bigamount-crypto';
 import { WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { blockchainIdToCode, isBitcoin, isEthereum } from '@emeraldwallet/core';
-import { Direction } from '@emeraldwallet/core/lib/persisistentState';
+import { PersistentState } from '@emeraldwallet/core';
 import { IState } from '../types';
 import { StoredTransaction } from './types';
+
+const { Direction } = PersistentState;
 
 export function getTransactions(state: IState, entries: WalletEntry[]): StoredTransaction[] {
   const entryIds = entries.map((entry) => entry.id);
@@ -42,10 +44,7 @@ export function filterTransactions(
   });
 }
 
-export function searchTransactions(
-  transactions: StoredTransaction[],
-  search: string,
-): StoredTransaction[] {
+export function searchTransactions(transactions: StoredTransaction[], search: string): StoredTransaction[] {
   const searchValue = search.toLowerCase();
 
   return transactions.filter((tx: StoredTransaction) => {

@@ -4,7 +4,6 @@ import {
   assertSingletonWindow,
   getMainWindow,
   LocalConnector,
-  LocalWalletState,
   protocol,
   Settings,
 } from '@emeraldwallet/electron-app';
@@ -105,9 +104,8 @@ app.on('ready', () => {
   logger.info('Run application');
 
   const persistentState = new PersistentStateImpl(resolvePath(joinPath(dataDir, 'persistentState')));
-  const walletState = new LocalWalletState(vault.getProvider());
 
-  application.run(webContents, apiAccess, apiMode, persistentState, vault.getProvider(), rpcConnections, walletState);
+  application.run(webContents, apiAccess, apiMode, persistentState, vault.getProvider(), rpcConnections);
 
   let initialized = false;
 

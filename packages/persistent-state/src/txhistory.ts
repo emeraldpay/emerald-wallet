@@ -39,7 +39,7 @@ export class TxHistoryImpl implements PersistentState.TxHistory {
       try {
         this.manager.addon.txhistory_query(
           JSON.stringify(filter),
-          neonToPromise(resolve, reject, createDateReviver(['sinceTimestamp', 'confirmTimestamp'])),
+          neonToPromise(resolve, reject, createDateReviver(['sinceTimestamp', 'confirmTimestamp', 'block.timestamp'])),
         );
       } catch (e) {
         reject(e);

@@ -1,4 +1,4 @@
-import { IBackendApi, WalletStateStorage, WalletApi } from '@emeraldwallet/core';
+import { IBackendApi, WalletApi } from '@emeraldwallet/core';
 import { applyMiddleware, createStore as createReduxStore, Store } from 'redux';
 import createSagaMiddleware from 'redux-saga';
 import thunkMiddleware from 'redux-thunk';
@@ -23,7 +23,7 @@ import { Triggers } from './triggers';
  * Injecting api allows to write unit tests.
  *
  */
-export const createStore = (api: WalletApi, backendApi: IBackendApi, walletState: WalletStateStorage): Store => {
+export const createStore = (api: WalletApi, backendApi: IBackendApi): Store => {
   const triggers = new Triggers();
 
   const sagaMiddleware = createSagaMiddleware();
@@ -41,7 +41,7 @@ export const createStore = (api: WalletApi, backendApi: IBackendApi, walletState
   sagaMiddleware.run(hwkey.sagas.root, api.vault);
   sagaMiddleware.run(wallet.sagas.root);
   sagaMiddleware.run(settings.sagas.root);
-  sagaMiddleware.run(accounts.sagas.root, api.vault, walletState);
+  sagaMiddleware.run(accounts.sagas.root, api.vault, api.xPubPos);
   sagaMiddleware.run(hdpathPreview.sagas.root, api.vault, backendApi);
 
   triggers.setStore(store);

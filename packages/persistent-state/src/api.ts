@@ -1,8 +1,8 @@
 import { PersistentState } from '@emeraldwallet/core';
 import { AddressbookImpl } from './addressbook';
 import { TxHistoryImpl } from './txhistory';
+import { TxMetaStoreImpl } from './txmeta';
 import { XPubPositionImpl } from './xpubpos';
-import {TxMetaStoreImpl} from "./txmeta";
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const addon = require('../index.node');
@@ -35,11 +35,40 @@ function resolveStatus<T>(status: Status<T>, resolve: PromiseCallback<T>, reject
   resolve(status.result);
 }
 
-export function createDateReviver(names: string[]): JsonReviver {
-  return (key: string, value: any) => {
-    if (typeof value == 'string' && names.indexOf(key) >= 0) {
-      return new Date(value);
+function recursiveDateFormatter(value: Record<string, any>, selectors: string[]): Record<string, any> | Date {
+  const [selector, ...restSelectors] = selectors;
+
+  if (restSelectors.length === 0) {
+    if (typeof value[selector] === 'string') {
+      return {
+        ...value,
+        [selector]: new Date(value[selector]),
+      };
     }
+  } else {
+    return {
+      ...value,
+      [selector]: recursiveDateFormatter(value[selector], restSelectors),
+    };
+  }
+
+  return value;
+}
+
+export function createDateReviver(names: string[]): JsonReviver {
+  return (key: string, value: string | Record<string, any>) => {
+    const selectors = names.reduce<Record<string, string[]>>((carry, name) => {
+      const [part, ...parts] = name.split('.');
+
+      return { ...carry, [part]: parts };
+    }, {});
+
+    if (selectors[key]?.length === 0 && typeof value === 'string') {
+      return new Date(value);
+    } else if (selectors[key]?.length > 0 && typeof value === 'object') {
+      return recursiveDateFormatter(value, selectors[key]);
+    }
+
     return value;
   };
 }

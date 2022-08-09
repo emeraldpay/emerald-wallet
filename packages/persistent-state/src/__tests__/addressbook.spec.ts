@@ -1,7 +1,7 @@
 import { tempPath } from './_commons';
 import { PersistentStateImpl } from '../api';
 import { BlockchainCode, blockchainCodeToId } from '@emeraldwallet/core';
-import { AddressbookItem } from '@emeraldwallet/core/lib/persisistentState';
+import { PersistentState } from '@emeraldwallet/core';
 
 describe('Address Book', () => {
   let path: string;
@@ -12,6 +12,10 @@ describe('Address Book', () => {
     state = new PersistentStateImpl(path);
   });
 
+  afterEach(() => {
+    state.close();
+  });
+
   test('empty query', async () => {
     const act = await state.addressbook.query();
 
@@ -19,7 +23,7 @@ describe('Address Book', () => {
   });
 
   test('add an item and query all', async () => {
-    const item: AddressbookItem = {
+    const item: PersistentState.AddressbookItem = {
       blockchain: blockchainCodeToId(BlockchainCode.ETH),
       address: {
         type: 'plain',
@@ -36,7 +40,7 @@ describe('Address Book', () => {
   });
 
   test('add an item, remove and query all', async () => {
-    const item: AddressbookItem = {
+    const item: PersistentState.AddressbookItem = {
       blockchain: blockchainCodeToId(BlockchainCode.ETH),
       address: {
         type: 'plain',
@@ -52,7 +56,7 @@ describe('Address Book', () => {
   });
 
   test('add an item, query all, close state, open state and query all', async () => {
-    const item: AddressbookItem = {
+    const item: PersistentState.AddressbookItem = {
       blockchain: blockchainCodeToId(BlockchainCode.ETH),
       address: {
         type: 'plain',

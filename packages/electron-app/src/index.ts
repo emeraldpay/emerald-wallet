@@ -13,6 +13,4 @@ export { default as Settings } from './application/Settings';
 
 export { LocalConnector } from './vault/LocalConnector';
 
-export { LocalWalletState } from './walletstate/LocalWalletState';
-
 export { ApiMode } from './types';

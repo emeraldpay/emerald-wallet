@@ -179,4 +179,10 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess, pe
   ipcMain.handle(Commands.ADDRESS_BOOK_QUERY, (event, filter: PersistentState.AddressbookFilter) =>
     persistentState.addressbook.query(filter),
   );
+
+  ipcMain.handle(Commands.XPUB_POSITION_GET, (event, xpub: string) => persistentState.xpubpos.get(xpub));
+
+  ipcMain.handle(Commands.XPUB_POSITION_SET, (event, xpub: string, pos: number) =>
+    persistentState.xpubpos.setAtLeast(xpub, pos),
+  );
 }

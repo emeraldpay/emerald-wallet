@@ -1,5 +1,5 @@
 import { BigAmount, CreateAmount, Units } from '@emeraldpay/bigamount';
-import { BitcoinEntry, UnsignedBitcoinTx } from '@emeraldpay/emerald-vault-core';
+import { BitcoinEntry, CurrentAddress, UnsignedBitcoinTx } from '@emeraldpay/emerald-vault-core';
 import BigNumber from 'bignumber.js';
 import { amountDecoder, amountFactory, BalanceUtxo, BlockchainCode, blockchainIdToCode } from '../../blockchains';
 import { ValidationResult } from './types';
@@ -59,13 +59,13 @@ export class CreateBitcoinTx {
   private readonly utxo: BalanceUtxo[];
   private readonly zero: BigAmount;
 
-  constructor(source: BitcoinEntry, utxo: BalanceUtxo[]) {
+  constructor(source: BitcoinEntry, addresses: CurrentAddress[], utxo: BalanceUtxo[]) {
     this.source = source;
     this.utxo = utxo;
 
     this.blockchain = blockchainIdToCode(source.blockchain);
 
-    const changeAddress = source.addresses.find((item) => item.role == 'change')?.address;
+    const changeAddress = addresses.find((item) => item.role == 'change')?.address;
 
     if (changeAddress == null) {
       throw new Error('No change address found');

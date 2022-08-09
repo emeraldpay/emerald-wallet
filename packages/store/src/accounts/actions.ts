@@ -1,6 +1,7 @@
 import {
   AddEntry,
   AddressRole,
+  CurrentAddress,
   EntryId,
   IdSeedReference,
   OddPasswordItem,
@@ -470,4 +471,13 @@ export function listSeedAddresses(
 
 export function disableReceiveForEntry(entryId: EntryId, disabled = true): Dispatched<void> {
   return (dispatch, getState, extra) => extra.api.vault.setEntryReceiveDisabled(entryId, disabled);
+}
+
+export function getXPubPositionalAddress(entryId: string, xPub: string, role: AddressRole): Dispatched<CurrentAddress> {
+  return async (dispatch, getState, extra) => {
+    const position = await extra.api.xPubPos.get(xPub);
+    const [address] = await extra.api.vault.listEntryAddresses(entryId, role, position, 1);
+
+    return address;
+  };
 }

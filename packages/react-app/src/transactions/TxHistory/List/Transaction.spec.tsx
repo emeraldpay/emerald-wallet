@@ -1,5 +1,4 @@
-import { BlockchainCode, blockchainCodeToId } from '@emeraldwallet/core';
-import { ChangeType, Direction, State, Status } from '@emeraldwallet/core/lib/persisistentState';
+import { BlockchainCode, blockchainCodeToId, PersistentState } from '@emeraldwallet/core';
 import { StoredTransaction } from '@emeraldwallet/store';
 import { Theme } from '@emeraldwallet/ui';
 import { ThemeProvider } from '@material-ui/styles';
@@ -8,6 +7,8 @@ import * as React from 'react';
 import { Provider } from 'react-redux';
 import { Observable, Store } from 'redux';
 import Transaction from './Transaction';
+
+const { ChangeType, Direction, State, Status } = PersistentState;
 
 function createStore(): Store {
   return {

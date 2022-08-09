@@ -1,5 +1,5 @@
 import { IEmeraldVault } from '@emeraldpay/emerald-vault-core';
-import { Logger, WalletStateStorage } from '@emeraldwallet/core';
+import { Logger } from '@emeraldwallet/core';
 import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
 import { ChainRpcConnections, EmeraldApiAccess, Services } from '@emeraldwallet/services';
 import { screen } from '@emeraldwallet/store';
@@ -8,7 +8,6 @@ import { createServices } from '../createServices';
 import ElectronLogger from '../logging/ElectronLogger';
 import { ApiMode } from '../types';
 import { mapVaultWithIpc } from '../vault/vaultIpc';
-import { mapWalletStateWithIpc } from '../walletstate/walletStateIpc';
 import { setIpcHandlers } from './ipc-handlers/ipc';
 import Settings from './Settings';
 
@@ -39,7 +38,6 @@ export default class Application {
     persistentState: PersistentStateImpl,
     vault: IEmeraldVault,
     rpc: ChainRpcConnections,
-    walletStateStorage: WalletStateStorage,
   ): void {
     this.rpc = rpc;
     this.webContents = webContents;
@@ -49,7 +47,6 @@ export default class Application {
     setIpcHandlers(this, apiAccess, persistentState);
 
     mapVaultWithIpc(vault);
-    mapWalletStateWithIpc(walletStateStorage);
 
     this.log.info('Running services');
 

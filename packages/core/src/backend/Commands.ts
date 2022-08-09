@@ -41,4 +41,7 @@ export enum Commands {
   ADDRESS_BOOK_ADD = 'address-book-add',
   ADDRESS_BOOK_REMOVE = 'address-book-remove',
   ADDRESS_BOOK_QUERY = 'address-book-query',
+
+  XPUB_POSITION_GET = 'xpub-position-get',
+  XPUB_POSITION_SET = 'xpub-position-set',
 }

@@ -108,6 +108,12 @@ export class TxService implements IService {
                       ],
                       [],
                     );
+
+                    if (tx.xpubIndex != null) {
+                      this.persistentState.xpubpos
+                        .setAtLeast(identifier, tx.xpubIndex)
+                        .catch((error) => log.error('Error while set xPub position: ', error));
+                    }
                   } else {
                     changes = (tx.transfers as EthereumTransfer[]).reduce<PersistentState.Change[]>(
                       (carry, transfer) => {

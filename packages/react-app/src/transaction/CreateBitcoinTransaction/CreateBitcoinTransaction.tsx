@@ -1,8 +1,9 @@
-import { EntryId, isBitcoinEntry } from '@emeraldpay/emerald-vault-core';
+import { AddressRole, CurrentAddress, EntryId, isBitcoinEntry } from '@emeraldpay/emerald-vault-core';
 import { BitcoinEntry, isSeedPkRef, UnsignedBitcoinTx, Uuid } from '@emeraldpay/emerald-vault-core/lib/types';
 import { BalanceUtxo, BlockchainCode, blockchainIdToCode } from '@emeraldwallet/core';
 import { CreateBitcoinTx } from '@emeraldwallet/core/lib/workflow';
 import { accounts, FeePrices, IState, screen, transaction } from '@emeraldwallet/store';
+import { getXPubPositionalAddress } from '@emeraldwallet/store/lib/accounts/actions';
 import { Back, Page } from '@emeraldwallet/ui';
 import { Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -27,6 +28,7 @@ interface StateProps {
 
 interface DispatchProps {
   getFees: (blockchain: BlockchainCode) => () => Promise<FeePrices>;
+  getXPubPositionalAddress(entryId: string, xPub: string, role: AddressRole): Promise<CurrentAddress>;
   onBroadcast: (blockchain: BlockchainCode, orig: UnsignedBitcoinTx, raw: string) => void;
   onCancel?: () => void;
 }
@@ -38,6 +40,7 @@ const Component: React.FC<OwnProps & StateProps & DispatchProps> = ({
   source,
   utxo,
   getFees,
+  getXPubPositionalAddress,
   onBroadcast,
   onCancel,
 }) => {
@@ -48,15 +51,21 @@ const Component: React.FC<OwnProps & StateProps & DispatchProps> = ({
   const [txBuilder, setTxBuilder] = React.useState<CreateBitcoinTx | null>(null);
 
   React.useEffect(() => {
-    try {
-      // make sure we setup the Tx Builder only once, otherwise it loses configuration options
-      const txBuilder = new CreateBitcoinTx(entry, utxo);
+    if (isBitcoinEntry(entry)) {
+      Promise.all(entry.xpub.map(({ xpub, role }) => getXPubPositionalAddress(entry.id, xpub, role))).then(
+        (addresses) => {
+          try {
+            // make sure we set up the Tx Builder only once, otherwise it loses configuration options
+            const txBuilder = new CreateBitcoinTx(entry, addresses, utxo);
 
-      setTxBuilder(txBuilder);
-    } catch (exception) {
-      // Nothing
+            setTxBuilder(txBuilder);
+          } catch (exception) {
+            // Nothing
+          }
+        },
+      );
     }
-  }, [entry.id]);
+  }, [entry, utxo, getXPubPositionalAddress]);
 
   let content;
 
@@ -154,6 +163,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           avgMiddle,
           avgTail5,
         };
+      },
+      getXPubPositionalAddress(entryId, xPub, role) {
+        return dispatch(getXPubPositionalAddress(entryId, xPub, role));
       },
       onBroadcast: (blockchain, orig, raw) => {
         dispatch(transaction.actions.broadcastTx(blockchain, raw));

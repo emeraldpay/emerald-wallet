@@ -1,5 +1,4 @@
-import { BlockchainCode, blockchainCodeToId } from '@emeraldwallet/core';
-import { ChangeType, Direction, State, Status } from '@emeraldwallet/core/lib/persisistentState';
+import { BlockchainCode, blockchainCodeToId, PersistentState } from '@emeraldwallet/core';
 import { StoredTransaction } from '@emeraldwallet/store/lib/txhistory/types';
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
@@ -8,6 +7,8 @@ import { BackendMock } from '../backendMock';
 import { providerForStore } from '../storeProvider';
 import withTheme from '../themeProvider';
 import { createWallets, setup, wallet3 } from '../wallets';
+
+const { ChangeType, Direction, State, Status } = PersistentState;
 
 const txEthereum1 = new StoredTransaction({
   blockchain: blockchainCodeToId(BlockchainCode.ETH),

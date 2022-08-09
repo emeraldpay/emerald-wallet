@@ -1,7 +1,16 @@
-import { CurrentAddress, EntryId, isBitcoinEntry, isEthereumEntry, Uuid, Wallet } from '@emeraldpay/emerald-vault-core';
+import {
+  AddressRole,
+  CurrentAddress,
+  EntryId,
+  isBitcoinEntry,
+  isEthereumEntry,
+  Uuid,
+  Wallet,
+} from '@emeraldpay/emerald-vault-core';
 import { AnyCoinCode, BlockchainCode, blockchainIdToCode, Blockchains } from '@emeraldwallet/core';
 import { registry } from '@emeraldwallet/erc20';
 import { accounts, IBalanceValue, IState, screen } from '@emeraldwallet/store';
+import { getXPubPositionalAddress } from '@emeraldwallet/store/lib/accounts/actions';
 import { Address, Back, Page, WalletReference } from '@emeraldwallet/ui';
 import { Box, Button, createStyles, FormControl, Grid, InputLabel, MenuItem, Select } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -23,12 +32,21 @@ const useStyles = makeStyles(
   }),
 );
 
-interface Accept {
-  addresses: string[];
+interface BaseAccept {
   blockchain: BlockchainCode;
   entryId: EntryId;
   token: AnyCoinCode;
 }
+
+interface BitcoinAccept extends BaseAccept {
+  xpub: string;
+}
+
+interface EthereumAccept extends BaseAccept {
+  addresses: string[];
+}
+
+type Accept = BitcoinAccept | EthereumAccept;
 
 interface OwnProps {
   walletId: Uuid;
@@ -41,12 +59,9 @@ interface StateProps {
 }
 
 interface DispatchProps {
+  getXPubPositionalAddress(entryId: string, xPub: string, role: AddressRole): Promise<CurrentAddress>;
   onCancel(): void;
   onSave(entryId: EntryId): void;
-}
-
-function distinct<T>(value: T, index: number, array: T[]): boolean {
-  return array.indexOf(value) === index;
 }
 
 function anyToken(accepted: Accept[], blockchain: BlockchainCode): AnyCoinCode | undefined {
@@ -55,17 +70,19 @@ function anyToken(accepted: Accept[], blockchain: BlockchainCode): AnyCoinCode |
   return accepts?.token;
 }
 
-function anyAddress(accepted: Accept[], blockchain: BlockchainCode, token?: AnyCoinCode): string | undefined {
-  const [accepts] = accepted.filter((item) => item.blockchain === blockchain && item.token === token);
-  const [address] = accepts?.addresses ?? [];
+function distinct<T>(value: T, index: number, array: T[]): boolean {
+  return array.indexOf(value) === index;
+}
 
-  return address;
+function isBitcoinAccept(accept: Accept): accept is BitcoinAccept {
+  return (accept as BitcoinAccept).xpub != null;
 }
 
 const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
   accepted,
   assets,
   wallet,
+  getXPubPositionalAddress,
   onCancel,
   onSave,
 }) => {
@@ -76,19 +93,10 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
     [accepted],
   );
 
+  const [availableAddresses, setAvailableAddresses] = React.useState<string[]>([]);
   const [currentBlockchain, setCurrentBlockchain] = React.useState(availableBlockchains[0]);
   const [currentToken, setCurrentToken] = React.useState(anyToken(accepted, currentBlockchain));
-  const [currentAddress, setCurrentAddress] = React.useState(anyAddress(accepted, currentBlockchain, currentToken));
-
-  const availableAddresses = React.useMemo(
-    () =>
-      accepted
-        .filter((item) => item.blockchain === currentBlockchain && item.token === currentToken)
-        .map((item) => item.addresses)
-        .reduce((carry: string[], address: string[]) => [...carry, ...address], [])
-        .filter(distinct),
-    [accepted, currentBlockchain, currentToken],
-  );
+  const [currentAddress, setCurrentAddress] = React.useState<string | undefined>(undefined);
 
   const availableCoins = React.useMemo(
     () =>
@@ -100,12 +108,8 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
   );
 
   const currentEntry = React.useMemo(
-    () =>
-      currentAddress == null
-        ? undefined
-        : accepted.find((item) => item.blockchain === currentBlockchain && item.addresses.indexOf(currentAddress) >= 0)
-            ?.entryId,
-    [accepted, currentAddress, currentBlockchain],
+    () => accepted.find((item) => item.blockchain === currentBlockchain)?.entryId,
+    [accepted, currentBlockchain],
   );
 
   const tokenInfo = React.useMemo(
@@ -116,21 +120,47 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
   const selectBlockchain = React.useCallback(
     (blockchain: BlockchainCode): void => {
       const token = anyToken(accepted, blockchain);
+      const [address] = availableAddresses;
 
-      setCurrentAddress(anyAddress(accepted, blockchain, token));
+      setCurrentAddress(address);
       setCurrentBlockchain(blockchain);
       setCurrentToken(token);
     },
-    [accepted],
+    [accepted, availableAddresses],
   );
 
   const selectToken = React.useCallback(
     (token: AnyCoinCode): void => {
-      setCurrentAddress(anyAddress(accepted, currentBlockchain, token));
+      const [address] = availableAddresses;
+
+      setCurrentAddress(address);
       setCurrentToken(token);
     },
-    [accepted, currentBlockchain],
+    [availableAddresses],
   );
+
+  React.useEffect(() => {
+    const accepts = accepted.filter((item) => item.blockchain === currentBlockchain && item.token === currentToken);
+
+    Promise.all(
+      accepts.map(async (accept) => {
+        if (isBitcoinAccept(accept)) {
+          const { address } = await getXPubPositionalAddress(accept.entryId, accept.xpub, 'receive');
+
+          return [address];
+        }
+
+        return accept.addresses;
+      }),
+    ).then((addresses) => {
+      const uniqueAddresses = addresses
+        .reduce((carry: string[], address: string[]) => [...carry, ...address], [])
+        .filter(distinct);
+
+      setAvailableAddresses(uniqueAddresses);
+      setCurrentAddress(uniqueAddresses[0]);
+    });
+  }, [accepted, currentBlockchain, currentToken, getXPubPositionalAddress]);
 
   let qrCodeValue = currentAddress;
 
@@ -154,7 +184,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
                   disabled={availableBlockchains.length <= 1}
                   labelId="blockchain-select-label"
                   value={currentBlockchain}
-                  onChange={(e) => selectBlockchain(e.target.value as BlockchainCode)}
+                  onChange={(event) => selectBlockchain(event.target.value as BlockchainCode)}
                 >
                   {availableBlockchains.map((blockchain) => (
                     <MenuItem key={blockchain} value={blockchain}>
@@ -171,7 +201,7 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
                   disabled={availableCoins.length <= 1}
                   labelId="coin-select-label"
                   value={currentToken}
-                  onChange={(e) => selectToken(e.target.value as AnyCoinCode)}
+                  onChange={(event) => selectToken(event.target.value as AnyCoinCode)}
                 >
                   {availableCoins.map((token) => (
                     <MenuItem key={token} value={token}>
@@ -187,8 +217,8 @@ const ReceiveScreen: React.FC<DispatchProps & OwnProps & StateProps> = ({
                 <Select
                   disabled={availableAddresses.length <= 1}
                   labelId="address-select-label"
-                  value={currentAddress}
-                  onChange={(e) => setCurrentAddress(e.target.value as string)}
+                  value={currentAddress ?? ''}
+                  onChange={(event) => setCurrentAddress(event.target.value as string)}
                 >
                   {availableAddresses.map((address) => (
                     <MenuItem key={address} value={address}>
@@ -237,19 +267,31 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       wallet?.entries
         .filter((entry) => !entry.receiveDisabled)
         .reduce<Accept[]>((carry, entry) => {
+          const blockchain = blockchainIdToCode(entry.blockchain);
+
           let address: string | undefined;
 
           if (isEthereumEntry(entry)) {
             address = entry.address?.value;
           } else if (isBitcoinEntry(entry)) {
-            address = entry.addresses.find((a: CurrentAddress) => a.role === 'receive')?.address;
+            const { xpub } = entry.xpub.find(({ role }) => role === 'receive') ?? {};
+
+            if (xpub != null) {
+              return [
+                ...carry,
+                {
+                  blockchain,
+                  xpub,
+                  entryId: entry.id,
+                  token: Blockchains[blockchain].params.coinTicker,
+                },
+              ];
+            }
           }
 
           if (address == null) {
             return carry;
           }
-
-          const blockchain = blockchainIdToCode(entry.blockchain);
 
           const accepts = Blockchains[blockchain].getAssets().reduce<Accept[]>((carry, token) => {
             if (address == null) {
@@ -285,9 +327,15 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       wallet,
     };
   },
-  (dispatch, ownProps) => ({
-    onCancel: () => dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId)),
-    onSave: (entryId: EntryId) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (dispatch: any, ownProps) => ({
+    getXPubPositionalAddress(entryId, xPub, role) {
+      return dispatch(getXPubPositionalAddress(entryId, xPub, role));
+    },
+    onCancel() {
+      dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId));
+    },
+    onSave(entryId: EntryId) {
       dispatch(accounts.actions.nextAddress(entryId, 'receive'));
       dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, ownProps.walletId));
     },

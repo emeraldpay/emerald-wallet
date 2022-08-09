@@ -1,13 +1,7 @@
-import {EntryId, SeedDescription, Uuid, Wallet, AddressBookItem, WalletEntry} from '@emeraldpay/emerald-vault-core';
-import {Wei} from '@emeraldpay/bigamount-crypto';
-import {
-  AnyCoinCode,
-  BlockchainCode,
-  CurrencyCode,
-  BalanceUtxo,
-} from '@emeraldwallet/core';
-import {BigAmount} from "@emeraldpay/bigamount";
-import {AddressRole} from "@emeraldpay/emerald-vault-core/lib/types";
+import { BigAmount } from '@emeraldpay/bigamount';
+import { EntryId, SeedDescription, Uuid, Wallet, WalletEntry } from '@emeraldpay/emerald-vault-core';
+import { AddressRole } from '@emeraldpay/emerald-vault-core/lib/types';
+import { BalanceUtxo, BlockchainCode } from '@emeraldwallet/core';
 
 export const moduleName = 'accounts';
 
@@ -29,7 +23,7 @@ export interface AccountDetails {
   balance?: string;
   balancePending?: any;
   txcount?: number;
-  utxo?: BalanceUtxo[]
+  utxo?: BalanceUtxo[];
 }
 
 export interface IAccountsState {
@@ -65,7 +59,7 @@ export enum ActionTypes {
   SET_SEEDS = 'ACCOUNT/SET_SEEDS',
   SUBSCRIBE_WALLET_BALANCE = 'ACCOUNT/SUB_WALLET_BALANCE',
   TRY_UNLOCK_SEED = 'ACCOUNT/TRY_UNLOCK_SEED',
-  NEXT_ADDRESS = 'ACCOUNT/NEXT_ADDRESS'
+  NEXT_ADDRESS = 'ACCOUNT/NEXT_ADDRESS',
 }
 
 export interface ILoadWalletsAction {
@@ -83,7 +77,7 @@ export interface IFetchHdPathsAction {
 export interface IUpdateWalletAction {
   type: ActionTypes.WALLET_UPDATED;
   payload: {
-    walletId: Uuid,
+    walletId: Uuid;
     name: string;
     description: string;
   };
@@ -96,7 +90,7 @@ export interface IWalletsLoaded {
 
 export interface ISetBalanceAction {
   type: ActionTypes.SET_BALANCE;
-  payload: IBalanceUpdate
+  payload: IBalanceUpdate;
 }
 
 export interface ISetLoadingAction {
@@ -127,8 +121,8 @@ export interface ISetTxCountAction {
 export interface IHdAccountCreated {
   type: ActionTypes.HD_ACCOUNT_CREATED;
   payload: {
-    walletId: string,
-    account: WalletEntry
+    walletId: string;
+    account: WalletEntry;
   };
 }
 
@@ -137,8 +131,8 @@ export interface ILoadSeedsAction {
 }
 
 export interface ISetSeedsAction {
-  type: ActionTypes.SET_SEEDS,
-  payload: SeedDescription[]
+  type: ActionTypes.SET_SEEDS;
+  payload: SeedDescription[];
 }
 
 /**
@@ -168,9 +162,9 @@ export interface ISubWalletBalance {
 }
 
 export interface INextAddress {
-  type: ActionTypes.NEXT_ADDRESS,
-  entryId: EntryId,
-  addressRole: AddressRole,
+  type: ActionTypes.NEXT_ADDRESS;
+  entryId: EntryId;
+  addressRole: AddressRole;
 }
 
 export type AccountsAction =
@@ -189,5 +183,4 @@ export type AccountsAction =
   | ILoadSeedsAction
   | ISetSeedsAction
   | ISubWalletBalance
-  | INextAddress
-  ;
+  | INextAddress;

@@ -7,7 +7,7 @@ import {
   createStore,
   RemoteAddressBook,
   RemoteVault,
-  RenderWalletState,
+  RemoteXPubPosition,
   screen,
   settings,
   triggers,
@@ -20,12 +20,11 @@ Logger.setInstance(ElectronLogger);
 
 const logger = Logger.forCategory('store');
 
-const api: WalletApi = { addressBook: RemoteAddressBook, vault: RemoteVault };
+const api: WalletApi = { addressBook: RemoteAddressBook, vault: RemoteVault, xPubPos: RemoteXPubPosition };
 
 const backendApi = new BackendApi();
-const walletState = new RenderWalletState();
 
-export const store = createStore(api, backendApi, walletState);
+export const store = createStore(api, backendApi);
 
 function listenElectron(): void {
   logger.debug('Running launcher listener for Redux');

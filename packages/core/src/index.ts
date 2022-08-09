@@ -65,8 +65,6 @@ export {Commands} from './backend/Commands';
 // frontend
 export {default as IFrontApp} from './frontend/IFrontApp';
 
-export {WalletStateStorage} from './walletstate/WalletStateStorage';
-
 export {toBigNumber, toNumber, toHex, quantitiesToHex, fromBaseUnits, toBaseUnits} from "./convert";
 
 export {Contract} from './Contract';

@@ -17,27 +17,18 @@ function* loadAddresses(
   addressBook: PersistentState.Addressbook,
   { payload: blockchain }: ILoadContactsAction,
 ): SagaIterator {
-  const filter = {
+  const { items }: { items: PersistentState.AddressbookItem[] } = yield call(addressBook.query, {
     blockchain: blockchainCodeToId(blockchain),
-  };
-  const x = yield call(addressBook.query, filter);
+  });
 
-  console.log(filter, x)
-
-  yield put(setAddressBook(blockchain, x.items));
+  yield put(setAddressBook(blockchain, items));
 }
 
 function* addContact(
   addressBook: PersistentState.Addressbook,
   { payload: { address, blockchain, description, label } }: AddContactAction,
 ): SagaIterator {
-  const contact: PersistentState.AddressbookItem = {
-    address,
-    blockchain,
-    description,
-    label,
-    createTimestamp: new Date(),
-  };
+  const contact: PersistentState.AddressbookItem = { address, blockchain, description, label };
 
   const id = yield call(addressBook.add, contact);
 

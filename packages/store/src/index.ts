@@ -48,4 +48,4 @@ export { default as reduxLogger } from './redux-logger';
 export { createStore } from './create-store';
 export { RemoteVault } from './VaultAccess';
 export { RemoteAddressBook } from './AddressBookAccess';
-export { RenderWalletState } from './RenderWalletState';
+export { RemoteXPubPosition } from './XPubPositionAccess';
