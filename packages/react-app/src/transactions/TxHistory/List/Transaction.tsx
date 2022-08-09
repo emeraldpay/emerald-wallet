@@ -35,6 +35,16 @@ const Confirmations: Readonly<Record<BlockchainCode, number>> = {
   [BlockchainCode.ETC]: 48,
 };
 
+const Confirmed: Readonly<Record<BlockchainCode, number>> = {
+  [BlockchainCode.Unknown]: 1,
+  [BlockchainCode.BTC]: 6 * 24,
+  [BlockchainCode.TestBTC]: 6 * 24,
+  [BlockchainCode.ETH]: 4 * 60 * 24,
+  [BlockchainCode.Goerli]: 4 * 60 * 24,
+  [BlockchainCode.Kovan]: 4 * 60 * 24,
+  [BlockchainCode.ETC]: 4 * 60 * 24,
+};
+
 const useStyles = makeStyles((theme) =>
   createStyles({
     button: {
@@ -137,7 +147,9 @@ const useStyles = makeStyles((theme) =>
     transactionDetailsId: {
       color: theme.palette.text.secondary,
       fontSize: 14,
+      flex: '1 1 auto',
       marginRight: 10,
+      maxWidth: 535,
       overflow: 'hidden',
       textOverflow: 'ellipsis',
     },
@@ -145,6 +157,7 @@ const useStyles = makeStyles((theme) =>
       color: theme.palette.text.secondary,
       fontSize: 14,
       marginRight: 10,
+      whiteSpace: 'nowrap',
     },
     transactionLabel: {
       alignItems: 'center',
@@ -194,8 +207,10 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   tx,
   getFiatValue,
   getHeight,
-  getWallet,
   getTransactionMeta,
+  getWallet,
+  goToCancelTx,
+  goToSpeedUpTx,
   goToTransaction,
   goToWallet,
   setTransactionMeta,
@@ -223,6 +238,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
 
     return 0;
   }, [blockchainCode, tx.block, getHeight]);
+  const confirmed = React.useMemo(() => confirmations >= Confirmed[blockchainCode], [blockchainCode, confirmations]);
   const sinceTime = React.useMemo(
     () =>
       DateTime.fromJSDate(tx.sinceTimestamp).toRelative({
@@ -317,26 +333,23 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
             {tx.txId}
           </div>
           <div className={classes.transactionDetailsInfo}>
-            {sinceTime} / {`${confirmations > 0 ? confirmations : 'No'} confirmation`}
+            {sinceTime} / {confirmed ? 'Confirmed' : `${confirmations > 0 ? confirmations : 'No'} confirmation`}
           </div>
           <IconButton className={classes.button} onClick={onOpenMenu}>
             <MoreIcon fontSize="inherit" />
           </IconButton>
           <Menu anchorEl={menuAnchor} open={menuAnchor != null} onClose={onCloseMenu}>
             <MenuItem onClick={() => goToTransaction(tx)}>Details</MenuItem>
-            {isEthereum(blockchainCode) && (
-              <>
-                <MenuItem>Cancel</MenuItem>
-                <MenuItem>Speed Up</MenuItem>
-              </>
-            )}
+            {isEthereum(blockchainCode) && <MenuItem onClick={() => goToCancelTx(tx)}>Cancel</MenuItem>}
+            {isEthereum(blockchainCode) && <MenuItem onClick={() => goToSpeedUpTx(tx)}>Speed Up</MenuItem>}
           </Menu>
         </div>
       </div>
       <div className={classes.changes}>
         {tx.changes
           .reduce<Change[]>((carry, change) => {
-            if (change.wallet == null) {
+            // TODO Remove second condition
+            if (change.wallet == null || change.wallet === '-0') {
               return carry;
             }
 

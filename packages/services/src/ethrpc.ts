@@ -1,29 +1,14 @@
-import {JsonRpc} from "./jsonrpc";
-import {toHex, toNumber, toBigNumber} from "@emeraldwallet/core";
+import { toBigNumber, toHex, toNumber } from '@emeraldwallet/core';
+import { JsonRpc } from './jsonrpc';
 
 export type CallObject = {
-  to: string,
-  data?: string,
-  nonce?: number,
-  gas?: number,
+  to: string;
+  data?: string;
+  nonce?: number;
+  gas?: number;
 };
 
-function formatTransaction(tx: any) {
-  if (!tx) {
-    return tx;
-  }
-  return {
-    ...tx,
-    blockNumber: tx.blockNumber ? toNumber(tx.blockNumber) : tx.blockNumber,
-    nonce: toNumber(tx.nonce),
-    value: toBigNumber(tx.value),
-    gasPrice: toBigNumber(tx.gasPrice),
-    gas: toNumber(tx.gas),
-    transactionIndex: toNumber(tx.transactionIndex),
-  };
-}
-
-function formatBlock(b: any) {
+function formatBlock(b: any): any {
   return {
     ...b,
     difficulty: toBigNumber(b.difficulty),
@@ -69,7 +54,7 @@ export class EthApi {
    * Executes a new message call immediately without creating a transaction on the block chain
    */
   call(callData: CallObject, blockNumber: number | string = 'latest'): Promise<any> {
-    return this.rpc.call('eth_call', [{to: callData.to, data: callData.data}, blockNumber]);
+    return this.rpc.call('eth_call', [{ to: callData.to, data: callData.data }, blockNumber]);
   }
 
   /**
@@ -78,8 +63,8 @@ export class EthApi {
   estimateGas(call: CallObject): Promise<number> {
     const txData = {
       ...call,
-      gas: (call.gas !== undefined) ? toHex(call.gas) : call.gas,
-      nonce: (call.nonce !== undefined) ? toHex(call.nonce) : call.nonce,
+      gas: call.gas !== undefined ? toHex(call.gas) : call.gas,
+      nonce: call.nonce !== undefined ? toHex(call.nonce) : call.nonce,
     };
     return this.rpc.call('eth_estimateGas', [txData]).then((gas: any) => toNumber(gas));
   }
@@ -98,23 +83,24 @@ export class EthApi {
    *       we call it getBlockNumber(), FEF
    */
   getBlockNumber(): Promise<number> {
-    return this.rpc.call('eth_blockNumber', [])
-      .then((result: any) => toNumber(result));
+    return this.rpc.call('eth_blockNumber', []).then((result: any) => toNumber(result));
   }
 
   /**
    * Returns information about a block by block number.
    */
-  getBlockByNumber(blockNumber: number | string = 'latest', full: boolean = false): Promise<any> {
+  getBlockByNumber(blockNumber: number | string = 'latest', full = false): Promise<any> {
     return this.rpc.call('eth_getBlockByNumber', [blockNumber, full]);
   }
 
   /**
    * Returns a block matching the block number or block hash.
    */
-  getBlock(hashOrNumber: string | number | 'earliest' | 'latest' | 'pending', full: boolean = false) {
-    const method = (typeof hashOrNumber === 'string' && hashOrNumber.indexOf('0x') === 0) ?
-      'eth_getBlockByHash' : 'eth_getBlockByNumber';
+  getBlock(hashOrNumber: string | number | 'earliest' | 'latest' | 'pending', full = false): Promise<any> {
+    const method =
+      typeof hashOrNumber === 'string' && hashOrNumber.indexOf('0x') === 0
+        ? 'eth_getBlockByHash'
+        : 'eth_getBlockByNumber';
     let block = hashOrNumber;
     if (method === 'eth_getBlockByNumber') {
       if (!isPredefinedBlockNumber(hashOrNumber)) {
@@ -130,8 +116,7 @@ export class EthApi {
    * @param blockNumber - integer block number, or the string 'latest', 'earliest' or 'pending'
    */
   getTransactionCount(address: string, blockNumber: number | string = 'latest'): Promise<any> {
-    return this.rpc.call('eth_getTransactionCount', [address, blockNumber])
-      .then(toNumber);
+    return this.rpc.call('eth_getTransactionCount', [address, blockNumber]).then(toNumber);
   }
 
   /**
@@ -145,11 +130,8 @@ export class EthApi {
    * Returns the information about a transaction requested by transaction hash.
    */
   getTransaction(hash: string): Promise<any> {
-    return this.rpc.call('eth_getTransactionByHash', [hash])
-      .then(formatTransaction);
+    return this.rpc.call('eth_getTransactionByHash', [hash]);
   }
-
-
 }
 
 export default class EthRpc {
