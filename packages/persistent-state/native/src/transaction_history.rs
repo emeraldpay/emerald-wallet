@@ -267,18 +267,25 @@ pub fn query<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManager
   Ok(())
 }
 
-fn submit_internal(tx: Transaction) -> Result<bool, StateManagerError> {
+fn submit_internal(tx: Transaction) -> Result<TransactionJson, StateManagerError> {
   let storage = Instance::get_storage()?;
+  let blockchain = tx.blockchain.value() as u32;
+  let tx_id = tx.tx_id.clone();
   storage.get_transactions()
     .submit(vec![tx])
     .map_err(StateManagerError::from)
-    .map(|_| true)
+    .and_then(|_| {
+      storage.get_transactions()
+        .get_tx(blockchain, tx_id.as_str())
+        .ok_or(StateManagerError::IO)
+    })
+    .and_then(TransactionJson::try_from)
 }
 
 #[neon_frame_fn(channel=1)]
 pub fn submit<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
   where
-    H: FnOnce(Result<bool, StateManagerError>) + Send + 'static {
+    H: FnOnce(Result<TransactionJson, StateManagerError>) + Send + 'static {
   let tx = cx
     .argument::<JsString>(0)
     .map_err(|_| StateManagerError::MissingArgument(0, "tx".to_string()))?

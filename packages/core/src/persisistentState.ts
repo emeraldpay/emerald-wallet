@@ -139,8 +139,9 @@ export interface TxHistory {
   /**
    * Add or update existing transaction in the storage
    * @param tx
+   * @returns the stored version of just submitted transaction, which may have different values if it's merged/enhanced with already stored data
    */
-  submit(tx: Transaction): Promise<void>;
+  submit(tx: Transaction): Promise<Transaction>;
 
   /**
    * Remove transaction from the storage
