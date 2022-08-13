@@ -232,6 +232,8 @@ describe("Tx History", () => {
     let act = await state.txhistory.query(filter);
     expect(act.items.length).toBe(1);
     expect(act.items[0].changes[0].address).toBe("0xf958f1dc9290422d3624b72fc871a8ebb0387f56");
+    expect(act.items[0].changes[0].wallet).toBe("e4bf870e-6247-4465-a476-ad99716c38ce-0")
+    expect(act.items[0].changes[1].wallet).toBeUndefined();
   });
 
 })

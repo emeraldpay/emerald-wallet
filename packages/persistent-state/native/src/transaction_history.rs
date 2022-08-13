@@ -198,7 +198,11 @@ impl TryFrom<ChangeJson> for Change {
 impl From<&Change> for ChangeJson {
   fn from(value: &Change) -> Self {
     ChangeJson {
-      wallet: Some(format!("{}-{}", value.wallet_id, value.entry_id)),
+      wallet: if value.wallet_id.is_empty() {
+        None
+      } else {
+        Some(format!("{}-{}", value.wallet_id, value.entry_id))
+      },
       address: if_not_empty(value.address.clone()),
       direction: value.direction as usize,
       hd_path: if_not_empty(value.hd_path.clone()),
