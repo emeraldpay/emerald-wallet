@@ -32,11 +32,12 @@ lazy_static! {
 }
 
 impl Instance {
-  fn init(path: PathBuf) -> Result<(), StateManagerError> {
+  fn init(path: Option<PathBuf>) -> Result<(), StateManagerError> {
     let current = CURRENT.read().unwrap().clone();
     if current.is_ready() {
       return Err(StateManagerError::Misconfigured)
     }
+    let path = if let Some(value) = path { value } else { emerald_wallet_state::storage::default_path() };
     let storage = SledStorage::open(path)?;
     let mut w = CURRENT.write().unwrap();
     *w = Arc::new(StorageRef::INITIALIZED(Arc::new(storage)));
@@ -67,12 +68,11 @@ impl Instance {
 
 #[neon_frame_fn]
 pub fn open(cx: &mut FunctionContext) -> Result<bool, StateManagerError> {
-  let path = cx
-    .argument::<JsString>(0)
-    .map_err(|_| StateManagerError::MissingArgument(0, "path".to_string()))?
-    .value(cx);
+  let path = cx.argument_opt(0)
+    .map(|arg| arg.downcast::<JsString, _>(cx).unwrap().value(cx))
+    .map(|dir| PathBuf::from(dir));
 
-  Instance::init(PathBuf::from(path))
+    Instance::init(path)
     .map(|_| true)
 }
 

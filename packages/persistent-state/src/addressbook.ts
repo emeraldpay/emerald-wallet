@@ -35,11 +35,11 @@ export class AddressbookImpl implements PersistentState.Addressbook {
     });
   }
 
-  query(filter?: PersistentState.AddressbookFilter): Promise<PersistentState.PageResult<PersistentState.AddressbookItem>> {
+  query(filter?: PersistentState.AddressbookFilter, page?: PersistentState.PageQuery): Promise<PersistentState.PageResult<PersistentState.AddressbookItem>> {
     return new Promise((resolve, reject) => {
       try {
         this.manager.addon.addressbook_query(
-          JSON.stringify(filter),
+          JSON.stringify(filter), JSON.stringify(page),
           neonToPromise(resolve, reject, createDateReviver(["createTimestamp", "updateTimestamp"]))
         );
       } catch (e) {
