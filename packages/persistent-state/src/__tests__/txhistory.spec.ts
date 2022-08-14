@@ -16,6 +16,9 @@ describe("Tx History", () => {
   beforeEach(() => {
     state = new PersistentStateImpl(tempPath("tx-history"));
   });
+  afterEach( () => {
+    state.close();
+  });
 
   test("empty query", async () => {
     let act = await state.txhistory.query();
@@ -36,6 +39,28 @@ describe("Tx History", () => {
     expect(act).toEqual({items: [tx], cursor: null});
     // make sure it's actual date, not a string. a date keeps timezone and millis
     expect(act.items[0].sinceTimestamp.toISOString()).toBe("2021-03-05T15:11:12.000Z");
+  });
+
+  test("add a tx and query using cursor", async () => {
+    for (let i = 0; i < 10; i++) {
+      let tx: Transaction = {
+        blockchain: blockchainCodeToId(BlockchainCode.ETH),
+        txId: `0xd91a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc4400${i}`,
+        state: State.PREPARED,
+        sinceTimestamp: new Date(`2021-03-05T10:00:${25 - i}`),
+        status: Status.UNKNOWN,
+        changes: []
+      };
+      await state.txhistory.submit(tx);
+    }
+    let page1 = await state.txhistory.query({}, {limit: 5});
+    expect(page1.items.length).toBe(5);
+    expect(page1.items[0].txId).toBe("0xd91a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc44000");
+    expect(page1.cursor).toBeDefined();
+
+    let page2 = await state.txhistory.query({}, {limit: 5, cursor: page1.cursor});
+    expect(page2.items.length).toBe(5);
+    expect(page2.items[0].txId).toBe("0xd91a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc44005");
   });
 
   test("add a tx returns itself", async () => {

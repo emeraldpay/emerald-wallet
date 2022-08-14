@@ -10,7 +10,7 @@ use protobuf::ProtobufEnum;
 use regex::Regex;
 use uuid::Uuid;
 use crate::commons::{if_not_empty, if_time};
-use crate::pagination::PageResultJson;
+use crate::pagination::{PageQueryJson, PageResultJson};
 
 #[derive(Deserialize)]
 struct FilterJson {
@@ -223,7 +223,7 @@ impl TryFrom<PageResult<Transaction>> for PageResultJson<TransactionJson> {
     }
     Ok(PageResultJson {
       items: transactions,
-      cursor: None,
+      cursor: value.cursor.map(|c| c.offset),
     })
   }
 }
@@ -232,15 +232,15 @@ impl TryFrom<PageResult<Transaction>> for PageResultJson<TransactionJson> {
 // NAPI functions
 // ------
 
-fn query_internal(filter: Filter) -> Result<PageResultJson<TransactionJson>, StateManagerError> {
+fn query_internal(filter: Filter, page: PageQuery) -> Result<PageResultJson<TransactionJson>, StateManagerError> {
   let storage = Instance::get_storage()?;
   storage.get_transactions()
-    .query(filter, PageQuery::default())
+    .query(filter, page)
     .map_err(|e| StateManagerError::from(e))
     .and_then(|r| PageResultJson::try_from(r))
 }
 
-#[neon_frame_fn(channel=1)]
+#[neon_frame_fn(channel=2)]
 pub fn query<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
   where
     H: FnOnce(Result<PageResultJson<TransactionJson>, StateManagerError>) + Send + 'static {
@@ -259,8 +259,22 @@ pub fn query<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManager
     Filter::default()
   };
 
+  let page: Handle<JsValue> = cx.argument(1)
+    .map_err(|_| StateManagerError::MissingArgument(1, "page".to_string()))?;
+  let page = if page.is_a::<JsString, _>(cx) {
+    let json = page.downcast_or_throw::<JsString, _>(cx)
+      .map_err(|_| StateManagerError::InvalidArgument(1, "page".to_string()))?
+      .value(cx);
+    PageQuery::from(
+      serde_json::from_str::<PageQueryJson>(json.as_str())
+        .map_err(|_| StateManagerError::InvalidArgument(1, "page".to_string()))?
+    )
+  } else {
+    PageQuery::default()
+  };
+
   std::thread::spawn(move || {
-    let result = query_internal(filter);
+    let result = query_internal(filter, page);
     handler(result);
   });
 
