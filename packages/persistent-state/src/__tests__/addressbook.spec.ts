@@ -1,7 +1,6 @@
+import { BlockchainCode, PersistentState , blockchainCodeToId } from '@emeraldwallet/core';
 import { tempPath } from './_commons';
 import { PersistentStateImpl } from '../api';
-import { BlockchainCode, blockchainCodeToId } from '@emeraldwallet/core';
-import { PersistentState } from '@emeraldwallet/core';
 
 describe('Address Book', () => {
   let path: string;

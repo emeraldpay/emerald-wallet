@@ -1,5 +1,5 @@
-import {PersistentStateImpl, neonToPromise} from "./api";
 import {PersistentState} from "@emeraldwallet/core";
+import {PersistentStateImpl, neonToPromise} from "./api";
 
 /**
  * Manage XPub Position

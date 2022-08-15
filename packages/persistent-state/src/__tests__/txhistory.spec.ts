@@ -1,7 +1,6 @@
+import { BlockchainCode , PersistentState, blockchainCodeToId } from '@emeraldwallet/core';
 import { tempPath } from './_commons';
 import { PersistentStateImpl } from '../api';
-import { PersistentState } from '@emeraldwallet/core';
-import { BlockchainCode, blockchainCodeToId } from '@emeraldwallet/core';
 
 const { ChangeType, Direction, State, Status } = PersistentState;
 

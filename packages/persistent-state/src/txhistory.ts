@@ -1,5 +1,5 @@
 import { PersistentState } from '@emeraldwallet/core';
-import { createDateReviver, neonToPromise, PersistentStateImpl } from './api';
+import { PersistentStateImpl, createDateReviver, neonToPromise } from './api';
 
 /**
  * Manage Transaction History
