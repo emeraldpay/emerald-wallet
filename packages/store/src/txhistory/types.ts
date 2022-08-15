@@ -1,6 +1,13 @@
-import { BigAmount } from '@emeraldpay/bigamount';
+import { BigAmount, Unit, Units } from '@emeraldpay/bigamount';
 import { Uuid } from '@emeraldpay/emerald-vault-core/lib/types';
-import { amountFactory, AnyCoinCode, blockchainIdToCode, PersistentState } from '@emeraldwallet/core';
+import {
+  AnyCoinCode,
+  PersistentState,
+  amountFactory,
+  blockchainIdToCode,
+  isSupportedTokenCode,
+  tokenAmount,
+} from '@emeraldwallet/core';
 
 export enum ActionTypes {
   LOAD_STORED_TXS = 'WALLET/HISTORY/LOAD_STORED_TXS',
@@ -30,9 +37,15 @@ export class StoredTransactionChange implements PersistentState.Change {
   }
 
   get amountValue(): BigAmount {
-    const factory = amountFactory(blockchainIdToCode(this._blockchain));
+    if (this.asset === 'UNKNOWN') {
+      return new BigAmount(this.amount, new Units([new Unit(18, 'Unknown token', '???')]));
+    }
 
-    return factory(this.amount);
+    if (isSupportedTokenCode(this.asset)) {
+      return tokenAmount(this.amount, this.asset);
+    }
+
+    return amountFactory(blockchainIdToCode(this._blockchain))(this.amount);
   }
 
   set amountValue(amount: BigAmount) {

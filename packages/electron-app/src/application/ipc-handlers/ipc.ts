@@ -130,6 +130,10 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess, pe
     return app.rpc.chain(blockchain).eth.getTransactionCount(address);
   });
 
+  ipcMain.handle(Commands.GET_ETH_RECEIPT, (event: any, blockchain: BlockchainCode, hash: string) => {
+    return app.rpc.chain(blockchain).eth.getTransactionReceipt(hash);
+  });
+
   ipcMain.handle(Commands.GET_ETH_TX, (event: any, blockchain: BlockchainCode, hash: string) => {
     return app.rpc.chain(blockchain).eth.getTransaction(hash);
   });

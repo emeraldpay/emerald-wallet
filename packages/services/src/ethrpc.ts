@@ -90,7 +90,10 @@ export class EthApi {
    * Returns information about a block by block number.
    */
   getBlockByNumber(blockNumber: number | string = 'latest', full = false): Promise<any> {
-    return this.rpc.call('eth_getBlockByNumber', [blockNumber, full]);
+    return this.rpc.call('eth_getBlockByNumber', [
+      typeof blockNumber === 'string' ? blockNumber : `0x${blockNumber.toString(16)}`,
+      full,
+    ]);
   }
 
   /**
@@ -124,6 +127,10 @@ export class EthApi {
    */
   sendRawTransaction(rawTxData: string): Promise<string> {
     return this.rpc.call('eth_sendRawTransaction', [rawTxData]);
+  }
+
+  getTransactionReceipt(hash: string): Promise<any> {
+    return this.rpc.call('eth_getTransactionReceipt', [hash]);
   }
 
   /**

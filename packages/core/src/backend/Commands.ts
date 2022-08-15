@@ -19,6 +19,7 @@ export enum Commands {
   ESTIMATE_TX = 'estimate-tx',
   ESTIMATE_FEE = 'estimate-fee',
   GET_NONCE = 'get-nonce',
+  GET_ETH_RECEIPT = 'get-eth-receipt',
   GET_ETH_TX = 'get-eth-tx',
   SIGN_TX = 'sign-tx',
   // @deprecated

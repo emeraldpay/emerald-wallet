@@ -1,6 +1,6 @@
-import { BitcoinTransfer, Direction as ApiDirection, EthereumTransfer } from '@emeraldpay/api/lib/typesTransaction';
+import { Direction as ApiDirection, BitcoinTransfer, EthereumTransfer } from '@emeraldpay/api/lib/typesTransaction';
 import { IEmeraldVault, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, blockchainIdToCode, isBitcoin, Logger, PersistentState } from '@emeraldwallet/core';
+import { Blockchains, Logger, PersistentState, blockchainIdToCode, isBitcoin } from '@emeraldwallet/core';
 import { registry } from '@emeraldwallet/erc20';
 import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
 import { txhistory } from '@emeraldwallet/store';
@@ -119,9 +119,8 @@ export class TxService implements IService {
                       (carry, transfer) => {
                         const asset =
                           (transfer.contractAddress == null
-                            ? null
-                            : registry.byAddress(blockchainCode, transfer.contractAddress)?.symbol) ??
-                          (blockchainCode === BlockchainCode.ETC ? 'ETC' : 'ETH');
+                            ? Blockchains[blockchainCode].params.coinTicker
+                            : registry.byAddress(blockchainCode, transfer.contractAddress)?.symbol) ?? 'UNKNOWN';
 
                         const items: PersistentState.Change[] = [
                           {
@@ -159,7 +158,7 @@ export class TxService implements IService {
                         tx.removed === false && tx.mempool === false ? tx.block?.timestamp ?? new Date() : undefined,
                       state:
                         tx.removed === true ? State.REPLACED : tx.mempool === true ? State.SUBMITTED : State.CONFIRMED,
-                      status: Status.UNKNOWN,
+                      status: Status.UNKNOWN, // TODO Set from backend
                       txId: tx.txId,
                     })
                     .then((merged) => {

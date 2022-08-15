@@ -1,11 +1,10 @@
 import { BigAmount } from '@emeraldpay/bigamount';
-import { isLedger, SeedReference } from '@emeraldpay/emerald-vault-core';
-import { amountDecoder, BlockchainCode, Blockchains, HDPath, isEthereum } from '@emeraldwallet/core';
-import { accounts, hdpathPreview, hwkey, IState } from '@emeraldwallet/store';
+import { SeedReference, isLedger } from '@emeraldpay/emerald-vault-core';
+import { BlockchainCode, Blockchains, HDPath, amountDecoder, isEthereum } from '@emeraldwallet/core';
+import { IState, accounts, hdpathPreview, hwkey } from '@emeraldwallet/store';
 import { HDPathIndexes, IAddressState } from '@emeraldwallet/store/lib/hdpath-preview/types';
 import { Address } from '@emeraldwallet/ui';
 import {
-  createStyles,
   Grid,
   MenuItem,
   Select,
@@ -16,6 +15,7 @@ import {
   TableRow,
   Tooltip,
   Typography,
+  createStyles,
 } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import BeenhereIcon from '@material-ui/icons/Beenhere';
@@ -105,14 +105,14 @@ const Component: React.FC<Actions & OwnProps & StateProps> = ({
   const addresses = React.useMemo(
     () =>
       table.reduce<Partial<Record<BlockchainCode, string>>>((carry, item) => {
-        if (item.xpub || item.address) {
-          return {
-            ...carry,
-            [item.blockchain]: item.xpub ?? item.address,
-          };
+        if (item.xpub == null && item.address == null) {
+          return carry;
         }
 
-        return carry;
+        return {
+          ...carry,
+          [item.blockchain]: item.xpub ?? item.address,
+        };
       }, {}),
     [table],
   );
@@ -293,13 +293,11 @@ export default connect(
       }
     }
 
-    const disabledAccounts =
-      seed.type == 'id'
-        ? accounts.selectors
-            .allWallets(state)
-            .map(({ reserved }) => reserved?.map(({ accountId }) => accountId) ?? [])
-            .reduce((result, accountId) => result.concat(accountId), [])
-        : [];
+    const disabledAccounts = accounts.selectors
+      .allWallets(state)
+      .filter(({ reserved }) => reserved?.some(({ seedId }) => !isLedger(seed) && seedId === seed.value))
+      .map(({ reserved }) => reserved?.map(({ accountId }) => accountId) ?? [])
+      .reduce((result, accountId) => result.concat(accountId), []);
 
     let accountId = 0;
 
@@ -327,7 +325,6 @@ export default connect(
       },
       onStart() {
         dispatch(hdpathPreview.actions.init(ownProps.blockchains, ownProps.seed));
-        dispatch(hdpathPreview.actions.displayAccount(0));
         dispatch(hwkey.actions.setWatch(true));
       },
     };

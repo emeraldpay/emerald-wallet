@@ -34,3 +34,37 @@ export interface EthereumTransaction {
   to?: string;
   value: string | BigNumber;
 }
+
+export interface EthereumRawReceipt {
+  blockHash: string;
+  blockNumber: string;
+  contractAddress?: string;
+  cumulativeGasUsed: string;
+  effectiveGasPrice?: string;
+  from: string;
+  gasUsed: string;
+  logs: unknown[];
+  logsBloom: string;
+  root: string;
+  status: string;
+  to?: string;
+  transactionHash: string;
+  transactionIndex: string;
+}
+
+export interface EthereumReceipt {
+  blockHash: string;
+  blockNumber: number;
+  contractAddress?: string;
+  cumulativeGasUsed: number;
+  effectiveGasPrice?: number;
+  from: string;
+  gasUsed: number;
+  logs: unknown[];
+  logsBloom: string;
+  root: string;
+  status: number;
+  to?: string;
+  transactionHash: string;
+  transactionIndex: number;
+}

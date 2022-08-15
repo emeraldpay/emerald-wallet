@@ -1,5 +1,12 @@
 import { EstimationMode } from '@emeraldpay/api';
-import { AnyCoinCode, BlockchainCode, Commands, EthereumRawTransaction, IBackendApi } from '@emeraldwallet/core';
+import {
+  AnyCoinCode,
+  BlockchainCode,
+  Commands,
+  EthereumRawReceipt,
+  EthereumRawTransaction,
+  IBackendApi,
+} from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 
 /**
@@ -24,6 +31,10 @@ export default class BackendApi implements IBackendApi {
 
   getNonce(blockchain: BlockchainCode, address: string): Promise<number> {
     return ipcRenderer.invoke(Commands.GET_NONCE, blockchain, address);
+  }
+
+  getEthReceipt(blockchain: BlockchainCode, hash: string): Promise<EthereumRawReceipt | null> {
+    return ipcRenderer.invoke(Commands.GET_ETH_RECEIPT, blockchain, hash);
   }
 
   getEthTx(blockchain: BlockchainCode, hash: string): Promise<EthereumRawTransaction | null> {

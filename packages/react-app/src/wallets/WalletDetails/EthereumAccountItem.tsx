@@ -1,10 +1,10 @@
-import { BigAmount, FormatterBuilder, Predicates } from '@emeraldpay/bigamount';
+import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { EthereumEntry, WalletEntry } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, blockchainIdToCode, Blockchains, getStandardUnits } from '@emeraldwallet/core';
-import { accounts, IState, screen, tokens } from '@emeraldwallet/store';
+import { BlockchainCode, Blockchains, blockchainIdToCode, formatAmount } from '@emeraldwallet/core';
+import { IState, accounts, screen, tokens } from '@emeraldwallet/store';
 import { CoinAvatar } from '@emeraldwallet/ui';
-import { Button, createStyles, Grid, Theme, Typography } from '@material-ui/core';
+import { Button, Grid, Theme, Typography, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
@@ -59,22 +59,6 @@ interface DispatchProps {
   gotoRecover(entry: WalletEntry): void;
 }
 
-function formatBalance(balance: BigAmount): string {
-  const units = getStandardUnits(balance);
-
-  const balanceFormatter = new FormatterBuilder()
-    .when(Predicates.ZERO, (whenTrue, whenFalse): void => {
-      whenTrue.useTopUnit();
-      whenFalse.useOptimalUnit(undefined, units, 3);
-    })
-    .number(3, true)
-    .append(' ')
-    .unitCode()
-    .build();
-
-  return balanceFormatter.format(balance);
-}
-
 const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
   entries,
   balance,
@@ -113,10 +97,10 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
             severity="warning"
           >
             <div className={styles.alertTitle}>Coins on wrong blockchain</div>
-            You have {formatBalance(balance)}
+            You have {formatAmount(balance)}
             {receiveDisabledTokens.reduce(
               (carry, item, index, array) =>
-                `${carry}${array.length === index + 1 ? ' and ' : ', '}${formatBalance(item)}`,
+                `${carry}${array.length === index + 1 ? ' and ' : ', '}${formatAmount(item)}`,
               '',
             )}{' '}
             on {blockchain.getTitle()} blockchain

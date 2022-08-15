@@ -56,7 +56,12 @@ export { default as Logger } from './logging/Logger';
 export {default as ILogger} from './logging/ILogger';
 export {default as DefaultLogger} from './logging/DefaultLogger';
 
-export { EthereumRawTransaction, EthereumTransaction } from './transaction/ethereum';
+export {
+  EthereumRawReceipt,
+  EthereumReceipt,
+  EthereumRawTransaction,
+  EthereumTransaction
+} from './transaction/ethereum';
 
 // backend
 export {default as IBackendApi} from './backend/IBackendApi';
@@ -70,3 +75,5 @@ export {toBigNumber, toNumber, toHex, quantitiesToHex, fromBaseUnits, toBaseUnit
 export {Contract} from './Contract';
 
 export * as PersistentState from './persistentState';
+
+export { formatAmount } from './format';

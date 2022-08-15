@@ -1,14 +1,14 @@
-import { BigAmount, FormatterBuilder, Predicates } from '@emeraldpay/bigamount';
+import { BigAmount, FormatterBuilder } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { isEthereumEntry, WalletEntry } from '@emeraldpay/emerald-vault-core';
+import { WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import {
-  amountFactory,
   AnyCoinCode,
   BlockchainCode,
-  blockchainIdToCode,
   Blockchains,
   CurrencyAmount,
-  getStandardUnits,
+  amountFactory,
+  blockchainIdToCode,
+  formatAmount,
   isAnyTokenCode,
   toBaseUnits,
   toBigNumber,
@@ -18,13 +18,13 @@ import {
 import { tokenUnits } from '@emeraldwallet/core/lib/blockchains/tokens';
 import { registry } from '@emeraldwallet/erc20';
 import {
-  accounts,
-  addressBook,
   DEFAULT_FEE,
   FEE_KEYS,
   GasPrices,
-  hwkey,
   IState,
+  accounts,
+  addressBook,
+  hwkey,
   screen,
   settings,
   tokens,
@@ -34,11 +34,11 @@ import { Back, Page } from '@emeraldwallet/ui';
 import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import { traceValidate } from './util';
 import { EmeraldDialogs } from '../../app/screen/Dialog';
 import ChainTitle from '../../common/ChainTitle';
 import CreateTx from '../CreateTx';
 import SignTx from '../SignTx';
-import { traceValidate } from './util';
 
 const DEFAULT_GAS_LIMIT = '21000' as const;
 const DEFAULT_ERC20_GAS_LIMIT = '40000' as const;
@@ -120,32 +120,8 @@ interface Props {
   onEmptyAddressBookClick?: () => void;
 }
 
-function formatBalance(balance: BigAmount): string {
-  const units = getStandardUnits(balance);
-
-  const balanceFormatter = new FormatterBuilder()
-    .when(Predicates.ZERO, (whenTrue, whenFalse): void => {
-      whenTrue.useTopUnit();
-      whenFalse.useOptimalUnit(undefined, units, 3);
-    })
-    .number(3, true)
-    .append(' ')
-    .unitCode()
-    .build();
-
-  return balanceFormatter.format(balance);
-}
-
 function isToken(tx: AnyTransaction): tx is CreateERC20Tx {
   return isAnyTokenCode(tx.getTokenSymbol().toUpperCase());
-}
-
-function sortBigNumber(first: BigNumber, second: BigNumber): number {
-  if (first.eq(second)) {
-    return 0;
-  }
-
-  return first.gt(second) ? 1 : -1;
 }
 
 const { TxTarget } = workflow;
@@ -519,9 +495,8 @@ function signTokenTx(dispatch: any, ownProps: OwnProps, { entryId, password, tok
 }
 
 function signEtherTx(dispatch: any, ownProps: OwnProps, { entryId, password, transaction: tx }: Request) {
-
   if (tx.to == null || tx.from == null || !Wei.is(tx.amount)) {
-    console.warn("Invalid tx", tx.to, tx.from, tx.amount)
+    console.warn('Invalid tx', tx.to, tx.from, tx.amount);
     return;
   }
 
@@ -546,21 +521,23 @@ function signEtherTx(dispatch: any, ownProps: OwnProps, { entryId, password, tra
     prepared = validated;
   }
 
-  return prepared.then(() => dispatch(
-    transaction.actions.signTransaction(
-      entryId,
-      blockchainCode,
-      tx.from!!,
-      password || '',
-      tx.to!!,
-      tx.gas.toNumber(),
-      tx.amount!! as Wei,
-      '',
-      tx.gasPrice,
-      tx.maxGasPrice,
-      tx.priorityGasPrice,
+  return prepared.then(() =>
+    dispatch(
+      transaction.actions.signTransaction(
+        entryId,
+        blockchainCode,
+        tx.from!!,
+        password || '',
+        tx.to!!,
+        tx.gas.toNumber(),
+        tx.amount!! as Wei,
+        '',
+        tx.gasPrice,
+        tx.maxGasPrice,
+        tx.priorityGasPrice,
+      ),
     ),
-  ));
+  );
 }
 
 function sign(dispatch: any, ownProps: OwnProps, request: Request) {
@@ -639,7 +616,7 @@ export default connect(
         const balance = accounts.selectors.getBalance(state, entry.id, zero) ?? zero;
         const tokensBalances = tokens.selectors.selectBalances(state, address, blockchainCode) ?? [];
 
-        return [balance, ...tokensBalances].map(formatBalance);
+        return [balance, ...tokensBalances].map(formatAmount);
       },
       getFiatForAddress: (address: string, token: AnyCoinCode): string => {
         if (token !== txFeeSymbol) {

@@ -1,9 +1,8 @@
 import { WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { StoredTransaction, txhistory } from '@emeraldwallet/store';
-import { createStyles, Theme } from '@material-ui/core';
+import { Theme, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
-import { connect } from 'react-redux';
 import Header from './Header';
 import List from './List';
 
@@ -22,45 +21,35 @@ interface OwnProps {
   transactions: StoredTransaction[];
 }
 
-interface StateProps {
-  txs: StoredTransaction[];
-}
-
-const TxHistory: React.FC<OwnProps & StateProps> = ({ entries, txs }) => {
+const TxHistory: React.FC<OwnProps> = ({ entries, transactions }) => {
   const styles = useStyles();
 
   const [filter, setFilter] = React.useState('ALL');
-  const [transactions, setTransactions] = React.useState(txs);
+  const [txs, setTxs] = React.useState(transactions);
 
   const onTxFilterChange = React.useCallback(
     (event: any, value: string) => {
       setFilter(value);
-      setTransactions(txhistory.selectors.filterTransactions(entries, txs, value));
+      setTxs(txhistory.selectors.filterTransactions(entries, transactions, value));
     },
-    [entries, txs],
+    [entries, transactions],
   );
 
   const onSearchChange = React.useCallback(
-    (event: any) => setTransactions(txhistory.selectors.searchTransactions(txs, event.target.value)),
-    [txs],
+    (event: any) => setTxs(txhistory.selectors.searchTransactions(transactions, event.target.value)),
+    [transactions],
   );
 
   React.useEffect(() => {
-    setTransactions(txs);
-  }, [txs]);
+    setTxs(transactions);
+  }, [transactions]);
 
   return (
     <div className={styles.container}>
       <Header onTxFilterChange={onTxFilterChange} txFilterValue={filter} onSearchChange={onSearchChange} />
-      <List transactions={transactions} />
+      <List transactions={txs} />
     </div>
   );
 };
 
-export default connect<StateProps, {}, OwnProps>((state, ownProps) => {
-  const sorted = ownProps.transactions.sort(
-    (first, second) => (first.block?.timestamp.getTime() ?? 0) - (second.block?.timestamp.getTime() ?? 0),
-  );
-
-  return { txs: sorted.reverse() };
-})(TxHistory);
+export default TxHistory;

@@ -23,6 +23,9 @@
       "path": "../core"
     },
     {
+      "path": "../persistent-state"
+    },
+    {
       "path": "../store"
     }
   ]

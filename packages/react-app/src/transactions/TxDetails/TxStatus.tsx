@@ -2,6 +2,7 @@ import { PersistentState } from '@emeraldwallet/core';
 import { createStyles, makeStyles } from '@material-ui/core';
 import {
   CheckCircle as CheckIcon,
+  RemoveCircle as DropIcon,
   Error as ErrorIcon,
   Forward as ForwardIcon,
   QueryBuilder as QueryBuilderIcon,
@@ -10,7 +11,7 @@ import {
 import classNames from 'classnames';
 import * as React from 'react';
 
-const { State } = PersistentState;
+const { State, Status } = PersistentState;
 
 const useStyles = makeStyles((theme) =>
   createStyles({
@@ -35,10 +36,20 @@ const useStyles = makeStyles((theme) =>
 
 interface OwnProps {
   state?: PersistentState.State;
+  status?: PersistentState.Status;
 }
 
-export const TxStatus: React.FC<OwnProps> = ({ state }) => {
+export const TxStatus: React.FC<OwnProps> = ({ state, status }) => {
   const classes = useStyles();
+
+  if (status === Status.FAILED) {
+    return (
+      <div className={classNames(classes.block, classes.error)}>
+        <ErrorIcon />
+        &nbsp;Failed
+      </div>
+    );
+  }
 
   switch (state) {
     case State.PREPARED:
@@ -72,7 +83,7 @@ export const TxStatus: React.FC<OwnProps> = ({ state }) => {
     case State.DROPPED:
       return (
         <div className={classNames(classes.block, classes.error)}>
-          <ErrorIcon />
+          <DropIcon />
           &nbsp;Dropped
         </div>
       );

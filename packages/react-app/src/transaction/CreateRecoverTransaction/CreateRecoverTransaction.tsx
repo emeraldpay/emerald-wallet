@@ -1,20 +1,20 @@
-import { BigAmount, FormatterBuilder, Predicates } from '@emeraldpay/bigamount';
+import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { isEthereumEntry, WalletEntry } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, blockchainIdToCode, Blockchains, getStandardUnits, IBlockchain } from '@emeraldwallet/core';
+import { WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
+import { BlockchainCode, Blockchains, IBlockchain, blockchainIdToCode, formatAmount } from '@emeraldwallet/core';
 import { CreateEthereumTx, TxTarget } from '@emeraldwallet/core/lib/workflow';
 import { ITokenInfo, registry } from '@emeraldwallet/erc20';
-import { accounts, FEE_KEYS, GasPrices, IState, screen, tokens, transaction } from '@emeraldwallet/store';
+import { FEE_KEYS, GasPrices, IState, accounts, screen, tokens, transaction } from '@emeraldwallet/store';
 import { AccountSelect, Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import {
   Box,
-  createStyles,
   FormControlLabel,
   FormHelperText,
   MenuItem,
   Slider,
   Switch,
   TextField,
+  createStyles,
   withStyles,
 } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -88,22 +88,6 @@ interface DispatchProps {
   getFees(blockchain: BlockchainCode): Promise<Record<typeof FEE_KEYS[number], GasPrices>>;
   goBack(): void;
   signTransaction(tx: CreateEthereumTx, password: string): Promise<void>;
-}
-
-function formatBalance(balance: BigAmount, decimals = 3): string {
-  const units = getStandardUnits(balance);
-
-  const balanceFormatter = new FormatterBuilder()
-    .when(Predicates.ZERO, (whenTrue, whenFalse): void => {
-      whenTrue.useTopUnit();
-      whenFalse.useOptimalUnit(undefined, units, decimals);
-    })
-    .number(decimals, true)
-    .append(' ')
-    .unitCode()
-    .build();
-
-  return balanceFormatter.format(balance);
 }
 
 const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & DispatchProps> = ({
@@ -287,7 +271,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
               )}
               <FormFieldWrapper>
                 <FormLabel>Amount</FormLabel>
-                {formatBalance(balanceByToken[token.symbol])}
+                {formatAmount(balanceByToken[token.symbol])}
               </FormFieldWrapper>
               <FormFieldWrapper>
                 <FormLabel>Reason</FormLabel>
@@ -425,7 +409,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
         <>
           <FormFieldWrapper>
             <FormLabel />
-            Recover {formatBalance(tx.getAmount(), 6)} with fee {formatBalance(tx.getFees(), 6)}
+            Recover {formatAmount(tx.getAmount(), 6)} with fee {formatAmount(tx.getFees(), 6)}
           </FormFieldWrapper>
           <FormFieldWrapper>
             <FormLabel>Password</FormLabel>
@@ -509,7 +493,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
 
         const balance = accounts.selectors.getBalance(state, entryByAddress.id, zeroAmount) ?? zeroAmount;
 
-        return [formatBalance(balance)];
+        return [formatAmount(balance)];
       },
     };
   },

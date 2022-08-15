@@ -1,18 +1,25 @@
 import { BigAmount, FormatterBuilder } from '@emeraldpay/bigamount';
 import { EntryId, Wallet } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, blockchainIdToCode, CurrencyAmount, isEthereum, PersistentState } from '@emeraldwallet/core';
 import {
+  BlockchainCode,
+  CurrencyAmount,
+  PersistentState,
+  blockchainIdToCode,
+  formatAmount,
+  isEthereum,
+} from '@emeraldwallet/core';
+import {
+  IState,
+  StoredTransaction,
   accounts,
   blockchains,
-  IState,
   screen,
   settings,
-  StoredTransaction,
   transaction,
   txhistory,
 } from '@emeraldwallet/store';
 import { CoinAvatar, HashIcon } from '@emeraldwallet/ui';
-import { createStyles, IconButton, InputAdornment, makeStyles, Menu, MenuItem, TextField } from '@material-ui/core';
+import { IconButton, InputAdornment, Menu, MenuItem, TextField, createStyles, makeStyles } from '@material-ui/core';
 import CheckIcon from '@material-ui/icons/Check';
 import CloseIcon from '@material-ui/icons/Close';
 import EditIcon from '@material-ui/icons/Edit';
@@ -23,7 +30,7 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import ProgressPie from './ProgressPie';
 
-const { Direction, Status } = PersistentState;
+const { Direction, State, Status } = PersistentState;
 
 const Confirmations: Readonly<Record<BlockchainCode, number>> = {
   [BlockchainCode.Unknown]: 1,
@@ -193,16 +200,6 @@ interface DispatchProps {
 
 const fiatFormatter = new FormatterBuilder().useTopUnit().number(2).append(' ').unitCode().build();
 
-const coinFormatter = new FormatterBuilder()
-  .number(3, true, 2, {
-    decimalSeparator: '.',
-    groupSeparator: ',',
-    groupSize: 3,
-  })
-  .append(' ')
-  .unitCode()
-  .build();
-
 const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   tx,
   getFiatValue,
@@ -340,13 +337,18 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
           </IconButton>
           <Menu anchorEl={menuAnchor} open={menuAnchor != null} onClose={onCloseMenu}>
             <MenuItem onClick={() => goToTransaction(tx)}>Details</MenuItem>
-            {isEthereum(blockchainCode) && <MenuItem onClick={() => goToCancelTx(tx)}>Cancel</MenuItem>}
-            {isEthereum(blockchainCode) && <MenuItem onClick={() => goToSpeedUpTx(tx)}>Speed Up</MenuItem>}
+            {isEthereum(blockchainCode) && tx.state < State.CONFIRMED && (
+              <MenuItem onClick={() => goToCancelTx(tx)}>Cancel</MenuItem>
+            )}
+            {isEthereum(blockchainCode) && tx.state < State.CONFIRMED && (
+              <MenuItem onClick={() => goToSpeedUpTx(tx)}>Speed Up</MenuItem>
+            )}
           </Menu>
         </div>
       </div>
       <div className={classes.changes}>
         {tx.changes
+          .filter((change) => change.amountValue.isPositive())
           .reduce<Change[]>((carry, change) => {
             // TODO Remove second condition
             if (change.wallet == null || change.wallet === '-0') {
@@ -364,7 +366,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
           .map((change, index) => (
             <div className={index > 0 ? classes.changeItem : undefined} key={`${change.address}-${index}`}>
               <div className={classes.changeItemCoin}>
-                {change.direction === Direction.EARN ? '+' : '-'} {coinFormatter.format(change.amountValue)}
+                {change.direction === Direction.EARN ? '+' : '-'} {formatAmount(change.amountValue)}
               </div>
               <div className={classes.changeItemAmount}>
                 <div className={classes.changeItemAmountWallet} onClick={() => goToWallet(change.wallet.id)}>

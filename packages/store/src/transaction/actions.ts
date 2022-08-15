@@ -8,6 +8,7 @@ import {
   BlockchainCode,
   Blockchains,
   EthereumAddress,
+  EthereumReceipt,
   EthereumTransaction,
   EthereumTx,
   Logger,
@@ -22,8 +23,8 @@ import {
   Dispatched,
   FEE_KEYS,
   FeePrices,
-  GasPrices,
   GasPriceType,
+  GasPrices,
   IExtraArgument,
   PriceSort,
 } from '../types';
@@ -330,6 +331,26 @@ export function getFee(blockchain: BlockchainCode): Dispatched<FeePrices> {
         max: avgTail5Number.max.toNumber(),
         priority: avgTail5Number.priority.toNumber(),
       },
+    };
+  };
+}
+
+export function getEthReceipt(blockchain: BlockchainCode, hash: string): Dispatched<EthereumReceipt | null> {
+  return async (dispatch, getState, extra) => {
+    const rawReceipt = await extra.backendApi.getEthReceipt(blockchain, hash);
+
+    if (rawReceipt == null) {
+      return null;
+    }
+
+    return {
+      ...rawReceipt,
+      blockNumber: parseInt(rawReceipt.blockNumber, 16),
+      cumulativeGasUsed: parseInt(rawReceipt.cumulativeGasUsed, 16),
+      effectiveGasPrice: rawReceipt.effectiveGasPrice == null ? undefined : parseInt(rawReceipt.effectiveGasPrice, 16),
+      gasUsed: parseInt(rawReceipt.gasUsed, 16),
+      status: parseInt(rawReceipt.status, 16),
+      transactionIndex: parseInt(rawReceipt.transactionIndex, 16),
     };
   };
 }
