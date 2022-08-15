@@ -24,9 +24,21 @@ export interface PageResult<T> {
   /**
    * Optional cursor to request a next page. When it's not set it means there is no following page.
    * The cursor is supposed to be passed when querying the API
-   * TODO not used yet
    */
-  cursor?: number;
+  cursor?: string;
+}
+
+export interface PageQuery {
+  /**
+   * Max elements in the resulting page.
+   * Default is 100.
+   */
+  limit?: number;
+  /**
+   * Optional cursor to continue fetching the results. As returned by `PageResult#cursor`.
+   * If not set the query starts from the beginning.
+   */
+  cursor?: string;
 }
 
 export enum State {
@@ -175,6 +187,7 @@ export interface TxHistory {
   /**
    * Add or update existing transaction in the storage
    * @param tx
+   * @returns the stored version of just submitted transaction, which may have different values if it's merged/enhanced with already stored data
    */
   submit(tx: Transaction): Promise<Transaction>;
 
@@ -188,8 +201,9 @@ export interface TxHistory {
   /**
    * Find transactions under the specified criteria
    * @param filter
+   * @param query
    */
-  query(filter?: TxHistoryFilter): Promise<PageResult<Transaction>>;
+  query(filter?: TxHistoryFilter, query?: PageQuery): Promise<PageResult<Transaction>>;
 
   /**
    * Get current API Cursor for the specified address
@@ -248,8 +262,9 @@ export interface Addressbook {
   /**
    * Find address book items under the specified criteria
    * @param filter
+   * @param query
    */
-  query(filter?: AddressbookFilter): Promise<PageResult<AddressbookItem>>;
+  query(filter?: AddressbookFilter, query?: PageQuery): Promise<PageResult<AddressbookItem>>;
 }
 
 export interface XPubPosition {

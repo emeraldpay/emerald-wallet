@@ -10,7 +10,7 @@ use protobuf::ProtobufEnum;
 use regex::Regex;
 use uuid::Uuid;
 use crate::commons::{if_not_empty, if_time};
-use crate::pagination::PageResultJson;
+use crate::pagination::{PageQueryJson, PageResultJson};
 
 #[derive(Deserialize)]
 struct FilterJson {
@@ -198,7 +198,11 @@ impl TryFrom<ChangeJson> for Change {
 impl From<&Change> for ChangeJson {
   fn from(value: &Change) -> Self {
     ChangeJson {
-      wallet: Some(format!("{}-{}", value.wallet_id, value.entry_id)),
+      wallet: if value.wallet_id.is_empty() {
+        None
+      } else {
+        Some(format!("{}-{}", value.wallet_id, value.entry_id))
+      },
       address: if_not_empty(value.address.clone()),
       direction: value.direction as usize,
       hd_path: if_not_empty(value.hd_path.clone()),
@@ -219,7 +223,7 @@ impl TryFrom<PageResult<Transaction>> for PageResultJson<TransactionJson> {
     }
     Ok(PageResultJson {
       items: transactions,
-      cursor: None,
+      cursor: value.cursor.map(|c| c.offset),
     })
   }
 }
@@ -228,15 +232,15 @@ impl TryFrom<PageResult<Transaction>> for PageResultJson<TransactionJson> {
 // NAPI functions
 // ------
 
-fn query_internal(filter: Filter) -> Result<PageResultJson<TransactionJson>, StateManagerError> {
+fn query_internal(filter: Filter, page: PageQuery) -> Result<PageResultJson<TransactionJson>, StateManagerError> {
   let storage = Instance::get_storage()?;
   storage.get_transactions()
-    .query(filter, PageQuery::default())
+    .query(filter, page)
     .map_err(|e| StateManagerError::from(e))
     .and_then(|r| PageResultJson::try_from(r))
 }
 
-#[neon_frame_fn(channel=1)]
+#[neon_frame_fn(channel=2)]
 pub fn query<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
   where
     H: FnOnce(Result<PageResultJson<TransactionJson>, StateManagerError>) + Send + 'static {
@@ -255,26 +259,47 @@ pub fn query<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManager
     Filter::default()
   };
 
+  let page: Handle<JsValue> = cx.argument(1)
+    .map_err(|_| StateManagerError::MissingArgument(1, "page".to_string()))?;
+  let page = if page.is_a::<JsString, _>(cx) {
+    let json = page.downcast_or_throw::<JsString, _>(cx)
+      .map_err(|_| StateManagerError::InvalidArgument(1, "page".to_string()))?
+      .value(cx);
+    PageQuery::from(
+      serde_json::from_str::<PageQueryJson>(json.as_str())
+        .map_err(|_| StateManagerError::InvalidArgument(1, "page".to_string()))?
+    )
+  } else {
+    PageQuery::default()
+  };
+
   std::thread::spawn(move || {
-    let result = query_internal(filter);
+    let result = query_internal(filter, page);
     handler(result);
   });
 
   Ok(())
 }
 
-fn submit_internal(tx: Transaction) -> Result<bool, StateManagerError> {
+fn submit_internal(tx: Transaction) -> Result<TransactionJson, StateManagerError> {
   let storage = Instance::get_storage()?;
+  let blockchain = tx.blockchain.value() as u32;
+  let tx_id = tx.tx_id.clone();
   storage.get_transactions()
     .submit(vec![tx])
     .map_err(StateManagerError::from)
-    .map(|_| true)
+    .and_then(|_| {
+      storage.get_transactions()
+        .get_tx(blockchain, tx_id.as_str())
+        .ok_or(StateManagerError::IO)
+    })
+    .and_then(TransactionJson::try_from)
 }
 
 #[neon_frame_fn(channel=1)]
 pub fn submit<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
   where
-    H: FnOnce(Result<bool, StateManagerError>) + Send + 'static {
+    H: FnOnce(Result<TransactionJson, StateManagerError>) + Send + 'static {
   let tx = cx
     .argument::<JsString>(0)
     .map_err(|_| StateManagerError::MissingArgument(0, "tx".to_string()))?

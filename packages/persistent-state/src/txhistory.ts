@@ -34,11 +34,12 @@ export class TxHistoryImpl implements PersistentState.TxHistory {
     });
   }
 
-  query(filter?: PersistentState.TxHistoryFilter): Promise<PersistentState.PageResult<PersistentState.Transaction>> {
+  query(filter?: PersistentState.TxHistoryFilter, page?: PersistentState.PageQuery): Promise<PersistentState.PageResult<PersistentState.Transaction>> {
     return new Promise((resolve, reject) => {
       try {
         this.manager.addon.txhistory_query(
           JSON.stringify(filter),
+          JSON.stringify(page),
           neonToPromise(resolve, reject, createDateReviver(['sinceTimestamp', 'confirmTimestamp', 'block.timestamp'])),
         );
       } catch (e) {

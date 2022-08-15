@@ -106,7 +106,7 @@ export class PersistentStateImpl implements PersistentState.PersistentState {
    * @param dir
    */
   constructor(dir?: string) {
-    this.addon.open(dir ?? './state_test');
+    this.addon.open(dir)
   }
 
   /**
