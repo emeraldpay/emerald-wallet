@@ -1,39 +1,39 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, Commands, PersistentState } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
+import { ActionTypes, StoredTransaction, UpdateStoredTxAction } from './types';
 import { Dispatched } from '../types';
-import { ActionTypes, HistoryAction, StoredTransaction } from './types';
 
-export function loadTransactions(walletId: Uuid, entryIds: string[]): Dispatched<HistoryAction> {
+export function loadTransactions(walletId: Uuid, cursor?: string): Dispatched<void> {
   return async (dispatch, getState) => {
     const state = getState();
 
-    if (walletId === state.history.walletId) {
-      return;
+    let walletCursor = cursor;
+
+    if (walletId !== state.history.walletId) {
+      walletCursor = undefined;
     }
 
-    const transactions: PersistentState.Transaction[] = await ipcRenderer.invoke(Commands.LOAD_TX_HISTORY, entryIds);
+    const page: PersistentState.PageResult<StoredTransaction> = await ipcRenderer.invoke(
+      Commands.LOAD_TX_HISTORY,
+      walletId,
+      walletCursor,
+    );
 
     dispatch({
-      walletId,
-      transactions: transactions.map((tx) => new StoredTransaction(tx)),
       type: ActionTypes.LOAD_STORED_TXS,
+      walletId,
+      cursor: page.cursor,
+      transactions: page.items.map((tx) => new StoredTransaction(tx)),
     });
   };
 }
 
-export function updateTransaction(walletId: Uuid, tx: PersistentState.Transaction): Dispatched<void> {
-  return (dispatch, getState) => {
-    const state = getState();
-
-    if (walletId !== state.history.walletId) {
-      return;
-    }
-
-    dispatch({
-      transaction: new StoredTransaction(tx),
-      type: ActionTypes.UPDATE_STORED_TX,
-    });
+export function updateTransaction(walletId: Uuid, transaction: PersistentState.Transaction): UpdateStoredTxAction {
+  return {
+    type: ActionTypes.UPDATE_STORED_TX,
+    walletId,
+    transaction,
   };
 }
 

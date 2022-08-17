@@ -1,35 +1,35 @@
 import { combineReducers } from 'redux';
 import {
+  IState,
   accounts,
   addAccount,
   addressBook,
   application,
   blockchains,
   connection,
-  IState,
+  hdpathPreview,
   hwkey,
   screen,
   settings,
   tokens,
   transaction,
   txhistory,
-  hdpathPreview
 } from './';
 
 const root = combineReducers<IState>({
-  history: txhistory.reducer,
-  settings: settings.reducer,
-  [addressBook.moduleName]: addressBook.reducer,
-  [tokens.moduleName]: tokens.reducer,
-  [application.moduleName]: application.reducer,
-  hwkey: hwkey.reducer,
   [accounts.moduleName]: accounts.reducer,
-  blockchains: blockchains.reducer,
-  [screen.moduleName]: screen.reducer,
+  [addressBook.moduleName]: addressBook.reducer,
+  [application.moduleName]: application.reducer,
   [connection.moduleName]: connection.reducer,
-  addAccount: addAccount.reducer,
+  [screen.moduleName]: screen.reducer,
+  [tokens.moduleName]: tokens.reducer,
   [transaction.moduleName]: transaction.reducer,
-  hdpathPreview: hdpathPreview.reducer
+  addAccount: addAccount.reducer,
+  blockchains: blockchains.reducer,
+  hdpathPreview: hdpathPreview.reducer,
+  history: txhistory.reducer,
+  hwkey: hwkey.reducer,
+  settings: settings.reducer,
 });
 
 export default root;

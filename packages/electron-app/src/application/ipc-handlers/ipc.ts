@@ -6,6 +6,7 @@ import {
   isNativeCallError,
   isNativeCallResponse,
 } from '@emeraldpay/api';
+import { Uuid } from '@emeraldpay/emerald-vault-core';
 import {
   AnyCoinCode,
   BlockchainCode,
@@ -51,12 +52,8 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess, pe
     app.settings.setTerms(v);
   });
 
-  ipcMain.handle(Commands.LOAD_TX_HISTORY, async (event: any, entryIds: string[]) => {
-    return entryIds.reduce<Promise<PersistentState.Transaction[]>>(async (carry, entryId) => {
-      const [txs, { items }] = await Promise.all([carry, persistentState.txhistory.query({ wallet: entryId })]);
-
-      return txs.concat(items);
-    }, Promise.resolve([]));
+  ipcMain.handle(Commands.LOAD_TX_HISTORY, async (event: any, walletId: Uuid, cursor?: string) => {
+    return persistentState.txhistory.query({ wallet: walletId }, { cursor, limit: 10 });
   });
 
   ipcMain.handle(

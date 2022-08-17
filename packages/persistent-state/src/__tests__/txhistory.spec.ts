@@ -70,7 +70,7 @@ describe('Tx History', () => {
       blockchain: blockchainCodeToId(BlockchainCode.ETH),
       txId: "0xd91a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc44563",
       state: State.PREPARED,
-      sinceTimestamp: new Date("2021-03-05T10:11:12"),
+      sinceTimestamp: new Date("2021-03-05T10:11:12Z"),
       status: Status.UNKNOWN,
       changes: []
     };
@@ -80,7 +80,7 @@ describe('Tx History', () => {
     expect(act).toBeDefined();
     expect(act.txId).toBe("0xd91a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc44563");
     // make sure it's actual date, not a string. a date keeps timezone and millis
-    expect(act.sinceTimestamp.toISOString()).toBe("2021-03-05T15:11:12.000Z");
+    expect(act.sinceTimestamp.toISOString()).toBe("2021-03-05T10:11:12.000Z");
   });
 
   test('add a tx, remove it and query all', async () => {

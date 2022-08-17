@@ -1,4 +1,4 @@
-import { BlockchainCode, PersistentState , blockchainCodeToId } from '@emeraldwallet/core';
+import { BlockchainCode, PersistentState, blockchainCodeToId } from '@emeraldwallet/core';
 import { tempPath } from './_commons';
 import { PersistentStateImpl } from '../api';
 
@@ -12,9 +12,6 @@ describe('Address Book', () => {
   });
 
   afterEach(() => {
-    state.close();
-  });
-  afterEach( () => {
     state.close();
   });
 
@@ -41,29 +38,33 @@ describe('Address Book', () => {
     expect(act.items[0].address).toEqual(item.address);
   });
 
-  test("add an item and query using cursor", async () => {
-    for (let i = 0; i < 10; i++) {
-      const item: PersistentState.AddressbookItem = {
-        blockchain: blockchainCodeToId(BlockchainCode.ETH),
-        address: {
-          type: "plain",
-          address: `0x2EA8846a26B6af5F63CAAe912BB3c4064B94D50${i}`
-        }
-      };
+  test('add an item and query using cursor', async () => {
+    await Promise.all(
+      Array(10)
+        .fill(null)
+        .map(async (_, index) => {
+          const item: PersistentState.AddressbookItem = {
+            blockchain: blockchainCodeToId(BlockchainCode.ETH),
+            address: {
+              type: 'plain',
+              address: `0x2EA8846a26B6af5F63CAAe912BB3c4064B94D50${index}`,
+            },
+          };
 
-      await state.addressbook.add(item);
-    }
+          await state.addressbook.add(item);
+        }),
+    );
 
     const page1 = await state.addressbook.query({}, { limit: 5 });
 
     expect(page1.items.length).toBe(5);
-    expect(page1.items[0].address.address).toBe("0x2EA8846a26B6af5F63CAAe912BB3c4064B94D509");
+    expect(page1.items[0].address.address).toBe('0x2EA8846a26B6af5F63CAAe912BB3c4064B94D509');
     expect(page1.cursor).toBeDefined();
 
     const page2 = await state.addressbook.query({}, { cursor: page1.cursor, limit: 5 });
 
     expect(page2.items.length).toBe(5);
-    expect(page2.items[0].address.address).toBe("0x2EA8846a26B6af5F63CAAe912BB3c4064B94D504");
+    expect(page2.items[0].address.address).toBe('0x2EA8846a26B6af5F63CAAe912BB3c4064B94D504');
   });
 
   test('add an item, remove and query all', async () => {

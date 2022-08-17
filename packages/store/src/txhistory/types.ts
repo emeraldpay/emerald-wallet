@@ -1,5 +1,5 @@
 import { BigAmount, Unit, Units } from '@emeraldpay/bigamount';
-import { Uuid } from '@emeraldpay/emerald-vault-core/lib/types';
+import { Uuid } from '@emeraldpay/emerald-vault-core';
 import {
   AnyCoinCode,
   PersistentState,
@@ -8,11 +8,6 @@ import {
   isSupportedTokenCode,
   tokenAmount,
 } from '@emeraldwallet/core';
-
-export enum ActionTypes {
-  LOAD_STORED_TXS = 'WALLET/HISTORY/LOAD_STORED_TXS',
-  UPDATE_STORED_TX = 'WALLET/HISTORY/UPDATE_STORED_TX',
-}
 
 export class StoredTransactionChange implements PersistentState.Change {
   amount: string;
@@ -77,20 +72,28 @@ export class StoredTransaction implements Omit<PersistentState.Transaction, 'cha
   }
 }
 
+export interface HistoryState {
+  cursor?: string;
+  walletId?: Uuid;
+  transactions: StoredTransaction[];
+}
+
+export enum ActionTypes {
+  LOAD_STORED_TXS = 'WALLET/HISTORY/LOAD_STORED_TXS',
+  UPDATE_STORED_TX = 'WALLET/HISTORY/UPDATE_STORED_TX',
+}
+
 export interface LoadStoredTxsAction {
   type: ActionTypes.LOAD_STORED_TXS;
+  cursor?: string;
   transactions: StoredTransaction[];
   walletId: Uuid;
 }
 
 export interface UpdateStoredTxAction {
   type: ActionTypes.UPDATE_STORED_TX;
-  transaction: StoredTransaction;
+  transaction: PersistentState.Transaction;
+  walletId: Uuid;
 }
 
 export type HistoryAction = LoadStoredTxsAction | UpdateStoredTxAction;
-
-export interface HistoryState {
-  transactions: StoredTransaction[];
-  walletId?: Uuid;
-}

@@ -1,20 +1,41 @@
-import { ActionTypes, HistoryAction, HistoryState, LoadStoredTxsAction, UpdateStoredTxAction } from './types';
+import {
+  ActionTypes,
+  HistoryAction,
+  HistoryState,
+  LoadStoredTxsAction,
+  StoredTransaction,
+  UpdateStoredTxAction,
+} from './types';
 
 const INITIAL_STATE: HistoryState = {
   transactions: [],
 };
 
-function onLoadStoredTransactions(state: HistoryState, { transactions, walletId }: LoadStoredTxsAction): HistoryState {
-  return { ...state, transactions, walletId };
+function onLoadStoredTransactions(
+  state: HistoryState,
+  { cursor, transactions, walletId }: LoadStoredTxsAction,
+): HistoryState {
+  if (state.walletId === walletId) {
+    return { ...state, cursor, transactions: [...state.transactions, ...transactions] };
+  }
+
+  return { ...state, cursor, transactions, walletId };
 }
 
-function onUpdateStoreTransaction(state: HistoryState, { transaction }: UpdateStoredTxAction): HistoryState {
+function onUpdateStoreTransaction(state: HistoryState, { transaction, walletId }: UpdateStoredTxAction): HistoryState {
+  if (state.walletId !== walletId) {
+    return state;
+  }
+
   const txIndex = state.transactions.findIndex((tx) => tx.txId === transaction.txId);
+
+  if (txIndex === -1) {
+    return state;
+  }
 
   return {
     ...state,
-    transactions:
-      txIndex > -1 ? state.transactions.splice(txIndex, 1, transaction) : [...state.transactions, transaction],
+    transactions: state.transactions.splice(txIndex, 1, new StoredTransaction(transaction)),
   };
 }
 

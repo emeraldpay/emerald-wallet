@@ -91,7 +91,7 @@ const useStyles = makeStyles((theme) =>
     },
     container: {
       display: 'flex',
-      marginTop: 20,
+      marginBottom: 20,
     },
     progress: {
       marginRight: 20,
