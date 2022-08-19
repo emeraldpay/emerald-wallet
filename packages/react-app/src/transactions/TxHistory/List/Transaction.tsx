@@ -93,7 +93,7 @@ const useStyles = makeStyles((theme) =>
       display: 'flex',
       '& + &': {
         marginTop: 20,
-      }
+      },
     },
     progress: {
       marginRight: 20,
@@ -192,7 +192,6 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  getTransactionMeta(blockchain: BlockchainCode, txId: string): Promise<PersistentState.TxMeta | null>;
   goToCancelTx(tx: StoredTransaction): void;
   goToSpeedUpTx(tx: StoredTransaction): void;
   goToTransaction(tx: StoredTransaction): void;
@@ -206,7 +205,6 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   tx,
   getFiatValue,
   getHeight,
-  getTransactionMeta,
   getWallet,
   goToCancelTx,
   goToSpeedUpTx,
@@ -218,10 +216,9 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
 
   const blockchainCode = blockchainIdToCode(tx.blockchain);
 
-  const [txMeta, setTxMeta] = React.useState<PersistentState.TxMeta | null>(null);
   const [menuAnchor, setMenuAnchor] = React.useState<HTMLButtonElement | null>(null);
 
-  const [label, setLabel] = React.useState(txMeta?.label ?? tx.txId);
+  const [label, setLabel] = React.useState(tx.meta?.label ?? tx.txId);
   const [labelEdit, setLabelEdit] = React.useState(false);
 
   const confirmations = React.useMemo(() => {
@@ -260,21 +257,17 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   }, []);
 
   const onSaveLabel = React.useCallback(async () => {
-    if (txMeta != null) {
-      await setTransactionMeta({ ...txMeta, label, timestamp: new Date() });
-    }
+    await setTransactionMeta({
+      ...(tx.meta ?? {
+        blockchain: blockchainCode,
+        txId: tx.txId,
+      }),
+      label,
+      timestamp: new Date(),
+    });
 
     setLabelEdit(false);
-  }, [label, txMeta, setTransactionMeta]);
-
-  React.useEffect(() => {
-    (async () => {
-      const meta = await getTransactionMeta(blockchainCode, tx.txId);
-
-      setLabel(meta?.label ?? tx.txId);
-      setTxMeta(meta ?? { blockchain: blockchainCode, timestamp: new Date(), txId: tx.txId });
-    })();
-  }, [blockchainCode, tx.txId, getTransactionMeta]);
+  }, [blockchainCode, label, tx, setTransactionMeta]);
 
   return (
     <div className={classes.container}>
@@ -409,9 +402,6 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   }),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
-    getTransactionMeta(blockchain, txId) {
-      return dispatch(txhistory.actions.getTransactionMeta(blockchain, txId));
-    },
     async goToCancelTx(tx) {
       const ethTx = await dispatch(transaction.actions.getEthTx(blockchainIdToCode(tx.blockchain), tx.txId));
 

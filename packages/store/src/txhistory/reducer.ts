@@ -22,12 +22,15 @@ function onLoadStoredTransactions(
   return { ...state, cursor, transactions, walletId };
 }
 
-function onUpdateStoreTransaction(state: HistoryState, { transaction, walletId }: UpdateStoredTxAction): HistoryState {
+function onUpdateStoreTransaction(
+  state: HistoryState,
+  { meta, transaction, walletId }: UpdateStoredTxAction,
+): HistoryState {
   if (state.walletId === walletId) {
     if (state.transactions.length < 10) {
       return {
         ...state,
-        transactions: [...state.transactions, new StoredTransaction(transaction)],
+        transactions: [...state.transactions, new StoredTransaction(transaction, meta)],
       };
     }
 
@@ -36,7 +39,7 @@ function onUpdateStoreTransaction(state: HistoryState, { transaction, walletId }
     if (txIndex > -1) {
       return {
         ...state,
-        transactions: state.transactions.splice(txIndex, 1, new StoredTransaction(transaction)),
+        transactions: state.transactions.splice(txIndex, 1, new StoredTransaction(transaction, meta)),
       };
     }
   }

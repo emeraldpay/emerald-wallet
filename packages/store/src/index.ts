@@ -49,5 +49,6 @@ export { createStore } from './create-store';
 
 export { RemoteAddressBook } from './remote-access/AddressBook';
 export { RemoteTxHistory } from './remote-access/TxHistory';
+export { RemoteTxMeta } from './remote-access/TxMeta';
 export { RemoteVault } from './remote-access/Vault';
 export { RemoteXPubPosition } from './remote-access/XPubPos';

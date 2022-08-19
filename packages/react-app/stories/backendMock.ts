@@ -19,6 +19,7 @@ import {
 import {
   AnyCoinCode,
   BlockchainCode,
+  blockchainCodeToId,
   EthereumRawReceipt,
   EthereumRawTransaction,
   IBackendApi,
@@ -65,7 +66,7 @@ interface MemoryTransaction {
 }
 
 export class MemoryTxHistory {
-  transactions: Array<MemoryTransaction>;
+  transactions: Array<MemoryTransaction> = [];
 
   insertTransactions(transactions: PersistentState.Transaction[]): void {
     this.transactions = transactions.map<MemoryTransaction>((tx, index) => ({ tx, cursor: `cursor:${index}` }));
@@ -88,6 +89,26 @@ export class MemoryTxHistory {
       cursor: lastItem?.cursor === lastTx?.cursor ? undefined : lastItem?.cursor,
       items: filtered.map(({ tx }) => tx),
     });
+  }
+}
+
+export class MemoryTxMeta {
+  store: Record<number, Record<string, PersistentState.TxMeta | null>> = {};
+
+  async getMeta(blockchain: BlockchainCode, txId: string): Promise<PersistentState.TxMeta | null> {
+    return this.store[blockchainCodeToId(blockchain)]?.[txId] ?? null;
+  }
+
+  async setMeta(meta: PersistentState.TxMeta): Promise<PersistentState.TxMeta> {
+    const blockchain = blockchainCodeToId(meta.blockchain);
+
+    if (this.store[blockchain] == null) {
+      this.store[blockchain] = {};
+    }
+
+    this.store[blockchain][meta.txId] = meta;
+
+    return meta;
   }
 }
 
@@ -199,6 +220,22 @@ export class TxHistoryMock implements PersistentState.TxHistory {
 
   setCursor(): Promise<void> {
     throw new Error('Method not implemented.');
+  }
+}
+
+export class TxMetaMock implements PersistentState.TxMetaStore {
+  readonly txMeta: MemoryTxMeta;
+
+  constructor(txMeta: MemoryTxMeta) {
+    this.txMeta = txMeta;
+  }
+
+  get(blockchain: BlockchainCode, txid: string): Promise<PersistentState.TxMeta> {
+    return this.txMeta.getMeta(blockchain, txid);
+  }
+
+  set(meta: PersistentState.TxMeta): Promise<PersistentState.TxMeta> {
+    return this.txMeta.setMeta(meta);
   }
 }
 
@@ -415,17 +452,20 @@ export class XPubPosMock implements PersistentState.XPubPosition {
 export class ApiMock implements WalletApi {
   readonly addressBook: PersistentState.Addressbook;
   readonly txHistory: PersistentState.TxHistory;
+  readonly txMeta: PersistentState.TxMetaStore;
   readonly vault: IEmeraldVault;
   readonly xPubPos: PersistentState.XPubPosition;
 
   constructor(
     addressBook: PersistentState.Addressbook,
     txHistory: PersistentState.TxHistory,
+    txMeta: PersistentState.TxMetaStore,
     vault: IEmeraldVault,
     xPubPos: PersistentState.XPubPosition,
   ) {
     this.addressBook = addressBook;
     this.txHistory = txHistory;
+    this.txMeta = txMeta;
     this.vault = vault;
     this.xPubPos = xPubPos;
   }
@@ -439,6 +479,7 @@ export class BackendMock implements IBackendApi {
   readonly addressBook = new MemoryAddressBook();
   readonly blockchains: Record<string, BlockchainMock> = {};
   readonly txHistory = new MemoryTxHistory();
+  readonly txMeta = new MemoryTxMeta();
   readonly vault = new MemoryVault();
   readonly xPubPos = new MemoryXPubPos();
 

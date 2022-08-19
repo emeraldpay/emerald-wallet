@@ -58,8 +58,9 @@ export class StoredTransaction implements Omit<PersistentState.Transaction, 'cha
   txId: string;
 
   changes: StoredTransactionChange[];
+  meta: PersistentState.TxMeta | null;
 
-  constructor(tx: PersistentState.Transaction) {
+  constructor(tx: PersistentState.Transaction, meta: PersistentState.TxMeta | null) {
     this.block = tx.block;
     this.blockchain = tx.blockchain;
     this.confirmTimestamp = tx.confirmTimestamp;
@@ -69,6 +70,7 @@ export class StoredTransaction implements Omit<PersistentState.Transaction, 'cha
     this.txId = tx.txId;
 
     this.changes = tx.changes.map((change) => new StoredTransactionChange(tx.blockchain, change));
+    this.meta = meta;
   }
 }
 
@@ -92,6 +94,7 @@ export interface LoadStoredTxsAction {
 
 export interface UpdateStoredTxAction {
   type: ActionTypes.UPDATE_STORED_TX;
+  meta: PersistentState.TxMeta | null;
   transaction: PersistentState.Transaction;
   walletId: Uuid;
 }

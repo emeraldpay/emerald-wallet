@@ -168,7 +168,11 @@ export class TxService implements IService {
 
                       const walletId = EntryIdOp.of(entryId).extractWalletId();
 
-                      this.webContents?.send('store', txhistory.actions.updateTransaction(walletId, merged));
+                      this.persistentState.txmeta
+                        .get(blockchainIdToCode(merged.blockchain), merged.txId)
+                        .then((meta) =>
+                          this.webContents?.send('store', txhistory.actions.updateTransaction(walletId, merged, meta)),
+                        );
                     })
                     .catch((error) => log.error('Error while submitting TX state: ', error));
                 }),

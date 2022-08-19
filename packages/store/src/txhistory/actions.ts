@@ -1,6 +1,5 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, Commands, PersistentState } from '@emeraldwallet/core';
-import { ipcRenderer } from 'electron';
+import { BlockchainCode, PersistentState, blockchainIdToCode } from '@emeraldwallet/core';
 import { ActionTypes, StoredTransaction, UpdateStoredTxAction } from './types';
 import { Dispatched } from '../types';
 
@@ -19,20 +18,33 @@ export function loadTransactions(walletId: Uuid, cursor?: string): Dispatched<vo
       { cursor: walletCursor, limit: 10 },
     );
 
+    const transactions = await Promise.all(
+      page.items.map(async (tx) => {
+        const meta = await extra.api.txMeta.get(blockchainIdToCode(tx.blockchain), tx.txId);
+
+        return new StoredTransaction(tx, meta);
+      }),
+    );
+
     dispatch({
       type: ActionTypes.LOAD_STORED_TXS,
+      transactions,
       walletId,
       cursor: page.cursor,
-      transactions: page.items.map((tx) => new StoredTransaction(tx)),
     });
   };
 }
 
-export function updateTransaction(walletId: Uuid, transaction: PersistentState.Transaction): UpdateStoredTxAction {
+export function updateTransaction(
+  walletId: Uuid,
+  transaction: PersistentState.Transaction,
+  meta: PersistentState.TxMeta | null,
+): UpdateStoredTxAction {
   return {
-    type: ActionTypes.UPDATE_STORED_TX,
-    walletId,
+    meta,
     transaction,
+    walletId,
+    type: ActionTypes.UPDATE_STORED_TX,
   };
 }
 
@@ -40,9 +52,9 @@ export function getTransactionMeta(
   blockchain: BlockchainCode,
   txId: string,
 ): Dispatched<PersistentState.TxMeta | null> {
-  return () => ipcRenderer.invoke(Commands.GET_TX_META, blockchain, txId);
+  return (dispatch, getState, extra) => extra.api.txMeta.get(blockchain, txId);
 }
 
 export function setTransactionMeta(meta: PersistentState.TxMeta): Dispatched<PersistentState.TxMeta> {
-  return () => ipcRenderer.invoke(Commands.SET_TX_META, meta);
+  return (dispatch, getState, extra) => extra.api.txMeta.set(meta);
 }

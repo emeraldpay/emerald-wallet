@@ -3,6 +3,7 @@ import {
   BackendApi,
   RemoteAddressBook,
   RemoteTxHistory,
+  RemoteTxMeta,
   RemoteVault,
   RemoteXPubPosition,
   accounts,
@@ -10,8 +11,7 @@ import {
   application,
   createStore,
   screen,
-  settings,
-  triggers,
+  settings, triggers,
 } from '@emeraldwallet/store';
 import { ipcRenderer } from 'electron';
 import * as ElectronLogger from 'electron-log';
@@ -24,6 +24,7 @@ const logger = Logger.forCategory('store');
 const api: WalletApi = {
   addressBook: RemoteAddressBook,
   txHistory: RemoteTxHistory,
+  txMeta: RemoteTxMeta,
   vault: RemoteVault,
   xPubPos: RemoteXPubPosition,
 };

@@ -4,12 +4,21 @@ import { DecoratorFunction } from '@storybook/addons/dist/ts3.9/types';
 import * as React from 'react';
 import { ReactElement } from 'react';
 import { Provider } from 'react-redux';
-import { AddressBookMock, ApiMock, BackendMock, TxHistoryMock, VaultMock, XPubPosMock } from './backendMock';
+import {
+  AddressBookMock,
+  ApiMock,
+  BackendMock,
+  TxHistoryMock,
+  TxMetaMock,
+  VaultMock,
+  XPubPosMock,
+} from './backendMock';
 
 function createApi(backend: BackendMock): WalletApi {
   return new ApiMock(
     new AddressBookMock(backend.addressBook),
     new TxHistoryMock(backend.txHistory),
+    new TxMetaMock(backend.txMeta),
     new VaultMock(backend.vault),
     new XPubPosMock(backend.xPubPos),
   );
