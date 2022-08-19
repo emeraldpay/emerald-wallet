@@ -1,5 +1,4 @@
-import { BlockchainCode, blockchainCodeToId, PersistentState } from '@emeraldwallet/core';
-import { StoredTransaction } from '@emeraldwallet/store/lib/txhistory/types';
+import { BlockchainCode, PersistentState, blockchainCodeToId } from '@emeraldwallet/core';
 import { storiesOf } from '@storybook/react';
 import * as React from 'react';
 import TxHistory from '../../src/transactions/TxHistory';
@@ -10,7 +9,7 @@ import { createWallets, setup, wallet3 } from '../wallets';
 
 const { ChangeType, Direction, State, Status } = PersistentState;
 
-const txEthereum1 = new StoredTransaction({
+const txEthereum1: PersistentState.Transaction = {
   blockchain: blockchainCodeToId(BlockchainCode.ETH),
   changes: [
     {
@@ -19,7 +18,7 @@ const txEthereum1 = new StoredTransaction({
       asset: 'ETH',
       direction: Direction.SPEND,
       type: ChangeType.TRANSFER,
-      wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
+      wallet: 'f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-1',
     },
     {
       address: '0x2',
@@ -27,16 +26,16 @@ const txEthereum1 = new StoredTransaction({
       asset: 'ETH',
       direction: Direction.EARN,
       type: ChangeType.TRANSFER,
-      wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
+      wallet: 'f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-1',
     },
   ],
   txId: '0x1',
   state: State.PREPARED,
   sinceTimestamp: new Date('2022-01-01T10:00:00'),
   status: Status.UNKNOWN,
-});
+};
 
-const txEthereum2 = new StoredTransaction({
+const txEthereum2: PersistentState.Transaction = {
   block: {
     blockId: '0x1',
     height: 99990,
@@ -50,7 +49,7 @@ const txEthereum2 = new StoredTransaction({
       asset: 'ETH',
       direction: Direction.EARN,
       type: ChangeType.TRANSFER,
-      wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
+      wallet: 'f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-1',
     },
     {
       address: '0x2',
@@ -58,16 +57,16 @@ const txEthereum2 = new StoredTransaction({
       asset: 'ETH',
       direction: Direction.SPEND,
       type: ChangeType.TRANSFER,
-      wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
+      wallet: 'f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-1',
     },
   ],
   txId: '0x2',
   state: State.PREPARED,
   sinceTimestamp: new Date('2022-01-01T10:00:00'),
   status: Status.UNKNOWN,
-});
+};
 
-const txBitcoin1 = new StoredTransaction({
+const txBitcoin1: PersistentState.Transaction = {
   blockchain: blockchainCodeToId(BlockchainCode.BTC),
   changes: [
     {
@@ -76,7 +75,7 @@ const txBitcoin1 = new StoredTransaction({
       asset: 'BTC',
       direction: Direction.SPEND,
       type: ChangeType.TRANSFER,
-      wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
+      wallet: 'f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-1',
     },
     {
       address: 'xyz',
@@ -84,16 +83,16 @@ const txBitcoin1 = new StoredTransaction({
       asset: 'BTC',
       direction: Direction.EARN,
       type: ChangeType.TRANSFER,
-      wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
+      wallet: 'f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-1',
     },
   ],
   txId: '0x3',
   state: State.PREPARED,
   sinceTimestamp: new Date('2022-01-01T10:00:00'),
   status: Status.UNKNOWN,
-});
+};
 
-const txBitcoin2 = new StoredTransaction({
+const txBitcoin2: PersistentState.Transaction = {
   blockchain: blockchainCodeToId(BlockchainCode.BTC),
   changes: [
     {
@@ -102,7 +101,7 @@ const txBitcoin2 = new StoredTransaction({
       asset: 'BTC',
       direction: Direction.EARN,
       type: ChangeType.TRANSFER,
-      wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
+      wallet: 'f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-1',
     },
     {
       address: 'xyz',
@@ -110,26 +109,20 @@ const txBitcoin2 = new StoredTransaction({
       asset: 'BTC',
       direction: Direction.SPEND,
       type: ChangeType.TRANSFER,
-      wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
+      wallet: 'f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-1',
     },
   ],
   sinceTimestamp: new Date('2022-01-01T10:00:00'),
   state: State.PREPARED,
   status: Status.UNKNOWN,
   txId: '0x4',
-});
+};
 
 const backend = new BackendMock();
 
+backend.txHistory.insertTransactions([txEthereum1, txBitcoin1, txEthereum2, txBitcoin2]);
+
 storiesOf('TxHistory', module)
-  .addDecorator(providerForStore(backend, [...setup, ...createWallets]))
   .addDecorator(withTheme)
-  .add('ethereum one', () => <TxHistory entries={wallet3.entries} transactions={[txEthereum1]} />)
-  .add('ethereum two', () => <TxHistory entries={wallet3.entries} transactions={[txEthereum2]} />)
-  .add('ethereum few', () => <TxHistory entries={wallet3.entries} transactions={[txEthereum1, txEthereum2]} />)
-  .add('bitcoin one', () => <TxHistory entries={wallet3.entries} transactions={[txBitcoin1]} />)
-  .add('bitcoin two', () => <TxHistory entries={wallet3.entries} transactions={[txBitcoin2]} />)
-  .add('bitcoin few', () => <TxHistory entries={wallet3.entries} transactions={[txBitcoin1, txBitcoin2]} />)
-  .add('many', () => (
-    <TxHistory entries={wallet3.entries} transactions={[txEthereum1, txEthereum2, txBitcoin1, txBitcoin2]} />
-  ));
+  .addDecorator(providerForStore(backend, [...setup, ...createWallets]))
+  .add('transactions', () => <TxHistory walletId={wallet3.id} />);

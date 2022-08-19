@@ -46,6 +46,8 @@ export { default as rootReducer } from './root-reducer';
 export { default as BackendApi } from './BackendApi';
 export { default as reduxLogger } from './redux-logger';
 export { createStore } from './create-store';
-export { RemoteVault } from './VaultAccess';
-export { RemoteAddressBook } from './AddressBookAccess';
-export { RemoteXPubPosition } from './XPubPositionAccess';
+
+export { RemoteAddressBook } from './remote-access/AddressBook';
+export { RemoteTxHistory } from './remote-access/TxHistory';
+export { RemoteVault } from './remote-access/Vault';
+export { RemoteXPubPosition } from './remote-access/XPubPos';

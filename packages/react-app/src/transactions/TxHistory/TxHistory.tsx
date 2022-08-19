@@ -39,7 +39,7 @@ const TxHistory: React.FC<OwnProps & StateProps & DispatchProps> = ({
 }) => {
   const styles = useStyles();
 
-  const onShowMore = React.useCallback(() => loadTransactions(walletId, cursor), [cursor, walletId, loadTransactions]);
+  const onLoadMore = React.useCallback(() => loadTransactions(walletId, cursor), [cursor, walletId, loadTransactions]);
 
   React.useEffect(() => {
     (async () => {
@@ -50,7 +50,7 @@ const TxHistory: React.FC<OwnProps & StateProps & DispatchProps> = ({
   return (
     <div className={styles.container}>
       <Header />
-      <List cursor={cursor} transactions={transactions} onShowMore={onShowMore} />
+      <List cursor={cursor} transactions={transactions} onLoadMore={onLoadMore} />
     </div>
   );
 };

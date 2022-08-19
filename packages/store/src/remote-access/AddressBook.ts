@@ -1,7 +1,7 @@
 import { Commands, PersistentState } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 
-class AddressBookAccess implements PersistentState.Addressbook {
+class AddressBook implements PersistentState.Addressbook {
   add(item: PersistentState.AddressbookItem): Promise<string> {
     return ipcRenderer.invoke(Commands.ADDRESS_BOOK_ADD, item);
   }
@@ -17,4 +17,4 @@ class AddressBookAccess implements PersistentState.Addressbook {
   }
 }
 
-export const RemoteAddressBook = new AddressBookAccess();
+export const RemoteAddressBook = new AddressBook();

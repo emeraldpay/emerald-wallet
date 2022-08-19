@@ -36,6 +36,7 @@
     "luxon": "^2.4.0",
     "qrcode": "^1.4.4",
     "qrcode.react": "^1.0.0",
+    "rc-virtual-list": "^3.4.8",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
     "react-dropzone": "^14.2.1",

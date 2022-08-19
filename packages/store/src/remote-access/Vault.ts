@@ -21,7 +21,7 @@ import { ipcRenderer } from 'electron';
 
 const PREFIX = 'vault/';
 
-class VaultAccess implements IEmeraldVault {
+class Vault implements IEmeraldVault {
   addEntry(walletId: Uuid, entry: AddEntry): Promise<EntryId> {
     return ipcRenderer.invoke(PREFIX + 'addEntry', walletId, entry);
   }
@@ -161,4 +161,4 @@ class VaultAccess implements IEmeraldVault {
   }
 }
 
-export const RemoteVault = new VaultAccess();
+export const RemoteVault = new Vault();

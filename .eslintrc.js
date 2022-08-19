@@ -42,6 +42,7 @@ module.exports = {
         'newlines-between': 'never',
       },
     ],
+    'react/display-name': 'off',
     'react/prop-types': 'off',
     'sort-imports': [
       'warn',

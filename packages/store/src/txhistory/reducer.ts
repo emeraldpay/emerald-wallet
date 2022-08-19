@@ -23,20 +23,25 @@ function onLoadStoredTransactions(
 }
 
 function onUpdateStoreTransaction(state: HistoryState, { transaction, walletId }: UpdateStoredTxAction): HistoryState {
-  if (state.walletId !== walletId) {
-    return state;
+  if (state.walletId === walletId) {
+    if (state.transactions.length < 10) {
+      return {
+        ...state,
+        transactions: [...state.transactions, new StoredTransaction(transaction)],
+      };
+    }
+
+    const txIndex = state.transactions.findIndex((tx) => tx.txId === transaction.txId);
+
+    if (txIndex > -1) {
+      return {
+        ...state,
+        transactions: state.transactions.splice(txIndex, 1, new StoredTransaction(transaction)),
+      };
+    }
   }
 
-  const txIndex = state.transactions.findIndex((tx) => tx.txId === transaction.txId);
-
-  if (txIndex === -1) {
-    return state;
-  }
-
-  return {
-    ...state,
-    transactions: state.transactions.splice(txIndex, 1, new StoredTransaction(transaction)),
-  };
+  return state;
 }
 
 export function reducer(state = INITIAL_STATE, action: HistoryAction): HistoryState {

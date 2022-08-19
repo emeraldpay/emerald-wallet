@@ -91,7 +91,9 @@ const useStyles = makeStyles((theme) =>
     },
     container: {
       display: 'flex',
-      marginBottom: 20,
+      '& + &': {
+        marginTop: 20,
+      }
     },
     progress: {
       marginRight: 20,

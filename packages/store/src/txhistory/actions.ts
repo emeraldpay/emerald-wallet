@@ -5,7 +5,7 @@ import { ActionTypes, StoredTransaction, UpdateStoredTxAction } from './types';
 import { Dispatched } from '../types';
 
 export function loadTransactions(walletId: Uuid, cursor?: string): Dispatched<void> {
-  return async (dispatch, getState) => {
+  return async (dispatch, getState, extra) => {
     const state = getState();
 
     let walletCursor = cursor;
@@ -14,10 +14,9 @@ export function loadTransactions(walletId: Uuid, cursor?: string): Dispatched<vo
       walletCursor = undefined;
     }
 
-    const page: PersistentState.PageResult<StoredTransaction> = await ipcRenderer.invoke(
-      Commands.LOAD_TX_HISTORY,
-      walletId,
-      walletCursor,
+    const page: PersistentState.PageResult<PersistentState.Transaction> = await extra.api.txHistory.query(
+      { wallet: walletId },
+      { cursor: walletCursor, limit: 10 },
     );
 
     dispatch({

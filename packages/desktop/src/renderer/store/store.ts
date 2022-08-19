@@ -1,13 +1,14 @@
 import { Logger, WalletApi } from '@emeraldwallet/core';
 import {
+  BackendApi,
+  RemoteAddressBook,
+  RemoteTxHistory,
+  RemoteVault,
+  RemoteXPubPosition,
   accounts,
   addressBook,
   application,
-  BackendApi,
   createStore,
-  RemoteAddressBook,
-  RemoteVault,
-  RemoteXPubPosition,
   screen,
   settings,
   triggers,
@@ -20,7 +21,12 @@ Logger.setInstance(ElectronLogger);
 
 const logger = Logger.forCategory('store');
 
-const api: WalletApi = { addressBook: RemoteAddressBook, vault: RemoteVault, xPubPos: RemoteXPubPosition };
+const api: WalletApi = {
+  addressBook: RemoteAddressBook,
+  txHistory: RemoteTxHistory,
+  vault: RemoteVault,
+  xPubPos: RemoteXPubPosition,
+};
 
 const backendApi = new BackendApi();
 

@@ -1,7 +1,7 @@
 import { Commands, PersistentState } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 
-class XPubPositionAccess implements PersistentState.XPubPosition {
+class XPubPos implements PersistentState.XPubPosition {
   get(xpub: string): Promise<number> {
     return ipcRenderer.invoke(Commands.XPUB_POSITION_GET, xpub);
   }
@@ -11,4 +11,4 @@ class XPubPositionAccess implements PersistentState.XPubPosition {
   }
 }
 
-export const RemoteXPubPosition = new XPubPositionAccess();
+export const RemoteXPubPosition = new XPubPos();

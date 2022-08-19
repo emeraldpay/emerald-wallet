@@ -52,9 +52,12 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess, pe
     app.settings.setTerms(v);
   });
 
-  ipcMain.handle(Commands.LOAD_TX_HISTORY, async (event: any, walletId: Uuid, cursor?: string) => {
-    return persistentState.txhistory.query({ wallet: walletId }, { cursor, limit: 10 });
-  });
+  ipcMain.handle(
+    Commands.LOAD_TX_HISTORY,
+    async (event: any, filter?: PersistentState.TxHistoryFilter, query?: PersistentState.PageQuery) => {
+      return persistentState.txhistory.query(filter, query);
+    },
+  );
 
   ipcMain.handle(
     Commands.GET_BALANCE,

@@ -3,9 +3,10 @@ import {
   AddressBookItem,
   CurrentAddress,
   EntryId,
+  EntryIdOp,
   ExportedWeb3Json,
-  IdSeedReference,
   IEmeraldVault,
+  IdSeedReference,
   LedgerDetails,
   OddPasswordItem,
   SeedDefinition,
@@ -18,7 +19,7 @@ import {
 import {
   AnyCoinCode,
   BlockchainCode,
-  blockchainCodeToId,
+  EthereumRawReceipt,
   EthereumRawTransaction,
   IBackendApi,
   PersistentState,
@@ -33,7 +34,7 @@ export class MemoryAddressBook {
 
     this.storage[item.address.address] = { id, ...item };
 
-    return id;
+    return Promise.resolve(id);
   }
 
   async remove(id: string): Promise<void> {
@@ -51,10 +52,42 @@ export class MemoryAddressBook {
       items = items.filter((item) => item.blockchain === filter.blockchain);
     }
 
-    return {
+    return Promise.resolve({
       items,
-      cursor: 0,
-    };
+      cursor: '0',
+    });
+  }
+}
+
+interface MemoryTransaction {
+  cursor: string;
+  tx: PersistentState.Transaction;
+}
+
+export class MemoryTxHistory {
+  transactions: Array<MemoryTransaction>;
+
+  insertTransactions(transactions: PersistentState.Transaction[]): void {
+    this.transactions = transactions.map<MemoryTransaction>((tx, index) => ({ tx, cursor: `cursor:${index}` }));
+  }
+
+  async loadTransactions(
+    filter?: PersistentState.TxHistoryFilter,
+    query?: PersistentState.PageQuery,
+  ): Promise<PersistentState.PageResult<PersistentState.Transaction>> {
+    const cursorIndex = query.cursor == null ? -1 : this.transactions.findIndex((tx) => tx.cursor === query.cursor);
+
+    const filtered = this.transactions
+      .slice(cursorIndex > -1 ? cursorIndex : 0)
+      .filter(({ tx }) => tx.changes.some((change) => EntryIdOp.of(change.wallet).extractWalletId() === filter.wallet));
+
+    const [lastItem] = filtered.slice(-1);
+    const [lastTx] = this.transactions.slice(-1);
+
+    return Promise.resolve({
+      cursor: lastItem?.cursor === lastTx?.cursor ? undefined : lastItem?.cursor,
+      items: filtered.map(({ tx }) => tx),
+    });
   }
 }
 
@@ -76,6 +109,24 @@ export class MemoryVault {
     }
 
     this.seedAddresses[seedId][hdpath] = address;
+  }
+}
+
+export class MemoryXPubPos {
+  storage: Record<string, number> = {};
+
+  async get(xpub: string): Promise<number> {
+    const { [xpub]: current } = this.storage;
+
+    return Promise.resolve(current);
+  }
+
+  async setAtLeast(xpub: string, position: number): Promise<void> {
+    const { [xpub]: current } = this.storage;
+
+    if (position > current) {
+      this.storage[xpub] = position;
+    }
   }
 }
 
@@ -117,6 +168,37 @@ export class AddressBookMock implements PersistentState.Addressbook {
     filter?: PersistentState.AddressbookFilter,
   ): Promise<PersistentState.PageResult<PersistentState.AddressbookItem>> {
     return this.addressBook.query(filter);
+  }
+}
+
+export class TxHistoryMock implements PersistentState.TxHistory {
+  readonly txHistory: MemoryTxHistory;
+
+  constructor(txHistory: MemoryTxHistory) {
+    this.txHistory = txHistory;
+  }
+
+  query(
+    filter?: PersistentState.TxHistoryFilter,
+    query?: PersistentState.PageQuery,
+  ): Promise<PersistentState.PageResult<PersistentState.Transaction>> {
+    return this.txHistory.loadTransactions(filter, query);
+  }
+
+  remove(): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  submit(): Promise<PersistentState.Transaction> {
+    throw new Error('Method not implemented.');
+  }
+
+  getCursor(): Promise<string | null> {
+    throw new Error('Method not implemented.');
+  }
+
+  setCursor(): Promise<void> {
+    throw new Error('Method not implemented.');
   }
 }
 
@@ -314,13 +396,38 @@ export class VaultMock implements IEmeraldVault {
   }
 }
 
+export class XPubPosMock implements PersistentState.XPubPosition {
+  readonly xPubPos: MemoryXPubPos;
+
+  constructor(xPubPos: MemoryXPubPos) {
+    this.xPubPos = xPubPos;
+  }
+
+  get(xpub: string): Promise<number> {
+    return this.xPubPos.get(xpub);
+  }
+
+  setAtLeast(xpub: string, pos: number): Promise<void> {
+    return this.xPubPos.setAtLeast(xpub, pos);
+  }
+}
+
 export class ApiMock implements WalletApi {
   readonly addressBook: PersistentState.Addressbook;
+  readonly txHistory: PersistentState.TxHistory;
   readonly vault: IEmeraldVault;
+  readonly xPubPos: PersistentState.XPubPosition;
 
-  constructor(addressBook: PersistentState.Addressbook, vault: IEmeraldVault) {
+  constructor(
+    addressBook: PersistentState.Addressbook,
+    txHistory: PersistentState.TxHistory,
+    vault: IEmeraldVault,
+    xPubPos: PersistentState.XPubPosition,
+  ) {
     this.addressBook = addressBook;
+    this.txHistory = txHistory;
     this.vault = vault;
+    this.xPubPos = xPubPos;
   }
 
   chain(): unknown {
@@ -331,7 +438,9 @@ export class ApiMock implements WalletApi {
 export class BackendMock implements IBackendApi {
   readonly addressBook = new MemoryAddressBook();
   readonly blockchains: Record<string, BlockchainMock> = {};
+  readonly txHistory = new MemoryTxHistory();
   readonly vault = new MemoryVault();
+  readonly xPubPos = new MemoryXPubPos();
 
   broadcastSignedTx(): Promise<string> {
     return Promise.resolve('');
@@ -391,6 +500,10 @@ export class BackendMock implements IBackendApi {
     }
 
     return Promise.resolve(0);
+  }
+
+  getEthReceipt(): Promise<EthereumRawReceipt | null> {
+    return Promise.resolve(null);
   }
 
   getEthTx(): Promise<EthereumRawTransaction | null> {

@@ -1,33 +1,49 @@
 import { StoredTransaction } from '@emeraldwallet/store';
-import { Button, Grid, Theme } from '@material-ui/core';
-import { useTheme } from '@material-ui/styles';
+import { Theme, createStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import List from 'rc-virtual-list';
 import * as React from 'react';
 import TxItem from './Transaction';
+
+const useStyles = makeStyles<Theme>((theme) =>
+  createStyles({
+    emptyList: {
+      color: theme.palette.text.secondary,
+    },
+    list: {
+      paddingRight: 18,
+    },
+  }),
+);
 
 interface OwnProps {
   cursor?: string | null;
   transactions: StoredTransaction[];
-  onShowMore(): void;
+  onLoadMore(): void;
 }
 
-const TransactionsList: React.FC<OwnProps> = ({ cursor, transactions, onShowMore }) => {
-  const theme = useTheme<Theme>();
+const TransactionsList: React.FC<OwnProps> = ({ cursor, transactions, onLoadMore }) => {
+  const styles = useStyles();
+
+  const onScroll = React.useCallback(
+    (event: React.UIEvent<HTMLElement, UIEvent>) => {
+      if (cursor != null) {
+        const { offsetHeight, scrollHeight, scrollTop } = event.currentTarget;
+
+        if (offsetHeight + scrollTop >= scrollHeight - scrollHeight * 0.1) {
+          onLoadMore();
+        }
+      }
+    },
+    [cursor, onLoadMore],
+  );
 
   return transactions.length > 0 ? (
-    <>
-      {transactions.map((tx) => (
-        <TxItem key={tx.txId} tx={tx} />
-      ))}
-      {cursor != null && (
-        <Grid container justify="center">
-          <Button color="primary" variant="outlined" onClick={onShowMore}>
-            Show more
-          </Button>
-        </Grid>
-      )}
-    </>
+    <List prefixCls={styles.list} data={transactions} itemHeight={73} itemKey="txId" height={500} onScroll={onScroll}>
+      {(tx) => <TxItem tx={tx} />}
+    </List>
   ) : (
-    <div style={{ color: theme.palette.text.secondary }}>There are no transactions.</div>
+    <div className={styles.emptyList}>There are no transactions.</div>
   );
 };
 
