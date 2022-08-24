@@ -1,4 +1,4 @@
-import { HasherType, hashicon, Params } from '@emeraldpay/hashicon';
+import { HasherType, Params, hashicon } from '@emeraldpay/hashicon';
 import * as React from 'react';
 import { Component } from 'react';
 
@@ -35,7 +35,7 @@ export class HashIcon extends Component<OwnProps> {
 
     const icon = hashicon(value, options).toDataURL();
 
-    return <img alt={value} className={className} src={icon} width={size} />;
+    return <img alt={value} className={className} draggable="false" src={icon} width={size} />;
   }
 }
 

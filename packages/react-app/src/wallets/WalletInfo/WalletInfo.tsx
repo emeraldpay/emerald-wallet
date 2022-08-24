@@ -1,12 +1,10 @@
 import {SeedDescription, Wallet} from '@emeraldpay/emerald-vault-core';
 import {isSeedPkRef} from '@emeraldpay/emerald-vault-core/lib/types';
-import {Page} from '@emeraldwallet/ui';
-import {Back} from '@emeraldwallet/ui';
-import {blockchainIdToCode, Blockchains} from '@emeraldwallet/core';
+import {Blockchains, blockchainIdToCode} from '@emeraldwallet/core';
 import {parseDate} from '@emeraldwallet/core/lib/utils';
-import {accounts, IState, screen} from '@emeraldwallet/store';
-import {Button} from '@emeraldwallet/ui';
-import {createStyles, Divider, Table, TableBody, TableCell, TableRow, withStyles} from '@material-ui/core';
+import {IState, accounts, screen} from '@emeraldwallet/store';
+import {Back,Button,Page} from '@emeraldwallet/ui';
+import {Divider, Table, TableBody, TableCell, TableRow, createStyles, withStyles} from '@material-ui/core';
 import {Check as CheckIcon, Close as CrossIcon} from '@material-ui/icons';
 import {clipboard} from 'electron';
 import * as React from 'react';

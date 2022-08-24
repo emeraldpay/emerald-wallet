@@ -24,14 +24,18 @@ const useStyle = makeStyles((theme: Theme) =>
     container: {
       display: 'inline-block',
     },
-    largeSize: {
-      width: theme.spacing(8),
-      height: theme.spacing(8),
-      fontSize: '3em',
+    defaultSize: {
+      width: theme.spacing(4),
+      height: theme.spacing(4),
     },
     smallSize: {
       width: theme.spacing(3),
       height: theme.spacing(3),
+    },
+    largeSize: {
+      width: theme.spacing(8),
+      height: theme.spacing(8),
+      fontSize: '3em',
     },
   }),
 );
@@ -43,7 +47,7 @@ interface OwnProps {
   size?: 'default' | 'small' | 'large';
 }
 
-const CoinAvatar: React.FC<OwnProps> = ({ center, chain, className, size }) => {
+const CoinAvatar: React.FC<OwnProps> = ({ center, chain, className, size = 'default' }) => {
   const classes = useStyle();
 
   return (

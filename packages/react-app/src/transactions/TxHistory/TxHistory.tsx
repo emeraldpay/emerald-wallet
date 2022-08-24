@@ -1,22 +1,9 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core';
 import { PersistentState } from '@emeraldwallet/core';
 import { IState, StoredTransaction, txhistory } from '@emeraldwallet/store';
-import { Theme, createStyles } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import Header from './Header';
 import List from './List';
-
-const useStyles = makeStyles<Theme>((theme) =>
-  createStyles({
-    container: {
-      backgroundColor: 'white',
-      border: `1px solid ${theme.palette.divider}`,
-      padding: 30,
-    },
-  }),
-);
 
 interface OwnProps {
   walletId: Uuid;
@@ -37,8 +24,6 @@ const TxHistory: React.FC<OwnProps & StateProps & DispatchProps> = ({
   walletId,
   loadTransactions,
 }) => {
-  const styles = useStyles();
-
   const onLoadMore = React.useCallback(() => loadTransactions(walletId, cursor), [cursor, walletId, loadTransactions]);
 
   React.useEffect(() => {
@@ -47,12 +32,7 @@ const TxHistory: React.FC<OwnProps & StateProps & DispatchProps> = ({
     })();
   }, [walletId, loadTransactions]);
 
-  return (
-    <div className={styles.container}>
-      <Header />
-      <List cursor={cursor} transactions={transactions} onLoadMore={onLoadMore} />
-    </div>
-  );
+  return <List cursor={cursor} transactions={transactions} onLoadMore={onLoadMore} />;
 };
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(

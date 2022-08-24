@@ -3,29 +3,18 @@ import {
   AddressRole,
   CurrentAddress,
   EntryId,
+  Uuid,
   isBitcoinEntry,
   isEthereumEntry,
-  Uuid,
 } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, blockchainIdToCode, Blockchains } from '@emeraldwallet/core';
-import { accounts, IState, tokens } from '@emeraldwallet/store';
+import { BlockchainCode, Blockchains, blockchainIdToCode } from '@emeraldwallet/core';
+import { IState, accounts, tokens } from '@emeraldwallet/store';
 import { getXPubPositionalAddress } from '@emeraldwallet/store/lib/accounts/actions';
 import { Address, Balance } from '@emeraldwallet/ui';
-import { createStyles, Grid, Table, TableBody, TableCell, TableHead, TableRow, Theme } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Grid, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import * as React from 'react';
 import { connect } from 'react-redux';
-
-const useStyles = makeStyles<Theme>((theme) =>
-  createStyles({
-    root: {
-      padding: '30px 30px 20px',
-      backgroundColor: 'white',
-      border: `1px solid ${theme.palette.divider}`,
-    },
-  }),
-);
 
 interface AddressInfo {
   address?: string;
@@ -48,8 +37,6 @@ interface DispatchProps {
 }
 
 const Addresses: React.FC<OwnProps & StateProps & DispatchProps> = ({ addressesInfo, getXPubPositionalAddress }) => {
-  const styles = useStyles();
-
   const [addresses, setAddresses] = React.useState(addressesInfo);
 
   React.useEffect(() => {
@@ -70,7 +57,7 @@ const Addresses: React.FC<OwnProps & StateProps & DispatchProps> = ({ addressesI
   }, [addressesInfo, getXPubPositionalAddress]);
 
   return (
-    <Grid container={true} className={styles.root}>
+    <Grid container={true}>
       <Grid item={true} xs={12}>
         <Table>
           <TableHead>

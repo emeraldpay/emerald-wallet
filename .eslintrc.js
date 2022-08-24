@@ -21,7 +21,7 @@ module.exports = {
     },
   ],
   parser: '@typescript-eslint/parser',
-  plugins: ['@typescript-eslint', 'import'],
+  plugins: ['@typescript-eslint', 'import', 'unused-imports'],
   root: true,
   rules: {
     '@typescript-eslint/explicit-function-return-type': [
@@ -30,6 +30,7 @@ module.exports = {
         allowExpressions: true,
       },
     ],
+    '@typescript-eslint/no-unused-vars': 'off',
     'import/no-named-as-default': 'off',
     'import/order': [
       'warn',
@@ -50,6 +51,8 @@ module.exports = {
         ignoreDeclarationSort: true,
       },
     ],
+    'unused-imports/no-unused-imports': 'warn',
+    'unused-imports/no-unused-vars': 'warn',
   },
   settings: {
     'import/parsers': {

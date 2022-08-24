@@ -4,7 +4,7 @@ import { EthereumEntry, WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, Blockchains, blockchainIdToCode, formatAmount } from '@emeraldwallet/core';
 import { IState, accounts, screen, tokens } from '@emeraldwallet/store';
 import { CoinAvatar } from '@emeraldwallet/ui';
-import { Button, Grid, Theme, Typography, createStyles } from '@material-ui/core';
+import { Button, Typography, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Alert } from '@material-ui/lab';
 import * as React from 'react';
@@ -12,33 +12,46 @@ import { Dispatch } from 'react';
 import { connect } from 'react-redux';
 import AccountBalance from '../../common/Balance';
 
-const useStyles = makeStyles<Theme>((theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     alert: {
-      marginBottom: 15,
+      marginBottom: theme.spacing(2),
     },
     alertTitle: {
       fontWeight: 'bold',
-      marginBottom: 10,
+      marginBottom: theme.spacing(),
     },
     container: {
-      border: `0px solid ${theme.palette.divider}`,
-      marginBottom: '10px',
+      alignItems: 'start',
+      display: 'flex',
+      marginBottom: theme.spacing(2),
+    },
+    icon: {
+      marginRight: theme.spacing(),
+    },
+    title: {
+      alignItems: 'center',
+      display: 'flex',
+      flex: '1 1 auto',
+      height: theme.spacing(4),
+    },
+    balances: {
+      marginLeft: theme.spacing(),
     },
     balance: {
-      display: 'flex',
       alignItems: 'center',
+      display: 'flex',
       justifyContent: 'end',
     },
     balanceValue: {
       textAlign: 'right',
     },
     balanceSymbol: {
-      width: '90px',
       display: 'inline-block',
-      textAlign: 'left',
-      paddingLeft: '16px',
       opacity: '50%',
+      paddingLeft: 16,
+      textAlign: 'left',
+      width: 100,
     },
   }),
 );
@@ -69,10 +82,10 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
 }) => {
   const styles = useStyles();
 
-  const accountClasses = {
-    root: styles.balance,
+  const classes = {
     coins: styles.balanceValue,
     coinSymbol: styles.balanceSymbol,
+    root: styles.balance,
   };
 
   const [entry] = entries;
@@ -110,27 +123,23 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
     </>
   ) : (
     <div className={styles.container}>
-      <Grid container={true}>
-        <Grid container={true}>
-          <Grid item={true} xs={1}>
-            <CoinAvatar chain={blockchainCode} />
-          </Grid>
-          <Grid item={true} xs={6}>
-            <Typography>{blockchain.getTitle()}</Typography>
-          </Grid>
-          <Grid item={true} xs={5}>
-            <AccountBalance key="main" classes={accountClasses} balance={balance} />
-            {tokensBalances.map((token) => (
-              <AccountBalance
-                key={'token-' + token.units.top.code}
-                classes={accountClasses}
-                balance={token}
-                onConvert={token.units.top.code === 'WETH' ? () => gotoConvert(entry) : undefined}
-              />
-            ))}
-          </Grid>
-        </Grid>
-      </Grid>
+      <div className={styles.icon}>
+        <CoinAvatar chain={blockchainCode} />
+      </div>
+      <div className={styles.title}>
+        <Typography>{blockchain.getTitle()}</Typography>
+      </div>
+      <div className={styles.balances}>
+        <AccountBalance key="main" classes={classes} balance={balance} />
+        {tokensBalances.map((token) => (
+          <AccountBalance
+            key={'token-' + token.units.top.code}
+            classes={classes}
+            balance={token}
+            onConvert={token.units.top.code === 'WETH' ? () => gotoConvert(entry) : undefined}
+          />
+        ))}
+      </div>
     </div>
   );
 };

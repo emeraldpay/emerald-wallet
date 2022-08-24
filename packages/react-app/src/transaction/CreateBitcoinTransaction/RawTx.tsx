@@ -1,66 +1,47 @@
-import {connect} from "react-redux";
-import {Dispatch} from "react";
+import { Theme } from '@emeraldwallet/ui';
+import { Box, TextField, createStyles } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
-import {Box, createStyles, Theme, TextField} from "@material-ui/core";
-import {IState} from "@emeraldwallet/store";
-import {makeStyles} from "@material-ui/core/styles";
 
-const useStyles = makeStyles<Theme>((theme) =>
+const useStyles = makeStyles<typeof Theme>((theme) =>
   createStyles({
     fieldRoot: {
-      border: 0
+      border: 0,
     },
     value: {
-      fontSize: "12px",
-      ...theme.monotype
-    }
-  })
+      fontSize: '12px',
+      ...theme.monotype,
+    },
+  }),
 );
 
-/**
- *
- */
-const Component = (({rawtx}: Props & Actions & OwnProps) => {
-  const styles = useStyles();
-  return <Box>
-    <TextField
-      classes={{root: styles.fieldRoot}}
-      label="Raw Tx"
-      value={rawtx}
-      multiline={true}
-      rows={4}
-      fullWidth
-      InputLabelProps={{
-        shrink: true,
-      }}
-      InputProps={{
-        classes: {
-          input: styles.value
-        }
-      }}
-      variant="outlined"
-    />
-  </Box>
-})
-
-// State Properties
-interface Props {
-}
-
-// Actions
-interface Actions {
-}
-
-// Component properties
 interface OwnProps {
-  rawtx: string
+  rawtx: string;
 }
 
-export default connect(
-  (state: IState, ownProps: OwnProps): Props => {
-    return {}
-  },
-  (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
-    return {}
-  }
-)((Component));
+const Component: React.FC<OwnProps> = ({ rawtx }) => {
+  const styles = useStyles();
+  return (
+    <Box>
+      <TextField
+        classes={{ root: styles.fieldRoot }}
+        label="Raw Tx"
+        value={rawtx}
+        multiline={true}
+        rows={4}
+        fullWidth
+        InputLabelProps={{
+          shrink: true,
+        }}
+        InputProps={{
+          classes: {
+            input: styles.value,
+          },
+        }}
+        variant="outlined"
+      />
+    </Box>
+  );
+};
+
+export default Component;

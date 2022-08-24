@@ -1,29 +1,42 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { BitcoinEntry } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, blockchainIdToCode, Blockchains } from '@emeraldwallet/core';
-import { accounts, IState } from '@emeraldwallet/store';
+import { BlockchainCode, Blockchains, blockchainIdToCode } from '@emeraldwallet/core';
+import { IState, accounts } from '@emeraldwallet/store';
 import { CoinAvatar } from '@emeraldwallet/ui';
-import { createStyles, Grid, Theme, Typography } from '@material-ui/core';
+import { Typography, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import AccountBalance from '../../common/Balance';
 
-const useStyles = makeStyles<Theme>((theme) =>
+const useStyles = makeStyles((theme) =>
   createStyles({
     container: {
-      border: `0px solid ${theme.palette.divider}`,
-      marginBottom: '10px',
+      alignItems: 'start',
+      display: 'flex',
+      marginBottom: theme.spacing(2),
+    },
+    icon: {
+      marginRight: theme.spacing(),
+    },
+    title: {
+      alignItems: 'center',
+      display: 'flex',
+      flex: '1 1 auto',
+      height: theme.spacing(4),
+    },
+    balances: {
+      marginLeft: theme.spacing(),
     },
     balanceValue: {
       textAlign: 'right',
     },
     balanceSymbol: {
-      width: '40px',
       display: 'inline-block',
-      textAlign: 'left',
-      paddingLeft: '16px',
       opacity: '50%',
+      paddingLeft: 16,
+      textAlign: 'left',
+      width: 100,
     },
   }),
 );
@@ -40,28 +53,25 @@ interface StateProps {
 
 const Component: React.FC<StateProps & OwnProps> = ({ balance, blockchainCode }) => {
   const styles = useStyles();
-  const blockchain = Blockchains[blockchainCode];
 
-  const accountClasses = {
+  const classes = {
     coinSymbol: styles.balanceSymbol,
     root: styles.balanceValue,
   };
 
+  const blockchain = Blockchains[blockchainCode];
+
   return (
     <div className={styles.container}>
-      <Grid container={true}>
-        <Grid container={true}>
-          <Grid item={true} xs={1}>
-            <CoinAvatar chain={blockchainCode} />
-          </Grid>
-          <Grid item={true} xs={6}>
-            <Typography>{blockchain.getTitle()}</Typography>
-          </Grid>
-          <Grid item={true} xs={4}>
-            <AccountBalance key="main" classes={accountClasses} balance={balance} />
-          </Grid>
-        </Grid>
-      </Grid>
+      <div className={styles.icon}>
+        <CoinAvatar chain={blockchainCode} />
+      </div>
+      <div className={styles.title}>
+        <Typography>{blockchain.getTitle()}</Typography>
+      </div>
+      <div className={styles.balances}>
+        <AccountBalance key="main" classes={classes} balance={balance} />
+      </div>
     </div>
   );
 };

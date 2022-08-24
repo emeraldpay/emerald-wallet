@@ -5,7 +5,6 @@ export { default as AddContact } from './address-book/AddContact';
 // accounts
 export { default as WalletList } from './wallets/WalletList';
 export { default as WalletDetails } from './wallets/WalletDetails';
-export { default as TokenBalances } from './wallets/TokenBalances';
 
 // create-account
 export { default as ShowPrivateKey } from './create-account/ShowPrivateKey';

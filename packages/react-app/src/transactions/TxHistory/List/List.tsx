@@ -3,7 +3,7 @@ import { Theme, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import List from 'rc-virtual-list';
 import * as React from 'react';
-import TxItem from './Transaction';
+import Transaction from './Transaction';
 
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
@@ -40,7 +40,7 @@ const TransactionsList: React.FC<OwnProps> = ({ cursor, transactions, onLoadMore
 
   return transactions.length > 0 ? (
     <List prefixCls={styles.list} data={transactions} itemHeight={73} itemKey="txId" height={500} onScroll={onScroll}>
-      {(tx) => <TxItem tx={tx} />}
+      {(tx) => <Transaction tx={tx} />}
     </List>
   ) : (
     <div className={styles.emptyList}>There are no transactions.</div>

@@ -154,6 +154,7 @@ const useStyles = makeStyles((theme) =>
       marginTop: 5,
     },
     transactionDetailsId: {
+      ...theme.monotype,
       color: theme.palette.text.secondary,
       fontSize: 14,
       flex: '1 1 auto',
@@ -212,7 +213,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   goToWallet,
   setTransactionMeta,
 }) => {
-  const classes = useStyles();
+  const styles = useStyles();
 
   const blockchainCode = blockchainIdToCode(tx.blockchain);
 
@@ -270,64 +271,64 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   }, [blockchainCode, label, tx, setTransactionMeta]);
 
   return (
-    <div className={classes.container}>
-      <div className={classes.progress}>
+    <div className={styles.container}>
+      <div className={styles.progress}>
         <ProgressPie progress={Math.min(100, (100 / Confirmations[blockchainCode]) * confirmations)}>
           <CoinAvatar
             className={classNames(
-              classes.progressStatus,
+              styles.progressStatus,
               tx.status === Status.OK
-                ? classes.progressStatusOk
+                ? styles.progressStatusOk
                 : tx.status === Status.FAILED
-                ? classes.progressStatusFail
-                : classes.progressStatusUnknown,
+                ? styles.progressStatusFail
+                : styles.progressStatusUnknown,
             )}
             chain={blockchainCode}
           />
         </ProgressPie>
       </div>
-      <div className={classes.transaction}>
-        <div className={classes.transactionLabel}>
+      <div className={styles.transaction}>
+        <div className={styles.transactionLabel}>
           {labelEdit ? (
             <TextField
               InputProps={{
                 classes: {
-                  input: classes.textFieldInput,
-                  root: classes.textFieldRoot,
+                  input: styles.textFieldInput,
+                  root: styles.textFieldRoot,
                 },
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton className={classes.button} onClick={onSaveLabel}>
+                    <IconButton className={styles.button} onClick={onSaveLabel}>
                       <CheckIcon fontSize="inherit" />
                     </IconButton>
-                    <IconButton className={classes.button} onClick={onEditLabel}>
+                    <IconButton className={styles.button} onClick={onEditLabel}>
                       <CloseIcon fontSize="inherit" />
                     </IconButton>
                   </InputAdornment>
                 ),
               }}
-              classes={{ root: classes.textField }}
+              classes={{ root: styles.textField }}
               size="small"
               value={label}
               onChange={({ target: { value } }) => setLabel(value)}
             />
           ) : (
             <>
-              <div className={classes.transactionLabelText}>Tx {label}</div>
-              <IconButton className={classes.button} onClick={onEditLabel}>
+              <div className={styles.transactionLabelText}>Tx {label}</div>
+              <IconButton className={styles.button} onClick={onEditLabel}>
                 <EditIcon fontSize="inherit" />
               </IconButton>
             </>
           )}
         </div>
-        <div className={classes.transactionDetails}>
-          <div className={classes.transactionDetailsId} title={tx.txId}>
+        <div className={styles.transactionDetails}>
+          <div className={styles.transactionDetailsId} title={tx.txId}>
             {tx.txId}
           </div>
-          <div className={classes.transactionDetailsInfo}>
+          <div className={styles.transactionDetailsInfo}>
             {sinceTime} / {confirmed ? 'Confirmed' : `${confirmations > 0 ? confirmations : 'No'} confirmation`}
           </div>
-          <IconButton className={classes.button} onClick={onOpenMenu}>
+          <IconButton className={styles.button} onClick={onOpenMenu}>
             <MoreIcon fontSize="inherit" />
           </IconButton>
           <Menu anchorEl={menuAnchor} open={menuAnchor != null} onClose={onCloseMenu}>
@@ -341,7 +342,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
           </Menu>
         </div>
       </div>
-      <div className={classes.changes}>
+      <div className={styles.changes}>
         {tx.changes
           .filter((change) => change.amountValue.isPositive())
           .reduce<Change[]>((carry, change) => {
@@ -359,20 +360,20 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
             return [...carry, { ...change, amountValue: change.amountValue, wallet }];
           }, [])
           .map((change, index) => (
-            <div className={index > 0 ? classes.changeItem : undefined} key={`${change.address}-${index}`}>
-              <div className={classes.changeItemCoin}>
+            <div className={index > 0 ? styles.changeItem : undefined} key={`${change.address}-${index}`}>
+              <div className={styles.changeItemCoin}>
                 {change.direction === Direction.EARN ? '+' : '-'} {formatAmount(change.amountValue)}
               </div>
-              <div className={classes.changeItemAmount}>
-                <div className={classes.changeItemAmountWallet} onClick={() => goToWallet(change.wallet.id)}>
+              <div className={styles.changeItemAmount}>
+                <div className={styles.changeItemAmountWallet} onClick={() => goToWallet(change.wallet.id)}>
                   <HashIcon
-                    className={classes.changeItemAmountWalletIcon}
+                    className={styles.changeItemAmountWalletIcon}
                     size={24}
                     value={`WALLET/${change.wallet.id}`}
                   />
                   {change.wallet.name}
                 </div>
-                <div className={classes.changeItemAmountFiat}>
+                <div className={styles.changeItemAmountFiat}>
                   {fiatFormatter.format(getFiatValue(change.amountValue))}
                 </div>
               </div>
