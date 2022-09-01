@@ -14,19 +14,25 @@ interface StateProps {
 const useStyles = makeStyles<Theme>((theme) =>
   createStyles({
     container: {
-      marginBottom: '10px',
-      marginTop: '5px',
+      display: 'flex',
+      flexDirection: 'column',
+      maxHeight: '100%',
+    },
+    list: {
+      height: '100%',
+      marginTop: 10,
+      overflowY: 'auto',
     },
     listItem: {
-      marginTop: '10px',
       border: `1px solid ${theme.palette && theme.palette.divider}`,
+      margin: 5,
     },
     noItems: {
       backgroundColor: 'white',
-      padding: '10px',
-      marginTop: '10px',
-      textAlign: 'center',
       border: `1px solid ${theme.palette && theme.palette.divider}`,
+      marginTop: 10,
+      padding: 10,
+      textAlign: 'center',
     },
   }),
 );
@@ -35,9 +41,9 @@ const ContactList: React.FC<StateProps> = ({ contacts }) => {
   const styles = useStyles();
 
   return (
-    <div>
+    <div className={styles.container}>
       <TopBar />
-      <div className={styles.container}>
+      <div className={styles.list}>
         {contacts.length > 0 ? (
           <>
             {contacts.map((contact) => (

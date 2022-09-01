@@ -42,7 +42,6 @@ declare module '@material-ui/core/styles/createTheme' {
 }
 
 const theme = {
-  emeraldColors: colors,
   palette: {
     error: {
       main: colors.ruby,
@@ -157,7 +156,7 @@ const theme = {
         border: `1px solid ${colors.conch.main}`,
       },
       elevation3: {
-        boxShadow: '0px 0px 50px rgba(0, 0, 0, 0.1)',
+        boxShadow: '0px 0px 10px rgba(0, 0, 0, 0.1)',
       },
     },
     MuiMenuItem: {

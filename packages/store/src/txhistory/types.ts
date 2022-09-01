@@ -77,12 +77,19 @@ export class StoredTransaction implements Omit<PersistentState.Transaction, 'cha
 export interface HistoryState {
   cursor?: string;
   walletId?: Uuid;
+  lastTxId: string | null;
   transactions: StoredTransaction[];
 }
 
 export enum ActionTypes {
   LOAD_STORED_TXS = 'WALLET/HISTORY/LOAD_STORED_TXS',
+  SET_LAST_TX_ID = 'WALLET/HISTORY/SET_LAST_TX_ID',
   UPDATE_STORED_TX = 'WALLET/HISTORY/UPDATE_STORED_TX',
+}
+
+export interface LastTxIdAction {
+  type: ActionTypes.SET_LAST_TX_ID;
+  txId: string | null;
 }
 
 export interface LoadStoredTxsAction {
@@ -99,4 +106,4 @@ export interface UpdateStoredTxAction {
   walletId: Uuid;
 }
 
-export type HistoryAction = LoadStoredTxsAction | UpdateStoredTxAction;
+export type HistoryAction = LastTxIdAction | LoadStoredTxsAction | UpdateStoredTxAction;

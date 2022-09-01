@@ -13,83 +13,85 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+
+import { Theme, createStyles } from '@material-ui/core';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
-import {withStyles} from '@material-ui/core/styles';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
+import { makeStyles } from '@material-ui/styles';
 import * as React from 'react';
 
-const styles = (theme) => ({
-  root: {},
-  typography: {},
-  toolbar: {
-    background: 'transparent',
-    height: theme && theme.spacing(10),
-    flex: 1,
-    justifyContent: 'space-between'
-  },
-  childWrapper: {
-    padding: theme && theme.spacing(4)
-  }
-});
+const useStyles = makeStyles<Theme>((theme) =>
+  createStyles({
+    children: {
+      overflowY: 'auto',
+      padding: theme.spacing(4),
+    },
+    footer: {
+      padding: theme.spacing(2),
+    },
+    root: {
+      display: 'flex',
+      flexDirection: 'column',
+      maxHeight: '100%',
+      overflow: 'hidden',
+    },
+    toolbar: {
+      background: 'transparent',
+      flex: 0,
+      justifyContent: 'space-between',
+    },
+  }),
+);
 
-const getIconWithButton = (icon: React.ReactElement) => {
-  if (!icon) {
-    return <div/>;
+interface OwnProps {
+  className?: string;
+  footer?: React.ReactElement;
+  leftIcon?: React.ReactElement;
+  rightIcon?: React.ReactElement;
+  title: React.ReactElement | string;
+}
+
+const getIconWithButton = (icon?: React.ReactElement): React.ReactElement => {
+  if (icon == null) {
+    return <div />;
   }
-  // move onClick handler from icon to IconButton
-  const onClickHandler = icon.props.onClick || undefined;
+
   return (
-    <IconButton onClick={onClickHandler}>
-      {React.cloneElement(icon, {...icon.props, onClick: undefined})}
+    <IconButton onClick={icon.props.onClick}>
+      {React.cloneElement(icon, { ...icon.props, onClick: undefined })}
     </IconButton>
   );
 };
 
-interface IPageProps {
-  title: React.ReactElement | string;
-  className?: string;
-  classes?: any;
-  rightIcon?: any;
-  leftIcon?: any;
-  children?: any;
-}
+export const PageTitle: React.FC = ({ children }) => (
+  <Typography variant="h6" color="inherit">
+    {children}
+  </Typography>
+);
 
-export interface IPageTile {
-  children: React.ReactElement | string;
-}
+export const Page: React.FC<OwnProps> = ({ children, footer, leftIcon, rightIcon, title }) => {
+  const styles = useStyles();
 
-export function PageTitle(props: IPageTile) {
   return (
-    <Typography variant='h6' color='inherit'>
-      {props.children}
-    </Typography>
-  );
-}
-
-export function Page(props: IPageProps) {
-  const {
-    title, leftIcon, rightIcon, classes
-  } = props;
-  const isTitleString = (typeof title === 'string');
-  return (
-    <Paper className={classes?.root}>
-      <Toolbar className={classes?.toolbar}>
+    <Paper classes={{ root: styles.root }}>
+      <Toolbar className={styles.toolbar}>
         {getIconWithButton(leftIcon)}
-        {isTitleString && (<PageTitle>{title}</PageTitle>)}
-        {!isTitleString && title}
+        {typeof title === 'string' ? <PageTitle>{title}</PageTitle> : title}
         {getIconWithButton(rightIcon)}
       </Toolbar>
-
-      <Divider/>
-
-      <div className={classes?.childWrapper}>
-        {props.children}
-      </div>
+      <Divider />
+      <div className={styles.children}>{children}</div>
+      {footer != null && (
+        <>
+          <Divider />
+          <div className={styles.footer}>{footer}</div>
+        </>
+      )}
     </Paper>
   );
-}
+};
 
-export default withStyles(styles, {name: 'EmeraldPage'})(Page);
+export default Page;

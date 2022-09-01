@@ -47,7 +47,8 @@ export type ScreenState = Partial<
     | 'notificationMessage'
     | 'notificationType'
     | 'screen'
-    | 'screenItem',
+    | 'screenItem'
+    | 'restoreData',
     any
   >
 >;
@@ -56,6 +57,7 @@ export interface IOpenAction {
   type: ActionTypes.OPEN;
   screen: string | Pages;
   item: any;
+  restore: any;
 }
 
 export interface IErrorAction {

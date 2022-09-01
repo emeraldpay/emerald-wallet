@@ -42,13 +42,17 @@ function onNotificationClose(state: ScreenState): ScreenState {
 }
 
 function onOpen(state: ScreenState, action: IOpenAction): ScreenState {
-  history.push(state);
+  history.push({
+    ...state,
+    restoreData: action.restore,
+  });
 
   return {
     ...state,
     dialog: null,
     screen: action.screen,
     screenItem: action.item,
+    restoreData: null,
   };
 }
 

@@ -1,5 +1,7 @@
-import { BlockchainCode, blockchainCodeToId, PersistentState } from '@emeraldwallet/core';
+import { BlockchainCode, PersistentState, blockchainCodeToId } from '@emeraldwallet/core';
 import { StoredTransaction } from '@emeraldwallet/store';
+import { Theme } from '@emeraldwallet/ui';
+import { ThemeProvider } from '@material-ui/core';
 import { mount } from 'enzyme';
 import * as React from 'react';
 import { Provider } from 'react-redux';
@@ -74,9 +76,11 @@ describe('TxDetailsView', () => {
   it('should render ethereum tx', () => {
     expect(
       mount(
-        <Provider store={createStore()}>
-          <TxDetails tx={ethereumTx} />
-        </Provider>,
+        <ThemeProvider theme={Theme}>
+          <Provider store={createStore()}>
+            <TxDetails tx={ethereumTx} />
+          </Provider>
+        </ThemeProvider>,
       ),
     ).toBeDefined();
   });
@@ -84,9 +88,11 @@ describe('TxDetailsView', () => {
   it('should render bitcoin tx', () => {
     expect(
       mount(
-        <Provider store={createStore()}>
-          <TxDetails tx={bitcoinTx} />
-        </Provider>,
+        <ThemeProvider theme={Theme}>
+          <Provider store={createStore()}>
+            <TxDetails tx={bitcoinTx} />
+          </Provider>
+        </ThemeProvider>,
       ),
     ).toBeDefined();
   });

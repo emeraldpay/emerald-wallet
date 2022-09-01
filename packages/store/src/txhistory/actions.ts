@@ -1,21 +1,25 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, PersistentState, blockchainIdToCode } from '@emeraldwallet/core';
-import { ActionTypes, StoredTransaction, UpdateStoredTxAction } from './types';
+import { ActionTypes, LastTxIdAction, StoredTransaction, UpdateStoredTxAction } from './types';
 import { Dispatched } from '../types';
 
-export function loadTransactions(walletId: Uuid, cursor?: string): Dispatched<void> {
+export function loadTransactions(walletId: Uuid, initial: boolean): Dispatched<void> {
   return async (dispatch, getState, extra) => {
-    const state = getState();
+    const { history } = getState();
 
-    let walletCursor = cursor;
+    if (walletId === history.walletId && (initial || history.cursor === null)) {
+      return;
+    }
 
-    if (walletId !== state.history.walletId) {
+    let walletCursor = history.cursor;
+
+    if (walletId !== history.walletId) {
       walletCursor = undefined;
     }
 
     const page: PersistentState.PageResult<PersistentState.Transaction> = await extra.api.txHistory.query(
       { wallet: walletId },
-      { cursor: walletCursor, limit: 10 },
+      { cursor: walletCursor, limit: 20 },
     );
 
     const transactions = await Promise.all(
@@ -57,4 +61,11 @@ export function getTransactionMeta(
 
 export function setTransactionMeta(meta: PersistentState.TxMeta): Dispatched<PersistentState.TxMeta> {
   return (dispatch, getState, extra) => extra.api.txMeta.set(meta);
+}
+
+export function setLastTxId(txId: string | null): LastTxIdAction {
+  return {
+    txId,
+    type: ActionTypes.SET_LAST_TX_ID,
+  };
 }

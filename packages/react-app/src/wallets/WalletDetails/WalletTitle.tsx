@@ -36,8 +36,8 @@ const WalletTitle: React.FC<OwnProps & StateProps & DispatchProps> = ({ wallet, 
   const [edit, setEdit] = React.useState(false);
 
   const onSave = React.useCallback(
-    ({ id, name }: Partial<Wallet>) => {
-      updateWallet({ id, name });
+    ({ id, value }) => {
+      updateWallet({ id, name: value });
       setEdit(false);
     },
     [updateWallet],
@@ -46,7 +46,7 @@ const WalletTitle: React.FC<OwnProps & StateProps & DispatchProps> = ({ wallet, 
   return edit ? (
     <InlineEdit
       id={wallet?.id}
-      initialValue={wallet?.name}
+      initialValue={wallet?.name ?? ''}
       placeholder="Wallet name"
       onCancel={() => setEdit(false)}
       onSave={onSave}
@@ -67,7 +67,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   }),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
-    updateWallet: (data: Partial<Wallet>) => {
+    updateWallet(data) {
       if (data.id != null) {
         dispatch(accounts.actions.updateWallet(data.id, data.name ?? ''));
       }

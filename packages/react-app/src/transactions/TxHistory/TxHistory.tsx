@@ -1,5 +1,4 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core';
-import { PersistentState } from '@emeraldwallet/core';
 import { IState, StoredTransaction, txhistory } from '@emeraldwallet/store';
 import * as React from 'react';
 import { connect } from 'react-redux';
@@ -11,43 +10,57 @@ interface OwnProps {
 
 interface StateProps {
   cursor?: string;
+  lastTxId: string | null;
   transactions: StoredTransaction[];
 }
 
 interface DispatchProps {
-  loadTransactions(walletId: Uuid, cursor?: string): Promise<PersistentState.PageResult<StoredTransaction>>;
+  loadTransactions(walletId: Uuid, initial: boolean): Promise<void>;
+  setLastTxId(txId: string | null): void;
 }
 
 const TxHistory: React.FC<OwnProps & StateProps & DispatchProps> = ({
   cursor,
+  lastTxId,
   transactions,
   walletId,
   loadTransactions,
+  setLastTxId,
 }) => {
-  const onLoadMore = React.useCallback(() => loadTransactions(walletId, cursor), [cursor, walletId, loadTransactions]);
-
   React.useEffect(() => {
     (async () => {
-      await loadTransactions(walletId);
+      await loadTransactions(walletId, true);
     })();
   }, [walletId, loadTransactions]);
 
-  return <List cursor={cursor} transactions={transactions} onLoadMore={onLoadMore} />;
+  return (
+    <List
+      cursor={cursor}
+      lastTxId={lastTxId}
+      transactions={transactions}
+      onLoadMore={() => loadTransactions(walletId, false)}
+      setLastTxId={setLastTxId}
+    />
+  );
 };
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state) => {
-    const { cursor, transactions } = state.history;
+    const { cursor, lastTxId, transactions } = state.history;
 
     return {
       cursor,
+      lastTxId,
       transactions,
     };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
-    loadTransactions(walletId, cursor) {
-      return dispatch(txhistory.actions.loadTransactions(walletId, cursor));
+    loadTransactions(walletId, initial) {
+      return dispatch(txhistory.actions.loadTransactions(walletId, initial));
+    },
+    setLastTxId(txId) {
+      dispatch(txhistory.actions.setLastTxId(txId));
     },
   }),
 )(TxHistory);

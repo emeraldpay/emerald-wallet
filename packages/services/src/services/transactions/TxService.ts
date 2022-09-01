@@ -158,7 +158,7 @@ export class TxService implements IService {
                         tx.removed === false && tx.mempool === false ? tx.block?.timestamp ?? new Date() : undefined,
                       state:
                         tx.removed === true ? State.REPLACED : tx.mempool === true ? State.SUBMITTED : State.CONFIRMED,
-                      status: Status.UNKNOWN, // TODO Set from backend
+                      status: tx.failed ? Status.FAILED : Status.OK,
                       txId: tx.txId,
                     })
                     .then((merged) => {

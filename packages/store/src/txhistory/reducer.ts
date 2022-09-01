@@ -2,12 +2,14 @@ import {
   ActionTypes,
   HistoryAction,
   HistoryState,
+  LastTxIdAction,
   LoadStoredTxsAction,
   StoredTransaction,
   UpdateStoredTxAction,
 } from './types';
 
 const INITIAL_STATE: HistoryState = {
+  lastTxId: null,
   transactions: [],
 };
 
@@ -19,7 +21,11 @@ function onLoadStoredTransactions(
     return { ...state, cursor, transactions: [...state.transactions, ...transactions] };
   }
 
-  return { ...state, cursor, transactions, walletId };
+  return { ...state, cursor, transactions, walletId, lastTxId: null };
+}
+
+function onSetLastTxId(state: HistoryState, { txId }: LastTxIdAction): HistoryState {
+  return { ...state, lastTxId: txId };
 }
 
 function onUpdateStoreTransaction(
@@ -51,6 +57,8 @@ export function reducer(state = INITIAL_STATE, action: HistoryAction): HistorySt
   switch (action.type) {
     case ActionTypes.LOAD_STORED_TXS:
       return onLoadStoredTransactions(state, action);
+    case ActionTypes.SET_LAST_TX_ID:
+      return onSetLastTxId(state, action);
     case ActionTypes.UPDATE_STORED_TX:
       return onUpdateStoreTransaction(state, action);
     default:

@@ -9,6 +9,7 @@ export function getCurrentScreen(state: IState): ScreenState {
   return {
     screen: state.screen.screen,
     screenItem: state.screen.screenItem,
+    restoreData: state.screen.restoreData,
   };
 }
 

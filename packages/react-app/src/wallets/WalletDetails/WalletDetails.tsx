@@ -1,4 +1,4 @@
-import { screen } from '@emeraldwallet/store';
+import { IState, screen } from '@emeraldwallet/store';
 import { Back } from '@emeraldwallet/ui';
 import { Button, Divider, IconButton, Paper, Tab, Toolbar, createStyles, makeStyles } from '@material-ui/core';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
@@ -11,18 +11,42 @@ import WalletMenu from './WalletMenu';
 import WalletTitle from './WalletTitle';
 import TxHistory from '../../transactions/TxHistory';
 
+export enum WalletTabs {
+  BALANCE = '0',
+  ADDRESSES = '1',
+  TRANSACTIONS = '2',
+}
+
 const useStyles = makeStyles((theme) =>
   createStyles({
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+      maxHeight: '100%',
+    },
+    paper: {
+      display: 'flex',
+      flex: 1,
+      flexDirection: 'column',
+      height: '100%',
+      overflow: 'hidden',
+    },
     tabs: {
       display: 'flex',
+      flex: 0,
       justifyContent: 'space-between',
+      marginTop: '-10px',
       marginBottom: theme.spacing(2),
     },
     tabPanel: {
+      height: '100%',
+      overflowY: 'auto',
+      padding: 0,
+    },
+    tabPanelPadding: {
       padding: theme.spacing(4),
     },
     toolbar: {
-      height: theme.spacing(10),
       justifyContent: 'space-between',
     },
     toolbarButtons: {
@@ -46,7 +70,12 @@ const useStyles = makeStyles((theme) =>
 );
 
 interface OwnProps {
+  initialTab?: WalletTabs;
   walletId: string;
+}
+
+interface StateProps {
+  hasOtherWallets: boolean;
 }
 
 interface DispatchProps {
@@ -55,63 +84,70 @@ interface DispatchProps {
   gotoWalletsScreen(): void;
 }
 
-enum WalletTabs {
-  BALANCE = '0',
-  ADDRESSES = '1',
-  TRANSACTIONS = '2',
-}
-
-const WalletDetails: React.FC<OwnProps & DispatchProps> = ({ walletId, gotoReceive, gotoSend, gotoWalletsScreen }) => {
+const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
+  hasOtherWallets,
+  initialTab,
+  walletId,
+  gotoReceive,
+  gotoSend,
+  gotoWalletsScreen,
+}) => {
   const styles = useStyles();
 
-  const [tab, setTab] = React.useState(WalletTabs.BALANCE);
+  const [tab, setTab] = React.useState(initialTab ?? WalletTabs.BALANCE);
 
   return (
-    <TabContext value={tab}>
-      <div className={styles.tabs}>
-        <TabList indicatorColor="primary" textColor="primary" onChange={(event, selected) => setTab(selected)}>
-          <Tab label="Balance" value={WalletTabs.BALANCE} />
-          <Tab label="Addresses" value={WalletTabs.ADDRESSES} />
-          <Tab label="Transactions" value={WalletTabs.TRANSACTIONS} />
-        </TabList>
-        <IconButton>
-          <WalletMenu walletId={walletId} />
-        </IconButton>
-      </div>
-      <Paper>
-        <Toolbar className={styles.toolbar}>
-          <div className={classNames(styles.toolbarButtons, styles.toolbarButtonsLeft)}>
-            <IconButton className={styles.toolbarButton} onClick={gotoWalletsScreen}>
-              <Back />
-            </IconButton>
-          </div>
-          <WalletTitle walletId={walletId} />
-          <div className={classNames(styles.toolbarButtons, styles.toolbarButtonsRight)}>
-            <Button className={styles.toolbarButton} color="primary" variant="outlined" onClick={gotoSend}>
-              Send
-            </Button>
-            <Button className={styles.toolbarButton} color="primary" variant="outlined" onClick={gotoReceive}>
-              Receive
-            </Button>
-          </div>
-        </Toolbar>
-        <Divider />
-        <TabPanel className={styles.tabPanel} value={WalletTabs.BALANCE}>
-          <WalletBalance walletId={walletId} />
-        </TabPanel>
-        <TabPanel className={styles.tabPanel} value={WalletTabs.ADDRESSES}>
-          <Addresses walletId={walletId} />
-        </TabPanel>
-        <TabPanel className={styles.tabPanel} value={WalletTabs.TRANSACTIONS}>
-          <TxHistory walletId={walletId} />
-        </TabPanel>
-      </Paper>
-    </TabContext>
+    <div className={styles.container} style={{ height: tab === WalletTabs.TRANSACTIONS ? '100%' : 'auto' }}>
+      <TabContext value={tab}>
+        <div className={styles.tabs}>
+          <TabList indicatorColor="primary" textColor="primary" onChange={(event, selected) => setTab(selected)}>
+            <Tab label="Balance" value={WalletTabs.BALANCE} />
+            <Tab label="Addresses" value={WalletTabs.ADDRESSES} />
+            <Tab label="Transactions" value={WalletTabs.TRANSACTIONS} />
+          </TabList>
+          <IconButton>
+            <WalletMenu walletId={walletId} />
+          </IconButton>
+        </div>
+        <Paper classes={{ root: styles.paper }}>
+          <Toolbar className={styles.toolbar}>
+            <div className={classNames(styles.toolbarButtons, styles.toolbarButtonsLeft)}>
+              {hasOtherWallets && (
+                <IconButton className={styles.toolbarButton} onClick={gotoWalletsScreen}>
+                  <Back />
+                </IconButton>
+              )}
+            </div>
+            <WalletTitle walletId={walletId} />
+            <div className={classNames(styles.toolbarButtons, styles.toolbarButtonsRight)}>
+              <Button className={styles.toolbarButton} color="primary" variant="outlined" onClick={gotoSend}>
+                Send
+              </Button>
+              <Button className={styles.toolbarButton} color="primary" variant="outlined" onClick={gotoReceive}>
+                Receive
+              </Button>
+            </div>
+          </Toolbar>
+          <Divider />
+          <TabPanel className={classNames(styles.tabPanel, styles.tabPanelPadding)} value={WalletTabs.BALANCE}>
+            <WalletBalance walletId={walletId} />
+          </TabPanel>
+          <TabPanel className={classNames(styles.tabPanel, styles.tabPanelPadding)} value={WalletTabs.ADDRESSES}>
+            <Addresses walletId={walletId} />
+          </TabPanel>
+          <TabPanel className={styles.tabPanel} value={WalletTabs.TRANSACTIONS}>
+            <TxHistory walletId={walletId} />
+          </TabPanel>
+        </Paper>
+      </TabContext>
+    </div>
   );
 };
 
-export default connect<{}, DispatchProps, OwnProps>(
-  null,
+export default connect<StateProps, DispatchProps, OwnProps, IState>(
+  (state) => ({
+    hasOtherWallets: state.accounts.wallets.length > 1,
+  }),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any, ownProps) => ({
     gotoReceive() {

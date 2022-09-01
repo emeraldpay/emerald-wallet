@@ -29,6 +29,7 @@ import { DateTime } from 'luxon';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import ProgressPie from './ProgressPie';
+import { WalletTabs } from '../../../wallets/WalletDetails';
 
 const { Direction, State, Status } = PersistentState;
 
@@ -90,10 +91,11 @@ const useStyles = makeStyles((theme) =>
       textAlign: 'right',
     },
     container: {
+      boxSizing: 'border-box',
       display: 'flex',
-      '& + &': {
-        marginTop: 20,
-      },
+      paddingBottom: theme.spacing(2),
+      paddingLeft: theme.spacing(4),
+      paddingRight: theme.spacing(4),
     },
     progress: {
       marginRight: 20,
@@ -153,16 +155,6 @@ const useStyles = makeStyles((theme) =>
       lineHeight: '24px',
       marginTop: 5,
     },
-    transactionDetailsId: {
-      ...theme.monotype,
-      color: theme.palette.text.secondary,
-      fontSize: 14,
-      flex: '1 1 auto',
-      marginRight: 10,
-      maxWidth: 535,
-      overflow: 'hidden',
-      textOverflow: 'ellipsis',
-    },
     transactionDetailsInfo: {
       color: theme.palette.text.secondary,
       fontSize: 14,
@@ -184,6 +176,7 @@ type Change = Omit<txhistory.types.StoredTransactionChange, 'wallet'> & { wallet
 
 interface OwnProps {
   tx: StoredTransaction;
+  style?: React.CSSProperties;
 }
 
 interface StateProps {
@@ -204,6 +197,7 @@ const fiatFormatter = new FormatterBuilder().useTopUnit().number(2).append(' ').
 
 const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   tx,
+  style,
   getFiatValue,
   getHeight,
   getWallet,
@@ -271,7 +265,7 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
   }, [blockchainCode, label, tx, setTransactionMeta]);
 
   return (
-    <div className={styles.container}>
+    <div className={styles.container} style={style}>
       <div className={styles.progress}>
         <ProgressPie progress={Math.min(100, (100 / Confirmations[blockchainCode]) * confirmations)}>
           <CoinAvatar
@@ -322,9 +316,6 @@ const Transaction: React.FC<OwnProps & StateProps & DispatchProps> = ({
           )}
         </div>
         <div className={styles.transactionDetails}>
-          <div className={styles.transactionDetailsId} title={tx.txId}>
-            {tx.txId}
-          </div>
           <div className={styles.transactionDetailsInfo}>
             {sinceTime} / {confirmed ? 'Confirmed' : `${confirmations > 0 ? confirmations : 'No'} confirmation`}
           </div>
@@ -418,7 +409,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       }
     },
     goToTransaction(tx) {
-      dispatch(screen.actions.gotoScreen(screen.Pages.TX_DETAILS, tx));
+      dispatch(screen.actions.gotoScreen(screen.Pages.TX_DETAILS, tx, { tab: WalletTabs.TRANSACTIONS }));
     },
     goToWallet(walletId) {
       dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, walletId));

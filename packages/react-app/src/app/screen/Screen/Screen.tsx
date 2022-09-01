@@ -8,8 +8,8 @@ import CreateHdAccount from '../../../create-account/CreateHdAccount';
 import CreateWalletScreen from '../../../create-wallet/CreateWalletScreen';
 import {
   AddContact,
-  BroadcastTx,
   ContactList as AddressBook,
+  BroadcastTx,
   Home,
   Settings,
   TxDetails,
@@ -38,8 +38,8 @@ interface OwnProps {
 
 interface StateProps {
   screen?: string;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   screenItem?: any;
+  restoreData?: any;
 }
 
 const Screen: React.FC<OwnProps & StateProps> = (props) => {
@@ -98,7 +98,7 @@ const Screen: React.FC<OwnProps & StateProps> = (props) => {
     case screen.Pages.TX_DETAILS:
       return <TxDetails tx={props.screenItem} />;
     case screen.Pages.WALLET:
-      return <WalletDetails walletId={props.screenItem} />;
+      return <WalletDetails initialTab={props.restoreData?.tab} walletId={props.screenItem} />;
     case screen.Pages.WALLET_INFO:
       return <WalletInfo walletId={props.screenItem} />;
     default:

@@ -46,7 +46,7 @@ const Welcome = (props: Props) => {
 
   if (needSetup) {
     return (
-      <Grid container={true} justify='center' alignItems='center'>
+      <Grid container={true} justifyContent='center' alignItems='center'>
         <Grid item={true} xs={10}>
           <InitialSetup currentTermsVersion={currentTermsVersion}/>
         </Grid>
@@ -55,7 +55,7 @@ const Welcome = (props: Props) => {
   }
 
   return (
-    <Grid container={true} direction='column' justify='center' alignItems='center' style={{ maxWidth: '1150px' }}>
+    <Grid container={true} direction='column' justifyContent='center' alignItems='center' style={{ maxWidth: '1150px' }}>
       <Grid item={true} xs={true} style={{ paddingTop: '6%' }}>
         <Logo width='250' height='250'/>
       </Grid>

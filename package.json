@@ -35,8 +35,8 @@
     "packages/*"
   ],
   "resolutions": {
-    "@emeraldpay/api": "https://artifacts.emerald.cash/builds/emerald-api-js/8bb1bf86/emeraldpay-api-v0.3.0-alpha.2.tgz",
-    "@emeraldpay/api-node": "https://artifacts.emerald.cash/builds/emerald-api-js/8bb1bf86/emeraldpay-api-node-v0.3.0-alpha.2.tgz",
+    "@emeraldpay/api": "https://artifacts.emerald.cash/builds/emerald-api-js/625b2bd7/emeraldpay-api-v0.3.0-alpha.2.tgz",
+    "@emeraldpay/api-node": "https://artifacts.emerald.cash/builds/emerald-api-js/625b2bd7/emeraldpay-api-node-v0.3.0-alpha.2.tgz",
     "tslib": "2.3.1"
   }
 }

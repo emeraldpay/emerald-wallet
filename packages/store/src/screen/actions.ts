@@ -1,98 +1,26 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core/lib/types';
+import {
+  ActionTypes,
+  ICloseNotificationAction,
+  IDialogAction,
+  IErrorAction,
+  IGoBackAction,
+  IOpenAction,
+  IOpenLinkAction,
+  IShowNotificationAction,
+  Pages,
+} from './types';
 import { accounts, screen } from '../index';
 import { IState } from '../types';
-import { ActionTypes, IDialogAction, IOpenAction, Pages } from './types';
 
-export function gotoScreen(screen: string | Pages, item: any = null): IOpenAction {
+const hashRegExp = new RegExp('^(0x)?[a-z0-9A-Z]+$');
+
+export function gotoScreen(screen: string | Pages, item: any = null, restore: any = null): IOpenAction {
   return {
     type: ActionTypes.OPEN,
     screen,
     item,
-  };
-}
-
-export function showError(error: Error) {
-  return {
-    error,
-    type: ActionTypes.ERROR,
-  };
-}
-
-export function closeError() {
-  return {
-    type: ActionTypes.ERROR,
-    error: null,
-  };
-}
-
-export function showDialog(name: string): IDialogAction {
-  return {
-    type: ActionTypes.DIALOG,
-    value: name,
-  };
-}
-
-export function closeDialog(): IDialogAction {
-  return {
-    type: ActionTypes.DIALOG,
-    value: null,
-  };
-}
-
-export function goBack() {
-  return {
-    type: ActionTypes.GO_BACK,
-  };
-}
-
-export function catchError(dispatch: any): (err: Error) => void {
-  return (err: Error) => {
-    dispatch(showError(err));
-  };
-}
-
-export const openLink = (linkUrl: string) => ({
-  type: ActionTypes.OPEN_LINK,
-  linkUrl,
-});
-
-const hashRE = new RegExp('^(0x)?[a-z0-9A-Z]+$');
-
-export function openTxReceipt(hash: string) {
-  if (!hashRE.test(hash) || typeof hash != 'string') {
-    console.warn('Invalid hash provided', hash);
-    return openLink('https://receipt.emerald.cash/');
-  }
-  return openLink(`https://receipt.emerald.cash/tx/${hash}`);
-}
-
-export function showNotification(
-  message: any,
-  notificationType: any,
-  duration: any,
-  actionText: any,
-  actionToDispatchOnActionClick: any,
-) {
-  return {
-    type: ActionTypes.NOTIFICATION_SHOW,
-    message,
-    notificationType,
-    duration,
-    actionText,
-    actionToDispatchOnActionClick,
-  };
-}
-
-export function dispatchRpcError(dispatch: any) {
-  return (err: any) => {
-    // console.warn('RPC Error', err && err.message ? err.message : '');
-    dispatch(showNotification('Remote server connection failure', 'warning', 2000, null, null));
-  };
-}
-
-export function closeNotification() {
-  return {
-    type: ActionTypes.NOTIFICATION_CLOSE,
+    restore,
   };
 }
 
@@ -127,5 +55,91 @@ export function gotoWalletsScreen() {
 
       dispatch(gotoScreen(nextPage, walletId));
     }
+  };
+}
+
+export function goBack(): IGoBackAction {
+  return {
+    type: ActionTypes.GO_BACK,
+  };
+}
+
+export function showNotification(
+  message: any,
+  notificationType: any,
+  duration: any,
+  actionText: any,
+  actionToDispatchOnActionClick: any,
+): IShowNotificationAction {
+  return {
+    type: ActionTypes.NOTIFICATION_SHOW,
+    message,
+    notificationType,
+    duration,
+    actionText,
+    actionToDispatchOnActionClick,
+  };
+}
+
+export function closeNotification(): ICloseNotificationAction {
+  return {
+    type: ActionTypes.NOTIFICATION_CLOSE,
+  };
+}
+
+export function openLink(linkUrl: string): IOpenLinkAction {
+  return {
+    type: ActionTypes.OPEN_LINK,
+    linkUrl,
+  };
+}
+
+export function openTxReceipt(hash: string): IOpenLinkAction {
+  if (!hashRegExp.test(hash)) {
+    console.warn('Invalid hash provided', hash);
+
+    return openLink('https://receipt.emerald.cash/');
+  }
+
+  return openLink(`https://receipt.emerald.cash/tx/${hash}`);
+}
+
+export function showDialog(name: string): IDialogAction {
+  return {
+    type: ActionTypes.DIALOG,
+    value: name,
+  };
+}
+
+export function closeDialog(): IDialogAction {
+  return {
+    type: ActionTypes.DIALOG,
+    value: null,
+  };
+}
+
+export function showError(error: Error): IErrorAction {
+  return {
+    type: ActionTypes.ERROR,
+    error,
+  };
+}
+
+export function closeError(): IErrorAction {
+  return {
+    type: ActionTypes.ERROR,
+    error: null,
+  };
+}
+
+export function dispatchRpcError(dispatch: any) {
+  return () => {
+    dispatch(showNotification('Remote server connection failure', 'warning', 2000, null, null));
+  };
+}
+
+export function catchError(dispatch: any): (err: Error) => void {
+  return (err: Error) => {
+    dispatch(showError(err));
   };
 }

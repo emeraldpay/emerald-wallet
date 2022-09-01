@@ -7,20 +7,30 @@ import {
   isBitcoinEntry,
   isEthereumEntry,
 } from '@emeraldpay/emerald-vault-core';
+import { isSeedPkRef } from '@emeraldpay/emerald-vault-core/lib/types';
 import { BlockchainCode, Blockchains, blockchainIdToCode } from '@emeraldwallet/core';
 import { IState, accounts, tokens } from '@emeraldwallet/store';
 import { getXPubPositionalAddress } from '@emeraldwallet/store/lib/accounts/actions';
-import { Address, Balance } from '@emeraldwallet/ui';
-import { Grid, Table, TableBody, TableCell, TableHead, TableRow } from '@material-ui/core';
+import { Address, Balance, CoinAvatar } from '@emeraldwallet/ui';
+import { Table, TableBody, TableCell, TableRow, createStyles, makeStyles } from '@material-ui/core';
 import { Skeleton } from '@material-ui/lab';
 import * as React from 'react';
 import { connect } from 'react-redux';
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    address: {
+      width: 'auto',
+    },
+  }),
+);
 
 interface AddressInfo {
   address?: string;
   balances: BigAmount[];
   blockchain: BlockchainCode;
   entryId: EntryId;
+  hdPath?: string;
   xPub?: string;
 }
 
@@ -37,6 +47,8 @@ interface DispatchProps {
 }
 
 const Addresses: React.FC<OwnProps & StateProps & DispatchProps> = ({ addressesInfo, getXPubPositionalAddress }) => {
+  const styles = useStyles();
+
   const [addresses, setAddresses] = React.useState(addressesInfo);
 
   React.useEffect(() => {
@@ -57,38 +69,31 @@ const Addresses: React.FC<OwnProps & StateProps & DispatchProps> = ({ addressesI
   }, [addressesInfo, getXPubPositionalAddress]);
 
   return (
-    <Grid container={true}>
-      <Grid item={true} xs={12}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Blockchain</TableCell>
-              <TableCell>Address</TableCell>
-              <TableCell>Balance</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {addresses.map(({ address, balances, blockchain }, index) => (
-              <TableRow key={`address-${address}[${index}]`}>
-                <TableCell>{Blockchains[blockchain].getTitle()}</TableCell>
-                <TableCell>
-                  {address == null ? (
-                    <Skeleton variant="text" width={380} height={12} />
-                  ) : (
-                    <Address address={address} />
-                  )}
-                </TableCell>
-                <TableCell>
-                  {balances.map((balance) => (
-                    <Balance key={'balance-' + balance.units.top.code} balance={balance} />
-                  ))}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Grid>
-    </Grid>
+    <Table>
+      <TableBody>
+        {addresses.map(({ address, balances, blockchain, hdPath }, index) => (
+          <TableRow key={`address-${address}[${index}]`}>
+            <TableCell>
+              <CoinAvatar chain={blockchain} />
+            </TableCell>
+            <TableCell>{Blockchains[blockchain].getTitle()}</TableCell>
+            <TableCell>{hdPath}</TableCell>
+            <TableCell>
+              {address == null ? (
+                <Skeleton variant="text" width={380} height={12} />
+              ) : (
+                <Address address={address} classes={{ root: styles.address }} />
+              )}
+            </TableCell>
+            <TableCell>
+              {balances.map((balance) => (
+                <Balance key={'balance-' + balance.units.top.code} balance={balance} />
+              ))}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 };
 
@@ -116,6 +121,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
               balances: [],
               blockchain: blockchainIdToCode(entry.blockchain),
               entryId: entry.id,
+              hdPath: isSeedPkRef(entry, entry.key) ? entry.key.hdPath : undefined,
             };
 
             const zeroAmount = accounts.selectors.zeroAmountFor<BigAmount>(blockchainIdToCode(entry.blockchain));

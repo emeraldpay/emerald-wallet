@@ -1,5 +1,4 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { Uuid } from '@emeraldpay/emerald-vault-core';
 import {
   EthereumReceipt,
   EthereumTransaction,
@@ -43,7 +42,7 @@ interface OwnProps {
 interface DispatchProps {
   getEthReceipt(tx: StoredTransaction): Promise<EthereumReceipt | null>;
   getEthTx(tx: StoredTransaction): Promise<EthereumTransaction | null>;
-  goBack(walletId?: Uuid): void;
+  goBack(): void;
   goToCancelTx(tx: EthereumTransaction): void;
   goToDashboard(): void;
   goToReceipt(tx: StoredTransaction): void;

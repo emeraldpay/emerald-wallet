@@ -19,7 +19,7 @@ interface DispatchProps {
 
 const Dialog: React.FC<StateProps & DispatchProps> = ({ dialog, handleClose }) => {
   if (dialog == null) {
-    return <div />;
+    return <></>;
   }
 
   switch (dialog) {
