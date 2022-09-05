@@ -7,6 +7,7 @@ import {
   OddPasswordItem,
   SeedDefinition,
   SeedDescription,
+  SeedDetails,
   SeedReference,
   Uuid,
   Wallet,
@@ -480,4 +481,8 @@ export function getXPubPositionalAddress(entryId: string, xPub: string, role: Ad
 
     return address;
   };
+}
+
+export function updateSeed(seed: Uuid | IdSeedReference, details: Partial<SeedDetails>): Dispatched<boolean> {
+  return (dispatch, getState, extra) => extra.api.vault.updateSeed(seed, details);
 }

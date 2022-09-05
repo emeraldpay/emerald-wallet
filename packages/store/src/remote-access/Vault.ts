@@ -2,21 +2,22 @@ import {
   AddEntry,
   AddressBookItem,
   AddressRole,
-  CreateAddressBookItem,
   CurrentAddress,
   EntryId,
+  ExportedWeb3Json,
+  HWKeyDetails,
   IEmeraldVault,
+  IdSeedReference,
   LedgerSeedReference,
   OddPasswordItem,
   SeedDefinition,
   SeedDescription,
+  SeedDetails,
   SeedReference,
   UnsignedTx,
   Uuid,
   Wallet,
-  WalletState,
 } from '@emeraldpay/emerald-vault-core';
-import { ExportedWeb3Json, HWKeyDetails } from '@emeraldpay/emerald-vault-core/lib/types';
 import { ipcRenderer } from 'electron';
 
 const PREFIX = 'vault/';
@@ -24,10 +25,6 @@ const PREFIX = 'vault/';
 class Vault implements IEmeraldVault {
   addEntry(walletId: Uuid, entry: AddEntry): Promise<EntryId> {
     return ipcRenderer.invoke(PREFIX + 'addEntry', walletId, entry);
-  }
-
-  addToAddressBook(item: CreateAddressBookItem): Promise<boolean> {
-    return ipcRenderer.invoke(PREFIX + 'addToAddressBook', item);
   }
 
   addWallet(label: string | undefined): Promise<Uuid> {
@@ -107,13 +104,13 @@ class Vault implements IEmeraldVault {
   }
 
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  setState(state: WalletState): Promise<void> {
+  setState(/* state: WalletState */): Promise<void> {
     // NOTE The state is set on the backend from LocalWalletState,
     // this client method is not supposed to be used directly
     console.warn('The wallet state must be set on the backend');
 
-    // return ipcRenderer.invoke(PREFIX + "setState", state);
     return Promise.resolve();
+    // return ipcRenderer.invoke(PREFIX + "setState", state);
   }
 
   setWalletLabel(walletId: Uuid, label: string): Promise<boolean> {
@@ -158,6 +155,10 @@ class Vault implements IEmeraldVault {
 
   snapshotRestore(sourceFile: string, password: string): Promise<boolean> {
     return ipcRenderer.invoke(PREFIX + 'snapshotRestore', sourceFile, password);
+  }
+
+  updateSeed(seed: Uuid | IdSeedReference, details: Partial<SeedDetails>): Promise<boolean> {
+    return ipcRenderer.invoke(PREFIX + 'updateSeed', seed, details);
   }
 }
 

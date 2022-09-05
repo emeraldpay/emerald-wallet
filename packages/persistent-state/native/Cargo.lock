@@ -4,9 +4,9 @@ version = 3
 
 [[package]]
 name = "aho-corasick"
-version = "0.7.18"
+version = "0.7.19"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1e37cfd5e7657ada45f742d6e99ca5788580b5c529dc78faf11ece6dc702656f"
+checksum = "b4f55bd91a0978cbfd91c457a164bab8b4001c833b7f323132c0a4e1922dd44e"
 dependencies = [
  "memchr",
 ]
@@ -114,7 +114,7 @@ dependencies = [
 [[package]]
 name = "emerald-wallet-state"
 version = "0.1.0"
-source = "git+https://github.com/emeraldpay/emerald-wallet-state?branch=master#a89beb42b31b285e637fe9e2eddf1a56cb8b5676"
+source = "git+https://github.com/emeraldpay/emerald-wallet-state?branch=master#faa805f5314cbfb4a9fe1c9493c1e8e8beabddf8"
 dependencies = [
  "chrono",
  "enum-display-derive",
@@ -356,9 +356,9 @@ dependencies = [
 
 [[package]]
 name = "once_cell"
-version = "1.13.1"
+version = "1.14.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "074864da206b4973b84eb91683020dbefd6a8c3f0f38e054d93954e891935e4e"
+checksum = "2f7254b99e31cad77da24b08ebf628882739a608578bb1bcdfc1f9c21260d7c0"
 
 [[package]]
 name = "parking_lot"

@@ -3,6 +3,7 @@ import { MenuItem, Tab, TextField, createStyles, withStyles } from '@material-ui
 import { Alert, TabContext, TabList, TabPanel } from '@material-ui/lab';
 import * as React from 'react';
 import { WithTranslation } from 'react-i18next';
+import SeedItem from './SeedItem';
 import { DispatchProps, MutableState, StateProps } from '../Settings/Settings';
 import { ExportResult } from '../Settings/types';
 
@@ -16,8 +17,6 @@ const styles = createStyles({
   },
   formBody: {
     flex: 1,
-    marginBottom: -20,
-    marginTop: -20,
   },
   formRow: {
     alignItems: 'center',
@@ -51,8 +50,9 @@ const styles = createStyles({
 
 enum SettingsTabs {
   COMMON = '0',
-  GLOBAL_KEY = '1',
-  EXPORT_VAULT = '2',
+  SEEDS = '1',
+  GLOBAL_KEY = '2',
+  EXPORT_VAULT = '3',
 }
 
 interface State extends MutableState {
@@ -142,7 +142,7 @@ export class SettingsForm extends React.Component<Props, State> {
   };
 
   public render(): React.ReactElement {
-    const { classes, goBack, hasWallets, t } = this.props;
+    const { classes, goBack, hasWallets, seeds, t, updateSeed } = this.props;
     const { currency, globalKeySet, language } = this.state;
 
     return (
@@ -152,9 +152,11 @@ export class SettingsForm extends React.Component<Props, State> {
             <TabList
               className={classes.tabsSwitcher}
               orientation="vertical"
+              variant="scrollable"
               onChange={(event, tab) => this.setState({ tab })}
             >
               <Tab label={t('settings.common')} value={SettingsTabs.COMMON} />
+              <Tab label={t('settings.seeds')} value={SettingsTabs.SEEDS} />
               <Tab disabled={!globalKeySet} label={t('settings.globalKey')} value={SettingsTabs.GLOBAL_KEY} />
               <Tab
                 disabled={!globalKeySet || !hasWallets}
@@ -217,6 +219,11 @@ export class SettingsForm extends React.Component<Props, State> {
                   <Button primary={true} label="Save" onClick={this.handleSave} />
                 </div>
               </div>
+            </TabPanel>
+            <TabPanel className={classes.formBody} value={SettingsTabs.SEEDS}>
+              {seeds.map((seed) => (
+                <SeedItem key={seed.id} seed={seed} updateSeed={updateSeed} />
+              ))}
             </TabPanel>
             {globalKeySet && (
               <>
