@@ -1,4 +1,5 @@
-import { IState, screen } from '@emeraldwallet/store';
+import { Uuid } from '@emeraldpay/emerald-vault-core';
+import { IState, screen, txhistory } from '@emeraldwallet/store';
 import { Back } from '@emeraldwallet/ui';
 import { Button, Divider, IconButton, Paper, Tab, Toolbar, createStyles, makeStyles } from '@material-ui/core';
 import { TabContext, TabList, TabPanel } from '@material-ui/lab';
@@ -82,6 +83,7 @@ interface DispatchProps {
   gotoReceive(): void;
   gotoSend(): void;
   gotoWalletsScreen(): void;
+  loadTransactions(walletId: Uuid, initial: boolean): Promise<void>;
 }
 
 const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
@@ -91,10 +93,17 @@ const WalletDetails: React.FC<OwnProps & StateProps & DispatchProps> = ({
   gotoReceive,
   gotoSend,
   gotoWalletsScreen,
+  loadTransactions,
 }) => {
   const styles = useStyles();
 
   const [tab, setTab] = React.useState(initialTab ?? WalletTabs.BALANCE);
+
+  React.useEffect(() => {
+    (async () => {
+      await loadTransactions(walletId, true);
+    })();
+  }, [walletId, loadTransactions]);
 
   return (
     <div className={styles.container} style={{ height: tab === WalletTabs.TRANSACTIONS ? '100%' : 'auto' }}>
@@ -158,6 +167,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     },
     gotoWalletsScreen() {
       dispatch(screen.actions.gotoWalletsScreen());
+    },
+    loadTransactions(walletId, initial) {
+      return dispatch(txhistory.actions.loadTransactions(walletId, initial));
     },
   }),
 )(WalletDetails);

@@ -12,6 +12,7 @@ import {
 } from '@emeraldwallet/services';
 import { IpcMain, WebContents } from 'electron';
 import { ApiMode } from './types';
+import { Settings } from './index';
 
 class Reconnect {
   private previousStatus = 'CONNECTED';
@@ -44,6 +45,7 @@ class Reconnect {
 }
 
 export function createServices(
+  settings: Settings,
   ipcMain: IpcMain,
   webContents: WebContents,
   apiAccess: EmeraldApiAccess,
@@ -55,7 +57,7 @@ export function createServices(
 
   services.add(new BalanceListener(ipcMain, webContents, apiAccess));
   services.add(new ConnStatus(ipcMain, webContents, apiAccess));
-  services.add(new TxService(apiAccess, persistentState, vault, webContents));
+  services.add(new TxService(settings, apiAccess, persistentState, vault, webContents));
 
   for (const chain of apiMode.chains) {
     const blockchain = chain.toLowerCase() as BlockchainCode;

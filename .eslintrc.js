@@ -31,6 +31,7 @@ module.exports = {
       },
     ],
     '@typescript-eslint/no-unused-vars': 'off',
+    'import/namespace': 'off',
     'import/no-named-as-default': 'off',
     'import/order': [
       'warn',

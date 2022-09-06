@@ -26,23 +26,15 @@ const TxHistory: React.FC<OwnProps & StateProps & DispatchProps> = ({
   walletId,
   loadTransactions,
   setLastTxId,
-}) => {
-  React.useEffect(() => {
-    (async () => {
-      await loadTransactions(walletId, true);
-    })();
-  }, [walletId, loadTransactions]);
-
-  return (
-    <List
-      cursor={cursor}
-      lastTxId={lastTxId}
-      transactions={transactions}
-      onLoadMore={() => loadTransactions(walletId, false)}
-      setLastTxId={setLastTxId}
-    />
-  );
-};
+}) => (
+  <List
+    cursor={cursor}
+    lastTxId={lastTxId}
+    transactions={transactions}
+    onLoadMore={() => loadTransactions(walletId, false)}
+    setLastTxId={setLastTxId}
+  />
+);
 
 export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (state) => {

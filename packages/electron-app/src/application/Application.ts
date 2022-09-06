@@ -3,13 +3,13 @@ import { Logger } from '@emeraldwallet/core';
 import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
 import { ChainRpcConnections, EmeraldApiAccess, Services } from '@emeraldwallet/services';
 import { screen } from '@emeraldwallet/store';
-import { ipcMain, WebContents } from 'electron';
+import { WebContents, ipcMain } from 'electron';
+import { setIpcHandlers } from './ipc-handlers/ipc';
+import Settings from './Settings';
 import { createServices } from '../createServices';
 import ElectronLogger from '../logging/ElectronLogger';
 import { ApiMode } from '../types';
 import { mapVaultWithIpc } from '../vault/vaultIpc';
-import { setIpcHandlers } from './ipc-handlers/ipc';
-import Settings from './Settings';
 
 type Versions = Record<string, unknown>;
 
@@ -50,7 +50,7 @@ export default class Application {
 
     this.log.info('Running services');
 
-    this.services = createServices(ipcMain, webContents, apiAccess, apiMode, persistentState, vault);
+    this.services = createServices(this.settings, ipcMain, webContents, apiAccess, apiMode, persistentState, vault);
     this.services.start();
   }
 
