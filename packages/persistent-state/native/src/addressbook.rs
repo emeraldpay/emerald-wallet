@@ -27,6 +27,12 @@ pub struct AddressBookJson {
 }
 
 #[derive(Serialize, Deserialize, Clone)]
+pub struct AddressBookUpdateJson {
+  label: Option<String>,
+  description: Option<String>,
+}
+
+#[derive(Serialize, Deserialize, Clone)]
 struct AddressItemJson {
   #[serde(rename = "type")]
   address_type: AddressType,
@@ -249,6 +255,84 @@ pub fn remove<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManage
 
   std::thread::spawn(move || {
     let result = remove_internal(id);
+    handler(result);
+  });
+
+  Ok(())
+}
+
+fn update_internal(id: Uuid, update: AddressBookUpdateJson) -> Result<bool, StateManagerError> {
+  let storage = Instance::get_storage()?.get_addressbook();
+  let current = storage.get(id)?;
+  if let Some(mut item) = current {
+    if let Some(value) = update.label {
+      item.set_label(value);
+    }
+    if let Some(value) = update.description {
+      item.set_description(value);
+    }
+    storage.update(id, item)
+      .map_err(StateManagerError::from)
+      .map(|_| true)
+  } else {
+    Ok(false)
+  }
+}
+
+#[neon_frame_fn(channel=2)]
+pub fn update<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
+  where
+    H: FnOnce(Result<bool, StateManagerError>) + Send + 'static {
+
+  let id = cx
+    .argument::<JsString>(0)
+    .map_err(|_| StateManagerError::MissingArgument(0, "id".to_string()))?
+    .value(cx);
+  let id = Uuid::parse_str(id.as_str())
+    .map_err(|_| StateManagerError::InvalidArgument(0, "id".to_string()))?;
+
+  let update = cx
+    .argument::<JsString>(1)
+    .map_err(|_| StateManagerError::MissingArgument(1, "update".to_string()))?
+    .value(cx);
+  let update = serde_json::from_str::<AddressBookUpdateJson>(update.as_str())
+    .map_err(|_| StateManagerError::InvalidArgument(1, "update".to_string()))?;
+
+  std::thread::spawn(move || {
+    let result = update_internal(id, update);
+    handler(result);
+  });
+
+  Ok(())
+}
+
+fn get_internal(id: Uuid) -> Result<Option<AddressBookJson>, StateManagerError> {
+  let storage = Instance::get_storage()?;
+  let result = storage.get_addressbook()
+    .get(id)
+    .map_err(|e| StateManagerError::from(e))?;
+  if let Some(item) = result {
+    let json = AddressBookJson::try_from(item)?;
+    Ok(Some(json))
+  } else {
+    Ok(None)
+  }
+}
+
+#[neon_frame_fn(channel=1)]
+pub fn get<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
+  where
+    H: FnOnce(Result<Option<AddressBookJson>, StateManagerError>) + Send + 'static {
+
+  let id = cx
+    .argument::<JsString>(0)
+    .map_err(|_| StateManagerError::MissingArgument(0, "id".to_string()))?
+    .value(cx);
+  let id = Uuid::parse_str(id.as_str())
+    .map_err(|_| StateManagerError::InvalidArgument(0, "id".to_string()))?;
+
+  std::thread::spawn(move || {
+    let result = get_internal(id);
     handler(result);
   });
 

@@ -38,6 +38,78 @@ describe('Address Book', () => {
     expect(act.items[0].address).toEqual(item.address);
   });
 
+  test("add an get item", async () => {
+    const item: PersistentState.AddressbookItem = {
+      blockchain: blockchainCodeToId(BlockchainCode.ETH),
+      address: {
+        type: "plain",
+        address: "0x2EA8846a26B6af5F63CAAe912BB3c4064B94D54B"
+      }
+    };
+
+    const id = await state.addressbook.add(item);
+    const act = await state.addressbook.get(id);
+
+    expect(act).toBeDefined();
+    expect(act?.address).toEqual(item.address);
+  });
+
+  test("return nothing for non existing id", async () => {
+    const item: PersistentState.AddressbookItem = {
+      blockchain: blockchainCodeToId(BlockchainCode.ETH),
+      address: {
+        type: "plain",
+        address: "0x2EA8846a26B6af5F63CAAe912BB3c4064B94D54B"
+      }
+    };
+
+    const otherId = 'a43e0aa5-7d07-43cb-81d3-fe21be748a2d';
+
+    const id = await state.addressbook.add(item);
+    const act = await state.addressbook.get(otherId);
+    const existing = await state.addressbook.get(id);
+
+    expect(id === otherId).toBeFalsy();
+    expect(act).toBeNull();
+    expect(existing).toBeDefined();
+  });
+
+  test("update label", async () => {
+    const item: PersistentState.AddressbookItem = {
+      blockchain: blockchainCodeToId(BlockchainCode.ETH),
+      address: {
+        type: "plain",
+        address: "0x2EA8846a26B6af5F63CAAe912BB3c4064B94D54B"
+      }
+    };
+
+    const id = await state.addressbook.add(item);
+    const updated = await state.addressbook.update(id, { label: "test" });
+    const act = await state.addressbook.query();
+
+    expect(updated).toBeTruthy();
+    expect(act.items.length).toBe(1);
+    expect(act.items[0].label).toBe("test");
+  });
+
+  test("update description", async () => {
+    const item: PersistentState.AddressbookItem = {
+      blockchain: blockchainCodeToId(BlockchainCode.ETH),
+      address: {
+        type: "plain",
+        address: "0x2EA8846a26B6af5F63CAAe912BB3c4064B94D54B"
+      }
+    };
+    const id = await state.addressbook.add(item);
+
+    const updated = await state.addressbook.update(id, {description: "test"});
+    expect(updated).toBeTruthy();
+
+    const act = await state.addressbook.query();
+    expect(act.items.length).toBe(1);
+    expect(act.items[0].description).toBe("test");
+  });
+
   test('add an item and query using cursor', async () => {
     await Promise.all(
       Array(10)

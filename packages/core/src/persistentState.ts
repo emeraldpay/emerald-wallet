@@ -254,6 +254,12 @@ export interface Addressbook {
   add(item: AddressbookItem): Promise<string>;
 
   /**
+   * Get address book item by id
+   * @param id
+   */
+  get(id: string): Promise<AddressbookItem | null>;
+
+  /**
    * Remove an item from the address book
    * @param id
    */
@@ -265,6 +271,14 @@ export interface Addressbook {
    * @param query
    */
   query(filter?: AddressbookFilter, query?: PageQuery): Promise<PageResult<AddressbookItem>>;
+
+  /**
+   * Update and existing address book item with new values. Currently, it accepts to update only the label and description
+   *
+   * @param id id of the existing address book
+   * @param item updated fields
+   */
+  update(id: string, item: Partial<AddressbookItem>): Promise<boolean>;
 }
 
 export interface XPubPosition {
