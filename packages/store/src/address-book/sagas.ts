@@ -1,21 +1,22 @@
 import { IEmeraldVault } from '@emeraldpay/emerald-vault-core';
 import { AddressBookItem } from '@emeraldpay/emerald-vault-core/lib/types';
-import { blockchainCodeToId, PersistentState } from '@emeraldwallet/core';
+import { PersistentState, blockchainCodeToId, blockchainIdToCode } from '@emeraldwallet/core';
 import { SagaIterator } from 'redux-saga';
 import { call, put, takeEvery } from 'redux-saga/effects';
-import * as screen from '../screen';
 import { contactDeletedAction, newContactAddedAction, setAddressBook } from './actions';
 import {
   ActionTypes,
   AddContactAction,
   DeleteContactAction,
-  ILoadContactsAction,
+  EditContactAction,
+  LoadContactsAction,
   LoadLegacyContactsAction,
 } from './types';
+import * as screen from '../screen';
 
 function* loadAddresses(
   addressBook: PersistentState.Addressbook,
-  { payload: blockchain }: ILoadContactsAction,
+  { payload: blockchain }: LoadContactsAction,
 ): SagaIterator {
   const { items }: { items: PersistentState.AddressbookItem[] } = yield call(addressBook.query, {
     blockchain: blockchainCodeToId(blockchain),
@@ -34,6 +35,22 @@ function* addContact(
 
   yield put(newContactAddedAction({ ...contact, id }));
   yield put(screen.actions.gotoScreen(screen.Pages.ADDRESS_BOOK));
+}
+
+function* editContact(
+  addressBook: PersistentState.Addressbook,
+  { payload: { blockchain, description, id, label } }: EditContactAction,
+): SagaIterator {
+  if (id != null) {
+    const contact: Partial<PersistentState.AddressbookItem> = { description, label };
+
+    yield call(addressBook.update, id, contact);
+
+    const { items }: { items: PersistentState.AddressbookItem[] } = yield call(addressBook.query, { blockchain });
+
+    yield put(setAddressBook(blockchainIdToCode(blockchain), items));
+    yield put(screen.actions.gotoScreen(screen.Pages.ADDRESS_BOOK));
+  }
 }
 
 function* deleteContact(
@@ -78,5 +95,6 @@ export function* root(addressBook: PersistentState.Addressbook, vault: IEmeraldV
   yield takeEvery(ActionTypes.LOAD, loadAddresses, addressBook);
   yield takeEvery(ActionTypes.LOAD_LEGACY, loadLegacyAddresses, addressBook, vault);
   yield takeEvery(ActionTypes.ADD_CONTACT, addContact, addressBook);
+  yield takeEvery(ActionTypes.EDIT_CONTACT, editContact, addressBook);
   yield takeEvery(ActionTypes.DELETE_ADDRESS, deleteContact, addressBook);
 }

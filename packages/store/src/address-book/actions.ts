@@ -1,12 +1,13 @@
-import { BlockchainCode, blockchainCodeToId, PersistentState } from '@emeraldwallet/core';
+import { BlockchainCode, PersistentState, blockchainCodeToId } from '@emeraldwallet/core';
 import {
   ActionTypes,
   AddContactAction,
   ContactAddedAction,
   ContactDeletedAction,
   DeleteContactAction,
-  ILoadContactsAction,
-  ISetAddressBookAction,
+  EditContactAction,
+  LoadContactsAction,
+  SetAddressBookAction,
   LoadLegacyContactsAction,
   SetLoadingAction,
 } from './types';
@@ -19,10 +20,10 @@ export function setLoadingAction(loading: boolean): SetLoadingAction {
 }
 
 export function addContactAction(
-  chain: BlockchainCode,
   address: string,
-  label: string,
-  description: string,
+  blockchain: BlockchainCode,
+  label?: string,
+  description?: string,
 ): AddContactAction {
   return {
     type: ActionTypes.ADD_CONTACT,
@@ -30,8 +31,24 @@ export function addContactAction(
       description,
       label,
       address: { type: 'plain', address },
-      blockchain: blockchainCodeToId(chain),
-      createTimestamp: new Date(),
+      blockchain: blockchainCodeToId(blockchain),
+    },
+  };
+}
+
+export function editContactAction(
+  blockchain: BlockchainCode,
+  id?: string,
+  label?: string,
+  description?: string,
+): EditContactAction {
+  return {
+    type: ActionTypes.EDIT_CONTACT,
+    payload: {
+      description,
+      id,
+      label,
+      blockchain: blockchainCodeToId(blockchain),
     },
   };
 }
@@ -57,7 +74,7 @@ export function contactDeletedAction(blockchain: BlockchainCode, id: string): Co
   };
 }
 
-export function loadAddressBook(chain: BlockchainCode): ILoadContactsAction {
+export function loadAddressBook(chain: BlockchainCode): LoadContactsAction {
   return {
     type: ActionTypes.LOAD,
     payload: chain,
@@ -67,7 +84,7 @@ export function loadAddressBook(chain: BlockchainCode): ILoadContactsAction {
 export function setAddressBook(
   chain: BlockchainCode,
   addressBook: PersistentState.AddressbookItem[],
-): ISetAddressBookAction {
+): SetAddressBookAction {
   return {
     type: ActionTypes.SET_BOOK,
     payload: {

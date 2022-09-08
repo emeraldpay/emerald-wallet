@@ -3,14 +3,15 @@ import { BlockchainCode, PersistentState } from '@emeraldwallet/core';
 export const moduleName = 'addressBook';
 
 export enum ActionTypes {
+  ADD_CONTACT = 'ADDRESSBOOK/ADD_ADDRESS',
+  ADDRESS_DELETED = 'ADDRESSBOOK/ADDRESS_DELETED',
+  DELETE_ADDRESS = 'ADDRESSBOOK/DELETE_ADDRESS',
+  EDIT_CONTACT = 'ADDRESSBOOK/EDIT_CONTACT',
   LOAD = 'ADDRESSBOOK/LOAD',
   LOAD_LEGACY = 'ADDRESSBOOK/LOAD_LEGACY',
-  LOADING = 'ADDRESSBOOK/LOADING',
   LOADED = 'ADDRESSBOOK/LOADED',
-  ADD_CONTACT = 'ADDRESSBOOK/ADD_ADDRESS',
+  LOADING = 'ADDRESSBOOK/LOADING',
   NEW_ADDRESS_ADDED = 'ADDRESSBOOK/NEW_CONTACT_ADDED',
-  DELETE_ADDRESS = 'ADDRESSBOOK/DELETE_ADDRESS',
-  ADDRESS_DELETED = 'ADDRESSBOOK/ADDRESS_DELETED',
   SET_BOOK = 'ADDRESSBOOK/SET_BOOK',
 }
 
@@ -19,7 +20,7 @@ export interface Contacts {
   [key: string]: PersistentState.AddressbookItem;
 }
 
-export interface IAddressBookState {
+export interface AddressBookState {
   loading: boolean;
   contacts: {
     [chain in BlockchainCode]?: Contacts;
@@ -29,6 +30,11 @@ export interface IAddressBookState {
 export interface AddContactAction {
   type: ActionTypes.ADD_CONTACT;
   payload: PersistentState.AddressbookItem;
+}
+
+export interface EditContactAction {
+  type: ActionTypes.EDIT_CONTACT;
+  payload: Partial<Omit<PersistentState.AddressbookItem, 'blockchain'>> & { blockchain: number };
 }
 
 export interface ContactAddedAction {
@@ -57,12 +63,12 @@ export interface ContactDeletedAction {
   };
 }
 
-export interface ILoadContactsAction {
+export interface LoadContactsAction {
   type: ActionTypes.LOAD;
   payload: BlockchainCode;
 }
 
-export interface ISetAddressBookAction {
+export interface SetAddressBookAction {
   type: ActionTypes.SET_BOOK;
   payload: {
     blockchain: BlockchainCode;
@@ -85,6 +91,6 @@ export type AddressBookAction =
   | SetLoadingAction
   | DeleteContactAction
   | ContactDeletedAction
-  | ILoadContactsAction
-  | ISetAddressBookAction
+  | LoadContactsAction
+  | SetAddressBookAction
   | LoadLegacyContactsAction;

@@ -1,156 +1,144 @@
-import {ButtonGroup, Input, Page} from '@emeraldwallet/ui';
-import {BlockchainCode} from '@emeraldwallet/core';
-import { Button, ChainSelector } from '@emeraldwallet/ui';
-import { CSSProperties, withStyles } from '@material-ui/styles';
+import { BlockchainCode, IBlockchain, PersistentState, blockchainIdToCode, Blockchains } from '@emeraldwallet/core';
+import { Button, ButtonGroup, ChainSelector, Input, Page } from '@emeraldwallet/ui';
+import { StyleRules, Theme, createStyles } from '@material-ui/core';
+import { WithStyles, withStyles } from '@material-ui/styles';
 import * as React from 'react';
 
-export const styles = {
-  formRow: {
-    display: 'flex',
-    marginBottom: '19px',
-    alignItems: 'center'
-  },
-  left: {
-    flexBasis: '20%',
-    marginLeft: '14.75px',
-    marginRight: '14.75px'
-  },
-  right: {
-    flexGrow: 2,
-    display: 'flex',
-    alignItems: 'center',
-    marginLeft: '14.75px',
-    marginRight: '14.75px',
-    maxWidth: '580px'
-  },
-  fieldName: {
-    fontSize: '16px',
-    textAlign: 'right'
-  } as CSSProperties
-};
+export const styles = (theme: Theme): StyleRules =>
+  createStyles({
+    row: {
+      alignItems: 'center',
+      display: 'flex',
+      marginBottom: 20,
+    },
+    leftColumn: {
+      flex: '1 1 20%',
+      marginRight: 20,
+    },
+    rightColumn: {
+      alignItems: 'center',
+      display: 'flex',
+      flex: '1 1 80%',
+    },
+    label: {
+      color: theme.palette.text.secondary,
+      fontSize: 16,
+      textAlign: 'right',
+    },
+  });
 
-export interface IContactFormProps {
-  classes: any;
-  initialValues?: {
-    name?: string;
-    address?: string;
-  };
-  blockAddress?: boolean;
-  onCancel?: any;
-  onSubmit?: any;
-  title?: string;
-  blockchains?: any;
+interface ContactData {
+  id?: string;
+  address: string;
+  blockchain: BlockchainCode;
+  description?: string;
+  label?: string;
 }
 
-interface IContactFormState {
-  name?: string;
-  address?: string;
-  blockchain?: BlockchainCode;
+export interface OwnProps {
+  contact?: PersistentState.AddressbookItem;
 }
 
-export class ContactForm extends React.Component<IContactFormProps, IContactFormState> {
-  constructor (props: IContactFormProps) {
+export interface StateProps {
+  blockchains: IBlockchain[];
+  title: string;
+}
+
+export interface DispatchProps {
+  onCancel(): void;
+  onSubmit(data: ContactData): void;
+}
+
+type Props = OwnProps & StateProps & DispatchProps & WithStyles<typeof styles>;
+type State = Partial<ContactData>;
+
+export class ContactForm extends React.Component<Props, State> {
+  constructor(props: Props) {
     super(props);
+
+    const { blockchains, contact } = props;
+
+    const { address: contactAddress, blockchain, description, label } = contact ?? {};
+    const { address } = contactAddress ?? {};
+
     this.state = {
-      ...this.props.initialValues,
-      blockchain: (props.blockchains && props.blockchains.length > 0) ? props.blockchains[0].params.code : BlockchainCode.ETH
+      address,
+      description,
+      label,
+      blockchain:
+        blockchain == null
+          ? blockchains.length > 0
+            ? blockchains[0].params.code
+            : BlockchainCode.ETH
+          : blockchainIdToCode(blockchain),
     };
   }
 
-  public handleCancel = () => {
-    if (this.props.onCancel) {
-      this.props.onCancel();
+  public handleBlockchainChange = (blockchain: BlockchainCode): void => {
+    this.setState({ blockchain });
+  };
+
+  public handleAddressChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    this.setState({ address: event.target.value });
+  };
+
+  public handleLabelChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+    this.setState({ label: event.target.value });
+  };
+
+  public handleSubmit = (): void => {
+    const { contact } = this.props;
+    const { address, blockchain, description, label } = this.state;
+
+    if (address != null && blockchain != null) {
+      this.props.onSubmit({ address, blockchain, description, label, id: contact?.id });
     }
-  }
+  };
 
-  public handleSubmit = () => {
-    if (this.props.onSubmit) {
-      const { address, name, blockchain } = this.state;
-      this.props.onSubmit({ blockchain, address, name, description: '' });
-    }
-  }
+  public handleCancel = (): void => {
+    this.props.onCancel();
+  };
 
-  public handleAddressChange = (event: any) => {
-    this.setState({
-      address: event.target.value
-    });
-  }
+  public render(): React.ReactElement {
+    const { blockchains = [], classes, contact, title } = this.props;
+    const { address, blockchain, label } = this.state;
 
-  public handleChainChange = (chain: any) => {
-    this.setState({
-      blockchain: chain
-    });
-  }
-
-  public handleNameChange = (event: any) => {
-    this.setState({
-      name: event.target.value
-    });
-  }
-
-  public render () {
-    const {
-      blockAddress, title, classes
-    } = this.props;
-    const {
-      blockchain, name, address
-    } = this.state;
-    const chains = this.props.blockchains || [];
     return (
-      <Page title={title || ''}>
-        <div className={classes.formRow}>
-          <div className={classes.left}>
-            <div className={classes.fieldName}>
-              Blockchain
-            </div>
+      <Page title={title}>
+        <div className={classes.row}>
+          <div className={classes.leftColumn}>
+            <div className={classes.label}>Blockchain</div>
           </div>
-          <div className={classes.right}>
-            <ChainSelector
-              onChange={this.handleChainChange}
-              value={blockchain}
-              chains={chains}
-            />
+          <div className={classes.rightColumn}>
+            {contact?.id == null ? (
+              <ChainSelector chains={blockchains} value={blockchain} onChange={this.handleBlockchainChange} />
+            ) : (
+              <>{Blockchains[blockchainIdToCode(contact.blockchain)].getTitle()}</>
+            )}
           </div>
         </div>
-        <div className={classes.formRow}>
-          <div className={classes.left}>
-            <div className={classes.fieldName}>Address</div>
+        <div className={classes.row}>
+          <div className={classes.leftColumn}>
+            <div className={classes.label}>Address</div>
           </div>
-          <div className={classes.right}>
-            <Input
-              onChange={this.handleAddressChange}
-              value={address}
-              type='text'
-              disabled={blockAddress}
-            />
+          <div className={classes.rightColumn}>
+            <Input disabled={contact?.id != null} type="text" value={address} onChange={this.handleAddressChange} />
           </div>
         </div>
-        <div className={classes.formRow}>
-          <div className={classes.left}>
-            <div className={classes.fieldName}>Name</div>
+        <div className={classes.row}>
+          <div className={classes.leftColumn}>
+            <div className={classes.label}>Label</div>
           </div>
-          <div className={classes.right}>
-            <Input
-              onChange={this.handleNameChange}
-              value={name}
-              type='text'
-            />
+          <div className={classes.rightColumn}>
+            <Input type="text" value={label} onChange={this.handleLabelChange} />
           </div>
         </div>
-
-        <div className={classes.formRow}>
-          <div className={classes.left}/>
-          <div className={classes.right}>
+        <div className={classes.row}>
+          <div className={classes.leftColumn} />
+          <div className={classes.rightColumn}>
             <ButtonGroup>
-              <Button
-                label='Cancel'
-                onClick={this.handleCancel}
-              />
-              <Button
-                primary={true}
-                label='Save'
-                onClick={this.handleSubmit}
-              />
+              <Button label="Cancel" onClick={this.handleCancel} />
+              <Button primary={true} label="Save" onClick={this.handleSubmit} />
             </ButtonGroup>
           </div>
         </div>

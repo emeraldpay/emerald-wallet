@@ -13,6 +13,7 @@ export enum ActionTypes {
 
 export enum Pages {
   ACCOUNT = 'account',
+  ADD_ADDRESS = 'add-address',
   ADD_HD_ADDRESS = 'add-hd-address',
   ADDRESS_BOOK = 'address-book',
   BROADCAST_TX = 'broadcast-tx',
@@ -26,6 +27,7 @@ export enum Pages {
   CREATE_TX_RECOVER = 'create-tx-recovery',
   CREATE_TX_SPEED_UP = 'create-tx-speed-up',
   CREATE_WALLET = 'create-wallet',
+  EDIT_ADDRESS = 'edit-address',
   GLOBAL_KEY = 'global-key',
   HOME = 'home',
   IMPORT_VAULT = 'import-vault',

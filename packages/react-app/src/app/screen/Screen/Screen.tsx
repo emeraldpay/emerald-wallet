@@ -3,6 +3,7 @@ import { IState, screen } from '@emeraldwallet/store';
 import { CircularProgress } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import EditContact from '../../../address-book/EditContact';
 import AddHDAddress from '../../../create-account/AddHDAddress';
 import CreateHdAccount from '../../../create-account/CreateHdAccount';
 import CreateWalletScreen from '../../../create-wallet/CreateWalletScreen';
@@ -53,14 +54,14 @@ const Screen: React.FC<OwnProps & StateProps> = (props) => {
           Initializing...
         </div>
       );
-    case 'add-address':
-      return <AddContact />;
     case 'broadcast-tx':
       return <BroadcastTx tx={props.screenItem.tx} signed={props.screenItem.signed} />;
     case 'settings':
       return <Settings />;
     case 'welcome':
       return <Welcome currentTermsVersion={props.termsVersion} />;
+    case screen.Pages.ADD_ADDRESS:
+      return <AddContact />;
     case screen.Pages.ADD_HD_ADDRESS:
       return <AddHDAddress walletId={props.screenItem} />;
     case screen.Pages.ADDRESS_BOOK:
@@ -83,8 +84,8 @@ const Screen: React.FC<OwnProps & StateProps> = (props) => {
       return <CreateRecoverTransaction entry={props.screenItem} />;
     case screen.Pages.CREATE_WALLET:
       return <CreateWalletScreen />;
-    case screen.Pages.SETUP_VAULT:
-      return <SetupVault />;
+    case screen.Pages.EDIT_ADDRESS:
+      return <EditContact contact={props.screenItem} />;
     case screen.Pages.GLOBAL_KEY:
       return <GlobalKey />;
     case screen.Pages.IMPORT_VAULT:
@@ -95,6 +96,8 @@ const Screen: React.FC<OwnProps & StateProps> = (props) => {
       return <PasswordMigration />;
     case screen.Pages.RECEIVE:
       return <ReceiveScreen walletId={props.screenItem} />;
+    case screen.Pages.SETUP_VAULT:
+      return <SetupVault />;
     case screen.Pages.TX_DETAILS:
       return <TxDetails tx={props.screenItem} />;
     case screen.Pages.WALLET:

@@ -16,12 +16,14 @@ describe('SettingsForm', () => {
           hasWallets={true}
           i18n={{} as any}
           language="en-US"
+          seeds={[]}
           exportVaultFile={() => Promise.resolve(ExportResult.COMPLETE)}
           goBack={() => undefined}
           isGlobalKeySet={() => Promise.resolve(true)}
           onChangeGlobalKey={() => Promise.resolve(true)}
           onSubmit={async () => undefined}
           showNotification={() => undefined}
+          updateSeed={async () => true}
         />
       </ThemeProvider>,
       {},

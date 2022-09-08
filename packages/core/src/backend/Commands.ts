@@ -40,8 +40,10 @@ export enum Commands {
   VAULT_SEED_ADDRESSES = 'vault-get-seed-addresses',
 
   ADDRESS_BOOK_ADD = 'address-book-add',
+  ADDRESS_BOOK_GET = 'address-book-get',
   ADDRESS_BOOK_REMOVE = 'address-book-remove',
   ADDRESS_BOOK_QUERY = 'address-book-query',
+  ADDRESS_BOOK_UPDATE = 'address-book-update',
 
   XPUB_POSITION_GET = 'xpub-position-get',
   XPUB_POSITION_SET = 'xpub-position-set',

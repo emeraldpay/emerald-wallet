@@ -1,67 +1,103 @@
-import { PersistentState } from '@emeraldwallet/core';
-import { addressBook, IState } from '@emeraldwallet/store';
-import { Theme } from '@material-ui/core';
+import { BlockchainCode, IBlockchain, PersistentState } from '@emeraldwallet/core';
+import { IState, addressBook, screen, settings } from '@emeraldwallet/store';
+import { Back, Page } from '@emeraldwallet/ui';
+import { Button, MenuItem, TextField } from '@material-ui/core';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
+import ContactIcon from '@material-ui/icons/PersonAdd';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import TopBar from '../../common/TopBar';
-import Contact from './Contact';
+import Contact from '../Contact';
 
-interface StateProps {
-  contacts: PersistentState.AddressbookItem[];
-}
-
-const useStyles = makeStyles<Theme>((theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
-    container: {
-      display: 'flex',
-      flexDirection: 'column',
-      maxHeight: '100%',
+    blockchains: {
+      marginRight: 20,
+      width: 320,
     },
-    list: {
-      height: '100%',
-      marginTop: 10,
-      overflowY: 'auto',
-    },
-    listItem: {
-      border: `1px solid ${theme.palette && theme.palette.divider}`,
-      margin: 5,
-    },
-    noItems: {
-      backgroundColor: 'white',
-      border: `1px solid ${theme.palette && theme.palette.divider}`,
-      marginTop: 10,
-      padding: 10,
+    emptyList: {
       textAlign: 'center',
+    },
+    footer: {
+      alignItems: 'center',
+      display: 'flex',
+      justifyContent: 'space-between',
     },
   }),
 );
 
-const ContactList: React.FC<StateProps> = ({ contacts }) => {
+type BlockchainCodeSelector = 'all' | BlockchainCode;
+
+interface StateProps {
+  blockchains: IBlockchain[];
+  getContacts(blockchain: BlockchainCodeSelector): PersistentState.AddressbookItem[];
+}
+
+interface DispatchProps {
+  goBack(): void;
+  goToAddNewContact(): void;
+}
+
+const ContactList: React.FC<StateProps & DispatchProps> = ({ blockchains, getContacts, goBack, goToAddNewContact }) => {
   const styles = useStyles();
 
+  const [blockchain, setBlockchain] = React.useState<BlockchainCodeSelector>('all');
+  const [contacts, setContacts] = React.useState(getContacts(blockchain));
+
+  React.useEffect(() => {
+    setContacts(getContacts(blockchain));
+  }, [blockchain, getContacts]);
+
   return (
-    <div className={styles.container}>
-      <TopBar />
-      <div className={styles.list}>
-        {contacts.length > 0 ? (
-          <>
-            {contacts.map((contact) => (
-              <div key={`${contact.blockchain}-${contact.address.address}`} className={styles.listItem}>
-                <Contact contact={contact} />
-              </div>
+    <Page
+      title="Address Book"
+      leftIcon={<Back onClick={goBack} />}
+      footer={
+        <div className={styles.footer}>
+          <TextField
+            classes={{ root: styles.blockchains }}
+            select={true}
+            value={blockchain}
+            onChange={({ target: { value } }) => setBlockchain(value as BlockchainCode)}
+          >
+            <MenuItem value="all">All</MenuItem>
+            {blockchains.map((blockchain) => (
+              <MenuItem key={blockchain.params.code} value={blockchain.params.code}>
+                {blockchain.getTitle()}
+              </MenuItem>
             ))}
-          </>
-        ) : (
-          <div className={styles.noItems}>There are no contacts. Add one.</div>
-        )}
-      </div>
-    </div>
+          </TextField>
+          <Button color="primary" startIcon={<ContactIcon />} variant="outlined" onClick={goToAddNewContact}>
+            Add new
+          </Button>
+        </div>
+      }
+    >
+      {contacts.length > 0 ? (
+        contacts.map((contact) => (
+          <Contact key={`${contact.blockchain}-${contact.address.address}`} contact={contact} />
+        ))
+      ) : (
+        <div className={styles.emptyList}>There are no contacts. Add one.</div>
+      )}
+    </Page>
   );
 };
 
-const AddressBook = connect<StateProps, {}, {}, IState>((state) => ({
-  contacts: addressBook.selectors.all(state),
-}))(ContactList);
+const AddressBook = connect<StateProps, DispatchProps, {}, IState>(
+  (state) => ({
+    blockchains: settings.selectors.currentChains(state),
+    getContacts(blockchain) {
+      return addressBook.selectors.byBlockchain(state, blockchain === 'all' ? null : blockchain);
+    },
+  }),
+  (dispatch) => ({
+    goBack() {
+      dispatch(screen.actions.goBack());
+    },
+    goToAddNewContact() {
+      dispatch(screen.actions.gotoScreen(screen.Pages.ADD_ADDRESS));
+    },
+  }),
+)(ContactList);
 
 export default AddressBook;

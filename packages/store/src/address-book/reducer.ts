@@ -1,19 +1,19 @@
-import { BlockchainCode, blockchainIdToCode, PersistentState } from '@emeraldwallet/core';
-import { ActionTypes, AddressBookAction, Contacts, IAddressBookState, ISetAddressBookAction } from './types';
+import { BlockchainCode, PersistentState, blockchainIdToCode } from '@emeraldwallet/core';
+import { ActionTypes, AddressBookAction, AddressBookState, Contacts, SetAddressBookAction } from './types';
 
-export const INITIAL_STATE: IAddressBookState = {
+export const INITIAL_STATE: AddressBookState = {
   loading: false,
   contacts: {},
 };
 
-function onLoading(state: IAddressBookState, loading: boolean): IAddressBookState {
+function onLoading(state: AddressBookState, loading: boolean): AddressBookState {
   return {
     ...state,
     loading,
   };
 }
 
-function onSetAddressBook(state: IAddressBookState, action: ISetAddressBookAction): IAddressBookState {
+function onSetAddressBook(state: AddressBookState, action: SetAddressBookAction): AddressBookState {
   const { blockchain, contacts } = action.payload;
 
   return {
@@ -31,7 +31,7 @@ function onSetAddressBook(state: IAddressBookState, action: ISetAddressBookActio
   };
 }
 
-function onNewContactAdded(state: IAddressBookState, contact: PersistentState.AddressbookItem): IAddressBookState {
+function onNewContactAdded(state: AddressBookState, contact: PersistentState.AddressbookItem): AddressBookState {
   const chain = blockchainIdToCode(contact.blockchain);
 
   if (contact.address.type != 'plain') {
@@ -54,7 +54,7 @@ function onNewContactAdded(state: IAddressBookState, contact: PersistentState.Ad
   };
 }
 
-function onContactDeleted(state: IAddressBookState, blockchain: BlockchainCode, id: string): IAddressBookState {
+function onContactDeleted(state: AddressBookState, blockchain: BlockchainCode, id: string): AddressBookState {
   const contacts: Contacts | undefined = state.contacts[blockchain];
 
   if (contacts != null) {
@@ -78,7 +78,7 @@ function onContactDeleted(state: IAddressBookState, blockchain: BlockchainCode, 
   return state;
 }
 
-export function reducer(state: IAddressBookState = INITIAL_STATE, action: AddressBookAction): IAddressBookState {
+export function reducer(state: AddressBookState = INITIAL_STATE, action: AddressBookAction): AddressBookState {
   switch (action.type) {
     case ActionTypes.LOADING:
       return onLoading(state, action.payload);

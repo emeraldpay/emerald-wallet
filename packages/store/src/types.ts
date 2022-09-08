@@ -6,7 +6,7 @@ import * as accounts from './accounts';
 import { IAccountsState } from './accounts/types';
 import { IAddAccountState } from './add-account/types';
 import * as addressBook from './address-book';
-import { IAddressBookState } from './address-book/types';
+import { AddressBookState } from './address-book/types';
 import * as application from './application';
 import { IBlockchainsState } from './blockchains/types';
 import * as conn from './conn/types';
@@ -21,7 +21,7 @@ import { HistoryState } from './txhistory/types';
 
 export interface IState {
   [accounts.moduleName]: IAccountsState;
-  [addressBook.moduleName]: IAddressBookState;
+  [addressBook.moduleName]: AddressBookState;
   [application.moduleName]: any;
   [conn.moduleName]: any;
   addAccount?: IAddAccountState;

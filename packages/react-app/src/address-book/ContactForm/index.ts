@@ -1,1 +1,1 @@
-export { default } from './ContactForm';
+export { default, StateProps, DispatchProps } from './ContactForm';
