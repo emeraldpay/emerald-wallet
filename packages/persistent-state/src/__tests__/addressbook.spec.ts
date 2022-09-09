@@ -30,7 +30,7 @@ describe("Address Book", () => {
     let act = await state.addressbook.query();
     expect(act.items.length).toBe(1);
     expect(act.items[0].id).toBe(id);
-    expect(act.items[0].address).toEqual(item.address);
+    expect(act.items[0].address.address).toEqual(item.address.address);
   });
 
   test("add an get item", async () => {
@@ -45,7 +45,44 @@ describe("Address Book", () => {
 
     let act = await state.addressbook.get(id);
     expect(act).toBeDefined();
-    expect(act!!.address).toEqual(item.address);
+    expect(act!!.address.address).toEqual(item.address.address);
+    expect(act!!.address.currentAddress).toEqual(item.address.address);
+  });
+
+  test("adding xpub as plain sets the correct type", async () => {
+    let item: AddressbookItem = {
+      blockchain: blockchainCodeToId(BlockchainCode.BTC),
+      address: {
+        type: "plain",
+        //amused ankle enable chuckle doll above flee oval virtual throw danger kind oblige surge crumble
+        address: "zpub6tviAxktqYSfSuMMd35WPKK8yiET4CcQQzg7bVcEep7E53jiUv9hBizBCLERcAa57nhPtXPCTGbBJ81r9wHnzEPUXGn9AL5cdEmMAKLJH5F"
+      }
+    };
+    let id = await state.addressbook.add(item);
+
+    let act = await state.addressbook.get(id);
+    expect(act).toBeDefined();
+    expect(act!!.address.address).toBe("zpub6tviAxktqYSfSuMMd35WPKK8yiET4CcQQzg7bVcEep7E53jiUv9hBizBCLERcAa57nhPtXPCTGbBJ81r9wHnzEPUXGn9AL5cdEmMAKLJH5F");
+    expect(act!!.address.type).toBe("xpub");
+    expect(act!!.address.currentAddress).toBe("bc1quj6e5fg6uj236jhynnwa84sxs6dzd25lpnptms");
+  });
+
+  test("xpub item uses known pos", async () => {
+    let item: AddressbookItem = {
+      blockchain: blockchainCodeToId(BlockchainCode.BTC),
+      address: {
+        type: "plain",
+        //amused ankle enable chuckle doll above flee oval virtual throw danger kind oblige surge crumble
+        address: "zpub6tviAxktqYSfSuMMd35WPKK8yiET4CcQQzg7bVcEep7E53jiUv9hBizBCLERcAa57nhPtXPCTGbBJ81r9wHnzEPUXGn9AL5cdEmMAKLJH5F"
+      }
+    };
+    let id = await state.addressbook.add(item);
+    await state.xpubpos.set_at_least(item.address.address, 4);
+
+    let act = await state.addressbook.get(id);
+    expect(act).toBeDefined();
+    expect(act!!.address.address).toBe("zpub6tviAxktqYSfSuMMd35WPKK8yiET4CcQQzg7bVcEep7E53jiUv9hBizBCLERcAa57nhPtXPCTGbBJ81r9wHnzEPUXGn9AL5cdEmMAKLJH5F");
+    expect(act!!.address.currentAddress).toBe("bc1qvetem3yt77xfn5sn0yc2rdfahcayvh2d63kp60");
   });
 
   test("return nothing for non existing id", async () => {
@@ -82,24 +119,6 @@ describe("Address Book", () => {
     let act = await state.addressbook.query();
     expect(act.items.length).toBe(1);
     expect(act.items[0].label).toBe("test");
-  });
-
-  test("update description", async () => {
-    let item: AddressbookItem = {
-      blockchain: blockchainCodeToId(BlockchainCode.ETH),
-      address: {
-        type: "plain",
-        address: "0x2EA8846a26B6af5F63CAAe912BB3c4064B94D54B"
-      }
-    };
-    let id = await state.addressbook.add(item);
-
-    let updated = await state.addressbook.update(id, {description: "test"});
-    expect(updated).toBeTruthy();
-
-    let act = await state.addressbook.query();
-    expect(act.items.length).toBe(1);
-    expect(act.items[0].description).toBe("test");
   });
 
   test("add an item and query using cursor", async () => {

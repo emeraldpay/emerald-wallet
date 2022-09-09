@@ -3,7 +3,7 @@ use uuid::Uuid;
 use neon::object::Object;
 use neon::types::{JsString, JsValue};
 use neon::prelude::{FunctionContext, Handle};
-use emerald_wallet_state::access::addressbook::{AddressBook, Filter};
+use emerald_wallet_state::access::addressbook::{AddressBook, BookItemEnriched, Filter};
 use emerald_wallet_state::access::pagination::{PageQuery, PageResult};
 use emerald_wallet_state::proto::addressbook::{BookItem, Address, Address_AddressType};
 use crate::commons::{if_not_empty, if_time};
@@ -16,7 +16,6 @@ pub struct AddressBookJson {
   id: Option<String>,
   address: AddressItemJson,
   label: Option<String>,
-  description: Option<String>,
   blockchain: u32,
   #[serde(rename = "createdTimestamp")]
   #[serde(skip_serializing_if = "Option::is_none")]
@@ -29,7 +28,6 @@ pub struct AddressBookJson {
 #[derive(Serialize, Deserialize, Clone)]
 pub struct AddressBookUpdateJson {
   label: Option<String>,
-  description: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -37,6 +35,8 @@ struct AddressItemJson {
   #[serde(rename = "type")]
   address_type: AddressType,
   address: String,
+  #[serde(rename = "currentAddress")]
+  current_address: Option<String>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -66,16 +66,17 @@ impl TryFrom<AddressItemJson> for Address {
   }
 }
 
-impl TryFrom<Address> for AddressItemJson {
+impl TryFrom<(Address, String)> for AddressItemJson {
   type Error = StateManagerError;
 
-  fn try_from(value: Address) -> Result<Self, Self::Error> {
+  fn try_from(value: (Address, String)) -> Result<Self, Self::Error> {
     Ok(AddressItemJson {
-      address_type: match value.field_type {
+      address_type: match value.0.field_type {
         Address_AddressType::PLAIN => AddressType::Plain,
         Address_AddressType::XPUB => AddressType::XPub,
       },
-      address: value.address.clone()
+      address: value.0.address.clone(),
+      current_address: Some(value.1),
     })
   }
 }
@@ -94,9 +95,6 @@ impl TryFrom<AddressBookJson> for BookItem {
     if let Some(label) = value.label {
       result.label = label;
     }
-    if let Some(description) = value.description {
-      result.description = description;
-    }
     result.blockchain = value.blockchain;
     if let Some(created_at) = value.create_ts {
       result.create_timestamp = created_at.timestamp_millis() as u64;
@@ -109,18 +107,18 @@ impl TryFrom<AddressBookJson> for BookItem {
   }
 }
 
-impl TryFrom<BookItem> for AddressBookJson {
+impl TryFrom<BookItemEnriched> for AddressBookJson {
   type Error = StateManagerError;
 
-  fn try_from(value: BookItem) -> Result<Self, Self::Error> {
+  fn try_from(value: BookItemEnriched) -> Result<Self, Self::Error> {
+    let data = value.data;
     Ok(AddressBookJson {
-      blockchain: value.blockchain,
-      id: Some(value.id.clone()),
-      address: AddressItemJson::try_from(value.get_address().clone())?,
-      label: if_not_empty(value.label.clone()),
-      description: if_not_empty(value.description.clone()),
-      create_ts: if_time(value.create_timestamp),
-      update_ts: if_time(value.update_timestamp),
+      blockchain: data.blockchain,
+      id: Some(data.id.clone()),
+      address: AddressItemJson::try_from((data.get_address().clone(), value.current_address))?,
+      label: if_not_empty(data.label.clone()),
+      create_ts: if_time(data.create_timestamp),
+      update_ts: if_time(data.update_timestamp),
     })
   }
 }
@@ -136,10 +134,10 @@ impl TryFrom<FilterJson> for Filter {
   }
 }
 
-impl TryFrom<PageResult<BookItem>> for PageResultJson<AddressBookJson> {
+impl TryFrom<PageResult<BookItemEnriched>> for PageResultJson<AddressBookJson> {
   type Error = StateManagerError;
 
-  fn try_from(value: PageResult<BookItem>) -> Result<Self, Self::Error> {
+  fn try_from(value: PageResult<BookItemEnriched>) -> Result<Self, Self::Error> {
     let mut items = Vec::new();
     for tx in value.values {
       items.push(AddressBookJson::try_from(tx)?)
@@ -266,12 +264,9 @@ fn update_internal(id: Uuid, update: AddressBookUpdateJson) -> Result<bool, Stat
   let current = storage.get(id)?;
   if let Some(mut item) = current {
     if let Some(value) = update.label {
-      item.set_label(value);
+      item.data.set_label(value);
     }
-    if let Some(value) = update.description {
-      item.set_description(value);
-    }
-    storage.update(id, item)
+    storage.update(id, item.data)
       .map_err(StateManagerError::from)
       .map(|_| true)
   } else {
