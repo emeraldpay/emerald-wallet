@@ -1,26 +1,25 @@
-import { CSSProperties, withStyles } from '@material-ui/styles';
+import { StyleRules, Theme } from '@material-ui/core';
+import { WithStyles, createStyles, withStyles } from '@material-ui/styles';
 import * as React from 'react';
 
-const styles = (theme?: any) => ({
-  root: {
-    color: theme.palette && theme.palette.text.secondary,
-    flexShrink: 1,
-    width: '120px',
-    textAlign: 'right',
-    paddingRight: '30px',
-    fontSize: '16px',
-    fontWeight: 400
-  } as CSSProperties
-});
+const styles = (theme: Theme): StyleRules =>
+  createStyles({
+    root: {
+      color: theme.palette.text.secondary,
+      flexShrink: 0,
+      fontSize: 16,
+      fontWeight: 400,
+      paddingRight: 30,
+      textAlign: 'right',
+      width: 160,
+    },
+  });
 
-interface IProps {
-  classes?: any;
-}
-
-export class Label extends React.Component<IProps> {
-  public render () {
+export class Label extends React.Component<WithStyles<typeof styles>> {
+  public render(): React.ReactElement {
     const { classes, children } = this.props;
-    return (<label className={classes.root}>{children}</label>);
+
+    return <label className={classes.root}>{children}</label>;
   }
 }
 

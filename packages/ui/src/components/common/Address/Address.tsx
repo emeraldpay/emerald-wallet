@@ -13,80 +13,63 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import {withStyles} from '@material-ui/core/styles';
+
+import { Theme } from '@material-ui/core';
 import Typography from '@material-ui/core/Typography';
+import { createStyles, makeStyles } from '@material-ui/styles';
+import { clipboard } from 'electron';
 import * as React from 'react';
+import { Check1 as CheckCircle, Copytoclipboard as CloneIcon } from '../../../icons';
 import ToggledIconButton from '../ToggledIconButton';
 
-import {Check1 as CheckCircle, Copytoclipboard as CloneIcon} from '../../../icons';
+export const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    container: {
+      alignItems: 'center',
+      display: 'flex',
+      height: 28,
+      width: '100%',
+    },
+    fullAddress: {
+      ...theme.monotype,
+      fontSize: 15,
+      fontWeight: 500,
+    },
+    shortenedAddress: {
+      ...theme.monotype,
+      fontSize: 15,
+      fontWeight: 500,
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      width: '100%',
+    },
+    toggledIcon: {
+      cursor: 'pointer',
+    },
+  }),
+);
 
-const copy = require('copy-to-clipboard');
-
-export const getStyles = (theme?: any) => ({
-  container: {
-    height: '28px',
-    display: 'flex',
-    alignItems: 'center',
-    width: '100%'
-  },
-  fullAddress: {
-    fontFamily: [
-      '"Roboto Mono"',
-      'monospace'
-    ].join(','),
-    fontSize: '15px',
-    fontWeight: 500
-  },
-  shortenedAddress: {
-    fontFamily: [
-      '"Roboto Mono"',
-      'monospace'
-    ].join(','),
-    fontSize: '15px',
-    fontWeight: 500,
-    textOverflow: 'ellipsis',
-    overflow: 'hidden',
-    width: '100%'
-  },
-  toggledIcon: {
-    cursor: 'pointer'
-  }
-});
-
-export interface IAddressProps {
+interface OwnProps {
   hideCopy?: boolean;
-  onCopyClick?: any;
-  id?: string;
+  id: string;
   shortened?: boolean;
-  classes: any;
-  muiTheme?: any;
 }
 
-export function Address(props: IAddressProps) {
-  const {classes, shortened, hideCopy} = props;
-  const addressClassname = shortened ? classes.shortenedAddress : classes.fullAddress;
-  const idProp = props.id;
-  const id = (idProp.startsWith('0x') ? idProp : `0x${idProp}`);
-
-  function handleOnCopyClick() {
-    copy(props.id);
-    if (props.onCopyClick) {
-      props.onCopyClick(props.id);
-    }
-  }
+const Address: React.FC<OwnProps> = ({ hideCopy, id, shortened }) => {
+  const styles = useStyles();
 
   return (
-    <div className={classes.container}>
-      <Typography className={addressClassname}>{id}</Typography>
-      {hideCopy ? null : (
+    <div className={styles.container}>
+      <Typography className={shortened === true ? styles.shortenedAddress : styles.fullAddress}>{id}</Typography>
+      {hideCopy === true ? null : (
         <ToggledIconButton
-          onClick={handleOnCopyClick}
-          icon={<CloneIcon color='secondary'/>}
-          toggledIcon={<CheckCircle color='primary'/>}
+          icon={<CloneIcon color="secondary" />}
+          toggledIcon={<CheckCircle color="primary" />}
+          onClick={() => clipboard.writeText(id)}
         />
       )}
     </div>
   );
-}
+};
 
-export default withStyles(getStyles)(Address);
+export default Address;

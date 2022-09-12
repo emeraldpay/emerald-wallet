@@ -1,5 +1,5 @@
-import { PersistentState, blockchainIdToCode } from '@emeraldwallet/core';
-import { addressBook, screen } from '@emeraldwallet/store';
+import { BlockchainCode, PersistentState, blockchainIdToCode, isBitcoin } from '@emeraldwallet/core';
+import { addressBook, screen, transaction } from '@emeraldwallet/store';
 import { Account, CoinAvatar } from '@emeraldwallet/ui';
 import { IconButton, ListItemIcon, Menu, MenuItem, Typography, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -42,14 +42,51 @@ interface OwnProps {
 }
 
 interface DispatchProps {
+  getAddressBookItem(id: string): Promise<PersistentState.AddressbookItem>;
+  getXPubLastIndex(blockchain: BlockchainCode, xpub: string): Promise<number>;
   goToEdit(contact: PersistentState.AddressbookItem): void;
   onDelete(): void;
+  setXPubIndex(xpub: string, position: number): Promise<void>;
 }
 
-const Contact: React.FC<OwnProps & DispatchProps> = ({ contact, goToEdit, onDelete }) => {
+const Contact: React.FC<OwnProps & DispatchProps> = ({
+  contact,
+  getAddressBookItem,
+  getXPubLastIndex,
+  goToEdit,
+  onDelete,
+  setXPubIndex,
+}) => {
   const styles = useStyles();
 
   const [menuElement, setMenuElement] = React.useState<null | HTMLButtonElement>(null);
+
+  const copyAddress = React.useCallback(
+    async ({ blockchain, address: { address, type }, id }: PersistentState.AddressbookItem) => {
+      const blockchainCode = blockchainIdToCode(blockchain);
+
+      let copyAddress = address;
+
+      if (isBitcoin(blockchainCode) && type === 'xpub') {
+        const lastIndex = await getXPubLastIndex(blockchainCode, address);
+
+        await setXPubIndex(address, lastIndex + 1);
+
+        if (id != null) {
+          const {
+            address: { address: lastAddress },
+          } = await getAddressBookItem(id);
+
+          copyAddress = lastAddress;
+        }
+      }
+
+      clipboard.writeText(copyAddress);
+
+      setMenuElement(null);
+    },
+    [getAddressBookItem, getXPubLastIndex, setXPubIndex],
+  );
 
   return (
     <div className={styles.container}>
@@ -64,19 +101,13 @@ const Contact: React.FC<OwnProps & DispatchProps> = ({ contact, goToEdit, onDele
           <MenuIcon />
         </IconButton>
         <Menu anchorEl={menuElement} keepMounted={true} open={menuElement != null} onClose={() => setMenuElement(null)}>
-          <MenuItem
-            onClick={() => {
-              clipboard.writeText(contact.address.address);
-
-              setMenuElement(null);
-            }}
-          >
+          <MenuItem onClick={() => copyAddress(contact)}>
             <ListItemIcon>
               <CopyIcon fontSize="small" />
             </ListItemIcon>
             <Typography variant="inherit">Copy address</Typography>
           </MenuItem>
-          <MenuItem onClick={()=>goToEdit(contact)}>
+          <MenuItem onClick={() => goToEdit(contact)}>
             <ListItemIcon>
               <EditIcon fontSize="small" />
             </ListItemIcon>
@@ -94,15 +125,28 @@ const Contact: React.FC<OwnProps & DispatchProps> = ({ contact, goToEdit, onDele
   );
 };
 
-export default connect<{}, DispatchProps, OwnProps>(null, (dispatch, ownProps) => ({
-  goToEdit(contact) {
-    dispatch(screen.actions.gotoScreen(screen.Pages.EDIT_ADDRESS, contact));
-  },
-  onDelete() {
-    const {
-      contact: { blockchain, id },
-    } = ownProps;
+export default connect<{}, DispatchProps, OwnProps>(
+  null,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (dispatch: any, ownProps) => ({
+    getAddressBookItem(id) {
+      return dispatch(addressBook.actions.getAddressBookItem(id));
+    },
+    getXPubLastIndex(blockchain, xpub) {
+      return dispatch(transaction.actions.getXPubLastIndex(blockchain, xpub));
+    },
+    goToEdit(contact) {
+      dispatch(screen.actions.gotoScreen(screen.Pages.EDIT_ADDRESS, contact));
+    },
+    onDelete() {
+      const {
+        contact: { blockchain, id },
+      } = ownProps;
 
-    dispatch(addressBook.actions.deleteContactAction(blockchainIdToCode(blockchain), id as string));
-  },
-}))(Contact);
+      dispatch(addressBook.actions.deleteContactAction(blockchainIdToCode(blockchain), id as string));
+    },
+    setXPubIndex(xpub, position) {
+      return dispatch(transaction.actions.setXPubIndex(xpub, position));
+    },
+  }),
+)(Contact);

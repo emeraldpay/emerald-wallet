@@ -12,7 +12,7 @@ export default connect<StateProps, DispatchProps, {}, IState>(
       dispatch(addressBook.actions.editContactAction(blockchain, id, label, description));
     },
     onCancel() {
-      dispatch(screen.actions.gotoScreen(screen.Pages.ADDRESS_BOOK));
+      dispatch(screen.actions.gotoScreen(screen.Pages.ADDRESS_BOOK, null, null, true));
     },
   }),
 )(ContactForm);

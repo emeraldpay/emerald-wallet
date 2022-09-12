@@ -107,7 +107,7 @@ export class Account extends React.PureComponent<OwnProps> {
 
     return (
       <div className={classes.identityIcon}>
-        <IdentityIcon id={address.startsWith('0x') ? address : `0x${address}`} />
+        <IdentityIcon id={address} />
       </div>
     );
   }

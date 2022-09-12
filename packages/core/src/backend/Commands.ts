@@ -47,4 +47,6 @@ export enum Commands {
 
   XPUB_POSITION_GET = 'xpub-position-get',
   XPUB_POSITION_SET = 'xpub-position-set',
+
+  XPUB_LAST_INDEX = 'xpub-last-index',
 }

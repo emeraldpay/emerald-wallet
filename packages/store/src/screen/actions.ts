@@ -15,12 +15,18 @@ import { IState } from '../types';
 
 const hashRegExp = new RegExp('^(0x)?[a-z0-9A-Z]+$');
 
-export function gotoScreen(screen: string | Pages, item: any = null, restore: any = null): IOpenAction {
+export function gotoScreen(
+  screen: string | Pages,
+  item: any = null,
+  restore: any = null,
+  ignore = false,
+): IOpenAction {
   return {
     type: ActionTypes.OPEN,
-    screen,
+    ignore,
     item,
     restore,
+    screen,
   };
 }
 

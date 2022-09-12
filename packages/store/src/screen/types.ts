@@ -43,23 +43,25 @@ export type ScreenState = Partial<
   Record<
     | 'dialog'
     | 'error'
+    | 'ignoreBack'
     | 'notificationActionText'
     | 'notificationActionToDispatchOnActionClick'
     | 'notificationDuration'
     | 'notificationMessage'
     | 'notificationType'
+    | 'restoreData'
     | 'screen'
-    | 'screenItem'
-    | 'restoreData',
+    | 'screenItem',
     any
   >
 >;
 
 export interface IOpenAction {
   type: ActionTypes.OPEN;
-  screen: string | Pages;
+  ignore: boolean;
   item: any;
   restore: any;
+  screen: string | Pages;
 }
 
 export interface IErrorAction {

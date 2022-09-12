@@ -104,6 +104,12 @@ export class TxService implements IService {
                 const blockchainCode = blockchainIdToCode(blockchain);
                 const now = new Date();
 
+                if (tx.xpubIndex != null) {
+                  this.persistentState.xpubpos
+                    .setAtLeast(identifier, tx.xpubIndex + 1)
+                    .catch((error) => log.error('Error while set xPub position: ', error));
+                }
+
                 this.persistentState.txhistory
                   .submit({
                     block,

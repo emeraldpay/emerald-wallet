@@ -86,13 +86,11 @@ interface CreateTxState {
 interface DispatchFromProps {
   checkGlobalKey: (password: string) => Promise<boolean>;
   onCancel: () => void;
-  onEmptyAddressBookClick: () => void;
   signAndSend: (request: Request) => void;
   getFees(blockchain: BlockchainCode): Promise<Record<typeof FEE_KEYS[number], GasPrices>>;
 }
 
 interface Props {
-  addressBookAddresses: string[];
   allTokens?: any;
   amount: any;
   chain: BlockchainCode;
@@ -117,7 +115,6 @@ interface Props {
   getEntryByAddress: (address: string) => WalletEntry | undefined;
   getFiatForAddress: (address: string, token: AnyCoinCode) => string;
   getTokenBalanceForAddress: (address: string, token: AnyCoinCode) => BigAmount;
-  onEmptyAddressBookClick?: () => void;
 }
 
 function isToken(tx: AnyTransaction): tx is CreateERC20Tx {
@@ -386,6 +383,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
       case PAGES.TX:
         return (
           <CreateTx
+            chain={this.props.chain}
             eip1559={this.props.eip1559}
             highGasPrice={this.state.highGasPrice}
             lowGasPrice={this.state.lowGasPrice}
@@ -396,7 +394,6 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
             fiatBalance={this.props.getFiatForAddress(tx.from!, this.state.token)}
             currency={this.props.currency}
             tokenSymbols={this.props.tokenSymbols}
-            addressBookAddresses={this.props.addressBookAddresses}
             ownAddresses={this.props.ownAddresses}
             onChangeFrom={this.onChangeFrom}
             onChangeToken={this.onChangeToken}
@@ -405,7 +402,6 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
             onChangeTo={this.onChangeTo}
             onSubmit={this.onSubmitCreateTransaction}
             onCancel={this.props.onCancel}
-            onEmptyAddressBookClick={this.props.onEmptyAddressBookClick}
             onMaxClicked={this.onMaxClicked}
             onSetMaxGasPrice={this.onSetMaxGasPrice}
             onSetPriorityGasPrice={this.onSetPriorityGasPrice}
@@ -573,7 +569,6 @@ export default connect(
     return {
       allTokens,
       getEntryByAddress,
-      addressBookAddresses: addressBook.selectors.all(state).map((i) => i.address.address),
       amount: ownProps.amount || Wei.ZERO,
       chain: blockchain.params.code,
       currency: settings.selectors.fiatCurrency(state),
@@ -656,7 +651,6 @@ export default connect(
     onCancel: () => {
       dispatch(screen.actions.gotoWalletsScreen());
     },
-    onEmptyAddressBookClick: () => dispatch(screen.actions.gotoScreen('add-address')),
     signAndSend: (request) => {
       sign(dispatch, ownProps, request).then((result: any) => {
         if (result) {

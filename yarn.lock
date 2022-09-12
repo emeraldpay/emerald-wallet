@@ -1515,9 +1515,9 @@
     dir-compare "^2.4.0"
     fs-extra "^9.0.1"
 
-"@emeraldpay/api-node@0.3.0-alpha.2", "@emeraldpay/api-node@https://artifacts.emerald.cash/builds/emerald-api-js/45b089e9/emeraldpay-api-node-v0.3.0-alpha.2.tgz":
+"@emeraldpay/api-node@0.3.0-alpha.2", "@emeraldpay/api-node@https://artifacts.emerald.cash/builds/emerald-api-js/acba4725/emeraldpay-api-node-v0.3.0-alpha.2.tgz":
   version "0.3.0-alpha.2"
-  resolved "https://artifacts.emerald.cash/builds/emerald-api-js/45b089e9/emeraldpay-api-node-v0.3.0-alpha.2.tgz#9842d43e19d38579cc9bb7e5c2e11a9416dd7194"
+  resolved "https://artifacts.emerald.cash/builds/emerald-api-js/acba4725/emeraldpay-api-node-v0.3.0-alpha.2.tgz#81b46c96749728a38759855a657feb98bd0bc504"
   dependencies:
     "@emeraldpay/api" "0.3.0-alpha.2"
     "@grpc/grpc-js" "^1.5.1"
@@ -1525,9 +1525,9 @@
     google-protobuf "^3.10.0"
     protobufjs "^6.8.8"
 
-"@emeraldpay/api@0.3.0-alpha.2", "@emeraldpay/api@https://artifacts.emerald.cash/builds/emerald-api-js/45b089e9/emeraldpay-api-v0.3.0-alpha.2.tgz":
+"@emeraldpay/api@0.3.0-alpha.2", "@emeraldpay/api@https://artifacts.emerald.cash/builds/emerald-api-js/acba4725/emeraldpay-api-v0.3.0-alpha.2.tgz":
   version "0.3.0-alpha.2"
-  resolved "https://artifacts.emerald.cash/builds/emerald-api-js/45b089e9/emeraldpay-api-v0.3.0-alpha.2.tgz#9c1e4743daca45ca9824f3955968386db3002e1e"
+  resolved "https://artifacts.emerald.cash/builds/emerald-api-js/acba4725/emeraldpay-api-v0.3.0-alpha.2.tgz#c93e01c8a90ee12095f8cf9f52f28af0565c2a6b"
   dependencies:
     google-protobuf "^3.10.0"
     protobufjs "^6.8.8"

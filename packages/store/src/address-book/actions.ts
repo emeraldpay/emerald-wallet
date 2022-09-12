@@ -7,10 +7,11 @@ import {
   DeleteContactAction,
   EditContactAction,
   LoadContactsAction,
-  SetAddressBookAction,
   LoadLegacyContactsAction,
+  SetAddressBookAction,
   SetLoadingAction,
 } from './types';
+import { Dispatched } from '../types';
 
 export function setLoadingAction(loading: boolean): SetLoadingAction {
   return {
@@ -92,6 +93,10 @@ export function setAddressBook(
       contacts: addressBook,
     },
   };
+}
+
+export function getAddressBookItem(id: string): Dispatched<PersistentState.AddressbookItem> {
+  return (dispatch, getState, extra) => extra.api.addressBook.get(id);
 }
 
 /**

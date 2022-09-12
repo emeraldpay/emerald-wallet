@@ -1,23 +1,30 @@
+import { BlockchainCode } from '@emeraldwallet/core';
 import { shallow } from 'enzyme';
 import * as React from 'react';
 import ToField from '.';
 
 describe('ToField', () => {
   it('it renders without crash', () => {
-    const wrapper = shallow(<ToField onChangeTo={jest.fn()}/>);
-    expect(wrapper).toBeDefined();
+    const component = shallow(<ToField blockchain={BlockchainCode.ETH} onChange={jest.fn()} />);
+
+    expect(component).toBeDefined();
   });
 
   it('on init calls onChangeTo function', () => {
-    const onChangeStub = jest.fn();
-    const wrapper = shallow(<ToField onChangeTo={onChangeStub}/>);
-    expect(onChangeStub).toHaveBeenCalled();
+    const onChange = jest.fn();
+
+    shallow(<ToField blockchain={BlockchainCode.ETH} onChange={onChange} />);
+
+    expect(onChange).toHaveBeenCalled();
   });
+
   it('handle input change', () => {
-    const onChangeStub = jest.fn();
-    const component = shallow(<ToField onChangeTo={onChangeStub}/>);
+    const onChange = jest.fn();
+    const component = shallow(<ToField blockchain={BlockchainCode.ETH} onChange={onChange} />);
+
     component.find('Input').simulate('change', { target: { value: '0x5671' } });
-    expect(onChangeStub.mock.calls.length).toBe(2);
-    expect(onChangeStub.mock.calls[1][0]).toBe('0x5671');
+
+    expect(onChange.mock.calls.length).toBe(2);
+    expect(onChange.mock.calls[1][0]).toBe('0x5671');
   });
 });

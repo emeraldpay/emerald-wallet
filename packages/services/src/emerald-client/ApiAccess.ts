@@ -1,15 +1,15 @@
+import * as os from 'os';
 import { ConnectionStatus } from '@emeraldpay/api';
 import {
   AuthenticationStatus,
   BlockchainClient,
   CredentialsContext,
-  emeraldCredentials,
   MarketClient,
   MonitoringClient,
   TransactionClient,
+  emeraldCredentials,
 } from '@emeraldpay/api-node';
-import { IEmeraldClient, Logger } from '@emeraldwallet/core';
-import * as os from 'os';
+import { Logger } from '@emeraldwallet/core';
 import { ChainListener } from '../ChainListener';
 import { AddressListener } from '../services/balances/AddressListener';
 import { PriceListener } from '../services/prices/PricesListener';
@@ -44,7 +44,7 @@ const PERIOD_PING = PERIOD_OK - 1500;
 
 const log = Logger.forCategory('ApiAccess');
 
-export class EmeraldApiAccess implements IEmeraldClient {
+export class EmeraldApiAccess {
   public readonly address: string;
   public readonly blockchainClient: BlockchainClient;
   public readonly pricesClient: MarketClient;

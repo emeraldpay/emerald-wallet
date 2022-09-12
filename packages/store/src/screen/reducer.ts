@@ -23,7 +23,17 @@ function onDialog(state: ScreenState, action: IDialogAction): ScreenState {
 }
 
 function goBack(state: ScreenState): ScreenState {
-  return history.pop() ?? state;
+  let prev = history.pop();
+
+  if (prev == null) {
+    return state;
+  }
+
+  while (prev?.ignoreBack === true || prev?.screen === state.screen) {
+    prev = history.pop();
+  }
+
+  return prev ?? state;
 }
 
 function onNotificationOpen(state: ScreenState, action: IShowNotificationAction): ScreenState {
@@ -44,6 +54,7 @@ function onNotificationClose(state: ScreenState): ScreenState {
 function onOpen(state: ScreenState, action: IOpenAction): ScreenState {
   history.push({
     ...state,
+    ignoreBack: action.ignore,
     restoreData: action.restore,
   });
 

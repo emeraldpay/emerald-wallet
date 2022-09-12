@@ -12,7 +12,6 @@
     "build": "yarn run build:ts && yarn run build:rs:release",
     "clean": "rimraf lib/ tsconfig.tsbuildinfo",
     "cargo:update": "cd native && cargo update",
-    "postinstall": "yarn run cargo:update",
     "test": "jest --passWithNoTests"
   },
   "dependencines": {

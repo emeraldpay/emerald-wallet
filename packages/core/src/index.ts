@@ -48,9 +48,6 @@ export {
   getStandardUnits,
 } from './Asset';
 
-// emerald client
-export { IEmeraldClient } from './emerald-client/IEmeraldClient';
-
 // logging
 export { default as Logger } from './logging/Logger';
 export {default as ILogger} from './logging/ILogger';
