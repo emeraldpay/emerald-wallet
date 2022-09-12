@@ -228,10 +228,10 @@ export interface AddressbookItem {
   address: {
     type: 'plain' | 'xpub';
     address: string;
+    currentAddress?: string | undefined;
   };
   blockchain: number;
   label?: string | undefined;
-  description?: string | undefined;
   createTimestamp?: Date | undefined;
   updateTimestamp?: Date | undefined;
 }
@@ -291,6 +291,8 @@ export interface XPubPosition {
   /**
    * Set the current minimum position for the specified xpub. If the storage knows a larger position it stays on
    * that position, otherwise moves up to the specified.
+   *
+   * NOTE: It's the next position. I.e., if we have xpub with used address at position N and want to use then next address then set it as N+1 here.
    *
    * @param xpub
    * @param pos
