@@ -27,9 +27,9 @@ function* loadAddresses(
 
 function* addContact(
   addressBook: PersistentState.Addressbook,
-  { payload: { address, blockchain, description, label } }: AddContactAction,
+  { payload: { address, blockchain, label } }: AddContactAction,
 ): SagaIterator {
-  const contact: PersistentState.AddressbookItem = { address, blockchain, description, label };
+  const contact: PersistentState.AddressbookItem = { address, blockchain, label };
 
   const id = yield call(addressBook.add, contact);
 
@@ -39,10 +39,10 @@ function* addContact(
 
 function* editContact(
   addressBook: PersistentState.Addressbook,
-  { payload: { blockchain, description, id, label } }: EditContactAction,
+  { payload: { blockchain, id, label } }: EditContactAction,
 ): SagaIterator {
   if (id != null) {
-    const contact: Partial<PersistentState.AddressbookItem> = { description, label };
+    const contact: Partial<PersistentState.AddressbookItem> = { label };
 
     yield call(addressBook.update, id, contact);
 
@@ -82,7 +82,6 @@ function* loadLegacyAddresses(
       },
       blockchain: item.blockchain,
       createTimestamp: item.createdAt,
-      description: item.description,
       label: item.name,
     };
 

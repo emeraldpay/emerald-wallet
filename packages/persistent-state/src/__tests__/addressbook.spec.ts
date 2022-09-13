@@ -54,40 +54,50 @@ describe('Address Book', () => {
     expect(act?.address).toEqual(item.address);
   });
 
-  test("adding xpub as plain sets the correct type", async () => {
-    let item: PersistentState.AddressbookItem = {
+  test('adding xpub as plain sets the correct type', async () => {
+    const item: PersistentState.AddressbookItem = {
       blockchain: blockchainCodeToId(BlockchainCode.BTC),
       address: {
-        type: "plain",
+        type: 'plain',
         //amused ankle enable chuckle doll above flee oval virtual throw danger kind oblige surge crumble
-        address: "zpub6tviAxktqYSfSuMMd35WPKK8yiET4CcQQzg7bVcEep7E53jiUv9hBizBCLERcAa57nhPtXPCTGbBJ81r9wHnzEPUXGn9AL5cdEmMAKLJH5F"
-      }
+        address:
+          'zpub6tviAxktqYSfSuMMd35WPKK8yiET4CcQQzg7bVcEep7E53jiUv9hBizBCLERcAa57nhPtXPCTGbBJ81r9wHnzEPUXGn9AL5cdEmMAKLJH5F',
+      },
     };
-    let id = await state.addressbook.add(item);
 
-    let act = await state.addressbook.get(id);
+    const id = await state.addressbook.add(item);
+    const act = await state.addressbook.get(id);
+
     expect(act).toBeDefined();
-    expect(act!!.address.address).toBe("zpub6tviAxktqYSfSuMMd35WPKK8yiET4CcQQzg7bVcEep7E53jiUv9hBizBCLERcAa57nhPtXPCTGbBJ81r9wHnzEPUXGn9AL5cdEmMAKLJH5F");
-    expect(act!!.address.type).toBe("xpub");
-    expect(act!!.address.currentAddress).toBe("bc1quj6e5fg6uj236jhynnwa84sxs6dzd25lpnptms");
+    expect(act.address.address).toBe(
+      'zpub6tviAxktqYSfSuMMd35WPKK8yiET4CcQQzg7bVcEep7E53jiUv9hBizBCLERcAa57nhPtXPCTGbBJ81r9wHnzEPUXGn9AL5cdEmMAKLJH5F',
+    );
+    expect(act.address.type).toBe('xpub');
+    expect(act.address.currentAddress).toBe('bc1quj6e5fg6uj236jhynnwa84sxs6dzd25lpnptms');
   });
 
-  test("xpub item uses known pos", async () => {
-    let item: PersistentState.AddressbookItem = {
+  test('xpub item uses known pos', async () => {
+    const item: PersistentState.AddressbookItem = {
       blockchain: blockchainCodeToId(BlockchainCode.BTC),
       address: {
-        type: "plain",
+        type: 'plain',
         //amused ankle enable chuckle doll above flee oval virtual throw danger kind oblige surge crumble
-        address: "zpub6tviAxktqYSfSuMMd35WPKK8yiET4CcQQzg7bVcEep7E53jiUv9hBizBCLERcAa57nhPtXPCTGbBJ81r9wHnzEPUXGn9AL5cdEmMAKLJH5F"
-      }
+        address:
+          'zpub6tviAxktqYSfSuMMd35WPKK8yiET4CcQQzg7bVcEep7E53jiUv9hBizBCLERcAa57nhPtXPCTGbBJ81r9wHnzEPUXGn9AL5cdEmMAKLJH5F',
+      },
     };
-    let id = await state.addressbook.add(item);
-    await state.xpubpos.set_at_least(item.address.address, 4);
 
-    let act = await state.addressbook.get(id);
+    const id = await state.addressbook.add(item);
+
+    await state.xpubpos.setAtLeast(item.address.address, 4);
+
+    const act = await state.addressbook.get(id);
+
     expect(act).toBeDefined();
-    expect(act!!.address.address).toBe("zpub6tviAxktqYSfSuMMd35WPKK8yiET4CcQQzg7bVcEep7E53jiUv9hBizBCLERcAa57nhPtXPCTGbBJ81r9wHnzEPUXGn9AL5cdEmMAKLJH5F");
-    expect(act!!.address.currentAddress).toBe("bc1qvetem3yt77xfn5sn0yc2rdfahcayvh2d63kp60");
+    expect(act.address.address).toBe(
+      'zpub6tviAxktqYSfSuMMd35WPKK8yiET4CcQQzg7bVcEep7E53jiUv9hBizBCLERcAa57nhPtXPCTGbBJ81r9wHnzEPUXGn9AL5cdEmMAKLJH5F',
+    );
+    expect(act.address.currentAddress).toBe('bc1qvetem3yt77xfn5sn0yc2rdfahcayvh2d63kp60');
   });
 
   test('return nothing for non existing id', async () => {

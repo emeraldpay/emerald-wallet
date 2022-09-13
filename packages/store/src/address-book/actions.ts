@@ -24,12 +24,10 @@ export function addContactAction(
   address: string,
   blockchain: BlockchainCode,
   label?: string,
-  description?: string,
 ): AddContactAction {
   return {
     type: ActionTypes.ADD_CONTACT,
     payload: {
-      description,
       label,
       address: { type: 'plain', address },
       blockchain: blockchainCodeToId(blockchain),
@@ -41,12 +39,10 @@ export function editContactAction(
   blockchain: BlockchainCode,
   id?: string,
   label?: string,
-  description?: string,
 ): EditContactAction {
   return {
     type: ActionTypes.EDIT_CONTACT,
     payload: {
-      description,
       id,
       label,
       blockchain: blockchainCodeToId(blockchain),

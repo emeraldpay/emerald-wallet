@@ -1,5 +1,5 @@
 import { BlockchainCode, PersistentState, blockchainIdToCode } from '@emeraldwallet/core';
-import { addressBook, transaction } from '@emeraldwallet/store';
+import { accounts, addressBook, transaction } from '@emeraldwallet/store';
 import { Account } from '@emeraldwallet/ui';
 import MenuItem from '@material-ui/core/MenuItem';
 import * as React from 'react';
@@ -36,12 +36,18 @@ class AddressBookMenuItem extends React.Component<Props> {
     if (type === 'xpub') {
       const lastIndex = await getXPubLastIndex(blockchainIdToCode(blockchain), address);
 
-      await setXPubIndex(address, lastIndex + 1);
+      if (lastIndex != null) {
+        await setXPubIndex(address, lastIndex + 1);
+      }
 
       if (id != null) {
-        const contact = await getAddressBookItem(id);
+        const {
+          address: { currentAddress },
+        } = await getAddressBookItem(id);
 
-        onChange(contact.address.address);
+        if (currentAddress != null) {
+          onChange(currentAddress);
+        }
       }
     } else {
       onChange(address);
@@ -72,8 +78,10 @@ export default connect<{}, DispatchProps>(
     getAddressBookItem(id) {
       return dispatch(addressBook.actions.getAddressBookItem(id));
     },
-    getXPubLastIndex(blockchain, xpub) {
-      return dispatch(transaction.actions.getXPubLastIndex(blockchain, xpub));
+    async getXPubLastIndex(blockchain, xpub) {
+      const start = await dispatch(accounts.actions.getXPubPosition(xpub));
+
+      return dispatch(transaction.actions.getXPubLastIndex(blockchain, xpub, start));
     },
     setXPubIndex(xpub, position) {
       return dispatch(transaction.actions.setXPubIndex(xpub, position));

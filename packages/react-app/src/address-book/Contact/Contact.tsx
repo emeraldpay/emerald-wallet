@@ -1,5 +1,5 @@
 import { BlockchainCode, PersistentState, blockchainIdToCode, isBitcoin } from '@emeraldwallet/core';
-import { addressBook, screen, transaction } from '@emeraldwallet/store';
+import { accounts, addressBook, screen, transaction } from '@emeraldwallet/store';
 import { Account, CoinAvatar } from '@emeraldwallet/ui';
 import { IconButton, ListItemIcon, Menu, MenuItem, Typography, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
@@ -43,7 +43,7 @@ interface OwnProps {
 
 interface DispatchProps {
   getAddressBookItem(id: string): Promise<PersistentState.AddressbookItem>;
-  getXPubLastIndex(blockchain: BlockchainCode, xpub: string): Promise<number>;
+  getXPubLastIndex(blockchain: BlockchainCode, xpub: string): Promise<number | undefined>;
   goToEdit(contact: PersistentState.AddressbookItem): void;
   onDelete(): void;
   setXPubIndex(xpub: string, position: number): Promise<void>;
@@ -62,7 +62,7 @@ const Contact: React.FC<OwnProps & DispatchProps> = ({
   const [menuElement, setMenuElement] = React.useState<null | HTMLButtonElement>(null);
 
   const copyAddress = React.useCallback(
-    async ({ blockchain, address: { address, type }, id }: PersistentState.AddressbookItem) => {
+    async ({ blockchain, address: { address, currentAddress, type }, id }: PersistentState.AddressbookItem) => {
       const blockchainCode = blockchainIdToCode(blockchain);
 
       let copyAddress = address;
@@ -70,14 +70,22 @@ const Contact: React.FC<OwnProps & DispatchProps> = ({
       if (isBitcoin(blockchainCode) && type === 'xpub') {
         const lastIndex = await getXPubLastIndex(blockchainCode, address);
 
-        await setXPubIndex(address, lastIndex + 1);
+        if (lastIndex == null) {
+          if (currentAddress != null) {
+            copyAddress = currentAddress;
+          }
+        } else {
+          await setXPubIndex(address, lastIndex + 1);
 
-        if (id != null) {
-          const {
-            address: { address: lastAddress },
-          } = await getAddressBookItem(id);
+          if (id != null) {
+            const {
+              address: { currentAddress },
+            } = await getAddressBookItem(id);
 
-          copyAddress = lastAddress;
+            if (currentAddress != null) {
+              copyAddress = currentAddress;
+            }
+          }
         }
       }
 
@@ -132,8 +140,10 @@ export default connect<{}, DispatchProps, OwnProps>(
     getAddressBookItem(id) {
       return dispatch(addressBook.actions.getAddressBookItem(id));
     },
-    getXPubLastIndex(blockchain, xpub) {
-      return dispatch(transaction.actions.getXPubLastIndex(blockchain, xpub));
+    async getXPubLastIndex(blockchain, xpub) {
+      const start = await dispatch(accounts.actions.getXPubPosition(xpub));
+
+      return dispatch(transaction.actions.getXPubLastIndex(blockchain, xpub, start));
     },
     goToEdit(contact) {
       dispatch(screen.actions.gotoScreen(screen.Pages.EDIT_ADDRESS, contact));

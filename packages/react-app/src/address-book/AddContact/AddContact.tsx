@@ -8,8 +8,8 @@ export default connect<StateProps, DispatchProps, {}, IState>(
     title: 'Add Contact',
   }),
   (dispatch) => ({
-    onSubmit({ address, blockchain, description, label }) {
-      dispatch(addressBook.actions.addContactAction(address, blockchain, label, description));
+    onSubmit({ address, blockchain, label }) {
+      dispatch(addressBook.actions.addContactAction(address, blockchain, label));
     },
     onCancel() {
       dispatch(screen.actions.gotoScreen(screen.Pages.ADDRESS_BOOK, null, null, true));

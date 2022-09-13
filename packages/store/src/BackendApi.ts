@@ -41,7 +41,7 @@ export default class BackendApi implements IBackendApi {
     return ipcRenderer.invoke(Commands.GET_ETH_TX, blockchain, hash);
   }
 
-  getXPubLastIndex(blockchain: BlockchainCode, xpub: string): Promise<number> {
-    return ipcRenderer.invoke(Commands.XPUB_LAST_INDEX, blockchain, xpub);
+  getXPubLastIndex(blockchain: BlockchainCode, xpub: string, start: number): Promise<number | undefined> {
+    return ipcRenderer.invoke(Commands.XPUB_LAST_INDEX, blockchain, xpub, start);
   }
 }

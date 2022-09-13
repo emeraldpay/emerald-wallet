@@ -1,4 +1,4 @@
-import { BlockchainCode, IBlockchain, PersistentState, blockchainIdToCode, Blockchains } from '@emeraldwallet/core';
+import { BlockchainCode, Blockchains, IBlockchain, PersistentState, blockchainIdToCode } from '@emeraldwallet/core';
 import { Button, ButtonGroup, ChainSelector, Input, Page } from '@emeraldwallet/ui';
 import { StyleRules, Theme, createStyles } from '@material-ui/core';
 import { WithStyles, withStyles } from '@material-ui/styles';
@@ -58,12 +58,11 @@ export class ContactForm extends React.Component<Props, State> {
 
     const { blockchains, contact } = props;
 
-    const { address: contactAddress, blockchain, description, label } = contact ?? {};
+    const { address: contactAddress, blockchain, label } = contact ?? {};
     const { address } = contactAddress ?? {};
 
     this.state = {
       address,
-      description,
       label,
       blockchain:
         blockchain == null

@@ -474,6 +474,10 @@ export function disableReceiveForEntry(entryId: EntryId, disabled = true): Dispa
   return (dispatch, getState, extra) => extra.api.vault.setEntryReceiveDisabled(entryId, disabled);
 }
 
+export function getXPubPosition(xPub: string): Dispatched<number> {
+  return (dispatch, getState, extra) => extra.api.xPubPos.get(xPub);
+}
+
 export function getXPubPositionalAddress(entryId: string, xPub: string, role: AddressRole): Dispatched<CurrentAddress> {
   return async (dispatch, getState, extra) => {
     const position = await extra.api.xPubPos.get(xPub);

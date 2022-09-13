@@ -196,9 +196,9 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess, pe
     persistentState.xpubpos.setAtLeast(xpub, pos),
   );
 
-  ipcMain.handle(Commands.XPUB_LAST_INDEX, async (event, blockchain: BlockchainCode, xpub: string) => {
+  ipcMain.handle(Commands.XPUB_LAST_INDEX, async (event, blockchain: BlockchainCode, xpub: string, start: number) => {
     const state = await apiAccess.transactionClient.getXpubState({
-      address: { xpub },
+      address: { start, xpub },
       blockchain: blockchainCodeToId(blockchain),
     });
 
