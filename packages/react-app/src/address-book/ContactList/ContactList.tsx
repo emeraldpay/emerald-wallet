@@ -95,7 +95,7 @@ const AddressBook = connect<StateProps, DispatchProps, {}, IState>(
       dispatch(screen.actions.goBack());
     },
     goToAddNewContact() {
-      dispatch(screen.actions.gotoScreen(screen.Pages.ADD_ADDRESS));
+      dispatch(screen.actions.gotoScreen(screen.Pages.ADD_ADDRESS, null, null, true));
     },
   }),
 )(ContactList);

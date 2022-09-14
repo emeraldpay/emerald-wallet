@@ -8,7 +8,8 @@ import { connect } from 'react-redux';
 interface OwnProps {
   contact: PersistentState.AddressbookItem;
   forwardRef?: React.Ref<HTMLElement>;
-  onChange: Function;
+  onChange(id: string, address: string): void;
+  onPrevent(id: string): void;
 }
 
 interface DispatchProps {
@@ -23,41 +24,54 @@ class AddressBookMenuItem extends React.Component<Props> {
   onClick = async (): Promise<void> => {
     const {
       contact: {
-        address: { address, type },
+        address: { address, currentAddress, type },
         blockchain,
         id,
       },
       onChange,
+      onPrevent,
       getAddressBookItem,
       getXPubLastIndex,
       setXPubIndex,
     } = this.props;
 
+    if (id == null) {
+      return;
+    }
+
+    onPrevent(id);
+
     if (type === 'xpub') {
       const lastIndex = await getXPubLastIndex(blockchainIdToCode(blockchain), address);
 
-      if (lastIndex != null) {
-        await setXPubIndex(address, lastIndex + 1);
-      }
+      if (lastIndex == null) {
+        if (currentAddress == null) {
+          return;
+        }
 
-      if (id != null) {
+        onChange(id, currentAddress);
+      } else {
+        await setXPubIndex(address, lastIndex + 1);
+
         const {
           address: { currentAddress },
         } = await getAddressBookItem(id);
 
-        if (currentAddress != null) {
-          onChange(currentAddress);
+        if (currentAddress == null) {
+          return;
         }
+
+        onChange(id, currentAddress);
       }
     } else {
-      onChange(address);
+      onChange(id, address);
     }
   };
 
   public render(): React.ReactElement {
     const {
       contact: {
-        address: { address },
+        address: { address, type },
         label,
       },
       forwardRef,
@@ -65,7 +79,11 @@ class AddressBookMenuItem extends React.Component<Props> {
 
     return (
       <MenuItem innerRef={forwardRef} onClick={this.onClick}>
-        <Account address={address} addressProps={{ hideCopy: true }} name={label} />
+        <Account
+          address={type === 'xpub' ? `${address.slice(0, 8)}..${address.slice(-4)}` : address}
+          addressProps={{ hideCopy: true }}
+          name={label}
+        />
       </MenuItem>
     );
   }

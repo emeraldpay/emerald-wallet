@@ -43,7 +43,7 @@ export type ScreenState = Partial<
   Record<
     | 'dialog'
     | 'error'
-    | 'ignoreBack'
+    | 'ignoreOnBack'
     | 'notificationActionText'
     | 'notificationActionToDispatchOnActionClick'
     | 'notificationDuration'

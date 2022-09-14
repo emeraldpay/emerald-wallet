@@ -13,7 +13,7 @@ export function all(state: IState): PersistentState.AddressbookItem[] {
       return carry;
     }
 
-    return [...carry, ...Object.values(blockchainContacts)];
+    return [...carry, ...blockchainContacts];
   }, []);
 }
 
@@ -26,5 +26,5 @@ export function byBlockchain(state: IState, blockchain: BlockchainCode | null): 
 
   const { [blockchain]: blockchainContacts } = contacts;
 
-  return blockchainContacts == null ? [] : Object.values(blockchainContacts);
+  return blockchainContacts ?? [];
 }

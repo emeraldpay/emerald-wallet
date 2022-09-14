@@ -13,7 +13,7 @@ import {
   Wallet,
   WalletEntry,
 } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, blockchainCodeToId, Logger, WalletApi } from '@emeraldwallet/core';
+import { BlockchainCode, blockchainCodeToId, HDPath, Logger, WalletApi } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 import { Dispatch } from 'redux';
 import { dispatchRpcError } from '../screen/actions';
@@ -483,7 +483,10 @@ export function getXPubPositionalAddress(entryId: string, xPub: string, role: Ad
     const position = await extra.api.xPubPos.get(xPub);
     const [address] = await extra.api.vault.listEntryAddresses(entryId, role, position, 1);
 
-    return address;
+    return {
+      ...address,
+      hdPath: address.hdPath == null ? undefined : HDPath.parse(address.hdPath).forIndex(position).toString(),
+    };
   };
 }
 

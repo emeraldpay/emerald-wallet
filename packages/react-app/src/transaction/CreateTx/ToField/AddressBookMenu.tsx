@@ -15,7 +15,9 @@ interface State {
 
 class AddressBookMenu extends React.Component<Props, State> {
   menuElement: HTMLButtonElement | null = null;
-  state = { menuOpen: false };
+  state: State = { menuOpen: false };
+
+  preventId?: string;
 
   onClick = (): void => {
     this.setState((state) => ({ menuOpen: !state.menuOpen }));
@@ -25,10 +27,16 @@ class AddressBookMenu extends React.Component<Props, State> {
     this.setState({ menuOpen: false });
   };
 
-  onChange = (value: string): void => {
+  onChange = (id: string, value: string): void => {
     this.setState({ menuOpen: false });
 
-    this.props.onChange(value);
+    if (this.preventId === id) {
+      this.props.onChange(value);
+    }
+  };
+
+  onPrevent = (id: string): void => {
+    this.preventId = id;
   };
 
   public renderAddresses(): React.ReactElement | React.ReactElement[] {
@@ -39,7 +47,7 @@ class AddressBookMenu extends React.Component<Props, State> {
     }
 
     return contacts.map((contact) => (
-      <AddressBookMenuItem key={contact.id} contact={contact} onChange={this.onChange} />
+      <AddressBookMenuItem key={contact.id} contact={contact} onChange={this.onChange} onPrevent={this.onPrevent} />
     ));
   }
 

@@ -23,7 +23,6 @@ import {
   GasPrices,
   IState,
   accounts,
-  addressBook,
   hwkey,
   screen,
   settings,
@@ -649,7 +648,7 @@ export default connect(
       return dispatch(transaction.actions.getFee(blockchain));
     },
     onCancel: () => {
-      dispatch(screen.actions.gotoWalletsScreen());
+      dispatch(screen.actions.goBack());
     },
     signAndSend: (request) => {
       sign(dispatch, ownProps, request).then((result: any) => {

@@ -1,15 +1,17 @@
 import { BlockchainCode, PersistentState, blockchainIdToCode, isBitcoin } from '@emeraldwallet/core';
 import { accounts, addressBook, screen, transaction } from '@emeraldwallet/store';
-import { Account, CoinAvatar } from '@emeraldwallet/ui';
-import { IconButton, ListItemIcon, Menu, MenuItem, Typography, createStyles } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import { Address, CoinAvatar } from '@emeraldwallet/ui';
 import {
-  FileCopy as CopyIcon,
-  Edit as EditIcon,
-  ArrowDropDown as MenuIcon,
-  Clear as RemoveIcon,
-} from '@material-ui/icons';
-import { clipboard } from 'electron';
+  CircularProgress,
+  IconButton,
+  ListItemIcon,
+  Menu,
+  MenuItem,
+  Typography,
+  createStyles,
+} from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { Edit as EditIcon, ArrowDropDown as MenuIcon, Clear as RemoveIcon } from '@material-ui/icons';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
@@ -29,6 +31,16 @@ const useStyles = makeStyles((theme) =>
     account: {
       flex: '1 1 auto',
       minWidth: 0,
+    },
+    accountAddress: {
+      alignItems: 'center',
+      display: 'flex',
+      flexBasis: '50%',
+    },
+    accountBitcoin: {
+      alignItems: 'center',
+      display: 'flex',
+      justifyContent: 'space-between',
     },
     actions: {
       flex: '0 0 auto',
@@ -59,62 +71,72 @@ const Contact: React.FC<OwnProps & DispatchProps> = ({
 }) => {
   const styles = useStyles();
 
+  const [addressUpdating, setAddressUpdating] = React.useState(true);
+  const [currentContact, setCurrentContact] = React.useState(contact);
   const [menuElement, setMenuElement] = React.useState<null | HTMLButtonElement>(null);
 
-  const copyAddress = React.useCallback(
-    async ({ blockchain, address: { address, currentAddress, type }, id }: PersistentState.AddressbookItem) => {
-      const blockchainCode = blockchainIdToCode(blockchain);
+  React.useEffect(() => {
+    const {
+      address: { address },
+      blockchain,
+      id,
+    } = contact;
 
-      let copyAddress = address;
+    const blockchainCode = blockchainIdToCode(blockchain);
 
-      if (isBitcoin(blockchainCode) && type === 'xpub') {
-        const lastIndex = await getXPubLastIndex(blockchainCode, address);
-
-        if (lastIndex == null) {
-          if (currentAddress != null) {
-            copyAddress = currentAddress;
-          }
-        } else {
-          await setXPubIndex(address, lastIndex + 1);
-
-          if (id != null) {
-            const {
-              address: { currentAddress },
-            } = await getAddressBookItem(id);
-
-            if (currentAddress != null) {
-              copyAddress = currentAddress;
-            }
-          }
+    if (id != null && isBitcoin(blockchainCode)) {
+      getXPubLastIndex(blockchainCode, address).then((lastIndex) => {
+        if (lastIndex != null) {
+          setXPubIndex(address, lastIndex + 1).then(() => {
+            getAddressBookItem(id).then((updated) => {
+              setCurrentContact(updated);
+              setAddressUpdating(false);
+            });
+          });
         }
-      }
+      });
+    }
+  }, [contact, getAddressBookItem, getXPubLastIndex, setXPubIndex]);
 
-      clipboard.writeText(copyAddress);
+  const {
+    address: { address, currentAddress },
+    blockchain,
+    label,
+  } = currentContact;
 
-      setMenuElement(null);
-    },
-    [getAddressBookItem, getXPubLastIndex, setXPubIndex],
-  );
+  const blockchainCode = blockchainIdToCode(blockchain);
 
   return (
     <div className={styles.container}>
       <div className={styles.avatar}>
-        <CoinAvatar chain={blockchainIdToCode(contact.blockchain)} />
+        <CoinAvatar chain={blockchainCode} />
       </div>
       <div className={styles.account}>
-        <Account address={contact.address.address} addressWidth="100%" name={contact.label} />
+        <Typography variant="body1">{label ?? currentAddress ?? address}</Typography>
+        {isBitcoin(blockchainCode) ? (
+          <div className={styles.accountBitcoin}>
+            <div className={styles.accountAddress}>
+              <Address
+                address={currentAddress ?? ''}
+                loading={addressUpdating}
+                loadingIcon={<CircularProgress color="primary" size="1em" />}
+              />
+            </div>
+            <Address
+              address={address}
+              classes={{ root: styles.accountAddress }}
+              label={`${address.slice(0, 8)}..${address.slice(-4)}`}
+            />
+          </div>
+        ) : (
+          <Address address={address} />
+        )}
       </div>
       <div className={styles.actions}>
         <IconButton onClick={(event) => setMenuElement(event.currentTarget)}>
           <MenuIcon />
         </IconButton>
         <Menu anchorEl={menuElement} keepMounted={true} open={menuElement != null} onClose={() => setMenuElement(null)}>
-          <MenuItem onClick={() => copyAddress(contact)}>
-            <ListItemIcon>
-              <CopyIcon fontSize="small" />
-            </ListItemIcon>
-            <Typography variant="inherit">Copy address</Typography>
-          </MenuItem>
           <MenuItem onClick={() => goToEdit(contact)}>
             <ListItemIcon>
               <EditIcon fontSize="small" />
@@ -146,7 +168,7 @@ export default connect<{}, DispatchProps, OwnProps>(
       return dispatch(transaction.actions.getXPubLastIndex(blockchain, xpub, start));
     },
     goToEdit(contact) {
-      dispatch(screen.actions.gotoScreen(screen.Pages.EDIT_ADDRESS, contact));
+      dispatch(screen.actions.gotoScreen(screen.Pages.EDIT_ADDRESS, contact, null, true));
     },
     onDelete() {
       const {

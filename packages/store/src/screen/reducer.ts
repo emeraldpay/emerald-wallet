@@ -29,7 +29,7 @@ function goBack(state: ScreenState): ScreenState {
     return state;
   }
 
-  while (prev?.ignoreBack === true || prev?.screen === state.screen) {
+  while (prev?.ignoreOnBack === true || prev?.screen === state.screen) {
     prev = history.pop();
   }
 
@@ -54,13 +54,13 @@ function onNotificationClose(state: ScreenState): ScreenState {
 function onOpen(state: ScreenState, action: IOpenAction): ScreenState {
   history.push({
     ...state,
-    ignoreBack: action.ignore,
     restoreData: action.restore,
   });
 
   return {
     ...state,
     dialog: null,
+    ignoreOnBack: action.ignore,
     screen: action.screen,
     screenItem: action.item,
     restoreData: null,
