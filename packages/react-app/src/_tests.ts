@@ -1,10 +1,10 @@
 import { IState } from '@emeraldwallet/store';
-import { Observable, Store } from 'redux';
+import { Store } from 'redux';
 
 export function createTestStore(state?: Partial<IState>): Store {
   return {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [Symbol.observable](): Observable<any> {
+    [Symbol.observable](): any {
       return undefined;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any

@@ -16,14 +16,14 @@ limitations under the License.
 
 import Typography from '@material-ui/core/Typography';
 import { ThemeProvider } from '@material-ui/styles';
-import { shallow } from 'enzyme';
+import { mount, shallow } from 'enzyme';
 import * as React from 'react';
 import Address from './Address';
 import { Theme } from '../../../index';
 
 describe('Address', () => {
   it('shows address', () => {
-    const accountAddr = shallow(
+    const accountAddr = mount(
       <ThemeProvider theme={Theme}>
         <Address id="0xFBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98" />
       </ThemeProvider>,
@@ -43,12 +43,12 @@ describe('Address', () => {
   });
 
   it('shows sanitized hex', () => {
-    const accountAddr = shallow(
+    const accountAddr = mount(
       <ThemeProvider theme={Theme}>
         <Address id="FBb1b73C4f0BDa4f67dcA266ce6Ef42f520fBB98" shortened={true} />
       </ThemeProvider>,
     );
 
-    expect(accountAddr.find(Typography).props().className).toEqual('shortenedAddress');
+    expect(accountAddr.find(Typography).props().className).toContain('shortenedAddress');
   });
 });

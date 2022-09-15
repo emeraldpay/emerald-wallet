@@ -5,7 +5,7 @@ import { ThemeProvider } from '@material-ui/core';
 import { mount } from 'enzyme';
 import * as React from 'react';
 import { Provider } from 'react-redux';
-import { Observable, Store } from 'redux';
+import { Store } from 'redux';
 import { default as TxDetails } from './TxDetails';
 
 const { ChangeType, Direction, State, Status } = PersistentState;
@@ -13,7 +13,7 @@ const { ChangeType, Direction, State, Status } = PersistentState;
 function createStore(): Store {
   return {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    [Symbol.observable](): Observable<any> {
+    [Symbol.observable](): any {
       return undefined;
     },
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
