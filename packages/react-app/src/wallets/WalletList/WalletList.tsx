@@ -1,66 +1,46 @@
-import { accounts, IState, screen } from '@emeraldwallet/store';
-import { Grid, withStyles } from '@material-ui/core';
+import { Wallet } from '@emeraldpay/emerald-vault-core';
+import { IState, accounts, screen } from '@emeraldwallet/store';
+import { createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import WalletItem from './WalletItem';
-import {Wallet} from '@emeraldpay/emerald-vault-core';
 
-const styles = (theme: any) => ({
-  container: {
-    marginBottom: '10px'
-  },
-  hiddenListItem: {
-    border: `1px solid ${theme.palette.divider}`,
-    opacity: 0.4,
-    marginBottom: '10px'
-  },
-  listItem: {
-    // border: `1px solid ${theme.palette.divider}`,
-    // marginBottom: '10px'
-  }
-});
+const useStyles = makeStyles(() =>
+  createStyles({
+    container: {
+      maxHeight: '100%',
+      overflowY: 'auto',
+    },
+  }),
+);
 
-interface IWalletsListProps {
+interface StateProps {
   wallets: Wallet[];
-  classes: any;
-  openWallet: (wallet: Wallet) => void;
 }
 
-const WalletList = ((props: IWalletsListProps) => {
-  const {
-    wallets, classes
-  } = props;
-  const {
-    openWallet,
-  } = props;
+interface DispatchProps {
+  openWallet(wallet: Wallet): void;
+}
+
+const WalletList: React.FC<StateProps & DispatchProps> = ({ wallets, openWallet }) => {
+  const styles = useStyles();
+
   return (
-    <div className={classes.container}>
-      <Grid container={true}>
-        {wallets.map((wallet: Wallet) => {
-          return (
-              <WalletItem
-                key={wallet.id}
-                wallet={wallet}
-                openWallet={openWallet}
-              />
-          );
-        })}
-      </Grid>
+    <div className={styles.container}>
+      {wallets.map((wallet: Wallet) => {
+        return <WalletItem key={wallet.id} wallet={wallet} openWallet={openWallet} />;
+      })}
     </div>
   );
-});
+};
 
-const StyledAccountList = withStyles(styles)(WalletList);
-
-export default connect(
-  (state: IState, ownProps) => {
-    return {
-      wallets: accounts.selectors.allWallets(state),
-    };
-  },
-  (dispatch, ownProps) => ({
-    openWallet: (wallet: Wallet) => {
+export default connect<StateProps, DispatchProps, {}, IState>(
+  (state) => ({
+    wallets: accounts.selectors.allWallets(state),
+  }),
+  (dispatch) => ({
+    openWallet(wallet) {
       dispatch(screen.actions.gotoScreen(screen.Pages.WALLET, wallet.id));
     },
-  })
-)((StyledAccountList));
+  }),
+)(WalletList);

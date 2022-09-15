@@ -1,16 +1,17 @@
-import { Logger } from '@emeraldwallet/core';
+import { Logger, WalletApi } from '@emeraldwallet/core';
 import {
+  BackendApi,
+  RemoteAddressBook,
+  RemoteTxHistory,
+  RemoteTxMeta,
+  RemoteVault,
+  RemoteXPubPosition,
   accounts,
   addressBook,
   application,
-  BackendApi,
   createStore,
-  RemoteVault,
-  RenderWalletState,
   screen,
-  settings,
-  triggers,
-  txhistory,
+  settings, triggers,
 } from '@emeraldwallet/store';
 import { ipcRenderer } from 'electron';
 import * as ElectronLogger from 'electron-log';
@@ -20,12 +21,17 @@ Logger.setInstance(ElectronLogger);
 
 const logger = Logger.forCategory('store');
 
-const api = { vault: RemoteVault };
+const api: WalletApi = {
+  addressBook: RemoteAddressBook,
+  txHistory: RemoteTxHistory,
+  txMeta: RemoteTxMeta,
+  vault: RemoteVault,
+  xPubPos: RemoteXPubPosition,
+};
 
 const backendApi = new BackendApi();
-const walletState = new RenderWalletState();
 
-export const store = createStore(api, backendApi, walletState);
+export const store = createStore(api, backendApi);
 
 function listenElectron(): void {
   logger.debug('Running launcher listener for Redux');
@@ -104,26 +110,13 @@ function startSync(): void {
     .then(() => store.dispatch(accounts.actions.loadWalletsAction()))
     .then(() => {
       const supported = settings.selectors.currentChains(store.getState());
-      const codes = supported.map((chain) => chain.params.code);
 
-      const loadAllChain = [];
-
-      supported.forEach((chain) => {
-        const loadChain = [];
-
-        loadChain.push(store.dispatch(addressBook.actions.loadAddressBook(chain.params.code)));
-
-        loadAllChain.push(
-          Promise.all(loadChain).catch((exception) =>
-            logger.error(`Failed to load chain ${chain.params.code}`, exception),
-          ),
-        );
+      const loadChains = supported.map(async (blockchain) => {
+        await store.dispatch(addressBook.actions.loadLegacyAddressBook(blockchain.params.code));
+        await store.dispatch(addressBook.actions.loadAddressBook(blockchain.params.code));
       });
 
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      store.dispatch(txhistory.actions.init(codes) as any);
-
-      return Promise.all(loadAllChain).catch((exception) => logger.error('Failed to load chains', exception));
+      return Promise.all(loadChains).catch((exception) => logger.error('Failed to load chains', exception));
     })
     .then(() => {
       logger.info('Initial synchronization finished');

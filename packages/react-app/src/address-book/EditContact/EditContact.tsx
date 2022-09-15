@@ -1,24 +1,18 @@
+import { IState, addressBook, screen, settings } from '@emeraldwallet/store';
 import { connect } from 'react-redux';
-import ContactForm from '../ContactForm';
+import ContactForm, { DispatchProps, StateProps } from '../ContactForm';
 
-const EditContact = connect(
-  (state, ownProps: any) => ({
-    blockAddress: true,
+export default connect<StateProps, DispatchProps, {}, IState>(
+  (state) => ({
+    blockchains: settings.selectors.currentChains(state),
     title: 'Edit Contact',
-    initialValues: {
-      name: ownProps.address.name,
-      address: ownProps.address.address,
-      description: ownProps.address.description
-    }
   }),
-  (dispatch, ownProps) => ({
-    onSubmit: (data: any) => {
-      ownProps.submit(data);
+  (dispatch) => ({
+    onSubmit({ blockchain, id, label }) {
+      dispatch(addressBook.actions.editContactAction(blockchain, id, label));
     },
-    cancel: () => {
-      ownProps.onCancel();
-    }
-  })
+    onCancel() {
+      dispatch(screen.actions.gotoScreen(screen.Pages.ADDRESS_BOOK));
+    },
+  }),
 )(ContactForm);
-
-export default EditContact;

@@ -68,7 +68,7 @@ const Component: React.FC<OwnProps & StateProps> = ({ disabled, hdpath, max, sta
 
       onChange(hdpath.forAccount(account));
     },
-    [hdpath],
+    [hdpath, onChange],
   );
 
   const onDecreaseAccount = React.useCallback(() => {
@@ -85,7 +85,7 @@ const Component: React.FC<OwnProps & StateProps> = ({ disabled, hdpath, max, sta
     if (newAccount >= 0) {
       updateAccount(newAccount);
     }
-  }, [account]);
+  }, [account, isDisabled, updateAccount]);
 
   const onIncreaseAccount = React.useCallback(() => {
     if (account >= MAX) {
@@ -101,7 +101,7 @@ const Component: React.FC<OwnProps & StateProps> = ({ disabled, hdpath, max, sta
     if (newAccount <= MAX) {
       updateAccount(newAccount);
     }
-  }, [account]);
+  }, [account, isDisabled, updateAccount]);
 
   const onAccountClick = React.useCallback(
     (account: AccountItem) => () => {
@@ -109,7 +109,7 @@ const Component: React.FC<OwnProps & StateProps> = ({ disabled, hdpath, max, sta
         updateAccount(account.account);
       }
     },
-    [],
+    [updateAccount],
   );
 
   let from = account - 3;

@@ -1,7 +1,6 @@
 import {
   AddEntry,
   AddressRole,
-  CreateAddressBookItem,
   EntryId,
   IEmeraldVault,
   LedgerSeedReference,
@@ -83,10 +82,6 @@ export function mapVaultWithIpc(vault: IEmeraldVault): void {
     return vault.listAddressBook(blockchain);
   });
 
-  ipcMain.handle(PREFIX + 'addToAddressBook', (event, item: CreateAddressBookItem) => {
-    return vault.addToAddressBook(item);
-  });
-
   ipcMain.handle(PREFIX + 'removeFromAddressBook', (event, blockchain: number, address: string) => {
     return vault.removeFromAddressBook(blockchain, address);
   });
@@ -144,5 +139,9 @@ export function mapVaultWithIpc(vault: IEmeraldVault): void {
 
   ipcMain.handle(PREFIX + 'snapshotRestore', (event, sourceFile, password) => {
     return vault.snapshotRestore(sourceFile, password);
+  });
+
+  ipcMain.handle(PREFIX + 'updateSeed', (event, seed, details) => {
+    return vault.updateSeed(seed, details);
   });
 }

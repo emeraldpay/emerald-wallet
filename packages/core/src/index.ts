@@ -33,7 +33,7 @@ export {utils};
 export {default as WithDefaults} from './withDefaults';
 
 export { IServerConnect } from './IServerConnect';
-export { IApi } from './IApi';
+export { WalletApi } from './WalletApi';
 
 export {EthereumAddress} from './blockchains/ethereum/Address';
 export {
@@ -47,24 +47,18 @@ export {
   AssetDetail, AssetDetails,
   getStandardUnits,
 } from './Asset';
-export {
-  IStoredTransaction,
-  BitcoinStoredTransaction,
-  EthereumStoredTransaction,
-  isBitcoinStoredTransaction,
-  isEthereumStoredTransaction
-} from './history/IStoredTransaction';
-
-// address book core
-export { AddressBookService, IAddressBookService } from './address-book/AddressBookService';
-
-// emerald client
-export { IEmeraldClient } from './emerald-client/IEmeraldClient';
 
 // logging
 export { default as Logger } from './logging/Logger';
 export {default as ILogger} from './logging/ILogger';
 export {default as DefaultLogger} from './logging/DefaultLogger';
+
+export {
+  EthereumRawReceipt,
+  EthereumReceipt,
+  EthereumRawTransaction,
+  EthereumTransaction
+} from './transaction/ethereum';
 
 // backend
 export {default as IBackendApi} from './backend/IBackendApi';
@@ -73,10 +67,10 @@ export {Commands} from './backend/Commands';
 // frontend
 export {default as IFrontApp} from './frontend/IFrontApp';
 
-export {WalletStateStorage} from './walletstate/WalletStateStorage';
-
 export {toBigNumber, toNumber, toHex, quantitiesToHex, fromBaseUnits, toBaseUnits} from "./convert";
 
 export {Contract} from './Contract';
 
-export * as PersistentState from './persisistentState';
+export * as PersistentState from './persistentState';
+
+export { formatAmount } from './format';

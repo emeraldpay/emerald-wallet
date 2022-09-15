@@ -19,7 +19,7 @@ interface HomeProps {
 export const Home: React.FC<HomeProps> = ({ connecting, statusMessage }) => {
   if (connecting) {
     return (
-      <Grid container={true} alignItems="center" justify="center">
+      <Grid container={true} alignItems="center" justifyContent="center">
         <Grid item={true}>
           <CircularProgress size={50} />
         </Grid>

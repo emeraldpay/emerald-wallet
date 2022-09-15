@@ -1,15 +1,16 @@
 import { Logger } from '@emeraldwallet/core';
-import { screen } from '@emeraldwallet/store';
+import { IState, screen } from '@emeraldwallet/store';
 import { CircularProgress } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import EditContact from '../../../address-book/EditContact';
 import AddHDAddress from '../../../create-account/AddHDAddress';
 import CreateHdAccount from '../../../create-account/CreateHdAccount';
 import CreateWalletScreen from '../../../create-wallet/CreateWalletScreen';
 import {
   AddContact,
-  BroadcastTx,
   ContactList as AddressBook,
+  BroadcastTx,
   Home,
   Settings,
   TxDetails,
@@ -32,13 +33,17 @@ import SetupVault from '../../vault/SetupVault';
 
 const log = Logger.forCategory('screen');
 
-export interface Props {
+interface OwnProps {
   termsVersion: string;
-  screen: any;
-  screenItem: any;
 }
 
-const Screen: React.FC<Props> = (props) => {
+interface StateProps {
+  screen?: string;
+  screenItem?: any;
+  restoreData?: any;
+}
+
+const Screen: React.FC<OwnProps & StateProps> = (props) => {
   log.info('Show screen: ', props.screen);
 
   switch (props.screen) {
@@ -49,14 +54,14 @@ const Screen: React.FC<Props> = (props) => {
           Initializing...
         </div>
       );
-    case 'add-address':
-      return <AddContact />;
     case 'broadcast-tx':
       return <BroadcastTx tx={props.screenItem.tx} signed={props.screenItem.signed} />;
     case 'settings':
       return <Settings />;
     case 'welcome':
       return <Welcome currentTermsVersion={props.termsVersion} />;
+    case screen.Pages.ADD_ADDRESS:
+      return <AddContact />;
     case screen.Pages.ADD_HD_ADDRESS:
       return <AddHDAddress walletId={props.screenItem} />;
     case screen.Pages.ADDRESS_BOOK:
@@ -79,8 +84,8 @@ const Screen: React.FC<Props> = (props) => {
       return <CreateRecoverTransaction entry={props.screenItem} />;
     case screen.Pages.CREATE_WALLET:
       return <CreateWalletScreen />;
-    case screen.Pages.SETUP_VAULT:
-      return <SetupVault />;
+    case screen.Pages.EDIT_ADDRESS:
+      return <EditContact contact={props.screenItem} />;
     case screen.Pages.GLOBAL_KEY:
       return <GlobalKey />;
     case screen.Pages.IMPORT_VAULT:
@@ -91,15 +96,17 @@ const Screen: React.FC<Props> = (props) => {
       return <PasswordMigration />;
     case screen.Pages.RECEIVE:
       return <ReceiveScreen walletId={props.screenItem} />;
+    case screen.Pages.SETUP_VAULT:
+      return <SetupVault />;
     case screen.Pages.TX_DETAILS:
-      return <TxDetails hash={props.screenItem.hash} />;
+      return <TxDetails tx={props.screenItem} />;
     case screen.Pages.WALLET:
-      return <WalletDetails walletId={props.screenItem} />;
+      return <WalletDetails initialTab={props.restoreData?.tab} walletId={props.screenItem} />;
     case screen.Pages.WALLET_INFO:
       return <WalletInfo walletId={props.screenItem} />;
+    default:
+      return <div>Unknown screen: {props.screen}</div>;
   }
-
-  return <div>Unknown screen: {props.screen}</div>;
 };
 
-export default connect((state) => screen.selectors.getCurrentScreen(state))(Screen);
+export default connect<StateProps, {}, {}, IState>((state) => screen.selectors.getCurrentScreen(state))(Screen);

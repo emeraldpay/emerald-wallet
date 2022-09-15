@@ -1,116 +1,151 @@
 import { BigAmount } from '@emeraldpay/bigamount';
-import { isBitcoinEntry, isEthereumEntry, Uuid } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, blockchainIdToCode, Blockchains } from '@emeraldwallet/core';
-import { accounts, IState, tokens } from '@emeraldwallet/store';
-import { Address, Balance } from '@emeraldwallet/ui';
-import { createStyles, Grid, Table, TableBody, TableCell, TableHead, TableRow, Theme } from '@material-ui/core';
-import { makeStyles } from '@material-ui/core/styles';
+import {
+  AddressRole,
+  CurrentAddress,
+  EntryId,
+  Uuid,
+  isBitcoinEntry,
+  isEthereumEntry,
+} from '@emeraldpay/emerald-vault-core';
+import { isSeedPkRef } from '@emeraldpay/emerald-vault-core/lib/types';
+import { BlockchainCode, Blockchains, blockchainIdToCode } from '@emeraldwallet/core';
+import { IState, accounts, tokens } from '@emeraldwallet/store';
+import { getXPubPositionalAddress } from '@emeraldwallet/store/lib/accounts/actions';
+import { Address, Balance, CoinAvatar } from '@emeraldwallet/ui';
+import { Table, TableBody, TableCell, TableRow, createStyles, makeStyles } from '@material-ui/core';
+import { Skeleton } from '@material-ui/lab';
 import * as React from 'react';
 import { connect } from 'react-redux';
 
-const useStyles = makeStyles<Theme>((theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
-    root: {
-      padding: '30px 30px 20px',
-      backgroundColor: 'white',
-      border: `1px solid ${theme.palette.divider}`,
+    address: {
+      width: 'auto',
     },
   }),
 );
+
+interface AddressInfo {
+  address?: string;
+  balances: BigAmount[];
+  blockchain: BlockchainCode;
+  entryId: EntryId;
+  hdPath?: string;
+  xPub?: string;
+}
 
 interface OwnProps {
   walletId: Uuid;
 }
 
 interface StateProps {
-  addresses: AddressInfo[];
+  addressesInfo: AddressInfo[];
 }
 
-interface AddressInfo {
-  address: string;
-  balances: BigAmount[];
-  blockchain: BlockchainCode;
+interface DispatchProps {
+  getXPubPositionalAddress(entryId: string, xPub: string, role: AddressRole): Promise<CurrentAddress>;
 }
 
-const Addresses: React.FC<StateProps & OwnProps> = ({ addresses }) => {
+const Addresses: React.FC<OwnProps & StateProps & DispatchProps> = ({ addressesInfo, getXPubPositionalAddress }) => {
   const styles = useStyles();
 
+  const [addresses, setAddresses] = React.useState(addressesInfo);
+
+  React.useEffect(() => {
+    Promise.all(
+      addressesInfo.map(async (address) => {
+        if (address.address == null && address.xPub != null) {
+          const { address: xPubAddress } = await getXPubPositionalAddress(address.entryId, address.xPub, 'receive');
+
+          return {
+            ...address,
+            address: xPubAddress,
+          };
+        }
+
+        return address;
+      }),
+    ).then(setAddresses);
+  }, [addressesInfo, getXPubPositionalAddress]);
+
   return (
-    <Grid container={true} className={styles.root}>
-      <Grid item={true} xs={12}>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell>Blockchain</TableCell>
-              <TableCell>Address</TableCell>
-              <TableCell>Balance</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {addresses.map((address, index) => (
-              <TableRow key={`address-${address.address}[${index}]`}>
-                <TableCell>{Blockchains[address.blockchain].getTitle()}</TableCell>
-                <TableCell>
-                  <Address address={address.address} />
-                </TableCell>
-                <TableCell>
-                  {address.balances.map((balance) => (
-                    <Balance key={'balance-' + balance.units.top.code} balance={balance} />
-                  ))}
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </Grid>
-    </Grid>
+    <Table>
+      <TableBody>
+        {addresses.map(({ address, balances, blockchain, hdPath }, index) => (
+          <TableRow key={`address-${address}[${index}]`}>
+            <TableCell>
+              <CoinAvatar chain={blockchain} />
+            </TableCell>
+            <TableCell>{Blockchains[blockchain].getTitle()}</TableCell>
+            <TableCell>{hdPath}</TableCell>
+            <TableCell>
+              {address == null ? (
+                <Skeleton variant="text" width={380} height={12} />
+              ) : (
+                <Address address={address} classes={{ root: styles.address }} />
+              )}
+            </TableCell>
+            <TableCell>
+              {balances.map((balance) => (
+                <Balance key={'balance-' + balance.units.top.code} balance={balance} />
+              ))}
+            </TableCell>
+          </TableRow>
+        ))}
+      </TableBody>
+    </Table>
   );
 };
 
-export default connect<StateProps, {}, OwnProps, IState>((state, ownProps) => {
-  const wallet = accounts.selectors.findWallet(state, ownProps.walletId);
+export default connect<StateProps, DispatchProps, OwnProps, IState>(
+  (state, ownProps) => {
+    const wallet = accounts.selectors.findWallet(state, ownProps.walletId);
 
-  const addresses: AddressInfo[] = [];
+    return {
+      addressesInfo:
+        wallet?.entries
+          .filter((entry) => !entry.receiveDisabled)
+          .reduce<AddressInfo[]>((carry, entry) => {
+            let address: string | undefined;
+            let xPub: string | undefined;
 
-  wallet?.entries
-    .filter((entry) => !entry.receiveDisabled)
-    .forEach((account) => {
-      let addressValue: string | undefined;
+            if (isEthereumEntry(entry)) {
+              address = entry.address?.value;
+            } else if (isBitcoinEntry(entry)) {
+              ({ xpub: xPub } = entry.xpub.find(({ role }) => role === 'receive') ?? {});
+            }
 
-      if (isEthereumEntry(account)) {
-        addressValue = account.address?.value;
-      } else if (isBitcoinEntry(account)) {
-        addressValue = account.addresses.find((address) => address.role === 'receive')?.address;
-      }
+            const addressInfo: AddressInfo = {
+              xPub,
+              address,
+              balances: [],
+              blockchain: blockchainIdToCode(entry.blockchain),
+              entryId: entry.id,
+              hdPath: isSeedPkRef(entry, entry.key) ? entry.key.hdPath : undefined,
+            };
 
-      if (addressValue == null) {
-        return;
-      }
+            const zeroAmount = accounts.selectors.zeroAmountFor<BigAmount>(blockchainIdToCode(entry.blockchain));
+            const balance = accounts.selectors.getBalance(state, entry.id, zeroAmount) || zeroAmount;
 
-      const address: AddressInfo = {
-        address: addressValue,
-        balances: [],
-        blockchain: blockchainIdToCode(account.blockchain),
-      };
+            addressInfo.balances.push(balance);
 
-      const zeroAmount = accounts.selectors.zeroAmountFor<BigAmount>(blockchainIdToCode(account.blockchain));
-      const balance = accounts.selectors.getBalance(state, account.id, zeroAmount) || zeroAmount;
+            if (address == null) {
+              return [...carry, addressInfo];
+            }
 
-      address.balances.push(balance);
+            const balances =
+              tokens.selectors.selectBalances(state, address, blockchainIdToCode(entry.blockchain)) ?? [];
 
-      ({ value: addressValue } = account.address ?? {});
+            balances.filter((unit) => unit.isPositive()).forEach((unit) => addressInfo.balances.push(unit));
 
-      if (addressValue == null) {
-        return;
-      }
-
-      const balances =
-        tokens.selectors.selectBalances(state, addressValue, blockchainIdToCode(account.blockchain)) ?? [];
-
-      balances.filter((unit) => unit.isPositive()).forEach((unit) => address.balances.push(unit));
-
-      addresses.push(address);
-    });
-
-  return { addresses };
-})(Addresses);
+            return [...carry, addressInfo];
+          }, []) ?? [],
+    };
+  },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (dispatch: any) => ({
+    getXPubPositionalAddress(entryId, xPub, role) {
+      return dispatch(getXPubPositionalAddress(entryId, xPub, role));
+    },
+  }),
+)(Addresses);

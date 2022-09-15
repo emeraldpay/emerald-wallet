@@ -9,14 +9,18 @@ export enum Commands {
   DELETE_ADDR_BOOK_ITEM = 'delete-addr-book-item',
 
   // Transaction history
-  PERSIST_TX_HISTORY = 'persist-tx-history',
   LOAD_TX_HISTORY = 'load-tx-history',
+
+  GET_TX_META = 'get-tx-meta',
+  SET_TX_META = 'set-tx-meta',
 
   // @deprecated
   BROADCAST_TX = 'broadcast-tx',
   ESTIMATE_TX = 'estimate-tx',
   ESTIMATE_FEE = 'estimate-fee',
   GET_NONCE = 'get-nonce',
+  GET_ETH_RECEIPT = 'get-eth-receipt',
+  GET_ETH_TX = 'get-eth-tx',
   SIGN_TX = 'sign-tx',
   // @deprecated
   GET_BALANCE = 'get-balance',
@@ -34,4 +38,15 @@ export enum Commands {
   VAULT_CREATE_HD_ACCOUNT = 'create-hd-account',
   VAULT_GET_SEEDS = 'get-vault-seeds',
   VAULT_SEED_ADDRESSES = 'vault-get-seed-addresses',
+
+  ADDRESS_BOOK_ADD = 'address-book-add',
+  ADDRESS_BOOK_GET = 'address-book-get',
+  ADDRESS_BOOK_REMOVE = 'address-book-remove',
+  ADDRESS_BOOK_QUERY = 'address-book-query',
+  ADDRESS_BOOK_UPDATE = 'address-book-update',
+
+  XPUB_POSITION_GET = 'xpub-position-get',
+  XPUB_POSITION_SET = 'xpub-position-set',
+
+  XPUB_LAST_INDEX = 'xpub-last-index',
 }

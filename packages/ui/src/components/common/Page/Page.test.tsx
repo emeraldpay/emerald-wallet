@@ -13,18 +13,28 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
-import {render} from '@testing-library/react';
+
+import { ThemeProvider } from '@material-ui/core';
+import { render } from '@testing-library/react';
 import * as React from 'react';
 import Page from './Page';
+import Theme from '../../../theme';
 
 describe('Page', () => {
   it('it renders without crash with string title', () => {
-    const wrapper = render(<Page title='Title'/>);
+    const wrapper = render(
+      <ThemeProvider theme={Theme}>
+        <Page title="Title" />
+      </ThemeProvider>,
+    );
     expect(wrapper).toBeDefined();
   });
   it('it renders without crash with component title', () => {
-    const wrapper = render(<Page title={<div>title</div>}/>);
+    const wrapper = render(
+      <ThemeProvider theme={Theme}>
+        <Page title={<div>title</div>} />
+      </ThemeProvider>,
+    );
     expect(wrapper).toBeDefined();
   });
-
 });

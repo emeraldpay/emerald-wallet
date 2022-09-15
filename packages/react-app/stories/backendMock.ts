@@ -3,9 +3,10 @@ import {
   AddressBookItem,
   CurrentAddress,
   EntryId,
+  EntryIdOp,
   ExportedWeb3Json,
-  IdSeedReference,
   IEmeraldVault,
+  IdSeedReference,
   LedgerDetails,
   OddPasswordItem,
   SeedDefinition,
@@ -15,7 +16,101 @@ import {
   Uuid,
   Wallet,
 } from '@emeraldpay/emerald-vault-core';
-import { AnyCoinCode, BlockchainCode, IApi, IBackendApi } from '@emeraldwallet/core';
+import {
+  AnyCoinCode,
+  BlockchainCode,
+  blockchainCodeToId,
+  EthereumRawReceipt,
+  EthereumRawTransaction,
+  IBackendApi,
+  PersistentState,
+  WalletApi,
+} from '@emeraldwallet/core';
+
+export class MemoryAddressBook {
+  storage: Record<string, PersistentState.AddressbookItem> = {};
+
+  async add(item: PersistentState.AddressbookItem): Promise<string> {
+    const id = Math.random().toString(16).substring(7);
+
+    this.storage[item.address.address] = { id, ...item };
+
+    return Promise.resolve(id);
+  }
+
+  async remove(id: string): Promise<void> {
+    this.storage = Object.values(this.storage)
+      .filter((item) => item.id !== id)
+      .reduce((carry, item) => ({ ...carry, [item.address.address]: item }), {});
+  }
+
+  async query(
+    filter?: PersistentState.AddressbookFilter,
+  ): Promise<PersistentState.PageResult<PersistentState.AddressbookItem>> {
+    let items = Object.values(this.storage);
+
+    if (filter != null) {
+      items = items.filter((item) => item.blockchain === filter.blockchain);
+    }
+
+    return Promise.resolve({
+      items,
+      cursor: '0',
+    });
+  }
+}
+
+interface MemoryTransaction {
+  cursor: string;
+  tx: PersistentState.Transaction;
+}
+
+export class MemoryTxHistory {
+  transactions: Array<MemoryTransaction> = [];
+
+  insertTransactions(transactions: PersistentState.Transaction[]): void {
+    this.transactions = transactions.map<MemoryTransaction>((tx, index) => ({ tx, cursor: `cursor:${index}` }));
+  }
+
+  async loadTransactions(
+    filter?: PersistentState.TxHistoryFilter,
+    query?: PersistentState.PageQuery,
+  ): Promise<PersistentState.PageResult<PersistentState.Transaction>> {
+    const cursorIndex = query.cursor == null ? -1 : this.transactions.findIndex((tx) => tx.cursor === query.cursor);
+
+    const filtered = this.transactions
+      .slice(cursorIndex > -1 ? cursorIndex : 0)
+      .filter(({ tx }) => tx.changes.some((change) => EntryIdOp.of(change.wallet).extractWalletId() === filter.wallet));
+
+    const [lastItem] = filtered.slice(-1);
+    const [lastTx] = this.transactions.slice(-1);
+
+    return Promise.resolve({
+      cursor: lastItem?.cursor === lastTx?.cursor ? undefined : lastItem?.cursor,
+      items: filtered.map(({ tx }) => tx),
+    });
+  }
+}
+
+export class MemoryTxMeta {
+  store: Record<number, Record<string, PersistentState.TxMeta | null>> = {};
+
+  async getMeta(blockchain: BlockchainCode, txId: string): Promise<PersistentState.TxMeta | null> {
+    return this.store[blockchainCodeToId(blockchain)]?.[txId] ?? null;
+  }
+
+  async setMeta(meta: PersistentState.TxMeta): Promise<PersistentState.TxMeta> {
+    const blockchain = blockchainCodeToId(meta.blockchain);
+
+    if (this.store[blockchain] == null) {
+      this.store[blockchain] = {};
+    }
+
+    this.store[blockchain][meta.txId] = meta;
+
+    return meta;
+  }
+}
 
 export class MemoryVault {
   passwords: Record<Uuid, string> = {};
@@ -38,6 +133,24 @@ export class MemoryVault {
   }
 }
 
+export class MemoryXPubPos {
+  storage: Record<string, number> = {};
+
+  async get(xpub: string): Promise<number> {
+    const { [xpub]: current } = this.storage;
+
+    return Promise.resolve(current);
+  }
+
+  async setAtLeast(xpub: string, position: number): Promise<void> {
+    const { [xpub]: current } = this.storage;
+
+    if (position > current) {
+      this.storage[xpub] = position;
+    }
+  }
+}
+
 export class BlockchainMock {
   balances: Record<string, Record<string, string>> = {};
 
@@ -56,6 +169,75 @@ export const REAL_BTC_TX =
   'fe6d3087006a18000000000017a91491acb73977a2bf1298686e61a72f62f4e94258a687024730440220438fb2c075aeeed1' +
   'd1a0ff49efcae7bc9aa922d97d4395de856d76c39ef5069a02205599f95b7e7eadc742c309100d4db42e33225f8766279502' +
   'd9f1068e8d517f2a012102e8e1d7659d6fbc0dbf653826937b09475ba6763c347138965bfebdb762a9b107f8ed0900';
+
+export class AddressBookMock implements PersistentState.Addressbook {
+  readonly addressBook: MemoryAddressBook;
+
+  constructor(addressBook: MemoryAddressBook) {
+    this.addressBook = addressBook;
+  }
+
+  add(item: PersistentState.AddressbookItem): Promise<string> {
+    return this.addressBook.add(item);
+  }
+
+  async remove(id: string): Promise<void> {
+    await this.addressBook.remove(id);
+  }
+
+  query(
+    filter?: PersistentState.AddressbookFilter,
+  ): Promise<PersistentState.PageResult<PersistentState.AddressbookItem>> {
+    return this.addressBook.query(filter);
+  }
+}
+
+export class TxHistoryMock implements PersistentState.TxHistory {
+  readonly txHistory: MemoryTxHistory;
+
+  constructor(txHistory: MemoryTxHistory) {
+    this.txHistory = txHistory;
+  }
+
+  query(
+    filter?: PersistentState.TxHistoryFilter,
+    query?: PersistentState.PageQuery,
+  ): Promise<PersistentState.PageResult<PersistentState.Transaction>> {
+    return this.txHistory.loadTransactions(filter, query);
+  }
+
+  remove(): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  submit(): Promise<PersistentState.Transaction> {
+    throw new Error('Method not implemented.');
+  }
+
+  getCursor(): Promise<string | null> {
+    throw new Error('Method not implemented.');
+  }
+
+  setCursor(): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+}
+
+export class TxMetaMock implements PersistentState.TxMetaStore {
+  readonly txMeta: MemoryTxMeta;
+
+  constructor(txMeta: MemoryTxMeta) {
+    this.txMeta = txMeta;
+  }
+
+  get(blockchain: BlockchainCode, txid: string): Promise<PersistentState.TxMeta> {
+    return this.txMeta.getMeta(blockchain, txid);
+  }
+
+  set(meta: PersistentState.TxMeta): Promise<PersistentState.TxMeta> {
+    return this.txMeta.setMeta(meta);
+  }
+}
 
 export class VaultMock implements IEmeraldVault {
   readonly vault: MemoryVault;
@@ -241,13 +423,51 @@ export class VaultMock implements IEmeraldVault {
   verifyGlobalKey(password: string): Promise<boolean> {
     return Promise.resolve(password === 'password');
   }
+
+  snapshotCreate(): Promise<boolean> {
+    return Promise.resolve(true);
+  }
+
+  snapshotRestore(sourceFile: string, password: string): Promise<boolean> {
+    return Promise.resolve(password === 'password');
+  }
 }
 
-export class ApiMock implements IApi {
-  readonly vault: IEmeraldVault;
+export class XPubPosMock implements PersistentState.XPubPosition {
+  readonly xPubPos: MemoryXPubPos;
 
-  constructor(vault: IEmeraldVault) {
+  constructor(xPubPos: MemoryXPubPos) {
+    this.xPubPos = xPubPos;
+  }
+
+  get(xpub: string): Promise<number> {
+    return this.xPubPos.get(xpub);
+  }
+
+  setAtLeast(xpub: string, pos: number): Promise<void> {
+    return this.xPubPos.setAtLeast(xpub, pos);
+  }
+}
+
+export class ApiMock implements WalletApi {
+  readonly addressBook: PersistentState.Addressbook;
+  readonly txHistory: PersistentState.TxHistory;
+  readonly txMeta: PersistentState.TxMetaStore;
+  readonly vault: IEmeraldVault;
+  readonly xPubPos: PersistentState.XPubPosition;
+
+  constructor(
+    addressBook: PersistentState.Addressbook,
+    txHistory: PersistentState.TxHistory,
+    txMeta: PersistentState.TxMetaStore,
+    vault: IEmeraldVault,
+    xPubPos: PersistentState.XPubPosition,
+  ) {
+    this.addressBook = addressBook;
+    this.txHistory = txHistory;
+    this.txMeta = txMeta;
     this.vault = vault;
+    this.xPubPos = xPubPos;
   }
 
   chain(): unknown {
@@ -256,8 +476,12 @@ export class ApiMock implements IApi {
 }
 
 export class BackendMock implements IBackendApi {
-  readonly vault: MemoryVault = new MemoryVault();
+  readonly addressBook = new MemoryAddressBook();
   readonly blockchains: Record<string, BlockchainMock> = {};
+  readonly txHistory = new MemoryTxHistory();
+  readonly txMeta = new MemoryTxMeta();
+  readonly vault = new MemoryVault();
+  readonly xPubPos = new MemoryXPubPos();
 
   broadcastSignedTx(): Promise<string> {
     return Promise.resolve('');
@@ -296,10 +520,6 @@ export class BackendMock implements IBackendApi {
     return Promise.resolve(0);
   }
 
-  persistTransactions(): Promise<void> {
-    return Promise.resolve(undefined);
-  }
-
   getNonce(): Promise<number> {
     return Promise.resolve(0);
   }
@@ -321,5 +541,13 @@ export class BackendMock implements IBackendApi {
     }
 
     return Promise.resolve(0);
+  }
+
+  getEthReceipt(): Promise<EthereumRawReceipt | null> {
+    return Promise.resolve(null);
+  }
+
+  getEthTx(): Promise<EthereumRawTransaction | null> {
+    return Promise.resolve(null);
   }
 }

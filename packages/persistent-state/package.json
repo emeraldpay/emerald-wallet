@@ -6,11 +6,12 @@
   "author": "Emerald Team",
   "license": "Apache-2.0",
   "scripts": {
-    "clean": "rimraf  lib/ tsconfig.tsbuildinfo",
     "build:ts": "yarn clean && tsc -b",
     "build:rs": "cargo-cp-artifact -nc index.node -- cargo build --manifest-path native/Cargo.toml --message-format=json-render-diagnostics",
-    "build:rs:release": "yarn run build:rs -- --release",
+    "build:rs:release": "yarn run build:rs --release",
     "build": "yarn run build:ts && yarn run build:rs:release",
+    "clean": "rimraf lib/ tsconfig.tsbuildinfo",
+    "cargo:update": "cd native && cargo update",
     "test": "jest --passWithNoTests"
   },
   "dependencines": {

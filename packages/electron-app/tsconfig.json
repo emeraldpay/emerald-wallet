@@ -25,9 +25,6 @@
       "path": "../erc20"
     },
     {
-      "path": "../history-store"
-    },
-    {
       "path": "../services"
     }
   ]

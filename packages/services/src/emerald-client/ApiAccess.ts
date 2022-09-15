@@ -1,18 +1,18 @@
+import * as os from 'os';
 import { ConnectionStatus } from '@emeraldpay/api';
 import {
   AuthenticationStatus,
   BlockchainClient,
   CredentialsContext,
-  emeraldCredentials,
   MarketClient,
   MonitoringClient,
+  TransactionClient,
+  emeraldCredentials,
 } from '@emeraldpay/api-node';
-import { IEmeraldClient, Logger } from '@emeraldwallet/core';
-import * as os from 'os';
+import { Logger } from '@emeraldwallet/core';
 import { ChainListener } from '../ChainListener';
 import { AddressListener } from '../services/balances/AddressListener';
 import { PriceListener } from '../services/prices/PricesListener';
-import { TxListener } from '../services/transactions/TxListener';
 
 enum Status {
   CONNECTED = 'CONNECTED',
@@ -30,11 +30,12 @@ interface AppParams {
 }
 
 interface ConnectionState {
+  connectedAt: Date;
   authenticated: boolean;
   blockchainConnected: boolean;
-  pricesConnected: boolean;
   diagConnected: boolean;
-  connectedAt: Date;
+  pricesConnected: boolean;
+  transactionConnected: boolean;
 }
 
 const PERIOD_OK = 20000;
@@ -43,11 +44,12 @@ const PERIOD_PING = PERIOD_OK - 1500;
 
 const log = Logger.forCategory('ApiAccess');
 
-export class EmeraldApiAccess implements IEmeraldClient {
+export class EmeraldApiAccess {
+  public readonly address: string;
   public readonly blockchainClient: BlockchainClient;
   public readonly pricesClient: MarketClient;
+  public readonly transactionClient: TransactionClient;
 
-  private readonly address: string;
   private readonly credentials: CredentialsContext;
   private readonly connectionState: ConnectionState;
 
@@ -67,17 +69,20 @@ export class EmeraldApiAccess implements IEmeraldClient {
     ];
 
     this.connectionState = {
+      connectedAt: new Date(),
       authenticated: false,
       blockchainConnected: false,
-      pricesConnected: false,
       diagConnected: false,
-      connectedAt: new Date(),
+      pricesConnected: false,
+      transactionConnected: false,
     };
 
     this.credentials = emeraldCredentials(addr, agent, id);
+
     this.blockchainClient = new BlockchainClient(addr, this.credentials.getChannelCredentials());
     this.monitoringClient = new MonitoringClient(addr, this.credentials.getChannelCredentials());
     this.pricesClient = new MarketClient(addr, this.credentials.getChannelCredentials());
+    this.transactionClient = new TransactionClient(addr, this.credentials.getChannelCredentials());
 
     this.credentials.setListener((status: AuthenticationStatus) => {
       this.connectionState.authenticated = status === AuthenticationStatus.AUTHENTICATED;
@@ -99,6 +104,11 @@ export class EmeraldApiAccess implements IEmeraldClient {
       this.verifyConnection();
     });
 
+    this.transactionClient.setConnectionListener((status) => {
+      this.connectionState.transactionConnected = status === ConnectionStatus.CONNECTED;
+      this.verifyConnection();
+    });
+
     this.periodicCheck();
     this.ping();
   }
@@ -109,10 +119,6 @@ export class EmeraldApiAccess implements IEmeraldClient {
 
   public newChainListener(): ChainListener {
     return new ChainListener(this.blockchainClient);
-  }
-
-  public newTxListener(): TxListener {
-    return new TxListener(this.blockchainClient);
   }
 
   public newPricesListener(): PriceListener {

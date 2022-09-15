@@ -4,6 +4,7 @@ import { storiesOf } from '@storybook/react';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import SignTx from '../../src/transaction/SignTx';
+import withTheme from '../themeProvider';
 
 const ethereumTx = new workflow.CreateEthereumTx({
   amount: new Wei('10000'),
@@ -14,4 +15,6 @@ const ethereumTx = new workflow.CreateEthereumTx({
   to: '0x456',
 });
 
-storiesOf('SignTx', module).add('default', () => <SignTx tx={ethereumTx} />);
+storiesOf('SignTx', module)
+  .addDecorator(withTheme)
+  .add('default', () => <SignTx tx={ethereumTx} />);

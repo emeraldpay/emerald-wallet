@@ -36,13 +36,19 @@ export { triggers };
 
 export { config };
 
-export { IState, GasPrices, GasPriceType, PriceSort, FEE_KEYS, DEFAULT_FEE } from './types';
+export { IState, GasPrices, GasPriceType, PriceSort, FEE_KEYS, DEFAULT_FEE, FeePrices } from './types';
 
 export { IBalanceValue, BalanceValueConverted } from './accounts/types';
+
+export { StoredTransaction } from './txhistory/types';
 
 export { default as rootReducer } from './root-reducer';
 export { default as BackendApi } from './BackendApi';
 export { default as reduxLogger } from './redux-logger';
 export { createStore } from './create-store';
-export { RemoteVault } from './VaultAccess';
-export { RenderWalletState } from './RenderWalletState';
+
+export { RemoteAddressBook } from './remote-access/AddressBook';
+export { RemoteTxHistory } from './remote-access/TxHistory';
+export { RemoteTxMeta } from './remote-access/TxMeta';
+export { RemoteVault } from './remote-access/Vault';
+export { RemoteXPubPosition } from './remote-access/XPubPos';

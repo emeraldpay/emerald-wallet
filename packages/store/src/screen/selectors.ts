@@ -1,19 +1,28 @@
-export const getCurrentDialog = (state: any) => ({
-  dialog: state.screen.get('dialog'),
-  dialogItem: state.screen.get('dialogItem')
-});
+import { IState } from '../types';
+import { ScreenState } from './types';
 
-export const getCurrentScreen = (state: any) => ({
-  screen: state.screen.get('screen'),
-  screenItem: state.screen.get('item')
-});
+export function getCurrentDialog(state: IState): ScreenState {
+  return { dialog: state.screen.dialog };
+}
 
-export const getError = (state: any) => (state.screen.get('error'));
+export function getCurrentScreen(state: IState): ScreenState {
+  return {
+    screen: state.screen.screen,
+    screenItem: state.screen.screenItem,
+    restoreData: state.screen.restoreData,
+  };
+}
 
-export const getNotification = (state: any) => ({
-  notificationMessage: state.screen.get('notificationMessage'),
-  notificationDuration: state.screen.get('notificationDuration'),
-  notificationType: state.screen.get('notificationType'),
-  notificationActionText: state.screen.get('notificationActionText'),
-  notificationActionToDispatchOnActionClick: state.screen.get('notificationActionToDispatchOnActionClick')
-});
+export function getError(state: IState): Error | null | undefined {
+  return state.screen.error;
+}
+
+export function getNotification(state: IState): ScreenState {
+  return {
+    notificationMessage: state.screen.notificationMessage,
+    notificationDuration: state.screen.notificationDuration,
+    notificationType: state.screen.notificationType,
+    notificationActionText: state.screen.notificationActionText,
+    notificationActionToDispatchOnActionClick: state.screen.notificationActionToDispatchOnActionClick,
+  };
+}

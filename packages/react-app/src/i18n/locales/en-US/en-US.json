@@ -88,6 +88,7 @@
     "globalKeyOld": "Old password",
     "globalKeyPasswordMismatch": "Password not match or equal to old",
     "lang": "Language",
+    "seeds": "Seeds",
     "showHiddenAccounts": "Hidden Accounts"
   }
 }

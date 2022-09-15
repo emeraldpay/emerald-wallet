@@ -62,7 +62,7 @@ class ImportVault extends React.Component<Props, State> {
       dragAndDrop.ondragend = () => false;
 
       dragAndDrop.ondrop = (event: DragEvent) => {
-        const [file] = event.dataTransfer?.files ?? [];
+        const file = event.dataTransfer?.files[0];
 
         if (file == null) {
           return false;
@@ -148,7 +148,7 @@ class ImportVault extends React.Component<Props, State> {
         </FormFieldWrapper>
         <FormFieldWrapper>
           <FormLabel classes={{ root: classes.label }} />
-          <Grid container justify="flex-end">
+          <Grid container justifyContent="flex-end">
             <Grid item>
               <Button
                 disabled={fileName == null || password?.length === 0}

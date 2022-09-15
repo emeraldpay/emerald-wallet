@@ -9,8 +9,11 @@ storiesOf('Settings', module).add('default', () => (
     t={(str: string): string => str}
     tReady={true}
     currency="RUB"
+    hasWallets={true}
     language="ru"
+    exportVaultFile={() => Promise.resolve(null)}
     goBack={() => null}
+    isGlobalKeySet={() => Promise.resolve(true)}
     onChangeGlobalKey={() => null}
     onSubmit={() => null}
     showNotification={() => null}

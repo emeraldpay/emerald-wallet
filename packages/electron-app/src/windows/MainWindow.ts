@@ -14,9 +14,10 @@ const createWindow = (app: Application, options: any): BrowserWindow => {
   const win = new BrowserWindow({
     show: false,
     width: 1200,
-    height: 650,
+    height: 720,
     minWidth: 1200,
-    minHeight: 650,
+    minHeight: 720,
+    useContentSize: true,
     icon: options.appIconPath,
     webPreferences: {
       nodeIntegration: true,

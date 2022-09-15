@@ -1,59 +1,172 @@
-import {txhistory} from '@emeraldwallet/store';
-import {IService} from '../Services';
-import {TxListener} from './TxListener';
-import {WebContents} from 'electron';
-import {BlockchainCode, Logger} from "@emeraldwallet/core";
-import {EmeraldApiAccess} from "../..";
+import { transaction as ApiTransaction } from '@emeraldpay/api';
+import { EntryIdOp, IEmeraldVault, isBitcoinEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
+import { Blockchains, Logger, PersistentState, blockchainIdToCode } from '@emeraldwallet/core';
+import { registry } from '@emeraldwallet/erc20';
+import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
+import { txhistory } from '@emeraldwallet/store';
+import { WebContents } from 'electron';
+import { EmeraldApiAccess } from '../../emerald-client/ApiAccess';
+import { IService } from '../Services';
+
+const { ChangeType: ApiType, Direction: ApiDirection } = ApiTransaction;
+const { ChangeType: StateType, Direction: StateDirection, State, Status } = PersistentState;
+
+type EntryIdentifier = { entryId: string; blockchain: number; identifier: string };
 
 const log = Logger.forCategory('TxService');
 
 export class TxService implements IService {
-  public id: string;
+  public readonly id: string;
+
   private apiAccess: EmeraldApiAccess;
+  private persistentState: PersistentStateImpl;
+  private settings: any;
+  private vault: IEmeraldVault;
   private webContents?: WebContents;
-  private ipcMain: any;
-  private subscriber: TxListener[] = [];
 
-  constructor(ipcMain: any, webContents: WebContents, apiAccess: EmeraldApiAccess) {
-    this.webContents = webContents;
+  constructor(
+    settings: any,
+    apiAccess: EmeraldApiAccess,
+    persistentState: PersistentStateImpl,
+    vault: IEmeraldVault,
+    webContents: WebContents,
+  ) {
+    this.id = 'TransactionHistoryListener';
+
     this.apiAccess = apiAccess;
-    this.ipcMain = ipcMain;
-    this.id = `TransactionListener`;
+    this.persistentState = persistentState;
+    this.settings = settings;
+    this.vault = vault;
+    this.webContents = webContents;
   }
 
-  public stop () {
-    this.subscriber.forEach((x) => x.stop());
-    this.subscriber = [];
+  start(): void {
+    const now = new Date().getTime();
+    const lastCursor = this.settings.getLastCursor() ?? 0;
+
+    let resetCursors = false;
+
+    if (now - lastCursor > 7 * 24 * 60 * 60 * 1000) {
+      this.settings.setLastCursor(now);
+
+      resetCursors = true;
+    }
+
+    this.vault.listWallets().then((wallets) =>
+      wallets.forEach((wallet) => {
+        const entryIdentifiers = wallet.entries.reduce<EntryIdentifier[]>((carry, entry) => {
+          const entryData = { entryId: entry.id, blockchain: entry.blockchain };
+
+          if (isEthereumEntry(entry)) {
+            const { value: address } = entry.address ?? {};
+
+            if (address == null) {
+              return carry;
+            }
+
+            return [...carry, { ...entryData, identifier: address }];
+          }
+
+          if (isBitcoinEntry(entry)) {
+            return [...carry, ...entry.xpub.map(({ xpub }) => ({ ...entryData, identifier: xpub }))];
+          }
+
+          return carry;
+        }, []);
+
+        entryIdentifiers.forEach(({ identifier }) => {
+          if (resetCursors) {
+            this.persistentState.txhistory.setCursor(identifier, '');
+          }
+        });
+
+        entryIdentifiers.forEach(({ entryId, blockchain, identifier }) =>
+          this.persistentState.txhistory.getCursor(identifier).then((cursor) =>
+            this.apiAccess.transactionClient
+              .subscribeAddressTx({
+                blockchain,
+                address: identifier,
+                cursor: cursor ?? undefined,
+              })
+              .onData((tx) => {
+                let block: PersistentState.BlockRef | null = null;
+
+                if (tx.block != null) {
+                  const { height, timestamp, hash: blockId } = tx.block;
+
+                  block = {
+                    blockId,
+                    height,
+                    timestamp,
+                  };
+                }
+
+                const blockchainCode = blockchainIdToCode(blockchain);
+                const now = new Date();
+
+                if (tx.xpubIndex != null) {
+                  this.persistentState.xpubpos
+                    .setAtLeast(identifier, tx.xpubIndex + 1)
+                    .catch((error) => log.error('Error while set xPub position: ', error));
+                }
+
+                this.persistentState.txhistory
+                  .submit({
+                    block,
+                    blockchain,
+                    changes: tx.changes.map<PersistentState.Change>((change) => {
+                      const asset =
+                        (change.contractAddress == null
+                          ? Blockchains[blockchainCode].params.coinTicker
+                          : registry.byAddress(blockchainCode, change.contractAddress)?.symbol) ?? 'UNKNOWN';
+
+                      return {
+                        asset,
+                        address: change.address,
+                        amount: change.amount,
+                        direction: change.direction === ApiDirection.SEND ? StateDirection.SPEND : StateDirection.EARN,
+                        type: change.type === ApiType.FEE ? StateType.FEE : StateType.TRANSFER,
+                        wallet: change.address === tx.address ? entryId : undefined,
+                      };
+                    }),
+                    confirmTimestamp:
+                      tx.removed === false && tx.mempool === false ? tx.block?.timestamp ?? now : undefined,
+                    sinceTimestamp: tx.block?.timestamp ?? now,
+                    state:
+                      tx.removed === true ? State.REPLACED : tx.mempool === true ? State.SUBMITTED : State.CONFIRMED,
+                    status: tx.failed ? Status.FAILED : Status.OK,
+                    txId: tx.txId,
+                  })
+                  .then((merged) => {
+                    if (tx.cursor != null) {
+                      this.persistentState.txhistory.setCursor(identifier, tx.cursor);
+                    }
+
+                    const walletId = EntryIdOp.of(entryId).extractWalletId();
+
+                    this.persistentState.txmeta
+                      .get(blockchainIdToCode(merged.blockchain), merged.txId)
+                      .then((meta) =>
+                        this.webContents?.send('store', txhistory.actions.updateTransaction(walletId, merged, meta)),
+                      );
+                  })
+                  .catch((error) => log.error('Error while submitting TX state: ', error));
+              }),
+          ),
+        );
+      }),
+    );
   }
 
-  public start () {
-    this.ipcMain.on('subscribe-tx', (_: any, blockchain: BlockchainCode, hash: string) => {
-      const subscriber = this.apiAccess.newTxListener();
-      this.subscriber.push(subscriber);
-      subscriber.subscribe(blockchain, hash, (event: any) => {
-        const action = txhistory.actions.updateTxs([{
-          blockchain,
-          hash: event.txid,
-          blockNumber: event.blockNumber,
-          timestamp: event.timestamp,
-          broadcasted: event.broadcasted
-        }]);
-        try {
-          this.webContents?.send('store', action);
-        } catch (e) {
-          log.warn("Cannot send to the UI", e)
-        }
-      });
-    });
+  stop(): void {
+    // Nothing
+  }
+
+  reconnect(): void {
+    // Nothing
   }
 
   setWebContents(webContents: WebContents): void {
     this.webContents = webContents;
   }
-
-  reconnect(): void {
-    this.stop();
-    this.start();
-  }
-
 }

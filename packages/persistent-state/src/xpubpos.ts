@@ -1,5 +1,5 @@
-import {PersistentStateImpl, neonToPromise} from "./api";
 import {PersistentState} from "@emeraldwallet/core";
+import {PersistentStateImpl, neonToPromise} from "./api";
 
 /**
  * Manage XPub Position
@@ -24,7 +24,7 @@ export class XPubPositionImpl implements PersistentState.XPubPosition {
     });
   }
 
-  set_at_least(xpub: string, pos: number): Promise<void> {
+  setAtLeast(xpub: string, pos: number): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
         this.manager.addon.xpubpos_set(

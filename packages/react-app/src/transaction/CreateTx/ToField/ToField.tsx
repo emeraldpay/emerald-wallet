@@ -1,98 +1,73 @@
-import {IdentityIcon, Input} from '@emeraldwallet/ui';
+import { BlockchainCode, PersistentState } from '@emeraldwallet/core';
+import { IState, addressBook } from '@emeraldwallet/store';
+import { Input } from '@emeraldwallet/ui';
 import * as React from 'react';
-
+import { connect } from 'react-redux';
+import AddressBookMenu from './AddressBookMenu';
 import FormLabel from '../FormLabel';
-import AddressIconMenu from './AddressIconMenu';
 
-interface Props {
-  onChangeTo?: any;
+interface OwnProps {
+  blockchain: BlockchainCode;
   to?: string;
-  addressBookAddresses?: any[];
-  onEmptyAddressBookClick?: Function;
+  onChange(value: string): void;
+}
+
+interface StateProps {
+  contacts: PersistentState.AddressbookItem[];
 }
 
 interface State {
-  errorText: string | null;
-  toStr?: string;
+  error: string | null;
+  value: string;
 }
+
+type Props = OwnProps & StateProps;
 
 class ToField extends React.Component<Props, State> {
-
-  public inputStyles = {
-    flexGrow: 5
-  };
-  constructor (props: Props) {
+  constructor(props: Props) {
     super(props);
-    this.onChangeTo = this.onChangeTo.bind(this);
-    this.state = { errorText: null, toStr: props.to || '0x' };
+
+    this.state = {
+      error: null,
+      value: props.to ?? '',
+    };
   }
 
-  public componentDidMount () {
-    this.onChangeTo(this.props.to);
-  }
+  getRightIcon = (): React.ReactElement => {
+    const { contacts } = this.props;
 
-  public componentDidUpdate (prevProps: any) {
-    if (this.props.to != null && this.props.to !== prevProps.to) {
-      this.onChangeTo(this.props.to);
-    }
-  }
+    return <AddressBookMenu contacts={contacts} onChange={(value) => this.onChange(value)} />;
+  };
 
-  public onChangeTo (value: any) {
-    if (this.props.onChangeTo) {
-      this.props.onChangeTo(value);
-    }
-    this.setState({ toStr: value });
+  onChange = (value: string): void => {
+    this.setState({ value });
 
-    if (!value) {
-      this.setState({ errorText: 'Required' });
+    this.props.onChange(value);
+
+    if (value.length === 0) {
+      this.setState({ error: 'Required' });
     } else {
-      this.setState({ errorText: null });
+      this.setState({ error: null });
     }
-  }
+  };
 
-  public handleInputChange = (event: any) => {
-    const { value } = event.target;
-    this.onChangeTo(value);
-  }
+  public render(): React.ReactElement {
+    const { error, value } = this.state;
 
-  public getLeftIcon () {
-    if (!this.props.to) {
-      return null;
-    }
     return (
-      <IdentityIcon
-        size={30}
-        id={this.props.to}
-      />
-    );
-  }
-
-  public getRightIcon () {
-    return (
-      <AddressIconMenu
-        onChange={(val: any) => this.onChangeTo(val)}
-        addressBookAddresses={this.props.addressBookAddresses}
-        onEmptyAddressBookClick={this.props.onEmptyAddressBookClick}
-      />
-    );
-  }
-
-  public render () {
-    return (
-      <React.Fragment>
+      <>
         <FormLabel>To</FormLabel>
-        <div style={this.inputStyles}>
-          <Input
-            leftIcon={this.getLeftIcon()}
-            rightIcon={this.getRightIcon()}
-            value={this.state.toStr}
-            errorText={this.state.errorText}
-            onChange={this.handleInputChange}
-          />
-        </div>
-      </React.Fragment>
+        <Input
+          errorText={error}
+          rightIcon={this.getRightIcon()}
+          value={value}
+          onChange={({ target: { value } }: React.ChangeEvent<HTMLInputElement>) => this.onChange(value)}
+        />
+      </>
     );
   }
 }
 
-export default ToField;
+export default connect<StateProps, {}, OwnProps, IState>((state, ownProps) => ({
+  contacts: addressBook.selectors.byBlockchain(state, ownProps.blockchain),
+}))(ToField);

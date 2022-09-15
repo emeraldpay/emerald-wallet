@@ -1,78 +1,66 @@
-import {BlockchainCode} from '@emeraldwallet/core';
-import {AddressBookItem} from '@emeraldpay/emerald-vault-core';
+import { BlockchainCode, PersistentState } from '@emeraldwallet/core';
 
 export const moduleName = 'addressBook';
 
 export enum ActionTypes {
-  LOAD = 'ADDRESSBOOK/LOAD',
-  LOADING = 'ADDRESSBOOK/LOADING',
-  LOADED = 'ADDRESSBOOK/LOADED',
-  ADD_CONTACT = 'ADDRESSBOOK/ADD_ADDRESS',
-  NEW_ADDRESS_ADDED = 'ADDRESSBOOK/NEW_CONTACT_ADDED',
-  DELETE_ADDRESS = 'ADDRESSBOOK/DELETE_ADDRESS',
-  ADDRESS_DELETED = 'ADDRESSBOOK/ADDRESS_DELETED',
-  SET_BOOK = 'ADDRESSBOOK/SET_BOOK'
+  ADD_CONTACT = 'ADDRESS_BOOK/ADD_CONTACT',
+  DELETE_CONTACT = 'ADDRESS_BOOK/DELETE_ADDRESS',
+  EDIT_CONTACT = 'ADDRESS_BOOK/EDIT_CONTACT',
+  LOAD = 'ADDRESS_BOOK/LOAD',
+  LOAD_LEGACY = 'ADDRESS_BOOK/LOAD_LEGACY',
+  SET_ADDRESS_BOOK = 'ADDRESS_BOOK/SET_BOOK',
 }
 
-// FIXME incompatible with Bitcoin
-export interface Contacts {[key: string]: AddressBookItem;}
-
-export interface IAddressBookState {
-  loading: boolean;
+export interface AddressBookState {
   contacts: {
-    [chain in BlockchainCode]?: Contacts;
+    [chain in BlockchainCode]?: PersistentState.AddressbookItem[];
+  };
+}
+
+/**
+ * FIXME Remove in future release
+ * @deprecated
+ */
+export interface LoadLegacyContactsAction {
+  type: ActionTypes.LOAD_LEGACY;
+  payload: BlockchainCode;
+}
+
+export interface LoadContactsAction {
+  type: ActionTypes.LOAD;
+  payload: BlockchainCode;
+}
+
+export interface SetAddressBookAction {
+  type: ActionTypes.SET_ADDRESS_BOOK;
+  payload: {
+    blockchain: BlockchainCode;
+    contacts: PersistentState.AddressbookItem[];
   };
 }
 
 export interface AddContactAction {
   type: ActionTypes.ADD_CONTACT;
-  payload: AddressBookItem;
+  payload: PersistentState.AddressbookItem;
 }
 
-export interface ContactAddedAction {
-  type: ActionTypes.NEW_ADDRESS_ADDED;
-  payload: AddressBookItem;
-}
-
-export interface SetLoadingAction {
-  type: ActionTypes.LOADING;
-  payload: boolean;
+export interface EditContactAction {
+  type: ActionTypes.EDIT_CONTACT;
+  payload: Partial<Omit<PersistentState.AddressbookItem, 'blockchain'>> & { blockchain: number };
 }
 
 export interface DeleteContactAction {
-  type: ActionTypes.DELETE_ADDRESS;
+  type: ActionTypes.DELETE_CONTACT;
   payload: {
     blockchain: BlockchainCode;
-    address: string;
-  };
-}
-
-export interface ContactDeletedAction {
-  type: ActionTypes.ADDRESS_DELETED;
-  payload: {
-    blockchain: BlockchainCode;
-    address: string;
-  };
-}
-
-export interface ILoadContactsAction {
-  type: ActionTypes.LOAD;
-  payload: BlockchainCode;
-}
-
-export interface ISetAddressBookAction {
-  type: ActionTypes.SET_BOOK;
-  payload: {
-    blockchain: BlockchainCode;
-    contacts: AddressBookItem[];
+    id: string;
   };
 }
 
 export type AddressBookAction =
+  | LoadLegacyContactsAction
+  | LoadContactsAction
   | AddContactAction
-  | ContactAddedAction
-  | SetLoadingAction
+  | EditContactAction
   | DeleteContactAction
-  | ContactDeletedAction
-  | ILoadContactsAction
-  | ISetAddressBookAction;
+  | SetAddressBookAction;

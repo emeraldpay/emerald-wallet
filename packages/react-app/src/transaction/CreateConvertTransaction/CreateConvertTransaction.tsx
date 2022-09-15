@@ -1,22 +1,22 @@
-import { BigAmount, FormatterBuilder, Predicates } from '@emeraldpay/bigamount';
+import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { isEthereumEntry, WalletEntry } from '@emeraldpay/emerald-vault-core';
+import { WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import {
-  amountFactory,
   AnyCoinCode,
   BlockchainCode,
-  blockchainIdToCode,
   Blockchains,
-  getStandardUnits,
+  amountFactory,
+  blockchainIdToCode,
+  formatAmount,
   tokenAmount,
   workflow,
 } from '@emeraldwallet/core';
 import { tokenUnits } from '@emeraldwallet/core/lib/blockchains/tokens';
 import { CreateErc20WrappedTx, TxTarget } from '@emeraldwallet/core/lib/workflow';
 import { registry } from '@emeraldwallet/erc20';
-import { accounts, FEE_KEYS, GasPrices, IState, screen, tokens, transaction } from '@emeraldwallet/store';
+import { FEE_KEYS, GasPrices, IState, accounts, screen, tokens, transaction } from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
-import { Box, createStyles, FormControlLabel, FormHelperText, Slider, Switch, withStyles } from '@material-ui/core';
+import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles, withStyles } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
 import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
@@ -92,22 +92,6 @@ interface DispatchProps {
   getFees(blockchain: BlockchainCode): Promise<Record<typeof FEE_KEYS[number], GasPrices>>;
   goBack(): void;
   signTransaction(tx: CreateErc20WrappedTx, tokenSymbol: string, password: string): Promise<void>;
-}
-
-function formatBalance(balance: BigAmount): string {
-  const units = getStandardUnits(balance);
-
-  const balanceFormatter = new FormatterBuilder()
-    .when(Predicates.ZERO, (whenTrue, whenFalse): void => {
-      whenTrue.useTopUnit();
-      whenFalse.useOptimalUnit(undefined, units, 3);
-    })
-    .number(3, true)
-    .append(' ')
-    .unitCode()
-    .build();
-
-  return balanceFormatter.format(balance);
 }
 
 const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & DispatchProps> = ({
@@ -602,7 +586,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           return tokens.selectors.selectBalance(state, tokenInfo.address, address, blockchain) ?? zeroAmount;
         });
 
-        return [balance, ...tokensBalances].map(formatBalance);
+        return [balance, ...tokensBalances].map(formatAmount);
       },
       getTokenBalanceByAddress(token, address) {
         const zero = tokenAmount(0, token);

@@ -1,4 +1,4 @@
-import { accounts, screen } from '@emeraldwallet/store';
+import { accounts, IState, screen } from '@emeraldwallet/store';
 import {
   AddCircle as AddCircleIcon,
   Book as BookIcon,
@@ -14,7 +14,11 @@ import ListItemText from '@material-ui/core/ListItemText';
 import Popover from '@material-ui/core/Popover';
 import * as React from 'react';
 import { connect } from 'react-redux';
-import { EmeraldDialogs } from '../../screen/Dialog/Dialog';
+import { EmeraldDialogs } from '../../screen/Dialog';
+
+interface StateProps {
+  walletsCount: number;
+}
 
 interface DispatchProps {
   gotoAbout(): void;
@@ -24,7 +28,8 @@ interface DispatchProps {
   isGlobalKeySet(): Promise<boolean>;
 }
 
-const Component: React.FC<DispatchProps> = ({
+const Component: React.FC<StateProps & DispatchProps> = ({
+  walletsCount,
   gotoAbout,
   gotoAddressBook,
   gotoCreateWallet,
@@ -47,7 +52,7 @@ const Component: React.FC<DispatchProps> = ({
 
       setGlobalKeySet(hasGlobalKey);
     })();
-  }, []);
+  }, [walletsCount, isGlobalKeySet]);
 
   return (
     <div>
@@ -110,8 +115,10 @@ const Component: React.FC<DispatchProps> = ({
   );
 };
 
-export default connect<{}, DispatchProps>(
-  null,
+export default connect<StateProps, DispatchProps, {}, IState>(
+  (state) => ({
+    walletsCount: state.accounts.wallets.length,
+  }),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
     gotoAbout() {

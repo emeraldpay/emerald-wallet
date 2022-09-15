@@ -1,41 +1,76 @@
 import * as vault from '@emeraldpay/emerald-vault-core';
 import { SeedDefinition, Uuid } from '@emeraldpay/emerald-vault-core';
 import { IBlockchain } from '@emeraldwallet/core';
-import { accounts, IState, screen } from '@emeraldwallet/store';
+import { IState, accounts, screen } from '@emeraldwallet/store';
 import { ImportMnemonic, ImportPk, NewMnemonic } from '@emeraldwallet/ui';
-import { Button, Card, CardActions, CardContent, CardHeader, Step, StepLabel, Stepper } from '@material-ui/core';
+import {
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardHeader,
+  Step,
+  StepLabel,
+  Stepper,
+  createStyles,
+  makeStyles,
+} from '@material-ui/core';
 import * as bip39 from 'bip39';
 import * as React from 'react';
 import { connect } from 'react-redux';
+import Finish from './Finish';
+import { CreateWalletFlow, STEP_CODE } from './flow/createWalletFlow';
+import { Result, isPk, isPkRaw } from './flow/types';
+import SaveMnemonic from './SaveMnemonic';
+import SelectKeySource from './SelectKeySource';
+import WalletOptions from './WalletOptions';
 import SelectCoins from '../create-account/SelectCoins';
 import SelectHDPath from '../create-account/SelectHDPath';
 import UnlockSeed from '../create-account/UnlockSeed';
 import LedgerWait from '../ledger/LedgerWait';
-import Finish from './Finish';
-import { CreateWalletFlow, STEP_CODE } from './flow/createWalletFlow';
-import { isPk, isPkRaw, Result } from './flow/types';
-import SaveMnemonic from './SaveMnemonic';
-import SelectKeySource from './SelectKeySource';
-import WalletOptions from './WalletOptions';
 
-type Actions = {
-  checkGlobalKey(password: string): Promise<boolean>;
-  onOpen(walletId: string): void;
-};
+const useStyles = makeStyles(() =>
+  createStyles({
+    container: {
+      display: 'flex',
+      flexDirection: 'column',
+      maxHeight: '100%',
+    },
+    header: {
+      flex: 0,
+    },
+    content: {
+      flex: 1,
+      minHeight: 100,
+      overflowY: 'auto',
+    },
+    footer: {
+      flex: 0,
+      float: 'none',
+      justifyContent: 'end',
+      padding: 16,
+    },
+  }),
+);
 
-type OwnProps = {
+interface OwnProps {
   blockchains: IBlockchain[];
   seeds: vault.SeedDescription[];
-  mnemonicGenerator?: () => Promise<string>;
-  onCancel: () => void;
-  onCreate: (value: Result) => Promise<string>;
-  onError: (err: any) => void;
-  onSaveSeed?: (seed: SeedDefinition) => Promise<Uuid>;
-};
+  mnemonicGenerator?(): Promise<string>;
+  onCancel(): void;
+  onCreate(value: Result): Promise<string>;
+  onError(error: Error): void;
+  onSaveSeed?(seed: SeedDefinition): Promise<Uuid>;
+}
 
-type StateProps = {
+interface StateProps {
   hasWallets: boolean;
-};
+}
+
+interface DispatchProps {
+  checkGlobalKey(password: string): Promise<boolean>;
+  onOpen(walletId: string): void;
+}
 
 function isValidMnemonic(text: string): boolean {
   return bip39.validateMnemonic(text);
@@ -45,37 +80,46 @@ function isValidMnemonic(text: string): boolean {
  * Multistep wizard to create a new Wallet. The wallet can be created from an existing or new seed, private key, or just
  * empty without any account initially.
  */
-export const CreateWizard: React.FC<Actions & OwnProps & StateProps> = (props) => {
+export const CreateWizard: React.FC<DispatchProps & OwnProps & StateProps> = ({
+  blockchains,
+  hasWallets,
+  seeds,
+  checkGlobalKey,
+  mnemonicGenerator,
+  onCancel,
+  onCreate,
+  onError,
+  onOpen,
+  onSaveSeed,
+}) => {
+  const styles = useStyles();
+
   const [walletId, setWalletId] = React.useState('');
 
-  function create(result: Result): void {
-    props
-      .onCreate(result)
-      .then((id) => {
-        setWalletId(id);
-      })
-      .catch(props.onError);
-  }
-
-  const [step, setStep] = React.useState(new CreateWalletFlow(create));
-
-  const page = step.getCurrentStep();
+  const [step, setStep] = React.useState(
+    new CreateWalletFlow((result) =>
+      onCreate(result)
+        .then((id) => setWalletId(id))
+        .catch(onError),
+    ),
+  );
 
   const applyWithState = function <T extends unknown[]>(fn: (...args: T) => CreateWalletFlow): (...args: T) => void {
     return (...args) => setStep(fn.call(step, ...args));
   };
 
-  const activeStepIndex = page.index;
   let activeStepPage = null;
 
+  const page = step.getCurrentStep();
+
   if (page.code == STEP_CODE.KEY_SOURCE) {
-    activeStepPage = <SelectKeySource seeds={props.seeds} onSelect={applyWithState(step.applySource)} />;
+    activeStepPage = <SelectKeySource seeds={seeds} onSelect={applyWithState(step.applySource)} />;
   } else if (page.code == STEP_CODE.OPTIONS) {
     activeStepPage = <WalletOptions onChange={applyWithState(step.applyOptions)} />;
   } else if (page.code == STEP_CODE.SELECT_BLOCKCHAIN) {
     activeStepPage = (
       <SelectCoins
-        blockchains={props.blockchains}
+        blockchains={blockchains}
         multiple={!isPk(step.getResult().type)}
         enabled={[]}
         onChange={applyWithState(step.applyBlockchains)}
@@ -86,7 +130,7 @@ export const CreateWizard: React.FC<Actions & OwnProps & StateProps> = (props) =
   } else if (page.code == STEP_CODE.MNEMONIC_GENERATE) {
     activeStepPage = (
       <NewMnemonic
-        onGenerate={props.mnemonicGenerator}
+        onGenerate={mnemonicGenerator}
         onContinue={(mnemonic, password) => setStep(step.applyMnemonic(mnemonic, password))}
       />
     );
@@ -103,35 +147,43 @@ export const CreateWizard: React.FC<Actions & OwnProps & StateProps> = (props) =
     activeStepPage = (
       <ImportPk
         raw={isPkRaw(result.type)}
-        checkGlobalKey={props.checkGlobalKey}
+        checkGlobalKey={checkGlobalKey}
         onChange={applyWithState(step.applyImportPk)}
       />
     );
   } else if (page.code == STEP_CODE.LEDGER_OPEN) {
     activeStepPage = <LedgerWait fullSize={true} onConnected={applyWithState(step.applyLedgerConnected)} />;
   } else if (page.code == STEP_CODE.LOCK_SEED) {
-    const onLock = (password: string): void => {
-      if (!props.onSaveSeed) {
+    const onLock = (globalPassword: string): void => {
+      if (onSaveSeed == null) {
         console.warn('No method to save seed');
+
         return;
       }
+
+      const { mnemonic, password } = step.getMnemonic();
+
       const save: SeedDefinition = {
+        password: globalPassword,
         type: 'mnemonic',
         value: {
-          value: step.getMnemonic().mnemonic!,
-          password: step.getMnemonic().password,
+          password,
+          value: mnemonic ?? '',
         },
-        password,
       };
-      props.onSaveSeed(save).then((id) => setStep(step.applyMnemonicSaved(id, password)));
+
+      onSaveSeed(save).then((id) => setStep(step.applyMnemonicSaved(id, globalPassword)));
     };
+
     activeStepPage = <SaveMnemonic onPassword={onLock} />;
   } else if (page.code == STEP_CODE.SELECT_HD_ACCOUNT) {
     const seed = step.getResult().seed;
+
     if (typeof seed == 'undefined') {
       console.log('Step State', step.getResult());
       throw new Error('Invalid state: seed is undefined');
     }
+
     activeStepPage = (
       <SelectHDPath
         blockchains={step.getResult().blockchains}
@@ -144,7 +196,7 @@ export const CreateWizard: React.FC<Actions & OwnProps & StateProps> = (props) =
   }
 
   const stepper = (
-    <Stepper activeStep={activeStepIndex} alternativeLabel={true}>
+    <Stepper activeStep={page.index} alternativeLabel={true}>
       {step.getSteps().map((it) => (
         <Step key={it.code}>
           <StepLabel>{it.title}</StepLabel>
@@ -157,15 +209,15 @@ export const CreateWizard: React.FC<Actions & OwnProps & StateProps> = (props) =
 
   if (walletId) {
     controls = (
-      <Button variant={'contained'} color={'primary'} onClick={() => props.onOpen(walletId)}>
+      <Button variant={'contained'} color={'primary'} onClick={() => onOpen(walletId)}>
         Open Wallet
       </Button>
     );
   } else {
     controls = (
       <>
-        {props.hasWallets && (
-          <Button disabled={page.code == STEP_CODE.CREATED} onClick={props.onCancel}>
+        {hasWallets && (
+          <Button disabled={page.code == STEP_CODE.CREATED} onClick={onCancel}>
             Cancel
           </Button>
         )}
@@ -182,10 +234,10 @@ export const CreateWizard: React.FC<Actions & OwnProps & StateProps> = (props) =
   }
 
   return (
-    <Card>
-      <CardHeader action={stepper} />
-      <CardContent>{activeStepPage}</CardContent>
-      <CardActions>{controls}</CardActions>
+    <Card classes={{ root: styles.container }}>
+      <CardHeader classes={{ root: styles.header }} action={stepper} />
+      <CardContent classes={{ root: styles.content }}>{activeStepPage}</CardContent>
+      <CardActions classes={{ root: styles.footer }}>{controls}</CardActions>
     </Card>
   );
 };
@@ -194,7 +246,8 @@ export default connect(
   (state: IState): StateProps => ({
     hasWallets: state.accounts.wallets.length > 0,
   }),
-  (dispatch: any): Actions => ({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (dispatch: any): DispatchProps => ({
     checkGlobalKey(password) {
       return dispatch(accounts.actions.verifyGlobalKey(password));
     },

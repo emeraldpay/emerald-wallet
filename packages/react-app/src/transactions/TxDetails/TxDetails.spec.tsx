@@ -1,82 +1,99 @@
-import {render} from '@testing-library/react';
-import BigNumber from 'bignumber.js';
-import {mount} from 'enzyme';
+import { BlockchainCode, PersistentState, blockchainCodeToId } from '@emeraldwallet/core';
+import { StoredTransaction } from '@emeraldwallet/store';
+import { Theme } from '@emeraldwallet/ui';
+import { ThemeProvider } from '@material-ui/core';
+import { mount } from 'enzyme';
 import * as React from 'react';
-import {default as TxDetails} from './TxDetails';
-import {BlockchainCode, EthereumStoredTransaction} from "@emeraldwallet/core";
-import Total from "../../app/layout/Header/Total";
-import {Provider} from "react-redux";
-import {Map, List} from "immutable"
+import { Provider } from 'react-redux';
+import { Store } from 'redux';
+import { default as TxDetails } from './TxDetails';
 
-const reduceClasses = (prev: any, curr: any) => ({...prev, [curr]: curr});
+const { ChangeType, Direction, State, Status } = PersistentState;
 
-function createStore() {
+function createStore(): Store {
   return {
-    dispatch() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    [Symbol.observable](): any {
+      return undefined;
     },
-    subscribe() {
-      return () => {
-      };
-    },
-    replaceReducer() {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    dispatch(): any {
+      return () => undefined;
     },
     getState() {
-      return {
-        accounts: {
-          wallets: [
-            {
-              id: "111",
-              entries: [
-                {
-                  blockchain: 101,
-                }
-              ]
-            }
-          ],
-        },
-        history: Map({
-          trackedTransactions: List([
-            {
-              blockchain: BlockchainCode.ETC,
-              hash: '0x95c1767c33c37ef93de48897c1001679d947bd7f082fdf4e772c534ae180b9c8',
-              data: '0xDADA',
-              from: '0x1234',
-              to: '0x9876',
-              gas: 21000,
-              gasPrice: new BigNumber('30000000000'),
-              value: new BigNumber('100999370000000000000')
-            },
-            {
-              blockchain: BlockchainCode.BTC,
-              hash: '01679d947bd7f082fdf4e772c534ae1895c1767c33c37ef93de48897c100b9c8',
-              fee: 21000,
-              inputs: [],
-              outputs: []
-            }
-          ])
-        })
-      }
-    }
-  }
+      return undefined;
+    },
+    replaceReducer(): void {
+      // Nothing
+    },
+    subscribe() {
+      return () => undefined;
+    },
+  };
 }
 
-describe('TxDetailsView', () => {
-  it('should render nested components correctly', () => {
-    const component = mount(<Provider store={createStore() as any}><TxDetails
-      hash={"0x95c1767c33c37ef93de48897c1001679d947bd7f082fdf4e772c534ae180b9c8"}/></Provider>);
-    expect(component).toBeDefined();
-  });
+const ethereumTx = new StoredTransaction(
+  {
+    blockchain: blockchainCodeToId(BlockchainCode.ETH),
+    changes: [
+      {
+        amount: '-100000',
+        asset: 'ETH',
+        direction: Direction.SPEND,
+        type: ChangeType.TRANSFER,
+        wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
+      },
+    ],
+    sinceTimestamp: new Date('2022-01-01T10:00:00'),
+    state: State.PREPARED,
+    status: Status.UNKNOWN,
+    txId: '0x95c1767c33c37ef93de48897c1001679d947bd7f082fdf4e772c534ae180b9c8',
+  },
+  null,
+);
 
-  it('should show tx input data', async () => {
-    const component = mount(<Provider store={createStore() as any}><TxDetails
-      hash={"0x95c1767c33c37ef93de48897c1001679d947bd7f082fdf4e772c534ae180b9c8"}/></Provider>);
-    const inputComps = await component.html().indexOf("0xDADA");
-    expect(inputComps > 0).toBeTruthy();
+const bitcoinTx = new StoredTransaction(
+  {
+    blockchain: blockchainCodeToId(BlockchainCode.BTC),
+    changes: [
+      {
+        amount: '-100000',
+        asset: 'BTC',
+        direction: Direction.SPEND,
+        type: ChangeType.TRANSFER,
+        wallet: '74b0a509-9083-4b12-80bb-e01db1fa2293-1',
+      },
+    ],
+    sinceTimestamp: new Date('2022-01-01T10:00:00'),
+    state: State.PREPARED,
+    status: Status.UNKNOWN,
+    txId: '01679d947bd7f082fdf4e772c534ae1895c1767c33c37ef93de48897c100b9c8',
+  },
+  null,
+);
+
+describe('TxDetailsView', () => {
+  it('should render ethereum tx', () => {
+    expect(
+      mount(
+        <ThemeProvider theme={Theme}>
+          <Provider store={createStore()}>
+            <TxDetails tx={ethereumTx} />
+          </Provider>
+        </ThemeProvider>,
+      ),
+    ).toBeDefined();
   });
 
   it('should render bitcoin tx', () => {
-    const component = mount(<Provider store={createStore() as any}><TxDetails
-      hash={"01679d947bd7f082fdf4e772c534ae1895c1767c33c37ef93de48897c100b9c8"}/></Provider>);
-    expect(component).toBeDefined();
+    expect(
+      mount(
+        <ThemeProvider theme={Theme}>
+          <Provider store={createStore()}>
+            <TxDetails tx={bitcoinTx} />
+          </Provider>
+        </ThemeProvider>,
+      ),
+    ).toBeDefined();
   });
 });

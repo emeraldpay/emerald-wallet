@@ -1,82 +1,58 @@
-import {IState, txhistory} from '@emeraldwallet/store';
-import {makeStyles, withStyles} from '@material-ui/core/styles';
+import { Uuid } from '@emeraldpay/emerald-vault-core';
+import { IState, StoredTransaction, txhistory } from '@emeraldwallet/store';
 import * as React from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import List from './List';
-import Header from './Header';
-import {IStoredTransaction} from "@emeraldwallet/core";
-import {WalletEntry} from "@emeraldpay/emerald-vault-core";
-import {Box, createStyles, Theme} from "@material-ui/core";
 
-const useStyles = makeStyles<Theme>((theme) =>
-  createStyles({
-    container: {
-      padding: '30px 30px 20px',
-      backgroundColor: 'white',
-      border: `1px solid ${theme.palette.divider}`
-    }
-  })
+interface OwnProps {
+  walletId: Uuid;
+}
+
+interface StateProps {
+  cursor?: string;
+  lastTxId: string | null;
+  transactions: StoredTransaction[];
+}
+
+interface DispatchProps {
+  loadTransactions(walletId: Uuid, initial: boolean): Promise<void>;
+  setLastTxId(txId: string | null): void;
+}
+
+const TxHistory: React.FC<OwnProps & StateProps & DispatchProps> = ({
+  cursor,
+  lastTxId,
+  transactions,
+  walletId,
+  loadTransactions,
+  setLastTxId,
+}) => (
+  <List
+    cursor={cursor}
+    lastTxId={lastTxId}
+    transactions={transactions}
+    onLoadMore={() => loadTransactions(walletId, false)}
+    setLastTxId={setLastTxId}
+  />
 );
 
-/**
- *
- */
-const Component = (({useTransactions, accounts}: Props & Actions & OwnProps) => {
-  const styles = useStyles();
+export default connect<StateProps, DispatchProps, OwnProps, IState>(
+  (state) => {
+    const { cursor, lastTxId, transactions } = state.history;
 
-  const [txFilter, setTxFilter] = React.useState('ALL');
-  const [displayedTransactions, setDisplayedTransactions] = React.useState(
-    ([] as IStoredTransaction[]).concat(useTransactions)
-  );
-
-  const onTxFilterChange = (event: any, value: any) => {
-    const txes = txhistory.selectors.filterTransactions(value, null, useTransactions, accounts);
-    setTxFilter(value);
-    setDisplayedTransactions(txes);
-  }
-
-  const onSearchChange = (e: any) => {
-    const txes = txhistory.selectors.searchTransactions(e.target.value, useTransactions);
-    setDisplayedTransactions(txes);
-  }
-
-  return (
-    <div className={styles.container}>
-      <Header
-        onTxFilterChange={onTxFilterChange}
-        txFilterValue={txFilter}
-        onSearchChange={onSearchChange}
-      />
-      <List
-        transactions={displayedTransactions}
-      />
-    </div>
-  );
-})
-
-// State Properties
-interface Props {
-  useTransactions: IStoredTransaction[],
-}
-
-// Actions
-interface Actions {
-}
-
-// Component properties
-interface OwnProps {
-  transactions: IStoredTransaction[],
-  accounts: WalletEntry[]
-}
-
-export default connect(
-  (state: IState, ownProps: OwnProps) => {
-    const sorted = ownProps.transactions.sort((a, b) =>
-      (a.timestamp?.getTime() || 0) - (b.timestamp?.getTime() || 0)
-    );
     return {
-      useTransactions: sorted.reverse()
+      cursor,
+      lastTxId,
+      transactions,
     };
   },
-  (dispatch, ownProps) => ({})
-)((Component));
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  (dispatch: any) => ({
+    loadTransactions(walletId, initial) {
+      return dispatch(txhistory.actions.loadTransactions(walletId, initial));
+    },
+    setLastTxId(txId) {
+      dispatch(txhistory.actions.setLastTxId(txId));
+    },
+  }),
+)(TxHistory);

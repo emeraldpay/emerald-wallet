@@ -1,5 +1,5 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { EthereumStoredTransaction } from '@emeraldwallet/core/src/history/IStoredTransaction';
+import { EthereumTransaction } from '@emeraldwallet/core';
 import { accounts, IState, screen, transaction } from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import * as React from 'react';
@@ -11,11 +11,11 @@ import FormLabel from '../CreateTx/FormLabel/FormLabel';
 interface DispatchProps {
   checkGlobalKey(password: string): Promise<boolean>;
   goBack(): void;
-  signTransaction(tx: EthereumStoredTransaction, password: string, accountId?: string): Promise<void>;
+  signTransaction(tx: EthereumTransaction, password: string, accountId?: string): Promise<void>;
 }
 
 interface OwnProps {
-  transaction: EthereumStoredTransaction;
+  transaction: EthereumTransaction;
 }
 
 interface StateProps {

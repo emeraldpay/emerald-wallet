@@ -1,16 +1,14 @@
-import {SeedDescription, Wallet} from '@emeraldpay/emerald-vault-core';
-import {isSeedPkRef} from '@emeraldpay/emerald-vault-core/lib/types';
-import {Page} from '@emeraldwallet/ui';
-import {Back} from '@emeraldwallet/ui';
-import {blockchainIdToCode, Blockchains} from '@emeraldwallet/core';
-import {parseDate} from '@emeraldwallet/core/lib/utils';
-import {accounts, IState, screen} from '@emeraldwallet/store';
-import {Button} from '@emeraldwallet/ui';
-import {createStyles, Divider, Table, TableBody, TableCell, TableRow, withStyles} from '@material-ui/core';
-import {Check as CheckIcon, Close as CrossIcon} from '@material-ui/icons';
-import {clipboard} from 'electron';
+import { SeedDescription, Wallet, isBitcoinEntry } from '@emeraldpay/emerald-vault-core';
+import { isSeedPkRef } from '@emeraldpay/emerald-vault-core/lib/types';
+import { Blockchains, blockchainIdToCode } from '@emeraldwallet/core';
+import { parseDate } from '@emeraldwallet/core/lib/utils';
+import { IState, accounts, screen } from '@emeraldwallet/store';
+import { Back, Button, Page } from '@emeraldwallet/ui';
+import { Divider, Table, TableBody, TableCell, TableRow, createStyles, withStyles } from '@material-ui/core';
+import { Check as CheckIcon, Close as CrossIcon } from '@material-ui/icons';
+import { clipboard } from 'electron';
 import * as React from 'react';
-import {connect} from 'react-redux';
+import { connect } from 'react-redux';
 import i18n from '../../i18n';
 
 const styles = createStyles({
@@ -86,7 +84,11 @@ const WalletInfo: React.FC<OwnProps & StateProps & StylesProps & DispatchProps> 
                   `Label: ${entry.label ?? 'Not set'}`,
                   `Created At: ${entry.createdAt}`,
                   `Blockchain: ${Blockchains[blockchainIdToCode(entry.blockchain).toString()].getTitle()}`,
-                  `Address: ${entry.address?.value}`,
+                  isBitcoinEntry(entry)
+                    ? entry.xpub
+                        .map(({ role, xpub }) => `${role === 'receive' ? 'Receive' : 'Change'} xPub: ${xpub}`)
+                        .join('\n')
+                    : `Address: ${entry.address?.value}`,
                   ...(isSeedPkRef(entry, entry.key)
                     ? [`HD Path: ${entry.key.hdPath}`]
                     : [`Private Key Id: ${entry.key?.keyId}`, `Private Key Type: ${entry.key?.type}`]),
@@ -171,10 +173,19 @@ const WalletInfo: React.FC<OwnProps & StateProps & StylesProps & DispatchProps> 
                   {Blockchains[blockchainIdToCode(entry.blockchain).toString()].getTitle()}
                 </ValueTableCell>
               </TableRow>
-              <TableRow>
-                <TitleTableCell>Address</TitleTableCell>
-                <ValueTableCell>{entry.address?.value}</ValueTableCell>
-              </TableRow>
+              {isBitcoinEntry(entry) ? (
+                entry.xpub.map(({ role, xpub }) => (
+                  <TableRow key={xpub}>
+                    <TitleTableCell>{role === 'receive' ? 'Receive' : 'Change'} xPub</TitleTableCell>
+                    <ValueTableCell>{xpub}</ValueTableCell>
+                  </TableRow>
+                ))
+              ) : (
+                <TableRow>
+                  <TitleTableCell>Address</TitleTableCell>
+                  <ValueTableCell>{entry.address?.value}</ValueTableCell>
+                </TableRow>
+              )}
               {isSeedPkRef(entry, entry.key) ? (
                 <TableRow>
                   <TitleTableCell>HDPath</TitleTableCell>

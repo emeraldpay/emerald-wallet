@@ -51,6 +51,7 @@
     "@emeraldwallet/electron-app": "^2.8.0-dev",
     "@emeraldwallet/ui": "^2.8.0-dev",
     "core-js": "^3.21.1",
+    "electron-log": "4.0.7",
     "node-fetch": "^3.2.3",
     "react": "16.13.1",
     "react-dom": "16.13.1",

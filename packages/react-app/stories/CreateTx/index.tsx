@@ -66,20 +66,35 @@ storiesOf('CreateTx Ethereum', module)
   .add('FromField', () => <FromField accounts={['0x1', '02']} />)
   .add('ToField', () => <ToField />);
 
-const bitcoinTx = new CreateBitcoinTx(wallet3.entries[1] as BitcoinEntry, [
-  {
-    txid: '75be7ffb8726bc193f20c2225cdac3b014de9bbc92f1d3c45e2595ad147d0fc2',
-    vout: 0,
-    value: Satoshi.fromBitcoin(1.5).encode(),
-    address: 'bc1qmpwznj3e8v7mz2swwppu9stjrac2q9zy9x983h',
-  },
-  {
-    txid: '14de9bbc925ad147d0fc2f1d3c45e75be7ffb8726bc193f20c2225cdac3b0259',
-    vout: 0,
-    value: Satoshi.fromBitcoin(2).encode(),
-    address: 'bc1q8xw7slwt90dtx4nrs08pjsq244eusxn605v9w9',
-  },
-]);
+const bitcoinTx = new CreateBitcoinTx(
+  wallet3.entries[1] as BitcoinEntry,
+  [
+    {
+      address: 'bc1qvnvpqr9d6k4cvz9yy842zr73kcmqcshl8gvgn6',
+      hdPath: "m/84'/0'/3'/0/3",
+      role: 'change',
+    },
+    {
+      address: 'bc1qa2s34p38jyuen859slf28nnvccauk6xuwqzug4',
+      hdPath: "m/84'/0'/3'/0/2",
+      role: 'receive',
+    },
+  ],
+  [
+    {
+      txid: '75be7ffb8726bc193f20c2225cdac3b014de9bbc92f1d3c45e2595ad147d0fc2',
+      vout: 0,
+      value: Satoshi.fromBitcoin(1.5).encode(),
+      address: 'bc1qmpwznj3e8v7mz2swwppu9stjrac2q9zy9x983h',
+    },
+    {
+      txid: '14de9bbc925ad147d0fc2f1d3c45e75be7ffb8726bc193f20c2225cdac3b0259',
+      vout: 0,
+      value: Satoshi.fromBitcoin(2).encode(),
+      address: 'bc1q8xw7slwt90dtx4nrs08pjsq244eusxn605v9w9',
+    },
+  ],
+);
 bitcoinTx.requiredAmountBitcoin = 1.2;
 bitcoinTx.address = 'bc1q5c4g4njf4g7a2ugu0tq5rjjdg3j0yexus7x3f4';
 

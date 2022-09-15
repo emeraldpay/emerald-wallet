@@ -15,7 +15,7 @@ export const Terms = ({ onAgree }: IProps) => {
   };
 
   return (
-    <Grid container={true} direction='column' justify='center' alignItems='center'>
+    <Grid container={true} direction='column' justifyContent='center' alignItems='center'>
       <Grid item={true} xs={12}>
         <div style={style}>
           <p>

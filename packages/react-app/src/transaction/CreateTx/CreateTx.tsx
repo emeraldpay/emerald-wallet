@@ -1,9 +1,9 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { workflow } from '@emeraldwallet/core';
+import { BlockchainCode, workflow } from '@emeraldwallet/core';
 import { GasPrices } from '@emeraldwallet/store';
 import { Button, ButtonGroup } from '@emeraldwallet/ui';
-import { Box, createStyles, FormControlLabel, FormHelperText, Slider, Switch, withStyles } from '@material-ui/core';
+import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles, withStyles } from '@material-ui/core';
 import * as React from 'react';
 import AmountField from './AmountField';
 import FormFieldWrapper from './FormFieldWrapper';
@@ -59,24 +59,23 @@ const styles = createStyles({
 const { ValidationResult } = workflow;
 
 export interface Props {
+  chain: BlockchainCode;
   tx: workflow.CreateEthereumTx | workflow.CreateERC20Tx;
   token: string;
 
   /** Available tokens / currencies for transfer */
   tokenSymbols: string[];
-  addressBookAddresses?: string[];
   currency?: string;
   txFeeToken: string;
   fiatBalance?: string;
   ownAddresses?: string[];
   onSubmit?: () => void;
   onCancel?: () => void;
-  onChangeTo?: (to: string) => void;
+  onChangeTo: (to: string) => void;
   onChangeAmount?: (amount: BigAmount) => void;
   onChangeFrom?: (from: string) => void;
   onChangeGasLimit?: (value: string) => void;
   onChangeToken?: (tokenSymbol: string) => void;
-  onEmptyAddressBookClick?: () => void;
   onMaxClicked?: () => void;
   getBalancesByAddress?: (address: string) => string[];
 
@@ -179,12 +178,7 @@ class CreateTransaction extends React.Component<Props, State> {
           />
         </FormFieldWrapper>
         <FormFieldWrapper>
-          <ToField
-            onChangeTo={this.props.onChangeTo}
-            to={this.props.tx.to}
-            addressBookAddresses={this.props.addressBookAddresses}
-            onEmptyAddressBookClick={this.props.onEmptyAddressBookClick}
-          />
+          <ToField blockchain={this.props.chain} to={this.props.tx.to} onChange={this.props.onChangeTo} />
         </FormFieldWrapper>
         <FormFieldWrapper>
           <AmountField

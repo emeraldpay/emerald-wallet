@@ -1,10 +1,10 @@
-import { isEthereumEntry, SeedReference, Uuid, WalletEntry } from '@emeraldpay/emerald-vault-core';
+import { SeedReference, Uuid, WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { AddSeedEntry, isSeedPkRef } from '@emeraldpay/emerald-vault-core/lib/types';
-import { blockchainCodeToId, blockchainIdToCode, Blockchains, HDPath, IBlockchain } from '@emeraldwallet/core';
-import { accounts, IState, screen } from '@emeraldwallet/store';
-import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
+import { Blockchains, HDPath, IBlockchain, blockchainCodeToId, blockchainIdToCode } from '@emeraldwallet/core';
+import { IState, accounts, screen } from '@emeraldwallet/store';
+import { Back, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import {
-  createStyles,
+  Button,
   Grid,
   MenuItem,
   Table,
@@ -14,6 +14,7 @@ import {
   TableRow,
   TextField,
   Typography,
+  createStyles,
   withStyles,
 } from '@material-ui/core';
 import * as React from 'react';
@@ -23,8 +24,9 @@ import FormFieldWrapper from '../../transaction/CreateTx/FormFieldWrapper';
 import FormLabel from '../../transaction/CreateTx/FormLabel/FormLabel';
 
 const styles = createStyles({
-  actionButtons: {
-    marginTop: 20,
+  blockchains: {
+    flex: 1,
+    marginRight: 20,
   },
   tableCellAction: {
     minWidth: 60,
@@ -131,7 +133,7 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
         setPasswordError('Incorrect password');
       }
     }
-  }, [password, selectedBlockchain]);
+  }, [entries, password, checkGlobalKey, isGlobalKeySet, listAddresses, selectedBlockchain]);
 
   const onAddAddress = React.useCallback(
     ({ address, hdPath, seedId }: SeedAddress) => {
@@ -149,7 +151,7 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
         },
       }).then(goBack);
     },
-    [password, selectedBlockchain],
+    [password, selectedBlockchain, walletId, addEntryToWallet, goBack],
   );
 
   React.useEffect(() => {
@@ -216,10 +218,51 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
             }),
         );
       })();
-  }, [counter, entries, password, selectedBlockchain, stage]);
+  }, [counter, entries, password, stage, listAddresses, selectedBlockchain]);
 
   return (
-    <Page title="Additional Addresses" leftIcon={<Back onClick={goBack} />}>
+    <Page
+      footer={
+        stage === Stage.UNLOCK ? undefined : (
+          <Grid container alignItems="center" justifyContent="space-between">
+            <Grid item classes={{ root: classes.blockchains }}>
+              <FormFieldWrapper style={{ paddingBottom: 0 }}>
+                <FormLabel>Blockchain</FormLabel>
+                <TextField
+                  fullWidth={true}
+                  select={true}
+                  value={selectedBlockchain}
+                  onChange={({ target: { value } }) => setSelectedBlockchain(parseInt(value, 10))}
+                >
+                  {blockchains.map((blockchain) => (
+                    <MenuItem key={blockchain.params.code} value={blockchainCodeToId(blockchain.params.code)}>
+                      {blockchain.getTitle()}
+                    </MenuItem>
+                  ))}
+                </TextField>
+              </FormFieldWrapper>
+            </Grid>
+            <Grid item>
+              <ButtonGroup>
+                <Button
+                  color="primary"
+                  disabled={counter === 0}
+                  variant="outlined"
+                  onClick={() => setCounter(counter - 1)}
+                >
+                  Back
+                </Button>
+                <Button color="primary" variant="outlined" onClick={() => setCounter(counter + 1)}>
+                  Next
+                </Button>
+              </ButtonGroup>
+            </Grid>
+          </Grid>
+        )
+      }
+      title="Additional Addresses"
+      leftIcon={<Back onClick={goBack} />}
+    >
       {stage === Stage.UNLOCK &&
         (isHWSeed ? (
           <LedgerWait fullSize onConnected={() => setStage(Stage.LIST)} />
@@ -233,28 +276,15 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
                 <PasswordInput error={passwordError} minLength={1} onChange={setPassword} />
               </Grid>
               <Grid item xs={2}>
-                <Button label="Unlock" primary={true} onClick={onSeedUnlock} />
+                <Button color="primary" variant="contained" onClick={onSeedUnlock}>
+                  Unlock
+                </Button>
               </Grid>
             </Grid>
           </>
         ))}
       {stage === Stage.LIST && (
         <>
-          <FormFieldWrapper>
-            <FormLabel>Blockchain</FormLabel>
-            <TextField
-              fullWidth={true}
-              select={true}
-              value={selectedBlockchain}
-              onChange={({ target: { value } }) => setSelectedBlockchain(parseInt(value, 10))}
-            >
-              {blockchains.map((blockchain) => (
-                <MenuItem key={blockchain.params.code} value={blockchainCodeToId(blockchain.params.code)}>
-                  {blockchain.getTitle()}
-                </MenuItem>
-              ))}
-            </TextField>
-          </FormFieldWrapper>
           <Table>
             <TableHead>
               <TableRow>
@@ -272,21 +302,20 @@ const AddHDAddress: React.FC<DispatchProps & OwnProps & StateProps & StylesProps
                     <TableCell className={classes.tableCellHdPath}>{hdPath}</TableCell>
                     <TableCell>{address}</TableCell>
                     <TableCell className={classes.tableCellAction}>
-                      <Button disabled={existed} label="Add" primary={true} onClick={() => onAddAddress(seedAddress)} />
+                      <Button
+                        color="primary"
+                        disabled={existed}
+                        variant="contained"
+                        onClick={() => onAddAddress(seedAddress)}
+                      >
+                        Add
+                      </Button>
                     </TableCell>
                   </TableRow>
                 );
               })}
             </TableBody>
           </Table>
-          <Grid container className={classes.actionButtons} justify="flex-end">
-            <Grid item>
-              <ButtonGroup>
-                <Button disabled={counter === 0} label="Back" onClick={() => setCounter(counter - 1)} />
-                <Button label="Next" onClick={() => setCounter(counter + 1)} />
-              </ButtonGroup>
-            </Grid>
-          </Grid>
         </>
       )}
     </Page>

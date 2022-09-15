@@ -1,49 +1,58 @@
 import ElectronStore from 'electron-store';
+import uuid from 'uuid/v4';
 
-const uuid = require('uuid/v4');
-
-interface IStoreType {
-  version: number;
+interface StoreType {
+  id: string;
+  lastCursor?: number;
   terms: string;
-  id: any;
-  // @deprecated
-  geth?: any;
+  version: number;
   // @deprecated
   chain?: any;
+  // @deprecated
+  geth?: any;
 }
 
-const DEFAULTS: IStoreType = {
+const DEFAULTS: StoreType = {
+  id: uuid(),
   version: 1,
   terms: 'none',
-  id: uuid()
 };
 
 export default class Settings {
-  private settings: ElectronStore<IStoreType>;
-  constructor () {
+  private settings: ElectronStore<StoreType>;
+
+  constructor() {
     this.settings = new ElectronStore({
+      defaults: DEFAULTS,
       name: 'settings',
-      defaults: DEFAULTS
     });
+
     // not used anymore
     this.settings.delete('geth');
     this.settings.delete('chain');
   }
 
-  /**
-   * Get settings as plain JavaScript object
-   * @returns {*}
-   */
-  public toJS () {
-    return this.settings.store;
+  public getId(): string {
+    return this.settings.get('id');
   }
 
-  public setTerms (v: string) {
-    this.settings.set('terms', v);
+  public getLastCursor(): number | undefined {
+    return this.settings.get('lastCursor');
+  }
+
+  public setLastCursor(timestamp: number): Settings {
+    this.settings.set('lastCursor', timestamp);
+
     return this;
   }
 
-  public getId () {
-    return this.settings.get('id');
+  public setTerms(version: string): Settings {
+    this.settings.set('terms', version);
+
+    return this;
+  }
+
+  public toJS(): StoreType {
+    return this.settings.store;
   }
 }

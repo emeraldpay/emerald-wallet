@@ -5,11 +5,12 @@
   "scripts": {
     "build": "yarn workspace @emeraldwallet/desktop run build",
     "build:dist": "yarn workspace @emeraldwallet/desktop run build:dist",
-    "build:neon": "electron-build-env neon build @emeraldpay/emerald-vault-native --release",
+    "build:vault": "electron-build-env neon build @emeraldpay/emerald-vault-native --release",
+    "build:persistent-state": "yarn workspace @emeraldwallet/persistent-state run build:rs:release",
     "clean": "lerna run clean --stream",
     "clean:node_modules": "rimraf node_modules packages/*/node_modules",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
-    "postinstall": "yarn build:neon",
+    "postinstall": "yarn build:persistent-state && yarn build:vault",
     "prebuilt:vault": "cd node_modules/@emeraldpay/emerald-vault-native && node-pre-gyp install --fallback-to-build=false --update-binary --runtime=electron --target=15.0.0",
     "test": "lerna run test --stream",
     "test:coverage": "lerna run test:coverage --stream --concurrency 1"
@@ -19,14 +20,25 @@
     "@typescript-eslint/parser": "^2.33.0",
     "electron-build-env": "0.2.0",
     "eslint": "^7.0.0",
+    "eslint-import-resolver-typescript": "^3.4.0",
+    "eslint-plugin-import": "^2.26.0",
     "eslint-plugin-react": "^7.20.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-unused-imports": "^2.0.0",
     "lerna": "3.20.2",
-    "neon-cli": "0.3.1",
+    "neon-cli": "0.10.1",
     "node-pre-gyp": "^0.17.0",
     "prettier": "^2.5.1",
-    "typescript": "3.8.3"
+    "typescript": "3.9.10"
   },
   "workspaces": [
     "packages/*"
-  ]
+  ],
+  "resolutions": {
+    "@emeraldpay/api": "https://artifacts.emerald.cash/builds/emerald-api-js/acba4725/emeraldpay-api-v0.3.0-alpha.2.tgz",
+    "@emeraldpay/api-node": "https://artifacts.emerald.cash/builds/emerald-api-js/acba4725/emeraldpay-api-node-v0.3.0-alpha.2.tgz",
+    "@emeraldpay/emerald-vault-core": "https://artifacts.emerald.cash/builds/vault-node/6a9cdced/emeraldpay-emerald-vault-core-v0.10.0-dev.tgz",
+    "@emeraldpay/emerald-vault-native": "https://artifacts.emerald.cash/builds/vault-node/6a9cdced/emeraldpay-emerald-vault-native-v0.10.0-dev.tgz",
+    "tslib": "2.3.1"
+  }
 }

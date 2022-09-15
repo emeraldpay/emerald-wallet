@@ -56,7 +56,7 @@ export const styles = createStyles({
   },
   nameTypography: {
     fontSize: 14,
-    lineHeight: 22,
+    lineHeight: 2,
   },
   root: {
     alignItems: 'center',
@@ -107,7 +107,7 @@ export class Account extends React.PureComponent<OwnProps> {
 
     return (
       <div className={classes.identityIcon}>
-        <IdentityIcon id={address.startsWith('0x') ? address : `0x${address}`} />
+        <IdentityIcon id={address} />
       </div>
     );
   }

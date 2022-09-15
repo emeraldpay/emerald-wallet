@@ -104,18 +104,17 @@ export function findWalletByAddress(state: any, address: string, blockchain: Blo
   );
 }
 
-export function findAccountByAddress(state: any, address: string, chain: BlockchainCode): WalletEntry | undefined {
-  return allEntries(state).find((e) => {
-    if (blockchainCodeToId(chain) != e.blockchain) {
-      return false
+export function findAccountByAddress(state: IState, address: string, chain: BlockchainCode): WalletEntry | undefined {
+  return allEntries(state).find((entry) => {
+    if (blockchainCodeToId(chain) != entry.blockchain) {
+      return false;
     }
-    if (isEthereumEntry(e)) {
-      return e.address?.value == address
-    } else if (isBitcoinEntry(e)) {
-      //TODO would not find old address
-      return e.addresses.some((a) => a.address == address)
+
+    if (isEthereumEntry(entry)) {
+      return entry.address?.value == address;
     }
-    return false
+
+    return false;
   });
 }
 

@@ -1,17 +1,17 @@
-import { initialize as initRemote, enable as remoteEnable } from '@electron/remote/main';
+import { enable as remoteEnable, initialize as initRemote } from '@electron/remote/main';
 import {
   Application,
   assertSingletonWindow,
   getMainWindow,
   LocalConnector,
-  LocalWalletState,
   protocol,
   Settings,
 } from '@emeraldwallet/electron-app';
-import { EmeraldApiAccessDev, EmeraldApiAccessProd, ServerConnect } from '@emeraldwallet/services';
+import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
+import { EmeraldApiAccess, EmeraldApiAccessDev, EmeraldApiAccessProd, ServerConnect } from '@emeraldwallet/services';
 import { app, ipcMain } from 'electron';
 import * as logger from 'electron-log';
-import path, { resolve as resolvePath } from 'path';
+import { join as joinPath, resolve as resolvePath } from 'path';
 import gitVersion from '../../gitversion.json';
 import { DevelopmentMode, ProductionMode, sendMode } from './utils/api-modes';
 
@@ -72,7 +72,7 @@ app.on('ready', () => {
   logger.info('Starting Emerald', app.getVersion());
   logger.info('Setup API access');
 
-  let apiAccess;
+  let apiAccess: EmeraldApiAccess;
 
   if (apiMode.id === DevelopmentMode.id) {
     apiAccess = new EmeraldApiAccessDev(settings.getId(), parameters);
@@ -83,7 +83,7 @@ app.on('ready', () => {
   logger.info('Connect to', apiAccess.address);
   logger.info('Setup Vault');
 
-  const vault = new LocalConnector(dataDir ? resolvePath(path.join(dataDir, '/vault')) : null);
+  const vault = new LocalConnector(dataDir ? resolvePath(joinPath(dataDir, 'vault')) : null);
 
   logger.info('Setup Server connect');
 
@@ -103,9 +103,9 @@ app.on('ready', () => {
 
   logger.info('Run application');
 
-  const walletState = new LocalWalletState(vault.getProvider());
+  const persistentState = new PersistentStateImpl(resolvePath(joinPath(dataDir, 'persistentState')));
 
-  application.run(webContents, apiAccess, apiMode, vault.getProvider(), rpcConnections, walletState);
+  application.run(webContents, apiAccess, apiMode, persistentState, vault.getProvider(), rpcConnections);
 
   let initialized = false;
 
@@ -142,6 +142,7 @@ app.on('ready', () => {
   });
 
   app.on('quit', () => {
+    persistentState.close();
     application.stop();
   });
 });

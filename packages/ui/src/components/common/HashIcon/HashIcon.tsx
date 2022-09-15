@@ -1,45 +1,42 @@
+import { HasherType, Params, hashicon } from '@emeraldpay/hashicon';
 import * as React from 'react';
-import {Component} from "react";
-import {Params, hashicon, HasherType} from "@emeraldpay/hashicon";
+import { Component } from 'react';
 
-export interface Props {
-  value: string;
-  size?: number;
+export interface OwnProps {
+  className?: string;
   hasher?: HasherType;
   options?: Params;
+  size?: number;
+  value: string;
 }
 
-export class HashIcon extends Component<Props, {}> {
-  shouldComponentUpdate(nextProps: Props, nextState): boolean {
+export class HashIcon extends Component<OwnProps> {
+  shouldComponentUpdate(nextProps: OwnProps): boolean {
     // Check only 3 main properties for changes
-    return (this.props.value !== nextProps.value) ||
-      (this.props.size !== nextProps.size) ||
-      (this.props.hasher !== nextProps.hasher);
+    return (
+      this.props.hasher !== nextProps.hasher ||
+      this.props.size !== nextProps.size ||
+      this.props.value !== nextProps.value
+    );
   }
 
-  render() {
-    const value = this.props.value;
-    let options = {};
+  render(): React.ReactNode {
+    const { className, hasher, size, value } = this.props;
 
-    if (typeof options != "undefined") {
-      options = {...options, ...this.props.options};
+    let options = { ...this.props.options };
+
+    if (typeof hasher == 'string') {
+      options = { ...options, ...{ hasher } };
     }
-    if (typeof this.props.size == "number") {
-      options = {...options, ...{size: this.props.size}};
+
+    if (typeof size === 'number') {
+      options = { ...options, ...{ size } };
     }
-    if (typeof this.props.hasher == "string") {
-      options = {...options, ...{hasher: this.props.hasher}};
-    }
+
     const icon = hashicon(value, options).toDataURL();
-    const attributes = {
-      src: icon,
-      alt: value
-    };
-    if (typeof this.props.size == 'number') {
-      attributes["width"] = this.props.size;
-    }
-    return (<img {...attributes}/>);
+
+    return <img alt={value} className={className} draggable="false" src={icon} width={size} />;
   }
 }
 
-export default HashIcon
+export default HashIcon;

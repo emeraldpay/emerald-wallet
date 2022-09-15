@@ -1,10 +1,10 @@
 import { workflow } from '@emeraldwallet/core';
 import { ArrowRight, Button, ButtonGroup, IdentityIcon, PasswordInput } from '@emeraldwallet/ui';
-import { Divider, List, ListItem, ListItemText } from '@material-ui/core';
-import { withStyles } from '@material-ui/styles';
+import { Divider, List, ListItem, ListItemText, StyleRules, Theme } from '@material-ui/core';
+import { withStyles } from '@material-ui/core/styles';
 import * as React from 'react';
 
-const styles = (theme?: any) => ({
+const styles = (theme: Theme): StyleRules => ({
   formRow: {
     display: 'flex',
     marginBottom: '19px',

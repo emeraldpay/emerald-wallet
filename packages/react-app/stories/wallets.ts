@@ -1,6 +1,6 @@
+import { Wallet } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode } from '@emeraldwallet/core';
 import { accounts, settings, tokens } from '@emeraldwallet/store';
-import { Wallet } from '@emeraldpay/emerald-vault-core';
 
 export const ledgerSeedId = '7befa8b6-670d-467a-8ddd-a9615087ba14';
 
@@ -63,10 +63,7 @@ export const wallet3: Wallet = {
         value:
           'zpub6trp3XEQXBogyby8NUy5xg5qykZAMnC7e4apsn1kNXhtGs3TKVpKS8P4DXMKuy56yKkLwgAYnWsMd9PzGnTdWAHoiwvRLwfAZ58ajkbVudW',
       },
-      addresses: [
-        { role: 'receive', hdPath: "m/84'/0'/3'/0/2", address: 'bc1qa2s34p38jyuen859slf28nnvccauk6xuwqzug4' },
-        { role: 'change', hdPath: "m/84'/0'/3'/0/3", address: 'bc1qvnvpqr9d6k4cvz9yy842zr73kcmqcshl8gvgn6' },
-      ],
+      addresses: [],
       blockchain: 1,
       id: 'f1fa1c12-5ac0-48f3-a76d-5bfb75be37b4-3',
       createdAt: new Date(),

@@ -1,7 +1,7 @@
-import { BigAmount, FormatterBuilder, Predicates } from '@emeraldpay/bigamount';
-import { createStyles, MenuItem, TextField } from '@material-ui/core';
-import {withStyles} from '@material-ui/styles';
-import {getStandardUnits} from "@emeraldwallet/core";
+import { BigAmount } from '@emeraldpay/bigamount';
+import { formatAmount } from '@emeraldwallet/core';
+import { MenuItem, TextField, createStyles } from '@material-ui/core';
+import { withStyles } from '@material-ui/styles';
 import * as React from 'react';
 import { ReactElement } from 'react';
 import FormLabel from '../FormLabel';
@@ -34,22 +34,6 @@ export class TokenField extends React.Component<Props> {
     }
   };
 
-  public formatBalance = (balance: BigAmount): string => {
-    const units = getStandardUnits(balance);
-
-    const balanceFormatter = new FormatterBuilder()
-      .when(Predicates.ZERO, (whenTrue, whenFalse): void => {
-        whenTrue.useTopUnit();
-        whenFalse.useOptimalUnit(undefined, units, 3);
-      })
-      .number(3, true)
-      .append(' ')
-      .unitCode()
-      .build();
-
-    return balanceFormatter.format(balance);
-  };
-
   public render(): ReactElement {
     const { classes, selectedToken, balance } = this.props;
 
@@ -66,7 +50,7 @@ export class TokenField extends React.Component<Props> {
           ))}
         </TextField>
         <div className={classes.balance} data-testid="balance">
-          {balance == null ? '?' : this.formatBalance(balance)}
+          {balance == null ? '?' : formatAmount(balance)}
           {` / ${this.props.fiatBalance} ${this.props.fiatCurrency}`}
         </div>
       </React.Fragment>

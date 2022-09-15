@@ -19,6 +19,9 @@
       "path": "../electron-app"
     },
     {
+      "path": "../persistent-state"
+    },
+    {
       "path": "../react-app"
     }
   ]

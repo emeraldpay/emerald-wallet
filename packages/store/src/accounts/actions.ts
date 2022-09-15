@@ -1,17 +1,19 @@
 import {
   AddEntry,
   AddressRole,
+  CurrentAddress,
   EntryId,
   IdSeedReference,
   OddPasswordItem,
   SeedDefinition,
   SeedDescription,
+  SeedDetails,
   SeedReference,
   Uuid,
   Wallet,
   WalletEntry,
 } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, blockchainCodeToId, IApi, Logger } from '@emeraldwallet/core';
+import { BlockchainCode, blockchainCodeToId, HDPath, Logger, WalletApi } from '@emeraldwallet/core';
 import { ipcRenderer } from 'electron';
 import { Dispatch } from 'redux';
 import { dispatchRpcError } from '../screen/actions';
@@ -123,7 +125,7 @@ export function importSeedWalletAction(mnemonic: string, password: string): ICre
 }
 
 function createWalletWithAccount(
-  api: IApi,
+  api: WalletApi,
   dispatch: Dispatch<any>,
   blockchain: BlockchainCode,
   walletName: string = '',
@@ -470,4 +472,24 @@ export function listSeedAddresses(
 
 export function disableReceiveForEntry(entryId: EntryId, disabled = true): Dispatched<void> {
   return (dispatch, getState, extra) => extra.api.vault.setEntryReceiveDisabled(entryId, disabled);
+}
+
+export function getXPubPosition(xPub: string): Dispatched<number> {
+  return (dispatch, getState, extra) => extra.api.xPubPos.get(xPub);
+}
+
+export function getXPubPositionalAddress(entryId: string, xPub: string, role: AddressRole): Dispatched<CurrentAddress> {
+  return async (dispatch, getState, extra) => {
+    const position = await extra.api.xPubPos.get(xPub);
+    const [address] = await extra.api.vault.listEntryAddresses(entryId, role, position, 1);
+
+    return {
+      ...address,
+      hdPath: address.hdPath == null ? undefined : HDPath.parse(address.hdPath).forIndex(position).toString(),
+    };
+  };
+}
+
+export function updateSeed(seed: Uuid | IdSeedReference, details: Partial<SeedDetails>): Dispatched<boolean> {
+  return (dispatch, getState, extra) => extra.api.vault.updateSeed(seed, details);
 }

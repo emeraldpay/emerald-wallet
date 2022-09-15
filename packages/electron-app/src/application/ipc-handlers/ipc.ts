@@ -6,6 +6,7 @@ import {
   isNativeCallError,
   isNativeCallResponse,
 } from '@emeraldpay/api';
+import { Uuid } from '@emeraldpay/emerald-vault-core';
 import {
   AnyCoinCode,
   BlockchainCode,
@@ -13,10 +14,10 @@ import {
   Commands,
   isBitcoin,
   isEthereum,
-  IStoredTransaction,
   Logger,
+  PersistentState,
 } from '@emeraldwallet/core';
-import { loadTransactions2, storeTransactions2 } from '@emeraldwallet/history-store';
+import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
 import { EmeraldApiAccess } from '@emeraldwallet/services';
 import { ipcMain } from 'electron';
 import * as os from 'os';
@@ -29,7 +30,7 @@ interface BalanceResult {
 
 const log = Logger.forCategory('IPC Handlers');
 
-export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess) {
+export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess, persistentState: PersistentStateImpl) {
   ipcMain.handle(Commands.GET_VERSION, async (event, args) => {
     const osDetails = {
       platform: os.platform(),
@@ -51,14 +52,12 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess) {
     app.settings.setTerms(v);
   });
 
-  // Transaction history API
-  ipcMain.handle(Commands.PERSIST_TX_HISTORY, (event: any, blockchain: BlockchainCode, txs: IStoredTransaction[]) => {
-    storeTransactions2(blockchain, txs);
-  });
-
-  ipcMain.handle(Commands.LOAD_TX_HISTORY, (event: any, blockchain: BlockchainCode) => {
-    return loadTransactions2(blockchain);
-  });
+  ipcMain.handle(
+    Commands.LOAD_TX_HISTORY,
+    async (event: any, filter?: PersistentState.TxHistoryFilter, query?: PersistentState.PageQuery) => {
+      return persistentState.txhistory.query(filter, query);
+    },
+  );
 
   ipcMain.handle(
     Commands.GET_BALANCE,
@@ -131,6 +130,14 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess) {
     return app.rpc.chain(blockchain).eth.getTransactionCount(address);
   });
 
+  ipcMain.handle(Commands.GET_ETH_RECEIPT, (event: any, blockchain: BlockchainCode, hash: string) => {
+    return app.rpc.chain(blockchain).eth.getTransactionReceipt(hash);
+  });
+
+  ipcMain.handle(Commands.GET_ETH_TX, (event: any, blockchain: BlockchainCode, hash: string) => {
+    return app.rpc.chain(blockchain).eth.getTransaction(hash);
+  });
+
   ipcMain.handle(
     Commands.ESTIMATE_FEE,
     async (event: any, blockchain: BlockchainCode, blocks: number, mode: EstimationMode) => {
@@ -160,4 +167,41 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess) {
       return null;
     },
   );
+
+  ipcMain.handle(Commands.GET_TX_META, (event, blockchain: BlockchainCode, txId: string) =>
+    persistentState.txmeta.get(blockchain, txId),
+  );
+
+  ipcMain.handle(Commands.SET_TX_META, (event, meta: PersistentState.TxMeta) => persistentState.txmeta.set(meta));
+
+  ipcMain.handle(Commands.ADDRESS_BOOK_ADD, (event, item: PersistentState.AddressbookItem) =>
+    persistentState.addressbook.add(item),
+  );
+
+  ipcMain.handle(Commands.ADDRESS_BOOK_GET, (event, id: string) => persistentState.addressbook.get(id));
+
+  ipcMain.handle(Commands.ADDRESS_BOOK_REMOVE, (event, id: string) => persistentState.addressbook.remove(id));
+
+  ipcMain.handle(Commands.ADDRESS_BOOK_QUERY, (event, filter: PersistentState.AddressbookFilter) =>
+    persistentState.addressbook.query(filter),
+  );
+
+  ipcMain.handle(Commands.ADDRESS_BOOK_UPDATE, (event, id: string, item: Partial<PersistentState.AddressbookItem>) =>
+    persistentState.addressbook.update(id, item),
+  );
+
+  ipcMain.handle(Commands.XPUB_POSITION_GET, (event, xpub: string) => persistentState.xpubpos.get(xpub));
+
+  ipcMain.handle(Commands.XPUB_POSITION_SET, (event, xpub: string, pos: number) =>
+    persistentState.xpubpos.setAtLeast(xpub, pos),
+  );
+
+  ipcMain.handle(Commands.XPUB_LAST_INDEX, async (event, blockchain: BlockchainCode, xpub: string, start: number) => {
+    const state = await apiAccess.transactionClient.getXpubState({
+      address: { start, xpub },
+      blockchain: blockchainCodeToId(blockchain),
+    });
+
+    return state.lastIndex;
+  });
 }
