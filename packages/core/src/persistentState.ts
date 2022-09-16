@@ -127,6 +127,10 @@ export interface Transaction {
    * Changes and references to the user wallets
    */
   changes: Change[];
+  /**
+   * Is the transaction in a mempool?
+   */
+  mempool?: boolean;
 }
 
 /**
@@ -138,13 +142,17 @@ export interface TxHistoryFilter {
    */
   wallet?: Uuid | EntryId;
   /**
-   * require a transaction known or confirmed after the specified moment
+   * Require a transaction known or confirmed after the specified moment
    */
   after?: Date;
   /**
-   * require a transaction known or confirmed before the specified moment
+   * Require a transaction known or confirmed before the specified moment
    */
   before?: Date;
+  /**
+   * Require a transaction in mempool
+   */
+  mempool?: boolean;
 }
 
 export interface TxMeta {
