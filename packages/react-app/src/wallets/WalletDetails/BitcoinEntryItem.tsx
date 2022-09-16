@@ -80,7 +80,7 @@ export default connect((state: IState, ownProps: OwnProps): StateProps => {
   const { entry } = ownProps;
 
   const blockchainCode = blockchainIdToCode(entry.blockchain);
-  const balance = accounts.selectors.getBalance(state, entry.id) ?? accounts.selectors.zeroAmountFor(blockchainCode);
+  const balance = accounts.selectors.getBalance(state, entry.id, accounts.selectors.zeroAmountFor(blockchainCode));
 
   return {
     balance,
