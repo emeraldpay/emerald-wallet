@@ -1,16 +1,16 @@
 import { BigAmount, CreateAmount, Units } from '@emeraldpay/bigamount';
 import { BitcoinEntry, CurrentAddress, UnsignedBitcoinTx } from '@emeraldpay/emerald-vault-core';
 import BigNumber from 'bignumber.js';
-import { amountDecoder, amountFactory, BalanceUtxo, BlockchainCode, blockchainIdToCode } from '../../blockchains';
 import { ValidationResult } from './types';
+import { BalanceUtxo, BlockchainCode, amountDecoder, amountFactory, blockchainIdToCode } from '../../blockchains';
 
-export interface BitcoinTxDetails<A extends BigAmount> {
+export interface BitcoinTxDetails<T extends BigAmount> {
+  change?: T;
   from: BalanceUtxo[];
   to: {
     address?: string;
-    amount?: A;
+    amount?: T;
   };
-  change?: A;
 }
 
 export interface Output {
@@ -20,7 +20,7 @@ export interface Output {
 }
 
 export interface TxMetric {
-  // https://en.bitcoin.it/wiki/Weight_units
+  /** @see https://en.bitcoin.it/wiki/Weight_units */
   weightOf(inputs: BalanceUtxo[], outputs: Output[]): number;
 }
 
@@ -37,10 +37,13 @@ class AverageTxMetric implements TxMetric {
   }
 }
 
-// https://bitcoinfees.net/, https://www.buybitcoinworldwide.com/fee-calculator
+/**
+ * @see https://bitcoinfees.net
+ * @see https://www.buybitcoinworldwide.com/fee-calculator
+ */
 const DEFAULT_VKB_FEE = 1024;
 
-// see https://en.bitcoin.it/wiki/Weight_units
+/** @see https://en.bitcoin.it/wiki/Weight_units */
 export function convertWUToVB(wu: number): number {
   return wu / 4;
 }
@@ -87,6 +90,15 @@ export class CreateBitcoinTx {
     };
   }
 
+  get requiredAmount(): BigAmount {
+    return this.tx.to.amount ?? this.zero;
+  }
+
+  set requiredAmount(value: BigAmount) {
+    this.tx.to.amount = value;
+    this.rebalance();
+  }
+
   get transaction(): BitcoinTxDetails<BigAmount> {
     return { ...this.tx };
   }
@@ -103,15 +115,6 @@ export class CreateBitcoinTx {
 
   set requiredAmountBitcoin(amount: number | string) {
     this.requiredAmount = this.amountFactory(new BigNumber(amount).multipliedBy(this.amountUnits.top.multiplier));
-  }
-
-  get requiredAmount(): BigAmount {
-    return this.tx.to.amount ?? this.zero;
-  }
-
-  set requiredAmount(value: BigAmount) {
-    this.tx.to.amount = value;
-    this.rebalance();
   }
 
   get totalToSpend(): BigAmount {
@@ -151,8 +154,52 @@ export class CreateBitcoinTx {
     return this.totalToSpend.minus(this.change).minus(this.requiredAmount).max(this.zero);
   }
 
-  totalUtxo(current: BalanceUtxo[]): BigAmount {
-    return current.map((item) => this.amountDecoder(item.value)).reduce((t1, t2) => t1.plus(t2), this.zero);
+  create(): UnsignedBitcoinTx {
+    return {
+      inputs: this.tx.from.map((item) => {
+        return {
+          txid: item.txid,
+          amount: this.amountDecoder(item.value).number.toNumber(),
+          vout: item.vout,
+          address: item.address,
+          entryId: this.source.id,
+        };
+      }),
+      outputs: this.outputs,
+      fee: this.fees.number.toNumber(),
+    };
+  }
+
+  debug(): Record<string, unknown> {
+    return {
+      available: this.totalAvailable.toString(),
+      send: this.tx.to.amount?.toString(),
+      fess: this.fees.toString(),
+      change: this.change.toString(),
+      from: this.tx.from.map((item) => {
+        return {
+          address: item.address,
+          amount: item.value,
+        };
+      }),
+      to: this.outputs.map((item) => {
+        return {
+          address: item.address,
+          amount: item.amount,
+        };
+      }),
+    };
+  }
+
+  estimateFees(price: number): BigAmount {
+    const size = this.metric.weightOf(this.tx.from ?? [], this.outputs);
+
+    return this.amountFactory(price).multiply(size).divide(1024);
+  }
+
+  setMaxAmount(): void {
+    this.requiredAmount = this.totalAvailable;
+    this.rebalance();
   }
 
   rebalance(): boolean {
@@ -204,13 +251,11 @@ export class CreateBitcoinTx {
     return totalSend.isGreaterOrEqualTo(requiredAmount);
   }
 
-  estimateFees(price: number): BigAmount {
-    const size = this.metric.weightOf(this.tx.from ?? [], this.outputs);
-
-    return this.amountFactory(price).multiply(size).divide(1024);
+  totalUtxo(current: BalanceUtxo[]): BigAmount {
+    return current.map((item) => this.amountDecoder(item.value)).reduce((t1, t2) => t1.plus(t2), this.zero);
   }
 
-  public validate(): ValidationResult {
+  validate(): ValidationResult {
     if (typeof this.tx.from == 'undefined' || this.tx.from.length == 0) {
       return ValidationResult.NO_FROM;
     }
@@ -230,42 +275,5 @@ export class CreateBitcoinTx {
     }
 
     return ValidationResult.OK;
-  }
-
-  create(): UnsignedBitcoinTx {
-    return {
-      inputs: this.tx.from.map((item) => {
-        return {
-          txid: item.txid,
-          amount: this.amountDecoder(item.value).number.toNumber(),
-          vout: item.vout,
-          address: item.address,
-          entryId: this.source.id,
-        };
-      }),
-      outputs: this.outputs,
-      fee: this.fees.number.toNumber(),
-    };
-  }
-
-  debug(): Record<string, unknown> {
-    return {
-      available: this.totalAvailable.toString(),
-      send: this.tx.to.amount?.toString(),
-      fess: this.fees.toString(),
-      change: this.change.toString(),
-      from: this.tx.from.map((item) => {
-        return {
-          address: item.address,
-          amount: item.value,
-        };
-      }),
-      to: this.outputs.map((item) => {
-        return {
-          address: item.address,
-          amount: item.amount,
-        };
-      }),
-    };
   }
 }

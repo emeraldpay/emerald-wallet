@@ -13,46 +13,40 @@ import ToField from './ToField';
 import TokenField from './TokenField';
 
 const styles = createStyles({
-  inputField: {
-    flexGrow: 5,
+  container: {
+    width: 800,
   },
-  toField: {
-    width: 500,
-  },
-  amountField: {
-    width: 300,
-  },
-  gasPriceTypeBox: {
-    width: 240,
-    float: 'left',
-    height: 40,
-  },
-  gasPriceSliderBox: {
-    width: 300,
-    float: 'left',
+  gasPriceHelp: {
+    position: 'initial',
+    paddingLeft: 10,
   },
   gasPriceHelpBox: {
     width: 500,
     clear: 'left',
+  },
+  gasPriceMarkLabel: {
+    fontSize: '0.7em',
+    opacity: 0.8,
   },
   gasPriceSlider: {
     width: 300,
     marginBottom: 10,
     paddingTop: 10,
   },
-  gasPriceHelp: {
-    position: 'initial',
-    paddingLeft: 10,
+  gasPriceSliderBox: {
+    width: 300,
+    float: 'left',
   },
-  withHelp: {
-    minHeight: 80,
-  },
-  gasPriceMarkLabel: {
-    fontSize: '0.7em',
-    opacity: 0.8,
+  gasPriceTypeBox: {
+    width: 240,
+    float: 'left',
+    height: 40,
   },
   gasPriceValueLabel: {
     fontSize: '0.7em',
+  },
+  inputField: {
+    flexGrow: 5,
   },
 });
 
@@ -158,7 +152,7 @@ class CreateTransaction extends React.Component<Props, State> {
     const stdPriorityGasPriceNumber = stdPriorityGasPrice.getNumberByUnit(unit).toNumber();
 
     return (
-      <div style={{ width: 800 }}>
+      <div className={this.props.classes.container}>
         <FormFieldWrapper>
           <FromField
             accounts={this.props.ownAddresses}

@@ -1,9 +1,15 @@
-import { AddressRole, CurrentAddress, EntryId, isBitcoinEntry } from '@emeraldpay/emerald-vault-core';
-import { BitcoinEntry, isSeedPkRef, UnsignedBitcoinTx, Uuid } from '@emeraldpay/emerald-vault-core/lib/types';
-import { BalanceUtxo, BlockchainCode, blockchainIdToCode } from '@emeraldwallet/core';
-import { CreateBitcoinTx } from '@emeraldwallet/core/lib/workflow';
-import { accounts, FeePrices, IState, screen, transaction } from '@emeraldwallet/store';
-import { getXPubPositionalAddress } from '@emeraldwallet/store/lib/accounts/actions';
+import {
+  AddressRole,
+  BitcoinEntry,
+  CurrentAddress,
+  EntryId,
+  UnsignedBitcoinTx,
+  Uuid,
+  isBitcoinEntry,
+  isSeedPkRef,
+} from '@emeraldpay/emerald-vault-core';
+import { BalanceUtxo, BlockchainCode, blockchainIdToCode, workflow } from '@emeraldwallet/core';
+import { FeePrices, IState, accounts, screen, transaction } from '@emeraldwallet/store';
 import { Back, Page } from '@emeraldwallet/ui';
 import { Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -27,10 +33,10 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  getFees: (blockchain: BlockchainCode) => () => Promise<FeePrices>;
+  onBroadcast(blockchain: BlockchainCode, orig: UnsignedBitcoinTx, raw: string): void;
+  onCancel?(): void;
+  getFees(blockchain: BlockchainCode): () => Promise<FeePrices<number>>;
   getXPubPositionalAddress(entryId: string, xPub: string, role: AddressRole): Promise<CurrentAddress>;
-  onBroadcast: (blockchain: BlockchainCode, orig: UnsignedBitcoinTx, raw: string) => void;
-  onCancel?: () => void;
 }
 
 const Component: React.FC<OwnProps & StateProps & DispatchProps> = ({
@@ -48,7 +54,7 @@ const Component: React.FC<OwnProps & StateProps & DispatchProps> = ({
   const [raw, setRaw] = React.useState('');
 
   const [tx, setTx] = React.useState<UnsignedBitcoinTx | null>(null);
-  const [txBuilder, setTxBuilder] = React.useState<CreateBitcoinTx | null>(null);
+  const [txBuilder, setTxBuilder] = React.useState<workflow.CreateBitcoinTx | null>(null);
 
   React.useEffect(() => {
     if (isBitcoinEntry(entry)) {
@@ -56,7 +62,7 @@ const Component: React.FC<OwnProps & StateProps & DispatchProps> = ({
         (addresses) => {
           try {
             // make sure we set up the Tx Builder only once, otherwise it loses configuration options
-            const txBuilder = new CreateBitcoinTx(entry, addresses, utxo);
+            const txBuilder = new workflow.CreateBitcoinTx(entry, addresses, utxo);
 
             setTxBuilder(txBuilder);
           } catch (exception) {
@@ -149,10 +155,10 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  (dispatch: any, ownProps) => {
-    return {
-      getFees: (blockchain) => async () => {
-        const [avgLast, avgMiddle, avgTail5] = await Promise.all([
+  (dispatch: any, ownProps) => ({
+    getFees(blockchain) {
+      return async () => {
+        const [avgLast, avgMiddle, avgTail5]: number[] = await Promise.all([
           dispatch(transaction.actions.estimateFee(blockchain, 6, 'avgLast')),
           dispatch(transaction.actions.estimateFee(blockchain, 6, 'avgMiddle')),
           dispatch(transaction.actions.estimateFee(blockchain, 6, 'avgTail5')),
@@ -163,19 +169,19 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           avgMiddle,
           avgTail5,
         };
-      },
-      getXPubPositionalAddress(entryId, xPub, role) {
-        return dispatch(getXPubPositionalAddress(entryId, xPub, role));
-      },
-      onBroadcast: (blockchain, orig, raw) => {
-        dispatch(transaction.actions.broadcastTx(blockchain, raw));
+      };
+    },
+    getXPubPositionalAddress(entryId, xPub, role) {
+      return dispatch(accounts.actions.getXPubPositionalAddress(entryId, xPub, role));
+    },
+    onBroadcast: (blockchain, orig, raw) => {
+      dispatch(transaction.actions.broadcastTx(blockchain, raw));
 
-        // when a change output was used
-        if (orig.outputs.length > 1) {
-          dispatch(accounts.actions.nextAddress(ownProps.source, 'change'));
-        }
-      },
-      onCancel: () => dispatch(screen.actions.gotoWalletsScreen()),
-    };
-  },
+      // when a change output was used
+      if (orig.outputs.length > 1) {
+        dispatch(accounts.actions.nextAddress(ownProps.source, 'change'));
+      }
+    },
+    onCancel: () => dispatch(screen.actions.gotoWalletsScreen()),
+  }),
 )(Component);
