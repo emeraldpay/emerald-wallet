@@ -478,6 +478,18 @@ export function getXPubPosition(xPub: string): Dispatched<number> {
   return (dispatch, getState, extra) => extra.api.xPubPos.get(xPub);
 }
 
+export function getAllXPubAddresses(entryId: string, xPub: string, role: AddressRole): Dispatched<CurrentAddress[]> {
+  return async (dispatch, getState, extra) => {
+    const position = await extra.api.xPubPos.get(xPub);
+    const addresses = await extra.api.vault.listEntryAddresses(entryId, role, 0, position + 1);
+
+    return addresses.map((address, index) => ({
+      ...address,
+      hdPath: address.hdPath == null ? undefined : HDPath.parse(address.hdPath).forIndex(index).toString(),
+    }));
+  };
+}
+
 export function getXPubPositionalAddress(entryId: string, xPub: string, role: AddressRole): Dispatched<CurrentAddress> {
   return async (dispatch, getState, extra) => {
     const position = await extra.api.xPubPos.get(xPub);

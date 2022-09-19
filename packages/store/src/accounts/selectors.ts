@@ -118,41 +118,69 @@ export function findAccountByAddress(state: IState, address: string, chain: Bloc
   });
 }
 
-export function getBalance<T extends BigAmount>(state: IState, entryId: string, defaultValue?: T): T | undefined {
+type AddressesBalance<T extends BigAmount> = { [address: string]: T };
+
+export function getAddressesBalance<T extends BigAmount>(state: IState, entryId: string): AddressesBalance<T> {
   const entry = findEntry(state, entryId);
-  if (!entry) {
-    console.warn("Unknown entry", entryId);
+
+  if (entry == null) {
+    return {};
+  }
+
+  const blockchainCode = blockchainIdToCode(entry.blockchain);
+
+  const amountDecode = amountDecoder<T>(blockchainCode);
+  const zeroAmount = zeroAmountFor<T>(blockchainCode);
+
+  const entryDetails = state[moduleName].details.filter((details) => details.entryId === entryId);
+
+  if (entryDetails.length === 0) {
+    return {};
+  }
+
+  if (isBitcoinEntry(entry)) {
+    return entryDetails
+      .map((details) => details.utxo)
+      .filter((utxo): utxo is BalanceUtxo[] => utxo != null)
+      .flat()
+      .reduce<AddressesBalance<T>>(
+        (carry, { address, value }) => ({
+          ...carry,
+          [address]: amountDecode(value).plus(carry[address] ?? zeroAmount),
+        }),
+        {},
+      );
+  }
+
+  if (isEthereumEntry(entry) && entry.address != null) {
+    const { value: address } = entry.address;
+
+    return entryDetails
+      .map((details) => details.balance)
+      .filter((balance): balance is string => balance != null)
+      .reduce<AddressesBalance<T>>(
+        (carry, balance) => ({
+          ...carry,
+          [address]: amountDecode(balance).plus(carry[address] ?? zeroAmount),
+        }),
+        {},
+      );
+  }
+
+  return {};
+}
+
+export function getBalance<T extends BigAmount>(state: IState, entryId: string, defaultValue: T): T {
+  const entry = findEntry(state, entryId);
+
+  if (entry == null) {
     return defaultValue;
   }
 
-  const amountDecode = amountDecoder<T>(blockchainIdToCode(entry.blockchain));
-  const zero = zeroAmountFor<T>(blockchainIdToCode(entry.blockchain));
+  const addressesBalance = getAddressesBalance<T>(state, entryId);
+  const zeroAmount = zeroAmountFor<T>(blockchainIdToCode(entry.blockchain));
 
-  const entryDetails = (state[moduleName].details || [])
-    .filter((b) => b.entryId === entryId);
-
-  if (entryDetails.length == 0) {
-    return defaultValue || zero;
-  }
-
-  if (isEthereumEntry(entry)) {
-    return entryDetails
-      .filter((b) => typeof b.balance === 'string' && b.balance !== '')
-      .map((b) => b.balance)
-      .map((b) => b as string)
-      .map(amountDecode)
-      .reduce(sum) || defaultValue;
-  } else if (isBitcoinEntry(entry)) {
-    return entryDetails
-      .filter((b) => typeof b.utxo != "undefined")
-      .map((b) => b.utxo!)
-      .reduce((a, b) => a.concat(...b))
-      .map((u) => u.value)
-      .map(amountDecode)
-      .reduce(sum) || defaultValue
-  } else {
-    console.warn("Invalid entry", entry);
-  }
+  return Object.values(addressesBalance).reduce((carry, balance) => carry.plus(balance), zeroAmount);
 }
 
 export function balanceByChain<T extends BigAmount>(state: IState, blockchain: BlockchainCode): T {
@@ -228,7 +256,7 @@ export function getWalletBalances (state: IState, wallet: Wallet, includeEmpty: 
   bitcoinAccounts.forEach((entry) => {
     const code = blockchainIdToCode(entry.blockchain);
     const zero = zeroAmountFor<BigAmount>(code);
-    const balance = getBalance(state, entry.id, zero) || zero;
+    const balance = getBalance(state, entry.id, zero);
     assets.push({
       balance
     })
