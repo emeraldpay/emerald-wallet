@@ -36,8 +36,8 @@ fn main(mut cx: ModuleContext) -> NeonResult<()> {
   cx.export_function("addressbook_remove", addressbook::remove)?;
   cx.export_function("addressbook_update", addressbook::update)?;
 
-  cx.export_function("xpubpos_set", xpubpos::set)?;
-  cx.export_function("xpubpos_get", xpubpos::get)?;
+  cx.export_function("xpubpos_set_current", xpubpos::set_current)?;
+  cx.export_function("xpubpos_get_next", xpubpos::get_next)?;
 
   Ok(())
 }

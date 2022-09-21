@@ -138,13 +138,23 @@ export interface TxHistoryFilter {
    */
   wallet?: Uuid | EntryId;
   /**
-   * require a transaction known or confirmed after the specified moment
+   * Require a transaction known or confirmed after the specified moment
    */
   after?: Date;
   /**
-   * require a transaction known or confirmed before the specified moment
+   * Require a transaction known or confirmed before the specified moment
    */
   before?: Date;
+
+  /**
+   * Requre the specified state
+   */
+  state?: State;
+
+  /**
+   * Requre the specified status
+   */
+  status?: Status;
 }
 
 export interface TxMeta {
@@ -283,10 +293,10 @@ export interface Addressbook {
 
 export interface XPubPosition {
   /**
-   * Get current position at the xpub
+   * Get next position at the xpub
    * @param xpub
    */
-  get(xpub: string): Promise<number>;
+  getNext(xpub: string): Promise<number>;
 
   /**
    * Set the current minimum position for the specified xpub. If the storage knows a larger position it stays on
@@ -297,7 +307,16 @@ export interface XPubPosition {
    * @param xpub
    * @param pos
    */
-  setAtLeast(xpub: string, pos: number): Promise<void>;
+  setNextAddressAtLeast(xpub: string, pos: number): Promise<void>;
+
+  /**
+   * Set the current known position for the specified xpub. If the storage knows a larger position it stays on
+   * that position, otherwise moves up to the specified.
+   *
+   * @param xpub
+   * @param pos
+   */
+  setCurrentAddressAt(xpub: string, pos: number): Promise<void>;
 }
 
 export interface PersistentState {

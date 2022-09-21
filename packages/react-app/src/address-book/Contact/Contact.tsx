@@ -87,7 +87,7 @@ const Contact: React.FC<OwnProps & DispatchProps> = ({
     if (id != null && isBitcoin(blockchainCode)) {
       getXPubLastIndex(blockchainCode, address).then((lastIndex) => {
         if (lastIndex != null) {
-          setXPubIndex(address, lastIndex + 1).then(() => {
+          setXPubIndex(address, lastIndex).then(() => {
             getAddressBookItem(id).then((updated) => {
               setCurrentContact(updated);
               setAddressUpdating(false);
@@ -178,7 +178,7 @@ export default connect<{}, DispatchProps, OwnProps>(
       dispatch(addressBook.actions.deleteContactAction(blockchainIdToCode(blockchain), id as string));
     },
     setXPubIndex(xpub, position) {
-      return dispatch(transaction.actions.setXPubIndex(xpub, position));
+      return dispatch(transaction.actions.setXPubCurrentIndex(xpub, position));
     },
   }),
 )(Contact);

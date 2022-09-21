@@ -9,7 +9,7 @@ describe('XPub Position', () => {
   });
 
   test('default is zero', async () => {
-    const act = await state.xpubpos.get(
+    const act = await state.xpubpos.getNext(
       'xpub661MyMwAqRbcGczjuMoRm6dXaLDEhW1u34gKenbeYqAix21mdUKJyuyu5F1rzYGVxyL6tmgBUAEPrEz92mBXjByMRiJdba9wpnN37RLLAXa',
     );
     expect(act).toBe(0);
@@ -19,12 +19,12 @@ describe('XPub Position', () => {
     const xpub =
       'xpub661MyMwAqRbcGczjuMoRm6dXaLDEhW1u34gKenbeYqAix21mdUKJyuyu5F1rzYGVxyL6tmgBUAEPrEz92mBXjByMRiJdba9wpnN37RLLAXa';
 
-    const act = await state.xpubpos.get(xpub);
+    const act = await state.xpubpos.getNext(xpub);
     expect(act).toBe(0);
 
-    await state.xpubpos.setAtLeast(xpub, 5);
+    await state.xpubpos.setCurrentAddressAt(xpub, 4);
 
-    const act2 = await state.xpubpos.get(xpub);
+    const act2 = await state.xpubpos.getNext(xpub);
     expect(act2).toBe(5);
   });
 
@@ -32,13 +32,13 @@ describe('XPub Position', () => {
     const xpub =
       'xpub661MyMwAqRbcGczjuMoRm6dXaLDEhW1u34gKenbeYqAix21mdUKJyuyu5F1rzYGVxyL6tmgBUAEPrEz92mBXjByMRiJdba9wpnN37RLLAXa';
 
-    await state.xpubpos.setAtLeast(xpub, 5);
-    const act = await state.xpubpos.get(xpub);
+    await state.xpubpos.setCurrentAddressAt(xpub, 4);
+    const act = await state.xpubpos.getNext(xpub);
     expect(act).toBe(5);
 
-    await state.xpubpos.setAtLeast(xpub, 3);
+    await state.xpubpos.setCurrentAddressAt(xpub, 3);
 
-    const act2 = await state.xpubpos.get(xpub);
+    const act2 = await state.xpubpos.getNext(xpub);
     expect(act2).toBe(5);
   });
 });
