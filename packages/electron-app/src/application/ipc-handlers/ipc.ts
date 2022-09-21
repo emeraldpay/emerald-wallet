@@ -190,10 +190,16 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess, pe
     persistentState.addressbook.update(id, item),
   );
 
-  ipcMain.handle(Commands.XPUB_POSITION_GET, (event, xpub: string) => persistentState.xpubpos.get(xpub));
+  ipcMain.handle(Commands.XPUB_POSITION_GET_NEXT, (event, xpub: string) =>
+    persistentState.xpubpos.getNext(xpub)
+  );
 
   ipcMain.handle(Commands.XPUB_POSITION_SET, (event, xpub: string, pos: number) =>
-    persistentState.xpubpos.setAtLeast(xpub, pos),
+    persistentState.xpubpos.setCurrentAddressAt(xpub, pos),
+  );
+
+  ipcMain.handle(Commands.XPUB_POSITION_NEXT_SET, (event, xpub: string, pos: number) =>
+    persistentState.xpubpos.setNextAddressAtLeast(xpub, pos),
   );
 
   ipcMain.handle(Commands.XPUB_LAST_INDEX, async (event, blockchain: BlockchainCode, xpub: string, start: number) => {

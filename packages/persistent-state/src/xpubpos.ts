@@ -11,10 +11,10 @@ export class XPubPositionImpl implements PersistentState.XPubPosition {
     this.manager = manager;
   }
 
-  get(xpub: string): Promise<number> {
+  getNext(xpub: string): Promise<number> {
     return new Promise((resolve, reject) => {
       try {
-        this.manager.addon.xpubpos_get(
+        this.manager.addon.xpubpos_get_next(
           xpub,
           neonToPromise(resolve, reject)
         );
@@ -24,10 +24,14 @@ export class XPubPositionImpl implements PersistentState.XPubPosition {
     });
   }
 
-  setAtLeast(xpub: string, pos: number): Promise<void> {
+  setNextAddressAtLeast(xpub: string, pos: number): Promise<void> {
+    return this.setCurrentAddressAt(xpub, pos - 1);
+  }
+
+  setCurrentAddressAt(xpub: string, pos: number): Promise<void> {
     return new Promise((resolve, reject) => {
       try {
-        this.manager.addon.xpubpos_set(
+        this.manager.addon.xpubpos_set_current(
           xpub, pos,
           neonToPromise(resolve, reject)
         );
