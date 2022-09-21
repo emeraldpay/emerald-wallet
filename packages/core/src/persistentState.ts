@@ -138,13 +138,23 @@ export interface TxHistoryFilter {
    */
   wallet?: Uuid | EntryId;
   /**
-   * require a transaction known or confirmed after the specified moment
+   * Require a transaction known or confirmed after the specified moment
    */
   after?: Date;
   /**
-   * require a transaction known or confirmed before the specified moment
+   * Require a transaction known or confirmed before the specified moment
    */
   before?: Date;
+
+  /**
+   * Requre the specified state
+   */
+  state?: State;
+
+  /**
+   * Requre the specified status
+   */
+  status?: Status;
 }
 
 export interface TxMeta {
