@@ -17,6 +17,8 @@ struct FilterJson {
   wallet: Option<String>,
   after: Option<DateTime<Utc>>,
   before: Option<DateTime<Utc>>,
+  state: Option<i32>,
+  status: Option<i32>,
 }
 
 #[derive(Serialize, Deserialize, Clone)]
@@ -92,6 +94,8 @@ impl TryFrom<FilterJson> for Filter {
     Ok(Filter {
       after: value.after,
       before: value.before,
+      state: value.state.and_then(|n| State::from_i32(n)),
+      status: value.status.and_then(|n| Status::from_i32(n)),
       wallet,
       ..Filter::default()
     })

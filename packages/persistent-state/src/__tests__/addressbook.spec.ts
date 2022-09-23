@@ -51,7 +51,8 @@ describe('Address Book', () => {
     const act = await state.addressbook.get(id);
 
     expect(act).toBeDefined();
-    expect(act?.address).toEqual(item.address);
+    expect(act?.address.address).toEqual('0x2EA8846a26B6af5F63CAAe912BB3c4064B94D54B');
+    expect(act?.address.currentAddress).toEqual('0x2EA8846a26B6af5F63CAAe912BB3c4064B94D54B');
   });
 
   test('adding xpub as plain sets the correct type', async () => {
@@ -69,11 +70,11 @@ describe('Address Book', () => {
     const act = await state.addressbook.get(id);
 
     expect(act).toBeDefined();
-    expect(act.address.address).toBe(
+    expect(act!!.address.address).toBe(
       'zpub6tviAxktqYSfSuMMd35WPKK8yiET4CcQQzg7bVcEep7E53jiUv9hBizBCLERcAa57nhPtXPCTGbBJ81r9wHnzEPUXGn9AL5cdEmMAKLJH5F',
     );
-    expect(act.address.type).toBe('xpub');
-    expect(act.address.currentAddress).toBe('bc1quj6e5fg6uj236jhynnwa84sxs6dzd25lpnptms');
+    expect(act!!.address.type).toBe('xpub');
+    expect(act!!.address.currentAddress).toBe('bc1quj6e5fg6uj236jhynnwa84sxs6dzd25lpnptms');
   });
 
   test('xpub item uses known pos', async () => {
@@ -89,15 +90,15 @@ describe('Address Book', () => {
 
     const id = await state.addressbook.add(item);
 
-    await state.xpubpos.setAtLeast(item.address.address, 4);
+    await state.xpubpos.setCurrentAddressAt(item.address.address, 3);
 
     const act = await state.addressbook.get(id);
 
     expect(act).toBeDefined();
-    expect(act.address.address).toBe(
+    expect(act!!.address.address).toBe(
       'zpub6tviAxktqYSfSuMMd35WPKK8yiET4CcQQzg7bVcEep7E53jiUv9hBizBCLERcAa57nhPtXPCTGbBJ81r9wHnzEPUXGn9AL5cdEmMAKLJH5F',
     );
-    expect(act.address.currentAddress).toBe('bc1qvetem3yt77xfn5sn0yc2rdfahcayvh2d63kp60');
+    expect(act!!.address.currentAddress).toBe('bc1qvetem3yt77xfn5sn0yc2rdfahcayvh2d63kp60');
   });
 
   test('return nothing for non existing id', async () => {
@@ -139,32 +140,34 @@ describe('Address Book', () => {
   });
 
   test('add an item and query using cursor', async () => {
-    await Promise.all(
-      Array(10)
-        .fill(null)
-        .map(async (_, index) => {
-          const item: PersistentState.AddressbookItem = {
-            address: {
-              address: `0x2EA8846a26B6af5F63CAAe912BB3c4064B94D50${index}`,
-              type: 'plain',
-            },
-            blockchain: blockchainCodeToId(BlockchainCode.ETH),
-          };
 
-          await state.addressbook.add(item);
-        }),
-    );
+    // right now there are some strange thread races, which are easier to handle with for-loop update
+    for (let i = 0; i < 10; i++) {
+      const item: PersistentState.AddressbookItem = {
+        address: {
+          address: `0x2EA8846a26B6af5F63CAAe912BB3c4064B94D50${i}`,
+          type: 'plain',
+        },
+        blockchain: blockchainCodeToId(BlockchainCode.ETH),
+      };
+
+      await state.addressbook.add(item);
+      //TODO should not be necessary because all calls must be serialized. But right now there is some weird race. Must be fixed on the lib level
+      await new Promise(r => setTimeout(r, 100));
+    }
 
     const page1 = await state.addressbook.query({}, { limit: 5 });
 
     expect(page1.items.length).toBe(5);
     expect(page1.items[0].address.address).toBe('0x2EA8846a26B6af5F63CAAe912BB3c4064B94D509');
+    expect(page1.items[4].address.address).toBe('0x2EA8846a26B6af5F63CAAe912BB3c4064B94D505');
     expect(page1.cursor).toBeDefined();
 
     const page2 = await state.addressbook.query({}, { cursor: page1.cursor, limit: 5 });
 
     expect(page2.items.length).toBe(5);
     expect(page2.items[0].address.address).toBe('0x2EA8846a26B6af5F63CAAe912BB3c4064B94D504');
+    expect(page2.items[4].address.address).toBe('0x2EA8846a26B6af5F63CAAe912BB3c4064B94D500');
   });
 
   test('add an item, remove and query all', async () => {

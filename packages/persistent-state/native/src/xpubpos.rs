@@ -9,7 +9,7 @@ use neon::prelude::{FunctionContext};
 // NAPI functions
 // ------
 
-fn set_internal(xpub: String, pos: u32) -> Result<bool, StateManagerError> {
+fn set_current_internal(xpub: String, pos: u32) -> Result<bool, StateManagerError> {
   let storage = Instance::get_storage()?;
   storage.get_xpub_pos()
     .set_at_least(xpub, pos)
@@ -18,7 +18,7 @@ fn set_internal(xpub: String, pos: u32) -> Result<bool, StateManagerError> {
 }
 
 #[neon_frame_fn(channel=2)]
-pub fn set<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
+pub fn set_current<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
   where
     H: FnOnce(Result<bool, StateManagerError>) + Send + 'static {
   let xpub = cx
@@ -31,22 +31,22 @@ pub fn set<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerEr
     .value(cx) as u32;
 
   std::thread::spawn(move || {
-    let result = set_internal(xpub, pos);
+    let result = set_current_internal(xpub, pos);
     handler(result);
   });
 
   Ok(())
 }
 
-fn get_internal(xpub: String) -> Result<u32, StateManagerError> {
+fn get_next_internal(xpub: String) -> Result<u32, StateManagerError> {
   let storage = Instance::get_storage()?;
   storage.get_xpub_pos()
-    .get(xpub)
+    .get_next(xpub)
     .map_err(StateManagerError::from)
 }
 
 #[neon_frame_fn(channel=1)]
-pub fn get<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
+pub fn get_next<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerError>
   where
     H: FnOnce(Result<u32, StateManagerError>) + Send + 'static {
   let xpub = cx
@@ -55,7 +55,7 @@ pub fn get<H>(cx: &mut FunctionContext, handler: H) -> Result<(), StateManagerEr
     .value(cx);
 
   std::thread::spawn(move || {
-    let result = get_internal(xpub);
+    let result = get_next_internal(xpub);
     handler(result);
   });
 

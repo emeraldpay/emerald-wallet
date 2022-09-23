@@ -39,6 +39,50 @@ describe('Tx History', () => {
     expect(act.items[0].sinceTimestamp.toISOString()).toBe('2021-03-05T10:11:12.000Z');
   });
 
+  test('filter by state', async () => {
+    const tx: PersistentState.Transaction = {
+      blockchain: blockchainCodeToId(BlockchainCode.ETH),
+      txId: '0xd91a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc44563',
+      state: State.PREPARED,
+      sinceTimestamp: new Date('2021-03-05T10:11:12Z'),
+      status: Status.UNKNOWN,
+      changes: [],
+    };
+
+    await state.txhistory.submit(tx);
+
+    const actPrepared = await state.txhistory.query({state: State.PREPARED});
+    expect(actPrepared).toEqual({ items: [tx], cursor: null });
+
+    const actDropped = await state.txhistory.query({state: State.DROPPED});
+    expect(actDropped).toEqual({ items: [], cursor: null });
+
+    const actAll = await state.txhistory.query();
+    expect(actAll).toEqual({ items: [tx], cursor: null });
+  });
+
+  test('filter by state', async () => {
+    const tx: PersistentState.Transaction = {
+      blockchain: blockchainCodeToId(BlockchainCode.ETH),
+      txId: '0xd91a058f994b6844bfd225b8acd1062b2402143487b2b8118ea50a854dc44563',
+      state: State.PREPARED,
+      sinceTimestamp: new Date('2021-03-05T10:11:12Z'),
+      status: Status.UNKNOWN,
+      changes: [],
+    };
+
+    await state.txhistory.submit(tx);
+
+    const actUnknown = await state.txhistory.query({status: Status.UNKNOWN});
+    expect(actUnknown).toEqual({ items: [tx], cursor: null });
+
+    const actOk = await state.txhistory.query({status: Status.OK});
+    expect(actOk).toEqual({ items: [], cursor: null });
+
+    const actAll = await state.txhistory.query();
+    expect(actAll).toEqual({ items: [tx], cursor: null });
+  });
+
   test("add a tx and query using cursor", async () => {
     for (let i = 0; i < 10; i++) {
       const tx: PersistentState.Transaction = {

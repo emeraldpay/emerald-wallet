@@ -136,13 +136,23 @@ export class MemoryVault {
 export class MemoryXPubPos {
   storage: Record<string, number> = {};
 
-  async get(xpub: string): Promise<number> {
+  async getNext(xpub: string): Promise<number> {
     const { [xpub]: current } = this.storage;
-
-    return Promise.resolve(current);
+    if (typeof current == "undefined" || current == null) {
+      return Promise.resolve(0);
+    }
+    return Promise.resolve(current + 1);
   }
 
-  async setAtLeast(xpub: string, position: number): Promise<void> {
+  async setNextAddressAtLeast(xpub: string, position: number): Promise<void> {
+    const { [xpub]: current } = this.storage;
+
+    if (position > current) {
+      this.storage[xpub] = position - 1;
+    }
+  }
+
+  async setCurrentAddressAt(xpub: string, position: number): Promise<void> {
     const { [xpub]: current } = this.storage;
 
     if (position > current) {
@@ -440,12 +450,16 @@ export class XPubPosMock implements PersistentState.XPubPosition {
     this.xPubPos = xPubPos;
   }
 
-  get(xpub: string): Promise<number> {
-    return this.xPubPos.get(xpub);
+  getNext(xpub: string): Promise<number> {
+    return this.xPubPos.getNext(xpub);
   }
 
-  setAtLeast(xpub: string, pos: number): Promise<void> {
-    return this.xPubPos.setAtLeast(xpub, pos);
+  setNextAddressAtLeast(xpub: string, pos: number): Promise<void> {
+    return this.xPubPos.setNextAddressAtLeast(xpub, pos);
+  }
+
+  setCurrentAddressAt(xpub: string, pos: number): Promise<void> {
+    return this.xPubPos.setCurrentAddressAt(xpub, pos);
   }
 }
 

@@ -51,7 +51,7 @@ class AddressBookMenuItem extends React.Component<Props> {
 
         onChange(id, currentAddress);
       } else {
-        await setXPubIndex(address, lastIndex + 1);
+        await setXPubIndex(address, lastIndex);
 
         const {
           address: { currentAddress },
@@ -102,7 +102,7 @@ export default connect<{}, DispatchProps>(
       return dispatch(transaction.actions.getXPubLastIndex(blockchain, xpub, start));
     },
     setXPubIndex(xpub, position) {
-      return dispatch(transaction.actions.setXPubIndex(xpub, position));
+      return dispatch(transaction.actions.setXPubCurrentIndex(xpub, position));
     },
   }),
   null,

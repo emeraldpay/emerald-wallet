@@ -372,8 +372,8 @@ export function getEthTx(blockchain: BlockchainCode, hash: string): Dispatched<E
   };
 }
 
-export function setXPubIndex(xpub: string, position: number): Dispatched<void> {
-  return (dispatch, getState, extra) => extra.api.xPubPos.setAtLeast(xpub, position);
+export function setXPubCurrentIndex(xpub: string, position: number): Dispatched<void> {
+  return (dispatch, getState, extra) => extra.api.xPubPos.setCurrentAddressAt(xpub, position);
 }
 
 export function getXPubLastIndex(blockchain: BlockchainCode, xpub: string, start: number): Dispatched<number> {

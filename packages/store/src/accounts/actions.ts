@@ -475,12 +475,12 @@ export function disableReceiveForEntry(entryId: EntryId, disabled = true): Dispa
 }
 
 export function getXPubPosition(xPub: string): Dispatched<number> {
-  return (dispatch, getState, extra) => extra.api.xPubPos.get(xPub);
+  return (dispatch, getState, extra) => extra.api.xPubPos.getNext(xPub);
 }
 
 export function getAllXPubAddresses(entryId: string, xPub: string, role: AddressRole): Dispatched<CurrentAddress[]> {
   return async (dispatch, getState, extra) => {
-    const position = await extra.api.xPubPos.get(xPub);
+    const position = await extra.api.xPubPos.getNext(xPub);
     const addresses = await extra.api.vault.listEntryAddresses(entryId, role, 0, position + 1);
 
     return addresses.map((address, index) => ({
@@ -492,7 +492,7 @@ export function getAllXPubAddresses(entryId: string, xPub: string, role: Address
 
 export function getXPubPositionalAddress(entryId: string, xPub: string, role: AddressRole): Dispatched<CurrentAddress> {
   return async (dispatch, getState, extra) => {
-    const position = await extra.api.xPubPos.get(xPub);
+    const position = await extra.api.xPubPos.getNext(xPub);
     const [address] = await extra.api.vault.listEntryAddresses(entryId, role, position, 1);
 
     return {
