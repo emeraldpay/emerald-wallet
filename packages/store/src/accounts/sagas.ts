@@ -174,9 +174,9 @@ function* nextAddress(xPubPos: PersistentState.XPubPosition, action: INextAddres
   const roleXPub = (entry?.xpub ?? []).filter(({ role }) => role === action.addressRole);
 
   for (const { xpub } of roleXPub) {
-    const pos: number = yield call(xPubPos.get, xpub);
+    const pos: number = yield call(xPubPos.getNext, xpub);
 
-    yield call(xPubPos.setAtLeast, xpub, pos + 1);
+    yield call(xPubPos.setNextAddressAtLeast, xpub, pos);
   }
 
   yield put(accounts.actions.loadWalletsAction());
