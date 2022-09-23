@@ -4,7 +4,17 @@ import { WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, Blockchains, IBlockchain, blockchainIdToCode, formatAmount } from '@emeraldwallet/core';
 import { CreateEthereumTx, TxTarget } from '@emeraldwallet/core/lib/workflow';
 import { ITokenInfo, registry } from '@emeraldwallet/erc20';
-import { FEE_KEYS, GasPrices, IState, accounts, screen, tokens, transaction } from '@emeraldwallet/store';
+import {
+  FEE_KEYS,
+  GasPrices,
+  IState,
+  accounts,
+  screen,
+  tokens,
+  transaction,
+  application,
+  DefaultFee,
+} from '@emeraldwallet/store';
 import { AccountSelect, Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import {
   Box,
@@ -75,6 +85,7 @@ interface StylesProps {
 
 interface StateProps {
   balanceByToken: Record<string, BigAmount>;
+  defaultFee: DefaultFee;
   eip1559: boolean;
   ownAddresses: string[];
   recoverBlockchain: IBlockchain;
@@ -85,13 +96,14 @@ interface StateProps {
 
 interface DispatchProps {
   checkGlobalKey(password: string): Promise<boolean>;
-  getFees(blockchain: BlockchainCode): Promise<Record<typeof FEE_KEYS[number], GasPrices>>;
+  getFees(blockchain: BlockchainCode, defaultFee: DefaultFee): Promise<Record<typeof FEE_KEYS[number], GasPrices>>;
   goBack(): void;
   signTransaction(tx: CreateEthereumTx, password: string): Promise<void>;
 }
 
 const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & DispatchProps> = ({
   entry: { address: fromAddress },
+  defaultFee,
   eip1559,
   balanceByToken,
   classes,
@@ -194,7 +206,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
 
   React.useEffect(() => {
     (async (): Promise<void> => {
-      const fees = await getFees(recoverBlockchain.params.code);
+      const fees = await getFees(recoverBlockchain.params.code, defaultFee);
 
       const { avgLast, avgMiddle, avgTail5 } = fees;
       const feeProp = eip1559 ? 'max' : 'expect';
@@ -466,6 +478,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       balanceByToken,
       recoverBlockchain,
       wrongBlockchain,
+      defaultFee: application.selectors.getDefaultFee(state, recoverBlockchainCode),
       eip1559: recoverBlockchain.params.eip1559 ?? false,
       ownAddresses:
         accounts.selectors
@@ -502,8 +515,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     checkGlobalKey(password) {
       return dispatch(accounts.actions.verifyGlobalKey(password));
     },
-    getFees(blockchain) {
-      return dispatch(transaction.actions.getFee(blockchain));
+    getFees(blockchain, defaultFee) {
+      return dispatch(transaction.actions.getFee(blockchain, defaultFee));
     },
     goBack() {
       dispatch(screen.actions.goBack());

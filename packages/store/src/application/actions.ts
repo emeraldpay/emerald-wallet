@@ -1,60 +1,50 @@
 import { Commands, Logger } from '@emeraldwallet/core';
-import { ipcRenderer, shell } from 'electron';
-import { IExtraArgument } from '../types';
-import { ActionTypes, IConfigAction, ISetConnectingAction } from './types';
+import { ipcRenderer } from 'electron';
+import { ActionTypes, ApplicationOptions, ConnectingAction, OptionsAction } from './types';
+import { Dispatched } from '../types';
 
 const log = Logger.forCategory('store.application');
 
-export function agreeOnTerms (v: any): any {
-  return async (dispatch: any) => {
-    await ipcRenderer.invoke(Commands.SET_TERMS, v);
-    return {
-      type: 'LAUNCHER/TERMS',
-      version: v
-    };
+export function agreeOnTerms(version?: string): Dispatched<void> {
+  return async (dispatch) => {
+    await ipcRenderer.invoke(Commands.SET_TERMS, version);
+
+    dispatch({
+      type: ActionTypes.TERMS,
+      payload: version,
+    });
   };
 }
 
-export function connecting (value: boolean): ISetConnectingAction {
+export function connecting(value: boolean): ConnectingAction {
   return {
-    type: ActionTypes.SET_CONNECTING,
-    payload: value
+    type: ActionTypes.CONNECTING,
+    payload: value,
   };
 }
 
-function setConfigAction (config: any): IConfigAction {
-  return {
-    type: ActionTypes.CONFIG,
-    payload: config
+export function getVersions(): Dispatched<unknown> {
+  return () => {
+    return ipcRenderer.invoke(Commands.GET_VERSION);
   };
 }
 
-export function getVersions (): any {
-  return (dispatch: any, getState: any, extra: IExtraArgument) => {
-    return ipcRenderer.invoke('get-version');
-  };
-}
-
-export function readConfig (): any {
-  return async (dispatch: any) => {
+export function readConfig(): Dispatched<void> {
+  return async (dispatch) => {
     const config = await ipcRenderer.invoke(Commands.GET_APP_SETTINGS);
-    log.debug(`Got app settings from electron: ${JSON.stringify(config)}`);
-    dispatch(setConfigAction(config));
-  };
 
-  // if (typeof window.process !== 'undefined') {
-  //
-  //   const launcherConfig = remote.getGlobal('launcherConfig').get();
-  //
-  //   log.debug(`Got launcher config from electron: ${JSON.stringify(launcherConfig)}`);
-  //
-  //   return {
-  //     type: ActionTypes.CONFIG,
-  //     payload: launcherConfig
-  //   };
-  // }
-  // return {
-  //   type: ActionTypes.CONFIG,
-  //   payload: {}
-  // };
+    log.debug(`Got app settings from electron: ${JSON.stringify(config)}`);
+
+    dispatch({
+      type: ActionTypes.CONFIG,
+      payload: config,
+    });
+  };
+}
+
+export function setOptions(options: ApplicationOptions): OptionsAction {
+  return {
+    type: ActionTypes.OPTIONS,
+    payload: options,
+  };
 }

@@ -12,7 +12,7 @@ describe('AmountField', () => {
     const wrapper = shallow(
       <Provider store={createTestStore()}>
         <ThemeProvider theme={Theme}>
-          <AmountField initialAmount={Wei.ZERO} units={WEIS} onChangeAmount={jest.fn()} />
+          <AmountField amount={Wei.ZERO} units={WEIS} onChangeAmount={jest.fn()} />
         </ThemeProvider>
       </Provider>,
     );
@@ -26,7 +26,7 @@ describe('AmountField', () => {
     const wrapper = mount(
       <Provider store={createTestStore()}>
         <ThemeProvider theme={Theme}>
-          <AmountField initialAmount={Wei.ZERO} units={WEIS} onChangeAmount={onChangeAmount} />
+          <AmountField amount={Wei.ZERO} units={WEIS} onChangeAmount={onChangeAmount} />
         </ThemeProvider>
       </Provider>,
     );

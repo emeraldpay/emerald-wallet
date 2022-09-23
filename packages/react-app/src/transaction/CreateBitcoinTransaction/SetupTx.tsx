@@ -1,6 +1,7 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { BitcoinEntry, EntryId, UnsignedBitcoinTx } from '@emeraldpay/emerald-vault-core';
 import { blockchainIdToCode, workflow } from '@emeraldwallet/core';
+import { TxTarget } from '@emeraldwallet/core/lib/workflow';
 import { FeePrices, screen } from '@emeraldwallet/store';
 import { Button, ButtonGroup } from '@emeraldwallet/ui';
 import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles } from '@material-ui/core';
@@ -67,35 +68,39 @@ interface StateProps {
 const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCancel, onCreate }) => {
   const styles = useStyles();
 
+  const [initializing, setInitializing] = React.useState(true);
+
   const [amount, setAmount] = React.useState(create.requiredAmount);
+
+  const [useStdFee, setUseStdFee] = React.useState(true);
   const [feePrice, setFeePrice] = React.useState(0);
   const [maximalFee, setMaximalFee] = React.useState(0);
   const [minimalFee, setMinimalFee] = React.useState(0);
   const [standardFee, setStandardFee] = React.useState(0);
-  const [useStdFee, setUseStdFee] = React.useState(true);
 
   const getTotalFee = React.useCallback((price: number) => create.estimateFees(price).toString(), [create]);
 
   const onSetAmount = React.useCallback(
     (value: BigAmount) => {
-      create.requiredAmountBitcoin = value.number.toNumber();
+      create.requiredAmount = value;
 
-      setAmount(create.requiredAmount);
+      setAmount(value);
     },
     [create],
   );
 
   const onSetAmountMax = React.useCallback(() => {
-    create.setMaxAmount();
+    create.target = TxTarget.SEND_ALL;
 
     setAmount(create.requiredAmount);
   }, [create]);
 
   const onSetFeePrice = React.useCallback(
-    (price: number) => {
-      create.feePrice = price;
+    (value: number) => {
+      create.feePrice = value;
 
-      setFeePrice(price);
+      setAmount(create.requiredAmount);
+      setFeePrice(value);
     },
     [create],
   );
@@ -109,17 +114,23 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
     [create],
   );
 
-  React.useEffect(() => {
-    getFees().then(({ avgLast, avgTail5, avgMiddle }) => {
-      setMinimalFee(avgLast);
-      setStandardFee(avgTail5);
-      setMaximalFee(avgMiddle);
+  React.useEffect(
+    () => {
+      getFees().then(({ avgLast, avgTail5, avgMiddle }) => {
+        setMinimalFee(avgLast);
+        setStandardFee(avgTail5);
+        setMaximalFee(avgMiddle);
 
-      onSetFeePrice(avgTail5);
-    });
-  }, [useStdFee, getFees, onSetFeePrice]);
+        onSetFeePrice(avgTail5);
 
-  const valid = standardFee > 0 && create.validate() == ValidationResult.OK;
+        setInitializing(false);
+      });
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
+
+  const validTx = !initializing && create.validate() === ValidationResult.OK;
 
   return (
     <div className={styles.container}>
@@ -128,7 +139,7 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
       </FormFieldWrapper>
       <FormFieldWrapper>
         <AmountField
-          initialAmount={amount}
+          amount={amount}
           units={create.requiredAmount.units}
           onChangeAmount={onSetAmount}
           onMaxClicked={onSetAmountMax}
@@ -142,6 +153,7 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
               control={
                 <Switch
                   checked={useStdFee}
+                  disabled={initializing}
                   onChange={(event) => {
                     const checked = event.target.checked;
                     if (checked) {
@@ -187,7 +199,7 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
         <ButtonGroup classes={{ container: styles.inputField }}>
           <Button label="Cancel" onClick={onCancel} />
           <Button
-            disabled={!valid}
+            disabled={!validTx}
             label="Create Transaction"
             primary={true}
             onClick={() => onCreate(create.create())}

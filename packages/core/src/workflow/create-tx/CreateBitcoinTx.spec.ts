@@ -1,8 +1,8 @@
-import { Satoshi, SATOSHIS } from '@emeraldpay/bigamount-crypto';
+import { SATOSHIS, Satoshi } from '@emeraldpay/bigamount-crypto';
 import { BitcoinEntry } from '@emeraldpay/emerald-vault-core';
+import { CreateBitcoinTx, Output, TxMetric, convertWUToVB } from './CreateBitcoinTx';
+import { TxTarget, ValidationResult } from './types';
 import { BalanceUtxo } from '../../blockchains';
-import { convertWUToVB, CreateBitcoinTx, Output, TxMetric } from './CreateBitcoinTx';
-import { ValidationResult } from './types';
 
 const basicEntry: BitcoinEntry = {
   address: undefined,
@@ -96,7 +96,7 @@ describe('CreateBitcoinTx', () => {
       ],
     );
     create.metric = defaultMetric;
-    create.requiredAmountBitcoin = 0.97;
+    create.requiredAmount = Satoshi.fromBitcoin(0.97);
     create.address = 'AAA';
     create.feePrice = 100 * 1024;
 
@@ -137,7 +137,7 @@ describe('CreateBitcoinTx', () => {
         { txid: '3', vout: 0, value: Satoshi.fromBitcoin(0.756).encode(), address: 'ADDR' },
       ],
     );
-    create.requiredAmountBitcoin = 2;
+    create.requiredAmount = Satoshi.fromBitcoin(2);
     create.address = 'AAA';
     const ok = create.rebalance();
     expect(ok).toBeFalsy();
@@ -162,7 +162,7 @@ describe('CreateBitcoinTx', () => {
       ],
     );
     create.metric = defaultMetric;
-    create.requiredAmountBitcoin = 0.02 - 0.00008;
+    create.requiredAmount = Satoshi.fromBitcoin(0.02 - 0.00008);
     create.feePrice = 65 * 1024;
     create.address = 'AAA';
 
@@ -185,6 +185,26 @@ describe('CreateBitcoinTx', () => {
     expect(create.validate()).toBe(ValidationResult.OK);
   });
 
+  it('rebalance with send all target', () => {
+    const create = new CreateBitcoinTx(
+      basicEntry,
+      [{ address: 'addrchange', hdPath: "m/84'", role: 'change' }],
+      [
+        { txid: '1', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'ADDR' },
+        { txid: '2', vout: 0, value: Satoshi.fromBitcoin(0.05).encode(), address: 'ADDR' },
+      ],
+    );
+    create.metric = defaultMetric;
+    create.address = 'AAA';
+    create.feePrice = 100 * 1024;
+    create.target = TxTarget.SEND_ALL;
+
+    const ok = create.rebalance();
+
+    expect(ok).toBeTruthy();
+    expect(create.requiredAmount.number.toNumber()).toEqual(9992000);
+  });
+
   it('simple fee', () => {
     const create = new CreateBitcoinTx(
       basicEntry,
@@ -195,7 +215,7 @@ describe('CreateBitcoinTx', () => {
       ],
     );
     create.metric = defaultMetric;
-    create.requiredAmountBitcoin = 0.08;
+    create.requiredAmount = Satoshi.fromBitcoin(0.08);
     create.address = 'AAA';
     create.feePrice = 100 * 1024;
 
@@ -214,7 +234,7 @@ describe('CreateBitcoinTx', () => {
       ],
     );
     create.metric = defaultMetric;
-    create.requiredAmountBitcoin = 2;
+    create.requiredAmount = Satoshi.fromBitcoin(2);
     create.address = 'AAA';
 
     expect(create.fees.toString()).toBe(Satoshi.ZERO.toString());
@@ -230,7 +250,7 @@ describe('CreateBitcoinTx', () => {
       ],
     );
     create.metric = defaultMetric;
-    create.requiredAmountBitcoin = 0.08;
+    create.requiredAmount = Satoshi.fromBitcoin(0.08);
     create.address = 'AAA';
     create.feePrice = 100 * 1024;
 
@@ -255,7 +275,7 @@ describe('CreateBitcoinTx', () => {
       ],
     );
     create.metric = defaultMetric;
-    create.requiredAmountBitcoin = 0.08;
+    create.requiredAmount = Satoshi.fromBitcoin(0.08);
     create.address = 'AAA';
 
     // ((2 * 120) + (2 * 80)) * 100 * 1024 == 40000

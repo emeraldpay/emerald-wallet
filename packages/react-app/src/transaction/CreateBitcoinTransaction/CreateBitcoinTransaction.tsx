@@ -9,7 +9,7 @@ import {
   isSeedPkRef,
 } from '@emeraldpay/emerald-vault-core';
 import { BalanceUtxo, BlockchainCode, blockchainIdToCode, workflow } from '@emeraldwallet/core';
-import { FeePrices, IState, accounts, screen, transaction } from '@emeraldwallet/store';
+import { DefaultFee, FeePrices, IState, accounts, application, screen, transaction } from '@emeraldwallet/store';
 import { Back, Page } from '@emeraldwallet/ui';
 import { Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -27,6 +27,7 @@ interface OwnProps {
 
 interface StateProps {
   blockchain: BlockchainCode;
+  defaultFee: DefaultFee;
   entry: BitcoinEntry;
   seedId: Uuid;
   utxo: BalanceUtxo[];
@@ -35,12 +36,13 @@ interface StateProps {
 interface DispatchProps {
   onBroadcast(blockchain: BlockchainCode, orig: UnsignedBitcoinTx, raw: string): void;
   onCancel?(): void;
-  getFees(blockchain: BlockchainCode): () => Promise<FeePrices<number>>;
+  getFees(blockchain: BlockchainCode, defaultFee: DefaultFee): () => Promise<FeePrices<number>>;
   getXPubPositionalAddress(entryId: string, xPub: string, role: AddressRole): Promise<CurrentAddress>;
 }
 
 const Component: React.FC<OwnProps & StateProps & DispatchProps> = ({
   blockchain,
+  defaultFee,
   entry,
   seedId,
   source,
@@ -56,22 +58,25 @@ const Component: React.FC<OwnProps & StateProps & DispatchProps> = ({
   const [tx, setTx] = React.useState<UnsignedBitcoinTx | null>(null);
   const [txBuilder, setTxBuilder] = React.useState<workflow.CreateBitcoinTx | null>(null);
 
-  React.useEffect(() => {
-    if (isBitcoinEntry(entry)) {
-      Promise.all(entry.xpub.map(({ xpub, role }) => getXPubPositionalAddress(entry.id, xpub, role))).then(
-        (addresses) => {
-          try {
-            // make sure we set up the Tx Builder only once, otherwise it loses configuration options
-            const txBuilder = new workflow.CreateBitcoinTx(entry, addresses, utxo);
+  React.useEffect(
+    () => {
+      if (isBitcoinEntry(entry)) {
+        Promise.all(entry.xpub.map(({ role, xpub }) => getXPubPositionalAddress(entry.id, xpub, role))).then(
+          (addresses) => {
+            try {
+              const txBuilder = new workflow.CreateBitcoinTx(entry, addresses, utxo);
 
-            setTxBuilder(txBuilder);
-          } catch (exception) {
-            // Nothing
-          }
-        },
-      );
-    }
-  }, [entry, utxo, getXPubPositionalAddress]);
+              setTxBuilder(txBuilder);
+            } catch (exception) {
+              // Nothing
+            }
+          },
+        );
+      }
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   let content;
 
@@ -82,7 +87,7 @@ const Component: React.FC<OwnProps & StateProps & DispatchProps> = ({
           create={txBuilder}
           entry={entry}
           source={source}
-          getFees={getFees(blockchain)}
+          getFees={getFees(blockchain, defaultFee)}
           onCreate={(tx) => {
             setTx(tx);
             setPage('sign');
@@ -145,30 +150,47 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       throw new Error('Not a seed entry');
     }
 
-    const utxo = accounts.selectors.getUtxo(state, entry.id);
+    const blockchain = blockchainIdToCode(entry.blockchain);
 
     return {
       entry,
-      utxo,
-      blockchain: blockchainIdToCode(entry.blockchain),
+      blockchain,
+      defaultFee: application.selectors.getDefaultFee(state, blockchain),
       seedId: entry.key.seedId,
+      utxo: accounts.selectors.getUtxo(state, entry.id),
     };
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any, ownProps) => ({
-    getFees(blockchain) {
+    getFees(blockchain, defaultFee) {
       return async () => {
-        const [avgLast, avgMiddle, avgTail5]: number[] = await Promise.all([
-          dispatch(transaction.actions.estimateFee(blockchain, 6, 'avgLast')),
-          dispatch(transaction.actions.estimateFee(blockchain, 6, 'avgMiddle')),
-          dispatch(transaction.actions.estimateFee(blockchain, 6, 'avgTail5')),
-        ]);
+        try {
+          const fees: number[] = await Promise.all([
+            dispatch(transaction.actions.estimateFee(blockchain, 6, 'avgLast')),
+            dispatch(transaction.actions.estimateFee(blockchain, 6, 'avgMiddle')),
+            dispatch(transaction.actions.estimateFee(blockchain, 6, 'avgTail5')),
+          ]);
 
-        return {
-          avgLast,
-          avgMiddle,
-          avgTail5,
-        };
+          const [avgLast, avgMiddle, avgTail5] = fees.sort((first, second) => {
+            if (first === second) {
+              return 0;
+            }
+
+            return first > second ? 1 : -1;
+          });
+
+          return {
+            avgLast,
+            avgMiddle,
+            avgTail5,
+          };
+        } catch (exception) {
+          return {
+            avgLast: defaultFee.min,
+            avgMiddle: defaultFee.max,
+            avgTail5: defaultFee.std,
+          };
+        }
       };
     },
     getXPubPositionalAddress(entryId, xPub, role) {

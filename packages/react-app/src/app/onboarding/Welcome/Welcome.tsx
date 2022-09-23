@@ -1,91 +1,96 @@
-import { application } from '@emeraldwallet/store';
+import { IState, application } from '@emeraldwallet/store';
 import { Logo } from '@emeraldwallet/ui';
-import { CircularProgress, Grid } from '@material-ui/core';
-import { withStyles } from '@material-ui/core/styles';
+import { CircularProgress, Grid, createStyles, makeStyles } from '@material-ui/core';
+import classNames from 'classnames';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import InitialSetup from '../InitialSetup';
 
-const getStyles = (theme: any) => ({
+const useStyles = makeStyles((theme) => createStyles({
+  brand: {
+    fontSize: 42,
+  },
   brandPart1: {
-    color: theme.palette && theme.palette.primary.main
+    color: theme.palette.primary.main,
   },
   brandPart2: {
-    color: theme.palette && theme.palette.secondary.main
-  }
-});
+    color: theme.palette.secondary.main,
+  },
+  container: {
+    maxWidth: 1150,
+  },
+  loader: {
+    marginRight: theme.spacing(),
+  },
+  logo: {
+    paddingTop: '6%',
+  },
+  message: {
+    height: 40,
+    paddingTop: 40,
+  },
+  messageLevel: {
+    alignItems: 'center',
+    display: 'flex',
+  },
+  messageLevel1: {
+    color: '#999',
+  },
+  messageLevel3: {
+    color: '#f66',
+  },
+}));
 
-export interface IOwnProps {
-  currentTermsVersion: any;
-  classes?: any;
+export interface OwnProps {
+  currentTermsVersion: string;
 }
 
-interface IStateProps {
-  message: any;
-  level: any;
-  needSetup: any;
-  classes?: any;
+interface StateProps {
+  level: number;
+  message: string;
+  needSetup: boolean;
 }
 
-type Props = IOwnProps & IStateProps;
+const Welcome: React.FC<OwnProps & StateProps> = ({ currentTermsVersion, level, message, needSetup }) => {
+  const styles = useStyles();
 
-const Welcome = (props: Props) => {
-  const {
-    message, level, needSetup, classes, currentTermsVersion
-  } = props;
-  let messageBlock = null;
-  if (message) {
-    const messageStyle = {
-      color: '#999'
-    };
-    if (level === 3) {
-      messageStyle.color = '#f66';
-    }
-    messageBlock = <span style={messageStyle}><CircularProgress size={25}/> {message}</span>;
-  }
-
-  if (needSetup) {
-    return (
-      <Grid container={true} justifyContent='center' alignItems='center'>
-        <Grid item={true} xs={10}>
-          <InitialSetup currentTermsVersion={currentTermsVersion}/>
-        </Grid>
+  return needSetup ? (
+    <Grid container={true} alignItems="center" justifyContent="center">
+      <Grid item xs={10}>
+        <InitialSetup currentTermsVersion={currentTermsVersion} />
       </Grid>
-    );
-  }
-
-  return (
-    <Grid container={true} direction='column' justifyContent='center' alignItems='center' style={{ maxWidth: '1150px' }}>
-      <Grid item={true} xs={true} style={{ paddingTop: '6%' }}>
-        <Logo width='250' height='250'/>
+    </Grid>
+  ) : (
+    <Grid container alignItems="center" direction="column" className={styles.container} justifyContent="center">
+      <Grid item xs className={styles.logo}>
+        <Logo width="250" height="250" />
       </Grid>
-      <Grid item={true}>
-        <Grid container={true} direction='column'>
-          <Grid item={true} xs={true}>
-            <div style={{ fontSize: '42px' }}>
-              <span className={classes.brandPart1}>Emerald </span>
-              <span className={classes.brandPart2}>Wallet</span>
+      <Grid item>
+        <Grid container direction="column">
+          <Grid item xs>
+            <div className={styles.brand}>
+              <span className={styles.brandPart1}>Emerald&nbsp;</span>
+              <span className={styles.brandPart2}>Wallet</span>
             </div>
           </Grid>
         </Grid>
       </Grid>
-      <Grid item={true} xs={true} style={{ paddingTop: '40px', height: '40px' }}>
-        <div>
-          {messageBlock}
+      <Grid item xs={true} className={styles.message}>
+        <div className={classNames(styles.messageLevel, level === 3 ? styles.messageLevel3 : styles.messageLevel1)}>
+          <CircularProgress className={styles.loader} size={24} />
+          {message}
         </div>
       </Grid>
     </Grid>
   );
 };
 
-const StyledWelcome = withStyles(getStyles)(Welcome);
+export default connect<StateProps, {}, OwnProps, IState>((state, ownProps: OwnProps): StateProps => {
+  const message = application.selectors.getMessage(state);
 
-export default connect<IStateProps, any, IOwnProps>(
-  (state: any, ownProps: IOwnProps): IStateProps => {
-    const msg = application.selectors.getMessage(state);
-    return ({
-      ...msg,
-      needSetup: application.selectors.isConfigured(state) &&
-        (application.selectors.terms(state) !== ownProps.currentTermsVersion)
-    });
-  })(StyledWelcome);
+  return {
+    ...message,
+    needSetup:
+      application.selectors.isConfigured(state) && application.selectors.terms(state) !== ownProps.currentTermsVersion,
+  };
+})(Welcome);

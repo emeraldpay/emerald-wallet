@@ -124,10 +124,10 @@ class CreateTransaction extends React.Component<Props, State> {
     }
   }
 
-  public getDisabled = (): boolean => {
+  public getDisabled = (validate?: boolean): boolean => {
     const gasPrice = new Wei(this.props.stdGasPrice[this.props.eip1559 ? 'max' : 'expect']);
 
-    return gasPrice.isZero() || this.props.tx.validate() !== ValidationResult.OK;
+    return gasPrice.isZero() || ((validate ?? true) && this.props.tx.validate() !== ValidationResult.OK);
   };
 
   public render(): React.ReactElement {
@@ -176,7 +176,7 @@ class CreateTransaction extends React.Component<Props, State> {
         </FormFieldWrapper>
         <FormFieldWrapper>
           <AmountField
-            initialAmount={this.props.tx.getAmount()}
+            amount={this.props.tx.getAmount()}
             units={this.props.tx.getAmount().units}
             onChangeAmount={
               this.props.onChangeAmount ||
@@ -195,6 +195,7 @@ class CreateTransaction extends React.Component<Props, State> {
                 control={
                   <Switch
                     checked={this.state.useStdMaxGasPrice}
+                    disabled={this.getDisabled(false)}
                     onChange={(event) => {
                       const checked = event.target.checked;
 
@@ -255,6 +256,7 @@ class CreateTransaction extends React.Component<Props, State> {
                   control={
                     <Switch
                       checked={this.state.useStdPriorityGasPrice}
+                      disabled={this.getDisabled(false)}
                       onChange={(event) => {
                         const checked = event.target.checked;
 
