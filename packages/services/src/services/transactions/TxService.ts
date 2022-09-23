@@ -81,7 +81,7 @@ export class TxService implements IService {
         });
 
         this.persistentState.txhistory
-          .query({ mempool: true })
+          .query({ state: State.SUBMITTED })
           .then(({ items: transactions }) =>
             Promise.all(
               transactions.map(({ blockchain: txBlockchain, txId }) =>
