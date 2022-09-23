@@ -47,11 +47,20 @@ export type Dispatched<T> = (dispatch: Dispatch, getState: GetState, extra: IExt
 
 export type AppThunk<ReturnType = void> = ThunkAction<ReturnType, IState, null, Action<string>>;
 
+export const DEFAULT_FEE: GasPrices = { expect: 0, max: 0, priority: 0 } as const;
+export const FEE_KEYS = ['avgLast', 'avgTail5', 'avgMiddle'] as const;
+
 export type GasPriceType = number | string;
 export type GasPrices<T = GasPriceType> = Record<'expect' | 'max' | 'priority', T>;
 export type PriceSort = Record<'expects' | 'highs' | 'priorities', BigNumber[]>;
 
-export const DEFAULT_FEE: GasPrices = { expect: 0, max: 0, priority: 0 } as const;
-export const FEE_KEYS = ['avgLast', 'avgTail5', 'avgMiddle'] as const;
+export interface DefaultFee {
+  max: number;
+  min: number;
+  std: number;
+  priority_max?: number;
+  priority_min?: number;
+  priority_std?: number;
+}
 
-export type FeePrices = Record<typeof FEE_KEYS[number], GasPrices>;
+export type FeePrices<T = GasPriceType> = Record<typeof FEE_KEYS[number], T>;

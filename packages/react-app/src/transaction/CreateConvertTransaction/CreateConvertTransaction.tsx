@@ -14,7 +14,17 @@ import {
 import { tokenUnits } from '@emeraldwallet/core/lib/blockchains/tokens';
 import { CreateErc20WrappedTx, TxTarget } from '@emeraldwallet/core/lib/workflow';
 import { registry } from '@emeraldwallet/erc20';
-import { FEE_KEYS, GasPrices, IState, accounts, screen, tokens, transaction } from '@emeraldwallet/store';
+import {
+  FEE_KEYS,
+  GasPrices,
+  IState,
+  accounts,
+  screen,
+  tokens,
+  transaction,
+  DefaultFee,
+  application,
+} from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles, withStyles } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
@@ -80,6 +90,7 @@ interface StylesProps {
 interface StateProps {
   addresses: string[];
   blockchain: BlockchainCode;
+  defaultFee: DefaultFee;
   eip1559: boolean;
   getBalance(address?: string): Wei;
   getBalancesByAddress(address: string): string[];
@@ -89,7 +100,7 @@ interface StateProps {
 interface DispatchProps {
   checkGlobalKey(password: string): Promise<boolean>;
   estimateGas(blockchain: BlockchainCode, tx: CreateErc20WrappedTx, tokenSymbol: string): Promise<number>;
-  getFees(blockchain: BlockchainCode): Promise<Record<typeof FEE_KEYS[number], GasPrices>>;
+  getFees(blockchain: BlockchainCode, defaultFee: DefaultFee): Promise<Record<typeof FEE_KEYS[number], GasPrices>>;
   goBack(): void;
   signTransaction(tx: CreateErc20WrappedTx, tokenSymbol: string, password: string): Promise<void>;
 }
@@ -98,6 +109,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
   addresses,
   blockchain,
   classes,
+  defaultFee,
   eip1559,
   entry: { address },
   checkGlobalKey,
@@ -266,7 +278,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
 
   React.useEffect(() => {
     (async (): Promise<void> => {
-      const fees = await getFees(blockchain);
+      const fees = await getFees(blockchain, defaultFee);
 
       const { avgLast, avgMiddle, avgTail5 } = fees;
       const feeProp = eip1559 ? 'max' : 'expect';
@@ -367,7 +379,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
           <FormFieldWrapper>
             <AmountField
               disabled={initializing}
-              initialAmount={currentTx.amount}
+              amount={currentTx.amount}
               units={currentTx.amount.units}
               onChangeAmount={onChangeAmount}
               onMaxClicked={onClickMaxAmount}
@@ -554,6 +566,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
               item.blockchain === entry.blockchain && item.address != null ? [...carry, item.address.value] : carry,
             [],
           ) ?? [],
+      defaultFee: application.selectors.getDefaultFee(state, blockchain),
       eip1559: Blockchains[blockchain].params.eip1559 ?? false,
       getBalance(address) {
         const zeroBalance = new Wei(zero);
@@ -624,8 +637,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         }),
       );
     },
-    getFees(blockchain) {
-      return dispatch(transaction.actions.getFee(blockchain));
+    getFees(blockchain, defaultFee) {
+      return dispatch(transaction.actions.getFee(blockchain, defaultFee));
     },
     goBack() {
       dispatch(screen.actions.goBack());

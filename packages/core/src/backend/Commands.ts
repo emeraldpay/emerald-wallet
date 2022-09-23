@@ -45,8 +45,9 @@ export enum Commands {
   ADDRESS_BOOK_QUERY = 'address-book-query',
   ADDRESS_BOOK_UPDATE = 'address-book-update',
 
-  XPUB_POSITION_GET = 'xpub-position-get',
+  XPUB_POSITION_GET_NEXT = 'xpub-position-get-next',
   XPUB_POSITION_SET = 'xpub-position-set',
+  XPUB_POSITION_NEXT_SET = 'xpub-position-next-set',
 
   XPUB_LAST_INDEX = 'xpub-last-index',
 }

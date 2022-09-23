@@ -20,6 +20,7 @@ import { Pages } from '../screen';
 import { catchError, gotoScreen, showError } from '../screen/actions';
 import {
   DEFAULT_FEE,
+  DefaultFee,
   Dispatched,
   FEE_KEYS,
   FeePrices,
@@ -225,7 +226,7 @@ function sortBigNumber(first: BigNumber, second: BigNumber): number {
   return first.gt(second) ? 1 : -1;
 }
 
-export function getFee(blockchain: BlockchainCode): Dispatched<FeePrices> {
+export function getFee(blockchain: BlockchainCode, defaultFee: DefaultFee): Dispatched<FeePrices> {
   return async (dispatch: any) => {
     let results = await Promise.allSettled(FEE_KEYS.map((key) => dispatch(estimateFee(blockchain, 128, key))));
 
@@ -237,7 +238,7 @@ export function getFee(blockchain: BlockchainCode): Dispatched<FeePrices> {
       ),
     );
 
-    let [avgLastNumber, avgTail5Number, avgMiddleNumber] = results.map((result) => {
+    let [avgLast, avgTail5, avgMiddle] = results.map((result) => {
       const value = result.status === 'fulfilled' ? result.value ?? DEFAULT_FEE : DEFAULT_FEE;
 
       let expect: GasPriceType;
@@ -257,7 +258,7 @@ export function getFee(blockchain: BlockchainCode): Dispatched<FeePrices> {
       };
     });
 
-    let { expects, highs, priorities } = [avgLastNumber, avgTail5Number, avgMiddleNumber].reduce<PriceSort>(
+    let { expects, highs, priorities } = [avgLast, avgTail5, avgMiddle].reduce<PriceSort>(
       (carry, item) => ({
         expects: [...carry.expects, item.expect],
         highs: [...carry.highs, item.max],
@@ -274,7 +275,7 @@ export function getFee(blockchain: BlockchainCode): Dispatched<FeePrices> {
     highs = highs.sort(sortBigNumber);
     priorities = priorities.sort(sortBigNumber);
 
-    [avgLastNumber, avgTail5Number, avgMiddleNumber] = expects.reduce<Array<GasPrices<BigNumber>>>(
+    [avgLast, avgTail5, avgMiddle] = expects.reduce<Array<GasPrices<BigNumber>>>(
       (carry, item, index) => [
         ...carry,
         {
@@ -286,50 +287,41 @@ export function getFee(blockchain: BlockchainCode): Dispatched<FeePrices> {
       [],
     );
 
-    if (avgTail5Number.expect.eq(0) && avgTail5Number.max.eq(0)) {
-      // TODO Set default value from remote config
-      avgTail5Number = {
-        expect: new Wei(30, 'GWei').number,
-        max: new Wei(30, 'GWei').number,
-        priority: new Wei(1, 'GWei').number,
+    if (avgTail5.expect.eq(0) && avgTail5.max.eq(0)) {
+      return {
+        avgLast: {
+          expect: defaultFee.min,
+          max: defaultFee.min,
+          priority: defaultFee.priority_min ?? 0,
+        },
+        avgMiddle: {
+          expect: defaultFee.max,
+          max: defaultFee.max,
+          priority: defaultFee.priority_max ?? 0,
+        },
+        avgTail5: {
+          expect: defaultFee.std,
+          max: defaultFee.std,
+          priority: defaultFee.priority_std ?? 0,
+        },
       };
     }
 
-    const avgLastExpect = avgLastNumber.expect.gt(0)
-      ? avgLastNumber.expect.toNumber()
-      : avgTail5Number.expect.minus(avgTail5Number.expect.multipliedBy(0.25)).toNumber();
-    const avgLastMax = avgLastNumber.max.gt(0)
-      ? avgLastNumber.max.toNumber()
-      : avgTail5Number.max.minus(avgTail5Number.max.multipliedBy(0.25)).toNumber();
-    const avgLastPriority = avgLastNumber.priority.gt(0)
-      ? avgLastNumber.priority.toNumber()
-      : avgTail5Number.priority.minus(avgTail5Number.priority.multipliedBy(0.25)).toNumber();
-
-    const avgMiddleExpect = avgMiddleNumber.expect.gt(0)
-      ? avgMiddleNumber.expect.toNumber()
-      : avgTail5Number.expect.plus(avgTail5Number.expect.multipliedBy(0.25)).toNumber();
-    const avgMiddleMax = avgMiddleNumber.max.gt(0)
-      ? avgMiddleNumber.max.toNumber()
-      : avgTail5Number.max.plus(avgTail5Number.max.multipliedBy(0.25)).toNumber();
-    const avgMiddlePriority = avgMiddleNumber.priority.gt(0)
-      ? avgMiddleNumber.priority.toNumber()
-      : avgTail5Number.priority.plus(avgTail5Number.priority.multipliedBy(0.25)).toNumber();
-
     return {
       avgLast: {
-        expect: avgLastExpect,
-        max: avgLastMax,
-        priority: avgLastPriority,
+        expect: avgLast.expect.toNumber(),
+        max: avgLast.max.toNumber(),
+        priority: avgLast.priority.toNumber(),
       },
       avgMiddle: {
-        expect: avgMiddleExpect,
-        max: avgMiddleMax,
-        priority: avgMiddlePriority,
+        expect: avgMiddle.expect.toNumber(),
+        max: avgMiddle.max.toNumber(),
+        priority: avgMiddle.priority.toNumber(),
       },
       avgTail5: {
-        expect: avgTail5Number.expect.toNumber(),
-        max: avgTail5Number.max.toNumber(),
-        priority: avgTail5Number.priority.toNumber(),
+        expect: avgTail5.expect.toNumber(),
+        max: avgTail5.max.toNumber(),
+        priority: avgTail5.priority.toNumber(),
       },
     };
   };
@@ -380,8 +372,8 @@ export function getEthTx(blockchain: BlockchainCode, hash: string): Dispatched<E
   };
 }
 
-export function setXPubIndex(xpub: string, position: number): Dispatched<void> {
-  return (dispatch, getState, extra) => extra.api.xPubPos.setAtLeast(xpub, position);
+export function setXPubCurrentIndex(xpub: string, position: number): Dispatched<void> {
+  return (dispatch, getState, extra) => extra.api.xPubPos.setCurrentAddressAt(xpub, position);
 }
 
 export function getXPubLastIndex(blockchain: BlockchainCode, xpub: string, start: number): Dispatched<number> {

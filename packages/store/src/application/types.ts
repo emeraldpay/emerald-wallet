@@ -1,18 +1,70 @@
 export const moduleName = 'application';
 
 export enum ActionTypes {
-  SET_CONNECTING = 'LAUNCHER/CONNECTING',
   CONFIG = 'LAUNCHER/CONFIG',
-  SETTINGS = 'LAUNCHER/SETTINGS',
+  CONNECTING = 'LAUNCHER/CONNECTING',
   MESSAGE = 'LAUNCHER/MESSAGE',
-  TERMS = 'LAUNCHER/TERMS'
+  OPTIONS = 'LAUNCHER/OPTIONS',
+  SETTINGS = 'LAUNCHER/SETTINGS',
+  TERMS = 'LAUNCHER/TERMS',
 }
-export interface ISetConnectingAction {
-  type: ActionTypes.SET_CONNECTING;
+
+export interface ApplicationMessage {
+  level: number;
+  message: string;
+}
+
+export interface ApplicationOptions {
+  [key: string]: boolean | number | string | null | undefined;
+}
+
+export interface ApplicationState {
+  configured: boolean;
+  connecting: boolean;
+  launcherType: string;
+  message: ApplicationMessage;
+  options: ApplicationOptions;
+  settingsUpdated: boolean;
+  terms: string;
+}
+
+export interface ConfigAction {
+  type: ActionTypes.CONFIG;
+  payload: {
+    terms?: string;
+  };
+}
+
+export interface ConnectingAction {
+  type: ActionTypes.CONNECTING;
   payload: boolean;
 }
 
-export interface IConfigAction {
-  type: ActionTypes.CONFIG;
-  payload: any;
+export interface MessageAction {
+  type: ActionTypes.MESSAGE;
+  level: number;
+  message: string;
 }
+
+export interface OptionsAction {
+  type: ActionTypes.OPTIONS;
+  payload: ApplicationOptions;
+}
+
+export interface SettingsAction {
+  type: ActionTypes.SETTINGS;
+  updated: boolean;
+}
+
+export interface TermsAction {
+  type: ActionTypes.TERMS;
+  version: string;
+}
+
+export type ApplicationAction =
+  | ConfigAction
+  | ConnectingAction
+  | MessageAction
+  | OptionsAction
+  | SettingsAction
+  | TermsAction;
