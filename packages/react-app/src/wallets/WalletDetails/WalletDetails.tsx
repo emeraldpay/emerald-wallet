@@ -163,7 +163,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       dispatch(screen.actions.gotoScreen(screen.Pages.RECEIVE, ownProps.walletId));
     },
     gotoSend() {
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, ownProps.walletId));
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, ownProps.walletId, null, true));
     },
     gotoWalletsScreen() {
       dispatch(screen.actions.gotoWalletsScreen());

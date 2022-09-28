@@ -1,6 +1,7 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { EthereumTransaction } from '@emeraldwallet/core';
 import { accounts, IState, screen, transaction } from '@emeraldwallet/store';
+import { SignData } from '@emeraldwallet/store/lib/transaction/actions';
 import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
@@ -101,7 +102,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         gasPrice = cancelGasPrice;
       }
 
-      const signed = await dispatch(
+      const signed: SignData | undefined = await dispatch(
         transaction.actions.signTransaction(
           accountId,
           tx.blockchain,
@@ -118,8 +119,18 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         ),
       );
 
-      if (signed) {
-        dispatch(screen.actions.gotoScreen(screen.Pages.BROADCAST_TX, signed));
+      if (signed != null) {
+        dispatch(
+          screen.actions.gotoScreen(
+            screen.Pages.BROADCAST_TX,
+            {
+              ...signed,
+              fee: (maxGasPrice ?? gasPrice ?? Wei.ZERO).multiply(21000),
+            },
+            null,
+            true,
+          ),
+        );
       }
     },
   }),

@@ -1,8 +1,9 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { BlockchainCode, EthereumTransaction } from '@emeraldwallet/core';
-import { accounts, IState, screen, transaction } from '@emeraldwallet/store';
+import { IState, accounts, screen, transaction } from '@emeraldwallet/store';
+import { SignData } from '@emeraldwallet/store/lib/transaction/actions';
 import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
-import { Box, createStyles, FormHelperText, Slider, withStyles } from '@material-ui/core';
+import { Box, FormHelperText, Slider, createStyles, withStyles } from '@material-ui/core';
 import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { useCallback, useState } from 'react';
@@ -234,14 +235,16 @@ export default connect<{}, DispatchProps, OwnProps, IState>(
         gasPrice = new Wei(tx.gasPrice ?? 0);
       }
 
-      const signed = await dispatch(
+      const gas = parseInt(tx.gas.toString(), 10);
+
+      const signed: SignData | undefined = await dispatch(
         transaction.actions.signTransaction(
           accountId,
           tx.blockchain,
           tx.from,
           password,
           tx.to,
-          parseInt(tx.gas.toString(), 10),
+          gas,
           new Wei(tx.value),
           tx.data,
           gasPrice,
@@ -251,8 +254,18 @@ export default connect<{}, DispatchProps, OwnProps, IState>(
         ),
       );
 
-      if (signed) {
-        dispatch(screen.actions.gotoScreen(screen.Pages.BROADCAST_TX, signed));
+      if (signed != null) {
+        dispatch(
+          screen.actions.gotoScreen(
+            screen.Pages.BROADCAST_TX,
+            {
+              ...signed,
+              fee: (maxGasPrice ?? gasPrice ?? Wei.ZERO).multiply(gas),
+            },
+            null,
+            true,
+          ),
+        );
       }
     },
   }),

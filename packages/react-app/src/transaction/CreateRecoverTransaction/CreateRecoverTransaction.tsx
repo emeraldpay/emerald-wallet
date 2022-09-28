@@ -15,6 +15,7 @@ import {
   application,
   DefaultFee,
 } from '@emeraldwallet/store';
+import { SignData } from '@emeraldwallet/store/lib/transaction/actions';
 import { AccountSelect, Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import {
   Box,
@@ -529,7 +530,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       const { blockchain, id: entryId } = ownProps.entry;
       const blockchainCode = blockchainIdToCode(blockchain);
 
-      const signed = await dispatch(
+      const signed: SignData | undefined = await dispatch(
         transaction.actions.signTransaction(
           entryId,
           blockchainCode,
@@ -545,8 +546,18 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         ),
       );
 
-      if (signed) {
-        dispatch(screen.actions.gotoScreen(screen.Pages.BROADCAST_TX, signed));
+      if (signed != null) {
+        dispatch(
+          screen.actions.gotoScreen(
+            screen.Pages.BROADCAST_TX,
+            {
+              ...signed,
+              fee: (tx.maxGasPrice ?? tx.gasPrice ?? Wei.ZERO).multiply(tx.gas),
+            },
+            null,
+            true,
+          ),
+        );
       }
     },
   }),

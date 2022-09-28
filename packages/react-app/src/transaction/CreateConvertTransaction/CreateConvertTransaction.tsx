@@ -25,6 +25,7 @@ import {
   DefaultFee,
   application,
 } from '@emeraldwallet/store';
+import { SignData } from '@emeraldwallet/store/lib/transaction/actions';
 import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles, withStyles } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
@@ -656,7 +657,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         ? tokens.actions.createWrapTxData()
         : tokens.actions.createUnwrapTxData(tx.amount.number);
 
-      const signed = await dispatch(
+      const signed: SignData | undefined = await dispatch(
         transaction.actions.signTransaction(
           accountId,
           chain,
@@ -666,11 +667,25 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
           tx.gas.toNumber(),
           Wei.is(tx.amount) ? tx.amount : Wei.ZERO,
           data,
+          tx.gasPrice,
+          tx.maxGasPrice,
+          tx.priorityGasPrice,
         ),
       );
 
-      if (signed) {
-        dispatch(screen.actions.gotoScreen(screen.Pages.BROADCAST_TX, signed));
+      if (signed != null) {
+        dispatch(
+          screen.actions.gotoScreen(
+            screen.Pages.BROADCAST_TX,
+            {
+              ...signed,
+              fee: (tx.maxGasPrice ?? tx.gasPrice ?? Wei.ZERO).multiply(tx.gas),
+              tokenAmount: Wei.is(tx.amount) ? tx.amount : Wei.ZERO,
+            },
+            null,
+            true,
+          ),
+        );
       }
     },
   }),

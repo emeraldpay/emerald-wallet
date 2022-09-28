@@ -163,9 +163,9 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   (dispatch, ownProps) => ({
     onSelected: (account: WalletEntry) => {
       if (isBitcoinEntry(account)) {
-        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_BITCOIN, account.id));
+        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_BITCOIN, account.id, null, true));
       } else if (isEthereumEntry(account)) {
-        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_ETHEREUM, account));
+        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_ETHEREUM, account, null, true));
       }
     },
     onCancel: () => {

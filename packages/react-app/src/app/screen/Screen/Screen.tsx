@@ -65,7 +65,7 @@ const Screen: React.FC<OwnProps & StateProps> = (props) => {
     case screen.Pages.ADDRESS_BOOK:
       return <AddressBook />;
     case screen.Pages.BROADCAST_TX:
-      return <BroadcastTx tx={props.screenItem.tx} signed={props.screenItem.signed} />;
+      return <BroadcastTx data={props.screenItem} />;
     case screen.Pages.CREATE_HD_ACCOUNT:
       return <CreateHdAccount walletId={props.screenItem} />;
     case screen.Pages.CREATE_TX:

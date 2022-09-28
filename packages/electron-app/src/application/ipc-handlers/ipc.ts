@@ -31,32 +31,28 @@ interface BalanceResult {
 const log = Logger.forCategory('IPC Handlers');
 
 export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess, persistentState: PersistentStateImpl) {
-  ipcMain.handle(Commands.GET_VERSION, async (event, args) => {
-    const osDetails = {
+  ipcMain.handle(Commands.GET_VERSION, (event, args) => ({
+    gitVersion: app.versions?.gitVersion,
+    os: {
+      arch: os.arch(),
       platform: os.platform(),
       release: os.release(),
-      arch: os.arch(),
-    };
-    return {
-      os: osDetails,
-      version: app.versions?.version,
-      gitVersion: app.versions?.gitVersion,
-    };
-  });
+    },
+    version: app.versions?.version,
+  }));
 
-  ipcMain.handle(Commands.GET_APP_SETTINGS, () => {
-    return app.settings.toJS();
-  });
+  ipcMain.handle(Commands.GET_APP_SETTINGS, () => app.settings.toJS());
 
-  ipcMain.handle(Commands.SET_TERMS, (event: any, v: string) => {
-    app.settings.setTerms(v);
-  });
+  ipcMain.handle(Commands.SET_TERMS, (event: any, v: string) => app.settings.setTerms(v));
 
   ipcMain.handle(
     Commands.LOAD_TX_HISTORY,
-    async (event: any, filter?: PersistentState.TxHistoryFilter, query?: PersistentState.PageQuery) => {
-      return persistentState.txhistory.query(filter, query);
-    },
+    (event: any, filter?: PersistentState.TxHistoryFilter, query?: PersistentState.PageQuery) =>
+      persistentState.txhistory.query(filter, query),
+  );
+
+  ipcMain.handle(Commands.SUBMIT_TX_HISTORY, (event: any, tx: PersistentState.Transaction) =>
+    persistentState.txhistory.submit(tx),
   );
 
   ipcMain.handle(
@@ -91,7 +87,7 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess, pe
     },
   );
 
-  ipcMain.handle(Commands.BROADCAST_TX, async (event: any, blockchain: BlockchainCode, tx: string) => {
+  ipcMain.handle(Commands.BROADCAST_TX, (event: any, blockchain: BlockchainCode, tx: string) => {
     if (isEthereum(blockchain)) {
       return app.rpc.chain(blockchain).eth.sendRawTransaction(tx);
     } else if (isBitcoin(blockchain)) {
@@ -122,21 +118,21 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess, pe
     }
   });
 
-  ipcMain.handle(Commands.ESTIMATE_TX, (event: any, blockchain: BlockchainCode, tx: any) => {
-    return app.rpc.chain(blockchain).eth.estimateGas(tx);
-  });
+  ipcMain.handle(Commands.ESTIMATE_TX, (event: any, blockchain: BlockchainCode, tx: any) =>
+    app.rpc.chain(blockchain).eth.estimateGas(tx),
+  );
 
-  ipcMain.handle(Commands.GET_NONCE, (event: any, blockchain: BlockchainCode, address: string) => {
-    return app.rpc.chain(blockchain).eth.getTransactionCount(address);
-  });
+  ipcMain.handle(Commands.GET_NONCE, (event: any, blockchain: BlockchainCode, address: string) =>
+    app.rpc.chain(blockchain).eth.getTransactionCount(address),
+  );
 
-  ipcMain.handle(Commands.GET_ETH_RECEIPT, (event: any, blockchain: BlockchainCode, hash: string) => {
-    return app.rpc.chain(blockchain).eth.getTransactionReceipt(hash);
-  });
+  ipcMain.handle(Commands.GET_ETH_RECEIPT, (event: any, blockchain: BlockchainCode, hash: string) =>
+    app.rpc.chain(blockchain).eth.getTransactionReceipt(hash),
+  );
 
-  ipcMain.handle(Commands.GET_ETH_TX, (event: any, blockchain: BlockchainCode, hash: string) => {
-    return app.rpc.chain(blockchain).eth.getTransaction(hash);
-  });
+  ipcMain.handle(Commands.GET_ETH_TX, (event: any, blockchain: BlockchainCode, hash: string) =>
+    app.rpc.chain(blockchain).eth.getTransaction(hash),
+  );
 
   ipcMain.handle(
     Commands.ESTIMATE_FEE,
@@ -190,9 +186,7 @@ export function setIpcHandlers(app: Application, apiAccess: EmeraldApiAccess, pe
     persistentState.addressbook.update(id, item),
   );
 
-  ipcMain.handle(Commands.XPUB_POSITION_GET_NEXT, (event, xpub: string) =>
-    persistentState.xpubpos.getNext(xpub)
-  );
+  ipcMain.handle(Commands.XPUB_POSITION_GET_NEXT, (event, xpub: string) => persistentState.xpubpos.getNext(xpub));
 
   ipcMain.handle(Commands.XPUB_POSITION_SET, (event, xpub: string, pos: number) =>
     persistentState.xpubpos.setCurrentAddressAt(xpub, pos),

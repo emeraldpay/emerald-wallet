@@ -33,21 +33,31 @@ function onUpdateStoreTransaction(
   { meta, transaction, walletId }: UpdateStoredTxAction,
 ): HistoryState {
   if (state.walletId === walletId) {
-    if (state.transactions.length < 10) {
+    const storedTransaction = new StoredTransaction(transaction, meta);
+    const storedTransactions = [...state.transactions];
+
+    if (storedTransactions.length === 0) {
       return {
         ...state,
-        transactions: [...state.transactions, new StoredTransaction(transaction, meta)],
+        transactions: [storedTransaction],
       };
     }
 
-    const txIndex = state.transactions.findIndex((tx) => tx.txId === transaction.txId);
+    const txIndex = storedTransactions.findIndex((tx) => tx.txId === transaction.txId);
 
     if (txIndex > -1) {
+      storedTransactions.splice(txIndex, 1, storedTransaction);
+
       return {
         ...state,
-        transactions: state.transactions.splice(txIndex, 1, new StoredTransaction(transaction, meta)),
+        transactions: storedTransactions,
       };
     }
+
+    return {
+      ...state,
+      transactions: [storedTransaction, ...state.transactions],
+    };
   }
 
   return state;

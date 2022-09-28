@@ -31,6 +31,7 @@ import {
   application,
   DefaultFee,
 } from '@emeraldwallet/store';
+import { SignData } from '@emeraldwallet/store/lib/transaction/actions';
 import { Back, Page } from '@emeraldwallet/ui';
 import { BigNumber } from 'bignumber.js';
 import * as React from 'react';
@@ -463,9 +464,15 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
   }
 }
 
-function signTokenTx(dispatch: any, ownProps: OwnProps, { entryId, password, token, transaction: tx }: Request) {
+function signTokenTx(
+  dispatch: any,
+  ownProps: OwnProps,
+  { entryId, password, token, transaction: tx }: Request,
+): Promise<SignData | null> {
   if (password == null || tx.to == null || tx.from == null) {
-    return;
+    console.warn('Invalid tx', tx.to, tx.from);
+
+    return Promise.resolve(null);
   }
 
   const blockchainCode = blockchainIdToCode(ownProps.sourceEntry.blockchain);
@@ -492,10 +499,15 @@ function signTokenTx(dispatch: any, ownProps: OwnProps, { entryId, password, tok
   );
 }
 
-function signEtherTx(dispatch: any, ownProps: OwnProps, { entryId, password, transaction: tx }: Request) {
+function signEtherTx(
+  dispatch: any,
+  ownProps: OwnProps,
+  { entryId, password, transaction: tx }: Request,
+): Promise<SignData | null> {
   if (tx.to == null || tx.from == null || !Wei.is(tx.amount)) {
     console.warn('Invalid tx', tx.to, tx.from, tx.amount);
-    return;
+
+    return Promise.resolve(null);
   }
 
   const blockchainCode = blockchainIdToCode(ownProps.sourceEntry.blockchain);
@@ -507,11 +519,11 @@ function signEtherTx(dispatch: any, ownProps: OwnProps, { entryId, password, tra
     value: tx.amount,
   };
 
-  const isHardware = password == null;
-
   const validated = traceValidate(blockchainCode, plainTx, dispatch, transaction.actions.estimateGas);
+
   let prepared: Promise<any>;
-  if (isHardware) {
+
+  if (password == null) {
     prepared = validated
       .then(() => dispatch(hwkey.actions.setWatch(false)))
       .then(() => dispatch(screen.actions.showDialog(EmeraldDialogs.SIGN_TX)));
@@ -524,11 +536,11 @@ function signEtherTx(dispatch: any, ownProps: OwnProps, { entryId, password, tra
       transaction.actions.signTransaction(
         entryId,
         blockchainCode,
-        tx.from!!,
-        password || '',
-        tx.to!!,
+        plainTx.from,
+        password ?? '',
+        plainTx.to,
         tx.gas.toNumber(),
-        tx.amount!! as Wei,
+        plainTx.value,
         '',
         tx.gasPrice,
         tx.maxGasPrice,
@@ -538,7 +550,7 @@ function signEtherTx(dispatch: any, ownProps: OwnProps, { entryId, password, tra
   );
 }
 
-function sign(dispatch: any, ownProps: OwnProps, request: Request) {
+function sign(dispatch: any, ownProps: OwnProps, request: Request): Promise<SignData | null> {
   const blockchain = Blockchains[blockchainIdToCode(ownProps.sourceEntry.blockchain)];
   const token = request.token.toUpperCase();
   const { coinTicker } = blockchain.params;
@@ -654,9 +666,20 @@ export default connect(
       dispatch(screen.actions.goBack());
     },
     signAndSend: (request) => {
-      sign(dispatch, ownProps, request).then((result: any) => {
-        if (result) {
-          dispatch(screen.actions.gotoScreen(screen.Pages.BROADCAST_TX, result));
+      sign(dispatch, ownProps, request).then((signed) => {
+        if (signed != null) {
+          dispatch(
+            screen.actions.gotoScreen(
+              screen.Pages.BROADCAST_TX,
+              {
+                ...signed,
+                fee: request.transaction.getFees(),
+                tokenAmount: Wei.is(request.transaction) ? undefined : request.transaction.amount,
+              },
+              null,
+              true,
+            ),
+          );
         }
       });
     },

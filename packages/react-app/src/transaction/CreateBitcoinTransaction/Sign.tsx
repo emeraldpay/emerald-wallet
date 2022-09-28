@@ -62,7 +62,7 @@ interface OwnProps {
   entryId: Uuid;
   blockchain: BlockchainCode;
   seedId: Uuid;
-  onSign: (raw: string) => void;
+  onSign: (txid: string, raw: string) => void;
 }
 
 export default connect(
@@ -73,10 +73,10 @@ export default connect(
     }
   },
   (dispatch: Dispatch<any>, ownProps: OwnProps): Actions => {
-    const onSigned = (raw: string | undefined, err: string | undefined) => {
-      if (raw) {
-        ownProps.onSign(raw);
-      } else if (err) {
+    const onSigned = (txid: string | null, raw: string | null, err?: string) => {
+      if (txid != null && raw != null) {
+        ownProps.onSign(txid, raw);
+      } else if (err != null) {
         console.error(err)
       } else {
         console.error("Unknown error")

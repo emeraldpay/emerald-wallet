@@ -1,4 +1,5 @@
 import { Commands, PersistentState } from '@emeraldwallet/core';
+import { Transaction } from '@emeraldwallet/core/src/persistentState';
 import { ipcRenderer } from 'electron';
 
 class TxHistory implements PersistentState.TxHistory {
@@ -9,12 +10,8 @@ class TxHistory implements PersistentState.TxHistory {
     return ipcRenderer.invoke(Commands.LOAD_TX_HISTORY, filter, query);
   }
 
-  remove(): Promise<void> {
-    throw new Error('Method not implemented.');
-  }
-
-  submit(): Promise<PersistentState.Transaction> {
-    throw new Error('Method not implemented.');
+  submit(tx: PersistentState.Transaction): Promise<PersistentState.Transaction> {
+    return ipcRenderer.invoke(Commands.SUBMIT_TX_HISTORY, tx);
   }
 
   getCursor(): Promise<string | null> {
@@ -22,6 +19,10 @@ class TxHistory implements PersistentState.TxHistory {
   }
 
   setCursor(): Promise<void> {
+    throw new Error('Method not implemented.');
+  }
+
+  remove(): Promise<void> {
     throw new Error('Method not implemented.');
   }
 }

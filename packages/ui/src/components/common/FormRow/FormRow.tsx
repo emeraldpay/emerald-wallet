@@ -19,7 +19,7 @@ export const styles = {
     alignItems: 'center',
     marginLeft: '14.75px',
     marginRight: '14.75px',
-    maxWidth: '580px'
+    maxWidth: '640px'
   }
 };
 
