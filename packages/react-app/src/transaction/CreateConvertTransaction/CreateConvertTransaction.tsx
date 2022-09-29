@@ -15,15 +15,15 @@ import { tokenUnits } from '@emeraldwallet/core/lib/blockchains/tokens';
 import { CreateErc20WrappedTx, TxTarget } from '@emeraldwallet/core/lib/workflow';
 import { registry } from '@emeraldwallet/erc20';
 import {
+  DefaultFee,
   FEE_KEYS,
   GasPrices,
   IState,
   accounts,
+  application,
   screen,
   tokens,
   transaction,
-  DefaultFee,
-  application,
 } from '@emeraldwallet/store';
 import { SignData } from '@emeraldwallet/store/lib/transaction/actions';
 import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
@@ -192,7 +192,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
       setConvertable(converting);
       setConvertTx(tx.dump());
     },
-    [convertTx],
+    [convertTx, convertable],
   );
 
   const onChangeAddress = useCallback(
@@ -206,7 +206,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
 
       setConvertTx(tx.dump());
     },
-    [convertTx],
+    [convertTx, tokenSymbol, getBalance, getTokenBalanceByAddress],
   );
 
   const onChangeAmount = useCallback(
@@ -275,53 +275,57 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
     } else {
       setPasswordError('Incorrect password');
     }
-  }, [convertTx, password]);
+  }, [convertTx, password, tokenSymbol, checkGlobalKey, signTransaction]);
 
-  React.useEffect(() => {
-    (async (): Promise<void> => {
-      const fees = await getFees(blockchain, defaultFee);
+  React.useEffect(
+    () => {
+      (async (): Promise<void> => {
+        const fees = await getFees(blockchain, defaultFee);
 
-      const { avgLast, avgMiddle, avgTail5 } = fees;
-      const feeProp = eip1559 ? 'max' : 'expect';
+        const { avgLast, avgMiddle, avgTail5 } = fees;
+        const feeProp = eip1559 ? 'max' : 'expect';
 
-      const newStdMaxGasPrice = new Wei(avgTail5[feeProp]);
-      const newStdPriorityGasPrice = new Wei(avgTail5.priority);
+        const newStdMaxGasPrice = new Wei(avgTail5[feeProp]);
+        const newStdPriorityGasPrice = new Wei(avgTail5.priority);
 
-      setStdMaxGasPrice(newStdMaxGasPrice);
-      setHighMaxGasPrice(new Wei(avgMiddle[feeProp]));
-      setLowMaxGasPrice(new Wei(avgLast[feeProp]));
+        setStdMaxGasPrice(newStdMaxGasPrice);
+        setHighMaxGasPrice(new Wei(avgMiddle[feeProp]));
+        setLowMaxGasPrice(new Wei(avgLast[feeProp]));
 
-      setStdPriorityGasPrice(newStdPriorityGasPrice);
-      setHighPriorityGasPrice(new Wei(avgMiddle.priority));
-      setLowPriorityGasPrice(new Wei(avgLast.priority));
+        setStdPriorityGasPrice(newStdPriorityGasPrice);
+        setHighPriorityGasPrice(new Wei(avgMiddle.priority));
+        setLowPriorityGasPrice(new Wei(avgLast.priority));
 
-      const gasPriceOptimalUnit = newStdMaxGasPrice.getOptimalUnit();
-      const maxGasPriceNumber = newStdMaxGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
-      const priorityGasPriceNumber = newStdPriorityGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
+        const gasPriceOptimalUnit = newStdMaxGasPrice.getOptimalUnit();
+        const maxGasPriceNumber = newStdMaxGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
+        const priorityGasPriceNumber = newStdPriorityGasPrice.getNumberByUnit(gasPriceOptimalUnit).toNumber();
 
-      setGasPriceUnit(gasPriceOptimalUnit);
+        setGasPriceUnit(gasPriceOptimalUnit);
 
-      setMaxGasPrice(maxGasPriceNumber);
-      setPriorityGasPrice(priorityGasPriceNumber);
+        setMaxGasPrice(maxGasPriceNumber);
+        setPriorityGasPrice(priorityGasPriceNumber);
 
-      const tx = CreateErc20WrappedTx.fromPlain(convertTx);
+        const tx = CreateErc20WrappedTx.fromPlain(convertTx);
 
-      if (eip1559) {
-        tx.gasPrice = undefined;
-        tx.maxGasPrice = new Wei(maxGasPriceNumber, gasPriceOptimalUnit);
-        tx.priorityGasPrice = new Wei(priorityGasPriceNumber, gasPriceOptimalUnit);
-      } else {
-        tx.gasPrice = new Wei(maxGasPriceNumber, gasPriceOptimalUnit);
-        tx.maxGasPrice = undefined;
-        tx.priorityGasPrice = undefined;
-      }
+        if (eip1559) {
+          tx.gasPrice = undefined;
+          tx.maxGasPrice = new Wei(maxGasPriceNumber, gasPriceOptimalUnit);
+          tx.priorityGasPrice = new Wei(priorityGasPriceNumber, gasPriceOptimalUnit);
+        } else {
+          tx.gasPrice = new Wei(maxGasPriceNumber, gasPriceOptimalUnit);
+          tx.maxGasPrice = undefined;
+          tx.priorityGasPrice = undefined;
+        }
 
-      tx.rebalance();
+        tx.rebalance();
 
-      setConvertTx(tx.dump());
-      setInitializing(false);
-    })();
-  }, []);
+        setConvertTx(tx.dump());
+        setInitializing(false);
+      })();
+    },
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [],
+  );
 
   React.useEffect(() => {
     if (oldAmount.current == null || convertTx.amount?.equals(oldAmount.current) === false) {
@@ -342,7 +346,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
         })();
       }
     }
-  }, [convertable, convertTx.amount]);
+  }, [blockchain, convertable, convertTx, tokenSymbol, estimateGas]);
 
   const currentTx = CreateErc20WrappedTx.fromPlain(convertTx);
 
@@ -650,8 +654,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       }
 
       const { blockchain, id: accountId } = ownProps.entry;
-      const chain = blockchainIdToCode(blockchain);
-      const token = registry.bySymbol(chain, tokenSymbol);
+      const blockchainCode = blockchainIdToCode(blockchain);
+      const token = registry.bySymbol(blockchainCode, tokenSymbol);
 
       const data = Wei.is(tx.amount)
         ? tokens.actions.createWrapTxData()
@@ -660,7 +664,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       const signed: SignData | undefined = await dispatch(
         transaction.actions.signTransaction(
           accountId,
-          chain,
+          blockchainCode,
           tx.address,
           password,
           token.address,
@@ -680,7 +684,10 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
             {
               ...signed,
               fee: (tx.maxGasPrice ?? tx.gasPrice ?? Wei.ZERO).multiply(tx.gas),
-              tokenAmount: Wei.is(tx.amount) ? tx.amount : Wei.ZERO,
+              originalAmount: tx.amount,
+              tokenAmount: Wei.is(tx.amount)
+                ? new BigAmount(tx.amount, tokenUnits(tokenSymbol))
+                : new Wei(tx.amount.number),
             },
             null,
             true,

@@ -553,6 +553,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
             {
               ...signed,
               fee: (tx.maxGasPrice ?? tx.gasPrice ?? Wei.ZERO).multiply(tx.gas),
+              originalAmount: tx.amount,
             },
             null,
             true,

@@ -236,6 +236,7 @@ export default connect<{}, DispatchProps, OwnProps, IState>(
       }
 
       const gas = parseInt(tx.gas.toString(), 10);
+      const value = new Wei(tx.value);
 
       const signed: SignData | undefined = await dispatch(
         transaction.actions.signTransaction(
@@ -245,7 +246,7 @@ export default connect<{}, DispatchProps, OwnProps, IState>(
           password,
           tx.to,
           gas,
-          new Wei(tx.value),
+          value,
           tx.data,
           gasPrice,
           maxGasPrice,
@@ -261,6 +262,7 @@ export default connect<{}, DispatchProps, OwnProps, IState>(
             {
               ...signed,
               fee: (maxGasPrice ?? gasPrice ?? Wei.ZERO).multiply(gas),
+              originalAmount: value,
             },
             null,
             true,

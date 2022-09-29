@@ -674,7 +674,7 @@ export default connect(
               {
                 ...signed,
                 fee: request.transaction.getFees(),
-                tokenAmount: Wei.is(request.transaction) ? undefined : request.transaction.amount,
+                originalAmount: request.transaction.amount,
               },
               null,
               true,

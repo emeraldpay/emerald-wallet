@@ -12,12 +12,11 @@ import { IState, StoredTransaction, screen, transaction, txhistory } from '@emer
 import { Address, Back, Balance, Button, ButtonGroup, FormRow, Page } from '@emeraldwallet/ui';
 import { Typography, createStyles } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
-import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { TxStatus } from './TxStatus';
 
-const { Direction, State, Status } = PersistentState;
+const { ChangeType, Direction, State, Status } = PersistentState;
 const { gotoScreen, gotoWalletsScreen } = screen.actions;
 
 const styles = createStyles({
@@ -76,7 +75,12 @@ const TxDetails: React.FC<OwnProps & StateProps & DispatchProps & StylesProps> =
     [transaction],
   );
   const txChanges = React.useMemo(
-    () => transaction?.changes.filter((change) => change.amountValue.isPositive()) ?? [],
+    () =>
+      transaction?.changes.filter((change) => change.type !== ChangeType.FEE && change.amountValue.isPositive()) ?? [],
+    [transaction],
+  );
+  const txFee = React.useMemo(
+    () => transaction?.changes.find((change) => change.type === ChangeType.FEE)?.amountValue,
     [transaction],
   );
   const txStatus = React.useMemo(
@@ -149,16 +153,10 @@ const TxDetails: React.FC<OwnProps & StateProps & DispatchProps & StylesProps> =
           {ethTx != null && (
             <>
               <br />
-              {ethReceipt?.effectiveGasPrice != null && (
+              {txFee && (
                 <FormRow
                   leftColumn={<div className={classes.nameField}>Transaction Fee</div>}
-                  rightColumn={
-                    <Typography>
-                      {formatAmount(
-                        new Wei(new BigNumber(ethReceipt.effectiveGasPrice).multipliedBy(ethReceipt.gasUsed)),
-                      )}
-                    </Typography>
-                  }
+                  rightColumn={<Typography>{formatAmount(txFee)}</Typography>}
                 />
               )}
               {ethTx.gasPrice == null ? (
