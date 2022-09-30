@@ -90,7 +90,7 @@ export class HDPath {
 
   public forCoin(coin: number | string): HDPath {
     if (typeof coin != "number") {
-      if (coin.toLowerCase() == 'eth' || coin.toLowerCase() == 'kovan') {
+      if (coin.toLowerCase() == 'eth') {
         return this.forCoin(60)
       } else if (coin.toLowerCase() == 'etc') {
         return this.forCoin(61)

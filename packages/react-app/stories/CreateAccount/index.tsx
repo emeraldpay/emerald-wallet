@@ -81,7 +81,7 @@ storiesOf('CreateAccount', module)
   ))
   .add('select blockchain when one is set', () => (
     <SelectCoins multiple={true}
-                 blockchains={[Blockchains[BlockchainCode.ETH], Blockchains[BlockchainCode.ETC], Blockchains[BlockchainCode.Kovan]]}
+                 blockchains={[Blockchains[BlockchainCode.ETH], Blockchains[BlockchainCode.ETC]]}
                  enabled={[BlockchainCode.ETH]}
                  onChange={action("selected")}/>
   ))

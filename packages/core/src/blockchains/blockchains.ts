@@ -12,7 +12,6 @@ import { IBlockchain } from './IBlockchain';
 export enum BlockchainCode {
   ETC = 'etc',
   ETH = 'eth',
-  Kovan = 'kovan',
   Goerli = 'goerli',
   Unknown = 'unknown',
   BTC = 'btc',
@@ -29,17 +28,6 @@ export const Blockchains: { [key: string]: IBlockchain } = {
     new EthereumParams(BlockchainCode.ETC, CoinTicker.ETC, 61, HDPath.default().forCoin(BlockchainCode.ETC), 250),
     'Ethereum Classic',
     [],
-  ),
-  [BlockchainCode.Kovan]: new Ethereum(
-    new EthereumParams(
-      BlockchainCode.Kovan,
-      CoinTicker.ETH,
-      42,
-      HDPath.default().forCoin(BlockchainCode.ETH).forAccount(160720),
-      100,
-    ),
-    'Ethereum Kovan Testnet',
-    ['WEENUS', 'WETH'],
   ),
   [BlockchainCode.Goerli]: new Ethereum(
     new EthereumParams(
@@ -75,7 +63,6 @@ const allCodes = [
   BlockchainCode.BTC,
   BlockchainCode.ETC,
   BlockchainCode.ETH,
-  BlockchainCode.Kovan,
   BlockchainCode.Goerli,
   BlockchainCode.TestBTC,
 ];
@@ -117,8 +104,6 @@ export function blockchainIdToCode(id: number): BlockchainCode {
       return BlockchainCode.ETH;
     case 101:
       return BlockchainCode.ETC;
-    case 10002:
-      return BlockchainCode.Kovan;
     case 10003:
       return BlockchainCode.TestBTC;
     case 10005:
@@ -140,8 +125,6 @@ export function blockchainCodeToId(code: BlockchainCode): number {
       return 100;
     case BlockchainCode.ETC:
       return 101;
-    case BlockchainCode.Kovan:
-      return 10002;
     case BlockchainCode.TestBTC:
       return 10003;
     case BlockchainCode.Goerli:
@@ -152,23 +135,12 @@ export function blockchainCodeToId(code: BlockchainCode): number {
 }
 
 export function isEthereum(code: BlockchainCode): boolean {
-  return (
-    code === BlockchainCode.ETH ||
-    code === BlockchainCode.ETC ||
-    code === BlockchainCode.Kovan ||
-    code === BlockchainCode.Goerli
-  );
+  return code === BlockchainCode.ETH || code === BlockchainCode.ETC || code === BlockchainCode.Goerli;
 }
 
 export function isBitcoin(code: BlockchainCode): boolean {
   return code == BlockchainCode.BTC || code == BlockchainCode.TestBTC;
 }
-
-export const WEIS_KOVAN = new Units([
-  new Unit(0, 'KovanWei', 'KovWei'),
-  new Unit(9, 'KovanGwei', 'KovGWei'),
-  new Unit(18, 'KovanEther', 'ETK'),
-]);
 
 export const WEIS_GOERLI = new Units([
   new Unit(0, 'GoerliWei', 'GoeWei'),
@@ -179,29 +151,20 @@ export const WEIS_GOERLI = new Units([
 export const SATOSHIS_TEST = new Units([new Unit(0, 'Test Satoshi', 'tsat'), new Unit(8, 'Test Bitcoin', 'TBTC')]);
 
 export function amountFactory(code: BlockchainCode): CreateAmount<BigAmount> {
-  if (isEthereum(code)) {
-    if (BlockchainCode.ETH == code) {
-      return Wei.factory();
-    }
-    if (BlockchainCode.ETC == code) {
-      return WeiEtc.factory();
-    }
-    if (BlockchainCode.Kovan == code) {
-      return (n) => new WeiAny(n, WEIS_KOVAN);
-    }
-    if (BlockchainCode.Goerli == code) {
-      return (n) => new WeiAny(n, WEIS_GOERLI);
-    }
-  }
-  if (isBitcoin(code)) {
-    if (BlockchainCode.BTC == code) {
+  switch (code) {
+    case BlockchainCode.BTC:
       return Satoshi.factory();
-    }
-    if (BlockchainCode.TestBTC == code) {
-      return (n) => new BigAmount(n, SATOSHIS_TEST);
-    }
+    case BlockchainCode.ETC:
+      return WeiEtc.factory();
+    case BlockchainCode.ETH:
+      return Wei.factory();
+    case BlockchainCode.Goerli:
+      return (value) => new WeiAny(value, WEIS_GOERLI);
+    case BlockchainCode.TestBTC:
+      return (value) => new BigAmount(value, SATOSHIS_TEST);
+    default:
+      throw new Error(`Unsupported blockchain: ${code}`);
   }
-  throw new Error('Unsupported blockchain: ' + code);
 }
 
 export function amountDecoder<T extends BigAmount>(code: BlockchainCode): (n: string) => T {
