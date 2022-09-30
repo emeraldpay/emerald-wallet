@@ -1,39 +1,69 @@
+import { Wei } from '@emeraldpay/bigamount-crypto/lib/ethereum';
 import { BlockchainCode } from '@emeraldwallet/core';
-import '@testing-library/jest-dom/extend-expect';
 import { Theme } from '@emeraldwallet/ui';
 import { ThemeProvider } from '@material-ui/core';
+import '@testing-library/jest-dom/extend-expect';
 import { render } from '@testing-library/react';
+import BigNumber from 'bignumber.js';
 import * as React from 'react';
-import { BroadcastTxView, styles } from './BroadcastTx';
+import { Provider } from 'react-redux';
+import BroadcastTx from './BroadcastTx';
+import { createTestStore } from '../../_tests';
 
-const reduceClasses = (prev: any, curr: any) => ({ ...prev, [curr]: curr });
-const classes = Object.keys(styles).reduce(reduceClasses, {});
+describe('BroadcastTx', () => {
+  const data = {
+    blockchain: BlockchainCode.Goerli,
+    entryId: '1022fd13-3431-4f3b-bce8-109fdab15873-1',
+    fee: new Wei(1, 'ETHER'),
+    signed:
+      '0x02f8720580845a288bce8502d16b842682520894e7f129f88b57e902cb18ba' +
+      'eecd43f17449419ae287b1a2bc2ec5000080c001a056663c0965287c9e0e92d6' +
+      'c6ecf157759ea79c21264c7026061a8732f8d2539da03b44d23d74d2e47af661' +
+      '0fa2c4b1f0a352ee0be3fc0457ff81d5813dde597d4b',
+    tx: {
+      blockchain: BlockchainCode.Goerli,
+      data: '',
+      from: '0x65a60f440ed54910d91a0634a45a2294cc807095',
+      gas: 21000,
+      maxGasPrice: new BigNumber('10000000000'),
+      nonce: '0x0',
+      priorityGasPrice: new BigNumber('1000000000'),
+      to: '0xe7f129f88b57e902cb18baeecd43f17449419ae2',
+      value: new BigNumber('50000000000000000'),
+    },
+    txId: '0xc9c924dd7f4ffe61d653718b204d6aae514736db227fdb0297b76cd8f3f1f203',
+  };
 
-describe('BroadcastTxView', () => {
-  const signedRawTx =
-    '0xf8aa808502540be400830186a094aff4481d10270f50f203e0763e2597776068cbc580b844a9059cbb000000000000000000000000aff4481d10270f50f203e0763e2597776068cbc5000000000000000000000000000000000000000000000000000000000000000077a03de05abc2e11ecf3ec3b1e1eeb3257ce51cad9cee10336b3b54e146469a2369fa047c6296bfc2551278ad808969a07b483506dda8896741191d74e7deabc2dbd02';
+  const store = createTestStore();
 
   it('should work without crash', () => {
     const wrapper = render(
-      <ThemeProvider theme={Theme}>
-        <BroadcastTxView classes={classes} signed={signedRawTx} tx={{ blockchain: BlockchainCode.Kovan }} />
-      </ThemeProvider>,
+      <Provider store={store}>
+        <ThemeProvider theme={Theme}>
+          <BroadcastTx data={data} />
+        </ThemeProvider>
+      </Provider>,
     );
+
     expect(wrapper).toBeDefined();
   });
 
   it('should display tx value for ordinary tx', async () => {
-    const rawTx =
-      '0xf86943843b9aca0082520894b780b602f934e95e3598463d3cd26d2a1ad4c8e9865af3107a4000801ca0f557cb12da8ace97df5a90f458144be7fdb32b9510af47d764fb13ab72f3e810a051717e3ba63d713393b66a72649058b9d19e36676609697c07243415bcd04b4a';
     const wrapper = render(
-      <ThemeProvider theme={Theme}>
-        <BroadcastTxView classes={classes} signed={rawTx} tx={{ blockchain: BlockchainCode.Kovan }} />
-      </ThemeProvider>,
+      <Provider store={store}>
+        <ThemeProvider theme={Theme}>
+          <BroadcastTx data={data} />
+        </ThemeProvider>
+      </Provider>,
     );
+
     const valueDiv = await wrapper.findByTestId('token-amount');
+
     expect(valueDiv).toBeDefined();
-    expect(valueDiv).toHaveTextContent('0.0001 ETH');
+    expect(valueDiv).toHaveTextContent('0.05 ETH');
+
     const nonceDiv = await wrapper.findByTestId('nonce');
-    expect(nonceDiv).toHaveTextContent('67');
+
+    expect(nonceDiv).toHaveTextContent('0');
   });
 });

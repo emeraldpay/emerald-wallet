@@ -1,6 +1,5 @@
 import { BigAmount, CreateAmount, Units } from '@emeraldpay/bigamount';
 import { BitcoinEntry, CurrentAddress, UnsignedBitcoinTx } from '@emeraldpay/emerald-vault-core';
-import BigNumber from 'bignumber.js';
 import { TxTarget, ValidationResult } from './types';
 import { BalanceUtxo, BlockchainCode, amountDecoder, amountFactory, blockchainIdToCode } from '../../blockchains';
 
