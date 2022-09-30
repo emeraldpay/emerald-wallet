@@ -4,6 +4,7 @@ import {
   HistoryState,
   LastTxIdAction,
   LoadStoredTxsAction,
+  RemoveStoredTxAction,
   StoredTransaction,
   UpdateStoredTxAction,
 } from './types';
@@ -26,6 +27,10 @@ function onLoadStoredTransactions(
 
 function onSetLastTxId(state: HistoryState, { txId }: LastTxIdAction): HistoryState {
   return { ...state, lastTxId: txId };
+}
+
+function onRemoveStoreTransaction(state: HistoryState, { txId }: RemoveStoredTxAction): HistoryState {
+  return { ...state, transactions: state.transactions.filter((tx) => tx.txId !== txId) };
 }
 
 function onUpdateStoreTransaction(
@@ -69,6 +74,8 @@ export function reducer(state = INITIAL_STATE, action: HistoryAction): HistorySt
       return onLoadStoredTransactions(state, action);
     case ActionTypes.SET_LAST_TX_ID:
       return onSetLastTxId(state, action);
+    case ActionTypes.REMOVE_STORED_TX:
+      return onRemoveStoreTransaction(state, action);
     case ActionTypes.UPDATE_STORED_TX:
       return onUpdateStoreTransaction(state, action);
     default:

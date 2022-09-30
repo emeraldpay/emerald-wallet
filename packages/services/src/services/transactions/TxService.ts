@@ -85,7 +85,9 @@ export class TxService implements IService {
           .then(({ items: transactions }) =>
             Promise.all(
               transactions.map(({ blockchain: txBlockchain, txId }) =>
-                this.persistentState.txhistory.remove(txBlockchain, txId),
+                this.persistentState.txhistory
+                  .remove(txBlockchain, txId)
+                  .then(() => this.webContents?.send('store', txhistory.actions.removeTransaction(txId))),
               ),
             ),
           )
