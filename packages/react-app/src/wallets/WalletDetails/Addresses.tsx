@@ -2,10 +2,10 @@ import { BigAmount } from '@emeraldpay/bigamount';
 import {
   AddressRole,
   CurrentAddress,
+  CurrentXpub,
   EntryId,
   Uuid,
   isBitcoinEntry,
-  isEthereumEntry,
 } from '@emeraldpay/emerald-vault-core';
 import { isSeedPkRef } from '@emeraldpay/emerald-vault-core/lib/types';
 import { BlockchainCode, blockchainIdToCode } from '@emeraldwallet/core';
@@ -15,13 +15,16 @@ import * as React from 'react';
 import { connect } from 'react-redux';
 import AddressesItem from './AddressesItem';
 
-export interface AddressInfo {
+export interface Identifiers {
   address?: string;
+  xPub?: CurrentXpub;
+}
+
+export interface AddressInfo extends Identifiers {
   balances: { [address: string]: BigAmount[] };
   blockchain: BlockchainCode;
   entryId: EntryId;
   hdPath?: string;
-  xPub?: string;
 }
 
 interface OwnProps {
@@ -43,7 +46,7 @@ const Addresses: React.FC<OwnProps & StateProps & DispatchProps> = ({ addressesI
     Promise.all(
       addressesInfo.map(async (address) => {
         if (address.address == null && address.xPub != null) {
-          const xPubAddresses = await getAllXPubAddresses(address.entryId, address.xPub, 'receive');
+          const xPubAddresses = await getAllXPubAddresses(address.entryId, address.xPub.xpub, address.xPub.role);
 
           return xPubAddresses.map(({ address: xPubAddress, hdPath }) => ({
             ...address,
@@ -77,52 +80,55 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
         wallet?.entries
           .filter((entry) => !entry.receiveDisabled)
           .reduce<AddressInfo[]>((carry, entry) => {
-            let address: string | undefined;
-            let xPub: string | undefined;
-
-            if (isEthereumEntry(entry)) {
-              address = entry.address?.value;
-            } else if (isBitcoinEntry(entry)) {
-              ({ xpub: xPub } = entry.xpub.find(({ role }) => role === 'receive') ?? {});
-            }
-
             const blockchainCode = blockchainIdToCode(entry.blockchain);
 
-            const addressInfo: AddressInfo = {
-              xPub,
+            let identifiers: Identifiers[] = [];
+
+            if (isBitcoinEntry(entry)) {
+              identifiers = entry.xpub.map((xPub) => ({ xPub }));
+            } else if (entry.address != null) {
+              identifiers = [{ address: entry.address.value }];
+            }
+
+            const addressInfo: AddressInfo[] = identifiers.map(({ address, xPub }) => ({
               address,
+              xPub,
               balances: {},
               blockchain: blockchainCode,
               entryId: entry.id,
               hdPath: isSeedPkRef(entry, entry.key) ? entry.key.hdPath : undefined,
-            };
+            }));
 
-            if (isBitcoinEntry(entry)) {
-              const addressesBalance = accounts.selectors.getAddressesBalance(state, entry.id);
+            return carry.concat(
+              addressInfo.map((addressInfo) => {
+                if (isBitcoinEntry(entry)) {
+                  const addressesBalance = accounts.selectors.getAddressesBalance(state, entry.id);
 
-              addressInfo.balances = Object.keys(addressesBalance).reduce(
-                (carry, address) => ({ ...carry, [address]: [addressesBalance[address]] }),
-                {},
-              );
+                  addressInfo.balances = Object.keys(addressesBalance).reduce(
+                    (carry, address) => ({ ...carry, [address]: [addressesBalance[address]] }),
+                    {},
+                  );
 
-              return [...carry, addressInfo];
-            }
+                  return addressInfo;
+                }
 
-            if (address == null) {
-              return carry;
-            }
+                if (addressInfo.address == null) {
+                  return addressInfo;
+                }
 
-            const zeroAmount = accounts.selectors.zeroAmountFor<BigAmount>(blockchainCode);
+                const zeroAmount = accounts.selectors.zeroAmountFor<BigAmount>(blockchainCode);
 
-            const balance = accounts.selectors.getBalance(state, entry.id, zeroAmount);
-            const tokensBalance =
-              tokens.selectors
-                .selectBalances(state, address, blockchainCode)
-                ?.filter((balance) => balance.isPositive()) ?? [];
+                const balance = accounts.selectors.getBalance(state, entry.id, zeroAmount);
+                const tokensBalance =
+                  tokens.selectors
+                    .selectBalances(state, addressInfo.address, blockchainCode)
+                    ?.filter((balance) => balance.isPositive()) ?? [];
 
-            addressInfo.balances[address] = [balance, ...tokensBalance];
+                addressInfo.balances[addressInfo.address] = [balance, ...tokensBalance];
 
-            return [...carry, addressInfo];
+                return addressInfo;
+              }),
+            );
           }, []) ?? [],
     };
   },
