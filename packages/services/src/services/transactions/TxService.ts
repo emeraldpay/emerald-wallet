@@ -52,7 +52,7 @@ export class TxService implements IService {
       resetCursors = true;
     }
 
-    this.vault.listWallets().then((wallets) =>
+    this.vault.listWallets().then((wallets) => {
       wallets.forEach((wallet) => {
         const entryIdentifiers = wallet.entries.reduce<EntryIdentifier[]>((carry, entry) => {
           const entryData = { entryId: entry.id, blockchain: entry.blockchain };
@@ -80,82 +80,106 @@ export class TxService implements IService {
           }
         });
 
-        entryIdentifiers.forEach(({ entryId, blockchain, identifier }) =>
-          this.persistentState.txhistory.getCursor(identifier).then((cursor) =>
-            this.apiAccess.transactionClient
-              .subscribeAddressTx({
-                blockchain,
-                address: identifier,
-                cursor: cursor ?? undefined,
-              })
-              .onData((tx) => {
-                let block: PersistentState.BlockRef | null = null;
+        this.persistentState.txhistory
+          .query({ state: State.SUBMITTED })
+          .then(({ items: transactions }) =>
+            Promise.all(
+              transactions.map(({ blockchain: txBlockchain, txId }) =>
+                this.persistentState.txhistory.remove(txBlockchain, txId),
+              ),
+            ),
+          )
+          .then(() =>
+            entryIdentifiers.forEach(({ entryId, blockchain, identifier }) =>
+              this.persistentState.txhistory
+                .getCursor(identifier)
+                .then((cursor) =>
+                  this.apiAccess.transactionClient
+                    .subscribeAddressTx({
+                      blockchain,
+                      address: identifier,
+                      cursor: cursor ?? undefined,
+                    })
+                    .onData((tx) => {
+                      if (tx.removed) {
+                        this.persistentState.txhistory
+                          .remove(blockchain, tx.txId)
+                          .catch((error) => log.error('Error while removing TX from state: ', error));
+                      } else {
+                        let block: PersistentState.BlockRef | null = null;
 
-                if (tx.block != null) {
-                  const { height, timestamp, hash: blockId } = tx.block;
+                        if (tx.block != null) {
+                          const { height, timestamp, hash: blockId } = tx.block;
 
-                  block = {
-                    blockId,
-                    height,
-                    timestamp,
-                  };
-                }
+                          block = {
+                            blockId,
+                            height,
+                            timestamp,
+                          };
+                        }
 
-                const blockchainCode = blockchainIdToCode(blockchain);
-                const now = new Date();
+                        const blockchainCode = blockchainIdToCode(blockchain);
+                        const now = new Date();
 
-                if (tx.xpubIndex != null) {
-                  this.persistentState.xpubpos
-                    .setCurrentAddressAt(identifier, tx.xpubIndex)
-                    .catch((error) => log.error('Error while set xPub position: ', error));
-                }
+                        if (tx.xpubIndex != null) {
+                          this.persistentState.xpubpos
+                            .setCurrentAddressAt(identifier, tx.xpubIndex)
+                            .catch((error) => log.error('Error while set xPub position: ', error));
+                        }
 
-                this.persistentState.txhistory
-                  .submit({
-                    block,
-                    blockchain,
-                    changes: tx.changes.map<PersistentState.Change>((change) => {
-                      const asset =
-                        (change.contractAddress == null
-                          ? Blockchains[blockchainCode].params.coinTicker
-                          : registry.byAddress(blockchainCode, change.contractAddress)?.symbol) ?? 'UNKNOWN';
+                        this.persistentState.txhistory
+                          .submit({
+                            block,
+                            blockchain,
+                            changes: tx.changes.map<PersistentState.Change>((change) => {
+                              const asset =
+                                (change.contractAddress == null
+                                  ? Blockchains[blockchainCode].params.coinTicker
+                                  : registry.byAddress(blockchainCode, change.contractAddress)?.symbol) ?? 'UNKNOWN';
 
-                      return {
-                        asset,
-                        address: change.address,
-                        amount: change.amount,
-                        direction: change.direction === ApiDirection.SEND ? StateDirection.SPEND : StateDirection.EARN,
-                        type: change.type === ApiType.FEE ? StateType.FEE : StateType.TRANSFER,
-                        wallet: change.address === tx.address ? entryId : undefined,
-                      };
+                              return {
+                                asset,
+                                address: change.address,
+                                amount: change.amount,
+                                direction:
+                                  change.direction === ApiDirection.SEND ? StateDirection.SPEND : StateDirection.EARN,
+                                type: change.type === ApiType.FEE ? StateType.FEE : StateType.TRANSFER,
+                                wallet: change.address === tx.address ? entryId : undefined,
+                              };
+                            }),
+                            confirmTimestamp: tx.mempool === false ? tx.block?.timestamp ?? now : undefined,
+                            sinceTimestamp: tx.block?.timestamp ?? now,
+                            state: tx.mempool === true ? State.SUBMITTED : State.CONFIRMED,
+                            status: tx.failed ? Status.FAILED : Status.OK,
+                            txId: tx.txId,
+                          })
+                          .then((merged) => {
+                            if (tx.cursor != null) {
+                              this.persistentState.txhistory.setCursor(identifier, tx.cursor);
+                            }
+
+                            const walletId = EntryIdOp.of(entryId).extractWalletId();
+
+                            this.persistentState.txmeta
+                              .get(blockchainIdToCode(merged.blockchain), merged.txId)
+                              .then((meta) =>
+                                this.webContents?.send(
+                                  'store',
+                                  txhistory.actions.updateTransaction(walletId, merged, meta),
+                                ),
+                              )
+                              .catch((error) => log.error('Error while getting TX meta: ', error));
+                          })
+                          .catch((error) => log.error('Error while submitting TX data: ', error));
+                      }
                     }),
-                    confirmTimestamp:
-                      tx.removed === false && tx.mempool === false ? tx.block?.timestamp ?? now : undefined,
-                    sinceTimestamp: tx.block?.timestamp ?? now,
-                    state:
-                      tx.removed === true ? State.REPLACED : tx.mempool === true ? State.SUBMITTED : State.CONFIRMED,
-                    status: tx.failed ? Status.FAILED : Status.OK,
-                    txId: tx.txId,
-                  })
-                  .then((merged) => {
-                    if (tx.cursor != null) {
-                      this.persistentState.txhistory.setCursor(identifier, tx.cursor);
-                    }
-
-                    const walletId = EntryIdOp.of(entryId).extractWalletId();
-
-                    this.persistentState.txmeta
-                      .get(blockchainIdToCode(merged.blockchain), merged.txId)
-                      .then((meta) =>
-                        this.webContents?.send('store', txhistory.actions.updateTransaction(walletId, merged, meta)),
-                      );
-                  })
-                  .catch((error) => log.error('Error while submitting TX state: ', error));
-              }),
-          ),
-        );
-      }),
-    );
+                )
+                .catch((error) => log.error('Error while getting history cursor: ', error)),
+            ),
+          )
+          .catch((error) => log.error('Error while processing TXs history: ', error));
+      });
+    });
   }
 
   stop(): void {
