@@ -71,20 +71,20 @@ const Contact: React.FC<OwnProps & DispatchProps> = ({
 }) => {
   const styles = useStyles();
 
-  const [addressUpdating, setAddressUpdating] = React.useState(true);
+  const [addressUpdating, setAddressUpdating] = React.useState(contact.address.type === 'xpub');
   const [currentContact, setCurrentContact] = React.useState(contact);
   const [menuElement, setMenuElement] = React.useState<null | HTMLButtonElement>(null);
 
   React.useEffect(() => {
     const {
-      address: { address },
+      address: { address, type },
       blockchain,
       id,
     } = contact;
 
     const blockchainCode = blockchainIdToCode(blockchain);
 
-    if (id != null && isBitcoin(blockchainCode)) {
+    if (id != null && isBitcoin(blockchainCode) && type === 'xpub') {
       getXPubLastIndex(blockchainCode, address).then((lastIndex) => {
         if (lastIndex != null) {
           setXPubIndex(address, lastIndex).then(() => {
@@ -99,7 +99,7 @@ const Contact: React.FC<OwnProps & DispatchProps> = ({
   }, [contact, getAddressBookItem, getXPubLastIndex, setXPubIndex]);
 
   const {
-    address: { address, currentAddress },
+    address: { address, currentAddress, type },
     blockchain,
     label,
   } = currentContact;
@@ -113,7 +113,7 @@ const Contact: React.FC<OwnProps & DispatchProps> = ({
       </div>
       <div className={styles.account}>
         <Typography variant="body1">{label ?? currentAddress ?? address}</Typography>
-        {isBitcoin(blockchainCode) ? (
+        {isBitcoin(blockchainCode) && type === 'xpub' ? (
           <div className={styles.accountBitcoin}>
             <div className={styles.accountAddress}>
               <Address

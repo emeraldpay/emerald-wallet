@@ -1,15 +1,22 @@
-import { application, IState } from '@emeraldwallet/store';
-import { CircularProgress, Grid } from '@material-ui/core';
+import { IState, application } from '@emeraldwallet/store';
+import { CircularProgress, createStyles, makeStyles } from '@material-ui/core';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import Dashboard from '../Dashboard';
 
-const styles = {
-  statusMessage: {
-    color: '#999',
-    marginTop: '15px',
-  },
-};
+const useStyles = makeStyles((theme) =>
+  createStyles({
+    loader: {
+      marginRight: theme.spacing(),
+    },
+    statusMessage: {
+      alignItems: 'center',
+      color: '#999',
+      display: 'flex',
+      justifyContent: 'center',
+    },
+  }),
+);
 
 interface HomeProps {
   connecting: boolean;
@@ -17,23 +24,19 @@ interface HomeProps {
 }
 
 export const Home: React.FC<HomeProps> = ({ connecting, statusMessage }) => {
-  if (connecting) {
-    return (
-      <Grid container={true} alignItems="center" justifyContent="center">
-        <Grid item={true}>
-          <CircularProgress size={50} />
-        </Grid>
-        <Grid>
-          <div style={styles.statusMessage}>{statusMessage}</div>
-        </Grid>
-      </Grid>
-    );
-  }
+  const styles = useStyles();
 
-  return <Dashboard />;
+  return connecting ? (
+    <div className={styles.statusMessage}>
+      <CircularProgress className={styles.loader} size={24} />
+      {statusMessage}
+    </div>
+  ) : (
+    <Dashboard />
+  );
 };
 
 export default connect((state: IState) => ({
   connecting: application.selectors.isConnecting(state),
-  statusMessage: application.selectors.getMessage(state).text,
+  statusMessage: application.selectors.getMessage(state).message,
 }))(Home);

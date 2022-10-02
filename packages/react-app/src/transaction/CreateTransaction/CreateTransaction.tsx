@@ -28,6 +28,8 @@ import {
   settings,
   tokens,
   transaction,
+  application,
+  DefaultFee,
 } from '@emeraldwallet/store';
 import { Back, Page } from '@emeraldwallet/ui';
 import { BigNumber } from 'bignumber.js';
@@ -86,7 +88,7 @@ interface DispatchFromProps {
   checkGlobalKey: (password: string) => Promise<boolean>;
   onCancel: () => void;
   signAndSend: (request: Request) => void;
-  getFees(blockchain: BlockchainCode): Promise<Record<typeof FEE_KEYS[number], GasPrices>>;
+  getFees(blockchain: BlockchainCode, defaultFee: DefaultFee): Promise<Record<typeof FEE_KEYS[number], GasPrices>>;
 }
 
 interface Props {
@@ -95,6 +97,7 @@ interface Props {
   chain: BlockchainCode;
   currency: string;
   data: any;
+  defaultFee: DefaultFee;
   eip1559: boolean;
   fiatRate?: any;
   from?: any;
@@ -277,7 +280,7 @@ class CreateTransaction extends React.Component<OwnProps & Props & DispatchFromP
   };
 
   public async componentDidMount() {
-    const fees = await this.props.getFees(this.props.chain);
+    const fees = await this.props.getFees(this.props.chain, this.props.defaultFee);
 
     const { avgLast, avgMiddle, avgTail5 } = fees;
     const tx = this.transaction;
@@ -572,6 +575,7 @@ export default connect(
       chain: blockchain.params.code,
       currency: settings.selectors.fiatCurrency(state),
       data: ownProps.data,
+      defaultFee: application.selectors.getDefaultFee(state, blockchainCode),
       eip1559: blockchain.params.eip1559 ?? false,
       gasLimit: ownProps.gasLimit || DEFAULT_GAS_LIMIT,
       ownAddresses:
@@ -642,10 +646,9 @@ export default connect(
       },
     };
   },
-
   (dispatch: any, ownProps: OwnProps): DispatchFromProps => ({
-    getFees: (blockchain) => {
-      return dispatch(transaction.actions.getFee(blockchain));
+    getFees: (blockchain, defaultFee) => {
+      return dispatch(transaction.actions.getFee(blockchain, defaultFee));
     },
     onCancel: () => {
       dispatch(screen.actions.goBack());

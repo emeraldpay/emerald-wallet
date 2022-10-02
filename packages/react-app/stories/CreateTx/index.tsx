@@ -61,7 +61,7 @@ storiesOf('CreateTx Ethereum', module)
   ))
   .add('AmountField', () => <AmountField units={WEIS} onChangeAmount={action('onChangeAmount')} />)
   .add('AmountField (101.202)', () => (
-    <AmountField units={WEIS} initialAmount={new Wei('101.202', 'ETHER')} onChangeAmount={action('onChangeAmount')} />
+    <AmountField units={WEIS} amount={new Wei('101.202', 'ETHER')} onChangeAmount={action('onChangeAmount')} />
   ))
   .add('FromField', () => <FromField accounts={['0x1', '02']} />)
   .add('ToField', () => <ToField />);

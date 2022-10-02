@@ -1,79 +1,91 @@
 import produce from 'immer';
-import { ActionTypes } from './types';
+import {
+  ActionTypes,
+  ApplicationAction,
+  ApplicationState,
+  ConfigAction,
+  ConnectingAction,
+  MessageAction,
+  OptionsAction,
+  SettingsAction,
+  TermsAction,
+} from './types';
 
-export const INITIAL_STATE = {
-  settingsUpdated: false,
+export const INITIAL_STATE: ApplicationState = {
+  configured: false,
   connecting: true,
   launcherType: 'web',
-  terms: 'none',
-  configured: false,
   message: {
-    text: 'Starting...',
-    level: 2
-  }
+    level: 2,
+    message: 'Starting...',
+  },
+  options: {},
+  settingsUpdated: false,
+  terms: 'none',
 };
 
-function onConfig (state: any, action: any) {
-  const config = action.payload;
-  if (action.type === ActionTypes.CONFIG) {
-    return produce(state, (draft: any) => {
-      draft.configured = true;
-      if (config.terms) {
-        draft.terms = config.terms;
-      }
-    });
-  }
-  return state;
+function onConfig(state: ApplicationState, { payload: { terms } }: ConfigAction): ApplicationState {
+  return produce(state, (draft) => {
+    draft.configured = true;
+
+    if (terms != null) {
+      draft.terms = terms;
+    }
+  });
 }
 
-function onMessage (state: any, action: any) {
-  if (action.type === ActionTypes.MESSAGE) {
-    return produce(state, (draft: any) => {
-      draft.message = {
-        text: action.msg,
-        level: action.level
-      };
-    });
-  }
-  return state;
+function onConnecting(state: ApplicationState, action: ConnectingAction): ApplicationState {
+  return {
+    ...state,
+    connecting: action.payload,
+  };
 }
 
-function onSettingUpdate (state: any, action: any) {
-  if (action.type === ActionTypes.SETTINGS) {
-    return {
-      ...state,
-      settingsUpdated: action.updated
+function onMessage(state: ApplicationState, action: MessageAction): ApplicationState {
+  return produce(state, (draft) => {
+    draft.message = {
+      level: action.level,
+      message: action.message,
     };
-  }
-  return state;
+  });
 }
 
-function onTerms (state: any, action: any) {
-  if (action.type === ActionTypes.TERMS) {
-    return {
-      ...state,
-      terms: action.version
-    };
-  }
-  return state;
+function onOptions(state: ApplicationState, action: OptionsAction): ApplicationState {
+  return {
+    ...state,
+    options: action.payload,
+  };
 }
 
-function onConnecting (state: any, action: any) {
-  if (action.type === ActionTypes.SET_CONNECTING) {
-    return {
-      ...state,
-      connecting: action.payload
-    };
-  }
-  return state;
+function onSetting(state: ApplicationState, action: SettingsAction): ApplicationState {
+  return {
+    ...state,
+    settingsUpdated: action.updated,
+  };
 }
 
-export function reducer (state: any, action: any): any {
-  state = state || INITIAL_STATE;
-  state = onConfig(state, action);
-  state = onMessage(state, action);
-  state = onSettingUpdate(state, action);
-  state = onTerms(state, action);
-  state = onConnecting(state, action);
-  return state;
+function onTerms(state: ApplicationState, action: TermsAction): ApplicationState {
+  return {
+    ...state,
+    terms: action.version,
+  };
+}
+
+export function reducer(state = INITIAL_STATE, action: ApplicationAction): ApplicationState {
+  switch (action.type) {
+    case ActionTypes.CONFIG:
+      return onConfig(state, action);
+    case ActionTypes.MESSAGE:
+      return onMessage(state, action);
+    case ActionTypes.CONNECTING:
+      return onConnecting(state, action);
+    case ActionTypes.OPTIONS:
+      return onOptions(state, action);
+    case ActionTypes.SETTINGS:
+      return onSetting(state, action);
+    case ActionTypes.TERMS:
+      return onTerms(state, action);
+    default:
+      return state;
+  }
 }

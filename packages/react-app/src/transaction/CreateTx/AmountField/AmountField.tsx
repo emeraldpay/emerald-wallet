@@ -1,5 +1,5 @@
 import { BigAmount, FormatterBuilder, Units } from '@emeraldpay/bigamount';
-import {Input} from '@emeraldwallet/ui';
+import { Input } from '@emeraldwallet/ui';
 import { Button, createStyles } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import * as React from 'react';
@@ -12,8 +12,8 @@ interface Actions {
 }
 
 interface OwnProps {
+  amount?: BigAmount | undefined;
   disabled?: boolean;
-  initialAmount?: BigAmount | undefined;
   units: Units;
   onChangeAmount: (amount: BigAmount) => void;
   onMaxClicked?: () => void;
@@ -39,16 +39,14 @@ const formatOptions = {
 };
 
 function amountOrDefault(amount: BigAmount | undefined): string {
-  if (typeof amount != 'undefined' && amount != null) {
-    return new FormatterBuilder().useTopUnit().number(6, true, undefined, formatOptions).build().format(amount);
-  }
-
-  return '0';
+  return amount == null
+    ? '0'
+    : new FormatterBuilder().useTopUnit().number(6, true, undefined, formatOptions).build().format(amount);
 }
 
 const Component: React.FC<Actions & OwnProps> = ({
   disabled = false,
-  initialAmount,
+  amount,
   units,
   onChangeAmount,
   onClear,
@@ -56,8 +54,8 @@ const Component: React.FC<Actions & OwnProps> = ({
 }) => {
   const styles = useStyles();
 
-  const [allowFormat, setAllowFormat] = React.useState(false);
-  const [amount, setAmount] = React.useState(amountOrDefault(initialAmount));
+  const [allowAmountUpdate, setAllowAmountUpdate] = React.useState(false);
+  const [currentAmount, setCurrentAmount] = React.useState(amountOrDefault(amount));
   const [errorText, setErrorText] = React.useState('');
 
   const handleChangeAmount = React.useCallback(
@@ -66,7 +64,8 @@ const Component: React.FC<Actions & OwnProps> = ({
 
       value = value.trim();
 
-      setAmount(value);
+      setAllowAmountUpdate(false);
+      setCurrentAmount(value);
 
       if (value === '') {
         setErrorText('Required');
@@ -101,36 +100,40 @@ const Component: React.FC<Actions & OwnProps> = ({
         setErrorText('');
 
         onChangeAmount(changedTo);
-      } catch (e) {
-        console.error('failed to parse amount', e);
+      } catch (exception) {
+        console.error('Failed to parse amount:', exception);
 
         setErrorText('Invalid value');
         onClear();
       }
     },
-    [units],
+    [units, onChangeAmount, onClear],
   );
 
   const handleMaxClick = React.useCallback(() => {
     onMaxClicked?.();
 
-    setAllowFormat(true);
+    setAllowAmountUpdate(true);
   }, [onMaxClicked]);
 
   React.useEffect(() => {
-    if (allowFormat) {
-      setAmount(amountOrDefault(initialAmount));
-      setAllowFormat(false);
+    if (allowAmountUpdate) {
+      setCurrentAmount(amountOrDefault(amount));
     }
-  }, [allowFormat, initialAmount]);
+  }, [allowAmountUpdate, amount]);
 
   return (
     <React.Fragment>
       <FormLabel>Amount</FormLabel>
       <div className={styles.input}>
-        <Input disabled={disabled} errorText={errorText} value={amount} onChange={handleChangeAmount} />
+        <Input disabled={disabled} errorText={errorText} value={currentAmount} onChange={handleChangeAmount} />
       </div>
-      <Button className={styles.button} color={'primary'} disabled={disabled} onClick={handleMaxClick}>
+      <Button
+        className={styles.button}
+        color={allowAmountUpdate ? 'primary' : 'secondary'}
+        disabled={disabled}
+        onClick={handleMaxClick}
+      >
         MAX
       </Button>
     </React.Fragment>

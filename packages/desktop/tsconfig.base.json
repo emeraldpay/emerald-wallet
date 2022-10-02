@@ -10,6 +10,7 @@
     "target": "ES6"
   },
   "files": [
+    "defaults.json",
     "gitversion.json"
   ]
 }

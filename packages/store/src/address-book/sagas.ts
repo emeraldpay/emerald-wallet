@@ -58,10 +58,22 @@ function* addContact(
 ): SagaIterator {
   const contact: PersistentState.AddressbookItem = { address, blockchain, label };
 
-  yield call(addressBook.add, contact);
+  try {
+    yield call(addressBook.add, contact);
 
-  yield put(loadAddressBook(blockchainIdToCode(blockchain)));
-  yield put(screen.actions.gotoScreen(screen.Pages.ADDRESS_BOOK));
+    yield put(loadAddressBook(blockchainIdToCode(blockchain)));
+    yield put(screen.actions.gotoScreen(screen.Pages.ADDRESS_BOOK));
+  } catch ({ message }) {
+    yield put(
+      screen.actions.showNotification(
+        'Cannot save contact! Check address format and try again',
+        'error',
+        3000,
+        null,
+        null,
+      ),
+    );
+  }
 }
 
 function* editContact(

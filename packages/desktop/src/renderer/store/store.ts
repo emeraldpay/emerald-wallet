@@ -11,11 +11,14 @@ import {
   application,
   createStore,
   screen,
-  settings, triggers,
+  settings,
+  triggers,
 } from '@emeraldwallet/store';
 import { ipcRenderer } from 'electron';
 import * as ElectronLogger from 'electron-log';
+import { AnyAction } from 'redux';
 import checkUpdate from '../../main/utils/check-update';
+import updateOptions from '../../main/utils/update-options';
 
 Logger.setInstance(ElectronLogger);
 
@@ -78,7 +81,13 @@ function getInitialScreen(): void {
   );
 }
 
-function newWalletVersionCheck(): void {
+function checkOptionsUpdates(): void {
+  updateOptions().then((options) => {
+    store.dispatch(application.actions.setOptions(options));
+  });
+}
+
+function checkWalletUpdates(): void {
   checkUpdate().then((versionDetails) => {
     if (!versionDetails.isLatest) {
       store.dispatch(
@@ -128,7 +137,8 @@ function startSync(): void {
 
 export function startStore(): void {
   try {
-    store.dispatch(application.actions.readConfig());
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    store.dispatch(application.actions.readConfig() as any);
     store.dispatch(settings.actions.loadSettings());
 
     listenElectron();
@@ -137,7 +147,8 @@ export function startStore(): void {
   }
 
   getInitialScreen();
-  newWalletVersionCheck();
+  checkOptionsUpdates();
+  checkWalletUpdates();
 }
 
 triggers.onceBlockchainConnected(store).then(startSync);

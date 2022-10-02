@@ -1,18 +1,23 @@
-import { IState } from '../types';
-import { moduleName } from './types';
+import { BlockchainCode, blockchainCodeToId } from '@emeraldwallet/core';
+import { ApplicationMessage, moduleName } from './types';
+import { DefaultFee, IState } from '../types';
 
-export function getMessage (state: any): any {
+export function getDefaultFee(state: IState, blockchain: BlockchainCode): DefaultFee {
+  return JSON.parse(state[moduleName].options[`default_fee.${blockchainCodeToId(blockchain)}`]);
+}
+
+export function getMessage(state: IState): ApplicationMessage {
   return state[moduleName].message;
 }
 
-export function isConnecting (state: any): boolean {
+export function isConfigured(state: IState): boolean {
+  return state[moduleName].configured;
+}
+
+export function isConnecting(state: IState): boolean {
   return state[moduleName].connecting;
 }
 
-export function terms (state: IState): string {
+export function terms(state: IState): string {
   return state[moduleName].terms;
-}
-
-export function isConfigured (state: any): boolean {
-  return state[moduleName].configured;
 }
