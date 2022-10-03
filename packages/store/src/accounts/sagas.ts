@@ -65,7 +65,18 @@ function* fetchErc20Balances(): SagaIterator {
 function* loadAllWallets(vault: IEmeraldVault): SagaIterator {
   yield put(setLoadingAction(true));
 
-  const wallets: Wallet[] = yield call(vault.listWallets);
+  let wallets: Wallet[] = yield call(vault.listWallets);
+
+  wallets = wallets.map((wallet) => ({
+    ...wallet,
+    entries: wallet.entries.filter((entry) => {
+      try {
+        return typeof blockchainIdToCode(entry.blockchain) === 'string';
+      } catch (exception) {
+        return false;
+      }
+    }),
+  }));
 
   yield put(setWalletsAction(wallets));
   yield put(fetchErc20BalancesAction());
@@ -174,9 +185,9 @@ function* nextAddress(xPubPos: PersistentState.XPubPosition, action: INextAddres
   const roleXPub = (entry?.xpub ?? []).filter(({ role }) => role === action.addressRole);
 
   for (const { xpub } of roleXPub) {
-    const pos: number = yield call(xPubPos.getNext, xpub);
+    const position: number = yield call(xPubPos.getNext, xpub);
 
-    yield call(xPubPos.setNextAddressAtLeast, xpub, pos);
+    yield call(xPubPos.setCurrentAddressAt, xpub, position);
   }
 
   yield put(accounts.actions.loadWalletsAction());

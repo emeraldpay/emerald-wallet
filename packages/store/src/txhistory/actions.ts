@@ -1,6 +1,6 @@
 import { Uuid } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, PersistentState, blockchainIdToCode } from '@emeraldwallet/core';
-import { ActionTypes, LastTxIdAction, StoredTransaction, UpdateStoredTxAction } from './types';
+import { ActionTypes, LastTxIdAction, RemoveStoredTxAction, StoredTransaction, UpdateStoredTxAction } from './types';
 import { Dispatched } from '../types';
 
 export function loadTransactions(walletId: Uuid, initial: boolean): Dispatched<void> {
@@ -36,6 +36,13 @@ export function loadTransactions(walletId: Uuid, initial: boolean): Dispatched<v
       walletId,
       cursor: page.cursor,
     });
+  };
+}
+
+export function removeTransaction(txId: string): RemoveStoredTxAction {
+  return {
+    txId,
+    type: ActionTypes.REMOVE_STORED_TX,
   };
 }
 

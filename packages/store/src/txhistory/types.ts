@@ -84,6 +84,7 @@ export interface HistoryState {
 export enum ActionTypes {
   LOAD_STORED_TXS = 'WALLET/HISTORY/LOAD_STORED_TXS',
   SET_LAST_TX_ID = 'WALLET/HISTORY/SET_LAST_TX_ID',
+  REMOVE_STORED_TX = 'WALLET/HISTORY/REMOVE_STORED_TX',
   UPDATE_STORED_TX = 'WALLET/HISTORY/UPDATE_STORED_TX',
 }
 
@@ -99,6 +100,11 @@ export interface LoadStoredTxsAction {
   walletId: Uuid;
 }
 
+export interface RemoveStoredTxAction {
+  type: ActionTypes.REMOVE_STORED_TX;
+  txId: string;
+}
+
 export interface UpdateStoredTxAction {
   type: ActionTypes.UPDATE_STORED_TX;
   meta: PersistentState.TxMeta | null;
@@ -106,4 +112,4 @@ export interface UpdateStoredTxAction {
   walletId: Uuid;
 }
 
-export type HistoryAction = LastTxIdAction | LoadStoredTxsAction | UpdateStoredTxAction;
+export type HistoryAction = LastTxIdAction | LoadStoredTxsAction | RemoveStoredTxAction | UpdateStoredTxAction;
