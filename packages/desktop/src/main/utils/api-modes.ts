@@ -2,7 +2,7 @@ import { ApiMode } from '@emeraldwallet/electron-app';
 
 export const DevelopmentMode: ApiMode = {
   id: 'development',
-  chains: ['ETH', 'ETC', 'BTC', 'GOERLI', 'KOVAN', 'TESTBTC'],
+  chains: ['ETH', 'ETC', 'BTC', 'GOERLI', 'TESTBTC'],
   assets: ['ETH', 'ETC', 'BTC', 'DAI', 'USDC', 'USDT', 'WETH', 'TESTBTC'],
   currencies: ['USD'],
 };

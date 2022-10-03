@@ -39,7 +39,6 @@ const Confirmations: Readonly<Record<BlockchainCode, number>> = {
   [BlockchainCode.TestBTC]: 3,
   [BlockchainCode.ETH]: 12,
   [BlockchainCode.Goerli]: 12,
-  [BlockchainCode.Kovan]: 12,
   [BlockchainCode.ETC]: 48,
 };
 
@@ -49,7 +48,6 @@ const Confirmed: Readonly<Record<BlockchainCode, number>> = {
   [BlockchainCode.TestBTC]: 6 * 24,
   [BlockchainCode.ETH]: 4 * 60 * 24,
   [BlockchainCode.Goerli]: 4 * 60 * 24,
-  [BlockchainCode.Kovan]: 4 * 60 * 24,
   [BlockchainCode.ETC]: 4 * 60 * 24,
 };
 

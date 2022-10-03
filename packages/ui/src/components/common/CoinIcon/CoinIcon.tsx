@@ -50,8 +50,6 @@ const CoinIcon: React.FC<OwnProps> = ({ chain, size }) => {
       return <Typography className={classNames(iconSize, styles.onlyText)}>DAI</Typography>;
     case 'GOERLI':
       return <Typography className={styles.testnet}>Goerli</Typography>;
-    case 'KOVAN':
-      return <Typography className={styles.testnet}>Kovan</Typography>;
     case 'TESTBTC':
       return <Typography className={styles.testnet}>TBTC</Typography>;
     case 'USD':
