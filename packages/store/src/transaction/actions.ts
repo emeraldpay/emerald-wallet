@@ -24,9 +24,17 @@ import BigNumber from 'bignumber.js';
 import { findWalletByEntryId } from '../accounts/selectors';
 import { Pages } from '../screen';
 import { catchError, gotoScreen, showError } from '../screen/actions';
-import { updateTransaction } from '../txhistory/actions';
-import { StoredTransaction } from '../txhistory/types';
-import { DEFAULT_FEE, DefaultFee, Dispatched, FEE_KEYS, FeePrices, GasPriceType, GasPrices, PriceSort } from '../types';
+import {
+  DEFAULT_FEE,
+  DefaultFee,
+  Dispatched,
+  FEE_KEYS,
+  FeePrices,
+  GasPriceType,
+  GasPrices,
+  IExtraArgument,
+  PriceSort,
+} from '../types';
 
 const log = Logger.forCategory('store.transaction');
 
