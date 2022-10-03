@@ -21,7 +21,11 @@ function createStore(): Store {
       return () => undefined;
     },
     getState() {
-      return undefined;
+      return {
+        history: {
+          transactions: [],
+        },
+      };
     },
     replaceReducer(): void {
       // Nothing

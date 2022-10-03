@@ -58,7 +58,7 @@ interface OwnProps {
   entry: BitcoinEntry;
   source: EntryId;
   getFees(): Promise<FeePrices<number>>;
-  onCreate(tx: UnsignedBitcoinTx): void;
+  onCreate(tx: UnsignedBitcoinTx, fee: BigAmount): void;
 }
 
 interface StateProps {
@@ -78,7 +78,7 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
   const [minimalFee, setMinimalFee] = React.useState(0);
   const [standardFee, setStandardFee] = React.useState(0);
 
-  const getTotalFee = React.useCallback((price: number) => create.estimateFees(price).toString(), [create]);
+  const getTotalFee = React.useCallback((price: number) => create.estimateFees(price), [create]);
 
   const onSetAmount = React.useCallback(
     (value: BigAmount) => {
@@ -130,6 +130,7 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
     [],
   );
 
+  const totalFee = getTotalFee(feePrice);
   const validTx = !initializing && create.validate() === ValidationResult.OK;
 
   return (
@@ -174,7 +175,7 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
                 className={styles.feeSlider}
                 classes={{ markLabel: styles.feeMarkLabel }}
                 defaultValue={standardFee}
-                getAriaValueText={getTotalFee}
+                getAriaValueText={(value) => getTotalFee(value).toString()}
                 aria-labelledby="discrete-slider"
                 valueLabelDisplay="auto"
                 step={1}
@@ -190,7 +191,7 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
             </Box>
           )}
           <Box className={styles.feeHelpBox}>
-            <FormHelperText className={styles.feeHelp}>{getTotalFee(feePrice)}</FormHelperText>
+            <FormHelperText className={styles.feeHelp}>{totalFee.toString()}</FormHelperText>
           </Box>
         </Box>
       </FormFieldWrapper>
@@ -202,7 +203,7 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
             disabled={!validTx}
             label="Create Transaction"
             primary={true}
-            onClick={() => onCreate(create.create())}
+            onClick={() => onCreate(create.create(), totalFee)}
           />
         </ButtonGroup>
       </FormFieldWrapper>

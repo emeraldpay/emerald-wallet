@@ -10,6 +10,7 @@ export enum Commands {
 
   // Transaction history
   LOAD_TX_HISTORY = 'load-tx-history',
+  SUBMIT_TX_HISTORY = 'submit-tx-history',
 
   GET_TX_META = 'get-tx-meta',
   SET_TX_META = 'set-tx-meta',

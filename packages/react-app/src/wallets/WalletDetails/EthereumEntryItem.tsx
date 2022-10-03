@@ -188,10 +188,10 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: Dispatch<any>) => ({
     gotoConvert(entry) {
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_CONVERT, entry));
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_CONVERT, entry, null, true));
     },
     gotoRecover(entry) {
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_RECOVER, entry));
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_RECOVER, entry, null, true));
     },
   }),
 )(Component);

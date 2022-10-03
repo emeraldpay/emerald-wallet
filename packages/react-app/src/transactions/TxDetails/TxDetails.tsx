@@ -8,16 +8,15 @@ import {
   formatAmount,
   isEthereum,
 } from '@emeraldwallet/core';
-import { StoredTransaction, screen, transaction } from '@emeraldwallet/store';
+import { IState, StoredTransaction, screen, transaction, txhistory } from '@emeraldwallet/store';
 import { Address, Back, Balance, Button, ButtonGroup, FormRow, Page } from '@emeraldwallet/ui';
 import { Typography, createStyles } from '@material-ui/core';
 import { withStyles } from '@material-ui/styles';
-import BigNumber from 'bignumber.js';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { TxStatus } from './TxStatus';
 
-const { Direction, State, Status } = PersistentState;
+const { ChangeType, Direction, State, Status } = PersistentState;
 const { gotoScreen, gotoWalletsScreen } = screen.actions;
 
 const styles = createStyles({
@@ -39,6 +38,10 @@ interface OwnProps {
   tx?: StoredTransaction;
 }
 
+interface StateProps {
+  transaction?: StoredTransaction;
+}
+
 interface DispatchProps {
   getEthReceipt(tx: StoredTransaction): Promise<EthereumReceipt | null>;
   getEthTx(tx: StoredTransaction): Promise<EthereumTransaction | null>;
@@ -53,9 +56,9 @@ interface StylesProps {
   classes: Record<keyof typeof styles, string>;
 }
 
-const TxDetails: React.FC<OwnProps & DispatchProps & StylesProps> = ({
+const TxDetails: React.FC<OwnProps & StateProps & DispatchProps & StylesProps> = ({
   classes,
-  tx,
+  transaction,
   getEthTx,
   getEthReceipt,
   goBack,
@@ -67,51 +70,65 @@ const TxDetails: React.FC<OwnProps & DispatchProps & StylesProps> = ({
   const [ethReceipt, setEthReceipt] = React.useState<EthereumReceipt | null>(null);
   const [ethTx, setEthTx] = React.useState<EthereumTransaction | null>(null);
 
-  const blockchain = React.useMemo(() => (tx == null ? undefined : blockchainById(tx.blockchain)), [tx]);
-  const txChanges = React.useMemo(() => tx?.changes.filter((change) => change.amountValue.isPositive()) ?? [], [tx]);
+  const blockchain = React.useMemo(
+    () => (transaction == null ? undefined : blockchainById(transaction.blockchain)),
+    [transaction],
+  );
+  const txChanges = React.useMemo(
+    () =>
+      transaction?.changes.filter((change) => change.type !== ChangeType.FEE && change.amountValue.isPositive()) ?? [],
+    [transaction],
+  );
+  const txFee = React.useMemo(
+    () => transaction?.changes.find((change) => change.type === ChangeType.FEE)?.amountValue,
+    [transaction],
+  );
   const txStatus = React.useMemo(
-    () => (ethReceipt == null ? tx?.status : ethReceipt.status === 1 ? Status.OK : Status.FAILED),
-    [ethReceipt, tx],
+    () => (ethReceipt == null ? transaction?.status : ethReceipt.status === 1 ? Status.OK : Status.FAILED),
+    [ethReceipt, transaction],
   );
 
   React.useEffect(() => {
-    if (tx != null && blockchain != null && isEthereum(blockchain.params.code)) {
+    if (transaction != null && blockchain != null && isEthereum(blockchain.params.code)) {
       (async () => {
-        const results = await Promise.allSettled([getEthReceipt(tx), getEthTx(tx)]);
+        const results = await Promise.allSettled([getEthReceipt(transaction), getEthTx(transaction)]);
 
-        const [receipt, transaction] = results.map((result) =>
-          result.status === 'fulfilled' ? result.value : null,
-        ) as [EthereumReceipt, EthereumTransaction];
+        const [receipt, tx] = results.map((result) => (result.status === 'fulfilled' ? result.value : null)) as [
+          EthereumReceipt,
+          EthereumTransaction,
+        ];
 
         setEthReceipt(receipt);
-        setEthTx(transaction);
+        setEthTx(tx);
       })();
     }
-  }, [blockchain, tx, getEthReceipt, getEthTx]);
+  }, [blockchain, transaction, getEthReceipt, getEthTx]);
 
   return (
     <Page title="Transaction Details" leftIcon={<Back onClick={() => goBack()} />}>
-      {tx != null && (
+      {transaction == null ? (
+        <Typography variant="caption">Transaction not found! Please try again later.</Typography>
+      ) : (
         <>
           <FormRow
             leftColumn={<div className={classes.nameField}>Date</div>}
-            rightColumn={<Typography>{tx.confirmTimestamp?.toUTCString() ?? 'Pending'}</Typography>}
+            rightColumn={<Typography>{transaction.confirmTimestamp?.toUTCString() ?? 'Pending'}</Typography>}
           />
           <FormRow
             leftColumn={<div className={classes.nameField}>Status</div>}
-            rightColumn={<TxStatus state={tx.state} status={txStatus} />}
+            rightColumn={<TxStatus state={transaction.state} status={txStatus} />}
           />
           <FormRow
             leftColumn={<div className={classes.nameField}>Hash</div>}
             rightColumn={
-              <Typography className={classes.idField} title={tx.txId}>
-                {tx.txId}
+              <Typography className={classes.idField} title={transaction.txId}>
+                {transaction.txId}
               </Typography>
             }
           />
           <FormRow
             leftColumn={<div className={classes.nameField}>Block</div>}
-            rightColumn={<Typography>{tx.block?.height ?? 'Pending'}</Typography>}
+            rightColumn={<Typography>{transaction.block?.height ?? 'Pending'}</Typography>}
           />
           {txChanges.length > 0 && (
             <>
@@ -136,16 +153,10 @@ const TxDetails: React.FC<OwnProps & DispatchProps & StylesProps> = ({
           {ethTx != null && (
             <>
               <br />
-              {ethReceipt?.effectiveGasPrice != null && (
+              {txFee && (
                 <FormRow
                   leftColumn={<div className={classes.nameField}>Transaction Fee</div>}
-                  rightColumn={
-                    <Typography>
-                      {formatAmount(
-                        new Wei(new BigNumber(ethReceipt.effectiveGasPrice).multipliedBy(ethReceipt.gasUsed)),
-                      )}
-                    </Typography>
-                  }
+                  rightColumn={<Typography>{formatAmount(txFee)}</Typography>}
                 />
               )}
               {ethTx.gasPrice == null ? (
@@ -173,7 +184,7 @@ const TxDetails: React.FC<OwnProps & DispatchProps & StylesProps> = ({
                 leftColumn={<div className={classes.nameField}>Input Data</div>}
                 rightColumn={<textarea className={classes.textField} readOnly={true} rows={5} value={ethTx.data} />}
               />
-              {tx.state < State.CONFIRMED && (
+              {transaction.state < State.CONFIRMED && (
                 <FormRow
                   leftColumn={<div className={classes.nameField}>Modify</div>}
                   rightColumn={
@@ -190,7 +201,7 @@ const TxDetails: React.FC<OwnProps & DispatchProps & StylesProps> = ({
             rightColumn={
               <ButtonGroup>
                 <Button onClick={goToDashboard} label="DASHBOARD" />
-                <Button onClick={() => goToReceipt(tx)} primary={true} label="OPEN RECEIPT" />
+                <Button onClick={() => goToReceipt(transaction)} primary={true} label="OPEN RECEIPT" />
               </ButtonGroup>
             }
           />
@@ -200,8 +211,10 @@ const TxDetails: React.FC<OwnProps & DispatchProps & StylesProps> = ({
   );
 };
 
-export default connect<{}, DispatchProps>(
-  null,
+export default connect<StateProps, DispatchProps, OwnProps, IState>(
+  (state, { tx }) => ({
+    transaction: tx == null ? undefined : txhistory.selectors.transactionById(state, tx.txId) ?? tx,
+  }),
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: any) => ({
     getEthReceipt(tx) {
@@ -214,7 +227,7 @@ export default connect<{}, DispatchProps>(
       dispatch(screen.actions.goBack());
     },
     goToCancelTx(tx) {
-      dispatch(gotoScreen(screen.Pages.CREATE_TX_CANCEL, tx));
+      dispatch(gotoScreen(screen.Pages.CREATE_TX_CANCEL, tx, null, true));
     },
     goToDashboard() {
       dispatch(gotoWalletsScreen());
@@ -223,7 +236,7 @@ export default connect<{}, DispatchProps>(
       dispatch(screen.actions.openTxReceipt(tx.txId));
     },
     goToSpeedUpTx(tx) {
-      dispatch(gotoScreen(screen.Pages.CREATE_TX_SPEED_UP, tx));
+      dispatch(gotoScreen(screen.Pages.CREATE_TX_SPEED_UP, tx, null, true));
     },
   }),
 )(withStyles(styles)(TxDetails));

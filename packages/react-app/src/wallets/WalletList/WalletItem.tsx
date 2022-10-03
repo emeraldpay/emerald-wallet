@@ -154,7 +154,7 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       dispatch(screen.actions.gotoScreen(screen.Pages.RECEIVE, ownProps.wallet.id));
     },
     onSend() {
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, ownProps.wallet.id));
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX, ownProps.wallet.id, null, true));
     },
   }),
 )(WalletItem);

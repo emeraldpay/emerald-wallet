@@ -54,8 +54,6 @@ const Screen: React.FC<OwnProps & StateProps> = (props) => {
           Initializing...
         </div>
       );
-    case 'broadcast-tx':
-      return <BroadcastTx tx={props.screenItem.tx} signed={props.screenItem.signed} />;
     case 'settings':
       return <Settings />;
     case 'welcome':
@@ -66,6 +64,8 @@ const Screen: React.FC<OwnProps & StateProps> = (props) => {
       return <AddHDAddress walletId={props.screenItem} />;
     case screen.Pages.ADDRESS_BOOK:
       return <AddressBook />;
+    case screen.Pages.BROADCAST_TX:
+      return <BroadcastTx data={props.screenItem} />;
     case screen.Pages.CREATE_HD_ACCOUNT:
       return <CreateHdAccount walletId={props.screenItem} />;
     case screen.Pages.CREATE_TX:

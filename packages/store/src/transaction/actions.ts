@@ -1,10 +1,11 @@
 import { EstimationMode } from '@emeraldpay/api';
 import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { UnsignedTx } from '@emeraldpay/emerald-vault-core';
+import { SignedTx, UnsignedTx } from '@emeraldpay/emerald-vault-core';
 import { EntryId, UnsignedBitcoinTx } from '@emeraldpay/emerald-vault-core/lib/types';
 import { IEmeraldVault } from '@emeraldpay/emerald-vault-core/lib/vault';
 import {
+  AnyCoinCode,
   BlockchainCode,
   Blockchains,
   EthereumAddress,
@@ -12,12 +13,19 @@ import {
   EthereumTransaction,
   EthereumTx,
   Logger,
+  PersistentState,
+  blockchainCodeToId,
+  isBitcoin,
+  isEthereum,
   quantitiesToHex,
   toBigNumber,
 } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
+import { findWalletByEntryId } from '../accounts/selectors';
 import { Pages } from '../screen';
 import { catchError, gotoScreen, showError } from '../screen/actions';
+import { updateTransaction } from '../txhistory/actions';
+import { StoredTransaction } from '../txhistory/types';
 import {
   DEFAULT_FEE,
   DefaultFee,
@@ -26,44 +34,37 @@ import {
   FeePrices,
   GasPriceType,
   GasPrices,
-  IExtraArgument,
   PriceSort,
 } from '../types';
 
 const log = Logger.forCategory('store.transaction');
 
-function unwrap(value: string[] | string | null): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const [data] = Array.isArray(value) ? value : [value];
-
-    if (typeof data === 'string') {
-      return resolve(data);
-    }
-
-    reject(new Error(`Invalid value ${value}`));
-  });
-}
+const { Direction, ChangeType, State, Status } = PersistentState;
 
 function withNonce(tx: EthereumTransaction): (nonce: number) => Promise<EthereumTransaction> {
   return (nonce) => new Promise((resolve) => resolve({ ...tx, nonce: quantitiesToHex(nonce) }));
 }
 
-function verifySender(expected: string): (a: string, c: BlockchainCode) => Promise<string> {
-  return (raw: string, chain: BlockchainCode) =>
+function verifySender(expected: string): (txid: string, raw: string, chain: BlockchainCode) => Promise<SignedTx> {
+  return (txid, raw, chain) =>
     new Promise((resolve, reject) => {
       // Find chain id
       const chainId = Blockchains[chain].params.chainId;
       const tx = EthereumTx.fromRaw(raw, chainId);
+
       if (tx.verifySignature()) {
         log.debug('Tx signature verified');
+
         if (!tx.getSenderAddress().equals(new EthereumAddress(expected))) {
           log.error(`WRONG SENDER: ${tx.getSenderAddress().toString()} != ${expected}`);
+
           reject(new Error('Emerald Vault returned signature from wrong Sender'));
         } else {
-          resolve(raw);
+          resolve({ raw, txid });
         }
       } else {
         log.error(`Invalid signature: ${raw}`);
+
         reject(new Error('Emerald Vault returned invalid signature for the transaction'));
       }
     });
@@ -75,7 +76,7 @@ function signTx(
   tx: EthereumTransaction,
   passphrase: string,
   blockchain: BlockchainCode,
-): Promise<string | string[]> {
+): Promise<SignedTx> {
   log.debug(`Calling emerald api to sign tx from ${tx.from} to ${tx.to} in ${blockchain} blockchain`);
 
   let gasPrices: Record<'gasPrice', string> | Record<'maxGasPrice' | 'priorityGasPrice', string>;
@@ -108,6 +109,14 @@ function signTx(
   return vault.signTx(accountId, unsignedTx, passphrase);
 }
 
+export interface SignData {
+  blockchain: BlockchainCode;
+  entryId: string;
+  signed: string;
+  tx: EthereumTransaction | UnsignedBitcoinTx;
+  txId: string;
+}
+
 export function signTransaction(
   accountId: string,
   blockchain: BlockchainCode,
@@ -121,7 +130,7 @@ export function signTransaction(
   maxGasPrice?: Wei,
   priorityGasPrice?: Wei,
   nonce: number | string = '',
-): Dispatched<any> {
+): Dispatched<SignData> {
   const originalTx: EthereumTransaction = {
     blockchain,
     data,
@@ -135,15 +144,15 @@ export function signTransaction(
     value: value.number,
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (dispatch: any, getState, extra) => {
-    const callSignTx = (tx: EthereumTransaction): Promise<any> =>
+    const callSignTx = (tx: EthereumTransaction): Promise<SignData> =>
       signTx(extra.api.vault, accountId, tx, passphrase, blockchain)
-        .then(unwrap)
-        .then((rawTx) => verifySender(from)(rawTx, blockchain))
-        .then((signed) => ({ tx, signed }));
+        .then(({ raw, txid }) => verifySender(from)(txid, raw, blockchain))
+        .then(({ raw: signed, txid: txId }) => ({ blockchain, tx, txId, signed, entryId: accountId }));
 
     if (nonce.toString().length > 0) {
-      return callSignTx(originalTx);
+      return callSignTx(originalTx).catch(catchError(dispatch));
     }
 
     return extra.backendApi
@@ -154,36 +163,151 @@ export function signTransaction(
   };
 }
 
+type SignHandler = (txid: string | null, raw: string | null, err?: string) => void;
+
 export function signBitcoinTransaction(
   entryId: EntryId,
   tx: UnsignedBitcoinTx,
   password: string,
-  handler: (raw?: string, err?: string) => void,
-): Dispatched<any> {
+  handler: SignHandler,
+): Dispatched<SignHandler> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return (dispatch: any, getState, extra) => {
     extra.api.vault
       .signTx(entryId, tx, password)
-      .then((raw) => handler(raw))
+      .then(({ raw, txid }) => handler(txid, raw))
       .catch((err) => {
-        handler(undefined, 'Internal error. ' + err?.message);
+        handler(null, null, 'Internal error. ' + err?.message);
         dispatch(showError(err));
       });
   };
 }
 
-export function broadcastTx(chain: BlockchainCode, signedTx: string): Dispatched<void> {
+export interface BroadcastData extends SignData {
+  fee: BigAmount;
+  originalAmount?: BigAmount;
+  tokenAmount?: BigAmount;
+}
+
+export function broadcastTx({
+  blockchain,
+  entryId,
+  fee,
+  originalAmount,
+  signed,
+  tokenAmount,
+  tx,
+  txId,
+}: BroadcastData): Dispatched<void> {
   return async (dispatch, getState, extra) => {
     try {
-      const hash = await extra.backendApi.broadcastSignedTx(chain, signedTx);
+      await extra.backendApi.broadcastSignedTx(blockchain, signed);
 
-      const state = getState();
+      let changes: PersistentState.Change[] = [];
 
-      dispatch(
-        gotoScreen(
-          Pages.TX_DETAILS,
-          state.history.transactions.find((tx) => tx.txId === hash),
-        ),
-      );
+      const feeChange = {
+        asset: fee.units.top.code as AnyCoinCode,
+        amount: fee.number.toString(),
+        direction: Direction.SPEND,
+        type: ChangeType.FEE,
+      };
+
+      if (isBitcoin(blockchain)) {
+        const asset = blockchain === BlockchainCode.TestBTC ? 'TESTBTC' : 'BTC';
+        const bitcoinTx = tx as UnsignedBitcoinTx;
+
+        changes = [feeChange]
+          .concat(
+            bitcoinTx.inputs.map<PersistentState.Change>((input) => ({
+              asset,
+              address: input.address,
+              amount: input.amount.toString(),
+              direction: Direction.SPEND,
+              type: ChangeType.TRANSFER,
+              wallet: input.entryId,
+            })),
+          )
+          .concat(
+            bitcoinTx.outputs.map((output) => ({
+              asset,
+              address: output.address,
+              amount: output.amount.toString(),
+              direction: Direction.EARN,
+              type: ChangeType.TRANSFER,
+              wallet: output.entryId,
+            })),
+          );
+      } else if (isEthereum(blockchain)) {
+        const ethereumTx = tx as EthereumTransaction;
+
+        if (originalAmount != null) {
+          const amount = originalAmount.number.toString();
+          const asset = originalAmount.units.top.code as AnyCoinCode;
+
+          changes = [
+            {
+              ...feeChange,
+              address: ethereumTx.from,
+            },
+            {
+              amount,
+              asset,
+              address: ethereumTx.from,
+              direction: Direction.SPEND,
+              type: ChangeType.TRANSFER,
+              wallet: entryId,
+            },
+            {
+              amount,
+              asset,
+              address: ethereumTx.to,
+              direction: Direction.EARN,
+              type: ChangeType.TRANSFER,
+            },
+          ];
+        }
+
+        if (tokenAmount != null) {
+          const amount = tokenAmount.number.toString();
+          const asset = tokenAmount.units.top.code as AnyCoinCode;
+
+          changes = [
+            ...changes,
+            {
+              amount,
+              asset,
+              address: ethereumTx.to,
+              direction: Direction.SPEND,
+              type: ChangeType.TRANSFER,
+            },
+            {
+              amount,
+              asset,
+              address: ethereumTx.from,
+              direction: Direction.EARN,
+              type: ChangeType.TRANSFER,
+              wallet: entryId,
+            },
+          ];
+        }
+      }
+
+      const transaction = await extra.api.txHistory.submit({
+        changes,
+        txId,
+        blockchain: blockchainCodeToId(blockchain),
+        sinceTimestamp: new Date(),
+        state: State.SUBMITTED,
+        status: Status.UNKNOWN,
+      });
+
+      const wallet = findWalletByEntryId(getState(), entryId);
+
+      if (wallet != null) {
+        await dispatch(updateTransaction(wallet.id, transaction, null));
+      }
+
+      dispatch(gotoScreen(Pages.TX_DETAILS, new StoredTransaction(transaction, null)));
     } catch (exception) {
       dispatch(showError(exception));
     }
@@ -198,10 +322,10 @@ type Tx = {
   value?: BigAmount;
 };
 
-export function estimateGas(chain: BlockchainCode, tx: Tx): Dispatched<any> {
+export function estimateGas(chain: BlockchainCode, tx: Tx): Dispatched<number> {
   const { data, from, gas, to, value } = tx;
 
-  return (dispatch: any, getState: any, extra: IExtraArgument) => {
+  return (dispatch, getState, extra) => {
     return extra.backendApi.estimateTxCost(chain, {
       data,
       from,
@@ -212,8 +336,9 @@ export function estimateGas(chain: BlockchainCode, tx: Tx): Dispatched<any> {
   };
 }
 
-export function estimateFee(blockchain: BlockchainCode, blocks: number, mode: EstimationMode) {
-  return (dispatch: any, getState: any, extra: IExtraArgument) => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function estimateFee(blockchain: BlockchainCode, blocks: number, mode: EstimationMode): Dispatched<any> {
+  return (dispatch, getState, extra) => {
     return extra.backendApi.estimateFee(blockchain, blocks, mode);
   };
 }
@@ -227,6 +352,7 @@ function sortBigNumber(first: BigNumber, second: BigNumber): number {
 }
 
 export function getFee(blockchain: BlockchainCode, defaultFee: DefaultFee): Dispatched<FeePrices> {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   return async (dispatch: any) => {
     let results = await Promise.allSettled(FEE_KEYS.map((key) => dispatch(estimateFee(blockchain, 128, key))));
 

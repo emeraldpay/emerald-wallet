@@ -10,6 +10,8 @@ import {
 } from '@emeraldpay/emerald-vault-core';
 import { BalanceUtxo, BlockchainCode, blockchainIdToCode, workflow } from '@emeraldwallet/core';
 import { DefaultFee, FeePrices, IState, accounts, application, screen, transaction } from '@emeraldwallet/store';
+import { zeroAmountFor } from '@emeraldwallet/store/lib/accounts/selectors';
+import { BroadcastData } from '@emeraldwallet/store/lib/transaction/actions';
 import { Back, Page } from '@emeraldwallet/ui';
 import { Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -34,7 +36,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  onBroadcast(blockchain: BlockchainCode, orig: UnsignedBitcoinTx, raw: string): void;
+  onBroadcast(data: BroadcastData): void;
   onCancel?(): void;
   getFees(blockchain: BlockchainCode, defaultFee: DefaultFee): () => Promise<FeePrices<number>>;
   getXPubPositionalAddress(entryId: string, xPub: string, role: AddressRole): Promise<CurrentAddress>;
@@ -52,8 +54,10 @@ const Component: React.FC<OwnProps & StateProps & DispatchProps> = ({
   onBroadcast,
   onCancel,
 }) => {
+  const [fee, setFee] = React.useState(zeroAmountFor(blockchain));
   const [page, setPage] = React.useState<Step>('setup');
-  const [raw, setRaw] = React.useState('');
+  const [signed, setSigned] = React.useState('');
+  const [txId, setTxId] = React.useState('');
 
   const [tx, setTx] = React.useState<UnsignedBitcoinTx | null>(null);
   const [txBuilder, setTxBuilder] = React.useState<workflow.CreateBitcoinTx | null>(null);
@@ -88,8 +92,10 @@ const Component: React.FC<OwnProps & StateProps & DispatchProps> = ({
           entry={entry}
           source={source}
           getFees={getFees(blockchain, defaultFee)}
-          onCreate={(tx) => {
+          onCreate={(tx, fee) => {
+            setFee(fee);
             setTx(tx);
+
             setPage('sign');
           }}
         />
@@ -104,8 +110,10 @@ const Component: React.FC<OwnProps & StateProps & DispatchProps> = ({
         entryId={source}
         seedId={seedId}
         tx={tx}
-        onSign={(raw) => {
-          setRaw(raw);
+        onSign={(txId, signed) => {
+          setSigned(signed);
+          setTxId(txId);
+
           setPage('result');
         }}
       />
@@ -116,8 +124,17 @@ const Component: React.FC<OwnProps & StateProps & DispatchProps> = ({
         <Confirm
           blockchain={blockchain}
           entryId={entry.id}
-          rawtx={raw}
-          onConfirm={() => onBroadcast(blockchain, tx, raw)}
+          rawtx={signed}
+          onConfirm={() =>
+            onBroadcast({
+              blockchain,
+              fee,
+              tx,
+              txId,
+              signed,
+              entryId: entry.id,
+            })
+          }
         />
       );
     }
@@ -196,14 +213,15 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
     getXPubPositionalAddress(entryId, xPub, role) {
       return dispatch(accounts.actions.getXPubPositionalAddress(entryId, xPub, role));
     },
-    onBroadcast: (blockchain, orig, raw) => {
-      dispatch(transaction.actions.broadcastTx(blockchain, raw));
+    onBroadcast(data) {
+      dispatch(transaction.actions.broadcastTx(data));
 
-      // when a change output was used
-      if (orig.outputs.length > 1) {
+      if ((data.tx as UnsignedBitcoinTx).outputs.length > 1) {
         dispatch(accounts.actions.nextAddress(ownProps.source, 'change'));
       }
     },
-    onCancel: () => dispatch(screen.actions.gotoWalletsScreen()),
+    onCancel() {
+      dispatch(screen.actions.gotoWalletsScreen());
+    },
   }),
 )(Component);

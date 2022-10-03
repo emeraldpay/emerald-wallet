@@ -14,9 +14,9 @@ import {
   SeedDescription,
   SeedDetails,
   SeedReference,
+  SignedTx,
   UnsignedTx,
-  Uuid,
-  Wallet,
+  Uuid, Wallet,
 } from '@emeraldpay/emerald-vault-core';
 import { ipcRenderer } from 'electron';
 
@@ -117,7 +117,7 @@ class Vault implements IEmeraldVault {
     return ipcRenderer.invoke(PREFIX + 'setWalletLabel', walletId, label);
   }
 
-  signTx(entryId: EntryId, tx: UnsignedTx, password?: string): Promise<string> {
+  signTx(entryId: EntryId, tx: UnsignedTx, password?: string): Promise<SignedTx> {
     return ipcRenderer.invoke(PREFIX + 'signTx', entryId, tx, password);
   }
 

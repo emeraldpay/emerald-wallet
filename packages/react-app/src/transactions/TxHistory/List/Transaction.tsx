@@ -398,14 +398,14 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
       const ethTx = await dispatch(transaction.actions.getEthTx(blockchainIdToCode(tx.blockchain), tx.txId));
 
       if (ethTx != null) {
-        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_CANCEL, ethTx));
+        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_CANCEL, ethTx, null, true));
       }
     },
     async goToSpeedUpTx(tx) {
       const ethTx = await dispatch(transaction.actions.getEthTx(blockchainIdToCode(tx.blockchain), tx.txId));
 
       if (ethTx != null) {
-        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_SPEED_UP, ethTx));
+        dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_SPEED_UP, ethTx, null, true));
       }
     },
     goToTransaction(tx) {
