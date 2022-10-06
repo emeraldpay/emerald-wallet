@@ -13,9 +13,9 @@ import {
   toBaseUnits,
   toBigNumber,
   tokenAmount,
+  tokenUnits,
   workflow,
 } from '@emeraldwallet/core';
-import { tokenUnits } from '@emeraldwallet/core/lib/blockchains/tokens';
 import { registry } from '@emeraldwallet/erc20';
 import {
   DEFAULT_FEE,
@@ -32,7 +32,6 @@ import {
   tokens,
   transaction,
 } from '@emeraldwallet/store';
-import { SignData } from '@emeraldwallet/store/lib/transaction/actions';
 import { Back, Page } from '@emeraldwallet/ui';
 import { BigNumber } from 'bignumber.js';
 import * as React from 'react';

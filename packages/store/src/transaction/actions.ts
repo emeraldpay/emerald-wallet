@@ -100,14 +100,6 @@ function signTx(
   return vault.signTx(accountId, unsignedTx, passphrase);
 }
 
-export interface SignData {
-  blockchain: BlockchainCode;
-  entryId: string;
-  signed: string;
-  tx: EthereumTransaction | UnsignedBitcoinTx;
-  txId: string;
-}
-
 export function signTransaction(
   accountId: string,
   blockchain: BlockchainCode,

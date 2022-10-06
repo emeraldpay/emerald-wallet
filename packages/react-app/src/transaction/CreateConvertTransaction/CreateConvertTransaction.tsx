@@ -25,7 +25,6 @@ import {
   tokens,
   transaction,
 } from '@emeraldwallet/store';
-import { SignData } from '@emeraldwallet/store/lib/transaction/actions';
 import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles, withStyles } from '@material-ui/core';
 import { ToggleButton, ToggleButtonGroup } from '@material-ui/lab';
