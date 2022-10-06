@@ -1,10 +1,9 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { Blockchains, EthereumTx, toNumber } from '@emeraldwallet/core';
+import { AnyCoinCode, Blockchains, EthereumTx, toNumber } from '@emeraldwallet/core';
 import { tokenUnits } from '@emeraldwallet/core/lib/blockchains/tokens';
 import { decodeData, registry } from '@emeraldwallet/erc20';
-import { screen, transaction } from '@emeraldwallet/store';
-import { BroadcastData } from '@emeraldwallet/store/lib/transaction/actions';
+import { BroadcastData, screen, transaction } from '@emeraldwallet/store';
 import { Account, Button, ButtonGroup, FormRow, Page } from '@emeraldwallet/ui';
 import { createStyles } from '@material-ui/core';
 import { withStyles } from '@material-ui/core/styles';
@@ -44,23 +43,23 @@ class BroadcastTx extends React.Component<OwnProps & DispatchProps & StylesProps
     const decoded = EthereumTx.fromRaw(signed, chain.params.chainId);
     const data = decoded.getData();
 
-    let coinSymbol = chain.params.coinTicker;
-    let erc20Tx = null;
+    let coinSymbol: AnyCoinCode = chain.params.coinTicker;
+
+    let txTo: string | null = null;
+    let txValue: string | null = null;
 
     if (data.length > 0) {
       const decodedData = decodeData(data);
 
       if (decodedData.inputs.length > 0) {
-        erc20Tx = {
-          to: decodedData.inputs[0].toString(16),
-          value: toNumber('0x' + decodedData.inputs[1].toString(16)).toString(),
-        };
+        txTo = decodedData.inputs[0].toString(16);
+        txValue = toNumber('0x' + decodedData.inputs[1].toString(16)).toString();
 
         const tokenInfo = registry.byAddress(chain.params.code, decoded.getRecipientAddress().toString());
 
         if (tokenInfo) {
           coinSymbol = tokenInfo.symbol;
-          erc20Tx.value = new BigAmount(erc20Tx.value, tokenUnits(tokenInfo.symbol)).toString();
+          txValue = new BigAmount(txValue, tokenUnits(tokenInfo.symbol)).toString();
         }
       }
     }
@@ -73,7 +72,7 @@ class BroadcastTx extends React.Component<OwnProps & DispatchProps & StylesProps
           leftColumn={<div className={classes.fieldName}>From</div>}
           rightColumn={<Account identity={true} address={decoded.getSenderAddress().toString()} />}
         />
-        {erc20Tx === null ? (
+        {txTo === null ? (
           <React.Fragment>
             <FormRow
               leftColumn={<div className={classes.fieldName}>To</div>}
@@ -92,13 +91,13 @@ class BroadcastTx extends React.Component<OwnProps & DispatchProps & StylesProps
           <React.Fragment>
             <FormRow
               leftColumn={<div className={classes.fieldName}>To</div>}
-              rightColumn={<Account identity={true} address={erc20Tx.to} />}
+              rightColumn={<Account identity={true} address={txTo} />}
             />
             <FormRow
               leftColumn={<div className={classes.fieldName}>Amount</div>}
               rightColumn={
                 <div data-testid="token-amount">
-                  {erc20Tx.value} {coinSymbol}
+                  {txValue} {coinSymbol}
                 </div>
               }
             />

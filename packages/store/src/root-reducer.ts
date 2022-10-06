@@ -12,7 +12,6 @@ import {
   screen,
   settings,
   tokens,
-  transaction,
   txhistory,
 } from './';
 
@@ -23,7 +22,6 @@ const root = combineReducers<IState>({
   [connection.moduleName]: connection.reducer,
   [screen.moduleName]: screen.reducer,
   [tokens.moduleName]: tokens.reducer,
-  [transaction.moduleName]: transaction.reducer,
   addAccount: addAccount.reducer,
   blockchains: blockchains.reducer,
   hdpathPreview: hdpathPreview.reducer,

@@ -1,5 +1,4 @@
-import { Wei } from '@emeraldpay/bigamount-crypto/lib/ethereum';
-import { BlockchainCode } from '@emeraldwallet/core';
+import { BlockchainCode, amountFactory } from '@emeraldwallet/core';
 import { Theme } from '@emeraldwallet/ui';
 import { ThemeProvider } from '@material-ui/core';
 import '@testing-library/jest-dom/extend-expect';
@@ -14,7 +13,7 @@ describe('BroadcastTx', () => {
   const data = {
     blockchain: BlockchainCode.Goerli,
     entryId: '1022fd13-3431-4f3b-bce8-109fdab15873-1',
-    fee: new Wei(1, 'ETHER'),
+    fee: amountFactory(BlockchainCode.Goerli)(1 ** 18),
     signed:
       '0x02f8720580845a288bce8502d16b842682520894e7f129f88b57e902cb18ba' +
       'eecd43f17449419ae287b1a2bc2ec5000080c001a056663c0965287c9e0e92d6' +
@@ -60,7 +59,7 @@ describe('BroadcastTx', () => {
     const valueDiv = await wrapper.findByTestId('token-amount');
 
     expect(valueDiv).toBeDefined();
-    expect(valueDiv).toHaveTextContent('0.05 ETH');
+    expect(valueDiv).toHaveTextContent('0.05 ETG');
 
     const nonceDiv = await wrapper.findByTestId('nonce');
 

@@ -1,6 +1,5 @@
 import { EstimationMode } from '@emeraldpay/api';
 import { BigAmount } from '@emeraldpay/bigamount';
-import { Wei } from '@emeraldpay/bigamount-crypto';
 import { SignedTx, UnsignedTx } from '@emeraldpay/emerald-vault-core';
 import { EntryId, UnsignedBitcoinTx } from '@emeraldpay/emerald-vault-core/lib/types';
 import { IEmeraldVault } from '@emeraldpay/emerald-vault-core/lib/vault';
@@ -21,21 +20,13 @@ import {
   toBigNumber,
 } from '@emeraldwallet/core';
 import BigNumber from 'bignumber.js';
+import { BroadcastData, SignData } from './types';
 import { findWalletByEntryId } from '../accounts/selectors';
 import { Pages } from '../screen';
 import { catchError, gotoScreen, showError } from '../screen/actions';
 import { updateTransaction } from '../txhistory/actions';
 import { StoredTransaction } from '../txhistory/types';
-import {
-  DEFAULT_FEE,
-  DefaultFee,
-  Dispatched,
-  FEE_KEYS,
-  FeePrices,
-  GasPriceType,
-  GasPrices,
-  PriceSort,
-} from '../types';
+import { DEFAULT_FEE, DefaultFee, Dispatched, FEE_KEYS, FeePrices, GasPriceType, GasPrices, PriceSort } from '../types';
 
 const log = Logger.forCategory('store.transaction');
 
@@ -109,14 +100,6 @@ function signTx(
   return vault.signTx(accountId, unsignedTx, passphrase);
 }
 
-export interface SignData {
-  blockchain: BlockchainCode;
-  entryId: string;
-  signed: string;
-  tx: EthereumTransaction | UnsignedBitcoinTx;
-  txId: string;
-}
-
 export function signTransaction(
   accountId: string,
   blockchain: BlockchainCode,
@@ -124,11 +107,11 @@ export function signTransaction(
   passphrase: string,
   to: string,
   gas: number,
-  value: Wei,
+  value: BigAmount,
   data: string,
-  gasPrice?: Wei,
-  maxGasPrice?: Wei,
-  priorityGasPrice?: Wei,
+  gasPrice?: BigAmount,
+  maxGasPrice?: BigAmount,
+  priorityGasPrice?: BigAmount,
   nonce: number | string = '',
 ): Dispatched<SignData> {
   const originalTx: EthereumTransaction = {
@@ -181,12 +164,6 @@ export function signBitcoinTransaction(
         dispatch(showError(err));
       });
   };
-}
-
-export interface BroadcastData extends SignData {
-  fee: BigAmount;
-  originalAmount?: BigAmount;
-  tokenAmount?: BigAmount;
 }
 
 export function broadcastTx({

@@ -15,9 +15,11 @@ import { IHWKeyState } from './hwkey/types';
 import { ScreenState } from './screen/types';
 import { ISettingsState } from './settings/types';
 import { ITokensState } from './tokens/types';
-import { ITransactionState } from './transaction/types';
+import { BroadcastData, SignData } from './transaction/types';
 import { Triggers } from './triggers';
 import { HistoryState } from './txhistory/types';
+
+export { SignData, BroadcastData };
 
 export interface IState {
   [accounts.moduleName]: IAccountsState;
@@ -32,7 +34,6 @@ export interface IState {
   screen: ScreenState;
   settings: ISettingsState;
   tokens: ITokensState;
-  transaction: ITransactionState;
 }
 
 export type GetState = () => IState;

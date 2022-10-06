@@ -19,19 +19,19 @@ import { tokenUnits } from '@emeraldwallet/core/lib/blockchains/tokens';
 import { registry } from '@emeraldwallet/erc20';
 import {
   DEFAULT_FEE,
+  DefaultFee,
   FEE_KEYS,
   GasPrices,
   IState,
+  SignData,
   accounts,
+  application,
   hwkey,
   screen,
   settings,
   tokens,
   transaction,
-  application,
-  DefaultFee,
 } from '@emeraldwallet/store';
-import { SignData } from '@emeraldwallet/store/lib/transaction/actions';
 import { Back, Page } from '@emeraldwallet/ui';
 import { BigNumber } from 'bignumber.js';
 import * as React from 'react';

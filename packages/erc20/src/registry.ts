@@ -52,12 +52,12 @@ export const registry = {
       {
         address: '0x0Bb7509324cE409F7bbC4b701f932eAca9736AB7',
         decimals: 18,
-        symbol: 'WETH'
+        symbol: 'WETG'
       }
     ],
-    [BlockchainCode.Unknown]: [],
     [BlockchainCode.BTC]: [],
     [BlockchainCode.TestBTC]: [],
+    [BlockchainCode.Unknown]: [],
   }),
   all: () => {
     return registry.tokens;

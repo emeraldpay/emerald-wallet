@@ -9,9 +9,16 @@ import {
   isSeedPkRef,
 } from '@emeraldpay/emerald-vault-core';
 import { BalanceUtxo, BlockchainCode, blockchainIdToCode, workflow } from '@emeraldwallet/core';
-import { DefaultFee, FeePrices, IState, accounts, application, screen, transaction } from '@emeraldwallet/store';
-import { zeroAmountFor } from '@emeraldwallet/store/lib/accounts/selectors';
-import { BroadcastData } from '@emeraldwallet/store/lib/transaction/actions';
+import {
+  BroadcastData,
+  DefaultFee,
+  FeePrices,
+  IState,
+  accounts,
+  application,
+  screen,
+  transaction,
+} from '@emeraldwallet/store';
 import { Back, Page } from '@emeraldwallet/ui';
 import { Typography } from '@material-ui/core';
 import { Alert } from '@material-ui/lab';
@@ -54,7 +61,7 @@ const Component: React.FC<OwnProps & StateProps & DispatchProps> = ({
   onBroadcast,
   onCancel,
 }) => {
-  const [fee, setFee] = React.useState(zeroAmountFor(blockchain));
+  const [fee, setFee] = React.useState(accounts.selectors.zeroAmountFor(blockchain));
   const [page, setPage] = React.useState<Step>('setup');
   const [signed, setSigned] = React.useState('');
   const [txId, setTxId] = React.useState('');

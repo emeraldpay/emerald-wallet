@@ -1,16 +1,16 @@
+import { BlockchainCode } from './blockchains';
+import { CoinTicker } from './CoinTicker';
+import { HDPath } from './hdpath';
+
 /**
  * Parameters of particular blockchain
  */
-import { AnyCoinCode } from '../Asset';
-import {BlockchainCode} from './blockchains';
-import {HDPath} from "./hdpath";
-
 export default interface IBlockchainParams {
-  decimals: number;
-  coinTicker: AnyCoinCode;
   chainId: number;
-  hdPath: HDPath;
   code: BlockchainCode;
+  coinTicker: CoinTicker;
   confirmations: number;
+  decimals: number;
   eip1559?: boolean;
+  hdPath: HDPath;
 }

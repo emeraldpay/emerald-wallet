@@ -1,7 +1,6 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { BlockchainCode, EthereumTransaction } from '@emeraldwallet/core';
-import { IState, accounts, screen, transaction } from '@emeraldwallet/store';
-import { SignData } from '@emeraldwallet/store/lib/transaction/actions';
+import { IState, SignData, accounts, screen , transaction } from '@emeraldwallet/store';
 import { Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import { Box, FormHelperText, Slider, createStyles, withStyles } from '@material-ui/core';
 import BigNumber from 'bignumber.js';

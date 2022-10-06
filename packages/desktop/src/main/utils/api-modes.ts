@@ -10,8 +10,8 @@ export const DevelopmentMode: ApiMode = {
 export const ProductionMode: ApiMode = {
   id: 'production',
   chains: ['ETH', 'ETC', 'BTC'],
-  assets: ['ETH', 'ETC', 'DAI', 'USDC', 'USDT', 'WETH'],
-  currencies: ['USD', 'EUR', 'USDC', 'USDT', 'BTC'],
+  assets: ['ETH', 'ETC', 'BTC', 'DAI', 'USDC', 'USDT', 'WETH'],
+  currencies: ['USD', 'EUR', 'BTC', 'USDC', 'USDT'],
 };
 
 export function sendMode(webContents, mode): void {

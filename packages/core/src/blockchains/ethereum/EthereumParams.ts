@@ -1,5 +1,5 @@
-import { AnyCoinCode } from '../../Asset';
 import { BlockchainCode } from '../blockchains';
+import { CoinTicker } from '../CoinTicker';
 import { HDPath } from '../hdpath';
 import IBlockchainParams from '../IBlockchainParams';
 
@@ -7,7 +7,7 @@ class EthereumParams implements IBlockchainParams {
   public readonly decimals = 18;
 
   public code: BlockchainCode;
-  public coinTicker: AnyCoinCode;
+  public coinTicker: CoinTicker;
   public chainId: number;
   public hdPath: HDPath;
   public confirmations: number;
@@ -15,7 +15,7 @@ class EthereumParams implements IBlockchainParams {
 
   constructor(
     code: BlockchainCode,
-    coinTicker: AnyCoinCode,
+    coinTicker: CoinTicker,
     chainId: number,
     hdPath: HDPath,
     confirmations: number,

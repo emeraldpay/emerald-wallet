@@ -59,6 +59,8 @@ const CoinIcon: React.FC<OwnProps> = ({ chain, size }) => {
       return <Typography className={classNames(iconSize, styles.onlyText)}>USDC</Typography>;
     case 'USDT':
       return <CurrencyUsdt className={iconSize} />;
+    case 'WETG':
+      return <Typography className={classNames(iconSize, styles.onlyText)}>WETG</Typography>;
     case 'WETH':
       //TODO use icon
       return <Typography className={classNames(iconSize, styles.onlyText)}>WETH</Typography>;
