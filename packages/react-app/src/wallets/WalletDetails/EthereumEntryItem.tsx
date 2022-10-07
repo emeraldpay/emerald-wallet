@@ -2,6 +2,7 @@ import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { EthereumEntry, WalletEntry } from '@emeraldpay/emerald-vault-core';
 import { BlockchainCode, Blockchains, blockchainIdToCode, formatAmount } from '@emeraldwallet/core';
+import { ConvertableTokenCode, isConvertableToken } from '@emeraldwallet/core/lib/Asset';
 import { IState, accounts, screen, tokens } from '@emeraldwallet/store';
 import { CoinAvatar } from '@emeraldwallet/ui';
 import { Button, Typography, createStyles } from '@material-ui/core';
@@ -68,7 +69,7 @@ interface StateProps {
 }
 
 interface DispatchProps {
-  gotoConvert(entry: WalletEntry): void;
+  gotoConvert(entry: WalletEntry, token: ConvertableTokenCode): void;
   gotoRecover(entry: WalletEntry): void;
 }
 
@@ -131,14 +132,18 @@ const Component: React.FC<DispatchProps & OwnProps & StateProps> = ({
       </div>
       <div className={styles.balances}>
         <AccountBalance key="main" classes={classes} balance={balance} />
-        {tokensBalances.map((token) => (
-          <AccountBalance
-            key={'token-' + token.units.top.code}
-            classes={classes}
-            balance={token}
-            onConvert={token.units.top.code === 'WETH' ? () => gotoConvert(entry) : undefined}
-          />
-        ))}
+        {tokensBalances.map((token) => {
+          const { code } = token.units.top;
+
+          return (
+            <AccountBalance
+              key={'token-' + token.units.top.code}
+              classes={classes}
+              balance={token}
+              onConvert={isConvertableToken(code) ? () => gotoConvert(entry, code) : undefined}
+            />
+          );
+        })}
       </div>
     </div>
   );
@@ -187,8 +192,8 @@ export default connect<StateProps, DispatchProps, OwnProps, IState>(
   },
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   (dispatch: Dispatch<any>) => ({
-    gotoConvert(entry) {
-      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_CONVERT, entry, null, true));
+    gotoConvert(entry, token) {
+      dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_CONVERT, { entry, token }, null, true));
     },
     gotoRecover(entry) {
       dispatch(screen.actions.gotoScreen(screen.Pages.CREATE_TX_RECOVER, entry, null, true));

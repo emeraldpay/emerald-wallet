@@ -1,12 +1,17 @@
+import { BigAmount } from '@emeraldpay/bigamount';
+import { UnsignedBitcoinTx } from '@emeraldpay/emerald-vault-core';
+import { BlockchainCode, EthereumTransaction } from '@emeraldwallet/core';
 
-export const moduleName = 'transaction';
-
-export interface ITransactionState {
-  gasPrice: any;
+export interface SignData {
+  blockchain: BlockchainCode;
+  entryId: string;
+  signed: string;
+  tx: EthereumTransaction | UnsignedBitcoinTx;
+  txId: string;
 }
 
-export enum ActionTypes {
-
+export interface BroadcastData extends SignData {
+  fee: BigAmount;
+  originalAmount?: BigAmount;
+  tokenAmount?: BigAmount;
 }
-
-export type TransactionAction = any;

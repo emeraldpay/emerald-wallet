@@ -10,12 +10,15 @@ import { HDPath } from './hdpath';
 import { IBlockchain } from './IBlockchain';
 
 export enum BlockchainCode {
+  // Mainnet
+  BTC = 'btc',
   ETC = 'etc',
   ETH = 'eth',
+  // Testnet
   Goerli = 'goerli',
-  Unknown = 'unknown',
-  BTC = 'btc',
   TestBTC = 'testbtc',
+  // Other
+  Unknown = 'unknown',
 }
 
 export const Blockchains: { [key: string]: IBlockchain } = {
@@ -32,14 +35,14 @@ export const Blockchains: { [key: string]: IBlockchain } = {
   [BlockchainCode.Goerli]: new Ethereum(
     new EthereumParams(
       BlockchainCode.Goerli,
-      CoinTicker.ETH,
+      CoinTicker.ETG,
       5,
       HDPath.default().forCoin(BlockchainCode.ETH).forAccount(160720),
       100,
       true,
     ),
     'Ethereum Goerli Testnet',
-    ['WEENUS', 'WETH'],
+    ['WEENUS', 'WETH', 'WETG'],
   ),
   [BlockchainCode.BTC]: new Bitcoin({
     chainId: 0,
@@ -143,9 +146,9 @@ export function isBitcoin(code: BlockchainCode): boolean {
 }
 
 export const WEIS_GOERLI = new Units([
-  new Unit(0, 'GoerliWei', 'GoeWei'),
-  new Unit(9, 'GoerliGwei', 'GoeGWei'),
-  new Unit(18, 'GoerliEther', 'ETG'),
+  new Unit(0, 'Goerli Wei', 'WeiG'),
+  new Unit(9, 'Goerli Gwei', 'GWeiG'),
+  new Unit(18, 'Goerli Ether', 'ETG'),
 ]);
 
 export const SATOSHIS_TEST = new Units([new Unit(0, 'Test Satoshi', 'tsat'), new Unit(8, 'Test Bitcoin', 'TBTC')]);

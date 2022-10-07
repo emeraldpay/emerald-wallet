@@ -71,7 +71,7 @@ const Screen: React.FC<OwnProps & StateProps> = (props) => {
     case screen.Pages.CREATE_TX:
       return <SelectAccount walletId={props.screenItem} />;
     case screen.Pages.CREATE_TX_CONVERT:
-      return <CreateConvertTransaction entry={props.screenItem} />;
+      return <CreateConvertTransaction entry={props.screenItem.entry} token={props.screenItem.token} />;
     case screen.Pages.CREATE_TX_BITCOIN:
       return <CreateBitcoinTransaction source={props.screenItem} />;
     case screen.Pages.CREATE_TX_CANCEL:

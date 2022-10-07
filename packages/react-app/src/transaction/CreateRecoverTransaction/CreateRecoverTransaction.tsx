@@ -5,17 +5,16 @@ import { BlockchainCode, Blockchains, IBlockchain, blockchainIdToCode, formatAmo
 import { CreateEthereumTx, TxTarget } from '@emeraldwallet/core/lib/workflow';
 import { ITokenInfo, registry } from '@emeraldwallet/erc20';
 import {
+  DefaultFee,
   FEE_KEYS,
   GasPrices,
   IState,
+  SignData,
   accounts,
+  application,
   screen,
   tokens,
-  transaction,
-  application,
-  DefaultFee,
-} from '@emeraldwallet/store';
-import { SignData } from '@emeraldwallet/store/lib/transaction/actions';
+ transaction } from '@emeraldwallet/store';
 import { AccountSelect, Back, Button, ButtonGroup, Page, PasswordInput } from '@emeraldwallet/ui';
 import {
   Box,

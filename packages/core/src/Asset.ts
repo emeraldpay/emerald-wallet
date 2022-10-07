@@ -3,14 +3,21 @@ import { SATOSHIS, Satoshi, WEIS, WEIS_ETC, Wei, WeiEtc } from '@emeraldpay/biga
 import { CoinTickerCode } from './blockchains';
 
 export type StableCoinCode = 'DAI' | 'USDC' | 'USDT';
-export type SupportedTokenCode = 'WEENUS' | 'WETH';
 
 export function isStableCoinCode(value: string): value is StableCoinCode {
   return value === 'DAI' || value === 'USDC' || value === 'USDT';
 }
 
+export type ConvertableTokenCode = 'WETG' | 'WETH';
+
+export function isConvertableToken(value: string): value is ConvertableTokenCode {
+  return value === 'WETG' || value === 'WETH';
+}
+
+export type SupportedTokenCode = ConvertableTokenCode | 'WEENUS';
+
 export function isSupportedTokenCode(value: string): value is SupportedTokenCode {
-  return value === 'WEENUS' || value === 'WETH';
+  return value === 'WEENUS' || value === 'WETG' || value === 'WETH';
 }
 
 export type AnyTokenCode = StableCoinCode | SupportedTokenCode | 'UNKNOWN';
@@ -26,15 +33,22 @@ export interface AssetDetail {
 }
 
 export const AssetDetails: Record<AnyCoinCode, AssetDetail> = {
+  // Mainnet coin tickers
   BTC: { title: 'Bitcoin' },
-  DAI: { title: 'Dai' },
   ETC: { title: 'Classic Ether' },
   ETH: { title: 'Ether' },
-  TESTBTC: { title: 'Test Bitcoin' },
+  // Assets
+  DAI: { title: 'Dai' },
   USDC: { title: 'USD Coin' },
   USDT: { title: 'Tether' },
   WETH: { title: 'Wrapped Ether' },
+  // Testnet coin tickers
+  ETG: { title: 'Goerli Ether' },
+  TESTBTC: { title: 'Test Bitcoin' },
+  // Testnet assets
   WEENUS: { title: 'Weenus' },
+  WETG: { title: 'Wrapped Goerli Ether' },
+  // Other
   UNKNOWN: { title: 'Unknown token' },
 };
 
