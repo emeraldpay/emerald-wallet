@@ -1,7 +1,6 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import { AnyCoinCode, Blockchains, EthereumTx, toNumber } from '@emeraldwallet/core';
-import { tokenUnits } from '@emeraldwallet/core/lib/blockchains/tokens';
+import { AnyCoinCode, Blockchains, EthereumTx, toNumber, tokenUnits } from '@emeraldwallet/core';
 import { decodeData, registry } from '@emeraldwallet/erc20';
 import { BroadcastData, screen, transaction } from '@emeraldwallet/store';
 import { Account, Button, ButtonGroup, FormRow, Page } from '@emeraldwallet/ui';

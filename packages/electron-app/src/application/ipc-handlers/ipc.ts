@@ -1,3 +1,4 @@
+import * as os from 'os';
 import {
   AddressBalance,
   AssetCode,
@@ -6,21 +7,19 @@ import {
   isNativeCallError,
   isNativeCallResponse,
 } from '@emeraldpay/api';
-import { Uuid } from '@emeraldpay/emerald-vault-core';
 import {
   AnyCoinCode,
   BlockchainCode,
-  blockchainCodeToId,
   Commands,
-  isBitcoin,
-  isEthereum,
   Logger,
   PersistentState,
+  blockchainCodeToId,
+  isBitcoin,
+  isEthereum,
 } from '@emeraldwallet/core';
 import { PersistentStateImpl } from '@emeraldwallet/persistent-state';
 import { EmeraldApiAccess } from '@emeraldwallet/services';
 import { ipcMain } from 'electron';
-import * as os from 'os';
 import Application from '../Application';
 
 interface BalanceResult {

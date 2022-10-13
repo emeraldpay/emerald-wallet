@@ -1,7 +1,7 @@
-import {BlockchainCode, Currency, toBigNumber} from '@emeraldwallet/core';
-import {Wei, WEIS} from '@emeraldpay/bigamount-crypto';
+import { WEIS, Wei } from '@emeraldpay/bigamount-crypto';
+import { BlockchainCode, Currency, toBigNumber } from '@emeraldwallet/core';
 
-export function txFeeFiat (gasPrice: string | number, gasLimit: number, rate: number | undefined): string {
+export function txFeeFiat(gasPrice: string | number, gasLimit: number, rate: number | undefined): string {
   if (typeof rate == 'undefined') {
     return '--';
   }
@@ -21,7 +21,8 @@ export const traceValidate = (chain: BlockchainCode, tx: any, dispatch: any, est
         } else {
           resolve(gasEst);
         }
-      }).catch((error: any) => {
+      })
+      .catch((error: any) => {
         reject(error);
       });
   });

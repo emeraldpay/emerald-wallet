@@ -1,6 +1,5 @@
 import { BigAmount, CreateAmount, Unit, Units } from '@emeraldpay/bigamount';
-import { Satoshi, Wei, WeiEtc } from '@emeraldpay/bigamount-crypto';
-import { WeiAny } from '@emeraldpay/bigamount-crypto/lib/ethereum';
+import { Satoshi, Wei, WeiAny, WeiEtc } from '@emeraldpay/bigamount-crypto';
 import { LedgerApp } from '@emeraldpay/emerald-vault-core';
 import { Bitcoin } from './bitcoin';
 import { CoinTicker } from './CoinTicker';

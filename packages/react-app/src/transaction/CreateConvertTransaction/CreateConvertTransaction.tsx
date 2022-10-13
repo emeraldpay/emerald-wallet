@@ -5,6 +5,7 @@ import {
   BlockchainCode,
   Blockchains,
   ConvertableTokenCode,
+  EthereumTransactionType,
   amountFactory,
   blockchainIdToCode,
   formatAmount,
@@ -12,7 +13,6 @@ import {
   tokenUnits,
   workflow,
 } from '@emeraldwallet/core';
-import { EthereumTransactionType } from '@emeraldwallet/core/lib/transaction/ethereum';
 import { registry } from '@emeraldwallet/erc20';
 import {
   DefaultFee,
@@ -352,7 +352,7 @@ const CreateConvertTransaction: React.FC<OwnProps & StylesProps & StateProps & D
         })();
       }
     }
-  }, [blockchain, convertable, convertTx.amount, token, estimateGas]);
+  }, [blockchain, convertable, convertTx, token, estimateGas]);
 
   const currentTx = workflow.CreateErc20WrappedTx.fromPlain(convertTx);
 

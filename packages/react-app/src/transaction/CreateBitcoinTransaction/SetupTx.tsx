@@ -1,7 +1,6 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { BitcoinEntry, EntryId, UnsignedBitcoinTx } from '@emeraldpay/emerald-vault-core';
 import { blockchainIdToCode, workflow } from '@emeraldwallet/core';
-import { TxTarget } from '@emeraldwallet/core/lib/workflow';
 import { FeePrices, screen } from '@emeraldwallet/store';
 import { Button, ButtonGroup } from '@emeraldwallet/ui';
 import { Box, FormControlLabel, FormHelperText, Slider, Switch, createStyles } from '@material-ui/core';
@@ -90,7 +89,7 @@ const SetupTx: React.FC<OwnProps & StateProps> = ({ create, entry, getFees, onCa
   );
 
   const onSetAmountMax = React.useCallback(() => {
-    create.target = TxTarget.SEND_ALL;
+    create.target = workflow.TxTarget.SEND_ALL;
 
     setAmount(create.requiredAmount);
   }, [create]);

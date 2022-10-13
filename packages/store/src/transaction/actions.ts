@@ -1,8 +1,6 @@
 import { EstimationMode } from '@emeraldpay/api';
 import { BigAmount } from '@emeraldpay/bigamount';
-import { SignedTx, UnsignedTx } from '@emeraldpay/emerald-vault-core';
-import { EntryId, UnsignedBitcoinTx } from '@emeraldpay/emerald-vault-core/lib/types';
-import { IEmeraldVault } from '@emeraldpay/emerald-vault-core/lib/vault';
+import { EntryId, IEmeraldVault, SignedTx, UnsignedBitcoinTx, UnsignedTx } from '@emeraldpay/emerald-vault-core';
 import {
   AnyCoinCode,
   BlockchainCode,
@@ -10,6 +8,7 @@ import {
   EthereumAddress,
   EthereumReceipt,
   EthereumTransaction,
+  EthereumTransactionType,
   EthereumTx,
   Logger,
   PersistentState,
@@ -19,7 +18,6 @@ import {
   quantitiesToHex,
   toBigNumber,
 } from '@emeraldwallet/core';
-import { EthereumTransactionType } from '@emeraldwallet/core/lib/transaction/ethereum';
 import BigNumber from 'bignumber.js';
 import { BroadcastData, SignData } from './types';
 import { findWalletByEntryId } from '../accounts/selectors';

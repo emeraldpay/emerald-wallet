@@ -1,24 +1,24 @@
 import { BigAmount, FormatterBuilder, Unit } from '@emeraldpay/bigamount';
-import { WeiAny } from '@emeraldpay/bigamount-crypto/lib/ethereum'; // FIXME
+import { WeiAny } from '@emeraldpay/bigamount-crypto';
 import { WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
 import {
   AnyCoinCode,
   BlockchainCode,
   Blockchains,
   CurrencyAmount,
+  EthereumTransactionType,
   amountDecoder,
   amountFactory,
   blockchainIdToCode,
   formatAmount,
   isAnyTokenCode,
+  isCoinTickerCode,
   toBaseUnits,
   toBigNumber,
   tokenAmount,
   tokenUnits,
   workflow,
-  isCoinTickerCode,
 } from '@emeraldwallet/core';
-import { EthereumTransactionType } from '@emeraldwallet/core/lib/transaction/ethereum';
 import { TokenInfo, registry } from '@emeraldwallet/erc20';
 import {
   DEFAULT_FEE,

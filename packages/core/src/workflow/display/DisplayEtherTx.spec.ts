@@ -1,5 +1,4 @@
 import { Wei } from '@emeraldpay/bigamount-crypto';
-import BigNumber from 'bignumber.js';
 import { DisplayEtherTx } from './DisplayEtherTx';
 import { CreateEthereumTx, TxTarget } from '..';
 import { BlockchainCode } from '../../blockchains';

@@ -1,9 +1,15 @@
 import { BigAmount } from '@emeraldpay/bigamount';
 import { Wei } from '@emeraldpay/bigamount-crypto';
 import { WalletEntry, isEthereumEntry } from '@emeraldpay/emerald-vault-core';
-import { BlockchainCode, Blockchains, IBlockchain, blockchainIdToCode, formatAmount } from '@emeraldwallet/core';
-import { EthereumTransactionType } from '@emeraldwallet/core/lib/transaction/ethereum';
-import { CreateEthereumTx, TxTarget } from '@emeraldwallet/core/lib/workflow';
+import {
+  BlockchainCode,
+  Blockchains,
+  EthereumTransactionType,
+  IBlockchain,
+  blockchainIdToCode,
+  formatAmount,
+  workflow,
+} from '@emeraldwallet/core';
 import { TokenInfo, registry } from '@emeraldwallet/erc20';
 import {
   DefaultFee,
@@ -99,7 +105,7 @@ interface DispatchProps {
   checkGlobalKey(password: string): Promise<boolean>;
   getFees(blockchain: BlockchainCode, defaultFee: DefaultFee): Promise<Record<typeof FEE_KEYS[number], GasPrices>>;
   goBack(): void;
-  signTransaction(tx: CreateEthereumTx, password: string): Promise<void>;
+  signTransaction(tx: workflow.CreateEthereumTx, password: string): Promise<void>;
 }
 
 const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & DispatchProps> = ({
@@ -127,7 +133,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
   const [password, setPassword] = useState('');
   const [passwordError, setPasswordError] = useState<string>();
 
-  const [transaction, setTransaction] = React.useState(new CreateEthereumTx(null).dump());
+  const [transaction, setTransaction] = React.useState(new workflow.CreateEthereumTx(null).dump());
 
   const zeroWei = new Wei(0);
 
@@ -165,13 +171,13 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
 
     const balance = new Wei(balanceByToken[token.symbol]);
 
-    const tx = new CreateEthereumTx({
+    const tx = new workflow.CreateEthereumTx({
       amount: balance,
       blockchain: wrongBlockchain.params.code,
       from: fromAddress.value,
       gas: 21000,
       to: address,
-      target: TxTarget.SEND_ALL,
+      target: workflow.TxTarget.SEND_ALL,
       type: eip1559 ? EthereumTransactionType.EIP1559 : EthereumTransactionType.LEGACY,
     });
 
@@ -206,7 +212,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
     const correctPassword = await checkGlobalKey(password);
 
     if (correctPassword) {
-      const tx = CreateEthereumTx.fromPlain(transaction);
+      const tx = workflow.CreateEthereumTx.fromPlain(transaction);
 
       await signTransaction(tx, password);
     } else {
@@ -248,7 +254,7 @@ const CreateRecoverTransaction: React.FC<OwnProps & StylesProps & StateProps & D
     [],
   );
 
-  const tx = CreateEthereumTx.fromPlain(transaction);
+  const tx = workflow.CreateEthereumTx.fromPlain(transaction);
 
   const stdMaxGasPriceNumber = stdMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber();
   const highMaxGasPriceNumber = highMaxGasPrice.getNumberByUnit(gasPriceUnit).toNumber();
