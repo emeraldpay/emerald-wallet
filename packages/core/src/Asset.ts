@@ -8,16 +8,16 @@ export function isStableCoinCode(value: string): value is StableCoinCode {
   return value === 'DAI' || value === 'USDC' || value === 'USDT';
 }
 
-export type ConvertableTokenCode = 'WETG' | 'WETH';
+export type ConvertableTokenCode = 'WETC' | 'WETG' | 'WETH';
 
 export function isConvertableToken(value: string): value is ConvertableTokenCode {
-  return value === 'WETG' || value === 'WETH';
+  return value === 'WETC' || value === 'WETG' || value === 'WETH';
 }
 
 export type SupportedTokenCode = ConvertableTokenCode | 'WEENUS';
 
 export function isSupportedTokenCode(value: string): value is SupportedTokenCode {
-  return value === 'WEENUS' || value === 'WETG' || value === 'WETH';
+  return value === 'WEENUS' || isConvertableToken(value);
 }
 
 export type AnyTokenCode = StableCoinCode | SupportedTokenCode | 'UNKNOWN';
@@ -41,6 +41,7 @@ export const AssetDetails: Record<AnyCoinCode, AssetDetail> = {
   DAI: { title: 'Dai' },
   USDC: { title: 'USD Coin' },
   USDT: { title: 'Tether' },
+  WETC: { title: 'Wrapped Ether Classic' },
   WETH: { title: 'Wrapped Ether' },
   // Testnet coin tickers
   ETG: { title: 'Goerli Ether' },

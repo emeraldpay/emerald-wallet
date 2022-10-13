@@ -29,7 +29,7 @@ export const Blockchains: { [key: string]: IBlockchain } = {
   [BlockchainCode.ETC]: new Ethereum(
     new EthereumParams(BlockchainCode.ETC, CoinTicker.ETC, 61, HDPath.default().forCoin(BlockchainCode.ETC), 250),
     'Ethereum Classic',
-    [],
+    ['WETC'],
   ),
   [BlockchainCode.Goerli]: new Ethereum(
     new EthereumParams(

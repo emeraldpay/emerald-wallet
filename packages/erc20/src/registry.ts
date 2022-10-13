@@ -10,6 +10,13 @@ type TokenCollection = { [code in BlockchainCode]?: TokenInfo[] };
 
 class Registry {
   private tokens: TokenCollection = {
+    [BlockchainCode.ETC]: [
+      {
+        address: '0x1953cab0E5bFa6D4a9BaD6E05fD46C1CC6527a5a',
+        decimals: 18,
+        symbol: 'WETC',
+      },
+    ],
     [BlockchainCode.ETH]: [
       {
         address: '0x6B175474E89094C44Da98b954EedeAC495271d0F',
